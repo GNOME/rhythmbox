@@ -76,8 +76,6 @@ static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 
-static const char *impl_get_status_fast (RBGroupSource *source);
-static const char *impl_get_status_full (RBGroupSource *source);
 static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
 static void rb_group_source_drop_cb (GtkWidget *widget,
 				     GdkDragContext *context,
@@ -108,6 +106,7 @@ struct RBGroupSourcePrivate
 
 	RBNodeView *songs;
 	RBNodeFilter *filter;
+	gboolean filter_changed;
 
 	char *title;
 
@@ -118,9 +117,6 @@ struct RBGroupSourcePrivate
 	char *description;
 
 	guint idle_save_id;
-
-	GTimeVal cached_mod_time;
-	char *cached_status;
 
 	gboolean deleted;
 };
@@ -463,6 +459,15 @@ impl_get_description (RBSource *asource)
 }
 
 static const char *
+impl_get_status (RBSource *asource)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	return rb_library_compute_status (source->priv->library, source->priv->group,
+					  source->priv->filter);
+}
+
+
+static const char *
 impl_get_browser_key (RBSource *source)
 {
 	return NULL;
@@ -510,92 +515,6 @@ impl_get_album (RBSource *asource)
 		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
 	else
 		return NULL;
-}
-
-static const char *
-impl_get_status (RBSource *asource)
-{
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
-	GTimeVal mod_time = rb_library_get_modification_time (source->priv->library);
-	const char *ret;
-
-	if (source->priv->cached_mod_time.tv_sec > mod_time.tv_sec ||
-	    (source->priv->cached_mod_time.tv_sec == mod_time.tv_sec
-	     && source->priv->cached_mod_time.tv_usec > mod_time.tv_usec)) {
-		rb_debug ("returning cached status");
-		return source->priv->cached_status;
-	}
-
-	rb_debug ("returning new status");
-	
-	if (!rb_library_is_idle (source->priv->library))
-		ret = impl_get_status_fast (source);
-	else
-		ret = impl_get_status_full (source);
-
-	g_get_current_time (&source->priv->cached_mod_time);
-	g_free (source->priv->cached_status);
-	source->priv->cached_status = g_strdup (ret);
-
-	return ret;
-}
-
-static const char *
-impl_get_status_fast (RBGroupSource *source)
-{
-	return g_strdup_printf (_("%ld songs"),
-				(long) rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
-}
-
-static const char *
-impl_get_status_full (RBGroupSource *source)
-{
-	char *ret;
-	float days;
-	long len, hours, minutes, seconds;
-	long n_seconds = 0;
-	GPtrArray *kids;
-	int i;
-
-	kids = rb_node_get_children (source->priv->group);
-
-	len = 0;
-
-	for (i = 0; i < kids->len; i++) {
-		long secs;
-		RBNode *node;
-
-		node = g_ptr_array_index (kids, i);
-
-		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION);
-		if (secs < 0)
-			g_warning ("Invalid duration value for node %p", node);
-		else
-			n_seconds += secs;
-
-		len++;
-	}
-
-	rb_node_thaw (source->priv->group);
-
-	days    = (float) n_seconds / (float) (60 * 60 * 24); 
-	hours   = n_seconds / (60 * 60);
-	minutes = n_seconds / 60 - hours * 60;
-	seconds = n_seconds % 60;
-
-	/* FIXME impl remaining time */
-	if (days >= 1.0) {
-		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"),
-				       days, len);
-	} else if (hours >= 1) {
-		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"),
-				       hours, minutes, len);
-	} else {
-		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"),
-				       minutes, len);
-	}
-
-	return ret;
 }
 
 static GList *
@@ -648,7 +567,9 @@ static void
 songs_view_changed_cb (RBNodeView *view, RBGroupSource *source)
 {
 	rb_debug ("got node view change");
-	rb_source_notify_status_changed (RB_SOURCE (source));
+	if (source->priv->filter_changed)
+		rb_source_notify_status_changed (RB_SOURCE (source));
+	source->priv->filter_changed = FALSE;
 }
 
 static gboolean
@@ -972,6 +893,7 @@ impl_search (RBSource *asource, const char *search_text)
 					       0);
 		rb_node_filter_done_changing (source->priv->filter);
 	}
+	source->priv->filter_changed = TRUE;
 }
 
 static void

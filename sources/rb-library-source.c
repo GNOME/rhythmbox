@@ -82,6 +82,8 @@ static void rb_library_source_drop_cb (GtkWidget        *widget,
 
 static void songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source);
 
+static void library_status_changed_cb (RBLibrary *library, RBLibrarySource *source);
+
 static void rb_library_source_state_pref_changed (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
@@ -108,9 +110,6 @@ static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 
-/* Misc */
-static const char *impl_get_status_fast (RBLibrarySource *source);
-static const char *impl_get_status_full (RBLibrarySource *source);
 static void artists_filter (RBLibrarySource *source,
 	                    RBNode *genre);
 static void albums_filter (RBLibrarySource *source,
@@ -160,11 +159,10 @@ struct RBLibrarySourcePrivate
 
 	gboolean loading_prefs;
 
-	GTimeVal cached_mod_time;
-	char *cached_status;
-
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
+
+	gboolean filter_changed;
 };
 
 enum
@@ -348,8 +346,6 @@ rb_library_source_finalize (GObject *object)
 	g_object_unref (G_OBJECT (source->priv->songs_filter));
 	g_object_unref (G_OBJECT (source->priv->albums_filter));
 
-	g_free (source->priv->cached_status);
-
 	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -390,6 +386,11 @@ rb_library_source_set_property (GObject *object,
 	case PROP_LIBRARY:
 		{
 			source->priv->library = g_value_get_object (value);
+
+			g_signal_connect (G_OBJECT (source->priv->library),
+					  "status-changed",
+					  G_CALLBACK (library_status_changed_cb),
+					  source);
 
 			source->priv->paned = gtk_vpaned_new ();
 
@@ -617,6 +618,15 @@ impl_get_description (RBSource *source)
 }
 
 static const char *
+impl_get_status (RBSource *asource)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	return rb_library_compute_status (source->priv->library,
+					  rb_library_get_all_songs (source->priv->library),
+					  source->priv->songs_filter);
+}
+
+static const char *
 impl_get_browser_key (RBSource *source)
 {
 	return CONF_STATE_SHOW_BROWSER;
@@ -636,13 +646,10 @@ impl_search (RBSource *asource, const char *search_text)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
 		/* resets the filter */
-	if (search_text == NULL || strcmp (search_text, "") == 0)
-	{
+	if (search_text == NULL || strcmp (search_text, "") == 0) {
 		rb_node_view_select_node (source->priv->genres,
 				          rb_library_get_all_artists (source->priv->library));
-	}
-	else
-	{
+	} else {
 		rb_node_view_select_none (source->priv->genres);
 		rb_node_view_select_none (source->priv->artists);
 		rb_node_view_select_none (source->priv->albums);
@@ -766,97 +773,6 @@ impl_get_album (RBSource *asource)
 		return NULL;
 }
 
-static const char *
-impl_get_status (RBSource *asource)
-{
-	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	GTimeVal mod_time = rb_library_get_modification_time (source->priv->library);
-	const char *ret;
-
-	if (source->priv->cached_mod_time.tv_sec > mod_time.tv_sec ||
-	    (source->priv->cached_mod_time.tv_sec == mod_time.tv_sec
-	     && source->priv->cached_mod_time.tv_usec > mod_time.tv_usec)) {
-		rb_debug ("returning cached status");
-		return source->priv->cached_status;
-	}
-	
-	rb_debug ("returning new status");
-	
-	if (!rb_library_is_idle (source->priv->library))
-		ret = impl_get_status_fast (source);
-	else
-		ret = impl_get_status_full (source);
-
-	g_get_current_time (&source->priv->cached_mod_time);
-	g_free (source->priv->cached_status);
-	source->priv->cached_status = g_strdup (ret);
-
-	return ret;
-}
-
-static const char *
-impl_get_status_fast (RBLibrarySource *source)
-{
-
-	return g_strdup_printf (_("%ld songs"),
-				(long) rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
-}
-
-static const char *
-impl_get_status_full (RBLibrarySource *source)
-{
-	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
-	char *ret;
-	float days;
-	long len, hours, minutes, seconds;
-	long n_seconds = 0;
-	GPtrArray *kids;
-	int i;
-
-	kids = rb_node_get_children (songsroot);
-
-	len = 0;
-
-	for (i = 0; i < kids->len; i++) {
-		long secs;
-		RBNode *node;
-
-		node = g_ptr_array_index (kids, i);
-
-		if (source->priv->songs_filter != NULL &&
-		    rb_node_filter_evaluate (source->priv->songs_filter, node) == FALSE)
-			continue;
-
-		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION);
-		if (secs < 0)
-			g_warning ("Invalid duration value for node %p", node);
-		else
-			n_seconds += secs;
-
-		len++;
-	}
-
-	rb_node_thaw (songsroot);
-
-	days    = (float) n_seconds / (float) (60 * 60 * 24); 
-	hours   = n_seconds / (60 * 60);
-	minutes = n_seconds / 60 - hours * 60;
-	seconds = n_seconds % 60;
-
-	/* FIXME impl remaining time */
-	if (days >= 1.0) {
-		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"),
-				       days, len);
-	} else if (hours >= 1) {
-		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"),
-				       hours, minutes, len);
-	} else {
-		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"),
-				       minutes, len);
-	}
-
-	return ret;
-}
 
 static void
 rb_library_source_preferences_sync (RBLibrarySource *source)
@@ -944,10 +860,18 @@ rb_library_source_state_pref_changed (GConfClient *client,
 }
 
 static void
+library_status_changed_cb (RBLibrary *library, RBLibrarySource *source)
+{
+	rb_source_notify_status_changed (RB_SOURCE (source));
+}
+
+static void
 songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source)
 {
 	rb_debug ("got node view change");
-	rb_source_notify_status_changed (RB_SOURCE (source));
+	if (source->priv->filter_changed)
+		rb_source_notify_status_changed (RB_SOURCE (source));
+	source->priv->filter_changed = FALSE;
 }
 
 void
@@ -1077,8 +1001,7 @@ rb_library_source_drop_cb (GtkWidget *widget,
 }
 
 static void
-artists_filter (RBLibrarySource *source,
-	        RBNode *genre)
+artists_filter (RBLibrarySource *source, RBNode *genre)
 {
 	rb_node_filter_empty (source->priv->artists_filter);
 	rb_node_filter_add_expression (source->priv->artists_filter,
@@ -1095,9 +1018,7 @@ artists_filter (RBLibrarySource *source,
 }
 
 static void
-albums_filter (RBLibrarySource *source,
-	       RBNode *genre,
-	       RBNode *artist)
+albums_filter (RBLibrarySource *source, RBNode *genre, RBNode *artist)
 {
 	rb_node_filter_empty (source->priv->albums_filter);
 	rb_node_filter_add_expression (source->priv->albums_filter,
@@ -1129,10 +1050,7 @@ albums_filter (RBLibrarySource *source,
 }
 
 static void
-songs_filter (RBLibrarySource *source,
-	      RBNode *genre,
-	      RBNode *artist,
-	      RBNode *album)
+songs_filter (RBLibrarySource *source, RBNode *genre, RBNode *artist, RBNode *album)
 {
 	rb_node_filter_empty (source->priv->songs_filter);
 	rb_node_filter_add_expression (source->priv->songs_filter,
@@ -1166,4 +1084,5 @@ songs_filter (RBLibrarySource *source,
 								      RB_NODE_PROP_REAL_ALBUM, album),
 				       2);
 	rb_node_filter_done_changing (source->priv->songs_filter);
+	source->priv->filter_changed = TRUE;
 }

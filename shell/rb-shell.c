@@ -106,7 +106,6 @@ static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
-static gboolean rb_shell_poll_library (RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell);
 static void rb_shell_sync_paned (RBShell *shell);
 static void paned_size_allocate_cb (GtkWidget *widget,
@@ -577,7 +576,6 @@ async_library_release_brakes (RBShell *shell)
 
 	GDK_THREADS_ENTER ();
 
-	g_idle_add ((GSourceFunc) rb_shell_poll_library, shell);
 	rb_library_release_brakes (shell->priv->library);
 
 	GDK_THREADS_LEAVE ();
@@ -918,36 +916,6 @@ source_selected_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source selected");
 	rb_shell_select_source (shell, source);
-}
-
-static gboolean
-rb_shell_poll_library (RBShell *shell)
-{
-	gboolean library_is_idle = rb_library_is_idle (shell->priv->library);
-
-	GDK_THREADS_ENTER ();
-
-	if (library_is_idle && shell->priv->busy_cursor_displayed) {
-		rb_debug ("nulling cursor");
-		gdk_window_set_cursor (shell->priv->window->window, NULL);
-		gdk_flush ();
-		shell->priv->busy_cursor_displayed = FALSE;
-	} else if (!library_is_idle && !shell->priv->busy_cursor_displayed) {
-		GdkCursor *cursor;
-
-		rb_debug ("setting watch cursor");
-
-		cursor = gdk_cursor_new (GDK_WATCH);
-		gdk_window_set_cursor (shell->priv->window->window, cursor);
-		gdk_cursor_unref (cursor);
-
-		shell->priv->busy_cursor_displayed = TRUE;
-	}
-	g_timeout_add (1000, (GSourceFunc) rb_shell_poll_library, shell);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
 }
 
 static void

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #define __RB_LIBRARY_H
 
 #include "rb-node.h"
+#include "rb-node-filter.h"
 
 G_BEGIN_DECLS
 
@@ -49,7 +51,7 @@ typedef struct
 
 	/* signals */
 	void	(*error)	(const char *uri, const char *msg);
-	void	(*operation_end)();
+	void	(*status_changed)();
 } RBLibraryClass;
 
 GType			rb_library_get_type		(void);
@@ -67,10 +69,6 @@ gboolean		rb_library_update_uri           (RBLibrary *library,
 							 GError **error);
 void			rb_library_remove_uri           (RBLibrary *library,
 							 const char *uri);
-
-void			rb_library_operation_end        (RBLibrary *library);
-
-GTimeVal		rb_library_get_modification_time(RBLibrary *library);		
 
 RBNode *		rb_library_new_node		(RBLibrary *library,
 							 const char *location,
@@ -109,6 +107,8 @@ void			rb_library_handle_songs         (RBLibrary *library,
 							 RBNode *node,
 							 GFunc func,
 							 gpointer user_data);
+
+char *			rb_library_compute_status	(RBLibrary *library, RBNode *root, RBNodeFilter *filter);
 
 G_END_DECLS
 

@@ -1,3 +1,33 @@
+2003-08-14  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-action-queue.h:
+	* library/rb-library-action.c:
+	* library/rb-library-action.h:
+	* library/rb-library-walker-thread.c:
+	* library/rb-library-walker-thread.h:
+	* library/rb-library.c: (rb_library_class_init), (rb_library_init),
+	(rb_library_finalize), (signal_status_changed),
+	(rb_library_add_uri), (rb_library_add_uri_sync), (song_added_cb),
+	(sync_node), (rb_library_update_node), (rb_library_compute_status),
+	(poll_status_update), (get_status_fast), (get_status_full):
+	* library/rb-library.h:
+	* shell/rb-shell.c: (async_library_release_brakes),
+	(source_selected_cb):
+	* sources/rb-group-source.c: (impl_get_status),
+	(songs_view_changed_cb), (impl_search):
+	* sources/rb-library-source.c: (rb_library_source_finalize),
+	(rb_library_source_set_property), (impl_get_status), (impl_search),
+	(library_status_changed_cb), (songs_view_changed_cb),
+	(artists_filter), (albums_filter), (songs_filter):
+
+	Refactor status caching stuff.  The code for summarizing the library
+	status has been moved into RBLibrary, where it belongs.  This should
+	make switching to a better status computation system easier.
+
+	Also, instead of doing time-based caching, we now take the simple
+	expident of only emitting the STATUS_CHANGED signal if the node
+	filter or the library has changed.
+
 2003-08-13  Colin Walters  <walters@verbum.org>
 
 	* AUTHORS: Add James Kahn.

@@ -59,9 +59,14 @@ static void restore_node (RBNode *node);
 static gboolean rb_library_periodic_save (RBLibrary *library);
 static void sync_sort_keys (RBNode *node);
 static void walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library);
+static char *get_status_fast (RBLibrary *library, RBNode *root);
+static char *get_status_full (RBLibrary *library, RBNode *root, RBNodeFilter *filter);
+
 
 struct RBLibraryPrivate
 {
+	GMutex *lock;
+
 	RBLibraryWalkerThread *walker_thread;
 	RBLibraryMainThread *main_thread;
 
@@ -89,9 +94,15 @@ struct RBLibraryPrivate
 
 	GTimeVal mod_time;
 
+	GTimeVal cached_mod_time;
+	char *cached_status;
+
 	char *xml_file;
 
 	guint idle_save_id;
+
+	gboolean status_poll_queued;
+	guint status_poll_id;
 };
 
 enum
@@ -102,7 +113,7 @@ enum
 enum
 {
 	ERROR,
-	OPERATION_END,
+	STATUS_CHANGED,
 	LAST_SIGNAL,
 };
 
@@ -158,6 +169,15 @@ rb_library_class_init (RBLibraryClass *klass)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
+	rb_library_signals[STATUS_CHANGED] =
+		g_signal_new ("status-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryClass, status_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -174,6 +194,8 @@ rb_library_init (RBLibrary *library)
 						    NULL);
 
 	g_free (libname); 
+
+	library->priv->lock = g_mutex_new ();
 
 	library->priv->genre_hash = g_hash_table_new (g_str_hash,
 						      g_str_equal);
@@ -249,6 +271,7 @@ rb_library_finalize (GObject *object)
 
 	g_source_remove (library->priv->idle_save_id);
 
+
 	rb_debug ("library: finalizing");
 	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
 	g_object_unref (G_OBJECT (library->priv->main_thread));
@@ -286,7 +309,18 @@ rb_library_finalize (GObject *object)
 	g_static_rw_lock_free (library->priv->album_hash_lock);
 	g_static_rw_lock_free (library->priv->song_hash_lock);
 
+	g_free (library->priv->cached_status);
+
 	g_free (library->priv->xml_file);
+
+	g_mutex_lock (library->priv->lock);
+
+	if (library->priv->status_poll_queued)
+		g_source_remove (library->priv->status_poll_id);
+
+	g_mutex_unlock (library->priv->lock);
+
+	g_mutex_free (library->priv->lock);
 
 	g_free (library->priv);
 
@@ -307,6 +341,14 @@ rb_library_new (void)
 }
 
 static void
+signal_status_changed (RBLibrary *library)
+{
+	g_get_current_time (&library->priv->mod_time);
+	
+	g_signal_emit (G_OBJECT (library), rb_library_signals[STATUS_CHANGED], 0);
+}
+
+static void
 walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library)
 {
 	rb_debug ("caught walker done");
@@ -319,8 +361,7 @@ walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library)
 }
 
 void
-rb_library_add_uri (RBLibrary *library,
-		    const char *uri)
+rb_library_add_uri (RBLibrary *library, const char *uri)
 {
 	if (rb_uri_is_directory (uri) == FALSE) {
 		RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, uri);
@@ -338,7 +379,6 @@ rb_library_add_uri (RBLibrary *library,
 		rb_debug ("starting walker thread");
 
 		rb_library_walker_thread_start (thread);
-		
 	}
 }
 
@@ -355,6 +395,8 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 	}
 	
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
+
+	signal_status_changed (library);
 }
 
 gboolean
@@ -382,24 +424,6 @@ rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
 	/* just to be sure */
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 	return ret;
-}
-
-void
-rb_library_operation_end (RBLibrary *library)
-{
-	g_return_if_fail (RB_IS_LIBRARY (library));
-
-	rb_thread_helpers_lock_gdk ();
-	
-	g_signal_emit (G_OBJECT (library), rb_library_signals[OPERATION_END], 0);
-
-	rb_thread_helpers_unlock_gdk ();
-}
-
-GTimeVal
-rb_library_get_modification_time (RBLibrary *library)
-{
-	return library->priv->mod_time;
 }
 
 void rb_library_remove_uri (RBLibrary *library, const char *uri)
@@ -501,6 +525,9 @@ song_added_cb (RBNode *node,
 {
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
 
+	/* Don't bother to emit the status changed signal here;
+	 * the source will come get the updated status because of the
+	 * node view change anyways. */
 	g_get_current_time (&library->priv->mod_time);
 	
 	g_hash_table_insert (library->priv->song_hash,
@@ -1332,10 +1359,7 @@ set_node_album (RBNode *node,
 }
 
 static void
-sync_node (RBNode *node,
-	   RBLibrary *library,
-	   gboolean check_reparent,
-	   GError **error)
+sync_node (RBNode *node, RBLibrary *library, gboolean check_reparent, GError **error)
 {
 	MonkeyMediaStreamInfo *info;
 	char *location;
@@ -1390,9 +1414,7 @@ out:
 }
 
 gboolean
-rb_library_update_node (RBLibrary *library,
-			RBNode *node,
-			GError **error)
+rb_library_update_node (RBLibrary *library, RBNode *node, GError **error)
 {
 	GnomeVFSFileInfo *info;
 	const char *location;
@@ -1420,4 +1442,111 @@ rb_library_update_node (RBLibrary *library,
 	
 	gnome_vfs_file_info_unref (info);
 	return FALSE;
+}
+
+char *
+rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
+{
+	if (!rb_library_is_idle (library))
+		return get_status_fast (library, root);
+	else
+		return get_status_full (library, root, filter);
+}
+
+static gboolean
+poll_status_update (gpointer data)
+{
+	RBLibrary *library = RB_LIBRARY (data);
+
+	g_mutex_lock (library->priv->lock);
+
+	/* This marks things as requiring an update.  That way we'll
+	 * get the full status back when the library is idle.
+	 */
+	if (rb_library_is_idle (library)) {
+		GDK_THREADS_ENTER ();
+
+		signal_status_changed (library);
+
+		GDK_THREADS_LEAVE ();
+
+		library->priv->status_poll_queued = FALSE;
+	} else
+		library->priv->status_poll_id =
+			g_timeout_add (500, (GSourceFunc) poll_status_update, library);
+
+	g_mutex_unlock (library->priv->lock);
+
+	return FALSE;
+}
+
+static char *
+get_status_fast (RBLibrary *library, RBNode *root)
+{
+	char *ret = g_strdup_printf (_("%ld songs"), (long) rb_node_get_n_children (root));
+
+	g_mutex_lock (library->priv->lock);
+
+	if (!library->priv->status_poll_queued) {
+		g_idle_add ((GSourceFunc) poll_status_update, library);
+		library->priv->status_poll_queued = TRUE;
+	}
+	
+	g_mutex_unlock (library->priv->lock);
+	
+	return ret;
+}
+
+static char *
+get_status_full (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
+{
+	char *ret;
+	float days;
+	long len, hours, minutes, seconds;
+	long n_seconds = 0;
+	GPtrArray *kids;
+	int i;
+
+	kids = rb_node_get_children (root);
+
+	len = 0;
+
+	for (i = 0; i < kids->len; i++) {
+		long secs;
+		RBNode *node;
+
+		node = g_ptr_array_index (kids, i);
+
+		if (filter != NULL && rb_node_filter_evaluate (filter, node) == FALSE)
+			continue;
+
+		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION);
+		if (secs < 0)
+			g_warning ("Invalid duration value for node %p", node);
+		else
+			n_seconds += secs;
+
+		len++;
+	}
+
+	rb_node_thaw (root);
+
+	days    = (float) n_seconds / (float) (60 * 60 * 24); 
+	hours   = n_seconds / (60 * 60);
+	minutes = n_seconds / 60 - hours * 60;
+	seconds = n_seconds % 60;
+
+	/* FIXME impl remaining time */
+	if (days >= 1.0) {
+		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"),
+				       days, len);
+	} else if (hours >= 1) {
+		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"),
+				       hours, minutes, len);
+	} else {
+		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"),
+				       minutes, len);
+	}
+
+	return ret;
 }
