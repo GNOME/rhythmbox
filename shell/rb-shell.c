@@ -712,6 +712,7 @@ rb_shell_construct (RBShell *shell)
 		g_signal_connect_object (G_OBJECT (shell->priv->db), "legacy-load-complete",
 					 G_CALLBACK (rb_shell_legacy_load_complete_cb), shell,
 					 0);
+		rhythmdb_load_legacy (shell->priv->db);
 	}
 
 	rb_debug ("shell: setting up tray icon");

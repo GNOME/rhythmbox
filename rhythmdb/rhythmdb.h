@@ -268,6 +268,7 @@ void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
+void		rhythmdb_load_legacy			(RhythmDB *db);
 RhythmDBEntry * rhythmdb_legacy_id_to_entry		(RhythmDB *db, guint id);
 
 char *		rhythmdb_get_status			(RhythmDB *db);

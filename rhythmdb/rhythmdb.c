@@ -292,9 +292,11 @@ rhythmdb_init (RhythmDB *db)
 		db->priv->column_types[i] = extract_gtype_from_enum_entry (unsaved_prop_class, i);
 		g_assert (db->priv->column_types[i] != G_TYPE_INVALID);
 	}
-	
+
 	g_type_class_unref (prop_class);
 	g_type_class_unref (unsaved_prop_class);
+
+	db->priv->legacy_id_map = g_hash_table_new (NULL, NULL);
 
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc) query_thread_main,
 							 db, 3, TRUE, NULL);
