@@ -56,6 +56,7 @@ static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
 static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
 					      GObjectConstructParam *construct_properties);
+static void rb_iradio_source_dispose (GObject *object);
 static void rb_iradio_source_finalize (GObject *object);
 static void rb_iradio_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -115,6 +116,8 @@ void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 
 struct RBIRadioSourcePrivate
 {
+	gboolean disposed;
+	
 	RhythmDB *db;
 
 	GtkWidget *vbox;
@@ -206,6 +209,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
+	object_class->dispose = rb_iradio_source_dispose;
 	object_class->finalize = rb_iradio_source_finalize;
 	object_class->constructor = rb_iradio_source_constructor;
 
@@ -259,6 +263,19 @@ rb_iradio_source_init (RBIRadioSource *source)
 						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
 	gtk_widget_destroy (dummy);
+}
+
+static void
+rb_iradio_source_dispose (GObject *object)
+{
+	RBIRadioSource *source;
+
+	source = RB_IRADIO_SOURCE (object);
+	if (source->priv->disposed)
+		return;
+	source->priv->disposed = TRUE;
+	
+	g_object_unref (source->priv->db);
 }
 
 static void

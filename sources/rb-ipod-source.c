@@ -403,6 +403,7 @@ rb_ipod_unload_songs (RBiPodSource *source)
 	g_object_get (G_OBJECT (source), "db", &db, NULL);
 	rhythmdb_entry_delete_by_type (db, RHYTHMDB_ENTRY_TYPE_IPOD);
 	rhythmdb_commit (db);
+	g_object_unref (db);
 }
 
 

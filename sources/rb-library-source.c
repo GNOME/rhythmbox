@@ -60,6 +60,7 @@ static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
 static GObject *rb_library_source_constructor (GType type, guint n_construct_properties,
 					       GObjectConstructParam *construct_properties);
+static void rb_library_source_dispose (GObject *object);
 static void rb_library_source_finalize (GObject *object);
 static void rb_library_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -141,6 +142,8 @@ static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 
 struct RBLibrarySourcePrivate
 {
+	gboolean disposed;
+	
 	RhythmDB *db;
 	
 	GtkWidget *browser;
@@ -243,6 +246,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
+	object_class->dispose = rb_library_source_dispose;
 	object_class->finalize = rb_library_source_finalize;
 	object_class->constructor = rb_library_source_constructor;
 
@@ -393,6 +397,19 @@ rb_library_source_init (RBLibrarySource *source)
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
+}
+
+static void
+rb_library_source_dispose (GObject *object)
+{
+	RBLibrarySource *source;
+	source = RB_LIBRARY_SOURCE (object);
+
+	if (source->priv->disposed)
+		return;
+	source->priv->disposed = TRUE;
+
+	g_object_unref (source->priv->db);
 }
 
 static void

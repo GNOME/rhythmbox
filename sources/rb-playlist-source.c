@@ -51,6 +51,7 @@ static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
 static void rb_playlist_source_init (RBPlaylistSource *source);
 static GObject *rb_playlist_source_constructor (GType type, guint n_construct_properties,
 						GObjectConstructParam *construct_properties);
+static void rb_playlist_source_dispose (GObject *object);
 static void rb_playlist_source_finalize (GObject *object);
 static void rb_playlist_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -94,6 +95,8 @@ static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 
 struct RBPlaylistSourcePrivate
 {
+	gboolean disposed;
+	
 	RhythmDB *db;
 
 	gboolean automatic;
@@ -158,6 +161,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
+	object_class->dispose = rb_playlist_source_dispose;
 	object_class->finalize = rb_playlist_source_finalize;
 	object_class->constructor = rb_playlist_source_constructor;
 
@@ -312,6 +316,19 @@ static void
 rb_playlist_source_init (RBPlaylistSource *source)
 {
 	source->priv = g_new0 (RBPlaylistSourcePrivate, 1);
+}
+
+static void
+rb_playlist_source_dispose (GObject *object)
+{
+	RBPlaylistSource *source;
+	source = RB_PLAYLIST_SOURCE (object);
+
+	if (source->priv->disposed)
+		return;
+	source->priv->disposed = TRUE;
+
+	g_object_unref (source->priv->db);
 }
 
 static void
@@ -713,11 +730,8 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 static void
 playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **title)
 {
-	RhythmDB *db;
 	RhythmDBEntry *entry;
 
-	g_object_get (G_OBJECT (model), "db", &db, NULL);
-	
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
 	*uri = g_strdup (entry->location);
