@@ -421,10 +421,10 @@ queue_full_cb (GstQueue *queue,
 
 static void
 rb_player_construct (RBPlayer *mp,
-			       gboolean iradio_mode,
-			       gboolean audiocd_mode,
-			       const char *uri,
-			       GError **error)
+		     gboolean iradio_mode,
+		     gboolean audiocd_mode,
+		     const char *uri,
+		     GError **error)
 {
 	GstDParamManager *dpman;
 	char *decoder_name = NULL;

@@ -2,6 +2,313 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-16 15:24:53 GMT	Colin Walters <walters@verbum.org>	patch-69
+
+    Summary:
+      merge again from tags
+    Revision:
+      rhythmbox--mainline--0.7--patch-69
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-5
+       add (broken) gst tagging, other misc bits
+    
+
+    new files:
+     metadata/rb-metadata-gst.c monkey-media/.arch-ids/=id
+
+    modified files:
+     ChangeLog metadata/Makefile.am metadata/rb-metadata.h
+     player/rb-player-gst.c
+
+    new directories:
+     monkey-media monkey-media/.arch-ids
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-5
+
+
+2003-12-16 08:06:12 GMT	Colin Walters <walters@verbum.org>	patch-68
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-68
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-66
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-1
+       rename RBPlayer to RBHeader
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-2
+       she compiles...barely
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-3
+       she boots and plays...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-4
+       kill off more monkey-media cruft, fix up gint64 bits, other bugs
+    
+
+    new files:
+     metadata/.arch-ids/=id metadata/Makefile.am
+     metadata/rb-metadata-mm.c metadata/rb-metadata.h
+     player/.arch-ids/=id player/Makefile.am
+
+    removed files:
+     monkey-media/monkey-media-audio-cd-private.h
+     monkey-media/monkey-media-audio-cd.c
+     monkey-media/monkey-media-audio-cd.h
+     monkey-media/monkey-media-audio-quality.c
+     monkey-media/monkey-media-audio-quality.h
+     monkey-media/monkey-media-musicbrainz.c
+     monkey-media/monkey-media-musicbrainz.h monkey-media/sha1.c
+     monkey-media/sha1.h tests/test-info.c
+
+    modified files:
+     ChangeLog Makefile.am configure.ac data/glade/song-info.glade
+     data/glade/station-properties.glade iradio/Makefile.am
+     iradio/rb-station-properties-dialog.c
+     metadata/monkey-media/Makefile.am
+     metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/monkey-media.c
+     metadata/monkey-media/monkey-media.h
+     metadata/monkey-media/stream-info-impl/Makefile.am
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     player/rb-player-gst.c player/rb-player.h rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/Makefile.am shell/main.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c shell/rb-source-header.c
+     shell/rb-source-header.h shell/rb-statusbar.h
+     sources/Makefile.am tests/Makefile.am widgets/Makefile.am
+     widgets/rb-entry-view.c widgets/rb-header.c
+     widgets/rb-header.h widgets/rb-song-info.c
+
+    renamed files:
+     monkey-media/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/.arch-ids/.cvsignore.id
+     monkey-media/.arch-ids/=id
+       ==> metadata/monkey-media/.arch-ids/=id
+     monkey-media/.arch-ids/monkey-media-includes.h.in.id
+       ==> metadata/monkey-media/.arch-ids/monkey-media-includes.h.in.id
+     monkey-media/.arch-ids/monkey-media-marshal.list.id
+       ==> metadata/monkey-media/.arch-ids/monkey-media-marshal.list.id
+     monkey-media/id3-vfs/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/id3-vfs/.arch-ids/.cvsignore.id
+     monkey-media/id3-vfs/.arch-ids/=id
+       ==> metadata/monkey-media/id3-vfs/.arch-ids/=id
+     monkey-media/monkey-media-player-gst.c
+       ==> player/rb-player-gst.c
+     monkey-media/monkey-media-player-xine.c
+       ==> player/rb-player-xine.c
+     monkey-media/monkey-media-player.h
+       ==> player/rb-player.h
+     monkey-media/stream-info-impl/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/stream-info-impl/.arch-ids/.cvsignore.id
+     monkey-media/stream-info-impl/.arch-ids/=id
+       ==> metadata/monkey-media/stream-info-impl/.arch-ids/=id
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/.cvsignore.id
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids/=id
+       ==> metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/=id
+     widgets/rb-player.c
+       ==> widgets/rb-header.c
+     widgets/rb-player.h
+       ==> widgets/rb-header.h
+
+    new directories:
+     metadata metadata/.arch-ids metadata/monkey-media/.arch-ids
+     metadata/monkey-media/id3-vfs/.arch-ids
+     metadata/monkey-media/stream-info-impl/.arch-ids
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids
+     player player/.arch-ids
+
+    removed directories:
+     monkey-media/.arch-ids monkey-media/id3-vfs/.arch-ids
+     monkey-media/stream-info-impl/.arch-ids
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids
+
+    renamed directories:
+     monkey-media
+       ==> metadata/monkey-media
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-4
+
+
+2003-12-16 04:27:50 GMT	Colin Walters <walters@verbum.org>	patch-67
+
+    Summary:
+      major shuffle/play order work, misc bugfixes (Jeffrey Yasskin)
+    Revision:
+      rhythmbox--mainline--0.7--patch-67
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+       remove spurious string copy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+       Fix some warnings about uninitialized variables that were only found with optimization on.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+       merge from shuffle-repeat branch
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+       merge from shuffle-random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+       Create class hierarchy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+       Made the play order classes work almost as well as original
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+       Add playing-source property to RBShellPlayer and modify RBHistory to use it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+       Fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+       Add shuffle play order and modify RBHistory to accomodate it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+       Make shuffle mostly work
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+       Fix crash involving changing sources in shuffle mode
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+       Make shuffle's checking for a changed entry view lazy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+       Cleanups and added a few member functions to RBPlayOrder
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+       Fix problems compiling under C89
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+       Implement go_{next,previous} methods for shuffle
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+       Fix some anomalies with reshuffling. Shuffle now seems to work.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+       Make the shuffle checkbox select shuffle rather than random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+       Fix up the random play order and document the history more
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+       Fix comments in rb-play-order.h
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+       Fix crash when PLAY_ORDER gconf key doesn't exist
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+       Make the filter_changed event actually fire.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+       Make shuffle play order use RBSource's filter_changed signal and fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+       Implement random by time since last play
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+       Fix memory leak
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+       Give treed credit for random-by-age algorithm
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+       remove CONF_STATE_SHUFFLE
+    
+
+    new files:
+     shell/rb-play-order-linear.c shell/rb-play-order-linear.h
+     shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-by-age.h
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-random-equal-weights.h
+     shell/rb-play-order-shuffle.c shell/rb-play-order-shuffle.h
+     shell/rb-play-order.c shell/rb-play-order.h
+
+    modified files:
+     ChangeLog data/rhythmbox.schemas lib/rb-preferences.h
+     lib/rb-string-helpers.c lib/rb-util.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c shell/Makefile.am shell/rb-history.c
+     shell/rb-history.h shell/rb-shell-player.c
+     shell/rb-source-header.c sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-source.c
+     widgets/rb-entry-view.c widgets/rb-player.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+
+
 2003-12-15 03:02:42 GMT	Colin Walters <walters@verbum.org>	patch-66
 
     Summary:
