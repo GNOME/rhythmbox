@@ -1,3 +1,17 @@
+2003-08-13  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_init),
+	(rb_node_view_finalize), (queue_changed_sig),
+	(rb_node_view_selection_changed_cb),
+	(rb_node_view_row_activated_cb),
+	(gtk_tree_model_sort_row_inserted_cb),
+	(gtk_tree_model_sort_row_deleted_cb),
+	(gtk_tree_model_sort_row_changed_cb),
+	(gtk_tree_sortable_sort_column_changed_cb), (emit_node_changed):
+
+	Queue a one-time idle handler on a change to the node view, instead of
+	polling every 50 microseconds.
+
 2003-08-13  Douglas McMorris  <virage83@mail.utexas.edu>
 
 	* lib/widgets/rb-volume.c: (clicked_cb): Move the volume display below

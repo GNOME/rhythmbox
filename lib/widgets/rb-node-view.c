@@ -94,7 +94,7 @@ static void gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 			                        RBNodeView *view);
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
-static gboolean rb_node_view_timeout_cb (RBNodeView *view);
+static gboolean emit_node_changed (RBNodeView *view);
 static void playing_node_destroyed_cb (RBNode *node, RBNodeView *view);
 static void root_child_removed_cb (RBNode *root,
 			           RBNode *child,
@@ -144,8 +144,8 @@ struct RBNodeViewPrivate
 
 	RBNode *selected_node;
 
-	gboolean changed;
-	guint timeout;
+	gboolean change_sig_queued;
+	guint change_sig_id;
 
 	gboolean selection_lock;
 
@@ -343,8 +343,6 @@ rb_node_view_init (RBNodeView *view)
 {
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
 
-	view->priv->timeout = g_timeout_add (50, (GSourceFunc) rb_node_view_timeout_cb, view);
-
 	view->priv->idle = TRUE;
 
 	g_signal_connect (G_OBJECT (view),
@@ -365,7 +363,8 @@ rb_node_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	g_source_remove (view->priv->timeout);
+	if (view->priv->change_sig_queued)
+		g_source_remove (view->priv->change_sig_id);
 
 	g_list_free (view->priv->search_columns);
 
@@ -1387,6 +1386,14 @@ rb_node_view_button_press_cb (GtkTreeView *treeview,
 }
 
 static void
+queue_changed_sig (RBNodeView *view)
+{
+	if (!view->priv->change_sig_queued)
+		view->priv->change_sig_id = g_timeout_add (1000, (GSourceFunc) emit_node_changed, view);
+	view->priv->change_sig_queued = TRUE;
+}
+
+static void
 rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 				   RBNodeView *view)
 {
@@ -1403,7 +1410,7 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 		selected_node = (g_list_first (sel))->data;
 
 	if (available != view->priv->have_selection) {
-		view->priv->changed = TRUE;
+		queue_changed_sig (view);
 		view->priv->have_selection = available;
 
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[HAVE_SEL_CHANGED], 0, available);
@@ -1432,6 +1439,7 @@ rb_node_view_row_activated_cb (GtkTreeView *treeview,
 	GtkTreeIter iter, iter2;
 	RBNode *node;
 
+	rb_debug ("row activated");
 	gtk_tree_model_get_iter (view->priv->sortmodel, &iter, path);
 	gtk_tree_model_sort_convert_iter_to_child_iter
 		(GTK_TREE_MODEL_SORT (view->priv->sortmodel), &iter2, &iter);
@@ -1440,6 +1448,7 @@ rb_node_view_row_activated_cb (GtkTreeView *treeview,
 
 	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &iter);
 
+	rb_debug ("emitting node activated");
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_ACTIVATED], 0, node);
 }
 
@@ -1449,7 +1458,7 @@ gtk_tree_model_sort_row_inserted_cb (GtkTreeModel *model,
 				     GtkTreeIter *iter,
 				     RBNodeView *view)
 {
-	view->priv->changed = TRUE;
+	queue_changed_sig (view);
 }
 
 static void
@@ -1457,7 +1466,7 @@ gtk_tree_model_sort_row_deleted_cb (GtkTreeModel *model,
 				    GtkTreePath *path,
 			            RBNodeView *view)
 {
-	view->priv->changed = TRUE;
+	queue_changed_sig (view);
 }
 
 static void
@@ -1466,14 +1475,14 @@ gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 				    GtkTreeIter *iter,
 			            RBNodeView *view)
 {
-	view->priv->changed = TRUE;
+	queue_changed_sig (view);
 }
 
 static void
 gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					  RBNodeView *view)
 {
-	view->priv->changed = TRUE;
+	queue_changed_sig (view);
 }
 
 void
@@ -1581,22 +1590,18 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 }
 
 static gboolean
-rb_node_view_timeout_cb (RBNodeView *view)
+emit_node_changed (RBNodeView *view)
 {
-	if (view->priv->changed == FALSE)
-		return TRUE;
-
 	GDK_THREADS_ENTER ();
 
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
 
-	view->priv->changed = FALSE;
+	view->priv->change_sig_queued = FALSE;
 
 	GDK_THREADS_LEAVE ();
 
-	return TRUE;
+	return FALSE;
 }
-
 
 static void
 playing_node_destroyed_cb (RBNode *node, RBNodeView *view)
