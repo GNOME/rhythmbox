@@ -1,454 +1,34 @@
-# #-#-#-#-#  sr.po (monkey-media 2.2)  #-#-#-#-#
-# Serbian translation of monkey-media
-# Courtesy of Prevod.org team (http://www.prevod.org/) -- 2003.
-# 
-# This file is distributed under the same license as the monkey-media package.
-# 
-# Maintainer: Бранко Ивановић <popeye@one.ekof.bg.ac.yu>
-#
-# #-#-#-#-#  sr.po (rhythmbox)  #-#-#-#-#
 # Serbian translation of rhythmbox
 # Courtesy of Prevod.org team (http://www.prevod.org/) -- 2003.
-# 
+#
 # This file is distributed under the same license as the rhythmbox package.
-# 
+#
 # Maintainer: Предраг Кртолица <predrag_k@optusnet.com.au>
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  sr.po (monkey-media 2.2)  #-#-#-#-#\n"
-"Project-Id-Version: monkey-media 2.2\n"
-"POT-Creation-Date: 2003-05-06 05:31+0200\n"
-"PO-Revision-Date: 2003-05-05 01:31+0200\n"
-"Last-Translator: Бранко Ивановић <popeye@one.ekof.bg.ac.yu>\n"
+"Project-Id-Version: rhythmbox\n"
+"POT-Creation-Date: 2003-08-25 15:14+0200\n"
+"PO-Revision-Date: 2003-08-25 15:13+0200\n"
+"Last-Translator: Предраг Кртолица <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3;    plural=n%10==1 && n%100!=11 ? 0 :    n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"#-#-#-#-#  sr.po (rhythmbox)  #-#-#-#-#\n"
-"Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-06-16 18:37+0200\n"
-"PO-Revision-Date: 2003-06-11 00:22+1000\n"
-"Last-Translator: Предраг Кртолица <predrag_k@optusnet.com.au>\n"
-"Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 
-#: src/monkey-media-audio-cd.c:218
-#, c-format
-msgid ""
-"%s does not point to a valid CDRom device. This may be caused by:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"%s не показује ка исправном ЦД уређају. Узрок може бити:\n"
-"а) подршка за ЦД није уграђена у Линукс језгро\n"
-"б) Немате права да приступите ЦД уређају\n"
-"в) %s није ЦД уређај.\n"
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
+msgid "Add To Music Player Library"
+msgstr "Додај у музичку библиотеку"
 
-#: src/monkey-media-audio-cd.c:343
-#, c-format
-msgid "You do not seem to have permission to access %s."
-msgstr "Изгледа да немате права да приступите %s."
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr "Проширење за приручни мени Наутилуса за Rhythmbox"
 
-#: src/monkey-media-audio-cd.c:350
-#, c-format
-msgid ""
-"%s does not appear to point to a valid CD device. This may be because:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"%s не показује ка исправном ЦД уређају. Узрок може бити:\n"
-"а) подршка за ЦД није уграђена у Линукс језгро\n"
-"б) Немате права да приступите ЦД уређају\n"
-"в) %s није ЦД уређај.\n"
-
-#: src/monkey-media-audio-cd.c:603
-#, c-format
-msgid "Error reading CD header: %s"
-msgstr "Грешка при читању ЦД заглавља: %s"
-
-#: src/monkey-media-audio-cd.c:729
-#, c-format
-msgid "Error getting leadout: %s"
-msgstr "Грешка при читању последње ЦД стазе: %s"
-
-#: src/monkey-media-stream-info.c:302
-msgid "Unsupported mimetype"
-msgstr "Неподржан тип датотеке"
-
-#: src/monkey-media-stream-info.c:357
-#, c-format
-msgid "Track %.2d"
-msgstr "Стаза %.2d"
-
-#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
-#: src/monkey-media-stream-info.c:639 iradio/rb-new-station-dialog.c:182
-#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
-#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
-#: sources/rb-iradio-source.c:235
-#, fuzzy
-msgid "Unknown"
-msgstr ""
-"#-#-#-#-#  sr.po (monkey-media 2.2)  #-#-#-#-#\n"
-"Непознато\n"
-"#-#-#-#-#  sr.po (rhythmbox)  #-#-#-#-#\n"
-"Непознат"
-
-#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
-msgid "No TRM ID for this song"
-msgstr "Не постоји идентификациони број за ову песму"
-
-#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
-msgid "No information for this song found"
-msgstr "Информације за ову песму нису нађене"
-
-#: src/monkey-media-player-gst.c:371
-msgid "Failed to create gnomevfssrc input element; check your installation"
-msgstr ""
-"Неуспех при креирању gnomevfssrc улазног елемента; проверити инсталацију"
-
-#: src/monkey-media-player-gst.c:380
-msgid "Failed to create cdparanoia input element; check your installation"
-msgstr ""
-"Неуспех при креирању cdparanoia улазног елемента; проверити инсталацију"
-
-#: src/monkey-media-player-gst.c:401
-msgid "Failed to create spider element; check your installation"
-msgstr "Неуспех при креирању spider елемента; проверити инсталацију"
-
-#: src/monkey-media-player-gst.c:414
-msgid "Failed to create volume element; check your installation"
-msgstr "Неуспех при креирању елемента озвучења; проверити инсталацију"
-
-#: src/monkey-media-player-gst.c:434
-msgid "Could not create audio output element; check your settings"
-msgstr "Нисам могао да креирам излазни звучни елемент; проверити подешавања"
-
-#: src/monkey-media-player-gst.c:524
-msgid "No AudioCD support; check your settings"
-msgstr "Не постоји подршка за Аудио ЦД; проверити подешавања"
-
-#: src/monkey-media-player-xine.c:267
-msgid "Failed to set up an audio driver; check your installation"
-msgstr "Неуспех при подешавању драјвера за звук; проверити инсталацију"
-
-#: src/monkey-media-player-xine.c:350
-#, c-format
-msgid "No input plugin available for %s; check your installation."
-msgstr "Није доступан додатак за %s; проверити инсталацију."
-
-#: src/monkey-media-player-xine.c:359
-#, fuzzy, c-format
-msgid "No demux plugin available for %s; check your installation."
-msgstr "Nije dostupan demux додатак за %s; проверити инсталацију."
-
-#: src/monkey-media-player-xine.c:368
-#, fuzzy, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr "Demux операција за %s није успела; проверити инсталацију."
-
-#: src/monkey-media-player-xine.c:376
-msgid "Internal error; check your installation."
-msgstr "Интерна грешка; проверити инсталацију."
-
-#: src/monkey-media-player-xine.c:385
-#, c-format
-msgid "Audio of %s not handled; check your installation."
-msgstr "%s звук није обрађиван; проверити инсталацију."
-
-#: src/monkey-media.c:211
-msgid "GStreamer options:"
-msgstr "GStreamer опције"
-
-#: src/monkey-media.c:467
-#, c-format
-msgid "Please remove %s"
-msgstr "Молим Вас одрстаните %s"
-
-#: src/monkey-media.c:469
-#, c-format
-msgid "Failed to create directory %s"
-msgstr "Нисам успео да креирам директоријум %s"
-
-#: src/stream-info-impl/audiocd-stream-info-impl.c:164
-msgid "Invalid track number"
-msgstr "Неисправан број нумере"
-
-#: src/stream-info-impl/audiocd-stream-info-impl.c:268
-msgid "Audio CD track"
-msgstr "Аудио ЦД нумера"
-
-#: src/stream-info-impl/flac-stream-info-impl.c:154
-#: src/stream-info-impl/mp3-stream-info-impl.c:152
-#: src/stream-info-impl/vorbis-stream-info-impl.c:165
-msgid "Failed to open file for reading"
-msgstr "Нисам успео да отворим датотеку за читање"
-
-#: src/stream-info-impl/flac-stream-info-impl.c:470
-msgid "FLAC"
-msgstr "FLAC"
-
-#: src/stream-info-impl/mp3-stream-info-impl.c:469
-#, c-format
-msgid "MPEG %d Layer III"
-msgstr "MPEG %d Layer III"
-
-#: src/stream-info-impl/vorbis-stream-info-impl.c:178
-msgid "Failed to seek file"
-msgstr "Нисам успео да претражим датотеку"
-
-#: src/stream-info-impl/vorbis-stream-info-impl.c:192
-msgid "Failed to open file as Ogg Vorbis"
-msgstr "Нисам успео да отворим датотеку као Ogg Vorbis"
-
-#: src/stream-info-impl/vorbis-stream-info-impl.c:537
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: data/glade/buffering-dialog.glade.h:1
-msgid "<b>Loading...</b>"
-msgstr ""
-
-#: data/glade/buffering-dialog.glade.h:2
-msgid "Loading..."
-msgstr ""
-
-#: data/glade/general-prefs.glade.h:1 data/glade/library-prefs.glade.h:1
-msgid "    "
-msgstr "    "
-
-#: data/glade/general-prefs.glade.h:2
-msgid "<span weight=\"bold\">Visible Columns</span>"
-msgstr "<span weight=\"bold\">Видљиве колоне</span>"
-
-#: data/glade/general-prefs.glade.h:3
-#: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
-msgid "A_lbum"
-msgstr "А_лбум"
-
-#: data/glade/general-prefs.glade.h:4
-msgid "Track _number"
-msgstr "Број _песме"
-
-#: data/glade/general-prefs.glade.h:5
-msgid "_Artist"
-msgstr "И_звођач"
-
-#: data/glade/general-prefs.glade.h:6
-msgid "_Duration"
-msgstr "Тра_јање"
-
-#: data/glade/general-prefs.glade.h:7
-#: data/node-views/rb-node-view-genres.xml.h:1
-#: data/node-views/rb-node-view-iradio-genres.xml.h:1
-msgid "_Genre"
-msgstr "_Жанр"
-
-#: data/glade/general-prefs.glade.h:8
-msgid "_Last played"
-msgstr "За_дња иведена"
-
-#: data/glade/general-prefs.glade.h:9
-msgid "_Play count"
-msgstr "_Број извођења"
-
-#: data/glade/general-prefs.glade.h:10
-#: data/node-views/rb-node-view-iradio-stations.xml.h:4
-msgid "_Quality"
-msgstr "_Квалитет"
-
-#: data/glade/general-prefs.glade.h:11
-#: data/node-views/rb-node-view-cdaudio.xml.h:6
-#: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8
-msgid "_Rating"
-msgstr "О_цена"
-
-#: data/glade/library-prefs.glade.h:2
-msgid "<b>Browser Views</b>"
-msgstr "<b>Прегледачеви изгледи</b>"
-
-#: data/glade/library-prefs.glade.h:3
-msgid "Artists and albums"
-msgstr "Извођачи и албуми"
-
-#: data/glade/library-prefs.glade.h:4
-msgid "Genres and artists"
-msgstr "Жанрови и извођачи"
-
-#: data/glade/library-prefs.glade.h:5
-msgid "Genres, artists and albums"
-msgstr "Жанрови, извођачи и албуми"
-
-#: data/glade/load-failure.glade.h:1
-msgid "The following files couldn't be loaded:"
-msgstr ""
-
-#: data/glade/song-info.glade.h:1
-msgid "   "
-msgstr "   "
-
-#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: data/glade/song-info.glade.h:3
-#, fuzzy
-msgid "<b>Duration:</b>"
-msgstr "Тра_јање"
-
-#: data/glade/song-info.glade.h:4
-msgid "<b>Encoding:</b>"
-msgstr ""
-
-#: data/glade/song-info.glade.h:5
-#, fuzzy
-msgid "<b>Last played:</b>"
-msgstr "За_дња иведена"
-
-#: data/glade/song-info.glade.h:6
-#, fuzzy
-msgid "<b>Location:</b>"
-msgstr "Положаја: "
-
-#: data/glade/song-info.glade.h:7
-msgid "<b>Name:</b>"
-msgstr ""
-
-#: data/glade/song-info.glade.h:8
-#, fuzzy
-msgid "<b>Play count:</b>"
-msgstr "_Број извођења"
-
-#: data/glade/song-info.glade.h:9
-#, fuzzy
-msgid "<b>Quality:</b>"
-msgstr "_Квалитет"
-
-#: data/glade/song-info.glade.h:10
-#, fuzzy
-msgid "<b>_Album:</b>"
-msgstr "А_лбум"
-
-#: data/glade/song-info.glade.h:11
-#, fuzzy
-msgid "<b>_Artist:</b>"
-msgstr "И_звођач"
-
-#: data/glade/song-info.glade.h:12
-msgid "<b>_Comments:</b>"
-msgstr ""
-
-#: data/glade/song-info.glade.h:13
-msgid "<b>_Date:</b>"
-msgstr ""
-
-#: data/glade/song-info.glade.h:14
-#, fuzzy
-msgid "<b>_Genre:</b>"
-msgstr "_Жанр"
-
-#: data/glade/song-info.glade.h:15
-#, fuzzy
-msgid "<b>_Rating:</b>"
-msgstr "О_цене"
-
-#: data/glade/song-info.glade.h:16
-#, fuzzy
-msgid "<b>_Title:</b>"
-msgstr "_Наслови"
-
-#: data/glade/song-info.glade.h:17
-#, fuzzy
-msgid "<b>_Track number:</b>"
-msgstr "Број _песме"
-
-#: data/glade/song-info.glade.h:18
-msgid "Basic"
-msgstr "Основни"
-
-#: data/glade/song-info.glade.h:19
-msgid "Details"
-msgstr "Подаци"
-
-#: data/glade/song-info.glade.h:20
-msgid "_of"
-msgstr "ово_га"
-
-#: data/glade/station-new.glade.h:1
-msgid " "
-msgstr ""
-
-#: data/glade/station-new.glade.h:3 data/glade/station-properties.glade.h:6
-msgid "_Genre: "
-msgstr "_Жанр"
-
-#: data/glade/station-new.glade.h:4
-#, fuzzy
-msgid "_Location: "
-msgstr "Положаја: "
-
-#: data/glade/station-new.glade.h:5 data/glade/station-properties.glade.h:11
-msgid "_Title: "
-msgstr "_Наслови"
-
-#: data/glade/station-new.glade.h:6
-msgid "dialog1"
-msgstr ""
-
-#: data/glade/station-properties.glade.h:2
-msgid "42"
-msgstr "42"
-
-#: data/glade/station-properties.glade.h:3
-msgid "Play Count: "
-msgstr "Песма број: "
-
-#: data/glade/station-properties.glade.h:4
-msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr "Сре, 01. Јан 1970 00:00:00 -0500"
-
-#: data/glade/station-properties.glade.h:5
-msgid "_Add: "
-msgstr "Додај"
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "Зад_ња извођена"
-
-#: data/glade/station-properties.glade.h:8
-msgid "_Locations"
-msgstr "_Положаји"
-
-#: data/glade/station-properties.glade.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:51
-msgid "_Properties"
-msgstr "_Особине"
-
-#: data/glade/station-properties.glade.h:10
-msgid "_Rating: "
-msgstr "О_цене"
-
-#: data/glade/station-properties.glade.h:12
-msgid "blah Properties"
-msgstr "трућ Особине"
-
-#: data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr ""
-
-#: data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr ""
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
+msgid "Rhythmbox Nautilus Context Menu Item"
+msgstr "Ставка приручног менија Наутилуса за Rhythmbox"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -458,14 +38,320 @@ msgstr "Љуска Rhythmbox-а "
 msgid "Rhythmbox shell factory"
 msgstr "Творница Rhythmbox-а"
 
+#: data/glade/buffering-dialog.glade.h:1
+msgid "Loading..."
+msgstr "Учитава..."
+
+#: data/glade/create-playlist.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: data/glade/create-playlist.glade.h:2 data/glade/druid.glade.h:1
+#: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
+msgid "*"
+msgstr "*"
+
+#: data/glade/create-playlist.glade.h:3
+msgid "<b>Search songs in Music Library:</b>"
+msgstr "<b>Пронађи песме у музичкој библиотеци:</b>"
+
+#: data/glade/create-playlist.glade.h:4
+msgid "Album"
+msgstr "Албум"
+
+#: data/glade/create-playlist.glade.h:5
+msgid "And"
+msgstr "и"
+
+#: data/glade/create-playlist.glade.h:6
+msgid "Artist"
+msgstr "Извођач"
+
+#: data/glade/create-playlist.glade.h:7
+msgid "Genre"
+msgstr "Жанр"
+
+#: data/glade/create-playlist.glade.h:8
+msgid "Last played"
+msgstr "Последња изведена"
+
+#: data/glade/create-playlist.glade.h:9
+msgid "Or"
+msgstr "или"
+
+#: data/glade/create-playlist.glade.h:10
+msgid "Played"
+msgstr "Изведена"
+
+#: data/glade/create-playlist.glade.h:11
+msgid "Rating"
+msgstr "Оцена"
+
+#: data/glade/create-playlist.glade.h:12
+msgid "Search Songs"
+msgstr "Тражи песме"
+
+#: data/glade/create-playlist.glade.h:13
+msgid "Where"
+msgstr "где"
+
+#: data/glade/create-playlist.glade.h:14
+msgid "Year"
+msgstr "година"
+
+#: data/glade/create-playlist.glade.h:15
+msgid "contains"
+msgstr "садржи"
+
+# bug: "contains" -> "contain"
+#: data/glade/create-playlist.glade.h:16
+msgid "does not contains"
+msgstr "не садржи"
+
+#: data/glade/create-playlist.glade.h:17
+msgid "is after"
+msgstr "је након"
+
+#: data/glade/create-playlist.glade.h:18
+msgid "is before"
+msgstr "је пре"
+
+#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:258
+msgid "Finish"
+msgstr "Заврши"
+
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:243
+msgid ""
+"In order to get started using\n"
+"Rhythmbox, this assistant will ask\n"
+"you some simple questions."
+msgstr ""
+"Да бисте почели са коришћењем\n"
+"Rhythmbox-а, овај помоћник ће вам\n"
+"поставити пар једноставних питања."
+
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:249
+msgid "Library setup"
+msgstr "Постављање библиотеке"
+
+#: data/glade/druid.glade.h:7
+msgid ""
+"Rhythmbox needs to know where to find your music.\n"
+"You may choose to skip this step; instead, you \n"
+"can add music to your library at any point later.\n"
+"\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox мора да зна где може да пронађе вашу музику.\n"
+"Можете и прескочити овај корак; уместо тога, можете\n"
+"додати музику у вашу библиотеку било када.\n"
+"\n"
+"Молим изаберите неку од могућности испод:"
+
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:239
+msgid "Welcome to Rhythmbox"
+msgstr "Добродошли у Rhythmbox"
+
+#: data/glade/druid.glade.h:13
+msgid ""
+"You are now ready to start\n"
+"Rhythmbox."
+msgstr ""
+"Сада сте спремни да покренете\n"
+"Rhythmbox."
+
+#: data/glade/druid.glade.h:15
+msgid "_Browse..."
+msgstr "_Пронађи..."
+
+#: data/glade/druid.glade.h:16
+msgid "_Enter location manually:"
+msgstr "_Унесите адресу ручно:"
+
+#: data/glade/druid.glade.h:17
+msgid "_Path:"
+msgstr "_Путања:"
+
+#: data/glade/druid.glade.h:18
+msgid "_Skip this step"
+msgstr "Пре_скочи овај корак"
+
+#: data/glade/general-prefs.glade.h:1
+#: data/node-views/rb-node-view-cdaudio.xml.h:1
+#: data/node-views/rb-node-view-songs.xml.h:1
+msgid "A_lbum"
+msgstr "А_лбум"
+
+#: data/glade/general-prefs.glade.h:2
+msgid "Track _number"
+msgstr "Број _песме"
+
+#: data/glade/general-prefs.glade.h:3
+msgid "Visible Columns"
+msgstr "Приказане колоне"
+
+#: data/glade/general-prefs.glade.h:4
+msgid "_Artist"
+msgstr "И_звођач"
+
+#: data/glade/general-prefs.glade.h:5
+msgid "_Duration"
+msgstr "Тра_јање"
+
+#: data/glade/general-prefs.glade.h:6
+#: data/node-views/rb-node-view-genres.xml.h:1
+#: data/node-views/rb-node-view-iradio-genres.xml.h:1
+msgid "_Genre"
+msgstr "_Жанр"
+
+#: data/glade/general-prefs.glade.h:7
+msgid "_Last played"
+msgstr "После_дња изведена"
+
+#: data/glade/general-prefs.glade.h:8
+msgid "_Play count"
+msgstr "_Број извођења"
+
+#: data/glade/general-prefs.glade.h:9
+#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+msgid "_Quality"
+msgstr "_Квалитет"
+
+#: data/glade/general-prefs.glade.h:10
+#: data/node-views/rb-node-view-cdaudio.xml.h:6
+#: data/node-views/rb-node-view-iradio-stations.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.h:8
+msgid "_Rating"
+msgstr "О_цена"
+
+#: data/glade/library-prefs.glade.h:1
+msgid "Artists and albums"
+msgstr "Извођачи и албуми"
+
+#: data/glade/library-prefs.glade.h:2
+msgid "Browser Views"
+msgstr "Прегледи читача"
+
+#: data/glade/library-prefs.glade.h:3
+msgid "Genres and artists"
+msgstr "Жанрови и извођачи"
+
+#: data/glade/library-prefs.glade.h:4
+msgid "Genres, artists and albums"
+msgstr "Жанрови, извођачи и албуми"
+
+#: data/glade/load-failure.glade.h:1
+msgid "The following files couldn't be loaded:"
+msgstr "Није успео да учита наредне датотеке:"
+
+#: data/glade/song-info.glade.h:2
+msgid "Basic"
+msgstr "Основни"
+
+#: data/glade/song-info.glade.h:3
+msgid "Details"
+msgstr "Подаци"
+
+#: data/glade/song-info.glade.h:4
+msgid "Duration:"
+msgstr "Трајање:"
+
+#: data/glade/song-info.glade.h:5
+msgid "Encoding:"
+msgstr "Кодирање:"
+
+#: data/glade/song-info.glade.h:6
+msgid "Last played:"
+msgstr "Последње изведена:"
+
+#: data/glade/song-info.glade.h:7
+msgid "Location:"
+msgstr "Адреса:"
+
+#: data/glade/song-info.glade.h:8
+msgid "Name:"
+msgstr "Име:"
+
+#: data/glade/song-info.glade.h:9
+msgid "Play count:"
+msgstr "Број извођења:"
+
+#: data/glade/song-info.glade.h:10
+msgid "Quality:"
+msgstr "Квалитет:"
+
+#: data/glade/song-info.glade.h:11
+msgid "_Album:"
+msgstr "А_лбум:"
+
+#: data/glade/song-info.glade.h:12
+msgid "_Artist:"
+msgstr "И_звођач:"
+
+#: data/glade/song-info.glade.h:13
+msgid "_Comments:"
+msgstr "_Примедбе:"
+
+#: data/glade/song-info.glade.h:14
+msgid "_Date:"
+msgstr "_Датум:"
+
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:5
+msgid "_Genre:"
+msgstr "_Жанр:"
+
+#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
+msgid "_Rating:"
+msgstr "О_цене:"
+
+#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:8
+msgid "_Title:"
+msgstr "_Наслов:"
+
+#: data/glade/song-info.glade.h:18
+msgid "_Track number:"
+msgstr "Број _песме:"
+
+#: data/glade/song-info.glade.h:19
+msgid "_of:"
+msgstr "_од:"
+
+#: data/glade/station-new.glade.h:3
+msgid "_Location:"
+msgstr "_Адреса:"
+
+#: data/glade/station-properties.glade.h:2
+msgid "L_ocation:"
+msgstr "А_дреса:"
+
+#: data/glade/station-properties.glade.h:3
+msgid "Play Count:"
+msgstr "Песма број: "
+
+#: data/glade/station-properties.glade.h:4
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr "сре, 01. јан 1970 00:00:00 +0200"
+
+#: data/glade/station-properties.glade.h:6
+msgid "_Last Played:"
+msgstr "_Последње изведена:"
+
+#: data/glade/uri.glade.h:2
+msgid "Enter the _location (URI) of the file you would like to add:"
+msgstr "Унесите _адресу (URI) датотеке коју желите да додате:"
+
+#: data/glade/uri.glade.h:3
+msgid "Open from URI"
+msgstr "Отвори са адресе"
+
 #: data/node-views/rb-node-view-albums.xml.h:1
 msgid "_Album"
 msgstr "А_лбум"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
-msgid "A_rtist"
-msgstr "И_звођач"
-
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:2
@@ -505,7 +391,7 @@ msgstr "Задња изво_ђена"
 msgid "_Play Count"
 msgstr "П_есма број"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:947
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:604 shell/rb-shell.c:1066
 msgid "Music Player"
 msgstr "Музички програм"
 
@@ -513,8 +399,7 @@ msgstr "Музички програм"
 msgid "Play and organize your music collection"
 msgstr "Организуј и изводи своју музичку збирку"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
-#: data/ui/rhythmbox-library-view.xml.in.h:4
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Deselect all songs"
 msgstr "Поништи избор свих песама"
 
@@ -522,24 +407,19 @@ msgstr "Поништи избор свих песама"
 msgid "Eject Audio-CD"
 msgstr "Избаци Звучни ЦДа"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
-#: data/ui/rhythmbox-library-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Scroll the view to the currently playing song"
 msgstr "Превуци поглед на тренутно извођену песму"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:6
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Select _All"
 msgstr "О_значи све"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:7
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:33
 msgid "Select all songs"
 msgstr "Означи све песме"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
-#: data/ui/rhythmbox-iradio-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:51
 msgid "_Edit"
 msgstr "_Измени"
 
@@ -547,335 +427,317 @@ msgstr "_Измени"
 msgid "_Eject Audio-CD..."
 msgstr "Избаци Зву_чни ЦД"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:13 data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_Jump to Playing Song"
 msgstr "Скочи на изво_ђену песму"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
-#: data/ui/rhythmbox-iradio-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:15 data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:69
 msgid "_View"
 msgstr "По_гледај"
 
-#: data/ui/rhythmbox-iradio-view.xml.in.h:1
-msgid "Change the visibility of the genre browser"
-msgstr "Промените видљивост претраживача жанрова"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:2
-msgid "Scroll the view to the currently playing station"
-msgstr "Превуци поглед на станицу која се тренутно изводи"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:3
-msgid "Show information on the selected station"
-msgstr "Покажи податке о изабраној станици"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:36
-msgid "_Browser"
-msgstr "Прегле_дач"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:6
-msgid "_Jump to Playing Station"
-msgstr "Ско_чи на станицу која се изводи"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:7
-msgid "_New Internet Radio Station"
-msgstr "Нова ин_тернет радио станица"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:1
-msgid "Change the visibility of the artist and album browser"
-msgstr "Промени видљивост претраживача извођача и албума"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Copy selection"
-msgstr "Копирај избор"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:15
-msgid "Delete selection"
-msgstr "Уклони избор"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:27
-msgid "Show information on the selected song"
-msgstr "Покажи детаље изабране песме"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:39
-msgid "_Copy"
-msgstr "Копи_рај"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:40
-msgid "_Delete"
-msgstr "_Уклони"
-
 #: data/ui/rhythmbox-ui.xml.in.h:1
-#, fuzzy
 msgid "Add Lo_cation..."
-msgstr "Положаја: "
+msgstr "Додај ад_ресу..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:2
-#, fuzzy
 msgid "Change the visibility of the browser"
-msgstr "Промените видљивост претраживача жанрова"
+msgstr "Промените видљивост претраживача"
 
 #: data/ui/rhythmbox-ui.xml.in.h:3
-#, fuzzy
 msgid "Change the visibility of the main window"
-msgstr "Промените видљивост претраживача жанрова"
+msgstr "Промените видљивост главног прозора"
 
 #: data/ui/rhythmbox-ui.xml.in.h:4
-#, fuzzy
 msgid "Change the visibility of the source list"
-msgstr "Промените видљивост претраживача жанрова"
+msgstr "Промените видљивост изворног списка"
 
 #: data/ui/rhythmbox-ui.xml.in.h:5
-msgid "Choose a location (URI) to be added to the library"
-msgstr ""
+msgid "Change the visibility of the statusbar"
+msgstr "Промените видљивост линије са стањем"
 
 #: data/ui/rhythmbox-ui.xml.in.h:6
-msgid "Choose a playlist to be loaded"
-msgstr ""
+msgid "Choose a location (URI) to be added to the library"
+msgstr "Изаберите адресу (URI) за додавање у библиотеку"
 
 #: data/ui/rhythmbox-ui.xml.in.h:7
-msgid "Choose files or a directory to be added to the library"
-msgstr ""
+msgid "Choose a playlist to be loaded"
+msgstr "Изаберите списак песама који желите да учитате"
 
 #: data/ui/rhythmbox-ui.xml.in.h:8
+msgid "Choose files or a directory to be added to the library"
+msgstr "Изаберите датотеке или директоријум који желите да додате у библиотеку"
+
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Close the music player"
 msgstr "Затвори музички програм"
 
 #: data/ui/rhythmbox-ui.xml.in.h:10
-#, fuzzy
-msgid "Create a new Internet Radio station"
-msgstr "Нова интернет радио станица"
+msgid "Copy selection"
+msgstr "Умножи избор"
 
 #: data/ui/rhythmbox-ui.xml.in.h:11
-msgid "Create a new playlist"
-msgstr ""
+msgid "Create a new Internet Radio station"
+msgstr "Направи нову интернет радио станицу"
 
 #: data/ui/rhythmbox-ui.xml.in.h:12
-msgid "Create a new smart playlist"
-msgstr ""
+msgid "Create a new playlist"
+msgstr "Направи нови списак песама"
 
 #: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "Cu_t"
-msgstr "И_сеци"
+msgid "Create a new smart playlist"
+msgstr "Направи нови паметни списак песама"
 
 #: data/ui/rhythmbox-ui.xml.in.h:14
+msgid "Cu_t"
+msgstr "_Исеци"
+
+#: data/ui/rhythmbox-ui.xml.in.h:15
 msgid "Cut selection"
 msgstr "Исеци изабрано"
 
 #: data/ui/rhythmbox-ui.xml.in.h:16
+msgid "Delete selection"
+msgstr "Уклони избор"
+
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Display music player help"
 msgstr "Прикажи помоћ музичког програма"
 
-#: data/ui/rhythmbox-ui.xml.in.h:17
-#, fuzzy
-msgid "Edit music player preferences"
-msgstr "Поставка музичког програма"
-
-#: data/ui/rhythmbox-ui.xml.in.h:18
-#, fuzzy
-msgid "New _Internet Radio Station"
-msgstr "Нова интернет радио станица"
-
 #: data/ui/rhythmbox-ui.xml.in.h:19
-msgid "New _Smart Playlist..."
-msgstr ""
+msgid "Edit music player preferences"
+msgstr "Уреди поставке музичког програма"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "Extract songs from a CD"
+msgstr "Извуци песме са CD-а"
+
+#: data/ui/rhythmbox-ui.xml.in.h:21
+msgid "New _Internet Radio Station"
+msgstr "Нова _Интернет радио станица"
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "New _Smart Playlist..."
+msgstr "Нови _мудри списак песама..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "P_revious"
 msgstr "П_ретходни"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Paste selection"
 msgstr "Убаци изабрано"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Pause playing"
-msgstr "Паузирај плејбек"
-
-#: data/ui/rhythmbox-ui.xml.in.h:23
-#, fuzzy
-msgid "Prefere_nces"
-msgstr "Поставке"
-
-#: data/ui/rhythmbox-ui.xml.in.h:24
-msgid "Repea_t"
-msgstr ""
+msgstr "Паузирај извођење"
 
 #: data/ui/rhythmbox-ui.xml.in.h:26
+msgid "Prefere_nces"
+msgstr "_Поставке"
+
+#: data/ui/rhythmbox-ui.xml.in.h:27
+msgid "Repea_t"
+msgstr "Поно_ви"
+
+#: data/ui/rhythmbox-ui.xml.in.h:28
+msgid "S_tatusbar"
+msgstr "Линија са ста_њем"
+
+#: data/ui/rhythmbox-ui.xml.in.h:29
+msgid "Save a playlist to a file"
+msgstr "Сачувај списак песама у датотеку"
+
+#: data/ui/rhythmbox-ui.xml.in.h:31
+msgid "Select N_one"
+msgstr "Не означавај ниједан"
+
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Show information about the music player"
 msgstr "Прикажи информацију о музичком програму "
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
-#, fuzzy
-msgid "Start playing"
-msgstr "Не изводи се"
-
-#: data/ui/rhythmbox-ui.xml.in.h:29
-#, fuzzy
-msgid "Start playing the next song"
-msgstr "Почни извођење одабраних песама"
-
-#: data/ui/rhythmbox-ui.xml.in.h:30
-#, fuzzy
-msgid "Start playing the previous song"
-msgstr "Изведи претходну песму"
-
-#: data/ui/rhythmbox-ui.xml.in.h:31
-#, fuzzy
-msgid "Stop playing"
-msgstr "Не изводи се"
-
-#: data/ui/rhythmbox-ui.xml.in.h:32
-msgid "Toggle random playing order"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:33
-msgid "Toggle repeat mode"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:34
-msgid "_About"
-msgstr "О те_ми"
-
 #: data/ui/rhythmbox-ui.xml.in.h:35
-msgid "_Add to Library..."
-msgstr ""
+msgid "Show information on the selected song"
+msgstr "Покажи детаље изабране песме"
+
+#: data/ui/rhythmbox-ui.xml.in.h:36
+msgid "Start playing"
+msgstr "Почни извођење"
 
 #: data/ui/rhythmbox-ui.xml.in.h:37
+msgid "Start playing the next song"
+msgstr "Почни извођење следеће песме"
+
+#: data/ui/rhythmbox-ui.xml.in.h:38
+msgid "Start playing the previous song"
+msgstr "Почни извођење претходне песме"
+
+#: data/ui/rhythmbox-ui.xml.in.h:39
+msgid "Stop playing"
+msgstr "Заустави извођење"
+
+#: data/ui/rhythmbox-ui.xml.in.h:40
+msgid "Toggle random playing order"
+msgstr "Изабери случајан редослед извођења"
+
+#: data/ui/rhythmbox-ui.xml.in.h:41
+msgid "Toggle repeat mode"
+msgstr "Изабери режим понављања"
+
+#: data/ui/rhythmbox-ui.xml.in.h:42
+msgid "_About"
+msgstr "_О програму"
+
+#: data/ui/rhythmbox-ui.xml.in.h:43
+msgid "_Add to Library..."
+msgstr "_Додај у библиотеку..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:44
+msgid "_Browser"
+msgstr "Прегле_дач"
+
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "_Close"
 msgstr "_Затвори"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
-msgid "_Contents"
-msgstr "Садр_жај"
-
-#: data/ui/rhythmbox-ui.xml.in.h:42
-msgid "_Help"
-msgstr "Помо_ћ"
-
-#: data/ui/rhythmbox-ui.xml.in.h:44
-msgid "_Load Playlist..."
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:45
-msgid "_Music"
-msgstr ""
-
 #: data/ui/rhythmbox-ui.xml.in.h:46
-msgid "_New Playlist..."
-msgstr ""
+msgid "_Contents"
+msgstr "_Садржај"
 
 #: data/ui/rhythmbox-ui.xml.in.h:47
+msgid "_Copy"
+msgstr "_Умножи"
+
+#: data/ui/rhythmbox-ui.xml.in.h:48
+msgid "_Cut"
+msgstr "_Исеци"
+
+#: data/ui/rhythmbox-ui.xml.in.h:49
+msgid "_Delete"
+msgstr "_Обриши"
+
+#: data/ui/rhythmbox-ui.xml.in.h:50
+msgid "_Delete Playlist"
+msgstr "_Обриши списак песама"
+
+#: data/ui/rhythmbox-ui.xml.in.h:52
+msgid "_Extract CD..."
+msgstr "_Извуци са CD-а..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:53 lib/widgets/rb-load-failure-dialog.c:143
+msgid "_File"
+msgstr "_Датотека"
+
+#: data/ui/rhythmbox-ui.xml.in.h:54
+msgid "_Help"
+msgstr "_Помоћ"
+
+#: data/ui/rhythmbox-ui.xml.in.h:56
+msgid "_Load Playlist..."
+msgstr "У_читај списак песама"
+
+#: data/ui/rhythmbox-ui.xml.in.h:57
+msgid "_Music"
+msgstr "_Музика"
+
+#: data/ui/rhythmbox-ui.xml.in.h:58
+msgid "_New Playlist..."
+msgstr "_Нови списак песама..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:59
 msgid "_Next"
 msgstr "Сле_дећи"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
-msgid "_Organize"
-msgstr "Организира_ј"
-
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Paste"
 msgstr "У_баци"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1070
+#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-shell-player.c:1122
 msgid "_Play"
 msgstr "Изв_еди"
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-ui.xml.in.h:62
+msgid "_Properties"
+msgstr "_Особине"
+
+#: data/ui/rhythmbox-ui.xml.in.h:63
+msgid "_Rename"
+msgstr "Пре_именуј"
+
+#: data/ui/rhythmbox-ui.xml.in.h:64
+msgid "_Rename Playlist"
+msgstr "Пре_именуј списак песама"
+
+#: data/ui/rhythmbox-ui.xml.in.h:65
+msgid "_Save Playlist..."
+msgstr "_Сачувај списак песама"
+
+#: data/ui/rhythmbox-ui.xml.in.h:66
 msgid "_Show Window"
 msgstr "Пр_икажи прозор"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53 shell/rb-statusbar.c:130
+#: data/ui/rhythmbox-ui.xml.in.h:67 shell/rb-statusbar.c:161
 msgid "_Shuffle"
-msgstr ""
+msgstr "Изме_шај"
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.in.h:68
 msgid "_Source List"
-msgstr ""
+msgstr "_Изворни списак"
 
-#: iradio/rb-iradio-backend.c:172 library/rb-library.c:502
+#: iradio/rb-iradio-backend.c:183 iradio/rb-iradio-backend.c:572
+#: iradio/rb-new-station-dialog.c:291 library/rb-library.c:751
 msgid "All"
 msgstr "Све"
 
-#: iradio/rb-iradio-backend.c:311
+#: iradio/rb-iradio-backend.c:345
 msgid "Unable to find file \"iradio-initial.xml\""
-msgstr ""
+msgstr "Не може да пронађе датотеку „iradio-initial.xml“"
 
-#: iradio/rb-iradio-backend.c:359
+#: iradio/rb-iradio-backend.c:375
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "Неуспела обрада %s\n"
 
-#: iradio/rb-iradio-backend.c:514 iradio/rb-iradio-backend.c:534
-#: iradio/rb-iradio-backend.c:535 lib/widgets/rb-tree-model-node.c:587
+#: iradio/rb-iradio-backend.c:529 iradio/rb-iradio-backend.c:548
+#: iradio/rb-iradio-backend.c:549 lib/widgets/rb-tree-model-node.c:588
 msgid "(Unknown)"
 msgstr "(Непознато)"
 
-#: iradio/rb-iradio-yp-xmlfile.c:223
-#, c-format
-msgid "Failed to open %s: %s"
-msgstr "Неуспело отварање %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:454
-#, c-format
-msgid "Failed to read %s: %s"
-msgstr "Неуспело читање %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:461
-#, c-format
-msgid "Failed to parse %s: %s"
-msgstr "Неоспела обрада %s: %s"
-
-#: iradio/rb-new-station-dialog.c:144
-msgid "New Internet Radio Station"
-msgstr "Нова интернет радио станица"
-
-#: iradio/rb-new-station-dialog.c:147
-msgid "_Don't Add"
-msgstr ""
-
-#: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
-#: library/rb-node.c:914
+#: iradio/rb-iradio-backend.c:735
 msgid "Never"
 msgstr "Никада"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:474
-#: lib/widgets/rb-song-info.c:488
+#: iradio/rb-new-station-dialog.c:143
+msgid "New Internet Radio Station"
+msgstr "Нова интернет радио станица"
+
+#: iradio/rb-new-station-dialog.c:181
+#: monkey-media/monkey-media-stream-info.c:402
+#: monkey-media/monkey-media-stream-info.c:418
+#: monkey-media/monkey-media-stream-info.c:665 sources/rb-audiocd-source.c:978
+#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
+#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
+#: sources/rb-playlist-source.c:371 sources/rb-playlist-source.c:389
+msgid "Unknown"
+msgstr "Непознат"
+
+#: iradio/rb-station-properties-dialog.c:177 lib/widgets/rb-song-info.c:568
+#: lib/widgets/rb-song-info.c:582
 #, c-format
 msgid "%s Properties"
-msgstr "%s Особине"
+msgstr "Особине за %s"
 
-#: iradio/rb-station-properties-dialog.c:389
+#: iradio/rb-station-properties-dialog.c:348
 #, c-format
 msgid "Properties for %s"
-msgstr "Особине %s"
+msgstr "Особине за %s"
 
-#: iradio/rb-station-properties-dialog.c:540
-msgid "No locations specified!"
-msgstr "Адреса није назначена"
-
-#: iradio/rb-station-properties-dialog.c:584
-msgid "No location is selected."
-msgstr "Адреса није изабрана"
-
-#: iradio/rb-station-properties-dialog.c:601
-msgid "No location specified."
-msgstr "Адреса није назначена"
-
-#: iradio/rb-station-properties-dialog.c:608
-msgid "Location is not a valid URL."
-msgstr "Адреса није важећи URL."
-
-#: lib/disclosure-widget.c:285
+#: lib/disclosure-widget.c:292
 msgid "Expander Size"
-msgstr ""
+msgstr "Величина разграника"
 
-#: lib/disclosure-widget.c:286
+#: lib/disclosure-widget.c:293
 msgid "Size of the expander arrow"
-msgstr ""
+msgstr "Величина стрелице разграника"
 
 #: lib/eel-gconf-extensions.c:67
 #, c-format
@@ -883,29 +745,16 @@ msgid ""
 "GConf error:\n"
 "  %s"
 msgstr ""
-"GConf грешка:\n"
+"Гконф грешка:\n"
 "  %s"
 
-#: library/rb-node.c:905
-msgid "Today at %-H:%M"
-msgstr "Данас у %-H:%M"
+#: lib/eggtrayicon.c:118
+msgid "Orientation"
+msgstr "Усмерење"
 
-#: library/rb-node.c:907
-msgid "Yesterday at %-H:%M"
-msgstr "Јуче у %-H:%M"
-
-#: library/rb-node.c:909
-msgid "%A, %B %-d %Y at %-H:%M"
-msgstr "%A, %-d. %B %Y у %-H:%M"
-
-#: library/rb-node.c:1678
-msgid "%Y-%m-%d %H:%M"
-msgstr "%d/%m/%Y %H:%M"
-
-#: library/rb-node-song.c:275
-#, c-format
-msgid "%ld:%02ld"
-msgstr "%ld:%02ld"
+#: lib/eggtrayicon.c:119
+msgid "The orientation of the tray."
+msgstr "Усмерење фиоке."
 
 #: lib/rb-file-helpers.c:76
 #, c-format
@@ -922,31 +771,76 @@ msgstr "%s постоји, молимо вас да га склоните."
 msgid "Failed to create directory %s."
 msgstr "Неуспело стварање директоријума %s."
 
+#: lib/rb-playlist.c:207
+#, c-format
+msgid "Couldn't write playlist: %s"
+msgstr "Не може да упише списак песама: %s"
+
+#: lib/rb-playlist.c:240
+#, c-format
+msgid "Couldn't open playlist: %s"
+msgstr "Не може да отвори списак песама: %s"
+
 #. comma separated list of prefixes that are to
 #. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
 msgid "THE ,DJ "
-msgstr "ДЈ"
+msgstr "THE, DJ, MC, ДЈ"
 
 #: lib/rb-string-helpers.c:48
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/rb-windows-ini-file.c:375
-#, c-format
-msgid "Unable to parse %s: %s\n"
-msgstr "У немогућности да обради %s: %s\n"
+#: lib/widgets/eggtreemodelfilter.c:267
+msgid "The child model"
+msgstr "Начин садржавања"
+
+#: lib/widgets/eggtreemodelfilter.c:268
+msgid "The model for the filtermodel to filter"
+msgstr "Начин филтрирања"
+
+#: lib/widgets/eggtreemodelfilter.c:275
+msgid "The virtual root"
+msgstr "Виртуелни почетак"
+
+#: lib/widgets/eggtreemodelfilter.c:276
+msgid "The virtual root (relative to the child model) for this filtermodel"
+msgstr ""
+"Виртуелни почетак (у односу на начин садржавања) за овај начин филтрирања"
+
+#: lib/widgets/gtktreemodelsort.c:306
+msgid "TreeModelSort Model"
+msgstr "TreeModelSort модел"
+
+#: lib/widgets/gtktreemodelsort.c:307
+msgid "The model for the TreeModelSort to sort"
+msgstr "Начин на који TreeModelSort уређује"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:106
-#, fuzzy
 msgid "Pixbuf Object"
 msgstr "Pixbuf објекат"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:107
-#, fuzzy
 msgid "The pixbuf to render."
-msgstr "pixbuf за рендеринг."
+msgstr "Pixbuf за исцртавање."
+
+#: lib/widgets/rb-druid.c:218 shell/main.c:85
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: lib/widgets/rb-druid.c:260
+msgid "You are now ready to start Rhythmbox."
+msgstr "Сада сте спремни да покренете Rhythmbox."
+
+#: lib/widgets/rb-druid.c:309
+#, c-format
+msgid "Error reading filename: %s"
+msgstr "Грешка при читању датотеке: %s"
+
+#: lib/widgets/rb-druid.c:324
+msgid "Choose a directory"
+msgstr "Изаберите директоријум"
 
 #: lib/widgets/rb-link.c:325
 #, c-format
@@ -959,303 +853,561 @@ msgstr ""
 
 #: lib/widgets/rb-load-failure-dialog.c:118
 msgid "Error loading files into library"
-msgstr ""
+msgstr "Грешка при учитавању датотека у библиотеку"
 
 #: lib/widgets/rb-load-failure-dialog.c:135
-#, fuzzy
-msgid "_File"
-msgstr "_Наслов"
-
-#: lib/widgets/rb-load-failure-dialog.c:143
 msgid "_Error"
-msgstr ""
+msgstr "_Грешка"
 
-#: lib/widgets/rb-node-view.c:686
+#: lib/widgets/rb-node-view.c:814
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Неуспела обрада %s као NodeView датотеке са распоредом"
 
-#: lib/widgets/rb-player.c:264
+#: lib/widgets/rb-player.c:261
 msgid "from "
-msgstr ""
+msgstr "од "
 
-#: lib/widgets/rb-player.c:270
-#, fuzzy
+#: lib/widgets/rb-player.c:267
 msgid " by "
-msgstr "по"
+msgstr "по "
 
-#: lib/widgets/rb-player.c:285
+#: lib/widgets/rb-player.c:282
 msgid "Listening to "
-msgstr ""
+msgstr "Слушате "
 
-#: lib/widgets/rb-player.c:496
-#, fuzzy
+#: lib/widgets/rb-player.c:487
 msgid "Get information on this album from the web"
-msgstr "Погледајте детаље о овом уметнику са веба"
+msgstr "Погледајте податке о овом албуму са веба"
 
-#: lib/widgets/rb-player.c:507
-#, fuzzy
+#: lib/widgets/rb-player.c:498
 msgid "Get information on this artist from the web"
-msgstr "Погледајте детаље о овом уметнику са веба"
+msgstr "Погледајте податке о овом уметнику са веба"
 
-#: lib/widgets/rb-player.c:517
-#, fuzzy
+#: lib/widgets/rb-player.c:508
 msgid "Get more information on this station from the web"
-msgstr "Погледајте детаље о овом уметнику са веба"
+msgstr "Погледајте податке о овој станици са веба"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:951 shell/rb-shell.c:1757
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1070 shell/rb-shell.c:2134
 msgid "Not playing"
 msgstr "Не изводи се"
 
-#: lib/widgets/rb-player.c:794
+#: lib/widgets/rb-player.c:785
 #, c-format
 msgid "%d:%02d of %d:%02d"
-msgstr ""
+msgstr "%d:%02d од %d:%02d"
 
-#: lib/widgets/rb-player.c:796
-#, fuzzy, c-format
+#: lib/widgets/rb-player.c:787
+#, c-format
 msgid "%d:%02d"
-msgstr "%ld:%02ld"
+msgstr "%d:%02d"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: lib/widgets/rb-search-entry.c:116
-#, fuzzy
 msgid "_Search:"
-msgstr "Тражи песм_у"
+msgstr "_Тражи:"
 
-#: lib/widgets/rb-song-info.c:197
-msgid "_Next Song"
-msgstr "С_ледећа песма"
-
-#: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:493
+#: lib/widgets/rb-song-info.c:227 lib/widgets/rb-song-info.c:587
 msgid "Song Properties"
-msgstr "Детаљи о песми"
+msgstr "Особине песме"
 
-#: lib/widgets/rb-song-info.c:775
+#: lib/widgets/rb-song-info.c:869
 msgid "on the desktop"
 msgstr "на радној површини"
 
-#: lib/widgets/rb-song-info.c:966
+#: lib/widgets/rb-song-info.c:1081
 #, c-format
-msgid "%d kbps "
+msgid "%d kbps"
 msgstr "%d kb/s "
 
-#: lib/widgets/rb-song-info.c:979
+#: lib/widgets/rb-song-info.c:1094
 msgid " (Mono)"
-msgstr " (Моно)"
+msgstr " (моно)"
 
-#: lib/widgets/rb-song-info.c:982
+#: lib/widgets/rb-song-info.c:1097
 msgid " (Stereo)"
-msgstr " (Стерео)"
+msgstr " (стерео)"
 
-#: lib/widgets/rb-song-info.c:985
+# bug: plural-forms
+#: lib/widgets/rb-song-info.c:1100
 #, c-format
 msgid " (%d channels)"
-msgstr " (%d канали)"
+msgstr " (%d канала)"
 
-#: lib/widgets/rb-sourcelist.c:129
+#: lib/widgets/rb-sourcelist.c:167
 msgid "_Source"
+msgstr "И_звор"
+
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: lib/widgets/rb-volume.c:232
+msgid "+"
+msgstr "+"
+
+#: lib/widgets/rb-volume.c:233
+msgid "-"
+msgstr "-"
+
+#: library/rb-library.c:996
+msgid "Failed to load library!"
+msgstr "Нисам успео да учитам библиотеку!"
+
+#: library/rb-library.c:1263
+#, c-format
+msgid "%ld:%02ld"
+msgstr "%ld:%02ld"
+
+#: library/rb-library.c:1564
+msgid "<b>Loading songs...</b>"
+msgstr "<b>Учитава песме...</b>"
+
+#: library/rb-library.c:1577
+msgid "<b>Refreshing songs...</b>"
+msgstr "<b>Освежава песме...</b>"
+
+# bug: plural-forms
+#: library/rb-library.c:1661
+#, c-format
+msgid "<b>%.1f</b> days (%ld songs)"
+msgstr "<b>%.1f</b> дана (песама: %ld)"
+
+# bug: plural-forms
+#: library/rb-library.c:1664
+#, c-format
+msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> часова и <b>%ld</b> минута (песама: %ld)"
+
+#: library/rb-library.c:1667
+#, c-format
+msgid "<b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> минута (песама: %ld)"
+
+#: library/rb-node.c:1351
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d/%m/%Y %H:%M"
+
+#: monkey-media/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
 msgstr ""
+"%s не показује ка исправном ЦД уређају. Узрок може бити:\n"
+"а) подршка за ЦД није уграђена у Линукс језгро\n"
+"б) Немате права да приступите ЦД уређају\n"
+"в) %s није ЦД уређај.\n"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
-msgid "Click to mute"
-msgstr "Клик да утишаш"
+#: monkey-media/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Изгледа да немате права да приступите %s."
 
-#: lib/widgets/rb-volume.c:381
-msgid "Click to unmute"
-msgstr "Клик да опозовеш утишање"
+#: monkey-media/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s не показује ка исправном ЦД уређају. Узрок може бити:\n"
+"а) подршка за ЦД није уграђена у Линукс језгро\n"
+"б) Немате права да приступите ЦД уређају\n"
+"в) %s није ЦД уређај.\n"
 
-#: shell/main.c:63
+#: monkey-media/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Грешка при читању ЦД заглавља: %s"
+
+#: monkey-media/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Грешка при читању последње ЦД стазе: %s"
+
+#: monkey-media/monkey-media-player-gst-old.c:371
+#: monkey-media/monkey-media-player-gst.c:451
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Неуспех при креирању gnomevfssrc улазног елемента; проверити инсталацију"
+
+#: monkey-media/monkey-media-player-gst-old.c:380
+#: monkey-media/monkey-media-player-gst.c:466
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Неуспех при креирању cdparanoia улазног елемента; проверити инсталацију"
+
+#: monkey-media/monkey-media-player-gst-old.c:401
+#: monkey-media/monkey-media-player-gst-tmp.c:560
+#: monkey-media/monkey-media-player-gst.c:516
+msgid "Failed to create spider element; check your installation"
+msgstr "Неуспех при креирању spider елемента; проверити инсталацију"
+
+#: monkey-media/monkey-media-player-gst-old.c:414
+#: monkey-media/monkey-media-player-gst-tmp.c:572
+#: monkey-media/monkey-media-player-gst.c:531
+msgid "Failed to create volume element; check your installation"
+msgstr "Неуспех при креирању елемента озвучења; проверити инсталацију"
+
+#: monkey-media/monkey-media-player-gst-old.c:434
+#: monkey-media/monkey-media-player-gst-tmp.c:590
+#: monkey-media/monkey-media-player-gst.c:552
+msgid "Could not create audio output element; check your settings"
+msgstr "Нисам могао да креирам излазни звучни елемент; проверити подешавања"
+
+#: monkey-media/monkey-media-player-gst-old.c:524
+#: monkey-media/monkey-media-player-gst-tmp.c:706
+#: monkey-media/monkey-media-player-gst.c:639
+msgid "No AudioCD support; check your settings"
+msgstr "Не постоји подршка за Аудио ЦД; проверити подешавања"
+
+#: monkey-media/monkey-media-player-gst-tmp.c:511
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Неуспех при образовању улазног елемента %s; проверите вашу инсталацију"
+
+#: monkey-media/monkey-media-player-gst-tmp.c:536
+#: monkey-media/monkey-media-player-gst.c:489
+msgid "Failed to create queue element; check your installation"
+msgstr "Неуспех при образовању редног елемента; проверите вашу инсталацију"
+
+#: monkey-media/monkey-media-player-xine.c:332
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Неуспех при подешавању драјвера за звук; проверите вашу инсталацију"
+
+#: monkey-media/monkey-media-player-xine.c:420
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Није доступан додатак за %s; проверити инсталацију."
+
+#: monkey-media/monkey-media-player-xine.c:429
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Није доступан demux додатак за %s; проверити инсталацију."
+
+#: monkey-media/monkey-media-player-xine.c:438
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demux операција за %s није успела; проверити инсталацију."
+
+#: monkey-media/monkey-media-player-xine.c:446
+msgid "Internal error; check your installation."
+msgstr "Интерна грешка; проверити инсталацију."
+
+#: monkey-media/monkey-media-player-xine.c:455
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "%s звук није обрађиван; проверити инсталацију."
+
+#: monkey-media/monkey-media-stream-info.c:308
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Неподржан МИМЕ тип %s"
+
+#: monkey-media/monkey-media-stream-info.c:313
+msgid "Unknown file type"
+msgstr "Непознат тип датотеке"
+
+#: monkey-media/monkey-media-stream-info.c:384
+#, c-format
+msgid "Track %.2d"
+msgstr "Стаза %.2d"
+
+#: monkey-media/monkey-media-stream-info.c:749
+#: monkey-media/monkey-media-stream-info.c:814
+msgid "No TRM ID for this song"
+msgstr "Не постоји идентификациони број за ову песму"
+
+#: monkey-media/monkey-media-stream-info.c:765
+#: monkey-media/monkey-media-stream-info.c:829
+msgid "No information for this song found"
+msgstr "Информације за ову песму нису нађене"
+
+#: monkey-media/monkey-media.c:226
+msgid "GStreamer options:"
+msgstr "GStreamer опције"
+
+#: monkey-media/monkey-media.c:503
+#, c-format
+msgid "Please remove %s"
+msgstr "Молим Вас одрстаните %s"
+
+#: monkey-media/monkey-media.c:505
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Нисам успео да креирам директоријум %s"
+
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Неисправан број нумере"
+
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Аудио ЦД нумера"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:195
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:264
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Нисам успео да отворим датотеку за читање"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:247
+msgid "Error decoding FLAC file"
+msgstr "Грешка при декодирању FLAC датотеке"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:751
+msgid "FLAC"
+msgstr "FLAC"
+
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Нисам успео да претражим датотеку"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Нисам успео да отворим датотеку као Ogg Vorbis"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: shell/main.c:72
+msgid "Print the playing song and exit"
+msgstr "Испиши песму која се изводи и изађи"
+
+#: shell/main.c:73
+msgid "Print the playing song URI and exit"
+msgstr "Испиши адресу песме која се изводи и изађи"
+
+#: shell/main.c:74
 msgid "Enable debugging code"
 msgstr "Омогући проналажење грешака у програму"
 
-#: shell/main.c:64
-#, fuzzy
+#: shell/main.c:75
 msgid "Do not register the shell"
-msgstr "Немој пријавити бонобо активацију"
+msgstr "Немој пријавити љуску"
 
-#: shell/main.c:65
+#: shell/main.c:76
 msgid "Quit Rhythmbox"
 msgstr "Прекини Rhythmbox"
 
-#: shell/main.c:66
+#: shell/main.c:77
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia опције:"
 
-#: shell/main.c:76
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
+#: shell/main.c:170
+msgid ""
+"Rhythmbox does not currently work if GNOME sound events are are enabled and "
+"esdsink is in use."
+msgstr ""
+"Rhythmbox тренутно не ради уколико су укључени Гномови звучи догађаји и "
+"користи се esdsink."
 
-#: shell/main.c:195
-#, fuzzy, c-format
+#: shell/main.c:210
+#, c-format
 msgid ""
 "Failed to activate the shell:\n"
 "%s"
-msgstr "Неуспело активирање Rhythmbox-а"
-
-#: shell/rb-playlist.c:44
-#, fuzzy, c-format
-msgid "Unable to parse playlist entry \"%s\""
-msgstr "У немогућности да обради %s: %s\n"
-
-#: shell/rb-playlist.c:70
-#, fuzzy, c-format
-msgid "Unable to load playlist file \"%s\""
-msgstr "У немогућности да обради %s: %s\n"
-
-#: shell/rb-playlist.c:90
-#, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no numberofentries header found"
 msgstr ""
+"Није успео да покрене љуску:\n"
+"%s"
 
-#: shell/rb-playlist.c:186
+#: shell/rb-shell-player.c:332
 #, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no playlist header"
-msgstr ""
+msgid "Failed to create the player: %s"
+msgstr "Није успео да почне са пуштањем: %s"
 
-#: shell/rb-shell.c:440
-#, fuzzy, c-format
+#: shell/rb-shell-player.c:386
+msgid "Previous"
+msgstr "Претходна"
+
+#: shell/rb-shell-player.c:415
+msgid "Next"
+msgstr "Следећа"
+
+#: shell/rb-shell-player.c:434
+msgid "Volume Control"
+msgstr "Управљање јачином звука"
+
+#: shell/rb-shell-player.c:697
+#, c-format
+msgid "Opening %s..."
+msgstr "Отвара %s..."
+
+#: shell/rb-shell-player.c:1113
+msgid "Pause"
+msgstr "Пауза"
+
+#: shell/rb-shell-player.c:1114
+msgid "_Pause"
+msgstr "_Паузирај"
+
+#: shell/rb-shell-player.c:1121
+msgid "Play"
+msgstr "Пусти"
+
+#: shell/rb-shell-player.c:1129
+msgid "Stop"
+msgstr "Заустави"
+
+#: shell/rb-shell-player.c:1130
+msgid "_Stop"
+msgstr "_Заустави"
+
+#: shell/rb-shell-player.c:1364
+msgid "Unexpected end of stream!"
+msgstr "Неочекивани крај тока!"
+
+#: shell/rb-shell-preferences.c:176
+msgid "Music Player Preferences"
+msgstr "Поставке музичког програма"
+
+#: shell/rb-shell-preferences.c:224
+msgid "General"
+msgstr "Опште"
+
+#: shell/rb-shell.c:504
+#, c-format
 msgid "Unable to parse URI \"%s\"\n"
-msgstr "У немогућности да обради %s: %s\n"
+msgstr "Не може да обради адресу „%s“\n"
 
-#: shell/rb-shell.c:474
-#, fuzzy, c-format
-msgid "Unable to handle URI \"%s\"\n"
-msgstr "У немогућности да обради %s: %s\n"
-
-#: shell/rb-shell.c:522
-#, fuzzy, c-format
+#: shell/rb-shell.c:806
+#, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed RB in a\n"
+"This probably means that you installed Rhythmbox in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
-"Неуспела регистација Rhythmbox-а са бонобо активацијом:\n"
-"Ово вероватно значи да сте инсталирали Rhythmbox у \n"
-"различитом префиксу од бонобо активације; ово\n"
-"упзорење је безопасно, али IPC неће радити.\n"
+"Није успео да пријави љуску: %s\n"
+"Ово вероватно значи да сте инсталирали Rhythmbox на  \n"
+"различитом месту од бонобо активације; ово\n"
+"упозорење је безопасно, али IPC неће радити.\n"
 
-#: shell/rb-shell.c:967
+#: shell/rb-shell.c:1084
 #, c-format
 msgid "%s (Paused)"
-msgstr ""
+msgstr "%s (паузирана)"
 
-#: shell/rb-shell.c:970
+#: shell/rb-shell.c:1087
 #, c-format
 msgid ""
 "%s\n"
 "Paused"
 msgstr ""
+"%s\n"
+"Паузирана"
 
-#: shell/rb-shell.c:1053
+#: shell/rb-shell.c:1155
 msgid "translator_credits"
-msgstr "захвале преводиоцима"
+msgstr ""
+"Предраг Кртолица <predrag_k@optusnet.com.au>\n"
+"Данило Шеган <dsegan@gmx.net>\n"
+"\n"
+"Prevod.org — превод на српски језик."
 
-#: shell/rb-shell.c:1063
-msgid "Lead developers:"
-msgstr "Водећи аутори"
+#: shell/rb-shell.c:1164
+msgid "Maintainers:"
+msgstr "Одржавају:"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1168
 msgid "Contributors:"
-msgstr "Сарадници"
+msgstr "Допринели:"
 
-#: shell/rb-shell.c:1068
-msgid "Music management and playback software for GNOME."
-msgstr "Организација музике и програм за извођење на ГНОМ-уа"
+#: shell/rb-shell.c:1192
+#, c-format
+msgid ""
+"Music management and playback software for GNOME.\n"
+"Audio backend: %s\n"
+"Audio formats: %s\n"
+msgstr ""
+"Организација музике и програм за извођење за Гнома.\n"
+"Звучни излази: %s\n"
+"Звучни записи: %s\n"
 
-#: shell/rb-shell.c:1211
+#: shell/rb-shell.c:1335
 msgid "Choose Files or Directory"
-msgstr ""
+msgstr "Изаберите датотеке или директоријум"
 
-#: shell/rb-shell.c:1240
+#: shell/rb-shell.c:1364
 msgid "Load playlist"
-msgstr ""
+msgstr "Учитај списак песама"
 
-#: shell/rb-shell-player.c:315
-#, fuzzy, c-format
-msgid "Failed to create the player: %s"
-msgstr ""
-"Неуспело формирање тока, грешка је:\n"
-"%s"
+#: shell/rb-shell.c:1427 shell/rb-shell.c:1465
+msgid "There is already a playlist with that name."
+msgstr "Већ постоји списак песама са тим именом."
 
-#: shell/rb-shell-player.c:650
-#, c-format
-msgid "Opening %s..."
-msgstr ""
+#: shell/rb-shell.c:1445
+msgid "Save playlist"
+msgstr "Сачувај списак песама"
 
-#: shell/rb-shell-player.c:721
-#, c-format
-msgid "All fallback locations failed, unable to play: %s\n"
-msgstr ""
+#: shell/rb-shell.c:1572
+msgid "Couldn't parse playlist"
+msgstr "Не може да обради списак песама"
 
-#: shell/rb-shell-player.c:1061
-#, fuzzy
-msgid "Pause"
-msgstr "У_баци"
+#: shell/rb-shell.c:1919
+msgid "C_reate"
+msgstr "Нап_рави"
 
-#: shell/rb-shell-player.c:1062
-#, fuzzy
-msgid "_Pause"
-msgstr "У_баци"
+#: shell/rb-shell.c:1934
+msgid "New Playlist"
+msgstr "Нови списак песама"
 
-#: shell/rb-shell-player.c:1069
-#, fuzzy
-msgid "Play"
-msgstr "Изв_еди"
+#: shell/rb-shell.c:1945
+msgid "Please enter a name for the new playlist:"
+msgstr "Молим унесите име за нови списак песама:"
 
-#: shell/rb-shell-player.c:1077
-msgid "Stop"
-msgstr ""
+#: shell/rb-shell.c:1950 shell/rb-shell.c:2016
+msgid "Untitled"
+msgstr "Неименовани"
 
-#: shell/rb-shell-player.c:1078
-#, fuzzy
-msgid "_Stop"
-msgstr "Копи_рај"
+#: shell/rb-shell.c:1954
+msgid "Add the _selected songs to the new playlist"
+msgstr "Додај _одабране песме у нови списак песама"
 
-#: shell/rb-shell-player.c:1296
-msgid "Unexpected end of stream!"
-msgstr ""
+#: shell/rb-shell.c:1985
+msgid "R_ename"
+msgstr "Пре_именуј"
 
-#: shell/rb-shell-preferences.c:174
-msgid "Music Player Preferences"
-msgstr "Поставка музичког програма"
+#: shell/rb-shell.c:2000
+msgid "Rename Playlist"
+msgstr "Преименуј списак песама"
 
-#: shell/rb-shell-preferences.c:212
-#, fuzzy
-msgid "General"
-msgstr "_Жанр"
+#: shell/rb-shell.c:2011
+msgid "Please enter a new name for the playlist:"
+msgstr "Молим унесите ново име за списак песама"
+
+#: shell/rb-source-header.c:172
+msgid "Show _Browser"
+msgstr "Прикажи прегле_дач"
 
 #: shell/rb-source-header.c:173
-#, fuzzy
-msgid "Show _Browser"
-msgstr "Прегле_дач"
-
-#: shell/rb-source-header.c:174
-#, fuzzy
 msgid "Hide _Browser"
-msgstr "Прегле_дач"
+msgstr "Сакриј прегле_дач"
 
-#: shell/rb-statusbar.c:131
+#: shell/rb-statusbar.c:162
 msgid "_Repeat"
-msgstr ""
+msgstr "_Понављај"
 
 #: sources/rb-audiocd-source.c:297
 msgid "music audiocd"
-msgstr "музика звучни ЦД"
+msgstr "музички ЦД"
 
 #: sources/rb-audiocd-source.c:300
-#, fuzzy
 msgid "Audio CD"
-msgstr "Звучни ЦД"
+msgstr "Музички ЦД"
 
 #: sources/rb-audiocd-source.c:931
 msgid "Retrieving MusicBrainz data"
-msgstr ""
+msgstr "Преузми MusicBrainz податке"
 
 #: sources/rb-audiocd-source.c:1093
 #, c-format
@@ -1264,84 +1416,131 @@ msgstr "Неуспела обрада %s као инфо датотека дис
 
 #: sources/rb-audiocd-source.c:1163
 msgid "Loading CD information"
-msgstr ""
+msgstr "Учитава податке о ЦД-у"
 
+# bug: plural-forms
 #: sources/rb-audiocd-source.c:1230
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d песама, %d:%02d:%02d укупно време"
 
-#: sources/rb-group-source.c:344
-msgid "music group"
-msgstr ""
-
-#: sources/rb-group-source.c:347
-msgid "Unnamed"
-msgstr ""
-
-#: sources/rb-group-source.c:565
-msgid "Create"
-msgstr ""
-
-#: sources/rb-group-source.c:589
-msgid "Please enter a name for the new music group."
-msgstr ""
-
-#: sources/rb-group-source.c:599
-msgid "Untitled"
-msgstr ""
-
-#: sources/rb-group-source.c:603
-msgid "Add the _selected songs to the new group"
-msgstr ""
-
-#: sources/rb-group-source.c:1224
-#, fuzzy, c-format
-msgid "Failed to parse %s as group file"
-msgstr "Неуспела обрада %s као инфо датотека диска"
-
-#: sources/rb-iradio-source.c:380
-#, fuzzy
+#: sources/rb-iradio-source.c:359
 msgid "Radio"
-msgstr "и радио"
+msgstr "Радио"
 
-#: sources/rb-iradio-source.c:498
-#, fuzzy, c-format
+# bug: plural-forms
+#: sources/rb-iradio-source.c:487
+#, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
-msgstr "укупно %d станица у %d различитих жанрова"
+msgstr "укупно станица: <b>%d</b>; различитих жанрова: <b>%d</b>"
 
-#: sources/rb-library-source.c:618
+#: sources/rb-library-source.c:529
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
-#: sources/rb-library-source.c:799
-#, c-format
-msgid "%ld songs"
-msgstr ""
-
-#: sources/rb-library-source.c:843
-#, c-format
-msgid "<b>%.1f</b> days"
-msgstr ""
-
-#: sources/rb-library-source.c:846
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes"
-msgstr ""
-
-#: sources/rb-library-source.c:849
-#, c-format
-msgid "<b>%ld</b> minutes"
-msgstr ""
-
-#: sources/rb-library-source.c:945
-#, fuzzy
+#: sources/rb-library-source.c:877
 msgid "Add Location"
-msgstr "Положаја: "
+msgstr "Додај адресу"
 
-#: sources/rb-source.c:366
+#: sources/rb-playlist-source.c:626
+#, c-format
+msgid "Failed to parse %s as playlist file"
+msgstr "Неуспела обрада %s као списка песама"
+
+#: sources/rb-source.c:418
 msgid "No properties available."
-msgstr ""
+msgstr "Нису доступне особине."
+
+#: sources/rb-source.c:501
+msgid "This source does not support drag and drop."
+msgstr "Овај извор не подржава превлачење и пуштање."
+
+#~ msgid "<span weight=\"bold\">Visible Columns</span>"
+#~ msgstr "<span weight=\"bold\">Видљиве колоне</span>"
+
+#~ msgid "   "
+#~ msgstr "   "
+
+#~ msgid "42"
+#~ msgstr "42"
+
+#~ msgid "_Add: "
+#~ msgstr "Додај"
+
+#~ msgid "_Locations"
+#~ msgstr "_Положаји"
+
+#~ msgid "blah Properties"
+#~ msgstr "трућ Особине"
+
+#~ msgid "A_rtist"
+#~ msgstr "И_звођач"
+
+#~ msgid "Change the visibility of the genre browser"
+#~ msgstr "Промените видљивост претраживача жанрова"
+
+#~ msgid "Scroll the view to the currently playing station"
+#~ msgstr "Превуци поглед на станицу која се тренутно изводи"
+
+#~ msgid "Show information on the selected station"
+#~ msgstr "Покажи податке о изабраној станици"
+
+#~ msgid "_Jump to Playing Station"
+#~ msgstr "Ско_чи на станицу која се изводи"
+
+#~ msgid "_New Internet Radio Station"
+#~ msgstr "Нова ин_тернет радио станица"
+
+#~ msgid "Change the visibility of the artist and album browser"
+#~ msgstr "Промени видљивост претраживача извођача и албума"
+
+#~ msgid "_Organize"
+#~ msgstr "Организира_ј"
+
+#~ msgid "Failed to open %s: %s"
+#~ msgstr "Неуспело отварање %s: %s"
+
+#~ msgid "Failed to read %s: %s"
+#~ msgstr "Неуспело читање %s: %s"
+
+#~ msgid "Failed to parse %s: %s"
+#~ msgstr "Неоспела обрада %s: %s"
+
+#~ msgid "No locations specified!"
+#~ msgstr "Адреса није назначена"
+
+#~ msgid "No location is selected."
+#~ msgstr "Адреса није изабрана"
+
+#~ msgid "No location specified."
+#~ msgstr "Адреса није назначена"
+
+#~ msgid "Location is not a valid URL."
+#~ msgstr "Адреса није важећи URL."
+
+#~ msgid "Today at %-H:%M"
+#~ msgstr "Данас у %-H:%M"
+
+#~ msgid "Yesterday at %-H:%M"
+#~ msgstr "Јуче у %-H:%M"
+
+#~ msgid "%A, %B %-d %Y at %-H:%M"
+#~ msgstr "%A, %-d. %B %Y у %-H:%M"
+
+#~ msgid "Unable to parse %s: %s\n"
+#~ msgstr "У немогућности да обради %s: %s\n"
+
+#~ msgid "_Next Song"
+#~ msgstr "С_ледећа песма"
+
+#~ msgid "Click to mute"
+#~ msgstr "Клик да утишаш"
+
+#~ msgid "Click to unmute"
+#~ msgstr "Клик да опозовеш утишање"
+
+#~ msgid "Lead developers:"
+#~ msgstr "Водећи аутори"
 
 #~ msgid "<span weight=\"bold\">Appearance</span>"
 #~ msgstr "<span weight=\"bold\">Изглед</span>"
@@ -1434,9 +1633,6 @@ msgstr ""
 #~ msgid "Play the next song"
 #~ msgstr "Изведи следећу песму"
 
-#~ msgid "Shuffle the play list"
-#~ msgstr "Измешај редослед песма"
-
 #~ msgid "To play, add music to the play list"
 #~ msgstr "Да би чуо песму, додај је у списак песама"
 
@@ -1461,9 +1657,6 @@ msgstr ""
 
 #~ msgid "%s - Unknown"
 #~ msgstr "%s - Непознат"
-
-#~ msgid "Failed to parse %s as playlist"
-#~ msgstr "Неуспела обрада %s као списка песама"
 
 #~ msgid "%ld:%.2ld"
 #~ msgstr "%ld:%.2ld"
@@ -1502,9 +1695,6 @@ msgstr ""
 
 #~ msgid "Play Song Later"
 #~ msgstr "Изведи песму касније"
-
-#~ msgid "Enqueue the selected song(s) for later playback"
-#~ msgstr "Уврсти одабране песме(у) за касније извођење"
 
 #~ msgid "Play _Song"
 #~ msgstr "Изведи пес_му"
