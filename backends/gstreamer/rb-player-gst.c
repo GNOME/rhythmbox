@@ -72,6 +72,7 @@ struct RBPlayerPrivate
 
 	guint error_signal_id;
 
+	GstDParamManager *volume_dpmanager;
 	GstDParam *volume_dparam;
 	float cur_volume;
 
@@ -106,6 +107,7 @@ static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 static GObjectClass *parent_class = NULL;
 
 static gboolean rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error);
+static void rb_player_gst_free_pipeline (RBPlayer *player);
 
 GType
 rb_player_get_type (void)
@@ -253,7 +255,7 @@ rb_player_finalize (GObject *object)
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_NULL);
 		
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		rb_player_gst_free_pipeline (mp);
 	}
 
 	if (mp->priv->timer)
@@ -264,6 +266,21 @@ rb_player_finalize (GObject *object)
 	g_free (mp->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+rb_player_gst_free_pipeline (RBPlayer *player)
+{
+	if (player->priv->pipeline == NULL)
+		return;
+	
+	if (player->priv->volume_dpmanager) {
+		gst_dpman_detach_dparam (player->priv->volume_dpmanager, "volume");
+		gst_object_unref (GST_OBJECT (player->priv->volume_dparam));
+		player->priv->volume_dpmanager = NULL;
+	}
+	gst_object_unref (GST_OBJECT (player->priv->pipeline));
+	player->priv->pipeline = NULL;
 }
 
 static gboolean
@@ -508,6 +525,7 @@ rb_player_construct (RBPlayer *mp,
 	MAKE_ELEMENT_OR_LOSE(volume, volume);
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->volume);
 	dpman = gst_dpman_get_manager (mp->priv->volume);
+	mp->priv->volume_dpmanager = dpman;
 	gst_dpman_set_mode (dpman, "synchronous");
 	mp->priv->volume_dparam = gst_dpsmooth_new (G_TYPE_DOUBLE);
 	g_assert (mp->priv->volume_dparam != NULL);
@@ -566,8 +584,7 @@ missing_element:
 			     RB_PLAYER_ERROR_GENERAL,
 			     err);
 		g_free (err);
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
+		rb_player_gst_free_pipeline (mp);
 	}
 }
 
@@ -686,8 +703,7 @@ rb_player_open (RBPlayer *mp,
 	if (mp->priv->pipeline) {
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_NULL);
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
+		rb_player_gst_free_pipeline (mp);
 	}
 
 	g_free (mp->priv->uri);
