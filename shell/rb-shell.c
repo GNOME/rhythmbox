@@ -802,7 +802,7 @@ rb_shell_construct (RBShell *shell)
 		/* this is not critical, but worth a warning nevertheless */
 		char *msg = rb_shell_corba_exception_to_string (&ev);
 		g_message (_("Failed to register the shell: %s\n"
-			     "This probably means that you installed RB in a\n"
+			     "This probably means that you installed Rhythmbox in a\n"
 			     "different prefix than bonobo-activation; this\n"
 			     "warning is harmless, but IPC will not work.\n"), msg);
 		g_free (msg);
