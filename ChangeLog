@@ -1,5 +1,14 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library.c: (rb_library_load), (rb_library_save),
+	(rb_library_timeout_cb), (rb_library_thread_process_changed_node):
+	* library/rb-node.c: (rb_node_add_child),
+	(rb_node_add_grandparent):
+
+	Do mtime checking in the thread.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library-watcher.c: (rb_library_watcher_init),
 	(rb_library_watcher_finalize), (rb_library_watcher_load_files),
 	(rb_library_watcher_pref_changed_cb),

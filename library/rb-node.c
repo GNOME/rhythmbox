@@ -357,6 +357,9 @@ rb_node_add_child (RBNode *node,
 	
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
+
+	if (g_list_find (node->priv->children, child) != NULL)
+		return;
 	
 	node->priv->children = g_list_append (node->priv->children, child);
 	child->priv->parents = g_list_append (child->priv->parents, node);
@@ -495,6 +498,9 @@ rb_node_add_grandparent (RBNode *node,
 {
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (grandparent));
+
+	if (g_list_find (node->priv->grandparents, grandparent) != NULL)
+		return;
 	
 	node->priv->grandparents = g_list_append (node->priv->grandparents,
 						  grandparent);

@@ -381,51 +381,39 @@ rb_library_load (RBLibrary *library)
 	xmlDocPtr doc;
 	xmlNodePtr child;
 
+	rb_library_create_skels (library);
+
 	if (g_file_test (library->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
-	{
-		rb_library_create_skels (library);
 		return;
-	}
 	
 	doc = xmlParseFile (library->priv->xml_file);
 
 	if (doc == NULL)
-	{
-		rb_library_create_skels (library);
 		return;
-	}
+
+	g_mutex_lock (library->priv->changed_nodes_lock);
 
 	for (child = doc->children->children; child != NULL; child = child->next)
 	{
 		RBNode *node;
 		RBNodeType type;
 		GValue value = { 0, };
-		
+
 		node = rb_node_new_from_xml (child);
 		if (node == NULL)
 			continue;
-		
+
 		type = rb_node_get_node_type (node);
 		switch (type)
 		{
-		case RB_NODE_TYPE_ALL_GENRES:
-			library->priv->all_genres = node;
-			break;
-		case RB_NODE_TYPE_ALL_ARTISTS:
-			library->priv->all_artists = node;
-			break;
-		case RB_NODE_TYPE_ALL_ALBUMS:
-			library->priv->all_albums = node;
-			break;
-		case RB_NODE_TYPE_ALL_SONGS:
-			library->priv->all_songs = node;
-			break;
 		case RB_NODE_TYPE_GENRE:
 			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
 					      &value);
 			g_hash_table_insert (library->priv->genre_to_node,
 					     g_strdup (g_value_get_string (&value)), node);
 			g_value_unset (&value);
+
+			rb_node_add_child (node, library->priv->all_albums);
 			break;
 		case RB_NODE_TYPE_ARTIST:
 			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
@@ -433,6 +421,8 @@ rb_library_load (RBLibrary *library)
 			g_hash_table_insert (library->priv->artist_to_node,
 					     g_strdup (g_value_get_string (&value)), node);
 			g_value_unset (&value);
+			
+			rb_node_add_child (node, library->priv->all_songs);
 			break;
 		case RB_NODE_TYPE_ALBUM:
 			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
@@ -448,16 +438,8 @@ rb_library_load (RBLibrary *library)
 					     g_strdup (g_value_get_string (&value)), node);
 			g_value_unset (&value);
 
-			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
-			if (g_value_get_long (&value) != rb_node_song_get_real_mtime (node))
-			{
-				g_mutex_lock (library->priv->changed_nodes_lock);
-				library->priv->changed_nodes = g_list_append (library->priv->changed_nodes,
-									      node);
-				g_mutex_unlock (library->priv->changed_nodes_lock);
-			}
-			g_value_unset (&value);
-			
+			library->priv->changed_nodes = g_list_append (library->priv->changed_nodes,
+								      node);
 			break;
 		default:
 			break;
@@ -470,10 +452,9 @@ rb_library_load (RBLibrary *library)
 					 0);
 	}
 
-	xmlFreeDoc (doc);
+	g_mutex_unlock (library->priv->changed_nodes_lock);
 
-	if (library->priv->all_genres == NULL)
-		rb_library_create_skels (library);
+	xmlFreeDoc (doc);
 }
 
 static void
@@ -487,7 +468,6 @@ rb_library_save (RBLibrary *library)
 	doc = xmlNewDoc ("1.0");
 	doc->children = xmlNewDocNode (doc, NULL, "RBLibrary", NULL);
 
-	rb_node_save_to_xml (library->priv->all_genres, doc->children);
 	children = rb_node_get_children (library->priv->all_genres);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
@@ -495,7 +475,6 @@ rb_library_save (RBLibrary *library)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
 
-	rb_node_save_to_xml (library->priv->all_artists, doc->children);
 	children = rb_node_get_children (library->priv->all_artists);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
@@ -503,7 +482,6 @@ rb_library_save (RBLibrary *library)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
 
-	rb_node_save_to_xml (library->priv->all_albums, doc->children);
 	children = rb_node_get_children (library->priv->all_albums);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
@@ -511,7 +489,6 @@ rb_library_save (RBLibrary *library)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
 
-	rb_node_save_to_xml (library->priv->all_songs, doc->children);
 	children = rb_node_get_children (library->priv->all_songs);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
@@ -654,7 +631,7 @@ rb_library_timeout_cb (RBLibrary *library)
 		rb_node_set_property (genre_node, RB_NODE_PROPERTY_NAME, &value);
 		g_value_unset (&value);
 
-		rb_node_add_child (genre_node, library->priv->all_artists);
+		rb_node_add_child (genre_node, library->priv->all_albums);
 		rb_node_add_child (library->priv->all_genres, genre_node);
 		
 		g_hash_table_insert (library->priv->genre_to_node, g_strdup (genre), genre_node);
@@ -834,6 +811,11 @@ rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 	rb_debug ("rb_library_thread_process_changed_node: releasing lock #1");
 	g_mutex_unlock (priv->changed_nodes_lock);
 	rb_debug ("rb_library_thread_process_changed_node: released lock #1");
+
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
+	if (g_value_get_long (&value) == rb_node_song_get_real_mtime (node))
+		return;
+	g_value_unset (&value);
 
 	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
 	info = monkey_media_stream_info_new (g_value_get_string (&value), &error);
