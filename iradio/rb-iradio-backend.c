@@ -31,7 +31,6 @@
 
 #include "rb-iradio-backend.h"
 #include "rb-iradio-yp-iterator.h"
-#include "rb-iradio-yp-shoutcast.h"
 #include "rb-iradio-yp-xmlfile.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -188,15 +187,19 @@ rb_iradio_backend_finalize (GObject *object)
 
 	g_return_if_fail (backend->priv != NULL);
 
-	fprintf(stderr, "backend: finalizing\n");
+	fprintf (stderr, "backend: finalizing\n");
 
-	rb_iradio_backend_save (backend);
+	fprintf (stderr, "FIXME: iradio saving disabled because it's broken right now\n");
+/*  	rb_iradio_backend_save (backend); */
 
-	children = rb_node_get_children (backend->priv->all_stations);
-	rb_node_thaw (backend->priv->all_stations);
-	for (i = children->len - 1; i >= 0; i--) {
-		rb_node_unref (g_ptr_array_index (children, i));
-	}
+/* 	children = rb_node_get_children (backend->priv->all_stations); */
+/* 	rb_node_thaw (backend->priv->all_stations); */
+/* 	for (i = children->len - 1; i >= 0; i--) { */
+/* 		rb_node_unref (g_ptr_array_index (children, i)); */
+/* 	} */
+
+	g_hash_table_destroy (backend->priv->genre_hash);
+	g_static_rw_lock_free (backend->priv->genre_hash_lock);
 	
 	rb_node_unref (backend->priv->all_stations);
 	rb_node_unref (backend->priv->all_genres);
