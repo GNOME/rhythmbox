@@ -88,6 +88,10 @@ static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
 				       RBShellPlayer *player);
 #endif
 
+/* static void rb_shell_handle_mixer_error (MonkeyMediaMixer *mixer, */
+/* 					 GError *error, */
+/* 					 gpointer user_data); */
+
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
 #define TOOLBAR_PATH_PLAY  "/Toolbar/Play"
@@ -233,6 +237,11 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 		rb_error_dialog (_("Failed to create the mixer, error was:\n%s"), error->message);
 		g_error_free (error);
 	}
+
+/* 	g_signal_connect (G_OBJECT (shell_player->priv->mixer), */
+/* 			  "error", */
+/* 			  G_CALLBACK (rb_shell_handle_mixer_error), */
+/* 			  shell_player); */
 
 	monkey_media_mixer_set_volume (shell_player->priv->mixer,
 				       eel_gconf_get_float (CONF_STATE_VOLUME));
@@ -626,7 +635,8 @@ rb_shell_player_update_play_button (RBShellPlayer *player)
 		pstate = PLAY_BUTTON_PLAY;
 		break;
 	case MONKEY_MEDIA_MIXER_STATE_PLAYING:
-		if (player->priv->player == player->priv->selected_player)
+		if (player->priv->player == player->priv->selected_player
+		    && rb_view_player_can_pause (RB_VIEW_PLAYER (player->priv->selected_player)))
 			pstate = PLAY_BUTTON_PAUSE;
 		else
 			pstate = PLAY_BUTTON_STOP;
@@ -787,3 +797,13 @@ static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
 	}
 }
 #endif
+
+/* static void */
+/* rb_shell_handle_mixer_error (MonkeyMediaMixer *mixer, */
+/* 			     GError *error, */
+/* 			     gpointer user_data) */
+/* { */
+/* 	fprintf (stderr, "%s\n", error->message); */
+/* 	rb_error_dialog ("%s", error->message); */
+/* } */
+
