@@ -1025,10 +1025,13 @@ rhythmdb_entry_get_string (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 { 
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	GValue gval = {0, };
+	char *ret;
 	db_enter (db, FALSE);
 	g_value_init (&gval, G_TYPE_STRING);
 	klass->impl_entry_get (db, entry, propid, &gval);
-	return g_value_dup_string (&gval);
+	ret = g_value_dup_string (&gval);
+	g_value_unset (&gval);
+	return ret;
 }
 
 #define DEFINE_GETTER(NAME, TYPE, GTYPE, DEFAULT)	\
