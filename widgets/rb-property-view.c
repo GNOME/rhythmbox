@@ -335,9 +335,26 @@ rb_property_view_handle_entry_addition	(RBPropertyView *view,
 }
 
 void
-rb_property_view_handle_entry_deletion (RBPropertyView *view)
+rb_property_view_handle_entry_deletion (RBPropertyView *view,
+					RhythmDBEntry *entry)
 {
-	rb_debug ("entry deleted");
+	GtkTreeIter iter;
+	g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+					 G_CALLBACK (rb_property_view_selection_changed_cb),
+					 view);
+	rhythmdb_property_model_entry_to_iter (view->priv->prop_model, entry, &iter);
+	rhythmdb_property_model_delete_iter (view->priv->prop_model, &iter);
+	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+					   G_CALLBACK (rb_property_view_selection_changed_cb),
+					   view);
+
+	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
+		GtkTreeIter first_iter;
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model),
+					       &first_iter);
+		gtk_tree_selection_select_iter (view->priv->selection, &first_iter);
+		
+	}
 }
 
 guint

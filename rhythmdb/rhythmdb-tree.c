@@ -1188,11 +1188,11 @@ rhythmdb_tree_entry_get (RhythmDB *adb, RhythmDBEntry *aentry,
 
 	sanity_check_database (db);
 
-	if (entry->deleted) {
+	if (G_UNLIKELY (entry->deleted)) {
 		g_value_copy (RHYTHMDB_TREE_ENTRY_VALUE (entry, propid), value);
 		return;
 	}
-	
+
 	/* Handle special properties */
 	switch (propid)
 	{
@@ -1254,13 +1254,26 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
 
 	sanity_check_database (db);
 
+	if (entry->deleted)
+		return;
+
 	entry->deleted = TRUE;
 
 #ifndef G_DISABLE_ASSERT
 	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
 	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
 #endif
-
+	
+	/* We store these properties back in the entry temporarily so that later
+	   callbacks can retreive the value even though the entry is removed from
+	   the indexed tree.
+	*/
+	g_value_set_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_GENRE),
+			    get_entry_genre_name (entry));
+	g_value_set_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_ARTIST),
+			    get_entry_artist_name (entry));
+	g_value_set_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_ALBUM),
+			    get_entry_album_name (entry));
 	remove_entry_from_album (db, entry); 
 	
 	g_hash_table_remove (db->priv->entries, uri);
