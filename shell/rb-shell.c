@@ -707,7 +707,7 @@ rb_shell_construct (RBShell *shell)
 		}
 	}
 
-	if (!rhythmdb_exists) {
+	if (!rhythmdb_exists && eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		rb_debug ("loading legacy library db");
 		g_signal_connect_object (G_OBJECT (shell->priv->db), "legacy-load-complete",
 					 G_CALLBACK (rb_shell_legacy_load_complete_cb), shell,
@@ -909,7 +909,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
 	/* Stop here if this is the first time. */
-	if (!eel_gconf_get_boolean(CONF_FIRST_TIME)) {
+	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		RBDruid *druid = rb_druid_new (shell->priv->db);
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 		rb_druid_show (druid);
