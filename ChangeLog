@@ -1,3 +1,62 @@
+2003-01-11  Jorn Baayen  <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* configure.in:
+	* shell/Makefile.am:
+	* shell/rb-player.c: (xine_error_cb), (rb_player_init),
+	(rb_player_finalize), (update_buttons), (rb_next), (rb_previous),
+	(rb_play), (rb_pause), (insert_song), (delete_song), (set_playing),
+	(rb_player_queue_song), (rb_player_set_state),
+	(rb_player_get_state), (eos_cb), (node_activated_cb),
+	(do_real_seek), (sync_time), (check_view_state):
+	* shell/rb-player.h:
+	* xine-output/Makefile.am:
+	* xine-output/gtk-xine.c: (gtk_xine_get_type),
+	(gtk_xine_class_init), (gtk_xine_instance_init),
+	(gtk_xine_finalize), (dest_size_cb), (frame_output_cb),
+	(load_video_out_driver), (load_audio_out_driver),
+	(video_window_translate_point), (generate_mouse_event),
+	(xine_thread), (configure_cb), (gtk_xine_realize),
+	(gtk_xine_idle_signal), (xine_event), (xine_error),
+	(gtk_xine_unrealize), (gtk_xine_new), (gtk_xine_check),
+	(gtk_xine_expose), (gtk_xine_size_allocate), (get_fourcc_string),
+	(gtk_xine_open), (gtk_xine_play), (gtk_xine_stop),
+	(gtk_xine_close), (gtk_xine_set_property), (gtk_xine_get_property),
+	(gtk_xine_set_speed), (gtk_xine_get_speed),
+	(gtk_xine_get_position), (gtk_xine_set_audio_channel),
+	(gtk_xine_get_audio_channel), (gtk_xine_set_fullscreen),
+	(gtk_xine_is_fullscreen), (gtk_xine_can_set_volume),
+	(gtk_xine_set_volume), (gtk_xine_get_volume),
+	(gtk_xine_set_show_cursor), (gtk_xine_get_show_cursor),
+	(gtk_xine_get_current_time), (gtk_xine_get_stream_length),
+	(gtk_xine_is_playing), (gtk_xine_is_seekable),
+	(gtk_xine_toggle_aspect_ratio), (gtk_xine_ratio_fits_screen),
+	(gtk_xine_set_scale_ratio):
+	* xine-output/gtk-xine.h:
+	* xine-output/gtkxine-marshal.list:
+	* xine-output/input_gnomevfs.c: (gnomevfs_plugin_get_capabilities),
+	(gnomevfs_plugin_read), (pool_release_buffer),
+	(gnomevfs_plugin_read_block), (gnomevfs_plugin_seek),
+	(gnomevfs_plugin_get_current_pos), (gnomevfs_plugin_get_length),
+	(gnomevfs_plugin_get_blocksize), (gnomevfs_klass_eject_media),
+	(gnomevfs_plugin_get_mrl), (gnomevfs_klass_get_description),
+	(gnomevfs_klass_get_identifier),
+	(gnomevfs_plugin_get_optional_data), (gnomevfs_plugin_dispose),
+	(gnomevfs_klass_dispose), (gnomevfs_klass_open),
+	(init_input_class):
+	* xine-output/scrsaver.c: (fake_event), (scrsaver_init),
+	(scrsaver_disable), (scrsaver_enable):
+	* xine-output/scrsaver.h:
+	* xine-output/video-utils.c: (wmspec_change_state),
+	(old_wmspec_set_fullscreen), (window_set_fullscreen),
+	(eel_gdk_window_set_invisible_cursor):
+	* xine-output/video-utils.h:
+
+	Optional xine support, build with --disable-gstreamer.
+	
+	GST build is broken atm (just makefile stuff), need an auto* guru to
+	fix it up for me ;)
+
 2003-01-07  Xan Lopez  <xan@dimensis.com>
 
 	* shell/rb-player.c: (rb_player_init):

@@ -19,7 +19,6 @@
  */
 
 #include <gtk/gtkhbox.h>
-#include <monkey-media.h>
 
 #include "rb.h"
 #include "rb-node.h"
@@ -50,29 +49,36 @@ typedef struct
 	GtkHBoxClass parent_class;
 } RBPlayerClass;
 
-GType                 rb_player_get_type      (void);
+typedef enum
+{
+	RB_PLAYER_PLAYING,
+	RB_PLAYER_PAUSED,
+	RB_PLAYER_STOPPED
+} RBPlayerState;
 
-RBPlayer             *rb_player_new           (RB *rb);
+GType         rb_player_get_type      (void);
 
-void                  rb_player_queue_song    (RBPlayer *player,
-			                       RBNode *song,
-			                       gboolean start_playing);
+RBPlayer     *rb_player_new           (RB *rb);
 
-RBNode               *rb_player_get_song      (RBPlayer *player);
+void          rb_player_queue_song    (RBPlayer *player,
+			               RBNode *song,
+			               gboolean start_playing);
 
-void                  rb_player_set_state     (RBPlayer *player,
-			                       MonkeyMediaMixerState state);
+RBNode       *rb_player_get_song      (RBPlayer *player);
 
-MonkeyMediaMixerState rb_player_get_state     (RBPlayer *player);
+void          rb_player_set_state     (RBPlayer *player,
+			               RBPlayerState state);
 
-void                  rb_player_load_playlist (RBPlayer *player,
-			                       const char *uri,
-			                       GError **error);
+RBPlayerState rb_player_get_state     (RBPlayer *player);
 
-void                  rb_player_save_playlist (RBPlayer *player,
-			                       const char *uri,
-					       const char *name,
-			                       GError **error);
+void          rb_player_load_playlist (RBPlayer *player,
+			               const char *uri,
+			               GError **error);
+
+void          rb_player_save_playlist (RBPlayer *player,
+			               const char *uri,
+				       const char *name,
+			               GError **error);
 
 G_END_DECLS
 

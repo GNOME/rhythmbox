@@ -20,6 +20,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/views/libviews.la	        \
 	$(top_builddir)/library/librblibrary.la	        \
+	$(top_builddir)/xine-output/librbxine-output.la \
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -34,7 +35,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib/toolbar                    	\
 	-I$(top_srcdir)/views                    	\
 	-I$(top_srcdir)/library                    	\
-	-I$(top_srcdir)/iradio                    	\
+	-I$(top_srcdir)/xine-output			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
