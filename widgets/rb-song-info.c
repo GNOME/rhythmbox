@@ -1155,7 +1155,9 @@ rb_song_info_update_encoding (RBSongInfo *song_info)
 			g_string_append (string, _(" (Stereo)"));
 			break;
 		default:
-			g_string_append_printf (string, _(" (%d channels)"), channels);
+			g_string_append_printf (string,
+						ngettext (" (%d channel)", " (%d channel)", channels),
+						channels);
 			break;
 		}
 	}
