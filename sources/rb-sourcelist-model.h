@@ -49,7 +49,7 @@ typedef struct RBSourceListModelClass
 {
 	GtkListStoreClass parent_class;
 
-	void (*drop_received) (RBSourceListModel *model, RBSource *target, GtkSelectionData *data);
+	void (*drop_received) (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos, GtkSelectionData *data);
 
 } RBSourceListModelClass;
 

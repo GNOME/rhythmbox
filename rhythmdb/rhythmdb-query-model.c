@@ -76,9 +76,11 @@ static gboolean rhythmdb_query_model_row_draggable (RbTreeDragSource *dragsource
 							  GList *paths);
 static gboolean rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 							 GtkTreePath *dest,
+							 GtkTreeViewDropPosition pos,
 							 GtkSelectionData  *selection_data);
 static gboolean rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 							GtkTreePath *dest,
+							GtkTreeViewDropPosition pos,
 							GtkSelectionData  *selection_data);
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model);
@@ -1005,6 +1007,7 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 static gboolean
 rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 					 GtkTreePath *dest,
+					 GtkTreeViewDropPosition pos,
 					 GtkSelectionData  *selection_data)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
@@ -1024,11 +1027,13 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 
 		strv = g_strsplit (selection_data->data, "\r\n", -1);
 
-		if (rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
-			ptr = iter.user_data;
-		else
+		if (dest == NULL || !rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
 			ptr = g_sequence_get_end_ptr (model->priv->entries);
+		else
+			ptr = iter.user_data;
 
+		if (pos == GTK_TREE_VIEW_DROP_AFTER)
+			ptr = g_sequence_ptr_next (ptr);
 
 		for (; strv[i]; i++) {
 			GSequencePtr tem_ptr;
@@ -1102,6 +1107,7 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 static gboolean
 rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 					GtkTreePath *dest,
+					GtkTreeViewDropPosition pos,
 					GtkSelectionData  *selection_data)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);

@@ -34,6 +34,7 @@
 #include "rb-marshal.h"
 #include "rb-tree-view-column.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-tree-dnd.h"
 
 struct RBSourceListPriv
 {
@@ -58,9 +59,9 @@ static void rb_sourcelist_init (RBSourceList *sourcelist);
 static void rb_sourcelist_finalize (GObject *object);
 static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
-static void drop_received_cb (RBSourceListModel *model, RBSource *target,
+static void drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
 			      GtkSelectionData *data, RBSourceList *sourcelist);
-static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path, 
+static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
 			      GtkTreeViewColumn *column, RBSourceList *sourcelist);
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
@@ -290,7 +291,7 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 			gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (sourcelist->priv->treeview),
 							  path, col, sourcelist->priv->title_renderer,
 							  TRUE);
-			
+
 			gtk_tree_path_free (path);
 			return;
 		}
@@ -362,23 +363,24 @@ rb_sourcelist_set_dnd_targets (RBSourceList *sourcelist,
 {
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 
-	gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					      targets, n_targets,
-					      GDK_ACTION_LINK);
+	rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (sourcelist->priv->treeview),
+					   RB_TREE_DEST_EMPTY_VIEW_DROP,
+					   targets, n_targets,
+					   GDK_ACTION_LINK);
 }
-	
+
 static void
-drop_received_cb (RBSourceListModel *model, RBSource *target,
+drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
 		  GtkSelectionData *data, RBSourceList *sourcelist)
 {
 	rb_debug ("drop recieved");
 	/* Proxy the signal. */
-	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);	
+	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);
 }
 
 static void
 row_activated_cb (GtkTreeView *treeview,
-		  GtkTreePath *path, 
+		  GtkTreePath *path,
 		  GtkTreeViewColumn *column,
 		  RBSourceList *sourcelist)
 {
@@ -404,7 +406,7 @@ button_press_cb (GtkTreeView *treeview,
 
 	if (event->button != 3)
 		return FALSE;
-	
+
 	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
 					      NULL, &iter))
 		return FALSE;
@@ -480,6 +482,7 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	gtk_tree_model_get (sourcelist->priv->model,
 			    &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 	g_object_set (G_OBJECT (source), "name", text, NULL);
-	
+
 	gtk_tree_path_free (path);
 }
+

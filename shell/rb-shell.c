@@ -1936,10 +1936,15 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 			     GtkSelectionData *data,
 			     RBShell *shell)
 {
+	if (source == NULL) 
+		source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
+							   FALSE);
+	
 	if (source != NULL) {
 		rb_source_receive_drag (source, data);
 		return;
-	}
+	} 
+
 
 /* 	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) { */
 /* 		long id; */

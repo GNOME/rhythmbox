@@ -76,10 +76,12 @@ struct _RbTreeDragDestIface {
 
 	gboolean (* drag_data_received) (RbTreeDragDest   *drag_dest,
 					 GtkTreePath       *dest,
+					 GtkTreeViewDropPosition pos,
 					 GtkSelectionData  *selection_data);
 
 	gboolean (* row_drop_possible)  (RbTreeDragDest   *drag_dest,
 					 GtkTreePath       *dest_path,
+					 GtkTreeViewDropPosition pos,
 					 GtkSelectionData  *selection_data);
 
 	gboolean (* row_drop_position) (RbTreeDragDest   *drag_dest,
@@ -114,10 +116,12 @@ GType    rb_tree_drag_dest_get_type         (void) G_GNUC_CONST;
 
 gboolean rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
 					       GtkTreePath       *dest,
+					       GtkTreeViewDropPosition pos,
 					       GtkSelectionData  *selection_data);
 
 gboolean rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
 					      GtkTreePath       *dest_path,
+					      GtkTreeViewDropPosition pos,
 					      GtkSelectionData  *selection_data);
 
 gboolean rb_tree_drag_dest_row_drop_position (RbTreeDragDest   *drag_dest,

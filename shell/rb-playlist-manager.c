@@ -611,7 +611,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 	g_free (file);
 }
 
-static RBSource *
+RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr, gboolean automatic)
 {
 	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
