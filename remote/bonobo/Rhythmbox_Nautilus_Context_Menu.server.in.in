@@ -1,0 +1,27 @@
+<oaf_info>
+
+<oaf_server iid="OAFIID:Rhythmbox_Nautilus_Context_Menu_Item"
+	type="shlib" location="@BONOBODIR@/librb-nautilus-context-menu.so">
+	<oaf_attribute name="repo_ids" type="stringv">
+		<item value="IDL:Bonobo/Unknown:1.0"/>
+		<item value="IDL:Bonobo/Listener:1.0"/>
+	</oaf_attribute>
+	<oaf_attribute name="name" stype="string" _value="Rhythmbox Nautilus Context Menu Item"/>
+	<oaf_attribute name="description" type="string" _value="Nautilus context menu extension for Rhythmbox"/>
+        <oaf_attribute name="bonobo:supported_uri_schemes" type="stringv">
+                <item value="file"/>
+        </oaf_attribute>
+	<oaf_attribute name="bonobo:supported_mime_types" type="stringv">
+		<item value="x-directory/normal"/>
+		<item value="audio/*"/>
+		<item value="application/x-ogg"/>
+		<item value="application/ogg"/>
+	</oaf_attribute>
+	<oaf_attribute name="nautilus:context_menu_handler" type="boolean" value="true"/>
+	<oaf_attribute name="nautilus:can_handle_multiple_files" type="boolean" value="true"/>
+	<oaf_attribute name="nautilusverb:AddToLibrary" type="string" _value="Add to Music Library"/>
+
+	<oaf_attribute name="nautilus:icon" type="string" value="rhythmbox"/>
+</oaf_server>
+
+</oaf_info>
