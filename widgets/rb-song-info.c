@@ -202,7 +202,7 @@ static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	GladeXML *xml;
-	GtkWidget *close, *cont;
+	GtkWidget *close;
 	
 	/* create the dialog and some buttons backward - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
@@ -263,20 +263,10 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->genre         = glade_xml_get_widget (xml, "song_info_genre");
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
-	cont = glade_xml_get_widget (xml, "song_info_location_container");
-	song_info->priv->location = rb_ellipsizing_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (song_info->priv->location), 0.0, 0.5);
-	gtk_label_set_selectable (GTK_LABEL (song_info->priv->location), TRUE);
-	gtk_container_add (GTK_CONTAINER (cont), song_info->priv->location);
-	gtk_widget_show (song_info->priv->location);
+	song_info->priv->location = glade_xml_get_widget (xml, "song_info_location");
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
-	cont = glade_xml_get_widget (xml, "song_info_name_container");
-	song_info->priv->name = rb_ellipsizing_label_new ("");
-	gtk_misc_set_alignment (GTK_MISC (song_info->priv->name), 0.0, 0.5);
-	gtk_label_set_selectable (GTK_LABEL (song_info->priv->name), TRUE);
-	gtk_container_add (GTK_CONTAINER (cont), song_info->priv->name);
-	gtk_widget_show (song_info->priv->name);
+	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
 
 	/* We add now the Pango attributes (look at bug #99867 and #97061) */
 	{
@@ -578,7 +568,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	if (num > 0)
 		tmp = g_strdup_printf ("%.2d", num);
 	else
-		tmp = g_strdup ("");
+		tmp = g_strdup (_("Never"));
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur),
 			    tmp);
 	g_free (tmp);
@@ -588,7 +578,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	if (num > 0)
 		tmp = g_strdup_printf ("%d", num);
 	else
-		tmp = g_strdup ("");
+		tmp = g_strdup (_("Unknown"));
 	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate),
 			    tmp);
 	g_free (tmp);
@@ -653,8 +643,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		g_free (basename);
 
 		if (tmp != NULL) {
-			rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (song_info->priv->name), RB_ELLIPSIZE_END);
-			rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->name), tmp);
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), tmp);
 		}
 
 		g_free (tmp);
@@ -675,8 +664,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		}
 		g_free (desktopdir);
 		
-		rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (song_info->priv->location), RB_ELLIPSIZE_END);
-		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->location), tmp);
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), tmp);
 		g_free (tmp);
 	}
 }
@@ -785,15 +773,15 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 
 	if (multiselect && editable) 
 		gtk_notebook_remove_page (GTK_NOTEBOOK (song_info->priv->notebook), 1);
-	gtk_widget_set_sensitive (song_info->priv->title, !multiselect);
+	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->title), editable);
 	gtk_widget_set_sensitive (song_info->priv->title_label, !multiselect);
-	gtk_widget_set_sensitive (song_info->priv->artist, editable);
+	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->artist), editable);
 	gtk_widget_set_sensitive (song_info->priv->artist_label, editable);
-	gtk_widget_set_sensitive (song_info->priv->album, editable);
+	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->album), editable);
 	gtk_widget_set_sensitive (song_info->priv->album_label, editable);
-	gtk_widget_set_sensitive (song_info->priv->genre, editable);
+	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->genre), editable);
 	gtk_widget_set_sensitive (song_info->priv->genre_label, editable);
-	gtk_widget_set_sensitive (song_info->priv->track_cur, !multiselect);
+	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->track_cur), !multiselect);
 	gtk_widget_set_sensitive (song_info->priv->track_cur_label, !multiselect);
 
 	song_info->priv->editable = editable;
@@ -818,6 +806,8 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 	str = rhythmdb_entry_get_string (song_info->priv->db,
 					 song_info->priv->current_entry,
 					 RHYTHMDB_PROP_LAST_PLAYED_STR);
+	if (!strcmp ("", str))
+		str = _("Never");
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), str);
 }
 

@@ -57,9 +57,9 @@ const RBQueryCreatorPropertyOption property_options[] =
 
 const RBQueryCreatorCriteriaOption criteria_options[] =
 {
-	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
 	{ N_("contains"), 0, RHYTHMDB_QUERY_PROP_LIKE },
 	{ N_("does not contain"), 0, RHYTHMDB_QUERY_PROP_NOT_LIKE },
+	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
 };
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
@@ -475,7 +475,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 		RhythmDBQueryType criteria = criteria_option->val;
 		RhythmDBPropType prop = criteria_option->strict ? prop_option->strict_val : prop_option->fuzzy_val;
 		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
-		char *folded_data = criteria_option->strict ? g_strdup (folded_data) : g_utf8_casefold (data, -1);
+		char *folded_data = criteria_option->strict ? g_strdup (data) : g_utf8_casefold (data, -1);
 
 		if (disjunction && row->next)
 			rhythmdb_query_append (dlg->priv->db,
