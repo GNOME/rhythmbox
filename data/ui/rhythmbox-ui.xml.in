@@ -98,6 +98,7 @@
 <submenu name="File" _label="_File">
         
         <menuitem name="NewGroup" verb="NewGroup" _label="_New Group"/>
+
         <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..."/>
 
 	<separator/>
@@ -133,11 +134,13 @@
 	<separator/>
 	
 	<menuitem name="Next" _label="_Next Song" verb="Next"/>
+
 	<menuitem name="Previous" _label="P_revious Song" verb="Previous"/>
 
 	<separator/>
 	
 	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle"/>
+	
 	<menuitem name="Repeat" _label="_Repeat" verb="Repeat"/>
 
 </submenu>
@@ -155,7 +158,9 @@
 <dockitem name="Toolbar" behavior="exclusive" config="0">
 
 	<toolitem name="Prevous" _label="Previous" verb="Previous"/>
+
 	<toolitem name="Play" _label="Play" verb="Play"/>
+
 	<toolitem name="Next" _label="Next" verb="Next"/>
 
 	<separator/>

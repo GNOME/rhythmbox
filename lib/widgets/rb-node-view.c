@@ -18,11 +18,11 @@
  *  $Id$
  *
  *  FIXME "Add/Remove columns" dialog
- *  FIXME popup menu with "Delete song", "Get info", "Play", and make delete key work
  */
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreemodelsort.h>
+#include <gdk/gdkkeysyms.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
@@ -85,6 +85,9 @@ static gboolean rb_node_view_status_foreach_cb (GtkTreeModel *model,
 				                GtkTreePath *path,
 				                GtkTreeIter *iter,
 				                StatusInfo *info);
+static gboolean rb_node_view_key_press_event_cb (GtkWidget *widget,
+				                 GdkEventKey *event,
+				                 RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -108,6 +111,7 @@ enum
 {
 	NODE_SELECTED,
 	NODE_ACTIVATED,
+	NODE_DELETED,
 	HAVE_SELECTION,
 	CHANGED,
 	LAST_SIGNAL
@@ -210,6 +214,16 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, node_selected),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1,
+			      RB_TYPE_NODE);
+	rb_node_view_signals[NODE_DELETED] =
+		g_signal_new ("node_deleted",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeViewClass, node_deleted),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
@@ -396,6 +410,10 @@ rb_node_view_construct (RBNodeView *view)
 			  "row_activated",
 			  G_CALLBACK (rb_node_view_row_activated_cb),
 			  view);
+	g_signal_connect (G_OBJECT (view->priv->treeview),
+			  "key_press_event",
+			  G_CALLBACK (rb_node_view_key_press_event_cb),
+			  view);
 	view->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
 	g_signal_connect (G_OBJECT (view->priv->selection),
 			  "changed",
@@ -498,22 +516,26 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
 							     "text", column,
 							     NULL);
+			gtk_tree_view_column_set_resizable (gcolumn, resizable);
 		}
 		else
 		{
+			int width;
+			
 			renderer = gtk_cell_renderer_pixbuf_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
 							     "pixbuf", column,
 							     NULL);
-			gtk_tree_view_column_set_fixed_width (gcolumn, GTK_ICON_SIZE_MENU);
+			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
+			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
+			gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
 		}
 		if (title != NULL)
 		{
 			gtk_tree_view_column_set_title (gcolumn, _(title));
 			g_free (title);
 		}
-		gtk_tree_view_column_set_resizable (gcolumn, resizable);
 		gtk_tree_view_column_set_reorderable (gcolumn, reorderable);
 		if (sort_order != NULL)
 			gtk_tree_view_column_set_sort_column_id (gcolumn, column);
@@ -896,6 +918,76 @@ rb_node_view_status_foreach_cb (GtkTreeModel *model,
 	info->n_songs++;
 	info->n_seconds += (long) rb_node_get_int_property (node, "duration");
 	info->n_bytes += (GnomeVFSFileSize) rb_node_get_int_property (node, "filesize");
+
+	return FALSE;
+}
+
+void
+rb_node_view_select_all (RBNodeView *view)
+{
+	gtk_tree_selection_select_all (view->priv->selection);
+}
+
+void
+rb_node_view_select_none (RBNodeView *view)
+{
+	gtk_tree_selection_unselect_all (view->priv->selection);
+}
+
+void
+rb_node_view_scroll_to_node (RBNodeView *view,
+			     RBNode *node)
+{
+	GtkTreeIter iter, iter2;
+	GValue val = { 0, };
+	gboolean visible;
+	GtkTreePath *path;
+
+	if (node == NULL)
+		return;
+	
+	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
+					   node, &iter);
+	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
+				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
+	visible = g_value_get_boolean (&val);
+	g_value_unset (&val);
+
+	if (visible == FALSE)
+		return;
+
+	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter2, &iter);
+	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter, &iter2);
+
+	path = gtk_tree_model_get_path (view->priv->sortmodel, &iter);
+
+	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
+				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
+				      FALSE, 0.0, 0.0);
+
+	gtk_tree_path_free (path);
+}
+
+static gboolean
+rb_node_view_key_press_event_cb (GtkWidget *widget,
+				 GdkEventKey *event,
+				 RBNodeView *view)
+{
+	GList *sel, *l;
+	
+	if (event->keyval != GDK_Delete)
+		return TRUE;
+
+	sel = rb_node_view_get_selection (view);
+	for (l = sel; l != NULL; l = g_list_next (l))
+	{
+		RBNode *node = l->data;
+
+		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
+	}
+	g_list_free (sel);
 
 	return FALSE;
 }

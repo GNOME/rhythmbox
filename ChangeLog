@@ -1,5 +1,51 @@
 2002-06-14  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/rhythmbox.schemas:
+	* data/ui/Makefile.am:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* data/ui/rhythmbox-test-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/rb-bonobo-helpers.c: (rb_bonobo_get_sensitive),
+	(rb_bonobo_get_active), (rb_bonobo_add_listener_list_with_data):
+	* lib/rb-bonobo-helpers.h:
+	* lib/view/rb-view.c: (rb_view_class_init), (rb_view_init),
+	(rb_view_finalize), (rb_view_set_property), (rb_view_get_property),
+	(rb_view_merge_ui), (rb_view_unmerge_ui),
+	(rb_view_get_sidebar_button), (rb_view_set_sensitive),
+	(rb_view_set_active), (rb_view_get_active),
+	(set_sensitive_foreach_func), (set_active_foreach_func),
+	(get_sensitive_foreach_func), (get_active_foreach_func):
+	* lib/view/rb-view.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_construct), (rb_node_view_status_foreach_cb),
+	(rb_node_view_select_all), (rb_node_view_select_none),
+	(rb_node_view_scroll_to_node), (rb_node_view_key_press_event_cb):
+	* lib/widgets/rb-node-view.h:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_finalize), (rb_shell_preferences_sync),
+	(music_base_folder_entry_changed_cb),
+	(include_audiocd_check_toggled_cb), (folders_sync_to_gconf):
+	* shell/rb-shell.c: (rb_shell_init), (rb_shell_finalize),
+	(rb_shell_construct), (rb_shell_window_load_state),
+	(rb_shell_window_save_state), (rb_shell_append_view),
+	(rb_shell_shuffle_changed_cb), (rb_shell_repeat_changed_cb):
+	* views/rb-library-view.c: (rb_library_view_finalize),
+	(rb_library_view_set_property), (rb_library_view_new),
+	(rb_library_view_set_playing_node), (paned_size_allocate_cb),
+	(rb_library_view_cmd_select_all),
+	(rb_library_view_cmd_select_none),
+	(rb_library_view_cmd_current_song),
+	(rb_library_view_show_browser_changed_cb),
+	(rb_library_view_show_browser):
+
+	Save shuffle/repeat state, add "Select All/None" and "Go to playing node"
+	menuitems in the library view, support for showing and hiding the browser
+	in the library, added explanastions to the schemas, use eel-gconf everywhere,
+	fix repeat.
+
+2002-06-14  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/music-folders.glade:
 	* data/rhythmbox.schemas:
 	* lib/Makefile.am:

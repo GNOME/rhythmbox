@@ -24,7 +24,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <libgnome/gnome-i18n.h>
-#include <gconf/gconf-client.h>
+#include <bonobo/bonobo-ui-component.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
@@ -36,6 +36,8 @@
 #include "rb-player.h"
 #include "rb-dialog.h"
 #include "rb-library-view.h"
+#include "rb-bonobo-helpers.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
 static void rb_library_view_init (RBLibraryView *view);
@@ -96,18 +98,38 @@ static void rb_library_view_paste (RBViewClipboard *clipboard,
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibraryView *view);
+static void rb_library_view_cmd_select_all (BonoboUIComponent *component,
+				            RBLibraryView *view,
+				            const char *verbname);
+static void rb_library_view_cmd_select_none (BonoboUIComponent *component,
+				             RBLibraryView *view,
+				             const char *verbname);
+static void rb_library_view_cmd_current_song (BonoboUIComponent *component,
+				              RBLibraryView *view,
+				              const char *verbname);
+static void rb_library_view_show_browser_changed_cb (BonoboUIComponent *component,
+					             const char *path,
+					             Bonobo_UIComponent_EventType type,
+					             const char *state,
+					             RBLibraryView *view);
+static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
+
+#define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
+#define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 
 #define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
+#define CONF_STATE_SHOW_BROWSER   "/apps/rhythmbox/state/library/show_browser"
 
 struct RBLibraryViewPrivate
 {
 	Library *library;
 
+	GtkWidget *browser;
+	GtkWidget *vbox;
+
 	RBNodeView *albums;
 	RBNodeView *artists;
 	RBNodeView *songs;
-
-	GtkWidget *vbox;
 
 	MonkeyMediaAudioStream *playing_stream;
 
@@ -122,12 +144,29 @@ struct RBLibraryViewPrivate
 
 	GtkWidget *paned;
 	int paned_position;
+
+	gboolean show_browser;
+	gboolean lock;
 };
 
 enum
 {
 	PROP_0,
 	PROP_LIBRARY
+};
+
+static BonoboUIVerb rb_library_view_verbs[] = 
+{
+	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_library_view_cmd_select_all),
+	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_library_view_cmd_select_none),
+	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_library_view_cmd_current_song),
+	BONOBO_UI_VERB_END
+};
+
+static RBBonoboUIListener rb_library_view_listeners[] = 
+{
+	RB_BONOBO_UI_LISTENER ("ShowBrowser", (BonoboUIListenerFn) rb_library_view_show_browser_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
 };
 
 static GObjectClass *parent_class = NULL;
@@ -263,6 +302,8 @@ rb_library_view_finalize (GObject *object)
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
+	g_object_unref (G_OBJECT (view->priv->browser));
+
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -280,38 +321,37 @@ rb_library_view_set_property (GObject *object,
 	{
 	case PROP_LIBRARY:
 		{
-			GtkWidget *hbox;
-			GConfClient *gconf_client;
-
 			view->priv->library = g_value_get_object (value);
 
 			view->priv->paned = gtk_vpaned_new ();
 
-			hbox = gtk_hbox_new (TRUE, 5);
+			view->priv->browser = gtk_hbox_new (TRUE, 5);
+			g_object_ref (G_OBJECT (view->priv->browser));
 			view->priv->artists = rb_node_view_new (library_get_root (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"));
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
-			gtk_box_pack_start_defaults (GTK_BOX (hbox), GTK_WIDGET (view->priv->artists));
+			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
 			view->priv->albums = rb_node_view_new (library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
 					  view);
-			gtk_box_pack_start_defaults (GTK_BOX (hbox), GTK_WIDGET (view->priv->albums));
-			gtk_paned_add1 (GTK_PANED (view->priv->paned), hbox);
+			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
+			gtk_paned_add1 (GTK_PANED (view->priv->paned), view->priv->browser);
 			
+			view->priv->songs = rb_node_view_new (library_get_all_songs (view->priv->library),
+						              rb_file ("rb-node-view-songs.xml"));
+
 			/* this gets emitted when the paned thingie is moved */
-			g_signal_connect (G_OBJECT (hbox),
+			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "size_allocate",
 					  G_CALLBACK (paned_size_allocate_cb),
 					  view);
 
-			view->priv->songs = rb_node_view_new (library_get_all_songs (view->priv->library),
-						              rb_file ("rb-node-view-songs.xml"));
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "node_activated",
 					  G_CALLBACK (song_activated_cb),
@@ -324,12 +364,13 @@ rb_library_view_set_property (GObject *object,
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
 
-			gconf_client = gconf_client_get_default ();
-			view->priv->paned_position = gconf_client_get_int (gconf_client,
-									   CONF_STATE_PANED_POSITION,
-									   NULL);
-			g_object_unref (G_OBJECT (gconf_client));
+			view->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+			view->priv->show_browser = eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER);
+
 			gtk_paned_set_position (GTK_PANED (view->priv->paned), view->priv->paned_position);
+			rb_library_view_show_browser (view, view->priv->show_browser);
+			
+			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
 		}
 		break;
 	default:
@@ -364,10 +405,12 @@ rb_library_view_new (BonoboUIContainer *container,
 	RBView *view;
 
 	view = RB_VIEW (g_object_new (RB_TYPE_LIBRARY_VIEW,
-				      "ui-file", "rhythmbox-test-view.xml",
+				      "ui-file", "rhythmbox-library-view.xml",
 				      "ui-name", "LibraryView",
 				      "container", container,
 				      "library", library,
+				      "verbs", rb_library_view_verbs,
+				      "listeners", rb_library_view_listeners,
 				      NULL));
 
 	return view;
@@ -611,6 +654,8 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		view->priv->playing_stream = NULL;
 
 		view->priv->title = NULL;
+
+		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
 	}
 	else
 	{
@@ -635,6 +680,8 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 				  view);
 		
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
+		
+		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, TRUE);
 	}
 }
 
@@ -751,14 +798,71 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBLibraryView *view)
 {
-	GConfClient *gconf_client;
-	
 	view->priv->paned_position = gtk_paned_get_position (GTK_PANED (view->priv->paned));
 
-	gconf_client = gconf_client_get_default ();
-	gconf_client_set_int (gconf_client,
-			      CONF_STATE_PANED_POSITION,
-			      view->priv->paned_position,
-			      NULL);
-	g_object_unref (G_OBJECT (gconf_client));
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, view->priv->paned_position);
+}
+
+static void
+rb_library_view_cmd_select_all (BonoboUIComponent *component,
+				RBLibraryView *view,
+				const char *verbname)
+{
+	rb_node_view_select_all (view->priv->songs);
+}
+
+static void
+rb_library_view_cmd_select_none (BonoboUIComponent *component,
+				 RBLibraryView *view,
+				 const char *verbname)
+{
+	rb_node_view_select_none (view->priv->songs);
+}
+
+static void
+rb_library_view_cmd_current_song (BonoboUIComponent *component,
+				  RBLibraryView *view,
+				  const char *verbname)
+{
+	rb_node_view_scroll_to_node (view->priv->songs,
+				     rb_node_view_get_playing_node (view->priv->songs));
+}
+
+static void
+rb_library_view_show_browser_changed_cb (BonoboUIComponent *component,
+					 const char *path,
+					 Bonobo_UIComponent_EventType type,
+					 const char *state,
+					 RBLibraryView *view)
+{
+	if (view->priv->lock == TRUE)
+		return;
+
+	view->priv->show_browser = rb_view_get_active (RB_VIEW (view), CMD_PATH_SHOW_BROWSER);
+
+	eel_gconf_set_boolean (CONF_STATE_SHOW_BROWSER, view->priv->show_browser);
+
+	rb_library_view_show_browser (view, view->priv->show_browser);
+}
+
+static void
+rb_library_view_show_browser (RBLibraryView *view,
+			      gboolean show)
+{
+	view->priv->lock = TRUE;
+
+	rb_view_set_active (RB_VIEW (view), CMD_PATH_SHOW_BROWSER, show);
+
+	view->priv->lock = FALSE;
+
+	if (show == TRUE && view->priv->browser->parent != view->priv->paned)
+	{
+		gtk_container_add (GTK_CONTAINER (view->priv->paned), view->priv->browser);
+		gtk_widget_show_all (view->priv->browser);
+	}
+	else if (show == FALSE && view->priv->browser->parent == view->priv->paned)
+	{
+		gtk_widget_hide (view->priv->browser);
+		gtk_container_remove (GTK_CONTAINER (view->priv->paned), view->priv->browser);
+	}
 }

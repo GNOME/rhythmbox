@@ -27,7 +27,6 @@
 #include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
 #include <config.h>
-#include <gconf/gconf-client.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
@@ -51,6 +50,7 @@
 #include "rb-library.h"
 #include "rb-library-view.h"
 #include "rb-shell-preferences.h"
+#include "eel-gconf-extensions.h"
 /* FIXME */
 #include "testview2.h"
 /* FIXME */
@@ -81,12 +81,6 @@ static void rb_shell_set_window_title (RBShell *shell,
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
-static void rb_shell_cmd_shuffle (BonoboUIComponent *component,
-		                  RBShell *shell,
-		                  const char *verbname);
-static void rb_shell_cmd_repeat (BonoboUIComponent *component,
-		                 RBShell *shell,
-		                 const char *verbname);
 static void rb_shell_cmd_about (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
@@ -97,6 +91,16 @@ static void rb_shell_cmd_music_folders (BonoboUIComponent *component,
 		                        RBShell *shell,
 		                        const char *verbname);
 static void rb_shell_quit (RBShell *shell);
+static void rb_shell_repeat_changed_cb (BonoboUIComponent *component,
+			                const char *path,
+			                Bonobo_UIComponent_EventType type,
+			                const char *state,
+			                RBShell *shell);
+static void rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
+			                 const char *path,
+			                 Bonobo_UIComponent_EventType type,
+			                 const char *state,
+			                 RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -105,6 +109,8 @@ static void rb_shell_quit (RBShell *shell);
 #define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
+#define CONF_STATE_SHUFFLE          "/apps/rhythmbox/state/shuffle"
+#define CONF_STATE_REPEAT           "/apps/rhythmbox/state/repeat"
 
 typedef struct
 {
@@ -137,16 +143,24 @@ struct RBShellPrivate
 	RBShellWindowState *state;
 
 	GtkWidget *prefs;
+
+	gboolean shuffle;
+	gboolean repeat;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
 {
-	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_shuffle),
-	BONOBO_UI_VERB ("Repeat",       (BonoboUIVerbFn) rb_shell_cmd_repeat),
 	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
 	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
 	BONOBO_UI_VERB ("MusicFolders", (BonoboUIVerbFn) rb_shell_cmd_music_folders),
 	BONOBO_UI_VERB_END
+};
+
+static RBBonoboUIListener rb_shell_listeners[] =
+{
+	RB_BONOBO_UI_LISTENER ("Shuffle", (BonoboUIListenerFn) rb_shell_shuffle_changed_cb),
+	RB_BONOBO_UI_LISTENER ("Repeat",  (BonoboUIListenerFn) rb_shell_repeat_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
 };
 
 static GObjectClass *parent_class;
@@ -231,6 +245,8 @@ rb_shell_init (RBShell *shell)
 	g_free (file);
 	
 	shell->priv->state = g_new0 (RBShellWindowState, 1);
+
+	eel_gconf_monitor_add ("/apps/rhythmbox");
 }
 
 static void
@@ -239,6 +255,8 @@ rb_shell_finalize (GObject *object)
         RBShell *shell = RB_SHELL (object);
 
 	gtk_widget_hide (shell->priv->window);
+
+	eel_gconf_monitor_remove ("/apps/rhythmbox");
 
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
 
@@ -360,6 +378,9 @@ rb_shell_construct (RBShell *shell)
 	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
 						     rb_shell_verbs,
 						     shell);
+	rb_bonobo_add_listener_list_with_data (shell->priv->ui_component,
+					       rb_shell_listeners,
+					       shell);
 
 	/* initialize shell services */
 	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component);
@@ -413,6 +434,14 @@ rb_shell_construct (RBShell *shell)
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
 	rb_shell_window_load_state (shell);
+
+	/* restore shuffle/repeat */
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_SHUFFLE,
+			      eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_REPEAT,
+			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
 
 	gtk_widget_show (shell->priv->window);
 }
@@ -473,48 +502,29 @@ rb_shell_window_state_cb (GtkWidget *widget,
 static void
 rb_shell_window_load_state (RBShell *shell)
 {
-	GConfClient *gconf_client;
-
 	/* Restore window state. */
-	gconf_client = gconf_client_get_default ();
-	shell->priv->state->width = gconf_client_get_int (gconf_client,
-					                  CONF_STATE_WINDOW_WIDTH,
-					                  NULL);
-	shell->priv->state->height = gconf_client_get_int (gconf_client,
-					                   CONF_STATE_WINDOW_HEIGHT,
-					                   NULL);
-	shell->priv->state->maximized = gconf_client_get_bool (gconf_client,
-						               CONF_STATE_WINDOW_MAXIMIZED,
-						               NULL);
+	shell->priv->state->width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
+	shell->priv->state->height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
+	shell->priv->state->maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+
 	gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
 				     shell->priv->state->width,
 				     shell->priv->state->height);
+
 	if (shell->priv->state->maximized == TRUE)
 		gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-
-	g_object_unref (G_OBJECT (gconf_client));
 }
 
 static void
 rb_shell_window_save_state (RBShell *shell)
 {
-	GConfClient *gconf_client;
-
 	/* Save the window state. */
-	gconf_client = gconf_client_get_default ();
-	gconf_client_set_int (gconf_client,
-			      CONF_STATE_WINDOW_WIDTH,
-			      shell->priv->state->width,
-			      NULL);
-	gconf_client_set_int (gconf_client,
-			      CONF_STATE_WINDOW_HEIGHT,
-			      shell->priv->state->height,
-			      NULL);
-	gconf_client_set_bool (gconf_client,
-			       CONF_STATE_WINDOW_MAXIMIZED,
-			       shell->priv->state->maximized,
-			       NULL);
-	g_object_unref (G_OBJECT (gconf_client));
+	eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH,
+			       shell->priv->state->width);
+	eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT,
+			       shell->priv->state->height);
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
+			       shell->priv->state->maximized);
 }
 
 static gboolean
@@ -534,6 +544,9 @@ rb_shell_append_view (RBShell *shell,
 	RBSidebarButton *button;
 	
 	shell->priv->views = g_list_append (shell->priv->views, view);
+
+	rb_view_player_set_shuffle (RB_VIEW_PLAYER (view), shell->priv->shuffle);
+	rb_view_player_set_repeat (RB_VIEW_PLAYER (view), shell->priv->repeat);
 
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell->priv->notebook),
 				  GTK_WIDGET (view),
@@ -651,9 +664,11 @@ rb_shell_set_window_title (RBShell *shell,
 }
 
 static void
-rb_shell_cmd_shuffle (BonoboUIComponent *component,
-		      RBShell *shell,
-		      const char *verbname)
+rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
+			     const char *path,
+			     Bonobo_UIComponent_EventType type,
+			     const char *state,
+			     RBShell *shell)
 {
 	gboolean shuffle = rb_bonobo_get_active (component, CMD_PATH_SHUFFLE);
 	GList *l;
@@ -664,12 +679,17 @@ rb_shell_cmd_shuffle (BonoboUIComponent *component,
 
 		rb_view_player_set_shuffle (player, shuffle);
 	}
+	
+	shell->priv->shuffle = shuffle;
+	eel_gconf_set_boolean (CONF_STATE_SHUFFLE, shuffle);
 }
 
 static void
-rb_shell_cmd_repeat (BonoboUIComponent *component,
-		     RBShell *shell,
-		     const char *verbname)
+rb_shell_repeat_changed_cb (BonoboUIComponent *component,
+			    const char *path,
+			    Bonobo_UIComponent_EventType type,
+			    const char *state,
+			    RBShell *shell)
 {
 	gboolean repeat = rb_bonobo_get_active (component, CMD_PATH_REPEAT);
 	GList *l;
@@ -680,6 +700,9 @@ rb_shell_cmd_repeat (BonoboUIComponent *component,
 
 		rb_view_player_set_repeat (player, repeat);
 	}
+
+	shell->priv->repeat = repeat;
+	eel_gconf_set_boolean (CONF_STATE_REPEAT, repeat);
 }
 
 static void

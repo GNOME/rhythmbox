@@ -22,6 +22,7 @@
 #define __RB_VIEW_H
 
 #include <gtk/gtkframe.h>
+#include <bonobo/bonobo-ui-component.h>
 
 #include "rb-sidebar-button.h"
 
@@ -48,12 +49,22 @@ typedef struct
 	GtkFrameClass parent;
 } RBViewClass;
 
-GType            rb_view_get_type           (void);
+GType              rb_view_get_type           (void);
 
-void             rb_view_merge_ui           (RBView *view);
-void             rb_view_unmerge_ui         (RBView *view);
+void               rb_view_merge_ui           (RBView *view);
+void               rb_view_unmerge_ui         (RBView *view);
 
-RBSidebarButton *rb_view_get_sidebar_button (RBView *view);
+RBSidebarButton   *rb_view_get_sidebar_button (RBView *view);
+
+void               rb_view_set_sensitive      (RBView *view,
+					       const char *path,
+					       gboolean sensitive);
+
+void               rb_view_set_active         (RBView *view,
+					       const char *path,
+					       gboolean active);
+gboolean           rb_view_get_active         (RBView *view,
+					       const char *path);
 
 G_END_DECLS
 

@@ -18,7 +18,9 @@ librb_la_SOURCES =					\
 	rb-node.c					\
 	rb-node.h					\
 	rb-node-search.c				\
-	rb-node-search.h
+	rb-node-search.h				\
+	eel-gconf-extensions.c				\
+	eel-gconf-extensions.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

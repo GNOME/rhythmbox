@@ -63,6 +63,21 @@ rb_bonobo_set_sensitive (BonoboUIComponent *component,
 				      sensitive ? "1" : "0", NULL);
 }
 
+gboolean
+rb_bonobo_get_sensitive (BonoboUIComponent *component,
+			 const char *path)
+{
+	gboolean ret = FALSE;
+	char *prop;
+
+	prop = bonobo_ui_component_get_prop (component, path, "sensitive", NULL);
+	if (prop != NULL)
+		ret = atoi (prop);
+	g_free (prop);
+
+	return ret;
+}
+
 void
 rb_bonobo_set_active (BonoboUIComponent *component,
 		      const char *path,
@@ -85,4 +100,27 @@ rb_bonobo_get_active (BonoboUIComponent *component,
 	g_free (prop);
 
 	return ret;
+}
+
+void
+rb_bonobo_add_listener_list_with_data (BonoboUIComponent *component,
+				       const RBBonoboUIListener *list,
+				       gpointer user_data)
+{
+	const RBBonoboUIListener *l;
+
+	g_return_if_fail (list != NULL);
+	g_return_if_fail (BONOBO_IS_UI_COMPONENT (component));
+
+	bonobo_object_ref (BONOBO_OBJECT (component));
+
+	for (l = list; l != NULL && l->cname != NULL; l++)
+	{
+		bonobo_ui_component_add_listener (component,
+						  l->cname,
+						  l->cb,
+						  user_data);
+	}
+	
+	bonobo_object_unref (BONOBO_OBJECT (component));
 }

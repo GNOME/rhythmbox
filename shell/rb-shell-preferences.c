@@ -30,7 +30,6 @@
 #include <gtk/gtktogglebutton.h>
 #include <gdk/gdkkeysyms.h>
 #include <glade/glade.h>
-#include <gconf/gconf-client.h>
 #include <string.h>
 
 #include "rb-file-helpers.h"
@@ -38,6 +37,7 @@
 #include "rb-library-preferences.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_shell_preferences_class_init (RBShellPreferencesClass *klass);
 static void rb_shell_preferences_init (RBShellPreferences *shell_preferences);
@@ -87,8 +87,6 @@ struct RBShellPreferencesPrivate
 
 	GtkWidget *include_cd_check;
 	
-	GConfClient *gconf_client;
-
 	gboolean lock;
 };
 
@@ -140,15 +138,9 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
-	shell_preferences->priv->gconf_client = gconf_client_get_default ();
-	gconf_client_add_dir (shell_preferences->priv->gconf_client,
-			      CONF_LIBRARY_DIR,
-			      GCONF_CLIENT_PRELOAD_NONE,
-			      NULL);
-	gconf_client_notify_add (shell_preferences->priv->gconf_client,
-				 CONF_LIBRARY_DIR,
-				 (GConfClientNotifyFunc) library_pref_changed,
-				 shell_preferences, NULL, NULL);
+	eel_gconf_notification_add (CONF_LIBRARY_DIR,
+				    (GConfClientNotifyFunc) library_pref_changed,
+				    shell_preferences);
 
 	g_signal_connect (G_OBJECT (shell_preferences),
 			  "delete_event",
@@ -226,11 +218,6 @@ rb_shell_preferences_finalize (GObject *object)
 
 	g_return_if_fail (shell_preferences->priv != NULL);
 
-	gconf_client_remove_dir (shell_preferences->priv->gconf_client,
-				 CONF_LIBRARY_DIR,
-				 NULL);
-	g_object_unref (G_OBJECT (shell_preferences->priv->gconf_client));
-
 	g_free (shell_preferences->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -279,16 +266,9 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		return;
 	shell_preferences->priv->lock = TRUE;
 
-	base_folder = gconf_client_get_string (shell_preferences->priv->gconf_client,
-					       CONF_LIBRARY_BASE_FOLDER,
-					       NULL);
-	music_folders = gconf_client_get_list (shell_preferences->priv->gconf_client,
-					       CONF_LIBRARY_MUSIC_FOLDERS,
-					       GCONF_VALUE_STRING,
-					       NULL);
-	include_cd = gconf_client_get_bool (shell_preferences->priv->gconf_client,
-					    CONF_LIBRARY_INCLUDE_AUDIO_CD,
-					    NULL);
+	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
+	music_folders = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
+	include_cd = eel_gconf_get_boolean (CONF_LIBRARY_INCLUDE_AUDIO_CD);
 
 	gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry),
 			    base_folder);
@@ -366,10 +346,8 @@ music_base_folder_entry_changed_cb (GtkEditable *editable,
 	if (shell_preferences->priv->lock == TRUE)
 		return;
 
-	gconf_client_set_string (shell_preferences->priv->gconf_client,
-			         CONF_LIBRARY_BASE_FOLDER,
-				 gtk_entry_get_text (GTK_ENTRY (editable)),
-			         NULL);
+	eel_gconf_set_string (CONF_LIBRARY_BASE_FOLDER,
+			      gtk_entry_get_text (GTK_ENTRY (editable)));
 }
 
 void
@@ -440,10 +418,7 @@ include_audiocd_check_toggled_cb (GtkToggleButton *button,
 	if (shell_preferences->priv->lock == TRUE)
 		return;
 
-	gconf_client_set_bool (shell_preferences->priv->gconf_client,
-			       CONF_LIBRARY_INCLUDE_AUDIO_CD,
-			       button->active,
-			       NULL);
+	eel_gconf_set_boolean (CONF_LIBRARY_INCLUDE_AUDIO_CD, button->active);
 }
 
 static void
@@ -463,11 +438,8 @@ folders_sync_to_gconf (RBShellPreferences *shell_preferences)
 	gtk_tree_model_foreach (GTK_TREE_MODEL (shell_preferences->priv->folders_store),
 				(GtkTreeModelForeachFunc) get_folders, (void **) &folders);
 
-	gconf_client_set_list (shell_preferences->priv->gconf_client,
-		               CONF_LIBRARY_MUSIC_FOLDERS,
-			       GCONF_VALUE_STRING,
-			       folders,
-			       NULL);
+	eel_gconf_set_string_list (CONF_LIBRARY_MUSIC_FOLDERS,
+				   folders);
 
 	g_slist_foreach (folders, (GFunc) g_free, NULL);
 	g_slist_free (folders);

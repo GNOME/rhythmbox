@@ -25,6 +25,19 @@
 
 G_BEGIN_DECLS
 
+typedef struct
+{
+	const char        *cname;
+	BonoboUIListenerFn cb;
+} RBBonoboUIListener;
+
+#define RB_BONOBO_UI_LISTENER(name,cb) { (name), (cb) }
+#define RB_BONOBO_UI_LISTENER_END      { NULL, NULL }
+
+void     rb_bonobo_add_listener_list_with_data (BonoboUIComponent *component,
+						const RBBonoboUIListener *list,
+						gpointer user_data);
+
 void     rb_bonobo_set_label     (BonoboUIComponent *component,
 			          const char *path,
 			          const char *label);
@@ -40,6 +53,8 @@ void     rb_bonobo_set_verb      (BonoboUIComponent *component,
 void     rb_bonobo_set_sensitive (BonoboUIComponent *component,
 			          const char *path,
 			          gboolean sensitive);
+gboolean rb_bonobo_get_sensitive (BonoboUIComponent *component,
+			          const char *path);
 void     rb_bonobo_set_active    (BonoboUIComponent *component,
 			          const char *path,
 			          gboolean active);

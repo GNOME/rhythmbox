@@ -68,6 +68,28 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/shuffle</key>
+        <applyto>/apps/rhythmbox/state/shuffle</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Shuffle mode</short>
+	<long>If true, rhythmbox will use a random playing order.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/repeat</key>
+        <applyto>/apps/rhythmbox/state/repeat</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Repeat mode</short>
+	<long>If true, rhythmbox will go into repeat mode.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/library/paned_position</key>
         <applyto>/apps/rhythmbox/state/library/paned_position</applyto>
         <owner>rhythmbox</owner>
@@ -76,6 +98,17 @@
         <locale name="C">
 	<short>Library paned position</short>
 	<long>Library paned position.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/library/show_browser</key>
+        <applyto>/apps/rhythmbox/state/library/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+	<short>Show browser in library</short>
+	<long>Show the artist and album browser in the library.</long>
         </locale>
       </schema>
     </schemalist>
