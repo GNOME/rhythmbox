@@ -503,11 +503,12 @@ rb_player_construct (RBPlayer *mp,
 			mp->priv->pipeline = NULL;
 			return;
 		}
-		g_signal_connect (G_OBJECT (mp->priv->queue), "full",
+		g_signal_connect (G_OBJECT (mp->priv->queue), "overrun",
 				  G_CALLBACK (queue_full_cb), mp);
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
 	}
 
+#ifdef WITH_MONKEYMEDIA
 	/* The decoding element */
 	if (iradio_mode)
 #ifdef HAVE_MP3
@@ -516,6 +517,7 @@ rb_player_construct (RBPlayer *mp,
 		decoder_name = "vorbisfile";
 #endif
 	else
+#endif
 		decoder_name = "spider";
 
 	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
