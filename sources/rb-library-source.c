@@ -108,6 +108,10 @@ static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       RBLibrarySource *source); 
+static void rb_library_source_browser_views_changed (GConfClient *client,
+						     guint cnxn_id,
+						     GConfEntry *entry,
+						     RBLibrarySource *source);
 static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
@@ -307,10 +311,17 @@ update_browser_views_visibility (RBLibrarySource *source)
 }
 
 static void
-rb_library_source_ui_prefs_sync (RBLibrarySource *source)
+rb_library_source_browser_views_changed (GConfClient *client,
+					 guint cnxn_id,
+					 GConfEntry *entry,
+					 RBLibrarySource *source)
 {
 	update_browser_views_visibility (source);
+}
 
+static void
+rb_library_source_ui_prefs_sync (RBLibrarySource *source)
+{
 	if (source->priv->config_widget)
 		rb_library_source_preferences_sync (source);
 }
@@ -341,6 +352,7 @@ rb_library_source_init (RBLibrarySource *source)
 						       RB_STOCK_LIBRARY,
 						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
+
 	gtk_widget_destroy (dummy);
 }
 
@@ -511,11 +523,14 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	rb_library_source_state_prefs_sync (source);
 	rb_library_source_ui_prefs_sync (source);
+	update_browser_views_visibility (source);
 	eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 				    source);
 	eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
+	eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
+				    (GConfClientNotifyFunc) rb_library_source_browser_views_changed, source);
 	return G_OBJECT (source);
 }
 
@@ -1260,9 +1275,11 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	const char *current_sorting_type;
 
 	/* Unlocked */
+	rb_debug ("preparing to read lock for query");
 	rhythmdb_read_lock (source->priv->db);
 
 	if (source->priv->active_query) {
+		rb_debug ("killing active query");
 		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
 						      G_CALLBACK (query_complete_cb),
 						      source);
@@ -1276,6 +1293,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->songs);
 	sorting_matches = source->priv->cached_sorting_type
 		&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
+	rb_debug ("current sorting: %s, match: %s", current_sorting_type, sorting_matches ? "TRUE" : "FALSE" );
 	if (is_all_query) {
 		if (sorting_matches) {
 			rb_debug ("cached query hit");
@@ -1309,6 +1327,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	}
 
 	source->priv->query_type = qtype;
+	rb_debug ("query type: %d", qtype);
 
 	if (source->priv->cached_all_query == NULL
 	    || (is_all_query && !sorting_matches)) {
@@ -1336,7 +1355,9 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		g_object_ref (G_OBJECT (source->priv->cached_artists_model));
 		g_object_ref (G_OBJECT (source->priv->cached_albums_model));
 	} else {
+		rb_debug ("query is not special");
 		if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
+			rb_debug ("resetting genres view");
 			rb_property_view_reset (source->priv->genres);
 			g_list_foreach (source->priv->selected_genres, (GFunc) g_free, NULL);
 			g_list_free (source->priv->selected_genres);
@@ -1344,6 +1365,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		}
 		genre_model = rb_property_view_get_model (source->priv->genres);
 		if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
+			rb_debug ("resetting artist view");
 			rb_property_view_reset (source->priv->artists);
 			g_list_foreach (source->priv->selected_artists, (GFunc) g_free, NULL);
 			g_list_free (source->priv->selected_artists);
@@ -1351,6 +1373,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		}
 		artist_model = rb_property_view_get_model (source->priv->artists);
 		if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
+			rb_debug ("resetting album view");
 			rb_property_view_reset (source->priv->albums);
 			g_list_foreach (source->priv->selected_albums, (GFunc) g_free, NULL);
 			g_list_free (source->priv->selected_albums);
@@ -1382,16 +1405,20 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 				 "complete", G_CALLBACK (query_complete_cb),
 				 source, 0);
 	
+	rb_debug ("setting empty model");
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
 
 	query = construct_query_from_selection (source);
 	
+	rb_debug ("doing query");
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 		
 	rhythmdb_query_free (query);
 	g_object_unref (G_OBJECT (query_model));
 
+	rb_debug ("polling");
 	rb_entry_view_poll_model (source->priv->songs);
+	rb_debug ("done polling");
 }
 
 static void
