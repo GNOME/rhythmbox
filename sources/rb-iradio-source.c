@@ -444,8 +444,8 @@ impl_search (RBSource *asource, const char *search_text)
 	    source->priv->search_text != NULL
 	    && !strcmp (search_text, source->priv->search_text))
 		return;
-	if (search_text[0] == '\0')
-	  search_text = NULL;
+	if (search_text != NULL && search_text[0] == '\0')
+		search_text = NULL;
 
 	g_free (source->priv->search_text);
 	if (search_text)

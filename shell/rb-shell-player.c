@@ -1797,6 +1797,8 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("got buffering_end_cb");
 	rb_shell_player_disable_buffering (player);
+ 	if (player->priv->source)
+ 		rb_source_buffering_done (player->priv->source);
 }
 
 const char *
