@@ -81,7 +81,7 @@ struct _RBVolumePrivate {
 	MonkeyMediaMixer *mixer;
 };
 
-#define VOLUME_MAX 4.0
+#define VOLUME_MAX 1.0
 
 static void rb_volume_class_init (RBVolumeClass *klass);
 static void rb_volume_instance_init (RBVolume *volume);
@@ -180,7 +180,7 @@ rb_volume_instance_init (RBVolume *volume)
 	gtk_widget_show (priv->indicator);
 
 	/* Volume slider */
-	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 1.0, 2.0, 0);
+	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 0.1, 0.2, 0);
 	priv->slider = gtk_hscale_new (GTK_ADJUSTMENT (priv->adjustment));
 	gtk_range_set_inverted (GTK_RANGE (priv->slider), TRUE);
 	gtk_scale_set_draw_value (GTK_SCALE (priv->slider), FALSE);
@@ -255,6 +255,7 @@ rb_volume_finalize (GObject *object)
 static void
 update_mixer (RBVolume *volume)
 {
+	fprintf (stderr, "setting volume to %f\n", volume->priv->vol);
 	monkey_media_mixer_set_volume (volume->priv->mixer,
 				       volume->priv->vol);
 	monkey_media_mixer_set_mute (volume->priv->mixer,
@@ -321,7 +322,7 @@ rb_volume_update_slider (RBVolume *volume)
 static void
 rb_volume_update_image (RBVolume *volume)
 {
-	int vol;
+	float vol;
 	GdkPixbuf *pixbuf;
 
 	vol = volume->priv->vol;
@@ -330,9 +331,9 @@ rb_volume_update_image (RBVolume *volume)
 		pixbuf = volume->priv->volume_mute_pixbuf;
 	else if (vol <= 0)
 		pixbuf = volume->priv->volume_zero_pixbuf;
-	else if (vol <= (VOLUME_MAX / 3))
+	else if (vol <= (VOLUME_MAX / 3.0))
 		pixbuf = volume->priv->volume_min_pixbuf;
-	else if (vol <= 2 * (VOLUME_MAX / 3))
+	else if (vol <= 2.0 * (VOLUME_MAX / 3.0))
 		pixbuf = volume->priv->volume_medium_pixbuf;
 	else
 		pixbuf = volume->priv->volume_max_pixbuf;

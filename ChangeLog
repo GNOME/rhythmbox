@@ -1,5 +1,13 @@
 2002-10-30  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-volume.c: (rb_volume_instance_init),
+	(update_mixer), (rb_volume_update_image):
+
+	Volume between 0.0 and 1.0 instead of 4.0, which produced
+	crap sound.
+
+2002-10-30  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/preferences.glade:
 	* data/ui/rhythmbox-library-view.xml.in:
 	* data/ui/rhythmbox-ui.xml.in:
