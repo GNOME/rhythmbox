@@ -62,15 +62,11 @@ fi
 
 dnl dashboard support
 AC_ARG_ENABLE(dashboard,
-	      [  --disable-dashboard	  Disable dashboard support (http://www.nat.org/dashboard) (default enabled)])
-if test "x$enable_dashboard" = "xno" ; then
-   echo "Disabling dashboard support"
-else
-   echo "Building dashboard support"
-   enable_dashboard=yes
+	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)],enable_dashboard=yes,enable_dashboard=no)
+if test "x$enable_dashboard" == "xyes" ; then
    AC_DEFINE([WITH_DASHBOARD], 1, [Define to enable support for dashboard (http://www.nat.org/dashboard)])
 fi
-AM_CONDITIONAL(WITH_DASHBOARD, test x"$with_dashboard" = xyes)
+AM_CONDITIONAL(WITH_DASHBOARD, test x"$enable_dashboard" = xyes)
 
 dnl Sound system
 AC_ARG_WITH(player,
@@ -231,7 +227,6 @@ if test "x$enable_mp3" != "xno"; then
           AC_MSG_ERROR([For MP3 support, you need libid3tag 15.0b or later (or --disable-mp3)])
 	fi
         ID3TAG_LIBS="-lid3tag"
-        AC_SUBST(ID3TAG_LIBS)
     fi
   fi
 fi
@@ -346,23 +341,11 @@ if test x"$have_xfree" = "xyes" ; then
 	AC_DEFINE(HAVE_XFREE, 1, [defined if you have X11/XF86keysym.h])
 fi
 
-have_xsun=no
-AC_COMPILE_IFELSE([
-	#include <X11/Sunkeysym.h>
-int main(int argc,char **argv) {
-  return 0;
-}
-], have_xsun=yes)
-AC_MSG_CHECKING(for Sun X11 headers)
-AC_MSG_RESULT($have_xsun)
-if test x"$have_xsun" = "xyes" ; then
-	AC_DEFINE(HAVE_XSUN, 1, [defined if you have X11/Sunkeysym.h])
-fi
-
 AC_ARG_ENABLE(mmkeys, AC_HELP_STRING([--disable-mmkeys],
 					[don't build with Multimedia Keys support]))
-if test x"$have_xfree" = xyes || test x"$have_xsun" = xyes; then
+if test x"$have_xfree" = xyes; then
 	if test x"$enable_mmkeys" != xno; then
+		enable_mmkeys=yes
 		AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
 	fi
 else
@@ -509,6 +492,11 @@ if test x"$enable_mp4" != "xyes"; then
 else
 	AC_MSG_NOTICE([** MPEG-4 support is enabled])
 fi
+fi
+if test x"$enable_mmkeys" != "xyes"; then
+	AC_MSG_NOTICE([   Multimedia keys support is disabled])
+else
+	AC_MSG_NOTICE([** Multimedia keys support is enabled])
 fi
 if test x"$enable_dashboard" != "xyes"; then
 	AC_MSG_NOTICE([   Dashboard support is disabled])
