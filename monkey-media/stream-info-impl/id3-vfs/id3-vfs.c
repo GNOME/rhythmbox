@@ -458,6 +458,21 @@ int id3_vfs_update(struct id3_vfs_file *file)
   return 0;
 }
 
+static int
+id3_vfs_is_wave (guchar *buffer)
+{
+  if (buffer[8] != 'W')
+    return 0;
+  if (buffer[9] != 'A')
+    return 0;
+  if (buffer[10] != 'V')
+    return 0;
+  if (buffer[11] != 'E' && buffer[11] != ' ')
+    return 0;
+
+  return 1;
+}
+
 int
 id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
 		int *time, int *version, int *vbr, int *channels)
@@ -466,7 +481,7 @@ id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
   GnomeVFSHandle *iofile = file->iofile;
   GnomeVFSResult res;
   guchar buffer[16384];
-  int found, i;
+  int is_wave, found, i;
 
   *bitrate = 0;
   *samplerate = 0;
@@ -485,6 +500,11 @@ id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
   if( res != GNOME_VFS_OK || length_read < 512 )
     goto bitdone;
 
+  /* Reduce false positive by castrating the search if we have a WAVE file */
+  is_wave = id3_vfs_is_wave (buffer);
+  if (is_wave == 1)
+    length_read = 4096;
+
   for (i = 0; i + 4 < length_read; i++)
   {
     if (mp3_bitrate_parse_header (buffer+i, length_read - i, bitrate, samplerate, time, version, vbr, channels))
@@ -495,7 +515,7 @@ id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
   }
 
   /* If we haven't found anything, try again with 8 more kB */
-  if (found == 0)
+  if (is_wave == 0 && found == 0)
   {
     res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
 
@@ -516,6 +536,6 @@ bitdone:
   if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position) != GNOME_VFS_OK)
     return 0;
 
-  return 1;
+  return found;
 }
 

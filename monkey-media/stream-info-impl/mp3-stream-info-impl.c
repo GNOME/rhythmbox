@@ -42,6 +42,7 @@ static void MP3_stream_info_impl_class_init (MP3StreamInfoImplClass *klass);
 static void MP3_stream_info_impl_init (MP3StreamInfoImpl *ma);
 static void MP3_stream_info_impl_finalize (GObject *object);
 static void MP3_stream_info_impl_open_stream (MonkeyMediaStreamInfo *info);
+static gboolean MP3_stream_info_impl_get_bitrate_info (MP3StreamInfoImpl *impl);
 static gboolean MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 					        MonkeyMediaStreamInfoField field,
 					        int index,
@@ -169,25 +170,82 @@ MP3_stream_info_impl_open_stream (MonkeyMediaStreamInfo *info)
 	}
 
 	impl->priv->tag = id3_vfs_tag (impl->priv->file);
+
+	if (MP3_stream_info_impl_get_bitrate_info (impl) == FALSE)
+	{
+		error = g_error_new (MONKEY_MEDIA_STREAM_INFO_ERROR,
+				     MONKEY_MEDIA_STREAM_INFO_ERROR_OPEN_FAILED,
+				     _("Failed to gather information about the file"));
+		g_object_set (G_OBJECT (info), "error", error, NULL);
+		return;
+	}
 }
 
 static void
-MP3_stream_info_impl_get_bitrate_info (MP3StreamInfoImpl *info)
+MP3_stream_info_impl_get_length_from_tag (MP3StreamInfoImpl *impl)
 {
-	if (info->priv->info_num == NULL)
-	{
-		struct MP3BitrateInfo *info_num;
+	struct id3_frame const *frame;
 
-		info_num = g_new0 (struct MP3BitrateInfo, 1);
-		id3_vfs_bitrate (info->priv->file,
-				&info_num->bitrate,
-				&info_num->samplerate,
-				&info_num->time,
-				&info_num->version,
-				&info_num->vbr,
-				&info_num->channels);
-		info->priv->info_num = info_num;
+	/* The following is based on information from the
+	 * ID3 tag version 2.4.0 Native Frames informal standard.
+	 */
+	frame = id3_tag_findframe(impl->priv->tag, "TLEN", 0);
+
+	if (frame == NULL)
+		return;
+
+	{
+		union id3_field const *field;
+		unsigned int nstrings;
+		id3_latin1_t *latin1;
+
+		field = id3_frame_field (frame, 1);
+		nstrings = id3_field_getnstrings (field);
+		if (nstrings <= 0)
+			return;
+
+		latin1 = id3_ucs4_latin1duplicate
+			(id3_field_getstrings(field, 0));
+
+		if (latin1 == NULL)
+			return;
+
+		/* "The 'Length' frame contains the length of the
+		 * audio file in milliseconds, represented as a
+		 * numeric string."
+		 */
+		if (atol(latin1) > 0)
+			impl->priv->info_num->time = atol(latin1);
+		g_free (latin1);
 	}
+}
+
+static gboolean
+MP3_stream_info_impl_get_bitrate_info (MP3StreamInfoImpl *impl)
+{
+	if (impl->priv->info_num == NULL)
+	{
+		struct MP3BitrateInfo *info;
+
+		info = g_new0 (struct MP3BitrateInfo, 1);
+		if (id3_vfs_bitrate (impl->priv->file,
+				&info->bitrate,
+				&info->samplerate,
+				&info->time,
+				&info->version,
+				&info->vbr,
+				&info->channels) == 0)
+		{
+			impl->priv->info_num = info;
+			return FALSE;
+		}
+
+		impl->priv->info_num = info;
+
+		MP3_stream_info_impl_get_length_from_tag (impl);
+	}
+
+	return TRUE;
 }
 
 static int
@@ -469,7 +527,6 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
 		g_value_init (value, G_TYPE_LONG);
-		MP3_stream_info_impl_get_bitrate_info (impl);
 
 		if (impl->priv->info_num->vbr == 0)
 		{
@@ -498,7 +555,6 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_set_boolean (value, TRUE);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CODEC_INFO:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_STRING);
 		if (impl->priv->info_num->version != 3)
 		{
@@ -511,12 +567,10 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_INT);
 		g_value_set_int (value, impl->priv->info_num->bitrate / 1000);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
 		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate (impl->priv->info_num->bitrate / 1000));
 		break;
@@ -526,17 +580,14 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_set_string (value, NULL);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VARIABLE_BIT_RATE:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_BOOLEAN);
 		g_value_set_boolean (value, impl->priv->info_num->vbr);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_LONG);
 		g_value_set_long (value, impl->priv->info_num->samplerate);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
-		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_INT);
 		g_value_set_int (value, impl->priv->info_num->channels);
 		break;
@@ -595,16 +646,22 @@ MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_na
 	if (frame == 0)
 		return NULL;
 
-	field = &frame->fields[1];
+	field = id3_frame_field(frame, 1);
 	nstrings = id3_field_getnstrings (field);
 	for (j = 0; j < nstrings; j++)
 	{
+		id3_utf8_t *tmp = NULL;
+
 		ucs4 = id3_field_getstrings (field, j);
 
 		if (strcmp (field_name, ID3_FRAME_GENRE) == 0)
 			ucs4 = id3_genre_name (ucs4);
 
-		utf8 = id3_ucs4_utf8duplicate (ucs4);
+		tmp = id3_ucs4_utf8duplicate (ucs4);
+		if (strcmp (tmp, "") != 0)
+			utf8 = tmp;
+		else
+			g_free (tmp);
 	}
 
 	if (utf8 && !g_utf8_validate (utf8, -1, NULL)) {
