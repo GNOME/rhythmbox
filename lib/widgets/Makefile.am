@@ -4,6 +4,7 @@ noinst_LTLIBRARIES = librbwidgets.la
 
 librbwidgets_la_SOURCES =				\
 	rb-song-display-box.c				\
+	rb-song-display-box.h				\
 	rb-tree-model-node.c				\
 	rb-tree-model-node.h				\
 	rb-node-view.c					\
