@@ -1,3 +1,15 @@
+2002-10-25  Olivier Martin <oleevye@wanadoo.fr>
+
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_update_title), (rb_song_info_update_comments),
+	(rb_song_info_update_track), (rb_song_info_update_entry),
+	(rb_song_info_update_genre), (rb_song_info_update_bitrate),
+	(rb_song_info_update_channels), (rb_song_info_update_size),
+	(rb_song_info_update_duration), (rb_song_info_forward_clicked_cb),
+	(rb_song_info_update_current_values):
+
+	Sanitize song-info and fix the forward button.
+
 2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/node-views/rb-node-view-albums.xml:
