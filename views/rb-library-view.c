@@ -357,6 +357,9 @@ rb_library_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
+	/* save state */
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, view->priv->paned_position);
+
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
@@ -1045,8 +1048,6 @@ paned_size_allocate_cb (GtkWidget *widget,
 		        RBLibraryView *view)
 {
 	view->priv->paned_position = gtk_paned_get_position (GTK_PANED (view->priv->paned));
-
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, view->priv->paned_position);
 }
 
 static void
