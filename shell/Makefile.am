@@ -65,6 +65,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/corba                    	\
+	-I$(top_builddir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\

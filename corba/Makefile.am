@@ -27,8 +27,8 @@ idl_DATA = Rhythmbox.idl
 
 CLEANFILES = $(rhythmbox_interface_idl_sources)
 
-$(rhythmbox_interface_idl_sources): Rhythmbox.idl
-	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) Rhythmbox.idl
+$(rhythmbox_interface_idl_sources): $(srcdir)/Rhythmbox.idl
+	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/Rhythmbox.idl
 
 BUILT_SOURCES = $(rhythmbox_interface_idl_sources)
 
