@@ -455,7 +455,7 @@ rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
 	stream = rb_view_player_get_stream (player->priv->view_player);
 	progress = gtk_adjustment_get_value (adjustment);
 	duration = rb_view_player_get_duration (player->priv->view_player);
-	new = (long) progress * duration;
+	new = (long) (progress * duration);
 	
 	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
 
