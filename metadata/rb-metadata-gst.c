@@ -56,6 +56,7 @@ static struct
 	{"application/x-id3", "id3tag"},
 	{"application/ogg", NULL},
 	{"audio/x-flac", "flactag"},
+	{"application/x-ape", NULL},
 };
 
 static GObjectClass *parent_class = NULL;
