@@ -722,7 +722,6 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->library_source = rb_library_source_new (shell->priv->container,
 							     shell->priv->library);
 	rb_shell_append_source (shell, shell->priv->library_source);
-	rb_shell_select_source (shell, shell->priv->library_source); /* select this one by default */
 
 	rb_debug ("shell: creating iradio backend");
 	shell->priv->iradio_backend = g_object_new (RB_TYPE_IRADIO_BACKEND, NULL);
@@ -734,6 +733,8 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_sync_window_state (shell);
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
+
+	rb_shell_select_source (shell, shell->priv->library_source); /* select this one by default */
 
 	/* Look for Sound Juicer */
 	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_EXTRACT_CD, 
@@ -1475,13 +1476,11 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 	rb_debug ("Deleting source %p", shell->priv->selected_source);
 
 	if (g_list_find (shell->priv->groups, shell->priv->selected_source) != NULL) {
-		/* so, this is a group */
 		rb_group_source_remove_file (RB_GROUP_SOURCE (shell->priv->selected_source));
 		shell->priv->groups = g_list_remove (shell->priv->groups, shell->priv->selected_source);
-		
-	}
 
-	rb_shell_remove_source (shell, shell->priv->selected_source);
+		rb_shell_remove_source (shell, shell->priv->selected_source);
+	}
 }
 
 

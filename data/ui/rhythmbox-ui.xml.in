@@ -158,11 +158,6 @@
       <placeholder name="SourceMenu"/>
 
       <separator/>
-	
-      <menuitem name="ExtractCD" verb="ExtractCD" _label="_Extract CD..." accel="*Control*E"/>
-
-      <separator/>
-
 
       <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
       <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
@@ -172,7 +167,9 @@
 
       <menuitem name="FileGroupDelete" verb="FileGroupDelete" _label="_Delete Playlist"/>
 
-      <placeholder name="FileMenu"/>
+      <separator/>
+
+      <menuitem name="ExtractCD" verb="ExtractCD" _label="_Extract CD..." accel="*Control*E"/>
 
       <separator/>
 
