@@ -19,14 +19,21 @@ libmonkey_media_HEADERS =				\
 libmonkey_media_la_SOURCES =				\
 	monkey-media.c					\
 	monkey-media-stream-info.c			\
-	monkey-media-player-xine.c			\
-	monkey-media-player-gst.c			\
-	monkey-media-player-gst-tmp.c			\
 	monkey-media-audio-quality.c			\
 	monkey-media-private.h				\
 	sha1.c						\
 	sha1.h						\
 	$(BUILT_SOURCES)
+
+if USE_XINE
+libmonkey_media_la_SOURCES += monkey-media-player-xine.c
+else
+if USE_GSTREAMER_WORKAROUNDS
+libmonkey_media_la_SOURCES += monkey-media-player-gst-tmp.c 
+else
+libmonkey_media_la_SOURCES += monkey-media-player-gst.c
+endif
+endif
 
 if HAVE_MUSICBRAINZ
 libmonkey_media_la_SOURCES += monkey-media-musicbrainz.c monkey-media-musicbrainz.h 

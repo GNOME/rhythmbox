@@ -104,17 +104,15 @@ else
 
 fi
 
-USE_BROKEN_GSTREAMER=1
-AC_ARG_ENABLE(broken_gstreamer,
-              [  --disable-broken-gstreamer		Enable use of the GStreamer backend without workarounds],
-	      USE_BROKEN_GSTREAMER=0)
-if test x$enable_broken_gstreamer != xno; then
-	AC_DEFINE(USE_BROKEN_GSTREAMER,1,[Define if you don't want to use GStreamer bug workarounds])
-fi
+AC_ARG_ENABLE(gstreamer_workarounds,
+              AC_HELP_STRING([--disable-gstreamer-workarounds],
+			     [Enable use of the GStreamer backend without workarounds]),
+	      disable_gstreamer_workarounds=yes)
 
+AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
+AM_CONDITIONAL(USE_GSTREAMER_WORKAROUNDS, test x"$disable_gstreamer_workarounds" != xyes)
 
 dnl Workaround for the gtktreemodelsort bug
-
 AC_ARG_ENABLE(gtktreemodelsort_workaround,
               AC_HELP_STRING([--enable-gtktreemodelsort-workaround],
 	                     [Enable use of a workaround for the gtk tree model sort bug which causes song jumping]),
@@ -355,7 +353,11 @@ else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 fi
 if test x"$WANT_XINE" != "x1"; then
-	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
+	if test x"$disable_gstreamer_workarounds" != xyes; then	
+		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled (with workarounds)])
+	else
+		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
+	fi
 else
 	AC_MSG_NOTICE([** xine backend is enabled])
 fi

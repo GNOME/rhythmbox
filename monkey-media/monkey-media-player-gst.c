@@ -65,6 +65,9 @@ struct MonkeyMediaPlayerPrivate
 
 	gboolean audiocd_mode;
 
+	GTimer *timer;
+	long timer_add;
+
 	guint tick_timeout_id;
 
 	MonkeyMediaAudioCD *cd;

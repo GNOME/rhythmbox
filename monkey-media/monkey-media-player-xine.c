@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#ifdef HAVE_XINE
 #include <xine.h>
 #include <string.h>
 #include <math.h>
@@ -624,8 +623,6 @@ monkey_media_player_set_time (MonkeyMediaPlayer *mp,
 	g_return_if_fail (time >= 0);
 
 	if (mp->priv->stream != NULL) {
-		long length;
-
 		xine_play (mp->priv->stream, 0, time * 1000);
 
 		if (mp->priv->playing == TRUE)
@@ -648,5 +645,3 @@ monkey_media_player_get_time (MonkeyMediaPlayer *mp)
 	else
 		return -1;
 }
-
-#endif /* HAVE_XINE */

@@ -1,5 +1,27 @@
 2003-08-06  Colin Walters  <walters@verbum.org>
 
+	* configure.ac:
+	* monkey-media/Makefile.am:
+	* monkey-media/monkey-media-player-gst-tmp.c:
+	(monkey_media_player_finalize), (monkey_media_player_construct),
+	(monkey_media_player_sync_pipeline), (monkey_media_player_open),
+	(monkey_media_player_pause), (monkey_media_player_set_time),
+	(monkey_media_player_get_time):
+	* monkey-media/monkey-media-player-gst.c:
+	* monkey-media/monkey-media-player-xine.c:
+	(monkey_media_player_set_time), (monkey_media_player_get_time):
+	* shell/rb-shell-player.c: (rb_shell_player_do_previous):
+
+	Make the monkey-media backend choice use real Automake conditionals,
+	instead of hackish #defines.
+
+	Switch the temporary GStreamer backend to use a GTimer instead
+	of the GStreamer clock (this makes the Previous button work). 
+
+	Make xine backend compile with -Werror (hi hadess!).
+
+2003-08-06  Colin Walters  <walters@verbum.org>
+
 	* shell/main.c: (main), (sound_error_dialog), (rb_init):
 
 	Hold the GDK lock in main idle handler.  Also, bomb out if

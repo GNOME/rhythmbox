@@ -849,15 +849,15 @@ static void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
 	if (monkey_media_player_get_time (player->priv->mmplayer) < 3 &&
-	    rb_shell_player_have_previous (player, player->priv->selected_source) == TRUE)
-	{
+	    rb_shell_player_have_previous (player, player->priv->selected_source) == TRUE) {
+		rb_debug ("doing previous");
 		/* we're in the first 2 seconds of the song, go to previous */
 		rb_shell_player_previous (player);
-	}
-	else
-	{
+	} else {
 		/* we're further in the song, restart it */
+		rb_debug ("restarting song");
 		monkey_media_player_set_time (player->priv->mmplayer, 0);
+		rb_player_sync_time (player->priv->player_widget);
 	}
 
 	rb_shell_player_jump_to_current (player);

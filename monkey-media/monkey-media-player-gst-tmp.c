@@ -20,9 +20,6 @@
  */
 
 #include <config.h>
-
-#ifdef HAVE_GSTREAMER
-#ifdef USE_BROKEN_GSTREAMER
 #include <gst/gst.h>
 #include <gst/gstqueue.h>
 #include <gst/gconf/gconf.h>
@@ -68,6 +65,9 @@ struct MonkeyMediaPlayerPrivate
 	GstDParam *volume_dparam;
 	float cur_volume;
 	gboolean mute;
+
+	GTimer *timer;
+	long timer_add;
 
 	guint tick_timeout_id;
 };
@@ -233,6 +233,8 @@ monkey_media_player_finalize (GObject *object)
 		
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 	}
+
+	g_timer_destroy (mp->priv->timer);
 	
 	g_free (mp->priv->uri);
 
@@ -607,6 +609,11 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	g_object_set (G_OBJECT (mp->priv->volume),
 		      "mute", mp->priv->mute,
 		      NULL);
+
+	mp->priv->timer = g_timer_new ();
+	g_timer_stop (mp->priv->timer);
+	g_timer_reset (mp->priv->timer);
+	mp->priv->timer_add = 0;
 }
 
 MonkeyMediaPlayer *
@@ -633,6 +640,9 @@ void
 monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 {
 	if (mp->priv->playing) {
+		
+		g_timer_start (mp->priv->timer);
+
 		if (iradio_mode) {
 			g_object_ref (G_OBJECT (mp));
 			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
@@ -719,6 +729,10 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 	
 	mp->priv->uri = g_strdup (uri);
 
+	g_timer_stop (mp->priv->timer);
+	g_timer_reset (mp->priv->timer);
+	mp->priv->timer_add = 0;
+
 	monkey_media_player_sync_pipeline (mp, iradio_mode);
 }
 
@@ -773,6 +787,10 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 	mp->priv->playing = FALSE;
 
 	g_return_if_fail (mp->priv->pipeline != NULL);
+
+	mp->priv->timer_add += floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5);
+	g_timer_stop (mp->priv->timer);
+	g_timer_reset (mp->priv->timer);
 
 	gst_element_set_state (mp->priv->pipeline,
 			       GST_STATE_PAUSED);
@@ -866,23 +884,18 @@ monkey_media_player_set_time (MonkeyMediaPlayer *mp,
 
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->pipeline, GST_STATE_PLAYING);
+
+	g_timer_reset (mp->priv->timer);
+	mp->priv->timer_add = time;
 }
 
 long
 monkey_media_player_get_time (MonkeyMediaPlayer *mp)
 {
-	GstClock *clock;
-	long ret;
-
 	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), -1);
-	if (mp->priv->pipeline == NULL)
+
+	if (mp->priv->pipeline != NULL)
+		return (long) floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5) + mp->priv->timer_add;
+	else
 		return -1;
-
-	clock = gst_bin_get_clock (GST_BIN (mp->priv->pipeline));
-	ret = (long) (gst_clock_get_time (clock) / GST_SECOND);
-
-	return ret;
 }
-
-#endif /* USE_BROKEN_GSTREAMER */
-#endif /* HAVE_GSTREAMER */
