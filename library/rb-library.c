@@ -297,19 +297,15 @@ rb_library_add_uri (RBLibrary *library,
 		    const char *uri)
 {
 	if (rb_uri_is_directory (uri) == FALSE)
-	{
 		return rb_library_action_queue_add (library->priv->main_queue,
 					            TRUE,
 					            RB_LIBRARY_ACTION_ADD_FILE,
 					            uri);
-	}
 	else
-	{
 		return rb_library_action_queue_add (library->priv->walker_queue,
 					            TRUE,
 					            RB_LIBRARY_ACTION_ADD_DIRECTORY,
 					            uri);
-	}
 }
 
 void
@@ -590,8 +586,7 @@ rb_library_save (RBLibrary *library)
 	xmlDocSetRootElement (doc, root);
 
 	children = rb_node_get_children (library->priv->all_genres);
-	for (i = 0; i < children->len; i++)
-	{
+	for (i = 0; i < children->len; i++) {
 		RBNode *kid;
 
 		kid = g_ptr_array_index (children, i);
@@ -601,8 +596,7 @@ rb_library_save (RBLibrary *library)
 	}
 
 	children = rb_node_get_children (library->priv->all_artists);
-	for (i = 0; i < children->len; i++)
-	{
+	for (i = 0; i < children->len; i++) {
 		RBNode *kid;
 
 		kid = g_ptr_array_index (children, i);
@@ -612,8 +606,7 @@ rb_library_save (RBLibrary *library)
 	}
 
 	children = rb_node_get_children (library->priv->all_albums);
-	for (i = 0; i < children->len; i++)
-	{
+	for (i = 0; i < children->len; i++) {
 		RBNode *kid;
 
 		kid = g_ptr_array_index (children, i);
@@ -623,8 +616,7 @@ rb_library_save (RBLibrary *library)
 	}
 
 	children = rb_node_get_children (library->priv->all_songs);
-	for (i = 0; i < children->len; i++)
-	{
+	for (i = 0; i < children->len; i++) {
 		RBNode *kid;
 
 		kid = g_ptr_array_index (children, i);
@@ -727,17 +719,13 @@ rb_library_handle_songs (RBLibrary *library,
 			 gpointer user_data)
 {
 	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
-	{
 		(*func) (node, user_data);
-	}
-	else
-	{
+	else {
 		GPtrArray *kids;
 		int i;
 
 		kids = rb_node_get_children (node);
-		for (i = 0; i < kids->len; i++)
-		{
+		for (i = 0; i < kids->len; i++) {
 			RBNode *n;
 
 			n = g_ptr_array_index (kids, i);
@@ -764,8 +752,8 @@ rb_library_load (RBLibrary *library)
 
 	doc = xmlParseFile (library->priv->xml_file);
 
-	if (doc == NULL)
-	{
+	if (doc == NULL) {
+		rb_error_dialog (_("Failed to load library!"));
 		unlink (library->priv->xml_file);
 		return;
 	}
@@ -773,8 +761,7 @@ rb_library_load (RBLibrary *library)
 	root = xmlDocGetRootElement (doc);
 
 	tmp = xmlGetProp (root, "version");
-	if (tmp == NULL || strcmp (tmp, RB_LIBRARY_XML_VERSION) != 0)
-	{
+	if (tmp == NULL || strcmp (tmp, RB_LIBRARY_XML_VERSION) != 0) {
 		g_free (tmp);
 		unlink (library->priv->xml_file);
 		xmlFreeDoc (doc);
@@ -784,8 +771,7 @@ rb_library_load (RBLibrary *library)
 
 	p = rb_profiler_new ("XML loader");
 
-	for (child = root->children; child != NULL; child = child->next)
-	{
+	for (child = root->children; child != NULL; child = child->next) {
 		RBNode *node;
 		const char *location;
 
@@ -805,7 +791,6 @@ rb_library_load (RBLibrary *library)
 		location = rb_node_get_property_string (node,
 							RB_NODE_PROP_LOCATION);
 		if (location != NULL) {
-			rb_debug ("library: queueing %s for updating", location);
 			rb_library_action_queue_add (library->priv->main_queue,
 						     FALSE,
 						     RB_LIBRARY_ACTION_UPDATE_FILE,

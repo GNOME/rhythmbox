@@ -969,6 +969,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GList *list, *uri_list, *i;
 
+	rb_debug ("parsing uri list");
 	list = gnome_vfs_uri_list_parse (data->data);
 
 	if (list == NULL)
@@ -984,6 +985,8 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	if (uri_list == NULL)
 		return FALSE;
 	
+	rb_debug ("adding uris");
+
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 
@@ -1010,6 +1013,8 @@ rb_library_source_drop_cb (GtkWidget *widget,
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (user_data);
 	GtkTargetList *tlist;
 	gboolean ret;
+
+	rb_debug ("checking target");
 
 	tlist = gtk_target_list_new (target_uri, 1);
 	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);

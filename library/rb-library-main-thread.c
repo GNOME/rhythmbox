@@ -320,8 +320,8 @@ thread_main (RBLibraryMainThread *thread)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_library_get_song_by_location (thread->priv->library, realuri) == NULL)
-				{
+				if (rb_library_get_song_by_location (thread->priv->library, realuri) == NULL) {
+					rb_debug ("uri \"%s\" does not exist, adding new node", realuri);
 					rb_library_new_node (thread->priv->library,
 							     realuri,
 							     &error);
@@ -329,6 +329,8 @@ thread_main (RBLibraryMainThread *thread)
 						push_err (thread, uri, error);
 						break;
 					}
+				} else {
+					rb_debug ("uri \"%s\" does not exist, adding new node", realuri);
 				}
 
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
@@ -341,12 +343,12 @@ thread_main (RBLibraryMainThread *thread)
 					if (song == NULL)
 						break;
 
-					if (rb_uri_exists (realuri) == FALSE)
-					{
+					if (rb_uri_exists (realuri) == FALSE) {
 						rb_node_unref (song);
 						break;
 					}
 
+					rb_debug ("updating existing node \"%s\"", realuri);
 					rb_library_update_node (thread->priv->library, song, &error);
 					if (error != NULL) {
 						push_err (thread, uri, error);
@@ -356,7 +358,6 @@ thread_main (RBLibraryMainThread *thread)
 
 				/* just to be sure */
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
-				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				{
 					RBNode *song;

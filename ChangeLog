@@ -1,3 +1,16 @@
+2003-08-01  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-file-monitor.c: (rb_file_monitor_add),
+	(rb_file_monitor_remove):
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_add_uri), (rb_library_save),
+	(rb_library_handle_songs), (rb_library_load):
+	* sources/rb-library-source.c: (impl_receive_drag),
+	(rb_library_source_drop_cb):
+
+	Completely disable RBFileMonitor, to save memory.  Also some
+	indentation fixes in the library, and some more debug statements.
+
 2003-08-01  Colin Walters  <walters@gnu.org>
 
 	* configure.ac:

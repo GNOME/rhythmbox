@@ -167,6 +167,7 @@ rb_file_monitor_new (void)
 	return file_monitor;
 }
 
+#if 0
 static void
 monitor_callback (GnomeVFSMonitorHandle *vfs_handle,
 		  const char *monitor_uri,
@@ -191,11 +192,13 @@ monitor_callback (GnomeVFSMonitorHandle *vfs_handle,
 		break;
 	}
 }
+#endif
 
 void
 rb_file_monitor_add (RBFileMonitor *monitor,
 		     const char *uri)
 {
+#if 0
 	RBFileMonitorHandle *handle;
 	char *dir, *realuri;
 	
@@ -224,11 +227,8 @@ rb_file_monitor_add (RBFileMonitor *monitor,
 						       (GDestroyNotify) g_free,
 						       NULL);
 		
-		if (0)
-		{
-			gnome_vfs_monitor_add (&(handle->handle), dir, GNOME_VFS_MONITOR_DIRECTORY,
-					       (GnomeVFSMonitorCallback) monitor_callback, handle);
-		}
+		gnome_vfs_monitor_add (&(handle->handle), dir, GNOME_VFS_MONITOR_DIRECTORY,
+				       (GnomeVFSMonitorCallback) monitor_callback, handle);
 
 		g_hash_table_insert (monitor->priv->dir_to_handle, g_strdup (dir), handle);
 	}
@@ -239,12 +239,14 @@ rb_file_monitor_add (RBFileMonitor *monitor,
 
 	g_free (dir);
 	g_free (realuri);
+#endif
 }
 
 void
 rb_file_monitor_remove (RBFileMonitor *monitor,
 			const char *uri)
 {
+#if 0
 	RBFileMonitorHandle *handle;
 	char *dir, *realuri;
 	
@@ -280,6 +282,7 @@ rb_file_monitor_remove (RBFileMonitor *monitor,
 
 	g_free (realuri);
 	g_free (dir);
+#endif
 }
 
 RBFileMonitor *
