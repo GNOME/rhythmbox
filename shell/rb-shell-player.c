@@ -565,3 +565,12 @@ rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
 {
 	rb_shell_player_set_playing_player (shell_player, player);
 }
+
+void
+rb_shell_player_stop (RBShellPlayer *shell_player)
+{
+	g_return_if_fail (RB_IS_SHELL_PLAYER (shell_player));
+
+	monkey_media_mixer_set_state (shell_player->priv->mixer,
+				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+}

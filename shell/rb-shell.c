@@ -259,6 +259,7 @@ rb_shell_finalize (GObject *object)
         RBShell *shell = RB_SHELL (object);
 
 	gtk_widget_hide (shell->priv->window);
+	rb_shell_player_stop (shell->priv->player_shell);
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 	
