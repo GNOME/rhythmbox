@@ -2,6 +2,126 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-26 02:31:32 GMT	Colin Walters <walters@verbum.org>	patch-170
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-170
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/da.po po/ja.po po/nl.po
+
+
+2004-03-26 02:19:22 GMT	Colin Walters <walters@verbum.org>	patch-169
+
+    Summary:
+      ignore files with unsupported mime types
+    Revision:
+      rhythmbox--main--0.7--patch-169
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c rhythmdb/rhythmdb.c
+
+
+2004-03-26 01:57:10 GMT	Colin Walters <walters@verbum.org>	patch-168
+
+    Summary:
+      disconnect gconf notifiers, more use of _connect_object
+    Revision:
+      rhythmbox--main--0.7--patch-168
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+
+2004-03-26 01:47:50 GMT	Colin Walters <walters@verbum.org>	patch-167
+
+    Summary:
+      use g_signal_connect_object where applicable
+    Revision:
+      rhythmbox--main--0.7--patch-167
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2004-03-23 04:28:44 GMT	Colin Walters <walters@verbum.org>	patch-166
+
+    Summary:
+      fix crasher in query creator (Peter Williams)
+    Revision:
+      rhythmbox--main--0.7--patch-166
+
+
+    modified files:
+     ChangeLog widgets/rb-query-creator.c
+
+
+2004-03-23 04:23:29 GMT	Colin Walters <walters@verbum.org>	patch-165
+
+    Summary:
+      merge from David Dollar: more buffering work
+    Revision:
+      rhythmbox--main--0.7--patch-165
+
+    Patches applied:
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-6
+       update from main tree
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-7
+       update from main tree
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-8
+       made xine use the buffering progress bar, also cleaned up the wrappers for the buffering property
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c shell/rb-statusbar.c
+
+    new patches:
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-6
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-7
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-8
+
+
+2004-03-23 04:03:00 GMT	Colin Walters <walters@verbum.org>	patch-164
+
+    Summary:
+      merge from me: init fix, dist README.iPod
+    Revision:
+      rhythmbox--main--0.7--patch-164
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-253
+       merge from main
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-254
+       merge from main
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-255
+       load database near at the end of shell initialization
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-256
+       actually dist README.iPod
+    
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-253
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-254
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-255
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-256
+
+
 2004-03-22 22:18:53 GMT	Colin Walters <walters@verbum.org>	patch-163
 
     Summary:
