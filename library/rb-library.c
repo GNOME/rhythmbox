@@ -799,19 +799,19 @@ static void
 finalize_node (RBNode *node)
 {
 	RBNode *parent;
-
+	
 	parent = rb_node_get_property_pointer (node,
 					    RB_NODE_PROP_REAL_ALBUM);
 	if (G_LIKELY (parent != NULL))
-		rb_node_unref (parent);
+		rb_node_unref_with_locked_child (parent, node);
 	parent = rb_node_get_property_pointer (node,
 					    RB_NODE_PROP_REAL_ARTIST);
 	if (G_LIKELY (parent != NULL))
-		rb_node_unref (parent);
+		rb_node_unref_with_locked_child (parent, node);
 	parent = rb_node_get_property_pointer (node,
 					    RB_NODE_PROP_REAL_GENRE);
 	if (G_LIKELY (parent != NULL))
-		rb_node_unref (parent);
+		rb_node_unref_with_locked_child (parent, node);
 }
 
 RBNode *

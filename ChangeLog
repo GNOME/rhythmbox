@@ -1,3 +1,12 @@
+2003-07-31  Colin Walters  <walters@gnu.org>
+
+	* library/rb-library.c: (finalize_node):
+	* library/rb-node.c: (unref_signal_objects), (rb_node_dispose),
+	(rb_node_unref_with_locked_child), (rb_node_unref):
+	* library/rb-node.h:
+
+	Don't deadlock on recursive unreffing chains.
+
 2003-07-31  Colin Walters  <walters@verbum.org>
 
 	* data/ui/rhythmbox-ui.xml.in:

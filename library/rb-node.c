@@ -290,15 +290,13 @@ unref_signal_objects (long id,
 	              RBNode *node)
 {
 	if (signal_data->data)
-	{
 		g_object_weak_unref (G_OBJECT (signal_data->data),
 				     (GWeakNotify)signal_object_weak_notify,
 				     signal_data);
-	}
 }
 
 static void
-rb_node_dispose (RBNode *node)
+rb_node_dispose (RBNode *node, RBNode *locked_child)
 {
 	guint i;
 
@@ -320,11 +318,13 @@ rb_node_dispose (RBNode *node)
 
 		child = g_ptr_array_index (node->children, i);
 
-		g_static_rw_lock_writer_lock (child->lock);
+		if (locked_child != child)
+			g_static_rw_lock_writer_lock (child->lock);
 
 		real_remove_child (node, child, FALSE, TRUE);
 
-		g_static_rw_lock_writer_unlock (child->lock);
+		if (locked_child != child)
+			g_static_rw_lock_writer_unlock (child->lock);
 	}
 
 	g_static_rw_lock_writer_unlock (node->lock);
@@ -425,6 +425,24 @@ rb_node_ref (RBNode *node)
 }
 
 void
+rb_node_unref_with_locked_child (RBNode *node, RBNode *child)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+	g_return_if_fail (RB_IS_NODE (child));
+
+	g_static_rw_lock_writer_lock (node->lock);
+
+	node->ref_count--;
+
+	if (node->ref_count <= 0) {
+		rb_node_dispose (node, child);
+		rb_node_finalize (node);
+	} else {
+		g_static_rw_lock_writer_unlock (node->lock);
+	}
+}
+
+void
 rb_node_unref (RBNode *node)
 {
 	g_return_if_fail (RB_IS_NODE (node));
@@ -434,7 +452,7 @@ rb_node_unref (RBNode *node)
 	node->ref_count--;
 
 	if (node->ref_count <= 0) {
-		rb_node_dispose (node);
+		rb_node_dispose (node, NULL);
 		rb_node_finalize (node);
 	} else {
 		g_static_rw_lock_writer_unlock (node->lock);

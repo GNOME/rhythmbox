@@ -89,6 +89,7 @@ long        rb_node_get_id                (RBNode *node);
 /* refcounting */
 void        rb_node_ref                   (RBNode *node);
 void        rb_node_unref                 (RBNode *node);
+void	    rb_node_unref_with_locked_child (RBNode *node, RBNode *child);
 
 /* locking */
 void        rb_node_freeze                (RBNode *node);
