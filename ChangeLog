@@ -2,6 +2,923 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2004-01-21 20:59:01 GMT	Colin Walters <walters@verbum.org>	patch-409
+
+    Summary:
+      merge more bugfixes from 0.7
+    Revision:
+      rhythmbox--mainline--0.6--patch-409
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-143
+       be sure to g_strdup const location string, add debug bits
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-167
+       adapt Bonobo interface to play-order changes
+    
+
+    modified files:
+     ChangeLog corba/Rhythmbox.idl rhythmdb/rhythmdb.c
+     shell/rb-shell-player.c shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-143
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-167
+
+
+2004-01-18 05:13:10 GMT	Colin Walters <walters@verbum.org>	patch-408
+
+    Summary:
+      better dashboard support (Lee Willis)
+    Revision:
+      rhythmbox--mainline--0.6--patch-408
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c shell/rb-shell.c
+
+
+2004-01-18 02:41:01 GMT	Colin Walters <walters@verbum.org>	patch-407
+
+    Summary:
+      more bugfixes from 0.7
+    Revision:
+      rhythmbox--mainline--0.6--patch-407
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-133
+       fix compilation with G_DISABLE_ASSERT
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-141
+       hold read lock while using constant string from db
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-133
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-141
+
+
+2004-01-18 02:31:19 GMT	Colin Walters <walters@verbum.org>	patch-406
+
+    Summary:
+      merge various fixes from 0.7
+    Revision:
+      rhythmbox--mainline--0.6--patch-406
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-145
+       URL-encode locations when upgrading from 0.5.x DB
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-155
+       various shell bugfixes, jump to song added via cmdline, and more debug bits
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-156
+       work with session management (Matt Hughes)
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-legacy.c shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-145
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-155
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-156
+
+
+2004-01-14 03:42:29 GMT	Colin Walters <walters@verbum.org>	patch-405
+
+    Summary:
+      add debugging bits to query, make gconf notifier for browsers more specific
+    Revision:
+      rhythmbox--mainline--0.6--patch-405
+
+
+    modified files:
+     ChangeLog sources/rb-library-source.c
+
+
+2004-01-12 23:53:50 GMT	Colin Walters <walters@verbum.org>	patch-404
+
+    Summary:
+      tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.6--base-0
+    Revision:
+      rhythmbox--mainline--0.6--patch-404
+
+    (automatically generated log message)
+
+    new patches:
+     chris@gnome-de.org--2003/rhythmbox--mainline--0.6--base-0
+     chris@gnome-de.org--2003/rhythmbox--mainline--0.6--patch-1
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-5
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-5
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-8
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-9
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-10
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--patch-1
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--base-0
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-1
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-2
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-3
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-4
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-5
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-18
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.6--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-5
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-6
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--base-0
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-1
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-2
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-28
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-29
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-30
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-31
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-32
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-33
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-34
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-35
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-36
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-40
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-41
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-42
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-43
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-44
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-45
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-46
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-47
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-48
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-49
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-50
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-51
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-52
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-53
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-54
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-55
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-56
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-57
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-58
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-59
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-60
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-61
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-62
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-63
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-64
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-65
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-66
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-67
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-68
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-69
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-70
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-71
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-72
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-73
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-74
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-75
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-76
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-77
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-28
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-29
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-30
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-31
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-32
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-33
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-34
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-35
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-36
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-40
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-41
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-42
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-43
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-44
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-45
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-46
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-47
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-48
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-49
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-50
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-51
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-52
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-53
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-54
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-55
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-56
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-57
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-58
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-59
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-60
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-61
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-62
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-63
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-64
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-65
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-66
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-67
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-68
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-69
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-70
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-71
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-72
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-73
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-74
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-75
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-76
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-77
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-78
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-79
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-80
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-81
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-82
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-83
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-84
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-85
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-86
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-87
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-88
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-89
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-90
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-91
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-92
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-93
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-94
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-95
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-96
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-97
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-98
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-99
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-100
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-101
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-102
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-103
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-104
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-105
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-8
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-9
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-13
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-14
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-15
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-22
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-23
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-24
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-25
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-26
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-27
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-28
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-29
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-30
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-31
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-32
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-33
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-34
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-35
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-36
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-37
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-38
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-39
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-40
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-41
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-42
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-43
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-44
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-45
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-46
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-47
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-48
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-49
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-50
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-51
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-52
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-53
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-54
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-55
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-56
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-57
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-58
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-59
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-60
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-61
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-62
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-63
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-64
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-65
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-66
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-67
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-68
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-69
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-70
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-71
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-72
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-73
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-74
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-75
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-76
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-77
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-78
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-79
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-80
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-81
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-82
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-83
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-84
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-85
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-86
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-87
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-88
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-89
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-90
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-91
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-92
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-93
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-94
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-95
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-96
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-97
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-98
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-99
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-100
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-101
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-102
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-103
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-104
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-105
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-106
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-107
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-108
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-109
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-110
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-111
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-112
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-113
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-114
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-115
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-116
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-117
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-118
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-119
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-120
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-121
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-122
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-123
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-124
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-125
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-126
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-127
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-128
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-129
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-130
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-131
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-132
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-133
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-134
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-135
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-136
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-137
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-138
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-139
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-140
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-141
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-142
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-143
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-144
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-145
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-146
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-147
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-148
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-149
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-150
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-151
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-152
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-153
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-154
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-155
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-156
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-157
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-158
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-159
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-160
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-161
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-162
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-163
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-164
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-165
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-166
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-167
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-168
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-169
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-170
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-171
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-172
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-173
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-174
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-175
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-176
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-177
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-178
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-179
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-180
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-181
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-182
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-183
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-184
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-185
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-186
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-187
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-188
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-189
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-190
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-191
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-192
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-193
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-194
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-195
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-196
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-197
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-198
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-199
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-200
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-201
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-202
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-203
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-204
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-205
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-206
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-207
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-208
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-209
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-210
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-211
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-212
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-213
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-214
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-215
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-216
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-217
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-218
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-219
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-220
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-221
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-222
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-223
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-224
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-225
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-226
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-227
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-228
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-229
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-230
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-231
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-232
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-233
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-234
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-235
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-236
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-237
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-238
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-239
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-240
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-241
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-242
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-243
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-244
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-245
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-246
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-247
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-248
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-249
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-250
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-251
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-252
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-253
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-254
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-255
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-256
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-257
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-258
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-259
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-260
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-261
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-262
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-263
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-264
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-265
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-266
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-267
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-268
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-269
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-270
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-271
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-272
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-273
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-274
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-275
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-276
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-277
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-278
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-279
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-280
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-281
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-282
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-283
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-284
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-285
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-286
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-287
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-288
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-289
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-290
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-291
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-292
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-293
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-294
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-295
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-296
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-297
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-298
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-299
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-300
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-301
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-302
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-303
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-304
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-305
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-306
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-307
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-308
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-309
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-310
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-311
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-312
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-313
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-314
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-315
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-316
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-317
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-318
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-319
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-320
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-321
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-322
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-323
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-324
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-325
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-326
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-327
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-328
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-329
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-330
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-331
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-332
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-333
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-334
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-335
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-336
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-337
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-338
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-339
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-340
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-341
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-342
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-343
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-344
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-345
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-346
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-347
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-348
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-349
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-350
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-351
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-352
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-353
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-354
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-355
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-356
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-357
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-358
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-359
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-360
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-361
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-362
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-363
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-364
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-365
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-366
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-367
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-368
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-369
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-370
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-371
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-372
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-373
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-374
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-375
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-376
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-377
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-378
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-379
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-380
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-381
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-382
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-383
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-384
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-385
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-386
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-387
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-388
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-389
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-390
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-391
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-392
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-393
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-394
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-395
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-396
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-397
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-398
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-399
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-400
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-401
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-402
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-403
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-23
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-46
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-67
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-81
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-88
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-110
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-117
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-118
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-123
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-8
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-9
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-13
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-14
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-15
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-22
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-6
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-7
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-8
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-9
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-10
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-11
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-12
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-13
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-14
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-15
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-16
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-17
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-18
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-19
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-20
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-21
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-3
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-4
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-5
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-6
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-7
+
+
 2004-01-09 15:30:54 GMT	Colin Walters <walters@verbum.org>	patch-403
 
     Summary:
