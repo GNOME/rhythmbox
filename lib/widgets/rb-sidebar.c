@@ -33,6 +33,7 @@
 #include "rb-dialog.h"
 #include "rb-sidebar.h"
 #include "rb-sidebar-private.h"
+#include "rb-marshal.h"
 
 #define DARKEN 1.4
 
@@ -48,6 +49,12 @@ struct _RBSidebarPriv
 	GSList *radiogroup;
 
 	GtkWidget *dnd_hint;
+};
+
+enum
+{
+	DRAG_FINISHED,
+	LAST_SIGNAL
 };
 
 static void rb_sidebar_class_init (RBSidebarClass *klass);
@@ -84,6 +91,8 @@ static void rb_sidebar_get_button_coords (GtkWidget *w,
 			                  int *x2, int *y2);
 
 static GtkVBoxClass *parent_class = NULL;
+
+static guint rb_sidebar_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_sidebar_get_type (void)
@@ -125,6 +134,22 @@ rb_sidebar_class_init (RBSidebarClass *class)
 	o_class->finalize = rb_sidebar_finalize;
 
 	object_class->destroy = rb_sidebar_destroy;
+
+	rb_sidebar_signals[DRAG_FINISHED] =
+		g_signal_new ("drag_finished",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSidebarClass, drag_finished),
+			      NULL, NULL,
+			      rb_marshal_VOID__OBJECT_INT_INT_BOXED_UINT_UINT,
+			      G_TYPE_NONE,
+			      6,
+			      GDK_TYPE_DRAG_CONTEXT,
+			      G_TYPE_INT,
+			      G_TYPE_INT,
+			      GTK_TYPE_SELECTION_DATA | G_SIGNAL_TYPE_STATIC_SCOPE,
+			      G_TYPE_UINT,
+			      G_TYPE_UINT);
 }
 
 static void
@@ -447,6 +472,24 @@ rb_sidebar_move_item (RBSidebar *sidebar,
 	sidebar->priv->buttons = g_list_insert (sidebar->priv->buttons, button, pos);
 }
 
+static gboolean
+event_for_self (GtkWidget *widget,
+		GdkDragContext *context,
+		RBSidebar *sidebar)
+{
+	GtkTargetList *list;
+	gboolean ret;
+
+	list = gtk_target_list_new (sidebar->dnd_targets,
+				    G_N_ELEMENTS (sidebar->dnd_targets));
+
+	ret = (gtk_drag_dest_find_target (widget, context, list) != GDK_NONE);
+
+	gtk_target_list_unref (list);
+
+	return ret;
+}
+
 static void
 rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 					    GdkDragContext *context,
@@ -458,6 +501,15 @@ rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 {
 	RBSidebarButton *button;
 	char *dnd_info;
+
+	if (event_for_self (widget, context, sidebar) == FALSE)
+	{
+		g_signal_emit (G_OBJECT (sidebar),
+			       rb_sidebar_signals[DRAG_FINISHED],
+			       0,
+			       context, x, y, data, info, time);
+		return;
+	}
 	
 	if (!(data->length >= 0 && data->format == 8))
 		gtk_drag_finish (context, FALSE, FALSE, time);
@@ -527,6 +579,12 @@ rb_sidebar_event_box_drag_motion_cb (GtkWidget *widget,
 {
 	GtkWidget *button;
 	RBSidebarDNDPosition pos;
+
+	if (event_for_self (widget, context, sidebar) == FALSE)
+	{
+		gtk_drag_highlight (widget);
+		return TRUE;
+	}
 		
 	button = rb_sidebar_get_dnd_info (sidebar, x, y, &pos);
 	rb_sidebar_show_dnd_hint (sidebar, button, pos);
@@ -592,6 +650,12 @@ rb_sidebar_event_box_drag_leave_cb (GtkWidget *widget,
 				    guint time,
 				    RBSidebar *sidebar)
 {
+	if (event_for_self (widget, context, sidebar) == FALSE)
+	{
+		gtk_drag_unhighlight (widget);
+		return;
+	}
+	
 	rb_sidebar_hide_dnd_hint (sidebar);
 }
 
@@ -702,4 +766,27 @@ rb_sidebar_get_button_pos (GtkWidget *widget,
 	{
 		return RB_SIDEBAR_DND_POSITION_MID;
 	}
+}
+
+void
+rb_sidebar_add_dnd_targets (RBSidebar *sidebar,
+			    const GtkTargetEntry *targets,
+			    int n_targets)
+{
+	GtkTargetList *list;
+
+	g_return_if_fail (RB_IS_SIDEBAR (sidebar));
+
+	list = gtk_target_list_new (targets, n_targets);
+	gtk_target_list_add_table (list,
+				   sidebar->dnd_targets,
+				   G_N_ELEMENTS (sidebar->dnd_targets));
+
+	gtk_drag_dest_set (sidebar->priv->event_box,
+			   GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+			   NULL, 0,
+			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
+	gtk_drag_dest_set_target_list (sidebar->priv->event_box, list);
+
+	gtk_target_list_unref (list);
 }

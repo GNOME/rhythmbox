@@ -42,5 +42,3 @@ INCLUDES =						\
 
 librbwidgets_la_LDFLAGS = -export-dynamic
 librbwidgets_la_LIDADD = $(top_builddir)/lib/view/librbview.la
-
-EXTRA_DIST =			\

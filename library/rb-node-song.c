@@ -51,6 +51,7 @@ rb_node_song_sync (RBNode *node,
 	if (info == NULL)
 	{
 		g_free (location);
+		g_object_unref (G_OBJECT (node));
 		return;
 	}
 

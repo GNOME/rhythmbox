@@ -59,7 +59,7 @@ RBLibraryAction      *rb_library_action_queue_add       (RBLibraryActionQueue *q
 
 gboolean              rb_library_action_queue_is_empty  (RBLibraryActionQueue *queue);
 
-void                  rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
+RBLibraryAction      *rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
 							 RBLibraryActionType *type,
 							 char **uri);
 void                  rb_library_action_queue_pop_head  (RBLibraryActionQueue *queue);

@@ -32,6 +32,7 @@
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-window-icon.h>
 #include <libgnomeui/gnome-about.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -52,6 +53,7 @@
 #include "rb-shell-preferences.h"
 #include "rb-group-view.h"
 #include "rb-file-monitor.h"
+#include "rb-library-dnd-types.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
@@ -157,6 +159,28 @@ static void toolbar_style_changed_cb (GConfClient *client,
 			              guint cnxn_id,
 			              GConfEntry *entry,
 			              RBShell *shell);
+static void rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
+			                 GdkDragContext *context,
+			                 int x, int y,
+			                 GtkSelectionData *data,
+			                 guint info,
+			                 guint time,
+			                 RBShell *shell);
+static void dnd_add_handled_cb (RBLibraryAction *action,
+		                RBGroupView *view);
+
+static const GtkTargetEntry target_table[] =
+	{
+		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST },
+		{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
+	};
+
+typedef enum
+{
+	CREATE_GROUP_WITH_URI_LIST,
+	CREATE_GROUP_WITH_NODE_LIST,
+	CREATE_GROUP_WITH_NOTHING
+} CreateGroupType;
 
 #define CMD_PATH_SHUFFLE        "/commands/Shuffle"
 #define CMD_PATH_REPEAT         "/commands/Repeat"
@@ -469,7 +493,16 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 
 	shell->priv->paned = gtk_hpaned_new ();
+	
 	shell->priv->sidebar = rb_sidebar_new ();
+	rb_sidebar_add_dnd_targets (RB_SIDEBAR (shell->priv->sidebar),
+				    target_table,
+				    G_N_ELEMENTS (target_table));
+	g_signal_connect (G_OBJECT (shell->priv->sidebar),
+			  "drag_finished",
+			  G_CALLBACK (rb_sidebar_drag_finished_cb),
+			  shell);
+		
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
@@ -998,6 +1031,8 @@ ask_string_response_cb (GtkDialog *dialog,
 	GtkWidget *entry;
 	RBView *group;
 	char *name;
+	CreateGroupType type;
+	GList *data, *l;
 
 	if (response_id != GTK_RESPONSE_OK)
 	{
@@ -1020,20 +1055,72 @@ ask_string_response_cb (GtkDialog *dialog,
 	rb_shell_append_view (shell, group);
 	g_free (name);
 
-	/* check if we need to add some songs to the new group */
-	if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "from_selection")))
-	{
-		GList *i;
-		GList *songs = rb_view_get_selection (shell->priv->selected_view);
+	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type"));
+	data = g_object_get_data (G_OBJECT (dialog), "data");
 
-		for (i = songs; i != NULL; i = g_list_next (i))
+	switch (type)
+	{
+	case CREATE_GROUP_WITH_NODE_LIST:
+		for (l = data; l != NULL; l = g_list_next (l))
 		{
 			rb_group_view_add_node (RB_GROUP_VIEW (group),
-						RB_NODE (i->data));
+						RB_NODE (l->data));
 		}
+		break;
+	case CREATE_GROUP_WITH_URI_LIST:
+		for (l = data; l != NULL; l = g_list_next (l))
+		{
+			char *uri;
+			RBNode *node;
+				
+			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
+			node = rb_node_get_song_by_uri (uri);
+
+			if (node != NULL)
+			{
+				/* add this node to the newly created group */
+				rb_group_view_add_node (RB_GROUP_VIEW (group), node);
+			}
+			else
+			{
+				/* will add these nodes to the newly created group */
+				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri);
+                                g_signal_connect_object (G_OBJECT (action),
+                                                         "handled", 
+                                                         G_CALLBACK (dnd_add_handled_cb),
+                                                         G_OBJECT (group),
+                                                         0);
+			}
+
+			g_free (uri);
+		}
+		gnome_vfs_uri_list_free (data);
+		break;
+	case CREATE_GROUP_WITH_NOTHING:
+		break;
 	}
 
 	rb_shell_save_music_groups (shell);
+}
+
+static void
+create_group (RBShell *shell, CreateGroupType type,
+	      GList *data)
+{
+	GtkWidget *dialog;
+	
+	dialog = rb_ask_string (_("Please enter a name for the new music group."),
+			        _("Create"),
+			        _("Untitled"),
+			       GTK_WINDOW (shell->priv->window));
+
+	g_object_set_data (G_OBJECT (dialog), "type", GINT_TO_POINTER (type));
+	g_object_set_data (G_OBJECT (dialog), "data", data);
+
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_string_response_cb),
+			  shell);
 }
 
 static void
@@ -1041,18 +1128,8 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 			RBShell *shell,
 			const char *verbname)
 {
-	GtkWidget *dialog;
-	
-	dialog = rb_ask_string (_("Please enter a name for the new music group."),
-			       _("Create"),
-			       _("Untitled"),
-			       GTK_WINDOW (shell->priv->window));
-
-	g_object_set_data (G_OBJECT (dialog), "from_selection", GINT_TO_POINTER (FALSE));
-	g_signal_connect (G_OBJECT (dialog),
-			  "response",
-			  G_CALLBACK (ask_string_response_cb),
-			  shell);
+	create_group (shell, CREATE_GROUP_WITH_NOTHING,
+		      NULL);
 }
 
 static void
@@ -1060,18 +1137,8 @@ rb_shell_cmd_new_group_selection (BonoboUIComponent *component,
 				  RBShell *shell,
 				  const char *verbname)
 {
-	GtkWidget *dialog;
-	
-	dialog = rb_ask_string (_("Please enter a name for the new music group."),
-			       _("Create"),
-			       _("Untitled"),
-			       GTK_WINDOW (shell->priv->window));
-
-	g_object_set_data (G_OBJECT (dialog), "from_selection", GINT_TO_POINTER (TRUE));
-	g_signal_connect (G_OBJECT (dialog),
-			  "response",
-			  G_CALLBACK (ask_string_response_cb),
-			  shell);
+	create_group (shell, CREATE_GROUP_WITH_NODE_LIST,
+		      rb_view_get_selection (shell->priv->selected_view));
 }
 
 static void
@@ -1254,4 +1321,164 @@ toolbar_style_changed_cb (GConfClient *client,
 			  RBShell *shell)
 {
 	rb_shell_sync_toolbar_style (shell);
+}
+
+static void
+add_uri (const char *uri,
+	 RBGroupView *view)
+{
+	RBNode *node;
+
+	node = rb_node_get_song_by_uri (uri);
+
+	if (node != NULL)
+	{
+		rb_group_view_add_node (view, node);
+	}
+}
+
+static void
+dnd_add_handled_cb (RBLibraryAction *action,
+		    RBGroupView *view)
+{
+	char *uri;
+	RBLibraryActionType type;
+
+	rb_library_action_get (action,
+			       &type,
+			       &uri);
+
+	switch (type)
+	{
+	case RB_LIBRARY_ACTION_ADD_FILE:
+		{
+			RBNode *node;
+
+			node = rb_node_get_song_by_uri (uri);
+
+			if (node != NULL)
+			{
+				rb_group_view_add_node (view, node);
+			}
+		}
+		break;
+	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
+		{
+			rb_uri_handle_recursively (uri,
+						   (GFunc) add_uri,
+						   view);
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+static void
+rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
+			     GdkDragContext *context,
+			     int x, int y,
+			     GtkSelectionData *data,
+			     guint info,
+			     guint time,
+			     RBShell *shell)
+{
+	switch (info)
+	{
+	case RB_LIBRARY_DND_NODE_ID:
+		{
+			long id;
+			RBNode *node;
+
+			id = atol (data->data);
+			node = rb_node_from_id (id);
+
+			if (node == NULL)
+				break;
+
+			switch (rb_node_get_node_type (node))
+			{
+			case RB_NODE_TYPE_ALL_SONGS:
+			case RB_NODE_TYPE_ALBUM:
+				/* create a group containing the songs of this
+				 * album, with the name of the album */
+				{
+					RBGroupView *group;
+					GValue value = { 0, };
+					GList *kids, *l;
+
+					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
+								                  shell->priv->library));
+					
+					rb_node_get_property (node, "name", &value);
+					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
+					g_value_unset (&value);
+
+					kids = rb_node_get_children (node);
+					for (l = kids; l != NULL; l = g_list_next (l))
+					{
+						rb_group_view_add_node (group, RB_NODE (l->data));
+					}
+					g_list_free (kids);
+					
+					shell->priv->groups = g_list_append (shell->priv->groups, group);
+					rb_shell_append_view (shell, RB_VIEW (group));
+				}
+				break;
+			case RB_NODE_TYPE_ALL_ALBUMS:
+			case RB_NODE_TYPE_ARTIST:
+				/* create a group containing the songs of this
+				 * artist, with the name of the artist */
+				{
+					RBGroupView *group;
+					GValue value = { 0, };
+					GList *kids, *l;
+
+					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
+								                  shell->priv->library));
+					
+					rb_node_get_property (node, "name", &value);
+					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
+					g_value_unset (&value);
+
+					kids = rb_node_get_children (node);
+					for (l = kids; l != NULL; l = g_list_next (l))
+					{
+						RBNode *kid;
+						GList *kids2, *j;
+
+						kid = RB_NODE (l->data);
+
+						if (rb_node_get_node_type (kid) == RB_NODE_TYPE_ALL_SONGS)
+							continue;
+
+						kids2 = rb_node_get_children (kid);
+						for (j = kids2; j != NULL; j = g_list_next (j))
+						{
+							rb_group_view_add_node (group, RB_NODE (j->data));
+						}
+						g_list_free (kids2);
+					}
+					g_list_free (kids);
+					
+					shell->priv->groups = g_list_append (shell->priv->groups, group);
+					rb_shell_append_view (shell, RB_VIEW (group));
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		break;
+	case RB_LIBRARY_DND_URI_LIST:
+		{
+			GList *list;
+
+			list = gnome_vfs_uri_list_parse (data->data);
+			create_group (shell, CREATE_GROUP_WITH_URI_LIST, list);
+		}
+		break;
+	}
+
+	gtk_drag_finish (context, TRUE, FALSE, time);
 }

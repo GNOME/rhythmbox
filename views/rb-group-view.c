@@ -1196,22 +1196,53 @@ rb_group_view_remove_file (RBGroupView *view)
 }
 
 static void
-dnd_add_handled_cb (RBLibraryAction *action,
-		    RBGroupView *view)
+add_uri (const char *uri,
+	 RBGroupView *view)
 {
 	RBNode *node;
-	char *uri;
-	RBLibraryActionType type;
-
-	rb_library_action_get (action,
-			       &type,
-			       &uri);
 
 	node = rb_node_get_song_by_uri (uri);
 
 	if (node != NULL)
 	{
 		rb_group_view_add_node (view, node);
+	}
+}
+
+static void
+dnd_add_handled_cb (RBLibraryAction *action,
+		    RBGroupView *view)
+{
+	char *uri;
+	RBLibraryActionType type;
+
+	rb_library_action_get (action,
+			       &type,
+			       &uri);
+	
+	switch (type)
+	{
+	case RB_LIBRARY_ACTION_ADD_FILE:
+		{
+			RBNode *node;
+
+			node = rb_node_get_song_by_uri (uri);
+
+			if (node != NULL)
+			{
+				rb_group_view_add_node (view, node);
+			}
+		}
+		break;
+	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
+		{
+			rb_uri_handle_recursively (uri,
+						   (GFunc) add_uri,
+						   view);
+		}
+		break;
+	default:
+		break;
 	}
 }
 
@@ -1246,7 +1277,7 @@ rb_group_view_drop_cb (GtkWidget *widget,
 		long id;
 		RBNode *node = NULL;
 
-		id = (long) g_strtod (data->data, NULL);
+		id = atol (data->data);
 		node = rb_node_from_id (id);
 
 		if (node != NULL)
@@ -1327,7 +1358,7 @@ rb_group_view_add_list_uri (RBGroupView *view,
 			}
 			else
 			{
-				RBLibraryAction *action= rb_library_add_uri (view->priv->library, uri);
+				RBLibraryAction *action = rb_library_add_uri (view->priv->library, uri);
 				g_signal_connect_object (G_OBJECT (action),
 						         "handled",
 						         G_CALLBACK (dnd_add_handled_cb),

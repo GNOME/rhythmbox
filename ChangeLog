@@ -1,3 +1,35 @@
+2002-08-25  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/Makefile.am:
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively):
+	* lib/rb-file-helpers.h:
+	* lib/rb-marshal.list:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-sidebar.c: (rb_sidebar_class_init),
+	(event_for_self), (rb_sidebar_event_box_drag_data_received_cb),
+	(rb_sidebar_event_box_drag_motion_cb),
+	(rb_sidebar_event_box_drag_leave_cb), (rb_sidebar_get_button_pos),
+	(rb_sidebar_add_dnd_targets):
+	* lib/widgets/rb-sidebar.h:
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_set_property), (rb_song_info_update_buttons):
+	* library/rb-library-action-queue.c:
+	(rb_library_action_queue_peek_head):
+	* library/rb-library-action-queue.h:
+	* library/rb-library-walker-thread.c: (action_handled_cb),
+	(add_file), (thread_main):
+	* library/rb-node-song.c: (rb_node_song_sync):
+	* shell/rb-shell.c: (rb_shell_construct), (ask_string_response_cb),
+	(create_group), (rb_shell_cmd_new_group),
+	(rb_shell_cmd_new_group_selection), (toolbar_style_changed_cb),
+	(add_uri), (dnd_add_handled_cb), (rb_sidebar_drag_finished_cb):
+	* views/rb-group-view.c: (add_uri), (dnd_add_handled_cb),
+	(rb_group_view_drop_cb), (rb_group_view_add_list_uri):
+
+	Support DnD to empty sidebar space to create new groups,
+	remove "up" button in songinfo and rename "down" to
+	"Next Song", as recommended by Seth on IRC.
+
 2002-08-25  Olivier Martin <omartin@ifrance.com>
 
 	* data/ui/rhythmbox-ui.xml.in:

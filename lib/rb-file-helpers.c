@@ -28,6 +28,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
+#include <libgnomevfs/gnome-vfs-directory.h>
 #include <unistd.h>
 
 #include "rb-file-helpers.h"
@@ -511,3 +512,51 @@ rb_uri_resolve_relative (const char *location)
 	return uri;
 }
 
+void
+rb_uri_handle_recursively (const char *text_uri,
+		           GFunc func,
+		           gpointer user_data)
+{
+	GList *list, *l;
+	GnomeVFSURI *uri;
+
+	uri = gnome_vfs_uri_new (text_uri);
+
+	gnome_vfs_directory_list_load (&list, text_uri,
+				       (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
+					GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+					GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
+
+	for (l = list; l != NULL; l = g_list_next (l))
+	{
+		GnomeVFSFileInfo *info;
+		GnomeVFSURI *file_uri;
+		char *file_uri_text;
+
+		info = (GnomeVFSFileInfo *) l->data;
+
+		file_uri = gnome_vfs_uri_append_path (uri, info->name);
+		file_uri_text = gnome_vfs_uri_to_string (file_uri,
+							 GNOME_VFS_URI_HIDE_NONE);
+		gnome_vfs_uri_unref (file_uri);
+
+		if (info->type != GNOME_VFS_FILE_TYPE_REGULAR)
+		{
+			if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) &&
+			    (info->name) && (info->name[0] != '.'))
+			{
+				rb_uri_handle_recursively (file_uri_text,
+							   func,
+							   user_data);
+
+			}
+		}
+		else
+			(*func) (file_uri_text, user_data);
+
+		g_free (file_uri_text);
+	}
+
+	gnome_vfs_file_info_list_free (list);
+	gnome_vfs_uri_unref (uri);
+}

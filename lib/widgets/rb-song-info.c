@@ -30,6 +30,9 @@
 #include <gtk/gtkbbox.h>
 #include <gtk/gtkcombo.h>
 #include <gtk/gtktextview.h>
+#include <gtk/gtkimage.h>
+#include <gtk/gtkalignment.h>
+#include <gtk/gtkstock.h>
 #include <glade/glade.h>
 #include <string.h>
 #include <monkey-media-stream-info.h>
@@ -70,12 +73,7 @@ static void rb_song_info_update_comments (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
-static void song_info_back_clicked_cb (GtkWidget *button,
-			   	       RBSongInfo *song_info);
 static void song_info_forward_clicked_cb (GtkWidget *button,
-					  RBSongInfo *song_info);
-static void rb_song_info_node_deleted_cb (RBNodeView *node_view,
-					  RBNode *node,
 					  RBSongInfo *song_info);
 static void rb_song_info_view_changed_cb (RBNodeView *node_view,
 					  RBSongInfo *song_info);
@@ -90,7 +88,6 @@ struct RBSongInfoPrivate
 
 	/* the dialog widgets */
 	GtkTooltips *tooltips;
-	GtkWidget   *back;
 	GtkWidget   *forward;
 	GtkWidget   *title;
 	GtkWidget   *artist;
@@ -169,7 +166,7 @@ static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	GladeXML *xml;
-	GtkWidget *close;
+	GtkWidget *close, *label, *image, *hbox, *align;
 	
 	/* create the dialog and some buttons back - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
@@ -184,17 +181,28 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_button_box_set_layout (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area),
 				   GTK_BUTTONBOX_START);
 
-	song_info->priv->back = gtk_dialog_add_button (GTK_DIALOG (song_info),
-						       GTK_STOCK_GO_UP,
-						       GTK_RESPONSE_NONE);
-	g_signal_connect (G_OBJECT (song_info->priv->back),
-			  "clicked",
-			  G_CALLBACK (song_info_back_clicked_cb),
-			  song_info);
+	song_info->priv->forward = gtk_button_new ();
 
-	song_info->priv->forward = gtk_dialog_add_button (GTK_DIALOG (song_info),
-							  GTK_STOCK_GO_DOWN, 
-							  GTK_RESPONSE_NONE);
+	label = gtk_label_new_with_mnemonic (_("_Next Song"));
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), song_info->priv->forward);
+	
+	image = gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_BUTTON);
+	
+	hbox = gtk_hbox_new (FALSE, 2);
+	
+	align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	
+	gtk_container_add (GTK_CONTAINER (song_info->priv->forward), align);
+	gtk_container_add (GTK_CONTAINER (align), hbox);
+	
+	gtk_widget_show_all (song_info->priv->forward);
+
+	gtk_dialog_add_action_widget (GTK_DIALOG (song_info),
+			              song_info->priv->forward,
+				      GTK_RESPONSE_NONE);
 	g_signal_connect (G_OBJECT (song_info->priv->forward),
 			  "clicked",
 			  G_CALLBACK (song_info_forward_clicked_cb),
@@ -281,11 +289,6 @@ rb_song_info_set_property (GObject *object,
 			rb_song_info_update_current_values (song_info);
 
 			/* install some callbacks on the node view */
-			g_signal_connect_object (G_OBJECT (node_view),
-						 "node_deleted",
-						 G_CALLBACK (rb_song_info_node_deleted_cb),
-						 song_info,
-						 G_CONNECT_AFTER);
 			g_signal_connect_object (G_OBJECT (node_view),
 						 "changed",
 						 G_CALLBACK (rb_song_info_view_changed_cb),
@@ -642,30 +645,6 @@ rb_song_info_update_location (RBSongInfo *song_info)
 }
 
 static void
-song_info_back_clicked_cb (GtkWidget *button,
-			   RBSongInfo *song_info)
-{
-	GValue location = { 0, };
-	MonkeyMediaStreamInfo *info = NULL;
-	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
-					      song_info->priv->current_node,
-					      RB_DIRECTION_UP);
-
-	g_return_if_fail (node != NULL);
-
-	/* update our node and info, then refresh the dlg */
-	song_info->priv->current_node = node;
-	rb_node_get_property (node, "location", &location);
-	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
-	song_info->priv->current_info = info;
-	g_value_unset (&location);
-
-	/* update the node view */
-	rb_node_view_select_node (song_info->priv->node_view, node);
-	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
-}
-
-static void
 song_info_forward_clicked_cb (GtkWidget *button,
 			      RBSongInfo *song_info)
 {
@@ -697,13 +676,6 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 {
 	RBNode *node = NULL;
 
-	/* back */
-	node = rb_node_view_get_node (song_info->priv->node_view,
-				      song_info->priv->current_node,
-				      FALSE);
-
-	gtk_widget_set_sensitive (song_info->priv->back, node != NULL);
-
 	/* forward */
 	node = rb_node_view_get_node (song_info->priv->node_view,
 				      song_info->priv->current_node,
@@ -711,29 +683,6 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 
 	gtk_widget_set_sensitive (song_info->priv->forward,
 				  node != NULL);
-}
-
-/*
- * rb_song_info_node_deleted_cb: the node for which we display
- * the information could have been deleted, we exit if this is
- * the case
- */
-static void
-rb_song_info_node_deleted_cb (RBNodeView *node_view,
-			      RBNode *node,
-			      RBSongInfo *song_info)
-{
-	if (rb_node_get_id (node) == 
-			rb_node_get_id (song_info->priv->current_node))
-	{
-		song_info->priv->current_info = NULL;
-		song_info->priv->current_node = NULL;
-		gtk_widget_destroy (GTK_WIDGET (song_info));
-
-		return;
-	}
-
-	rb_song_info_update_buttons (song_info);
 }
 
 /*

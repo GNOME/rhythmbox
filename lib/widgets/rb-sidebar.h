@@ -61,11 +61,22 @@ struct _RBSidebar
 struct _RBSidebarClass
 {
 	GtkScrolledWindowClass parent_class;
+	
+	void (*drag_finished) (RBSidebar *sidebar,
+			       GdkDragContext *context,
+			       int x, int y,
+			       GtkSelectionData *data,
+			       guint info,
+			       guint time);
 };
 
 GType      rb_sidebar_get_type        (void);
 
 GtkWidget *rb_sidebar_new             (void);
+
+void       rb_sidebar_add_dnd_targets (RBSidebar *sidebar,
+				       const GtkTargetEntry *targets,
+				       int n_targets);
 
 void       rb_sidebar_append          (RBSidebar *sidebar,
 				       RBSidebarButton *button);

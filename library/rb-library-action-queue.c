@@ -151,7 +151,7 @@ rb_library_action_queue_is_empty (RBLibraryActionQueue *queue)
 	return ret;
 }
 
-void
+RBLibraryAction *
 rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
                                    RBLibraryActionType *type,
                                    char **uri)
@@ -163,6 +163,8 @@ rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
 	g_static_rw_lock_reader_unlock (queue->priv->lock);
 
 	rb_library_action_get (action, type, uri);
+
+	return action;
 }
 
 void

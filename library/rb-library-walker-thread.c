@@ -23,6 +23,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-library-walker-thread.h"
+#include "rb-file-helpers.h"
 
 static void rb_library_walker_thread_class_init (RBLibraryWalkerThreadClass *klass);
 static void rb_library_walker_thread_init (RBLibraryWalkerThread *thread);
@@ -40,6 +41,8 @@ static gpointer thread_main (RBLibraryWalkerThreadPrivate *priv);
 struct RBLibraryWalkerThreadPrivate
 {
 	RBLibrary *library;
+
+	RBLibraryAction *action;
 
 	GThread *thread;
 	GMutex *lock;
@@ -188,69 +191,27 @@ rb_library_walker_thread_get_property (GObject *object,
 }
 
 static void
-add_directory (RBLibraryWalkerThreadPrivate *priv,
-	       const char *dir)
+action_handled_cb (RBLibraryAction *action,
+		   RBLibraryAction *parent_action)
 {
-	GList *list, *l;
-	GnomeVFSURI *uri, *subdir_uri, *file_uri;
-	char *tmp, *text_uri, *subdir_uri_text;
+	g_object_unref (G_OBJECT (parent_action));
+}
 
-	if (dir == NULL)
-		return;
+static void
+add_file (const char *filename,
+	  RBLibraryWalkerThreadPrivate *priv)
+{
+	RBLibraryAction *action;
 
-	tmp = gnome_vfs_expand_initial_tilde (dir);
-	uri = gnome_vfs_uri_new (tmp);
-	g_free (tmp);
-	if (uri == NULL || gnome_vfs_uri_exists (uri) == FALSE)
-		return;
-
-	text_uri = gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_NONE);
-
-	gnome_vfs_directory_list_load (&list, text_uri,
-				       (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
-		  			GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
-					GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
-
-	for (l = list; l != NULL; l = g_list_next (l))
-	{
-		GnomeVFSFileInfo *info = l->data;
-		gchar *filename;
-
-		if (info->type != GNOME_VFS_FILE_TYPE_REGULAR)
-		{
-		        /* recurse into directories, unless they start with ".", so we 
-			   avoid hidden dirs, '.' and '..' */
-		        if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && 
-			    (info->name) && (info->name[0] != '.'))
-			{
-			        subdir_uri = gnome_vfs_uri_append_path (uri, info->name);
-				subdir_uri_text = gnome_vfs_uri_to_string
-					(subdir_uri, GNOME_VFS_URI_HIDE_NONE);
-				gnome_vfs_uri_unref (subdir_uri);
-				add_directory (priv, subdir_uri_text);
-				g_free (subdir_uri_text);
-			}
-
-			continue;
-		}
-
-		file_uri = gnome_vfs_uri_append_file_name (uri, info->name);
-		filename = gnome_vfs_uri_to_string (file_uri, GNOME_VFS_URI_HIDE_NONE);
-
-		rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
-					     FALSE,
-					     RB_LIBRARY_ACTION_ADD_FILE,
-					     filename);
-
-		g_free (filename);
-		gnome_vfs_uri_unref (file_uri);
-	}
-
-	gnome_vfs_file_info_list_free (list);
-
-	g_free (text_uri);
-
-	gnome_vfs_uri_unref (uri);
+	action = rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
+					      FALSE,
+					      RB_LIBRARY_ACTION_ADD_FILE,
+					      filename);
+	g_object_ref (G_OBJECT (priv->action));
+	g_signal_connect (G_OBJECT (action),
+			  "handled",
+			  G_CALLBACK (action_handled_cb),
+			  priv->action);
 }
 
 static gpointer
@@ -274,16 +235,20 @@ thread_main (RBLibraryWalkerThreadPrivate *priv)
 		while (rb_library_action_queue_is_empty (queue) == FALSE)
 		{
 			RBLibraryActionType type;
+			RBLibraryAction *action;
 			char *uri;
 			
-			rb_library_action_queue_peek_head (queue,
-							   &type,
-							   &uri);
+			action = rb_library_action_queue_peek_head (queue,
+							            &type,
+							            &uri);
 
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-				add_directory (priv, uri);
+				priv->action = action;
+				rb_uri_handle_recursively (uri,
+							   (GFunc) add_file,
+							   priv);
 				break;
 			default:
 				break;
