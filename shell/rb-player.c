@@ -1,5 +1,5 @@
 /*
- *  Copyright Â© 2002 Jorn Baayen.  All rights reserved.
+ *  Copyright © 2002 Jorn Baayen.  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,10 +24,9 @@
 /* FIXME tooltips on buttons */
 /* FIXME Whole track foo of bar thing should ellipsize */
 /* FIXME fix rblink markup; change cursor when over it */
-/* FIXME update window title again */
 /* FIXME better pause indication */
-/* FIXME tooltip on elapsed label should tell total and remaining time */
 /* FIXME figure proper whole album/all shuffle behaviour */
+/* FIXME playlist management button? */
 
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
@@ -36,6 +35,8 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkhscale.h>
 #include <gtk/gtknotebook.h>
+#include <gtk/gtktooltips.h>
+#include <gtk/gtkeventbox.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
@@ -76,14 +77,20 @@ static void shuffle_cb (GtkWidget *widget, RBPlayer *player);
 static void repeat_cb (GtkWidget *widget, RBPlayer *player);
 static void eos_cb (MonkeyMediaStream *stream, RBPlayer *player);
 static void node_activated_cb (RBNodeView *view, RBNode *song, RBPlayer *player);
+static gboolean slider_pressed_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
+static gboolean slider_moved_cb (GtkWidget *widget, GdkEventMotion *event, RBPlayer *player);
+static gboolean slider_released_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
+static void slider_changed_cb (GtkWidget *widget, RBPlayer *player);
 static void nullify_info (RBPlayer *player);
-static gboolean sync_time (RBPlayer *player);
+static gboolean sync_time_timeout (RBPlayer *player);
 static void clear (RBPlayer *player);
+static void sync_time (RBPlayer *player);
 
 struct RBPlayerPrivate
 {
 	RB *rb;
 
+	GtkTooltips *tooltips;
 	GtkWidget *info_notebook;
 	GtkWidget *song_label;
 	GtkWidget *from_label;
@@ -91,7 +98,7 @@ struct RBPlayerPrivate
 	GtkWidget *artist_link;
 	GtkAdjustment *song_adjustment;
 	GtkWidget *song_scale;
-	gboolean slider_locked;
+	GtkWidget *time_ebox;
 	GtkWidget *time_label;
 
 	GtkWidget *first_button_box;
@@ -115,6 +122,16 @@ struct RBPlayerPrivate
 	MonkeyMediaMixer *mixer;
 
 	guint timeout;
+
+	struct
+	{
+		guint slider_moved_timeout;
+		long latest_set_time;
+		guint value_changed_update_handler;
+		gboolean slider_dragging;
+		gboolean slider_locked;
+		long fake_elapsed;
+	} slider_drag_info;
 };
 
 enum
@@ -225,6 +242,8 @@ rb_player_init (RBPlayer *player)
 			    FALSE, FALSE, 0);
 
 	/* player area + play controls box */
+	player->priv->tooltips = gtk_tooltips_new ();
+
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_notebook_append_page (GTK_NOTEBOOK (player->priv->info_notebook), vbox, NULL);
 
@@ -278,12 +297,31 @@ rb_player_init (RBPlayer *player)
 	player->priv->song_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	player->priv->song_scale = gtk_hscale_new (player->priv->song_adjustment);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->song_scale), FALSE);
+	g_signal_connect (G_OBJECT (player->priv->song_scale),
+			  "button_press_event",
+			  G_CALLBACK (slider_pressed_cb),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->song_scale),
+			  "button_release_event",
+			  G_CALLBACK (slider_released_cb),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->song_scale),
+			  "motion_notify_event",
+			  G_CALLBACK (slider_moved_cb),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->song_scale),
+			  "value_changed",
+			  G_CALLBACK (slider_changed_cb),
+			  player);
 	gtk_box_pack_start (GTK_BOX (scale_box), player->priv->song_scale,
 			    TRUE, TRUE, 0);
 
-	player->priv->time_label = gtk_label_new ("0:00");
-	gtk_box_pack_start (GTK_BOX (scale_box), player->priv->time_label,
+	player->priv->time_ebox = gtk_event_box_new ();
+	gtk_box_pack_start (GTK_BOX (scale_box), player->priv->time_ebox,
 			    FALSE, FALSE, 0);
+	player->priv->time_label = gtk_label_new ("0:00");
+	gtk_container_add (GTK_CONTAINER (player->priv->time_ebox),
+			   player->priv->time_label);
 
 	/* play controls box */
 	hbox = gtk_hbox_new (FALSE, 20);
@@ -359,7 +397,7 @@ rb_player_init (RBPlayer *player)
 		exit (-1);
 	}
 
-	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) sync_time, player);
+	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) sync_time_timeout, player);
 
 	gtk_widget_show_all (GTK_WIDGET (player));
 
@@ -486,6 +524,8 @@ next (RBPlayer *player)
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
 	update_buttons (player);
+
+	sync_time (player);
 }
 
 static void
@@ -497,6 +537,8 @@ previous (RBPlayer *player)
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
 	update_buttons (player);
+
+	sync_time (player);
 }
 
 static void
@@ -506,6 +548,8 @@ play (RBPlayer *player)
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
 	update_buttons (player);
+
+	sync_time (player);
 }
 
 static void
@@ -515,6 +559,8 @@ pause (RBPlayer *player)
 				      MONKEY_MEDIA_MIXER_STATE_PAUSED);
 
 	update_buttons (player);
+
+	sync_time (player);
 }
 
 static void
@@ -608,22 +654,22 @@ escape_for_allmusic (char *in)
 static void
 sync_info (RBPlayer *player)
 {
-	const char *text;
-	char *url;
+	const char *title, *artist, *album;
+	char *url, *title_str;
 	int num;
 
-	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
-	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (player->priv->song_label), text);
+	title = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
+	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (player->priv->song_label), title);
 
-	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ALBUM);
-	url = ALBUM_INFO_URL (text);
-	rb_link_set (RB_LINK (player->priv->album_link), text,
+	album = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ALBUM);
+	url = ALBUM_INFO_URL (album);
+	rb_link_set (RB_LINK (player->priv->album_link), album,
 		     _("Get information about this album from the web"), url);
 	g_free (url);
 
-	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ARTIST);
-	url = ARTIST_INFO_URL (text);
-	rb_link_set (RB_LINK (player->priv->artist_link), text,
+	artist = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ARTIST);
+	url = ARTIST_INFO_URL (artist);
+	rb_link_set (RB_LINK (player->priv->artist_link), artist,
 		     _("Get information about this artist from the web"), url);
 	g_free (url);
 
@@ -638,6 +684,19 @@ sync_info (RBPlayer *player)
 		gtk_label_set_text (GTK_LABEL (player->priv->from_label), _("From "));
 
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (player->priv->info_notebook), 0);
+
+	if (artist != NULL && title != NULL)
+		title_str = g_strdup_printf (_("%s - %s"), artist, title);
+	else if (artist != NULL && title == NULL)
+		title_str = g_strdup_printf (_("%s - Unknown"), artist);
+	else if (artist == NULL && title != NULL)
+		title_str = g_strdup_printf (_("%s"), title);
+	else
+		title_str = NULL;
+
+	rb_set_title (player->priv->rb, title_str);
+
+	g_free (title_str);
 }
 
 static void
@@ -674,6 +733,9 @@ static void
 nullify_info (RBPlayer *player)
 {
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (player->priv->info_notebook), 1);
+
+	if (player->priv->rb != NULL)
+		rb_set_title (player->priv->rb, NULL);
 }
 
 void
@@ -819,6 +881,8 @@ eos_cb (MonkeyMediaStream *stream,
 	set_playing (player, rb_node_view_get_next_node (player->priv->playlist_view));
 
 	update_buttons (player);
+
+	sync_time (player);
 }
 
 static void
@@ -834,30 +898,156 @@ node_activated_cb (RBNodeView *view,
 	update_buttons (player);
 }
 
-/* FIXME re-intro seeking */
-static gboolean
-sync_time (RBPlayer *player)
+static void
+do_real_seek (RBPlayer *player)
 {
-	long duration, elapsed;
-	double progress = 0.0;
-	char *elapsed_str;
-
-	if (player->priv->playing == NULL)
-		return TRUE;
+	long new, duration;
+	double progress;
 
 	duration = rb_node_get_property_long (player->priv->playing, RB_NODE_PROP_REAL_DURATION);
-	elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream));
+	progress = gtk_adjustment_get_value (player->priv->song_adjustment);
+
+	new = (long) (progress * duration);
+	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream), new);
+
+	if (new != player->priv->slider_drag_info.latest_set_time)
+		player->priv->slider_drag_info.latest_set_time = new;
+}
+
+static void
+sync_time (RBPlayer *player)
+{
+	long elapsed, duration;
+	double progress = 0.0;
+	char *elapsed_str, *tooltip_str;
+
+	if (player->priv->slider_drag_info.slider_dragging)
+		elapsed = player->priv->slider_drag_info.fake_elapsed;
+	else
+		elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream));
+
+	duration = rb_node_get_property_long (player->priv->playing, RB_NODE_PROP_REAL_DURATION);
 
 	if (elapsed > 0)
 		progress = (double) ((long) elapsed) / duration;
 
-	player->priv->slider_locked = TRUE;
-	gtk_adjustment_set_value (player->priv->song_adjustment, progress);
-	player->priv->slider_locked = FALSE;
+	if (!player->priv->slider_drag_info.slider_dragging) {
+		player->priv->slider_drag_info.slider_locked = TRUE;
+		gtk_adjustment_set_value (player->priv->song_adjustment, progress);
+		player->priv->slider_drag_info.slider_locked = FALSE;
+	}
 
-	elapsed_str = g_strdup_printf ("%ld:%.2ld", elapsed / 60, elapsed % 60);
+	elapsed_str = g_strdup_printf (_("%ld:%.2ld"), elapsed / 60, elapsed % 60);
 	gtk_label_set_text (GTK_LABEL (player->priv->time_label), elapsed_str);
 	g_free (elapsed_str);
+
+	tooltip_str = g_strdup_printf (_("Total %ld:%.2ld (%ld:%.2ld remaining)"),
+				       duration / 60, duration % 60,
+				       (duration - elapsed) / 60, (duration - elapsed) % 60);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->time_ebox,
+			      tooltip_str, NULL);
+	g_free (tooltip_str);
+}
+
+static gboolean
+slider_pressed_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player)
+{
+	player->priv->slider_drag_info.slider_dragging = TRUE;
+        player->priv->slider_drag_info.latest_set_time = -1;
+
+        return FALSE;
+}
+
+static gboolean
+slider_moved_idle (RBPlayer *player)
+{
+	do_real_seek (player);
+
+        return FALSE;
+}
+
+static gboolean
+slider_moved_cb (GtkWidget *widget,
+                 GdkEventMotion *event,
+                 RBPlayer *player)
+{
+        double progress;
+        long duration;
+
+        if (player->priv->slider_drag_info.slider_dragging == FALSE)
+                return FALSE;
+
+        progress = gtk_adjustment_get_value (player->priv->song_adjustment);
+	duration = rb_node_get_property_long (player->priv->playing, RB_NODE_PROP_REAL_DURATION);
+
+        player->priv->slider_drag_info.fake_elapsed = (long) (progress * duration);
+
+	sync_time (player);
+
+        if (player->priv->slider_drag_info.slider_moved_timeout != 0) {
+                g_source_remove (player->priv->slider_drag_info.slider_moved_timeout);
+                player->priv->slider_drag_info.slider_moved_timeout = 0;
+        }
+        player->priv->slider_drag_info.slider_moved_timeout =
+                g_timeout_add (40, (GSourceFunc) slider_moved_idle, player);
+
+        return FALSE;
+}
+
+static gboolean
+slider_released_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player)
+{
+        if (player->priv->slider_drag_info.slider_dragging == FALSE)
+                return FALSE;
+
+	do_real_seek (player);
+
+        player->priv->slider_drag_info.slider_dragging = FALSE;
+
+	sync_time (player);
+
+        if (player->priv->slider_drag_info.slider_moved_timeout != 0) {
+                g_source_remove (player->priv->slider_drag_info.slider_moved_timeout);
+                player->priv->slider_drag_info.slider_moved_timeout = 0;
+        }
+
+        return FALSE;
+}
+
+static gboolean
+slider_changed_idle (RBPlayer *player)
+{
+	/* force a sync */
+        slider_released_cb (player->priv->song_scale, NULL, player);
+
+        player->priv->slider_drag_info.value_changed_update_handler = 0;
+
+        return FALSE;
+}
+
+static void
+slider_changed_cb (GtkWidget *widget, RBPlayer *player)
+{
+	if (player->priv->slider_drag_info.slider_dragging == FALSE &&
+            player->priv->slider_drag_info.slider_locked == FALSE &&
+            player->priv->slider_drag_info.value_changed_update_handler == 0) {
+                player->priv->slider_drag_info.slider_dragging = TRUE;
+                player->priv->slider_drag_info.value_changed_update_handler =
+                        g_idle_add ((GSourceFunc) slider_changed_idle, player);
+        }
+}
+
+static gboolean
+sync_time_timeout (RBPlayer *player)
+{
+	if (player->priv->slider_drag_info.slider_dragging)
+		return TRUE;
+
+	if (player->priv->playing == NULL)
+		return TRUE;
+
+	sync_time (player);
 
 	return TRUE;
 }

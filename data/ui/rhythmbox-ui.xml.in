@@ -2,44 +2,6 @@
 
 <commands>
 
-	<cmd name="Previous"
-	     pixtype="stock"
-	     pixname="rhythmbox-previous"
-	     _tip="Start playing the previous song"
-	     priority="1"/>
-	     
-	<cmd name="Play"
-	     pixtype="stock"
-	     pixname="rhythmbox-play"
-	     _tip="Start playing"
-	     priority="1"/>
-
-	<cmd name="Pause"
-	     pixtype="stock"
-	     pixname="rhythmbox-pause"
-	     _tip="Pause playing"
-	     priority="1"/>
-
-	<cmd name="Next"
-	     pixtype="stock"
-	     pixname="rhythmbox-next"
-	     _tip="Start playing the next song"
-	     priority="1"/>
-
-	<cmd name="Shuffle"
-	     pixtype="stock"
-	     pixname="rhythmbox-shuffle"
-	     _tip="Toggle random playing order"
-	     priority="1"
-	     type="toggle"/>
-
-	<cmd name="Repeat"
-	     pixtype="stock"
-	     pixname="rhythmbox-repeat"
-	     _tip="Toggle repeat mode"
-	     priority="1"
-	     type="toggle"/>
-
 	<cmd name="Cut"
 	     pixtype="stock"
 	     pixname="gtk-cut"
@@ -105,24 +67,6 @@
         <separator/>
 
         <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
-
-</submenu>
-
-<submenu name="Controls" _label="_Music">
-
-	<menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
-
-	<separator/>
-
-	<menuitem name="Previous" _label="P_revious" verb="Previous" accel="*Control*Left"/>
-
-	<menuitem name="Next" _label="_Next" verb="Next" accel="*Control*Right"/>
-
-	<separator/>
-	
-	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
-	
-	<menuitem name="Repeat" _label="Repea_t" verb="Repeat" accel="*Control*t"/>
 
 </submenu>
 

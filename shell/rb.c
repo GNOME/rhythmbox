@@ -87,7 +87,6 @@ static void rb_quit (RB *rb);
 #define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
 
-
 typedef struct
 {
 	int width;
@@ -553,4 +552,14 @@ RBLibrary *
 rb_get_library (RB *rb)
 {
 	return rb->priv->library;
+}
+
+void
+rb_set_title (RB *rb,
+	      const char *title)
+{
+	if (title != NULL)
+		gtk_window_set_title (GTK_WINDOW (rb->priv->window), title);
+	else
+		gtk_window_set_title (GTK_WINDOW (rb->priv->window), _("Music Player"));
 }

@@ -1,5 +1,20 @@
 2002-12-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+
+	Remove obsolete music menu.
+	
+	* shell/rb-player.c: (rb_player_init), (next), (previous), (play),
+	(pause), (sync_info), (nullify_info), (eos_cb), (do_real_seek),
+	(sync_time), (slider_pressed_cb), (slider_moved_idle),
+	(slider_moved_cb), (slider_released_cb), (slider_changed_idle),
+	(slider_changed_cb), (sync_time_timeout):
+	* shell/rb.c: (rb_get_library), (rb_set_title):
+
+	Reimplement seeking, and setting the window title.
+
+2002-12-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
 	* shell/rb-player.c: (rb_player_init), (rb_player_finalize),
 	(next), (previous), (shuffle), (append_repeat_node), (insert_song),
