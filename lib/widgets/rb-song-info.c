@@ -79,6 +79,10 @@ static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
 static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
+static void rb_song_info_navigation_move (RBSongInfo *song_info, RBDirection direction);
+
+static void rb_song_info_backward_clicked_cb (GtkWidget *button,
+					      RBSongInfo *song_info);
 static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 					     RBSongInfo *song_info);
 static void rb_song_info_view_changed_cb (RBNodeView *node_view,
@@ -92,11 +96,12 @@ struct RBSongInfoPrivate
 {
 	RBNodeView *node_view;
 
-	/* infrmation on the displayed song */
+	/* information on the displayed song */
 	RBNode *current_node;
 	MonkeyMediaStreamInfo *current_info;
 
 	/* the dialog widgets */
+	GtkWidget   *backward;
 	GtkWidget   *forward;
 
 	GtkWidget   *title;
@@ -181,7 +186,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	GladeXML *xml;
 	GtkWidget *close, *label, *image, *hbox, *align, *cont;
 	
-	/* create the dialog and some buttons forward - close */
+	/* create the dialog and some buttons backward - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
 
 	g_signal_connect (G_OBJECT (song_info),
@@ -191,9 +196,34 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
+	song_info->priv->backward = gtk_button_new ();
+	label = gtk_label_new_with_mnemonic (_("_Previous"));
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), song_info->priv->backward);
+	image = gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_BUTTON);
+	
+	hbox = gtk_hbox_new (FALSE, 2);
+	
+	align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	
+	gtk_container_add (GTK_CONTAINER (song_info->priv->backward), align);
+	gtk_container_add (GTK_CONTAINER (align), hbox);
+	
+	gtk_widget_show_all (song_info->priv->backward);
+
+	gtk_dialog_add_action_widget (GTK_DIALOG (song_info),
+			              song_info->priv->backward,
+				      GTK_RESPONSE_NONE);
+	g_signal_connect (G_OBJECT (song_info->priv->backward),
+			  "clicked",
+			  G_CALLBACK (rb_song_info_backward_clicked_cb),
+			  song_info);
+	
 	song_info->priv->forward = gtk_button_new ();
 
-	label = gtk_label_new_with_mnemonic (_("_Next Song"));
+	label = gtk_label_new_with_mnemonic (_("_Next"));
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label), song_info->priv->forward);
 	
 	image = gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_BUTTON);
@@ -219,8 +249,8 @@ rb_song_info_init (RBSongInfo *song_info)
 			  song_info);
 
 	close = gtk_dialog_add_button (GTK_DIALOG (song_info),
-			               GTK_STOCK_CLOSE,
-			               GTK_RESPONSE_CLOSE);
+				       GTK_STOCK_CLOSE,
+				       GTK_RESPONSE_CLOSE);
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
@@ -782,12 +812,11 @@ rb_song_info_update_location (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_forward_clicked_cb (GtkWidget *button,
-				 RBSongInfo *song_info)
+rb_song_info_navigation_move (RBSongInfo *song_info, RBDirection direction)
 {
 	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
 					      song_info->priv->current_node,
-					      TRUE);
+					      direction);
 
 	g_return_if_fail (node != NULL);
 
@@ -799,6 +828,21 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 
 	if (rb_song_info_update_current_values (song_info) == TRUE)
 		rb_song_info_populate_dialog (song_info);
+
+}
+
+static void
+rb_song_info_backward_clicked_cb (GtkWidget *button,
+				  RBSongInfo *song_info)
+{
+	rb_song_info_navigation_move (song_info, RB_DIRECTION_UP);
+}
+
+static void
+rb_song_info_forward_clicked_cb (GtkWidget *button,
+				 RBSongInfo *song_info)
+{
+	rb_song_info_navigation_move (song_info, RB_DIRECTION_DOWN);
 }
 
 /*
@@ -813,10 +857,17 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 	g_return_if_fail (song_info->priv->node_view != NULL);
 	g_return_if_fail (song_info->priv->current_node != NULL);
 
+	/* backward */
+	node = rb_node_view_get_node (song_info->priv->node_view,
+				      song_info->priv->current_node,
+				      RB_DIRECTION_UP);
+	
+	gtk_widget_set_sensitive (song_info->priv->backward,
+				  node != NULL);
 	/* forward */
 	node = rb_node_view_get_node (song_info->priv->node_view,
 				      song_info->priv->current_node,
-				      TRUE);
+				      RB_DIRECTION_DOWN);
 
 	gtk_widget_set_sensitive (song_info->priv->forward,
 				  node != NULL);
