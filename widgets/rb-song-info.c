@@ -41,8 +41,9 @@
 #include <monkey-media-stream-info.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
-#include "rb-node.h"
+#include "rhythmdb.h"
 #include "rb-song-info.h"
+#include "rb-enums.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
@@ -86,7 +87,7 @@ static void rb_song_info_backward_clicked_cb (GtkWidget *button,
 					      RBSongInfo *song_info);
 static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 					     RBSongInfo *song_info);
-static void rb_song_info_view_changed_cb (RBNodeView *node_view,
+static void rb_song_info_view_changed_cb (RBEntryView *entry_view,
 					  RBSongInfo *song_info);
 static void rb_song_info_rated_cb (RBRating *rating,
 				   int score,
@@ -95,10 +96,11 @@ static void cleanup (RBSongInfo *dlg);
 
 struct RBSongInfoPrivate
 {
-	RBNodeView *node_view;
+	RhythmDB *db;
+	RBEntryView *entry_view;
 
 	/* information on the displayed song */
-	RBNode *current_node;
+	RhythmDBEntry *current_entry;
 	MonkeyMediaStreamInfo *current_info;
 
 	/* the dialog widgets */
@@ -127,7 +129,7 @@ struct RBSongInfoPrivate
 enum 
 {
 	PROP_0,
-	PROP_NODE_VIEW
+	PROP_ENTRY_VIEW
 };
 
 static GObjectClass *parent_class = NULL;
@@ -171,11 +173,11 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 	object_class->get_property = rb_song_info_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_NODE_VIEW,
-					 g_param_spec_object ("node_view",
-					                      "RBNodeView",
-					                      "RBNodeView object",
-					                      RB_TYPE_NODE_VIEW,
+					 PROP_ENTRY_VIEW,
+					 g_param_spec_object ("entry_view",
+					                      "RBEntryView",
+					                      "RBEntryView object",
+					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_song_info_finalize;
@@ -415,14 +417,15 @@ rb_song_info_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
+	case PROP_ENTRY_VIEW:
 		{
-			RBNodeView *node_view = g_value_get_object (value);
-			song_info->priv->node_view = node_view;
+			RBEntryView *entry_view = g_value_get_object (value);
+			song_info->priv->entry_view = entry_view;
 			rb_song_info_update_current_values (song_info);
 
-			/* install some callbacks on the node view */
-			g_signal_connect_object (G_OBJECT (node_view),
+			g_object_get (G_OBJECT (entry_view), "db", &song_info->priv->db, NULL);
+
+			g_signal_connect_object (G_OBJECT (entry_view),
 						 "changed",
 						 G_CALLBACK (rb_song_info_view_changed_cb),
 						 song_info,
@@ -445,8 +448,8 @@ rb_song_info_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
-		g_value_set_object (value, song_info->priv->node_view);
+	case PROP_ENTRY_VIEW:
+		g_value_set_object (value, song_info->priv->entry_view);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -455,17 +458,17 @@ rb_song_info_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_song_info_new (RBNodeView *node_view)
+rb_song_info_new (RBEntryView *entry_view)
 {
 	RBSongInfo *song_info;
 
-	g_return_val_if_fail (RB_IS_NODE_VIEW (node_view), NULL);
+	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
-	if (rb_node_view_have_selection (node_view) == FALSE) 
+	if (rb_entry_view_have_selection (entry_view) == FALSE) 
 		return NULL;
 
 	/* create the dialog */
-	song_info = g_object_new (RB_TYPE_SONG_INFO, "node_view", node_view, NULL);
+	song_info = g_object_new (RB_TYPE_SONG_INFO, "entry_view", entry_view, NULL);
 
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
@@ -491,16 +494,18 @@ rb_song_info_rated_cb (RBRating *rating,
 
 	g_return_if_fail (RB_IS_RATING (rating));
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
-	g_return_if_fail (RB_IS_NODE (song_info->priv->current_node));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, score);
-	rb_node_set_property (song_info->priv->current_node,
-			      RB_NODE_PROP_RATING,
-			      &value);
+	rhythmdb_write_lock (song_info->priv->db);
+	rhythmdb_entry_set (song_info->priv->db,
+			    song_info->priv->current_entry,
+			    RHYTHMDB_PROP_RATING,
+			    &value);
 	g_value_unset (&value);
+	rhythmdb_write_unlock (song_info->priv->db);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
@@ -572,13 +577,17 @@ rb_song_info_update_title (RBSongInfo *song_info)
 	}
 	else
 	{
-		if (song_info->priv->current_node != NULL)
+		if (song_info->priv->current_entry != NULL)
 		{
 			const char *url;
 			char *tmp;
 
-			url = rb_node_get_property_string (song_info->priv->current_node,
-					                   RB_NODE_PROP_LOCATION);
+			rhythmdb_read_lock (song_info->priv->db);
+
+			url = rhythmdb_entry_get_string (song_info->priv->db,
+							 song_info->priv->current_entry,
+							 RHYTHMDB_PROP_LOCATION);
+			rhythmdb_read_unlock (song_info->priv->db);
 
 			tmp = g_strdup_printf (_("%s Properties"), url);
 			gtk_window_set_title (GTK_WINDOW (song_info), tmp);
@@ -836,8 +845,11 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 	g_return_if_fail (song_info != NULL);
 
-	text = rb_node_get_property_string (song_info->priv->current_node,
-			                    RB_NODE_PROP_LOCATION);
+	rhythmdb_read_lock (song_info->priv->db);
+	text = rhythmdb_entry_get_string (song_info->priv->db,
+					  song_info->priv->current_entry,
+					  RHYTHMDB_PROP_LOCATION);
+	rhythmdb_read_unlock (song_info->priv->db);
 
 	if (text != NULL)
 	{
@@ -880,20 +892,20 @@ rb_song_info_update_location (RBSongInfo *song_info)
 static void
 rb_song_info_navigation_move (RBSongInfo *song_info, RBDirection direction)
 {
-	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
-					      song_info->priv->current_node,
-					      direction);
+/* 	RhythmDBEntry *entry; */
 
-	g_return_if_fail (node != NULL);
+	/* RHYTHMDB FIXME */
 
-	/* update the node view */
-	rb_node_view_select_node (song_info->priv->node_view, node);
-	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
+/* 	g_return_if_fail (entry != NULL); */
 
-	cleanup (song_info);
+/* 	/\* update the node view *\/ */
+/* 	rb_entry_view_select_node (song_info->priv->entry_view, node); */
+/* 	rb_entry_view_scroll_to_node (song_info->priv->entry_view, node); */
 
-	if (rb_song_info_update_current_values (song_info) == TRUE)
-		rb_song_info_populate_dialog (song_info);
+/* 	cleanup (song_info); */
+
+/* 	if (rb_song_info_update_current_values (song_info) == TRUE) */
+/* 		rb_song_info_populate_dialog (song_info); */
 
 }
 
@@ -917,30 +929,31 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 static void
 rb_song_info_update_buttons (RBSongInfo *song_info)
 {
-	RBNode *node = NULL;
+	/* RHYTHMDB FIXME */
+/* 	RhythmDBEntry *entry = NULL; */
 
-	g_return_if_fail (song_info != NULL);
-	g_return_if_fail (song_info->priv->node_view != NULL);
-	g_return_if_fail (song_info->priv->current_node != NULL);
+/* 	g_return_if_fail (song_info != NULL); */
+/* 	g_return_if_fail (song_info->priv->entry_view != NULL); */
+/* 	g_return_if_fail (song_info->priv->current_entry != NULL); */
 
-	/* backward */
-	node = rb_node_view_get_node (song_info->priv->node_view,
-				      song_info->priv->current_node,
-				      RB_DIRECTION_UP);
+/* 	/\* backward *\/ */
+/* 	node = rb_entry_view_get_node (song_info->priv->entry_view, */
+/* 				      song_info->priv->current_entry, */
+/* 				      RB_DIRECTION_UP); */
 	
-	gtk_widget_set_sensitive (song_info->priv->backward,
-				  node != NULL);
-	/* forward */
-	node = rb_node_view_get_node (song_info->priv->node_view,
-				      song_info->priv->current_node,
-				      RB_DIRECTION_DOWN);
+/* 	gtk_widget_set_sensitive (song_info->priv->backward, */
+/* 				  node != NULL); */
+/* 	/\* forward *\/ */
+/* 	node = rb_entry_view_get_node (song_info->priv->entry_view, */
+/* 				      song_info->priv->current_entry, */
+/* 				      RB_DIRECTION_DOWN); */
 
-	gtk_widget_set_sensitive (song_info->priv->forward,
-				  node != NULL);
+/* 	gtk_widget_set_sensitive (song_info->priv->forward, */
+/* 				  node != NULL); */
 }
 
 static void
-rb_song_info_view_changed_cb (RBNodeView *node_view,
+rb_song_info_view_changed_cb (RBEntryView *entry_view,
 			      RBSongInfo *song_info)
 {
 	/* update next button sensitivity */
@@ -955,29 +968,30 @@ static gboolean
 rb_song_info_update_current_values (RBSongInfo *song_info)
 {
 	const char *url;
-	RBNode *node = NULL;
+	RhythmDBEntry *entry = NULL;
 	MonkeyMediaStreamInfo *info;
-	GList *selected_nodes;
+	GList *selected_entries;
 
-	/* get the node */
-	selected_nodes = rb_node_view_get_selection (song_info->priv->node_view);
+	selected_entries = rb_entry_view_get_selected_entries (song_info->priv->entry_view);
 
-	if ((selected_nodes == NULL) ||
-	    (selected_nodes->data == NULL) ||
-	    (RB_IS_NODE (selected_nodes->data) == FALSE))
+	if ((selected_entries == NULL) ||
+	    (selected_entries->data == NULL))
 	{
 		song_info->priv->current_info = NULL;
-		song_info->priv->current_node = NULL;
+		song_info->priv->current_entry = NULL;
 		gtk_widget_destroy (GTK_WIDGET (song_info));
 
 		return FALSE;
 	}
 
-	song_info->priv->current_node = node = selected_nodes->data;
+	song_info->priv->current_entry = entry = selected_entries->data;
 
 	/* get the stream info */
-	url = rb_node_get_property_string (node,
-			                   RB_NODE_PROP_LOCATION);
+	rhythmdb_read_lock (song_info->priv->db);
+	url = rhythmdb_entry_get_string (song_info->priv->db,
+					  entry,
+					  RHYTHMDB_PROP_LOCATION);
+	rhythmdb_read_unlock (song_info->priv->db);
 
 	info = monkey_media_stream_info_new (url, NULL);
 	song_info->priv->current_info = info;
@@ -988,40 +1002,45 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 static void
 rb_song_info_update_play_count (RBSongInfo *song_info)
 {
-	char *text = g_strdup_printf ("%d", rb_node_get_property_int (song_info->priv->current_node,
-								      RB_NODE_PROP_PLAY_COUNT));
+	char *text;
+
+	rhythmdb_read_lock (song_info->priv->db);
+
+	text = g_strdup_printf ("%d", rhythmdb_entry_get_int (song_info->priv->db,
+							      song_info->priv->current_entry,
+							      RHYTHMDB_PROP_PLAY_COUNT));
+	rhythmdb_read_unlock (song_info->priv->db);
+
 	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 }
 
 static void
 rb_song_info_update_last_played (RBSongInfo *song_info)
 {
+	rhythmdb_read_lock (song_info->priv->db);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played),
-			    rb_node_get_property_string (song_info->priv->current_node,
-							 RB_NODE_PROP_LAST_PLAYED_STR));
+			    rhythmdb_entry_get_string (song_info->priv->db,
+						       song_info->priv->current_entry,
+						       RHYTHMDB_PROP_LAST_PLAYED_STR));
+	rhythmdb_read_unlock (song_info->priv->db);
 }
 
 static void
 rb_song_info_update_rating (RBSongInfo *song_info)
 {
-	GValue value = { 0, };
-
+	guint rating;
+	
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
-	g_return_if_fail (RB_IS_NODE (song_info->priv->current_node));
 
-	if (rb_node_get_property (song_info->priv->current_node,
-				  RB_NODE_PROP_RATING,
-				  &value) == FALSE)
-	{
-		g_value_init (&value, G_TYPE_INT);
-		g_value_set_int (&value, 0);
-	}
+	rhythmdb_read_lock (song_info->priv->db);
+	rating = rhythmdb_entry_get_int (song_info->priv->db,
+					 song_info->priv->current_entry,
+					 RHYTHMDB_PROP_RATING);
+	rhythmdb_read_unlock (song_info->priv->db);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
-		      "score", g_value_get_int (&value),
+		      "score", rating,
 		      NULL);
-
-	g_value_unset (&value);
 }
 
 static void

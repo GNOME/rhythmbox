@@ -9,13 +9,6 @@ librblibrary_la_SOURCES =				\
 	rb-library-main-thread.h			\
 	rb-library-action.c				\
 	rb-library-action.h				\
-	rb-node.c					\
-	rb-node.h					\
-	rb-node-db.c					\
-	rb-node-db.h					\
-	rb-node-common.h				\
-	rb-node-filter.c				\
-	rb-node-filter.h				\
 	rb-library-dnd-types.h
 
 INCLUDES =						\

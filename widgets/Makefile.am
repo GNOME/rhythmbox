@@ -5,8 +5,6 @@ noinst_LTLIBRARIES = librbwidgets.la
 librbwidgets_la_SOURCES =				\
 	rb-song-display-box.c				\
 	rb-song-display-box.h				\
-	rb-node-view.c					\
-	rb-node-view.h					\
 	rb-entry-view.c					\
 	rb-entry-view.h					\
 	rb-property-view.c				\
@@ -37,8 +35,6 @@ librbwidgets_la_SOURCES =				\
 	gtkrbtree.h					\
 	rb-rating.c					\
 	rb-rating.h					\
-	rb-tree-model-node.c				\
-	rb-tree-model-node.h				\
 	rb-tree-model-sort.c				\
 	rb-tree-model-sort.h				\
 	rb-tree-view.c					\

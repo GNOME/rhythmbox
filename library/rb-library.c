@@ -32,8 +32,6 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "rb-node.h"
-#include "rb-node-filter.h"
 #include "rb-library.h"
 #include "rb-library-main-thread.h"
 #include "rb-string-helpers.h"
@@ -588,7 +586,7 @@ synchronize_entry_with_data (RBLibrary *library, RhythmDBEntry *entry, RBLibrary
 }
 
 char *
-rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
+rb_library_compute_status (RBLibrary *library)
 {
 	char *ret = NULL;
 	gboolean adding_songs = !queue_is_empty (library->priv->add_queue);

@@ -23,7 +23,6 @@
 #include <string.h>
 
 #include "rhythmdb.h"
-#include "rb-node.h"
 #include "rb-tree-model-sort.h"
 #include "eggtreemultidnd.h"
 #include "rb-library-dnd-types.h"
@@ -177,15 +176,15 @@ rb_tree_model_sort_multi_row_draggable (EggTreeMultiDragSource *drag_source, GLi
 	{
 		GtkTreeIter iter;
 		GtkTreePath *path;
-		RBNode *node = NULL;
+		RhythmDBEntry *entry = NULL;
 
 		path = gtk_tree_row_reference_get_path (l->data);
 		gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_source), &iter, path);
 		g_signal_emit (G_OBJECT (drag_source), 
 			       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
-			       0, &iter, &node);
+			       0, &iter, &entry);
 
-		if (node == NULL)
+		if (entry == NULL)
 			return FALSE;
 	}
 	
@@ -225,24 +224,6 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 	/* Set the appropriate data */
 	switch (target_info)
 	{
-		case RB_LIBRARY_DND_NODE_ID:
-		{
-			GtkTreeIter iter;
-			GtkTreePath *path = gtk_tree_row_reference_get_path (path_list->data);
-			RBNode *node = NULL;
-
-			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-			g_signal_emit (G_OBJECT (model), 
-				       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
-				       0, &iter, &node);
-
-			if (node == NULL)
-				return FALSE;
-
-				drag_data = g_strdup_printf ("%ld", rb_node_get_id (node));
-		}
-		break;
-
 		case RB_LIBRARY_DND_URI_LIST:
 		{
 			GList *i = NULL;
@@ -250,20 +231,22 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 			{
 				GtkTreeIter iter;
 				GtkTreePath *path = gtk_tree_row_reference_get_path (i->data);
-				RBNode *node = NULL;
+				RhythmDBEntry *entry = NULL;
 				char *tmp, *tmp2;
 				const char *value;
 
 				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 				g_signal_emit (G_OBJECT (model), 
 					       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
-					       0, &iter, &node);
+					       0, &iter, &entry);
 
-				if (node == NULL)
+				if (entry == NULL)
 					return FALSE;
 
-				value = rb_node_get_property_string (node,
-						                     RB_NODE_PROP_LOCATION);
+				/* RHYTHMDB FIXME */
+/* 				value = rhythmdb_entry_get_string (entry, */
+/* 								   RHYTHMDB_PROP_LOCATION); */
+				value = NULL;
 				tmp = g_strdup (value);	
 
 				if (drag_data != NULL)

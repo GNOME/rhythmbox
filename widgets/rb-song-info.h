@@ -20,7 +20,7 @@
  */
 
 #include <gtk/gtkdialog.h>
-#include "rb-node-view.h"
+#include "rb-entry-view.h"
 
 #ifndef __RB_SONG_INFO_H
 #define __RB_SONG_INFO_H
@@ -50,7 +50,7 @@ typedef struct
 
 GType      rb_song_info_get_type (void);
 
-GtkWidget *rb_song_info_new      (RBNodeView *view);
+GtkWidget *rb_song_info_new      (RBEntryView *view);
 
 G_END_DECLS
 
