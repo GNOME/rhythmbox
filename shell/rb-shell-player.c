@@ -61,6 +61,9 @@ static void rb_shell_player_cmd_stop (BonoboUIComponent *component,
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
+static void rb_shell_player_cmd_restart (BonoboUIComponent *component,
+			                 RBShellPlayer *player,
+			                 const char *verbname);
 static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_player (RBShellPlayer *player);
@@ -80,6 +83,7 @@ static void rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
 #define CMD_PATH_PLAY     "/commands/Play"
 #define CMD_PATH_PREVIOUS "/commands/Previous"
 #define CMD_PATH_NEXT     "/commands/Next"
+#define CMD_PATH_RESTART  "/commands/RestartSong"
 
 struct RBShellPlayerPrivate
 {
@@ -113,11 +117,12 @@ enum
 
 static BonoboUIVerb rb_shell_player_verbs[] =
 {
-	BONOBO_UI_VERB ("Previous", (BonoboUIVerbFn) rb_shell_player_cmd_previous),
-	BONOBO_UI_VERB ("Play",     (BonoboUIVerbFn) rb_shell_player_cmd_play),
-	BONOBO_UI_VERB ("Pause",    (BonoboUIVerbFn) rb_shell_player_cmd_pause),
-	BONOBO_UI_VERB ("Stop",     (BonoboUIVerbFn) rb_shell_player_cmd_stop),
-	BONOBO_UI_VERB ("Next",     (BonoboUIVerbFn) rb_shell_player_cmd_next),
+	BONOBO_UI_VERB ("Previous",    (BonoboUIVerbFn) rb_shell_player_cmd_previous),
+	BONOBO_UI_VERB ("Play",        (BonoboUIVerbFn) rb_shell_player_cmd_play),
+	BONOBO_UI_VERB ("Pause",       (BonoboUIVerbFn) rb_shell_player_cmd_pause),
+	BONOBO_UI_VERB ("Stop",        (BonoboUIVerbFn) rb_shell_player_cmd_stop),
+	BONOBO_UI_VERB ("Next",        (BonoboUIVerbFn) rb_shell_player_cmd_next),
+	BONOBO_UI_VERB ("RestartSong", (BonoboUIVerbFn) rb_shell_player_cmd_restart),
 	BONOBO_UI_VERB_END
 };
 
@@ -418,6 +423,31 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 }
 
 static void
+rb_shell_player_cmd_restart (BonoboUIComponent *component,
+			     RBShellPlayer *player,
+			     const char *verbname)
+{
+	MonkeyMediaAudioStream *stream;
+	
+	if (player->priv->player != NULL)
+		stream = rb_view_player_get_stream (player->priv->player);
+	else
+		return;
+	
+	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), 0);
+
+	if (monkey_media_mixer_get_state (player->priv->mixer) != MONKEY_MEDIA_MIXER_STATE_PLAYING)
+	{
+		monkey_media_mixer_set_state (player->priv->mixer,
+					      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+
+		rb_shell_player_update_play_button (player);
+	}
+
+	rb_view_player_notify_changed (player->priv->player);
+}
+
+static void
 rb_shell_player_set_play_button (RBShellPlayer *player,
 			         PlayButtonState state)
 {
@@ -477,6 +507,7 @@ rb_shell_player_sync_with_player (RBShellPlayer *player)
 
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS, have_previous);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT, have_next);
+	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_RESTART, player->priv->player != NULL);
 
 	rb_shell_player_sync_mixer (player);
 }
