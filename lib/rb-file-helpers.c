@@ -136,10 +136,19 @@ rb_uri_resolve_symlink (const char *uri)
 	gnome_vfs_get_file_info (uri, info,
 				 GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE);
 
-	if (info->type == GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK)
-		real = g_strdup (info->symlink_name);
-	else
+	if (info->type == GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK) {
+		GnomeVFSURI *vfsuri;
+		GnomeVFSURI *new_vfsuri;
+
+		vfsuri = gnome_vfs_uri_new (uri);
+		new_vfsuri = gnome_vfs_uri_resolve_relative (vfsuri, info->symlink_name);
+		real = gnome_vfs_uri_to_string (new_vfsuri, GNOME_VFS_URI_HIDE_NONE); 
+
+		gnome_vfs_uri_unref (new_vfsuri);
+		gnome_vfs_uri_unref (vfsuri);
+	} else {
 		real = g_strdup (uri);
+	}
 
 	gnome_vfs_file_info_unref (info);
 
