@@ -68,6 +68,8 @@ void		rb_property_view_reset			(RBPropertyView *view);
 void		rb_property_view_handle_entry_addition	(RBPropertyView *view,
 							 RhythmDBEntry *entry);
 
+void		rb_property_view_handle_entry_deletion	(RBPropertyView *view); 
+
 guint		rb_property_view_get_num_properties	(RBPropertyView *view);
 
 G_END_DECLS

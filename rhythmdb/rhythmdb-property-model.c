@@ -65,10 +65,6 @@ static gboolean rhythmdb_property_model_iter_nth_child (GtkTreeModel *tree_model
 static gboolean rhythmdb_property_model_iter_parent (GtkTreeModel *tree_model,
 						  GtkTreeIter  *iter,
 						  GtkTreeIter  *child);
-static void rhythmdb_property_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
-						 RhythmDBPropertyModel *model);
-static void rhythmdb_property_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   RhythmDBPropertyModel *model);
 
 typedef struct {
 	char *name;
@@ -84,20 +80,14 @@ struct RhythmDBPropertyModelPrivate
 
 	guint stamp;
 
-	GMutex *lock;
-
 	GPtrArray *query;
-
-	GAsyncQueue *add_queue;
-	GHashTable *pending_propset;
 
 	GSequence *properties;
 	GMemChunk *property_memchunk;
-	GHashTable *propset;
+	GHashTable *reverse_map;
 
 	RhythmDBPropertyModelEntry *all;
 	
-	gboolean dirty;
 	gboolean complete;
 };
 
@@ -108,14 +98,6 @@ enum
 	PROP_QUERY,
 	PROP_PROP,
 };
-
-enum
-{
-	DIRTY,
-	LAST_SIGNAL
-};
-
-static guint rhythmdb_property_model_signals[LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
@@ -192,16 +174,6 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							   0, RHYTHMDB_NUM_PROPERTIES,
 							   RHYTHMDB_PROP_TYPE,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-
-	rhythmdb_property_model_signals[DIRTY] =
-		g_signal_new ("dirty",
-			      RHYTHMDB_TYPE_PROPERTY_MODEL,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBPropertyModelClass, dirty),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
 }
 
 static void
@@ -234,19 +206,6 @@ rhythmdb_property_model_set_property (GObject *object,
 	case PROP_RHYTHMDB:
 	{
 		model->priv->db = g_value_get_object (value);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_added",
-					 G_CALLBACK (rhythmdb_property_model_entry_added_cb),
-					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_restored",
-					 G_CALLBACK (rhythmdb_property_model_entry_added_cb),
-					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_deleted",
-					 G_CALLBACK (rhythmdb_property_model_entry_deleted_cb),
-					 model, 0);
-
 		break;
 	}
 	case PROP_QUERY:
@@ -318,12 +277,7 @@ rhythmdb_property_model_init (RhythmDBPropertyModel *model)
 	model->priv->stamp = g_random_int ();
 
 	model->priv->properties = g_sequence_new (NULL);
-	model->priv->propset = g_hash_table_new (g_str_hash, g_str_equal);
-	model->priv->pending_propset = g_hash_table_new (g_str_hash, g_str_equal);
-
-	model->priv->lock = g_mutex_new ();
-
-	model->priv->add_queue = g_async_queue_new ();
+	model->priv->reverse_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	model->priv->all = g_mem_chunk_alloc (model->priv->property_memchunk);
 	model->priv->all->name = g_strdup (_("All"));
@@ -354,11 +308,8 @@ rhythmdb_property_model_finalize (GObject *object)
 		g_free (prop->sort_key);
 	}
 
-	g_async_queue_unref (model->priv->add_queue);
-
 	g_mem_chunk_destroy (model->priv->property_memchunk);
-	g_hash_table_destroy (model->priv->pending_propset);
-	g_hash_table_destroy (model->priv->propset);
+	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->properties);
 
 	g_free (model->priv);
@@ -367,19 +318,7 @@ rhythmdb_property_model_finalize (GObject *object)
 }
 
 RhythmDBPropertyModel *
-rhythmdb_property_model_new (RhythmDB *db, RhythmDBPropType propid, GPtrArray *query)
-{
-	RhythmDBPropertyModel *model = g_object_new (RHYTHMDB_TYPE_PROPERTY_MODEL,
-						     "db", db, "prop", propid, "query",
-						     query, NULL);
-
-	g_return_val_if_fail (model->priv != NULL, NULL);
-
-	return model;
-}
-
-RhythmDBPropertyModel *
-rhythmdb_property_model_new_empty (RhythmDB *db, RhythmDBPropType propid)
+rhythmdb_property_model_new (RhythmDB *db, RhythmDBPropType propid)
 {
 	return g_object_new (RHYTHMDB_TYPE_PROPERTY_MODEL, "db", db, "prop", propid, NULL);
 }
@@ -391,168 +330,41 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a, RhythmDBProperty
 }
 
 void
-rhythmdb_property_model_append (RhythmDBPropertyModel *model, const char *title, const char *sort_key)
+rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
 {
 	RhythmDBPropertyModelEntry *prop;
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GSequencePtr ptr;
+	char *title, *sort_key;
+
+	rhythmdb_read_lock (model->priv->db);
+	title = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
+	rhythmdb_read_unlock (model->priv->db);
+
+	if (g_hash_table_lookup (model->priv->reverse_map, title)) {
+		g_free (title);
+		return;
+	}
+
+	rhythmdb_read_lock (model->priv->db);
+	sort_key = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->sort_propid);
+	rhythmdb_read_unlock (model->priv->db);
 
 	prop = g_mem_chunk_alloc (model->priv->property_memchunk);
-	prop->name = g_strdup (title);
-	prop->sort_key = g_strdup (sort_key);
+	prop->name = title;
+	prop->sort_key = sort_key;
 
-	g_hash_table_insert (model->priv->pending_propset, prop->name, prop->name);
-	g_async_queue_push (model->priv->add_queue, prop);
-}
-
-void
-rhythmdb_property_model_append_entry (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
-{
-
-	char *title;
-	char *sort_key;
-		
-	rhythmdb_read_lock (model->priv->db); 
-	title = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
-	sort_key = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->sort_propid);
-	rhythmdb_read_unlock (model->priv->db); 
-
-	g_mutex_lock (model->priv->lock);
+	iter.stamp = model->priv->stamp;
+	ptr = g_sequence_insert_sorted (model->priv->properties, prop,
+					(GCompareDataFunc) rhythmdb_property_model_compare,
+					model);
+	g_hash_table_insert (model->priv->reverse_map, prop->name, ptr);
 	
-	if (g_hash_table_lookup (model->priv->propset, title))
-		goto out;
-	if (g_hash_table_lookup (model->priv->pending_propset, title))
-		goto out;
-
-	rhythmdb_property_model_append (model, title, sort_key);
-out:
-	g_free (title);
-	g_free (sort_key);
-	g_mutex_unlock (model->priv->lock);
-}
-
-void
-rhythmdb_property_model_complete (RhythmDBPropertyModel *model)
-{
-	g_mutex_lock (model->priv->lock);
-	
-	model->priv->complete = TRUE;
-	
-	g_mutex_unlock (model->priv->lock);
-}
-
-/* Threading: should be entered via database thread, with db lock held
- */
-static void
-rhythmdb_property_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
-					RhythmDBPropertyModel *model)
-{
-	char *name = NULL, *sort_key = NULL;
-	g_mutex_lock (model->priv->lock);
-
-	if (G_LIKELY (model->priv->query)) {
-		name = rhythmdb_entry_get_string (db, entry, model->priv->propid);
-		if (g_hash_table_lookup (model->priv->propset, name))
-			goto out;
-		if (g_hash_table_lookup (model->priv->pending_propset, name))
-			goto out;
-
-		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			sort_key = rhythmdb_entry_get_string (db, entry, model->priv->sort_propid);
-			rhythmdb_property_model_append (model, name, sort_key);
-		}
-	}
-
-out:
-	g_free (name);
-	g_free (sort_key);
-	g_mutex_unlock (model->priv->lock);
-}
-
-static void
-rhythmdb_property_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
-				       RhythmDBPropertyModel *model)
-{
-	g_mutex_lock (model->priv->lock);
-	
-	if (model->priv->dirty)
-		goto out;
-
-	if (G_LIKELY (model->priv->query)) {
-		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rb_debug ("model is now dirty");
-			model->priv->dirty = TRUE;
-		}
-	}
-out:
-	g_mutex_unlock (model->priv->lock);
-}
-
-static int
-compare_times (GTimeVal *a, GTimeVal *b)
-{
-	if (a->tv_sec == b->tv_sec)
-		/* It's quite unlikely that microseconds are equal,
-		 * so just ignore that case, we don't need a lot
-		 * of precision.
-		 */
-		return a->tv_usec > b->tv_usec ? 1 : -1;
-	else if (a->tv_sec > b->tv_sec)
-		return 1;
-	else
-		return -1;
-}
-
-/* Threading: main thread only, should hold GDK lock
- */
-gboolean
-rhythmdb_property_model_sync (RhythmDBPropertyModel *model, GTimeVal *timeout)
-{
-	RhythmDBPropertyModelEntry *prop;	
-	gboolean synced = FALSE;
-	guint count = 0;
-			      
-	g_mutex_lock (model->priv->lock);
-
-	if (model->priv->dirty) {
-		model->priv->dirty = FALSE;
-		g_mutex_unlock (model->priv->lock);
-		rb_debug ("emitting dirty");
-		g_signal_emit (G_OBJECT (model), rhythmdb_property_model_signals[DIRTY], 0);
-		return TRUE;
-	}
-
-	while ((prop = g_async_queue_try_pop (model->priv->add_queue)) != NULL) {
-		GtkTreeIter iter;
-		GtkTreePath *path;
-		GSequencePtr ptr;
-		GTimeVal now;
-
-		synced = TRUE;
-
-		iter.stamp = model->priv->stamp;
-
-		ptr = g_sequence_insert_sorted (model->priv->properties, prop,
-						(GCompareDataFunc) rhythmdb_property_model_compare,
-						model);
-		g_hash_table_insert (model->priv->propset, prop->name, ptr);
-		g_hash_table_remove (model->priv->pending_propset, prop->name);
-		
-		iter.user_data = ptr;
-		path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
-		rb_debug ("emitting row inserted");
-		gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
-		gtk_tree_path_free (path);
-
-		if (timeout && count / 16 > 0) {
-			g_get_current_time (&now);
-			if (compare_times (timeout,&now) > 0) {
-				rb_debug ("hit timeout");
-				break;
-			}
-		}
-	}
-
-	g_mutex_unlock (model->priv->lock);
-	return synced;
+	iter.user_data = ptr;
+	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
+	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
+	gtk_tree_path_free (path);
 }
 
 static GtkTreeModelFlags

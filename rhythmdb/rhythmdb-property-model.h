@@ -56,26 +56,14 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
-
-	/* signals */
-	void	(*dirty)	(void);
 } RhythmDBPropertyModelClass;
 
 GType			rhythmdb_property_model_get_type	(void);
 
-RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBPropType propid, GPtrArray *query);
+RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBPropType propid);
 
-RhythmDBPropertyModel *	rhythmdb_property_model_new_empty	(RhythmDB *db, RhythmDBPropType propid);
-
-void			rhythmdb_property_model_append		(RhythmDBPropertyModel *model,
-								 const char *title, const char *sort_key);
-
-void			rhythmdb_property_model_append_entry	(RhythmDBPropertyModel *model,
+void			rhythmdb_property_model_insert		(RhythmDBPropertyModel *model,
 								 RhythmDBEntry *entry);
-
-gboolean		rhythmdb_property_model_sync		(RhythmDBPropertyModel *model, GTimeVal *timeout);
-
-void			rhythmdb_property_model_complete	(RhythmDBPropertyModel *model);
 
 G_END_DECLS
 

@@ -148,10 +148,6 @@ typedef struct
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
 						 GtkTreeModel *main_model,
 						 gboolean *cancel);
-
-	void		(*impl_do_property_query)(RhythmDB *db, guint propid, GPtrArray *query,
-						  GtkTreeModel *main_model);
-
 } RhythmDBClass;
 
 GType		rhythmdb_get_type	(void);
@@ -236,24 +232,6 @@ void		rhythmdb_do_full_query			(RhythmDB *db,
 void		rhythmdb_do_full_query_parsed		(RhythmDB *db,
 							 GtkTreeModel *main_model,
 							 GPtrArray *query);
-
-/* This is a specialized query to return a flat list of metadata,
- * e.g. genre/artist/album.  The varargs are the same as for the
- * rhythmdb_do_entry_query call.  You should think of it, conceptually,
- * as constructing a list of all entries which match the query, and then
- * returning the values of the attribute as a set.
- */
-void		rhythmdb_do_property_query		(RhythmDB *db, guint property_id,
-							 GtkTreeModel **model, ...);
-
-void		rhythmdb_do_property_query_async	(RhythmDB *db, guint property_id,
-							 GtkTreeModel *model, ...);
-
-void		rhythmdb_do_property_query_ptrarray	(RhythmDB *db, guint property_id,
-							 GtkTreeModel **model, GPtrArray *query);
-
-void		rhythmdb_do_property_query_ptrarray_async(RhythmDB *db, guint property_id,
-							  GtkTreeModel *model, GPtrArray *query);
 
 void		rhythmdb_do_full_query_async		(RhythmDB *db, GtkTreeModel *main_model, ...);
 

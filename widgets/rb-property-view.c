@@ -61,8 +61,6 @@ static void rb_property_view_row_activated_cb (GtkTreeView *treeview,
 			                   RBPropertyView *view);
 static void rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 						   RBPropertyView *view);
-static gboolean rb_property_view_poll_model (RBPropertyView *view);
-static void rb_property_view_model_dirty_cb (RhythmDBPropertyModel *model, RBPropertyView *view);
 
 struct RBPropertyViewPrivate
 {
@@ -77,10 +75,7 @@ struct RBPropertyViewPrivate
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
-	guint query_idle_id;
-	
-	gboolean query_queued;
-	GTimeVal last_query_time;
+	guint refresh_idle_id;
 };
 
 enum
@@ -95,7 +90,6 @@ enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_QUERY,
 	PROP_PROP,
 };
 
@@ -161,13 +155,6 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							    RHYTHMDB_PROP_TYPE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	g_object_class_install_property (object_class,
-					 PROP_QUERY,
-					 g_param_spec_pointer ("query",
-							       "Query",
-							       "RhythmDB query",
-							       G_PARAM_READWRITE));
-
 
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
 		g_signal_new ("property-activated",
@@ -222,9 +209,6 @@ rb_property_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	if (view->priv->query_idle_id)
-		g_source_remove (view->priv->query_idle_id);
-
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -244,38 +228,6 @@ rb_property_view_set_property (GObject *object,
 	case PROP_DB:
 		view->priv->db = g_value_get_object (value);
 		break;
-	case PROP_QUERY:
-	{
-		GtkTreeIter iter;
-		if (view->priv->query)
-			rhythmdb_query_free (view->priv->query);
-			
-		view->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
-
-		view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid,
-								      view->priv->query);
-
-		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
-					 "dirty",
-					 G_CALLBACK (rb_property_view_model_dirty_cb),
-					 view,
-					 0);
-		
-		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
-					 GTK_TREE_MODEL (view->priv->prop_model));
-		g_object_unref (G_OBJECT (view->priv->prop_model));
-
-		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-						 G_CALLBACK (rb_property_view_selection_changed_cb),
-						 view);
-						 
-		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter);
-		gtk_tree_selection_select_iter (view->priv->selection, &iter);
-		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-						   G_CALLBACK (rb_property_view_selection_changed_cb),
-						   view);
-	}
-	break;
 	case PROP_PROP:
 		view->priv->propid = g_value_get_enum (value);
 		break;
@@ -328,8 +280,8 @@ rb_property_view_new (RhythmDB *db, guint propid)
 }
 
 void
-rb_property_view_set_selection_mode	(RBPropertyView *view,
-					 GtkSelectionMode mode)
+rb_property_view_set_selection_mode (RBPropertyView *view,
+				     GtkSelectionMode mode)
 {
 	g_return_if_fail (mode == GTK_SELECTION_SINGLE || mode == GTK_SELECTION_MULTIPLE);
 	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview)),
@@ -339,18 +291,36 @@ rb_property_view_set_selection_mode	(RBPropertyView *view,
 void
 rb_property_view_reset (RBPropertyView *view)
 {
-	GPtrArray *query;
+	GtkTreeIter iter;
+	
+	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 
-	query = rhythmdb_query_copy (view->priv->query);
-	g_object_set (G_OBJECT (view), "query", query, NULL);
-	rhythmdb_query_free (query);
+	gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
+				 GTK_TREE_MODEL (view->priv->prop_model));
+	g_object_unref (G_OBJECT (view->priv->prop_model));
+	
+	g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+					 G_CALLBACK (rb_property_view_selection_changed_cb),
+					 view);
+	
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter);
+	gtk_tree_selection_select_iter (view->priv->selection, &iter);
+	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+					   G_CALLBACK (rb_property_view_selection_changed_cb),
+					   view);
 }
 
 void
 rb_property_view_handle_entry_addition	(RBPropertyView *view,
 					 RhythmDBEntry *entry)
 {
-	rhythmdb_property_model_append_entry (view->priv->prop_model, entry);
+	rhythmdb_property_model_insert (view->priv->prop_model, entry);
+}
+
+void
+rb_property_view_handle_entry_deletion (RBPropertyView *view)
+{
+	rb_debug ("entry deleted");
 }
 
 guint
@@ -395,8 +365,7 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	view = RB_PROPERTY_VIEW (parent_class->constructor (type, n_construct_properties,
 							    construct_properties));
 
-	view->priv->prop_model = rhythmdb_property_model_new_empty (view->priv->db,
-								    view->priv->propid);
+	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
@@ -426,9 +395,6 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 				     column);
-	
-	view->priv->query_idle_id = 
-		g_idle_add ((GSourceFunc) rb_property_view_poll_model, view);
 
 	return G_OBJECT (view);
 }
@@ -504,69 +470,3 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 		}
 	}
 }
-
-static gboolean
-rb_property_view_poll_model (RBPropertyView *view)
-{
-	gboolean synced;
-	GTimeVal timeout;
-
-	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
-
-	GDK_THREADS_ENTER ();
-
-	synced = rhythmdb_property_model_sync (view->priv->prop_model, &timeout);
-
-	GDK_THREADS_LEAVE ();
-
-	if (synced)
-		g_idle_add ((GSourceFunc) rb_property_view_poll_model, view);
-	else
-		g_timeout_add (300, (GSourceFunc) rb_property_view_poll_model, view);
-	return FALSE;
-}
-
-static gboolean
-kick_off_query (RBPropertyView *view)
-{
-	GPtrArray *query;
-	GDK_THREADS_ENTER ();
-
-	rb_debug ("kicking off query");
-	query = rhythmdb_query_copy (view->priv->query);
-	g_object_set (G_OBJECT (view), "query", query, NULL);
-	rhythmdb_query_free (query);
-
-	g_get_current_time (&view->priv->last_query_time);
-	rhythmdb_do_property_query_ptrarray_async (view->priv->db,
-						   view->priv->propid,
-						   GTK_TREE_MODEL (view->priv->prop_model),
-						   view->priv->query);
-	
-	view->priv->query_queued = FALSE;
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
-static void
-rb_property_view_model_dirty_cb (RhythmDBPropertyModel *model, RBPropertyView *view)
-{
-	GTimeVal next;
-
-	if (view->priv->query_queued)
-		return;
-
-	g_get_current_time (&next);
-
-#define RB_PROPERTY_VIEW_QUERY_REFRESH_TIME 4
-	rb_debug ("dirty");
-
-	if (next.tv_sec - view->priv->last_query_time.tv_sec >= RB_PROPERTY_VIEW_QUERY_REFRESH_TIME) {
-		g_idle_add ((GSourceFunc) kick_off_query, view);
-		view->priv->query_queued = TRUE;
-	}
-}
-
