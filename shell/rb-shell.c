@@ -373,6 +373,9 @@ rb_shell_init (RBShell *shell)
 static void
 rb_shell_sync_state (RBShell *shell)
 {
+	if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
+		return;
+	
 	rb_debug ("saving playlists");
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
 
@@ -998,7 +1001,8 @@ rb_shell_construct (RBShell *shell)
 		rb_debug ("No AudioCD device is available!");
 #endif
 	
-	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")) {
+	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")
+	    && !g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run")) {
 		/* register with CORBA */
 		CORBA_exception_init (&ev);
 		
