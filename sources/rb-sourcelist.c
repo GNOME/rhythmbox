@@ -83,9 +83,6 @@ static void rb_sourcelist_playing_cell_data_func (GtkTreeViewColumn *column, Gtk
 static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 						GtkTreeModel *tree_model, GtkTreeIter *iter,
 						RBSourceList *sourcelist);
-static gboolean rb_sourcelist_is_row_visible (GtkTreeModel *model,
-					      GtkTreeIter *iter,
-					      gpointer data);
 
 static GtkVBoxClass *parent_class = NULL;
 
@@ -184,15 +181,10 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	sourcelist->priv = g_new0 (RBSourceListPriv, 1);
 
-	sourcelist->priv->real_model = rb_sourcelist_model_new ();
-	sourcelist->priv->filter_model = gtk_tree_model_filter_new (sourcelist->priv->real_model,
-								    NULL);
+	sourcelist->priv->filter_model = rb_sourcelist_model_new ();
+	sourcelist->priv->real_model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
 
-	gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model),
-						rb_sourcelist_is_row_visible, 
-						NULL, NULL);
-
-	g_signal_connect_object (G_OBJECT (sourcelist->priv->real_model),
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->filter_model),
 				 "drop_received",
 				 G_CALLBACK (drop_received_cb),
 				 sourcelist, 0);
@@ -547,28 +539,6 @@ visibility_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
 	
 	gtk_tree_model_filter_refilter (GTK_TREE_MODEL_FILTER (sourcelist->priv->filter_model));
-}
-
-
-static gboolean
-rb_sourcelist_is_row_visible (GtkTreeModel *model,
-			      GtkTreeIter *iter,
-			      gpointer data)
-{
-	RBSource *source;
-
-	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-
-	if (source != NULL) {
-		gboolean visible;
-		g_object_get (G_OBJECT (source), 
-			      "visibility", &visible, 
-			      NULL);
-		return visible;
-	} else {
-		return FALSE;
-	}
 }
 
 static void

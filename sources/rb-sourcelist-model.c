@@ -108,7 +108,7 @@ rb_sourcelist_model_get_type (void)
 			NULL
 		};
 
-		rb_sourcelist_model_type = g_type_register_static (GTK_TYPE_LIST_STORE, "RBSourceListModel",
+		rb_sourcelist_model_type = g_type_register_static (GTK_TYPE_TREE_MODEL_FILTER, "RBSourceListModel",
 								   &rb_sourcelist_model_info, 0);
 		g_type_add_interface_static (rb_sourcelist_model_type,
 					     RB_TYPE_TREE_DRAG_SOURCE,
@@ -184,10 +184,32 @@ rb_sourcelist_model_finalize (GObject *object)
 		(* G_OBJECT_CLASS (parent_class)->finalize) (object);
 }
 
+static gboolean
+rb_sourcelist_is_row_visible (GtkTreeModel *model,
+			      GtkTreeIter *iter,
+			      gpointer data)
+{
+	RBSource *source;
+
+	gtk_tree_model_get (GTK_TREE_MODEL (model), iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+	
+	if (source != NULL) {
+		gboolean visible;	
+		g_object_get (G_OBJECT (source), "visibility", &visible, NULL);
+
+		return visible;
+	} else {
+		return FALSE;
+	}
+}
+
+
 GtkTreeModel *
 rb_sourcelist_model_new (void)
 {
 	RBSourceListModel *model;
+	GtkListStore *store;
  	GType *column_types = g_new (GType, RB_SOURCELIST_MODEL_N_COLUMNS);
 
 	column_types[RB_SOURCELIST_MODEL_COLUMN_PLAYING] = G_TYPE_BOOLEAN;
@@ -195,11 +217,18 @@ rb_sourcelist_model_new (void)
 	column_types[RB_SOURCELIST_MODEL_COLUMN_NAME] = G_TYPE_STRING;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_POINTER;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES] = PANGO_TYPE_ATTR_LIST;
+	store = gtk_list_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS, 
+				     column_types);
 
- 	model = RB_SOURCELIST_MODEL (g_object_new (RB_TYPE_SOURCELIST_MODEL, NULL));
- 	gtk_list_store_set_column_types (GTK_LIST_STORE (model),
- 					 RB_SOURCELIST_MODEL_N_COLUMNS,
- 					 column_types);
+ 	model = RB_SOURCELIST_MODEL (g_object_new (RB_TYPE_SOURCELIST_MODEL, 
+						   "child-model", store,
+						   "virtual-root", NULL,
+						   NULL));
+
+	gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (model), 
+						rb_sourcelist_is_row_visible, 
+						NULL, NULL);
+
 	g_free (column_types);
 
 	return GTK_TREE_MODEL (model);

@@ -40,14 +40,14 @@ typedef struct RBSourceListModelPriv RBSourceListModelPriv;
 
 typedef struct RBSourceListModel
 {
-	GtkListStore parent;
+	GtkTreeModelFilter parent;
 
 	RBSourceListModelPriv *priv;
 } RBSourceListModel;
 
 typedef struct RBSourceListModelClass
 {
-	GtkListStoreClass parent_class;
+	GtkTreeModelFilterClass parent_class;
 
 	void (*drop_received) (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos, GtkSelectionData *data);
 
