@@ -46,6 +46,7 @@ rb_prefix_to_suffix (const char *string)
 		{
 			char *tmp = g_strndup (string, strlen (items[i]));
 			tmp = g_strchomp (tmp);
+			/* Translators: the format is "Prefix, Artist name" */
 			str = g_strdup_printf (_("%s, %s"), string + strlen (items[i]), tmp);
 			g_free (tmp);
 			g_free (foldedprefix);
