@@ -849,14 +849,34 @@ out:
 }
 
 static void
-handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
+handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri_maybe,
+					const char *title,
 					const char *genre, RBPlaylistManager *mgr)
 {
+	char *uri;
+
+	if (uri_maybe[0] == '/') {
+		uri = gnome_vfs_get_uri_from_local_path (uri_maybe);
+		if (uri == NULL) {
+			rb_debug ("Error processing absolute filename: %s", uri_maybe);
+			return;
+		}
+	} else {
+		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri_maybe);
+		if (!vfsuri) {
+			rb_debug ("Error processing probable URI: %s", uri_maybe);
+			return;
+		}
+		uri = gnome_vfs_uri_to_string (vfsuri, GNOME_VFS_URI_HIDE_NONE);
+		gnome_vfs_uri_unref (vfsuri);
+	}
+	
 	if (!mgr->priv->firsturi)
 		mgr->priv->firsturi = g_strdup (uri);
 	if (rb_uri_is_iradio (uri)) {
 		rb_iradio_source_add_station (mgr->priv->iradio_source,
 					      uri, title, genre);
+		g_free (uri);
 		return;
 	}
 
@@ -865,4 +885,5 @@ handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, c
 			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 	}
 	add_uri_to_playlist (mgr, mgr->priv->loading_playlist, uri, title);
+	g_free (uri);
 }
