@@ -1,243 +1,30 @@
-# arch-tag: traditional Chinese translation of Rhythmbox
+# traditional Chinese translation of netrhythmbox.
 # Copyright (C) 2003 Free Software Foundation, Inc.
 # Abel Cheung <maddog@linux.org.hk>, 2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: net-rhythmbox 0.4.99\n"
-"POT-Creation-Date: 2003-05-30 19:40+0800\n"
-"PO-Revision-Date: 2003-05-30 20:47+0800\n"
+"Project-Id-Version: rhythmbox 0.5.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-09-01 20:25+0800\n"
+"PO-Revision-Date: 2003-09-01 20:26+0800\n"
 "Last-Translator: Abel Cheung <maddog@linux.org.hk>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/glade/buffering-dialog.glade.h:1
-msgid "<b>Loading...</b>"
-msgstr "<b>載入中...</b>"
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
+msgid "Add To Music Player Library"
+msgstr "加入樂庫"
 
-#: data/glade/buffering-dialog.glade.h:2
-msgid "Loading..."
-msgstr "載入中..."
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr "Rhythmbox 的 Nautilus 快顯選單額外項目"
 
-#: data/glade/general-prefs.glade.h:1 data/glade/library-prefs.glade.h:1
-msgid "    "
-msgstr "    "
-
-#: data/glade/general-prefs.glade.h:2
-msgid "<span weight=\"bold\">Visible Columns</span>"
-msgstr "<span weight=\"bold\">顯示以下欄位</span>"
-
-#: data/glade/general-prefs.glade.h:3
-#: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
-msgid "A_lbum"
-msgstr "專輯(_L)"
-
-#: data/glade/general-prefs.glade.h:4
-msgid "Track _number"
-msgstr ""
-
-#: data/glade/general-prefs.glade.h:5
-msgid "_Artist"
-msgstr "藝人(_A)"
-
-#: data/glade/general-prefs.glade.h:6
-msgid "_Duration"
-msgstr "長度(_D)"
-
-#: data/glade/general-prefs.glade.h:7
-#: data/node-views/rb-node-view-genres.xml.h:1
-#: data/node-views/rb-node-view-iradio-genres.xml.h:1
-msgid "_Genre"
-msgstr "樂曲分類(_G)"
-
-#: data/glade/general-prefs.glade.h:8
-msgid "_Last played"
-msgstr "最後播放時間(_L)"
-
-#: data/glade/general-prefs.glade.h:9
-msgid "_Play count"
-msgstr "播放次數(_P)"
-
-#: data/glade/general-prefs.glade.h:10
-#: data/node-views/rb-node-view-iradio-stations.xml.h:4
-msgid "_Quality"
-msgstr "品質(_Q)"
-
-#: data/glade/general-prefs.glade.h:11
-#: data/node-views/rb-node-view-cdaudio.xml.h:6
-#: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8
-msgid "_Rating"
-msgstr "評級(_R)"
-
-#: data/glade/library-prefs.glade.h:2
-msgid "<b>Browser Views</b>"
-msgstr "<b>顯示欄位</b>"
-
-#: data/glade/library-prefs.glade.h:3
-msgid "Artists and albums"
-msgstr "藝人及專輯"
-
-#: data/glade/library-prefs.glade.h:4
-msgid "Genres and artists"
-msgstr "樂曲分類及藝人"
-
-#: data/glade/library-prefs.glade.h:5
-msgid "Genres, artists and albums"
-msgstr "樂曲分類、藝人及專輯"
-
-#: data/glade/load-failure.glade.h:1
-msgid "The following files couldn't be loaded:"
-msgstr "無法載入以下的檔案："
-
-#: data/glade/song-info.glade.h:1
-msgid "   "
-msgstr "   "
-
-#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: data/glade/song-info.glade.h:3
-msgid "<b>Duration:</b>"
-msgstr "<b>長度：</b>"
-
-#: data/glade/song-info.glade.h:4
-msgid "<b>Encoding:</b>"
-msgstr "<b>編碼：</b>"
-
-#: data/glade/song-info.glade.h:5
-msgid "<b>Last played:</b>"
-msgstr "<b>最後播放時間：</b>"
-
-#: data/glade/song-info.glade.h:6
-msgid "<b>Location:</b>"
-msgstr "<b>位置：</b>"
-
-#: data/glade/song-info.glade.h:7
-msgid "<b>Name:</b>"
-msgstr "<b>名稱：</b>"
-
-#: data/glade/song-info.glade.h:8
-msgid "<b>Play count:</b>"
-msgstr "<b>播放次數：</b>"
-
-#: data/glade/song-info.glade.h:9
-msgid "<b>Quality:</b>"
-msgstr "<b>品質：</b>"
-
-#: data/glade/song-info.glade.h:10
-msgid "<b>_Album:</b>"
-msgstr "<b>專輯(_A)：</b>"
-
-#: data/glade/song-info.glade.h:11
-msgid "<b>_Artist:</b>"
-msgstr "<b>藝人(_A)：</b>"
-
-#: data/glade/song-info.glade.h:12
-msgid "<b>_Comments:</b>"
-msgstr "<b>備註(_C)：</b>"
-
-#: data/glade/song-info.glade.h:13
-msgid "<b>_Date:</b>"
-msgstr "<b>日期(_D)：</b>"
-
-#: data/glade/song-info.glade.h:14
-msgid "<b>_Genre:</b>"
-msgstr "<b>樂曲類型(_G)：</b>"
-
-#: data/glade/song-info.glade.h:15
-msgid "<b>_Rating:</b>"
-msgstr "<b>評級(_R)：</b>"
-
-#: data/glade/song-info.glade.h:16
-msgid "<b>_Title:</b>"
-msgstr "<b>標題(_T)：</b>"
-
-#: data/glade/song-info.glade.h:17
-msgid "<b>_Track number:</b>"
-msgstr ""
-
-#: data/glade/song-info.glade.h:18
-msgid "Basic"
-msgstr "基本"
-
-#: data/glade/song-info.glade.h:19
-msgid "Details"
-msgstr "詳細資料"
-
-#: data/glade/song-info.glade.h:20
-msgid "_of"
-msgstr "總數(_O)："
-
-#: data/glade/station-new.glade.h:1
-msgid " "
-msgstr " "
-
-#: data/glade/station-new.glade.h:3 data/glade/station-properties.glade.h:6
-msgid "_Genre: "
-msgstr "樂曲分類(_G)："
-
-#: data/glade/station-new.glade.h:4
-msgid "_Location: "
-msgstr "位置(_L)："
-
-#: data/glade/station-new.glade.h:5 data/glade/station-properties.glade.h:11
-msgid "_Title: "
-msgstr "標題(_T)："
-
-#: data/glade/station-new.glade.h:6
-msgid "dialog1"
-msgstr "dialog1"
-
-#: data/glade/station-properties.glade.h:2
-msgid "42"
-msgstr "42"
-
-#: data/glade/station-properties.glade.h:3
-msgid "Play Count: "
-msgstr "播放次數："
-
-#: data/glade/station-properties.glade.h:4
-msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr ""
-
-#: data/glade/station-properties.glade.h:5
-msgid "_Add: "
-msgstr "新增(_A)："
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "最後播放時間(_L)："
-
-#: data/glade/station-properties.glade.h:8
-msgid "_Locations"
-msgstr "位置(_L)"
-
-#: data/glade/station-properties.glade.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:51
-msgid "_Properties"
-msgstr "屬性(_P)"
-
-#: data/glade/station-properties.glade.h:10
-msgid "_Rating: "
-msgstr "評級(_R)："
-
-#: data/glade/station-properties.glade.h:12
-msgid "blah Properties"
-msgstr " "
-
-#: data/glade/uri.glade.h:2
-msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "請輸入準備加入的檔案位置[URI](_L)："
-
-#: data/glade/uri.glade.h:3
-msgid "Open from URI"
-msgstr "開啟 URI"
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
+msgid "Rhythmbox Nautilus Context Menu Item"
+msgstr "Rhythmbox Nautilus 快顯選單項目"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -247,14 +34,246 @@ msgstr "Rhythmbox shell"
 msgid "Rhythmbox shell factory"
 msgstr "Rhythmbox shell 工廠"
 
+#: data/glade/buffering-dialog.glade.h:1
+msgid "Loading..."
+msgstr "載入中..."
+
+#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:1
+#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
+#: data/glade/uri.glade.h:1
+msgid "*"
+msgstr "*"
+
+#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:260
+msgid "Finish"
+msgstr "完成"
+
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:245
+msgid ""
+"In order to get started using\n"
+"Rhythmbox, this assistant will ask\n"
+"you some simple questions."
+msgstr "為準備使用 Rhythmbox，本精靈將會向您問一些簡單的問題。"
+
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:251
+msgid "Library setup"
+msgstr "樂庫設定"
+
+#: data/glade/druid.glade.h:7
+msgid ""
+"Rhythmbox needs to know where to find your music.\n"
+"You may choose to skip this step; instead, you \n"
+"can add music to your library at any point later.\n"
+"\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox 需要知道您的樂曲存放在哪裡。\n"
+"您可以選擇略過這個步驟，\n"
+"在稍後的時間才將音樂加入您的樂庫中。\n"
+"\n"
+"請選取以下其中一種選擇："
+
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:241
+msgid "Welcome to Rhythmbox"
+msgstr "歡迎使用 Rhythmbox"
+
+#: data/glade/druid.glade.h:13
+msgid ""
+"You are now ready to start\n"
+"Rhythmbox."
+msgstr "您現在可以準備啟動 Rhythmbox。"
+
+#: data/glade/druid.glade.h:15
+msgid "_Browse..."
+msgstr "瀏覽(_B)..."
+
+#: data/glade/druid.glade.h:16
+msgid "_Enter location manually:"
+msgstr "自行輸入位置(_E)："
+
+#: data/glade/druid.glade.h:17
+msgid "_Path:"
+msgstr "路徑(_P)"
+
+#: data/glade/druid.glade.h:18
+msgid "_Skip this step"
+msgstr "略過這個步驟(_S)"
+
+#: data/glade/general-prefs.glade.h:1
+#: data/node-views/rb-node-view-cdaudio.xml.h:1
+#: data/node-views/rb-node-view-songs.xml.h:1
+msgid "A_lbum"
+msgstr "專輯(_L)"
+
+#: data/glade/general-prefs.glade.h:2
+msgid "Track _number"
+msgstr ""
+
+#: data/glade/general-prefs.glade.h:3
+msgid "Visible Columns"
+msgstr "會顯示的欄位"
+
+#: data/glade/general-prefs.glade.h:4
+msgid "_Artist"
+msgstr "藝人(_A)"
+
+#: data/glade/general-prefs.glade.h:5
+msgid "_Duration"
+msgstr "長度(_D)"
+
+#: data/glade/general-prefs.glade.h:6
+#: data/node-views/rb-node-view-genres.xml.h:1
+#: data/node-views/rb-node-view-iradio-genres.xml.h:1
+msgid "_Genre"
+msgstr "樂曲分類(_G)"
+
+#: data/glade/general-prefs.glade.h:7
+msgid "_Last played"
+msgstr "最後播放時間(_L)"
+
+#: data/glade/general-prefs.glade.h:8
+msgid "_Play count"
+msgstr "播放次數(_P)"
+
+#: data/glade/general-prefs.glade.h:9
+#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+msgid "_Quality"
+msgstr "品質(_Q)"
+
+#: data/glade/general-prefs.glade.h:10
+#: data/node-views/rb-node-view-cdaudio.xml.h:6
+#: data/node-views/rb-node-view-iradio-stations.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.h:8
+msgid "_Rating"
+msgstr "評級(_R)"
+
+#: data/glade/library-prefs.glade.h:1
+msgid "Artists and albums"
+msgstr "藝人及專輯"
+
+#: data/glade/library-prefs.glade.h:2
+msgid "Browser Views"
+msgstr ""
+
+#: data/glade/library-prefs.glade.h:3
+msgid "Genres and artists"
+msgstr "樂曲分類及藝人"
+
+#: data/glade/library-prefs.glade.h:4
+msgid "Genres, artists and albums"
+msgstr "樂曲分類、藝人及專輯"
+
+#: data/glade/load-failure.glade.h:1
+msgid "The following files couldn't be loaded:"
+msgstr "無法載入以下的檔案："
+
+#: data/glade/song-info.glade.h:2
+msgid "Basic"
+msgstr "基本"
+
+#: data/glade/song-info.glade.h:3
+msgid "Details"
+msgstr "詳細資料"
+
+#: data/glade/song-info.glade.h:4
+msgid "Duration:"
+msgstr "長度："
+
+#: data/glade/song-info.glade.h:5
+msgid "Encoding:"
+msgstr "編碼："
+
+#: data/glade/song-info.glade.h:6
+msgid "Last played:"
+msgstr "最後播放時間："
+
+#: data/glade/song-info.glade.h:7
+msgid "Location:"
+msgstr "位置："
+
+#: data/glade/song-info.glade.h:8
+msgid "Name:"
+msgstr "名稱："
+
+#: data/glade/song-info.glade.h:9
+msgid "Play count:"
+msgstr "播放次數："
+
+#: data/glade/song-info.glade.h:10
+msgid "Quality:"
+msgstr "品質："
+
+#: data/glade/song-info.glade.h:11
+msgid "_Album:"
+msgstr "專輯(_A)："
+
+#: data/glade/song-info.glade.h:12
+msgid "_Artist:"
+msgstr "藝人(_A)："
+
+#: data/glade/song-info.glade.h:13
+msgid "_Comments:"
+msgstr "備註(_C)："
+
+#: data/glade/song-info.glade.h:14
+msgid "_Date:"
+msgstr "日期(_D)："
+
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:5
+msgid "_Genre:"
+msgstr "樂曲分類(_G)："
+
+#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
+msgid "_Rating:"
+msgstr "評級(_R)："
+
+#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:8
+msgid "_Title:"
+msgstr "標題(_T)："
+
+#: data/glade/song-info.glade.h:18
+msgid "_Track number:"
+msgstr ""
+
+#: data/glade/song-info.glade.h:19
+msgid "_of:"
+msgstr "總數(_O)："
+
+#: data/glade/station-new.glade.h:3
+msgid "_Location:"
+msgstr "位置(_L)："
+
+#: data/glade/station-properties.glade.h:2
+msgid "L_ocation:"
+msgstr "位置(_O)："
+
+#: data/glade/station-properties.glade.h:3
+msgid "Play Count:"
+msgstr "播放次數："
+
+#: data/glade/station-properties.glade.h:4
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr ""
+
+#: data/glade/station-properties.glade.h:6
+msgid "_Last Played:"
+msgstr "最後播放時間(_L)："
+
+#: data/glade/uri.glade.h:2
+msgid "Enter the _location (URI) of the file you would like to add:"
+msgstr "請輸入準備加入的檔案位置[URI](_L)："
+
+#: data/glade/uri.glade.h:3
+msgid "Open from URI"
+msgstr "開啟 URI"
+
 #: data/node-views/rb-node-view-albums.xml.h:1
 msgid "_Album"
 msgstr "專輯(_A)"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
-msgid "A_rtist"
-msgstr "藝人(_R)"
-
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:2
@@ -294,7 +313,7 @@ msgstr "最後播放時間(_A)"
 msgid "_Play Count"
 msgstr "播放次數(_P)"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:922
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:544 shell/rb-shell.c:1045
 msgid "Music Player"
 msgstr "音樂播放程式"
 
@@ -302,8 +321,7 @@ msgstr "音樂播放程式"
 msgid "Play and organize your music collection"
 msgstr "播放及管理音樂庫"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
-#: data/ui/rhythmbox-library-view.xml.in.h:4
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Deselect all songs"
 msgstr "取消選取所有樂曲"
 
@@ -311,24 +329,19 @@ msgstr "取消選取所有樂曲"
 msgid "Eject Audio-CD"
 msgstr "退出音樂光碟"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
-#: data/ui/rhythmbox-library-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Scroll the view to the currently playing song"
 msgstr "將清單捲動至播放中的樂曲"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:6
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Select _All"
 msgstr "全部選取(_A)"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:7
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:33
 msgid "Select all songs"
 msgstr "選取所有樂曲"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
-#: data/ui/rhythmbox-iradio-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:51
 msgid "_Edit"
 msgstr "編輯(_E)"
 
@@ -336,65 +349,13 @@ msgstr "編輯(_E)"
 msgid "_Eject Audio-CD..."
 msgstr "退出音樂光碟(_E)..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:13 data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_Jump to Playing Song"
 msgstr "前往播放中的樂曲(_J)"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
-#: data/ui/rhythmbox-iradio-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:15 data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:69
 msgid "_View"
 msgstr "顯示(_V)"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:1
-msgid "Change the visibility of the genre browser"
-msgstr "更改樂曲分類的顯示狀態"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:2
-msgid "Scroll the view to the currently playing station"
-msgstr "將清單捲動至播放中的電台"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:3
-msgid "Show information on the selected station"
-msgstr "顯示有關選定的電台的資訊"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:36
-msgid "_Browser"
-msgstr "瀏覽(_B)"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:6
-msgid "_Jump to Playing Station"
-msgstr "前往播放中的電台(_J)"
-
-#: data/ui/rhythmbox-iradio-view.xml.in.h:7
-msgid "_New Internet Radio Station"
-msgstr "新增網上電台(_N)"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:1
-msgid "Change the visibility of the artist and album browser"
-msgstr "更改藝人及專輯的顯示狀態"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Copy selection"
-msgstr "複製選擇範圍"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:15
-msgid "Delete selection"
-msgstr "刪除選擇範圍"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:27
-msgid "Show information on the selected song"
-msgstr "顯示有關選定的樂曲的資訊"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:39
-msgid "_Copy"
-msgstr "複製(_C)"
-
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:40
-msgid "_Delete"
-msgstr "刪除(_D)"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
 msgid "Add Lo_cation..."
@@ -413,249 +374,294 @@ msgid "Change the visibility of the source list"
 msgstr ""
 
 #: data/ui/rhythmbox-ui.xml.in.h:5
+msgid "Change the visibility of the statusbar"
+msgstr "切換是否顯示狀態列"
+
+#: data/ui/rhythmbox-ui.xml.in.h:6
 msgid "Choose a location (URI) to be added to the library"
 msgstr "請選取準備加入樂庫的位置(URI)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "Choose a playlist to be loaded"
 msgstr "請選取準備載入的播放清單"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
+#: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Choose files or a directory to be added to the library"
 msgstr "請選取準備加入樂庫的檔案或目錄"
 
-#: data/ui/rhythmbox-ui.xml.in.h:8
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Close the music player"
 msgstr "關閉音樂播放程式"
 
 #: data/ui/rhythmbox-ui.xml.in.h:10
+msgid "Copy selection"
+msgstr "複製選擇範圍"
+
+#: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "Create a new Internet Radio station"
 msgstr "新增網上電台"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Create a new playlist"
 msgstr "新增播放清單"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
+#: data/ui/rhythmbox-ui.xml.in.h:13
 msgid "Create a new smart playlist"
 msgstr ""
 
-#: data/ui/rhythmbox-ui.xml.in.h:13
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Cu_t"
 msgstr "剪下(_T)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.in.h:15
 msgid "Cut selection"
 msgstr "剪下選擇範圍"
 
 #: data/ui/rhythmbox-ui.xml.in.h:16
+msgid "Delete selection"
+msgstr "刪除選擇範圍"
+
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Display music player help"
 msgstr "顯示本音樂播放程式的說明文件"
 
-#: data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "Edit music player preferences"
 msgstr "修改音樂播放程式偏好設定"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18
+#: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "Extract songs from a CD"
+msgstr ""
+
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "New _Internet Radio Station"
 msgstr "新增網上電台(_I)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19
+#: data/ui/rhythmbox-ui.xml.in.h:22
 msgid "New _Smart Playlist..."
 msgstr ""
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "P_revious"
 msgstr "上一首(_R)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Paste selection"
 msgstr "貼上選擇範圍"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Pause playing"
 msgstr "暫停播放"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "Prefere_nces"
 msgstr "偏好設定(_N)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Repea_t"
 msgstr "重複(_T)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:28
+msgid "S_tatusbar"
+msgstr "狀態列(_T)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:29
+msgid "Save a playlist to a file"
+msgstr "將播放清單儲存至檔案"
+
+#: data/ui/rhythmbox-ui.xml.in.h:31
+msgid "Select N_one"
+msgstr "全部不選(_O)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Show information about the music player"
 msgstr "顯示有關音樂播放程式的資訊"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:35
+msgid "Show information on the selected song"
+msgstr "顯示有關選定的樂曲的資訊"
+
+#: data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Start playing"
 msgstr "開啟播放樂曲"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "Start playing the next song"
 msgstr "開始播放下一首樂曲"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "Start playing the previous song"
 msgstr "開始播放上一首樂曲"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "Stop playing"
 msgstr "停止播放樂曲"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "Toggle random playing order"
 msgstr "切換隨機選曲模式"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "Toggle repeat mode"
 msgstr "切換重播模式"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_About"
 msgstr "關於(_A)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "_Add to Library..."
 msgstr "加入至樂庫(_A)..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:44
+msgid "_Browser"
+msgstr "瀏覽(_B)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "_Close"
 msgstr "關閉(_C)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "_Contents"
 msgstr "內容(_C)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:47
+msgid "_Copy"
+msgstr "複製(_C)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:48
+msgid "_Cut"
+msgstr "剪下(_C)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:49
+msgid "_Delete"
+msgstr "刪除(_D)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:50
+msgid "_Delete Playlist"
+msgstr "刪除播放清單(_D)..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:52
+msgid "_Extract CD..."
+msgstr ""
+
+#: data/ui/rhythmbox-ui.xml.in.h:53 lib/widgets/rb-load-failure-dialog.c:145
+msgid "_File"
+msgstr "檔案(_F)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:54
 msgid "_Help"
 msgstr "求助(_H)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:56
 msgid "_Load Playlist..."
 msgstr "載入播放清單(_L)..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Music"
 msgstr "音樂(_M)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:58
 msgid "_New Playlist..."
 msgstr "新增播放清單(_N)..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-ui.xml.in.h:59
 msgid "_Next"
 msgstr "下一首(_N)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
-msgid "_Organize"
-msgstr "管理(_O)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Paste"
 msgstr "貼上(_P)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1064
+#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-shell-player.c:1069
 msgid "_Play"
 msgstr "播放(_P)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-ui.xml.in.h:62
+msgid "_Properties"
+msgstr "屬性(_P)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:63
+msgid "_Rename"
+msgstr "重新命名(_R)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:64
+msgid "_Rename Playlist"
+msgstr "更改播放清單名稱(_R)..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:65
+msgid "_Save Playlist..."
+msgstr "儲存播放清單(_S)..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:66
 msgid "_Show Window"
 msgstr "顯示視窗(_S)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53 shell/rb-statusbar.c:130
+#: data/ui/rhythmbox-ui.xml.in.h:67 shell/rb-statusbar.c:163
 msgid "_Shuffle"
 msgstr ""
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.in.h:68
 msgid "_Source List"
 msgstr ""
 
-#: iradio/rb-iradio-backend.c:172 library/rb-library.c:502
+#: iradio/rb-iradio-backend.c:182 iradio/rb-iradio-backend.c:556
+#: iradio/rb-new-station-dialog.c:293 library/rb-library.c:746
 msgid "All"
 msgstr "全部"
 
-#: iradio/rb-iradio-backend.c:311
+#: iradio/rb-iradio-backend.c:340
 msgid "Unable to find file \"iradio-initial.xml\""
 msgstr "找不到“iradio-initial.xml”檔案"
 
-#: iradio/rb-iradio-backend.c:359
+#: iradio/rb-iradio-backend.c:370
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "無法分析 %s\n"
 
-#: iradio/rb-iradio-backend.c:514 iradio/rb-iradio-backend.c:534
-#: iradio/rb-iradio-backend.c:535 lib/widgets/rb-tree-model-node.c:587
+#: iradio/rb-iradio-backend.c:513 iradio/rb-iradio-backend.c:532
+#: iradio/rb-iradio-backend.c:533 lib/widgets/rb-tree-model-node.c:590
 msgid "(Unknown)"
 msgstr "(不明)"
 
-#: iradio/rb-iradio-yp-xmlfile.c:223
-#, c-format
-msgid "Failed to open %s: %s"
-msgstr "無法開啟 %s：%s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:454
-#, c-format
-msgid "Failed to read %s: %s"
-msgstr "無法讀取 %s：%s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:461
-#, c-format
-msgid "Failed to parse %s: %s"
-msgstr "無法分析 %s：%s"
-
-#: iradio/rb-new-station-dialog.c:144
-msgid "New Internet Radio Station"
-msgstr "新增網上電台"
-
-#: iradio/rb-new-station-dialog.c:147
-msgid "_Don't Add"
-msgstr "不要加入(_D)"
-
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "不詳"
-
-#: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
-#: library/rb-node.c:914
+#: iradio/rb-iradio-backend.c:719 rhythmdb/rhythmdb-tree.c:245
+#: rhythmdb/rhythmdb.c:322
 msgid "Never"
 msgstr "無"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:474
-#: lib/widgets/rb-song-info.c:488
+#: iradio/rb-new-station-dialog.c:145
+msgid "New Internet Radio Station"
+msgstr "新增網上電台"
+
+#. Initialize the tree structure.
+#: iradio/rb-new-station-dialog.c:183
+#: monkey-media/monkey-media-stream-info.c:405
+#: monkey-media/monkey-media-stream-info.c:421
+#: monkey-media/monkey-media-stream-info.c:668 rhythmdb/rhythmdb-tree.c:251
+#: rhythmdb/rhythmdb-tree.c:252 rhythmdb/rhythmdb-tree.c:253
+#: sources/rb-audiocd-source.c:980 sources/rb-audiocd-source.c:987
+#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
+#: sources/rb-iradio-source.c:237 sources/rb-playlist-source.c:366
+#: sources/rb-playlist-source.c:382
+msgid "Unknown"
+msgstr "不詳"
+
+#: iradio/rb-station-properties-dialog.c:179 lib/widgets/rb-song-info.c:570
+#: lib/widgets/rb-song-info.c:584
 #, c-format
 msgid "%s Properties"
 msgstr "%s 屬性"
 
-#: iradio/rb-station-properties-dialog.c:389
+#: iradio/rb-station-properties-dialog.c:350
 #, c-format
 msgid "Properties for %s"
 msgstr "%s 的屬性"
 
-#: iradio/rb-station-properties-dialog.c:540
-msgid "No locations specified!"
-msgstr "未指定位置！"
-
-#: iradio/rb-station-properties-dialog.c:584
-msgid "No location is selected."
-msgstr "未選取位置。"
-
-#: iradio/rb-station-properties-dialog.c:601
-msgid "No location specified."
-msgstr "未指定位置。"
-
-#: iradio/rb-station-properties-dialog.c:608
-msgid "Location is not a valid URL."
-msgstr "指定的位置不是有效的網址。"
-
-#: lib/disclosure-widget.c:285
+#: lib/disclosure-widget.c:294
 msgid "Expander Size"
 msgstr "箭頭大小"
 
-#: lib/disclosure-widget.c:286
+#: lib/disclosure-widget.c:295
 msgid "Size of the expander arrow"
 msgstr ""
 
@@ -668,253 +674,589 @@ msgstr ""
 "GConf 錯誤：\n"
 "  %s"
 
-#: library/rb-node.c:905
-msgid "Today at %-H:%M"
-msgstr "今天 %H時%M分"
+#: lib/eggtrayicon.c:118
+msgid "Orientation"
+msgstr "方向"
 
-#: library/rb-node.c:907
-msgid "Yesterday at %-H:%M"
-msgstr "昨天 %H時%M分"
+#: lib/eggtrayicon.c:119
+msgid "The orientation of the tray."
+msgstr ""
 
-#: library/rb-node.c:909
-msgid "%A, %B %-d %Y at %-H:%M"
-msgstr "%Y年%m月%d日 (%a) %H時%M分"
-
-#: library/rb-node.c:1678
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
-
-#: library/rb-node-song.c:275
-#, c-format
-msgid "%ld:%02ld"
-msgstr "%ld:%02ld"
-
-#: lib/rb-file-helpers.c:76
+#: lib/rb-file-helpers.c:78
 #, c-format
 msgid "Failed to find %s"
 msgstr "找不到 %s"
 
-#: lib/rb-file-helpers.c:101
+#: lib/rb-file-helpers.c:103
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s 已存在，請先將它移走。"
 
-#: lib/rb-file-helpers.c:104
+#: lib/rb-file-helpers.c:106
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "無法建立目錄 %s。"
 
+#: lib/rb-playlist.c:208
+#, c-format
+msgid "Couldn't write playlist: %s"
+msgstr "無法寫入播放清單：%s"
+
+#: lib/rb-playlist.c:241
+#, c-format
+msgid "Couldn't open playlist: %s"
+msgstr "無法開啟播放清單：%s"
+
 #. comma separated list of prefixes that are to
 #. * be appended as suffix, NOTE: notice the spaces placement
-#: lib/rb-string-helpers.c:33
+#: lib/rb-string-helpers.c:35
 msgid "THE ,DJ "
 msgstr "THE ,DJ "
 
-#: lib/rb-string-helpers.c:48
+#: lib/rb-string-helpers.c:50
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/rb-windows-ini-file.c:375
-#, c-format
-msgid "Unable to parse %s: %s\n"
-msgstr "無法分析 %s：%s\n"
+#: lib/widgets/eggtreemodelfilter.c:267
+msgid "The child model"
+msgstr ""
 
-#: lib/widgets/rb-cell-renderer-pixbuf.c:106
+#: lib/widgets/eggtreemodelfilter.c:268
+msgid "The model for the filtermodel to filter"
+msgstr ""
+
+#: lib/widgets/eggtreemodelfilter.c:275
+msgid "The virtual root"
+msgstr ""
+
+#: lib/widgets/eggtreemodelfilter.c:276
+msgid "The virtual root (relative to the child model) for this filtermodel"
+msgstr ""
+
+#: lib/widgets/gtktreemodelsort.c:306
+msgid "TreeModelSort Model"
+msgstr ""
+
+#: lib/widgets/gtktreemodelsort.c:307
+msgid "The model for the TreeModelSort to sort"
+msgstr ""
+
+#: lib/widgets/rb-cell-renderer-pixbuf.c:109
 msgid "Pixbuf Object"
 msgstr "Pixbuf 物件"
 
-#: lib/widgets/rb-cell-renderer-pixbuf.c:107
+#: lib/widgets/rb-cell-renderer-pixbuf.c:110
 msgid "The pixbuf to render."
-msgstr ""
+msgstr "準備描繪的 pixbuf。"
 
-#: lib/widgets/rb-link.c:325
+#: lib/widgets/rb-druid.c:220 shell/main.c:87
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: lib/widgets/rb-druid.c:262
+msgid "You are now ready to start Rhythmbox."
+msgstr "您現在可以準備啟動 Rhythmbox。"
+
+#: lib/widgets/rb-druid.c:311
+#, c-format
+msgid "Error reading filename: %s"
+msgstr "讀取檔案名稱時發生錯誤：%s"
+
+#: lib/widgets/rb-druid.c:326
+msgid "Choose a directory"
+msgstr "選取目錄"
+
+#: lib/widgets/rb-link.c:343
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
 "%s"
 msgstr ""
 
-#: lib/widgets/rb-load-failure-dialog.c:108
+#: lib/widgets/rb-load-failure-dialog.c:120
 msgid "Error loading files into library"
 msgstr "將檔案載入至樂庫時發生錯誤"
 
-#: lib/widgets/rb-load-failure-dialog.c:125
-msgid "_File"
-msgstr "檔案(_F)"
-
-#: lib/widgets/rb-load-failure-dialog.c:133
+#: lib/widgets/rb-load-failure-dialog.c:137
 msgid "_Error"
 msgstr "錯誤(_E)"
 
-#: lib/widgets/rb-node-view.c:686
+#: lib/widgets/rb-node-view.c:816
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr ""
 
-#: lib/widgets/rb-player.c:264
+#: lib/widgets/rb-player.c:263
 msgid "from "
 msgstr ""
 
-#: lib/widgets/rb-player.c:270
+#: lib/widgets/rb-player.c:269
 msgid " by "
 msgstr ""
 
-#: lib/widgets/rb-player.c:285
+#: lib/widgets/rb-player.c:284
 msgid "Listening to "
 msgstr "正在聆聽"
 
-#: lib/widgets/rb-player.c:496
+#: lib/widgets/rb-player.c:489
 msgid "Get information on this album from the web"
 msgstr "從網際網路獲取有關該專輯的資訊"
 
-#: lib/widgets/rb-player.c:507
+#: lib/widgets/rb-player.c:500
 msgid "Get information on this artist from the web"
 msgstr "從網際網路獲取有關該藝人的資訊"
 
-#: lib/widgets/rb-player.c:517
+#: lib/widgets/rb-player.c:510
 msgid "Get more information on this station from the web"
 msgstr "從網際網路獲取有關該電台的資訊"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:926 shell/rb-shell.c:1732
+#: lib/widgets/rb-player.c:519 shell/rb-shell.c:1047 shell/rb-tray-icon.c:223
 msgid "Not playing"
 msgstr "沒有播放樂曲"
 
-#: lib/widgets/rb-player.c:794
+#: lib/widgets/rb-player.c:787
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%3$d:%4$02d 之 %1$d:%2$02d"
 
-#: lib/widgets/rb-player.c:796
+#: lib/widgets/rb-player.c:789
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: lib/widgets/rb-search-entry.c:116
+#: lib/widgets/rb-search-entry.c:119
 msgid "_Search:"
 msgstr "搜尋(_S)："
 
-#: lib/widgets/rb-song-info.c:197
-msgid "_Next Song"
-msgstr "下一首(_N)"
-
-#: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:493
+#: lib/widgets/rb-song-info.c:229 lib/widgets/rb-song-info.c:589
 msgid "Song Properties"
 msgstr "歌曲屬性"
 
-#: lib/widgets/rb-song-info.c:775
+#: lib/widgets/rb-song-info.c:871
 msgid "on the desktop"
 msgstr "在桌面上"
 
-#: lib/widgets/rb-song-info.c:966
+#: lib/widgets/rb-song-info.c:1083
 #, c-format
-msgid "%d kbps "
-msgstr "%d kbps "
+msgid "%d kbps"
+msgstr "%d kbps"
 
-#: lib/widgets/rb-song-info.c:979
+#: lib/widgets/rb-song-info.c:1096
 msgid " (Mono)"
 msgstr " (單聲道)"
 
-#: lib/widgets/rb-song-info.c:982
+#: lib/widgets/rb-song-info.c:1099
 msgid " (Stereo)"
 msgstr " (立體聲)"
 
-#: lib/widgets/rb-song-info.c:985
+#: lib/widgets/rb-song-info.c:1102
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d 聲道)"
 
-#: lib/widgets/rb-sourcelist.c:129
+#: lib/widgets/rb-sourcelist.c:189
 msgid "_Source"
 msgstr "來源(_S)"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
-msgid "Click to mute"
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: lib/widgets/rb-volume.c:234
+msgid "+"
+msgstr "+"
+
+#: lib/widgets/rb-volume.c:235
+msgid "-"
+msgstr "-"
+
+#: library/rb-library.c:977
+msgid "Failed to load library!"
+msgstr "無法載入樂庫！"
+
+#: library/rb-library.c:1244
+#, c-format
+msgid "%ld:%02ld"
+msgstr "%ld:%02ld"
+
+#: library/rb-library.c:1545
+msgid "Loading songs..."
+msgstr "載入樂曲..."
+
+#: library/rb-library.c:1558
+msgid "Refreshing songs..."
+msgstr "重新整理樂曲..."
+
+#: library/rb-library.c:1644
+#, c-format
+msgid "<b>%.1f</b> days (%ld songs)"
+msgstr "<b>%.1f</b> 日 (%ld 首樂曲)"
+
+#: library/rb-library.c:1647
+#, c-format
+msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> 時 <b>%ld</b> 分 (%ld 首樂曲)"
+
+#: library/rb-library.c:1650
+#, c-format
+msgid "<b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> 分 (%ld 首樂曲)"
+
+#: library/rb-node.c:1353 rhythmdb/rhythmdb.c:324
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: monkey-media/monkey-media-audio-cd.c:221
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s 不是有效的光碟裝置。這可能是因為：\n"
+"a) 作業系統核心不支援光碟\n"
+"b) 您沒有足夠權限存取光碟機\n"
+"c) %s 不是光碟機\n"
+
+#: monkey-media/monkey-media-audio-cd.c:346
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "您沒有足夠權限存取 %s。"
+
+#: monkey-media/monkey-media-audio-cd.c:353
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s 不是有效的光碟裝置。這可能是因為：\n"
+"a) 作業系統核心不支援光碟\n"
+"b) 您沒有足夠權限存取光碟機\n"
+"c) %s 不是光碟機\n"
+
+#: monkey-media/monkey-media-audio-cd.c:606
+#, c-format
+msgid "Error reading CD header: %s"
 msgstr ""
 
-#: lib/widgets/rb-volume.c:381
-msgid "Click to unmute"
+#: monkey-media/monkey-media-audio-cd.c:732
+#, c-format
+msgid "Error getting leadout: %s"
 msgstr ""
 
-#: shell/main.c:63
+#: monkey-media/monkey-media-player-gst-old.c:372
+#: monkey-media/monkey-media-player-gst.c:454
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-old.c:381
+#: monkey-media/monkey-media-player-gst.c:469
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-old.c:402
+#: monkey-media/monkey-media-player-gst-tmp.c:563
+#: monkey-media/monkey-media-player-gst.c:519
+msgid "Failed to create spider element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-old.c:415
+#: monkey-media/monkey-media-player-gst-tmp.c:575
+#: monkey-media/monkey-media-player-gst.c:534
+msgid "Failed to create volume element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-old.c:435
+#: monkey-media/monkey-media-player-gst-tmp.c:593
+#: monkey-media/monkey-media-player-gst.c:555
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-old.c:525
+#: monkey-media/monkey-media-player-gst-tmp.c:709
+#: monkey-media/monkey-media-player-gst.c:642
+msgid "No AudioCD support; check your settings"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-tmp.c:514
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-gst-tmp.c:539
+#: monkey-media/monkey-media-player-gst.c:492
+msgid "Failed to create queue element; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-xine.c:335
+msgid "Failed to set up an audio driver; check your installation"
+msgstr ""
+
+#: monkey-media/monkey-media-player-xine.c:423
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+
+#: monkey-media/monkey-media-player-xine.c:432
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+
+#: monkey-media/monkey-media-player-xine.c:441
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr ""
+
+#: monkey-media/monkey-media-player-xine.c:449
+msgid "Internal error; check your installation."
+msgstr "內部錯誤：請檢查安裝是否正確。"
+
+#: monkey-media/monkey-media-player-xine.c:458
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr ""
+
+#: monkey-media/monkey-media-stream-info.c:311
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "不支援 %s MIME 類型"
+
+#: monkey-media/monkey-media-stream-info.c:316
+msgid "Unknown file type"
+msgstr "不明的檔案類型"
+
+#: monkey-media/monkey-media-stream-info.c:387
+#, c-format
+msgid "Track %.2d"
+msgstr ""
+
+#: monkey-media/monkey-media-stream-info.c:752
+#: monkey-media/monkey-media-stream-info.c:817
+msgid "No TRM ID for this song"
+msgstr ""
+
+#: monkey-media/monkey-media-stream-info.c:768
+#: monkey-media/monkey-media-stream-info.c:832
+msgid "No information for this song found"
+msgstr "找不到任何有關此樂曲的資訊"
+
+#: monkey-media/monkey-media.c:229
+msgid "GStreamer options:"
+msgstr "GStreamer 選項："
+
+#: monkey-media/monkey-media.c:506
+#, c-format
+msgid "Please remove %s"
+msgstr "請移除 %s"
+
+#: monkey-media/monkey-media.c:508
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "無法建立目錄 %s"
+
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:167
+msgid "Invalid track number"
+msgstr ""
+
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:271
+msgid "Audio CD track"
+msgstr "音樂光碟音軌"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:198
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:267
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:153
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:168
+msgid "Failed to open file for reading"
+msgstr "無法開啟檔案來讀取資料"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:250
+msgid "Error decoding FLAC file"
+msgstr "將 FLAC 檔案解碼時出現錯誤"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:754
+msgid "FLAC"
+msgstr "FLAC"
+
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:470
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:181
+msgid "Failed to seek file"
+msgstr "無法在檔案內搜尋位置"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:195
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "無法以 Ogg Vorbis 方式來開啟檔案"
+
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:540
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: shell/main.c:74
+msgid "Print the playing song and exit"
+msgstr ""
+
+#: shell/main.c:75
+msgid "Print the playing song URI and exit"
+msgstr ""
+
+#: shell/main.c:76
 msgid "Enable debugging code"
 msgstr "啟用偵錯模式"
 
-#: shell/main.c:64
+#: shell/main.c:77
 msgid "Do not register the shell"
 msgstr ""
 
-#: shell/main.c:65
+#: shell/main.c:78
 msgid "Quit Rhythmbox"
 msgstr "結束 Rhythmbox"
 
-#: shell/main.c:66
+#: shell/main.c:79
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia 選項："
 
-#: shell/main.c:76
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
+#: shell/main.c:172
+msgid ""
+"Rhythmbox does not currently work if GNOME sound events are are enabled and "
+"esdsink is in use."
+msgstr ""
+"如果啟用了 GNOME 系統事件音效，而且選用 esdsink，Rhythmbox 會無法運作。"
 
-#: shell/main.c:195
+#: shell/main.c:212
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
 "%s"
 msgstr ""
 
-#: shell/rb-playlist.c:44
-#, c-format
-msgid "Unable to parse playlist entry \"%s\""
-msgstr "無法分析播放清單項目“%s”"
+#: shell/rb-playlist-manager.c:531
+msgid "Load playlist"
+msgstr "載入播放清單"
 
-#: shell/rb-playlist.c:70
-#, c-format
-msgid "Unable to load playlist file \"%s\""
-msgstr "無法載入播放清單檔案“%s”"
+#: shell/rb-playlist-manager.c:570
+msgid "There is already a playlist with that name."
+msgstr "這個名稱的播放清單已經存在。"
 
-#: shell/rb-playlist.c:90
-#, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no numberofentries header found"
-msgstr ""
+#: shell/rb-playlist-manager.c:620
+msgid "Save playlist"
+msgstr "儲存播放清單"
 
-#: shell/rb-playlist.c:186
-#, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no playlist header"
-msgstr ""
-"讀取播放清單檔案“%s”時發生錯誤：\n"
-"沒有播放清單標頭"
+#: shell/rb-playlist-manager.c:737
+msgid "Couldn't parse playlist"
+msgstr "無法分析播放清單"
 
-#: shell/rb-shell.c:440
+#: shell/rb-playlist-manager.c:795
+msgid "C_reate"
+msgstr "產生(_R)"
+
+#: shell/rb-playlist-manager.c:810
+msgid "New Playlist"
+msgstr "新增播放清單"
+
+#: shell/rb-playlist-manager.c:821
+msgid "Please enter a name for the new playlist:"
+msgstr "請為新的播放清單命名"
+
+#: shell/rb-playlist-manager.c:826 shell/rb-playlist-manager.c:892
+msgid "Untitled"
+msgstr "未命名"
+
+#: shell/rb-playlist-manager.c:830
+msgid "Add the _selected songs to the new playlist"
+msgstr "將指定的樂曲加入播放清單(_S)"
+
+#: shell/rb-playlist-manager.c:861
+msgid "R_ename"
+msgstr "重新命名(_E)"
+
+#: shell/rb-playlist-manager.c:876
+msgid "Rename Playlist"
+msgstr "更改播放清單名稱"
+
+#: shell/rb-playlist-manager.c:887
+msgid "Please enter a new name for the playlist:"
+msgstr "請為新的播放清單命名："
+
+#: shell/rb-shell-player.c:333
+#, c-format
+msgid "Failed to create the player: %s"
+msgstr "無法產生播放程式的主視窗：%s"
+
+#: shell/rb-shell-player.c:387
+msgid "Previous"
+msgstr "上一首"
+
+#: shell/rb-shell-player.c:416
+msgid "Next"
+msgstr "下一首"
+
+#: shell/rb-shell-player.c:435
+msgid "Volume Control"
+msgstr "音量控制"
+
+#: shell/rb-shell-player.c:645
+#, c-format
+msgid "Opening %s..."
+msgstr "正在開啟 %s..."
+
+#: shell/rb-shell-player.c:1060
+msgid "Pause"
+msgstr "暫停"
+
+#: shell/rb-shell-player.c:1061
+msgid "_Pause"
+msgstr "暫停(_P)"
+
+#: shell/rb-shell-player.c:1068
+msgid "Play"
+msgstr "播放"
+
+#: shell/rb-shell-player.c:1076
+msgid "Stop"
+msgstr "停止"
+
+#: shell/rb-shell-player.c:1077
+msgid "_Stop"
+msgstr "停止(_S)"
+
+#: shell/rb-shell-player.c:1346
+msgid "Unexpected end of stream!"
+msgstr "音效串流突然結束！"
+
+#: shell/rb-shell-preferences.c:178
+msgid "Music Player Preferences"
+msgstr "音樂播放程式偏好設定"
+
+#: shell/rb-shell-preferences.c:226
+msgid "General"
+msgstr "一般"
+
+#: shell/rb-shell.c:444
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "無法分析 URI“%s”\n"
 
-#: shell/rb-shell.c:474
-#, c-format
-msgid "Unable to handle URI \"%s\"\n"
-msgstr "無法處理 URI“%s”\n"
-
-#: shell/rb-shell.c:522
+#: shell/rb-shell.c:757
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed RB in a\n"
+"This probably means that you installed Rhythmbox in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
 
-#: shell/rb-shell.c:942
+#: shell/rb-shell.c:1060
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (暫停)"
 
-#: shell/rb-shell.c:945
+#: shell/rb-shell.c:1064
 #, c-format
 msgid ""
 "%s\n"
@@ -923,7 +1265,7 @@ msgstr ""
 "%s\n"
 "暫停"
 
-#: shell/rb-shell.c:1028
+#: shell/rb-shell.c:1116
 msgid "translator_credits"
 msgstr ""
 "i18n 程式中文化計劃\n"
@@ -931,180 +1273,262 @@ msgstr ""
 "\n"
 "Abel Cheung <maddog@linux.org.hk>, 2003"
 
-#: shell/rb-shell.c:1038
-msgid "Lead developers:"
-msgstr "主要開發者："
+#: shell/rb-shell.c:1125
+msgid "Maintainers:"
+msgstr "維護者："
 
-#: shell/rb-shell.c:1039
+#: shell/rb-shell.c:1129
 msgid "Contributors:"
-msgstr "協助開發者："
+msgstr "協助開發："
 
-#: shell/rb-shell.c:1043
-msgid "Music management and playback software for GNOME."
-msgstr "適用於 GNOME 的音樂管理/播放軟體。"
+#: shell/rb-shell.c:1153
+#, c-format
+msgid ""
+"Music management and playback software for GNOME.\n"
+"Audio backend: %s\n"
+"Audio formats: %s\n"
+msgstr ""
+"適用於 GNOME 的音樂管理/播放軟體。\n"
+"使用作為音效處理的函式庫：%s\n"
+"支援的音效格式：%s\n"
 
-#: shell/rb-shell.c:1186
+#: shell/rb-shell.c:1266
 msgid "Choose Files or Directory"
 msgstr "選取檔案或目錄"
 
-#: shell/rb-shell.c:1215
-msgid "Load playlist"
-msgstr "載入播放清單"
-
-#: shell/rb-shell-player.c:314
-#, c-format
-msgid "Failed to create the player: %s"
+#: shell/rb-shell.c:1308
+msgid "To extract CDs you must install the Sound Juicer package."
 msgstr ""
 
-#: shell/rb-shell-player.c:644
+#: shell/rb-shell.c:1315
 #, c-format
-msgid "Opening %s..."
-msgstr "正在開啟 %s..."
-
-#: shell/rb-shell-player.c:715
-#, c-format
-msgid "All fallback locations failed, unable to play: %s\n"
-msgstr ""
-
-#: shell/rb-shell-player.c:1055
-msgid "Pause"
-msgstr "暫停"
-
-#: shell/rb-shell-player.c:1056
-msgid "_Pause"
-msgstr "暫停(_P)"
-
-#: shell/rb-shell-player.c:1063
-msgid "Play"
-msgstr "播放"
-
-#: shell/rb-shell-player.c:1071
-msgid "Stop"
-msgstr "停止"
-
-#: shell/rb-shell-player.c:1072
-msgid "_Stop"
-msgstr "停止(_S)"
-
-#: shell/rb-shell-player.c:1290
-msgid "Unexpected end of stream!"
-msgstr ""
-
-#: shell/rb-shell-preferences.c:174
-msgid "Music Player Preferences"
-msgstr "音樂播放程式偏好設定"
-
-#: shell/rb-shell-preferences.c:212
-msgid "General"
-msgstr "一般"
-
-#: shell/rb-source-header.c:173
-msgid "Show _Browser"
+msgid "Couldn't run sound-juicer: %s"
 msgstr ""
 
 #: shell/rb-source-header.c:174
+msgid "Show _Browser"
+msgstr ""
+
+#: shell/rb-source-header.c:175
 msgid "Hide _Browser"
 msgstr ""
 
-#: shell/rb-statusbar.c:131
+#: shell/rb-statusbar.c:164
 msgid "_Repeat"
 msgstr "重複(_R)"
 
-#: sources/rb-audiocd-source.c:297
+#: sources/rb-audiocd-source.c:299
 msgid "music audiocd"
 msgstr "音樂光碟"
 
-#: sources/rb-audiocd-source.c:300
+#: sources/rb-audiocd-source.c:302
 msgid "Audio CD"
 msgstr "音樂光碟"
 
-#: sources/rb-audiocd-source.c:931
+#: sources/rb-audiocd-source.c:933
 msgid "Retrieving MusicBrainz data"
 msgstr "正在擷取 MusicBrainz 資料"
 
-#: sources/rb-audiocd-source.c:1093
+#: sources/rb-audiocd-source.c:1095
 #, c-format
 msgid "Failed to parse %s as disc info file"
 msgstr ""
 
-#: sources/rb-audiocd-source.c:1163
+#: sources/rb-audiocd-source.c:1165
 msgid "Loading CD information"
 msgstr "正在載入光碟資訊"
 
-#: sources/rb-audiocd-source.c:1230
+#: sources/rb-audiocd-source.c:1232
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d 首樂曲，時間總長度為 %d:%02d:%02d"
 
-#: sources/rb-group-source.c:344
-msgid "music group"
-msgstr ""
-
-#: sources/rb-group-source.c:347
-msgid "Unnamed"
-msgstr "未命名"
-
-#: sources/rb-group-source.c:565
-msgid "Create"
-msgstr ""
-
-#: sources/rb-group-source.c:589
-msgid "Please enter a name for the new music group."
-msgstr ""
-
-#: sources/rb-group-source.c:599
-msgid "Untitled"
-msgstr "未命名"
-
-#: sources/rb-group-source.c:603
-msgid "Add the _selected songs to the new group"
-msgstr ""
-
-#: sources/rb-group-source.c:1224
-#, c-format
-msgid "Failed to parse %s as group file"
-msgstr ""
-
-#: sources/rb-iradio-source.c:380
+#: sources/rb-iradio-source.c:360
 msgid "Radio"
-msgstr ""
+msgstr "電台"
 
-#: sources/rb-iradio-source.c:479
+#: sources/rb-iradio-source.c:487
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "<b>%d</b> 個電台正在播放 <b>%d</b> 種不同類型的音樂"
 
-#: sources/rb-library-source.c:618
+#: sources/rb-library-source.c:533
 msgid "Library"
 msgstr "樂庫"
 
-#: sources/rb-library-source.c:799
-#, c-format
-msgid "%ld songs"
-msgstr "%ld 首樂曲"
-
-#: sources/rb-library-source.c:843
-#, c-format
-msgid "<b>%.1f</b> days"
-msgstr "<b>%.1f</b> 日"
-
-#: sources/rb-library-source.c:846
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes"
-msgstr "<b>%ld</b> 時 <b>%ld</b> 分"
-
-#: sources/rb-library-source.c:849
-#, c-format
-msgid "<b>%ld</b> minutes"
-msgstr "<b>%ld</b> 分"
-
-#: sources/rb-library-source.c:945
+#: sources/rb-library-source.c:880
 msgid "Add Location"
 msgstr "加入位置"
 
-#: sources/rb-source.c:366
+#: sources/rb-playlist-source.c:604
+#, c-format
+msgid "Failed to parse %s as playlist file"
+msgstr "無法將檔案 %s 以播放清單方式來分析內容"
+
+#: sources/rb-source.c:416
 msgid "No properties available."
 msgstr "無法提供屬性。"
+
+#: sources/rb-source.c:499
+msgid "This source does not support drag and drop."
+msgstr "無法拖曳這個來源。"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "Album"
+#~ msgstr "專輯"
+
+#~ msgid "And"
+#~ msgstr "及"
+
+#~ msgid "Artist"
+#~ msgstr "藝人"
+
+#~ msgid "Genre"
+#~ msgstr "樂曲分類"
+
+#~ msgid "Last played"
+#~ msgstr "最後播放時間"
+
+#~ msgid "Or"
+#~ msgstr "或"
+
+#~ msgid "Rating"
+#~ msgstr "評級"
+
+#~ msgid "Search Songs"
+#~ msgstr "搜尋樂曲"
+
+#~ msgid "<span weight=\"bold\">Visible Columns</span>"
+#~ msgstr "<span weight=\"bold\">顯示以下欄位</span>"
+
+#~ msgid "<b>Duration:</b>"
+#~ msgstr "<b>長度：</b>"
+
+#~ msgid "<b>Last played:</b>"
+#~ msgstr "<b>最後播放時間：</b>"
+
+#~ msgid "<b>Location:</b>"
+#~ msgstr "<b>位置：</b>"
+
+#~ msgid "<b>Name:</b>"
+#~ msgstr "<b>名稱：</b>"
+
+#~ msgid "<b>Play count:</b>"
+#~ msgstr "<b>播放次數：</b>"
+
+#~ msgid "<b>Quality:</b>"
+#~ msgstr "<b>品質：</b>"
+
+#~ msgid "<b>_Album:</b>"
+#~ msgstr "<b>專輯(_A)：</b>"
+
+#~ msgid "<b>_Artist:</b>"
+#~ msgstr "<b>藝人(_A)：</b>"
+
+#~ msgid "<b>_Date:</b>"
+#~ msgstr "<b>日期(_D)：</b>"
+
+#~ msgid "<b>_Genre:</b>"
+#~ msgstr "<b>樂曲類型(_G)：</b>"
+
+#~ msgid "<b>_Rating:</b>"
+#~ msgstr "<b>評級(_R)：</b>"
+
+#~ msgid "<b>_Title:</b>"
+#~ msgstr "<b>標題(_T)：</b>"
+
+#~ msgid "_Add: "
+#~ msgstr "新增(_A)："
+
+#~ msgid "_Locations"
+#~ msgstr "位置(_L)"
+
+#~ msgid "A_rtist"
+#~ msgstr "藝人(_R)"
+
+#~ msgid "Change the visibility of the genre browser"
+#~ msgstr "更改樂曲分類的顯示狀態"
+
+#~ msgid "Scroll the view to the currently playing station"
+#~ msgstr "將清單捲動至播放中的電台"
+
+#~ msgid "Show information on the selected station"
+#~ msgstr "顯示有關選定的電台的資訊"
+
+#~ msgid "_Jump to Playing Station"
+#~ msgstr "前往播放中的電台(_J)"
+
+#~ msgid "_New Internet Radio Station"
+#~ msgstr "新增網上電台(_N)"
+
+#~ msgid "Change the visibility of the artist and album browser"
+#~ msgstr "更改藝人及專輯的顯示狀態"
+
+#~ msgid "_Organize"
+#~ msgstr "管理(_O)"
+
+#~ msgid "Failed to open %s: %s"
+#~ msgstr "無法開啟 %s：%s"
+
+#~ msgid "Failed to read %s: %s"
+#~ msgstr "無法讀取 %s：%s"
+
+#~ msgid "_Don't Add"
+#~ msgstr "不要加入(_D)"
+
+#~ msgid "No locations specified!"
+#~ msgstr "未指定位置！"
+
+#~ msgid "No location is selected."
+#~ msgstr "未選取位置。"
+
+#~ msgid "No location specified."
+#~ msgstr "未指定位置。"
+
+#~ msgid "Location is not a valid URL."
+#~ msgstr "指定的位置不是有效的網址。"
+
+#~ msgid "Today at %-H:%M"
+#~ msgstr "今天 %H時%M分"
+
+#~ msgid "Yesterday at %-H:%M"
+#~ msgstr "昨天 %H時%M分"
+
+#~ msgid "%A, %B %-d %Y at %-H:%M"
+#~ msgstr "%Y年%m月%d日 (%a) %H時%M分"
+
+#~ msgid "Unable to parse %s: %s\n"
+#~ msgstr "無法分析 %s：%s\n"
+
+#~ msgid "_Next Song"
+#~ msgstr "下一首(_N)"
+
+#~ msgid "Unable to parse playlist entry \"%s\""
+#~ msgstr "無法分析播放清單項目“%s”"
+
+#~ msgid "Unable to load playlist file \"%s\""
+#~ msgstr "無法載入播放清單檔案“%s”"
+
+#~ msgid ""
+#~ "Error reading playlist file \"%s\":\n"
+#~ " no playlist header"
+#~ msgstr ""
+#~ "讀取播放清單檔案“%s”時發生錯誤：\n"
+#~ "沒有播放清單標頭"
+
+#~ msgid "Unable to handle URI \"%s\"\n"
+#~ msgstr "無法處理 URI“%s”\n"
+
+#~ msgid "Lead developers:"
+#~ msgstr "主要開發者："
+
+#~ msgid "Unnamed"
+#~ msgstr "未命名"
+
+#~ msgid "%ld songs"
+#~ msgstr "%ld 首樂曲"
 
 #~ msgid "<span weight=\"bold\">Appearance</span>"
 #~ msgstr "<span weight=\"bold\">外觀</span>"
@@ -1193,17 +1617,11 @@ msgstr "無法提供屬性。"
 #~ msgid "Change the visibility of the side pane"
 #~ msgstr "切換是否顯示側面窗格"
 
-#~ msgid "Change the visibility of the statusbar"
-#~ msgstr "切換是否顯示狀態列"
-
 #~ msgid "Change the visibility of the toolbar"
 #~ msgstr "切換是否顯示工具列"
 
 #~ msgid "Edit the toolbar"
 #~ msgstr "修改工具列"
-
-#~ msgid "St_atusbar"
-#~ msgstr "狀態列(_A)"
 
 #~ msgid "T_oolbar"
 #~ msgstr "工具列(_O)"
@@ -1214,15 +1632,6 @@ msgstr "無法提供屬性。"
 #~ msgid "_Toolbar"
 #~ msgstr "工具列(_T)"
 
-#~ msgid "Previous"
-#~ msgstr "上一首"
-
-#~ msgid "Next"
-#~ msgstr "下一首"
-
-#~ msgid "Cut"
-#~ msgstr "剪下"
-
 #~ msgid "Copy"
 #~ msgstr "複製"
 
@@ -1231,9 +1640,6 @@ msgstr "無法提供屬性。"
 
 #~ msgid "Properties"
 #~ msgstr "屬性"
-
-#~ msgid "Volume"
-#~ msgstr "音量"
 
 #~ msgid "%ld songs, %.1f days total time, %s"
 #~ msgstr "%ld 首樂曲，時間總長度為 %1f 日，%s"
@@ -1249,55 +1655,6 @@ msgstr "無法提供屬性。"
 
 #~ msgid "Total: %d:%02d"
 #~ msgstr "總共： %d:%02d"
-
-#~ msgid ""
-#~ "%s does not point to a valid CD-ROM device. This may be caused by:\n"
-#~ "a) CD support is not compiled into your OS\n"
-#~ "b) You do not have the correct permissions to access the CD drive\n"
-#~ "c) %s is not the CD drive.\n"
-#~ msgstr ""
-#~ "%s 不是有效的光碟裝置。這可能是因為：\n"
-#~ "a) 作業系統不支援光碟\n"
-#~ "b) 您沒有足夠權限存取光碟機\n"
-#~ "c) %s 不是光碟機\n"
-
-#~ msgid "You do not seem to have permission to access %s."
-#~ msgstr "您沒有足夠權限存取 %s。"
-
-#~ msgid ""
-#~ "%s does not appear to point to a valid CD device. This may be because:\n"
-#~ "a) CD support is not compiled into Linux\n"
-#~ "b) You do not have the correct permissions to access the CD drive\n"
-#~ "c) %s is not the CD drive.\n"
-#~ msgstr ""
-#~ "%s 不是有效的光碟裝置。這可能是因為：\n"
-#~ "a) 作業系統不支援光碟\n"
-#~ "b) 您沒有足夠權限存取光碟機\n"
-#~ "c) %s 不是光碟機\n"
-
-#~ msgid "GStreamer options:"
-#~ msgstr "GStreamer 選項："
-
-#~ msgid "Please remove %s"
-#~ msgstr "請移除 %s"
-
-#~ msgid "Failed to create directory %s"
-#~ msgstr "無法建立目錄 %s"
-
-#~ msgid "No information for this song found"
-#~ msgstr "找不到任何有關此樂曲的資訊"
-
-#~ msgid "Audio CD track"
-#~ msgstr "音樂光碟音軌"
-
-#~ msgid "FLAC"
-#~ msgstr "FLAC"
-
-#~ msgid "MPEG %d Layer III"
-#~ msgstr "MPEG %d Layer III"
-
-#~ msgid "Failed to open file as Ogg Vorbis"
-#~ msgstr "無法以 Ogg Vorbis 方式來開啟檔案"
 
 #~ msgid ""
 #~ "Internet\n"
