@@ -147,6 +147,18 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/library/sorting</key>
+        <applyto>/apps/rhythmbox/state/library/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Artist,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/library/show_browser</key>
         <applyto>/apps/rhythmbox/state/library/show_browser</applyto>
         <owner>rhythmbox</owner>
@@ -201,6 +213,18 @@
         <locale name="C">
 	  <short>Show browser in radio display</short>
 	  <long>Show the genre browser in the Internet Radio display.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/iradio/sorting</key>
+        <applyto>/apps/rhythmbox/state/iradio/sorting</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Title,ascending</default>
+        <locale name="C">
+	<short>The sorting order</short>
+	<long>A comma-separated list.  The first is the title of the
+	column to sort on, the second is the sort type.</long>
         </locale>
       </schema>
       <schema>

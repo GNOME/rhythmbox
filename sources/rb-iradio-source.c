@@ -109,6 +109,7 @@ void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 #define CONF_UI_IRADIO_COLUMNS_SETUP CONF_PREFIX "/ui/iradio/columns_setup"
 #define CONF_STATE_IRADIO_DIR CONF_PREFIX "/state/iradio"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/iradio/paned_position"
+#define CONF_STATE_IRADIO_SORTING CONF_PREFIX "/state/iradio/sorting"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/iradio/show_browser"
 
 struct RBIRadioSourcePrivate
@@ -303,12 +304,12 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	g_object_ref (G_OBJECT (source->priv->genres));
 
 	/* set up stations view */
-	source->priv->stations = rb_entry_view_new (source->priv->db);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE, FALSE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, FALSE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+	source->priv->stations = rb_entry_view_new (source->priv->db, CONF_STATE_IRADIO_SORTING);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED);
 
 	g_signal_connect (G_OBJECT (source->priv->stations),
 			  "size_allocate",

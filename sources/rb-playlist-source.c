@@ -35,6 +35,7 @@
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
 #include "rb-playlist.h"
+#include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-playlist-source.h"
@@ -259,7 +260,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 		
-	source->priv->songs = rb_entry_view_new (source->priv->db);
+	source->priv->songs = rb_entry_view_new (source->priv->db, NULL);
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (source->priv->model));
 
@@ -273,18 +274,19 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 							 (GtkTreeCellDataFunc)
 							 rb_playlist_source_track_cell_data_func,
 							 source, NULL);
-		rb_entry_view_append_column_custom (source->priv->songs, column, TRUE,
-						    _("Tra_ck"), NULL, NULL);
+		rb_entry_view_append_column_custom (source->priv->songs, column, 
+						    _("Tra_ck"), "PlaylistTrack", NULL, NULL);
 	}
 
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
+	rb_entry_view_set_columns_clickable (source->priv->songs, FALSE);
 
 	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 			  G_CALLBACK (rb_playlist_source_songs_show_popup_cb), source);

@@ -80,14 +80,16 @@ typedef struct
 
 GType		rb_entry_view_get_type			(void);
 
-RBEntryView *	rb_entry_view_new			(RhythmDB *db);
+RBEntryView *	rb_entry_view_new			(RhythmDB *db, const char *sort_key);
 
-void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype,
-							 gboolean is_default);
+void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype);
 
 void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
-							 gboolean is_default, const char *title,
-							 GCompareDataFunc sort_func, gpointer user_data);
+							 const char *title, const char *key,
+							 GCompareDataFunc sort_func,
+							 gpointer user_data);
+
+void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable);
 
 void		rb_entry_view_set_model			(RBEntryView *view,
 							 RhythmDBModel *model);

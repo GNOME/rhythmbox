@@ -143,6 +143,7 @@ void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_UI_LIBRARY_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
+#define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/ui/library/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
 
@@ -409,16 +410,16 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
 	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST, TRUE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
-	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+	source->priv->songs = rb_entry_view_new (source->priv->db, CONF_STATE_LIBRARY_SORTING);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
 
 	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 			  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
