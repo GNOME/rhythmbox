@@ -194,10 +194,11 @@ rb_play_order_player_is_playing (RBPlayOrder *porder)
 RBEntryView*
 rb_play_order_get_entry_view (RBPlayOrder *porder)
 {
+	RBSource *source;
 	RBShellPlayer *player = porder->priv->player;
 	if (player == NULL)
 		return NULL;
-	RBSource *source = rb_shell_player_get_source (player);
+	source = rb_shell_player_get_source (player);
 	if (source == NULL)
 		return NULL;
 	return rb_source_get_entry_view (source);

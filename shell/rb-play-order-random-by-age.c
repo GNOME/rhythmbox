@@ -86,6 +86,7 @@ rb_random_play_order_by_age_get_type (void)
 static void
 rb_random_play_order_by_age_class_init (RBRandomPlayOrderByAgeClass *klass)
 {
+	RBPlayOrderClass *porder;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
@@ -94,7 +95,7 @@ rb_random_play_order_by_age_class_init (RBRandomPlayOrderByAgeClass *klass)
 	object_class->finalize = rb_random_play_order_by_age_finalize;
 
 
-	RBPlayOrderClass *porder = RB_PLAY_ORDER_CLASS (klass);
+	porder = RB_PLAY_ORDER_CLASS (klass);
 	porder->get_next = rb_random_play_order_by_age_get_next;
 	porder->go_next = rb_random_play_order_by_age_go_next;
 	porder->get_previous = rb_random_play_order_by_age_get_previous;
@@ -262,6 +263,8 @@ rb_random_play_order_pick_entry (RBEntryView *entry_view)
 	 * of the individual song's weight, we can get O(lg(N)) with a binary
 	 * search here. But updates will then be O(N) because they'll have to
 	 * update the weights-so-far. Can the GSequence help here? */
+	double total_weight;
+	double rnd;
 	RhythmDBEntry *result = NULL;
 	GArray *entries = get_entry_view_contents (entry_view);
 	int i;
@@ -273,11 +276,11 @@ rb_random_play_order_pick_entry (RBEntryView *entry_view)
 
 	/* Algorithm due to treed */
 
-	double total_weight = 0;
+	total_weight = 0;
 	for (i=0; i<entries->len; ++i) {
 		total_weight += g_array_index (entries, EntryWeight, i).weight;
 	}
-	double rnd = g_random_double_range (0, total_weight);
+	rnd = g_random_double_range (0, total_weight);
 	for (i=0; i<entries->len; ++i) {
 		if (rnd < g_array_index (entries, EntryWeight, i).weight) {
 			result = g_array_index (entries, EntryWeight, i).entry;
