@@ -1,3 +1,15 @@
+2002-06-11  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-player.c: (rb_player_init):
+
+	Fix hscale oddness.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_cmd_play),
+	(rb_shell_player_cmd_pause):
+	* tests/testview.c: (rb_test_view_init):
+
+	Sync player widget with ViewPlayer when pausing or unpausing stream.
+
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
 
 	* tests/testview.c: (song_eos_cb): emit changed signal

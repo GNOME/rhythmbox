@@ -99,6 +99,8 @@ struct RBTestViewPrivate
 
 	gboolean shuffle;
 	gboolean repeat;
+
+	RBPlayer *player;
 };
 
 enum
@@ -195,7 +197,6 @@ static void
 rb_test_view_init (RBTestView *view)
 {
 	RBSidebarButton *button;
-	RBPlayer *player;
 	GtkWidget *align;
 	
 	view->priv = g_new0 (RBTestViewPrivate, 1);
@@ -214,8 +215,8 @@ rb_test_view_init (RBTestView *view)
 	view->priv->vbox = gtk_vbox_new (FALSE, 5);
 
 	align = gtk_alignment_new (0.0, 0.5, 1.0, 1.0);
-	player = rb_player_new (RB_VIEW_PLAYER (view));
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (player));
+	view->priv->player = rb_player_new (RB_VIEW_PLAYER (view));
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (view->priv->player));
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
 			    align,
 			    FALSE, TRUE, 0);

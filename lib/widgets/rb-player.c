@@ -189,7 +189,7 @@ rb_player_init (RBPlayer *player)
 	scalebox = player->priv->timeline = gtk_hbox_new (FALSE, 2);
 	g_object_ref (G_OBJECT (scalebox));
 	
-	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.1));
+	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	g_signal_connect (G_OBJECT (player->priv->adjustment),
 			  "changed",
 			  G_CALLBACK (rb_player_adjustment_changed_cb),

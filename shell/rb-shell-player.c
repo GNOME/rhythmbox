@@ -354,6 +354,8 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
+	rb_view_player_notify_changed (player->priv->player);
+
 	rb_shell_player_update_play_button (player);
 }
 
@@ -364,6 +366,8 @@ rb_shell_player_cmd_pause (BonoboUIComponent *component,
 {
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PAUSED);
+
+	rb_view_player_notify_changed (player->priv->player);
 
 	rb_shell_player_update_play_button (player);
 }
