@@ -1119,7 +1119,7 @@ eos_cb (gpointer xine_or_mm_object,
 
 	next = rb_node_view_get_next_node (player->priv->playlist_view);
 	if (next == NULL) {
-		rb_player_set_state (player, RB_PLAYER_PAUSED);
+		player->priv->state = RB_PLAYER_PAUSED;
 		next = rb_node_view_get_first_node (player->priv->playlist_view);
 	}
 
