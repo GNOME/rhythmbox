@@ -1,3 +1,29 @@
+2003-08-09  Colin Walters  <cwalters@gnome.org>
+
+	* lib/widgets/eggtreemodelfilter.c:
+	(egg_tree_model_filter_class_init),
+	(egg_tree_model_filter_build_level),
+	(egg_tree_model_filter_free_level),
+	(egg_tree_model_filter_fetch_child),
+	(egg_tree_model_filter_remove_node),
+	(egg_tree_model_filter_update_childs), (bsearch_elt_with_offset),
+	(egg_tree_model_filter_row_changed),
+	(egg_tree_model_filter_row_inserted),
+	(egg_tree_model_filter_row_deleted),
+	(egg_tree_model_filter_rows_reordered),
+	(egg_tree_model_filter_iter_children),
+	(egg_tree_model_filter_iter_has_child),
+	(egg_tree_model_filter_iter_n_children),
+	(egg_tree_model_filter_ref_node),
+	(egg_tree_model_filter_real_unref_node),
+	(egg_real_tree_model_filter_convert_child_path_to_path),
+	(egg_tree_model_filter_refilter_helper),
+	(egg_tree_model_filter_refilter):
+	* lib/widgets/eggtreemodelfilter.h:
+
+	Merge in the latest eggtreemodelfilter.  It appears to work,
+	and presumably it fixes some bugs.
+
 2003-08-09  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/eggtreemultidnd.c:
@@ -5,7 +31,8 @@
 	(egg_tree_multi_drag_button_press_event):
 
 	Apply patch from Yann to fix drag&drop requiring two clicks.
-	This closes #119512.
+	This closes #119512.  Also merge a gtk_tree_path_free call from
+	the latest libegg.
 
 2003-08-09  Carlos Perelló Marín <carlos@gnome.org>
 
