@@ -70,11 +70,14 @@ static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
 struct RBPlaylistManagerPrivate
 {
 	RhythmDB *db;
+	RBShell *shell;
 	RBSource *selected_source;
 
 	RBSourceList *sourcelist;
 
 	GtkActionGroup *actiongroup;
+	GtkUIManager *uimanager;
+
 	RBLibrarySource *libsource;
 	RBIRadioSource *iradio_source;
 	GtkWindow *window;
@@ -102,10 +105,8 @@ struct RBPlaylistManagerPrivate
 enum
 {
 	PROP_0,
-	PROP_WINDOW,
-	PROP_ACTION_GROUP,
+	PROP_SHELL,
 	PROP_SOURCE,
-	PROP_DB,
 	PROP_SOURCELIST,
 	PROP_LIBRARY_SOURCE,
 	PROP_IRADIO_SOURCE,
@@ -196,29 +197,16 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+
 	g_object_class_install_property (object_class,
-					 PROP_WINDOW,
-					 g_param_spec_object ("window",
-							      "window",
-							      "toplevel window",
-							      GTK_TYPE_WINDOW,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							      "RBShell",
+							      "RBShell object",
+							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE));
 
-	g_object_class_install_property (object_class,
-					 PROP_ACTION_GROUP,
-					 g_param_spec_object ("action-group",
-							      "GtkActionGroup",
-							      "GtkActionGroup object",
-							      GTK_TYPE_ACTION_GROUP,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY_SOURCE,
 					 g_param_spec_object ("library_source",
@@ -340,6 +328,35 @@ rb_playlist_manager_finalize (GObject *object)
 }
 
 static void
+rb_playlist_manager_set_uimanager (RBPlaylistManager *mgr, 
+				   GtkUIManager *uimanager)
+{
+
+	if (mgr->priv->uimanager != NULL) {
+		if (mgr->priv->actiongroup != NULL) {
+			gtk_ui_manager_remove_action_group (mgr->priv->uimanager,
+							    mgr->priv->actiongroup);
+		}
+		g_object_unref (G_OBJECT (mgr->priv->uimanager));
+		mgr->priv->uimanager = NULL;
+	}
+
+	mgr->priv->uimanager = uimanager;
+
+	if (mgr->priv->actiongroup == NULL) {
+		mgr->priv->actiongroup = gtk_action_group_new ("PlaylistActions");
+		gtk_action_group_add_actions (mgr->priv->actiongroup,
+					      rb_playlist_manager_actions,
+					      rb_playlist_manager_n_actions,
+					      mgr);
+	}
+	
+	gtk_ui_manager_insert_action_group (mgr->priv->uimanager,
+					    mgr->priv->actiongroup,
+					    0);
+}
+
+static void
 rb_playlist_manager_set_property (GObject *object,
 				  guint prop_id,
 				  const GValue *value,
@@ -366,27 +383,28 @@ rb_playlist_manager_set_property (GObject *object,
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
 		break;
 	}
-	case PROP_ACTION_GROUP:
-		mgr->priv->actiongroup = g_value_get_object (value);
-		gtk_action_group_add_actions (mgr->priv->actiongroup,
-					      rb_playlist_manager_actions,
-					      rb_playlist_manager_n_actions,
-					      mgr);
+	case PROP_SHELL:
+	{
+		GtkUIManager *uimanager;
+		mgr->priv->shell = g_value_get_object (value);
+		g_object_get (G_OBJECT (mgr->priv->shell), 
+			      "ui-manager", &uimanager, 
+			      "db", &mgr->priv->db,
+			      NULL);
+		rb_playlist_manager_set_uimanager (mgr, uimanager);
+			
+			      
 		break;
-	case PROP_DB:
-		mgr->priv->db = g_value_get_object (value);
-		break;
+	}
 	case PROP_SOURCELIST:
 		mgr->priv->sourcelist = g_value_get_object (value);
+		mgr->priv->window = GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (mgr->priv->sourcelist)));
 		break;
 	case PROP_LIBRARY_SOURCE:
 		mgr->priv->libsource = g_value_get_object (value);
 		break;
 	case PROP_IRADIO_SOURCE:
 		mgr->priv->iradio_source = g_value_get_object (value);
-		break;
-	case PROP_WINDOW:
-		mgr->priv->window = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -407,11 +425,8 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, mgr->priv->selected_source);
 		break;
-	case PROP_ACTION_GROUP:
-		g_value_set_object (value, mgr->priv->actiongroup);
-		break;
-	case PROP_DB:
-		g_value_set_object (value, mgr->priv->db);
+	case PROP_SHELL:
+		g_value_set_object (value, mgr->priv->shell);
 		break;
 	case PROP_SOURCELIST:
 		g_value_set_object (value, mgr->priv->sourcelist);
@@ -421,9 +436,6 @@ rb_playlist_manager_get_property (GObject *object,
 		break;
 	case PROP_IRADIO_SOURCE:
 		g_value_set_object (value, mgr->priv->iradio_source);
-		break;
-	case PROP_WINDOW:
-		g_value_set_object (value, mgr->priv->window);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -443,15 +455,13 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr, RBSource *source)
 }
 
 RBPlaylistManager *
-rb_playlist_manager_new (GtkActionGroup *actiongroup, GtkWindow *window,
-			 RhythmDB *db, RBSourceList *sourcelist,
+rb_playlist_manager_new (RBShell *shell,
+			 RBSourceList *sourcelist,
 			 RBLibrarySource *libsource,
 			 RBIRadioSource *iradio_source)
 {
 	return g_object_new (RB_TYPE_PLAYLIST_MANAGER,
-			     "action-group", actiongroup,
-			     "window", window,
-			     "db", db,
+			     "shell", shell,
 			     "sourcelist", sourcelist,
 			     "library_source", libsource,
 			     "iradio_source", iradio_source,
@@ -528,7 +538,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 		if (xmlNodeIsText (child))
 			continue;
 
-		playlist = rb_playlist_source_new_from_xml (mgr->priv->db,
+		playlist = rb_playlist_source_new_from_xml (mgr->priv->shell,
 							    child);
 		append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	}
@@ -624,9 +634,10 @@ rb_playlist_manager_set_dirty (RBPlaylistManager *mgr)
 
 RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
-				  const char *suggested_name, gboolean automatic)
+				  const char *suggested_name, 
+				  gboolean automatic)
 {
-	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
+	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->shell, automatic));
 	GTimeVal serial;
 	char *internal;
 

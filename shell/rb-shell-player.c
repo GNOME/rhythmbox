@@ -234,6 +234,7 @@ enum
 {
 	PROP_0,
 	PROP_SOURCE,
+	PROP_DB,
 	PROP_UI_MANAGER,
 	PROP_ACTION_GROUP,
 	PROP_PLAY_ORDER,
@@ -355,6 +356,15 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "GtkUIManager object",
 							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	g_object_class_install_property (object_class,
 					 PROP_ACTION_GROUP,
 					 g_param_spec_object ("action-group",
@@ -712,8 +722,6 @@ rb_shell_player_set_property (GObject *object,
 			g_list_free (extra_views);
 			
 			/* Set database object */
-			g_object_get (G_OBJECT (player->priv->selected_source),
-				      "db", &player->priv->db, NULL);
 			g_object_set (G_OBJECT (player->priv->header_widget),
 				      "db", player->priv->db, NULL);
 		}
@@ -721,6 +729,9 @@ rb_shell_player_set_property (GObject *object,
 		break;
 	case PROP_UI_MANAGER:
 		player->priv->ui_manager = g_value_get_object (value);
+		break;
+	case PROP_DB:
+		player->priv->db = g_value_get_object (value);
 		break;
 	case PROP_ACTION_GROUP:
 		player->priv->actiongroup = g_value_get_object (value);
@@ -751,6 +762,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_UI_MANAGER:
 		g_value_set_object (value, player->priv->ui_manager);
+		break;
+	case PROP_DB:
+		g_value_set_object (value, player->priv->db);
 		break;
 	case PROP_ACTION_GROUP:
 		g_value_set_object (value, player->priv->actiongroup);
@@ -805,11 +819,13 @@ rb_shell_player_get_playing_source (RBShellPlayer *player)
 
 
 RBShellPlayer *
-rb_shell_player_new (GtkUIManager *mgr, GtkActionGroup *actiongroup)
+rb_shell_player_new (RhythmDB *db, GtkUIManager *mgr, 
+		     GtkActionGroup *actiongroup)
 {
 	return g_object_new (RB_TYPE_SHELL_PLAYER,			       
 			     "ui-manager", mgr,
 			     "action-group", actiongroup,
+			     "db", db,
 			     NULL);
 }
 

@@ -86,9 +86,9 @@ static void rb_playlist_source_drop_cb (GtkWidget *widget,
 static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 					  GList *list);
 
-#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/PlaylistSongsList"
-#define PLAYLIST_SOURCE_POPUP_PATH "/popups/PlaylistSourceList"
-#define PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH "/popups/AutomaticPlaylistSourceList"
+#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
+#define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
+#define PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH "/SmartPlaylistSourcePopup"
 
 struct RBPlaylistSourcePrivate
 {
@@ -113,7 +113,6 @@ enum
 {
 	PROP_0,
 	PROP_LIBRARY,
-	PROP_DB,
 	PROP_AUTOMATIC,
 };
 
@@ -183,14 +182,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
 					 PROP_AUTOMATIC,
 					 g_param_spec_boolean ("automatic",
 							       "automatic",
@@ -227,12 +218,17 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	RBPlaylistSourceClass *klass;
 	GObjectClass *parent_class;  
 	GtkWidget *dummy = gtk_tree_view_new ();
+	RBShell *shell;
 
 	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_PLAYLIST_SOURCE (parent_class->constructor (type, n_construct_properties,
 								construct_properties));
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (RB_SHELL (shell), "db", &source->priv->db, NULL);
+	g_object_unref (G_OBJECT (shell));
 
 	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
 				 G_CALLBACK (rb_playlist_source_entry_added_cb),
@@ -306,9 +302,8 @@ static void
 rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 					RBPlaylistSource *playlist_view)
 {
-#ifdef FIXME
-	rb_bonobo_show_popup (GTK_WIDGET (view), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
-#endif
+	_rb_source_show_popup (RB_SOURCE (playlist_view), 
+			       PLAYLIST_SOURCE_SONGS_POPUP_PATH);
 }
 
 static void
@@ -349,9 +344,6 @@ rb_playlist_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		source->priv->db = g_value_get_object (value);
-		break;
 	case PROP_AUTOMATIC:
 		source->priv->automatic = g_value_get_boolean (value);
 		break;
@@ -371,9 +363,6 @@ rb_playlist_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		g_value_set_object (value, source->priv->db);
-		break;
 	case PROP_AUTOMATIC:
 		g_value_set_boolean (value, source->priv->automatic);
 		break;
@@ -384,13 +373,13 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (RhythmDB *db, gboolean automatic)
+rb_playlist_source_new (RBShell *shell, gboolean automatic)
 {
 	RBSource *source;
 	
 	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
-					  "db", db,
+					  "shell", shell,
 					  "automatic", automatic,
 					  NULL));
 
@@ -604,13 +593,13 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 static gboolean
 impl_show_popup (RBSource *asource)
 {
-#ifdef FIXME
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	if (source->priv->automatic)
-		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH);
-	else
-		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_POPUP_PATH);
-#endif
+
+	if (source->priv->automatic) {
+		_rb_source_show_popup (RB_SOURCE (asource), PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH);
+	} else {
+		_rb_source_show_popup (RB_SOURCE (asource), PLAYLIST_SOURCE_POPUP_PATH);
+	}
 	return TRUE;
 }
 
@@ -750,14 +739,14 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 }
 
 RBSource *
-rb_playlist_source_new_from_xml	(RhythmDB *db,
+rb_playlist_source_new_from_xml	(RBShell *shell,
 				 xmlNodePtr node)
 {
 	RBPlaylistSource *source;
 	xmlNodePtr child;
 	char *tmp;
 
-	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db, FALSE));
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE));
 
 	tmp = xmlGetProp (node, "type");
 	if (!strcmp (tmp, "automatic"))
@@ -789,7 +778,7 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 		while (xmlNodeIsText (child))
 			child = child->next;
 
-		query = rhythmdb_query_deserialize (db, child);
+		query = rhythmdb_query_deserialize (source->priv->db, child);
 		limit_str = xmlGetProp (node, "limit-count");
 		if (!limit_str) /* Backwards compatibility */
 			limit_str = xmlGetProp (node, "limit");

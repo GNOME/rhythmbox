@@ -331,11 +331,11 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder)
 	g_return_if_fail (porder != NULL);
 
 	source = rb_shell_player_get_playing_source (porder->priv->player);
-	if (source) {
-		g_object_get (G_OBJECT (source),
-			      "db", &db,
-			      NULL);
-	}
+
+	g_object_get (G_OBJECT (porder->priv->player),
+		      "db", &db,
+		      NULL);
+
 	if (db != porder->priv->db) {
 		if (RB_PLAY_ORDER_GET_CLASS (porder)->db_changed)
 			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, porder->priv->db);

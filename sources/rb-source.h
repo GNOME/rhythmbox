@@ -166,6 +166,10 @@ gboolean	rb_source_show_popup		(RBSource *source);
 
 void		rb_source_delete_thyself	(RBSource *source);
 
+/* Protected method, should only be used by objects inheriting from RBSource */
+void            _rb_source_show_popup           (RBSource *source, 
+						 const char *ui_path);
+
 G_END_DECLS
 
 #endif /* __RB_SOURCE_H */

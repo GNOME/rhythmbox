@@ -51,8 +51,7 @@ typedef struct
 
 GType		rb_iradio_source_get_type	(void);
 
-RBSource *	rb_iradio_source_new		(RBShell *shell, RhythmDB *db, 
-						 GtkActionGroup *actiongroup);
+RBSource *	rb_iradio_source_new		(RBShell *shell);
 
 void		rb_iradio_source_add_station	(RBIRadioSource *source,
 						 const char *uri, const char *title, const char *genre);

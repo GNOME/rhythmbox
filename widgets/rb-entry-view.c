@@ -1608,6 +1608,7 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 	return FALSE;
 }
 
+
 static void
 queue_changed_sig (RBEntryView *view)
 {

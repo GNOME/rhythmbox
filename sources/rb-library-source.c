@@ -177,29 +177,29 @@ struct RBLibrarySourcePrivate
 	
 	gboolean loading_prefs;
 
+	GtkActionGroup *action_group;
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
-
+	
 	RhythmDBEntryType entry_type;
 };
 
 static GtkActionEntry rb_library_source_actions [] =
 {
-	{ "LibrarySrcChooseGenre", NULL, N_(""), NULL,
-	  N_(""),
+	{ "LibrarySrcChooseGenre", NULL, N_("Browse this genre"), NULL,
+	  N_("Set the browser to view only this genre"),
 	  G_CALLBACK (rb_library_source_cmd_choose_genre) },
-	{ "LibrarySrcChooseArtist", NULL , N_(""), NULL,
-	  N_(""),
+	{ "LibrarySrcChooseArtist", NULL , N_("Browse this artist"), NULL,
+	  N_("Set the browser to view only this artist"),
 	  G_CALLBACK (rb_library_source_cmd_choose_artist) },
-	{ "LibrarySrcChooseAlbum", NULL, N_(""), NULL,
-	  N_(""),
+	{ "LibrarySrcChooseAlbum", NULL, N_("Browse this album"), NULL,
+	  N_("Set the browser to view only this album"),
 	  G_CALLBACK (rb_library_source_cmd_choose_album) }
 };
 
 enum
 {
 	PROP_0,
-	PROP_DB,	
 	PROP_ICON,
 	PROP_ENTRY_TYPE
 };
@@ -273,13 +273,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
 					 PROP_ICON,
 					 g_param_spec_object ("icon",
 							      "Icon",
@@ -305,15 +298,12 @@ update_browser_views_visibility (RBLibrarySource *source)
 	GtkWidget *genres = GTK_WIDGET (source->priv->genres);
 	GtkWidget *artists = GTK_WIDGET (source->priv->artists);
 	GtkWidget *albums = GTK_WIDGET (source->priv->albums);
-	GtkActionGroup *actiongroup;
 	GtkAction *action;
 
 	views = eel_gconf_get_integer (CONF_UI_LIBRARY_BROWSER_VIEWS);
 
-	g_object_get (G_OBJECT (source), "action-group", &actiongroup, NULL);
-	
 	gtk_widget_show (genres);
-	action = gtk_action_group_get_action (actiongroup,
+	action = gtk_action_group_get_action (source->priv->action_group,
 					      "LibrarySrcChooseGenre");
 	if (action) {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
@@ -321,14 +311,14 @@ update_browser_views_visibility (RBLibrarySource *source)
 
 
 	gtk_widget_show (artists);	
-	action = gtk_action_group_get_action (actiongroup,
+	action = gtk_action_group_get_action (source->priv->action_group,
 					      "LibrarySrcChooseArtist"); 
 	if (action) {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 	}
 
 	gtk_widget_show (albums);
-	action = gtk_action_group_get_action (actiongroup,
+	action = gtk_action_group_get_action (source->priv->action_group,
 					      "LibrarySrcChooseAlbum"); 
 	if (action) {
 		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
@@ -337,7 +327,7 @@ update_browser_views_visibility (RBLibrarySource *source)
 	switch (views)
 	{
 	case 0:
-		action = gtk_action_group_get_action (actiongroup,
+		action = gtk_action_group_get_action (source->priv->action_group,
 						      "LibrarySrcChooseGenre");
 		if (action) {
 			g_object_set (G_OBJECT (action), 
@@ -349,7 +339,7 @@ update_browser_views_visibility (RBLibrarySource *source)
 		/* Since this is hidden now, reset the query */
 		break;
 	case 1:
-		action = gtk_action_group_get_action (actiongroup,
+		action = gtk_action_group_get_action (source->priv->action_group,
 						      "LibrarySrcChooseAlbum");
 		if (action) {
 			g_object_set (G_OBJECT (action), 
@@ -434,42 +424,48 @@ rb_library_source_finalize (GObject *object)
 
 static void
 rb_library_source_songs_show_popup_cb (RBEntryView *view,
-				       RBLibrarySource *library_source)
+				       RBLibrarySource *source)
 {
-#ifdef FIXME
-	GtkWidget *menu;
-	GtkWidget *window;
-
-	window = gtk_widget_get_ancestor (GTK_WIDGET (view),
-					  BONOBO_TYPE_WINDOW);
-
-	menu = gtk_menu_new ();
-
-	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu),
-			         LIBRARY_SOURCE_SONGS_POPUP_PATH);
-
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
-			3, gtk_get_current_event_time ());
-
-	gtk_object_sink (GTK_OBJECT (menu));
-#endif
+	_rb_source_show_popup (RB_SOURCE (source), "/LibraryViewPopup");
 }
 
-/* This function may seem a bit weird. Since we have 2 instances of objects 
- * inheriting from RBLibrarySource, we can't install those ui verbs when
- * creating a new instance of such an object. Attaching those verbs in the 
- * shell would also be weird imo since this would add more code 
- * dependant on the source type to the shell */
-void
-rb_library_source_class_add_actions (RBShell *shell, 
-				     GtkActionGroup *actiongroup)
+static void
+register_action_group (RBLibrarySource *source)
 {
-	gtk_action_group_add_actions (actiongroup, 
+	GtkUIManager *uimanager;
+	GList *actiongroups;
+	GList *group;
+	RBShell *shell;
+
+	g_object_get (G_OBJECT (source), "ui-manager", &uimanager, NULL);
+	actiongroups = gtk_ui_manager_get_action_groups (uimanager);
+
+	/* Don't create the action group if it's already registered */
+	for (group = actiongroups; group != NULL; group = group->next) {
+		const gchar *name;
+
+		name = gtk_action_group_get_name (GTK_ACTION_GROUP (group->data));
+		if (strcmp (name, "LibraryActions") == 0) {
+			g_object_unref (G_OBJECT (uimanager));
+			source->priv->action_group = GTK_ACTION_GROUP (group->data);
+			return;
+		}
+	}
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	source->priv->action_group = gtk_action_group_new ("LibraryActions");
+	gtk_action_group_set_translation_domain (source->priv->action_group,
+						 GETTEXT_PACKAGE);
+	gtk_action_group_add_actions (source->priv->action_group, 
 				      rb_library_source_actions,
 				      G_N_ELEMENTS (rb_library_source_actions),
 				      shell);
-}
+	gtk_ui_manager_insert_action_group (uimanager, 
+					    source->priv->action_group, 0);
+	g_object_unref (G_OBJECT (uimanager));
+	g_object_unref (G_OBJECT (shell));
 
+}
 
 static GObject *
 rb_library_source_constructor (GType type, guint n_construct_properties,
@@ -478,12 +474,20 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
 	GObjectClass *parent_class;  
+	RBShell *shell;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
 							       construct_properties));
+
+	register_action_group (source);
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_unref (G_OBJECT (shell));
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -590,9 +594,6 @@ rb_library_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		source->priv->db = g_value_get_object (value);
-		break;
 	case PROP_ICON:
 		if (source->priv->pixbuf) {
 			g_object_unref (G_OBJECT (source->priv->pixbuf));
@@ -619,9 +620,6 @@ rb_library_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		g_value_set_object (value, source->priv->db);
-		break;
 	case PROP_ICON:
 		g_value_set_object (value, source->priv->pixbuf);
 		break;
@@ -635,8 +633,7 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (RBShell *shell, RhythmDB *db, 
-		       GtkActionGroup *actiongroup)
+rb_library_source_new (RBShell *shell)
 {
 	RBSource *source;
 	GtkWidget *dummy = gtk_tree_view_new ();
@@ -651,8 +648,7 @@ rb_library_source_new (RBShell *shell, RhythmDB *db,
 					  "name", _("Library"),
 					  "internal-name", "<library>",
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
-					  "db", db,
-					  "action-group", actiongroup,
+					  "shell", shell,
 					  "icon", icon,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, 
@@ -744,6 +740,7 @@ rb_library_source_cmd_choose_genre (GtkAction *action,
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_GENRE);
 	rb_property_view_set_selection (source->priv->genres, props);
 	g_list_free (props);
+	g_object_unref (source);
 }
 
 static void
@@ -759,6 +756,7 @@ rb_library_source_cmd_choose_artist (GtkAction *action,
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ARTIST);
 	rb_property_view_set_selection (source->priv->artists, props);
 	g_list_free (props);
+	g_object_unref (source);
 }
 
 static void
@@ -774,6 +772,7 @@ rb_library_source_cmd_choose_album (GtkAction *action,
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ALBUM);
 	rb_property_view_set_selection (source->priv->albums, props);
 	g_list_free (props);
+	g_object_unref (source);
 }
 
 static void
@@ -1275,9 +1274,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 static gboolean
 impl_show_popup (RBSource *source)
 {
-#ifdef FIXME
-	rb_bonobo_show_popup (GTK_WIDGET (source), LIBRARY_SOURCE_POPUP_PATH);
-#endif
+	_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 	return TRUE;
 }
 

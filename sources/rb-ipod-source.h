@@ -51,8 +51,7 @@ typedef struct
 	RBLibrarySourceClass parent;
 } RBiPodSourceClass;
 
-RBSource *	rb_ipod_source_new		(RBShell *shell, RhythmDB *db, 
-						 GtkActionGroup *actiongroup);
+RBSource *	rb_ipod_source_new		(RBShell *shell);
 
 GType		rb_ipod_source_get_type	        (void);
 

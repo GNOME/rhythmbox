@@ -20,6 +20,7 @@
  */
 
 #include "rb-util.h"
+#include <gtk/gtk.h>
 #include <string.h>
 
 gboolean
@@ -221,7 +222,8 @@ totem_pixbuf_mirror (GdkPixbuf *pixbuf)
 /* Same as gtk_image_new_from_stock except that it mirrors the icons for RTL 
  * languages
  */
-GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
+GtkWidget *
+rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 {
 
 	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_LTR) {
@@ -256,4 +258,14 @@ GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 	}
 
 	return NULL;
+}
+
+void
+rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
+{
+	GtkWidget *menu;
+
+	menu = gtk_ui_manager_get_widget (uimanager, path);
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, 
+			gtk_get_current_event_time ());
 }

@@ -26,6 +26,7 @@
 #include <glib/gtypes.h>
 #include <glib-object.h>
 #include <gtk/gtkimage.h>
+#include <gtk/gtkuimanager.h>
 
 G_BEGIN_DECLS
 
@@ -36,6 +37,7 @@ gboolean rb_gvalue_compare (GValue *a, GValue *b);
 
 int rb_compare_gtimeval (GTimeVal *a, GTimeVal *b);
 
+void rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path);
 
 GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 

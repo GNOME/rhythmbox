@@ -54,8 +54,7 @@ typedef struct
 
 GType		rb_library_source_get_type	(void);
 
-RBSource *      rb_library_source_new           (RBShell *shell, RhythmDB *db, 
-					 	 GtkActionGroup *actiongroup);
+RBSource *      rb_library_source_new           (RBShell *shell);
 
 void		rb_library_source_show_browser	(RBLibrarySource *source,
 						 gboolean show);

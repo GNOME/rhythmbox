@@ -66,7 +66,6 @@ static void rb_iradio_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 static void rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
-						  RhythmDBEntry *entry,
 						  RBIRadioSource *source);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -105,7 +104,6 @@ void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
-#define IRADIO_SOURCE_SONGS_POPUP_PATH "/popups/IRadioSongsList"
 
 #define CONF_UI_IRADIO_DIR CONF_PREFIX "/ui/iradio"
 #define CONF_UI_IRADIO_COLUMNS_SETUP CONF_PREFIX "/ui/iradio/columns_setup"
@@ -166,7 +164,6 @@ struct RBIRadioSourcePrivate
 enum
 {
 	PROP_0,
-	PROP_DB,
 	PROP_ENTRY_TYPE
 };
 
@@ -232,13 +229,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_buffering_done = impl_buffering_done;
 
 	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
 					 g_param_spec_uint ("entry-type",
 							    "Entry type",
@@ -302,6 +292,8 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	RBIRadioSource *source;
 	RBIRadioSourceClass *klass;
 	GObjectClass *parent_class;  
+	RBShell *shell;
+
 	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IRADIO_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
@@ -309,6 +301,11 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 							      construct_properties));
 
 	source->priv->paned = gtk_hpaned_new ();
+
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "db", &source->priv->db, NULL);
+	g_object_unref (G_OBJECT (shell));
+
 
 	/* set up stations view */
 	source->priv->stations = rb_entry_view_new (source->priv->db, CONF_STATE_IRADIO_SORTING,
@@ -330,7 +327,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 				 source, 0);
 	g_signal_connect_object (G_OBJECT (source->priv->stations), "show_popup",
 				 G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source, 0);
-
+	
 	/* set up genre entry view */
 	source->priv->genres = rb_property_view_new (source->priv->db,
 						     RHYTHMDB_PROP_GENRE,
@@ -374,9 +371,6 @@ rb_iradio_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		source->priv->db = g_value_get_object (value);
-		break;
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_uint (value);
 		break;
@@ -396,9 +390,6 @@ rb_iradio_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		g_value_set_object (value, source->priv->db);
-		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_uint (value, source->priv->entry_type);
 		break;
@@ -409,16 +400,14 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (RBShell *shell, RhythmDB *db, 
-		      GtkActionGroup *actiongroup)
+rb_iradio_source_new (RBShell *shell)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
+					  "shell", shell,
 					  "internal-name", "<radio>",
-					  "db", db,
-					  "action-group", actiongroup,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, 
@@ -666,26 +655,12 @@ rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 
 static void
 rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
-				      RhythmDBEntry *entry,
 				      RBIRadioSource *source)
 {
-#ifdef FIXME
-	GtkWidget *menu;
-	GtkWidget *window;
-
-	window = gtk_widget_get_ancestor (GTK_WIDGET (view),
-					  BONOBO_TYPE_WINDOW);
-
-	menu = gtk_menu_new ();
-
-	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu),
-			         IRADIO_SOURCE_SONGS_POPUP_PATH);
-
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
-			3, gtk_get_current_event_time ());
-
-	gtk_object_sink (GTK_OBJECT (menu));
-#endif
+	if (G_OBJECT (source) == NULL) {
+		return;
+	}
+	_rb_source_show_popup (RB_SOURCE (source), "/IRadioViewPopup");
 }
 
 static void

@@ -199,7 +199,7 @@ rb_ipod_source_finalize (GObject *object)
 
 
 RBSource *
-rb_ipod_source_new (RBShell *shell, RhythmDB *db, GtkActionGroup *actiongroup)
+rb_ipod_source_new (RBShell *shell)
 {
 	RBSource *source;
 	GtkWidget *dummy = gtk_tree_view_new ();
@@ -216,8 +216,7 @@ rb_ipod_source_new (RBShell *shell, RhythmDB *db, GtkActionGroup *actiongroup)
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_IPOD,
 					  "internal-name", "<ipod>",
 					  "icon", icon,
-					  "db", db,
-					  "action-group", actiongroup,
+					  "shell", shell,
 					  "visibility", FALSE,
 					  NULL));
 
@@ -252,10 +251,14 @@ static gboolean
 load_ipod_db_idle_cb (RBiPodSource *source)
 {
 	RhythmDBEntry *entry;
+	RBShell *shell;
 	RhythmDB *db;
 	int i;
 
-	g_object_get (G_OBJECT (source), "db", &db, NULL);
+	g_object_get (G_OBJECT (source), "shell", &shell, NULL);
+	g_object_get (G_OBJECT (shell), "db", &db, NULL);
+	g_object_unref (G_OBJECT (shell));
+
 	g_assert (db != NULL);
 	g_assert (source->priv->parser != NULL);
 
@@ -270,6 +273,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			ipod_item_destroy (item);
 			ipod_parser_destroy (source->priv->parser);
 			source->priv->parser = NULL;
+			g_object_unref (G_OBJECT (db));
 			return FALSE;
 		}
 		song = (iPodSong *)item->data;
@@ -349,17 +353,13 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 		ipod_item_destroy (item);
 	}
 
+	g_object_unref (G_OBJECT (db));
 	return TRUE;
 }
 
 static void
 rb_ipod_load_songs (RBiPodSource *source)
 {
-	RhythmDB *db;
-
-	g_object_get (G_OBJECT (source), "db", &db, NULL);
-	g_assert (db != NULL);
-
 	source->priv->parser = ipod_parser_new (source->priv->ipod_mount_path);
 
 	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, 

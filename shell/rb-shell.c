@@ -220,8 +220,8 @@ static gboolean rb_shell_playing_impl (RBRemoteProxy *proxy);
 static long rb_shell_get_playing_time_impl (RBRemoteProxy *proxy);
 static void rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time);
 
-typedef RBSource *(*SourceCreateFunc)(RBShell *, RhythmDB *db, 
-				      GtkActionGroup *actiongroup);
+typedef RBSource *(*SourceCreateFunc)(RBShell *);
+
 static SourceCreateFunc known_sources[] = {
 	rb_library_source_new,
 	rb_iradio_source_new,
@@ -260,7 +260,9 @@ enum
 	PROP_NO_UPDATE,
 	PROP_DRY_RUN,
 	PROP_RHYTHMDB_FILE,
-	PROP_SELECTED_SOURCE
+	PROP_SELECTED_SOURCE,
+	PROP_DB,
+	PROP_UI_MANAGER
 };
 
 /* prefs */
@@ -486,10 +488,28 @@ rb_shell_class_init (RBShellClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_SELECTED_SOURCE,
-					 g_param_spec_pointer ("selected-source", 
-							       "selected-source", 
-							       "Source which is currently selected", 
+					 g_param_spec_object ("selected-source", 
+							      "selected-source", 
+							      "Source which is currently selected", 
+							      RB_TYPE_SOURCE,
+							      G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_DB,
+					 g_param_spec_object ("db", 
+							      "RhythmDB", 
+							      "RhythmDB object", 
+							      RHYTHMDB_TYPE,
 							       G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager", 
+							      "GtkUIManager", 
+							      "GtkUIManager object", 
+							      GTK_TYPE_UI_MANAGER,
+							       G_PARAM_READABLE));
+
 
 }
 
@@ -598,7 +618,13 @@ rb_shell_get_property (GObject *object,
 		g_value_set_string (value, shell->priv->rhythmdb_file);
 		break;
 	case PROP_SELECTED_SOURCE:
-		g_value_set_pointer (value, shell->priv->selected_source);
+		g_value_set_object (value, shell->priv->selected_source);
+		break;
+	case PROP_DB:
+		g_value_set_object (value, shell->priv->db);
+		break;
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, shell->priv->ui_manager);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -857,7 +883,8 @@ rb_shell_construct (RBShell *shell)
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
 
-	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_manager,
+	shell->priv->player_shell = rb_shell_player_new (shell->priv->db,
+							 shell->priv->ui_manager,
 							 shell->priv->actiongroup);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "playing-source-changed",
@@ -954,27 +981,20 @@ rb_shell_construct (RBShell *shell)
 	while (known_sources[i] != NULL) {
 		RBSource *source;
 
-		source = known_sources[i] (shell, 
-					   shell->priv->db, 
-					   shell->priv->actiongroup);
-
+		source = known_sources[i] (shell);
 		rb_shell_append_source (shell, RB_SOURCE (source));
 		i++;
 	}
 
 	library_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG);
-
-	rb_library_source_class_add_actions (shell, shell->priv->actiongroup);
-
 	g_assert (library_source != NULL);
+
 	iradio_source  = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
 	g_assert (iradio_source != NULL);
 
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
-	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->actiongroup,
-								 GTK_WINDOW (shell->priv->window),
-								 shell->priv->db,
+	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
 								 RB_SOURCELIST (shell->priv->sourcelist),
 								 RB_LIBRARY_SOURCE (library_source),
 								 RB_IRADIO_SOURCE (iradio_source));

@@ -22,12 +22,16 @@
 
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
+#include <gtk/gtkuimanager.h>
 #include <time.h>
 
-#include "rb-source.h"
+
+#include "rb-cut-and-paste-code.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-cut-and-paste-code.h"
+#include "rb-shell.h"
+#include "rb-source.h"
+#include "rb-util.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
@@ -62,7 +66,7 @@ struct RBSourcePrivate
 	char *name;
 	char *internal_name;
 	
-	GtkActionGroup *actiongroup;
+	RBShell *shell;
 	gboolean visible;
 };
 
@@ -71,7 +75,8 @@ enum
 	PROP_0,
 	PROP_NAME,
 	PROP_INTERNAL_NAME,
-	PROP_ACTION_GROUP,
+	PROP_SHELL,
+	PROP_UI_MANAGER,
 	PROP_VISIBLE
 };
 
@@ -161,11 +166,21 @@ rb_source_class_init (RBSourceClass *klass)
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
-					 PROP_ACTION_GROUP,
-					 g_param_spec_pointer ("action-group",
-							       "GtkActionGroup",
-							       "GtkActionGroup object",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							       "RBShell",
+							       "RBShell object",
+							      RB_TYPE_SHELL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+							       "GtkUIManager",
+							       "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
+							      G_PARAM_READABLE));
+
 
 	g_object_class_install_property (object_class, 
 					 PROP_VISIBLE,
@@ -263,8 +278,8 @@ rb_source_set_property (GObject *object,
 		g_free (source->priv->internal_name);
 		source->priv->internal_name = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_ACTION_GROUP:
-		source->priv->actiongroup = g_value_get_pointer (value);
+	case PROP_SHELL:
+		source->priv->shell = g_value_get_object (value);
 		break;
 	case PROP_VISIBLE:
 		source->priv->visible = g_value_get_boolean (value);
@@ -294,12 +309,22 @@ rb_source_get_property (GObject *object,
 	case PROP_INTERNAL_NAME:
 		g_value_set_string (value, source->priv->internal_name);
 		break;
-	case PROP_ACTION_GROUP:
-		g_value_set_pointer (value, source->priv->actiongroup);
+	case PROP_SHELL:
+		g_value_set_object (value, source->priv->shell);
 		break;
 	case PROP_VISIBLE:
 		g_value_set_boolean (value, source->priv->visible);
 		break;
+	case PROP_UI_MANAGER:
+	{
+		GtkUIManager *manager;
+		g_object_get (G_OBJECT (source->priv->shell), 
+			      "ui-manager", &manager,
+			      NULL);
+		g_value_set_object (value, manager);
+		g_object_unref (G_OBJECT(manager));
+		break;
+	}
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -640,6 +665,18 @@ rb_source_receive_drag (RBSource *source, GtkSelectionData *data)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_receive_drag (source, data);
+}
+
+void
+_rb_source_show_popup (RBSource *source, const char *ui_path)
+{
+	GtkUIManager *uimanager;
+
+	g_object_get (G_OBJECT (source->priv->shell), 
+		      "ui-manager", &uimanager, NULL);
+	rb_gtk_action_popup_menu (uimanager, ui_path);
+	g_object_unref (G_OBJECT (uimanager));
+
 }
 
 static gboolean

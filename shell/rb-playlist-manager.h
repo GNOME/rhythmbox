@@ -58,9 +58,8 @@ typedef struct
 
 GType			rb_playlist_manager_get_type	(void);
 
-RBPlaylistManager *	rb_playlist_manager_new		(GtkActionGroup *actiongroup,
-							 GtkWindow *window,
-							 RhythmDB *db, RBSourceList *sourcelist,
+RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
+							 RBSourceList *sourcelist,
 							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);
 

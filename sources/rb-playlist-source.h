@@ -25,10 +25,11 @@
 
 #include <libxml/tree.h>
 
-#include "rb-source.h"
-#include "rhythmdb.h"
 #include "rb-library-source.h"
 #include "rb-query-creator.h"
+#include "rb-shell.h"
+#include "rb-source.h"
+#include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 
 G_BEGIN_DECLS
@@ -56,9 +57,10 @@ typedef struct
 
 GType		rb_playlist_source_get_type	(void);
 
-RBSource *	rb_playlist_source_new		(RhythmDB *db, gboolean smart);
+RBSource *	rb_playlist_source_new		(RBShell *shell,
+						 gboolean smart);
 
-RBSource *	rb_playlist_source_new_from_xml	(RhythmDB *db,
+RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);
 
 RhythmDBQueryModel *rb_playlist_source_get_model(RBPlaylistSource *source);

@@ -73,4 +73,46 @@
       <separator/>
       <menuitem name="ShowWindowTray" action="TrayShowWindow"/>
   </popup>
+
+  <popup name="LibraryViewPopup">
+    <menuitem name="CopyLibraryPopup" action="EditCopy"/>
+    <menuitem name="DeleteLibraryPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="BrowseGenreLibraryPopup" action="LibrarySrcChooseGenre"/>
+    <menuitem name="BrowseArtistLibraryPopup" action="LibrarySrcChooseArtist"/>
+    <menuitem name="BrowseAlbumLibraryPopup" action="LibrarySrcChooseAlbum"/>
+    <separator/>
+    <menuitem name="PropertiesLibraryPopup" action="MusicProperties"/>
+  </popup>
+
+  <popup name="PlaylistViewPopup">
+    <menuitem name="CopyPlaylistPopup" action="EditCopy"/>
+    <menuitem name="CutPlaylistPopup" action="EditCut"/>
+    <menuitem name="DeletePlaylistPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
+  </popup>
+
+  <popup name="LibrarySourcePopup">
+    <menuitem name="LibrarySrcPopupAddFile" action="MusicImportFile"/>
+    <menuitem name="LibrarySrcPopupAddFolder" action="MusicImportFolder"/>
+    <menuitem name="LibrarySrcPopupAddCD" action="MusicImportCD"/>
+  </popup>
+
+  <popup name="IRadioViewPopup">
+    <menuitem name="DeleteIRadioPopup" action="EditDelete"/>
+    <separator/>
+    <menuitem name="PropertiesIRadioPopup" action="MusicProperties"/>
+  </popup>
+
+  <popup name="PlaylistSourcePopup">
+    <menuitem name="DeletePlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
+  </popup>
+
+  <popup name="SmartPlaylistSourcePopup">
+    <menuitem name="EditSmartPlaylistPopup" action="EditAutomaticPlaylist"/>
+    <separator/>
+    <menuitem name="DeleteSmartPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
+  </popup>
+
 </ui>

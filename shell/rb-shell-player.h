@@ -69,7 +69,8 @@ typedef struct
 
 GType			rb_shell_player_get_type   (void);
 
-RBShellPlayer *		rb_shell_player_new		(GtkUIManager *mgr,
+RBShellPlayer *		rb_shell_player_new		(RhythmDB *db,
+							 GtkUIManager *mgr,
 							 GtkActionGroup *actiongroup);
 
 void			rb_shell_player_set_selected_source	(RBShellPlayer *shell_player,
