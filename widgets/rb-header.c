@@ -20,6 +20,7 @@
  *
  */
 
+#include <math.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvbox.h>
@@ -284,7 +285,7 @@ rb_header_init (RBHeader *player)
 	scalebox = player->priv->timeline = gtk_vbox_new (FALSE, 0);
 	g_object_ref (G_OBJECT (scalebox));
 
-	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
+	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 10.0, 1.0, 10.0, 0.0));
 	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
 	g_signal_connect_object (G_OBJECT (player->priv->scale),
 				 "button_press_event",
@@ -693,7 +694,11 @@ rb_header_sync_time (RBHeader *player)
 		double progress = 0.0;
 
 		if (seconds > 0)
-			progress = (double) ((long) seconds) / duration;
+			progress = (double) (long) seconds;
+		else {
+			player->priv->adjustment->upper = duration;
+			g_signal_emit_by_name (G_OBJECT (player->priv->adjustment), "changed");
+		}
 
 		player->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (player->priv->adjustment, progress);
@@ -725,13 +730,12 @@ static gboolean
 slider_moved_timeout (RBHeader *player)
 {
 	double progress;
-	long duration, new;
+	long new;
 
 	GDK_THREADS_ENTER ();
 	
 	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (player->priv->scale)));
-	duration = rb_header_get_duration (player);
-	new = (long) (progress * duration);
+	new = (long) (progress+0.5);
 	
 	rb_debug ("setting time to %ld", new);
 	rb_player_set_time (player->priv->mmplayer, new);
@@ -751,7 +755,6 @@ slider_moved_callback (GtkWidget *widget,
 {
 	GtkAdjustment *adjustment;
 	double progress;
-	long duration;
 
 	if (player->priv->slider_dragging == FALSE) {
 		rb_debug ("slider is not dragging");
@@ -761,9 +764,7 @@ slider_moved_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	duration = rb_header_get_duration (player);
-
-	player->priv->state->elapsed = (long) (progress * duration);
+	player->priv->state->elapsed = (long) (progress+0.5);
 
 	rb_header_update_elapsed (player);
 
@@ -784,7 +785,7 @@ slider_release_callback (GtkWidget *widget,
 			 RBHeader *player)
 {
 	double progress;
-	long duration, new;
+	long new;
 	GtkAdjustment *adjustment;
 
 	if (player->priv->slider_dragging == FALSE) {
@@ -795,8 +796,7 @@ slider_release_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	duration = rb_header_get_duration (player);
-	new = (long) (progress * duration);
+	new = (long) (progress+0.5);
 
 	if (new != player->priv->latest_set_time) {
 		rb_debug ("setting time to %ld", new);
