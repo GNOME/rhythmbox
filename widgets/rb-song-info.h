@@ -21,6 +21,7 @@
 
 #include <gtk/gtkdialog.h>
 #include "rb-entry-view.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_SONG_INFO_H
 #define __RB_SONG_INFO_H

@@ -421,9 +421,9 @@ rb_song_info_set_property (GObject *object,
 		{
 			RBEntryView *entry_view = g_value_get_object (value);
 			song_info->priv->entry_view = entry_view;
-			rb_song_info_update_current_values (song_info);
-
 			g_object_get (G_OBJECT (entry_view), "db", &song_info->priv->db, NULL);
+
+			rb_song_info_update_current_values (song_info);
 
 			g_signal_connect_object (G_OBJECT (entry_view),
 						 "changed",
@@ -462,7 +462,7 @@ rb_song_info_new (RBEntryView *entry_view)
 {
 	RBSongInfo *song_info;
 
-	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
+        g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
 	if (rb_entry_view_have_selection (entry_view) == FALSE) 
 		return NULL;

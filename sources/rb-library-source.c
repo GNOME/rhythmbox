@@ -819,15 +819,17 @@ static void
 impl_song_properties (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-/* 	GtkWidget *song_info = NULL; */
+ 	GtkWidget *song_info = NULL; 
 
 	g_return_if_fail (source->priv->songs != NULL);
+        
+ 	song_info = rb_song_info_new (source->priv->songs); 
 
-	/* RHYTHMDB FIXME */
-/* 	song_info = rb_song_info_new (source->priv->songs); */
-/* 	if (song_info) */
-/* 		gtk_widget_show_all (song_info); */
-/* 	else */
+        g_return_if_fail (song_info != NULL);
+
+ 	if (song_info) 
+ 		gtk_widget_show_all (song_info); 
+ 	else 
 		rb_debug ("failed to create dialog, or no selection!");
 }
 
