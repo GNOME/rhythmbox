@@ -94,30 +94,10 @@ rhythmdb_entry_ref (RhythmDB *adb, RhythmDBEntry *aentry)
 	rb_atomic_inc (&entry->refcount);
 }
 
+void rhythmdb_entry_unref (RhythmDB *adb, RhythmDBEntry *aentry);
 
-static inline void
-rhythmdb_entry_unref (RhythmDB *adb, RhythmDBEntry *aentry)
-{
-	RhythmDBTree *db = (RhythmDBTree *) adb;
-	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
+void rhythmdb_entry_unref_unlocked (RhythmDB *adb, RhythmDBEntry *aentry);
 
-	if (rb_atomic_dec (&entry->refcount) <= 1) {
-		rhythmdb_write_lock (adb);
-		rhythmdb_tree_entry_destroy (db, entry);
-		rhythmdb_write_unlock (adb);
-	}
-}
-
-static inline void
-rhythmdb_entry_unref_unlocked (RhythmDB *adb, RhythmDBEntry *aentry)
-{
-	RhythmDBTree *db = (RhythmDBTree *) adb;
-	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
-
-	if (rb_atomic_dec (&entry->refcount) <= 1) {
-		rhythmdb_tree_entry_destroy (db, entry);
-	}
-}
 
 G_END_DECLS
 

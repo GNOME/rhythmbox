@@ -49,11 +49,9 @@ static void rhythmdb_query_model_get_property (GObject *object,
 					       GValue *value,
 					       GParamSpec *pspec);
 static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
-					    RhythmDBEntry *entry,
-					    gboolean lock);
+					    RhythmDBEntry *entry);
 static void rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
-					    RhythmDBEntry *entry,
-					    gboolean lock);
+					    RhythmDBEntry *entry);
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
@@ -459,12 +457,12 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 }
 
 static void
-rhythmdb_query_model_free_update (RhythmDBQueryModel *model,
-				  struct RhythmDBQueryModelUpdate *update)
+rhythmdb_query_model_free_pending_update (RhythmDBQueryModel *model,
+					  struct RhythmDBQueryModelUpdate *update)
 {
 	switch (update->type) {
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
-		/* We steal the ref here from the update queue */
+		rhythmdb_entry_unref (model->priv->db, update->entry);
 		break;
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
 		rhythmdb_entry_unref (model->priv->db, update->entry);
@@ -472,10 +470,6 @@ rhythmdb_query_model_free_update (RhythmDBQueryModel *model,
 		g_value_unset (&update->new);
 		break;
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
-		/* Unref twice; once because we were holding a ref originally
-		   due to storing it, and another time because we had it
-		   in the update queue. */
-		rhythmdb_entry_unref (model->priv->db, update->entry);
 		rhythmdb_entry_unref (model->priv->db, update->entry);
 		break;
 	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
@@ -484,7 +478,6 @@ rhythmdb_query_model_free_update (RhythmDBQueryModel *model,
 
 	g_free (update);
 }
-	
 
 static void
 rhythmdb_query_model_finalize (GObject *object)
@@ -510,7 +503,7 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->query);
 
 	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL)
-		rhythmdb_query_model_free_update (model, update);
+		rhythmdb_query_model_free_pending_update (model, update);
 
 	g_async_queue_unref (model->priv->query_complete);
 	g_async_queue_unref (model->priv->pending_updates);
@@ -712,8 +705,7 @@ compare_times (GTimeVal *a, GTimeVal *b)
 
 static void
 rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
-				RhythmDBEntry *entry,
-				gboolean lock)
+				RhythmDBEntry *entry)
 {
 	GSequencePtr ptr;
 	guint64 size;
@@ -729,27 +721,25 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
 		return;
 
-	if (lock)
-		rhythmdb_read_lock (model->priv->db);
+	rhythmdb_read_lock (model->priv->db);
 	size = rhythmdb_entry_get_uint64 (model->priv->db, entry,
 					  RHYTHMDB_PROP_FILE_SIZE);
 	duration = rhythmdb_entry_get_long (model->priv->db,
 					    entry, RHYTHMDB_PROP_DURATION);
-	if (lock)
-		rhythmdb_read_unlock (model->priv->db);
+	rhythmdb_read_unlock (model->priv->db);
 
 	if (model->priv->max_size_mb > 0
 	    && ((model->priv->total_size + size) / (1024*1024)) >= model->priv->max_size_mb)
 		return;
 
+	rhythmdb_entry_ref (model->priv->db, entry);
+
 	if (model->priv->sort_func) {
-		if (lock)
-			rhythmdb_read_lock (model->priv->db);
+		rhythmdb_read_lock (model->priv->db);
 		ptr = g_sequence_insert_sorted (model->priv->entries, entry,
 						model->priv->sort_func,
 						model->priv->sort_user_data);
-		if (lock)
-			rhythmdb_read_unlock (model->priv->db);
+		rhythmdb_read_unlock (model->priv->db);
 	} else {
 		ptr = g_sequence_get_end_ptr (model->priv->entries);
 		g_sequence_insert (ptr, entry);
@@ -772,8 +762,7 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 
 static void
 rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
-				RhythmDBEntry *entry,
-				gboolean lock)
+				RhythmDBEntry *entry)
 {
 	GtkTreePath *path;
 	GSequencePtr ptr;
@@ -792,18 +781,17 @@ rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
 	
-	if (lock)
-		rhythmdb_read_lock (model->priv->db);
+	rhythmdb_read_lock (model->priv->db);
 	model->priv->total_duration -= rhythmdb_entry_get_long (model->priv->db, entry,
 								RHYTHMDB_PROP_DURATION);
 	model->priv->total_size -= rhythmdb_entry_get_uint64 (model->priv->db, entry,
 							      RHYTHMDB_PROP_FILE_SIZE);
-	if (lock)
-		rhythmdb_read_unlock (model->priv->db);
+	rhythmdb_read_unlock (model->priv->db);
 
 	g_sequence_remove (ptr);
 	g_hash_table_remove (model->priv->reverse_map, entry);
 	
+	rhythmdb_entry_unref (model->priv->db, entry);
 }
 
 static gboolean
@@ -857,7 +845,7 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
 		{
-			rhythmdb_query_model_do_insert (model, update->entry, TRUE);
+			rhythmdb_query_model_do_insert (model, update->entry);
 			break;
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
@@ -883,7 +871,8 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
 		{
-			rhythmdb_query_model_do_delete (model, update->entry, TRUE);
+			rhythmdb_query_model_do_delete (model, update->entry);
+			break;
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
 		{
@@ -905,7 +894,7 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 	}
 	
 	for (tem = processed; tem; tem = tem->next)
-		rhythmdb_query_model_free_update (model, tem->data);
+		rhythmdb_query_model_free_pending_update (model, tem->data);
 		
 	g_list_free (processed);
 	return processed != NULL;

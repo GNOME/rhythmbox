@@ -222,6 +222,30 @@ rhythmdb_tree_init (RhythmDBTree *db)
 
 }
 
+void
+rhythmdb_entry_unref (RhythmDB *adb, RhythmDBEntry *aentry)
+{
+	RhythmDBTree *db = (RhythmDBTree *) adb;
+	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
+
+	if (rb_atomic_dec (&entry->refcount) <= 1) {
+		rhythmdb_write_lock (adb);
+		rhythmdb_tree_entry_destroy (db, entry);
+		rhythmdb_write_unlock (adb);
+	}
+}
+
+void
+rhythmdb_entry_unref_unlocked (RhythmDB *adb, RhythmDBEntry *aentry)
+{
+	RhythmDBTree *db = (RhythmDBTree *) adb;
+	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
+
+	if (rb_atomic_dec (&entry->refcount) <= 1) {
+		rhythmdb_tree_entry_destroy (db, entry);
+	}
+}
+
 static inline char *
 get_entry_genre_name (RhythmDBTreeEntry *entry)
 {

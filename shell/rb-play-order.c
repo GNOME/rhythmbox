@@ -22,6 +22,7 @@
 #include "rb-play-order.h"
 
 #include "rb-shell-player.h"
+#include "rb-debug.h"
 #include <string.h>
 #include "rb-preferences.h"
 #include <libgnome/gnome-i18n.h>
@@ -57,7 +58,6 @@ static void rb_play_order_playing_entry_changed_cb (GObject *entry_view,
 static void rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
 static void rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
 static void rb_play_order_entries_replaced_cb (RBPlayOrder *porder);
-static void rb_play_order_db_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
 
 struct RBPlayOrderPrivate
 {
@@ -170,11 +170,6 @@ rb_play_order_finalize (GObject *object)
 						      porder);
 		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
 						      G_CALLBACK (rb_play_order_entries_replaced_cb),
-						      porder);
-	}
-	if (porder->priv->db) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->db),
-						      G_CALLBACK (rb_play_order_db_entry_deleted_cb),
 						      porder);
 	}
 
@@ -340,19 +335,6 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder)
 			      NULL);
 	}
 	if (db != porder->priv->db) {
-		if (porder->priv->db) {
-			g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->db),
-							      G_CALLBACK (rb_play_order_db_entry_deleted_cb),
-							      porder);
-		}
-		porder->priv->db = db;
-		if (porder->priv->db) {
-			g_signal_connect_swapped (G_OBJECT (porder->priv->db),
-						  "entry_deleted",
-						  G_CALLBACK (rb_play_order_db_entry_deleted_cb),
-						  porder);
-		}
-
 		if (RB_PLAY_ORDER_GET_CLASS (porder)->db_changed)
 			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, porder->priv->db);
 	}
@@ -433,8 +415,10 @@ rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
 static void
 rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
 {
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed) {
+		rb_debug ("signaling entry_deleted");
 		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
+	}
 }
 
 static void
@@ -442,13 +426,6 @@ rb_play_order_entries_replaced_cb (RBPlayOrder *porder)
 {
 	if (RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced)
 		RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced (porder);
-}
-
-static void
-rb_play_order_db_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
-{
-	if (RB_PLAY_ORDER_GET_CLASS (porder)->db_entry_deleted)
-		RB_PLAY_ORDER_GET_CLASS (porder)->db_entry_deleted (porder, entry);
 }
 
 static gboolean
