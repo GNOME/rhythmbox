@@ -33,10 +33,12 @@ static void rb_metadata_class_init (RBMetaDataClass *klass);
 static void rb_metadata_init (RBMetaData *md);
 static void rb_metadata_finalize (GObject *object);
 
+typedef GstElement *(*RBAddTaggerElem) (GstBin *, GstElement *);
+
 struct RBMetadataGstType
 {
 	char *mimetype;
-	char *plugin;
+	RBAddTaggerElem tag_func;
 	char *human_name;
 };
 
@@ -98,15 +100,56 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 	object_class->finalize = rb_metadata_finalize;
 }
 
+
+static GstElement *
+rb_add_flac_tagger (GstBin *pipeline, GstElement *element)
+{
+	GstElement *tagger = NULL;
+
+	if (!(tagger = gst_element_factory_make ("flactag", "flactag")))
+		return NULL;
+
+	gst_bin_add (GST_BIN (pipeline), tagger);
+	gst_element_link_many (element, tagger, NULL);
+
+	return tagger;
+}
+
+static GstElement *
+rb_add_id3_tagger (GstBin *pipeline, GstElement *element)
+{
+	GstElement *spider;
+	GstElement *tagger;
+	GstCaps *filtercaps = NULL;
+
+	if (!(spider = gst_element_factory_make ("spider", "spider")))
+		return NULL;
+
+	if (!(tagger = gst_element_factory_make ("id3mux", "id3mux")))
+		/* FIXME: leaks spider */
+		return NULL;
+
+	gst_bin_add (GST_BIN (pipeline), spider);
+	gst_bin_add (GST_BIN (pipeline), tagger);
+	
+	gst_element_link_many (element, spider, NULL);
+	filtercaps = gst_caps_new_simple ("audio/mpeg", NULL);
+	gst_element_link_filtered (spider, tagger, filtercaps);
+	gst_caps_free (filtercaps);
+
+	return tagger;
+
+}
+
 static void
 add_supported_type (RBMetaData *md,
 		    const char *mime,
-		    const char *decoder,
+		    RBAddTaggerElem add_tagger_func,
 		    const char *human_name)
 {
 	struct RBMetadataGstType *type = g_new0 (struct RBMetadataGstType, 1);
 	type->mimetype = g_strdup (mime);
-	type->plugin = g_strdup (decoder);
+	type->tag_func = add_tagger_func;
 	type->human_name = g_strdup (human_name);
 	g_ptr_array_add (md->priv->supported_types, type);
 }
@@ -120,13 +163,12 @@ rb_metadata_init (RBMetaData *md)
 
 	md->priv->supported_types = g_ptr_array_new ();
 	
-	add_supported_type (md, "application/x-id3", "id3tag", "MP3");
-	add_supported_type (md, "audio/mpeg", NULL, "MP3");
+	add_supported_type (md, "application/x-id3", rb_add_id3_tagger, "MP3");
+	add_supported_type (md, "audio/mpeg", rb_add_id3_tagger, "MP3");
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
-	add_supported_type (md, "audio/x-flac", "flactag", "FLAC");
+	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
 	add_supported_type (md, "application/x-ape", NULL, "MonkeysAudio");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
-	add_supported_type (md, "audio/mpeg", NULL, "MP3");
 	
 	if ((elt = gst_element_factory_make ("faad", "faad")) != NULL) {
 		add_supported_type (md, "audio/x-m4a", NULL, "MPEG-4");
@@ -145,7 +187,6 @@ rb_metadata_finalize (GObject *object)
 	for (i = 0; i < md->priv->supported_types->len; i++) {
 		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
 		g_free (type->mimetype);
-		g_free (type->plugin);
 		g_free (type->human_name);
 		g_free (type);
 	}
@@ -194,8 +235,12 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_TRACK_NUMBER))
 		return RB_METADATA_FIELD_TRACK_NUMBER;
+	else if (!strcmp (tag, GST_TAG_TRACK_COUNT)) 
+		return RB_METADATA_FIELD_MAX_TRACK_NUMBER;
 	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_NUMBER))
 		return RB_METADATA_FIELD_DISC_NUMBER;
+	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_COUNT))
+		return RB_METADATA_FIELD_MAX_TRACK_NUMBER;
 	else if (!strcmp (tag, GST_TAG_DESCRIPTION))
 		return RB_METADATA_FIELD_DESCRIPTION;
 	else if (!strcmp (tag, GST_TAG_VERSION))
@@ -249,8 +294,12 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_COMMENT;
 	case RB_METADATA_FIELD_TRACK_NUMBER:
 		return GST_TAG_TRACK_NUMBER;
+	case RB_METADATA_FIELD_MAX_TRACK_NUMBER:
+		return GST_TAG_TRACK_COUNT;
 	case RB_METADATA_FIELD_DISC_NUMBER:
 		return GST_TAG_ALBUM_VOLUME_NUMBER;
+	case RB_METADATA_FIELD_MAX_DISC_NUMBER:
+		return GST_TAG_ALBUM_VOLUME_COUNT;
 	case RB_METADATA_FIELD_DESCRIPTION:
 		return GST_TAG_DESCRIPTION;
 	case RB_METADATA_FIELD_VERSION:
@@ -298,14 +347,14 @@ rb_metadata_gst_type_to_name (RBMetaData *md, const char *mimetype)
 	return NULL;
 }
 
-static const char *
-rb_metadata_gst_type_to_plugin (RBMetaData *md, const char *mimetype)
+static RBAddTaggerElem
+rb_metadata_gst_type_to_tag_function (RBMetaData *md, const char *mimetype)
 {
 	int i;
 	for (i = 0; i < md->priv->supported_types->len; i++) {
 		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
 		if (!strcmp (type->mimetype, mimetype))
-			return type->plugin;
+			return type->tag_func;
 	}
 	return NULL;
 }
@@ -583,12 +632,11 @@ rb_metadata_load (RBMetaData *md,
 gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
-	/* Disabled until we can save reliably.
-	 */
-#if 0
-	return rb_metadata_gst_type_to_plugin (md, mimetype) != NULL;
-#endif
+#ifdef ENABLE_TAG_WRITING
+	return rb_metadata_gst_type_to_tag_function (md, mimetype) != NULL;
+#else 
 	return FALSE;
+#endif
 }
 
 static void
@@ -596,6 +644,7 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 {
 	RBMetaDataField field = GPOINTER_TO_INT (key);
 	const char *tag = rb_metadata_gst_field_to_gst_tag (field);
+
 	if (tag) {
 		GValue newval = {0,};
 		g_value_init (&newval, gst_tag_get_type (tag));
@@ -608,6 +657,8 @@ rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tag
 	}
 }
 
+
+
 void
 rb_metadata_save (RBMetaData *md, GError **error)
 {
@@ -618,6 +669,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
 	GnomeVFSResult result;
+	RBAddTaggerElem add_tagger_func;
 
 	g_return_if_fail (md->priv->uri != NULL);
 	g_return_if_fail (md->priv->type != NULL);
@@ -631,15 +683,30 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
 
+	/* Source */
 	plugin_name = "gnomevfssrc";
 	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
 	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
 	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
 
-	plugin_name = rb_metadata_gst_type_to_plugin (md, md->priv->type);
+	/* Sink */
+	plugin_name = "gnomevfssink";
+	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+
+	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
+	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
+	/* FIXME: gst_bin_add (GST_BIN (pipeline, md->priv->sink)) really
+	 * should be called here, but weird crashes happen when unreffing the
+	 * pipeline if it's not moved after the creation of the tagging
+	 * elements 
+	 */
+
+	/* Tagger element(s) */
+	add_tagger_func = rb_metadata_gst_type_to_tag_function (md, md->priv->type);
 	
-	if (!plugin_name) {
+	if (!add_tagger_func) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
@@ -647,22 +714,15 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto out_error;
 	}
 
-	if (!(tagger = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_tag_setter_set_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_KEEP);
-
-	g_hash_table_foreach (md->priv->metadata, (GHFunc) rb_metadata_gst_add_tag_data,
+	tagger = add_tagger_func (GST_BIN (pipeline), gnomevfssrc);
+	gst_tag_setter_set_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_REPLACE);
+	g_hash_table_foreach (md->priv->metadata, 
+			      (GHFunc) rb_metadata_gst_add_tag_data,
 			      GST_TAG_SETTER (tagger));
-	gst_bin_add (GST_BIN (pipeline), tagger);
 
-	plugin_name = "gnomevfssink";
-	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
-	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
-	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
+	gst_bin_add (GST_BIN (pipeline), md->priv->sink); 
 
-	gst_element_link_many (gnomevfssrc, tagger, md->priv->sink, NULL);
+	gst_element_link_many (tagger, md->priv->sink, NULL);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -679,8 +739,9 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		if ((result = gnome_vfs_close (handle)) != GNOME_VFS_OK)
 			goto vfs_error;
 		if ((result = gnome_vfs_move (tmpname, md->priv->uri, TRUE)) != GNOME_VFS_OK)
-			goto vfs_error;
+				goto vfs_error;
 	}
+
 	goto out;
  vfs_error:
 	g_set_error (error,
@@ -733,14 +794,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	GValue *newval;
 	GType type;
 	
-	switch (field)
-	{
-	case RB_METADATA_FIELD_TITLE:
-	case RB_METADATA_FIELD_ARTIST:
-	case RB_METADATA_FIELD_ALBUM:
-	case RB_METADATA_FIELD_GENRE:
-		break;
-	default:
+	if (rb_metadata_gst_field_to_gst_tag (field) == NULL) {
 		return FALSE;
 	}
 
@@ -750,6 +804,7 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	newval = g_new0 (GValue, 1);
 	g_value_init (newval, type);
 	g_value_copy (val, newval);
+
 	g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (field),
 			     newval);
 	return TRUE;

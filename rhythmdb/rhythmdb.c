@@ -536,9 +536,8 @@ rhythmdb_action_free (RhythmDB *db, struct RhythmDBAction *action)
 	{
 	case RHYTHMDB_ACTION_STAT:
 	case RHYTHMDB_ACTION_LOAD:
-		g_free (action->uri);
-		break;
 	case RHYTHMDB_ACTION_SYNC:
+		g_free (action->uri);
 		break;
 	}
 	g_free (action);
@@ -747,25 +746,23 @@ emit_changed_signals (RhythmDB *db, gboolean commit)
 
 	for (tem = db->priv->changed_entries; tem; tem = tem->next) {
 		struct RhythmDBEntryChangeData *data = tem->data;
-
-#if 0
 		if (commit) {
 			struct RhythmDBAction *action;
 			RBMetaDataField field;
 
-			if (rhythmdb_entry_get_int (db, data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
+			if (rhythmdb_entry_get_ulong (data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
 			    && !g_hash_table_lookup (queued_entry_changes, data->entry)
 			    && metadata_field_from_prop (data->prop, &field)) {
 				action = g_new0 (struct RhythmDBAction, 1);
 				action->type = RHYTHMDB_ACTION_SYNC;
-				action->entry = data->entry;
+				action->uri = g_strdup (data->entry->location);
+
 				g_hash_table_insert (queued_entry_changes, data->entry, action);
 				g_async_queue_push (db->priv->action_queue, action);
 			}
 			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
 				       data->prop, &data->old, &data->new);
 		}
-#endif
 		g_value_unset (&data->old);
 		g_value_unset (&data->new);
 		g_free (data);
@@ -1398,6 +1395,55 @@ error:
 	event->vfsinfo = NULL;
 }
 
+static void
+rhythmdb_entry_get (RhythmDBEntry *entry, 
+		    RhythmDBPropType propid, GValue *val)
+{
+	g_assert (G_VALUE_TYPE (val) == rhythmdb_property_type_map[propid]);
+	switch (rhythmdb_property_type_map[propid]) {
+	case G_TYPE_STRING:
+		g_value_set_string (val, rhythmdb_entry_get_string (entry, propid));
+		break;
+	case G_TYPE_BOOLEAN:
+		g_value_set_boolean (val, rhythmdb_entry_get_boolean (entry, propid));
+		break;
+	case G_TYPE_ULONG:
+		g_value_set_ulong (val, rhythmdb_entry_get_ulong (entry, propid));
+		break;
+	case G_TYPE_UINT64:
+		g_value_set_uint64 (val, rhythmdb_entry_get_uint64 (entry, propid));
+		break;
+	case G_TYPE_DOUBLE:
+		g_value_set_double (val, rhythmdb_entry_get_double (entry, propid));
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+}
+
+static void
+entry_to_rb_metadata (RhythmDB *db, RhythmDBEntry *entry)
+{
+	GValue val = {0, };
+	int i;
+
+	for (i = RHYTHMDB_PROP_TYPE; i != RHYTHMDB_NUM_PROPERTIES; i++) {
+		RBMetaDataField field;
+		
+		if (metadata_field_from_prop (i, &field) == FALSE) {
+			continue;
+		}
+
+		g_value_init (&val, rhythmdb_property_type_map[i]);
+		rhythmdb_entry_get (entry, i, &val);
+		rb_metadata_set (db->priv->metadata, 
+				 field,
+				 &val);
+		g_value_unset (&val);
+	}
+}
+
 static gpointer
 action_thread_main (RhythmDB *db)
 {
@@ -1444,6 +1490,35 @@ action_thread_main (RhythmDB *db)
 		break;
 		case RHYTHMDB_ACTION_SYNC:
 		{
+			GError *error = NULL;
+			RhythmDBEntry *entry;
+
+			if (db->priv->dry_run) {
+				rb_debug ("dry run is enabled, not syncing metadata");
+				break;
+			}
+
+			rb_metadata_load (db->priv->metadata,
+					  action->uri, &error);
+			if (error != NULL) {
+				g_warning ("error loading metadata from %s: %s", action->uri,
+					   error->message);
+				break;
+			}
+
+			entry = rhythmdb_entry_lookup_by_location (db, action->uri);
+			if (!entry) {
+				break;
+			}
+
+			entry_to_rb_metadata (db, entry);
+
+			rb_metadata_save (db->priv->metadata, &error);
+			if (error != NULL) {
+				g_warning ("error saving metadata to %s: %s", 
+					   action->uri, error->message);
+				break;
+			}
 			break;
 		}
 		}
@@ -1581,14 +1656,40 @@ rhythmdb_save (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 }
 
+/* FIXME: this has nothing to do with entry_sync_mirrored */
+void 
+rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
+		     guint propid, GValue *value)
+{
+	struct RhythmDBEntryChangeData *changedata;
+
+	changedata = g_new0 (struct RhythmDBEntryChangeData, 1);
+	changedata->entry = entry;
+	changedata->prop = propid;
+
+	/* Copy a temporary gvalue, since _entry_get uses
+	 * _set_static_string to avoid memory allocations. */
+	{
+		GValue tem = {0,};
+		g_value_init (&tem, G_VALUE_TYPE (value));
+		rhythmdb_entry_get (entry, propid, &tem);
+		g_value_init (&changedata->old, G_VALUE_TYPE (value));
+		g_value_copy (&tem, &changedata->old);
+		g_value_unset (&tem);
+	}
+	g_value_init (&changedata->new, G_VALUE_TYPE (value));
+	g_value_copy (value, &changedata->new);
+
+	db->priv->changed_entries = g_list_append (db->priv->changed_entries, changedata);
+
+	rhythmdb_entry_set (db, entry, propid, value);
+}
+
 void
 rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		    guint propid, GValue *value)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-#if 0
-	struct RhythmDBEntryChangeData *changedata;
-#endif
 
 	g_assert (rhythmdb_get_readonly (db) == FALSE);
 
@@ -1607,26 +1708,6 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		g_assert_not_reached ();
 		break;
 	}
-#endif
-
-#if 0
-	changedata = g_new0 (struct RhythmDBEntryChangeData, 1);
-	changedata->entry = entry;
-	changedata->prop = propid;
-
-	/* Copy a temporary gvalue, since _entry_get uses
-	 * _set_static_string to avoid memory allocations. */
-	{
-		GValue tem = {0,};
-		g_value_init (&tem, G_VALUE_TYPE (value));
-		klass->impl_entry_get (db, entry, propid, &tem);
-		g_value_init (&changedata->old, G_VALUE_TYPE (value));
-		g_value_copy (&tem, &changedata->old);
-		g_value_unset (&tem);
-	}
-	g_value_init (&changedata->new, G_VALUE_TYPE (value));
-	g_value_copy (value, &changedata->new);
-	db->priv->changed_entries = g_list_append (db->priv->changed_entries, changedata);
 #endif
 
 	klass->impl_entry_set (db, entry, propid, value);
@@ -1717,7 +1798,8 @@ void
 rhythmdb_entry_queue_set (RhythmDB *db, RhythmDBEntry *entry,
 			  guint propid, GValue *value)
 {
-/* FIXME */
+	/* FIXME */
+	g_print ("WARNING: rhythmdb_entry_queue_set not implemented\n");
 #if 0
 	struct RhythmDBAction *action = g_new0 (struct RhythmDBAction, 1);
 	action->entry = entry;

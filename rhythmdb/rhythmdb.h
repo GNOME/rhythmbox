@@ -175,6 +175,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return rb_refstring_get (entry->artist);
 	case RHYTHMDB_PROP_GENRE:
 		return rb_refstring_get (entry->genre);
+	case RHYTHMDB_PROP_MIMETYPE:
+		return rb_refstring_get (entry->mimetype);
 	case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		return rb_refstring_get_sort_key (entry->title);
 	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
@@ -243,6 +245,8 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->last_played;
 	case RHYTHMDB_PROP_PLAY_COUNT:
 		return entry->play_count;
+	case RHYTHMDB_PROP_BITRATE:
+		return entry->bitrate;		
 	default:
 		g_assert_not_reached ();
 		return 0;
@@ -352,11 +356,11 @@ void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
-
-void		rhythmdb_entry_queue_set(RhythmDB *db, RhythmDBEntry *entry,
+void            rhythmdb_entry_sync     (RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
-void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
+
+void		rhythmdb_entry_queue_set(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);

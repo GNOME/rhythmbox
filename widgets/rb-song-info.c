@@ -218,8 +218,6 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 static void
 rb_song_info_init (RBSongInfo *song_info)
 {
-	GtkWidget *close;
-	
 	/* create the dialog and some buttons backward - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
 
@@ -230,12 +228,14 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
-	close = gtk_dialog_add_button (GTK_DIALOG (song_info),
-				       GTK_STOCK_CLOSE,
-				       GTK_RESPONSE_CLOSE);
+	gtk_dialog_add_button (GTK_DIALOG (song_info),
+			       GTK_STOCK_CLOSE,
+			       GTK_RESPONSE_CLOSE);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
+
+
 
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
@@ -756,7 +756,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	if (num > 0)
 		tmp = g_strdup_printf ("%.2ld", num);
 	else
-		tmp = g_strdup (_("Never"));
+		tmp = g_strdup (_("Unknown"));
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur),
 			    tmp);
 	g_free (tmp);
@@ -1028,8 +1028,8 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, album);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_set (dialog->priv->db,
-					    tem->data, RHYTHMDB_PROP_ALBUM, &val);
+			rhythmdb_entry_sync (dialog->priv->db,
+					     tem->data, RHYTHMDB_PROP_ALBUM, &val);
 		g_value_unset (&val);
 	}
 	
@@ -1037,8 +1037,8 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, artist);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_set (dialog->priv->db,
-					    tem->data, RHYTHMDB_PROP_ARTIST, &val);
+			rhythmdb_entry_sync (dialog->priv->db,
+					     tem->data, RHYTHMDB_PROP_ARTIST, &val);
 		g_value_unset (&val);
 	}
 
@@ -1046,8 +1046,8 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
 		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_set (dialog->priv->db,
-					    tem->data, RHYTHMDB_PROP_GENRE, &val);
+			rhythmdb_entry_sync (dialog->priv->db,
+					     tem->data, RHYTHMDB_PROP_GENRE, &val);
 		g_value_unset (&val);
 	}
 }
@@ -1076,32 +1076,32 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 					   RHYTHMDB_PROP_TITLE);
 	g_value_init (&val, type);
 	g_value_set_string (&val, title);
-	rhythmdb_entry_set (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_sync (dialog->priv->db,
+			     dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	type = rhythmdb_get_property_type (dialog->priv->db,
 					   RHYTHMDB_PROP_TRACK_NUMBER);
 	g_value_init (&val, type);
 	g_value_set_ulong (&val, tracknum);
-	rhythmdb_entry_set (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+	rhythmdb_entry_sync (dialog->priv->db,
+			     dialog->priv->current_entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
 	g_value_unset (&val);
 
 	type = rhythmdb_get_property_type (dialog->priv->db,
 					   RHYTHMDB_PROP_ALBUM);
 	g_value_init (&val, type);
 	g_value_set_string (&val, album);
-	rhythmdb_entry_set (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_ALBUM, &val);
+	rhythmdb_entry_sync (dialog->priv->db,
+			     dialog->priv->current_entry, RHYTHMDB_PROP_ALBUM, &val);
 	g_value_unset (&val);
 
 	type = rhythmdb_get_property_type (dialog->priv->db,
 					   RHYTHMDB_PROP_ARTIST);
 	g_value_init (&val, type);
 	g_value_set_string (&val, artist);
-	rhythmdb_entry_set (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_ARTIST, &val);
+	rhythmdb_entry_sync (dialog->priv->db,
+			     dialog->priv->current_entry, RHYTHMDB_PROP_ARTIST, &val);
 	g_value_unset (&val);
 
 
@@ -1109,10 +1109,13 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 					   RHYTHMDB_PROP_GENRE);
 	g_value_init (&val, type);
 	g_value_set_string (&val, genre);
-	rhythmdb_entry_set (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
+	rhythmdb_entry_sync (dialog->priv->db,
+			     dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 
+	/* FIXME: when an entry is SYNCed, a changed signal is emitted, and
+	 * this signal is also emitted, aren't they redundant?
+	 */
 	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[POST_METADATA_CHANGE], 0,
 		       dialog->priv->current_entry);
 

@@ -49,7 +49,6 @@ if test x"$enable_ipod" = xyes; then
 		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
 fi
 
-
 PKG_CHECK_MODULES(RHYTHMBOX,                    \
                   gtk+-2.0 >= 2.4               \
                   libgnomeui-2.0                \
@@ -151,7 +150,7 @@ else if test "x$with_player" = "xgstreamer"; then
 	HAVE_SOUNDSYSTEM=no
 
 	GST_MAJORMINOR=0.8
-	GST_REQUIRED_VERSION=0.8.1
+	GST_REQUIRED_VERSION=0.8.2
 	PKG_CHECK_MODULES(SOUNDSYSTEM, \
 		gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
 		gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
@@ -202,6 +201,20 @@ if test x"$with_metadata" = xauto; then
       with_metadata=xine
    fi
 fi
+
+dnl Tag writing
+AC_ARG_ENABLE(tag-writing,
+	      AC_HELP_STRING([--enable-tag-writing],
+			     [Enable tag writing support in rhythmbox **EXPERIMENTAL**]))
+if test x"$with_player" != "xgstreamer"; then
+   AC_MSG_WARN([Tag writing support only works with the GStreamer backend])
+   enable_tag_writing="no"
+fi
+if test x"$enable_tag_writing" = xyes; then
+   AC_MSG_WARN([Tag writing support is experimental, and may corrupt files, use at your own risk])
+   AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
+fi
+
 
 AM_CONDITIONAL(WITH_XINE_METADATA, test x"$with_metadata" = "xxine")
 AM_CONDITIONAL(WITH_GST_METADATA, test x"$with_metadata" = "xgstreamer")
@@ -478,6 +491,11 @@ if test x"$with_metadata" = xxine; then
 	AC_MSG_NOTICE([** Xine metadata is enabled])
 else
 	AC_MSG_NOTICE([** GStreamer metadata is enabled])
+fi
+if test x"$enable_tag_writing" = xyes; then
+        AC_MSG_NOTICE([** Tag writing is enabled - USE AT YOUR OWN RISK])
+else
+	AC_MSG_NOTICE([   Tag writing is disabled])
 fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])
