@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-05-31 03:05+0200\n"
-"PO-Revision-Date: 2003-05-31 03:06+0200\n"
+"POT-Creation-Date: 2003-07-15 23:22+0200\n"
+"PO-Revision-Date: 2003-07-15 23:22+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -296,7 +296,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:922
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:577 shell/rb-shell.c:989
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -558,7 +558,7 @@ msgstr "_Organisera"
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1064
+#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1075
 msgid "_Play"
 msgstr "_Spela"
 
@@ -739,15 +739,15 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-load-failure-dialog.c:108
+#: lib/widgets/rb-load-failure-dialog.c:118
 msgid "Error loading files into library"
 msgstr "Fel vid inläsning av filer till biblioteket"
 
-#: lib/widgets/rb-load-failure-dialog.c:125
+#: lib/widgets/rb-load-failure-dialog.c:135
 msgid "_File"
 msgstr "_Arkiv"
 
-#: lib/widgets/rb-load-failure-dialog.c:133
+#: lib/widgets/rb-load-failure-dialog.c:143
 msgid "_Error"
 msgstr "_Fel"
 
@@ -780,7 +780,7 @@ msgstr "Hämta information om denna artist från webben"
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:926 shell/rb-shell.c:1732
+#: lib/widgets/rb-player.c:526 shell/rb-shell.c:993 shell/rb-shell.c:1799
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -841,27 +841,35 @@ msgstr "Klicka för att tysta"
 msgid "Click to unmute"
 msgstr "Klicka för att avtysta"
 
-#: shell/main.c:63
+#: shell/main.c:65
+msgid "Print the playing song and exit"
+msgstr "Skriv ut den spelade låten och avsluta"
+
+#: shell/main.c:66
+msgid "Print the playing song URI and exit"
+msgstr "Skriv ut URI:n för den spelade låten och avsluta"
+
+#: shell/main.c:67
 msgid "Enable debugging code"
 msgstr "Aktivera felsökningsläge"
 
-#: shell/main.c:64
+#: shell/main.c:68
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/main.c:65
+#: shell/main.c:69
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: shell/main.c:66
+#: shell/main.c:70
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
 
-#: shell/main.c:76
+#: shell/main.c:80
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:195
+#: shell/main.c:200
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -898,17 +906,17 @@ msgstr ""
 "Fel vid läsande av spellistefilen \"%s\":\n"
 " inget spellistehuvud"
 
-#: shell/rb-shell.c:440
+#: shell/rb-shell.c:448
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:474
+#: shell/rb-shell.c:482
 #, c-format
 msgid "Unable to handle URI \"%s\"\n"
 msgstr "Kan inte hantera URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:522
+#: shell/rb-shell.c:564
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -921,12 +929,12 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:942
+#: shell/rb-shell.c:1009
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:945
+#: shell/rb-shell.c:1012
 #, c-format
 msgid ""
 "%s\n"
@@ -935,69 +943,69 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1028
+#: shell/rb-shell.c:1095
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1038
+#: shell/rb-shell.c:1105
 msgid "Lead developers:"
 msgstr "Huvudutvecklare:"
 
-#: shell/rb-shell.c:1039
+#: shell/rb-shell.c:1106
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1043
+#: shell/rb-shell.c:1110
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:1186
+#: shell/rb-shell.c:1253
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1215
+#: shell/rb-shell.c:1282
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell-player.c:314
+#: shell/rb-shell-player.c:315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:644
+#: shell/rb-shell-player.c:650
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
 # Osäker
-#: shell/rb-shell-player.c:715
+#: shell/rb-shell-player.c:721
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr "Alla reservplatser misslyckades, kan inte spela: %s\n"
 
-#: shell/rb-shell-player.c:1055
+#: shell/rb-shell-player.c:1066
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1056
+#: shell/rb-shell-player.c:1067
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1063
+#: shell/rb-shell-player.c:1074
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1071
+#: shell/rb-shell-player.c:1082
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1072
+#: shell/rb-shell-player.c:1083
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1290
+#: shell/rb-shell-player.c:1301
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
@@ -1080,7 +1088,7 @@ msgstr "Misslyckades med att tolka %s som gruppfil"
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:479
+#: sources/rb-iradio-source.c:498
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
