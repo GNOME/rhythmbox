@@ -1,10 +1,29 @@
+# #-#-#-#-#  cs.po (Monkey Media HEAD)  #-#-#-#-#
+# Monkey Media Czech translation.
+# Copyright (C) 2002 Free Software Foundation
+# This file is distributed under the same license as the Monkey Media package.
+# Michal Bukovjan <bukm@centrum.cz>, 2002.
+#
+# #-#-#-#-#  cs.po (Rhytmbox HEAD)  #-#-#-#-#
 # Rhytmbox Czech translation.
 # Copyright (C) 2002 Free Software Foundation
 # This file is distributed under the same license as the PACKAGE package.
 # Michal Bukovjan <bukm@centrum.cz>, 2002.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  cs.po (Monkey Media HEAD)  #-#-#-#-#\n"
+"Project-Id-Version: Monkey Media HEAD\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-06-14 13:36+0200\n"
+"PO-Revision-Date: 2003-06-14 20:12+0200\n"
+"Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
+"Language-Team: Czech <cs@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  cs.po (Rhytmbox HEAD)  #-#-#-#-#\n"
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-07-15 16:58+0200\n"
@@ -14,6 +33,187 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s neukazuje na platné zařízení CDROM. To může být způsobeno tím, že:\n"
+"a) jádro Linuxu není sestaveno s podporou CD\n"
+"b) nemáte příslušná oprávnění pro přístup k zařízení CD\n"
+"c) %s není zařízení CD.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Zdá se, že nemáte právo přístupu k %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s neukazuje na platné zařízení CDROM. To může být způsobeno tím, že:\n"
+"a) jádro Linuxu není sestaveno s podporou CD\n"
+"b) nemáte příslušná oprávnění pro přístup k zařízení CD\n"
+"c) %s není zařízení CD.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Chyba při čtení hlavičky CD: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Chyba při získávání ukončení (leadout): %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Nepodporovaný typ MIME %s"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Neznámý typ souboru"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Stopa: %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+msgid "Unknown"
+msgstr "Neznámý"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Pro tuto píseň neexistuje TRM ID"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Pro tuto píseň nebyla nalezena žádná informace"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr "Selhalo vytvoření vstupu gnomevfssrc; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr "Selhalo vytvoření vstupu cdparanoia; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:528
+msgid "Failed to create queue element; check your installation"
+msgstr "Selhalo vytvoření elementu queue; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:552
+msgid "Failed to create spider element; check your installation"
+msgstr "Selhalo vytvoření elementu spider; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:564
+msgid "Failed to create volume element; check your installation"
+msgstr "Selhalo vytvoření elementu volume; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:582
+msgid "Could not create audio output element; check your settings"
+msgstr "Selhalo vytvoření výstupu zvuku; zkontrolujte své nastavení"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:686
+msgid "No AudioCD support; check your settings"
+msgstr "Žádná podpora AudioCD; zkontrolujte své nastavení"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Selhalo nastavení ovladače zvuku; zkontrolujte svou instalaci"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Pro %s není k dispozici vstupní plugin; zkontrolujte svou instalaci."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Pro %s není k dispozici demux plugin; zkontrolujte svou instalaci."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demuxing %s selhalo; zkontrolujte svou instalaci."
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Interní chyba; zkontrolujte svou instalaci."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Zvuk %s není obsloužen; zkontrolujte svou instalaci."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "Volby pro GStreamer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Odstraňte prosím %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Selhalo vytvoření adresáře %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Neplatné číslo stopy"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Audio CD stopa"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Selhalo otevření souboru pro čtení"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Vrstva III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Selhalo vyhledávání v souboru"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Nelze otevřít soubor jako formát Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:503
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Selhalo vytvoření vstupního elementu %s; zkontrolujte svou instalaci"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -614,12 +814,6 @@ msgstr "Nové internetové rádio"
 #: iradio/rb-new-station-dialog.c:147
 msgid "_Don't Add"
 msgstr "_Nepřidávat"
-
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Neznámý"
 
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914

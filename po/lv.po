@@ -1,10 +1,28 @@
+# #-#-#-#-#  lv.po (monkey-media)  #-#-#-#-#
+# monkey-media for Latvian.
+# Copyright (C) 2002 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the monkey-media package.
+# Artis Trops <hornet@navigator.lv>, 2002.
+#
+# #-#-#-#-#  lv.po (rhythmbox)  #-#-#-#-#
 # rhythmbox for Latvian.
 # Copyright (C) 2002 Jorn Baayen
 # This file is distributed under the same license as the rythmbox package.
 # Artis Trops <hornet@navigator.lv>, 2002.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  lv.po (monkey-media)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media\n"
+"POT-Creation-Date: 2003-01-28 10:58+0100\n"
+"PO-Revision-Date: 2003-01-28 22:00+0200\n"
+"Last-Translator: Artis Trops <hornet@navigator.lv>\n"
+"Language-Team: Latvian <ll10nt@os.lv>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  lv.po (rhythmbox)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox\n"
 "POT-Creation-Date: 2003-02-02 11:01+0100\n"
 "PO-Revision-Date: 2003-02-02 22:28--300\n"
@@ -13,6 +31,176 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s nenorāda uz derīgu CDRom iekārtu. Tā cēlonis varētu būt:\n"
+"a) CD atbalsts nav iekompilēts Linuxā\n"
+"b) Jums nav nepieciešamās atļaujas, lai piekļūtu CD iekārtai\n"
+"c) %s nav CD iekārta.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Izskatās, ka jums nav atļaujas, lai piekļūtu %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s neizskatās, ka norādītu uz derīgu CD iekārtu. Tas vārētu būt tāpēc, ka:\n"
+"a) CD atbalsts nav iekompilēts Linuxā\n"
+"b) Jums nav nepieciešamās atļaujas, lai piekļūtu CD iekārtai\n"
+"c) %s nav CD iekārta.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Kļūda lasot CD galveni: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Kļūda saņemot leadout: %s"
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr "Neatbalstīts mime tips"
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "Celiņš %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639 views/rb-audiocd-view.c:961
+#: views/rb-audiocd-view.c:968 views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "Nezināms"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr "Šai dziesmai nav TRM ID"
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr "Informācija par šo dziesmu nav atrasta"
+
+#: src/monkey-media-player-gst.c:294 src/monkey-media-player-gst.c:330
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr "Neizdevās gnomevfssrc ievades elementu; pārbaudiet savu instalāciju"
+
+#: src/monkey-media-player-gst.c:303
+msgid "Failed to create typefind element; check your installation"
+msgstr "Neizdevās izveidot typefind elementu; pārbaudiet savu instalāciju"
+
+#: src/monkey-media-player-gst.c:341
+msgid "Failed to create volume element; check your installation"
+msgstr "Neizdevās izveidot skaļuma elementu; pārbaudiet savu instalāciju"
+
+#: src/monkey-media-player-gst.c:359
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+"Nevarēju izveidot audio izvades elementu; pārbaudiet savus uzstādījumus"
+
+#: src/monkey-media-player-gst.c:476
+#, c-format
+msgid "Failed to find a decoder plugin for %s; check your installation"
+msgstr ""
+"Neizdevās atrast dekodera iespraudni priekš %s; pārbaudiet savu instalāciju"
+
+#: src/monkey-media-player-gst.c:505
+#, c-format
+msgid "Mime type %s not handled; check your installation"
+msgstr "Mime tips %s netiek apdarināts; pārbaudiet savu instalāciju."
+
+#: src/monkey-media-player-xine.c:251
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Neizdevās uzstādīt audio draiveri; pārbaudiet savu instalāciju"
+
+#: src/monkey-media-player-xine.c:334
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+"Ievades iespraudnis nav pieejams priekš %s; pārbaudiet savu instalāciju."
+
+#: src/monkey-media-player-xine.c:343
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Demux iespraudnis nav peejams priekš %s; pārbaudiet savu instalāciju."
+
+#: src/monkey-media-player-xine.c:352
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demuksēšana priekš %s neizdevās; pārbaudiet savu instalāciju."
+
+#: src/monkey-media-player-xine.c:360
+msgid "Internal error; check your installation."
+msgstr "Iekšēja kļūda; pārbaudiet savu instalāciju."
+
+#: src/monkey-media-player-xine.c:369
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Audio %s neapdarināts; pārbaudiet savu instalāciju."
+
+#: src/monkey-media.c:204
+msgid "GStreamer options:"
+msgstr "GStreamer opcijas:"
+
+#: src/monkey-media.c:460
+#, c-format
+msgid "Please remove %s"
+msgstr "Lūdzu izņemiet %s"
+
+#: src/monkey-media.c:462
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Neizdevās izveidot direktoriju %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Nederīgs celiņa numurs"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Audio CD celiņš"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Neizdevās atvērt failu lasīšanai"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Neizdevās sameklēt failu"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Neizdevās atvērt failu kā Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:529
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -38,8 +226,7 @@ msgstr "<span weight=\"bold\">Izskats</span>"
 msgid "<span weight=\"bold\">Visible Columns</span>"
 msgstr "<span weight=\"bold\">Redzamās Kolonnas</span>"
 
-#: data/glade/preferences.glade.h:5
-#: data/node-views/rb-node-view-songs.xml.h:1
+#: data/glade/preferences.glade.h:5 data/node-views/rb-node-view-songs.xml.h:1
 msgid "A_lbum"
 msgstr "A_lbūms"
 
@@ -119,8 +306,7 @@ msgstr "_Teksts"
 msgid "   "
 msgstr "   "
 
-#: data/glade/song-info.glade.h:2
-#: data/glade/station-new.glade.h:1
+#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:1
 #: data/glade/station-properties.glade.h:1
 msgid "*"
 msgstr "*"
@@ -205,8 +391,7 @@ msgstr "Žanrs: "
 msgid "Location: "
 msgstr "Lokācija: "
 
-#: data/glade/station-new.glade.h:4
-#: iradio/rb-new-station-dialog.c:151
+#: data/glade/station-new.glade.h:4 iradio/rb-new-station-dialog.c:151
 msgid "New Internet Radio Station"
 msgstr "Jauna Internet Radio Stacija"
 
@@ -243,8 +428,7 @@ msgid "_Locations"
 msgstr "_Lokācijas"
 
 #: data/glade/station-properties.glade.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:14
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:22
 msgid "_Properties"
 msgstr "_Rekvizīti"
 
@@ -306,9 +490,7 @@ msgstr "_Laiks"
 msgid "Tra_ck"
 msgstr "Ce_liņš"
 
-#: data/rhythmbox.desktop.in.h:1
-#: shell/rb.c:297
-#: shell/rb.c:578
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Mūzikas Atskaņotājs"
 
@@ -342,8 +524,7 @@ msgstr "Izvēlēties visas dziesmas"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6
 #: data/ui/rhythmbox-iradio-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:12
-#: data/ui/rhythmbox-ui.xml.in.h:16
+#: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:16
 msgid "_Edit"
 msgstr "_Rediģēt"
 
@@ -391,28 +572,23 @@ msgstr "_Jauna Internet Radio Stacija"
 msgid "Change the visibility of the artist and album browser"
 msgstr "Mainīt izpildītāja un albuma pārlūka redzamību"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:2
-#: data/ui/rhythmbox-ui.xml.in.h:2
+#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:2
 msgid "Copy selection"
 msgstr "Kopēt izvēlēto"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:3
-#: data/ui/rhythmbox-ui.xml.in.h:5
+#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:5
 msgid "Delete selection"
 msgstr "Dzēst izvēlēto"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:8
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Show information on the selected song"
 msgstr "Parādīt informāciju par pašlaik izvēlēto dziesmu"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:10
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:14
 msgid "_Copy"
 msgstr "_Kopēt"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:11
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:15
 msgid "_Delete"
 msgstr "_Dzēst"
 
@@ -480,8 +656,7 @@ msgstr "_Atskaņot"
 msgid "_Show Window"
 msgstr "_Parādīt Logu"
 
-#: iradio/rb-iradio-backend.c:146
-#: library/rb-library.c:450
+#: iradio/rb-iradio-backend.c:146 library/rb-library.c:450
 msgid "All"
 msgstr "Viss"
 
@@ -490,10 +665,8 @@ msgstr "Viss"
 msgid "Failed to parse %s\n"
 msgstr "Neizdevās parsēt %s\n"
 
-#: iradio/rb-iradio-backend.c:455
-#: iradio/rb-iradio-backend.c:472
-#: iradio/rb-iradio-backend.c:473
-#: lib/widgets/rb-tree-model-node.c:582
+#: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:582
 msgid "(Unknown)"
 msgstr "(Nezināms)"
 
@@ -512,8 +685,7 @@ msgstr "Neizdevās nolasīt %s: %s"
 msgid "Failed to parse %s: %s"
 msgstr "Neizdevās parsēt %s: %s"
 
-#: iradio/rb-station-properties-dialog.c:187
-#: lib/widgets/rb-song-info.c:475
+#: iradio/rb-station-properties-dialog.c:187 lib/widgets/rb-song-info.c:475
 #: lib/widgets/rb-song-info.c:489
 #, c-format
 msgid "%s Properties"
@@ -542,9 +714,11 @@ msgstr "Lokācija nav derīgs URL."
 
 #: lib/eel-gconf-extensions.c:66
 #, c-format
-msgid "GConf error:\n"
+msgid ""
+"GConf error:\n"
 "  %s"
-msgstr "GConf kļūda:\n"
+msgstr ""
+"GConf kļūda:\n"
 "  %s"
 
 #: lib/rb-file-helpers.c:76
@@ -588,9 +762,11 @@ msgstr "Pixbuf, ko renderēt."
 
 #: lib/widgets/rb-link.c:325
 #, c-format
-msgid "There was an error going to %s:\n"
+msgid ""
+"There was an error going to %s:\n"
 "%s"
-msgstr "Bija kļūda, ejot uz %s:\n"
+msgstr ""
+"Bija kļūda, ejot uz %s:\n"
 "%s"
 
 #: lib/widgets/rb-node-view.c:653
@@ -607,8 +783,7 @@ msgstr "_Meklēt dziesmu:"
 msgid "_Next Song"
 msgstr "_Nākamā Dziesma"
 
-#: lib/widgets/rb-song-info.c:230
-#: lib/widgets/rb-song-info.c:494
+#: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:494
 msgid "Song Properties"
 msgstr "Dziesmas Rekvizīti"
 
@@ -634,8 +809,7 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d kanāli)"
 
-#: lib/widgets/rb-volume.c:178
-#: lib/widgets/rb-volume.c:385
+#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
 msgid "Click to mute"
 msgstr "Klikšķis, lai klusinātu"
 
@@ -648,9 +822,7 @@ msgstr "Klikšķis, lai atklusinātu"
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:877
-#: library/rb-node.c:883
-#: library/rb-node.c:914
+#: library/rb-node.c:877 library/rb-node.c:883 library/rb-node.c:914
 msgid "Never"
 msgstr "Nekad"
 
@@ -680,7 +852,8 @@ msgid ""
 msgstr ""
 "Tā tā tā...\n"
 "\n"
-"Kas tad nu? Jums būs problēmas. Mēs zinām. Netraucējiet mūs ar blusu paziņojumiem.\n"
+"Kas tad nu? Jums būs problēmas. Mēs zinām. Netraucējiet mūs ar blusu "
+"paziņojumiem.\n"
 "\n"
 "Lai jums jauka diena."
 
@@ -732,8 +905,7 @@ msgstr "Atskaņot nākošo dziesmu"
 msgid "Shuffle the play list"
 msgstr "Sajaukt repertuāru"
 
-#: shell/rb-player.c:403
-#: shell/rb-player.c:411
+#: shell/rb-player.c:403 shell/rb-player.c:411
 msgid "Not playing"
 msgstr "Neatskaņou"
 
@@ -743,9 +915,11 @@ msgstr "Lai atskaņotu, pievienojiet mūziku repertuāram"
 
 #: shell/rb-player.c:443
 #, c-format
-msgid "Failed to create player, exiting. Error was:\n"
+msgid ""
+"Failed to create player, exiting. Error was:\n"
 "%s"
-msgstr "Nezidevās izveidot atskaņotāju, izeju. Kļūda bija:\n"
+msgstr ""
+"Nezidevās izveidot atskaņotāju, izeju. Kļūda bija:\n"
 "%s"
 
 #: shell/rb-player.c:548
@@ -780,9 +954,11 @@ msgstr "%s - Nezināms"
 
 #: shell/rb-player.c:831
 #, c-format
-msgid "Failed to create stream, error was:\n"
+msgid ""
+"Failed to create stream, error was:\n"
 "%s"
-msgstr "Neizdevās izveidot straumi, kļūda bija:\n"
+msgstr ""
+"Neizdevās izveidot straumi, kļūda bija:\n"
 "%s"
 
 #: shell/rb-player.c:926
@@ -843,19 +1019,14 @@ msgstr "mūzikas audiocd"
 msgid "Audio-CD"
 msgstr "Audio-CD"
 
-#: views/rb-audiocd-view.c:671
-#: views/rb-iradio-view.c:764
+#: views/rb-audiocd-view.c:671 views/rb-iradio-view.c:764
 #, c-format
-msgid "Failed to create stream for %s, error was:\n"
+msgid ""
+"Failed to create stream for %s, error was:\n"
 "%s"
-msgstr "Neizdevās izveidot straumi priekš %s, kļūda bija:\n"
+msgstr ""
+"Neizdevās izveidot straumi priekš %s, kļūda bija:\n"
 "%s"
-
-#: views/rb-audiocd-view.c:961
-#: views/rb-audiocd-view.c:968
-#: views/rb-iradio-view.c:782
-msgid "Unknown"
-msgstr "Nezināms"
 
 #: views/rb-audiocd-view.c:1075
 #, c-format
@@ -871,11 +1042,12 @@ msgstr "%d dziesmas, %d:%02d:%02d kopējais laiks"
 msgid "iradio"
 msgstr "iradio"
 
-#: views/rb-iradio-view.c:308
-#: views/rb-iradio-view.c:1147
-msgid "Internet\n"
+#: views/rb-iradio-view.c:308 views/rb-iradio-view.c:1147
+msgid ""
+"Internet\n"
 "Radio"
-msgstr "Internet\n"
+msgstr ""
+"Internet\n"
 "Radio"
 
 #: views/rb-iradio-view.c:980
@@ -914,4 +1086,3 @@ msgstr "Atskaņot _Dziesmu"
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "Sākt atskaņot izvēlētās dziesmu(as)"
-

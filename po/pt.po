@@ -1,10 +1,28 @@
+# #-#-#-#-#  pt.po (2.4)  #-#-#-#-#
+# monkey-media Portuguese translation.
+# Copyright (C) 2003 monkey-media
+# This file is distributed under the same license as the monkey-media package.
+# Duarte Loreto <happyguy_pt@hotmail.com>, 2003.
+#
+# #-#-#-#-#  pt.po (2.4)  #-#-#-#-#
 # rhythmbox Portuguese translation.
 # Copyright (C) 2003 rhythmbox
 # This file is distributed under the same license as the rhythmbox package.
 # Duarte Loreto <happyguy_pt@hotmail.com>, 2003.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  pt.po (2.4)  #-#-#-#-#\n"
+"Project-Id-Version: 2.4\n"
+"POT-Creation-Date: 2003-07-27 23:34+0100\n"
+"PO-Revision-Date: 2003-07-27 23:35+0000\n"
+"Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
+"Language-Team: Portuguese <gnome-pt@yahoogroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  pt.po (2.4)  #-#-#-#-#\n"
 "Project-Id-Version: 2.4\n"
 "POT-Creation-Date: 2003-07-27 23:25+0100\n"
 "PO-Revision-Date: 2003-07-27 23:30+0000\n"
@@ -13,6 +31,191 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s não aponta para um dispositivo CDRom válido. Tal pode dever-se a:\n"
+"a) Não possui suporte para CD compilado no Linux\n"
+"b) não possui as permissões adequadas para aceder à unidade CD\n"
+"c) %s não é a unidade CD.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Não parece que possua permissões para aceder a %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s não aparenta apontar para um dispositivo CD válido. Tal pode dever-se a:\n"
+"a) Não possui suporte para CD compilado no Linux\n"
+"b) não possui as permissões adequadas para aceder à unidade CD\n"
+"c) %s não é a unidade CD.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Erro ao ler cabeçalho CD: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Erro ao obter leadout: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Tipo MIME não suportado %s"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Tipo de ficheiro desconhecido"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Pista %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Nenhum ID TRM para esta música"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Nenhuma informação encontrada para esta música"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Falha ao gerar elemento de entrada gnomevfssrc; verifique a sua instalação"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Falha ao gerar elemento de entrada cdparanoia; verifique a sua instalação"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:529
+msgid "Failed to create queue element; check your installation"
+msgstr "Falha ao criar elemento de pilha; verifique a sua instalação"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:553
+msgid "Failed to create spider element; check your installation"
+msgstr "Falha ao gerar elemento aranha; verifique a sua instalação"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:565
+msgid "Failed to create volume element; check your installation"
+msgstr "Falha ao gerar elemento volume; verifique a sua instalação"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:583
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+"Incapaz de criar elemento de saida audio; verifique as suas configurações"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:687
+msgid "No AudioCD support; check your settings"
+msgstr "Nenhum suporte AudioCD; verifique as suas configurações"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Falha ao definir um dispositivo audio; verifique a sua instalação"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+"Nenhum plugin de entrada disponível para %s; verifique a sua instalação."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Nenhum plugin demux disponível para %s; verifique a sua instalação."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Falha no demuxing de %s; verifique a sua instalação."
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Erro interno; verifique a sua instalação."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Audio de %s não gerido; verifique a sua instalação."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "Opções GStreamer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Remova %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Falha ao criar directório %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Número de pista inválido"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Pista CD audio"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Falha ao abrir ficheiro para leitura"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Camada III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Falha ao procurar ficheiro"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Falha ao abrir ficheiro como Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:504
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Falha ao gerar elemento de entrada %s; verifique a sua instalação"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -613,12 +816,6 @@ msgstr "Nova Estação Rádio Internet"
 #: iradio/rb-new-station-dialog.c:147
 msgid "_Don't Add"
 msgstr "_Não Adicionar"
-
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Desconhecido"
 
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914

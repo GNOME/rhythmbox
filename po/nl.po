@@ -1,10 +1,30 @@
+# #-#-#-#-#  nl.po (Monkey-media)  #-#-#-#-#
+# English translation of PACKAGE.
+# Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# <>, 2003.
+#
+# #-#-#-#-#  nl.po (Rhythmbox cvs)  #-#-#-#-#
 #  translation of Rhythmbox.
 # Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Kees van den Broek <kvdb@NOSPAMkvdb.net>, 2003.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  nl.po (Monkey-media)  #-#-#-#-#\n"
+"Project-Id-Version: Monkey-media\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-07-07 13:14+0200\n"
+"PO-Revision-Date: 2003-04-24 14:54+0100\n"
+"Last-Translator: Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
+"Language-Team: Dutch <nl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.6\n"
+"#-#-#-#-#  nl.po (Rhythmbox cvs)  #-#-#-#-#\n"
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-07-16 15:58+0200\n"
@@ -15,6 +35,209 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 0.9.6\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s wijst niet naar een geldige CDROM-speler. Dit kan komen door:\n"
+"a) Afwezigheid van CD ondersteuning in uw Linux compilatie\n"
+"b) U heeft geen bevoegdheid om de CD-speler te gebruiken\n"
+"c) %s is geen CD-speler.\n"
+"\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "U heeft geen toegang om %s te benaderen."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s wijst niet naar een geldige CD-speler. Dit kan komen door:\n"
+"a) Afwezigheid van CD ondersteuning in uw Linux compilatie\n"
+"b) U heeft geen bevoegdheid om de CD-speler te gebruiken\n"
+"c) %s is geen CD-speler.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Fout tijdens het lezen van CD informatie: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Fout tijdens het verkrijgen van leadout: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, fuzzy, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Niet ondersteund MIME-type"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Onbekend bestandstype"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Track %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+msgid "Unknown"
+msgstr "Onbekend"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Geen TRM ID voor dit liedje"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Geen informatie over dit liedje gevonden"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van een gnomevfssrc "
+"invoerelement;\n"
+"controleer uw installatie"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van het 'cdparanoia' "
+"invoerelement; controleer uw installatie"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:529
+#, fuzzy
+msgid "Failed to create queue element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van het volume element;\n"
+"controleer uw installatie"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:553
+msgid "Failed to create spider element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van het 'spider' element; "
+"controleer uw installatie"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:565
+msgid "Failed to create volume element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van het volume element;\n"
+"controleer uw installatie"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:583
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van een audio "
+"uitgangselement;\n"
+"controleer uw instellingen"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:687
+msgid "No AudioCD support; check your settings"
+msgstr "Geen audio-CD ondersteuning; controleer uw instellingen"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr ""
+"Fout tijdens het initialiseren van een audio stuurprogramma; controleer uw "
+"installatie"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Geen invoer plugin beschikbaar voor %s; controleer uw installatie."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+"Geen signaal decompositie plugin beschikbaar voor %s; controleer uw "
+"installatie."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Signaal demontage voor %s mislukt; controleer uw installatie"
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Interne fout; controleer uw installatie."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Audio van %s onhandelbaar; controleer uw installatie."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "GStreamer mogelijkheden:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Verwijder %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Fout tijdens het aanmaken van map %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Ongeldig tracknummer"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Audio CD track"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Fout tijdens het verkrijgen van lees-toegang tot bestand"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Fout tijdens zoeken in bestand"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Mislukt om het bestand te openen als Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:504
+#, fuzzy, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr ""
+"Er is een fout opgetreden tijdens het creeëren van het 'spider' element; "
+"controleer uw installatie"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -641,12 +864,6 @@ msgstr "Nieuw internet radio station"
 msgid "_Don't Add"
 msgstr ""
 
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Onbekend"
-
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914
 msgid "Never"
@@ -1155,3 +1372,11 @@ msgstr "Locatie: "
 #: sources/rb-source.c:366
 msgid "No properties available."
 msgstr ""
+
+#~ msgid "Failed to find a decoder plugin for %s; check your installation"
+#~ msgstr ""
+#~ "Er is een fout opgetreden tijdens het vinden van een decoder plugin voor %"
+#~ "s; controleer uw installatie"
+
+#~ msgid "Mime type %s not handled; check your installation"
+#~ msgstr "Mime type %s onhandelbaar; controleer uw installatie."

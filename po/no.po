@@ -1,10 +1,28 @@
+# #-#-#-#-#  no.po (monkey-media 0.1)  #-#-#-#-#
+# Norwegian (bokmål) translation of monkey-media.
+# Copyright (C) 2002 Kjartan Maraas
+# This file is distributed under the same license as the PACKAGE package.
+# Kjartan Maraas <kmaraas@gnome.org>, 2002.
+#
+# #-#-#-#-#  no.po (RhythmBox 0.1)  #-#-#-#-#
 # Norwegian (bokmål) translation of RhythmBox.
 # Copyright (C) Kjartan Maraas
 # This file is distributed under the same license as the RhythmBox package.
 # Kjartan Maraas <kmaraas@gnome.org>, 2002.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  no.po (monkey-media 0.1)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media 0.1\n"
+"POT-Creation-Date: 2003-06-07 15:02+0200\n"
+"PO-Revision-Date: 2003-06-07 15:03+0200\n"
+"Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
+"Language-Team: Norwegian <no@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  no.po (RhythmBox 0.1)  #-#-#-#-#\n"
 "Project-Id-Version: RhythmBox 0.1\n"
 "POT-Creation-Date: 2003-06-07 14:52+0200\n"
 "PO-Revision-Date: 2003-06-07 14:56+0200\n"
@@ -13,6 +31,187 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s peker ikke til en gyldig CDROM-enhet. Dette kan forårsakes av:\n"
+"a) CD-støtte er ikke kompilert inn i Linux\n"
+"b) Du har ikke rettigheter til å aksessere CDROM-enheten\n"
+"c) %s er ikke CDROM-enheten.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Du ser ikke ut til å ha rettigheter til å aksessere %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s peker ikke til en gyldig CDROM-enhet. Dette kan forårsakes av:\n"
+"a) CD-støtte er ikke kompilert inn i Linux\n"
+"b) Du har ikke rettigheter til å aksessere CDROM-enheten\n"
+"c) %s er ikke CDROM-enheten.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Feil under lesing av CD-header: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Feil under henting av «leadout»: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "MIME-type %s er ikke støttet"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Ukjent filtype"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Spor %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+msgid "Unknown"
+msgstr "Ukjent"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Ingen TRM-ID for denne sangen"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Ingen informasjon funnet for denne sangen"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr "Kunne ikke opprette gnomevfssrc inndata-element; sjekk installasjonen"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr "Kunne ikke opprette cdparanoia inndata-element; sjekk installasjonen"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:528
+msgid "Failed to create queue element; check your installation"
+msgstr "Feil under oppretting av kø-element; sjekk installasjonen"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:552
+msgid "Failed to create spider element; check your installation"
+msgstr "Feil under oppretting av spider-element; sjekk installasjonen"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:564
+msgid "Failed to create volume element; check your installation"
+msgstr "Feil under oppretting av volumelement; sjekk installasjonen"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:582
+msgid "Could not create audio output element; check your settings"
+msgstr "Kunne ikke opprette utdataelement for lyd; sjekk innstillingene"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:686
+msgid "No AudioCD support; check your settings"
+msgstr "Ingen støtte for lyd-CD; sjekk innstillingene"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Kunne ikke sette opp en lyddriver; sjekk installasjonen."
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Ingen inndata-tillegg tilgjengelig for %s; sjekk installasjonen."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Ingen demux-tillegg tilgjengelig for %s; sjekk installasjonen."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demuxing for %s feilet; sjekk installasjonen."
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Intern feil; sjekk installasjonen."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Lyd er ikke håndtert for %s; sjekk installasjonen."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "GStreamer-alternativer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Vennligst fjern %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Kunne ikke opprette katalog %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Ugyldig spornummer"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Lyd-CD spor"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Feil under åpning av fil for lesing"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d lag III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Feil under søking i fil"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Feil under åpning av fil som Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:503
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Feil under oppretting av inndata-element %s; sjekk installasjonen"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -613,12 +812,6 @@ msgstr "Ny radiostasjon på internett"
 #: iradio/rb-new-station-dialog.c:147
 msgid "_Don't Add"
 msgstr "_Ikke legg til"
-
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Ukjent"
 
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914

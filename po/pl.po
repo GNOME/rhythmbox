@@ -1,3 +1,13 @@
+# #-#-#-#-#  pl.po (monkey-media)  #-#-#-#-#
+# Copyright (C) 2002-2003 Free Software Foundation, Inc.
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# Aktualną wersję tego pliku możesz odnaleźć w repozytorium cvs.gnome.pl
+# (:pserver:anonymous@cvs.gnome.pl:/home/cvs, puste hasło)
+# Jeśli masz jakiekolwiek uwagi odnoszące się do tłumaczenia lub chcesz
+# pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas na adres:
+# translators@gnome.pl
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+# #-#-#-#-#  pl.po (rhythmbox)  #-#-#-#-#
 # Copyright (C) 2001-2002 Free Software Foundation, Inc.
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 # Aktualną wersję tego pliku możesz odnaleźć w repozytorium cvs.gnome.pl
@@ -6,8 +16,19 @@
 # pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas na adres:
 # translators@gnome.pl
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  pl.po (monkey-media)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media\n"
+"POT-Creation-Date: 2003-07-08 08:39+0200\n"
+"PO-Revision-Date: 2003-07-05 12:29+0100\n"
+"Last-Translator: GNOME PL Team <translators@gnome.pl>\n"
+"Language-Team: Polish <pl@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  pl.po (rhythmbox)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox\n"
 "POT-Creation-Date: 2003-03-02 12:21+0100\n"
 "PO-Revision-Date: 2003-03-02 23:43+0100\n"
@@ -16,6 +37,193 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"Ścieżka \"%s\" nie wskazuje na poprawne urządzenie CD-ROM.\n"
+"Przyczyny tego mogą być następujące:\n"
+"a) system nie obsługuje napędu CD\n"
+"b) brak uprawnień potrzebnych przy dostępie do napędu CD\n"
+"c) plik \"%s\" nie odnosi się do napędu CD.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Brak uprawnień potrzebnych przy dostępie do %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"Ścieżka \"%s\" nie wskazuje na poprawne urządzenie CD-ROM.\n"
+"Przyczyny tego mogą być następujące:\n"
+"a) system nie obsługuje napędu CD\n"
+"b) brak uprawnień potrzebnych przy dostępie do napędu CD\n"
+"c) plik \"%s\" nie odnosi się do napędu CD.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Błąd przy odczycie nagłówka płyty CD: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Błąd przy odczycie obszaru kończącego płytę: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Nieobsługiwany typ MIME %s"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Nieznany typ pliku"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Ścieżka %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648
+msgid "Unknown"
+msgstr "Nieznany"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Brak odcisku akustycznego (TRM ID)"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Nie odnaleziono informacji o utworze"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Nie można utworzyć elementu wejściowego gnomevfssrc; sprawdź poprawność "
+"instalacji"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Nie można utworzyć elementu wejściowego cdparanoia; sprawdź poprawność "
+"instalacji"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:529
+msgid "Failed to create queue element; check your installation"
+msgstr "Nie można utworzyć elementu kolejki; sprawdź poprawność instalacji"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:553
+msgid "Failed to create spider element; check your installation"
+msgstr ""
+"Nie powiodło się utworzyć elementu spider; sprawdź poprawność instalacji"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:565
+msgid "Failed to create volume element; check your installation"
+msgstr "Nie można utworzyć elementu głośności; sprawdź poprawność instalacji"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:583
+msgid "Could not create audio output element; check your settings"
+msgstr "Nie można utworzyć elementu wyjścia dźwięku; sprawdź ustawienia"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:687
+msgid "No AudioCD support; check your settings"
+msgstr "Brak obsługi AudioCD; sprawdź ustawienia"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Nie można ustawić sterownika dźwięku; sprawdź poprawność instalacji"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Brak wtyczki wejściowej dla %s; sprawdź poprawność instalacji."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Brak wtyczki demultipleksera dla %s; sprawdź poprawność instalacji."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Błąd przy rozdziale sygnału %s; sprawdź poprawność instalacji."
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Błąd wewnętrzny; sprawdź poprawność instalacji."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr ""
+"Strumień dźwiękowy %s nie jest obsługiwany; sprawdź poprawność instalacji."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "Opcje podsystemu GStreamer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Usuń plik %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Nie można utworzyć katalogu %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Niepoprawny numer ścieżki"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Ścieżka Audio CD"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Nie można otworzyć pliku do odczytu"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Nie można zmieniać pozycji odczytu z pliku"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Nie można odczytać pliku jako Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:504
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr ""
+"Nie można utworzyć elementu wejściowego %s; sprawdź poprawność instalacji"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -305,7 +513,7 @@ msgstr "Cza_s"
 msgid "Tra_ck"
 msgstr "Ś_cieżka"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:1 shell/rb.c:1
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:1
 msgid "Music Player"
 msgstr "Odtwarzacz muzyczny"
 
@@ -480,7 +688,6 @@ msgstr ""
 msgid "Failed to parse %s\n"
 msgstr ""
 
-#: iradio/rb-iradio-backend.c:1 iradio/rb-iradio-backend.c:1
 #: iradio/rb-iradio-backend.c:1 lib/widgets/rb-tree-model-node.c:1
 msgid "(Unknown)"
 msgstr ""
@@ -501,7 +708,6 @@ msgid "Failed to parse %s: %s"
 msgstr ""
 
 #: iradio/rb-station-properties-dialog.c:1 lib/widgets/rb-song-info.c:1
-#: lib/widgets/rb-song-info.c:1
 #, c-format
 msgid "%s Properties"
 msgstr ""
@@ -596,7 +802,7 @@ msgstr ""
 msgid "_Next Song"
 msgstr ""
 
-#: lib/widgets/rb-song-info.c:1 lib/widgets/rb-song-info.c:1
+#: lib/widgets/rb-song-info.c:1
 msgid "Song Properties"
 msgstr "Właściwości utworu"
 
@@ -622,7 +828,7 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d kanałów)"
 
-#: lib/widgets/rb-volume.c:1 lib/widgets/rb-volume.c:1
+#: lib/widgets/rb-volume.c:1
 msgid "Click to mute"
 msgstr ""
 
@@ -635,7 +841,7 @@ msgstr ""
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1 library/rb-node.c:1 library/rb-node.c:1
+#: library/rb-node.c:1
 msgid "Never"
 msgstr "Nigdy"
 
@@ -713,7 +919,7 @@ msgstr ""
 msgid "Shuffle the play list"
 msgstr ""
 
-#: shell/rb-player.c:1 shell/rb-player.c:1
+#: shell/rb-player.c:1
 msgid "Not playing"
 msgstr ""
 
@@ -826,11 +1032,6 @@ msgid ""
 "%s"
 msgstr ""
 
-#: views/rb-audiocd-view.c:1 views/rb-audiocd-view.c:1
-#: views/rb-iradio-view.c:1
-msgid "Unknown"
-msgstr ""
-
 #: views/rb-audiocd-view.c:1
 #, c-format
 msgid "Failed to parse %s as disc info file"
@@ -845,7 +1046,7 @@ msgstr ""
 msgid "iradio"
 msgstr ""
 
-#: views/rb-iradio-view.c:1 views/rb-iradio-view.c:1
+#: views/rb-iradio-view.c:1
 msgid ""
 "Internet\n"
 "Radio"
@@ -887,3 +1088,10 @@ msgstr ""
 #: views/rb-library-view.c:1
 msgid "Start playing the selected song(s)"
 msgstr ""
+
+#~ msgid "Failed to find a decoder plugin for %s; check your installation"
+#~ msgstr ""
+#~ "Nie można odnaleźć wtyczki dekodującej %s; sprawdź poprawność instalacji"
+
+#~ msgid "Mime type %s not handled; check your installation"
+#~ msgstr "Typ MIME %s nie jest obsługiwany; sprawdź poprawność instalacji"

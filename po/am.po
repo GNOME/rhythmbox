@@ -1,11 +1,30 @@
+# #-#-#-#-#  am.po (sodipodi)  #-#-#-#-#
+# Translations into the Amharic Language.
+# Copyright (C) 2002 Free Software Foundation, Inc.
+# This file is distributed under the same license as the sodipodi package.
+# Ge'ez Frontier Foundation <locales@geez.org>, 2002.
+#
+#
+# #-#-#-#-#  am.po (rhythmbox 1.0)  #-#-#-#-#
 # Translations into the Amharic Language.
 # Copyright (C) 2002 Free Software Foundation, Inc.
 # This file is distributed under the same license as the rhythmbox package.
 # Ge'ez Frontier Foundation <locales@geez.org>, 2002.
 #
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  am.po (sodipodi)  #-#-#-#-#\n"
+"Project-Id-Version: sodipodi\n"
+"POT-Creation-Date: 2003-02-05 11:11+0100\n"
+"PO-Revision-Date: 2003-02-06 07:51+EDT\n"
+"Last-Translator: Ge'ez Frontier Foundation <locales@geez.org>\n"
+"Language-Team: Amharic <locales@geez.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  am.po (rhythmbox 1.0)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox 1.0\n"
 "POT-Creation-Date: 2003-01-23 10:59+0100\n"
 "PO-Revision-Date: 2003-01-24 09:30+EDT\n"
@@ -14,6 +33,165 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr ""
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr ""
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr ""
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr ""
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "ዱካ %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639 views/rb-audiocd-view.c:961
+#: views/rb-audiocd-view.c:968 views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "ያልታወቀ"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr ""
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:360 src/monkey-media-player-gst.c:402
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:369
+msgid "Failed to create typefind element; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:413
+msgid "Failed to create volume element; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:431
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:548
+#, c-format
+msgid "Failed to find a decoder plugin for %s; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-gst.c:577
+#, c-format
+msgid "Mime type %s not handled; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr ""
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr ""
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr ""
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr ""
+
+#: src/monkey-media.c:209
+msgid "GStreamer options:"
+msgstr "የGStreamer ምርጫዎችን፦"
+
+#: src/monkey-media.c:465
+#, c-format
+msgid "Please remove %s"
+msgstr ""
+
+#: src/monkey-media.c:467
+#, c-format
+msgid "Failed to create directory %s"
+msgstr ""
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr ""
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "የድምፅ ሲዲ ዱካ"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr ""
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d ደረጃ III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr ""
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr ""
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -810,11 +988,6 @@ msgid ""
 "Failed to create stream for %s, error was:\n"
 "%s"
 msgstr ""
-
-#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
-#: views/rb-iradio-view.c:782
-msgid "Unknown"
-msgstr "ያልታወቀ"
 
 #: views/rb-audiocd-view.c:1075
 #, c-format

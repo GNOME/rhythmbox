@@ -1,3 +1,11 @@
+# #-#-#-#-#  fr.po (0.6.1.99)  #-#-#-#-#
+# French translation of Monkey-Media.
+# Copyright (C) 2002-2003 Free Software Foundation, Inc.
+# maintainer: Baptiste MILLE-MATHIAS <bmm80@ifrance.com>, 2002.
+# Christophe Merlet (RedFox) <redfox@redfoxcenter.org>, 2002-2003.
+# Laurent Richard <laurent.richard@lilit.be>, 2003
+#
+# #-#-#-#-#  fr.po (Rhythmbox 0.4.99)  #-#-#-#-#
 # French translation of rhythmbox.
 # Copyright (C) 2002-2003 Free Software Foundation, Inc.
 # Baptiste MILLE-MATHIAS <bmm80@ifrance.com>, 2002.
@@ -6,8 +14,19 @@
 # Gildas Guillemot <g.guillemot@laposte.net>, 2003.
 # Laurent Richard <laurent.richard@ael.be>, 2003.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  fr.po (0.6.1.99)  #-#-#-#-#\n"
+"Project-Id-Version: 0.6.1.99\n"
+"POT-Creation-Date: 2003-02-19 22:06+0100\n"
+"PO-Revision-Date: 2003-02-19 22:00+0100\n"
+"Last-Translator: Laurent Richard <laurent.richard@lilit.be>\n"
+"Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  fr.po (Rhythmbox 0.4.99)  #-#-#-#-#\n"
 "Project-Id-Version: Rhythmbox 0.4.99\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-07-07 00:15+0200\n"
@@ -17,6 +36,192 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s ne désigne pas un périphérique CD Rom valide. Cela peut être causé par :\n"
+"a) Le support CD n'est pas compilé dans Linux\n"
+"b) Vous n'avez les droits nécessaires pouraccéder au lecteur CD\n"
+"c) %s n'est pas un lecteur CD.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Il semble que vous n'ayez pas les permissions pour accéder à %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s ne désigne pas un périphérique CD Rom valide. Cela peut être causé par :\n"
+"a) Le support CD n'est pas compilé dans Linux\n"
+"b) Vous n'avez les droits nécessaires pouraccéder au lecteur CD\n"
+"c) %s n'est pas un lecteur CD.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Erreur de lecture de l'en-tête CD : %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Erreur d'obtention du leadout : %s"
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr "Type MIME non supporté"
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "Piste %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+msgid "Unknown"
+msgstr "Inconnu"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr "Pas de ID TRM pour cette chanson"
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr "Pas d'information trouvée pour cette chanson"
+
+#: src/monkey-media-player-gst.c:360 src/monkey-media-player-gst.c:402
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Impossible de créer l'élément d'entrée gnomevfssrc ; veuillez vérifier votre "
+"installation."
+
+#: src/monkey-media-player-gst.c:369
+msgid "Failed to create typefind element; check your installation"
+msgstr ""
+"Impossible de créer l'élément typefind ; veuillez vérifier votre installation"
+
+#: src/monkey-media-player-gst.c:413
+msgid "Failed to create volume element; check your installation"
+msgstr ""
+"Impossible de créer l'élément volume ; veuillez vérifier votre installation."
+
+#: src/monkey-media-player-gst.c:431
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+"Impossible de créer l'élément audio de sortie ; veuillez vérifier vos "
+"paramètres."
+
+#: src/monkey-media-player-gst.c:548
+#, c-format
+msgid "Failed to find a decoder plugin for %s; check your installation"
+msgstr ""
+"Impossible de trouver un greffon pour décoder %s ; veuillez vérifier votre "
+"installation"
+
+#: src/monkey-media-player-gst.c:577
+#, c-format
+msgid "Mime type %s not handled; check your installation"
+msgstr "Le type mime %s n'est pas géré ; veuillez vérifier votre installation"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr ""
+"Impossible d'installer un driver audio ; veuillez vérifier votre installation"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+"Aucun greffon d'entrée disponible pour %s ; veuillez vérifier votre "
+"installation"
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+"Pas de greffon demux disponible pour %s ; veuillez vérifier votre "
+"installation"
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr ""
+"L'utilisation du greffon demux pour %s a échoué ; veuillez vérifier votre "
+"installation"
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Erreur interne ; veuillez vérifier votre installation."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr ""
+"La partie audio de %s n'a pu être gérée ; veuillez vérifier votre "
+"installation"
+
+#: src/monkey-media.c:209
+msgid "GStreamer options:"
+msgstr "Options GStreamer :"
+
+#: src/monkey-media.c:465
+#, c-format
+msgid "Please remove %s"
+msgstr "Veuillez retirer %s"
+
+#: src/monkey-media.c:467
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Impossible de créer le dossier %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Numéro de piste non valide"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Piste CD Audio"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Impossible d'ouvrir le fichier en lecture"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Impossible de chercher le fichier"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Impossible d'ouvrir le fichier en tant que Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -618,12 +823,6 @@ msgstr "Nouvelle station radio internet"
 msgid "_Don't Add"
 msgstr "_Ne pas ajouter"
 
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Inconnu"
-
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914
 msgid "Never"
@@ -1125,6 +1324,27 @@ msgstr "Ajouter un emplacement"
 #: sources/rb-source.c:366
 msgid "No properties available."
 msgstr "Aucune propriété disponible."
+
+#~ msgid "Failed to create %s element"
+#~ msgstr "Impossible de créer l'élément %s"
+
+#~ msgid "Failed to create queue element"
+#~ msgstr "Impossible de créer l'élément queue"
+
+#~ msgid "Failed to create adder element"
+#~ msgstr "Impossible de créer l'élément adder"
+
+#~ msgid "Failed to create tee element"
+#~ msgstr "Impossible de créer l'élément tee"
+
+#~ msgid "Failed to create cdparanoia element"
+#~ msgstr "Impossible de créer l'élément cdparanoia"
+
+#~ msgid "Failed to create gnomevfssink element"
+#~ msgstr "Impossible d'ouvrir l'élément gnomevfssink"
+
+#~ msgid "Failed to create colorspace element"
+#~ msgstr "Impossible de créer l'élément colorspace"
 
 #~ msgid "<span weight=\"bold\">Appearance</span>"
 #~ msgstr "<span weight=\"bold\">Apparence</span>"

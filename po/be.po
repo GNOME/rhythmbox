@@ -1,10 +1,30 @@
+# #-#-#-#-#  be.po (monkey-media.HEAD.be)  #-#-#-#-#
+# translation of monkey-media.HEAD.be.po to Belarusian
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Vital Khilko <dojlid@mova.org>, 2003.
+#
+# #-#-#-#-#  be.po (rhythmbox.HEAD.be)  #-#-#-#-#
 # translation of rhythmbox.HEAD.be.po to Belarusian
 # This file is distributed under the same license as the PACKAGE package.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # Vital Khilko <dojlid@mova.org>, 2003.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  be.po (monkey-media.HEAD.be)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media.HEAD.be\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-06-16 05:03+0200\n"
+"PO-Revision-Date: 2003-06-16 23:16+0300\n"
+"Last-Translator: Vital Khilko <dojlid@mova.org>\n"
+"Language-Team: Belarusian <i18n@mova.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0\n"
+"#-#-#-#-#  be.po (rhythmbox.HEAD.be)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox.HEAD.be\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-06-16 05:11+0200\n"
@@ -15,6 +35,198 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.0\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s не зьяўляецца указальнікам на прыладу CDRom. Магчымыя прычыны:\n"
+"a) падтрымка CD не скампілявана ў Linux\n"
+"b) Вы маеце некарэктныя правы на доступ да прылады CD\n"
+"c) %s гэта не CD прылада.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Здаецца, адсутнічаюць правы доступу да %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s ня указывае на дапушчальную прыладу чытаньня дыскаў.\n"
+"Гэта можа здарыцца з нагоды:\n"
+"а) падтрымка прылады чытаньня дыскаў ня скампілявана ў ядры Linux\n"
+"б) Адсутнічаюць неабходныя правы доступу да прылады чытаньня дыскаў\n"
+"в) %s ня зьяўляецца прыладай чытаньня дыскаў.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Памылка чытаньня загалоўка аўдыё дыска: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Памылка атрыманьня leadout: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Тып МІМЕ %s, які не падтрымліваецца"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Невядомы тып файла"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Запіс %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648 iradio/rb-new-station-dialog.c:182
+#: sources/rb-audiocd-source.c:978 sources/rb-audiocd-source.c:985
+#: sources/rb-iradio-source.c:233 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235
+#, fuzzy
+msgid "Unknown"
+msgstr ""
+"#-#-#-#-#  be.po (monkey-media.HEAD.be)  #-#-#-#-#\n"
+"Невядомы\n"
+"#-#-#-#-#  be.po (rhythmbox.HEAD.be)  #-#-#-#-#\n"
+"Невядома"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Няма ідэнтыфікатара TRM для гэтае песьні"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Няма інфармацыі для гэтае песьні"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Збой пад час стварэньня уваходнага элемэнта gnomevfssrc; праверце вашу "
+"ўсталёўку"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Збой стварэньня уваходнага элемэнта cdparanoia; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:528
+msgid "Failed to create queue element; check your installation"
+msgstr "Збой пад час стварэньня элемэнта чаргі; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:552
+msgid "Failed to create spider element; check your installation"
+msgstr "Збой пад час стварэньня элемэнта adder; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:564
+msgid "Failed to create volume element; check your installation"
+msgstr "Збой пад час стварэньня элемэнта гучнасьці; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:582
+msgid "Could not create audio output element; check your settings"
+msgstr "Немагчыма стварыць выхадны элемэнт аўдыё; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:686
+msgid "No AudioCD support; check your settings"
+msgstr "Адсутнічае падтрымка аўдыёдыскаў; праверце вашыя ўсталяваньні"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Збой наладкі драйвэра аўдыё; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Адсутнічае ўваходны дадатак для %s; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+"Адсутнічае дадатак дэмультыплексаваньня для %s; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Збой дэмульціплексаваньня для %s; праверце вашу ўсталёўку"
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Нутраная памылка; праверце вашу ўстаёўку."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Аўдыё ад %s не апрацавана; праверце вашу ўсталёўку."
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "Выбары GStreamer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Калі ласка, выдаліце %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Збой пад час стварэньня каталёга %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Нерэчаісны нумар запіса"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Запіс на аўдыё дыске"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Збой адкрыцьця файла для чытаньня"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Збой пошуку па файле"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Збой адкрыцьця файла Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:503
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr ""
+"Збой пад час стварэньня ўваходнага элемэнта %s; праверце вашу ўсталёўку"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
@@ -616,12 +828,6 @@ msgstr "Новая інтэрнэт-радыёстанцыя "
 msgid "_Don't Add"
 msgstr "_Не дадаваць"
 
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-msgid "Unknown"
-msgstr "Невядома"
-
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914
 msgid "Never"
@@ -1118,6 +1324,18 @@ msgstr "Дадаць разьмяшчэньне"
 msgid "No properties available."
 msgstr "Уласьцівасьці недаступныя."
 
+#~ msgid "Failed to create thread element"
+#~ msgstr "Збой пад час стварэньня элемэнта ніці"
+
+#~ msgid "Failed to create tee element"
+#~ msgstr "Збой стварэньня элемэнта tee"
+
+#~ msgid "Failed to create gnomevfssink element"
+#~ msgstr "Збой стварэньня элемэнта gnomevfssink"
+
+#~ msgid "Failed to create colorspace element"
+#~ msgstr "Збой стварэньня элемэнта прасторы колера"
+
 #~ msgid "<span weight=\"bold\">Appearance</span>"
 #~ msgstr "<span weight=\"bold\">Вонкавы выгляд</span>"
 
@@ -1258,4 +1476,3 @@ msgstr "Уласьцівасьці недаступныя."
 #~ msgstr ""
 #~ "Інтэрнэт\n"
 #~ "радыё"
-

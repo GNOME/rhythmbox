@@ -1,9 +1,27 @@
+# #-#-#-#-#  vi.po (Monkey-media for Gnome v-2.1.x)  #-#-#-#-#
+# Monkey-media in Vietnamese.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# T.M.Thanh <tmthanh@yahoo.com>, 2002 - 2003.
+#
+# #-#-#-#-#  vi.po (rhythmbox VERSION)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) 2002 Free Software Foundation, Inc.
 # pclouds <pclouds@gmx.net>, 2002.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  vi.po (Monkey-media for Gnome v-2.1.x)  #-#-#-#-#\n"
+"Project-Id-Version: Monkey-media for Gnome v-2.1.x\n"
+"POT-Creation-Date: 2003-01-28 10:58+0100\n"
+"PO-Revision-Date: 2003-01-28 21:04+0700\n"
+"Last-Translator: Trinh Minh Thanh <tmthanh@yahoo.com>\n"
+"Language-Team: Gnome-Vi <Gnomevi-list@lists.sourceforge.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  vi.po (rhythmbox VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox VERSION\n"
 "POT-Creation-Date: 2003-01-19 03:49+0100\n"
 "PO-Revision-Date: 2003-01-20 17:20+0700\n"
@@ -12,6 +30,179 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s có vẻ như không chỉ tới thiết bị CDRom hợp lệ. Điều này có thể vì:\n"
+"a) Hỗ trợ CD không được biên dịch sang Linux\n"
+"b) Bạn không có quyền truy cập CD drive\n"
+"c) %s không phải là CD drive.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Có vẻ là bạn không có quyền truy cập %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s có vẻ như không chỉ tới thiết bị CD hợp lệ. Điều này có thể vì:\n"
+"a) Hỗ trợ CD không được biên dịch sang Linux\n"
+"b) Bạn không có quyền truy cập CD drive\n"
+"c) %s không phải là CD drive.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Lỗi khi đọc CD header: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Lỗi khi lấy leadout: %s"
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr "Loại mime không được hỗ trợ"
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "Rãnh %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639 views/rb-audiocd-view.c:961
+#: views/rb-audiocd-view.c:968 views/rb-iradio-view.c:782
+#, fuzzy
+msgid "Unknown"
+msgstr ""
+"#-#-#-#-#  vi.po (Monkey-media for Gnome v-2.1.x)  #-#-#-#-#\n"
+"Không xác định\n"
+"#-#-#-#-#  vi.po (rhythmbox VERSION)  #-#-#-#-#\n"
+"Không biết"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr "Không có TRM ID cho bài này"
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr "Không thấy thông tin về bài này"
+
+#: src/monkey-media-player-gst.c:294 src/monkey-media-player-gst.c:330
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Không tạo được phần tử đầu vào gnomevfssrc, hãy kiểm tra cài đặt của bạn"
+
+#: src/monkey-media-player-gst.c:303
+msgid "Failed to create typefind element; check your installation"
+msgstr "Không tạo được phần tử typefind, hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-gst.c:341
+msgid "Failed to create volume element; check your installation"
+msgstr "Không tạo được phần tử âm lượng, hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-gst.c:359
+msgid "Could not create audio output element; check your settings"
+msgstr "Không thể tạo phần tử đầu ra audio, hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-gst.c:476
+#, c-format
+msgid "Failed to find a decoder plugin for %s; check your installation"
+msgstr "Không tìm được decoder plugin cho %s; hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-gst.c:505
+#, c-format
+msgid "Mime type %s not handled; check your installation"
+msgstr "Mime type %s không được xử lý; hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-xine.c:251
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Không thiết lập được audio driver, hãy kiểm tra việc cài đặt"
+
+#: src/monkey-media-player-xine.c:334
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Hiện không có input plugin cho %s; hãy kiểm tra việc cài đặt."
+
+#: src/monkey-media-player-xine.c:343
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Hiện không có demux plugin cho %s; hãy kiểm tra việc cài đặt."
+
+#: src/monkey-media-player-xine.c:352
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demuxing cho %s lỗi; hãy kiểm tra việc cài đặt."
+
+#: src/monkey-media-player-xine.c:360
+msgid "Internal error; check your installation."
+msgstr "Lỗi nội bộ, hãy kiểm tra việc cài đặt."
+
+#: src/monkey-media-player-xine.c:369
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Audio của %s không được xử lý; hãy kiểm tra việc cài đặt."
+
+#: src/monkey-media.c:204
+msgid "GStreamer options:"
+msgstr "Tùy chọn GStreamer:"
+
+#: src/monkey-media.c:460
+#, c-format
+msgid "Please remove %s"
+msgstr "Hãy gỡ bỏ %s"
+
+#: src/monkey-media.c:462
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Không tạo được thư mục %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Số rãnh không hợp lệ"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Rãnh Audio CD"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Không mở được tập tin để đọc"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Không tìm kiếm được tập tin"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Không mở được tập tin theo Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:529
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -658,7 +849,8 @@ msgid ""
 msgstr ""
 "Chà chà chà...\n"
 "\n"
-"Gentoo hả? Bạn sẽ gặp vấn đề. Chúng tôi biết. Đừng báo lỗi này cho chúng tôi.\n"
+"Gentoo hả? Bạn sẽ gặp vấn đề. Chúng tôi biết. Đừng báo lỗi này cho chúng "
+"tôi.\n"
 "\n"
 "Chúc một ngày tốt lành."
 
@@ -819,11 +1011,6 @@ msgstr ""
 "Lỗi tạo luồng cho %s:\n"
 "%s"
 
-#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
-#: views/rb-iradio-view.c:782
-msgid "Unknown"
-msgstr "Không biết"
-
 #: views/rb-audiocd-view.c:1075
 #, c-format
 msgid "Failed to parse %s as disc info file"
@@ -880,6 +1067,27 @@ msgstr "Chơi _bài hát"
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "Chơi bài được chọn"
+
+#~ msgid "Failed to create %s element"
+#~ msgstr "Không tạo được phần tử %s"
+
+#~ msgid "Failed to create queue element"
+#~ msgstr "Không tạo được phần tử theo hàng"
+
+#~ msgid "Failed to create adder element"
+#~ msgstr "Không tạo được phần tử trình thêm"
+
+#~ msgid "Failed to create tee element"
+#~ msgstr "Không tạo được phần tử khởi đầu"
+
+#~ msgid "Failed to create cdparanoia element"
+#~ msgstr "Không tạo được phần tử cdparanoia"
+
+#~ msgid "Failed to create gnomevfssink element"
+#~ msgstr "Không tạo được phần tử gnomevfssink"
+
+#~ msgid "Failed to create colorspace element"
+#~ msgstr "Không tạo được phần tử không gian màu"
 
 #~ msgid "<span weight=\"bold\">View Settings</span>"
 #~ msgstr "<span weight=\"bold\">Xem thiết lập</span>"

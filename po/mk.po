@@ -1,3 +1,12 @@
+# #-#-#-#-#  mk.po (monkey-media.HEAD)  #-#-#-#-#
+# translation of monkey-media.HEAD.po to 
+# translation of monkey-media.HEAD.po to Macedonian
+# translation of monkey-media.HEAD.po to
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER, 2003
+# Vladislav Bidikov <bidikovi@mail.com.mk>, 2003
+#
+# #-#-#-#-#  mk.po (rhythmbox.HEAD)  #-#-#-#-#
 # translation of rhythmbox.HEAD.po to 
 # translation of rhythmbox.HEAD.po to Macedonian
 # translation of rhythmbox.HEAD.po to
@@ -5,8 +14,21 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER, 2003
 # Ivan Stojmirov <stojmir@linux.net.mk>, 2003
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  mk.po (monkey-media.HEAD)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media.HEAD\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-06-13 20:53+0200\n"
+"PO-Revision-Date: 2003-06-15 09:43+0200\n"
+"Last-Translator: \n"
+"Language-Team:  <mk@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0\n"
+"#-#-#-#-#  mk.po (rhythmbox.HEAD)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-06-13 21:02+0200\n"
@@ -18,12 +40,192 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.0\n"
 
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s не покажува кон валиден CDRom уред. Ова може да биде предизвикано од:\n"
+"a) CD подршка не е компајлирана во Linux\n"
+"b) Немате соодветни пермисии за пристап кон CD драјв\n"
+"c) %s не е валиден CD драјв\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Немате пермисии да пристапите до %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s не покажува кон валиден CD уред. Ова може да биде предизвикано од:\n"
+"a) CD подршка не е компајлирана во Linux\n"
+"b) Немате соодветни пермисии за пристап кон CD драјв\n"
+"c) %s не е валиден CD драјв\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Грешка при читање на CD заглавје: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Грешка при читање на leadout: %s"
+
+#: src/monkey-media-stream-info.c:306
+#, c-format
+msgid "Unsupported MIME type %s"
+msgstr "Неподржан MIME тип %s"
+
+#: src/monkey-media-stream-info.c:311
+msgid "Unknown file type"
+msgstr "Непознат фајл тип"
+
+#: src/monkey-media-stream-info.c:366
+#, c-format
+msgid "Track %.2d"
+msgstr "Трака %.2d"
+
+#: src/monkey-media-stream-info.c:384 src/monkey-media-stream-info.c:400
+#: src/monkey-media-stream-info.c:648
+msgid "Unknown"
+msgstr "Непознато"
+
+#: src/monkey-media-stream-info.c:728 src/monkey-media-stream-info.c:789
+msgid "No TRM ID for this song"
+msgstr "Нема TRM ID за оваа песна"
+
+#: src/monkey-media-stream-info.c:743 src/monkey-media-stream-info.c:804
+msgid "No information for this song found"
+msgstr "Не може да се наје информација за оваа песна"
+
+#: src/monkey-media-player-gst.c:446
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"Неможе да се креира gnomevfssrc елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:461
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"Неможе да се креира gcdparanoia елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:484 src/monkey-media-player-gst-tmp.c:528
+msgid "Failed to create queue element; check your installation"
+msgstr "Неможе да се креира queue елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:511 src/monkey-media-player-gst-tmp.c:552
+msgid "Failed to create spider element; check your installation"
+msgstr "Неможе да се креира spider елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:526 src/monkey-media-player-gst-tmp.c:564
+msgid "Failed to create volume element; check your installation"
+msgstr "Неможе да се креира volume елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:547 src/monkey-media-player-gst-tmp.c:582
+msgid "Could not create audio output element; check your settings"
+msgstr "Неможе да се креира audio елемент; проверете ја вашата инсталација"
+
+#: src/monkey-media-player-gst.c:633 src/monkey-media-player-gst-tmp.c:686
+msgid "No AudioCD support; check your settings"
+msgstr "Нема AudioCD подршка; проверете ги вашите подесувања"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Неможе да се  активира аудио драјвер; проверета ја инсталацијата"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Нема плагин за влез за %s; проверете ја вашата инсталација."
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Нема плагин demux за %s; проверете ја вашата инсталација."
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Демаскирање за %s неуспеа; проверете ја вашата инсталација."
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "Интерна грешка; проверете ја вашата инсталација."
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Аудио од тип %s не е обработен; проверете ја вашата инсталација. "
+
+#: src/monkey-media.c:216
+msgid "GStreamer options:"
+msgstr "Опции за GStreamer:"
+
+#: src/monkey-media.c:489
+#, c-format
+msgid "Please remove %s"
+msgstr "Ве молиме да го тргнете %s"
+
+#: src/monkey-media.c:491
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "Неуспешно креирање директориум %s"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Невалиден број на трака"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Аудио CD трака"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Неуспешно отварање на датотека за читање"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Неуспешно пронаоѓање на датотека"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Неуспешно пронаоѓање на датотека како Ogg Vorbis"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
+
+#: src/monkey-media-player-gst-tmp.c:503
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Неуспешно креирање %s влезен елемент; проверете ја вашата инсталација"
+
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
 msgstr ""
 
 #: data/glade/buffering-dialog.glade.h:2
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Loading..."
 msgstr "Се вчитува..."
 
@@ -105,7 +307,7 @@ msgstr "   "
 
 #: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:2
 #: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "*"
 msgstr "*"
 
@@ -170,12 +372,12 @@ msgid "<b>_Track number:</b>"
 msgstr "<b>Број на трака:</b>"
 
 #: data/glade/song-info.glade.h:18
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Basic"
 msgstr "Основно"
 
 #: data/glade/song-info.glade.h:19
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Details"
 msgstr "Детали"
 
@@ -184,7 +386,7 @@ msgid "_of"
 msgstr "_од"
 
 #: data/glade/station-new.glade.h:1
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid " "
 msgstr " "
 
@@ -201,12 +403,12 @@ msgid "_Title: "
 msgstr "_Наслов:"
 
 #: data/glade/station-new.glade.h:6
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "dialog1"
 msgstr "дијалог1"
 
 #: data/glade/station-properties.glade.h:2
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "42"
 msgstr "42"
 
@@ -248,7 +450,7 @@ msgid "Enter the _location (URI) of the file you would like to add:"
 msgstr "Внеси ја _локацијата (URI) датотеката што сакаш да ја додадеш:"
 
 #: data/glade/uri.glade.h:3
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Open from URI"
 msgstr "Отвори од адреса"
 
@@ -331,7 +533,7 @@ msgstr ""
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:4
 #: data/ui/rhythmbox-library-view.xml.in.h:6
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Select _All"
 msgstr "Избери _се"
 
@@ -343,7 +545,7 @@ msgstr "Избери ги сите песни"
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6
 #: data/ui/rhythmbox-iradio-view.xml.in.h:5
 #: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:41
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Edit"
 msgstr "_Уреди"
 
@@ -359,7 +561,7 @@ msgstr "_Скокни до песната што свири"
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:9
 #: data/ui/rhythmbox-iradio-view.xml.in.h:8
 #: data/ui/rhythmbox-library-view.xml.in.h:15 data/ui/rhythmbox-ui.xml.in.h:55
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_View"
 msgstr "_Преглед"
 
@@ -405,12 +607,12 @@ msgid "Show information on the selected song"
 msgstr "Прикажи информации за селектираната песна"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:39
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Copy"
 msgstr "_Копирај"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:40
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Delete"
 msgstr "_Избриши"
 
@@ -531,7 +733,7 @@ msgid "Toggle repeat mode"
 msgstr "Вклучи повторувачки режим"
 
 #: data/ui/rhythmbox-ui.xml.in.h:34
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_About"
 msgstr "_За"
 
@@ -540,17 +742,17 @@ msgid "_Add to Library..."
 msgstr "_Додади во библиотека..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:37
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Close"
 msgstr "_Затвори"
 
 #: data/ui/rhythmbox-ui.xml.in.h:38
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Contents"
 msgstr "_Содржина"
 
 #: data/ui/rhythmbox-ui.xml.in.h:42
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Help"
 msgstr "_Помош"
 
@@ -567,7 +769,7 @@ msgid "_New Playlist..."
 msgstr "_Нова листа на песни..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:47
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Next"
 msgstr "_Следно"
 
@@ -576,12 +778,12 @@ msgid "_Organize"
 msgstr "_Организирај"
 
 #: data/ui/rhythmbox-ui.xml.in.h:49
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Paste"
 msgstr "_Вметни"
 
 #: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1065
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Play"
 msgstr "_Свири"
 
@@ -598,7 +800,7 @@ msgid "_Source List"
 msgstr ""
 
 #: iradio/rb-iradio-backend.c:172 library/rb-library.c:502
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "All"
 msgstr "Сите"
 
@@ -639,23 +841,15 @@ msgstr "Нова Интернет Радио Станица"
 msgid "_Don't Add"
 msgstr "_Не додавај"
 
-#: iradio/rb-new-station-dialog.c:182 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
-msgid "Unknown"
-msgstr "Непознато"
-
 #: iradio/rb-node-station.c:245 library/rb-node.c:877 library/rb-node.c:883
 #: library/rb-node.c:914
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Never"
 msgstr "Никогаш"
 
 #: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:474
 #: lib/widgets/rb-song-info.c:488
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "%s Properties"
 msgstr "%s Својства"
 
@@ -689,8 +883,7 @@ msgid "Size of the expander arrow"
 msgstr "Големина на стрелката"
 
 #: lib/eel-gconf-extensions.c:67
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid ""
 "GConf error:\n"
 "  %s"
@@ -720,20 +913,17 @@ msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
 #: lib/rb-file-helpers.c:76
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Failed to find %s"
 msgstr "Не успеа да се најде %s"
 
 #: lib/rb-file-helpers.c:101
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "%s exists, please move it out of the way."
 msgstr "%s постои, отстрани го од патот."
 
 #: lib/rb-file-helpers.c:104
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Failed to create directory %s."
 msgstr "Не успеа да се креира директориумот %s."
 
@@ -744,8 +934,7 @@ msgid "THE ,DJ "
 msgstr "THE ,DJ "
 
 #: lib/rb-string-helpers.c:48
-#, c-format
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "%s, %s"
 msgstr "%s, %s"
 
@@ -774,7 +963,7 @@ msgid "Error loading files into library"
 msgstr ""
 
 #: lib/widgets/rb-load-failure-dialog.c:135
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_File"
 msgstr "_Датотека"
 
@@ -788,7 +977,7 @@ msgid "Failed to parse %s as NodeView layout file"
 msgstr ""
 
 #: lib/widgets/rb-player.c:264
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "from "
 msgstr "од-"
 
@@ -828,7 +1017,7 @@ msgstr "%d:%02d"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: lib/widgets/rb-search-entry.c:116
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Search:"
 msgstr "_Барај:"
 
@@ -841,7 +1030,7 @@ msgid "Song Properties"
 msgstr "Својства за песната"
 
 #: lib/widgets/rb-song-info.c:775
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "on the desktop"
 msgstr "на работната околина"
 
@@ -970,7 +1159,7 @@ msgid "Lead developers:"
 msgstr ""
 
 #: shell/rb-shell.c:1064
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Contributors:"
 msgstr "Соработници:"
 
@@ -1002,27 +1191,27 @@ msgid "All fallback locations failed, unable to play: %s\n"
 msgstr ""
 
 #: shell/rb-shell-player.c:1056
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Pause"
 msgstr "Пауза"
 
 #: shell/rb-shell-player.c:1057
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Pause"
 msgstr "_Пауза"
 
 #: shell/rb-shell-player.c:1064
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Play"
 msgstr "Пушти"
 
 #: shell/rb-shell-player.c:1072
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Stop"
 msgstr "Стоп"
 
 #: shell/rb-shell-player.c:1073
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "_Stop"
 msgstr "_Стоп"
 
@@ -1035,7 +1224,7 @@ msgid "Music Player Preferences"
 msgstr ""
 
 #: shell/rb-shell-preferences.c:212
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "General"
 msgstr "Општо"
 
@@ -1056,7 +1245,7 @@ msgid "music audiocd"
 msgstr ""
 
 #: sources/rb-audiocd-source.c:300
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Audio CD"
 msgstr "Audio CD"
 
@@ -1083,7 +1272,7 @@ msgid "music group"
 msgstr ""
 
 #: sources/rb-group-source.c:347
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Unnamed"
 msgstr "Безимено"
 
@@ -1096,7 +1285,7 @@ msgid "Please enter a name for the new music group."
 msgstr ""
 
 #: sources/rb-group-source.c:599
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Untitled"
 msgstr "Безимено"
 
@@ -1110,7 +1299,7 @@ msgid "Failed to parse %s as group file"
 msgstr ""
 
 #: sources/rb-iradio-source.c:380
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Radio"
 msgstr "Радио"
 
@@ -1120,7 +1309,7 @@ msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr ""
 
 #: sources/rb-library-source.c:618
-#, exfuzzy (по грешка беа обележани како fuzzy   --стојмир)
+#, fuzzy
 msgid "Library"
 msgstr "Библиотека"
 
@@ -1151,4 +1340,3 @@ msgstr ""
 #: sources/rb-source.c:366
 msgid "No properties available."
 msgstr ""
-

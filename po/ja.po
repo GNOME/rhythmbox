@@ -1,9 +1,27 @@
+# #-#-#-#-#  ja.po (monkey-media HEAD)  #-#-#-#-#
+# monkey-media ja.po
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# This file is distributed under the same license as the monkey-media package.
+# KAMAGASAKO Masatoshi <emerald@gnome.gr.jp>, 2003
+#
+# #-#-#-#-#  ja.po (rhythmbox 0.4.1.99)  #-#-#-#-#
 # rhythmbox ja.po.
 # Copyright (C) 2002-2003 Free Software Foundation, Inc.
 # Norihiro UMEDA <norihiro@users.sourceforge.jp>, 2002-2003.
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  ja.po (monkey-media HEAD)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media HEAD\n"
+"POT-Creation-Date: 2003-04-26 02:41+0900\n"
+"PO-Revision-Date: 2003-03-06 17:54+0900\n"
+"Last-Translator: KAMAGASAKO Masatoshi <emerald@gnome.gr.jp>\n"
+"Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  ja.po (rhythmbox 0.4.1.99)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox 0.4.1.99\n"
 "POT-Creation-Date: 2003-02-23 03:19+0900\n"
 "PO-Revision-Date: 2003-02-23 04:48+0900\n"
@@ -12,6 +30,184 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s は有効な CD-ROM ドライブを指していません。原因は以下のいずれかかも知れませ"
+"ん: \n"
+"a) CD サポートがLinuxに組み込まれていない\n"
+"b) CD ドライブにアクセスするための適切な権限を持っていない\n"
+"c) %s は CD ドライブではない\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "あなたは %s にアクセスする権限を持っていないようです。"
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s は有効な CD-ROM ドライブを指していないようです。原因は以下のいずれかかも知"
+"れません:\n"
+"a) CD サポートがLinuxに組み込まれていない\n"
+"b) CD ドライブにアクセスするための適切な権限を持っていない\n"
+"c) %s は CD ドライブではない\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "CD ヘッダの読み込み時エラー: %s"
+
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "リードアウト時エラー: %s"
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr "サポーされていない mime 型"
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "トラック %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639 views/rb-audiocd-view.c:961
+#: views/rb-audiocd-view.c:968 views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "不明"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr "この曲には TRM ID がありません"
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr "この曲についての情報は見つかりません"
+
+#: src/monkey-media-player-gst.c:371
+msgid "Failed to create gnomevfssrc input element; check your installation"
+msgstr ""
+"gnomevfssrc 入力要素の生成に失敗しました; インストール状況を確認してください"
+
+#: src/monkey-media-player-gst.c:380
+#, fuzzy
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr ""
+"gnomevfssrc 入力要素の生成に失敗しました; インストール状況を確認してください"
+
+#: src/monkey-media-player-gst.c:401
+#, fuzzy
+msgid "Failed to create spider element; check your installation"
+msgstr "typefound要素の生成に失敗しました; インストール状況を確認してください"
+
+#: src/monkey-media-player-gst.c:414
+msgid "Failed to create volume element; check your installation"
+msgstr "volume要素の生成に失敗しました; 設定を確認してください"
+
+#: src/monkey-media-player-gst.c:434
+msgid "Could not create audio output element; check your settings"
+msgstr "オーディオ出力要素を見つけられませんでした; 設定を確認してください"
+
+#: src/monkey-media-player-gst.c:524
+#, fuzzy
+msgid "No AudioCD support; check your settings"
+msgstr "オーディオ出力要素を見つけられませんでした; 設定を確認してください"
+
+#: src/monkey-media-player-xine.c:267
+msgid "Failed to set up an audio driver; check your installation"
+msgstr ""
+"オーディオドライバのセットアップに失敗しました; インストール状況を確認してく"
+"ださい"
+
+#: src/monkey-media-player-xine.c:350
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr ""
+"利用可能な %s 用の入力プラグインがありません; インストール状況を確認してくだ"
+"さい。"
+
+#: src/monkey-media-player-xine.c:359
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr ""
+"%s 用の利用可能な demux プラグインがありません; インストール状況を確認してく"
+"ださい。"
+
+#: src/monkey-media-player-xine.c:368
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "%s の demux に失敗しました; インストール状況を確認してください。"
+
+#: src/monkey-media-player-xine.c:376
+msgid "Internal error; check your installation."
+msgstr "内部エラー; インストール状況を確認してください。"
+
+#: src/monkey-media-player-xine.c:385
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "%s のオーディオは扱えません; インストール状況を確認してください。"
+
+#: src/monkey-media.c:211
+msgid "GStreamer options:"
+msgstr "GStreamer オプション:"
+
+#: src/monkey-media.c:467
+#, c-format
+msgid "Please remove %s"
+msgstr "%s を削除してください"
+
+#: src/monkey-media.c:469
+#, c-format
+msgid "Failed to create directory %s"
+msgstr "ディレクトリ %s の生成に失敗しました"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "無効なトラック番号"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "オーディオ CD トラック"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "ファイルを読み込み用に開くのに失敗しました"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "ファイルの検索に失敗しました"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "ファイルを Ogg Vorbis として開くのに失敗しました"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:537
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -839,11 +1035,6 @@ msgstr ""
 "ストリーム %s を次の理由により生成できません\n"
 "%s"
 
-#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
-#: views/rb-iradio-view.c:782
-msgid "Unknown"
-msgstr "不明"
-
 #: views/rb-audiocd-view.c:1075
 #, c-format
 msgid "Failed to parse %s as disc info file"
@@ -902,3 +1093,11 @@ msgstr "曲を再生(_S)"
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "選択した曲を再生開始"
+
+#~ msgid "Failed to find a decoder plugin for %s; check your installation"
+#~ msgstr ""
+#~ "%s 用デコーダプラグインを見つけられませんでした; インストール状況を確認し"
+#~ "てください"
+
+#~ msgid "Mime type %s not handled; check your installation"
+#~ msgstr "Mime 型 %s は扱えません; インストール状況を確認してください"

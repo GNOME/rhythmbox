@@ -1,3 +1,18 @@
+# #-#-#-#-#  da.po (Monkey Media)  #-#-#-#-#
+# Danish translation of Monkey Media
+# Copyright (C) 2003 Free Software Foundation, Inc.
+# This file is distributed under the same license as the monkey-media package.
+# Kenneth Christiansen <kenneth@gnu.org>, 2002.
+# Ole Laursen <olau@hardworking.dk>, 2003.
+#
+# Konventioner:
+#
+#   playlist -> sætliste
+#   library  -> samling
+#   group    -> ??? ikke gruppe, da det forvæksles med band
+# 	        indtil videre bruges sætliste
+#
+# #-#-#-#-#  da.po (Rhythmbox)  #-#-#-#-#
 # Danish translation of Rhythmbox
 # Copyright (C) 2002 Kenneth Christiansen and Jorn Baayen
 # This file is distributed under the same license as the Rhythmbox package.
@@ -10,8 +25,19 @@
 # group          -> ikke gruppe, da det forvæksles med band
 # 	            indtil videre bruges sætliste
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  da.po (Monkey Media)  #-#-#-#-#\n"
+"Project-Id-Version: Monkey Media\n"
+"POT-Creation-Date: 2003-01-10 19:22+0100\n"
+"PO-Revision-Date: 2003-01-10 19:21+0100\n"
+"Last-Translator: Kenneth Christiansen <kenneth@gnu.org>\n"
+"Language-Team: Danish <dansk@klid.dk>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  da.po (Rhythmbox)  #-#-#-#-#\n"
 "Project-Id-Version: Rhythmbox\n"
 "POT-Creation-Date: 2002-10-27 02:12+0100\n"
 "PO-Revision-Date: 2002-05-21 22:07+0200\n"
@@ -20,6 +46,165 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media.c:188
+msgid "GStreamer options:"
+msgstr "GStreamer-indstillinger:"
+
+#: src/monkey-media-audio-stream.c:274 src/monkey-media-audio-reencoder.c:238
+#: src/monkey-media-visualization.c:367
+#, c-format
+msgid "Failed to create %s element"
+msgstr "Oprettelse af %s-element mislykkedes"
+
+#: src/monkey-media-audio-stream.c:285 src/monkey-media-visualization.c:250
+msgid "Failed to create queue element"
+msgstr "Oprettelse af køelement mislykkedes"
+
+#: src/monkey-media-audio-stream.c:300 src/monkey-media-mixer.c:283
+msgid "Failed to create volume element"
+msgstr "Oprettelse af lydstyrkeelement mislykkedes"
+
+#: src/monkey-media-mixer.c:245 src/monkey-media-mixer.c:256
+#: src/monkey-media-audio-reencoder.c:193 src/monkey-media-visualization.c:241
+msgid "Failed to create thread element"
+msgstr "Oprettelse af trådelement mislykkedes"
+
+#: src/monkey-media-mixer.c:265
+msgid "Failed to create adder element"
+msgstr "Oprettelse af tilførelseselement mislykkedes"
+
+#: src/monkey-media-mixer.c:274
+msgid "Failed to create tee element"
+msgstr "Oprettelse af T-element mislykkedes"
+
+#: src/monkey-media-mixer.c:296
+msgid "Failed to create audiosink element"
+msgstr "Oprettelse af lydsynkningselement mislykkedes"
+
+#: src/monkey-media-stream-info.c:302
+msgid "Unsupported mimetype"
+msgstr "Ikke-understøttet MIME-type"
+
+#: src/monkey-media-stream-info.c:357
+#, c-format
+msgid "Track %.2d"
+msgstr "Spor %.2d"
+
+#: src/monkey-media-stream-info.c:375 src/monkey-media-stream-info.c:391
+#: src/monkey-media-stream-info.c:639
+msgid "Unknown"
+msgstr "Ukendt"
+
+#: src/monkey-media-stream-info.c:719 src/monkey-media-stream-info.c:780
+msgid "No TRM ID for this song"
+msgstr "Ingen TRM-id for denne sang"
+
+#: src/monkey-media-stream-info.c:734 src/monkey-media-stream-info.c:795
+msgid "No information for this song found"
+msgstr "Ingen oplysninger om denne sang fundet"
+
+#: src/monkey-media-stream.c:350
+msgid "Failed to create thread bin"
+msgstr "Oprettelse af trådspand mislykkedes"
+
+#: src/monkey-media-stream.c:366
+msgid "Failed to create cdparanoia element"
+msgstr "Oprettelse af cdparanioa-element mislykkedes"
+
+#: src/monkey-media-stream.c:392
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "Ugyldig spornummer"
+
+#: src/monkey-media-stream.c:421
+msgid "Failed to create gnomevfssrc element"
+msgstr "Oprettelse af gnomevfssrc-element mislykkedes"
+
+#: src/monkey-media-audio-cd.c:218
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s ser ikke ud til at være et gyldigt cd-rom-drev. Dette kan skyldes:\n"
+"a) Cd-understøttelse er ikke tilgængeligt på din maskine\n"
+"b) Du har ikke de nødvendige rettigheder til at tilgå cd-drevet\n"
+"c) %s er ikke et cd-drev.\n"
+
+#: src/monkey-media-audio-cd.c:343
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "Det ser ikke ud til at du har rettighed til at tilgå %s."
+
+#: src/monkey-media-audio-cd.c:350
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s ser ikke ud til at være et gyldigt cd-drev. Dette kan skyldes:\n"
+"a) Cd-understøttelse er ikke tilgængeligt på din maskine\n"
+"b) Du har ikke de nødvendige rettigheder til at tilgå cd-drevet\n"
+"c) %s er ikke et cd-drev.\n"
+
+#: src/monkey-media-audio-cd.c:603
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "Fejl ved læsning af cd-hoved: %s"
+
+# RETMIG: er dette rigtigt?
+#: src/monkey-media-audio-cd.c:729
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr "Fejl ved aflæsning: %s"
+
+#: src/monkey-media-audio-reencoder.c:250
+msgid "Failed to create gnomevfssink element"
+msgstr "Oprettelse af gnomevfssink-element mislykkedes"
+
+#: src/monkey-media-visualization.c:263
+msgid "Failed to create colorspace element"
+msgstr "Oprettelse af farverumselement mislykkedes"
+
+#: src/monkey-media-visualization.c:272
+msgid "Failed to create videosink element"
+msgstr "Oprettelse af videosynkningselement mislykkedes"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "Lydcd-spor"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:154
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "Åbning af fil for læsning mislykkedes"
+
+#: src/stream-info-impl/flac-stream-info-impl.c:470
+msgid "FLAC"
+msgstr "FLAC"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d Layer III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "Søgning i fil mislykkedes"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Åbning af fil som Ogg Vorbis mislykkedes"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:529
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox_Shell.server.in.h:1
 msgid "Rhythmbox shell"
@@ -945,6 +1130,24 @@ msgstr "samling"
 #: views/rb-library-view.c:324 views/rb-library-view.c:1205
 msgid "Library"
 msgstr "Samling"
+
+#~ msgid "MonkeyMedia Properties"
+#~ msgstr "MonkeyMedia-indstillinger"
+
+#~ msgid "O_ther:"
+#~ msgstr "Andre:"
+
+#~ msgid "Plugin:"
+#~ msgstr "Udv.modul:"
+
+#~ msgid "_Advanced Linux Sound Architecture (ALSA)"
+#~ msgstr "_Advanced Linux Sound Architecture (ALSA)"
+
+#~ msgid "_Enlightened Sound Daemon (Esound)"
+#~ msgstr "_Enlightened Sound Daemon (Esound)"
+
+#~ msgid "_Open Sound System (OSS)"
+#~ msgstr "_Open Sound System (OSS)"
 
 #~ msgid "<span weight=\"bold\">View Settings</span>"
 #~ msgstr "<span weight=\"bold\">Visningsindstillinger</span>"

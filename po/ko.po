@@ -1,10 +1,28 @@
+# #-#-#-#-#  ko.po (monkey-media 0.5.0.99)  #-#-#-#-#
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+# #-#-#-#-#  ko.po (rhythmbox 0.4.1.99)  #-#-#-#-#
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Young-Ho, Cha <ganadist@mizi.com>, 2002, 2003
 #
+#, fuzzy
 msgid ""
 msgstr ""
+"#-#-#-#-#  ko.po (monkey-media 0.5.0.99)  #-#-#-#-#\n"
+"Project-Id-Version: monkey-media 0.5.0.99\n"
+"POT-Creation-Date: 2002-11-06 17:52+0900\n"
+"PO-Revision-Date: 2002-11-06 08:58+0900\n"
+"Last-Translator: Young-Ho, Cha <ganadist@mizi.com>\n"
+"Language-Team: GTP Korean <gnome-kr-translation@gnome.or.kr>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  ko.po (rhythmbox 0.4.1.99)  #-#-#-#-#\n"
 "Project-Id-Version: rhythmbox 0.4.1.99\n"
 "POT-Creation-Date: 2003-01-07 20:16+0900\n"
 "PO-Revision-Date: 2003-01-07 22:56+0900\n"
@@ -13,6 +31,153 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: src/monkey-media.c:206
+msgid "GStreamer options:"
+msgstr "GStreamer 옵션:"
+
+#: src/monkey-media-audio-stream.c:274 src/monkey-media-mixer.c:306
+#: src/monkey-media-audio-reencoder.c:238 src/monkey-media-visualization.c:271
+#: src/monkey-media-visualization.c:366
+#, c-format
+msgid "Failed to create %s element"
+msgstr "%s 요소 만드는데 실패"
+
+#: src/monkey-media-audio-stream.c:285 src/monkey-media-visualization.c:249
+msgid "Failed to create queue element"
+msgstr "큐 요소 만드는데 실패"
+
+#: src/monkey-media-audio-stream.c:300 src/monkey-media-mixer.c:293
+msgid "Failed to create volume element"
+msgstr "볼륨 요소 만드는데 실패"
+
+#: src/monkey-media-mixer.c:243 src/monkey-media-mixer.c:260
+#: src/monkey-media-audio-reencoder.c:193 src/monkey-media-visualization.c:240
+msgid "Failed to create thread element"
+msgstr "스레드 요소 만드는데 실패"
+
+#: src/monkey-media-mixer.c:275
+msgid "Failed to create adder element"
+msgstr "adder 요소 만드는데 실패"
+
+#: src/monkey-media-mixer.c:284
+msgid "Failed to create tee element"
+msgstr "tee 요소 만드는데 실패"
+
+#: src/monkey-media-stream-info.c:301
+msgid "Unsupported mimetype"
+msgstr "지원하지 않는 mime형식"
+
+#: src/monkey-media-stream-info.c:356
+#, c-format
+msgid "Track %.2d"
+msgstr "트랙 %.2d"
+
+#: src/monkey-media-stream-info.c:374 src/monkey-media-stream-info.c:390
+#: src/monkey-media-stream-info.c:638 views/rb-audiocd-view.c:961
+#: views/rb-audiocd-view.c:968 views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#: src/monkey-media-stream-info.c:718 src/monkey-media-stream-info.c:779
+msgid "No TRM ID for this song"
+msgstr "이 노래의 TRM ID가 없음"
+
+#: src/monkey-media-stream-info.c:733 src/monkey-media-stream-info.c:794
+msgid "No information for this song found"
+msgstr "이 노래의 정보를 찾을 수 없음"
+
+#: src/monkey-media-stream.c:350
+msgid "Failed to create thread bin"
+msgstr "thread bin 만드는데 실패"
+
+#: src/monkey-media-stream.c:366
+msgid "Failed to create cdparanoia element"
+msgstr "cdparanoia 요소 만드는데 실패"
+
+#: src/monkey-media-stream.c:392
+#: src/stream-info-impl/audiocd-stream-info-impl.c:164
+msgid "Invalid track number"
+msgstr "잘못된 트랙 번호"
+
+#: src/monkey-media-stream.c:421
+msgid "Failed to create gnomevfssrc element"
+msgstr "gnomevfssrc 요소 만드는데 실패"
+
+#: src/monkey-media-audio-cd.c:192
+#, c-format
+msgid ""
+"%s does not point to a valid CDRom device. This may be caused by:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s(이)가 올바른 CDRom 장치를 가르키고 있지 않습니다.:\n"
+"1) 리눅스 커널에 CDrom 드라이브 지원이 없이 컴파일 되었습니다\n"
+"2) CD 드라이브에 접근할 수 있는 권한이 없습니다\n"
+"3) %s(이)가 CD드라이브가 아닙니다.\n"
+
+#: src/monkey-media-audio-cd.c:317
+#, c-format
+msgid "You do not seem to have permission to access %s."
+msgstr "%s에 접근할 수 있는 권한이 없습니다."
+
+#: src/monkey-media-audio-cd.c:324
+#, c-format
+msgid ""
+"%s does not appear to point to a valid CD device. This may be because:\n"
+"a) CD support is not compiled into Linux\n"
+"b) You do not have the correct permissions to access the CD drive\n"
+"c) %s is not the CD drive.\n"
+msgstr ""
+"%s(이)가 올바른 CDRom 장치를 가르키고 있지 않은것 같습니다.:\n"
+"1) 리눅스 커널에 CDrom 드라이브 지원이 없이 컴파일 되었습니다\n"
+"2) CD 드라이브에 접근할 수 있는 권한이 없습니다\n"
+"3) %s(이)가 CD드라이브가 아닙니다.\n"
+
+#: src/monkey-media-audio-cd.c:577
+#, c-format
+msgid "Error reading CD header: %s"
+msgstr "CD 헤더 읽는 중 오류: %s"
+
+#: src/monkey-media-audio-cd.c:703
+#, c-format
+msgid "Error getting leadout: %s"
+msgstr ""
+
+#: src/monkey-media-audio-reencoder.c:250
+msgid "Failed to create gnomevfssink element"
+msgstr "gnomevfssink 요소 만들기 실패"
+
+#: src/monkey-media-visualization.c:262
+msgid "Failed to create colorspace element"
+msgstr "colorspace 요소 만들기 실패"
+
+#: src/stream-info-impl/audiocd-stream-info-impl.c:268
+msgid "Audio CD track"
+msgstr "음악 CD 트랙"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:152
+#: src/stream-info-impl/vorbis-stream-info-impl.c:165
+msgid "Failed to open file for reading"
+msgstr "파일을 읽는데 실패"
+
+#: src/stream-info-impl/mp3-stream-info-impl.c:469
+#, c-format
+msgid "MPEG %d Layer III"
+msgstr "MPEG %d 레이어 III"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:178
+msgid "Failed to seek file"
+msgstr "파일내용 찾기 실패"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:192
+msgid "Failed to open file as Ogg Vorbis"
+msgstr "Ogg Vorbis로 파일 열기 실패"
+
+#: src/stream-info-impl/vorbis-stream-info-impl.c:529
+msgid "Ogg Vorbis"
+msgstr "Ogg Vorbis"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -877,11 +1042,6 @@ msgstr ""
 "%s의 스트림 만들기 실패, 오류:\n"
 "%s"
 
-#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
-#: views/rb-iradio-view.c:782
-msgid "Unknown"
-msgstr "알 수 없음"
-
 #: views/rb-audiocd-view.c:1075
 #, c-format
 msgid "Failed to parse %s as disc info file"
@@ -940,4 +1100,3 @@ msgstr "노래 연주(_S)"
 #: views/rb-library-view.c:377
 msgid "Start playing the selected song(s)"
 msgstr "선택한 곡을 연주 시작합니다"
-
