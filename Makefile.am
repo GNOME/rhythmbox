@@ -1,4 +1,4 @@
-SUBDIRS = lib views library shell data po help
+SUBDIRS = lib views library iradio shell data po help
 
 EXTRA_DIST = 			\
 	autogen.sh		\
