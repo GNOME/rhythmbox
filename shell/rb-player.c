@@ -236,7 +236,7 @@ pack_button (RBPlayer *player, GtkWidget *widget,
 static void
 rb_player_init (RBPlayer *player)
 {
-	GtkWidget *hbox, *vbox, *infobox, *label;
+	GtkWidget *hbox, *vbox, *infobox, *vbox_label, *big_label, *label;
 	GtkWidget *artist_album_box, *scale_box, *song_box;
 	PangoAttribute *attr;
 	PangoAttrList *pattrlist;
@@ -403,17 +403,28 @@ rb_player_init (RBPlayer *player)
 			  G_CALLBACK (shuffle_cb), player);
 
 	/* 'Empty playlist' label */
-	label = gtk_label_new (_("Not playing\n\nTo play, add music to the play list"));
-	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+	vbox_label = gtk_vbox_new (TRUE, 5);
+	gtk_box_pack_start (GTK_BOX (player->priv->info_notebook), vbox_label,
+			FALSE, FALSE, 0);
+	
+	big_label = gtk_label_new (_("Not playing"));
+	gtk_box_pack_start (GTK_BOX (vbox_label), big_label, 
+			FALSE, FALSE, 0);
+
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
 	attr->start_index = 0;
 	attr->end_index = strlen (_("Not playing"));
 	pango_attr_list_insert (pattrlist, attr);
-	gtk_label_set_attributes (GTK_LABEL (label),
+	gtk_label_set_attributes (GTK_LABEL (big_label),
 				  pattrlist);
 	pango_attr_list_unref (pattrlist);
-	gtk_notebook_append_page (GTK_NOTEBOOK (player->priv->info_notebook), label, NULL);
+
+	label = gtk_label_new (_("To play, add music to the play list"));
+	gtk_box_pack_start (GTK_BOX (vbox_label), label, 
+			FALSE, FALSE, 0);
+	
+	gtk_notebook_append_page (GTK_NOTEBOOK (player->priv->info_notebook), vbox_label, NULL);
 
 	/* playlist */
 	/* FIXME should be reorderable */
