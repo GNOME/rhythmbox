@@ -49,7 +49,7 @@ static void rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 struct _RBWindowsINIFilePrivate
 {
 	GHashTable *sections;
-	const char *filename;
+	char *filename;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -144,7 +144,7 @@ rb_windows_ini_file_finalize (GObject *object)
 
 	g_hash_table_destroy (inifile->priv->sections);
 
-	g_free ((char *) inifile->priv->filename);
+	g_free (inifile->priv->filename);
 	g_free (inifile->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
