@@ -9,20 +9,21 @@
 # Nikos: 24May2004, review translation
 # Nikos Charonitakis <charosn@her.forthnet.gr>, 2004.
 # Velonis Petros <velonis@freemail.gr>, 2003.
-# Kostas Papadimas <pkst@gnome.org>, 2003, 2004.
+# Kostas Papadimas <pkst@gnome.org>, 2003, 2004, 2005.
+# 
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-11-29 15:40+0200\n"
-"PO-Revision-Date: 2004-11-29 15:55+0200\n"
-"Last-Translator: Nikos Charonitakis <charosn@her.forthnet.gr>\n"
+"POT-Creation-Date: 2005-02-06 12:43+0200\n"
+"PO-Revision-Date: 2005-02-06 12:44+0200\n"
+"Last-Translator: Kostas Papadimas <pkst@gnome.org>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: KBabel 1.0.2\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -155,12 +156,11 @@ msgstr "Τα παρακάτω αρχεία δε μπορούν να φορτωθ
 
 #: data/glade/recorder.glade.h:1
 msgid "Album Progress"
-msgstr ""
+msgstr "Πρόοδος άλμπουμ"
 
 #: data/glade/recorder.glade.h:2
-#, fuzzy
 msgid "Create audio CD from playlist?"
-msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+msgstr "Δημιουργία CD ήχου από λίστα αναπαραγωγής;"
 
 #: data/glade/recorder.glade.h:3
 msgid "Options"
@@ -168,16 +168,15 @@ msgstr "Επιλογές"
 
 #: data/glade/recorder.glade.h:4
 msgid "Track Progress"
-msgstr ""
+msgstr "Πρόοδος κομματιού"
 
 #: data/glade/recorder.glade.h:5
 msgid "Writer Device"
 msgstr "Συσκευή Εγγραφής"
 
 #: data/glade/recorder.glade.h:6
-#, fuzzy
 msgid "_Make multiple copies"
-msgstr "Ιδιότητες τραγουδιού"
+msgstr "_Δημιουργία πολλαπλών αντιγράφων"
 
 #: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
@@ -348,19 +347,19 @@ msgid "Properties for %s"
 msgstr "Ιδιότητες για %s"
 
 #: lib/totem-pl-parser.c:206
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't write parser: %s"
-msgstr "Αδυναμία εγγραφής λίστας αναπαραγωγής: %s"
+msgstr "Αδυναμία εγγραφής parser:·%s"
 
 #: lib/totem-pl-parser.c:309 lib/totem-pl-parser.c:432
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't open file '%s': %s"
-msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
+msgstr "Αδυναμία ανοίγματος αρχείου '%s':·%s"
 
 #: metadata/rb-metadata-gst.c:358
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
-msgstr ""
+msgstr "Δεν υπάρχει πρόσθετη λειτουργία για τον χειρισμό ενός αρχείου %s·"
 
 #: metadata/rb-metadata-gst.c:593 metadata/rb-metadata-gst.c:726
 #: player/rb-player-gst.c:549 player/rb-recorder-gst.c:435
@@ -374,33 +373,31 @@ msgstr "Η λειτουργία δεν υποστηρίζεται"
 
 #: metadata/rb-metadata-xine.c:104
 msgid "There is no plugin to handle this song"
-msgstr ""
+msgstr "Δεν·υπάρχει·πρόσθετη·λειτουργία·για·τον·χειρισμό·αυτού του τραγουδιού"
 
 #: metadata/rb-metadata-xine.c:107
 msgid "This song is broken and can not be played further"
-msgstr ""
+msgstr "Το τραγούδι είναι ακτεστραμμένο και δεν μπορει να παιχθεί παρακάτω"
 
 #: metadata/rb-metadata-xine.c:110
 msgid "This location is not a valid one"
-msgstr ""
+msgstr "Αυτή η τοποθεσία δεν είναι έγκυρη"
 
 #: metadata/rb-metadata-xine.c:113
-#, fuzzy
 msgid "This song could not be opened"
-msgstr "Τα παρακάτω αρχεία δεν μπορούν να φορτωθούν:"
+msgstr "Αυτό το τραγούδι δεν μπορεί να ανοιχθεί"
 
 #: metadata/rb-metadata-xine.c:115
 msgid "Generic Error"
-msgstr ""
+msgstr "Γενικό Σφάλμα"
 
 #: metadata/rb-metadata-xine.c:146
-#, fuzzy
 msgid "File is not an audio file"
-msgstr "Αποτυχία εύρεσης ενός ηχητικού κομματιού"
+msgstr "Το αρχείο δεν είναι  ηχητικό κομμάτι"
 
 #: metadata/rb-metadata-xine.c:158
 msgid "Song is not handled"
-msgstr ""
+msgstr "Δεν υπάρχει χειρισμός για αυτό το τραγούδι"
 
 #: player/rb-player-gst.c:395 player/rb-player-gst.c:605
 #: player/rb-player-gst.c:615 player/rb-recorder-gst.c:565
@@ -465,45 +462,41 @@ msgstr ""
 "Δεν είναι δυνατός ο χειρισμός του ήχου από %s, ελέγξτε την εγκατάσταση σας."
 
 #: player/rb-recorder-gst.c:350
-#, fuzzy
 msgid "Failed to create pipeline"
-msgstr "Αποτυχία αναζήτησης αρχείου"
+msgstr "Αποτυχία δημιουργίας pipeline"
 
 #: player/rb-recorder-gst.c:453 player/rb-recorder-gst.c:457
 #: player/rb-recorder-xine.c:229 player/rb-recorder-xine.c:233
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to unlink '%s'"
-msgstr "Αδύνατη η εύρεση %s"
+msgstr "Αδυναμία ·unlink·'%s'"
 
 #: player/rb-recorder-gst.c:523 player/rb-recorder-gst.c:529
-#, fuzzy
 msgid "Could not get current track position"
-msgstr "Αδυναμία κλεισίματος output sink"
+msgstr "Αδυναμία λήψης τρέχουσας θέσης κομματιού"
 
 #: player/rb-recorder-gst.c:777 player/rb-recorder-xine.c:442
 #, c-format
 msgid "Cannot find drive %s"
-msgstr ""
+msgstr "Αδυναμία εύρεσης οδηγού %s"
 
 #: player/rb-recorder-gst.c:791 player/rb-recorder-xine.c:456
 #, c-format
 msgid "Drive %s is not a recorder"
-msgstr ""
+msgstr "Ο οδηγός %s δεν είναι ένα recorder"
 
 #: player/rb-recorder-gst.c:1039 player/rb-recorder-xine.c:704
 #, c-format
 msgid "Could not get track time for file: %s"
-msgstr ""
+msgstr "Αδυναμία λήψης χρόνου κομματιού για αρχείο:·%s"
 
 #: player/rb-recorder-gst.c:1071 player/rb-recorder-xine.c:736
 msgid "Could not determine default writer device"
-msgstr ""
+msgstr "Αδυναμία εντοπισμού προεπιλεγμένης συσκευής εγγραφής"
 
 #: player/rb-recorder-gst.c:1086 player/rb-recorder-xine.c:751
-#, fuzzy
 msgid "Could not determine audio track durations."
-msgstr ""
-"Αποτυχία δημιουργίας στοιχείου εξόδου ήχου, ελέγξτε την εγκατάσταση σας"
+msgstr "Αδυναμία·εντοπισμού·διάρκειας ηχητικού κομματιού"
 
 #: player/rb-recorder-gst.c:1098
 #, c-format
@@ -511,6 +504,8 @@ msgid ""
 "This playlist is %lld minutes long.  This exceeds the %lld minute length of "
 "the media in the drive."
 msgstr ""
+"Αυτή η λίστα αναπαραγωγής έχει διάρκεια %lld λεπτά.  Αυτό υπερβαίνει την "
+"διάρκεια %lld λεπτών του μέσου στον οδηγό."
 
 #: player/rb-recorder-gst.c:1134 player/rb-recorder-xine.c:799
 #, c-format
@@ -518,14 +513,16 @@ msgid ""
 "There was an error writing to the CD:\n"
 "%s"
 msgstr ""
+"Σφάλμα κατά την εγγραφή στο CD:\n"
+"%s"
 
 #: player/rb-recorder-gst.c:1136 player/rb-recorder-xine.c:801
 msgid "There was an error writing to the CD"
-msgstr ""
+msgstr "Σφάλμα κατά την εγγραφή στο CD"
 
 #: player/rb-recorder-xine.c:214
 msgid "Xine backend not yet implemented"
-msgstr ""
+msgstr "Το Xine backend δεν έχει ακόμα εφαρμοστεί"
 
 #: player/rb-recorder-xine.c:763
 #, c-format
@@ -533,6 +530,8 @@ msgid ""
 "This playlist is %d minutes long.  This exceeds the %d minute length of the "
 "media in the drive."
 msgstr ""
+"Αυτή η λίστα αναπαραγωγής έχει διάρκεια %d λεπτά.  Αυτό υπερβαίνει την "
+"διάρκεια %d λεπτών του μέσου στον οδηγό."
 
 #: remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -576,18 +575,18 @@ msgid "An exception occured '%s'"
 msgstr "Συνέβει μια εξαίρεση '%s'"
 
 #: rhythmdb/rhythmdb.c:947
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't monitor %s: %s"
-msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
+msgstr "Αποτυχία παρακολούθησης ·%s:·%s"
 
 #: rhythmdb/rhythmdb.c:1043
 msgid "<invalid filename>"
 msgstr "<μη έγκυρο όνομα αρχείου>"
 
 #: rhythmdb/rhythmdb.c:1492
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't access %s: %s"
-msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
+msgstr "Αποτυχία πρόσβασης %s:·%s"
 
 #: rhythmdb/rhythmdb.c:1941 widgets/rb-entry-view.c:886
 #: widgets/rb-song-info.c:926
@@ -647,24 +646,20 @@ msgid "Print the playing song and exit"
 msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
 
 #: shell/main.c:109
-#, fuzzy
 msgid "Print the playing song artist and exit"
-msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+msgstr "Εκτύπωση του τρέχοντος καλλιτέχνη τραγουδιού και έξοδος"
 
 #: shell/main.c:110
-#, fuzzy
 msgid "Print the playing song album and exit"
-msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+msgstr "Εκτύπωση του τρέχοντος άλμπουμ και έξοδος"
 
 #: shell/main.c:111
-#, fuzzy
 msgid "Print the playing song track and exit"
-msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+msgstr "Εκτύπωση του τρέχοντος κομματιού ραγουδιού και έξοδος"
 
 #: shell/main.c:112
-#, fuzzy
 msgid "Print the playing song genre and exit"
-msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+msgstr "Εκτύπωση του τρέχοντος είδους τραγουδιού και έξοδος"
 
 #: shell/main.c:113
 msgid "Print the playing song URI and exit"
@@ -702,7 +697,7 @@ msgstr "Μετάβαση στο επόμενο τραγούδι"
 
 #: shell/main.c:124
 msgid "Toggle shuffling"
-msgstr ""
+msgstr "Εναλλαγή ανακατέματος"
 
 #: shell/main.c:126
 msgid "Enable debugging code"
@@ -803,9 +798,8 @@ msgid "_Create Audio CD..."
 msgstr "_Δημιουργία Audio-CD..."
 
 #: shell/rb-playlist-manager.c:147
-#, fuzzy
 msgid "Create an audio CD from playlist"
-msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+msgstr "Δημιουργία ενός CD ήχου από λίστα αναπαραγωγής"
 
 #: shell/rb-playlist-manager.c:149 shell/rb-shell-clipboard.c:105
 msgid "_Delete"
@@ -820,13 +814,12 @@ msgid "Change this automatic playlist"
 msgstr "Αλλαγή αυτής της αυτόματης λίστας αναπαραγωγής"
 
 #: shell/rb-playlist-manager.c:502
-#, fuzzy
 msgid "Couldn't read playlist"
-msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
+msgstr "Αποτυχία ανάγνωσης λίστας αναπαραγωγής"
 
 #: shell/rb-playlist-manager.c:503
 msgid "The playlist file may be in an unknown format or corrupted."
-msgstr ""
+msgstr "Η λίστα αναπαραγωγής μπορεί να είναι άγνωστης μορφής ή κατεστραμμένη"
 
 #: shell/rb-playlist-manager.c:787
 msgid "Load playlist"
@@ -917,9 +910,8 @@ msgid "Stop playback"
 msgstr "Διακοπή αναπαραγωγής"
 
 #: shell/rb-shell-player.c:292 shell/rb-statusbar.c:232
-#, fuzzy
 msgid "Sh_uffle"
-msgstr "Ανακατεμένη"
+msgstr "Ανα_κάτεμα"
 
 #: shell/rb-shell-player.c:293 shell/rb-statusbar.c:235
 msgid "Play songs in a random order"
@@ -956,19 +948,16 @@ msgid "Opening %s..."
 msgstr "Άνοιγμα %s..."
 
 #: shell/rb-shell-player.c:1026
-#, fuzzy
 msgid "Couldn't start playback"
-msgstr "Αποτυχία παύσης αναπαραγωγής"
+msgstr "Αποτυχία εκκίνησης αναπαραγωγής"
 
 #: shell/rb-shell-player.c:1829
-#, fuzzy
 msgid "Couldn't stop playback"
 msgstr "Αποτυχία παύσης αναπαραγωγής"
 
 #: shell/rb-shell-player.c:1921
-#, fuzzy
 msgid "Stream error"
-msgstr "Επιλογές GStreamer:"
+msgstr "Σφάλμα stream"
 
 #: shell/rb-shell-player.c:1922
 msgid "Unexpected end of stream!"
@@ -979,9 +968,8 @@ msgid "Playback error"
 msgstr "Σφάλμα αναπαραγωγής"
 
 #: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1582
-#, fuzzy
 msgid "Couldn't display help"
-msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
+msgstr "Αδυναμία εμφάνισης βοήθειας"
 
 #: shell/rb-shell-preferences.c:179
 msgid "Music Player Preferences"
@@ -1016,18 +1004,16 @@ msgid "_Import Folder..."
 msgstr "_Εισαγωγή Φακέλου..."
 
 #: shell/rb-shell.c:345
-#, fuzzy
 msgid "Choose folder to be added to the Library"
-msgstr "Επιλογή αρχείων ή καταλόγου που θα προστεθεί στην βιβλιοθήκη"
+msgstr "Επιλογή φακέλου που θα προστεθεί στην βιβλιοθήκη"
 
 #: shell/rb-shell.c:347
 msgid "Import _File..."
 msgstr "_Εισαγωγή _Αρχείου..."
 
 #: shell/rb-shell.c:348
-#, fuzzy
 msgid "Choose file to be added to the Library"
-msgstr "Επιλογή αρχείων ή καταλόγου που θα προστεθεί στην βιβλιοθήκη"
+msgstr "Επιλογή αρχείου που θα προστεθεί στην βιβλιοθήκη"
 
 #: shell/rb-shell.c:350
 msgid "Import _Audio CD..."
@@ -1075,7 +1061,7 @@ msgstr "Εμφάνιση _όλων"
 
 #: shell/rb-shell.c:366
 msgid "Show all items in this music source"
-msgstr ""
+msgstr "Εμφάνιση όλων των αντικείμενων σε αυτή την πηγή ήχου"
 
 #: shell/rb-shell.c:376
 msgid "Source _List"
@@ -1146,33 +1132,31 @@ msgid "Music management and playback software for GNOME."
 msgstr "Λογισμικό διαχείρισης και αναπαραγωγής μουσικής για το GNOME."
 
 #: shell/rb-shell.c:1642 widgets/rb-druid.c:319
-#, fuzzy
 msgid "Load folder into Library"
-msgstr "Σφάλμα φόρτωσης αρχείων στην βιβλιοθήκη"
+msgstr "Φόρτωση φακέλου στην βιβλιοθήκη"
 
 #: shell/rb-shell.c:1663
-#, fuzzy
 msgid "Load file into Library"
-msgstr "Σφάλμα φόρτωσης αρχείων στην βιβλιοθήκη"
+msgstr "Φόρτωση αρχείου στην βιβλιοθήκη"
 
 #: shell/rb-shell.c:1696
 msgid "CD Ripper not found"
-msgstr ""
+msgstr "Δεν βρέθηκε CD Ripper"
 
 #: shell/rb-shell.c:1697
-#, fuzzy
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
-msgstr "Για να εξάγετε CD θα πρέπει να εγκαταστήσετε το πακέτο Sound Juicer."
+msgstr ""
+"Για να εξάγετε μουσική από CD θα πρέπει να εγκαταστήσετε το πακέτο Sound "
+"Juicer."
 
 #: shell/rb-shell.c:1705
-#, fuzzy
 msgid "Couldn't run CD Ripper"
-msgstr "Αδυναμία εκτέλεσης sound-juicer: %s"
+msgstr "Αδυναμία εκτέλεσης CD·Ripper"
 
 #: shell/rb-shell.c:1706
-#, fuzzy, c-format
+#, c-format
 msgid "An error occurred while running sound-juicer: %s"
-msgstr "Αδυναμία εκτέλεσης sound-juicer: %s"
+msgstr "Σφάλμα κατά την εκτέλεση του sound-juicer: %s"
 
 #: shell/rb-source-header.c:94
 msgid "_Browser"
@@ -1326,14 +1310,13 @@ msgid "Tra_ck"
 msgstr "Κομ_μάτι"
 
 #: sources/rb-playlist-source.c:754
-#, fuzzy
 msgid "Couldn't save playlist"
-msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
+msgstr "Αποτυχία αποθήκευσης λίστας αναπαραγωγής"
 
 #: sources/rb-playlist-source-recorder.c:220
 #, c-format
 msgid "Invalid writer device: %s"
-msgstr ""
+msgstr "Μη έγκυρη συσκευή εγγραφής:·%s"
 
 #: sources/rb-playlist-source-recorder.c:288
 #: sources/rb-playlist-source-recorder.c:592 widgets/rb-dialog.c:54
@@ -1341,47 +1324,48 @@ msgid "Close"
 msgstr "Κλείσιμο"
 
 #: sources/rb-playlist-source-recorder.c:292
-#, fuzzy
 msgid "Error creating audio CD"
-msgstr "Σφάλμα λήψης leadout: %s"
+msgstr "Σφάλμα δημιουργίας CD ήχου"
 
 #: sources/rb-playlist-source-recorder.c:312
 msgid "Burning audio to CD"
-msgstr ""
+msgstr "Εγγραφή ήψου στο CD"
 
 #: sources/rb-playlist-source-recorder.c:327
 msgid "Finished creating audio CD."
-msgstr ""
+msgstr "Ολοκληρώθηκε η δημιουργία CD ήχου."
 
 #: sources/rb-playlist-source-recorder.c:332
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
+"Ολοκληρώθηκε η δημιουργία CD ήχου.\n"
+"Δημιουργία άλλου αντιγράφου;"
 
 #: sources/rb-playlist-source-recorder.c:334
 msgid "Writing cancelled.  Try again?"
-msgstr ""
+msgstr "Η εγγραφή ακυρώθηκε. Να γίνει προσπάθεια ξανά;"
 
 #: sources/rb-playlist-source-recorder.c:380
 msgid "Audio recording error"
-msgstr ""
+msgstr "Σφάλμα εγγραφής ήχου"
 
 #: sources/rb-playlist-source-recorder.c:416
 msgid "Audio Conversion Error"
-msgstr ""
+msgstr "Σφάλμα μετατροπής ήχου"
 
 #: sources/rb-playlist-source-recorder.c:441
 msgid "Recording error"
-msgstr ""
+msgstr "Σφάλμα εγγραφής"
 
 #: sources/rb-playlist-source-recorder.c:525
 msgid "Do you wish to interrupt writing this disc?"
-msgstr ""
+msgstr "Θέλετε να διακόψετε την εγγραφή στον δίσκο;"
 
 #: sources/rb-playlist-source-recorder.c:526
 msgid "This may result in an unusable disc."
-msgstr ""
+msgstr "Αυτό μπορεί να έχει σαν αποτέλεσμα έναν άχρηστο δίκο"
 
 #: sources/rb-playlist-source-recorder.c:527
 msgid "_Cancel"
@@ -1389,106 +1373,103 @@ msgstr "_Ακύρωση"
 
 #: sources/rb-playlist-source-recorder.c:528
 msgid "_Interrupt"
-msgstr ""
+msgstr "Δια_κοπή"
 
 #: sources/rb-playlist-source-recorder.c:550
 msgid "Could not create audio CD"
-msgstr ""
+msgstr "Αδυναμία δημιουργίας κενού CD"
 
 #: sources/rb-playlist-source-recorder.c:571
 msgid "Please make sure another application is not using the disc."
-msgstr ""
+msgstr "Παρακαλώ βεβαιωθείτε ότι δεν χρησιμοποιεί τον δίσκο άλλη εφαρμογή."
 
 #: sources/rb-playlist-source-recorder.c:572
 msgid "Disc is busy"
-msgstr ""
+msgstr "Ο δίσκος είναι απασχολημένος"
 
 #: sources/rb-playlist-source-recorder.c:574
 msgid "Please insert a rewritable or blank media in the drive tray."
-msgstr ""
+msgstr "Εισάγετε ένα επανεγγράψιμο ή ένα κενό μέσο στον οδηγό."
 
 #: sources/rb-playlist-source-recorder.c:575
 msgid "Insert rewritable or blank media"
-msgstr ""
+msgstr "Εισάγετε ένα επανεγγράψιμο ή ένα κενό μέσο"
 
 #: sources/rb-playlist-source-recorder.c:577
 msgid "Please insert a blank media in the drive tray."
-msgstr ""
+msgstr "Εισάγετε ένα κενό μέσο στο συρτάρι του οδηγού"
 
 #: sources/rb-playlist-source-recorder.c:578
 msgid "Insert blank media"
-msgstr ""
+msgstr "Εισάγετε ένα κενό μέσο"
 
 #: sources/rb-playlist-source-recorder.c:580
 msgid "Please replace the in-drive media by a rewritable or blank media."
-msgstr ""
+msgstr "Παρακαλώ αντικαταστήστε το μέσο με ένα επανεγγράψιμο ή ένα κενό μέσο."
 
 #: sources/rb-playlist-source-recorder.c:581
 msgid "Reload rewritable or blank media"
-msgstr ""
+msgstr "Επαναφόρτωση επανεγγράψιμου ή κενού μέσου"
 
 #: sources/rb-playlist-source-recorder.c:583
 msgid "Please replace the in-drive media by a blank media."
-msgstr ""
+msgstr "Παρακαλώ αντικαταστήστε το μέσο με ένα κενό μέσο."
 
 #: sources/rb-playlist-source-recorder.c:584
 msgid "Reload blank media"
-msgstr ""
+msgstr "Επαναφόρτωση κενού μέσου"
 
 #: sources/rb-playlist-source-recorder.c:629
-#, fuzzy
 msgid "Converting audio track"
-msgstr "Αποτυχία εύρεσης ενός ηχητικού κομματιού"
+msgstr "Μετατροπή ηχητικού κομματιού"
 
 #: sources/rb-playlist-source-recorder.c:632
 msgid "Preparing to write disc"
-msgstr ""
+msgstr "Προετοιμασία εγγραφής σε δίσκο"
 
 #: sources/rb-playlist-source-recorder.c:635
 msgid "Writing disc"
-msgstr ""
+msgstr "Εγγραφή δίσκου"
 
 #: sources/rb-playlist-source-recorder.c:638
 msgid "Fixating disc"
-msgstr ""
+msgstr "Fixating δίσκου"
 
 #: sources/rb-playlist-source-recorder.c:641
 msgid "Erasing disc"
-msgstr ""
+msgstr "Σβήσιμο δίσκου"
 
 #: sources/rb-playlist-source-recorder.c:644
 msgid "Unhandled action in burn_action_changed_cb"
-msgstr ""
+msgstr "Unhandled action in burn_action_changed_cb"
 
 #: sources/rb-playlist-source-recorder.c:681
-#, fuzzy
 msgid "C_reate"
-msgstr "_Επικόλληση"
+msgstr "_Δημιουργία"
 
 #: sources/rb-playlist-source-recorder.c:752
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create the recorder: %s"
-msgstr "Αποτυχία δημιουργίας  player: %s"
+msgstr "Αποτυχία δημιουργίας του recorder:·%s"
 
 #: sources/rb-playlist-source-recorder.c:836
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
-msgstr ""
+msgstr "Δεν είναι δυνατή η απομάκρυνση προσωρινού καταλόγου  '%s':·%s"
 
 #: sources/rb-playlist-source-recorder.c:856
-#, fuzzy
 msgid "Create Audio CD"
-msgstr "Εξαγωγή Audio-CD"
+msgstr "Δημιουργία CD ήχου"
 
 #: sources/rb-playlist-source-recorder.c:874
-#, fuzzy, c-format
+#, c-format
 msgid "Create audio CD from '%s' playlist?"
-msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+msgstr "Δημιουργία CD ήχου από την λίστα αναπαραγωγής '%s' ;"
 
 #: sources/rb-playlist-source-recorder.c:972
 #, c-format
 msgid "Cannot get free space at %s"
-msgstr ""
+msgstr "Αδυναμία λήψης ελεύθερου χώρου σε %s"
 
 #: sources/rb-playlist-source-recorder.c:1067
 #, c-format
@@ -1497,6 +1478,9 @@ msgid ""
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 msgstr ""
+"Αυτή η λίστα αναπαραγωγής έχει διάρκεια %lld λεπτά.  Αυτό υπερβαίνει την "
+"διάρκεια ενός κανονικού CD. Αν το μέσο προορισμού είναι μεγαλύτερο από ένα "
+"κανονικό CD ήχου , βάλτε το στον οδηγό και προσπαθείστε ξανά."
 
 #: sources/rb-playlist-source-recorder.c:1073
 #, c-format
@@ -1504,26 +1488,28 @@ msgid ""
 "This playlist is %lld minutes long.  This exceeds the %lld  minute length of "
 "the media in the drive."
 msgstr ""
+"Αυτή η λίστα αναπαραγωγής έχει διάρκεια %lld λεπτά.  Αυτό υπερβαίνει την "
+"διάρκεια %lld λεπτών του μέσου στον οδηγό."
 
 #: sources/rb-playlist-source-recorder.c:1081
-#, fuzzy
 msgid "Playlist too long"
-msgstr "Αναπαραγωγή επομένου τραγουδιού"
+msgstr "Η λίστα αναπαραγωγής είναι πολύ μεγάλη"
 
 #: sources/rb-playlist-source-recorder.c:1091
 msgid "Could not find temporary space!"
-msgstr ""
+msgstr "Αδυναμία·εύρεσης·αρκετού·προσωρινού·χώρου!"
 
 #: sources/rb-playlist-source-recorder.c:1092
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  Need %d MiB."
 msgstr ""
+"Αδυναμία εύρεσης αρκετού ελεύθερου προσωρινού χώρου για την μετατροπή "
+"ηχητικών κομματιών. Χρειάζονται ·%d·MiB."
 
 #: sources/rb-source.c:657
-#, fuzzy
 msgid "Not supported"
-msgstr "Η λειτουργία δεν υποστηρίζεται"
+msgstr "Δεν υποστηρίζεται"
 
 #: sources/rb-source.c:658
 msgid "This source does not support drag and drop."
@@ -1543,7 +1529,7 @@ msgstr "Μέγεθος του βέλους διαστολής"
 
 #: widgets/eel-gconf-extensions.c:68
 msgid "Configuration system error"
-msgstr ""
+msgstr "Σφάλμα ρύθμισης συστήματος"
 
 #: widgets/eggtrayicon.c:120
 msgid "Orientation"
@@ -1753,9 +1739,9 @@ msgid "Multiple Song Properties"
 msgstr "Ιδιότητες τραγουδιού"
 
 #: widgets/rb-song-info.c:781
-#, fuzzy, c-format
+#, c-format
 msgid "%lu kbps"
-msgstr "%d kbps"
+msgstr "%lu kbps"
 
 #: widgets/rb-song-info.c:838
 msgid "on the desktop"
@@ -1771,257 +1757,3 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#~ msgid "Add Lo_cation..."
-#~ msgstr "Προσθήκη Τοπο_θεσίας..."
-
-#~ msgid "Choose a location (URI) to be added to the library"
-#~ msgstr "Επιλέξτε μια τοποθεσία (URI) για να προστεθεί στην βιβλιοθήκη"
-
-#~ msgid "Import Lo_cation..."
-#~ msgstr "Εισαγωγή _Τοποθεσίας..."
-
-#~ msgid "P_laylist"
-#~ msgstr "Λί_στα αναπαραγωγής"
-
-#~ msgid "Pause playing"
-#~ msgstr "Παύση αναπαραγωγής"
-
-#~ msgid "Repea_t"
-#~ msgstr "Επανάλη_ψη"
-
-#~ msgid "Start playing"
-#~ msgstr "Έναρξη αναπαραγωγής"
-
-#~ msgid "Stop playing"
-#~ msgstr "Διακοπή αναπαραγωγής"
-
-#~ msgid "_Add to Library..."
-#~ msgstr "_Προσθήκη στην Βιβλιοθήκη..."
-
-#~ msgid "_Cut"
-#~ msgstr "Απο_κοπή"
-
-#~ msgid "_Remove"
-#~ msgstr "_Αφαίρεση"
-
-#~ msgid "_Shuffle"
-#~ msgstr "Α_νακάτεμα"
-
-#~ msgid ""
-#~ "GConf error:\n"
-#~ "  %s"
-#~ msgstr ""
-#~ "Σφάλμα GConf:\n"
-#~ "  %s"
-
-#~ msgid "%s exists, please move it out of the way."
-#~ msgstr "Το %s υπάρχει, παρακαλώ μετακινήστε το."
-
-#~ msgid "Failed to create directory %s."
-#~ msgstr "Αδύνατη η δημιουργία καταλόγου %s."
-
-#~ msgid "Unsupported MIME type %s"
-#~ msgstr "Μη υποστηριζόμενο είδος MIME %s"
-
-#~ msgid "Unknown file type"
-#~ msgstr "Άγνωστος τύπος αρχείου"
-
-#~ msgid "Track %.2d"
-#~ msgstr "Κομμάτι %.2d"
-
-#~ msgid "No TRM ID for this song"
-#~ msgstr "Δεν υπάρχει TRM ID για αυτό το τραγούδι"
-
-#~ msgid "No information for this song found"
-#~ msgstr "Δε βρέθηκαν πληροφορίες για αυτό το τραγούδι"
-
-#~ msgid "Invalid track number"
-#~ msgstr "Μη έγκυρος αριθμός κομματιού"
-
-#~ msgid "Audio CD track"
-#~ msgstr "Κομμάτι CD ήχου "
-
-#~ msgid "Failed to open file for reading"
-#~ msgstr "Αποτυχία ανοίγματος αρχείου για ανάγνωση"
-
-#~ msgid "Error decoding FLAC file"
-#~ msgstr "Σφάλμα αποκωδικοποίησης αρχείου FLAC"
-
-#~ msgid "FLAC"
-#~ msgstr "FLAC"
-
-#~ msgid "Failed to gather information about the file"
-#~ msgstr "Αποτυχία συγκέντρωσης πληροφοριών σχετικά με το αρχείο"
-
-#~ msgid "MPEG %d Layer III"
-#~ msgstr "MPEG %d Layer III"
-
-#~ msgid "MPEG 2.5 Layer III"
-#~ msgstr "MPEG 2.5 Στρώμα III"
-
-#~ msgid "Failed to recognise filetype"
-#~ msgstr "Αποτυχία αναγνώρισης τύπου αρχείου"
-
-#~ msgid "MPEG-4 audio (MPEG-4 AAC)"
-#~ msgstr "ήχος MPEG-4 (MPEG-4 AAC)"
-
-#~ msgid "Failed to open file as Ogg Vorbis"
-#~ msgstr "Αποτυχία ανοίγματος αρχείου ως Ogg Vorbis"
-
-#~ msgid "Ogg Vorbis"
-#~ msgstr "Ogg Vorbis"
-
-#~ msgid "Loading songs..."
-#~ msgstr "Φόρτωση τραγουδιών..."
-
-#~ msgid "Refreshing songs..."
-#~ msgstr "Ανανέωση τραγουδιών.."
-
-#~ msgid ""
-#~ "Failed to activate the shell:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Αποτυχία ενεργοποίησης του κέλυφους:\n"
-#~ "%s"
-
-#~ msgid "Unable to parse URI \"%s\"\n"
-#~ msgstr "Αδυναμία ανάλυσης URI\"%s\"\n"
-
-#~ msgid "Choose Files or Directory"
-#~ msgstr "Επιλογή αρχείων ή καταλόγου"
-
-#~ msgid "No properties available."
-#~ msgstr "Δεν υπάρχουν διαθέσιμες ιδιότητες."
-
-#~ msgid "Error reading filename: %s"
-#~ msgstr "Σφάλμα ανάγνωσης ονόματος αρχείου: %s"
-
-#~ msgid "Choose a directory"
-#~ msgstr "Επιλογή ενός καταλόγου"
-
-#~ msgid ""
-#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
-#~ "and esdsink is in use."
-#~ msgstr ""
-#~ "Το Rhythmbox δεν λειτουργεί αν είναι ενεργοποιημένα τα γεγονότα ήχου του "
-#~ "GNOME και είναι σε χρήση το esdsink."
-
-#~ msgid "Could not open iTunesDB \"%s\" for writing.\n"
-#~ msgstr "Αποτυχία ανοίγματος  iTunesDB \"%s\" για εγγραφή.\n"
-
-#~ msgid "Could not open file \"%s\" for reading.\n"
-#~ msgstr "Αποτυχία ανοίγματος αρχείου \"%s\" για ανάγνωση.\n"
-
-#~ msgid "Could not open file \"%s\" for writing.\n"
-#~ msgstr "Αποτυχία ανοίγματος αρχείου \"%s\" για εγγραφή.\n"
-
-#~ msgid "Toggle random playing order"
-#~ msgstr "Εναλλαγή τυχάιας σειράς αναπαραγωγής"
-
-#~ msgid "Toggle repeat mode"
-#~ msgstr "Εναλλαγή λειτουργίας επανάληψης"
-
-#~ msgid "Failed to create thread element; check your GStreamer installation"
-#~ msgstr ""
-#~ "Αποτυχία δημιουργίας στοιχείου αλληλουχίας, ελέγξτε την εγκατάσταση του "
-#~ "GStreamer"
-
-#~ msgid "Failed to create %s input element; check your installation"
-#~ msgstr ""
-#~ "Αποτυχία δημιουργίας στοιχείου εισόδου %s, ελέγξτε την εγκατάσταση σας"
-
-#~ msgid "Failed to create queue element; check your installation"
-#~ msgstr "Αποτυχία δημιουργίας στοιχείου ουράς, ελέγξτε την εγκατάσταση σας"
-
-#~ msgid "Failed to create typefind element; check your installation"
-#~ msgstr ""
-#~ "Αποτυχία δημιουργίας στοιχείου typefind, ελέγξτε την εγκατάσταση σας"
-
-#~ msgid "Failed to create volume element; check your installation"
-#~ msgstr "Αποτυχία δημιουργίας στοιχείου έντασης, ελέγξτε την εγκατάσταση σας"
-
-#~ msgid "I could not initialize Bonobo"
-#~ msgstr "Αδύνατη η αρχικοποίηση του Bonobo"
-
-#~ msgid "Could not create an instance of the sample echo component"
-#~ msgstr "Αδύνατη η δημιουργία ενός τεκμηρίου του δείγματος συνιστώσας ηχούς"
-
-#~ msgid "Encoding:"
-#~ msgstr "Κωδικοποίηση:"
-
-#~ msgid "Quality:"
-#~ msgstr "Ποιότητα:"
-
-#~ msgid "_Comments:"
-#~ msgstr "_Σχόλια:"
-
-#~ msgid "_Date:"
-#~ msgstr "Ημερο_μηνία:"
-
-#~ msgid "_of:"
-#~ msgstr "α_πό:"
-
-#~ msgid "_Album"
-#~ msgstr "_Άλμπουμ"
-
-#~ msgid ""
-#~ "%s does not point to a valid CDRom device. This may be caused by:\n"
-#~ "a) CD support is not compiled into Linux\n"
-#~ "b) You do not have the correct permissions to access the CD drive\n"
-#~ "c) %s is not the CD drive.\n"
-#~ msgstr ""
-#~ "Το %s δεν δείχνει πρός μια έγκυρη συσκευή CDRom. Αυτό μπορεί να "
-#~ "οφείλεται:\n"
-#~ "α) Η υποστήριξη  CD δεν έχει γίνει compile στο σύστημα σας\n"
-#~ "β) Δεν έχετε τα απαραίτητα δικαιώματα πρόσβασης στον οδηγό CD\n"
-#~ "γ) Το %s δεν είναι ο οδηγός CD.\n"
-
-#~ msgid "You do not seem to have permission to access %s."
-#~ msgstr "Δε φαίνεται να έχετε τα απαραίτητα δικαιώματα πρόσβασης στο  %s."
-
-#~ msgid ""
-#~ "%s does not appear to point to a valid CD device. This may be because:\n"
-#~ "a) CD support is not compiled into Linux\n"
-#~ "b) You do not have the correct permissions to access the CD drive\n"
-#~ "c) %s is not the CD drive.\n"
-#~ msgstr ""
-#~ "Το %s δεν δείχνει πρός μια έγκυρη συσκευή CD. Αυτό μπορεί να οφείλεται:\n"
-#~ "α) Η υποστήριξη  CD δεν έχει γίνει compile στο σύστημα σας\n"
-#~ "β) Δεν έχετε τα απαραίτητα δικαιώματα πρόσβασης στον οδηγό CD\n"
-#~ "γ) Το %s δεν είναι ο οδηγός CD.\n"
-
-#~ msgid "Error reading CD header: %s"
-#~ msgstr "Σφάλμα ανάγνωσης κεφαλίδας CD : %s"
-
-#~ msgid "Lossless"
-#~ msgstr "Αισθητή"
-
-#~ msgid "Failed to create gnomevfssrc input element; check your installation"
-#~ msgstr ""
-#~ "Αποτυχία δημιουργίας στοιχείου εισόδου gnomevfssrc, ελέγξτε την "
-#~ "εγκατάσταση σας"
-
-#~ msgid "Failed to create cdparanoia input element; check your installation"
-#~ msgstr ""
-#~ "Αποτυχία δημιουργίας στοιχείου εισόδου cdparanoia, ελέγξτε την "
-#~ "εγκατάσταση σας"
-
-#~ msgid "Please remove %s"
-#~ msgstr "Παρακαλώ απομακρύνετε το  %s"
-
-#~ msgid "Failed to create directory %s"
-#~ msgstr "Αποτυχία δημιουργίας καταλόγου %s"
-
-#~ msgid "MonkeyMedia options:"
-#~ msgstr "Επιλογές MonkeyMedia:"
-
-#~ msgid " (Mono)"
-#~ msgstr " (Μονοφωνικό)"
-
-#~ msgid " (Stereo)"
-#~ msgstr " (Στερεοφωνικό)"
-
-#~ msgid " (%d channel)"
-#~ msgid_plural " (%d channel)"
-#~ msgstr[0] " (%d κανάλι)"
-#~ msgstr[1] "(%d κανάλια)"
