@@ -621,6 +621,7 @@ monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 			gst_element_set_state (mp->priv->pipeline,
 					       GST_STATE_PLAYING);
 		}
+		g_timer_start (mp->priv->timer);
 	} else {
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_PAUSED);
