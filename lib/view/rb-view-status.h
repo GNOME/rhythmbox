@@ -43,9 +43,11 @@ typedef struct
 	const char *(*impl_get) (RBViewStatus *status);
 } RBViewStatusIface;
 
-GType       rb_view_status_get_type (void);
+GType       rb_view_status_get_type       (void);
 
-const char *rb_view_status_get      (RBViewStatus *status);
+const char *rb_view_status_get            (RBViewStatus *status);
+
+void        rb_view_status_notify_changed (RBViewStatus *status);
 
 G_END_DECLS
 

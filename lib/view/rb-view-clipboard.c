@@ -22,6 +22,14 @@
 
 static void rb_view_clipboard_base_init (gpointer g_iface);
 
+enum
+{
+	CHANGED,
+	LAST_SIGNAL
+};
+
+static guint rb_view_clipboard_signals[LAST_SIGNAL] = { 0 };
+
 GType
 rb_view_clipboard_get_type (void)
 {
@@ -54,4 +62,85 @@ rb_view_clipboard_get_type (void)
 static void
 rb_view_clipboard_base_init (gpointer g_iface)
 {
+	static gboolean initialized = FALSE;
+
+	if (initialized == TRUE)
+		return;
+
+	rb_view_clipboard_signals[CHANGED] =
+		g_signal_new ("changed",
+			      RB_TYPE_VIEW_CLIPBOARD,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewClipboardIface, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
+	initialized = TRUE;
+}
+
+gboolean
+rb_view_clipboard_can_cut (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	return iface->impl_can_cut (clipboard);
+}
+
+gboolean
+rb_view_clipboard_can_copy (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	return iface->impl_can_copy (clipboard);
+}
+
+gboolean
+rb_view_clipboard_can_paste (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	return iface->impl_can_paste (clipboard);
+}
+
+GList *
+rb_view_clipboard_cut (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+	GList *ret;
+
+	ret = iface->impl_cut (clipboard);
+
+	rb_view_clipboard_notify_changed (clipboard);
+
+	return ret;
+}
+
+GList *
+rb_view_clipboard_copy (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+	GList *ret;
+
+	ret = iface->impl_copy (clipboard);
+
+	rb_view_clipboard_notify_changed (clipboard);
+
+	return ret;
+}
+
+void
+rb_view_clipboard_paste (RBViewClipboard *clipboard,
+		         GList *nodes)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	iface->impl_paste (clipboard, nodes);
+}
+
+void
+rb_view_clipboard_notify_changed (RBViewClipboard *clipboard)
+{
+	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[CHANGED], 0);
 }

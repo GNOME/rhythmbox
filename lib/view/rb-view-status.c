@@ -22,6 +22,14 @@
 
 static void rb_view_status_base_init (gpointer g_iface);
 
+enum
+{
+	CHANGED,
+	LAST_SIGNAL
+};
+
+static guint rb_view_status_signals[LAST_SIGNAL] = { 0 };
+
 GType
 rb_view_status_get_type (void)
 {
@@ -54,6 +62,22 @@ rb_view_status_get_type (void)
 static void
 rb_view_status_base_init (gpointer g_iface)
 {
+	static gboolean initialized = FALSE;
+
+	if (initialized == TRUE)
+		return;
+
+	rb_view_status_signals[CHANGED] =
+		g_signal_new ("changed",
+			      RB_TYPE_VIEW_STATUS,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewStatusIface, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
+	initialized = TRUE;
 }
 
 const char *
@@ -62,4 +86,10 @@ rb_view_status_get (RBViewStatus *status)
 	RBViewStatusIface *iface = RB_VIEW_STATUS_GET_IFACE (status);
 
 	return iface->impl_get (status);
+}
+
+void
+rb_view_status_notify_changed (RBViewStatus *status)
+{
+	g_signal_emit (G_OBJECT (status), rb_view_status_signals[CHANGED], 0);
 }

@@ -37,9 +37,7 @@ typedef struct
 	GTypeInterface g_iface;
 
 	/* signals */
-	void (*can_cut)   (RBViewClipboard *clipboard, gboolean can_cut);
-	void (*can_copy)  (RBViewClipboard *clipboard, gboolean can_copy);
-	void (*can_paste) (RBViewClipboard *clipboard, gboolean can_paste);
+	void (*changed) (RBViewClipboard *clipboard);
 
 	/* methods */
 	gboolean (*impl_can_cut)   (RBViewClipboard *clipboard);
@@ -52,16 +50,18 @@ typedef struct
 				    GList *nodes);
 } RBViewClipboardIface;
 
-GType    rb_view_clipboard_get_type  (void);
+GType    rb_view_clipboard_get_type       (void);
 
-gboolean rb_view_clipboard_can_cut   (RBViewClipboard *clipboard);
-gboolean rb_view_clipboard_can_copy  (RBViewClipboard *clipboard);
-gboolean rb_view_clipboard_can_paste (RBViewClipboard *clipboard);
+gboolean rb_view_clipboard_can_cut        (RBViewClipboard *clipboard);
+gboolean rb_view_clipboard_can_copy       (RBViewClipboard *clipboard);
+gboolean rb_view_clipboard_can_paste      (RBViewClipboard *clipboard);
 
-GList   *rb_view_clipboard_cut       (RBViewClipboard *clipboard);
-GList   *rb_view_clipboard_copy      (RBViewClipboard *clipboard);
-void     rb_view_clipboard_paste     (RBViewClipboard *clipboard,
-				      GList *nodes);
+GList   *rb_view_clipboard_cut            (RBViewClipboard *clipboard);
+GList   *rb_view_clipboard_copy           (RBViewClipboard *clipboard);
+void     rb_view_clipboard_paste          (RBViewClipboard *clipboard,
+				           GList *nodes);
+
+void     rb_view_clipboard_notify_changed (RBViewClipboard *clipboard);
 
 G_END_DECLS
 

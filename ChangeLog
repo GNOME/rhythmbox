@@ -1,5 +1,20 @@
 2002-06-11  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/view/rb-view-clipboard.c: (rb_view_clipboard_base_init),
+	(rb_view_clipboard_can_cut), (rb_view_clipboard_can_copy),
+	(rb_view_clipboard_can_paste), (rb_view_clipboard_cut),
+	(rb_view_clipboard_copy), (rb_view_clipboard_paste),
+	(rb_view_clipboard_notify_changed):
+	* lib/view/rb-view-clipboard.h:
+	* lib/view/rb-view-status.c: (rb_view_status_base_init),
+	(rb_view_status_get), (rb_view_status_notify_changed):
+	* lib/view/rb-view-status.h:
+
+	Implement RBViewStatus and RBViewClipboard interfaces.
+
+2002-06-11  Jorn Baayen  <jorn@nl.linux.org>
+
 	* tests/testview2.c: (rb_test_view2_get_type),
 	(rb_test_view2_finalize), (rb_test_view2_new):
 	* tests/testview2.h:
