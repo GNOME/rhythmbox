@@ -155,6 +155,9 @@ static void volume_changed_cb (GtkAdjustment *adjustment,
 static void volume_mute_cb (GtkWidget* button,
 			    GdkEventButton *event,
 			    RBVolume* volume);
+static gboolean volume_scroll_cb (GtkWidget *button,
+				  GdkEvent *event,
+				  RBVolume *volume);
 static gboolean timeout_cb (RBVolume *volume);
 static void rb_volume_update_slider (RBVolume *volume);
 static void rb_volume_update_image (RBVolume *volume);
@@ -231,6 +234,10 @@ rb_volume_instance_init (RBVolume *volume)
 			  "button_press_event",
 			  G_CALLBACK (volume_mute_cb),
 			  volume);
+	g_signal_connect (G_OBJECT (priv->indicator),
+			  "scroll_event",
+			  G_CALLBACK (volume_scroll_cb),
+			  volume);
 
 	priv->tooltip = gtk_tooltips_new ();
 	gtk_tooltips_set_tip (priv->tooltip, priv->indicator, _("Click to mute"), NULL);
@@ -245,6 +252,11 @@ rb_volume_instance_init (RBVolume *volume)
 	gtk_widget_set_size_request (priv->slider, 75, -1);
 	gtk_box_pack_start (GTK_BOX (volume), priv->slider, TRUE, TRUE, 0);
 	gtk_widget_show (priv->slider);
+
+	g_signal_connect (G_OBJECT (priv->slider),
+			  "scroll_event",
+			  G_CALLBACK (volume_scroll_cb),
+			  volume);
 
 	g_signal_connect (G_OBJECT (priv->adjustment),
 			  "value-changed",
@@ -368,6 +380,32 @@ volume_mute_cb (GtkWidget *button,
 	mute = volume->priv->mute^1;
 	
 	rb_volume_set_mute (volume, mute);
+}
+
+static gboolean
+volume_scroll_cb (GtkWidget *button,
+		  GdkEvent *event,
+		  RBVolume *volume)
+{
+	GdkEventScroll *event_scroll;
+	gdouble value, inc;
+
+	if (event->type != GDK_SCROLL)
+		return FALSE;
+
+	event_scroll = (GdkEventScroll *)event;
+
+	if (event_scroll->direction == GDK_SCROLL_UP ||
+	    event_scroll->direction == GDK_SCROLL_RIGHT)
+		inc = -GTK_ADJUSTMENT (volume->priv->adjustment)->page_increment / 2;
+	else
+		inc = GTK_ADJUSTMENT (volume->priv->adjustment)->page_increment / 2;
+	
+	value = GTK_ADJUSTMENT (volume->priv->adjustment)->value;
+	gtk_adjustment_set_value (GTK_ADJUSTMENT (volume->priv->adjustment),
+			          value + inc);
+	
+	return TRUE;
 }
 
 static gboolean
