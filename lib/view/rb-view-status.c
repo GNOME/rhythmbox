@@ -24,7 +24,7 @@ static void rb_view_status_base_init (gpointer g_iface);
 
 enum
 {
-	CHANGED,
+	STATUS_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -67,11 +67,11 @@ rb_view_status_base_init (gpointer g_iface)
 	if (initialized == TRUE)
 		return;
 
-	rb_view_status_signals[CHANGED] =
-		g_signal_new ("changed",
+	rb_view_status_signals[STATUS_CHANGED] =
+		g_signal_new ("status_changed",
 			      RB_TYPE_VIEW_STATUS,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBViewStatusIface, changed),
+			      G_STRUCT_OFFSET (RBViewStatusIface, status_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -91,5 +91,5 @@ rb_view_status_get (RBViewStatus *status)
 void
 rb_view_status_notify_changed (RBViewStatus *status)
 {
-	g_signal_emit (G_OBJECT (status), rb_view_status_signals[CHANGED], 0);
+	g_signal_emit (G_OBJECT (status), rb_view_status_signals[STATUS_CHANGED], 0);
 }

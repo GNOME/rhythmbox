@@ -182,7 +182,7 @@ rb_shell_status_set_property (GObject *object,
 		if (shell_status->priv->status != NULL)
 		{
 			g_signal_connect (G_OBJECT (shell_status->priv->status),
-					  "changed",
+					  "status_changed",
 					  G_CALLBACK (rb_view_status_changed_cb),
 					  shell_status);
 		}

@@ -37,7 +37,7 @@ typedef struct
 	GTypeInterface g_iface;
 	
 	/* signals */
-	void (*changed) (RBViewStatus *status);
+	void (*status_changed) (RBViewStatus *status);
 
 	/* methods */
 	const char *(*impl_get) (RBViewStatus *status);

@@ -1,5 +1,15 @@
 2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/view/rb-view-status.c: (rb_view_status_base_init),
+	(rb_view_status_notify_changed):
+	* lib/view/rb-view-status.h:
+	* shell/rb-shell-status.c: (rb_shell_status_set_property):
+	* tests/testview.c: (node_view_changed_cb):
+
+	Fix duped "changed" signal ;)
+
+2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c:
 	(gtk_tree_sortable_sort_column_changed_cb),
 	(rb_node_view_get_status), (rb_node_view_status_foreach_cb):

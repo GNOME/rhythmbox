@@ -611,7 +611,6 @@ node_view_changed_cb (RBNodeView *view,
 {
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
-
 	rb_view_status_notify_changed (RB_VIEW_STATUS (test_view));
 }
 
