@@ -196,6 +196,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_node_view = impl_get_node_view;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;

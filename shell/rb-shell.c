@@ -963,6 +963,11 @@ rb_shell_remove_source (RBShell *shell,
 
 	shell->priv->sources = g_list_remove (shell->priv->sources, source);
 
+	if (g_list_find (shell->priv->groups, source) != NULL) {
+		shell->priv->groups = g_list_remove (shell->priv->groups, source);
+		rb_group_source_remove_file (RB_GROUP_SOURCE (source));
+	}
+
 	rb_sourcelist_remove (RB_SOURCELIST (shell->priv->sourcelist), source);
 
 	gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
@@ -1429,12 +1434,7 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 {
 	rb_debug ("Deleting source %p", shell->priv->selected_source);
 
-	if (g_list_find (shell->priv->groups, shell->priv->selected_source) != NULL) {
-		rb_group_source_remove_file (RB_GROUP_SOURCE (shell->priv->selected_source));
-		shell->priv->groups = g_list_remove (shell->priv->groups, shell->priv->selected_source);
-
-		rb_shell_remove_source (shell, shell->priv->selected_source);
-	}
+	rb_shell_remove_source (shell, shell->priv->selected_source);
 }
 
 

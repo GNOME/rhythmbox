@@ -252,6 +252,8 @@ rb_group_source_finalize (GObject *object)
 
 	rb_group_source_save (source);
 
+	g_source_remove (source->priv->idle_save_id);
+
 	rb_node_unref (source->priv->group);
 
 	g_free (source->priv->title);
