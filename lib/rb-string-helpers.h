@@ -18,8 +18,6 @@
  *  $Id$
  */
 
-#include <bonobo/bonobo-ui-component.h>
-
 #ifndef __RB_STRING_HELPERS_H
 #define __RB_STRING_HELPERS_H
 
