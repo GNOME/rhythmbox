@@ -1,5 +1,23 @@
 2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/node-views/rb-node-view-songs.xml:
+	* data/rhythmbox.schemas:
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-node-song.c: (set_track_number):
+	* library/rb-node.h:
+	* sources/rb-audiocd-source.c: (rb_audiocd_node_fill_basic):
+
+	Simpler track number format (easier to parse for us humans),
+	include track num column by default and sort on it.
+
+	Breaks library format.
+
+2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
 	* shell/rb-source-header.c: (rb_source_header_init):
 	* shell/rb-statusbar.c: (rb_statusbar_init),

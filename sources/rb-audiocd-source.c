@@ -995,9 +995,6 @@ rb_audiocd_node_fill_basic (char *location)
        rb_node_set_property (RB_NODE (track),
                              RB_NODE_PROP_TRACK_NUMBER,
                              &value);
-       rb_node_set_property (RB_NODE (track),
-                             RB_NODE_PROP_REAL_TRACK_NUMBER,
-                             &value);
        g_value_unset (&value);
        
        g_value_init (&value, G_TYPE_STRING);
