@@ -6,6 +6,7 @@ data/glade/druid.glade
 data/glade/general-prefs.glade
 data/glade/library-prefs.glade
 data/glade/load-failure.glade
+data/glade/recorder.glade
 data/glade/song-info.glade
 data/glade/song-info-multiple.glade
 data/glade/station-new.glade
@@ -21,9 +22,13 @@ lib/rb-string-helpers.c
 lib/totem-pl-parser.c
 metadata/rb-metadata-gst.c
 metadata/rb-metadata-mm.c
+metadata/rb-metadata-xine.c
 player/rb-player-gst.c
 player/rb-player-xine.c
+player/rb-recorder-gst.c
+player/rb-recorder-xine.c
 remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in
+remote/bonobo/rb-remote-bonobo.c
 rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
 rhythmdb/rhythmdb.c
@@ -31,6 +36,7 @@ shell/main.c
 shell/rb-play-order.c
 shell/rb-play-order.c
 shell/rb-playlist-manager.c
+shell/rb-shell-clipboard.c
 shell/rb-shell-player.c
 shell/rb-shell-preferences.c
 shell/rb-shell.c
@@ -42,12 +48,14 @@ sources/rb-ipod-source.c
 sources/rb-iradio-source.c
 sources/rb-library-source.c
 sources/rb-playlist-source.c
+sources/rb-playlist-source-recorder.c
 sources/rb-source.c
 sources/rb-sourcelist.c
 widgets/disclosure-widget.c
 widgets/eel-gconf-extensions.c
 widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
+widgets/rb-dialog.c
 widgets/rb-druid.c
 widgets/rb-entry-view.c
 widgets/rb-header.c

@@ -1064,20 +1064,14 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
                 media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
 
                 if ((media_duration < 0) && (duration > 4440)) {
-                        message = g_strdup_printf (_("This playlist is %" 
-                                                     G_GINT64_FORMAT
-                                                     " minutes long.  "
+                        message = g_strdup_printf (_("This playlist is %lld minutes long.  "
                                                      "This exceeds the length of a standard audio CD.  "
                                                      "If the destination media is larger than a standard audio CD "
                                                      "please insert it in the drive and try again."),
                                                    duration / 60);
                 } else if ((media_duration > 0) && (media_duration <= duration)) {
-                        message = g_strdup_printf (_("This playlist is %" 
-                                                     G_GINT64_FORMAT
-                                                     " minutes long.  "
-                                                     "This exceeds the %" 
-                                                     G_GINT64_FORMAT
-                                                     " minute length of the media in the drive."),
+                        message = g_strdup_printf (_("This playlist is %lld minutes long.  "
+                                                     "This exceeds the %lld  minute length of the media in the drive."),
                                                    duration / 60,
                                                    media_duration / 60);
                 }

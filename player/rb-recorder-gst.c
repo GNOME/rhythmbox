@@ -1095,12 +1095,8 @@ rb_recorder_burn (RBRecorder *recorder,
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
-                             _("This playlist is %"
-                               G_GINT64_FORMAT
-                               " minutes long.  "
-                               "This exceeds the %"
-                               G_GINT64_FORMAT
-                               " minute length of the media in the drive."),
+                             _("This playlist is %lld minutes long.  "
+                               "This exceeds the %lld minute length of the media in the drive."),
                              tracks_length / 60,
                              media_length / 60);
                 return FALSE;
