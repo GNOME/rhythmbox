@@ -35,8 +35,6 @@ if INSTALL_SCHEMAS
 install-data-local: install-schemas
 endif
 
-CLEANFILES = GNOME_Rhythmbox.server rhythmbox.desktop
-
 EXTRA_DIST = $(server_in_files)     \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
