@@ -27,6 +27,7 @@
 #include <gtk/gtkeventbox.h>
 #include <gtk/gtkdialog.h>
 #include <gtk/gtkdnd.h>
+#include <gtk/gtkmain.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
@@ -51,6 +52,8 @@ static void rb_sidebar_button_get_property (GObject *object,
 static gboolean rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
 					                 GdkEventButton *event,
 					                 RBSidebarButton *button);
+static gboolean rb_sidebar_button_popup_menu_cb (GtkWidget *widget,
+				                 RBSidebarButton *button);
 static char *rb_sidebar_button_item_factory_translate_func (const char *path,
 					                    gpointer unused);
 static void rb_sidebar_button_popup_rename_cb (RBSidebarButton *button,
@@ -280,6 +283,9 @@ rb_sidebar_button_init (RBSidebarButton *button)
 	g_signal_connect (G_OBJECT (button), "button_press_event",
 			  G_CALLBACK (rb_sidebar_button_button_press_event_cb),
 			  button);
+	g_signal_connect (G_OBJECT (button), "popup_menu",
+			  G_CALLBACK (rb_sidebar_button_popup_menu_cb),
+			  button);
 	
 	/* popup menu */
 	button->priv->popup_factory = gtk_item_factory_new (GTK_TYPE_MENU, "<main>", NULL);
@@ -479,15 +485,11 @@ rb_sidebar_button_get (RBSidebarButton *button,
 	*is_static = button->priv->is_static;
 }
 
-static gboolean
-rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
-					 GdkEventButton *event,
-					 RBSidebarButton *button)
+static void
+popup_menu (RBSidebarButton *button,
+	    GdkEventButton *event)
 {
 	GtkWidget *w;
-	
-	if (event->button != 3)
-		return FALSE;
 
 	w = gtk_item_factory_get_widget (button->priv->popup_factory,
 				         N_("/Rename..."));
@@ -501,6 +503,47 @@ rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
 				event->y_root,
 				event->button,
 				event->time);
+}
+
+static gboolean
+rb_sidebar_button_popup_menu_cb (GtkWidget *widget,
+				 RBSidebarButton *button)
+{
+	GdkEventButton *event;
+	GtkRequisition req;
+	int x, y;
+
+	gdk_window_get_origin (widget->window, &x, &y);
+
+	gtk_widget_size_request (button->priv->popup_factory->widget, &req);
+
+	x += widget->allocation.width / 2;
+	y += widget->allocation.height;
+
+	x = CLAMP (x, 0, MAX (0, gdk_screen_width () - req.width));
+	y = CLAMP (y, 0, MAX (0, gdk_screen_height () - req.height));
+
+	event = g_new0 (GdkEventButton, 1);
+	event->time = gtk_get_current_event_time ();
+	event->x_root = x;
+	event->y_root = y;
+	
+	popup_menu (button, event);
+
+	g_free (event);
+
+	return FALSE;
+}
+
+static gboolean
+rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
+					 GdkEventButton *event,
+					 RBSidebarButton *button)
+{
+	if (event->button != 3)
+		return FALSE;
+
+	popup_menu (button, event);
 
 	return FALSE;
 }
