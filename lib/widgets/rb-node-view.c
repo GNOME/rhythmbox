@@ -492,7 +492,7 @@ rb_node_view_construct (RBNodeView *view)
 		}
 		if (title != NULL)
 		{
-			gtk_tree_view_column_set_title (gcolumn, title);
+			gtk_tree_view_column_set_title (gcolumn, _(title));
 			g_free (title);
 		}
 		gtk_tree_view_column_set_resizable (gcolumn, resizable);
