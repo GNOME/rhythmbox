@@ -46,6 +46,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_SET_STAR      "rhythmbox-set-star"
 #define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"
 #define RB_STOCK_NO_STAR       "rhythmbox-no-star"
+#define RB_STOCK_AUDIOCD       "rhythmbox-audiocd"
 #define RB_STOCK_DND_ICON      "rhythmbox-dnd"
 
 void rb_stock_icons_init (void);

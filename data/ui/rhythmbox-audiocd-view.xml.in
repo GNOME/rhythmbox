@@ -1,0 +1,59 @@
+<Root>
+
+<commands>
+
+  <cmd name="EjectCD"
+       _tip="Eject Audio-CD"/>
+
+  <cmd name="SelectAll"
+       _tip="Select all songs"/>
+
+  <cmd name="SelectNone"
+       _tip="Deselect all songs"/>
+
+  <cmd name="CurrentSong"
+       _tip="Scroll the view to the currently playing song"
+       pixtype="stock"
+       pixname="gtk-jump-to"/>
+
+</commands>
+
+<menu>
+
+<submenu name="File">
+
+  <placeholder name="SourceMenu">
+
+    <menuitem name="EjectCD" verb="EjectCD" _label="_Eject Audio-CD..."/>
+    
+  </placeholder>
+
+</submenu>
+
+<submenu name="Edit" _label="_Edit">
+
+  <placeholder name="EditMenu">
+
+    <separator/>
+
+    <menuitem name="SelectAll" verb="SelectAll" _label="Select _All" accel="*Control*a"/>
+
+  </placeholder>
+
+</submenu>
+
+<submenu name="View" _label="_View">
+
+  <placeholder name="ViewMenu">
+
+    <separator/>
+
+    <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
+
+  </placeholder>
+
+</submenu>
+
+</menu>
+
+</Root>

@@ -3,8 +3,10 @@ noinst_LTLIBRARIES = libviews.la
 libviews_la_SOURCES =					\
 	rb-library-view.c				\
 	rb-library-view.h				\
-	rb-group-view.c					\
-	rb-group-view.h
+        rb-group-view.c                                 \
+        rb-group-view.h					\
+	rb-audiocd-view.c				\
+	rb-audiocd-view.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

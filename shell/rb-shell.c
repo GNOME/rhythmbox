@@ -53,6 +53,7 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-library.h"
 #include "rb-library-view.h"
+#include "rb-audiocd-view.h"
 #include "rb-shell-preferences.h"
 #include "rb-group-view.h"
 #include "rb-file-monitor.h"
@@ -568,6 +569,7 @@ rb_shell_construct (RBShell *shell)
 	Bonobo_UIContainer corba_container;
 	GtkWidget *vbox;
 	RBView *library_view;
+        RBView *audiocd_view;
 	GulToolbar *toolbar;
 	GulTbBonoboView *bview;
 	
@@ -758,6 +760,11 @@ rb_shell_construct (RBShell *shell)
 	/* load library */
 	rb_library_release_brakes (shell->priv->library);
 	
+        audiocd_view = rb_audiocd_view_new (shell->priv->container);
+
+        rb_shell_append_view (shell, audiocd_view);
+        rb_audiocd_refresh_cd (RB_AUDIOCD_VIEW (audiocd_view));
+
 	/* now that the lib is loaded, we can load the music groups */
 	rb_shell_load_music_groups (shell);
 

@@ -57,7 +57,8 @@ rb_stock_icons_init (void)
 		RB_STOCK_SET_STAR,
 		RB_STOCK_UNSET_STAR,
 		RB_STOCK_NO_STAR,
-		RB_STOCK_DND_ICON
+		RB_STOCK_DND_ICON,
+                RB_STOCK_AUDIOCD
 	};
 
 	factory = gtk_icon_factory_new ();
