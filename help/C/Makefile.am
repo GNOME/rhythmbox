@@ -4,7 +4,7 @@ lang = C
 omffile = rhythmbox-C.omf
 entities = fdl-appendix.xml legal.xml authors.xml quick-reference.xml user-guide.xml rhythmbox.xml
 
-authors.xml: Makefile.am $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_srcdir)/DOCUMENTERS
+authors.xml: $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_srcdir)/DOCUMENTERS
 	(echo '<?xml version="1.0"?>'; \
 	 echo '<sect2 id="authors">'; \
 	 echo '<title>Authors</title>'; \
@@ -24,7 +24,12 @@ authors.xml: Makefile.am $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_s
 	 echo '</sect2>') >> $@.tmp
 	mv $@.tmp $@
 
+all-am: authors.xml
+
 include $(top_srcdir)/xmldocs.make
+
+CLEANFILES += authors.xml
+
 dist-hook: app-dist-hook
 
 
