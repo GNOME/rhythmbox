@@ -2,6 +2,47 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-23 22:52:49 GMT	Colin Walters <walters@verbum.org>	patch-108
+
+    Summary:
+      merge more tag writing bits from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-108
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-26
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-27
+       attempt to synchronize metadata
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-28
+       squish memleak
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-29
+       attempt to handle multiple entries in song info dialog
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-30
+       don't sync metadata if dry-run is enabled
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-31
+       don't sync empty values, set labels unsensitive as necessary
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade rhythmdb/rhythmdb.c
+     shell/rb-shell.c widgets/rb-song-info.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-26
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-27
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-28
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-29
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-30
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-31
+
+
 2003-12-23 05:29:35 GMT	Colin Walters <walters@verbum.org>	patch-107
 
     Summary:
