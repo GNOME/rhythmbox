@@ -1817,12 +1817,20 @@ rb_shell_sync_selected_source (RBShell *shell)
 		const char *tmpname;
 		g_object_get (G_OBJECT (tmp->data), "internal-name", &tmpname, NULL);
 		if (!strcmp (internalname, tmpname)) {
+			gboolean visible;
 			g_assert (tmp->data != NULL);
-			rb_shell_select_source_internal (shell, tmp->data);
-			return;
+			g_object_get (G_OBJECT (tmp->data), 
+				      "visibility", &visible, 
+				      NULL);
+			if (visible != FALSE) {
+				rb_shell_select_source_internal (shell,
+								 tmp->data);
+				return;
+
+			}
 		}
 	}
-	g_warning ("unknown source %s!", internalname);
+
 	rb_shell_select_source_internal (shell, rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG));
 }
 
