@@ -245,7 +245,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			rb_library_action_queue_peek_head (queue,
 							   &type,
 							   &uri);
-			realuri = rb_resolve_symlink (uri);
+
+			realuri = rb_uri_resolve_symlink (uri);
 
 			switch (type)
 			{
@@ -267,6 +268,12 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 					song = rb_node_get_song_by_uri (realuri);
 					if (song == NULL)
 						break;
+
+					if (rb_uri_exists (realuri) == FALSE)
+					{
+						rb_node_unref (song);
+						break;
+					}
 
 					rb_node_song_update_if_newer (song, priv->library);
 				}

@@ -1,3 +1,13 @@
+2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink),
+	(rb_uri_is_directory), (rb_uri_exists):
+	* lib/rb-file-helpers.h:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_add_uri):
+
+	Check for file existance when loading from XML.
+
 2002-08-14  Olivier Martin <omartin@ifrance.com>
 
 	* TODO:

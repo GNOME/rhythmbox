@@ -122,11 +122,13 @@ rb_file_helpers_shutdown (void)
 }
 
 char *
-rb_resolve_symlink (const char *uri)
+rb_uri_resolve_symlink (const char *uri)
 {
 	GnomeVFSFileInfo *info;
 	char *real;
 
+	g_return_val_if_fail (uri != NULL, NULL);
+	
 	info = gnome_vfs_file_info_new ();
 
 	gnome_vfs_get_file_info (uri, info,
@@ -143,10 +145,12 @@ rb_resolve_symlink (const char *uri)
 }
 
 gboolean
-rb_is_directory (const char *uri)
+rb_uri_is_directory (const char *uri)
 {
 	GnomeVFSFileInfo *info;
 	gboolean dir;
+
+	g_return_val_if_fail (uri != NULL, FALSE);
 
 	info = gnome_vfs_file_info_new ();
 
@@ -162,4 +166,19 @@ rb_is_directory (const char *uri)
 	gnome_vfs_file_info_unref (info);
 
 	return dir;
+}
+
+gboolean
+rb_uri_exists (const char *uri)
+{
+	GnomeVFSURI *vuri;
+	gboolean ret;
+	
+	g_return_val_if_fail (uri != NULL, FALSE);
+
+	vuri = gnome_vfs_uri_new (uri);
+	ret = gnome_vfs_uri_exists (vuri);
+	gnome_vfs_uri_unref (vuri);
+
+	return ret;
 }
