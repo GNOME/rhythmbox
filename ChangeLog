@@ -2,6 +2,49 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-10-20 04:22:43 GMT	Colin Walters <walters@verbum.org>	patch-167
+
+    Summary:
+      resuscitate iradio station property dialog
+    Revision:
+      rhythmbox--mainline--0.6--patch-167
+
+
+    modified files:
+     ChangeLog iradio/rb-station-properties-dialog.c
+     sources/rb-iradio-source.c
+
+
+2003-10-20 04:22:28 GMT	Colin Walters <walters@verbum.org>	patch-166
+
+    Summary:
+      some updates to NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-166
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2003-10-20 03:52:50 GMT	Colin Walters <walters@verbum.org>	patch-165
+
+    Summary:
+      dnd work 
+    Revision:
+      rhythmbox--mainline--0.6--patch-165
+
+    The library isn't a row drag dest.
+    The iradio view isn't a row drag source or dest.
+    The playlist source is both. 
+    
+
+    modified files:
+     ChangeLog sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+
 2003-10-20 02:06:59 GMT	Colin Walters <walters@verbum.org>	patch-164
 
     Summary:
