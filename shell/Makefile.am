@@ -47,6 +47,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
+	$(top_builddir)/library/librblibrary.la	        \
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/corba/librbcorba.la	        \
 	$(top_builddir)/monkey-media/libmonkey-media.la \
@@ -64,6 +65,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
+	-I$(top_srcdir)/library                    	\
 	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\

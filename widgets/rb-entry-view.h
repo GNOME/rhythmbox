@@ -66,7 +66,6 @@ typedef struct
 	GtkScrolledWindowClass parent;
 
 	void (*entry_added)		(RBEntryView *view, RhythmDBEntry *entry);
-	void (*entry_deleted)		(RBEntryView *view, RhythmDBEntry *entry);
 
 	void (*entry_selected)          (RBEntryView *view, RhythmDBEntry *entry);
 	void (*entry_activated)         (RBEntryView *view, RhythmDBEntry *entry);

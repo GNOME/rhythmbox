@@ -64,12 +64,6 @@ RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBProp
 
 void			rhythmdb_property_model_insert		(RhythmDBPropertyModel *model,
 								 RhythmDBEntry *entry);
-gboolean		rhythmdb_property_model_delete_iter	(RhythmDBPropertyModel *model,
-								 GtkTreeIter *iter);
-
-void			rhythmdb_property_model_entry_to_iter	(RhythmDBPropertyModel *model,
-								 RhythmDBEntry *entry,
-								 GtkTreeIter *iter);
 
 G_END_DECLS
 
