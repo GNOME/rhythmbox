@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-21 00:39+0200\n"
-"PO-Revision-Date: 2003-09-21 00:42+0200\n"
+"POT-Creation-Date: 2003-09-24 01:49+0200\n"
+"PO-Revision-Date: 2003-09-24 01:48+0200\n"
 "Last-Translator: Предраг Кртолица <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -49,48 +49,36 @@ msgstr "Учитава..."
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
-msgid "Finish"
-msgstr "Заврши"
-
-#: data/glade/druid.glade.h:3
+#: data/glade/druid.glade.h:2
 msgid ""
-"In order to get started using Rhythmbox, this assistant will ask you some "
-"simple questions."
-msgstr "Да бисте почели са коришћењем Rhythmbox-а, овај помоћник ће вам поставити пар једноставних питања."
-
-#: data/glade/druid.glade.h:4 lib/widgets/rb-druid.c:250
-msgid "Library setup"
-msgstr "Постављање библиотеке"
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox барата свом вашом музиком помоћу централне музичке „библиотеке“, "
+"тако да је можете лако прегледати, претраживати и сређивати.\n"
+"\n"
+"Да бисте ово користили, Rhythmbox мора да зна где може да пронађе вашу "
+"музику. Можете и прескочити овај корак; уместо тога, можете додати музику у "
+"вашу библиотеку било када.\n"
+"Молим изаберите неку од могућности испод:"
 
 #: data/glade/druid.glade.h:5
-msgid ""
-"Rhythmbox needs to know where to find your music. You may choose to skip "
-"this step; instead, you can add music to your library at any point later. "
-"Please choose one of the options below:"
-msgstr "Rhythmbox мора да зна где може да пронађе вашу музику. Можете и прескочити овај корак; уместо тога, можете додати музику у вашу библиотеку било када. Молим изаберите неку од могућности испод:"
-
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:240
-msgid "Welcome to Rhythmbox"
-msgstr "Добродошли у Rhythmbox"
-
-#: data/glade/druid.glade.h:7 lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Сада сте спремни да покренете Rhythmbox."
-
-#: data/glade/druid.glade.h:8
 msgid "_Browse..."
 msgstr "_Пронађи..."
 
-#: data/glade/druid.glade.h:9
+#: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
 msgstr "_Унесите адресу ручно:"
 
-#: data/glade/druid.glade.h:10
+#: data/glade/druid.glade.h:7
 msgid "_Path:"
 msgstr "_Путања:"
 
-#: data/glade/druid.glade.h:11
+#: data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "Пре_скочи овај корак"
 
@@ -754,15 +742,49 @@ msgstr "Pixbuf за исцртавање."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
+#: lib/widgets/rb-druid.c:240
+msgid "Welcome to Rhythmbox"
+msgstr "Добродошли у Rhythmbox"
+
 #: lib/widgets/rb-druid.c:244
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
+"Rhythmbox is the GNOME music player that lets you do\n"
+"everything: play your music files, listen to Internet Radio,\n"
+"import music from CDs, and much more.\n"
+"\n"
+"This assistant will help you get started by\n"
+"asking you some simple questions."
 msgstr ""
-"Да бисте почели са коришћењем\n"
-"Rhythmbox-а, овај помоћник ће вам\n"
-"поставити пар једноставних питања."
+"Rhythmbox је Гном програм за пуштање музике који вам \n"
+"омогућава да радите све: пуштате музику, слушате Интернет \n"
+"радио, увозите музику са ЦД-ова и много тога другог.\n"
+"\n"
+"Овај помоћник ће вам помоћи да почнете\n"
+"постављањем пар једноставних питања."
+
+#: lib/widgets/rb-druid.c:250
+msgid "Music library setup"
+msgstr "Постављање музичке библиотеке"
+
+#: lib/widgets/rb-druid.c:259
+msgid "Finish"
+msgstr "Заврши"
+
+#: lib/widgets/rb-druid.c:261
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music\n"
+"to the library using \"Organize\"\n"
+"then \"Add to Library\", or by importing\n"
+"it from CDs."
+msgstr ""
+"Сада сте спремни да покренете Rhythmbox.\n"
+"\n"
+"Не заборавите да можете додати музику у\n"
+"библиотеку помоћу „Организуј“ и затим \n"
+"„Додај у библиотеку“, или увозом исте \n"
+"са ЦД-ова."
 
 #: lib/widgets/rb-druid.c:310
 #, c-format
@@ -1089,7 +1111,7 @@ msgstr "Нисам успео да отворим датотеку за чита
 msgid "Error decoding FLAC file"
 msgstr "Грешка при декодирању FLAC датотеке"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1291,7 +1313,8 @@ msgid ""
 "bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "Није успео да пријави љуску: %s\n"
-"Ово вероватно значи да сте инсталирали Rhythmbox на различитом месту од бонобо активације; ово упозорење је безопасно, али IPC неће радити."
+"Ово вероватно значи да сте инсталирали Rhythmbox на различитом месту од "
+"бонобо активације; ово упозорење је безопасно, али IPC неће радити."
 
 #: shell/rb-shell.c:1222
 #, c-format
@@ -1425,6 +1448,25 @@ msgstr "Нису доступне особине."
 #: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Овај извор не подржава превлачење и пуштање."
+
+#~ msgid ""
+#~ "In order to get started using Rhythmbox, this assistant will ask you some "
+#~ "simple questions."
+#~ msgstr ""
+#~ "Да бисте почели са коришћењем Rhythmbox-а, овај помоћник ће вам поставити "
+#~ "пар једноставних питања."
+
+#~ msgid "You are now ready to start Rhythmbox."
+#~ msgstr "Сада сте спремни да покренете Rhythmbox."
+
+#~ msgid ""
+#~ "In order to get started using\n"
+#~ "Rhythmbox, this assistant will ask\n"
+#~ "you some simple questions."
+#~ msgstr ""
+#~ "Да бисте почели са коришћењем\n"
+#~ "Rhythmbox-а, овај помоћник ће вам\n"
+#~ "поставити пар једноставних питања."
 
 #~ msgid ""
 #~ "You are now ready to start\n"
