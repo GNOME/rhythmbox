@@ -187,6 +187,7 @@ struct RBShellPlayerPrivate
 	GtkWidget *buffering_progress;
 	guint buffering_progress_idle_id;
 
+	GtkTooltips *tooltips;
 	GtkWidget *prev_button;
 	PlayButtonState playbutton_state;
 	GtkWidget *play_pause_stop_button;
@@ -369,13 +370,20 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	hbox = gtk_hbox_new (FALSE, 5);
 
+	player->priv->tooltips = gtk_tooltips_new ();
+	gtk_tooltips_enable (player->priv->tooltips);
+
 	/* Previous button */
 	image = gtk_image_new_from_stock (RB_STOCK_PREVIOUS,
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
+
 	player->priv->prev_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
 	g_signal_connect_swapped (G_OBJECT (player->priv->prev_button),
 				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
+			      GTK_WIDGET (player->priv->prev_button), 
+			      _("Previous"), NULL);
 
 	/* Button images */
 	player->priv->play_image = gtk_image_new_from_stock (RB_STOCK_PLAY,
@@ -402,6 +410,9 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
 	g_signal_connect_swapped (G_OBJECT (player->priv->next_button),
 				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
+			      GTK_WIDGET (player->priv->next_button), 
+			      _("Next"), NULL);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);
@@ -1121,6 +1132,10 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 		g_error ("Should not get here!");
 		break;
 	}
+	
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
+			      GTK_WIDGET (player->priv->play_pause_stop_button), 
+			      tlabel, NULL);
 
 	gtk_widget_show_all (GTK_WIDGET (player->priv->play_pause_stop_button));
 
