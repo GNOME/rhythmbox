@@ -1,3 +1,12 @@
+2002-10-31  Jorn Baayen  <jorn@nl.linux.org>
+
+	* shell/rb-shell.c: (rb_shell_window_save_state),
+	(rb_shell_sidebar_size_allocate_cb):
+	* views/rb-library-view.c: (rb_library_view_finalize),
+	(paned_size_allocate_cb):
+
+	Only save state on exit.
+
 2002-10-30  Jorn Baayen  <jorn@nl.linux.org>
 
 	* views/rb-group-view.c: (rb_group_view_add_node):

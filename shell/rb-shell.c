@@ -267,6 +267,7 @@ typedef struct
 	int width;
 	int height;
 	gboolean maximized;
+	int paned_position;
 } RBShellWindowState;
 
 struct RBShellPrivate
@@ -850,6 +851,8 @@ rb_shell_window_save_state (RBShell *shell)
 			       shell->priv->state->height);
 	eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
 			       shell->priv->state->maximized);
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
+			       shell->priv->state->paned_position);
 }
 
 static gboolean
@@ -1561,8 +1564,7 @@ rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 				   GtkAllocation *allocation,
 				   RBShell *shell)
 {
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
-			       gtk_paned_get_position (GTK_PANED (shell->priv->paned)));
+	shell->priv->state->paned_position = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
 }
 
 static void
