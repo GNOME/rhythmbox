@@ -1,3 +1,9 @@
+2003-07-31  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-shell.c: (rb_shell_finalize): destroy the main shell
+	window on exit, so that the MonkeyMediaPlayer is as well, and
+	the xine config saved
+
 2003-07-31  Colin Walters  <walters@rhythmbox.org>
 
 	* INSTALL:

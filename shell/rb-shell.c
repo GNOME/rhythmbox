@@ -412,6 +412,8 @@ rb_shell_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
 
+	gtk_widget_destroy (shell->priv->window);
+
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
 	
