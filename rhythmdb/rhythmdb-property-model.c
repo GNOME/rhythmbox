@@ -123,6 +123,12 @@ GType
 rhythmdb_property_model_get_type (void)
 {
 	static GType rhythmdb_property_model_type = 0;
+	static const GInterfaceInfo tree_model_info =
+	{
+		(GInterfaceInitFunc) rhythmdb_property_model_tree_model_init,
+		NULL,
+		NULL
+	};
 
 	if (rhythmdb_property_model_type == 0)
 	{
@@ -142,13 +148,6 @@ rhythmdb_property_model_get_type (void)
 		rhythmdb_property_model_type = g_type_register_static (G_TYPE_OBJECT,
 								       "RhythmDBPropertyModel",
 								       &our_info, 0);
-
-		static const GInterfaceInfo tree_model_info =
-		{
-			(GInterfaceInitFunc) rhythmdb_property_model_tree_model_init,
-			NULL,
-			NULL
-		};
 
 		g_type_add_interface_static (rhythmdb_property_model_type,
 					     GTK_TYPE_TREE_MODEL,

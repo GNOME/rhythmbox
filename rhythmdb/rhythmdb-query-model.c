@@ -133,6 +133,20 @@ GType
 rhythmdb_query_model_get_type (void)
 {
 	static GType rhythmdb_query_model_type = 0;
+	static const GInterfaceInfo tree_model_info =
+	{
+		(GInterfaceInitFunc) rhythmdb_query_model_tree_model_init,
+		NULL,
+		NULL
+	};
+
+	static const GInterfaceInfo rhythmdb_model_info =
+	{
+		(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
+		NULL,
+		NULL
+	};
+
 
 	if (rhythmdb_query_model_type == 0)
 	{
@@ -152,20 +166,6 @@ rhythmdb_query_model_get_type (void)
 		rhythmdb_query_model_type = g_type_register_static (G_TYPE_OBJECT,
 								    "RhythmDBQueryModel",
 								    &our_info, 0);
-
-		static const GInterfaceInfo tree_model_info =
-		{
-			(GInterfaceInitFunc) rhythmdb_query_model_tree_model_init,
-			NULL,
-			NULL
-		};
-
-		static const GInterfaceInfo rhythmdb_model_info =
-		{
-			(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
-			NULL,
-			NULL
-		};
 
 		g_type_add_interface_static (rhythmdb_query_model_type,
 					     GTK_TYPE_TREE_MODEL,
