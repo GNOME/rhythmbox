@@ -1,3 +1,581 @@
+2003-09-29 20:51:32 GMT	Colin Walters <walters@verbum.org>	patch-14
+
+    Summary:
+      really fix sorting insanity
+    Revision:
+      rhythmbox--mainline--0.6--patch-14
+
+
+    modified files:
+     widgets/rb-entry-view.c widgets/rb-property-view.c
+
+
+2003-09-29 17:53:59 GMT	Colin Walters <walters@verbum.org>	patch-13
+
+    Summary:
+      revert to previous treeview behavior for now
+    Revision:
+      rhythmbox--mainline--0.6--patch-13
+
+
+    modified files:
+     widgets/Makefile.am widgets/rb-entry-view.c
+
+
+2003-09-29 17:42:59 GMT	Colin Walters <walters@verbum.org>	patch-12
+
+    Summary:
+      remove debugging bit
+    Revision:
+      rhythmbox--mainline--0.6--patch-12
+
+
+    modified files:
+     rhythmdb/rhythmdb-tree.c
+
+
+2003-09-29 17:42:28 GMT	Colin Walters <walters@verbum.org>	patch-11
+
+    Summary:
+      bump version to 0.5.99
+    Revision:
+      rhythmbox--mainline--0.6--patch-11
+
+
+    modified files:
+     configure.ac
+
+
+2003-09-29 16:09:27 GMT	Colin Walters <walters@verbum.org>	patch-10
+
+    Summary:
+      resurrect lib/widgets because CVS sucks donkey balls
+    Revision:
+      rhythmbox--mainline--0.6--patch-10
+
+
+    new files:
+     lib/widgets/.arch-ids/.cvsignore.id lib/widgets/.arch-ids/=id
+     lib/widgets/.cvsignore
+
+    new directories:
+     lib/widgets lib/widgets/.arch-ids
+
+
+2003-09-29 15:40:58 GMT	Colin Walters <walters@verbum.org>	patch-9
+
+    Summary:
+      be sure to unset previous queries, and fix sorting
+    Revision:
+      rhythmbox--mainline--0.6--patch-9
+
+
+    modified files:
+     sources/rb-library-source.c widgets/rb-entry-view.c
+
+
+2003-09-29 15:31:31 GMT	Colin Walters <walters@verbum.org>	patch-8
+
+    Summary:
+      fix duration type, disable sorting while busy, tweak timeout
+    Revision:
+      rhythmbox--mainline--0.6--patch-8
+
+
+    modified files:
+     rhythmdb/rhythmdb.c widgets/rb-entry-view.c
+     widgets/rb-property-view.c
+
+
+2003-09-29 15:02:51 GMT	Colin Walters <walters@verbum.org>	patch-7
+
+    Summary:
+      fix duration column, don't attempt to load nonexistent db save file
+    Revision:
+      rhythmbox--mainline--0.6--patch-7
+
+    fix duration column, don't attempt to load nonexistent db save file
+    
+
+    modified files:
+     data/views/rb-entry-view-library.xml rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c widgets/rb-entry-view.c
+
+
+2003-09-29 02:52:01 GMT	Colin Walters <walters@verbum.org>	patch-6
+
+    Summary:
+      fix a bunch of bugs wrt converting iters from sort/query model
+    Revision:
+      rhythmbox--mainline--0.6--patch-6
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-09-29 02:30:30 GMT	Colin Walters <walters@verbum.org>	patch-5
+
+    Summary:
+      unref monkey-media info object to prevent fd leak
+    Revision:
+      rhythmbox--mainline--0.6--patch-5
+
+
+    modified files:
+     library/rb-library.c
+
+
+2003-09-29 02:17:59 GMT	Colin Walters <walters@verbum.org>	patch-4
+
+    Summary:
+      fix one more conflict, add librbwidgets to shell Makefile.am
+    Revision:
+      rhythmbox--mainline--0.6--patch-4
+
+
+    modified files:
+     shell/Makefile.am widgets/Makefile.am
+
+
+2003-09-29 02:13:46 GMT	Colin Walters <walters@verbum.org>	patch-3
+
+    Summary:
+      remove reference to am_dead in library thread
+    Revision:
+      rhythmbox--mainline--0.6--patch-3
+
+
+    modified files:
+     library/rb-library-main-thread.c
+
+
+2003-09-29 02:10:17 GMT	Colin Walters <walters@verbum.org>	patch-2
+
+    Summary:
+      fix up merge conflict
+    Revision:
+      rhythmbox--mainline--0.6--patch-2
+
+
+    modified files:
+     Makefile.am
+
+
+2003-09-29 02:04:32 GMT	Colin Walters <walters@verbum.org>	patch-1
+
+    Summary:
+      merge in rhythmdb 
+    Revision:
+      rhythmbox--mainline--0.6--patch-1
+
+    With this commit, the first pass at RhythmDB is commited. 
+    It involves a ton of changes, as you can see from the
+    log-for-merge output below.  I will attempt to summarize
+    these changes eventually in the INTERNALS document, rather
+    than this changelog.
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-35
+       s/name/title/
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-36
+       more s/name/title/
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-37
+       even more s/name/title/
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-38
+       first attempt at a query model
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-39
+       remove some signals, add back in external query func
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-40
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-41
+       much more hackery on refcounting/queueing stuff
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-42
+       really remove gdk locking
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-43
+       more attempt at deletion handling
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-44
+       don't unlock db after destroy
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-45
+       attempt to use RhythmDBQueryModel
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-46
+       Work on making the query fully asynchronous
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-47
+       use g_print instead of rb_debug for tests
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-48
+       fix up querying, fix g_prints; we now pass the query test suite
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-49
+       updates for new query interface
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-50
+       add iter_from_entry method
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-51
+       cool hack for testing both sync and async queries
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-52
+       much more hackery on the entry view
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-53
+       more work on moving to RBEntryModel
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-54
+       make entry view compile
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-55
+       a few hacks to make the whole thing compile, for now
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-56
+       work on implementing property queries again
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-57
+       much hacking up of the tree, does not compile yet
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-58
+       even more hackery, working on view test
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-59
+       don't include test-rhythmdb-view executable, fix up some entry view stuff
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-60
+       add cvsignore for views data
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-61
+       entry view test appears to work
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-62
+       add data/views dir
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-63
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-64
+       update gsequence
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-65
+       yet more hacking.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-66
+       use cell_data func in property view
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-67
+       hack up the library a bit
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-68
+       one night's hackery
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-69
+       remove am_dead bits, thread is now a daemon thread
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-70
+       hack up the library to use rhythmdb
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-71
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-72
+       kill off walker thread, make lots more stuff compile
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-73
+       make player widget compile, updates all over the place
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-74
+       make clipboard compile
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-75
+       make playlist manager compile (but VERY unlikely to actually work)
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-76
+       she actually compiles!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-77
+       she boots!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-78
+       misc bugfixes. poll model, fix up exiting etc
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-79
+       fix up query API, do query in library source, etc
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-80
+       she PLAYS MUSIC!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-81
+       fix sorting order bits
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-82
+       fix sorting order bits
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-83
+       attempt to make property views work, not quite going yet though
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-84
+       make All display show up
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-85
+       make double-clicking on property sorta work
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-86
+       make entry refcount start at 1 (doh!)
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-87
+       don't lose if we're setting playing_entry to NULL
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-88
+       go go gadget property view!  (also make saving/loading db work)
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-89
+       rearrange source tree/dependencies to remove circular depends
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-90
+       make property view queries async
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-91
+       ensure property displays unique values
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-92
+       more work on async property views
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-93
+       stop in debugger on RhythmDB errors too
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-94
+       add missing break in property setting
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-95
+       create entries atomically, do entry view timeout correctly, other things
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-96
+       go go gadget asynchronous property filtering!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-97
+       fix sorting order in entry view
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-98
+       actually add playing column to view and stuff
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-99
+       don't crash when playing an entry and switching to another filter
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-100
+       fix exact queries for genre/artist/album, and attempt to impl. searching
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-101
+       make searching really work
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-102
+       pre-fold sort keys
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-103
+       optimize library queries even more
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-104
+       tweak querying a bit more, still a bit buggy though
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-105
+       merge with mainline
+    
+    
+
+    new files:
+     data/views/.arch-ids/.cvsignore.id data/views/.arch-ids/=id
+     data/views/.cvsignore data/views/Makefile.am
+     data/views/rb-entry-view-library.xml lib/gsequence.c
+     lib/gsequence.h lib/rb-atomic.c lib/rb-atomic.h
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-property-model.h
+     rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h tests/test-rhythmdb-view.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+     widgets/rb-property-view.c widgets/rb-property-view.h
+
+    removed files:
+     iradio/rb-iradio-backend.c iradio/rb-iradio-backend.h
+     library/rb-library-walker-thread.c
+     library/rb-library-walker-thread.h
+
+    modified files:
+     Makefile.am configure.ac data/Makefile.am iradio/Makefile.am
+     iradio/rb-new-station-dialog.c iradio/rb-new-station-dialog.h
+     iradio/rb-station-properties-dialog.c
+     iradio/rb-station-properties-dialog.h lib/Makefile.am
+     lib/rb-cut-and-paste-code.h lib/rb-debug.c
+     lib/rb-file-helpers.c library/Makefile.am
+     library/rb-library-main-thread.c library/rb-library.c
+     library/rb-library.h rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb-tree.h
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h shell/Makefile.am
+     shell/rb-playlist-manager.c shell/rb-playlist-manager.h
+     shell/rb-shell-clipboard.c shell/rb-shell-clipboard.h
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c shell/rb-tray-icon.c sources/Makefile.am
+     sources/rb-iradio-source.c sources/rb-iradio-source.h
+     sources/rb-library-source.c sources/rb-library-source.h
+     sources/rb-playlist-source.h sources/rb-source.c
+     sources/rb-source.h tests/Makefile.am
+     tests/deserialization-test2.xml
+     tests/deserialization-test3.xml tests/test-rhythmdb-indexing.c
+     tests/test-rhythmdb-query.c tests/test-rhythmdb-simple.c
+     tests/test-rhythmdb-tree-deserialization.c
+     tests/test-rhythmdb-tree-serialization.c widgets/Makefile.am
+     widgets/rb-cell-renderer-rating.c widgets/rb-druid.c
+     widgets/rb-player.c widgets/rb-player.h
+     widgets/rb-tree-model-sort.c widgets/rb-tree-view.c
+     widgets/rb-tree-view.h {arch}/=tagging-method
+
+    renamed files:
+     lib/widgets/.arch-ids/.cvsignore.id
+       ==> widgets/.arch-ids/.cvsignore.id
+     lib/widgets/.arch-ids/=id
+       ==> widgets/.arch-ids/=id
+     lib/widgets/.arch-ids/eggintl.h.id
+       ==> widgets/.arch-ids/eggintl.h.id
+     lib/widgets/.arch-ids/eggtreemodelfilter.c.id
+       ==> widgets/.arch-ids/eggtreemodelfilter.c.id
+     lib/widgets/.arch-ids/eggtreemodelfilter.h.id
+       ==> widgets/.arch-ids/eggtreemodelfilter.h.id
+     lib/widgets/.arch-ids/eggtreemultidnd.c.id
+       ==> widgets/.arch-ids/eggtreemultidnd.c.id
+     lib/widgets/.arch-ids/eggtreemultidnd.h.id
+       ==> widgets/.arch-ids/eggtreemultidnd.h.id
+     lib/widgets/.arch-ids/gtkintl.h.id
+       ==> widgets/.arch-ids/gtkintl.h.id
+     lib/widgets/.arch-ids/gtkrbtree.h.id
+       ==> widgets/.arch-ids/gtkrbtree.h.id
+     lib/widgets/.arch-ids/gtktreedatalist.c.id
+       ==> widgets/.arch-ids/gtktreedatalist.c.id
+     lib/widgets/.arch-ids/gtktreedatalist.h.id
+       ==> widgets/.arch-ids/gtktreedatalist.h.id
+     lib/widgets/.arch-ids/gtktreemodelsort.c.id
+       ==> widgets/.arch-ids/gtktreemodelsort.c.id
+     lib/widgets/.arch-ids/gtktreemodelsort.h.id
+       ==> widgets/.arch-ids/gtktreemodelsort.h.id
+     lib/widgets/.arch-ids/gtktreeprivate.h.id
+       ==> widgets/.arch-ids/gtktreeprivate.h.id
+     lib/widgets/rb-sourcelist-model.c
+       ==> sources/rb-sourcelist-model.c
+     lib/widgets/rb-sourcelist-model.h
+       ==> sources/rb-sourcelist-model.h
+     lib/widgets/rb-sourcelist.c
+       ==> sources/rb-sourcelist.c
+     lib/widgets/rb-sourcelist.h
+       ==> sources/rb-sourcelist.h
+     rhythmdb/deserialization-test1.xml
+       ==> tests/deserialization-test1.xml
+     rhythmdb/deserialization-test2.xml
+       ==> tests/deserialization-test2.xml
+     rhythmdb/deserialization-test3.xml
+       ==> tests/deserialization-test3.xml
+     rhythmdb/test-rhythmdb-indexing.c
+       ==> tests/test-rhythmdb-indexing.c
+     rhythmdb/test-rhythmdb-query.c
+       ==> tests/test-rhythmdb-query.c
+     rhythmdb/test-rhythmdb-simple.c
+       ==> tests/test-rhythmdb-simple.c
+     rhythmdb/test-rhythmdb-tree-deserialization.c
+       ==> tests/test-rhythmdb-tree-deserialization.c
+     rhythmdb/test-rhythmdb-tree-serialization.c
+       ==> tests/test-rhythmdb-tree-serialization.c
+
+    new directories:
+     data/views data/views/.arch-ids widgets/.arch-ids
+
+    removed directories:
+     lib/widgets/.arch-ids
+
+    renamed directories:
+     lib/widgets
+       ==> widgets
+
+    new patches:
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-35
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-36
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-40
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-41
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-42
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-43
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-44
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-45
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-46
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-47
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-48
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-49
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-50
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-51
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-52
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-53
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-54
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-55
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-56
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-57
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-58
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-59
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-60
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-61
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-62
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-63
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-64
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-65
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-66
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-67
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-68
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-69
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-70
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-71
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-72
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-73
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-74
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-75
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-76
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-77
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-78
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-79
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-80
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-81
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-82
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-83
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-84
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-85
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-86
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-87
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-88
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-89
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-90
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-91
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-92
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-93
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-94
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-95
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-96
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-97
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-98
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-99
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-100
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-101
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-102
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-103
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-104
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-105
+
+
 2003-09-23 16:47:50 GMT	Colin Walters <walters@verbum.org>	patch-74
 
     Summary:
