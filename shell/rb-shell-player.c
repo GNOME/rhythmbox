@@ -388,7 +388,9 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
 
-	gtk_box_pack_start (GTK_BOX (player), hbox, FALSE, TRUE, 0);
+	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (alignment), hbox);
+	gtk_box_pack_start (GTK_BOX (player), alignment, FALSE, TRUE, 0);
 
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
@@ -400,7 +402,9 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv->volume_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	gtk_box_pack_end (GTK_BOX (player), player->priv->volume_button, FALSE, FALSE, 0);
+	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
+	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 0);
 
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,

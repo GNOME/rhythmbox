@@ -300,14 +300,15 @@ rb_player_init (RBPlayer *player)
 	gtk_label_set_attributes (GTK_LABEL (player->priv->elapsed), attrlist);
 	pango_attr_list_unref (attrlist);
 	player->priv->tips = gtk_tooltips_new ();
-	gtk_container_add (GTK_CONTAINER (align),
-			   player->priv->elapsed);
+	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
+	align = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), scalebox);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (player), hbox, TRUE, TRUE, 0);
-	gtk_box_pack_end (GTK_BOX (player), player->priv->timeframe, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (player), align, FALSE, FALSE, 0);
 
 	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_player_sync_time_locked, player);
 }
