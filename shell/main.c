@@ -55,7 +55,6 @@
 #include "eel-gconf-extensions.h"
 
 static gboolean rb_init (RBShell *shell);
-static gboolean sound_error_dialog (gpointer unused);
 static void rb_handle_cmdline (char **argv, int argc,
 			       gboolean already_running);
 
@@ -84,7 +83,7 @@ main (int argc, char **argv)
 	GnomeProgram *program;
 	CORBA_Object object;
 	RBShell *rb_shell;
-	gboolean sound_events_borked = FALSE;
+	char **new_argv;
 
 	const struct poptOption popt_options[] =
 	{
@@ -111,9 +110,16 @@ main (int argc, char **argv)
 		POPT_TABLEEND
 	};
 
+	/* Disable event sounds for now by passing "--disable-sound" to libgnomeui.
+	 * See: http://bugzilla.gnome.org/show_bug.cgi?id=119222 */
+	new_argv = g_strdupv (argv);
+	new_argv = g_realloc (new_argv, (argc+2)*sizeof(char*));
+	new_argv[argc] = g_strdup ("--disable-sound");
+	new_argv[argc+1] = NULL;
+
 	gtk_set_locale ();
 	program = gnome_program_init (PACKAGE, VERSION,
-				      LIBGNOMEUI_MODULE, argc, argv,
+				      LIBGNOMEUI_MODULE, argc+1, new_argv,
 				      GNOME_PARAM_POPT_TABLE, popt_options,
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
@@ -131,11 +137,6 @@ main (int argc, char **argv)
 #ifdef HAVE_GSTREAMER	
 	gst_init_with_popt_table (&argc, &argv, popt_options);
 	gst_control_init (&argc, &argv);
-	/* rb currently does not work with esd + gnome event sounds enabled */
-	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds")
-			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd")
-	    && strstr (gst_gconf_get_string ("default/audiosink"), "esdsink"))
-		sound_events_borked = TRUE;
 #endif
 #ifdef WITH_MONKEYMEDIA
 	monkey_media_init (&argc, &argv);
@@ -144,11 +145,6 @@ main (int argc, char **argv)
 	gdk_threads_init ();
 
 	CORBA_exception_init (&ev);
-
-	/* Work around a GTK+ bug.  Inititalizing a dialog causes
-	 * a GTK+ warning, which then dies because it's a warning. */
-	if (!sound_events_borked)
-		rb_debug_init (debug);
 
 	rb_debug ("initializing Rhythmbox %s", VERSION);
 
@@ -170,14 +166,10 @@ main (int argc, char **argv)
 
 		rb_stock_icons_init ();
 
-		if (sound_events_borked) {
-			g_idle_add ((GSourceFunc) sound_error_dialog, NULL);
-		} else {
-			rb_shell = rb_shell_new (argc, argv, no_registration,
-						 no_update, dry_run, rhythmdb_file);
-			
-			g_idle_add ((GSourceFunc) rb_init, rb_shell);
-		}
+		rb_shell = rb_shell_new (argc, argv, no_registration,
+					 no_update, dry_run, rhythmdb_file);
+		
+		g_idle_add ((GSourceFunc) rb_init, rb_shell);
 		
 		bonobo_main ();
 	} else {
@@ -197,26 +189,9 @@ main (int argc, char **argv)
 	if (object == NULL)
 		rb_stock_icons_shutdown ();
 
+	g_strfreev (new_argv);
+
 	return 0;
-}
-
-
-static gboolean
-sound_error_dialog (gpointer unused)
-{
-	GtkWidget *dialog;
-
-	GDK_THREADS_ENTER ();
-
-	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
-					 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
-					 _("Rhythmbox does not currently work if GNOME sound events are are enabled and esdsink is in use."));
-	gtk_dialog_run (GTK_DIALOG (dialog));
-
-	bonobo_main_quit ();
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
 }
 
 static gboolean
