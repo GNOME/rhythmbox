@@ -30,6 +30,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 
+#include "rb-dialog.h"
 #include "rb-sidebar.h"
 #include "rb-sidebar-button.h"
 #include "rb-ellipsizing-label.h"
@@ -56,13 +57,6 @@ static void rb_sidebar_button_popup_rename_cb (RBSidebarButton *button,
 static void rb_sidebar_button_popup_delete_cb (RBSidebarButton *button,
 				               guint action,
 				               GtkWidget *widget);
-static void rb_sidebar_button_set_editing (RBSidebarButton *button,
-			                   gboolean editing);
-static void rb_sidebar_button_entry_activate_cb (GtkWidget *entry,
-				                 RBSidebarButton *button);
-static gboolean rb_sidebar_button_entry_focus_out_event_cb (GtkWidget *widget,
-					                    GdkEventFocus *event,
-					                    RBSidebarButton *button);
 static void rb_sidebar_button_drag_data_get_cb (GtkWidget *widget,
 				                GdkDragContext *context,
 				                GtkSelectionData *selection_data,
@@ -71,19 +65,16 @@ static void rb_sidebar_button_drag_data_get_cb (GtkWidget *widget,
 static void rb_sidebar_button_drag_begin_cb (GtkWidget *widget,
 				             GdkDragContext *context,
 				             RBSidebarButton *button);
-static void rb_sidebar_button_label_size_allocate_cb (GtkWidget *widget,
-					              GtkAllocation *allocation,
-					              RBSidebarButton *button);
 
 struct RBSidebarButtonPrivate
 {
+	char *button_name;
 	char *stock_id;
 	char *text;
 	gboolean is_static;
 
 	GtkItemFactory *popup_factory;
-	
-	GtkWidget *entry;
+
 	GtkWidget *box;
 	
 	gboolean editing;
@@ -102,6 +93,7 @@ enum
 	PROP_STOCK_ID,
 	PROP_TEXT,
 	PROP_STATIC,
+	PROP_BUTTON_NAME,
 	PROP_SIDEBAR
 };
 
@@ -192,6 +184,13 @@ rb_sidebar_button_class_init (RBSidebarButtonClass *klass)
 							      "Sidebar object",
 							      RB_TYPE_SIDEBAR,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_BUTTON_NAME,
+					 g_param_spec_string ("button_name",
+							      "Button name",
+							      "Button name",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	
 	rb_sidebar_button_signals[EDITED] =
 		g_signal_new ("edited",
@@ -247,39 +246,14 @@ rb_sidebar_button_init (RBSidebarButton *button)
 	
 	/* label */
 	button->label = rb_ellipsizing_label_new ("");
-	g_signal_connect (G_OBJECT (button->label),
-			  "size_allocate",
-			  G_CALLBACK (rb_sidebar_button_label_size_allocate_cb),
-			  button);
 	gtk_box_pack_start (GTK_BOX (button->priv->box),
 			    button->label,
 			    FALSE,
 			    FALSE,
 			    0);
 
-	/* entry for editing */
-	button->priv->entry = gtk_entry_new ();
-	gtk_entry_set_has_frame (GTK_ENTRY (button->priv->entry),
-				 FALSE);
-	gtk_widget_modify_bg (button->priv->entry, GTK_STATE_ACTIVE,
-			      &button->priv->entry->style->bg[GTK_STATE_NORMAL]);
-	gtk_widget_modify_bg (button->priv->entry, GTK_STATE_PRELIGHT,
-			      &button->priv->entry->style->bg[GTK_STATE_NORMAL]);
-	g_signal_connect (G_OBJECT (button->priv->entry),
-			  "activate",
-			  G_CALLBACK (rb_sidebar_button_entry_activate_cb),
-			  button);
-	g_signal_connect (G_OBJECT (button->priv->entry),
-			  "focus_out_event",
-			  G_CALLBACK (rb_sidebar_button_entry_focus_out_event_cb),
-			  button);
-
 	gtk_widget_show (button->image);
 	gtk_widget_show (button->label);
-	gtk_widget_show (button->priv->entry);
-
-	g_object_ref (G_OBJECT (button->priv->entry));
-	g_object_ref (G_OBJECT (button->label));
 
 	gtk_container_add (GTK_CONTAINER (button), button->priv->box);
 
@@ -347,9 +321,6 @@ rb_sidebar_button_finalize (GObject *object)
 
 	g_return_if_fail (button->priv != NULL);
 	
-	g_object_unref (G_OBJECT (button->priv->entry));
-	g_object_unref (G_OBJECT (button->label));
-
 	gtk_widget_destroy (button->priv->dnd_widget);
 
 	g_object_unref (G_OBJECT (button->priv->popup_factory));
@@ -400,18 +371,20 @@ rb_sidebar_button_set_property (GObject *object,
 			g_free (button->priv->text);
 		button->priv->text = g_strdup (g_value_get_string (value));
 		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (button->label),
-				                button->priv->text);
+				               button->priv->text);
 		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (button->priv->dnd_label),
-				                button->priv->text);
-		gtk_entry_set_text (GTK_ENTRY (button->priv->entry),
-				    button->priv->text);
-		gtk_editable_select_region (GTK_EDITABLE (button->priv->entry), 0, -1);
+				               button->priv->text);
 		break;
 	case PROP_STATIC:
 		button->priv->is_static = g_value_get_boolean (value);
 		break;
 	case PROP_SIDEBAR:
 		button->priv->sidebar = g_value_get_object (value);
+		break;
+	case PROP_BUTTON_NAME:
+		if (button->priv->button_name != NULL)
+			g_free (button->priv->button_name);
+		button->priv->button_name = g_strdup (g_value_get_string (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -444,6 +417,9 @@ rb_sidebar_button_get_property (GObject *object,
 	case PROP_SIDEBAR:
 		g_value_set_object (value, button->priv->sidebar);
 		break;
+	case PROP_BUTTON_NAME:
+		g_value_set_string (value, button->priv->button_name);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -451,12 +427,14 @@ rb_sidebar_button_get_property (GObject *object,
 }
 
 RBSidebarButton *
-rb_sidebar_button_new (const char *unique_id)
+rb_sidebar_button_new (const char *unique_id,
+		       const char *button_name)
 {
 	RBSidebarButton *button;
 
 	button = RB_SIDEBAR_BUTTON (g_object_new (RB_TYPE_SIDEBAR_BUTTON,
 						  "unique_id", unique_id,
+						  "button_name", button_name,
 						  NULL));
 
 	g_return_val_if_fail (button->priv != NULL, NULL);
@@ -526,7 +504,7 @@ rb_sidebar_button_popup_rename_cb (RBSidebarButton *button,
 				   guint action,
 				   GtkWidget *widget)
 {
-	rb_sidebar_button_set_editing (button, TRUE);
+	rb_sidebar_button_rename (button);
 }
 
 static void
@@ -536,66 +514,6 @@ rb_sidebar_button_popup_delete_cb (RBSidebarButton *button,
 {
 	g_signal_emit (G_OBJECT (button),
 		       rb_sidebar_button_signals[DELETED], 0);
-}
-
-static void
-rb_sidebar_button_set_editing (RBSidebarButton *button,
-			       gboolean editing)
-{
-	if (editing == button->priv->editing)
-		return;
-
-	button->priv->editing = editing;
-	
-	if (editing == FALSE)
-	{
-		gtk_container_remove (GTK_CONTAINER (button->priv->box),
-				      button->priv->entry);
-		gtk_box_pack_start (GTK_BOX (button->priv->box),
-				    button->label,
-				    FALSE,
-				    FALSE,
-				    0);
-	}
-	else
-	{
-		gtk_container_remove (GTK_CONTAINER (button->priv->box),
-				      button->label);
-		gtk_box_pack_start (GTK_BOX (button->priv->box),
-				    button->priv->entry,
-				    FALSE,
-				    FALSE,
-				    0);
-		gtk_widget_grab_focus (button->priv->entry);
-	}
-}
-
-static void
-rb_sidebar_button_entry_activate_cb (GtkWidget *entry,
-				     RBSidebarButton *button)
-{
-	char *text = gtk_editable_get_chars (GTK_EDITABLE (entry), 0, -1);
-
-	rb_sidebar_button_set_editing (button, FALSE);
-
-	g_object_set (G_OBJECT (button),
-		      "text", text,
-		      NULL);
-
-	g_signal_emit (G_OBJECT (button),
-		       rb_sidebar_button_signals[EDITED], 0);
-
-	g_free (text);
-}
-
-static gboolean
-rb_sidebar_button_entry_focus_out_event_cb (GtkWidget *widget,
-					    GdkEventFocus *event,
-					    RBSidebarButton *button)
-{
-	rb_sidebar_button_set_editing (button, FALSE);
-
-	return FALSE;
 }
 
 static void
@@ -628,18 +546,29 @@ rb_sidebar_button_drag_begin_cb (GtkWidget *widget,
 	gtk_drag_set_icon_widget (context, button->priv->dnd_widget, -2, -2);
 }
 
-static void
-rb_sidebar_button_label_size_allocate_cb (GtkWidget *widget,
-					  GtkAllocation *allocation,
-					  RBSidebarButton *button)
-{
-	gtk_widget_set_size_request (button->priv->entry,
-				     widget->allocation.width,
-				     widget->allocation.height);
-}
-
 void
 rb_sidebar_button_rename (RBSidebarButton *button)
 {
-	rb_sidebar_button_set_editing (button, TRUE);
+	char *new, *title, *question;
+
+	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
+
+	title = g_strdup_printf (_("Rename %s"), button->priv->button_name);
+	question = g_strdup_printf (_("Enter a new name for this %s:"), button->priv->button_name);
+	new = rb_ask_string (title, question, button->priv->text,
+			     GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (button))));
+	g_free (title);
+	g_free (question);
+	
+	if (new == NULL)
+		return;
+
+	g_object_set (G_OBJECT (button),
+		      "text", new,
+		      NULL);
+
+	g_signal_emit (G_OBJECT (button),
+		       rb_sidebar_button_signals[EDITED], 0);
+
+	g_free (new);
 }

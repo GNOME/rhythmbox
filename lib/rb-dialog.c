@@ -107,7 +107,7 @@ rb_ask_string (const char *title,
 	       const char *default_text,
 	       GtkWindow *parent)
 {
-	GtkWidget *dialog, *hbox, *image, *entry, *label, *align, *vbox;
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox;
 	int response;
 
 	dialog = gtk_dialog_new_with_buttons (title,
@@ -125,15 +125,18 @@ rb_ask_string (const char *title,
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION,
 					  GTK_ICON_SIZE_DIALOG);
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
+
 	vbox = gtk_vbox_new (FALSE, 5);
-	align = gtk_alignment_new (0.0, 0.5, 1.0, 1.0);
+
 	label = gtk_label_new (question);
-	gtk_container_add (GTK_CONTAINER (align), label);
-	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, TRUE, 0);
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
+
 	entry = gtk_entry_new ();
 	gtk_entry_set_text (GTK_ENTRY (entry), default_text);
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);

@@ -56,7 +56,8 @@ typedef struct
 
 GType            rb_sidebar_button_get_type (void);
 
-RBSidebarButton *rb_sidebar_button_new      (const char *unique_id);
+RBSidebarButton *rb_sidebar_button_new      (const char *unique_id,
+					     const char *button_name);
 
 void             rb_sidebar_button_set      (RBSidebarButton *button,
 					     const char *stock_id,

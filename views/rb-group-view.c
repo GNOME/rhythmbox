@@ -280,7 +280,8 @@ rb_group_view_init (RBGroupView *view)
 	
 	view->priv = g_new0 (RBGroupViewPrivate, 1);
 
-	button = rb_sidebar_button_new ("RbGroupView");
+	button = rb_sidebar_button_new ("RbGroupView",
+					_("music group"));
 	rb_sidebar_button_set (button,
 			       RB_STOCK_GROUP,
 			       _("Unnamed"),

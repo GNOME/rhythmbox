@@ -279,7 +279,8 @@ rb_library_view_init (RBLibraryView *view)
 	
 	view->priv = g_new0 (RBLibraryViewPrivate, 1);
 
-	button = rb_sidebar_button_new ("RbLibraryView");
+	button = rb_sidebar_button_new ("RbLibraryView",
+					_("library"));
 	rb_sidebar_button_set (button,
 			       RB_STOCK_LIBRARY,
 			       _("Library"),

@@ -1,6 +1,24 @@
 2002-08-03  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/ui/rhythmbox-group-view.xml.in:
+	* lib/rb-dialog.c: (rb_ask_string):
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_class_init),
+	(rb_sidebar_button_init), (rb_sidebar_button_finalize),
+	(rb_sidebar_button_set_property), (rb_sidebar_button_get_property),
+	(rb_sidebar_button_new), (rb_sidebar_button_popup_rename_cb),
+	(rb_sidebar_button_rename):
+	* lib/widgets/rb-sidebar-button.h:
+	* lib/widgets/rb-sidebar.c:
+	(rb_sidebar_event_box_drag_data_received_cb):
+	* tests/testview2.c: (rb_test_view2_init):
+	* views/rb-group-view.c: (rb_group_view_init):
+	* views/rb-library-view.c: (rb_library_view_init):
+
+	Popup a dialog asking a new name when renaming a group.
+
+2002-08-03  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/ui/rhythmbox-group-view.xml.in:
 
 	Better rename/delete group tip.
 

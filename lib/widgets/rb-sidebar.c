@@ -504,17 +504,19 @@ rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 		{
 			char **parts;
 
-			/* DND data is in the format: unique_id\nstock_id\ntext */
+			/* DND data is in the format: unique_id\nbutton_name\nstock_id\ntext */
 			parts = g_strsplit (dnd_info, "\n", -1);
 
 			g_assert (parts[0] != NULL);
 			g_assert (parts[1] != NULL);
 			g_assert (parts[2] != NULL);
+			g_assert (parts[3] != NULL);
 
-			button = rb_sidebar_button_new (parts[0]);
+			button = rb_sidebar_button_new (parts[0],
+							parts[1]);
 			rb_sidebar_button_set (button,
-					       parts[1],
 					       parts[2],
+					       parts[3],
 					       FALSE);
 			rb_sidebar_append (sidebar, button);
 

@@ -148,7 +148,8 @@ rb_test_view2_init (RBTestView2 *view)
 
 	id = g_strdup_printf ("%d", counter);
 	counter++;
-	button = rb_sidebar_button_new (id);
+	button = rb_sidebar_button_new (id,
+					"test view");
 	rb_sidebar_button_set (button,
 			       RB_STOCK_PLAYLIST,
 			       "Playlist",
