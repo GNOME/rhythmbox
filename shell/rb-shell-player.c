@@ -1059,24 +1059,20 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	RhythmDBEntry *current_entry;
 	long entry_duration, entry_play_time, entry_time_left;
 	gboolean check_idle_time;
-	double mod, old_rating, new_rating;
+	double mod;
 	GValue value = { 0, };
 	
-	if (!eel_gconf_get_boolean (CONF_AUTO_RATE))
-		return;
-	
 	current_entry = rb_shell_player_get_playing_entry (player);
-	if (current_entry == NULL)
+	if (current_entry == NULL) {
+		player->priv->last_skipped = FALSE;
+		player->priv->last_jumped = jumped;
 		return;
+	}
 	
 	entry_play_time = rb_shell_player_get_playing_time (player);
 	entry_duration = rb_shell_player_get_playing_song_duration (player);
 	entry_time_left = entry_duration - entry_play_time;
 	g_return_if_fail (entry_time_left >= 0);
-	
-	/* don't auto-rate songs 30 seconds or less */
-	if (entry_duration <= 30)
-		return;
 	
 	/* sloppy end of song */
 	if (entry_time_left < 16)
@@ -1124,30 +1120,35 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 #endif /* HAVE_XIDLE_EXTENSION */
 	}
 	
-	/* get song's old rating */
-	old_rating = rhythmdb_entry_get_double (player->priv->db,
-						current_entry,
-						RHYTHMDB_PROP_RATING);
-	
-	/* create and clamp new rating */
-	new_rating = old_rating + mod;
-	if (new_rating > 5)
-		new_rating = 5;
-	else if (new_rating < 0)
-		new_rating = 0;
-	
-	/* set the new value for the song */
-	g_value_init (&value, G_TYPE_DOUBLE);
-	g_value_set_double (&value, new_rating);
-	rhythmdb_write_lock (player->priv->db);
-	rhythmdb_entry_set (player->priv->db,
-			    current_entry,
-			    RHYTHMDB_PROP_RATING,
-			    &value);
-	g_value_unset (&value);
-	rhythmdb_write_unlock (player->priv->db);
-
-	rb_debug ("set rating from %f to %f\n", old_rating, new_rating);
+	/* don't auto-rate songs 30 seconds or less */
+	if (eel_gconf_get_boolean (CONF_AUTO_RATE) && entry_duration > 30) {
+		double old_rating, new_rating;
+		
+		/* get song's old rating */
+		old_rating = rhythmdb_entry_get_double (player->priv->db,
+							current_entry,
+							RHYTHMDB_PROP_RATING);
+		
+		/* create and clamp new rating */
+		new_rating = old_rating + mod;
+		if (new_rating > 5)
+			new_rating = 5;
+		else if (new_rating < 0)
+			new_rating = 0;
+		
+		/* set the new value for the song */
+		g_value_init (&value, G_TYPE_DOUBLE);
+		g_value_set_double (&value, new_rating);
+		rhythmdb_write_lock (player->priv->db);
+		rhythmdb_entry_set (player->priv->db,
+				    current_entry,
+				    RHYTHMDB_PROP_RATING,
+				    &value);
+		g_value_unset (&value);
+		rhythmdb_write_unlock (player->priv->db);
+		
+		rb_debug ("set rating from %f to %f\n", old_rating, new_rating);
+	}
 }
 
 void
