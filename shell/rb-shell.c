@@ -59,6 +59,9 @@ static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_corba_quit (PortableServer_Servant _servant,
                                  CORBA_Environment *ev);
+static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
+					   const CORBA_char *uri,
+					   CORBA_Environment *ev);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -229,7 +232,8 @@ rb_shell_class_init (RBShellClass *klass)
 
         object_class->finalize = rb_shell_finalize;
 
-	epv->quit = rb_shell_corba_quit;
+	epv->quit         = rb_shell_corba_quit;
+	epv->addToLibrary = rb_shell_corba_add_to_library;
 }
 
 static void
@@ -324,6 +328,16 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 	rb_shell_quit (shell);
 }
 
+static void
+rb_shell_corba_add_to_library (PortableServer_Servant _servant,
+			       const CORBA_char *uri,
+			       CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+
+	rb_library_add_uri (shell->priv->library, (char *) uri);
+}
+
 void
 rb_shell_construct (RBShell *shell)
 {
@@ -356,7 +370,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize UI */
 	win = BONOBO_WINDOW (bonobo_window_new ("Rhythmbox shell",
-						_("Music Player")));
+						_("Rhythmbox Music Player")));
 
 	shell->priv->window = GTK_WIDGET (win);
 
@@ -681,7 +695,7 @@ rb_shell_set_window_title (RBShell *shell,
 	if (window_title == NULL)
 	{
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
-				      _("Music Player"));
+				      _("Rhythmbox Music Player"));
 	}
 	else
 	{

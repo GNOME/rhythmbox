@@ -32,6 +32,7 @@ void        rb_ensure_dir_exists     (const char *dir);
 char       *rb_uri_resolve_symlink   (const char *uri);
 gboolean    rb_uri_is_directory      (const char *uri);
 gboolean    rb_uri_exists            (const char *uri);
+char       *rb_uri_resolve_relative  (const char *uri);
 
 void        rb_file_helpers_init     (void);
 void        rb_file_helpers_shutdown (void);

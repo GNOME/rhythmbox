@@ -17,6 +17,9 @@ appicondir = $(datadir)/pixmaps
 schemadir = $(sysconfdir)/gconf/schemas
 schema_DATA = rhythmbox.schemas
 
+applicationsdir = $(datadir)/application-registry
+applications_DATA = rhythmbox.applications
+
 install-schemas: $(schema_DATA)
 	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMAS_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(top_srcdir)/data/$(schema_DATA)
 
@@ -29,4 +32,5 @@ CLEANFILES = GNOME_Rhythmbox_Shell.server rhythmbox.desktop
 EXTRA_DIST = $(server_in_files)     \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
+	     $(applications_DATA)   \
 	     $(schema_DATA)

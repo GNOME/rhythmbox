@@ -1,5 +1,25 @@
 2002-08-21  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/Makefile.am:
+	* data/rhythmbox.applications:
+	* data/rhythmbox.desktop.in:
+	* lib/rb-file-helpers.c: (is_valid_scheme_character),
+	(remove_internal_relative_components), (is_uri_partial),
+	(eel_uri_make_full_from_relative),
+	(file_uri_from_local_relative_path), (has_valid_scheme),
+	(rb_uri_resolve_relative):
+	* lib/rb-file-helpers.h:
+	* shell/RhythmboxShell.idl:
+	* shell/main.c: (main), (rb_init), (rb_handle_cmdline):
+	* shell/rb-shell.c: (rb_shell_class_init),
+	(rb_shell_corba_add_to_library), (rb_shell_construct),
+	(rb_shell_set_window_title):
+
+	Support adding files to lib from the cmdline, install
+	applications file.
+
+2002-08-21  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_init),
 	(rb_sidebar_button_button_press_event_cb),
 	(rb_sidebar_button_item_factory_translate_func),

@@ -37,7 +37,7 @@
 #include "rb-stock-icons.h"
 
 static gboolean rb_init (RBShell *shell);
-static void rb_handle_cmdline ();
+static void rb_handle_cmdline (char **argv, int argc);
 
 static CORBA_Environment ev;
 
@@ -99,6 +99,9 @@ main (int argc, char **argv)
 
 		rb_shell = rb_shell_new ();
 
+		g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
+		g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
+
 		g_idle_add ((GSourceFunc) rb_init, rb_shell);
 
 		bonobo_main ();
@@ -107,7 +110,7 @@ main (int argc, char **argv)
 	{
 		rb_debug ("already running");
 
-		rb_handle_cmdline ();
+		rb_handle_cmdline (argv, argc);
 	}
 
 	/* cleanup */
@@ -123,17 +126,24 @@ main (int argc, char **argv)
 static gboolean
 rb_init (RBShell *shell)
 {
+	char **argv;
+	int argc;
+	
 	rb_shell_construct (shell);
 
-	rb_handle_cmdline ();
+	argv = (char **) g_object_get_data (G_OBJECT (shell), "argv");
+	argc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (shell), "argc"));
+
+	rb_handle_cmdline (argv, argc);
 	
 	return FALSE;
 }
 
 static void
-rb_handle_cmdline ()
+rb_handle_cmdline (char **argv, int argc)
 {
 	GNOME_RhythmboxShell shell;
+	int i;
 
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)
@@ -143,6 +153,18 @@ rb_handle_cmdline ()
 		g_free (msg);
 		
 		return;
+	}
+
+	for (i = 0; i < argc; i++)
+	{
+		char *tmp;
+
+		tmp = rb_uri_resolve_relative (argv[i]);
+			
+		if (rb_uri_exists (tmp) == TRUE)
+			GNOME_RhythmboxShell_addToLibrary (shell, tmp, &ev);
+
+		g_free (tmp);
 	}
 	
 	if (quit == TRUE)
