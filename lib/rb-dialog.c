@@ -122,6 +122,8 @@ rb_ask_file_internal (const char *title,
 						       GTK_STOCK_OPEN, 
 						       GTK_RESPONSE_OK,
 						       NULL);
+		gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (filesel),
+						 FALSE);
 	}
 
 	if (default_file != NULL)
