@@ -758,6 +758,7 @@ set_playing (RBPlayer *player, RBNode *song)
 	} else {
 		GError *error = NULL;
 
+		monkey_media_player_close (player->priv->player);
 		monkey_media_player_open (player->priv->player,
 					  rb_node_get_property_string (song, RB_NODE_PROP_LOCATION),
 					  &error);

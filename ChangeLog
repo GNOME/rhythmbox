@@ -1,3 +1,8 @@
+2003-01-13  Bastien Nocera  <hadess@hadess.net>
+
+	* shell/rb-player.c: (set_playing): close the stream before opening a
+	new one, that fixes the stutterring when changing songs
+
 2003-01-12  Jeffrey Baker  <jwbaker@acm.org>
 	    Jorn Baayen  <jorn@nl.linux.org>
 
