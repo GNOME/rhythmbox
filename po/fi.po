@@ -3,6 +3,7 @@
 # Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 # Suomennos: http://gnome-fi.sourceforge.net/
 # Hile Tuohela <hile@iki.fi>, 2002, 2003.
+# Tommi Vainikainen <Tommi.Vainikainen@iki.fi>, 2004.
 #
 # $Id$
 #
@@ -10,9 +11,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-06-16 22:01+0300\n"
-"PO-Revision-Date: 2004-02-04 21:44+0200\n"
-"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
+"POT-Creation-Date: 2004-09-17 08:43+0300\n"
+"PO-Revision-Date: 2004-09-17 08:48+0300\n"
+"Last-Translator: Tommi Vainikainen <Tommi.Vainikainen@iki.fi>\n"
 "Language-Team: Gnome Finnish Translation Team <laatu@gnome-fi.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -249,7 +250,7 @@ msgstr "_Syötä tiedoston, jonka haluat ladata, sijainti (URI):"
 msgid "Open from URI"
 msgstr "Avaa URIsta"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1884
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1385 shell/rb-shell.c:2054
 msgid "Music Player"
 msgstr "Musiikkisoitin"
 
@@ -473,7 +474,7 @@ msgstr "Näytä tietoja valitusta kappaleesta"
 msgid "Source _List"
 msgstr "Lähde_lista"
 
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1537
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1578
 msgid "Start playing"
 msgstr "Aloita soitto"
 
@@ -549,7 +550,7 @@ msgstr "_Seuraava"
 msgid "_Paste"
 msgstr "_Liitä"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1538
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1579
 msgid "_Play"
 msgstr "_Soita"
 
@@ -594,7 +595,7 @@ msgstr "Uusi radiokanava"
 #: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
 #: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
 #: widgets/rb-entry-view.c:964 widgets/rb-entry-view.c:991
-#: widgets/rb-song-info.c:801
+#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:801
 msgid "Unknown"
 msgstr "Tuntematon"
 
@@ -823,7 +824,7 @@ msgid "<invalid filename>"
 msgstr "<virheellinen tiedostonimi>"
 
 #: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:930
-#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
+#: widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Ei koskaan"
 
@@ -879,82 +880,102 @@ msgstr "%s, %s ja %s"
 msgid "%s and %s"
 msgstr "%s ja %s"
 
-#: shell/main.c:91
+#: shell/main.c:96
 msgid "Print the playing song and exit"
 msgstr "Näytä soitettava kappale ja poistu"
 
-#: shell/main.c:92
+#: shell/main.c:97
 msgid "Print the playing song URI and exit"
 msgstr "Näytä soitettavan kappaleen URI ja poistu"
 
-#: shell/main.c:94
+#: shell/main.c:99
 msgid "Print the playing song length in seconds and exit"
 msgstr "Näytä soitettavan kappaleen pituus sekunteina ja poistu"
 
-#: shell/main.c:95
+#: shell/main.c:100
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Näytä soitettavan tiedoston soitettu aika ja poistu"
 
-#: shell/main.c:96
+#: shell/main.c:101
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Siirry annetuun aikaan soitettavassa kappalessa, jos mahdollista, ja poistu"
 
-#: shell/main.c:98
+#: shell/main.c:103
 msgid "Toggle play/pause mode"
 msgstr "Vaihtele soitto/tauko tilaa"
 
-#: shell/main.c:99
+#: shell/main.c:104
 msgid "Focus the running player"
 msgstr "Kohdista suoritettavana olevaan soittimeen"
 
-#: shell/main.c:100
+#: shell/main.c:105
 msgid "Jump to previous song"
 msgstr "Hyppää edelliseen kappaleeseen"
 
-#: shell/main.c:101
+#: shell/main.c:106
 msgid "Jump to next song"
 msgstr "Hyppää seuraavaan kappaleeseen"
 
-#: shell/main.c:103
+#: shell/main.c:107
+msgid "Turn up volume"
+msgstr "Lisää äänenvoimakkuutta"
+
+#: shell/main.c:108
+msgid "Turn down volume"
+msgstr "Vähennä äänenvoimakkuutta"
+
+#: shell/main.c:109
+msgid "Toggle muting"
+msgstr "Vaihtele vaimennusta"
+
+#: shell/main.c:110
+msgid "Increase rating"
+msgstr "Lisää arvostusta"
+
+#: shell/main.c:111
+msgid "Decrease rating"
+msgstr "Vähennä arvostusta"
+
+#: shell/main.c:113
 msgid "Toggle shuffling"
 msgstr "Vaihtele satunnaissoittoa"
 
-#: shell/main.c:105
+#: shell/main.c:115
 msgid "Enable debugging code"
 msgstr "Ota käyttöön kehityskoodi"
 
-#: shell/main.c:106
+#: shell/main.c:116
 msgid "Do not update the library"
 msgstr "Älä päivitä kirjastoa"
 
-#: shell/main.c:107
+#: shell/main.c:117
 msgid "Do not register the shell"
 msgstr "Älä rekisteröi kuorta"
 
-#: shell/main.c:108
+#: shell/main.c:118
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Älä tallenna mitään tietoja pysyvästi (sivuvaikutuksena --no-registration)"
 
-#: shell/main.c:109
+#: shell/main.c:119
 msgid "Path for database file to use"
 msgstr "Käytettävän tietokantatiedoston polku"
 
-#: shell/main.c:110
+#: shell/main.c:120
 msgid "Quit Rhythmbox"
 msgstr "Lopeta musiikkisoitin"
 
-#: shell/main.c:125 widgets/rb-druid.c:218
+#: shell/main.c:143 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Musiikkisoitin"
 
-#: shell/main.c:238 shell/main.c:247
+#: shell/main.c:255 shell/main.c:264
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Tapahtui poikkeus '%s'"
 
-#: shell/main.c:311
+#: shell/main.c:328
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -991,7 +1012,7 @@ msgstr "Satunnaisuus arvostelun perusteella"
 msgid "Random by time since last play and rating"
 msgstr "Satunnaisuus viimeisen soiton ja arvostelun perusteella"
 
-#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
+#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:871
 msgid "Couldn't parse playlist"
 msgstr "Soittlistan tulkitseminen epäonnistui"
 
@@ -1003,45 +1024,45 @@ msgstr "Lataa soittolista"
 msgid "Save playlist"
 msgstr "Tallenna soittolista"
 
-#: shell/rb-shell-player.c:443
+#: shell/rb-shell-player.c:445
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Soittimen luonti epäonnistui: %s"
 
-#: shell/rb-shell-player.c:511
+#: shell/rb-shell-player.c:513
 msgid "Play previous song"
 msgstr "Soita edellinen kappale"
 
-#: shell/rb-shell-player.c:540
+#: shell/rb-shell-player.c:542
 msgid "Play next song"
 msgstr "Soita seuraava kappale"
 
-#: shell/rb-shell-player.c:559
+#: shell/rb-shell-player.c:562
 msgid "Change the music volume"
 msgstr "Muuta musiikin voimakkuutta"
 
-#: shell/rb-shell-player.c:841
+#: shell/rb-shell-player.c:844
 #, c-format
 msgid "Opening %s..."
 msgstr "Avataan %s"
 
-#: shell/rb-shell-player.c:1529
+#: shell/rb-shell-player.c:1570
 msgid "Pause playback"
 msgstr "Keskeytä soitto"
 
-#: shell/rb-shell-player.c:1530
+#: shell/rb-shell-player.c:1571
 msgid "_Pause"
 msgstr "_Tauolle"
 
-#: shell/rb-shell-player.c:1545
+#: shell/rb-shell-player.c:1586
 msgid "Stop playback"
 msgstr "Pysäytä soitto"
 
-#: shell/rb-shell-player.c:1546
+#: shell/rb-shell-player.c:1587
 msgid "_Stop"
 msgstr "_Pysäytä"
 
-#: shell/rb-shell-player.c:1874
+#: shell/rb-shell-player.c:1915
 msgid "Unexpected end of stream!"
 msgstr "Virta loppui odottamattomasti!"
 
@@ -1053,24 +1074,28 @@ msgstr "Musiikkisoittimen asetukset"
 msgid "General"
 msgstr "Yleiset"
 
-#: shell/rb-shell.c:838
+#: shell/rb-shell.c:869
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "URIn \"%s\" tulkitseminen epäonnistui\n"
 
-#: shell/rb-shell.c:1062
+#: shell/rb-shell.c:1119
 msgid "Whether the main window is visible"
 msgstr "Asettaa, onko pääikkuna näkyvissä"
 
-#: shell/rb-shell.c:1067
+#: shell/rb-shell.c:1124
 msgid "Whether shuffle is enabled"
 msgstr "Onko satunnaistoisto päällä"
 
-#: shell/rb-shell.c:1071
+#: shell/rb-shell.c:1129
+msgid "Whether repeat is enabled"
+msgstr "Onko toisto päällä"
+
+#: shell/rb-shell.c:1134
 msgid "Properties for the current song"
 msgstr "Valitun kappaleen ominaisuudet"
 
-#: shell/rb-shell.c:1484
+#: shell/rb-shell.c:1654
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1082,12 +1107,12 @@ msgstr ""
 "kuin bonobo-aktivoinnin. Tämä varoitus on harmiton,mutta prosessien välinen "
 "tiedonvälitys (IPC) ei toimi."
 
-#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
+#: shell/rb-shell.c:2029 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
 msgid "Not playing"
 msgstr "Soitto pysäytetty"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1862
+#: shell/rb-shell.c:2032
 #, c-format
 msgid ""
 "%s\n"
@@ -1097,7 +1122,7 @@ msgstr ""
 "Pysäytetty, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1866
+#: shell/rb-shell.c:2036
 #, c-format
 msgid ""
 "%s\n"
@@ -1107,43 +1132,44 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:2070
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: shell/rb-shell.c:1968
+#: shell/rb-shell.c:2138
 msgid "translator_credits"
 msgstr ""
-"Hile Tuohela, 2002-2003\n"
+"Tommi Vainikainen, 2004\n"
+"Hile Tuohela, 2002-2004\n"
 "\n"
 "http://gnome-fi.org/"
 
-#: shell/rb-shell.c:1977
+#: shell/rb-shell.c:2147
 msgid "Maintainers:"
 msgstr "Ylläpitäjät:"
 
-#: shell/rb-shell.c:1980
+#: shell/rb-shell.c:2150
 msgid "Former Maintainers:"
 msgstr "Aikaisemmat ylläpitäjät:"
 
-#: shell/rb-shell.c:1983
+#: shell/rb-shell.c:2153
 msgid "Contributors:"
 msgstr "Avustajat:"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:2155
 msgid "Music management and playback software for GNOME."
 msgstr "Musiikin hallinta- ja soitto-ohjelma Gnomeen"
 
-#: shell/rb-shell.c:2166
+#: shell/rb-shell.c:2336
 msgid "Choose Files or Directory"
 msgstr "Valitse tiedostoja tai hakemisto"
 
-#: shell/rb-shell.c:2212
+#: shell/rb-shell.c:2382
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "CD-levyjen tuonti vaatii, etää Sound Juicer on asennettu."
 
-#: shell/rb-shell.c:2219
+#: shell/rb-shell.c:2389
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "sound-juiceria ei voitu suorittaa: %s"
@@ -1262,7 +1288,7 @@ msgstr "Ei ominaisuuksia."
 msgid "This source does not support drag and drop."
 msgstr "Tämä lähde ei tue vetoa ja tiputusta."
 
-#: sources/rb-sourcelist.c:194
+#: sources/rb-sourcelist.c:195
 msgid "_Source"
 msgstr "_Lähde"
 
@@ -1485,11 +1511,11 @@ msgstr "työpöydällä"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:235
+#: widgets/rb-volume.c:236
 msgid "-"
 msgstr "-"
 
