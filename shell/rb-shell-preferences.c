@@ -57,7 +57,6 @@ const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text"
 struct RBShellPreferencesPrivate
 {
 	GtkWidget *toolbar_check;
-	GtkWidget *style_hbox;
 	GtkWidget *statusbar_check;
 	GtkWidget *sidebar_check;
 	GtkWidget *style_optionmenu;
@@ -172,8 +171,6 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	shell_preferences->priv->toolbar_check =
 		glade_xml_get_widget (xml, "toolbar_check");
-	shell_preferences->priv->style_hbox =
-		glade_xml_get_widget (xml, "style_hbox");
 	shell_preferences->priv->statusbar_check =
 		glade_xml_get_widget (xml, "statusbar_check");
 	shell_preferences->priv->sidebar_check =
@@ -254,7 +251,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->toolbar_check),
 				      eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
-	gtk_widget_set_sensitive (shell_preferences->priv->style_hbox,
+	gtk_widget_set_sensitive (shell_preferences->priv->style_optionmenu,
 				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->statusbar_check),
 				      eel_gconf_get_boolean (CONF_UI_STATUSBAR_VISIBLE));
