@@ -16,6 +16,11 @@ AC_CHECK_SIZEOF(long)
 
 ACLOCAL="$ACLOCAL -I macros"
 
+if test x"$GCC" = xyes; then
+  AC_MSG_NOTICE([disabling compiler optimiztation by default])
+  CFLAGS=`echo $CFLAGS | sed -e 's/-O2//'`
+fi
+
 if test x"$GCC" = "xyes"; then
 AC_MSG_CHECKING([gcc argument to enable C99])
 saved_CFLAGS="$CFLAGS"
