@@ -28,11 +28,6 @@ This is an area where the current Rhythmbox kind of falls over.
 So permitting multiple implementations will allow us more
 flexibility for experimentation.
 
-*** But what about CD audio?
-
-Should we support saving CD tracks in the database?  Should we
-be able to mix them with regular songs in a playlist?
-
 ** What is a song?
 
 Conceptually, it's just a collection of attributes.  The most
@@ -79,8 +74,9 @@ queries.  Equally important though, we need to be flexible enough
 to query on any attribute.  This will be an important basis for
 implementing iTunes-like smart playlists.
 
-The main idea of the new API is that it simply returns something that
-implements the GtkTreeModel interface each time a query is run. This
+The main idea of the new API is that it simply returns a set of
+nodes which match the query.  Then a new object which implements
+the GtkTreeModel interface is wrapped around this set.  This
 has the potential to be a lot more efficient than the previous approach.
 In the previous approach, the whole database was always presented in a
 GtkTreeModel interface, and then EggTreeModelFilter was used to filter it.
@@ -95,7 +91,10 @@ So here's how it will work in the new implementation.  When the user clicks
 on an album, this only requires one query.  So, we will just call
 rhythmdb_do_entry_query like this:
 
-GtkTreeModel *model = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "album", "Foo's Greatest Hits", RHYTHMDB_QUERY_END);
+album = compute_album_id ();
+...
+GPtrArray *set = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "album", album, RHYTHMDB_QUERY_END);
+GtkTreeModel *model = rb_db_model_new (set);
 
 Then, we will make the main song view use this model:
 
@@ -106,18 +105,23 @@ several queries, because we need to filter the artist and album browsers
 by artists/albums which are in those genres.  As before, we filter the main
 view by the query:
 
-GtkTreeModel *model = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Ambient", RHYTHMDB_QUERY_END);
+genre = get_genre_id ();
+...
+GPtrArray *set = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", genre, RHYTHMDB_QUERY_END);
+GtkTreeModel *model = rb_db_model_new (set);
 gtk_tree_view_set_model (mainview, model);
 
 However, we also need to gather the lists of artists/albums.  We use the
 specialized query rhythmdb_do_property_query, which returns just a flat
 GtkTreeModel.  This call looks like this:
 
-model = rhythmdb_do_property_query (db, "artist", RHYTHMDB_QUERY_PROP_EQUALS,
-                                    "genre", "Rock", RHYTHMDB_QUERY_END);
+set = rhythmdb_do_property_query (db, "artist", RHYTHMDB_QUERY_PROP_EQUALS,
+                                  "genre", "Rock", RHYTHMDB_QUERY_END);
+model = rb_db_model_new (set);
 gtk_tree_view_set_model (artistview, model);
-model = rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS,
-                                    "genre", "Rock", RHYTHMDB_QUERY_END);
+set = rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS,
+                                 "genre", "Rock", RHYTHMDB_QUERY_END);
+model = rb_db_model_new (set);
 gtk_tree_view_set_model (artistview, model);
 
 Conceptually, the property_query call just gathers all the song entries
@@ -141,19 +145,21 @@ As we mentioned before, the nice thing about this API is that it could
 also be fairly easily implemented by a real database such as SQLite.
 For example, this call:
 
-rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Ambient", RHYTHMDB_QUERY_END);
+/* Here, 19 is a unique ID referring to a genre such as "Rock */
+rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", 19, RHYTHMDB_QUERY_END);
 
 could be rewritten in SQL:
 
-select * from songs where genre="Ambient";
+select * from songs where genreid=19;
 
 And this call:
 
-rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Rock", RHYTHMDB_QUERY_END);
+/* Here, 37 is a unique ID referring to a genre such as "Rock */
+rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS, "genre", 37, RHYTHMDB_QUERY_END);
 
 could be rewritten as:
 
-select distinct album from songs where genre="Rock";
+select distinct album from songs where genreid=37;
 
 ** Static playlists
 

@@ -1,14 +1,14 @@
 
 AUTHORS.tab : $(top_srcdir)/AUTHORS
-	cat $(top_srcdir)/AUTHORS | sed -e 's/^/"/' -e 's/$$/",/' > $@.tmp
+	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/AUTHORS > $@.tmp
 	mv $@.tmp $@
 
 MAINTAINERS.tab : $(top_srcdir)/MAINTAINERS
-	cat $(top_srcdir)/MAINTAINERS | sed -e 's/^/"/' -e 's/$$/",/' > $@.tmp
+	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/MAINTAINERS > $@.tmp
 	mv $@.tmp $@
 
 DOCUMENTERS.tab : $(top_srcdir)/DOCUMENTERS
-	cat $(top_srcdir)/DOCUMENTERS | sed -e 's/^/"/' -e 's/$$/",/' > $@.tmp
+	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/DOCUMENTERS > $@.tmp
 	mv $@.tmp $@
 
 tab_files = AUTHORS.tab MAINTAINERS.tab DOCUMENTERS.tab

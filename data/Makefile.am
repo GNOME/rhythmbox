@@ -29,7 +29,9 @@ iradio_DATA = iradio-initial.pls
 iradiodir = $(datadir)/rhythmbox
 
 install-schemas: $(schema_DATA)
-	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA)
+	if test -z "$(DESTDIR)"; then \
+		GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA); \
+	fi
 
 if INSTALL_SCHEMAS
 install-data-local: install-schemas
