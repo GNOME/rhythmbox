@@ -1,3 +1,15 @@
+Overview of Changes in Rhythmbox 0.6.4
+======================================
+
+* Add audio/x-flac as a known MIME type for FLAC [Colin Walters]
+* Dashboard is disabled by default due to compilation problems on some machines [Colin Walters]
+* Remove applicable filtering when genre/artist/album filter is hidden in the prefs [Colin Walters]
+* Don't crash when using --print-playing with internet radio [Colin Walters]
+* Update GStreamer player to handle changes in GStreamer 0.7 [Colin Walters]
+* Don't send ourselves SIGINT on a g_warning if not in debug mode [Colin Walters]
+* Make file chooser dialog resizable [Colin Walters]
+* Don't try to use multimedia keys if we only have XSun [Colin Walters]
+
 Overview of Changes in Rhythmbox 0.6.3
 ======================================
 
