@@ -38,6 +38,7 @@
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
+#include "rhythmdb-serialize.h"
 #include "rb-playlist-source.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
@@ -719,17 +720,25 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
 	g_free (tmp);
 
-	for (child = node->children; child; child = child->next) {
-		char *location;
+	if (source->priv->automatic) {
+		GPtrArray *query = rhythmdb_query_deserialize (db, node);
+		gchar *limit_str = xmlGetProp (node, "limit");
+		guint limit = atoi (limit_str);
+		rb_playlist_source_set_query (source, query, limit);
+		g_free (limit_str);
+	} else {
+		for (child = node->children; child; child = child->next) {
+			char *location;
 
-		if (xmlNodeIsText (child))
-			continue;
+			if (xmlNodeIsText (child))
+				continue;
 		
-		if (strcmp (child->name, "location"))
-			continue;
+			if (strcmp (child->name, "location"))
+				continue;
 		
-		location = xmlNodeGetContent (child);
-		rb_playlist_source_add_location (source, location);
+			location = xmlNodeGetContent (child);
+			rb_playlist_source_add_location (source, location);
+		}
 	}
 
 	rhythmdb_read_unlock (db);
@@ -773,6 +782,17 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 			g_free (encoded);
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->model),
 						   &iter));
-	} else
-		g_assert_not_reached ();
+	} else {
+		GPtrArray *query;
+		guint limit;
+		char *limit_str;
+
+		g_object_get (G_OBJECT (source->priv->model), "max-size", &limit,
+			      "query", &query, NULL);
+		limit_str = g_strdup_printf ("%d", limit);
+		
+		xmlSetProp (node, "limit", limit_str);
+		g_free (limit_str);
+		rhythmdb_query_serialize (source->priv->db, query, node);
+	}
 }

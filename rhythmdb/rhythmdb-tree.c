@@ -40,6 +40,7 @@
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
+#include "rhythmdb-serialize.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -201,43 +202,6 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
 }
 
-static inline const char *
-elt_name_from_propid (RhythmDBPropType propid)
-{
-	switch (propid) {
-	case RHYTHMDB_PROP_TYPE:
-		return "type";
-	case RHYTHMDB_PROP_TITLE:
-		return "title";
-	case RHYTHMDB_PROP_GENRE:
-		return "genre";
-	case RHYTHMDB_PROP_ARTIST:
-		return "artist";
-	case RHYTHMDB_PROP_ALBUM:
-		return "album";
-	case RHYTHMDB_PROP_TRACK_NUMBER:
-		return "track-number";
-	case RHYTHMDB_PROP_DURATION:
-		return "duration";
-	case RHYTHMDB_PROP_FILE_SIZE:
-		return "file-size";
-	case RHYTHMDB_PROP_LOCATION:
-		return "location";
-	case RHYTHMDB_PROP_MTIME:
-		return "mtime";
-	case RHYTHMDB_PROP_RATING:
-		return "rating";
-	case RHYTHMDB_PROP_PLAY_COUNT:
-		return "play-count";
-	case RHYTHMDB_PROP_LAST_PLAYED:
-		return "last-played";
-	case RHYTHMDB_PROP_QUALITY:
-		return "quality";
-	}
-	g_assert_not_reached ();
-	return NULL;
-}
-
 static void
 rhythmdb_tree_init (RhythmDBTree *db)
 {
@@ -263,7 +227,7 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	db->priv->propname_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	for (i = 0; i < RHYTHMDB_NUM_SAVED_PROPERTIES; i++) {
-		const char *name = elt_name_from_propid (i);
+		const char *name = rhythmdb_elt_name_from_propid (i);
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 }
@@ -701,7 +665,7 @@ g_free (encoded);							\
 
 		value = RHYTHMDB_TREE_ENTRY_VALUE (entry, i);
 
-		elt_name = elt_name_from_propid (i);
+		elt_name = rhythmdb_elt_name_from_propid (i);
 
 		RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle);
 		RHYTHMDB_FWRITE (elt_name, 1, strlen (elt_name), ctx->handle);

@@ -371,6 +371,18 @@ rb_shell_init (RBShell *shell)
 }
 
 static void
+rb_shell_sync_state (RBShell *shell)
+{
+	rb_debug ("saving playlists");
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
+
+	rb_debug ("saving db");
+	rhythmdb_read_lock (shell->priv->db);
+	rhythmdb_save (shell->priv->db);
+	rhythmdb_read_unlock (shell->priv->db);
+}
+
+static void
 rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
@@ -395,7 +407,6 @@ rb_shell_finalize (GObject *object)
 	
 	g_list_free (shell->priv->sources);
 
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
 	g_object_unref (G_OBJECT (shell->priv->playlist_manager));
 
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
@@ -404,11 +415,6 @@ rb_shell_finalize (GObject *object)
 
 	rb_debug ("shutting down DB");
 	rhythmdb_shutdown (shell->priv->db);
-
-	rb_debug ("saving db");
-	rhythmdb_read_lock (shell->priv->db);
-	rhythmdb_save (shell->priv->db);
-	rhythmdb_read_unlock (shell->priv->db);
 
 	rb_debug ("unreffing DB");
 	g_object_unref (G_OBJECT (shell->priv->db));
@@ -1649,6 +1655,7 @@ rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
 
+	rb_shell_sync_state (shell);
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
 
