@@ -3,6 +3,9 @@ SUBDIRS = ui art glade node-views
 @INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = rhythmbox.pc
+
 server_in_files = GNOME_Rhythmbox.server.in
 server_DATA = GNOME_Rhythmbox.server
 serverdir = $(libdir)/bonobo/servers

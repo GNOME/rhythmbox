@@ -15,14 +15,7 @@ tab_files = AUTHORS.tab MAINTAINERS.tab DOCUMENTERS.tab
 
 bin_PROGRAMS = rhythmbox 
 
-rhythmbox_interface_idl_sources =      		\
-	Rhythmbox-common.c	     			\
-	Rhythmbox-stubs.c	     			\
-	Rhythmbox-skels.c	     			\
-	Rhythmbox.h
-
 rhythmbox_SOURCES =              			\
-	$(rhythmbox_interface_idl_sources) 		\
 	main.c						\
 	rb-shell.c					\
 	rb-shell.h					\
@@ -47,6 +40,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/library/librblibrary.la	        \
 	$(top_builddir)/iradio/librbiradio.la	        \
+	$(top_builddir)/corba/librbcorba.la	        \
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -59,6 +53,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib/widgets                    	\
 	-I$(top_srcdir)/lib/toolbar                    	\
 	-I$(top_srcdir)/sources                    	\
+	-I$(top_srcdir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/library                    	\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
@@ -70,18 +65,6 @@ INCLUDES = 						\
 
 CLEAN_FILES = $(rhythmbox_interface_idl_sources)
 
-$(rhythmbox_interface_idl_sources): Rhythmbox.idl
-	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/Rhythmbox.idl
+BUILT_SOURCES = $(tab_files)
 
-BUILT_SOURCES = $(rhythmbox_interface_idl_sources) $(tab_files)
-
-EXTRA_DIST = Rhythmbox.idl
-
-CLEANFILES =			\
-	AUTHORS.tab		\
-	MAINTAINERS.tab		\
-	Rhythmbox-common.c	\
-	Rhythmbox-stubs.c	\
-	Rhythmbox-skels.c	\
-	Rhythmbox.h
-
+CLEANFILES = AUTHORS.tab MAINTAINERS.tab

@@ -1,6 +1,6 @@
 # AUTOMAKE_OPTIONS = 1.7
 
-SUBDIRS = lib sources library iradio shell data po help
+SUBDIRS = lib sources library iradio corba shell data po help
 
 EXTRA_DIST = 			\
 	autogen.sh		\
