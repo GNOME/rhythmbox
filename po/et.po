@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "POT-Creation-Date: 2004-02-27 04:31+0100\n"
-"PO-Revision-Date: 2004-02-29 14:01+0300\n"
+"PO-Revision-Date: 2004-05-03 09:43+0300\n"
 "Last-Translator: Priit Laes <amd@tt.ee>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
@@ -26,16 +26,19 @@ msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Rhythmboxi Nautiluse kontekstmenüü element"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
+#, fuzzy
 msgid "Rhythmbox shell"
-msgstr ""
+msgstr "Uus shell"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
+#, fuzzy
 msgid "Rhythmbox shell factory"
-msgstr ""
+msgstr "Clock Applet Factory"
 
 #: data/glade/create-playlist.glade.h:1
 #: data/glade/druid.glade.h:1
 #: data/glade/song-info.glade.h:1
+#: data/glade/song-info-multiple.glade.h:1
 #: data/glade/station-new.glade.h:1
 #: data/glade/station-properties.glade.h:1
 #: data/glade/uri.glade.h:1
@@ -47,8 +50,9 @@ msgid "Add if any criteria are matched"
 msgstr "Lisa lisa kui vastab vähemalt ühele tunnusele"
 
 #: data/glade/create-playlist.glade.h:3
+#, fuzzy
 msgid "Create automatically updating playlist where:"
-msgstr ""
+msgstr "Loo a uus automaatselt uuendatav lugude nimekiri"
 
 #: data/glade/create-playlist.glade.h:4
 msgid "GB"
@@ -64,7 +68,7 @@ msgstr "_Piira:"
 
 #: data/glade/create-playlist.glade.h:7
 msgid "songs"
-msgstr "laulud"
+msgstr "lugu"
 
 #: data/glade/druid.glade.h:2
 #, fuzzy
@@ -93,7 +97,7 @@ msgid "_Skip this step"
 msgstr "_Jäta see samm vahele"
 
 #: data/glade/general-prefs.glade.h:1
-#: widgets/rb-entry-view.c:1306
+#: widgets/rb-entry-view.c:1228
 msgid "A_lbum"
 msgstr "A_lbum"
 
@@ -126,12 +130,7 @@ msgid "_Play count"
 msgstr "_Mängimise arv"
 
 #: data/glade/general-prefs.glade.h:9
-#: widgets/rb-entry-view.c:1336
-msgid "_Quality"
-msgstr "_Kvaliteet"
-
-#: data/glade/general-prefs.glade.h:10
-#: widgets/rb-entry-view.c:1257
+#: widgets/rb-entry-view.c:1179
 msgid "_Rating"
 msgstr "_Reiting"
 
@@ -156,64 +155,73 @@ msgid "The following files couldn't be loaded:"
 msgstr "Järgnevaid faile ei olnud võimalik laadida:"
 
 #: data/glade/song-info.glade.h:2
+#: data/glade/song-info-multiple.glade.h:2
+msgid "Automatically rate:"
+msgstr "Automaatne hindamine:"
+
+#: data/glade/song-info.glade.h:3
 msgid "Basic"
 msgstr "Põhiline"
 
-#: data/glade/song-info.glade.h:3
+#: data/glade/song-info.glade.h:4
 #: data/glade/station-properties.glade.h:2
 msgid "Bitrate:"
 msgstr "Bitikiirus:"
 
-#: data/glade/song-info.glade.h:4
+#: data/glade/song-info.glade.h:5
 msgid "Details"
 msgstr "Üksikasjad"
 
-#: data/glade/song-info.glade.h:5
+#: data/glade/song-info.glade.h:6
 msgid "Duration:"
 msgstr "Kestvus:"
 
-#: data/glade/song-info.glade.h:6
+#: data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Faili nimi:"
 
-#: data/glade/song-info.glade.h:7
+#: data/glade/song-info.glade.h:8
 msgid "Last played:"
 msgstr "Viimati mängitud:"
 
-#: data/glade/song-info.glade.h:8
+#: data/glade/song-info.glade.h:9
 msgid "Location:"
 msgstr "Asukoht:"
 
-#: data/glade/song-info.glade.h:9
-msgid "Play count:"
-msgstr "Mängi:"
-
 #: data/glade/song-info.glade.h:10
+msgid "Play count:"
+msgstr "Mängimiste arv:"
+
+#: data/glade/song-info.glade.h:11
+#: data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "_Album:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:12
+#: data/glade/song-info-multiple.glade.h:4
 msgid "_Artist:"
 msgstr "_Esitaja:"
 
-#: data/glade/song-info.glade.h:12
+#: data/glade/song-info.glade.h:13
+#: data/glade/song-info-multiple.glade.h:5
 #: data/glade/station-new.glade.h:2
 #: data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "_Stiil:"
 
-#: data/glade/song-info.glade.h:13
+#: data/glade/song-info.glade.h:14
+#: data/glade/song-info-multiple.glade.h:6
 #: data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "_Reiting:"
 
-#: data/glade/song-info.glade.h:14
+#: data/glade/song-info.glade.h:15
 #: data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
 msgid "_Title:"
 msgstr "_Tiitel:"
 
-#: data/glade/song-info.glade.h:15
+#: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "_Loo number:"
 
@@ -246,20 +254,14 @@ msgid "Open from URI"
 msgstr "Ava URI-st"
 
 #: data/rhythmbox.desktop.in.h:1
-#: shell/rb-shell.c:1174
-#: shell/rb-shell.c:1813
+#: shell/rb-shell.c:1216
+#: shell/rb-shell.c:1885
 msgid "Music Player"
 msgstr "Muusikamängija"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
 msgstr "Mängi ja halda oma muusikakollektsiooni"
-
-#: data/rhythmbox.desktop.in.h:3
-#: shell/main.c:115
-#: widgets/rb-druid.c:218
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1
 #: data/ui/rhythmbox-ui.xml.h:21
@@ -341,8 +343,9 @@ msgid "Change this automatic playlist"
 msgstr "Muuda seda automaatset lugude nimekirja"
 
 #: data/ui/rhythmbox-ui.xml.h:10
+#, fuzzy
 msgid "Choose a location (URI) to be added to the library"
-msgstr ""
+msgstr "Vali teeki lisatavad failid või kataloog"
 
 #: data/ui/rhythmbox-ui.xml.h:11
 msgid "Choose a playlist to be loaded"
@@ -433,12 +436,12 @@ msgid "Pause playing"
 msgstr "Peata mängimine"
 
 #: data/ui/rhythmbox-ui.xml.h:34
-#: shell/rb-statusbar.c:243
+#: shell/rb-statusbar.c:238
 msgid "Play first song again after all songs are played"
 msgstr "Mängi esimest lugu kui kõik lood on mängitud"
 
 #: data/ui/rhythmbox-ui.xml.h:35
-#: shell/rb-statusbar.c:238
+#: shell/rb-statusbar.c:233
 msgid "Play songs in a random order"
 msgstr "Mängi lugusid suvalises järjekorras"
 
@@ -487,7 +490,7 @@ msgid "Source _List"
 msgstr "_Lähtenimekiri"
 
 #: data/ui/rhythmbox-ui.xml.h:50
-#: shell/rb-shell-player.c:1490
+#: shell/rb-shell-player.c:1536
 msgid "Start playing"
 msgstr "Alusta mängimist"
 
@@ -520,8 +523,9 @@ msgid "_Contents"
 msgstr "_Sisukord"
 
 #: data/ui/rhythmbox-ui.xml.h:58
+#, fuzzy
 msgid "_Control"
-msgstr ""
+msgstr "Control-H"
 
 #: data/ui/rhythmbox-ui.xml.h:59
 msgid "_Copy"
@@ -564,7 +568,7 @@ msgid "_Paste"
 msgstr "_Aseta"
 
 #: data/ui/rhythmbox-ui.xml.h:71
-#: shell/rb-shell-player.c:1491
+#: shell/rb-shell-player.c:1537
 msgid "_Play"
 msgstr "_Mängi"
 
@@ -589,7 +593,7 @@ msgid "_Show Window"
 msgstr "_Näita akent"
 
 #: data/ui/rhythmbox-ui.xml.h:77
-#: shell/rb-statusbar.c:235
+#: shell/rb-statusbar.c:230
 msgid "_Shuffle"
 msgstr "_Segatud"
 
@@ -602,19 +606,19 @@ msgid "New Internet Radio Station"
 msgstr "Uus Internetiraadiojaam"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:440
+#: iradio/rb-station-properties-dialog.c:460
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:714
-#: sources/rb-ipod-source.c:173
-#: sources/rb-iradio-source.c:249
-#: sources/rb-iradio-source.c:250
-#: sources/rb-iradio-source.c:251
-#: sources/rb-playlist-source.c:393
-#: widgets/rb-entry-view.c:1039
-#: widgets/rb-entry-view.c:1066
-#: widgets/rb-song-info.c:597
+#: rhythmdb/rhythmdb.c:767
+#: sources/rb-ipod-source.c:175
+#: sources/rb-iradio-source.c:266
+#: sources/rb-iradio-source.c:267
+#: sources/rb-iradio-source.c:268
+#: sources/rb-playlist-source.c:394
+#: widgets/rb-entry-view.c:961
+#: widgets/rb-entry-view.c:988
+#: widgets/rb-song-info.c:801
 msgid "Unknown"
 msgstr "Tundmatu"
 
@@ -623,24 +627,27 @@ msgstr "Tundmatu"
 msgid "All"
 msgstr "Kõik"
 
-#: iradio/rb-station-properties-dialog.c:172
-#: widgets/rb-song-info.c:548
+#: iradio/rb-station-properties-dialog.c:173
+#: widgets/rb-song-info.c:751
+#, c-format
 msgid "%s Properties"
 msgstr "%s omadused"
 
-#: iradio/rb-station-properties-dialog.c:338
+#: iradio/rb-station-properties-dialog.c:358
+#, c-format
 msgid "Properties for %s"
 msgstr "%s omadused"
 
-#: lib/disclosure-widget.c:294
+#: lib/disclosure-widget.c:300
 msgid "Expander Size"
-msgstr ""
+msgstr "Laiendaja suurus"
 
-#: lib/disclosure-widget.c:295
+#: lib/disclosure-widget.c:301
 msgid "Size of the expander arrow"
-msgstr ""
+msgstr "Laiendaja noole suurus"
 
 #: lib/eel-gconf-extensions.c:67
+#, c-format
 msgid ""
 "GConf error:\n"
 "  %s"
@@ -655,29 +662,35 @@ msgstr "Suund"
 #: lib/eggtrayicon.c:121
 #, fuzzy
 msgid "The orientation of the tray."
-msgstr " ."
+msgstr "Alumine salv"
 
-#: lib/rb-file-helpers.c:75
+#: lib/rb-file-helpers.c:77
+#, c-format
 msgid "Failed to find %s"
 msgstr "%s leidmine ebaõnnestus"
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:102
+#, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s eksisteerib, palun vii see eest ära."
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:105
+#, c-format
 msgid "Failed to create directory %s."
 msgstr "Kataloogi %s loomine ebaõnnestus."
 
 #: lib/rb-playlist.c:217
+#, c-format
 msgid "Couldn't write playlist: %s"
 msgstr "Viga lugude nimekirja kirjutamisel: %s"
 
 #: lib/rb-playlist.c:250
+#, c-format
 msgid "Couldn't open playlist: %s"
 msgstr "Viga lugude nimekirja avamisel: %s"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:310
+#, c-format
 msgid "Unsupported MIME type %s"
 msgstr "Toetamata MIME tüüp %s"
 
@@ -686,6 +699,7 @@ msgid "Unknown file type"
 msgstr "Tundmatu faili tüüp"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:386
+#, c-format
 msgid "Track %.2d"
 msgstr "Lugu %.2d"
 
@@ -727,6 +741,7 @@ msgid "Failed to gather information about the file"
 msgstr "Viga faili kohta info kogumisel"
 
 #: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
+#, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d Kiht III"
 
@@ -749,7 +764,7 @@ msgstr "MPEG-4 audio (MPEG-4 AAC)"
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 #, fuzzy
 msgid "Failed to seek file"
-msgstr "Viga "
+msgstr "Faili '%s' avamine ebaõnnestus: %s"
 
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
 msgid "Failed to open file as Ogg Vorbis"
@@ -759,260 +774,292 @@ msgstr "Faili avamine Ogg Vorbis failina ebaõnnestus"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:459
-#: metadata/rb-metadata-gst.c:588
-#: player/rb-player-gst.c:565
+#: metadata/rb-metadata-gst.c:290
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr ""
+
+#: metadata/rb-metadata-gst.c:531
+#: metadata/rb-metadata-gst.c:660
+#: player/rb-player-gst.c:562
+#, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr ""
 
-#: metadata/rb-metadata-mm.c:205
+#: metadata/rb-metadata-mm.c:219
 msgid "Operation not supported"
-msgstr ""
+msgstr "Tegevus ei ole toetatud"
 
-#: player/rb-player-gst.c:325
-#: player/rb-player-gst.c:758
-msgid "Failed to close audio output sink"
-msgstr ""
-
-#: player/rb-player-gst.c:412
-#: player/rb-player-gst.c:622
-#: player/rb-player-gst.c:632
+#: player/rb-player-gst.c:409
+#: player/rb-player-gst.c:621
+#: player/rb-player-gst.c:631
+#, fuzzy
 msgid "Could not start pipeline playing"
-msgstr ""
+msgstr "Ei saa käivitada wombat serverit"
 
 #: player/rb-player-gst.c:528
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 
-#: player/rb-player-gst.c:589
+#: player/rb-player-gst.c:586
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr ""
 
-#: player/rb-player-gst.c:644
+#: player/rb-player-gst.c:658
 msgid "Could not pause playback"
 msgstr "Esituse peatamine ebaõnnestus"
 
-#: player/rb-player-gst.c:653
+#: player/rb-player-gst.c:668
+#, fuzzy
 msgid "Could not close output sink"
-msgstr ""
+msgstr "Võrdlemise väljundi parsimine ei õnnestunud."
 
-#: player/rb-player-gst.c:699
+#: player/rb-player-gst.c:715
 msgid "No AudioCD support; check your settings"
 msgstr ""
 
-#: player/rb-player-xine.c:339
+#: player/rb-player-gst.c:774
+msgid "Failed to close audio output sink"
+msgstr ""
+
+#: player/rb-player-xine.c:354
 #, fuzzy
 msgid "Failed to set up an audio driver; check your installation"
 msgstr "Viga audio"
 
-#: player/rb-player-xine.c:439
+#: player/rb-player-xine.c:454
+#, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr ""
 
-#: player/rb-player-xine.c:448
+#: player/rb-player-xine.c:463
+#, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 
-#: player/rb-player-xine.c:457
+#: player/rb-player-xine.c:472
+#, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr ""
 
-#: player/rb-player-xine.c:465
+#: player/rb-player-xine.c:480
 msgid "Internal error; check your installation."
 msgstr "Sisemine viga; kontrolli paigaldust."
 
-#: player/rb-player-xine.c:473
+#: player/rb-player-xine.c:488
+#, fuzzy, c-format
 msgid "Audio of %s not handled; check your installation."
-msgstr ""
+msgstr "Teeki cupsdconf ei leitud. Kontrolli paigaldust."
 
-#: rhythmdb/rhythmdb.c:792
+#: rhythmdb/rhythmdb.c:845
 msgid "<invalid filename>"
 msgstr "<vigane failinimi>"
 
-#: rhythmdb/rhythmdb.c:1323
-#: widgets/rb-entry-view.c:1005
-#: widgets/rb-song-info.c:571
-#: widgets/rb-song-info.c:805
+#: rhythmdb/rhythmdb.c:1462
+#: widgets/rb-entry-view.c:927
+#: widgets/rb-song-info.c:774
+#: widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Mitte kunagi"
 
-#: rhythmdb/rhythmdb.c:1325
+#: rhythmdb/rhythmdb.c:1464
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2090
+#: rhythmdb/rhythmdb.c:2191
 msgid "Loading songs..."
 msgstr "Lugude laadimine..."
 
-#: rhythmdb/rhythmdb.c:2092
+#: rhythmdb/rhythmdb.c:2193
 msgid "Refreshing songs..."
 msgstr "Värskendan lugusid..."
 
 #  Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2109
-#: rhythmdb/rhythmdb.c:2116
-#: rhythmdb/rhythmdb.c:2117
-#: rhythmdb/rhythmdb.c:2127
-#: rhythmdb/rhythmdb.c:2118
-#: rhythmdb/rhythmdb.c:2122
+#. Translators: the format is "X days, X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2210
+#: rhythmdb/rhythmdb.c:2217
+#: rhythmdb/rhythmdb.c:2218
+#: rhythmdb/rhythmdb.c:2228
+#: rhythmdb/rhythmdb.c:2219
+#: rhythmdb/rhythmdb.c:2223
+#, c-format
 msgid "%s, %s and %s"
 msgstr "%s. %s ja %s"
 
 #  Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2130
+#. Translators: the format is "X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2231
+#, c-format
 msgid "%s and %s"
 msgstr "%s ja %s-it"
 
-#: shell/main.c:90
-msgid "Print the playing song and exit"
-msgstr ""
-
 #: shell/main.c:91
+#, fuzzy
+msgid "Print the playing song and exit"
+msgstr "Näitab seda abiteksti"
+
+#: shell/main.c:92
 msgid "Print the playing song URI and exit"
 msgstr ""
 
-#: shell/main.c:93
+#: shell/main.c:94
 msgid "Print the playing song length in seconds and exit"
 msgstr ""
 
-#: shell/main.c:94
+#: shell/main.c:95
 msgid "Print the current elapsed time of playing song and exit"
 msgstr ""
 
-#: shell/main.c:95
+#: shell/main.c:96
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 
-#: shell/main.c:97
+#: shell/main.c:98
 #, fuzzy
 msgid "Toggle play/pause mode"
-msgstr "Lülita taasesitus"
+msgstr "Täisekraanirežii&m"
 
-#: shell/main.c:98
+#: shell/main.c:99
 msgid "Focus the running player"
 msgstr "Fokusseeri töötav mängija"
 
-#: shell/main.c:99
+#: shell/main.c:100
 msgid "Jump to previous song"
 msgstr "Hüppa eelmisele loole"
 
-#: shell/main.c:100
+#: shell/main.c:101
 msgid "Jump to next song"
 msgstr "Hüppa järgmisele loole"
 
-#: shell/main.c:102
-msgid "Enable debugging code"
-msgstr ""
-
 #: shell/main.c:103
+#, fuzzy
+msgid "Toggle shuffling"
+msgstr "Näita segamist"
+
+#: shell/main.c:105
+#, fuzzy
+msgid "Enable debugging code"
+msgstr "Kodeerija täieliku silumisinfo lubamine"
+
+#: shell/main.c:106
 msgid "Do not update the library"
 msgstr "Ära uuenda teeki"
 
-#: shell/main.c:104
+#: shell/main.c:107
+#, fuzzy
 msgid "Do not register the shell"
-msgstr ""
+msgstr "Ära uuenda teeki"
 
-#: shell/main.c:105
+#: shell/main.c:108
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 
-#: shell/main.c:106
+#: shell/main.c:109
 msgid "Path for database file to use"
 msgstr "Otsingutee kasutatava andmebaasifailini"
 
-#: shell/main.c:107
+#: shell/main.c:110
 msgid "Quit Rhythmbox"
 msgstr "Välju Rhythmboxist"
 
-#: shell/main.c:208
-msgid "Rhythmbox does not currently work if GNOME sound events are are enabled and esdsink is in use."
-msgstr ""
+#: shell/main.c:125
+#: widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
 
-#: shell/main.c:247
-#: shell/main.c:256
+#: shell/main.c:232
+#: shell/main.c:241
+#, fuzzy, c-format
 msgid "An exception occured '%s'"
-msgstr ""
+msgstr "Pythoni erand (%s)"
 
-#: shell/main.c:294
+#: shell/main.c:305
+#, fuzzy, c-format
 msgid ""
 "Failed to activate the shell:\n"
 "%s"
-msgstr ""
-
-#: shell/rb-play-order.c:227
-msgid "Linear"
-msgstr ""
+msgstr "Ebaõnnestus pikselrastri %s saamine"
 
 #: shell/rb-play-order.c:228
+msgid "Linear"
+msgstr "Lineaarne"
+
+#: shell/rb-play-order.c:229
+msgid "Linear looping"
+msgstr "Lineaarne tsükkel"
+
+#: shell/rb-play-order.c:230
 msgid "Shuffle"
 msgstr "Segatud"
 
-#: shell/rb-play-order.c:229
+#: shell/rb-play-order.c:231
 msgid "Random with equal weights"
-msgstr ""
+msgstr "Juhuslik võrdsete kaaludega"
 
-#: shell/rb-play-order.c:230
+#: shell/rb-play-order.c:232
 msgid "Random by time since last play"
 msgstr "Juhuslik aeg alates viimasest mängimisest"
 
-#: shell/rb-play-order.c:231
+#: shell/rb-play-order.c:233
 msgid "Random by rating"
 msgstr "Juhuslik reitingu alusel"
 
-#: shell/rb-play-order.c:232
+#: shell/rb-play-order.c:234
 msgid "Random by time since last play and rating"
 msgstr ""
 
-#: shell/rb-playlist-manager.c:420
-#: shell/rb-shell-player.c:897
+#: shell/rb-playlist-manager.c:476
+#: shell/rb-shell-player.c:868
 msgid "Couldn't parse playlist"
 msgstr "Ei suutnud töödelda lugude nimekirja"
 
-#: shell/rb-playlist-manager.c:634
+#: shell/rb-playlist-manager.c:774
 msgid "Load playlist"
 msgstr "Lae lugude nimekiri"
 
-#: shell/rb-playlist-manager.c:671
+#: shell/rb-playlist-manager.c:815
 msgid "Save playlist"
 msgstr "Salvesta lugude nimekiri"
 
-#: shell/rb-shell-player.c:479
+#: shell/rb-shell-player.c:443
+#, c-format
 msgid "Failed to create the player: %s"
 msgstr "Mängija loomine ebaõnnestus: %s"
 
-#: shell/rb-shell-player.c:544
+#: shell/rb-shell-player.c:511
 msgid "Play previous song"
 msgstr "Mängi eelmist lugu"
 
-#: shell/rb-shell-player.c:573
+#: shell/rb-shell-player.c:540
 msgid "Play next song"
 msgstr "Mängi järgmist lugu"
 
-#: shell/rb-shell-player.c:592
+#: shell/rb-shell-player.c:559
 msgid "Change the music volume"
 msgstr "Muuda muusika helitugevust"
 
-#: shell/rb-shell-player.c:870
+#: shell/rb-shell-player.c:841
+#, c-format
 msgid "Opening %s..."
 msgstr "Avan %s..."
 
-#: shell/rb-shell-player.c:1482
+#: shell/rb-shell-player.c:1528
 msgid "Pause playback"
 msgstr "Peata esitus"
 
-#: shell/rb-shell-player.c:1483
+#: shell/rb-shell-player.c:1529
 msgid "_Pause"
 msgstr "_Peata"
 
-#: shell/rb-shell-player.c:1498
+#: shell/rb-shell-player.c:1544
 msgid "Stop playback"
 msgstr "Lõpeta esitus"
 
-#: shell/rb-shell-player.c:1499
+#: shell/rb-shell-player.c:1545
 msgid "_Stop"
 msgstr "_Lõpeta"
 
-#: shell/rb-shell-player.c:1832
+#: shell/rb-shell-player.c:1873
 msgid "Unexpected end of stream!"
 msgstr "Ootamatu voo lõpp!"
 
@@ -1024,36 +1071,40 @@ msgstr "Muusikamängija seadistused"
 msgid "General"
 msgstr "Üldine"
 
-#: shell/rb-shell.c:826
+#: shell/rb-shell.c:838
+#, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Viga URI \"%s\" töötlemisel\n"
 
-#: shell/rb-shell.c:1024
+#: shell/rb-shell.c:1062
 msgid "Whether the main window is visible"
 msgstr "Kas põhiaken on nähtav"
 
-#: shell/rb-shell.c:1029
+#: shell/rb-shell.c:1067
 msgid "Whether shuffle is enabled"
 msgstr " "
 
-#: shell/rb-shell.c:1033
+#: shell/rb-shell.c:1071
 msgid "Properties for the current song"
 msgstr "Käesoleva laulu omadused"
 
-#: shell/rb-shell.c:1452
+#: shell/rb-shell.c:1484
+#, c-format
 msgid ""
 "Failed to register the shell: %s\n"
 "This probably means that you installed Rhythmbox in a different prefix than bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 
-#: shell/rb-shell.c:1787
+#: shell/rb-shell.c:1859
 #: shell/rb-tray-icon.c:227
-#: widgets/rb-header.c:557
+#: widgets/rb-header.c:579
 msgid "Not playing"
 msgstr "Ei mängi"
 
 #  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1790
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1862
+#, c-format
 msgid ""
 "%s\n"
 "Paused, %s"
@@ -1062,7 +1113,9 @@ msgstr ""
 "peatatud, %s"
 
 #  Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1794
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1866
+#, c-format
 msgid ""
 "%s\n"
 "%s"
@@ -1071,153 +1124,162 @@ msgstr ""
 "%s"
 
 #  Translators: %s is the song name
-#: shell/rb-shell.c:1829
+#. Translators: %s is the song name
+#: shell/rb-shell.c:1901
+#, c-format
 msgid "%s (Paused)"
 msgstr "%s (peatatud)"
 
-#: shell/rb-shell.c:1897
+#: shell/rb-shell.c:1969
 msgid "translator_credits"
 msgstr ""
 "Tõlge eesti keelde:\n"
 "       Priit Laes <amd@linux.ee>, 2004."
 
-#: shell/rb-shell.c:1906
+#: shell/rb-shell.c:1978
 msgid "Maintainers:"
-msgstr ""
+msgstr "Arendajad:"
 
-#: shell/rb-shell.c:1909
+#: shell/rb-shell.c:1981
 msgid "Former Maintainers:"
-msgstr ""
+msgstr "Endised arendajad:"
 
-#: shell/rb-shell.c:1912
+#: shell/rb-shell.c:1984
 msgid "Contributors:"
 msgstr "Kaasautorid:"
 
-#: shell/rb-shell.c:1914
+#: shell/rb-shell.c:1986
 msgid "Music management and playback software for GNOME."
 msgstr "Muusikahaldus ja -esitus tarkvara GNOME töölaua jaoks."
 
-#: shell/rb-shell.c:2087
+#: shell/rb-shell.c:2167
 msgid "Choose Files or Directory"
 msgstr "Vali failid või kataloog"
 
-#: shell/rb-shell.c:2133
+#: shell/rb-shell.c:2213
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr ""
 
-#: shell/rb-shell.c:2140
+#: shell/rb-shell.c:2220
+#, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Viga sound-juicer'i rakendamisel: %s"
 
-#: shell/rb-source-header.c:177
+#: shell/rb-source-header.c:183
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filtreeri muusikat stiili, artisti, albumi või pealkirja alusel"
 
-#: shell/rb-source-header.c:184
+#: shell/rb-source-header.c:190
 msgid "Show _Browser"
 msgstr "Näita _sirvijat"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:191
 msgid "Hide _Browser"
 msgstr "Peida _sirvija"
 
-#: shell/rb-statusbar.c:240
+#: shell/rb-statusbar.c:235
 msgid "_Repeat"
 msgstr "Ko_rdus"
 
-#: shell/rb-statusbar.c:446
+#: shell/rb-statusbar.c:442
 msgid "Buffering..."
 msgstr "Puhverdan..."
 
-#: sources/itunesdb.c:459
+#: sources/itunesdb.c:447
+#, fuzzy
 msgid "Master-PL"
-msgstr ""
+msgstr "Poola (pl_PL)"
 
-#: sources/itunesdb.c:461
+#: sources/itunesdb.c:449
 msgid "Playlist"
 msgstr "Lugude nimekiri"
 
-#: sources/itunesdb.c:813
+#: sources/itunesdb.c:801
+#, c-format
 msgid "Error reading \"%s\".\n"
 msgstr "Viga \"%s\" lugemisel.\n"
 
-#: sources/itunesdb.c:821
-msgid "\"%s\" is not a iTunesDB.\n"
-msgstr "\"%s\" ei ole iTunesDB.\n"
+#: sources/itunesdb.c:809
+#, c-format
+msgid "\"%s\" is not a valid iPod database.\n"
+msgstr "\"%s\" ei ole korrektne iPodi andmebaas.\n"
 
-#: sources/itunesdb.c:1061
+#: sources/itunesdb.c:1049
+#: sources/itunesdb.c:1704
+#, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Viga faili \"%s\" avamisel kirjutamiseks.\n"
 
-#: sources/itunesdb.c:1568
-msgid "Could not open iTunesDB \"%s\" for writing.\n"
-msgstr "Viga iTunesDB \"%s\" avamisel kirjutamiseks.\n"
+#: sources/itunesdb.c:1556
+#: sources/itunesdb.c:1711
+#, c-format
+msgid "Could not open \"%s\" file for writing.\n"
+msgstr "Ei suuda avada faili \"%s\" kirjutamiseks.\n"
 
 #  an error occured
-#: sources/itunesdb.c:1580
+#. an error occured
+#: sources/itunesdb.c:1568
+#, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Viga faili '%s' ümbernimetamisel '%s'-iks (%s).\n"
 
-#: sources/itunesdb.c:1716
-msgid "Could not open file \"%s\" for reading.\n"
-msgstr "Viga faili \"%s\" avamisel lugemiseks.\n"
-
-#: sources/itunesdb.c:1723
-msgid "Could not open file \"%s\" for writing.\n"
-msgstr "Viga faili \"%s\" avamisel kirjutamiseks.\n"
-
 #  error -- not end of file!
-#: sources/itunesdb.c:1736
+#. error -- not end of file!
+#: sources/itunesdb.c:1724
+#, c-format
 msgid "Error reading file \"%s\".\n"
 msgstr "Viga faili \"%s\" lugemisel.\n"
 
-#: sources/itunesdb.c:1748
+#: sources/itunesdb.c:1736
+#, fuzzy, c-format
 msgid "Error writing PC file \"%s\".\n"
-msgstr ""
+msgstr "viga faili \"%s\" kirjutamisel"
 
 #: sources/rb-ipod-source.c:117
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:323
-#: sources/rb-library-source.c:510
-#: widgets/rb-query-creator.c:55
+#: sources/rb-iradio-source.c:340
+#: sources/rb-library-source.c:513
+#: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Stiil"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:421
 msgid "Radio"
 msgstr "Raadio"
 
-#: sources/rb-iradio-source.c:547
-#: sources/rb-library-source.c:524
-#: widgets/rb-query-creator.c:53
+#: sources/rb-iradio-source.c:590
+#: sources/rb-library-source.c:527
+#: widgets/rb-query-creator.c:54
+#, c-format
 msgid "Artist"
 msgstr "Esitaja"
 
-#: sources/rb-library-source.c:538
-#: widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:541
+#: widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Album"
 
-#: sources/rb-library-source.c:647
+#: sources/rb-library-source.c:649
 msgid "Library"
 msgstr "Teek"
 
-#: sources/rb-library-source.c:1180
+#: sources/rb-library-source.c:1192
 msgid "Add Location"
 msgstr "Lisa asukoht"
 
-#: sources/rb-playlist-source.c:270
-#: widgets/rb-entry-view.c:1275
+#: sources/rb-playlist-source.c:271
+#: widgets/rb-entry-view.c:1197
 msgid "Tra_ck"
 msgstr "L_ugu"
 
-#: sources/rb-source.c:495
+#: sources/rb-source.c:528
+#, fuzzy
 msgid "No properties available."
-msgstr ""
+msgstr "Sätteid pole saadaval"
 
-#: sources/rb-source.c:578
+#: sources/rb-source.c:611
 msgid "This source does not support drag and drop."
 msgstr ""
 
@@ -1230,8 +1292,9 @@ msgid "Pixbuf Object"
 msgstr "Pixbuf objekt"
 
 #: widgets/rb-cell-renderer-pixbuf.c:110
+#, fuzzy
 msgid "The pixbuf to render."
-msgstr ""
+msgstr "Renderdatav tekst"
 
 #: widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
@@ -1245,23 +1308,22 @@ msgid ""
 msgstr ""
 
 #: widgets/rb-druid.c:249
-#, fuzzy
 msgid "Music library setup"
-msgstr "Muusikateegi "
+msgstr "Muusikateegi seadistamine"
 
 #: widgets/rb-druid.c:258
 msgid "Finish"
 msgstr "Lõpp"
 
 #: widgets/rb-druid.c:260
-#, fuzzy
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
 "Remember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."
-msgstr "Sina praegu kuni alustamine e sina liida muusika kuni kasutamine Muusika Import Kataloog või importimine."
+msgstr ""
 
 #: widgets/rb-druid.c:318
+#, c-format
 msgid "Error reading filename: %s"
 msgstr "Viga failinime lugemisel: %s"
 
@@ -1269,87 +1331,93 @@ msgstr "Viga failinime lugemisel: %s"
 msgid "Choose a directory"
 msgstr "Vali kataloog"
 
-#: widgets/rb-entry-view.c:1041
-#: widgets/rb-header.c:838
-#, fuzzy
+#: widgets/rb-entry-view.c:963
+#: widgets/rb-header.c:872
+#, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1068
+#: widgets/rb-entry-view.c:990
 msgid "Very Low"
 msgstr "Väga madal"
 
-#: widgets/rb-entry-view.c:1070
+#: widgets/rb-entry-view.c:992
 msgid "Low"
 msgstr "Madal"
 
-#: widgets/rb-entry-view.c:1072
+#: widgets/rb-entry-view.c:994
 msgid "Regular"
 msgstr "Normaalne"
 
-#: widgets/rb-entry-view.c:1074
+#: widgets/rb-entry-view.c:996
 msgid "High"
 msgstr "Kõrge"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:998
 msgid "Very High"
 msgstr "Väga kõrge"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:1000
 msgid "Perfect"
-msgstr ""
+msgstr "Perfektne"
 
-#: widgets/rb-entry-view.c:1284
+#: widgets/rb-entry-view.c:1206
 msgid "_Title"
 msgstr "_Pealkiri"
 
-#: widgets/rb-entry-view.c:1295
+#: widgets/rb-entry-view.c:1217
 msgid "Art_ist"
 msgstr "Es_itaja"
 
-#: widgets/rb-entry-view.c:1317
+#: widgets/rb-entry-view.c:1239
 msgid "Ge_nre"
 msgstr "_Stiil"
 
-#: widgets/rb-entry-view.c:1327
+#: widgets/rb-entry-view.c:1249
 msgid "Ti_me"
 msgstr "_Aeg"
 
-#: widgets/rb-entry-view.c:1346
+#: widgets/rb-entry-view.c:1258
+msgid "_Quality"
+msgstr "_Kvaliteet"
+
+#: widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "Mängimiste arv"
 
-#: widgets/rb-entry-view.c:1355
+#: widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "Viim_ati mängitud"
 
-#: widgets/rb-entry-view.c:1499
+#: widgets/rb-entry-view.c:1422
 msgid "Now Playing"
 msgstr "Hetkel mängib"
 
-#: widgets/rb-header.c:280
+#: widgets/rb-header.c:277
 msgid "Listening to "
 msgstr "Kuulan"
 
-#: widgets/rb-header.c:517
+#: widgets/rb-header.c:539
 msgid "Get information on this album from the web"
 msgstr "Hangi internetist infot selle albumi kohta "
 
-#: widgets/rb-header.c:536
+#: widgets/rb-header.c:558
 msgid "Get information on this artist from the web"
 msgstr "Hangi internetist infot selle artisti kohta "
 
-#: widgets/rb-header.c:564
+#: widgets/rb-header.c:586
 msgid "Get information on this station from the web"
 msgstr "Hangi internetist infot selle raadiojaama kohta"
 
-#: widgets/rb-header.c:827
+#: widgets/rb-header.c:861
+#, fuzzy, c-format
 msgid "%d:%02d of %d:%02d"
-msgstr ""
+msgstr "%d:%02d"
 
-#: widgets/rb-header.c:835
+#: widgets/rb-header.c:869
+#, fuzzy, c-format
 msgid "%d:%02d of %d:%02d remaining"
-msgstr ""
+msgstr "Jääkviga:"
 
 #: widgets/rb-load-failure-dialog.c:119
 msgid "Error loading files into library"
@@ -1363,58 +1431,83 @@ msgstr "_Viga"
 msgid "_File"
 msgstr "_Fail"
 
-#: widgets/rb-query-creator.c:52
+#: widgets/rb-query-creator.c:53
 msgid "Title"
 msgstr "Pealkiri"
 
-#: widgets/rb-query-creator.c:60
+#: widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "Reiting"
+
+#: widgets/rb-query-creator.c:62
 msgid "contains"
 msgstr "sisaldab"
 
-#: widgets/rb-query-creator.c:61
+#: widgets/rb-query-creator.c:63
 msgid "does not contain"
 msgstr "ei sisalda"
 
-#: widgets/rb-query-creator.c:62
+#: widgets/rb-query-creator.c:64
+#: widgets/rb-query-creator.c:69
 msgid "equals"
 msgstr "võrdub"
 
-#: widgets/rb-query-creator.c:230
+#: widgets/rb-query-creator.c:70
+msgid "greater than"
+msgstr "suurem kui"
+
+#: widgets/rb-query-creator.c:71
+msgid "less than"
+msgstr "väiksem kui"
+
+#: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
 msgstr "Loo automaatne lugude nimekiri"
 
 #  this string can only be so long, or there wont be a search entry :)
+#. this string can only be so long, or there wont be a search entry :)
 #: widgets/rb-search-entry.c:118
 msgid "_Search:"
 msgstr "_Otsi:"
 
 #: widgets/rb-song-display-box.c:113
+#, fuzzy
 msgid "from"
-msgstr ""
+msgstr "%s paketist %s\n"
 
 #: widgets/rb-song-display-box.c:115
+#, fuzzy
 msgid "by"
-msgstr ""
+msgstr "Autor: %1"
 
-#: widgets/rb-song-info.c:245
+#: widgets/rb-song-info.c:267
 msgid "Song Properties"
 msgstr "Loo omadused"
 
-#: widgets/rb-song-info.c:595
+#: widgets/rb-song-info.c:359
+msgid "Multiple Song Properties"
+msgstr "Mitme laulu omadused"
+
+#: widgets/rb-song-info.c:799
+#, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: widgets/rb-song-info.c:658
+#: widgets/rb-song-info.c:862
 msgid "on the desktop"
 msgstr "töölaual"
 
 #  Translators - The + and - refer to increasing and decreasing the volume.
 #  ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
+#  Translators - The + and - refer to increasing and decreasing the volume.
+#  ** I don't know if there are sensible alternatives in other languages
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: widgets/rb-volume.c:234
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "-"
 msgstr "-"
 
