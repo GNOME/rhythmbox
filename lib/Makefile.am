@@ -34,10 +34,6 @@ librb_la_SOURCES =					\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
-	getline.c					\
-	getline.h					\
-	getstr.c					\
-	getstr.h					\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-preferences.h	
