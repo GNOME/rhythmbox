@@ -1,3 +1,11 @@
+2003-08-18  Yann Rouillard  <yann@cvs.gnome.org>
+
+	* lib/widgets/rb-volume.c (rb_volume_init), 
+	(mixer_value_changed_cb), (rb_volume_sync_volume):
+
+	Reverted the slider range so that + et - keys 
+	slider accels work correctly.
+	
 2003-08-18  Benjamin Otte  <in7y118@public.uni-hamburg.de>
 
 	* monkey-media/mokey-media-player-gst-tmp.c:

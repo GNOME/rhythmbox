@@ -167,9 +167,9 @@ rb_volume_init (RBVolume *volume)
 
 	volume->priv->window = gtk_window_new (GTK_WINDOW_POPUP);
 
-	volume->priv->adj = GTK_ADJUSTMENT (gtk_adjustment_new (-50,
-							       -VOLUME_MAX,
+	volume->priv->adj = GTK_ADJUSTMENT (gtk_adjustment_new (50,
 							       0.0,
+							       VOLUME_MAX,
 							       VOLUME_MAX/20,
 							       VOLUME_MAX/10,
 							       0.0));
@@ -194,6 +194,7 @@ rb_volume_init (RBVolume *volume)
 
 	box = gtk_vbox_new (FALSE, 0);
 	volume->priv->scale = gtk_vscale_new (volume->priv->adj);
+	gtk_range_set_inverted (GTK_RANGE (volume->priv->scale), TRUE);
 	gtk_widget_set_size_request (volume->priv->scale, -1, 100);
 
 	g_signal_connect (G_OBJECT (volume->priv->window), "scroll_event",
@@ -296,7 +297,7 @@ rb_volume_sync_volume (RBVolume *volume)
 	gtk_widget_show (image);
 	gtk_container_add (GTK_CONTAINER (volume->priv->button), image);
 
-	gtk_adjustment_set_value (volume->priv->adj, - vol);
+	gtk_adjustment_set_value (volume->priv->adj, vol);
 }
 
 static void
@@ -388,7 +389,7 @@ scroll_cb (GtkWidget *widget, GdkEvent *event, gpointer unused)
 
 	rb_debug ("got scroll, setting volume to %f", volume);
 	eel_gconf_set_float (CONF_STATE_VOLUME, volume);
-	
+
 	return FALSE;
 }
 
@@ -398,11 +399,11 @@ rb_volume_popup_hide (RBVolume *volume)
 {
 	rb_debug ("hiding popup");
 	gtk_grab_remove (volume->priv->window);
-	gdk_pointer_ungrab (GDK_CURRENT_TIME);		
+	gdk_pointer_ungrab (GDK_CURRENT_TIME);
 	gdk_keyboard_ungrab (GDK_CURRENT_TIME);
-	
+
 	gtk_widget_hide (GTK_WIDGET (volume->priv->window));
-	
+
 /* 	gtk_frame_set_shadow_type (GTK_FRAME (data->frame), GTK_SHADOW_NONE); */
 }
 
@@ -444,7 +445,7 @@ scale_key_press_event_cb (GtkWidget *widget, GdkEventKey *event, RBVolume *volum
 static void
 mixer_value_changed_cb (GtkAdjustment *adj, RBVolume *volume)
 {
-	float vol = - gtk_adjustment_get_value (volume->priv->adj);
+	float vol = gtk_adjustment_get_value (volume->priv->adj);
 
 	rb_debug ("setting volume to %f", vol);
 
