@@ -2,6 +2,65 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-14 23:56:39 GMT	Jeffrey Yasskin <jyasskin@mail.utexas.edu>	patch-146
+
+    Summary:
+      fix player=xine compile
+    Revision:
+      rhythmbox--main--0.7--patch-146
+
+
+    modified files:
+     ChangeLog player/rb-player-xine.c
+
+
+2004-03-14 23:32:36 GMT	Jeffrey Yasskin <jyasskin@mail.utexas.edu>	patch-145
+
+    Summary:
+      Make setting shuffle and repeat use the random-by-age-and-rating play order
+    Revision:
+      rhythmbox--main--0.7--patch-145
+
+    The rb/state/repeat gconf key isn't gone yet because that requires messing with bonobo, which I don't understand.
+    
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7--patch-142
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--patch-1
+       Make checking the shuffle and repeat checkboxes together select random-by-age-and-rating
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--patch-2
+       Make a new play order for linear with repeat and use a table in statusbar.c to pick the play order.
+    
+
+    new files:
+     shell/rb-play-order-linear-loop.c
+     shell/rb-play-order-linear-loop.h
+
+    modified files:
+     ChangeLog shell/Makefile.am shell/rb-play-order-linear.c
+     shell/rb-play-order.c shell/rb-statusbar.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--random-for-shuffle-repeat--0.7--patch-2
+
+
+2004-03-14 13:05:45 GMT	Christophe Fergeau <teuf@gnome.org>	patch-144
+
+    Summary:
+      Fixed a few strings to make the translators job easier
+    Revision:
+      rhythmbox--main--0.7--patch-144
+
+
+    modified files:
+     ChangeLog sources/itunesdb.c
+
+
 2004-03-14 01:29:48 GMT	Colin Walters <walters@verbum.org>	patch-143
 
     Summary:
