@@ -1060,8 +1060,16 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	changedata = g_new0 (struct RhythmDBEntryChangeData, 1);
 	changedata->entry = entry;
 	changedata->prop = propid;
-	g_value_init (&changedata->old, G_VALUE_TYPE (value));
-	klass->impl_entry_get (db, entry, propid, &changedata->old);
+
+	/* Copy a temporary gvalue, since _entry_get uses
+	 * _set_static_string to avoid memory allocations. */
+	{
+		GValue tem = {0,};
+		g_value_init (&tem, G_VALUE_TYPE (value));
+		klass->impl_entry_get (db, entry, propid, &tem);
+		g_value_init (&changedata->old, G_VALUE_TYPE (value));
+		g_value_copy (&tem, &changedata->old);
+	}
 	g_value_init (&changedata->new, G_VALUE_TYPE (value));
 	g_value_copy (value, &changedata->new);
 	db->priv->changed_entries = g_list_append (db->priv->changed_entries, changedata);
