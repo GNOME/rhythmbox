@@ -469,16 +469,24 @@ rb_metadata_load (RBMetaData *md,
 		goto out;
 	}
 
-	/* FIXME
-	 * For now, we simply ignore files with an unknown MIME
-	 * type. This will be fixed once GStreamer gives us
-	 * a good way to detect audio. */
-	if (!rb_metadata_can_save (md, md->priv->type)) {
-		rb_debug ("ignoring file %s with detected type %s",
-			  uri, md->priv->type);
-		g_free (md->priv->type);
-		md->priv->type = NULL;
-		goto out;
+	{
+		/* FIXME
+		 * For now, we simply ignore files with an unknown MIME
+		 * type. This will be fixed once GStreamer gives us
+		 * a good way to detect audio. */
+		gboolean supported_type = FALSE;
+		guint i;
+
+		for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
+			if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type))
+				supported_type = TRUE;
+		if (!supported_type) {
+			rb_debug ("ignoring file %s with detected type %s",
+				  uri, md->priv->type);
+			g_free (md->priv->type);
+			md->priv->type = NULL;
+			goto out;
+		}
 	}
 	
 	if (md->priv->error) {
