@@ -1937,11 +1937,13 @@ tray_button_press_event_cb (GtkWidget *ebox,
 			    GdkEventButton *event,
 			    RBShell *shell)
 {
-	/* contextmenu */
-	sync_tray_menu (shell);
-	bonobo_control_do_popup (shell->priv->tray_icon_control,
-				 event->button,
-				 event->time);
+	if (event->button == 3) {
+		/* contextmenu */
+		sync_tray_menu (shell);
+		bonobo_control_do_popup (shell->priv->tray_icon_control,
+					 event->button,
+					 event->time);
+	}
 }
 
 static void
@@ -2062,7 +2064,7 @@ sync_tray_menu (RBShell *shell)
 	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
 
 	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/popups/TrayPopup", TRUE, NULL);
-	bonobo_ui_node_set_attr (node, "name", "button1");
+	bonobo_ui_node_set_attr (node, "name", "button3");
 	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
 	bonobo_ui_node_free (node);
 
