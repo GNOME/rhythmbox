@@ -772,8 +772,6 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	const char *b_str = NULL;
 	gint ret;
 
-	rhythmdb_read_lock (view->priv->db);
-
 	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
 
@@ -806,8 +804,6 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	ret = 0;
 
 out:
-	rhythmdb_read_unlock (view->priv->db);
-
 	return ret;
 }
 
@@ -819,8 +815,6 @@ rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	const char *a_str = NULL;
 	const char *b_str = NULL;	
 	gint ret;
-
-	rhythmdb_read_lock (view->priv->db);
 
 	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
@@ -838,8 +832,6 @@ rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	}
 
 out:
-	rhythmdb_read_unlock (view->priv->db);
-
 	return ret;
 }
 
@@ -851,14 +843,10 @@ rb_entry_view_int_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	gint a_val, b_val;
 	gint ret;
 
-	rhythmdb_read_lock (data->view->priv->db);
-
 	a_val = rhythmdb_entry_get_int (data->view->priv->db, a, data->propid);
 	b_val = rhythmdb_entry_get_int (data->view->priv->db, b, data->propid);
 
 	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-
-	rhythmdb_read_unlock (data->view->priv->db);
 
 	return ret;
 }
@@ -870,14 +858,10 @@ rb_entry_view_long_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	glong a_val, b_val;
 	gint ret;
 
-	rhythmdb_read_lock (data->view->priv->db);
-
 	a_val = rhythmdb_entry_get_long (data->view->priv->db, a, data->propid);
 	b_val = rhythmdb_entry_get_long (data->view->priv->db, b, data->propid);
 
 	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-
-	rhythmdb_read_unlock (data->view->priv->db);
 
 	return ret;
 }
@@ -890,14 +874,10 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	const char *b_val;	
 	gint ret;
 
-	rhythmdb_read_lock (data->view->priv->db);
-
 	a_val = rhythmdb_entry_get_string (data->view->priv->db, a, data->propid);
 	b_val = rhythmdb_entry_get_string (data->view->priv->db, b, data->propid);
 
 	ret = strcmp (a_val, b_val);
-
-	rhythmdb_read_unlock (data->view->priv->db);
 
 	return ret;
 }

@@ -720,11 +720,15 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	    && ((model->priv->total_size + size) / (1024*1024)) >= model->priv->max_size_mb)
 		return NULL;
 
-	if (model->priv->sort_func)
+	if (model->priv->sort_func) {
+		if (lock)
+			rhythmdb_read_lock (model->priv->db);
 		ptr = g_sequence_insert_sorted (model->priv->entries, entry,
 						model->priv->sort_func,
 						model->priv->sort_user_data);
-	else {
+		if (lock)
+			rhythmdb_read_unlock (model->priv->db);
+	} else {
 		ptr = g_sequence_get_end_ptr (model->priv->entries);
 		g_sequence_insert (ptr, entry);
 		ptr = g_sequence_ptr_prev (ptr);
