@@ -175,7 +175,9 @@ rb_library_finalize (GObject *object)
 
 	g_return_if_fail (library->priv != NULL);
 
+	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
 	g_object_unref (G_OBJECT (library->priv->main_thread));
+	GDK_THREADS_ENTER ();
 	g_object_unref (G_OBJECT (library->priv->walker_thread));
 	g_object_unref (G_OBJECT (library->priv->main_queue));
 	g_object_unref (G_OBJECT (library->priv->walker_queue));
@@ -548,7 +550,7 @@ rb_library_save (RBLibrary *library)
 	}
 	rb_node_thaw (library->priv->all_songs);
 
-	xmlSaveFormatFileEnc (library->priv->xml_file, doc, "UTF-8", 1);
+	xmlSaveFile (library->priv->xml_file, doc);
 }
 
 RBLibraryActionQueue *
