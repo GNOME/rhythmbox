@@ -1738,27 +1738,27 @@ rb_shell_cmd_current_song (BonoboUIComponent *component,
 static void
 rb_shell_jump_to_current (RBShell *shell)
 {
-	/* RHYTHMDB FIXME */
-/* 	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell); */
-/* 	RBNodeView *songs; */
-/* 	RBNode *playing; */
+	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
+	RBEntryView *songs;
+	RhythmDBEntry *playing;
 
-/* 	g_return_if_fail (source != NULL); */
+	g_return_if_fail (source != NULL);
 
-/* 	songs = rb_source_get_node_view (source); */
+	songs = rb_source_get_entry_view (source);
 
-/* 	playing = rb_node_view_get_playing_node (songs); */
+	playing = rb_entry_view_get_playing_entry (songs);
 
-/* 	g_return_if_fail (playing != NULL); */
+	g_return_if_fail (playing != NULL);
 
-/* 	if (!rb_node_view_get_node_visible (songs, playing)) { */
-/* 		rb_source_header_clear_search (shell->priv->source_header); */
-/* 	} */
-/* 	rb_shell_select_source (shell, source); */
-/* 	if (!rb_node_view_get_node_visible (songs, playing)) { */
-/* 		rb_source_search (shell->priv->selected_source, NULL); */
-/* 	} */
-/* 	rb_shell_player_jump_to_current (shell->priv->player_shell); */
+	if (!rb_entry_view_get_entry_visible (songs, playing)) {
+		rb_source_reset_filters (source);
+		rb_source_header_clear_search (shell->priv->source_header);
+	}
+	rb_shell_select_source (shell, source);
+	if (!rb_entry_view_get_entry_visible (songs, playing)) {
+		rb_source_search (shell->priv->selected_source, NULL);
+	}
+	rb_shell_player_jump_to_current (shell->priv->player_shell);
 }
 
 static gboolean

@@ -115,13 +115,15 @@ static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
 static void impl_delete (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
+static void impl_reset_filters (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
-static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
+static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
+					gboolean sync);
 static void query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
@@ -236,6 +238,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_get_extra_views = impl_get_extra_views;
 	source_class->impl_get_config_widget = impl_get_config_widget;
+	source_class->impl_reset_filters = impl_reset_filters;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
@@ -435,7 +438,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "changed",
 			  G_CALLBACK (songs_view_changed_cb),
 			  source);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL, FALSE);
 
 	/* Drag'n'Drop for songs view */
 /* 	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received", */
@@ -563,7 +566,7 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 	rb_debug ("genre selected"); 
 	g_free (libsource->priv->selected_genre);
 	libsource->priv->selected_genre = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE, FALSE);
 }
 
 static void
@@ -573,7 +576,7 @@ artist_selected_cb (RBPropertyView *propview, const char *name,
 	rb_debug ("artist selected"); 
 	g_free (libsource->priv->selected_artist);
 	libsource->priv->selected_artist = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST, FALSE);
 }
 
 static void
@@ -583,7 +586,7 @@ album_selected_cb (RBPropertyView *propview, const char *name,
 	rb_debug ("album selected"); 
 	g_free (libsource->priv->selected_album);
 	libsource->priv->selected_album = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM, FALSE);
 }
 
 static const char *
@@ -629,7 +632,7 @@ impl_search (RBSource *asource, const char *search_text)
 
 	g_free (source->priv->search_text);
 	source->priv->search_text = g_utf8_casefold (search_text, -1);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH, FALSE);
 }
 
 
@@ -651,6 +654,36 @@ impl_get_extra_views (RBSource *asource)
 	ret = g_list_append (ret, source->priv->artists);
 	ret = g_list_append (ret, source->priv->albums);
 	return ret;
+}
+
+static void
+impl_reset_filters (RBSource *asource)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	gboolean changed = FALSE;
+
+	if (source->priv->selected_genre != NULL)
+		changed = TRUE;
+	g_free (source->priv->selected_genre);
+	source->priv->selected_genre = NULL;
+
+	if (source->priv->selected_artist != NULL)
+		changed = TRUE;
+	g_free (source->priv->selected_artist);
+	source->priv->selected_artist = NULL;
+
+	if (source->priv->selected_album != NULL)
+		changed = TRUE;
+	g_free (source->priv->selected_album);
+	source->priv->selected_album = NULL;
+
+	if (source->priv->search_text != NULL)
+		changed = TRUE;
+	g_free (source->priv->search_text);
+	source->priv->search_text = NULL;
+
+	if (changed)
+		rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL, TRUE);
 }
   
 static GtkWidget *
@@ -943,7 +976,8 @@ entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 }
 
 static void
-rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
+rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
+			    gboolean sync)
 {
 	RhythmDBQueryModel *query_model;
 	GtkTreeModel *model;
@@ -1053,7 +1087,13 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			  "complete", G_CALLBACK (query_complete_cb),
 			  source);
 
-	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
+	if (!sync)
+		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
+	else {
+		rhythmdb_read_lock (source->priv->db);
+		rhythmdb_do_full_query_parsed (source->priv->db, model, query);
+		rhythmdb_read_unlock (source->priv->db);
+	}
 
 	rhythmdb_query_free (genre_query);
 	rhythmdb_query_free (artist_query);

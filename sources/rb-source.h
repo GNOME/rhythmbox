@@ -74,6 +74,7 @@ typedef struct
 	gboolean	(*impl_can_search)	(RBSource *source);
 
 	void		(*impl_search)		(RBSource *source, const char *text);
+	void		(*impl_reset_filters)	(RBSource *source);
 	GtkWidget *	(*impl_get_config_widget)(RBSource *source);
 
 	gboolean	(*impl_can_cut)		(RBSource *source);
@@ -128,6 +129,8 @@ gboolean	rb_source_can_search		(RBSource *source);
 
 void		rb_source_search		(RBSource *source,
 						 const char *text);
+
+void		rb_source_reset_filters		(RBSource *source);
 
 GtkWidget *	rb_source_get_config_widget	(RBSource *source);
 

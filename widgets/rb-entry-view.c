@@ -1779,6 +1779,18 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 	gtk_tree_path_free (path);
 }
 
+gboolean
+rb_entry_view_get_entry_visible (RBEntryView *view,
+				 RhythmDBEntry *entry)
+{
+	GtkTreeIter unused;
+
+	if (view->priv->playing_query_model != view->priv->query_model)
+		return FALSE;
+
+	return rb_entry_view_entry_is_visible (view, entry, &unused);
+}
+
 static gboolean
 rb_entry_view_entry_is_visible (RBEntryView *view,
 				RhythmDBEntry *entry,

@@ -49,6 +49,7 @@ static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_search (RBSource *source);
 static gboolean default_can_cut (RBSource *source);
 static GList *default_copy (RBSource *source);
+static void default_reset_filters (RBSource *source);
 static void default_song_properties (RBSource *source);
 static GtkWidget * default_get_config_widget (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
@@ -129,6 +130,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_delete = default_can_cut;
 	klass->impl_can_copy = default_can_cut;
 	klass->impl_copy = default_copy;
+	klass->impl_reset_filters = default_reset_filters;
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_buffering_done = default_buffering_done;
@@ -446,6 +448,20 @@ rb_source_delete (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	klass->impl_delete (source);
+}
+
+static void
+default_reset_filters (RBSource *source)
+{
+	rb_debug ("no implementation of reset_filters for this source");
+}
+
+void
+rb_source_reset_filters (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_reset_filters (source);
 }
 
 static void
