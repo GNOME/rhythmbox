@@ -36,7 +36,7 @@
 #include "rb-playlist.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
-#include "rb-group-source.h"
+#include "rb-playlist-source.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
@@ -44,21 +44,21 @@
 #include "rb-song-info.h"
 #include "rb-library-dnd-types.h"
 
-#define RB_GROUP_XML_VERSION "1.0"
+#define RB_PLAYLIST_XML_VERSION "1.0"
 
-static void rb_group_source_class_init (RBGroupSourceClass *klass);
-static void rb_group_source_init (RBGroupSource *source);
-static void rb_group_source_finalize (GObject *object);
-static void rb_group_source_set_property (GObject *object,
+static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
+static void rb_playlist_source_init (RBPlaylistSource *source);
+static void rb_playlist_source_finalize (GObject *object);
+static void rb_playlist_source_set_property (GObject *object,
 			                  guint prop_id,
 			                  const GValue *value,
 			                  GParamSpec *pspec);
-static void rb_group_source_get_property (GObject *object,
+static void rb_playlist_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 
-static void songs_view_changed_cb (RBNodeView *view, RBGroupSource *source);
+static void songs_view_changed_cb (RBNodeView *view, RBPlaylistSource *source);
 
 /* source methods */
 static const char *impl_get_status (RBSource *source);
@@ -75,8 +75,8 @@ static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 
-static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
-static void rb_group_source_drop_cb (GtkWidget *widget,
+static void rb_playlist_source_songs_show_popup_cb (RBNodeView *view, RBPlaylistSource *playlist_view);
+static void rb_playlist_source_drop_cb (GtkWidget *widget,
 				     GdkDragContext *context,
 				     gint x,
 				     gint y,
@@ -84,22 +84,22 @@ static void rb_group_source_drop_cb (GtkWidget *widget,
 				     guint info,
 				     guint time,
 				     gpointer user_data);
-static void rb_group_source_add_list_uri (RBGroupSource *source,
+static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 					  GList *list);
 static char * filename_from_name (const char *name);
-static gboolean rb_group_source_periodic_save (RBGroupSource *source);
+static gboolean rb_playlist_source_periodic_save (RBPlaylistSource *source);
 static void name_notify_cb (GObject *obj, const char *property, gpointer unused);
 
 
-#define GROUP_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
-#define GROUP_SOURCE_POPUP_PATH "/popups/GroupSourceList"
+#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
+#define PLAYLIST_SOURCE_POPUP_PATH "/popups/GroupSourceList"
 
-struct RBGroupSourcePrivate
+struct RBPlaylistSourcePrivate
 {
 	RBLibrary *library;
 	RBLibrarySource *library_source;
 
-	RBNode *group;
+	RBNode *root;
 
 	GtkWidget *vbox;
 	GdkPixbuf *pixbuf;
@@ -113,7 +113,6 @@ struct RBGroupSourcePrivate
 	char *status;
 
 	char *file;
-	char *name;
 
 	guint idle_save_id;
 
@@ -143,45 +142,45 @@ static const GtkTargetEntry target_uri[] =
 		};
 
 GType
-rb_group_source_get_type (void)
+rb_playlist_source_get_type (void)
 {
-	static GType rb_group_source_type = 0;
+	static GType rb_playlist_source_type = 0;
 
-	if (rb_group_source_type == 0)
+	if (rb_playlist_source_type == 0)
 	{
 		static const GTypeInfo our_info =
 		{
-			sizeof (RBGroupSourceClass),
+			sizeof (RBPlaylistSourceClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) rb_group_source_class_init,
+			(GClassInitFunc) rb_playlist_source_class_init,
 			NULL,
 			NULL,
-			sizeof (RBGroupSource),
+			sizeof (RBPlaylistSource),
 			0,
-			(GInstanceInitFunc) rb_group_source_init
+			(GInstanceInitFunc) rb_playlist_source_init
 		};
 
-		rb_group_source_type = g_type_register_static (RB_TYPE_SOURCE,
-							       "RBGroupSource",
-							       &our_info, 0);
+		rb_playlist_source_type = g_type_register_static (RB_TYPE_SOURCE,
+								  "RBPlaylistSource",
+								  &our_info, 0);
 	}
 
-	return rb_group_source_type;
+	return rb_playlist_source_type;
 }
 
 static void
-rb_group_source_class_init (RBGroupSourceClass *klass)
+rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->finalize = rb_group_source_finalize;
+	object_class->finalize = rb_playlist_source_finalize;
 
-	object_class->set_property = rb_group_source_set_property;
-	object_class->get_property = rb_group_source_get_property;
+	object_class->set_property = rb_playlist_source_set_property;
+	object_class->get_property = rb_playlist_source_get_property;
 
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
@@ -222,50 +221,44 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_FILE,
 					 g_param_spec_string ("file",
-							      "Group file",
-							      "Group file",
+							      "playlist file",
+							      "playlist file",
 							      NULL,
 							      G_PARAM_READWRITE));
 }
 
 
 static void
-rb_group_source_songs_show_popup_cb (RBNodeView *view,
-		   		     RBGroupSource *group_view)
+rb_playlist_source_songs_show_popup_cb (RBNodeView *view,
+		   		     RBPlaylistSource *playlist_view)
 {
-	rb_bonobo_show_popup (GTK_WIDGET (view), GROUP_SOURCE_SONGS_POPUP_PATH);
+	rb_bonobo_show_popup (GTK_WIDGET (view), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
 }
 
 static void
-rb_group_source_init (RBGroupSource *source)
+rb_playlist_source_init (RBPlaylistSource *source)
 {
-	source->priv = g_new0 (RBGroupSourcePrivate, 1);
+	source->priv = g_new0 (RBPlaylistSourcePrivate, 1);
 
-	source->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_group_source_periodic_save,
+	source->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_playlist_source_periodic_save,
 						 source);
 
-	g_signal_connect (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), NULL);
+	g_signal_connect_object (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), NULL, 0);
 }
 
 static void
-rb_group_source_finalize (GObject *object)
+rb_playlist_source_finalize (GObject *object)
 {
-	RBGroupSource *source;
+	RBPlaylistSource *source;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_GROUP_SOURCE (object));
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (object));
 
-	source = RB_GROUP_SOURCE (object);
+	source = RB_PLAYLIST_SOURCE (object);
 
 	g_return_if_fail (source->priv != NULL);
 
-	if (!source->priv->deleted) {
-		rb_group_source_save (source);
-
-		g_source_remove (source->priv->idle_save_id);
-	}
-
-	rb_node_unref (source->priv->group);
+	rb_node_unref (source->priv->root);
 
 	g_free (source->priv->title);
 	g_free (source->priv->status);
@@ -278,12 +271,12 @@ rb_group_source_finalize (GObject *object)
 }
 
 static void
-rb_group_source_set_property (GObject *object,
+rb_playlist_source_set_property (GObject *object,
 			      guint prop_id,
 			      const GValue *value,
 			      GParamSpec *pspec)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (object);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
 
 	switch (prop_id)
 	{
@@ -297,16 +290,16 @@ rb_group_source_set_property (GObject *object,
 		
 		gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 		
-		source->priv->group = rb_node_new (rb_library_get_node_db (source->priv->library));
+		source->priv->root = rb_node_new (rb_library_get_node_db (source->priv->library));
 		
-		source->priv->songs = rb_node_view_new (source->priv->group,
+		source->priv->songs = rb_node_view_new (source->priv->root,
 							rb_file ("rb-node-view-songs.xml"),
 							source->priv->filter);
 		g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
-				  G_CALLBACK (rb_group_source_songs_show_popup_cb), source);
+				  G_CALLBACK (rb_playlist_source_songs_show_popup_cb), source);
 		
 		g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
-				  G_CALLBACK (rb_group_source_drop_cb), source);
+				  G_CALLBACK (rb_playlist_source_drop_cb), source);
 		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
 				   target_table, G_N_ELEMENTS (target_table), GDK_ACTION_COPY);
 		rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1);
@@ -346,12 +339,12 @@ rb_group_source_set_property (GObject *object,
 }
 
 static void
-rb_group_source_get_property (GObject *object,
+rb_playlist_source_get_property (GObject *object,
 			      guint prop_id,
 			      GValue *value,
 			      GParamSpec *pspec)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (object);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (object);
 
 	switch (prop_id)
 	{
@@ -368,13 +361,13 @@ rb_group_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_group_source_new (BonoboUIContainer *container,
+rb_playlist_source_new (BonoboUIContainer *container,
 		     RBLibrary *library,
 		     RBLibrarySource *libsource)
 {
 	RBSource *source;
 
-	source = RB_SOURCE (g_object_new (RB_TYPE_GROUP_SOURCE,
+	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
 					  "container", container,
 					  "library", library,
@@ -385,14 +378,14 @@ rb_group_source_new (BonoboUIContainer *container,
 }
 
 RBSource *
-rb_group_source_new_from_file (BonoboUIContainer *container,
+rb_playlist_source_new_from_file (BonoboUIContainer *container,
 			       RBLibrary *library,
 			       RBLibrarySource *libsource,
 			       const char *file)
 {
 	RBSource *source;
 
-	source = RB_SOURCE (g_object_new (RB_TYPE_GROUP_SOURCE,
+	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
 					  "container", container,
 					  "library", library,
@@ -400,7 +393,7 @@ rb_group_source_new_from_file (BonoboUIContainer *container,
 					  "file", file,
 					  NULL));
 
-	rb_group_source_load (RB_GROUP_SOURCE (source));
+	rb_playlist_source_load (RB_PLAYLIST_SOURCE (source));
 
 	return source;
 }
@@ -408,9 +401,9 @@ rb_group_source_new_from_file (BonoboUIContainer *container,
 static void
 name_notify_cb (GObject *obj, const char *property, gpointer unused)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (obj);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (obj);
 
-	rb_debug ("caught name notify");
+	rb_debug ("caught notify");
 
 	if (!strcmp (property, "name")) {
 		char *file;
@@ -426,27 +419,19 @@ name_notify_cb (GObject *obj, const char *property, gpointer unused)
 	}
 }
 
-void
-rb_group_source_set_name (RBGroupSource *group,
-		        const char *name)
-{
-	g_object_set (G_OBJECT (group), "name", name, NULL);
-}
-
 const char *
-rb_group_source_get_file (RBGroupSource *group)
+rb_playlist_source_get_file (RBPlaylistSource *playlist)
 {
-	return group->priv->file;
+	return playlist->priv->file;
 }
 
 static const char *
 impl_get_status (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
-	return rb_library_compute_status (source->priv->library, source->priv->group,
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	return rb_library_compute_status (source->priv->library, source->priv->root,
 					  source->priv->filter);
 }
-
 
 static const char *
 impl_get_browser_key (RBSource *source)
@@ -457,7 +442,7 @@ impl_get_browser_key (RBSource *source)
 static GdkPixbuf *
 impl_get_pixbuf (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
 	return source->priv->pixbuf;
 }
@@ -465,7 +450,7 @@ impl_get_pixbuf (RBSource *asource)
 static RBNodeView *
 impl_get_node_view (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
 	return source->priv->songs;
 }
@@ -473,7 +458,7 @@ impl_get_node_view (RBSource *asource)
 static const char *
 impl_get_artist (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (source->priv->songs);
@@ -487,7 +472,7 @@ impl_get_artist (RBSource *asource)
 static const char *
 impl_get_album (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (source->priv->songs);
@@ -501,11 +486,11 @@ impl_get_album (RBSource *asource)
 static GList *
 impl_cut (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	GList *sel = rb_node_view_get_selection (source->priv->songs);
 
 	for (; sel != NULL; sel = g_list_next (sel))
-		rb_node_remove_child (source->priv->group, sel->data);
+		rb_node_remove_child (source->priv->root, sel->data);
 	
 	return sel;
 }
@@ -513,26 +498,26 @@ impl_cut (RBSource *asource)
 static void
 impl_paste (RBSource *asource, GList *nodes)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
 	for (; nodes; nodes = g_list_next (nodes))
-		rb_group_source_add_node (source, nodes->data);
+		rb_playlist_source_add_node (source, nodes->data);
 }
 
 static void
 impl_delete (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	GList *sel = rb_node_view_get_selection (source->priv->songs);
 
 	for (; sel != NULL; sel = g_list_next (sel))
-		rb_node_remove_child (source->priv->group, sel->data);
+		rb_node_remove_child (source->priv->root, sel->data);
 }
 
 static void
 impl_song_properties (RBSource *asource)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	GtkWidget *song_info = NULL;
 
 	g_return_if_fail (source->priv->songs != NULL);
@@ -545,7 +530,7 @@ impl_song_properties (RBSource *asource)
 }
 
 static void
-songs_view_changed_cb (RBNodeView *view, RBGroupSource *source)
+songs_view_changed_cb (RBNodeView *view, RBPlaylistSource *source)
 {
 	rb_debug ("got node view change");
 	if (source->priv->filter_changed)
@@ -554,44 +539,46 @@ songs_view_changed_cb (RBNodeView *view, RBGroupSource *source)
 }
 
 static gboolean
-rb_group_source_periodic_save (RBGroupSource *source)
+rb_playlist_source_periodic_save (RBPlaylistSource *source)
 {
 	if (rb_library_is_idle (source->priv->library)) {
 		rb_debug ("doing periodic save");
-		rb_group_source_save (source);
+		rb_playlist_source_save (source);
 	} else {
 		rb_debug ("library is busy, skipping periodic save");
 	}
 	source->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
-						    (GSourceFunc) rb_group_source_periodic_save,
+						    (GSourceFunc) rb_playlist_source_periodic_save,
 						    source);
 	return FALSE;
 }
 
 void
-rb_group_source_save (RBGroupSource *source)
+rb_playlist_source_save (RBPlaylistSource *source)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	GPtrArray *kids;
 	int i;
 	char *dir;
+	const char *name;
 
-	g_return_if_fail (RB_IS_GROUP_SOURCE (source));
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
-	dir = g_build_filename (rb_dot_dir (), "groups", NULL);
+	dir = g_build_filename (rb_dot_dir (), "playlists", NULL);
 	rb_ensure_dir_exists (dir);
 	g_free (dir);
 
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
 
-	root = xmlNewDocNode (doc, NULL, "rhythmbox_music_group", NULL);
-	xmlSetProp (root, "version", RB_GROUP_XML_VERSION);
-	xmlSetProp (root, "name", source->priv->name);
+	root = xmlNewDocNode (doc, NULL, "rhythmbox_music_playlist", NULL);
+	xmlSetProp (root, "version", RB_PLAYLIST_XML_VERSION);
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	xmlSetProp (root, "name", name);
 	xmlDocSetRootElement (doc, root);
 
-	kids = rb_node_get_children (source->priv->group);
+	kids = rb_node_get_children (source->priv->root);
 	for (i = 0; i < kids->len; i++) {
 		RBNode *node = g_ptr_array_index (kids, i);
 		xmlNodePtr xmlnode;
@@ -603,7 +590,7 @@ rb_group_source_save (RBGroupSource *source)
 		xmlSetProp (xmlnode, "id", tmp);
 		g_free (tmp);
 	}
-	rb_node_thaw (source->priv->group);
+	rb_node_thaw (source->priv->root);
 
 	{
 		GString *tmpname = g_string_new (source->priv->file);
@@ -617,13 +604,13 @@ rb_group_source_save (RBGroupSource *source)
 }
 
 void
-rb_group_source_load (RBGroupSource *source)
+rb_playlist_source_load (RBPlaylistSource *source)
 {
 	xmlDocPtr doc;
 	xmlNodePtr child, root;
 	char *name, *tmp;
 	
-	g_return_if_fail (RB_IS_GROUP_SOURCE (source));
+	g_return_if_fail (RB_IS_PLAYLIST_SOURCE (source));
 
 	if (g_file_test (source->priv->file, G_FILE_TEST_EXISTS) == FALSE)
 		return;
@@ -631,14 +618,14 @@ rb_group_source_load (RBGroupSource *source)
 	doc = xmlParseFile (source->priv->file);
 
 	if (doc == NULL) {
-		rb_warning_dialog (_("Failed to parse %s as group file"), source->priv->file);
+		rb_warning_dialog (_("Failed to parse %s as playlist file"), source->priv->file);
 		return;
 	}
 
 	root = xmlDocGetRootElement (doc);
 
 	tmp = xmlGetProp (root, "version");
-	if (tmp == NULL || strcmp (tmp, RB_GROUP_XML_VERSION) != 0) {
+	if (tmp == NULL || strcmp (tmp, RB_PLAYLIST_XML_VERSION) != 0) {
 		g_free (tmp);
 		xmlFreeDoc (doc);
 		unlink (source->priv->file);
@@ -665,43 +652,43 @@ rb_group_source_load (RBGroupSource *source)
 		if (node == NULL)
 			continue;
 
-		rb_group_source_add_node (source, node);
+		rb_playlist_source_add_node (source, node);
 	}
 
 	xmlFreeDoc (doc);
 
-	rb_group_source_set_name (source, name);
+	g_object_set (G_OBJECT (source), "name", name, NULL);
 	g_free (name);
 }
 
 
 void
-rb_group_source_delete (RBGroupSource *source)
+rb_playlist_source_delete (RBPlaylistSource *source)
 {
 	g_source_remove (source->priv->idle_save_id);
 	unlink (source->priv->file);
 	source->priv->deleted = TRUE;
 }
 
-/* rb_group_view_add_node: append a node to this group
+/* rb_playlist_view_add_node: append a node to this playlist
  */
 void
-rb_group_source_add_node (RBGroupSource *source,
+rb_playlist_source_add_node (RBPlaylistSource *source,
 			  RBNode *node)
 {
 	g_return_if_fail (source != NULL);
 	g_return_if_fail (node != NULL);
 
-	if (rb_node_has_child (source->priv->group, node) == FALSE)
-		rb_node_add_child (source->priv->group, node);
+	if (rb_node_has_child (source->priv->root, node) == FALSE)
+		rb_node_add_child (source->priv->root, node);
 }
 
 static void
 handle_songs_func (RBNode *node,
-		   RBGroupSource *source)
+		   RBPlaylistSource *source)
 {
 	if (rb_library_source_eval_filter (source->priv->library_source, node))
-		rb_group_source_add_node (source, node);
+		rb_playlist_source_add_node (source, node);
 	else
 		rb_debug ("node %p failed filter", node);
 }
@@ -710,7 +697,7 @@ static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
 	GList *list;
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) {
 		long id;
 		RBNode *node = NULL;
@@ -730,7 +717,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		list = gnome_vfs_uri_list_parse (data->data);
 
 		if (list != NULL)
-			rb_group_source_add_list_uri (source, list);
+			rb_playlist_source_add_list_uri (source, list);
 		else
 			return FALSE;
 	}
@@ -740,16 +727,16 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 static gboolean
 impl_show_popup (RBSource *source)
 {
-	rb_bonobo_show_popup (GTK_WIDGET (source), GROUP_SOURCE_POPUP_PATH);
+	rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 
-/* rb_group_source_drop_cb: received data from a dnd operation
+/* rb_playlist_source_drop_cb: received data from a dnd operation
  * This can be either a list of uris (from nautilus) or 
  * a list of node ids (from the node-view).
  */
 static void
-rb_group_source_drop_cb (GtkWidget *widget,
+rb_playlist_source_drop_cb (GtkWidget *widget,
 			 GdkDragContext *context,
 			 gint x,
 			 gint y,
@@ -758,7 +745,7 @@ rb_group_source_drop_cb (GtkWidget *widget,
 			 guint time,
 			 gpointer user_data)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (user_data);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (user_data);
 	GtkTargetList *tlist;
 	GdkAtom target;
 
@@ -774,11 +761,11 @@ rb_group_source_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
-/* rb_group_source_add_list_uri: Insert nodes from a list
+/* rb_playlist_source_add_list_uri: Insert nodes from a list
  * of GnomeVFSUri.
  * */
 static void 
-rb_group_source_add_list_uri (RBGroupSource *source,
+rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 			    GList *list)
 {
 	GList *i, *uri_list = NULL;
@@ -801,7 +788,7 @@ rb_group_source_add_list_uri (RBGroupSource *source,
 
 			/* add the node, if already present in the library */
 			if (node != NULL)
-				rb_group_source_add_node (source, node);
+				rb_playlist_source_add_node (source, node);
 			else {
 				GError *error = NULL;
 				RBNode *node;
@@ -811,7 +798,7 @@ rb_group_source_add_list_uri (RBGroupSource *source,
 				if (error != NULL) {
 					node  = rb_library_get_song_by_location (source->priv->library, uri);
 					
-					rb_group_source_add_node (source, node);
+					rb_playlist_source_add_node (source, node);
 				}
 			}
 		}
@@ -835,7 +822,7 @@ filename_from_name (const char *name)
 	tmp = g_strconcat (asciiname, ".xml", NULL);
 
 	while (ret == NULL) {
-		char *tmp2 = g_build_filename (rb_dot_dir (), "groups", tmp, NULL);
+		char *tmp2 = g_build_filename (rb_dot_dir (), "playlists", tmp, NULL);
 		g_free (tmp);
 		
 		if (g_file_test (tmp2, G_FILE_TEST_EXISTS) == FALSE)
@@ -856,7 +843,7 @@ filename_from_name (const char *name)
 static void
 impl_search (RBSource *asource, const char *search_text)
 {
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
 	/* resets the filter */
 	if (search_text == NULL || strcmp (search_text, "") == 0) {
@@ -885,7 +872,7 @@ playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **t
 }
 
 void
-rb_group_source_save_playlist (RBGroupSource *source, const char *uri)
+rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 {
 	RBPlaylist *playlist;
 	RBTreeModelNode *nodemodel;
@@ -896,7 +883,7 @@ rb_group_source_save_playlist (RBGroupSource *source, const char *uri)
 	/* We use a nodemodel because it's the interface to RBPlaylist,
 	 * due to compatibility with other programs (totem).
 	 */
-	nodemodel = rb_tree_model_node_new (source->priv->group, NULL);
+	nodemodel = rb_tree_model_node_new (source->priv->root, NULL);
 
 	rb_playlist_write (playlist, GTK_TREE_MODEL (nodemodel),
 			   playlist_iter_func, uri, &error);

@@ -61,7 +61,6 @@ main (int argc, char **argv)
 	GnomeProgram *program;
 	CORBA_Object object;
 	RBShell *rb_shell;
-	char *old_collate = NULL;
 	gboolean sound_events_borked = FALSE;
 
 	const struct poptOption popt_options[] =
@@ -140,10 +139,6 @@ main (int argc, char **argv)
 
 		rb_handle_cmdline (argv, argc, TRUE);
 	}
-
-	/* restore original collate */
-	putenv (old_collate);
-	g_free (old_collate);
 
 	/* cleanup */
 	CORBA_exception_free (&ev);

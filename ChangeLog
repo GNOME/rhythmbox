@@ -1,3 +1,55 @@
+2003-08-17  Colin Walters  <cwalters@gnome.org>
+
+	* data/art/Makefile.am:
+	* data/art/rhythmbox-group.png:
+	* lib/rb-dialog.c: (rb_ask_string):
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_append):
+	* shell/main.c: (main):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(rb_shell_remove_source), (rb_shell_select_source),
+	(load_playlist_response_cb), (save_playlist_response_cb),
+	(create_playlist_with_name), (add_uri_to_playlist),
+	(handle_playlist_entry_into_playlist_cb), (ask_string_response_cb),
+	(create_playlist), (rb_shell_cmd_new_playlist),
+	(rb_shell_load_playlists), (handle_songs_func),
+	(sourcelist_drag_received_cb), (rb_shell_new_playlist_dialog):
+	* sources/Makefile.am:
+	* sources/rb-group-source.c:
+	* sources/rb-group-source.h:
+	* sources/rb-playlist-source.c: (rb_playlist_source_get_type),
+	(rb_playlist_source_class_init),
+	(rb_playlist_source_songs_show_popup_cb),
+	(rb_playlist_source_init), (rb_playlist_source_finalize),
+	(rb_playlist_source_set_property),
+	(rb_playlist_source_get_property), (rb_playlist_source_new),
+	(rb_playlist_source_new_from_file), (name_notify_cb),
+	(rb_playlist_source_get_file), (impl_get_status),
+	(impl_get_browser_key), (impl_get_pixbuf), (impl_get_node_view),
+	(impl_get_artist), (impl_get_album), (impl_cut), (impl_paste),
+	(impl_delete), (impl_song_properties), (songs_view_changed_cb),
+	(rb_playlist_source_periodic_save), (rb_playlist_source_save),
+	(rb_playlist_source_load), (rb_playlist_source_delete),
+	(rb_playlist_source_add_node), (handle_songs_func),
+	(impl_receive_drag), (impl_show_popup),
+	(rb_playlist_source_drop_cb), (rb_playlist_source_add_list_uri),
+	(filename_from_name), (impl_search), (playlist_iter_func),
+	(rb_playlist_source_save_playlist):
+	* sources/rb-playlist-source.h:
+
+	Rename Group to Playlist pretty much everywhere.   Add some
+	transition code from ~/.gnome2/rhythmbox/groups to
+	~/.gnome2/rhythmbox/playlists.
+
+	Fix up a bug on exit introduced in the removal of the
+	LC_COLLATE cruft.
+
+	And switch back to having the shell save the active playlists
+	on unref instead of the playlists doing it themselves, because
+	we apparently can't g_object_get inside a finalize method.
+	Grr.
+
 2003-08-17  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_append),
