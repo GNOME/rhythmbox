@@ -1059,11 +1059,7 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 	RhythmDBEntry* entry;
 
 	if (player->priv->source != NULL) {
-
-		if (RB_IS_LIBRARY_SOURCE (player->priv->source)) {
-
-			rb_debug("previous algorithm for a library source");
-			
+		if (rb_source_can_pause (player->priv->source)) {
 			/* If we're in the first 2 seconds go to the previous song,
 			 * else restart the current one.
 			 */
@@ -1084,11 +1080,8 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 				rb_player_set_time (player->priv->mmplayer, 0);
 				rb_header_sync_time (player->priv->header_widget);
 			}
-		}
-		else if (RB_IS_IRADIO_SOURCE (player->priv->source)) {
-		
-			rb_debug("previous algorithm for an iradio source");
-			
+		} else {
+			rb_debug("source can't pause, going to previous");
 			entry = rb_play_order_get_previous (player->priv->play_order);
 			
 			if (entry) {
