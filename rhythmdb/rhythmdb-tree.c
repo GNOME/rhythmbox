@@ -60,11 +60,29 @@ static void rhythmdb_tree_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 static void rhythmdb_tree_entry_get (RhythmDB *db, RhythmDBEntry *entry,
 				guint propid, GValue *value);
 static void rhythmdb_tree_entry_delete (RhythmDB *db, RhythmDBEntry *entry);
+static void rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type);
+
 static RhythmDBEntry * rhythmdb_tree_entry_lookup_by_location (RhythmDB *db, const char *uri);
 static void rhythmdb_tree_do_full_query (RhythmDB *db, GPtrArray *query,
 					 GtkTreeModel *main_model, gboolean *cancel);
 gboolean rhythmdb_tree_evaluate_query (RhythmDB *adb, GPtrArray *query,
 				       RhythmDBEntry *aentry);
+
+typedef void (*RBTreeEntryItFunc)(RhythmDBTree *db, 
+				  RhythmDBTreeEntry *entry, 
+				  gpointer data);
+
+typedef void (*RBTreePropertyItFunc)(RhythmDBTree *db, 
+				     RhythmDBTreeProperty *property, 
+				     gpointer data);
+static void rhythmdb_hash_tree_foreach (RhythmDB *adb, 
+					RhythmDBEntryType type,
+					RBTreeEntryItFunc entry_func, 
+					RBTreePropertyItFunc album_func,
+					RBTreePropertyItFunc artist_func,
+					RBTreePropertyItFunc genres_func,
+					gpointer data);
+
 
 #define RHYTHMDB_TREE_XML_VERSION "1.0"
 
@@ -136,11 +154,10 @@ struct RhythmDBTreePrivate
 	GMemChunk *property_memchunk;
 
 	GHashTable *entries;
-
-	GHashTable *song_genres;
-	GHashTable *iradio_genres;
-
+	GHashTable *genres;
+	GMutex *genres_lock;
 	gboolean finalizing;
+
 };
 
 enum
@@ -194,6 +211,7 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 	rhythmdb_class->impl_entry_set = rhythmdb_tree_entry_set;
 	rhythmdb_class->impl_entry_get = rhythmdb_tree_entry_get;
 	rhythmdb_class->impl_entry_delete = rhythmdb_tree_entry_delete;
+	rhythmdb_class->impl_entry_delete_by_type = rhythmdb_tree_entry_delete_by_type;
 	rhythmdb_class->impl_lookup_by_location = rhythmdb_tree_entry_lookup_by_location;
 	rhythmdb_class->impl_evaluate_query = rhythmdb_tree_evaluate_query;
 	rhythmdb_class->impl_do_full_query = rhythmdb_tree_do_full_query;
@@ -212,14 +230,8 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	db->priv->property_memchunk = g_mem_chunk_new ("RhythmDBTree property memchunk",
 						       sizeof (RhythmDBTreeProperty),
 						       1024, G_ALLOC_AND_FREE);
-
-	db->priv->song_genres = g_hash_table_new_full (g_str_hash, g_str_equal,
-						       (GDestroyNotify) g_free,
-						       NULL);
-	db->priv->iradio_genres = g_hash_table_new_full (g_str_hash, g_str_equal,
-							 (GDestroyNotify) g_free,
-							 NULL);
-
+	db->priv->genres = g_hash_table_new_full (g_direct_hash, g_direct_equal,
+						  NULL, (GDestroyNotify)g_hash_table_destroy);
 }
 
 void
@@ -355,8 +367,7 @@ rhythmdb_tree_finalize (GObject *object)
 	g_mem_chunk_destroy (db->priv->entry_memchunk);
 	g_mem_chunk_destroy (db->priv->property_memchunk);
 
-	g_hash_table_destroy (db->priv->song_genres);
-	g_hash_table_destroy (db->priv->iradio_genres);
+	g_hash_table_destroy (db->priv->genres);
 
 	g_free (db->priv);
 
@@ -637,7 +648,7 @@ struct RhythmDBTreeSaveContext
  * readability cost.  Sorry about that.
  */
 static void
-save_entry (const char *uri, RhythmDBTreeEntry *entry, struct RhythmDBTreeSaveContext *ctx)
+save_entry (RhythmDBTree *db, RhythmDBTreeEntry *entry, struct RhythmDBTreeSaveContext *ctx)
 {
 #ifdef HAVE_GNU_FWRITE_UNLOCKED
 #define RHYTHMDB_FWRITE fwrite_unlocked
@@ -665,14 +676,10 @@ g_free (encoded);							\
 	RhythmDBPropType i;
 	
 	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle);
-	switch (RHYTHMDB_TREE_ENTRY_GET_TYPE (entry))
-	{
-	case RHYTHMDB_ENTRY_TYPE_SONG:
+	if (RHYTHMDB_TREE_ENTRY_GET_TYPE (entry) == RHYTHMDB_ENTRY_TYPE_SONG) {
 		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle);
-		break;
-	case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
+	} else if (RHYTHMDB_TREE_ENTRY_GET_TYPE (entry) == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
 		RHYTHMDB_FWRITE_STATICSTR ("iradio", ctx->handle);
-		break;
 	}
 	RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle);
 		
@@ -808,7 +815,12 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	ctx->db = db;
 	ctx->handle = f;
 
-	g_hash_table_foreach (db->priv->entries, (GHFunc) save_entry, ctx);
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG, 
+				    (RBTreeEntryItFunc)save_entry, 
+				    NULL, NULL, NULL, ctx);
+	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, 
+				    (RBTreeEntryItFunc)save_entry, 
+				    NULL, NULL, NULL, ctx);
 
 	fprintf (f, "%s\n", "</rhythmdb>");
 
@@ -939,6 +951,52 @@ rhythmdb_tree_property_new (RhythmDBTree *db, const char *name)
 	return ret;
 }
 
+static inline GHashTable *
+get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
+{
+	GHashTable *table;
+
+	table = g_hash_table_lookup (db->priv->genres, (gpointer)type);
+	if (table == NULL) {
+		table = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       (GDestroyNotify) g_free,
+					       NULL);
+		if (table == NULL) {
+			g_warning ("Out of memory\n");
+			return NULL;
+		}
+		g_hash_table_insert (db->priv->genres, (gpointer)type, table);
+	} 
+	return table;
+}
+
+typedef void (*RBHFunc)(RhythmDBTree *db, GHashTable *genres, gpointer data);
+
+typedef struct {	
+	RhythmDBTree *db;
+	RBHFunc func;
+	gpointer data;
+} GenresIterCtxt;
+
+static void 
+genres_process_one (gpointer key,
+		    gpointer value,
+		    gpointer user_data)
+{
+	GenresIterCtxt *ctxt = (GenresIterCtxt *)user_data;
+	ctxt->func (ctxt->db, (GHashTable *)value, ctxt->data);
+}
+
+static void
+genres_hash_foreach (RhythmDBTree *db, RBHFunc func, gpointer data) {
+	GenresIterCtxt ctxt;
+
+	ctxt.db = db;
+	ctxt.func = func;
+	ctxt.data = data;
+	g_hash_table_foreach (db->priv->genres, genres_process_one, &ctxt);
+}
+
 static inline RhythmDBTreeProperty *
 get_or_create_genre (RhythmDBTree *db, RhythmDBEntryType type,
 		     const char *name)
@@ -946,20 +1004,7 @@ get_or_create_genre (RhythmDBTree *db, RhythmDBEntryType type,
 	RhythmDBTreeProperty *genre;
 	GHashTable *table;
 
-	switch (type)
-	{
-	case RHYTHMDB_ENTRY_TYPE_SONG:
-		table = db->priv->song_genres;
-		break;
-	case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
-		table = db->priv->iradio_genres;
-		break;
-	default:
-		g_assert_not_reached ();
-		table = NULL;
-		break;
-	}
-
+	table = get_genres_hash_for_type (db, type);
 	genre = g_hash_table_lookup (table, name);		
 
 	if (G_UNLIKELY (genre == NULL)) {
@@ -1059,20 +1104,7 @@ remove_entry_from_album (RhythmDBTree *db, RhythmDBTreeEntry *entry)
 	cur_artistname = g_strdup (get_entry_artist_name (entry));
 	cur_genrename = g_strdup (get_entry_genre_name (entry));
 
-	switch (RHYTHMDB_TREE_ENTRY_GET_TYPE (entry))
-	{
-	case RHYTHMDB_ENTRY_TYPE_SONG:
-		table = db->priv->song_genres;
-		break;
-	case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
-		table = db->priv->iradio_genres;
-		break;
-	default:
-		g_assert_not_reached ();
-		table = NULL;
-		break;
-	}
-
+	table = get_genres_hash_for_type (db, RHYTHMDB_TREE_ENTRY_GET_TYPE (entry));
 	if (remove_child (RHYTHMDB_TREE_PROPERTY (entry->album), entry)) {
 
 		handle_album_deletion (db, cur_albumname);
@@ -1298,24 +1330,17 @@ rhythmdb_tree_entry_finalize (RhythmDBTreeEntry *entry)
 #endif
 }
 
-static void
-rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
+static void 
+rhythmdb_tree_entry_delete_real (RhythmDB *adb, RhythmDBEntry *aentry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);
-	const char *uri;
 
-	sanity_check_database (db);
-
-	if (entry->deleted) {
-		rb_debug ("entry %x was already deleted", aentry);
+	if (entry->deleted)
 		return;
-	}
 
 	entry->deleted = TRUE;
 
-	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
-	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
 	
 	/* We store these properties back in the entry temporarily so that later
 	   callbacks can retreive the value even though the entry is removed from
@@ -1328,11 +1353,59 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
 	g_value_set_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_ALBUM),
 			    get_entry_album_name (entry));
 	remove_entry_from_album (db, entry); 
+}
+
+static void
+rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (adb);
+	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);
+	const char *uri;
+
+	sanity_check_database (db);
 	
+	rhythmdb_tree_entry_delete_real (adb, aentry);
+
+	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
+	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
+
 	g_hash_table_remove (db->priv->entries, uri);
 
 	sanity_check_database (db);
 }
+
+typedef struct {
+	RhythmDB *db;
+	RhythmDBEntryType type;
+} RbEntryRemovalCtxt;
+
+static gboolean
+remove_one_song (gchar *uri, RhythmDBTreeEntry *entry, 
+		 RbEntryRemovalCtxt *ctxt)
+{
+	g_return_val_if_fail (entry != NULL, FALSE);
+
+	if (RHYTHMDB_TREE_ENTRY_GET_TYPE (RHYTHMDB_TREE_ENTRY (entry)) == ctxt->type) {
+		rhythmdb_emit_entry_deleted (ctxt->db, entry);
+		rhythmdb_tree_entry_delete_real (ctxt->db, entry);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+static void
+rhythmdb_tree_entry_delete_by_type (RhythmDB *adb, RhythmDBEntryType type)
+{
+	RhythmDBTree *db = RHYTHMDB_TREE (adb);
+	RbEntryRemovalCtxt ctxt;
+
+	ctxt.db = adb;
+	ctxt.type = type;
+	g_hash_table_foreach_remove (db->priv->entries, 
+				     (GHRFunc) remove_one_song, &ctxt);
+}
+
 
 static void
 destroy_tree_property (RhythmDBTreeProperty *prop)
@@ -1682,28 +1755,24 @@ conjunctive_query (RhythmDBTree *db, GPtrArray *query,
 	traversal_data->cancel = cancel;
 
 	if (type_query_idx >= 0) {
+		GHashTable *genres;
 		RhythmDBEntryType etype;
 		RhythmDBQueryData *qdata = g_ptr_array_index (query, type_query_idx);
 		
 		g_ptr_array_remove_index_fast (query, type_query_idx);
 		
 		etype = g_value_get_int (qdata->val);
-		switch (etype)
-		{
-		case RHYTHMDB_ENTRY_TYPE_SONG:
-			conjunctive_query_genre (db, db->priv->song_genres, traversal_data);
-			break;
-		case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
-			conjunctive_query_genre (db, db->priv->iradio_genres, traversal_data);
-			break;
+		genres = get_genres_hash_for_type (db, etype);
+		if (genres != NULL) {
+			conjunctive_query_genre (db, genres, traversal_data);
 		}
-		goto out;
-	} 
+	} else {
+		/* FIXME */
+		/* No type was given; punt and query everything */
+		genres_hash_foreach (db, (RBHFunc)conjunctive_query_genre, 
+				     traversal_data);
+	}
 
-	/* No type was given; punt and query everything */
-	conjunctive_query_genre (db, db->priv->song_genres, traversal_data);
-	conjunctive_query_genre (db, db->priv->iradio_genres, traversal_data);
-out:
 	g_free (traversal_data);
 }
 
@@ -1811,4 +1880,113 @@ rhythmdb_tree_entry_lookup_by_location (RhythmDB *adb, const char *uri)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	return g_hash_table_lookup (db->priv->entries, uri);
+}
+
+
+
+struct HashTreeIteratorCtxt {
+	RhythmDBTree *db;
+	RBTreeEntryItFunc entry_func;
+	RBTreePropertyItFunc album_func;
+	RBTreePropertyItFunc artist_func;
+	RBTreePropertyItFunc genres_func;
+	gpointer data;
+};
+
+static void
+hash_tree_entries_foreach (gpointer key, gpointer value, gpointer data)
+{
+	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *)key;
+	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
+
+	g_assert (ctxt->entry_func);
+	
+	ctxt->entry_func (ctxt->db, entry, ctxt->data);
+}
+
+
+static void
+hash_tree_albums_foreach (gpointer key, gpointer value, gpointer data)
+{
+	RhythmDBTreeProperty *album = (RhythmDBTreeProperty *)value;
+	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
+
+	if (ctxt->album_func) {
+		ctxt->album_func (ctxt->db, album, ctxt->data);
+	}
+	if (ctxt->entry_func != NULL) {
+		g_hash_table_foreach (album->children, 
+				      hash_tree_entries_foreach, 
+				      ctxt);
+	}
+}
+
+
+static void
+hash_tree_artists_foreach (gpointer key, gpointer value, gpointer data)
+{
+	RhythmDBTreeProperty *artist = (RhythmDBTreeProperty *)value;
+	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
+
+
+	if (ctxt->artist_func) {
+		ctxt->artist_func (ctxt->db, artist, ctxt->data);
+	}
+	if ((ctxt->album_func != NULL) || (ctxt->entry_func != NULL)) {
+		g_hash_table_foreach (artist->children, 
+				      hash_tree_albums_foreach, 
+				      ctxt);
+	}
+}
+
+
+static void
+hash_tree_genres_foreach (gpointer key, gpointer value, gpointer data)
+{
+	RhythmDBTreeProperty *genre = (RhythmDBTreeProperty *)value;
+	struct HashTreeIteratorCtxt *ctxt = (struct HashTreeIteratorCtxt*)data;
+
+
+	if (ctxt->genres_func) {
+		ctxt->genres_func (ctxt->db, genre, ctxt->data);
+	}
+
+	if ((ctxt->album_func != NULL) 
+	    || (ctxt->artist_func != NULL) 
+	    || (ctxt->entry_func != NULL)) {
+		g_hash_table_foreach (genre->children, 
+				      hash_tree_artists_foreach, 
+				      ctxt);
+	}
+}
+
+static void
+rhythmdb_hash_tree_foreach (RhythmDB *adb, 
+			    RhythmDBEntryType type,
+			    RBTreeEntryItFunc entry_func, 
+			    RBTreePropertyItFunc album_func, 
+			    RBTreePropertyItFunc artist_func,
+			    RBTreePropertyItFunc genres_func,
+			    gpointer data)
+{
+	struct HashTreeIteratorCtxt ctxt;
+	GHashTable *table;
+
+	ctxt.db = RHYTHMDB_TREE (adb);
+	ctxt.album_func = album_func;
+	ctxt.artist_func = artist_func;
+	ctxt.genres_func = genres_func;
+	ctxt.entry_func = entry_func;
+	ctxt.data = data;
+
+	table = get_genres_hash_for_type (RHYTHMDB_TREE (adb), type);
+	if (table == NULL) {
+		return;
+	}
+	if ((ctxt.album_func != NULL) 
+	    || (ctxt.artist_func != NULL) 
+	    || (ctxt.genres_func != NULL)
+	    || (ctxt.entry_func != NULL)) {
+		g_hash_table_foreach (table, hash_tree_genres_foreach, &ctxt);
+	}
 }

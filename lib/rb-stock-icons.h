@@ -53,6 +53,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_NO_STAR       "rhythmbox-no-star"
 #define RB_STOCK_AUDIOCD       "rhythmbox-audiocd"
 #define RB_STOCK_DND_ICON      "rhythmbox-dnd"
+#define RB_STOCK_IPOD          "rhythmbox-ipod"
 
 void rb_stock_icons_init (void);
 

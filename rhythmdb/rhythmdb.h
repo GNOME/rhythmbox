@@ -1,4 +1,4 @@
-/*
+ /*
  *  arch-tag: Header for RhythmDB - Rhythmbox backend queryable database
  *
  *  Copyright (C) 2003,2004 Colin Walters <walters@rhythmbox.org>
@@ -41,11 +41,12 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE))
 #define RHYTHMDB_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE, RhythmDBClass))
 
-typedef enum
-{
-	RHYTHMDB_ENTRY_TYPE_SONG,
-	RHYTHMDB_ENTRY_TYPE_IRADIO_STATION
-} RhythmDBEntryType;
+
+typedef gint32 RhythmDBEntryType;
+
+#define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
+#define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
+
 
 typedef enum
 {
@@ -162,6 +163,9 @@ typedef struct
 						 guint propid, GValue *value);
 
 	void		(*impl_entry_delete)	(RhythmDB *db, RhythmDBEntry *entry);
+
+	void            (*impl_entry_delete_by_type) (RhythmDB *db, RhythmDBEntryType type);
+
 	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, const char *uri);
 
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
@@ -215,6 +219,9 @@ void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
 #endif
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
+void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
+					       RhythmDBEntryType type);
+
 
 const char *	rhythmdb_entry_get_string	(RhythmDB *db,
 						 RhythmDBEntry *entry,
@@ -298,6 +305,12 @@ RhythmDBEntry * rhythmdb_legacy_id_to_entry		(RhythmDB *db, guint id);
 char *		rhythmdb_get_status			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 GnomeVFSFileSize size);
+RhythmDBEntryType rhythmdb_entry_register_type          (void);
+
+RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
+RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
+
+
 
 G_END_DECLS
 

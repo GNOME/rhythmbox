@@ -1326,6 +1326,21 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 	klass->impl_entry_delete (db, entry);
 }
 
+void
+rhythmdb_entry_delete_by_type (RhythmDB *db, RhythmDBEntryType type)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	
+	db_enter (db, TRUE);
+
+	if (klass->impl_entry_delete_by_type) {
+		klass->impl_entry_delete_by_type (db, type);
+	} else {
+		g_warning ("delete_by_type not implemented");
+	}
+}
+
+
 GPtrArray *
 rhythmdb_query_copy (GPtrArray *array)
 {
@@ -2092,3 +2107,33 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize s
 	return ret;
 }
 
+static RBAtomic last_entry_type = {0};
+
+RhythmDBEntryType
+rhythmdb_entry_register_type (void)
+{
+	/* FIXME: does it need locking ? */
+	return rb_atomic_inc (&last_entry_type);		
+}
+
+RhythmDBEntryType rhythmdb_entry_song_get_type (void) 
+{
+	static RhythmDBEntryType song_type = -1;
+       
+	if (song_type == -1) {
+		song_type = rhythmdb_entry_register_type ();
+	}
+
+	return song_type;
+}
+
+RhythmDBEntryType rhythmdb_entry_iradio_get_type (void) 
+{
+	static RhythmDBEntryType iradio_type = -1;
+       
+	if (iradio_type == -1) {
+		iradio_type = rhythmdb_entry_register_type ();
+	}
+
+	return iradio_type;
+}

@@ -23,6 +23,3 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/metadata			\
 	$(RHYTHMBOX_CFLAGS)
-
-rhythmbox_LDADD =					\
-	$(top_builddir)/metadata/librbmetadata.la

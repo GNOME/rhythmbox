@@ -199,7 +199,7 @@ rb_statusbar_construct (GType                  type,
 	GObject *object;
 	RBStatusbar *statusbar;
 
-	klass = RB_STATUSBAR_CLASS (g_type_class_peek (type));
+	klass = RB_STATUSBAR_CLASS (g_type_class_peek (RB_TYPE_STATUSBAR));
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	object = parent_class->constructor (type,
 					    n_construct_properties,

@@ -450,7 +450,7 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 	RBShellPlayerClass *klass;
 	GObjectClass *parent_class;  
 
-	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (type));
+	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (RB_TYPE_SHELL_PLAYER));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,

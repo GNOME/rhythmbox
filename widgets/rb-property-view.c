@@ -493,11 +493,12 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	RBPropertyView *view;
 	RBPropertyViewClass *klass;
-	GObjectClass *parent_class;  
+	GObjectClass *parent_class; 
+	const GtkTargetEntry *target;
+ 
 
-        const GtkTargetEntry *target;
 
-	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (type));
+	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (RB_TYPE_PROPERTY_VIEW));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	view = RB_PROPERTY_VIEW (parent_class->constructor (type, n_construct_properties,

@@ -303,8 +303,9 @@ rb_player_construct (RBPlayer *mp,
 {
 	const char *audio_driver;
 #ifndef HAVE_NULL_VIDEO
-	xine_cfg_entry_t entry;
+        xine_cfg_entry_t entry;
 #endif
+
 
 	mp->priv->xine = xine_new ();
 

@@ -23,6 +23,8 @@
 #define __RB_SHELL_H
 
 #include "Rhythmbox.h"
+#include "rb-source.h"
+#include "rhythmdb.h"
 
 #include <bonobo/bonobo-control.h>
 #include <bonobo/bonobo-object.h>
@@ -62,6 +64,10 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 					 char *rhythmdb);
 
 void		rb_shell_construct	(RBShell *shell);
+
+void            rb_shell_register_entry_type_for_source (RBShell *shell,
+							 RBSource *source,
+							 RhythmDBEntryType type);
 
 /* utilities */
 

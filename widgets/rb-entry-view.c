@@ -1441,7 +1441,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	RBEntryView *view;
 	RBEntryViewClass *klass;
 	GObjectClass *parent_class;
-	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (type));
+	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (RB_TYPE_ENTRY_VIEW));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	view = RB_ENTRY_VIEW (parent_class->constructor (type, n_construct_properties,
