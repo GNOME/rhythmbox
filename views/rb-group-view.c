@@ -382,12 +382,12 @@ rb_group_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	kids = rb_node_get_children (view->priv->group);
+	rb_node_thaw (view->priv->group);
 	for (i = kids->len - 1; i >= 0; i--)
 	{
 		rb_node_remove_child (view->priv->group,
 				      g_ptr_array_index (kids, i));
 	}
-	rb_node_thaw (view->priv->group);
 
 	g_free (view->priv->title);
 	g_free (view->priv->status);
