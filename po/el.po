@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: el\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-05-24 15:35+0300\n"
-"PO-Revision-Date: 2004-05-24 15:55+0200\n"
+"POT-Creation-Date: 2004-11-29 15:40+0200\n"
+"PO-Revision-Date: 2004-11-29 15:55+0200\n"
 "Last-Translator: Nikos Charonitakis <charosn@her.forthnet.gr>\n"
 "Language-Team: Greek <nls@tux.hellug.gr>\n"
 "MIME-Version: 1.0\n"
@@ -23,18 +23,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: KBabel 1.0.2\n"
-
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
-msgid "Add to Music Library"
-msgstr "Προσθήκη στη Βιβλιοθήκη Μουσικής"
-
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
-msgid "Nautilus context menu extension for Rhythmbox"
-msgstr "Επέκταση μενού περιεχομένου του Ναυτίλου για το Rhythmbox"
-
-#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
-msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr "Αντικείμενο μενού περιεχομένου του Ναυτίλου για το Rhythmbox"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -98,8 +86,8 @@ msgid "_Browse..."
 msgstr "Ε_ξερεύνηση..."
 
 #: data/glade/druid.glade.h:6
-msgid "_Enter location manually:"
-msgstr "_Εισάγετε χειρωνακτικά την τοποθεσία:"
+msgid "_Enter location:"
+msgstr "_Εισαγωγή τοποθεσίας:"
 
 #: data/glade/druid.glade.h:7
 msgid "_Path:"
@@ -109,7 +97,7 @@ msgstr "_Διαδρομή:"
 msgid "_Skip this step"
 msgstr "Προσ_πέραση αυτού του βήματος"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1231
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1172
 msgid "A_lbum"
 msgstr "Ά_λμπουμ"
 
@@ -127,7 +115,7 @@ msgstr "_Καλλιτέχνης"
 
 #: data/glade/general-prefs.glade.h:5
 msgid "_Duration"
-msgstr "Διάρκεια"
+msgstr "_Διάρκεια"
 
 #: data/glade/general-prefs.glade.h:6
 msgid "_Genre"
@@ -141,7 +129,7 @@ msgstr "_Τελευταία αναπαραγωγή"
 msgid "_Play count"
 msgstr "_Μετρητής αναπαραγωγής"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1182
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1123
 msgid "_Rating"
 msgstr "_Κατάταξη"
 
@@ -163,7 +151,33 @@ msgstr "Είδη, καλλιτέχνες και άλμπουμ"
 
 #: data/glade/load-failure.glade.h:1
 msgid "The following files couldn't be loaded:"
-msgstr "Τα παρακάτω αρχεία δεν μπορούν να φορτωθούν:"
+msgstr "Τα παρακάτω αρχεία δε μπορούν να φορτωθούν:"
+
+#: data/glade/recorder.glade.h:1
+msgid "Album Progress"
+msgstr ""
+
+#: data/glade/recorder.glade.h:2
+#, fuzzy
+msgid "Create audio CD from playlist?"
+msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+
+#: data/glade/recorder.glade.h:3
+msgid "Options"
+msgstr "Επιλογές"
+
+#: data/glade/recorder.glade.h:4
+msgid "Track Progress"
+msgstr ""
+
+#: data/glade/recorder.glade.h:5
+msgid "Writer Device"
+msgstr "Συσκευή Εγγραφής"
+
+#: data/glade/recorder.glade.h:6
+#, fuzzy
+msgid "_Make multiple copies"
+msgstr "Ιδιότητες τραγουδιού"
 
 #: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
@@ -256,7 +270,7 @@ msgstr "Εισάγετε την τοπο_θεσία (URI) του αρχείου 
 msgid "Open from URI"
 msgstr "Άνοιγμα από URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1884
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:819 shell/rb-shell.c:1427
 msgid "Music Player"
 msgstr "Music Player"
 
@@ -264,7 +278,11 @@ msgstr "Music Player"
 msgid "Play and organize your music collection"
 msgstr "Παίξτε και οργανώστε την μουσική σας συλλογή"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:21
+#: data/rhythmbox.desktop.in.h:3
+msgid "Rhythmbox Music Player"
+msgstr "Rhythmbox Music Player"
+
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 shell/rb-shell-clipboard.c:94
 msgid "Deselect all songs"
 msgstr "Αποεπιλογή όλων των τραγουδιών"
 
@@ -272,19 +290,20 @@ msgstr "Αποεπιλογή όλων των τραγουδιών"
 msgid "Eject Audio-CD"
 msgstr "Εξαγωγή Audio-CD"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:41
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:369
 msgid "Scroll the view to the currently playing song"
 msgstr "Κύλιση της προβολής στο τρέχον τραγούδι"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:42
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 shell/rb-shell-clipboard.c:90
 msgid "Select _All"
 msgstr "Επιλογή _Όλων"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:43
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 shell/rb-shell-clipboard.c:91
 msgid "Select all songs"
 msgstr "Επιλογή όλων των τραγουδιών"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:62
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 shell/rb-playlist-manager.c:152
+#: shell/rb-shell.c:335
 msgid "_Edit"
 msgstr "_Επεξεργασία"
 
@@ -292,474 +311,59 @@ msgstr "_Επεξεργασία"
 msgid "_Eject Audio-CD..."
 msgstr "_Εξαγωγή Audio-CD..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:65
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:368
 msgid "_Jump to Playing Song"
-msgstr "_Μεταπήδηση στο αναπαραγώμενο τραγούδι"
+msgstr "_Μεταπήδηση στο Aναπαραγώμενο Tραγούδι"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:79
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:336
 msgid "_View"
 msgstr "_Προβολή"
-
-#: data/ui/rhythmbox-ui.xml.h:1
-msgid "Add Lo_cation..."
-msgstr "Προσθήκη Τοπο_θεσίας..."
-
-#: data/ui/rhythmbox-ui.xml.h:2
-msgid "Browse this album"
-msgstr "Περιήγηση στο άλμπουμ"
-
-#: data/ui/rhythmbox-ui.xml.h:3
-msgid "Browse this artist"
-msgstr "Περιήγηση σε αυτόν τον καλλιτέχνη"
-
-#: data/ui/rhythmbox-ui.xml.h:4
-msgid "Browse this genre"
-msgstr "Περιήγηση σε αυτό το είδος"
-
-#: data/ui/rhythmbox-ui.xml.h:5
-msgid "Change the visibility of the browser"
-msgstr "Αλλαγή της ορατότητας του περιηγητή"
-
-#: data/ui/rhythmbox-ui.xml.h:6
-msgid "Change the visibility of the main window"
-msgstr "Αλλαγή της ορατότητας του κυρίως παραθύρου"
-
-#: data/ui/rhythmbox-ui.xml.h:7
-msgid "Change the visibility of the source list"
-msgstr "Αλλαγή της ορατότητας της πηγαίας λίστας"
-
-#: data/ui/rhythmbox-ui.xml.h:8
-msgid "Change the visibility of the statusbar"
-msgstr "Αλλαγή της ορατότητας της γραμμής κατάστασης"
-
-#: data/ui/rhythmbox-ui.xml.h:9
-msgid "Change this automatic playlist"
-msgstr "Αλλαγή αυτής της αυτόματης λίστας αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:10
-msgid "Choose a location (URI) to be added to the library"
-msgstr "Επιλέξτε μια τοποθεσία (URI) για να προστεθεί στην βιβλιοθήκη"
-
-#: data/ui/rhythmbox-ui.xml.h:11
-msgid "Choose a playlist to be loaded"
-msgstr "Επιλέξτε μια λίστα αναπαραγωγής για φόρτωση"
-
-#: data/ui/rhythmbox-ui.xml.h:12
-msgid "Choose files or a directory to be added to the library"
-msgstr "Επιλογή αρχείων ή καταλόγου που θα προστεθεί στην βιβλιοθήκη"
-
-#: data/ui/rhythmbox-ui.xml.h:13
-msgid "Copy selection"
-msgstr "Αντιγραφή επιλογής"
-
-#: data/ui/rhythmbox-ui.xml.h:14
-msgid "Create a new Internet Radio station"
-msgstr "Δημιουργία ενός νέου σταθμού διαδικτυακού ραδιοφώνου"
-
-#: data/ui/rhythmbox-ui.xml.h:15
-msgid "Create a new automatically updating playlist"
-msgstr "Δημιουργία καινούριας αυτόματα ανανεούμενης λίστας αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:16
-msgid "Create a new playlist"
-msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:17
-msgid "Cu_t"
-msgstr "Αποκο_πή"
-
-#: data/ui/rhythmbox-ui.xml.h:18
-msgid "Cut selection"
-msgstr "Αποκοπή επιλογής"
-
-#: data/ui/rhythmbox-ui.xml.h:19
-msgid "D_eselect All"
-msgstr "_Αποεπιλογή όλων"
-
-#: data/ui/rhythmbox-ui.xml.h:20
-msgid "Delete selection"
-msgstr "Διαγραφή επιλογής"
-
-#: data/ui/rhythmbox-ui.xml.h:22
-msgid "Display music player help"
-msgstr "Προβολή βοήθειας music player"
-
-#: data/ui/rhythmbox-ui.xml.h:23
-msgid "Edit music player preferences"
-msgstr "Επεξεργασία προτιμήσεων music player"
-
-#: data/ui/rhythmbox-ui.xml.h:24
-msgid "Extract and import songs from a CD"
-msgstr "Εξαγωγή και εισαγωγή τραγουδιών από CD"
-
-#: data/ui/rhythmbox-ui.xml.h:25
-msgid "Import Lo_cation..."
-msgstr "Εισαγωγή _Τοποθεσίας..."
-
-#: data/ui/rhythmbox-ui.xml.h:26
-msgid "Import _Audio CD..."
-msgstr "Εισαγωγή CD Ή_χου..."
-
-#: data/ui/rhythmbox-ui.xml.h:27
-msgid "Make the main window smaller"
-msgstr "Να γίνει μικρότερο το κύριο παράθυρο"
-
-#: data/ui/rhythmbox-ui.xml.h:28
-msgid "New _Automatic Playlist..."
-msgstr "Καινούρια _Αυτόματη Λίστα Αναπαραγωγής..."
-
-#: data/ui/rhythmbox-ui.xml.h:29
-msgid "New _Internet Radio Station"
-msgstr "Νέος Σταθμός _Διαδικτυακού Ραδιοφώνου"
-
-#: data/ui/rhythmbox-ui.xml.h:30
-msgid "P_laylist"
-msgstr "Λί_στα αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:31
-msgid "P_revious"
-msgstr "Π_ροηγούμενο"
-
-#: data/ui/rhythmbox-ui.xml.h:32
-msgid "Paste selection"
-msgstr "Επικόλληση επιλογής"
-
-#: data/ui/rhythmbox-ui.xml.h:33
-msgid "Pause playing"
-msgstr "Παύση αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:238
-msgid "Play first song again after all songs are played"
-msgstr "Αναπαραγωγή πρώτου τραγουδιού αφότου αναπαραχθούν όλα τα τραγούδια"
-
-#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:233
-msgid "Play songs in a random order"
-msgstr "Αναπαραγωγή τραγουδιών με τυχαία σειρά"
-
-#: data/ui/rhythmbox-ui.xml.h:36
-msgid "Prefere_nces"
-msgstr "Προτι_μήσεις"
-
-#: data/ui/rhythmbox-ui.xml.h:37
-msgid "Quit the music player"
-msgstr "Έξοδος από το music player"
-
-#: data/ui/rhythmbox-ui.xml.h:38
-msgid "Repea_t"
-msgstr "Επανάλη_ψη"
-
-#: data/ui/rhythmbox-ui.xml.h:39
-msgid "S_tatusbar"
-msgstr "Γραμμή _κατάστασης"
-
-#: data/ui/rhythmbox-ui.xml.h:40
-msgid "Save a playlist to a file"
-msgstr "Αποθήκευση μιας λίστας αναπαραγωγής σε αρχείο"
-
-#: data/ui/rhythmbox-ui.xml.h:44
-msgid "Set the browser to view only this album"
-msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό το άλμπουμ"
-
-#: data/ui/rhythmbox-ui.xml.h:45
-msgid "Set the browser to view only this artist"
-msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό τον καλλιτέχνη"
-
-#: data/ui/rhythmbox-ui.xml.h:46
-msgid "Set the browser to view only this genre"
-msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό το είδος"
-
-#: data/ui/rhythmbox-ui.xml.h:47
-msgid "Show information about the music player"
-msgstr "Προβολή πληροφοριών για το music player"
-
-#: data/ui/rhythmbox-ui.xml.h:48
-msgid "Show information on the selected song"
-msgstr "Προβολή πληροφοριών για το επιλεγμένο τραγούδι"
-
-#: data/ui/rhythmbox-ui.xml.h:49
-msgid "Source _List"
-msgstr "Πηγαία _Λίστα"
-
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1537
-msgid "Start playing"
-msgstr "Έναρξη αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:51
-msgid "Start playing the next song"
-msgstr "Έναρξη αναπαραγωγής του επόμενου τραγουδιού"
-
-#: data/ui/rhythmbox-ui.xml.h:52
-msgid "Start playing the previous song"
-msgstr "Έναρξη αναπαραγωγής του προηγούμενου τραγουδιού"
-
-#: data/ui/rhythmbox-ui.xml.h:53
-msgid "Stop playing"
-msgstr "Διακοπή αναπαραγωγής"
-
-#: data/ui/rhythmbox-ui.xml.h:54
-msgid "_About"
-msgstr "Π_ερί"
-
-#: data/ui/rhythmbox-ui.xml.h:55
-msgid "_Add to Library..."
-msgstr "_Προσθήκη στην Βιβλιοθήκη..."
-
-#: data/ui/rhythmbox-ui.xml.h:56
-msgid "_Browser"
-msgstr "_Περιηγητής"
-
-#: data/ui/rhythmbox-ui.xml.h:57
-msgid "_Contents"
-msgstr "_Περιεχόμενα"
-
-#: data/ui/rhythmbox-ui.xml.h:58
-msgid "_Control"
-msgstr "'Ε_λεγχος"
-
-#: data/ui/rhythmbox-ui.xml.h:59
-msgid "_Copy"
-msgstr "_Αντιγραφή"
-
-#: data/ui/rhythmbox-ui.xml.h:60
-msgid "_Cut"
-msgstr "Απο_κοπή"
-
-#: data/ui/rhythmbox-ui.xml.h:61
-msgid "_Delete"
-msgstr "_Διαγραφή"
-
-#: data/ui/rhythmbox-ui.xml.h:63
-msgid "_Help"
-msgstr "_Βοήθεια"
-
-#: data/ui/rhythmbox-ui.xml.h:64
-msgid "_Import Folder..."
-msgstr "_Εισαγωγή Φακέλου..."
-
-#: data/ui/rhythmbox-ui.xml.h:66
-msgid "_Load from file..."
-msgstr "_Φόρτωση από αρχείο..."
-
-#: data/ui/rhythmbox-ui.xml.h:67
-msgid "_Music"
-msgstr "_Μουσική"
-
-#: data/ui/rhythmbox-ui.xml.h:68
-msgid "_New Playlist..."
-msgstr "_Νέα λίστα αναπαραγωγής..."
-
-#: data/ui/rhythmbox-ui.xml.h:69
-msgid "_Next"
-msgstr "_Επόμενο"
-
-#: data/ui/rhythmbox-ui.xml.h:70
-msgid "_Paste"
-msgstr "_Επικόλληση"
-
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1538
-msgid "_Play"
-msgstr "_Αναπαραγωγή"
-
-#: data/ui/rhythmbox-ui.xml.h:72
-msgid "_Properties"
-msgstr "_Ιδιότητες"
-
-#: data/ui/rhythmbox-ui.xml.h:73
-msgid "_Quit"
-msgstr "_Έξοδος"
-
-#: data/ui/rhythmbox-ui.xml.h:74
-msgid "_Remove"
-msgstr "_Αφαίρεση"
-
-#: data/ui/rhythmbox-ui.xml.h:75
-msgid "_Save to file..."
-msgstr "_Αποθήκευση στο αρχείο..."
-
-#: data/ui/rhythmbox-ui.xml.h:76
-msgid "_Show Window"
-msgstr "_Προβολή Παράθυρου"
-
-#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:230
-msgid "_Shuffle"
-msgstr "Α_νακάτεμα"
-
-#: data/ui/rhythmbox-ui.xml.h:78
-msgid "_Small Display"
-msgstr "Μικ_ρή Προβολή"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
 msgstr "Νέος σταθμός Internet Radio"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:460
-#: metadata/monkey-media/monkey-media-stream-info.c:404
-#: metadata/monkey-media/monkey-media-stream-info.c:420
-#: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
-#: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
-#: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:964 widgets/rb-entry-view.c:991
-#: widgets/rb-song-info.c:801
+#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:964
+#: sources/rb-ipod-source.c:254 sources/rb-iradio-source.c:257
+#: sources/rb-iradio-source.c:258 sources/rb-iradio-source.c:259
+#: sources/rb-playlist-source.c:400 widgets/rb-entry-view.c:911
+#: widgets/rb-entry-view.c:935 widgets/rb-song-info.c:759
+#: widgets/rb-song-info.c:783
 msgid "Unknown"
 msgstr "Άγνωστο"
 
-#: iradio/rb-new-station-dialog.c:309 rhythmdb/rhythmdb-property-model.c:372
+#: iradio/rb-new-station-dialog.c:308 rhythmdb/rhythmdb-property-model.c:333
 msgid "All"
 msgstr "Όλα"
 
-#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:751
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:744
 #, c-format
 msgid "%s Properties"
 msgstr "%s Ιδιότητες"
 
-#: iradio/rb-station-properties-dialog.c:358
+#: iradio/rb-station-properties-dialog.c:354
 #, c-format
 msgid "Properties for %s"
-msgstr "Ιδιότητες για %s "
+msgstr "Ιδιότητες για %s"
 
-#: lib/disclosure-widget.c:300
-msgid "Expander Size"
-msgstr "Μέγεθος Διαστελλόμενου"
-
-#: lib/disclosure-widget.c:301
-msgid "Size of the expander arrow"
-msgstr "Μέγεθος του βέλους διαστολής"
-
-#: lib/eel-gconf-extensions.c:67
-#, c-format
-msgid ""
-"GConf error:\n"
-"  %s"
-msgstr ""
-"Σφάλμα GConf:\n"
-"  %s"
-
-#: lib/eggtrayicon.c:120
-msgid "Orientation"
-msgstr "Προσανατολισμός"
-
-#: lib/eggtrayicon.c:121
-msgid "The orientation of the tray."
-msgstr "Ο προσανατολισμός του συρταριού."
-
-#: lib/rb-file-helpers.c:77
-#, c-format
-msgid "Failed to find %s"
-msgstr "Αδύνατη η εύρεση %s"
-
-#: lib/rb-file-helpers.c:102
-#, c-format
-msgid "%s exists, please move it out of the way."
-msgstr "Το %s υπάρχει, παρακαλώ μετακινήστε το."
-
-#: lib/rb-file-helpers.c:105
-#, c-format
-msgid "Failed to create directory %s."
-msgstr "Αδύνατη η δημιουργία καταλόγου %s."
-
-#: lib/rb-playlist.c:217
-#, c-format
-msgid "Couldn't write playlist: %s"
+#: lib/totem-pl-parser.c:206
+#, fuzzy, c-format
+msgid "Couldn't write parser: %s"
 msgstr "Αδυναμία εγγραφής λίστας αναπαραγωγής: %s"
 
-#: lib/rb-playlist.c:250
-#, c-format
-msgid "Couldn't open playlist: %s"
+#: lib/totem-pl-parser.c:309 lib/totem-pl-parser.c:432
+#, fuzzy, c-format
+msgid "Couldn't open file '%s': %s"
 msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
 
-#: metadata/monkey-media/monkey-media-stream-info.c:310
-#, c-format
-msgid "Unsupported MIME type %s"
-msgstr "Μη υποστηριζόμενο είδος MIME %s"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:315
-msgid "Unknown file type"
-msgstr "Άγνωστος τύπος αρχείου"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:386
-#, c-format
-msgid "Track %.2d"
-msgstr "Κομμάτι %.2d"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:751
-#: metadata/monkey-media/monkey-media-stream-info.c:816
-msgid "No TRM ID for this song"
-msgstr "Δεν υπάρχει TRM ID για αυτό το τραγούδι"
-
-#: metadata/monkey-media/monkey-media-stream-info.c:767
-#: metadata/monkey-media/monkey-media-stream-info.c:831
-msgid "No information for this song found"
-msgstr "Δε βρέθηκαν πληροφορίες για αυτό το τραγούδι"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
-msgid "Invalid track number"
-msgstr "Μη έγκυρος αριθμός κομματιού"
-
-#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
-msgid "Audio CD track"
-msgstr "Κομμάτι CD ήχου "
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
-msgid "Failed to open file for reading"
-msgstr "Αποτυχία ανοίγματος αρχείου για ανάγνωση"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
-msgid "Error decoding FLAC file"
-msgstr "Σφάλμα αποκωδικοποίησης αρχείου FLAC"
-
-#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
-msgid "FLAC"
-msgstr "FLAC"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
-msgid "Failed to gather information about the file"
-msgstr "Αποτυχία συγκέντρωσης πληροφοριών σχετικά με το αρχείο"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
-#, c-format
-msgid "MPEG %d Layer III"
-msgstr "MPEG %d Layer III"
-
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
-msgid "MPEG 2.5 Layer III"
-msgstr "MPEG 2.5 Στρώμα III"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
-msgid "Failed to recognise filetype"
-msgstr "Αποτυχία αναγνώρισης τύπου αρχείου"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
-msgid "Failed to find an audio track"
-msgstr "Αποτυχία εύρεσης ενός ηχητικού κομματιού"
-
-#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
-msgid "MPEG-4 audio (MPEG-4 AAC)"
-msgstr "ήχος MPEG-4 (MPEG-4 AAC)"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
-msgid "Failed to seek file"
-msgstr "Αποτυχία αναζήτησης αρχείου"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
-msgid "Failed to open file as Ogg Vorbis"
-msgstr "Αποτυχία ανοίγματος αρχείου ως Ogg Vorbis"
-
-#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
-msgid "Ogg Vorbis"
-msgstr "Ogg Vorbis"
-
-#: metadata/rb-metadata-gst.c:340
+#: metadata/rb-metadata-gst.c:358
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr ""
 
-#: metadata/rb-metadata-gst.c:575 metadata/rb-metadata-gst.c:696
-#: player/rb-player-gst.c:580
+#: metadata/rb-metadata-gst.c:593 metadata/rb-metadata-gst.c:726
+#: player/rb-player-gst.c:549 player/rb-recorder-gst.c:435
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Αποτυχία δημιουργίας στοιχείου %s, ελέγξτε την εγκατάσταση σας"
@@ -768,111 +372,258 @@ msgstr "Αποτυχία δημιουργίας στοιχείου %s, ελέγ�
 msgid "Operation not supported"
 msgstr "Η λειτουργία δεν υποστηρίζεται"
 
-#: player/rb-player-gst.c:426 player/rb-player-gst.c:638
-#: player/rb-player-gst.c:648
+#: metadata/rb-metadata-xine.c:104
+msgid "There is no plugin to handle this song"
+msgstr ""
+
+#: metadata/rb-metadata-xine.c:107
+msgid "This song is broken and can not be played further"
+msgstr ""
+
+#: metadata/rb-metadata-xine.c:110
+msgid "This location is not a valid one"
+msgstr ""
+
+#: metadata/rb-metadata-xine.c:113
+#, fuzzy
+msgid "This song could not be opened"
+msgstr "Τα παρακάτω αρχεία δεν μπορούν να φορτωθούν:"
+
+#: metadata/rb-metadata-xine.c:115
+msgid "Generic Error"
+msgstr ""
+
+#: metadata/rb-metadata-xine.c:146
+#, fuzzy
+msgid "File is not an audio file"
+msgstr "Αποτυχία εύρεσης ενός ηχητικού κομματιού"
+
+#: metadata/rb-metadata-xine.c:158
+msgid "Song is not handled"
+msgstr ""
+
+#: player/rb-player-gst.c:395 player/rb-player-gst.c:605
+#: player/rb-player-gst.c:615 player/rb-recorder-gst.c:565
 msgid "Could not start pipeline playing"
 msgstr "Αποτυχία έναρξης αναπαραγωγής pipeline"
 
-#: player/rb-player-gst.c:546
+#: player/rb-player-gst.c:515 player/rb-recorder-gst.c:395
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "Αποτυχία δημιουργίας στοιχείου εξόδου ήχου, ελέγξτε την εγκατάσταση σας"
 
-#: player/rb-player-gst.c:603
+#: player/rb-player-gst.c:572 player/rb-recorder-gst.c:496
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Αδυναμία αρχικοποίησης scheduler. Εκτελέσατε το gst-register;"
 
-#: player/rb-player-gst.c:675
+#: player/rb-player-gst.c:627 player/rb-recorder-gst.c:580
 msgid "Could not pause playback"
 msgstr "Αποτυχία παύσης αναπαραγωγής"
 
-#: player/rb-player-gst.c:685
+#: player/rb-player-gst.c:636
 msgid "Could not close output sink"
 msgstr "Αδυναμία κλεισίματος output sink"
 
-#: player/rb-player-gst.c:731
+#: player/rb-player-gst.c:681
 msgid "No AudioCD support; check your settings"
 msgstr "Δεν υπάρχει υποστήριξη AudioCD, ελέγξτε τις ρυθμίσεις σας"
 
-#: player/rb-player-gst.c:790
+#: player/rb-player-gst.c:740
 msgid "Failed to close audio output sink"
 msgstr "Αποτυχία κλεισίματος audio output sink"
 
-#: player/rb-player-xine.c:354
+#: player/rb-player-xine.c:323
 msgid "Failed to set up an audio driver; check your installation"
 msgstr "Αποτυχία εγκατάστασης οδηγού ήχου, ελέγξτε την εγκατάσταση σας"
 
-#: player/rb-player-xine.c:454
+#: player/rb-player-xine.c:423
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr ""
 "Δεν υπάρχει διαθέσιμη πρόσθετη λειτουργία για %s; ελέγξτε την εγκατάσταση σας"
 
-#: player/rb-player-xine.c:463
+#: player/rb-player-xine.c:432
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "Δεν υπάρχει διαθέσιμη πρόσθετη λειτουργία demux για %s; ελέγξτε την "
 "εγκατάσταση σας"
 
-#: player/rb-player-xine.c:472
+#: player/rb-player-xine.c:441
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Το Demuxing για %s, απέτυχε, ελέγξτε την εγκατάσταση σας"
 
-#: player/rb-player-xine.c:480
+#: player/rb-player-xine.c:449
 msgid "Internal error; check your installation."
 msgstr "Εσωτερικό σφάλμα, ελέγξτε την εγκατάσταση σας."
 
-#: player/rb-player-xine.c:488
+#: player/rb-player-xine.c:457
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr ""
 "Δεν είναι δυνατός ο χειρισμός του ήχου από %s, ελέγξτε την εγκατάσταση σας."
 
-#: rhythmdb/rhythmdb.c:845
+#: player/rb-recorder-gst.c:350
+#, fuzzy
+msgid "Failed to create pipeline"
+msgstr "Αποτυχία αναζήτησης αρχείου"
+
+#: player/rb-recorder-gst.c:453 player/rb-recorder-gst.c:457
+#: player/rb-recorder-xine.c:229 player/rb-recorder-xine.c:233
+#, fuzzy, c-format
+msgid "Unable to unlink '%s'"
+msgstr "Αδύνατη η εύρεση %s"
+
+#: player/rb-recorder-gst.c:523 player/rb-recorder-gst.c:529
+#, fuzzy
+msgid "Could not get current track position"
+msgstr "Αδυναμία κλεισίματος output sink"
+
+#: player/rb-recorder-gst.c:777 player/rb-recorder-xine.c:442
+#, c-format
+msgid "Cannot find drive %s"
+msgstr ""
+
+#: player/rb-recorder-gst.c:791 player/rb-recorder-xine.c:456
+#, c-format
+msgid "Drive %s is not a recorder"
+msgstr ""
+
+#: player/rb-recorder-gst.c:1039 player/rb-recorder-xine.c:704
+#, c-format
+msgid "Could not get track time for file: %s"
+msgstr ""
+
+#: player/rb-recorder-gst.c:1071 player/rb-recorder-xine.c:736
+msgid "Could not determine default writer device"
+msgstr ""
+
+#: player/rb-recorder-gst.c:1086 player/rb-recorder-xine.c:751
+#, fuzzy
+msgid "Could not determine audio track durations."
+msgstr ""
+"Αποτυχία δημιουργίας στοιχείου εξόδου ήχου, ελέγξτε την εγκατάσταση σας"
+
+#: player/rb-recorder-gst.c:1098
+#, c-format
+msgid ""
+"This playlist is %lld minutes long.  This exceeds the %lld minute length of "
+"the media in the drive."
+msgstr ""
+
+#: player/rb-recorder-gst.c:1134 player/rb-recorder-xine.c:799
+#, c-format
+msgid ""
+"There was an error writing to the CD:\n"
+"%s"
+msgstr ""
+
+#: player/rb-recorder-gst.c:1136 player/rb-recorder-xine.c:801
+msgid "There was an error writing to the CD"
+msgstr ""
+
+#: player/rb-recorder-xine.c:214
+msgid "Xine backend not yet implemented"
+msgstr ""
+
+#: player/rb-recorder-xine.c:763
+#, c-format
+msgid ""
+"This playlist is %d minutes long.  This exceeds the %d minute length of the "
+"media in the drive."
+msgstr ""
+
+#: remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
+msgid "Add to Music Library"
+msgstr "Προσθήκη στη Βιβλιοθήκη Μουσικής"
+
+#: remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr "Επέκταση μενού περιεχομένου του Ναυτίλου για το Rhythmbox"
+
+#: remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
+msgid "Rhythmbox Nautilus Context Menu Item"
+msgstr "Αντικείμενο μενού περιεχομένου του Ναυτίλου για το Rhythmbox"
+
+#: remote/bonobo/rb-remote-bonobo.c:517
+msgid "Whether the main window is visible"
+msgstr "Άν το κύριο παράθυρο θα είναι ορατό"
+
+#: remote/bonobo/rb-remote-bonobo.c:522
+msgid "Whether shuffle is enabled"
+msgstr "Αν το ανακάτεμα θα είναι ενεργό"
+
+#: remote/bonobo/rb-remote-bonobo.c:526
+msgid "Properties for the current song"
+msgstr "Ιδιότητες για το τρέχον τραγούδι"
+
+#: remote/bonobo/rb-remote-bonobo.c:677
+#, c-format
+msgid ""
+"Failed to register the shell: %s\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
+msgstr ""
+"Αποτυχία εγγραφής του κέλυφους: %s\n"
+"Αυτό μάλλον σημαίνει ότι εγκαταστήσατε το Rhythmbox με ένα διαφορετικό "
+"πρόθεμα από την ενεργοποίηση bonobo.  Αυτή η προειδοποίηση είναι ανώδυνη, "
+"αλλά το IPC  δεν θα λειτουργεί."
+
+#: remote/bonobo/rb-remote-bonobo.c:722 remote/bonobo/rb-remote-bonobo.c:731
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "Συνέβει μια εξαίρεση '%s'"
+
+#: rhythmdb/rhythmdb.c:947
+#, fuzzy, c-format
+msgid "Couldn't monitor %s: %s"
+msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
+
+#: rhythmdb/rhythmdb.c:1043
 msgid "<invalid filename>"
 msgstr "<μη έγκυρο όνομα αρχείου>"
 
-#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:930
-#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
+#: rhythmdb/rhythmdb.c:1492
+#, fuzzy, c-format
+msgid "Couldn't access %s: %s"
+msgstr "Αποτυχία ανοίγματος λίστας αναπαραγωγής: %s"
+
+#: rhythmdb/rhythmdb.c:1941 widgets/rb-entry-view.c:886
+#: widgets/rb-song-info.c:926
 msgid "Never"
 msgstr "Ποτέ"
 
-#: rhythmdb/rhythmdb.c:1464
+#: rhythmdb/rhythmdb.c:1943
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2191
-msgid "Loading songs..."
-msgstr "Φόρτωση τραγουδιών..."
+#: rhythmdb/rhythmdb.c:2589
+msgid "Loading..."
+msgstr "Γίνεται φόρτωση..."
 
-#: rhythmdb/rhythmdb.c:2193
-msgid "Refreshing songs..."
-msgstr "Ανανέωση τραγουδιών.."
-
-#: rhythmdb/rhythmdb.c:2210
+#: rhythmdb/rhythmdb.c:2606
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d τραγούδι"
 msgstr[1] "%d τραγούδια"
 
-#: rhythmdb/rhythmdb.c:2217
+#: rhythmdb/rhythmdb.c:2613
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld λεπτό"
 msgstr[1] "%ld λεπτά"
 
-#: rhythmdb/rhythmdb.c:2218 rhythmdb/rhythmdb.c:2228
+#: rhythmdb/rhythmdb.c:2614 rhythmdb/rhythmdb.c:2624
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld ώρα"
 msgstr[1] "%ld ώρες"
 
-#: rhythmdb/rhythmdb.c:2219
+#: rhythmdb/rhythmdb.c:2615
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -880,101 +631,107 @@ msgstr[0] "%ld ημέρα"
 msgstr[1] "%ld ημέρες"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2223
+#: rhythmdb/rhythmdb.c:2619
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s και %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2231
+#: rhythmdb/rhythmdb.c:2627
 #, c-format
 msgid "%s and %s"
 msgstr "%s και %s"
 
-#: shell/main.c:91
+#: shell/main.c:108
 msgid "Print the playing song and exit"
 msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
 
-#: shell/main.c:92
+#: shell/main.c:109
+#, fuzzy
+msgid "Print the playing song artist and exit"
+msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+
+#: shell/main.c:110
+#, fuzzy
+msgid "Print the playing song album and exit"
+msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+
+#: shell/main.c:111
+#, fuzzy
+msgid "Print the playing song track and exit"
+msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+
+#: shell/main.c:112
+#, fuzzy
+msgid "Print the playing song genre and exit"
+msgstr "Εκτύπωση του τρέχοντος τραγουδιού και έξοδος"
+
+#: shell/main.c:113
 msgid "Print the playing song URI and exit"
 msgstr "Εκτύπωση του τρέχοντος URI τραγουδιού και έξοδος"
 
-#: shell/main.c:94
+#: shell/main.c:115
 msgid "Print the playing song length in seconds and exit"
 msgstr ""
 "Εκτύπωση της διάρκειας του τρέχοντος τραγουδιού σε δευτερόλεπτα και έξοδος"
 
-#: shell/main.c:95
+#: shell/main.c:116
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Εκτύπωση της διάρκειας του τρέχοντος τραγουδιού και έξοδος"
 
-#: shell/main.c:96
+#: shell/main.c:117
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Αναζήτηση στον καθορισμένο χρόνο στο τραγούδι αν είναι δυνατό και έξοδος"
 
-#: shell/main.c:98
+#: shell/main.c:119
 msgid "Toggle play/pause mode"
 msgstr "Εναλλαγή λειτουργίας παύσης/αναπαραγωγής"
 
-#: shell/main.c:99
+#: shell/main.c:120
 msgid "Focus the running player"
 msgstr "Εστίαση στον εκτελούμενο αναπαραγωγό"
 
-#: shell/main.c:100
+#: shell/main.c:121
 msgid "Jump to previous song"
 msgstr "Μετάβαση στο προηγούμενο τραγούδι"
 
-#: shell/main.c:101
+#: shell/main.c:122
 msgid "Jump to next song"
 msgstr "Μετάβαση στο επόμενο τραγούδι"
 
-#: shell/main.c:103
+#: shell/main.c:124
 msgid "Toggle shuffling"
 msgstr ""
 
-#: shell/main.c:105
+#: shell/main.c:126
 msgid "Enable debugging code"
 msgstr "Ενεργοποίηση κώδικα εκσφαλμάτωσης"
 
-#: shell/main.c:106
+#: shell/main.c:127
 msgid "Do not update the library"
 msgstr "Να μην ενημερωθεί η βιβλιοθήκη"
 
-#: shell/main.c:107
+#: shell/main.c:128
 msgid "Do not register the shell"
 msgstr "Να μην εγγραφεί το κέλυφος"
 
-#: shell/main.c:108
+#: shell/main.c:129
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Να μην γίνεται μόνιμη αποθήκευση δεδομένων (συνεπάγεται --καθόλου-εγγραφή)"
 
-#: shell/main.c:109
+#: shell/main.c:130
 msgid "Path for database file to use"
 msgstr "Διαδρομή αρχείου βάσης δεδομένων για χρήση"
 
-#: shell/main.c:110
+#: shell/main.c:131
 msgid "Quit Rhythmbox"
 msgstr "Έξοδος από το Rhythmbox"
 
-#: shell/main.c:125 widgets/rb-druid.c:218
+#: shell/main.c:154 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: shell/main.c:238 shell/main.c:247
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "Συνέβει μια εξαίρεση '%s'"
-
-#: shell/main.c:311
-#, c-format
-msgid ""
-"Failed to activate the shell:\n"
-"%s"
-msgstr ""
-"Αποτυχία ενεργοποίησης του κέλυφους:\n"
-"%s"
 
 #: shell/rb-play-order.c:228
 msgid "Linear"
@@ -1004,103 +761,344 @@ msgstr "Τυχαία βάσει κατάταξης"
 msgid "Random by time since last play and rating"
 msgstr "Τυχαία βάσει τελευταίας αναπαραγωγής και κατάταξης"
 
-#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
-msgid "Couldn't parse playlist"
+#. Submenu of Music
+#: shell/rb-playlist-manager.c:132
+msgid "_Playlist"
+msgstr "_Λίστα Αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:134
+msgid "_New Playlist..."
+msgstr "_Νέα Λίστα Αναπαραγωγής..."
+
+#: shell/rb-playlist-manager.c:135
+msgid "Create a new playlist"
+msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:137
+msgid "New _Automatic Playlist..."
+msgstr "Νέα _Αυτόματη Λίστα Αναπαραγωγής..."
+
+#: shell/rb-playlist-manager.c:138
+msgid "Create a new automatically updating playlist"
+msgstr "Δημιουργία καινούριας αυτόματα ανανεούμενης λίστας αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:140
+msgid "_Load from file..."
+msgstr "_Φόρτωση από αρχείο..."
+
+#: shell/rb-playlist-manager.c:141
+msgid "Choose a playlist to be loaded"
+msgstr "Επιλέξτε μια λίστα αναπαραγωγής για φόρτωση"
+
+#: shell/rb-playlist-manager.c:143
+msgid "_Save to file..."
+msgstr "_Αποθήκευση σε αρχείο..."
+
+#: shell/rb-playlist-manager.c:144
+msgid "Save a playlist to a file"
+msgstr "Αποθήκευση μιας λίστας αναπαραγωγής σε αρχείο"
+
+#: shell/rb-playlist-manager.c:146
+msgid "_Create Audio CD..."
+msgstr "_Δημιουργία Audio-CD..."
+
+#: shell/rb-playlist-manager.c:147
+#, fuzzy
+msgid "Create an audio CD from playlist"
+msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:149 shell/rb-shell-clipboard.c:105
+msgid "_Delete"
+msgstr "_Διαγραφή"
+
+#: shell/rb-playlist-manager.c:150
+msgid "Delete playlist"
+msgstr "Διαγραφή λίστας αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:153
+msgid "Change this automatic playlist"
+msgstr "Αλλαγή αυτής της αυτόματης λίστας αναπαραγωγής"
+
+#: shell/rb-playlist-manager.c:502
+#, fuzzy
+msgid "Couldn't read playlist"
 msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
 
-#: shell/rb-playlist-manager.c:773
+#: shell/rb-playlist-manager.c:503
+msgid "The playlist file may be in an unknown format or corrupted."
+msgstr ""
+
+#: shell/rb-playlist-manager.c:787
 msgid "Load playlist"
 msgstr "Φόρτωση λίστας αναπαραγωγής"
 
-#: shell/rb-playlist-manager.c:814
+#: shell/rb-playlist-manager.c:824
 msgid "Save playlist"
 msgstr "Αποθήκευση λίστας αναπαραγωγής"
 
-#: shell/rb-shell-player.c:443
+#: shell/rb-shell-clipboard.c:93
+msgid "D_eselect All"
+msgstr "_Αποεπιλογή Όλων"
+
+#: shell/rb-shell-clipboard.c:96
+msgid "Cu_t"
+msgstr "Αποκο_πή"
+
+#: shell/rb-shell-clipboard.c:97
+msgid "Cut selection"
+msgstr "Αποκοπή επιλογής"
+
+#: shell/rb-shell-clipboard.c:99
+msgid "_Copy"
+msgstr "_Αντιγραφή"
+
+#: shell/rb-shell-clipboard.c:100
+msgid "Copy selection"
+msgstr "Αντιγραφή επιλογής"
+
+#: shell/rb-shell-clipboard.c:102
+msgid "_Paste"
+msgstr "_Επικόλληση"
+
+#: shell/rb-shell-clipboard.c:103
+msgid "Paste selection"
+msgstr "Επικόλληση επιλογής"
+
+#: shell/rb-shell-clipboard.c:106
+msgid "Delete selection"
+msgstr "Διαγραφή επιλογής"
+
+#: shell/rb-shell-player.c:257
+msgid "P_revious"
+msgstr "Π_ροηγούμενο"
+
+#: shell/rb-shell-player.c:258
+msgid "Start playing the previous song"
+msgstr "Έναρξη αναπαραγωγής του προηγούμενου τραγουδιού"
+
+#: shell/rb-shell-player.c:260
+msgid "_Next"
+msgstr "_Επόμενο"
+
+#: shell/rb-shell-player.c:261
+msgid "Start playing the next song"
+msgstr "Έναρξη αναπαραγωγής του επόμενου τραγουδιού"
+
+#: shell/rb-shell-player.c:263
+msgid "_Properties"
+msgstr "_Ιδιότητες"
+
+#: shell/rb-shell-player.c:264
+msgid "Show information on the selected song"
+msgstr "Προβολή πληροφοριών για το επιλεγμένο τραγούδι"
+
+#: shell/rb-shell-player.c:271
+msgid "_Play"
+msgstr "_Αναπαραγωγή"
+
+#: shell/rb-shell-player.c:272
+msgid "Start playback"
+msgstr "Έναρξη αναπαραγωγής"
+
+#: shell/rb-shell-player.c:278
+msgid "_Pause"
+msgstr "_Παύση"
+
+#: shell/rb-shell-player.c:279
+msgid "Pause playback"
+msgstr "Παύση αναπαραγωγής"
+
+#: shell/rb-shell-player.c:285
+msgid "_Stop"
+msgstr "_Διακοπή"
+
+#: shell/rb-shell-player.c:286
+msgid "Stop playback"
+msgstr "Διακοπή αναπαραγωγής"
+
+#: shell/rb-shell-player.c:292 shell/rb-statusbar.c:232
+#, fuzzy
+msgid "Sh_uffle"
+msgstr "Ανακατεμένη"
+
+#: shell/rb-shell-player.c:293 shell/rb-statusbar.c:235
+msgid "Play songs in a random order"
+msgstr "Αναπαραγωγή τραγουδιών με τυχαία σειρά"
+
+#: shell/rb-shell-player.c:295 shell/rb-statusbar.c:237
+msgid "_Repeat"
+msgstr "Επα_νάληψη"
+
+#: shell/rb-shell-player.c:296 shell/rb-statusbar.c:240
+msgid "Play first song again after all songs are played"
+msgstr "Αναπαραγωγή πρώτου τραγουδιού αφότου αναπαραχθούν όλα τα τραγούδια"
+
+#: shell/rb-shell-player.c:536
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Αποτυχία δημιουργίας  player: %s"
 
-#: shell/rb-shell-player.c:511
+#: shell/rb-shell-player.c:610
 msgid "Play previous song"
 msgstr "Αναπαραγωγή προηγούμενου τραγουδιού"
 
-#: shell/rb-shell-player.c:540
+#: shell/rb-shell-player.c:639
 msgid "Play next song"
 msgstr "Αναπαραγωγή επομένου τραγουδιού"
 
-#: shell/rb-shell-player.c:559
+#: shell/rb-shell-player.c:658
 msgid "Change the music volume"
 msgstr "Αλλαγή έντασης της μουσικής"
 
-#: shell/rb-shell-player.c:841
+#: shell/rb-shell-player.c:926
 #, c-format
 msgid "Opening %s..."
 msgstr "Άνοιγμα %s..."
 
-#: shell/rb-shell-player.c:1529
-msgid "Pause playback"
-msgstr "Παύση αναπαραγωγής"
+#: shell/rb-shell-player.c:1026
+#, fuzzy
+msgid "Couldn't start playback"
+msgstr "Αποτυχία παύσης αναπαραγωγής"
 
-#: shell/rb-shell-player.c:1530
-msgid "_Pause"
-msgstr "_Παύση"
+#: shell/rb-shell-player.c:1829
+#, fuzzy
+msgid "Couldn't stop playback"
+msgstr "Αποτυχία παύσης αναπαραγωγής"
 
-#: shell/rb-shell-player.c:1545
-msgid "Stop playback"
-msgstr "Διακοπή αναπαραγωγής"
+#: shell/rb-shell-player.c:1921
+#, fuzzy
+msgid "Stream error"
+msgstr "Επιλογές GStreamer:"
 
-#: shell/rb-shell-player.c:1546
-msgid "_Stop"
-msgstr "_Διακοπή"
-
-#: shell/rb-shell-player.c:1874
+#: shell/rb-shell-player.c:1922
 msgid "Unexpected end of stream!"
 msgstr "Απρόσμενο τέλος stream!"
 
-#: shell/rb-shell-preferences.c:177
+#: shell/rb-shell-player.c:1950
+msgid "Playback error"
+msgstr "Σφάλμα αναπαραγωγής"
+
+#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1582
+#, fuzzy
+msgid "Couldn't display help"
+msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
+
+#: shell/rb-shell-preferences.c:179
 msgid "Music Player Preferences"
 msgstr "Προτιμήσεις Music Player"
 
-#: shell/rb-shell-preferences.c:225
+#: shell/rb-shell-preferences.c:227
 msgid "General"
 msgstr "Γενικά"
 
-#: shell/rb-shell.c:838
-#, c-format
-msgid "Unable to parse URI \"%s\"\n"
-msgstr "Αδυναμία ανάλυσης URI\"%s\"\n"
+#: shell/rb-shell.c:334
+msgid "_Music"
+msgstr "_Μουσική"
 
-#: shell/rb-shell.c:1062
-msgid "Whether the main window is visible"
-msgstr "Άν το κύριο παράθυρο θα είναι ορατό"
+#: shell/rb-shell.c:337
+msgid "_Control"
+msgstr "Έ_λεγχος"
 
-#: shell/rb-shell.c:1067
-msgid "Whether shuffle is enabled"
-msgstr "Αν το ανακάτεμα θα είναι ενεργό"
+#: shell/rb-shell.c:338
+msgid "_Help"
+msgstr "_Βοήθεια"
 
-#: shell/rb-shell.c:1071
-msgid "Properties for the current song"
-msgstr "Ιδιότητες για το τρέχον τραγούδι"
+#: shell/rb-shell.c:340
+msgid "New _Internet Radio Station"
+msgstr "Νέος Σταθμός _Διαδικτυακού Ραδιοφώνου"
 
-#: shell/rb-shell.c:1484
-#, c-format
-msgid ""
-"Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a different prefix than "
-"bonobo-activation; this warning is harmless, but IPC will not work."
+#: shell/rb-shell.c:341
+msgid "Create a new Internet Radio station"
+msgstr "Δημιουργία ενός νέου σταθμού διαδικτυακού ραδιοφώνου"
+
+#: shell/rb-shell.c:344
+msgid "_Import Folder..."
+msgstr "_Εισαγωγή Φακέλου..."
+
+#: shell/rb-shell.c:345
+#, fuzzy
+msgid "Choose folder to be added to the Library"
+msgstr "Επιλογή αρχείων ή καταλόγου που θα προστεθεί στην βιβλιοθήκη"
+
+#: shell/rb-shell.c:347
+msgid "Import _File..."
+msgstr "_Εισαγωγή _Αρχείου..."
+
+#: shell/rb-shell.c:348
+#, fuzzy
+msgid "Choose file to be added to the Library"
+msgstr "Επιλογή αρχείων ή καταλόγου που θα προστεθεί στην βιβλιοθήκη"
+
+#: shell/rb-shell.c:350
+msgid "Import _Audio CD..."
+msgstr "Εισαγωγή CD Ή_χου..."
+
+#: shell/rb-shell.c:351
+msgid "Extract and import songs from a CD"
+msgstr "Εξαγωγή και εισαγωγή τραγουδιών από CD"
+
+#: shell/rb-shell.c:353
+msgid "_About"
+msgstr "Π_ερί"
+
+#: shell/rb-shell.c:354
+msgid "Show information about the music player"
+msgstr "Προβολή πληροφοριών για το music player"
+
+#: shell/rb-shell.c:356
+msgid "_Contents"
+msgstr "_Περιεχόμενα"
+
+#: shell/rb-shell.c:357
+msgid "Display music player help"
+msgstr "Προβολή βοήθειας music player"
+
+#: shell/rb-shell.c:359
+msgid "_Quit"
+msgstr "_Έξοδος"
+
+#: shell/rb-shell.c:360
+msgid "Quit the music player"
+msgstr "Έξοδος από το music player"
+
+#: shell/rb-shell.c:362
+msgid "Prefere_nces"
+msgstr "Προτι_μήσεις"
+
+#: shell/rb-shell.c:363
+msgid "Edit music player preferences"
+msgstr "Επεξεργασία προτιμήσεων music player"
+
+#: shell/rb-shell.c:365
+msgid "Show _all"
+msgstr "Εμφάνιση _όλων"
+
+#: shell/rb-shell.c:366
+msgid "Show all items in this music source"
 msgstr ""
-"Αποτυχία εγγραφής του κέλυφους: %s\n"
-"Αυτό μάλλον σημαίνει ότι εγκαταστήσατε το Rhythmbox με ένα διαφορετικό "
-"πρόθεμα από την ενεργοποίηση bonobo.  Αυτή η προειδοποίηση είναι ανώδυνη, αλλά "
-"το IPC  δεν θα λειτουργεί."
 
-#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
+#: shell/rb-shell.c:376
+msgid "Source _List"
+msgstr "Πηγαία _Λίστα"
+
+#: shell/rb-shell.c:377
+msgid "Change the visibility of the source list"
+msgstr "Αλλαγή της ορατότητας της πηγαίας λίστας"
+
+#: shell/rb-shell.c:379
+msgid "_Small Display"
+msgstr "Μικ_ρή Προβολή"
+
+#: shell/rb-shell.c:380
+msgid "Make the main window smaller"
+msgstr "Να γίνει μικρότερο το κύριο παράθυρο"
+
+#: shell/rb-shell.c:1402 shell/rb-tray-icon.c:203 widgets/rb-header.c:567
 msgid "Not playing"
 msgstr "Δεν αναπαράγεται"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1862
+#: shell/rb-shell.c:1405
 #, c-format
 msgid ""
 "%s\n"
@@ -1110,7 +1108,7 @@ msgstr ""
 "Διακόπηκε, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1866
+#: shell/rb-shell.c:1409
 #, c-format
 msgid ""
 "%s\n"
@@ -1120,164 +1118,440 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1443
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Διακόπηκε)"
 
-#: shell/rb-shell.c:1968
+#: shell/rb-shell.c:1504
 msgid "translator_credits"
 msgstr ""
 "Κώστας Παπαδήμας <pkst@gnome.org>\n"
 "Βελώνης Πέτρος <velonis@freemail.gr>"
 
-#: shell/rb-shell.c:1977
+#: shell/rb-shell.c:1513
 msgid "Maintainers:"
 msgstr "Maintainers:"
 
-#: shell/rb-shell.c:1980
+#: shell/rb-shell.c:1516
 msgid "Former Maintainers:"
 msgstr "Προηγούμενοι Συντηρητές:"
 
-#: shell/rb-shell.c:1983
+#: shell/rb-shell.c:1519
 msgid "Contributors:"
 msgstr "Συντελεστές:"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:1521
 msgid "Music management and playback software for GNOME."
 msgstr "Λογισμικό διαχείρισης και αναπαραγωγής μουσικής για το GNOME."
 
-#: shell/rb-shell.c:2166
-msgid "Choose Files or Directory"
-msgstr "Επιλογή αρχείων ή καταλόγου"
+#: shell/rb-shell.c:1642 widgets/rb-druid.c:319
+#, fuzzy
+msgid "Load folder into Library"
+msgstr "Σφάλμα φόρτωσης αρχείων στην βιβλιοθήκη"
 
-#: shell/rb-shell.c:2212
-msgid "To extract CDs you must install the Sound Juicer package."
+#: shell/rb-shell.c:1663
+#, fuzzy
+msgid "Load file into Library"
+msgstr "Σφάλμα φόρτωσης αρχείων στην βιβλιοθήκη"
+
+#: shell/rb-shell.c:1696
+msgid "CD Ripper not found"
+msgstr ""
+
+#: shell/rb-shell.c:1697
+#, fuzzy
+msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "Για να εξάγετε CD θα πρέπει να εγκαταστήσετε το πακέτο Sound Juicer."
 
-#: shell/rb-shell.c:2219
-#, c-format
-msgid "Couldn't run sound-juicer: %s"
+#: shell/rb-shell.c:1705
+#, fuzzy
+msgid "Couldn't run CD Ripper"
 msgstr "Αδυναμία εκτέλεσης sound-juicer: %s"
 
-#: shell/rb-source-header.c:183
+#: shell/rb-shell.c:1706
+#, fuzzy, c-format
+msgid "An error occurred while running sound-juicer: %s"
+msgstr "Αδυναμία εκτέλεσης sound-juicer: %s"
+
+#: shell/rb-source-header.c:94
+msgid "_Browser"
+msgstr "_Περιηγητής"
+
+#: shell/rb-source-header.c:95
+msgid "Change the visibility of the browser"
+msgstr "Αλλαγή της ορατότητας του περιηγητή"
+
+#: shell/rb-source-header.c:177
 msgid "Filter music display by genre, artist, album, or title"
 msgstr ""
 "Φιλτράρισμα εμφάνισης της μουσικής από το είδος, τον καλλιτέχνη, το άλμπουμ, "
 "ή τον τίτλο"
 
-#: shell/rb-source-header.c:190
+#: shell/rb-source-header.c:184
 msgid "Show _Browser"
 msgstr "Εμφάνιση _Περιηγητή"
 
-#: shell/rb-source-header.c:191
+#: shell/rb-source-header.c:185
 msgid "Hide _Browser"
 msgstr "Απόκρυψη _Περιηγητή"
 
-#: shell/rb-statusbar.c:235
-msgid "_Repeat"
-msgstr "Επα_νάληψη"
+#: shell/rb-statusbar.c:69
+msgid "S_tatusbar"
+msgstr "Γραμμή _κατάστασης"
 
-#: shell/rb-statusbar.c:442
+#: shell/rb-statusbar.c:70
+msgid "Change the visibility of the statusbar"
+msgstr "Αλλαγή της ορατότητας της γραμμής κατάστασης"
+
+#: shell/rb-statusbar.c:446
 msgid "Buffering..."
 msgstr "Buffering..."
 
-#: sources/itunesdb.c:447
+#: shell/rb-tray-icon.c:110
+msgid "_Show Window"
+msgstr "_Προβολή Παραθύρου"
+
+#: shell/rb-tray-icon.c:111
+msgid "Change the visibility of the main window"
+msgstr "Αλλαγή της ορατότητας του κυρίως παραθύρου"
+
+#: sources/itunesdb.c:429
 msgid "Master-PL"
 msgstr "Master-PL"
 
-#: sources/itunesdb.c:449
+#: sources/itunesdb.c:431
 msgid "Playlist"
 msgstr "Λίστα αναπαραγωγής"
 
-#: sources/itunesdb.c:801
+#: sources/itunesdb.c:783
 #, c-format
 msgid "Error reading \"%s\".\n"
 msgstr "Σφάλμα ανάγνωσης \"%s\".\n"
 
-#: sources/itunesdb.c:809
+#: sources/itunesdb.c:791
 #, c-format
 msgid "\"%s\" is not a valid iPod database.\n"
 msgstr "To \"%s\"  δεν είναι έγκυρη βάση δεδομένων iPod.\n"
 
-#: sources/itunesdb.c:1049 sources/itunesdb.c:1704
+#: sources/itunesdb.c:1031 sources/itunesdb.c:1691
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Αποτυχία ανοίγματος αρχείου \"%s\" για ανάγνωση.\n"
 
-#: sources/itunesdb.c:1556 sources/itunesdb.c:1711
+#: sources/itunesdb.c:1543 sources/itunesdb.c:1698
 #, c-format
 msgid "Could not open \"%s\" file for writing.\n"
 msgstr "Αποτυχία ανοίγματος αρχείου \"%s\" για εγγραφή.\n"
 
 #. an error occured
-#: sources/itunesdb.c:1568
+#: sources/itunesdb.c:1555
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Σφάλμα μετονομασίας '%s' σε '%s' (%s).\n"
 
 #. error -- not end of file!
-#: sources/itunesdb.c:1724
+#: sources/itunesdb.c:1711
 #, c-format
 msgid "Error reading file \"%s\".\n"
 msgstr "Σφάλμα ανάγνωσης αρχείου \"%s\".\n"
 
-#: sources/itunesdb.c:1736
+#: sources/itunesdb.c:1723
 #, c-format
 msgid "Error writing PC file \"%s\".\n"
 msgstr "Σφάλμα ανάγνωσης αρχείου PC \"%s\".\n"
 
-#: sources/rb-ipod-source.c:117
+#: sources/rb-ipod-source.c:232
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:340 sources/rb-library-source.c:513
+#: sources/rb-iradio-source.c:351 sources/rb-library-source.c:536
 #: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Είδος"
 
-#: sources/rb-iradio-source.c:421
+#: sources/rb-iradio-source.c:425
 msgid "Radio"
 msgstr "Ραδιόφωνο"
 
-#: sources/rb-iradio-source.c:590
+#: sources/rb-iradio-source.c:591
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d σταθμός "
 msgstr[1] "%d σταθμοί "
 
-#: sources/rb-library-source.c:527 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:192
+msgid "Browse this genre"
+msgstr "Περιήγηση σε αυτό το είδος"
+
+#: sources/rb-library-source.c:193
+msgid "Set the browser to view only this genre"
+msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό το είδος"
+
+#: sources/rb-library-source.c:195
+msgid "Browse this artist"
+msgstr "Περιήγηση αυτού του καλλιτέχνη"
+
+#: sources/rb-library-source.c:196
+msgid "Set the browser to view only this artist"
+msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό τον καλλιτέχνη"
+
+#: sources/rb-library-source.c:198
+msgid "Browse this album"
+msgstr "Περιήγηση αυτού του άλμπουμ"
+
+#: sources/rb-library-source.c:199
+msgid "Set the browser to view only this album"
+msgstr "Καθορίστε τον περιηγητή για να βλέπετε μόνο αυτό το άλμπουμ"
+
+#: sources/rb-library-source.c:550 widgets/rb-query-creator.c:54
 msgid "Artist"
 msgstr "Καλλιτέχνης"
 
-#: sources/rb-library-source.c:541 widgets/rb-query-creator.c:55
+#: sources/rb-library-source.c:564 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Άλμπουμ"
 
-#: sources/rb-library-source.c:649
+#: sources/rb-library-source.c:665
 msgid "Library"
 msgstr "Βιβλιοθήκη"
 
-#: sources/rb-library-source.c:1192
+#: sources/rb-library-source.c:1194
 msgid "Add Location"
 msgstr "Προσθήκη Τοποθεσίας"
 
-#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1200
+#: sources/rb-playlist-source.c:269 widgets/rb-entry-view.c:1141
 msgid "Tra_ck"
 msgstr "Κομ_μάτι"
 
-#: sources/rb-source.c:528
-msgid "No properties available."
-msgstr "Δεν υπάρχουν διαθέσιμες ιδιότητες."
+#: sources/rb-playlist-source.c:754
+#, fuzzy
+msgid "Couldn't save playlist"
+msgstr "Αποτυχία ανάλυσης λίστας αναπαραγωγής"
 
-#: sources/rb-source.c:611
+#: sources/rb-playlist-source-recorder.c:220
+#, c-format
+msgid "Invalid writer device: %s"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:288
+#: sources/rb-playlist-source-recorder.c:592 widgets/rb-dialog.c:54
+msgid "Close"
+msgstr "Κλείσιμο"
+
+#: sources/rb-playlist-source-recorder.c:292
+#, fuzzy
+msgid "Error creating audio CD"
+msgstr "Σφάλμα λήψης leadout: %s"
+
+#: sources/rb-playlist-source-recorder.c:312
+msgid "Burning audio to CD"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:327
+msgid "Finished creating audio CD."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:332
+msgid ""
+"Finished creating audio CD.\n"
+"Create another copy?"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:334
+msgid "Writing cancelled.  Try again?"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:380
+msgid "Audio recording error"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:416
+msgid "Audio Conversion Error"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:441
+msgid "Recording error"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:525
+msgid "Do you wish to interrupt writing this disc?"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:526
+msgid "This may result in an unusable disc."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:527
+msgid "_Cancel"
+msgstr "_Ακύρωση"
+
+#: sources/rb-playlist-source-recorder.c:528
+msgid "_Interrupt"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:550
+msgid "Could not create audio CD"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:571
+msgid "Please make sure another application is not using the disc."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:572
+msgid "Disc is busy"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:574
+msgid "Please insert a rewritable or blank media in the drive tray."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:575
+msgid "Insert rewritable or blank media"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:577
+msgid "Please insert a blank media in the drive tray."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:578
+msgid "Insert blank media"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:580
+msgid "Please replace the in-drive media by a rewritable or blank media."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:581
+msgid "Reload rewritable or blank media"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:583
+msgid "Please replace the in-drive media by a blank media."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:584
+msgid "Reload blank media"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:629
+#, fuzzy
+msgid "Converting audio track"
+msgstr "Αποτυχία εύρεσης ενός ηχητικού κομματιού"
+
+#: sources/rb-playlist-source-recorder.c:632
+msgid "Preparing to write disc"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:635
+msgid "Writing disc"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:638
+msgid "Fixating disc"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:641
+msgid "Erasing disc"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:644
+msgid "Unhandled action in burn_action_changed_cb"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:681
+#, fuzzy
+msgid "C_reate"
+msgstr "_Επικόλληση"
+
+#: sources/rb-playlist-source-recorder.c:752
+#, fuzzy, c-format
+msgid "Failed to create the recorder: %s"
+msgstr "Αποτυχία δημιουργίας  player: %s"
+
+#: sources/rb-playlist-source-recorder.c:836
+#, c-format
+msgid "Could not remove temporary directory '%s': %s"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:856
+#, fuzzy
+msgid "Create Audio CD"
+msgstr "Εξαγωγή Audio-CD"
+
+#: sources/rb-playlist-source-recorder.c:874
+#, fuzzy, c-format
+msgid "Create audio CD from '%s' playlist?"
+msgstr "Δημιουργία μιας νέας λίστας αναπαραγωγής"
+
+#: sources/rb-playlist-source-recorder.c:972
+#, c-format
+msgid "Cannot get free space at %s"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:1067
+#, c-format
+msgid ""
+"This playlist is %lld minutes long.  This exceeds the length of a standard "
+"audio CD.  If the destination media is larger than a standard audio CD "
+"please insert it in the drive and try again."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:1073
+#, c-format
+msgid ""
+"This playlist is %lld minutes long.  This exceeds the %lld  minute length of "
+"the media in the drive."
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:1081
+#, fuzzy
+msgid "Playlist too long"
+msgstr "Αναπαραγωγή επομένου τραγουδιού"
+
+#: sources/rb-playlist-source-recorder.c:1091
+msgid "Could not find temporary space!"
+msgstr ""
+
+#: sources/rb-playlist-source-recorder.c:1092
+#, c-format
+msgid ""
+"Could not find enough temporary space to convert audio tracks.  Need %d MiB."
+msgstr ""
+
+#: sources/rb-source.c:657
+#, fuzzy
+msgid "Not supported"
+msgstr "Η λειτουργία δεν υποστηρίζεται"
+
+#: sources/rb-source.c:658
 msgid "This source does not support drag and drop."
 msgstr "Αυτή η πηγή δεν υποστηρίζει το σύρε και άφησε."
 
-#: sources/rb-sourcelist.c:194
+#: sources/rb-sourcelist.c:218
 msgid "_Source"
 msgstr "_Πηγή"
+
+#: widgets/disclosure-widget.c:300
+msgid "Expander Size"
+msgstr "Μέγεθος Διαστελλόμενου"
+
+#: widgets/disclosure-widget.c:301
+msgid "Size of the expander arrow"
+msgstr "Μέγεθος του βέλους διαστολής"
+
+#: widgets/eel-gconf-extensions.c:68
+msgid "Configuration system error"
+msgstr ""
+
+#: widgets/eggtrayicon.c:120
+msgid "Orientation"
+msgstr "Προσανατολισμός"
+
+#: widgets/eggtrayicon.c:121
+msgid "The orientation of the tray."
+msgstr "Ο προσανατολισμός του συρταριού."
 
 #: widgets/rb-cell-renderer-pixbuf.c:109
 msgid "Pixbuf Object"
@@ -1326,73 +1600,64 @@ msgstr ""
 "Να θυμάστε ότι μπορείτε να προσθέσετε μουσική στη βιβλιοθήκη χρησιμοποιώντας "
 "\"Μουσική\" μετά \"Εισαγωγή Φακέλου\", ή εισαγάγοντας την από CD."
 
-#: widgets/rb-druid.c:318
-#, c-format
-msgid "Error reading filename: %s"
-msgstr "Σφάλμα ανάγνωσης ονόματος αρχείου: %s"
-
-#: widgets/rb-druid.c:333
-msgid "Choose a directory"
-msgstr "Επιλογή ενός καταλόγου"
-
-#: widgets/rb-entry-view.c:966 widgets/rb-header.c:873
+#: widgets/rb-entry-view.c:913 widgets/rb-header.c:859
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:993
+#: widgets/rb-entry-view.c:937
 msgid "Very Low"
 msgstr "Πολύ Χαμηλή"
 
-#: widgets/rb-entry-view.c:995
+#: widgets/rb-entry-view.c:939
 msgid "Low"
 msgstr "Χαμηλή"
 
-#: widgets/rb-entry-view.c:997
+#: widgets/rb-entry-view.c:941
 msgid "Regular"
 msgstr "Συνηθισμένη"
 
-#: widgets/rb-entry-view.c:999
+#: widgets/rb-entry-view.c:943
 msgid "High"
 msgstr "Υψηλή"
 
-#: widgets/rb-entry-view.c:1001
+#: widgets/rb-entry-view.c:945
 msgid "Very High"
 msgstr "Πολύ Υψηλή"
 
-#: widgets/rb-entry-view.c:1003
+#: widgets/rb-entry-view.c:947
 msgid "Perfect"
 msgstr "Τέλεια"
 
-#: widgets/rb-entry-view.c:1209
+#: widgets/rb-entry-view.c:1150
 msgid "_Title"
 msgstr "_Τίτλος"
 
-#: widgets/rb-entry-view.c:1220
+#: widgets/rb-entry-view.c:1161
 msgid "Art_ist"
 msgstr "Καλλι_τέχνης"
 
-#: widgets/rb-entry-view.c:1242
+#: widgets/rb-entry-view.c:1183
 msgid "Ge_nre"
 msgstr "Εί_δος"
 
-#: widgets/rb-entry-view.c:1252
+#: widgets/rb-entry-view.c:1193
 msgid "Ti_me"
 msgstr "Χρό_νος"
 
-#: widgets/rb-entry-view.c:1261
+#: widgets/rb-entry-view.c:1203
 msgid "_Quality"
 msgstr "Ποιό_τητα"
 
-#: widgets/rb-entry-view.c:1271
+#: widgets/rb-entry-view.c:1214
 msgid "_Play Count"
 msgstr "_Μετρητής Αναπαραγωγής"
 
-#: widgets/rb-entry-view.c:1280
+#: widgets/rb-entry-view.c:1223
 msgid "L_ast Played"
 msgstr "Τελε_υταία Αναπαραγωγή"
 
-#: widgets/rb-entry-view.c:1425
+#: widgets/rb-entry-view.c:1368
 msgid "Now Playing"
 msgstr "Τώρα Αναπαράγεται"
 
@@ -1400,24 +1665,24 @@ msgstr "Τώρα Αναπαράγεται"
 msgid "Listening to "
 msgstr "Ακρόαση του"
 
-#: widgets/rb-header.c:541
+#: widgets/rb-header.c:527
 msgid "Get information on this album from the web"
 msgstr "Λήψη πληροφοριών για αυτό το άλμπουμ από το διαδίκτυο"
 
-#: widgets/rb-header.c:560
+#: widgets/rb-header.c:546
 msgid "Get information on this artist from the web"
 msgstr "Λήψη πληροφοριών για αυτόν τον καλλιτέχνη από το διαδίκτυο"
 
-#: widgets/rb-header.c:588
+#: widgets/rb-header.c:574
 msgid "Get information on this station from the web"
 msgstr "Λήψη περισσότερων πληροφοριών για αυτόν τον σταθμό από το διαδίκτυο"
 
-#: widgets/rb-header.c:862
+#: widgets/rb-header.c:848
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d από %d:%02d"
 
-#: widgets/rb-header.c:870
+#: widgets/rb-header.c:856
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "απομένει %d:%02d από %d:%02d"
@@ -1487,24 +1752,152 @@ msgstr "Ιδιότητες Τραγουδιού"
 msgid "Multiple Song Properties"
 msgstr "Ιδιότητες τραγουδιού"
 
-#: widgets/rb-song-info.c:799
-#, c-format
-msgid "%d kbps"
+#: widgets/rb-song-info.c:781
+#, fuzzy, c-format
+msgid "%lu kbps"
 msgstr "%d kbps"
 
-#: widgets/rb-song-info.c:862
+#: widgets/rb-song-info.c:838
 msgid "on the desktop"
 msgstr "στην επιφάνεια εργασίας"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:236
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:235
+#: widgets/rb-volume.c:237
 msgid "-"
 msgstr "-"
+
+#~ msgid "Add Lo_cation..."
+#~ msgstr "Προσθήκη Τοπο_θεσίας..."
+
+#~ msgid "Choose a location (URI) to be added to the library"
+#~ msgstr "Επιλέξτε μια τοποθεσία (URI) για να προστεθεί στην βιβλιοθήκη"
+
+#~ msgid "Import Lo_cation..."
+#~ msgstr "Εισαγωγή _Τοποθεσίας..."
+
+#~ msgid "P_laylist"
+#~ msgstr "Λί_στα αναπαραγωγής"
+
+#~ msgid "Pause playing"
+#~ msgstr "Παύση αναπαραγωγής"
+
+#~ msgid "Repea_t"
+#~ msgstr "Επανάλη_ψη"
+
+#~ msgid "Start playing"
+#~ msgstr "Έναρξη αναπαραγωγής"
+
+#~ msgid "Stop playing"
+#~ msgstr "Διακοπή αναπαραγωγής"
+
+#~ msgid "_Add to Library..."
+#~ msgstr "_Προσθήκη στην Βιβλιοθήκη..."
+
+#~ msgid "_Cut"
+#~ msgstr "Απο_κοπή"
+
+#~ msgid "_Remove"
+#~ msgstr "_Αφαίρεση"
+
+#~ msgid "_Shuffle"
+#~ msgstr "Α_νακάτεμα"
+
+#~ msgid ""
+#~ "GConf error:\n"
+#~ "  %s"
+#~ msgstr ""
+#~ "Σφάλμα GConf:\n"
+#~ "  %s"
+
+#~ msgid "%s exists, please move it out of the way."
+#~ msgstr "Το %s υπάρχει, παρακαλώ μετακινήστε το."
+
+#~ msgid "Failed to create directory %s."
+#~ msgstr "Αδύνατη η δημιουργία καταλόγου %s."
+
+#~ msgid "Unsupported MIME type %s"
+#~ msgstr "Μη υποστηριζόμενο είδος MIME %s"
+
+#~ msgid "Unknown file type"
+#~ msgstr "Άγνωστος τύπος αρχείου"
+
+#~ msgid "Track %.2d"
+#~ msgstr "Κομμάτι %.2d"
+
+#~ msgid "No TRM ID for this song"
+#~ msgstr "Δεν υπάρχει TRM ID για αυτό το τραγούδι"
+
+#~ msgid "No information for this song found"
+#~ msgstr "Δε βρέθηκαν πληροφορίες για αυτό το τραγούδι"
+
+#~ msgid "Invalid track number"
+#~ msgstr "Μη έγκυρος αριθμός κομματιού"
+
+#~ msgid "Audio CD track"
+#~ msgstr "Κομμάτι CD ήχου "
+
+#~ msgid "Failed to open file for reading"
+#~ msgstr "Αποτυχία ανοίγματος αρχείου για ανάγνωση"
+
+#~ msgid "Error decoding FLAC file"
+#~ msgstr "Σφάλμα αποκωδικοποίησης αρχείου FLAC"
+
+#~ msgid "FLAC"
+#~ msgstr "FLAC"
+
+#~ msgid "Failed to gather information about the file"
+#~ msgstr "Αποτυχία συγκέντρωσης πληροφοριών σχετικά με το αρχείο"
+
+#~ msgid "MPEG %d Layer III"
+#~ msgstr "MPEG %d Layer III"
+
+#~ msgid "MPEG 2.5 Layer III"
+#~ msgstr "MPEG 2.5 Στρώμα III"
+
+#~ msgid "Failed to recognise filetype"
+#~ msgstr "Αποτυχία αναγνώρισης τύπου αρχείου"
+
+#~ msgid "MPEG-4 audio (MPEG-4 AAC)"
+#~ msgstr "ήχος MPEG-4 (MPEG-4 AAC)"
+
+#~ msgid "Failed to open file as Ogg Vorbis"
+#~ msgstr "Αποτυχία ανοίγματος αρχείου ως Ogg Vorbis"
+
+#~ msgid "Ogg Vorbis"
+#~ msgstr "Ogg Vorbis"
+
+#~ msgid "Loading songs..."
+#~ msgstr "Φόρτωση τραγουδιών..."
+
+#~ msgid "Refreshing songs..."
+#~ msgstr "Ανανέωση τραγουδιών.."
+
+#~ msgid ""
+#~ "Failed to activate the shell:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Αποτυχία ενεργοποίησης του κέλυφους:\n"
+#~ "%s"
+
+#~ msgid "Unable to parse URI \"%s\"\n"
+#~ msgstr "Αδυναμία ανάλυσης URI\"%s\"\n"
+
+#~ msgid "Choose Files or Directory"
+#~ msgstr "Επιλογή αρχείων ή καταλόγου"
+
+#~ msgid "No properties available."
+#~ msgstr "Δεν υπάρχουν διαθέσιμες ιδιότητες."
+
+#~ msgid "Error reading filename: %s"
+#~ msgstr "Σφάλμα ανάγνωσης ονόματος αρχείου: %s"
+
+#~ msgid "Choose a directory"
+#~ msgstr "Επιλογή ενός καταλόγου"
 
 #~ msgid ""
 #~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
@@ -1553,9 +1946,6 @@ msgstr "-"
 #~ msgid "Could not create an instance of the sample echo component"
 #~ msgstr "Αδύνατη η δημιουργία ενός τεκμηρίου του δείγματος συνιστώσας ηχούς"
 
-#~ msgid "Loading..."
-#~ msgstr "Γίνεται φόρτωση..."
-
 #~ msgid "Encoding:"
 #~ msgstr "Κωδικοποίηση:"
 
@@ -1603,9 +1993,6 @@ msgstr "-"
 #~ msgid "Error reading CD header: %s"
 #~ msgstr "Σφάλμα ανάγνωσης κεφαλίδας CD : %s"
 
-#~ msgid "Error getting leadout: %s"
-#~ msgstr "Σφάλμα λήψης leadout: %s"
-
 #~ msgid "Lossless"
 #~ msgstr "Αισθητή"
 
@@ -1618,9 +2005,6 @@ msgstr "-"
 #~ msgstr ""
 #~ "Αποτυχία δημιουργίας στοιχείου εισόδου cdparanoia, ελέγξτε την "
 #~ "εγκατάσταση σας"
-
-#~ msgid "GStreamer options:"
-#~ msgstr "Επιλογές GStreamer:"
 
 #~ msgid "Please remove %s"
 #~ msgstr "Παρακαλώ απομακρύνετε το  %s"
