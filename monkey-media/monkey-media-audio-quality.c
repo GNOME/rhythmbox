@@ -21,6 +21,7 @@
  */
 
 #include "monkey-media-audio-quality.h"
+#include <libgnome/gnome-i18n.h>
 
 GType
 monkey_media_audio_quality_get_type (void)
@@ -31,12 +32,12 @@ monkey_media_audio_quality_get_type (void)
 	{
 		static const GEnumValue values[] =
 		{
-			{ MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW,  "MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW",  "Very low" },
-			{ MONKEY_MEDIA_AUDIO_QUALITY_LOW,       "MONKEY_MEDIA_AUDIO_QUALITY_VLOW",      "Low" },
-			{ MONKEY_MEDIA_AUDIO_QUALITY_REGULAR,   "MONKEY_MEDIA_AUDIO_QUALITY_REGULAR",   "Regular" },
-			{ MONKEY_MEDIA_AUDIO_QUALITY_HIGH,      "MONKEY_MEDIA_AUDIO_QUALITY_HIGH",      "High" },
-			{ MONKEY_MEDIA_AUDIO_QUALITY_VERY_HIGH, "MONKEY_MEDIA_AUDIO_QUALITY_VERY_HIGH", "Very high" },
-			{ MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS,  "MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS",  "Lossless" },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW,  "MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW",  N_("Very low") },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_LOW,       "MONKEY_MEDIA_AUDIO_QUALITY_VLOW",      N_("Low") },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_REGULAR,   "MONKEY_MEDIA_AUDIO_QUALITY_REGULAR",   N_("Regular") },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_HIGH,      "MONKEY_MEDIA_AUDIO_QUALITY_HIGH",      N_("High") },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_VERY_HIGH, "MONKEY_MEDIA_AUDIO_QUALITY_VERY_HIGH", N_("Very high") },
+			{ MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS,  "MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS",  N_("Lossless") },
 			{ 0, 0, 0 }
 		};
 
@@ -74,7 +75,7 @@ monkey_media_audio_quality_to_string (MonkeyMediaAudioQuality quality)
 
 	value = g_enum_get_value (class, quality);
 
-	ret = g_strdup (value->value_nick);
+	ret = g_strdup (_(value->value_nick));
 
 	g_type_class_unref (class);
 
