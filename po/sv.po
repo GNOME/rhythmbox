@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-08-04 00:19+0200\n"
-"PO-Revision-Date: 2002-08-04 00:20+0200\n"
+"POT-Creation-Date: 2002-08-12 12:33+0200\n"
+"PO-Revision-Date: 2002-08-12 12:34+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -141,7 +141,7 @@ msgstr "Titel"
 msgid "Track"
 msgstr "Spår"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:378
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:355 shell/rb-shell.c:679
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -429,12 +429,12 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:484
+#: lib/widgets/rb-node-view.c:485
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:1034
+#: lib/widgets/rb-node-view.c:1029
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
@@ -447,55 +447,55 @@ msgstr "Från "
 msgid " by "
 msgstr " av "
 
-#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:525
+#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:537
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
 "Förlupen speltid för låten. Klicka på den för att visa återstående och total "
 "tid"
 
-#: lib/widgets/rb-player.c:361
+#: lib/widgets/rb-player.c:367
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: lib/widgets/rb-player.c:366
+#: lib/widgets/rb-player.c:378
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: lib/widgets/rb-player.c:376
+#: lib/widgets/rb-player.c:388
 msgid "Not Playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:511
+#: lib/widgets/rb-player.c:523
 msgid ""
 "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr ""
 "Återstående speltid för låten. Klicka på den för att visa total och förlupen "
 "tid"
 
-#: lib/widgets/rb-player.c:518
+#: lib/widgets/rb-player.c:530
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
 "Total speltid för låten. Klicka på den för att visa förlupen och återstående "
 "tid"
 
-#: lib/widgets/rb-player.c:551
+#: lib/widgets/rb-player.c:563
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:560
+#: lib/widgets/rb-player.c:572
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:568
+#: lib/widgets/rb-player.c:580
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Totalt: %d:%02d"
 
-#: lib/widgets/rb-player.c:571
+#: lib/widgets/rb-player.c:583
 msgid "Invalid mode"
 msgstr "Ogiltigt läge"
 
@@ -551,29 +551,29 @@ msgstr "%d stereo"
 
 #. comma separated list of prefixes that are to
 #. * be appended as suffix
-#: lib/widgets/rb-tree-model-node.c:569
+#: lib/widgets/rb-tree-model-node.c:574
 msgid "THE ,DJ "
 msgstr " "
 
-#: lib/widgets/rb-tree-model-node.c:582
+#: lib/widgets/rb-tree-model-node.c:587
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/widgets/rb-volume.c:172
+#: lib/widgets/rb-volume.c:177
 msgid "Mixer channel"
 msgstr "Mixerkanal"
 
-#: lib/widgets/rb-volume.c:173
+#: lib/widgets/rb-volume.c:178
 msgid "The mixer channel of which the volume is controlled."
 msgstr "Mixerkanal vars volym styrs."
 
-#: lib/widgets/rb-volume.c:275
+#: lib/widgets/rb-volume.c:280
 #, c-format
 msgid "Couldn't open mixer device %s\n"
 msgstr "Kunde inte öppna mixerenheten %s\n"
 
-#: lib/widgets/rb-volume.c:403
+#: lib/widgets/rb-volume.c:411
 msgid ""
 "warning: this version of gmix was compiled with a different version of\n"
 "soundcard.h.\n"
@@ -581,21 +581,21 @@ msgstr ""
 "varning: denna version av gmix kompilerades med en annan version av\n"
 "soundcard.h.\n"
 
-#: lib/widgets/rb-volume.c:413
+#: lib/widgets/rb-volume.c:423
 #, c-format
 msgid "Querying available channels of mixer device %s failed\n"
 msgstr "Undersökning av tillgängliga kanaler på mixerenheten %s misslyckades\n"
 
-#: lib/widgets/rb-volume.c:425
+#: lib/widgets/rb-volume.c:435
 #, c-format
 msgid "Mixer device %s has neither volume nor PCM channels.\n"
 msgstr "Mixerenheten %s har varken volym- eller PCM-kanaler.\n"
 
-#: lib/widgets/rb-volume.c:543
+#: lib/widgets/rb-volume.c:553
 msgid "Invalid channel number"
 msgstr "Ogiltigt kanalnummer"
 
-#: library/rb-library.c:366
+#: library/rb-library.c:223
 msgid "All"
 msgstr "Alla"
 
@@ -661,54 +661,54 @@ msgstr "Mapp"
 msgid "Choose a folder"
 msgstr "Välj en mapp"
 
-#: shell/rb-shell.c:368
+#: shell/rb-shell.c:345
 #, c-format
-msgid ""
-"Failed to register the shell:\n"
-"%s"
-msgstr ""
-"Misslyckades med att registrera skalet:\n"
-"%s"
+msgid "Failed to register the shell: %s\n"
+msgstr "Misslyckades med att registrera skalet: %s\n"
 
-#: shell/rb-shell.c:785
+#: shell/rb-shell.c:753
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:796
+#: shell/rb-shell.c:764
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:797
+#: shell/rb-shell.c:765
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:841
-msgid "Choose a file to add"
-msgstr "Välj en fil att lägga till"
+#: shell/rb-shell.c:809
+msgid "Choose files to add"
+msgstr "Välj filer att lägga till"
 
-#: shell/rb-shell.c:859
+#: shell/rb-shell.c:833
 msgid "Enter a name"
 msgstr "Ange ett namn"
 
-#: shell/rb-shell.c:860
+#: shell/rb-shell.c:834
 msgid "Enter a name for the new music group:"
 msgstr "Ange ett namn för den nya musikgruppen:"
 
-#: shell/rb-shell.c:861
+#: shell/rb-shell.c:835
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:284
+#: views/rb-group-view.c:298
 msgid "music group"
 msgstr "musikgrupp"
 
-#: views/rb-group-view.c:287
+#: views/rb-group-view.c:301
 msgid "Unnamed"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:769 views/rb-library-view.c:743
+#: views/rb-group-view.c:353
+msgid "Drop songs here to add them in this group"
+msgstr "Släpp låtar här för att lägga till dem i denna grupp"
+
+#: views/rb-group-view.c:798 views/rb-library-view.c:773
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -717,18 +717,22 @@ msgstr ""
 "Misslyckades med att skapa ström för %s, felet var:\n"
 "%s"
 
-#: views/rb-group-view.c:1019
+#: views/rb-group-view.c:1050
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
 
-#: views/rb-library-view.c:283
+#: views/rb-library-view.c:297
 msgid "library"
 msgstr "bibliotek"
 
-#: views/rb-library-view.c:286
+#: views/rb-library-view.c:300
 msgid "Library"
 msgstr "Bibliotek"
+
+#: views/rb-library-view.c:313
+msgid "Drop files here to add them to the library"
+msgstr "Släpp filer här för att lägga till dem i biblioteket"
 
 #~ msgid "#"
 #~ msgstr "Nr"
