@@ -1,3 +1,146 @@
+2003-10-06 05:19:01 GMT	Colin Walters <walters@verbum.org>	patch-73
+
+    Summary:
+      third playlist iteration, looks pretty good now
+    Revision:
+      rhythmbox--mainline--0.6--patch-73
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-15
+       remove eggtreemodelfilter
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-16
+       drag and drop inside playlists is here
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-17
+       fix dnd bug
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-18
+       use locations instead of pointers in dnd
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-19
+       drag and drop from library into playlists works!
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-20
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-21
+       attempt to save entries in the actual playlist order
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-22
+       load playlists only after library is done loading
+    
+
+    removed files:
+     library/rb-library-dnd-types.h widgets/.arch-ids/eggintl.h.id
+     widgets/.arch-ids/eggtreemodelfilter.c.id
+     widgets/.arch-ids/eggtreemodelfilter.h.id widgets/eggintl.h
+     widgets/eggtreemodelfilter.c widgets/eggtreemodelfilter.h
+
+    modified files:
+     lib/Makefile.am library/Makefile.am
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-shell.c shell/rb-tray-icon.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+     sources/rb-sourcelist-model.c widgets/Makefile.am
+     widgets/rb-entry-view.c widgets/rb-property-view.c
+
+    renamed files:
+     widgets/.arch-ids/eggtreemultidnd.c.id
+       ==> lib/.arch-ids/eggtreemultidnd.c.id
+     widgets/.arch-ids/eggtreemultidnd.h.id
+       ==> lib/.arch-ids/eggtreemultidnd.h.id
+     widgets/eggtreemultidnd.c
+       ==> lib/eggtreemultidnd.c
+     widgets/eggtreemultidnd.h
+       ==> lib/eggtreemultidnd.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-15
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-22
+
+
+2003-10-06 05:18:15 GMT	Colin Walters <walters@verbum.org>	patch-72
+
+    Summary:
+      make playlist column clickable
+    Revision:
+      rhythmbox--mainline--0.6--patch-72
+
+
+    modified files:
+     sources/rb-playlist-source.c
+
+
+2003-10-06 02:47:28 GMT	Colin Walters <walters@verbum.org>	patch-71
+
+    Summary:
+      hide browse/search for unsearchable sources
+    Revision:
+      rhythmbox--mainline--0.6--patch-71
+
+
+    modified files:
+     shell/rb-source-header.c sources/rb-playlist-source.c
+
+
+2003-10-06 02:25:21 GMT	Colin Walters <walters@verbum.org>	patch-70
+
+    Summary:
+      second merge from playlists branch, creation/saving/loading works
+    Revision:
+      rhythmbox--mainline--0.6--patch-70
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-13
+       implement simple playlist serialization/deserialization
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-14
+       reimplement "New Playlist" functionality
+    
+
+    modified files:
+     shell/rb-playlist-manager.c shell/rb-shell.c
+     sources/rb-playlist-source.c sources/rb-playlist-source.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-13
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-14
+
+
+2003-10-06 01:03:49 GMT	Colin Walters <walters@verbum.org>	patch-69
+
+    Summary:
+      [wheeler@kde.org] pre-C99 compatibility fixes 
+    Revision:
+      rhythmbox--mainline--0.6--patch-69
+
+
+    modified files:
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c
+
+
+2003-10-06 00:09:41 GMT	Colin Walters <walters@verbum.org>	patch-68
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-68
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-06 00:08:06 GMT	Colin Walters <walters@verbum.org>	patch-67
 
     Summary:
