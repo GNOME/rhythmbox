@@ -1,5 +1,13 @@
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/song-info.glade:
+	* library/rb-node-filter.c: (thread_main):
+
+	Don't lock the all_songs node when searching,
+	remove accels from songinfo tabs (deprecated)
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_n_rows),
 	(rb_node_view_get_visible_nodes):
 	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_init),

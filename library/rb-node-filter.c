@@ -303,7 +303,8 @@ thread_main (RBNodeFilterPrivate *priv)
 
 		/* start finding nodes */
 		node = rb_library_get_all_songs (priv->library);
-		kids = rb_node_get_children (node);
+		kids = g_list_copy (rb_node_get_children (node));
+		rb_node_unlock (node);
 
 		for (l = kids; l != NULL; l = g_list_next (l))
 		{
@@ -350,7 +351,7 @@ thread_main (RBNodeFilterPrivate *priv)
 				results++;
 			}
 		}
-		rb_node_unlock (node);
+		g_list_free (kids);
 
 		g_free (expression);
 
