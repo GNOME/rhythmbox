@@ -2,6 +2,203 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-12-17 02:28:34 GMT	Colin Walters <walters@verbum.org>	patch-369
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-369
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/es.po
+
+
+2003-12-17 02:21:27 GMT	Colin Walters <walters@verbum.org>	patch-368
+
+    Summary:
+      merge play order bits from --0.7
+    Revision:
+      rhythmbox--mainline--0.6--patch-368
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+       remove spurious string copy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+       Fix some warnings about uninitialized variables that were only found with optimization on.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+       merge from shuffle-repeat branch
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+       merge from shuffle-random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+       Create class hierarchy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+       Made the play order classes work almost as well as original
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+       Add playing-source property to RBShellPlayer and modify RBHistory to use it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+       Fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+       Add shuffle play order and modify RBHistory to accomodate it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+       Make shuffle mostly work
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+       Fix crash involving changing sources in shuffle mode
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+       Make shuffle's checking for a changed entry view lazy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+       Cleanups and added a few member functions to RBPlayOrder
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+       Fix problems compiling under C89
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+       Implement go_{next,previous} methods for shuffle
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+       Fix some anomalies with reshuffling. Shuffle now seems to work.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+       Make the shuffle checkbox select shuffle rather than random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+       Fix up the random play order and document the history more
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+       Fix comments in rb-play-order.h
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+       Fix crash when PLAY_ORDER gconf key doesn't exist
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+       Make the filter_changed event actually fire.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+       Make shuffle play order use RBSource's filter_changed signal and fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+       Implement random by time since last play
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+       Fix memory leak
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+       Give treed credit for random-by-age algorithm
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+       remove CONF_STATE_SHUFFLE
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-67
+       major shuffle/play order work, misc bugfixes (Jeffrey Yasskin)
+    
+
+    new files:
+     shell/rb-play-order-linear.c shell/rb-play-order-linear.h
+     shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-by-age.h
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-random-equal-weights.h
+     shell/rb-play-order-shuffle.c shell/rb-play-order-shuffle.h
+     shell/rb-play-order.c shell/rb-play-order.h
+
+    modified files:
+     ChangeLog data/rhythmbox.schemas lib/rb-preferences.h
+     lib/rb-string-helpers.c lib/rb-util.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c shell/Makefile.am shell/rb-history.c
+     shell/rb-history.h shell/rb-shell-player.c
+     shell/rb-source-header.c sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-source.c
+     widgets/rb-entry-view.c widgets/rb-player.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-67
+
+
+2003-12-17 02:11:07 GMT	Colin Walters <walters@verbum.org>	patch-367
+
+    Summary:
+      async queries now require db read lock
+    Revision:
+      rhythmbox--mainline--0.6--patch-367
+
+    This removes a race condition in the library where changes could sneak in
+    while the data structures were being set up, but before the query started.
+    
+    
+    
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c sources/rb-library-source.c
+     sources/rb-playlist-source.c
+
+
 2003-12-15 03:06:22 GMT	Colin Walters <walters@verbum.org>	patch-366
 
     Summary:
