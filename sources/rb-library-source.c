@@ -108,6 +108,7 @@ static void impl_song_properties (RBSource *source);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
+static gboolean impl_show_popup (RBSource *source);
 
 static void artists_filter (RBLibrarySource *source,
 	                    RBNode *genre);
@@ -124,6 +125,7 @@ void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 
 
 #define LIBRARY_SOURCE_SONGS_POPUP_PATH "/popups/LibrarySongsList"
+#define LIBRARY_SOURCE_POPUP_PATH "/popups/LibrarySourceList"
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_UI_LIBRARY_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
@@ -242,6 +244,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_album = impl_get_album;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -966,6 +969,13 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	}
 
 	g_list_free (uri_list);
+	return TRUE;
+}
+
+static gboolean
+impl_show_popup (RBSource *source)
+{
+	rb_bonobo_show_popup (GTK_WIDGET (source), LIBRARY_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 
