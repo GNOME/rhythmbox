@@ -249,8 +249,10 @@ LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS $FLAC_LIBS"
 AM_CONDITIONAL(USE_ID3VFS, test x"$enable_mp3" = "xyes" || test x"$enable_flac" = "xyes")
 
 dnl Check for Musicbrainz
-AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
-				[don't build with MusicBrainz support]))
+dnl DISABLED
+dnl AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
+dnl				[don't build with MusicBrainz support]))
+enable_musicbrainz=no
 if test x"$enable_musicbrainz" != "xno"; then
 	PKG_CHECK_MODULES(MUSICBRAINZ, libmusicbrainz >= 2.0.0, enable_musicbrainz=yes,
 		          enable_musicbrainz=no)
@@ -431,11 +433,11 @@ if test x"$enable_flac" != "xyes"; then
 else
 	AC_MSG_NOTICE([** FLAC support is enabled])
 fi
-# if test x"$enable_musicbrainz" != "xyes"; then
-# 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
-# else
-# 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
-# fi
+dnl if test x"$enable_musicbrainz" != "xyes"; then
+dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
+dnl else
+dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
+dnl fi
 if test x"$WANT_XINE" != "x1"; then
 	if test x"$disable_gstreamer_workarounds" != xyes; then	
 		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled (with workarounds)])
