@@ -452,11 +452,11 @@ if test x"$enable_flac" != "xyes"; then
 else
 	AC_MSG_NOTICE([** FLAC support is enabled])
 fi
-if test x"$enable_musicbrainz" != "xyes"; then
-	AC_MSG_NOTICE([   MusicBrainz support is disabled])
-else
-	AC_MSG_NOTICE([** MusicBrainz support is enabled])
-fi
+# if test x"$enable_musicbrainz" != "xyes"; then
+# 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
+# else
+# 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
+# fi
 if test x"$WANT_XINE" != "x1"; then
 	if test x"$disable_gstreamer_workarounds" != xyes; then	
 		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled (with workarounds)])
