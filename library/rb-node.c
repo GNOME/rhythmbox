@@ -16,9 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
- *
- *  FIXME CHILD_CHANGED on albums has NULL user_data when processed,
- *  not when added.
  */
 
 #include <stdlib.h>
@@ -43,10 +40,6 @@ static void rb_node_changed (RBNode *node);
 static long rb_node_id_factory_new_id (void);
 static void rb_node_id_factory_set_to (long new_factory_position);
 static void rb_node_property_free (GValue *value);
-static void rb_node_child_changed_cb (RBNode *child,
-			              RBNode *node);
-static void rb_node_child_destroyed_cb (RBNode *child,
-			                RBNode *node);
 static void rb_node_save_property (char *property,
 		                   GValue *value,
 		                   xmlNodePtr node);
@@ -72,7 +65,7 @@ typedef struct
 	RBNodeActionType type;
 	RBNode *node;
 	RBNodeSignal signal;
-	gpointer user_data;
+	RBNode *user_data;
 } RBNodeAction;
 
 static void rb_node_add_action (RBNode *node,
@@ -91,6 +84,8 @@ struct RBNodePrivate
 	gboolean handled;
 
 	GStaticRWLock *lock;
+	
+	gboolean dead;
 };
 
 enum
@@ -277,6 +272,7 @@ static void
 rb_node_dispose (GObject *object)
 {
 	RBNode *node = RB_NODE (object);
+	GValue value = { 0, };
 	GList *l;
 
 	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
@@ -286,6 +282,44 @@ rb_node_dispose (GObject *object)
 		g_hash_table_remove (id_to_node_hash, node);
 	g_static_rw_lock_writer_unlock (id_to_node_hash_lock);
 
+	switch (rb_node_get_node_type (node))
+	{
+	case RB_NODE_TYPE_GENRE:
+		rb_node_get_property (node, "name", &value);
+		g_static_rw_lock_writer_lock (name_to_genre_lock);
+		g_hash_table_remove (name_to_genre,
+				     g_value_get_string (&value)),
+		g_static_rw_lock_writer_unlock (name_to_genre_lock);
+		g_value_unset (&value);
+		break;
+	case RB_NODE_TYPE_ARTIST:
+		rb_node_get_property (node, "name", &value);
+		g_static_rw_lock_writer_lock (name_to_artist_lock);
+		g_hash_table_remove (name_to_artist,
+				     g_value_get_string (&value)),
+		g_static_rw_lock_writer_unlock (name_to_artist_lock);
+		g_value_unset (&value);
+		break;
+	case RB_NODE_TYPE_ALBUM:
+		rb_node_get_property (node, "name", &value);
+		g_static_rw_lock_writer_lock (name_to_album_lock);
+		g_hash_table_remove (name_to_album,
+				     g_value_get_string (&value)),
+		g_static_rw_lock_writer_unlock (name_to_album_lock);
+		g_value_unset (&value);
+		break;
+	case RB_NODE_TYPE_SONG:
+		rb_node_get_property (node, "location", &value);
+		g_static_rw_lock_writer_lock (uri_to_song_lock);
+		g_hash_table_remove (uri_to_song,
+				     g_value_get_string (&value)),
+		g_static_rw_lock_writer_unlock (uri_to_song_lock);
+		g_value_unset (&value);
+		break;
+	default:
+		break;
+	}
+
 	/* decrement parent refcount */
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
@@ -294,6 +328,8 @@ rb_node_dispose (GObject *object)
 		g_static_rw_lock_writer_lock (node2->priv->lock);
 		node2->priv->children = g_list_remove (node2->priv->children, node);
 		g_static_rw_lock_writer_unlock (node2->priv->lock);
+		
+		g_signal_emit (G_OBJECT (node2), rb_node_signals[CHILD_DESTROYED], 0, node);
 	}
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
@@ -374,6 +410,18 @@ rb_node_system_handle_action (RBNodeAction *action)
 		else
 		{
 			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
+			if (action->signal == CHANGED)
+			{
+				GList *l;
+
+				g_static_rw_lock_reader_lock (action->node->priv->lock);
+				for (l = action->node->priv->parents; l != NULL; l = g_list_next (l))
+				{
+					g_signal_emit (G_OBJECT (l->data), rb_node_signals[CHILD_CHANGED], 0,
+						       action->node);
+				}
+				g_static_rw_lock_reader_unlock (action->node->priv->lock);
+			}
 		}
 		break;
 	default:
@@ -442,16 +490,12 @@ rb_node_add_child (RBNode *node,
 	}
 
 	node->priv->children = g_list_append (node->priv->children, child);
+
+	g_static_rw_lock_writer_unlock (node->priv->lock);
+
+	g_static_rw_lock_writer_lock (child->priv->lock);
 	child->priv->parents = g_list_append (child->priv->parents, node);
-	
-	g_signal_connect (G_OBJECT (child),
-			  "destroyed",
-			  G_CALLBACK (rb_node_child_destroyed_cb),
-			  node);
-	g_signal_connect (G_OBJECT (child),
-			  "changed",
-			  G_CALLBACK (rb_node_child_changed_cb),
-			  node);
+	g_static_rw_lock_writer_unlock (child->priv->lock);
 
 	action = g_new0 (RBNodeAction, 1);
 	action->type = RB_NODE_ACTION_SIGNAL;
@@ -460,8 +504,6 @@ rb_node_add_child (RBNode *node,
 	action->user_data = child;
 
 	rb_node_add_action (node, action);
-
-	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
 void
@@ -490,16 +532,12 @@ rb_node_remove_child (RBNode *node,
 	rb_node_add_action (node, action);
 	
 	node->priv->children = g_list_remove (node->priv->children, child);
-	child->priv->parents = g_list_remove (child->priv->parents, node);
-	
-	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
-					      G_CALLBACK (rb_node_child_destroyed_cb),
-		 			      node);
-	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
-			  		      G_CALLBACK (rb_node_child_changed_cb),
-			  		      node);
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
+
+	g_static_rw_lock_writer_lock (child->priv->lock);
+	child->priv->parents = g_list_remove (child->priv->parents, node);
+	g_static_rw_lock_writer_unlock (child->priv->lock);
 }
 
 GList *
@@ -546,36 +584,6 @@ rb_node_has_parent (RBNode *node,
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
-}
-
-static void
-rb_node_child_changed_cb (RBNode *child,
-			  RBNode *node)
-{
-	RBNodeAction *action;
-	
-	action = g_new0 (RBNodeAction, 1);
-	action->type = RB_NODE_ACTION_SIGNAL;
-	action->node = node;
-	action->signal = CHILD_CHANGED;
-	action->user_data = child;
-
-	rb_node_add_action (node, action);
-}
-
-static void
-rb_node_child_destroyed_cb (RBNode *child,
-			    RBNode *node)
-{
-	RBNodeAction *action;
-
-	action = g_new0 (RBNodeAction, 1);
-	action->type = RB_NODE_ACTION_SIGNAL;
-	action->node = node;
-	action->signal = CHILD_DESTROYED;
-	action->user_data = child;
-
-	rb_node_add_action (node, action);
 }
 
 long
@@ -769,7 +777,18 @@ int
 rb_node_parent_index (RBNode *node,
 		      RBNode *parent)
 {
-	return rb_node_child_index (parent, node);
+	int ret;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+	g_return_val_if_fail (RB_IS_NODE (parent), -1);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	ret = g_list_index (node->priv->parents, parent);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return ret;
 }
 
 int
@@ -1159,10 +1178,17 @@ rb_node_system_init (void)
 					        (GDestroyNotify) g_free,
 					        NULL);
 
-	name_to_genre_lock  = g_new0 (GStaticRWLock, 1);
+	name_to_genre_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (name_to_genre_lock);
+
 	name_to_artist_lock = g_new0 (GStaticRWLock, 1);
-	name_to_album_lock  = g_new0 (GStaticRWLock, 1);
-	uri_to_song_lock    = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (name_to_artist_lock);
+
+	name_to_album_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (name_to_album_lock);
+
+	uri_to_song_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (uri_to_song_lock);
 }
 
 void
@@ -1275,6 +1301,22 @@ static void
 rb_node_add_action (RBNode *node,
 		    RBNodeAction *action)
 {
+	gboolean dead;
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+	dead = node->priv->dead;
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	if (dead == TRUE)
+		return;
+	
+	if (action->type == RB_NODE_ACTION_UNREF)
+	{
+		g_static_rw_lock_writer_lock (node->priv->lock);
+		node->priv->dead = TRUE;
+		g_static_rw_lock_writer_unlock (node->priv->lock);
+	}
+
 	g_static_rw_lock_writer_lock (actions_lock);
 	g_queue_push_tail (actions, action);
 	g_static_rw_lock_writer_unlock (actions_lock);
@@ -1294,9 +1336,15 @@ rb_node_add_action (RBNode *node,
 gboolean
 rb_node_is_handled (RBNode *node)
 {
+	gboolean ret;
+	
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 
-	return node->priv->handled;
+	g_static_rw_lock_reader_lock (node->priv->lock);
+	ret = node->priv->handled;
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return ret;
 }
 
 void
@@ -1304,5 +1352,7 @@ rb_node_set_handled (RBNode *node)
 {
 	g_return_if_fail (RB_IS_NODE (node));
 
+	g_static_rw_lock_writer_lock (node->priv->lock);
 	node->priv->handled = TRUE;
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 }

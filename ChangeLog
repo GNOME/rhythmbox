@@ -1,3 +1,15 @@
+2002-08-16  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-sort.c:
+	(rb_tree_model_sort_multi_drag_data_get):
+	* library/rb-node.c: (rb_node_dispose),
+	(rb_node_system_handle_action), (rb_node_add_child),
+	(rb_node_remove_child), (rb_node_parent_index),
+	(rb_node_system_init), (rb_node_add_action), (rb_node_is_handled),
+	(rb_node_set_handled):
+
+	Squash a lot of node bugs, and make it a lot faster.
+
 2002-08-15  Jorn Baayen  <jorn@nl.linux.org>
 
 	* configure.in:

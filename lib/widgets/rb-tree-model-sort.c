@@ -198,6 +198,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 
 		g_signal_emit (G_OBJECT (model), rb_tree_model_sort_signals[URI_FROM_ITER], 0, &iter, &tmp);
 		tmp2 = g_strdup (uri_list);
+		g_free (uri_list);
 		uri_list = g_strdup_printf ("%s\r\n%s", tmp2, tmp);
 		g_free (tmp2);
 		g_free (tmp);
