@@ -112,7 +112,8 @@ rb_metadata_finalize (GObject *object)
 
 	md = RB_METADATA (object);
 
-	g_hash_table_destroy (md->priv->metadata);
+	if (md->priv->metadata)
+		g_hash_table_destroy (md->priv->metadata);
 
 	if (md->priv->pipeline)
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
