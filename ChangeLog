@@ -2,6 +2,65 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-13 22:33:08 GMT	Colin Walters <walters@verbum.org>	patch-82
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-82
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/no.po
+
+
+2004-02-13 22:30:19 GMT	Colin Walters <walters@verbum.org>	patch-81
+
+    Summary:
+      more misc bugfixes
+    Revision:
+      rhythmbox--main--0.7--patch-81
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-208
+       add --no-update argument
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-209
+       flame the user if the haven't run gst-register
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-210
+       remove some duplicated library references
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-211
+       make rb_true_function and rb_false_function non-variadic
+    
+
+    modified files:
+     ChangeLog lib/rb-util.c lib/rb-util.h player/rb-player-gst.c
+     rhythmdb/Makefile.am rhythmdb/rhythmdb.c shell/main.c
+     shell/rb-shell-player.c shell/rb-shell.c shell/rb-shell.h
+     widgets/Makefile.am
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-208
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-209
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-210
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-211
+
+
+2004-02-12 22:01:45 GMT	Christophe Fergeau <teuf@gnome.org>	patch-80
+
+    Summary:
+      Conditionnaly defines the static mutex used as a fallback in rb-atomic since it's not always used
+    Revision:
+      rhythmbox--main--0.7--patch-80
+
+
+    modified files:
+     ChangeLog lib/rb-atomic.c
+
+
 2004-02-12 05:21:01 GMT	Sean Harshbarger <harshy@dersoldat.org>	patch-79
 
     Summary:
