@@ -2,6 +2,90 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-19 00:03:10 GMT	Colin Walters <walters@verbum.org>	patch-87
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-87
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-375
+       kill off unused RhythmDBModel
+    
+
+    removed files:
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-playlist-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-375
+
+
+2003-12-18 23:14:26 GMT	Colin Walters <walters@verbum.org>	patch-86
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-86
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-374
+       don't save default values
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-374
+
+
+2003-12-18 22:30:09 GMT	Colin Walters <walters@verbum.org>	patch-85
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-85
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-10
+       add types to RBMetaData, have rhythmdb use them
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-11
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-12
+       add error handling, eos handling to gst RBMetadata
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-13
+       kill of location metadata prop
+    
+
+    new files:
+     metadata/rb-metadata-common.c
+
+    modified files:
+     ChangeLog metadata/Makefile.am metadata/rb-metadata-gst.c
+     metadata/rb-metadata-mm.c metadata/rb-metadata.h
+     rhythmdb/rhythmdb.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-13
+
+
 2003-12-18 03:34:30 GMT	Colin Walters <walters@verbum.org>	patch-84
 
     Summary:
