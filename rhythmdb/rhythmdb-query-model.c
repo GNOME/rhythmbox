@@ -861,10 +861,8 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 
 		strv = g_strsplit (selection_data->data, "\r\n", -1);
 
-		rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest);
+		g_assert (rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest));
 		ptr = iter.user_data;
-		if (gtk_tree_path_prev (dest))
-			ptr = g_sequence_ptr_next (ptr);
 
 		while (strv[i]) {
 			GSequencePtr tem_ptr;
