@@ -581,7 +581,7 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 
 		rb_debug ("queueing entry change");
 
-		update = g_new (struct RhythmDBQueryModelUpdate, 1);
+		update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
 		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED;
 		update->entry = entry;
 		update->prop = prop;
