@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-02 05:29+0100\n"
-"PO-Revision-Date: 2003-11-02 05:30+0100\n"
+"POT-Creation-Date: 2003-11-05 12:59+0100\n"
+"PO-Revision-Date: 2003-11-05 13:00+0100\n"
 "Last-Translator: Predrag Krtolica <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -503,7 +503,7 @@ msgstr "Pokaži detalje izabrane pesme"
 msgid "Source _List"
 msgstr "_Izvorni spisak"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1245
+#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1254
 msgid "Start playing"
 msgstr "Počni izvođenje"
 
@@ -587,7 +587,7 @@ msgstr "Sle_deći"
 msgid "_Paste"
 msgstr "U_baci"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1246
+#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1255
 msgid "_Play"
 msgstr "Izv_edi"
 
@@ -792,19 +792,19 @@ msgid "Failed to create spider element; check your installation"
 msgstr "Neuspeh pri kreiranju spider elementa; proveriti instalaciju"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:594
+#: monkey-media/monkey-media-player-gst-tmp.c:597
 #: monkey-media/monkey-media-player-gst.c:535
 msgid "Failed to create volume element; check your installation"
 msgstr "Neuspeh pri kreiranju elementa ozvučenja; proveriti instalaciju"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:612
+#: monkey-media/monkey-media-player-gst-tmp.c:616
 #: monkey-media/monkey-media-player-gst.c:556
 msgid "Could not create audio output element; check your settings"
 msgstr "Nisam mogao da kreiram izlazni zvučni element; proveriti podešavanja"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:728
+#: monkey-media/monkey-media-player-gst-tmp.c:733
 #: monkey-media/monkey-media-player-gst.c:643
 msgid "No AudioCD support; check your settings"
 msgstr "Ne postoji podrška za Audio CD; proveriti podešavanja"
@@ -814,12 +814,12 @@ msgstr "Ne postoji podrška za Audio CD; proveriti podešavanja"
 msgid "Failed to create %s input element; check your installation"
 msgstr "Neuspeh pri obrazovanju ulaznog elementa %s; proverite vašu instalaciju"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:542
+#: monkey-media/monkey-media-player-gst-tmp.c:543
 #: monkey-media/monkey-media-player-gst.c:493
 msgid "Failed to create queue element; check your installation"
 msgstr "Neuspeh pri obrazovanju rednog elementa; proverite vašu instalaciju"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:576
+#: monkey-media/monkey-media-player-gst-tmp.c:578
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Neuspeh pri obrazovanju elementa %s; proverite vašu instalaciju"
@@ -1064,45 +1064,45 @@ msgstr "Učitaj spisak pesama"
 msgid "Save playlist"
 msgstr "Sačuvaj spisak pesama"
 
-#: shell/rb-shell-player.c:440
+#: shell/rb-shell-player.c:441
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nije uspeo da počne sa puštanjem: %s"
 
-#: shell/rb-shell-player.c:501
+#: shell/rb-shell-player.c:502
 msgid "Go to previous song"
 msgstr "Idi na prethodnu pesmu"
 
-#: shell/rb-shell-player.c:530
+#: shell/rb-shell-player.c:531
 msgid "Go to next song"
 msgstr "Idi na sledeću pesmu"
 
-#: shell/rb-shell-player.c:549
+#: shell/rb-shell-player.c:550
 msgid "Change the music volume"
 msgstr "Izmeni jačinu zvuka"
 
-#: shell/rb-shell-player.c:788
+#: shell/rb-shell-player.c:789
 #, c-format
 msgid "Opening %s..."
 msgstr "Otvara %s..."
 
-#: shell/rb-shell-player.c:1237
+#: shell/rb-shell-player.c:1246
 msgid "Pause playback"
 msgstr "Pauziraj izvođenje"
 
-#: shell/rb-shell-player.c:1238
+#: shell/rb-shell-player.c:1247
 msgid "_Pause"
 msgstr "_Pauziraj"
 
-#: shell/rb-shell-player.c:1253
+#: shell/rb-shell-player.c:1262
 msgid "Stop playback"
 msgstr "Zaustavi izvođenje"
 
-#: shell/rb-shell-player.c:1254
+#: shell/rb-shell-player.c:1263
 msgid "_Stop"
 msgstr "_Zaustavi"
 
-#: shell/rb-shell-player.c:1582
+#: shell/rb-shell-player.c:1591
 msgid "Unexpected end of stream!"
 msgstr "Neočekivani kraj toka!"
 
@@ -1269,11 +1269,13 @@ msgstr "Žanr"
 msgid "Radio"
 msgstr "Radio"
 
-# bug: plural-forms
-#: sources/rb-iradio-source.c:527
+#: sources/rb-iradio-source.c:531
 #, c-format
-msgid "%d total stations in %d distinct genres"
-msgstr "ukupno %d stanica u %d različitih žanrova"
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "%d stanica"
+msgstr[1] "%d stanice"
+msgstr[2] "%d stanica"
 
 #: sources/rb-library-source.c:445 widgets/rb-query-creator.c:45
 msgid "Artist"
@@ -1363,6 +1365,10 @@ msgstr "Izaberite direktorijum"
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
+#: widgets/rb-entry-view.c:1423
+msgid "Now Playing"
+msgstr "Sada pušta"
+
 #: widgets/rb-link.c:332
 #, c-format
 msgid ""
@@ -1422,7 +1428,7 @@ msgstr "sadrži"
 msgid "does not contain"
 msgstr "ne sadrži"
 
-#: widgets/rb-query-creator.c:167
+#: widgets/rb-query-creator.c:181
 msgid "Create Automatic Playlist"
 msgstr "Napravi automatski spisak pesama"
 
@@ -1460,11 +1466,13 @@ msgstr " (mono)"
 msgid " (Stereo)"
 msgstr " (stereo)"
 
-# bug: plural-forms
-#: widgets/rb-song-info.c:1158
+#: widgets/rb-song-info.c:1159
 #, c-format
-msgid " (%d channels)"
-msgstr " (%d kanala)"
+msgid " (%d channel)"
+msgid_plural " (%d channel)"
+msgstr[0] " (%d kanal)"
+msgstr[1] " (%d kanala)"
+msgstr[2] " (%d kanala)"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
@@ -1475,6 +1483,10 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+# bug: plural-forms
+#~ msgid "%d total stations in %d distinct genres"
+#~ msgstr "ukupno %d stanica u %d različitih žanrova"
 
 #~ msgid ""
 #~ "%s\n"
