@@ -47,6 +47,9 @@ typedef struct
 typedef struct
 {
 	GtkDialogClass parent_class;
+
+	void (*pre_metadata_change) (RBSongInfo *info, RhythmDBEntry *entry);
+	void (*post_metadata_change) (RBSongInfo *info, RhythmDBEntry *entry);
 } RBSongInfoClass;
 
 GType      rb_song_info_get_type (void);

@@ -667,3 +667,28 @@ rb_uri_handle_recursively (const char *text_uri,
 	gnome_vfs_file_info_list_free (list);
 	gnome_vfs_uri_unref (uri);
 }
+
+
+GnomeVFSResult
+rb_uri_mkstemp (const char *prefix, char **uri_ret, GnomeVFSHandle **ret)
+{
+	GnomeVFSHandle *handle = NULL;
+	char *uri = NULL;
+	GnomeVFSResult result = GNOME_VFS_ERROR_FILE_EXISTS;
+	
+	
+	do {
+		g_free (uri);
+		uri = g_strdup_printf ("%s%06X", prefix, g_random_int_range (0, 0xFFFFFF));
+		result = gnome_vfs_create (&handle, uri, GNOME_VFS_OPEN_RANDOM, TRUE,  0644);
+	} while (result == GNOME_VFS_ERROR_FILE_EXISTS);
+
+	if (result == GNOME_VFS_OK) {
+		*uri_ret = uri;
+		*ret = handle;
+	} else {
+		g_free (uri);
+	}
+	return result;
+}
+

@@ -83,6 +83,7 @@ static void rb_song_info_rated_cb (RBRating *rating,
 				   int score,
 				   RBSongInfo *song_info);
 static void rb_song_info_mnemonic_cb (GtkWidget *target);
+static void rb_song_info_sync_entries (RBSongInfo *dialog);
 
 struct RBSongInfoPrivate
 {
@@ -111,6 +112,13 @@ struct RBSongInfoPrivate
 	GtkWidget   *rating;
 };
 
+enum
+{
+	PRE_METADATA_CHANGE,
+	POST_METADATA_CHANGE,
+	LAST_SIGNAL
+};
+
 enum 
 {
 	PROP_0,
@@ -118,6 +126,8 @@ enum
 };
 
 static GObjectClass *parent_class = NULL;
+
+static guint rb_song_info_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_song_info_get_type (void)
@@ -166,6 +176,28 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_song_info_finalize;
+
+	rb_song_info_signals[PRE_METADATA_CHANGE] =
+		g_signal_new ("pre-metadata-change",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSongInfoClass, pre_metadata_change),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
+
+	rb_song_info_signals[POST_METADATA_CHANGE] =
+		g_signal_new ("post-metadata-change",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSongInfoClass, post_metadata_change),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
 }
 
 static void
@@ -324,12 +356,6 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	}
 
-	/* make those fields not editable for now */
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->title), FALSE);
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->artist), FALSE);
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->album), FALSE);
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_cur), FALSE);
-
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect (G_OBJECT (song_info->priv->title),
 			  "mnemonic-activate",
@@ -458,8 +484,10 @@ rb_song_info_response_cb (GtkDialog *dialog,
 			  int response_id,
 			  RBSongInfo *song_info)
 {
-	if (response_id == GTK_RESPONSE_CLOSE)
+	if (response_id == GTK_RESPONSE_CLOSE) {
+		rb_song_info_sync_entries (RB_SONG_INFO (dialog));
 		gtk_widget_destroy (GTK_WIDGET (dialog));
+	}
 }
 
 static void
@@ -761,3 +789,58 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 		      NULL);
 }
 
+static void
+rb_song_info_sync_entries (RBSongInfo *dialog)
+{
+	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
+	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
+	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
+	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
+	const char *tracknum_str = gtk_entry_get_text (GTK_ENTRY (dialog->priv->track_cur));
+	char *endptr;
+	gint tracknum;
+	GValue val = {0,};
+
+	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);
+	if (endptr == tracknum_str)
+		tracknum = -1;
+
+	rhythmdb_write_lock (dialog->priv->db);
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, title);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_INT);
+	g_value_set_int (&val, tracknum);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+	g_value_unset (&val);
+
+	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[PRE_METADATA_CHANGE], 0,
+		       dialog->priv->current_entry);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, album);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_ALBUM, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, artist);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_ARTIST, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, genre);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
+	g_value_unset (&val);
+
+	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[POST_METADATA_CHANGE], 0,
+		       dialog->priv->current_entry);
+
+	rhythmdb_write_unlock (dialog->priv->db);
+}

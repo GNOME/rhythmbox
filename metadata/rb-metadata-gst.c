@@ -27,6 +27,7 @@
 
 #include "rb-metadata.h"
 #include "rb-debug.h"
+#include "rb-file-helpers.h"
 
 static void rb_metadata_class_init (RBMetaDataClass *klass);
 static void rb_metadata_init (RBMetaData *md);
@@ -41,6 +42,7 @@ struct RBMetaDataPrivate
 	GstElement *pipeline;
 	GstElement *fakesink;
 
+	char *type;
 	gboolean eos;
 	GError *error;
 };
@@ -165,6 +167,51 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return -1;
 }
 
+static const char *
+rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
+{
+	switch (field)
+	{
+	case RB_METADATA_FIELD_TITLE:
+		return GST_TAG_TITLE;
+	case RB_METADATA_FIELD_ARTIST:
+		return GST_TAG_ARTIST;
+	case RB_METADATA_FIELD_ALBUM:
+		return GST_TAG_ALBUM;
+	case RB_METADATA_FIELD_DATE:
+		return GST_TAG_DATE;
+	case RB_METADATA_FIELD_GENRE:
+		return GST_TAG_GENRE;
+	case RB_METADATA_FIELD_COMMENT:
+		return GST_TAG_COMMENT;
+	case RB_METADATA_FIELD_TRACK_NUMBER:
+		return GST_TAG_TRACK_NUMBER;
+	case RB_METADATA_FIELD_DESCRIPTION:
+		return GST_TAG_DESCRIPTION;
+	case RB_METADATA_FIELD_VERSION:
+		return GST_TAG_VERSION;
+	case RB_METADATA_FIELD_ISRC:
+		return GST_TAG_ISRC;
+	case RB_METADATA_FIELD_ORGANIZATION:
+		return GST_TAG_ORGANIZATION;
+	case RB_METADATA_FIELD_COPYRIGHT:
+		return GST_TAG_COPYRIGHT;
+	case RB_METADATA_FIELD_CONTACT:
+		return GST_TAG_CONTACT;
+	case RB_METADATA_FIELD_LICENSE:
+		return GST_TAG_LICENSE;
+	case RB_METADATA_FIELD_PERFORMER:
+		return GST_TAG_PERFORMER;
+	case RB_METADATA_FIELD_DURATION:
+		return GST_TAG_DURATION;
+	case RB_METADATA_FIELD_CODEC:
+		return GST_TAG_CODEC;
+	case RB_METADATA_FIELD_BITRATE:
+		return GST_TAG_BITRATE;
+	default:
+		return NULL;
+	}
+}
 static void
 rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 {
@@ -225,6 +272,15 @@ rb_metadata_gst_found_tag (GObject *pipeline, GstElement *source, GstTagList *ta
 	gst_tag_list_foreach (tags, (GstTagForeachFunc) rb_metadata_gst_load_tag, md);
 }
 
+static void
+rb_metadata_gst_typefind_cb (GstElement *typefind, GstCaps *caps, RBMetaData *md)
+{
+	if (gst_caps_get_size (caps) > 0) {
+		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
+		rb_debug ("found type %s", md->priv->type);
+	}
+}
+
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -234,9 +290,12 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *gnomevfssrc = NULL;
 	GstElement *typefind = NULL;
 	GstElement *spider = NULL;
+	const char *plugin_name = NULL;
 
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
+	g_free (md->priv->type);
+	md->priv->type = NULL;
 	md->priv->error = NULL;
 	md->priv->eos = FALSE;
 
@@ -264,33 +323,133 @@ rb_metadata_load (RBMetaData *md,
 	g_signal_connect (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md);
 	g_signal_connect (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md);
 
-#define MAKE_ADD_PLUGIN_OR_ERROR(VAR, NAME) \
-	VAR = gst_element_factory_make (NAME, NAME); \
-	if (VAR == NULL) { \
-		g_set_error (error, \
-			     RB_METADATA_ERROR, \
-			     RB_METADATA_ERROR_MISSING_PLUGIN, \
-			     _("Failed to create %s element; check your installation"), \
-			     NAME); \
-		gst_object_unref (GST_OBJECT (pipeline)); \
-		md->priv->pipeline = NULL; \
-		return; \
-	} \
-	gst_bin_add (GST_BIN (pipeline), VAR);		  
-
-	MAKE_ADD_PLUGIN_OR_ERROR(gnomevfssrc, "gnomevfssrc")
-	g_object_set (G_OBJECT (gnomevfssrc),
-			       "location", uri, NULL);
-	MAKE_ADD_PLUGIN_OR_ERROR(typefind, "typefind")
-	MAKE_ADD_PLUGIN_OR_ERROR(spider, "spider")
-	MAKE_ADD_PLUGIN_OR_ERROR(md->priv->fakesink, "fakesink")
+	plugin_name = "gnomevfssrc";
+	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
+	g_object_set (G_OBJECT (gnomevfssrc), "location", uri, NULL);
+	plugin_name = "typefind";
+	if (!(typefind = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	g_signal_connect (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md);
+	gst_bin_add (GST_BIN (pipeline), typefind);		  
+	plugin_name = "spider";
+	if (!(spider = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), spider);		  
+	plugin_name = "fakesink";
+	if (!(md->priv->fakesink = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), md->priv->fakesink);		  
 	g_signal_connect (md->priv->fakesink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
-#undef MAKE_ADD_PLUGIN_OR_ERROR
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
 	gst_element_link_filtered (spider, md->priv->fakesink,
-				   gst_caps_new ("app filter", "application/x-gst-tags",
-						 gst_props_empty_new ()));
+				   gst_caps_new_simple ("application/x-gst-tags", NULL));
+							
+
+	md->priv->pipeline = pipeline;
+	gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	while (gst_bin_iterate (GST_BIN (pipeline))
+	       && md->priv->type == NULL
+	       && md->priv->error == NULL
+	       && !md->priv->eos)
+		;
+	gst_element_set_state (pipeline, GST_STATE_NULL);
+	if (md->priv->error) {
+		g_propagate_error (error, md->priv->error);
+	}
+	goto out;
+ missing_plugin:
+	g_set_error (error,
+		     RB_METADATA_ERROR,
+		     RB_METADATA_ERROR_MISSING_PLUGIN,
+		     _("Failed to create %s element; check your installation"),
+		     plugin_name);
+ out:
+	if (pipeline != NULL)
+		gst_object_unref (GST_OBJECT (pipeline));
+	md->priv->pipeline = NULL;
+}
+
+gboolean
+rb_metadata_can_save (RBMetaData *md)
+{
+	return TRUE;
+}
+
+static void
+rb_metadata_gst_add_tag_data (gpointer key, const GValue *val, GstTagSetter *tagsetter)
+{
+	RBMetaDataField field = GPOINTER_TO_INT (key);
+	const char *tag = rb_metadata_gst_field_to_gst_tag (field);
+	if (tag) {
+		GValue newval = {0,};
+		g_value_init (&newval, gst_tag_get_type (tag));
+		if (g_value_transform (val, &newval)) {
+			gst_tag_setter_add_values (GST_TAG_SETTER (tagsetter),
+						   GST_TAG_MERGE_REPLACE,
+						   tag, &newval, NULL);
+		}
+		g_value_unset (&newval);
+	}
+}
+
+void
+rb_metadata_save (RBMetaData *md, GError **error)
+{
+	GstElement *pipeline = NULL;
+	GstElement *gnomevfssrc = NULL;
+	GstElement *tagger = NULL;
+	GstElement *gnomevfssink = NULL;
+	const char *plugin_name = NULL;
+	char *tmpname = NULL;
+	GnomeVFSHandle *handle = NULL;
+	GnomeVFSResult result;
+
+	g_return_if_fail (md->priv->uri != NULL);
+	g_return_if_fail (md->priv->type != NULL);
+
+	rb_debug ("saving metadata for uri: %s", md->priv->uri);
+
+	if ((result = rb_uri_mkstemp (md->priv->uri, &tmpname, &handle)) != GNOME_VFS_OK)
+		goto vfs_error;
+
+	pipeline = gst_pipeline_new ("pipeline");
+
+	g_signal_connect (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md);
+
+	plugin_name = "gnomevfssrc";
+	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
+	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
+
+	if (!strcmp (md->priv->type, "audio/x-vorbis"))
+		plugin_name = "vorbisfile";
+	else {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     "Unsupported file type: %s", md->priv->type);
+		goto out_error;
+	}
+
+	if (!(tagger = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+
+	g_hash_table_foreach (md->priv->metadata, (GHFunc) rb_metadata_gst_add_tag_data,
+			      GST_TAG_SETTER (tagger));
+	gst_bin_add (GST_BIN (pipeline), tagger);
+
+	plugin_name = "gnomevfssink";
+	if (!(gnomevfssink = gst_element_factory_make (plugin_name, plugin_name)))
+		goto missing_plugin;
+	gst_bin_add (GST_BIN (pipeline), gnomevfssink);		  
+	g_object_set (G_OBJECT (gnomevfssink), "handle", handle, NULL);
+	g_signal_connect (md->priv->fakesink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
+
+	gst_element_link_many (gnomevfssrc, tagger, gnomevfssink, NULL);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -298,24 +457,40 @@ rb_metadata_load (RBMetaData *md,
 	       && md->priv->error == NULL
 	       && !md->priv->eos)
 		;
+	gst_element_set_state (pipeline, GST_STATE_NULL);
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
+		goto out_error;
 	}
-}
-
-gboolean
-rb_metadata_can_save (RBMetaData *md)
-{
-	return FALSE;
-}
-
-void
-rb_metadata_save (RBMetaData *md, GError **error)
-{
+	if (handle != NULL) {
+		if ((result = gnome_vfs_close (handle)) != GNOME_VFS_OK)
+			goto vfs_error;
+		if ((result = gnome_vfs_move (tmpname, md->priv->uri, TRUE)) != GNOME_VFS_OK)
+			goto vfs_error;
+	}
+	goto out;
+ vfs_error:
 	g_set_error (error,
 		     RB_METADATA_ERROR,
-		     RB_METADATA_ERROR_UNSUPPORTED,
-		     _("Operation not supported"));
+		     RB_METADATA_ERROR_GNOMEVFS,
+		     "%s",
+		     gnome_vfs_result_to_string (result)); 
+	goto out_error;
+ missing_plugin:
+	g_set_error (error,
+		     RB_METADATA_ERROR,
+		     RB_METADATA_ERROR_MISSING_PLUGIN,
+		     _("Failed to create %s element; check your installation"),
+		     plugin_name); 
+ out_error:
+	if (handle != NULL)
+		gnome_vfs_close (handle);
+	if (tmpname != NULL)
+		gnome_vfs_unlink (tmpname);
+ out:
+	if (pipeline != NULL)
+		gst_object_unref (GST_OBJECT (pipeline));
+	md->priv->pipeline = NULL;
 }
 
 gboolean
@@ -334,8 +509,30 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field,
 
 gboolean
 rb_metadata_set (RBMetaData *md, RBMetaDataField field,
-		 GValue *val)
+		 const GValue *val)
 {
-	return FALSE;
+	GValue *newval;
+	GType type;
+	
+	switch (field)
+	{
+	case RB_METADATA_FIELD_TITLE:
+	case RB_METADATA_FIELD_ARTIST:
+	case RB_METADATA_FIELD_ALBUM:
+	case RB_METADATA_FIELD_GENRE:
+		break;
+	default:
+		return FALSE;
+	}
+
+	type = rb_metadata_get_field_type (md, field);
+	g_return_val_if_fail (type == G_VALUE_TYPE (val), FALSE);
+
+	newval = g_new0 (GValue, 1);
+	g_value_init (newval, type);
+	g_value_copy (val, newval);
+	g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (field),
+			     newval);
+	return TRUE;
 }
 

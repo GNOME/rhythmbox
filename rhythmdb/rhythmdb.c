@@ -630,7 +630,7 @@ read_metadata_async (RhythmDB *db, const char *location, GError **real_error)
 }
 
 static void
-synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
+set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 {
 	GValue val = {0,};
 
@@ -750,7 +750,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, realuri);
 	if (entry == NULL)
 		goto out_dupentry;
-	synchronize_entry_with_metadata (db, entry);
+	set_props_from_metadata (db, entry);
 
 	/* initialize the last played date to 0=never */
 	g_value_init (&last_time, G_TYPE_LONG);

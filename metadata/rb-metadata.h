@@ -106,7 +106,7 @@ gboolean	rb_metadata_get		(RBMetaData *md, RBMetaDataField field,
 					 GValue *val);
 
 gboolean	rb_metadata_set		(RBMetaData *md, RBMetaDataField field,
-					 GValue *val);
+					 const GValue *val);
 
 G_END_DECLS
 
