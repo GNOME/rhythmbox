@@ -185,7 +185,7 @@ AM_CONDITIONAL(USE_XINE, test x"$with_player" = "xxine")
 
 dnl Tagging
 AC_ARG_WITH(metadata,
-              AC_HELP_STRING([--with-metadata=gstreamer|monkeymedia|xine|auto],
+              AC_HELP_STRING([--with-metadata=gstreamer|xine|auto],
 			     [Select the metadata reader to use]),,
 	      with_metadata=auto)
 if test x"$with_player" = xxine && test x"$with_metadata" = xgstreamer; then
@@ -199,12 +199,8 @@ if test x"$with_metadata" = xauto; then
    if test x"$with_player" = xgstreamer; then
       with_metadata=gstreamer
    else
-      with_metadata=monkeymedia
+      with_metadata=xine
    fi
-fi
-AM_CONDITIONAL(USE_MONKEYMEDIA, test x"$with_metadata" = xmonkeymedia)
-if test x"$with_metadata" = xmonkeymedia; then
-	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
 fi
 
 AM_CONDITIONAL(WITH_XINE_METADATA, test x"$with_metadata" = "xxine")
@@ -216,99 +212,6 @@ dnl 			[ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS -llirc_client"
 dnl 			AC_DEFINE(HAVE_REMOTE)]
 dnl 			,,) ] ,)
 
-dnl Check for libid3tag
-
-AC_ARG_ENABLE(mp3, AC_HELP_STRING([--disable-mp3],
-				[don't build with MP3 support]))
-if test x"$with_metadata" = xmonkeymedia; then
-if test "x$enable_mp3" != "xno"; then
-  PKG_CHECK_MODULES(ID3TAG, id3tag >= 0.15.0b, enable_mp3=yes, enable_mp3=no)
-  if test x"$enable_mp3" = xno; then
-    AC_CHECK_HEADER(id3tag.h,[enable_mp3=yes],)
-    if test x"$enable_mp3" = xyes; then
-	AC_CHECK_LIB(id3tag,id3_frame_field,[enable_mp3=yes],[enable_mp3=no])
-        if test x"$enable_mp3" = xno; then
-          AC_MSG_ERROR([For MP3 support, you need libid3tag 15.0b or later (or --disable-mp3)])
-	fi
-        ID3TAG_LIBS="-lid3tag"
-    fi
-  fi
-fi
-if test "x$enable_mp3" = "xyes"; then
-  if test x"$have_gstreamer" = xyes; then
-    AM_GST_ELEMENT_CHECK(mad,,missing_gst_elements="$missing_gst_elements mad")
-  fi
-  AC_SUBST(ID3TAG_LIBS)
-fi
-if test "x$enable_mp3" = "xyes"; then
-   AC_DEFINE(HAVE_MP3,,[Define if we have MP3 support])
-fi
-fi
-AM_CONDITIONAL(HAVE_MP3,test "x$enable_mp3" = "xyes")
-
-dnl Check for libmp4v2
-
-AC_ARG_ENABLE(mp4, AC_HELP_STRING([--disable-mp4],
-			[don't build with MPEG-4 support]))
-if test x"$with_metadata" = xmonkeymedia; then
-if test "x$enable_mp4" != "xno"; then
-  AC_CHECK_HEADER(mp4.h, [AC_CHECK_HEADER(mpeg4ip.h, [enable_mp4=yes],)],)
-fi
-if test "x$enable_mp4" = "xyes"; then
-  LIBS="$LIBS -lmp4v2 -lstdc++"
-  AC_DEFINE(HAVE_MP4,,[Define if we have MPEG-4 support])
-fi
-fi
-AM_CONDITIONAL(HAVE_MP4, test "x$enable_mp4" = "xyes")
-
-dnl Check for Ogg Vorbis
-
-AC_ARG_ENABLE(vorbis, AC_HELP_STRING([--disable-vorbis],
-				[don't build with Ogg Vorbis support]))
-if test x"$with_metadata" = xmonkeymedia; then
-if test x"$enable_vorbis" != xno; then
-  MM_PATH_OGG(enable_vorbis=yes,enable_vorbis=no)
-  if test x"$enable_vorbis" = xyes; then
-    MM_PATH_VORBIS(,enable_vorbis=no)
-  fi
-  if test x"$enable_vorbis" = xyes; then
-    if test x"$have_gstreamer" = xyes; then
-      AM_GST_ELEMENT_CHECK(vorbisfile,,missing_gst_elements="$missing_gst_elements vorbis")
-    fi
-    CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
-    LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS"
-  fi
-fi  
-if test "x$enable_vorbis" = "xyes"; then
-   AC_DEFINE(HAVE_VORBIS,,[Define if we have Ogg Vorbis support])
-fi
-fi
-AM_CONDITIONAL(HAVE_VORBIS,test "x$enable_vorbis" = "xyes")
-
-dnl Check for FLAC
-
-AC_ARG_ENABLE(flac, AC_HELP_STRING([--disable-flac],
-				[don't build with flac support]))
-if test x"$with_metadata" = xmonkeymedia; then
-if test x"$enable_flac" = xyes && test x"$enable_mp3" != xyes; then
-  AC_MSG_ERROR([libid3tag is required for FLAC support])  
-fi
-if test x"$enable_flac" != "xno" && test x"$enable_mp3" = xyes; then
-  AC_CHECK_HEADER(FLAC/all.h,[enable_flac=yes],)
-fi
-if test "x$enable_flac" = "xyes"; then
-  LIBS="$LIBS -lFLAC"
-fi  
-if test "x$enable_flac" = "xyes"; then
-   AC_DEFINE(HAVE_FLAC,,[Define if we have FLAC support])
-fi
-fi
-AM_CONDITIONAL(HAVE_FLAC,test "x$enable_flac" = "xyes")
-
-CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
-LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS $FLAC_LIBS"
-
-AM_CONDITIONAL(USE_ID3VFS, test x"$enable_mp3" = "xyes" || test x"$enable_flac" = "xyes")
 
 dnl Check for Musicbrainz
 dnl DISABLED
@@ -509,9 +412,6 @@ AC_OUTPUT([
 Makefile
 lib/Makefile
 metadata/Makefile
-metadata/monkey-media/Makefile
-metadata/monkey-media/stream-info-impl/Makefile
-metadata/monkey-media/stream-info-impl/id3-vfs/Makefile
 player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
@@ -543,32 +443,10 @@ fi
 if test x"${with_rhythmdb_debug}" != x0; then
 	AC_MSG_NOTICE([** RhythmDB sanity checking enabled (may be slow!)])
 fi
-if test x"$with_metadata" = xmonkeymedia; then
-	AC_MSG_NOTICE([** Monkey-Media metadata is enabled])
+if test x"$with_metadata" = xxine; then
+	AC_MSG_NOTICE([** Xine metadata is enabled])
 else
 	AC_MSG_NOTICE([** GStreamer metadata is enabled])
-fi
-if test x"$with_metadata" = xmonkeymedia; then
-if test x"$enable_mp3" != "xyes"; then
-	AC_MSG_NOTICE([   MP3 support is disabled])
-else
-	AC_MSG_NOTICE([** MP3 support is enabled])
-fi
-if test x"$enable_vorbis" != "xyes"; then
-	AC_MSG_NOTICE([   Ogg Vorbis support is disabled])
-else
-	AC_MSG_NOTICE([** Ogg Vorbis support is enabled])
-fi
-if test x"$enable_flac" != "xyes"; then
-	AC_MSG_NOTICE([   FLAC support is disabled])
-else
-	AC_MSG_NOTICE([** FLAC support is enabled])
-fi
-if test x"$enable_mp4" != "xyes"; then
-	AC_MSG_NOTICE([   MPEG-4 support is disabled])
-else
-	AC_MSG_NOTICE([** MPEG-4 support is enabled])
-fi
 fi
 if test x"$enable_mmkeys" != "xyes"; then
 	AC_MSG_NOTICE([   Multimedia keys support is disabled])

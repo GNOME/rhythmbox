@@ -2,6 +2,92 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2004-07-14 21:59:00 GMT	Colin Walters <walters@verbum.org>	patch-91
+
+    Summary:
+      kill off monkeymedia
+    Revision:
+      rhythmbox--main--0.9--patch-91
+
+
+    removed files:
+     macros/.arch-ids/.cvsignore.id macros/.arch-ids/=id
+     macros/.cvsignore macros/gst-element-check-0.6.m4
+     macros/ogg.m4 macros/vorbis.m4
+     metadata/monkey-media/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/.arch-ids/.cvsignore.id
+     metadata/monkey-media/.arch-ids/=id
+     metadata/monkey-media/.arch-ids/monkey-media-marshal.list.id
+     metadata/monkey-media/.arch-inventory
+     metadata/monkey-media/.cvsignore
+     metadata/monkey-media/Makefile.am
+     metadata/monkey-media/id3-vfs/.arch-ids/.cvsignore.id
+     metadata/monkey-media/id3-vfs/.arch-ids/=id
+     metadata/monkey-media/id3-vfs/.cvsignore
+     metadata/monkey-media/monkey-media-marshal.list
+     metadata/monkey-media/monkey-media-private.h
+     metadata/monkey-media/monkey-media-stream-info.c
+     metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/monkey-media.c
+     metadata/monkey-media/monkey-media.h
+     metadata/monkey-media/stream-info-impl/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/stream-info-impl/.arch-ids/.cvsignore.id
+     metadata/monkey-media/stream-info-impl/.arch-ids/=id
+     metadata/monkey-media/stream-info-impl/.arch-inventory
+     metadata/monkey-media/stream-info-impl/.cvsignore
+     metadata/monkey-media/stream-info-impl/Makefile.am
+     metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.h
+     metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/flac-stream-info-impl.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/.cvsignore.id
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/=id
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-inventory
+     metadata/monkey-media/stream-info-impl/id3-vfs/.cvsignore
+     metadata/monkey-media/stream-info-impl/id3-vfs/Makefile.am
+     metadata/monkey-media/stream-info-impl/id3-vfs/field.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/file.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/global.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/id3-vfs.c
+     metadata/monkey-media/stream-info-impl/id3-vfs/id3-vfs.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/mp3bitrate.c
+     metadata/monkey-media/stream-info-impl/id3-vfs/mp3bitrate.h
+     metadata/monkey-media/stream-info-impl/id3-vfs/tag.h
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.h
+     metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.h
+     metadata/monkey-media/stream-info-impl/ogg-helper.c
+     metadata/monkey-media/stream-info-impl/ogg-helper.h
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.h
+
+    modified files:
+     ChangeLog configure.ac metadata/Makefile.am shell/Makefile.am
+
+    removed directories:
+     macros macros/.arch-ids metadata/monkey-media
+     metadata/monkey-media/.arch-ids metadata/monkey-media/id3-vfs
+     metadata/monkey-media/id3-vfs/.arch-ids
+     metadata/monkey-media/stream-info-impl
+     metadata/monkey-media/stream-info-impl/.arch-ids
+     metadata/monkey-media/stream-info-impl/id3-vfs
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids
+
+
+2004-07-14 18:39:16 GMT	Colin Walters <walters@verbum.org>	patch-90
+
+    Summary:
+      hal linking fix, automake1.8 workaround (Bastien Nocera)
+    Revision:
+      rhythmbox--main--0.9--patch-90
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
 2004-07-14 15:50:28 GMT	Colin Walters <walters@verbum.org>	patch-89
 
     Summary:

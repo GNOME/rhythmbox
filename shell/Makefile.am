@@ -94,11 +94,6 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
-if USE_MONKEYMEDIA
-INCLUDES += -I$(top_srcdir)/metadata/monkey-media
-endif
- 
-
 BUILT_SOURCES = $(tab_files)
 
 CLEANFILES = $(BUILT_SOURCES)
