@@ -27,6 +27,7 @@
 #include <gtk/gtkmenu.h>
 #include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkmenuitem.h>
+#include <gtk/gtkbbox.h>
 #include <glade/glade.h>
 #include <string.h>
 #include <monkey-media-stream-info.h>
@@ -62,10 +63,17 @@ static void rb_song_info_update_genre (RBSongInfo *song_info);
 static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       MonkeyMediaStreamInfoField field,
 		                       GtkWidget *widget);
+static void rb_song_info_update_buttons (RBSongInfo *song_info);
+static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
 static void song_info_back_clicked_cb (GtkWidget *button,
 			   	       RBSongInfo *song_info);
 static void song_info_forward_clicked_cb (GtkWidget *button,
+					  RBSongInfo *song_info);
+static void rb_song_info_node_deleted_cb (RBNodeView *node_view,
+					  RBNode *node,
+					  RBSongInfo *song_info);
+static void rb_song_info_view_changed_cb (RBNodeView *node_view,
 					  RBSongInfo *song_info);
 
 struct RBSongInfoPrivate
@@ -166,6 +174,9 @@ rb_song_info_init (RBSongInfo *song_info)
 			  G_CALLBACK (rb_song_info_response_cb),
 			  song_info);
 
+	gtk_button_box_set_layout (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area),
+				   GTK_BUTTONBOX_START);
+
 	song_info->priv->back = gtk_dialog_add_button (GTK_DIALOG (song_info),
 						       GTK_STOCK_GO_UP,
 						       GTK_RESPONSE_NONE);
@@ -231,7 +242,10 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
-	g_object_unref (G_OBJECT (song_info->priv->current_info));
+	if (song_info->priv->current_info != NULL)
+	{
+		g_object_unref (G_OBJECT (song_info->priv->current_info));
+	}
 
 	g_free (song_info->priv);
 
@@ -250,31 +264,21 @@ rb_song_info_set_property (GObject *object,
 	{
 	case PROP_NODE_VIEW:
 		{
-			GValue location = { 0, };
-			RBNode *node = NULL;
-			RBNodeView *node_view = NULL;
-			MonkeyMediaStreamInfo *info;
-			GList *selected_nodes;
-
-			/* get the node */
-			node_view = g_value_get_object (value);
+			RBNodeView *node_view = g_value_get_object (value);
 			song_info->priv->node_view = node_view;
-			selected_nodes = rb_node_view_get_selection (node_view);
+			rb_song_info_update_current_values (song_info);
 
-			if ((selected_nodes != NULL) &&
-			    (selected_nodes->data != NULL) &&
-			    (RB_IS_NODE (selected_nodes->data)))
-			{
-				song_info->priv->current_node = node = selected_nodes->data;
-			}
-
-			/* get the stream info */
-			rb_node_get_property (node, "location", &location);
-			info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
-			g_value_unset (&location);
-			
-			/* and fill it in */
-			rb_song_info_populate_dialog (song_info);
+			/* install some callbacks on the node view */
+			g_signal_connect_object (G_OBJECT (node_view),
+						 "node_deleted",
+						 G_CALLBACK (rb_song_info_node_deleted_cb),
+						 song_info,
+						 G_CONNECT_AFTER);
+			g_signal_connect_object (G_OBJECT (node_view),
+						 "changed",
+						 G_CALLBACK (rb_song_info_view_changed_cb),
+						 song_info,
+						 G_CONNECT_AFTER);
 		}
 		break;
 	default:
@@ -314,6 +318,8 @@ rb_song_info_new (RBNodeView *node_view)
 
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
+	rb_song_info_populate_dialog (song_info);
+
 	return GTK_WIDGET (song_info);
 }
 
@@ -329,6 +335,10 @@ rb_song_info_response_cb (GtkDialog *dialog,
 static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
+	/* update the buttons sensitivity */
+	rb_song_info_update_buttons (song_info);
+	
+	/* update the fields values */
 	rb_song_info_update_entry (song_info,
 				   MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
 				   song_info->priv->title);
@@ -568,18 +578,16 @@ song_info_back_clicked_cb (GtkWidget *button,
 
 	g_return_if_fail (node != NULL);
 
-	/* update the node view */
-	rb_node_view_select_node (song_info->priv->node_view, node);
-	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
-
 	/* update our node and info, then refresh the dlg */
 	song_info->priv->current_node = node;
 	rb_node_get_property (node, "location", &location);
 	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
 	song_info->priv->current_info = info;
 	g_value_unset (&location);
-			
-	rb_song_info_populate_dialog (song_info);
+
+	/* update the node view */
+	rb_node_view_select_node (song_info->priv->node_view, node);
+	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
 }
 
 static void
@@ -590,13 +598,9 @@ song_info_forward_clicked_cb (GtkWidget *button,
 	MonkeyMediaStreamInfo *info = NULL;
 	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
 					      song_info->priv->current_node,
-					      RB_DIRECTION_DOWN);
+					      TRUE);
 
 	g_return_if_fail (node != NULL);
-
-	/* update the node view */
-	rb_node_view_select_node (song_info->priv->node_view, node);
-	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
 
 	/* update our node and info, then refresh the dlg */
 	song_info->priv->current_node = node;
@@ -604,6 +608,113 @@ song_info_forward_clicked_cb (GtkWidget *button,
 	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
 	song_info->priv->current_info = info;
 	g_value_unset (&location);
-			
+
+	/* update the node view */
+	rb_node_view_select_node (song_info->priv->node_view, node);
+	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
+}
+
+/*
+ * rb_song_info_update_buttons: update back/forward sensitivity
+ */
+static void
+rb_song_info_update_buttons (RBSongInfo *song_info)
+{
+	RBNode *node = NULL;
+
+	/* back */
+	node = rb_node_view_get_node (song_info->priv->node_view,
+				      song_info->priv->current_node,
+				      FALSE);
+
+	gtk_widget_set_sensitive (song_info->priv->back, node != NULL);
+
+	/* forward */
+	node = rb_node_view_get_node (song_info->priv->node_view,
+				      song_info->priv->current_node,
+				      TRUE);
+
+	gtk_widget_set_sensitive (song_info->priv->forward,
+				  node != NULL);
+}
+
+/*
+ * rb_song_info_node_deleted_cb: the node for which we display
+ * the information could have been deleted, we exit if this is
+ * the case
+ */
+static void
+rb_song_info_node_deleted_cb (RBNodeView *node_view,
+			      RBNode *node,
+			      RBSongInfo *song_info)
+{
+	if (rb_node_get_id (node) == 
+			rb_node_get_id (song_info->priv->current_node))
+	{
+		song_info->priv->current_info = NULL;
+		song_info->priv->current_node = NULL;
+		gtk_widget_destroy (GTK_WIDGET (song_info));
+
+		return;
+	}
+
+	rb_song_info_update_buttons (song_info);
+}
+
+/*
+ * rb_song_info_view_changed_cb: when the view has changed
+ * we need to refresh the information displayed
+ */
+static void
+rb_song_info_view_changed_cb (RBNodeView *node_view,
+			      RBSongInfo *song_info)
+{
+	/* the view has changed, so we reload the node information */
+	g_object_unref (G_OBJECT (song_info->priv->current_info));
+
+	if (rb_song_info_update_current_values (song_info) == FALSE)
+	{
+		return;
+	}
+
+	/* and refresh */
 	rb_song_info_populate_dialog (song_info);
 }
+
+/*
+ * rb_song_info_update_current_values: get the selection from
+ * the node view and then updates current_node & current_info
+ */
+static gboolean
+rb_song_info_update_current_values (RBSongInfo *song_info)
+{
+	GValue location = { 0, };
+	RBNode *node = NULL;
+	MonkeyMediaStreamInfo *info;
+	GList *selected_nodes;
+
+	/* get the node */
+	selected_nodes = rb_node_view_get_selection (song_info->priv->node_view);
+
+	if ((selected_nodes == NULL) ||
+	    (selected_nodes->data == NULL) ||
+	    (RB_IS_NODE (selected_nodes->data) == FALSE))
+	{
+		song_info->priv->current_info = NULL;
+		song_info->priv->current_node = NULL;
+		gtk_widget_destroy (GTK_WIDGET (song_info));
+
+		return FALSE;
+	}
+
+	song_info ->priv->current_node = node = selected_nodes->data;
+
+	/* get the stream info */
+	rb_node_get_property (node, "location", &location);
+	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
+	song_info->priv->current_info = info;
+	g_value_unset (&location);
+
+	return TRUE;
+}
+

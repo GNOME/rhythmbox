@@ -1,3 +1,18 @@
+2002-08-14  Olivier Martin <omartin@ifrance.com>
+
+	* TODO:
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_finalize), (rb_song_info_set_property),
+	(rb_song_info_new), (rb_song_info_populate_dialog),
+	(song_info_back_clicked_cb), (song_info_forward_clicked_cb),
+	(rb_song_info_update_buttons), (rb_song_info_node_deleted_cb),
+	(rb_song_info_view_changed_cb),
+	(rb_song_info_update_current_values):
+	* lib/widgets/rb-song-info.h:
+
+	Cleanup of the song information dialog. Also improve the buttons
+	layout so that they don't move.
+
 2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/rb-file-helpers.c: (rb_is_directory):

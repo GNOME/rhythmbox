@@ -49,7 +49,7 @@ typedef struct
 
 GType      rb_song_info_get_type (void);
 
-GtkWidget *rb_song_info_new      (RBNodeView *node_view);
+GtkWidget *rb_song_info_new      (RBNodeView *view);
 
 G_END_DECLS
 
