@@ -460,10 +460,10 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
 	-Wcast-align -Wsign-compare \
-	-Werror -std=iso9899:199409 -Wdeclaration-after-statement \
+	-Werror \
 	$CFLAGS"
 
-	for option in -Wno-strict-aliasing -Wno-sign-compare; do
+	for option in -std=iso9899:199409 -Wno-strict-aliasing -Wno-sign-compare -Wdeclaration-after-statement; do
 		SAVE_CFLAGS="$CFLAGS"
 		CFLAGS="$CFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
