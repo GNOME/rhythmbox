@@ -804,16 +804,22 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 			     RBShell *shell,
 			     const char *verbname)
 {
-	char *file;
-
-	file = rb_ask_file (_("Choose a file to add"),
-			    GTK_WINDOW (shell->priv->window));
-	if (file == NULL)
+	char **files, **filecur;
+    
+	files = rb_ask_file_multiple (_("Choose files to add"),
+			              GTK_WINDOW (shell->priv->window));
+	if (files == NULL)
 		return;
 
-	rb_library_add_file (shell->priv->library, file);
+	filecur = files;
+    
+	while (*filecur != NULL)
+	{
+    		rb_library_add_file (shell->priv->library, *filecur);
+		filecur++;
+	}
 
-	g_free (file);
+	g_strfreev (files);
 }
 
 static void
