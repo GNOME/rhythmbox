@@ -52,12 +52,13 @@ static struct
 {
 	const char *mimetype;
 	const char *plugin;
+	const char *human_name;
 } rb_metadata_type_map[] = {
-	{"application/x-id3", "id3tag"},
-	{"application/ogg", NULL},
-	{"audio/x-flac", "flactag"},
-	{"application/x-ape", NULL},
-	{"audio/x-mod", NULL},
+	{"application/x-id3", "id3tag", "MP3"},
+	{"application/ogg", NULL, "Ogg"},
+	{"audio/x-flac", "flactag", "FLAC"},
+	{"application/x-ape", NULL, "MonkeysAudio"},
+	{"audio/x-mod", NULL, "MOD"},
 };
 
 static GObjectClass *parent_class = NULL;
@@ -246,6 +247,17 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return NULL;
 	}
 }
+
+static const char *
+rb_metadata_gst_type_to_name (RBMetaData *md)
+{
+	int i;
+	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
+		if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type))
+			return rb_metadata_type_map[i].human_name;
+	return NULL;
+}
+
 static void
 rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 {
@@ -266,6 +278,24 @@ rb_metadata_gst_error_cb (GstElement *element,
 			  RBMetaData *md)
 {
 	rb_debug ("caught error: %s ", error->message);
+
+	if (error->domain == GST_STREAM_ERROR
+	    && error->code == GST_STREAM_ERROR_CODEC_NOT_FOUND) {
+		const char *human_element_hame = rb_metadata_gst_type_to_name (md);
+		if (human_element_hame) {
+			const char *untranslated_nice_message = "There is no plugin installed to handle a %s file.";
+			const char *nice_message = _("There is no plugin installed to handle a %s file.");
+			if (!strcmp (_("_Artist"), "_Artist")
+			    || strcmp (untranslated_nice_message, nice_message)) {
+				md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
+								       RB_METADATA_ERROR_MISSING_PLUGIN,
+								       nice_message);
+				return;
+			}
+		}
+	}
+	
+	/* Fallthrough */
 	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
 					       RB_METADATA_ERROR_GENERAL,
 					       error->message);
