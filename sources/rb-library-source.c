@@ -123,8 +123,7 @@ static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
-static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
-					gboolean sync);
+static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
 static void query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
@@ -469,7 +468,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
 
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL, FALSE);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 
 	/* Drag'n'Drop for songs view */
 /* 	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received", */
@@ -637,7 +636,7 @@ genres_selected_cb (RBPropertyView *propview, GList *genres,
 	g_list_foreach (libsource->priv->selected_genres, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_genres);
 	libsource->priv->selected_genres = genres;
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE, FALSE);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE);
 }
 
 static void
@@ -660,7 +659,7 @@ artists_selected_cb (RBPropertyView *propview, GList *artists,
 	g_list_foreach (libsource->priv->selected_artists, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_artists);
 	libsource->priv->selected_artists = artists;
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST, FALSE);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST);
 }
 
 static void
@@ -683,7 +682,7 @@ albums_selected_cb (RBPropertyView *propview, GList *albums,
 	g_list_foreach (libsource->priv->selected_albums, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_albums);
 	libsource->priv->selected_albums = albums;
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM, FALSE);
+	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
 }
 
 static void
@@ -700,7 +699,7 @@ static void
 songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
 {
 	rb_debug ("sort order changed");
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH, FALSE);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
 }
 
 static const char *
@@ -744,7 +743,7 @@ impl_search (RBSource *asource, const char *search_text)
 
 	g_free (source->priv->search_text);
 	source->priv->search_text = search_text != NULL ? g_utf8_casefold (search_text, -1) : NULL;
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH, FALSE);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
 }
 
 
@@ -798,7 +797,7 @@ impl_reset_filters (RBSource *asource)
 	source->priv->search_text = NULL;
 
 	if (changed)
-		rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL, TRUE);
+		rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 }
   
 static GtkWidget *
@@ -1214,8 +1213,7 @@ construct_query_from_selection (RBLibrarySource *source)
 }
 
 static void
-rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
-			    gboolean sync)
+rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 {
 	RhythmDBQueryModel *query_model;
 	RhythmDBPropertyModel *genre_model = NULL;
@@ -1354,10 +1352,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 
 	query = construct_query_from_selection (source);
 	
-	if (!sync)
-		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
-	else
-		rhythmdb_do_full_query_parsed (source->priv->db, model, query);
+	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 		
 	rhythmdb_query_free (query);
 	g_object_unref (G_OBJECT (query_model));
