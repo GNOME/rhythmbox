@@ -1147,6 +1147,12 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 		return FALSE;
 	}
 
+	mime = rb_metadata_get_mime (event->metadata);
+	if (!mime) {
+		rb_debug ("unsupported file");
+		return TRUE;
+	}
+
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (!entry) {
 		entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, event->real_uri);
@@ -1154,12 +1160,6 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 			rb_debug ("entry already exists");
 			return TRUE;
 		}
-	}
-
-	mime = rb_metadata_get_mime (event->metadata);
-	if (!mime) {
-		rb_debug ("unsupported file");
-		return TRUE;
 	}
 
 	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
