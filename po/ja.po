@@ -1,23 +1,23 @@
 # rhythmbox ja.po.
-# Copyright (C) 2002 Free Software Foundation, Inc.
-# Norihiro UMEDA <norihiro@users.sourceforge.jp>, 2002.
+# Copyright (C) 2002-2003 Free Software Foundation, Inc.
+# Norihiro UMEDA <norihiro@users.sourceforge.jp>, 2002-2003.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox 0.3.0.99\n"
-"POT-Creation-Date: 2002-11-08 19:38+0900\n"
-"PO-Revision-Date: 2002-11-08 19:50+0900\n"
+"Project-Id-Version: rhythmbox 0.4.1.99\n"
+"POT-Creation-Date: 2003-02-23 03:19+0900\n"
+"PO-Revision-Date: 2003-02-23 04:48+0900\n"
 "Last-Translator: Norihiro UMEDA <noririro@users.sourceforge.jp>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/GNOME_Rhythmbox_Shell.server.in.h:1
+#: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
 msgstr "Rhythmbox シェル"
 
-#: data/GNOME_Rhythmbox_Shell.server.in.h:2
+#: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
 msgstr "Rhythmbox shell factory"
 
@@ -26,71 +26,90 @@ msgid "    "
 msgstr "    "
 
 #: data/glade/preferences.glade.h:2
+msgid "<b>Browser Views</b>"
+msgstr "<b>ブラウザ表示</b>"
+
+#: data/glade/preferences.glade.h:3
 msgid "<span weight=\"bold\">Appearance</span>"
 msgstr "<span weight=\"bold\">外観</span>"
 
-#: data/glade/preferences.glade.h:3
+#: data/glade/preferences.glade.h:4
 msgid "<span weight=\"bold\">Visible Columns</span>"
 msgstr "<span weight=\"bold\">表示項目</span>"
 
-#: data/glade/preferences.glade.h:4 data/node-views/rb-node-view-songs.xml.h:1
+#: data/glade/preferences.glade.h:5 data/node-views/rb-node-view-songs.xml.h:1
 msgid "A_lbum"
 msgstr "アルバム(_l)"
 
-#: data/glade/preferences.glade.h:5
+#: data/glade/preferences.glade.h:6
+msgid "Artists and albums"
+msgstr "アーティストとアルバム"
+
+#: data/glade/preferences.glade.h:7
+msgid "Genres and artists"
+msgstr "ジャンルとアーティスト"
+
+#: data/glade/preferences.glade.h:8
+msgid "Genres, artists and albums"
+msgstr "ジャンル、アーティスト、アルバム"
+
+#: data/glade/preferences.glade.h:9
 msgid "Preferences"
 msgstr "設定"
 
-#: data/glade/preferences.glade.h:6
+#: data/glade/preferences.glade.h:10
 msgid "Show _toolbar as:"
 msgstr "ツールバーの表示(_t):"
 
-#: data/glade/preferences.glade.h:7
+#: data/glade/preferences.glade.h:11
 msgid "Text _below icons"
 msgstr "アイコンの下にテキストを表示(_b)"
 
-#: data/glade/preferences.glade.h:8
+#: data/glade/preferences.glade.h:12
 msgid "Text b_eside icons"
 msgstr "アイコンの横にテキストを表示(_e)"
 
-#: data/glade/preferences.glade.h:9
+#: data/glade/preferences.glade.h:13
 msgid "Track _number"
 msgstr "トラック番号(_n)"
 
-#: data/glade/preferences.glade.h:10
+#: data/glade/preferences.glade.h:14
 msgid "_Artist"
 msgstr "アーティスト(_A)"
 
-#: data/glade/preferences.glade.h:11
+#: data/glade/preferences.glade.h:15
 msgid "_Desktop default"
 msgstr "デスクトップの標準設定(_D)"
 
-#: data/glade/preferences.glade.h:12
+#: data/glade/preferences.glade.h:16
 msgid "_Duration"
 msgstr "時間(_D)"
 
-#: data/glade/preferences.glade.h:13
+#: data/glade/preferences.glade.h:17
+#: data/node-views/rb-node-view-genres.xml.h:1
+#: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "ジャンル(_G)"
 
-#: data/glade/preferences.glade.h:14
+#: data/glade/preferences.glade.h:18
 msgid "_Icons"
 msgstr "アイコンのみ(_I)"
 
-#: data/glade/preferences.glade.h:15
+#: data/glade/preferences.glade.h:19
 msgid "_Last played"
 msgstr "最終再生時刻(_L)"
 
-#: data/glade/preferences.glade.h:16
+#: data/glade/preferences.glade.h:20
 msgid "_Play count"
 msgstr "再生回数(_P)"
 
-#: data/glade/preferences.glade.h:17
+#: data/glade/preferences.glade.h:21
+#: data/node-views/rb-node-view-iradio-stations.xml.h:5
 #: data/node-views/rb-node-view-songs.xml.h:8
 msgid "_Rating"
 msgstr "レーティング(_R)"
 
-#: data/glade/preferences.glade.h:18
+#: data/glade/preferences.glade.h:22
 msgid "_Text"
 msgstr "テキストのみ(_T)"
 
@@ -98,7 +117,8 @@ msgstr "テキストのみ(_T)"
 msgid "   "
 msgstr "   "
 
-#: data/glade/song-info.glade.h:2
+#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -164,7 +184,7 @@ msgstr "<span weight=\"bold\">トラック番号(_T):</span>"
 
 #: data/glade/song-info.glade.h:18
 msgid "Basic"
-msgstr "基本"
+msgstr "基本情報"
 
 #: data/glade/song-info.glade.h:19
 msgid "Details"
@@ -174,21 +194,66 @@ msgstr "詳細"
 msgid "_of"
 msgstr " _/ "
 
-#: data/glade/toolbar-editor.glade.h:1
-msgid "<b>Cu_rrent Controls</b>"
-msgstr "<b>現在のボタン(_r)</b>"
+#: data/glade/station-new.glade.h:2
+msgid "Genre: "
+msgstr "ジャンル: "
 
-#: data/glade/toolbar-editor.glade.h:2
-msgid "<b>_Available Controls</b>"
-msgstr "<b>利用可能なボタン(_A)</b>"
+#: data/glade/station-new.glade.h:3
+msgid "Location: "
+msgstr "場所: "
 
-#: data/glade/toolbar-editor.glade.h:3
-msgid "Toolbar Editor"
-msgstr "ツールバー設定"
+#: data/glade/station-new.glade.h:4 iradio/rb-new-station-dialog.c:151
+msgid "New Internet Radio Station"
+msgstr "新規インターネットラジオ局"
 
-#: data/glade/toolbar-editor.glade.h:4
-msgid "_Reset to defaults"
-msgstr "標準設定に戻す(_R)"
+#: data/glade/station-new.glade.h:5
+msgid "Title: "
+msgstr "タイトル: "
+
+#: data/glade/station-properties.glade.h:2
+msgid "42"
+msgstr "42"
+
+#: data/glade/station-properties.glade.h:3
+msgid "Play Count: "
+msgstr "再生回数: "
+
+#: data/glade/station-properties.glade.h:4
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr "1970年 00時00分00秒 -0500 1月1日 水曜日 "
+
+#: data/glade/station-properties.glade.h:5
+msgid "_Add: "
+msgstr "追加(_A):"
+
+#: data/glade/station-properties.glade.h:6
+msgid "_Genre: "
+msgstr "ジャンル(_G): "
+
+#: data/glade/station-properties.glade.h:7
+msgid "_Last Played:"
+msgstr "最終再生時刻(_L): "
+
+#: data/glade/station-properties.glade.h:8
+msgid "_Locations"
+msgstr "場所(_L)"
+
+#: data/glade/station-properties.glade.h:9
+#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:22
+msgid "_Properties"
+msgstr "ファイル情報(_P)"
+
+#: data/glade/station-properties.glade.h:10
+msgid "_Rating: "
+msgstr "レーティング(_R): "
+
+#: data/glade/station-properties.glade.h:11
+msgid "_Title: "
+msgstr "タイトル(_T): "
+
+#: data/glade/station-properties.glade.h:12
+msgid "blah Properties"
+msgstr "ほげプロバティ"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
 msgid "_Album"
@@ -198,17 +263,35 @@ msgstr "アルバム(_A)"
 msgid "A_rtist"
 msgstr "アーティスト(_r)"
 
-#: data/node-views/rb-node-view-songs.xml.h:2
-msgid "Art_ist"
-msgstr "アーティスト(_i)"
-
+#: data/node-views/rb-node-view-iradio-stations.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:3
 msgid "Ge_nre"
 msgstr "ジャンル(_n)"
 
+#: data/node-views/rb-node-view-iradio-stations.xml.h:2
 #: data/node-views/rb-node-view-songs.xml.h:4
 msgid "L_ast Played"
 msgstr "最終再生時刻(_a)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:7
+msgid "_Play Count"
+msgstr "再生回数(_P)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+msgid "_Quality"
+msgstr "音質(_Q)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:9
+#: data/node-views/rb-node-view-playlist.xml.h:2
+msgid "_Title"
+msgstr "タイトル(_T)"
+
+#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-playlist.xml.h:1
+msgid "Art_ist"
+msgstr "アーティスト(_i)"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
 msgid "Ti_me"
@@ -218,276 +301,227 @@ msgstr "時間(_m)"
 msgid "Tra_ck"
 msgstr "トラック(_c)"
 
-#: data/node-views/rb-node-view-songs.xml.h:7
-msgid "_Play Count"
-msgstr "再生回数(_P)"
-
-#: data/node-views/rb-node-view-songs.xml.h:9
-msgid "_Title"
-msgstr "タイトル(_T)"
-
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:599 shell/rb-shell.c:989
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Rhythmbox ミュージックプレイヤー"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr "楽曲コレクションを再生／編集"
+msgstr "あなたの楽曲コレクションを再生・管理します"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:1
-msgid "Delete the currently selected music group"
-msgstr "選択したグループを削除"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:2
-#: data/ui/rhythmbox-library-view.xml.in.h:2
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
+#: data/ui/rhythmbox-library-view.xml.in.h:4
 msgid "Deselect all songs"
 msgstr "曲選択を解除"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:3
-msgid "Rename the currently selected music group"
-msgstr "選択したグループの名前を変更"
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:2
+msgid "Eject Audio-CD"
+msgstr "音楽 CD イジェクト"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:3
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
+#: data/ui/rhythmbox-library-view.xml.in.h:5
 msgid "Scroll the view to the currently playing song"
 msgstr "現在再生している曲を表示"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:4
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
+#: data/ui/rhythmbox-library-view.xml.in.h:6
 msgid "Select _All"
 msgstr "すべて選択(_A)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:6
-#: data/ui/rhythmbox-library-view.xml.in.h:5
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
+#: data/ui/rhythmbox-library-view.xml.in.h:7
 msgid "Select all songs"
 msgstr "すべての曲を選択"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:7
-msgid "_Delete Group"
-msgstr "グループを削除(_D)"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:7 data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
+#: data/ui/rhythmbox-iradio-view.xml.in.h:5
+#: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:16
 msgid "_Edit"
 msgstr "編集(_E)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:8
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:7
+msgid "_Eject Audio-CD..."
+msgstr "音楽 CD をイジェクト(_E)..."
+
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
+#: data/ui/rhythmbox-library-view.xml.in.h:13
 msgid "_Jump to Playing Song"
 msgstr "現在再生している曲を表示(_J)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:10
-msgid "_Rename Group..."
-msgstr "グループ名を変更...(_R)"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:11
-#: data/ui/rhythmbox-library-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
+#: data/ui/rhythmbox-iradio-view.xml.in.h:8
+#: data/ui/rhythmbox-library-view.xml.in.h:15
 msgid "_View"
 msgstr "表示(_V)"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:1
+msgid "Change the visibility of the genre browser"
+msgstr "ジャンルブラウザの表示形式を変更"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:2
+msgid "Scroll the view to the currently playing station"
+msgstr "現在再生中のラジオ局を表示"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:3
+msgid "Show information on the selected station"
+msgstr "選択したラジオ局の情報を表示"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:4
+#: data/ui/rhythmbox-library-view.xml.in.h:9
+msgid "_Browser"
+msgstr "ブラウザ(_B)"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:6
+msgid "_Jump to Playing Station"
+msgstr "現在再生中のラジオ局を表示(_J)"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:7
+msgid "_New Internet Radio Station"
+msgstr "新規インターネットラジオ局(_N)"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:1
 msgid "Change the visibility of the artist and album browser"
 msgstr "アーティスト/アルバムの表示を変更"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:6
-msgid "_Browser"
-msgstr "ブラウザ(_B)"
-
-#: data/ui/rhythmbox-test-view-2.xml.in.h:1
-msgid "Oh neej!!"
-msgstr "Oh neej!!"
-
-#: data/ui/rhythmbox-test-view-2.xml.in.h:2
-msgid "_Actions"
-msgstr "アクション(_A)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:1
-msgid "Change the visibility of the main window"
-msgstr "メイン"
-
-#: data/ui/rhythmbox-ui.xml.in.h:2
-msgid "Change the visibility of the side pane"
-msgstr "サイドフレームの表示/非表示を切替"
-
-#: data/ui/rhythmbox-ui.xml.in.h:3
-msgid "Change the visibility of the statusbar"
-msgstr "ステータスバーの表示/非表示を切替"
-
-#: data/ui/rhythmbox-ui.xml.in.h:4
-msgid "Change the visibility of the toolbar"
-msgstr "ツールバーの表示/非表示を切替"
-
-#: data/ui/rhythmbox-ui.xml.in.h:5
-msgid "Choose files or a directory to be added to the library"
-msgstr "ライブラリに追加するファイル及びディレクトリを選択"
-
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:2
 msgid "Copy selection"
 msgstr "選択部分をコピー"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
-msgid "Create a new music group"
-msgstr "新規グループを作成"
-
-#: data/ui/rhythmbox-ui.xml.in.h:8
-msgid "Cu_t"
-msgstr "切り取り(_t)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Cut selection"
-msgstr "選択部分を切り取り"
-
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:5
 msgid "Delete selection"
 msgstr "選択部分を削除"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
-msgid "Display music player help"
-msgstr "ミュージックプレイヤーのヘルプを表示"
-
-#: data/ui/rhythmbox-ui.xml.in.h:12
-msgid "Edit music player preferences"
-msgstr "ミュージックプレイヤーの設定"
-
-#: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "Edit the toolbar"
-msgstr "ツールバーの設定"
-
-#: data/ui/rhythmbox-ui.xml.in.h:14
-msgid "P_revious"
-msgstr "戻る(_r)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:15
-msgid "Paste selection"
-msgstr "選択部分に貼り付け"
-
-#: data/ui/rhythmbox-ui.xml.in.h:16
-msgid "Pause playing"
-msgstr "再生の一時停止"
-
-#: data/ui/rhythmbox-ui.xml.in.h:17
-msgid "Prefere_nces"
-msgstr "設定(_n)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:18
-msgid "Quit the music player"
-msgstr "ミュージックプレイヤーの終了"
-
-#: data/ui/rhythmbox-ui.xml.in.h:19
-msgid "Repea_t"
-msgstr "リピート(_t)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:20
-msgid "Show information about the music player"
-msgstr "Rhythmbox についての情報を表示します"
-
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Show information on the selected song"
 msgstr "選択した曲の情報を表示"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
-msgid "St_atusbar"
-msgstr "ステータスバー(_a)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:23
-msgid "Start playing"
-msgstr "再生開始"
-
-#: data/ui/rhythmbox-ui.xml.in.h:24
-msgid "Start playing the next song"
-msgstr "次の曲を再生"
-
-#: data/ui/rhythmbox-ui.xml.in.h:25
-msgid "Start playing the previous song"
-msgstr "前の曲を再生"
-
-#: data/ui/rhythmbox-ui.xml.in.h:26
-msgid "Stop playing"
-msgstr "停止"
-
-#: data/ui/rhythmbox-ui.xml.in.h:27
-msgid "T_oolbar"
-msgstr "ツールバー(_o)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:28
-msgid "Toggle random playing order"
-msgstr "ランダム再生モードの切替え"
-
-#: data/ui/rhythmbox-ui.xml.in.h:29
-msgid "Toggle repeat mode"
-msgstr "リピートの切替え"
-
-#: data/ui/rhythmbox-ui.xml.in.h:30
-msgid "_About"
-msgstr "情報(_A)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:31
-msgid "_Add to Library..."
-msgstr "ライブラリに追加(_A)..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:32
-msgid "_Contents"
-msgstr "内容(_C)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:14
 msgid "_Copy"
 msgstr "コピー(_C)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:15
 msgid "_Delete"
 msgstr "削除(_D)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:1
+msgid "Close the music player"
+msgstr "ミュージックプレイヤーの終了"
+
+#: data/ui/rhythmbox-ui.xml.in.h:3
+msgid "Cu_t"
+msgstr "切り取り(_t)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:4
+msgid "Cut selection"
+msgstr "選択部分を切り取り"
+
+#: data/ui/rhythmbox-ui.xml.in.h:6
+msgid "Display music player help"
+msgstr "ミュージックプレイヤーのヘルプを表示"
+
+#: data/ui/rhythmbox-ui.xml.in.h:7
+msgid "P_revious"
+msgstr "戻る(_r)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:8
+msgid "Paste selection"
+msgstr "選択部分に貼り付け"
+
+#: data/ui/rhythmbox-ui.xml.in.h:9
+msgid "Show information about the music player"
+msgstr "Rhythmbox についての情報を表示します"
+
+#: data/ui/rhythmbox-ui.xml.in.h:11
+msgid "_About"
+msgstr "情報(_A)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:12
+msgid "_Close"
+msgstr "閉じる(_C)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:13
+msgid "_Contents"
+msgstr "内容(_C)"
+
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "_Help"
 msgstr "ヘルプ(_H)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
-msgid "_Music"
-msgstr "音楽(_M)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:38
-msgid "_New Group..."
-msgstr "新規グループ(_N)..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "_Next"
 msgstr "次(_N)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "_Organize"
-msgstr "関連付け(_O)"
+msgstr "楽曲管理(_O)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-ui.xml.in.h:20
 msgid "_Paste"
 msgstr "貼り付け(_P)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42 shell/rb-shell-player.c:518
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "_Play"
 msgstr "再生(_P)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
-msgid "_Properties"
-msgstr "ファイル情報(_P)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:44
-msgid "_Quit"
-msgstr "終了(_Q)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "_Show Window"
 msgstr "ウィンドウを表示(_S)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
-msgid "_Shuffle"
-msgstr "シャッフル(_S)"
+#: iradio/rb-iradio-backend.c:146 library/rb-library.c:450
+msgid "All"
+msgstr "全て"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
-msgid "_Side Pane"
-msgstr "サイドフレーム(_S)"
+#: iradio/rb-iradio-backend.c:329
+#, c-format
+msgid "Failed to parse %s\n"
+msgstr "\"%s\" を解析できません\n"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
-msgid "_Toolbar"
-msgstr "ツールバー(_T)"
+#: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:582
+msgid "(Unknown)"
+msgstr "(不明)"
+
+#: iradio/rb-iradio-yp-xmlfile.c:224
+#, c-format
+msgid "Failed to open %s: %s"
+msgstr "%s を開けません: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:454
+#, c-format
+msgid "Failed to read %s: %s"
+msgstr "%s を読み込みできません: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:460
+#, c-format
+msgid "Failed to parse %s: %s"
+msgstr "%s を解析できません: %s"
+
+#: iradio/rb-station-properties-dialog.c:187 lib/widgets/rb-song-info.c:475
+#: lib/widgets/rb-song-info.c:489
+#, c-format
+msgid "%s Properties"
+msgstr "%s の情報"
+
+#: iradio/rb-station-properties-dialog.c:382
+#, c-format
+msgid "Properties for %s"
+msgstr "%s の情報"
+
+#: iradio/rb-station-properties-dialog.c:545
+msgid "No locations specified!"
+msgstr "場所が指定されていません!"
+
+#: iradio/rb-station-properties-dialog.c:589
+msgid "No location is selected."
+msgstr "場所が選択されていません。"
+
+#: iradio/rb-station-properties-dialog.c:606
+msgid "No location specified."
+msgstr "場所が指定されていません。"
+
+#: iradio/rb-station-properties-dialog.c:613
+msgid "Location is not a valid URL."
+msgstr "指定された場所は有効な URL ではありません。"
 
 #: lib/eel-gconf-extensions.c:66
 #, c-format
@@ -506,7 +540,7 @@ msgstr "%s を見つけられません"
 #: lib/rb-file-helpers.c:101
 #, c-format
 msgid "%s exists, please move it out of the way."
-msgstr "%s が既に存在しているので、別のところに移動してください."
+msgstr "%s は既に存在しているので、別のところに移動してください."
 
 #: lib/rb-file-helpers.c:104
 #, c-format
@@ -524,63 +558,10 @@ msgstr "THE ,DJ"
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/toolbar/gul-tbi-separator.c:131
-msgid "Separator"
-msgstr "セパレータ"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:249
-#: lib/toolbar/gul-tbi-std-toolitem.c:370
-msgid "Previous"
-msgstr "戻る"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:252
-#: lib/toolbar/gul-tbi-std-toolitem.c:375 shell/rb-shell-player.c:517
-msgid "Play"
-msgstr "再生"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:255
-#: lib/toolbar/gul-tbi-std-toolitem.c:380
-msgid "Next"
-msgstr "次"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:258
-#: lib/toolbar/gul-tbi-std-toolitem.c:385
-msgid "Shuffle"
-msgstr "シャッフル"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:261
-#: lib/toolbar/gul-tbi-std-toolitem.c:390
-msgid "Repeat"
-msgstr "リピート"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:264
-#: lib/toolbar/gul-tbi-std-toolitem.c:395
-msgid "Cut"
-msgstr "切り取り"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:267
-#: lib/toolbar/gul-tbi-std-toolitem.c:400
-msgid "Copy"
-msgstr "コピー"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:270
-#: lib/toolbar/gul-tbi-std-toolitem.c:405
-msgid "Paste"
-msgstr "貼り付け"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:273
-#: lib/toolbar/gul-tbi-std-toolitem.c:410
-msgid "Properties"
-msgstr "ファイル情報"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:276
-#: lib/toolbar/gul-tbi-std-toolitem.c:415
-msgid "Add to Library"
-msgstr "ライブラリに追加"
-
-#: lib/toolbar/gul-tbi-volume.c:145
-msgid "Volume"
-msgstr "ボリューム"
+#: lib/rb-windows-ini-file.c:374
+#, c-format
+msgid "Unable to parse %s: %s\n"
+msgstr "%s を解析できません: %s\n"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:106
 msgid "Pixbuf Object"
@@ -590,7 +571,7 @@ msgstr "Pixbuf Object"
 msgid "The pixbuf to render."
 msgstr "The pixbuf to render."
 
-#: lib/widgets/rb-link.c:312
+#: lib/widgets/rb-link.c:325
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -599,107 +580,15 @@ msgstr ""
 "%s に関するエラーが発生しました:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:548
+#: lib/widgets/rb-node-view.c:653
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "%s をノード表示レイアウトファイルとして解析できません"
 
-#: lib/widgets/rb-node-view.c:1329
-#, c-format
-msgid "%d songs, %d:%02d:%02d total time, %s"
-msgstr "%d 曲, 総演奏時間 %d時間%02d分%02d秒, %s"
-
-#: lib/widgets/rb-player.c:207
-msgid "From "
-msgstr "収録: "
-
-#: lib/widgets/rb-player.c:213
-msgid " by "
-msgstr "  アーティスト: "
-
-#: lib/widgets/rb-player.c:252 lib/widgets/rb-player.c:645
-msgid ""
-"Elapsed time of the song. Click on it to display remaining and total time"
-msgstr "曲の経過時間を示しています。クリックで残り時間及び演奏時間に切替えます"
-
-#: lib/widgets/rb-player.c:383
-msgid "Get information on this album from the web"
-msgstr "このアルバムに関する情報を Web から取得します"
-
-#: lib/widgets/rb-player.c:393
-msgid "Get information on this artist from the web"
-msgstr "このアーティストに関する情報を Web から取得します"
-
-#: lib/widgets/rb-player.c:401
-msgid "Not Playing"
-msgstr "停止"
-
-#: lib/widgets/rb-player.c:631
-msgid ""
-"Remaining time of the song. Click on it to display total and elapsed time"
-msgstr "曲の残り時間を示しています。クリックで演奏時間及び経過時間に切替えます"
-
-#: lib/widgets/rb-player.c:638
-msgid ""
-"Total time of the song. Click on it to display elapsed and remaining time"
-msgstr "曲の演奏時間を示しています。クリックで経過時間及び残り時間に切替えます"
-
-#: lib/widgets/rb-player.c:669
-#, c-format
-msgid "%d:%02d"
-msgstr "%d:%02d"
-
-#: lib/widgets/rb-player.c:677
-#, c-format
-msgid "- %d:%02d"
-msgstr "- %d:%02d"
-
-#: lib/widgets/rb-player.c:684
-#, c-format
-msgid "Total: %d:%02d"
-msgstr "合計: %d:%02d"
-
-#: lib/widgets/rb-player.c:687
-msgid "Invalid mode"
-msgstr "無効なモード"
-
-#: lib/widgets/rb-search-entry.c:115
-msgid "_Search:"
-msgstr "曲の検索(_S)"
-
-#: lib/widgets/rb-sidebar-button.c:249
-msgid "/_Open"
-msgstr "/開く(_O)"
-
-#: lib/widgets/rb-sidebar-button.c:251
-msgid "/_Rename..."
-msgstr "/名前変更(_R)"
-
-#: lib/widgets/rb-sidebar-button.c:252
-msgid "/_Delete"
-msgstr "/削除(_D)"
-
-#: lib/widgets/rb-sidebar-button.c:495
-msgid "/Rename..."
-msgstr "/名前変更"
-
-#: lib/widgets/rb-sidebar-button.c:498
-msgid "/Delete"
-msgstr "/削除"
-
-#: lib/widgets/rb-sidebar-button.c:661
-#, c-format
-msgid "Please enter a new name for this %s."
-msgstr "%s のための新しい名前を入力してください"
-
-#: lib/widgets/rb-sidebar-button.c:662
-msgid "Rename"
-msgstr "名前変更"
-
-#: lib/widgets/rb-sidebar.c:421
-#, c-format
-msgid "Failed to parse %s as sidebar layout file"
-msgstr "%s をサイドフレームレイアウトファイルとして解析できません"
+#. this string can only be so long, or there wont be a search entry :)
+#: lib/widgets/rb-search-entry.c:116
+msgid "_Search song:"
+msgstr "曲の検索(_S):"
 
 #: lib/widgets/rb-song-info.c:197
 msgid "_Next Song"
@@ -708,11 +597,6 @@ msgstr "次(_N)"
 #: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:494
 msgid "Song Properties"
 msgstr "曲情報"
-
-#: lib/widgets/rb-song-info.c:475 lib/widgets/rb-song-info.c:489
-#, c-format
-msgid "%s Properties"
-msgstr "%s の情報"
 
 #: lib/widgets/rb-song-info.c:776
 msgid "on the desktop"
@@ -744,165 +628,209 @@ msgstr "消音"
 msgid "Click to unmute"
 msgstr "消音取り消し"
 
-#: library/rb-library.c:448
-msgid "All"
-msgstr "全て"
-
-#: library/rb-node-song.c:314
+#: library/rb-node-song.c:262
 #, c-format
-msgid "%.2d of %.2d"
-msgstr "%.2d of %.2d"
+msgid "%ld:%02ld"
+msgstr "%ld:%02ld"
 
-#: library/rb-node-song.c:766
-msgid "%Y-%m-%d %H:%M:%S"
-msgstr "%Y-%m-%d %H:%M:%S"
-
-#: library/rb-node.c:806 library/rb-node.c:812 library/rb-node.c:843
+#: library/rb-node.c:877 library/rb-node.c:883 library/rb-node.c:914
 msgid "Never"
 msgstr "一度も再生していません"
 
-#: library/rb-node.c:834
-msgid "Today at %-H:%M:%S"
-msgstr "今日の %-H時%M分%S秒"
+#: library/rb-node.c:905
+msgid "Today at %-H:%M"
+msgstr "今日の %-H時%M分"
 
-#: library/rb-node.c:836
-msgid "Yesterday at %-H:%M:%S"
-msgstr "昨日の%-H時%M分%S秒"
+#: library/rb-node.c:907
+msgid "Yesterday at %-H:%M"
+msgstr "昨日の %-H時%M分"
 
-#: library/rb-node.c:838
-msgid "%A, %B %-d %Y at %-H:%M:%S"
-msgstr "%A, %B %-d %Y at %-H:%M:%S"
+#: library/rb-node.c:909
+msgid "%A, %B %-d %Y at %-H:%M"
+msgstr "%A, %B %-d %Y の %-H時%M分"
 
-#: shell/main.c:59
+#: library/rb-node.c:1695
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y年%m月%d日 %H:%M"
+
+#: shell/main.c:62
+msgid ""
+"Well well well...\n"
+"\n"
+"Gentoo eh? You'll run into problems. We know. Don't bug us.\n"
+"\n"
+"Have a nice day."
+msgstr ""
+"Well well well...\n"
+"\n"
+"Gentoo eh? You'll run into problems. We know. Don't bug us.\n"
+"\n"
+"Have a nice day."
+
+#: shell/main.c:78
 msgid "Enable debugging code"
 msgstr "デバッグ用コードを有効にします"
 
-#: shell/main.c:60
-msgid "Do not register the shell"
-msgstr "シェルに登録しないでください"
+#: shell/main.c:79
+msgid "Do not register with bonobo activation"
+msgstr "bonobo activation に登録しないでください"
 
-#: shell/main.c:61
+#: shell/main.c:80
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox を終了します"
 
-#: shell/main.c:62
+#: shell/main.c:81
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia オプション:"
 
-#: shell/main.c:70
+#: shell/main.c:89
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:158
-#, c-format
-msgid ""
-"Failed to activate the shell:\n"
-"%s"
-msgstr ""
-"shellの起動に失敗しました:\n"
-"%s"
+#: shell/main.c:208
+msgid "Failed to activate Rhythmbox"
+msgstr "Rhythmbox の起動に失敗しました"
 
-#: shell/rb-shell-player.c:233
-#, c-format
-msgid ""
-"Failed to create the mixer, error was:\n"
-"%s"
-msgstr ""
-"%s のためミキサーの\n"
-"作成に失敗しました"
-
-#: shell/rb-shell-player.c:512
-msgid "Pause"
-msgstr "一時停止"
-
-#: shell/rb-shell-player.c:513
-msgid "_Pause"
-msgstr "一時停止(_P)"
-
-#: shell/rb-shell-player.c:522
-msgid "Stop"
-msgstr "停止"
-
-#: shell/rb-shell-player.c:523
-msgid "_Stop"
-msgstr "停止(_S)"
-
-#: shell/rb-shell-preferences.c:158
+#: shell/rb-shell-preferences.c:173
 msgid "Music Player Preferences"
 msgstr "ミュージックプレイヤー設定"
 
-#: shell/rb-shell.c:586
+#. TRANSLATOR: [song_label] by [artist]
+#: shell/rb-player.c:312
+msgid "by "
+msgstr "アーティスト: "
+
+#: shell/rb-player.c:327
+msgid "Drag to go to a particular moment in the song"
+msgstr "ドラッグして特定の時間までジャンプできます"
+
+#: shell/rb-player.c:372
+msgid "Play the previous song"
+msgstr "前の曲を再生"
+
+#: shell/rb-player.c:383
+msgid "Play the next song"
+msgstr "次の曲を再生"
+
+#: shell/rb-player.c:395
+msgid "Shuffle the play list"
+msgstr "プレイリストをシャッフル"
+
+#: shell/rb-player.c:404 shell/rb-player.c:412
+msgid "Not playing"
+msgstr "停止中"
+
+#: shell/rb-player.c:418
+msgid "To play, add music to the play list"
+msgstr "演奏を始めるにはプレイリストに曲を追加して下さい"
+
+#: shell/rb-player.c:444
 #, c-format
 msgid ""
-"Failed to register the shell: %s\n"
+"Failed to create player, exiting. Error was:\n"
+"%s"
+msgstr ""
+"%s のエラーのためミキサーの作成に\n"
+"失敗しました"
+
+#: shell/rb-player.c:549
+msgid "Start playback"
+msgstr "再生開始"
+
+#: shell/rb-player.c:555
+msgid "Pause playback"
+msgstr "一時停止"
+
+#: shell/rb-player.c:693
+msgid "Disable repeating the play list"
+msgstr "プレイリストのリピートを取り消し"
+
+#: shell/rb-player.c:697
+msgid "Enable repeating the play list"
+msgstr "プレイリストのリピートを有効にします"
+
+#: shell/rb-player.c:792
+msgid "Get information about this artist from the web"
+msgstr "このアーティストに関する情報を Web から取得します"
+
+#: shell/rb-player.c:798
+#, c-format
+msgid "%s - %s"
+msgstr "%s - %s"
+
+#: shell/rb-player.c:800
+#, c-format
+msgid "%s - Unknown"
+msgstr "%s - 不明"
+
+#: shell/rb-player.c:832
+#, c-format
+msgid ""
+"Failed to create stream, error was:\n"
+"%s"
+msgstr ""
+"次の理由によりストリームを生成できません:\n"
+"%s"
+
+#: shell/rb-player.c:927
+#, c-format
+msgid "Failed to parse %s as playlist"
+msgstr "%s をプレイリストとして解析できません"
+
+#: shell/rb-player.c:1174
+#, c-format
+msgid "%ld:%.2ld"
+msgstr "%ld:%.2ld"
+
+#: shell/rb-player.c:1178
+#, c-format
+msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
+msgstr "時間 %ld:%.2ld (残り時間 %ld:%.2ld)"
+
+#. this is not critical, but worth a warning nevertheless
+#: shell/rb.c:285
+msgid ""
+"Failed to register Rhythmbox with bonobo activation:\n"
 "This probably means that you installed RB in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
-"%s シェルの登録に失敗しました。\n"
-"Rhythmbox が bonobo-activation とは違うディレクトリに\n"
+"bonobo activation への登録に失敗しました:\n"
+"Rhythmbox が bonobo-activation とは違う場所に\n"
 "インストールされているせいかもしれません。この警告は致命的な\n"
 "ものではないですが、プロセス間通信機能は動作しません。\n"
 
-#: shell/rb-shell.c:993 shell/rb-shell.c:2008
-msgid "Not playing"
-msgstr "停止中"
-
-#: shell/rb-shell.c:1006
-#, c-format
-msgid "%s (Paused)"
-msgstr "%s (一時停止)"
-
-#: shell/rb-shell.c:1011
-#, c-format
-msgid ""
-"%s\n"
-"Paused"
-msgstr ""
-"%s\n"
-"一時停止中"
-
-#: shell/rb-shell.c:1156
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr "Norihiro UMEDA (norihiro@users.sourceforge.jp)"
 
-#: shell/rb-shell.c:1167
-msgid "Copyright 2002 Jorn Baayen"
-msgstr "Copyright 2002 Jorn Baayen"
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr "主席開発者"
 
-#: shell/rb-shell.c:1168
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr "貢献者:"
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME 向けの楽曲管理・再生ソフトウェアです。"
 
-#: shell/rb-shell.c:1370
-msgid "Choose Files or Directory"
-msgstr "ファイルおよびディレクトリの選択"
+#: views/rb-audiocd-view.c:268
+msgid "music audiocd"
+msgstr "オーディオ CD"
 
-#: shell/rb-shell.c:1857
-msgid "Create"
-msgstr "作成"
+#: views/rb-audiocd-view.c:271
+msgid "Audio-CD"
+msgstr "オーディオ CD"
 
-#: shell/rb-shell.c:1881
-msgid "Please enter a name for the new music group."
-msgstr "新しいグループの名前を入力してください"
-
-#: shell/rb-shell.c:1891
-msgid "Untitled"
-msgstr "無題"
-
-#: shell/rb-shell.c:1895
-msgid "Add the _selected songs to the new group"
-msgstr "選択した曲を新しいグループに追加する(_s)"
-
-#: views/rb-group-view.c:311
-msgid "music group"
-msgstr "グループ"
-
-#: views/rb-group-view.c:314
-msgid "Unnamed"
-msgstr "無題"
-
-#: views/rb-group-view.c:788 views/rb-library-view.c:861
+#: views/rb-audiocd-view.c:671 views/rb-iradio-view.c:764
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -911,15 +839,66 @@ msgstr ""
 "ストリーム %s を次の理由により生成できません\n"
 "%s"
 
-#: views/rb-group-view.c:1114
+#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
+#: views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "不明"
+
+#: views/rb-audiocd-view.c:1075
 #, c-format
-msgid "Failed to parse %s as group file"
-msgstr "%s をグループファイルとして解析できません"
+msgid "Failed to parse %s as disc info file"
+msgstr "%s をディスク情報ファイルとして解析できません"
 
-#: views/rb-library-view.c:321
-msgid "library"
-msgstr "ライブラリ"
+#: views/rb-audiocd-view.c:1197
+#, c-format
+msgid "%d songs, %d:%02d:%02d total time"
+msgstr "%d 曲, 総演奏時間 %d時間%02d分%02d秒"
 
-#: views/rb-library-view.c:324 views/rb-library-view.c:1213
-msgid "Library"
-msgstr "ライブラリ"
+#: views/rb-iradio-view.c:305
+msgid "iradio"
+msgstr "Internet Radio"
+
+#: views/rb-iradio-view.c:308 views/rb-iradio-view.c:1147
+msgid ""
+"Internet\n"
+"Radio"
+msgstr ""
+"インターネット\n"
+"ラジオ"
+
+#: views/rb-iradio-view.c:980
+#, c-format
+msgid "%d total stations in %d distinct genres"
+msgstr "%d局, %d ジャンル"
+
+#: views/rb-library-view.c:358
+msgid "_Play Album"
+msgstr "アルバムの再生(_P)"
+
+#: views/rb-library-view.c:361
+msgid "Start playing this album"
+msgstr "アルバムをすぐに再生"
+
+#: views/rb-library-view.c:366
+msgid "Play Album _Later"
+msgstr "アルバムを後で再生(_L)"
+
+#: views/rb-library-view.c:369
+msgid "Enqueue this album for later playback"
+msgstr "このアルバムを後で再生するように追加"
+
+#: views/rb-library-view.c:375
+msgid "Play Song Later"
+msgstr "曲を後で再生"
+
+#: views/rb-library-view.c:378
+msgid "Enqueue the selected song(s) for later playback"
+msgstr "選択した局を後で再生するように追加"
+
+#: views/rb-library-view.c:383
+msgid "Play _Song"
+msgstr "曲を再生(_S)"
+
+#: views/rb-library-view.c:386
+msgid "Start playing the selected song(s)"
+msgstr "選択した曲を再生開始"
