@@ -1,3 +1,19 @@
+2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
+
+	* library/rb-library-action-queue.c:
+	(rb_library_action_queue_init), (rb_library_action_queue_finalize),
+	(rb_library_action_queue_add), (rb_library_action_queue_is_empty),
+	(rb_library_action_queue_peek_head),
+	(rb_library_action_queue_pop_head):
+	* library/rb-node.c: (rb_node_dispose),
+	(rb_node_set_object_property), (rb_node_action_queue_cb),
+	(rb_node_set_property), (rb_node_from_id), (rb_node_system_init),
+	(rb_node_system_shutdown), (rb_node_get_genre_by_name),
+	(rb_node_get_artist_by_name), (rb_node_get_album_by_name),
+	(rb_node_get_song_by_uri), (rb_node_add_action):
+
+	Better locking.
+
 2002-08-10  Olivier Martin <omartin@ifrance.com>
 
 	* library/rb-node.c: (rb_node_action_queue_cb),

@@ -33,7 +33,7 @@ typedef struct
 struct RBLibraryActionQueuePrivate
 {
 	GQueue *queue;
-	GMutex *lock;
+	GStaticRWLock *lock;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -83,7 +83,8 @@ rb_library_action_queue_init (RBLibraryActionQueue *library_action_queue)
 
 	library_action_queue->priv->queue = g_queue_new ();
 
-	library_action_queue->priv->lock = g_mutex_new ();
+	library_action_queue->priv->lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (library_action_queue->priv->lock);
 }
 
 static void
@@ -106,7 +107,7 @@ rb_library_action_queue_finalize (GObject *object)
 	}
 	g_queue_free (library_action_queue->priv->queue);
 
-	g_mutex_free (library_action_queue->priv->lock);
+	g_static_rw_lock_free (library_action_queue->priv->lock);
 
 	g_free (library_action_queue->priv);
 
@@ -136,9 +137,9 @@ rb_library_action_queue_add (RBLibraryActionQueue *queue,
 	action->type = type;
 	action->uri = g_strdup (uri);
 	
-	g_mutex_lock (queue->priv->lock);
+	g_static_rw_lock_writer_lock (queue->priv->lock);
 	g_queue_push_tail (queue->priv->queue, action);
-	g_mutex_unlock (queue->priv->lock);
+	g_static_rw_lock_writer_unlock (queue->priv->lock);
 }
 
 gboolean
@@ -146,9 +147,9 @@ rb_library_action_queue_is_empty (RBLibraryActionQueue *queue)
 {
 	gboolean ret;
 
-	g_mutex_lock (queue->priv->lock);
+	g_static_rw_lock_reader_lock (queue->priv->lock);
 	ret = g_queue_is_empty (queue->priv->queue);
-	g_mutex_unlock (queue->priv->lock);
+	g_static_rw_lock_reader_unlock (queue->priv->lock);
 
 	return ret;
 }
@@ -160,9 +161,9 @@ rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
 {
 	RBLibraryAction *action;
 
-	g_mutex_lock (queue->priv->lock);
+	g_static_rw_lock_reader_lock (queue->priv->lock);
 	action = g_queue_peek_head (queue->priv->queue);
-	g_mutex_unlock (queue->priv->lock);
+	g_static_rw_lock_reader_unlock (queue->priv->lock);
 
 	*type = action->type;
 	*uri = action->uri;
@@ -173,9 +174,9 @@ rb_library_action_queue_pop_head (RBLibraryActionQueue *queue)
 {
 	RBLibraryAction *action;
 	
-	g_mutex_lock (queue->priv->lock);
+	g_static_rw_lock_writer_lock (queue->priv->lock);
 	action = g_queue_pop_head (queue->priv->queue);
-	g_mutex_unlock (queue->priv->lock);
+	g_static_rw_lock_writer_unlock (queue->priv->lock);
 	
 	g_free (action->uri);
 	g_free (action);

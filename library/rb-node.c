@@ -101,7 +101,7 @@ static guint rb_node_signals[LAST_SIGNAL] = { 0 };
 static GMutex *id_factory_lock = NULL;
 static long id_factory = 0;
 
-static GMutex *id_to_node_hash_lock = NULL;
+static GStaticRWLock *id_to_node_hash_lock = NULL;
 static GHashTable *id_to_node_hash = NULL;
 
 static GHashTable *name_to_genre  = NULL;
@@ -109,14 +109,14 @@ static GHashTable *name_to_artist = NULL;
 static GHashTable *name_to_album  = NULL;
 static GHashTable *uri_to_song    = NULL;
 
-static GMutex *name_to_genre_lock  = NULL;
-static GMutex *name_to_artist_lock = NULL;
-static GMutex *name_to_album_lock  = NULL;
-static GMutex *uri_to_song_lock    = NULL; 
+static GStaticRWLock *name_to_genre_lock  = NULL;
+static GStaticRWLock *name_to_artist_lock = NULL;
+static GStaticRWLock *name_to_album_lock  = NULL;
+static GStaticRWLock *uri_to_song_lock    = NULL; 
 
 /* action queue */
 static GQueue *actions = NULL;
-static GMutex *actions_lock = NULL;
+static GStaticRWLock *actions_lock = NULL;
 static guint actions_idle_func = 0;
 
 GType
@@ -274,10 +274,10 @@ rb_node_dispose (GObject *object)
 
 	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 	
-	g_mutex_lock (id_to_node_hash_lock);
+	g_static_rw_lock_writer_lock (id_to_node_hash_lock);
 	if (id_to_node_hash != NULL)
 		g_hash_table_remove (id_to_node_hash, node);
-	g_mutex_unlock (id_to_node_hash_lock);
+	g_static_rw_lock_writer_unlock (id_to_node_hash_lock);
 
 	/* decrement parent refcount */
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
@@ -309,9 +309,9 @@ rb_node_set_object_property (GObject *object,
 	case PROP_ID:
 		node->priv->id = g_value_get_long (value);
 
-		g_mutex_lock (id_to_node_hash_lock);
+		g_static_rw_lock_writer_lock (id_to_node_hash_lock);
 		g_hash_table_insert (id_to_node_hash, GINT_TO_POINTER (node->priv->id), node);
-		g_mutex_unlock (id_to_node_hash_lock);
+		g_static_rw_lock_writer_unlock (id_to_node_hash_lock);
 		break;
 	case PROP_TYPE:
 		node->priv->type = g_value_get_enum (value);
@@ -348,17 +348,22 @@ static gboolean
 rb_node_action_queue_cb (gpointer node_reference)
 {
 	RBNodeAction *action;
+	gboolean empty;
 
-	if (g_queue_is_empty (actions) == TRUE)
+	g_static_rw_lock_reader_lock (actions_lock);
+	empty = g_queue_is_empty (actions);
+	g_static_rw_lock_reader_unlock (actions_lock);
+
+	if (empty == TRUE)
 	{
 		actions_idle_func = 0;
 		return FALSE;
 	}
 
 	{
-		g_mutex_lock (actions_lock);
+		g_static_rw_lock_writer_lock (actions_lock);
 		action = g_queue_pop_head (actions);
-		g_mutex_unlock (actions_lock);
+		g_static_rw_lock_writer_unlock (actions_lock);
 
 		switch (action->type)
 		{
@@ -576,41 +581,41 @@ rb_node_set_property (RBNode *node,
 	case RB_NODE_TYPE_GENRE:
 		if (strcmp (property, "name") == 0)
 		{
-			g_mutex_lock (name_to_genre_lock);
+			g_static_rw_lock_writer_lock (name_to_genre_lock);
 			g_hash_table_replace (name_to_genre,
 					      g_strdup (g_value_get_string (value)),
 					      node);
-			g_mutex_unlock (name_to_genre_lock);
+			g_static_rw_lock_writer_unlock (name_to_genre_lock);
 		}
 		break;
 	case RB_NODE_TYPE_ARTIST:
 		if (strcmp (property, "name") == 0)
 		{
-			g_mutex_lock (name_to_artist_lock);
+			g_static_rw_lock_writer_lock (name_to_artist_lock);
 			g_hash_table_replace (name_to_artist,
 					      g_strdup (g_value_get_string (value)),
 					      node);
-			g_mutex_unlock (name_to_artist_lock);
+			g_static_rw_lock_writer_unlock (name_to_artist_lock);
 		}
 		break;
 	case RB_NODE_TYPE_ALBUM:
 		if (strcmp (property, "name") == 0)
 		{
-			g_mutex_lock (name_to_album_lock);
+			g_static_rw_lock_writer_lock (name_to_album_lock);
 			g_hash_table_replace (name_to_album,
 					      g_strdup (g_value_get_string (value)),
 					      node);
-			g_mutex_unlock (name_to_album_lock);
+			g_static_rw_lock_writer_unlock (name_to_album_lock);
 		}
 		break;
 	case RB_NODE_TYPE_SONG:
 		if (strcmp (property, "location") == 0)
 		{
-			g_mutex_lock (uri_to_song_lock);
+			g_static_rw_lock_writer_lock (uri_to_song_lock);
 			g_hash_table_replace (uri_to_song,
 					      g_strdup (g_value_get_string (value)),
 					      node);
-			g_mutex_unlock (uri_to_song_lock);
+			g_static_rw_lock_writer_unlock (uri_to_song_lock);
 		}
 		break;
 	default:
@@ -964,9 +969,9 @@ rb_node_from_id (int id)
 
 	g_return_val_if_fail (id >= 0, NULL);
 
-	g_mutex_lock (id_to_node_hash_lock);
+	g_static_rw_lock_reader_lock (id_to_node_hash_lock);
 	node = g_hash_table_lookup (id_to_node_hash, GINT_TO_POINTER (id));
-	g_mutex_unlock (id_to_node_hash_lock);
+	g_static_rw_lock_reader_unlock (id_to_node_hash_lock);
 
 	return node;
 }
@@ -1104,10 +1109,12 @@ rb_node_system_init (void)
 	g_return_if_fail (actions_lock == NULL);
 	
 	actions = g_queue_new ();
-	actions_lock = g_mutex_new ();
+	actions_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (actions_lock);
 
 	id_to_node_hash = g_hash_table_new (NULL, NULL);
-	id_to_node_hash_lock = g_mutex_new ();
+	id_to_node_hash_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (id_to_node_hash_lock);
 
 	id_factory_lock = g_mutex_new ();
 
@@ -1127,10 +1134,11 @@ rb_node_system_init (void)
 					        g_str_equal,
 					        (GDestroyNotify) g_free,
 					        NULL);
-	name_to_genre_lock  = g_mutex_new ();
-	name_to_artist_lock = g_mutex_new ();
-	name_to_album_lock  = g_mutex_new ();
-	uri_to_song_lock    = g_mutex_new ();
+
+	name_to_genre_lock  = g_new0 (GStaticRWLock, 1);
+	name_to_artist_lock = g_new0 (GStaticRWLock, 1);
+	name_to_album_lock  = g_new0 (GStaticRWLock, 1);
+	uri_to_song_lock    = g_new0 (GStaticRWLock, 1);
 }
 
 void
@@ -1140,7 +1148,7 @@ rb_node_system_shutdown (void)
 
 	g_source_remove (actions_idle_func);
 
-	g_mutex_free (actions_lock);
+	g_static_rw_lock_free (actions_lock);
 
 	while (g_queue_is_empty (actions) == FALSE)
 	{
@@ -1150,7 +1158,7 @@ rb_node_system_shutdown (void)
 	g_queue_free (actions);
 
 	g_hash_table_destroy (id_to_node_hash);
-	g_mutex_free (id_to_node_hash_lock);
+	g_static_rw_lock_free (id_to_node_hash_lock);
 
 	g_mutex_free (id_factory_lock);
 
@@ -1159,10 +1167,10 @@ rb_node_system_shutdown (void)
 	g_hash_table_destroy (name_to_album);
 	g_hash_table_destroy (uri_to_song);
 
-	g_mutex_free (name_to_genre_lock);
-	g_mutex_free (name_to_artist_lock);
-	g_mutex_free (name_to_album_lock);
-	g_mutex_free (uri_to_song_lock);
+	g_static_rw_lock_free (name_to_genre_lock);
+	g_static_rw_lock_free (name_to_artist_lock);
+	g_static_rw_lock_free (name_to_album_lock);
+	g_static_rw_lock_free (uri_to_song_lock);
 }
 
 void
@@ -1186,9 +1194,9 @@ rb_node_get_genre_by_name (const char *name)
 {
 	RBNode *ret;
 	
-	g_mutex_lock (name_to_genre_lock);
+	g_static_rw_lock_reader_lock (name_to_genre_lock);
 	ret = g_hash_table_lookup (name_to_genre, name);
-	g_mutex_unlock (name_to_genre_lock);
+	g_static_rw_lock_reader_unlock (name_to_genre_lock);
 
 	return ret;
 }
@@ -1198,9 +1206,9 @@ rb_node_get_artist_by_name (const char *name)
 {
 	RBNode *ret;
 
-	g_mutex_lock (name_to_artist_lock);
+	g_static_rw_lock_reader_lock (name_to_artist_lock);
 	ret = g_hash_table_lookup (name_to_artist, name);
-	g_mutex_unlock (name_to_artist_lock);
+	g_static_rw_lock_reader_unlock (name_to_artist_lock);
 
 	return ret;
 }
@@ -1210,9 +1218,9 @@ rb_node_get_album_by_name (const char *name)
 {
 	RBNode *ret;
 	
-	g_mutex_lock (name_to_album_lock);
+	g_static_rw_lock_reader_lock (name_to_album_lock);
 	ret = g_hash_table_lookup (name_to_album, name);
-	g_mutex_unlock (name_to_album_lock);
+	g_static_rw_lock_reader_unlock (name_to_album_lock);
 
 	return ret;
 }
@@ -1222,9 +1230,9 @@ rb_node_get_song_by_uri (const char *uri)
 {
 	RBNode *ret;
 
-	g_mutex_lock (uri_to_song_lock);
+	g_static_rw_lock_reader_lock (uri_to_song_lock);
 	ret = g_hash_table_lookup (uri_to_song, uri);
-	g_mutex_unlock (uri_to_song_lock);
+	g_static_rw_lock_reader_unlock (uri_to_song_lock);
 
 	return ret;
 }
@@ -1233,9 +1241,9 @@ static void
 rb_node_add_action (RBNode *node,
 		    RBNodeAction *action)
 {
-	g_mutex_lock (actions_lock);
+	g_static_rw_lock_writer_lock (actions_lock);
 	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
+	g_static_rw_lock_writer_unlock (actions_lock);
 
 	/* add the idle function that will emit signals */
 	if (actions_idle_func == 0)
