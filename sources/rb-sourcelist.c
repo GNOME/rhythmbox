@@ -171,22 +171,22 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	sourcelist->priv->model = rb_sourcelist_model_new ();
 
-	g_signal_connect (G_OBJECT (sourcelist->priv->model),
-			  "drop_received",
-			  G_CALLBACK (drop_received_cb),
-			  sourcelist);
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->model),
+				 "drop_received",
+				 G_CALLBACK (drop_received_cb),
+				 sourcelist, 0);
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->model);
 
-	g_signal_connect (G_OBJECT (sourcelist->priv->treeview),
-			  "row_activated",
-			  G_CALLBACK (row_activated_cb),
-			  sourcelist);
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+				 "row_activated",
+				 G_CALLBACK (row_activated_cb),
+				 sourcelist, 0);
 
-	g_signal_connect (G_OBJECT (sourcelist->priv->treeview),
-			  "button_press_event",
-			  G_CALLBACK (button_press_cb),
-			  sourcelist);
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+				 "button_press_event",
+				 G_CALLBACK (button_press_cb),
+				 sourcelist, 0);
 
 	/* Set up the pixbuf column */
 	renderer = gtk_cell_renderer_pixbuf_new ();
@@ -207,7 +207,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 						 (GtkTreeCellDataFunc)
 						 rb_sourcelist_title_cell_data_func,
 						 sourcelist, NULL);
-	g_signal_connect (renderer, "edited", G_CALLBACK (source_name_edited_cb), sourcelist);
+	g_signal_connect_object (renderer, "edited", G_CALLBACK (source_name_edited_cb), sourcelist, 0);
 
 	sourcelist->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sourcelist->priv->treeview));
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->selection),

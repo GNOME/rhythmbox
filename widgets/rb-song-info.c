@@ -223,10 +223,10 @@ rb_song_info_init (RBSongInfo *song_info)
 	/* create the dialog and some buttons backward - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
 
-	g_signal_connect (G_OBJECT (song_info),
-			  "response",
-			  G_CALLBACK (rb_song_info_response_cb),
-			  song_info);
+	g_signal_connect_object (G_OBJECT (song_info),
+				 "response",
+				 G_CALLBACK (rb_song_info_response_cb),
+				 song_info, 0);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
@@ -250,19 +250,19 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 							   GTK_STOCK_GO_BACK,
 							   GTK_RESPONSE_NONE);
 	
-	g_signal_connect (G_OBJECT (song_info->priv->backward),
-			  "clicked",
-			  G_CALLBACK (rb_song_info_backward_clicked_cb),
-			  song_info);
+	g_signal_connect_object (G_OBJECT (song_info->priv->backward),
+				 "clicked",
+				 G_CALLBACK (rb_song_info_backward_clicked_cb),
+				 song_info, 0);
 	
 	song_info->priv->forward = gtk_dialog_add_button (GTK_DIALOG (song_info),
 							   GTK_STOCK_GO_FORWARD,
 							   GTK_RESPONSE_NONE);
 	
-	g_signal_connect (G_OBJECT (song_info->priv->forward),
-			  "clicked",
-			  G_CALLBACK (rb_song_info_forward_clicked_cb),
-			  song_info);
+	g_signal_connect_object (G_OBJECT (song_info->priv->forward),
+				 "clicked",
+				 G_CALLBACK (rb_song_info_forward_clicked_cb),
+				 song_info, 0);
 
 	gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
 
@@ -334,14 +334,14 @@ rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
 	}
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
-	g_signal_connect (G_OBJECT (song_info->priv->title),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
-	g_signal_connect (G_OBJECT (song_info->priv->track_cur),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
+	g_signal_connect_object (G_OBJECT (song_info->priv->title),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->track_cur),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
 
 	gtk_editable_set_editable (GTK_EDITABLE (song_info->priv->title), editable);
 	gtk_editable_set_editable  (GTK_EDITABLE (song_info->priv->track_cur), editable);
@@ -464,26 +464,26 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 		g_free (str_final);
 	}
 
-	g_signal_connect (G_OBJECT (song_info->priv->artist),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
-	g_signal_connect (G_OBJECT (song_info->priv->album),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
-	g_signal_connect (G_OBJECT (song_info->priv->genre),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
+	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->album),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
+	g_signal_connect_object (G_OBJECT (song_info->priv->genre),
+				 "mnemonic-activate",
+				 G_CALLBACK (rb_song_info_mnemonic_cb),
+				 NULL, 0);
 
 	song_info->priv->auto_rate_notify_id
 		= eel_gconf_notification_add (CONF_AUTO_RATE,
 					      (GConfClientNotifyFunc) rb_song_info_auto_rate_conf_changed_cb,
 					      song_info);
-	g_signal_connect (song_info->priv->auto_rate, "toggled",
-			  G_CALLBACK (rb_song_info_auto_rate_toggled_cb),
-			  song_info);
+	g_signal_connect_object (song_info->priv->auto_rate, "toggled",
+				 G_CALLBACK (rb_song_info_auto_rate_toggled_cb),
+				 song_info, 0);
 
 	/* this widget has to be customly created */
 	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());

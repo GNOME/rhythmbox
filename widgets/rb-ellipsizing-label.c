@@ -871,13 +871,13 @@ main (int argc, char **argv)
 	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (label), RB_ELLIPSIZE_END);
 	
 	entry = gtk_entry_new ();
-	g_signal_connect (G_OBJECT (entry), "changed",
-			  G_CALLBACK (entry_changed_cb), label);
-	g_signal_connect (G_OBJECT (entry), "changed",
-			  G_CALLBACK (entry_changed_cb), label3);
+	g_signal_connect_object (G_OBJECT (entry), "changed",
+				 G_CALLBACK (entry_changed_cb), label, 0);
+	g_signal_connect_object (G_OBJECT (entry), "changed",
+				 G_CALLBACK (entry_changed_cb), label3, 0);
 	entry2 = gtk_entry_new ();
-	g_signal_connect (G_OBJECT (entry2), "changed",
-			  G_CALLBACK (entry_changed_cb), label2);
+	g_signal_connect_object (G_OBJECT (entry2), "changed",
+				 G_CALLBACK (entry_changed_cb), label2, 0);
 	
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), entry);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), entry2);

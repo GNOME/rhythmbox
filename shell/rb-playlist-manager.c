@@ -414,9 +414,9 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
 	{
 		RBPlaylist *parser = rb_playlist_new ();
 
-		g_signal_connect (G_OBJECT (parser), "entry",
-				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
-				  mgr);
+		g_signal_connect_object (G_OBJECT (parser), "entry",
+					 G_CALLBACK (handle_playlist_entry_into_playlist_cb),
+					 mgr, 0);
 
 		if (!rb_playlist_parse (parser, uri))
 			rb_error_dialog (_("Couldn't parse playlist"));
@@ -440,8 +440,8 @@ static void
 append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 {
 	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source);
-	g_signal_connect (G_OBJECT (source), "deleted",
-			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr);
+	g_signal_connect_object (G_OBJECT (source), "deleted",
+				 G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr, 0);
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
 		       source);
 }
@@ -647,8 +647,8 @@ rb_playlist_manager_cmd_load_playlist (BonoboUIComponent *component,
 	dialog = rb_ask_file_multiple (_("Load playlist"), NULL,
 			              GTK_WINDOW (mgr->priv->window));
 
-	g_signal_connect (G_OBJECT (dialog), "response",
-			  G_CALLBACK (load_playlist_response_cb), mgr);
+	g_signal_connect_object (G_OBJECT (dialog), "response",
+				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
 }
 
 static void
@@ -684,9 +684,9 @@ rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
 	dialog = rb_ask_file_multiple (_("Save playlist"), NULL,
 			              GTK_WINDOW (mgr->priv->window));
 
-	g_signal_connect (G_OBJECT (dialog), "response",
-			  G_CALLBACK (save_playlist_response_cb),
-			  mgr);
+	g_signal_connect_object (G_OBJECT (dialog), "response",
+				 G_CALLBACK (save_playlist_response_cb),
+				 mgr, 0);
 }
 
 static void

@@ -397,8 +397,8 @@ rb_metadata_load (RBMetaData *md,
 	 */
 	pipeline = gst_pipeline_new ("pipeline");
 
-	g_signal_connect (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md);
-	g_signal_connect (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md);
+	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
+	g_signal_connect_object (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md, 0);
 
 	plugin_name = "gnomevfssrc";
 	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
@@ -408,7 +408,7 @@ rb_metadata_load (RBMetaData *md,
 	plugin_name = "typefind";
 	if (!(typefind = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
-	g_signal_connect (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md);
+	g_signal_connect_object (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md, 0);
 	gst_bin_add (GST_BIN (pipeline), typefind);		  
 	plugin_name = "spider";
 	if (!(spider = gst_element_factory_make (plugin_name, plugin_name)))
@@ -419,8 +419,8 @@ rb_metadata_load (RBMetaData *md,
 		goto missing_plugin;
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
 	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
-	g_signal_connect (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md);
-	g_signal_connect (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
+	g_signal_connect_object (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md, 0);
+	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
 
@@ -558,7 +558,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	pipeline = gst_pipeline_new ("pipeline");
 
-	g_signal_connect (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md);
+	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
 
 	plugin_name = "gnomevfssrc";
 	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
@@ -593,7 +593,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 		goto missing_plugin;
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
 	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
-	g_signal_connect (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
+	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 
 	gst_element_link_many (gnomevfssrc, tagger, md->priv->sink, NULL);
 

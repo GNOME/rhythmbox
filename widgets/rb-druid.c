@@ -138,12 +138,12 @@ rb_druid_init (RBDruid *druid)
 	druid->priv->path_entry = glade_xml_get_widget (xml, "path_entry");
 	druid->priv->page2_skip_radiobutton = glade_xml_get_widget (xml, "page2_skip_radiobutton");
 
-	g_signal_connect (G_OBJECT (druid->priv->page2_skip_radiobutton), "toggled",
-			  G_CALLBACK (rb_druid_skip_toggled_cb), druid);
-	g_signal_connect (G_OBJECT (druid->priv->browse_button), "clicked",
-			  G_CALLBACK (rb_druid_browse_clicked_cb), druid);
-	g_signal_connect (G_OBJECT (druid->priv->path_entry), "changed",
-			  G_CALLBACK (rb_druid_entry_changed_cb), druid);
+	g_signal_connect_object (G_OBJECT (druid->priv->page2_skip_radiobutton), "toggled",
+				 G_CALLBACK (rb_druid_skip_toggled_cb), druid, 0);
+	g_signal_connect_object (G_OBJECT (druid->priv->browse_button), "clicked",
+				 G_CALLBACK (rb_druid_browse_clicked_cb), druid, 0);
+	g_signal_connect_object (G_OBJECT (druid->priv->path_entry), "changed",
+				 G_CALLBACK (rb_druid_entry_changed_cb), druid, 0);
 
 	g_object_unref (G_OBJECT (xml));
 }
@@ -250,7 +250,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	gtk_container_add (GTK_CONTAINER (GNOME_DRUID_PAGE_STANDARD (page)->vbox),
 			   druid->priv->page2_vbox);
 	gnome_druid_append_page (druid->priv->druid, page);
-	g_signal_connect (G_OBJECT (page), "prepare", G_CALLBACK (rb_druid_page2_prepare_cb), druid);
+	g_signal_connect_object (G_OBJECT (page), "prepare", G_CALLBACK (rb_druid_page2_prepare_cb), druid, 0);
 	
 	/* page 3 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_edge_new (GNOME_EDGE_FINISH));
@@ -258,10 +258,10 @@ rb_druid_init_widgets (RBDruid *druid)
 	gnome_druid_page_edge_set_title (GNOME_DRUID_PAGE_EDGE (page), _("Finish"));
 	gnome_druid_page_edge_set_text (GNOME_DRUID_PAGE_EDGE (page),
 					_("You are now ready to start Rhythmbox.\n\nRemember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."));
-	g_signal_connect (G_OBJECT (page), "finish", G_CALLBACK (rb_druid_page3_finish_cb), druid);
+	g_signal_connect_object (G_OBJECT (page), "finish", G_CALLBACK (rb_druid_page3_finish_cb), druid, 0);
 	gnome_druid_append_page (druid->priv->druid, page);
 
-/* 	g_signal_connect (page, "prepare", G_CALLBACK (gb_export_druid_page_5_prepare_cb), d); */
+/* 	g_signal_connect_object (page, "prepare", G_CALLBACK (gb_export_druid_page_5_prepare_cb), d, 0); */
 
 	/* misc */
 	gnome_druid_set_show_help (druid->priv->druid, FALSE);
@@ -334,8 +334,8 @@ rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
 			      GTK_WINDOW (druid->priv->window));
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
-	g_signal_connect (G_OBJECT (dialog), "response",
-			  G_CALLBACK (path_dialog_response_cb), druid);
+	g_signal_connect_object (G_OBJECT (dialog), "response",
+				 G_CALLBACK (path_dialog_response_cb), druid, 0);
 }
 
 void

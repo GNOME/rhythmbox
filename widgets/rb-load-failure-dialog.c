@@ -105,10 +105,10 @@ rb_load_failure_dialog_init (RBLoadFailureDialog *dlg)
 
 	dlg->priv = g_new0 (RBLoadFailureDialogPrivate, 1);
 
-	g_signal_connect (G_OBJECT (dlg),
-			  "response",
-			  G_CALLBACK (rb_load_failure_dialog_response_cb),
-			  dlg);
+	g_signal_connect_object (G_OBJECT (dlg),
+				 "response",
+				 G_CALLBACK (rb_load_failure_dialog_response_cb),
+				 dlg, 0);
 
 	gtk_dialog_add_button (GTK_DIALOG (dlg),
 			       GTK_STOCK_CLOSE,
@@ -154,12 +154,12 @@ rb_load_failure_dialog_init (RBLoadFailureDialog *dlg)
 
 	gtk_window_set_modal (GTK_WINDOW (dlg), FALSE);
 
-	g_signal_connect (G_OBJECT (dlg), "window-state-event",
-			  G_CALLBACK (rb_load_failure_dialog_window_state_cb),
-			  dlg);
-	g_signal_connect (G_OBJECT (dlg), "configure-event",
-			  G_CALLBACK (rb_load_failure_dialog_window_state_cb),
-			  dlg);
+	g_signal_connect_object (G_OBJECT (dlg), "window-state-event",
+				 G_CALLBACK (rb_load_failure_dialog_window_state_cb),
+				 dlg, 0);
+	g_signal_connect_object (G_OBJECT (dlg), "configure-event",
+				 G_CALLBACK (rb_load_failure_dialog_window_state_cb),
+				 dlg, 0);
 
 	rb_load_failure_dialog_sync_window_state (dlg);
 }

@@ -237,12 +237,12 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	source = RB_PLAYLIST_SOURCE (parent_class->constructor (type, n_construct_properties,
 								construct_properties));
 
-	g_signal_connect (G_OBJECT (source->priv->db), "entry_added",
-			  G_CALLBACK (rb_playlist_source_entry_added_cb),
-			  source);
-	g_signal_connect (G_OBJECT (source->priv->db), "entry_restored",
-			  G_CALLBACK (rb_playlist_source_entry_added_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_added",
+				 G_CALLBACK (rb_playlist_source_entry_added_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->db), "entry_restored",
+				 G_CALLBACK (rb_playlist_source_entry_added_cb),
+				 source, 0);
 
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
@@ -280,11 +280,11 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
 	rb_entry_view_set_columns_clickable (source->priv->songs, FALSE);
 
-	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
-			  G_CALLBACK (rb_playlist_source_songs_show_popup_cb), source);
+	g_signal_connect_object (G_OBJECT (source->priv->songs), "show_popup",
+				 G_CALLBACK (rb_playlist_source_songs_show_popup_cb), source, 0);
 		
-	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
-			  G_CALLBACK (rb_playlist_source_drop_cb), source);
+	g_signal_connect_object (G_OBJECT (source->priv->songs), "drag_data_received",
+				 G_CALLBACK (rb_playlist_source_drop_cb), source, 0);
 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_uri, G_N_ELEMENTS (target_uri), GDK_ACTION_COPY);
 		

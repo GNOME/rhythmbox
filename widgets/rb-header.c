@@ -289,22 +289,22 @@ rb_header_init (RBHeader *player)
 
 	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
-	g_signal_connect (G_OBJECT (player->priv->scale),
-			  "button_press_event",
-			  G_CALLBACK (slider_press_callback),
-			  player);
-	g_signal_connect (G_OBJECT (player->priv->scale),
-			  "button_release_event",
-			  G_CALLBACK (slider_release_callback),
-			  player);
-	g_signal_connect (G_OBJECT (player->priv->scale),
-			  "motion_notify_event",
-			  G_CALLBACK (slider_moved_callback),
-			  player);
-	g_signal_connect (G_OBJECT (player->priv->scale),
-			  "value_changed",
-			  G_CALLBACK (slider_changed_callback),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 "button_press_event",
+				 G_CALLBACK (slider_press_callback),
+				 player, 0);
+	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 "button_release_event",
+				 G_CALLBACK (slider_release_callback),
+				 player, 0);
+	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 "motion_notify_event",
+				 G_CALLBACK (slider_moved_callback),
+				 player, 0);
+	g_signal_connect_object (G_OBJECT (player->priv->scale),
+				 "value_changed",
+				 G_CALLBACK (slider_changed_callback),
+				 player, 0);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);

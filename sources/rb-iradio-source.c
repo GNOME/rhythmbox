@@ -310,26 +310,26 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED);
-	g_signal_connect (G_OBJECT (source->priv->stations),
-			  "sort-order-changed",
-			  G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->stations),
+				 "sort-order-changed",
+				 G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
+				 source, 0);
 
-	g_signal_connect (G_OBJECT (source->priv->stations),
-			  "size_allocate",
-			  G_CALLBACK (paned_size_allocate_cb),
-			  source);
-	g_signal_connect (G_OBJECT (source->priv->stations), "show_popup",
-			  G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source);
+	g_signal_connect_object (G_OBJECT (source->priv->stations),
+				 "size_allocate",
+				 G_CALLBACK (paned_size_allocate_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->stations), "show_popup",
+				 G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source, 0);
 
 	/* set up genre entry view */
 	source->priv->genres = rb_property_view_new (source->priv->db,
 						     RHYTHMDB_PROP_GENRE,
 						     _("Genre"));
-	g_signal_connect (G_OBJECT (source->priv->genres),
-			  "property-selected",
-			  G_CALLBACK (genre_selected_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->genres),
+				 "property-selected",
+				 G_CALLBACK (genre_selected_cb),
+				 source, 0);
 
 	g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy",
 		      GTK_POLICY_AUTOMATIC, NULL);

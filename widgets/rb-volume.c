@@ -159,11 +159,11 @@ rb_volume_init (RBVolume *volume)
 
 	gtk_container_add (GTK_CONTAINER (volume->priv->button), volume->priv->max_image);
 
-	g_signal_connect (G_OBJECT (volume->priv->button), "clicked",
-			  G_CALLBACK (clicked_cb), volume);
-	g_signal_connect (G_OBJECT (volume->priv->button), "scroll_event",
-			  G_CALLBACK (scroll_cb),
-			  volume);
+	g_signal_connect_object (G_OBJECT (volume->priv->button), "clicked",
+				 G_CALLBACK (clicked_cb), volume, 0);
+	g_signal_connect_object (G_OBJECT (volume->priv->button), "scroll_event",
+				 G_CALLBACK (scroll_cb),
+				 volume, 0);
 	gtk_widget_show_all (GTK_WIDGET (volume));
 
 	volume->priv->window = gtk_window_new (GTK_WINDOW_POPUP);
@@ -174,10 +174,10 @@ rb_volume_init (RBVolume *volume)
 							       VOLUME_MAX/20,
 							       VOLUME_MAX/10,
 							       0.0));
-	g_signal_connect (volume->priv->adj,
-			  "value-changed",
-			  (GCallback) mixer_value_changed_cb,
-			  volume);
+	g_signal_connect_object (volume->priv->adj,
+				 "value-changed",
+				 (GCallback) mixer_value_changed_cb,
+				 volume, 0);
 
 	frame = gtk_frame_new (NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (frame), 0);
@@ -198,26 +198,26 @@ rb_volume_init (RBVolume *volume)
 	gtk_range_set_inverted (GTK_RANGE (volume->priv->scale), TRUE);
 	gtk_widget_set_size_request (volume->priv->scale, -1, 100);
 
-	g_signal_connect (G_OBJECT (volume->priv->window), "scroll_event",
-			  G_CALLBACK (scroll_cb),
-			  volume);
+	g_signal_connect_object (G_OBJECT (volume->priv->window), "scroll_event",
+				 G_CALLBACK (scroll_cb),
+				 volume, 0);
 
-	g_signal_connect (G_OBJECT (volume->priv->window),
-			  "button-press-event",
-			  (GCallback) scale_button_release_event_cb,
-			  volume);
+	g_signal_connect_object (G_OBJECT (volume->priv->window),
+				 "button-press-event",
+				 (GCallback) scale_button_release_event_cb,
+				 volume, 0);
 
 	/* button event on the scale widget are not catched by its parent window
 	** so we must connect to this widget as well */
-	g_signal_connect (G_OBJECT (volume->priv->scale),
-			  "button-release-event",
-			  (GCallback) scale_button_release_event_cb,
-			  volume);
+	g_signal_connect_object (G_OBJECT (volume->priv->scale),
+				 "button-release-event",
+				 (GCallback) scale_button_release_event_cb,
+				 volume, 0);
 
-	g_signal_connect (G_OBJECT (volume->priv->scale),
-			  "key-press-event",
-			  (GCallback) scale_key_press_event_cb,
-			  volume);
+	g_signal_connect_object (G_OBJECT (volume->priv->scale),
+				 "key-press-event",
+				 (GCallback) scale_key_press_event_cb,
+				 volume, 0);
 
 	gtk_scale_set_draw_value (GTK_SCALE (volume->priv->scale), FALSE);
 

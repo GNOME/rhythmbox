@@ -184,14 +184,14 @@ rb_source_header_init (RBSourceHeader *header)
 			      NULL);
 	gtk_container_add (GTK_CONTAINER (ebox), GTK_WIDGET (header->priv->search));
 
-	g_signal_connect (G_OBJECT (header->priv->search), "search",
-			  G_CALLBACK (rb_source_header_search_cb), header);
+	g_signal_connect_object (G_OBJECT (header->priv->search), "search",
+				 G_CALLBACK (rb_source_header_search_cb), header, 0);
 
 	header->priv->disclosure = cddb_disclosure_new (_("Show _Browser"),
 							_("Hide _Browser"));
 	gtk_widget_set_sensitive (header->priv->disclosure, FALSE);
-	g_signal_connect (G_OBJECT (header->priv->disclosure), "toggled",
-			  G_CALLBACK (rb_source_header_disclosure_toggled_cb), header);
+	g_signal_connect_object (G_OBJECT (header->priv->disclosure), "toggled",
+				 G_CALLBACK (rb_source_header_disclosure_toggled_cb), header, 0);
 
 	gtk_table_attach_defaults (GTK_TABLE (header),
 			           header->priv->disclosure, 0, 2, 0, 1);
@@ -263,10 +263,10 @@ rb_source_header_set_property (GObject *object,
 				rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
 							  eel_gconf_get_string (header->priv->search_key));
 			}
-			g_signal_connect (G_OBJECT (header->priv->selected_source),
-					  "filter_changed",
-					  G_CALLBACK (rb_source_header_filter_changed_cb),
-					  header);
+			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
+						 "filter_changed",
+						 G_CALLBACK (rb_source_header_filter_changed_cb),
+						 header, 0);
 			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 						  rb_source_can_search (header->priv->selected_source));
 			if (!header->priv->browser_key &&

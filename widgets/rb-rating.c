@@ -190,10 +190,10 @@ rb_rating_init (RBRating *rating)
 	gtk_widget_destroy (dummy);
 
 	/* register some signals */
-	g_signal_connect (G_OBJECT (rating),
-			  "button_press_event",
-			  G_CALLBACK (rb_rating_button_press_cb),
-			  rating);
+	g_signal_connect_object (G_OBJECT (rating),
+				 "button_press_event",
+				 G_CALLBACK (rb_rating_button_press_cb),
+				 rating, 0);
 }
 
 static void

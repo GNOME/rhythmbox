@@ -227,17 +227,17 @@ rb_tray_icon_init (RBTrayIcon *icon)
 			      _("Not playing"), NULL);
 
 	icon->priv->ebox = gtk_event_box_new ();
-	g_signal_connect (G_OBJECT (icon->priv->ebox),
-			  "button_press_event",
-			  G_CALLBACK (rb_tray_icon_button_press_event_cb),
-			  icon);
-	g_signal_connect (G_OBJECT (icon->priv->ebox),
-			  "scroll_event",
-			  G_CALLBACK (rb_tray_icon_scroll_event_cb),
-			  icon);
+	g_signal_connect_object (G_OBJECT (icon->priv->ebox),
+				 "button_press_event",
+				 G_CALLBACK (rb_tray_icon_button_press_event_cb),
+				 icon, 0);
+	g_signal_connect_object (G_OBJECT (icon->priv->ebox),
+				 "scroll_event",
+				 G_CALLBACK (rb_tray_icon_scroll_event_cb),
+				 icon, 0);
 	gtk_drag_dest_set (icon->priv->ebox, GTK_DEST_DEFAULT_ALL, target_uri, 1, GDK_ACTION_COPY);
-	g_signal_connect (G_OBJECT (icon->priv->ebox), "drag_data_received",
-			  G_CALLBACK (rb_tray_icon_drop_cb), icon);
+	g_signal_connect_object (G_OBJECT (icon->priv->ebox), "drag_data_received",
+				 G_CALLBACK (rb_tray_icon_drop_cb), icon, 0);
 
 	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
 					  GTK_ICON_SIZE_SMALL_TOOLBAR);

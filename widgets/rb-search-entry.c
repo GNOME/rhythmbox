@@ -126,14 +126,14 @@ rb_search_entry_init (RBSearchEntry *entry)
 
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
 
-	g_signal_connect (G_OBJECT (entry->priv->entry),
-			  "changed",
-			  G_CALLBACK (rb_search_entry_changed_cb),
-			  entry);
-	g_signal_connect (G_OBJECT (entry->priv->entry),
-			  "focus_out_event",
-			  G_CALLBACK (rb_search_entry_focus_out_event_cb),
-			  entry);
+	g_signal_connect_object (G_OBJECT (entry->priv->entry),
+				 "changed",
+				 G_CALLBACK (rb_search_entry_changed_cb),
+				 entry, 0);
+	g_signal_connect_object (G_OBJECT (entry->priv->entry),
+				 "focus_out_event",
+				 G_CALLBACK (rb_search_entry_focus_out_event_cb),
+				 entry, 0);
 }
 
 static void

@@ -438,16 +438,16 @@ rb_player_construct (RBPlayer *mp,
 	 *  { src ! spider ! volume ! sink }
 	 */
 	MAKE_ELEMENT_OR_LOSE(thread, pipeline);
-	g_signal_connect (G_OBJECT (mp->priv->pipeline),
-			  "deep_notify",
-			  G_CALLBACK (deep_notify_cb),
-			  mp);
+	g_signal_connect_object (G_OBJECT (mp->priv->pipeline),
+				 "deep_notify",
+				 G_CALLBACK (deep_notify_cb),
+				 mp, 0);
 
 	mp->priv->error_signal_id =
-		g_signal_connect (G_OBJECT (mp->priv->pipeline),
-				  "error",
-				  G_CALLBACK (error_cb),
-				  mp);
+		g_signal_connect_object (G_OBJECT (mp->priv->pipeline),
+					 "error",
+					 G_CALLBACK (error_cb),
+					 mp, 0);
 
 	/* Construct the two threads */
 	if (iradio_mode) {
@@ -494,8 +494,8 @@ rb_player_construct (RBPlayer *mp,
 		if (mp->priv->queue == NULL)
 			goto missing_element;
 		g_object_set (G_OBJECT (mp->priv->queue), "max-size-bytes", 64 * 1024, NULL);
-		g_signal_connect (G_OBJECT (mp->priv->queue), "overrun",
-				  G_CALLBACK (queue_full_cb), mp);
+		g_signal_connect_object (G_OBJECT (mp->priv->queue), "overrun",
+					 G_CALLBACK (queue_full_cb), mp, 0);
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
 	}
 
@@ -538,8 +538,8 @@ rb_player_construct (RBPlayer *mp,
 	else
 		gst_element_link_many (mp->priv->src, mp->priv->typefind, mp->priv->decoder, NULL);
 
-	g_signal_connect (G_OBJECT (mp->priv->sink), "eos",
-			  G_CALLBACK (eos_cb), mp);
+	g_signal_connect_object (G_OBJECT (mp->priv->sink), "eos",
+				 G_CALLBACK (eos_cb), mp, 0);
 
 	if (mp->priv->cur_volume > 1.0)
 		mp->priv->cur_volume = 1.0;

@@ -154,14 +154,14 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
-	g_signal_connect (G_OBJECT (shell_preferences),
-			  "delete_event",
-			  G_CALLBACK (rb_shell_preferences_window_delete_cb),
-			  shell_preferences);
-	g_signal_connect (G_OBJECT (shell_preferences),
-			  "response",
-			  G_CALLBACK (rb_shell_preferences_response_cb),
-			  shell_preferences);
+	g_signal_connect_object (G_OBJECT (shell_preferences),
+				 "delete_event",
+				 G_CALLBACK (rb_shell_preferences_window_delete_cb),
+				 shell_preferences, 0);
+	g_signal_connect_object (G_OBJECT (shell_preferences),
+				 "response",
+				 G_CALLBACK (rb_shell_preferences_response_cb),
+				 shell_preferences, 0);
 
 	gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			       GTK_STOCK_CLOSE,
@@ -169,8 +169,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	help = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			              GTK_STOCK_HELP,
 			              GTK_RESPONSE_HELP);
-	g_signal_connect (G_OBJECT (help), "clicked",
-			  G_CALLBACK (help_cb), shell_preferences);
+	g_signal_connect_object (G_OBJECT (help), "clicked",
+				 G_CALLBACK (help_cb), shell_preferences, 0);
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
 

@@ -501,24 +501,24 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED);
 
-	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
-			  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "sort-order-changed",
-			  G_CALLBACK (songs_view_sort_order_changed_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->songs), "show_popup",
+				 G_CALLBACK (rb_library_source_songs_show_popup_cb), source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->songs),
+				 "sort-order-changed",
+				 G_CALLBACK (songs_view_sort_order_changed_cb),
+				 source, 0);
 
 	/* set up genres treeview */
 	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE,
 						     _("Genre"));
 	rb_property_view_set_selection_mode (source->priv->genres, GTK_SELECTION_MULTIPLE);
-	g_signal_connect (G_OBJECT (source->priv->genres),
-			  "properties-selected",
-			  G_CALLBACK (genres_selected_cb),
-			  source);
-	g_signal_connect (G_OBJECT (source->priv->genres),
-			  "property-selection-reset", G_CALLBACK (genres_selection_reset_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->genres),
+				 "properties-selected",
+				 G_CALLBACK (genres_selected_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->genres),
+				 "property-selection-reset", G_CALLBACK (genres_selection_reset_cb),
+				 source, 0);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
 
@@ -526,13 +526,13 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST,
 						      _("Artist"));
 	rb_property_view_set_selection_mode (source->priv->artists, GTK_SELECTION_MULTIPLE);
-	g_signal_connect (G_OBJECT (source->priv->artists),
-			  "properties-selected",
-			  G_CALLBACK (artists_selected_cb),
-			  source);
-	g_signal_connect (G_OBJECT (source->priv->artists),
-			  "property-selection-reset", G_CALLBACK (artists_selection_reset_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->artists),
+				 "properties-selected",
+				 G_CALLBACK (artists_selected_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->artists),
+				 "property-selection-reset", G_CALLBACK (artists_selection_reset_cb),
+				 source, 0);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
 
@@ -540,22 +540,22 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM,
 						     _("Album"));
 	rb_property_view_set_selection_mode (source->priv->albums, GTK_SELECTION_MULTIPLE);
-	g_signal_connect (G_OBJECT (source->priv->albums),
-			  "properties-selected",
-			  G_CALLBACK (albums_selected_cb),
-			  source);
-	g_signal_connect (G_OBJECT (source->priv->albums),
-			  "property-selection-reset", G_CALLBACK (albums_selection_reset_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->albums),
+				 "properties-selected",
+				 G_CALLBACK (albums_selected_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->albums),
+				 "property-selection-reset", G_CALLBACK (albums_selection_reset_cb),
+				 source, 0);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
 
 	/* this gets emitted when the paned thingie is moved */
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "size_allocate",
-			  G_CALLBACK (paned_size_allocate_cb),
-			  source);
+	g_signal_connect_object (G_OBJECT (source->priv->songs),
+				 "size_allocate",
+				 G_CALLBACK (paned_size_allocate_cb),
+				 source, 0);
 
 	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
 
@@ -1222,10 +1222,10 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 
 	g_return_if_fail (uri_widget != NULL);
 
-	g_signal_connect (G_OBJECT (uri_widget),
-			  "changed",
-			  G_CALLBACK (rb_library_source_add_location_entry_changed_cb),
-			  open_button);
+	g_signal_connect_object (G_OBJECT (uri_widget),
+				 "changed",
+				 G_CALLBACK (rb_library_source_add_location_entry_changed_cb),
+				 open_button, 0);
 
 	switch (gtk_dialog_run (GTK_DIALOG (dialog))) {
 	case GTK_RESPONSE_OK:

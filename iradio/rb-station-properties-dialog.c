@@ -158,10 +158,10 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	
 	dialog->priv = g_new0 (RBStationPropertiesDialogPrivate, 1);
 	
-	g_signal_connect (G_OBJECT (dialog),
-			  "response",
-			  G_CALLBACK (rb_station_properties_dialog_response_cb),
-			  dialog);
+	g_signal_connect_object (G_OBJECT (dialog),
+				 "response",
+				 G_CALLBACK (rb_station_properties_dialog_response_cb),
+				 dialog, 0);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);

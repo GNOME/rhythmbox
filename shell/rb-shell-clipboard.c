@@ -232,10 +232,10 @@ rb_shell_clipboard_set_property (GObject *object,
 		{
 			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
-			g_signal_connect (G_OBJECT (songs),
-					  "changed",
-					  G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
-					  clipboard);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "changed",
+						 G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
+						 clipboard, 0);
 		}
 		break;
 	case PROP_COMPONENT:

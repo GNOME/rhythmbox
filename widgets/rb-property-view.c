@@ -529,8 +529,8 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
                              target, 1,
                              GDK_ACTION_COPY);
 
-        g_signal_connect (G_OBJECT (view->priv->treeview), "drag_data_get",
-                          G_CALLBACK (rb_property_view_drag_data_get), view);
+        g_signal_connect_object (G_OBJECT (view->priv->treeview), "drag_data_get",
+				 G_CALLBACK (rb_property_view_drag_data_get), view, 0);
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",

@@ -362,22 +362,22 @@ rb_play_order_playing_source_changed (RBPlayOrder *porder)
 			/* Optimization possibilty: Only connect handlers
 			 * subclass actually listens to. */
 			RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
-			g_signal_connect (G_OBJECT (entry_view),
-					  "notify::playing-entry",
-					  G_CALLBACK (rb_play_order_playing_entry_changed_cb),
-					  porder);
-			g_signal_connect_swapped (G_OBJECT (entry_view),
-						  "entry-added",
-						  G_CALLBACK (rb_play_order_entry_added_cb),
-						  porder);
-			g_signal_connect_swapped (G_OBJECT (entry_view),
+			g_signal_connect_object (G_OBJECT (entry_view),
+						 "notify::playing-entry",
+						 G_CALLBACK (rb_play_order_playing_entry_changed_cb),
+						 porder, 0);
+			g_signal_connect_object (G_OBJECT (entry_view),
+						 "entry-added",
+						 G_CALLBACK (rb_play_order_entry_added_cb),
+						 porder, G_CONNECT_SWAPPED);
+			g_signal_connect_object (G_OBJECT (entry_view),
 						  "entry-deleted",
 						  G_CALLBACK (rb_play_order_entry_deleted_cb),
-						  porder);
-			g_signal_connect_swapped (G_OBJECT (entry_view),
-						  "entries-replaced",
-						  G_CALLBACK (rb_play_order_entries_replaced_cb),
-						  porder);
+						 porder, G_CONNECT_SWAPPED);
+			g_signal_connect_object (G_OBJECT (entry_view),
+						 "entries-replaced",
+						 G_CALLBACK (rb_play_order_entries_replaced_cb),
+						 porder, G_CONNECT_SWAPPED);
 		}
 	}
 

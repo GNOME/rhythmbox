@@ -130,10 +130,10 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 	/* create the dialog and some buttons forward - close */
 	dialog->priv = g_new0 (RBNewStationDialogPrivate, 1);
 
-	g_signal_connect (G_OBJECT (dialog),
-			  "response",
-			  G_CALLBACK (rb_new_station_dialog_response_cb),
-			  dialog);
+	g_signal_connect_object (G_OBJECT (dialog),
+				 "response",
+				 G_CALLBACK (rb_new_station_dialog_response_cb),
+				 dialog, 0);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
@@ -163,20 +163,20 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 	dialog->priv->title = glade_xml_get_widget (xml, "titleEntry");
 	dialog->priv->genre = glade_xml_get_widget (xml, "genreCombo");
 	dialog->priv->location = glade_xml_get_widget (xml, "locationEntry");
-	g_signal_connect (G_OBJECT (dialog->priv->title),
-			  "changed",
-			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
-			  dialog);
+	g_signal_connect_object (G_OBJECT (dialog->priv->title),
+				 "changed",
+				 G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
+				 dialog, 0);
 
-	g_signal_connect (G_OBJECT (GTK_COMBO (dialog->priv->genre)->entry),
-			  "changed",
-			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
-			  dialog);
+	g_signal_connect_object (G_OBJECT (GTK_COMBO (dialog->priv->genre)->entry),
+				 "changed",
+				 G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
+				 dialog, 0);
 
-	g_signal_connect (G_OBJECT (dialog->priv->location),
-			  "changed",
-			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
-			  dialog);
+	g_signal_connect_object (G_OBJECT (dialog->priv->location),
+				 "changed",
+				 G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
+				 dialog, 0);
 
 	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
 				       g_list_append (NULL, _("Unknown")));
