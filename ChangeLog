@@ -1,3 +1,197 @@
+2003-10-01 22:16:53 GMT	Colin Walters <walters@verbum.org>	patch-40
+
+    Summary:
+      default track numbers to -1
+    Revision:
+      rhythmbox--mainline--0.6--patch-40
+
+
+    modified files:
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-tree.c
+
+
+2003-10-01 21:39:59 GMT	Colin Walters <walters@verbum.org>	patch-39
+
+    Summary:
+      correctly sync mirrored properties during deserialization
+    Revision:
+      rhythmbox--mainline--0.6--patch-39
+
+
+    modified files:
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h
+
+
+2003-10-01 21:39:42 GMT	Colin Walters <walters@verbum.org>	patch-38
+
+    Summary:
+      make title be the sort column
+    Revision:
+      rhythmbox--mainline--0.6--patch-38
+
+
+    modified files:
+     data/views/rb-entry-view-iradio.xml
+
+
+2003-10-01 21:39:20 GMT	Colin Walters <walters@verbum.org>	patch-37
+
+    Summary:
+      make iradio queries async, fix search query
+    Revision:
+      rhythmbox--mainline--0.6--patch-37
+
+
+    modified files:
+     sources/rb-iradio-source.c
+
+
+2003-10-01 20:43:39 GMT	Colin Walters <walters@verbum.org>	patch-36
+
+    Summary:
+      don't show duration field in iradio
+    Revision:
+      rhythmbox--mainline--0.6--patch-36
+
+
+    modified files:
+     data/views/rb-entry-view-iradio.xml
+
+
+2003-10-01 20:40:09 GMT	Colin Walters <walters@verbum.org>	patch-35
+
+    Summary:
+      make legacy importer do last played, rating, and play count
+    Revision:
+      rhythmbox--mainline--0.6--patch-35
+
+
+    modified files:
+     rhythmdb/rhythmdb-legacy.c
+
+
+2003-10-01 20:28:27 GMT	Colin Walters <walters@verbum.org>	patch-34
+
+    Summary:
+      fix duration importing from legacy db, also fix time display
+    Revision:
+      rhythmbox--mainline--0.6--patch-34
+
+
+    modified files:
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-query-model.c
+     sources/rb-iradio-source.c widgets/rb-player.c
+
+
+2003-10-01 19:44:42 GMT	Colin Walters <walters@verbum.org>	patch-33
+
+    Summary:
+      fixes to debian/ dir
+    Revision:
+      rhythmbox--mainline--0.6--patch-33
+
+    Patches applied:
+    
+     * treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-26
+    
+     * treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-1
+       fix debian directory
+    
+
+    new files:
+     debian/.arch-ids/README.Debian.id
+     debian/.arch-ids/changelog.id debian/.arch-ids/copyright.id
+     debian/.arch-ids/rhythmbox.postinst.id
+     debian/.arch-ids/rhythmbox.postrm.id debian/.arch-ids/rules.id
+     debian/README.Debian debian/changelog debian/copyright
+     debian/rhythmbox.postinst debian/rhythmbox.postrm debian/rules
+
+    removed files:
+     debian/README.Debian debian/changelog debian/copyright
+     debian/rhythmbox.postinst debian/rhythmbox.postrm debian/rules
+
+    new patches:
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--base-0
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-1
+
+
+2003-10-01 18:17:10 GMT	Colin Walters <walters@verbum.org>	patch-32
+
+    Summary:
+      actually synchronize synchronous queries, and do syncs in chunks of 16
+    Revision:
+      rhythmbox--mainline--0.6--patch-32
+
+
+    modified files:
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+
+
+2003-10-01 17:36:28 GMT	Colin Walters <walters@verbum.org>	patch-31
+
+    Summary:
+      some work on jump to playing, doesn't quite work yet
+    Revision:
+      rhythmbox--mainline--0.6--patch-31
+
+
+    modified files:
+     shell/rb-shell.c sources/rb-library-source.c
+     sources/rb-source.c sources/rb-source.h
+     widgets/rb-entry-view.c
+
+
+2003-10-01 17:11:08 GMT	Colin Walters <walters@verbum.org>	patch-30
+
+    Summary:
+      remove cancelling bits, use a thread pool
+    Revision:
+      rhythmbox--mainline--0.6--patch-30
+
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+
+
+2003-10-01 14:49:00 GMT	Colin Walters <walters@verbum.org>	patch-29
+
+    Summary:
+      don't make search filter browsers
+    Revision:
+      rhythmbox--mainline--0.6--patch-29
+
+
+    modified files:
+     sources/rb-library-source.c
+
+
+2003-10-01 14:29:31 GMT	Colin Walters <walters@verbum.org>	patch-28
+
+    Summary:
+      use various _FOLDED props instead of unfolded for searching
+    Revision:
+      rhythmbox--mainline--0.6--patch-28
+
+
+    modified files:
+     rhythmdb/rhythmdb-tree.c sources/rb-library-source.c
+
+
+2003-10-01 04:52:55 GMT	Colin Walters <walters@verbum.org>	patch-27
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-27
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-01 04:34:47 GMT	Colin Walters <walters@verbum.org>	patch-26
 
     Summary:
