@@ -8,8 +8,7 @@ librblibrary_la_SOURCES =				\
 	rb-library-main-thread.c			\
 	rb-library-main-thread.h			\
 	rb-library-action.c				\
-	rb-library-action.h				\
-	rb-library-dnd-types.h
+	rb-library-action.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

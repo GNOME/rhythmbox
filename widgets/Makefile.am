@@ -40,15 +40,6 @@ librbwidgets_la_SOURCES =				\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
-EGGFILES=						\
-	eggtreemodelfilter.c				\
-	eggtreemodelfilter.h				\
-	eggtreemultidnd.c				\
-	eggtreemultidnd.h
-EGGDIR=$(srcdir)/../../../libegg/libegg/treeviewutils/
-regenerate-built-sources:
-	EGGFILES="$(EGGFILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
-
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\

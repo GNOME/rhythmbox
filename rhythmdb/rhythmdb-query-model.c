@@ -23,15 +23,21 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
+#include <gtk/gtktreednd.h>
 
 #include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
+#include "eggtreemultidnd.h"
 
 static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface);
+static void rhythmdb_query_model_multi_drag_source_init (EggTreeMultiDragSourceIface *iface);
+static void rhythmdb_query_model_drag_dest_init (GtkTreeDragDestIface *iface);
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
@@ -54,6 +60,19 @@ static void rhythmdb_query_model_cancel (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_sortable (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
+static gboolean rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource, 
+							  GList *paths, 
+							  GtkSelectionData *selection_data);
+static gboolean rhythmdb_query_model_multi_drag_data_delete (EggTreeMultiDragSource *dragsource,
+							     GList *paths);
+static gboolean rhythmdb_query_model_multi_row_draggable (EggTreeMultiDragSource *dragsource,
+							  GList *paths);
+static gboolean rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
+							 GtkTreePath *dest,
+							 GtkSelectionData  *selection_data);
+static gboolean rhythmdb_query_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+							GtkTreePath *dest,
+							GtkSelectionData  *selection_data);
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model);
 static GType rhythmdb_query_model_get_column_type (GtkTreeModel *tree_model, int index);
@@ -80,6 +99,10 @@ static gboolean rhythmdb_query_model_iter_parent (GtkTreeModel *tree_model,
 						  GtkTreeIter  *child);
 static GSequencePtr choose_sequence_element (GSequence *seq);
 
+
+static const GtkTargetEntry rhythmdb_query_model_drag_types[] = { { "text/uri-list", 0, 0 },};
+
+static GtkTargetList *rhythmdb_query_model_drag_target_list = NULL;
 
 struct RhythmDBQueryModelUpdate
 {
@@ -133,20 +156,6 @@ GType
 rhythmdb_query_model_get_type (void)
 {
 	static GType rhythmdb_query_model_type = 0;
-	static const GInterfaceInfo tree_model_info =
-	{
-		(GInterfaceInitFunc) rhythmdb_query_model_tree_model_init,
-		NULL,
-		NULL
-	};
-
-	static const GInterfaceInfo rhythmdb_model_info =
-	{
-		(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
-		NULL,
-		NULL
-	};
-
 
 	if (rhythmdb_query_model_type == 0)
 	{
@@ -163,6 +172,32 @@ rhythmdb_query_model_get_type (void)
 			(GInstanceInitFunc) rhythmdb_query_model_init
 		};
 
+		static const GInterfaceInfo tree_model_info =
+		{
+			(GInterfaceInitFunc) rhythmdb_query_model_tree_model_init,
+			NULL,
+			NULL
+		};
+
+		static const GInterfaceInfo rhythmdb_model_info =
+		{
+			(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
+			NULL,
+			NULL
+		};
+
+		static const GInterfaceInfo multi_drag_source_info = {
+			(GInterfaceInitFunc) rhythmdb_query_model_multi_drag_source_init,
+			NULL,
+			NULL
+		};
+
+		static const GInterfaceInfo drag_dest_info = {
+			(GInterfaceInitFunc) rhythmdb_query_model_drag_dest_init,
+			NULL,
+			NULL
+		};
+
 		rhythmdb_query_model_type = g_type_register_static (G_TYPE_OBJECT,
 								    "RhythmDBQueryModel",
 								    &our_info, 0);
@@ -174,6 +209,14 @@ rhythmdb_query_model_get_type (void)
 		g_type_add_interface_static (rhythmdb_query_model_type,
 					     RHYTHMDB_TYPE_MODEL,
 					     &rhythmdb_model_info);
+
+		g_type_add_interface_static (rhythmdb_query_model_type,
+					     EGG_TYPE_TREE_MULTI_DRAG_SOURCE,
+					     &multi_drag_source_info);
+
+		g_type_add_interface_static (rhythmdb_query_model_type,
+					     GTK_TYPE_TREE_DRAG_DEST,
+					     &drag_dest_info);
 	}
 
 	return rhythmdb_query_model_type;
@@ -185,6 +228,11 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
+
+	if (!rhythmdb_query_model_drag_target_list)
+		rhythmdb_query_model_drag_target_list
+			= gtk_target_list_new (rhythmdb_query_model_drag_types,
+					       G_N_ELEMENTS (rhythmdb_query_model_drag_types));
 
 	object_class->set_property = rhythmdb_query_model_set_property;
 	object_class->get_property = rhythmdb_query_model_get_property;
@@ -254,6 +302,21 @@ rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 	iface->poll = rhythmdb_query_model_poll;
 	iface->cancel = rhythmdb_query_model_cancel;
 	iface->sortable = rhythmdb_query_model_sortable;
+}
+
+static void
+rhythmdb_query_model_multi_drag_source_init (EggTreeMultiDragSourceIface *iface)
+{
+	iface->row_draggable = rhythmdb_query_model_multi_row_draggable;
+	iface->drag_data_delete = rhythmdb_query_model_multi_drag_data_delete;
+	iface->drag_data_get = rhythmdb_query_model_multi_drag_data_get;
+}
+
+static void
+rhythmdb_query_model_drag_dest_init (GtkTreeDragDestIface *iface)
+{
+	iface->drag_data_received = rhythmdb_query_model_drag_data_received;
+	iface->row_drop_possible = rhythmdb_query_model_row_drop_possible;
 }
 
 static void
@@ -656,6 +719,160 @@ rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 	iter->stamp = model->priv->stamp;
 	iter->user_data = ptr;
 	return TRUE;
+}
+
+static gboolean
+rhythmdb_query_model_multi_row_draggable (EggTreeMultiDragSource *dragsource,
+					  GList *paths)
+{
+	return TRUE;
+}
+
+static gboolean
+rhythmdb_query_model_multi_drag_data_delete (EggTreeMultiDragSource *dragsource, GList *paths)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
+	return model->priv->sort_func == NULL;
+}
+
+static gboolean
+rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource, 
+					  GList *paths, 
+					  GtkSelectionData *selection_data)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
+	guint target;
+
+	rb_debug ("getting drag data");
+
+	if (gtk_target_list_find (rhythmdb_query_model_drag_target_list,
+				  selection_data->target, &target)) {
+		RhythmDBEntry *entry;
+		GList *tem;
+		GString *data;
+
+		data = g_string_new ("");
+      
+		for (tem = paths; tem; tem = tem->next) {
+			GtkTreeIter iter;
+			GtkTreePath *path;
+			GSequencePtr ptr;
+
+			path = gtk_tree_row_reference_get_path (tem->data);
+	  
+			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+
+			entry = g_sequence_ptr_get_data (iter.user_data);
+
+			rhythmdb_read_lock (model->priv->db);
+
+			g_string_append (data, rhythmdb_entry_get_string (model->priv->db, entry,
+									  RHYTHMDB_PROP_LOCATION));
+
+			rhythmdb_read_unlock (model->priv->db);
+
+			if (!model->priv->sort_func) {
+				ptr = g_hash_table_lookup (model->priv->reverse_map,
+							   entry);
+
+				model->priv->stamp++;
+				rb_debug ("emitting row deleted");
+				gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
+							    path);
+
+				gtk_tree_path_free (path);
+				g_sequence_remove (ptr);
+				g_hash_table_remove (model->priv->reverse_map, entry);
+			}
+
+			if (tem->next)
+				g_string_append (data, "\r\n");
+		}
+
+		gtk_selection_data_set (selection_data,
+					selection_data->target,
+					8, data->str,
+					strlen (data->str));
+
+		g_string_free (data, TRUE);
+      
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean
+rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
+					 GtkTreePath *dest,
+					 GtkSelectionData  *selection_data)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
+
+	rb_debug ("drag received");
+
+	if (model->priv->sort_func != NULL)
+		return FALSE;
+	
+	if (selection_data->format == 8 && selection_data->length >= 0) {
+		GtkTreeIter iter;
+		GSequencePtr ptr;
+		char **strv;
+		RhythmDBEntry *entry;
+		int i = 0;
+
+		strv = g_strsplit (selection_data->data, "\r\n", -1);
+
+		rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest);
+		ptr = iter.user_data;
+		if (gtk_tree_path_prev (dest))
+			ptr = g_sequence_ptr_next (ptr);
+
+		while (strv[i]) {
+			GSequencePtr tem_ptr;
+			GtkTreeIter tem_iter;
+			GtkTreePath *tem_path;
+
+			rhythmdb_read_lock (model->priv->db);
+
+			entry = rhythmdb_entry_lookup_by_location (model->priv->db,
+								   strv[i]);
+			rhythmdb_read_unlock (model->priv->db);
+
+			if (entry != NULL) {
+				g_sequence_insert (ptr, entry);
+
+				tem_ptr = g_sequence_ptr_prev (ptr);
+
+				tem_iter.stamp = model->priv->stamp;
+				tem_iter.user_data = tem_ptr;
+				g_hash_table_insert (model->priv->reverse_map,
+						     entry, tem_ptr);
+
+				tem_path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
+									  &tem_iter);
+				
+				rb_debug ("emitting row inserted from dnd");
+				gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
+							     tem_path, &tem_iter);
+				gtk_tree_path_free (tem_path);
+			}
+			i++;
+		}
+
+		g_strfreev (strv);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean
+rhythmdb_query_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+					GtkTreePath *dest,
+					GtkSelectionData  *selection_data)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
+	return model->priv->sort_func == NULL;
 }
 
 static GtkTreeModelFlags

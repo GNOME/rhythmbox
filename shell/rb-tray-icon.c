@@ -41,7 +41,6 @@
 #include "rb-stock-icons.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
-#include "rb-library-dnd-types.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
@@ -120,10 +119,7 @@ static RBBonoboUIListener rb_tray_icon_listeners[] =
 	RB_BONOBO_UI_LISTENER_END
 };
 
-static const GtkTargetEntry target_uri [] =
-{
-	{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }
-};
+static const GtkTargetEntry target_uri [] = {{ "text/uri-list", 0, 0 }};
 
 static GObjectClass *parent_class = NULL;
 

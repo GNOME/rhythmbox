@@ -39,7 +39,6 @@
 #include "rhythmdb.h"
 #include "rhythmdb-property-model.h"
 #include "rb-string-helpers.h"
-#include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 

@@ -44,11 +44,12 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-string-helpers.h"
-#include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
 #include "rb-tree-view.h"
 #include "eel-gconf-extensions.h"
+
+static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
 
 struct RBEntryViewColumnSortData
 {
@@ -92,6 +93,10 @@ static void rb_entry_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
 						    GConfEntry *entry,
 						    gpointer user_data);
+/* static gboolean rb_entry_view_dummy_drag_drop_cb (GtkWidget *widget, */
+/* 						  GdkDragContext *drag_context, */
+/* 						  int x, int y, guint time, */
+/* 						  gpointer user_data); */
 static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 				   const char *path,
 				   int rating,
@@ -1152,8 +1157,20 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
+	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
+	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
 
+	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
+						GDK_BUTTON1_MASK,
+						rb_entry_view_drag_types,
+						G_N_ELEMENTS (rb_entry_view_drag_types),
+						GDK_ACTION_COPY);
+	gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (view->priv->treeview),
+					      rb_entry_view_drag_types,
+					      G_N_ELEMENTS (rb_entry_view_drag_types),
+					      GDK_ACTION_COPY);
+	
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	{
@@ -1192,6 +1209,19 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 
 	return G_OBJECT (view);
 }
+
+/* static gboolean */
+/* rb_entry_view_dummy_drag_drop_cb (GtkWidget *widget, */
+/* 				  GdkDragContext *drag_context, */
+/* 				  int x, int y, guint time, */
+/* 				  gpointer user_data) */
+/* { */
+/* 	g_signal_stop_emission_by_name (widget, "drag_drop"); */
+
+/* 	return TRUE; */
+/* } */
+
+
 
 static void
 rb_entry_view_rated_cb (RBCellRendererRating *cellrating,

@@ -26,7 +26,6 @@
 #include <gdk/gdk.h>
 #include <libgnome/gnome-i18n.h>
 
-#include "rb-library-dnd-types.h"
 #include "rb-sourcelist-model.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -194,8 +193,7 @@ rb_sourcelist_model_drag_data_received (GtkTreeDragDest *drag_dest,
 	g_return_val_if_fail (RB_IS_SOURCELIST_MODEL (drag_dest), FALSE);
 	model = RB_SOURCELIST_MODEL (drag_dest);
 	
-	if (selection_data->type == gdk_atom_intern (RB_LIBRARY_DND_URI_LIST_TYPE, TRUE)
-	    || selection_data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) {
+	if (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
 		GtkTreeIter iter;
 		RBSource *target;
 		rb_debug ("matched dnd type");

@@ -85,6 +85,7 @@ enum
 	ENTRY_RESTORED,
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
+	LOAD_COMPLETE,
 	LAST_SIGNAL
 };
 
@@ -180,6 +181,16 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1, G_TYPE_POINTER);
+
+	rhythmdb_signals[LOAD_COMPLETE] =
+		g_signal_new ("load_complete",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, load_complete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static GType
@@ -390,6 +401,8 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	klass->impl_load (db, db->priv->exit_mutex, &db->priv->exiting);
 
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
+	g_object_unref (G_OBJECT (db));
 	return NULL;
 }
 
@@ -397,6 +410,7 @@ void
 rhythmdb_load (RhythmDB *db)
 {
 	g_assert (!db->priv->load_thread);
+	g_object_ref (G_OBJECT (db));
 	db->priv->load_thread =
 		g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, TRUE, NULL);
 }

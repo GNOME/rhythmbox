@@ -124,6 +124,7 @@ typedef struct
 	void	(*entry_restored)	(RhythmDBEntry *entry);
 	void	(*entry_changed)	(RhythmDBEntry *entry);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
+	void	(*load_complete)	(RhythmDBEntry *entry);
 
 	/* virtual methods */
 

@@ -76,7 +76,6 @@
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
 #include "rb-file-monitor.h"
-#include "rb-library-dnd-types.h"
 #include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
 
@@ -199,6 +198,7 @@ static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
 						 Bonobo_UIComponent_EventType type,
 						 const char *state,
 						 RBShell *shell);
+static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_legacy_load_complete_cb (RBLibrary *library, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
@@ -228,11 +228,7 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBShell *shell);
 static void tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
 
-static const GtkTargetEntry target_table[] =
-	{
-		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST },
-		{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
-	};
+static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 } };
 
 #define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
@@ -725,8 +721,11 @@ rb_shell_construct (RBShell *shell)
 		shell->priv->db = rhythmdb_tree_new (fname);
 		g_free (fname);
 
-		if (rhythmdb_exists)
+		if (rhythmdb_exists) {
+			g_signal_connect (G_OBJECT (shell->priv->db), "load-complete",
+					  G_CALLBACK (rb_shell_load_complete_cb), shell);
 			rhythmdb_load (shell->priv->db);
+		}
 	}
 
 	rb_debug ("shell: creating library");
@@ -929,10 +928,6 @@ rb_shell_construct (RBShell *shell)
 		
 		rb_debug ("Registered with Bonobo Activation");
 	}
-
-	/* now that the lib is loaded, we can load the music playlists */
-	rb_debug ("shell: loading playlists");
-	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");
@@ -1562,6 +1557,15 @@ rb_shell_quit (RBShell *shell)
 	rb_debug ("Quitting");
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
+}
+
+static void
+rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
+{
+	rb_debug ("load complete");
+	GDK_THREADS_ENTER ();
+	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
+	GDK_THREADS_LEAVE ();
 }
 
 static void

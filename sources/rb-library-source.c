@@ -49,7 +49,6 @@
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
-#include "rb-library-dnd-types.h"
 #include "rb-search-entry.h"
 #include "rb-preferences.h"
 
@@ -196,10 +195,7 @@ enum
 static GObjectClass *parent_class = NULL;
 
 /* dnd */
-static const GtkTargetEntry target_uri [] =
-		{ { RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST } };
-static const GtkTargetEntry target_id [] =
-		{ { RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID } };
+static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
 
 GType
 rb_library_source_get_type (void)

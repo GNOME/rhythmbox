@@ -44,7 +44,6 @@
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-tree-view-column.h"
-#include "rb-library-dnd-types.h"
 
 #define RB_PLAYLIST_XML_VERSION "1.0"
 
@@ -122,10 +121,7 @@ enum
 
 static GObjectClass *parent_class = NULL;
 
-static const GtkTargetEntry target_uri[] =
-{
-	{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }
-};
+static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
 
 GType
 rb_playlist_source_get_type (void)
@@ -297,7 +293,6 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 			  G_CALLBACK (rb_playlist_source_drop_cb), source);
 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_uri, G_N_ELEMENTS (target_uri), GDK_ACTION_COPY);
-/* 	rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1); */
 		
 	source->priv->pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_PLAYLIST,
@@ -602,45 +597,30 @@ static void
 rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 				 GList *list)
 {
-/* 	GList *i, *uri_list = NULL; */
+	GList *i, *uri_list = NULL;
 
-/* 	g_return_if_fail (list != NULL); */
+	g_return_if_fail (list != NULL);
 
-/* 	for (i = list; i != NULL; i = g_list_next (i)) */
-/* 		uri_list = g_list_append (uri_list,  */
-/* 					  gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0)); */
+	for (i = list; i != NULL; i = g_list_next (i))
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 
-/* 	gnome_vfs_uri_list_free (list); */
+	gnome_vfs_uri_list_free (list);
 
-/* 	if (uri_list == NULL) return; */
+	if (uri_list == NULL)
+		return;
 
-/* 	for (i = uri_list; i != NULL; i = i->next) { */
-/* 		char *uri = i->data; */
+	for (i = uri_list; i != NULL; i = i->next) {
+		char *uri = i->data;
+		if (uri != NULL) {
+			rhythmdb_read_lock (source->priv->db);
+			rb_playlist_source_add_location (source, uri);
+			rhythmdb_read_unlock (source->priv->db);
+		}
 
-/* 		if (uri != NULL) { */
-/* 			RBNode *node = rb_library_get_song_by_location (source->priv->library, uri); */
+		g_free (uri);
+	}
 
-/* 			/\* add the node, if already present in the library *\/ */
-/* 			if (node != NULL) */
-/* 				rb_playlist_source_add_node (source, node); */
-/* 			else { */
-/* 				GError *error = NULL; */
-/* 				RBNode *node; */
-/* 				rb_library_add_uri_sync (source->priv->library, uri, &error); */
-				
-/* 				/\* FIXME error handling *\/ */
-/* 				if (error != NULL) { */
-/* 					node  = rb_library_get_song_by_location (source->priv->library, uri); */
-					
-/* 					rb_playlist_source_add_node (source, node); */
-/* 				} */
-/* 			} */
-/* 		} */
-
-/* 		g_free (uri); */
-/* 	} */
-
-/* 	g_list_free (uri_list); */
+	g_list_free (uri_list);
 }
 
 static void
@@ -674,16 +654,6 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 			   playlist_iter_func, uri, &error);
 	if (error != NULL)
 		rb_error_dialog ("%s", error->message);
-}
-
-void
-write_entry_to_xml (const char *location, gpointer unused, xmlNodePtr parent)
-{
-	xmlNodePtr node = xmlNewChild (parent, NULL, "location", NULL);
-	char *encoded = xmlEncodeEntitiesReentrant (NULL, location);
-	
-	xmlNodeSetContent (node, encoded);
-	g_free (encoded);
 }
 
 RBSource *
@@ -732,6 +702,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 {
 	xmlNodePtr node;
 	char *name;
+	GtkTreeIter iter;
 	
 	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
@@ -739,8 +710,29 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	xmlSetProp (node, "type", source->priv->smart ? "smart" : "static");
 	
 	if (!source->priv->smart) {
-		g_hash_table_foreach (source->priv->entries, (GHFunc) write_entry_to_xml,
-				      node);
+		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->model),
+						    &iter))
+			return;
+
+		do { 
+			xmlNodePtr child_node = xmlNewChild (node, NULL, "location", NULL);
+			RhythmDBEntry *entry;
+			const char *location;
+			char *encoded;
+
+			gtk_tree_model_get (GTK_TREE_MODEL (source->priv->model), &iter, 0, &entry, -1);
+
+			rhythmdb_read_lock (source->priv->db);
+			location = rhythmdb_entry_get_string (source->priv->db, entry,
+							      RHYTHMDB_PROP_LOCATION);
+			rhythmdb_read_unlock (source->priv->db);
+			
+			encoded = xmlEncodeEntitiesReentrant (NULL, location);			
+			
+			xmlNodeSetContent (child_node, encoded);
+			g_free (encoded);
+		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->model),
+						   &iter));
 	} else
 		g_assert_not_reached ();
 }
