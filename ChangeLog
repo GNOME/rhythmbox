@@ -1,3 +1,10 @@
+2002-09-13  Olivier Martin  <oleevye@wanadoo.fr>
+
+	* views/rb-group-view.c: (rb_group_view_set_playing_node):
+	* views/rb-library-view.c: (rb_library_view_set_playing_node):
+
+	Don't connect eos to a stream when there is an error.
+
 2002-09-11  Olivier Martin <oleevye@wanadoo.fr>
 
 	* library/rb-node-filter.c: (rb_node_filter_set_object_property),

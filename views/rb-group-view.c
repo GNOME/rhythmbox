@@ -842,6 +842,8 @@ rb_group_view_set_playing_node (RBGroupView *view,
 			rb_error_dialog (_("Failed to create stream for %s, error was:\n%s"),
 					 uri, error->message);
 			g_error_free (error);
+			g_value_unset (&value);
+			return;
 		}
 		
 		g_signal_connect (G_OBJECT (view->priv->playing_stream),
