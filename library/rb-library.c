@@ -59,13 +59,21 @@ static void restore_node (RBNode *node);
 static gboolean rb_library_periodic_save (RBLibrary *library);
 static void sync_sort_keys (RBNode *node);
 static void walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library);
-static char *get_status_fast (RBLibrary *library, RBNode *root);
-static char *get_status_full (RBLibrary *library, RBNode *root, RBNodeFilter *filter);
+static char *get_status_fast (RBLibrary *library);
+static char *get_status_normal (RBLibrary *library, RBNode *root, RBNodeFilter *filter);
+static gboolean poll_status_update (gpointer data);
 
+enum RBLibraryState
+{
+	LIBRARY_STATE_NONE,
+	LIBRARY_STATE_INITIAL_REFRESH,
+};
 
 struct RBLibraryPrivate
 {
 	GMutex *lock;
+
+	enum RBLibraryState state;
 
 	RBLibraryWalkerThread *walker_thread;
 	RBLibraryMainThread *main_thread;
@@ -98,6 +106,8 @@ struct RBLibraryPrivate
 	char *cached_status;
 
 	char *xml_file;
+
+	guint refresh_count;
 
 	guint idle_save_id;
 
@@ -220,6 +230,8 @@ rb_library_init (RBLibrary *library)
 
 	rb_library_create_skels (library);
 
+	library->priv->lock = g_mutex_new ();
+
 	library->priv->walker_mutex = g_mutex_new ();
 
 	library->priv->main_queue = g_async_queue_new ();
@@ -326,6 +338,8 @@ rb_library_finalize (GObject *object)
 	g_static_rw_lock_free (library->priv->album_hash_lock);
 	g_static_rw_lock_free (library->priv->song_hash_lock);
 
+	g_mutex_free (library->priv->lock);
+
 	g_free (library->priv->cached_status);
 
 	g_free (library->priv->xml_file);
@@ -354,9 +368,16 @@ rb_library_new (void)
 static void
 signal_status_changed (RBLibrary *library)
 {
+	rb_thread_helpers_lock_gdk ();
+
+	if (library->priv->in_shutdown)
+		goto out_unlock;
+	
 	g_get_current_time (&library->priv->mod_time);
 	
 	g_signal_emit (G_OBJECT (library), rb_library_signals[STATUS_CHANGED], 0);
+out_unlock:
+	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
@@ -371,6 +392,9 @@ walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library)
 	g_mutex_unlock (library->priv->walker_mutex);
 }
 
+/* MULTI-THREAD ENTRYPOINT
+ * Locks required: None
+ */
 void
 rb_library_add_uri (RBLibrary *library, const char *uri)
 {
@@ -393,6 +417,9 @@ rb_library_add_uri (RBLibrary *library, const char *uri)
 	}
 }
 
+/* MULTI-THREAD ENTRYPOINT
+ * Locks required: None
+ */
 void
 rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 {
@@ -407,36 +434,45 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 	
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 
-	rb_thread_helpers_lock_gdk ();
 	if (!library->priv->in_shutdown)
 		signal_status_changed (library);
-	rb_thread_helpers_unlock_gdk ();
 }
 
+
+/* MULTI-THREAD ENTRYPOINT
+ * Locks required: None
+ */
 gboolean
 rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
 {
 	RBNode *song;
-	gboolean ret;
+	gboolean ret = FALSE;
+
+	g_mutex_lock (library->priv->lock);
+	library->priv->refresh_count++;
+	g_mutex_unlock (library->priv->lock);
 	
 	song = rb_library_get_song_by_location (library, uri);
 	if (song == NULL)
-		return FALSE;
+		goto out;
 	
 	if (rb_uri_exists (uri) == FALSE) {
 		rb_debug ("song \"%s\" was deleted", uri);
 		rb_node_unref (song);
-		return FALSE;
+		goto out;
 	}
 	
 	rb_debug ("updating existing node \"%s\"", uri);
 	ret = rb_library_update_node (library, song, error);
 	if (error && *error) {
-		return ret;
+		goto out;
 	}
 
 	/* just to be sure */
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
+	ret = TRUE;
+out:
+	signal_status_changed (library);
 	return ret;
 }
 
@@ -916,6 +952,8 @@ rb_library_load (RBLibrary *library)
 	g_free (tmp);
 
 	p = rb_profiler_new ("XML loader");
+
+	library->priv->state = LIBRARY_STATE_INITIAL_REFRESH;
 
 	for (child = root->children; child != NULL; child = child->next) {
 		RBNode *node;
@@ -1461,10 +1499,27 @@ rb_library_update_node (RBLibrary *library, RBNode *node, GError **error)
 char *
 rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
 {
+	if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
+		guint refresh_count;
+		
+		g_mutex_lock (library->priv->lock);
+		refresh_count = library->priv->refresh_count;
+		g_mutex_unlock (library->priv->lock);
+
+		if (!library->priv->status_poll_queued) {
+			g_idle_add ((GSourceFunc) poll_status_update, library);
+			library->priv->status_poll_queued = TRUE;
+		}
+	
+		return g_strdup_printf (_("<b>Refreshing songs...</b> (%d/%d)"),
+					refresh_count,
+					rb_node_get_n_children (library->priv->all_songs));
+	}
+	
 	if (!rb_library_is_idle (library))
-		return get_status_fast (library, root);
+		return get_status_fast (library);
 	else
-		return get_status_full (library, root, filter);
+		return get_status_normal (library, root, filter);
 }
 
 static gboolean
@@ -1478,6 +1533,9 @@ poll_status_update (gpointer data)
 	 * get the full status back when the library is idle.
 	 */
 	if (rb_library_is_idle (library)) {
+
+		if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH)
+			library->priv->state = LIBRARY_STATE_NONE;
 
 		library->priv->status_poll_queued = FALSE;
 
@@ -1494,20 +1552,33 @@ poll_status_update (gpointer data)
 }
 
 static char *
-get_status_fast (RBLibrary *library, RBNode *root)
+get_status_fast (RBLibrary *library)
 {
-	char *ret = g_strdup_printf (_("%ld songs"), (long) rb_node_get_n_children (root));
+	char *ret;
+	gboolean walker_threads_active;
+	guint total;
+
+	g_mutex_lock (library->priv->walker_mutex);
+	walker_threads_active = (library->priv->walker_threads != NULL);
+	g_mutex_unlock (library->priv->walker_mutex);
+
+	total = rb_node_get_n_children (library->priv->all_songs);
+
+	if (walker_threads_active)
+		ret = g_strdup_printf (_("<b>Loading songs...</b> (%d total)"), total);
+	else
+		ret = g_strdup_printf (_("<b>Working...</b> (%d total songs)"), total);
 
 	if (!library->priv->status_poll_queued) {
 		g_idle_add ((GSourceFunc) poll_status_update, library);
 		library->priv->status_poll_queued = TRUE;
 	}
-	
+
 	return ret;
 }
 
 static char *
-get_status_full (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
+get_status_normal (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
 {
 	char *ret;
 	float days;

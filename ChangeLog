@@ -1,3 +1,14 @@
+2003-08-17  Colin Walters  <walters@rhythmbox.org>
+
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(signal_status_changed), (rb_library_add_uri_sync),
+	(rb_library_update_uri), (rb_library_load),
+	(rb_library_compute_status), (poll_status_update),
+	(get_status_fast), (get_status_normal):
+
+	Better status feedback from the library.  This
+	closes #119847.
+	
 2003-08-17  Colin Walters  <walters@verbum.org>
 
 	* INTERNALS: Update to reflect
