@@ -42,6 +42,16 @@ librbwidgets_la_SOURCES =				\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
+
+if GTK_TREE_MODEL_SORT_WORKAROUND
+librbwidgets_la_SOURCES += gtktreemodelsort.c
+librbwidgets_la_SOURCES += gtktreemodelsort.h
+librbwidgets_la_SOURCES += gtktreedatalist.c
+librbwidgets_la_SOURCES += gtktreedatalist.h
+librbwidgets_la_SOURCES += gtkintl.h
+endif
+
+
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\

@@ -19,7 +19,13 @@
  */
 
 #include <gtk/gtktreeview.h>
-#include <gtk/gtktreemodelsort.h>
+
+#ifdef USE_GTK_TREE_MODEL_SORT_WORKAROUND
+	#include "gtktreemodelsort.h"
+#else
+	#include <gtk/gtktreemodelsort.h>
+#endif
+
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkiconfactory.h>

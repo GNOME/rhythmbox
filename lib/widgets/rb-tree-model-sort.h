@@ -22,7 +22,11 @@
 
 #include <glib-object.h>
 
-#include <gtk/gtktreemodelsort.h>
+#ifdef USE_GTK_TREE_MODEL_SORT_WORKAROUND
+	#include "gtktreemodelsort.h"
+#else
+	#include <gtk/gtktreemodelsort.h>
+#endif
 
 G_BEGIN_DECLS
 
