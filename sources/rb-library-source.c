@@ -762,17 +762,7 @@ static const char *
 impl_get_status_fast (RBLibrarySource *source)
 {
 
-	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
-	GPtrArray *kids;
-	long len;
-
-	kids = rb_node_get_children (songsroot);
-
-	len = kids->len;
-
-	rb_node_thaw (songsroot);
-
-	return g_strdup_printf (_("%ld songs"), len);
+	return g_strdup_printf (_("%ld songs"), rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
 }
 
 static const char *
@@ -801,8 +791,7 @@ impl_get_status_full (RBLibrarySource *source)
 		    rb_node_filter_evaluate (source->priv->songs_filter, node) == FALSE)
 			continue;
 
-		secs = rb_node_get_property_long (node,
-						  RB_NODE_PROP_DURATION);
+		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION);
 		if (secs < 0)
 			g_warning ("Invalid duration value for node %p", node);
 		else

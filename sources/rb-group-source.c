@@ -74,6 +74,8 @@ static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 
+static const char *impl_get_status_fast (RBGroupSource *source);
+static const char *impl_get_status_full (RBGroupSource *source);
 static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
 static void rb_group_source_drop_cb (GtkWidget *widget,
 				     GdkDragContext *context,
@@ -475,7 +477,70 @@ impl_get_album (RBSource *asource)
 static const char *
 impl_get_status (RBSource *asource)
 {
-	return ""; /* FIXME; factor out status code from library */
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	if (!rb_library_is_idle (source->priv->library))
+		return impl_get_status_fast (source);
+	else
+		return impl_get_status_full (source);
+}
+
+static const char *
+impl_get_status_fast (RBGroupSource *source)
+{
+	return g_strdup_printf (_("%ld songs"), rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
+}
+
+static const char *
+impl_get_status_full (RBGroupSource *source)
+{
+	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
+	char *ret;
+	float days;
+	long len, hours, minutes, seconds;
+	long n_seconds = 0;
+	GPtrArray *kids;
+	int i;
+
+	kids = rb_node_get_children (songsroot);
+
+	len = 0;
+
+	for (i = 0; i < kids->len; i++)
+	{
+		long secs;
+		RBNode *node;
+
+		node = g_ptr_array_index (kids, i);
+
+		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION);
+		if (secs < 0)
+			g_warning ("Invalid duration value for node %p", node);
+		else
+			n_seconds += secs;
+
+		len++;
+	}
+
+	rb_node_thaw (songsroot);
+
+	days    = (float) n_seconds / (float) (60 * 60 * 24); 
+	hours   = n_seconds / (60 * 60);
+	minutes = n_seconds / 60 - hours * 60;
+	seconds = n_seconds % 60;
+
+	/* FIXME impl remaining time */
+	if (days >= 1.0) {
+		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"),
+				       days, len);
+	} else if (hours >= 1) {
+		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"),
+				       hours, minutes, len);
+	} else {
+		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"),
+				       minutes, len);
+	}
+
+	return ret;
 }
 
 static GList *

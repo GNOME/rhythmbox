@@ -1,5 +1,14 @@
 2003-07-31  Colin Walters  <walters@verbum.org>
 
+	* sources/rb-group-source.c: (impl_get_status),
+	(impl_get_status_fast), (impl_get_status_full):
+	* sources/rb-library-source.c: (impl_get_status_fast),
+	(impl_get_status_full):
+
+	Add status to group source too, but in a cut&paste sorta way :/
+
+2003-07-31  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell-player.c: (rb_shell_player_playpause),
 	(rb_shell_player_set_playing_source):
 
