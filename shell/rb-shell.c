@@ -757,10 +757,10 @@ rb_shell_construct (RBShell *shell)
 	/* load library */
 	rb_library_release_brakes (shell->priv->library);
 	
-        audiocd_view = rb_audiocd_view_new (shell->priv->container);
-
         if (rb_audiocd_is_any_device_available () == TRUE)
         {
+                audiocd_view = rb_audiocd_view_new (shell->priv->container);
+
                 if (rb_audiocd_is_cd_available (RB_AUDIOCD_VIEW (audiocd_view)) == TRUE)
                 {
                         rb_shell_append_view (shell, audiocd_view);
