@@ -38,6 +38,7 @@
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
 #include "rb-string-helpers.h"
+#include "rb-thread-helpers.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -49,7 +50,6 @@ static void rb_library_init (RBLibrary *library);
 static void rb_library_finalize (GObject *object);
 static void rb_library_save (RBLibrary *library);
 static void rb_library_create_skels (RBLibrary *library);
-static void rb_library_load (RBLibrary *library);
 static void sync_node (RBNode *node,
 		       RBLibrary *library,
 		       gboolean check_reparent,
@@ -97,6 +97,7 @@ enum
 enum
 {
 	ERROR,
+	OPERATION_END,
 	LAST_SIGNAL,
 };
 
@@ -152,6 +153,15 @@ rb_library_class_init (RBLibraryClass *klass)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
+	rb_library_signals[OPERATION_END] =
+		g_signal_new ("operation-end",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryClass, operation_end),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -209,9 +219,7 @@ rb_library_pass_on_error (RBLibraryMainThread *thread,
 void
 rb_library_release_brakes (RBLibrary *library)
 {
-	rb_debug ("doing it");
-	/* and off we go */
-	rb_library_load (library);
+	rb_debug ("releasing brakes");
 
 	rb_debug ("library: kicking off main thread");
 	/* create these after having loaded the xml to avoid extra loading time */
@@ -325,30 +333,45 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 }
 
-void
+gboolean
 rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
 {
 	RBNode *song;
+	gboolean ret;
 	
 	song = rb_library_get_song_by_location (library, uri);
 	if (song == NULL)
-		return;
+		return FALSE;
 	
 	if (rb_uri_exists (uri) == FALSE) {
 		rb_debug ("song \"%s\" was deleted", uri);
 		rb_node_unref (song);
-		return;
+		return FALSE;
 	}
 	
 	rb_debug ("updating existing node \"%s\"", uri);
-	rb_library_update_node (library, song, error);
+	ret = rb_library_update_node (library, song, error);
 	if (error && *error) {
-		return;
+		return ret;
 	}
 
 	/* just to be sure */
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
+	return ret;
 }
+
+void
+rb_library_operation_end (RBLibrary *library)
+{
+	g_return_if_fail (RB_IS_LIBRARY (library));
+
+	rb_thread_helpers_lock_gdk ();
+	
+	g_signal_emit (G_OBJECT (library), rb_library_signals[OPERATION_END], 0);
+
+	rb_thread_helpers_unlock_gdk ();
+}
+
 
 void rb_library_remove_uri (RBLibrary *library, const char *uri)
 {
@@ -792,7 +815,7 @@ rb_library_handle_songs (RBLibrary *library,
 	}
 }
 
-static void
+void
 rb_library_load (RBLibrary *library)
 {
 	xmlDocPtr doc;
@@ -853,6 +876,9 @@ rb_library_load (RBLibrary *library)
 						     location);
 		}
 	}
+
+	rb_library_action_queue_add (library->priv->main_queue, FALSE,
+				     RB_LIBRARY_ACTION_OPERATION_END, NULL);
 
 	rb_profiler_dump (p);
 	rb_profiler_free (p);
@@ -1338,7 +1364,7 @@ sync_node (RBNode *node,
 	g_object_unref (G_OBJECT (info));
 }
 
-void
+gboolean
 rb_library_update_node (RBLibrary *library,
 			RBNode *node,
 			GError **error)
@@ -1347,8 +1373,8 @@ rb_library_update_node (RBLibrary *library,
 	const char *location;
 	long mtime;
 
-	g_return_if_fail (RB_IS_NODE (node));
-	g_return_if_fail (RB_IS_LIBRARY (library));
+	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
+	g_return_val_if_fail (RB_IS_LIBRARY (library), FALSE);
 
 	info = gnome_vfs_file_info_new ();
 	
@@ -1361,9 +1387,12 @@ rb_library_update_node (RBLibrary *library,
 				           RB_NODE_PROP_MTIME);
 
 	if (info->mtime != mtime) {
+		gnome_vfs_file_info_unref (info);
 		rb_debug ("mtime for file \"%s\" has changed", location);
 		sync_node (node, library, TRUE, error);
+		return TRUE;
 	}
 	
 	gnome_vfs_file_info_unref (info);
+	return FALSE;
 }

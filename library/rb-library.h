@@ -48,7 +48,9 @@ typedef struct
 {
 	GObjectClass parent;
 
+	/* signals */
 	void	(*error)	(const char *uri, const char *msg);
+	void	(*operation_end)();
 } RBLibraryClass;
 
 GType			rb_library_get_type		(void);
@@ -61,17 +63,19 @@ RBLibraryAction *	rb_library_add_uri              (RBLibrary *library,
 void			rb_library_add_uri_sync         (RBLibrary *library,
 							 const char *uri,
 							 GError **error);
-void			rb_library_update_uri           (RBLibrary *library,
+gboolean		rb_library_update_uri           (RBLibrary *library,
 							 const char *uri,
 							 GError **error);
 void			rb_library_remove_uri           (RBLibrary *library,
 							 const char *uri);
 
+void			rb_library_operation_end        (RBLibrary *library);
+
 RBNode *		rb_library_new_node		(RBLibrary *library,
 							 const char *location,
 							 GError **error);
 
-void			rb_library_update_node		(RBLibrary *library,
+gboolean		rb_library_update_node		(RBLibrary *library,
 							 RBNode *node,
 							 GError **error);
 void			rb_library_remove_node          (RBLibrary *library,
@@ -79,6 +83,7 @@ void			rb_library_remove_node          (RBLibrary *library,
 
 RBNodeDb *		rb_library_get_node_db		(RBLibrary *library);
 
+void			rb_library_load			(RBLibrary *library);
 void			rb_library_release_brakes       (RBLibrary *library);
 
 gboolean		rb_library_is_idle		(RBLibrary *library);

@@ -1,3 +1,24 @@
+2003-08-12  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-action.c: (rb_library_action_type_get_type):
+	* library/rb-library-action.h:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_class_init),
+	(rb_library_release_brakes), (rb_library_update_uri),
+	(rb_library_operation_end), (rb_library_load),
+	(rb_library_update_node):
+	* library/rb-library.h:
+	* shell/rb-shell.c: (async_library_release_brakes),
+	(rb_shell_construct), (source_selected_cb),
+	(rb_shell_start_operation), (rb_shell_library_operation_end_cb):
+
+	Wait a half second after updating a file during the intial load.
+	This makes Rhythmbox more responsive, which doesn't fix the slowness
+	of the whole thing unfortunately.  That's still a bug...
+	
+	Also, add support for displaying a watch cursor while we're doing
+	all this.
+
 2003-08-12  Colin Walters  <walters@rhythmbox.org>
 
 	* configure.ac: Prerelease 0.4.99.3.

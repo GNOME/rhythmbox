@@ -119,6 +119,9 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void rb_shell_library_error_cb (RBLibrary *library,
 				       const char *uri, const char *msg,
 				       RBShell *shell); 
+static void rb_shell_library_operation_end_cb (RBLibrary *library,
+					       RBShell *shell); 
+static void rb_shell_start_operation (RBShell *shell);
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -295,6 +298,8 @@ struct RBShellPrivate
 	BonoboUIComponent *tray_icon_component;
 
 	RBVolume *volume;
+
+	guint operation_count;
 
 	RBGroupSource *loading_group;
 };
@@ -567,6 +572,21 @@ rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 	return ret;
 }
 
+static gboolean
+async_library_release_brakes (RBShell *shell)
+{
+	rb_debug ("async releasing library brakes");
+
+	GDK_THREADS_ENTER ();
+
+	rb_shell_start_operation (shell);
+	rb_library_release_brakes (shell->priv->library);
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
 void
 rb_shell_construct (RBShell *shell)
 {
@@ -717,6 +737,8 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect (G_OBJECT (shell->priv->library), "error",
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->library), "operation-end",
+			  G_CALLBACK (rb_shell_library_operation_end_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
 
@@ -743,11 +765,12 @@ rb_shell_construct (RBShell *shell)
 	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_EXTRACT_CD, 
 			g_find_program_in_path ("sound-juicer") != NULL);
 
-	/* load library */
-	rb_debug ("shell: releasing library brakes");
-	rb_library_release_brakes (shell->priv->library);
 
-	rb_debug ("shell: calling iradio_backend_load");
+	/* load library */
+	rb_debug ("shell: loading library");
+	rb_library_load (shell->priv->library);
+
+	rb_debug ("shell: loading iradio");
  	rb_iradio_backend_load (shell->priv->iradio_backend);
 
 #ifdef HAVE_AUDIOCD
@@ -814,6 +837,8 @@ rb_shell_construct (RBShell *shell)
 		
 	}
 	rb_shell_sync_window_visibility (shell);
+	
+	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);
 }
 
 char *
@@ -897,6 +922,32 @@ source_selected_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source selected");
 	rb_shell_select_source (shell, source);
+}
+
+static void
+rb_shell_start_operation (RBShell *shell)
+{
+	GdkCursor *cursor;
+	rb_debug ("starting operation");
+
+	cursor = gdk_cursor_new (GDK_WATCH);
+	gdk_window_set_cursor (shell->priv->window->window, cursor);
+	gdk_cursor_unref (cursor);
+	shell->priv->operation_count++;
+}
+
+static void
+rb_shell_library_operation_end_cb (RBLibrary *library, RBShell *shell)
+{
+
+	shell->priv->operation_count--;
+
+	rb_debug ("operation ended");
+	if (shell->priv->operation_count <= 0) {
+		rb_debug ("nulling cursor");
+		gdk_window_set_cursor (shell->priv->window->window, NULL);
+		gdk_flush ();
+	}
 }
 
 static void

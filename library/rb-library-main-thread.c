@@ -315,15 +315,26 @@ thread_main (RBLibraryMainThread *thread)
 							   &type,
 							   &uri);
 
-			realuri = rb_uri_resolve_symlink (uri);
+			if (uri)
+				realuri = rb_uri_resolve_symlink (uri);
+			else
+				realuri = NULL;
+
 
 			switch (type)
 			{
+			case RB_LIBRARY_ACTION_OPERATION_END:
+				rb_library_operation_end (thread->priv->library);
+				break;
 			case RB_LIBRARY_ACTION_ADD_FILE:
 				rb_library_add_uri_sync (thread->priv->library, realuri, &error);
 				break;
+			/* These operations don't need to be very fast; and if they
+			 * happen a lot they starve the main thread for the GDK lock.
+			 */
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
-				rb_library_update_uri (thread->priv->library, realuri, &error);
+				if (rb_library_update_uri (thread->priv->library, realuri, &error))
+					g_usleep (G_USEC_PER_SEC*2);
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				rb_library_remove_uri (thread->priv->library, realuri);
