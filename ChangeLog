@@ -2,6 +2,25 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-17 05:28:39 GMT	Colin Walters <walters@verbum.org>	patch-309
+
+    Summary:
+      mp3-in-wav and more mp3 metadata bits (Bastien Nocera)
+    Revision:
+      rhythmbox--mainline--0.6--patch-309
+
+    - Special-cases wave files (doesn't go as deep if they're waves, to
+      avoid false positives, bz # 124298)
+    - Discard empty tag fields, fixes metadata reading from emusic.com 
+      files (bz # 121841)
+    - implement TLEN (Track Length) tag from id3v2
+    
+
+    modified files:
+     ChangeLog monkey-media/stream-info-impl/id3-vfs/id3-vfs.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+
+
 2003-11-16 17:52:34 GMT	Colin Walters <walters@verbum.org>	patch-308
 
     Summary:
