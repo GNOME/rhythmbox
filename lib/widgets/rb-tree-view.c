@@ -16,11 +16,10 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
- *
- *  Copied parts from nautilus-horizontal-splitter.c, (C) Ramiro Estrugo
  */
 
 #include "rb-tree-view.h"
+#include "rb-tree-view-column.h"
 #include "gtktreeprivate.h"
 
 static void rb_tree_view_class_init (RBTreeViewClass *klass);
@@ -153,7 +152,7 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
 
       total_requested_width += col_width;
 
-      if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (column), "expand")) == TRUE)
+      if (rb_tree_view_column_get_expand (RB_TREE_VIEW_COLUMN (column)) == TRUE)
         {
           n_expand_columns++;
 
@@ -265,7 +264,7 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
 
       if (list == last_column)
         column->width = widget->allocation.width - width;
-      else if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (column), "expand")) == TRUE)
+      else if (rb_tree_view_column_get_expand (RB_TREE_VIEW_COLUMN (column)) == TRUE)
         {
           if (left_over_width > 0)
             column->width = real_requested_width + (left_over_width / n_expand_columns);

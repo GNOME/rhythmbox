@@ -1,5 +1,27 @@
 2002-11-03  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-node-view.c: (set_sort_column_id),
+	(rb_node_view_construct):
+	* lib/widgets/rb-player.c: (rb_player_init):
+	* lib/widgets/rb-tree-view-column.c:
+	(rb_tree_view_column_get_type), (rb_tree_view_column_class_init),
+	(rb_tree_view_column_init), (rb_tree_view_column_finalize),
+	(rb_tree_view_column_set_property),
+	(rb_tree_view_column_get_property), (rb_tree_view_column_new),
+	(rb_tree_view_column_get_expand), (rb_tree_view_column_set_expand),
+	(rb_tree_view_column_get_sort_order),
+	(rb_tree_view_column_set_sort_order):
+	* lib/widgets/rb-tree-view-column.h:
+	* lib/widgets/rb-tree-view.c:
+	(gtk_tree_view_size_allocate_columns):
+
+	Optimize sorting a bit more; the tracknumber column
+	is the default sort column now.
+
+2002-11-03  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/song-info.glade:
 	* lib/widgets/rb-ellipsizing-label.c: (rb_ellipsizing_label_init),
 	(real_size_allocate):

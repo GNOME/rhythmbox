@@ -193,6 +193,7 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (vbox), textvbox, TRUE, TRUE, 0);
 	
 	player->priv->song = rb_ellipsizing_label_new ("");
+	RB_ELLIPSIZING_LABEL (player->priv->song)->mode = RB_ELLIPSIZE_END;
  	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
  	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);	
 	gtk_misc_set_alignment (GTK_MISC (player->priv->song), 0, 0);

@@ -37,7 +37,9 @@ librbwidgets_la_SOURCES =				\
 	rb-rating.c					\
 	rb-rating.h					\
 	rb-tree-view.c					\
-	rb-tree-view.h
+	rb-tree-view.h					\
+	rb-tree-view-column.c				\
+	rb-tree-view-column.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

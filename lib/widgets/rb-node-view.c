@@ -44,6 +44,7 @@
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
 #include "rb-tree-view.h"
+#include "rb-tree-view-column.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
@@ -146,6 +147,8 @@ struct RBNodeViewPrivate
 
 	int saved_sort_column_id;
 	GtkSortType saved_sort_type;
+
+	RBTreeModelNodeColumn default_sort_column_id;
 };
 
 enum
@@ -465,6 +468,15 @@ bool_to_int (const char *boolean)
 	return (strcmp (boolean, "true") == 0);
 }
 
+static gboolean
+set_sort_column_id (RBNodeView *view)
+{
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					      view->priv->default_sort_column_id, GTK_SORT_ASCENDING);
+
+	return FALSE;
+}
+
 static void
 rb_node_view_construct (RBNodeView *view)
 {
@@ -637,7 +649,7 @@ rb_node_view_construct (RBNodeView *view)
 		g_type_class_unref (class);
 
 		/* so we got all info, now we can actually build the column */
-		gcolumn = gtk_tree_view_column_new ();
+		gcolumn = (GtkTreeViewColumn *) rb_tree_view_column_new ();
 		if (column == RB_TREE_MODEL_NODE_COL_PLAYING)
 		{
 			int width;
@@ -699,23 +711,22 @@ rb_node_view_construct (RBNodeView *view)
 		
 		gtk_tree_view_column_set_clickable (gcolumn, clickable);
 
+		rb_tree_view_column_set_sort_order (RB_TREE_VIEW_COLUMN (gcolumn), sort_order);
+
 		gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
 						 column,
 						 rb_node_view_sort_func,
 						 sort_order, NULL);
-		g_object_set_data_full (G_OBJECT (gcolumn),
-					"sort-order", sort_order,
-					(GDestroyNotify) g_list_free);
-		g_object_set_data (G_OBJECT (gcolumn),
-			           "sort-column", GINT_TO_POINTER (column));
 
 		if (default_sort_column == TRUE)
 		{
-			gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-							      column, GTK_SORT_ASCENDING);
+			/* do this in an idle, so that it gets set when done with initializing the rest --
+			 * will speed up xml loading a lot */
+			view->priv->default_sort_column_id = column;
+			g_idle_add ((GSourceFunc) set_sort_column_id, view);
 		}
 
-		g_object_set_data (G_OBJECT (gcolumn), "expand", GINT_TO_POINTER (expand));
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
 
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), 
 					     gcolumn);
