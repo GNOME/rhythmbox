@@ -43,7 +43,7 @@ you some simple questions.</property>
 	      <property name="spacing">6</property>
 
 	      <child>
-		<widget class="GtkVBox" id="vbox1">
+		<widget class="GtkVBox" id="page2_vbox">
 		  <property name="visible">True</property>
 		  <property name="homogeneous">False</property>
 		  <property name="spacing">0</property>
@@ -158,7 +158,7 @@ Please choose one of the options below:</property>
 				  </child>
 
 				  <child>
-				    <widget class="GtkEntry" id="entry1">
+				    <widget class="GtkEntry" id="path_entry">
 				      <property name="visible">True</property>
 				      <property name="can_focus">True</property>
 				      <property name="editable">True</property>
@@ -183,7 +183,6 @@ Please choose one of the options below:</property>
 				      <property name="label" translatable="yes">_Browse...</property>
 				      <property name="use_underline">True</property>
 				      <property name="relief">GTK_RELIEF_NORMAL</property>
-				      <signal name="clicked" handler="rb_druid_browse_clicked_cb" last_modification_time="Mon, 04 Aug 2003 20:32:19 GMT"/>
 				    </widget>
 				    <packing>
 				      <property name="padding">2</property>
@@ -226,7 +225,7 @@ Please choose one of the options below:</property>
 			      <property name="spacing">0</property>
 
 			      <child>
-				<widget class="GtkRadioButton" id="radiobutton2">
+				<widget class="GtkRadioButton" id="page2_skip_radiobutton">
 				  <property name="visible">True</property>
 				  <property name="can_focus">True</property>
 				  <property name="label" translatable="yes">_Skip this step</property>
