@@ -32,7 +32,6 @@
 #include "rb-stock-icons.h"
 #include "rb-link.h"
 #include "rb-player.h"
-#include "rb-string-helpers.h"
 #include "rb-ellipsizing-label.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
@@ -165,7 +164,7 @@ rb_player_init (RBPlayer *player)
 	player->priv->song = rb_ellipsizing_label_new ("");
  	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
  	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);	
-	gtk_misc_set_alignment (GTK_MISC(player->priv->song), 0, 0);
+	gtk_misc_set_alignment (GTK_MISC (player->priv->song), 0, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->song, FALSE, TRUE, 0);
 
 	player->priv->textframe = gtk_hbox_new (FALSE, 0);
@@ -310,11 +309,9 @@ rb_player_sync (RBPlayer *player)
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
 		const char *artist = rb_view_player_get_artist (player->priv->view_player);
-		char *escaped, *compressed;
+		char *escaped;
 
-		compressed = rb_string_compress (song, 50);
-		escaped = g_markup_escape_text (compressed, -1);
-		g_free (compressed);
+		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);

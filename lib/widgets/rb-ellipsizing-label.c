@@ -689,7 +689,7 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	RBEllipsizingLabel *label;
 	gboolean markup;
 	
-	markup = gtk_label_get_use_markup (GTK_LABEL(widget));
+	markup = gtk_label_get_use_markup (GTK_LABEL (widget));
 	
 	label = RB_ELLIPSIZING_LABEL (widget);
 	

@@ -28,7 +28,7 @@
 
 #include "rb-link.h"
 #include "rb-dialog.h"
-#include "rb-string-helpers.h"
+#include "rb-ellipsizing-label.h"
 
 static void rb_link_class_init (RBLinkClass *klass);
 static void rb_link_init (RBLink *link);
@@ -328,11 +328,9 @@ static void
 rb_link_set_text (RBLink *link,
 		  GdkColor *color)
 {
-	char *text, *escaped, *compressed;
+	char *text, *escaped;
 	
-	compressed = rb_string_compress (link->priv->text, 50);
-	escaped = g_markup_escape_text (compressed, -1);
-	g_free (compressed);
+	escaped = g_markup_escape_text (link->priv->text, -1);
 	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"single\">%s</span>",
 				color->red, color->green, color->blue, escaped);
 	g_free (escaped);
