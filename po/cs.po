@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-05 12:46+0200\n"
-"PO-Revision-Date: 2003-09-05 14:48+0200\n"
+"POT-Creation-Date: 2003-09-08 20:59+0200\n"
+"PO-Revision-Date: 2003-09-10 20:12+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -639,8 +639,7 @@ msgstr "Nelze zpracovat %s\n"
 msgid "(Unknown)"
 msgstr "(Neznámý)"
 
-#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb-tree.c:244
-#: rhythmdb/rhythmdb.c:321
+#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb.c:498
 msgid "Never"
 msgstr "Nikdy"
 
@@ -648,16 +647,13 @@ msgstr "Nikdy"
 msgid "New Internet Radio Station"
 msgstr "Nové internetové rádio"
 
-#. Initialize the tree structure.
 #: iradio/rb-new-station-dialog.c:182
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 rhythmdb/rhythmdb-tree.c:250
-#: rhythmdb/rhythmdb-tree.c:251 rhythmdb/rhythmdb-tree.c:252
-#: sources/rb-audiocd-source.c:979 sources/rb-audiocd-source.c:986
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-#: sources/rb-iradio-source.c:236 sources/rb-playlist-source.c:365
-#: sources/rb-playlist-source.c:381
+#: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
+#: sources/rb-playlist-source.c:365 sources/rb-playlist-source.c:381
 msgid "Unknown"
 msgstr "Neznámý"
 
@@ -839,6 +835,14 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Hledat:"
 
+#: lib/widgets/rb-song-display-box.c:116
+msgid "from "
+msgstr "z "
+
+#: lib/widgets/rb-song-display-box.c:119
+msgid "by "
+msgstr "od "
+
 #: lib/widgets/rb-song-info.c:228 lib/widgets/rb-song-info.c:588
 msgid "Song Properties"
 msgstr "Vlastnosti skladby"
@@ -911,7 +915,7 @@ msgstr "<b>%ld</b> hodin a <b>%ld</b> minut (%ld skladeb)"
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minut (%ld skladeb)"
 
-#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:323
+#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:500
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d. %m %Y %H:%M"
 
