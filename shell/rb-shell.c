@@ -903,26 +903,28 @@ rb_shell_construct (RBShell *shell)
 	/* register with CORBA */
 	CORBA_exception_init (&ev);
 	
-	corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
-	if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
-		registration_failed = TRUE;
-
-	if (bonobo_activation_active_server_register (RB_FACTORY_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
-		registration_failed = TRUE;
-
-	if (registration_failed) {
-		/* this is not critical, but worth a warning nevertheless */
-		char *msg = rb_shell_corba_exception_to_string (&ev);
-		g_message (_("Failed to register the shell: %s\n"
-			     "This probably means that you installed Rhythmbox in a "
-			     "different prefix than bonobo-activation; this "
-			     "warning is harmless, but IPC will not work."), msg);
-		g_free (msg);
-	}
+	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")) {
+		corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
+		if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
+			registration_failed = TRUE;
 		
-	CORBA_exception_free (&ev);
-
-	rb_debug ("Registered with Bonobo Activation");
+		if (bonobo_activation_active_server_register (RB_FACTORY_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
+			registration_failed = TRUE;
+		
+		if (registration_failed) {
+			/* this is not critical, but worth a warning nevertheless */
+			char *msg = rb_shell_corba_exception_to_string (&ev);
+			g_message (_("Failed to register the shell: %s\n"
+				     "This probably means that you installed Rhythmbox in a "
+				     "different prefix than bonobo-activation; this "
+				     "warning is harmless, but IPC will not work."), msg);
+			g_free (msg);
+		
+		}
+		CORBA_exception_free (&ev);
+		
+		rb_debug ("Registered with Bonobo Activation");
+	}
 
 	/* now that the lib is loaded, we can load the music playlists */
 	rb_debug ("shell: loading playlists");

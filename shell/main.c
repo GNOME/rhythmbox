@@ -152,6 +152,10 @@ main (int argc, char **argv)
 			
 			g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
 			g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
+
+			if (no_registration)
+				g_object_set_data (G_OBJECT (rb_shell), "rb-shell-no-registration",
+						   GINT_TO_POINTER (TRUE));
 			
 			g_idle_add ((GSourceFunc) rb_init, rb_shell);
 		}
