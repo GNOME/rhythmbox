@@ -169,7 +169,7 @@ rb_volume_init (RBVolume *volume)
 
 	volume->priv->adj = GTK_ADJUSTMENT (gtk_adjustment_new (-50,
 							       -VOLUME_MAX,
-							       0.0, 
+							       0.0,
 							       VOLUME_MAX/20,
 							       VOLUME_MAX/10,
 							       0.0));
@@ -181,49 +181,60 @@ rb_volume_init (RBVolume *volume)
 	frame = gtk_frame_new (NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (frame), 0);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_OUT);
-	
+
 	inner_frame = gtk_frame_new (NULL);
 	gtk_container_set_border_width (GTK_CONTAINER (inner_frame), 0);
 	gtk_frame_set_shadow_type (GTK_FRAME (inner_frame), GTK_SHADOW_NONE);
-	
+
 	event = gtk_event_box_new ();
 	/* This signal is to not let button press close the popup when the press is
 	** in the scale */
 	g_signal_connect_after (event, "button_press_event",
 				G_CALLBACK (scale_button_event_cb), volume);
-	
+
 	box = gtk_vbox_new (FALSE, 0);
 	volume->priv->scale = gtk_vscale_new (volume->priv->adj);
-	gtk_widget_set_size_request (volume->priv->scale, -1, 100);			
-	
-	g_signal_connect_after (G_OBJECT (volume->priv->window),
-				"button-press-event",
-				(GCallback) scale_button_release_event_cb,
-				volume);
-	
+	gtk_widget_set_size_request (volume->priv->scale, -1, 100);
+
+	g_signal_connect (G_OBJECT (volume->priv->window), "scroll_event",
+			  G_CALLBACK (scroll_cb),
+			  volume);
+
+	g_signal_connect (G_OBJECT (volume->priv->window),
+			  "button-press-event",
+			  (GCallback) scale_button_release_event_cb,
+			  volume);
+
+	/* button event on the scale widget are not catched by its parent window
+	** so we must connect to this widget as well */
+	g_signal_connect (G_OBJECT (volume->priv->scale),
+			  "button-release-event",
+			  (GCallback) scale_button_release_event_cb,
+			  volume);
+
 	g_signal_connect (G_OBJECT (volume->priv->scale),
 			  "key-press-event",
 			  (GCallback) scale_key_press_event_cb,
 			  volume);
-	
+
 	gtk_scale_set_draw_value (GTK_SCALE (volume->priv->scale), FALSE);
-	
+
 	gtk_range_set_update_policy (GTK_RANGE (volume->priv->scale),
 				     GTK_UPDATE_CONTINUOUS);
-	
+
 	gtk_container_add (GTK_CONTAINER (volume->priv->window), frame);
-	
+
 	gtk_container_add (GTK_CONTAINER (frame), inner_frame);
-	
-	/* Translators - The + and - refer to increasing and decreasing the volume. 
+
+	/* Translators - The + and - refer to increasing and decreasing the volume.
 	** I don't know if there are sensible alternatives in other languages */
-	pluslabel = gtk_label_new (_("+"));	
+	pluslabel = gtk_label_new (_("+"));
 	minuslabel = gtk_label_new (_("-"));
-	
+
 	gtk_box_pack_start (GTK_BOX (box), pluslabel, FALSE, FALSE, 0);
 	gtk_box_pack_end (GTK_BOX (box), minuslabel, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (box), volume->priv->scale, TRUE, TRUE, 0);
-	
+
 	gtk_container_add (GTK_CONTAINER (event), box);
 	gtk_container_add (GTK_CONTAINER (inner_frame), event);
 
@@ -271,7 +282,7 @@ rb_volume_sync_volume (RBVolume *volume)
 	vol = eel_gconf_get_float (CONF_STATE_VOLUME);
 	rb_debug ("current volume is %f", vol);
 	gtk_container_remove (GTK_CONTAINER (volume->priv->button),
-			      gtk_bin_get_child (GTK_BIN (volume->priv->button))); 
+			      gtk_bin_get_child (GTK_BIN (volume->priv->button)));
 
 	if (vol <= 0)
 		image = volume->priv->zero_image;
@@ -306,46 +317,47 @@ clicked_cb (GtkButton *button, RBVolume *volume)
 	 * Position the popup right next to the button.
 	 */
 	gtk_widget_size_request (GTK_WIDGET (volume->priv->window), &req);
-	
+
 	gdk_window_get_origin (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &x, &y);
 	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &button_width, &button_height);
 	rb_debug ("window origin: %d %d; size: %d %d", x, y, button_width, button_height);
-  	
+
 	gtk_widget_show_all (volume->priv->window);
 	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->window)->child), &window_width, &window_height);
-	gtk_window_move (GTK_WINDOW (volume->priv->window), x+((button_width-window_width)/2), y+button_width+spacing);	
-		
+	gtk_window_move (GTK_WINDOW (volume->priv->window), x+((button_width-window_width)/2), y+button_width+spacing);
+
 	/*
 	 * Grab focus and pointer.
 	 */
 	rb_debug ("grabbing focus");
 	gtk_widget_grab_focus (volume->priv->window);
 	gtk_grab_add (volume->priv->window);
-		
+
 	pointer = gdk_pointer_grab (volume->priv->window->window,
 				    TRUE,
 				    (GDK_BUTTON_PRESS_MASK |
-				     GDK_BUTTON_RELEASE_MASK
-				     | GDK_POINTER_MOTION_MASK),
+				     GDK_BUTTON_RELEASE_MASK |
+				     GDK_POINTER_MOTION_MASK |
+				     GDK_SCROLL_MASK),
 				    NULL, NULL, GDK_CURRENT_TIME);
-	
+
 	keyboard = gdk_keyboard_grab (volume->priv->window->window,
 				      TRUE,
 				      GDK_CURRENT_TIME);
-	
+
 	if (pointer != GDK_GRAB_SUCCESS || keyboard != GDK_GRAB_SUCCESS) {
 		/* We could not grab. */
 		rb_debug ("grab failed");
 		gtk_grab_remove (volume->priv->window);
 		gtk_widget_hide (volume->priv->window);
-		
+
 		if (pointer == GDK_GRAB_SUCCESS) {
 			gdk_keyboard_ungrab (GDK_CURRENT_TIME);
 		}
 		if (keyboard == GDK_GRAB_SUCCESS) {
 			gdk_pointer_ungrab (GDK_CURRENT_TIME);
 		}
-		
+
 		g_warning ("Could not grab X server!");
 		return;
 	}
@@ -399,7 +411,7 @@ scale_button_release_event_cb (GtkWidget *widget, GdkEventButton *event, RBVolum
 {
 	rb_debug ("scale release");
 	rb_volume_popup_hide (volume);
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean

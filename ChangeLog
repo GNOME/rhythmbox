@@ -1,3 +1,11 @@
+2003-08-18  Yann Rouillard  <yann@cvs.gnome.org>
+
+	* lib/widgets/rb-volume.c (rb_volume_init), (clicked_cb),
+	(scale_button_release_event_cb): 
+
+	Volume slider now hides when the button is released and also
+	catches scroll events even if the mouse is not above the slider.
+
 2003-08-18  Colin Walters  <walters@verbum.org>
 
 	* sources/rb-library-source.c (rb_library_source_add_location): Don't
