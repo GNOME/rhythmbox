@@ -1,3 +1,18 @@
+2003-01-12  Jeffrey Baker  <jwbaker@acm.org>
+	    Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/node-views/rb-node-view-albums.xml:
+	* data/node-views/rb-node-view-artists.xml:
+	* data/node-views/rb-node-view-genres.xml:
+	* data/node-views/rb-node-view-playlist.xml:
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/rb-node-view.c: (rb_node_view_finalize),
+	(rb_node_view_search_equal), (rb_node_view_construct):
+
+	Support treeview search; advanced search disabled
+	for now though, since setting a custom search func
+	seems to cause a crash on exit.. (?)
+
 2003-01-12  Jorn Baayen  <jorn@nl.linux.org>
 
 	* shell/rb-player.c: (set_playing), (eos_cb):

@@ -149,6 +149,8 @@ struct RBNodeViewPrivate
 	GtkSortType saved_sort_type;
 
 	RBTreeModelNodeColumn default_sort_column_id;
+
+	GList *search_columns;
 };
 
 enum
@@ -325,6 +327,8 @@ rb_node_view_finalize (GObject *object)
 
 	g_source_remove (view->priv->timeout);
 
+	g_list_free (view->priv->search_columns);
+
 	g_list_free (view->priv->nodeselection);
 
 	g_free (view->priv->view_desc_file);
@@ -491,6 +495,66 @@ set_sort_column_id (RBNodeView *view)
 	return FALSE;
 }
 
+static gboolean
+rb_node_view_search_equal (GtkTreeModel *model,
+                           gint column,
+                           const gchar *key,
+                           GtkTreeIter *iter,
+                           RBNodeView *view)
+{
+	gboolean retval = TRUE;
+	GList *l;
+	char *foldkey;
+
+	foldkey = g_utf8_casefold (key, -1);
+
+	for (l = view->priv->search_columns; l != NULL && retval == TRUE; l = g_list_next (l))
+	{
+		GValue a_value = { 0, };
+		GType type;
+		const char *stra;
+		RBTreeModelNodeColumn col;
+
+		col = GPOINTER_TO_INT (l->data);
+
+		gtk_tree_model_get_value (model, iter, col, &a_value);
+		type = gtk_tree_model_get_column_type (model, col);
+
+		switch (G_TYPE_FUNDAMENTAL (type))
+		{
+		case G_TYPE_STRING:
+			stra = g_value_get_string (&a_value);
+
+			if (stra != NULL) {
+				char *folda = g_utf8_casefold (stra, -1);
+
+				if (strstr (folda, foldkey) != NULL)
+					retval = FALSE;
+
+				g_free (folda);
+			}
+
+			break;
+		case G_TYPE_INT:
+			if (g_value_get_int (&a_value) == atoi (key))
+				retval = FALSE;
+
+			break;
+		case G_TYPE_LONG:
+			if (g_value_get_long (&a_value) == atol (key))
+				retval = FALSE;
+
+			break;
+		}
+
+		g_value_unset (&a_value);
+	}
+
+	g_free (foldkey);
+
+	return retval;
+}
+
 static void
 rb_node_view_construct (RBNodeView *view)
 {
@@ -588,9 +652,38 @@ rb_node_view_construct (RBNodeView *view)
 	}
 	g_free (tmp);
 
+	tmp = xmlGetProp (doc->children, "search-order");
+	if (tmp != NULL)
+	{
+		char **parts = g_strsplit (tmp, " ", 0);
+		int i;
+		GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
+		GEnumValue *ev;
+
+		for (i = 0; parts != NULL && parts[i] != NULL; i++)
+		{
+			RBTreeModelNodeColumn col;
+			ev = g_enum_get_value_by_name (class, parts[i]);
+			col = ev->value;
+			view->priv->search_columns = g_list_append (view->priv->search_columns, GINT_TO_POINTER (col));
+		}
+
+		g_strfreev (parts);
+		g_type_class_unref (class);
+	}
+	g_free (tmp);
+
 	tmp = xmlGetProp (doc->children, "keep-selection");
 	if (tmp != NULL)
 		view->priv->keep_selection = bool_to_int (tmp);
+	g_free (tmp);
+
+	tmp = xmlGetProp (doc->children, "searchable");
+	if (tmp != NULL && bool_to_int (tmp)) {
+                gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), TRUE);
+                gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
+						     (GtkTreeViewSearchEqualFunc) rb_node_view_search_equal, view, NULL);
+	}
 	g_free (tmp);
 
 	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
@@ -645,6 +738,11 @@ rb_node_view_construct (RBNodeView *view)
 		tmp = xmlGetProp (child, "default-sort-column");
 		if (tmp != NULL)
 			default_sort_column = bool_to_int (tmp);
+		g_free (tmp);
+
+		tmp = xmlGetProp (child, "default-search-column");
+		if (tmp != NULL && bool_to_int (tmp))
+			gtk_tree_view_set_search_column (GTK_TREE_VIEW (view->priv->treeview), column);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "expand");
