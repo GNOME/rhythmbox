@@ -1213,7 +1213,7 @@ rb_node_view_get_random_node (RBNodeView *view)
 	if (n_rows == 0)
 		return NULL;
 	else if ((n_rows - 1) > 0)
-		index = g_random_int_range (0, n_rows - 1);
+		index = g_random_int_range (0, n_rows);
 	else
 		index = 0;
 
