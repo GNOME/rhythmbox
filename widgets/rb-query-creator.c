@@ -72,13 +72,20 @@ static GtkWidget * create_option_menu (const RBQueryCreatorOption *options,
 static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu);
 static void append_row (RBQueryCreator *dialog);
 static void add_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
+static void remove_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
 static void limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator);
 
 struct RBQueryCreatorPrivate
 {
 	RhythmDB *db;
 	
-	GtkTable *table;
+	GtkSizeGroup *property_size_group;
+	GtkSizeGroup *criteria_size_group;
+	GtkSizeGroup *entry_size_group;
+	GtkSizeGroup *button_size_group;
+
+	GtkBox *vbox;
+
 	GtkWidget *addbutton;
 	GtkWidget *disjunction_check;
 	GtkWidget *limit_check;
@@ -147,6 +154,8 @@ static void
 rb_query_creator_init (RBQueryCreator *dlg)
 {
 	GladeXML *xml;
+	GtkWidget *mainbox;
+	GtkBox *hbox;
 	GtkWidget *first_option;
 	GtkWidget *first_criteria;
 	GtkWidget *first_entry;
@@ -163,6 +172,11 @@ rb_query_creator_init (RBQueryCreator *dlg)
 			       GTK_RESPONSE_OK);
 	gtk_dialog_set_default_response (GTK_DIALOG (dlg),
 					 GTK_RESPONSE_CLOSE);
+
+	dlg->priv->property_size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dlg->priv->criteria_size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dlg->priv->entry_size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dlg->priv->button_size_group = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_window_set_title (GTK_WINDOW (dlg), _("Create Automatic Playlist"));
 
@@ -184,25 +198,31 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	gtk_widget_set_sensitive (dlg->priv->limit_entry, FALSE);
 	gtk_widget_set_sensitive (dlg->priv->limit_option, FALSE);
 
-	dlg->priv->table = GTK_TABLE (glade_xml_get_widget (xml, "main_table"));
-	gtk_table_resize (dlg->priv->table, 1, 4);
-	dlg->priv->addbutton = GTK_WIDGET (glade_xml_get_widget (xml, "addButton"));
+	dlg->priv->vbox = GTK_BOX (glade_xml_get_widget (xml, "sub_vbox"));
+	dlg->priv->addbutton = gtk_button_new_from_stock (GTK_STOCK_ADD);
+	gtk_size_group_add_widget (dlg->priv->button_size_group, dlg->priv->addbutton);
 	g_signal_connect (G_OBJECT (dlg->priv->addbutton), "clicked", G_CALLBACK (add_button_click_cb),
 			  dlg);
 	first_option = create_option_menu (property_options,
 					   G_N_ELEMENTS (property_options),
 					   FALSE);
+	gtk_size_group_add_widget (dlg->priv->property_size_group, first_option);
 	first_criteria = create_option_menu (criteria_options,
 					     G_N_ELEMENTS (criteria_options),
 					     FALSE);
+	gtk_size_group_add_widget (dlg->priv->criteria_size_group, first_criteria);
 	first_entry = gtk_entry_new ();
+	gtk_size_group_add_widget (dlg->priv->entry_size_group, first_entry);
 
-	gtk_table_attach_defaults (dlg->priv->table, first_option, 0, 1, 0, 1);
-	gtk_table_attach_defaults (dlg->priv->table, first_criteria, 1, 2, 0, 1);
-	gtk_table_attach_defaults (dlg->priv->table, first_entry, 2, 3, 0, 1);
+	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_option));
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_criteria));
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_entry));
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (dlg->priv->addbutton));
+	gtk_box_pack_start_defaults (dlg->priv->vbox, GTK_WIDGET (hbox));
 
-	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dlg)->vbox),
-			   glade_xml_get_widget (xml, "main_vbox"));
+	mainbox = glade_xml_get_widget (xml, "main_vbox");
+	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), mainbox, FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (dlg));
 }
 
@@ -220,6 +240,11 @@ rb_query_creator_finalize (GObject *object)
 
 	g_ptr_array_free (dlg->priv->queries, TRUE);
 
+	g_object_unref (G_OBJECT (dlg->priv->property_size_group));
+	g_object_unref (G_OBJECT (dlg->priv->criteria_size_group));
+	g_object_unref (G_OBJECT (dlg->priv->entry_size_group));
+	g_object_unref (G_OBJECT (dlg->priv->button_size_group));
+	
 	g_free (dlg->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -271,17 +296,22 @@ rb_query_creator_new (RhythmDB *db)
 }
 
 static GtkWidget *
-lookup_table_child (GtkTable *table, guint row, guint col)
+get_box_widget_at_pos (GtkBox *box, guint pos)
 {
-	GList *children;
-
-	for (children = table->children; children; children = children->next) {
-		GtkTableChild *child = children->data;
-		if (child->top_attach == row &&
-		    child->left_attach == col)
-			return child->widget;
+	GtkWidget *ret;
+	GList *children = gtk_container_get_children (GTK_CONTAINER (box));
+	GList *tem;
+	for (tem = children; tem; tem = tem->next) {
+		guint thispos;
+		gtk_container_child_get (GTK_CONTAINER (box), GTK_WIDGET (tem->data),
+					 "position", &thispos, NULL);
+		if (thispos == pos)
+			break;
 	}
-	return NULL;
+	g_return_val_if_fail (tem != NULL, NULL);
+	ret = tem->data;
+	g_list_free (children);
+	return GTK_WIDGET (ret);
 }
 
 static int
@@ -298,7 +328,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 {
 	GPtrArray *query;
 	GPtrArray *sub_query;
-	guint i, n_rows;
+	GList *rows, *row;
 	gboolean disjunction;
 
 	query = rhythmdb_query_parse (dlg->priv->db,
@@ -309,23 +339,21 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 
 	disjunction = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dlg->priv->disjunction_check));
 	
-	g_object_get (G_OBJECT (dlg->priv->table), "n-rows", &n_rows, NULL);
-
 	sub_query = g_ptr_array_new ();
-
-	for (i = 0; i < n_rows; i++) {
-		GtkOptionMenu *propmenu = GTK_OPTION_MENU (lookup_table_child (dlg->priv->table,
-									       i, 0));
-		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (lookup_table_child (dlg->priv->table,
-										    i, 1));
-		GtkEntry *text = GTK_ENTRY (lookup_table_child (dlg->priv->table,
-								i, 2));
+	
+	rows = gtk_container_get_children (GTK_CONTAINER (dlg->priv->vbox));
+	for (row = rows; row; row = row->next) {
+		GtkOptionMenu *propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
+										  0));
+		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
+										       1));
+		GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (row->data), 2));
 		RhythmDBPropType prop = extract_option_menu_val (propmenu);
 		RhythmDBQueryType criteria = extract_option_menu_val (criteria_menu);
 		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
 		char *folded_data = g_utf8_casefold (data, -1);
 
-		if (disjunction && i < n_rows - 1)
+		if (disjunction && row->next)
 			rhythmdb_query_append (dlg->priv->db,
 					       sub_query,
 					       criteria,
@@ -347,6 +375,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 			       RHYTHMDB_QUERY_SUBQUERY,
 			       sub_query,
 			       RHYTHMDB_QUERY_END);
+	g_list_free (rows);
 	
 	return query;
 }
@@ -370,6 +399,24 @@ limit_toggled_cb (GtkWidget *limit, RBQueryCreator *dialog)
 }
 
 static void
+remove_button_click_cb (GtkWidget *button, RBQueryCreator *dialog)
+{
+	GList *rows = gtk_container_get_children (GTK_CONTAINER (dialog->priv->vbox));
+	GList *row;
+	for (row = rows; row; row = row->next) {
+		GList *columns = gtk_container_get_children (GTK_CONTAINER (row->data));
+		gboolean found = g_list_find (columns, button) != NULL;
+		g_list_free (columns);
+		if (found) {
+			gtk_container_remove (GTK_CONTAINER (dialog->priv->vbox),
+					      GTK_WIDGET (row->data));
+			break;
+		}
+	}
+	g_list_free (rows);
+}
+
+static void
 add_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
 {
 	append_row (creator);
@@ -378,40 +425,53 @@ add_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
 static void
 append_row (RBQueryCreator *dialog)
 {
-	guint n_rows, n_columns;
 	GtkWidget *option;
 	GtkWidget *criteria;
 	GtkWidget *entry;
 	GtkWidget *remove_button;
+	GtkBox *last_hbox;
+	GtkBox *hbox;
+	GList *rows;
+	guint len;
 
-	g_object_get (G_OBJECT (dialog->priv->table), "n-columns", &n_columns,
-		      "n-rows", &n_rows, NULL);
-
+	rows = gtk_container_get_children (GTK_CONTAINER (dialog->priv->vbox));
+	len = g_list_length (rows);
+	last_hbox = GTK_BOX (get_box_widget_at_pos (dialog->priv->vbox, len-1));
 	g_object_ref (G_OBJECT (dialog->priv->addbutton));
-	gtk_container_remove (GTK_CONTAINER (dialog->priv->table), dialog->priv->addbutton);
+	gtk_container_remove (GTK_CONTAINER (last_hbox),
+			      dialog->priv->addbutton);
 
 	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
-	gtk_table_attach_defaults (dialog->priv->table, remove_button, 3, 4, n_rows-1, n_rows);
+	g_signal_connect (G_OBJECT (remove_button), "clicked", G_CALLBACK (remove_button_click_cb),
+			  dialog);
+	gtk_size_group_add_widget (dialog->priv->button_size_group, remove_button);
+	gtk_box_pack_start_defaults (last_hbox, GTK_WIDGET (remove_button));
 
-	gtk_table_resize (dialog->priv->table, n_rows+1, n_columns);
+	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
+	gtk_box_pack_start_defaults (GTK_BOX (dialog->priv->vbox), GTK_WIDGET (hbox));
+	gtk_box_reorder_child (dialog->priv->vbox, GTK_WIDGET (hbox), -1);
+
 	/* This is the main (leftmost) GtkOptionMenu, for types. */
 	option = create_option_menu (property_options,
 				     G_N_ELEMENTS (property_options),
 				     FALSE);
-	gtk_table_attach_defaults (dialog->priv->table, option, 0, 1, n_rows, n_rows+1);
+	gtk_size_group_add_widget (dialog->priv->property_size_group, option);
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (option));
 	gtk_option_menu_set_history (GTK_OPTION_MENU (option), 0);
 	criteria = create_option_menu (criteria_options,
 				       G_N_ELEMENTS (criteria_options),
 				       FALSE);
-	gtk_table_attach_defaults (dialog->priv->table, criteria, 1, 2, n_rows, n_rows+1);
+	gtk_size_group_add_widget (dialog->priv->criteria_size_group, criteria);
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (criteria));
 
 	entry = gtk_entry_new ();
-	gtk_table_attach_defaults (dialog->priv->table, entry, 2, 3, n_rows, n_rows+1);
+	gtk_size_group_add_widget (dialog->priv->entry_size_group, entry);
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (entry));
 
-	gtk_table_attach_defaults (dialog->priv->table, dialog->priv->addbutton, 3, 4, n_rows, n_rows+1);
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (dialog->priv->addbutton));
 	g_object_unref (G_OBJECT (dialog->priv->addbutton));
 
-	gtk_widget_show_all (GTK_WIDGET (dialog->priv->table));
+	gtk_widget_show_all (GTK_WIDGET (dialog->priv->vbox));
 }
 
 /* Stolen from jamboree */
