@@ -1,39 +1,12 @@
 <?xml version="1.0" ?>
 
-<sect1 id="overview">
-<title>Getting Started</title>
-<sect2 id="intro-library">
-<title>The Library</title>
-<!-- <para>Introducion to rhythmbox as an id3 organised library based music player</para> -->
-<para>The &application; library file is a database of the songs listed in your library, and the playlists that you've created. This xml file is located in the <filename class="directory">.gnome/rhythmbox</filename> directory in your home directory. It is unique for each user on your system. Do not move or delete this file, as a a new, empty library will be created when the application is next opened.</para>
-</sect2>
-<sect2 id="intro-sidebar">
-<title>The Sidebar</title>
-<para>The sidebar is where you can access your music files, groups and CDs. The sidebar allows access to the following:
-<itemizedlist>
-<listitem>
-The &application; library, where all of the imported songs will appear.
-</listitem>
-<listitem>
-Any groups that have been created to organize the library contents.
-</listitem>
-<listitem>
-Audio CD's inserted into the computer's CD drives.
-</listitem>
-</itemizedlist>
-</para>
-
-<figure id="fig-sidebar">
-<title>The Sidebar</title>
-<screenshot>
-<graphic format="PNG"  fileref="figures/rb-sidebar.png"/>
-</screenshot>
-</figure>
-</sect2>
+<sect1 id="Usage">
+<title>Using Rhythmbox</title>
 
 <sect2 id="intro-toolbar">
 <title>The Toolbar</title>
 
+<para>The &application; toolbar provides easy access to functions used for playing tracks. From here it is possible to Play the currently selected track, Skip to a previous or next track, Pause a playing track, or select 'shuffle' play.</para>
 <figure id="fig-toolbar">
 <title>The Toolbar</title>
 <screenshot>
@@ -41,60 +14,37 @@ Audio CD's inserted into the computer's CD drives.
 </screenshot>
 </figure>
 
-<para>The &application; toolbar provides easy access to functions used for playing tracks. From here it is possible to Play, Skip to a previous or next track, Pause a playing track, or select 'shuffle' play.</para>
 <para>It also shows the volume control, which is described later.</para>
-<para>Playing, Pausing, Skiping, Volume</para>
 <note><para>The layout of the toolbar can be customized, see <xref linkend="toolbar-edit"/></para></note>
-
-</sect2>
-<sect2 id="intro-groups">
-<title>Groups</title>
-<!-- <para>What and why they are</para> -->
-<para>A group is a 'playlist' of songs that has been created in &application;. It might consits of a groups of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood'.</para>
 </sect2>
 
-<sect2 id="intro-notification">
-<title>Panel Applet</title>
-<para>The Notification Area is a Gnome feature that allows applications to add a small icon to the panel
-while the program is running. &application; adds it's icon to the notification area and this allows you control &application; from your tray.</para>
+<sect2 id="intro-sidebar">
+<title>The Side Pane</title>
+<para>The side pane is where you can access your music library and your groups <!-- and CDs -->. The side pane allows access to the following:
+<itemizedlist>
+<listitem>
+The &application; library, where all of the imported songs will appear.
+</listitem>
+<listitem>
+Any groups that have been created to organize the library contents.
+</listitem> <!--
+<listitem>
+Audio CD's inserted into the computer's CD drives.
+</listitem> -->
+</itemizedlist>
+</para>
 
-<note><para>For more info on using the Applet , see <xref linkend="notification-area"/></para></note>
-
-<figure id="fig-notification">
-<title>Rhythmbox in the Gnome Notification Area</title>
+<figure id="fig-sidebar">
+<title>The Side Pane</title>
 <screenshot>
-<graphic format="PNG" fileref="figures/rb-notification-area.png"/>
+<graphic format="PNG"  fileref="figures/rb-sidebar.png"/>
 </screenshot>
 </figure>
 </sect2>
 
-<sect2 id="importing">
-<title>Importing music files</title>
-<para>When &application; is first started, there will be no entries in its library. Use the Organize -> Add to Library menu item to add songs to your library. </para>
-</sect2>
-</sect1>
+<sect2 id="Playing">
+<title>Playing Music</title>
 
-<sect1 id="Usage">
-<title>Using Rhythmbox</title>
-<sect2 id="library">
-<title>The Library</title>
-<para>Once a songs has been imported, it can be played, dragged to a playlist so that it can be grouped with other songs, or burnt onto a CD.</para>
-<sect3 id="adding">
-<title>Adding Songs</title>
-<para>A song can be added to the library in a couple of ways, as shown below;
-<itemizedlist>
-<listitem>
-Imported in the same manner as detailed in the <xref linkend="importing"/> section.
-</listitem>
-<listitem>
-Drag and drop
-</listitem>
-<listitem>
-Individual selection
-</listitem>
-</itemizedlist>
-</para>
-</sect3>
 <sect3 id="playing">
 <title>Playing Songs/Albums</title>
 <para>To play a track, either select the track and press the 'Play' button on the toolbar, or simply double-click on the track (or Album or Artist) to start playing.</para>
@@ -110,22 +60,125 @@ Individual selection
 </figure>
 
 <tip><para>Clicking on the artist or album name (where they are underlined) will load the appropriate 'allmusic.com' page.</para></tip>
+</sect3></sect3>
+
+
+<sect3 id="shuffle">
+<title>Shuffle</title>
+<para>When this button is pressed, the tracks in the browser are played in 'random' order.</para>
+
+<figure id="fig-shuffle">
+<title>Shuffle</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-shuffle.png"/>
+</screenshot>
+</figure>
 </sect3>
 
+<sect3 id="repeat">
+<title>Repeat</title>
+<para>When this button is pressed, when the last track in the browser is played, the list is repeated from the beginning.</para>
+<figure id="fig-repeat">
+<title>Repeat</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-repeat.png"/>
+</screenshot>
+</figure>
+
 </sect3>
+
+<sect3 id="next-previous">
+<title>Next/Previous</title>
+<para>These buttons can be used to skip between tracks whilst playing. The previous button will restart the song if it's been playing for a while, or skip to previous if at the start of a track (within first 2 seconds).</para>
+
+<figure id="fig-nextprev">
+<title>Next/Previous</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-nextprev.png"/>
+</screenshot>
+</figure>
+
+</sect3>
+
+
+
 <sect3 id="volume">
 <title>Volume Control</title>
 <para>The volume of playback can be adjusted using the volume slider in the top right hand of the view. Sliding the to the right will increase the volume, whilst to the left will reduce it. The loudspeaker icon will change to indicate the relative volume. </para>
-<note><para>To mute the sound, click on the loudspeaker icon, and to restore the muted sound, do likewise.</para></note>
+<note>
+<para>To mute the sound, click on the loudspeaker icon, and to restore the muted sound, do likewise.</para>
+</note>
+<figure id="fig-volume-mute">
+<title>Mute</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-volume-mute.png"/>
+</screenshot>
+</figure>
+</sect3></sect2>
+
+
+<sect2 id="library">
+<title>The Library</title>
+
+<para>The &application; library is an organized view of all your music files. You can browse the library by artist or by album. Once you have added a song to your library you can play it directly or
+add it to a group to be played as part of a playlist.</para>
+<warning><para>The library is located in the <filename class="directory">.gnome/rhythmbox</filename> directory in your home directory. It is unique for each user on your system. </para><para>If you delete or move this directory a new, empty library will be created when the application is next opened.</para></warning>
+
+<sect3 id="adding">
+<title>Adding Songs</title>
+<para>A song can be added to the library in a few ways, as shown below;
+<itemizedlist>
+<listitem>
+When &application; is first started, there will be no entries in its library. Use the <guimenu>Organize</guimenu> menu and choose <guimenuitem>Add to Library</guimenuitem> item to add songs to your library (<shortcut><keycombo><keycap>Ctrl</keycap><keycap>O</keycap></keycombo></shortcut> will do the same thing). 
+</listitem>
+<listitem>
+Drag and drop from other applications. eg. Nautilus
+</listitem>
+<listitem>
+Opening a song/directory in Nautilus with &application;
+</listitem>
+</itemizedlist>
+</para>
 </sect3>
+
+<sect3 id="delete">
+<title>Deleting Songs</title>
+<para>To delete songs from the library, simply select the song and either open the <guimenu>Edit</guimenu> menu and choose the <guimenuitem>Delete</guimenuitem> item or press the <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key. Once the last entry of an album (or artist) is deleted, the appropriate entry is also deleted from the album (or artist view).</para>
+</sect3>
+
 <sect3 id="browser">
 <title>Using the Browser</title>
-<para>This allows the library to be easily browsed, showing the artist, then albumn of the current track. It is not shown when viewing a group or audio CD.</para>
+<para>The Browser allows the library to be easily browsed, showing the artist, then albumn of the current track. It is not shown when viewing a group<!-- or audio CD.--></para>
 <para>When started, the browser defaults to viewing all artists, and all tracks. Selecting an individual artist will change the Album list to show all albums by this artist, and the track list changes to show all tracks for these albums. Selecting an album will change the track list to show only the contents of this album.</para>  
+</sect3>
+
+<sect3 id="properties">
+<title>Properties</title>
+<para>
+Use the <guimenu>Edit</guimenu> menu and choose <guimenuitem>Properties</guimenuitem> item to view the properties of a particular track. (<shortcut><keycombo><keycap>Ctrl</keycap><keycap>P</keycap></keycombo></shortcut> will do the same thing). The dialog is divided into 2 sections, the first shows the basic details of the entry.
+</para>
+<figure id="fig-prop-basic">
+<title>Basic Properties</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-basic.png"/>
+</screenshot>
+</figure>
+
+<para>
+The 'Advanced' section of the dialog shows more detailed information about the file itself and its encoding. It also shows the <xref linkend="statistics"/> associated with the file.
+</para>
+<figure id="fig-prop-adv">
+<title>Advanced Properties</title>
+<screenshot>
+<graphic format="PNG"  fileref="figures/rb-adv.png"/>
+</screenshot>
+</figure>
+
 </sect3>
 
 <sect3 id="search">
 <title>Searching</title>
+<para>To search the &application; library for a particular word or phrase, type into the search field, and the view will show all the entries that have the search criteria will be shown the in the tracks list.</para>
 <figure id="fig-search">
 <title>Search name entry</title>
 <screenshot>
@@ -133,14 +186,42 @@ Individual selection
 </graphic>
 </screenshot>
 </figure>
-
-<para>To search the &application; library for a particular word or phrase, type into the search field, and the view will show all the entries that have the search criteria will be shown the in the tracks list.</para>
 </sect3>
+</sect2>
+
+<sect2 id="statistics">
+<title>Statistics</title>
+
+<para>&application; will maintain statistics on the use of the library. It automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through columns in the song list that you can add via the <xref linkend="prefs"/> dialog.</para>
+
+<sect3 id="statistics-rating">
+<title>Ratings</title>
+<para>This allows each song in the library to be rated on a scale of 1 to 5 stars. To rate a song, click in the 'Rating' column. Click in different parts of the column to set the required rating.</para>
+</sect3>
+<sect3 id="statistics-plays">
+<title>Number of plays</title>
+<para>Each time a track has completed playing, its play count is incremented by 1. This will allow the most popular songs in the library to be easily identified.</para>
+</sect3>
+<sect3 id="statistics-last">
+<title>Last played time</title>
+<para>When the play count is incremented, the last played time is also recorded.</para>
+</sect3>
+
+<figure id="fig-statistics">
+<title>Statistics</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-stats.png">
+</graphic>
+</screenshot>
+</figure>
+
 </sect2>
 
 <sect2 id="groups">
 <title>Groups</title>
-<para>As previously explained, a group is a 'playlist' of entries in the library.</para>
+
+<para>A group is a 'playlist' of songs that has been created in &application;. It might consist of a groups of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood'.</para>
+
 <para>To display a group, simply click on the required group, and the library display will change to show the contents.</para>
 
 <sect3 id="groups-add">
@@ -150,17 +231,27 @@ Individual selection
 
   <itemizedlist>
     <listitem>
-    Drag a 'track', 'album' or 'artist' to the sidebar. When the group is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled').	
+    Drag a 'track', 'album' or 'artist' to the side pane. When the group is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled').	
     </listitem>
     <listitem>    
-    Open the <guimenu>Organize</guimenu> menu and coose the <guimenuitem>New Group</guimenuitem> item (<shortcut><keycombo><keycap>Ctrl</keycap><keycap>N</keycap></keycombo></shortcut> will do the same thing). Again a dialog is displayed prompting for a name, and if the 'Add selected track' option box is ticked, then any selected tracks will be added to the group.
+    Open the <guimenu>Organize</guimenu> menu and choose the <guimenuitem>New Group</guimenuitem> item (<shortcut><keycombo><keycap>Ctrl</keycap><keycap>N</keycap></keycombo></shortcut> will do the same thing). Again a dialog is displayed prompting for a name, and if the 'Add selected track' option box is ticked, then any selected tracks will be added to the group.
     </listitem>
   </itemizedlist>
+
+  <para>To add a song, album or artist to an already existing group just drag and drop it from the library to the group's icon in the side pane.</para>
+
+<figure id="fig-groups-create">
+<title>Create a group</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-group-create.png">
+</graphic>
+</screenshot>
+</figure>
 
 </sect3>
 <sect3 id="groups-delete">
 <title>Deleting Songs</title>
-<para>...</para>
+<para>To delete songs from a group, simply select the song and either open the <guimenu>Edit</guimenu> menu and choose the <guimenuitem>Delete</guimenuitem> item or press the  <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut>key.</para>
 </sect3>
 <sect3 id="groups-modify">
 <title>Modifying a Group</title>
@@ -168,11 +259,15 @@ Individual selection
 </sect3>
 </sect2>
 
+<!--
+
+Not yet implemented
+
 <sect2 id="cd">
 <title>Audio CDs</title>
 <sect3 id="cd-playing">
 <title>Playing</title>
-<para>When a CD is inserted to the CD drive, it will appear in the sidebar, and the songs on it can be displayed in &application;'s main window.</para>
+<para>When a CD is inserted to the CD drive, it will appear in the side pane, and the songs on it can be displayed in &application;'s main window.</para>
 <para>To play and pause playback, or to skip forward or backwards, use the same controls as used for playing from the library.</para>
 </sect3>
 <sect3 id="cd-ripping">
@@ -186,27 +281,36 @@ Individual selection
 
 </sect2>
 
+-->
+
+<!-- 
+
+not yet implemented 
+
 <sect2 id="internet-radio">
 <title>Internet Radio</title>
 <sect3 id="radio-overview">
 <title>Listening via Internet</title>
-<!-- <para>Not sure about including this</para> -->
+<para>Not sure about including this</para>
 <para>The Internet Radio tuner can be used to listen to streamed audio files.</para>
 <para>&nyi;</para>
 </sect3>
 </sect2>
 
+-->
+
 <sect2 id="notification-area">
 <title>Panel Applet</title>
-<para>Using the &application; notification area in the systray, the following commands can be sent to the application: 
+
+<para>The Notification Area is a Gnome feature that allows applications to add a small icon to the panel
+while the program is running. &application; adds it's icon to the notification area and this allows you to control &application; from your tray.</para>
+
+<para>Using the &application; icon in the notification area, the following commands can be sent to the application: 
 </para>
 <para>
 <itemizedlist>
 <listitem>
-Pause &mdash; Pause playing song.
-</listitem>
-<listitem>
-Play &mdash; Start playing current song.
+Play / Pause &mdash; Play or Pause the currently selected song. This item changes depending on whether a song is playing or not.
 </listitem>
 <listitem>
 Previous &mdash; Skip to previous song in playlist.
@@ -215,14 +319,18 @@ Previous &mdash; Skip to previous song in playlist.
 Next &mdash; Skip to next song in playlist.
 </listitem>
 <listitem>
-Restart &mdash; Restart currently playing song.
-</listitem>
-<listitem>
-Show Window &mdash; toggle whether the &application; window is visible.
+Show Window &mdash; choose whether or not the &application; window is visible or not.
 </listitem>
 
 </itemizedlist>
 </para>
+
+<figure id="fig-notification">
+<title>Rhythmbox in the Gnome Notification Area</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-notification-area.png"/>
+</screenshot>
+</figure>
 
 <figure id="fig-notification-menu">
 <title>Notification Area (showing menu)</title>
@@ -237,7 +345,16 @@ Show Window &mdash; toggle whether the &application; window is visible.
 <title>Customizing &application;</title>
 <sect2 id="prefs">
 <title>Preferences</title>
-<para>Using the preferences dialog you can customise how you want Rhythmbox to look.</para>
+<para>Using the preferences dialog you can customize how you want &application; to look.</para>
+<sect3 id="prefs-view">
+<title>Appearance</title>
+<para>This section of dialog the allows you to select which parts of the application will be displayed.</para>
+</sect3>
+<sect3 id="prefs-columns">
+<title>Columns</title>
+<para>This section of the dialog allows you to select which columns are displayed in the song list.</para>
+</sect3>
+
 <figure id="fig-preferences">
 <title>Preferences Dialog</title>
 <screenshot>
@@ -247,8 +364,8 @@ Show Window &mdash; toggle whether the &application; window is visible.
 </sect2>
 
 <sect2 id="toolbar-edit">
-<title>Toolbar editting</title>
-<para>The Toolbar editor lets you add, remove and re-order buttons on the Rhythmbox toolbar.</para>
+<title>Toolbar editing</title>
+<para>The Toolbar editor lets you add, remove and re-order buttons on the &application; toolbar.</para>
 <figure id="fig-toolbar-editor">
 <title>The Toolbar Editor</title>
 <screenshot>
