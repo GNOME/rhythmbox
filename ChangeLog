@@ -1,3 +1,10 @@
+2003-08-06  Colin Walters  <walters@verbum.org>
+
+	* shell/main.c: (main), (sound_error_dialog), (rb_init):
+
+	Hold the GDK lock in main idle handler.  Also, bomb out if
+	GNOME sound events are enabled (This works around #119222). 
+
 2003-08-05  Colin Walters  <cwalters@gnome.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_random_node):

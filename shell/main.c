@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,8 +40,10 @@
 #include "rb-file-helpers.h"
 #include "rb-thread-helpers.h"
 #include "rb-stock-icons.h"
+#include "eel-gconf-extensions.h"
 
 static gboolean rb_init (RBShell *shell);
+static gboolean sound_error_dialog (gpointer unused);
 static void rb_handle_cmdline (char **argv, int argc,
 			       gboolean already_running);
 
@@ -59,6 +62,7 @@ main (int argc, char **argv)
 	CORBA_Object object;
 	RBShell *rb_shell;
 	char *old_collate = NULL;
+	gboolean sound_events_borked = FALSE;
 
 	const struct poptOption popt_options[] =
 	{
@@ -87,6 +91,10 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
+
+	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds"))
+		sound_events_borked = TRUE;
+	
 
 	/* workaround for non utf8 LC_COLLATE */
 	old_collate = g_strdup_printf ("LC_COLLATE=%s",
@@ -119,11 +127,14 @@ main (int argc, char **argv)
 
 	CORBA_exception_init (&ev);
 
-	rb_debug_init (debug);
+	/* Work around a GTK+ bug.  Inititalizing a dialog causes
+	 * a GTK+ warning, which then dies because it's a warning. */
+	if (!sound_events_borked)
+		rb_debug_init (debug);
+
 	rb_file_helpers_init ();
 
-	if (no_registration == FALSE)
-	{
+	if (no_registration == FALSE) {
 		object = bonobo_activation_activate_from_id (RB_SHELL_OAFIID,
 			 				     Bonobo_ACTIVATION_FLAG_EXISTING_ONLY,
 							     NULL, NULL);
@@ -131,25 +142,26 @@ main (int argc, char **argv)
 	else
 		object = NULL;
 
-	if (object == NULL)
-	{
+	if (object == NULL) {
 		rb_debug ("Going to create a new shell");
 
 		glade_gnome_init ();
 
 		rb_stock_icons_init ();
 
-		rb_shell = rb_shell_new ();
-
-		g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
-		g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
-
-		g_idle_add ((GSourceFunc) rb_init, rb_shell);
-
+		if (sound_events_borked) {
+			g_idle_add ((GSourceFunc) sound_error_dialog, NULL);
+		} else {
+			rb_shell = rb_shell_new ();
+			
+			g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
+			g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
+			
+			g_idle_add ((GSourceFunc) rb_init, rb_shell);
+		}
+		
 		bonobo_main ();
-	}
-	else
-	{
+	} else {
 		rb_debug ("already running");
 
 		rb_handle_cmdline (argv, argc, TRUE);
@@ -169,12 +181,33 @@ main (int argc, char **argv)
 	return 0;
 }
 
+
+static gboolean
+sound_error_dialog (gpointer unused)
+{
+	GtkWidget *dialog;
+
+	GDK_THREADS_ENTER ();
+
+	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
+					 _("Rhythmbox does not currently work if GNOME sound events are enabled."));
+	gtk_dialog_run (GTK_DIALOG (dialog));
+
+	bonobo_main_quit ();
+
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 static gboolean
 rb_init (RBShell *shell)
 {
 	char **argv;
 	int argc;
 
+	GDK_THREADS_ENTER ();
+	
 	rb_shell_construct (shell);
 
 	argv = (char **) g_object_get_data (G_OBJECT (shell), "argv");
@@ -182,6 +215,8 @@ rb_init (RBShell *shell)
 
 	rb_handle_cmdline (argv, argc, FALSE);
 	
+	GDK_THREADS_LEAVE ();
+
 	return FALSE;
 }
 
