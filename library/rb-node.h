@@ -76,10 +76,34 @@ void        rb_node_freeze                (RBNode *node);
 void        rb_node_thaw                  (RBNode *node);
 
 /* property interface */
+/* properties */
 enum
 {
-	RB_NODE_PROP_NAME          = 0,
-	RB_NODE_PROP_NAME_SORT_KEY = 1
+	RB_NODE_PROP_NAME               = 0,
+	RB_NODE_PROP_NAME_SORT_KEY      = 1,
+	RB_NODE_PROP_GENRE              = 2,
+	RB_NODE_PROP_ARTIST             = 3,
+	RB_NODE_PROP_ALBUM              = 4,
+	RB_NODE_PROP_REAL_GENRE         = 5,
+	RB_NODE_PROP_REAL_ARTIST        = 6,
+	RB_NODE_PROP_REAL_ALBUM         = 7,
+	RB_NODE_PROP_TRACK_NUMBER       = 8,
+	RB_NODE_PROP_REAL_TRACK_NUMBER  = 9,
+	RB_NODE_PROP_DURATION           = 10,
+	RB_NODE_PROP_REAL_DURATION      = 11,
+	RB_NODE_PROP_FILE_SIZE          = 12,
+	RB_NODE_PROP_LOCATION           = 13,
+	RB_NODE_PROP_MTIME              = 14,
+	RB_NODE_PROP_RESERVED           = 15,
+	RB_NODE_PROP_RATING	        = 16,
+ 	RB_NODE_PROP_NUM_PLAYS          = 17,
+ 	RB_NODE_PROP_LAST_PLAYED        = 18,
+	RB_NODE_PROP_LAST_PLAYED_SIMPLE = 19,
+	RB_NODE_PROP_ARTIST_SORT_KEY    = 20,
+	RB_NODE_PROP_ALBUM_SORT_KEY     = 21,
+	RB_NODE_PROP_QUALITY            = 22,
+	RB_NODE_PROP_ALT_LOCATIONS      = 23,
+	/* 24-99 are reserved */
 };
 
 void        rb_node_set_property          (RBNode *node,
@@ -102,6 +126,8 @@ double      rb_node_get_property_double   (RBNode *node,
 float       rb_node_get_property_float    (RBNode *node,
 					   int property_id);
 RBNode     *rb_node_get_property_node     (RBNode *node,
+					   int property_id);
+GObject    *rb_node_get_property_object   (RBNode *node,
 					   int property_id);
 /* free return value */
 char       *rb_node_get_property_time     (RBNode *node,
@@ -138,6 +164,11 @@ void        rb_node_system_init           (void);
 void        rb_node_system_shutdown       (void);
 
 long        rb_node_new_id                (void);
+
+
+/* Update 'play' statistics */
+void        rb_node_update_play_statistics (RBNode *node);
+
 
 G_END_DECLS
 

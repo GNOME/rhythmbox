@@ -79,6 +79,7 @@ static void rb_library_view_set_shuffle (RBViewPlayer *player,
 			                 gboolean shuffle);
 static void rb_library_view_set_repeat (RBViewPlayer *player,
 			                gboolean repeat);
+static gboolean rb_library_view_can_pause (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_first (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_next (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_previous (RBViewPlayer *player);
@@ -86,8 +87,11 @@ static void rb_library_view_next (RBViewPlayer *player);
 static void rb_library_view_previous (RBViewPlayer *player);
 static void rb_library_view_jump_to_current (RBViewPlayer *player);
 static const char *rb_library_view_get_title (RBViewPlayer *player);
+static RBViewPlayerResult rb_library_view_have_artist_album (RBViewPlayer *player);
 static const char *rb_library_view_get_artist (RBViewPlayer *player);
 static const char *rb_library_view_get_album (RBViewPlayer *player);
+static RBViewPlayerResult rb_library_view_have_url (RBViewPlayer *player);
+static void rb_library_view_get_url (RBViewPlayer *player, char **text, char **link);
 static const char *rb_library_view_get_song (RBViewPlayer *player);
 static long rb_library_view_get_duration (RBViewPlayer *player);
 static GdkPixbuf *rb_library_view_get_pixbuf (RBViewPlayer *player);
@@ -758,14 +762,18 @@ rb_library_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_set_shuffle      = rb_library_view_set_shuffle;
 	iface->impl_set_repeat       = rb_library_view_set_repeat;
 	iface->impl_have_first       = rb_library_view_have_first;
+	iface->impl_can_pause        = rb_library_view_can_pause;
 	iface->impl_have_next        = rb_library_view_have_next;
 	iface->impl_have_previous    = rb_library_view_have_previous;
 	iface->impl_next             = rb_library_view_next;
 	iface->impl_previous         = rb_library_view_previous;
 	iface->impl_jump_to_current  = rb_library_view_jump_to_current;
 	iface->impl_get_title        = rb_library_view_get_title;
+	iface->impl_have_artist_album = rb_library_view_have_artist_album;
 	iface->impl_get_artist       = rb_library_view_get_artist;
 	iface->impl_get_album        = rb_library_view_get_album;
+	iface->impl_have_url	     = rb_library_view_have_url;
+	iface->impl_get_url          = rb_library_view_get_url;
 	iface->impl_get_song         = rb_library_view_get_song;
 	iface->impl_get_duration     = rb_library_view_get_duration;
 	iface->impl_get_pixbuf       = rb_library_view_get_pixbuf;
@@ -810,6 +818,12 @@ rb_library_view_set_repeat (RBViewPlayer *player,
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	view->priv->repeat = repeat;
+}
+
+static gboolean
+rb_library_view_can_pause (RBViewPlayer *player)
+{
+	return TRUE;
 }
 
 static RBViewPlayerResult
@@ -888,6 +902,12 @@ rb_library_view_get_title (RBViewPlayer *player)
 	return (const char *) view->priv->title;
 }
 
+static RBViewPlayerResult
+rb_library_view_have_artist_album (RBViewPlayer *player)
+{
+	return TRUE;
+}
+
 static const char *
 rb_library_view_get_artist (RBViewPlayer *player)
 {
@@ -897,7 +917,7 @@ rb_library_view_get_artist (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
 	else
 		return NULL;
 }
@@ -911,9 +931,22 @@ rb_library_view_get_album (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
 	else
 		return NULL;
+}
+
+static RBViewPlayerResult
+rb_library_view_have_url (RBViewPlayer *player)
+{
+	return FALSE;
+}
+
+static void
+rb_library_view_get_url (RBViewPlayer *player, char **text, char **url)
+{
+	*text = *url = NULL;
+	return;
 }
 
 static const char *
@@ -939,7 +972,7 @@ rb_library_view_get_duration (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_long (node, RB_NODE_SONG_PROP_REAL_DURATION);
+		return rb_node_get_property_long (node, RB_NODE_PROP_REAL_DURATION);
 	else
 		return -1;
 }
@@ -1008,8 +1041,8 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		const char *song = rb_library_view_get_song (RB_VIEW_PLAYER (view));
 		const char *uri;
 
-		uri = rb_node_get_property_string (node,
-				                   RB_NODE_SONG_PROP_LOCATION);
+		uri = rb_node_get_property_string (node, 
+				                   RB_NODE_PROP_LOCATION);
 
 		g_assert (uri != NULL);
 
@@ -1061,7 +1094,7 @@ song_update_statistics (RBLibraryView *view)
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
-	rb_node_song_update_play_statistics (node);
+	rb_node_update_play_statistics (node);
 }
 
 static void
@@ -1417,17 +1450,17 @@ rb_library_view_search_cb (RBSearchEntry *search,
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,
 					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_ARTIST,
+									      RB_NODE_PROP_ARTIST,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,
 					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_ALBUM,
+									      RB_NODE_PROP_ALBUM,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,
 					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_GENRE,
+									      RB_NODE_PROP_GENRE,
 									      search_text),
 					       0);
 
@@ -1469,7 +1502,7 @@ albums_filter (RBLibraryView *view,
 				       0);
 	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_GENRE, genre),
+								      RB_NODE_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
@@ -1495,7 +1528,7 @@ songs_filter (RBLibraryView *view,
 				       0);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_GENRE, genre),
+								      RB_NODE_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
@@ -1503,7 +1536,7 @@ songs_filter (RBLibraryView *view,
 				       1);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_ARTIST, artist),
+								      RB_NODE_PROP_REAL_ARTIST, artist),
 				       1);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
@@ -1511,7 +1544,7 @@ songs_filter (RBLibraryView *view,
 				       2);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_ALBUM, album),
+								      RB_NODE_PROP_REAL_ALBUM, album),
 				       2);
 	rb_node_filter_done_changing (view->priv->songs_filter);
 }

@@ -262,7 +262,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 					return FALSE;
 
 				value = rb_node_get_property_string (node,
-						                     RB_NODE_SONG_PROP_LOCATION);
+						                     RB_NODE_PROP_LOCATION);
 				tmp = g_strdup (value);	
 
 				if (drag_data != NULL)

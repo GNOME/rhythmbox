@@ -127,7 +127,7 @@ rb_node_song_new (const char *location,
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, location);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_LOCATION,
+			      RB_NODE_PROP_LOCATION,
 			      &value);
 	g_value_unset (&value);
 
@@ -136,12 +136,12 @@ rb_node_song_new (const char *location,
 	g_value_set_string (&value, "");
 
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_NUM_PLAYS,
+			      RB_NODE_PROP_NUM_PLAYS,
 			      &value);
 
 	/* Last played time */
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
+			      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
 			      &value);
 
 	g_value_unset (&value);
@@ -227,7 +227,7 @@ set_mtime (RBNodeSong *node, const char *location)
 	g_value_set_long (&val, info->mtime);
 	
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_MTIME,
+			      RB_NODE_PROP_MTIME,
 			      &val);
 	
 	g_value_unset (&val);
@@ -249,7 +249,7 @@ set_duration (RBNodeSong *node,
 					    0,
 				            &val);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_DURATION,
+			      RB_NODE_PROP_REAL_DURATION,
 			      &val);
 	
 	g_value_init (&string_val, G_TYPE_STRING);
@@ -264,7 +264,7 @@ set_duration (RBNodeSong *node,
 	g_free (tmp);
 	
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_DURATION,
+			      RB_NODE_PROP_DURATION,
 			      &string_val);
 
 	g_value_unset (&string_val);
@@ -292,7 +292,7 @@ set_track_number (RBNodeSong *node,
 	cur = g_value_get_int (&val);
 	
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_TRACK_NUMBER,
+			      RB_NODE_PROP_REAL_TRACK_NUMBER,
 			      &val);
 	g_value_unset (&val);
 	
@@ -319,7 +319,7 @@ set_track_number (RBNodeSong *node,
 	g_value_set_string (&val, tmp);
 
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_TRACK_NUMBER,
+			      RB_NODE_PROP_TRACK_NUMBER,
 			      &val);
 
 	g_free (tmp);
@@ -342,7 +342,7 @@ set_genre (RBNodeSong *node,
 				            &val);
 
 	if (check_reparent == TRUE &&
-	    is_different (node, RB_NODE_SONG_PROP_GENRE, &val) == TRUE) {
+	    is_different (node, RB_NODE_PROP_GENRE, &val) == TRUE) {
 		g_value_unset (&val);
 
 		return TRUE;
@@ -381,7 +381,7 @@ set_genre (RBNodeSong *node,
 		rb_node_ref (genre);
 
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_GENRE,
+			      RB_NODE_PROP_GENRE,
 			      &val);
 		
 	g_value_unset (&val);
@@ -389,7 +389,7 @@ set_genre (RBNodeSong *node,
 	g_value_init (&val, G_TYPE_POINTER);
 	g_value_set_pointer (&val, genre);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_GENRE,
+			      RB_NODE_PROP_REAL_GENRE,
 			      &val);
 	g_value_unset (&val);
 
@@ -413,7 +413,7 @@ set_artist (RBNodeSong *node,
 				            &val);
 
 	if (check_reparent == TRUE &&
-	    is_different (node, RB_NODE_SONG_PROP_ARTIST, &val) == TRUE) {
+	    is_different (node, RB_NODE_PROP_ARTIST, &val) == TRUE) {
 		g_value_unset (&val);
 
 		return TRUE;
@@ -463,7 +463,7 @@ set_artist (RBNodeSong *node,
 	}
 
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_ARTIST,
+			      RB_NODE_PROP_ARTIST,
 			      &val);
 		
 	g_value_unset (&val);
@@ -476,14 +476,14 @@ set_artist (RBNodeSong *node,
 	g_value_set_string (&val, collated);
 	g_free (collated);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
+			      RB_NODE_PROP_ARTIST_SORT_KEY,
 			      &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_POINTER);
 	g_value_set_pointer (&val, artist);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_ARTIST,
+			      RB_NODE_PROP_REAL_ARTIST,
 			      &val);
 	g_value_unset (&val);
 
@@ -510,7 +510,7 @@ set_album (RBNodeSong *node,
 				            &val);
 
 	if (check_reparent == TRUE &&
-	    is_different (node, RB_NODE_SONG_PROP_ALBUM, &val) == TRUE) {
+	    is_different (node, RB_NODE_PROP_ALBUM, &val) == TRUE) {
 		g_value_unset (&val);
 
 		return TRUE;
@@ -552,7 +552,7 @@ set_album (RBNodeSong *node,
 	}
 	
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_ALBUM,
+			      RB_NODE_PROP_ALBUM,
 			      &val);
 		
 	folded = g_utf8_casefold (g_value_get_string (&val), -1);
@@ -564,14 +564,14 @@ set_album (RBNodeSong *node,
 	g_value_set_string (&val, collated);
 	g_free (collated);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
+			      RB_NODE_PROP_ALBUM_SORT_KEY,
 			      &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_POINTER);
 	g_value_set_pointer (&val, album);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_ALBUM,
+			      RB_NODE_PROP_REAL_ALBUM,
 			      &val);
 	g_value_unset (&val);
 
@@ -590,7 +590,7 @@ rb_node_song_sync (RBNodeSong *node,
 	const char *location;
 
 	location = rb_node_get_property_string (RB_NODE (node),
-				                RB_NODE_SONG_PROP_LOCATION);
+				                RB_NODE_PROP_LOCATION);
 	
 	info = monkey_media_stream_info_new (location, NULL);
 	if (info == NULL) {
@@ -605,7 +605,7 @@ rb_node_song_sync (RBNodeSong *node,
 	set_duration (node, info);
 
 	/* filesize */
-	set_value (node, RB_NODE_SONG_PROP_FILE_SIZE,
+	set_value (node, RB_NODE_PROP_FILE_SIZE,
 		   info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE);
 
 	/* title */
@@ -646,12 +646,12 @@ rb_node_song_update_if_changed (RBNodeSong *node,
 	info = gnome_vfs_file_info_new ();
 	
 	location = rb_node_get_property_string (RB_NODE (node),
-						RB_NODE_SONG_PROP_LOCATION);
+						RB_NODE_PROP_LOCATION);
 	gnome_vfs_get_file_info (location, info,
 				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
 
 	mtime = rb_node_get_property_long (RB_NODE (node),
-				           RB_NODE_SONG_PROP_MTIME);
+				           RB_NODE_PROP_MTIME);
 
 	if (info->mtime != mtime)
 		rb_node_song_sync (node, library, TRUE);
@@ -665,7 +665,7 @@ rb_node_song_get_genre (RBNodeSong *node)
 	g_return_val_if_fail (RB_IS_NODE_SONG (node), NULL);
 	
 	return rb_node_get_property_node (RB_NODE (node),
-			                  RB_NODE_SONG_PROP_REAL_GENRE);
+			                  RB_NODE_PROP_REAL_GENRE);
 }
 
 RBNode *
@@ -674,7 +674,7 @@ rb_node_song_get_artist (RBNodeSong *node)
 	g_return_val_if_fail (RB_IS_NODE_SONG (node), NULL);
 	
 	return rb_node_get_property_node (RB_NODE (node),
-					  RB_NODE_SONG_PROP_REAL_ARTIST);
+					  RB_NODE_PROP_REAL_ARTIST);
 }
 
 RBNode *
@@ -683,7 +683,7 @@ rb_node_song_get_album (RBNodeSong *node)
 	g_return_val_if_fail (RB_IS_NODE_SONG (node), NULL);
 	
 	return rb_node_get_property_node (RB_NODE (node),
-					  RB_NODE_SONG_PROP_REAL_ALBUM);
+					  RB_NODE_PROP_REAL_ALBUM);
 }
 
 gboolean
@@ -725,51 +725,4 @@ rb_node_song_restored (RBNode *node)
 	rb_node_ref (rb_node_song_get_genre (RB_NODE_SONG (node)));
 	rb_node_ref (rb_node_song_get_artist (RB_NODE_SONG (node)));
 	rb_node_ref (rb_node_song_get_album (RB_NODE_SONG (node)));
-}
-
-void        
-rb_node_song_update_play_statistics (RBNode *node)
-{
-	char *play_count, *time_string;
-	time_t now;
-	GValue value = { 0, };
-
-	g_return_if_fail (RB_IS_NODE_SONG (node));
-
-	/* Increment current play count */
-	play_count = (char *) rb_node_get_property_string (RB_NODE (node),
-				                           RB_NODE_SONG_PROP_NUM_PLAYS);
-
-	if (play_count != NULL)
-		play_count = g_strdup_printf ("%ld", atol (play_count) + 1);
-	else
-		play_count = g_strdup ("1");
-		
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, play_count);
-	g_free (play_count);
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_NUM_PLAYS,
-			      &value);
-	g_value_unset (&value);
-
-	/* Reset the last played time */
-	time (&now);
-
-	g_value_init (&value, G_TYPE_LONG);
-	g_value_set_long (&value, now);
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_LAST_PLAYED,
-			      &value);
-	g_value_unset (&value);
-
-	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
-
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, time_string);
-	g_free (time_string);
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
-			      &value);
-	g_value_unset (&value);
 }

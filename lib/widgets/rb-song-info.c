@@ -404,7 +404,7 @@ rb_song_info_rated_cb (RBRating *rating,
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, score);
 	rb_node_set_property (song_info->priv->current_node,
-			      RB_NODE_SONG_PROP_RATING,
+			      RB_NODE_PROP_RATING,
 			      &value);
 	g_value_unset (&value);
 
@@ -484,7 +484,7 @@ rb_song_info_update_title (RBSongInfo *song_info)
 			char *tmp;
 
 			url = rb_node_get_property_string (song_info->priv->current_node,
-					                   RB_NODE_SONG_PROP_LOCATION);
+					                   RB_NODE_PROP_LOCATION);
 
 			tmp = g_strdup_printf (_("%s Properties"), url);
 			gtk_window_set_title (GTK_WINDOW (song_info), tmp);
@@ -743,7 +743,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	g_return_if_fail (song_info != NULL);
 
 	text = rb_node_get_property_string (song_info->priv->current_node,
-			                    RB_NODE_SONG_PROP_LOCATION);
+			                    RB_NODE_PROP_LOCATION);
 
 	if (text != NULL)
 	{
@@ -862,7 +862,7 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 
 	/* get the stream info */
 	url = rb_node_get_property_string (node,
-			                   RB_NODE_SONG_PROP_LOCATION);
+			                   RB_NODE_PROP_LOCATION);
 
 	info = monkey_media_stream_info_new (url, NULL);
 	song_info->priv->current_info = info;
@@ -876,7 +876,7 @@ rb_song_info_update_play_count (RBSongInfo *song_info)
 	const char *text = NULL;
 
 	text = rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
-                                            RB_NODE_SONG_PROP_NUM_PLAYS);
+                                            RB_NODE_PROP_NUM_PLAYS);
 
 	if (text == NULL || strlen (text) == 0)
 	{
@@ -892,7 +892,7 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 	char *text = NULL;
 
 	text = rb_node_get_property_time (song_info->priv->current_node,
-					  RB_NODE_SONG_PROP_LAST_PLAYED);
+					  RB_NODE_PROP_LAST_PLAYED);
 
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), text);
 
@@ -908,7 +908,7 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 	g_return_if_fail (RB_IS_NODE (song_info->priv->current_node));
 
 	if (rb_node_get_property (song_info->priv->current_node,
-				  RB_NODE_SONG_PROP_RATING,
+				  RB_NODE_PROP_RATING,
 				  &value) == FALSE)
 	{
 		g_value_init (&value, G_TYPE_INT);

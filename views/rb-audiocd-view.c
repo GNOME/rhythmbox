@@ -551,7 +551,7 @@ rb_audiocd_view_get_artist (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
 	else
 		return NULL;
 }
@@ -565,7 +565,7 @@ rb_audiocd_view_get_album (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
 	else
 		return NULL;
 }
@@ -593,7 +593,7 @@ rb_audiocd_view_get_duration (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_long (node, RB_NODE_SONG_PROP_REAL_DURATION);
+		return rb_node_get_property_long (node, RB_NODE_PROP_REAL_DURATION);
 	else
 		return -1;
 }
@@ -661,7 +661,7 @@ rb_audiocd_view_set_playing_node (RBAudiocdView *view,
 		const char *uri;
 
 		uri = rb_node_get_property_string (node,
-				                    RB_NODE_SONG_PROP_LOCATION);
+				                    RB_NODE_PROP_LOCATION);
 
 		g_assert (uri != NULL);
 		
@@ -714,7 +714,7 @@ song_update_statistics (RBAudiocdView *view)
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
-	rb_node_song_update_play_statistics (node);
+	rb_node_update_play_statistics (node);
 }
 
 static void
@@ -907,7 +907,6 @@ rb_audiocd_view_node_removed_cb (RBNode *node,
 	rb_audiocd_view_set_playing_node (view, NULL);
 }
 
-
 void
 update_musicbrainz_info_thread (RBAudiocdView *view)
 {
@@ -924,7 +923,7 @@ update_musicbrainz_info_thread (RBAudiocdView *view)
 		RBNode *track = g_ptr_array_index (kids, i);
 
                 rb_node_get_property (RB_NODE (track),
-                                      RB_NODE_SONG_PROP_LOCATION,
+                                      RB_NODE_PROP_LOCATION,
                                       &value);
                 info = monkey_media_stream_info_new (g_value_get_string (&value), NULL);
                 g_value_unset (&value);
@@ -951,7 +950,7 @@ rb_audiocd_node_fill_basic (char *location)
        g_value_init (&value, G_TYPE_STRING);
        g_value_set_string (&value, (char *) location);
        rb_node_set_property (RB_NODE (track),
-                             RB_NODE_SONG_PROP_LOCATION,
+                             RB_NODE_PROP_LOCATION,
                              &value);
        g_value_unset (&value);
 
@@ -961,14 +960,14 @@ rb_audiocd_node_fill_basic (char *location)
        g_value_init (&value, G_TYPE_STRING);
        g_value_set_string (&value, _("Unknown"));
        rb_node_set_property (RB_NODE (track),
-                             RB_NODE_SONG_PROP_ARTIST,
+                             RB_NODE_PROP_ARTIST,
                              &value);
        g_value_unset (&value);
        
        g_value_init (&value, G_TYPE_STRING);
        g_value_set_string (&value, _("Unknown"));
        rb_node_set_property (RB_NODE (track),
-                             RB_NODE_SONG_PROP_ALBUM,
+                             RB_NODE_PROP_ALBUM,
                              &value);
        g_value_unset (&value);
        
@@ -977,10 +976,10 @@ rb_audiocd_node_fill_basic (char *location)
                                            0,
                                            &value);
        rb_node_set_property (RB_NODE (track),
-                             RB_NODE_SONG_PROP_TRACK_NUMBER,
+                             RB_NODE_PROP_TRACK_NUMBER,
                              &value);
        rb_node_set_property (RB_NODE (track),
-                             RB_NODE_SONG_PROP_REAL_TRACK_NUMBER,
+                             RB_NODE_PROP_REAL_TRACK_NUMBER,
                              &value);
        g_value_unset (&value);
        
@@ -1032,14 +1031,14 @@ rb_audiocd_discinfo_save (RBAudiocdView *view)
 		xmlnode = xmlNewChild (root, NULL, "node", NULL);
 
                 rb_node_get_property (RB_NODE (node),
-                                      RB_NODE_SONG_PROP_LOCATION,
+                                      RB_NODE_PROP_LOCATION,
                                       &value);
 
 		xmlSetProp (xmlnode, "location", g_value_get_string (&value));
                 g_value_unset (&value);
 
                 rb_node_get_property (RB_NODE (node),
-                                      RB_NODE_SONG_PROP_RATING,
+                                      RB_NODE_PROP_RATING,
                                       &value);
 
                 tmp = g_strdup_printf ("%d", g_value_get_int (&value));
@@ -1116,7 +1115,7 @@ rb_audiocd_discinfo_load (RBAudiocdView *view)
                         g_value_init (&value, G_TYPE_INT);
                         g_value_set_int (&value, rating);
                         rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_SONG_PROP_RATING,
+                                              RB_NODE_PROP_RATING,
                                               &value);
                         g_value_unset (&value);
                 }
@@ -1186,7 +1185,7 @@ rb_audiocd_get_status (RBAudiocdView *view)
 		n_songs++;
 
 		n_seconds += rb_node_get_property_long (node,
-							RB_NODE_SONG_PROP_REAL_DURATION);
+							RB_NODE_PROP_REAL_DURATION);
 	}
 		
 	rb_node_thaw (view->priv->audiocd);

@@ -58,7 +58,7 @@ rb_song_set_duration (RBNode *node,
         g_return_if_fail (success == TRUE);
 
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_REAL_DURATION,
+			      RB_NODE_PROP_REAL_DURATION,
 			      &val);
 	
 	g_value_init (&string_val, G_TYPE_STRING);
@@ -74,7 +74,7 @@ rb_song_set_duration (RBNode *node,
 	g_free (tmp);
 	
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_DURATION,
+			      RB_NODE_PROP_DURATION,
 			      &string_val);
 
 	g_value_unset (&string_val);
@@ -126,10 +126,10 @@ rb_song_set_artist (RBNode *node,
         g_value_unset (&value);
 
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_ARTIST,
+			      RB_NODE_PROP_ARTIST,
 			      &val);
         rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_REAL_ARTIST,
+			      RB_NODE_PROP_REAL_ARTIST,
 			      &val);
 		
 	g_value_unset (&val);
@@ -146,7 +146,7 @@ rb_song_set_artist (RBNode *node,
 	g_free (collated);
 
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
+			      RB_NODE_PROP_ARTIST_SORT_KEY,
 			      &val);
 	g_value_unset (&val);
 }
@@ -186,10 +186,10 @@ rb_song_set_album (RBNode *node,
         g_value_unset (&value);
 	
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_ALBUM,
+			      RB_NODE_PROP_ALBUM,
 			      &val);
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_REAL_ALBUM,
+			      RB_NODE_PROP_REAL_ALBUM,
 			      &val);
 		
 	folded = g_utf8_casefold (g_value_get_string (&val), -1);
@@ -201,7 +201,7 @@ rb_song_set_album (RBNode *node,
 	g_value_set_string (&val, collated);
 	g_free (collated);
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
+			      RB_NODE_PROP_ALBUM_SORT_KEY,
 			      &val);
 	g_value_unset (&val);
 }

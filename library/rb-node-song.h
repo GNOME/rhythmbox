@@ -26,31 +26,6 @@
 
 G_BEGIN_DECLS
 
-/* properties */
-enum
-{
-	RB_NODE_SONG_PROP_GENRE              = 2,
-	RB_NODE_SONG_PROP_ARTIST             = 3,
-	RB_NODE_SONG_PROP_ALBUM              = 4,
-	RB_NODE_SONG_PROP_REAL_GENRE         = 5,
-	RB_NODE_SONG_PROP_REAL_ARTIST        = 6,
-	RB_NODE_SONG_PROP_REAL_ALBUM         = 7,
-	RB_NODE_SONG_PROP_TRACK_NUMBER       = 8,
-	RB_NODE_SONG_PROP_REAL_TRACK_NUMBER  = 9,
-	RB_NODE_SONG_PROP_DURATION           = 10,
-	RB_NODE_SONG_PROP_REAL_DURATION      = 11,
-	RB_NODE_SONG_PROP_FILE_SIZE          = 12,
-	RB_NODE_SONG_PROP_LOCATION           = 13,
-	RB_NODE_SONG_PROP_MTIME              = 14,
-	RB_NODE_SONG_PROP_RESERVED           = 15,
-	RB_NODE_SONG_PROP_RATING	     = 16,
- 	RB_NODE_SONG_PROP_NUM_PLAYS          = 17,
- 	RB_NODE_SONG_PROP_LAST_PLAYED        = 18,
-	RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE = 19,
-	RB_NODE_SONG_PROP_ARTIST_SORT_KEY    = 20,
-	RB_NODE_SONG_PROP_ALBUM_SORT_KEY     = 21
-};
-
 #define RB_TYPE_NODE_SONG         (rb_node_song_get_type ())
 #define RB_NODE_SONG(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE_SONG, RBNodeSong))
 #define RB_NODE_SONG_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_NODE_SONG, RBNodeSongClass))
@@ -95,10 +70,6 @@ RBNode     *rb_node_song_get_album             (RBNodeSong *song);
 gboolean    rb_node_song_has_album             (RBNodeSong *song,
 				                RBNode *album,
 					        RBLibrary *library);
-
-/* Update 'play' statistics */
-void        rb_node_song_update_play_statistics (RBNode *node);
-
 
 G_END_DECLS
 

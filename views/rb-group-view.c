@@ -69,6 +69,7 @@ static void rb_group_view_set_shuffle (RBViewPlayer *player,
 			               gboolean shuffle);
 static void rb_group_view_set_repeat (RBViewPlayer *player,
 			              gboolean repeat);
+static gboolean rb_group_view_can_pause (RBViewPlayer *player);
 static RBViewPlayerResult rb_group_view_have_first (RBViewPlayer *player);
 static RBViewPlayerResult rb_group_view_have_next (RBViewPlayer *player);
 static RBViewPlayerResult rb_group_view_have_previous (RBViewPlayer *player);
@@ -562,6 +563,7 @@ rb_group_view_player_init (RBViewPlayerIface *iface)
 {
 	iface->impl_set_shuffle      = rb_group_view_set_shuffle;
 	iface->impl_set_repeat       = rb_group_view_set_repeat;
+	iface->impl_can_pause        = rb_group_view_can_pause;
 	iface->impl_have_first       = rb_group_view_have_first;
 	iface->impl_have_next        = rb_group_view_have_next;
 	iface->impl_have_previous    = rb_group_view_have_previous;
@@ -615,6 +617,12 @@ rb_group_view_set_repeat (RBViewPlayer *player,
 	RBGroupView *view = RB_GROUP_VIEW (player);
 
 	view->priv->repeat = repeat;
+}
+
+static gboolean
+rb_group_view_can_pause (RBViewPlayer *player)
+{
+	return TRUE;
 }
 
 static RBViewPlayerResult
@@ -702,7 +710,7 @@ rb_group_view_get_artist (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
 	else
 		return NULL;
 }
@@ -716,7 +724,7 @@ rb_group_view_get_album (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM);
+		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
 	else
 		return NULL;
 }
@@ -744,7 +752,7 @@ rb_group_view_get_duration (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-		return rb_node_get_property_long (node, RB_NODE_SONG_PROP_REAL_DURATION);
+		return rb_node_get_property_long (node, RB_NODE_PROP_REAL_DURATION);
 	else
 		return -1;
 }
@@ -812,7 +820,7 @@ rb_group_view_set_playing_node (RBGroupView *view,
 		const char *uri;
 
 		uri = rb_node_get_property_string (node,
-				                    RB_NODE_SONG_PROP_LOCATION);
+				                    RB_NODE_PROP_LOCATION);
 
 		g_assert (uri != NULL);
 		
@@ -865,7 +873,7 @@ song_update_statistics (RBGroupView *view)
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
-	rb_node_song_update_play_statistics (node);
+	rb_node_update_play_statistics (node);
 }
 
 static void
