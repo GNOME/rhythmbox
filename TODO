@@ -12,20 +12,20 @@ Bugs:
 * Sometimes crash on exit? (gnome_vfs_shutdown prob)
 * We don't unref the mixer atm (see above)
 
-* Do mtime checking when adding watched dir and file is already in lib [0.3]
+* Do mtime checking when adding watched dir and file is already in lib
 * Changing files while rb is running is still horked, esp when changing
   artist/album/genre.
 * If an artist has album kid without grandchildren needs to begone
+* Check for file extisnce when loading from xml (thread..)
 
 Features:
 ---------
 * Implement small view
 * Smart column sizing
-* View->Show shortcut bar [0.3]
-* Save paned position [0.3]
-* Start playing from selection? [0.3]
-* ellipsizing labels in sidebar
+* Cranberries, The instead of The Cranberries in artist list
 
+* write new multimedia backend based on libxmms?
+* rewrite library once again :-( This time think to refcounting and threads..
 
 Open tasks:
 ===========

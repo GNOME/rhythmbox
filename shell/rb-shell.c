@@ -111,6 +111,9 @@ static void rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
 			                 RBShell *shell);
 static void rb_shell_load_music_groups (RBShell *shell);
 static void rb_shell_save_music_groups (RBShell *shell);
+static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
+				               GtkAllocation *allocation,
+				               RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -121,6 +124,7 @@ static void rb_shell_save_music_groups (RBShell *shell);
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
 #define CONF_STATE_SHUFFLE          "/apps/rhythmbox/state/shuffle"
 #define CONF_STATE_REPEAT           "/apps/rhythmbox/state/repeat"
+#define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
 
 typedef struct
@@ -137,6 +141,7 @@ struct RBShellPrivate
 	BonoboUIComponent *ui_component;
 	BonoboUIContainer *container;
 
+	GtkWidget *paned;
 	GtkWidget *sidebar;
 	GtkWidget *notebook;
 
@@ -322,7 +327,7 @@ rb_shell_construct (RBShell *shell)
 	CORBA_Environment ev;
 	BonoboWindow *win;
 	Bonobo_UIContainer corba_container;
-	GtkWidget *hbox, *vbox;
+	GtkWidget *vbox;
 	RBView *library_view;
 	GtkWidget *splash;
 	GdkPixbuf *splash_icon;
@@ -419,17 +424,23 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->status_shell = rb_shell_status_new (bonobo_window_get_ui_engine (win));
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 
-	hbox = gtk_hpaned_new ();
+	shell->priv->paned = gtk_hpaned_new ();
 	shell->priv->sidebar = rb_sidebar_new ();
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
-	gtk_paned_pack1 (GTK_PANED (hbox), shell->priv->sidebar, FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (hbox), shell->priv->notebook, FALSE, FALSE);
+	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sidebar, FALSE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->notebook, FALSE, FALSE);
+	g_signal_connect (G_OBJECT (shell->priv->sidebar),
+			  "size_allocate",
+			  G_CALLBACK (rb_shell_sidebar_size_allocate_cb),
+			  shell);
+	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
+				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
-	gtk_box_pack_start (GTK_BOX (vbox), hbox, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->status_shell), FALSE, TRUE, 0);
 
 	bonobo_window_set_contents (win, vbox);
@@ -840,6 +851,7 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 
 	name = rb_ask_string (_("Enter a name"),
 			      _("Enter a name for the new music group:"),
+			      _("Untitled"),
 			      GTK_WINDOW (shell->priv->window));
 	
 	if (name == NULL)
@@ -914,4 +926,13 @@ rb_shell_save_music_groups (RBShell *shell)
 	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups);
 	
 	g_slist_free (groups);
+}
+
+static void
+rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
+				   GtkAllocation *allocation,
+				   RBShell *shell)
+{
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
+			       gtk_paned_get_position (GTK_PANED (shell->priv->paned)));
 }

@@ -331,7 +331,7 @@ rb_link_set_text (RBLink *link,
 	char *text, *escaped, *compressed;
 	
 	compressed = rb_string_compress (link->priv->text, 50);
-	escaped = g_markup_escape_text (compressed, g_utf8_strlen (compressed, -1));
+	escaped = g_markup_escape_text (compressed, -1);
 	g_free (compressed);
 	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"single\">%s</span>",
 				color->red, color->green, color->blue, escaped);

@@ -674,7 +674,17 @@ rb_library_view_start_playing (RBViewPlayer *player)
 	RBNode *node;
 
 	if (view->priv->shuffle == FALSE)
-		node = rb_node_view_get_first_node (view->priv->songs);
+	{
+		GList *sel = rb_node_view_get_selection (view->priv->songs);
+
+		if (sel == NULL)
+			node = rb_node_view_get_first_node (view->priv->songs);
+		else
+		{
+			GList *first = g_list_first (sel);
+			node = RB_NODE (first->data);
+		}
+	}
 	else
 		node = rb_node_view_get_random_node (view->priv->songs);
 

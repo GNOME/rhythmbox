@@ -20,7 +20,12 @@ librbwidgets_la_SOURCES =				\
 	gtktreemodelfilter.c				\
 	gtktreemodelfilter.h				\
 	e-splash.c					\
-	e-splash.h
+	e-splash.h					\
+	eel-ellipsizing-label.c				\
+	eel-ellipsizing-label.h				\
+	eel-gtk-macros.h				\
+	eel-pango-extensions.c				\
+	eel-pango-extensions.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -102,7 +102,10 @@ rb_ask_file (const char *title, GtkWindow *parent)
 }
 
 char *
-rb_ask_string (const char *title, const char *question, GtkWindow *parent)
+rb_ask_string (const char *title,
+	       const char *question,
+	       const char *default_text,
+	       GtkWindow *parent)
 {
 	GtkWidget *dialog, *hbox, *image, *entry, *label, *align, *vbox;
 	int response;
@@ -128,6 +131,7 @@ rb_ask_string (const char *title, const char *question, GtkWindow *parent)
 	gtk_container_add (GTK_CONTAINER (align), label);
 	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, TRUE, 0);
 	entry = gtk_entry_new ();
+	gtk_entry_set_text (GTK_ENTRY (entry), default_text);
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);

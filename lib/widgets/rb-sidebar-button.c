@@ -32,6 +32,7 @@
 
 #include "rb-sidebar.h"
 #include "rb-sidebar-button.h"
+#include "eel-ellipsizing-label.h"
 
 static void rb_sidebar_button_class_init (RBSidebarButtonClass *klass);
 static void rb_sidebar_button_init (RBSidebarButton *button);
@@ -70,6 +71,9 @@ static void rb_sidebar_button_drag_data_get_cb (GtkWidget *widget,
 static void rb_sidebar_button_drag_begin_cb (GtkWidget *widget,
 				             GdkDragContext *context,
 				             RBSidebarButton *button);
+static void rb_sidebar_button_label_size_allocate_cb (GtkWidget *widget,
+					              GtkAllocation *allocation,
+					              RBSidebarButton *button);
 
 struct RBSidebarButtonPrivate
 {
@@ -242,8 +246,11 @@ rb_sidebar_button_init (RBSidebarButton *button)
 			    0);
 	
 	/* label */
-	button->label = gtk_label_new ("");
-	gtk_label_set_line_wrap (GTK_LABEL (button->label), TRUE);
+	button->label = eel_ellipsizing_label_new ("");
+	g_signal_connect (G_OBJECT (button->label),
+			  "size_allocate",
+			  G_CALLBACK (rb_sidebar_button_label_size_allocate_cb),
+			  button);
 	gtk_box_pack_start (GTK_BOX (button->priv->box),
 			    button->label,
 			    FALSE,
@@ -317,8 +324,7 @@ rb_sidebar_button_init (RBSidebarButton *button)
 			    TRUE,
 			    0);
 	
-	button->priv->dnd_label = gtk_label_new ("");
-	gtk_label_set_line_wrap (GTK_LABEL (button->priv->dnd_label), TRUE);
+	button->priv->dnd_label = eel_ellipsizing_label_new ("");
 	gtk_box_pack_start (GTK_BOX (dnd_vbox),
 			    button->priv->dnd_label,
 			    FALSE,
@@ -393,10 +399,10 @@ rb_sidebar_button_set_property (GObject *object,
 		if (button->priv->text != NULL)
 			g_free (button->priv->text);
 		button->priv->text = g_strdup (g_value_get_string (value));
-		gtk_label_set_text (GTK_LABEL (button->label),
-				    button->priv->text);
-		gtk_label_set_text (GTK_LABEL (button->priv->dnd_label),
-				    button->priv->text);
+		eel_ellipsizing_label_set_text (EEL_ELLIPSIZING_LABEL (button->label),
+				                button->priv->text);
+		eel_ellipsizing_label_set_text (EEL_ELLIPSIZING_LABEL (button->priv->dnd_label),
+				                button->priv->text);
 		gtk_entry_set_text (GTK_ENTRY (button->priv->entry),
 				    button->priv->text);
 		gtk_editable_select_region (GTK_EDITABLE (button->priv->entry), 0, -1);
@@ -620,4 +626,14 @@ rb_sidebar_button_drag_begin_cb (GtkWidget *widget,
 				     GTK_WIDGET (button)->allocation.width,
 				     GTK_WIDGET (button)->allocation.height);
 	gtk_drag_set_icon_widget (context, button->priv->dnd_widget, -2, -2);
+}
+
+static void
+rb_sidebar_button_label_size_allocate_cb (GtkWidget *widget,
+					  GtkAllocation *allocation,
+					  RBSidebarButton *button)
+{
+	gtk_widget_set_size_request (button->priv->entry,
+				     widget->allocation.width,
+				     widget->allocation.height);
 }

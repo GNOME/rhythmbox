@@ -35,6 +35,7 @@ char *rb_ask_file       (const char *title,
 
 char *rb_ask_string     (const char *title,
 			 const char *question,
+			 const char *default_text,
 			 GtkWindow *parent);
 
 G_END_DECLS

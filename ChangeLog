@@ -1,3 +1,52 @@
+2002-07-03  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/rhythmbox.schemas:
+	* lib/rb-dialog.c: (rb_ask_string):
+	* lib/rb-dialog.h:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/eel-ellipsizing-label.c: (eel_strcmp),
+	(eel_str_is_equal), (eel_ellipsizing_label_init), (real_finalize),
+	(eel_ellipsizing_label_new), (eel_ellipsizing_label_set_text),
+	(real_size_request), (real_size_allocate), (real_expose_event),
+	(eel_ellipsizing_label_class_init):
+	* lib/widgets/eel-ellipsizing-label.h:
+	* lib/widgets/eel-gtk-macros.h:
+	* lib/widgets/eel-pango-extensions.c:
+	(eel_pango_attr_list_copy_or_create),
+	(eel_pango_attr_list_apply_global_attribute),
+	(apply_global_attribute), (eel_pango_layout_set_underline),
+	(eel_pango_layout_set_weight),
+	(eel_pango_layout_set_font_desc_from_string),
+	(measure_string_width), (compute_character_widths),
+	(eel_string_ellipsize_start), (eel_string_ellipsize_end),
+	(eel_string_ellipsize_middle),
+	(eel_pango_layout_set_text_ellipsized),
+	(eel_pango_layout_fit_to_dimensions),
+	(eel_pango_font_description_get_largest_fitting_font_size),
+	(eel_pango_ft2_get_context), (eel_create_bogus_test_pango_context),
+	(eel_self_check_ellipsize), (eel_self_check_ellipsize_start),
+	(eel_self_check_ellipsize_middle), (eel_self_check_ellipsize_end),
+	(eel_self_check_pango_extensions):
+	* lib/widgets/eel-pango-extensions.h:
+	* lib/widgets/rb-link.c: (rb_link_set_text):
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_init),
+	(rb_sidebar_button_set_property),
+	(rb_sidebar_button_drag_begin_cb),
+	(rb_sidebar_button_label_size_allocate_cb):
+	* shell/rb-shell.c: (rb_shell_construct), (rb_shell_cmd_new_group),
+	(rb_shell_save_music_groups), (rb_shell_sidebar_size_allocate_cb):
+	* views/rb-group-view.c: (rb_group_view_start_playing):
+	* views/rb-library-view.c: (rb_library_view_start_playing):
+
+	Save main paned state, use ellipsizing labels in sidebar,
+	start playing from selection.
+
+	Lots of C&P from eel. Ugh. We really need an ellipsizing label in gtk.
+
+	* data/ui/rhythmbox-ui.xml.in:
+
+	Remove "Get Info" for now.
+
 2002-07-03  Dennis Smit  <synap@area101.penguin.nl> 
 
 	* data/ui/rhythmbox-group-view.xml.in:
