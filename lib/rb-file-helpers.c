@@ -49,7 +49,7 @@ rb_file (const char *filename)
 		SHARE_UNINSTALLED_DIR "/",
 		SHARE_UNINSTALLED_DIR "/glade/",
 		SHARE_UNINSTALLED_DIR "/art/",
-		SHARE_UNINSTALLED_DIR "/node-views/"
+		SHARE_UNINSTALLED_DIR "/node-views/",
 		SHARE_DIR "/",
 		SHARE_DIR "/glade/",
 		SHARE_DIR "/art/",

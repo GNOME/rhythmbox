@@ -120,6 +120,6 @@ cd $ORIGDIR
 
 if test -z "$AUTOGEN_SUBDIR_MODE"; then
 	echo "Running configure..."
-    ($srcdir/configure --enable-maintainer-mode "$@" \
+    ($srcdir/configure --enable-maintainer-mode --enable-uninstalled-build "$@" \
 	 && echo -e "\nNow type 'make' to compile $PROJECT.")
 fi
