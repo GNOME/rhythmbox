@@ -240,6 +240,8 @@ rb_source_header_set_property (GObject *object,
 					  "filter_changed",
 					  G_CALLBACK (rb_source_header_filter_changed_cb),
 					  header);
+			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
+						  rb_source_can_search (header->priv->selected_source));
 		}
 		rb_source_header_sync_control_state (header);
 		

@@ -1,6 +1,21 @@
 2003-08-03  Colin Walters  <walters@verbum.org>
 
 	* iradio/rb-iradio-backend.c: (restore_node):
+	* shell/rb-source-header.c: (rb_source_header_set_property):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-library-source.c: (rb_library_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_pixbuf), (default_can_search),
+	(rb_source_can_search):
+	* sources/rb-source.h:
+
+	Add a new method can_search to sources.  Right now the group
+	source is the only one that can't.  Hopefully we'll fix that
+	soon.
+
+2003-08-03  Colin Walters  <walters@verbum.org>
+
+	* iradio/rb-iradio-backend.c: (restore_node):
 
 	Bump refcount of restored stations to 1.
 

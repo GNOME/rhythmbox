@@ -585,9 +585,11 @@ static void
 restore_node (RBNode *node)
 {
 	RBNode *parent;
-	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
+	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION)) {
+		rb_node_ref (node);
 		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
 					       (RBNodeCallback) finalize_node, NULL);
+	}
 
 	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
 	if (G_LIKELY (parent != NULL))

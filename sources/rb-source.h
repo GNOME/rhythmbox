@@ -71,6 +71,8 @@ typedef struct
 
 	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
 
+	gboolean	(*impl_can_search)	(RBSource *source);
+
 	void		(*impl_search)		(RBSource *source, const char *text);
 	GtkWidget *	(*impl_get_config_widget)(RBSource *source);
 
@@ -119,6 +121,8 @@ GList *		rb_source_get_extra_views	(RBSource *source);
 const char *	rb_source_get_description	(RBSource *source);
 
 GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
+
+gboolean	rb_source_can_search		(RBSource *source);
 
 void		rb_source_search		(RBSource *source,
 						 const char *text);
