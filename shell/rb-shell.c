@@ -163,6 +163,8 @@ static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_quit (RBShell *shell);
+static void rb_shell_cmd_view_all (GtkAction *action,
+ 				   RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
@@ -342,6 +344,9 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
 	  N_("Edit music player preferences"),
 	  G_CALLBACK (rb_shell_cmd_preferences) },
+	{ "ViewAll", NULL, N_("Show _all"), "<control>Y",
+	  N_("Show all items in this music source"),
+	  G_CALLBACK (rb_shell_cmd_view_all) },
 	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
 	  N_("Scroll the view to the currently playing song"),
 	  G_CALLBACK (rb_shell_cmd_current_song) },
@@ -1860,6 +1865,16 @@ rb_shell_cmd_current_song (GtkAction *action,
 	rb_debug ("current song");
 
 	rb_shell_jump_to_current (shell);
+}
+
+static void
+rb_shell_cmd_view_all (GtkAction *action,
+		       RBShell *shell)
+{
+	rb_debug ("view all");
+
+	rb_source_reset_filters (shell->priv->selected_source);
+	rb_source_header_clear_search (shell->priv->source_header);
 }
 
 static void

@@ -366,6 +366,8 @@ rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
 
 	rb_source_search (header->priv->selected_source, searchtext);
 
+	rb_source_header_sync_control_state (header);
+
 	g_free (searchtext);
 }
 
@@ -377,6 +379,7 @@ rb_source_header_search_cb (RBSearchEntry *search,
 	rb_debug  ("searching for \"%s\"", text);
 
 	eel_gconf_set_string (header->priv->search_key, text);
+	rb_source_header_sync_control_state (header);
 }
 
 void
@@ -390,6 +393,7 @@ rb_source_header_clear_search (RBSourceHeader *header)
 	if (header->priv->selected_source)
 		rb_source_search (header->priv->selected_source, NULL);
 	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
+	rb_source_header_sync_control_state (header);
 }
 
 static void
@@ -432,9 +436,19 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 {
 	GtkAction *viewbrowser_action;
 	GtkAction *viewstatusbar_action;
+	GtkAction *viewall_action;
 	gboolean have_browser = header->priv->selected_source != NULL
 		&& header->priv->browser_key != NULL;
 	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	gboolean has_search;
+
+	if (header->priv->search_key == NULL) {
+		has_search = FALSE;
+	} else {
+		const char *search_string;
+		search_string = eel_gconf_get_string (header->priv->search_key);
+		has_search = search_string != NULL && search_string[0];
+	}
 
 	gtk_widget_set_sensitive (header->priv->disclosure,
 				  have_browser);
@@ -444,7 +458,12 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 		      have_browser && not_small, NULL);
 	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
 							    "ViewStatusbar");
-	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive", not_small, NULL);
+	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive",
+		      not_small && has_search, NULL);
+	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
+						      "ViewAll");
+	g_object_set (G_OBJECT (viewall_action), "sensitive",
+		      have_browser && not_small, NULL);
 	if (have_browser) {
 		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
