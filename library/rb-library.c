@@ -626,12 +626,18 @@ rb_library_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize
 	seconds = duration % 60;
 
 	if (days >= 1.0) {
-		time = g_strdup_printf ("%.1f days", days);
+		time = ngettext ("%.1f day", "%.1f days", days);
+		time = g_strdup_printf (time, days);			
 	} else {
 		const char *minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
 		if (hours >= 1) {		
 			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
-			char *fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
+			char *fmt;
+			if (minutes > 0) {
+				fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
+			} else {
+				fmt = g_strdup_printf ("%s", hourfmt);
+			}
 			time = g_strdup_printf (fmt, hours, minutes);
 			g_free (fmt);
 		} else 
