@@ -2,6 +2,38 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-16 16:23:10 GMT	Colin Walters <walters@verbum.org>	patch-71
+
+    Summary:
+      remove cruft, fix compile errors
+    Revision:
+      rhythmbox--mainline--0.7--patch-71
+
+
+    removed files:
+     data/node-views/.arch-ids/.cvsignore.id
+     data/node-views/.arch-ids/=id data/node-views/.cvsignore
+     data/node-views/Makefile.am
+     data/node-views/rb-node-view-albums.xml
+     data/node-views/rb-node-view-artists.xml
+     data/node-views/rb-node-view-cdaudio.xml
+     data/node-views/rb-node-view-genres.xml
+     data/node-views/rb-node-view-iradio-genres.xml
+     data/node-views/rb-node-view-iradio-stations.xml
+     data/node-views/rb-node-view-playlist.xml
+     data/node-views/rb-node-view-songs.xml
+     data/views/.arch-ids/.cvsignore.id data/views/.arch-ids/=id
+     data/views/.cvsignore
+
+    modified files:
+     ChangeLog configure.ac data/Makefile.am
+     metadata/monkey-media/monkey-media.c
+
+    removed directories:
+     data/node-views data/node-views/.arch-ids data/views
+     data/views/.arch-ids
+
+
 2003-12-16 16:01:18 GMT	Colin Walters <walters@verbum.org>	patch-70
 
     Summary:

@@ -58,26 +58,6 @@
 #endif
 
 static void monkey_media_init_internal (void);
-static void monkey_media_audio_driver_changed (GConfClient *client, guint cnxn_id,
-			                       GConfEntry *entry, gpointer user_data);
-static void monkey_media_cd_drive_changed (GConfClient *client, guint cnxn_id,
-			                   GConfEntry *entry, gpointer user_data);
-static void monkey_media_cd_playback_mode_changed (GConfClient *client, guint cnxn_id,
-			                           GConfEntry *entry, gpointer user_data);
-static void popt_callback (poptContext context, enum poptCallbackReason reason,
-	                   const struct poptOption *option, const char *arg, gpointer data);
-
-static GConfClient *gconf_client = NULL;
-
-static char *audio_driver = NULL;
-static char *cd_drive = NULL;
-static MonkeyMediaCDPlaybackMode cd_playback_mode = MONKEY_MEDIA_CD_PLAYBACK_NO_ERROR_CORRECTION;
-
-static char *mmdir = NULL;
-
-static GMainLoop *main_loop = NULL;
-
-static gboolean alive = FALSE;
 
 typedef struct
 {

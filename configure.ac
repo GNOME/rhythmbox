@@ -438,7 +438,6 @@ data/Makefile
 data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
-data/node-views/Makefile
 data/rhythmbox.pc
 sources/Makefile
 help/Makefile
