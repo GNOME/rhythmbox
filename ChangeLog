@@ -1,3 +1,10 @@
+2003-09-01  Yann Rouillard <yann@cvs.gnome.org>
+
+	rb-shell.c: (rb_shell_construct):
+
+	Moved library creation before tray icon initialization.
+	This fixes segmentation fault when dnd'ing on tray icon.
+
 2003-09-01  Metin Amiroff  <metin@karegen.com>
 
 	configure.ac: Added "az" in ALL_LINGUAS.

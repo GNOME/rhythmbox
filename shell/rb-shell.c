@@ -570,12 +570,15 @@ rb_shell_construct (RBShell *shell)
 					   NULL);
 
 	bonobo_ui_component_freeze (shell->priv->ui_component, NULL);
-	
+
 	rb_debug ("shell: loading bonobo ui");
 	bonobo_ui_util_set_ui (shell->priv->ui_component,
 			       DATADIR,
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
+
+	rb_debug ("shell: creating library");
+	shell->priv->library = rb_library_new ();
 
 	rb_debug ("shell: setting up tray icon");
 	tray_deleted_cb (NULL, NULL, shell);
@@ -614,7 +617,7 @@ rb_shell_construct (RBShell *shell)
 			  G_CALLBACK (source_activated_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "show_popup",
 			  G_CALLBACK (rb_shell_show_popup_cb), shell);
-	
+
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->ui_component);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
@@ -654,9 +657,6 @@ rb_shell_construct (RBShell *shell)
 
 	gtk_widget_show_all (vbox);
 
-	rb_debug ("shell: creating library");
-	shell->priv->library = rb_library_new ();
-
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
@@ -679,7 +679,7 @@ rb_shell_construct (RBShell *shell)
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->library), "progress",
 			  G_CALLBACK (rb_shell_library_progress_cb), shell);
-	
+
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
 
@@ -1510,7 +1510,7 @@ tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 		rb_debug ("caught delete_event for tray icon");
 		gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
 	}
-	
+
 	rb_debug ("creating new tray icon");
 	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->container,
 						   shell->priv->ui_component,
