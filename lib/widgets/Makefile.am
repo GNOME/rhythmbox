@@ -28,4 +28,4 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LDADD = $(top_srcdir)/lib/view/librbview.la
+librbwidgets_la_LIDADD = $(top_srcdir)/lib/view/librbview.la

@@ -24,13 +24,13 @@ static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
 static void rb_shell_clipboard_finalize (GObject *object);
 static void rb_shell_clipboard_set_property (GObject *object,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *pspec);
+					     guint prop_id,
+					     const GValue *value,
+					     GParamSpec *pspec);
 static void rb_shell_clipboard_get_property (GObject *object,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *pspec);
+				   	     guint prop_id,
+					     GValue *value,
+					     GParamSpec *pspec);
 
 struct RBShellClipboardPrivate
 {

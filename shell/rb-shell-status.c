@@ -26,13 +26,13 @@ static void rb_shell_status_class_init (RBShellStatusClass *klass);
 static void rb_shell_status_init (RBShellStatus *shell_status);
 static void rb_shell_status_finalize (GObject *object);
 static void rb_shell_status_set_property (GObject *object,
-					guint prop_id,
-					const GValue *value,
-					GParamSpec *pspec);
+					  guint prop_id,
+					  const GValue *value,
+					  GParamSpec *pspec);
 static void rb_shell_status_get_property (GObject *object,
-					guint prop_id,
-					GValue *value,
-					GParamSpec *pspec);
+					  guint prop_id,
+					  GValue *value,
+					  GParamSpec *pspec);
 
 struct RBShellStatusPrivate
 {
