@@ -440,21 +440,24 @@ rb_metadata_load (RBMetaData *md,
 		/* We caught the first buffer, which means the decoder should have read all
 		 * of the metadata, and should know the length now.
 		 */
-		GstFormat format = GST_FORMAT_TIME;
-		gint64 length;
-		
-		if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
-			GValue *newval = g_new0 (GValue, 1);
-
-			rb_debug ("duration query succeeded");
+		if (g_hash_table_lookup (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION)) == NULL) {
+			GstFormat format = GST_FORMAT_TIME;
+			gint64 length;
 			
-			g_value_init (newval, G_TYPE_LONG);
-			/* FIXME - use guint64 for duration? */
-			g_value_set_long (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
-			g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
-					     newval);
-		} else {
-			rb_debug ("duration query failed!");
+			if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL,
+					       &format, &length)) {
+				GValue *newval = g_new0 (GValue, 1);
+				
+				rb_debug ("duration query succeeded");
+				
+				g_value_init (newval, G_TYPE_LONG);
+				/* FIXME - use guint64 for duration? */
+				g_value_set_long (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
+				g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
+						     newval);
+			} else {
+				rb_debug ("duration query failed!");
+			}
 		}
 	} else if (md->priv->eos)
 		rb_debug ("caught eos without handoff!");
