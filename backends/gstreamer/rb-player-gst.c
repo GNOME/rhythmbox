@@ -676,8 +676,6 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			return FALSE;
 		}
 			
-/* Disabled for now since it breaks */
-#if 0
 		if (may_pause == 1) {
 			rb_debug ("setting sink to NULL");
 			if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
@@ -688,7 +686,6 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 				return FALSE;
 			}
 		}
-#endif
 	}
 	return TRUE;
 }
