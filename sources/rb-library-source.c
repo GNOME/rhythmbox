@@ -148,13 +148,6 @@ struct RBLibrarySourcePrivate
 	RBNodeView *artists;
 	RBNodeView *songs;
 
-	char *title;
-
-	gboolean shuffle;
-	gboolean repeat;
-
-	char *status;
-
 	GtkWidget *paned;
 
 	gboolean lock;
@@ -341,9 +334,6 @@ rb_library_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
-	g_free (source->priv->title);
-	g_free (source->priv->status);
-
 	g_object_unref (G_OBJECT (source->priv->artists_filter));
 	g_object_unref (G_OBJECT (source->priv->songs_filter));
 	g_object_unref (G_OBJECT (source->priv->albums_filter));
@@ -354,14 +344,14 @@ rb_library_source_finalize (GObject *object)
 }
 
 static void
-rb_library_source_songs_show_popup_cb (RBNodeView *source,
+rb_library_source_songs_show_popup_cb (RBNodeView *view,
 				     RBNode *node,
 				     RBLibrarySource *library_source)
 {
 	GtkWidget *menu;
 	GtkWidget *window;
 
-	window = gtk_widget_get_ancestor (GTK_WIDGET (source),
+	window = gtk_widget_get_ancestor (GTK_WIDGET (view),
 					  BONOBO_TYPE_WINDOW);
 
 	menu = gtk_menu_new ();
