@@ -305,15 +305,9 @@ rb_shell_player_set_player (RBShellPlayer *shell_player,
 RBViewPlayer *
 rb_shell_player_get_player (RBShellPlayer *shell_player)
 {
-	RBViewPlayer *player;
-	
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (shell_player), NULL);
 
-	g_object_get (G_OBJECT (shell_player),
-		      "player", &player,
-		      NULL);
-
-	return player;
+	return shell_player->priv->selected_player;
 }
 
 RBShellPlayer *

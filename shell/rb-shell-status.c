@@ -244,15 +244,9 @@ rb_shell_status_set_status (RBShellStatus *shell_status,
 RBViewStatus *
 rb_shell_status_get_status (RBShellStatus *shell_status)
 {
-	RBViewStatus *status;
-	
 	g_return_val_if_fail (RB_IS_SHELL_STATUS (shell_status), NULL);
 
-	g_object_get (G_OBJECT (shell_status),
-		      "status", &status,
-		      NULL);
-
-	return status;
+	return shell_status->priv->status;
 }
 
 RBShellStatus *

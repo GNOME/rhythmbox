@@ -240,15 +240,9 @@ rb_shell_clipboard_set_clipboard (RBShellClipboard *shell_clipboard,
 RBViewClipboard *
 rb_shell_clipboard_get_clipboard (RBShellClipboard *shell_clipboard)
 {
-	RBViewClipboard *clipboard;
-	
 	g_return_val_if_fail (RB_IS_SHELL_CLIPBOARD (shell_clipboard), NULL);
 
-	g_object_get (G_OBJECT (shell_clipboard),
-		      "clipboard", &clipboard,
-		      NULL);
-
-	return clipboard;
+	return shell_clipboard->priv->clipboard;
 }
 
 RBShellClipboard *

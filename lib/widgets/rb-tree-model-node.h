@@ -81,9 +81,13 @@ void             rb_tree_model_node_iter_from_node   (RBTreeModelNode *model,
 void             rb_tree_model_node_set_filter       (RBTreeModelNode *model,
 						      RBNode *filter_parent,
 						      RBNode *filter_grandparent);
+void             rb_tree_model_node_get_filter       (RBTreeModelNode *model,
+						      RBNode **filter_parent,
+						      RBNode **filter_grandparent);
 
 void             rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 						      RBNode *node);
+RBNode          *rb_tree_model_node_get_playing_node (RBTreeModelNode *model);
 
 G_END_DECLS
 

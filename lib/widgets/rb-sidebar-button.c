@@ -485,11 +485,9 @@ rb_sidebar_button_get (RBSidebarButton *button,
 {
 	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
 	
-	g_object_get (G_OBJECT (button),
-		      "stock_id", stock_id,
-		      "text", text,
-		      "static", is_static,
-		      NULL);
+	*stock_id  = button->priv->stock_id;
+	*text      = button->priv->text;
+	*is_static = button->priv->is_static;
 }
 
 static gboolean

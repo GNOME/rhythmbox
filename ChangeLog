@@ -1,3 +1,22 @@
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/view/rb-view.c: (rb_view_get_sidebar_button):
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_property),
+	(rb_node_view_get_playing_node), (rb_node_view_get_n_rows),
+	(rb_node_view_get_visible_nodes):
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_get):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_filter),
+	(rb_tree_model_node_set_playing_node),
+	(rb_tree_model_node_get_playing_node):
+	* lib/widgets/rb-tree-model-node.h:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_get_clipboard):
+	* shell/rb-shell-player.c: (rb_shell_player_get_player):
+	* shell/rb-shell-status.c: (rb_shell_status_get_status):
+	* views/rb-group-view.c: (rb_group_view_get_file):
+
+	Patch a few rather major leaks, fix the refcounting issue.
+
 2002-06-22  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/node-views/rb-node-view-albums.xml:

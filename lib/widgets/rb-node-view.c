@@ -359,7 +359,7 @@ rb_node_view_get_property (GObject *object,
 		{
 			g_assert (view->priv->nodemodel != NULL);
 
-			g_object_set_property (G_OBJECT (view->priv->nodemodel),
+			g_object_get_property (G_OBJECT (view->priv->nodemodel),
 					       "filter-grandparent", value);
 		}
 		break;
@@ -636,15 +636,9 @@ rb_node_view_set_playing_node (RBNodeView *view,
 RBNode *
 rb_node_view_get_playing_node (RBNodeView *view)
 {
-	RBNode *node;
-	
 	g_return_val_if_fail (RB_IS_NODE_VIEW (view), NULL);
 
-	g_object_get (G_OBJECT (view),
-		      "playing-node", &node,
-		      NULL);
-
-	return node;
+	return rb_tree_model_node_get_playing_node (view->priv->nodemodel);
 }
 
 static RBNode *
@@ -1123,14 +1117,12 @@ rb_node_view_timeout_cb (RBNodeView *view)
 static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
-	RBNode *parent, *grandparent;
+	RBNode *parent = NULL, *grandparent = NULL;
 	GList *l;
 	int n_rows = 0;
 
-	g_object_get (G_OBJECT (view->priv->nodemodel),
-	              "filter-parent", &parent,
-		      "filter-grandparent", &grandparent,
-		      NULL);
+	rb_tree_model_node_get_filter (view->priv->nodemodel,
+				       &parent, &grandparent);
 
 	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
 	{
@@ -1140,20 +1132,18 @@ rb_node_view_get_n_rows (RBNodeView *view)
 
 		n_rows++;
 	}
-	
+
 	return n_rows;
 }
 
 static GList *
 rb_node_view_get_visible_nodes (RBNodeView *view)
 {
-	RBNode *parent, *grandparent;
+	RBNode *parent = NULL, *grandparent = NULL;
 	GList *ret = NULL, *l;
 
-	g_object_get (G_OBJECT (view->priv->nodemodel),
-	              "filter-parent", &parent,
-		      "filter-grandparent", &grandparent,
-		      NULL);
+	rb_tree_model_node_get_filter (view->priv->nodemodel,
+				       &parent, &grandparent);
 
 	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
 	{
@@ -1163,6 +1153,6 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 
 		ret = g_list_append (ret, l->data);
 	}
-	
+
 	return ret;
 }

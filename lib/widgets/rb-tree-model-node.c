@@ -818,6 +818,17 @@ rb_tree_model_node_set_filter (RBTreeModelNode *model,
 }
 
 void
+rb_tree_model_node_get_filter (RBTreeModelNode *model,
+			       RBNode **filter_parent,
+			       RBNode **filter_grandparent)
+{
+	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
+
+	*filter_parent      = model->priv->filter_parent;
+	*filter_grandparent = model->priv->filter_grandparent;
+}
+
+void
 rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 			             RBNode *node)
 {
@@ -826,6 +837,14 @@ rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 	g_object_set (G_OBJECT (model),
 		      "playing-node", node,
 		      NULL);
+}
+
+RBNode *
+rb_tree_model_node_get_playing_node (RBTreeModelNode *model)
+{
+	g_return_val_if_fail (RB_IS_TREE_MODEL_NODE (model), NULL);
+
+	return model->priv->playing_node;
 }
 
 static void

@@ -441,13 +441,7 @@ rb_group_view_set_name (RBGroupView *group,
 const char *
 rb_group_view_get_file (RBGroupView *group)
 {
-	char *file;
-
-	g_object_get (G_OBJECT (group),
-		      "file", &file,
-		      NULL);
-	
-	return file;
+	return group->priv->file;
 }
 
 static void

@@ -325,15 +325,9 @@ rb_view_unmerge_ui (RBView *view)
 RBSidebarButton *
 rb_view_get_sidebar_button (RBView *view)
 {
-	RBSidebarButton *button;
-
 	g_return_val_if_fail (RB_IS_VIEW (view), NULL);
 
-	g_object_get (G_OBJECT (view),
-		      "sidebar-button", &button,
-		      NULL);
-
-	return button;
+	return view->priv->button;
 }
 
 void
