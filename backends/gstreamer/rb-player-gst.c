@@ -508,16 +508,18 @@ rb_player_construct (RBPlayer *mp,
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
 	}
 
-#ifdef WITH_MONKEYMEDIA
 	/* The decoding element */
 	if (iradio_mode)
+#ifdef WITH_MONKEYMEDIA
 #ifdef HAVE_MP3
 		decoder_name = "mad";
 #else
 		decoder_name = "vorbisfile";
 #endif
-	else
+#else
+		decoder_name = "mad";
 #endif
+	else
 		decoder_name = "spider";
 
 	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
