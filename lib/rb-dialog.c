@@ -119,10 +119,10 @@ rb_ask_file_multiple (const char *title,
 	filesel = gtk_file_chooser_dialog_new (title, 
 					       parent, 
 					       GTK_FILE_CHOOSER_ACTION_OPEN,
-					       GTK_STOCK_OPEN, 
-					       GTK_RESPONSE_OK,
 					       GTK_STOCK_CANCEL, 
 					       GTK_RESPONSE_CANCEL,
+					       GTK_STOCK_OPEN, 
+					       GTK_RESPONSE_OK,
 					       NULL);
 
 	if (default_file != NULL)

@@ -52,14 +52,14 @@ main (int argc, char *argv [])
 	 * Initialize bonobo.
 	 */
 	if (!bonobo_init (&argc, argv))
-		g_error (_("I could not initialize Bonobo"));
+		g_error ("Could not initialize Bonobo");
 	
 	CORBA_exception_init (&ev);
 	rb = bonobo_activation_activate_from_id (RB_IID, 0, NULL, &ev);
 
 
 	if (rb == CORBA_OBJECT_NIL) {
-		g_warning (_("Could not create an instance of the sample echo component"));
+		g_warning ("Could not create an instance of Rhythmbox");
 		return bonobo_debug_shutdown ();
 	}
 	CORBA_exception_init (&ev);
@@ -67,7 +67,7 @@ main (int argc, char *argv [])
 	pb = GNOME_Rhythmbox_getPlayerProperties (rb, &ev);
 	if (BONOBO_EX (&ev)) {
 		char *err = bonobo_exception_get_text (&ev);
-		g_warning (_("An exception occured '%s'"), err);
+		g_warning ("An exception occured '%s'", err);
 		g_free (err);
 		exit (1);
 	}
@@ -87,7 +87,7 @@ main (int argc, char *argv [])
 
 	if (BONOBO_EX (&ev)) {
 		char *err = bonobo_exception_get_text (&ev);
-		g_warning (_("An exception occured '%s'"), err);
+		g_warning ("An exception occured '%s'", err);
 		g_free (err);
 		exit (1);
 	}

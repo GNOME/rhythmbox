@@ -30,6 +30,7 @@
 
 #include "rb-player.h"
 #include "rb-file-helpers.h"
+#include "rb-debug.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *mp);
@@ -552,6 +553,14 @@ rb_player_playing (RBPlayer *mp)
 
 	return (xine_get_status (mp->priv->stream) == XINE_STATUS_PLAY && xine_get_param (mp->priv->stream, XINE_PARAM_SPEED) == XINE_SPEED_NORMAL);
 }
+
+void
+rb_player_set_replaygain (RBPlayer *mp,
+			  double track_gain, double track_peak, 
+			  double album_gain, double album_peak)
+{
+	/* FIXME: implement me */
+	rb_debug ("rb_player_set_replaygain not implemented in xine backend\n");}
 
 static gboolean
 can_set_volume (RBPlayer *mp)

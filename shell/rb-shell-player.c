@@ -536,7 +536,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->prev_button), 
-			      _("Go to previous song"), NULL);
+			      _("Play previous song"), NULL);
 
 	/* Button images */
 	player->priv->play_image = gtk_image_new_from_stock (RB_STOCK_PLAY,
@@ -565,7 +565,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->next_button), 
-			      _("Go to next song"), NULL);
+			      _("Play next song"), NULL);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);

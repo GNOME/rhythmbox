@@ -257,7 +257,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	gtk_widget_show (GTK_WIDGET (page));
 	gnome_druid_page_edge_set_title (GNOME_DRUID_PAGE_EDGE (page), _("Finish"));
 	gnome_druid_page_edge_set_text (GNOME_DRUID_PAGE_EDGE (page),
-					_("You are now ready to start Rhythmbox.\n\nRemember that you may add music to the library using \"Organize\" then \"Add to Library\", or by importing it from CDs."));
+					_("You are now ready to start Rhythmbox.\n\nRemember that you may add music to the library using \"Music\" then \"Import Folder\", or by importing it from CDs."));
 	g_signal_connect (G_OBJECT (page), "finish", G_CALLBACK (rb_druid_page3_finish_cb), druid);
 	gnome_druid_append_page (druid->priv->druid, page);
 
