@@ -26,6 +26,12 @@
 
 G_BEGIN_DECLS
 
+enum
+{
+	/* Must be one more than the last RBNode property */
+	RB_NODE_PROP_IRADIO_SOURCE = 24,
+};
+
 typedef enum
 {
 	RB_IRADIO_BACKEND_COLUMN_PLAYING,
@@ -65,6 +71,10 @@ typedef struct
 GType   rb_iradio_backend_get_type			(void);
 
 void    rb_iradio_backend_load				(RBIRadioBackend *backend);
+
+RBNode *rb_iradio_backend_new_station			(GList *locations, const char *name,
+							 const char *genre, const char *source,
+							 RBIRadioBackend *iradio_backend);
 
 void    rb_iradio_backend_remove_node			(RBIRadioBackend *backend,
 							 RBNode *node);

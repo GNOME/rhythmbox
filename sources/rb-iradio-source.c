@@ -40,7 +40,6 @@
 #include "rb-new-station-dialog.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-volume.h"
-#include "rb-node-station.h"
 #include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
@@ -589,7 +588,7 @@ ensure_node_selection (RBNodeView *view,
 		selection = rb_node_view_get_selection (view);
 	}
 
-	return RB_NODE (selection->data);
+	return selection->data;
 }
 
 static void

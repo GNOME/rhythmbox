@@ -39,7 +39,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "rb-node-station.h"
 #include "rb-glist-wrapper.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-glade-helpers.h"
@@ -427,8 +426,8 @@ rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 				    0, text, -1);
 	}
 
-	listwrapper = RB_GLIST_WRAPPER (rb_node_get_property_object (dialog->priv->current_node,
-								     RB_NODE_PROP_ALT_LOCATIONS));
+	listwrapper = RB_GLIST_WRAPPER (rb_node_get_property_pointer (dialog->priv->current_node,
+								      RB_NODE_PROP_ALT_LOCATIONS));
 	altlocations = rb_glist_wrapper_get_list (listwrapper);
 	while (altlocations != NULL)
 	{
@@ -467,7 +466,7 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 static void
 rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog)
 {
-	char *text = g_strdup_printf ("%d", rb_node_get_property_int (RB_NODE (dialog->priv->current_node),
+	char *text = g_strdup_printf ("%d", rb_node_get_property_int (dialog->priv->current_node,
 								      RB_NODE_PROP_PLAY_COUNT));
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
 	g_free (text);
@@ -477,7 +476,7 @@ static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
 	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed),
-			    rb_node_get_property_string (RB_NODE (dialog->priv->current_node),
+			    rb_node_get_property_string (dialog->priv->current_node,
 							 RB_NODE_PROP_LAST_PLAYED_STR));
 }
 
@@ -487,7 +486,6 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 	GValue value = { 0, };
 
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
 
 	if (rb_node_get_property (dialog->priv->current_node,
 				  RB_NODE_PROP_RATING,
@@ -527,7 +525,7 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_sync_locations (RBStationPropertiesDialog *dialog)
 {
-	RBGListWrapper *wlocations = RB_GLIST_WRAPPER (rb_node_get_property_object (dialog->priv->current_node,
+	RBGListWrapper *wlocations = RB_GLIST_WRAPPER (rb_node_get_property_pointer (dialog->priv->current_node,
 										    RB_NODE_PROP_ALT_LOCATIONS));
 	GtkTreeIter iter;
 	GList *locations = rb_glist_wrapper_get_list (wlocations);

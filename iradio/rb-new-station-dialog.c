@@ -32,7 +32,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "rb-node-station.h"
 #include "rb-new-station-dialog.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
@@ -272,11 +271,11 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 	if (response_id != GTK_RESPONSE_OK)
 		goto cleanup;
 	locations = g_list_prepend (locations, g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location))));
-	rb_node_station_new (locations,
-			     g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title))),
-			     g_strdup (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry))),
-			     "user",
-			     dialog->priv->backend);
+	rb_iradio_backend_new_station (locations,
+				       g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title))),
+				       g_strdup (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry))),
+				       "user",
+				       dialog->priv->backend);
  cleanup:
 	return;
 }

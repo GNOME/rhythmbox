@@ -38,7 +38,6 @@
 #include "rb-dialog.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
-#include "rb-node-song.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
@@ -539,7 +538,7 @@ ensure_node_selection (RBNodeView *source,
 		selection = rb_node_view_get_selection (source);
 	}
 
-	return RB_NODE (selection->data);
+	return selection->data;
 }
 
 

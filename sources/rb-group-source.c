@@ -38,7 +38,6 @@
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
-#include "rb-node-song.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-library-dnd-types.h"
@@ -229,42 +228,8 @@ rb_group_source_songs_show_popup_cb (RBNodeView *view,
 static void
 rb_group_source_init (RBGroupSource *source)
 {
-	GtkWidget *dummy = gtk_tree_view_new ();
 	source->priv = g_new0 (RBGroupSourcePrivate, 1);
 
-	source->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
-
-	source->priv->group = rb_node_new ();
-
-	source->priv->songs = rb_node_view_new (source->priv->group,
-						rb_file ("rb-node-view-songs.xml"),
-						NULL);
-	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
-			  G_CALLBACK (rb_group_source_songs_show_popup_cb), source);
-
-	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
-			  G_CALLBACK (rb_group_source_drop_cb), source);
-	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
-			   target_table, G_N_ELEMENTS (target_table), GDK_ACTION_COPY);
-	rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1);
-
-	source->priv->pixbuf = gtk_widget_render_icon (dummy,
-						       RB_STOCK_PLAYLIST,
-						       GTK_ICON_SIZE_MENU,
-						       NULL);
-	gtk_widget_destroy (dummy);
-
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "changed",
-			  G_CALLBACK (songs_view_changed_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->songs));
-
-	gtk_widget_show_all (GTK_WIDGET (source));
-			
 }
 
 static void
@@ -304,8 +269,44 @@ rb_group_source_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_LIBRARY:
+	{
+		GtkWidget *dummy = gtk_tree_view_new ();
 		source->priv->library = g_value_get_object (value);
-		break;
+		source->priv->vbox = gtk_vbox_new (FALSE, 5);
+		
+		gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
+		
+		source->priv->group = rb_node_new (rb_library_get_node_db (source->priv->library));
+		
+		source->priv->songs = rb_node_view_new (source->priv->group,
+							rb_file ("rb-node-view-songs.xml"),
+							NULL);
+		g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
+				  G_CALLBACK (rb_group_source_songs_show_popup_cb), source);
+		
+		g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
+				  G_CALLBACK (rb_group_source_drop_cb), source);
+		gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
+				   target_table, G_N_ELEMENTS (target_table), GDK_ACTION_COPY);
+		rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1);
+		
+		source->priv->pixbuf = gtk_widget_render_icon (dummy,
+							       RB_STOCK_PLAYLIST,
+							       GTK_ICON_SIZE_MENU,
+							       NULL);
+		gtk_widget_destroy (dummy);
+		
+		g_signal_connect (G_OBJECT (source->priv->songs),
+				  "changed",
+				  G_CALLBACK (songs_view_changed_cb),
+				  source);
+		
+		gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->songs));
+		
+		gtk_widget_show_all (GTK_WIDGET (source));
+			
+	}
+	break;
 	case PROP_FILE:
 		g_free (source->priv->file);
 
@@ -665,7 +666,8 @@ rb_group_source_load (RBGroupSource *source)
 		id = atol (tmp);
 		g_free (tmp);
 
-		node = rb_node_get_from_id (id);
+		node = rb_node_db_get_node_from_id (rb_library_get_node_db (source->priv->library),
+						    id);
 
 		if (node == NULL)
 			continue;
@@ -791,7 +793,8 @@ rb_group_source_drop_cb (GtkWidget *widget,
 		RBNode *node = NULL;
 
 		id = atol (data->data);
-		node = rb_node_get_from_id (id);
+		node = rb_node_db_get_node_from_id (rb_library_get_node_db (source->priv->library),
+						    id);
 
 		if (node != NULL)
 			rb_library_handle_songs (source->priv->library,

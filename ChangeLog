@@ -1,3 +1,98 @@
+2003-07-27  Colin Walters  <cwalters@gnome.org>
+
+	* iradio/Makefile.am:
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),
+	(rb_iradio_backend_finalize), (load_initial),
+	(rb_iradio_backend_load), (rb_iradio_backend_remove_node),
+	(rb_iradio_backend_lookup_station_by_location),
+	(rb_iradio_backend_add_station_full), (finalize_node),
+	(set_title_sort_key), (set_genre), (rb_iradio_backend_new_station):
+	* iradio/rb-iradio-backend.h:
+	* iradio/rb-new-station-dialog.c:
+	(rb_new_station_dialog_response_cb):
+	* iradio/rb-node-station.c:
+	* iradio/rb-node-station.h:
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_update_location),
+	(rb_station_properties_dialog_update_play_count),
+	(rb_station_properties_dialog_update_last_played),
+	(rb_station_properties_dialog_update_rating),
+	(rb_station_properties_dialog_sync_locations):
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_set_property), (rb_node_view_construct),
+	(rb_node_view_selection_changed_cb):
+	* lib/widgets/rb-player.c: (rb_player_class_init),
+	(rb_player_set_property):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_play_count),
+	(rb_song_info_update_last_played):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_class_init), (rb_tree_model_node_set_property),
+	(rb_tree_model_node_get_property), (rb_tree_model_node_get_path),
+	(rb_tree_model_node_get_value), (rb_tree_model_node_iter_next),
+	(rb_tree_model_node_node_from_iter):
+	* lib/widgets/rb-tree-model-sort.c:
+	* library/Makefile.am:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(rb_library_remove_node), (rb_library_get_node_db),
+	(rb_library_create_skels), (rb_library_handle_songs),
+	(rb_library_load), (finalize_node), (rb_library_new_node),
+	(is_different), (set_node_value), (set_node_title),
+	(set_node_mtime), (set_node_duration), (set_node_track_number),
+	(set_node_genre), (set_node_artist), (set_node_album), (sync_node),
+	(rb_library_update_node):
+	* library/rb-library.h:
+	* library/rb-node-common.h:
+	* library/rb-node-db.c: (rb_node_db_get_type),
+	(rb_node_db_set_name), (rb_node_db_get_property),
+	(rb_node_db_set_property), (rb_node_db_class_init),
+	(rb_node_db_init), (rb_node_db_finalize), (rb_node_db_get_by_name),
+	(rb_node_db_new), (node_from_id_real), (rb_node_db_get_name),
+	(rb_node_db_get_node_from_id), (_rb_node_db_new_id),
+	(_rb_node_db_add_id), (_rb_node_db_remove_id):
+	* library/rb-node-db.h:
+	* library/rb-node-filter.c: (rb_node_filter_add_expression),
+	(rb_node_filter_evaluate), (rb_node_filter_expression_new),
+	(rb_node_filter_expression_evaluate):
+	* library/rb-node-filter.h:
+	* library/rb-node-song.c:
+	* library/rb-node-song.h:
+	* library/rb-node.c: (write_lock_to_read_lock),
+	(read_lock_to_write_lock), (lock_gdk), (unlock_gdk), (callback),
+	(rb_node_emit_signal), (rb_node_finalize), (real_remove_child),
+	(remove_child), (signal_object_weak_notify),
+	(unref_signal_objects), (rb_node_dispose), (rb_node_new),
+	(rb_node_new_with_id), (rb_node_get_db), (rb_node_get_id),
+	(rb_node_ref), (rb_node_unref), (rb_node_freeze), (rb_node_thaw),
+	(child_changed), (real_set_property), (rb_node_set_property),
+	(rb_node_get_property), (save_parent), (rb_node_save_to_xml),
+	(real_add_child), (rb_node_new_from_xml), (rb_node_add_child),
+	(rb_node_remove_child), (rb_node_has_child),
+	(rb_node_real_get_child_index), (rb_node_sort_children),
+	(rb_node_reorder_children), (rb_node_get_children),
+	(rb_node_get_n_children), (rb_node_get_nth_child),
+	(get_child_index_real), (rb_node_get_child_index),
+	(rb_node_get_next_child), (rb_node_get_previous_child),
+	(rb_node_signal_connect_object), (rb_node_signal_disconnect),
+	(rb_node_update_play_statistics):
+	* library/rb-node.h:
+	* shell/rb-shell-player.c: (rb_shell_player_open_node):
+	* shell/rb-shell.c: (ask_string_response_cb),
+	(sourcelist_drag_finished_cb):
+	* sources/rb-group-source.c: (rb_group_source_init),
+	(rb_group_source_set_property), (rb_group_source_load),
+	(rb_group_source_drop_cb):
+	* sources/rb-iradio-source.c: (ensure_node_selection):
+	* sources/rb-library-source.c: (ensure_node_selection):
+	* sources/rb-song-info-helpers.h:
+
+	Steal Epiphany node stuff.  Clean that up a bit.  Rework the
+	rest of the source to use it.
+
+	Kill off RBNodeSong and RBNodeStation.
+
+	Other stuff.
+
 2003-07-24  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_set_dnd_targets):

@@ -12,9 +12,7 @@ librbiradio_la_SOURCES =				\
 	rb-iradio-yp-iterator.c				\
 	rb-iradio-yp-iterator.h				\
 	rb-iradio-yp-xmlfile.c				\
-	rb-iradio-yp-xmlfile.h				\
-	rb-node-station.c				\
-	rb-node-station.h				
+	rb-iradio-yp-xmlfile.h
 
 
 INCLUDES =						\

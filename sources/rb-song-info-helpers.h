@@ -23,7 +23,6 @@
 #define __RB_SONG_INFO_HELPERS_VIEW_H
 
 #include "rb-node.h"
-#include "rb-node-song.h"
 
 G_BEGIN_DECLS
 
