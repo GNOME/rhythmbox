@@ -42,6 +42,7 @@ struct RhythmDBPrivate
 
 	GThreadPool *query_thread_pool;
 
+	GHashTable *added_entries;
 	GHashTable *changed_entries;
 
 	guint thread_reaper_id;
@@ -382,6 +383,13 @@ emit_entry_changed (RhythmDBEntry *entry, gpointer unused,
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry);
 }
 
+static void
+emit_entry_added (RhythmDBEntry *entry, gpointer unused,
+		  RhythmDB *db)
+{
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
+}
+
 void
 rhythmdb_write_unlock (RhythmDB *db)
 {
@@ -389,6 +397,11 @@ rhythmdb_write_unlock (RhythmDB *db)
 		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
 		g_hash_table_destroy (db->priv->changed_entries);
 		db->priv->changed_entries = NULL;
+	}
+	if (db->priv->added_entries) {
+		g_hash_table_foreach (db->priv->added_entries, (GHFunc) emit_entry_added, db);
+		g_hash_table_destroy (db->priv->added_entries);
+		db->priv->added_entries = NULL;
 	}
 		 
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
@@ -414,7 +427,10 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	
 	ret = klass->impl_entry_new (db, type, uri);
 	rb_debug ("emitting entry added");
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, ret);
+	if (!db->priv->changed_entries)
+		db->priv->added_entries = g_hash_table_new (NULL, NULL);
+
+	g_hash_table_insert (db->priv->added_entries, ret, NULL);
 	return ret;
 }
 
