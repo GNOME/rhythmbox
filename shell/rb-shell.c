@@ -344,7 +344,7 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 	g_return_val_if_fail (ev != NULL, NULL);
 
 	if ((CORBA_exception_id (ev) != NULL) &&
-	    (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError != 0)))
+	    (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError) != 0))
 	{
 		return bonobo_exception_get_text (ev); 
 	}
