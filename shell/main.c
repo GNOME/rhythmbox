@@ -147,6 +147,8 @@ main (int argc, char **argv)
 	if (!sound_events_borked)
 		rb_debug_init (debug);
 
+	rb_debug ("initializing Rhythmbox %s", VERSION);
+
 	rb_file_helpers_init ();
 	rb_string_helpers_init ();
 
