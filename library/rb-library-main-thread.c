@@ -23,6 +23,7 @@
 
 #include "rb-library-main-thread.h"
 #include "rb-file-helpers.h"
+#include "rb-library-action.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -139,10 +140,8 @@ file_changed_cb (RBFileMonitor *monitor,
 		 const char *uri,
 		 RBLibraryMainThread *thread)
 {
-	rb_library_action_queue_add (rb_library_get_main_queue (thread->priv->library),
-				     TRUE,
-				     RB_LIBRARY_ACTION_UPDATE_FILE,
-				     uri);
+	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_UPDATE_FILE, uri);
+	g_async_queue_push (rb_library_get_main_queue (thread->priv->library), action);
 }
 
 static void
@@ -150,10 +149,8 @@ file_removed_cb (RBFileMonitor *monitor,
 		 const char *uri,
 		 RBLibraryMainThread *thread)
 {
-	rb_library_action_queue_add (rb_library_get_main_queue (thread->priv->library),
-				     TRUE,
-				     RB_LIBRARY_ACTION_REMOVE_FILE,
-				     uri);
+	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_REMOVE_FILE, uri);
+	g_async_queue_push (rb_library_get_main_queue (thread->priv->library), action);
 }
 
 static void
@@ -289,6 +286,7 @@ exit_if_dead (RBLibraryMainThread *thread)
 	if (thread->priv->dead == TRUE) {
 		rb_debug ("caught dead flag");
 		g_mutex_unlock (thread->priv->lock);
+		g_async_queue_unref (rb_library_get_main_queue (thread->priv->library));
 		g_thread_exit (NULL);
 	}
 	g_mutex_unlock (thread->priv->lock);
@@ -296,64 +294,63 @@ exit_if_dead (RBLibraryMainThread *thread)
 
 static gpointer
 thread_main (RBLibraryMainThread *thread)
-{	while (TRUE)
-	{
-		RBLibraryActionQueue *queue;
+{
+	GAsyncQueue *queue;
 
+	queue = rb_library_get_main_queue (thread->priv->library);
+	g_async_queue_ref (queue);
+	while (TRUE)
+	{
+		RBLibraryAction *action;
+		RBLibraryActionType type;
+		char *uri, *realuri;
+		GError *error = NULL;
+		GTimeVal timeout;
+		
 		exit_if_dead (thread);
 
-		queue = rb_library_get_main_queue (thread->priv->library);
-		while (rb_library_action_queue_is_empty (queue) == FALSE)
-		{
-			RBLibraryActionType type;
-			char *uri, *realuri;
-			GError *error = NULL;
+		g_get_current_time (&timeout);
+		g_time_val_add (&timeout, 1000);
 
+		while ((action = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
 			exit_if_dead (thread);
 
-			rb_library_action_queue_peek_head (queue,
-							   &type,
-							   &uri);
-
-			if (uri)
-				realuri = rb_uri_resolve_symlink (uri);
-			else
-				realuri = NULL;
-
-
-			switch (type)
-			{
-			case RB_LIBRARY_ACTION_OPERATION_END:
-				rb_library_operation_end (thread->priv->library);
-				break;
-			case RB_LIBRARY_ACTION_ADD_FILE:
-				rb_library_add_uri_sync (thread->priv->library, realuri, &error);
-				break;
-			/* These operations don't need to be very fast; and if they
-			 * happen a lot they starve the main thread for the GDK lock.
-			 */
-			case RB_LIBRARY_ACTION_UPDATE_FILE:
-				if (rb_library_update_uri (thread->priv->library, realuri, &error))
-					g_usleep (G_USEC_PER_SEC*2);
-				break;
-			case RB_LIBRARY_ACTION_REMOVE_FILE:
-				rb_library_remove_uri (thread->priv->library, realuri);
-				break;
-			default:
-				break;
-			}
-
-			if (error != NULL) {
-				push_err (thread, realuri, error);
-			}
-
-			g_free (realuri);
-
-			rb_library_action_queue_pop_head (queue);
+			g_get_current_time (&timeout);
+			g_time_val_add (&timeout, 1000);
 		}
 
+		
+		rb_library_action_get (action, &type, &uri);
+
+		realuri = rb_uri_resolve_symlink (uri);
+
+		rb_debug ("popped action from queue, type: %d uri: %s", type, uri);
+		switch (type)
+		{
+		case RB_LIBRARY_ACTION_ADD_FILE:
+			rb_library_add_uri_sync (thread->priv->library, realuri, &error);
+			break;
+		case RB_LIBRARY_ACTION_UPDATE_FILE:
+			rb_library_update_uri (thread->priv->library, realuri, &error);
+			break;
+		case RB_LIBRARY_ACTION_REMOVE_FILE:
+			rb_library_remove_uri (thread->priv->library, realuri);
+			break;
+		default:
+			g_assert_not_reached ();
+			break;
+		}
+
+		if (error != NULL) {
+			push_err (thread, realuri, error);
+		}
+
+		g_free (realuri);
+		g_object_unref (G_OBJECT (action));
+			
 		g_usleep (10);
 	}
 
+	g_async_queue_unref (queue);
 	return NULL;
 }

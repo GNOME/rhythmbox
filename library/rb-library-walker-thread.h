@@ -46,11 +46,18 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
+
+	/* signals */
+	void (*done) (RBLibraryWalkerThread *thread);
 } RBLibraryWalkerThreadClass;
 
 GType                  rb_library_walker_thread_get_type (void);
 
-RBLibraryWalkerThread *rb_library_walker_thread_new      (RBLibrary *library);
+RBLibraryWalkerThread *rb_library_walker_thread_new      (RBLibrary *library, const char *uri);
+
+void			rb_library_walker_thread_start (RBLibraryWalkerThread *thread);
+
+void			rb_library_walker_thread_kill (RBLibraryWalkerThread *thread);
 
 G_END_DECLS
 

@@ -795,49 +795,6 @@ rb_group_source_add_node (RBGroupSource *source,
 }
 
 static void
-add_uri (const char *uri,
-	 RBGroupSource *source)
-{
-	RBNode *node;
-
-	node = rb_library_get_song_by_location (source->priv->library, uri);
-
-	if (node != NULL)
-		rb_group_source_add_node (source, node);
-}
-
-static void
-dnd_add_handled_cb (RBLibraryAction *action,
-		    RBGroupSource *source)
-{
-	char *uri;
-	RBLibraryActionType type;
-
-	rb_library_action_get (action,
-			       &type,
-			       &uri);
-	
-	switch (type)
-	{
-	case RB_LIBRARY_ACTION_ADD_FILE:
-	{
-		RBNode *node;
-		
-		node = rb_library_get_song_by_location (source->priv->library, uri);
-		
-		if (node != NULL)
-			rb_group_source_add_node (source, node);
-	}
-	break;
-	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-		rb_uri_handle_recursively (uri, (GFunc) add_uri, NULL, NULL, source);
-	break;
-	default:
-		break;
-	}
-}
-
-static void
 handle_songs_func (RBNode *node,
 		   RBGroupSource *source)
 {
@@ -944,12 +901,16 @@ rb_group_source_add_list_uri (RBGroupSource *source,
 			if (node != NULL)
 				rb_group_source_add_node (source, node);
 			else {
-				RBLibraryAction *action = rb_library_add_uri (source->priv->library, uri);
-				g_signal_connect_object (G_OBJECT (action),
-						         "handled",
-						         G_CALLBACK (dnd_add_handled_cb),
-						         G_OBJECT (source),
-							 0);
+				GError *error = NULL;
+				RBNode *node;
+				rb_library_add_uri_sync (source->priv->library, uri, &error);
+				
+				/* FIXME error handling */
+				if (error != NULL) {
+					node  = rb_library_get_song_by_location (source->priv->library, uri);
+					
+					rb_group_source_add_node (source, node);
+				}
 			}
 		}
 

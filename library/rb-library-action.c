@@ -43,14 +43,6 @@ static GObjectClass *parent_class = NULL;
 
 enum
 {
-	HANDLED,
-	LAST_SIGNAL
-};
-
-static guint rb_library_action_signals[LAST_SIGNAL] = { 0 };
-
-enum
-{
 	PROP_0,
 	PROP_TYPE,
 	PROP_URI
@@ -112,16 +104,6 @@ rb_library_action_class_init (RBLibraryActionClass *klass)
 							      "Action uri",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	rb_library_action_signals[HANDLED] =
-		g_signal_new ("handled",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryActionClass, handled),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 }
 
 static void
@@ -152,8 +134,6 @@ rb_library_action_finalize (GObject *object)
 static void
 rb_library_action_dispose (GObject *object)
 {
-	g_signal_emit (object, rb_library_action_signals[HANDLED], 0);
-
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
@@ -238,10 +218,8 @@ rb_library_action_type_get_type (void)
 		static const GEnumValue values[] =
 		{
 			{ RB_LIBRARY_ACTION_ADD_FILE,      "RB_LIBRARY_ACTION_ADD_FILE",      "add file" },
-			{ RB_LIBRARY_ACTION_ADD_DIRECTORY, "RB_LIBRARY_ACTION_ADD_DIRECTORY", "add directory" },
 			{ RB_LIBRARY_ACTION_REMOVE_FILE,   "RB_LIBRARY_ACTION_REMOVE_FILE",   "remove file" },
 			{ RB_LIBRARY_ACTION_UPDATE_FILE,   "RB_LIBRARY_ACTION_UPDATE_FILE",   "update file" },
-			{ RB_LIBRARY_ACTION_OPERATION_END, "RB_LIBRARY_ACTION_OPERATION_END", "end operation" },
 			{ 0, 0, 0 }
 		};
 

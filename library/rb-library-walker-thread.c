@@ -23,6 +23,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-library-walker-thread.h"
+#include "rb-library-action.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 
@@ -37,11 +38,12 @@ static void rb_library_walker_thread_get_property (GObject *object,
                                                    guint prop_id,
                                                    GValue *value,
                                                    GParamSpec *pspec);
-static gpointer thread_main (RBLibraryWalkerThreadPrivate *priv);
+static gpointer thread_main (RBLibraryWalkerThread *thread);
 
 struct RBLibraryWalkerThreadPrivate
 {
 	RBLibrary *library;
+	char *uri;
 
 	RBLibraryAction *action;
 
@@ -53,8 +55,17 @@ struct RBLibraryWalkerThreadPrivate
 enum
 {
 	PROP_0,
-	PROP_LIBRARY
+	PROP_LIBRARY,
+	PROP_URI
 };
+
+enum
+{
+	DONE,
+	LAST_SIGNAL,
+};
+
+static guint rb_library_walker_thread_signals[LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
@@ -105,6 +116,23 @@ rb_library_walker_thread_class_init (RBLibraryWalkerThreadClass *klass)
                                                               "Library object",
                                                               RB_TYPE_LIBRARY,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+        g_object_class_install_property (object_class,
+                                         PROP_URI,
+                                         g_param_spec_string ("uri",
+                                                              "uri",
+							      "uri",
+							      "",
+                                                              G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	rb_library_walker_thread_signals[DONE] =
+		g_signal_new ("done",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryWalkerThreadClass, done),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -127,13 +155,8 @@ rb_library_walker_thread_finalize (GObject *object)
 
 	g_return_if_fail (thread->priv != NULL);
 
-	g_mutex_lock (thread->priv->lock);
-	thread->priv->dead = TRUE;
-	g_mutex_unlock (thread->priv->lock);
-
-	g_thread_join (thread->priv->thread);
-
 	g_mutex_free (thread->priv->lock);
+	g_free (thread->priv->uri);
 
 	g_free (thread->priv);
 
@@ -141,7 +164,7 @@ rb_library_walker_thread_finalize (GObject *object)
 }
 
 RBLibraryWalkerThread *
-rb_library_walker_thread_new (RBLibrary *library)
+rb_library_walker_thread_new (RBLibrary *library, const char *uri)
 {
 	RBLibraryWalkerThread *library_walker_thread;
 
@@ -149,6 +172,7 @@ rb_library_walker_thread_new (RBLibrary *library)
 
 	library_walker_thread = RB_LIBRARY_WALKER_THREAD (g_object_new (RB_TYPE_LIBRARY_WALKER_THREAD,
 								        "library", library,
+									"uri", uri,
 								        NULL));
 
 	g_return_val_if_fail (library_walker_thread->priv != NULL, NULL);
@@ -169,8 +193,9 @@ rb_library_walker_thread_set_property (GObject *object,
 	case PROP_LIBRARY:
 		thread->priv->library = g_value_get_object (value);                    
 	
-		thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
-							thread->priv, TRUE, NULL);
+		break;
+	case PROP_URI:
+		thread->priv->uri = g_strdup (g_value_get_string (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -191,83 +216,52 @@ rb_library_walker_thread_get_property (GObject *object,
 	case PROP_LIBRARY:
 		g_value_set_object (value, thread->priv->library);
 		break;
+	case PROP_URI:
+		g_value_set_string (value, thread->priv->uri);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
 	}
 }
 
-static void
-action_handled_cb (RBLibraryAction *action,
-		   RBLibraryAction *parent_action)
+void
+rb_library_walker_thread_start (RBLibraryWalkerThread *thread)
 {
-	g_object_unref (G_OBJECT (parent_action));
+	thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
+						thread, TRUE, NULL);
+}
+
+void
+rb_library_walker_thread_kill (RBLibraryWalkerThread *thread)
+{
+	g_mutex_lock (thread->priv->lock);
+	thread->priv->dead = TRUE;
+	g_mutex_unlock (thread->priv->lock);
 }
 
 static void
 add_file (const char *filename,
-	  RBLibraryWalkerThreadPrivate *priv)
+	  RBLibraryWalkerThread *thread)
 {
-	RBLibraryAction *action;
-
-	action = rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
-					      FALSE,
-					      RB_LIBRARY_ACTION_ADD_FILE,
-					      filename);
-	g_object_ref (G_OBJECT (priv->action));
-	g_signal_connect (G_OBJECT (action),
-			  "handled",
-			  G_CALLBACK (action_handled_cb),
-			  priv->action);
+	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, filename);
+	
+	g_async_queue_push (rb_library_get_main_queue (thread->priv->library), action);
 }
 
 static gpointer
-thread_main (RBLibraryWalkerThreadPrivate *priv)
+thread_main (RBLibraryWalkerThread *thread)
 {
-	while (TRUE)
-	{
-		RBLibraryActionQueue *queue;
+	g_async_queue_ref (rb_library_get_main_queue (thread->priv->library));
 
-		g_mutex_lock (priv->lock);
-		
-		if (priv->dead == TRUE)
-		{
-			rb_debug ("caught dead flag");
-			g_mutex_unlock (priv->lock);
-			g_thread_exit (NULL);
-		}
-		g_mutex_unlock (priv->lock);
+	rb_uri_handle_recursively (thread->priv->uri, (GFunc) add_file, thread->priv->lock, &thread->priv->dead, thread);
+	if (!thread->priv->dead)
+		g_signal_emit (G_OBJECT (thread), rb_library_walker_thread_signals[DONE], 0);
 
-		queue = rb_library_get_walker_queue (priv->library);
-		while (rb_library_action_queue_is_empty (queue) == FALSE)
-		{
-			RBLibraryActionType type;
-			RBLibraryAction *action;
-			char *uri;
-			
-			action = rb_library_action_queue_peek_head (queue,
-							            &type,
-							            &uri);
+	g_async_queue_unref (rb_library_get_main_queue (thread->priv->library));
 
-			switch (type)
-			{
-			case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-				priv->action = action;
-				rb_uri_handle_recursively (uri,
-							   (GFunc) add_file,
-							   priv->lock,
-							   &priv->dead,
-							   priv);
-				break;
-			default:
-				break;
-			}
-
-			rb_library_action_queue_pop_head (queue);
-		}
-
-		g_usleep (10);
-	}
+	g_object_unref (G_OBJECT (thread));
+	g_thread_exit (NULL);
 
 	return NULL;
 }

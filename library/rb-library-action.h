@@ -28,10 +28,8 @@ G_BEGIN_DECLS
 typedef enum
 {
 	RB_LIBRARY_ACTION_ADD_FILE,
-	RB_LIBRARY_ACTION_ADD_DIRECTORY,
 	RB_LIBRARY_ACTION_REMOVE_FILE,
 	RB_LIBRARY_ACTION_UPDATE_FILE,
-	RB_LIBRARY_ACTION_OPERATION_END,
 } RBLibraryActionType;
 
 #define RB_TYPE_LIBRARY_ACTION_TYPE (rb_library_action_type_get_type ())
@@ -57,8 +55,6 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
-
-	void (*handled) (RBLibraryAction *action);
 } RBLibraryActionClass;
 
 GType               rb_library_action_get_type  (void);

@@ -21,7 +21,6 @@
 #ifndef __RB_LIBRARY_H
 #define __RB_LIBRARY_H
 
-#include "rb-library-action-queue.h"
 #include "rb-node.h"
 
 G_BEGIN_DECLS
@@ -57,7 +56,7 @@ GType			rb_library_get_type		(void);
 
 RBLibrary *		rb_library_new                  (void);
 
-RBLibraryAction *	rb_library_add_uri              (RBLibrary *library,
+void			rb_library_add_uri              (RBLibrary *library,
 							 const char *uri);
 /* These methods are called asynchronously by the library main thread. */
 void			rb_library_add_uri_sync         (RBLibrary *library,
@@ -104,8 +103,7 @@ RBNode *		rb_library_get_album_by_name    (RBLibrary *library,
 RBNode *		rb_library_get_song_by_location (RBLibrary *library,
 							 const char *location);
 
-RBLibraryActionQueue *	rb_library_get_main_queue       (RBLibrary *library);
-RBLibraryActionQueue *	rb_library_get_walker_queue     (RBLibrary *library);
+GAsyncQueue *		rb_library_get_main_queue       (RBLibrary *library);
 
 void			rb_library_handle_songs         (RBLibrary *library,
 							 RBNode *node,

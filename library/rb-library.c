@@ -36,9 +36,9 @@
 #include "rb-library.h"
 #include "rb-library-walker-thread.h"
 #include "rb-library-main-thread.h"
-#include "rb-library-action-queue.h"
 #include "rb-string-helpers.h"
 #include "rb-thread-helpers.h"
+#include "rb-library-action.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -58,14 +58,17 @@ static void finalize_node (RBNode *node);
 static void restore_node (RBNode *node);
 static gboolean rb_library_periodic_save (RBLibrary *library);
 static void sync_sort_keys (RBNode *node);
+static void walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library);
 
 struct RBLibraryPrivate
 {
 	RBLibraryWalkerThread *walker_thread;
 	RBLibraryMainThread *main_thread;
 
-	RBLibraryActionQueue *walker_queue;
-	RBLibraryActionQueue *main_queue;
+	GMutex *walker_mutex;
+	GList *walker_threads;
+
+	GAsyncQueue *main_queue;
 
 	RBNodeDb *db;
 
@@ -155,15 +158,6 @@ rb_library_class_init (RBLibraryClass *klass)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
-	rb_library_signals[OPERATION_END] =
-		g_signal_new ("operation-end",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryClass, operation_end),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 }
 
 static void
@@ -204,8 +198,9 @@ rb_library_init (RBLibrary *library)
 
 	rb_library_create_skels (library);
 
-	library->priv->main_queue = rb_library_action_queue_new ();
-	library->priv->walker_queue = rb_library_action_queue_new ();
+	library->priv->walker_mutex = g_mutex_new ();
+
+	library->priv->main_queue = g_async_queue_new ();
 }
 
 static void
@@ -230,9 +225,6 @@ rb_library_release_brakes (RBLibrary *library)
 	g_signal_connect (G_OBJECT (library->priv->main_thread), "error",
 			  G_CALLBACK (rb_library_pass_on_error), library);
 
-	rb_debug ("library: creating walker thread");
-	library->priv->walker_thread = rb_library_walker_thread_new (library);
-
 	library->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_library_periodic_save,
 						  library);
 }
@@ -240,7 +232,7 @@ rb_library_release_brakes (RBLibrary *library)
 gboolean
 rb_library_is_idle (RBLibrary *library)
 {
-	return rb_library_action_queue_is_empty (library->priv->main_queue);
+	return g_async_queue_try_pop (library->priv->main_queue) == NULL;
 }
 
 static void
@@ -261,12 +253,22 @@ rb_library_finalize (GObject *object)
 	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
 	g_object_unref (G_OBJECT (library->priv->main_thread));
 	GDK_THREADS_ENTER ();
-	g_object_unref (G_OBJECT (library->priv->walker_thread));
-	g_object_unref (G_OBJECT (library->priv->main_queue));
-	g_object_unref (G_OBJECT (library->priv->walker_queue));
+
+	g_mutex_lock (library->priv->walker_mutex);
+	rb_debug ("killing walker threads");
+	while (library->priv->walker_threads != NULL) {
+		rb_library_walker_thread_kill (RB_LIBRARY_WALKER_THREAD (library->priv->walker_threads->data));
+		library->priv->walker_threads = g_list_next (library->priv->walker_threads);
+	}
+	g_mutex_unlock (library->priv->walker_mutex);
+
+	g_mutex_free (library->priv->walker_mutex);
+
+	g_async_queue_unref (library->priv->main_queue);
 
 	rb_library_save (library);
 
+	rb_debug ("unreffing ALL nodes");
 	rb_node_unref (library->priv->all_songs);
 	rb_node_unref (library->priv->all_albums);
 	rb_node_unref (library->priv->all_artists);
@@ -304,20 +306,40 @@ rb_library_new (void)
 	return library;
 }
 
-RBLibraryAction *
+static void
+walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library)
+{
+	rb_debug ("caught walker done");
+
+	g_mutex_lock (library->priv->walker_mutex);
+
+	library->priv->walker_threads = g_list_remove (library->priv->walker_threads, thread);
+
+	g_mutex_unlock (library->priv->walker_mutex);
+}
+
+void
 rb_library_add_uri (RBLibrary *library,
 		    const char *uri)
 {
-	if (rb_uri_is_directory (uri) == FALSE)
-		return rb_library_action_queue_add (library->priv->main_queue,
-					            TRUE,
-					            RB_LIBRARY_ACTION_ADD_FILE,
-					            uri);
-	else
-		return rb_library_action_queue_add (library->priv->walker_queue,
-					            TRUE,
-					            RB_LIBRARY_ACTION_ADD_DIRECTORY,
-					            uri);
+	if (rb_uri_is_directory (uri) == FALSE) {
+		RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, uri);
+		rb_debug ("queueing action");
+		g_async_queue_push (library->priv->main_queue, action);
+	} else {
+		RBLibraryWalkerThread *thread = rb_library_walker_thread_new (library, uri);
+
+		g_signal_connect (G_OBJECT (thread), "done", G_CALLBACK (walker_thread_done_cb), library);
+
+		g_mutex_lock (library->priv->walker_mutex);
+		library->priv->walker_threads = g_list_append (library->priv->walker_threads, thread);
+		g_mutex_unlock (library->priv->walker_mutex);
+
+		rb_debug ("starting walker thread");
+
+		rb_library_walker_thread_start (thread);
+		
+	}
 }
 
 void
@@ -725,16 +747,10 @@ rb_library_save (RBLibrary *library)
 	rb_debug ("library: done saving");
 }
 
-RBLibraryActionQueue *
+GAsyncQueue *
 rb_library_get_main_queue (RBLibrary *library)
 {
 	return library->priv->main_queue;
-}
-
-RBLibraryActionQueue *
-rb_library_get_walker_queue (RBLibrary *library)
-{
-	return library->priv->walker_queue;
 }
 
 RBNode *
@@ -881,15 +897,10 @@ rb_library_load (RBLibrary *library)
 			
 		location = rb_node_get_property_string (node, RB_NODE_PROP_LOCATION);
 		if (G_LIKELY (location != NULL)) {
-			rb_library_action_queue_add (library->priv->main_queue,
-						     FALSE,
-						     RB_LIBRARY_ACTION_UPDATE_FILE,
-						     location);
+			RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_UPDATE_FILE, location);
+			g_async_queue_push (library->priv->main_queue, action);
 		}
 	}
-
-	rb_library_action_queue_add (library->priv->main_queue, FALSE,
-				     RB_LIBRARY_ACTION_OPERATION_END, NULL);
 
 	rb_profiler_dump (p);
 	rb_profiler_free (p);
@@ -1327,9 +1338,9 @@ sync_node (RBNode *node,
 	   GError **error)
 {
 	MonkeyMediaStreamInfo *info;
-	const char *location;
+	char *location;
 
-	location = rb_node_get_property_string (node, RB_NODE_PROP_LOCATION);
+	location = g_strdup (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION));
 	
 	info = monkey_media_stream_info_new (location, error);
 	if (G_UNLIKELY (info == NULL)) {
@@ -1362,6 +1373,7 @@ sync_node (RBNode *node,
 		rb_node_unref (node);
 
 		rb_library_add_uri (library, location);
+		goto out;
 	}
 
 	sync_sort_keys (node);
@@ -1372,6 +1384,8 @@ sync_node (RBNode *node,
 				   node);
 	}
 
+out:
+	g_free (location);
 	g_object_unref (G_OBJECT (info));
 }
 

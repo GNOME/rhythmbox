@@ -1,3 +1,54 @@
+2003-08-13  Colin Walters  <walters@verbum.org>
+	    James Kahn  <james@liet.net>
+
+	* library/Makefile.am:
+	* library/rb-library-action-queue.c:
+	* library/rb-library-action-queue.h:
+	* library/rb-library-action.c: (rb_library_action_class_init),
+	(rb_library_action_dispose), (rb_library_action_type_get_type):
+	* library/rb-library-action.h:
+	* library/rb-library-main-thread.c: (file_changed_cb),
+	(file_removed_cb), (exit_if_dead), (thread_main):
+	* library/rb-library-walker-thread.c:
+	(rb_library_walker_thread_class_init),
+	(rb_library_walker_thread_finalize),
+	(rb_library_walker_thread_new),
+	(rb_library_walker_thread_set_property),
+	(rb_library_walker_thread_get_property),
+	(rb_library_walker_thread_start), (rb_library_walker_thread_kill),
+	(add_file), (thread_main):
+	* library/rb-library-walker-thread.h:
+	* library/rb-library.c: (rb_library_class_init), (rb_library_init),
+	(rb_library_release_brakes), (rb_library_is_idle),
+	(rb_library_finalize), (walker_thread_done_cb),
+	(rb_library_add_uri), (rb_library_load), (sync_node):
+	* library/rb-library.h:
+	* shell/rb-shell.c: (async_library_release_brakes),
+	(rb_shell_construct), (rb_shell_poll_library):
+	* sources/rb-group-source.c: (rb_group_source_add_list_uri):
+
+	Library thread system rewrite.  James noticed two major bugs
+	in the library.  First, after unreffing a node if something had
+	changed, we queued an action to update it but continued processing
+	just as if the update had completed, which was very wrong.
+
+	Secondly, he noticed that since the library main thread just
+	peeked and the head, and then only really dequeued at the end of its
+	loop, this newly added action was the one which would be dequeued.
+
+	So, RBLibraryActionQueue has been killed off in favor of a plain GAsyncQueue.
+	Also, walker threads now no longer have their own special ADD_DIRECTORY queue;
+	instead, they run as independent threads which just push ADD_FILE actions onto
+	the main queue. This means you can now simultaneously load music from several
+	different folders.
+
+	Also, the OPERATION_END action was removed; instead, the shell periodically
+	polls the library to see whether it's busy or not, and sets the watch cursor
+	accordingly.
+
+	And finally, a bit of race-conditiony code in the shell to add uris
+	from a D&D was changed to be synchronous.
+
 2003-08-13  Yann Rouillard  <yann@cvs.gnome.org>
 
 	* lib/widgets/eggtreemultidnd.c: (egg_tree_multi_drag_button_press_event),

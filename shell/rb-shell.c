@@ -106,6 +106,7 @@ static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
+static gboolean rb_shell_poll_library (RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell);
 static void rb_shell_sync_paned (RBShell *shell);
 static void paned_size_allocate_cb (GtkWidget *widget,
@@ -119,9 +120,6 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void rb_shell_library_error_cb (RBLibrary *library,
 				       const char *uri, const char *msg,
 				       RBShell *shell); 
-static void rb_shell_library_operation_end_cb (RBLibrary *library,
-					       RBShell *shell); 
-static void rb_shell_start_operation (RBShell *shell);
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -299,7 +297,7 @@ struct RBShellPrivate
 
 	RBVolume *volume;
 
-	guint operation_count;
+	gboolean busy_cursor_displayed;
 
 	RBGroupSource *loading_group;
 };
@@ -579,7 +577,7 @@ async_library_release_brakes (RBShell *shell)
 
 	GDK_THREADS_ENTER ();
 
-	rb_shell_start_operation (shell);
+	g_idle_add ((GSourceFunc) rb_shell_poll_library, shell);
 	rb_library_release_brakes (shell->priv->library);
 
 	GDK_THREADS_LEAVE ();
@@ -737,8 +735,6 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect (G_OBJECT (shell->priv->library), "error",
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
-	g_signal_connect (G_OBJECT (shell->priv->library), "operation-end",
-			  G_CALLBACK (rb_shell_library_operation_end_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
 
@@ -924,30 +920,34 @@ source_selected_cb (RBSourceList *sourcelist,
 	rb_shell_select_source (shell, source);
 }
 
-static void
-rb_shell_start_operation (RBShell *shell)
+static gboolean
+rb_shell_poll_library (RBShell *shell)
 {
-	GdkCursor *cursor;
-	rb_debug ("starting operation");
+	gboolean library_is_idle = rb_library_is_idle (shell->priv->library);
 
-	cursor = gdk_cursor_new (GDK_WATCH);
-	gdk_window_set_cursor (shell->priv->window->window, cursor);
-	gdk_cursor_unref (cursor);
-	shell->priv->operation_count++;
-}
+	GDK_THREADS_ENTER ();
 
-static void
-rb_shell_library_operation_end_cb (RBLibrary *library, RBShell *shell)
-{
-
-	shell->priv->operation_count--;
-
-	rb_debug ("operation ended");
-	if (shell->priv->operation_count <= 0) {
+	if (library_is_idle && shell->priv->busy_cursor_displayed) {
 		rb_debug ("nulling cursor");
 		gdk_window_set_cursor (shell->priv->window->window, NULL);
 		gdk_flush ();
+		shell->priv->busy_cursor_displayed = FALSE;
+	} else if (!library_is_idle && !shell->priv->busy_cursor_displayed) {
+		GdkCursor *cursor;
+
+		rb_debug ("setting watch cursor");
+
+		cursor = gdk_cursor_new (GDK_WATCH);
+		gdk_window_set_cursor (shell->priv->window->window, cursor);
+		gdk_cursor_unref (cursor);
+
+		shell->priv->busy_cursor_displayed = TRUE;
 	}
+	g_timeout_add (1000, (GSourceFunc) rb_shell_poll_library, shell);
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
 }
 
 static void
