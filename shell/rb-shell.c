@@ -1824,23 +1824,22 @@ GtkWidget *
 rb_shell_new_group_dialog (RBShell *shell)
 {
 	RBNodeView *nodeview;
-	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align, *vbox2;
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align;
 	GList *selection;
-	char *tmp;
 	
 	dialog = gtk_dialog_new_with_buttons ("",
 					      NULL,
 					      0,
 					      GTK_STOCK_CANCEL,
 					      GTK_RESPONSE_CANCEL,
-					      _("Create"),
+					      _("C_reate"),
 					      GTK_RESPONSE_OK,
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 12);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
 	gtk_window_set_transient_for (GTK_WINDOW (dialog), 
 				      GTK_WINDOW (shell->priv->window));
@@ -1848,37 +1847,32 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 
-	gtk_window_set_title (GTK_WINDOW (dialog), _("Add Playlist"));
+	gtk_window_set_title (GTK_WINDOW (dialog), _("New Playlist"));
 
 	hbox = gtk_hbox_new (FALSE, 12);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 	image = gtk_image_new_from_stock (RB_STOCK_GROUP,
 					  GTK_ICON_SIZE_DIALOG);
 	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (align), image);
 	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
-	vbox = gtk_vbox_new (FALSE, 0);
+	vbox = gtk_vbox_new (FALSE, 6);
 
-	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new playlist:"));
-	label = gtk_label_new (tmp);
-	g_free (tmp);
+	label = gtk_label_new (_("Please enter a name for the new playlist:"));
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
-	vbox2 = gtk_vbox_new (FALSE, 6);
-	gtk_box_pack_start (GTK_BOX (vbox), vbox2, FALSE, TRUE, 0);
-	
 	entry = gtk_entry_new ();
 	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
-	gtk_box_pack_start (GTK_BOX (vbox2), entry, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
 
 	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new playlist"));
 	nodeview = rb_source_get_node_view (shell->priv->selected_source);
 	selection = rb_node_view_get_selection (nodeview);
 	if (selection == NULL)
 		gtk_widget_set_sensitive (cbox, FALSE);
-	gtk_box_pack_start (GTK_BOX (vbox2), cbox, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), cbox, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
