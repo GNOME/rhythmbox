@@ -90,6 +90,8 @@ static GList *rb_node_view_get_visible_nodes (RBNodeView *view);
 static void root_child_destroyed_cb (RBNode *root,
 			             RBNode *child,
 			             RBNodeView *view);
+static void tree_view_size_allocate_cb (GtkWidget *widget,
+			                GtkAllocation *allocation);
 
 struct RBNodeViewPrivate
 {
@@ -452,6 +454,11 @@ rb_node_view_construct (RBNodeView *view)
 	
 	view->priv->treeview = gtk_tree_view_new_with_model (view->priv->sortmodel);
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+				 "size_allocate",
+				 G_CALLBACK (tree_view_size_allocate_cb),
+				 view,
+				 0);
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",
 			         G_CALLBACK (rb_node_view_row_activated_cb),
 			         view,
@@ -508,13 +515,13 @@ rb_node_view_construct (RBNodeView *view)
 	{
 		char *title = NULL;
 		gboolean visible = FALSE, reorderable = FALSE, resizable = FALSE, clickable = TRUE;
+		gboolean default_sort_column = FALSE, expand = FALSE;
 		GList *sort_order = NULL;
 		RBTreeModelNodeColumn column;
 		GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
 		GtkTreeViewColumn *gcolumn;
 		GtkCellRenderer *renderer;
 		GEnumValue *ev;
-		gboolean default_sort_column = FALSE;
 
 		/* get props from the xml file */
 		tmp = xmlGetProp (child, "column");
@@ -551,6 +558,11 @@ rb_node_view_construct (RBNodeView *view)
 			default_sort_column = atoi (tmp);
 		g_free (tmp);
 
+		tmp = xmlGetProp (child, "expand");
+		if (tmp != NULL)
+			expand = atoi (tmp);
+		g_free (tmp);
+
 		tmp = xmlGetProp (child, "sort-order");
 		if (tmp != NULL)
 		{
@@ -582,6 +594,8 @@ rb_node_view_construct (RBNodeView *view)
 							     "text", column,
 							     NULL);
 			gtk_tree_view_column_set_resizable (gcolumn, resizable);
+			gtk_tree_view_column_set_sizing (gcolumn,
+							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 		}
 		else
 		{
@@ -626,6 +640,8 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
 							      column, GTK_SORT_ASCENDING);
 		}
+
+		g_object_set_data (G_OBJECT (gcolumn), "expand", GINT_TO_POINTER (expand));
 
 		gtk_tree_view_column_set_visible (gcolumn, visible);
 
@@ -1214,4 +1230,102 @@ root_child_destroyed_cb (RBNode *root,
 
 	view->priv->to_be_selected_node = node;
 	g_idle_add ((GSourceFunc) select_node, view);
+}
+
+#define TREE_VIEW_DRAG_WIDTH 6
+
+static void
+tree_view_size_allocate_cb (GtkWidget *widget,
+			    GtkAllocation *allocation)
+{
+	GList *columns, *l, *last_column;
+	int n_expand_columns = 0, total_requested_width = 0, left_over_width, width = 0;
+
+	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (widget));
+	last_column = g_list_last (columns);
+	for (l = columns; l != NULL; l = g_list_next (l))
+	{
+		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (l->data);
+		if (column->visible == FALSE)
+			continue;
+
+		if (column->use_resized_width == TRUE)
+		{
+			total_requested_width += column->resized_width;
+		}
+		else if (column->column_type == GTK_TREE_VIEW_COLUMN_FIXED)
+		{
+			total_requested_width += column->fixed_width;
+		}
+		else if (gtk_tree_view_get_headers_visible (GTK_TREE_VIEW (widget)) == TRUE)
+		{
+			total_requested_width += MAX (column->requested_width, column->button_request);
+		}
+		else
+		{
+			if (column->requested_width >= 0)
+				total_requested_width += column->requested_width;
+		}
+
+		if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (column), "expand")) == TRUE)
+			n_expand_columns++;
+	}
+
+	left_over_width = allocation->width - total_requested_width;
+	if (left_over_width < 0)
+		left_over_width = 0;
+
+	for (l = columns; l != NULL; l = g_list_next (l))
+	{
+		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (l->data);
+		GtkAllocation allocation;
+
+		if (column->visible == FALSE)
+			continue;
+
+		if (column->use_resized_width == TRUE)
+		{
+			column->width = column->resized_width;
+		}
+		else if (column->column_type == GTK_TREE_VIEW_COLUMN_FIXED)
+		{
+			column->width = column->fixed_width;
+		}
+		else if (gtk_tree_view_get_headers_visible (GTK_TREE_VIEW (widget)) == TRUE)
+		{
+			column->width = MAX (column->requested_width, column->button_request);
+		}
+		else
+		{
+			column->width = column->requested_width;
+			if (column->width < 0)
+				column->width = 0;
+		}
+
+		if (l == last_column)
+		{
+			column->width = widget->allocation.width - width;
+		}
+		else if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (column), "expand")) == TRUE)
+		{
+			column->width += (left_over_width / n_expand_columns);
+		}
+
+		g_object_notify (G_OBJECT (column), "width");
+
+		allocation.y = 0;
+		allocation.height = column->button->allocation.height; 
+		allocation.x = width;
+		allocation.width = column->width;
+		gtk_widget_size_allocate (column->button, &allocation);
+		if (column->window)
+			gdk_window_move_resize (column->window,
+						allocation.x + allocation.width - TREE_VIEW_DRAG_WIDTH / 2,
+						allocation.y,
+						TREE_VIEW_DRAG_WIDTH, allocation.height);
+
+		width += column->width;
+	}
+
+	g_list_free (columns);
 }
