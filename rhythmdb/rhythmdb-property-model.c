@@ -505,6 +505,7 @@ rhythmdb_property_model_sync (RhythmDBPropertyModel *model, GTimeVal *timeout)
 {
 	RhythmDBPropertyModelEntry *prop;	
 	gboolean synced = FALSE;
+	guint count = 0;
 			      
 	g_mutex_lock (model->priv->lock);
 
@@ -538,10 +539,12 @@ rhythmdb_property_model_sync (RhythmDBPropertyModel *model, GTimeVal *timeout)
 		gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
 		gtk_tree_path_free (path);
 
-		g_get_current_time (&now);
-		if (compare_times (timeout,&now) > 0) {
-			rb_debug ("hit timeout");
-			break;
+		if (timeout && count % 16 > 0) {
+			g_get_current_time (&now);
+			if (compare_times (timeout,&now) > 0) {
+				rb_debug ("hit timeout");
+				break;
+			}
 		}
 	}
 

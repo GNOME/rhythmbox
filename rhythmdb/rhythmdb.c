@@ -363,7 +363,6 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	klass->impl_load (db, db->priv->exit_mutex, &db->priv->exiting);
 
-	g_thread_exit (NULL);
 	return NULL;
 }
 
@@ -700,6 +699,8 @@ rhythmdb_do_property_query_ptrarray (RhythmDB *db, guint property_id,
 	property_query_thread_main (data, db);
 
 	*model = data->main_model;
+	while (rhythmdb_property_model_sync (RHYTHMDB_PROPERTY_MODEL (data->main_model), NULL))
+		;
 }
 
 void
@@ -833,6 +834,8 @@ rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 		      "query", query, NULL);
 
 	query_thread_main (data, db);
+	while (rhythmdb_query_model_sync (RHYTHMDB_QUERY_MODEL (main_model), NULL))
+		;
 }
 
 void

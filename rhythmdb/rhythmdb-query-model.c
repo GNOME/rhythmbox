@@ -428,6 +428,7 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 	GList *processed = NULL, *tem;
 	GTimeVal now;
 	struct RhythmDBQueryModelUpdate *update;
+	guint count = 0;
 
 	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL) {
 		GtkTreePath *path;
@@ -518,10 +519,13 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 
 		processed = g_list_prepend (processed, update);
 
-		/* Do this here at the bottom, so we do at least one update. */
-		g_get_current_time (&now);
-		if (compare_times (timeout,&now) < 0)
-			break;
+		count++;
+		if (timeout && count % 16 > 0) {
+			/* Do this here at the bottom, so we do at least one update. */
+			g_get_current_time (&now);
+			if (compare_times (timeout,&now) < 0)
+				break;
+		}
 	} 
 	
 	for (tem = processed; tem; tem = tem->next) {
