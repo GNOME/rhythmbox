@@ -901,8 +901,15 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 	case GTK_RESPONSE_OK:
 	{
 		char *uri = gtk_editable_get_chars (GTK_EDITABLE (uri_widget), 0, -1);
-		rb_debug ("Got location \"%s\", adding...", uri);
-		rb_library_add_uri (source->priv->library, (char *) uri);
+		if (uri != NULL) {
+			GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+			if (vfsuri != NULL) {
+				rb_library_add_uri (source->priv->library, uri);
+				gnome_vfs_uri_unref (vfsuri);
+			} else
+				rb_debug ("invalid uri: \"%s\"", uri);
+
+		}
 		break;
 	}
 	default:
