@@ -88,8 +88,6 @@ static int rb_node_view_get_n_rows (RBNodeView *view);
 static void root_child_removed_cb (RBNode *root,
 			           RBNode *child,
 			           RBNodeView *view);
-static void tree_view_size_allocate_cb (GtkWidget *widget,
-			                GtkAllocation *allocation);
 static gboolean rb_node_view_is_empty (RBNodeView *view);
 static void rb_node_view_columns_parse (RBNodeView *view,
 					const char *config);
@@ -166,8 +164,6 @@ enum
 static GObjectClass *parent_class = NULL;
 
 static guint rb_node_view_signals[LAST_SIGNAL] = { 0 };
-
-/* #define EVIL_COLUMN_SIZING_HACK */
 
 GType
 rb_node_view_get_type (void)
@@ -508,11 +504,6 @@ rb_node_view_construct (RBNodeView *view)
 	
 	view->priv->treeview = gtk_tree_view_new_with_model (view->priv->sortmodel);
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
-				 "size_allocate",
-				 G_CALLBACK (tree_view_size_allocate_cb),
-				 view,
-				 0);
-	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",
 			         G_CALLBACK (rb_node_view_row_activated_cb),
 			         view,
@@ -671,10 +662,11 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
 							     "text", column,
 							     NULL);
-			gtk_tree_view_column_set_resizable (gcolumn, resizable);
 			gtk_tree_view_column_set_sizing (gcolumn,
 							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 		}
+
+		gtk_tree_view_column_set_resizable (gcolumn, resizable);
 
 		if (title != NULL)
 		{
@@ -818,7 +810,7 @@ after_filter_changed_cb (RBNodeFilter *filter,
 	int sort_column_id;
 	GList *l;
 	GtkSortType order;
-
+	
 	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
 					          &sort_column_id, &order) == FALSE)
 		return;
@@ -839,7 +831,6 @@ after_filter_changed_cb (RBNodeFilter *filter,
 				         sort_column_id,
 					 rb_node_view_sort_func,
 					 sort_order, NULL);
-	gtk_tree_model_sort_clear_cache (GTK_TREE_MODEL_SORT (view->priv->sortmodel));
 }
 
 void
@@ -1511,13 +1502,12 @@ root_child_removed_cb (RBNode *root,
 	rb_node_view_select_node (view, node);
 }
 
+#if 0
 #define TREE_VIEW_DRAG_WIDTH 6
 
 static void
-tree_view_size_allocate_cb (GtkWidget *widget,
-			    GtkAllocation *allocation)
+size_tree_view_columns (GtkWidget *widget)
 {
-#ifdef EVIL_COLUMN_SIZING_HACK
 	GList *columns, *l;
 	int n_expand_columns = 0, total_requested_width = 0, left_over_width, width = 0;
 
@@ -1551,7 +1541,7 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 			n_expand_columns++;
 	}
 
-	left_over_width = allocation->width - total_requested_width;
+	left_over_width = widget->allocation.width - total_requested_width;
 	if (left_over_width < 0)
 		left_over_width = 0;
 
@@ -1609,8 +1599,8 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 	}
 
 	g_list_free (columns);
-#endif /* EVIL_COLUMN_SIZING_HACK */
 }
+#endif
 
 gboolean
 rb_node_view_get_node_visible (RBNodeView *view,
