@@ -1678,7 +1678,7 @@ ask_file_response_cb (GtkDialog *dialog,
 		      int response_id,
 		      RBShell *shell)
 {
-#ifndef USE_GTK_FILE_CHOOSER
+#ifndef HAVE_GTK_2_3
 	char **files, **filecur, *stored;
 
 	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));

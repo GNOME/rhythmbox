@@ -97,7 +97,7 @@ rb_ask_file_multiple (const char *title,
 {
 	GtkWidget *filesel;
 
-#ifndef USE_GTK_FILE_CHOOSER
+#ifndef HAVE_GTK_2_3
 	filesel = gtk_file_selection_new (title);
 	if (default_file != NULL)
 		gtk_file_selection_set_filename (GTK_FILE_SELECTION (filesel), default_file);
