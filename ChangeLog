@@ -1,3 +1,19 @@
+2003-06-01  Colin Walters  <walters@gnu.org>
+
+	* data/iradio-initial.xml:
+	* shell/rb-shell-player.c: (cancel_buffering_dialog),
+	(buffering_begin_cb):
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_async_update_play_statistics),
+	(impl_buffering_done):
+
+	Update BassDrive URLs.  Make buffering dialog and iradio actually work.
+	Increase the time before we update play statistics in iradio to 6 seconds.
+
+	Jorn: if I ref/unref the node in rb-iradio-source.c:impl_buffering_done,
+	I get a crash in the node view...if you have a chance it'd be cool
+	if you could take a look.
+
 2003-06-01  Colin Walters  <walters@debian.org>
 
 	* data/rhythmbox.schemas:

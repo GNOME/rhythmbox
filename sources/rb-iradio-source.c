@@ -445,18 +445,28 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_ERROR;
 }
 
-static gboolean
-rb_iradio_source_async_update_play_statistics (RBIRadioSource *source)
+struct RBIRadioAsyncPlayStatisticsData
 {
+	RBIRadioSource *source;
 	RBNode *node;
+};
+
+static gboolean
+rb_iradio_source_async_update_play_statistics (struct RBIRadioAsyncPlayStatisticsData *data)
+{
+	RBNode *playing_node;
 
 	gdk_threads_enter ();
 
-	node = rb_node_view_get_playing_node (source->priv->stations);
-	rb_debug ("async updating play statistics, node: %p", node);
-	if (node != NULL)
-		rb_node_update_play_statistics (node);
+	playing_node = rb_node_view_get_playing_node (data->source->priv->stations);
+	rb_debug ("async updating play statistics, node: %p playing node: %p",
+		  data->node, playing_node);
+	if (data->node == playing_node)
+		rb_node_update_play_statistics (data->node);
 
+/* 	rb_node_unref (data->node); */
+
+	g_free (data);
 	gdk_threads_leave ();
 	return FALSE;
 }
@@ -466,9 +476,18 @@ impl_buffering_done (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	RBNode *node = rb_node_view_get_playing_node (source->priv->stations);
+	struct RBIRadioAsyncPlayStatisticsData *data = g_new0 (struct RBIRadioAsyncPlayStatisticsData, 1);
+
 	rb_debug ("queueing async play statistics update, node: %p", node);
-	g_timeout_add (3500, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
-		       source);
+
+/*	FIXME reffing/unreffing causes a crash? */
+/*  	rb_node_ref (node); */
+	
+	data->source = source;
+	data->node = node;
+
+	g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
+		       data);
 }
 
 static const char *

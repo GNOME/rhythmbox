@@ -169,6 +169,7 @@ struct RBShellPlayerPrivate
 
 	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
+	GtkWidget *buffering_progress;
 	guint buffering_progress_idle_id;
 
 	GtkWidget *prev_button;
@@ -1462,11 +1463,9 @@ static void
 cancel_buffering_dialog (RBShellPlayer *player)
 {
 	if (player->priv->buffering_dialog) {
-		rb_debug ("destroying buffering dialog");
+		rb_debug ("removing idle source, hiding buffering dialog");
 		g_source_remove (player->priv->buffering_progress_idle_id);
 		gtk_widget_hide (player->priv->buffering_dialog);
-		gtk_widget_destroy (player->priv->buffering_dialog);
-		player->priv->buffering_dialog = NULL;
 	}
 }
 
@@ -1476,30 +1475,32 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	GladeXML *xml;
-	GtkWidget *progress;
 	rb_debug ("got buffering_begin_cb");
 
 	if (!monkey_media_player_playing (mmplayer)) {
 		rb_debug ("not playing, ignoring");
 		return;
 	}
-	g_return_if_fail (player->priv->buffering_dialog != NULL);
 
 	gdk_threads_enter ();
 
-	xml = rb_glade_xml_new ("buffering-dialog.glade",
-				"dialog",
-				player);
+	if (!player->priv->buffering_dialog) {
+		GladeXML *xml = rb_glade_xml_new ("buffering-dialog.glade",
+						  "dialog",
+						  player);
+		
+		player->priv->buffering_progress = glade_xml_get_widget (xml, "progressbar");
 
-	progress = glade_xml_get_widget (xml, "progressbar");
-	gtk_progress_bar_pulse (GTK_PROGRESS_BAR (progress));
+		gtk_progress_bar_pulse (GTK_PROGRESS_BAR (player->priv->buffering_progress));
+
+		player->priv->buffering_dialog = glade_xml_get_widget (xml, "dialog");
+		g_signal_connect (G_OBJECT(glade_xml_get_widget (xml, "cancel_button")),
+				  "clicked", G_CALLBACK (cancel_buffering_clicked_cb),
+				  player);
+	}
 	player->priv->buffering_progress_idle_id =
-		g_timeout_add (100, (GSourceFunc) buffering_tick_cb, progress);
+		g_timeout_add (100, (GSourceFunc) buffering_tick_cb, player->priv->buffering_progress);
 
-	player->priv->buffering_dialog = glade_xml_get_widget (xml, "dialog");
-	g_signal_connect (G_OBJECT(glade_xml_get_widget (xml, "cancel_button")),
-			  "clicked", G_CALLBACK (cancel_buffering_clicked_cb),
-			  player);
 	gtk_widget_show (player->priv->buffering_dialog);
 	rb_debug ("leaving buffering_begin");
 
