@@ -637,11 +637,11 @@ idle_save_state (RBShell *shell)
 static gboolean
 idle_save_rhythmdb (RhythmDB *db)
 {
-	if (RHYTHMDB_IS (db)) {
-		rhythmdb_read_lock (db);
-		rhythmdb_save (db);
-		rhythmdb_read_unlock (db);
-	}
+#if 0 /* Disabled for now */
+	rhythmdb_read_lock (db);
+	rhythmdb_save (db);
+	rhythmdb_read_unlock (db);
+#endif
 	
 	return TRUE;
 }
