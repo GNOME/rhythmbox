@@ -1,19 +1,31 @@
 Overview of Changes in Rhythmbox 0.7.0
 ======================================
 
+* Buffering progress now uses bottom progress bar [Colin Walters]
+
+Overview of Changes in Rhythmbox 0.6.1
+======================================
+
 * Drag and drop onto source list can create playlists [Yann Rouillard]
+* Avoid crashes when metadata changes on disk [Colin Walters]
 * Xine backend fixes [Bastien Nocera]
+* Load playlists directly for internet radio [Bastien Nocera, Colin Walters]
 * Major rework of mp3 metadata reading [Bastien Nocera]
 * Handle mp3-in-wav files [Bastien Nocera]
 * Support for MP4 metadata [Bastien Nocera]
+* Don't crash on multiply added songs [Colin Walters]
 * Try legacy charsets for ID3V1 tags [Colin Walters]
 * Make editing playlist names nicer [Bastien Nocera]
 * Fix tray icon window restoration [Bastien Nocera]
 * Play from stopped state plays selected song [Jeffrey Yasskin]
 * Don't unnecessarily reset filters/search on jump to playing song [Colin Walters]
-* Scroll wheel over tray icon controls volume [Jon Kinred]
-* Buffering progress now uses bottom progress bar [Colin Walters]
+* Don't crash when an iradio search is active and switching sources [Colin Walters]
+* Don't crash on jump to playing song [Colin Walters]
 * Translator comments [Jordi Mallach]
+* Fix bonobo reference counting [Gustavo J. A. M. Carneiro, Colin Walters]
+* Scroll wheel over tray icon controls volume [Jon Kinred]
+* Ensure Properties is disabled if there's no selected song [Colin Walters]
+* GCC 2.95 build fixes [Scott Wheeler, Danilo Segan]
 
 Overview of Changes in Rhythmbox 0.6.0
 ======================================
