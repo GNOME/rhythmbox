@@ -264,6 +264,9 @@ void		rhythmdb_query_cancel			(RhythmDB *db, GtkTreeModel *query_model);
 
 GType		rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
 
+void		rhythmdb_entry_sync_mirrored		(RhythmDB *db, RhythmDBEntry *entry,
+							 guint propid, GValue *value);
+
 GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
 void		rhythmdb_query_free			(GPtrArray *query);

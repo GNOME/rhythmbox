@@ -449,7 +449,15 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 
 	klass->impl_entry_set (db, entry, propid, value);
 
-	/* Handle any mirrored (unsaved) properties */
+	rhythmdb_entry_sync_mirrored (db, entry, propid, value);
+}
+
+void
+rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid,
+			      GValue *value)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+
 	switch (propid)
 	{
 	case RHYTHMDB_PROP_TITLE:

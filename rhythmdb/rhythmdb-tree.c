@@ -573,6 +573,8 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_assert_not_reached ();
 			break;
 		}
+		rhythmdb_entry_sync_mirrored (RHYTHMDB (ctx->db),
+					      ctx->entry, ctx->propid, value);
 
 	nextstate:
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
