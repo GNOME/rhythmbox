@@ -1,10 +1,10 @@
 # arch-tag: Rhythmbox RPM specification
 
-%define gstreamer_version 0.6.0
+%define gstreamer_version 0.7.0
 %define libvorbis_version 1.0
 %define gtk2_version 2.2.0
 %define libgnomeui_version 2.2.0
-
+%define versioning 07
 Name:		rhythmbox
 Summary:	Music Management Application 
 Version:	@VERSION@
@@ -15,14 +15,17 @@ Source:		%{name}-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 Requires:	gtk2 >= %{gtk2_version}
 Requires:	libgnomeui >= %{libgnomeui_version}
-Requires:	gstreamer >= %{gstreamer_version}
+Requires:	gstreamer%{versioning} >= %{gstreamer_version}
 Requires:	gstreamer-plugins >= %{gstreamer_version}
 Requires:	libvorbis >= %{libvorbis_version}
 
 Prereq:         GConf2
 Prereq:         /usr/bin/gconftool-2
 
-BuildRequires:  gstreamer-devel >= %{gstreamer_version}
+
+
+
+BuildRequires:  gstreamer%{versioning}-devel >= %{gstreamer_version}
 BuildRequires:  gstreamer-plugins-devel >= %{gstreamer_version}
 BuildRequires:  gtk2-devel >= %{gtk2_version}
 
