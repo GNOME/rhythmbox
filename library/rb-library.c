@@ -550,7 +550,7 @@ rb_library_save (RBLibrary *library)
 	}
 	rb_node_thaw (library->priv->all_songs);
 
-	xmlSaveFile (library->priv->xml_file, doc);
+	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
 }
 
 RBLibraryActionQueue *
