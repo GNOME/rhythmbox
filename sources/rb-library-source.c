@@ -143,7 +143,7 @@ static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_UI_LIBRARY_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
-#define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/ui/library/sorting"
+#define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/library/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
 #define CONF_STATE_SEARCH_TEXT   CONF_PREFIX "/state/library/search_text"
