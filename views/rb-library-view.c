@@ -24,6 +24,7 @@
 #include <gtk/gtkvpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
+#include <gtk/gtktooltips.h>
 #include <libgnome/gnome-i18n.h>
 #include <bonobo/bonobo-ui-component.h>
 
@@ -124,6 +125,14 @@ static void song_deleted_cb (RBNodeView *view,
 static void rb_library_view_cmd_song_info (BonoboUIComponent *component,
 				           RBLibraryView *view,
 				           const char *verbname);
+static void rb_library_view_drop_cb (GtkWidget        *widget,
+				     GdkDragContext   *context,
+				     gint              x,
+				     gint              y,
+				     GtkSelectionData *data,
+				     guint             info,
+				     guint             time,
+				     gpointer          user_data);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -164,6 +173,8 @@ struct RBLibraryViewPrivate
 	char *artist;
 	char *album;
 	char *song;
+
+	GtkTooltips *tips;
 };
 
 enum
@@ -188,6 +199,9 @@ static RBBonoboUIListener rb_library_view_listeners[] =
 };
 
 static GObjectClass *parent_class = NULL;
+
+/* dnd */
+static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
 
 GType
 rb_library_view_get_type (void)
@@ -287,6 +301,18 @@ rb_library_view_init (RBLibraryView *view)
 			       TRUE);
 	g_object_set_data (G_OBJECT (button), "view", view);
 
+
+	/* Drag'n'Drop */
+	g_signal_connect (G_OBJECT (button), "drag_data_received",
+			  G_CALLBACK (rb_library_view_drop_cb), view);
+	gtk_drag_dest_set (GTK_WIDGET (button), GTK_DEST_DEFAULT_ALL,
+			   target_table, 1, GDK_ACTION_COPY);
+	view->priv->tips = gtk_tooltips_new ();
+	gtk_tooltips_set_tip (view->priv->tips,
+			      GTK_WIDGET (button),
+			      _("Drop files here to add them to the library"),
+			      NULL);
+
 	g_object_set (G_OBJECT (view),
 		      "sidebar-button", button,
 		      NULL);
@@ -378,7 +404,12 @@ rb_library_view_set_property (GObject *object,
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
 
-
+			/* Drag'n'Drop */
+			g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
+					  G_CALLBACK (rb_library_view_drop_cb), view);
+			gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
+					   target_table, 1, GDK_ACTION_COPY);
+	
 			/* this gets emitted when the paned thingie is moved */
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "size_allocate",
@@ -985,4 +1016,65 @@ rb_library_view_cmd_song_info (BonoboUIComponent *component,
 		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
 		gtk_widget_show_all (song_info);
 	}
+}
+
+static void
+rb_library_view_drop_cb (GtkWidget	  *widget,
+			 GdkDragContext     *context,
+			 gint                x,
+			 gint                y,
+			 GtkSelectionData   *data,
+			 guint               info,
+			 guint               time,
+			 gpointer            user_data)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (user_data);
+	GList *list, *uri_list, *i;
+
+	list = gnome_vfs_uri_list_parse (data->data);
+
+	if (list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+	i = list;
+	uri_list = NULL;
+
+	while (i != NULL)
+	{
+		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string (
+					(const GnomeVFSURI*) i->data, 0));
+		i = i->next;
+	}
+	gnome_vfs_uri_list_free (list);
+
+	if (uri_list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+
+	uri_list = g_list_reverse (uri_list);
+	for (i = uri_list; i != NULL; i = i->next)
+	{
+		char *uri = g_strdup (i->data);
+
+		if (uri != NULL)
+		{
+			/* add this uri to the library*/
+			rb_library_action_queue_add (rb_library_get_action_queue (view->priv->library),
+						     TRUE,
+						     RB_LIBRARY_ACTION_ADD_FILE, uri);
+		}
+
+		g_free (uri);
+		g_free (i->data);
+	}
+
+	g_list_free (uri_list);
+
+	gtk_drag_finish (context, TRUE, FALSE, time);
 }

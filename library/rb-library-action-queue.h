@@ -23,14 +23,9 @@
 
 #include <glib-object.h>
 
-G_BEGIN_DECLS
+#include "rb-library-action.h"
 
-typedef enum
-{
-	RB_LIBRARY_ACTION_ADD_FILE,
-	RB_LIBRARY_ACTION_REMOVE_FILE,
-	RB_LIBRARY_ACTION_UPDATE_FILE
-} RBLibraryActionType;
+G_BEGIN_DECLS
 
 #define RB_TYPE_LIBRARY_ACTION_QUEUE         (rb_library_action_queue_get_type ())
 #define RB_LIBRARY_ACTION_QUEUE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY_ACTION_QUEUE, RBLibraryActionQueue))
@@ -57,7 +52,8 @@ GType                 rb_library_action_queue_get_type  (void);
 
 RBLibraryActionQueue *rb_library_action_queue_new       (void);
 
-void                  rb_library_action_queue_add       (RBLibraryActionQueue *queue,
+RBLibraryAction      *rb_library_action_queue_add       (RBLibraryActionQueue *queue,
+							 gboolean priority,
 							 RBLibraryActionType type,
 							 const char *uri);
 

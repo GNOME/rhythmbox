@@ -255,6 +255,7 @@ add_directory (RBLibraryWatcherThreadPrivate *priv,
 		filename = gnome_vfs_uri_to_string (file_uri, GNOME_VFS_URI_HIDE_NONE);
 
 		rb_library_action_queue_add (rb_library_get_action_queue (priv->library),
+					     FALSE,
 					     RB_LIBRARY_ACTION_ADD_FILE,
 					     filename);
 

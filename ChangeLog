@@ -1,3 +1,33 @@
+2002-08-11  Olivier Martin <omartin@ifrance.com>
+            Jorn Baayen  <jorn@nl.linux.org>
+
+	* library/Makefile.am:
+	* library/rb-library-action-queue.c:
+	(rb_library_action_queue_finalize), (rb_library_action_queue_add),
+	(rb_library_action_queue_peek_head),
+	(rb_library_action_queue_pop_head):
+	* library/rb-library-action-queue.h:
+	* library/rb-library-action.c: (rb_library_action_get_type),
+	(rb_library_action_class_init), (rb_library_action_init),
+	(rb_library_action_finalize), (rb_library_action_dispose),
+	(rb_library_action_set_property), (rb_library_action_get_property),
+	(rb_library_action_new), (rb_library_action_get),
+	(rb_library_action_type_get_type):
+	* library/rb-library-action.h:
+	* library/rb-library-watcher-thread.c: (add_directory):
+	* library/rb-library.c: (rb_library_add_file):
+	* library/rb-node-song.c: (rb_node_song_sync):
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_remove_file), (dnd_add_handled_cb),
+	(rb_group_view_drop_cb):
+	* views/rb-library-view.c: (rb_library_view_init),
+	(rb_library_view_set_property), (rb_library_view_cmd_song_info),
+	(rb_library_view_drop_cb):
+
+	Add DND from external apps, action queue actions are now objects
+	with a "handled" signal, and actions can have priority so that
+	they are pushed in front of the queue instead of put at the end.
+
 2002-08-11  Jeffrey Baker  <jwbaker@acm.org>
 
 	* lib/rb-dialog.c: (rb_ask_file_multiple):

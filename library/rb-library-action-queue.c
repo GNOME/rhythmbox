@@ -24,12 +24,6 @@ static void rb_library_action_queue_class_init (RBLibraryActionQueueClass *klass
 static void rb_library_action_queue_init (RBLibraryActionQueue *library_action_queue);
 static void rb_library_action_queue_finalize (GObject *object);
 
-typedef struct
-{
-	RBLibraryActionType type;
-	char *uri;
-} RBLibraryAction;
-
 struct RBLibraryActionQueuePrivate
 {
 	GQueue *queue;
@@ -102,8 +96,7 @@ rb_library_action_queue_finalize (GObject *object)
 	while (g_queue_is_empty (library_action_queue->priv->queue) == FALSE)
 	{
 		RBLibraryAction *action = g_queue_pop_head (library_action_queue->priv->queue);
-		g_free (action->uri);
-		g_free (action);
+		g_object_unref (G_OBJECT (action));
 	}
 	g_queue_free (library_action_queue->priv->queue);
 
@@ -126,20 +119,24 @@ rb_library_action_queue_new (void)
 	return library_action_queue;
 }
 
-void
+RBLibraryAction *
 rb_library_action_queue_add (RBLibraryActionQueue *queue,
+			     gboolean priority,
 			     RBLibraryActionType type,
 			     const char *uri)
 {
 	RBLibraryAction *action;
 
-	action = g_new0 (RBLibraryAction, 1);
-	action->type = type;
-	action->uri = g_strdup (uri);
+	action = rb_library_action_new (type, uri);
 	
 	g_static_rw_lock_writer_lock (queue->priv->lock);
-	g_queue_push_tail (queue->priv->queue, action);
+	if (priority == TRUE)
+		g_queue_push_head (queue->priv->queue, action);
+	else
+		g_queue_push_tail (queue->priv->queue, action);
 	g_static_rw_lock_writer_unlock (queue->priv->lock);
+
+	return action;
 }
 
 gboolean
@@ -165,16 +162,7 @@ rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
 	action = g_queue_peek_head (queue->priv->queue);
 	g_static_rw_lock_reader_unlock (queue->priv->lock);
 
-	if (action != NULL)
-	{
-		*type = action->type;
-		*uri = action->uri;
-	}
-	else
-	{
-		*type = -1;
-		*uri = NULL;
-	}
+	rb_library_action_get (action, type, uri);
 }
 
 void
@@ -185,7 +173,6 @@ rb_library_action_queue_pop_head (RBLibraryActionQueue *queue)
 	g_static_rw_lock_writer_lock (queue->priv->lock);
 	action = g_queue_pop_head (queue->priv->queue);
 	g_static_rw_lock_writer_unlock (queue->priv->lock);
-	
-	g_free (action->uri);
-	g_free (action);
+
+	g_object_unref (G_OBJECT (action));
 }

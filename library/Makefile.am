@@ -12,6 +12,8 @@ librblibrary_la_SOURCES =				\
 	rb-library-action-queue.c			\
 	rb-library-action-queue.h			\
 	rb-library-preferences.h			\
+	rb-library-action.c				\
+	rb-library-action.h				\
 	rb-node.c					\
 	rb-node.h					\
 	rb-node-song.c					\

@@ -24,6 +24,7 @@
 #include <gtk/gtkvpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
+#include <gtk/gtktooltips.h>
 #include <libgnome/gnome-i18n.h>
 #include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
@@ -121,6 +122,14 @@ static void rb_group_view_cmd_rename_group (BonoboUIComponent *component,
 static void rb_group_view_cmd_delete_group (BonoboUIComponent *component,
 			                    RBGroupView *view,
 			                    const char *verbname);
+static void rb_group_view_drop_cb (GtkWidget        *widget,
+		    		   GdkDragContext   *context,
+				   gint              x,
+				   gint              y,
+				   GtkSelectionData *data,
+				   guint             info,
+				   guint             time,
+				   gpointer          user_data);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -153,6 +162,8 @@ struct RBGroupViewPrivate
 
 	char *file;
 	char *name;
+
+	GtkTooltips *tips;
 };
 
 enum
@@ -175,6 +186,9 @@ static BonoboUIVerb rb_group_view_verbs[] =
 };
 
 static GObjectClass *parent_class = NULL;
+
+/* dnd */
+static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
 
 GType
 rb_group_view_get_type (void)
@@ -323,6 +337,21 @@ rb_group_view_init (RBGroupView *view)
 
 	view->priv->songs = rb_node_view_new (view->priv->group,
 				              rb_file ("rb-node-view-songs.xml"));
+
+	/* Drag'n'Drop */
+	g_signal_connect (G_OBJECT (button), "drag_data_received",
+			  G_CALLBACK (rb_group_view_drop_cb), view);
+	gtk_drag_dest_set (GTK_WIDGET (button), GTK_DEST_DEFAULT_ALL,
+			   target_table, 1, GDK_ACTION_COPY);
+	g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
+			  G_CALLBACK (rb_group_view_drop_cb), view);
+	gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
+			   target_table, 1, GDK_ACTION_COPY);
+	view->priv->tips = gtk_tooltips_new ();
+	gtk_tooltips_set_tip (view->priv->tips,
+			      GTK_WIDGET (button),
+			      _("Drop songs here to add them in this group"),
+			      NULL);
 
 	g_signal_connect (G_OBJECT (view->priv->songs),
 			  "node_activated",
@@ -1125,4 +1154,101 @@ void
 rb_group_view_remove_file (RBGroupView *view)
 {
 	unlink (view->priv->file);
+}
+
+static void
+dnd_add_handled_cb (RBLibraryAction *action,
+		    RBGroupView *view)
+{
+	RBNode *node;
+	char *uri;
+	RBLibraryActionType type;
+
+	rb_library_action_get (action,
+			       &type,
+			       &uri);
+
+	node = rb_node_get_song_by_uri (uri);
+
+	if (node != NULL)
+	{
+		rb_node_add_child (view->priv->group, node);
+	}
+}
+
+static void
+rb_group_view_drop_cb (GtkWidget	  *widget,
+		       GdkDragContext     *context,
+		       gint                x,
+		       gint                y,
+		       GtkSelectionData   *data,
+		       guint               info,
+		       guint               time,
+		       gpointer            user_data)
+{
+	RBGroupView *view = RB_GROUP_VIEW (user_data);
+	GList *list, *uri_list, *i;
+
+	list = gnome_vfs_uri_list_parse (data->data);
+
+	if (list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+	i = list;
+	uri_list = NULL;
+
+	while (i != NULL)
+	{
+		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string (
+					(const GnomeVFSURI*) i->data, 0));
+		i = i->next;
+	}
+	gnome_vfs_uri_list_free (list);
+
+	if (uri_list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+
+	uri_list = g_list_reverse (uri_list);
+	for (i = uri_list; i != NULL; i = i->next)
+	{
+		char *uri = g_strdup (i->data);
+
+		if (uri != NULL)
+		{
+			RBNode *node = rb_node_get_song_by_uri (uri);
+
+			/* add the node, if already present in the library */
+			if (node != NULL)
+			{
+				rb_node_add_child (view->priv->group, node);
+			}
+			else
+			{
+				RBLibraryAction *action;
+				
+				action = rb_library_action_queue_add (rb_library_get_action_queue (view->priv->library),
+								      TRUE,
+							              RB_LIBRARY_ACTION_ADD_FILE, uri);
+				g_signal_connect_object (G_OBJECT (action),
+						         "handled",
+						         G_CALLBACK (dnd_add_handled_cb),
+						         G_OBJECT (view),
+							 0);
+			}
+		}
+
+		g_free (uri);
+		g_free (i->data);
+	}
+
+	g_list_free (uri_list);
+
+	gtk_drag_finish (context, TRUE, FALSE, time);
 }

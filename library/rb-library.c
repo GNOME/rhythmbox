@@ -172,6 +172,7 @@ rb_library_add_file (RBLibrary *library,
 		     const char *uri)
 {
 	rb_library_action_queue_add (library->priv->queue,
+				     TRUE,
 				     RB_LIBRARY_ACTION_ADD_FILE,
 				     uri);
 }
