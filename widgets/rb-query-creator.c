@@ -471,7 +471,7 @@ static const RBQueryCreatorCriteriaOption *
 get_criteria_for_property (RBQueryCreator *creator, RhythmDBPropType prop, guint *length)
 {
 	GType proptype;
-	const RBQueryCreatorCriteriaOption *options;
+	const RBQueryCreatorCriteriaOption *options = NULL;
 
 	proptype = rhythmdb_get_property_type (creator->priv->db, prop);
 
