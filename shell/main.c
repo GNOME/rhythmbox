@@ -30,6 +30,7 @@
 #include <monkey-media.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -46,6 +47,8 @@ static CORBA_Environment ev;
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
+
+static char* old_collate = NULL;
 
 int
 main (int argc, char **argv)
@@ -79,6 +82,26 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
+
+	/* workaround for non utf8 LC_COLLATE */
+	old_collate = g_strdup_printf ("LC_COLLATE=%s",
+				       g_getenv ("LC_COLLATE"));
+	if (strstr (old_collate, "UTF-8") == NULL)
+	{
+		char *lang = NULL, *new_collate;
+		
+		if (strlen (g_getenv ("LANG")) >=5)
+			lang = g_strndup (g_getenv ("LANG"), 5);
+		else 
+			lang = g_strdup ("en_US");
+
+		new_collate = g_strdup_printf("LC_COLLATE=%s.UTF-8", 
+					      lang);
+		putenv (new_collate);
+
+		g_free (lang);
+		g_free (new_collate);
+	}
 	
 	CORBA_exception_init (&ev);
 
@@ -117,6 +140,10 @@ main (int argc, char **argv)
 
 		rb_handle_cmdline (argv, argc, TRUE);
 	}
+
+	/* restore original collate */
+	putenv (old_collate);
+	g_free (old_collate);
 
 	/* cleanup */
 	CORBA_exception_free (&ev);
