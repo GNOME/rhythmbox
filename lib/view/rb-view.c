@@ -99,7 +99,7 @@ rb_view_get_type (void)
 			(GInstanceInitFunc) rb_view_init
 		};
 
-		rb_view_type = g_type_register_static (GTK_TYPE_FRAME,
+		rb_view_type = g_type_register_static (GTK_TYPE_HBOX,
 						       "RBView",
 						       &our_info, 0);
 	}
@@ -165,8 +165,6 @@ static void
 rb_view_init (RBView *view)
 {
 	view->priv = g_new0 (RBViewPrivate, 1);
-
-	gtk_frame_set_shadow_type (GTK_FRAME (view), GTK_SHADOW_NONE);
 
 	view->priv->active_paths = g_hash_table_new_full (g_str_hash,
 							  g_str_equal,

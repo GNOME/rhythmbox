@@ -110,7 +110,7 @@ rb_sidebar_get_type (void)
 			(GInstanceInitFunc) rb_sidebar_init
 		};
 
-		rb_sidebar_type = g_type_register_static (GTK_TYPE_FRAME, "RBSidebar",
+		rb_sidebar_type = g_type_register_static (GTK_TYPE_SCROLLED_WINDOW, "RBSidebar",
 							  &rb_sidebar_info, 0);
 	}
 	
@@ -136,7 +136,7 @@ rb_sidebar_class_init (RBSidebarClass *class)
 static void
 rb_sidebar_init (RBSidebar *bar)
 {
-	GtkWidget *dnd_ebox;
+	GtkWidget *dnd_ebox, *viewport;
 	GdkColor black = { 0, 0x0000, 0x0000, 0x0000 };
 	
 	static GtkTargetEntry target_table[] =
@@ -146,6 +146,12 @@ rb_sidebar_init (RBSidebar *bar)
 	};
 	
 	bar->priv = g_new0 (RBSidebarPriv, 1);
+
+	gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (bar), NULL);
+	gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (bar), NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (bar),
+					GTK_POLICY_NEVER,
+					GTK_POLICY_AUTOMATIC);
 
 	bar->priv->id_to_button = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -175,12 +181,18 @@ rb_sidebar_init (RBSidebar *bar)
 	bar->priv->vbox = gtk_vbox_new (FALSE, 0);
 	gtk_widget_show (bar->priv->vbox);
 	
-	gtk_container_add (GTK_CONTAINER (bar), bar->priv->event_box);
+	viewport = gtk_viewport_new (NULL, NULL);
+	gtk_viewport_set_shadow_type (GTK_VIEWPORT (viewport), GTK_SHADOW_IN);
+	g_signal_connect (G_OBJECT (viewport),
+			  "realize",
+			  G_CALLBACK (rb_sidebar_event_box_realize_cb),
+			  NULL);
+	gtk_container_add (GTK_CONTAINER (viewport), bar->priv->event_box);
+	gtk_container_add (GTK_CONTAINER (bar), viewport);
 
 	gtk_container_add (GTK_CONTAINER (bar->priv->event_box), bar->priv->vbox);
 	
 	gtk_container_set_border_width (GTK_CONTAINER (bar->priv->vbox), 4);
-	gtk_frame_set_shadow_type (GTK_FRAME (bar), GTK_SHADOW_NONE);
 
 	/* init dnd widgets */
 	bar->priv->dnd_hint = gtk_window_new (GTK_WINDOW_POPUP);

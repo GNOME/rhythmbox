@@ -322,7 +322,7 @@ rb_shell_clipboard_set (RBShellClipboard *clipboard,
 
 	g_list_free (clipboard->priv->nodes);
 
-	clipboard->priv->nodes = nodes;
+	clipboard->priv->nodes = g_list_copy (nodes);
 
 	for (l = nodes; l != NULL; l = g_list_next (l))
 	{

@@ -21,7 +21,7 @@
 #ifndef __RB_VIEW_H
 #define __RB_VIEW_H
 
-#include <gtk/gtkframe.h>
+#include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-ui-component.h>
 
 #include "rb-sidebar-button.h"
@@ -39,14 +39,14 @@ typedef struct RBViewPrivate RBViewPrivate;
 
 typedef struct
 {
-	GtkFrame parent;
+	GtkHBox parent;
 
 	RBViewPrivate *priv;
 } RBView;
 
 typedef struct
 {
-	GtkFrameClass parent;
+	GtkHBoxClass parent;
 } RBViewClass;
 
 GType              rb_view_get_type           (void);

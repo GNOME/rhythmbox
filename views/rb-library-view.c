@@ -369,6 +369,7 @@ rb_library_view_set_property (GObject *object,
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
 
+
 			/* this gets emitted when the paned thingie is moved */
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "size_allocate",

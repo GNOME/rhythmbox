@@ -95,6 +95,9 @@ static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 static void rb_shell_cmd_new_group (BonoboUIComponent *component,
 			            RBShell *shell,
 			            const char *verbname);
+static void rb_shell_cmd_dummy (BonoboUIComponent *component,
+		                RBShell *shell,
+		                const char *verbname);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_repeat_changed_cb (BonoboUIComponent *component,
 			                const char *path,
@@ -166,6 +169,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("MusicFolders", (BonoboUIVerbFn) rb_shell_cmd_music_folders),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
+	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
 	BONOBO_UI_VERB_END
 };
 
@@ -433,14 +437,14 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->status_shell = rb_shell_status_new (bonobo_window_get_ui_engine (win));
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 
-	hbox = gtk_hbox_new (FALSE, 5);
+	hbox = gtk_hpaned_new ();
 	shell->priv->sidebar = rb_sidebar_new ();
 	gtk_widget_set_size_request (shell->priv->sidebar, 80, -1);
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
-	gtk_box_pack_start (GTK_BOX (hbox), shell->priv->sidebar, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), shell->priv->notebook, TRUE, TRUE, 0);
+	gtk_paned_add1 (GTK_PANED (hbox), shell->priv->sidebar);
+	gtk_paned_add2 (GTK_PANED (hbox), shell->priv->notebook);
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
@@ -868,6 +872,14 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 	rb_shell_append_view (shell, group);
 
 	g_free (name);
+}
+
+static void
+rb_shell_cmd_dummy (BonoboUIComponent *component,
+		    RBShell *shell,
+		    const char *verbname)
+{
+	/* to work around bonoboui bug */
 }
 
 static void

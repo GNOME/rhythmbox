@@ -114,6 +114,8 @@ struct RBGroupViewPrivate
 {
 	RBLibrary *library;
 
+	RBNode *group;
+
 	GtkWidget *vbox;
 
 	RBNodeView *songs;
@@ -295,6 +297,28 @@ rb_group_view_init (RBGroupView *view)
 			    GTK_WIDGET (rb_search_entry_new ()),
 			    FALSE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (view), view->priv->vbox);
+
+	view->priv->group = rb_node_new (RB_NODE_TYPE_GENERIC);
+
+	view->priv->songs = rb_node_view_new (view->priv->group,
+				              rb_file ("rb-node-view-songs.xml"));
+
+	g_signal_connect (G_OBJECT (view->priv->songs),
+			  "node_activated",
+			  G_CALLBACK (song_activated_cb),
+			  view);
+	g_signal_connect (G_OBJECT (view->priv->songs),
+			  "node_deleted",
+			  G_CALLBACK (song_deleted_cb),
+			  view);
+	g_signal_connect (G_OBJECT (view->priv->songs),
+			  "changed",
+			  G_CALLBACK (node_view_changed_cb),
+			  view);
+
+	gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), GTK_WIDGET (view->priv->songs));
+			
+	rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
 }
 
 static void
@@ -309,12 +333,16 @@ rb_group_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
+	/* FIXME save to xml */
+
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
 	g_free (view->priv->album);
 	g_free (view->priv->artist);
 	g_free (view->priv->song);
+
+	g_object_unref (G_OBJECT (view->priv->group));
 
 	g_free (view->priv);
 
@@ -332,35 +360,23 @@ rb_group_view_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_LIBRARY:
-		{
-			view->priv->library = g_value_get_object (value);
+		view->priv->library = g_value_get_object (value);
 
-			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
-						              rb_file ("rb-node-view-songs.xml"));
-
-			g_signal_connect (G_OBJECT (view->priv->songs),
-					  "node_activated",
-					  G_CALLBACK (song_activated_cb),
-					  view);
-			g_signal_connect (G_OBJECT (view->priv->songs),
-					  "node_deleted",
-					  G_CALLBACK (song_deleted_cb),
-					  view);
-			g_signal_connect (G_OBJECT (view->priv->songs),
-					  "changed",
-					  G_CALLBACK (node_view_changed_cb),
-					  view);
-
-			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), GTK_WIDGET (view->priv->songs));
-			
-			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
-		}
+		/* FIXME load from xml */
 		break;
 	case PROP_FILE:
 		view->priv->file = g_strdup (g_value_get_string (value));
+		
+		/* FIXME remove old one, create new one */
 		break;
 	case PROP_NAME:
 		view->priv->name = g_strdup (g_value_get_string (value));
+
+//		g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (view))),
+//			      "text", view->priv->name,
+//			      NULL);
+
+		/* FIXME change filename */
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -405,6 +421,7 @@ rb_group_view_new (BonoboUIContainer *container,
 				      "container", container,
 				      "library", library,
 				      "verbs", rb_group_view_verbs,
+				      "file", "Untitled",
 				      NULL));
 
 	return view;
@@ -731,7 +748,8 @@ song_deleted_cb (RBNodeView *view,
 		 RBNode *node,
 		 RBGroupView *group_view)
 {
-	rb_library_remove_node (RB_LIBRARY (group_view->priv->library), node);
+	// FIXME
+//	rb_node_remove_child (view->priv->group, node);
 }
 
 static void
@@ -811,7 +829,7 @@ rb_group_view_can_copy (RBViewClipboard *clipboard)
 static gboolean
 rb_group_view_can_paste (RBViewClipboard *clipboard)
 {
-	return FALSE;
+	return TRUE;
 }
 
 static GList *
@@ -820,14 +838,14 @@ rb_group_view_cut (RBViewClipboard *clipboard)
 	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 	GList *sel, *l;
 
-	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
+	sel = rb_node_view_get_selection (view->priv->songs);
 	for (l = sel; l != NULL; l = g_list_next (l))
 	{
-		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
+		//FIXME
+//		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
 	}
-	g_list_free (sel);
 	
-	return NULL;
+	return sel;
 }
 
 static GList *
@@ -842,6 +860,13 @@ static void
 rb_group_view_paste (RBViewClipboard *clipboard,
 		     GList *nodes)
 {
+	RBGroupView *view = RB_GROUP_VIEW (clipboard);
+	GList *l;
+
+	for (l = nodes; l != NULL; l = g_list_next (l))
+	{
+		rb_node_add_child (view->priv->group, RB_NODE (l->data));
+	}
 }
 
 static void
@@ -879,7 +904,7 @@ sidebar_button_edited_cb (RBSidebarButton *button,
 		      "text", &text,
 		      NULL);
 
-	g_object_set (G_OBJECT (view),
-		      "name", text,
-		      NULL);
+	rb_group_view_set_name (view, text);
+
+	g_free (text);
 }

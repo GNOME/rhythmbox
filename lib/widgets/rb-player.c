@@ -113,7 +113,7 @@ rb_player_get_type (void)
 			(GInstanceInitFunc) rb_player_init
 		};
 
-		rb_player_type = g_type_register_static (GTK_TYPE_FRAME,
+		rb_player_type = g_type_register_static (GTK_TYPE_HBOX,
 							 "RBPlayer",
 							 &our_info, 0);
 	}
@@ -149,12 +149,12 @@ rb_player_init (RBPlayer *player)
 	
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
-	gtk_frame_set_shadow_type (GTK_FRAME (player), GTK_SHADOW_NONE);
-
 	hbox = gtk_hbox_new (FALSE, 10);
 
+#if 0
 	player->priv->image = gtk_image_new ();
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->image, FALSE, TRUE, 0);
+#endif
 
 	vbox = gtk_vbox_new (FALSE, 5);
 
@@ -174,7 +174,7 @@ rb_player_init (RBPlayer *player)
 	textline = player->priv->textline = gtk_hbox_new (FALSE, 0);
 	g_object_ref (G_OBJECT (textline));
 
-	label = gtk_label_new (_("from "));
+	label = gtk_label_new (_("From "));
 	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
 	
 	player->priv->album = rb_link_new ();
@@ -201,8 +201,10 @@ rb_player_init (RBPlayer *player)
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
+	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
 	player->priv->elapsed = gtk_label_new ("0:00");
-	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->elapsed, FALSE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
+	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
@@ -300,7 +302,7 @@ rb_player_sync (RBPlayer *player)
 {
 
 	MonkeyMediaAudioStream *stream = rb_view_player_get_stream (player->priv->view_player);
-	GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);
+//	GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);
 	char *tmp;
 
 	if (stream != NULL)
@@ -311,7 +313,7 @@ rb_player_sync (RBPlayer *player)
 		char *escaped, *compressed;
 
 		compressed = rb_string_compress (song, 50);
-		escaped = g_markup_escape_text (compressed, strlen (compressed));
+		escaped = g_markup_escape_text (compressed, -1);
 		g_free (compressed);
 		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
@@ -341,10 +343,12 @@ rb_player_sync (RBPlayer *player)
 		rb_player_set_show_timeline (player, FALSE);
 	}
 
+#if 0
 	if (pixbuf != NULL)
 		gtk_image_set_from_pixbuf (GTK_IMAGE (player->priv->image), pixbuf);
 	else
 		gtk_image_set_from_stock (GTK_IMAGE (player->priv->image), RB_STOCK_ALBUM, GTK_ICON_SIZE_DIALOG);
+#endif
 }
 
 static void

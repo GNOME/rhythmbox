@@ -21,7 +21,7 @@
 #ifndef __RB_PLAYER_H
 #define __RB_PLAYER_H
 
-#include <gtk/gtkframe.h>
+#include <gtk/gtkhbox.h>
 
 #include "rb-view-player.h"
 
@@ -38,14 +38,14 @@ typedef struct RBPlayerPrivate RBPlayerPrivate;
 
 typedef struct
 {
-	GtkFrame parent;
+	GtkHBox parent;
 
 	RBPlayerPrivate *priv;
 } RBPlayer;
 
 typedef struct
 {
-	GtkFrameClass parent;
+	GtkHBoxClass parent;
 } RBPlayerClass;
 
 GType     rb_player_get_type (void);

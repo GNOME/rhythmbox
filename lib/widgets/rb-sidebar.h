@@ -25,7 +25,7 @@
 #ifndef __RB_SIDEBAR_H
 #define __RB_SIDEBAR_H
 
-#include <gtk/gtkframe.h>
+#include <gtk/gtkscrolledwindow.h>
 
 #include "rb-sidebar-button.h"
 
@@ -44,14 +44,14 @@ typedef struct _RBSidebarPriv       RBSidebarPriv;
 
 struct _RBSidebar
 {
-	GtkFrame parent;
+	GtkScrolledWindow parent;
 
 	RBSidebarPriv *priv;
 };
 
 struct _RBSidebarClass
 {
-	GtkFrameClass parent_class;
+	GtkScrolledWindowClass parent_class;
 };
 
 typedef enum
