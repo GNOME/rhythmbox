@@ -32,7 +32,6 @@
 #include "rb-iradio-source.h"
 
 #include "rhythmdb-legacy.h"
-#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-glade-helpers.h"
@@ -721,7 +720,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 
 	model = GTK_TREE_MODEL (query_model);
 	
-	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
+	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
 
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
 

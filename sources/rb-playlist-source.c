@@ -253,7 +253,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 		
 	source->priv->songs = rb_entry_view_new (source->priv->db, NULL, TRUE, TRUE);
 
-	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (source->priv->model));
+	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
 
 	{
 		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
@@ -438,7 +438,7 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 
 	model = GTK_TREE_MODEL (query_model);
 
-	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
+	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
 
 	rhythmdb_read_lock (source->priv->db);
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);

@@ -38,7 +38,6 @@
 #include "rb-dialog.h"
 #include "rb-debug.h"
 #include "rhythmdb.h"
-#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
@@ -126,13 +125,13 @@ struct RBEntryViewPrivate
 {
 	RhythmDB *db;
 	
-	RhythmDBModel *model;
+	RhythmDBQueryModel *model;
 
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
 	gboolean playing;
-	RhythmDBModel *playing_model;
+	RhythmDBQueryModel *playing_model;
 	RhythmDBEntry *playing_entry;
 	gboolean playing_entry_in_view;
 	GtkTreeIter playing_entry_iter;
@@ -256,9 +255,9 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_MODEL,
 					 g_param_spec_object ("model",
-							      "RhythmDBModel",
-							      "RhythmDBModel",
-							      RHYTHMDB_TYPE_MODEL,
+							      "RhythmDBQueryModel",
+							      "RhythmDBQueryModel",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
@@ -531,11 +530,11 @@ rb_entry_view_set_property (GObject *object,
 		break;
 	case PROP_MODEL:
 	{
-		RhythmDBModel *new_model;
+		RhythmDBQueryModel *new_model;
 		struct RBEntryViewColumnSortData *sort_data;
 		
 		if (view->priv->model) {
-			rhythmdb_model_cancel (view->priv->model);
+			rhythmdb_query_model_cancel (view->priv->model);
 			rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (view->priv->model), FALSE);
 		}
 		new_model = g_value_get_object (value);
@@ -613,9 +612,9 @@ rb_entry_view_set_property (GObject *object,
 
 		if (view->priv->playing_entry != NULL) {
 			view->priv->playing_entry_in_view = 
-				rhythmdb_model_entry_to_iter (view->priv->model,
-							  view->priv->playing_entry,
-							  &view->priv->playing_entry_iter);
+				rhythmdb_query_model_entry_to_iter (view->priv->model,
+								    view->priv->playing_entry,
+								    &view->priv->playing_entry_iter);
 			if (view->priv->playing_entry_in_view) {
 				path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model),
 								&view->priv->playing_entry_iter);
@@ -700,7 +699,7 @@ rb_entry_view_new (RhythmDB *db, const char *sort_key,
 }
 
 void
-rb_entry_view_set_model (RBEntryView *view, RhythmDBModel *model)
+rb_entry_view_set_model (RBEntryView *view, RhythmDBQueryModel *model)
 {
 	g_object_set (G_OBJECT (view), "model", model, NULL);
 }
@@ -709,7 +708,7 @@ gboolean
 rb_entry_view_busy (RBEntryView *view)
 {
 	return view->priv->model &&
-		rhythmdb_model_has_pending_changes (RHYTHMDB_MODEL (view->priv->model));
+		rhythmdb_query_model_has_pending_changes (RHYTHMDB_QUERY_MODEL (view->priv->model));
 }
 
 glong
@@ -745,7 +744,7 @@ entry_from_tree_iter (RBEntryView *view, GtkTreeIter *iter)
 	return entry;
 }
 
-RhythmDBModel *
+RhythmDBQueryModel *
 rb_entry_view_get_model (RBEntryView *view)
 {
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (view), NULL);
@@ -1488,7 +1487,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	{
 		RhythmDBQueryModel *query_model;
 		query_model = rhythmdb_query_model_new_empty (view->priv->db);
-		rb_entry_view_set_model (view, RHYTHMDB_MODEL (query_model));
+		rb_entry_view_set_model (view, RHYTHMDB_QUERY_MODEL (query_model));
 		g_object_unref (G_OBJECT (query_model));
 	}
 		
@@ -1573,8 +1572,8 @@ rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 
 	g_return_val_if_fail (entry != NULL, NULL);
 
-	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					   entry, &iter)) {
+	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
+						 entry, &iter)) {
 		/* If the entry isn't in the entryview, the "next" entry is the first. */
 		return rb_entry_view_get_first_entry (view);
 	}
@@ -1594,8 +1593,8 @@ rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 
 	g_return_val_if_fail (entry != NULL, NULL);
 
-	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					   entry, &iter))
+	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
+						 entry, &iter))
 		return NULL;
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), &iter);
@@ -1851,8 +1850,8 @@ rb_entry_view_select_entry (RBEntryView *view,
 
 	rb_entry_view_select_none (view);
 
-	if (rhythmdb_model_entry_to_iter (view->priv->model,
-					  entry, &iter)) {
+	if (rhythmdb_query_model_entry_to_iter (view->priv->model,
+						entry, &iter)) {
 		gtk_tree_selection_select_iter (view->priv->selection, &iter);
 	}
 
@@ -1865,8 +1864,8 @@ rb_entry_view_scroll_to_entry (RBEntryView *view,
 {
 	GtkTreeIter iter;
 	
-	if (rhythmdb_model_entry_to_iter (view->priv->model,
-					  entry, &iter)) {
+	if (rhythmdb_query_model_entry_to_iter (view->priv->model,
+						entry, &iter)) {
 		rb_entry_view_scroll_to_iter (view, &iter);
 	}
 }
@@ -1905,8 +1904,8 @@ rb_entry_view_get_entry_contained (RBEntryView *view,
 {
 	GtkTreeIter unused;
 
-	return rhythmdb_model_entry_to_iter (view->priv->model,
-					     entry, &unused);
+	return rhythmdb_query_model_entry_to_iter (view->priv->model,
+						   entry, &unused);
 }
 
 static gboolean
@@ -1922,8 +1921,8 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 	if (!GTK_WIDGET_REALIZED (view))
 		return FALSE;
 
-	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					   entry, iter))
+	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
+						 entry, iter))
 		return FALSE;
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
@@ -2082,7 +2081,7 @@ rb_entry_view_poll_model (RBEntryView *view)
 	g_get_current_time (&timeout);
 	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
 
-	did_sync = rhythmdb_model_poll (view->priv->model, &timeout);
+	did_sync = rhythmdb_query_model_poll (view->priv->model, &timeout);
 	if (did_sync) {
 		g_source_remove (view->priv->model_poll_id);
 		view->priv->model_poll_id =
@@ -2102,7 +2101,7 @@ idle_poll_model (RBEntryView *view)
 
 	GDK_THREADS_ENTER ();
 
-	did_sync = rhythmdb_model_poll (view->priv->model, &timeout);
+	did_sync = rhythmdb_query_model_poll (view->priv->model, &timeout);
 
 	if (did_sync)
 		view->priv->model_poll_id =

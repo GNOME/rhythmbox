@@ -32,7 +32,6 @@
 #include "rb-source.h"
 #include "rb-library-source.h"
 
-#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
 #include "rb-property-view.h"
@@ -1242,7 +1241,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
 						      G_CALLBACK (query_complete_cb),
 						      source);
-		rhythmdb_model_cancel (RHYTHMDB_MODEL (source->priv->active_query));
+		rhythmdb_query_model_cancel (RHYTHMDB_QUERY_MODEL (source->priv->active_query));
 	}
 
 	is_all_query = (source->priv->selected_genres == NULL &&
@@ -1258,7 +1257,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			source->priv->model = source->priv->cached_all_query;
 			source->priv->active_query = NULL;
 			rb_entry_view_set_model (source->priv->songs,
-						 RHYTHMDB_MODEL (source->priv->cached_all_query));
+						 RHYTHMDB_QUERY_MODEL (source->priv->cached_all_query));
 			g_object_set (G_OBJECT (source->priv->cached_genres_model),
 				      "query-model", source->priv->cached_all_query, NULL);
 			g_object_set (G_OBJECT (source->priv->cached_artists_model),
@@ -1358,7 +1357,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 				 "complete", G_CALLBACK (query_complete_cb),
 				 source, 0);
 	
-	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
+	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
 
 	query = construct_query_from_selection (source);
 	
