@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox 0.8.0\n"
+"Project-Id-Version: rhythmbox 0.8.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-14 23:54+0200\n"
-"PO-Revision-Date: 2004-04-14 01:55+0200\n"
+"POT-Creation-Date: 2004-05-09 00:52+0200\n"
+"PO-Revision-Date: 2004-05-09 00:54+0200\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "_Camí:"
 msgid "_Skip this step"
 msgstr "_Omet aquest pas"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1228
 msgid "A_lbum"
 msgstr "À_lbum"
 
@@ -131,7 +131,7 @@ msgstr "Reproduïda per ú_ltima vegada"
 msgid "_Play count"
 msgstr "Compte de re_producció"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1257
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1179
 msgid "_Rating"
 msgstr "P_untuació"
 
@@ -246,7 +246,7 @@ msgstr "Introduïu la _ubicació (URI) del fitxer que voleu afegir:"
 msgid "Open from URI"
 msgstr "Obre des d'un URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1213 shell/rb-shell.c:1884
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1885
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -471,7 +471,7 @@ msgstr "Mostra informació sobre la cançó seleccionada"
 msgid "Source _List"
 msgstr "_Llista de fonts"
 
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1539
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1536
 msgid "Start playing"
 msgstr "Comença la reproducció"
 
@@ -547,7 +547,7 @@ msgstr "Següe_nt"
 msgid "_Paste"
 msgstr "_Enganxa"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1540
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1537
 msgid "_Play"
 msgstr "Re_produeix"
 
@@ -591,8 +591,8 @@ msgstr "Nova emissora de ràdio per Internet"
 #: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
 #: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
 #: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
-#: widgets/rb-song-info.c:800
+#: widgets/rb-entry-view.c:961 widgets/rb-entry-view.c:988
+#: widgets/rb-song-info.c:801
 msgid "Unknown"
 msgstr "Desconegut"
 
@@ -602,7 +602,7 @@ msgstr "Desconegut"
 msgid "All"
 msgstr "Tots"
 
-#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:750
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:751
 #, c-format
 msgid "%s Properties"
 msgstr "Propietats de %s"
@@ -637,17 +637,17 @@ msgstr "Orientació"
 msgid "The orientation of the tray."
 msgstr "L'orientació de la safata."
 
-#: lib/rb-file-helpers.c:75
+#: lib/rb-file-helpers.c:77
 #, c-format
 msgid "Failed to find %s"
 msgstr "No s'ha trobat %s"
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s existeix, mogueu-lo fora del camí."
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:105
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "No s'ha pogut crear el directori %s."
@@ -746,12 +746,12 @@ msgstr "No s'ha pogut obrir el fitxer com Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:288
+#: metadata/rb-metadata-gst.c:290
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "No hi ha cap connector instal·lat per a gestionar un fitxer %s."
 
-#: metadata/rb-metadata-gst.c:529 metadata/rb-metadata-gst.c:658
+#: metadata/rb-metadata-gst.c:531 metadata/rb-metadata-gst.c:660
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -761,8 +761,8 @@ msgstr "No s'ha pogut crear l'element %s; comproveu la vostra instal·lació"
 msgid "Operation not supported"
 msgstr "L'operació no és suportada"
 
-#: player/rb-player-gst.c:409 player/rb-player-gst.c:619
-#: player/rb-player-gst.c:629
+#: player/rb-player-gst.c:409 player/rb-player-gst.c:621
+#: player/rb-player-gst.c:631
 msgid "Could not start pipeline playing"
 msgstr "No s'ha pogut iniciar la reproducció del conducte"
 
@@ -776,19 +776,19 @@ msgstr ""
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "No s'ha pogut inicialitzar el planificador. Heu executat gst-register?"
 
-#: player/rb-player-gst.c:641
+#: player/rb-player-gst.c:658
 msgid "Could not pause playback"
 msgstr "No s'ha pogut pausar la reproducció"
 
-#: player/rb-player-gst.c:651
+#: player/rb-player-gst.c:668
 msgid "Could not close output sink"
 msgstr "No s'ha pogut tancar la sortida d'àudio"
 
-#: player/rb-player-gst.c:698
+#: player/rb-player-gst.c:715
 msgid "No AudioCD support; check your settings"
 msgstr "No hi ha suport per a CD d'àudio; comproveu la vostra configuració"
 
-#: player/rb-player-gst.c:757
+#: player/rb-player-gst.c:774
 msgid "Failed to close audio output sink"
 msgstr "No s'ha pogut tancar la sortida d'àudio"
 
@@ -830,8 +830,8 @@ msgstr "L'àudio de %s no està gestionat; comproveu la vostra instal·lació"
 msgid "<invalid filename>"
 msgstr "<nom de fitxer invàlid>"
 
-#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:1005
-#: widgets/rb-song-info.c:773 widgets/rb-song-info.c:953
+#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:927
+#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Mai"
 
@@ -887,82 +887,82 @@ msgstr "%s, %s i %s"
 msgid "%s and %s"
 msgstr "%s i %s"
 
-#: shell/main.c:90
+#: shell/main.c:91
 msgid "Print the playing song and exit"
 msgstr "Mostra la cançó que s'està reproduint i surt"
 
-#: shell/main.c:91
+#: shell/main.c:92
 msgid "Print the playing song URI and exit"
 msgstr "Mostra la URI de la cançó que s'està reproduint i surt"
 
-#: shell/main.c:93
+#: shell/main.c:94
 msgid "Print the playing song length in seconds and exit"
 msgstr "Mostra la durada de la cançó que s'està reproduint i surt"
 
-#: shell/main.c:94
+#: shell/main.c:95
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Mostra el temps transcorregut de la cançó que s'està reproduint i surt"
 
-#: shell/main.c:95
+#: shell/main.c:96
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Cerca al temps especificat en la cançó que s'està reproduint, si és "
 "possible, i surt"
 
-#: shell/main.c:97
+#: shell/main.c:98
 msgid "Toggle play/pause mode"
 msgstr "Commuta el mode reproducció/pausa"
 
-#: shell/main.c:98
+#: shell/main.c:99
 msgid "Focus the running player"
 msgstr "Focalitza el reproductor en execució"
 
-#: shell/main.c:99
+#: shell/main.c:100
 msgid "Jump to previous song"
 msgstr "Salta a l'anterior cançó"
 
-#: shell/main.c:100
+#: shell/main.c:101
 msgid "Jump to next song"
 msgstr "Salta a la següent cançó"
 
-#: shell/main.c:102
+#: shell/main.c:103
 msgid "Toggle shuffling"
 msgstr "Commuta l'ordre aleatori"
 
-#: shell/main.c:104
+#: shell/main.c:105
 msgid "Enable debugging code"
 msgstr "Habilita el codi de depuració"
 
-#: shell/main.c:105
+#: shell/main.c:106
 msgid "Do not update the library"
 msgstr "No actualitzes la biblioteca"
 
-#: shell/main.c:106
+#: shell/main.c:107
 msgid "Do not register the shell"
 msgstr "No registres la línia d'ordres"
 
-#: shell/main.c:107
+#: shell/main.c:108
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "No desis cap dada permanentment (implica --no-registration)"
 
-#: shell/main.c:108
+#: shell/main.c:109
 msgid "Path for database file to use"
 msgstr "Camí al fitxer de base de dades a utilitzar"
 
-#: shell/main.c:109
+#: shell/main.c:110
 msgid "Quit Rhythmbox"
 msgstr "Surt del Rhythmbox"
 
-#: shell/main.c:124 widgets/rb-druid.c:218
+#: shell/main.c:125 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:227 shell/main.c:236
+#: shell/main.c:238 shell/main.c:247
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "S'ha produït una excepció «%s»"
 
-#: shell/main.c:300
+#: shell/main.c:311
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -999,7 +999,7 @@ msgstr "Aleatori per puntuació"
 msgid "Random by time since last play and rating"
 msgstr "Aleatori per temps des de l'última reproducció i puntuació"
 
-#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:860
+#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
 msgid "Couldn't parse playlist"
 msgstr "No s'ha pogut analitzar la llista de reproducció"
 
@@ -1007,49 +1007,49 @@ msgstr "No s'ha pogut analitzar la llista de reproducció"
 msgid "Load playlist"
 msgstr "Carrega la llista de reproducció"
 
-#: shell/rb-playlist-manager.c:811
+#: shell/rb-playlist-manager.c:815
 msgid "Save playlist"
 msgstr "Desa la llista de reproducció"
 
-#: shell/rb-shell-player.c:442
+#: shell/rb-shell-player.c:443
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "No s'ha pogut crear el reproductor: %s"
 
-#: shell/rb-shell-player.c:510
+#: shell/rb-shell-player.c:511
 msgid "Play previous song"
 msgstr "Reprodueix l'anterior cançó"
 
-#: shell/rb-shell-player.c:539
+#: shell/rb-shell-player.c:540
 msgid "Play next song"
 msgstr "Reprodueix la següent cançó"
 
-#: shell/rb-shell-player.c:558
+#: shell/rb-shell-player.c:559
 msgid "Change the music volume"
 msgstr "Canvia el volum de la música"
 
-#: shell/rb-shell-player.c:833
+#: shell/rb-shell-player.c:841
 #, c-format
 msgid "Opening %s..."
 msgstr "S'està obrint %s..."
 
-#: shell/rb-shell-player.c:1531
+#: shell/rb-shell-player.c:1528
 msgid "Pause playback"
 msgstr "Pausa la reproducció"
 
-#: shell/rb-shell-player.c:1532
+#: shell/rb-shell-player.c:1529
 msgid "_Pause"
 msgstr "_Pausa"
 
-#: shell/rb-shell-player.c:1547
+#: shell/rb-shell-player.c:1544
 msgid "Stop playback"
 msgstr "Atura la reproducció"
 
-#: shell/rb-shell-player.c:1548
+#: shell/rb-shell-player.c:1545
 msgid "_Stop"
 msgstr "_Atura"
 
-#: shell/rb-shell-player.c:1880
+#: shell/rb-shell-player.c:1873
 msgid "Unexpected end of stream!"
 msgstr "Final del flux inesperat!"
 
@@ -1066,19 +1066,19 @@ msgstr "General"
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "No s'ha pogut analitzar l'URI «%s»\n"
 
-#: shell/rb-shell.c:1059
+#: shell/rb-shell.c:1062
 msgid "Whether the main window is visible"
 msgstr "Si la finstra principal és visible"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1067
 msgid "Whether shuffle is enabled"
 msgstr "Si l'ordre aleatori està habilitat"
 
-#: shell/rb-shell.c:1068
+#: shell/rb-shell.c:1071
 msgid "Properties for the current song"
 msgstr "Propietats de la cançó actual"
 
-#: shell/rb-shell.c:1485
+#: shell/rb-shell.c:1484
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1089,12 +1089,12 @@ msgstr ""
 "Açò significa que heu instal·lat Rhythmbox en un prefix diferent que bonobo-"
 "activation; aquest avís és inofensiu, però l'IPC no funcionarà."
 
-#: shell/rb-shell.c:1858 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
+#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
 msgid "Not playing"
 msgstr "No s'està reproduint"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1861
+#: shell/rb-shell.c:1862
 #, c-format
 msgid ""
 "%s\n"
@@ -1104,7 +1104,7 @@ msgstr ""
 "Pausat, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1865
+#: shell/rb-shell.c:1866
 #, c-format
 msgid ""
 "%s\n"
@@ -1114,40 +1114,40 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1901
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausat)"
 
-#: shell/rb-shell.c:1968
+#: shell/rb-shell.c:1969
 msgid "translator_credits"
 msgstr "Jordi Mallach <jordi@sindominio.net>"
 
-#: shell/rb-shell.c:1977
+#: shell/rb-shell.c:1978
 msgid "Maintainers:"
 msgstr "Mantenidors:"
 
-#: shell/rb-shell.c:1980
+#: shell/rb-shell.c:1981
 msgid "Former Maintainers:"
 msgstr "Mantenidors anteriors:"
 
-#: shell/rb-shell.c:1983
+#: shell/rb-shell.c:1984
 msgid "Contributors:"
 msgstr "Contribuïdors:"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:1986
 msgid "Music management and playback software for GNOME."
 msgstr "Gestió i reproducció de música per al GNOME."
 
-#: shell/rb-shell.c:2166
+#: shell/rb-shell.c:2167
 msgid "Choose Files or Directory"
 msgstr "Seleccioneu fitxers o un directori"
 
-#: shell/rb-shell.c:2212
+#: shell/rb-shell.c:2213
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Per a extraure CD heu d'instal·lar el paquet Sound Juicer."
 
-#: shell/rb-shell.c:2219
+#: shell/rb-shell.c:2220
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "No s'ha pogut executar sound-juicer: %s"
@@ -1172,47 +1172,47 @@ msgstr "_Repeteix"
 msgid "Buffering..."
 msgstr "S'està emplenant la memòria intermèdia..."
 
-#: sources/itunesdb.c:459
+#: sources/itunesdb.c:447
 msgid "Master-PL"
 msgstr "LR-Mestra"
 
-#: sources/itunesdb.c:461
+#: sources/itunesdb.c:449
 msgid "Playlist"
 msgstr "Llista de reproducció"
 
-#: sources/itunesdb.c:813
+#: sources/itunesdb.c:801
 #, c-format
 msgid "Error reading \"%s\".\n"
 msgstr "S'ha produït un error en llegir «%s».\n"
 
-#: sources/itunesdb.c:821
+#: sources/itunesdb.c:809
 #, c-format
 msgid "\"%s\" is not a valid iPod database.\n"
 msgstr "«%s» no és una base de dades d'iPod vàlida.\n"
 
-#: sources/itunesdb.c:1061 sources/itunesdb.c:1716
+#: sources/itunesdb.c:1049 sources/itunesdb.c:1704
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "No s'ha pogut obrir el fitxer «%s» per a lectura.\n"
 
-#: sources/itunesdb.c:1568 sources/itunesdb.c:1723
+#: sources/itunesdb.c:1556 sources/itunesdb.c:1711
 #, c-format
 msgid "Could not open \"%s\" file for writing.\n"
 msgstr "No s'ha pogut obrir el fitxer «%s» per a escriptura.\n"
 
 #. an error occured
-#: sources/itunesdb.c:1580
+#: sources/itunesdb.c:1568
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "S'ha produït un error en reanomenar «%s» a «%s» (%s).\n"
 
 #. error -- not end of file!
-#: sources/itunesdb.c:1736
+#: sources/itunesdb.c:1724
 #, c-format
 msgid "Error reading file \"%s\".\n"
 msgstr "S'ha produït un error en llegir el fitxer «%s».\n"
 
-#: sources/itunesdb.c:1748
+#: sources/itunesdb.c:1736
 #, c-format
 msgid "Error writing PC file \"%s\".\n"
 msgstr "S'ha produït un error en escriure el fitxer PC «%s».\n"
@@ -1253,7 +1253,7 @@ msgstr "Biblioteca"
 msgid "Add Location"
 msgstr "Afegeix una ubicació"
 
-#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1275
+#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1197
 msgid "Tra_ck"
 msgstr "_Pista"
 
@@ -1324,64 +1324,64 @@ msgstr "S'ha produït un error en llegir el nom de fitxer: %s"
 msgid "Choose a directory"
 msgstr "Seleccioneu un directori"
 
-#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:872
+#: widgets/rb-entry-view.c:963 widgets/rb-header.c:872
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1068
+#: widgets/rb-entry-view.c:990
 msgid "Very Low"
 msgstr "Molt baixa"
 
-#: widgets/rb-entry-view.c:1070
+#: widgets/rb-entry-view.c:992
 msgid "Low"
 msgstr "Baixa"
 
-#: widgets/rb-entry-view.c:1072
+#: widgets/rb-entry-view.c:994
 msgid "Regular"
 msgstr "Regular"
 
-#: widgets/rb-entry-view.c:1074
+#: widgets/rb-entry-view.c:996
 msgid "High"
 msgstr "Alta"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:998
 msgid "Very High"
 msgstr "Molt alta"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:1000
 msgid "Perfect"
 msgstr "Perfecta"
 
-#: widgets/rb-entry-view.c:1284
+#: widgets/rb-entry-view.c:1206
 msgid "_Title"
 msgstr "_Títol"
 
-#: widgets/rb-entry-view.c:1295
+#: widgets/rb-entry-view.c:1217
 msgid "Art_ist"
-msgstr "Art_ista:"
+msgstr "Art_ista"
 
-#: widgets/rb-entry-view.c:1317
+#: widgets/rb-entry-view.c:1239
 msgid "Ge_nre"
 msgstr "Gè_nere"
 
-#: widgets/rb-entry-view.c:1327
+#: widgets/rb-entry-view.c:1249
 msgid "Ti_me"
 msgstr "Te_mps"
 
-#: widgets/rb-entry-view.c:1336
+#: widgets/rb-entry-view.c:1258
 msgid "_Quality"
 msgstr "_Qualitat"
 
-#: widgets/rb-entry-view.c:1346
+#: widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "Com_pte de reproducció"
 
-#: widgets/rb-entry-view.c:1355
+#: widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "Reproduïd_a per última vegada"
 
-#: widgets/rb-entry-view.c:1499
+#: widgets/rb-entry-view.c:1422
 msgid "Now Playing"
 msgstr "Ara reproduint"
 
@@ -1477,22 +1477,22 @@ msgstr "Propietats de la cançó"
 msgid "Multiple Song Properties"
 msgstr "Propietats de múltiples cançons"
 
-#: widgets/rb-song-info.c:798
+#: widgets/rb-song-info.c:799
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: widgets/rb-song-info.c:861
+#: widgets/rb-song-info.c:862
 msgid "on the desktop"
 msgstr "a l'escriptori"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
+#: widgets/rb-volume.c:234
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "-"
 msgstr "-"
 
