@@ -818,24 +818,29 @@ rb_node_view_construct (RBNodeView *view)
 		return;
 	}
 
-	tmp = xmlGetProp (doc->children, "rules-hint");
+	child = doc->children; 	
+	while (child && child->type != XML_ELEMENT_NODE) {
+		child = child->next;
+	}
+
+	tmp = xmlGetProp (child, "rules-hint");
 	if (tmp != NULL)
 		gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
 	g_free (tmp);
 
-	tmp = xmlGetProp (doc->children, "headers-visible");
+	tmp = xmlGetProp (child, "headers-visible");
 	if (tmp != NULL)
 		gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
 	g_free (tmp);
 
 #ifdef USE_GTK_TREE_VIEW_WORKAROUND
-	tmp = xmlGetProp (doc->children, "use-column-sizing-hack");
+	tmp = xmlGetProp (child, "use-column-sizing-hack");
 	if (tmp != NULL)
 		view->priv->use_column_sizing_hack = TRUE;
 	g_free (tmp);
 #endif
 
-	tmp = xmlGetProp (doc->children, "selection-mode");
+	tmp = xmlGetProp (child, "selection-mode");
 	if (tmp != NULL) {
 		GEnumClass *class = g_type_class_ref (GTK_TYPE_SELECTION_MODE);
 		GEnumValue *ev = g_enum_get_value_by_name (class, tmp);
@@ -844,12 +849,12 @@ rb_node_view_construct (RBNodeView *view)
 	}
 	g_free (tmp);
 
-	tmp = xmlGetProp (doc->children, "search-order");
+	tmp = xmlGetProp (child, "search-order");
 	if (tmp != NULL)
 		view->priv->search_columns = parse_columns_as_glist (tmp);
 	g_free (tmp);
 
-	tmp = xmlGetProp (doc->children, "allowed-columns");
+	tmp = xmlGetProp (child, "allowed-columns");
 	if (tmp != NULL) {
 		GList *l = parse_columns_as_glist (tmp);
 		for (; l != NULL; l = g_list_next (l)) {
@@ -861,12 +866,12 @@ rb_node_view_construct (RBNodeView *view)
 	rb_debug ("allowed columns: %s", tmp);
 	g_free (tmp);
 
-	tmp = xmlGetProp (doc->children, "keep-selection");
+	tmp = xmlGetProp (child, "keep-selection");
 	if (tmp != NULL)
 		view->priv->keep_selection = bool_to_int (tmp);
 	g_free (tmp);
 
-	tmp = xmlGetProp (doc->children, "searchable");
+	tmp = xmlGetProp (child, "searchable");
 	if (tmp != NULL && bool_to_int (tmp)) {
                 gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), TRUE);
                 gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
@@ -879,9 +884,9 @@ rb_node_view_construct (RBNodeView *view)
 					 dumb_sort_func,
 					 NULL, NULL);
 
-	view->priv->columns_key = xmlGetProp (doc->children, "column-visibility-pref");
+	view->priv->columns_key = xmlGetProp (child, "column-visibility-pref");
 
-	for (child = doc->children->children; child != NULL; child = child->next) {
+	for (child = child->children; child != NULL; child = child->next) {
 		char *title = NULL;
 		gboolean reorderable = FALSE, resizable = FALSE, clickable = TRUE;
 		gboolean default_sort_column = FALSE, expand = FALSE;
