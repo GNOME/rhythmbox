@@ -75,7 +75,6 @@ static void rb_shell_player_cmd_previous (BonoboUIComponent *component,
 static void rb_shell_player_cmd_play (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
-static void rb_shell_player_playpause (RBShellPlayer *player);
 static void rb_shell_player_cmd_pause (BonoboUIComponent *component,
 			               RBShellPlayer *player,
 			               const char *verbname);
@@ -809,7 +808,6 @@ rb_shell_player_next (RBShellPlayer *player)
 		} else {
 			rb_debug ("No next node, stopping playback");
 			rb_shell_player_set_playing_source (player, NULL);
-			rb_shell_player_sync_buttons (player);
 			return;
 		}
 	}
@@ -868,7 +866,7 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 	rb_shell_player_playpause (player);
 }
 
-static void
+void
 rb_shell_player_playpause (RBShellPlayer *player)
 {
 	switch (player->priv->playbutton_state) {
@@ -1297,6 +1295,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 		rb_shell_player_stop (player);
 
 	rb_shell_player_sync_with_source (player);
+	if (player->priv->selected_source)
+		rb_shell_player_sync_buttons (player);
 }
 
 void

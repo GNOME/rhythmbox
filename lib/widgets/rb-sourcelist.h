@@ -54,6 +54,8 @@ typedef struct RBSourceListClass
 
 	void (*drop_received) (RBSourceList *list, RBSource *target, GtkSelectionData *data);
 
+	void (*source_activated) (RBSourceList *list, RBSource *target);
+
 	gboolean (*show_popup) (RBSourceList *list, RBSource *target);
 } RBSourceListClass;
 

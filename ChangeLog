@@ -1,3 +1,18 @@
+2003-08-28  Paolo Borelli  <pborelli@katamail.com>
+	    Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_init), (drop_received_cb), (row_activated_cb):
+	* lib/widgets/rb-sourcelist.h:
+	* shell/rb-shell-player.c: (rb_shell_player_next),
+	(rb_shell_player_set_playing_source_internal):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_construct), (source_activated_cb),
+	(rb_shell_show_popup_cb):
+
+	Add a 'source_activated' signal to the sourcelist and use it in the
+	shell so that double-clicking on a source starts playing it.
+
 2003-08-28  Colin Walters  <walters@verbum.org>
 
 	* data/Makefile.am:

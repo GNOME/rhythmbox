@@ -46,6 +46,7 @@ enum
 {
 	SELECTED,
 	DROP_RECEIVED,
+	SOURCE_ACTIVATED,
 	SHOW_POPUP,
 	LAST_SIGNAL
 };
@@ -57,6 +58,8 @@ static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
 static void drop_received_cb (RBSourceListModel *model, RBSource *target,
 			      GtkSelectionData *data, RBSourceList *sourcelist);
+static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path, 
+			      GtkTreeViewColumn *column, RBSourceList *sourcelist);
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
 				 RBSourceList *sourcelist);
@@ -127,6 +130,18 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
+
+	rb_sourcelist_signals[SOURCE_ACTIVATED] =
+		g_signal_new ("source_activated",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSourceListClass, source_activated),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_OBJECT);
+
 	rb_sourcelist_signals[SHOW_POPUP] =
 		g_signal_new ("show_popup",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -155,6 +170,11 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 			  sourcelist);
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->model);
+
+	g_signal_connect (G_OBJECT (sourcelist->priv->treeview),
+			  "row_activated",
+			  G_CALLBACK (row_activated_cb),
+			  sourcelist);
 
 	g_signal_connect (G_OBJECT (sourcelist->priv->treeview),
 			  "button_press_event",
@@ -320,6 +340,23 @@ drop_received_cb (RBSourceListModel *model, RBSource *target,
 	rb_debug ("drop recieved");
 	/* Proxy the signal. */
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);	
+}
+
+static void
+row_activated_cb (GtkTreeView *treeview,
+		  GtkTreePath *path, 
+		  GtkTreeViewColumn *column,
+		  RBSourceList *sourcelist)
+{
+	GtkTreeModel *model;
+	GtkTreeIter iter;
+	RBSource *target;
+
+	model = gtk_tree_view_get_model (treeview);
+	gtk_tree_model_get_iter (model, &iter, path);
+	gtk_tree_model_get (model, &iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+
+	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SOURCE_ACTIVATED], 0, target);
 }
 
 static gboolean

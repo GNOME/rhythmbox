@@ -116,6 +116,9 @@ static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static void source_selected_cb (RBSourceList *sourcelist,
 				RBSource *source,
 				RBShell *shell);
+static void source_activated_cb (RBSourceList *sourcelist,
+				 RBSource *source,
+				 RBShell *shell);
 static void rb_shell_library_error_cb (RBLibrary *library,
 				       const char *uri, const char *msg,
 				       RBShell *shell); 
@@ -668,6 +671,8 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->sourcelist = rb_sourcelist_new ();
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "drop_received",
 			  G_CALLBACK (sourcelist_drag_received_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "source_activated",
+			  G_CALLBACK (source_activated_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "show_popup",
 			  G_CALLBACK (rb_shell_show_popup_cb), shell);
 	
@@ -917,6 +922,22 @@ source_selected_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source selected");
 	rb_shell_select_source (shell, source);
+}
+
+static void
+source_activated_cb (RBSourceList *sourcelist,
+		     RBSource *source,
+		     RBShell *shell)
+{
+	rb_debug ("source activated");
+
+	/* Stop the playing source, if any */
+	rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+
+	/* Select the new one, and start it playing */
+	rb_shell_select_source (shell, source);
+	rb_shell_player_set_playing_source (shell->priv->player_shell, source);
+	rb_shell_player_playpause (shell->priv->player_shell);
 }
 
 static void
@@ -2042,7 +2063,6 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 	rb_debug ("popup");
 	return rb_source_show_popup (target);
 }
-
 
 static void
 tray_button_press_event_cb (GtkWidget *ebox,
