@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-10 21:44+0200\n"
-"PO-Revision-Date: 2003-08-10 21:45+0200\n"
+"POT-Creation-Date: 2003-08-13 19:09+0200\n"
+"PO-Revision-Date: 2003-08-13 19:10+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -228,16 +228,16 @@ msgid "_Date:"
 msgstr "_Datum:"
 
 #: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:7
+#: data/glade/station-properties.glade.h:5
 msgid "_Genre:"
 msgstr "_Genre:"
 
-#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:9
+#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
 msgid "_Rating:"
 msgstr "_Betyg:"
 
 #: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
-#: data/glade/station-properties.glade.h:10
+#: data/glade/station-properties.glade.h:8
 msgid "_Title:"
 msgstr "_Titel:"
 
@@ -254,26 +254,18 @@ msgid "_Location:"
 msgstr "_Plats:"
 
 #: data/glade/station-properties.glade.h:2
-msgid "Locations"
-msgstr "Platser"
+msgid "L_ocation:"
+msgstr "P_lats:"
 
 #: data/glade/station-properties.glade.h:3
 msgid "Play Count:"
 msgstr "Spelräknare:"
 
 #: data/glade/station-properties.glade.h:4
-msgid "Properties"
-msgstr "Egenskaper"
-
-#: data/glade/station-properties.glade.h:5
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
 msgstr "ons jan 01 1970 00.00.00 +0100"
 
 #: data/glade/station-properties.glade.h:6
-msgid "_Add:"
-msgstr "_Lägg till:"
-
-#: data/glade/station-properties.glade.h:8
 msgid "_Last Played:"
 msgstr "_Senast spelad:"
 
@@ -329,7 +321,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:586 shell/rb-shell.c:1037
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:606 shell/rb-shell.c:1088
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -581,7 +573,7 @@ msgstr "_Nästa"
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1125
+#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1088
 msgid "_Play"
 msgstr "_Spela"
 
@@ -605,42 +597,27 @@ msgstr "_Blanda"
 msgid "_Source List"
 msgstr "_Källista"
 
-#: iradio/rb-iradio-backend.c:180 library/rb-library.c:570
+#: iradio/rb-iradio-backend.c:183 library/rb-library.c:589
 msgid "All"
 msgstr "Alla"
 
-#: iradio/rb-iradio-backend.c:319
+#: iradio/rb-iradio-backend.c:345
 msgid "Unable to find file \"iradio-initial.xml\""
 msgstr "Kan inte hitta filen \"iradio-initial.xml\""
 
-#: iradio/rb-iradio-backend.c:365
+#: iradio/rb-iradio-backend.c:375
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
-#: iradio/rb-iradio-backend.c:526 iradio/rb-iradio-backend.c:545
-#: iradio/rb-iradio-backend.c:546 lib/widgets/rb-tree-model-node.c:587
+#: iradio/rb-iradio-backend.c:529 iradio/rb-iradio-backend.c:548
+#: iradio/rb-iradio-backend.c:549 lib/widgets/rb-tree-model-node.c:589
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
-#: iradio/rb-iradio-backend.c:740
+#: iradio/rb-iradio-backend.c:735
 msgid "Never"
 msgstr "Aldrig"
-
-#: iradio/rb-iradio-yp-xmlfile.c:223
-#, c-format
-msgid "Failed to open %s: %s"
-msgstr "Misslyckades med att öppna %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:454
-#, c-format
-msgid "Failed to read %s: %s"
-msgstr "Misslyckades med att läsa %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:461
-#, c-format
-msgid "Failed to parse %s: %s"
-msgstr "Misslyckades med att tolka %s: %s"
 
 #: iradio/rb-new-station-dialog.c:143
 msgid "New Internet Radio Station"
@@ -655,32 +632,16 @@ msgstr "Ny Internetradiokanal"
 msgid "Unknown"
 msgstr "Okänd"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:568
+#: iradio/rb-station-properties-dialog.c:177 lib/widgets/rb-song-info.c:568
 #: lib/widgets/rb-song-info.c:582
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
-#: iradio/rb-station-properties-dialog.c:389
+#: iradio/rb-station-properties-dialog.c:348
 #, c-format
 msgid "Properties for %s"
 msgstr "Egenskaper för %s"
-
-#: iradio/rb-station-properties-dialog.c:539
-msgid "No locations specified!"
-msgstr "Inga platser angivna!"
-
-#: iradio/rb-station-properties-dialog.c:583
-msgid "No location is selected."
-msgstr "Ingen plats är angiven."
-
-#: iradio/rb-station-properties-dialog.c:599
-msgid "No location specified."
-msgstr "Ingen plats angiven."
-
-#: iradio/rb-station-properties-dialog.c:605
-msgid "Location is not a valid URL."
-msgstr "Platsen är inte en giltig URL."
 
 #: lib/disclosure-widget.c:292
 msgid "Expander Size"
@@ -722,12 +683,12 @@ msgstr "%s finns, flytta undan den."
 msgid "Failed to create directory %s."
 msgstr "Misslyckades med att skapa katalogen %s."
 
-#: lib/rb-playlist.c:203
+#: lib/rb-playlist.c:207
 #, c-format
 msgid "Couldn't write playlist: %s"
 msgstr "Kunde inte skriva spellista: %s"
 
-#: lib/rb-playlist.c:236
+#: lib/rb-playlist.c:240
 #, c-format
 msgid "Couldn't open playlist: %s"
 msgstr "Kunde inte öppna spellista: %s"
@@ -793,7 +754,7 @@ msgstr "Fel vid inläsning av filer till biblioteket"
 msgid "_Error"
 msgstr "_Fel"
 
-#: lib/widgets/rb-node-view.c:716
+#: lib/widgets/rb-node-view.c:717
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
@@ -810,28 +771,28 @@ msgstr " av "
 msgid "Listening to "
 msgstr "Lyssnar på "
 
-#: lib/widgets/rb-player.c:486
+#: lib/widgets/rb-player.c:487
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: lib/widgets/rb-player.c:497
+#: lib/widgets/rb-player.c:498
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: lib/widgets/rb-player.c:507
+#: lib/widgets/rb-player.c:508
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2002
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1092 shell/rb-shell.c:2052
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:784
+#: lib/widgets/rb-player.c:785
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d av %d:%02d"
 
-#: lib/widgets/rb-player.c:786
+#: lib/widgets/rb-player.c:787
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -881,16 +842,16 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:820
+#: library/rb-library.c:834
 msgid "Failed to load library!"
 msgstr "Misslyckades med att läsa in biblioteket!"
 
-#: library/rb-library.c:1087
+#: library/rb-library.c:1104
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1339
+#: library/rb-node.c:1345
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -1062,13 +1023,18 @@ msgstr "Ogiltigt spårnummer"
 msgid "Audio CD track"
 msgstr "Ljud-cd-spår"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:154
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:195
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:264
 #: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:165
 msgid "Failed to open file for reading"
 msgstr "Misslyckades med att öppna fil för läsning"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:470
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:247
+msgid "Error decoding FLAC file"
+msgstr "Fel vid avkodning av FLAC-fil"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:751
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1127,43 +1093,37 @@ msgstr ""
 "Misslyckades med att aktivera skalet:\n"
 "%s"
 
-#: shell/rb-shell-player.c:319
+#: shell/rb-shell-player.c:317
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:665
+#: shell/rb-shell-player.c:663
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
-# Osäker
-#: shell/rb-shell-player.c:736
-#, c-format
-msgid "All fallback locations failed, unable to play: %s\n"
-msgstr "Alla reservplatser misslyckades, kan inte spela: %s\n"
-
-#: shell/rb-shell-player.c:1116
+#: shell/rb-shell-player.c:1079
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1117
+#: shell/rb-shell-player.c:1080
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1124
+#: shell/rb-shell-player.c:1087
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1132
+#: shell/rb-shell-player.c:1095
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1133
+#: shell/rb-shell-player.c:1096
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1356
+#: shell/rb-shell-player.c:1319
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
@@ -1175,12 +1135,12 @@ msgstr "Inställningar för musikspelare"
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:499
+#: shell/rb-shell.c:504
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:787
+#: shell/rb-shell.c:810
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1193,12 +1153,12 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1055
+#: shell/rb-shell.c:1106
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1058
+#: shell/rb-shell.c:1109
 #, c-format
 msgid ""
 "%s\n"
@@ -1207,21 +1167,21 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1127
+#: shell/rb-shell.c:1178
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1136
+#: shell/rb-shell.c:1187
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1140
+#: shell/rb-shell.c:1191
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1164
+#: shell/rb-shell.c:1215
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1232,51 +1192,51 @@ msgstr ""
 "Ljudbakände: %s\n"
 "Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1308
+#: shell/rb-shell.c:1358
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1337
+#: shell/rb-shell.c:1387
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1377
+#: shell/rb-shell.c:1427
 msgid "Save playlist"
 msgstr "Spara spellista"
 
-#: shell/rb-shell.c:1397
+#: shell/rb-shell.c:1447
 msgid "There is already a playlist with that name."
 msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-shell.c:1505
+#: shell/rb-shell.c:1554
 msgid "Couldn't parse playlist"
 msgstr "Kunde inte tolka spellista"
 
-#: shell/rb-shell.c:1835
+#: shell/rb-shell.c:1885
 msgid "C_reate"
 msgstr "S_kapa"
 
-#: shell/rb-shell.c:1850
+#: shell/rb-shell.c:1900
 msgid "New Playlist"
 msgstr "Ny spellista"
 
-#: shell/rb-shell.c:1861
+#: shell/rb-shell.c:1911
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-shell.c:1866
+#: shell/rb-shell.c:1916
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1870
+#: shell/rb-shell.c:1920
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
 
-#: shell/rb-source-header.c:173
+#: shell/rb-source-header.c:172
 msgid "Show _Browser"
 msgstr "Visa _bläddrare"
 
-#: shell/rb-source-header.c:174
+#: shell/rb-source-header.c:173
 msgid "Hide _Browser"
 msgstr "Dölj _bläddrare"
 
@@ -1315,22 +1275,22 @@ msgstr "%d låtar, %d.%02d.%02d total tid"
 msgid "%ld songs"
 msgstr "%ld låtar"
 
-#: sources/rb-group-source.c:566 sources/rb-library-source.c:825
+#: sources/rb-group-source.c:567 sources/rb-library-source.c:825
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> dagar (%ld låtar)"
 
-#: sources/rb-group-source.c:569 sources/rb-library-source.c:828
+#: sources/rb-group-source.c:570 sources/rb-library-source.c:828
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
 
-#: sources/rb-group-source.c:572 sources/rb-library-source.c:831
+#: sources/rb-group-source.c:573 sources/rb-library-source.c:831
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuter (%ld låtar)"
 
-#: sources/rb-group-source.c:710
+#: sources/rb-group-source.c:711
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
@@ -1339,7 +1299,7 @@ msgstr "Misslyckades med att tolka %s som gruppfil"
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:487
+#: sources/rb-iradio-source.c:497
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
@@ -1359,6 +1319,40 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:544
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "Locations"
+#~ msgstr "Platser"
+
+#~ msgid "Properties"
+#~ msgstr "Egenskaper"
+
+#~ msgid "_Add:"
+#~ msgstr "_Lägg till:"
+
+#~ msgid "Failed to open %s: %s"
+#~ msgstr "Misslyckades med att öppna %s: %s"
+
+#~ msgid "Failed to read %s: %s"
+#~ msgstr "Misslyckades med att läsa %s: %s"
+
+#~ msgid "Failed to parse %s: %s"
+#~ msgstr "Misslyckades med att tolka %s: %s"
+
+#~ msgid "No locations specified!"
+#~ msgstr "Inga platser angivna!"
+
+#~ msgid "No location is selected."
+#~ msgstr "Ingen plats är angiven."
+
+#~ msgid "No location specified."
+#~ msgstr "Ingen plats angiven."
+
+#~ msgid "Location is not a valid URL."
+#~ msgstr "Platsen är inte en giltig URL."
+
+# Osäker
+#~ msgid "All fallback locations failed, unable to play: %s\n"
+#~ msgstr "Alla reservplatser misslyckades, kan inte spela: %s\n"
 
 #~ msgid "Create"
 #~ msgstr "Skapa"
