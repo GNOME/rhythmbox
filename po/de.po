@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
-"POT-Creation-Date: 2002-11-17 17:47+0100\n"
-"PO-Revision-Date: 2002-11-17 17:43+0100\n"
+"POT-Creation-Date: 2002-11-27 09:02+0100\n"
+"PO-Revision-Date: 2002-11-20 16:18+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,72 +27,88 @@ msgid "    "
 msgstr "    "
 
 #: data/glade/preferences.glade.h:2
+msgid "<b>Browser Views</b>"
+msgstr "<b>Browser-Ansichten</b>"
+
+#: data/glade/preferences.glade.h:3
 msgid "<span weight=\"bold\">Appearance</span>"
 msgstr "<span weight=\"bold\">Aussehen</span>"
 
-#: data/glade/preferences.glade.h:3
+#: data/glade/preferences.glade.h:4
 msgid "<span weight=\"bold\">Visible Columns</span>"
 msgstr "<span weight=\"bold\">Sichtbare Spalten</span>"
 
-#: data/glade/preferences.glade.h:4 data/node-views/rb-node-view-songs.xml.h:1
+#: data/glade/preferences.glade.h:5 data/node-views/rb-node-view-songs.xml.h:1
 msgid "A_lbum"
 msgstr "A_lbum"
 
-#: data/glade/preferences.glade.h:5
+#: data/glade/preferences.glade.h:6
+msgid "Artists and albums"
+msgstr "Interpreten und Alben"
+
+#: data/glade/preferences.glade.h:7
+msgid "Genres and artists"
+msgstr "Genres und Interpreten"
+
+#: data/glade/preferences.glade.h:8
+msgid "Genres, artists and albums"
+msgstr "Genres, Interpreten und Alben"
+
+#: data/glade/preferences.glade.h:9
 msgid "Preferences"
 msgstr "Einstellungen"
 
-#: data/glade/preferences.glade.h:6
+#: data/glade/preferences.glade.h:10
 msgid "Show _toolbar as:"
 msgstr "_Werkzeugleiste zeigen als:"
 
-#: data/glade/preferences.glade.h:7
+#: data/glade/preferences.glade.h:11
 msgid "Text _below icons"
 msgstr "Text _unter Icons"
 
-#: data/glade/preferences.glade.h:8
+#: data/glade/preferences.glade.h:12
 msgid "Text b_eside icons"
 msgstr "Text _neben Icons"
 
-#: data/glade/preferences.glade.h:9
+#: data/glade/preferences.glade.h:13
 msgid "Track _number"
 msgstr "Titel_nummer"
 
-#: data/glade/preferences.glade.h:10
+#: data/glade/preferences.glade.h:14
 msgid "_Artist"
 msgstr "_Interpret"
 
-#: data/glade/preferences.glade.h:11
+#: data/glade/preferences.glade.h:15
 msgid "_Desktop default"
 msgstr "_Desktop-Vorgabe"
 
-#: data/glade/preferences.glade.h:12
+#: data/glade/preferences.glade.h:16
 msgid "_Duration"
 msgstr "_Dauer"
 
-#: data/glade/preferences.glade.h:13
+#: data/glade/preferences.glade.h:17
 #: data/node-views/rb-node-view-genres.xml.h:1
 msgid "_Genre"
 msgstr "_Genre"
 
-#: data/glade/preferences.glade.h:14
+#: data/glade/preferences.glade.h:18
 msgid "_Icons"
 msgstr "Nur _Icons"
 
-#: data/glade/preferences.glade.h:15
+#: data/glade/preferences.glade.h:19
 msgid "_Last played"
 msgstr "Zu_letzt gespielt"
 
-#: data/glade/preferences.glade.h:16
+#: data/glade/preferences.glade.h:20
 msgid "_Play count"
 msgstr "Ges_pielt"
 
-#: data/glade/preferences.glade.h:17
+#: data/glade/preferences.glade.h:21
 #: data/node-views/rb-node-view-songs.xml.h:8
 msgid "_Rating"
 msgstr "_Bewertung"
 
-#: data/glade/preferences.glade.h:18
+#: data/glade/preferences.glade.h:22
 msgid "_Text"
 msgstr "Nur _Text"
 
@@ -228,7 +244,7 @@ msgstr "Ges_pielt"
 msgid "_Title"
 msgstr "_Titel"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:602 shell/rb-shell.c:993
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:602 shell/rb-shell.c:999
 msgid "Music Player"
 msgstr "Musik-Player"
 
@@ -641,7 +657,7 @@ msgstr "»%s« konnte nicht als NodeView-layout-Datei interpretiert werden"
 
 #: lib/widgets/rb-node-view.c:1361
 #, c-format
-msgid "%d songs, %d:%02d:%02d total time, %s"
+msgid "%ld songs, %ld:%02ld:%02ld total time, %s"
 msgstr "%d Titel, Spielzeit %d:%02d:%02d, %s"
 
 #: lib/widgets/rb-player.c:207
@@ -851,7 +867,7 @@ msgstr "MonkeyMedia-Optionen:"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:210
+#: shell/main.c:209
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -885,7 +901,7 @@ msgstr "Stopp"
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-preferences.c:158
+#: shell/rb-shell-preferences.c:164
 msgid "Music Player Preferences"
 msgstr "Einstellungen des Musik-Players"
 
@@ -903,16 +919,16 @@ msgstr ""
 "diese Warnung ist harmlos, die Kommunikation mit anderen\n"
 "Prozessen (»IPC«) funktioniert daher jedoch nicht.\n"
 
-#: shell/rb-shell.c:997 shell/rb-shell.c:2013
+#: shell/rb-shell.c:1003 shell/rb-shell.c:2019
 msgid "Not playing"
 msgstr "Nichts zu tun"
 
-#: shell/rb-shell.c:1010
+#: shell/rb-shell.c:1016
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Unterbrochen)"
 
-#: shell/rb-shell.c:1015
+#: shell/rb-shell.c:1021
 #, c-format
 msgid ""
 "%s\n"
@@ -921,51 +937,51 @@ msgstr ""
 "%s\n"
 "Unterbrochen"
 
-#: shell/rb-shell.c:1161
+#: shell/rb-shell.c:1167
 msgid "translator_credits"
 msgstr ""
 "Christian Neumair <chris@gnome-de.org>\n"
 "Christian Meyer <chrisime@gnome.org>\n"
 "Benjamin Greiner <benjamin.greiner@gmx.net>"
 
-#: shell/rb-shell.c:1172
+#: shell/rb-shell.c:1178
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "© 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:1173
+#: shell/rb-shell.c:1179
 msgid "Music management and playback software for GNOME."
 msgstr "Musikverwaltungs- und -abspiel-Software für GNOME"
 
-#: shell/rb-shell.c:1375
+#: shell/rb-shell.c:1381
 msgid "Choose Files or Directory"
 msgstr "Wählen Sie Dateien oder ein Verzeichnis"
 
-#: shell/rb-shell.c:1862
+#: shell/rb-shell.c:1868
 msgid "Create"
 msgstr "Erstellen"
 
-#: shell/rb-shell.c:1886
+#: shell/rb-shell.c:1892
 msgid "Please enter a name for the new music group."
 msgstr "Geben Sie einen Namen für die neue Musikgruppe an."
 
-#: shell/rb-shell.c:1896
+#: shell/rb-shell.c:1902
 msgid "Untitled"
 msgstr "Unbenannt"
 
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1906
 msgid "Add the _selected songs to the new group"
 msgstr "Die _markierten Titel zur neuen Gruppe hinzufügen"
 
-#: views/rb-audiocd-view.c:267
+#: views/rb-audiocd-view.c:268
 msgid "music audiocd"
 msgstr "Musik-Audio-CD"
 
-#: views/rb-audiocd-view.c:270
+#: views/rb-audiocd-view.c:271
 msgid "Audio-CD"
 msgstr "Audio-CD"
 
-#: views/rb-audiocd-view.c:657 views/rb-group-view.c:822
-#: views/rb-library-view.c:962
+#: views/rb-audiocd-view.c:671 views/rb-group-view.c:822
+#: views/rb-library-view.c:1019
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -974,14 +990,19 @@ msgstr ""
 "Datenstrom für »%s« konnte nicht erstellt werden. Fehler:\n"
 "%s"
 
-#: views/rb-audiocd-view.c:948 views/rb-audiocd-view.c:955
+#: views/rb-audiocd-view.c:962 views/rb-audiocd-view.c:969
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: views/rb-audiocd-view.c:1062
+#: views/rb-audiocd-view.c:1076
 #, c-format
 msgid "Failed to parse %s as disc info file"
 msgstr "»%s« konnte nicht als CD-Infodatei interpretiert werden"
+
+#: views/rb-audiocd-view.c:1198
+#, c-format
+msgid "%d songs, %d:%02d:%02d total time"
+msgstr "%d Titel, Spielzeit %d:%02d:%02d"
 
 #: views/rb-group-view.c:342
 msgid "music group"
@@ -996,10 +1017,10 @@ msgstr "Namenlos"
 msgid "Failed to parse %s as group file"
 msgstr "»%s« konnte nicht als Gruppendatei interpretiert werden"
 
-#: views/rb-library-view.c:338
+#: views/rb-library-view.c:388
 msgid "library"
 msgstr "Bibliothek"
 
-#: views/rb-library-view.c:341 views/rb-library-view.c:1314
+#: views/rb-library-view.c:391 views/rb-library-view.c:1371
 msgid "Library"
 msgstr "Bibliothek"
