@@ -2,6 +2,13 @@
 
 	* shell/rb-shell.c: (sync_tray_menu), (tray_button_press_event_cb):
 
+	Merge old and new behavior: Open popup menu after any of our popup
+	buttons has been clicked.
+
+2003-08-19  Christian Neumair  <chris@gnome-de.org>
+
+	* shell/rb-shell.c: (sync_tray_menu), (tray_button_press_event_cb):
+
 	Only open tray popup menu on right-click for usability/consistency
 	reasons.
 

@@ -208,7 +208,7 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static void setup_tray_icon (RBShell *shell);
-static void sync_tray_menu (RBShell *shell);
+static void sync_tray_menu (RBShell *shell, guint button);
 
 static const GtkTargetEntry target_table[] =
 	{
@@ -1937,13 +1937,11 @@ tray_button_press_event_cb (GtkWidget *ebox,
 			    GdkEventButton *event,
 			    RBShell *shell)
 {
-	if (event->button == 3) {
-		/* contextmenu */
-		sync_tray_menu (shell);
-		bonobo_control_do_popup (shell->priv->tray_icon_control,
-					 event->button,
-					 event->time);
-	}
+	/* contextmenu */
+	sync_tray_menu (shell, event->button);
+	bonobo_control_do_popup (shell->priv->tray_icon_control,
+				 event->button,
+				 event->time);
 }
 
 static void
@@ -2054,7 +2052,7 @@ setup_tray_icon (RBShell *shell)
 }
 
 static void
-sync_tray_menu (RBShell *shell)
+sync_tray_menu (RBShell *shell, guint button)
 {
 	BonoboUIComponent *pcomp;
 	BonoboUINode *node;
@@ -2064,7 +2062,20 @@ sync_tray_menu (RBShell *shell)
 	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
 
 	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/popups/TrayPopup", TRUE, NULL);
-	bonobo_ui_node_set_attr (node, "name", "button3");
+
+	switch (button) {
+	case 1:
+		bonobo_ui_node_set_attr (node, "name", "button1");
+		break;
+	case 2:
+		bonobo_ui_node_set_attr (node, "name", "button2");
+		break;
+	case 3:
+		bonobo_ui_node_set_attr (node, "name", "button3");
+		break;
+	default:
+		break;
+	}
 	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
 	bonobo_ui_node_free (node);
 
