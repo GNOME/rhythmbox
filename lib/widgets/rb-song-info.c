@@ -184,7 +184,7 @@ static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	GladeXML *xml;
-	GtkWidget *close, *label, *image, *hbox, *align, *cont;
+	GtkWidget *close, *cont;
 	
 	/* create the dialog and some buttons backward - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
@@ -196,53 +196,19 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
 
-	song_info->priv->backward = gtk_button_new ();
-	label = gtk_label_new_with_mnemonic (_("_Previous"));
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label), song_info->priv->backward);
-	image = gtk_image_new_from_stock (GTK_STOCK_GO_BACK, GTK_ICON_SIZE_BUTTON);
+	song_info->priv->backward = gtk_dialog_add_button (GTK_DIALOG (song_info),
+							   GTK_STOCK_GO_BACK,
+							   GTK_RESPONSE_NONE);
 	
-	hbox = gtk_hbox_new (FALSE, 2);
-	
-	align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
-
-	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-	
-	gtk_container_add (GTK_CONTAINER (song_info->priv->backward), align);
-	gtk_container_add (GTK_CONTAINER (align), hbox);
-	
-	gtk_widget_show_all (song_info->priv->backward);
-
-	gtk_dialog_add_action_widget (GTK_DIALOG (song_info),
-			              song_info->priv->backward,
-				      GTK_RESPONSE_NONE);
 	g_signal_connect (G_OBJECT (song_info->priv->backward),
 			  "clicked",
 			  G_CALLBACK (rb_song_info_backward_clicked_cb),
 			  song_info);
 	
-	song_info->priv->forward = gtk_button_new ();
-
-	label = gtk_label_new_with_mnemonic (_("_Next"));
-	gtk_label_set_mnemonic_widget (GTK_LABEL (label), song_info->priv->forward);
+	song_info->priv->forward = gtk_dialog_add_button (GTK_DIALOG (song_info),
+							   GTK_STOCK_GO_FORWARD,
+							   GTK_RESPONSE_NONE);
 	
-	image = gtk_image_new_from_stock (GTK_STOCK_GO_FORWARD, GTK_ICON_SIZE_BUTTON);
-	
-	hbox = gtk_hbox_new (FALSE, 2);
-	
-	align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
-
-	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-	
-	gtk_container_add (GTK_CONTAINER (song_info->priv->forward), align);
-	gtk_container_add (GTK_CONTAINER (align), hbox);
-	
-	gtk_widget_show_all (song_info->priv->forward);
-
-	gtk_dialog_add_action_widget (GTK_DIALOG (song_info),
-			              song_info->priv->forward,
-				      GTK_RESPONSE_NONE);
 	g_signal_connect (G_OBJECT (song_info->priv->forward),
 			  "clicked",
 			  G_CALLBACK (rb_song_info_forward_clicked_cb),
@@ -251,8 +217,10 @@ rb_song_info_init (RBSongInfo *song_info)
 	close = gtk_dialog_add_button (GTK_DIALOG (song_info),
 				       GTK_STOCK_CLOSE,
 				       GTK_RESPONSE_CLOSE);
+
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
+
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
 
@@ -292,6 +260,64 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_label_set_selectable (GTK_LABEL (song_info->priv->name), TRUE);
 	gtk_container_add (GTK_CONTAINER (cont), song_info->priv->name);
 	gtk_widget_show (song_info->priv->name);
+
+	/* We add now the Pango attributes (look at bug #99867 and #97061) */
+	{
+		PangoAttrList *pattrlist = pango_attr_list_new ();
+                PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+		GtkWidget *label;
+                                                                                
+                attr->start_index = 0;
+                attr->end_index = G_MAXINT;
+                pango_attr_list_insert (pattrlist, attr);
+
+		label = glade_xml_get_widget (xml, "comments_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "date_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "album_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "artist_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "title_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "genre_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "trackn_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "name_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "rating_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "location_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "last_played_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "play_count_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "duration_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "quality_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+
+		label = glade_xml_get_widget (xml, "encoding_label");
+                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		
+                pango_attr_list_unref (pattrlist);
+	}
 
 	/* make those fields not editable for now */
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->title), FALSE);

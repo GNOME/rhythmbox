@@ -1,3 +1,12 @@
+2003-08-09  Carlos Perelló Marín <carlos@gnome.org>
+                                                                                
+        * data/glade/song-info.glade: Removed all pango markups and moved
+        to lib/widgets/rb-song-info.c, this way the translator experience will
+        be better :-P
+        * lib/widgets/rb-song-info.c: Fixed a small bug introduced by me that
+        show the navigation buttos bigger that the close one :-?. Implemented
+        the pango markup here from the .glade file.
+
 2003-08-09  Christian Neumair  <chris@gnome-de.org>
 
 	* lib/widgets/rb-druid.c: (rb_druid_init_widgets):
