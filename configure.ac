@@ -230,6 +230,8 @@ if test "x$enable_mp3" != "xno"; then
         if test x"$enable_mp3" = xno; then
           AC_MSG_ERROR([For MP3 support, you need libid3tag 15.0b or later (or --disable-mp3)])
 	fi
+        ID3TAG_LIBS="-lid3tag"
+        AC_SUBST(ID3TAG_LIBS)
     fi
   fi
 fi
