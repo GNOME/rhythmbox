@@ -57,6 +57,7 @@ struct RBPlayerPrivate
 
 	GstElement *decoder;
 	GstElement *volume;
+	GstElement *audioconvert;
 	GstElement *sink;
 
 	GError *error;
@@ -423,7 +424,15 @@ rb_player_construct (RBPlayer *mp,
 		     GError **error)
 {
 	GstDParamManager *dpman;
-	char *decoder_name = NULL;
+	char *element_name = NULL;
+
+#define MAKE_ELEMENT_OR_LOSE(NAME, NICE) G_STMT_START {	\
+	element_name = #NAME ;\
+	rb_debug ("constructing element \"" #NICE "\""); \
+	mp->priv->NICE = gst_element_factory_make (#NAME, #NICE); \
+	if (!mp->priv->NICE) \
+		goto missing_element; \
+	} G_STMT_END
 
 	/* The main playback pipeline for iradio, at the end this looks like:
 	 * { { src ! queue } ! { mad ! volume ! sink } }
@@ -431,15 +440,7 @@ rb_player_construct (RBPlayer *mp,
 	 * For local files, it just looks like:
 	 *  { src ! spider ! volume ! sink }
 	 */
-	mp->priv->pipeline = gst_element_factory_make ("thread", "pipeline");
-	if (!mp->priv->pipeline) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     "%s",
-			     _("Failed to create thread element; check your GStreamer installation"));
-		return;
-	}
+	MAKE_ELEMENT_OR_LOSE(thread, pipeline);
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
 			  "deep_notify",
 			  G_CALLBACK (deep_notify_cb),
@@ -465,18 +466,14 @@ rb_player_construct (RBPlayer *mp,
 	/* Construct elements */
 
 	/* The source */
-	mp->priv->src = audiocd_mode ? gst_element_factory_make ("cdparanoia", "src")
-		: gst_element_factory_make ("gnomevfssrc", "src");
-	if (mp->priv->src == NULL) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_NO_INPUT_PLUGIN,
-			     _("Failed to create %s input element; check your installation"),
-			     audiocd_mode ? "cdparanoia" : "gnomevfssrc");
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
-		return;
-	}
+
+	if (audiocd_mode)
+		element_name = "cdparanoia";
+	else
+		element_name = "gnomevfssrc";
+	mp->priv->src = gst_element_factory_make (element_name, "src");	
+	if (mp->priv->src == NULL)
+		goto missing_element;
 	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->src);
 
 #ifdef HAVE_AUDIOCD
@@ -495,71 +492,32 @@ rb_player_construct (RBPlayer *mp,
 	rb_debug ("constructing queue");
 	/* The queue */
 	if (iradio_mode) {
-		mp->priv->queue = gst_element_factory_make ("queue", "queue");
-		if (mp->priv->queue == NULL) {
-			g_set_error (error,
-				     RB_PLAYER_ERROR,
-				     RB_PLAYER_ERROR_NO_QUEUE_PLUGIN,
-				     _("Failed to create queue element; check your installation"));
-			gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-			mp->priv->pipeline = NULL;
-			return;
-		}
+		element_name = "queue";
+		mp->priv->queue = gst_element_factory_make (element_name, element_name);
+		if (mp->priv->queue == NULL)
+			goto missing_element;
 		g_object_set (G_OBJECT (mp->priv->queue), "max-size-bytes", 64 * 1024, NULL);
 		g_signal_connect (G_OBJECT (mp->priv->queue), "overrun",
 				  G_CALLBACK (queue_full_cb), mp);
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
 	}
 
-	rb_debug ("constructing typefind");
-	mp->priv->typefind = gst_element_factory_make ("typefind", "typefind");
-	if (mp->priv->typefind == NULL) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_NO_TYPEFIND_PLUGIN,
-			     _("Failed to create typefind element; check your installation"));
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
-		return;
-	}
+	MAKE_ELEMENT_OR_LOSE(typefind, typefind);
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->typefind);
 
-	rb_debug ("constructing autoplugger");
-	decoder_name = "spider";
-
-	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
-	if (mp->priv->decoder == NULL) {
-		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
-					     decoder_name);
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_NO_DEMUX_PLUGIN,
-			     err);
-		g_free (err);
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
-		return;
-	}
+	MAKE_ELEMENT_OR_LOSE(spider, decoder);
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->decoder);
 
-	/* Volume */
-	mp->priv->volume = gst_element_factory_make ("volume", "volume");
-	if (mp->priv->volume == NULL) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_NO_VOLUME_PLUGIN,
-			     _("Failed to create volume element; check your installation"));
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
-		return;
-	}
+	MAKE_ELEMENT_OR_LOSE(volume, volume);
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->volume);
-
 	dpman = gst_dpman_get_manager (mp->priv->volume);
 	gst_dpman_set_mode (dpman, "synchronous");
 	mp->priv->volume_dparam = gst_dpsmooth_new (G_TYPE_FLOAT);
 	g_assert (mp->priv->volume_dparam != NULL);
 	gst_dpman_attach_dparam (dpman, "volume", mp->priv->volume_dparam);
+
+	MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert);
+	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->audioconvert);
 
 	/* Output sink */
 	mp->priv->sink = gst_gconf_get_default_audio_sink ();
@@ -574,7 +532,7 @@ rb_player_construct (RBPlayer *mp,
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);
 
-	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->sink, NULL);
+	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->audioconvert, mp->priv->sink, NULL);
 	if (iradio_mode)
 		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->typefind, mp->priv->decoder, NULL);
 	else
@@ -601,6 +559,19 @@ rb_player_construct (RBPlayer *mp,
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = 0;
 	rb_debug ("pipeline construction complete");
+	return;
+missing_element:
+	{
+		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
+					     element_name);
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     err);
+		g_free (err);
+		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
+	}
 }
 
 RBPlayer *
