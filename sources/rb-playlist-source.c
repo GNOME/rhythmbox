@@ -400,8 +400,13 @@ static void
 rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				   RBPlaylistSource *source)
 {
-	const char *location = rhythmdb_entry_get_string (db, entry,
-							  RHYTHMDB_PROP_LOCATION);
+	const char *location;
+
+	if (source->priv->automatic)
+		return;
+	
+	location = rhythmdb_entry_get_string (db, entry,
+					      RHYTHMDB_PROP_LOCATION);
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 	}

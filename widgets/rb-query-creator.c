@@ -304,6 +304,7 @@ GPtrArray *
 rb_query_creator_get_query (RBQueryCreator *dlg)
 {
 	GPtrArray *query;
+	GPtrArray *sub_query;
 	guint i, n_rows;
 	gboolean disjunction;
 
@@ -317,6 +318,8 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 	
 	g_object_get (G_OBJECT (dlg->priv->table), "n-rows", &n_rows, NULL);
 
+	sub_query = g_ptr_array_new ();
+
 	for (i = 0; i < n_rows; i++) {
 		GtkOptionMenu *propmenu = GTK_OPTION_MENU (lookup_table_child (dlg->priv->table,
 									       i, 0));
@@ -328,22 +331,27 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 		RhythmDBQueryType criteria = extract_option_menu_val (criteria_menu);
 		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
 
-		if (disjunction)
+		if (disjunction && i < n_rows - 1)
 			rhythmdb_query_append (dlg->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_DISJUNCTION,
+					       sub_query,
 					       criteria,
 					       prop,
 					       data,
+					       RHYTHMDB_QUERY_DISJUNCTION,
 					       RHYTHMDB_QUERY_END);
 		else
 			rhythmdb_query_append (dlg->priv->db,
-					       query,
+					       sub_query,
 					       criteria,
 					       prop,
 					       data,
 					       RHYTHMDB_QUERY_END);
 	}
+	rhythmdb_query_append (dlg->priv->db,
+			       query,
+			       RHYTHMDB_QUERY_SUBQUERY,
+			       sub_query,
+			       RHYTHMDB_QUERY_END);
 	
 	return query;
 }
