@@ -32,8 +32,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.3.0.99\n"
-"POT-Creation-Date: 2002-11-07 10:46+0100\n"
-"PO-Revision-Date: 2002-11-07 11:12+0100\n"
+"POT-Creation-Date: 2002-11-12 20:59+0100\n"
+"PO-Revision-Date: 2002-11-12 21:00+0100\n"
 "Last-Translator: Luca Ferretti <elle.uca@genie.it>\n"
 "Language-Team: Italiano <tp@list.linux.it>\n"
 "MIME-Version: 1.0\n"
@@ -632,12 +632,12 @@ msgstr ""
 "Si è verificato un errore nel mostrare %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:547
+#: lib/widgets/rb-node-view.c:548
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Errore: failed to parse %s as NodeView layout file"
 
-#: lib/widgets/rb-node-view.c:1328
+#: lib/widgets/rb-node-view.c:1329
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time, %s"
 msgstr "%d brani, %d:%02d:%02d tempo totale, %s"
@@ -802,24 +802,24 @@ msgstr "%.2d di %.2d"
 # usare 09:44 invece di 9:44, ma non ho
 # fatto prove
 #: library/rb-node-song.c:766
-msgid "%Y-%m-%d %H:%M:%S"
-msgstr "%Y-%m-%d %H:%M:%S"
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
 
 #: library/rb-node.c:806 library/rb-node.c:812 library/rb-node.c:843
 msgid "Never"
 msgstr "Mai"
 
 #: library/rb-node.c:834
-msgid "Today at %-H:%M:%S"
-msgstr "Oggi alle %-H:%M:%S"
+msgid "Today at %-H:%M"
+msgstr "Oggi alle %-H:%M"
 
 #: library/rb-node.c:836
-msgid "Yesterday at %-H:%M:%S"
-msgstr "Ieri alle %-H:%M:%S"
+msgid "Yesterday at %-H:%M"
+msgstr "Ieri alle %-H:%M"
 
 #: library/rb-node.c:838
-msgid "%A, %B %-d %Y at %-H:%M:%S"
-msgstr "%A, %-d %B %T alle %-H:%M:%S"
+msgid "%A, %B %-d %Y at %-H:%M"
+msgstr "%A, %-d %B %T alle %-H:%M"
 
 # help command line
 #: shell/main.c:59
@@ -896,7 +896,7 @@ msgstr ""
 "un prefisso ($prefix) differente da bonobo-activation;\n"
 "questo avviso e' innocuo, ma l'IPC non funzionera'.\n"
 
-#: shell/rb-shell.c:993 shell/rb-shell.c:2008
+#: shell/rb-shell.c:993 shell/rb-shell.c:2009
 msgid "Not playing"
 msgstr "Fermo"
 
@@ -916,37 +916,37 @@ msgstr ""
 "%s\n"
 "In pausa"
 
-#: shell/rb-shell.c:1156
+#: shell/rb-shell.c:1157
 msgid "translator_credits"
 msgstr "Luca Ferretti <elle.uca@genie.it>"
 
-#: shell/rb-shell.c:1167
+#: shell/rb-shell.c:1168
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:1168
+#: shell/rb-shell.c:1169
 msgid "Music management and playback software for GNOME."
 msgstr "Gestore e lettore di file musicali per GNOME."
 
-#: shell/rb-shell.c:1370
+#: shell/rb-shell.c:1371
 msgid "Choose Files or Directory"
 msgstr "Scelta di una cartella o di file"
 
-#: shell/rb-shell.c:1857
+#: shell/rb-shell.c:1858
 msgid "Create"
 msgstr "Crea"
 
-#: shell/rb-shell.c:1881
+#: shell/rb-shell.c:1882
 msgid "Please enter a name for the new music group."
 msgstr "Fornire un nome per una nuova raccolta musicale."
 
-#: shell/rb-shell.c:1891
+#: shell/rb-shell.c:1892
 msgid "Untitled"
 msgstr "Senza nome"
 
 # E' nella finestra di dialogo per la creazione di 
 # una nuova raccolta... ripetere "nuova raccolta" mi pare stupido....
-#: shell/rb-shell.c:1895
+#: shell/rb-shell.c:1896
 msgid "Add the _selected songs to the new group"
 msgstr "Aggiungi i brani _selezionati a questa raccolta"
 
@@ -958,7 +958,7 @@ msgstr "raccolta musicale"
 msgid "Unnamed"
 msgstr "Senza nome"
 
-#: views/rb-group-view.c:786 views/rb-library-view.c:862
+#: views/rb-group-view.c:788 views/rb-library-view.c:861
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -967,7 +967,7 @@ msgstr ""
 "Creazione dello stream per %s fallita, l'errore è:\n"
 "%s"
 
-#: views/rb-group-view.c:1112
+#: views/rb-group-view.c:1114
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Errore: failed to parse %s as group file"
@@ -976,7 +976,7 @@ msgstr "Errore: failed to parse %s as group file"
 msgid "library"
 msgstr "discoteca"
 
-#: views/rb-library-view.c:324 views/rb-library-view.c:1220
+#: views/rb-library-view.c:324 views/rb-library-view.c:1213
 msgid "Library"
 msgstr "Discoteca"
 
