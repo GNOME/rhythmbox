@@ -466,6 +466,86 @@ rb_playlist_add_one_url_ext (RBPlaylist *playlist, const char *url, const char *
 }
 
 static gboolean
+rb_playlist_add_ram (RBPlaylist *playlist, const char *url,
+			 guint recurse_level, gpointer data)
+{
+	gboolean retval = FALSE;
+	char *contents, **lines;
+	int size, i;
+	const char *split_char;
+
+	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
+		return FALSE;
+
+	contents = g_realloc (contents, size + 1);
+	contents[size] = '\0';
+
+	/* figure out whether we're a unix or dos RAM file */
+	if (strstr(contents,"\x0d") == NULL)
+		split_char = "\n";
+	else
+		split_char = "\x0d\n";
+
+	lines = g_strsplit (contents, split_char, 0);
+	g_free (contents);
+
+	for (i = 0; lines[i] != NULL; i++) {
+		if (strcmp (lines[i], "") == 0)
+			continue;
+
+		/* Either it's a URI, or it has a proper path ... */
+		if (strstr(lines[i], "://") != NULL
+				|| lines[i][0] == G_DIR_SEPARATOR) {
+			/* .ram files can contain .smil entries */
+			rb_playlist_parse_recurse (playlist, lines[i],
+						   recurse_level);
+			rb_playlist_add_one_url (playlist, lines[i], NULL);
+		} else if (strcmp (lines[i], "--stop--") == 0) {
+			/* For Real Media playlists, handle the stop command */
+			break;
+		} else {
+			char *fullpath, *base;
+
+			/* Try with a base */
+			base = rb_playlist_base_url (url);
+
+			fullpath = g_strdup_printf ("%s/%s", base, lines[i]);
+			if (rb_playlist_parse_recurse (playlist, fullpath,
+						       recurse_level) == TRUE)
+				retval = TRUE;
+
+			g_free (fullpath);
+			g_free (base);
+		}
+	}
+
+	g_strfreev (lines);
+
+	return retval;
+}
+
+static const char *
+rb_playlist_get_extinfo_title (gboolean extinfo, char **lines, int i)
+{
+	const char *retval;
+
+	if (extinfo == FALSE)
+		return NULL;
+
+	if (i == 0)
+		return NULL;
+
+	retval = strstr (lines[i-1], "#EXTINF:");
+	retval = strstr (retval, ",");
+	if (retval == NULL || retval[0] == '\0')
+		return NULL;
+
+	retval++;
+
+	return retval;
+}
+
+static gboolean
 rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 		     guint recurse_level, gpointer data)
 {
@@ -473,12 +553,16 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 	char *contents, **lines;
 	int size, i;
 	char *split_char;
+	gboolean extinfo;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
 		return FALSE;
 
 	contents = g_realloc (contents, size + 1);
 	contents[size] = '\0';
+
+	/* is TRUE if there's an EXTINF on the previous line */
+	extinfo = FALSE;
 
 	/* figure out whether we're a unix m3u or dos m3u */
 	if (strstr(contents,"\x0d") == NULL)
@@ -490,17 +574,25 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 	g_free (contents);
 
 	for (i = 0; lines[i] != NULL; i++) {
-		if (lines[i][0] == '#' || lines[i][0] == '\0')
+		if (lines[i][0] == '\0')
 			continue;
+
+		/* Ignore comments, but mark it if we have extra info */
+		if (lines[i][0] == '#') {
+			if (strstr (lines[i], "#EXTINF") != NULL)
+				extinfo = TRUE;
+			continue;
+		}
+
 		/* Either it's a URI, or it has a proper path ... */
 		if (strstr(lines[i], "://") != NULL
 				|| lines[i][0] == G_DIR_SEPARATOR) {
-			/* We use the same code for .ram and m3u playlists,
-			 * and .ram files can contain .smil entries */
 			rb_playlist_parse_recurse (playlist, lines[i],
 						   recurse_level);
-			rb_playlist_add_one_url (playlist, lines[i], NULL);
+			rb_playlist_add_one_url (playlist, lines[i],
+						 rb_playlist_get_extinfo_title (extinfo, lines, i));
 			retval = TRUE;
+			extinfo = FALSE;
 		} else if (lines[i][0] == '\\' && lines[i][1] == '\\') {
 			/* ... Or it's in the windows smb form
 			 * (\\machine\share\filename), Note drive names
@@ -513,6 +605,7 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 
 			rb_playlist_add_one_url (playlist, tmpurl, NULL);
 			retval = TRUE;
+			extinfo = FALSE;
 
 			g_free (tmpurl);
 		} else {
@@ -538,7 +631,7 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 }
 
 static gboolean
-rb_playlist_add_asf_playlist (RBPlaylist *playlist, const char *url,
+rb_playlist_add_asf_parser (RBPlaylist *playlist, const char *url,
 			      guint recurse_level, gpointer data)
 {
 	gboolean retval = FALSE;
@@ -763,8 +856,7 @@ rb_playlist_add_ra (RBPlaylist *playlist, const char *url,
 		return TRUE;
 	}
 
-	/* How nice, same format as m3u it seems */
-	return rb_playlist_add_m3u (playlist, url, recurse_level, NULL);
+	return rb_playlist_add_ram (playlist, url, recurse_level, NULL);
 }
 
 static gboolean
@@ -902,7 +994,7 @@ rb_playlist_add_asf (RBPlaylist *playlist, const char *url,
 		return TRUE;
 	}
 
-	return rb_playlist_add_asf_playlist (playlist, url, recurse_level, data);
+	return rb_playlist_add_asf_parser (playlist, url, recurse_level, data);
 }
 
 #if HAVE_LIBGNOME_DESKTOP
@@ -992,7 +1084,8 @@ static PlaylistTypes special_types[] = {
 	{ "application/x-gnome-app-info", rb_playlist_add_desktop },
 #endif	
 	{ "x-directory/normal", rb_playlist_add_directory },
-	{ "video/x-ms-wvx", rb_playlist_add_asf_playlist },
+	{ "video/x-ms-wvx", rb_playlist_add_asx },
+	{ "video/x-ms-wax", rb_playlist_add_asx },
 };
 
 /* These ones are "dual" types, might be a video, might be a playlist */
