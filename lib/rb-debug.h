@@ -2,6 +2,7 @@
  *  arch-tag: Header for simple Rhythmbox debugging interface
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +30,8 @@ G_BEGIN_DECLS
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #define rb_debug(...) rb_debug_real (__func__, __FILE__, __LINE__, __VA_ARGS__)
+#elif defined(__GNUC__) && __GNUC__ >= 2
+#define rb_debug(...) rb_debug_real (__FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
 #else
 #define rb_debug(...) rb_debug_real ("", __FILE__, __LINE__, __VA_ARGS__)
 #endif
