@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-08-12 12:33+0200\n"
-"PO-Revision-Date: 2002-08-12 12:34+0200\n"
+"POT-Creation-Date: 2002-08-14 00:39+0200\n"
+"PO-Revision-Date: 2002-08-14 00:39+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -28,30 +28,18 @@ msgid "*"
 msgstr "*"
 
 #: data/glade/music-folders.glade.h:2
-msgid "<b>Also Look for Music in These Folders</b>"
-msgstr "<b>Leta efter musik även i dessa mappar</b>"
+msgid "<b>Imported Music Folder</b>"
+msgstr "<b>Mapp för importerad musik</b>"
 
 #: data/glade/music-folders.glade.h:3
-msgid "<b>Choose a folder to add</b>"
-msgstr "<b>Välj en mapp att lägga till</b>"
-
-#: data/glade/music-folders.glade.h:4
-msgid "<b>Music Base Folder</b>"
-msgstr "<b>Musikbasmapp</b>"
+msgid ""
+"All music you import from CD or the internet will be stored\n"
+"in this folder."
+msgstr ""
+"All musik som du importerar från cd eller Internet kommer att\n"
+"lagras i denna mapp."
 
 #: data/glade/music-folders.glade.h:5
-msgid "<b>Searching /data/music...</b>"
-msgstr "<b>Söker i /data/music...</b>"
-
-#: data/glade/music-folders.glade.h:6
-msgid "Choose Folder"
-msgstr "Välj mapp"
-
-#: data/glade/music-folders.glade.h:7
-msgid "Searching for Music Folders"
-msgstr "Söker efter musikmappar"
-
-#: data/glade/music-folders.glade.h:8
 msgid "_Browse..."
 msgstr "_Bläddra..."
 
@@ -115,7 +103,7 @@ msgstr "Filstorlek: "
 msgid "Location: "
 msgstr "Plats: "
 
-#: data/glade/song-info.glade.h:17 lib/widgets/rb-song-info.c:359
+#: data/glade/song-info.glade.h:17 lib/widgets/rb-song-info.c:396
 msgid "of"
 msgstr "av"
 
@@ -141,7 +129,7 @@ msgstr "Titel"
 msgid "Track"
 msgstr "Spår"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:355 shell/rb-shell.c:679
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:356 shell/rb-shell.c:680
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -237,8 +225,8 @@ msgid "_Actions"
 msgstr "_Åtgärder"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
-msgid "Choose a file to be added to the library"
-msgstr "Välj en fil att lägga till i biblioteket"
+msgid "Choose files or a directory to be added to the library"
+msgstr "Välj filer eller en katalog att lägga till i biblioteket"
 
 #: data/ui/rhythmbox-ui.xml.in.h:2
 msgid "Copy selection"
@@ -257,52 +245,52 @@ msgid "Cut selection"
 msgstr "Klipp ut markering"
 
 #: data/ui/rhythmbox-ui.xml.in.h:6
+msgid "Edit Rhythmbox preferences"
+msgstr "Redigera Rhythmbox-inställningar"
+
+#: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "Go to the next track"
 msgstr "Gå till nästa spår"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
+#: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Go to the previous track"
 msgstr "Gå till föregående spår"
 
-#: data/ui/rhythmbox-ui.xml.in.h:8
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Next"
 msgstr "Nästa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:9
+#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "P_revious Song"
 msgstr "_Föregående låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "Paste selection"
 msgstr "Klistra in markering"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Pause playing"
 msgstr "Gör paus i uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12 shell/rb-shell-player.c:402
+#: data/ui/rhythmbox-ui.xml.in.h:13 shell/rb-shell-player.c:400
 msgid "Play"
 msgstr "Spela"
 
-#: data/ui/rhythmbox-ui.xml.in.h:13
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Previous"
 msgstr "Föregående"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14 shell/main.c:59
+#: data/ui/rhythmbox-ui.xml.in.h:15 shell/main.c:59
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Show information about Rhythmbox"
 msgstr "Visa information om Rhythmbox"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Shuffle"
 msgstr "Blanda"
-
-#: data/ui/rhythmbox-ui.xml.in.h:17
-msgid "Specify where Rhythmbox should look for music"
-msgstr "Ange var Rhythmbox ska leta efter musik"
 
 #: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Start playing"
@@ -341,34 +329,30 @@ msgid "_Help"
 msgstr "_Hjälp"
 
 #: data/ui/rhythmbox-ui.xml.in.h:29
-msgid "_Music Folders..."
-msgstr "_Musikmappar..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "_New Group"
 msgstr "_Ny grupp"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "_Next Song"
 msgstr "_Nästa låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:31
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33 shell/rb-shell-player.c:403
+#: data/ui/rhythmbox-ui.xml.in.h:32 shell/rb-shell-player.c:401
 msgid "_Play"
 msgstr "_Spela"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "_Quit"
 msgstr "_Avsluta"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "_Repeat"
 msgstr "_Upprepa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "_Shuffle"
 msgstr "_Blanda"
 
@@ -381,17 +365,17 @@ msgstr ""
 "GConf-fel:\n"
 "  %s"
 
-#: lib/rb-file-helpers.c:72
+#: lib/rb-file-helpers.c:75
 #, c-format
 msgid "Failed to find %s"
 msgstr "Misslyckades med att hitta %s"
 
-#: lib/rb-file-helpers.c:97
+#: lib/rb-file-helpers.c:100
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s finns, flytta undan den."
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:103
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Misslyckades med att skapa katalogen %s."
@@ -429,12 +413,12 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:485
+#: lib/widgets/rb-node-view.c:482
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:1029
+#: lib/widgets/rb-node-view.c:1026
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
@@ -526,36 +510,36 @@ msgstr "Ange ett nytt namn för denna %s:"
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Misslyckades med att tolka %s som sidopanellayoutfil"
 
-#: lib/widgets/rb-song-info.c:163
+#: lib/widgets/rb-song-info.c:191
 msgid "Song Information"
 msgstr "Låtinformation"
 
-#: lib/widgets/rb-song-info.c:393
+#: lib/widgets/rb-song-info.c:430
 msgid "Unknown"
 msgstr "Okänd"
 
-#: lib/widgets/rb-song-info.c:417
+#: lib/widgets/rb-song-info.c:454
 #, c-format
 msgid "%d kbps"
 msgstr "%d kb/s"
 
-#: lib/widgets/rb-song-info.c:437
+#: lib/widgets/rb-song-info.c:474
 #, c-format
 msgid "%d Mono"
 msgstr "%d mono"
 
-#: lib/widgets/rb-song-info.c:440
+#: lib/widgets/rb-song-info.c:477
 #, c-format
 msgid "%d Stereo"
 msgstr "%d stereo"
 
 #. comma separated list of prefixes that are to
 #. * be appended as suffix
-#: lib/widgets/rb-tree-model-node.c:574
+#: lib/widgets/rb-tree-model-node.c:650
 msgid "THE ,DJ "
 msgstr " "
 
-#: lib/widgets/rb-tree-model-node.c:587
+#: lib/widgets/rb-tree-model-node.c:663
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -595,7 +579,7 @@ msgstr "Mixerenheten %s har varken volym- eller PCM-kanaler.\n"
 msgid "Invalid channel number"
 msgstr "Ogiltigt kanalnummer"
 
-#: library/rb-library.c:223
+#: library/rb-library.c:240
 msgid "All"
 msgstr "Alla"
 
@@ -633,66 +617,62 @@ msgstr ""
 "Misslyckades med att skapa mixern, felet var:\n"
 "%s"
 
-#: shell/rb-shell-player.c:397
+#: shell/rb-shell-player.c:395
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:398
+#: shell/rb-shell-player.c:396
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:407
+#: shell/rb-shell-player.c:405
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:408
+#: shell/rb-shell-player.c:406
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-preferences.c:157
-msgid "Music Folders"
-msgstr "Musikmappar"
+#: shell/rb-shell-preferences.c:125
+msgid "Preferences"
+msgstr "Inställningar"
 
-#: shell/rb-shell-preferences.c:193
-msgid "Folder"
-msgstr "Mapp"
-
-#: shell/rb-shell-preferences.c:348 shell/rb-shell-preferences.c:361
+#: shell/rb-shell-preferences.c:224
 msgid "Choose a folder"
 msgstr "Välj en mapp"
 
-#: shell/rb-shell.c:345
+#: shell/rb-shell.c:346
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Misslyckades med att registrera skalet: %s\n"
 
-#: shell/rb-shell.c:753
+#: shell/rb-shell.c:754
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:764
+#: shell/rb-shell.c:765
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:765
+#: shell/rb-shell.c:766
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:809
-msgid "Choose files to add"
-msgstr "Välj filer att lägga till"
+#: shell/rb-shell.c:811
+msgid "Choose files or a directory to add"
+msgstr "Välj filer eller en katalog att lägga till"
 
-#: shell/rb-shell.c:833
+#: shell/rb-shell.c:849
 msgid "Enter a name"
 msgstr "Ange ett namn"
 
-#: shell/rb-shell.c:834
+#: shell/rb-shell.c:850
 msgid "Enter a name for the new music group:"
 msgstr "Ange ett namn för den nya musikgruppen:"
 
-#: shell/rb-shell.c:835
+#: shell/rb-shell.c:851
 msgid "Untitled"
 msgstr "Namnlös"
 
@@ -733,6 +713,36 @@ msgstr "Bibliotek"
 #: views/rb-library-view.c:313
 msgid "Drop files here to add them to the library"
 msgstr "Släpp filer här för att lägga till dem i biblioteket"
+
+#~ msgid "Choose files or a folder to be added to the library"
+#~ msgstr "Välj filer eller en mapp att lägga till i biblioteket"
+
+#~ msgid "<b>Also Look for Music in These Folders</b>"
+#~ msgstr "<b>Leta efter musik även i dessa mappar</b>"
+
+#~ msgid "<b>Choose a folder to add</b>"
+#~ msgstr "<b>Välj en mapp att lägga till</b>"
+
+#~ msgid "<b>Searching /data/music...</b>"
+#~ msgstr "<b>Söker i /data/music...</b>"
+
+#~ msgid "Choose Folder"
+#~ msgstr "Välj mapp"
+
+#~ msgid "Searching for Music Folders"
+#~ msgstr "Söker efter musikmappar"
+
+#~ msgid "Specify where Rhythmbox should look for music"
+#~ msgstr "Ange var Rhythmbox ska leta efter musik"
+
+#~ msgid "_Music Folders..."
+#~ msgstr "_Musikmappar..."
+
+#~ msgid "Music Folders"
+#~ msgstr "Musikmappar"
+
+#~ msgid "Folder"
+#~ msgstr "Mapp"
 
 #~ msgid "#"
 #~ msgstr "Nr"
