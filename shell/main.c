@@ -48,7 +48,16 @@ static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 
-static char* old_collate = NULL;
+static void
+check_gentoo (void)
+{
+	if (g_file_test ("/etc/gentoo-release", G_FILE_TEST_EXISTS) == TRUE)
+	{
+		rb_warning_dialog ("Well well well....\n\n"
+			           "Gentoo eh? You'll run into problems. We know. Don't bug us.\n\n"
+			           "Have a nice day.");
+	}
+}
 
 int
 main (int argc, char **argv)
@@ -56,6 +65,7 @@ main (int argc, char **argv)
 	GnomeProgram *program;
 	CORBA_Object object;
 	RBShell *rb_shell;
+	char *old_collate = NULL;
 
 	const struct poptOption popt_options[] =
 	{
@@ -76,6 +86,8 @@ main (int argc, char **argv)
 
 	gdk_threads_init ();
 
+	check_gentoo ();
+
 #ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -86,23 +98,30 @@ main (int argc, char **argv)
 	/* workaround for non utf8 LC_COLLATE */
 	old_collate = g_strdup_printf ("LC_COLLATE=%s",
 				       g_getenv ("LC_COLLATE"));
-	if (strstr (old_collate, "UTF-8") == NULL)
+	if (old_collate == NULL || strstr (old_collate, "UTF-8") == NULL)
 	{
 		char *lang = NULL, *new_collate;
-		
-		if (strlen (g_getenv ("LANG")) >=5)
+		const char *env;
+
+		env = g_getenv ("LANG");
+		if (env == NULL)
+		{
+			env = "C";
+		}
+
+		if (strlen (env) >=5)
 			lang = g_strndup (g_getenv ("LANG"), 5);
-		else 
+		else
 			lang = g_strdup ("en_US");
 
-		new_collate = g_strdup_printf("LC_COLLATE=%s.UTF-8", 
-					      lang);
+		new_collate = g_strdup_printf ("LC_COLLATE=%s.UTF-8",
+					       lang);
 		putenv (new_collate);
 
 		g_free (lang);
 		g_free (new_collate);
 	}
-	
+
 	CORBA_exception_init (&ev);
 
 	rb_debug_init (debug);
