@@ -1,3 +1,16 @@
+2003-08-12  Joshua Haberman  <joshua@haberman.com>
+
+	* NEWS:
+	* monkey-media/stream-info-impl/flac-stream-info-impl.c:
+	(FLAC_stream_info_impl_finalize),
+	(FLAC_stream_info_impl_open_stream), (FLAC_read_callback),
+	(FLAC_write_callback), (FLAC_metadata_callback),
+	(FLAC_error_callback), (FLAC_stream_info_impl_get_n_values),
+	(FLAC_stream_info_impl_get_value),
+	(FLAC_stream_info_impl_vc_tag_get_utf8):
+
+	Make it read FLAC metadata.
+
 2003-08-12  Colin Walters  <walters@verbum.org>
 
 	* library/rb-library-action.c: (rb_library_action_type_get_type):

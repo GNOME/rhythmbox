@@ -32,6 +32,7 @@
 #include "id3-vfs/id3-vfs.h"
 
 #include <FLAC/metadata.h>
+#include <FLAC/stream_decoder.h>
 
 #include "monkey-media-stream-info.h"
 #include "monkey-media-private.h"
@@ -52,14 +53,44 @@ static gboolean FLAC_stream_info_impl_set_value (MonkeyMediaStreamInfo *info,
 					        const GValue *value);
 static char *FLAC_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag,
 						    const char *field_name);
+static char* FLAC_stream_info_impl_vc_tag_get_utf8 (MonkeyMediaStreamInfo *info,
+						   const char *field_name);
 static int FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 				              MonkeyMediaStreamInfoField field);
 
+/* FLAC stream decoder callbacks */
+
+static FLAC__StreamDecoderReadStatus
+FLAC_read_callback (const FLAC__StreamDecoder *decoder, FLAC__byte buffer[], unsigned *bytes, void *client_data);
+
+static FLAC__StreamDecoderWriteStatus
+FLAC_write_callback (const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame,
+		     const FLAC__int32 *const buffer[], void *client_data);
+
+static void
+FLAC_metadata_callback (const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data);
+
+static void
+FLAC_error_callback (const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data);
+
 struct FLACStreamInfoImplPrivate
 {
+	FLAC__StreamMetadata *streaminfo;
+	GnomeVFSFileSize file_size;
+
+	/* ID3 tag information, if present */
 	struct id3_tag *tag;
 	struct id3_vfs_file *file;
+
+	/* Vorbis comments, if present */
+	GHashTable *vorbis_comments;
 };
+
+struct FLACDecoderCallbackContext {
+	FLACStreamInfoImpl *stream_info_impl;
+	GnomeVFSHandle *file;
+}; 
+
 
 static GObjectClass *parent_class = NULL;
 
@@ -127,7 +158,17 @@ FLAC_stream_info_impl_finalize (GObject *object)
 
 	if (impl->priv->file != NULL)
 		id3_vfs_close (impl->priv->file);
-	
+
+	if (impl->priv->streaminfo)
+		FLAC__metadata_object_delete (impl->priv->streaminfo);
+
+	if (impl->priv->vorbis_comments)
+	{
+		/* because we constructed the table with g_hash_table_new_full,
+		 * all of the keys and values will be freed on destroy */
+		g_hash_table_destroy (impl->priv->vorbis_comments);
+	}
+
 	g_free (impl->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -139,6 +180,7 @@ FLAC_stream_info_impl_open_stream (MonkeyMediaStreamInfo *info)
 	FLACStreamInfoImpl *impl = FLAC_STREAM_INFO_IMPL (info);
 	char *uri;
 	GError *error;
+	GnomeVFSHandle *file;
 
 	g_object_get (G_OBJECT (info),
 		      "error", &error,
@@ -146,24 +188,182 @@ FLAC_stream_info_impl_open_stream (MonkeyMediaStreamInfo *info)
 		      NULL);
 
 	impl->priv->file = id3_vfs_open (uri, ID3_FILE_MODE_READONLY);
-	g_free (uri);
 	if (impl->priv->file == NULL)
 	{
 		error = g_error_new (MONKEY_MEDIA_STREAM_INFO_ERROR,
 			             MONKEY_MEDIA_STREAM_INFO_ERROR_OPEN_FAILED,
 			             _("Failed to open file for reading"));
 		g_object_set (G_OBJECT (info), "error", error, NULL);
+		g_free (uri);
 		return;
 	}
 
 	impl->priv->tag = id3_vfs_tag (impl->priv->file);
+
+	/* read FLAC STREAMINFO block and any VORBISCOMMENT blocks */
+
+	if (gnome_vfs_open (&file, uri, GNOME_VFS_OPEN_READ) == GNOME_VFS_OK)
+	{
+		FLAC__StreamDecoder *flac_decoder;
+		struct FLACDecoderCallbackContext flac_decoder_callback_context = { impl, file };
+		GnomeVFSFileInfo *fi;
+
+		/* get file size, useful for several calculations later on */
+
+		fi = gnome_vfs_file_info_new ();
+
+		if (gnome_vfs_get_file_info_from_handle (file, fi, GNOME_VFS_FILE_INFO_FOLLOW_LINKS) == GNOME_VFS_OK)
+			impl->priv->file_size = fi->size;
+		else
+			impl->priv->file_size = 1;  /* not zero to prevent divide-by-zero errors */
+
+		gnome_vfs_file_info_unref (fi);
+
+		/* Set up and run FLAC stream decoder to decode metadata */
+
+		impl->priv->vorbis_comments = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+		impl->priv->streaminfo = NULL;
+		flac_decoder = FLAC__stream_decoder_new ();
+
+		FLAC__stream_decoder_set_read_callback (flac_decoder, FLAC_read_callback);
+		FLAC__stream_decoder_set_write_callback (flac_decoder, FLAC_write_callback);
+		FLAC__stream_decoder_set_metadata_callback (flac_decoder, FLAC_metadata_callback);
+		FLAC__stream_decoder_set_error_callback (flac_decoder, FLAC_error_callback);
+		FLAC__stream_decoder_set_client_data (flac_decoder, &flac_decoder_callback_context);
+
+		/* by default, only the STREAMINFO block is parsed and passed to
+		 * the metadata callback.  Here we instruct the decoder to also
+		 * pass us the VORBISCOMMENT block if there is one. */
+		FLAC__stream_decoder_set_metadata_respond (flac_decoder, FLAC__METADATA_TYPE_VORBIS_COMMENT);
+
+		FLAC__stream_decoder_init (flac_decoder);
+
+		/* this runs the decoding process, calling the callbacks as appropriate */
+		if ((FLAC__stream_decoder_process_until_end_of_metadata (flac_decoder) == 0)
+		    || (impl->priv->streaminfo == NULL))
+		{
+			error = g_error_new (MONKEY_MEDIA_STREAM_INFO_ERROR,
+					     MONKEY_MEDIA_STREAM_INFO_ERROR_OPEN_FAILED,
+					     _("Error decoding FLAC file"));
+			g_object_set (G_OBJECT (info), "error", error, NULL);
+
+			FLAC__stream_decoder_delete (flac_decoder);
+			gnome_vfs_close (file);
+			return;
+		}
+
+		FLAC__stream_decoder_finish (flac_decoder);
+		FLAC__stream_decoder_delete (flac_decoder);
+
+		gnome_vfs_close (file);
+	}
+	else
+	{
+		error = g_error_new (MONKEY_MEDIA_STREAM_INFO_ERROR,
+			             MONKEY_MEDIA_STREAM_INFO_ERROR_OPEN_FAILED,
+			             _("Failed to open file for reading"));
+		g_object_set (G_OBJECT (info), "error", error, NULL);
+		g_free (uri);
+		return;
+	}
+	g_free (uri);
 }
+
+/*
+ * FLAC Stream Decoder callbacks
+ */
+
+static FLAC__StreamDecoderReadStatus
+FLAC_read_callback (const FLAC__StreamDecoder *decoder, FLAC__byte buffer[], unsigned *bytes, void *client_data)
+{
+	struct FLACDecoderCallbackContext *context = (struct FLACDecoderCallbackContext*) client_data;
+	GnomeVFSFileSize read;
+	GnomeVFSResult result;
+
+	result = gnome_vfs_read (context->file, buffer, *bytes, &read);
+
+	if (result == GNOME_VFS_OK)
+	{
+		*bytes = read;
+		return FLAC__STREAM_DECODER_READ_STATUS_CONTINUE;
+	}
+	else if (result == GNOME_VFS_ERROR_EOF)
+	{
+		return FLAC__STREAM_DECODER_READ_STATUS_END_OF_STREAM;
+	}
+	else
+	{
+		return FLAC__STREAM_DECODER_READ_STATUS_ABORT;
+	}
+}
+
+static FLAC__StreamDecoderWriteStatus
+FLAC_write_callback (const FLAC__StreamDecoder *decoder, const FLAC__Frame *frame, 
+		     const FLAC__int32 *const buffer[], void *client_data)
+{
+	/* This callback should never be called, because we request that
+	 * FLAC only decodes metadata, never actual sound data. */
+	return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
+}
+
+static void
+FLAC_metadata_callback (const FLAC__StreamDecoder *decoder, const FLAC__StreamMetadata *metadata, void *client_data)
+{
+	struct FLACDecoderCallbackContext *context = (struct FLACDecoderCallbackContext*) client_data;
+
+	if (metadata->type == FLAC__METADATA_TYPE_STREAMINFO)
+	{
+		context->stream_info_impl->priv->streaminfo = FLAC__metadata_object_clone (metadata);
+	}
+	else if (metadata->type == FLAC__METADATA_TYPE_VORBIS_COMMENT)
+	{
+		GHashTable *vorbis_comments = context->stream_info_impl->priv->vorbis_comments;
+		const FLAC__StreamMetadata_VorbisComment *vc_block = &metadata->data.vorbis_comment;
+		int c;
+
+		for (c = 0; c < vc_block->num_comments; c++)
+		{
+			FLAC__StreamMetadata_VorbisComment_Entry entry = vc_block->comments[c];
+			char *null_terminated_comment = malloc (entry.length + 1);
+			gchar** parts;
+			int equal_sign_loc;
+
+			memcpy (null_terminated_comment, entry.entry, entry.length);
+			null_terminated_comment[entry.length] = '\0';
+			parts = g_strsplit (null_terminated_comment, "=", 2);
+
+			if (parts[0] == NULL || parts[1] == NULL)
+			{
+				g_strfreev (parts);
+				continue;
+			}
+
+			/* if an earlier comment had this same key name, it will be replaced.
+			 * a possible improvement is to make the values of the hash table
+			 * lists of strings instead of single strings. */
+			g_hash_table_insert (vorbis_comments, g_strdup (parts[0]), g_strdup (parts[1]));
+
+			g_strfreev (parts);
+			free (null_terminated_comment);
+		}
+	}
+}
+
+static void
+FLAC_error_callback (const FLAC__StreamDecoder *decoder, FLAC__StreamDecoderErrorStatus status, void *client_data)
+{
+}
+
+/*
+ * End FLAC Stream Decoder callbacks
+ */
 
 static int
 FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 				   MonkeyMediaStreamInfoField field)
 {
 	FLACStreamInfoImpl *impl;
+	FLAC__StreamMetadata_StreamInfo stream_info;
 	char *tmp;
 	gboolean ret = FALSE;
 	
@@ -171,31 +371,43 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 
 	impl = FLAC_STREAM_INFO_IMPL (info);
 
+	stream_info = impl->priv->streaminfo->data.stream_info;
+
 	switch (field)
 	{
 	/* tags */
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE:
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TITLE);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "TITLE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TITLE);
 		ret = (tmp != NULL);
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST:
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ARTIST);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ARTIST");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ARTIST);
 		ret = (tmp != NULL);
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM:
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ALBUM);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ALBUM");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ALBUM);
 		ret = (tmp != NULL);
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DATE:
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_YEAR);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "DATE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_YEAR);
 		ret = (tmp != NULL);
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE:
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_GENRE);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "GENRE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_GENRE);
 		ret = (tmp != NULL);
 		g_free (tmp);
 		return ret;
@@ -205,6 +417,13 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "TRACKNUMBER");
+		if (tmp != NULL)
+		{
+			g_free (tmp);
+			return TRUE;
+		}
+		else
 		{
 			char **parts;
 			
@@ -249,15 +468,50 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "LOCATION");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DESCRIPTION:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "DESCRIPTION");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_VERSION:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "VERSION");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ISRC:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ISRC");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ORGANIZATION:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ORGANIZATION");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_COPYRIGHT:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "COPYRIGHT");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_CONTACT:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "CONTACT");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LICENSE:
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "LICENSE");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_PERFORMER:
-		return 0;
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "PERFORMER");
+		ret = (tmp != NULL);
+		g_free (tmp);
+		return ret;
 
 	/* generic bits */
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE:
@@ -273,6 +527,7 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
+	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		return 1;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SERIAL_NUMBER:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VENDOR:
@@ -280,7 +535,6 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRACK_GAIN:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_ALBUM_PEAK:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRACK_PEAK:
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		return 0;
 
 	/* video bits */
@@ -300,13 +554,16 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 				GValue *value)
 {
 	FLACStreamInfoImpl *impl;
+	FLAC__StreamMetadata_StreamInfo *stream_info;
 	char *tmp;
 	
 	g_return_val_if_fail (IS_FLAC_STREAM_INFO_IMPL (info), FALSE);
 	g_return_val_if_fail (value != NULL, FALSE);
 
 	impl = FLAC_STREAM_INFO_IMPL (info);
-	
+
+	stream_info = &impl->priv->streaminfo->data.stream_info;
+
 	if (FLAC_stream_info_impl_get_n_values (info, field) <= 0)
 		return FALSE;
 
@@ -315,46 +572,65 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 	/* tags */
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TITLE);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "TITLE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TITLE);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ARTIST);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ARTIST");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ARTIST);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ALBUM);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ALBUM");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_ALBUM);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DATE:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_YEAR);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "DATE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_YEAR);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_GENRE);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "GENRE");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_GENRE);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_COMMENT:
 		g_value_init (value, G_TYPE_STRING);
-		tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_COMMENT);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "COMMENT");
+		if (tmp == NULL)
+			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_COMMENT);
 		g_value_set_string (value, tmp);
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER:
+		g_value_init (value, G_TYPE_INT);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "TRACKNUMBER");
+		if (tmp != NULL)
+		{
+			g_value_set_int (value, atoi(tmp));
+			g_free (tmp);
+		}
+		else
 		{
 			char **parts;
 			int num = -1;
 			
-			g_value_init (value, G_TYPE_INT);
 
 			tmp = FLAC_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TRACK);
 			if (tmp == NULL)
@@ -402,62 +678,68 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "LOCATION");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DESCRIPTION:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "DESCRIPTION");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_VERSION:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "VERSION");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ISRC:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ISRC");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_ORGANIZATION:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "ORGANIZATION");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_COPYRIGHT:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "COPYRIGHT");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_CONTACT:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "CONTACT");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LICENSE:
+		g_value_init (value, G_TYPE_STRING);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "LICENSE");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
+		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_PERFORMER:
 		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, "");
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "PERFORMER");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
 		break;
 
 	/* generic bits */
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE:
-		{
-			GnomeVFSFileInfo *i;
-			GnomeVFSResult res;
-			char *uri;
-
-			g_object_get (G_OBJECT (info), "location", &uri, NULL);
-
-			g_value_init (value, G_TYPE_LONG);
-
-			i = gnome_vfs_file_info_new ();
-			res = gnome_vfs_get_file_info (uri, i,
-						       GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-			if (res == GNOME_VFS_OK)
-				g_value_set_long (value, i->size);
-			else
-				g_value_set_long (value, 0);
-
-			gnome_vfs_file_info_unref (i);
-		}
+		g_value_init (value, G_TYPE_LONG);
+		g_value_set_long (value, impl->priv->file_size);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
-        {
-            FLAC__StreamMetadata streaminfo;
-            char *uri, *path;
-
-	    /* FIXME */
-            g_object_get (G_OBJECT (info), "location", &uri, NULL);
-            path = gnome_vfs_get_local_path_from_uri (uri);
-
-            if (FLAC__metadata_get_streaminfo (path, &streaminfo))
-            {
-                g_value_init (value, G_TYPE_LONG);
-                g_value_set_long (value,
-                        (streaminfo.data.stream_info.total_samples * 10 /
-                        (streaminfo.data.stream_info.sample_rate / 100))/1000);
-            }
-            else
-            {
-                g_value_init (value, G_TYPE_LONG);
-                g_value_set_long (value, 0);
-            }
-        }
+		g_value_init (value, G_TYPE_LONG);
+		g_value_set_long (value, stream_info->total_samples / stream_info->sample_rate);
 		break;
 
 	/* audio bits */
@@ -475,33 +757,32 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
-		/* FIXME */
 		g_value_init (value, G_TYPE_INT);
-		g_value_set_int (value, id3_vfs_bitrate (impl->priv->file));
+		g_value_set_int (value, impl->priv->file_size * 8 / 1024.0f /  /* kilobits */
+					((float)stream_info->total_samples / stream_info->sample_rate)); /* seconds */
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
 		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
-		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate (id3_vfs_bitrate (impl->priv->file)));
+		g_value_set_enum (value, MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
-		/* FIXME */
 		g_value_init (value, G_TYPE_STRING);
-		g_value_set_string (value, NULL);
+		tmp = FLAC_stream_info_impl_vc_tag_get_utf8 (info, "MUSICBRAINZ_TRMID");
+		g_value_set_string (value, tmp);
+		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VARIABLE_BIT_RATE:
-		/* FIXME */ 
 		g_value_init (value, G_TYPE_BOOLEAN);
-		g_value_set_boolean (value, id3_vfs_vbr (impl->priv->file));
+		/* FLAC is VBR by nature */
+		g_value_set_boolean (value, true);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
-		/* FIXME */
 		g_value_init (value, G_TYPE_LONG);
-		g_value_set_long (value, id3_vfs_samplerate (impl->priv->file));
+		g_value_set_long (value, stream_info->sample_rate);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
-		/* FIXME */
 		g_value_init (value, G_TYPE_INT);
-		g_value_set_int (value, id3_vfs_channels (impl->priv->file));
+		g_value_set_int (value, stream_info->channels);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SERIAL_NUMBER:
 		g_value_init (value, G_TYPE_LONG);
@@ -516,6 +797,7 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_ALBUM_PEAK:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRACK_PEAK:
 		/* FIXME i believe flac does support this */
+		/* [JH] I don't think it does */
 		g_value_init (value, G_TYPE_DOUBLE);
 		g_value_set_double (value, 0.0);
 		break;
@@ -573,3 +855,19 @@ FLAC_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_n
 
 	return utf8;
 }
+
+static char*
+FLAC_stream_info_impl_vc_tag_get_utf8 (MonkeyMediaStreamInfo *info, const char *field_name)
+{
+	FLACStreamInfoImpl *impl;
+	char *utf8;
+
+	g_return_val_if_fail (IS_FLAC_STREAM_INFO_IMPL (info), NULL);
+	g_return_val_if_fail (field_name != NULL, NULL);
+
+	impl = FLAC_STREAM_INFO_IMPL (info);
+
+	utf8 = g_hash_table_lookup (impl->priv->vorbis_comments, field_name);
+	return g_strdup (utf8);
+}
+
