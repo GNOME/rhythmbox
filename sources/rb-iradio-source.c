@@ -89,6 +89,7 @@ static void rb_iradio_source_show_browser (RBIRadioSource *source,
 static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
 static void genre_selected_cb (RBPropertyView *propview, const char *name,
 			       RBIRadioSource *iradio_source);
+static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
 
 /* source methods */
 static const char *impl_get_status (RBSource *source);
@@ -305,6 +306,10 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED);
+	g_signal_connect (G_OBJECT (source->priv->stations),
+			  "sort-order-changed",
+			  G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
+			  source);
 
 	g_signal_connect (G_OBJECT (source->priv->stations),
 			  "size_allocate",
@@ -588,6 +593,13 @@ rb_iradio_source_state_pref_changed (GConfClient *client,
 	rb_iradio_source_state_prefs_sync (source);
 }
 
+static void
+rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view,
+						   RBIRadioSource *source)
+{
+	rb_debug ("sort order changed");
+	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
+}
 
 static void
 rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
@@ -690,6 +702,8 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
 	model = GTK_TREE_MODEL (query_model);
+	
+	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
 /* 	if (qtype >= RB_IRADIO_QUERY_TYPE_GENRE) */
@@ -700,8 +714,6 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	rhythmdb_query_free (query);
 
 	rhythmdb_read_unlock (source->priv->db);
-	
-	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 }
 
 static void
