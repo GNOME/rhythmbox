@@ -503,6 +503,23 @@ rb_song_info_new (RBEntryView *entry_view)
 	return GTK_WIDGET (song_info);
 }
 
+typedef void (*RBSongInfoSelectionFunc)(RBSongInfo *info,
+					RhythmDBEntry *entry,
+					void *data);
+
+static void
+rb_song_info_selection_for_each (RBSongInfo *info, RBSongInfoSelectionFunc func,
+				 void *data)
+{
+	if (info->priv->current_entry)
+		func (info, info->priv->current_entry, data);
+	else {
+		GList *tem;
+		for (tem = info->priv->selected_entries; tem ; tem = tem->next)
+			func (info, tem->data, data);
+	}
+}
+
 static void
 rb_song_info_response_cb (GtkDialog *dialog,
 			  int response_id,
@@ -546,38 +563,50 @@ rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
 }
 
 static void
+rb_song_info_set_entry_rating (RBSongInfo *info,
+			       RhythmDBEntry *entry,
+			       void *data)
+{
+	GValue value = {0, };
+	double trouble = *((double*) data);
+
+	rhythmdb_write_lock (info->priv->db);
+
+	/* set the new value for the song */
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, trouble);
+	rhythmdb_entry_set (info->priv->db,
+			    entry,
+			    RHYTHMDB_PROP_RATING,
+			    &value);
+	g_value_unset (&value);
+	/* since the user changed the rating, stop auto-rating */
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, FALSE);
+	rhythmdb_entry_set (info->priv->db,
+			    entry,
+			    RHYTHMDB_PROP_AUTO_RATE,
+			    &value);
+	g_value_unset (&value);
+
+	rhythmdb_write_unlock (info->priv->db);
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (info->priv->auto_rate), FALSE);
+}
+	
+
+static void
 rb_song_info_rated_cb (RBRating *rating,
 		       double score,
 		       RBSongInfo *song_info)
 {
-	GValue value = { 0, };
-
 	g_return_if_fail (RB_IS_RATING (rating));
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
-	/* set the new value for the song */
-	g_value_init (&value, G_TYPE_DOUBLE);
-	g_value_set_double (&value, score);
-	rhythmdb_write_lock (song_info->priv->db);
-	rhythmdb_entry_set (song_info->priv->db,
-			    song_info->priv->current_entry,
-			    RHYTHMDB_PROP_RATING,
-			    &value);
-	g_value_unset (&value);
-	rhythmdb_write_unlock (song_info->priv->db);
-
-	/* since the user changed the rating, stop auto-rating */
-	g_value_init (&value, G_TYPE_BOOLEAN);
-	g_value_set_boolean (&value, FALSE);
-	rhythmdb_write_lock (song_info->priv->db);
-	rhythmdb_entry_set (song_info->priv->db,
-			    song_info->priv->current_entry,
-			    RHYTHMDB_PROP_AUTO_RATE,
-			    &value);
-	g_value_unset (&value);
-	rhythmdb_write_unlock (song_info->priv->db);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (song_info->priv->auto_rate), FALSE);
+	rb_song_info_selection_for_each (song_info,
+					 rb_song_info_set_entry_rating,
+					 &score);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
