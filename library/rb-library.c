@@ -637,6 +637,8 @@ rb_library_save (RBLibrary *library)
 
 	xmlSaveFormatFile (tmpname->str, doc, 1);
 	rename (tmpname->str, library->priv->xml_file);
+	g_string_free (tmpname, TRUE);
+	xmlFreeDoc (doc);
 	rb_debug ("library: done saving");
 }
 

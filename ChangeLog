@@ -1,5 +1,11 @@
 2003-07-31  Colin Walters  <walters@verbum.org>
 
+	* library/rb-library.c: (rb_library_save):
+
+	Quash massive memory leak.
+
+2003-07-31  Colin Walters  <walters@verbum.org>
+
 	* library/rb-library.c: (rb_library_release_brakes),
 	(rb_library_finalize), (rb_library_periodic_save),
 	(rb_library_save):
