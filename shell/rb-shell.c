@@ -1013,6 +1013,9 @@ static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
 {
+	if (shell->priv->selected_source == source)
+		return;
+
 	rb_debug ("selecting source %p", source);
 
 	shell->priv->selected_source = source;
