@@ -744,18 +744,18 @@ sync_info (RBPlayer *player)
 static void
 set_playing (RBPlayer *player, RBNode *song)
 {
-	if (player->priv->playing == song) {
-		monkey_media_player_set_time (player->priv->player, 0);
+	if (player->priv->playing == song)
 		return;
-	}
 
 	player->priv->playing = song;
 
 	rb_node_view_set_playing_node (player->priv->playlist_view, song);
 
-	if (song == NULL)
+	if (song == NULL) {
+		monkey_media_player_close (player->priv->player);
+
 		nullify_info (player);
-	else {
+	} else {
 		GError *error = NULL;
 
 		monkey_media_player_open (player->priv->player,
@@ -1020,7 +1020,11 @@ eos_cb (MonkeyMediaPlayer *mm_player,
 
 	next = rb_node_view_get_next_node (player->priv->playlist_view);
 	if (next == NULL) {
-		rb_player_set_state (player, RB_PLAYER_PAUSED);
+		monkey_media_player_close (player->priv->player);
+
+		player->priv->playing = NULL;
+		player->priv->state = RB_PLAYER_PAUSED;
+
 		next = rb_node_view_get_first_node (player->priv->playlist_view);
 	}
 
