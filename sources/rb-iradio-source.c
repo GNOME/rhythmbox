@@ -626,7 +626,11 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	if (source->priv->search_text) {
 		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
 							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_GENRE,
+							    RHYTHMDB_PROP_GENRE_FOLDED,
+							    source->priv->search_text,
+							    RHYTHMDB_QUERY_DISJUNCTION,
+							    RHYTHMDB_QUERY_PROP_LIKE,
+							    RHYTHMDB_PROP_TITLE_FOLDED,
 							    source->priv->search_text,
 							    RHYTHMDB_QUERY_END);
 		rhythmdb_query_append (source->priv->db,
@@ -645,7 +649,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 					      G_CALLBACK (entry_added_cb),
 					      NULL);
 
-	if (qtype < RB_IRADIO_QUERY_TYPE_ALL) {
+	if (qtype < RB_IRADIO_QUERY_TYPE_GENRE) {
 		rb_property_view_reset (source->priv->genres);
 		g_free (source->priv->selected_genre);
 		source->priv->selected_genre = NULL;
@@ -667,11 +671,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	model = GTK_TREE_MODEL (query_model);
 
-	rhythmdb_read_lock (source->priv->db);
-
-	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
-
-	rhythmdb_read_unlock (source->priv->db);
+	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 
 	rhythmdb_query_free (genre_query);
 	rhythmdb_query_free (query);
