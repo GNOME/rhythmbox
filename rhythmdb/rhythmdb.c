@@ -44,6 +44,8 @@ struct RhythmDBPrivate
 	GThreadPool *query_thread_pool;
 	GThreadPool *property_query_thread_pool;
 
+	GHashTable *changed_entries;
+
 	GMutex *exit_mutex;
 	gboolean exiting;
 };
@@ -81,6 +83,7 @@ enum
 {
 	ENTRY_ADDED,
 	ENTRY_RESTORED,
+	ENTRY_CHANGED,
 	ENTRY_DELETED,
 	LAST_SIGNAL
 };
@@ -163,6 +166,16 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      RHYTHMDB_TYPE,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_restored),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1, G_TYPE_POINTER);
+
+	rhythmdb_signals[ENTRY_CHANGED] =
+		g_signal_new ("entry_changed",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
@@ -327,9 +340,22 @@ rhythmdb_write_lock (RhythmDB *db)
 	g_static_rw_lock_writer_lock (&db->priv->lock);
 }
 
+static void
+emit_entry_changed (RhythmDBEntry *entry, gpointer unused,
+		    RhythmDB *db)
+{
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry);
+}
+
 void
 rhythmdb_write_unlock (RhythmDB *db)
 {
+	if (db->priv->changed_entries) {
+		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
+		g_hash_table_destroy (db->priv->changed_entries);
+		db->priv->changed_entries = NULL;
+	}
+		 
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
 }
 
@@ -447,6 +473,11 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 #endif
 
 	db_enter (db, TRUE);
+
+	if (!db->priv->changed_entries)
+		db->priv->changed_entries = g_hash_table_new (NULL, NULL);
+
+	g_hash_table_insert (db->priv->changed_entries, entry, NULL);
 
 	klass->impl_entry_set (db, entry, propid, value);
 

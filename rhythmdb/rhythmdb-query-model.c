@@ -44,6 +44,8 @@ static void rhythmdb_query_model_get_property (GObject *object,
 					       GParamSpec *pspec);
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
+static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+						   RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
@@ -276,6 +278,10 @@ rhythmdb_query_model_set_property (GObject *object,
 					 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
 					 model, 0);
 		g_signal_connect_object (G_OBJECT (model->priv->db),
+					 "entry_changed",
+					 G_CALLBACK (rhythmdb_query_model_entry_changed_cb),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->db),
 					 "entry_deleted",
 					 G_CALLBACK (rhythmdb_query_model_entry_deleted_cb),
 					 model, 0);
@@ -427,29 +433,42 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 static void
+rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+				       RhythmDBQueryModel *model)
+{
+	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
+		struct RhythmDBQueryModelUpdate *update;
+
+		rb_debug ("queueing entry deletion");
+
+		update = g_new (struct RhythmDBQueryModelUpdate, 1);
+		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED;
+		update->entry = entry;
+		
+		/* Called with a locked database */
+		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
+		
+		g_async_queue_push (model->priv->pending_updates, update);
+	}
+}
+
+static void
 rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBQueryModel *model)
 {
+	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
+		struct RhythmDBQueryModelUpdate *update;
 
-	/* FIXME - instead of evaluating the query again, would it be good
-	 * to actually look in our ->priv->entries and through the pending
-	 * updates?
-	 */
-	if (G_LIKELY (model->priv->query)) {
-		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			struct RhythmDBQueryModelUpdate *update;
+		rb_debug ("queueing entry deletion");
 
-			rb_debug ("queueing entry deletion");
-
-			update = g_new (struct RhythmDBQueryModelUpdate, 1);
-			update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
-			update->entry = entry;
+		update = g_new (struct RhythmDBQueryModelUpdate, 1);
+		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
+		update->entry = entry;
 		
-			/* Called with a locked database */
-			rhythmdb_entry_ref_unlocked (model->priv->db, entry);
+		/* Called with a locked database */
+		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
 		
-			g_async_queue_push (model->priv->pending_updates, update);
-		}
+		g_async_queue_push (model->priv->pending_updates, update);
 	}
 }
 

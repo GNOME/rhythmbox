@@ -122,6 +122,7 @@ typedef struct
 	/* signals */
 	void	(*entry_added)		(RhythmDBEntry *entry);
 	void	(*entry_restored)	(RhythmDBEntry *entry);
+	void	(*entry_changed)	(RhythmDBEntry *entry);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 
 	/* virtual methods */
