@@ -280,8 +280,11 @@ rb_rating_expose (GtkWidget *widget,
 		  GdkEventExpose *event)
 {
 	int icon_size;
+	gboolean rtl;
 
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
+
+	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
@@ -316,6 +319,7 @@ rb_rating_expose (GtkWidget *widget,
 		/* draw the stars */
 		for (i = 0; i < MAX_SCORE; i++) {
 			GdkPixbuf *pixbuf;
+			gint icon_x_offset;
 
 			if (i < rating->priv->score)
 				pixbuf = rating->priv->pix_star;
@@ -325,10 +329,15 @@ rb_rating_expose (GtkWidget *widget,
 			if (pixbuf == NULL)
 				return FALSE;
 
+			if (rtl) {
+				icon_x_offset = X_OFFSET + (MAX_SCORE-i-1) * icon_size;
+			} else {
+				icon_x_offset = X_OFFSET + i * icon_size;
+			}
 			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
 							     widget->window,
 							     0, 0,
-							     X_OFFSET + i * icon_size, Y_OFFSET,
+							     icon_x_offset, Y_OFFSET,
 							     icon_size, icon_size,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -357,10 +366,17 @@ rb_rating_button_press_cb (GtkWidget *widget,
 
 	/* ensure the user clicks within the good area */
 	if (mouse_x >= 0 && mouse_x <= widget->allocation.width) {
+		gboolean rtl;
+		
 		if (mouse_x <= X_OFFSET)
 			score = 0;
 		else
 			score = ((mouse_x - X_OFFSET) / icon_size) + 1;
+
+		rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
+		if (rtl) {
+			score = MAX_SCORE - score + 1;
+		}
 
 		if (score > 5) score = 5;
 		if (score < 0) score = 0;

@@ -35,6 +35,9 @@
 #include "rb-marshal.h"
 #include "rb-cut-and-paste-code.h"
 
+/* Number of stars */
+#define MAX_SCORE 5
+
 static void rb_cell_renderer_rating_get_property (GObject *object,
 						  guint param_id,
 						  GValue *value,
@@ -175,7 +178,8 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 					 g_param_spec_double ("rating",
 							     ("Rating Value"),
 							     ("Rating Value"),
-							     0.0, 5.0, 2.5,
+							     0.0, (double)MAX_SCORE, 
+							      (double)MAX_SCORE/2.0,
 							     G_PARAM_READWRITE));
 
 	rb_cell_renderer_rating_signals[RATED] =
@@ -281,7 +285,7 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 		*y_offset = 0;
 
 	if (width)
-		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * 5;
+		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * MAX_SCORE;
 
 	if (height)
 		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_width;
@@ -302,7 +306,9 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 	gboolean selected;
 	GdkRectangle pix_rect, draw_rect;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
+	gboolean rtl;
 
+	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 	rb_cell_renderer_rating_get_size (cell, widget, cell_area,
 					  &pix_rect.x,
 					  &pix_rect.y,
@@ -321,9 +327,10 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 
 	selected = (flags & GTK_CELL_RENDERER_SELECTED);
 	
-	for (i = 0; i < 5; i++) {
+	for (i = 0; i < MAX_SCORE; i++) {
 		GdkPixbuf *buf;
 		GtkStateType state;
+		gint x_offset;
 
 		if (selected == TRUE) {
 			if (GTK_WIDGET_HAS_FOCUS (widget))
@@ -339,7 +346,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 
 		if (i < cellrating->priv->rating)
 			buf = cellrating->priv->pix_star;
-		else if (i >= cellrating->priv->rating && i < 5)
+		else if (i >= cellrating->priv->rating && i < MAX_SCORE)
 			buf = cellrating->priv->pix_unset_star;
 		else
 			buf = cellrating->priv->pix_blank;
@@ -354,11 +361,18 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 		if (buf == NULL)
 			return;
 
+		if (rtl) {
+			x_offset = draw_rect.x + (MAX_SCORE-i-1) * icon_width;
+		} else {
+			x_offset = draw_rect.x + i * icon_width;
+		}
+
+
 		gdk_pixbuf_render_to_drawable_alpha (buf,
 						     window,
 						     draw_rect.x - pix_rect.x,
 						     draw_rect.y - draw_rect.y,
-						     draw_rect.x +  i * icon_width,
+						     x_offset,
 						     draw_rect.y,
 						     icon_width,
 						     icon_width,
@@ -395,12 +409,22 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 	/* ensure the user clicks within the good cell */
 	if (mouse_x - cell_area->x >= 0
 	    && mouse_x - cell_area->x <= cell_area->width) {
+		gboolean rtl;
 		double rating;
 
 		rating = (int) ((mouse_x - cell_area->x) / icon_width) + 1;
 
-		if (rating > 5)
-			rating = 5;
+		rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
+		if (rtl) {
+			rating = MAX_SCORE - rating + 1;
+		}
+
+
+		if (rating < 0) 
+			rating = 0;
+
+		if (rating > MAX_SCORE)
+			rating = MAX_SCORE;
 		
 		g_signal_emit (G_OBJECT (cellrating), rb_cell_renderer_rating_signals[RATED],
 			       0, path, rating);
