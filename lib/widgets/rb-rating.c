@@ -27,7 +27,13 @@
 #include "rb-stock-icons.h"
 #include "rb-cut-and-paste-code.h"
 
-#define OFFSET 8
+/* Offset at the beggining of the widget */
+#define X_OFFSET 8
+
+/* Vertical offset */
+#define Y_OFFSET 6
+
+/* Number of stars */
 #define MAX_SCORE 5
 
 static void rb_rating_class_init (RBRatingClass *class);
@@ -239,8 +245,8 @@ rb_rating_size_request (GtkWidget *widget,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
-	requisition->width = 5 * icon_size + OFFSET;
-	requisition->height = icon_size;
+	requisition->width = 5 * icon_size + X_OFFSET;
+	requisition->height = icon_size + Y_OFFSET;
 }
 
 static gboolean
@@ -253,33 +259,30 @@ rb_rating_expose (GtkWidget *widget,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
+	/*
+	 * this code sucks, will redo it soon
+	 */
 	if (GTK_WIDGET_DRAWABLE (widget) == TRUE)
 	{
 		int i, y_offset;
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
-		gtk_paint_flat_box (widget->style, widget->window,
-				    GTK_STATE_NORMAL, GTK_SHADOW_NONE,
-				    NULL, widget, "text", 0, 0,
-				    widget->allocation.width,
-				    widget->allocation.height);
-
 		gtk_paint_shadow (widget->style, widget->window,
 				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
 				  NULL, widget, "text", 0, 0,
-				  widget->requisition.width + 2,
+				  widget->allocation.width,
 				  widget->allocation.height);
 
-		y_offset = (widget->allocation.height - widget->requisition.height) / 2;
+		y_offset = Y_OFFSET / 2;
 
 		/* draw a blank area at the beggining, this lets the user click
 		 * in this area to unset the rating */
 		gdk_pixbuf_render_to_drawable_alpha (rating->priv->pix_blank,
 						     widget->window,
 						     0, 0,
-						     0, 0,
-						     OFFSET, icon_size,
+						     0, y_offset,
+						     X_OFFSET, icon_size,
 						     GDK_PIXBUF_ALPHA_FULL, 0,
 						     GDK_RGB_DITHER_NORMAL, 0, 0);
 
@@ -312,7 +315,7 @@ rb_rating_expose (GtkWidget *widget,
 			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
 							     widget->window,
 							     0, 0,
-							     OFFSET + i * icon_size, y_offset,
+							     X_OFFSET + i * icon_size, y_offset,
 							     icon_size, icon_size,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -342,10 +345,10 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	/* ensure the user clicks within the good area */
 	if (mouse_x >= 0 && mouse_x <= widget->requisition.width)
 	{
-		if (mouse_x <= OFFSET)
+		if (mouse_x <= X_OFFSET)
 			score = 0;
 		else
-			score = ((mouse_x - OFFSET) / icon_size) + 1;
+			score = ((mouse_x - X_OFFSET) / icon_size) + 1;
 
 		if (score > 5) score = 5;
 		if (score < 0) score = 0;
