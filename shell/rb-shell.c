@@ -251,7 +251,10 @@ typedef enum
         "next=std_toolitem(item=next);" \
 	"shuffle_separator=separator;" \
         "shuffle=std_toolitem(item=shuffle);"\
-	"volume=volume;"
+	"volume=volume;"\
+	"restart=std_toolitem(item=restart);"\
+	"repeat=std_toolitem(item=repeat);"
+
 	
 typedef struct
 {
@@ -311,6 +314,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
 	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
+	BONOBO_UI_VERB ("Repeat",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
 	BONOBO_UI_VERB ("EditToolbar",  (BonoboUIVerbFn) rb_shell_cmd_edit_toolbar),
 	BONOBO_UI_VERB_END
 };

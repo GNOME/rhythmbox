@@ -138,6 +138,8 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 	static GdkPixbuf *pb_play = NULL;
 	static GdkPixbuf *pb_next = NULL;
 	static GdkPixbuf *pb_shuffle = NULL;
+	static GdkPixbuf *pb_restart = NULL;
+	static GdkPixbuf *pb_repeat = NULL;
 
 	if (!pb_prev)
 	{
@@ -159,6 +161,15 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 						     "rhythmbox-shuffle",
 						     GTK_ICON_SIZE_SMALL_TOOLBAR,
 						     NULL);
+		pb_restart = gtk_widget_render_icon (b,
+						     "rhythmbox-rewind",
+						     GTK_ICON_SIZE_SMALL_TOOLBAR,
+						     NULL);
+		pb_repeat = gtk_widget_render_icon (b,
+						     "rhythmbox-repeat",
+						     GTK_ICON_SIZE_SMALL_TOOLBAR,
+						     NULL);
+
 		gtk_widget_destroy (b);
 	}
 
@@ -176,6 +187,13 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 	case GUL_TBI_STD_TOOLITEM_SHUFFLE:
 		return g_object_ref (pb_shuffle);
 		break;
+	case GUL_TBI_STD_TOOLITEM_RESTART:
+		return g_object_ref (pb_restart);
+		break;
+	case GUL_TBI_STD_TOOLITEM_REPEAT:
+		return g_object_ref (pb_repeat);
+		break;
+
 	default:
 		g_assert_not_reached ();
 		return NULL;
@@ -201,6 +219,12 @@ gul_tbi_std_toolitem_get_name_human_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_SHUFFLE:
 		ret = _("Shuffle");
+		break;
+	case GUL_TBI_STD_TOOLITEM_RESTART:
+		ret = _("Restart");
+		break;
+	case GUL_TBI_STD_TOOLITEM_REPEAT:
+		ret = _("Repeat");
 		break;
 
 	default:
@@ -232,6 +256,12 @@ gul_tbi_std_toolitem_to_string_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_SHUFFLE:
 		sitem = "shuffle";
+		break;
+	case GUL_TBI_STD_TOOLITEM_RESTART:
+		sitem = "restart";
+		break;
+	case GUL_TBI_STD_TOOLITEM_REPEAT:
+		sitem = "repeat";
 		break;
 
 	default:
@@ -293,6 +323,17 @@ gul_tbi_std_toolitem_add_to_bonobo_tb_impl (GulTbItem *i, BonoboUIComponent *ui,
 			("<toolitem name=\"Shuffle\" label=\"%s\" "
 			 "verb=\"Shuffle\"/>", _("Shuffle")); 
 		break;
+
+	case GUL_TBI_STD_TOOLITEM_RESTART:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"Restart\" label=\"%s\" "
+			 "verb=\"RestartSong\"/>", _("RestartSong")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_REPEAT:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"Repeat\" label=\"%s\" "
+			 "verb=\"Repeat\"/>", _("Repeat")); 
+		break;
 	default:
 		g_assert_not_reached ();
 		xml_item = g_strdup ("");
@@ -332,6 +373,15 @@ gul_tbi_std_toolitem_parse_properties_impl (GulTbItem *it, const gchar *props)
 		{
 			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_SHUFFLE);
 		}
+		else if (!strncmp (item_prop, "restart", 7))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_RESTART);
+		}
+		else if (!strncmp (item_prop, "repeat", 6))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_REPEAT);
+		}
+
 	}
 }
 
@@ -343,7 +393,9 @@ gul_tbi_std_toolitem_set_item (GulTbiStdToolitem *a, GulTbiStdToolitemItem i)
 	g_return_if_fail (i == GUL_TBI_STD_TOOLITEM_PREVIOUS 
 			  || i == GUL_TBI_STD_TOOLITEM_PLAY
 			  || i == GUL_TBI_STD_TOOLITEM_NEXT
-			  || i == GUL_TBI_STD_TOOLITEM_SHUFFLE);
+			  || i == GUL_TBI_STD_TOOLITEM_SHUFFLE
+			  || i == GUL_TBI_STD_TOOLITEM_RESTART
+			  || i == GUL_TBI_STD_TOOLITEM_REPEAT);
 
 	p->item = i;
 }

@@ -1,3 +1,22 @@
+2002-10-13  Mark Humphreys <marquee@users.sourceforge.net>
+
+	* lib/toolbar/gul-tbi-std-toolitem.c:
+	(gul_tbi_std_toolitem_get_icon_impl),
+	(gul_tbi_std_toolitem_get_name_human_impl),
+	(gul_tbi_std_toolitem_to_string_impl),
+	(gul_tbi_std_toolitem_add_to_bonobo_tb_impl),
+	(gul_tbi_std_toolitem_parse_properties_impl),
+	(gul_tbi_std_toolitem_set_item):
+	* lib/toolbar/gul-tbi-std-toolitem.h:
+	* shell/rb-shell.c:
+
+	Add 'Repeat' and 'Restart' toolbar options to toolbar editor
+
+2002-10-10
+           Mark Humphreys <marquee@users.sourceforge.net>
+
+        * shell/rb-shell.c: Added documentation section to aboutbox.
+
 2002-10-08 Alex Duggan <aldug@gnome.org>
 
 	* lib/toolbar/Makefile.am: fix make dist so it includes gul-gobject-misc.h
