@@ -377,7 +377,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 			     int limit_count, int limit_size)
 {
 	int i;
-	GList *rows = creator->priv->rows;
+	GList *rows;
 	gboolean disjunction = FALSE;
 	RhythmDBQueryData *qdata;
 	GPtrArray *subquery;
@@ -395,6 +395,8 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 			append_row (creator);
 	}
 	
+	rows = creator->priv->rows;
+
 	for (i = 0; i < subquery->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
 		GtkOptionMenu *propmenu;
