@@ -1,3 +1,9 @@
+2002-10-27  Kristian Rietveld  <kris@gtk.org>
+
+	* lib/widgets/rb-cell-renderer-rating.c
+	(rb_cell_renderer_rating_get_size): only set values of *width and
+	*height if width and height are not NULL.
+
 2002-10-27  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),

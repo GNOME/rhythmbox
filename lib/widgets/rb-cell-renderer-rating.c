@@ -272,8 +272,11 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 	if (x_offset) *x_offset = 0;
 	if (y_offset) *y_offset = 0;
 
-	*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_size * 5;
-	*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_size;
+	if (width)
+		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_size * 5;
+
+	if (height)
+		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_size;
 }
 
 static void
