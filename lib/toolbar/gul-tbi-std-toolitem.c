@@ -145,6 +145,7 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 	static GdkPixbuf *pb_delete = NULL;
 	static GdkPixbuf *pb_properties = NULL;
 	static GdkPixbuf *pb_add_to_library = NULL;
+	static GdkPixbuf *pb_new_group = NULL;
 
 	if (!pb_prev)
 	{
@@ -194,6 +195,10 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 						            "gtk-open",
 						            GTK_ICON_SIZE_SMALL_TOOLBAR,
 						            NULL);
+		pb_new_group = gtk_widget_render_icon (b,
+						       "gtk-new",
+						       GTK_ICON_SIZE_SMALL_TOOLBAR,
+						       NULL);
 
 		gtk_widget_destroy (b);
 	}
@@ -229,6 +234,9 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
 		return g_object_ref (pb_add_to_library);
+		break;
+	case GUL_TBI_STD_TOOLITEM_NEW_GROUP:
+		return g_object_ref (pb_new_group);
 		break;
 
 	default:
@@ -274,6 +282,9 @@ gul_tbi_std_toolitem_get_name_human_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
 		ret = _("Add to Library");
+		break;
+	case GUL_TBI_STD_TOOLITEM_NEW_GROUP:
+		ret = _("New Group");
 		break;
 
 	default:
@@ -323,6 +334,9 @@ gul_tbi_std_toolitem_to_string_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
 		sitem = "add_to_library";
+		break;
+	case GUL_TBI_STD_TOOLITEM_NEW_GROUP:
+		sitem = "new_group";
 		break;
 
 	default:
@@ -414,6 +428,12 @@ gul_tbi_std_toolitem_add_to_bonobo_tb_impl (GulTbItem *i, BonoboUIComponent *ui,
 			("<toolitem name=\"AddToLibrary\" label=\"%s\" "
 			 "verb=\"AddToLibrary\"/>", _("Add to Library")); 
 		break;
+	case GUL_TBI_STD_TOOLITEM_NEW_GROUP:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"NewGroup\" label=\"%s\" "
+			 "verb=\"NewGroup\"/>", _("New Group")); 
+		break;
+
 	default:
 		g_assert_not_reached ();
 		xml_item = g_strdup ("");
@@ -477,6 +497,11 @@ gul_tbi_std_toolitem_parse_properties_impl (GulTbItem *it, const gchar *props)
 		{
 			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY);
 		}
+		else if (!strncmp (item_prop, "new_group", 9))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_NEW_GROUP);
+		}
+
 	}
 }
 
@@ -494,7 +519,8 @@ gul_tbi_std_toolitem_set_item (GulTbiStdToolitem *a, GulTbiStdToolitemItem i)
 			  || i == GUL_TBI_STD_TOOLITEM_COPY
 			  || i == GUL_TBI_STD_TOOLITEM_PASTE
 			  || i == GUL_TBI_STD_TOOLITEM_PROPERTIES
-			  || i == GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY);
+			  || i == GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY
+			  || i == GUL_TBI_STD_TOOLITEM_NEW_GROUP);
 
 	p->item = i;
 }

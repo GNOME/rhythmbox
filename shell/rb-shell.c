@@ -261,7 +261,8 @@ typedef enum
 	"copy=std_toolitem(item=copy);"\
 	"paste=std_toolitem(item=paste);"\
 	"properties=std_toolitem(item=properties);"\
-	"add_to_library=std_toolitem(item=add_to_library);"
+	"add_to_library=std_toolitem(item=add_to_library);"\
+	"new_group=std_toolitem(item=new_group);"
 
 	
 typedef struct
