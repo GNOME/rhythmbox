@@ -684,8 +684,10 @@ rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 	guint i;
 
 	if (model->priv->max_count > 0
-	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
+	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count) {
+		g_ptr_array_free (entries, TRUE);
 		return;
+	}
 	/* Check size later */
 
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
