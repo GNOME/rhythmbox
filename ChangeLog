@@ -1,5 +1,11 @@
 2003-01-05  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-node.c: (rb_node_finalize):
+
+	Fix clone mem corruption.
+
+2003-01-05  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-player.c: (rb_player_finalize), (rb_next),
 	(rb_previous), (rb_play), (rb_pause), (rb_clear), (rb_shuffle),
 	(rb_player_load_playlist), (rb_player_save_playlist), (play_cb),

@@ -259,17 +259,19 @@ rb_node_finalize (GObject *object)
 
 	g_return_if_fail (node->priv != NULL);
 
-	for (i = 0; i < node->priv->properties->len; i++) {
-		GValue *val;
+	if (node->priv->clone_of == NULL) {
+		for (i = 0; i < node->priv->properties->len; i++) {
+			GValue *val;
 
-		val = g_ptr_array_index (node->priv->properties, i);
+			val = g_ptr_array_index (node->priv->properties, i);
 
-		if (val != NULL) {
-			g_value_unset (val);
-			g_free (val);
+			if (val != NULL) {
+				g_value_unset (val);
+				g_free (val);
+			}
 		}
+		g_ptr_array_free (node->priv->properties, FALSE);
 	}
-	g_ptr_array_free (node->priv->properties, FALSE);
 
 	g_hash_table_destroy (node->priv->parents);
 

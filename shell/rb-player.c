@@ -21,6 +21,7 @@
 /* FIXME fix up button crack and summary bits? */
 /* FIXME reorderable */
 /* FIXME shuffle/repeat */
+/* FIXME make all nodes bold */
 
 /* FIXME scroll to playing node */
 /* FIXME volume control */
