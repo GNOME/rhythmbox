@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox 0.6.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-11-12 18:46+0100\n"
-"PO-Revision-Date: 2003-11-12 19:42+0100\n"
+"PO-Revision-Date: 2003-11-16 01:15+0100\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,15 +18,15 @@ msgstr ""
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
-msgstr "Afegeix a la biblioteca de música"
+msgstr "Afegeix a la biblioteca musical"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
-msgstr "Extensió de menú contexual de Nautilus per a Rhythmbox"
+msgstr "Extensió del menú contexual del Nautilus per a Rhythmbox"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr "Element de menú contextual de Nautilus per a Rhythmbox"
+msgstr "Element del menú contextual del Nautilus per a Rhythmbox"
 
 #: corba/test-corba.c:55
 msgid "I could not initialize Bonobo"
@@ -44,11 +44,11 @@ msgstr "S'ha produït una excepció «%s»"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
-msgstr "Shell de Rhythmbox"
+msgstr "Línia d'ordres del Rhythmbox"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
-msgstr "Factoria de shell de Rhythmbox"
+msgstr "Factoria de la línia d'ordres del Rhythmbox"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "Loading..."
@@ -66,7 +66,7 @@ msgstr "Afegeix si es compleix algun criteri"
 
 #: data/glade/create-playlist.glade.h:3
 msgid "Create automatically updating playlist where:"
-msgstr "Crea una llista de reproducció actualitzable automàticament quan:"
+msgstr "Crea una llista de reproducció actualitzable automàticament on:"
 
 #: data/glade/create-playlist.glade.h:4
 msgid "GB"
@@ -93,7 +93,7 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox gestiona tota la vostra música en una «biblioteca» de música central, per a que pogueu visualitzar, cercar i organitzar-la fàcilment.\n"
+"Rhythmbox gestiona tota la vostra música en una «biblioteca» musical central, per a que pogueu visualitzar, cercar i organitzar-la fàcilment.\n"
 "Per a utilitzar aquesta funcionalitat, heu de dir a Rhythmbox on trobar la vostra música. Podeu ometre aquest pas; en qualsevol cas podreu afegir música a la vostra biblioteca en qualsevol moment més tard.\n"
 "Si us plau, seleccioneu una de les següents opcions:"
 
@@ -152,7 +152,7 @@ msgstr "Compte de re_producció"
 #: data/glade/general-prefs.glade.h:9
 #: data/node-views/rb-node-view-iradio-stations.xml.h:4
 msgid "_Quality"
-msgstr "_Qüalitat"
+msgstr "_Qualitat"
 
 #: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
@@ -215,7 +215,7 @@ msgstr "Compte de reproducció:"
 
 #: data/glade/song-info.glade.h:10
 msgid "Quality:"
-msgstr "Qüalitat:"
+msgstr "Qualitat:"
 
 #: data/glade/song-info.glade.h:11
 msgid "_Album:"
@@ -350,7 +350,7 @@ msgstr "Expulsa el CD d'àudio"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:35
 msgid "Scroll the view to the currently playing song"
-msgstr "Desplaça la vista a la cançò que s'està reproduint actualment"
+msgstr "Desplaça la vista a la cançó que s'està reproduint actualment"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Select _All"
@@ -414,7 +414,7 @@ msgstr "Còpia la selecció"
 
 #: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Create a new Internet Radio station"
-msgstr "Crea una nova estació de Ràdio per Internet"
+msgstr "Crea una nova emissora de ràdio per Internet"
 
 #: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "Create a new automatically updating playlist"
@@ -763,10 +763,11 @@ msgstr ""
 msgid "Error reading CD header: %s"
 msgstr "S'ha produït un error en llegir la capçalera del CD: %s"
 
+# Leadout cal trobar una traducció més curta. jm
 #: monkey-media/monkey-media-audio-cd.c:731
 #, c-format
 msgid "Error getting leadout: %s"
-msgstr "S'ha produït un error en obtindre el «leadout»: %s"
+msgstr "S'ha produït un error en obtenir la pista de sortida de la sessió: %s"
 
 #: monkey-media/monkey-media-audio-quality.c:35
 msgid "Very low"
@@ -834,7 +835,7 @@ msgstr "El connector demux no està disponible per a %s; comproveu la vostra ins
 #: monkey-media/monkey-media-player-xine.c:442
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
-msgstr ""
+msgstr "No s'ha pogut demultiplexar %s; comproveu la vostra instal·lació."
 
 #: monkey-media/monkey-media-player-xine.c:450
 msgid "Internal error; check your installation."
@@ -990,7 +991,7 @@ msgstr "Mostra el temps transcorregut de la cançó que s'està reproduint i sur
 
 #: shell/main.c:88
 msgid "Seek to the specified time in playing song if possible and exit"
-msgstr "Cerca al temps especificat en la cançò que s'està reproduint, si és possible, i surt"
+msgstr "Cerca al temps especificat en la cançó que s'està reproduint, si és possible, i surt"
 
 #: shell/main.c:90
 msgid "Toggle play/pause mode"
@@ -1010,7 +1011,7 @@ msgstr "Habilita el codi de depuració"
 
 #: shell/main.c:95
 msgid "Do not register the shell"
-msgstr "No registres la shell"
+msgstr "No registres la línia d'ordres"
 
 #: shell/main.c:96
 msgid "Don't save any data permanently (implies --no-registration)"
@@ -1018,11 +1019,11 @@ msgstr "No desis cap dada permanentment (implica --no-registration)"
 
 #: shell/main.c:97
 msgid "Quit Rhythmbox"
-msgstr "Surt de Rhythmbox"
+msgstr "Surt del Rhythmbox"
 
 #: shell/main.c:98
 msgid "MonkeyMedia options:"
-msgstr "Opcions de MonkeyMedia:"
+msgstr "Opcions del MonkeyMedia:"
 
 #: shell/main.c:196
 msgid ""
@@ -1036,7 +1037,7 @@ msgid ""
 "Failed to activate the shell:\n"
 "%s"
 msgstr ""
-"No s'ha pogut activar la shell:\n"
+"No s'ha pogut activar la línia d'ordres:\n"
 "%s"
 
 #: shell/rb-playlist-manager.c:416
@@ -1121,7 +1122,7 @@ msgid ""
 "This probably means that you installed Rhythmbox in a different prefix than "
 "bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
-"No s'ha pogut registrar la shell: %s\n"
+"No s'ha pogut registrar la línia d'ordres: %s\n"
 "Açò significa que heu instal·lat Rhythmbox en un prefix diferent que bonobo-activation; aquest avís és inofensiu, però l'IPC no funcionarà."
 
 #: shell/rb-shell.c:1469 shell/rb-tray-icon.c:218 widgets/rb-player.c:541
@@ -1290,7 +1291,7 @@ msgstr ""
 
 #: widgets/rb-druid.c:249
 msgid "Music library setup"
-msgstr "Configuració de la biblioteca de música"
+msgstr "Configuració de la biblioteca musical"
 
 #: widgets/rb-druid.c:258
 msgid "Finish"
