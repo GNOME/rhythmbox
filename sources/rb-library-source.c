@@ -1228,6 +1228,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 						    source->priv->cached_artists_model);
 			rb_property_view_set_model (source->priv->albums,
 						    source->priv->cached_albums_model);
+			rb_entry_view_poll_model (source->priv->songs);
 			return;
 		} else if (source->priv->cached_all_query) {
 			rb_debug ("sorting mismatch, freeing cached query");

@@ -488,9 +488,9 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 static void
 rhythmdb_query_model_cancel (RhythmDBModel *rmodel)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
+/* 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel); */
 	rb_debug ("cancelling query");
-	model->priv->cancelled = TRUE;
+/* 	model->priv->cancelled = TRUE; */
 }
 
 void
