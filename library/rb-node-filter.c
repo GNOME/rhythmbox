@@ -210,29 +210,19 @@ rb_node_filter_evaluate (RBNodeFilter *filter,
 {
 	int i;
 
-	for (i = 0; i < filter->priv->levels->len; i++)
-	{
+	for (i = 0; i < filter->priv->levels->len; i++) {
 		GList *l, *list;
-		gboolean match;
-
-		match = FALSE;
 
 		list = g_ptr_array_index (filter->priv->levels, i);
 
-		for (l = list; l != NULL; l = g_list_next (l))
-		{
+		for (l = list; l != NULL; l = g_list_next (l)) {
 			if (rb_node_filter_expression_evaluate (l->data, node) == TRUE)
-			{
-				match = TRUE;
-				break;
-			}
+				return TRUE;
 		}
 
-		if (match == FALSE)
-			return FALSE;
 	}
-
-	return TRUE;
+	
+	return FALSE;
 }
 
 RBNodeFilterExpression *
