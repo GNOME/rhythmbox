@@ -160,6 +160,9 @@ static void rb_shell_cmd_delete_group (BonoboUIComponent *component,
 static void rb_shell_cmd_rename_group (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
+static void rb_shell_cmd_extract_cd (BonoboUIComponent *component,
+				       RBShell *shell,
+				       const char *verbname);
 GtkWidget * rb_shell_new_group_dialog (RBShell *shell);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
@@ -227,6 +230,7 @@ typedef enum
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 #define CMD_PATH_GROUP_DELETE   "/commands/FileGroupDelete"
+#define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
@@ -293,6 +297,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("FileGroupDelete",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
 	BONOBO_UI_VERB ("GroupDelete",  (BonoboUIVerbFn) rb_shell_cmd_delete_group),
+	BONOBO_UI_VERB ("ExtractCD",  (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
 	BONOBO_UI_VERB_END
 };
 
@@ -742,6 +747,10 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_sync_window_state (shell);
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
+
+	/* Look for Sound Juicer */
+	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_EXTRACT_CD, 
+			g_find_program_in_path ("sound-juicer") != NULL);
 
 	/* load library */
 	rb_debug ("shell: releasing library brakes");
@@ -1477,6 +1486,16 @@ rb_shell_cmd_new_station (BonoboUIComponent *component,
 	dialog = rb_new_station_dialog_new (shell->priv->iradio_backend);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
+}
+
+static void
+rb_shell_cmd_extract_cd (BonoboUIComponent *component,
+		    RBShell *shell,
+		    const char *verbname)
+{
+	GError *err = NULL;
+	g_spawn_command_line_async ("sound-juicer", &err);
+	g_clear_error(&err);
 }
 
 static void
