@@ -19,28 +19,54 @@
 #  $Id$
 
 define gtype
-  output *(GObject *) $
+  output *(GObject *) $arg0
   echo \n
-  output (char *) g_type_name (((GObject *) $)->g_type_instance.g_class->g_type)
+  output (char *) g_type_name (((GObject *) $arg0)->g_type_instance.g_class->g_type)
   echo \n
 end
 document gtype
-Print the type of $, assuming it is a GObject.
+Print the type of the argument, assuming it is a GObject.
 end
 
 define gvalue
-  output *(GValue *) $
-  if ((GValue *) $)->g_type > 0
+  output *(GValue *) $arg0
+  if ((GValue *) $arg0)->g_type > 0
     echo \n
-    output g_type_name (((GValue *) $)->g_type)
+    output g_type_name (((GValue *) $arg0)->g_type)
     echo \n
     # is it a string?
-    if ((GValue *) $)->g_type = 64 
-      output (char *) (((GValue *) $)->data.v_pointer)
+    if ((GValue *) $arg0)->g_type = 64 
+      output (char *) (((GValue *) $arg0)->data.v_pointer)
       echo \n
     end
   end
 end
 document gvalue
-Print the contents of $, assuming it is a GValue.
+Print the contents of the argument, assuming it is a GValue.
+end
+
+define rbnode
+  output *(RBNode *) $arg0
+  echo \n
+  output ((RBNode *) $arg0)->properties.len
+  echo \n
+  set $cnt = (int) (((RBNode *) $arg0)->properties.len)
+  set $i = 0
+  while $i < $cnt
+    if (((RBNode *) $arg0)->properties.pdata[$i])
+      echo property 
+      output $i
+      echo \n
+      #gvalue (((RBNode *) $arg0)->properties.pdata[$i])
+      set $x = (((RBNode *) $arg0)->properties.pdata[$i])
+      output g_type_name (((GValue *) $x)->g_type)
+      echo \n
+      # is it a string?
+      if ((GValue *) $x)->g_type = 64 
+	output (char *) (((GValue *) $x)->data.v_pointer)
+	echo \n
+      end
+    end
+    set $i = $i + 1
+  end
 end
