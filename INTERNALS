@@ -66,8 +66,10 @@ and then come back to it later once we know more.
 Understanding RBNode (library/rb-node.c) is crucial.  RBNode is not
 just used by the Library actually; every other source uses it as well.
 RBNode is therefore a pretty abstract thing.  Essentially, it
-is a node in a tree, which can have both a parent and children.  An
-RBNode also has a dynamic set of properties associated with it.
+is a node in a tree, which can have both parents and children.  An
+RBNode also has a dynamic set of properties associated with it.  A
+property has both a name and a value.  The value can be of many different
+types; e.g. a string, integer, or a pointer to another node. 
 
 These dynamic properties pretty much correspond to the song
 metadata you can see like song length, duration, location, etc.
