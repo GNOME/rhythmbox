@@ -958,6 +958,7 @@ gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 			  GConfEntry *entry, RBShellPlayer *player)
 {
 	rb_shell_player_sync_play_order (player);
+	rb_shell_player_sync_buttons (player);
 	g_object_notify (G_OBJECT (player), "play-order");
 }
 
