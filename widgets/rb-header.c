@@ -121,9 +121,6 @@ static GObjectClass *parent_class = NULL;
 
 #define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
 
-#define ALBUM_INFO_URL(xALBUM)   g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=%s", xALBUM);
-#define ARTIST_INFO_URL(xARTIST) g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST);
-
 GType
 rb_header_get_type (void)
 {
@@ -457,6 +454,31 @@ rb_header_get_duration (RBHeader *player)
 	return -1;
 }
 
+static char *
+info_url (guint opt, const char *data)
+{
+	char * ret, *p;
+
+	ret = g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=%d&sql=%s", opt, data);
+
+	for (p = ret; *p; p++)
+		if (*p == ' ')
+			*p = '+';
+	return ret;
+}
+
+static char *
+album_info_url (const char *album)
+{
+	return info_url (2, album);
+}
+
+static char *
+artist_info_url (const char *album)
+{
+	return info_url (1, album);
+}
+
 void
 rb_header_sync (RBHeader *player)
 {
@@ -502,7 +524,7 @@ rb_header_sync (RBHeader *player)
 			s = tmp = g_strdup (album);
 			while ((tmp = strstr (tmp, " ")) != NULL)
 				*tmp = '|';
-			tmp = ALBUM_INFO_URL (s);
+			tmp = album_info_url (s);
 			g_free (s);
 
 			gnome_href_set_url (player->priv->displaybox->album, tmp);
@@ -522,7 +544,7 @@ rb_header_sync (RBHeader *player)
 			{
 				*tmp = '|';
 			}
-			tmp = ARTIST_INFO_URL (s);
+			tmp = artist_info_url (s);
 			g_free (s);
 			gnome_href_set_url (player->priv->displaybox->artist, tmp);
 			escaped = g_markup_escape_text (artist, -1);
