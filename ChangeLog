@@ -2,6 +2,24 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8
 #
 
+2004-09-29 20:15:29 GMT	Colin Walters <walters@verbum.org>	patch-120
+
+    Summary:
+      remove bad assertion in shuffle code 
+    Revision:
+      rhythmbox--main--0.8--patch-120
+
+    The assertion entry_view_and_history_contents_match was assuming
+    that a deleted entry hadn't been removed by rb_shuffle_db_entry_deleted
+    in a separate idle handler before the assertion was checked.
+    
+    Also it was likely slow.
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-shuffle.c
+
+
 2004-09-27 17:40:43 GMT	Colin Walters <walters@verbum.org>	patch-119
 
     Summary:
