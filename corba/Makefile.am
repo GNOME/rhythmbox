@@ -7,7 +7,7 @@ noinst_PROGRAMS = test-corba
 test_corba_SOURCES = test-corba.c 
 test_corba_LDADD = librbcorba.la $(RHYTHMBOX_LIBS) 
 
-librbcorba_la_SOURCES = $(rhythmbox_interface_idl_sources)
+nodist_librbcorba_la_SOURCES = $(rhythmbox_interface_idl_sources)
 
 rhythmbox_interface_idl_sources =      	\
 	Rhythmbox-common.c	     			\
@@ -20,7 +20,7 @@ INCLUDES = 							\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE
 
-noinst_HEADERS = Rhythmbox.h
+nodist_noinst_HEADERS = Rhythmbox.h
 
 idldir = $(prefix)/share/idl
 idl_DATA = Rhythmbox.idl
