@@ -254,6 +254,7 @@ struct RBShellPrivate
 
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
+	GtkWidget *sourcelist_container;
 	GtkWidget *notebook;
 
 	GList *sources;
@@ -591,7 +592,7 @@ rb_shell_construct (RBShell *shell)
 	CORBA_Environment ev;
 	BonoboWindow *win;
 	Bonobo_UIContainer corba_container;
-	GtkWidget *vbox;
+	GtkWidget *vbox, *spacer, *spacer_label;
 	
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -688,12 +689,26 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->source_header), FALSE, TRUE, 0);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
 
+        /* aligns with treeview in other pane */
+	shell->priv->sourcelist_container = gtk_vbox_new (FALSE, 2);
+        spacer = gtk_hbox_new (FALSE,1);
+	gtk_container_set_border_width (GTK_CONTAINER (spacer), 5);
+        spacer_label = gtk_label_new ("");
+	gtk_box_pack_start (GTK_BOX (spacer), GTK_WIDGET (spacer_label), FALSE, TRUE, 0);
+
+	gtk_box_pack_start (GTK_BOX (shell->priv->sourcelist_container),
+                            GTK_WIDGET (spacer), FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (shell->priv->sourcelist_container),
+                            GTK_WIDGET (shell->priv->sourcelist), TRUE, TRUE, 0);
+        
 	if (gtk_widget_get_default_direction () != GTK_TEXT_DIR_RTL) {
-		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, TRUE, TRUE);
+		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist_container,
+                                 TRUE, TRUE);
 		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
 	} else {
 		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
-		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, TRUE, TRUE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist_container,
+                                 TRUE, TRUE);
 	}
 
 	vbox = gtk_vbox_new (FALSE, 5);
@@ -1687,9 +1702,9 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 	visible = !eel_gconf_get_boolean (CONF_UI_SOURCELIST_HIDDEN);
 
 	if (visible)
-		gtk_widget_show (GTK_WIDGET (shell->priv->sourcelist));
+		gtk_widget_show (GTK_WIDGET (shell->priv->sourcelist_container));
 	else
-		gtk_widget_hide (GTK_WIDGET (shell->priv->sourcelist));
+		gtk_widget_hide (GTK_WIDGET (shell->priv->sourcelist_container));
 
 	rb_bonobo_set_active (shell->priv->ui_component,
 			      CMD_PATH_VIEW_SOURCELIST,
