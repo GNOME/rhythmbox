@@ -952,9 +952,11 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 	if (coltype == RB_ENTRY_VIEW_COL_RATING) {
 		guint width;
 
+		propid = RHYTHMDB_PROP_RATING;
+
 		sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
 		sort_data->view = view;
-		sort_data->propid = RHYTHMDB_PROP_RATING;
+		sort_data->propid = propid;
 
 		renderer = rb_cell_renderer_rating_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
@@ -998,6 +1000,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		sort_data->propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
 		title = _("_Title");
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
 	case RB_ENTRY_VIEW_COL_ARTIST:
 		propid = RHYTHMDB_PROP_ARTIST;
@@ -1006,6 +1009,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		sort_data->propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
 		title = _("Art_ist");
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
 	case RB_ENTRY_VIEW_COL_ALBUM:
 		propid = RHYTHMDB_PROP_ALBUM;
@@ -1014,6 +1018,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		sort_data->propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
 		title = _("A_lbum");
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
 	case RB_ENTRY_VIEW_COL_GENRE:
 		propid = RHYTHMDB_PROP_GENRE;
@@ -1022,6 +1027,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		sort_data->propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
 		title = _("Ge_nre");
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
 	case RB_ENTRY_VIEW_COL_DURATION:
 		propid = RHYTHMDB_PROP_DURATION;
