@@ -712,8 +712,16 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
+			/* We steal the ref here from the update queue */
+			break;
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
+			rhythmdb_entry_unref (model->priv->db, update->entry);
+			break;
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
+			/* Unref twice; once because we were holding a ref originally
+			   due to storing it, and another time because we had it
+			   in the update queue. */
+			rhythmdb_entry_unref (model->priv->db, update->entry);
 			rhythmdb_entry_unref (model->priv->db, update->entry);
 			break;
 		case RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE:

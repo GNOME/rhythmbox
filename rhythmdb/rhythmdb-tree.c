@@ -246,9 +246,7 @@ rhythmdb_tree_init (RhythmDBTree *db)
 	guint i;
 	db->priv = g_new0 (RhythmDBTreePrivate, 1);
 
-	db->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal,
-						   NULL,
-						   (GDestroyNotify) rhythmdb_tree_entry_finalize);
+	db->priv->entries = g_hash_table_new (g_str_hash, g_str_equal);
 
 	db->priv->entry_memchunk = g_mem_chunk_new ("RhythmDBTree entry memchunk",
 						    sizeof (RhythmDBTreeEntry),
@@ -366,6 +364,7 @@ static void
 unparent_entries (const char *uri, RhythmDBTreeEntry *entry, RhythmDBTree *db)
 {
 	remove_entry_from_album (db, entry);
+	rhythmdb_tree_entry_finalize (entry);
 }
 
 static void
@@ -903,16 +902,7 @@ void
 rhythmdb_tree_entry_destroy (RhythmDBTree *db, RhythmDBEntry *aentry)
 {
 	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);
-	
-#ifndef G_DISABLE_ASSERT
-	const char *uri;
-	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
-	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
-#endif
-
-	remove_entry_from_album (db, entry); 
-	
-	g_hash_table_remove (db->priv->entries, uri);
+	rhythmdb_tree_entry_finalize (entry);
 	g_mem_chunk_free (db->priv->entry_memchunk, entry);
 }
 
@@ -1091,6 +1081,9 @@ rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *aentry,
 
 	sanity_check_database (db);
 
+	if (entry->deleted)
+		return;
+
 	/* Handle special properties */
 	switch (propid)
 	{
@@ -1197,6 +1190,11 @@ rhythmdb_tree_entry_get (RhythmDB *adb, RhythmDBEntry *aentry,
 
 	sanity_check_database (db);
 
+	if (entry->deleted) {
+		g_value_copy (RHYTHMDB_TREE_ENTRY_VALUE (entry, propid), value);
+		return;
+	}
+	
 	/* Handle special properties */
 	switch (propid)
 	{
@@ -1251,10 +1249,21 @@ static void
 rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
+	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);
 
 	sanity_check_database (db);
 
-	rhythmdb_entry_unref_unlocked (adb, aentry);
+	entry->deleted = TRUE;
+
+#ifndef G_DISABLE_ASSERT
+	const char *uri;
+	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
+	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
+#endif
+
+	remove_entry_from_album (db, entry); 
+	
+	g_hash_table_remove (db->priv->entries, uri);
 
 	sanity_check_database (db);
 }

@@ -78,6 +78,7 @@ typedef struct
 #ifndef G_DISABLE_ASSERT
 	guint magic;
 #endif	
+	gboolean deleted;
 	RBAtomic refcount;
 	RhythmDBTreeProperty *album;
 	GValue properties[RHYTHMDB_NUM_PROPERTIES];
