@@ -41,6 +41,8 @@ static gboolean debugging = FALSE;
  */
 void
 rb_debug_real (const char *func,
+	       const char *file,
+	       const int line,
 	       const char *format, ...)
 {
 	va_list args;
@@ -60,7 +62,7 @@ rb_debug_real (const char *func,
 	str_time = g_new0 (char, 255);
 	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
 
-	fprintf (stderr, "** DEBUG ** [%s] (%s): %s\n", func, str_time, buffer);
+	g_printerr ("[%s] %s:%d (%s): %s\n", func, file, line, str_time, buffer);
 	
 	g_free (str_time);
 }
@@ -183,7 +185,6 @@ rb_profiler_dump (RBProfiler *profiler)
 {
 	long elapsed;
 	double seconds;
-	char *tmp;
 
 	if (debugging == FALSE)
 		return;
@@ -192,10 +193,8 @@ rb_profiler_dump (RBProfiler *profiler)
 
 	seconds = g_timer_elapsed (profiler->timer, &elapsed);
 	
-	tmp = g_strdup_printf ("Profiler %s", profiler->name);
-	rb_debug_real (tmp, "%ld ms (%f s) elapsed",
-		       elapsed / (G_USEC_PER_SEC / 1000), seconds);
-	g_free (tmp);
+	rb_debug ("PROFILER %s %ld ms (%f s) elapsed", profiler->name, 
+		  elapsed / (G_USEC_PER_SEC / 1000), seconds);
 }
 
 void

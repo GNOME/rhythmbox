@@ -1,7 +1,7 @@
-AC_PREREQ(2.50)
+AC_PREREQ(2.54)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.4.1.99)
+AM_INIT_AUTOMAKE(rhythmbox, 0.4.99)
 
 AM_MAINTAINER_MODE
 
@@ -11,6 +11,18 @@ AC_ISC_POSIX
 AC_PROG_CC
 AC_STDC_HEADERS
 AM_PROG_LIBTOOL
+
+if test x"$GCC" = "xyes"; then
+AC_MSG_CHECKING([gcc argument to enable C99])
+saved_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -std=c99"
+AC_COMPILE_IFELSE([
+#include <stdio.h>
+#include <unistd.h>
+
+int main(int argc, char **argv) { printf("%s\n", __func__); exit(0); }
+],[AC_MSG_RESULT([-std=c99])],[CFLAGS="$saved_CFLAGS"; AC_MSG_RESULT([C99 not available])])
+fi
 
 GNOME_COMPILE_WARNINGS(error)
 
@@ -86,3 +98,8 @@ help/C/Makefile
 po/Makefile.in
 rhythmbox.spec
 ])
+
+if test "$GST_MAJORMINOR" = "0.6"; then
+   AC_MSG_WARN([spider element known to be broken in this GStreamer release])
+   AC_MSG_WARN([only mp3 iradio support will be enabled])
+fi

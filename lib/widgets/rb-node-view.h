@@ -94,6 +94,8 @@ RBNode	   *rb_node_view_get_node                 (RBNodeView *view,
 				                   RBNode *start,
 				                   RBDirection direction);
 
+RBNode *    rb_node_view_get_random_node	  (RBNodeView *view);
+
 void	    rb_node_view_enable_drag_source       (RBNodeView *view,
 					           const GtkTargetEntry *targets,
 					           int n_targets);

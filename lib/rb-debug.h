@@ -26,11 +26,17 @@
 
 G_BEGIN_DECLS
 
-#define rb_debug(...) rb_debug_real (G_GNUC_PRETTY_FUNCTION, __VA_ARGS__)
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+#define rb_debug(...) rb_debug_real (__func__, __FILE__, __LINE__, __VA_ARGS__)
+#else
+#define rb_debug(...) rb_debug_real ("", __FILE__, __LINE__, __VA_ARGS__)
+#endif
 
 void rb_debug_init             (gboolean debug);
 
 void rb_debug_real             (const char *func,
+				const char *file,
+				int line,
 				const char *format, ...);
 
 void rb_debug_stop_in_debugger (void);

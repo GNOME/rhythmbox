@@ -1015,7 +1015,7 @@ rb_node_save_to_xml (RBNode *node,
 
 			xmlSetProp (value_xml_node, "object_type", g_type_name (obj_type));
 
-			if (obj_type == RB_TYPE_GLIST_WRAPPER) {
+			if (RB_IS_GLIST_WRAPPER (obj)) {
 				RBGListWrapper *listwrap = RB_GLIST_WRAPPER (obj);
 				GList *cur;
 
@@ -1026,9 +1026,7 @@ rb_node_save_to_xml (RBNode *node,
 					xmlNodeSetContent (subnode, xml);
 					g_free (xml);
 				}
-
-				break;
-			} else if (obj_type == RB_TYPE_NODE) {
+			} else if (RB_IS_NODE (obj)) {
 				RBNode *prop_node;
 
 				prop_node = RB_NODE (obj);
@@ -1042,12 +1040,10 @@ rb_node_save_to_xml (RBNode *node,
 				g_free (xml);
 
 				g_static_rw_lock_reader_unlock (prop_node->priv->lock);
-
-				break;
 			} else {
 				g_assert_not_reached ();
-				break;
 			}
+			break;
 		}
 		default:
 			g_assert_not_reached ();
@@ -1166,33 +1162,27 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 				 * we could do something truly evil
 				 * using dlopen(), but let's not think
 				 * about that. */
-				if (obj_type == RB_TYPE_GLIST_WRAPPER) {
+				if (g_type_is_a (obj_type, RB_TYPE_GLIST_WRAPPER)) {
 					GList *newlist = NULL;
 					xmlNodePtr list_child;
 					RBGListWrapper *listwrapper = rb_glist_wrapper_new (NULL);
 
-					/* Free the unneeded string allocated above */
-					g_free (xml);
-
 					for (list_child = xml_child; list_child; list_child = list_child->next)
-						newlist = g_list_prepend (newlist, xmlNodeGetContent (xml_child));
+						newlist = g_list_prepend (newlist, xmlNodeGetContent (list_child));
 
 					rb_glist_wrapper_set_list (listwrapper, newlist);
 
 					g_value_set_pointer (value, listwrapper);
 
-					break;
-				} else if (obj_type == RB_TYPE_NODE) {
+				} else if (g_type_is_a (obj_type, RB_TYPE_NODE)) {
 					RBNode *property_node;
 
 					property_node = node_from_id_real (atol (xml));
 
 					g_value_set_pointer (value, property_node);
 
-					break;
 				} else {
 					g_assert_not_reached ();
-					break;
 				}
 
 				break;

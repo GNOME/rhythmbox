@@ -37,9 +37,11 @@
 #include "rb-tree-model-sort.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
+#include "rb-debug.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-node-song.h"
+#include "rb-node-station.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
@@ -140,6 +142,7 @@ struct RBNodeViewPrivate
 	char *columns_key;
 	guint gconf_notification_id;
 	GHashTable *columns;
+	GHashTable *allowed_columns;
 
 	RBNodeFilter *filter;
 
@@ -578,6 +581,28 @@ rb_node_view_search_equal (GtkTreeModel *model,
 	return retval;
 }
 
+GList *
+parse_columns_as_glist (const char *str)
+{
+	GList *ret = NULL;
+	char **parts = g_strsplit (str, ",", 0);
+	int i;
+	GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
+	GEnumValue *ev;
+	
+	for (i = 0; parts != NULL && parts[i] != NULL; i++)
+	{
+		RBTreeModelNodeColumn col;
+		ev = g_enum_get_value_by_name (class, parts[i]);
+		col = ev->value;
+		ret = g_list_append (ret, GINT_TO_POINTER (col));
+	}
+	
+	g_strfreev (parts);
+	g_type_class_unref (class);
+	return ret;
+}
+
 static void
 rb_node_view_construct (RBNodeView *view)
 {
@@ -592,6 +617,7 @@ rb_node_view_construct (RBNodeView *view)
 				 0);
 
 	view->priv->columns = g_hash_table_new (NULL, NULL);
+	view->priv->allowed_columns = g_hash_table_new (NULL, NULL);
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root,
 							view->priv->filter);
 	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
@@ -646,6 +672,7 @@ rb_node_view_construct (RBNodeView *view)
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	/* load layout */
+	rb_debug ("loading layout from %s", view->priv->view_desc_file);
 	doc = xmlParseFile (view->priv->view_desc_file);
 
 	if (doc == NULL)
@@ -677,23 +704,19 @@ rb_node_view_construct (RBNodeView *view)
 
 	tmp = xmlGetProp (doc->children, "search-order");
 	if (tmp != NULL)
-	{
-		char **parts = g_strsplit (tmp, " ", 0);
-		int i;
-		GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
-		GEnumValue *ev;
+		view->priv->search_columns = parse_columns_as_glist (tmp);
+	g_free (tmp);
 
-		for (i = 0; parts != NULL && parts[i] != NULL; i++)
-		{
-			RBTreeModelNodeColumn col;
-			ev = g_enum_get_value_by_name (class, parts[i]);
-			col = ev->value;
-			view->priv->search_columns = g_list_append (view->priv->search_columns, GINT_TO_POINTER (col));
+	tmp = xmlGetProp (doc->children, "allowed-columns");
+	if (tmp != NULL) {
+		GList *l = parse_columns_as_glist (tmp);
+		for (; l != NULL; l = g_list_next (l)) {
+			g_hash_table_insert (view->priv->allowed_columns,
+					     l->data, GINT_TO_POINTER (1));
 		}
-
-		g_strfreev (parts);
-		g_type_class_unref (class);
+		g_list_free (l);
 	}
+	rb_debug ("allowed columns: %s", tmp);
 	g_free (tmp);
 
 	tmp = xmlGetProp (doc->children, "keep-selection");
@@ -884,6 +907,7 @@ rb_node_view_construct (RBNodeView *view)
 
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
 
+		rb_debug ("appending column; %s", xmlGetProp (child, "column"));
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 					     gcolumn);
 
@@ -1025,7 +1049,8 @@ rb_node_view_get_node (RBNodeView *view,
 	GValue val = {0, };
 	gboolean visible;
 
-	g_assert (start != NULL);
+	if (start == NULL)
+		return NULL;
 
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
 					   start, &iter);
@@ -1153,6 +1178,68 @@ rb_node_view_get_rows (RBNodeView *view)
 				(void **) &list);
 
 	return list;
+}
+
+static int
+rb_node_view_get_n_rows (RBNodeView *view)
+{
+	GPtrArray *kids;
+	int n_rows = 0, i;
+
+	kids = rb_node_get_children (view->priv->root);
+	
+	for (i = 0; i < kids->len; i++)
+	{
+		RBNode *node;
+
+		node = g_ptr_array_index (kids, i);
+
+		if (view->priv->filter != NULL &&
+		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
+			continue;
+
+		n_rows++;
+	}
+
+	rb_node_thaw (view->priv->root);
+
+	return n_rows;
+}
+
+RBNode *
+rb_node_view_get_random_node (RBNodeView *view)
+{
+	RBNode *node;
+	GtkTreePath *path;
+	GtkTreeIter iter, iter2;
+	char *path_str;
+	int index, n_rows;
+
+	n_rows = rb_node_view_get_n_rows (view);
+	if (n_rows == 0)
+		return NULL;
+	else if ((n_rows - 1) > 0)
+		index = g_random_int_range (0, n_rows - 1);
+	else
+		index = 0;
+
+	path_str = g_strdup_printf ("%d", index);
+	path = gtk_tree_path_new_from_string (path_str);
+	g_free (path_str);
+
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel),
+				 &iter, path);
+
+	gtk_tree_path_free (path);
+
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter2, &iter);
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter, &iter2);
+
+	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+
+	return node;
 }
 
 static int
@@ -1577,6 +1664,11 @@ rb_node_view_columns_parse (RBNodeView *view,
 			    && (ev->value >= 0)
 			    && (ev->value < RB_TREE_MODEL_NODE_NUM_COLUMNS))
 			{
+				if (g_hash_table_lookup (view->priv->allowed_columns,
+							 GINT_TO_POINTER (ev->value)) == NULL) {
+					rb_debug ("column %s is not allowed", items[i]);
+					continue;
+				}
 				visible_columns = g_list_append (visible_columns,
 								 GINT_TO_POINTER (ev->value));
 			}
