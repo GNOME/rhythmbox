@@ -348,6 +348,11 @@ if test x"$enable_musicbrainz" != "xyes"; then
 else
 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 fi
+if test x"$WANT_XINE" != "x1"; then
+	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
+else
+	AC_MSG_NOTICE([** xine backend is enabled])
+fi
 dnl if test "x$enable_audiocd" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   Audio CD support is disabled])
 dnl else
