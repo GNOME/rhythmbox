@@ -494,8 +494,8 @@ rhythmdb_query_model_free_pending_update (RhythmDBQueryModel *model,
 		for (i = 0; i < update->entries->len; i++)
 			rhythmdb_entry_unref (model->priv->db,
 					      g_ptr_array_index (update->entries, i));
-		break;
 		g_ptr_array_free (update->entries, TRUE);
+		break;
 	}
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
 		rhythmdb_entry_unref (model->priv->db, update->entry);
