@@ -1265,6 +1265,8 @@ load_playlist_response_cb (GtkDialog *dialog,
 	if (file == NULL)
 		return;
 
+	rb_debug ("loading playlist from %s", file);
+
 	shell->priv->show_library_errors = TRUE;
 
 	tem = g_list_append (NULL, file);
@@ -1362,14 +1364,25 @@ rb_shell_cmd_save_playlist (BonoboUIComponent *component,
 }
 
 static void
-add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri)
+add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri, const char *title)
 {
 	RBNode *node;
 	GError *error = NULL;
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
+
+	if (strncmp ("http", scheme, 4) == 0) {
+		GList *locations = g_list_append (NULL, g_strdup (uri));
+		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, locations,
+						    title, NULL);
+		goto out;
+	}
 
 	rb_library_add_uri_sync (shell->priv->library, uri, &error);
-	if (error)
-		return; /* FIXME */
+	if (error) {
+		rb_debug ("error loading URI %s", uri);
+		goto out; /* FIXME */
+	}
 
 	node = rb_library_get_song_by_location (shell->priv->library, uri);
 
@@ -1377,12 +1390,14 @@ add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri)
 
 	/* add this node to the newly created group */
 	rb_group_source_add_node (group, node);
+out:
+	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void
 handle_playlist_entry_into_group_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
 {
-	add_uri_to_group (shell, RB_GROUP_SOURCE (shell->priv->loading_group), uri);
+	add_uri_to_group (shell, RB_GROUP_SOURCE (shell->priv->loading_group), uri, title);
 }
 
 static void
@@ -1454,7 +1469,7 @@ ask_string_response_cb (GtkDialog *dialog,
 		for (l = data; l != NULL; l = g_list_next (l)) {
 			char *uri;
 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
-			add_uri_to_group (shell, RB_GROUP_SOURCE (group), uri);
+			add_uri_to_group (shell, RB_GROUP_SOURCE (group), uri, NULL);
 			g_free (uri);
 		}
 		gnome_vfs_uri_list_free (data);
