@@ -1853,6 +1853,16 @@ rb_entry_view_get_entry_visible (RBEntryView *view,
 	return rb_entry_view_entry_is_visible (view, entry, &unused);
 }
 
+gboolean
+rb_entry_view_get_entry_contained (RBEntryView *view,
+				   RhythmDBEntry *entry)
+{
+	GtkTreeIter unused;
+
+	return rhythmdb_model_entry_to_iter (view->priv->model,
+					     entry, &unused);
+}
+
 static gboolean
 rb_entry_view_entry_is_visible (RBEntryView *view,
 				RhythmDBEntry *entry,

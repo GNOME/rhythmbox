@@ -2011,7 +2011,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 	}
 
 	songs = rb_source_get_entry_view (source);
-	if (!rb_entry_view_get_entry_visible (songs, entry)) {
+	if (!rb_entry_view_get_entry_contained (songs, entry)) {
 		rb_source_reset_filters (source);
 		rb_source_header_clear_search (shell->priv->source_header);
 	}
@@ -2021,7 +2021,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 
-	if (!rb_entry_view_get_entry_visible (songs, entry)) {
+	if (!rb_entry_view_get_entry_contained (songs, entry)) {
 		rb_source_search (shell->priv->selected_source, NULL);
 	}
 
