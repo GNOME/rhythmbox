@@ -99,13 +99,14 @@ static void
 rb_random_play_order_class_init (RBRandomPlayOrderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBPlayOrderClass *porder;
 
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_random_play_order_finalize;
 
 
-	RBPlayOrderClass *porder = RB_PLAY_ORDER_CLASS (klass);
+	porder = RB_PLAY_ORDER_CLASS (klass);
 	porder->db_changed = rb_random_db_changed;
 	porder->playing_entry_changed = rb_random_playing_entry_changed;
 	porder->entry_added = (void (*)(RBPlayOrder*,RhythmDBEntry*))rb_random_entry_view_changed;

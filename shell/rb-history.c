@@ -284,9 +284,10 @@ rb_history_length (RBHistory *hist)
 RhythmDBEntry *
 rb_history_first (RBHistory *hist)
 {
+	GSequencePtr begin;
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	GSequencePtr begin = g_sequence_get_begin_ptr (hist->priv->seq);
+	begin = g_sequence_get_begin_ptr (hist->priv->seq);
 	return g_sequence_ptr_is_end (begin) ? NULL : g_sequence_ptr_get_data (begin);
 }
 
@@ -312,9 +313,10 @@ rb_history_current (RBHistory *hist)
 RhythmDBEntry * 
 rb_history_next (RBHistory *hist)
 {
+	GSequencePtr next;
 	g_return_val_if_fail (RB_IS_HISTORY (hist), NULL);
 
-	GSequencePtr next = g_sequence_ptr_next (hist->priv->current);
+	next = g_sequence_ptr_next (hist->priv->current);
 	return g_sequence_ptr_is_end (next) ? NULL : g_sequence_ptr_get_data (next);
 }
 
@@ -340,9 +342,10 @@ rb_history_go_first (RBHistory *hist)
 void
 rb_history_go_previous (RBHistory *hist)
 {
+	GSequencePtr prev;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	GSequencePtr prev = g_sequence_ptr_prev (hist->priv->current);
+	prev = g_sequence_ptr_prev (hist->priv->current);
 	if (prev)
 		hist->priv->current = prev;
 }
@@ -358,9 +361,10 @@ rb_history_go_next (RBHistory *hist)
 void
 rb_history_go_last (RBHistory *hist)
 {
+	GSequencePtr last;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	GSequencePtr last = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));
+	last = g_sequence_ptr_prev (g_sequence_get_end_ptr (hist->priv->seq));
 	hist->priv->current = last ? last : g_sequence_get_end_ptr (hist->priv->seq);
 }
 
@@ -466,9 +470,10 @@ rb_history_limit_size (RBHistory *hist, gboolean cut_from_beginning)
 void
 rb_history_remove_entry (RBHistory *hist, RhythmDBEntry *entry)
 {
+	GSequencePtr to_delete;
 	g_return_if_fail (RB_IS_HISTORY (hist));
 
-	GSequencePtr to_delete = g_hash_table_lookup (hist->priv->entry_to_seqptr, entry);
+	to_delete = g_hash_table_lookup (hist->priv->entry_to_seqptr, entry);
 	if (to_delete) {
 		g_hash_table_remove (hist->priv->entry_to_seqptr, entry);
 		if (hist->priv->destroyer)
