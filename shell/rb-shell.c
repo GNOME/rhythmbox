@@ -637,13 +637,11 @@ idle_save_state (RBShell *shell)
 static gboolean
 idle_save_rhythmdb (RhythmDB *db)
 {
-#if 0 /* Disabled for now */
 	rhythmdb_read_lock (db);
 	rhythmdb_save (db);
 	rhythmdb_read_unlock (db);
-#endif
 	
-	return TRUE;
+	return FALSE;
 }
 
 static gboolean
@@ -1508,8 +1506,11 @@ rb_shell_construct (RBShell *shell)
 	if (rhythmdb_exists) {
 		rb_debug ("loading database");
 		rhythmdb_load (shell->priv->db);
+/* Disabled for now */
+#if 0
 		rb_debug ("adding db save-when-needed thread");
 		g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
+#endif
 	}
 	
 	rb_debug ("shell: syncing window state");
@@ -2159,6 +2160,7 @@ ask_file_response_cb (GtkDialog *dialog,
 	g_free (current_dir);
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 #endif
+	g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
 }
 
 static void
