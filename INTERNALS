@@ -1,39 +1,121 @@
 * Rhythmbox Internals
-* This file is completely out of date, but it's kept in the hope that it will be sorta useful
-* See rhythmdb/DESIGN for some bits
 
 This document will attempt to gather up some of the bits and pieces
 I've learned while hacking Rhythmbox.  Rhythmbox is fairly complex,
 and while some people would claim it is unnecessarily so, I think
 writing a good music player is just not as simple as you might
-think at first.  So, let's begin.
+think at first.  So, let's begin.  We'll start from the lower layers of
+the internal dependency stack, and build up.
 
-** The Shell  (RBShell, RBShellPlayer, RBSourceHeader, RBStatusBar, RBShellPreferences)
+** RBMetadata
 
-The shell is the outer Rhythmbox framework.  It controls the playback,
-menus, preferences, and most of the user interface in general.  The core
-component of the shell is RBShell, in shell/rb-shell.c.  It acts as
-kind of a catch-all for the various bits of glue needed to keep
-Rhythmbox working together.  It handles most of the menu callbacks,
-handles the playlist addition/deletion interface, maintains
-the tray icon, and forms the main widget which holds all of the widgets below.
-Unfortunately because of this rb-shell.c is getting a fairly big, and
-we plan to break it up into smaller classes eventually.
+This class handles extracting tag information from files, and in the
+future it will also handle writing.  It has two current backends - one
+that uses GStreamer, and another that uses the internal MonkeyMedia
+library.
 
-There are other more specialized components of the shell, such as
-RBShellPlayer. RBShellPlayer is a widget which handles the
-play/previous/next buttons, and contains various other widgets for the
-status display and volume.  RBShellPlayer is a pretty important class,
-because it contains a lot of the playback logic.
+** RBPlayer
 
-RBSourceHeader is that thingy with the "Hide Browser" button and the search
-entry.
+This class basically takes as input a URI, and handles playing it.  It
+has two current implementations - one for GStreamer, and another for
+Xine.  It depends on RBMetadata, since it can advertise tag information
+only received during playback (such as from internet radio).
 
-RBStatusBar is the thing on the bottom with the Shuffle and Repeat buttons
-and the status output.
+** RhythmDB
 
-RBShellPreferences manages the user preferences.  It is just a dialog box
-which pops up when you hit Edit->Preferences.
+This class is kind of an internal database which stores all the tag
+information acquired from RBMetadata, as well as other things such
+as the user song ratings and last play times.
+
+Basically, it's a queryable cache.  The idea is for it to have
+pluggable backends; right now it just stores everything in an
+XML file.
+
+RhythmDB has multiple threads; we'll talk later about thread safety.
+
+*** RhythmDBEntry
+
+The core data type is RhythmDBEntry - this is an abstract pointer
+which represents either a a local song in the library, or internet
+radio station.
+
+**** Dynamic properties
+
+Each RhythmDBEntry has a set of properties associated with it.  A
+property has both an ID and a value.  The value can be of many
+different types; e.g. a string, integer, or float.
+
+These dynamic properties pretty much correspond to the song
+metadata you can see like song length, duration, location, etc.
+
+*** RhythmDBTree
+
+As we mentioned before, RhythmDB was designed to have multiple storage
+backends - for instance, you could store all your music data in a SQL
+database.  However, the current default implementation uses a
+tree-structured in-memory database.
+
+The tree goes from Genre -> Artist -> Album -> Song.  This is what
+allows it to efficiently implement the browser (filtering by genre,
+artist, album).  When you click on say an artist, Rhythmbox just
+searches for songs in that subtree.  Here's a picture:
+
+                          ____RHYTHMDB_ENTRY_TYPE_SONG__
+                 ________/	       |		\__
+	        /	               |	           \
+       	  Genre1               	     Genre2                  Genre3
+         /	---	    	       |       	       	       ...
+        /	   \-	    	       |
+       Artist1	    Artist2	     Artist3
+     --	  |   ---      	 ---	       	--  -----
+   -/  	  |	 \-	    Album4     	  \      \---
+Album1  Album2   Album3--      	--    	  Album5   Album6---
+  |	  /  \	   ---	 \-- 	  \-- 	    \----    ----   \---
+  |	-/    \	      \-    \-	     \-	     \	 \---	 \---	\--
+Song1  Song2  Song3   Song4 Song5    Song6   Song7  Song8  Song9  Song10
+
+RhythmDBTree does a lot of work to maintain this tree structure - it
+can handle you changing just the artist of a song.
+
+There is actually one of these trees for each "type" of RhythmDBEntry.
+The main type is RHYTHMDB_ENTRY_TYPE_SONG, but there is also
+RHYTHMDB_ENTRY_TYPE_IRADIO_STATION for Internet Radio stations.
+
+**** Saving/loading
+
+RhythmDBTree can serialize and deserialize all the RhythmDBEntries to
+a custom XML format.  This actually runs in a separate thread when you
+first start up Rhythmbox.
+
+**** RhythmDBQueryModel
+
+This is a *very* important class.  It holds a sequence of
+RhythmDBEntries.  A RhythmDBQueryModel is used to store the results of
+a query. It automatically remembers its query, and watches the
+database for changes.
+
+A RhythmDBQueryModel is the "bridge" between the various RhythmDB
+database threads and the main GTK+ display.
+
+**** RhythmDBPropertyModel
+
+This class "attaches" to a RhythmDBQueryModel and keeps track of a
+list of a certain property, such as RHYTHMDB_PROP_ALBUM.
+
+** widgets
+
+This directory holds a lot of random widgets that Rhythmbox uses.
+Here are some examples:
+
+*** RBEntryView:
+
+This widget provides a view of a RhythmDBQueryModel.  It is the main
+song list you see in all the sources.
+
+*** RBPropertyView:
+
+Similar to RBEntryView, this widget provides a view of a
+RhythmDBPropertyModel.
 
 ** Sources
 
@@ -54,170 +136,41 @@ which is called to display a status string at the bottom of the window.
 
 The RBShell maintains a list of available RBSources.
 
-** Backends
+** The Shell
 
-All RBSource instances use some sort of"backend" too.  The RBLibrarySource
-has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  The RBPlaylistSource
-uses the RBLibrary.  As you might expect, while the RBSource components act as
-a "frontend", the various backends maintain all the data and don't deal much
-with user interfaces.
+Finally, the shell is the outer Rhythmbox framework.  It controls the
+playback, menus, preferences, and most of the user interface in
+general.  The core component of the shell is RBShell, in
+shell/rb-shell.c.  It acts as kind of a catch-all for the various bits
+of glue needed to keep Rhythmbox working together.  It "owns" most of
+the core data structures and the UI.
 
-** A first look at the Library
+The shell is broken up into a number of subcomponents.
 
-The Library is the main part of Rhythmbox; it is the thing that lets
-you play local files.  We'll go over some of the most important things,
-and then come back to it later once we know more.
+*** RBShellPlayer
 
-*** RBNode
+This widget handles the play/previous/next buttons, and contains
+various other widgets for the status display and volume.
+RBShellPlayer is a pretty important class, because it contains a lot
+of the playback logic.  However, it delgates a fair amount of this to:
 
-Understanding RBNode (library/rb-node.c) is crucial.  RBNode is not
-just used by the Library actually; every other source uses it as well.
-RBNode is therefore a pretty abstract thing.  Essentially, it
-is a node in a tree, which can have both parents and children.  We
-will examine how the tree structure is used shortly.
+*** RBPlayOrder (and subclasses)
 
-**** Dynamic properties
+These classes handle playing back a group of songs in a certain order.  They
+are used by RBShellPlayer.
 
-An RBNode also has a dynamic set of properties associated with it.  A
-property has both a name and a value.  The value can be of many different
-types; e.g. a string, integer, or a pointer to another node. 
+*** RBSourceHeader is that thingy with the "Hide Browser" button and the search
+entry.
 
-These dynamic properties pretty much correspond to the song
-metadata you can see like song length, duration, location, etc.
+*** RBStatusBar is the thing on the bottom with the Shuffle and Repeat buttons
+and the status output.
 
-**** Thread safety
+*** RBShellPreferences manages the user preferences.  It is just a dialog box
+which pops up when you hit Edit->Preferences.
 
-If you look at the RBNode code, you will notice that it has a lot
-of thread locking.  That's because any thread can manipulate the
-node database concurrently.  Each RBNode contains a read/write
-mutex.  With just one or two sepcial exceptions, all the locking is
-handled transparently by the rb_node_* functions.  It is safe to
-call e.g. rb_node_set_property from any thread at any time, and
-this is in fact done.
-
-*** The tree structure (RBLibrary)
-
-So where does this RBNode parent/children relationship come in?
-Rhythmbox maintains a sort of tree structured database of your music.
-This is what allows it implement the browser (filtering by genre, artist,
-album). As we said, an RBNode is part of a tree.  The Library sets up a
-tree (actually technically it's more like a forest) which looks like
-this:
-
-
-       	  Genre1               	     Genre2                  Genre3
-         /	---	    	       |       	       	       ...
-        /	   \-	    	       |
-       Artist1	    Artist2	     Artist3
-     --	  |   ---      	 ---	       	--  -----
-   -/  	  |	 \-	    Album4     	  \      \---
-Album1  Album2   Album3--      	--    	  Album5   Album6---
-  |	  /  \	   ---	 \-- 	  \-- 	    \----    ----   \---
-  |	-/    \	      \-    \-	     \-	     \	 \---	 \---	\--
-Song1  Song2  Song3   Song4 Song5    Song6   Song7  Song8  Song9  Song10
-
-This hierarchy is the core of what Rhythmbox presents to the user.
-When you go into the song properties dialog and edit a song title,
-you're really changing the RB_NODE_PROP_NAME of an RBNode.  If you
-change the artist of an RBNode, it is reparented to the new artist
-(and a new album is created if necessary).
-
-**** The "All" nodes maintained by RBLibrary/RBIRadioBackend
-
-Actually, the tree is slightly more complicated than this; besides
-The Genre->Artist->Album->Song chains, there are also special
-"All" nodes.  These represent the bold "All" entries you see
-on the display.  These "All" nodes basically point to
-all of one class of node.  For example, there is an "All Songs"
-node, which is the parent of every song.
-This allows us to easily iterate over all songs, and will come
-in handy in a minute when we look at RBNodeView. 
-
-**** Saving/loading
-
-RBNode also has a generic "serialization" infrastructure, which
-converts an RBNode to XML, which is then saved to disk.  This is
-how Rhythmbox stores information about songs.  If you look in
-~/.gnome2/rhythmbox, you should see several XML files there.
-Essentially that file just contains property IDs (which correspond
-to the values in library/rb-node.h), and their values.
-
-** Node Views (RBNodeView)
-
-Now that we understand that Rhythmbox has this tree database of our
-music, a logical question: how is it displayed to the user?  Well,
-that's the job of an RBNodeView (lib/widgets/rb-node-view.[ch]).
-
-An RBNodeView basically takes an RBNode and presents it all of its
-children using a GtkTreeView.  Remember special the "All" nodes?
-This is where they come in; for example, the Library has four
-RBNodeViews; one corresponding to  each "All" node.  
-
-Simply speaking, an RBNodeView contains both a GtkTreeView and an
-RBTreeModelNode.  The RBTreeModelNode takes care of the details of
-implementing the GtkTreeModel interface (see the GTK+ docs for more
-details).  Then we just use a GtkTreeView to show that to the user.
-RBNodeView hooks in a number of callbacks for sorting and
-filtering things, but this is the general idea.
-
-*** Usage
-
-Each RBSource has at least one RBNodeView.  This is also very important
-to understand.  RBSource has a method which looks like this:
-
-RBNodeView *	(*impl_get_node_view)	(RBSource *source);
-
-This method is called by RBShellPlayer to access a source's RBNodeView.
-The RBNodeView maintains state, such as which song is selected.  When
-a song is double-clicked, a signal is emitted which RBShellPlayer catches,
-and then gets the currently selected RBNode, and uses it to play the song.
-
-*** Filtering
-
-In addition to providing a view of the RBNode tree, the RBNodeView
-also takes care of filtering it, using an RBNodeFilter
-(library/rb-node-filter.[ch]).  Note that Rhythmbox is quite fast
-at filtering by genre/artist/album.  This is because of the tree
-structure used above.  To check whether a particular song should be
-displayed, we just check whether it has the selected genre or whatever
-as a parent.
-
-** More on the Library
-
-When you add music or delete music in the library, you might notice that it happens
-"in the background".  This is because there is are several separate threads
-dedicated to processing addition/removal/update requests on the library.
-
-The main one is (unsurprisingly) called RBLibraryMainThread.  This class
-continually reads the main RBLibraryActionQueue (which is a queue of pending
-requests from the user), and processes them.  For instance, an
-RB_LIBRARY_ACTION_ADD_FILE request causes a new node to be created.
-Note that the node system itself has the required locks needed for this to work.
-
-There is a secondary thread RBLibraryWalkerThread which is dedicated to handling
-recursive library additions.  It has its own RBLibraryActionQueue instance, and
-it watches for RB_LIBRARY_ACTION_ADD_DIRECTORY requests.  It then recursively
-traverses the URI and adds RB_LIBRARY_ACTION_ADD_FILE requests to the main
-queue.
-
-** The Radio Source
-
-Internet radio is handled similarly to the library.  Instead of the
-Genre->Artist->Album->Song tree, the hierarchy simply looks like:
-Genre->Song.  This hierarchy is maintained by the RBIRadioBackend.
-The RBIRadioSource handles most of the user-interface bits such
-as popping up dialog boxes and filtering and such.
-
-** The Playlist Source
-
-Once we have the library and RBNode, the playlist source is actually pretty
-easy to implement.  It maintains a single RBNode similar to the "All" node
-of the other sources.  This node is the parent of all the songs in the playlist.
-
-Note also that the Playlist source doesn't have its own backend; instead
-it just uses the node database from the library.  In the future, we hope
-to unify the backends so that both local songs and internet radio stations
-can be added to a playlist.
+*** RBPlaylistManager takes care of any kind of playlist request, such
+as the "New Playlist" menu item, or drag and drop of an artist (which
+creates a playlist).
 
 Local Variables:
 mode: outline

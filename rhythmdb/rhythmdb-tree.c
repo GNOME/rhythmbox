@@ -670,6 +670,21 @@ g_free (encoded);							\
 			if (g_value_get_long (value) == 0)
 				continue;
 			break;
+		case G_TYPE_FLOAT:
+		{
+			float v = g_value_get_float (value);
+			/* We don't care about precision so much. */
+			if (v > -0.001 && v < 0.001)
+				continue;
+			break;
+		}
+		case G_TYPE_DOUBLE:
+		{
+			double v = g_value_get_double (value);
+			if (v > -0.001 && v < 0.001)
+				continue;
+			break;
+		}
 		case G_TYPE_BOOLEAN:
 			if (g_value_get_boolean (value) == FALSE)
 				continue;

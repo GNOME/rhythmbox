@@ -671,18 +671,16 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 void
 rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
-	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
-		struct RhythmDBQueryModelUpdate *update;
-
-		update = g_new (struct RhythmDBQueryModelUpdate, 1);
-		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
-		update->entry = entry;
-
-		/* Called with a locked database */
-		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
-
-		g_async_queue_push (model->priv->pending_updates, update);
-	}
+	struct RhythmDBQueryModelUpdate *update;
+	
+	update = g_new (struct RhythmDBQueryModelUpdate, 1);
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
+	update->entry = entry;
+	
+	/* Called with a locked database */
+	rhythmdb_entry_ref_unlocked (model->priv->db, entry);
+	
+	g_async_queue_push (model->priv->pending_updates, update);
 }
 
 GnomeVFSFileSize
