@@ -1,15 +1,15 @@
 # #-#-#-#-#  ja.po (rhythmbox 0.6.0)  #-#-#-#-#
 # arch-tag: rhythmbox Japanese translation
-# Copyright (C) 2002-2003 Free Software Foundation, Inc.
+# Copyright (C) 2002-2004 Free Software Foundation, Inc.
 # Norihiro UMEDA <norihiro@users.sourceforge.jp>, 2002-2003.
-# Takeshi AIHANA <aihana@gnome.gr.jp>, 2003.
+# Takeshi AIHANA <aihana@gnome.gr.jp>, 2003-2004.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox RHYTHMBOX-0_6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-12-22 01:03+0900\n"
-"PO-Revision-Date: 2003-12-22 01:02+0900\n"
+"POT-Creation-Date: 2004-01-26 00:20+0900\n"
+"PO-Revision-Date: 2004-01-26 00:19+0900\n"
 "Last-Translator: Takeshi AIHANA <aihana@gnome.gr.jp>\n"
 "Language-Team: Japanese <gnome-translation@gnome.gr.jp>\n"
 "MIME-Version: 1.0\n"
@@ -335,7 +335,7 @@ msgstr "最終演奏日時(_A)"
 msgid "_Play Count"
 msgstr "演奏回数(_P)"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:872 shell/rb-shell.c:1495
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:963 shell/rb-shell.c:1586
 msgid "Music Player"
 msgstr "Rhythmbox ミュージック・プレイヤー"
 
@@ -527,7 +527,7 @@ msgstr "選択した曲の情報を表示します"
 msgid "Source _List"
 msgstr "ソース一覧(_L)"
 
-#: data/ui/rhythmbox-ui.xml.h:41 shell/rb-shell-player.c:1354
+#: data/ui/rhythmbox-ui.xml.h:41 shell/rb-shell-player.c:1349
 msgid "Start playing"
 msgstr "演奏を開始します"
 
@@ -611,7 +611,7 @@ msgstr "次へ(_N)"
 msgid "_Paste"
 msgstr "貼り付け(_P)"
 
-#: data/ui/rhythmbox-ui.xml.h:64 shell/rb-shell-player.c:1355
+#: data/ui/rhythmbox-ui.xml.h:64 shell/rb-shell-player.c:1350
 msgid "_Play"
 msgstr "演奏(_P)"
 
@@ -897,16 +897,16 @@ msgstr "この曲には TRM ID がありません"
 msgid "No information for this song found"
 msgstr "この曲の情報がありません"
 
-#: monkey-media/monkey-media.c:232
+#: monkey-media/monkey-media.c:234
 msgid "GStreamer options:"
 msgstr "GStreamer のオプション:"
 
-#: monkey-media/monkey-media.c:509
+#: monkey-media/monkey-media.c:511
 #, c-format
 msgid "Please remove %s"
 msgstr "%s を削除して下さい"
 
-#: monkey-media/monkey-media.c:511
+#: monkey-media/monkey-media.c:513
 #, c-format
 msgid "Failed to create directory %s"
 msgstr "フォルダ %s の生成に失敗しました"
@@ -971,44 +971,44 @@ msgstr "ファイルを Ogg Vorbis として開くのに失敗しました"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: rhythmdb/rhythmdb.c:1063 widgets/rb-entry-view.c:994
+#: rhythmdb/rhythmdb.c:1065 widgets/rb-entry-view.c:994
 msgid "Never"
 msgstr "一度も再生していません"
 
-#: rhythmdb/rhythmdb.c:1065
+#: rhythmdb/rhythmdb.c:1067
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y年%m月%d日 %H:%M"
 
-#: rhythmdb/rhythmdb.c:1897
+#: rhythmdb/rhythmdb.c:1899
 msgid "Loading songs..."
 msgstr "曲の読み込み中..."
 
-#: rhythmdb/rhythmdb.c:1899
+#: rhythmdb/rhythmdb.c:1901
 msgid "Refreshing songs..."
 msgstr "曲のリフレッシュ中..."
 
-#: rhythmdb/rhythmdb.c:1914
+#: rhythmdb/rhythmdb.c:1916
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d 曲"
 msgstr[1] "%d 曲"
 
-#: rhythmdb/rhythmdb.c:1922
+#: rhythmdb/rhythmdb.c:1924
 #, c-format
 msgid "%.1f day"
 msgid_plural "%.1f days"
 msgstr[0] "%.1f 日間"
 msgstr[1] "%.1f 日間"
 
-#: rhythmdb/rhythmdb.c:1925
+#: rhythmdb/rhythmdb.c:1927
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld 分間"
 msgstr[1] "%ld 分間"
 
-#: rhythmdb/rhythmdb.c:1927
+#: rhythmdb/rhythmdb.c:1929
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -1016,7 +1016,7 @@ msgstr[0] "%ld 時間"
 msgstr[1] "%ld 時間"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:1931
+#: rhythmdb/rhythmdb.c:1933
 #, c-format
 msgid "%s and %s"
 msgstr "%s と %s"
@@ -1106,45 +1106,45 @@ msgstr "演奏一覧の読み込み"
 msgid "Save playlist"
 msgstr "演奏一覧の保存"
 
-#: shell/rb-shell-player.c:477
+#: shell/rb-shell-player.c:472
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "プレイヤーの生成に失敗しました: %s"
 
-#: shell/rb-shell-player.c:538
+#: shell/rb-shell-player.c:533
 msgid "Go to previous song"
 msgstr "前の曲にジャンプします"
 
-#: shell/rb-shell-player.c:567
+#: shell/rb-shell-player.c:562
 msgid "Go to next song"
 msgstr "次の曲にジャンプします"
 
-#: shell/rb-shell-player.c:586
+#: shell/rb-shell-player.c:581
 msgid "Change the music volume"
 msgstr "音量を調整します"
 
-#: shell/rb-shell-player.c:872
+#: shell/rb-shell-player.c:867
 #, c-format
 msgid "Opening %s..."
 msgstr "%s のオープン中..."
 
-#: shell/rb-shell-player.c:1346
+#: shell/rb-shell-player.c:1341
 msgid "Pause playback"
 msgstr "演奏を一時停止します"
 
-#: shell/rb-shell-player.c:1347
+#: shell/rb-shell-player.c:1342
 msgid "_Pause"
 msgstr "一時停止(_P)"
 
-#: shell/rb-shell-player.c:1362
+#: shell/rb-shell-player.c:1357
 msgid "Stop playback"
 msgstr "演奏を停止します"
 
-#: shell/rb-shell-player.c:1363
+#: shell/rb-shell-player.c:1358
 msgid "_Stop"
 msgstr "停止(_S)"
 
-#: shell/rb-shell-player.c:1717
+#: shell/rb-shell-player.c:1683
 msgid "Unexpected end of stream!"
 msgstr "予期しないストリームの終了です！"
 
@@ -1156,20 +1156,24 @@ msgstr "ミュージック・プレイヤーの設定"
 msgid "General"
 msgstr "全般"
 
-#: shell/rb-shell.c:573
+#: shell/rb-shell.c:618
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "URI \"%s\" を解析できません\n"
 
-#: shell/rb-shell.c:755
+#: shell/rb-shell.c:816
 msgid "Whether the main window is visible"
 msgstr "メイン・ウィンドウを小さくします"
 
-#: shell/rb-shell.c:759
+#: shell/rb-shell.c:821
+msgid "Whether shuffle is enabled"
+msgstr "シャッフルを有効にするかどうかです"
+
+#: shell/rb-shell.c:825
 msgid "Properties for the current song"
 msgstr "現在演奏している曲のプロパティ"
 
-#: shell/rb-shell.c:1137
+#: shell/rb-shell.c:1228
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1181,12 +1185,12 @@ msgstr ""
 "しれません; この警告は致命的なものではないですが、プロセス間通信機能 (IPC) は"
 "動作しません。"
 
-#: shell/rb-shell.c:1469 shell/rb-tray-icon.c:227 widgets/rb-player.c:557
+#: shell/rb-shell.c:1560 shell/rb-tray-icon.c:227 widgets/rb-player.c:557
 msgid "Not playing"
 msgstr "演奏していません"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1472
+#: shell/rb-shell.c:1563
 #, c-format
 msgid ""
 "%s\n"
@@ -1196,7 +1200,7 @@ msgstr ""
 "一時停止中 (残り %s)"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1476
+#: shell/rb-shell.c:1567
 #, c-format
 msgid ""
 "%s\n"
@@ -1206,31 +1210,32 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1511
+#: shell/rb-shell.c:1602
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (一時停止中)"
 
-#: shell/rb-shell.c:1579
+#: shell/rb-shell.c:1670
 msgid "translator_credits"
 msgstr ""
+"相花 毅 <aihana@gnome.gr.jp>\n"
 "KAMAGASAKO Masatoshi <emerald@gnome.gr.jp>\n"
 "Norihiro UMEDA <norihiro@users.sourceforge.jp>\n"
-"Takeshi AIHANA <aihana@gnome.gr.jp>"
+"日本GNOMEユーザー会 <http://www.gnome.gr.jp>"
 
-#: shell/rb-shell.c:1588
+#: shell/rb-shell.c:1679
 msgid "Maintainers:"
 msgstr "メンテナ:"
 
-#: shell/rb-shell.c:1591
+#: shell/rb-shell.c:1682
 msgid "Former Maintainers:"
 msgstr "主要メンテナ:"
 
-#: shell/rb-shell.c:1594
+#: shell/rb-shell.c:1685
 msgid "Contributors:"
 msgstr "貢献者:"
 
-#: shell/rb-shell.c:1617
+#: shell/rb-shell.c:1708
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1241,17 +1246,17 @@ msgstr ""
 "オーディオのバックエンド: %s\n"
 "オーディオのフォーマット: %s\n"
 
-#: shell/rb-shell.c:1730
+#: shell/rb-shell.c:1821
 msgid "Choose Files or Directory"
 msgstr "ファイルまたはフォルダの選択"
 
-#: shell/rb-shell.c:1772
+#: shell/rb-shell.c:1863
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr ""
 "音楽 CD を展開するには、パッケージ \"Sound Juicer\" をインストールする必要が"
 "あります。"
 
-#: shell/rb-shell.c:1779
+#: shell/rb-shell.c:1870
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "sound-juicer を起動できませんでした: %s"
@@ -1282,7 +1287,7 @@ msgstr "リピート(_R)"
 msgid "Play first song again after all songs are played"
 msgstr "全ての曲が演奏された後に先頭の曲を再度演奏します"
 
-#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:430
+#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:448
 #: widgets/rb-query-creator.c:47
 msgid "Genre"
 msgstr "ジャンル"
@@ -1298,19 +1303,19 @@ msgid_plural "%d stations"
 msgstr[0] "%d 局"
 msgstr[1] "%d 局"
 
-#: sources/rb-library-source.c:444 widgets/rb-query-creator.c:45
+#: sources/rb-library-source.c:462 widgets/rb-query-creator.c:45
 msgid "Artist"
 msgstr "アーティスト"
 
-#: sources/rb-library-source.c:458 widgets/rb-query-creator.c:46
+#: sources/rb-library-source.c:476 widgets/rb-query-creator.c:46
 msgid "Album"
 msgstr "アルバム名"
 
-#: sources/rb-library-source.c:561
+#: sources/rb-library-source.c:582
 msgid "Library"
 msgstr "ライブラリ"
 
-#: sources/rb-library-source.c:1002
+#: sources/rb-library-source.c:1042
 msgid "Add Location"
 msgstr "場所の追加"
 
