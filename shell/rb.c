@@ -455,36 +455,37 @@ rb_cmd_about (BonoboUIComponent *component,
 {
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
+	char *copyright;
 
 	const char *authors[] =
 	{
 		"",
-		"Jorn Baayen (jorn@nl.linux.org)",
-		"Olivier Martin (oleevye@wanadoo.fr)",
+		"Jorn Baayen",
+		"Olivier Martin",
 		"",
 		"",
-		"Kenneth Christiansen (kenneth@gnu.org)",
-		"Mark Finlay (sisob@eircom.net)",
-		"Marco Pesenti Gritti (marco@it.gnome.org)",
-		"Mark Humphreys (marquee@users.sourceforge.net)",
-		"Laurens Krol (laurens.krol@planet.nl)",
-		"Xan Lopez (xan@dimensis.com)",
-		"Seth Nickell (snickell@stanford.edu)",
-		"Bastien Nocera (hadess@hadess.net)",
-		"Jan Arne Petersen (jpetersen@gnome-de.org)",
-		"Kristian Rietveld (kris@gtk.org)",
-		"Christian Schaller (uraeus@linuxrising.org)",
-		"Dennis Smit (synap@yourbase.nl)",
-		"Colin Walters (walters@gnu.org)",
-		"James Willcox (jwillcox@gnome.org)",
+		"Kenneth Christiansen",
+		"Mark Finlay",
+		"Marco Pesenti Gritti",
+		"Mark Humphreys",
+		"Laurens Krol",
+		"Xan Lopez",
+		"Seth Nickell",
+		"Bastien Nocera",
+		"Jan Arne Petersen",
+		"Kristian Rietveld",
+		"Christian Schaller",
+		"Dennis Smit",
+		"Colin Walters",
+		"James Willcox",
 		NULL
 	};
 
 	const char *documenters[] =
 	{
-		"Luca Ferretti (elle.uca@libero.it)",
-		"Mark Finlay (sisob@eircom.net)",
-		"Mark Humphreys (marquee@users.sourceforge.net)",
+		"Luca Ferretti",
+		"Mark Finlay",
+		"Mark Humphreys",
 		NULL
 	};
 
@@ -501,13 +502,17 @@ rb_cmd_about (BonoboUIComponent *component,
 
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
+	/* the %s will be substituted with the UTF-8 copyright symbol */
+	copyright = g_strdup_printf (_("Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."), "\xc2\xa9");
 	about = gnome_about_new ("Rhythmbox", VERSION,
-				 _("Copyright \xc2\xa9 2002, 2003 Jorn Baayen. All rights reserved."),
+				 copyright,
 				 _("Music management and playback software for GNOME."),
 				 (const char **) authors,
 				 (const char **) documenters,
 				 strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
 				 pixbuf);
+	g_free (copyright);
+
 	gtk_window_set_transient_for (GTK_WINDOW (about), GTK_WINDOW (rb->priv->window));
 
 	g_object_add_weak_pointer (G_OBJECT (about),
