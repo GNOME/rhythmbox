@@ -13,7 +13,4 @@ EXTRA_DIST = 			\
 
 CLEANFILES =				\
 	./po/.intltool-merge-cache 	\
-	./help/C/rhythmbox-C.omf.out 	\
-	./intltool-extract 		\
-	./intltool-merge 		\
-	./intltool-update
+	./help/C/rhythmbox-C.omf.out
