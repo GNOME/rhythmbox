@@ -156,6 +156,14 @@ rb_view_clipboard_delete (RBViewClipboard *clipboard)
 }
 
 void
+rb_view_clipboard_song_info (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	iface->impl_song_info (clipboard);
+}
+
+void
 rb_view_clipboard_notify_changed (RBViewClipboard *clipboard)
 {
 	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[CLIPBOARD_CHANGED], 0);

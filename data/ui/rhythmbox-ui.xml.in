@@ -113,6 +113,12 @@
 	
 	<cmd name="EditToolbar"
 	     _tip="Edit the toolbar"/>
+
+	<cmd name="SongInfo"
+	     pixtype="stock"
+	     pixname="gtk-properties"
+	     priority="1"
+	     _tip="Show information on the selected song"/>
 	     
 </commands>
 
@@ -147,6 +153,10 @@
 	<menuitem name="Delete" verb="Delete" _label="_Delete" accel="Delete"/>
 
 	<placeholder name="EditMenu"/>
+
+        <separator/>
+
+        <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
 
 	<separator/>
 

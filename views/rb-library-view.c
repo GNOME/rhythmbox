@@ -110,6 +110,7 @@ static GList *rb_library_view_copy (RBViewClipboard *clipboard);
 static void rb_library_view_paste (RBViewClipboard *clipboard,
 		                   GList *nodes);
 static void rb_library_view_delete (RBViewClipboard *clipboard);
+static void rb_library_view_song_info (RBViewClipboard *clipboard);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibraryView *view);
@@ -128,9 +129,6 @@ static void rb_library_view_show_browser_changed_cb (BonoboUIComponent *componen
 					             const char *state,
 					             RBLibraryView *view);
 static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
-static void rb_library_view_cmd_song_info (BonoboUIComponent *component,
-				           RBLibraryView *view,
-				           const char *verbname);
 static void rb_library_view_drop_cb (GtkWidget        *widget,
 				     GdkDragContext   *context,
 				     gint              x,
@@ -205,7 +203,6 @@ static BonoboUIVerb rb_library_view_verbs[] =
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_library_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_library_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_library_view_cmd_current_song),
-	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_library_view_cmd_song_info),
 	BONOBO_UI_VERB_END
 };
 
@@ -630,6 +627,7 @@ rb_library_view_clipboard_init (RBViewClipboardIface *iface)
 	iface->impl_copy       = rb_library_view_copy;
 	iface->impl_paste      = rb_library_view_paste;
 	iface->impl_delete     = rb_library_view_delete;
+	iface->impl_song_info  = rb_library_view_song_info;
 }
 
 static void
@@ -1030,6 +1028,18 @@ rb_library_view_delete (RBViewClipboard *clipboard)
 }
 
 static void
+rb_library_view_song_info (RBViewClipboard *clipboard)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+	GtkWidget *song_info = NULL;
+
+	g_return_if_fail (view->priv->songs != NULL);
+
+	song_info = rb_song_info_new (view->priv->songs);
+	gtk_widget_show_all (song_info);
+}
+
+static void
 paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBLibraryView *view)
@@ -1112,19 +1122,6 @@ rb_library_view_show_browser (RBLibraryView *view,
 		gtk_widget_hide (view->priv->browser);
 		gtk_container_remove (GTK_CONTAINER (view->priv->paned), view->priv->browser);
 	}
-}
-
-static void
-rb_library_view_cmd_song_info (BonoboUIComponent *component,
-			       RBLibraryView *view,
-			       const char *verbname)
-{
-	GtkWidget *song_info = NULL;
-
-	g_return_if_fail (view->priv->songs != NULL);
-
-	song_info = rb_song_info_new (view->priv->songs);
-	gtk_widget_show_all (song_info);
 }
 
 static void

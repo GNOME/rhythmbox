@@ -50,6 +50,7 @@ typedef struct
 	void     (*impl_paste)      (RBViewClipboard *clipboard,
 				     GList *nodes);
 	void     (*impl_delete)     (RBViewClipboard *clipboard);
+	void     (*impl_song_info)  (RBViewClipboard *clipboard);
 } RBViewClipboardIface;
 
 GType    rb_view_clipboard_get_type       (void);
@@ -64,6 +65,7 @@ GList   *rb_view_clipboard_copy           (RBViewClipboard *clipboard);
 void     rb_view_clipboard_paste          (RBViewClipboard *clipboard,
 				           GList *nodes);
 void     rb_view_clipboard_delete         (RBViewClipboard *clipboard);
+void     rb_view_clipboard_song_info      (RBViewClipboard *clipboard);
 
 void     rb_view_clipboard_notify_changed (RBViewClipboard *clipboard);
 

@@ -139,6 +139,12 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 	static GdkPixbuf *pb_next = NULL;
 	static GdkPixbuf *pb_shuffle = NULL;
 	static GdkPixbuf *pb_repeat = NULL;
+	static GdkPixbuf *pb_cut = NULL;
+	static GdkPixbuf *pb_copy = NULL;
+	static GdkPixbuf *pb_paste = NULL;
+	static GdkPixbuf *pb_delete = NULL;
+	static GdkPixbuf *pb_properties = NULL;
+	static GdkPixbuf *pb_add_to_library = NULL;
 
 	if (!pb_prev)
 	{
@@ -164,6 +170,30 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 						    "rhythmbox-repeat",
 						    GTK_ICON_SIZE_SMALL_TOOLBAR,
 						    NULL);
+		pb_cut = gtk_widget_render_icon (b,
+						 "gtk-cut",
+						 GTK_ICON_SIZE_SMALL_TOOLBAR,
+						 NULL);
+		pb_copy = gtk_widget_render_icon (b,
+						  "gtk-copy",
+						  GTK_ICON_SIZE_SMALL_TOOLBAR,
+						  NULL);
+		pb_paste = gtk_widget_render_icon (b,
+						   "gtk-paste",
+						   GTK_ICON_SIZE_SMALL_TOOLBAR,
+						   NULL);
+		pb_delete = gtk_widget_render_icon (b,
+						    "gtk-delete",
+						    GTK_ICON_SIZE_SMALL_TOOLBAR,
+						    NULL);
+		pb_properties = gtk_widget_render_icon (b,
+						        "gtk-properties",
+						        GTK_ICON_SIZE_SMALL_TOOLBAR,
+						        NULL);
+		pb_add_to_library = gtk_widget_render_icon (b,
+						            "gtk-open",
+						            GTK_ICON_SIZE_SMALL_TOOLBAR,
+						            NULL);
 
 		gtk_widget_destroy (b);
 	}
@@ -184,6 +214,21 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_REPEAT:
 		return g_object_ref (pb_repeat);
+		break;
+	case GUL_TBI_STD_TOOLITEM_CUT:
+		return g_object_ref (pb_cut);
+		break;
+	case GUL_TBI_STD_TOOLITEM_COPY:
+		return g_object_ref (pb_copy);
+		break;
+	case GUL_TBI_STD_TOOLITEM_PASTE:
+		return g_object_ref (pb_paste);
+		break;
+	case GUL_TBI_STD_TOOLITEM_PROPERTIES:
+		return g_object_ref (pb_properties);
+		break;
+	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
+		return g_object_ref (pb_add_to_library);
 		break;
 
 	default:
@@ -214,6 +259,21 @@ gul_tbi_std_toolitem_get_name_human_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_REPEAT:
 		ret = _("Repeat");
+		break;
+	case GUL_TBI_STD_TOOLITEM_CUT:
+		ret = _("Cut");
+		break;
+	case GUL_TBI_STD_TOOLITEM_COPY:
+		ret = _("Copy");
+		break;
+	case GUL_TBI_STD_TOOLITEM_PASTE:
+		ret = _("Paste");
+		break;
+	case GUL_TBI_STD_TOOLITEM_PROPERTIES:
+		ret = _("Properties");
+		break;
+	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
+		ret = _("Add to Library");
 		break;
 
 	default:
@@ -248,6 +308,21 @@ gul_tbi_std_toolitem_to_string_impl (GulTbItem *i)
 		break;
 	case GUL_TBI_STD_TOOLITEM_REPEAT:
 		sitem = "repeat";
+		break;
+	case GUL_TBI_STD_TOOLITEM_CUT:
+		sitem = "cut";
+		break;
+	case GUL_TBI_STD_TOOLITEM_COPY:
+		sitem = "copy";
+		break;
+	case GUL_TBI_STD_TOOLITEM_PASTE:
+		sitem = "paste";
+		break;
+	case GUL_TBI_STD_TOOLITEM_PROPERTIES:
+		sitem = "properties";
+		break;
+	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
+		sitem = "add_to_library";
 		break;
 
 	default:
@@ -309,11 +384,35 @@ gul_tbi_std_toolitem_add_to_bonobo_tb_impl (GulTbItem *i, BonoboUIComponent *ui,
 			("<toolitem name=\"Shuffle\" label=\"%s\" "
 			 "verb=\"Shuffle\"/>", _("Shuffle")); 
 		break;
-
 	case GUL_TBI_STD_TOOLITEM_REPEAT:
 		xml_item = g_strdup_printf
 			("<toolitem name=\"Repeat\" label=\"%s\" "
 			 "verb=\"Repeat\"/>", _("Repeat")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_CUT:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"Cut\" label=\"%s\" "
+			 "verb=\"Cut\"/>", _("Cut")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_COPY:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"Copy\" label=\"%s\" "
+			 "verb=\"Copy\"/>", _("Copy")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_PASTE:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"Paste\" label=\"%s\" "
+			 "verb=\"Paste\"/>", _("Paste")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_PROPERTIES:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"SongInfo\" label=\"%s\" "
+			 "verb=\"SongInfo\"/>", _("Properties")); 
+		break;
+	case GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY:
+		xml_item = g_strdup_printf
+			("<toolitem name=\"AddToLibrary\" label=\"%s\" "
+			 "verb=\"AddToLibrary\"/>", _("Add to Library")); 
 		break;
 	default:
 		g_assert_not_reached ();
@@ -358,7 +457,26 @@ gul_tbi_std_toolitem_parse_properties_impl (GulTbItem *it, const gchar *props)
 		{
 			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_REPEAT);
 		}
-
+		else if (!strncmp (item_prop, "cut", 3))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_CUT);
+		}
+		else if (!strncmp (item_prop, "copy", 4))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_COPY);
+		}
+		else if (!strncmp (item_prop, "paste", 5))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_PASTE);
+		}
+		else if (!strncmp (item_prop, "properties", 10))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_PROPERTIES);
+		}
+		else if (!strncmp (item_prop, "add_to_library", 14))
+		{
+			gul_tbi_std_toolitem_set_item (a, GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY);
+		}
 	}
 }
 
@@ -371,7 +489,12 @@ gul_tbi_std_toolitem_set_item (GulTbiStdToolitem *a, GulTbiStdToolitemItem i)
 			  || i == GUL_TBI_STD_TOOLITEM_PLAY
 			  || i == GUL_TBI_STD_TOOLITEM_NEXT
 			  || i == GUL_TBI_STD_TOOLITEM_SHUFFLE
-			  || i == GUL_TBI_STD_TOOLITEM_REPEAT);
+			  || i == GUL_TBI_STD_TOOLITEM_REPEAT
+			  || i == GUL_TBI_STD_TOOLITEM_CUT
+			  || i == GUL_TBI_STD_TOOLITEM_COPY
+			  || i == GUL_TBI_STD_TOOLITEM_PASTE
+			  || i == GUL_TBI_STD_TOOLITEM_PROPERTIES
+			  || i == GUL_TBI_STD_TOOLITEM_ADD_TO_LIBRARY);
 
 	p->item = i;
 }

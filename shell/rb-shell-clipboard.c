@@ -48,6 +48,9 @@ static void rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 static void rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
 					   RBShellClipboard *clipboard,
 					   const char *verbname);
+static void rb_shell_clipboard_cmd_song_info (BonoboUIComponent *component,
+				              RBShellClipboard *clipboard,
+				              const char *verbname);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static void rb_node_destroyed_cb (RBNode *node,
@@ -76,10 +79,11 @@ enum
 
 static BonoboUIVerb rb_shell_clipboard_verbs[] =
 {
-	BONOBO_UI_VERB ("Cut",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
-	BONOBO_UI_VERB ("Copy",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
-	BONOBO_UI_VERB ("Paste",  (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
-	BONOBO_UI_VERB ("Delete", (BonoboUIVerbFn) rb_shell_clipboard_cmd_delete),
+	BONOBO_UI_VERB ("Cut",      (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
+	BONOBO_UI_VERB ("Copy",     (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
+	BONOBO_UI_VERB ("Paste",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
+	BONOBO_UI_VERB ("Delete",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_delete),
+	BONOBO_UI_VERB ("SongInfo", (BonoboUIVerbFn) rb_shell_clipboard_cmd_song_info),
 	BONOBO_UI_VERB_END
 };
 
@@ -321,6 +325,14 @@ rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
 			       const char *verbname)
 {
 	rb_view_clipboard_delete (clipboard->priv->clipboard);
+}
+
+static void
+rb_shell_clipboard_cmd_song_info (BonoboUIComponent *component,
+				  RBShellClipboard *clipboard,
+				  const char *verbname)
+{
+	rb_view_clipboard_song_info (clipboard->priv->clipboard);
 }
 
 static void

@@ -104,6 +104,7 @@ static GList *rb_group_view_copy (RBViewClipboard *clipboard);
 static void rb_group_view_paste (RBViewClipboard *clipboard,
 		                 GList *nodes);
 static void rb_group_view_delete (RBViewClipboard *clipboard);
+static void rb_group_view_song_info (RBViewClipboard *clipboard);
 static void rb_group_view_cmd_select_all (BonoboUIComponent *component,
 				          RBGroupView *view,
 				          const char *verbname);
@@ -116,9 +117,6 @@ static void rb_group_view_cmd_current_song (BonoboUIComponent *component,
 static void sidebar_button_edited_cb (RBSidebarButton *button,
 			              RBGroupView *view);
 static char *filename_from_name (const char *name);
-static void rb_group_view_cmd_song_info (BonoboUIComponent *component,
-					 RBGroupView *view,
-					 const char *verbname);
 static void rb_group_view_cmd_rename_group (BonoboUIComponent *component,
 			                    RBGroupView *view,
 			                    const char *verbname);
@@ -180,7 +178,6 @@ static BonoboUIVerb rb_group_view_verbs[] =
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_group_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_group_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_group_view_cmd_current_song),
-	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_group_view_cmd_song_info),
 	BONOBO_UI_VERB ("RenameGroup", (BonoboUIVerbFn) rb_group_view_cmd_rename_group),
 	BONOBO_UI_VERB ("DeleteGroup", (BonoboUIVerbFn) rb_group_view_cmd_delete_group),
 	BONOBO_UI_VERB_END
@@ -567,6 +564,7 @@ rb_group_view_clipboard_init (RBViewClipboardIface *iface)
 	iface->impl_copy       = rb_group_view_copy;
 	iface->impl_paste      = rb_group_view_paste;
 	iface->impl_delete     = rb_group_view_delete;
+	iface->impl_song_info  = rb_group_view_song_info;
 }
 
 static void
@@ -981,6 +979,18 @@ rb_group_view_delete (RBViewClipboard *clipboard)
 }
 
 static void
+rb_group_view_song_info (RBViewClipboard *clipboard)
+{
+	RBGroupView *view = RB_GROUP_VIEW (clipboard);
+	GtkWidget *song_info = NULL;
+
+	g_return_if_fail (view->priv->songs != NULL);
+
+	song_info = rb_song_info_new (view->priv->songs);
+	gtk_widget_show_all (song_info);
+}
+
+static void
 rb_group_view_cmd_select_all (BonoboUIComponent *component,
 			      RBGroupView *view,
 			      const char *verbname)
@@ -1155,19 +1165,6 @@ filename_from_name (const char *name)
 	g_free (asciiname);
 
 	return ret;
-}
-
-static void
-rb_group_view_cmd_song_info (BonoboUIComponent *component,
-			     RBGroupView *view,
-			     const char *verbname)
-{
-	GtkWidget *song_info = NULL;
-
-	g_return_if_fail (view->priv->songs != NULL);
-
-	song_info = rb_song_info_new (view->priv->songs);
-	gtk_widget_show_all (song_info);
 }
 
 static void
