@@ -1319,7 +1319,7 @@ rhythmdb_query_copy (GPtrArray *array)
 	return ret;
 }
 
-GPtrArray *
+static GPtrArray *
 rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 {
 	RhythmDBQueryType query;
@@ -2002,7 +2002,7 @@ emit_legacy_load_complete (RhythmDB *db)
 	return FALSE;
 }
 
-gpointer
+static gpointer
 legacy_load_thread_main (RhythmDBLegacyLoadData *data)
 {
 	xmlDocPtr doc;

@@ -764,13 +764,6 @@ entry_from_tree_iter (RBEntryView *view, GtkTreeIter *iter)
 	return entry;
 }
 
-RhythmDBQueryModel *
-rb_entry_view_get_model (RBEntryView *view)
-{
-	g_return_val_if_fail (RB_IS_ENTRY_VIEW (view), NULL);
-	return view->priv->model;
-}
-
 static gint
 reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data)
 {

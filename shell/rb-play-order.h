@@ -143,7 +143,7 @@ typedef struct {
 	 * with is_default==TRUE will be used. */
 	gboolean is_default;
 } RBPlayOrderDescription;
-const RBPlayOrderDescription *	rb_play_order_get_orders	();
+const RBPlayOrderDescription *	rb_play_order_get_orders	(void);
 
 void			rb_play_order_playing_source_changed	(RBPlayOrder *porder);
 

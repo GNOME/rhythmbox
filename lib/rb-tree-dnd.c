@@ -55,6 +55,11 @@ typedef struct
 
 } RbTreeDndData;
 
+RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
+GList * get_context_data (GdkDragContext *context);
+void filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
+
+
 GType
 rb_tree_drag_source_get_type (void)
 {
@@ -243,9 +248,6 @@ rb_tree_drag_dest_row_drop_position (RbTreeDragDest   *drag_dest,
   return (* iface->row_drop_position) (drag_dest, dest_path, targets, pos);
 }
 
-
-
-
 RbTreeDndData *
 init_rb_tree_dnd_data (GtkWidget *widget)
 {
@@ -263,8 +265,6 @@ init_rb_tree_dnd_data (GtkWidget *widget)
 
 	return priv_data;
 }
-
-
 
 static void
 stop_drag_check (GtkWidget *widget)
@@ -324,7 +324,6 @@ path_list_free (GList *path_list)
 	g_list_free (path_list);
 }
 
-
 static void
 set_context_data (GdkDragContext *context,
 		  GList          *path_list)
@@ -337,13 +336,11 @@ set_context_data (GdkDragContext *context,
 	rb_debug ("Setting path_list: index=%i", gtk_tree_path_get_indices(path_list->data)[0]);
 }
 
-
 GList *
 get_context_data (GdkDragContext *context)
 {
 	return g_object_get_data (G_OBJECT (context), "rb-tree-view-multi-source-row");
 }
-
 
 void
 filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos)

@@ -755,10 +755,11 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	RBPlaylist *parser;
+	GnomeVFSURI *vfsuri;
 
 	rb_debug ("handling uri: %s", uri);
 
-	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	vfsuri = gnome_vfs_uri_new (uri);
 	if (!vfsuri) {
 		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
 		return;
@@ -1074,7 +1075,7 @@ rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
        		dashboard_send_raw_cluepacket (cluepacket);
        		g_free (cluepacket);
 	}
-#endif //WITH_DASHBOARD
+#endif /* WITH_DASHBOARD */
 }
 
 void

@@ -74,7 +74,7 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 	GtkWidget *dialog;
 	char buffer[1025];
 
-	vsnprintf (buffer, 1024, format, args);
+	g_vsnprintf (buffer, 1024, format, args);
 
 	dialog = gtk_message_dialog_new (NULL,
 					 GTK_DIALOG_MODAL,

@@ -78,6 +78,9 @@ static void rb_playlist_class_init (RBPlaylistClass *class);
 static void rb_playlist_init       (RBPlaylist      *playlist);
 static void rb_playlist_finalize   (GObject *object);
 
+const char * my_gnome_vfs_get_mime_type_with_data (const char *uri, gpointer *data);
+
+
 GtkType
 rb_playlist_get_type (void)
 {

@@ -18,11 +18,6 @@ AC_CHECK_SIZEOF(long)
 
 ACLOCAL="$ACLOCAL -I macros"
 
-if test x"$GCC" = xyes; then
-  AC_MSG_NOTICE([disabling compiler optimiztation by default])
-  CFLAGS=`echo $CFLAGS | sed -e 's/-O2//'`
-fi
-
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
 [AC_LANG_PROGRAM([[
@@ -444,6 +439,48 @@ AC_SUBST(BONOBO_ACTIVATION_IDL)
 
 AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])
 AC_SUBST(DATADIR_UNINST)
+
+dnl warnings bits, copied from gnome-keyring configure.in
+dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.
+
+AC_ARG_ENABLE(more-warnings,
+[  --enable-more-warnings  Maximum compiler warnings],
+set_more_warnings="$enableval",[
+if test -d "$srcdir/{arch}" || test -d "$srcdir/CVS"; then
+	set_more_warnings=yes
+else
+	set_more_warnings=no
+fi
+])
+AC_MSG_CHECKING(for more warnings, including -Werror)
+if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
+	AC_MSG_RESULT(yes)
+	CFLAGS="\
+	-Wall \
+	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
+	-Wnested-externs -Wpointer-arith \
+	-Wcast-align -Wsign-compare \
+	-Werror -std=iso9899:199409 -Wdeclaration-after-statement \
+	$CFLAGS"
+
+	for option in -Wno-strict-aliasing -Wno-sign-compare; do
+		SAVE_CFLAGS="$CFLAGS"
+		CFLAGS="$CFLAGS $option"
+		AC_MSG_CHECKING([whether gcc understands $option])
+		AC_TRY_COMPILE([], [],
+			has_option=yes,
+			has_option=no,)
+		if test $has_option = no; then
+			CFLAGS="$SAVE_CFLAGS"
+		fi
+		AC_MSG_RESULT($has_option)
+		unset has_option
+		unset SAVE_CFLAGS
+	done
+	unset option
+else
+	AC_MSG_RESULT(no)
+fi
 
 AC_OUTPUT([ 
 Makefile

@@ -99,6 +99,8 @@ static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
+static gboolean rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error);
+
 GType
 rb_player_get_type (void)
 {
@@ -608,7 +610,7 @@ rb_player_error_quark (void)
 	return quark;
 }
 
-gboolean
+static gboolean
 rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 {
 	if (mp->priv->playing) {

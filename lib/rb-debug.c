@@ -55,7 +55,7 @@ rb_debug_real (const char *func,
 
 	va_start (args, format);
 
-	vsnprintf (buffer, 1024, format, args);
+	g_vsnprintf (buffer, 1024, format, args);
 	
 	va_end (args);
 

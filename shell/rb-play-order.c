@@ -219,6 +219,27 @@ rb_play_order_get_property (GObject *object,
 	}
 }
 
+/**
+ * This should be the only function with full knowledge of what play orders are
+ * available.
+ */
+const RBPlayOrderDescription *
+rb_play_order_get_orders (void)
+{
+	/* Exactly one entry must have is_default==TRUE. Otherwise you will
+	 * cause a g_assert(). */
+	static const RBPlayOrderDescription orders[] = {
+		{ "linear", N_("Linear"), rb_linear_play_order_new, TRUE, TRUE },
+		{ "shuffle", N_("Shuffle"), rb_shuffle_play_order_new, TRUE, FALSE },
+		{ "random-equal-weights", N_("Random with equal weights"), rb_random_play_order_equal_weights_new, TRUE, FALSE },
+		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },
+		{ "random-by-rating", N_("Random by rating"), rb_random_play_order_by_rating_new, TRUE, FALSE },
+		{ "random-by-age-and-rating", N_("Random by time since last play and rating"), rb_random_play_order_by_age_and_rating_new, TRUE, FALSE },
+		{ NULL, NULL, NULL },
+	};
+	return orders;
+}
+
 RBPlayOrder *
 rb_play_order_new (const char* porder_name, RBShellPlayer *player)
 {
@@ -244,27 +265,6 @@ rb_play_order_new (const char* porder_name, RBShellPlayer *player)
 	g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
 			"\". Using %s play order.", porder_name, orders[default_index].name);
 	return orders[default_index].constructor (player);
-}
-
-/**
- * This should be the only function with full knowledge of what play orders are
- * available.
- */
-const RBPlayOrderDescription *
-rb_play_order_get_orders ()
-{
-	/* Exactly one entry must have is_default==TRUE. Otherwise you will
-	 * cause a g_assert(). */
-	static const RBPlayOrderDescription orders[] = {
-		{ "linear", N_("Linear"), rb_linear_play_order_new, TRUE, TRUE },
-		{ "shuffle", N_("Shuffle"), rb_shuffle_play_order_new, TRUE, FALSE },
-		{ "random-equal-weights", N_("Random with equal weights"), rb_random_play_order_equal_weights_new, TRUE, FALSE },
-		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },
-		{ "random-by-rating", N_("Random by rating"), rb_random_play_order_by_rating_new, TRUE, FALSE },
-		{ "random-by-age-and-rating", N_("Random by time since last play and rating"), rb_random_play_order_by_age_and_rating_new, TRUE, FALSE },
-		{ NULL, NULL, NULL },
-	};
-	return orders;
 }
 
 RBShellPlayer *

@@ -62,6 +62,8 @@ static void egg_tray_icon_get_property (GObject    *object,
 static void egg_tray_icon_realize   (GtkWidget *widget);
 static void egg_tray_icon_unrealize (GtkWidget *widget);
 
+EggTrayIcon * egg_tray_icon_new_for_xscreen (Screen *xscreen, const char *name);
+
 static void egg_tray_icon_update_manager_window (EggTrayIcon *icon);
 
 GType
