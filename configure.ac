@@ -292,10 +292,6 @@ AC_SUBST(LDFLAGS)
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 AC_PATH_PROG(GCONFTOOL, gconftool-2)
 
-AC_ARG_ENABLE(install_schemas,
-	[  --disable-install-schemas        Disable installation of the gconf schemas])
-AM_CONDITIONAL(INSTALL_SCHEMAS, test x$enable_install_schemas != xno)
-
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
 
