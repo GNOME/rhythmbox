@@ -944,7 +944,7 @@ rb_library_view_show_browser (RBLibraryView *view,
 
 	if (show == TRUE && view->priv->browser->parent != view->priv->paned)
 	{
-		gtk_container_add (GTK_CONTAINER (view->priv->paned), view->priv->browser);
+		gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
 		gtk_widget_show_all (view->priv->browser);
 	}
 	else if (show == FALSE && view->priv->browser->parent == view->priv->paned)

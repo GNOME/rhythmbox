@@ -104,7 +104,7 @@
 
 <submenu name="Edit" _label="_Edit">
 
-        <menuitem name="Cut" verb="Cut" _label="Cu_t" accel="*Control*X"/>
+        <menuitem name="Cut" verb="Cut" _label="Cu_t" accel="*Control*x"/>
 	
         <menuitem name="Copy" verb="Copy" _label="_Copy" accel="*Control*c"/>
 	
@@ -120,19 +120,19 @@
 
 <submenu name="Controls" _label="_Controls">
 
-	<menuitem name="Play" _label="_Play" verb="Play"/>
+	<menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
+
+	<separator/>
+
+	<menuitem name="Next" _label="_Next Song" verb="Next" accel="*Control*n"/>
+
+	<menuitem name="Previous" _label="P_revious Song" verb="Previous" accel="*Control*p"/>
 
 	<separator/>
 	
-	<menuitem name="Next" _label="_Next Song" verb="Next"/>
-
-	<menuitem name="Previous" _label="P_revious Song" verb="Previous"/>
-
-	<separator/>
+	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
 	
-	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle"/>
-	
-	<menuitem name="Repeat" _label="_Repeat" verb="Repeat"/>
+	<menuitem name="Repeat" _label="_Repeat" verb="Repeat" accel="*Control*r"/>
 
 </submenu>
 
