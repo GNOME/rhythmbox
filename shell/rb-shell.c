@@ -831,7 +831,7 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
     
 	while (*filecur != NULL)
 	{
-    		rb_library_add_file (shell->priv->library, *filecur);
+    		rb_library_add_uri (shell->priv->library, *filecur);
 		filecur++;
 	}
 

@@ -3,8 +3,8 @@ noinst_LTLIBRARIES = librblibrary.la
 librblibrary_la_SOURCES =				\
 	rb-library.c					\
 	rb-library.h					\
-	rb-library-watcher-thread.c			\
-	rb-library-watcher-thread.h			\
+	rb-library-walker-thread.c			\
+	rb-library-walker-thread.h			\
 	rb-library-main-thread.c			\
 	rb-library-main-thread.h			\
 	rb-library-xml-thread.c				\

@@ -291,6 +291,17 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			case RB_NODE_TYPE_ARTIST:
 				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
 				break;
+			case RB_NODE_TYPE_SONG:
+				{
+					GValue value = { 0, };
+					rb_node_get_property (node, "location", &value);
+					rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
+								     FALSE,
+								     RB_LIBRARY_ACTION_UPDATE_FILE,
+								     g_value_get_string (&value));
+					g_value_unset (&value);
+				}
+				break;
 			default:
 				break;
 			}

@@ -22,36 +22,28 @@
 #include <libgnomevfs/gnome-vfs-directory.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
-#include "rb-library-watcher-thread.h"
-#include "rb-library-preferences.h"
-#include "eel-gconf-extensions.h"
+#include "rb-library-walker-thread.h"
 
-static void rb_library_watcher_thread_class_init (RBLibraryWatcherThreadClass *klass);
-static void rb_library_watcher_thread_init (RBLibraryWatcherThread *thread);
-static void rb_library_watcher_thread_finalize (GObject *object);
-static void rb_library_watcher_thread_set_property (GObject *object,
-                                                    guint prop_id,
-                                                    const GValue *value,
-                                                    GParamSpec *pspec);
-static void rb_library_watcher_thread_get_property (GObject *object,
-                                                    guint prop_id,
-                                                    GValue *value,
-                                                    GParamSpec *pspec);
-static gpointer thread_main (RBLibraryWatcherThreadPrivate *priv);
-static void pref_changed_cb (GConfClient *client,
-		             guint cnxn_id,
-		             GConfEntry *entry,
-		             RBLibraryWatcherThread *thread);
+static void rb_library_walker_thread_class_init (RBLibraryWalkerThreadClass *klass);
+static void rb_library_walker_thread_init (RBLibraryWalkerThread *thread);
+static void rb_library_walker_thread_finalize (GObject *object);
+static void rb_library_walker_thread_set_property (GObject *object,
+                                                   guint prop_id,
+                                                   const GValue *value,
+                                                   GParamSpec *pspec);
+static void rb_library_walker_thread_get_property (GObject *object,
+                                                   guint prop_id,
+                                                   GValue *value,
+                                                   GParamSpec *pspec);
+static gpointer thread_main (RBLibraryWalkerThreadPrivate *priv);
 
-struct RBLibraryWatcherThreadPrivate
+struct RBLibraryWalkerThreadPrivate
 {
 	RBLibrary *library;
 
 	GThread *thread;
 	GMutex *lock;
 	gboolean dead;
-	
-	gboolean dirty;
 };
 
 enum
@@ -63,44 +55,44 @@ enum
 static GObjectClass *parent_class = NULL;
 
 GType
-rb_library_watcher_thread_get_type (void)
+rb_library_walker_thread_get_type (void)
 {
-	static GType rb_library_watcher_thread_type = 0;
+	static GType rb_library_walker_thread_type = 0;
 
-	if (rb_library_watcher_thread_type == 0)
+	if (rb_library_walker_thread_type == 0)
 	{
 		static const GTypeInfo our_info =
 		{
-			sizeof (RBLibraryWatcherThreadClass),
+			sizeof (RBLibraryWalkerThreadClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) rb_library_watcher_thread_class_init,
+			(GClassInitFunc) rb_library_walker_thread_class_init,
 			NULL,
 			NULL,
-			sizeof (RBLibraryWatcherThread),
+			sizeof (RBLibraryWalkerThread),
 			0,
-			(GInstanceInitFunc) rb_library_watcher_thread_init
+			(GInstanceInitFunc) rb_library_walker_thread_init
 		};
 
-		rb_library_watcher_thread_type = g_type_register_static (G_TYPE_OBJECT,
-						                         "RBLibraryWatcherThread",
-						                         &our_info, 0);
+		rb_library_walker_thread_type = g_type_register_static (G_TYPE_OBJECT,
+						                        "RBLibraryWalkerThread",
+						                        &our_info, 0);
 	}
 
-	return rb_library_watcher_thread_type;
+	return rb_library_walker_thread_type;
 }
 
 static void
-rb_library_watcher_thread_class_init (RBLibraryWatcherThreadClass *klass)
+rb_library_walker_thread_class_init (RBLibraryWalkerThreadClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->finalize = rb_library_watcher_thread_finalize;
+	object_class->finalize = rb_library_walker_thread_finalize;
 
-	object_class->set_property = rb_library_watcher_thread_set_property;
-        object_class->get_property = rb_library_watcher_thread_get_property;
+	object_class->set_property = rb_library_walker_thread_set_property;
+        object_class->get_property = rb_library_walker_thread_get_property;
 		                        
         g_object_class_install_property (object_class,
                                          PROP_LIBRARY,
@@ -112,28 +104,22 @@ rb_library_watcher_thread_class_init (RBLibraryWatcherThreadClass *klass)
 }
 
 static void
-rb_library_watcher_thread_init (RBLibraryWatcherThread *thread)
+rb_library_walker_thread_init (RBLibraryWalkerThread *thread)
 {
-	thread->priv = g_new0 (RBLibraryWatcherThreadPrivate, 1);
+	thread->priv = g_new0 (RBLibraryWalkerThreadPrivate, 1);
 
 	thread->priv->lock = g_mutex_new ();
-
-	eel_gconf_notification_add (CONF_LIBRARY_BASE_FOLDER,
-				    (GConfClientNotifyFunc) pref_changed_cb,
-				    thread);
-
-	thread->priv->dirty = TRUE;
 }
 
 static void
-rb_library_watcher_thread_finalize (GObject *object)
+rb_library_walker_thread_finalize (GObject *object)
 {
-	RBLibraryWatcherThread *thread;
+	RBLibraryWalkerThread *thread;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_LIBRARY_WATCHER_THREAD (object));
+	g_return_if_fail (RB_IS_LIBRARY_WALKER_THREAD (object));
 
-	thread = RB_LIBRARY_WATCHER_THREAD (object);
+	thread = RB_LIBRARY_WALKER_THREAD (object);
 
 	g_return_if_fail (thread->priv != NULL);
 
@@ -144,29 +130,29 @@ rb_library_watcher_thread_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-RBLibraryWatcherThread *
-rb_library_watcher_thread_new (RBLibrary *library)
+RBLibraryWalkerThread *
+rb_library_walker_thread_new (RBLibrary *library)
 {
-	RBLibraryWatcherThread *library_watcher_thread;
+	RBLibraryWalkerThread *library_walker_thread;
 
 	g_return_val_if_fail (RB_IS_LIBRARY (library), NULL);
 
-	library_watcher_thread = RB_LIBRARY_WATCHER_THREAD (g_object_new (RB_TYPE_LIBRARY_WATCHER_THREAD,
-								    "library", library,
-								    NULL));
+	library_walker_thread = RB_LIBRARY_WALKER_THREAD (g_object_new (RB_TYPE_LIBRARY_WALKER_THREAD,
+								        "library", library,
+								        NULL));
 
-	g_return_val_if_fail (library_watcher_thread->priv != NULL, NULL);
+	g_return_val_if_fail (library_walker_thread->priv != NULL, NULL);
 
-	return library_watcher_thread;
+	return library_walker_thread;
 }
 
 static void
-rb_library_watcher_thread_set_property (GObject *object,
-                                        guint prop_id,
-                                        const GValue *value,
-                                        GParamSpec *pspec)
+rb_library_walker_thread_set_property (GObject *object,
+                                       guint prop_id,
+                                       const GValue *value,
+                                       GParamSpec *pspec)
 {
-	RBLibraryWatcherThread *thread = RB_LIBRARY_WATCHER_THREAD (object);
+	RBLibraryWalkerThread *thread = RB_LIBRARY_WALKER_THREAD (object);
 
 	switch (prop_id)
 	{
@@ -183,12 +169,12 @@ rb_library_watcher_thread_set_property (GObject *object,
 }
 
 static void
-rb_library_watcher_thread_get_property (GObject *object,
-                                        guint prop_id,
-                                        GValue *value,
-                                        GParamSpec *pspec)
+rb_library_walker_thread_get_property (GObject *object,
+                                       guint prop_id,
+                                       GValue *value,
+                                       GParamSpec *pspec)
 {
-	RBLibraryWatcherThread *thread = RB_LIBRARY_WATCHER_THREAD (object);
+	RBLibraryWalkerThread *thread = RB_LIBRARY_WALKER_THREAD (object);
 
 	switch (prop_id)
 	{
@@ -202,7 +188,7 @@ rb_library_watcher_thread_get_property (GObject *object,
 }
 
 static void
-add_directory (RBLibraryWatcherThreadPrivate *priv,
+add_directory (RBLibraryWalkerThreadPrivate *priv,
 	       const char *dir)
 {
 	GList *list, *l;
@@ -251,7 +237,7 @@ add_directory (RBLibraryWatcherThreadPrivate *priv,
 		file_uri = gnome_vfs_uri_append_file_name (uri, info->name);
 		filename = gnome_vfs_uri_to_string (file_uri, GNOME_VFS_URI_HIDE_NONE);
 
-		rb_library_action_queue_add (rb_library_get_action_queue (priv->library),
+		rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
 					     FALSE,
 					     RB_LIBRARY_ACTION_ADD_FILE,
 					     filename);
@@ -268,10 +254,12 @@ add_directory (RBLibraryWatcherThreadPrivate *priv,
 }
 
 static gpointer
-thread_main (RBLibraryWatcherThreadPrivate *priv)
+thread_main (RBLibraryWalkerThreadPrivate *priv)
 {
 	while (TRUE)
 	{
+		RBLibraryActionQueue *queue;
+
 		g_mutex_lock (priv->lock);
 		
 		if (priv->dead == TRUE)
@@ -282,15 +270,26 @@ thread_main (RBLibraryWatcherThreadPrivate *priv)
 			g_thread_exit (NULL);
 		}
 
-		if (priv->dirty == TRUE)
+		queue = rb_library_get_walker_queue (priv->library);
+		while (rb_library_action_queue_is_empty (queue) == FALSE)
 		{
-			char *base_folder;
+			RBLibraryActionType type;
+			char *uri;
 			
-			priv->dirty = FALSE;
+			rb_library_action_queue_peek_head (queue,
+							   &type,
+							   &uri);
 
-			base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
-			add_directory (priv, base_folder);
-			g_free (base_folder);
+			switch (type)
+			{
+			case RB_LIBRARY_ACTION_ADD_DIRECTORY:
+				add_directory (priv, uri);
+				break;
+			default:
+				break;
+			}
+
+			rb_library_action_queue_pop_head (queue);
 		}
 
 		g_mutex_unlock (priv->lock);
@@ -299,13 +298,4 @@ thread_main (RBLibraryWatcherThreadPrivate *priv)
 	}
 
 	return NULL;
-}
-
-static void
-pref_changed_cb (GConfClient *client,
-		 guint cnxn_id,
-		 GConfEntry *entry,
-		 RBLibraryWatcherThread *thread)
-{
-	thread->priv->dirty = TRUE;
 }

@@ -1055,10 +1055,7 @@ rb_library_view_drop_cb (GtkWidget	  *widget,
 
 		if (uri != NULL)
 		{
-			/* add this uri to the library*/
-			rb_library_action_queue_add (rb_library_get_action_queue (view->priv->library),
-						     TRUE,
-						     RB_LIBRARY_ACTION_ADD_FILE, uri);
+			rb_library_add_uri (view->priv->library, uri);
 		}
 
 		g_free (uri);

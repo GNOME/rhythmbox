@@ -237,9 +237,10 @@ rb_library_action_type_get_type (void)
 	{
 		static const GEnumValue values[] =
 		{
-			{ RB_LIBRARY_ACTION_ADD_FILE,    "RB_LIBRARY_ACTION_ADD_FILE",    "add file" },
-			{ RB_LIBRARY_ACTION_REMOVE_FILE, "RB_LIBRARY_ACTION_REMOVE_FILE", "remove file" },
-			{ RB_LIBRARY_ACTION_UPDATE_FILE, "RB_LIBRARY_ACTION_UPDATE_FILE", "update file" },
+			{ RB_LIBRARY_ACTION_ADD_FILE,      "RB_LIBRARY_ACTION_ADD_FILE",      "add file" },
+			{ RB_LIBRARY_ACTION_ADD_DIRECTORY, "RB_LIBRARY_ACTION_ADD_DIRECTORY", "add directory" },
+			{ RB_LIBRARY_ACTION_REMOVE_FILE,   "RB_LIBRARY_ACTION_REMOVE_FILE",   "remove file" },
+			{ RB_LIBRARY_ACTION_UPDATE_FILE,   "RB_LIBRARY_ACTION_UPDATE_FILE",   "update file" },
 			{ 0, 0, 0 }
 		};
 

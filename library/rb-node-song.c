@@ -140,10 +140,7 @@ rb_node_song_sync (RBNode *node,
 		{
 			g_value_unset (&value);
 			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     TRUE,
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
+			rb_library_add_uri (library, location);
 			g_free (location);
 			g_object_unref (G_OBJECT (info));
 			return;
@@ -165,10 +162,7 @@ rb_node_song_sync (RBNode *node,
 		{
 			g_value_unset (&value);
 			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     TRUE,
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
+			rb_library_add_uri (library, location);
 			g_free (location);
 			g_object_unref (G_OBJECT (info));
 			return;
@@ -190,10 +184,7 @@ rb_node_song_sync (RBNode *node,
 		{
 			g_value_unset (&value);
 			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     TRUE,
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
+			rb_library_add_uri (library, location);
 			g_free (location);
 			g_object_unref (G_OBJECT (info));
 			return;

@@ -26,13 +26,15 @@
 #include <string.h>
 
 #include "rb-library.h"
-#include "rb-library-watcher-thread.h"
+#include "rb-library-walker-thread.h"
 #include "rb-library-xml-thread.h"
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
+#include "rb-library-preferences.h"
 #include "rb-node-song.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_library_class_init (RBLibraryClass *klass);
 static void rb_library_init (RBLibrary *library);
@@ -44,11 +46,12 @@ static void xml_thread_done_loading_cb (RBLibraryXMLThread *thread,
 
 struct RBLibraryPrivate
 {
-	RBLibraryWatcherThread *watcher_thread;
+	RBLibraryWalkerThread *walker_thread;
 	RBLibraryXMLThread *xml_thread;
 	RBLibraryMainThread *main_thread;
 
-	RBLibraryActionQueue *queue;
+	RBLibraryActionQueue *walker_queue;
+	RBLibraryActionQueue *main_queue;
 
 	RBNode *all_genres;
 	RBNode *all_artists;
@@ -111,7 +114,8 @@ rb_library_init (RBLibrary *library)
 
 	rb_library_create_skels (library);
 
-	library->priv->queue = rb_library_action_queue_new ();
+	library->priv->main_queue = rb_library_action_queue_new ();
+	library->priv->walker_queue = rb_library_action_queue_new ();
 
 	library->priv->main_thread = rb_library_main_thread_new (library);
 }
@@ -132,9 +136,9 @@ rb_library_finalize (GObject *object)
 	g_object_unref (G_OBJECT (library->priv->main_thread));
 	if (library->priv->xml_thread != NULL)
 		g_object_unref (G_OBJECT (library->priv->xml_thread));
-	if (library->priv->watcher_thread != NULL)
-		g_object_unref (G_OBJECT (library->priv->watcher_thread));
-	g_object_unref (G_OBJECT (library->priv->queue));
+	g_object_unref (G_OBJECT (library->priv->walker_thread));
+	g_object_unref (G_OBJECT (library->priv->main_queue));
+	g_object_unref (G_OBJECT (library->priv->walker_queue));
 
 	rb_library_save (library);
 
@@ -167,14 +171,24 @@ rb_library_new (void)
 	return library;
 }
 
-void
-rb_library_add_file (RBLibrary *library,
-		     const char *uri)
+RBLibraryAction *
+rb_library_add_uri (RBLibrary *library,
+		    const char *uri)
 {
-	rb_library_action_queue_add (library->priv->queue,
-				     TRUE,
-				     RB_LIBRARY_ACTION_ADD_FILE,
-				     uri);
+	if (g_file_test (uri, G_FILE_TEST_IS_DIR) == FALSE)
+	{
+		return rb_library_action_queue_add (library->priv->main_queue,
+					            TRUE,
+					            RB_LIBRARY_ACTION_ADD_FILE,
+					            uri);
+	}
+	else
+	{
+		return rb_library_action_queue_add (library->priv->walker_queue,
+					            TRUE,
+					            RB_LIBRARY_ACTION_ADD_DIRECTORY,
+					            uri);
+	}
 }
 
 void
@@ -302,19 +316,51 @@ rb_library_save (RBLibrary *library)
 }
 
 static void
+push_base_folder (RBLibrary *library)
+{
+	char *base_folder;
+	
+	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
+	rb_library_action_queue_add (library->priv->walker_queue,
+				     FALSE,
+				     RB_LIBRARY_ACTION_ADD_DIRECTORY,
+				     base_folder);
+	g_free (base_folder);
+}
+
+static void
+pref_changed_cb (GConfClient *client,
+		 guint cnxn_id,
+		 GConfEntry *entry,
+		 RBLibrary *library)
+{
+	push_base_folder (library);
+}
+
+static void
 xml_thread_done_loading_cb (RBLibraryXMLThread *thread,
 			    RBLibrary *library)
 {
 	g_object_unref (G_OBJECT (library->priv->xml_thread));
 	library->priv->xml_thread = NULL;
 
-	library->priv->watcher_thread = rb_library_watcher_thread_new (library);
+	eel_gconf_notification_add (CONF_LIBRARY_BASE_FOLDER,
+				    (GConfClientNotifyFunc) pref_changed_cb,
+				    library);
+
+	push_base_folder (library);
 }
 
 RBLibraryActionQueue *
-rb_library_get_action_queue (RBLibrary *library)
+rb_library_get_main_queue (RBLibrary *library)
 {
-	return library->priv->queue;
+	return library->priv->main_queue;
+}
+
+RBLibraryActionQueue *
+rb_library_get_walker_queue (RBLibrary *library)
+{
+	return library->priv->walker_queue;
 }
 
 void
@@ -324,4 +370,6 @@ rb_library_release_brakes (RBLibrary *library)
 							       library->priv->xml_file);
 	g_signal_connect (G_OBJECT (library->priv->xml_thread), "done_loading",
 			  G_CALLBACK (xml_thread_done_loading_cb), library);
+
+	library->priv->walker_thread = rb_library_walker_thread_new (library);
 }

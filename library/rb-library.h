@@ -53,7 +53,7 @@ RBLibrary            *rb_library_new                (void);
 
 void                  rb_library_release_brakes     (RBLibrary *library);
 
-void                  rb_library_add_file           (RBLibrary *library,
+RBLibraryAction      *rb_library_add_uri            (RBLibrary *library,
 					             const char *uri);
 void                  rb_library_remove_node        (RBLibrary *library,
 					             RBNode *node);
@@ -63,7 +63,8 @@ RBNode               *rb_library_get_all_artists    (RBLibrary *library);
 RBNode               *rb_library_get_all_albums     (RBLibrary *library);
 RBNode               *rb_library_get_all_songs      (RBLibrary *library);
 
-RBLibraryActionQueue *rb_library_get_action_queue   (RBLibrary *library);
+RBLibraryActionQueue *rb_library_get_main_queue     (RBLibrary *library);
+RBLibraryActionQueue *rb_library_get_walker_queue   (RBLibrary *library);
 
 G_END_DECLS
 

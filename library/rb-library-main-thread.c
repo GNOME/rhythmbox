@@ -203,7 +203,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			g_thread_exit (NULL);
 		}
 
-		queue = rb_library_get_action_queue (priv->library);
+		queue = rb_library_get_main_queue (priv->library);
 		while (rb_library_action_queue_is_empty (queue) == FALSE && i <= 10)
 		{
 			RBLibraryActionType type;
@@ -222,10 +222,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 					
 					song = rb_node_new (RB_NODE_TYPE_SONG);
 					rb_node_song_set_location (song, uri, priv->library);
-
-					break;
 				}
-				/* already there, update: fall through */
+				break;
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
 				{
 					RBNode *song;
