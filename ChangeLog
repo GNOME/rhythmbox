@@ -1,5 +1,17 @@
 2003-08-19  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell-player.c: (eos_cb):
+
+	Use GDK_THREADS_ENTER () instead of gdk_threads_enter ()
+	for stylistic reasons.
+	
+	* sources/rb-library-source.c: (impl_get_status):
+	* sources/rb-playlist-source.c: (impl_get_status):
+
+	Quash memory leak.
+
+2003-08-19  Colin Walters  <walters@verbum.org>
+
 	* NEWS:  Update.
 	* shell/rb-shell.c (rb_shell_construct): Don't abbreviate
 	Rhythmbox as "RB" in messages to users.

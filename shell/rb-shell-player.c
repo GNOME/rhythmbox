@@ -1346,7 +1346,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("eos!");
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
 	if (player->priv->source != NULL)
 	{
@@ -1370,7 +1370,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 		}
 	}
 
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 }
 
 void

@@ -149,6 +149,8 @@ struct RBLibrarySourcePrivate
 
 	gboolean lock;
 
+	char *status;
+	
 	RBNodeFilter *artists_filter;
 	RBNodeFilter *songs_filter;
 	RBNodeFilter *albums_filter;
@@ -610,9 +612,11 @@ static const char *
 impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	return rb_library_compute_status (source->priv->library,
-					  rb_library_get_all_songs (source->priv->library),
-					  source->priv->songs_filter);
+	g_free (source->priv->status);
+	source->priv->status = rb_library_compute_status (source->priv->library,
+							  rb_library_get_all_songs (source->priv->library),
+							  source->priv->songs_filter);
+	return source->priv->status;
 }
 
 static const char *

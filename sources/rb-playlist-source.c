@@ -429,8 +429,10 @@ static const char *
 impl_get_status (RBSource *asource)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	return rb_library_compute_status (source->priv->library, source->priv->root,
-					  source->priv->filter);
+	g_free (source->priv->status); 
+	source->priv->status = rb_library_compute_status (source->priv->library, source->priv->root,
+							  source->priv->filter);
+	return source->priv->status;
 }
 
 static const char *
