@@ -385,7 +385,7 @@ playing_source_changed_cb (RBRandomPlayOrderByAge *rorder)
 
 	player = rb_play_order_get_player (RB_PLAY_ORDER (rorder));
 
-	source = rb_shell_player_get_source (player);
+	source = rb_shell_player_get_playing_source (player);
 	if (source) {
 		g_object_get (G_OBJECT (source),
 				"db", &db,

@@ -643,21 +643,23 @@ get_song_info_from_player (RBShell *shell)
 	RhythmDB *db = shell->priv->db;
 	GNOME_Rhythmbox_SongInfo *song_info;
 	RBEntryView *view;
+	RBSource *playing_source;
 
-	view = rb_source_get_entry_view (shell->priv->selected_source);
+	playing_source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+
+	if (playing_source == NULL)
+		goto lose;
+
+	view = rb_source_get_entry_view (playing_source);
 	g_object_get (G_OBJECT (view), "playing_entry", &entry, NULL);
-	if (entry == NULL) {
-		/* FIXME: ORBit probably won't like it */
-		return NULL;
-	}
+	if (entry == NULL)
+		goto lose;
 
 	song_info = GNOME_Rhythmbox_SongInfo__alloc ();
 	rhythmdb_read_lock (db);
 	song_info->title = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
-	if (rb_source_have_artist_album (shell->priv->selected_source)) {
-		song_info->artist = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ARTIST));
-		song_info->album = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ALBUM));
-	}
+	song_info->artist = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ARTIST));
+	song_info->album = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ALBUM));
 	song_info->genre = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_GENRE));
 	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
 	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
@@ -670,6 +672,8 @@ get_song_info_from_player (RBShell *shell)
 	rhythmdb_read_unlock (db);
 
 	return song_info;
+ lose:
+	return NULL;
 }
 
 static void
@@ -1376,7 +1380,7 @@ static void
 rb_shell_source_deleted_cb (RBSource *source,
 			    RBShell *shell)
 {
-	if (source == rb_shell_player_get_source (shell->priv->player_shell)) {
+	if (source == rb_shell_player_get_playing_source (shell->priv->player_shell)) {
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 	}
 	if (source == shell->priv->selected_source) {
@@ -1425,8 +1429,8 @@ rb_shell_select_source (RBShell *shell,
 	/* update services */
 	rb_shell_clipboard_set_source (shell->priv->clipboard_shell,
 				       RB_SOURCE (source));
-	rb_shell_player_set_source (shell->priv->player_shell,
-				    RB_SOURCE (source));
+	rb_shell_player_set_selected_source (shell->priv->player_shell,
+					     RB_SOURCE (source));
 	rb_source_header_set_source (shell->priv->source_header,
 				     RB_SOURCE (source));
 	rb_statusbar_set_source (shell->priv->statusbar,
@@ -2045,7 +2049,7 @@ rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry)
 static void
 rb_shell_jump_to_current (RBShell *shell)
 {
-	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
+	RBSource *source = rb_shell_player_get_playing_source (shell->priv->player_shell);
 	RBEntryView *songs;
 	RhythmDBEntry *playing;
 

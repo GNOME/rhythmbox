@@ -796,8 +796,8 @@ rb_shell_player_error_quark (void)
 }
 
 void
-rb_shell_player_set_source (RBShellPlayer *player,
-			    RBSource *source)
+rb_shell_player_set_selected_source (RBShellPlayer *player,
+				     RBSource *source)
 {
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 	g_return_if_fail (RB_IS_SOURCE (source));
@@ -808,7 +808,7 @@ rb_shell_player_set_source (RBShellPlayer *player,
 }
 
 RBSource *
-rb_shell_player_get_source (RBShellPlayer *player)
+rb_shell_player_get_playing_source (RBShellPlayer *player)
 {
 	return player->priv->source;
 }

@@ -71,12 +71,12 @@ GType			rb_shell_player_get_type   (void);
 RBShellPlayer *		rb_shell_player_new		(BonoboUIComponent *component,
 							 BonoboUIComponent *tray_component);
 
-void			rb_shell_player_set_source	(RBShellPlayer *shell_player,
-							 RBSource *player);
+void			rb_shell_player_set_selected_source	(RBShellPlayer *shell_player,
+								 RBSource *player);
 void			rb_shell_player_set_playing_source (RBShellPlayer *player,
 							    RBSource *source);
 
-RBSource *		rb_shell_player_get_source	(RBShellPlayer *shell_player);
+RBSource *		rb_shell_player_get_playing_source (RBShellPlayer *shell_player);
 
 void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 

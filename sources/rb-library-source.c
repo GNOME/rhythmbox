@@ -73,6 +73,10 @@ static void rb_library_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
+static void rb_library_source_handle_genre_selection (RBLibrarySource *libsource, GList *genres);
+static void rb_library_source_handle_artist_selection (RBLibrarySource *libsource, GList *artists);
+static void rb_library_source_handle_album_selection (RBLibrarySource *libsource, GList *albums);
+
 static void genres_selected_cb (RBPropertyView *propview, GList *genres,
 			       RBLibrarySource *libsource);
 static void genres_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource);
@@ -284,12 +288,14 @@ update_browser_views_visibility (RBLibrarySource *source)
 			gtk_widget_hide (genres);
 			gtk_widget_show (artists);
 			gtk_widget_show (albums);
-			
+			/* Since this is hidden now, reset the query */
+			rb_library_source_handle_genre_selection (source, NULL);
 		break;
 		case 1:
 			gtk_widget_show (genres);
 			gtk_widget_show (artists);
 			gtk_widget_hide (albums);
+			rb_library_source_handle_artist_selection (source, NULL);
 
 		break;
 		case 2:
@@ -631,6 +637,12 @@ genres_selected_cb (RBPropertyView *propview, GList *genres,
 		   RBLibrarySource *libsource)
 {
 	rb_debug ("genre selected"); 
+	rb_library_source_handle_genre_selection (libsource, genres);
+}
+
+static void
+rb_library_source_handle_genre_selection (RBLibrarySource *libsource, GList *genres)
+{
 	if (string_list_equal (libsource->priv->selected_genres, genres))
 		return;
 	g_list_foreach (libsource->priv->selected_genres, (GFunc) g_free, NULL);
@@ -655,6 +667,13 @@ static void
 artists_selected_cb (RBPropertyView *propview, GList *artists, 
 		     RBLibrarySource *libsource)
 {
+	rb_library_source_handle_artist_selection (libsource, artists);
+}
+
+static void
+rb_library_source_handle_artist_selection (RBLibrarySource *libsource, GList *artists)
+{
+
 	rb_debug ("artist selected"); 
 	if (string_list_equal (libsource->priv->selected_artists, artists))
 		return;
@@ -681,6 +700,12 @@ albums_selected_cb (RBPropertyView *propview, GList *albums,
 		    RBLibrarySource *libsource)
 {
 	rb_debug ("album selected"); 
+	rb_library_source_handle_album_selection (libsource, albums);
+}
+
+static void
+rb_library_source_handle_album_selection (RBLibrarySource *libsource, GList *albums)
+{
 	if (string_list_equal (libsource->priv->selected_albums, albums))
 		return;
 	g_list_foreach (libsource->priv->selected_albums, (GFunc) g_free, NULL);
