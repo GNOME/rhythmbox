@@ -31,12 +31,7 @@ fi
 
 have_intltoolize=false
 if intltoolize --version < /dev/null > /dev/null 2>&1 ; then
-	intltool_version=`intltoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
-	case $intltool_version in
-	    0.2[5-9]*)
-		have_intltoolize=true
-		;;
-	esac
+    have_intltoolize=true
 fi
 if $have_intltoolize ; then : ; else
 	echo
@@ -48,12 +43,7 @@ fi
 
 have_autoconf=false
 if autoconf --version < /dev/null > /dev/null 2>&1 ; then
-	autoconf_version=`autoconf --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
-	case $autoconf_version in
-	    2.5*)
-		have_autoconf=true
-		;;
-	esac
+    have_autoconf=true
 fi
 if $have_autoconf ; then : ; else
 	echo

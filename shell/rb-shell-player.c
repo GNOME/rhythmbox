@@ -1072,7 +1072,8 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	entry_play_time = rb_shell_player_get_playing_time (player);
 	entry_duration = rb_shell_player_get_playing_song_duration (player);
 	entry_time_left = entry_duration - entry_play_time;
-	g_return_if_fail (entry_time_left >= 0);
+	if (entry_time_left <= 0)
+		return;
 	
 	/* sloppy end of song */
 	if (entry_time_left < 16)
