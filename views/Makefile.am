@@ -7,6 +7,8 @@ libviews_la_SOURCES =					\
 	rb-view-cmd.h					\
         rb-group-view.c                                 \
         rb-group-view.h					\
+	rb-song-info-helpers.c				\
+	rb-song-info-helpers.h				\
 	rb-audiocd-view.c				\
 	rb-audiocd-view.h
 

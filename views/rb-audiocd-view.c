@@ -49,6 +49,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-library-dnd-types.h"
+#include "rb-song-info-helpers.h"
 
 #define RB_AUDIOCD_XML_VERSION "1.0"
 
@@ -853,7 +854,7 @@ rb_audiocd_view_cmd_eject_cd (BonoboUIComponent *component,
                               const char *verbname)
 {
         printf ("Ejecting CD\n");
-        
+        rb_audiocd_view_set_playing_node (view, NULL);
         monkey_media_audio_cd_open_tray (view->priv->cd, NULL);
 }
 
@@ -892,43 +893,6 @@ rb_audiocd_view_node_removed_cb (RBNode *node,
 	rb_audiocd_view_set_playing_node (view, NULL);
 }
 
-static void
-set_duration (RBNode *node,
-	      MonkeyMediaStreamInfo *info)
-{
-	GValue val = { 0, };
-	GValue string_val = { 0, };
-	long minutes = 0, seconds = 0;
-	char *tmp;
-	
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
-					    0,
-				            &val);
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_REAL_DURATION,
-			      &val);
-	
-	g_value_init (&string_val, G_TYPE_STRING);
-
-	if (g_value_get_long (&val) > 0) {
-		minutes = g_value_get_long (&val) / 60;
-		seconds = g_value_get_long (&val) % 60;
-	}
-	
-	tmp = g_strdup_printf ("%ld:%02ld", minutes, seconds);
-	g_value_set_string (&string_val, tmp);
-	g_free (tmp);
-	
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_SONG_PROP_DURATION,
-			      &string_val);
-
-	g_value_unset (&string_val);
-
-	g_value_unset (&val);
-}
-
 
 void
 update_musicbrainz_info_thread (RBAudiocdView *view)
@@ -953,48 +917,9 @@ update_musicbrainz_info_thread (RBAudiocdView *view)
 
                 g_assert (info != NULL);
        
-                if (monkey_media_stream_info_get_value (info, 
-                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST, 
-                                                        0, 
-                                                        &value))
-                {
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_SONG_PROP_ARTIST,
-                                              &value);
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
-                                              &value);
-                        g_value_unset (&value);
-                }
-       
-                if (monkey_media_stream_info_get_value (info, 
-                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM, 
-                                                        0, 
-                                                        &value))
-                {
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_SONG_PROP_ALBUM,
-                                              &value);
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
-                                              &value); 
-                        g_value_unset (&value);
-                }
-                
-       
-                if (monkey_media_stream_info_get_value (info,
-                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
-                                                        0,
-                                                        &value))
-                {
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_PROP_NAME,
-                                              &value);
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_PROP_NAME_SORT_KEY,
-                                              &value);
-                        g_value_unset (&value);
-                }
+                rb_song_set_artist (track, info);
+                rb_song_set_album (track, info);
+                rb_song_set_title (track, info);
         }
         printf ("About to exit thread\n");
         g_thread_exit (NULL);
@@ -1040,6 +965,9 @@ rb_audiocd_node_fill_basic (char *location)
        rb_node_set_property (RB_NODE (track),
                              RB_NODE_SONG_PROP_TRACK_NUMBER,
                              &value);
+       rb_node_set_property (RB_NODE (track),
+                             RB_NODE_SONG_PROP_REAL_TRACK_NUMBER,
+                             &value);
        g_value_unset (&value);
        
        g_value_init (&value, G_TYPE_STRING);
@@ -1049,7 +977,7 @@ rb_audiocd_node_fill_basic (char *location)
                              &value);
        g_value_unset (&value);
        
-       set_duration (RB_NODE (track), info);
+       rb_song_set_duration (RB_NODE (track), info);
 
        return RB_NODE (track);
 }
