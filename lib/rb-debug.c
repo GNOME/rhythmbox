@@ -62,7 +62,8 @@ rb_debug_real (const char *func,
 	str_time = g_new0 (char, 255);
 	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
 
-	g_printerr ("[%s] %s:%d (%s): %s\n", func, file, line, str_time, buffer);
+	g_printerr ("[%p] [%s] %s:%d (%s): %s\n", g_thread_self (),
+		    func, file, line, str_time, buffer);
 	
 	g_free (str_time);
 }

@@ -1,3 +1,17 @@
+2003-08-11  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-debug.c: (rb_debug_real):
+	* lib/widgets/rb-node-view.c: (root_child_removed_cb):
+	* library/rb-node.c: (rb_node_dispose),
+	(rb_node_set_property_internal), (rb_node_add_child),
+	(rb_node_remove_child_unlocked), (rb_node_remove_child),
+	(rb_node_sort_children), (rb_node_reorder_children):
+
+	Just some minor changes:
+	Make debug output include thread ID.  Add a comment in
+	rb-node-view.c, and some thread helper functions cleanup
+	in rb-node.c.
+
 2003-08-10  Colin Walters  <walters@debian.org>
 
 	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),

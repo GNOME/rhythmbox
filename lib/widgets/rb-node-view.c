@@ -1612,6 +1612,9 @@ root_child_removed_cb (RBNode *root,
 		       guint last_index,
 		       RBNodeView *view)
 {
+	/* FIXME!  This function does absolutely nothing right now.
+	 * should it? */
+
 	/* selection bit */
 	if (view->priv->keep_selection == FALSE)
 		return;
