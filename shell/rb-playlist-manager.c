@@ -783,8 +783,8 @@ rb_playlist_manager_cmd_load_playlist (BonoboUIComponent *component,
 {
 	GtkWidget *dialog;
 
-	dialog = rb_ask_file_multiple (_("Load playlist"), NULL,
-			              GTK_WINDOW (mgr->priv->window));
+	dialog = rb_ask_file (_("Load playlist"), NULL,
+			      GTK_WINDOW (mgr->priv->window));
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);

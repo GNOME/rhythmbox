@@ -90,56 +90,13 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 	gtk_widget_show (GTK_WIDGET (dialog));
 }
 
-GtkWidget *
-rb_ask_file_multiple (const char *title,
-		      const char *default_file,
-		      GtkWindow *parent)
-{
-	GtkWidget *filesel;
-
-#ifndef HAVE_GTK_2_3
-	filesel = gtk_file_selection_new (title);
-	if (default_file != NULL)
-		gtk_file_selection_set_filename (GTK_FILE_SELECTION (filesel), default_file);
-
-	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (filesel));
-	gtk_file_selection_set_select_multiple (GTK_FILE_SELECTION (filesel), TRUE);
-#else
-	filesel = gtk_file_chooser_dialog_new (title, 
-					       parent, 
-					       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
-					       GTK_STOCK_CANCEL, 
-					       GTK_RESPONSE_CANCEL,
-					       GTK_STOCK_OPEN, 
-					       GTK_RESPONSE_OK,
-					       NULL);
-
-	if (default_file != NULL)
-		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (filesel),
-							 default_file);
-
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel),
-					      TRUE);
-
-	gtk_dialog_set_default_response (GTK_DIALOG (filesel),
-					 GTK_RESPONSE_OK);
-#endif
-	gtk_window_set_transient_for (GTK_WINDOW (filesel),
-				      parent);
-	gtk_window_set_modal (GTK_WINDOW (filesel),
-			      FALSE);
-	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
-					    TRUE);
-	gtk_widget_show_all (filesel);
-
-	return filesel;
-}
-
 static GtkWidget *
 rb_ask_file_internal (const char *title,
 		      const char *default_file,
 		      GtkWindow *parent,
-		      gboolean want_dir)
+		      gboolean multiple,
+		      gboolean want_dir,
+		      gboolean want_file_also)
 {
 	GtkWidget *filesel;
 
@@ -150,21 +107,31 @@ rb_ask_file_internal (const char *title,
 
 	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (filesel));
 #else
-	filesel = gtk_file_chooser_dialog_new (title, 
-					       parent, 
-					       want_dir ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER : GTK_FILE_CHOOSER_ACTION_OPEN,
-					       GTK_STOCK_CANCEL, 
-					       GTK_RESPONSE_CANCEL,
-					       GTK_STOCK_OPEN, 
-					       GTK_RESPONSE_OK,
-					       NULL);
+	{
+		GtkFileChooserAction mode;
+		if (want_dir) {
+			mode = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+			if (want_file_also)
+				mode &= GTK_FILE_CHOOSER_ACTION_OPEN;
+		} else {
+			mode = GTK_FILE_CHOOSER_ACTION_OPEN;
+		}
+		
+		filesel = gtk_file_chooser_dialog_new (title, 
+						       parent, 
+						       mode,
+						       GTK_STOCK_CANCEL, 
+						       GTK_RESPONSE_CANCEL,
+						       GTK_STOCK_OPEN, 
+						       GTK_RESPONSE_OK,
+						       NULL);
+	}
 
 	if (default_file != NULL)
 		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (filesel),
 							 default_file);
 
-	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel),
-					      FALSE);
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel), multiple);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (filesel),
 					 GTK_RESPONSE_OK);
@@ -181,21 +148,37 @@ rb_ask_file_internal (const char *title,
 	return filesel;
 }
 
-
 GtkWidget *
 rb_ask_file (const char *title,
 	     const char *default_file,
 	     GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, FALSE);
+	return rb_ask_file_internal (title, default_file, parent, FALSE, FALSE, FALSE);
+}
+
+GtkWidget *
+rb_ask_file_multiple (const char *title,
+		      const char *default_file,
+		      GtkWindow *parent)
+{
+	return rb_ask_file_internal (title, default_file, parent, TRUE, FALSE, FALSE);
 }
 
 GtkWidget *
 rb_ask_dir (const char *title,
-	     const char *default_file,
-	     GtkWindow *parent)
+	    const char *default_file,
+	    GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, TRUE);
+	return rb_ask_file_internal (title, default_file, parent, FALSE, TRUE, FALSE);
+}
+
+GtkWidget *
+rb_ask_dir_multiple (const char *title,
+		     const char *default_file,
+		     GtkWindow *parent,
+		     gboolean file_also)
+{
+	return rb_ask_file_internal (title, default_file, parent, TRUE, TRUE, TRUE);
 }
 
 GtkWidget *
