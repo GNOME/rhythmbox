@@ -343,7 +343,8 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 {
 	g_return_val_if_fail (ev != NULL, NULL);
 
-	if (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError) != 0)
+	if ((CORBA_exception_id (ev) != NULL) &&
+	    (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError != 0)))
 	{
 		return bonobo_exception_get_text (ev); 
 	}
@@ -352,7 +353,10 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 		const Bonobo_GeneralError *bonobo_general_error;
 
 		bonobo_general_error = CORBA_exception_value (ev);
-		return g_strdup (bonobo_general_error->description);
+		if (bonobo_general_error != NULL) 
+		{
+			return g_strdup (bonobo_general_error->description);
+		}
 	}
 
 	return NULL;
