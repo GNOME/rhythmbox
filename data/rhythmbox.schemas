@@ -201,6 +201,21 @@
         this in the settings menu, unless you know what you are doing.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/browser_views</key>
+        <applyto>/apps/rhythmbox/ui/browser_views</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Views to show in the browser.</short>
+	<long>
+	0 Artists, Albums
+	1 Genres, Artists
+	2 Genres, Artists, Albums
+        </long>
+        </locale>
+      </schema>
 
     </schemalist>
 </gconfschemafile>

@@ -49,6 +49,7 @@
 #include "rb-node-filter.h"
 #include "rb-search-entry.h"
 #include "rb-view-cmd.h"
+#include "rb-preferences.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
 static void rb_library_view_init (RBLibraryView *view);
@@ -207,6 +208,8 @@ struct RBLibraryViewPrivate
 
 	gboolean changing_artist;
 	gboolean changing_genre;
+
+	guint views_notif;
 };
 
 enum
@@ -328,6 +331,48 @@ rb_library_view_class_init (RBLibraryViewClass *klass)
 }
 
 static void
+update_browser_views_visibility (RBLibraryView *view)
+{
+	int views;
+	GtkWidget *genres = GTK_WIDGET (view->priv->genres);
+	GtkWidget *artists = GTK_WIDGET (view->priv->artists);
+	GtkWidget *albums = GTK_WIDGET (view->priv->albums);
+	
+	views = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
+
+	switch (views)
+	{
+		case 0:
+			gtk_widget_hide (genres);
+			gtk_widget_show (artists);
+			gtk_widget_show (albums);
+		break;
+		case 1:
+			gtk_widget_show (genres);
+			gtk_widget_show (artists);
+			gtk_widget_hide (albums);
+		break;
+		case 2:
+			gtk_widget_show (genres);
+			gtk_widget_show (artists);
+			gtk_widget_show (albums);
+		break;
+	}
+}
+
+static void
+browser_views_notifier (GConfClient *client,
+ 			guint cnxn_id,
+ 			GConfEntry *entry,
+ 			RBLibraryView *view)
+{
+	rb_node_view_select_node (view->priv->genres,
+				  rb_library_get_all_artists (view->priv->library));
+	
+	update_browser_views_visibility (view);
+}
+
+static void
 rb_library_view_init (RBLibraryView *view)
 {
 	RBSidebarButton *button;
@@ -363,6 +408,9 @@ rb_library_view_init (RBLibraryView *view)
 			  "search",
 			  G_CALLBACK (rb_library_view_search_cb),
 			  view);
+	
+	view->priv->views_notif = eel_gconf_notification_add 
+		(CONF_UI_BROWSER_VIEWS, (GConfClientNotifyFunc) browser_views_notifier, view);
 }
 
 static void
@@ -389,6 +437,8 @@ rb_library_view_finalize (GObject *object)
 	
 	g_object_unref (G_OBJECT (view->priv->search));
 
+	eel_gconf_notification_remove (view->priv->views_notif);
+	
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -551,6 +601,8 @@ rb_library_view_set_property (GObject *object,
 			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_SONG_INFO,
 					       rb_node_view_have_selection (view->priv->songs));
 
+			update_browser_views_visibility (view);
+			
 			rb_node_view_select_node (view->priv->artists,
 			 		          rb_library_get_all_albums (view->priv->library));
 		}

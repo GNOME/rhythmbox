@@ -27,6 +27,7 @@
 #include <gtk/gtkbox.h>
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkoptionmenu.h>
+#include <gtk/gtkradiobutton.h>
 #include <glade/glade.h>
 #include <libgnome/gnome-help.h>
 #include <string.h>
@@ -36,6 +37,7 @@
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "eel-gconf-extensions.h"
+#include "rb-preferences.h"
 
 static void rb_shell_preferences_class_init (RBShellPreferencesClass *klass);
 static void rb_shell_preferences_init (RBShellPreferences *shell_preferences);
@@ -65,6 +67,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *rating_check;
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
+	GSList *browser_views_group;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -128,6 +131,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GladeXML *xml;
 	GtkWidget *help;
+	GtkWidget *tmp;
 	
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
@@ -187,7 +191,12 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "play_count_check");
 	shell_preferences->priv->last_played_check =
 		glade_xml_get_widget (xml, "last_played_check");
-
+	tmp = glade_xml_get_widget (xml, "browser_views_radio");
+	shell_preferences->priv->browser_views_group =
+		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
+					(GTK_RADIO_BUTTON (tmp))));
+					
+	
 	g_object_unref (G_OBJECT (xml));
 
 	rb_shell_preferences_sync (shell_preferences);
@@ -203,6 +212,8 @@ rb_shell_preferences_finalize (GObject *object)
 
 	shell_preferences = RB_SHELL_PREFERENCES (object);
 
+	g_slist_free (shell_preferences->priv->browser_views_group);
+		
 	g_return_if_fail (shell_preferences->priv != NULL);
 
 	g_free (shell_preferences->priv);
@@ -248,6 +259,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	char *style;
 	char *columns;
 	int index = 0, i;
+	GSList *list;
 
 	gtk_widget_set_sensitive (shell_preferences->priv->style_optionmenu,
 				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
@@ -289,6 +301,10 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	}
 	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
 				     index);
+	
+	list = g_slist_nth (shell_preferences->priv->browser_views_group,
+			    eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
 
 	g_free (columns);
 	g_free (style);
@@ -301,6 +317,17 @@ ui_pref_changed (GConfClient *client,
 		 RBShellPreferences *shell_preferences)
 {
 	rb_shell_preferences_sync (shell_preferences);
+}
+
+void
+browser_views_activated_cb (GtkWidget *widget,
+			    RBShellPreferences *prefs)
+{
+	int index;
+
+	index = g_slist_index (prefs->priv->browser_views_group, widget);
+
+	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
 }
 
 void
