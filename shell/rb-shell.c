@@ -2074,8 +2074,7 @@ rb_shell_cmd_contents (BonoboUIComponent *component,
 	gnome_help_display ("rhythmbox.xml", NULL, &error);
 
 	if (error != NULL) {
-		g_warning (error->message);
-
+		rb_error_dialog ("%s", error->message);
 		g_error_free (error);
 	}
 }
