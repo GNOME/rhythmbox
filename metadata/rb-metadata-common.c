@@ -70,6 +70,14 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_BITRATE),
 				     GINT_TO_POINTER (G_TYPE_INT));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_GAIN),
+				     GINT_TO_POINTER (G_TYPE_DOUBLE));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_PEAK),
+				     GINT_TO_POINTER (G_TYPE_DOUBLE));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM_GAIN),
+				     GINT_TO_POINTER (G_TYPE_DOUBLE));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_ALBUM_PEAK),
+				     GINT_TO_POINTER (G_TYPE_DOUBLE));
 		g_object_set_data_full (G_OBJECT (md), "rb-metadata-field-type-map",
 					map, (GDestroyNotify) g_hash_table_destroy);
 	}

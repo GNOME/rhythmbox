@@ -96,6 +96,9 @@ void		rb_player_set_volume (RBPlayer *mp,
 				      float volume);
 float		rb_player_get_volume (RBPlayer *mp);
 
+void		rb_player_set_replaygain (RBPlayer *mp,
+					  double track_gain, double track_peak, double album_gain, double album_peak);
+
 void		rb_player_set_mute   (RBPlayer *mp,
 				      gboolean mute);
 

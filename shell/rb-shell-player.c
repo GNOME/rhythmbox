@@ -137,7 +137,8 @@ static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
-static void rb_shell_player_sync_volume (RBShellPlayer *player);
+static void rb_shell_player_sync_volume (RBShellPlayer *player); 
+static void rb_shell_player_sync_replaygain (RBShellPlayer *player);
 static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
 static void eos_cb (RBPlayer *player, gpointer data);
 static void error_cb (RBPlayer *player, GError *err, gpointer data);
@@ -972,6 +973,8 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	rb_entry_view_set_playing_entry (songs, entry);
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
+
+	rb_shell_player_sync_replaygain (player);
 }
 
 static void
@@ -1300,6 +1303,36 @@ rb_shell_player_sync_volume (RBShellPlayer *player)
 		volume = 1.0;
 	rb_player_set_volume (player->priv->mmplayer,
 					volume);
+					
+	rb_shell_player_sync_replaygain (player);					
+}
+
+static void
+rb_shell_player_sync_replaygain (RBShellPlayer *player)
+{
+	RhythmDBEntry *entry;
+	double entry_track_gain = 0;
+	double entry_track_peak = 0;
+	double entry_album_gain = 0;
+	double entry_album_peak = 0;
+	
+	entry = rb_shell_player_get_playing_entry (player);
+
+	if (entry != NULL) {
+		rhythmdb_read_lock (player->priv->db);
+             	entry_track_gain = rhythmdb_entry_get_double (player->priv->db,
+							      entry, RHYTHMDB_PROP_TRACK_GAIN);
+             	entry_track_peak = rhythmdb_entry_get_double (player->priv->db,
+							      entry, RHYTHMDB_PROP_TRACK_PEAK);
+             	entry_album_gain = rhythmdb_entry_get_double (player->priv->db,
+							      entry, RHYTHMDB_PROP_ALBUM_GAIN);
+             	entry_album_peak = rhythmdb_entry_get_double (player->priv->db,
+							      entry, RHYTHMDB_PROP_ALBUM_PEAK);
+		rhythmdb_read_unlock (player->priv->db);
+	}
+
+	rb_player_set_replaygain (player->priv->mmplayer, entry_track_gain, 
+				  entry_track_peak, entry_album_gain, entry_album_peak);
 }
 
 static void

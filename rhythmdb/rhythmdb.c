@@ -336,6 +336,18 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 	case RHYTHMDB_PROP_BITRATE:
 		*field = RB_METADATA_FIELD_BITRATE; 
 		return TRUE;		
+	case RHYTHMDB_PROP_TRACK_GAIN:
+		*field = RB_METADATA_FIELD_TRACK_GAIN;
+		return TRUE;
+	case RHYTHMDB_PROP_TRACK_PEAK:
+		*field = RB_METADATA_FIELD_TRACK_PEAK;
+		return TRUE;
+	case RHYTHMDB_PROP_ALBUM_GAIN:
+		*field = RB_METADATA_FIELD_ALBUM_GAIN;
+		return TRUE;
+	case RHYTHMDB_PROP_ALBUM_PEAK:
+		*field = RB_METADATA_FIELD_ALBUM_PEAK;
+		return TRUE;
 	default:
 		return FALSE;
 	}
@@ -788,6 +800,38 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	/* album */
 	set_metadata_string_default_unknown (db, entry, RB_METADATA_FIELD_ALBUM,
 					     RHYTHMDB_PROP_ALBUM);
+
+	/* replaygain track gain */
+        if (rb_metadata_get (db->priv->metadata,
+                             RB_METADATA_FIELD_TRACK_GAIN,
+                             &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_GAIN, &val);
+		g_value_unset (&val);
+	}
+
+	/* replaygain track peak */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_TRACK_PEAK,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_PEAK, &val);
+		g_value_unset (&val);
+	}
+
+	/* replaygain album gain */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_ALBUM_GAIN,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM_GAIN, &val);
+		g_value_unset (&val);
+	}
+
+	/* replaygain album peak */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_ALBUM_PEAK,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM_PEAK, &val);
+		g_value_unset (&val);
+	}
 }
 
 RhythmDBEntry *
@@ -1480,6 +1524,14 @@ rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
 		return "last-played-str";
 	case RHYTHMDB_PROP_BITRATE:
 		return "bitrate";
+	case RHYTHMDB_PROP_TRACK_GAIN:
+		return "replaygain-track-gain";
+	case RHYTHMDB_PROP_TRACK_PEAK:
+		return "replaygain-track-peak";
+	case RHYTHMDB_PROP_ALBUM_GAIN:
+		return "replaygain-album-gain";
+	case RHYTHMDB_PROP_ALBUM_PEAK:
+		return "replaygain-album-peak";
 	case RHYTHMDB_PROP_MIMETYPE:
 		return "mimetype";
 	default:
@@ -1884,6 +1936,10 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_GAIN, "Replaygain track gain"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_PEAK, "Replaygain track peak"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_GAIN, "Replaygain album pain"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_PEAK, "Replaygain album peak"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MIMETYPE, "Mime Type (gchararray)"),
 			{ 0, 0, 0 }
 		};

@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define RB_METADATA_NUM_FIELDS 20
+#define RB_METADATA_NUM_FIELDS 23
 
 /* This should correspond to the stuff in gsttag.h */
 typedef enum
@@ -50,6 +50,10 @@ typedef enum
 	RB_METADATA_FIELD_DURATION,                /* long */
 	RB_METADATA_FIELD_CODEC,		   /* string */
 	RB_METADATA_FIELD_BITRATE,                 /* int */
+	RB_METADATA_FIELD_TRACK_GAIN,		   /* double */
+	RB_METADATA_FIELD_TRACK_PEAK,		   /* double */
+	RB_METADATA_FIELD_ALBUM_GAIN,		   /* double */
+	RB_METADATA_FIELD_ALBUM_PEAK,		   /* double */
 } RBMetaDataField;
 
 typedef enum

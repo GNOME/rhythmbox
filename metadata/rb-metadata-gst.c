@@ -173,6 +173,14 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_CODEC;
 	else if (!strcmp (tag, GST_TAG_BITRATE))
 		return RB_METADATA_FIELD_BITRATE;
+	else if (!strcmp (tag, GST_TAG_TRACK_GAIN))
+		return RB_METADATA_FIELD_TRACK_GAIN;
+	else if (!strcmp (tag, GST_TAG_TRACK_PEAK))
+		return RB_METADATA_FIELD_TRACK_PEAK;
+	else if (!strcmp (tag, GST_TAG_ALBUM_GAIN))
+		return RB_METADATA_FIELD_ALBUM_GAIN;
+	else if (!strcmp (tag, GST_TAG_ALBUM_PEAK))
+		return RB_METADATA_FIELD_ALBUM_PEAK;
 	else
 		return -1;
 }
@@ -218,6 +226,14 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_CODEC;
 	case RB_METADATA_FIELD_BITRATE:
 		return GST_TAG_BITRATE;
+	case RB_METADATA_FIELD_TRACK_GAIN:
+		return GST_TAG_TRACK_GAIN;
+	case RB_METADATA_FIELD_TRACK_PEAK:
+		return GST_TAG_TRACK_PEAK;
+	case RB_METADATA_FIELD_ALBUM_GAIN:
+		return GST_TAG_ALBUM_GAIN;
+	case RB_METADATA_FIELD_ALBUM_PEAK:
+		return GST_TAG_ALBUM_PEAK;
 	default:
 		return NULL;
 	}

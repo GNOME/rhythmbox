@@ -29,11 +29,13 @@
 #include <gst/control/dparam_smooth.h>
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-player.h"
+#include "rb-debug.h"
 #include "rb-marshal.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
@@ -811,6 +813,49 @@ rb_player_playing (RBPlayer *mp)
 	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 
 	return mp->priv->playing;
+}
+
+void
+rb_player_set_replaygain (RBPlayer *mp,
+				    double track_gain, double track_peak, double album_gain, double album_peak)
+{
+	double scale;
+	double gain = 0;
+	double peak = 0;
+
+	g_return_if_fail (RB_IS_PLAYER (mp));
+
+	if (album_gain != 0)
+	  gain = album_gain;
+	else
+	  gain = track_gain;
+
+	if (gain == 0)
+		return;
+	  
+	scale = pow (10., gain / 20);
+
+	/* anti clip */
+	if (album_peak != 0)
+	  peak = album_peak;
+	else
+	  peak = track_peak;
+
+	if (peak != 0 && (scale * peak) > 1)
+		scale = 1.0 / peak;
+		
+	/* For security */
+	if (scale > 15)
+		scale = 15;
+	
+        rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
+
+	if (mp->priv->pipeline != NULL) {
+		g_object_set (G_OBJECT (mp->priv->volume_dparam),
+			      "value_float",
+			      mp->priv->cur_volume * scale,
+			      NULL);
+	}
 }
 
 void

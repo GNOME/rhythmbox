@@ -1227,6 +1227,18 @@ rhythmdb_tree_entry_get (RhythmDB *adb, RhythmDBEntry *aentry,
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		g_value_set_static_string (value, g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LAST_PLAYED_STR)));
 		break;
+	case RHYTHMDB_PROP_TRACK_GAIN:
+		g_value_set_double (value, g_value_get_double (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_TRACK_GAIN)));
+		break;
+	case RHYTHMDB_PROP_TRACK_PEAK:
+		g_value_set_double (value, g_value_get_double (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_TRACK_PEAK)));
+		break;
+	case RHYTHMDB_PROP_ALBUM_GAIN:
+		g_value_set_double (value, g_value_get_double (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_ALBUM_GAIN)));
+		break;
+	case RHYTHMDB_PROP_ALBUM_PEAK:
+		g_value_set_double (value, g_value_get_double (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_ALBUM_PEAK)));
+		break;
 	default:
 		g_value_copy (RHYTHMDB_TREE_ENTRY_VALUE (entry, propid), value);
 		break;
