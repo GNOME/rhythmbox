@@ -63,8 +63,6 @@ void     rb_shell_construct (RBShell *shell);
 
 char *rb_shell_corba_exception_to_string (CORBA_Environment *ev);
 
-extern GThread *main_thread;
-
 G_END_DECLS
 
 #endif /* __RB_SHELL_H */

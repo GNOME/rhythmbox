@@ -23,6 +23,8 @@ librb_la_SOURCES =					\
 	rb-stock-icons.h				\
 	rb-cut-and-paste-code.c				\
 	rb-cut-and-paste-code.h				\
+	rb-thread-helpers.c				\
+	rb-thread-helpers.h				\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\

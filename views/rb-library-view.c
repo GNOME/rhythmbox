@@ -699,7 +699,8 @@ rb_library_view_previous (RBViewPlayer *player)
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
-	if (monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (view->priv->playing_stream)) < 3)
+	if (monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (view->priv->playing_stream)) < 3 &&
+	    rb_library_view_have_previous (player) == TRUE)
 	{
 		/* we're in the first 2 seconds of the song, go to previous */
 		RBNode *node;

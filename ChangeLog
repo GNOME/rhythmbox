@@ -1,5 +1,29 @@
 2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/toolbar-editor.glade:
+
+	HIG-compliancy fixes.
+	
+	* lib/Makefile.am:
+	* lib/rb-thread-helpers.c: (rb_thread_helpers_init),
+	(rb_thread_helpers_in_main_thread):
+	* lib/rb-thread-helpers.h:
+	* library/Makefile.am:
+	* library/rb-node.c: (lock_gdk), (unlock_gdk):
+
+	Fix compile again.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_player):
+	* shell/rb-shell.c: (rb_shell_init),
+	(rb_shell_toolbar_editor_revert_clicked_cb):
+	* shell/rb-shell.h:
+	* views/rb-group-view.c: (rb_group_view_previous):
+	* views/rb-library-view.c: (rb_library_view_previous):
+
+	Fix previous behaviour on the first song.
+
+2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/rhythmbox-ui.xml.in:
 	* lib/toolbar/gul-tbi-std-toolitem.c:
 	(gul_tbi_std_toolitem_get_icon_impl),

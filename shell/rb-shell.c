@@ -58,6 +58,7 @@
 #include "rb-library-dnd-types.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
+#include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
 #include "eggtrayicon.h"
 #include "gul-toolbar.h"
@@ -341,8 +342,6 @@ static RBBonoboUIListener rb_tray_listeners[] =
 
 static GObjectClass *parent_class;
 
-GThread *main_thread = NULL;
-
 GType
 rb_shell_get_type (void)
 {
@@ -394,7 +393,7 @@ rb_shell_init (RBShell *shell)
 {
 	char *file;
 
-	main_thread = g_thread_self ();
+	rb_thread_helpers_init ();
 	
 	shell->priv = g_new0 (RBShellPrivate, 1);
 
@@ -1250,7 +1249,6 @@ rb_shell_toolbar_editor_revert_clicked_cb (GtkButton *b, GulTbEditor *tbe)
                 gul_tb_editor_set_available (tbe, avail);
                 g_object_unref (avail);
         }
-
 }
 
 static void

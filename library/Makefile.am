@@ -27,7 +27,6 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
-	-I$(top_srcdir)/shell 				\
 	$(RHYTHMBOX_CFLAGS)
 
 librblibrary_la_LDFLAGS = -export-dynamic

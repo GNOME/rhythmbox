@@ -30,7 +30,7 @@
 #include "rb-debug.h"
 #include "rb-enums.h"
 #include "rb-marshal.h"
-#include "rb-shell.h"
+#include "rb-thread-helpers.h"
 #include "rb-cut-and-paste-code.h"
 
 static void rb_node_class_init (RBNodeClass *klass);
@@ -1425,13 +1425,13 @@ read_lock_to_write_lock (RBNode *node)
 static void
 lock_gdk (void)
 {
-	if (g_thread_self () != main_thread)
+	if (rb_thread_helpers_in_main_thread () == FALSE)
 		GDK_THREADS_ENTER ();
 }
 
 static void
 unlock_gdk (void)
 {
-	if (g_thread_self () != main_thread)
+	if (rb_thread_helpers_in_main_thread () == FALSE)
 		GDK_THREADS_LEAVE ();
 }

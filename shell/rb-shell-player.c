@@ -528,7 +528,7 @@ rb_shell_player_sync_with_player (RBShellPlayer *player)
 
 	if (player->priv->player != NULL)
 	{
-		have_previous = (rb_view_player_have_previous (player->priv->player) == RB_VIEW_PLAYER_TRUE);
+		have_previous = TRUE;
 		have_next = (rb_view_player_have_next (player->priv->player) == RB_VIEW_PLAYER_TRUE);
 	}
 	else
