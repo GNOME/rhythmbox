@@ -808,6 +808,34 @@ out:
 }
 
 static gint
+rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			       RBEntryView *view)
+{
+	gint a_int, b_int;
+	const char *a_str = NULL;
+	const char *b_str = NULL;
+	gint ret;
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		goto out;
+
+	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
+	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
+
+	if (a_int != b_int) {
+		ret = (a_int < b_int ? -1 : 1);
+		goto out;
+	}
+
+out:
+	return ret;
+}
+
+static gint
 rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
@@ -1159,6 +1187,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 							 view,
 							 NULL);
 		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_tree_view_column_set_clickable (column, TRUE);
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 		gtk_tree_view_column_set_fixed_width (column, width * 5 + 5);
 		g_signal_connect_object (renderer,
@@ -1214,7 +1243,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_album_sort_func;
+		real_sort_data = view;
 		title = _("A_lbum");
 		key = "Album";
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
