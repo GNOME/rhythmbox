@@ -43,6 +43,7 @@ struct RBMetaDataPrivate
 	GstElement *sink;
 
 	char *type;
+	gboolean handoff;
 	gboolean eos;
 	GError *error;
 };
@@ -308,6 +309,21 @@ rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *c
 	}
 }
 
+static void
+rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPad *pad, RBMetaData *md)
+{
+	if (md->priv->handoff) {
+		rb_debug ("caught recursive handoff!");
+		return;
+	} else if (md->priv->eos) {
+		rb_debug ("caught handoff after eos!");
+		return;
+	}
+		
+	rb_debug ("in fakesink handoff");
+	md->priv->handoff = TRUE;
+}
+
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -317,6 +333,7 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *gnomevfssrc = NULL;
 	GstElement *typefind = NULL;
 	GstElement *spider = NULL;
+	GstCaps *filtercaps = NULL;
 	const char *plugin_name = NULL;
 
 	g_free (md->priv->uri);
@@ -325,6 +342,7 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->type = NULL;
 	md->priv->error = NULL;
 	md->priv->eos = FALSE;
+	md->priv->handoff = FALSE;
 
 	if (md->priv->pipeline)
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
@@ -368,19 +386,47 @@ rb_metadata_load (RBMetaData *md,
 	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
 	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
+	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
+	g_signal_connect (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md);
 	g_signal_connect (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
-	gst_element_link_filtered (spider, md->priv->sink,
-				   gst_caps_new_simple ("application/x-gst-tags", NULL));
-							
+
+	filtercaps = gst_caps_new_simple ("audio/x-raw-int", NULL);
+	gst_element_link_filtered (spider, md->priv->sink, filtercaps);
+	gst_caps_free (filtercaps);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
 	while (gst_bin_iterate (GST_BIN (pipeline))
 	       && md->priv->error == NULL
+	       && !md->priv->handoff
 	       && !md->priv->eos)
 		;
+
+	if (md->priv->handoff) {
+		/* We caught the first buffer, which means the decoder should have read all
+		 * of the metadata, and should know the length now.
+		 */
+		GstFormat format = GST_FORMAT_TIME;
+		gint64 length;
+		
+		if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
+			GValue *newval = g_new0 (GValue, 1);
+
+			rb_debug ("duration query succeeded");
+			
+			g_value_init (newval, G_TYPE_LONG);
+			/* FIXME - use guint64 for duration? */
+			g_value_set_long (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
+			g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
+					     newval);
+		} else {
+			rb_debug ("duration query failed!");
+		}
+	} else if (md->priv->eos)
+		rb_debug ("caught eos without handoff!");
+	
 	gst_element_set_state (pipeline, GST_STATE_NULL);
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
