@@ -519,7 +519,7 @@ rhythmdb_query_model_cancel (RhythmDBModel *rmodel)
 }
 
 void
-rhythmdb_query_model_complete (RhythmDBQueryModel *model)
+rhythmdb_query_model_signal_complete (RhythmDBQueryModel *model)
 {
 	struct RhythmDBQueryModelUpdate *update;
 
@@ -527,6 +527,11 @@ rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE;
 
 	g_async_queue_push (model->priv->pending_updates, update);
+}
+
+void
+rhythmdb_query_model_finish_complete (RhythmDBQueryModel *model)
+{
 	if (!rb_thread_helpers_in_main_thread ())
 		g_async_queue_pop (model->priv->query_complete);
 }

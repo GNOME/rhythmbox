@@ -55,6 +55,8 @@ struct RhythmDBPrivate
 
 	GHashTable *legacy_id_map;
 
+	gboolean query_in_progress;
+
 	GAsyncQueue *main_thread_cancel;
 	GAsyncQueue *update_queue;
 	GAsyncQueue *add_queue;
@@ -372,9 +374,6 @@ rhythmdb_shutdown (RhythmDB *db)
 	}
 
 	/* Once for each thread */
-	g_async_queue_push (db->priv->add_queue, NULL);
-	g_async_queue_push (db->priv->update_queue, NULL);
-	g_async_queue_push (db->priv->action_queue, NULL);
 	g_async_queue_pop (db->priv->main_thread_cancel);
 	g_async_queue_pop (db->priv->main_thread_cancel);
 	g_async_queue_pop (db->priv->main_thread_cancel);
@@ -731,6 +730,27 @@ push_err (RhythmDB *db, const char *uri, GError *error)
 	g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) signal_err_idle, loaderr, NULL);
 }
 
+static gpointer
+read_queue (GAsyncQueue *queue, gboolean *cancel)
+{
+	GTimeVal timeout;
+	gpointer ret;
+
+	g_get_current_time (&timeout);
+	g_time_val_add (&timeout, G_USEC_PER_SEC);
+	
+	if (G_UNLIKELY (*cancel))
+		return NULL;
+	while ((ret = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
+		if (G_UNLIKELY (*cancel))
+			return NULL;
+		g_get_current_time (&timeout);
+		g_time_val_add (&timeout, G_USEC_PER_SEC);
+	}
+
+	return ret;
+}
+
 static void
 add_file (const char *filename,
 	  RhythmDB *db)
@@ -745,7 +765,7 @@ add_thread_main (RhythmDB *db)
 		char *uri, *realuri;
 		GError *error = NULL;
 
-		uri = g_async_queue_pop (db->priv->add_queue);
+		uri = read_queue (db->priv->add_queue, &db->priv->exiting);
 		if (!uri)
 			break;
 
@@ -828,7 +848,7 @@ update_thread_main (RhythmDB *db)
 		GError *error = NULL;
 		RhythmDBEntry *entry;
 
-		entry = g_async_queue_pop (db->priv->update_queue);
+		entry = read_queue (db->priv->update_queue, &db->priv->exiting);
 
 		if (entry == NULL)
 			break;
@@ -854,7 +874,7 @@ action_thread_main (RhythmDB *db)
 	while (TRUE) {
 		struct RhythmDBAction *action;
 
-		action = g_async_queue_pop (db->priv->action_queue);
+		action = read_queue (db->priv->action_queue, &db->priv->exiting);
 
 		if (action == NULL)
 			break;
@@ -1485,11 +1505,12 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 				   data->main_model,
 				   &data->cancel);
 
-	rb_debug ("completed");
-	rhythmdb_query_model_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
 
+	rb_debug ("completed");
+	rhythmdb_query_model_signal_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
 	if (data->lock)
 		rhythmdb_read_unlock (db);
+	rhythmdb_query_model_finish_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
 
 	rhythmdb_query_free (data->query);
 	g_async_queue_push (db->priv->status_queue, data->main_model);
