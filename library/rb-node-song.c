@@ -110,7 +110,7 @@ rb_node_song_new (const char *location,
 {
 	RBNodeSong *node;
 	GValue value = { 0, };
-	
+
 	g_return_val_if_fail (location != NULL, NULL);
 	g_return_val_if_fail (RB_IS_LIBRARY (library), NULL);
 

@@ -763,12 +763,30 @@ rb_node_view_set_filter (RBNodeView *view,
 			 RBNode *filter_parent,
 			 RBNode *filter_artist)
 {
+	GtkWidget *window;
+	
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
+
+	window = gtk_widget_get_toplevel (GTK_WIDGET (view));
+	
+	if (window != NULL && window->window != NULL)
+	{
+		GdkCursor *cursor;
+
+		cursor = gdk_cursor_new (GDK_WATCH);
+		gdk_window_set_cursor (window->window, cursor);
+		gdk_cursor_unref (cursor);
+
+		gdk_flush ();
+	}
 
 	g_object_set (G_OBJECT (view),
 		      "filter-artist", filter_artist,
 		      "filter-parent", filter_parent,
 		      NULL);
+
+	if (window != NULL && window->window != NULL)
+		gdk_window_set_cursor (window->window, NULL);
 }
 
 void
