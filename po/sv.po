@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-20 19:13+0200\n"
-"PO-Revision-Date: 2003-08-20 19:14+0200\n"
+"POT-Creation-Date: 2003-08-22 17:57+0200\n"
+"PO-Revision-Date: 2003-08-22 17:58+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -389,7 +389,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:602 shell/rb-shell.c:1064
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1081
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -429,7 +429,7 @@ msgstr "_Mata ut ljud-cd..."
 msgid "_Jump to Playing Song"
 msgstr "_Hoppa till aktuell låt"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:67
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:69
 msgid "_View"
 msgstr "_Visa"
 
@@ -658,18 +658,26 @@ msgid "_Properties"
 msgstr "_Egenskaper"
 
 #: data/ui/rhythmbox-ui.xml.in.h:63
+msgid "_Rename"
+msgstr "_Byt namn"
+
+#: data/ui/rhythmbox-ui.xml.in.h:64
+msgid "_Rename Playlist"
+msgstr "_Byt namn på spellista"
+
+#: data/ui/rhythmbox-ui.xml.in.h:65
 msgid "_Save Playlist..."
 msgstr "_Spara spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:64
+#: data/ui/rhythmbox-ui.xml.in.h:66
 msgid "_Show Window"
 msgstr "_Visa fönster"
 
-#: data/ui/rhythmbox-ui.xml.in.h:65 shell/rb-statusbar.c:161
+#: data/ui/rhythmbox-ui.xml.in.h:67 shell/rb-statusbar.c:161
 msgid "_Shuffle"
 msgstr "_Blanda"
 
-#: data/ui/rhythmbox-ui.xml.in.h:66
+#: data/ui/rhythmbox-ui.xml.in.h:68
 msgid "_Source List"
 msgstr "_Källista"
 
@@ -877,7 +885,7 @@ msgstr "Hämta information om denna artist från webben"
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1068 shell/rb-shell.c:2026
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1085 shell/rb-shell.c:2149
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -1264,12 +1272,12 @@ msgstr "Inställningar för musikspelare"
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:502
+#: shell/rb-shell.c:505
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:804
+#: shell/rb-shell.c:821
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1282,12 +1290,12 @@ msgstr ""
 "i ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1082
+#: shell/rb-shell.c:1099
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1085
+#: shell/rb-shell.c:1102
 #, c-format
 msgid ""
 "%s\n"
@@ -1296,21 +1304,21 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1153
+#: shell/rb-shell.c:1170
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1162
+#: shell/rb-shell.c:1179
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1166
+#: shell/rb-shell.c:1183
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1190
+#: shell/rb-shell.c:1207
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1321,45 +1329,57 @@ msgstr ""
 "Ljudbakände: %s\n"
 "Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1333
+#: shell/rb-shell.c:1350
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1362
+#: shell/rb-shell.c:1379
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1402
-msgid "Save playlist"
-msgstr "Spara spellista"
-
-#: shell/rb-shell.c:1422
+#: shell/rb-shell.c:1442 shell/rb-shell.c:1480
 msgid "There is already a playlist with that name."
 msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-shell.c:1529
+#: shell/rb-shell.c:1460
+msgid "Save playlist"
+msgstr "Spara spellista"
+
+#: shell/rb-shell.c:1587
 msgid "Couldn't parse playlist"
 msgstr "Kunde inte tolka spellista"
 
-#: shell/rb-shell.c:1869
+#: shell/rb-shell.c:1934
 msgid "C_reate"
 msgstr "S_kapa"
 
-#: shell/rb-shell.c:1884
+#: shell/rb-shell.c:1949
 msgid "New Playlist"
 msgstr "Ny spellista"
 
-#: shell/rb-shell.c:1895
+#: shell/rb-shell.c:1960
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1965 shell/rb-shell.c:2031
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1904
+#: shell/rb-shell.c:1969
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
+
+#: shell/rb-shell.c:2000
+msgid "R_ename"
+msgstr "B_yt namn"
+
+#: shell/rb-shell.c:2015
+msgid "Rename Playlist"
+msgstr "Byt namn på spellista"
+
+#: shell/rb-shell.c:2026
+msgid "Please enter a new name for the playlist:"
+msgstr "Ange ett nytt namn för spellistan:"
 
 #: shell/rb-source-header.c:172
 msgid "Show _Browser"
@@ -1416,7 +1436,7 @@ msgstr "Bibliotek"
 msgid "Add Location"
 msgstr "Lägg till plats"
 
-#: sources/rb-playlist-source.c:623
+#: sources/rb-playlist-source.c:626
 #, c-format
 msgid "Failed to parse %s as playlist file"
 msgstr "Misslyckades med att tolka %s som spellistefil"
@@ -1428,6 +1448,12 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:501
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "Rename..."
+#~ msgstr "Byt namn..."
+
+#~ msgid "Rename"
+#~ msgstr "Byt namn"
 
 #~ msgid "Change the visibility of the toolbar"
 #~ msgstr "Ändra synligheten på verktygsraden"
@@ -2186,9 +2212,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Please enter a new name for this %s."
 #~ msgstr "Ange ett nytt namn för denna %s."
-
-#~ msgid "Rename"
-#~ msgstr "Byt namn"
 
 #~ msgid "Failed to parse %s as sidebar layout file"
 #~ msgstr "Misslyckades med att tolka %s som sidopanellayoutfil"
