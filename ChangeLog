@@ -2,6 +2,63 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-10-23 21:10:03 GMT	Colin Walters <walters@verbum.org>	patch-197
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-197
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po
+
+
+2003-10-23 21:06:46 GMT	Colin Walters <walters@verbum.org>	patch-196
+
+    Summary:
+      fully implement automatic playlist serialization/deserialization
+    Revision:
+      rhythmbox--mainline--0.6--patch-196
+
+
+    removed files:
+     rhythmdb/rhythmdb-serialize.c rhythmdb/rhythmdb-serialize.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     sources/rb-playlist-source.c
+
+
+2003-10-23 15:37:05 GMT	Colin Walters <walters@verbum.org>	patch-195
+
+    Summary:
+      playlist serialization, shell shutdown cleanup
+    Revision:
+      rhythmbox--mainline--0.6--patch-195
+
+
+    new files:
+     rhythmdb/rhythmdb-serialize.c rhythmdb/rhythmdb-serialize.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am rhythmdb/rhythmdb-tree.c
+     shell/rb-shell.c sources/rb-playlist-source.c
+
+
+2003-10-23 14:18:28 GMT	Colin Walters <walters@verbum.org>	patch-194
+
+    Summary:
+      don't distribute built corba things
+    Revision:
+      rhythmbox--mainline--0.6--patch-194
+
+
+    modified files:
+     ChangeLog corba/Makefile.am
+
+
 2003-10-23 14:05:57 GMT	Colin Walters <walters@verbum.org>	patch-193
 
     Summary:
