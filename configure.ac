@@ -379,9 +379,8 @@ if test "x$with_dbus" != "xno"; then
 	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
 	fi
         if test "x$enable_dbus" = xyes; then
-		AC_DEFINE(HAVE_DBUS, 1, [Define if D-BUS is enabled])	   
-		DBUS_CFLAGS="-DDBUS_API_SUBJECT_TO_CHANGE"
-		AC_SUBST(DBUS_CFLAGS)
+		AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
+		DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
 	fi
 fi			  
 AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
@@ -448,6 +447,7 @@ widgets/Makefile
 iradio/Makefile
 remote/Makefile
 remote/bonobo/Makefile
+remote/dbus/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile

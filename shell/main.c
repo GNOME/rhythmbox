@@ -49,6 +49,9 @@
 #include <bonobo/bonobo-main.h>
 #include "rb-remote-bonobo.h"
 #endif
+#ifdef WITH_DBUS
+#include "rb-remote-dbus.h"
+#endif
 
 #include "rb-refstring.h"
 #include "rb-shell.h"
@@ -89,9 +92,11 @@ main (int argc, char **argv)
 	GError **error;
 	RBRemoteClientProxy *client_proxy;
 	gboolean activated;
-	
 #ifdef WITH_BONOBO
 	RBRemoteBonobo *bonobo;
+#endif
+#ifdef WITH_DBUS
+	RBRemoteDBus *dbus;
 #endif
 
 	struct poptOption popt_options[] =
@@ -180,8 +185,20 @@ main (int argc, char **argv)
 	bonobo = rb_remote_bonobo_new ();
 	if (!no_registration) {
 		if ((activated = rb_remote_bonobo_activate (bonobo))) {
-			rb_debug ("successfully activated");
+			rb_debug ("successfully activated Bonobo");
 			client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
+		}
+	}
+#endif
+#ifdef WITH_DBUS
+	rb_debug ("going to create DBus object");
+	dbus = rb_remote_dbus_new ();
+	if (!no_registration) {
+		if ((activated = rb_remote_dbus_activate (dbus))) {
+			rb_debug ("successfully activated DBus");
+			/* Use Bonobo if available */
+			if (!client_proxy)
+				client_proxy = RB_REMOTE_CLIENT_PROXY (dbus);
 		}
 	}
 #endif
@@ -215,6 +232,18 @@ main (int argc, char **argv)
 				client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
 			else
 				g_critical ("acquired bonobo service but couldn't activate!");
+		}
+#endif
+#ifdef WITH_DBUS
+		rb_remote_dbus_acquire (dbus, RB_REMOTE_PROXY (rb_shell), error);
+		if (error) {
+			g_warning ("error: %s", (*error)->message);
+		} else {
+			if (rb_remote_dbus_activate (dbus)) {
+				if (!client_proxy)
+					client_proxy = RB_REMOTE_CLIENT_PROXY (dbus);
+			} else
+				g_critical ("acquired DBus service but couldn't activate!");
 		}
 #endif
 	}

@@ -77,6 +77,9 @@ rhythmbox_LDADD =					\
 if WITH_BONOBO
 rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la
 endif
+if WITH_DBUS
+rhythmbox_LDADD += $(top_builddir)/remote/dbus/librbdbus.la
+endif
 
 rhythmbox_LDFLAGS = -export-dynamic
 
@@ -102,6 +105,9 @@ INCLUDES = 						\
 
 if WITH_BONOBO
 INCLUDES += -I$(top_srcdir)/remote/bonobo
+endif
+if WITH_DBUS
+INCLUDES += -I$(top_srcdir)/remote/dbus
 endif
 
 BUILT_SOURCES = $(tab_files)
