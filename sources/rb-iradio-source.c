@@ -429,6 +429,15 @@ static void
 impl_search (RBSource *asource, const char *search_text)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+	if (search_text == NULL && source->priv->search_text == NULL)
+		return;
+	if (search_text != NULL &&
+	    source->priv->search_text != NULL
+	    && !strcmp (search_text, source->priv->search_text))
+		return;
+	if (search_text[0] == '\0')
+	  search_text = NULL;
+
 	g_free (source->priv->search_text);
 	source->priv->search_text = g_utf8_casefold (search_text, -1);
 	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
