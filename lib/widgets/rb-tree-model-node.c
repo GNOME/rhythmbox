@@ -76,6 +76,7 @@ static gboolean	rb_tree_model_node_iter_parent (GtkTreeModel *tree_model,
 static void rb_tree_model_node_tree_model_init (GtkTreeModelIface *iface);
 static void root_child_removed_cb (RBNode *node,
 				   RBNode *child,
+				   guint last_index,
 				   RBTreeModelNode *model);
 static void root_child_added_cb (RBNode *node,
 				 RBNode *child,
@@ -241,6 +242,9 @@ filter_changed_cb (RBNodeFilter *filter,
 {
 	GPtrArray *kids;
 	int i;
+
+	if (!model->priv->root)
+		return;
 
 	kids = rb_node_get_children (model->priv->root);
 	
@@ -798,6 +802,7 @@ rb_tree_model_node_iter_from_node (RBTreeModelNode *model,
 static void
 root_child_removed_cb (RBNode *node,
 		       RBNode *child,
+		       guint last_index,
 		       RBTreeModelNode *model)
 {
 	GtkTreePath *path;

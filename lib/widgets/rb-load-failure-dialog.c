@@ -132,20 +132,20 @@ rb_load_failure_dialog_init (RBLoadFailureDialog *dlg)
 
 	dlg->priv->treeview = glade_xml_get_widget (xml, "treeview");
 	gcolumn = gtk_tree_view_column_new ();
-	gtk_tree_view_column_set_title (gcolumn, _("_File"));
-	gtk_tree_view_append_column (GTK_TREE_VIEW (dlg->priv->treeview), gcolumn);
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-	gtk_tree_view_column_set_attributes (gcolumn, renderer,
-					     "text", RB_LOAD_FAILURE_DIALOG_COLUMN_URI,
-					     NULL);
-	gcolumn = gtk_tree_view_column_new ();
 	gtk_tree_view_column_set_title (gcolumn, _("_Error"));
 	gtk_tree_view_append_column (GTK_TREE_VIEW (dlg->priv->treeview), gcolumn);
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 	gtk_tree_view_column_set_attributes (gcolumn, renderer,
 					     "text", RB_LOAD_FAILURE_DIALOG_COLUMN_MESSAGE,
+					     NULL);
+	gcolumn = gtk_tree_view_column_new ();
+	gtk_tree_view_column_set_title (gcolumn, _("_File"));
+	gtk_tree_view_append_column (GTK_TREE_VIEW (dlg->priv->treeview), gcolumn);
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
+	gtk_tree_view_column_set_attributes (gcolumn, renderer,
+					     "text", RB_LOAD_FAILURE_DIALOG_COLUMN_URI,
 					     NULL);
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (dlg->priv->treeview),

@@ -39,6 +39,7 @@
 #include "rb-glist-wrapper.h"
 #include "rb-string-helpers.h"
 #include "rb-debug.h"
+#include "rb-dialog.h"
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
 
@@ -399,6 +400,7 @@ song_added_cb (RBNode *node,
 static void
 genre_removed_cb (RBNode *node,
 		  RBNode *child,
+		  guint last_id,
 		  RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->genre_hash_lock);
@@ -412,6 +414,7 @@ genre_removed_cb (RBNode *node,
 static void
 artist_removed_cb (RBNode *node,
 		   RBNode *child,
+		   guint last_id,
 		   RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->artist_hash_lock);
@@ -425,6 +428,7 @@ artist_removed_cb (RBNode *node,
 static void
 album_removed_cb (RBNode *node,
 		  RBNode *child,
+		  guint last_id,
 		  RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->album_hash_lock);
@@ -438,6 +442,7 @@ album_removed_cb (RBNode *node,
 static void
 song_removed_cb (RBNode *node,
 		 RBNode *child,
+		 guint last_id,
 		 RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
@@ -496,7 +501,7 @@ rb_library_create_skels (RBLibrary *library)
 	rb_node_signal_connect_object (library->priv->all_songs,
 				       RB_NODE_CHILD_REMOVED,
 				       (RBNodeCallback) song_removed_cb,
-				       G_OBJECT (library)); 
+				       G_OBJECT (library));
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, _("All"));
@@ -758,10 +763,20 @@ rb_library_load (RBLibrary *library)
 	{
 		RBNode *node;
 		const char *location;
+
+		if (xmlNodeIsText(child))
+			continue;
 		
 		node = rb_node_new_from_xml (library->priv->db, child);
 
-
+		if (!node) {
+			tmp = g_strdup_printf("%s.busted", library->priv->xml_file);
+			rb_error_dialog("failed to load \"%s\"", library->priv->xml_file);
+			rename (library->priv->xml_file, tmp);
+			g_free (tmp);
+			return;
+		}
+			
 		location = rb_node_get_property_string (node,
 							RB_NODE_PROP_LOCATION);
 		if (location != NULL) {

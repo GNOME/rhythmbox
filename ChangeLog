@@ -1,3 +1,22 @@
+2003-07-28  Colin Walters  <walters@debian.org>
+
+	* lib/widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_init):
+	* lib/widgets/rb-node-view.c: (root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c: (filter_changed_cb),
+	(root_child_removed_cb):
+	* library/rb-library.c: (genre_removed_cb), (artist_removed_cb),
+	(album_removed_cb), (song_removed_cb), (rb_library_create_skels),
+	(rb_library_load):
+	* library/rb-node.c: (rb_node_save_to_xml), (rb_node_new_from_xml),
+	(rb_node_add_child):
+	* library/rb-node.h:
+
+	Various node serialization fixes.
+
+	Also flip the order of columns in the load failure dialog, because
+	the filename is usually the long element.
+
 2003-07-27  Colin Walters  <cwalters@gnome.org>
 
 	* iradio/Makefile.am:

@@ -90,6 +90,7 @@ static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
 static void root_child_removed_cb (RBNode *root,
 			           RBNode *child,
+				   guint last_index,
 			           RBNodeView *view);
 static void rb_node_view_columns_parse (RBNodeView *view,
 					const char *config);
@@ -1565,10 +1566,9 @@ rb_node_view_timeout_cb (RBNodeView *view)
 static void
 root_child_removed_cb (RBNode *root,
 		       RBNode *child,
+		       guint last_index,
 		       RBNodeView *view)
 {
-	RBNode *node;
-
 	/* playing node bit */
 	if (child == rb_node_view_get_playing_node (view))
 	{
@@ -1584,13 +1584,7 @@ root_child_removed_cb (RBNode *root,
 	if (g_list_find (view->priv->nodeselection, child) == NULL)
 		return;
 
-	node = rb_node_view_get_node (view, child, RB_DIRECTION_DOWN);
-	if (node == NULL)
-		node = rb_node_view_get_node (view, child, RB_DIRECTION_UP);
-	if (node == NULL)
-		return;
-
-	rb_node_view_select_node (view, node);
+	rb_node_view_select_node (view, NULL);
 }
 
 gboolean

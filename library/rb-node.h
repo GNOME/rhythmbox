@@ -136,13 +136,13 @@ RBNode     *rb_node_new_from_xml        (RBNodeDb *db,
 
 /* DAG structure */
 void        rb_node_add_child             (RBNode *node,
-					     RBNode *child);
+					   RBNode *child);
 void        rb_node_remove_child          (RBNode *node,
-					     RBNode *child);
+					   RBNode *child);
 void	    rb_node_sort_children	    (RBNode *node,
 					     GCompareFunc compare_func);
 gboolean    rb_node_has_child             (RBNode *node,
-					     RBNode *child);
+					   RBNode *child);
 
 void	    rb_node_reorder_children	    (RBNode *node,
 					     int *new_order);
