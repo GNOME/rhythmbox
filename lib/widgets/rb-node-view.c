@@ -33,8 +33,10 @@
 #include <libxml/tree.h>
 #include <stdlib.h>
 
+#include "eggtreemultidnd.h"
 #include "eggtreemodelfilter.h"
 #include "rb-tree-model-node.h"
+#include "rb-tree-model-sort.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
 #include "rb-cell-renderer-pixbuf.h"
@@ -138,6 +140,8 @@ enum
 static GObjectClass *parent_class = NULL;
 
 static guint rb_node_view_signals[LAST_SIGNAL] = { 0 };
+
+static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
 
 GType
 rb_node_view_get_type (void)
@@ -428,7 +432,7 @@ rb_node_view_construct (RBNodeView *view)
 							     NULL);
 	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 						  RB_TREE_MODEL_NODE_COL_VISIBLE);
-	view->priv->sortmodel = gtk_tree_model_sort_new_with_model (view->priv->filtermodel);
+	view->priv->sortmodel = rb_tree_model_sort_new (view->priv->filtermodel);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
 			         "row_inserted",
 			         G_CALLBACK (gtk_tree_model_sort_row_inserted_cb),
@@ -472,6 +476,15 @@ rb_node_view_construct (RBNodeView *view)
 			         G_CALLBACK (rb_node_view_selection_changed_cb),
 			         view,
 				 0);
+
+	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
+
+	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
+						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
+						target_table,
+						1,
+						GDK_ACTION_COPY);
+
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	/* load layout */

@@ -19,12 +19,16 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	eggtreemodelfilter.c				\
 	eggtreemodelfilter.h				\
+	eggtreemultidnd.c				\
+	eggtreemultidnd.h				\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
 	rb-cell-renderer-pixbuf.h			\
 	rb-song-info.c					\
-	rb-song-info.h
+	rb-song-info.h					\
+	rb-tree-model-sort.c				\
+	rb-tree-model-sort.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

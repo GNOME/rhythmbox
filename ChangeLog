@@ -1,3 +1,35 @@
+2002-08-14  Olivier Martin <omartin@ifrance.com>
+
+	* TODO:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/eggtreemultidnd.c:
+	(egg_tree_multi_drag_source_get_type),
+	(egg_tree_multi_drag_source_row_draggable),
+	(egg_tree_multi_drag_source_drag_data_delete),
+	(egg_tree_multi_drag_source_drag_data_get), (stop_drag_check),
+	(egg_tree_multi_drag_button_release_event), (selection_foreach),
+	(path_list_free), (set_context_data), (get_context_data),
+	(get_info), (egg_tree_multi_drag_drag_data_get),
+	(egg_tree_multi_drag_motion_event),
+	(egg_tree_multi_drag_button_press_event),
+	(egg_tree_multi_drag_add_drag_support):
+	* lib/widgets/eggtreemultidnd.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct):
+	* lib/widgets/rb-tree-model-sort.c: (rb_tree_model_sort_get_type),
+	(rb_tree_model_sort_class_init), (rb_tree_model_sort_init),
+	(rb_tree_model_sort_finalize), (rb_tree_model_sort_new),
+	(rb_tree_model_sort_multi_drag_source_init),
+	(rb_tree_model_sort_multi_row_draggable),
+	(rb_tree_model_sort_multi_drag_data_get),
+	(rb_tree_model_sort_multi_drag_data_delete):
+	* lib/widgets/rb-tree-model-sort.h:
+	* views/rb-library-view.c: (rb_library_view_drop_cb):
+
+	Implement drag from the songs view. Thus one can select songs
+	from the library and drag them to a group.
+	Thanks jorn on this one!
+	(will completely work once the bugs in the group view have been fixed ;)
+
 2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/rb-file-helpers.c: (rb_file_helpers_shutdown),

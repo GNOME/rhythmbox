@@ -1053,6 +1053,8 @@ rb_library_view_drop_cb (GtkWidget	  *widget,
 	{
 		char *uri = g_strdup (i->data);
 
+		// TODO Check if this is a dir or a file
+
 		if (uri != NULL)
 		{
 			rb_library_add_uri (view->priv->library, uri);
