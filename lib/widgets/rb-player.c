@@ -49,6 +49,8 @@ static void rb_player_get_property (GObject *object,
 static void rb_view_player_changed_cb (RBViewPlayer *view_player,
 			               RBPlayer *player);
 static void rb_player_sync (RBPlayer *player);
+static void rb_player_set_show_url (RBPlayer *player,
+				    gboolean show);
 static void rb_player_set_show_timeline (RBPlayer *player,
 			                 gboolean show);
 static void rb_player_set_show_textline (RBPlayer *player,
@@ -103,6 +105,10 @@ struct RBPlayerPrivate
 	GtkTooltips *tips;
 	RBLink *artist;
 	RBLink *album;
+	GtkWidget *urlframe;
+	GtkWidget *urlline;
+	gboolean urlline_shown;
+	RBLink *url;
 
 	guint timeout;
 	
@@ -173,7 +179,7 @@ rb_player_class_init (RBPlayerClass *klass)
 static void
 rb_player_init (RBPlayer *player)
 {
-	GtkWidget *hbox, *vbox, *textline, *label, *align, *scalebox, *textvbox;
+	GtkWidget *hbox, *vbox, *textline, *urlline, *label, *align, *scalebox, *textvbox;
 	
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
@@ -198,6 +204,7 @@ rb_player_init (RBPlayer *player)
 	gtk_misc_set_alignment (GTK_MISC (player->priv->song), 0, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->song, FALSE, TRUE, 0);
 
+	/* Construct the Artist/Album display */
 	player->priv->textframe = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
 	
@@ -215,6 +222,18 @@ rb_player_init (RBPlayer *player)
 
 	player->priv->artist = rb_link_new ();
 	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->artist), FALSE, TRUE, 0);
+
+	/* Construct the URL display */
+	player->priv->urlframe = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->urlframe, FALSE, TRUE, 0);
+
+	urlline = player->priv->urlline = gtk_hbox_new (FALSE, 2);
+	g_object_ref (G_OBJECT (urlline));
+
+	label = gtk_label_new (_("Listening to "));
+	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (label), FALSE, TRUE, 0);
+	player->priv->url = rb_link_new();
+	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (player->priv->url), FALSE, TRUE, 0);
 
 	player->priv->timeframe = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), player->priv->timeframe, FALSE, FALSE, 0);
@@ -282,6 +301,7 @@ rb_player_finalize (GObject *object)
 
 	g_source_remove (player->priv->timeout);
 
+	g_object_unref (G_OBJECT (player->priv->urlline));
 	g_object_unref (G_OBJECT (player->priv->textline));
 	g_object_unref (G_OBJECT (player->priv->timeline));
 
@@ -359,13 +379,19 @@ rb_player_sync (RBPlayer *player)
 
 	/*GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);*/
 	char *tmp;
+	gboolean have_artist_album = player->priv->view_player != NULL
+		&& rb_view_player_have_artist_album (player->priv->view_player) == RB_VIEW_PLAYER_TRUE;
+	gboolean have_url = player->priv->view_player != NULL
+		&& rb_view_player_have_url (player->priv->view_player) == RB_VIEW_PLAYER_TRUE;
+
+	rb_player_set_show_url (player, have_url);
+	rb_player_set_show_textline (player, have_artist_album);
 
 	if (player->priv->view_player != NULL &&
 	    rb_view_player_get_stream (player->priv->view_player) != NULL) {
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
-		const char *album  = rb_view_player_get_album  (player->priv->view_player);
-		const char *artist = rb_view_player_get_artist (player->priv->view_player);
 		char *escaped, *s;
+		gboolean have_duration = rb_view_player_get_duration (player->priv->view_player) > 0;
 
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);
@@ -373,35 +399,50 @@ rb_player_sync (RBPlayer *player)
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
-		s = tmp = g_strdup (album);
-		while ((tmp = strstr (tmp, " ")) != NULL)
-			*tmp = '|';
+		if (have_artist_album)
+		{
+			const char *album  = rb_view_player_get_album  (player->priv->view_player);
+			const char *artist = rb_view_player_get_artist (player->priv->view_player);
+			s = tmp = g_strdup (album);
+			while ((tmp = strstr (tmp, " ")) != NULL)
+				*tmp = '|';
+			tmp = ALBUM_INFO_URL (s);
+			g_free (s);
+			rb_link_set (player->priv->album, album,
+				     _("Get information on this album from the web"), tmp);
+			g_free (tmp);
+
+			s = tmp = g_strdup (artist);
+			while ((tmp = strstr (tmp, " ")) != NULL)
+			{
+				*tmp = '|';
+			}
+			tmp = ARTIST_INFO_URL (s);
+			g_free (s);
+			rb_link_set (player->priv->artist, artist,
+				     _("Get information on this artist from the web"), tmp);
+			g_free (tmp);
+		}
+
+		if (have_url)
+		{
+			char *text, *url;
+			rb_view_player_get_url (player->priv->view_player, &text, &url);
+			fprintf(stderr, "setting url info: %s %s\n", text, url);
+			rb_link_set (player->priv->url, text,
+				     _("Get more information on this station from the web"),
+				     url);
+		}
 		
-		tmp = ALBUM_INFO_URL (s);
-		g_free (s);
-		rb_link_set (player->priv->album, album,
-			     _("Get information on this album from the web"), tmp);
-		g_free (tmp);
-
-		s = tmp = g_strdup (artist);
-		while ((tmp = strstr (tmp, " ")) != NULL)
-			*tmp = '|';
-		
-		tmp = ARTIST_INFO_URL (s);
-		g_free (s);
-		rb_link_set (player->priv->artist, artist,
-			     _("Get information on this artist from the web"), tmp);
-		g_free (tmp);
-
-		rb_player_set_show_textline (player, TRUE);
-		rb_player_set_show_timeline (player, TRUE);
-
-		rb_player_sync_time (player);
+		rb_player_set_show_timeline (player, have_duration);
+		if (have_duration)
+			rb_player_sync_time (player);
 	} else {
 		tmp = SONG_MARKUP (_("Not Playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
+		rb_player_set_show_url (player, FALSE);
 		rb_player_set_show_textline (player, FALSE);
 		rb_player_set_show_timeline (player, FALSE);
 	}
@@ -419,6 +460,24 @@ rb_view_player_changed_cb (RBViewPlayer *view_player,
 			   RBPlayer *player)
 {
 	rb_player_sync (player);
+}
+
+static void
+rb_player_set_show_url (RBPlayer *player,
+			gboolean show)
+{
+	if (player->priv->urlline_shown == show)
+		return;
+
+	player->priv->urlline_shown = show;
+
+	if (show == FALSE)
+		gtk_container_remove (GTK_CONTAINER (player->priv->urlframe), player->priv->urlline);
+	else
+	{
+		gtk_container_add (GTK_CONTAINER (player->priv->urlframe), player->priv->urlline);
+		gtk_widget_show_all (player->priv->urlline);
+	}
 }
 
 static void
@@ -446,7 +505,7 @@ rb_player_set_show_timeline (RBPlayer *player,
 		return;
 
 	player->priv->timeline_shown = show;
-	
+
 	if (show == FALSE)
 		gtk_container_remove (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
 	else {
