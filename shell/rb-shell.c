@@ -59,6 +59,7 @@
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
+#include "rb-tray-icon.h"
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist.h"
@@ -76,10 +77,8 @@
 #include "rb-playlist-source.h"
 #include "rb-file-monitor.h"
 #include "rb-library-dnd-types.h"
-#include "rb-volume.h"
 #include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
-#include "eggtrayicon.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -171,9 +170,6 @@ static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 Bonobo_UIComponent_EventType type,
 						 const char *state,
 						 RBShell *shell);
-static void rb_shell_cmd_show_window (BonoboUIComponent *component,
-				      RBShell *shell,
-				      const char *verbname);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
@@ -195,18 +191,12 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
-static void setup_tray_icon (RBShell *shell);
-static void sync_tray_menu (RBShell *shell, guint button);
+static void tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
 
 static const GtkTargetEntry target_table[] =
 	{
 		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST },
 		{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
-	};
-
-static const GtkTargetEntry target_uri [] =
-	{
-		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }
 	};
 
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
@@ -257,14 +247,7 @@ struct RBShellPrivate
 
 	GtkWidget *prefs;
 
-	EggTrayIcon *tray_icon;
-	GtkTooltips *tray_icon_tooltip;
-	BonoboControl *tray_icon_control;
-	BonoboUIComponent *tray_icon_component;
-
-	RBVolume *volume;
-
-	gboolean busy_cursor_displayed;
+	RBTrayIcon *tray_icon;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -285,12 +268,6 @@ static RBBonoboUIListener rb_shell_listeners[] =
 {
 	RB_BONOBO_UI_LISTENER ("ShowSourceList",(BonoboUIListenerFn) rb_shell_view_sourcelist_changed_cb),
 	RB_BONOBO_UI_LISTENER_END
-};
-
-static BonoboUIVerb rb_tray_verbs[] =
-{
-	BONOBO_UI_VERB ("ShowWindow", (BonoboUIVerbFn) rb_shell_cmd_show_window),
-	BONOBO_UI_VERB_END
 };
 
 static GObjectClass *parent_class;
@@ -599,8 +576,7 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox", NULL);
 
 	rb_debug ("shell: setting up tray icon");
-	/* tray icon */
-	setup_tray_icon (shell);
+	tray_deleted_cb (NULL, NULL, shell);
 
 	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
 						     rb_shell_verbs,
@@ -608,14 +584,18 @@ rb_shell_construct (RBShell *shell)
 	rb_bonobo_add_listener_list_with_data (shell->priv->ui_component,
 					       rb_shell_listeners,
 					       shell);
-	bonobo_ui_component_add_verb_list_with_data (shell->priv->tray_icon_component,
-						     rb_tray_verbs,
-						     shell);
 
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
-	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
-							 shell->priv->tray_icon_component);
+
+	{
+		BonoboUIComponent *tray_component;
+		g_object_get (G_OBJECT (shell->priv->tray_icon), "tray_component",
+			      &tray_component, NULL);
+
+		shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
+								 tray_component);
+	}
 	g_signal_connect (G_OBJECT (shell->priv->player_shell),
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
@@ -1062,10 +1042,7 @@ rb_shell_set_window_title (RBShell *shell,
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 				      _("Music Player"));
 
-		gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
-				      GTK_WIDGET (shell->priv->tray_icon),
-				      _("Not playing"),
-				      NULL);
+		rb_tray_icon_set_tooltip (shell->priv->tray_icon, _("Not playing"));
 	}
 	else {
 		gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
@@ -1081,11 +1058,9 @@ rb_shell_set_window_title (RBShell *shell,
 			title = g_strdup_printf (_("%s (Paused)"), window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      title);
+
 			tmp = g_strdup_printf (_("%s\nPaused"), window_title);
-			gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
-					      GTK_WIDGET (shell->priv->tray_icon),
-					      tmp,
-					      NULL);
+			rb_tray_icon_set_tooltip (shell->priv->tray_icon, tmp);
 			g_free (tmp);
 		} else {
 			title = g_strdup (window_title);
@@ -1096,10 +1071,7 @@ rb_shell_set_window_title (RBShell *shell,
 						    3000, window_title, -1);
 #endif
 
-			gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
-					      GTK_WIDGET (shell->priv->tray_icon),
-					      window_title,
-					      NULL);
+			rb_tray_icon_set_tooltip (shell->priv->tray_icon, window_title);
 		}
 	}
 }
@@ -1113,16 +1085,6 @@ rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 {
 	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN,
 			       !rb_bonobo_get_active (component, CMD_PATH_VIEW_SOURCELIST));
-}
-
-static void
-rb_shell_cmd_show_window (BonoboUIComponent *component,
-			  RBShell *shell,
-			  const char *verbname)
-{
-	rb_debug ("showing window");
-	gtk_window_present (GTK_WINDOW (shell->priv->window));
-	gtk_widget_grab_focus (shell->priv->window);
 }
 
 static void
@@ -1540,153 +1502,18 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 }
 
 static void
-tray_button_press_event_cb (GtkWidget *ebox,
-			    GdkEventButton *event,
-			    RBShell *shell)
-{
-	/* contextmenu */
-	sync_tray_menu (shell, event->button);
-	bonobo_control_do_popup (shell->priv->tray_icon_control,
-				 event->button,
-				 event->time);
-}
-
-static void
-tray_drop_cb (GtkWidget *widget,
-	      GdkDragContext *context,
-	      gint x,
-	      gint y,
-	      GtkSelectionData *data,
-	      guint info,
-	      guint time,
-	      RBShell *shell)
-{
-	GList *list, *uri_list, *i;
-	GtkTargetList *tlist;
-	gboolean ret;
-
-	tlist = gtk_target_list_new (target_uri, 1);
-	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
-	gtk_target_list_unref (tlist);
-
-	if (ret == FALSE)
-		return;
-
-	list = gnome_vfs_uri_list_parse (data->data);
-
-	if (list == NULL) {
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
-	}
-
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL) {
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
-	}
-
-	for (i = uri_list; i != NULL; i = i->next) {
-		char *uri = i->data;
-
-		if (uri != NULL)
-			rb_library_add_uri (shell->priv->library, uri);
-
-		g_free (uri);
-	}
-
-	g_list_free (uri_list);
-
-	gtk_drag_finish (context, TRUE, FALSE, time);
-}
-
-static void
 tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 {
-	rb_debug ("caught delete_event for tray icon");
-	gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
+	if (shell->priv->tray_icon) {
+		rb_debug ("caught delete_event for tray icon");
+		gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
+	}
 	
-	setup_tray_icon (shell);
-}
-
-static void
-setup_tray_icon (RBShell *shell)
-{
-	GtkWidget *ebox, *image;
-	BonoboControlFrame *frame;
-
-	rb_debug ("setting up tray icon");
-
-	shell->priv->tray_icon_tooltip = gtk_tooltips_new ();
-
-	shell->priv->tray_icon = egg_tray_icon_new ("Rhythmbox tray icon");
-
+	rb_debug ("creating new tray icon");
+	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->container,
+						   shell->priv->ui_component,
+						   shell->priv->library,
+						   GTK_WINDOW (shell->priv->window));
 	g_signal_connect (G_OBJECT (shell->priv->tray_icon), "delete_event",
 			  G_CALLBACK (tray_deleted_cb), shell);
-	gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
-			      GTK_WIDGET (shell->priv->tray_icon),
-			      _("Not playing"),
-			      NULL);
-	ebox = gtk_event_box_new ();
-	g_signal_connect (G_OBJECT (ebox),
-			  "button_press_event",
-			  G_CALLBACK (tray_button_press_event_cb),
-			  shell);
-	gtk_drag_dest_set (ebox, GTK_DEST_DEFAULT_ALL, target_uri, 1, GDK_ACTION_COPY);
-	g_signal_connect (G_OBJECT (ebox), "drag_data_received",
-			  G_CALLBACK (tray_drop_cb), shell);
-
-	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
-					  GTK_ICON_SIZE_SMALL_TOOLBAR);
-	gtk_container_add (GTK_CONTAINER (ebox), image);
-	
-	shell->priv->tray_icon_control = bonobo_control_new (ebox);
-	shell->priv->tray_icon_component =
-		bonobo_control_get_popup_ui_component (shell->priv->tray_icon_control);
-
-	frame = bonobo_control_frame_new (BONOBO_OBJREF (shell->priv->container));
-	bonobo_control_frame_bind_to_control (frame, BONOBO_OBJREF (shell->priv->tray_icon_control),
-					      NULL);
-	gtk_container_add (GTK_CONTAINER (shell->priv->tray_icon),
-			   bonobo_control_frame_get_widget (frame));
-
-	gtk_widget_show_all (GTK_WIDGET (ebox));
-}
-
-static void
-sync_tray_menu (RBShell *shell, guint button)
-{
-	BonoboUIComponent *pcomp;
-	BonoboUINode *node;
-
-	pcomp = bonobo_control_get_popup_ui_component (shell->priv->tray_icon_control);
-	
-	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
-
-	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/popups/TrayPopup", TRUE, NULL);
-
-	switch (button) {
-	case 1:
-		bonobo_ui_node_set_attr (node, "name", "button1");
-		break;
-	case 2:
-		bonobo_ui_node_set_attr (node, "name", "button2");
-		break;
-	case 3:
-		bonobo_ui_node_set_attr (node, "name", "button3");
-		break;
-	default:
-		break;
-	}
-	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
-	bonobo_ui_node_free (node);
-
-	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/commands", TRUE, NULL);
-	bonobo_ui_component_set_tree (pcomp, "/", node, NULL);
-	bonobo_ui_node_free (node);
 }

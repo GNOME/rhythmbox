@@ -1,3 +1,43 @@
+Sat, 30 Aug 2003 14:40:26 -0400  Colin Walters  <walters@verbum.org>
+
+	* shell/Makefile.am:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_set_window_title), (tray_deleted_cb):
+	* shell/rb-tray-icon.c: (rb_tray_icon_get_type),
+	(rb_tray_icon_class_init), (rb_tray_icon_init),
+	(rb_tray_icon_finalize), (rb_tray_icon_set_property),
+	(rb_tray_icon_get_property), (rb_tray_icon_new),
+	(rb_tray_icon_button_press_event_cb), (rb_tray_icon_drop_cb),
+	(sync_menu), (rb_tray_icon_cmd_show_window),
+	(rb_tray_icon_set_tooltip):
+	* shell/rb-tray-icon.h:
+
+	Factor out tray icon code from RBShell into RBTrayIcon.
+	
+Sat, 30 Aug 2003 14:38:14 -0400  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_get_type),
+	(rb_playlist_manager_class_init), (rb_playlist_manager_init),
+	(rb_playlist_manager_finalize), (rb_playlist_manager_set_property),
+	(rb_playlist_manager_get_property),
+	(rb_playlist_manager_set_source), (rb_playlist_manager_new),
+	(append_new_playlist_source), (rb_playlist_manager_load_playlists),
+	(rb_playlist_manager_save_playlists),
+	(rb_playlist_manager_cmd_new_playlist),
+	(rb_playlist_manager_cmd_rename_playlist),
+	(rb_playlist_manager_cmd_delete_playlist),
+	(load_playlist_response_cb),
+	(rb_playlist_manager_cmd_load_playlist),
+	(save_playlist_response_cb), (rb_playlist_manager_validate_name),
+	(ask_rename_response_cb), (rb_playlist_manager_cmd_save_playlist),
+	(create_playlist_with_name), (add_uri_to_playlist),
+	(handle_playlist_entry_into_playlist_cb), (read_playlist_name_cb),
+	(create_playlist), (rb_playlist_manager_new_playlist_dialog),
+	(rb_playlist_manager_rename_playlist_dialog):
+	* shell/rb-playlist-manager.h:
+
+	Add RBPlaylistManager that was forgotten in previous commit.
+
 Sat, 30 Aug 2003 09:20:23 -0400  Colin Walters  <walters@verbum.org>
 
 	* help/C/Makefile.am:

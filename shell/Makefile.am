@@ -32,7 +32,9 @@ rhythmbox_SOURCES =              			\
 	rb-playlist-manager.c				\
 	rb-playlist-manager.h				\
 	rb-remote.c					\
-	rb-remote.h
+	rb-remote.h					\
+	rb-tray-icon.c					\
+	rb-tray-icon.h				
 
 rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
