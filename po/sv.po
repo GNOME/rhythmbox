@@ -7,13 +7,25 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-07-31 22:58+0200\n"
-"PO-Revision-Date: 2003-07-31 22:59+0200\n"
+"POT-Creation-Date: 2003-08-03 01:49+0200\n"
+"PO-Revision-Date: 2003-08-03 01:50+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
+msgid "Add To Music Player Library"
+msgstr "Lägg till i musikspelarbiblioteket"
+
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr "Nautilus-sammanhangsmenytillägg för Rhythmbox"
+
+#: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
+msgid "Rhythmbox Nautilus Context Menu Item"
+msgstr "Nautilus-sammanhangsmenypost för Rhythmbox"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -228,7 +240,7 @@ msgstr "_Senast spelad:"
 msgid "_Locations"
 msgstr "_Platser"
 
-#: data/glade/station-properties.glade.h:9 data/ui/rhythmbox-ui.xml.in.h:57
+#: data/glade/station-properties.glade.h:9 data/ui/rhythmbox-ui.xml.in.h:59
 msgid "_Properties"
 msgstr "_Egenskaper"
 
@@ -295,7 +307,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:591 shell/rb-shell.c:1021
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:583 shell/rb-shell.c:1043
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -311,19 +323,19 @@ msgstr "Avmarkera alla låtar"
 msgid "Eject Audio-CD"
 msgstr "Mata ut ljud-cd"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Scroll the view to the currently playing song"
 msgstr "Rulla vyn till den för tillfället spelade låten"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:29
 msgid "Select _All"
 msgstr "Markera _alla"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Select all songs"
 msgstr "Markera alla låtar"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Edit"
 msgstr "_Redigera"
 
@@ -331,11 +343,11 @@ msgstr "_Redigera"
 msgid "_Eject Audio-CD..."
 msgstr "_Mata ut ljud-cd..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:50
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:52
 msgid "_Jump to Playing Song"
 msgstr "_Hoppa till aktuell låt"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:61
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:63
 msgid "_View"
 msgstr "_Visa"
 
@@ -408,168 +420,176 @@ msgid "Edit music player preferences"
 msgstr "Redigera inställningar för musikspelaren"
 
 #: data/ui/rhythmbox-ui.xml.in.h:19
+msgid "Extract songs from a CD"
+msgstr "Extrahera låtar från en cd"
+
+#: data/ui/rhythmbox-ui.xml.in.h:20
 msgid "New _Internet Radio Station"
 msgstr "Ny _Internetradiokanal"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "New _Smart Playlist..."
 msgstr "Ny _smart spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:22
 msgid "P_revious"
 msgstr "F_öregående"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Paste selection"
 msgstr "Klistra in markering"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Pause playing"
 msgstr "Gör paus i uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Prefere_nces"
 msgstr "Inställ_ningar"
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "Repea_t"
 msgstr "_Upprepa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Select N_one"
 msgstr "Markera _ingen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:31
 msgid "Show information about the music player"
 msgstr "Visa information om musikspelaren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Show information on the selected song"
 msgstr "Visa information om den valda låten"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "Start playing"
 msgstr "Starta uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Start playing the next song"
 msgstr "Starta uppspelning av nästa låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "Start playing the previous song"
 msgstr "Starta uppspelning av föregående låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Stop playing"
 msgstr "Stoppa uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "Toggle random playing order"
 msgstr "Slå på/av slumpvis spelordning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "Toggle repeat mode"
 msgstr "Slå på/av upprepningsläge"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "_About"
 msgstr "_Om"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "_Add to Library..."
 msgstr "_Lägg till i bibliotek..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Browser"
 msgstr "_Bläddrare"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Close"
 msgstr "S_täng"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "_Contents"
 msgstr "_Innehåll"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "_Copy"
 msgstr "_Kopiera"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "_Cut"
 msgstr "Klipp _ut"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "_Delete"
 msgstr "_Ta bort"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_Delete Playlist"
 msgstr "_Ta bort spellista"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48 lib/widgets/rb-load-failure-dialog.c:143
+#: data/ui/rhythmbox-ui.xml.in.h:49
+msgid "_Extract CD..."
+msgstr "_Extrahera cd..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:50 lib/widgets/rb-load-failure-dialog.c:143
 msgid "_File"
 msgstr "_Arkiv"
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:51
 msgid "_Help"
 msgstr "_Hjälp"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.in.h:53
 msgid "_Load Playlist..."
 msgstr "_Läs in spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-ui.xml.in.h:54
 msgid "_Music"
 msgstr "_Musik"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_New Playlist..."
 msgstr "_Ny spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.in.h:56
 msgid "_Next"
 msgstr "_Nästa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:56 shell/rb-shell-player.c:1103
+#: data/ui/rhythmbox-ui.xml.in.h:58 shell/rb-shell-player.c:1124
 msgid "_Play"
 msgstr "_Spela"
 
-#: data/ui/rhythmbox-ui.xml.in.h:58
+#: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Show Window"
 msgstr "_Visa fönster"
 
-#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-statusbar.c:130
+#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-statusbar.c:130
 msgid "_Shuffle"
 msgstr "_Blanda"
 
-#: data/ui/rhythmbox-ui.xml.in.h:60
+#: data/ui/rhythmbox-ui.xml.in.h:62
 msgid "_Source List"
 msgstr "_Källista"
 
-#: iradio/rb-iradio-backend.c:173 library/rb-library.c:507
+#: iradio/rb-iradio-backend.c:178 library/rb-library.c:514
 msgid "All"
 msgstr "Alla"
 
-#: iradio/rb-iradio-backend.c:307
+#: iradio/rb-iradio-backend.c:317
 msgid "Unable to find file \"iradio-initial.xml\""
 msgstr "Kan inte hitta filen \"iradio-initial.xml\""
 
-#: iradio/rb-iradio-backend.c:355
+#: iradio/rb-iradio-backend.c:363
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
-#: iradio/rb-iradio-backend.c:503 iradio/rb-iradio-backend.c:523
-#: iradio/rb-iradio-backend.c:524 lib/widgets/rb-tree-model-node.c:589
+#: iradio/rb-iradio-backend.c:524 iradio/rb-iradio-backend.c:543
+#: iradio/rb-iradio-backend.c:544 lib/widgets/rb-tree-model-node.c:589
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
-#: iradio/rb-iradio-backend.c:711
+#: iradio/rb-iradio-backend.c:738
 msgid "Never"
 msgstr "Aldrig"
 
@@ -600,8 +620,8 @@ msgstr "Lägg i_nte till"
 #: monkey-media/monkey-media-stream-info.c:384
 #: monkey-media/monkey-media-stream-info.c:400
 #: monkey-media/monkey-media-stream-info.c:648 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:233
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
+#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:230
+#: sources/rb-iradio-source.c:231 sources/rb-iradio-source.c:232
 msgid "Unknown"
 msgstr "Okänd"
 
@@ -710,40 +730,40 @@ msgstr "_Fel"
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-player.c:263
+#: lib/widgets/rb-player.c:261
 msgid "from "
 msgstr "från "
 
-#: lib/widgets/rb-player.c:269
+#: lib/widgets/rb-player.c:267
 msgid " by "
 msgstr " av "
 
-#: lib/widgets/rb-player.c:284
+#: lib/widgets/rb-player.c:282
 msgid "Listening to "
 msgstr "Lyssnar på "
 
-#: lib/widgets/rb-player.c:495
+#: lib/widgets/rb-player.c:486
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: lib/widgets/rb-player.c:506
+#: lib/widgets/rb-player.c:497
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: lib/widgets/rb-player.c:516
+#: lib/widgets/rb-player.c:507
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:525 shell/rb-shell.c:1025 shell/rb-shell.c:1944
+#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1047 shell/rb-shell.c:1953
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:793
+#: lib/widgets/rb-player.c:784
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d av %d:%02d"
 
-#: lib/widgets/rb-player.c:795
+#: lib/widgets/rb-player.c:786
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -797,12 +817,16 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:982
+#: library/rb-library.c:764
+msgid "Failed to load library!"
+msgstr "Misslyckades med att läsa in biblioteket!"
+
+#: library/rb-library.c:1021
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1285
+#: library/rb-node.c:1288
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -1066,43 +1090,43 @@ msgstr ""
 "Fel vid läsande av spellistefilen \"%s\":\n"
 " inget spellistehuvud"
 
-#: shell/rb-shell-player.c:323
+#: shell/rb-shell-player.c:325
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:659
+#: shell/rb-shell-player.c:663
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
 # Osäker
-#: shell/rb-shell-player.c:730
+#: shell/rb-shell-player.c:734
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr "Alla reservplatser misslyckades, kan inte spela: %s\n"
 
-#: shell/rb-shell-player.c:1094
+#: shell/rb-shell-player.c:1115
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1095
+#: shell/rb-shell-player.c:1116
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1102
+#: shell/rb-shell-player.c:1123
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1110
+#: shell/rb-shell-player.c:1131
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1111
+#: shell/rb-shell-player.c:1132
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1329
+#: shell/rb-shell-player.c:1355
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
@@ -1114,17 +1138,17 @@ msgstr "Inställningar för musikspelare"
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:462
+#: shell/rb-shell.c:472
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:496
+#: shell/rb-shell.c:506
 #, c-format
 msgid "Unable to handle URI \"%s\"\n"
 msgstr "Kan inte hantera URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:578
+#: shell/rb-shell.c:786
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1137,12 +1161,12 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1041
+#: shell/rb-shell.c:1063
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1044
+#: shell/rb-shell.c:1066
 #, c-format
 msgid ""
 "%s\n"
@@ -1151,45 +1175,45 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1112
+#: shell/rb-shell.c:1134
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1122
+#: shell/rb-shell.c:1144
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1126
+#: shell/rb-shell.c:1148
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1134
+#: shell/rb-shell.c:1156
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:1277
+#: shell/rb-shell.c:1299
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1306
+#: shell/rb-shell.c:1328
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1782
+#: shell/rb-shell.c:1791
 msgid "Create"
 msgstr "Skapa"
 
-#: shell/rb-shell.c:1806
+#: shell/rb-shell.c:1815
 msgid "Please enter a name for the new music group."
 msgstr "Ange ett namn för den nya musikgruppen."
 
-#: shell/rb-shell.c:1816
+#: shell/rb-shell.c:1825
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1820
+#: shell/rb-shell.c:1829
 msgid "Add the _selected songs to the new group"
 msgstr "Lägg till de _markerade låtarna till den nya gruppen"
 
@@ -1231,16 +1255,36 @@ msgstr "Läser in cd-information"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d låtar, %d.%02d.%02d total tid"
 
-#: sources/rb-group-source.c:651
+#: sources/rb-group-source.c:493 sources/rb-library-source.c:765
+#, c-format
+msgid "%ld songs"
+msgstr "%ld låtar"
+
+#: sources/rb-group-source.c:534 sources/rb-library-source.c:812
+#, c-format
+msgid "<b>%.1f</b> days (%ld songs)"
+msgstr "<b>%.1f</b> dagar (%ld låtar)"
+
+#: sources/rb-group-source.c:537 sources/rb-library-source.c:815
+#, c-format
+msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
+
+#: sources/rb-group-source.c:540 sources/rb-library-source.c:818
+#, c-format
+msgid "<b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> minuter (%ld låtar)"
+
+#: sources/rb-group-source.c:678
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
 
-#: sources/rb-iradio-source.c:380
+#: sources/rb-iradio-source.c:367
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:480
+#: sources/rb-iradio-source.c:466
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
@@ -1249,27 +1293,7 @@ msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
 msgid "Library"
 msgstr "Bibliotek"
 
-#: sources/rb-library-source.c:775
-#, c-format
-msgid "%ld songs"
-msgstr "%ld låtar"
-
-#: sources/rb-library-source.c:823
-#, c-format
-msgid "<b>%.1f</b> days (%ld songs)"
-msgstr "<b>%.1f</b> dagar (%ld låtar)"
-
-#: sources/rb-library-source.c:826
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
-
-#: sources/rb-library-source.c:829
-#, c-format
-msgid "<b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> minuter (%ld låtar)"
-
-#: sources/rb-library-source.c:935
+#: sources/rb-library-source.c:924
 msgid "Add Location"
 msgstr "Lägg till plats"
 
@@ -1352,45 +1376,8 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Toolbar Style"
 #~ msgstr "Verktygsradsstil"
 
-#, fuzzy
-#~ msgid "How to draw the toolbar"
-#~ msgstr "Redigera verktygsraden"
-
 #~ msgid "Show Arrow"
 #~ msgstr "Visa pil"
-
-#, fuzzy
-#~ msgid "Expand"
-#~ msgstr "Utökarstorlek"
-
-#, fuzzy
-#~ msgid "Spacer size"
-#~ msgstr "Utökarstorlek"
-
-#, fuzzy
-#~ msgid "Internal padding"
-#~ msgstr ""
-#~ "Internet-\n"
-#~ "radio"
-
-#, fuzzy
-#~ msgid "Toolbar style"
-#~ msgstr "_Verktygsrad"
-
-#, fuzzy
-#~ msgid "Toolbar icon size"
-#~ msgstr "Verktygsradsredigerare"
-
-#, fuzzy
-#~ msgid "Icon set"
-#~ msgstr "_Ikoner"
-
-#~ msgid "The child model"
-#~ msgstr "Barnmodellen"
-
-#, fuzzy
-#~ msgid "The model for the filtermodel to filter"
-#~ msgstr "Modellen för TreeModelFilter att filtrera"
 
 #~ msgid "The virtual root"
 #~ msgstr "Den virtuella roten"
@@ -1922,9 +1909,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Paste"
 #~ msgstr "Klistra in"
-
-#~ msgid "Add to Library"
-#~ msgstr "Lägg till i bibliotek"
 
 #~ msgid "New Group"
 #~ msgstr "Ny grupp"
