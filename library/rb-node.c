@@ -500,14 +500,6 @@ rb_node_remove_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	g_static_rw_lock_writer_lock (node->priv->lock);
-
-	if (g_list_find (node->priv->children, child) == NULL)
-	{
-		g_static_rw_lock_writer_unlock (node->priv->lock);
-		return;
-	}
-
 	action = g_new0 (RBNodeAction, 1);
 	action->type = RB_NODE_ACTION_SIGNAL;
 	action->node = node;
@@ -515,7 +507,14 @@ rb_node_remove_child (RBNode *node,
 	action->user_data = child;
 
 	rb_node_add_action (node, action);
-	
+
+	g_static_rw_lock_writer_lock (node->priv->lock);
+	if (g_list_find (node->priv->children, child) == NULL)
+	{
+		g_static_rw_lock_writer_unlock (node->priv->lock);
+		return;
+	}
+
 	node->priv->children = g_list_remove (node->priv->children, child);
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
