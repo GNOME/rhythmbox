@@ -1,3 +1,16 @@
+2002-11-01  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/gtkrbtree.h:
+	* lib/widgets/gtktreeprivate.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_columns_parse),
+	(gtk_tree_view_size_allocate_columns), (invalidate_last_column),
+	(gtk_tree_view_size_allocate):
+
+	Uber-dirty hack to put smart column sizing back.. don't try this at home!
+
 2002-11-01  Mark Humphreys  <mmarquee@btinternet.com>
             Jorn Baayen  <jorn@nl.linux.org>
 

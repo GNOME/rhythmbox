@@ -31,7 +31,9 @@ librbwidgets_la_SOURCES =				\
 	rb-song-info.c					\
 	rb-song-info.h					\
 	rb-tree-model-sort.c				\
-	rb-tree-model-sort.h
+	rb-tree-model-sort.h				\
+	gtktreeprivate.h				\
+	gtkrbtree.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
