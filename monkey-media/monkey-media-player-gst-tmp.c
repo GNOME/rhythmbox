@@ -468,6 +468,7 @@ static void
 monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			       gboolean iradio_mode,
 			       gboolean audiocd_mode,
+			       const char *uri,
 			       GError **error)
 {
 	GstDParamManager *dpman;
@@ -552,8 +553,16 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	/* The decoding element */
 	if (iradio_mode) {
 		mp->priv->decoder = gst_element_factory_make ("mad", "autoplugger");
-	} else
-		mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
+	} else {
+		if (g_str_has_suffix (uri, ".mp3"))
+			mp->priv->decoder = gst_element_factory_make ("mad", "autoplugger");
+		else if (g_str_has_suffix (uri, ".ogg"))
+			mp->priv->decoder = gst_element_factory_make ("vorbisfile", "autoplugger");
+		else if (g_str_has_suffix (uri, ".flac"))
+			mp->priv->decoder = gst_element_factory_make ("flacdec", "autoplugger");
+		else
+			mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
+	}
 
 	if (mp->priv->decoder == NULL) {
 		g_set_error (error,
@@ -671,8 +680,8 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 			  const char *uri,
 			  GError **error)
 {
-	gboolean audiocd_mode = uri && !strncmp ("audiocd://", uri, 10);
-	gboolean iradio_mode = uri && !strncmp ("http://", uri, 7);
+	gboolean audiocd_mode = uri && g_str_has_prefix (uri, "audiocd://");
+	gboolean iradio_mode = uri && g_str_has_prefix (uri, "http://");
 
 	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
 
@@ -691,7 +700,7 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 		return;
 	}
 
-	monkey_media_player_construct (mp, iradio_mode, audiocd_mode, error);
+	monkey_media_player_construct (mp, iradio_mode, audiocd_mode, uri, error);
 	if (error && *error)
 		return;
 
