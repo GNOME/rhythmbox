@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-17 15:13+0200\n"
-"PO-Revision-Date: 2003-08-17 15:14+0200\n"
+"POT-Creation-Date: 2003-08-18 15:14+0200\n"
+"PO-Revision-Date: 2003-08-18 15:15+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -666,7 +666,7 @@ msgid "_Source List"
 msgstr "_Källista"
 
 #: iradio/rb-iradio-backend.c:183 iradio/rb-iradio-backend.c:572
-#: iradio/rb-new-station-dialog.c:291 library/rb-library.c:663
+#: iradio/rb-new-station-dialog.c:291 library/rb-library.c:699
 msgid "All"
 msgstr "Alla"
 
@@ -840,7 +840,7 @@ msgstr "Fel vid inläsning av filer till biblioteket"
 msgid "_Error"
 msgstr "_Fel"
 
-#: lib/widgets/rb-node-view.c:801
+#: lib/widgets/rb-node-view.c:814
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
@@ -928,31 +928,41 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:902
+#: library/rb-library.c:938
 msgid "Failed to load library!"
 msgstr "Misslyckades med att läsa in biblioteket!"
 
-#: library/rb-library.c:1167
+#: library/rb-library.c:1205
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-library.c:1499
+#: library/rb-library.c:1514
 #, c-format
-msgid "%ld songs"
-msgstr "%ld låtar"
+msgid "<b>Refreshing songs...</b> (%d/%d)"
+msgstr "<b>Uppdaterar låtar...</b> (%d/%d)"
 
-#: library/rb-library.c:1550
+#: library/rb-library.c:1568
+#, c-format
+msgid "<b>Loading songs...</b> (%d total)"
+msgstr "<b>Läser in låtar...</b> (%d totalt)"
+
+#: library/rb-library.c:1570
+#, c-format
+msgid "<b>Working...</b> (%d total songs)"
+msgstr "<b>Arbetar...</b> (totalt %d låtar)"
+
+#: library/rb-library.c:1621
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> dagar (%ld låtar)"
 
-#: library/rb-library.c:1553
+#: library/rb-library.c:1624
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
 
-#: library/rb-library.c:1556
+#: library/rb-library.c:1627
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuter (%ld låtar)"
@@ -1397,11 +1407,11 @@ msgstr "Radio"
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
 
-#: sources/rb-library-source.c:528
+#: sources/rb-library-source.c:527
 msgid "Library"
 msgstr "Bibliotek"
 
-#: sources/rb-library-source.c:874
+#: sources/rb-library-source.c:873
 msgid "Add Location"
 msgstr "Lägg till plats"
 
@@ -1417,6 +1427,9 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:501
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "%ld songs"
+#~ msgstr "%ld låtar"
 
 #~ msgid "Volume"
 #~ msgstr "Volym"
@@ -1610,9 +1623,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Please enter a name for the new playlist."
 #~ msgstr "Ange ett namn för den nya spellistan."
-
-#~ msgid "<b>Loading...</b>"
-#~ msgstr "<b>Läser in...</b>"
 
 #~ msgid "<b>%.1f</b> days"
 #~ msgstr "<b>%.1f</b> dagar"
