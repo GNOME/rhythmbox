@@ -1,79 +1,82 @@
 <?xml version="1.0" ?>
 
-
 <sect1 id="rb-window">
-<title>Rhythmbox Window</title>
-&application; window enable you to display and playing your favourite music. <xref linkend="fig-rb-window"/> shows the &application; window that displays the &application; library.
-<figure id="fig-rb-window">
-<title>The Library in &application; Window</title>
-<screenshot>
-<mediaobject>
-  <imageobject>
-    <imagedata fileref="figures/rb-window.png" format="PNG"/>
-  </imageobject>
-  <textobject>
-	<phrase>Show the Rhythmbox window showing Librar.
-	Callouts: Menubar, Toolbar, Player area, View pane, Side pane, 
-	Statusbar.
-	</phrase>
-  </textobject>
-</mediaobject>
-</screenshot>
-</figure>
-<xref linkend="table-rb-window"/> describes the components of &application; window.
+<title>&application; Window</title>
+	<sect2 id="rb-window-intro">
+	<title>Overview</title>
 
-<table frame="topbot" id="table-rb-window">
-<title>&application; Window Components</title>
-<tgroup cols="2" colsep="0" rowsep="0"><colspec colname="COLSPEC0" colwidth="29.39*"/>
-<colspec colname="COLSPEC1" colwidth="70.61*"/>
-<thead>
-	<row rowsep="1">
-		<entry valign="top">Component</entry>
-		<entry valign="top">Description</entry>
-	</row>
-</thead>
-<tbody>
-	<row>
-		<entry valign="top">Menubar</entry>
-		<entry valign="top">Contains menus that you use to perform
-		tasks in &application;.</entry>
-	</row>
-	<row>
-		<entry valign="top">Toolbar</entry>
-		<entry valign="top">Contains buttons that you use to
-		perform	quick tasks in &application;.</entry>
-	</row>
+	<para>The &application; window enables you to display and play your favorite music. Figure 1 shows the &application; window displaying the library.</para>
+	<figure id="fig-rb-window">
+	<title>The Library in the &application; Window</title>
+	<screenshot>
+	<mediaobject>
+  		<imageobject>
+    		<imagedata fileref="figures/rb-window.png" format="PNG"/>
+  		</imageobject>
+  		<textobject>
+		<phrase>Show the &application; window showing Library.
+		Callouts: Menubar, Toolbar, Player area, View pane, Side pane, 
+		Statusbar.
+		</phrase>
+  		</textobject>
+	</mediaobject>
+	</screenshot>
+	</figure>
+	<para>Table 1 describes the components of &application; window.</para>
+
+	<table frame="topbot" id="table-rb-window">
+	<title>&application; Window Components</title>
+	<tgroup cols="2" colsep="0" rowsep="0"><colspec colname="COLSPEC0" colwidth="29.39*"/>
+	<colspec colname="COLSPEC1" colwidth="70.61*"/>
+	<thead>
+		<row rowsep="1">
+			<entry valign="top">Component</entry>
+			<entry valign="top">Description</entry>
+		</row>
+	</thead>
+	<tbody>
 		<row>
-		<entry valign="top">Side pane</entry>
-		<entry valign="top">Enable you to switch between Library 
-		and Groups.</entry>
-	</row>
-	<row>
-		<entry valign="top">Player area</entry>
-		<entry valign="top">Provides access to details about the
-		currently playing track and, in Library, enable you to
-		search for a particular word or phrase.</entry>
-	</row>
-	<row>
-		<entry valign="top">View pane</entry>
-		<entry valign="top">Displays a list of available 
-		tracks from:<itemizedlist>
-		<listitem><para>Library</para></listitem>
-		<listitem><para>Music groups</para></listitem><!--
-		<listitem><para>Audio CDs</para></listitem>		
-		<listitem><para>Internet radio</para></listitem> -->
-		</itemizedlist>	
-		</entry>
-	</row>
-	<row>
-		<entry valign="top">Statusbar</entry>
-		<entry valign="top">Displays global informations about 
-		tracks in View Pane.</entry>
-	</row>
+			<entry valign="top">Menubar</entry>
+			<entry valign="top">Contains menus that you use to perform
+			tasks in &application;.</entry>
+		</row>
+		<row>
+			<entry valign="top">Toolbar</entry>
+			<entry valign="top">Contains buttons that you use to
+			perform quick tasks in &application;.</entry>
+		</row>
+		<row>
+			<entry valign="top">Side pane</entry>
+			<entry valign="top">Enable you to switch between Library 
+			and Groups.</entry>
+		</row>
+		<row>
+			<entry valign="top">Player area</entry>
+			<entry valign="top">Provides access to details about the
+			currently playing track and, in Library, enable you to
+			search for a particular word or phrase.</entry>
+		</row>
+		<row>
+			<entry valign="top">View pane</entry>
+			<entry valign="top">Displays a list of available 
+			tracks from:<itemizedlist>
+			<listitem><para>Library</para></listitem>
+			<listitem><para>Music groups</para></listitem><!--
+			<listitem><para>Audio CDs</para></listitem>		
+			<listitem><para>Internet radio</para></listitem> -->
+			</itemizedlist>	
+			</entry>
+		</row>
+		<row>
+			<entry valign="top">Statusbar</entry>
+			<entry valign="top">Displays global informations about 
+			tracks in View Pane.</entry>
+		</row>
 
-</tbody>
-</tgroup>
-</table>
+	</tbody>
+	</tgroup>
+	</table>
+	</sect2>
 
 <sect2 id="intro-toolbar">
 <title>The Toolbar</title>
@@ -84,7 +87,7 @@
 			format="PNG"/>
 		</imageobject>
 		<textobject>
-			<phrase>Shows default Rhytmbox toolbar.</phrase>
+			<phrase>Shows default &application; toolbar.</phrase>
 		</textobject>
 	</mediaobject>
 	</screenshot>
@@ -157,15 +160,17 @@
 	playing. When tracker has focus, the arrow keys can be used to
 	Fast-Forward or Rewind the playing track.
 	</para>
+	<para>Clicking on the 'played time' will toggle between 'played time, 
+	'time left' and 'total time'.
+	</para>
 	<tip><para>Clicking on the artist or album name (where they are
 	underlined) will load the appropriate 'allmusic.com' page.</para>
 	</tip>
 </sect2>
-
 </sect1>
 
 <sect1 id="Usage">
-<title>Using Rhythmbox</title>
+<title>Using &application;</title>
 
 	<sect2 id="Playing">
 	<title>Playing Music</title>
@@ -337,7 +342,7 @@
 		<sect3 id="browser">
 		<title>Using the Browser</title>
 			<para>The Browser allows the library to be easily
-			browsed, showing the artist, then albumn of the current
+			browsed, showing the artist, then album of the current
 			track. It is not shown when viewing a group<!-- or
 			audio CD-->. Choose <menuchoice><guimenu>View</guimenu><guimenuitem>Browser</guimenuitem></menuchoice> to change browser visibility.
 			</para>
@@ -348,7 +353,7 @@
 				format="PNG"/>
 				</imageobject>
 				<textobject>
-				<phrase>The rhythmbox browser</phrase>
+				<phrase>The &application; browser</phrase>
 				</textobject>
 				</mediaobject>
 			</screenshot>
@@ -416,9 +421,9 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 <sect2 id="statistics">
 <title>Statistics</title>
 
-<para>&application; can maintain statistics on the use of the library. &application; automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through <guilabel>Additional</guilabel> tab in <xref linkend="properties"/> dialog for each song or direcly in the View Pane for all songs displayed in Library or groups; you can add proper columns via the <xref linkend="prefs"/> dialog.</para>
+<para>&application; can maintain statistics on the use of the library. &application; automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through <guilabel>Additional</guilabel> tab in <xref linkend="properties"/> dialog for each song or directly in the View Pane for all songs displayed in Library or groups; you can add proper columns via the <xref linkend="prefs"/> dialog.</para>
 <figure id="fig-rb-stats">
-<title>Rhythmbox statistic in View Pane</title>
+<title>application; statistic in View Pane</title>
 <screenshot>
 <mediaobject>
   <imageobject>
@@ -602,7 +607,7 @@ Show Window &mdash; choose whether or not the &application; window is visible or
 			format="PNG"/>
 			</imageobject>
 			<textobject>
-			<phrase>Show the Rhythmbox preferences dialog.
+			<phrase>Show the &application; preferences dialog.
 			</phrase>
 			</textobject>
 			</mediaobject>
@@ -612,7 +617,7 @@ Show Window &mdash; choose whether or not the &application; window is visible or
 		<sect3 id="prefs-view">
 		<title>Appearance</title>
 			<para>This section of the dialog allows you to select
-			how toolbar will be displayed.
+			how the toolbar will be displayed.
 			</para>
 		</sect3>
 
