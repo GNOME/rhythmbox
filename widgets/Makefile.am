@@ -19,7 +19,6 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	rb-druid.c					\
 	rb-druid.h					\
-	eggintl.h					\
 	$(EGGFILES)					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
