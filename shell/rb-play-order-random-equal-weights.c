@@ -84,6 +84,7 @@ rb_random_play_order_equal_weights_get_type (void)
 static void
 rb_random_play_order_equal_weights_class_init (RBRandomPlayOrderEqualWeightsClass *klass)
 {
+	RBPlayOrderClass *porder;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
@@ -92,7 +93,7 @@ rb_random_play_order_equal_weights_class_init (RBRandomPlayOrderEqualWeightsClas
 	object_class->finalize = rb_random_play_order_equal_weights_finalize;
 
 
-	RBPlayOrderClass *porder = RB_PLAY_ORDER_CLASS (klass);
+	porder = RB_PLAY_ORDER_CLASS (klass);
 	porder->get_next = rb_random_play_order_equal_weights_get_next;
 	porder->go_next = rb_random_play_order_equal_weights_go_next;
 	porder->get_previous = rb_random_play_order_equal_weights_get_previous;
