@@ -19,9 +19,10 @@ EXTRA_DIST = 			\
 	DOCUMENTERS		\
 	INTERNALS
 
-CLEANFILES =				\
+DISTCLEANFILES =			\
 	intltool-extract		\
 	intltool-merge			\
-	intltool-update			\
-	./po/.intltool-merge-cache 	\
-	./help/C/rhythmbox-C.omf.out
+	intltool-update
+
+CLEANFILES = ./po/.intltool-merge-cache 	\
+	     ./help/C/rhythmbox-C.omf.out
