@@ -1184,10 +1184,10 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		backend = "Xine";
 #endif		
 #ifdef HAVE_MP3
-		g_string_append (formats, "mp3 ");
+		g_string_append (formats, "MP3 ");
 #endif
 #ifdef HAVE_VORBIS
-		g_string_append (formats, "vorbis ");
+		g_string_append (formats, "Vorbis ");
 #endif
 #ifdef HAVE_FLAC
 		g_string_append (formats, "FLAC ");
