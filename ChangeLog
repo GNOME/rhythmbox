@@ -2,6 +2,150 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2004-09-16 19:18:49 GMT	Colin Walters <walters@verbum.org>	patch-127
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.9--patch-127
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/en_CA.po
+
+
+2004-09-16 19:16:34 GMT	Colin Walters <walters@verbum.org>	patch-126
+
+    Summary:
+      merge from 0.8: add MimeType to .desktop
+    Revision:
+      rhythmbox--main--0.9--patch-126
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-105
+       add MimeType field to .desktop
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-106
+       use ; in MimeType
+    
+
+    modified files:
+     ChangeLog data/rhythmbox.desktop.in
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-105
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-106
+
+
+2004-09-15 09:55:18 GMT	Christophe Fergeau <teuf@gnome.org>	patch-125
+
+    Summary:
+      Don't use G_GINT64_FORMAT since it makes the translators' job harder
+    Revision:
+      rhythmbox--main--0.9--patch-125
+
+
+    modified files:
+     ChangeLog player/rb-recorder-gst.c po/POTFILES.in
+     po/POTFILES.skip po/fr.po
+     sources/rb-playlist-source-recorder.c
+
+
+2004-09-15 09:38:35 GMT	Christophe Fergeau <teuf@gnome.org>	patch-124
+
+    Summary:
+      Switch to -std=gnu89 instead of -std=c89, fix compilation with that flag
+    Revision:
+      rhythmbox--main--0.9--patch-124
+
+
+    modified files:
+     ChangeLog configure.ac player/rb-recorder-gst.c
+     po/POTFILES.skip sources/rb-ipod-source.c
+     sources/rb-playlist-source-recorder.c widgets/gst-hig-dialog.h
+     widgets/rb-song-info.c
+
+
+2004-09-14 20:06:51 GMT	William Jon McCann <mccann@jhu.edu>	patch-123
+
+    Summary:
+      Explicitly add files with no taglines.
+    Revision:
+      rhythmbox--main--0.9--patch-123
+
+    
+    
+    Patches applied:
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-2
+       Add files missing from last commit.  Didn't get added because they didn't have ids.
+    
+
+    new files:
+     data/glade/.arch-ids/recorder.glade.id
+     data/glade/recorder.glade
+     player/.arch-ids/rb-recorder-marshal.list.id
+     player/rb-recorder-marshal.list
+
+    modified files:
+     ChangeLog
+
+    new patches:
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-2
+
+
+2004-09-14 19:35:58 GMT	William Jon McCann <mccann@jhu.edu>	patch-122
+
+    Summary:
+      
+    Revision:
+      rhythmbox--main--0.9--patch-122
+
+    
+    
+    Patches applied:
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9--patch-121
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-1
+       add audio disc recording
+    
+
+    new files:
+     player/rb-recorder-gst.c player/rb-recorder-xine.c
+     player/rb-recorder.h sources/rb-playlist-source-recorder.c
+     sources/rb-playlist-source-recorder.h
+
+    modified files:
+     ChangeLog configure.ac data/glade/Makefile.am
+     data/rhythmbox.schemas data/ui/rhythmbox-ui.xml
+     lib/rb-preferences.h player/Makefile.am
+     shell/rb-playlist-manager.c sources/Makefile.am
+     sources/rb-playlist-source.c sources/rb-playlist-source.h
+
+    new patches:
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--base-0
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-1
+
+
+2004-09-10 06:13:00 GMT	Colin Walters <walters@verbum.org>	patch-121
+
+    Summary:
+      G_DEFINE_TYPE love, also be sure to call finalize in some objects
+    Revision:
+      rhythmbox--main--0.9--patch-121
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c
+     metadata/rb-metadata-xine.c player/rb-player-gst.c
+     player/rb-player-xine.c rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c
+
+
 2004-09-10 05:15:36 GMT	Colin Walters <walters@verbum.org>	patch-120
 
     Summary:
