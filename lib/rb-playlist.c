@@ -1037,51 +1037,6 @@ rb_playlist_add_desktop (RBPlaylist *playlist, const char *url,
 }
 #endif
 
-static gboolean
-rb_playlist_add_directory (RBPlaylist *playlist, const char *url,
-			   guint recurse_level, gpointer data)
-{
-	GnomeVFSDirectoryHandle *handle;
-	GnomeVFSFileInfo *info;
-	GnomeVFSResult res;
-	gboolean retval = FALSE;
-
-	if (gnome_vfs_directory_open (&handle, url, GNOME_VFS_FILE_INFO_DEFAULT)
-	    != GNOME_VFS_OK)
-		return FALSE;
-
-	info = gnome_vfs_file_info_new ();
-	res = gnome_vfs_directory_read_next (handle, info);
-	while (res == GNOME_VFS_OK) {
-		char *str, *fullpath;
-
-		if (info->name != NULL && (strcmp (info->name, ".") == 0
-					   || strcmp (info->name, "..") == 0
-					   || strncmp (info->name, ".Trash", strlen (".Trash")))) {
-			res = gnome_vfs_directory_read_next (handle, info);
-			continue;
-		}
-
-		str = g_build_filename (G_DIR_SEPARATOR_S,
-					     url, info->name, NULL);
-		if (strstr (str, "://") != NULL)
-			fullpath = str + 1;
-		else
-			fullpath = str;
-
-		if (rb_playlist_parse_recurse (playlist, fullpath, recurse_level) == FALSE)
-			rb_playlist_add_one_url (playlist, fullpath, NULL);
-
-		retval = TRUE;
-		g_free (str);
-		res = gnome_vfs_directory_read_next (handle, info);
-	}
-
-	gnome_vfs_directory_close (handle);
-	gnome_vfs_file_info_unref (info);
-	return retval;
-}
-
 /* These ones need a special treatment, mostly playlist formats */
 static PlaylistTypes special_types[] = {
 	{ "audio/x-mpegurl", rb_playlist_add_m3u },
@@ -1091,7 +1046,6 @@ static PlaylistTypes special_types[] = {
 #if HAVE_LIBGNOME_DESKTOP
 	{ "application/x-gnome-app-info", rb_playlist_add_desktop },
 #endif	
-	{ "x-directory/normal", rb_playlist_add_directory },
 	{ "video/x-ms-wvx", rb_playlist_add_asx },
 	{ "video/x-ms-wax", rb_playlist_add_asx },
 };
