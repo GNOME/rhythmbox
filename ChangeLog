@@ -2,6 +2,52 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-17 02:12:43 GMT	Colin Walters <walters@verbum.org>	patch-77
+
+    Summary:
+      some merges from 0.6 branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-77
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-343
+       some fixes to legacy encoding support (Cha Young-Ho)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-367
+       async queries now require db read lock
+    
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c rhythmdb/rhythmdb.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-343
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-367
+
+
+2003-12-16 22:57:37 GMT	Colin Walters <walters@verbum.org>	patch-76
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-76
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-9
+       ignore empty tags, fix up about dialog, misc. fixes
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c rhythmdb/rhythmdb.c
+     shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-9
+
+
 2003-12-16 20:58:54 GMT	Colin Walters <walters@verbum.org>	patch-75
 
     Summary:
