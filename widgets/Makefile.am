@@ -21,8 +21,6 @@ librbwidgets_la_SOURCES =				\
 	rb-druid.h					\
 	disclosure-widget.c				\
 	disclosure-widget.h				\
-	gst-hig-dialog.c				\
-	gst-hig-dialog.h				\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-dialog.c					\
@@ -41,6 +39,8 @@ librbwidgets_la_SOURCES =				\
 	gtkrbtree.h					\
 	rb-rating.c					\
 	rb-rating.h					\
+	rb-rating-helper.c				\
+	rb-rating-helper.h				\
 	rb-tree-view.c					\
 	rb-tree-view.h					\
 	rb-query-creator.c				\

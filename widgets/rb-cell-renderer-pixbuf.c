@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* rbcellrendererpixbuf.c
  *
  * arch-tag: Implementation of Rhythmbox pixbuf GtkTreeView cell renderer
@@ -24,6 +25,8 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <stdlib.h>
+#include <gtk/gtktreeview.h>
+#include <gtk/gtkiconfactory.h>
 
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cut-and-paste-code.h"
@@ -52,13 +55,26 @@ static void rb_cell_renderer_pixbuf_render     (GtkCellRenderer            *cell
 						GdkRectangle               *cell_area,
 						GdkRectangle               *expose_area,
 						guint                       flags);
-
+static gboolean rb_cell_renderer_pixbuf_activate (GtkCellRenderer     *cell,
+						  GdkEvent            *event, 
+						  GtkWidget           *widget,
+						  const gchar         *path,
+						  GdkRectangle        *background_area,
+						  GdkRectangle        *cell_area,
+						  GtkCellRendererState flags);
 
 enum {
 	PROP_ZERO,
 	PROP_PIXBUF
 };
 
+enum
+{
+	PIXBUF_CLICKED,
+	LAST_SIGNAL
+};
+
+static guint rb_cell_renderer_pixbuf_signals [LAST_SIGNAL] = { 0 };
 
 GtkType
 rb_cell_renderer_pixbuf_get_type (void)
@@ -89,6 +105,9 @@ rb_cell_renderer_pixbuf_get_type (void)
 static void
 rb_cell_renderer_pixbuf_init (RBCellRendererPixbuf *cellpixbuf)
 {
+
+	/* set the renderer able to be activated */
+	GTK_CELL_RENDERER (cellpixbuf)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
 }
 
 static void
@@ -102,6 +121,7 @@ rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class)
 
 	cell_class->get_size = rb_cell_renderer_pixbuf_get_size;
 	cell_class->render = rb_cell_renderer_pixbuf_render;
+	cell_class->activate = rb_cell_renderer_pixbuf_activate;
 
 	g_object_class_install_property (object_class,
 					 PROP_PIXBUF,
@@ -111,6 +131,17 @@ rb_cell_renderer_pixbuf_class_init (RBCellRendererPixbufClass *class)
 							      GDK_TYPE_PIXBUF,
 							      G_PARAM_READABLE |
 							      G_PARAM_WRITABLE));
+
+	rb_cell_renderer_pixbuf_signals[PIXBUF_CLICKED] =
+		g_signal_new ("pixbuf-clicked",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_FIRST,
+			      G_STRUCT_OFFSET (RBCellRendererPixbufClass, pixbuf_clicked),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_STRING);
 }
 
 static void
@@ -295,4 +326,35 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
                                          0, 0);
 
   g_object_unref (pixbuf);
+}
+
+
+static gboolean
+rb_cell_renderer_pixbuf_activate (GtkCellRenderer *cell,
+				  GdkEvent *event, 
+				  GtkWidget *widget,
+				  const gchar *path,
+				  GdkRectangle *background_area,
+				  GdkRectangle *cell_area,
+				  GtkCellRendererState flags)
+{
+	int mouse_x, mouse_y, icon_width;
+	RBCellRendererPixbuf *cellpixbuf = (RBCellRendererPixbuf *) cell;
+
+	g_return_val_if_fail (RB_IS_CELL_RENDERER_PIXBUF (cellpixbuf), FALSE);
+
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
+	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
+	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
+					     mouse_x,
+					     mouse_y,
+					     &mouse_x,
+					     &mouse_y);
+
+	/* ensure the user clicks within the good cell */
+	if (mouse_x - cell_area->x >= 0
+	    && mouse_x - cell_area->x <= cell_area->width) {
+		g_signal_emit (G_OBJECT (cellpixbuf), rb_cell_renderer_pixbuf_signals [PIXBUF_CLICKED], 0, path);
+	}
+	return TRUE;
 }

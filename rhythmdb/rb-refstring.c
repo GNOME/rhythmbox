@@ -21,15 +21,15 @@
 
 #include <config.h>
 
-#define	G_IMPLEMENT_INLINES 1
-#define	__RB_REFSTRING_C__
-
 #include <glib.h>
 #include <string.h>
 
 GHashTable *rb_refstrings;
 
+#define	G_IMPLEMENT_INLINES 1
+#define	__RB_REFSTRING_C__
 #include "rb-refstring.h"
+#undef G_IMPLEMENT_INLINES
 
 static void
 rb_refstring_free (RBRefString *refstr)

@@ -30,13 +30,9 @@
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkiconfactory.h>
 
-#include "rb-stock-icons.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-marshal.h"
-#include "rb-cut-and-paste-code.h"
-
-/* Number of stars */
-#define MAX_SCORE 5
+#include "rb-rating-helper.h"
 
 static void rb_cell_renderer_rating_get_property (GObject *object,
 						  guint param_id,
@@ -74,11 +70,13 @@ static void rb_cell_renderer_rating_finalize (GObject *object);
 struct RBCellRendererRatingPrivate
 {
 	double rating;
-
-	GdkPixbuf *pix_star;
-	GdkPixbuf *pix_unset_star;
-	GdkPixbuf *pix_blank;
 };
+
+struct RBCellRendererRatingClassPrivate
+{
+	RBRatingPixbufs *pixbufs;	
+};
+
 
 enum 
 {
@@ -128,32 +126,12 @@ static void
 rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 {
 
-	GtkWidget *dummy;
-
 	cellrating->priv = g_new0 (RBCellRendererRatingPrivate, 1);
 
 	/* set the renderer able to be activated */
 	GTK_CELL_RENDERER (cellrating)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
 
 	/* create the needed icons */
-	dummy = gtk_label_new (NULL);
-	cellrating->priv->pix_star = gtk_widget_render_icon (dummy,
-							     RB_STOCK_SET_STAR,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	g_assert (cellrating->priv->pix_star);
-	cellrating->priv->pix_unset_star = gtk_widget_render_icon (dummy,
-							           RB_STOCK_UNSET_STAR,
-							           GTK_ICON_SIZE_MENU,
-							           NULL);
-	g_assert (cellrating->priv->pix_unset_star);
-	cellrating->priv->pix_blank = gtk_widget_render_icon (dummy,
-							      RB_STOCK_NO_STAR,
-							      GTK_ICON_SIZE_MENU,
-							      NULL);
-	g_assert (cellrating->priv->pix_blank);
-
-	gtk_widget_destroy (dummy);
 }
 
 static void
@@ -163,7 +141,6 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	GtkCellRendererClass *cell_class = GTK_CELL_RENDERER_CLASS (class);
 
 	parent_class = g_type_class_peek_parent (class);
-
 	object_class->finalize = rb_cell_renderer_rating_finalize;
 
 	object_class->get_property = rb_cell_renderer_rating_get_property;
@@ -173,16 +150,12 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	cell_class->render   = rb_cell_renderer_rating_render;
 	cell_class->activate = rb_cell_renderer_rating_activate;
 
-	g_object_class_install_property (object_class,
-					 PROP_RATING,
-					 g_param_spec_double ("rating",
-							     ("Rating Value"),
-							     ("Rating Value"),
-							     0.0, (double)MAX_SCORE, 
-							      (double)MAX_SCORE/2.0,
-							     G_PARAM_READWRITE));
+	class->priv = g_new0 (RBCellRendererRatingClassPrivate, 1);
+	class->priv->pixbufs = rb_rating_pixbufs_new ();
 
-	rb_cell_renderer_rating_signals[RATED] =
+	rb_rating_install_rating_property (object_class, PROP_RATING);
+
+	rb_cell_renderer_rating_signals[RATED] = 
 		g_signal_new ("rated",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
@@ -201,10 +174,6 @@ rb_cell_renderer_rating_finalize (GObject *object)
 	RBCellRendererRating *cellrating;
 
 	cellrating = RB_CELL_RENDERER_RATING (object);
-	
-	g_object_unref (G_OBJECT (cellrating->priv->pix_star));
-	g_object_unref (G_OBJECT (cellrating->priv->pix_unset_star));
-	g_object_unref (G_OBJECT (cellrating->priv->pix_blank));
 
 	g_free (cellrating->priv);
 
@@ -285,7 +254,7 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 		*y_offset = 0;
 
 	if (width)
-		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * MAX_SCORE;
+		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * RB_RATING_MAX_SCORE;
 
 	if (height)
 		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_width;
@@ -301,14 +270,13 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				GtkCellRendererState flags)
 
 {
-	int i, icon_width;
-	int offset = 0;
 	gboolean selected;
 	GdkRectangle pix_rect, draw_rect;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
-	gboolean rtl;
+	RBCellRendererRatingClass *cell_class;
 
-	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
+	cellrating = RB_CELL_RENDERER_RATING (cell);
+	cell_class = RB_CELL_RENDERER_RATING_GET_CLASS (cellrating);
 	rb_cell_renderer_rating_get_size (cell, widget, cell_area,
 					  &pix_rect.x,
 					  &pix_rect.y,
@@ -320,68 +288,19 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 	pix_rect.width -= cell->xpad * 2;
 	pix_rect.height -= cell->ypad * 2;
 	
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 	
 	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) == FALSE)
 		return;
 
+
+
 	selected = (flags & GTK_CELL_RENDERER_SELECTED);
-	
-	for (i = 0; i < MAX_SCORE; i++) {
-		GdkPixbuf *buf;
-		GtkStateType state;
-		gint x_offset;
 
-		if (selected == TRUE) {
-			if (GTK_WIDGET_HAS_FOCUS (widget))
-				state = GTK_STATE_SELECTED;
-			else
-				state = GTK_STATE_ACTIVE;
-		} else {
-			if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
-				state = GTK_STATE_INSENSITIVE;
-			else
-				state = GTK_STATE_NORMAL;
-		}
-
-		if (i < cellrating->priv->rating)
-			buf = cellrating->priv->pix_star;
-		else if (i >= cellrating->priv->rating && i < MAX_SCORE)
-			buf = cellrating->priv->pix_unset_star;
-		else
-			buf = cellrating->priv->pix_blank;
-
-		if (selected == FALSE)
-			offset = 120;
-
-		buf = eel_create_colorized_pixbuf (buf,
-						   widget->style->text[state].red + offset,
-						   widget->style->text[state].green + offset,
-						   widget->style->text[state].blue + offset);
-		if (buf == NULL)
-			return;
-
-		if (rtl) {
-			x_offset = draw_rect.x + (MAX_SCORE-i-1) * icon_width;
-		} else {
-			x_offset = draw_rect.x + i * icon_width;
-		}
-
-
-		gdk_pixbuf_render_to_drawable_alpha (buf,
-						     window,
-						     draw_rect.x - pix_rect.x,
-						     draw_rect.y - draw_rect.y,
-						     x_offset,
-						     draw_rect.y,
-						     icon_width,
-						     icon_width,
-						     GDK_PIXBUF_ALPHA_FULL,
-						     0,
-						     GDK_RGB_DITHER_NORMAL,
-						     0, 0);
-		g_object_unref (G_OBJECT (buf));
-	}
+	rb_rating_render_stars (widget, window, cell_class->priv->pixbufs, 
+				draw_rect.x - pix_rect.x, 
+				draw_rect.y - pix_rect.y, 
+				draw_rect.x, draw_rect.y,
+				cellrating->priv->rating, selected);	
 }
 
 static gboolean
@@ -393,12 +312,13 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 				  GdkRectangle *cell_area,
 				  GtkCellRendererState flags)
 {
-	int mouse_x, mouse_y, icon_width;
+	int mouse_x, mouse_y;
+	double rating;
+
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	g_return_val_if_fail (RB_IS_CELL_RENDERER_RATING (cellrating), FALSE);
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
 					     mouse_x,
@@ -406,27 +326,14 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 					     &mouse_x,
 					     &mouse_y);
 
-	/* ensure the user clicks within the good cell */
-	if (mouse_x - cell_area->x >= 0
-	    && mouse_x - cell_area->x <= cell_area->width) {
-		gboolean rtl;
-		double rating;
+	rating = rb_rating_get_rating_from_widget (widget, 
+						   mouse_x - cell_area->x,
+						   cell_area->width,
+						   cellrating->priv->rating);
 
-		rating = (int) ((mouse_x - cell_area->x) / icon_width) + 1;
-
-		rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
-		if (rtl) {
-			rating = MAX_SCORE - rating + 1;
-		}
-
-
-		if (rating < 0) 
-			rating = 0;
-
-		if (rating > MAX_SCORE)
-			rating = MAX_SCORE;
-		
-		g_signal_emit (G_OBJECT (cellrating), rb_cell_renderer_rating_signals[RATED],
+	if (rating != -1.0) {
+		g_signal_emit (G_OBJECT (cellrating), 
+			       rb_cell_renderer_rating_signals[RATED],
 			       0, path, rating);
 	}
 

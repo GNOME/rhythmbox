@@ -425,6 +425,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_HIDDEN:
+		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_NUM_PROPERTIES:
 			g_assert_not_reached ();
 			break;
@@ -535,6 +536,8 @@ save_entry_string (struct RhythmDBTreeSaveContext *ctx,
 		   const char *elt_name, const char *str)
 {
 	char *encoded;
+
+	g_return_if_fail (str != NULL);
 	write_elt_name_open (ctx, elt_name);
 	encoded	= xmlEncodeEntitiesReentrant (NULL, str);
 	RHYTHMDB_FWRITE (encoded, 1, strlen (encoded), ctx->handle);
@@ -703,6 +706,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		case RHYTHMDB_PROP_HIDDEN:
+		case RHYTHMDB_PROP_PLAYBACK_ERROR:
 		case RHYTHMDB_NUM_PROPERTIES:
 			break;
 		}

@@ -331,7 +331,7 @@ rb_source_get_property (GObject *object,
 	}
 }
 
-const char *
+char *
 rb_source_get_status (RBSource *status)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);

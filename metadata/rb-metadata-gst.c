@@ -136,8 +136,17 @@ rb_metadata_init (RBMetaData *md)
 	add_supported_type (md, "audio/mpeg", rb_add_id3_tagger, "MP3");
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
 	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
-	add_supported_type (md, "application/x-ape", NULL, "MonkeysAudio");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
+
+ 	if ((elt = gst_element_factory_make ("ffdec_wmav2", "ffdec_wmav2")) != NULL) {
+		add_supported_type (md, "video/x-ms-asf", NULL, "MusePack");
+ 		gst_object_unref (GST_OBJECT (elt));
+ 	}
+ 
+  	if ((elt = gst_element_factory_make ("musepackdec", "musepackdec")) != NULL) {
+ 		add_supported_type (md, "application/x-apetag", NULL, "MusePack");
+  		gst_object_unref (GST_OBJECT (elt));
+  	}
 	
 	if ((elt = gst_element_factory_make ("faad", "faad")) != NULL) {
 		add_supported_type (md, "audio/x-m4a", NULL, "MPEG-4");

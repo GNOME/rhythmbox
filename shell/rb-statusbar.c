@@ -505,9 +505,11 @@ rb_statusbar_new (RhythmDB *db, GtkActionGroup *actions,
 static void
 rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 {
-        const char *status_str
-                = rb_source_get_status (statusbar->priv->selected_source);
+	char *status_str;
+
+	status_str = rb_source_get_status (statusbar->priv->selected_source);
         gtk_label_set_markup (GTK_LABEL (statusbar->priv->status), status_str);
+	g_free (status_str);
 }
 
 void

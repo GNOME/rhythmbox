@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of widget to display RhythmDB entries
  *
@@ -24,6 +25,7 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkiconfactory.h>
+#include <gtk/gtkstock.h>
 #include <gtk/gtktooltips.h>
 #include <gdk/gdkkeysyms.h>
 #include <config.h>
@@ -105,6 +107,9 @@ static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 				   const char *path,
 				   double rating,
 				   RBEntryView *view);
+static void rb_entry_view_pixbuf_clicked_cb (RBEntryView *view,
+					     const char *path,
+					     RBCellRendererPixbuf *cellpixbuf);
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBEntryView *view);
@@ -142,6 +147,7 @@ struct RBEntryViewPrivate
 
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
+	GdkPixbuf *error_pixbuf;
 	
 	char *sorting_key;
 	guint sorting_gconf_notification_id;
@@ -398,6 +404,10 @@ rb_entry_view_init (RBEntryView *view)
 							    RB_STOCK_PAUSED,
 							    GTK_ICON_SIZE_MENU,
 							    NULL);
+	view->priv->error_pixbuf = gtk_widget_render_icon (dummy,
+							   RB_STOCK_PLAYBACK_ERROR,
+							   GTK_ICON_SIZE_MENU,
+							   NULL);
 	gtk_widget_destroy (dummy);
 
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
@@ -433,6 +443,7 @@ rb_entry_view_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
 	g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
+	g_object_unref (G_OBJECT (view->priv->error_pixbuf));
 
 	g_free (view->priv->sorting_key);
 
@@ -830,6 +841,8 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 		pixbuf = view->priv->playing_pixbuf;
 	else if (entry == view->priv->playing_entry)
 		pixbuf = view->priv->paused_pixbuf;
+	else if (entry->playback_error)
+		pixbuf = view->priv->error_pixbuf;
 	else
 		pixbuf = NULL;
 
@@ -1363,6 +1376,10 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 		gtk_tree_view_column_set_fixed_width (column, width + 5);
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
+		g_signal_connect_swapped (renderer,
+					  "pixbuf-clicked",
+					  G_CALLBACK (rb_entry_view_pixbuf_clicked_cb),
+					  G_OBJECT (view));
 
 		gtk_tooltips_set_tip (GTK_TOOLTIPS (tooltip), GTK_WIDGET (column->button),
 				       _("Now Playing"), NULL);
@@ -1430,6 +1447,27 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 	rhythmdb_entry_queue_set (view->priv->db, entry, RHYTHMDB_PROP_AUTO_RATE,
 				  &value);
 	g_value_unset (&value);
+}
+
+static void
+rb_entry_view_pixbuf_clicked_cb (RBEntryView          *view,
+				 const char           *path_string,
+				 RBCellRendererPixbuf *cellpixbuf)
+{
+	GtkTreePath *path;
+	RhythmDBEntry *entry;
+
+	g_return_if_fail (path_string != NULL);
+
+	path = gtk_tree_path_new_from_string (path_string);
+	entry = entry_from_tree_path (view, path);
+
+	gtk_tree_path_free (path);
+
+	if (entry->playback_error) {
+		rb_error_dialog (NULL, _("Playback Error"),
+				 "%s", entry->playback_error);
+	}
 }
 
 void

@@ -2,6 +2,362 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2005-01-09 17:51:29 GMT	William Jon McCann <mccann@jhu.edu>	patch-159
+
+    Summary:
+      Update recorder for n-c-b 2.9 API.  Add error dialog suppression.  Small build fix.
+    Revision:
+      rhythmbox--main--0.9--patch-159
+
+    
+    
+    Patches applied:
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-10
+       Disallow drop into smart playlists.  Fixes #140232.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-11
+       Fix for bug #120974: Skip unplayable songs.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-12
+       Fix crasher with rb-dialog.  Move error handling to error callback.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-13
+       Make rb-error-dialog non-modal.  Click on error pixbuf column to display playback error.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-14
+       Added playback error stock icon.  Display playback error in song info dialog.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-15
+       Add playback error icon.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-16
+       Fix visibility of playback error box in song info dialog.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-17
+       Don't increment auto rating on error.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-18
+       Use NO_AUDIO error to indicate BUSY audio subsystem and don't play next track in that case.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-19
+       Update to new nautilus-cd-burner 2.9 API.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-20
+       One more update for n-c-b 2.9 API.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-21
+       Sync with mainline.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-22
+       Build fix for inlines.
+    
+
+    new files:
+     data/art/.arch-ids/rhythmbox-playback-error.png.id
+     data/art/rhythmbox-playback-error.png
+
+    modified files:
+     ChangeLog configure.ac data/art/Makefile.am
+     data/glade/song-info.glade lib/rb-stock-icons.c
+     lib/rb-stock-icons.h player/rb-player-gst.c
+     player/rb-recorder-gst.c rhythmdb/rb-refstring.c
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-shell-player.c
+     sources/rb-playlist-source-recorder.c
+     sources/rb-playlist-source.c sources/rb-sourcelist-model.c
+     widgets/rb-cell-renderer-pixbuf.c
+     widgets/rb-cell-renderer-pixbuf.h widgets/rb-dialog.c
+     widgets/rb-entry-view.c widgets/rb-song-info.c
+
+    new patches:
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-10
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-11
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-12
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-13
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-14
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-15
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-16
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-17
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-18
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-19
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-20
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-21
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-22
+
+
+2004-12-13 22:03:58 GMT	Christophe Fergeau <teuf@gnome.org>	patch-158
+
+    Summary:
+      Factorize a bunch of common code between the rating widget used in song properties and the rating cell renderer
+    Revision:
+      rhythmbox--main--0.9--patch-158
+
+
+    new files:
+     widgets/rb-rating-helper.c widgets/rb-rating-helper.h
+
+    modified files:
+     ChangeLog widgets/Makefile.am
+     widgets/rb-cell-renderer-rating.c
+     widgets/rb-cell-renderer-rating.h widgets/rb-query-creator.c
+     widgets/rb-rating.c widgets/rb-song-info.c
+
+
+2004-12-13 12:51:03 GMT	Christophe Fergeau <teuf@gnome.org>	patch-157
+
+    Summary:
+      Scroll genre/artist/album view when using 'Browse this xxx' context menu
+    Revision:
+      rhythmbox--main--0.9--patch-157
+
+
+    modified files:
+     ChangeLog widgets/rb-property-view.c
+
+
+2004-12-13 00:10:50 GMT	Christophe Fergeau <teuf@gnome.org>	patch-156
+
+    Summary:
+      Make it possible to give a 0 rating
+    Revision:
+      rhythmbox--main--0.9--patch-156
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-137
+       Make it possible to set the rating for a song to 0.
+    
+
+    modified files:
+     ChangeLog widgets/rb-cell-renderer-rating.c
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-137
+
+
+2004-12-13 00:09:13 GMT	Christophe Fergeau <teuf@gnome.org>	patch-155
+
+    Summary:
+      Removed obsolete files
+    Revision:
+      rhythmbox--main--0.9--patch-155
+
+
+    removed files:
+     widgets/rb-tree-model-sort.c widgets/rb-tree-model-sort.h
+
+    modified files:
+     ChangeLog
+
+
+2004-12-02 17:12:50 GMT	Christophe Fergeau <teuf@gnome.org>	patch-154
+
+    Summary:
+      Add support for mpc and wma files
+    Revision:
+      rhythmbox--main--0.9--patch-154
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-136
+       Added support for mpc (MusePack) and wma files, wma supports needs testing against a wide range of wma files to check it's not doing anything silly
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-136
+
+
+2004-12-02 10:53:14 GMT	Christophe Fergeau <teuf@gnome.org>	patch-153
+
+    Summary:
+      Improve behaviour when handling non-UTF-8 filenames, fixes #157672
+    Revision:
+      rhythmbox--main--0.9--patch-153
+
+
+    modified files:
+     ChangeLog widgets/rb-song-info.c
+
+
+2004-12-01 23:53:05 GMT	Christophe Fergeau <teuf@gnome.org>	patch-152
+
+    Summary:
+      Added safety check which should prevent rb from crashing if we try to save a NULL property string
+    Revision:
+      rhythmbox--main--0.9--patch-152
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+
+2004-12-01 23:21:22 GMT	Christophe Fergeau <teuf@gnome.org>	patch-151
+
+    Summary:
+      Attempt to handle more nicely empty ipods
+    Revision:
+      rhythmbox--main--0.9--patch-151
+
+
+    modified files:
+     ChangeLog sources/rb-ipod-source.c
+
+
+2004-11-23 05:35:49 GMT	William Jon McCann <mccann@jhu.edu>	patch-150
+
+    Summary:
+      Enable drop of genre, artist, album into sourcelist.
+    Revision:
+      rhythmbox--main--0.9--patch-150
+
+    
+    
+    Patches applied:
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-9
+       Enable drop of genre, artist, album into sourcelist.
+    
+
+    modified files:
+     ChangeLog sources/rb-sourcelist-model.c
+
+    new patches:
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-9
+
+
+2004-11-17 16:49:21 GMT	William Jon McCann <mccann@jhu.edu>	patch-149
+
+    Summary:
+      Fixes for burn dialog.  Add GTK+-2.5 features.
+    Revision:
+      rhythmbox--main--0.9--patch-149
+
+    
+    
+    Patches applied:
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-3
+       Merge from mainline
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-4
+       Update from mainline
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-5
+       Use gtk+ 2.5 HIG dialogs.  Build fix for 64-bit systems.  Add burn to playlist context menu (fixes #153558).  Add track name to progress bar (fixes #153560).  Fix potential crasher in cdtext generation.  Fix mangled number of MiB listed in dialog.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-6
+       Bump required version of GTK+ to 2.5.4. 
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-7
+       Use GtkAboutDialog.  Add name to AUTHORS.  Remove gst-hig-dialog.  Use G_ format macros for 64-bit types.
+    
+     * mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-8
+       Use new GTK+ stock icons.
+    
+
+    removed files:
+     data/art/.arch-ids/rhythmbox-next.png.id
+     data/art/.arch-ids/rhythmbox-pause.png.id
+     data/art/.arch-ids/rhythmbox-play.png.id
+     data/art/.arch-ids/rhythmbox-previous.png.id
+     data/art/.arch-ids/rhythmbox-rewind.png.id
+     data/art/.arch-ids/rhythmbox-stop.png.id
+     data/art/rhythmbox-next.png data/art/rhythmbox-pause.png
+     data/art/rhythmbox-play.png data/art/rhythmbox-previous.png
+     data/art/rhythmbox-rewind.png data/art/rhythmbox-stop.png
+     widgets/.arch-ids/gst-hig-dialog.c.id
+     widgets/.arch-ids/gst-hig-dialog.h.id widgets/gst-hig-dialog.c
+     widgets/gst-hig-dialog.h
+
+    modified files:
+     AUTHORS ChangeLog configure.ac data/art/Makefile.am
+     data/ui/rhythmbox-ui.xml lib/rb-stock-icons.c
+     lib/rb-stock-icons.h shell/rb-shell-player.c shell/rb-shell.c
+     sources/rb-playlist-source-recorder.c widgets/Makefile.am
+     widgets/rb-dialog.c
+
+    new patches:
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-3
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-4
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-5
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-6
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-7
+     mccann@jhu.edu--2004/rhythmbox--main--0.9--patch-8
+
+
+2004-11-05 23:28:31 GMT	Christophe Fergeau <teuf@gnome.org>	patch-148
+
+    Summary:
+      Another leak fix
+    Revision:
+      rhythmbox--main--0.9--patch-148
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+
+2004-11-05 23:20:13 GMT	Christophe Fergeau <teuf@gnome.org>	patch-147
+
+    Summary:
+      Fixed a few small leaks
+    Revision:
+      rhythmbox--main--0.9--patch-147
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c shell/rb-statusbar.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-playlist-source.c sources/rb-source.c
+     sources/rb-source.h
+
+
+2004-09-29 21:40:56 GMT	Colin Walters <walters@verbum.org>	patch-146
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.9--patch-146
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/en_CA.po po/nl.po
+
+
+2004-09-27 19:33:25 GMT	Christophe Fergeau <teuf@gnome.org>	patch-145
+
+    Summary:
+      Added first-seen and last-seen properties, update them when necessary, fixed updating of modified files
+    Revision:
+      rhythmbox--main--0.9--patch-145
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-9
+       First go at adding first-seen and last-seen properties
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-10
+       Remove entries from the database when they haven't been seen in a long time
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-11
+       Fixed clean up of entries when they didn't show up for some time, fix rereading of files when they are modified
+    
+
+    modified files:
+     ChangeLog data/rhythmbox.schemas lib/rb-preferences.h
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-statusbar.c widgets/Makefile.am
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-9
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-10
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-11
+
+
 2004-09-27 16:23:41 GMT	Colin Walters <walters@verbum.org>	patch-144
 
     Summary:

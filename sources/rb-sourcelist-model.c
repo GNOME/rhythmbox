@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of GtkTreeModel iface containing RBSource objects
  *
@@ -338,7 +339,7 @@ path_is_droppable (RBSourceListModel *model,
 		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 		
-		return rb_source_can_rename (source);
+		return rb_source_can_cut (source);
 
 	}
 	return FALSE;
@@ -355,10 +356,21 @@ rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
 	if (g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE))) {
 		if (!dest_path)
 			return FALSE;
+		if (!path_is_droppable (RB_SOURCELIST_MODEL (model), dest_path))
+			return FALSE;
 		*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
 		return TRUE;
 	}
-	
+
+	if ((g_list_find (targets, gdk_atom_intern ("text/x-rhythmbox-artist", TRUE))
+	     || g_list_find (targets, gdk_atom_intern ("text/x-rhythmbox-album", TRUE))
+	     || g_list_find (targets, gdk_atom_intern ("text/x-rhythmbox-genre", TRUE)))
+	    && !g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE))) {
+		rb_debug ("genre, album, or artist type");
+		*pos = GTK_TREE_VIEW_DROP_AFTER;
+		return TRUE;
+	}
+
 	if (!g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE))) {
 		rb_debug ("unsupported type");
 		return FALSE;

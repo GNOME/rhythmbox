@@ -62,7 +62,7 @@ typedef struct
 	void (*deleted)		(RBSource *source);
 
 	/* methods */
-	const char *	(*impl_get_status)	(RBSource *source);
+	char *	        (*impl_get_status)	(RBSource *source);
 
 	const char *	(*impl_get_browser_key)	(RBSource *source);
 
@@ -118,7 +118,7 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 						 RhythmDBEntry *entry);
 
 /* general interface */
-const char *	rb_source_get_status		(RBSource *source);
+char *	        rb_source_get_status		(RBSource *source);
 
 const char *	rb_source_get_browser_key	(RBSource *source);
 

@@ -25,11 +25,12 @@
 #include <gtk/gtkiconfactory.h>
 
 #include "rb-rating.h"
+#include "rb-rating-helper.h"
 #include "rb-stock-icons.h"
 #include "rb-cut-and-paste-code.h"
 
 /* Offset at the beggining of the widget */
-#define X_OFFSET 4
+#define X_OFFSET 0
 
 /* Vertical offset */
 #define Y_OFFSET 2
@@ -60,17 +61,14 @@ static gboolean rb_rating_button_press_cb (GtkWidget *widget,
 
 struct RBRatingPrivate
 {
-	double score;
-
-	GdkPixbuf *pix_star;
-	GdkPixbuf *pix_dot;
-	GdkPixbuf *pix_blank;
+	double rating;
+	RBRatingPixbufs *pixbufs;
 };
 
 enum
 {
 	PROP_0,
-	PROP_SCORE
+	PROP_RATING
 };
 
 enum
@@ -125,13 +123,7 @@ rb_rating_class_init (RBRatingClass *klass)
 	widget_class->expose_event = rb_rating_expose;
 	widget_class->size_request = rb_rating_size_request;
 
-	g_object_class_install_property (object_class,
-					 PROP_SCORE,
-					 g_param_spec_double ("score",
-							      "Rating score",
-							      "Rating score",
-							      0.0, 5.0, 2.5,
-							      G_PARAM_READWRITE));
+	rb_rating_install_rating_property (object_class, PROP_RATING);
 
 	rb_rating_signals[RATED] = 
 		g_signal_new ("rated",
@@ -148,46 +140,10 @@ rb_rating_class_init (RBRatingClass *klass)
 static void
 rb_rating_init (RBRating *rating)
 {
-	GtkWidget *dummy;
-	GdkPixbuf *pixbuf;
-
 	rating->priv = g_new0 (RBRatingPrivate, 1);
 
 	/* create the needed icons */
-	dummy = gtk_label_new (NULL);
-	pixbuf = gtk_widget_render_icon (dummy,
-					 RB_STOCK_SET_STAR,
-					 GTK_ICON_SIZE_MENU,
-					 NULL);
-	rating->priv->pix_star = eel_create_colorized_pixbuf 
-					(pixbuf,
-					 dummy->style->text[GTK_STATE_NORMAL].red + COLOR_OFFSET,
-					 dummy->style->text[GTK_STATE_NORMAL].green + COLOR_OFFSET,
-					 dummy->style->text[GTK_STATE_NORMAL].blue + COLOR_OFFSET);
-	g_object_unref (G_OBJECT (pixbuf));
-
-	pixbuf = gtk_widget_render_icon (dummy,
-					 RB_STOCK_NO_STAR,
-					 GTK_ICON_SIZE_MENU,
-					 NULL);
-	rating->priv->pix_blank = eel_create_colorized_pixbuf 
-					(pixbuf,
-					 dummy->style->text[GTK_STATE_NORMAL].red,
-					 dummy->style->text[GTK_STATE_NORMAL].green,
-					 dummy->style->text[GTK_STATE_NORMAL].blue);
-	g_object_unref (G_OBJECT (pixbuf));
-
-	pixbuf = gtk_widget_render_icon (dummy,
-					 RB_STOCK_UNSET_STAR,
-					 GTK_ICON_SIZE_MENU,
-					 NULL);
-	rating->priv->pix_dot = eel_create_colorized_pixbuf (pixbuf,
-							     dummy->style->text[GTK_STATE_NORMAL].red,
-							     dummy->style->text[GTK_STATE_NORMAL].green,
-							     dummy->style->text[GTK_STATE_NORMAL].blue);
-	g_object_unref (G_OBJECT (pixbuf));
-
-	gtk_widget_destroy (dummy);
+	rating->priv->pixbufs = rb_rating_pixbufs_new ();
 
 	/* register some signals */
 	g_signal_connect_object (G_OBJECT (rating),
@@ -202,10 +158,7 @@ rb_rating_finalize (GObject *object)
 	RBRating *rating;
 
 	rating = RB_RATING (object);
-
-	g_object_unref (G_OBJECT (rating->priv->pix_star));
-	g_object_unref (G_OBJECT (rating->priv->pix_dot));
-	g_object_unref (G_OBJECT (rating->priv->pix_blank));
+	rb_rating_pixbufs_free (rating->priv->pixbufs);
 	g_free (rating->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -220,8 +173,8 @@ rb_rating_get_property (GObject *object,
 	RBRating *rating = RB_RATING (object);
   
 	switch (param_id) {
-	case PROP_SCORE:
-		g_value_set_double (value, rating->priv->score);
+	case PROP_RATING:
+		g_value_set_double (value, rating->priv->rating);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -239,8 +192,8 @@ rb_rating_set_property (GObject *object,
 	RBRating *rating= RB_RATING (object);
   
 	switch (param_id) {
-	case PROP_SCORE:
-		rating->priv->score = g_value_get_double (value);
+	case PROP_RATING:
+		rating->priv->rating = g_value_get_double (value);
 		gtk_widget_queue_draw (GTK_WIDGET (rating));
 		break;
 	default:
@@ -271,7 +224,7 @@ rb_rating_size_request (GtkWidget *widget,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
-	requisition->width = 5 * icon_size + X_OFFSET;
+	requisition->width = RB_RATING_MAX_SCORE * icon_size + X_OFFSET;
 	requisition->height = icon_size + Y_OFFSET * 2;
 }
 
@@ -280,16 +233,12 @@ rb_rating_expose (GtkWidget *widget,
 		  GdkEventExpose *event)
 {
 	int icon_size;
-	gboolean rtl;
 
 	g_return_val_if_fail (RB_IS_RATING (widget), FALSE);
-
-	rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
 	if (GTK_WIDGET_DRAWABLE (widget) == TRUE) {
-		int i;
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
@@ -305,46 +254,12 @@ rb_rating_expose (GtkWidget *widget,
 				  widget->allocation.width,
 				  widget->allocation.height);
 
-		/* draw a blank area at the beggining, this lets the user click
-		 * in this area to unset the rating */
-		gdk_pixbuf_render_to_drawable_alpha (rating->priv->pix_blank,
-						     widget->window,
-						     0, 0,
-						     0, Y_OFFSET,
-						     X_OFFSET, icon_size,
-						     GDK_PIXBUF_ALPHA_FULL, 0,
-						     GDK_RGB_DITHER_NORMAL, 0, 0);
-
 
 		/* draw the stars */
-		for (i = 0; i < MAX_SCORE; i++) {
-			GdkPixbuf *pixbuf;
-			gint icon_x_offset;
-
-			if (i < rating->priv->score)
-				pixbuf = rating->priv->pix_star;
-			else
-				pixbuf = rating->priv->pix_dot;
-
-			if (pixbuf == NULL)
-				return FALSE;
-
-			if (rtl) {
-				icon_x_offset = X_OFFSET + (MAX_SCORE-i-1) * icon_size;
-			} else {
-				icon_x_offset = X_OFFSET + i * icon_size;
-			}
-			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
-							     widget->window,
-							     0, 0,
-							     icon_x_offset, Y_OFFSET,
-							     icon_size, icon_size,
-							     GDK_PIXBUF_ALPHA_FULL, 0,
-							     GDK_RGB_DITHER_NORMAL, 0, 0);
-		}
-
-
-		return TRUE;
+		return rb_rating_render_stars (widget, widget->window, 
+					       rating->priv->pixbufs, 0, 0, 
+					       X_OFFSET, Y_OFFSET,
+					       rating->priv->rating, FALSE);
 	}
 
 	return FALSE;
@@ -355,38 +270,24 @@ rb_rating_button_press_cb (GtkWidget *widget,
 			   GdkEventButton *event,
 			   RBRating *rating)
 {
-	int mouse_x, mouse_y, icon_size;
-	double score = 0;
+	int mouse_x, mouse_y;
+	double new_rating;
 
 	g_return_val_if_fail (widget != NULL, FALSE);
 	g_return_val_if_fail (RB_IS_RATING (rating), FALSE);
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 
-	/* ensure the user clicks within the good area */
-	if (mouse_x >= 0 && mouse_x <= widget->allocation.width) {
-		gboolean rtl;
-		
-		if (mouse_x <= X_OFFSET)
-			score = 0;
-		else
-			score = ((mouse_x - X_OFFSET) / icon_size) + 1;
+	new_rating = rb_rating_get_rating_from_widget (widget, mouse_x, 
+						       widget->allocation.width, 
+						       rating->priv->rating);
 
-		rtl = (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL);
-		if (rtl) {
-			score = MAX_SCORE - score + 1;
-		}
-
-		if (score > 5) score = 5;
-		if (score < 0) score = 0;
-
+	if (new_rating == -1.0) {
+		return FALSE;
+	} else {
 		g_signal_emit (G_OBJECT (rating), 
 			       rb_rating_signals[RATED], 
-			       0, score);
-
+			       0, new_rating);
 		return TRUE;
 	}
-
-	return FALSE;
 }

@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of local song properties dialog
  *
@@ -48,6 +49,7 @@ static void rb_song_info_init (RBSongInfo *song_info);
 static GObject *rb_song_info_constructor (GType type, guint n_construct_properties,
 					  GObjectConstructParam *construct_properties);
 
+static void rb_song_info_show (GtkWidget *widget);
 static void rb_song_info_finalize (GObject *object);
 static void rb_song_info_set_property (GObject *object, 
 				       guint prop_id,
@@ -69,6 +71,7 @@ static void rb_song_info_update_bitrate (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_auto_rate (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
+static void rb_song_info_update_playback_error (RBSongInfo *song_info);
 
 static void rb_song_info_backward_clicked_cb (GtkWidget *button,
 					      RBSongInfo *song_info);
@@ -113,6 +116,8 @@ struct RBSongInfoPrivate
 	GtkWidget   *genre_label;
 	GtkWidget   *track_cur;
 	GtkWidget   *track_cur_label;
+	GtkWidget   *playback_error_box;
+	GtkWidget   *playback_error_label;
 
 	GtkWidget   *bitrate;
 	GtkWidget   *duration;
@@ -175,12 +180,15 @@ static void
 rb_song_info_class_init (RBSongInfoClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_song_info_set_property;
 	object_class->get_property = rb_song_info_get_property;
 	object_class->constructor = rb_song_info_constructor;
+
+	widget_class->show = rb_song_info_show;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_VIEW,
@@ -241,6 +249,14 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
 }
 
+static void
+rb_song_info_show (GtkWidget *widget)
+{
+	if (GTK_WIDGET_CLASS (parent_class)->show)
+		GTK_WIDGET_CLASS (parent_class)->show (widget);
+
+	rb_song_info_update_playback_error (RB_SONG_INFO (widget));
+}
 
 static void
 rb_song_info_construct_single (RBSongInfo *song_info, GladeXML *xml,
@@ -421,6 +437,8 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 	song_info->priv->album = glade_xml_get_widget (xml, "song_info_album");
 	song_info->priv->genre = glade_xml_get_widget (xml, "song_info_genre");
 	song_info->priv->auto_rate = glade_xml_get_widget (xml, "song_info_auto_rate");
+	song_info->priv->playback_error_box = glade_xml_get_widget (xml, "song_info_error_box");
+	song_info->priv->playback_error_label = glade_xml_get_widget (xml, "song_info_error_label");
 
         /* We add now the Pango attributes (look at bug #99867 and #97061) */
 	{
@@ -705,7 +723,7 @@ rb_song_info_rated_cb (RBRating *rating,
 	rhythmdb_commit (song_info->priv->db);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
-		      "score", score,
+		      "rating", score,
 		      NULL);
 
 	rb_song_info_update_auto_rate (song_info);
@@ -768,6 +786,28 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_bitrate (song_info);
 	rb_song_info_update_auto_rate (song_info);
 	rb_song_info_update_rating (song_info);
+	rb_song_info_update_playback_error (song_info);
+}
+
+static void
+rb_song_info_update_playback_error (RBSongInfo *song_info)
+{
+	char *message = NULL;
+
+	if (song_info->priv->current_entry->playback_error)
+		message = g_strdup (song_info->priv->current_entry->playback_error);
+
+	if (message) {
+		gtk_label_set_text (GTK_LABEL (song_info->priv->playback_error_label),
+				    message);
+		gtk_widget_show (song_info->priv->playback_error_box);
+	} else {
+		gtk_label_set_text (GTK_LABEL (song_info->priv->playback_error_label),
+				    "No errors");
+		gtk_widget_hide (song_info->priv->playback_error_box);
+	}
+
+	g_free (message);
 }
 
 static void
@@ -804,24 +844,29 @@ static void
 rb_song_info_update_location (RBSongInfo *song_info)
 {
 	const char *text;
-	char *basename, *dir, *desktopdir;
 
 	g_return_if_fail (song_info != NULL);
 
 	text = song_info->priv->current_entry->location;
 
 	if (text != NULL) {
-		char *tmp;
+		char *tmp, *tmp_utf8;
+		char *basename, *dir, *desktopdir;
 		
 		basename = g_path_get_basename (text);
 		tmp = gnome_vfs_unescape_string_for_display (basename);
 		g_free (basename);
-
-		if (tmp != NULL) {
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), tmp);
+		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
+		g_free (tmp);
+		if (tmp_utf8 != NULL) {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), 
+					    tmp_utf8);
+		} else {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), 
+					    _("Unknown file name"));
 		}
 
-		g_free (tmp);
+		g_free (tmp_utf8);
 	
 		tmp = gnome_vfs_get_local_path_from_uri (text);
 		if (tmp == NULL)
@@ -830,17 +875,25 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		g_free (tmp);
 		tmp = gnome_vfs_unescape_string_for_display (dir);
 		g_free (dir);
+		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
+		g_free (tmp);
 
-		desktopdir = g_build_filename (g_get_home_dir (), ".gnome-desktop", NULL);
-		if (strcmp (tmp, desktopdir) == 0)
+		desktopdir = g_build_filename (g_get_home_dir (), "Desktop", NULL);
+		if ((tmp_utf8 != NULL) && (strcmp (tmp_utf8, desktopdir) == 0))
 		{
-			g_free (tmp);
-			tmp = g_strdup (_("on the desktop"));
+			g_free (tmp_utf8);
+			tmp_utf8 = g_strdup (_("On the desktop"));
 		}
 		g_free (desktopdir);
-		
-		gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), tmp);
-		g_free (tmp);
+
+		if (tmp_utf8 != NULL) {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), 
+					    tmp_utf8);
+		} else {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), 
+					    _("Unknown location"));
+		}
+		g_free (tmp_utf8);
 	}
 }
 
@@ -1008,7 +1061,7 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
-		      "score", song_info->priv->current_entry->rating,
+		      "rating", song_info->priv->current_entry->rating,
 		      NULL);
 
 }

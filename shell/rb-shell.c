@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of main Rhythmbox shell
  *
@@ -29,7 +30,6 @@
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-window-icon.h>
-#include <libgnomeui/gnome-about.h>
 #include <libgnomeui/gnome-client.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
@@ -350,7 +350,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "MusicImportCD", GTK_STOCK_CDROM, N_("Import _Audio CD..."), "<control>E",
 	  N_("Extract and import songs from a CD"),
 	  G_CALLBACK (rb_shell_cmd_extract_cd) },
-	{ "HelpAbout", GNOME_STOCK_ABOUT, N_("_About"), NULL,
+	{ "HelpAbout", GTK_STOCK_ABOUT, N_("_About"), NULL,
 	  N_("Show information about the music player"),
 	  G_CALLBACK (rb_shell_cmd_about) },
 	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
@@ -1481,7 +1481,6 @@ rb_shell_cmd_about (GtkAction *action,
 {
 	const char **tem;
 	GString *comment;
-	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
 
 	const char *authors[] = {
@@ -1502,11 +1501,6 @@ rb_shell_cmd_about (GtkAction *action,
 	};
 
 	const char *translator_credits = _("translator_credits");
-
-	if (about != NULL) {
-		gtk_window_present (GTK_WINDOW (about));
-		return;
-	}
 
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
@@ -1547,20 +1541,17 @@ rb_shell_cmd_about (GtkAction *action,
 		g_string_free (formats, TRUE);
 	}
 #endif
-	about = gnome_about_new ("Rhythmbox", VERSION,
-				 "Copyright \xc2\xa9 2003, 2004 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
-				 comment->str,
-				 (const char **) authors,
-				 (const char **) documenters,
-				 strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
-				 pixbuf);
+	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
+			       "name", "Rhythmbox",
+			       "version", VERSION,
+			       "copyright", "Copyright \xc2\xa9 2003, 2004 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
+			       "comments", comment->str,
+			       "authors", (const char **) authors,
+			       "documenters", (const char **) documenters,
+			       "translator-credits", strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
+			       "logo", pixbuf,
+			       NULL);
 	g_string_free (comment, TRUE);
-	gtk_window_set_transient_for (GTK_WINDOW (about), GTK_WINDOW (shell->priv->window));
-
-	g_object_add_weak_pointer (G_OBJECT (about),
-				   (gpointer) &about);
-
-	gtk_widget_show (about);
 }
 
 static void
@@ -1890,6 +1881,7 @@ rb_shell_sync_selected_source (RBShell *shell)
 				      "visibility", &visible, 
 				      NULL);
 			if (visible != FALSE) {
+				g_free (internalname);
 				rb_shell_select_source_internal (shell,
 								 tmp->data);
 				return;
@@ -1897,8 +1889,8 @@ rb_shell_sync_selected_source (RBShell *shell)
 			}
 		}
 	}
-
 	rb_shell_select_source_internal (shell, rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG));
+	g_free (internalname);
 }
 
 

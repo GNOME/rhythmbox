@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of Rhythmbox dialog wrapper functions
  *
@@ -30,7 +31,6 @@
 #include <stdarg.h>
 
 #include "rb-dialog.h"
-#include "gst-hig-dialog.h"
 #include "rb-stock-icons.h"
 
 void
@@ -47,17 +47,20 @@ rb_error_dialog (GtkWindow *parent,
 	g_vasprintf (&text, secondary, args);
 	va_end (args);
 
-	dialog = gst_hig_dialog_new (parent,
-				     GTK_DIALOG_DESTROY_WITH_PARENT,
-				     GST_HIG_MESSAGE_ERROR,
-				     primary, text,
-				     _("Close"), GTK_RESPONSE_ACCEPT,
-				     NULL);
-	g_signal_connect_object (G_OBJECT (dialog),
-				 "response",
-				 G_CALLBACK (gtk_widget_destroy),
-				 NULL, 0);
-	gtk_dialog_run (GTK_DIALOG (dialog));
+	dialog = gtk_message_dialog_new (parent,
+					 GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_ERROR,
+					 GTK_BUTTONS_CLOSE,
+					 primary);
+
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  "%s", text);
+
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+
+	g_signal_connect (dialog, "response", G_CALLBACK (gtk_widget_destroy), NULL);
+
+	gtk_widget_show (dialog);
 
 	g_free (text);
 }

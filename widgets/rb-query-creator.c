@@ -425,7 +425,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 			gtk_entry_set_text (text, g_value_get_string (data->val));
 		} else {
 			RBRating *rating = RB_RATING (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
-			g_object_set (G_OBJECT (rating), "score",
+			g_object_set (G_OBJECT (rating), "rating",
 				      g_value_get_double (data->val), NULL);
 		}
 		rows = rows->next;
@@ -512,7 +512,7 @@ get_criteria_for_property (RBQueryCreator *creator, RhythmDBPropType prop, guint
 static void
 set_rating_score (RBRating *rating, gdouble score)
 {
-	g_object_set (G_OBJECT (rating), "score", score, NULL);
+	g_object_set (G_OBJECT (rating), "rating", score, NULL);
 }	
 
 static GtkWidget *
@@ -600,7 +600,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 			double rating;
 
 			g_object_get (G_OBJECT (get_box_widget_at_pos (GTK_BOX (row->data), 2)),
-				      "score", &rating, NULL);
+				      "rating", &rating, NULL);
 			if (disjunction && row->next)
 				rhythmdb_query_append (dlg->priv->db,
 						       sub_query,

@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of GStreamer backends, with workarounds for bugs
  *
@@ -315,14 +316,14 @@ eos_cb (GstElement *element,
 }
 
 static void
-rb_player_gst_signal_error (RBPlayer *mp, const char *msg)
+rb_player_gst_signal_error (RBPlayer *mp, int code, const char *msg)
 {
 	RBPlayerSignal *signal;
 
 	signal = g_new0 (RBPlayerSignal, 1);
 	signal->object = mp;
 	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
-					     RB_PLAYER_ERROR_GENERAL,
+					     code,
 					     msg);
 
 	g_object_ref (G_OBJECT (mp));
@@ -337,7 +338,17 @@ error_cb (GstElement *element,
 	  gchar *debug,
 	  RBPlayer *mp)
 {
-	rb_player_gst_signal_error (mp, error->message);
+	int code;
+
+	if ((error->domain == GST_CORE_ERROR)
+	    || (error->domain == GST_LIBRARY_ERROR)
+	    || (error->code == GST_RESOURCE_ERROR_BUSY)) {
+		code = RB_PLAYER_ERROR_NO_AUDIO;
+	} else {
+		code = RB_PLAYER_ERROR_GENERAL;
+	}
+
+	rb_player_gst_signal_error (mp, code, error->message);
 }
 
 static gboolean
@@ -392,7 +403,7 @@ queue_full_cb (GstQueue *queue,
 					 G_CALLBACK (queue_full_cb),
 					 mp);
 	if (gst_element_set_state (mp->priv->waiting_bin, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
-		rb_player_gst_signal_error (mp, _("Could not start pipeline playing"));
+		rb_player_gst_signal_error (mp, RB_PLAYER_ERROR_GENERAL, _("Could not start pipeline playing"));
 	} else {
 		g_object_ref (G_OBJECT (mp));
 		g_idle_add ((GSourceFunc) buffering_end_signal_idle, mp);
@@ -617,7 +628,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			}				
 		}
 		g_timer_start (mp->priv->timer);
-	} else {		
+	} else {
 		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->pipeline,
 					   GST_STATE_PAUSED) == GST_STATE_FAILURE) {

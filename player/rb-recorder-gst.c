@@ -2,7 +2,7 @@
 /*
  * arch-tag: Implementation of GStreamer recorder backend
  *
- * Copyright (C) 2004 William Jon McCann <mccann@jhu.edu>
+ * Copyright (C) 2004-2005 William Jon McCann <mccann@jhu.edu>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -28,7 +28,7 @@
 #include <gst/gconf/gconf.h>
 #include <gst/play/play.h>
 #include <libgnome/gnome-i18n.h>
-#include <cd-recorder.h>
+#include <nautilus-burn-recorder.h>
 #include <sys/vfs.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -68,7 +68,7 @@ struct _RBRecorderPrivate {
         double      progress;
 
         GList      *tracks;
-        CDDrive    *drive;
+        NautilusBurnDrive *drive;
 
         gboolean    playing;
 
@@ -91,7 +91,7 @@ typedef struct {
         GValue     *info;
 } RBRecorderSignal;
 
-static guint rb_recorder_signals[LAST_SIGNAL] = { 0 };
+static guint rb_recorder_signals [LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
@@ -128,7 +128,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
 
         object_class->finalize = rb_recorder_finalize;
 
-        rb_recorder_signals[EOS] =
+        rb_recorder_signals [EOS] =
                 g_signal_new ("eos",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -137,7 +137,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               g_cclosure_marshal_VOID__VOID,
                               G_TYPE_NONE,
                               0);
-        rb_recorder_signals[TRACK_PROGRESS_CHANGED] =
+        rb_recorder_signals [TRACK_PROGRESS_CHANGED] =
                 g_signal_new ("track-progress-changed",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -147,7 +147,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_NONE,
                               1,
                               G_TYPE_DOUBLE);
-        rb_recorder_signals[BURN_PROGRESS_CHANGED] =
+        rb_recorder_signals [BURN_PROGRESS_CHANGED] =
                 g_signal_new ("burn-progress-changed",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -157,7 +157,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_NONE,
                               1,
                               G_TYPE_DOUBLE);
-        rb_recorder_signals[ACTION_CHANGED] =
+        rb_recorder_signals [ACTION_CHANGED] =
                 g_signal_new ("action-changed",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -167,7 +167,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_NONE,
                               1,
                               G_TYPE_INT);
-        rb_recorder_signals[INSERT_MEDIA_REQUEST] =
+        rb_recorder_signals [INSERT_MEDIA_REQUEST] =
                 g_signal_new ("insert-media-request",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -179,7 +179,7 @@ rb_recorder_class_init (RBRecorderClass *klass)
                               G_TYPE_BOOLEAN,
                               G_TYPE_BOOLEAN,
                               G_TYPE_BOOLEAN);
-        rb_recorder_signals[ERROR] =
+        rb_recorder_signals [ERROR] =
                 g_signal_new ("error",
                               G_TYPE_FROM_CLASS (klass),
                               G_SIGNAL_RUN_LAST,
@@ -241,16 +241,16 @@ static gboolean
 add_track (RBRecorder *recorder,
            const char *cdtext)
 {
-        Track *track;
-        char  *filename;
+        NautilusBurnRecorderTrack *track;
+        char                      *filename;
 
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
 
         filename = g_strdup (recorder->priv->dest_file);
 
-        track = g_new0 (Track, 1);
+        track = g_new0 (NautilusBurnRecorderTrack, 1);
 
-        track->type = TRACK_TYPE_AUDIO;
+        track->type = NAUTILUS_BURN_RECORDER_TRACK_TYPE_AUDIO;
         track->contents.audio.filename = filename;
         if (cdtext)
                 track->contents.audio.cdtext = g_strdup (cdtext);
@@ -269,14 +269,14 @@ eos_cb (GstElement *element,
         if (recorder->priv->pipeline)
                 gst_element_set_state (recorder->priv->pipeline, GST_STATE_NULL);
 
-        g_signal_emit (G_OBJECT (recorder), rb_recorder_signals[EOS], 0);
+        g_signal_emit (G_OBJECT (recorder), rb_recorder_signals [EOS], 0);
 }
 
 static gboolean
 error_signal_idle (RBRecorderSignal *signal)
 {
         g_signal_emit (G_OBJECT (signal->object),
-                       rb_recorder_signals[ERROR],
+                       rb_recorder_signals [ERROR],
                        0,
                        signal->error);
 
@@ -439,7 +439,7 @@ rb_recorder_construct (RBRecorder *recorder,
 }
 
 static void
-recorder_track_free (Track *track)
+recorder_track_free (NautilusBurnRecorderTrack *track)
 {
         if (track->contents.audio.filename) {
                 char *lockfile = NULL;
@@ -458,7 +458,7 @@ recorder_track_free (Track *track)
                 }
         }
 
-        cd_recorder_track_free (track);
+        nautilus_burn_recorder_track_free (track);
 }
 
 static void
@@ -534,7 +534,7 @@ tick_timeout_cb (RBRecorder *recorder)
         if (fraction != recorder->priv->progress) {
                 recorder->priv->progress = fraction;
                 g_signal_emit (G_OBJECT (recorder),
-                               rb_recorder_signals[TRACK_PROGRESS_CHANGED],
+                               rb_recorder_signals [TRACK_PROGRESS_CHANGED],
                                0,
                                fraction);
         }
@@ -720,7 +720,7 @@ rb_recorder_write (RBRecorder *recorder,
         g_return_if_fail (recorder->priv->pipeline != NULL);
 
         g_signal_emit (recorder,
-                       rb_recorder_signals[ACTION_CHANGED],
+                       rb_recorder_signals [ACTION_CHANGED],
                        0,
                        RB_RECORDER_ACTION_FILE_CONVERTING);
 
@@ -746,9 +746,9 @@ rb_recorder_pause (RBRecorder *recorder,
 }
 
 gboolean
-rb_recorder_set_device  (RBRecorder  *recorder,
-                         const char  *device,
-                         GError     **error)
+rb_recorder_set_device (RBRecorder  *recorder,
+                        const char  *device,
+                        GError     **error)
 {
         GList *drives;
         GList *tmp;
@@ -759,15 +759,15 @@ rb_recorder_set_device  (RBRecorder  *recorder,
 
         *error = NULL;
 
-        drives = scan_for_cdroms (TRUE, FALSE);
+        drives = nautilus_burn_drive_get_list (TRUE, FALSE);
         
         for (tmp = drives; tmp != NULL; tmp = tmp->next) {
-                CDDrive *drive = (CDDrive*) tmp->data;
+                NautilusBurnDrive *drive = (NautilusBurnDrive*) tmp->data;
                 if (strcmp (drive->device, device) == 0) {
                         recorder->priv->drive = drive;
                         break;
                 }
-                cd_drive_free (drive);
+                nautilus_burn_drive_free (drive);
         }
         g_list_free (drives);
 
@@ -780,12 +780,12 @@ rb_recorder_set_device  (RBRecorder  *recorder,
         }
 
         if (!(recorder->priv->drive->type
-              & (CDDRIVE_TYPE_CD_RECORDER
-                 | CDDRIVE_TYPE_CDRW_RECORDER
-                 | CDDRIVE_TYPE_DVD_RAM_RECORDER
-                 | CDDRIVE_TYPE_DVD_RW_RECORDER
-                 | CDDRIVE_TYPE_DVD_PLUS_R_RECORDER
-                 | CDDRIVE_TYPE_DVD_PLUS_RW_RECORDER))) {
+              & (NAUTILUS_BURN_DRIVE_TYPE_CD_RECORDER
+                 | NAUTILUS_BURN_DRIVE_TYPE_CDRW_RECORDER
+                 | NAUTILUS_BURN_DRIVE_TYPE_DVD_RAM_RECORDER
+                 | NAUTILUS_BURN_DRIVE_TYPE_DVD_RW_RECORDER
+                 | NAUTILUS_BURN_DRIVE_TYPE_DVD_PLUS_R_RECORDER
+                 | NAUTILUS_BURN_DRIVE_TYPE_DVD_PLUS_RW_RECORDER))) {
                 g_set_error (error, RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
                              _("Drive %s is not a recorder"),
@@ -797,25 +797,25 @@ rb_recorder_set_device  (RBRecorder  *recorder,
 }
 
 static void
-rb_recorder_action_changed_cb (CDRecorder        *cdrecorder,
-                               CDRecorderActions  cd_action,
-                               CDRecorderMedia    cd_media,
-                               gpointer           data)
+rb_recorder_action_changed_cb (NautilusBurnRecorder        *cdrecorder,
+                               NautilusBurnRecorderActions  cd_action,
+                               NautilusBurnRecorderMedia    cd_media,
+                               gpointer                     data)
 {
         RBRecorder      *recorder = (RBRecorder*) data;
         RBRecorderAction action;
 
         switch (cd_action) {
-        case PREPARING_WRITE:
+        case NAUTILUS_BURN_RECORDER_ACTION_PREPARING_WRITE:
                 action = RB_RECORDER_ACTION_DISC_PREPARING_WRITE;
                 break;
-        case WRITING:
+        case NAUTILUS_BURN_RECORDER_ACTION_WRITING:
                 action = RB_RECORDER_ACTION_DISC_WRITING;
                 break;
-        case FIXATING:
+        case NAUTILUS_BURN_RECORDER_ACTION_FIXATING:
                 action = RB_RECORDER_ACTION_DISC_FIXATING;
                 break;
-        case BLANKING:
+        case NAUTILUS_BURN_RECORDER_ACTION_BLANKING:
                 action = RB_RECORDER_ACTION_DISC_BLANKING;
                 break;
         default:
@@ -823,37 +823,37 @@ rb_recorder_action_changed_cb (CDRecorder        *cdrecorder,
         }
 
         g_signal_emit (recorder,
-                       rb_recorder_signals[ACTION_CHANGED],
+                       rb_recorder_signals [ACTION_CHANGED],
                        0,
                        action);
 }
 
 static void
-rb_recorder_burn_progress_cb (CDRecorder *cdrecorder,
-                              gdouble     fraction,
-                              gpointer    data)
+rb_recorder_burn_progress_cb (NautilusBurnRecorder *cdrecorder,
+                              gdouble               fraction,
+                              gpointer              data)
 {
         RBRecorder *recorder = (RBRecorder*) data;
 
         g_signal_emit (recorder,
-                       rb_recorder_signals[BURN_PROGRESS_CHANGED],
+                       rb_recorder_signals [BURN_PROGRESS_CHANGED],
                        0,
                        fraction);
 }
 
 static gboolean
-rb_recorder_insert_cd_request_cb (CDRecorder *cdrecorder,
-                                  gboolean    is_reload,
-                                  gboolean    can_rewrite,
-                                  gboolean    busy_cd,
-                                  gpointer    data)
+rb_recorder_insert_cd_request_cb (NautilusBurnRecorder *cdrecorder,
+                                  gboolean              is_reload,
+                                  gboolean              can_rewrite,
+                                  gboolean              busy_cd,
+                                  gpointer              data)
 {
 
         RBRecorder *recorder = (RBRecorder*) data;
         gboolean    res = FALSE;
 
         g_signal_emit (recorder,
-                       rb_recorder_signals[INSERT_MEDIA_REQUEST],
+                       rb_recorder_signals [INSERT_MEDIA_REQUEST],
                        0,
                        is_reload,
                        can_rewrite,
@@ -863,21 +863,18 @@ rb_recorder_insert_cd_request_cb (CDRecorder *cdrecorder,
         return res;
 }
 
-static CDDrive *
+static NautilusBurnDrive *
 rb_recorder_get_default_drive (void)
 {
-        CDDrive *drive  = NULL;
-        GList   *drives = NULL;
+        NautilusBurnDrive *drive  = NULL;
+        GList             *drives = NULL;
 
-        drives = scan_for_cdroms (TRUE, FALSE);
+        drives = nautilus_burn_drive_get_list (TRUE, FALSE);
 
-        if (drives) {
-                /* FIXME: really need someone to write a cd_drive_copy */
-                drive = (CDDrive*) drives->data;
-                drives = drives->next;
-        }
+        if (drives)
+                drive = nautilus_burn_drive_copy ((NautilusBurnDrive*) drives->data);
 
-        g_list_foreach (drives, (GFunc)cd_drive_free, NULL);
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
         g_list_free (drives);
 
         return drive;
@@ -886,14 +883,14 @@ rb_recorder_get_default_drive (void)
 char *
 rb_recorder_get_default_device (void)
 {
-        CDDrive *drive;
-        char    *device = NULL;
+        NautilusBurnDrive *drive;
+        char              *device = NULL;
 
         drive = rb_recorder_get_default_drive ();
 
         if (drive) {
                 device = g_strdup (drive->device);
-                cd_drive_free (drive);
+                nautilus_burn_drive_free (drive);
         }
 
         return device;
@@ -916,7 +913,7 @@ rb_recorder_get_media_length (RBRecorder *recorder,
         else
                 device = rb_recorder_get_default_device ();
                 
-        size = cd_drive_get_media_size_from_path (device);
+        size = nautilus_burn_drive_get_media_size_from_path (device);
         if (size > 0)
                 secs = SIZE_TO_TIME(size);
         else
@@ -956,7 +953,7 @@ acb_wave_time (const char *filename)
 {
 #define WAV_SIGNATURE_SIZE 16
 #define LPCM_BITRATE (16 * 44100 * 2)
-        char        buffer[WAV_SIGNATURE_SIZE];
+        char        buffer [WAV_SIGNATURE_SIZE];
         int         fd, len;
         waveformat *wav;
 
@@ -967,18 +964,18 @@ acb_wave_time (const char *filename)
         if (read (fd, buffer, WAV_SIGNATURE_SIZE) != WAV_SIGNATURE_SIZE)
                 return ACB_ERROR_NOT_WAVE_TOO_SMALL;
 
-        if ((buffer[0] != 'R') ||
-            (buffer[1] != 'I') ||
-            (buffer[2] != 'F') ||
-            (buffer[3] != 'F') ||
-            (buffer[8] != 'W') ||
-            (buffer[9] != 'A') ||
-            (buffer[10] != 'V') ||
-            (buffer[11] != 'E') ||
-            (buffer[12] != 'f') ||
-            (buffer[13] != 'm') ||
-            (buffer[14] != 't') ||
-            (buffer[15] != ' '))
+        if ((buffer [0] != 'R') ||
+            (buffer [1] != 'I') ||
+            (buffer [2] != 'F') ||
+            (buffer [3] != 'F') ||
+            (buffer [8] != 'W') ||
+            (buffer [9] != 'A') ||
+            (buffer [10] != 'V') ||
+            (buffer [11] != 'E') ||
+            (buffer [12] != 'f') ||
+            (buffer [13] != 'm') ||
+            (buffer [14] != 't') ||
+            (buffer [15] != ' '))
                 return ACB_ERROR_NOT_WAVE_FORMAT;
 
         if (read (fd, &len, sizeof(len)) != sizeof (len)) {
@@ -1031,8 +1028,8 @@ get_tracks_length (RBRecorder *recorder,
                 return -1;
 
         for (l = recorder->priv->tracks; l; l = l->next) {
-                Track *track = l->data;
-                gint64 length;
+                NautilusBurnRecorderTrack *track = l->data;
+                gint64                     length;
 
                 length = acb_wave_time (track->contents.audio.filename);
                 if (length < 0) {
@@ -1050,12 +1047,12 @@ gboolean
 rb_recorder_burn (RBRecorder *recorder,
                   GError    **error)
 {
-        CDRecorder          *cdrecorder;
-        CDRecorderWriteFlags flags;
-        int                  res;
-        gboolean             result;
-        gint64               tracks_length;
-        gint64               media_length;
+        NautilusBurnRecorder          *cdrecorder;
+        NautilusBurnRecorderWriteFlags flags;
+        int                            res;
+        gboolean                       result;
+        gint64                         tracks_length;
+        gint64                         media_length;
 
         g_return_val_if_fail (recorder != NULL, FALSE);
         g_return_val_if_fail (RB_IS_RECORDER (recorder), FALSE);
@@ -1090,7 +1087,7 @@ rb_recorder_burn (RBRecorder *recorder,
         media_length = rb_recorder_get_media_length (recorder, error);
 
         /* don't fail here if media length cannot be determined
-         * cd_recorder_write_tracks will fail and issue a signal */
+         * nautilus_burn_recorder_write_tracks will fail and issue a signal */
         if ((media_length > 0) && (tracks_length > media_length)) {
                 g_set_error (error,
                              RB_RECORDER_ERROR,
@@ -1102,37 +1099,37 @@ rb_recorder_burn (RBRecorder *recorder,
                 return FALSE;
         }
         
-        cdrecorder = cd_recorder_new ();
+        cdrecorder = nautilus_burn_recorder_new ();
 
         g_signal_connect_object (G_OBJECT (cdrecorder), "progress-changed",
                                  G_CALLBACK (rb_recorder_burn_progress_cb), recorder, 0);
         g_signal_connect_object (G_OBJECT (cdrecorder), "action-changed",
                                  G_CALLBACK (rb_recorder_action_changed_cb), recorder, 0);
-        g_signal_connect_object (G_OBJECT (cdrecorder), "insert-cd-request",
+        g_signal_connect_object (G_OBJECT (cdrecorder), "insert-media-request",
                                  G_CALLBACK (rb_recorder_insert_cd_request_cb), recorder, 0);
 
         flags = 0;
         if (FALSE)
-                flags |= CDRECORDER_DUMMY_WRITE;
+                flags |= NAUTILUS_BURN_RECORDER_WRITE_DUMMY_WRITE;
         if (TRUE)
-                flags |= CDRECORDER_DEBUG;
+                flags |= NAUTILUS_BURN_RECORDER_WRITE_DEBUG;
         if (TRUE)
-                flags |= CDRECORDER_DISC_AT_ONCE;
+                flags |= NAUTILUS_BURN_RECORDER_WRITE_DISC_AT_ONCE;
 
-        res = cd_recorder_write_tracks (cdrecorder,
-                                        recorder->priv->drive,
-                                        recorder->priv->tracks,
-                                        0, 
-                                        flags);
+        res = nautilus_burn_recorder_write_tracks (cdrecorder,
+                                                   recorder->priv->drive,
+                                                   recorder->priv->tracks,
+                                                   0, 
+                                                   flags);
 
-        if (res == RESULT_FINISHED) {
+        if (res == NAUTILUS_BURN_RECORDER_RESULT_FINISHED) {
                 result = TRUE;
-        } else if (res == RESULT_ERROR) {
+        } else if (res == NAUTILUS_BURN_RECORDER_RESULT_ERROR) {
                 char *msg;
 
-                msg = cd_recorder_get_error_message (cdrecorder) ?
+                msg = nautilus_burn_recorder_get_error_message (cdrecorder) ?
                         g_strdup_printf (_("There was an error writing to the CD:\n%s"),
-                                         cd_recorder_get_error_message (cdrecorder))
+                                         nautilus_burn_recorder_get_error_message (cdrecorder))
                         : g_strdup (_("There was an error writing to the CD"));
                 g_set_error (error,
                              RB_RECORDER_ERROR,

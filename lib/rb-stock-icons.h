@@ -25,12 +25,6 @@
 
 G_BEGIN_DECLS
 
-#define RB_STOCK_PLAY          "rhythmbox-play"
-#define RB_STOCK_PAUSE         "rhythmbox-pause"
-#define RB_STOCK_STOP          "rhythmbox-stop"
-#define RB_STOCK_PREVIOUS      "rhythmbox-previous"
-#define RB_STOCK_NEXT          "rhythmbox-next"
-#define RB_STOCK_REWIND        "rhythmbox-rewind"
 #define RB_STOCK_SHUFFLE       "rhythmbox-shuffle"
 #define RB_STOCK_REPEAT        "rhythmbox-repeat"
 #define RB_STOCK_VISUALS       "rhythmbox-visuals"
@@ -39,6 +33,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_IRADIO        "rhythmbox-iradio"
 #define RB_STOCK_PLAYLIST      "rhythmbox-playlist"
 #define RB_STOCK_PLAYLIST_MENU "rhythmbox-playlist-menu"
+#define RB_STOCK_PLAYBACK_ERROR "rhythmbox-playback-error"
 #define RB_STOCK_PLAYING       "rhythmbox-playing"
 #define RB_STOCK_PAUSED        "rhythmbox-paused"
 #define RB_STOCK_ALBUM         "rhythmbox-album"

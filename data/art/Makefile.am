@@ -1,18 +1,13 @@
 ## arch-tag: Automake rules for included art
 
-art_DATA = rhythmbox-next.png          \
-	   rhythmbox-play.png          \
-	   rhythmbox-pause.png         \
-	   rhythmbox-stop.png          \
-	   rhythmbox-previous.png      \
-	   rhythmbox-rewind.png	       \
-	   rhythmbox-shuffle.png       \
+art_DATA = rhythmbox-shuffle.png       \
 	   rhythmbox-visuals.png       \
 	   rhythmbox-repeat.png        \
 	   rhythmbox-playlist.png      \
 	   rhythmbox-playlist-menu.png \
            rhythmbox-library.png       \
            rhythmbox-iradio.png        \
+	   rhythmbox-playback-error.png \
 	   rhythmbox-playing.png       \
 	   rhythmbox-paused.png	       \
 	   rhythmbox-album.png         \

@@ -36,6 +36,7 @@ G_BEGIN_DECLS
 #define RB_CELL_RENDERER_RATING_GET_CLASS(obj)  (GTK_CHECK_GET_CLASS ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRatingClass))
 
 typedef struct RBCellRendererRatingPrivate RBCellRendererRatingPrivate;
+typedef struct RBCellRendererRatingClassPrivate RBCellRendererRatingClassPrivate;
 
 typedef struct
 {
@@ -49,6 +50,9 @@ typedef struct
 	GtkCellRendererClass parent_class;
 
 	void (*rated) (GtkTreePath *path, double rating);
+
+	RBCellRendererRatingClassPrivate *priv;
+
 } RBCellRendererRatingClass;
 
 GtkType          rb_cell_renderer_rating_get_type (void);

@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of RhythmDB - Rhythmbox backend queryable database
  *
@@ -864,6 +865,7 @@ static void
 rhythmdb_entry_finalize (RhythmDBEntry *entry)
 {
 	g_free (entry->location);
+	g_free (entry->playback_error);
 	rb_refstring_unref (entry->title);
 	rb_refstring_unref (entry->genre);
 	rb_refstring_unref (entry->artist);
@@ -1865,6 +1867,10 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		g_free (entry->location);
 		entry->location = g_value_dup_string (value);
 		break;
+	case RHYTHMDB_PROP_PLAYBACK_ERROR:
+		g_free (entry->playback_error);
+		entry->playback_error = g_value_dup_string (value);
+		break;
 	case RHYTHMDB_PROP_MOUNTPOINT:
 		g_free (entry->mountpoint);
 		entry->mountpoint = g_value_dup_string (value);
@@ -2552,6 +2558,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray) [artist-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_PLAYBACK_ERROR, "Playback error string (gchararray) [playback-error]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
 			{ 0, 0, 0 }
 		};

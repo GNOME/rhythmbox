@@ -56,12 +56,12 @@ if test x"$enable_ipod" = xyes; then
 fi
 
 PKG_CHECK_MODULES(RHYTHMBOX,                    \
-                  gtk+-2.0 >= 2.4               \
+                  gtk+-2.0 >= 2.5.4             \
                   libgnomeui-2.0                \
 		  libglade-2.0                  \
 		  gnome-vfs-2.0 >= 2.6          \
 		  gnome-vfs-module-2.0          \
-		  libnautilus-burn >= 2.8.3	\
+		  libnautilus-burn >= 2.9.0	\
 		  $USE_HAL)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"

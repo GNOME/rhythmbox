@@ -63,7 +63,7 @@ static void rb_playlist_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 
 /* source methods */
-static const char *impl_get_status (RBSource *source);
+static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
@@ -111,7 +111,6 @@ struct RBPlaylistSourcePrivate
 	RBEntryView *songs;
 
 	char *title;
-	char *status;
 };
 
 enum
@@ -346,7 +345,6 @@ rb_playlist_source_finalize (GObject *object)
 	g_hash_table_destroy (source->priv->entries);
 
 	g_free (source->priv->title);
-	g_free (source->priv->status);
 
 	g_free (source->priv);
 
@@ -468,16 +466,17 @@ rb_playlist_source_get_query (RBPlaylistSource *source,
 		      "max-size", limit_mb, NULL);
 }
 
-static const char *
+static char *
 impl_get_status (RBSource *asource)
 {
 
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	g_free (source->priv->status);
-	source->priv->status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-							       rb_entry_view_get_duration (source->priv->songs),
-							       rb_entry_view_get_total_size (source->priv->songs));
-	return source->priv->status;
+	gchar *status;
+
+	status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+						 rb_entry_view_get_duration (source->priv->songs),
+						 rb_entry_view_get_total_size (source->priv->songs));
+	return status;
 }
 
 static const char *
@@ -577,7 +576,6 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
 	GList *list;
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-
 
         if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
                 list = gnome_vfs_uri_list_parse (data->data);

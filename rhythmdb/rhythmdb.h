@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
  /*
  *  arch-tag: Header for RhythmDB - Rhythmbox backend queryable database
  *
@@ -97,6 +98,7 @@ typedef enum
 	RHYTHMDB_PROP_ALBUM_FOLDED,
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
 	RHYTHMDB_PROP_HIDDEN,
+	RHYTHMDB_PROP_PLAYBACK_ERROR,
 
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
@@ -160,6 +162,9 @@ typedef struct {
 	/* cached data */
 	RBRefString *last_played_str;
 
+	/* playback error string */
+	char *playback_error;
+
 	/* visibility (to hide entries on unmounted volumes) */
 	gboolean hidden;
 } RhythmDBEntry;
@@ -210,6 +215,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->mountpoint;
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		return rb_refstring_get (entry->last_played_str);
+	case RHYTHMDB_PROP_PLAYBACK_ERROR:
+		return entry->playback_error;
 	default:
 		g_assert_not_reached ();
 		return NULL;

@@ -506,7 +506,7 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
- 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), FALSE);
+/*  	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), FALSE); */
 
         switch (view->priv->propid)
 	{
@@ -596,7 +596,17 @@ rb_property_view_set_selection (RBPropertyView *view, const GList *vals)
 		GtkTreeIter iter;
 		
 		if (rhythmdb_property_model_iter_from_string (view->priv->prop_model, vals->data, &iter)) {
+			GtkTreePath *path;
+
 			gtk_tree_selection_select_iter (view->priv->selection, &iter);
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->prop_model), &iter);
+			if (path != NULL) {
+				gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview),
+							      path, NULL, TRUE,
+							      0.5, 0.0);
+				gtk_tree_path_free (path);
+			}
+
 		}
 	}
 		

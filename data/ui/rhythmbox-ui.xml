@@ -107,12 +107,14 @@
   </popup>
 
   <popup name="PlaylistSourcePopup">
+    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
     <menuitem name="DeletePlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>
 
   <popup name="SmartPlaylistSourcePopup">
     <menuitem name="EditSmartPlaylistPopup" action="EditAutomaticPlaylist"/>
     <separator/>
+    <menuitem name="MusicPlaylistBurnPlaylistMenu" action="MusicPlaylistBurnPlaylist"/>
     <menuitem name="DeleteSmartPlaylistPopup" action="MusicPlaylistDeletePlaylist"/>
   </popup>
 

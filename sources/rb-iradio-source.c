@@ -87,7 +87,7 @@ static void genre_selected_cb (RBPropertyView *propview, const char *name,
 static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
 
 /* source methods */
-static const char *impl_get_status (RBSource *source);
+static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
@@ -582,7 +582,7 @@ impl_buffering_done (RBSource *asource)
 			       source);
 }
 
-static const char *
+static char *
 impl_get_status (RBSource *asource)
 {
  	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);

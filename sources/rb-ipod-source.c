@@ -385,14 +385,18 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	return TRUE;
 }
 
-static void
+static int
 rb_ipod_load_songs (RBiPodSource *source)
 {
 	source->priv->parser = ipod_parser_new (source->priv->ipod_mount_path);
-
+	if (source->priv->parser == NULL) {
+		return -1;
+	}
 	g_idle_add_full (G_PRIORITY_DEFAULT_IDLE, 
 			 (GSourceFunc)load_ipod_db_idle_cb,
 			 source, NULL);
+
+	return 0;
 }
 
 static void
@@ -412,18 +416,25 @@ rb_ipod_plugged (RBiPodSource *source,
 		 const gchar *mount_path,
 		 GnomeVFSVolume *volume)
 {
+	int res;
+
 	rb_debug ("iPod plugged\n");
 
 	if (source->priv->ipod_mount_path != NULL) {
 		/* Only one iPod can be recognized at once */
 		return;
 	}
-
-	source->priv->ipod_volume = volume;
+	
 	source->priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
-	gnome_vfs_volume_ref (volume);
-	g_object_set (G_OBJECT (source), "visibility", TRUE, NULL);	
-	rb_ipod_load_songs (source);
+	res = rb_ipod_load_songs (source);
+	if (res == 0) {
+		source->priv->ipod_volume = volume;
+		gnome_vfs_volume_ref (volume);
+		g_object_set (G_OBJECT (source), "visibility", TRUE, NULL);
+	} else {
+		g_free (source->priv->ipod_mount_path);
+		source->priv->ipod_mount_path = NULL;
+	}
 	/* FIXME: should we suspend this monitor until the iPod 
 	 * database has been read and fed to rhythmbox?
 	 */

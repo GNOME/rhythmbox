@@ -110,7 +110,7 @@ static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
-static const char *impl_get_status (RBSource *source);
+static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
@@ -160,7 +160,6 @@ struct RBLibrarySourcePrivate
 
 	gboolean lock;
 
-	char *status;
 	char *artist;
 	char *album;
 
@@ -426,7 +425,6 @@ rb_library_source_finalize (GObject *object)
 
 	rb_debug ("finalizing library source");
 
-	g_free (source->priv->status);
 	g_free (source->priv->artist);
 	g_free (source->priv->album);
 
@@ -902,15 +900,16 @@ songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
 }
 
-static const char *
+static char *
 impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	g_free (source->priv->status);
-	source->priv->status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-							       rb_entry_view_get_duration (source->priv->songs),
-							       rb_entry_view_get_total_size (source->priv->songs));
-	return source->priv->status;
+	gchar *status;
+
+	status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+						 rb_entry_view_get_duration (source->priv->songs),
+						 rb_entry_view_get_total_size (source->priv->songs));
+	return status;
 }
 
 static const char *
