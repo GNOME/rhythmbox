@@ -1062,6 +1062,10 @@ rb_shell_set_window_title (RBShell *shell,
 			title = g_strdup (window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      window_title);
+#if 0			
+			egg_tray_icon_send_message (EGG_TRAY_ICON (shell->priv->tray_icon),
+						    3000, window_title, -1);
+#endif
 
 			gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
 					      GTK_WIDGET (shell->priv->tray_icon),
@@ -1903,14 +1907,28 @@ tray_drop_cb (GtkWidget *widget,
 }
 
 static void
+tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
+{
+	rb_debug ("caught delete_event for tray icon");
+	gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
+	
+	setup_tray_icon (shell);
+}
+
+static void
 setup_tray_icon (RBShell *shell)
 {
 	GtkWidget *ebox, *image;
 	BonoboControlFrame *frame;
 
+	rb_debug ("setting up tray icon");
+
 	shell->priv->tray_icon_tooltip = gtk_tooltips_new ();
 
 	shell->priv->tray_icon = egg_tray_icon_new ("Rhythmbox tray icon");
+
+	g_signal_connect (G_OBJECT (shell->priv->tray_icon), "delete_event",
+			  G_CALLBACK (tray_deleted_cb), shell);
 	gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
 			      GTK_WIDGET (shell->priv->tray_icon),
 			      _("Not playing"),
