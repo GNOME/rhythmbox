@@ -840,7 +840,10 @@ rb_node_save_to_xml (RBNode *node,
 		switch (G_VALUE_TYPE (value))
 		{
 		case G_TYPE_STRING:
-			xmlNodeSetContent (value_xml_node, g_value_get_string (value));
+			xml = xmlEncodeEntitiesReentrant (parent_xml_node->doc,
+							  g_value_get_string (value));
+			xmlNodeSetContent (value_xml_node, xml);
+			g_free (xml);
 			break;
 		case G_TYPE_BOOLEAN:
 			xml = g_strdup_printf ("%d", g_value_get_boolean (value));
