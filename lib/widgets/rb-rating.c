@@ -28,10 +28,10 @@
 #include "rb-cut-and-paste-code.h"
 
 /* Offset at the beggining of the widget */
-#define X_OFFSET 8
+#define X_OFFSET 4
 
 /* Vertical offset */
-#define Y_OFFSET 6
+#define Y_OFFSET 4
 
 /* Number of stars */
 #define MAX_SCORE 5
@@ -268,6 +268,12 @@ rb_rating_expose (GtkWidget *widget,
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
+		gtk_paint_flat_box (widget->style, widget->window,
+				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
+				  NULL, widget, "entry_bg", 0, 0,
+				  widget->allocation.width,
+				  widget->allocation.height);
+
 		gtk_paint_shadow (widget->style, widget->window,
 				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
 				  NULL, widget, "text", 0, 0,
@@ -343,7 +349,7 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 
 	/* ensure the user clicks within the good area */
-	if (mouse_x >= 0 && mouse_x <= widget->requisition.width)
+	if (mouse_x >= 0 && mouse_x <= widget->allocation.width)
 	{
 		if (mouse_x <= X_OFFSET)
 			score = 0;
