@@ -1269,11 +1269,9 @@ rb_node_signal_connect_object (RBNode *node,
 			     GINT_TO_POINTER (node->signal_id),
 			     signal_data);
 	if (object)
-	{
 		g_object_weak_ref (object,
 				   (GWeakNotify)signal_object_weak_notify,
 				   signal_data);
-	}
 
 	ret = node->signal_id;
 	node->signal_id++;

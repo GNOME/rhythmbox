@@ -1,6 +1,21 @@
 2003-08-08  Colin Walters  <walters@verbum.org>
 
 	* configure.ac:
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(playing_node_destroyed_cb), (root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (playing_node_destroyed_cb),
+	(root_child_removed_cb):
+	* library/rb-node.c: (rb_node_signal_connect_object):
+
+	Re-apply node deletion patch; it appears to work now for
+	some reason...
+
+	Also give a warning if we're using GStreamer 0.7.
+
+2003-08-08  Colin Walters  <walters@verbum.org>
+
+	* configure.ac:
 
 	Require GStreamer 0.6.2 or above.
 

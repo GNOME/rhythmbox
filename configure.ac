@@ -375,6 +375,9 @@ if test x"$disable_gtktreemodelsort_workaround" = xyes; then
 else
 	AC_MSG_NOTICE([** GtkTreeModelSort workaround enabled])
 fi
+if test x"$missing_gst_output_element" != x; then
+	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])
+fi	
 if test x"$missing_gst_elements" != x; then
 	AC_MSG_WARN([The following GStreamer elements could not be found at compile time: $missing_gst_elements])
 	AC_MSG_WARN([Rhythmbox will fail at runtime if these elements cannot be found])
