@@ -1,3 +1,14 @@
+2003-08-10  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-file-helpers.c:
+	* lib/rb-file-helpers.h:
+	* library/rb-library.c: (rb_library_get_song_by_location):
+	* shell/rb-shell.c: (ask_file_response_cb):
+
+	Kill off rb_uri_canonicalize.  Instead just use
+	gnome_vfs_get_uri_from_local_path to ensure that uris are always
+	quoted internally.
+
 2003-08-11  Yann Rouillard <y.rouillard@laposte.net>
 
 	* lib/widgets/rb-node-view.c (dumb_sort_func): 

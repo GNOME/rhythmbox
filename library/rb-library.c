@@ -759,19 +759,14 @@ RBNode *
 rb_library_get_song_by_location (RBLibrary *library,
 			         const char *location)
 {
-	char *canonicalized_uri;
 	RBNode *ret;
 
-	canonicalized_uri = rb_uri_canonicalize (location);
-	
 	g_static_rw_lock_reader_lock (library->priv->song_hash_lock);
 	
 	ret = g_hash_table_lookup (library->priv->song_hash,
-				   canonicalized_uri);
+				   location);
 	
 	g_static_rw_lock_reader_unlock (library->priv->song_hash_lock);
-
-	g_free (canonicalized_uri);
 
 	return ret;
 }
