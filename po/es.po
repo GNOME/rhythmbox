@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"POT-Creation-Date: 2003-01-25 10:48+0100\n"
+"POT-Creation-Date: 2003-02-04 13:19-0300\n"
 "PO-Revision-Date: 2003-01-09 10:04CLST\n"
 "Last-Translator: Germán Poo Caamaño <gpoo@ubiobio.cl>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -304,7 +304,7 @@ msgstr "Tie_mpo"
 msgid "Tra_ck"
 msgstr "_Pista"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -802,17 +802,27 @@ msgstr ""
 "con un prefijo diferente al de bonobo-activation; este\n"
 "aviso es inocuo, pero la comunicación mediante IPC no funcionará.\n"
 
-#: shell/rb.c:491
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr ""
 "Xan López <xan@dimensis.com>\n"
 "Germán Poo-Caamaño <gpoo@ubiobio.cl>"
 
-#: shell/rb.c:502
-msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
-msgstr "Copyright © 2002, 2003 Jorn Baayen. Todos los derechos reservados."
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr "Desarrolladores líderes:"
 
-#: shell/rb.c:503
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr "Contribuciones:"
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright %s 2002, 2003 Jorn Baayen. Todos los derechos reservados."
+
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
 msgstr "Software de organización y reproducción de música para GNOME."
 
@@ -896,34 +906,4 @@ msgstr "Reproducir _canción"
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "Comenzar reproducción de la(s) canción(es) seleccionada(s)"
-
-#~ msgid "Delete the currently selected music group"
-#~ msgstr "Borrar el grupo de música actualmente seleccionado"
-
-#~ msgid "P_roperties"
-#~ msgstr "Pr_opiedades"
-
-#~ msgid "Rename the currently selected music group"
-#~ msgstr "Renombrar el grupo de música actualmente seleccionado"
-
-#~ msgid "_Delete Group"
-#~ msgstr "_Borrar grupo"
-
-#~ msgid "_Rename Group..."
-#~ msgstr "_Renombrar grupo..."
-
-#~ msgid "Oh neej!!"
-#~ msgstr "¡Oh no!"
-
-#~ msgid "_Actions"
-#~ msgstr "_Acciones"
-
-#~ msgid "Get information about this album from the web"
-#~ msgstr "Obtener información de este álbum en Internet"
-
-#~ msgid "Track %d from "
-#~ msgstr "Pista %d de "
-
-#~ msgid "From "
-#~ msgstr "De "
 
