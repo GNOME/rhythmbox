@@ -237,6 +237,10 @@ struct RBShellPlayerPrivate
 	GtkWidget *magic_button;
 
 	RBRemote *remote;
+
+	guint gconf_repeat_id;
+	guint gconf_play_order_id;
+	guint gconf_state_id;
 };
 
 enum
@@ -489,47 +493,49 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "info",
-			  G_CALLBACK (info_available_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "info",
+				 G_CALLBACK (info_available_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "eos",
-			  G_CALLBACK (eos_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "eos",
+				 G_CALLBACK (eos_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "tick",
-			  G_CALLBACK (tick_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "tick",
+				 G_CALLBACK (tick_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "error",
-			  G_CALLBACK (error_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "error",
+				 G_CALLBACK (error_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "buffering_begin",
-			  G_CALLBACK (buffering_begin_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "buffering_begin",
+				 G_CALLBACK (buffering_begin_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "buffering_end",
-			  G_CALLBACK (buffering_end_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "buffering_end",
+				 G_CALLBACK (buffering_end_cb),
+				 player, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->mmplayer),
-			  "buffering_progress",
-			  G_CALLBACK (buffering_progress_cb),
-			  player);
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "buffering_progress",
+				 G_CALLBACK (buffering_progress_cb),
+				 player, 0);
 
-	eel_gconf_notification_add (CONF_STATE_REPEAT,
-				    (GConfClientNotifyFunc)gconf_key_changed,
-				    player);
-	eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
-				    (GConfClientNotifyFunc)gconf_key_changed,
-				    player);
+	player->priv->gconf_repeat_id =
+		eel_gconf_notification_add (CONF_STATE_REPEAT,
+					    (GConfClientNotifyFunc)gconf_key_changed,
+					    player);
+	player->priv->gconf_play_order_id =
+		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
+					    (GConfClientNotifyFunc)gconf_key_changed,
+					    player);
 
 	rb_shell_player_sync_volume (player);
 
@@ -602,9 +608,10 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
 	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 0);
 
-	eel_gconf_notification_add (CONF_STATE,
-				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
-				    player);
+	player->priv->gconf_state_id = 
+		eel_gconf_notification_add (CONF_STATE,
+					    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
+					    player);
 
 #ifdef HAVE_MMKEYS
 	/* Enable Multimedia Keys */
@@ -623,6 +630,10 @@ rb_shell_player_finalize (GObject *object)
 	player = RB_SHELL_PLAYER (object);
 
 	g_return_if_fail (player->priv != NULL);
+
+	eel_gconf_notification_remove(player->priv->gconf_repeat_id);
+	eel_gconf_notification_remove(player->priv->gconf_play_order_id);
+	eel_gconf_notification_remove(player->priv->gconf_state_id);
 
 	eel_gconf_set_float (CONF_STATE_VOLUME,
 			     rb_player_get_volume (player->priv->mmplayer));
@@ -681,19 +692,19 @@ rb_shell_player_set_property (GObject *object,
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
-			g_signal_connect (G_OBJECT (songs),
-					  "changed",
-					  G_CALLBACK (rb_shell_player_entry_view_changed_cb),
-					  player);
-			g_signal_connect (G_OBJECT (songs),
-					  "entry-activated",
-					  G_CALLBACK (rb_shell_player_entry_activated_cb),
-					  player);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "changed",
+						 G_CALLBACK (rb_shell_player_entry_view_changed_cb),
+						 player, 0);
+			g_signal_connect_object (G_OBJECT (songs),
+						 "entry-activated",
+						 G_CALLBACK (rb_shell_player_entry_activated_cb),
+						 player, 0);
 			for (; extra_views; extra_views = extra_views->next)
-				g_signal_connect (G_OBJECT (extra_views->data),
-						  "property-activated",
-						  G_CALLBACK (rb_shell_player_property_row_activated_cb),
-						  player);
+				g_signal_connect_object (G_OBJECT (extra_views->data),
+							 "property-activated",
+							 G_CALLBACK (rb_shell_player_property_row_activated_cb),
+							 player, 0);
 
 			g_list_free (extra_views);
 			
@@ -1705,10 +1716,10 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 
 	if (source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-		g_signal_connect (G_OBJECT (songs),
-				  "playing_entry_deleted",
-				  G_CALLBACK (rb_shell_player_playing_entry_deleted_cb),
-				  player);
+		g_signal_connect_object (G_OBJECT (songs),
+					 "playing_entry_deleted",
+					 G_CALLBACK (rb_shell_player_playing_entry_deleted_cb),
+					 player, 0);
 	}
 
 	if (player->priv->play_order)
