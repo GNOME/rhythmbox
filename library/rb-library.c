@@ -173,7 +173,7 @@ RBLibraryAction *
 rb_library_add_uri (RBLibrary *library,
 		    const char *uri)
 {
-	if (g_file_test (uri, G_FILE_TEST_IS_DIR) == FALSE)
+	if (rb_is_directory (uri) == FALSE)
 	{
 		return rb_library_action_queue_add (library->priv->main_queue,
 					            TRUE,

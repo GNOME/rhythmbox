@@ -141,3 +141,25 @@ rb_resolve_symlink (const char *uri)
 
 	return real;
 }
+
+gboolean
+rb_is_directory (const char *uri)
+{
+	GnomeVFSFileInfo *info;
+	gboolean dir;
+
+	info = gnome_vfs_file_info_new ();
+
+	gnome_vfs_get_file_info (uri, info,
+				 GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	if (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY)
+		dir = TRUE;
+	else
+		dir = FALSE;
+
+	gnome_vfs_file_info_unref (info);
+
+	return dir;
+}
