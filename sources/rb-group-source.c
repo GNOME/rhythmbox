@@ -496,7 +496,6 @@ impl_get_status_fast (RBGroupSource *source)
 static const char *
 impl_get_status_full (RBGroupSource *source)
 {
-	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
 	char *ret;
 	float days;
 	long len, hours, minutes, seconds;
@@ -504,7 +503,7 @@ impl_get_status_full (RBGroupSource *source)
 	GPtrArray *kids;
 	int i;
 
-	kids = rb_node_get_children (songsroot);
+	kids = rb_node_get_children (source->priv->group);
 
 	len = 0;
 
@@ -523,7 +522,7 @@ impl_get_status_full (RBGroupSource *source)
 		len++;
 	}
 
-	rb_node_thaw (songsroot);
+	rb_node_thaw (source->priv->group);
 
 	days    = (float) n_seconds / (float) (60 * 60 * 24); 
 	hours   = n_seconds / (60 * 60);
