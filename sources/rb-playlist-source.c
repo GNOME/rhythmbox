@@ -73,7 +73,6 @@ static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
-static void impl_delete_thyself (RBSource *source);
 static void rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 					       RBPlaylistSource *source);
 
@@ -96,19 +95,19 @@ struct RBPlaylistSourcePrivate
 {
 	RhythmDB *db;
 
-	gboolean smart;
+	gboolean automatic;
 	GHashTable *entries;
 
 	RhythmDBQueryModel *model;
 
 	GtkWidget *vbox;
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *normal_pixbuf;
+	GdkPixbuf *smartypants_pixbuf;
 
 	RBEntryView *songs;
 
 	char *title;
 	char *status;
-	char *file;
 };
 
 enum
@@ -116,7 +115,7 @@ enum
 	PROP_0,
 	PROP_LIBRARY,
 	PROP_DB,
-	PROP_FILE,
+	PROP_AUTOMATIC,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -183,7 +182,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
-	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -194,12 +192,12 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
-					 PROP_FILE,
-					 g_param_spec_string ("file",
-							      "playlist file",
-							      "playlist file",
-							      NULL,
-							      G_PARAM_READWRITE));
+					 PROP_AUTOMATIC,
+					 g_param_spec_boolean ("automatic",
+							       "automatic",
+							       "whether this playlist is a smartypants",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -288,10 +286,14 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_uri, G_N_ELEMENTS (target_uri), GDK_ACTION_COPY);
 		
-	source->priv->pixbuf = gtk_widget_render_icon (dummy,
+	source->priv->normal_pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_PLAYLIST,
 						       GTK_ICON_SIZE_MENU,
 						       NULL);
+	source->priv->smartypants_pixbuf = gtk_widget_render_icon (dummy,
+								   RB_STOCK_AUTOMATIC_PLAYLIST,
+								   GTK_ICON_SIZE_MENU,
+								   NULL);
 	gtk_widget_destroy (dummy);
 		
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), GTK_WIDGET (source->priv->songs));
@@ -331,8 +333,6 @@ rb_playlist_source_finalize (GObject *object)
 	g_free (source->priv->title);
 	g_free (source->priv->status);
 
-	g_free (source->priv->file);
-
 	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -351,11 +351,8 @@ rb_playlist_source_set_property (GObject *object,
 	case PROP_DB:
 		source->priv->db = g_value_get_object (value);
 		break;
-	case PROP_FILE:
-		g_free (source->priv->file);
-
-		source->priv->file = g_strdup (g_value_get_string (value));
-
+	case PROP_AUTOMATIC:
+		source->priv->automatic = g_value_get_boolean (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -376,8 +373,8 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
 		break;
-	case PROP_FILE:
-		g_value_set_string (value, source->priv->file);
+	case PROP_AUTOMATIC:
+		g_value_set_boolean (value, source->priv->automatic);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -386,13 +383,14 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (RhythmDB *db)
+rb_playlist_source_new (RhythmDB *db, gboolean automatic)
 {
 	RBSource *source;
 	
 	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
 					  "db", db,
+					  "automatic", automatic,
 					  NULL));
 
 	return source;
@@ -413,6 +411,28 @@ RhythmDBQueryModel *
 rb_playlist_source_get_model (RBPlaylistSource *source)
 {
 	return source->priv->model;
+}
+
+void
+rb_playlist_source_set_query (RBPlaylistSource *source, GPtrArray *query,
+			      guint limit)
+{
+	RhythmDBQueryModel *query_model;
+	GtkTreeModel *model;
+	
+	g_assert (source->priv->automatic);
+
+	source->priv->model = query_model
+		= rhythmdb_query_model_new_empty (source->priv->db);
+
+	model = GTK_TREE_MODEL (query_model);
+
+	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
+
+	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
+
+	g_object_unref (G_OBJECT (query_model));
+	rb_entry_view_poll_model (source->priv->songs);
 }
 
 static const char *
@@ -438,7 +458,7 @@ impl_get_pixbuf (RBSource *asource)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
-	return source->priv->pixbuf;
+	return source->priv->automatic ? source->priv->smartypants_pixbuf : source->priv->normal_pixbuf;
 }
 
 static RBEntryView *
@@ -494,13 +514,6 @@ impl_song_properties (RBSource *asource)
 		gtk_widget_show_all (song_info);
 	else
 		rb_debug ("failed to create dialog, or no selection!");
-}
-
-static void
-impl_delete_thyself (RBSource *asource)
-{
-	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	unlink (source->priv->file);
 }
 
 static gboolean
@@ -690,11 +703,11 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 
 	rhythmdb_read_lock (db);
 
-	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db));
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db, FALSE));
 
 	tmp = xmlGetProp (node, "type");
-	if (!strcmp (tmp, "smart"))
-		source->priv->smart = TRUE;
+	if (!strcmp (tmp, "automatic"))
+		source->priv->automatic = TRUE;
 	g_free (tmp);
 	tmp = xmlGetProp (node, "name");
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
@@ -728,9 +741,9 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
 	xmlSetProp (node, "name", name);
-	xmlSetProp (node, "type", source->priv->smart ? "smart" : "static");
+	xmlSetProp (node, "type", source->priv->automatic ? "automatic" : "static");
 	
-	if (!source->priv->smart) {
+	if (!source->priv->automatic) {
 		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->model),
 						    &iter))
 			return;

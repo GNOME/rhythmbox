@@ -23,7 +23,7 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-volume-zero.png   \
 	   rhythmbox-tray-icon.png     \
 	   rhythmbox-set-star.png      \
-	   rhythmbox-smart-playlist.png \
+	   rhythmbox-automatic-playlist.png \
 	   rhythmbox-unset-star.png    \
 	   rhythmbox-no-star.png       \
 	   rhythmbox-audiocd.png       \

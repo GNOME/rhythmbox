@@ -31,6 +31,7 @@
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
 #include "rb-sourcelist.h"
+#include "rb-query-creator.h"
 #include "rb-playlist.h"
 
 #include "rb-bonobo-helpers.h"
@@ -61,6 +62,9 @@ static void rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
 static void rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
 						  RBPlaylistManager *mgr,
 						  const char *verbname);
+static void rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
+							    RBPlaylistManager *mgr,
+							    const char *verbname);
 static void rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
 						     RBPlaylistManager *mgr,
 						     const char *verbname);
@@ -112,6 +116,7 @@ static guint rb_playlist_manager_signals[LAST_SIGNAL] = { 0 };
 static BonoboUIVerb rb_playlist_manager_verbs[] =
 {
  	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_new_playlist),
+ 	BONOBO_UI_VERB ("NewAutomaticPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_new_automatic_playlist),
 	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_playlist_manager_cmd_load_playlist),
 	BONOBO_UI_VERB ("SavePlaylist", (BonoboUIVerbFn) rb_playlist_manager_cmd_save_playlist),
 	BONOBO_UI_VERB ("FileDeletePlaylist",(BonoboUIVerbFn) rb_playlist_manager_cmd_delete_playlist),
@@ -495,7 +500,7 @@ rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr)
 
 		rhythmdb_read_lock (mgr->priv->db);
 
-		playlist = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->db));
+		playlist = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->db, FALSE));
 		g_object_set (G_OBJECT (playlist), "name", name, NULL);
 		g_free (name);
 
@@ -577,9 +582,9 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 }
 
 static RBSource *
-rb_playlist_manager_new_playlist (RBPlaylistManager *mgr)
+rb_playlist_manager_new_playlist (RBPlaylistManager *mgr, gboolean automatic)
 {
-	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db));
+	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
 	g_object_set (G_OBJECT (playlist), "name", "", NULL);
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
@@ -591,7 +596,29 @@ rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
 				      RBPlaylistManager *mgr,
 				      const char *verbname)
 {
-	rb_playlist_manager_new_playlist (mgr);
+	rb_playlist_manager_new_playlist (mgr, FALSE);
+}
+
+static void
+rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
+						RBPlaylistManager *mgr,
+						const char *verbname)
+{
+	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
+	RBSource *playlist;
+	
+	switch (gtk_dialog_run (GTK_DIALOG (creator)))
+	{
+	case GTK_RESPONSE_NONE:
+	case GTK_RESPONSE_CLOSE:
+		return;
+	}
+
+	playlist = rb_playlist_manager_new_playlist (mgr, TRUE);
+	rb_playlist_source_set_query (RB_PLAYLIST_SOURCE (playlist),
+				      rb_query_creator_get_query (creator),
+				      rb_query_creator_get_limit (creator));
+	gtk_widget_destroy (GTK_WIDGET (creator));	
 }
 
 static void
@@ -632,7 +659,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	{
 		RBPlaylist *parser = rb_playlist_new ();
-		RBSource *playlist = rb_playlist_manager_new_playlist (mgr);
+		RBSource *playlist = rb_playlist_manager_new_playlist (mgr, FALSE);
 
 		g_signal_connect (G_OBJECT (parser), "entry",
 				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),

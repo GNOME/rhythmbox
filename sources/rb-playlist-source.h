@@ -56,12 +56,15 @@ typedef struct
 
 GType		rb_playlist_source_get_type	(void);
 
-RBSource *	rb_playlist_source_new		(RhythmDB *db);
+RBSource *	rb_playlist_source_new		(RhythmDB *db, gboolean smart);
 
 RBSource *	rb_playlist_source_new_from_xml	(RhythmDB *db,
 						 xmlNodePtr node);
 
 RhythmDBQueryModel *rb_playlist_source_get_model(RBPlaylistSource *source);
+
+void		rb_playlist_source_set_query	(RBPlaylistSource *source, GPtrArray *query,
+						 guint limit);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);

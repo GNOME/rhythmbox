@@ -94,9 +94,9 @@
 	 pixname="gtk-new"
 	 _tip="Create a new playlist"/>
 
-    <cmd name="NewSmartPlaylist"
+    <cmd name="NewAutomaticPlaylist"
     	 pixtype="stock"
-    	 pixname="rhythmbox-smart-playlist"
+    	 pixname="rhythmbox-automatic-playlist"
     	 _tip="Create a new automatically updating playlist"/>
 
     <cmd name="NewStation"
@@ -174,7 +174,7 @@
 
       <submenu name="Playlist" _label="Playlist" pixtype="stock" pixname="rhythmbox-playlist-menu">
 	<menuitem name="NewPlaylist" verb="NewPlaylist" _label="_New Playlist..." accel="*Control*n"/>
-	<menuitem name="NewSmartPlaylist" verb="NewSmartPlaylist" _label="New _Smart Playlist..."/>
+	<menuitem name="NewAutomaticPlaylist" verb="NewAutomaticPlaylist" _label="New _Automatic Playlist..."/>
 	<separator/>
 
 	<menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load from file..."/>

@@ -48,7 +48,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_VOLUME_MUTE   "rhythmbox-volume-mute"
 #define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
 #define RB_STOCK_SET_STAR      "rhythmbox-set-star"
-#define RB_STOCK_SMART_PLAYLIST "rhythmbox-smart-playlist"
+#define RB_STOCK_AUTOMATIC_PLAYLIST "rhythmbox-automatic-playlist"
 #define RB_STOCK_UNSET_STAR    "rhythmbox-unset-star"
 #define RB_STOCK_NO_STAR       "rhythmbox-no-star"
 #define RB_STOCK_AUDIOCD       "rhythmbox-audiocd"

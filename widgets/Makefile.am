@@ -36,6 +36,8 @@ librbwidgets_la_SOURCES =				\
 	rb-rating.h					\
 	rb-tree-view.c					\
 	rb-tree-view.h					\
+	rb-query-creator.c				\
+	rb-query-creator.h				\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
