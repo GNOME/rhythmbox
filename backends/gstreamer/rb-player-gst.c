@@ -605,6 +605,8 @@ rb_player_error_quark (void)
 static gboolean
 rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 {
+	static gint may_pause = -1;
+  
 	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
 		if (iradio_mode) {
@@ -632,6 +634,21 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 		}
 		g_timer_start (mp->priv->timer);
 	} else {
+		/* get correct gst version */
+		if (may_pause == -1) {
+			guint major, minor, micro;
+
+			rb_debug ("decoding gst version to check if we may free the audio sink");
+			gst_version (&major, &minor, &micro);
+			/* this makes sure someone removes this later on */
+			g_assert (major == 0);
+			g_assert (minor == 8);
+			if (micro > 1)
+				may_pause = 1;
+			else
+				may_pause = 0;
+		}
+		
 		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->pipeline,
 					   GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
@@ -642,16 +659,16 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			return FALSE;
 		}
 			
-#if 0
-		rb_debug ("setting sink to NULL");
-		if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
-			g_set_error (error,
-				     RB_PLAYER_ERROR,
-				     RB_PLAYER_ERROR_GENERAL,
-				     _("Could not close output sink"));
-			return FALSE;
+		if (may_pause == 1) {
+			rb_debug ("setting sink to NULL");
+			if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
+				g_set_error (error,
+					     RB_PLAYER_ERROR,
+					     RB_PLAYER_ERROR_GENERAL,
+					     _("Could not close output sink"));
+				return FALSE;
+			}
 		}
-#endif
 	}
 	return TRUE;
 }
