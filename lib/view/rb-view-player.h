@@ -57,6 +57,8 @@ typedef struct
 	void                    (*impl_set_repeat)       (RBViewPlayer *player,
 					                  gboolean repeat);
 
+	gboolean		(*impl_can_pause)        (RBViewPlayer *player);
+
 	RBViewPlayerResult      (*impl_have_first)       (RBViewPlayer *player);
 	RBViewPlayerResult      (*impl_have_next)        (RBViewPlayer *player);
 	RBViewPlayerResult      (*impl_have_previous)    (RBViewPlayer *player);
@@ -68,8 +70,11 @@ typedef struct
 
 	const char             *(*impl_get_title)        (RBViewPlayer *player);
 
+	RBViewPlayerResult      (*impl_have_artist_album)(RBViewPlayer *player);
 	const char             *(*impl_get_artist)       (RBViewPlayer *player);
 	const char             *(*impl_get_album)        (RBViewPlayer *player);
+	RBViewPlayerResult      (*impl_have_url)	 (RBViewPlayer *player);
+	void		        (*impl_get_url)          (RBViewPlayer *player, char **text, char **url);
 	const char             *(*impl_get_song)         (RBViewPlayer *player);
 	long                    (*impl_get_duration)     (RBViewPlayer *player);
 
@@ -87,6 +92,7 @@ void                    rb_view_player_set_shuffle      (RBViewPlayer *player,
 						         gboolean shuffle);
 void                    rb_view_player_set_repeat       (RBViewPlayer *player,
 						         gboolean repeat);
+gboolean		rb_view_player_can_pause        (RBViewPlayer *player);
 
 RBViewPlayerResult      rb_view_player_have_first       (RBViewPlayer *player);
 RBViewPlayerResult      rb_view_player_have_next        (RBViewPlayer *player);
@@ -99,8 +105,11 @@ void                    rb_view_player_jump_to_current  (RBViewPlayer *player);
 
 const char             *rb_view_player_get_title        (RBViewPlayer *player);
 
+RBViewPlayerResult      rb_view_player_have_artist_album    (RBViewPlayer *player);
 const char             *rb_view_player_get_artist       (RBViewPlayer *player);
 const char             *rb_view_player_get_album        (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_have_url		(RBViewPlayer *player);
+void			rb_view_player_get_url		(RBViewPlayer *player, char **text, char **url);
 const char             *rb_view_player_get_song         (RBViewPlayer *player);
 long                    rb_view_player_get_duration     (RBViewPlayer *player);
 
