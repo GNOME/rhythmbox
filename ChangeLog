@@ -1,3 +1,19 @@
+2003-08-04  Colin Walters  <walters@debian.org>
+
+	* data/glade/Makefile.am:
+	* data/glade/druid.glade:
+	* data/rhythmbox.schemas:
+	* lib/rb-preferences.h:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-druid.c: (rb_druid_get_type),
+	(rb_druid_class_init), (rb_druid_init), (rb_druid_finalize),
+	(rb_druid_set_property), (rb_druid_get_property), (rb_druid_new),
+	(rb_druid_browse_clicked_cb):
+	* lib/widgets/rb-druid.h:
+	* shell/rb-shell.c: (rb_shell_construct):
+
+	Initial work on a first-time druid, disabled for now.
+
 2003-08-04  Colin Walters  <walters@verbum.org>
 
 	* Makefile.am:

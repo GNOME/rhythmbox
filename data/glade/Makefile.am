@@ -5,6 +5,7 @@ glade_DATA =	general-prefs.glade	  	\
 		station-new.glade		\
 		station-properties.glade	\
 		buffering-dialog.glade		\
+		druid.glade			\
 		uri.glade
 
 gladedir = $(pkgdatadir)/glade

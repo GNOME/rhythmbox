@@ -13,6 +13,8 @@ librbwidgets_la_SOURCES =				\
 	rb-player.h					\
 	rb-volume.c					\
 	rb-volume.h					\
+	rb-druid.c					\
+	rb-druid.h					\
 	rb-sourcelist.c					\
 	rb-sourcelist.h					\
 	rb-sourcelist-model.c				\

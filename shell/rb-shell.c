@@ -54,6 +54,7 @@
 #include "rb-file-helpers.h"
 #include "rb-source.h"
 #include "rb-preferences.h"
+#include "rb-druid.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
@@ -683,6 +684,9 @@ rb_shell_construct (RBShell *shell)
 
 	gtk_widget_show_all (vbox);
 
+	rb_debug ("shell: creating library");
+	shell->priv->library = rb_library_new ();
+
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
@@ -697,9 +701,6 @@ rb_shell_construct (RBShell *shell)
 
 	rb_debug ("shell: syncing with gconf");
 	rb_shell_sync_sourcelist_visibility (shell);
-
-	rb_debug ("shell: creating library");
-	shell->priv->library = rb_library_new ();
 
 	shell->priv->load_error_dialog = rb_load_failure_dialog_new ();
 	shell->priv->show_library_errors = FALSE;
@@ -797,6 +798,16 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
+#if 0
+	/* Stop here if this is the first time. */
+	if (!eel_gconf_get_boolean(CONF_FIRST_TIME)) {
+		GtkDialog *druid = GTK_DIALOG (rb_druid_new (shell->priv->library));
+		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
+		gtk_dialog_run (druid);
+		rb_shell_sync_window_visibility (shell);
+	}
+#endif
+
 	GDK_THREADS_ENTER ();
 
 	rb_debug ("shell: dropping into mainloop");
@@ -804,6 +815,7 @@ rb_shell_construct (RBShell *shell)
 		gtk_main_iteration ();
 
 	GDK_THREADS_LEAVE ();
+
 }
 
 char *
