@@ -50,53 +50,6 @@
 	cleanup UI xml file, add prefs glade file, add schemas,
 	general cleanup.
 
-2002-06-13  Jorn Baayen  <jorn@nl.linux.org>
-
-	* Makefile.am:
-	* NEWS:
-	* configure.in:
-	* data/Makefile.am:
-	* data/glade/Makefile.am:
-	* data/rhythmbox.schemas:
-	* data/ui/rhythmbox-test-view.xml.in:
-	* data/ui/rhythmbox-ui.xml.in:
-	* lib/view/rb-view.c: (rb_view_class_init), (rb_view_set_property),
-	(rb_view_get_property), (rb_view_merge_ui), (rb_view_unmerge_ui):
-	* lib/view/rb-view.h:
-	* shell/Makefile.am:
-	* shell/rb-shell.c: (rb_shell_init), (rb_shell_finalize),
-	(rb_shell_construct), (rb_shell_window_state_cb),
-	(rb_shell_window_load_state), (rb_shell_window_save_state),
-	(rb_shell_select_view), (rb_shell_quit):
-	* tests/Makefile.am:
-	* tests/testview.c:
-	* tests/testview.h:
-	* tests/testview2.c: (rb_test_view2_new):
-	* tests/testview2.h:
-	* views/Makefile.am:
-	* views/rb-library-view.c: (rb_library_view_get_type),
-	(rb_library_view_class_init), (rb_library_view_init),
-	(rb_library_view_finalize), (rb_library_view_set_property),
-	(rb_library_view_get_property), (rb_library_view_new),
-	(artist_node_selected_cb), (album_node_selected_cb),
-	(rb_library_view_player_init), (rb_library_view_status_init),
-	(rb_library_view_clipboard_init), (rb_library_view_set_shuffle),
-	(rb_library_view_set_repeat), (rb_library_view_have_next),
-	(rb_library_view_have_previous), (rb_library_view_next),
-	(rb_library_view_previous), (rb_library_view_get_title),
-	(rb_library_view_get_artist), (rb_library_view_get_album),
-	(rb_library_view_get_song), (rb_library_view_get_duration),
-	(rb_library_view_get_pixbuf), (rb_library_view_get_stream),
-	(rb_library_view_start_playing), (rb_library_view_stop_playing),
-	(rb_library_view_set_playing_node), (song_activated_cb),
-	(node_view_changed_cb), (song_eos_cb),
-	(rb_library_view_get_previous_node),
-	(rb_library_view_get_next_node), (rb_library_view_status_get),
-	(rb_library_view_can_cut), (rb_library_view_can_copy),
-	(rb_library_view_can_paste), (rb_library_view_cut),
-	(rb_library_view_copy), (rb_library_view_paste):
-	* views/rb-library-view.h:
-
 2002-06-13  Jeroen Zwartepoorte  <jeroen@xs4all.nl>
 
 	* shell/rb-shell.c: (rb_shell_construct),
