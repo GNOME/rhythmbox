@@ -24,6 +24,7 @@
 #define __RB_PLAYER_H
 
 #include <glib-object.h>
+#include "rb-metadata.h"
 
 G_BEGIN_DECLS
 
@@ -66,8 +67,7 @@ typedef struct
 	GObjectClass parent_class;
 
 	void (*eos)             (RBPlayer *mp);
-/* 	void (*info)            (RBPlayer *mp, MonkeyMediaStreamInfoField field, */
-/* 		                 GValue *value); */
+	void (*info)            (RBPlayer *mp, RBMetaDataField field, GValue *value);
 	void (*buffering_begin) (RBPlayer *mp);
 	void (*buffering_end)   (RBPlayer *mp);
 	void (*error)           (RBPlayer *mp, GError *error);

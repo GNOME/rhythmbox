@@ -21,5 +21,8 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
+	-I$(top_srcdir)/metadata			\
 	$(RHYTHMBOX_CFLAGS)
 
+rhythmbox_LDADD =					\
+	$(top_builddir)/metadata/librbmetadata.la

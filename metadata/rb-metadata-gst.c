@@ -40,7 +40,7 @@ struct RBMetaDataPrivate
 	GHashTable *metadata;
 
 	GstElement *pipeline;
-	GstElement *fakesink;
+	GstElement *sink;
 
 	char *type;
 	gboolean eos;
@@ -220,7 +220,7 @@ rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 		rb_debug ("RENTERED EOS!");
 		return;
 	}
-	gst_element_set_state (md->priv->fakesink, GST_STATE_NULL);
+	gst_element_set_state (md->priv->sink, GST_STATE_NULL);
 	md->priv->eos = TRUE;
 }
 
@@ -338,13 +338,13 @@ rb_metadata_load (RBMetaData *md,
 		goto missing_plugin;
 	gst_bin_add (GST_BIN (pipeline), spider);		  
 	plugin_name = "fakesink";
-	if (!(md->priv->fakesink = gst_element_factory_make (plugin_name, plugin_name)))
+	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), md->priv->fakesink);		  
-	g_signal_connect (md->priv->fakesink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
+	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
+	g_signal_connect (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
-	gst_element_link_filtered (spider, md->priv->fakesink,
+	gst_element_link_filtered (spider, md->priv->sink,
 				   gst_caps_new_simple ("application/x-gst-tags", NULL));
 							
 
@@ -401,7 +401,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	GstElement *pipeline = NULL;
 	GstElement *gnomevfssrc = NULL;
 	GstElement *tagger = NULL;
-	GstElement *gnomevfssink = NULL;
 	const char *plugin_name = NULL;
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
@@ -427,6 +426,8 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	if (!strcmp (md->priv->type, "audio/x-vorbis"))
 		plugin_name = "vorbisfile";
+	else if (!strcmp (md->priv->type, "application/x-id3"))
+		plugin_name = "id3tag";
 	else {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
@@ -443,13 +444,13 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	gst_bin_add (GST_BIN (pipeline), tagger);
 
 	plugin_name = "gnomevfssink";
-	if (!(gnomevfssink = gst_element_factory_make (plugin_name, plugin_name)))
+	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), gnomevfssink);		  
-	g_object_set (G_OBJECT (gnomevfssink), "handle", handle, NULL);
-	g_signal_connect (md->priv->fakesink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
+	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
+	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
+	g_signal_connect (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
 
-	gst_element_link_many (gnomevfssrc, tagger, gnomevfssink, NULL);
+	gst_element_link_many (gnomevfssrc, tagger, md->priv->sink, NULL);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);

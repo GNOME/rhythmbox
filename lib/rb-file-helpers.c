@@ -680,7 +680,7 @@ rb_uri_mkstemp (const char *prefix, char **uri_ret, GnomeVFSHandle **ret)
 	do {
 		g_free (uri);
 		uri = g_strdup_printf ("%s%06X", prefix, g_random_int_range (0, 0xFFFFFF));
-		result = gnome_vfs_create (&handle, uri, GNOME_VFS_OPEN_RANDOM, TRUE,  0644);
+		result = gnome_vfs_create (&handle, uri, GNOME_VFS_OPEN_WRITE | GNOME_VFS_OPEN_RANDOM, TRUE,  0644);
 	} while (result == GNOME_VFS_ERROR_FILE_EXISTS);
 
 	if (result == GNOME_VFS_OK) {

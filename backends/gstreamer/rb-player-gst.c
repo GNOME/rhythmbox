@@ -34,6 +34,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "rb-player.h"
+#include "rb-marshal.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *mp);
@@ -87,10 +88,7 @@ typedef enum
 typedef struct
 {
 	RBPlayer *object;
-	/* FIXME */
-#if 0
-	MonkeyMediaStreamInfoField info_field;
-#endif	
+	RBMetaDataField info_field;
 	GError *error;
 	GValue *info;
 } RBPlayerSignal;
@@ -144,20 +142,15 @@ rb_player_class_init (RBPlayerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	/* FIXME */
-#if 0
 	rb_player_signals[INFO] =
 		g_signal_new ("info",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerClass, info),
 			      NULL, NULL,
-			      monkey_media_marshal_VOID__ENUM_POINTER,
+			      rb_marshal_VOID__INT_POINTER,
 			      G_TYPE_NONE,
-			      2,
-			      MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD,
-			      G_TYPE_POINTER);
-#endif
+			      2, G_TYPE_INT, G_TYPE_POINTER);
 	rb_player_signals[BUFFERING_BEGIN] =
 		g_signal_new ("buffering_begin",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -338,8 +331,6 @@ error_cb (GstElement *element,
 	g_idle_add ((GSourceFunc) error_signal_idle, signal);
 }
 
-/* FIXME */
-#if 0
 static gboolean
 info_signal_idle (RBPlayerSignal *signal)
 {
@@ -358,52 +349,26 @@ static void
 deep_notify_cb (GstElement *element, GstElement *orig,
 	        GParamSpec *pspec, RBPlayer *player)
 {
-	GValue *value;
-	GEnumClass *class;
-	GEnumValue *ev = NULL;
-
 	if (!(pspec->flags & G_PARAM_READABLE)) return;
 
-	class = g_type_class_ref (RB_TYPE_STREAM_INFO_FIELD);
-
-	value = g_new0 (GValue, 1);
-	g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
-	g_object_get_property (G_OBJECT (orig), pspec->name, value);
-
-	/* Other properties from the gnomevfssrc go here */
-	if (strcmp (pspec->name, "iradio-title") == 0)
-		ev = g_enum_get_value (class, RB_STREAM_INFO_FIELD_TITLE);
-	if (ev == NULL && strcmp (pspec->name, "iradio-url") == 0)
-		ev = g_enum_get_value (class, RB_STREAM_INFO_FIELD_LOCATION);
-	if (ev == NULL)
-		ev = g_enum_get_value_by_nick (class, pspec->name);
-
-	/* FIXME begin hack */
-	if (ev == NULL) {
-		char *tmp = g_strconcat ("audio_", pspec->name, NULL);
-		ev = g_enum_get_value_by_nick (class, tmp);
-
-		g_free (tmp);
-	}
-	/* FIXME end hack */
-
-	if (ev != NULL) {
+	if (strcmp (pspec->name, "iradio-title") == 0) {
 		RBPlayerSignal *signal;
 
 		signal = g_new0 (RBPlayerSignal, 1);
 
-		signal->info_field = ev->value;
-		signal->info = value;
+		signal->info_field = RB_METADATA_FIELD_TITLE;
+		signal->info = g_new0 (GValue, 1);
+		g_value_init (signal->info, G_TYPE_STRING); 
+		g_object_get_property (G_OBJECT (orig), pspec->name, signal->info);
+
 		signal->object = player;
 
 		g_object_ref (G_OBJECT (player));
 
 		g_idle_add ((GSourceFunc) info_signal_idle, signal);
+		return;
 	}
-
-	g_type_class_unref (class);
 }
-#endif
 
 static void
 queue_full_cb (GstQueue *queue,
@@ -444,13 +409,10 @@ rb_player_construct (RBPlayer *mp,
 			     _("Failed to create thread element; check your GStreamer installation"));
 		return;
 	}
-	/* FIXME */
-#if 0
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
 			  "deep_notify",
 			  G_CALLBACK (deep_notify_cb),
 			  mp);
-#endif
 
 	mp->priv->error_signal_id =
 		g_signal_connect (G_OBJECT (mp->priv->pipeline),

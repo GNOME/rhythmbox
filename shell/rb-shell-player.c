@@ -52,6 +52,7 @@
 #include "rb-player.h"
 #include "rb-header.h"
 #include "rb-playlist.h"
+#include "rb-metadata.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
@@ -146,13 +147,10 @@ static void error_cb (RBPlayer *player, GError *err, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, GError *err,
 				   gboolean lock);
 
-/* FIXME */
-#if 0
 static void info_available_cb (RBPlayer *player,
-			       MonkeyMediaStreamInfoField field,
+			       RBMetaDataField field,
 			       GValue *value,
 			       gpointer data);
-#endif
 static void buffering_end_cb (RBPlayer *player, gpointer data);
 static void buffering_begin_cb (RBPlayer *player, gpointer data);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
@@ -468,13 +466,10 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 
-	/* FIXME */
-#if 0
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "info",
 			  G_CALLBACK (info_available_cb),
 			  player);
-#endif	
 
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "eos",
@@ -1758,11 +1753,9 @@ tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 	GDK_THREADS_LEAVE ();
 }
 
-	/* FIXME */
-#if 0
 static void
 info_available_cb (RBPlayer *mmplayer,
-		   MonkeyMediaStreamInfoField field,
+		   RBMetaDataField field,
 		   GValue *value,
 		   gpointer data)
 {
@@ -1770,16 +1763,7 @@ info_available_cb (RBPlayer *mmplayer,
 	RBEntryView *songs;
 	RhythmDBEntry *entry;
 	gboolean changed = FALSE;
-	char *valcontents;
-	GEnumValue *enumvalue = g_enum_get_value (g_type_class_peek (MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD),
-						  field);
-	valcontents = g_strdup_value_contents (value);
-	rb_debug ("info: %s -> %s; source: %p uri: %s\n",
-		  enumvalue->value_name,
-		  valcontents,
-		  player->priv->source,
-		  rb_player_get_uri (player->priv->mmplayer));
-	g_free (valcontents);
+	rb_debug ("info: %d", field);
 
 	/* Sanity check, this signal may come in after we stopped the
 	 * player */
@@ -1789,7 +1773,7 @@ info_available_cb (RBPlayer *mmplayer,
 		return;
 	}
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
 	songs = rb_source_get_entry_view (player->priv->source);
 	entry = rb_entry_view_get_playing_entry (songs);
@@ -1800,10 +1784,13 @@ info_available_cb (RBPlayer *mmplayer,
 	}
 
 	switch (field)	{
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE:
+	case RB_METADATA_FIELD_TITLE:
 	{
 		char *song = g_value_dup_string (value);
-		g_return_if_fail (song == NULL || g_utf8_validate (song, -1, NULL));
+		if (!g_utf8_validate (song, -1, NULL)) {
+			g_warning ("Invalid UTF-8 from internet radio: %s", song);
+			goto out_unlock;
+		}
 
 		if ((!song && player->priv->song)
 		    || !player->priv->song
@@ -1816,6 +1803,7 @@ info_available_cb (RBPlayer *mmplayer,
 			g_free (song);
 		break;
 	}
+#if 0
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
 	{
 		const char *url = g_value_get_string (value);
@@ -1848,11 +1836,9 @@ info_available_cb (RBPlayer *mmplayer,
 		g_value_unset (&newval);
 		break;
 	}
+#endif
 	default:
 	{
-/* 		GEnumValue *enumvalue = g_enum_get_value(g_type_class_peek(MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD), */
-/* 							 field); */
-/* 		fprintf (stderr, "unused info field: %s\n", enumvalue->value_name); */
 		break;
 	}
 	}
@@ -1861,9 +1847,8 @@ info_available_cb (RBPlayer *mmplayer,
 		rb_shell_player_sync_with_source (player);
 
  out_unlock:
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 }
-#endif
 
 static void
 buffering_begin_cb (RBPlayer *mmplayer,
