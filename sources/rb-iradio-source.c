@@ -437,6 +437,19 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
 
+	if (uri && !g_utf8_validate (uri, -1, NULL)) {
+		rb_debug ("uri \"%s\" is not valid UTF-8", uri);
+		return;
+	}
+	if (title && !g_utf8_validate (title, -1, NULL)) {
+		rb_debug ("title \"s\" is not valid UTF-8", title);
+		return;
+	}
+	if (genre && !g_utf8_validate (genre, -1, NULL)) {
+		rb_debug ("genre \"s\" is not valid UTF-8", genre);
+		genre = "";
+	}
+
 	rhythmdb_write_lock (source->priv->db);
 
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
