@@ -53,6 +53,7 @@
 #include "rb-volume.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
+#include "rb-history.h"
 
 typedef enum
 {
@@ -187,6 +188,8 @@ struct RBShellPlayerPrivate
 	char *url;
 
 	gboolean have_previous_entry;
+
+	RBHistory *history;	/* holds the last <arbitrary #> songs and any enqueued songs. */
 
 	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
@@ -352,6 +355,8 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,
 							     construct_properties));
 
+	player->priv->history = rb_history_new (player->priv->db);
+
 	return G_OBJECT (player);
 }
 
@@ -503,6 +508,8 @@ rb_shell_player_finalize (GObject *object)
 			     monkey_media_player_get_volume (player->priv->mmplayer));
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
+
+	g_object_unref (G_OBJECT (player->priv->history));
 
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
@@ -797,6 +804,7 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	}
 
 	rb_debug ("Success!");
+	rb_history_set_playing (player->priv->history, entry);
 	rb_entry_view_set_playing_entry (songs, entry);
 	rb_shell_player_play (player);
 }
@@ -807,17 +815,25 @@ rb_shell_player_previous (RBShellPlayer *player)
 	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 	RhythmDBEntry *entry;
 
-	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		rb_debug ("choosing random entry");
-		entry =  rb_entry_view_get_random_entry (songs);
+	/* First check if there are any songs in the history */
+	if ((entry = rb_history_back (player->priv->history))) {
+		rb_debug ("choosing history entry");
 	} else {
-		rb_debug ("choosing previous linked entry");
-		entry = rb_entry_view_get_previous_entry (songs);
-	}
-	if (entry == NULL) {
-		rb_debug ("No previous entry, stopping playback");
-		rb_shell_player_set_playing_source (player, NULL);
-		return;
+		/* Do we want to just stop playback if they've run out of history? */
+		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+			rb_debug ("choosing random entry");
+			entry =  rb_entry_view_get_random_entry (songs);
+		} else {
+			rb_debug ("choosing previous linked entry");
+			entry = rb_entry_view_get_previous_entry (songs);
+		}
+		if (entry == NULL) {
+			rb_debug ("No previous entry, stopping playback");
+			rb_shell_player_set_playing_source (player, NULL);
+			return;
+		}
+
+		rb_history_prepend (player->priv->history, entry);
 	}
 
 	rb_shell_player_set_playing_entry (player, entry);
@@ -829,24 +845,29 @@ rb_shell_player_next (RBShellPlayer *player)
 	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 	RhythmDBEntry *entry;
 
-	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		rb_debug ("choosing random entry");
-		entry =  rb_entry_view_get_random_entry (songs);
+	/* First check if there are any enqueued songs */
+	if ((entry = rb_history_forward (player->priv->history))) {
+		rb_debug ("choosing enqueued entry");
 	} else {
-		rb_debug ("choosing next linked entry");
-		entry = rb_entry_view_get_next_entry (songs);
-	}
-
-	if (entry == NULL) {
-		/* If repeat is enabled, loop back to the start */
-		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
-		    && rb_shell_player_have_first (player, player->priv->source)) {
-			rb_debug ("No next entry, but repeat is enabled");
-			entry = rb_entry_view_get_first_entry (songs);
+		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+			rb_debug ("choosing random entry");
+			entry =  rb_entry_view_get_random_entry (songs);
 		} else {
-			rb_debug ("No next entry, stopping playback");
-			rb_shell_player_set_playing_source (player, NULL);
-			return;
+			rb_debug ("choosing next linked entry");
+			entry = rb_entry_view_get_next_entry (songs);
+		}
+
+		if (entry == NULL) {
+			/* If repeat is enabled, loop back to the start */
+			if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
+				&& rb_shell_player_have_first (player, player->priv->source)) {
+				rb_debug ("No next entry, but repeat is enabled");
+				entry = rb_entry_view_get_first_entry (songs);
+			} else {
+				rb_debug ("No next entry, stopping playback");
+				rb_shell_player_set_playing_source (player, NULL);
+				return;
+			}
 		}
 	}
 
@@ -1129,8 +1150,9 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	songs = rb_source_get_entry_view (playa->priv->source);
 	entry = rb_entry_view_get_first_entry (songs);
 
-	if (entry != NULL)
+	if (entry != NULL) {
 		rb_shell_player_set_playing_entry (playa, entry);
+	}
 }
 
 static void
