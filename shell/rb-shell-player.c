@@ -440,18 +440,26 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 				      rb_shell_player_n_actions,
 				      player);
 	player->priv->play_action_group = gtk_action_group_new ("PlayActions");
+	gtk_action_group_set_translation_domain (player->priv->play_action_group,
+						 GETTEXT_PACKAGE);
+
 	gtk_action_group_add_actions (player->priv->play_action_group,
 				      rb_shell_player_play_action,
 				      1, player);
 	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
 					    player->priv->play_action_group, 0);
 	player->priv->pause_action_group = gtk_action_group_new ("PauseActions");
+	gtk_action_group_set_translation_domain (player->priv->pause_action_group,
+						 GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (player->priv->pause_action_group,
 				      rb_shell_player_pause_action,
 				      1, player);
 	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
 					    player->priv->pause_action_group, 0);
 	player->priv->stop_action_group = gtk_action_group_new ("StopActions");
+	gtk_action_group_set_translation_domain (player->priv->stop_action_group,
+						 GETTEXT_PACKAGE);
+
 	gtk_action_group_add_actions (player->priv->stop_action_group,
 				      rb_shell_player_stop_action,
 				      1, player);

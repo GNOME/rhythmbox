@@ -809,6 +809,8 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->ui_manager = gtk_ui_manager_new ();
 
 	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
+	gtk_action_group_set_translation_domain (shell->priv->actiongroup,
+						 GETTEXT_PACKAGE);
 	gtk_action_group_add_actions (shell->priv->actiongroup,
 				      rb_shell_actions,
 				      rb_shell_n_actions, shell);
