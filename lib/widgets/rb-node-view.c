@@ -517,8 +517,12 @@ bool_to_int (const char *boolean)
 static gboolean
 set_sort_column_id (RBNodeView *view)
 {
+	gdk_threads_enter ();
+	
 	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
 					      view->priv->default_sort_column_id, GTK_SORT_ASCENDING);
+
+	gdk_threads_leave ();
 
 	return FALSE;
 }

@@ -514,8 +514,12 @@ rb_library_save (RBLibrary *library)
 	xmlNodePtr root;
 	GPtrArray *children;
 	int i;
+	GString *tmpname = g_string_new (library->priv->xml_file);
 
 	rb_debug ("library: saving");
+
+	g_string_append (tmpname, ".tmp");
+	
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
@@ -571,7 +575,8 @@ rb_library_save (RBLibrary *library)
 	}
 	rb_node_thaw (library->priv->all_songs);
 
-	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
+	xmlSaveFormatFile (tmpname->str, doc, 1);
+	rename (tmpname->str, library->priv->xml_file);
 	rb_debug ("library: done saving");
 }
 

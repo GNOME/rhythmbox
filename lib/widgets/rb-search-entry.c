@@ -200,9 +200,13 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 static gboolean
 rb_search_entry_timeout_cb (RBSearchEntry *entry)
 {
+	gdk_threads_enter ();
+	
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 	entry->priv->timeout = 0;
+
+	gdk_threads_leave ();
 
 	return FALSE;
 }

@@ -91,6 +91,7 @@ static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       GConfEntry *entry,
 					       RBLibrarySource *source); 
 static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
+static void rb_library_source_ui_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
@@ -291,16 +292,22 @@ update_browser_views_visibility (RBLibrarySource *source)
 }
 
 static void
+rb_library_source_ui_prefs_sync (RBLibrarySource *source)
+{
+	update_browser_views_visibility (source);
+
+	if (source->priv->config_widget)
+		rb_library_source_preferences_sync (source);
+}
+
+static void
 rb_library_source_ui_pref_changed (GConfClient *client,
 				   guint cnxn_id,
 				   GConfEntry *entry,
 				   RBLibrarySource *source)
 {
 	rb_debug ("ui pref changed");
-	update_browser_views_visibility (source);
-
-	if (source->priv->config_widget)
-		rb_library_source_preferences_sync (source);
+	rb_library_source_ui_prefs_sync (source);
 }
 
 static void
@@ -474,13 +481,12 @@ rb_library_source_set_property (GObject *object,
 			gtk_widget_show_all (GTK_WIDGET (source));
 
 			rb_library_source_state_prefs_sync (source);
+			rb_library_source_ui_prefs_sync (source);
 			eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
 						    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 						    source);
 			eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
 						    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
-
-			update_browser_views_visibility (source);
 
 			rb_node_view_select_node (source->priv->artists,
 					          rb_library_get_all_albums (source->priv->library));

@@ -1,3 +1,15 @@
+2003-05-18  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-node-view.c: (set_sort_column_id):
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_timeout_cb):
+	* library/rb-library.c: (rb_library_save):
+	* sources/rb-library-source.c: (rb_library_source_ui_prefs_sync),
+	(rb_library_source_ui_pref_changed),
+	(rb_library_source_set_property):
+
+	Do an audit for holding gdk lock in idle timers.  Minor GConf
+	fixups in library.
+
 2003-05-18  Colin Walters  <cwalters@gnome.org>
 
 	* data/node-views/rb-node-view-songs.xml:
