@@ -1,3 +1,31 @@
+Fri, 29 Aug 2003 03:13:34 -0400  Colin Walters  <walters@verbum.org>
+
+	* rhythmdb/rhythmdb-entry-model.c: (rhythmdb_entry_model_get_type),
+	(rhythmdb_entry_model_class_init),
+	(rhythmdb_entry_model_tree_model_init),
+	(rhythmdb_entry_model_set_property), (rhythmdb_get_property),
+	(extract_gtype_from_enum_entry), (rhythmdb_entry_model_init),
+	(rhythmdb_entry_model_finalize), (rhythmdb_entry_model_new),
+	(rhythmdb_entry_model_get_flags),
+	(rhythmdb_entry_model_get_n_columns),
+	(rhythmdb_entry_model_get_column_type),
+	(rhythmdb_entry_model_get_iter), (rhythmdb_entry_model_get_path),
+	(rhythmdb_entry_model_get_value), (rhythmdb_entry_model_iter_next),
+	(rhythmdb_entry_model_iter_children),
+	(rhythmdb_entry_model_iter_has_child),
+	(rhythmdb_entry_model_iter_n_children),
+	(rhythmdb_entry_model_iter_nth_child),
+	(rhythmdb_entry_model_iter_parent):
+	* rhythmdb/rhythmdb-entry-model.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init), (rhythmdb_lock),
+	(rhythmdb_unlock), (rhythmdb_entry_new), (set_sort_key_value),
+	(rhythmdb_entry_set), (rhythmdb_do_entry_query),
+	(rhythmdb_do_property_query), (rhythmdb_query_get_type),
+	(rhythmdb_prop_get_type), (rhythmdb_unsaved_prop_get_type):
+	* rhythmdb/rhythmdb.h:
+
+	More RhythmDB work.
+
 Thu, 28 Aug 2003 22:53:13 -0400  Colin Walters  <walters@verbum.org>
 
 	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),

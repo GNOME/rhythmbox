@@ -40,11 +40,42 @@ enum
 	RHYTHMDB_QUERY_PROP_LESS,
 } RhythmDBQueryType;
 
+enum
+{
+	RHYTHMDB_PROP_TYPE,
+	RHYTHMDB_PROP_NAME,
+	RHYTHMDB_PROP_GENRE,
+	RHYTHMDB_PROP_ARTIST,
+	RHYTHMDB_PROP_ALBUM,
+	RHYTHMDB_PROP_TRACK_NUMBER,
+	RHYTHMDB_PROP_DURATION,
+	RHYTHMDB_PROP_FILE_SIZE,
+	RHYTHMDB_PROP_LOCATION,
+	RHYTHMDB_PROP_MTIME,
+	RHYTHMDB_PROP_RATING,
+	RHYTHMDB_PROP_PLAY_COUNT,
+	RHYTHMDB_PROP_LAST_PLAYED,
+	RHYTHMDB_PROP_QUALITY,
+} RhythmDBPropType;
+
+enum
+{
+	RHYTHMDB_PROP_NAME_SORT_KEY,
+	RHYTHMDB_PROP_GENRE_SORT_KEY,
+	RHYTHMDB_PROP_ARTIST_SORT_KEY,
+	RHYTHMDB_PROP_ALBUM_SORT_KEY,
+	RHYTHMDB_PROP_LAST_PLAYED_STR,
+} RhythmDBUnsavedPropType;
+
 GType rhythmdb_query_get_type (void);
+GType rhythmdb_prop_get_type (void);
+GType rhythmdb_unsaved_prop_get_type (void);
 
-#define RHYTHMDB_QUERY (rhythmdb_query_get_type ())
+#define RHYTHMDB_TYPE_QUERY (rhythmdb_query_get_type ())
+#define RHYTHMDB_TYPE_PROP (rhythmdb_prop_get_type ())
+#define RHYTHMDB_TYPE_UNSAVED_PROP (rhythmdb_unsaved_prop_get_type ())
 
-typedef gpointer RhythmDBEntry;
+typedef void RhythmDBEntry;
 
 typedef struct
 {
@@ -62,8 +93,6 @@ typedef struct
 	void	(*entry_added)		(RhythmDBEntry *entry);
 
 	/* virtual methods */
-	void		(*impl_lock)		(RhythmDB *db);
-	void		(*impl_unlock)		(RhythmDB *db);
 	RhythmDBEntry *	(*rhythmdb_entry_new)	(RhythmDB *db);
 
 	void		(*rhythmdb_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
@@ -73,18 +102,9 @@ typedef struct
 						 guint propid, GValue *value);
 
 	void		(*rhythmdb_entry_delete)(RhythmDB *db, RhythmDBEntry *entry);
-#define DEFINE_GETTER (name, TYPE) \
-	TYPE		(*rhythmdb_entry_get_ ## name) (RhythmDB *db, RhythmDBEntry *entry, guint property_id);
-	DEFINE_GETTER (string, const char *)
-	DEFINE_GETTER (boolean, gboolean)
-	DEFINE_GETTER (long, long)
-	DEFINE_GETTER (int, int)
-	DEFINE_GETTER (double, double)
-	DEFINE_GETTER (float, float)
-	DEFINE_GETTER (pointer, pointer)
-#undef DEFINE_GETTER
-	GtkTreeModel *	(*rhythmdb_do_entry_query)(RhythmDB *db, va_list args);
-	GtkTreeModel *	(*rhythmdb_do_property_query)(RhythmDB *db, const char *property, va_list args);
+
+	GPtrArray *	(*rhythmdb_do_entry_query)(RhythmDB *db, va_list args);
+	GPtrArray *	(*rhythmdb_do_property_query)(RhythmDB *db, const char *property, va_list args);
 
 } RhythmDBClass;
 
@@ -137,8 +157,12 @@ gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
  * rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Classical",
  *                          RHYTHMDB_QUERY_PROP_GREATER, "rating", 5,
  *                          RHYTHMDB_QUERY_END);
+ *
+ * Actually, you wouldn't literally specify "Classical" as above.  More on that
+ * issue below.
+ *
  */
-GtkTreeModel *	rhythmdb_do_entry_query		(RhythmDB *db, ...);
+GPtrArray *	rhythmdb_do_entry_query		(RhythmDB *db, ...);
 
 /* This is a specialized query to return a flat list of metadata,
  * e.g. genre/artist/album.  The varargs are the same as for the
@@ -146,7 +170,7 @@ GtkTreeModel *	rhythmdb_do_entry_query		(RhythmDB *db, ...);
  * as constructing a list of all entries which match the query, and then
  * returning the values of the attribute as a set.
  */
-GtkTreeModel *	rhythmdb_do_property_query	(RhythmDB *db, const char *property, ...);
+GPtrArray *	rhythmdb_do_property_query	(RhythmDB *db, const char *property, ...);
 
 G_END_DECLS
 
