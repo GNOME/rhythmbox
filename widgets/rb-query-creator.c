@@ -67,14 +67,16 @@ static void setup_option_menu (GtkWidget *option_menu,
 			       int length, gboolean activate_first);
 static GtkWidget * create_option_menu (const RBQueryCreatorOption *options,
 				      int length, gboolean activate_first);
-/* static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu); */
+static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu);
 static void append_row (RBQueryCreator *dialog);
+static void add_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
 
 struct RBQueryCreatorPrivate
 {
 	RhythmDB *db;
 	
 	GtkTable *table;
+	GtkWidget *addbutton;
 	GPtrArray *queries;
 };
 
@@ -138,6 +140,9 @@ static void
 rb_query_creator_init (RBQueryCreator *dlg)
 {
 	GladeXML *xml;
+	GtkWidget *first_option;
+	GtkWidget *first_criteria;
+	GtkWidget *first_entry;
 
 	dlg->priv = g_new0 (RBQueryCreatorPrivate, 1);
 
@@ -163,10 +168,25 @@ rb_query_creator_init (RBQueryCreator *dlg)
 				dlg);
 
 	dlg->priv->table = GTK_TABLE (glade_xml_get_widget (xml, "main_table"));
+	gtk_table_resize (dlg->priv->table, 1, 4);
+	dlg->priv->addbutton = GTK_WIDGET (glade_xml_get_widget (xml, "addButton"));
+	g_signal_connect (G_OBJECT (dlg->priv->addbutton), "clicked", G_CALLBACK (add_button_click_cb),
+			  dlg);
+	first_option = create_option_menu (property_options,
+					   G_N_ELEMENTS (property_options),
+					   FALSE);
+	first_criteria = create_option_menu (criteria_options,
+					     G_N_ELEMENTS (criteria_options),
+					     FALSE);
+	first_entry = gtk_entry_new ();
+	gtk_entry_set_text (GTK_ENTRY (first_entry), "moo");
+
+	gtk_table_attach_defaults (dlg->priv->table, first_option, 0, 1, 0, 1);
+	gtk_table_attach_defaults (dlg->priv->table, first_criteria, 1, 2, 0, 1);
+	gtk_table_attach_defaults (dlg->priv->table, first_entry, 2, 3, 0, 1);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dlg)->vbox),
 			   glade_xml_get_widget (xml, "main_vbox"));
-	append_row (dlg);
 }
 
 static void
@@ -233,17 +253,62 @@ rb_query_creator_new (RhythmDB *db)
 	return g_object_new (RB_TYPE_QUERY_CREATOR, "db", db, NULL);
 }
 
+static GtkWidget *
+lookup_table_child (GtkTable *table, guint row, guint col)
+{
+	GList *children;
+
+	for (children = table->children; children; children = children->next) {
+		GtkTableChild *child = children->data;
+		if (child->top_attach == row &&
+		    child->left_attach == col)
+			return child->widget;
+	}
+	return NULL;
+}
+
+static int
+extract_option_menu_val (GtkOptionMenu *menu)
+{
+	GtkWidget *active_item = option_menu_get_active_child (GTK_WIDGET (menu));
+
+	return GPOINTER_TO_INT (g_object_get_data (G_OBJECT (active_item),
+						   "rb-query-creator-value"));
+}
+
 GPtrArray *
 rb_query_creator_get_query (RBQueryCreator *dlg)
 {
-	GPtrArray *query = rhythmdb_query_parse (dlg->priv->db,
-						 RHYTHMDB_QUERY_PROP_EQUALS,
-						 RHYTHMDB_PROP_TYPE,
-						 RHYTHMDB_ENTRY_TYPE_SONG,
-						 RHYTHMDB_QUERY_PROP_LIKE,
-						 RHYTHMDB_PROP_TITLE,
-						 "26",
-						 RHYTHMDB_QUERY_END);
+	GPtrArray *query;
+	guint i, n_rows;
+
+	query = rhythmdb_query_parse (dlg->priv->db,
+				      RHYTHMDB_QUERY_PROP_EQUALS,
+				      RHYTHMDB_PROP_TYPE,
+				      RHYTHMDB_ENTRY_TYPE_SONG,
+				      RHYTHMDB_QUERY_END);
+
+	g_object_get (G_OBJECT (dlg->priv->table), "n-rows", &n_rows, NULL);
+
+	for (i = 0; i < n_rows; i++) {
+		GtkOptionMenu *propmenu = GTK_OPTION_MENU (lookup_table_child (dlg->priv->table,
+									       i, 0));
+		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (lookup_table_child (dlg->priv->table,
+										    i, 1));
+		GtkEntry *text = GTK_ENTRY (lookup_table_child (dlg->priv->table,
+								i, 2));
+		RhythmDBPropType prop = extract_option_menu_val (propmenu);
+		RhythmDBQueryType criteria = extract_option_menu_val (criteria_menu);
+		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
+
+		rhythmdb_query_append (dlg->priv->db,
+				       query,
+				       criteria,
+				       prop,
+				       data,
+				       RHYTHMDB_QUERY_END);
+	}
+	
 	return query;
 }
 
@@ -254,6 +319,12 @@ rb_query_creator_get_limit (RBQueryCreator *dlg)
 }
 
 static void
+add_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
+{
+	append_row (creator);
+}
+
+static void
 append_row (RBQueryCreator *dialog)
 {
 	guint n_rows, n_columns;
@@ -261,37 +332,33 @@ append_row (RBQueryCreator *dialog)
 	GtkWidget *criteria;
 	GtkWidget *entry;
 	GtkWidget *remove_button;
-	GtkWidget *add_button;
-	GtkTableChild *tablechild;
 
 	g_object_get (G_OBJECT (dialog->priv->table), "n-columns", &n_columns,
 		      "n-rows", &n_rows, NULL);
 
-	tablechild = (g_list_nth (dialog->priv->table->children,
-				  ((n_rows-1) * n_columns) + 3))->data;
-	add_button = tablechild->widget;
-	g_object_ref (G_OBJECT (add_button));
-	gtk_container_remove (GTK_CONTAINER (dialog->priv->table), add_button);
+	g_object_ref (G_OBJECT (dialog->priv->addbutton));
+	gtk_container_remove (GTK_CONTAINER (dialog->priv->table), dialog->priv->addbutton);
 
 	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
-	gtk_table_attach_defaults (dialog->priv->table, remove_button, n_rows-1, n_rows, 3, 4);
+	gtk_table_attach_defaults (dialog->priv->table, remove_button, 3, 4, n_rows-1, n_rows);
 
 	gtk_table_resize (dialog->priv->table, n_rows+1, n_columns);
 	/* This is the main (leftmost) GtkOptionMenu, for types. */
 	option = create_option_menu (property_options,
 				     G_N_ELEMENTS (property_options),
 				     FALSE);
-	gtk_table_attach_defaults (dialog->priv->table, option, n_rows, n_rows+1, 0, 1);
+	gtk_table_attach_defaults (dialog->priv->table, option, 0, 1, n_rows, n_rows+1);
 	gtk_option_menu_set_history (GTK_OPTION_MENU (option), 0);
 	criteria = create_option_menu (criteria_options,
 				       G_N_ELEMENTS (criteria_options),
 				       FALSE);
-	gtk_table_attach_defaults (dialog->priv->table, criteria, n_rows, n_rows+1, 1, 2);
+	gtk_table_attach_defaults (dialog->priv->table, criteria, 1, 2, n_rows, n_rows+1);
 
 	entry = gtk_entry_new ();
-	gtk_table_attach_defaults (dialog->priv->table, entry, n_rows, n_rows+1, 2, 3);
+	gtk_table_attach_defaults (dialog->priv->table, entry, 2, 3, n_rows, n_rows+1);
 
-	gtk_table_attach_defaults (dialog->priv->table, add_button, n_rows, n_rows+1, 3, 4);
+	gtk_table_attach_defaults (dialog->priv->table, dialog->priv->addbutton, 3, 4, n_rows, n_rows+1);
+	g_object_unref (G_OBJECT (dialog->priv->addbutton));
 
 	gtk_widget_show_all (GTK_WIDGET (dialog->priv->table));
 }
@@ -312,7 +379,7 @@ setup_option_menu (GtkWidget *option_menu,
 	for (i = 0; i < length; i++) {
 		menu_item = gtk_menu_item_new_with_label (_(options[i].name));
 		g_object_set_data (G_OBJECT (menu_item),
-				   "value", GINT_TO_POINTER (options[i].val));
+				   "rb-query-creator-value", GINT_TO_POINTER (options[i].val));
 		gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
 		gtk_widget_show (menu_item);
 	}
@@ -340,22 +407,22 @@ create_option_menu (const RBQueryCreatorOption *options,
 	return option_menu;
 }
 
-/* static GtkWidget* */
-/* option_menu_get_active_child (GtkWidget *option_menu) */
-/* { */
-/* 	GtkWidget *menu; */
-/* 	GList *children; */
-/* 	int pos; */
-/* 	GtkWidget *child; */
+static GtkWidget*
+option_menu_get_active_child (GtkWidget *option_menu)
+{
+	GtkWidget *menu;
+	GList *children;
+	int pos;
+	GtkWidget *child;
   
-/* 	menu = gtk_option_menu_get_menu (GTK_OPTION_MENU (option_menu)); */
-/* 	children = gtk_container_get_children (GTK_CONTAINER (menu)); */
+	menu = gtk_option_menu_get_menu (GTK_OPTION_MENU (option_menu));
+	children = gtk_container_get_children (GTK_CONTAINER (menu));
 
-/* 	pos = gtk_option_menu_get_history (GTK_OPTION_MENU (option_menu)); */
-/* 	child = g_list_nth (children, pos)->data; */
-/* 	g_assert (child != NULL); */
-/* 	g_assert (GTK_IS_WIDGET (child)); */
+	pos = gtk_option_menu_get_history (GTK_OPTION_MENU (option_menu));
+	child = g_list_nth (children, pos)->data;
+	g_assert (child != NULL);
+	g_assert (GTK_IS_WIDGET (child));
   
-/* 	return child; */
-/* } */
+	return child;
+}
 

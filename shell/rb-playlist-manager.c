@@ -611,6 +611,7 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 	{
 	case GTK_RESPONSE_NONE:
 	case GTK_RESPONSE_CLOSE:
+		gtk_widget_destroy (GTK_WIDGET (creator));	
 		return;
 	}
 
