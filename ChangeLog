@@ -1,5 +1,13 @@
 2003-08-17  Colin Walters  <walters@verbum.org>
 
+	* monkey-media/stream-info-impl/mp3-stream-info-impl.c:
+	(MP3_stream_info_impl_id3_tag_get_utf8):
+
+	Check for invalid UTF-8, and try to convert it from
+	the locale encoding.
+
+2003-08-17  Colin Walters  <walters@verbum.org>
+
 	* shell/main.c (main): Kill off old LC_COLLATE
 	workaround (Closes: #119476).
 

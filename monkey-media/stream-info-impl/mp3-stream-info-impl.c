@@ -565,5 +565,13 @@ MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_na
 		utf8 = id3_ucs4_utf8duplicate (ucs4);
 	}
 
+	if (!g_utf8_validate (utf8, -1, NULL)) {
+		size_t read, written;
+
+		g_warning ("Invalid UTF-8 in %s field in mp3 file\n", field_name);
+
+		utf8 = g_locale_to_utf8 ((char *) ucs4, -1, &read, &written, NULL);
+	}
+
 	return utf8;
 }
