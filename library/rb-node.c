@@ -268,8 +268,6 @@ rb_node_dispose (GObject *object)
 	GValue value = { 0, };
 	GList *l;
 
-	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
-	
 	g_static_rw_lock_writer_lock (id_to_node_hash_lock);
 	if (id_to_node_hash != NULL)
 		g_hash_table_remove (id_to_node_hash, node);
@@ -332,6 +330,8 @@ rb_node_dispose (GObject *object)
 		node2->priv->parents = g_list_remove (node2->priv->parents, node);
 		g_static_rw_lock_writer_unlock (node2->priv->lock);
 	}
+
+	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
