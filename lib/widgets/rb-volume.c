@@ -294,7 +294,9 @@ clicked_cb (GtkButton *button, RBVolume *volume)
 	GtkRequisition  req;
 	GdkGrabStatus pointer, keyboard;
 	gint x, y;
-	gint width, height;
+	gint button_width, button_height;
+	gint window_width, window_height;
+	gint spacing = 1;
 	rb_debug ("volume clicked");
 
 /* 	if (GTK_WIDGET_VISIBLE (GTK_WIDGET (volume->priv->window))) */
@@ -306,13 +308,12 @@ clicked_cb (GtkButton *button, RBVolume *volume)
 	gtk_widget_size_request (GTK_WIDGET (volume->priv->window), &req);
 	
 	gdk_window_get_origin (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &x, &y);
-	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &width, &height);
-	rb_debug ("window origin: %d %d; size: %d %d", x, y, width, height);
-		
-	rb_debug ("moving window to %d %d", x, y);
-	gtk_window_move (GTK_WINDOW (volume->priv->window), x, y);
-		
+	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &button_width, &button_height);
+	rb_debug ("window origin: %d %d; size: %d %d", x, y, button_width, button_height);
+  	
 	gtk_widget_show_all (volume->priv->window);
+	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->window)->child), &window_width, &window_height);
+	gtk_window_move (GTK_WINDOW (volume->priv->window), x+((button_width-window_width)/2), y+button_width+spacing);	
 		
 	/*
 	 * Grab focus and pointer.
