@@ -140,6 +140,11 @@
 	 pixtype="stock"
          pixname="gtk-jump-to"/>
 
+     <cmd name="ExtractCD"
+         _tip="Extract songs from a CD"
+         pixtype="stock"
+         pixname="rhythmbox-sound-juicer"/>
+
   </commands>
 
   <menu>
@@ -153,6 +158,11 @@
       <placeholder name="SourceMenu"/>
 
       <separator/>
+	
+      <menuitem name="ExtractCD" verb="ExtractCD" _label="_Extract CD..." accel="*Control*E"/>
+
+      <separator/>
+
 
       <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
       <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
