@@ -1507,7 +1507,9 @@ rb_shell_construct (RBShell *shell)
 
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean (CONF_FIRST_TIME)) {
-		RBDruid *druid = rb_druid_new (shell->priv->db);
+		RBDruid *druid;
+		shell->priv->show_db_errors = TRUE;
+		druid = rb_druid_new (shell->priv->db);
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
