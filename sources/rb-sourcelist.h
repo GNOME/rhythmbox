@@ -67,6 +67,8 @@ GtkWidget *	rb_sourcelist_new		(void);
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
 						 RBSource *source);
 
+GtkTreeModel *	rb_sourcelist_get_model		(RBSourceList *sourcelist);
+
 void		rb_sourcelist_edit_source_name	(RBSourceList *sourcelist,
 						 RBSource *source);
 

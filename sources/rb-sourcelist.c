@@ -273,6 +273,12 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 	g_signal_connect_object (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), sourcelist, 0);
 }
 
+GtkTreeModel *
+rb_sourcelist_get_model (RBSourceList *sourcelist)
+{
+	return GTK_TREE_MODEL (sourcelist->priv->model);
+}
+
 void
 rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 {

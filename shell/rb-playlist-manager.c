@@ -571,12 +571,25 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 	return NULL;
 }
 
+static void
+save_source_iter_to_xml (GtkTreeModel *model, GtkTreeIter *iter,
+			 xmlNodePtr root)
+{
+	RBSource *source;
+	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+			    &source, -1);
+	if (RB_IS_PLAYLIST_SOURCE (source))
+		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source),
+						root);
+}
+
 void
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
-	GList *tmp;
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveThreadData *data;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
 
 	rb_debug ("saving the playlists");
 
@@ -600,9 +613,13 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 
 	root = xmlNewDocNode (data->doc, NULL, "rhythmdb-playlists", NULL);
 	xmlDocSetRootElement (data->doc, root);
-	
-	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
-		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (tmp->data), root);
+
+	model = rb_sourcelist_get_model (mgr->priv->sourcelist);
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			save_source_iter_to_xml (model, &iter, root);
+		} while (gtk_tree_model_iter_next (model, &iter));
+	}
 
 	g_object_ref (G_OBJECT (mgr));
 	mgr->priv->outstanding_threads++;
