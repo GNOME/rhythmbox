@@ -521,13 +521,63 @@ out:
 }
 
 void
+rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
+{
+	char *file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	xmlDocPtr doc;
+	xmlNodePtr root;
+	xmlNodePtr child;
+	
+	if (!g_file_test (file, G_FILE_TEST_EXISTS))
+		goto out;
+
+	doc = xmlParseFile (file);
+	
+	if (doc == NULL)
+		goto out;
+
+	root = xmlDocGetRootElement (doc);
+	
+	for (child = root->children; child; child = child->next) {
+		RBSource *playlist;
+
+		if (xmlNodeIsText (child))
+			continue;
+
+		playlist = rb_playlist_source_new_from_xml (mgr->priv->library,
+							    child);
+		append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
+	}
+
+	xmlFreeDoc (doc);
+out:
+	g_free (file);
+}
+
+void
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 {
-	/* RHYTHMDB FIXME */
-/* 	GList *tmp; */
-/* 	rb_debug ("saving playlists"); */
-/* 	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next) */
-/* 		rb_playlist_source_save (RB_PLAYLIST_SOURCE (tmp->data)); */
+	char *file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	char *tmpname = g_strconcat (file, ".tmp", NULL);
+	GList *tmp;
+	xmlDocPtr doc;
+	xmlNodePtr root;
+
+	rb_debug ("saving playlists");
+
+	doc = xmlNewDoc ("1.0");
+
+	root = xmlNewDocNode (doc, NULL, "rhythmdb-playlists", NULL);
+	xmlDocSetRootElement (doc, root);
+	
+	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
+		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (tmp->data), root);
+
+	xmlSaveFormatFile (tmpname, doc, 1);
+	rename (tmpname, file);
+	xmlFreeDoc (doc);
+	g_free (tmpname);
+	g_free (file);
 }
 
 static void
@@ -637,8 +687,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (file == NULL)
 		return;
 
-	/* RHYTHMDB FIXME */
-/* 	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), file); */
+	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), file);
 	g_free (file);
 }
 
@@ -719,9 +768,7 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 	if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
 		return NULL;
 
-	ret = NULL;
-/* 	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library, */
-/* 							  mgr->priv->libsource)); */
+	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library));
 	g_object_set (G_OBJECT (ret), "name", name, NULL);
 	return ret;
 }
@@ -803,8 +850,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 	if (playlist == NULL)
 		return;
 
-	/* RHYTHMDB FIXME */
-/* 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist)); */
+	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 
 	g_free (name);
 
@@ -821,7 +867,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
 				  mgr);
 
-/* 		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist); */
+		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist);
 		if (!rb_playlist_parse (parser, g_list_first (data)->data))
 			rb_error_dialog (_("Couldn't parse playlist"));
 		mgr->priv->loading_playlist = NULL;
@@ -843,11 +889,11 @@ read_playlist_name_cb (GtkDialog *dialog,
 	case CREATE_PLAYLIST_WITH_SELECTION:
 		/* add the current selection if the user checked */
 		if (add_selection) {
-/* 			RBEntryView *entryview = rb_source_get_entry_view (mgr->priv->selected_source); */
-/* 			GList *i = NULL; */
-/* 			GList *selection = rb_entry_view_get_selected_entries (entryview); */
-/* 			for (i  = selection; i != NULL; i = g_list_next (i)) */
-/* 				rb_playlist_source_add_entry (RB_PLAYLIST_SOURCE (playlist), i->data); */
+			RBEntryView *entryview = rb_source_get_entry_view (mgr->priv->selected_source);
+			GList *i = NULL;
+			GList *selection = rb_entry_view_get_selected_entries (entryview);
+			for (i  = selection; i != NULL; i = g_list_next (i))
+				rb_playlist_source_add_entry (RB_PLAYLIST_SOURCE (playlist), i->data);
 		}
 	break;
 	}

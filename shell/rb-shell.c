@@ -931,8 +931,8 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	/* now that the lib is loaded, we can load the music playlists */
-/* 	rb_debug ("shell: loading playlists"); */
-/* 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager); */
+	rb_debug ("shell: loading playlists");
+	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");

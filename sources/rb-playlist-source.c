@@ -578,11 +578,26 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 
 	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) == NULL);
 	g_hash_table_insert (source->priv->entries,
-			     g_strdup (location), NULL);
+			     g_strdup (location), GINT_TO_POINTER (1));
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
 	if (entry != NULL)
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 }	
+
+void
+rb_playlist_source_add_entry (RBPlaylistSource *source, 
+			      RhythmDBEntry *entry)
+{
+	const char *location;
+
+	rhythmdb_read_lock (source->priv->db);
+	location = rhythmdb_entry_get_string (source->priv->db, entry,
+					      RHYTHMDB_PROP_LOCATION);
+	rhythmdb_read_lock (source->priv->db);
+
+	rb_playlist_source_add_location (source, location);
+}
+
 
 static void 
 rb_playlist_source_add_list_uri (RBPlaylistSource *source,
@@ -665,4 +680,73 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 			   playlist_iter_func, uri, &error);
 	if (error != NULL)
 		rb_error_dialog ("%s", error->message);
+}
+
+void
+write_entry_to_xml (const char *location, gpointer unused, xmlNodePtr parent)
+{
+	xmlNodePtr node = xmlNewChild (parent, NULL, "location", NULL);
+	char *encoded = xmlEncodeEntitiesReentrant (NULL, location);
+	
+	xmlNodeSetContent (node, encoded);
+	g_free (encoded);
+}
+
+RBSource *
+rb_playlist_source_new_from_xml	(RBLibrary *library,
+				 xmlNodePtr node)
+{
+	RBPlaylistSource *source;
+	xmlNodePtr child;
+	char *tmp;
+	RhythmDB *db;
+
+	g_object_get (G_OBJECT (library), "db", &db, NULL);
+
+	rhythmdb_read_lock (db);
+
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (library));
+
+	tmp = xmlGetProp (node, "type");
+	if (!strcmp (tmp, "smart"))
+		source->priv->smart = TRUE;
+	g_free (tmp);
+	tmp = xmlGetProp (node, "name");
+	g_object_set (G_OBJECT (source), "name", tmp, NULL);
+	g_free (tmp);
+
+	for (child = node->children; child; child = child->next) {
+		char *location;
+
+		if (xmlNodeIsText (child))
+			continue;
+		
+		if (strcmp (child->name, "location"))
+			continue;
+		
+		location = xmlNodeGetContent (child);
+		rb_playlist_source_add_location (source, location);
+	}
+
+	rhythmdb_read_unlock (db);
+
+	return RB_SOURCE (source);
+}
+
+void
+rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node)
+{
+	xmlNodePtr node;
+	char *name;
+	
+	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	xmlSetProp (node, "name", name);
+	xmlSetProp (node, "type", source->priv->smart ? "smart" : "static");
+	
+	if (!source->priv->smart) {
+		g_hash_table_foreach (source->priv->entries, (GHFunc) write_entry_to_xml,
+				      node);
+	} else
+		g_assert_not_reached ();
 }
