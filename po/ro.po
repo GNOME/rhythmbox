@@ -1,4 +1,4 @@
-# arch-tag: translation of rhythmbox-ro.po to Romanian
+# translation of rhythmbox-ro.po to Romanian
 # Romanian translation of rhythmbox.
 # Copyright (C) 2003 THE rhythmbox'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the rhythmbox package.
@@ -6,16 +6,17 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox-ro\n"
+"Project-Id-Version: ro\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-04 22:26-0400\n"
-"PO-Revision-Date: 2003-10-05 23:29+0300\n"
+"POT-Creation-Date: 2003-10-08 14:52+0300\n"
+"PO-Revision-Date: 2003-10-08 14:48+0300\n"
 "Last-Translator: Mugurel Tudor <mugurelu@go.ro>\n"
-"Language-Team: Romanian <gnomero@lists.sourceforge.net>\n"
+"Language-Team:  <@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.0.2\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: KBabel 1.0.1\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add To Music Player Library"
@@ -47,69 +48,41 @@ msgstr "Încarc..."
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
-msgid "Finish"
-msgstr "Terminat"
-
-#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:244
+#: data/glade/druid.glade.h:2
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
-msgstr ""
-"Pentru a putea începe utilizarea\n"
-"Rhythmbox, acest asistent vă va cere\n"
-"să răspundeţi la câteva întrebări."
-
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:250
-msgid "Library setup"
-msgstr "Setare bibliotecă"
-
-#: data/glade/druid.glade.h:7
-msgid ""
-"Rhythmbox needs to know where to find your music.\n"
-"You may choose to skip this step; instead, you \n"
-"can add music to your library at any point later.\n"
-"\n"
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox trebuie să ştie unde va găsi muzica\n"
-"dumneavoastră. Puteţi sări acest pas şi adăuga\n"
-"melodiile mai târziu.\n"
-"\n"
+"Rhythmbox gestionează toate melodiile dumneavoastră folosind o \"bibliotecă"
+"\" muzicală, pe care o puteţi vizualiza, căuta sau organiza foarte comod.\n"
+"Pentru a o putea folosi, va trebui să îi spuneţi lui Rhythmbox unde să "
+"găsească muzica. Puteţi sări acest pas, deoarece puteţi adăuga melodiile şi "
+"mai târziu.\n"
 "Vă rugăm alegeţi una dintre opţiunile de mai jos:"
 
-#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:240
-msgid "Welcome to Rhythmbox"
-msgstr "Bine aţi venit în Rhythmbox"
-
-#: data/glade/druid.glade.h:13
-msgid ""
-"You are now ready to start\n"
-"Rhythmbox."
-msgstr ""
-"Puteţi porni acum\n"
-"Rhythmbox."
-
-#: data/glade/druid.glade.h:15
+#: data/glade/druid.glade.h:5
 msgid "_Browse..."
 msgstr "_Navighează..."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
 msgstr "_Introduceţi locaţia manual:"
 
-#: data/glade/druid.glade.h:17
+#: data/glade/druid.glade.h:7
 msgid "_Path:"
 msgstr "_Calea:"
 
-#: data/glade/druid.glade.h:18
+#: data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Sări acest pas"
 
 #: data/glade/general-prefs.glade.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
+#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1061
 msgid "A_lbum"
 msgstr "A_lbum"
 
@@ -151,7 +124,7 @@ msgstr "_Calitate"
 #: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
 #: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8
+#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1018
 msgid "_Rating"
 msgstr "_Apreciere"
 
@@ -284,44 +257,45 @@ msgstr "_Album"
 #: data/node-views/rb-node-view-artists.xml.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1052
 msgid "Art_ist"
 msgstr "Art_ist"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:3
 #: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1070
 msgid "Ge_nre"
 msgstr "Ge_n"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1079
 msgid "Ti_me"
 msgstr "Ti_mp"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:6 widgets/rb-entry-view.c:1035
+#: sources/rb-playlist-source.c:277
 msgid "Tra_ck"
 msgstr "Pi_stă"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:7
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
 #: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9
+#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1043
 msgid "_Title"
 msgstr "_Titlu"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4
+#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1098
 msgid "L_ast Played"
 msgstr "Ultim_a redare"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7
+#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1090
 msgid "_Play Count"
 msgstr "Nu_măr redări"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:555 shell/rb-shell.c:1092
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:678 shell/rb-shell.c:1271
 msgid "Music Player"
 msgstr "Player muzical"
 
@@ -337,19 +311,19 @@ msgstr "Deselectează toate melodiile"
 msgid "Eject Audio-CD"
 msgstr "Ejectează CD-ul audio"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:35
 msgid "Scroll the view to the currently playing song"
 msgstr "Defilează vizualizarea la melodia redată curent"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Select _All"
 msgstr "Selectează _tot"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:37
 msgid "Select all songs"
 msgstr "Selectează toate melodiile"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_Edit"
 msgstr "_Editare"
 
@@ -357,11 +331,11 @@ msgstr "_Editare"
 msgid "_Eject Audio-CD..."
 msgstr "_Ejectare CD audio..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:57
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:58
 msgid "_Jump to Playing Song"
 msgstr "_Sări la melodia redată"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:71
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:74
 msgid "_View"
 msgstr "_Vizualizare"
 
@@ -398,32 +372,32 @@ msgid "Choose files or a directory to be added to the library"
 msgstr "Alege fişierele sau un director pentru a fi adăugate la bibliotecă"
 
 #: data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Close the music player"
-msgstr "Închide player-ul"
-
-#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Copy selection"
 msgstr "Copiază selecţia"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Create a new Internet Radio station"
 msgstr "Creează o nouă staţie Radio Internet"
+
+#: data/ui/rhythmbox-ui.xml.in.h:11
+msgid "Create a new automatically updating playlist"
+msgstr "Creează un nou playlist actualizabil automat"
 
 #: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Create a new playlist"
 msgstr "Creează un nou playlist"
 
 #: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "Create a new smart playlist"
-msgstr "Creează un nou playlist inteligent"
-
-#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Cu_t"
 msgstr "_Taie"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Cut selection"
 msgstr "Taie selecţia"
+
+#: data/ui/rhythmbox-ui.xml.in.h:15
+msgid "D_eselect All"
+msgstr "D_eselectează tot"
 
 #: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Delete selection"
@@ -438,237 +412,226 @@ msgid "Edit music player preferences"
 msgstr "Editează preferinţele player-ului"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
-msgid "Extract songs from a CD"
-msgstr "Extrage melodii de pe un CD"
+msgid "Extract and import songs from a CD"
+msgstr "Extrage şi importă melodii de pe un CD"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
+msgid "Import Lo_cation..."
+msgstr "Importă o lo_caţie..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "Import _Audio CD..."
+msgstr "Importă un CD _audio..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Make the main window smaller"
 msgstr "Micşorează ferestra principală"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "New _Internet Radio Station"
 msgstr "Staţie Radio _Internet nouă"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "New _Smart Playlist..."
 msgstr "Playlist I_nteligent nou..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "P_revious"
 msgstr "P_recedenta"
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Paste selection"
 msgstr "Lipeşte selecţia"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Pause playing"
 msgstr "Suspendă redarea"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:29
+msgid "Playlist"
+msgstr "Playlist"
+
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Prefere_nces"
 msgstr "Preferi_nţe"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:31
+msgid "Quit the music player"
+msgstr "Închide player-ul"
+
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Repea_t"
 msgstr "Repe_titiv"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "S_tatusbar"
 msgstr "Bară de s_tatus"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Save a playlist to a file"
 msgstr "Salvează un playlist într-un fişier"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
-msgid "Select N_one"
-msgstr "_Deselectează tot"
-
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "Show information about the music player"
 msgstr "Afişează informaţii despre player"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "Show information on the selected song"
 msgstr "Afişează informaţii despre melodia curentă"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "Source _List"
 msgstr "_Listă surse"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1138
 msgid "Start playing"
 msgstr "Incepe redarea"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "Start playing the next song"
 msgstr "Începe redarea următoarei melodii"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "Start playing the previous song"
 msgstr "Începe redarea melodiei precedente"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "Stop playing"
 msgstr "Opreşte redarea"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "Toggle random playing order"
 msgstr "Comută ordinea de redare aleatoare"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "Toggle repeat mode"
 msgstr "Comută modul de repetiţie"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_About"
 msgstr "_Despre"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Add to Library..."
 msgstr "_Adaugă la bibliotecă..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_Browser"
 msgstr "_Navigator"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
-msgid "_Close"
-msgstr "În_chide"
-
-#: data/ui/rhythmbox-ui.xml.in.h:48
+#: data/ui/rhythmbox-ui.xml.in.h:50
 msgid "_Contents"
 msgstr "_Conţinut"
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:51
+msgid "_Control"
+msgstr "_Control"
+
+#: data/ui/rhythmbox-ui.xml.in.h:52
 msgid "_Copy"
 msgstr "_Copiază"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50
+#: data/ui/rhythmbox-ui.xml.in.h:53
 msgid "_Cut"
 msgstr "_Taie"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.in.h:54
 msgid "_Delete"
 msgstr "Şter_ge"
-
-#: data/ui/rhythmbox-ui.xml.in.h:52
-msgid "_Delete Playlist"
-msgstr "Şter_ge playlist"
-
-#: data/ui/rhythmbox-ui.xml.in.h:54
-msgid "_Extract CD..."
-msgstr "_Extrage CD..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:55 lib/widgets/rb-load-failure-dialog.c:144
-msgid "_File"
-msgstr "_Fişier"
 
 #: data/ui/rhythmbox-ui.xml.in.h:56
 msgid "_Help"
 msgstr "_Ajutor"
 
-#: data/ui/rhythmbox-ui.xml.in.h:58
-msgid "_Load Playlist..."
-msgstr "Î_ncarcă playlist..."
+#: data/ui/rhythmbox-ui.xml.in.h:57
+msgid "_Import folder..."
+msgstr "_Importă un dosar..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:59
+msgid "_Load from file..."
+msgstr "Î_ncarcă din fişier..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Music"
 msgstr "_Muzică"
 
-#: data/ui/rhythmbox-ui.xml.in.h:60
+#: data/ui/rhythmbox-ui.xml.in.h:61
 msgid "_New Playlist..."
 msgstr "Playlist _nou..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:61
+#: data/ui/rhythmbox-ui.xml.in.h:62
 msgid "_Next"
 msgstr "_Următoarea"
 
-#: data/ui/rhythmbox-ui.xml.in.h:62
+#: data/ui/rhythmbox-ui.xml.in.h:63
 msgid "_Paste"
 msgstr "_Lipeşte"
 
-#: data/ui/rhythmbox-ui.xml.in.h:63 shell/rb-shell-player.c:1075
+#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1139
 msgid "_Play"
 msgstr "_Redare"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64
+#: data/ui/rhythmbox-ui.xml.in.h:65
 msgid "_Properties"
 msgstr "_Proprietăţi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:65
+#: data/ui/rhythmbox-ui.xml.in.h:66
+msgid "_Quit"
+msgstr "Închi_de"
+
+#: data/ui/rhythmbox-ui.xml.in.h:67
+msgid "_Remove"
+msgstr "Ş_terge"
+
+#: data/ui/rhythmbox-ui.xml.in.h:68
 msgid "_Rename"
 msgstr "_Redenumeşte"
 
-#: data/ui/rhythmbox-ui.xml.in.h:66
-msgid "_Rename Playlist"
-msgstr "_Redenumeşte playlist"
+#: data/ui/rhythmbox-ui.xml.in.h:69
+msgid "_Rename..."
+msgstr "_Redenumeşte..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:67
-msgid "_Save Playlist..."
-msgstr "_Salvează playlist..."
+#: data/ui/rhythmbox-ui.xml.in.h:70
+msgid "_Save to file..."
+msgstr "_Salvează într-un fişier..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:68
+#: data/ui/rhythmbox-ui.xml.in.h:71
 msgid "_Show Window"
 msgstr "_Afişează fereastra"
 
-#: data/ui/rhythmbox-ui.xml.in.h:69 shell/rb-statusbar.c:161
+#: data/ui/rhythmbox-ui.xml.in.h:72 shell/rb-statusbar.c:184
 msgid "_Shuffle"
 msgstr "_Aleator"
 
-#: data/ui/rhythmbox-ui.xml.in.h:70
+#: data/ui/rhythmbox-ui.xml.in.h:73
 msgid "_Small Display"
 msgstr "_Afişaj mic"
-
-#: iradio/rb-iradio-backend.c:181 iradio/rb-iradio-backend.c:555
-#: iradio/rb-new-station-dialog.c:292 library/rb-library.c:745
-msgid "All"
-msgstr "Toate"
-
-#: iradio/rb-iradio-backend.c:339
-msgid "Unable to find file \"iradio-initial.xml\""
-msgstr "Nu pot găsi fişierul \"iradio-initial.xml\""
-
-#: iradio/rb-iradio-backend.c:369
-#, c-format
-msgid "Failed to parse %s\n"
-msgstr "Eroare la interpretarea %s\n"
-
-#: iradio/rb-iradio-backend.c:512 iradio/rb-iradio-backend.c:531
-#: iradio/rb-iradio-backend.c:532 lib/widgets/rb-tree-model-node.c:589
-msgid "(Unknown)"
-msgstr "(Necunoscut)"
-
-#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb-tree.c:244
-#: rhythmdb/rhythmdb.c:321
-msgid "Never"
-msgstr "Niciodată"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
 msgstr "Staţie Radio Internet nouă"
 
-#. Initialize the tree structure.
 #: iradio/rb-new-station-dialog.c:182
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 rhythmdb/rhythmdb-tree.c:250
-#: rhythmdb/rhythmdb-tree.c:251 rhythmdb/rhythmdb-tree.c:252
-#: sources/rb-audiocd-source.c:979 sources/rb-audiocd-source.c:986
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-#: sources/rb-iradio-source.c:236 sources/rb-playlist-source.c:365
-#: sources/rb-playlist-source.c:381
+#: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:243
+#: sources/rb-iradio-source.c:244 sources/rb-iradio-source.c:245
+#: sources/rb-playlist-source.c:409
 msgid "Unknown"
 msgstr "Necunoscut"
 
-#: iradio/rb-station-properties-dialog.c:178 lib/widgets/rb-song-info.c:569
-#: lib/widgets/rb-song-info.c:583
+#: iradio/rb-new-station-dialog.c:294 rhythmdb/rhythmdb-property-model.c:329
+msgid "All"
+msgstr "Toate"
+
+#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:574
+#: widgets/rb-song-info.c:592
 #, c-format
 msgid "%s Properties"
 msgstr "Proprietăţi %s"
 
-#: iradio/rb-station-properties-dialog.c:349
+#: iradio/rb-station-properties-dialog.c:333
 #, c-format
 msgid "Properties for %s"
 msgstr "Proprietăţi pentru %s"
@@ -698,17 +661,17 @@ msgstr "Orientare"
 msgid "The orientation of the tray."
 msgstr "Orientarea tray-ului."
 
-#: lib/rb-file-helpers.c:77
+#: lib/rb-file-helpers.c:78
 #, c-format
 msgid "Failed to find %s"
 msgstr "Nu am putut găsi %s"
 
-#: lib/rb-file-helpers.c:102
+#: lib/rb-file-helpers.c:103
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s există, vă rugăm mutaţi-l."
 
-#: lib/rb-file-helpers.c:105
+#: lib/rb-file-helpers.c:106
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Nu am putut crea directorul %s."
@@ -734,56 +697,76 @@ msgstr "THE ,DJ "
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/widgets/eggtreemodelfilter.c:267
-msgid "The child model"
-msgstr "Modelul copil"
-
-#: lib/widgets/eggtreemodelfilter.c:268
-msgid "The model for the filtermodel to filter"
-msgstr "Modelul pentru filtrare"
-
-#: lib/widgets/eggtreemodelfilter.c:275
-msgid "The virtual root"
-msgstr "Rădăcina virtuală"
-
-#: lib/widgets/eggtreemodelfilter.c:276
-msgid "The virtual root (relative to the child model) for this filtermodel"
-msgstr "Rădăcina virtuală (relativ la modelul copil) pentru acest model de filtrare"
-
-#: lib/widgets/gtktreemodelsort.c:306
-msgid "TreeModelSort Model"
-msgstr "Modelul TreeModelSort"
-
-#: lib/widgets/gtktreemodelsort.c:307
-msgid "The model for the TreeModelSort to sort"
-msgstr "Modelul pentru sortarea TreeModelSort"
-
-#: lib/widgets/rb-cell-renderer-pixbuf.c:109
+#: widgets/rb-cell-renderer-pixbuf.c:109
 msgid "Pixbuf Object"
 msgstr "Obiect Pixbuf"
 
-#: lib/widgets/rb-cell-renderer-pixbuf.c:110
+#: widgets/rb-cell-renderer-pixbuf.c:110
 msgid "The pixbuf to render."
 msgstr "Pixbuf pentru randat."
 
-#: lib/widgets/rb-druid.c:219 shell/main.c:86
+#: widgets/rb-druid.c:219 shell/main.c:101
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Puteţi porni acum Rhythmbox."
+#: widgets/rb-druid.c:240
+msgid "Welcome to Rhythmbox"
+msgstr "Bine aţi venit în Rhythmbox"
 
-#: lib/widgets/rb-druid.c:310
+#: widgets/rb-druid.c:244
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+"Rhythmbox este playerul muzical GNOME care vă permite să realizaţi orice: să "
+"ascultaţi melodiile dumneavoastră sau posturile Radio Internet, să importaţi "
+"melodii de pe CD şi multe altele.\n"
+"\n"
+"Acest asistent vă va ajuta să începeţi utilizarea sa punându-vă câteva "
+"întrebări simple."
+
+#: widgets/rb-druid.c:250
+msgid "Music library setup"
+msgstr "Setare bibliotecă muzicală"
+
+#: widgets/rb-druid.c:259
+msgid "Finish"
+msgstr "Terminat"
+
+#: widgets/rb-druid.c:261
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Organize\" then \"Add "
+"to Library\", or by importing it from CDs."
+msgstr ""
+"Puteţi începe acum utilizarea Rhythmbox.\n"
+"\n"
+"Nu uitaţi că puteţi adăuga melodiile la bibliotecă folosind \"Organizare\" "
+"apoi \"Adaugă la bibliotecă\", sau prin importare direct de pe CD-uri."
+
+#: widgets/rb-druid.c:310
 #, c-format
 msgid "Error reading filename: %s"
 msgstr "Eroare la citirea numelui de fişier: %s"
 
-#: lib/widgets/rb-druid.c:325
+#: widgets/rb-druid.c:325
 msgid "Choose a directory"
 msgstr "Alegeţi un director"
 
-#: lib/widgets/rb-link.c:342
+#: widgets/rb-entry-view.c:883 rhythmdb/rhythmdb.c:543
+msgid "Never"
+msgstr "Niciodată"
+
+#: widgets/rb-entry-view.c:916 widgets/rb-player.c:804
+#, c-format
+msgid "%d:%02d"
+msgstr "%d:%02d"
+
+#: widgets/rb-link.c:332
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -792,137 +775,129 @@ msgstr ""
 "A intervenit o eroare la %s:\n"
 "%s"
 
-#: lib/widgets/rb-load-failure-dialog.c:119
+#: widgets/rb-load-failure-dialog.c:119
 msgid "Error loading files into library"
 msgstr "Eroare la încărcarea fişierelor în bibliotecă"
 
-#: lib/widgets/rb-load-failure-dialog.c:136
+#: widgets/rb-load-failure-dialog.c:136
 msgid "_Error"
 msgstr "_Eroare"
 
-#: lib/widgets/rb-node-view.c:788
-#, c-format
-msgid "Failed to parse %s as NodeView layout file"
-msgstr "Nu am putut parsa %s ca fişier şablon NodeView"
+#: widgets/rb-load-failure-dialog.c:144
+msgid "_File"
+msgstr "_Fişier"
 
-#: lib/widgets/rb-player.c:262
-msgid "from "
-msgstr "de pe "
-
-#: lib/widgets/rb-player.c:268
-msgid " by "
-msgstr " al lui "
-
-#: lib/widgets/rb-player.c:283
+#: widgets/rb-player.c:279
 msgid "Listening to "
 msgstr "Ascult "
 
-#: lib/widgets/rb-player.c:488
+#: widgets/rb-player.c:505
 msgid "Get information on this album from the web"
 msgstr "Obţine informaţii despre acest album prin internet"
 
-#: lib/widgets/rb-player.c:499
+#: widgets/rb-player.c:516
 msgid "Get information on this artist from the web"
 msgstr "Obţine informaţii despre acest artist prin internet"
 
-#: lib/widgets/rb-player.c:509
+#: widgets/rb-player.c:526
 msgid "Get more information on this station from the web"
 msgstr "Obţine mai multe informaţii despre această staţie prin internet"
 
-#: lib/widgets/rb-player.c:518 shell/rb-shell.c:1094 shell/rb-tray-icon.c:222
+#: widgets/rb-player.c:537 shell/rb-shell.c:1247 shell/rb-tray-icon.c:218
 msgid "Not playing"
 msgstr "Redare oprită"
 
-#: lib/widgets/rb-player.c:786
+#: widgets/rb-player.c:802
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d din %d:%02d"
 
-#: lib/widgets/rb-player.c:788
-#, c-format
-msgid "%d:%02d"
-msgstr "%d:%02d"
-
 #. this string can only be so long, or there wont be a search entry :)
-#: lib/widgets/rb-search-entry.c:118
+#: widgets/rb-search-entry.c:118
 msgid "_Search:"
 msgstr "_Caută:"
 
-#: lib/widgets/rb-song-info.c:228 lib/widgets/rb-song-info.c:588
+#: widgets/rb-song-display-box.c:113
+msgid "from "
+msgstr "de pe "
+
+#: widgets/rb-song-display-box.c:116
+msgid "by "
+msgstr "al lui "
+
+#: widgets/rb-song-info.c:230 widgets/rb-song-info.c:598
 msgid "Song Properties"
 msgstr "Proprietăţi melodie"
 
-#: lib/widgets/rb-song-info.c:870
+#: widgets/rb-song-info.c:883
 msgid "on the desktop"
 msgstr "pe desktop"
 
-#: lib/widgets/rb-song-info.c:1082
+#: widgets/rb-song-info.c:1106
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: lib/widgets/rb-song-info.c:1095
+#: widgets/rb-song-info.c:1119
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:1098
+#: widgets/rb-song-info.c:1122
 msgid " (Stereo)"
 msgstr " (Stereo)"
 
-#: lib/widgets/rb-song-info.c:1101
+#: widgets/rb-song-info.c:1125
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d canale)"
 
-#: lib/widgets/rb-sourcelist.c:188
+#: sources/rb-sourcelist.c:188
 msgid "_Source"
 msgstr "_Sursă"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: lib/widgets/rb-volume.c:233
+#: widgets/rb-volume.c:233
 msgid "+"
 msgstr "+"
 
-#: lib/widgets/rb-volume.c:234
+#: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:976
-msgid "Failed to load library!"
-msgstr "Nu am putut încărca biblioteca !"
-
-#: library/rb-library.c:1243
-#, c-format
-msgid "%ld:%02ld"
-msgstr "%ld:%02ld"
-
-#: library/rb-library.c:1544
+#: library/rb-library.c:630
 msgid "Loading songs..."
 msgstr "Încarc melodiile..."
 
-#: library/rb-library.c:1557
+#: library/rb-library.c:632
 msgid "Refreshing songs..."
 msgstr "Actualizez melodiile..."
 
-#: library/rb-library.c:1643
+#: library/rb-library.c:680
 #, c-format
-msgid "<b>%.1f</b> days (%ld songs)"
-msgstr "<b>%.1f</b> zile (%ld melodii)"
+msgid "%d song"
+msgid_plural "%d songs"
+msgstr[0] "%d melodie"
+msgstr[1] "%d melodii"
 
-#: library/rb-library.c:1646
+#: library/rb-library.c:690
 #, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> ore şi <b>%ld</b> minute (%ld melodii)"
+msgid "%ld minute"
+msgid_plural "%ld minutes"
+msgstr[0] "%ld minut"
+msgstr[1] "%ld minute"
 
-#: library/rb-library.c:1649
+#: library/rb-library.c:692
 #, c-format
-msgid "<b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> minute (%ld melodii)"
+msgid "%ld hour"
+msgid_plural "%ld hours"
+msgstr[0] "%ld oră"
+msgstr[1] "%ld ore"
 
-#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:323
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
+#: library/rb-library.c:693
+#, c-format
+msgid "%s and %s"
+msgstr "%s şi %s"
 
 #: monkey-media/monkey-media-audio-cd.c:220
 #, c-format
@@ -976,35 +951,35 @@ msgid "Failed to create cdparanoia input element; check your installation"
 msgstr "Nu am putut crea elementul cdparanoia, verificaţi instalarea"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:562
+#: monkey-media/monkey-media-player-gst-tmp.c:571
 #: monkey-media/monkey-media-player-gst.c:518
 msgid "Failed to create spider element; check your installation"
 msgstr "Nu am putut crea elementul spider, verificaţi instalarea"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:574
+#: monkey-media/monkey-media-player-gst-tmp.c:583
 #: monkey-media/monkey-media-player-gst.c:533
 msgid "Failed to create volume element; check your installation"
 msgstr "Nu am putut crea elementul volum, verificaţi instalarea"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:592
+#: monkey-media/monkey-media-player-gst-tmp.c:601
 #: monkey-media/monkey-media-player-gst.c:554
 msgid "Could not create audio output element; check your settings"
 msgstr "Nu am putut crea elementul ieşire audio, verificaţi setările"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:708
+#: monkey-media/monkey-media-player-gst-tmp.c:717
 #: monkey-media/monkey-media-player-gst.c:641
 msgid "No AudioCD support; check your settings"
 msgstr "Nu există suport pentru CD audio, verificaţi setările"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:513
+#: monkey-media/monkey-media-player-gst-tmp.c:514
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr "Nu am putut crea elementul %s, verificaţi instalarea"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:538
+#: monkey-media/monkey-media-player-gst-tmp.c:539
 #: monkey-media/monkey-media-player-gst.c:491
 msgid "Failed to create queue element; check your installation"
 msgstr "Nu am putut crea elementul coadă, verificaţi instalarea"
@@ -1094,7 +1069,7 @@ msgstr "Nu am putut deschide fişierul pentru citire"
 msgid "Error decoding FLAC file"
 msgstr "Eroare la decodarea fişierului FLAC"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1115,31 +1090,59 @@ msgstr "Nu am putut deschide fişierul ca Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: shell/main.c:73
+#: rhythmdb/rhythmdb.c:545 sources/rb-source.c:306
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: shell/main.c:79
 msgid "Print the playing song and exit"
 msgstr "Tipăreşte melodia redată şi ieşi"
 
-#: shell/main.c:74
+#: shell/main.c:80
 msgid "Print the playing song URI and exit"
 msgstr "Tipăreşte URI pentru melodia redată şi ieşi"
 
-#: shell/main.c:75
+#: shell/main.c:82
+msgid "Print the playing song length in seconds and exit"
+msgstr "Tipăreşte lungimea melodiei redate şi ieşi"
+
+#: shell/main.c:83
+msgid "Print the current elapsed time of playing song and exit"
+msgstr "Tipăreşte timpul rămas pentru redare al melodiei curente şi ieşi"
+
+#: shell/main.c:84
+msgid "Seek to the specified time in playing song if possible and exit"
+msgstr "Caută la timpul specificat în melodia redată curent şi ieşi"
+
+#: shell/main.c:86
+msgid "Toggle play/pause mode"
+msgstr "Comută modul redare/pauză"
+
+#: shell/main.c:87
+msgid "Jump to previous song"
+msgstr "Sări la melodia precedentă"
+
+#: shell/main.c:88
+msgid "Jump to next song"
+msgstr "Sări la melodia următoare"
+
+#: shell/main.c:90
 msgid "Enable debugging code"
 msgstr "Activează codul de depanare"
 
-#: shell/main.c:76
+#: shell/main.c:91
 msgid "Do not register the shell"
 msgstr "Nu înregistra shell-ul"
 
-#: shell/main.c:77
+#: shell/main.c:92
 msgid "Quit Rhythmbox"
 msgstr "Închide Rhythmbox"
 
-#: shell/main.c:78
+#: shell/main.c:93
 msgid "MonkeyMedia options:"
 msgstr "Opţiuni MonkeyMedia:"
 
-#: shell/main.c:171
+#: shell/main.c:189
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -1147,7 +1150,7 @@ msgstr ""
 "Rhythmbox nu funcţionează dacă evenimentele sonore sunt activate în GNOME şi "
 "esdsink este folosit."
 
-#: shell/main.c:211
+#: shell/main.c:231
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1156,98 +1159,81 @@ msgstr ""
 "Nu am putut activa shell-ul:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:549
+#: shell/rb-playlist-manager.c:665
 msgid "Load playlist"
 msgstr "Încarcă playlist-ul"
 
-#: shell/rb-playlist-manager.c:589
+#: shell/rb-playlist-manager.c:705
 msgid "There is already a playlist with that name."
 msgstr "Există deja un playlist cu acest nume"
 
-#: shell/rb-playlist-manager.c:639
+#: shell/rb-playlist-manager.c:756
 msgid "Save playlist"
 msgstr "Salvează playlist"
 
-#: shell/rb-playlist-manager.c:756
+#: shell/rb-playlist-manager.c:873
 msgid "Couldn't parse playlist"
 msgstr "Nu am putut parcurge playlist-ul"
 
-#: shell/rb-playlist-manager.c:808 shell/rb-playlist-manager.c:848
-#: shell/rb-playlist-manager.c:923
+#: shell/rb-playlist-manager.c:925 shell/rb-playlist-manager.c:965
 msgid "Untitled"
 msgstr "Fără titlu"
 
-#: shell/rb-playlist-manager.c:816
+#: shell/rb-playlist-manager.c:933
 msgid "C_reate"
 msgstr "C_reează"
 
-#: shell/rb-playlist-manager.c:831
+#: shell/rb-playlist-manager.c:948
 msgid "New Playlist"
 msgstr "Playlist nou"
 
-#: shell/rb-playlist-manager.c:842
+#: shell/rb-playlist-manager.c:959
 msgid "Please enter a name for the new playlist:"
 msgstr "Vă rugăm introduceţi un nume pentru noul playlist:"
 
-#: shell/rb-playlist-manager.c:859
+#: shell/rb-playlist-manager.c:976
 msgid "Add the _selected songs to the new playlist"
 msgstr "Adaugă melodiile _selectate la noul playlist"
 
-#: shell/rb-playlist-manager.c:890
-msgid "R_ename"
-msgstr "R_edenumeşte"
-
-#: shell/rb-playlist-manager.c:905
-msgid "Rename Playlist"
-msgstr "Redenumeşte playlist-ul"
-
-#: shell/rb-playlist-manager.c:916
-msgid "Please enter a new name for the playlist:"
-msgstr "Vă rugăm introduceţi un nou nume pentru playlist:"
-
-#: shell/rb-shell-player.c:333
+#: shell/rb-shell-player.c:350
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nu am putut crea player-ul: %s"
 
-#: shell/rb-shell-player.c:387
-msgid "Previous"
-msgstr "Precedenta"
+#: shell/rb-shell-player.c:404
+msgid "Go to previous song"
+msgstr "Du-te la melodia precedentă"
 
-#: shell/rb-shell-player.c:416
-msgid "Next"
-msgstr "Următoarea"
+#: shell/rb-shell-player.c:433
+msgid "Go to next song"
+msgstr "Du-te la melodia următoare"
 
-#: shell/rb-shell-player.c:435
-msgid "Volume Control"
-msgstr "Control volum"
+#: shell/rb-shell-player.c:452
+msgid "Change the music volume"
+msgstr "Modifică volumul player-ului"
 
-#: shell/rb-shell-player.c:645
+#: shell/rb-shell-player.c:672
 #, c-format
 msgid "Opening %s..."
 msgstr "Deschid %s..."
 
-#: shell/rb-shell-player.c:1066
-msgid "Pause"
-msgstr "Pauză"
+#: shell/rb-shell-player.c:1130
+msgid "Pause playback"
+msgstr "Suspendă redarea"
 
-#: shell/rb-shell-player.c:1067
+#: shell/rb-shell-player.c:1131
 msgid "_Pause"
 msgstr "_Pauză"
 
-#: shell/rb-shell-player.c:1074
-msgid "Play"
-msgstr "Redă"
+#: shell/rb-shell-player.c:1146
+msgid "Stop playback"
+msgstr "Opreşte redarea"
 
-#: shell/rb-shell-player.c:1082
-msgid "Stop"
-msgstr "Stop"
-
-#: shell/rb-shell-player.c:1083
+#: shell/rb-shell-player.c:1147
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell-player.c:1355
+#: shell/rb-shell-player.c:1482
 msgid "Unexpected end of stream!"
 msgstr "Sfârşit neaşteptat de flux !"
 
@@ -1259,51 +1245,58 @@ msgstr "Preferinţe Player Muzical"
 msgid "General"
 msgstr "Generale"
 
-#: shell/rb-shell.c:455
+#: shell/rb-shell.c:498
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Nu am putut interpreta URI \"%s\"\n"
 
-#: shell/rb-shell.c:771
+#: shell/rb-shell.c:921
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a\n"
-"different prefix than bonobo-activation; this\n"
-"warning is harmless, but IPC will not work.\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "Nu am putut înregistra shell-ul: %s\n"
-"Acest lucru înseamnă ca aţi instalat Rhythmbox\n"
-"în altă locaţie decât bonobo-activation, acest\n"
-"avertisment este inofensiv, dar IPC nu va funcţiona.\n"
+"Acest lucru înseamnă ca aţi instalat Rhythmbox în altă locaţie decât bonobo-"
+"activation; acest avertisment este inofensiv, dar IPC nu va funcţiona."
 
-#: shell/rb-shell.c:1107
+#: shell/rb-shell.c:1249
+#, c-format
+msgid ""
+"%s\n"
+"Paused, %s remaining"
+msgstr ""
+"%s\n"
+"Oprit, %s rămase"
+
+#: shell/rb-shell.c:1252
+#, c-format
+msgid ""
+"%s\n"
+"%s remaining"
+msgstr ""
+"%s\n"
+"%s rămase"
+
+#: shell/rb-shell.c:1286
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pauză)"
 
-#: shell/rb-shell.c:1111
-#, c-format
-msgid ""
-"%s\n"
-"Paused"
-msgstr ""
-"%s\n"
-"Oprit"
-
-#: shell/rb-shell.c:1174
+#: shell/rb-shell.c:1351
 msgid "translator_credits"
 msgstr "Mugurel Tudor <mugurelu@go.ro>"
 
-#: shell/rb-shell.c:1183
+#: shell/rb-shell.c:1360
 msgid "Maintainers:"
 msgstr "Autori:"
 
-#: shell/rb-shell.c:1187
+#: shell/rb-shell.c:1364
 msgid "Contributors:"
 msgstr "Contribuţii:"
 
-#: shell/rb-shell.c:1211
+#: shell/rb-shell.c:1388
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1314,30 +1307,42 @@ msgstr ""
 "Suport audio: %s\n"
 "Formate audio: %s\n"
 
-#: shell/rb-shell.c:1324
+#: shell/rb-shell.c:1501
 msgid "Choose Files or Directory"
 msgstr "Alegeţi fişiere sau directoare"
 
-#: shell/rb-shell.c:1366
+#: shell/rb-shell.c:1543
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Pentru a extrage un CD trebuie să instalaţi pachetul Sound Juicer."
 
-#: shell/rb-shell.c:1373
+#: shell/rb-shell.c:1550
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Nu am putut rula sound-juicer: %s"
 
-#: shell/rb-source-header.c:172
+#: shell/rb-source-header.c:177
+msgid "Filter music display by genre, artist, album, or title"
+msgstr "Filtrează afişarea muzicii după gen, artist, album sau titlu"
+
+#: shell/rb-source-header.c:184
 msgid "Show _Browser"
 msgstr "Afişează _navigatorul"
 
-#: shell/rb-source-header.c:173
+#: shell/rb-source-header.c:185
 msgid "Hide _Browser"
 msgstr "Ascunde _navigatorul"
 
-#: shell/rb-statusbar.c:162
+#: shell/rb-statusbar.c:187
+msgid "Play songs in a random order"
+msgstr "Redă melodiile în ordine aleatoare"
+
+#: shell/rb-statusbar.c:189
 msgid "_Repeat"
 msgstr "_Repetitiv"
+
+#: shell/rb-statusbar.c:192
+msgid "Play first song again after all songs are played"
+msgstr "Repetă redarea primei melodii din playlist după terminarea acesteia"
 
 #: sources/rb-audiocd-source.c:298
 msgid "music audiocd"
@@ -1365,33 +1370,27 @@ msgstr "Încarc informaţii despre CD"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d melodii, %d:%02d:%02d timp total"
 
-#: sources/rb-iradio-source.c:359
+#: sources/rb-iradio-source.c:379
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:486
+#: sources/rb-iradio-source.c:496
 #, c-format
-msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
-msgstr "<b>%d</b> staţii în <b>%d</b> genuri distincte"
+msgid "%d total stations in %d distinct genres"
+msgstr "%d staţii în %d genuri distincte"
 
-#: sources/rb-library-source.c:532
+#: sources/rb-library-source.c:588
 msgid "Library"
 msgstr "Bibliotecă"
 
-#: sources/rb-library-source.c:879
+#: sources/rb-library-source.c:991
 msgid "Add Location"
 msgstr "Adaugă locaţie"
 
-#: sources/rb-playlist-source.c:603
-#, c-format
-msgid "Failed to parse %s as playlist file"
-msgstr "Nu am putut interpreta %s ca fişier playlist"
-
-#: sources/rb-source.c:415
+#: sources/rb-source.c:469
 msgid "No properties available."
 msgstr "Nici o proprietate disponibilă."
 
-#: sources/rb-source.c:498
+#: sources/rb-source.c:552
 msgid "This source does not support drag and drop."
 msgstr "Această sursă nu suportă tragere şi plasare."
-
