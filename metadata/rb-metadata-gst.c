@@ -283,16 +283,11 @@ rb_metadata_gst_error_cb (GstElement *element,
 	    && error->code == GST_STREAM_ERROR_CODEC_NOT_FOUND) {
 		const char *human_element_hame = rb_metadata_gst_type_to_name (md);
 		if (human_element_hame) {
-			const char *untranslated_nice_message = "There is no plugin installed to handle a %s file.";
-			const char *nice_message = _("There is no plugin installed to handle a %s file.");
-			if (!strcmp (_("_Artist"), "_Artist")
-			    || strcmp (untranslated_nice_message, nice_message)) {
-				md->priv->error = g_error_new (RB_METADATA_ERROR,
-							       RB_METADATA_ERROR_MISSING_PLUGIN,
-							       nice_message,
-							       human_element_hame);
-				return;
-			}
+			md->priv->error = g_error_new (RB_METADATA_ERROR,
+						       RB_METADATA_ERROR_MISSING_PLUGIN,
+						       _("There is no plugin installed to handle a %s file."),
+						       human_element_hame);
+			return;
 		}
 	}
 	
