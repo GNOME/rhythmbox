@@ -2,6 +2,7 @@
  *  arch-tag: Header with definitions for Rhythmbox icon loading
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,7 +56,10 @@ G_BEGIN_DECLS
 #define RB_STOCK_DND_ICON      "rhythmbox-dnd"
 #define RB_STOCK_IPOD          "rhythmbox-ipod"
 
-void rb_stock_icons_init (void);
+void	rb_stock_icons_init	(void);
+
+void	rb_stock_icons_shutdown (void);
+
 
 G_END_DECLS
 

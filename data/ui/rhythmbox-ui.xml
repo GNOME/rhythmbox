@@ -158,6 +158,15 @@
          pixtype="stock"
          pixname="gtk-cdrom"/>
 
+     <cmd name="SLChooseGenre"
+	  _tip="Set the browser to view only this genre"/>
+
+     <cmd name="SLChooseArtist"
+	  _tip="Set the browser to view only this artist"/>
+
+     <cmd name="SLChooseAlbum"
+	  _tip="Set the browser to view only this album"/>
+
   </commands>
 
   <menu>
@@ -172,7 +181,7 @@
 
       <separator/>
 
-      <submenu name="Playlist" _label="Playlist" pixtype="stock" pixname="rhythmbox-playlist-menu">
+      <submenu name="Playlist" _label="P_laylist" pixtype="stock" pixname="rhythmbox-playlist-menu">
 	<menuitem name="NewPlaylist" verb="NewPlaylist" _label="_New Playlist..." accel="*Control*n"/>
 	<menuitem name="NewAutomaticPlaylist" verb="NewAutomaticPlaylist" _label="New _Automatic Playlist..."/>
 	<separator/>
@@ -301,15 +310,12 @@
       <separator/>
       <menuitem name="SLChooseGenre"
 		_label="Browse this genre"
-		_tip="Set the browser to view only this genre"
 		verb=""/>
       <menuitem name="SLChooseArtist"
 		_label="Browse this artist"
-		_tip="Set the browser to view only this artist"
 		verb=""/>
       <menuitem name="SLChooseAlbum"
 		_label="Browse this album"
-		_tip="Set the browser to view only this album"
 		verb=""/>
       <separator/>
       <menuitem name="SLProperties"

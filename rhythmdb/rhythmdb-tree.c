@@ -1866,7 +1866,7 @@ rhythmdb_tree_do_full_query (RhythmDB *adb,
 			     gboolean *cancel)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
-	struct RhythmDBTreeQueryGatheringData *data = g_new (struct RhythmDBTreeQueryGatheringData, 1);
+	struct RhythmDBTreeQueryGatheringData *data = g_new0 (struct RhythmDBTreeQueryGatheringData, 1);
 
 	data->main_model = RHYTHMDB_QUERY_MODEL (main_model);
 

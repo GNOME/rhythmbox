@@ -514,7 +514,7 @@ void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
 	gboolean hidden;
-	const gchar *play_order;
+	gchar *play_order;
 	gboolean repeat;
 	gboolean is_linear, is_shuffle;
 
@@ -527,6 +527,7 @@ rb_statusbar_sync_state (RBStatusbar *statusbar)
 
 	is_linear = (strcmp (play_order, "linear") == 0);
 	is_shuffle = (strcmp (play_order, "shuffle") == 0);
+	g_free (play_order);
 	if (is_linear || is_shuffle) {
 		/* setting active sets the play order to one of shuffle or random */
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),

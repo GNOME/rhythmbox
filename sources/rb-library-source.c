@@ -306,29 +306,58 @@ update_browser_views_visibility (RBLibrarySource *source)
 	GtkWidget *genres = GTK_WIDGET (source->priv->genres);
 	GtkWidget *artists = GTK_WIDGET (source->priv->artists);
 	GtkWidget *albums = GTK_WIDGET (source->priv->albums);
+	BonoboUIComponent *component;
 
 	views = eel_gconf_get_integer (CONF_UI_LIBRARY_BROWSER_VIEWS);
+
+	g_object_get (G_OBJECT (source), "component", &component, NULL);
 	
 	switch (views)
 	{
 		case 0:
 			gtk_widget_hide (genres);
-			gtk_widget_show (artists);
-			gtk_widget_show (albums);
-			/* Since this is hidden now, reset the query */
 			rb_library_source_handle_genre_selection (source, NULL);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseGenre",
+						 FALSE);
+			gtk_widget_show (artists);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseArtist",
+						 TRUE);
+			gtk_widget_show (albums);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseAlbum",
+						 TRUE);
+			/* Since this is hidden now, reset the query */
 		break;
 		case 1:
 			gtk_widget_show (genres);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseGenre",
+						 TRUE);
 			gtk_widget_show (artists);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseArtist",
+						 TRUE);
 			gtk_widget_hide (albums);
 			rb_library_source_handle_artist_selection (source, NULL);
-
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseAlbum",
+						 FALSE);
 		break;
 		case 2:
 			gtk_widget_show (genres);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseGenre",
+						 TRUE);
 			gtk_widget_show (artists);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseArtist",
+						 TRUE);
 			gtk_widget_show (albums);
+			rb_bonobo_set_sensitive (component,
+						 "/commands" "/SLChooseAlbum",
+						 TRUE);
 		break;
 	}
 }

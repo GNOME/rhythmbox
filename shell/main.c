@@ -186,6 +186,7 @@ main (int argc, char **argv)
 #endif
 	rb_file_helpers_shutdown ();
 	rb_string_helpers_shutdown ();
+	rb_stock_icons_shutdown ();
 
 	return 0;
 }

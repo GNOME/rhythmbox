@@ -322,6 +322,8 @@ struct RBShellPrivate
 	gboolean db_dirty;
 	guint async_state_save_id;
 
+	gboolean shutting_down;
+
 	int argc;
 	char **argv;
 	gboolean no_registration;
@@ -614,6 +616,21 @@ rb_shell_db_changed_prop_cb (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 static void
+rb_shell_shutdown (RBShell *shell)
+{
+	if (shell->priv->shutting_down)
+		return;
+	shell->priv->shutting_down = TRUE;
+
+	rb_debug ("Unregistering with bonobo");
+	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
+	
+	bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
+	rb_debug ("Unregistered with Bonobo Activation");
+	
+}
+
+static void
 rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
@@ -624,13 +641,6 @@ rb_shell_finalize (GObject *object)
 
 	eel_gconf_monitor_remove (CONF_PREFIX);
 
-	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
-	
-	bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
-
-
-	rb_debug ("Unregistered with Bonobo Activation");
-	
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
 
@@ -2112,6 +2122,7 @@ rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
 
+	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
