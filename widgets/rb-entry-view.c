@@ -148,7 +148,7 @@ struct RBEntryViewPrivate
 	RhythmDBEntry *selected_entry;
 
 	glong total_duration;
-	glong total_size;
+	GnomeVFSFileSize total_size;
 
 	gboolean change_sig_queued;
 	guint change_sig_id;
@@ -641,7 +641,7 @@ rb_entry_view_get_duration (RBEntryView *view)
 	return view->priv->total_duration;
 }
 
-glong
+GnomeVFSFileSize
 rb_entry_view_get_total_size (RBEntryView *view)
 {
 	return view->priv->total_size;

@@ -659,7 +659,7 @@ poll_status_update (gpointer data)
 }
 
 char *
-rb_library_compute_status_normal (gint n_songs, glong duration, glong size)
+rb_library_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize size)
 {
 	float days;
 	long hours, minutes, seconds;

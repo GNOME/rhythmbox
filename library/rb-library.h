@@ -24,6 +24,7 @@
 #define __RB_LIBRARY_H
 
 #include "rhythmdb.h"
+#include <libgnomevfs/gnome-vfs-file-info.h>
 
 G_BEGIN_DECLS
 
@@ -80,7 +81,7 @@ GAsyncQueue *		rb_library_get_main_queue       (RBLibrary *library);
 GAsyncQueue *		rb_library_get_add_queue	(RBLibrary *library);
 
 char *			rb_library_compute_status_normal(gint count, glong duration,
-							 glong size);
+							 GnomeVFSFileSize size);
 
 G_END_DECLS
 

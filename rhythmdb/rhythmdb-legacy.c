@@ -41,6 +41,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	gint track_number = -1;
 	glong duration = 0;
 	glong last_played = 0;
+	glong file_size = 0;
 	GValue val = {0, };
 	char *xml;
 
@@ -82,6 +83,11 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 			case 9: /* RB_NODE_PROP_DURATION */
 				xml = xmlNodeGetContent (node_child);
 				duration = g_ascii_strtoull (xml, NULL, 10);
+				g_free (xml);
+				break;
+			case 11: /* RB_NODE_PROP_FILE_SIZE */
+				xml = xmlNodeGetContent (node_child);
+				file_size = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
 			case 12: /* RB_NODE_PROP_LOCATION */
@@ -162,6 +168,11 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
 		g_value_unset (&val);
 	}
+
+	g_value_init (&val, G_TYPE_LONG);
+	g_value_set_long (&val, file_size);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_INT);
 	g_value_set_int (&val, rating);

@@ -26,6 +26,7 @@
 #include <gtk/gtkscrolledwindow.h>
 #include <gtk/gtktreeviewcolumn.h>
 #include <gtk/gtkdnd.h>
+#include <libgnomevfs/gnome-vfs-file-info.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-model.h"
@@ -91,7 +92,7 @@ void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *
 void		rb_entry_view_set_model			(RBEntryView *view,
 							 RhythmDBModel *model);
 
-glong		rb_entry_view_get_total_size		(RBEntryView *view);
+GnomeVFSFileSize rb_entry_view_get_total_size		(RBEntryView *view);
 glong		rb_entry_view_get_duration		(RBEntryView *view);
 
 void		rb_entry_view_set_playing		(RBEntryView *view,
