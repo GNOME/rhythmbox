@@ -45,113 +45,6 @@ rb_node_song_sync (RBNode *node,
 		return;
 	}
 
-	virgin = !GPOINTER_TO_INT (g_object_get_data (G_OBJECT (node), "no_virgin"));
-
-	/* need to check whether we need to reparent */
-	{
-		RBNode *genre_node, *artist_node, *album_node;
-
-		monkey_media_stream_info_get_value (info,
-					            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
-					            &value);
-		if (virgin == FALSE &&
-		    strcmp (rb_node_song_get_genre (node), g_value_get_string (&value)))
-		{
-			g_value_unset (&value);
-			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
-			g_free (location);
-			g_object_unref (G_OBJECT (info));
-			return;
-		}
-		genre_node = rb_library_get_genre_by_name (library, g_value_get_string (&value));
-		if (genre_node == NULL)
-		{
-			genre_node = rb_node_new (RB_NODE_TYPE_GENRE);
-
-			rb_node_set_property (genre_node, "name", &value);
-
-			rb_node_add_child (genre_node, rb_library_get_all_albums (library));
-			rb_node_add_child (rb_library_get_all_genres (library), genre_node);
-		}
-		g_value_unset (&value);
-
-		monkey_media_stream_info_get_value (info,
-					            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
-					            &value);
-		if (virgin == FALSE &&
-		    strcmp (rb_node_song_get_artist (node), g_value_get_string (&value)))
-		{
-			g_value_unset (&value);
-			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
-			g_free (location);
-			g_object_unref (G_OBJECT (info));
-			return;
-		}
-		artist_node = rb_library_get_artist_by_name (library, g_value_get_string (&value));
-		if (artist_node == NULL)
-		{
-			artist_node = rb_node_new (RB_NODE_TYPE_ARTIST);
-
-			rb_node_set_property (artist_node, "name", &value);
-
-			rb_node_add_child (genre_node, artist_node);
-			rb_node_add_child (artist_node, rb_library_get_all_songs (library));
-			rb_node_add_child (rb_library_get_all_artists (library), artist_node);
-		}
-		g_value_unset (&value);
-
-		monkey_media_stream_info_get_value (info,
-					            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
-					            &value);
-		if (virgin == FALSE &&
-		    strcmp (rb_node_song_get_album (node), g_value_get_string (&value)))
-		{
-			g_value_unset (&value);
-			rb_node_unref (node);
-			rb_library_action_queue_add (rb_library_get_action_queue (library),
-						     RB_LIBRARY_ACTION_ADD_FILE,
-						     location);
-			g_free (location);
-			g_object_unref (G_OBJECT (info));
-			return;
-		}
-		album_node = rb_library_get_album_by_name (library, g_value_get_string (&value));
-		if (album_node == NULL)
-		{
-			album_node = rb_node_new (RB_NODE_TYPE_ALBUM);
-
-			rb_node_set_property (album_node, "name", &value);
-
-			rb_node_add_child (artist_node, album_node);
-			rb_node_add_child (rb_library_get_all_albums (library), album_node);
-		}
-		g_value_unset (&value);
-
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (genre_node));
-		rb_node_set_property (node, "genre", &newvalue);
-		g_value_unset (&newvalue);
-
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (artist_node));
-		rb_node_set_property (node, "artist", &newvalue);
-		g_value_unset (&newvalue);
-
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (album_node));
-		rb_node_set_property (node, "album", &newvalue);
-		g_value_unset (&newvalue);
-
-		rb_node_add_child (album_node, node);
-		rb_node_add_child (rb_library_get_all_songs (library), node);
-	}
-
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
 				            &value);
@@ -216,10 +109,114 @@ rb_node_song_sync (RBNode *node,
 	g_value_unset (&newvalue);
 	gnome_vfs_file_info_unref (vfsinfo);
 
-	g_free (location);
-	g_object_unref (G_OBJECT (info));
+	virgin = !GPOINTER_TO_INT (g_object_get_data (G_OBJECT (node), "no_virgin"));
+
+	/* need to check whether we need to reparent */
+	{
+		RBNode *genre_node, *artist_node, *album_node;
+
+		monkey_media_stream_info_get_value (info,
+					            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+					            &value);
+		if (virgin == FALSE &&
+		    strcmp (rb_node_song_get_genre (node), g_value_get_string (&value)))
+		{
+			g_value_unset (&value);
+			rb_node_unref (node);
+			rb_library_action_queue_add (rb_library_get_action_queue (library),
+						     RB_LIBRARY_ACTION_ADD_FILE,
+						     location);
+			g_free (location);
+			g_object_unref (G_OBJECT (info));
+			return;
+		}
+		genre_node = rb_node_get_genre_by_name (g_value_get_string (&value));
+		if (genre_node == NULL)
+		{
+			genre_node = rb_node_new (RB_NODE_TYPE_GENRE);
+
+			rb_node_set_property (genre_node, "name", &value);
+		}
+		g_value_unset (&value);
+
+		monkey_media_stream_info_get_value (info,
+					            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
+					            &value);
+		if (virgin == FALSE &&
+		    strcmp (rb_node_song_get_artist (node), g_value_get_string (&value)))
+		{
+			g_value_unset (&value);
+			rb_node_unref (node);
+			rb_library_action_queue_add (rb_library_get_action_queue (library),
+						     RB_LIBRARY_ACTION_ADD_FILE,
+						     location);
+			g_free (location);
+			g_object_unref (G_OBJECT (info));
+			return;
+		}
+		artist_node = rb_node_get_artist_by_name (g_value_get_string (&value));
+		if (artist_node == NULL)
+		{
+			artist_node = rb_node_new (RB_NODE_TYPE_ARTIST);
+
+			rb_node_set_property (artist_node, "name", &value);
+		}
+		g_value_unset (&value);
+
+		monkey_media_stream_info_get_value (info,
+					            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
+					            &value);
+		if (virgin == FALSE &&
+		    strcmp (rb_node_song_get_album (node), g_value_get_string (&value)))
+		{
+			g_value_unset (&value);
+			rb_node_unref (node);
+			rb_library_action_queue_add (rb_library_get_action_queue (library),
+						     RB_LIBRARY_ACTION_ADD_FILE,
+						     location);
+			g_free (location);
+			g_object_unref (G_OBJECT (info));
+			return;
+		}
+		album_node = rb_node_get_album_by_name (g_value_get_string (&value));
+		if (album_node == NULL)
+		{
+			album_node = rb_node_new (RB_NODE_TYPE_ALBUM);
+
+			rb_node_set_property (album_node, "name", &value);
+		}
+		g_value_unset (&value);
+
+		g_value_init (&newvalue, G_TYPE_LONG);
+		g_value_set_long (&newvalue, rb_node_get_id (genre_node));
+		rb_node_set_property (node, "genre", &newvalue);
+		g_value_unset (&newvalue);
+
+		g_value_init (&newvalue, G_TYPE_LONG);
+		g_value_set_long (&newvalue, rb_node_get_id (artist_node));
+		rb_node_set_property (node, "artist", &newvalue);
+		g_value_unset (&newvalue);
+
+		g_value_init (&newvalue, G_TYPE_LONG);
+		g_value_set_long (&newvalue, rb_node_get_id (album_node));
+		rb_node_set_property (node, "album", &newvalue);
+		g_value_unset (&newvalue);
+		
+		rb_node_add_child (genre_node, rb_library_get_all_albums (library));
+		rb_node_add_child (rb_library_get_all_genres (library), genre_node);
+		rb_node_add_child (genre_node, artist_node);
+		rb_node_add_child (artist_node, rb_library_get_all_songs (library));
+		rb_node_add_child (rb_library_get_all_artists (library), artist_node);
+		rb_node_add_child (artist_node, album_node);
+		rb_node_add_child (rb_library_get_all_albums (library), album_node);
+		rb_node_add_child (album_node, node);
+		rb_node_add_child (rb_library_get_all_songs (library), node);
+	}
 
 	g_object_set_data (G_OBJECT (node), "no_virgin", GINT_TO_POINTER (TRUE));
+
+	g_free (location);
+	g_object_unref (G_OBJECT (info));
 }
 
 void
@@ -256,7 +253,6 @@ rb_node_song_get_location (RBNode *node)
 
 void
 rb_node_song_update_if_newer (RBNode *node,
-			      time_t mtime,
 			      RBLibrary *library)
 {
 	GnomeVFSFileInfo *info;

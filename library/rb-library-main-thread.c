@@ -215,7 +215,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_library_get_song_by_uri (priv->library, uri) == NULL)
+				if (rb_node_get_song_by_uri (uri) == NULL)
 				{
 					RBNode *song;
 					
@@ -229,18 +229,18 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				{
 					RBNode *song;
 
-					song = rb_library_get_song_by_uri (priv->library, uri);
+					song = rb_node_get_song_by_uri (uri);
 					if (song == NULL)
 						break;
 
-					rb_node_song_set_location (song, uri, priv->library);
+					rb_node_song_update_if_newer (song, priv->library);
 				}
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				{
 					RBNode *song;
 
-					song = rb_library_get_song_by_uri (priv->library, uri);
+					song = rb_node_get_song_by_uri (uri);
 					if (song == NULL)
 						break;
 

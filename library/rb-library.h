@@ -61,15 +61,6 @@ RBNode               *rb_library_get_all_artists    (RBLibrary *library);
 RBNode               *rb_library_get_all_albums     (RBLibrary *library);
 RBNode               *rb_library_get_all_songs      (RBLibrary *library);
 
-RBNode               *rb_library_get_genre_by_name  (RBLibrary *library,
-					             const char *name);
-RBNode               *rb_library_get_artist_by_name (RBLibrary *library,
-					             const char *name);
-RBNode               *rb_library_get_album_by_name  (RBLibrary *library,
-					             const char *name);
-RBNode               *rb_library_get_song_by_uri    (RBLibrary *library,
-					             const char *uri);
-
 RBLibraryActionQueue *rb_library_get_action_queue   (RBLibrary *library);
 
 G_END_DECLS

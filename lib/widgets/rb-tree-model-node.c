@@ -284,8 +284,12 @@ rb_tree_model_node_set_property (GObject *object,
 
 			if (old != NULL)
 			{
-				GList *kids = rb_node_get_children (old);
+				GList *kids;
 				GList *l;
+
+				rb_node_lock (old);
+
+				kids = rb_node_get_children (old);
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
@@ -302,12 +306,18 @@ rb_tree_model_node_set_property (GObject *object,
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
 						                      G_CALLBACK (filter_parent_destroyed_cb),
 						                      model);
+
+				rb_node_unlock (old);
 			}
 
 			if (model->priv->filter_parent != NULL)
 			{
-				GList *kids = rb_node_get_children (model->priv->filter_parent);
+				GList *kids;
 				GList *l;
+
+				rb_node_lock (model->priv->filter_parent);
+
+				kids = rb_node_get_children (model->priv->filter_parent);
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
@@ -326,6 +336,8 @@ rb_tree_model_node_set_property (GObject *object,
 						         G_CALLBACK (filter_parent_destroyed_cb),
 						         G_OBJECT (model),
 							 0);
+
+				rb_node_unlock (model->priv->filter_parent);
 			}
 		}
 		break;

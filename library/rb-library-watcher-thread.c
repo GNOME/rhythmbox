@@ -18,7 +18,13 @@
  *  $Id$
  */
 
+#include <libgnomevfs/gnome-vfs-ops.h>
+#include <libgnomevfs/gnome-vfs-directory.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
+
 #include "rb-library-watcher-thread.h"
+#include "rb-library-preferences.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_library_watcher_thread_class_init (RBLibraryWatcherThreadClass *klass);
 static void rb_library_watcher_thread_init (RBLibraryWatcherThread *thread);
@@ -32,6 +38,10 @@ static void rb_library_watcher_thread_get_property (GObject *object,
                                                     GValue *value,
                                                     GParamSpec *pspec);
 static gpointer thread_main (RBLibraryWatcherThreadPrivate *priv);
+static void pref_changed_cb (GConfClient *client,
+		             guint cnxn_id,
+		             GConfEntry *entry,
+		             RBLibraryWatcherThread *thread);
 
 struct RBLibraryWatcherThreadPrivate
 {
@@ -40,6 +50,8 @@ struct RBLibraryWatcherThreadPrivate
 	GThread *thread;
 	GMutex *lock;
 	gboolean dead;
+	
+	gboolean dirty;
 };
 
 enum
@@ -105,6 +117,15 @@ rb_library_watcher_thread_init (RBLibraryWatcherThread *thread)
 	thread->priv = g_new0 (RBLibraryWatcherThreadPrivate, 1);
 
 	thread->priv->lock = g_mutex_new ();
+
+	eel_gconf_notification_add (CONF_LIBRARY_BASE_FOLDER,
+				    (GConfClientNotifyFunc) pref_changed_cb,
+				    thread);
+	eel_gconf_notification_add (CONF_LIBRARY_MUSIC_FOLDERS,
+				    (GConfClientNotifyFunc) pref_changed_cb,
+				    thread);
+
+	thread->priv->dirty = TRUE;
 }
 
 static void
@@ -183,6 +204,71 @@ rb_library_watcher_thread_get_property (GObject *object,
 	}
 }
 
+static void
+add_directory (RBLibraryWatcherThreadPrivate *priv,
+	       const char *dir)
+{
+	GList *list, *l;
+	GnomeVFSURI *uri, *subdir_uri, *file_uri;
+	char *tmp, *text_uri, *subdir_uri_text;
+
+	if (dir == NULL)
+		return;
+
+	tmp = gnome_vfs_expand_initial_tilde (dir);
+	uri = gnome_vfs_uri_new (tmp);
+	g_free (tmp);
+	if (uri == NULL || gnome_vfs_uri_exists (uri) == FALSE)
+		return;
+
+	text_uri = gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_NONE);
+
+	gnome_vfs_directory_list_load (&list, text_uri,
+				       (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
+		  			GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+					GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
+
+	for (l = list; l != NULL; l = g_list_next (l))
+	{
+		GnomeVFSFileInfo *info = l->data;
+		gchar *filename;
+
+		if (info->type != GNOME_VFS_FILE_TYPE_REGULAR)
+		{
+		        /* recurse into directories, unless they start with ".", so we 
+			   avoid hidden dirs, '.' and '..' */
+		        if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) && 
+			    (info->name) && (info->name[0] != '.'))
+			{
+			        subdir_uri = gnome_vfs_uri_append_path (uri, info->name);
+				subdir_uri_text = gnome_vfs_uri_to_string
+					(subdir_uri, GNOME_VFS_URI_HIDE_NONE);
+				gnome_vfs_uri_unref (subdir_uri);
+				add_directory (priv, subdir_uri_text);
+				g_free (subdir_uri_text);
+			}
+
+			continue;
+		}
+
+		file_uri = gnome_vfs_uri_append_file_name (uri, info->name);
+		filename = gnome_vfs_uri_to_string (file_uri, GNOME_VFS_URI_HIDE_NONE);
+
+		rb_library_action_queue_add (rb_library_get_action_queue (priv->library),
+					     RB_LIBRARY_ACTION_ADD_FILE,
+					     filename);
+
+		g_free (filename);
+		gnome_vfs_uri_unref (file_uri);
+	}
+
+	gnome_vfs_file_info_list_free (list);
+
+	g_free (text_uri);
+
+	gnome_vfs_uri_unref (uri);
+}
+
 static gpointer
 thread_main (RBLibraryWatcherThreadPrivate *priv)
 {
@@ -198,10 +284,41 @@ thread_main (RBLibraryWatcherThreadPrivate *priv)
 			g_thread_exit (NULL);
 		}
 
+		if (priv->dirty == TRUE)
+		{
+			GSList *dirs, *l;
+			char *base_folder;
+			
+			priv->dirty = FALSE;
+
+			base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
+			add_directory (priv, base_folder);
+			g_free (base_folder);
+
+			dirs = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
+
+			for (l = dirs; l != NULL; l = g_slist_next (l))
+			{
+				add_directory (priv, l->data);
+				g_free (l->data);
+			}
+
+			g_slist_free (dirs);
+		}
+
 		g_mutex_unlock (priv->lock);
 
 		g_usleep (10);
 	}
 
 	return NULL;
+}
+
+static void
+pref_changed_cb (GConfClient *client,
+		 guint cnxn_id,
+		 GConfEntry *entry,
+		 RBLibraryWatcherThread *thread)
+{
+	thread->priv->dirty = TRUE;
 }

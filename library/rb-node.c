@@ -57,7 +57,7 @@ struct RBNodePrivate
 
 	GHashTable *properties;
 
-	GMutex *lock;
+	GStaticRWLock *lock;
 };
 
 enum
@@ -81,9 +81,21 @@ static GObjectClass *parent_class = NULL;
 
 static guint rb_node_signals[LAST_SIGNAL] = { 0 };
 
+static GMutex *id_factory_lock = NULL;
 static long id_factory = 0;
 
+static GMutex *id_to_node_hash_lock = NULL;
 static GHashTable *id_to_node_hash = NULL;
+
+static GHashTable *name_to_genre  = NULL;
+static GHashTable *name_to_artist = NULL;
+static GHashTable *name_to_album  = NULL;
+static GHashTable *uri_to_song    = NULL;
+
+static GMutex *name_to_genre_lock  = NULL;
+static GMutex *name_to_artist_lock = NULL;
+static GMutex *name_to_album_lock  = NULL;
+static GMutex *uri_to_song_lock    = NULL; 
 
 /* action queue */
 typedef enum
@@ -216,7 +228,8 @@ rb_node_init (RBNode *node)
 {
 	node->priv = g_new0 (RBNodePrivate, 1);
 
-	node->priv->lock = g_mutex_new ();
+	node->priv->lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (node->priv->lock);
 
 	node->priv->type = RB_NODE_TYPE_GENERIC;
 	node->priv->id = -1;
@@ -243,7 +256,7 @@ rb_node_finalize (GObject *object)
 
 	g_hash_table_destroy (node->priv->properties);
 
-	g_mutex_free (node->priv->lock);
+	g_static_rw_lock_free (node->priv->lock);
 
 	g_free (node->priv);
 
@@ -258,8 +271,10 @@ rb_node_dispose (GObject *object)
 
 	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 	
+	g_mutex_lock (id_to_node_hash_lock);
 	if (id_to_node_hash != NULL)
 		g_hash_table_remove (id_to_node_hash, node);
+	g_mutex_unlock (id_to_node_hash_lock);
 
 	/* decrement parent refcount */
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
@@ -291,9 +306,9 @@ rb_node_set_object_property (GObject *object,
 	case PROP_ID:
 		node->priv->id = g_value_get_long (value);
 
-		if (id_to_node_hash == NULL)
-			id_to_node_hash = g_hash_table_new (NULL, NULL);
+		g_mutex_lock (id_to_node_hash_lock);
 		g_hash_table_insert (id_to_node_hash, GINT_TO_POINTER (node->priv->id), node);
+		g_mutex_unlock (id_to_node_hash_lock);
 		break;
 	case PROP_TYPE:
 		node->priv->type = g_value_get_enum (value);
@@ -343,11 +358,11 @@ rb_node_add_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	g_mutex_lock (node->priv->lock);
+	g_static_rw_lock_writer_lock (node->priv->lock);
 
 	if (g_list_find (node->priv->children, child) != NULL)
 	{
-		g_mutex_unlock (node->priv->lock);
+		rb_node_unlock (node);
 		return;
 	}
 
@@ -372,7 +387,7 @@ rb_node_add_child (RBNode *node,
 	g_queue_push_tail (actions, action);
 	g_mutex_unlock (actions_lock);
 
-	g_mutex_unlock (node->priv->lock);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
 void
@@ -384,11 +399,11 @@ rb_node_remove_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	g_mutex_lock (node->priv->lock);
+	g_static_rw_lock_writer_lock (node->priv->lock);
 
 	if (g_list_find (node->priv->children, child) == NULL)
 	{
-		g_mutex_unlock (node->priv->lock);
+		rb_node_unlock (node);
 		return;
 	}
 
@@ -411,7 +426,7 @@ rb_node_remove_child (RBNode *node,
 			  		      G_CALLBACK (rb_node_child_changed_cb),
 			  		      node);
 
-	g_mutex_unlock (node->priv->lock);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
 GList *
@@ -441,13 +456,20 @@ rb_node_has_parent (RBNode *node,
 		    RBNode *parent)
 {
 	GList *parents;
+	gboolean ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (RB_IS_NODE (parent), FALSE);
 
+	rb_node_lock (node);
+	
 	parents = rb_node_get_parents (node);
 	
-	return (g_list_find (parents, parent) != NULL);
+	ret = (g_list_find (parents, parent) != NULL);
+
+	rb_node_unlock (node);
+
+	return ret;
 }
 
 static void
@@ -504,17 +526,69 @@ rb_node_set_property (RBNode *node,
 		      const GValue *value)
 {
 	GValue *val;
+	RBNodeType type;
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
 
+	type = rb_node_get_node_type (node);
+	switch (type)
+	{
+	case RB_NODE_TYPE_GENRE:
+		if (strcmp (property, "name") == 0)
+		{
+			g_mutex_lock (name_to_genre_lock);
+			g_hash_table_replace (name_to_genre,
+					      g_strdup (g_value_get_string (value)),
+					      node);
+			g_mutex_unlock (name_to_genre_lock);
+		}
+		break;
+	case RB_NODE_TYPE_ARTIST:
+		if (strcmp (property, "name") == 0)
+		{
+			g_mutex_lock (name_to_artist_lock);
+			g_hash_table_replace (name_to_artist,
+					      g_strdup (g_value_get_string (value)),
+					      node);
+			g_mutex_unlock (name_to_artist_lock);
+		}
+		break;
+	case RB_NODE_TYPE_ALBUM:
+		if (strcmp (property, "name") == 0)
+		{
+			g_mutex_lock (name_to_album_lock);
+			g_hash_table_replace (name_to_album,
+					      g_strdup (g_value_get_string (value)),
+					      node);
+			g_mutex_unlock (name_to_album_lock);
+		}
+		break;
+	case RB_NODE_TYPE_SONG:
+		if (strcmp (property, "name") == 0)
+		{
+			g_mutex_lock (uri_to_song_lock);
+			g_hash_table_replace (uri_to_song,
+					      g_strdup (g_value_get_string (value)),
+					      node);
+			g_mutex_unlock (uri_to_song_lock);
+		}
+		break;
+	default:
+		break;
+	}
+
 	val = g_new0 (GValue, 1);
 	g_value_init (val, G_VALUE_TYPE (value));
 	g_value_copy (value, val);
+	
+	g_static_rw_lock_writer_lock (node->priv->lock);
 
 	g_hash_table_replace (node->priv->properties,
 			      g_strdup (property),
 			      val);
+
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	rb_node_changed (node);
 }
@@ -529,7 +603,7 @@ rb_node_get_property (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
 
-	g_mutex_lock (node->priv->lock);
+	rb_node_lock (node);
 
 	val = g_hash_table_lookup (node->priv->properties,
 				   property);
@@ -538,7 +612,7 @@ rb_node_get_property (RBNode *node,
 	g_value_init (value, G_VALUE_TYPE (val));
 	g_value_copy (val, value);
 
-	g_mutex_unlock (node->priv->lock);
+	rb_node_unlock (node);
 }
 
 RBNode *
@@ -551,14 +625,14 @@ rb_node_get_nth_child (RBNode *node,
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
-	g_mutex_lock (node->priv->lock);
+	rb_node_lock (node);
 
 	children = rb_node_get_children (node);
 	nth = g_list_nth (children, n);
 
 	ret = RB_NODE (nth->data);
 
-	g_mutex_unlock (node->priv->lock);
+	rb_node_unlock (node);
 
 	return ret;
 }
@@ -568,25 +642,39 @@ rb_node_child_index (RBNode *node,
 		     RBNode *child)
 {
 	GList *children;
+	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (RB_IS_NODE (child), -1);
 
+	rb_node_lock (node);
+
 	children = rb_node_get_children (node);
 
-	return g_list_index (children, child);
+	ret = g_list_index (children, child);
+
+	rb_node_unlock (node);
+
+	return ret;
 }
 
 int
 rb_node_n_children (RBNode *node)
 {
 	GList *children;
+	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
+	rb_node_lock (node);
+
 	children = rb_node_get_children (node);
 
-	return g_list_length (children);
+	ret = g_list_length (children);
+
+	rb_node_unlock (node);
+
+	return ret;
 }
 
 gboolean
@@ -594,13 +682,20 @@ rb_node_has_child (RBNode *node,
 		   RBNode *child)
 {
 	GList *children;
+	gboolean ret;
 
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (RB_IS_NODE (child), FALSE);
 	
+	rb_node_lock (node);
+	
 	children = rb_node_get_children (node);
 
-	return (g_list_find (children, child) != NULL);
+	ret = (g_list_find (children, child) != NULL);
+
+	rb_node_unlock (node);
+
+	return ret;
 }
 
 int
@@ -614,12 +709,19 @@ int
 rb_node_n_parents (RBNode *node)
 {
 	GList *parents;
+	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
+	rb_node_lock (node);
+
 	parents = rb_node_get_parents (node);
 
-	return g_list_length (parents);
+	ret = g_list_length (parents);
+
+	rb_node_unlock (node);
+
+	return ret;
 }
 
 RBNode *
@@ -632,14 +734,14 @@ rb_node_get_nth_parent (RBNode *node,
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
-	g_mutex_lock (node->priv->lock);
+	rb_node_lock (node);
 
 	parents = rb_node_get_parents (node);
 	nth = g_list_nth (parents, n);
 
 	ret = RB_NODE (nth->data);
 
-	g_mutex_unlock (node->priv->lock);
+	rb_node_unlock (node);
 
 	return ret;
 }
@@ -674,6 +776,8 @@ rb_node_save_to_xml (RBNode *node,
 
 	g_type_class_unref (class);
 
+	g_hash_table_foreach (node->priv->properties, (GHFunc) rb_node_save_property, xml_node);
+
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
 		RBNode *parent = RB_NODE (l->data);
@@ -689,8 +793,6 @@ rb_node_save_to_xml (RBNode *node,
 		xmlSetProp (parent_xml_node, "id", tmp);
 		g_free (tmp);
 	}
-
-	g_hash_table_foreach (node->priv->properties, (GHFunc) rb_node_save_property, xml_node);
 }
 
 RBNode *
@@ -779,7 +881,6 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			g_hash_table_replace (node->priv->properties,
 					      prop_type,
 					      value);
-			g_free (prop_type);
 		}
 	}
 
@@ -824,7 +925,9 @@ rb_node_from_id (int id)
 
 	g_return_val_if_fail (id >= 0, NULL);
 
+	g_mutex_lock (id_to_node_hash_lock);
 	node = g_hash_table_lookup (id_to_node_hash, GINT_TO_POINTER (id));
+	g_mutex_unlock (id_to_node_hash_lock);
 
 	return node;
 }
@@ -859,7 +962,9 @@ rb_node_type_get_type (void)
 static long 
 rb_node_id_factory_new_id (void)
 {
+	g_mutex_lock (id_factory_lock);
 	id_factory++;
+	g_mutex_unlock (id_factory_lock);
 
 	return id_factory;
 }
@@ -867,7 +972,9 @@ rb_node_id_factory_new_id (void)
 static void
 rb_node_id_factory_set_to (long new_factory_position)
 {
+	g_mutex_lock (id_factory_lock);
 	id_factory = new_factory_position + 1;
+	g_mutex_unlock (id_factory_lock);
 }
 
 static void
@@ -991,18 +1098,44 @@ rb_node_action_queue_timeout_cb (gpointer unused)
 }
 
 void
-rb_node_init_action_queue (void)
+rb_node_system_init (void)
 {
 	g_return_if_fail (actions_lock == NULL);
 	
 	actions = g_queue_new ();
 	actions_lock = g_mutex_new ();
 
+	id_to_node_hash = g_hash_table_new (NULL, NULL);
+	id_to_node_hash_lock = g_mutex_new ();
+
+	id_factory_lock = g_mutex_new ();
+
+	name_to_genre  = g_hash_table_new_full (g_str_hash,
+					        g_str_equal,
+					        (GDestroyNotify) g_free,
+					        NULL);
+	name_to_artist = g_hash_table_new_full (g_str_hash,
+					        g_str_equal,
+					        (GDestroyNotify) g_free,
+					        NULL);
+	name_to_album  = g_hash_table_new_full (g_str_hash,
+					        g_str_equal,
+					        (GDestroyNotify) g_free,
+					        NULL);
+	uri_to_song    = g_hash_table_new_full (g_str_hash,
+					        g_str_equal,
+					        (GDestroyNotify) g_free,
+					        NULL);
+	name_to_genre_lock  = g_mutex_new ();
+	name_to_artist_lock = g_mutex_new ();
+	name_to_album_lock  = g_mutex_new ();
+	uri_to_song_lock    = g_mutex_new ();
+
 	actions_timeout = g_timeout_add (10, (GSourceFunc) rb_node_action_queue_timeout_cb, NULL);
 }
 
 void
-rb_node_shutdown_action_queue (void)
+rb_node_system_shutdown (void)
 {
 	g_return_if_fail (actions_lock != NULL);
 
@@ -1016,4 +1149,83 @@ rb_node_shutdown_action_queue (void)
 	}
 
 	g_queue_free (actions);
+
+	g_hash_table_destroy (id_to_node_hash);
+	g_mutex_free (id_to_node_hash_lock);
+
+	g_mutex_free (id_factory_lock);
+
+	g_hash_table_destroy (name_to_genre);
+	g_hash_table_destroy (name_to_artist);
+	g_hash_table_destroy (name_to_album);
+	g_hash_table_destroy (uri_to_song);
+
+	g_mutex_free (name_to_genre_lock);
+	g_mutex_free (name_to_artist_lock);
+	g_mutex_free (name_to_album_lock);
+	g_mutex_free (uri_to_song_lock);
+}
+
+void
+rb_node_lock (RBNode *node)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+}
+
+void
+rb_node_unlock (RBNode *node)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+}
+
+RBNode *
+rb_node_get_genre_by_name (const char *name)
+{
+	RBNode *ret;
+	
+	g_mutex_lock (name_to_genre_lock);
+	ret = g_hash_table_lookup (name_to_genre, name);
+	g_mutex_unlock (name_to_genre_lock);
+
+	return ret;
+}
+
+RBNode *
+rb_node_get_artist_by_name (const char *name)
+{
+	RBNode *ret;
+
+	g_mutex_lock (name_to_artist_lock);
+	ret = g_hash_table_lookup (name_to_artist, name);
+	g_mutex_unlock (name_to_artist_lock);
+
+	return ret;
+}
+
+RBNode *
+rb_node_get_album_by_name (const char *name)
+{
+	RBNode *ret;
+	
+	g_mutex_lock (name_to_album_lock);
+	ret = g_hash_table_lookup (name_to_album, name);
+	g_mutex_unlock (name_to_album_lock);
+
+	return ret;
+}
+
+RBNode *
+rb_node_get_song_by_uri (const char *uri)
+{
+	RBNode *ret;
+
+	g_mutex_lock (uri_to_song_lock);
+	ret = g_hash_table_lookup (uri_to_song, uri);
+	g_mutex_unlock (uri_to_song_lock);
+
+	return ret;
 }

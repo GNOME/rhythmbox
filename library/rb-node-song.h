@@ -35,7 +35,6 @@ void             rb_node_song_set_location         (RBNode *node,
 char            *rb_node_song_get_location         (RBNode *node);
 
 void             rb_node_song_update_if_newer      (RBNode *node,
-					            time_t mtime,
 						    RBLibrary *library);
 
 /* properties */

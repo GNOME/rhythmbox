@@ -708,7 +708,7 @@ rb_shell_set_window_title (RBShell *shell,
 	if (window_title == NULL)
 	{
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
-				      "Rhythmbox");
+				      _("Music Player"));
 	}
 	else
 	{

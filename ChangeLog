@@ -1,3 +1,40 @@
+2002-08-04  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property):
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-watcher-thread.c:
+	(rb_library_watcher_thread_init), (add_directory), (thread_main),
+	(pref_changed_cb):
+	* library/rb-library-xml-thread.c:
+	(rb_library_xml_thread_set_property), (thread_main):
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(rb_library_create_skels), (xml_thread_done_loading_cb):
+	* library/rb-library.h:
+	* library/rb-node-iterator.c: (rb_node_iterator_next):
+	* library/rb-node-song.c: (rb_node_song_sync),
+	(rb_node_song_update_if_newer):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_init), (rb_node_finalize),
+	(rb_node_dispose), (rb_node_set_object_property),
+	(rb_node_add_child), (rb_node_remove_child), (rb_node_has_parent),
+	(rb_node_set_property), (rb_node_get_property),
+	(rb_node_get_nth_child), (rb_node_child_index),
+	(rb_node_n_children), (rb_node_has_child), (rb_node_n_parents),
+	(rb_node_get_nth_parent), (rb_node_save_to_xml),
+	(rb_node_new_from_xml), (rb_node_from_id),
+	(rb_node_id_factory_new_id), (rb_node_id_factory_set_to),
+	(rb_node_system_init), (rb_node_system_shutdown), (rb_node_lock),
+	(rb_node_unlock), (rb_node_get_genre_by_name),
+	(rb_node_get_artist_by_name), (rb_node_get_album_by_name),
+	(rb_node_get_song_by_uri):
+	* library/rb-node.h:
+	* shell/rb-shell.c: (rb_shell_set_window_title):
+
+	Full implementation, debugging time..
+
+	Don't try it yet, doesnt work 
+
 2002-08-04  Bastien Nocera  <hadess@hadess.net>
 
 	* lib/widgets/rb-volume.c: (open_mixer): kill header mismatch

@@ -19,6 +19,7 @@
  */
 
 #include "rb-library-xml-thread.h"
+#include "rb-node-song.h"
 
 static void rb_library_xml_thread_class_init (RBLibraryXMLThreadClass *klass);
 static void rb_library_xml_thread_init (RBLibraryXMLThread *thread);
@@ -45,6 +46,10 @@ struct RBLibraryXMLThreadPrivate
 	gboolean dead;
 
 	RBLibraryXMLThread *object;
+
+	gboolean initialized_file;
+	xmlDocPtr doc;
+	xmlNodePtr child;
 };
 
 enum
@@ -191,14 +196,21 @@ rb_library_xml_thread_set_property (GObject *object,
 	{
 	case PROP_LIBRARY:
 		thread->priv->library = g_value_get_object (value);                    
-	
-		thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
-							thread->priv, TRUE, NULL);
 		break;
 	case PROP_FILE_NAME:
 		if (thread->priv->filename != NULL)
 			g_free (thread->priv->filename);
 		thread->priv->filename = g_strdup (g_value_get_string (value));
+	
+		if (g_file_test (thread->priv->filename, G_FILE_TEST_EXISTS) == TRUE)
+		{
+			thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
+								thread->priv, TRUE, NULL);
+		}
+		else
+		{
+			done_loading (thread->priv);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -233,20 +245,69 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 {
 	while (TRUE)
 	{
+		int i = 0;
+
 		g_mutex_lock (priv->lock);
 		
 		if (priv->dead == TRUE)
 		{
 			g_mutex_unlock (priv->lock);
 			g_mutex_free (priv->lock);
+			if (priv->doc != NULL)
+				xmlFreeDoc (priv->doc);
 			g_free (priv);
 			priv->object->priv = NULL;
 			g_thread_exit (NULL);
 		}
 
-		g_mutex_unlock (priv->lock);
+		if (priv->initialized_file == FALSE)
+		{
+			priv->doc = xmlParseFile (priv->filename);
 
-		done_loading (priv);
+			if (priv->doc == NULL)
+				done_loading (priv);
+
+			priv->initialized_file = TRUE;
+		}
+
+		if (priv->child == NULL)
+			priv->child = priv->doc->children->children;
+
+		for (; priv->child != NULL && i <= 10; priv->child = priv->child->next, i++)
+		{
+			RBNode *node;
+			RBNodeType type;
+
+			node = rb_node_new_from_xml (priv->child);
+			if (node == NULL)
+				continue;
+
+			type = rb_node_get_node_type (node);
+			switch (type)
+			{
+			case RB_NODE_TYPE_GENRE:
+				rb_node_add_child (node, rb_library_get_all_albums (priv->library));
+				break;
+			case RB_NODE_TYPE_ARTIST:
+				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
+				break;
+			case RB_NODE_TYPE_SONG:
+				rb_node_song_update_if_newer (node, priv->library);
+				break;
+			default:
+				break;
+			}
+		}
+
+		if (priv->child == NULL)
+		{
+			xmlFreeDoc (priv->doc);
+			priv->doc = NULL;
+
+			done_loading (priv);
+		}
+
+		g_mutex_unlock (priv->lock);
 
 		g_usleep (10);
 	}
