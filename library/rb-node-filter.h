@@ -60,6 +60,8 @@ typedef enum
 	RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,      /* args: int prop_id, RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,  /* args: int prop_id, const char *string */
 	RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS,    /* args: int prop_id, const char *string */
+	RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,     /* args: int prop_id, const char *string */
+	RB_NODE_FILTER_EXPRESSION_KEY_PROP_EQUALS,       /* args: int prop_id, const char *string */
 	RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS,       /* args: int prop_id, int int */
 	RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN,  /* args: int prop_id, int int */
 	RB_NODE_FILTER_EXPRESSION_INT_PROP_LESS_THAN     /* args: int prop_id, int int */

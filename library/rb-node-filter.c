@@ -267,6 +267,18 @@ rb_node_filter_expression_new (RBNodeFilterExpressionType type,
 		exp->args.prop_args.prop_id = va_arg (valist, int);
 		exp->args.prop_args.second_arg.string = g_utf8_casefold (va_arg (valist, char *), -1);
 		break;
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS:
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_EQUALS:
+	{
+		char *folded;
+
+		exp->args.prop_args.prop_id = va_arg (valist, int);
+
+		folded = g_utf8_casefold (va_arg (valist, char *), -1);
+		exp->args.prop_args.second_arg.string = g_utf8_collate_key (folded, -1);
+		g_free (folded);
+		break;
+	}
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN:
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_LESS_THAN:
@@ -289,6 +301,8 @@ rb_node_filter_expression_free (RBNodeFilterExpression *exp)
 	{
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS:
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_EQUALS:
 		g_free (exp->args.prop_args.second_arg.string);
 		break;
 	default:
@@ -356,6 +370,30 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 		g_free (folded_case);
 
 		return ret;
+	}
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS:
+	{
+		const char *prop;
+
+		prop = rb_node_get_property_string (node,
+						    exp->args.prop_args.prop_id);
+
+		if (prop == NULL)
+			return FALSE;
+
+		return (strstr (prop, exp->args.prop_args.second_arg.string) != NULL);
+	}
+	case RB_NODE_FILTER_EXPRESSION_KEY_PROP_EQUALS:
+	{
+		const char *prop;
+
+		prop = rb_node_get_property_string (node,
+						    exp->args.prop_args.prop_id);
+
+		if (prop == NULL)
+			return FALSE;
+
+		return (strcmp (prop, exp->args.prop_args.second_arg.string) == 0);
 	}
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
 	{

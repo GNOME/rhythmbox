@@ -1075,27 +1075,36 @@ rb_node_view_sort_func (GtkTreeModel *model,
 			strb = g_value_get_string (&b_value);
 			if (stra == NULL) stra = "";
 			if (strb == NULL) strb = "";
-			folda = g_utf8_casefold (stra, g_utf8_strlen (stra, -1));
-			foldb = g_utf8_casefold (strb, g_utf8_strlen (strb, -1));
-			retval = g_utf8_collate (folda, foldb);
-			g_free (folda);
-			g_free (foldb);
+
+			if (column == RB_TREE_MODEL_NODE_COL_ARTIST_KEY ||
+			    column == RB_TREE_MODEL_NODE_COL_ALBUM_KEY)
+			{
+				retval = strcmp (stra, strb);
+			}
+			else
+			{
+				folda = g_utf8_casefold (stra, g_utf8_strlen (stra, -1));
+				foldb = g_utf8_casefold (strb, g_utf8_strlen (strb, -1));
+				retval = g_utf8_collate (folda, foldb);
+				g_free (folda);
+				g_free (foldb);
+			}
 			break;
 		case G_TYPE_INT:
 			if (g_value_get_int (&a_value) < g_value_get_int (&b_value))
-				retval = 1;
+				retval = -1;
 			else if (g_value_get_int (&a_value) == g_value_get_int (&b_value))
 				retval = 0;
 			else
-				retval = -1;
+				retval = 1;
 			break;
 		case G_TYPE_LONG:
 			if (g_value_get_long (&a_value) < g_value_get_long (&b_value))
-				retval = 1;
+				retval = -1;
 			else if (g_value_get_long (&a_value) == g_value_get_long (&b_value))
 				retval = 0;
 			else
-				retval = -1;
+				retval = 1;
 			break;
 		case G_TYPE_OBJECT:
 			if ((g_value_get_object (&a_value) == NULL) && (g_value_get_object (&b_value) != NULL))

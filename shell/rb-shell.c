@@ -1874,7 +1874,7 @@ rb_shell_new_group_dialog (RBShell *shell)
 
 	hbox = gtk_hbox_new (FALSE, 12);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
-	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION,
+	image = gtk_image_new_from_stock (RB_STOCK_GROUP,
 					  GTK_ICON_SIZE_DIALOG);
 	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (align), image);

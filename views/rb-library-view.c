@@ -1240,18 +1240,18 @@ rb_library_view_search_cb (RBSearchEntry *search,
 		
 		rb_node_filter_empty (view->priv->songs_filter);
 		rb_node_filter_add_expression (view->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_PROP_NAME,
+					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,
+									      RB_NODE_SONG_PROP_TITLE_SORT_KEY,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_ARTIST,
+					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,
+									      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_ALBUM,
+					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,
+									      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
 									      search_text),
 					       0);
 		rb_node_filter_done_changing (view->priv->songs_filter);

@@ -389,7 +389,9 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 		return GDK_TYPE_PIXBUF;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
+	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
+	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
 	case RB_TREE_MODEL_NODE_COL_GENRE:
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 	case RB_TREE_MODEL_NODE_COL_DURATION:
@@ -399,6 +401,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		return G_TYPE_BOOLEAN;
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT:
 	case RB_TREE_MODEL_NODE_COL_RATING:
 		return G_TYPE_INT;
 	default:
@@ -511,9 +514,19 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				      RB_NODE_SONG_PROP_ARTIST,
 				      value);
 		break;
+	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
+		rb_node_get_property (node,
+				      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
+				      value);
+		break;
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
 		rb_node_get_property (node,
 				      RB_NODE_SONG_PROP_ALBUM,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
+		rb_node_get_property (node,
+				      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_GENRE:
@@ -524,6 +537,11 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 		rb_node_get_property (node,
 				      RB_NODE_SONG_PROP_TRACK_NUMBER,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT:
+		rb_node_get_property (node,
+				      RB_NODE_SONG_PROP_REAL_TRACK_NUMBER,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
@@ -795,18 +813,21 @@ rb_tree_model_node_column_get_type (void)
 	{
 		static const GEnumValue values[] =
 		{
-			{ RB_TREE_MODEL_NODE_COL_PLAYING,      "RB_TREE_MODEL_NODE_COL_PLAYING",      "playing" },
-			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER", "track number" },
-			{ RB_TREE_MODEL_NODE_COL_TITLE,        "RB_TREE_MODEL_NODE_COL_TITLE",        "title" },
-			{ RB_TREE_MODEL_NODE_COL_ARTIST,       "RB_TREE_MODEL_NODE_COL_ARTIST",       "artist" },
-			{ RB_TREE_MODEL_NODE_COL_ALBUM,        "RB_TREE_MODEL_NODE_COL_ALBUM",        "album" },
-			{ RB_TREE_MODEL_NODE_COL_GENRE,        "RB_TREE_MODEL_NODE_COL_GENRE",        "genre" },
-			{ RB_TREE_MODEL_NODE_COL_DURATION,     "RB_TREE_MODEL_NODE_COL_DURATION",     "duration" },
-			{ RB_TREE_MODEL_NODE_COL_RATING,       "RB_TREE_MODEL_NODE_COL_RATING",       "rating" },
-			{ RB_TREE_MODEL_NODE_COL_PRIORITY,     "RB_TREE_MODEL_NODE_COL_PRIORITY",     "priority" },
-			{ RB_TREE_MODEL_NODE_COL_VISIBLE,      "RB_TREE_MODEL_NODE_COL_VISIBLE",      "visible" },
-			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT,   "RB_TREE_MODEL_NODE_COL_PLAY_COUNT",   "play count" },
-			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,  "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",  "last played" },
+			{ RB_TREE_MODEL_NODE_COL_PLAYING,          "RB_TREE_MODEL_NODE_COL_PLAYING",          "playing" },
+			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER,     "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER",     "track number" },
+			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT", "track number (int format)" },
+			{ RB_TREE_MODEL_NODE_COL_TITLE,            "RB_TREE_MODEL_NODE_COL_TITLE",            "title" },
+			{ RB_TREE_MODEL_NODE_COL_ARTIST,           "RB_TREE_MODEL_NODE_COL_ARTIST",           "artist" },
+			{ RB_TREE_MODEL_NODE_COL_ARTIST_KEY,       "RB_TREE_MODEL_NODE_COL_ARTIST_KEY",       "artist (g_utf8_colalte key)" },
+			{ RB_TREE_MODEL_NODE_COL_ALBUM,            "RB_TREE_MODEL_NODE_COL_ALBUM",            "album" },
+			{ RB_TREE_MODEL_NODE_COL_ALBUM_KEY,        "RB_TREE_MODEL_NODE_COL_ALBUM_KEY",        "album (g_utf_collate key)" },
+			{ RB_TREE_MODEL_NODE_COL_GENRE,            "RB_TREE_MODEL_NODE_COL_GENRE",            "genre" },
+			{ RB_TREE_MODEL_NODE_COL_DURATION,         "RB_TREE_MODEL_NODE_COL_DURATION",         "duration" },
+			{ RB_TREE_MODEL_NODE_COL_RATING,           "RB_TREE_MODEL_NODE_COL_RATING",           "rating" },
+			{ RB_TREE_MODEL_NODE_COL_PRIORITY,         "RB_TREE_MODEL_NODE_COL_PRIORITY",         "priority" },
+			{ RB_TREE_MODEL_NODE_COL_VISIBLE,          "RB_TREE_MODEL_NODE_COL_VISIBLE",          "visible" },
+			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT,       "RB_TREE_MODEL_NODE_COL_PLAY_COUNT",       "play count" },
+			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,      "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",      "last played" },
 			{ 0, 0, 0 }
 		};
 

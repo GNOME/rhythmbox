@@ -184,6 +184,35 @@ set_value (RBNodeSong *node, int property,
 }
 
 static void
+set_title (RBNodeSong *node, MonkeyMediaStreamInfo *info)
+{
+	GValue val = { 0, };
+	char *collated, *folded;
+
+	monkey_media_stream_info_get_value (info,
+					    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+					    0,
+					    &val);
+
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_NAME,
+			      &val);
+
+	folded = g_utf8_casefold (g_value_get_string (&val), -1);
+	g_value_unset (&val);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_TITLE_SORT_KEY,
+			      &val);
+	g_value_unset (&val);
+}
+
+static void
 set_mtime (RBNodeSong *node, const char *location)
 {
 	GnomeVFSFileInfo *info;
@@ -360,7 +389,7 @@ set_artist (RBNodeSong *node,
 {
 	GValue val = { 0, };
 	RBNode *artist;
-	char *swapped;
+	char *swapped, *collated, *folded;
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
@@ -409,6 +438,18 @@ set_artist (RBNodeSong *node,
 		
 	g_value_unset (&val);
 
+	g_value_init (&val, G_TYPE_STRING);
+	folded = g_utf8_casefold (swapped, -1);
+	g_free (swapped);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
+			      &val);
+	g_value_unset (&val);
+
 	g_value_init (&val, G_TYPE_POINTER);
 	g_value_set_pointer (&val, artist);
 	rb_node_set_property (RB_NODE (node),
@@ -427,6 +468,7 @@ set_album (RBNodeSong *node,
 {
 	GValue val = { 0, };
 	RBNode *album;
+	char *collated, *folded;
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
@@ -463,6 +505,17 @@ set_album (RBNodeSong *node,
 			      RB_NODE_SONG_PROP_ALBUM,
 			      &val);
 		
+	folded = g_utf8_casefold (g_value_get_string (&val), -1);
+	g_value_unset (&val);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
+			      &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_POINTER);
@@ -503,8 +556,7 @@ rb_node_song_sync (RBNodeSong *node,
 		   info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE);
 
 	/* title */
-	set_value (node, RB_NODE_PROP_NAME,
-		   info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE);
+	set_title (node, info);
 
 	/* mtime */
 	set_mtime (node, location);
