@@ -19,7 +19,7 @@ Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
 appicon_DATA = rhythmbox.png
 appicondir = $(datadir)/pixmaps
 
-schemadir = $(GCONF_SCHEMAS_FILE_DIR)
+schemadir = @GCONF_SCHEMA_FILE_DIR@
 schema_DATA = rhythmbox.schemas
 
 keys_DATA = rhythmbox.keys
