@@ -16,6 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
+ *
+ *  FIXME CHILD_CHANGED on albums has NULL user_data when processed,
+ *  not when added.
  */
 
 #include <stdlib.h>
@@ -398,13 +401,11 @@ rb_node_action_queue_cb (gpointer node_reference)
 		return FALSE;
 	}
 
-	{
-		g_static_rw_lock_writer_lock (actions_lock);
-		action = g_queue_pop_head (actions);
-		g_static_rw_lock_writer_unlock (actions_lock);
+	g_static_rw_lock_writer_lock (actions_lock);
+	action = g_queue_pop_head (actions);
+	g_static_rw_lock_writer_unlock (actions_lock);
 
-		rb_node_system_handle_action (action);
-	}
+	rb_node_system_handle_action (action);
 
 	return TRUE;
 }
