@@ -469,6 +469,7 @@ rb_player_sync (RBPlayer *player)
 		gboolean have_duration = rb_player_get_duration (player) > 0;
 		const char *album; 
 		const char *artist; 
+		GtkTooltips *artist_href_tips, *album_href_tips;
 
 		rhythmdb_read_lock (player->priv->db);
 
@@ -509,7 +510,13 @@ rb_player_sync (RBPlayer *player)
 			gnome_href_set_text (player->priv->displaybox->album, escaped);
 			g_free (escaped);
 			g_free (tmp);
-
+   
+   			album_href_tips = gtk_tooltips_new ();
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (album_href_tips), 
+					      GTK_WIDGET (player->priv->displaybox->album),
+					      _("Get information on this album from the web"), 
+					      NULL);
+			
 			s = tmp = g_strdup (artist);
 			while ((tmp = strstr (tmp, " ")) != NULL)
 			{
@@ -522,6 +529,13 @@ rb_player_sync (RBPlayer *player)
 			gnome_href_set_text (player->priv->displaybox->artist, escaped);
 			g_free (escaped);
 			g_free (tmp);
+
+   			artist_href_tips = gtk_tooltips_new ();
+			gtk_tooltips_set_tip (GTK_TOOLTIPS (artist_href_tips), 
+					      GTK_WIDGET (player->priv->displaybox->artist),
+					      _("Get information on this artist from the web"),
+					      NULL);
+			
 		}
 
 		if (player->priv->urlline_shown)
@@ -537,10 +551,18 @@ rb_player_sync (RBPlayer *player)
 		if (have_duration)
 			rb_player_sync_time (player);
 	} else {
+		GtkTooltips *iradio_href_tips;
+
 		rb_debug ("not playing");
 		tmp = SONG_MARKUP (_("Not playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
+
+		iradio_href_tips = gtk_tooltips_new ();
+		gtk_tooltips_set_tip (GTK_TOOLTIPS (iradio_href_tips), 
+				      GTK_WIDGET (player->priv->displaybox->artist),
+				      _("Get information on this station from the web"),
+				      NULL);
 
 		rb_player_set_urldata (player, NULL, NULL);
 		rb_player_set_show_artist_album (player, FALSE);
