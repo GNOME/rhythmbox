@@ -316,7 +316,7 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 	GString *newcolumns = g_string_new ("");
 	char *currentcols = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 	char **colnames = currentcols ? g_strsplit (currentcols, ",", 0) : NULL;
-	char *colname;
+	char *colname = NULL;
 	int i;
 
 	if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->artist_check))
