@@ -610,11 +610,50 @@ rb_library_source_new (RhythmDB *db, RBLibrary *library)
 /* 	return selection->data; */
 /* } */
 
+static gboolean
+string_list_equal (GList *a, GList *b)
+{
+	GList *sorted_a_keys;
+	GList *sorted_b_keys;
+	GList *a_ptr, *b_ptr;
+	gboolean ret = TRUE;
+
+	if (g_list_length (a) != g_list_length (b))
+		return FALSE;
+
+	for (sorted_a_keys = NULL; a; a = a->next) {
+		sorted_a_keys = g_list_append (sorted_a_keys,
+					       g_utf8_collate_key (a->data, -1));
+	}
+	for (sorted_b_keys = NULL; b; b = b->next) {
+		sorted_b_keys = g_list_append (sorted_b_keys,
+					       g_utf8_collate_key (b->data, -1));
+	}
+	sorted_a_keys = g_list_sort (sorted_a_keys, (GCompareFunc) strcmp);
+	sorted_b_keys = g_list_sort (sorted_b_keys, (GCompareFunc) strcmp);
+	
+	for (a_ptr = sorted_a_keys, b_ptr = sorted_b_keys;
+	     a_ptr && b_ptr; a_ptr = a_ptr->next, b_ptr = b_ptr->next) {
+		if (strcmp (a_ptr->data, b_ptr->data)) {
+			ret = FALSE;
+			break;
+		}
+	}
+	g_list_foreach (sorted_a_keys, (GFunc) g_free, NULL);
+	g_list_foreach (sorted_b_keys, (GFunc) g_free, NULL);
+	g_list_free (sorted_a_keys);
+	g_list_free (sorted_b_keys);
+	return ret;
+}
+	
+
 static void
 genres_selected_cb (RBPropertyView *propview, GList *genres,
 		   RBLibrarySource *libsource)
 {
 	rb_debug ("genre selected"); 
+	if (string_list_equal (libsource->priv->selected_genres, genres))
+		return;
 	g_list_foreach (libsource->priv->selected_genres, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_genres);
 	libsource->priv->selected_genres = genres;
@@ -626,6 +665,8 @@ artists_selected_cb (RBPropertyView *propview, GList *artists,
 		     RBLibrarySource *libsource)
 {
 	rb_debug ("artist selected"); 
+	if (string_list_equal (libsource->priv->selected_artists, artists))
+		return;
 	g_list_foreach (libsource->priv->selected_artists, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_artists);
 	libsource->priv->selected_artists = artists;
@@ -637,6 +678,8 @@ albums_selected_cb (RBPropertyView *propview, GList *albums,
 		    RBLibrarySource *libsource)
 {
 	rb_debug ("album selected"); 
+	if (string_list_equal (libsource->priv->selected_albums, albums))
+		return;
 	g_list_foreach (libsource->priv->selected_albums, (GFunc) g_free, NULL);
 	g_list_free (libsource->priv->selected_albums);
 	libsource->priv->selected_albums = albums;
