@@ -40,14 +40,14 @@ typedef struct RBSourceHeaderPrivate RBSourceHeaderPrivate;
 
 typedef struct
 {
-	GtkHBox parent;
+	GtkTable parent;
 
 	RBSourceHeaderPrivate *priv;
 } RBSourceHeader;
 
 typedef struct
 {
-	GtkHBoxClass parent_class;
+	GtkTableClass parent_class;
 } RBSourceHeaderClass;
 
 GType			rb_source_header_get_type	(void);

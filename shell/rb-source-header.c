@@ -119,7 +119,7 @@ rb_source_header_get_type (void)
 			(GInstanceInitFunc) rb_source_header_init
 		};
 
-		rb_source_header_type = g_type_register_static (GTK_TYPE_HBOX,
+		rb_source_header_type = g_type_register_static (GTK_TYPE_TABLE,
 							       "RBSourceHeader",
 							       &our_info, 0);
 	}
@@ -161,7 +161,9 @@ rb_source_header_init (RBSourceHeader *header)
 	GtkWidget *align;
 	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
 
-	gtk_box_set_spacing (GTK_BOX (header), 5);
+	gtk_table_set_homogeneous (GTK_TABLE (header), TRUE);
+	gtk_table_set_col_spacings (GTK_TABLE (header), 5);
+	gtk_table_resize (GTK_TABLE (header), 1, 3);
 
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
 
@@ -174,13 +176,13 @@ rb_source_header_init (RBSourceHeader *header)
 	g_signal_connect (G_OBJECT (header->priv->disclosure), "toggled",
 			  G_CALLBACK (rb_source_header_disclosure_toggled_cb), header);
 
-	gtk_box_pack_start (GTK_BOX (header),
-			    GTK_WIDGET (header->priv->disclosure), FALSE, TRUE, 0);
+	gtk_table_attach_defaults (GTK_TABLE (header),
+			           header->priv->disclosure, 0, 2, 0, 1);
 
-	align = gtk_alignment_new (1.0, 0.5, 0.5, 1.0);
+	align = gtk_alignment_new (1.0, 0.5, 1.0, 1.0);
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (header->priv->search));
-	gtk_box_pack_end (GTK_BOX (header),
-			  align, TRUE, TRUE, 0);
+	gtk_table_attach_defaults (GTK_TABLE (header),
+			           align, 2, 3, 0, 1);
 }
 
 static void

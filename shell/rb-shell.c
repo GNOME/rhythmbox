@@ -948,7 +948,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	{
  		"Lead developers:",
 		"Jorn Baayen (jorn@nl.linux.org)",
-		"Colin Walters <walters@verbum.org>",
+		"Colin Walters (walters@verbum.org)",
  		"",
 		"Contributors:",
 		"Olivier Martin (oleevye@wanadoo.fr)",
