@@ -1,3 +1,23 @@
+2003-08-02  Colin Walters  <walters@gnu.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(rb_node_view_get_property), (rb_node_view_search_equal),
+	(rb_node_view_construct), (filter_changed_cb),
+	(rb_node_view_set_playing_node), (rb_node_view_get_node),
+	(rb_node_view_get_n_rows), (rb_node_view_sort_func),
+	(rb_node_view_button_press_cb),
+	(rb_node_view_selection_changed_cb), (rb_node_view_select_node),
+	(root_child_removed_cb), (rb_node_view_columns_parse):
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_init),
+	(rb_tree_model_node_get_iter), (rb_tree_model_node_get_value),
+	(rb_tree_model_node_iter_nth_child),
+	(rb_tree_model_node_update_node),
+	(rb_tree_model_node_set_playing_node):
+	* shell/rb-shell-player.c: (rb_shell_player_jump_to_current):
+
+	Just some indentation cleanups, and a minor fix in
+	rb_shell_player_jump_to_current.
+
 2003-08-02  Colin Walters  <walters@verbum.org>
 
 	* INTERNALS: Flesh out more; talk about the "All" nodes,

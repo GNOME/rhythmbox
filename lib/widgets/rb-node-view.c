@@ -408,8 +408,7 @@ rb_node_view_set_property (GObject *object,
 	case PROP_FILTER:
 		view->priv->filter = g_value_get_object (value);
 
-		if (view->priv->filter != NULL)
-		{
+		if (view->priv->filter != NULL) {
 			g_signal_connect_object (G_OBJECT (view->priv->filter),
 					         "changed",
 					         G_CALLBACK (filter_changed_cb),
@@ -442,13 +441,13 @@ rb_node_view_get_property (GObject *object,
 		g_value_set_object (value, view->priv->root);
 		break;
 	case PROP_PLAYING_NODE:
-		{
-			g_assert (view->priv->nodemodel != NULL);
-
-			g_object_get_property (G_OBJECT (view->priv->nodemodel),
-				               "playing-node", value);
-		}
-		break;
+	{
+		g_assert (view->priv->nodemodel != NULL);
+		
+		g_object_get_property (G_OBJECT (view->priv->nodemodel),
+				       "playing-node", value);
+	}
+	break;
 	case PROP_VIEW_DESC_FILE:
 		g_value_set_string (value, view->priv->view_desc_file);
 		break;
@@ -538,8 +537,7 @@ rb_node_view_search_equal (GtkTreeModel *model,
 
 	foldkey = g_utf8_casefold (key, -1);
 
-	for (l = view->priv->search_columns; l != NULL && retval == TRUE; l = g_list_next (l))
-	{
+	for (l = view->priv->search_columns; l != NULL && retval == TRUE; l = g_list_next (l)) {
 		GValue a_value = { 0, };
 		GType type;
 		const char *stra;
@@ -678,8 +676,7 @@ rb_node_view_construct (RBNodeView *view)
 	rb_debug ("loading layout from %s", view->priv->view_desc_file);
 	doc = xmlParseFile (view->priv->view_desc_file);
 
-	if (doc == NULL)
-	{
+	if (doc == NULL) {
 		rb_error_dialog (_("Failed to parse %s as NodeView layout file"),
 				 view->priv->view_desc_file);
 		return;
@@ -696,8 +693,7 @@ rb_node_view_construct (RBNodeView *view)
 	g_free (tmp);
 
 	tmp = xmlGetProp (doc->children, "selection-mode");
-	if (tmp != NULL)
-	{
+	if (tmp != NULL) {
 		GEnumClass *class = g_type_class_ref (GTK_TYPE_SELECTION_MODE);
 		GEnumValue *ev = g_enum_get_value_by_name (class, tmp);
 		gtk_tree_selection_set_mode (view->priv->selection, ev->value);
@@ -742,8 +738,7 @@ rb_node_view_construct (RBNodeView *view)
 
 	view->priv->columns_key = xmlGetProp (doc->children, "column-visibility-pref");
 
-	for (child = doc->children->children; child != NULL; child = child->next)
-	{
+	for (child = doc->children->children; child != NULL; child = child->next) {
 		char *title = NULL;
 		gboolean reorderable = FALSE, resizable = FALSE, clickable = TRUE;
 		gboolean default_sort_column = FALSE, expand = FALSE;
@@ -801,13 +796,11 @@ rb_node_view_construct (RBNodeView *view)
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "sort-order");
-		if (tmp != NULL)
-		{
+		if (tmp != NULL) {
 			char **parts = g_strsplit (tmp, " ", 0);
 			int i;
 
-			for (i = 0; parts != NULL && parts[i] != NULL; i++)
-			{
+			for (i = 0; parts != NULL && parts[i] != NULL; i++) {
 				RBTreeModelNodeColumn col;
 				ev = g_enum_get_value_by_name (class, parts[i]);
 				col = ev->value;
@@ -877,16 +870,14 @@ rb_node_view_construct (RBNodeView *view)
 
 		gtk_tree_view_column_set_resizable (gcolumn, resizable);
 
-		if (title != NULL)
-		{
+		if (title != NULL) {
 			gtk_tree_view_column_set_title (gcolumn, _(title));
 			g_free (title);
 		}
 
 		gtk_tree_view_column_set_reorderable (gcolumn, reorderable);
 
-		if (clickable == TRUE)
-		{
+		if (clickable == TRUE) {
 			if (sort_order != NULL)
 				gtk_tree_view_column_set_sort_column_id (gcolumn, column);
 		}
@@ -900,8 +891,7 @@ rb_node_view_construct (RBNodeView *view)
 						 rb_node_view_sort_func,
 						 sort_order, NULL);
 
-		if (default_sort_column == TRUE)
-		{
+		if (default_sort_column == TRUE) {
 			/* do this in an idle, so that it gets set when done with initializing the rest --
 			 * will speed up xml loading a lot */
 			view->priv->default_sort_column_id = column;
@@ -923,8 +913,7 @@ rb_node_view_construct (RBNodeView *view)
 	{
 		char *config = eel_gconf_get_string (view->priv->columns_key);
 
-		if (config != NULL)
-		{
+		if (config != NULL) {
 			rb_node_view_columns_parse (view, config);
 
 			view->priv->gconf_notification_id = 
@@ -980,8 +969,7 @@ filter_changed_cb (RBNodeFilter *filter,
 
 	window = gtk_widget_get_toplevel (GTK_WIDGET (view));
 
-	if (window != NULL && window->window != NULL)
-	{
+	if (window != NULL && window->window != NULL) {
 		/* nice busy cursor */
 		GdkCursor *cursor;
 
@@ -998,8 +986,7 @@ filter_changed_cb (RBNodeFilter *filter,
 	}
 
 	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-					          &view->priv->saved_sort_column_id, &view->priv->saved_sort_type) == FALSE)
-	{
+					          &view->priv->saved_sort_column_id, &view->priv->saved_sort_type) == FALSE) {
 		view->priv->saved_sort_column_id = -1;
 		return;
 	}
@@ -1030,9 +1017,7 @@ rb_node_view_set_playing_node (RBNodeView *view,
 {
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
-	g_object_set (G_OBJECT (view),
-		      "playing-node", node,
-		      NULL);
+	g_object_set (G_OBJECT (view), "playing-node", node, NULL);
 }
 
 RBNode *
@@ -1070,8 +1055,7 @@ rb_node_view_get_node (RBNodeView *view,
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter, &iter2);
 
-	if (direction == RB_DIRECTION_DOWN)
-	{
+	if (direction == RB_DIRECTION_DOWN) {
 		if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->sortmodel), &iter) == FALSE)
 			return NULL;
 	}
@@ -1080,8 +1064,7 @@ rb_node_view_get_node (RBNodeView *view,
 		GtkTreePath *path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->sortmodel), &iter);
 		gboolean found;
 
-		if (gtk_tree_path_prev (path) == FALSE)
-		{
+		if (gtk_tree_path_prev (path) == FALSE) {
 			gtk_tree_path_free (path);
 			return NULL;
 		}
@@ -1194,8 +1177,7 @@ rb_node_view_get_n_rows (RBNodeView *view)
 
 	kids = rb_node_get_children (view->priv->root);
 	
-	for (i = 0; i < kids->len; i++)
-	{
+	for (i = 0; i < kids->len; i++) {
 		RBNode *node;
 
 		node = g_ptr_array_index (kids, i);
@@ -1258,8 +1240,7 @@ rb_node_view_sort_func (GtkTreeModel *model,
 	GList *l;
 	int retval = 0;
 
-	for (l = order; l != NULL && retval == 0; l = g_list_next (l))
-	{
+	for (l = order; l != NULL && retval == 0; l = g_list_next (l)) {
 		RBTreeModelNodeColumn column = GPOINTER_TO_INT (l->data);
 		GType type = gtk_tree_model_get_column_type (model, column);
 		GValue a_value = {0, };
@@ -1289,11 +1270,8 @@ rb_node_view_sort_func (GtkTreeModel *model,
 			if (column == RB_TREE_MODEL_NODE_COL_ARTIST_KEY ||
 			    column == RB_TREE_MODEL_NODE_COL_ALBUM_KEY ||
 			    column == RB_TREE_MODEL_NODE_COL_TITLE_KEY)
-			{
 				retval = strcmp (stra, strb);
-			}
-			else
-			{
+			else {
 				folda = g_utf8_casefold (stra, g_utf8_strlen (stra, -1));
 				foldb = g_utf8_casefold (strb, g_utf8_strlen (strb, -1));
 				retval = g_utf8_collate (folda, foldb);
@@ -1351,8 +1329,7 @@ rb_node_view_button_press_cb (GtkTreeView *treeview,
 			      GdkEventButton *event,
 			      RBNodeView *view)
 {
-	if (event->button == 3)
-	{
+	if (event->button == 3) {
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[SHOW_POPUP], 0);
 		return view->priv->have_selection;
 	}
@@ -1376,8 +1353,7 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	if (sel != NULL)
 		selected_node = (g_list_first (sel))->data;
 
-	if (available != view->priv->have_selection)
-	{
+	if (available != view->priv->have_selection) {
 		view->priv->changed = TRUE;
 		view->priv->have_selection = available;
 
@@ -1385,9 +1361,7 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	}
 
 	if (selected_node != NULL && selected_node != view->priv->selected_node)
-	{
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_SELECTED], 0, selected_node);
-	}
 
 	view->priv->selected_node = selected_node;
 
@@ -1493,8 +1467,7 @@ rb_node_view_select_node (RBNodeView *view,
 	visible = g_value_get_boolean (&val);
 	g_value_unset (&val);
 
-	if (visible == FALSE)
-	{
+	if (visible == FALSE) {
 		view->priv->selection_lock = FALSE;
 		return;
 	}
@@ -1570,8 +1543,7 @@ root_child_removed_cb (RBNode *root,
 		       RBNodeView *view)
 {
 	/* playing node bit */
-	if (child == rb_node_view_get_playing_node (view))
-	{
+	if (child == rb_node_view_get_playing_node (view)) {
 		g_signal_emit (G_OBJECT (view),
 			       rb_node_view_signals[PLAYING_NODE_REMOVED],
 			       0,
@@ -1653,16 +1625,13 @@ rb_node_view_columns_parse (RBNodeView *view,
 
 	/* the list of visible columns */
 	items = g_strsplit (config, ",", 0);
-	if (items != NULL)
-	{
-		for (i = 0; items[i] != NULL; i++)
-		{
+	if (items != NULL) {
+		for (i = 0; items[i] != NULL; i++) {
 			ev = g_enum_get_value_by_name (class, items[i]);
 
 			if ((ev != NULL)
 			    && (ev->value >= 0)
-			    && (ev->value < RB_TREE_MODEL_NODE_NUM_COLUMNS))
-			{
+			    && (ev->value < RB_TREE_MODEL_NODE_NUM_COLUMNS)) {
 				if (g_hash_table_lookup (view->priv->allowed_columns,
 							 GINT_TO_POINTER (ev->value)) == NULL) {
 					rb_debug ("column %s is not allowed", items[i]);
@@ -1679,8 +1648,7 @@ rb_node_view_columns_parse (RBNodeView *view,
 	g_type_class_unref (class);
 
 	/* set the visibility for all columns */
-	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS; i++)
-	{
+	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS; i++) {
 		switch (i)
 		{
 		case RB_TREE_MODEL_NODE_COL_PLAYING:
@@ -1694,8 +1662,7 @@ rb_node_view_columns_parse (RBNodeView *view,
 		default:
 			column = g_hash_table_lookup (view->priv->columns,
 						      GINT_TO_POINTER (i));
-			if (column != NULL)
-			{
+			if (column != NULL) {
 				gboolean visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL;
 				gtk_tree_view_column_set_visible (column, visible);
 			}

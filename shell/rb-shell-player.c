@@ -835,7 +835,8 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 
 	node = rb_shell_player_get_playing_node (player);	
 
-	g_return_if_fail (node != NULL);
+	if (node == NULL)
+		return;
 	
 	rb_node_view_scroll_to_node (songs, node);
 	rb_node_view_select_node (songs, rb_node_view_get_playing_node (songs));

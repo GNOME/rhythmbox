@@ -196,8 +196,7 @@ rb_tree_model_node_init (RBTreeModelNode *model)
 {
 	GtkWidget *dummy;
 	
-	do
-	{
+	do {
 		model->stamp = g_random_int ();
 	}
 	while (model->stamp == 0);
@@ -454,8 +453,7 @@ rb_tree_model_node_get_iter (GtkTreeModel *tree_model,
 	iter->stamp = model->stamp;
 	iter->user_data = rb_node_get_nth_child (model->priv->root, i);
 
-	if (iter->user_data == NULL)
-	{
+	if (iter->user_data == NULL) {
 		iter->stamp = 0;
 		return FALSE;
 	}
@@ -532,14 +530,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		break;
 	/* Generic node stuff */
 	case RB_TREE_MODEL_NODE_COL_TITLE:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_NAME,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_NAME, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE_KEY:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_NAME_SORT_KEY,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_NAME_SORT_KEY, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
 	{
@@ -559,14 +553,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		g_value_init (value, G_TYPE_BOOLEAN);
 
 		if (model->priv->filter != NULL)
-		{
 			g_value_set_boolean (value,
 					     rb_node_filter_evaluate (model->priv->filter, node));
-		}
 		else
-		{
 			g_value_set_boolean (value, TRUE);
-		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 		g_value_init (value, G_TYPE_BOOLEAN);
@@ -581,52 +571,34 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		g_value_set_boolean (value, FALSE);
 		break;
 	case RB_TREE_MODEL_NODE_COL_QUALITY:
-		if (rb_node_get_property (node,
-					  RB_NODE_PROP_QUALITY,
-					  value) == FALSE)
-		{
+		if (rb_node_get_property (node, RB_NODE_PROP_QUALITY, value) == FALSE) {
 			g_value_init (value, G_TYPE_STRING);
 			g_value_set_string (value, _("(Unknown)"));
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_RATING:
-		if (rb_node_get_property (node,
-				          RB_NODE_PROP_RATING,
-				          value) == FALSE)
-		{
+		if (rb_node_get_property (node, RB_NODE_PROP_RATING, value) == FALSE) {
 			g_value_init (value, G_TYPE_INT);
 			g_value_set_int (value, 0);
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_ARTIST,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_ARTIST, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_ARTIST_SORT_KEY,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_ARTIST_SORT_KEY, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_ALBUM,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_ALBUM, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_ALBUM_SORT_KEY,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_ALBUM_SORT_KEY, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_GENRE:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_GENRE,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_GENRE, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_TRACK_NUMBER,
-				      value);
+		rb_node_get_property (node, RB_NODE_PROP_TRACK_NUMBER, value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR:
 	{
@@ -771,8 +743,7 @@ rb_tree_model_node_iter_nth_child (GtkTreeModel *tree_model,
 
 	node = rb_node_get_nth_child (model->priv->root, n);
 
-	if (node != NULL)
-	{
+	if (node != NULL) {
 		iter->stamp = model->stamp;
 		iter->user_data = node;
 		return TRUE;
@@ -846,15 +817,12 @@ rb_tree_model_node_update_node (RBTreeModelNode *model,
 
 	rb_tree_model_node_iter_from_node (model, node, &iter);
 
-	if (idx >= 0)
-	{
+	if (idx >= 0) {
 		path = gtk_tree_path_new ();
 		gtk_tree_path_append_index (path, idx);
 	}
 	else
-	{
 		path = get_path_real (model, node);
-	}
 
 	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
@@ -896,9 +864,7 @@ rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 {
 	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
 
-	g_object_set (G_OBJECT (model),
-		      "playing-node", node,
-		      NULL);
+	g_object_set (G_OBJECT (model), "playing-node", node, NULL);
 }
 
 RBNode *
