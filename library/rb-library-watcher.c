@@ -109,7 +109,7 @@ rb_library_watcher_class_init (RBLibraryWatcherClass *klass)
 	rb_library_watcher_signals[FILE_CREATED] =
 		g_signal_new ("file_created",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBLibraryWatcherClass, file_created),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,
@@ -119,7 +119,7 @@ rb_library_watcher_class_init (RBLibraryWatcherClass *klass)
 	rb_library_watcher_signals[FILE_CHANGED] =
 		g_signal_new ("file_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBLibraryWatcherClass, file_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,
@@ -129,7 +129,7 @@ rb_library_watcher_class_init (RBLibraryWatcherClass *klass)
 	rb_library_watcher_signals[FILE_DELETED] =
 		g_signal_new ("file_deleted",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBLibraryWatcherClass, file_deleted),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,
@@ -302,10 +302,13 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 	GnomeVFSURI *uri, *subdir_uri, *file_uri;
 	char *tmp, *text_uri, *subdir_uri_text;
 
+	if (dir == NULL)
+		return;
+
 	tmp = gnome_vfs_expand_initial_tilde (dir);
 	uri = gnome_vfs_uri_new (tmp);
 	g_free (tmp);
-	if (gnome_vfs_uri_exists (uri) == FALSE)
+	if (uri == NULL || gnome_vfs_uri_exists (uri) == FALSE)
 		return;
 
 	if (g_hash_table_lookup (watcher->priv->handles, uri) != NULL)

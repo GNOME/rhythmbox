@@ -410,10 +410,10 @@ rb_player_sync_time (RBPlayer *player)
 
 	if (duration > -1)
 	{
-		double progress = 0;
+		double progress = 0.0;
 
 		if (seconds > 0)
-			progress = (double) seconds / duration;
+			progress = (double) ((long) seconds) / duration;
 
 		player->priv->lock_adjustment = TRUE;
 		gtk_adjustment_set_value (player->priv->adjustment, progress);
@@ -423,7 +423,7 @@ rb_player_sync_time (RBPlayer *player)
 	else
 	{
 		player->priv->lock_adjustment = TRUE;
-		gtk_adjustment_set_value (player->priv->adjustment, 0);
+		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
 		player->priv->lock_adjustment = FALSE;
 		gtk_widget_set_sensitive (player->priv->scale, FALSE);
 	}

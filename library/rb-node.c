@@ -143,7 +143,7 @@ rb_node_class_init (RBNodeClass *klass)
 	rb_node_signals[DESTROYED] =
 		g_signal_new ("destroyed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, destroyed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
@@ -152,7 +152,7 @@ rb_node_class_init (RBNodeClass *klass)
 	rb_node_signals[CHANGED] =
 		g_signal_new ("changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
@@ -162,7 +162,7 @@ rb_node_class_init (RBNodeClass *klass)
 	rb_node_signals[CHILD_CREATED] =
 		g_signal_new ("child_created",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, child_created),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
@@ -172,7 +172,7 @@ rb_node_class_init (RBNodeClass *klass)
 	rb_node_signals[CHILD_CHANGED] =
 		g_signal_new ("child_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, child_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
@@ -182,7 +182,7 @@ rb_node_class_init (RBNodeClass *klass)
 	rb_node_signals[CHILD_DESTROYED] =
 		g_signal_new ("child_destroyed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, child_destroyed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,

@@ -182,7 +182,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
+			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, window_title_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,

@@ -1,5 +1,15 @@
 2002-06-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-player.c: (rb_player_sync_time):
+	* library/rb-library-watcher.c: (rb_library_watcher_class_init),
+	(rb_library_watcher_add_directory):
+	* library/rb-node.c: (rb_node_class_init):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init):
+
+	Some NULL checks.
+
+2002-06-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-player.c: (rb_player_init):
 
 	Make song label selectable.
