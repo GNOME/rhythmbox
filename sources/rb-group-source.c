@@ -34,6 +34,7 @@
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
+#include "rb-util.h"
 #include "rb-group-source.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
@@ -64,12 +65,12 @@ static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
+static GList * impl_cut (RBSource *source);
+static void impl_paste (RBSource *asource, GList *nodes);
+static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_can_pause (RBSource *player);
-static gboolean impl_have_artist_album	(RBSource *player);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
-static gboolean impl_have_url (RBSource *player);
 
 static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
 static void rb_group_source_drop_cb (GtkWidget *widget,
@@ -174,12 +175,18 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_get_node_view = impl_get_node_view;
+	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_cut = impl_cut;
+	source_class->impl_paste = impl_paste;
+	source_class->impl_delete = impl_delete;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = impl_can_pause;
-	source_class->impl_have_artist_album = impl_have_artist_album;
+	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_artist = impl_get_artist;
 	source_class->impl_get_album = impl_get_album;
-	source_class->impl_have_url = impl_have_url;
+	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -324,7 +331,7 @@ rb_group_source_set_property (GObject *object,
 			g_free (source->priv->description);
 		
 			source->priv->name = g_strdup (g_value_get_string (value));
-			source->priv->description = g_strdup_printf ("\"%s\" Group", source->priv->name);
+			source->priv->description = g_strdup (source->priv->name);
 
 			if (source->priv->file == NULL)
 			{
@@ -445,18 +452,6 @@ impl_get_node_view (RBSource *asource)
 	return source->priv->songs;
 }
 
-gboolean
-impl_can_pause (RBSource *source)
-{
-	return TRUE;
-}
-
-static gboolean
-impl_have_artist_album (RBSource *source)
-{
-	return TRUE;
-}
-
 static const char *
 impl_get_artist (RBSource *asource)
 {
@@ -485,16 +480,41 @@ impl_get_album (RBSource *asource)
 		return NULL;
 }
 
-static gboolean
-impl_have_url (RBSource *source)
-{
-	return FALSE;
-}
-
 static const char *
 impl_get_status (RBSource *asource)
 {
 	return ""; /* FIXME; factor out status code from library */
+}
+
+static GList *
+impl_cut (RBSource *asource)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	GList *sel = rb_node_view_get_selection (source->priv->songs);
+
+	for (; sel != NULL; sel = g_list_next (sel))
+		rb_node_remove_child (source->priv->group, sel->data);
+	
+	return sel;
+}
+
+static void
+impl_paste (RBSource *asource, GList *nodes)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+
+	for (; nodes; nodes = g_list_next (nodes))
+		rb_group_source_add_node (source, nodes->data);
+}
+
+static void
+impl_delete (RBSource *asource)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	GList *sel = rb_node_view_get_selection (source->priv->songs);
+
+	for (; sel != NULL; sel = g_list_next (sel))
+		rb_node_remove_child (source->priv->group, sel->data);
 }
 
 static void

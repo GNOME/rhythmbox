@@ -1,5 +1,15 @@
 2003-07-28  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync):
+	* sources/rb-group-source.c: (rb_group_source_class_init),
+	(rb_group_source_set_property), (impl_get_status), (impl_cut),
+	(impl_paste), (impl_delete):
+
+	Building upon previous work, playlists are starting to work via
+	cut&paste.  Still need to do drag&drop bits.
+
+2003-07-28  Colin Walters  <walters@verbum.org>
+
 	* HACKING:
 	* lib/Makefile.am:
 	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_set_property),
