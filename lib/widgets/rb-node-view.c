@@ -40,7 +40,6 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-node-song.h"
-#include "rb-node-station.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
