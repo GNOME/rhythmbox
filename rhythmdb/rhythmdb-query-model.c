@@ -111,7 +111,6 @@ struct RhythmDBQueryModelUpdate
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED,
-		RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE,
 	} type;
 	RhythmDBEntry *entry;
 };
@@ -467,13 +466,7 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 void
 rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 {
-	struct RhythmDBQueryModelUpdate *update;
-
-	rb_debug ("queuing completion signal");
-	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
-	update->type = RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE;
-
-	g_async_queue_push (model->priv->pending_updates, update);
+	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
 }
 
 gboolean
@@ -694,12 +687,6 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			g_hash_table_remove (model->priv->reverse_map, update->entry);
 			break;
 		}
-		case RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE:
-		{
-			rb_debug ("emitting query complete");
-			g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
-			break;
-		}
 		}
 
 		processed = g_list_prepend (processed, update);
@@ -729,8 +716,6 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			   in the update queue. */
 			rhythmdb_entry_unref (model->priv->db, update->entry);
 			rhythmdb_entry_unref (model->priv->db, update->entry);
-			break;
-		case RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE:
 			break;
 		}
 
