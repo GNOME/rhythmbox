@@ -654,6 +654,7 @@ rb_group_source_save (RBGroupSource *source)
 		GString *tmpname = g_string_new (source->priv->file);
 		g_string_append (tmpname, ".tmp");
 		xmlSaveFormatFile (tmpname->str, doc, 1);
+		rename (tmpname->str, source->priv->file);
 		g_string_free (tmpname, TRUE);
 	}
 
