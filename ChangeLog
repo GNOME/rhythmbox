@@ -1,5 +1,11 @@
 2002-09-08  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-node-iterator.c: (rb_node_iterator_next):
+
+	Fix an evillll leak
+
+2002-09-08  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_iter):
 
 	Faster way of iter validity checking.

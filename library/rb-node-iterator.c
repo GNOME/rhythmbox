@@ -127,7 +127,10 @@ rb_node_iterator_next (RBNodeIterator *iterator)
 	kids = rb_node_get_children (iterator->priv->parent);
 	pos = g_list_find (kids, iterator->priv->position);
 	if (pos == NULL)
+	{
+		g_list_free (kids);
 		return NULL;
+	}
 	for (pos = g_list_next (pos); pos != NULL; pos = g_list_next (pos))
 	{
 		if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
@@ -137,8 +140,12 @@ rb_node_iterator_next (RBNodeIterator *iterator)
 	if (pos != NULL)
 	{
 		iterator->priv->position = RB_NODE (pos->data);
+		g_list_free (kids);
 		return iterator->priv->position;
 	}
 	else
+	{
+		g_list_free (kids);
 		return NULL;
+	}
 }
