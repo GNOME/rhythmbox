@@ -276,7 +276,7 @@ rb_player_init (RBPlayer *player)
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (player->priv->info_notebook), FALSE);
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (player->priv->info_notebook), FALSE);
 	gtk_box_pack_start (GTK_BOX (player),
-			    GTK_WIDGET (player->priv->info_notebook),
+			    player->priv->info_notebook,
 			    FALSE, FALSE, 0);
 
 	/* player area + play controls box */
@@ -430,12 +430,12 @@ rb_player_init (RBPlayer *player)
 
 	/* 'Empty playlist' label */
 	vbox_label = gtk_vbox_new (TRUE, 5);
-	gtk_box_pack_start (GTK_BOX (player->priv->info_notebook), vbox_label,
-			FALSE, FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox_label), 20);
 
 	big_label = gtk_label_new (_("Not playing"));
-	gtk_box_pack_start (GTK_BOX (vbox_label), big_label, 
-			FALSE, FALSE, 0);
+	gtk_misc_set_alignment (GTK_MISC (big_label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox_label), big_label,
+			    TRUE, TRUE, 0);
 
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
@@ -447,10 +447,12 @@ rb_player_init (RBPlayer *player)
 	pango_attr_list_unref (pattrlist);
 
 	label = gtk_label_new (_("To play, add music to the play list"));
-	gtk_box_pack_start (GTK_BOX (vbox_label), label, 
-			FALSE, FALSE, 0);
-	
-	gtk_notebook_append_page (GTK_NOTEBOOK (player->priv->info_notebook), vbox_label, NULL);
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox_label), label,
+			    TRUE, TRUE, 0);
+
+	gtk_notebook_append_page (GTK_NOTEBOOK (player->priv->info_notebook),
+				  vbox_label, NULL);
 
 	/* playlist */
 	/* FIXME should be reorderable */
