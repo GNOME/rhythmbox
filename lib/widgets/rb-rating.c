@@ -255,7 +255,7 @@ rb_rating_expose (GtkWidget *widget,
 
 	if (GTK_WIDGET_DRAWABLE (widget) == TRUE)
 	{
-		int i;
+		int i, y_offset;
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
@@ -268,8 +268,10 @@ rb_rating_expose (GtkWidget *widget,
 		gtk_paint_shadow (widget->style, widget->window,
 				  GTK_STATE_NORMAL, GTK_SHADOW_IN,
 				  NULL, widget, "text", 0, 0,
-				  widget->requisition.width,
-				  widget->requisition.height);
+				  widget->requisition.width + 2,
+				  widget->allocation.height);
+
+		y_offset = (widget->allocation.height - widget->requisition.height) / 2;
 
 		/* draw a blank area at the beggining, this lets the user click
 		 * in this area to unset the rating */
@@ -310,8 +312,8 @@ rb_rating_expose (GtkWidget *widget,
 			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
 							     widget->window,
 							     0, 0,
-							     OFFSET + i * icon_size, 0,
-							     icon_size, icon_size,
+							     OFFSET + i * icon_size, y_offset,
+							     icon_size, icon_size + y_offset,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
 			g_object_unref (G_OBJECT (pixbuf));

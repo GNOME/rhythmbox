@@ -271,15 +271,14 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->name          = glade_xml_get_widget (xml, "song_info_name");
 
 
-	/* make those fields insensitive for now */
-	gtk_widget_set_sensitive (song_info->priv->title, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->artist, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->album, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->date, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->track_cur, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->track_max, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->genre, FALSE);
-	gtk_widget_set_sensitive (song_info->priv->comments, FALSE);
+	/* make those fields not editable for now */
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->title), FALSE);
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->artist), FALSE);
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->album), FALSE);
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->date), FALSE);
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_cur), FALSE);
+	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_max), FALSE);
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (song_info->priv->comments), FALSE);
 
 	/* this widget has to be customly created */
 	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());
@@ -287,9 +286,9 @@ rb_song_info_init (RBSongInfo *song_info)
 				 "rated",
 				 G_CALLBACK (rb_song_info_rated_cb),
 				 G_OBJECT (song_info), 0);
-	gtk_table_attach_defaults (GTK_TABLE (glade_xml_get_widget (xml, "song_info_basic")),
+	gtk_table_attach_defaults (GTK_TABLE (glade_xml_get_widget (xml, "song_info_additional")),
 				   GTK_WIDGET (song_info->priv->rating),
-				   1, 2, 6, 7);
+				   1, 2, 10, 11);
 	/* default focus */
 	gtk_widget_grab_focus (song_info->priv->title);
 
