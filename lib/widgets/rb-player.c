@@ -306,9 +306,12 @@ rb_player_sync (RBPlayer *player)
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
 		const char *artist = rb_view_player_get_artist (player->priv->view_player);
+		char *escaped;
 
 		tmp = SONG_MARKUP (song);
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
+		escaped = g_markup_escape_text (tmp, g_utf8_strlen (tmp, -1));
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), escaped);
+		g_free (escaped);
 		g_free (tmp);
 
 		tmp = ALBUM_INFO_URL (album);

@@ -327,10 +327,12 @@ static void
 rb_link_set_text (RBLink *link,
 		  GdkColor *color)
 {
-	char *text;
-
+	char *text, *escaped;
+	
+	escaped = g_markup_escape_text (link->priv->text, g_utf8_strlen (link->priv->text, -1));
 	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"single\">%s</span>",
-				color->red, color->green, color->blue, link->priv->text);
+				color->red, color->green, color->blue, escaped);
+	g_free (escaped);
 	gtk_label_set_markup (GTK_LABEL (link->priv->label), text);
 	g_free (text);
 }

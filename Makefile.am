@@ -5,4 +5,6 @@ EXTRA_DIST = 			\
 	intltool-merge.in	\
 	intltool-update.in	\
 	intltool-extract.in	\
-	INSTALL.GNU
+	INSTALL.GNU		\
+	rhythmbox.spec		\
+	rhythmbox.spec.in

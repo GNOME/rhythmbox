@@ -1,5 +1,18 @@
 2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
 
+	* Makefile.am:
+	* configure.in:
+	* lib/widgets/rb-link.c: (rb_link_set_text):
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_random_node):
+	* lib/widgets/rb-player.c: (rb_player_sync):
+	* rhythmbox.spec:
+	* rhythmbox.spec.in:
+
+	Add spec to build, escape text in RBPlayer and RBLink,
+	fix random for lists with only 1 item :)
+
+2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_init),
 	(rb_node_view_finalize), (gtk_tree_model_sort_row_inserted_cb),
 	(gtk_tree_model_sort_row_deleted_cb),

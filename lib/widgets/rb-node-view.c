@@ -759,9 +759,14 @@ rb_node_view_get_random_node (RBNodeView *view)
 	GtkTreeIter iter, iter2;
 	char *path_str;
 	int index;
+	int n_children;
 
-	index = g_random_int_range (0,
-			            (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL) - 1));
+	n_children = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL);
+
+	if ((n_children - 1) > 0)
+		index = g_random_int_range (0, n_children - 1);
+	else
+		index = 0;
 
 	path_str = g_strdup_printf ("%d", index);
 	path = gtk_tree_path_new_from_string (path_str);
