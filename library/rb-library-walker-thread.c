@@ -239,6 +239,9 @@ rb_library_walker_thread_kill (RBLibraryWalkerThread *thread)
 	g_mutex_lock (thread->priv->lock);
 	thread->priv->dead = TRUE;
 	g_mutex_unlock (thread->priv->lock);
+
+	g_thread_join (thread->priv->thread);
+	g_object_unref (G_OBJECT (thread));
 }
 
 static void
@@ -257,15 +260,15 @@ thread_main (RBLibraryWalkerThread *thread)
 	g_async_queue_ref (rb_library_get_main_queue (thread->priv->library));
 
 	rb_uri_handle_recursively (thread->priv->uri, (GFunc) add_file, thread->priv->lock, &thread->priv->dead, thread);
+	g_mutex_lock (thread->priv->lock);
 	if (!thread->priv->dead) {
 		rb_debug ("emitting DONE");
 		g_signal_emit (G_OBJECT (thread), rb_library_walker_thread_signals[DONE], 0);
 	}
+	g_mutex_unlock (thread->priv->lock);
 
 	g_async_queue_unref (rb_library_get_main_queue (thread->priv->library));
 
-	rb_debug ("unreffing self");
-	g_object_unref (G_OBJECT (thread));
 	rb_debug ("exiting");
 	g_thread_exit (NULL);
 

@@ -103,6 +103,8 @@ struct RBLibraryPrivate
 
 	gboolean status_poll_queued;
 	guint status_poll_id;
+
+	gboolean in_shutdown;
 };
 
 enum
@@ -195,8 +197,6 @@ rb_library_init (RBLibrary *library)
 
 	g_free (libname); 
 
-	library->priv->lock = g_mutex_new ();
-
 	library->priv->genre_hash = g_hash_table_new (g_str_hash,
 						      g_str_equal);
 	library->priv->artist_hash = g_hash_table_new (g_str_hash,
@@ -266,6 +266,26 @@ rb_library_is_idle (RBLibrary *library)
 	return FALSE;
 }
 
+void
+rb_library_shutdown (RBLibrary *library)
+{
+	rb_debug ("Shuuut it dooooown!");
+
+	library->priv->in_shutdown = TRUE;
+
+	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
+	g_object_unref (G_OBJECT (library->priv->main_thread));
+	GDK_THREADS_ENTER ();
+
+	rb_debug ("killing walker threads");
+	g_mutex_lock (library->priv->walker_mutex);
+	while (library->priv->walker_threads != NULL) {
+		rb_library_walker_thread_kill (RB_LIBRARY_WALKER_THREAD (library->priv->walker_threads->data));
+		library->priv->walker_threads = g_list_next (library->priv->walker_threads);
+	}
+	g_mutex_unlock (library->priv->walker_mutex);
+}
+
 static void
 rb_library_finalize (GObject *object)
 {
@@ -281,17 +301,6 @@ rb_library_finalize (GObject *object)
 	g_source_remove (library->priv->idle_save_id);
 
 	rb_debug ("library: finalizing");
-	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
-	g_object_unref (G_OBJECT (library->priv->main_thread));
-	GDK_THREADS_ENTER ();
-
-	g_mutex_lock (library->priv->walker_mutex);
-	rb_debug ("killing walker threads");
-	while (library->priv->walker_threads != NULL) {
-		rb_library_walker_thread_kill (RB_LIBRARY_WALKER_THREAD (library->priv->walker_threads->data));
-		library->priv->walker_threads = g_list_next (library->priv->walker_threads);
-	}
-	g_mutex_unlock (library->priv->walker_mutex);
 
 	g_mutex_free (library->priv->walker_mutex);
 
@@ -321,14 +330,8 @@ rb_library_finalize (GObject *object)
 
 	g_free (library->priv->xml_file);
 
-	g_mutex_lock (library->priv->lock);
-
 	if (library->priv->status_poll_queued)
 		g_source_remove (library->priv->status_poll_id);
-
-	g_mutex_unlock (library->priv->lock);
-
-	g_mutex_free (library->priv->lock);
 
 	g_free (library->priv);
 
@@ -404,7 +407,10 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 	
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 
-	signal_status_changed (library);
+	rb_thread_helpers_lock_gdk ();
+	if (!library->priv->in_shutdown)
+		signal_status_changed (library);
+	rb_thread_helpers_unlock_gdk ();
 }
 
 gboolean
@@ -1466,24 +1472,23 @@ poll_status_update (gpointer data)
 {
 	RBLibrary *library = RB_LIBRARY (data);
 
-	g_mutex_lock (library->priv->lock);
+	GDK_THREADS_ENTER ();
 
 	/* This marks things as requiring an update.  That way we'll
 	 * get the full status back when the library is idle.
 	 */
 	if (rb_library_is_idle (library)) {
-		GDK_THREADS_ENTER ();
+
+		library->priv->status_poll_queued = FALSE;
 
 		signal_status_changed (library);
 
-		GDK_THREADS_LEAVE ();
-
-		library->priv->status_poll_queued = FALSE;
-	} else
+	} else {
 		library->priv->status_poll_id =
 			g_timeout_add (500, (GSourceFunc) poll_status_update, library);
-
-	g_mutex_unlock (library->priv->lock);
+	}
+	
+	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }
@@ -1493,14 +1498,10 @@ get_status_fast (RBLibrary *library, RBNode *root)
 {
 	char *ret = g_strdup_printf (_("%ld songs"), (long) rb_node_get_n_children (root));
 
-	g_mutex_lock (library->priv->lock);
-
 	if (!library->priv->status_poll_queued) {
 		g_idle_add ((GSourceFunc) poll_status_update, library);
 		library->priv->status_poll_queued = TRUE;
 	}
-	
-	g_mutex_unlock (library->priv->lock);
 	
 	return ret;
 }

@@ -84,6 +84,7 @@ RBNodeDb *		rb_library_get_node_db		(RBLibrary *library);
 
 void			rb_library_load			(RBLibrary *library);
 void			rb_library_release_brakes       (RBLibrary *library);
+void			rb_library_shutdown		(RBLibrary *library);
 
 gboolean		rb_library_is_idle		(RBLibrary *library);
 

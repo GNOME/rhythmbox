@@ -434,10 +434,12 @@ rb_shell_finalize (GObject *object)
 
 	gtk_widget_destroy (shell->priv->window);
 
-	/* hack to make the gdk thread lock available for freeing
-	 * the library.. evil */
+	rb_library_shutdown (shell->priv->library);
+
+	rb_debug ("unreffing library");
 	g_object_unref (G_OBJECT (shell->priv->library));
 
+	rb_debug ("unreffing iradio backend");
 	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
 
 	if (shell->priv->prefs != NULL)
@@ -449,6 +451,7 @@ rb_shell_finalize (GObject *object)
 
         parent_class->finalize (G_OBJECT (shell));
 
+	rb_debug ("THE END");
 	bonobo_main_quit ();
 }
 

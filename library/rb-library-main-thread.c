@@ -310,13 +310,13 @@ thread_main (RBLibraryMainThread *thread)
 		exit_if_dead (thread);
 
 		g_get_current_time (&timeout);
-		g_time_val_add (&timeout, 1000);
+		g_time_val_add (&timeout, G_USEC_PER_SEC);
 
 		while ((action = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
 			exit_if_dead (thread);
 
 			g_get_current_time (&timeout);
-			g_time_val_add (&timeout, 1000);
+			g_time_val_add (&timeout, G_USEC_PER_SEC);
 		}
 
 		

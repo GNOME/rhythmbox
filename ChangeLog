@@ -1,3 +1,21 @@
+2003-08-15  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-walker-thread.c:
+	(rb_library_walker_thread_kill), (thread_main):
+	* library/rb-library.c: (rb_library_init), (rb_library_shutdown),
+	(rb_library_finalize), (rb_library_add_uri_sync),
+	(poll_status_update), (get_status_fast):
+	* library/rb-library.h:
+	* shell/rb-shell.c: (rb_shell_finalize):
+
+	Be sure to hold the GDK lock when emitting the status changed
+	signal.  This was a nasty bug added a few changes ago.
+
+	Also, do some gymnastics to try to ensure that any active
+	walker threads are cleanly shut down when the user clicks
+	close.
+
 2003-08-14  Colin Walters  <walters@verbum.org>
 
 	* library/rb-library-walker-thread.c: (add_file), (thread_main):
