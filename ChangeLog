@@ -1,3 +1,10 @@
+2003-08-07  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-main-thread.c: (thread_main):
+
+	Be sure to remove an item from the queue even if there's an
+	error.
+
 2003-08-07  Colin Walters  <walters@gnu.org>
 
 	* shell/rb-shell-player.c:

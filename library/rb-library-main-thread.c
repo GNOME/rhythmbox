@@ -320,21 +320,20 @@ thread_main (RBLibraryMainThread *thread)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				rb_library_add_uri_sync (thread->priv->library, uri, &error);
+				rb_library_add_uri_sync (thread->priv->library, realuri, &error);
 				break;
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
-				rb_library_update_uri (thread->priv->library, uri, &error);
+				rb_library_update_uri (thread->priv->library, realuri, &error);
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
-				rb_library_remove_uri (thread->priv->library, uri);
+				rb_library_remove_uri (thread->priv->library, realuri);
 				break;
 			default:
 				break;
 			}
 
 			if (error != NULL) {
-				push_err (thread, uri, error);
-				break;
+				push_err (thread, realuri, error);
 			}
 
 			g_free (realuri);
