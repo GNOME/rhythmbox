@@ -255,7 +255,6 @@ rb_volume_finalize (GObject *object)
 static void
 update_mixer (RBVolume *volume)
 {
-	fprintf (stderr, "setting volume to %f\n", volume->priv->vol);
 	monkey_media_mixer_set_volume (volume->priv->mixer,
 				       volume->priv->vol);
 	monkey_media_mixer_set_mute (volume->priv->mixer,
