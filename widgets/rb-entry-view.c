@@ -1165,6 +1165,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
 		sort_data->view = view;
 		sort_data->propid = propid;
+		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
 
 		renderer = rb_cell_renderer_rating_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
