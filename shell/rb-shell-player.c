@@ -63,6 +63,8 @@ typedef enum
 
 static void rb_shell_player_class_init (RBShellPlayerClass *klass);
 static void rb_shell_player_init (RBShellPlayer *shell_player);
+static GObject *rb_shell_player_constructor (GType type, guint n_construct_properties,
+					     GObjectConstructParam *construct_properties);
 static void rb_shell_player_finalize (GObject *object);
 static void rb_shell_player_set_property (GObject *object,
 					  guint prop_id,
@@ -285,6 +287,7 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_shell_player_finalize;
+	object_class->constructor = rb_shell_player_constructor;
 
 	object_class->set_property = rb_shell_player_set_property;
 	object_class->get_property = rb_shell_player_get_property;
@@ -335,6 +338,23 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_STRING);
 }
 
+static GObject *
+rb_shell_player_constructor (GType type, guint n_construct_properties,
+			     GObjectConstructParam *construct_properties)
+{
+	RBShellPlayer *player;
+	RBShellPlayerClass *klass;
+	GObjectClass *parent_class;  
+
+	klass = RB_SHELL_PLAYER_CLASS (g_type_class_peek (type));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,
+							     construct_properties));
+
+	return G_OBJECT (player);
+}
+
 static void
 rb_shell_player_init (RBShellPlayer *player)
 {
@@ -345,8 +365,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
 	player->priv->mmplayer = monkey_media_player_new (&error);
-	if (error != NULL)
-	{
+	if (error != NULL) {
 		rb_error_dialog (_("Failed to create the player: %s"), error->message);
 		g_error_free (error);
 		exit (1);
