@@ -225,9 +225,6 @@ rb_property_view_finalize (GObject *object)
 	if (view->priv->query_idle_id)
 		g_source_remove (view->priv->query_idle_id);
 
-	if (view->priv->prop_model)
-		g_object_unref (G_OBJECT (view->priv->prop_model));
-
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -255,9 +252,6 @@ rb_property_view_set_property (GObject *object,
 			
 		view->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
 
-		if (view->priv->prop_model)
-			g_object_unref (G_OBJECT (view->priv->prop_model));
-
 		view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid,
 								      view->priv->query);
 
@@ -269,6 +263,7 @@ rb_property_view_set_property (GObject *object,
 		
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (view->priv->prop_model));
+		g_object_unref (G_OBJECT (view->priv->prop_model));
 
 		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
 						 G_CALLBACK (rb_property_view_selection_changed_cb),

@@ -326,40 +326,59 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 {
-	const char *name, *tmp;
+	char *name, *tmp;
 	name = rhythmdb_entry_get_string (dialog->priv->db,
 					  dialog->priv->current_entry,
 					  RHYTHMDB_PROP_TITLE);
 	tmp = g_strdup_printf (_("Properties for %s"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
-	g_free ((char*) tmp);
+	g_free (tmp);
+	g_free (name);
 }
 
 static void
 rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dialog)
 {
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title),
-			    rhythmdb_entry_get_string (dialog->priv->db,
-						       dialog->priv->current_entry,
-						       RHYTHMDB_PROP_TITLE));
+	char *tmp;
+
+	rhythmdb_read_lock (dialog->priv->db);
+	tmp = rhythmdb_entry_get_string (dialog->priv->db,
+					 dialog->priv->current_entry,
+					 RHYTHMDB_PROP_TITLE);
+	rhythmdb_read_unlock (dialog->priv->db);
+	
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title), tmp);
+	g_free (tmp);
 }
 
 static void
 rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 {
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre),
-			    rhythmdb_entry_get_string (dialog->priv->db,
-						       dialog->priv->current_entry,
-						       RHYTHMDB_PROP_GENRE));
+	char *tmp;
+
+	rhythmdb_read_lock (dialog->priv->db);
+	tmp = rhythmdb_entry_get_string (dialog->priv->db,
+					 dialog->priv->current_entry,
+					 RHYTHMDB_PROP_GENRE);
+	rhythmdb_read_unlock (dialog->priv->db);
+	
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre), tmp);
+	g_free (tmp);
 }
 
 static void
 rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 {
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location),
-			    rhythmdb_entry_get_string (dialog->priv->db,
-						       dialog->priv->current_entry,
-						       RHYTHMDB_PROP_LOCATION));
+	char *tmp;
+
+	rhythmdb_read_lock (dialog->priv->db);
+	tmp = rhythmdb_entry_get_string (dialog->priv->db,
+					 dialog->priv->current_entry,
+					 RHYTHMDB_PROP_LOCATION);
+	rhythmdb_read_unlock (dialog->priv->db);
+	
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location), tmp);
+	g_free (tmp);
 }
 
 static void
@@ -400,10 +419,16 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
-	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed),
-			    rhythmdb_entry_get_string (dialog->priv->db,
-						       dialog->priv->current_entry,
-						       RHYTHMDB_PROP_LAST_PLAYED_STR));
+	char *tmp;
+
+	rhythmdb_read_lock (dialog->priv->db);
+	tmp = rhythmdb_entry_get_string (dialog->priv->db,
+					 dialog->priv->current_entry,
+					 RHYTHMDB_PROP_LAST_PLAYED_STR);
+	rhythmdb_read_unlock (dialog->priv->db);
+	
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->lastplayed), tmp);
+	g_free (tmp);
 }
 
 static void

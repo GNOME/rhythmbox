@@ -173,6 +173,8 @@ struct RBLibrarySourcePrivate
 	glong total_duration;
 
 	char *status;
+	char *artist;
+	char *album;
 
 	char *search_text;
 	GList *selected_genres;
@@ -784,21 +786,23 @@ impl_get_artist (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	RhythmDBEntry *entry;
-	const char *ret;
+
+	g_free (source->priv->artist);
 
 	entry = rb_entry_view_get_playing_entry (source->priv->songs);
 
 	if (entry != NULL) {
 		rhythmdb_read_lock (source->priv->db);
 		
-		ret = rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST);
+		source->priv->artist =
+			rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST);
 
 		rhythmdb_read_unlock (source->priv->db);
-
-		return ret;
 	} else {
-		return NULL;
+		source->priv->artist = NULL;
 	}
+
+	return source->priv->artist;
 }
 
 static const char *
@@ -806,21 +810,22 @@ impl_get_album (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	RhythmDBEntry *entry;
-	const char *ret;
+
+	g_free (source->priv->artist);
 
 	entry = rb_entry_view_get_playing_entry (source->priv->songs);
 
 	if (entry != NULL) {
 		rhythmdb_read_lock (source->priv->db);
 
-		ret = rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM);
+		source->priv->album =
+			rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM);
 		
 		rhythmdb_read_unlock (source->priv->db);
-
-		return ret;
 	} else {
-		return NULL;
+		source->priv->album = NULL;
 	}
+	return source->priv->album;
 }
 
 
@@ -1196,7 +1201,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 			  source);
 	
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
-
 	if (!sync)
 		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 	else {
@@ -1209,6 +1213,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	rhythmdb_query_free (artist_query);
 	rhythmdb_query_free (album_query);
 	rhythmdb_query_free (query);
+	g_object_unref (G_OBJECT (query_model));
 }
 
 static void

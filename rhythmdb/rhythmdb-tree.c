@@ -1782,6 +1782,7 @@ do_property_query_recurse (RhythmDBTree *db, GPtrArray *query, guint prop_type, 
 	}
 
 	g_list_free (conjunctions);
+	g_hash_table_destroy (data->result);
 	g_free (data);
 }
 

@@ -418,11 +418,12 @@ static void
 rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				   RBPlaylistSource *source)
 {
-	const char *location = rhythmdb_entry_get_string (db, entry,
-							  RHYTHMDB_PROP_LOCATION);
+	char *location = rhythmdb_entry_get_string (db, entry,
+						    RHYTHMDB_PROP_LOCATION);
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 	}
+	g_free (location);
 }
 
 RhythmDBQueryModel *
@@ -582,7 +583,7 @@ void
 rb_playlist_source_add_entry (RBPlaylistSource *source, 
 			      RhythmDBEntry *entry)
 {
-	const char *location;
+	char *location;
 
 	rhythmdb_read_lock (source->priv->db);
 	location = rhythmdb_entry_get_string (source->priv->db, entry,
@@ -590,6 +591,7 @@ rb_playlist_source_add_entry (RBPlaylistSource *source,
 	rhythmdb_read_lock (source->priv->db);
 
 	rb_playlist_source_add_location (source, location);
+	g_free (location);
 }
 
 
@@ -635,8 +637,8 @@ playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **t
 
 	rhythmdb_read_lock (db);
 
-	*uri = (char*) rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
-	*title = (char*) rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE);
+	*uri = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
+	*title = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE);
 
 	rhythmdb_read_unlock (db);
 }
@@ -717,7 +719,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 		do { 
 			xmlNodePtr child_node = xmlNewChild (node, NULL, "location", NULL);
 			RhythmDBEntry *entry;
-			const char *location;
+			char *location;
 			char *encoded;
 
 			gtk_tree_model_get (GTK_TREE_MODEL (source->priv->model), &iter, 0, &entry, -1);
@@ -728,6 +730,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 			rhythmdb_read_unlock (source->priv->db);
 			
 			encoded = xmlEncodeEntitiesReentrant (NULL, location);			
+			g_free (location);
 			
 			xmlNodeSetContent (child_node, encoded);
 			g_free (encoded);

@@ -407,8 +407,8 @@ void
 rhythmdb_property_model_append_entry (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
 {
 
-	const char *title;
-	const char *sort_key;
+	char *title;
+	char *sort_key;
 		
 	rhythmdb_read_lock (model->priv->db); 
 	title = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
@@ -424,6 +424,8 @@ rhythmdb_property_model_append_entry (RhythmDBPropertyModel *model, RhythmDBEntr
 
 	rhythmdb_property_model_append (model, title, sort_key);
 out:
+	g_free (title);
+	g_free (sort_key);
 	g_mutex_unlock (model->priv->lock);
 }
 
@@ -443,23 +445,25 @@ static void
 rhythmdb_property_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 					RhythmDBPropertyModel *model)
 {
-
+	char *name = NULL, *sort_key = NULL;
 	g_mutex_lock (model->priv->lock);
 
 	if (G_LIKELY (model->priv->query)) {
-		const char *name = rhythmdb_entry_get_string (db, entry, model->priv->propid);
+		name = rhythmdb_entry_get_string (db, entry, model->priv->propid);
 		if (g_hash_table_lookup (model->priv->propset, name))
 			goto out;
 		if (g_hash_table_lookup (model->priv->pending_propset, name))
 			goto out;
 
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			const char *sort_key = rhythmdb_entry_get_string (db, entry, model->priv->sort_propid);
+			sort_key = rhythmdb_entry_get_string (db, entry, model->priv->sort_propid);
 			rhythmdb_property_model_append (model, name, sort_key);
 		}
 	}
 
 out:
+	g_free (name);
+	g_free (sort_key);
 	g_mutex_unlock (model->priv->lock);
 }
 

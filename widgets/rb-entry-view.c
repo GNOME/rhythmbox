@@ -380,8 +380,6 @@ rb_entry_view_finalize (GObject *object)
 	g_hash_table_destroy (view->priv->propid_column_map);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 
-	g_object_unref (G_OBJECT (view->priv->model));
-
 	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
 	g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
 
@@ -677,7 +675,7 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				RBEntryView *view)
 {
 	gint a_int, b_int;
-	const char *a_str, *b_str;
+	char *a_str = NULL, *b_str = NULL;
 	gint ret;
 
 	rhythmdb_read_lock (view->priv->db);
@@ -686,6 +684,8 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
+	g_free (a_str);
+	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -693,6 +693,8 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
+	g_free (a_str);
+	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -708,6 +710,8 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
+	g_free (a_str);
+	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -762,7 +766,7 @@ static gint
 rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				struct RBEntryViewCellDataFuncData *data)
 {
-	const char *a_val, *b_val;
+	char *a_val, *b_val;
 	gint ret;
 
 	rhythmdb_read_lock (data->view->priv->db);
@@ -773,6 +777,9 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	ret = strcmp (a_val, b_val);
 
 	rhythmdb_read_unlock (data->view->priv->db);
+
+	g_free (a_val);
+	g_free (b_val);
 
 	return ret;
 }
@@ -903,7 +910,7 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 				     struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
-	const char *str;
+	char *str;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
@@ -914,6 +921,7 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	rhythmdb_read_unlock (data->view->priv->db);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_free (str);
 }
 
 static void
@@ -1480,7 +1488,6 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       RBEntryView *view)
 {
 	RhythmDBEntry *entry = entry_from_tree_iter (view, iter);
-	rb_debug ("row inserted");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }

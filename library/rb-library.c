@@ -544,7 +544,7 @@ rb_library_add_uri (RBLibrary *library, const char *uri, GError **error)
 void
 rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **error)
 {
-	const char *location;
+	char *location;
 	RBLibraryEntryUpdateData *metadata;
 
 	rb_atomic_inc (&library->priv->refresh_count);
@@ -577,6 +577,7 @@ rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **erro
 	if (!(error && *error))
 		rb_file_monitor_add (rb_file_monitor_get (), location);
 out:
+	g_free (location);
 	signal_progress_changed (library);
 	signal_status_changed (library);
 }

@@ -193,7 +193,7 @@ void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 
-const char *	rhythmdb_entry_get_string	(RhythmDB *db,
+char *		rhythmdb_entry_get_string	(RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 guint property_id);
 gboolean	rhythmdb_entry_get_boolean	(RhythmDB *db,

@@ -466,8 +466,8 @@ rb_player_sync (RBPlayer *player)
 		const char *song = player->priv->title;
 		char *escaped, *s;
 		gboolean have_duration = rb_player_get_duration (player) > 0;
-		const char *album; 
-		const char *artist; 
+		char *album; 
+		char *artist; 
 
 		rhythmdb_read_lock (player->priv->db);
 
@@ -530,6 +530,8 @@ rb_player_sync (RBPlayer *player)
 		rb_player_set_show_timeline (player, have_duration);
 		if (have_duration)
 			rb_player_sync_time (player);
+		g_free (artist);
+		g_free (album);
 	} else {
 		rb_debug ("not playing");
 		tmp = SONG_MARKUP (_("Not playing"));

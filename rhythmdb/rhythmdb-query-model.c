@@ -418,6 +418,8 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	g_return_if_fail (model->priv != NULL);
 
+	rb_debug ("finalizing query model");
+
 	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->entries);
 
@@ -491,7 +493,6 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 {
 	if (G_LIKELY (model->priv->query)) {
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rb_debug ("queueing entry addition");
 			rhythmdb_query_model_add_entry (model, entry);
 		}
 	}
@@ -589,8 +590,6 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		if (update == NULL)
 			break;
 
-		rb_debug ("processing update");
-
 		iter.stamp = model->priv->stamp;
 
 		switch (update->type) {
@@ -614,7 +613,6 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 							      &iter);
 				
-			rb_debug ("emitting row inserted");
 			gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 						     path, &iter);
 			gtk_tree_path_free (path);
@@ -757,6 +755,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 			GtkTreeIter iter;
 			GtkTreePath *path;
 			GSequencePtr ptr;
+			char *location;
 
 			path = gtk_tree_row_reference_get_path (tem->data);
 	  
@@ -766,8 +765,9 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 
 			rhythmdb_read_lock (model->priv->db);
 
-			g_string_append (data, rhythmdb_entry_get_string (model->priv->db, entry,
-									  RHYTHMDB_PROP_LOCATION));
+			location = rhythmdb_entry_get_string (model->priv->db, entry, RHYTHMDB_PROP_LOCATION);
+			g_string_append (data, location);
+			g_free (location);
 
 			rhythmdb_read_unlock (model->priv->db);
 

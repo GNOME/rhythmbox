@@ -1020,6 +1020,17 @@ rhythmdb_unsaved_prop_get_type (void)
 	return etype;
 }
 
+char *
+rhythmdb_entry_get_string (RhythmDB *db, RhythmDBEntry *entry, guint propid)
+{ 
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	GValue gval = {0, };
+	db_enter (db, FALSE);
+	g_value_init (&gval, G_TYPE_STRING);
+	klass->impl_entry_get (db, entry, propid, &gval);
+	return g_value_dup_string (&gval);
+}
+
 #define DEFINE_GETTER(NAME, TYPE, GTYPE, DEFAULT)	\
 TYPE \
 rhythmdb_entry_get_ ## NAME (RhythmDB *db, RhythmDBEntry *entry, guint propid) \
@@ -1034,7 +1045,6 @@ rhythmdb_entry_get_ ## NAME (RhythmDB *db, RhythmDBEntry *entry, guint propid) \
 	return retval; \
 }
 
-DEFINE_GETTER(string, const char *, STRING, NULL)
 DEFINE_GETTER(boolean, gboolean, BOOLEAN, FALSE)
 DEFINE_GETTER(pointer, gpointer, POINTER, NULL)
 DEFINE_GETTER(long, long, LONG, 0)
