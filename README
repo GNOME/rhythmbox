@@ -1,0 +1,64 @@
+General Information
+===================
+
+This is Rhythmbox version 0.3. Rhythmbox is your one-stop multimedia
+application, supporting a music library, multiple "music groups",
+internet radio, and more.
+
+Rhythmbox is free software, licensed under the GNU GPL.
+
+The official web site is:
+  http://www.rhythmbox.org/
+
+Information about mailing lists can be found at:
+  http://lists.sourceforge.net/lists/listinfo/rhythmbox-devel
+
+Our IRC channel is #rhythmbox on GIMPnet (irc.gimp.org).
+
+Rhythmbox CVS is hosted at gnome.org, rhythmbox-new module.
+
+Installation
+============
+
+See the file 'INSTALL'
+
+How to report bugs
+==================
+
+Bugs should be reported to the GNOME bug tracking system.
+(http://bugzilla.gnome.org, product rhythmbox.) You will need to create an
+account for yourself.
+
+In the bug report please include:
+
+* Information about your system. For instance:
+
+   - MonkeyMedia version
+   - GStreamer version
+   - Available GStreamer plugins (run gst-inspect with no arguments)
+   
+  And anything else you think is relevant.
+
+* How to reproduce the bug.
+
+  If you can reproduce the bug with one of the programs in tests/, that
+  will be most convenient.  Otherwise, please include a short test program
+  that exhibits the behavior.  As a last resort, you can also provide
+  a pointer to a larger piece of software that can be downloaded.
+
+* If the bug was a crash, the exact text that was printed out when the
+  crash occured, and a trace (which can be obtained by using gdb or bug-buddy).
+
+Patches
+=======
+
+Patches should also be submitted to bugzilla.gnome.org. If the patch fixes
+an existing bug, add the patch as an attachment to that bug report.
+
+Otherwise, enter a new bug report that describes the patch, and attach
+the patch to that bug report.
+
+Bug reports containing patches should include the PATCH keywoard in their
+keyword field.
+
+Patches should be in unified diff form. (The -u option to GNU diff.)

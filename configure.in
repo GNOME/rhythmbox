@@ -1,0 +1,71 @@
+AC_INIT(shell)
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE(rhythmbox, 0.3.0)
+
+AM_MAINTAINER_MODE
+
+AC_PROG_INTLTOOL
+
+AC_ISC_POSIX
+AC_PROG_CC
+AC_STDC_HEADERS
+AM_PROG_LIBTOOL
+
+GNOME_COMPILE_WARNINGS
+
+MONKEYMEDIA_REQUIRED=0.5.0
+
+AC_SUBST(MONKEYMEDIA_REQUIRED)
+
+PKG_CHECK_MODULES(RHYTHMBOX,                    \
+                  gtk+-2.0                      \
+                  libgnomeui-2.0                \
+		  libglade-2.0                  \
+		  gnome-vfs-2.0                 \
+		  libpanelapplet-2.0            \
+		  libbonobo-2.0			\
+		  bonobo-activation-2.0		\
+		  libgnomecanvas-2.0 >= 1.113.0 \
+		  monkey-media >= $MONKEYMEDIA_REQUIRED)
+AC_SUBST(RHYTHMBOX_CFLAGS)
+AC_SUBST(RHYTHMBOX_LIBS)
+
+ALL_LINGUAS=
+
+GETTEXT_PACKAGE=rhythmbox
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE")
+
+AM_GLIB_GNU_GETTEXT
+
+CFLAGS="$CFLAGS -Wall -Werror"
+
+AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
+
+AC_PATH_PROG(GCONFTOOL, gconftool-2)
+
+AM_GCONF_SOURCE_2
+
+ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
+AC_SUBST(ORBIT_IDL)
+
+LIBBONOBO_IDL="`$PKG_CONFIG --variable=idldir libbonobo-2.0`"
+AC_SUBST(LIBBONOBO_IDL)
+
+BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
+AC_SUBST(BONOBO_ACTIVATION_IDL)
+
+AC_OUTPUT([ 
+Makefile
+lib/Makefile
+lib/widgets/Makefile
+lib/view/Makefile
+library/Makefile
+shell/Makefile
+data/Makefile
+data/ui/Makefile
+data/art/Makefile
+data/glade/Makefile
+data/node-views/Makefile
+tests/Makefile
+])

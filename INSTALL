@@ -1,0 +1,29 @@
+Prerequisites
+=============
+
+Rhythmbox requires the following packages:
+
+ - A working GNOME 2 platform (more specifically, you need glib-2.0, gtk+-2.0,
+   gnome-vfs-2.0, libgnome-2.0, gconf-2.0 and libglade-2.0.)
+   For more information, see:
+
+    http://www.gnome.org/
+
+ - The MonkeyMedia multimedia library, available from:
+
+    http://nl.linux.org/~jorn/monkey-media.html
+
+Simple install procedure
+========================
+
+  % gzip -cd rhythmbox-0.3.tar.gz | tar xvf -    # unpack the sources
+  % cd rhythmbox-0.3                             # change to the directory
+  % ./configure                                  # run the 'configure' script
+  % make                                         # build Rhythmbox
+  [ Become root if necessary ]
+  % make install                                 # install Rhythmbox
+
+The Details
+===========
+
+More detailed installation instructions can be found in INSTALL.GNU.

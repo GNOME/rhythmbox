@@ -1,0 +1,10 @@
+#include <Bonobo.idl>
+
+module GNOME
+{
+	interface RhythmboxShell : Bonobo::Unknown
+	{
+		void quit ();
+	};
+};
+
