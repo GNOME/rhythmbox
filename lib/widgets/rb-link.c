@@ -28,6 +28,8 @@
 
 #include "rb-link.h"
 #include "rb-dialog.h"
+#include "rb-debug.h"
+#include "rb-ellipsizing-label.h"
 
 typedef enum
 {
@@ -156,7 +158,14 @@ rb_link_init (RBLink *link)
 {
 	link->priv = g_new0 (RBLinkPrivate, 1);
 
+#ifdef RB_LINK_USE_ELLIPSIZING_LABEL
+	link->priv->label = rb_ellipsizing_label_new ("");
+	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (link->priv->label), RB_ELLIPSIZE_END);
+#else
 	link->priv->label = gtk_label_new ("");
+#endif
+ 	gtk_label_set_use_markup (GTK_LABEL (link->priv->label), FALSE);
+ 	gtk_label_set_selectable (GTK_LABEL (link->priv->label), FALSE);	
 	gtk_misc_set_alignment (GTK_MISC (link->priv->label), 0.0, 0.5);
 
 	gtk_container_add (GTK_CONTAINER (link), link->priv->label);
@@ -214,7 +223,14 @@ rb_link_set_property (GObject *object,
 	case PROP_TEXT:
 		g_free (link->priv->text);
 		link->priv->text = g_strdup (g_value_get_string (value));
-		gtk_label_set_text (GTK_LABEL (link->priv->label), link->priv->text);
+#ifdef RB_LINK_USE_ELLIPSIZING_LABEL
+		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (link->priv->label),
+					       link->priv->text);
+#else
+		gtk_label_set_text (GTK_LABEL (link->priv->label),
+				    link->priv->text);
+#endif
+		
 		break;
 	case PROP_TOOLTIP:
 		g_free (link->priv->tooltip);
@@ -338,6 +354,8 @@ rb_link_enter_notify_event_cb (GtkWidget *widget,
 {
 	GdkCursor *cursor;
 
+	rb_debug ("enter notify");
+
 	if (!link->priv->active)
 		return TRUE;
 
@@ -355,6 +373,8 @@ rb_link_leave_notify_event_cb (GtkWidget *widget,
 			       GdkEventCrossing *event,
 			       RBLink *link)
 {
+	rb_debug ("leave notify");
+
 	if (!link->priv->active)
 		return TRUE;
 

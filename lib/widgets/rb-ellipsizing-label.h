@@ -68,6 +68,8 @@ void       rb_ellipsizing_label_set_markup	(RBEllipsizingLabel *label,
 
 gboolean   rb_ellipsizing_label_get_ellipsized  (RBEllipsizingLabel *label);
 
+int		rb_ellipsizing_label_get_width	(RBEllipsizingLabel *label);
+
 G_END_DECLS
 
 #endif /* RB_ELLIPSIZING_LABEL_H */

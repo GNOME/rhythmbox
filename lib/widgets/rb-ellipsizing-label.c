@@ -30,6 +30,7 @@
 struct RBEllipsizingLabelPrivate
 {
 	char *full_text;
+	int real_width;
 
 	RBEllipsizeMode mode;
 };
@@ -233,7 +234,8 @@ end_element_handler    (GMarkupParseContext *context,
 static void
 append_ellipsized_text (const char *text,
 			EllipsizeStringData *data,
-			int text_len)
+			int text_len,
+			gboolean markup)
 {
 	int position;
 	int new_position;
@@ -252,28 +254,44 @@ append_ellipsized_text (const char *text,
 	         (position > data->end_offset &&
 	          new_position > data->end_offset))
 	{
-		escaped = g_markup_escape_text (text, strlen (text));
-		g_string_append (data->string, escaped);
-		g_free (escaped);
+		if (markup)
+		{
+			escaped = g_markup_escape_text (text, strlen (text));
+			g_string_append (data->string, escaped);
+			g_free (escaped);
+		}
+		else
+			g_string_append (data->string, text);
 	}
 	else if (position <= data->start_offset &&
 		 new_position >= data->end_offset)
 	{
 		if (position < data->start_offset)
 		{
-			escaped = g_markup_escape_text (text, data->start_offset - position);
-			g_string_append (data->string, escaped);
-			g_free (escaped);
+			if (markup)
+			{
+				escaped = g_markup_escape_text (text, data->start_offset - position);
+				g_string_append (data->string, escaped);
+				g_free (escaped);
+			}
+			else
+				g_string_append_len (data->string, text, data->start_offset - position);
 		}
 
 		g_string_append (data->string, ELLIPSIS);
 		
 		if (new_position > data->end_offset)
 		{
-			escaped = g_markup_escape_text (text + data->end_offset - position,
-							position + text_len - data->end_offset);
-			g_string_append (data->string, escaped);
-			g_free (escaped);
+			if (markup)
+			{
+				escaped = g_markup_escape_text (text + data->end_offset - position,
+								position + text_len - data->end_offset);
+				g_string_append (data->string, escaped);
+				g_free (escaped);
+			}
+			else
+				g_string_append_len (data->string, text + data->end_offset - position,
+						     position + text_len - data->end_offset);
 		}
 	}
 
@@ -289,7 +307,7 @@ text_handler           (GMarkupParseContext *context,
 {
 	EllipsizeStringData *data = (EllipsizeStringData *)user_data;
 
-	append_ellipsized_text (text, data, text_len);
+	append_ellipsized_text (text, data, text_len, TRUE);
 }
 
 static GMarkupParser pango_markup_parser = {
@@ -327,7 +345,7 @@ ellipsize_string (const char *string,
 	else
 	{
 		append_ellipsized_text (string, &data,
-					g_utf8_strlen (string, -1));
+					g_utf8_strlen (string, -1), FALSE);
 	}
 	
 	result = str->str;
@@ -336,9 +354,9 @@ ellipsize_string (const char *string,
 }
 
 static char *
-rb_string_ellipsize_start (const char *string, PangoLayout *layout, int width, gboolean markup)
+rb_string_ellipsize_start (const char *string, PangoLayout *layout, int width,
+			   int *resulting_width, gboolean markup)
 {
-	int resulting_width;
 	int *cuts;
 	int *widths;
 	int char_len;
@@ -355,9 +373,9 @@ rb_string_ellipsize_start (const char *string, PangoLayout *layout, int width, g
 	 * to just dump this, and always do the compute_character_widths() etc.
 	 * down below.
 	 */
-	resulting_width = measure_string_width (string, layout, markup);
+	*resulting_width = measure_string_width (string, layout, markup);
 
-	if (resulting_width <= width) {
+	if (*resulting_width <= width) {
 		/* String is already short enough. */
 		return g_strdup (string);
 	}
@@ -385,9 +403,9 @@ rb_string_ellipsize_start (const char *string, PangoLayout *layout, int width, g
 
         for (truncate_offset = 1; truncate_offset < char_len; truncate_offset++) {
 
-        	resulting_width -= widths[truncate_offset];
+        	*resulting_width -= widths[truncate_offset];
 
-        	if (resulting_width <= width &&
+        	if (*resulting_width <= width &&
 		    cuts[truncate_offset]) {
 			break;
         	}
@@ -402,9 +420,9 @@ rb_string_ellipsize_start (const char *string, PangoLayout *layout, int width, g
 }
 
 static char *
-rb_string_ellipsize_end (const char *string, PangoLayout *layout, int width, gboolean markup)
+rb_string_ellipsize_end (const char *string, PangoLayout *layout, int width,
+			 int *resulting_width, gboolean markup)
 {
-	int resulting_width;
 	int *cuts;
 	int *widths;
 	int char_len;
@@ -416,9 +434,9 @@ rb_string_ellipsize_end (const char *string, PangoLayout *layout, int width, gbo
 	if (*string == '\0')
 		return g_strdup ("");
 
-	resulting_width = measure_string_width (string, layout, markup);
+	*resulting_width = measure_string_width (string, layout, markup);
 	
-	if (resulting_width <= width) {
+	if (*resulting_width <= width) {
 		return g_strdup (string);
 	}
 
@@ -431,8 +449,8 @@ rb_string_ellipsize_end (const char *string, PangoLayout *layout, int width, gbo
 	compute_character_widths (string, layout, &char_len, &widths, &cuts, markup);
 	
         for (truncate_offset = char_len - 1; truncate_offset > 0; truncate_offset--) {
-		resulting_width -= widths[truncate_offset];
-        	if (resulting_width <= width &&
+		*resulting_width -= widths[truncate_offset];
+        	if (*resulting_width <= width &&
 		    cuts[truncate_offset]) {
 			break;
         	}
@@ -448,9 +466,9 @@ rb_string_ellipsize_end (const char *string, PangoLayout *layout, int width, gbo
 }
 
 static char *
-rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, gboolean markup)
+rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width,
+			    int *resulting_width, gboolean markup)
 {
-	int resulting_width;
 	int *cuts;
 	int *widths;
 	int char_len;
@@ -464,9 +482,9 @@ rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, 
 	if (*string == '\0')
 		return g_strdup ("");
 
-	resulting_width = measure_string_width (string, layout, markup);
+	*resulting_width = measure_string_width (string, layout, markup);
 	
-	if (resulting_width <= width) {
+	if (*resulting_width <= width) {
 		return g_strdup (string);
 	}
 
@@ -489,26 +507,26 @@ rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, 
 	}
 
 	while (starting_fragment_length > 0 || ending_fragment_offset < char_len) {
-		if (resulting_width <= width &&
+		if (*resulting_width <= width &&
 		    cuts[ending_fragment_offset] &&
 		    cuts[starting_fragment_length]) {
 			break;
 		}
 
 		if (starting_fragment_length > 0) {
-			resulting_width -= widths[starting_fragment_length];
+			*resulting_width -= widths[starting_fragment_length];
 			starting_fragment_length--;
 		}
 
 	shave_end:
-		if (resulting_width <= width &&
+		if (*resulting_width <= width &&
 		    cuts[ending_fragment_offset] &&
 		    cuts[starting_fragment_length]) {
 			break;
 		}
 
 		if (ending_fragment_offset < char_len) {
-			resulting_width -= widths[ending_fragment_offset];
+			*resulting_width -= widths[ending_fragment_offset];
 			ending_fragment_offset++;
 		}
 	}
@@ -524,11 +542,12 @@ rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, 
 
 
 /**
- * gul_pango_layout_set_text_ellipsized
+ * set_text_ellipsized
  *
  * @layout: a pango layout
  * @string: A a string to be ellipsized.
  * @width: Desired maximum width in points.
+ * @resulting_width: The actual width used. 
  * @mode: The desired ellipsizing mode.
  * 
  * Truncates a string if required to fit in @width and sets it on the
@@ -538,11 +557,12 @@ rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, 
  * 
  */
 static gboolean
-gul_pango_layout_set_text_ellipsized (PangoLayout  *layout,
-				      const char   *string,
-				      int           width,
-				      RBEllipsizeMode mode,
-				      gboolean markup)
+set_text_ellipsized (PangoLayout  *layout,
+		     const char   *string,
+		     int           width,
+		     int	   *resulting_width,
+		     RBEllipsizeMode mode,
+		     gboolean markup)
 {
 	gboolean ret;
 	char *s;
@@ -553,13 +573,16 @@ gul_pango_layout_set_text_ellipsized (PangoLayout  *layout,
 	
 	switch (mode) {
 	case RB_ELLIPSIZE_START:
-		s = rb_string_ellipsize_start (string, layout, width, markup);
+		s = rb_string_ellipsize_start (string, layout, width,
+					       resulting_width, markup);
 		break;
 	case RB_ELLIPSIZE_MIDDLE:
-		s = rb_string_ellipsize_middle (string, layout, width, markup);
+		s = rb_string_ellipsize_middle (string, layout, width,
+						resulting_width, markup);
 		break;
 	case RB_ELLIPSIZE_END:
-		s = rb_string_ellipsize_end (string, layout, width, markup);
+		s = rb_string_ellipsize_end (string, layout, width,
+					     resulting_width, markup);
 		break;
 	default:
 		g_return_val_if_reached (FALSE);
@@ -685,6 +708,12 @@ rb_ellipsizing_label_set_mode (RBEllipsizingLabel *label,
 	label->priv->mode = mode;
 }
 
+int
+rb_ellipsizing_label_get_width (RBEllipsizingLabel *label)
+{
+	return label->priv->real_width;
+}
+
 static void
 real_size_request (GtkWidget *widget, GtkRequisition *requisition)
 {
@@ -699,6 +728,7 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
 	RBEllipsizingLabel *label;
 	gboolean markup;
+	PangoLayout *layout;
 	
 	markup = gtk_label_get_use_markup (GTK_LABEL (widget));
 	
@@ -710,30 +740,33 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	 * we just punt in that case, I don't know what to do really.
 	 */
 
-	if (GTK_LABEL (label)->layout != NULL) {
-		if (label->priv->full_text == NULL) {
-			pango_layout_set_text (GTK_LABEL (label)->layout, "", -1);
-		} else {
-			RBEllipsizeMode mode;
+	layout = gtk_label_get_layout (GTK_LABEL (label));
 
-			if (label->priv->mode != -1)
-				mode = label->priv->mode;
+	g_return_if_fail (layout != NULL);
 
-			if (ABS (GTK_MISC (label)->xalign - 0.5) < 1e-12)
-				mode = RB_ELLIPSIZE_MIDDLE;
-			else if (GTK_MISC (label)->xalign < 0.5)
-				mode = RB_ELLIPSIZE_END;
-			else
-				mode = RB_ELLIPSIZE_START;
+	if (label->priv->full_text == NULL) {
+		pango_layout_set_text (GTK_LABEL (label)->layout, "", -1);
+	} else {
+		RBEllipsizeMode mode;
 
-			label->ellipsized = gul_pango_layout_set_text_ellipsized (GTK_LABEL (label)->layout,
-							      label->priv->full_text,
-							      allocation->width,
-							      mode,
-							      markup);
+		if (label->priv->mode != -1)
+			mode = label->priv->mode;
 
-			gtk_widget_queue_draw (GTK_WIDGET (label));
-		}
+		if (ABS (GTK_MISC (label)->xalign - 0.5) < 1e-12)
+			mode = RB_ELLIPSIZE_MIDDLE;
+		else if (GTK_MISC (label)->xalign < 0.5)
+			mode = RB_ELLIPSIZE_END;
+		else
+			mode = RB_ELLIPSIZE_START;
+
+		label->ellipsized = set_text_ellipsized (GTK_LABEL (label)->layout,
+							 label->priv->full_text,
+							 allocation->width,
+							 &label->priv->real_width,
+							 mode,
+							 markup);
+
+		gtk_widget_queue_draw (GTK_WIDGET (label));
 	}
 
 	GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
@@ -752,7 +785,7 @@ real_expose_event (GtkWidget *widget, GdkEventExpose *event)
 	 * ellipsized text has been set on the layout in size_allocate
 	 */
 	GTK_WIDGET_CLASS (parent_class)->size_request (widget, &req);
-	widget->requisition.width = req.width;
+	widget->requisition.width = label->priv->real_width;
 	GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
 	widget->requisition.width = 0;
 
@@ -783,3 +816,63 @@ rb_ellipsizing_label_get_ellipsized (RBEllipsizingLabel *label)
 
 	return label->ellipsized;
 }
+
+#ifdef RB_ELLIPSIZING_LABEL_TEST
+
+#include <gtk/gtk.h>
+
+static void
+entry_changed_cb (GtkEntry *entry, RBEllipsizingLabel *label)
+{
+	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (label),
+				       gtk_entry_get_text (entry));
+}
+
+int
+main (int argc, char **argv)
+{
+	GtkWidget *toplevel, *vbox, *hbox, *hbox2, *entry, *entry2;
+	GtkWidget *pre_label, *label, *label2, *label3, *mid_label;
+
+	gtk_init (&argc, &argv);
+
+	toplevel = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_default_size (GTK_WINDOW (toplevel), 250, 100);
+
+	vbox = gtk_vbox_new (FALSE, 0);
+	hbox = gtk_hbox_new (FALSE, 0);
+	hbox2 = gtk_hbox_new (FALSE, 0);
+
+	pre_label = gtk_label_new ("From ");
+	label = rb_ellipsizing_label_new ("");
+	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (label), RB_ELLIPSIZE_END);
+	mid_label = gtk_label_new (" by ");
+	label2 = rb_ellipsizing_label_new ("");
+	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (label), RB_ELLIPSIZE_END);
+	label3 = rb_ellipsizing_label_new ("");
+	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (label), RB_ELLIPSIZE_END);
+	
+	entry = gtk_entry_new ();
+	g_signal_connect (G_OBJECT (entry), "changed",
+			  G_CALLBACK (entry_changed_cb), label);
+	g_signal_connect (G_OBJECT (entry), "changed",
+			  G_CALLBACK (entry_changed_cb), label3);
+	entry2 = gtk_entry_new ();
+	g_signal_connect (G_OBJECT (entry2), "changed",
+			  G_CALLBACK (entry_changed_cb), label2);
+	
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), entry);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), entry2);
+	gtk_box_pack_start (GTK_BOX (vbox), label3, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), pre_label, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), label, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), mid_label, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), label2, TRUE, TRUE, 0);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), hbox);
+	gtk_container_add (GTK_CONTAINER (toplevel), vbox);
+
+	gtk_widget_show_all (toplevel);
+
+	gtk_main ();
+}
+#endif

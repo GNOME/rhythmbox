@@ -1,3 +1,20 @@
+2003-08-27  Colin Walters  <walters@verbum.org>
+
+	* NEWS: Update.
+	
+	* lib/widgets/rb-ellipsizing-label.c: (append_ellipsized_text),
+	(text_handler), (ellipsize_string), (rb_string_ellipsize_start),
+	(rb_string_ellipsize_end), (rb_string_ellipsize_middle),
+	(set_text_ellipsized), (rb_ellipsizing_label_get_width),
+	(real_size_allocate), (real_expose_event), (entry_changed_cb),
+	(main):
+	* lib/widgets/rb-ellipsizing-label.h:
+	* lib/widgets/rb-link.c: (rb_link_init), (rb_link_set_property),
+	(rb_link_enter_notify_event_cb), (rb_link_leave_notify_event_cb):
+
+	Do some work on using ellipsizing labels for the artist/album
+	links.  Disabled for now pending some GTK+ fixes.
+
 2003-08-27  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac:
