@@ -29,7 +29,7 @@
 #include <libgnomevfs/gnome-vfs-file-info.h>
 
 #include "rhythmdb.h"
-#include "rhythmdb-model.h"
+#include "rhythmdb-query-model.h"
 
 G_BEGIN_DECLS
 
@@ -95,7 +95,7 @@ void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *
 void		rb_entry_view_set_columns_clickable	(RBEntryView *view, gboolean clickable);
 
 void		rb_entry_view_set_model			(RBEntryView *view,
-							 RhythmDBModel *model);
+							 RhythmDBQueryModel *model);
 
 gboolean	rb_entry_view_busy			(RBEntryView *view);
 

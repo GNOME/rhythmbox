@@ -27,7 +27,6 @@
 
 #include <gtk/gtktreednd.h>
 
-#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
 #include "rb-thread-helpers.h"
@@ -36,7 +35,6 @@
 
 static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
-static void rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
@@ -61,11 +59,6 @@ static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *
 						   RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
-static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
-						    GtkTreeIter *iter);
-static void rhythmdb_query_model_cancel (RhythmDBModel *model);
-static gboolean rhythmdb_query_model_has_pending_changes (RhythmDBModel *model);
-static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
 static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 							  GList *paths,
@@ -204,13 +197,6 @@ rhythmdb_query_model_get_type (void)
 			NULL
 		};
 
-		static const GInterfaceInfo rhythmdb_model_info =
-		{
-			(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
-			NULL,
-			NULL
-		};
-
 		static const GInterfaceInfo drag_source_info = {
 			(GInterfaceInitFunc) rhythmdb_query_model_drag_source_init,
 			NULL,
@@ -230,10 +216,6 @@ rhythmdb_query_model_get_type (void)
 		g_type_add_interface_static (rhythmdb_query_model_type,
 					     GTK_TYPE_TREE_MODEL,
 					     &tree_model_info);
-
-		g_type_add_interface_static (rhythmdb_query_model_type,
-					     RHYTHMDB_TYPE_MODEL,
-					     &rhythmdb_model_info);
 
 		g_type_add_interface_static (rhythmdb_query_model_type,
 					     RB_TYPE_TREE_DRAG_SOURCE,
@@ -334,15 +316,6 @@ rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface)
 	iface->iter_n_children = rhythmdb_query_model_iter_n_children;
 	iface->iter_nth_child = rhythmdb_query_model_iter_nth_child;
 	iface->iter_parent = rhythmdb_query_model_iter_parent;
-}
-
-static void
-rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
-{
-	iface->entry_to_iter = rhythmdb_query_model_entry_to_iter;
-	iface->poll = rhythmdb_query_model_poll;
-	iface->cancel = rhythmdb_query_model_cancel;
-	iface->has_pending_changes = rhythmdb_query_model_has_pending_changes;
 }
 
 static void
@@ -520,10 +493,9 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 			     "db", db, NULL);
 }
 
-static void
-rhythmdb_query_model_cancel (RhythmDBModel *rmodel)
+void
+rhythmdb_query_model_cancel (RhythmDBQueryModel *model)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	rb_debug ("cancelling query");
 	g_async_queue_push (model->priv->query_complete, GINT_TO_POINTER (1));
 }
@@ -553,9 +525,8 @@ rhythmdb_query_model_finish_complete (RhythmDBQueryModel *model)
 }
 
 gboolean
-rhythmdb_query_model_has_pending_changes (RhythmDBModel *rmodel)
+rhythmdb_query_model_has_pending_changes (RhythmDBQueryModel *model)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	return g_async_queue_length (model->priv->pending_updates) > 0;
 }
 
@@ -771,10 +742,9 @@ rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
 	
 /* Threading: main thread only, should hold GDK lock
  */
-static gboolean
-rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
+gboolean
+rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	GList *processed = NULL, *tem;
 	GTimeVal now;
 	struct RhythmDBQueryModelUpdate *update;
@@ -891,11 +861,10 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 	return processed != NULL;
 }
 
-static gboolean
-rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
+gboolean
+rhythmdb_query_model_entry_to_iter (RhythmDBQueryModel *model, RhythmDBEntry *entry,
 				    GtkTreeIter *iter)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	GSequencePtr ptr;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
