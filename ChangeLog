@@ -1,5 +1,27 @@
 2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(rb_node_view_timeout_cb), (root_child_removed_cb),
+	(rb_node_view_enable_drag_source):
+	* lib/widgets/rb-player.c: (rb_player_sync_time):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (rb_tree_model_node_get_path),
+	(rb_tree_model_node_iter_n_children), (root_child_removed_cb),
+	(root_child_added_cb), (root_child_reordered_cb):
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(genre_added_cb), (artist_added_cb), (album_added_cb),
+	(song_added_cb), (genre_removed_cb), (artist_removed_cb),
+	(album_removed_cb), (song_removed_cb),
+	(rb_library_get_genre_by_name), (rb_library_get_artist_by_name),
+	(rb_library_get_album_by_name), (rb_library_get_song_by_location):
+	* library/rb-node.c: (real_add_child):
+	* views/rb-group-view.c: (song_eos_cb):
+	* views/rb-library-view.c: (song_eos_cb):
+
+	More library fixage, still buggy ...
+
+2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_select_node),
 	(root_child_removed_cb):
 	* lib/widgets/rb-tree-model-node.c: (root_child_added_cb):

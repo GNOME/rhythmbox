@@ -112,9 +112,6 @@ struct RBTreeModelNodePrivate
 
 	GdkPixbuf *playing_pixbuf;
 
-	int n_children;
-	RBNode *last_kid;
-
 	RBLibrary *library;
 };
 
@@ -265,7 +262,6 @@ rb_tree_model_node_set_property (GObject *object,
 			         GParamSpec *pspec)
 {
 	RBTreeModelNode *model = RB_TREE_MODEL_NODE (object);
-	GPtrArray *kids;
 
 	switch (prop_id)
 	{
@@ -298,12 +294,6 @@ rb_tree_model_node_set_property (GObject *object,
 				         G_OBJECT (model),
 					 0);
 
-		model->priv->n_children = rb_node_get_n_children (model->priv->root);
-		
-		kids = rb_node_get_children (model->priv->root);
-		if (kids->len > 0)
-			model->priv->last_kid = g_ptr_array_index (kids, kids->len - 1);
-		rb_node_thaw (model->priv->root);
 		break;
 	case PROP_FILTER_PARENT:
 		{
@@ -614,14 +604,7 @@ rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 		return gtk_tree_path_new ();
 	
 	retval = gtk_tree_path_new ();
-	if (node == model->priv->last_kid)
-	{
-		gtk_tree_path_append_index (retval, model->priv->n_children - 1);
-	}
-	else
-	{
-		gtk_tree_path_append_index (retval, rb_node_get_child_index (model->priv->root, node));
-	}
+	gtk_tree_path_append_index (retval, rb_node_get_child_index (model->priv->root, node));
 
 	return retval;
 }
@@ -789,7 +772,7 @@ rb_tree_model_node_iter_n_children (GtkTreeModel *tree_model,
 		return 0;
 
 	if (iter == NULL)
-		return model->priv->n_children;
+		return rb_node_get_n_children (model->priv->root);
 
 	g_return_val_if_fail (model->stamp == iter->stamp, -1);
 
@@ -865,11 +848,6 @@ root_child_removed_cb (RBNode *node,
 	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
-
-	if (node == model->priv->last_kid)
-		model->priv->last_kid = rb_node_get_previous_child (node, child);
-
-	model->priv->n_children--;
 }
 
 static void
@@ -877,13 +855,8 @@ root_child_added_cb (RBNode *node,
 		     RBNode *child,
 		     RBTreeModelNode *model)
 {
-	/* FIXME do locking of n_children and last_kid */
 	GtkTreePath *path;
 	GtkTreeIter iter;
-
-	model->priv->n_children++;
-
-	model->priv->last_kid = child;
 
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 
@@ -949,9 +922,12 @@ root_child_reordered_cb (RBNode *node,
 {
 	GtkTreePath *path;
 	int *order, i;
+	int n_kids;
 
-	order = g_new0 (int, model->priv->n_children);
-	for (i = 0; i < model->priv->n_children; i++) {
+	n_kids = rb_node_get_n_children (model->priv->root);
+
+	order = g_new0 (int, n_kids);
+	for (i = 0; i < n_kids; i++) {
 		if (i == old_index)
 			order[i] = new_index;
 		else if (i == new_index)

@@ -16,8 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
- *
- *  FIXME eigen lock schrijven ipv gstaticrwlock hacks
  */
 
 #include <stdlib.h>
@@ -1029,8 +1027,6 @@ real_add_child (RBNode *node,
 		return;
 	}
 
-	GDK_THREADS_ENTER ();
-
 	g_ptr_array_add (node->priv->children, child);
 
 	node_info = g_new0 (RBNodeParent, 1);
@@ -1040,6 +1036,8 @@ real_add_child (RBNode *node,
 	g_hash_table_insert (child->priv->parents,
 			     GINT_TO_POINTER (node->priv->id),
 			     node_info);
+
+	GDK_THREADS_ENTER ();
 
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
@@ -1347,6 +1345,7 @@ id_factory_set_to (long new_factory_pos)
 	g_mutex_unlock (id_factory_lock);
 }
 
+/* evillish hacks to temporarily readlock->writelock and v.v. */
 static void
 write_lock_to_read_lock (RBNode *node)
 {

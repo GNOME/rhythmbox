@@ -874,9 +874,13 @@ static void
 song_eos_cb (MonkeyMediaStream *stream,
 	     RBLibraryView *view)
 {
+	GDK_THREADS_ENTER ();
+	
 	rb_library_view_next (RB_VIEW_PLAYER (view));
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (view));
+
+	GDK_THREADS_LEAVE ();
 }
 
 static RBNode *

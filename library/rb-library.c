@@ -61,6 +61,11 @@ struct RBLibraryPrivate
 	GHashTable *album_hash;
 	GHashTable *song_hash;
 
+	GStaticRWLock *genre_hash_lock;
+	GStaticRWLock *artist_hash_lock;
+	GStaticRWLock *album_hash_lock;
+	GStaticRWLock *song_hash_lock;
+
 	char *xml_file;
 };
 
@@ -137,6 +142,18 @@ rb_library_init (RBLibrary *library)
 	library->priv->song_hash = g_hash_table_new (g_str_hash,
 						     g_str_equal);
 
+	library->priv->genre_hash_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (library->priv->genre_hash_lock);
+
+	library->priv->artist_hash_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (library->priv->artist_hash_lock);
+
+	library->priv->album_hash_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (library->priv->album_hash_lock);
+
+	library->priv->song_hash_lock = g_new0 (GStaticRWLock, 1);
+	g_static_rw_lock_init (library->priv->song_hash_lock);
+
 	rb_library_create_skels (library);
 
 	library->priv->main_queue = rb_library_action_queue_new ();
@@ -184,6 +201,11 @@ rb_library_finalize (GObject *object)
 	g_hash_table_destroy (library->priv->artist_hash);
 	g_hash_table_destroy (library->priv->album_hash);
 	g_hash_table_destroy (library->priv->song_hash);
+
+	g_static_rw_lock_free (library->priv->genre_hash_lock);
+	g_static_rw_lock_free (library->priv->artist_hash_lock);
+	g_static_rw_lock_free (library->priv->album_hash_lock);
+	g_static_rw_lock_free (library->priv->song_hash_lock);
 
 	g_free (library->priv->xml_file);
 
@@ -257,15 +279,18 @@ rb_library_get_all_songs (RBLibrary *library)
 	return library->priv->all_songs;
 }
 
-/* FIXME locking .. */
 static void
 genre_added_cb (RBNode *node,
 		RBNode *child,
 		RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->genre_hash_lock);
+
 	g_hash_table_insert (library->priv->genre_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
 			     child);
+	
+	g_static_rw_lock_writer_unlock (library->priv->genre_hash_lock);
 }
 
 static void
@@ -273,9 +298,13 @@ artist_added_cb (RBNode *node,
 	 	 RBNode *child,
 		 RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->artist_hash_lock);
+	
 	g_hash_table_insert (library->priv->artist_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
 			     child);
+
+	g_static_rw_lock_writer_unlock (library->priv->artist_hash_lock);
 }
 
 static void
@@ -283,9 +312,13 @@ album_added_cb (RBNode *node,
 		RBNode *child,
 		RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->album_hash_lock);
+	
 	g_hash_table_insert (library->priv->album_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
 			     child);
+	
+	g_static_rw_lock_writer_unlock (library->priv->album_hash_lock);
 }
 
 static void
@@ -293,9 +326,13 @@ song_added_cb (RBNode *node,
 	       RBNode *child,
 	       RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
+	
 	g_hash_table_insert (library->priv->song_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION),
 			     child);
+	
+	g_static_rw_lock_writer_unlock (library->priv->song_hash_lock);
 }
 
 static void
@@ -303,8 +340,12 @@ genre_removed_cb (RBNode *node,
 		  RBNode *child,
 		  RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->genre_hash_lock);
+	
 	g_hash_table_remove (library->priv->genre_hash,
 			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+	
+	g_static_rw_lock_writer_unlock (library->priv->genre_hash_lock);
 }
 
 static void
@@ -312,8 +353,12 @@ artist_removed_cb (RBNode *node,
 		   RBNode *child,
 		   RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->artist_hash_lock);
+	
 	g_hash_table_remove (library->priv->artist_hash,
 			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+	
+	g_static_rw_lock_writer_unlock (library->priv->artist_hash_lock);
 }
 
 static void
@@ -321,8 +366,12 @@ album_removed_cb (RBNode *node,
 		  RBNode *child,
 		  RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->album_hash_lock);
+	
 	g_hash_table_remove (library->priv->album_hash,
 			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+	
+	g_static_rw_lock_writer_unlock (library->priv->album_hash_lock);
 }
 
 static void
@@ -330,8 +379,12 @@ song_removed_cb (RBNode *node,
 		 RBNode *child,
 		 RBLibrary *library)
 {
+	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
+
 	g_hash_table_remove (library->priv->song_hash,
 			     rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION));
+	
+	g_static_rw_lock_writer_unlock (library->priv->song_hash_lock);
 }
 
 static void
@@ -536,32 +589,64 @@ RBNode *
 rb_library_get_genre_by_name (RBLibrary *library,
 			      const char *genre)
 {
-	return g_hash_table_lookup (library->priv->genre_hash,
-				    genre);
+	RBNode *ret;
+	
+	g_static_rw_lock_reader_lock (library->priv->genre_hash_lock);
+
+	ret = g_hash_table_lookup (library->priv->genre_hash,
+				   genre);
+	
+	g_static_rw_lock_reader_unlock (library->priv->genre_hash_lock);
+
+	return ret;
 }
 
 RBNode *
 rb_library_get_artist_by_name (RBLibrary *library,
 			       const char *artist)
 {
-	return g_hash_table_lookup (library->priv->artist_hash,
-				    artist);
+	RBNode *ret;
+	
+	g_static_rw_lock_reader_lock (library->priv->artist_hash_lock);
+	
+	ret = g_hash_table_lookup (library->priv->artist_hash,
+				   artist);
+
+	g_static_rw_lock_reader_unlock (library->priv->artist_hash_lock);
+
+	return ret;
 }
 
 RBNode *
 rb_library_get_album_by_name (RBLibrary *library,
 			      const char *album)
 {
-	return g_hash_table_lookup (library->priv->album_hash,
-				    album);
+	RBNode *ret;
+	
+	g_static_rw_lock_reader_lock (library->priv->album_hash_lock);
+	
+	ret = g_hash_table_lookup (library->priv->album_hash,
+				   album);
+	
+	g_static_rw_lock_reader_unlock (library->priv->album_hash_lock);
+
+	return ret;
 }
 
 RBNode *
 rb_library_get_song_by_location (RBLibrary *library,
 			         const char *location)
 {
-	return g_hash_table_lookup (library->priv->song_hash,
-				    location);
+	RBNode *ret;
+	
+	g_static_rw_lock_reader_lock (library->priv->song_hash_lock);
+	
+	ret = g_hash_table_lookup (library->priv->song_hash,
+				   location);
+	
+	g_static_rw_lock_reader_unlock (library->priv->song_hash_lock);
+
+	return ret;
 }
 
 void

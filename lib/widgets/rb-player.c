@@ -459,10 +459,12 @@ rb_player_sync_time (RBPlayer *player)
 
 	if (player->priv->view_player == NULL)
 		return TRUE;
-	
+
 	stream = rb_view_player_get_stream (player->priv->view_player);
 	if (stream == NULL)
+	{
 		return TRUE;
+	}
 
 	player->priv->state->duration = duration =
 		rb_view_player_get_duration (player->priv->view_player);
