@@ -164,6 +164,7 @@ rb_player_init (RBPlayer *player)
 	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
 	player->priv->song = gtk_label_new ("");
 	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
+	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);
 	gtk_container_add (GTK_CONTAINER (align), player->priv->song);
 	gtk_box_pack_start (GTK_BOX (textvbox), align, FALSE, FALSE, 0);
 
