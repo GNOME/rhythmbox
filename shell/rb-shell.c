@@ -1155,7 +1155,7 @@ rb_shell_property_changed_generic_cb (GObject *object,
 	g_object_get (object, pspec->name, &value, NULL);
 	BONOBO_ARG_SET_BOOLEAN (arg, value);
 	shell_notify_pb_changes (shell, pspec->name, arg);
-	/* FIXME: arg should be released somehow */
+	bonobo_arg_release (arg);
 }
 
 static void
@@ -1173,7 +1173,7 @@ rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
 	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
 	arg->_value = (gpointer)song_info;
 	shell_notify_pb_changes (shell, "song", arg);
-	/* FIXME: arg should be released somehow */
+	bonobo_arg_release (arg);
 
 #ifdef WITH_DASHBOARD
 	if (song_info) {
