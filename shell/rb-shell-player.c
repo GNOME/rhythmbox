@@ -102,8 +102,6 @@ static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
 static void rb_shell_player_sync_status (RBShellPlayer *player);
-static void rb_shell_player_set_playing_source (RBShellPlayer *player,
-				                RBSource *source);
 static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 
@@ -1258,7 +1256,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	rb_shell_player_set_play_button (player, pstate);
 }
 
-static void
+void
 rb_shell_player_set_playing_source (RBShellPlayer *player,
 				    RBSource *source)
 {

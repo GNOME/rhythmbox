@@ -969,8 +969,10 @@ static void
 rb_shell_remove_source (RBShell *shell,
 			RBSource *source)
 {
+	if (source == rb_shell_player_get_source (shell->priv->player_shell)) {
+		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
+	}
 	if (source == shell->priv->selected_source) {
-		rb_shell_player_stop (shell->priv->player_shell);
 		rb_shell_select_source (shell, shell->priv->library_source);
 	}
 

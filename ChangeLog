@@ -1,3 +1,14 @@
+2003-08-07  Colin Walters  <walters@gnu.org>
+
+	* shell/rb-shell-player.c:
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_remove_source):
+	* sources/rb-group-source.c: (rb_group_source_finalize):
+
+	If we're playing a source to be deleted, fully stop it first.
+	Also be sure not to g_source_remove an id twice in the group
+	source.
+
 2003-08-07  Colin Walters  <walters@verbum.org>
 
 	* data/ui/rhythmbox-ui.xml.in:

@@ -59,6 +59,8 @@ RBShellPlayer *		rb_shell_player_new		(BonoboUIComponent *component,
 
 void			rb_shell_player_set_source	(RBShellPlayer *shell_player,
 							 RBSource *player);
+void			rb_shell_player_set_playing_source (RBShellPlayer *player,
+							    RBSource *source);
 
 RBSource *		rb_shell_player_get_source	(RBShellPlayer *shell_player);
 

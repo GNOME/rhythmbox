@@ -257,10 +257,11 @@ rb_group_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
-	if (!source->priv->deleted)
+	if (!source->priv->deleted) {
 		rb_group_source_save (source);
 
-	g_source_remove (source->priv->idle_save_id);
+		g_source_remove (source->priv->idle_save_id);
+	}
 
 	rb_node_unref (source->priv->group);
 
