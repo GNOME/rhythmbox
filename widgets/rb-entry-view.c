@@ -1115,9 +1115,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 	gtk_tree_view_column_set_resizable (column, TRUE);
 
 append:
+	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
 	rb_entry_view_append_column_custom (view, column, is_default, title, sort_func,
 					    real_sort_data ? real_sort_data : sort_data);
-	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
 }
 
 void
@@ -1791,7 +1791,7 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 
 	for (tem = visible_properties; tem; tem = tem->next) {
 		GtkTreeViewColumn *column
-			= g_hash_table_lookup (view->priv->propid_column_map, GINT_TO_POINTER (tem->data));
+			= g_hash_table_lookup (view->priv->propid_column_map, tem->data);
 		if (column)
 			gtk_tree_view_column_set_visible (column, TRUE);
 	}
