@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-09-06 01:49+0200\n"
-"PO-Revision-Date: 2003-09-06 01:52+0200\n"
+"POT-Creation-Date: 2003-09-20 23:56+0200\n"
+"PO-Revision-Date: 2003-09-20 23:58+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -49,61 +49,49 @@ msgstr "*"
 msgid "Finish"
 msgstr "Slutför"
 
-#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:244
+#: data/glade/druid.glade.h:3
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
+"In order to get started using Rhythmbox, this assistant will ask you some "
+"simple questions."
 msgstr ""
-"Denna guide kommer att fråga dig\n"
-"ett par enkla frågor för att du ska\n"
-"kunna komma igång med användningen\n"
-"av Rhythmbox."
+"Denna guide kommer att fråga dig ett par enkla frågor för att du ska kunna "
+"komma igång med användningen av Rhythmbox."
 
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:250
+#: data/glade/druid.glade.h:4 lib/widgets/rb-druid.c:250
 msgid "Library setup"
 msgstr "Bibliotekskonfiguration"
 
-#: data/glade/druid.glade.h:7
+#: data/glade/druid.glade.h:5
 msgid ""
-"Rhythmbox needs to know where to find your music.\n"
-"You may choose to skip this step; instead, you \n"
-"can add music to your library at any point later.\n"
-"\n"
+"Rhythmbox needs to know where to find your music. You may choose to skip "
+"this step; instead, you can add music to your library at any point later. "
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox måste veta var det kan hitta din musik.\n"
-"Du kan välja att hoppa över detta steg och istället\n"
-"lägga till musik till ditt bibliotek vid ett senare\n"
-"tillfälle.\n"
-"\n"
-"Välj ett av alternativen nedan:"
+"Rhythmbox måste veta var det kan hitta din musik. Du kan välja att hoppa "
+"över detta steg och istället lägga till musik till ditt bibliotek vid ett "
+"senare tillfälle. Välj ett av alternativen nedan:"
 
-#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:240
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:240
 msgid "Welcome to Rhythmbox"
 msgstr "Välkommen till Rhythmbox"
 
-#: data/glade/druid.glade.h:13
-msgid ""
-"You are now ready to start\n"
-"Rhythmbox."
-msgstr ""
-"Du är nu redo att starta\n"
-"Rhythmbox."
+#: data/glade/druid.glade.h:7 lib/widgets/rb-druid.c:261
+msgid "You are now ready to start Rhythmbox."
+msgstr "Du är nu redo att starta Rhythmbox."
 
-#: data/glade/druid.glade.h:15
+#: data/glade/druid.glade.h:8
 msgid "_Browse..."
 msgstr "_Bläddra..."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:9
 msgid "_Enter location manually:"
 msgstr "_Ange plats manuellt:"
 
-#: data/glade/druid.glade.h:17
+#: data/glade/druid.glade.h:10
 msgid "_Path:"
 msgstr "_Sökväg:"
 
-#: data/glade/druid.glade.h:18
+#: data/glade/druid.glade.h:11
 msgid "_Skip this step"
 msgstr "_Hoppa över detta steg"
 
@@ -640,8 +628,7 @@ msgstr "Misslyckades med att tolka %s\n"
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
-#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb-tree.c:244
-#: rhythmdb/rhythmdb.c:321
+#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb.c:498
 msgid "Never"
 msgstr "Aldrig"
 
@@ -649,16 +636,13 @@ msgstr "Aldrig"
 msgid "New Internet Radio Station"
 msgstr "Ny Internetradiokanal"
 
-#. Initialize the tree structure.
 #: iradio/rb-new-station-dialog.c:182
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 rhythmdb/rhythmdb-tree.c:250
-#: rhythmdb/rhythmdb-tree.c:251 rhythmdb/rhythmdb-tree.c:252
-#: sources/rb-audiocd-source.c:979 sources/rb-audiocd-source.c:986
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-#: sources/rb-iradio-source.c:236 sources/rb-playlist-source.c:365
-#: sources/rb-playlist-source.c:381
+#: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
+#: sources/rb-playlist-source.c:365 sources/rb-playlist-source.c:381
 msgid "Unknown"
 msgstr "Okänd"
 
@@ -770,9 +754,16 @@ msgstr "Pixbuf att rendera."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Du är nu redo att starta Rhythmbox."
+#: lib/widgets/rb-druid.c:244
+msgid ""
+"In order to get started using\n"
+"Rhythmbox, this assistant will ask\n"
+"you some simple questions."
+msgstr ""
+"Denna guide kommer att fråga dig\n"
+"ett par enkla frågor för att du ska\n"
+"kunna komma igång med användningen\n"
+"av Rhythmbox."
 
 #: lib/widgets/rb-druid.c:310
 #, c-format
@@ -840,11 +831,11 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Sök:"
 
-#: lib/widgets/rb-song-display-box.c:116
+#: lib/widgets/rb-song-display-box.c:113
 msgid "from "
 msgstr "från "
 
-#: lib/widgets/rb-song-display-box.c:119
+#: lib/widgets/rb-song-display-box.c:116
 msgid "by "
 msgstr "av "
 
@@ -920,7 +911,7 @@ msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuter (%ld låtar)"
 
-#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:323
+#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:500
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -980,37 +971,37 @@ msgstr ""
 "installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:562
+#: monkey-media/monkey-media-player-gst-tmp.c:571
 #: monkey-media/monkey-media-player-gst.c:518
 msgid "Failed to create spider element; check your installation"
 msgstr ""
 "Misslyckades med att skapa spindelelement; kontrollera din installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:574
+#: monkey-media/monkey-media-player-gst-tmp.c:583
 #: monkey-media/monkey-media-player-gst.c:533
 msgid "Failed to create volume element; check your installation"
 msgstr "Misslyckades med att skapa volymelement; kontrollera din installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:592
+#: monkey-media/monkey-media-player-gst-tmp.c:601
 #: monkey-media/monkey-media-player-gst.c:554
 msgid "Could not create audio output element; check your settings"
 msgstr "Kunde inte skapa ljudutmatningselement; kontrollera dina inställningar"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:708
+#: monkey-media/monkey-media-player-gst-tmp.c:717
 #: monkey-media/monkey-media-player-gst.c:641
 msgid "No AudioCD support; check your settings"
 msgstr "Inget stöd för ljud-cd; kontrollera dina inställningar"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:513
+#: monkey-media/monkey-media-player-gst-tmp.c:514
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa %s-indataelelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:538
+#: monkey-media/monkey-media-player-gst-tmp.c:539
 #: monkey-media/monkey-media-player-gst.c:491
 msgid "Failed to create queue element; check your installation"
 msgstr "Misslyckades med att skapa köelement; kontrollera din installation"
@@ -1302,14 +1293,13 @@ msgstr "Kan inte tolka URI:n \"%s\"\n"
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a\n"
-"different prefix than bonobo-activation; this\n"
-"warning is harmless, but IPC will not work.\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "Misslyckades med att registrera skalet: %s\n"
-"Detta betyder troligtvis att du installerade Rhythmbox\n"
-"i ett annat prefix än bonobo-activation. Denna varning\n"
-"är inte allvarlig, men IPC kommer inte att fungera.\n"
+"Detta betyder troligtvis att du installerade Rhythmbox i ett annat prefix än "
+"bonobo-activation. Denna varning är inte allvarlig, men IPC kommer inte att "
+"fungera."
 
 #: shell/rb-shell.c:1222
 #, c-format
@@ -1439,6 +1429,27 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid ""
+#~ "Rhythmbox needs to know where to find your music.\n"
+#~ "You may choose to skip this step; instead, you \n"
+#~ "can add music to your library at any point later.\n"
+#~ "\n"
+#~ "Please choose one of the options below:"
+#~ msgstr ""
+#~ "Rhythmbox måste veta var det kan hitta din musik.\n"
+#~ "Du kan välja att hoppa över detta steg och istället\n"
+#~ "lägga till musik till ditt bibliotek vid ett senare\n"
+#~ "tillfälle.\n"
+#~ "\n"
+#~ "Välj ett av alternativen nedan:"
+
+#~ msgid ""
+#~ "You are now ready to start\n"
+#~ "Rhythmbox."
+#~ msgstr ""
+#~ "Du är nu redo att starta\n"
+#~ "Rhythmbox."
 
 #~ msgid "Paused, %s remaining"
 #~ msgstr "Gör paus, %s återstår"
@@ -1588,25 +1599,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Create"
 #~ msgstr "Skapa"
-
-#~ msgid ""
-#~ "In order to get started using Rhythmbox, this assistant will ask you some "
-#~ "simple questions."
-#~ msgstr ""
-#~ "Denna guide kommer att fråga dig ett par enkla frågor för att du ska "
-#~ "kunna komma igång med användningen av Rhythmbox."
-
-#~ msgid ""
-#~ "Rhythmbox needs to know where to find your music. You may choose to skip "
-#~ "this step; instead, you can add music to your library at any point "
-#~ "later.\n"
-#~ "Please choose one of the options below:"
-#~ msgstr ""
-#~ "Rhythmbox måste veta var det kan hitta din musik. Du kan välja att hoppa "
-#~ "över detta steg och istället lägga till musik till ditt bibliotek vid ett "
-#~ "senare tillfälle.\n"
-#~ "\n"
-#~ "Välj ett av alternativen nedan:"
 
 #~ msgid "_of"
 #~ msgstr "_av"
