@@ -124,6 +124,10 @@
 	 _tip="Change the visibility of the source list"
 	 type="toggle"/>
 
+    <cmd name="ToggleSmallDisplay"
+	 _tip="Make the main window smaller"
+	 type="toggle"/>
+
     <cmd name="ViewBrowser"
 	 _tip="Change the visibility of the browser"
 	 type="toggle"/>
@@ -211,7 +215,11 @@
 
     <submenu name="View" _label="_View">
 
-      <menuitem name="SourceList" verb="ShowSourceList" _label="_Source List" accel="F9"/>
+      <menuitem name="SmallDisplay" verb="ToggleSmallDisplay" _label="_Small Display" accel="F8"/>
+
+      <separator/>
+
+      <menuitem name="SourceList" verb="ShowSourceList" _label="Source _List" accel="F9"/>
 
       <menuitem name="ViewBrowser" verb="ViewBrowser" _label="_Browser" accel="F7"/>
 

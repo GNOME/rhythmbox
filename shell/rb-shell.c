@@ -172,11 +172,21 @@ static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 Bonobo_UIComponent_EventType type,
 						 const char *state,
 						 RBShell *shell);
+static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
+						 const char *path,
+						 Bonobo_UIComponent_EventType type,
+						 const char *state,
+						 RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
+static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShell *shell);
+static void smalldisplay_changed_cb (GConfClient *client,
+				     guint cnxn_id,
+				     GConfEntry *entry,
+				     RBShell *shell);
 static void paned_changed_cb (GConfClient *client,
 			      guint cnxn_id,
 			      GConfEntry *entry,
@@ -201,14 +211,15 @@ static const GtkTargetEntry target_table[] =
 		{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
 	};
 
+#define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
-#define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 #define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
 #define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
+#define CONF_STATE_SMALL_WIDTH      CONF_PREFIX "/state/small_width"
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
@@ -269,6 +280,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 static RBBonoboUIListener rb_shell_listeners[] =
 {
 	RB_BONOBO_UI_LISTENER ("ShowSourceList",(BonoboUIListenerFn) rb_shell_view_sourcelist_changed_cb),
+	RB_BONOBO_UI_LISTENER ("ToggleSmallDisplay",(BonoboUIListenerFn) rb_shell_view_smalldisplay_changed_cb),
 	RB_BONOBO_UI_LISTENER_END
 };
 
@@ -662,6 +674,9 @@ rb_shell_construct (RBShell *shell)
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
+	eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
+				    (GConfClientNotifyFunc) smalldisplay_changed_cb,
+				    shell);
 	eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
 				    (GConfClientNotifyFunc) paned_changed_cb,
 				    shell);
@@ -782,6 +797,7 @@ rb_shell_construct (RBShell *shell)
 		g_object_unref (G_OBJECT (druid));
 	}
 	
+	rb_shell_sync_smalldisplay (shell);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);
 }
@@ -810,21 +826,29 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEvent *event,
 			  RBShell *shell)
 {
+	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+
 	g_return_val_if_fail (widget != NULL, FALSE);
 	rb_debug ("caught window state change");
 
 	switch (event->type)
 	{
 	case GDK_WINDOW_STATE:
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
-				       event->window_state.new_window_state &
-				       GDK_WINDOW_STATE_MAXIMIZED);
+		if (small == TRUE)
+			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		else
+			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
+					       event->window_state.new_window_state &
+					       GDK_WINDOW_STATE_MAXIMIZED);
 		break;
 	case GDK_CONFIGURE:
-		if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED)) {
-			eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
-			eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
-		}
+		if (small == TRUE)
+			eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->configure.width);
+		else
+			if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED)) {
+				eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
+				eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
+			}
 		break;
 	default:
 		break;
@@ -836,17 +860,40 @@ rb_shell_window_state_cb (GtkWidget *widget,
 static void
 rb_shell_sync_window_state (RBShell *shell)
 {
+	int small_width = eel_gconf_get_integer (CONF_STATE_SMALL_WIDTH);
 	int width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
 	int height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
 	gboolean maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-
-	gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
-				     width, height);
-
-	if (maximized)
-		gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-	else
+	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	GdkGeometry hints;
+	if (small == TRUE)
+	{
+		hints.max_height = 0;
+		hints.max_width = 3000;
 		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
+					     small_width, 0);
+		gtk_window_resize (GTK_WINDOW (shell->priv->window),
+				   small_width, 1);
+		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
+						NULL,
+						&hints,
+						GDK_HINT_MAX_SIZE);
+	} else {
+		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
+					     width, height);
+		gtk_window_resize (GTK_WINDOW (shell->priv->window),
+				   width, height);
+		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
+						NULL,
+						&hints,
+						0);
+
+		if (maximized)
+			gtk_window_maximize (GTK_WINDOW (shell->priv->window));
+		else
+			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
+	}
 }
 
 static gboolean
@@ -1087,6 +1134,17 @@ rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 {
 	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN,
 			       !rb_bonobo_get_active (component, CMD_PATH_VIEW_SOURCELIST));
+}
+
+static void
+rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
+				     const char *path,
+				     Bonobo_UIComponent_EventType type,
+				     const char *state,
+				     RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY,
+			       rb_bonobo_get_active (component, CMD_PATH_VIEW_SMALLDISPLAY));
 }
 
 static void
@@ -1343,6 +1401,36 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 }
 
 static void
+rb_shell_sync_smalldisplay (RBShell *shell)
+{
+	gboolean smalldisplay;
+
+	smalldisplay = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+
+	if (smalldisplay)
+	{
+		rb_bonobo_set_sensitive (shell->priv->ui_component,
+					CMD_PATH_VIEW_SOURCELIST, FALSE);
+  
+		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
+	} else {
+		rb_bonobo_set_sensitive (shell->priv->ui_component,
+					CMD_PATH_VIEW_SOURCELIST, TRUE);
+  
+		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
+	}
+
+	rb_source_header_sync_control_state (shell->priv->source_header);
+	rb_shell_player_sync_buttons (shell->priv->player_shell);
+
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_VIEW_SMALLDISPLAY,
+			      smalldisplay);
+
+	rb_shell_sync_window_state (shell);
+}
+
+static void
 sourcelist_visibility_changed_cb (GConfClient *client,
 				  guint cnxn_id,
 				  GConfEntry *entry,
@@ -1350,6 +1438,16 @@ sourcelist_visibility_changed_cb (GConfClient *client,
 {
 	rb_debug ("sourcelist visibility changed"); 
 	rb_shell_sync_sourcelist_visibility (shell);
+}
+
+static void
+smalldisplay_changed_cb (GConfClient *client,
+				  guint cnxn_id,
+				  GConfEntry *entry,
+				  RBShell *shell)
+{
+	rb_debug ("small display mode changed");
+	rb_shell_sync_smalldisplay (shell);
 }
 
 static void

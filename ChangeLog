@@ -1,13 +1,65 @@
+2003-09-02 03:33:33 GMT Colin Walters <walters@verbum.org>      patch-10
+
+    Summary:
+      merge with mainline
+    Revision:
+      rhythmbox--cvs--1.0--patch-10
+ 
+    merge with mainline
+     
+    Patches applied:
+     
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--base-0
+       tag of walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-8
+     
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-1
+       sync to walter's tree
+     
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-2
+       more walter changes
+     
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-3
+       small-display merge
+     
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-4
+       made view menu items sensitive to small display mode
+     
+     * desrt@desrt.ca--2003/rhythmbox--small-display--1.0--base-0
+       tag of desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-1
+     
+     * desrt@desrt.ca--2003/rhythmbox--small-display--1.0--patch-1
+       initial small display support
+     
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-12
+       merge with desrt, pick up small-display
+     
+ 
+    modified files:
+     data/rhythmbox.schemas data/ui/rhythmbox-ui.xml.in
+     lib/rb-preferences.h shell/rb-shell-player.c
+     shell/rb-shell-player.h shell/rb-shell.c
+     shell/rb-source-header.c shell/rb-source-header.h
+ 
+    new patches:
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-12
+	
 2003-09-01  Yann Rouillard <yann@cvs.gnome.org>
 
-	rb-shell.c: (rb_shell_construct):
+	* rb-shell.c: (rb_shell_construct):
 
 	Moved library creation before tray icon initialization.
 	This fixes segmentation fault when dnd'ing on tray icon.
 
 2003-09-01  Metin Amiroff  <metin@karegen.com>
 
-	configure.ac: Added "az" in ALL_LINGUAS.
+	* configure.ac: Added "az" in ALL_LINGUAS.
 
 2003-09-01  desrt@desrt.ca
 

@@ -109,7 +109,6 @@ static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
-static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 
 static void rb_shell_player_playing_node_removed_cb (RBNodeView *view,
@@ -1144,7 +1143,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	rb_player_sync (player->priv->player_widget);
 }
 
-static void
+void
 rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
 	RBSource *source;
@@ -1152,6 +1151,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	gboolean have_previous = FALSE;
 	gboolean have_next = FALSE;
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
+        gboolean not_small;
 
 	rb_debug ("syncing with source %p", source);
 
@@ -1187,8 +1187,10 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT, have_next);
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->next_button), have_next);
 
+        not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
-				 rb_shell_player_get_playing_node (player) != NULL);
+				 rb_shell_player_get_playing_node (player) != NULL
+				 && not_small );
 
 	{
 		RBNodeView *view = rb_source_get_node_view (player->priv->selected_source);

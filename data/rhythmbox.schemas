@@ -48,6 +48,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/small_width</key>
+        <applyto>/apps/rhythmbox/state/small_width</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>600</default>
+        <locale name="C">
+	<short>Small window width</short>
+	<long>Main window width when the player is in Small Display mode.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/window_maximized</key>
         <applyto>/apps/rhythmbox/state/window_maximized</applyto>
         <owner>rhythmbox</owner>
@@ -67,6 +78,17 @@
 	<locale name="C">
 	<short>Source list visibility</short>
 	<long>If true, the main source list is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/small_display</key>
+	<applyto>/apps/rhythmbox/ui/small_display</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Small display mode</short>
+	<long>If true, the main window is displayed without the source list, browser or playlist.</long>
 	</locale>
       </schema>
       <schema>

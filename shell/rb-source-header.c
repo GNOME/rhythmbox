@@ -68,7 +68,6 @@ static void rb_source_header_view_browser_changed_cb (BonoboUIComponent *compone
 						      Bonobo_UIComponent_EventType type,
 						      const char *state,
 						      RBSourceHeader *header);
-static void rb_source_header_sync_control_state (RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
@@ -375,15 +374,17 @@ rb_source_header_view_browser_changed_cb (BonoboUIComponent *component,
 			       rb_bonobo_get_active (component, CMD_PATH_VIEW_BROWSER));
 }
 
-static void
+void
 rb_source_header_sync_control_state (RBSourceHeader *header)
 {
 	gboolean have_browser = header->priv->selected_source != NULL
 		&& header->priv->browser_key != NULL;
+	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+
 	gtk_widget_set_sensitive (header->priv->disclosure,
 				  have_browser);
 	rb_bonobo_set_sensitive (header->priv->component, CMD_PATH_VIEW_BROWSER,
-				have_browser);
+				have_browser && not_small);
 	if (have_browser) {
 		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
