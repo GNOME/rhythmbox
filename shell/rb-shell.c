@@ -1851,12 +1851,24 @@ static void
 rb_shell_jump_to_current (RBShell *shell)
 {
 	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
+	RBNodeView *songs;
+	RBNode *playing;
 
 	g_return_if_fail (source != NULL);
 
-	rb_source_header_clear_search (shell->priv->source_header);
+	songs = rb_source_get_node_view (source);
+
+	playing = rb_node_view_get_playing_node (songs);
+
+	g_return_if_fail (playing != NULL);
+
+	if (!rb_node_view_get_node_visible (songs, playing)) {
+		rb_source_header_clear_search (shell->priv->source_header);
+	}
 	rb_shell_select_source (shell, source);
-	rb_source_search (shell->priv->selected_source, NULL);
+	if (!rb_node_view_get_node_visible (songs, playing)) {
+		rb_source_search (shell->priv->selected_source, NULL);
+	}
 	rb_shell_player_jump_to_current (shell->priv->player_shell);
 }
 

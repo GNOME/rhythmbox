@@ -1329,8 +1329,13 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 
 	if (player->priv->source != NULL)
 	{
+		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+
 		rb_debug ("updating play statistics");
+
+		rb_node_view_freeze (songs);
 		rb_node_update_play_statistics (rb_shell_player_get_playing_node (player));
+		rb_node_view_thaw (songs);
 
 		switch (rb_source_handle_eos (player->priv->source))
 		{

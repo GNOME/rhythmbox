@@ -123,14 +123,25 @@ dnl Workaround for the gtktreemodelsort bug
 disable_gtktreemodelsort_workaround=yes
 AC_ARG_ENABLE(gtktreemodelsort_workaround,
               AC_HELP_STRING([--disable-gtktreemodelsort-workaround],
-	                     [Disable use of a workaround for the gtk tree model sort bug which causes song jumping]),,
+	                     [Disable use of a workaround for the GtkTreeModelSort bug which causes song jumping]),,
 	      disable_gtktreemodelsort_workaround=no)
 
 if test "x$disable_gtktreemodelsort_workaround" != "xyes"; then
-  AC_DEFINE(USE_GTK_TREE_MODEL_SORT_WORKAROUND,,[Define to enable the Gtk Tree Model Sort workaround])
+  AC_DEFINE(USE_GTK_TREE_MODEL_SORT_WORKAROUND,,[Define to enable the GtkTreeModelSort workaround])
 fi
 
 AM_CONDITIONAL(GTK_TREE_MODEL_SORT_WORKAROUND, test "x$disable_gtktreemodelsort_workaround" != "xyes")
+
+dnl Workaround for the gtktreeview bug
+disable_gtktreeview_workaround=yes
+AC_ARG_ENABLE(gtktreeview_workaround,
+              AC_HELP_STRING([--disable-gtktreeview-workaround],
+	                     [Disable use of a workaround for the GtkTreeView bug which causes temporary display corruption]),,
+	      disable_gtktreeview_workaround=no)
+
+if test "x$disable_gtktreeview_workaround" != "xyes"; then
+  AC_DEFINE(USE_GTK_TREE_VIEW_WORKAROUND,,[Define to enable the GtkTreeView workaround])
+fi
 
 
 dnl Check for zlib
@@ -389,6 +400,11 @@ if test x"$disable_gtktreemodelsort_workaround" = xyes; then
 	AC_MSG_NOTICE([   GtkTreeModelSort workaround disabled])
 else
 	AC_MSG_NOTICE([** GtkTreeModelSort workaround enabled])
+fi
+if test x"$disable_gtktreeview_workaround" = xyes; then
+	AC_MSG_NOTICE([   GtkTreeView workaround disabled])
+else
+	AC_MSG_NOTICE([** GtkTreeView workaround enabled])
 fi
 if test x"$missing_gst_output_element" != x; then
 	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])

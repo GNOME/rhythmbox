@@ -102,6 +102,10 @@ void	    rb_node_view_enable_drag_source       (RBNodeView *view,
 
 RBTreeModelNode *rb_node_view_get_model		(RBNodeView *view);
 
+void		rb_node_view_freeze		(RBNodeView *view);
+
+void		rb_node_view_thaw		(RBNodeView *view);
+
 G_END_DECLS
 
 #endif /* __RB_NODE_VIEW_H */

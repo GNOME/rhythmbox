@@ -1,5 +1,33 @@
 2003-08-16  Colin Walters  <walters@verbum.org>
 
+	* configure.ac:
+	
+	The GtkTreeView workaround can now be controlled
+	via configure.
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_thaw),
+	(rb_node_view_freeze), (rb_node_view_set_property),
+	(rb_node_view_construct), (rb_node_view_rated_cb),
+	(filter_changed_cb), (rb_node_view_set_playing):
+	* lib/widgets/rb-node-view.h:
+	* shell/rb-shell-player.c: (eos_cb):
+	* shell/rb-shell.c: (rb_shell_jump_to_current):
+
+	Re-implement workaround for 119797.  This fixes
+	the case where when going from one song to another
+	displayed the treeview weirdness.
+
+	Also, we added some optimizations that make
+	Jump to Playing Song way faster if there is
+	no active search.  This also has the side
+	effect of not giving the treeview weirdness.
+
+	However, the cause where there is an active search,
+	and you jump to current, still causes corruption.
+	This one does not appear to be easily fixable.
+
+2003-08-16  Colin Walters  <walters@verbum.org>
+
 	* NEWS: Update.
 
 2003-08-16  Jan Arne Petersen  <jpetersen@uni-bonn.de>
