@@ -311,7 +311,7 @@ rb_player_sync (RBPlayer *player)
 		char *escaped, *compressed;
 
 		compressed = rb_string_compress (song, 50);
-		escaped = g_markup_escape_text (compressed, g_utf8_strlen (compressed, -1));
+		escaped = g_markup_escape_text (compressed, strlen (compressed));
 		g_free (compressed);
 		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
