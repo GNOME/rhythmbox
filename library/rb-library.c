@@ -836,6 +836,7 @@ static void
 restore_node (RBNode *node)
 {
 	RBNode *parent;
+
 	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
 		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
 					       (RBNodeCallback) finalize_node, NULL);

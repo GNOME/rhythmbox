@@ -269,6 +269,7 @@ rb_volume_sync_volume (RBVolume *volume)
 	GtkWidget *image;
 
 	vol = eel_gconf_get_float (CONF_STATE_VOLUME);
+	rb_debug ("current volume is %f", vol);
 	gtk_container_remove (GTK_CONTAINER (volume->priv->button),
 			      gtk_bin_get_child (GTK_BIN (volume->priv->button))); 
 
