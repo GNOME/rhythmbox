@@ -1,5 +1,29 @@
 2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c:
+	(gtk_tree_sortable_sort_column_changed_cb),
+	(rb_node_view_get_status), (rb_node_view_status_foreach_cb):
+	* lib/widgets/rb-node-view.h:
+	* shell/rb-shell-status.c: (rb_shell_status_class_init),
+	(rb_shell_status_init), (rb_shell_status_finalize),
+	(rb_shell_status_set_property), (rb_shell_status_get_property),
+	(rb_shell_status_new), (rb_shell_status_add_hint_cb),
+	(rb_shell_status_remove_hint_cb), (rb_shell_status_sync),
+	(rb_view_status_changed_cb):
+	* shell/rb-shell-status.h:
+	* shell/rb-shell.c: (rb_shell_construct):
+	* tests/testview.c: (rb_test_view_get_type),
+	(rb_test_view_finalize), (rb_test_view_status_init),
+	(node_view_changed_cb), (rb_test_view_get_next_node),
+	(rb_test_view_status_get):
+	* tests/testview2.c: (rb_test_view2_get_type),
+	(rb_test_view_status_init), (rb_test_view_stop_playing),
+	(rb_test_view_status_get):
+
+	Implement statusbar.
+
+2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_construct):
 
 	Run gettext on translatable strings from the xml files.

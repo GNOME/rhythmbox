@@ -313,7 +313,7 @@ rb_shell_construct (RBShell *shell)
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
 			  shell);
-	shell->priv->status_shell = rb_shell_status_new ();
+	shell->priv->status_shell = rb_shell_status_new (bonobo_window_get_ui_engine (win));
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 
 	hbox = gtk_hbox_new (FALSE, 5);

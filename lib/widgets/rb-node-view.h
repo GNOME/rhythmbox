@@ -74,6 +74,8 @@ RBNode     *rb_node_view_get_random_node   (RBNodeView *view);
 
 GList      *rb_node_view_get_selection     (RBNodeView *view);
 
+char       *rb_node_view_get_status        (RBNodeView *view);
+
 G_END_DECLS
 
 #endif /* __RB_NODE_VIEW_H */

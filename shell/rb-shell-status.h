@@ -19,6 +19,7 @@
  */
 
 #include <gtk/gtkhbox.h>
+#include <bonobo/bonobo-ui-engine.h>
 
 #include "rb-view-status.h"
 
@@ -50,7 +51,7 @@ typedef struct
 
 GType          rb_shell_status_get_type   (void);
 
-RBShellStatus *rb_shell_status_new        (void);
+RBShellStatus *rb_shell_status_new        (BonoboUIEngine *engine);
 
 void           rb_shell_status_set_status (RBShellStatus *shell_status,
 					   RBViewStatus *status);

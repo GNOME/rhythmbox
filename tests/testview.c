@@ -82,6 +82,8 @@ static void song_eos_cb (MonkeyMediaStream *stream,
 	                 RBTestView *view);
 static RBNode *rb_test_view_get_previous_node (RBTestView *view);
 static RBNode *rb_test_view_get_next_node (RBTestView *view);
+static void rb_test_view_status_init (RBViewStatusIface *iface);
+static const char *rb_test_view_status_get (RBViewStatus *status);
 
 struct RBTestViewPrivate
 {
@@ -101,6 +103,8 @@ struct RBTestViewPrivate
 	gboolean repeat;
 
 	RBPlayer *player;
+
+	char *status;
 };
 
 enum
@@ -147,7 +151,7 @@ rb_test_view_get_type (void)
 		
 		static const GInterfaceInfo status_info =
 		{
-			NULL,
+			(GInterfaceInitFunc) rb_test_view_status_init,
 			NULL,
 			NULL
 		};
@@ -240,6 +244,7 @@ rb_test_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	g_free (view->priv->title);
+	g_free (view->priv->status);
 
 	g_free (view->priv);
 
@@ -371,6 +376,12 @@ rb_test_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_get_stream    = rb_test_view_get_stream;
 	iface->impl_start_playing = rb_test_view_start_playing;
 	iface->impl_stop_playing  = rb_test_view_stop_playing;
+}
+
+static void
+rb_test_view_status_init (RBViewStatusIface *iface)
+{
+	iface->impl_get = rb_test_view_status_get;
 }
 
 static void
@@ -600,6 +611,8 @@ node_view_changed_cb (RBNodeView *view,
 {
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
+
+	rb_view_status_notify_changed (RB_VIEW_STATUS (test_view));
 }
 
 static void
@@ -641,4 +654,15 @@ rb_test_view_get_next_node (RBTestView *view)
 		node = rb_node_view_get_random_node (view->priv->songs);
 
 	return node;
+}
+
+static const char *
+rb_test_view_status_get (RBViewStatus *status)
+{
+	RBTestView *view = RB_TEST_VIEW (status);
+
+	g_free (view->priv->status);
+	view->priv->status = rb_node_view_get_status (view->priv->songs);
+
+	return (const char *) view->priv->status;
 }

@@ -23,6 +23,7 @@
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreemodelsort.h>
 #include <libgnome/gnome-i18n.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
 #include <libxml/tree.h>
 #include <stdlib.h>
@@ -31,6 +32,15 @@
 #include "rb-tree-model-node.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
+
+typedef struct 
+{
+	GnomeVFSFileSize n_bytes;
+	long n_seconds;
+	int n_songs;
+
+	RBNodeView *view;
+} StatusInfo;
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -69,6 +79,10 @@ static RBNode *rb_node_view_get_node (RBNodeView *view,
 		                      gboolean down);
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
+static gboolean rb_node_view_status_foreach_cb (GtkTreeModel *model,
+				                GtkTreePath *path,
+				                GtkTreeIter *iter,
+				                StatusInfo *info);
 
 struct RBNodeViewPrivate
 {
@@ -825,4 +839,56 @@ gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					  RBNodeView *view)
 {
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+}
+
+char *
+rb_node_view_get_status (RBNodeView *view)
+{
+	char *ret, *size;
+	int hours, minutes, seconds;
+	StatusInfo *info = g_new0 (StatusInfo, 1);
+
+	info->view = view;
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (view->priv->sortmodel),
+				(GtkTreeModelForeachFunc) rb_node_view_status_foreach_cb,
+				info);
+
+	size = gnome_vfs_format_file_size_for_display (info->n_bytes);
+
+	hours   = info->n_seconds / (60 * 60);
+	minutes = info->n_seconds / 60 - hours * 60;
+	seconds = info->n_seconds % 60;
+
+	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d playing time, %s"),
+			       info->n_songs, hours, minutes, seconds, size);
+
+	g_free (size);
+	g_free (info);
+
+	return ret;
+}
+
+static gboolean
+rb_node_view_status_foreach_cb (GtkTreeModel *model,
+				GtkTreePath *path,
+				GtkTreeIter *iter,
+				StatusInfo *info)
+{
+	GtkTreeIter iter2, iter3;
+	RBNode *node;
+
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (info->view->priv->sortmodel),
+							&iter2, iter);
+	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (info->view->priv->filtermodel),
+							  &iter3, &iter2);
+
+	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (info->view->priv->nodemodel),
+						  &iter3);
+
+	info->n_songs++;
+	info->n_seconds += (long) rb_node_get_int_property (node, "duration");
+	info->n_bytes += (GnomeVFSFileSize) rb_node_get_int_property (node, "filesize");
+
+	return FALSE;
 }

@@ -46,6 +46,8 @@ static GdkPixbuf *rb_test_view_get_pixbuf (RBViewPlayer *player);
 static MonkeyMediaAudioStream *rb_test_view_get_stream (RBViewPlayer *player);
 static void rb_test_view_start_playing (RBViewPlayer *player);
 static void rb_test_view_stop_playing (RBViewPlayer *player);
+static void rb_test_view_status_init (RBViewStatusIface *iface);
+static const char *rb_test_view_status_get (RBViewStatus *status);
 
 struct RBTestView2Private
 {
@@ -90,7 +92,7 @@ rb_test_view2_get_type (void)
 		
 		static const GInterfaceInfo status_info =
 		{
-			NULL,
+			(GInterfaceInitFunc) rb_test_view_status_init,
 			NULL,
 			NULL
 		};
@@ -202,6 +204,12 @@ rb_test_view_player_init (RBViewPlayerIface *iface)
 }
 
 static void
+rb_test_view_status_init (RBViewStatusIface *iface)
+{
+	iface->impl_get = rb_test_view_status_get;
+}
+
+static void
 rb_test_view_set_shuffle (RBViewPlayer *player,
 			  gboolean shuffle)
 {
@@ -279,4 +287,10 @@ rb_test_view_start_playing (RBViewPlayer *player)
 static void
 rb_test_view_stop_playing (RBViewPlayer *player)
 {
+}
+
+static const char *
+rb_test_view_status_get (RBViewStatus *status)
+{
+	return "Ja dacht je dat!";
 }
