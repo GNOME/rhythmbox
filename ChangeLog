@@ -1,3 +1,172 @@
+2003-10-06 00:08:06 GMT	Colin Walters <walters@verbum.org>	patch-67
+
+    Summary:
+      first merge of playlists branch
+    Revision:
+      rhythmbox--mainline--0.6--patch-67
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-58
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-1
+       create playlists/ dir, move manager in there
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-2
+       some hackery on playlist source, doesn't compile yet 
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-3
+       implement sortable method in rhythmdb model, minor tweaks to playlist src
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-4
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-5
+       first cut at a playlist model, some fixes to query model
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-6
+       kill off playlists/, it won't work due to circular dep issues 
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-7
+       make playlist model compile
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-8
+       playlist source compiles, doesn't do much yet 
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-9
+       it compiles and boots, still more to do
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-10
+       fix column types, other misc bits...very close now!
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-11
+       add one to tracknum to start from 1
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-12
+       merge with mainline
+    
+
+    new files:
+     rhythmdb/rhythmdb-playlist-model.c
+     rhythmdb/rhythmdb-playlist-model.h
+
+    modified files:
+     library/rb-library.c library/rb-library.h rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-legacy.h
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+     rhythmdb/rhythmdb-query-model.c shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell.c
+     sources/Makefile.am sources/rb-iradio-source.c
+     sources/rb-playlist-source.c sources/rb-playlist-source.h
+     widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-8
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-9
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-12
+
+
+2003-10-05 23:11:54 GMT	Colin Walters <walters@verbum.org>	patch-66
+
+    Summary:
+      avoid double-freeing cached window title 
+    Revision:
+      rhythmbox--mainline--0.6--patch-66
+
+    
+
+    modified files:
+     shell/rb-shell.c
+
+
+2003-10-05 21:58:18 GMT	Colin Walters <walters@verbum.org>	patch-65
+
+    Summary:
+      don't process cmdline bonobo opts if --no-registration is used 
+    Revision:
+      rhythmbox--mainline--0.6--patch-65
+
+    
+
+    modified files:
+     shell/main.c shell/rb-shell.c
+
+
+2003-10-05 18:04:18 GMT	Colin Walters <walters@verbum.org>	patch-64
+
+    Summary:
+      don't try to register the shell if --no-registration is passed 
+    Revision:
+      rhythmbox--mainline--0.6--patch-64
+
+    
+
+    modified files:
+     shell/main.c shell/rb-shell.c
+
+
+2003-10-05 07:44:38 GMT	Colin Walters <walters@verbum.org>	patch-63
+
+    Summary:
+      sort by artist by default, not album, and fix small bug in entry view 
+    Revision:
+      rhythmbox--mainline--0.6--patch-63
+
+    
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-10-05 07:07:06 GMT	Colin Walters <walters@verbum.org>	patch-62
+
+    Summary:
+      implement entry change signal
+    Revision:
+      rhythmbox--mainline--0.6--patch-62
+
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h
+
+
+2003-10-05 06:54:27 GMT	Colin Walters <walters@verbum.org>	patch-61
+
+    Summary:
+      don't crash on empty search 
+    Revision:
+      rhythmbox--mainline--0.6--patch-61
+
+    
+
+    modified files:
+     sources/rb-library-source.c
+
+
+2003-10-05 06:08:27 GMT	Colin Walters <walters@verbum.org>	patch-60
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-60
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-05 05:56:56 GMT	Colin Walters <walters@verbum.org>	patch-59
 
     Summary:
