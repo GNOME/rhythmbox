@@ -1,5 +1,20 @@
 2002-08-18  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/rb-debug.c: (rb_debug_real), (log_handler),
+	(rb_profiler_new), (rb_profiler_dump), (rb_profiler_reset),
+	(rb_profiler_free):
+	* lib/rb-debug.h:
+	* library/rb-library-main-thread.c:
+	* library/rb-library-xml-thread.c: (thread_main):
+	* library/rb-node.c: (rb_node_class_init),
+	(rb_node_system_handle_action), (rb_node_changed):
+	* library/rb-node.h:
+
+	Remove "changed" signal since it was unused and caused unnecessary
+	overhead, and introduce profiling functions.
+
+2002-08-18  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/node-views/rb-node-view-albums.xml:
 	* data/node-views/rb-node-view-artists.xml:
 	* data/node-views/rb-node-view-songs.xml:

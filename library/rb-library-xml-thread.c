@@ -23,6 +23,7 @@
 
 #include "rb-library-xml-thread.h"
 #include "rb-node-song.h"
+#include "rb-debug.h"
 
 static void rb_library_xml_thread_class_init (RBLibraryXMLThreadClass *klass);
 static void rb_library_xml_thread_init (RBLibraryXMLThread *thread);
@@ -247,6 +248,8 @@ rb_library_xml_thread_get_property (GObject *object,
 static gpointer
 thread_main (RBLibraryXMLThreadPrivate *priv)
 {
+	static RBProfiler *p = NULL;
+	
 	while (TRUE)
 	{
 		int i = 0;
@@ -261,6 +264,8 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 				xmlFreeDoc (priv->doc);
 			g_free (priv);
 			priv->object->priv = NULL;
+			rb_profiler_dump (p);
+			rb_profiler_free (p);
 			g_thread_exit (NULL);
 		}
 
@@ -286,6 +291,8 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			g_free (tmp);
 
 			priv->initialized_file = TRUE;
+
+			p = rb_profiler_new ("XML loader thread");
 		}
 
 		if (priv->child == NULL && priv->dead == FALSE)

@@ -66,7 +66,6 @@ typedef struct
 
 	/* signals */
 	void (*destroyed)       (RBNode *node);
-	void (*changed)         (RBNode *node);
 
 	void (*child_created)   (RBNode *node, RBNode *child);
 	void (*child_changed)   (RBNode *node, RBNode *child);

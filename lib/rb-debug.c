@@ -25,6 +25,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <time.h>
 
 #include "rb-debug.h"
 
@@ -39,10 +40,13 @@ static gboolean debugging = FALSE;
  * is not going wrong, if something *is* wrong use g_warning.
  */
 void
-rb_debug (const char *format, ...)
+rb_debug_real (const char *func,
+	       const char *format, ...)
 {
 	va_list args;
 	char buffer[1025];
+	char *str_time;
+	time_t the_time;
 
 	if (debugging == FALSE) return;
 
@@ -52,7 +56,13 @@ rb_debug (const char *format, ...)
 	
 	va_end (args);
 
-	fprintf (stderr, "** DEBUG ** %s\n", buffer);
+	time (&the_time);
+	str_time = g_new0 (char, 255);
+	strftime (str_time, 254, "%H:%M:%S", localtime (&the_time));
+
+	fprintf (stderr, "** DEBUG ** [%s] (%s): %s\n", func, str_time, buffer);
+	
+	g_free (str_time);
 }
 
 void
@@ -143,4 +153,71 @@ log_handler (const char *domain,
 	{
 		rb_debug_stop_in_debugger ();
 	}
+}
+
+struct RBProfiler
+{
+	GTimer *timer;
+	char *name;
+};
+
+RBProfiler *
+rb_profiler_new (const char *name)
+{
+	RBProfiler *profiler;
+	
+	if (debugging == FALSE)
+		return NULL;
+
+	profiler = g_new0 (RBProfiler, 1);
+	profiler->timer = g_timer_new ();
+	profiler->name  = g_strdup (name);
+
+	g_timer_start (profiler->timer);
+
+	return profiler;
+}
+
+void
+rb_profiler_dump (RBProfiler *profiler)
+{
+	long elapsed;
+	double seconds;
+	char *tmp;
+
+	if (debugging == FALSE)
+		return;
+	if (profiler == NULL)
+		return;
+
+	seconds = g_timer_elapsed (profiler->timer, &elapsed);
+	
+	tmp = g_strdup_printf ("Profiler %s", profiler->name);
+	rb_debug_real (tmp, "%ld ms (%f s) elapsed",
+		       elapsed / (G_USEC_PER_SEC / 1000), seconds);
+	g_free (tmp);
+}
+
+void
+rb_profiler_reset (RBProfiler *profiler)
+{
+	if (debugging == FALSE)
+		return;
+	if (profiler == NULL)
+		return;
+
+	g_timer_start (profiler->timer);
+}
+
+void
+rb_profiler_free (RBProfiler *profiler)
+{
+	if (debugging == FALSE)
+		return;
+	if (profiler == NULL)
+		return;
+
+	g_timer_destroy (profiler->timer);
+	g_free (profiler->name);
+	g_free (profiler);
 }

@@ -22,6 +22,7 @@
 #include "rb-node-song.h"
 #include "rb-file-helpers.h"
 #include "rb-file-monitor.h"
+#include "rb-debug.h"
 
 static void rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass);
 static void rb_library_main_thread_init (RBLibraryMainThread *thread);

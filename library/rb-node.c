@@ -53,7 +53,6 @@ typedef enum
 typedef enum
 {
 	DESTROYED,
-	CHANGED,
 	CHILD_CREATED,
 	CHILD_CHANGED,
 	CHILD_DESTROYED,
@@ -182,15 +181,6 @@ rb_node_class_init (RBNodeClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, destroyed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	rb_node_signals[CHANGED] =
-		g_signal_new ("changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeClass, changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -410,18 +400,6 @@ rb_node_system_handle_action (RBNodeAction *action)
 		else
 		{
 			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
-			if (action->signal == CHANGED)
-			{
-				GList *l;
-
-				g_static_rw_lock_reader_lock (action->node->priv->lock);
-				for (l = action->node->priv->parents; l != NULL; l = g_list_next (l))
-				{
-					g_signal_emit (G_OBJECT (l->data), rb_node_signals[CHILD_CHANGED], 0,
-						       action->node);
-				}
-				g_static_rw_lock_reader_unlock (action->node->priv->lock);
-			}
 		}
 		break;
 	default:
@@ -976,16 +954,26 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 static void
 rb_node_changed (RBNode *node)
 {
-	RBNodeAction *action;
+	GList *l;
 
 	g_return_if_fail (RB_IS_NODE (node));
 
-	action = g_new0 (RBNodeAction, 1);
-	action->type = RB_NODE_ACTION_SIGNAL;
-	action->node = node;
-	action->signal = CHANGED;
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	rb_node_add_action (node, action);
+	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
+	{
+		RBNodeAction *action;
+	
+		action = g_new0 (RBNodeAction, 1);
+		action->type = RB_NODE_ACTION_SIGNAL;
+		action->node = RB_NODE (l->data);
+		action->signal = CHILD_CHANGED;
+		action->user_data = node;
+
+		rb_node_add_action (node, action);
+	}
+	
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
 RBNode *

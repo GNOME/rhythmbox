@@ -26,11 +26,21 @@
 
 G_BEGIN_DECLS
 
+#define rb_debug(...) rb_debug_real (G_GNUC_PRETTY_FUNCTION, __VA_ARGS__)
+
 void rb_debug_init             (gboolean debug);
 
-void rb_debug                  (const char *format, ...);
+void rb_debug_real             (const char *func,
+				const char *format, ...);
 
 void rb_debug_stop_in_debugger (void);
+
+typedef struct RBProfiler RBProfiler;
+
+RBProfiler *rb_profiler_new   (const char *name);
+void        rb_profiler_dump  (RBProfiler *profiler);
+void        rb_profiler_reset (RBProfiler *profiler);
+void        rb_profiler_free  (RBProfiler *profiler);
 
 G_END_DECLS
 
