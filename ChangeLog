@@ -1,5 +1,13 @@
 2002-07-03  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_value):
+
+	In the artist list we do:
+	The Cranberries -> Cranberries, The
+	DJ Tiesto       -> Tiesto, DJ
+
+2002-07-03  Jorn Baayen  <jorn@nl.linux.org>
+
 	* views/rb-group-view.c: (rb_group_view_init):
 	* views/rb-library-view.c: (rb_library_view_init):
 

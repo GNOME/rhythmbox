@@ -556,9 +556,48 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 		{
 			GValue val = { 0, };
-			
+			char *str = NULL;
+			const char *name;
+
 			rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &val);
-			g_value_set_string (value, g_value_get_string (&val));
+			name = g_value_get_string (&val);
+
+			if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST)
+			{
+				/* comma separated list of prefixes that are to
+				 * be appended as suffix */
+				static const char *prefix_to_suffix = N_("THE ,DJ ");
+				char **items;
+				char *foldedname = g_utf8_casefold (name, -1);
+				int i;
+
+				items = g_strsplit (_(prefix_to_suffix), ",", 0);
+				for (i = 0; items[i] != NULL; i++)
+				{
+					char *foldedprefix = g_utf8_casefold (items[i], -1);
+					if (strncmp (foldedname, foldedprefix, strlen (foldedprefix)) == 0)
+					{
+						char *tmp = g_strndup (name, strlen (items[i]));
+						tmp = g_strchomp (tmp);
+						str = g_strdup_printf (_("%s, %s"),
+								       name + strlen (items[i]),
+								       tmp);
+						g_free (tmp);
+						g_free (foldedprefix);
+						break;
+					}
+					g_free (foldedprefix);
+				}
+				g_strfreev (items);
+
+				g_free (foldedname);
+			}
+
+			if (str == NULL)
+				str = g_strdup (name);
+
+			g_value_set_string (value, str);
+			g_free (str);
 			g_value_unset (&val);
 		}
 		break;
