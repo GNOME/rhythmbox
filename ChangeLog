@@ -1,3 +1,8 @@
+2002-11-28  Colin Walters  <walters@gnu.org>
+
+	* lib/rb-string-helpers.c (rb_utf8_strncasecmp): New function.
+	* lib/rb-string-helpers.h (rb_utf8_strncasecmp): Prototype it.
+
 2002-11-28  Olivier Martin <oleevye@wanadoo.fr>
 
 	* lib/widgets/rb-rating.c: (rb_rating_get_type), (rb_rating_init),
@@ -9,6 +14,7 @@
 2002-11-27  Colin Walters  <walters@gnu.org>
 
 	* lib/rb-windows-ini-file.c, lib/rb-windows-ini-file.h: New files.
+
 	* lib/getline.c, lib/getline.h, lib/getstr.c, lib/getstr.h: New
 	files, stolen from the GNU coreutils.
 
