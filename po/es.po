@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-17 20:19+0100\n"
-"PO-Revision-Date: 2004-02-17 20:24+0100\n"
+"POT-Creation-Date: 2004-02-29 17:43+0100\n"
+"PO-Revision-Date: 2004-02-29 17:47+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "_Ruta: "
 msgid "_Skip this step"
 msgstr "_Saltar este paso"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1318
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
 msgid "A_lbum"
 msgstr "Á_lbum"
 
@@ -138,11 +138,11 @@ msgstr "_Ultima reproducción"
 msgid "_Play count"
 msgstr "_Número de reproducciones"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1348
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1336
 msgid "_Quality"
 msgstr "Cal_idad"
 
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1269
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1257
 msgid "_Rating"
 msgstr "_Evaluación"
 
@@ -252,7 +252,7 @@ msgstr "Introduzca la _ubicación (URI) del archivo que quiere añadir:"
 msgid "Open from URI"
 msgstr "Abrir desde URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1172 shell/rb-shell.c:1811
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1860
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -599,10 +599,11 @@ msgstr "Estación de radio nueva"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:708 sources/rb-iradio-source.c:249
-#: sources/rb-iradio-source.c:250 sources/rb-iradio-source.c:251
-#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1051
-#: widgets/rb-entry-view.c:1078 widgets/rb-song-info.c:581
+#: rhythmdb/rhythmdb.c:714 sources/rb-ipod-source.c:173
+#: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
+#: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
+#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
+#: widgets/rb-song-info.c:597
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -704,7 +705,7 @@ msgstr "Pista de CD de audio"
 
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "Ha ocurrido un error al abrir el archivo para lectura"
@@ -717,16 +718,16 @@ msgstr "Ha ocurrido un error al decodificar el archivo FLAC"
 msgid "FLAC"
 msgstr "FLAC"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
 msgid "Failed to gather information about the file"
 msgstr "Fallo al obtener información acerca del archivo"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:562
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d capa 3"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:564
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
 msgid "MPEG 2.5 Layer III"
 msgstr "MPEG 2.5 Layer III"
 
@@ -754,73 +755,44 @@ msgstr "Ha ocurrido un error al abrir el archivo como Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:439 metadata/rb-metadata-gst.c:564
-#: player/rb-player-gst.c:532
+#: metadata/rb-metadata-gst.c:459 metadata/rb-metadata-gst.c:588
+#: player/rb-player-gst.c:565
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 
-#: metadata/rb-metadata-mm.c:202
+#: metadata/rb-metadata-mm.c:205
 msgid "Operation not supported"
 msgstr "Operación no soportada"
 
-#: player/rb-player-gst.c:324 player/rb-player-gst.c:787
+#: player/rb-player-gst.c:325 player/rb-player-gst.c:758
 msgid "Failed to close audio output sink"
 msgstr "Fallo al cerrar el sumidero de salida de sonido"
 
-#: player/rb-player-gst.c:411 player/rb-player-gst.c:651
-#: player/rb-player-gst.c:661
+#: player/rb-player-gst.c:412 player/rb-player-gst.c:622
+#: player/rb-player-gst.c:632
 msgid "Could not start pipeline playing"
 msgstr "No se ha podido iniciar la reproducción en pipeline"
 
-#: player/rb-player-gst.c:440
-msgid "Failed to create thread element; check your GStreamer installation"
-msgstr ""
-"Ha ocurrido un error al crear el elemento de hilo; compruebe su instalación "
-"de Gstreamer"
-
-#: player/rb-player-gst.c:474
-#, c-format
-msgid "Failed to create %s input element; check your installation"
-msgstr ""
-"Ha ocurrido un error al crear el elemento de entrada %s; compruebe su "
-"instalación"
-
-#: player/rb-player-gst.c:503
-msgid "Failed to create queue element; check your installation"
-msgstr ""
-"Ha ocurrido un error al crear el elemento de de cola; compruebe su "
-"instalación"
-
-#: player/rb-player-gst.c:520
-msgid "Failed to create typefind element; check your installation"
-msgstr "Ha ocurrido un error al crear el elemento typefind; compruebe su instalación"
-
-#: player/rb-player-gst.c:551
-msgid "Failed to create volume element; check your installation"
-msgstr ""
-"Ha ocurrido un error al crear el elemento de volumen; compruebe su "
-"instalación"
-
-#: player/rb-player-gst.c:570
+#: player/rb-player-gst.c:528
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "No se ha podido crear el elemento de salida de audio; compruebe su "
 "configuración"
 
-#: player/rb-player-gst.c:618
+#: player/rb-player-gst.c:589
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "No se pudo inicializar el planificador ¿Ejecutó gst-register?"
 
-#: player/rb-player-gst.c:673
+#: player/rb-player-gst.c:644
 msgid "Could not pause playback"
 msgstr "No se ha podido pausar la reproducción"
 
-#: player/rb-player-gst.c:682
+#: player/rb-player-gst.c:653
 msgid "Could not close output sink"
 msgstr "No se ha podido cerrar el sumidero de salida"
 
-#: player/rb-player-gst.c:728
+#: player/rb-player-gst.c:699
 msgid "No AudioCD support; check your settings"
 msgstr "No hay soporte AudioCD; compruebe su configuración"
 
@@ -858,49 +830,49 @@ msgstr "Error interno; compruebe su instalación."
 msgid "Audio of %s not handled; check your installation."
 msgstr "El audio de %s no es manejado; compruebe su instalación"
 
-#: rhythmdb/rhythmdb.c:775
+#: rhythmdb/rhythmdb.c:792
 msgid "<invalid filename>"
 msgstr "<nombre de archivo inválido>"
 
-#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1017
-#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:810
+#: rhythmdb/rhythmdb.c:1323 widgets/rb-entry-view.c:1005
+#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:805
 msgid "Never"
 msgstr "Nunca"
 
-#: rhythmdb/rhythmdb.c:1308
+#: rhythmdb/rhythmdb.c:1325
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2069
+#: rhythmdb/rhythmdb.c:2102
 msgid "Loading songs..."
 msgstr "Cargando canciones..."
 
-#: rhythmdb/rhythmdb.c:2071
+#: rhythmdb/rhythmdb.c:2104
 msgid "Refreshing songs..."
 msgstr "Refrescando canciones..."
 
-#: rhythmdb/rhythmdb.c:2088
+#: rhythmdb/rhythmdb.c:2121
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d canción"
 msgstr[1] "%d canciones"
 
-#: rhythmdb/rhythmdb.c:2095
+#: rhythmdb/rhythmdb.c:2128
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuto"
 msgstr[1] "%ld minutos"
 
-#: rhythmdb/rhythmdb.c:2096 rhythmdb/rhythmdb.c:2106
+#: rhythmdb/rhythmdb.c:2129 rhythmdb/rhythmdb.c:2139
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld horas"
 
-#: rhythmdb/rhythmdb.c:2097
+#: rhythmdb/rhythmdb.c:2130
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -908,13 +880,13 @@ msgstr[0] "%ld día"
 msgstr[1] "%ld días"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2101
+#: rhythmdb/rhythmdb.c:2134
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s y %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2109
+#: rhythmdb/rhythmdb.c:2142
 #, c-format
 msgid "%s and %s"
 msgstr "%s y %s"
@@ -979,7 +951,7 @@ msgstr "Ruta al archivo de base de datos a usar"
 msgid "Quit Rhythmbox"
 msgstr "Salir de Rhythmbox"
 
-#: shell/main.c:207
+#: shell/main.c:210
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -987,12 +959,12 @@ msgstr ""
 "Rhythmbox no funciona actualmente si están activados los eventos de sonido "
 "de Gnome y esdsink está en uso."
 
-#: shell/main.c:246 shell/main.c:255
+#: shell/main.c:249 shell/main.c:258
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Ocurrió una excepción «%s»"
 
-#: shell/main.c:293
+#: shell/main.c:296
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1025,15 +997,15 @@ msgstr "Aleatorio por puntuación"
 msgid "Random by time since last play and rating"
 msgstr "Aleatorio por tiempo desde la última reproducción y puntuación"
 
-#: shell/rb-playlist-manager.c:420 shell/rb-shell-player.c:897
+#: shell/rb-playlist-manager.c:422 shell/rb-shell-player.c:897
 msgid "Couldn't parse playlist"
 msgstr "No se ha podido analizar la lista de reproducción"
 
-#: shell/rb-playlist-manager.c:634
+#: shell/rb-playlist-manager.c:647
 msgid "Load playlist"
 msgstr "Cargar lista de reproducción"
 
-#: shell/rb-playlist-manager.c:671
+#: shell/rb-playlist-manager.c:684
 msgid "Save playlist"
 msgstr "Guardar lista de reproducción"
 
@@ -1087,24 +1059,24 @@ msgstr "Preferencias del reproductor de música"
 msgid "General"
 msgstr "General"
 
-#: shell/rb-shell.c:824
+#: shell/rb-shell.c:842
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Ha ocurrido un error al procesar la URI «%s»\n"
 
-#: shell/rb-shell.c:1022
+#: shell/rb-shell.c:1040
 msgid "Whether the main window is visible"
 msgstr "Indica si la ventana principal es visible"
 
-#: shell/rb-shell.c:1027
+#: shell/rb-shell.c:1045
 msgid "Whether shuffle is enabled"
 msgstr "Indica si la reproducción aleatoria está activada"
 
-#: shell/rb-shell.c:1031
+#: shell/rb-shell.c:1049
 msgid "Properties for the current song"
 msgstr "Propiedades de la canción actual"
 
-#: shell/rb-shell.c:1450
+#: shell/rb-shell.c:1471
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1116,12 +1088,12 @@ msgstr ""
 "diferente al de bonobo-activation; este aviso es inocuo, pero la "
 "comunicación mediante IPC no funcionará."
 
-#: shell/rb-shell.c:1785 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1834 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "Sin reproducción"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1788
+#: shell/rb-shell.c:1837
 #, c-format
 msgid ""
 "%s\n"
@@ -1131,7 +1103,7 @@ msgstr ""
 "Pausado, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1792
+#: shell/rb-shell.c:1841
 #, c-format
 msgid ""
 "%s\n"
@@ -1141,12 +1113,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1827
+#: shell/rb-shell.c:1876
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: shell/rb-shell.c:1895
+#: shell/rb-shell.c:1944
 msgid "translator_credits"
 msgstr ""
 "Xan López <xan@dimensis.com>\n"
@@ -1154,44 +1126,44 @@ msgstr ""
 "Francisco Javier F. <serrador@arrakis.es>\n"
 "Carlos Perelló Marín <carlos@gnome.org>"
 
-#: shell/rb-shell.c:1904
+#: shell/rb-shell.c:1953
 msgid "Maintainers:"
 msgstr "Encargados del desarrollo:"
 
-#: shell/rb-shell.c:1907
+#: shell/rb-shell.c:1956
 msgid "Former Maintainers:"
 msgstr "Encargados del desarrollo:"
 
-#: shell/rb-shell.c:1910
+#: shell/rb-shell.c:1959
 msgid "Contributors:"
 msgstr "Colaboradores:"
 
-#: shell/rb-shell.c:1912
+#: shell/rb-shell.c:1961
 msgid "Music management and playback software for GNOME."
 msgstr "Software de organización y reproducción de música para Gnome."
 
-#: shell/rb-shell.c:2082
+#: shell/rb-shell.c:2134
 msgid "Choose Files or Directory"
 msgstr "Elija archivos o directorio"
 
-#: shell/rb-shell.c:2128
+#: shell/rb-shell.c:2180
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Para extraer CDs debe instalar el paquete Sound Juicer."
 
-#: shell/rb-shell.c:2135
+#: shell/rb-shell.c:2187
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "No se pudo ejecutar sound-juicer: %s"
 
-#: shell/rb-source-header.c:177
+#: shell/rb-source-header.c:183
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filtrar música por género, artista, álbum o título"
 
-#: shell/rb-source-header.c:184
+#: shell/rb-source-header.c:190
 msgid "Show _Browser"
 msgstr "Mostrar _navegador"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:191
 msgid "Hide _Browser"
 msgstr "Ocultar _navegador"
 
@@ -1203,47 +1175,106 @@ msgstr "_Repetir"
 msgid "Buffering..."
 msgstr "Buffering..."
 
-#: sources/rb-iradio-source.c:323 sources/rb-library-source.c:510
-#: widgets/rb-query-creator.c:55
+#: sources/itunesdb.c:459
+msgid "Master-PL"
+msgstr "Master-PL"
+
+#: sources/itunesdb.c:461
+msgid "Playlist"
+msgstr "Lista de reproducción"
+
+#: sources/itunesdb.c:813
+#, c-format
+msgid "Error reading \"%s\".\n"
+msgstr "Error al leer %s.\n"
+
+#: sources/itunesdb.c:821
+#, c-format
+msgid "\"%s\" is not a iTunesDB.\n"
+msgstr "\"%s\" no es una BD iTunes.\n"
+
+#: sources/itunesdb.c:1061
+#, c-format
+msgid "Could not open \"%s\" file for reading.\n"
+msgstr "No se ha podido abrir «%s» para lectura.\n"
+
+#: sources/itunesdb.c:1568
+#, c-format
+msgid "Could not open iTunesDB \"%s\" for writing.\n"
+msgstr "No se ha podido abrir la BD iTunes «%s» para escritura.\n"
+
+#. an error occured
+#: sources/itunesdb.c:1580
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s).\n"
+msgstr "Error renombrando «%s» a «%s» (%s).\n"
+
+#: sources/itunesdb.c:1716
+#, c-format
+msgid "Could not open file \"%s\" for reading.\n"
+msgstr "No se ha posido habir el archivo «%s» para lectura.\n"
+
+#: sources/itunesdb.c:1723
+#, c-format
+msgid "Could not open file \"%s\" for writing.\n"
+msgstr "No se ha posido habir el archivo «%s» para escritura.\n"
+
+#. error -- not end of file!
+#: sources/itunesdb.c:1736
+#, c-format
+msgid "Error reading file \"%s\".\n"
+msgstr "Error al leer el archivo: %s.\n"
+
+#: sources/itunesdb.c:1748
+#, c-format
+msgid "Error writing PC file \"%s\".\n"
+msgstr "Error al escribir el archivo PC %s.\n"
+
+#: sources/rb-ipod-source.c:117
+msgid "iPod"
+msgstr "iPod"
+
+#: sources/rb-iradio-source.c:328 sources/rb-library-source.c:513
+#: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Género"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:403
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:547
+#: sources/rb-iradio-source.c:559
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d estación"
 msgstr[1] "%d estaciones"
 
-#: sources/rb-library-source.c:524 widgets/rb-query-creator.c:53
+#: sources/rb-library-source.c:527 widgets/rb-query-creator.c:54
 msgid "Artist"
 msgstr "Artista"
 
-#: sources/rb-library-source.c:538 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:541 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Álbum"
 
-#: sources/rb-library-source.c:647
+#: sources/rb-library-source.c:649
 msgid "Library"
 msgstr "Biblioteca"
 
-#: sources/rb-library-source.c:1180
+#: sources/rb-library-source.c:1192
 msgid "Add Location"
 msgstr "Añadir ubicación"
 
-#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1287
+#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1275
 msgid "Tra_ck"
 msgstr "_Pista"
 
-#: sources/rb-source.c:495
+#: sources/rb-source.c:528
 msgid "No properties available."
 msgstr "No hay propiedades disponibles"
 
-#: sources/rb-source.c:578
+#: sources/rb-source.c:611
 msgid "This source does not support drag and drop."
 msgstr "Esta fuente no soporta arrastrar y soltar."
 
@@ -1297,69 +1328,69 @@ msgstr ""
 "Recuerde que puede añadir música a la biblioteca usando «Música» y después "
 "«Importar carpeta» o importándola de CDs."
 
-#: widgets/rb-druid.c:309
+#: widgets/rb-druid.c:318
 #, c-format
 msgid "Error reading filename: %s"
 msgstr "Ha ocurrido un error al leer el archivo: %s"
 
-#: widgets/rb-druid.c:324
+#: widgets/rb-druid.c:333
 msgid "Choose a directory"
 msgstr "Elija un directorio"
 
-#: widgets/rb-entry-view.c:1053 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1080
+#: widgets/rb-entry-view.c:1068
 msgid "Very Low"
 msgstr "Muy baja"
 
-#: widgets/rb-entry-view.c:1082
+#: widgets/rb-entry-view.c:1070
 msgid "Low"
 msgstr "Baja"
 
-#: widgets/rb-entry-view.c:1084
+#: widgets/rb-entry-view.c:1072
 msgid "Regular"
 msgstr "Regular"
 
-#: widgets/rb-entry-view.c:1086
+#: widgets/rb-entry-view.c:1074
 msgid "High"
 msgstr "Alta"
 
-#: widgets/rb-entry-view.c:1088
+#: widgets/rb-entry-view.c:1076
 msgid "Very High"
 msgstr "Muy alta"
 
-#: widgets/rb-entry-view.c:1090
+#: widgets/rb-entry-view.c:1078
 msgid "Perfect"
 msgstr "Perfecto"
 
-#: widgets/rb-entry-view.c:1296
+#: widgets/rb-entry-view.c:1284
 msgid "_Title"
 msgstr "_Título"
 
-#: widgets/rb-entry-view.c:1307
+#: widgets/rb-entry-view.c:1295
 msgid "Art_ist"
 msgstr "A_rtista"
 
-#: widgets/rb-entry-view.c:1329
+#: widgets/rb-entry-view.c:1317
 msgid "Ge_nre"
 msgstr "Gé_nero"
 
-#: widgets/rb-entry-view.c:1339
+#: widgets/rb-entry-view.c:1327
 msgid "Ti_me"
 msgstr "Dura_ción"
 
-#: widgets/rb-entry-view.c:1358
+#: widgets/rb-entry-view.c:1346
 msgid "_Play Count"
 msgstr "_Número de reproducciones"
 
-#: widgets/rb-entry-view.c:1367
+#: widgets/rb-entry-view.c:1355
 msgid "L_ast Played"
 msgstr "_Ultima reproducción"
 
-#: widgets/rb-entry-view.c:1511
+#: widgets/rb-entry-view.c:1499
 msgid "Now Playing"
 msgstr "Reproduciendo ahora"
 
@@ -1401,23 +1432,35 @@ msgstr "_Error"
 msgid "_File"
 msgstr "_Archivo"
 
-#: widgets/rb-query-creator.c:52
+#: widgets/rb-query-creator.c:53
 msgid "Title"
 msgstr "Título"
 
-#: widgets/rb-query-creator.c:60
+#: widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "Evaluación"
+
+#: widgets/rb-query-creator.c:62
 msgid "contains"
 msgstr "contiene"
 
-#: widgets/rb-query-creator.c:61
+#: widgets/rb-query-creator.c:63
 msgid "does not contain"
 msgstr "no contiene"
 
-#: widgets/rb-query-creator.c:62
+#: widgets/rb-query-creator.c:64 widgets/rb-query-creator.c:69
 msgid "equals"
 msgstr "igual a"
 
-#: widgets/rb-query-creator.c:230
+#: widgets/rb-query-creator.c:70
+msgid "greater than"
+msgstr "mayor que"
+
+#: widgets/rb-query-creator.c:71
+msgid "less than"
+msgstr "menor que"
+
+#: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
 msgstr "Crear una lista de reproducción automática"
 
@@ -1438,7 +1481,12 @@ msgstr "por"
 msgid "Song Properties"
 msgstr "Propiedades de la canción"
 
-#: widgets/rb-song-info.c:663
+#: widgets/rb-song-info.c:595
+#, c-format
+msgid "%d kbps"
+msgstr "%d Kbps "
+
+#: widgets/rb-song-info.c:658
 msgid "on the desktop"
 msgstr "en el escritorio"
 
@@ -1451,6 +1499,31 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "Failed to create thread element; check your GStreamer installation"
+#~ msgstr ""
+#~ "Ha ocurrido un error al crear el elemento de hilo; compruebe su "
+#~ "instalación de Gstreamer"
+
+#~ msgid "Failed to create %s input element; check your installation"
+#~ msgstr ""
+#~ "Ha ocurrido un error al crear el elemento de entrada %s; compruebe su "
+#~ "instalación"
+
+#~ msgid "Failed to create queue element; check your installation"
+#~ msgstr ""
+#~ "Ha ocurrido un error al crear el elemento de de cola; compruebe su "
+#~ "instalación"
+
+#~ msgid "Failed to create typefind element; check your installation"
+#~ msgstr ""
+#~ "Ha ocurrido un error al crear el elemento typefind; compruebe su "
+#~ "instalación"
+
+#~ msgid "Failed to create volume element; check your installation"
+#~ msgstr ""
+#~ "Ha ocurrido un error al crear el elemento de volumen; compruebe su "
+#~ "instalación"
 
 #~ msgid "Toggle random playing order"
 #~ msgstr "Conmutar orden de reproducción aleatorio"
@@ -1563,9 +1636,6 @@ msgstr "-"
 #~ msgid "Failed to parse %s as NodeView layout file"
 #~ msgstr ""
 #~ "Ha ocurrido un error al procesar %s como archivo de formato NodeView"
-
-#~ msgid "%d kbps"
-#~ msgstr "%d Kbps "
 
 #~ msgid " (Mono)"
 #~ msgstr " (Mono)"
