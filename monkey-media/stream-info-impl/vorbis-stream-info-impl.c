@@ -250,9 +250,13 @@ vorbis_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 			char *tmp, **parts;
 			gboolean ret = FALSE;
 
+			tmp = vorbis_comment_query (impl->priv->comment, "tracktotal", 0);
+			if (tmp != NULL)
+				return TRUE;
+
 			tmp = vorbis_comment_query (impl->priv->comment, "tracknumber", 0);
 			if (tmp == NULL)
-				return 0;
+				return FALSE;
 
 			parts = g_strsplit (tmp, "/", -1);
 			
@@ -468,20 +472,25 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 
 			g_value_init (value, G_TYPE_INT);
 
-			tmp = vorbis_comment_query (impl->priv->comment, "tracknumber", 0);
-			if (tmp == NULL)
-			{
-				g_value_set_int (value, -1);
+			tmp = vorbis_comment_query (impl->priv->comment, "tracktotal", 0);
+			if (tmp != NULL) {
+				g_value_set_int (value, atoi (tmp));
+				g_strfreev (parts);
 				break;
 			}
-			
-			parts = g_strsplit (tmp, "/", -1);
-			
-			if (parts[0] != NULL && parts[1] != NULL)
-				num = atoi (parts[1]);
 
-			g_value_set_int (value, num);
-
+			tmp = vorbis_comment_query (impl->priv->comment, "tracknumber", 0);
+			if (tmp != NULL) {
+				parts = g_strsplit (tmp, "/", -1);
+				
+				if (parts[0] != NULL && parts[1] != NULL)
+					num = atoi (parts[1]);
+				
+				g_value_set_int (value, num);
+				
+				g_value_set_int (value, -1);
+				
+			}
 			g_strfreev (parts);
 		}
 		break;
