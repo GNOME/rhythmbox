@@ -166,6 +166,8 @@ struct RBNodeViewPrivate
 	gboolean idle;
 
 	guint playing_node_destroyed_sigid;
+
+	gboolean use_column_sizing_hack;
 };
 
 enum
@@ -388,6 +390,69 @@ rb_node_view_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+
+/* FIXME!
+ * This is a gross hack to work around a GTK+ bug.  See
+ * http://bugzilla.gnome.org/show_bug.cgi?id=119797 for more
+ * information.
+ */
+static void
+set_columns_unfixed (RBNodeView *view)
+{
+	GList *columns;
+	int i;
+
+	if (!view->priv->use_column_sizing_hack)
+		return;
+	
+	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
+
+	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS && columns != NULL; i++, columns = g_list_next (columns))
+		switch (i)
+		{
+		case RB_TREE_MODEL_NODE_COL_PLAYING:
+			break;
+		case RB_TREE_MODEL_NODE_COL_RATING:
+			break;
+		default:
+			rb_debug ("setting column %d to AUTOSIZE", i);
+			gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (columns->data),
+							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
+			break;
+		}
+	g_list_free (columns);
+}
+
+static void
+set_columns_fixed (RBNodeView *view)
+{
+	GList *columns;
+	int i;
+
+	if (!view->priv->use_column_sizing_hack)
+		return;
+	
+	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
+	
+	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS && columns != NULL; i++, columns = g_list_next (columns))
+		switch (i)
+		{
+		case RB_TREE_MODEL_NODE_COL_PLAYING:
+			break;
+		case RB_TREE_MODEL_NODE_COL_RATING:
+			break;
+		default:
+			rb_debug ("setting column %d to FIXED", i);
+			gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (columns->data),
+							 GTK_TREE_VIEW_COLUMN_FIXED);
+
+			break;
+		}
+
+	g_list_free (columns);
+}
+
 static void
 rb_node_view_set_property (GObject *object,
 			   guint prop_id,
@@ -416,8 +481,10 @@ rb_node_view_set_property (GObject *object,
 							       (RBNodeCallback) playing_node_destroyed_cb,
 							       G_OBJECT (view));
 
+		set_columns_fixed (view);
 		g_object_set_property (G_OBJECT (view->priv->nodemodel),
 			               "playing-node", value);
+		set_columns_unfixed (view);
 
 		if (view->priv->idle)
 			rb_node_view_scroll_to_node (view, g_value_get_pointer (value));
@@ -727,6 +794,11 @@ rb_node_view_construct (RBNodeView *view)
 		gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
 	g_free (tmp);
 
+	tmp = xmlGetProp (doc->children, "use-column-sizing-hack");
+	if (tmp != NULL)
+		view->priv->use_column_sizing_hack = TRUE;
+	g_free (tmp);
+
 	tmp = xmlGetProp (doc->children, "selection-mode");
 	if (tmp != NULL) {
 		GEnumClass *class = g_type_class_ref (GTK_TYPE_SELECTION_MODE);
@@ -999,12 +1071,16 @@ rb_node_view_rated_cb (RBCellRendererRating *cellrating,
 	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &node_iter);
 	gtk_tree_path_free (path);
 
+	set_columns_fixed (view);
+
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, rating);
 	rb_node_set_property (node,
 			      RB_NODE_PROP_RATING,
 			      &value);
 	g_value_unset (&value);
+
+	set_columns_unfixed (view);
 }
 
 static void
