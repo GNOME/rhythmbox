@@ -25,6 +25,7 @@
 #include <bonobo/bonobo-ui-util.h>
 #include "rb-source.h"
 #include "rhythmdb.h"
+#include "rb-sourcelist.h"
 #include "rb-library-source.h"
 #include "rb-iradio-source.h"
 
@@ -59,7 +60,8 @@ typedef struct
 GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(BonoboUIComponent *component, GtkWindow *window,
-							 RhythmDB *db, RBLibrarySource *libsource,
+							 RhythmDB *db, RBSourceList *sourcelist,
+							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);
 
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,

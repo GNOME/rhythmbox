@@ -70,6 +70,7 @@ typedef struct
 	GList *		(*impl_get_extra_views)	(RBSource *source);
 
 	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
+	gboolean	(*impl_can_rename)	(RBSource *source);
 
 	gboolean	(*impl_can_search)	(RBSource *source);
 
@@ -124,6 +125,7 @@ RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 GList *		rb_source_get_extra_views	(RBSource *source);
 
 GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
+gboolean	rb_source_can_rename		(RBSource *source);
 
 gboolean	rb_source_can_search		(RBSource *source);
 

@@ -838,6 +838,7 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->ui_component,
 								 GTK_WINDOW (shell->priv->window),
 								 shell->priv->db,
+								 RB_SOURCELIST (shell->priv->sourcelist),
 								 RB_LIBRARY_SOURCE (shell->priv->library_source),
 								 RB_IRADIO_SOURCE (shell->priv->iradio_source));
 

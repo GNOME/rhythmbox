@@ -67,6 +67,9 @@ GtkWidget *	rb_sourcelist_new		(void);
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
 						 RBSource *source);
 
+void		rb_sourcelist_edit_source_name	(RBSourceList *sourcelist,
+						 RBSource *source);
+
 void		rb_sourcelist_remove		(RBSourceList *sourcelist,
 						 RBSource *source);
 

@@ -46,6 +46,7 @@ static void rb_source_get_property (GObject *object,
 
 static const char * default_get_browser_key (RBSource *status);
 static GList *default_get_extra_views (RBSource *source);
+static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
 static gboolean default_can_cut (RBSource *source);
 static GList *default_copy (RBSource *source);
@@ -125,6 +126,7 @@ rb_source_class_init (RBSourceClass *klass)
 
 	klass->impl_get_browser_key = default_get_browser_key;
 	klass->impl_get_extra_views = default_get_extra_views;
+	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
 	klass->impl_can_cut = default_can_cut;
 	klass->impl_can_delete = default_can_cut;
@@ -344,6 +346,19 @@ rb_source_get_pixbuf (RBSource *source)
 	return klass->impl_get_pixbuf (source);
 }
 
+static gboolean
+default_can_rename (RBSource *source)
+{
+	return FALSE;
+}
+
+gboolean
+rb_source_can_rename (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_rename (source);
+}
 
 static gboolean
 default_can_search (RBSource *source)
