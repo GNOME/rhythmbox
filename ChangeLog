@@ -2,6 +2,192 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2004-09-23 16:55:42 GMT	Colin Walters <walters@verbum.org>	patch-140
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.9--patch-140
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/en_CA.po po/es.po po/hu.po
+     po/lt.po po/nb.po po/no.po po/pt_BR.po po/sk.po
+
+
+2004-09-23 14:39:54 GMT	Christophe Fergeau <teuf@gnome.org>	patch-139
+
+    Summary:
+      Merged teuf@gnome.org--2004/rhythmbox--removable--0.9, files on transient mount points should be handled better now
+    Revision:
+      rhythmbox--main--0.9--patch-139
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-1
+       Copied and pasted code from the old removable--0.7 branch, #ifdef'ed out for now
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-2
+       Finished adding necessary code, removed #ifdef, now let's debug that ;)
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-3
+       Attempt at preventing non-song entries from being hidden
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-4
+       Fixed importing of songs in the library
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-5
+       Start debugging this code ;)
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-6
+       Emit a changed signal on the entries we modify so entries are actually hidden
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-7
+       Handle songs on mount points not mounted at rb start up, add a mountpoint XML tag to old rhythmdb files if it didn't exist yet
+    
+     * teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-8
+       Catch pre-unmount signal to release the file being paused if necessary
+    
+
+    modified files:
+     ChangeLog lib/rb-util.c lib/rb-util.h
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     shell/rb-shell-player.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-1
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-2
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-3
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-4
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-5
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-6
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-7
+     teuf@gnome.org--2004/rhythmbox--removable--0.9--patch-8
+
+
+2004-09-23 10:43:04 GMT	Christophe Fergeau <teuf@gnome.org>	patch-138
+
+    Summary:
+      Handle songs on mount points not mounted at rb start up, add a mountpoint XML tag to old rhythmdb files if it didn't exist yet
+    Revision:
+      rhythmbox--main--0.9--patch-138
+
+
+    modified files:
+     ChangeLog
+
+
+2004-09-23 09:50:30 GMT	Christophe Fergeau <teuf@gnome.org>	patch-137
+
+    Summary:
+      Check that files in the library are still available at startup
+    Revision:
+      rhythmbox--main--0.9--patch-137
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2004-09-20 17:34:51 GMT	Colin Walters <walters@verbum.org>	patch-136
+
+    Summary:
+      many alignment fixes (paolo.bacchilega@libero.it)
+    Revision:
+      rhythmbox--main--0.9--patch-136
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c shell/rb-shell.c
+     shell/rb-source-header.c shell/rb-statusbar.c
+
+
+2004-09-20 17:32:24 GMT	Colin Walters <walters@verbum.org>	patch-135
+
+    Summary:
+      add dispose methods, be sure to unref db and other objects
+    Revision:
+      rhythmbox--main--0.9--patch-135
+
+
+    modified files:
+     ChangeLog sources/rb-ipod-source.c sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+
+
+2004-09-19 22:25:35 GMT	Colin Walters <walters@verbum.org>	patch-134
+
+    Summary:
+      rb-recorder-marshal.[ch] are junk
+    Revision:
+      rhythmbox--main--0.9--patch-134
+
+
+    modified files:
+     ChangeLog player/.arch-inventory
+
+
+2004-09-19 22:21:15 GMT	Colin Walters <walters@verbum.org>	patch-133
+
+    Summary:
+      bump req on libnautilus-burn
+    Revision:
+      rhythmbox--main--0.9--patch-133
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-09-17 20:56:27 GMT	Colin Walters <walters@verbum.org>	patch-132
+
+    Summary:
+      add more print-playing options (Jon Oberheide)
+    Revision:
+      rhythmbox--main--0.9--patch-132
+
+
+    modified files:
+     ChangeLog shell/main.c
+
+
+2004-09-17 17:31:00 GMT	Christophe Fergeau <teuf@gnome.org>	patch-131
+
+    Summary:
+      Remove spurious unref, this was making rhythmbox crashy
+    Revision:
+      rhythmbox--main--0.9--patch-131
+
+
+    modified files:
+     ChangeLog sources/rb-ipod-source.c
+
+
+2004-09-16 22:15:22 GMT	Christophe Fergeau <teuf@gnome.org>	patch-130
+
+    Summary:
+      Use the gnome-dev-ipod icon from gnome icon theme if it's available
+    Revision:
+      rhythmbox--main--0.9--patch-130
+
+
+    modified files:
+     ChangeLog sources/rb-ipod-source.c
+
+
+2004-09-16 20:51:23 GMT	Christophe Fergeau <teuf@gnome.org>	patch-129
+
+    Summary:
+      Added support for disc number tags in the iPod source
+    Revision:
+      rhythmbox--main--0.9--patch-129
+
+
+    modified files:
+     ChangeLog sources/rb-ipod-source.c
+
+
 2004-09-16 19:38:13 GMT	Colin Walters <walters@verbum.org>	patch-128
 
     Summary:
