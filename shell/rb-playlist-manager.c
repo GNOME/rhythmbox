@@ -625,6 +625,14 @@ rb_playlist_manager_save_playlists_blocking (RBPlaylistManager *mgr)
 	g_mutex_unlock (mgr->priv->saving_mutex);
 }
 
+static void
+rb_playlist_manager_set_dirty (RBPlaylistManager *mgr)
+{
+	g_mutex_lock (mgr->priv->saving_mutex);
+	mgr->priv->dirty = TRUE;
+	g_mutex_unlock (mgr->priv->saving_mutex);
+}
+
 RBSource *
 rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name, gboolean automatic)
@@ -632,6 +640,7 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
 	GTimeVal serial;
 	char *internal;
+
 
 	g_get_current_time (&serial);
 	internal = g_strdup_printf ("<playlist:%ld:%ld>", serial.tv_sec,
@@ -644,6 +653,8 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	g_free (internal);
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
+	rb_playlist_manager_set_dirty (mgr);
+
 	return playlist;
 }
 
@@ -688,9 +699,13 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 		gtk_widget_destroy (GTK_WIDGET (creator));	
 		return;
 	}
+
+
 	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
 
 	rb_playlist_manager_set_automatic_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), creator); 
+
+	rb_playlist_manager_set_dirty (mgr);
 
 	gtk_widget_destroy (GTK_WIDGET (creator));	
 }
@@ -728,6 +743,7 @@ rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
 	rb_debug ("Deleting playlist %p", mgr->priv->selected_source);
 	
 	rb_source_delete_thyself (mgr->priv->selected_source);
+	rb_playlist_manager_set_dirty (mgr);
 }
 
 static void
@@ -754,6 +770,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	rb_playlist_manager_parse_file (mgr, escaped_file);
 	g_free (escaped_file);
+	rb_playlist_manager_set_dirty (mgr);
 }
 
 static void

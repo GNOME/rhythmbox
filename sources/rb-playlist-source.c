@@ -35,6 +35,7 @@
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
 #include "rb-playlist.h"
+#include "rb-thread-helpers.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
@@ -855,6 +856,8 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	char *name;
 	char *internal_name;
 	GtkTreeIter iter;
+
+	rb_thread_helpers_lock_gdk ();
 	
 	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
 	g_object_get (G_OBJECT (source), "name", &name,
@@ -866,8 +869,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 	if (!source->priv->automatic) {
 		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->model),
 						    &iter))
-			return;
-
+			goto out;
 		do { 
 			xmlNodePtr child_node = xmlNewChild (node, NULL, "location", NULL);
 			RhythmDBEntry *entry;
@@ -905,4 +907,7 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 		g_free (limit_str);
 		rhythmdb_query_serialize (source->priv->db, query, node);
 	}
+
+out:
+	rb_thread_helpers_unlock_gdk ();
 }

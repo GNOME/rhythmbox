@@ -649,9 +649,7 @@ idle_save_rhythmdb (RhythmDB *db)
 static gboolean
 idle_save_playlist_manager (RBPlaylistManager *mgr)
 {
-	if (RB_IS_PLAYLIST_MANAGER (mgr)) {
-		rb_playlist_manager_save_playlists (mgr);
-	}
+	rb_playlist_manager_save_playlists (mgr);
 
 	return TRUE;
 }
