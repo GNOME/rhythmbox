@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-10 04:27+0100\n"
-"PO-Revision-Date: 2004-03-10 14:14+0100\n"
+"POT-Creation-Date: 2004-03-17 15:18+0100\n"
+"PO-Revision-Date: 2004-03-17 21:32+0100\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -427,11 +427,11 @@ msgstr "Vložit výběr"
 msgid "Pause playing"
 msgstr "Pozastavit přehrávání"
 
-#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:243
+#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:248
 msgid "Play first song again after all songs are played"
 msgstr "Když jsou přehrány všechny skladby, hrát znovu první skladbu"
 
-#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:238
+#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:243
 msgid "Play songs in a random order"
 msgstr "Přehrávat skladby v náhodném pořadí"
 
@@ -579,7 +579,7 @@ msgstr "_Uložit do souboru..."
 msgid "_Show Window"
 msgstr "_Zobrazit okno"
 
-#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:235
+#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:240
 msgid "_Shuffle"
 msgstr "_Zamíchat"
 
@@ -967,27 +967,31 @@ msgstr ""
 "Nemohu aktivovat shell:\n"
 "%s"
 
-#: shell/rb-play-order.c:227
+#: shell/rb-play-order.c:228
 msgid "Linear"
 msgstr "Lineární"
 
-#: shell/rb-play-order.c:228
+#: shell/rb-play-order.c:229
+msgid "Linear looping"
+msgstr "Lineární opakování"
+
+#: shell/rb-play-order.c:230
 msgid "Shuffle"
 msgstr "Zamíchat"
 
-#: shell/rb-play-order.c:229
+#: shell/rb-play-order.c:231
 msgid "Random with equal weights"
 msgstr "Náhodně se stejnými vahami"
 
-#: shell/rb-play-order.c:230
+#: shell/rb-play-order.c:232
 msgid "Random by time since last play"
 msgstr "Náhodně podle doby od posledního hraní"
 
-#: shell/rb-play-order.c:231
+#: shell/rb-play-order.c:233
 msgid "Random by rating"
 msgstr "Náhodně podle ohodnocení"
 
-#: shell/rb-play-order.c:232
+#: shell/rb-play-order.c:234
 msgid "Random by time since last play and rating"
 msgstr "Náhodně podle doby od posledního hraní a ohodnocení"
 
@@ -1041,7 +1045,7 @@ msgstr "Zastavit přehrávání"
 msgid "_Stop"
 msgstr "Za_stavit"
 
-#: shell/rb-shell-player.c:1839
+#: shell/rb-shell-player.c:1837
 msgid "Unexpected end of stream!"
 msgstr "Neočekávaný konec proudu!"
 
@@ -1158,11 +1162,11 @@ msgstr "Zobrazit _prohlížeč"
 msgid "Hide _Browser"
 msgstr "Skrýt _prohlížeč"
 
-#: shell/rb-statusbar.c:240
+#: shell/rb-statusbar.c:245
 msgid "_Repeat"
 msgstr "_Opakovat"
 
-#: shell/rb-statusbar.c:446
+#: shell/rb-statusbar.c:451
 msgid "Buffering..."
 msgstr "Ukládám do vyrovnávací paměti..."
 
@@ -1181,34 +1185,24 @@ msgstr "Chyba při čtení \"%s\".\n"
 
 #: sources/itunesdb.c:821
 #, c-format
-msgid "\"%s\" is not a iTunesDB.\n"
-msgstr "\"%s\" není iTunesDB.\n"
+msgid "\"%s\" is not a valid iPod database.\n"
+msgstr "\"%s\" není platná databáze iPod.\n"
 
-#: sources/itunesdb.c:1061
+#: sources/itunesdb.c:1061 sources/itunesdb.c:1716
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Nemohu otevřít soubor \"%s\" pro čtení.\n"
 
-#: sources/itunesdb.c:1568
+#: sources/itunesdb.c:1568 sources/itunesdb.c:1723
 #, c-format
-msgid "Could not open iTunesDB \"%s\" for writing.\n"
-msgstr "Nemohu otevřít iTunesDB \"%s\" pro zápis.\n"
+msgid "Could not open \"%s\" file for writing.\n"
+msgstr "Nemohu otevřít soubor \"%s\" pro zápis.\n"
 
 #. an error occured
 #: sources/itunesdb.c:1580
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Chyba při přejmenovávání '%s' na '%s' (%s).\n"
-
-#: sources/itunesdb.c:1716
-#, c-format
-msgid "Could not open file \"%s\" for reading.\n"
-msgstr "Nemohu otevřít soubor \"%s\" pro čtení.\n"
-
-#: sources/itunesdb.c:1723
-#, c-format
-msgid "Could not open file \"%s\" for writing.\n"
-msgstr "Nemohu otevřít soubor \"%s\" pro zápis.\n"
 
 #. error -- not end of file!
 #: sources/itunesdb.c:1736
