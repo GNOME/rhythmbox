@@ -161,5 +161,5 @@ rb_gvalue_compare (GValue *a, GValue *b)
 		g_assert_not_reached ();
 		break;
 	}
-	return FALSE;
+	return retval;
 }

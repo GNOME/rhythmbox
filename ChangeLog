@@ -1,3 +1,349 @@
+2003-09-07 21:06:29 GMT	Colin Walters <walters@verbum.org>	patch-48
+
+    Summary:
+      merge in rhythmdb, not used elsewhere in rb yet
+    Revision:
+      rhythmbox--mainline--1.0--patch-48
+
+    merge in rhythmdb, not used elsewhere in rb yet
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--base-0
+       tag of walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--base-0
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-1
+       merge in some rhythmdb work
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-2
+       RhythmDB compiles again.  Try to implement deletion correctly.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-3
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-4
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-5
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-6
+       more tests
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-7
+       zero out the entry memchunks on allocation
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-8
+       fix a memory leak, thanks valgrind!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-9
+       more RhythmDB tests
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-10
+       more extensive test suite, and work to pass it
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-11
+       make test-indexing not segfault
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-12
+       add query regression tests, fix up query arg parsing
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-13
+       fix rb_gvalue_compare
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-14
+       fix query parsing and evaluation, add more query regression tests
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-15
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-16
+       query tests for indexed attrs, and fix some bugs they found
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-17
+       regression tests for mirrored properties
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-18
+       test for fwrite_unlocked
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-19
+       first attempt at implementing XML serialization
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-20
+       minor GValue optimizations
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-21
+       more regression tests.  Correctly delete database on unref
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-22
+       fix uninitialized value and use of a freed str, thanks valgrind!
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-23
+       move tests to rhythmdb, fix up query tests, fix up entry adding in treedb
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-24
+       first serialization regression tests, and assoc. bugfixes
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-25
+       SAX-based deserializer, with a single regression test
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-26
+       Minor cleanups, make simple tests work again
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-27
+       Move loading to separate thread.  Add _shutdown method.  More deserialization tests.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-28
+       Squash more memory leaks.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-29
+       Squash a few more (minor) memory leaks.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-30
+       Index entries by URI.  Add URI parameter to creation.  Fix regression tests.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-31
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-32
+       kill off entry model cruft
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-33
+       babble a bit about converting in DESIGN
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-34
+       discussion of threading issues in DESIGN
+    
+
+    new files:
+     rhythmdb/deserialization-test1.xml
+     rhythmdb/deserialization-test2.xml
+     rhythmdb/deserialization-test3.xml
+     rhythmdb/test-rhythmdb-indexing.c
+     rhythmdb/test-rhythmdb-query.c rhythmdb/test-rhythmdb-simple.c
+     rhythmdb/test-rhythmdb-tree-deserialization.c
+     rhythmdb/test-rhythmdb-tree-serialization.c
+
+    removed files:
+     rhythmdb/rhythmdb-entry-model.c
+     rhythmdb/rhythmdb-entry-model.h
+
+    modified files:
+     Makefile.am configure.ac lib/rb-util.c rhythmdb/.cvsignore
+     rhythmdb/DESIGN rhythmdb/Makefile.am rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb-tree.h rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h tests/Makefile.am {arch}/=tagging-method
+
+    new patches:
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-28
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-29
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-30
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-31
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-32
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-33
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-34
+
+
+2003-09-07 20:27:57 GMT	Colin Walters <walters@verbum.org>	patch-47
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-47
+
+
+    modified files:
+     po/ChangeLog po/ja.po po/nl.po
+
+
+2003-09-07 19:53:29 GMT	Colin Walters <walters@verbum.org>	patch-46
+
+    Summary:
+      make it compile with -Werror
+    Revision:
+      rhythmbox--mainline--1.0--patch-46
+
+    make it compile with -Werror
+    
+
+    modified files:
+     lib/widgets/rb-song-display-box.c
+
+
+2003-09-07 19:50:40 GMT	Colin Walters <walters@verbum.org>	patch-45
+
+    Summary:
+      update HACKING, README
+    Revision:
+      rhythmbox--mainline--1.0--patch-45
+
+    update HACKING, README
+    
+
+    modified files:
+     HACKING README
+
+
+2003-09-07 02:46:03 GMT	Colin Walters <walters@verbum.org>	patch-44
+
+    Summary:
+      update NEWS, configure.ac
+    Revision:
+      rhythmbox--mainline--1.0--patch-44
+
+    update NEWS, configure.ac
+    
+
+    modified files:
+     NEWS configure.ac
+
+
+2003-09-07 01:01:54 GMT	Colin Walters <walters@verbum.org>	patch-43
+
+    Summary:
+      more internet radio stations, from Nadav Rotem <nadavrotem@mail.ru>
+    Revision:
+      rhythmbox--mainline--1.0--patch-43
+
+    more internet radio stations, from Nadav Rotem <nadavrotem@mail.ru>
+    
+
+    modified files:
+     data/iradio-initial.pls
+
+
+2003-09-07 00:37:34 GMT	Colin Walters <walters@verbum.org>	patch-42
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-42
+
+
+    modified files:
+     po/ChangeLog po/ja.po po/nl.po po/sr.po po/sr@Latn.po
+
+
+2003-09-06 14:39:20 GMT	Colin Walters <walters@verbum.org>	patch-41
+
+    Summary:
+      merge with CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-41
+
+    merge with CVS
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-27
+       merge with mainline
+    
+
+    modified files:
+     po/ChangeLog po/POTFILES.in po/cs.po po/nl.po po/no.po
+     po/sr.po po/sr@Latn.po po/sv.po
+
+    new patches:
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-27
+
+
+2003-09-05 06:06:04 GMT	Colin Walters <walters@verbum.org>	patch-40
+
+    Summary:
+      merge with CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-40
+
+    merge with CVS
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-22
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-23
+       update changelog
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-24
+       merge with CVS
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-25
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-26
+       update ChangeLog
+    
+
+    modified files:
+     ChangeLog po/ChangeLog po/pl.po
+
+    new patches:
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-26
+
+
+2003-09-07 21:06:29 GMT	Colin Walters <walters@verbum.org>	patch-48
+
+    Summary:
+      merge in rhythmdb, not used elsewhere in rb yet
+    Revision:
+      rhythmbox--mainline--1.0--patch-48
+
+    merge in rhythmdb, not used elsewhere in rb yet
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--base-0
+       tag of walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--base-0
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-1
+       merge in some rhythmdb work
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-2
+       RhythmDB compiles again.  Try to implement deletion correctly.
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-3
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-4
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-5
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-6
+	
 2003-09-05 06:00:50 GMT	Colin Walters <walters@verbum.org>	patch-25
 
     Summary:

@@ -50,14 +50,83 @@ for example.
 
 ** Multithread-capable
 
-We need to be able to perform operations in multiple threads.
-However, the database should be optimized for common operations,
+We need to ensure that the UI doesn't block.  Generally this
+means using threads.  This introduces a lot of locking issues
+that need to be addressed.
+
+The database should be also optimized for common operations,
 and this definitely means reading.  Writing should be lower
 priority, although we don't want to completely starve writers.
 
 Because we need to support multiple backends, we can only really
-support large-grained locking (i.e. one big global RW lock).
-SQLite for example only has one lock.
+support coarse-grained locking (i.e. one big global RW lock).
+
+*** Multithreaded entry attribute changes
+
+This issue is not as simple as one might think.  We definitely
+want to be able to use threads for this - for example, after
+the user has changed a bunch of songs on disk, we need
+to update the UI to reflect those changes, incrementally.
+That involves emitting a gtk_tree_model_row_changed signal, for
+which we need to hold the GDK lock.
+
+*** Deadlock 
+
+We have to consider deadlock situations here, where one thread is
+holding the GDK lock, and wants the database lock, and then another
+thread is holding the db lock and wants the GDK lock.  In the old
+design, the any other thread could grab the GDK lock to update the UI,
+which is wrong.
+
+*** RBEntryModel
+
+In general, we don't want the various processing threads in
+Rhythmbox to be aware that there is this huge slow UI to
+keep updated.  Setting an attribute or delete an entry
+shouldn't involve doing anything else besides calling the
+function.
+
+However, we do need to update the UI somehow.  The UI
+is represented by the GtkTreeModel implementations
+returned by a query.  Thus, one plan is to have an update
+queue.  Whenever a thread other than the main one modifies
+RhythmDB, we push an update notifier onto the queue.  Then,
+we have another thread (besides the main one) dedicated
+to processing this queue, and emitting the appropriate
+row_changed signals.
+
+**** GtkTreeModel mapping efficiency
+
+In order to emit the row_changed signal, we will need
+to efficiently look up a GtkTreeIter, given an entry.
+Perhaps we have to write our own GtkTreeModel implementation
+that combines a GHashTable and a GList?  Or just subclass
+GtkListStore, and add a GHashTable index?
+
+*** Deletions
+
+Handling deletions well is important.  Currently
+doing a "Select All" followed by "Delete" can take
+some time.  Now, this works two ways.  First, the user
+can request a deletion.  To handle this, we simply
+queue deletion requests from the UI, and then have
+a thread which processes those.
+
+However, we also need to handle deletions from other
+threads, such as the database processing thread.  This
+brings up an issue - we cannot treat deletions like
+other operations.  If an entry is deleted from the
+database, but the UI isn't updated - the user may
+try to change the properties of an entry that's
+already been deleted.  How to solve this?
+
+*** Additions
+
+Additions fairly straightforward; we don't have
+as many database consistency issues as deletions.  Basically
+we just have a thread add something to the database, and then
+queue a signal emission for the main UI, much like for property
+changes.
 
 ** RhythmDBEntry  (basically equivalent of RBNode)
 
@@ -181,6 +250,20 @@ in the database and refresh if appropriate.  Well, it wouldn't be hard
 to watch for ANY change in the DB and refresh, but this would obviously
 be very expensive.  We'll want to intelligently refresh only if the
 smart playlist query requries it.
+
+* A plan for refactoring Rhythmbox to integrate RhythmDB
+
+** Shell will create/destroy the database object
+
+** Library takes database object, creates new thread to refresh metadata
+
+** Morph RBIRadioBackend into the trival class RBIRadioLoader
+
+** Turn RBNodeView into RBEntryView
+*** RBTreeModelNode goees away
+Instead, just add a bunch of columns into an RBTreeView, but set
+the column_func to get the correct value
+
 
 Local Variables:
 mode: outline

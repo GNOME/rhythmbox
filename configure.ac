@@ -35,6 +35,20 @@ int main(int argc, char **argv) { printf("%s\n", __func__); exit(0); }
 ],[AC_MSG_RESULT([-std=c99])],[CFLAGS="$saved_CFLAGS"; AC_MSG_RESULT([C99 not available])])
 fi
 
+AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
+AC_COMPILE_IFELSE(
+[AC_LANG_PROGRAM([[
+#define _GNU_SOURCE
+#include <stdio.h>
+]],
+[[fwrite_unlocked ("foo", 1, sizeof ("foo"), stdout);]])],[have_fwrite_unlocked=yes])
+if test x"$have_fwrite_unlocked" = xyes; then
+	AC_DEFINE(HAVE_GNU_FWRITE_UNLOCKED,1,[Define if you have GNU fwrite_unlocked])
+	AC_MSG_RESULT([yes])
+else
+	AC_MSG_RESULT([no])
+fi	
+
 PKG_CHECK_MODULES(RHYTHMBOX,                    \
                   gtk+-2.0 >= 2.2.0             \
                   libgnomeui-2.0                \
@@ -46,6 +60,16 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
 
+dnl Database
+
+AC_ARG_WITH(database,
+              AC_HELP_STRING([--database],
+			     [Select the database to use (default: tree)]),,
+	      with_database=tree)
+AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
+if test x"$with_database" != xtree; then
+	AC_MSG_ERROR([Unknown database selected])
+fi
 
 dnl Sound system
 WANT_XINE=
@@ -346,6 +370,7 @@ AC_SUBST(DATADIR_UNINST)
 
 AC_OUTPUT([ 
 Makefile
+rhythmdb/Makefile
 lib/Makefile
 lib/widgets/Makefile
 library/Makefile
@@ -372,6 +397,9 @@ rhythmbox.spec
 ])
 
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])
+if test x"$with_database" = xtree; then
+	AC_MSG_NOTICE([** Tree database is enabled])
+fi
 if test x"$enable_mp3" != "xyes"; then
 	AC_MSG_NOTICE([   MP3 support is disabled])
 else

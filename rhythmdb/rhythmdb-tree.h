@@ -22,6 +22,8 @@
 #ifndef RHYTHMDB_TREE_H
 #define RHYTHMDB_TREE_H
 
+#include "rhythmdb.h"
+
 G_BEGIN_DECLS
 
 #define RHYTHMDB_TYPE_TREE         (rhythmdb_tree_get_type ())
@@ -31,16 +33,18 @@ G_BEGIN_DECLS
 #define RHYTHMDB_IS_TREE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_TREE))
 #define RHYTHMDB_TREE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_TREE, RhythmDBTreeClass))
 
+typedef struct RhythmDBTreePrivate RhythmDBTreePrivate;
+
 typedef struct
 {
-	GObject parent;
+	RhythmDB parent;
 
 	RhythmDBTreePrivate *priv;
 } RhythmDBTree;
 
 typedef struct
 {
-	GObjectClass parent;
+	RhythmDBClass parent;
 
 } RhythmDBTreeClass;
 
