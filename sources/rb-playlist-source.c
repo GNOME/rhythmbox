@@ -695,8 +695,8 @@ playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **t
 
 	rhythmdb_read_lock (db);
 
-	*uri = (char*) rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
-	*title = (char*) rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE);
+	*uri = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
+	*title = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
 
 	rhythmdb_read_unlock (db);
 }
