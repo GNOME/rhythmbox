@@ -29,6 +29,7 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkiconfactory.h>
+#include <gtk/gtktooltips.h>
 #include <gdk/gdkkeysyms.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
@@ -624,11 +625,17 @@ rb_node_view_construct (RBNodeView *view)
 	xmlDocPtr doc;
 	xmlNodePtr child;
 	char *tmp;
+	char *tips;
+	GtkTooltips *tool_tips;
+	gboolean tooltip_active = FALSE;
 
 	rb_node_signal_connect_object (view->priv->root,
 				       RB_NODE_CHILD_REMOVED,
 				       (RBNodeCallback) root_child_removed_cb,
 				       G_OBJECT (view));
+
+	tool_tips = gtk_tooltips_new ();
+	gtk_tooltips_enable (tool_tips);
 
 	view->priv->columns = g_hash_table_new (NULL, NULL);
 	view->priv->allowed_columns = g_hash_table_new (NULL, NULL);
@@ -783,6 +790,10 @@ rb_node_view_construct (RBNodeView *view)
 			reorderable = bool_to_int (tmp);
 		g_free (tmp);
 
+		tips = xmlGetProp (child, "tooltip");
+		if (tips != NULL)
+		  tooltip_active = TRUE;
+
 		tmp = xmlGetProp (child, "resizable");
 		if (tmp != NULL)
 			resizable = bool_to_int (tmp);
@@ -920,6 +931,15 @@ rb_node_view_construct (RBNodeView *view)
 		g_hash_table_insert (view->priv->columns,
 				     GINT_TO_POINTER (column),
 				     gcolumn);
+
+		if (tooltip_active) {
+		  gtk_tooltips_set_tip (GTK_TOOLTIPS(tool_tips), 
+					GTK_WIDGET (gcolumn->button), 
+					tips, NULL);
+		  tooltip_active = FALSE;
+		  g_free (tips);
+		}
+
 	}
 
 	if (view->priv->columns_key != NULL)
