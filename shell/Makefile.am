@@ -48,7 +48,7 @@ INCLUDES = 						\
 CLEAN_FILES = $(rhythmbox_shell_interface_idl_sources)
 
 RhythmboxShell-common.c RhythmboxShell-stubs.c RhythmboxShell-skels.c RhythmboxShell.h: RhythmboxShell.idl
-	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) RhythmboxShell.idl
+	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/RhythmboxShell.idl
 
 EXTRA_DIST = RhythmboxShell.idl
 
