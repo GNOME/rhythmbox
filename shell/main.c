@@ -51,11 +51,17 @@ static gboolean no_registration = FALSE;
 static void
 check_gentoo (void)
 {
+	/*
+	 * Dear Gentoo packager,
+	 *
+	 * I would like to ask you to respect our decision to display this
+	 * message and not hack this out.
+	 */
 	if (g_file_test ("/etc/gentoo-release", G_FILE_TEST_EXISTS) == TRUE)
 	{
-		rb_warning_dialog ("Well well well....\n\n"
-			           "Gentoo eh? You'll run into problems. We know. Don't bug us.\n\n"
-			           "Have a nice day.");
+		rb_warning_dialog (_("Well well well...\n\n"
+			             "Gentoo eh? You'll run into problems. We know. Don't bug us.\n\n"
+			             "Have a nice day."));
 	}
 }
 

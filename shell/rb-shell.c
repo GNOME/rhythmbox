@@ -657,7 +657,7 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 
 	shell->priv->paned = gtk_hpaned_new ();
-	
+
 	shell->priv->sidebar = rb_sidebar_new ();
 	rb_sidebar_add_dnd_targets (RB_SIDEBAR (shell->priv->sidebar),
 				    target_table,
@@ -666,18 +666,13 @@ rb_shell_construct (RBShell *shell)
 			  "drag_finished",
 			  G_CALLBACK (rb_sidebar_drag_finished_cb),
 			  shell);
-	
-	vbox = gtk_vbox_new (FALSE, 5);
-	
+
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->notebook, TRUE, TRUE, 0);
-	
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sidebar, FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->notebook, TRUE, FALSE);
 	g_signal_connect (G_OBJECT (shell->priv->sidebar),
 			  "size_allocate",
 			  G_CALLBACK (rb_shell_sidebar_size_allocate_cb),
@@ -687,6 +682,7 @@ rb_shell_construct (RBShell *shell)
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->status_shell), FALSE, TRUE, 0);
 

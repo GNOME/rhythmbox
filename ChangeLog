@@ -1,3 +1,28 @@
+2002-11-17  Jorn Baayen  <jorn@nl.linux.org>
+
+	* TODO:
+
+	Add some stuff.
+	
+	* data/node-views/Makefile.am:
+	* data/node-views/rb-node-view-genres.xml:
+
+	Marco forgot to commit this :)
+	
+	* shell/main.c: (check_gentoo):
+
+	Mark the warning for translation.
+	
+	* shell/rb-shell.c: (rb_shell_construct):
+	
+	Pack player area above sidebar and views, to make it clear
+	that it's not view-specific.
+	
+	* views/rb-library-view.c: (rb_library_view_search_cb),
+	(albums_filter):
+
+	Fix some filtering bugs.
+
 2002-11-17 Marco Pesenti Gritti <marco@it.gnome.org>
 
 	* library/rb-node-filter.c:

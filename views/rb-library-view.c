@@ -1340,7 +1340,7 @@ rb_library_view_search_cb (RBSearchEntry *search,
 	if (search_text == NULL || strcmp (search_text, "") == 0)
 	{
 		rb_node_view_select_node (view->priv->genres,
-		 		          rb_library_get_all_artists (view->priv->library));
+				          rb_library_get_all_artists (view->priv->library));
 	}
 	else
 	{
@@ -1349,7 +1349,9 @@ rb_library_view_search_cb (RBSearchEntry *search,
 		rb_node_view_select_none (view->priv->albums);
 
 		artists_filter (view, rb_library_get_all_artists (view->priv->library));
-		
+		albums_filter (view, rb_library_get_all_artists (view->priv->library),
+			             rb_library_get_all_albums (view->priv->library));
+
 		rb_node_filter_empty (view->priv->songs_filter);
 		rb_node_filter_add_expression (view->priv->songs_filter,
 					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
@@ -1405,12 +1407,16 @@ albums_filter (RBLibraryView *view,
 								      genre, rb_library_get_all_artists (view->priv->library)),
 				       0);
 	rb_node_filter_add_expression (view->priv->albums_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_songs (view->priv->library)),
+				       0);
+	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
 								      RB_NODE_SONG_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
-								      rb_library_get_all_albums (view->priv->library)),
+								      rb_library_get_all_songs (view->priv->library)),
 				       1);
 	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
