@@ -187,15 +187,10 @@ static void rb_shell_cmd_show_window (BonoboUIComponent *component,
 				      const char *verbname);
 static void rb_shell_load_playlists (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
-static void rb_shell_sync_window_visibility (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShell *shell);
-static void window_visibility_changed_cb (GConfClient *client,
-			                  guint cnxn_id,
-			                  GConfEntry *entry,
-			                  RBShell *shell);
 static void paned_changed_cb (GConfClient *client,
 			      guint cnxn_id,
 			      GConfEntry *entry,
@@ -833,8 +828,8 @@ rb_shell_construct (RBShell *shell)
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
 	}
-	rb_shell_sync_window_visibility (shell);
 	
+	gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
 	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);
 }
 
@@ -1709,16 +1704,6 @@ sourcelist_visibility_changed_cb (GConfClient *client,
 {
 	rb_debug ("sourcelist visibility changed"); 
 	rb_shell_sync_sourcelist_visibility (shell);
-}
-
-static void
-window_visibility_changed_cb (GConfClient *client,
-			      guint cnxn_id,
-			      GConfEntry *entry,
-			      RBShell *shell)
-{
-	rb_debug ("window visiblity changed");
-	rb_shell_sync_window_visibility (shell);
 }
 
 static void
