@@ -2347,6 +2347,7 @@ rb_shell_sync_selected_source (RBShell *shell)
 	GList *tmp;
 
 	internalname = eel_gconf_get_string (CONF_STATE_SELECTED_SOURCE);
+	g_return_if_fail (internalname);
 
 	for (tmp = shell->priv->sources; tmp ; tmp = tmp->next) {
 		const char *tmpname;
