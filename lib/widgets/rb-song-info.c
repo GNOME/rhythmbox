@@ -272,7 +272,6 @@ rb_song_info_init (RBSongInfo *song_info)
 
 
 	/* make those fields insensitive for now */
-	/*
 	gtk_widget_set_sensitive (song_info->priv->title, FALSE);
 	gtk_widget_set_sensitive (song_info->priv->artist, FALSE);
 	gtk_widget_set_sensitive (song_info->priv->album, FALSE);
@@ -281,7 +280,6 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_widget_set_sensitive (song_info->priv->track_max, FALSE);
 	gtk_widget_set_sensitive (song_info->priv->genre, FALSE);
 	gtk_widget_set_sensitive (song_info->priv->comments, FALSE);
-	*/
 
 	/* this widget has to be customly created */
 	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());
