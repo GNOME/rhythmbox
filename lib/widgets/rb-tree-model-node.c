@@ -31,6 +31,7 @@
 #include "rb-string-helpers.h"
 #include "rb-node.h"
 #include "rb-node-song.h"
+#include "rb-node-station.h"
 #include "rb-debug.h"
 
 static void rb_tree_model_node_class_init (RBTreeModelNodeClass *klass);
@@ -402,6 +403,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
 	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
+	case RB_TREE_MODEL_NODE_COL_QUALITY:
 		return G_TYPE_STRING;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
@@ -509,15 +511,7 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		else
 			g_value_set_object (value, NULL);
 		break;
-	case RB_TREE_MODEL_NODE_COL_RATING:
-		if (rb_node_get_property (node,
-				          RB_NODE_SONG_PROP_RATING,
-				          value) == FALSE)
-		{
-			g_value_init (value, G_TYPE_INT);
-			g_value_set_int (value, 0);
-		}
-		break;
+	/* Generic node stuff */
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 		rb_node_get_property (node,
 				      RB_NODE_PROP_NAME,
@@ -528,56 +522,7 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				      RB_NODE_PROP_NAME_SORT_KEY,
 				      value);
 		break;
-	case RB_TREE_MODEL_NODE_COL_ARTIST:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_ARTIST,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_ALBUM:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_ALBUM,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_GENRE:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_GENRE,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_TRACK_NUMBER,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_REAL_TRACK_NUMBER,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_DURATION:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_DURATION,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
-				      value);
-		break;
-	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
-		rb_node_get_property (node,
-				      RB_NODE_SONG_PROP_NUM_PLAYS,
-				      value);
-		break;
+
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		g_value_init (value, G_TYPE_BOOLEAN);
 
@@ -604,6 +549,75 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 		g_value_init (value, G_TYPE_BOOLEAN);
 		g_value_set_boolean (value, FALSE);
+		break;
+
+	case RB_TREE_MODEL_NODE_COL_QUALITY:
+		if (rb_node_get_property (node,
+					  RB_NODE_PROP_QUALITY,
+					  value) == FALSE)
+		{
+			g_value_init (value, G_TYPE_STRING);
+			g_value_set_string (value, _("(Unknown)"));
+		}
+		break;
+	case RB_TREE_MODEL_NODE_COL_RATING:
+		if (rb_node_get_property (node,
+				          RB_NODE_PROP_RATING,
+				          value) == FALSE)
+		{
+			g_value_init (value, G_TYPE_INT);
+			g_value_set_int (value, 0);
+		}
+		break;
+	case RB_TREE_MODEL_NODE_COL_ARTIST:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_ARTIST,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_ARTIST_SORT_KEY,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_ALBUM:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_ALBUM,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_ALBUM_SORT_KEY,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_GENRE:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_GENRE,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_TRACK_NUMBER,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_REAL_TRACK_NUMBER,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_DURATION:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_DURATION,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NUM_PLAYS,
+				      value);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -849,6 +863,7 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_VISIBLE,          "RB_TREE_MODEL_NODE_COL_VISIBLE",          "visible" },
 			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT,       "RB_TREE_MODEL_NODE_COL_PLAY_COUNT",       "play count" },
 			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,      "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",      "last played" },
+			{ RB_TREE_MODEL_NODE_COL_QUALITY,	   "RB_TREE_MODEL_NODE_COL_QUALITY",	      "quality" },
 			{ 0, 0, 0 }
 		};
 
