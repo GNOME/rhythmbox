@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-01-12 11:35+0100\n"
-"PO-Revision-Date: 2003-01-12 11:35+0100\n"
+"POT-Creation-Date: 2003-01-13 11:52+0100\n"
+"PO-Revision-Date: 2003-01-13 11:52+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -622,12 +622,13 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:566
+#: lib/widgets/rb-node-view.c:630
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-search-entry.c:115
+#. this string can only be so long, or there wont be a search entry :)
+#: lib/widgets/rb-search-entry.c:116
 msgid "_Search song:"
 msgstr "_Sök låt:"
 
@@ -661,11 +662,11 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d kanaler)"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
+#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:388
 msgid "Click to mute"
 msgstr "Klicka för att tysta"
 
-#: lib/widgets/rb-volume.c:381
+#: lib/widgets/rb-volume.c:384
 msgid "Click to unmute"
 msgstr "Klicka för att avtysta"
 
@@ -731,70 +732,70 @@ msgstr "Misslyckades med att aktivera Rhythmbox"
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-player.c:325
+#: shell/rb-player.c:302
 msgid "by "
 msgstr "av "
 
-#: shell/rb-player.c:340
+#: shell/rb-player.c:317
 msgid "Drag to go to a particular moment in the song"
 msgstr "Dra för att gå till ett visst ställe i låten"
 
-#: shell/rb-player.c:385
+#: shell/rb-player.c:362
 msgid "Play the previous song"
 msgstr "Spela föregående låt"
 
-#: shell/rb-player.c:392
+#: shell/rb-player.c:369
 msgid "Start playback"
 msgstr "Starta uppspelning"
 
-#: shell/rb-player.c:399
+#: shell/rb-player.c:376
 msgid "Pause playback"
 msgstr "Gör paus i uppspelning"
 
-#: shell/rb-player.c:406
+#: shell/rb-player.c:383
 msgid "Play the next song"
 msgstr "Spela nästa låt"
 
-#: shell/rb-player.c:414
+#: shell/rb-player.c:391
 msgid "Repeat the play list"
 msgstr "Upprepa spellistan"
 
-#: shell/rb-player.c:421
+#: shell/rb-player.c:398
 msgid "Shuffle the play list"
 msgstr "Blanda spellistan"
 
-#: shell/rb-player.c:430 shell/rb-player.c:438
+#: shell/rb-player.c:407 shell/rb-player.c:415
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: shell/rb-player.c:444
+#: shell/rb-player.c:421
 msgid "To play, add music to the play list"
 msgstr "Lägg till musik i spellistan för att spela"
 
-#: shell/rb-player.c:487
+#: shell/rb-player.c:448
 #, c-format
 msgid ""
-"Failed to create mixer, exiting. Error was:\n"
+"Failed to create player, exiting. Error was:\n"
 "%s"
 msgstr ""
-"Misslyckades med att skapa mixern, avslutar. Felet var:\n"
+"Misslyckades med att skapa spelaren, avslutar. Felet var:\n"
 "%s"
 
-#: shell/rb-player.c:763
+#: shell/rb-player.c:725
 msgid "Get information about this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: shell/rb-player.c:769
+#: shell/rb-player.c:731
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:771
+#: shell/rb-player.c:733
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Okänd"
 
-#: shell/rb-player.c:807
+#: shell/rb-player.c:765
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
@@ -803,17 +804,17 @@ msgstr ""
 "Misslyckades med att skapa ström, felet var:\n"
 "%s"
 
-#: shell/rb-player.c:932
+#: shell/rb-player.c:855
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Misslyckades med att tolka %s som spellista"
 
-#: shell/rb-player.c:1167
+#: shell/rb-player.c:1090
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld.%.2ld"
 
-#: shell/rb-player.c:1171
+#: shell/rb-player.c:1094
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Totalt %ld.%.2ld (%ld.%.2ld återstår)"
@@ -838,8 +839,8 @@ msgstr ""
 "Skicka synpunkter på översättningen till sv@li.org"
 
 #: shell/rb.c:502
-msgid "Copyright  2002 Jorn Baayen. All rights reserved."
-msgstr "Copyright 2002 Jorn Baayen. Alla rättigheter förehållna."
+msgid "Copyright  2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
 
 #: shell/rb.c:503
 msgid "Music management and playback software for GNOME."
@@ -925,6 +926,12 @@ msgstr "Spela _låt"
 #: views/rb-library-view.c:377
 msgid "Start playing the selected song(s)"
 msgstr "Starta uppspelning av de markerade låtarna"
+
+#~ msgid "Copyright 2002, 2003 Jorn Baayen. All rights reserved."
+#~ msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
+
+#~ msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
+#~ msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
 
 #~ msgid "by"
 #~ msgstr "av"
