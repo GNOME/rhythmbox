@@ -865,7 +865,7 @@ rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 	RhythmDBTreeProperty *genre;
 	char *new_uri;
 
-	if (g_hash_table_lookup (db->priv->entries, new_uri))
+	if (g_hash_table_lookup (db->priv->entries, uri))
 		return;
 
 	/* Initialize the tree structure. */
