@@ -1103,7 +1103,7 @@ static gboolean
 rb_playlist_parse_recurse (RBPlaylist *playlist, const char *uri,
 			   gint recurse_level)
 {
-	const char *mimetype;
+	char *mimetype;
 	int i;
 
 	g_return_val_if_fail (uri != NULL, FALSE);
@@ -1123,13 +1123,19 @@ rb_playlist_parse_recurse (RBPlaylist *playlist, const char *uri,
 	if (mimetype == NULL)
 		return rb_playlist_add_url_from_data (playlist, uri, recurse_level);
 
-	for (i = 0; i < G_N_ELEMENTS(special_types); i++)
-		if (strcmp (special_types[i].mimetype, mimetype) == 0)
+	for (i = 0; i < G_N_ELEMENTS(special_types); i++) {
+		if (strcmp (special_types[i].mimetype, mimetype) == 0) {
+			g_free (mimetype);
 			return (* special_types[i].func) (playlist, uri, recurse_level, NULL);
+		}
+	}
 
-	for (i = 0; i < G_N_ELEMENTS(dual_types); i++)
-		if (strcmp (dual_types[i].mimetype, mimetype) == 0)
+	for (i = 0; i < G_N_ELEMENTS(dual_types); i++) {
+		if (strcmp (dual_types[i].mimetype, mimetype) == 0) {
+			g_free (mimetype);
 			return rb_playlist_add_url_from_data (playlist, uri, recurse_level);
+		}
+	}
 
 	return FALSE;
 }
