@@ -111,7 +111,7 @@ enum
 
 static GObjectClass *parent_class = NULL;
 
-#define SONG_MARKUP(xSONG) g_strdup_printf ("<span size=\"xx-large\"><b>%s</b></span>", xSONG);
+#define SONG_MARKUP(xSONG) g_strdup_printf ("<span size=\"xx-large\">%s</span>", xSONG);
 
 #define ALBUM_INFO_URL(xALBUM)   g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=%s", xALBUM);
 #define ARTIST_INFO_URL(xARTIST) g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST);
