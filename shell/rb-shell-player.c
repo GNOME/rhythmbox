@@ -438,7 +438,8 @@ rb_shell_player_cmd_previous (BonoboUIComponent *component,
 		monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->current_stream), 0);
 	}
 
-	rb_view_player_jump_to_current (player->priv->player);
+	/* FIXME: uncomment - disabled for 0.4 release */
+	//rb_view_player_jump_to_current (player->priv->player);
 }
 
 static void
@@ -496,7 +497,8 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 	{
 		rb_view_player_next (player->priv->player);
 
-		rb_view_player_jump_to_current (player->priv->player);
+		/* FIXME: uncomment - disabled for 0.4 release */
+		//rb_view_player_jump_to_current (player->priv->player);
 	}
 }
 
