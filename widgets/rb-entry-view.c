@@ -1022,7 +1022,10 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	minutes = duration / 60;
 	seconds = duration % 60;
 
-	str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	if (minutes == 0 && seconds == 0)
+		str = g_strdup (_("Unknown"));
+	else
+		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 
