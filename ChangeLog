@@ -1,3 +1,28 @@
+2002-10-26  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/rb-dialog.c: (rb_ask_string):
+	* lib/widgets/rb-node-view.c: (rb_node_view_sort_func):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-node-filter.c: (rb_node_filter_expression_new),
+	(rb_node_filter_expression_free),
+	(rb_node_filter_expression_evaluate):
+	* library/rb-node-filter.h:
+	* library/rb-node-song.c: (set_title), (set_artist), (set_album),
+	(rb_node_song_sync):
+	* library/rb-node-song.h:
+	* shell/rb-shell.c: (rb_shell_new_group_dialog):
+	* views/rb-library-view.c: (rb_library_view_search_cb):
+
+	Optimize sorting and searching, sorting still isn't fast
+	enough to be enabled by default though :/
+
+	Also use the group icon for group string request dialogs.
+
 2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/glade/toolbar-editor.glade:
