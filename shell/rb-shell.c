@@ -35,6 +35,7 @@
 #include <libgnomeui/gnome-window-icon.h>
 #include <libgnomeui/gnome-about.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -1345,7 +1346,12 @@ ask_file_response_cb (GtkDialog *dialog,
     
 	while (*filecur != NULL)
 	{
-    		rb_library_add_uri (shell->priv->library, *filecur);
+		char *escaped;
+
+		escaped = gnome_vfs_escape_path_string (*filecur);
+    		rb_library_add_uri (shell->priv->library, escaped);
+		g_free (escaped);
+		
 		filecur++;
 	}
 

@@ -405,6 +405,7 @@ set_artist (RBNodeSong *node,
 	GValue val = { 0, };
 	RBNode *artist;
 	char *swapped, *collated, *folded;
+	gboolean new = FALSE;
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
@@ -452,7 +453,7 @@ set_artist (RBNodeSong *node,
 
 		g_value_unset (&value);
 
-		rb_node_add_child (rb_library_get_all_artists (library), artist);
+		new = TRUE;
 	}
 
 	if (check_reparent == FALSE) {
@@ -486,6 +487,9 @@ set_artist (RBNodeSong *node,
 			      &val);
 	g_value_unset (&val);
 
+	if (new == TRUE)
+		rb_node_add_child (rb_library_get_all_artists (library), artist);
+
 	return FALSE;
 }
 
@@ -498,6 +502,7 @@ set_album (RBNodeSong *node,
 	GValue val = { 0, };
 	RBNode *album;
 	char *collated, *folded;
+	gboolean new = FALSE;
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
@@ -537,7 +542,7 @@ set_album (RBNodeSong *node,
 
 		g_value_unset (&value);
 
-		rb_node_add_child (rb_library_get_all_albums (library), album);
+		new = TRUE;
 	}
 
 	if (check_reparent == FALSE) {
@@ -545,7 +550,7 @@ set_album (RBNodeSong *node,
 	
 		rb_node_ref (album);
 	}
-
+	
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_SONG_PROP_ALBUM,
 			      &val);
@@ -569,6 +574,9 @@ set_album (RBNodeSong *node,
 			      RB_NODE_SONG_PROP_REAL_ALBUM,
 			      &val);
 	g_value_unset (&val);
+
+	if (new == TRUE)
+		rb_node_add_child (rb_library_get_all_albums (library), album);
 
 	return FALSE;
 }

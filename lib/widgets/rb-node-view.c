@@ -439,9 +439,9 @@ rb_node_view_new (RBNode *root,
 
 static void
 node_from_sort_iter_cb (RBTreeModelSort *model,
-		      GtkTreeIter *iter,
-		      void **node,
-		      RBNodeView *view)
+		        GtkTreeIter *iter,
+		        void **node,
+		        RBNodeView *view)
 {
 	GtkTreeIter filter_iter, node_iter;
 	
