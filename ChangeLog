@@ -2,6 +2,200 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-06 21:12:11 GMT	Colin Walters <walters@verbum.org>	patch-120
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-120
+
+
+    new files:
+     po/.arch-ids/uk.po.id po/uk.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/hu.po po/ko.po
+
+
+2004-03-06 18:34:24 GMT	Christophe Fergeau <teuf@gnome.org>	patch-119
+
+    Summary:
+      When using the gtk 2.3 file chooser, use the folder mode, since the open mode is no longer able to open directories
+    Revision:
+      rhythmbox--main--0.7--patch-119
+
+
+    modified files:
+     ChangeLog lib/rb-dialog.c
+
+
+2004-03-06 18:28:30 GMT	Christophe Fergeau <teuf@gnome.org>	patch-118
+
+    Summary:
+      Favour duration read from tags (TLEN or Xing header) over queried length (which is calculated using the file length and the bitrate) when using GStreamer
+    Revision:
+      rhythmbox--main--0.7--patch-118
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c
+
+
+2004-03-06 18:01:49 GMT	Christophe Fergeau <teuf@gnome.org>	patch-117
+
+    Summary:
+      Reversed changes to use gint64 instead of glong for stream duration since it was too invasive
+    Revision:
+      rhythmbox--main--0.7--patch-117
+
+
+    modified files:
+     ChangeLog lib/rb-dialog.c
+     metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     metadata/rb-metadata-common.c metadata/rb-metadata-gst.c
+     rhythmdb/rhythmdb-query-model.c shell/rb-shell.c
+     widgets/rb-entry-view.c widgets/rb-header.c
+
+
+2004-03-06 13:11:42 GMT	Christophe Fergeau <teuf@gnome.org>	patch-116
+
+    Summary:
+      Fixed some places I had overlooked where the duration was still considered as a glong
+    Revision:
+      rhythmbox--main--0.7--patch-116
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c widgets/rb-header.c
+
+
+2004-03-06 12:48:22 GMT	Christophe Fergeau <teuf@gnome.org>	patch-115
+
+    Summary:
+      Improved duration reading when using gstreamer. It favours tags over querying the length since for mp3 vbr files, tag reporting will be more accurate. Changed gtk 2.3 file selector mode from files to folder since some recent changes prevent the user from selecting folders when in file mode
+    Revision:
+      rhythmbox--main--0.7--patch-115
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-6
+       RB_METADATA_FIELD_DURATION now contains a guint64 instead of a glong
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-7
+       Favour GST_TAG_DURATION over calculating the duration using file size and bitrate since this won't work at all on vbr streams
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-8
+       Removed debugging printf
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-9
+       Use gint64 for duration in monkey-media too
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-10
+       Uncomment commented gst_object_unref
+    
+
+    modified files:
+     ChangeLog lib/rb-dialog.c
+     metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     metadata/rb-metadata-common.c metadata/rb-metadata-gst.c
+     rhythmdb/rhythmdb-query-model.c widgets/rb-entry-view.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-6
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-7
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-8
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-9
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-10
+
+
+2004-03-06 11:48:22 GMT	Christophe Fergeau <teuf@gnome.org>	patch-114
+
+    Summary:
+      Sync xing header parsing code with xine-lib cvs
+    Revision:
+      rhythmbox--main--0.7--patch-114
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-2
+       Sync xing header parsing code with latest xine lib cvs. Fixes some potential buffer overflow on malformed xing headers
+    
+     * teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-3
+       Use glib macros for endianness conversion
+    
+     * teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-5
+       Fixed detection of Xing headers, I screwed up host endianness<->big endian conversion
+    
+
+    modified files:
+     ChangeLog
+     metadata/monkey-media/stream-info-impl/id3-vfs/mp3bitrate.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-2
+     teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-3
+     teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-5
+
+
+2004-03-06 11:41:53 GMT	Christophe Fergeau <teuf@gnome.org>	patch-113
+
+    Summary:
+      Use gtk 2.4 gatomic stuff if it's available. Should still compile with gtk 2.2
+    Revision:
+      rhythmbox--main--0.7--patch-113
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--fixlets--0.7--patch-4
+       Use g_atomic to implement rb_atomic_inc/dec if glib 2.3 is available
+    
+     * teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-4
+       use glib atomic stuff if available
+    
+     * teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-6
+       Removed commented code, added a comment
+    
+
+    modified files:
+     ChangeLog configure.ac lib/Makefile.am lib/rb-atomic.c
+     lib/rb-atomic.h rhythmdb/rhythmdb-tree.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--fixlets--0.7--patch-4
+     teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-4
+     teuf@gnome.org--2003/rhythmbox--wip--0.7--patch-6
+
+
+2004-03-05 23:16:09 GMT	Christophe Fergeau <teuf@gnome.org>	patch-112
+
+    Summary:
+      Fix library saving at exit when it doesn't exist yet
+    Revision:
+      rhythmbox--main--0.7--patch-112
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.6--patch-27
+       Fix library saving when rhythmdb.xml doesn't exist
+    
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.6--patch-27
+
+
 2004-03-02 21:39:22 GMT	Colin Walters <walters@verbum.org>	patch-111
 
     Summary:
