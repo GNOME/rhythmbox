@@ -569,8 +569,8 @@ rhythmdb_write_lock (RhythmDB *db)
 	db->priv->changed_entries = NULL;
 }
 
-void
-rhythmdb_write_unlock (RhythmDB *db)
+static void
+emit_changed_signals (RhythmDB *db)
 {
 	GList *tem;
 	GHashTable *queued_entry_changes = g_hash_table_new (NULL, NULL);
@@ -597,6 +597,15 @@ rhythmdb_write_unlock (RhythmDB *db)
 	g_list_free (db->priv->changed_entries);
 	db->priv->changed_entries = NULL;
 	g_hash_table_destroy (queued_entry_changes);
+}
+
+static void
+rhythmdb_write_unlock_internal (RhythmDB *db, gboolean commit)
+{
+	GList *tem;
+
+	if (commit)
+		emit_changed_signals (db);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
@@ -604,6 +613,12 @@ rhythmdb_write_unlock (RhythmDB *db)
 	db->priv->added_entries = NULL;
 		 
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
+}
+
+void
+rhythmdb_write_unlock (RhythmDB *db)
+{
+	rhythmdb_write_unlock_internal (db, TRUE);
 }
 
 GQuark
@@ -791,7 +806,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
  out_dupentry:
 	g_free (realuri);
 
-	rhythmdb_write_unlock (db);
+	rhythmdb_write_unlock_internal (db, FALSE);
 	return entry;
 }
 

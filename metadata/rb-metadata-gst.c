@@ -273,7 +273,7 @@ rb_metadata_gst_found_tag (GObject *pipeline, GstElement *source, GstTagList *ta
 }
 
 static void
-rb_metadata_gst_typefind_cb (GstElement *typefind, GstCaps *caps, RBMetaData *md)
+rb_metadata_gst_typefind_cb (GstElement *typefind, guint probability, GstCaps *caps, RBMetaData *md)
 {
 	if (gst_caps_get_size (caps) > 0) {
 		md->priv->type = g_strdup (gst_structure_get_name (gst_caps_get_structure (caps, 0)));
