@@ -2,6 +2,190 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-03 22:32:13 GMT	Colin Walters <walters@verbum.org>	patch-243
+
+    Summary:
+      update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-243
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/sr.po po/sr@Latn.po
+     po/sv.po
+
+
+2003-11-03 22:24:44 GMT	Colin Walters <walters@verbum.org>	patch-242
+
+    Summary:
+      fix up error handling on missing elements a bit
+    Revision:
+      rhythmbox--mainline--0.6--patch-242
+
+
+    modified files:
+     ChangeLog monkey-media/monkey-media-player-gst-tmp.c
+     shell/rb-shell-player.c
+
+
+2003-11-03 15:13:06 GMT	Colin Walters <walters@verbum.org>	patch-241
+
+    Summary:
+      don't crash when clearing iradio search
+    Revision:
+      rhythmbox--mainline--0.6--patch-241
+
+
+    modified files:
+     ChangeLog sources/rb-iradio-source.c
+
+
+2003-11-03 05:55:19 GMT	Colin Walters <walters@verbum.org>	patch-240
+
+    Summary:
+      history fixes, indentation bits, vim swap files (jeffrey)
+    Revision:
+      rhythmbox--mainline--0.6--patch-240
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-6
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-7
+       Make history follow specification in http://mail.gnome.org/archives/rhythmbox-devel/2003-November/msg00002.html
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-8
+       fix spacing
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-16
+       Merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-17
+       Mark vim swap files as junk
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-18
+       merge history changes
+    
+
+    modified files:
+     ChangeLog shell/rb-history.c shell/rb-history.h
+     shell/rb-shell-player.c {arch}/=tagging-method
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-18
+
+
+2003-11-03 02:29:42 GMT	Colin Walters <walters@verbum.org>	patch-239
+
+    Summary:
+      tooltip on playing column (harshy)
+    Revision:
+      rhythmbox--mainline--0.6--patch-239
+
+    Patches applied:
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-217
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-1
+       star-merge from 20031028
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-2
+       star-merge
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-3
+       Fixed now playing tooltip regression
+    
+
+    modified files:
+     ChangeLog widgets/rb-entry-view.c
+
+    new patches:
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--base-0
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-1
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-2
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-3
+
+
+2003-11-01 22:42:36 GMT	Colin Walters <walters@verbum.org>	patch-238
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-238
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/sr.po po/sr@Latn.po
+
+
+2003-11-01 22:37:50 GMT	Colin Walters <walters@verbum.org>	patch-237
+
+    Summary:
+      implement --dry-run option
+    Revision:
+      rhythmbox--mainline--0.6--patch-237
+
+
+    modified files:
+     ChangeLog shell/main.c shell/rb-shell.c
+
+
+2003-11-01 20:30:00 GMT	Colin Walters <walters@verbum.org>	patch-236
+
+    Summary:
+      history work (jeffrey)
+    Revision:
+      rhythmbox--mainline--0.6--patch-236
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-11
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-1
+       Make shuffle stop playback when it runs out of history.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-2
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-3
+       Make callers of rhythmdb_query_model_entry_to_iter() fail quickly when they don't check if it failed.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-4
+       Fix crash when user goes "back" in the history but the filter has changed so the previous song is no longer in it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-5
+       Fix spacing issue
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-14
+       This patch is slightly broken. The history dies when this patch stops playback.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-15
+       Fix history crashes after user changes the filter
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+     shell/rb-shell-player.c widgets/rb-entry-view.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-15
+
+
 2003-10-31 22:17:17 GMT	Colin Walters <walters@verbum.org>	patch-235
 
     Summary:

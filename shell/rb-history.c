@@ -268,6 +268,12 @@ rb_history_prepend (RBHistory *hist, RhythmDBEntry *entry)
 	rb_history_limit_size (hist, FALSE, MAX_HISTORY_SIZE);
 }
 
+void
+rb_history_clear (RBHistory *hist)
+{
+	rb_history_limit_size (hist, TRUE, 1);
+}
+
 /**
  * Cuts nodes off of the history from the desired end until it is smaller than max_size. 
  * Never cuts off the current node.

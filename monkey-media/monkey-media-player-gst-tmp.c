@@ -517,6 +517,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			     _("Failed to create %s input element; check your installation"),
 			     audiocd_mode ? "cdparanoia" : "gnomevfssrc");
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
 		return;
 	}
 	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->src);
@@ -541,6 +542,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 				     MONKEY_MEDIA_PLAYER_ERROR_NO_QUEUE_PLUGIN,
 				     _("Failed to create queue element; check your installation"));
 			gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+			mp->priv->pipeline = NULL;
 			return;
 		}
 #if GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 6
@@ -581,6 +583,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			     err);
 		g_free (err);
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
 		return;
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->decoder);
@@ -593,6 +596,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			     MONKEY_MEDIA_PLAYER_ERROR_NO_VOLUME_PLUGIN,
 			     _("Failed to create volume element; check your installation"));
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
 		return;
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->volume);
@@ -611,6 +615,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			     MONKEY_MEDIA_PLAYER_ERROR_NO_AUDIO,
 			     _("Could not create audio output element; check your settings"));
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
 		return;
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);

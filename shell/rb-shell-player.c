@@ -262,6 +262,7 @@ gconf_key_changed (GConfClient *client,guint cnxn_id,
 	if (strcmp (CONF_STATE_REPEAT, entry->key) == 0) {
 		g_object_notify (G_OBJECT (player), "repeat");
 	} else 	if (strcmp (CONF_STATE_SHUFFLE, entry->key) == 0) {
+		rb_history_clear (player->priv->history);
 		g_object_notify (G_OBJECT (player), "shuffle");
 	}
 }
@@ -812,6 +813,9 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	monkey_media_player_close (player->priv->mmplayer);
 	monkey_media_player_open (player->priv->mmplayer, location, error);
+	if (error && *error)
+		return;
+
 	monkey_media_player_play (player->priv->mmplayer);
 
 	if (!was_playing) {
@@ -876,69 +880,57 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	rb_shell_player_play (player);
 }
 
-static void
-rb_shell_player_previous (RBShellPlayer *player)
+static RhythmDBEntry*
+rb_shell_player_get_previous (RBShellPlayer *player)
 {
 	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 	RhythmDBEntry *entry;
 
-	/* First check if there are any songs in the history */
-	if ((entry = rb_history_back (player->priv->history))) {
+	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 		rb_debug ("choosing history entry");
+		entry = rb_history_back (player->priv->history);
 	} else {
-		/* Just stop shuffle playback if they've run out of history */
-		if (!eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-			rb_debug ("choosing previous linked entry");
-			entry = rb_entry_view_get_previous_entry (songs);
-		}
-		if (entry == NULL) {
-			rb_debug ("No previous entry, stopping playback");
-			rb_shell_player_set_playing_source (player, NULL);
-			return;
-		}
-
-		rb_history_prepend (player->priv->history, entry);
+		rb_debug ("choosing previous linked entry");
+		entry = rb_entry_view_get_previous_entry (songs);
 	}
 
-	rb_shell_player_set_playing_entry (player, entry);
+	return entry;
 }
 
-static void
-rb_shell_player_next (RBShellPlayer *player)
+static RhythmDBEntry *
+rb_shell_player_get_next (RBShellPlayer *player)
 {
 	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 	RhythmDBEntry *entry;
 
-	/* First check if there are any enqueued songs */
-	if ((entry = rb_history_forward (player->priv->history))) {
-		rb_debug ("choosing enqueued entry");
-	} else {
-		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+		if ((entry = rb_history_forward (player->priv->history))) {
+			rb_debug ("choosing enqueued entry");
+		} else {
 			rb_debug ("choosing random entry");
 			entry =  rb_entry_view_get_random_entry (songs);
-		} else {
-			rb_debug ("choosing next linked entry");
-			entry = rb_entry_view_get_next_entry (songs);
 		}
+	} else {
+		rb_debug ("choosing next linked entry");
+		entry = rb_entry_view_get_next_entry (songs);
+	}
 
-		if (entry == NULL) {
-			/* If repeat is enabled, loop back to the start */
-			if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
+	if (entry == NULL) {
+		/* It just so happens that this only happens when shuffle is
+		 * off. This will change when we implement shuffle, but the
+		 * code to deal with it will be different.  I think it should
+		 * go in rb_entry_view_get_next_entry() */
+		/* If repeat is enabled, loop back to the start */
+		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
 				&& rb_shell_player_have_first (player, player->priv->source)) {
-				rb_debug ("No next entry, but repeat is enabled");
-				entry = rb_entry_view_get_first_entry (songs);
-			} else {
-				rb_debug ("No next entry, stopping playback");
-				rb_shell_player_set_playing_source (player, NULL);
-				g_object_notify (G_OBJECT (player), "playing");
-				return;
-			}
+			rb_debug ("No next entry, but repeat is enabled");
+			entry = rb_entry_view_get_first_entry (songs);
 		}
 	}
 
-	rb_shell_player_set_playing_entry (player, entry);
+	return entry;
 }
-
+	
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
@@ -963,26 +955,43 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
-	/* If we're in the first 2 seconds go to the previous song,
-	 * else restart the current one.
-	 */
-	if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
-		rb_debug ("doing previous");
-		rb_shell_player_previous (player);
-	} else {
-		rb_debug ("restarting song");
-		monkey_media_player_set_time (player->priv->mmplayer, 0);
-		rb_player_sync_time (player->priv->player_widget);
-	}
+	if (player->priv->source != NULL) {
+		/* If we're in the first 2 seconds go to the previous song,
+		 * else restart the current one.
+		 */
+		if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
+			rb_debug ("doing previous");
+			RhythmDBEntry* entry = rb_shell_player_get_previous (player);
+			if (entry) {
+				rb_shell_player_set_playing_entry (player, entry);
+			} else {
+				/* Is this the right thing to do when there's no previous song? */
+				rb_debug ("No previous entry, restarting song");
+				monkey_media_player_set_time (player->priv->mmplayer, 0);
+				rb_player_sync_time (player->priv->player_widget);
+			}
+		} else {
+			rb_debug ("restarting song");
+			monkey_media_player_set_time (player->priv->mmplayer, 0);
+			rb_player_sync_time (player->priv->player_widget);
+		}
 
-	rb_shell_player_jump_to_current (player);
+		rb_shell_player_jump_to_current (player);
+	}
 }
 
 void
 rb_shell_player_do_next (RBShellPlayer *player)
 {
 	if (player->priv->source != NULL) {
-		rb_shell_player_next (player);
+		RhythmDBEntry *entry = rb_shell_player_get_next (player);
+		if (entry) {
+			rb_shell_player_set_playing_entry (player, entry);
+		} else {
+			rb_debug ("No next entry, stopping playback");
+			rb_shell_player_set_playing_source (player, NULL);
+			g_object_notify (G_OBJECT (player), "playing");
+		}
 		rb_shell_player_jump_to_current (player);
 	}
 }
@@ -1583,7 +1592,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 			rb_shell_player_set_playing_source (player, NULL);
 			break;
 		case RB_SOURCE_EOF_NEXT:
-			rb_shell_player_next (player);
+			rb_shell_player_do_next (player);
 			break;
 		}
 	}
@@ -1808,7 +1817,7 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 		gtk_progress_bar_pulse (GTK_PROGRESS_BAR (player->priv->buffering_progress));
 
 		player->priv->buffering_dialog = glade_xml_get_widget (xml, "dialog");
-		g_signal_connect (G_OBJECT(glade_xml_get_widget (xml, "cancel_button")),
+		g_signal_connect (G_OBJECT (glade_xml_get_widget (xml, "cancel_button")),
 				  "clicked", G_CALLBACK (cancel_buffering_clicked_cb),
 				  player);
 	}

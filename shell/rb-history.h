@@ -73,6 +73,11 @@ void			rb_history_prepend	(RBHistory *hist, RhythmDBEntry *entry);
  */
 void			rb_history_enqueue	(RBHistory *hist, RhythmDBEntry *entry);
 
+/**
+ * Makes the history empty
+ */
+void			rb_history_clear	(RBHistory *hist);
+
 G_END_DECLS
 
 #endif /* __RB_HISTORY_H */
