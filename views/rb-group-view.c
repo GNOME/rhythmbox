@@ -91,8 +91,10 @@ static void node_view_changed_cb (RBNodeView *view,
 static void song_eos_cb (MonkeyMediaStream *stream,
 	                 RBGroupView *view);
 static RBNode *rb_group_view_get_first_node (RBGroupView *view);
-static RBNode *rb_group_view_get_previous_node (RBGroupView *view);
-static RBNode *rb_group_view_get_next_node (RBGroupView *view);
+static RBNode *rb_group_view_get_previous_node (RBGroupView *view,
+						gboolean just_check);
+static RBNode *rb_group_view_get_next_node (RBGroupView *view,
+					    gboolean just_check);
 static void rb_group_view_status_init (RBViewStatusIface *iface);
 static const char *rb_group_view_status_get (RBViewStatus *status);
 static void rb_group_view_clipboard_init (RBViewClipboardIface *iface);
@@ -596,7 +598,7 @@ rb_group_view_have_next (RBViewPlayer *player)
 	RBGroupView *view = RB_GROUP_VIEW (player);
 	RBNode *next;
 
-	next = rb_group_view_get_next_node (view);
+	next = rb_group_view_get_next_node (view, TRUE);
 	
 	return (next != NULL);
 }
@@ -607,7 +609,7 @@ rb_group_view_have_previous (RBViewPlayer *player)
 	RBGroupView *view = RB_GROUP_VIEW (player);
 	RBNode *previous;
 
-	previous = rb_group_view_get_previous_node (view);
+	previous = rb_group_view_get_previous_node (view, TRUE);
 
 	return (previous != NULL);
 }
@@ -618,7 +620,7 @@ rb_group_view_next (RBViewPlayer *player)
 	RBGroupView *view = RB_GROUP_VIEW (player);
 	RBNode *node;
 
-	node = rb_group_view_get_next_node (view);
+	node = rb_group_view_get_next_node (view, FALSE);
 	
 	rb_group_view_set_playing_node (view, node);
 }
@@ -629,7 +631,7 @@ rb_group_view_previous (RBViewPlayer *player)
 	RBGroupView *view = RB_GROUP_VIEW (player);
 	RBNode *node;
 
-	node = rb_group_view_get_previous_node (view);
+	node = rb_group_view_get_previous_node (view, FALSE);
 	
 	rb_group_view_set_playing_node (view, node);
 }
@@ -846,14 +848,20 @@ song_eos_cb (MonkeyMediaStream *stream,
 }
 
 static RBNode *
-rb_group_view_get_previous_node (RBGroupView *view)
+rb_group_view_get_previous_node (RBGroupView *view,
+				 gboolean just_check)
 {
 	RBNode *node;
 	
 	if (view->priv->shuffle == FALSE)
 		node = rb_node_view_get_previous_node (view->priv->songs);
 	else
-		node = rb_node_view_get_previous_random_node (view->priv->songs);
+	{
+		if (just_check == TRUE)
+			node = rb_node_view_get_first_node (view->priv->songs);
+		else
+			node = rb_node_view_get_previous_random_node (view->priv->songs);
+	}
 
 	return node;
 }
@@ -882,7 +890,8 @@ rb_group_view_get_first_node (RBGroupView *view)
 }
 
 static RBNode *
-rb_group_view_get_next_node (RBGroupView *view)
+rb_group_view_get_next_node (RBGroupView *view,
+			     gboolean just_check)
 {
 	RBNode *node;
 	
@@ -895,7 +904,12 @@ rb_group_view_get_next_node (RBGroupView *view)
 		}
 	}
 	else
-		node = rb_node_view_get_next_random_node (view->priv->songs);
+	{
+		if (just_check == TRUE)
+			node = rb_node_view_get_first_node (view->priv->songs);
+		else
+			node = rb_node_view_get_next_random_node (view->priv->songs);
+	}
 
 	return node;
 }

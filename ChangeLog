@@ -1,5 +1,20 @@
 2002-11-04  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_next_random_node),
+	(rb_node_view_get_previous_random_node):
+	* views/rb-group-view.c: (rb_group_view_have_next),
+	(rb_group_view_have_previous), (rb_group_view_next),
+	(rb_group_view_previous), (rb_group_view_get_previous_node),
+	(rb_group_view_get_next_node):
+	* views/rb-library-view.c: (rb_library_view_have_next),
+	(rb_library_view_have_previous), (rb_library_view_next),
+	(rb_library_view_previous), (rb_library_view_get_previous_node),
+	(rb_library_view_get_next_node):
+
+	Fix some random stuff.
+
+2002-11-04  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-ellipsizing-label.c: (rb_ellipsizing_label_init),
 	(real_finalize), (rb_ellipsizing_label_new),
 	(rb_ellipsizing_label_set_text), (rb_ellipsizing_label_set_markup),

@@ -1029,7 +1029,7 @@ rb_node_view_get_next_random_node (RBNodeView *view)
 	if (view->priv->current_random != NULL &&
 	    view->priv->current_random->next != NULL) {
 		view->priv->current_random = view->priv->current_random->next;
-		node = (RBNode *)view->priv->current_random->data;
+		node = (RBNode *) view->priv->current_random->data;
 	} else {
 		node = rb_node_view_get_random_node (view);
 		view->priv->random_nodes = g_list_append (view->priv->random_nodes, node);
@@ -1050,7 +1050,7 @@ rb_node_view_get_previous_random_node (RBNodeView *view)
 	if (view->priv->current_random != NULL &&
 	    view->priv->current_random->prev != NULL) {
 		view->priv->current_random = view->priv->current_random->prev;
-		node = (RBNode *)view->priv->current_random->data;
+		node = (RBNode *) view->priv->current_random->data;
 	} else {
 		node = rb_node_view_get_random_node (view);
 		view->priv->random_nodes = g_list_prepend (view->priv->random_nodes, node);
