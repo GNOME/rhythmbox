@@ -7,8 +7,6 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb.c					\
 	rhythmdb-legacy.h				\
 	rhythmdb-legacy.c				\
-	rhythmdb-serialize.h				\
-	rhythmdb-serialize.c				\
 	rhythmdb-model.h				\
 	rhythmdb-model.c				\
 	rhythmdb-property-model.h			\

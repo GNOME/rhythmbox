@@ -60,6 +60,8 @@ struct RhythmDBPrivate
 	GHashTable *added_entries;
 	GHashTable *changed_entries;
 
+	GHashTable *propname_map;
+
 	guint thread_reaper_id;
 
 	GAsyncQueue *status_queue;
@@ -296,6 +298,13 @@ rhythmdb_init (RhythmDB *db)
 	g_type_class_unref (prop_class);
 	g_type_class_unref (unsaved_prop_class);
 
+	db->priv->propname_map = g_hash_table_new (g_str_hash, g_str_equal);
+
+	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {
+		const char *name = rhythmdb_nice_elt_name_from_propid (db, i);
+		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
+	}
+
 	db->priv->legacy_id_map = g_hash_table_new (NULL, NULL);
 
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc) query_thread_main,
@@ -367,6 +376,8 @@ rhythmdb_finalize (GObject *object)
 	g_async_queue_unref (db->priv->status_queue);
 
 	g_free (db->priv->column_types);
+
+	g_hash_table_destroy (db->priv->propname_map);
 
 	g_free (db->priv->name);
 
@@ -1147,6 +1158,242 @@ rhythmdb_query_free (GPtrArray *query)
 	}
 
 	g_ptr_array_free (query, TRUE);
+}
+
+inline const char *
+rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
+{
+	switch (propid) {
+	case RHYTHMDB_PROP_TYPE:
+		return "type";
+	case RHYTHMDB_PROP_TITLE:
+		return "title";
+	case RHYTHMDB_PROP_TITLE_FOLDED:
+		return "title-folded";
+	case RHYTHMDB_PROP_TITLE_SORT_KEY:
+		return "title-sort-key";
+	case RHYTHMDB_PROP_GENRE:
+		return "genre";
+	case RHYTHMDB_PROP_GENRE_FOLDED:
+		return "genre-folded";
+	case RHYTHMDB_PROP_GENRE_SORT_KEY:
+		return "genre-sort-key";
+	case RHYTHMDB_PROP_ARTIST:
+		return "artist";
+	case RHYTHMDB_PROP_ARTIST_FOLDED:
+		return "artist-folded";
+	case RHYTHMDB_PROP_ARTIST_SORT_KEY:
+		return "artist-sort-key";
+	case RHYTHMDB_PROP_ALBUM:
+		return "album";
+	case RHYTHMDB_PROP_ALBUM_FOLDED:
+		return "album-folded";
+	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
+		return "album-sort-key";
+	case RHYTHMDB_PROP_TRACK_NUMBER:
+		return "track-number";
+	case RHYTHMDB_PROP_DURATION:
+		return "duration";
+	case RHYTHMDB_PROP_FILE_SIZE:
+		return "file-size";
+	case RHYTHMDB_PROP_LOCATION:
+		return "location";
+	case RHYTHMDB_PROP_MTIME:
+		return "mtime";
+	case RHYTHMDB_PROP_RATING:
+		return "rating";
+	case RHYTHMDB_PROP_PLAY_COUNT:
+		return "play-count";
+	case RHYTHMDB_PROP_LAST_PLAYED:
+		return "last-played";
+	case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		return "last-played-str";
+	case RHYTHMDB_PROP_QUALITY:
+		return "quality";
+	default:
+		g_assert_not_reached ();
+	}
+	return NULL;
+}
+
+inline int
+rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const char *name)
+{
+	gpointer ret, orig;	
+	if (g_hash_table_lookup_extended (db->priv->propname_map, name,
+					  &orig, &ret)) {
+		return GPOINTER_TO_INT (ret);
+	}
+	return -1;
+}
+
+static void
+write_encoded_gvalue (xmlNodePtr node,
+		      GValue *val)
+{
+	char *strval;
+	char *quoted;
+
+	switch (G_VALUE_TYPE (val))
+	{
+	case G_TYPE_STRING:
+		strval = g_value_dup_string (val);
+		break;
+	case G_TYPE_BOOLEAN:
+		strval = g_strdup_printf ("%d", g_value_get_boolean (val));
+		break;
+	case G_TYPE_INT:
+		strval = g_strdup_printf ("%d", g_value_get_int (val));
+		break;
+	case G_TYPE_LONG:
+		strval = g_strdup_printf ("%ld", g_value_get_long (val));
+		break;
+	case G_TYPE_FLOAT:
+		strval = g_strdup_printf ("%f", g_value_get_float (val));
+		break;
+	case G_TYPE_DOUBLE:
+		strval = g_strdup_printf ("%f", g_value_get_double (val));
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	quoted = xmlEncodeEntitiesReentrant (NULL, strval);
+	g_free (strval);
+	xmlNodeSetContent (node, quoted);
+	g_free (quoted);
+}
+
+static void
+read_encoded_property (RhythmDB *db,
+		       xmlNodePtr node,
+		       guint propid,
+		       GValue *val)
+{
+	char *content;
+	
+	g_value_init (val, db->priv->column_types[propid]);
+
+	content = xmlNodeGetContent (node);
+	
+	switch (G_VALUE_TYPE (val))
+	{
+	case G_TYPE_STRING:
+		g_value_set_string (val, content);
+		break;
+	case G_TYPE_BOOLEAN:
+		g_value_set_boolean (val, g_ascii_strtoull (content, NULL, 10));
+		break;
+	case G_TYPE_INT:
+		g_value_set_int (val, g_ascii_strtoull (content, NULL, 10));
+		break;
+	case G_TYPE_LONG:
+		g_value_set_long (val, g_ascii_strtoull (content, NULL, 10));
+		break;
+	case G_TYPE_FLOAT:
+		g_value_set_float (val, g_ascii_strtod (content, NULL));
+		break;
+	case G_TYPE_DOUBLE:
+		g_value_set_float (val, g_ascii_strtod (content, NULL));
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	g_free (content);
+}
+
+void
+rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
+			  xmlNodePtr parent)
+{
+	guint i;
+	xmlNodePtr node = xmlNewChild (parent, NULL, "conjunction", NULL);
+	xmlNodePtr subnode;
+
+	for (i = 0; i < query->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (query, i);
+		
+		switch (data->type) {
+		case RHYTHMDB_QUERY_SUBQUERY:
+			subnode = xmlNewChild (node, NULL, "subquery", NULL);
+			rhythmdb_query_serialize (db, data->subquery, subnode);
+			break;
+		case RHYTHMDB_QUERY_PROP_LIKE:
+			subnode = xmlNewChild (node, NULL, "like", NULL);
+			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
+		case RHYTHMDB_QUERY_PROP_EQUALS:
+			subnode = xmlNewChild (node, NULL, "equals", NULL);
+			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
+		case RHYTHMDB_QUERY_DISJUNCTION:
+			subnode = xmlNewChild (node, NULL, "disjunction", NULL);
+			break;
+		case RHYTHMDB_QUERY_END:
+			break;
+		case RHYTHMDB_QUERY_PROP_GREATER:
+		case RHYTHMDB_QUERY_PROP_LESS:
+			g_assert_not_reached ();
+			break;
+		}		
+	}
+}
+
+GPtrArray *
+rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
+{
+	GPtrArray *query = g_ptr_array_new ();
+	xmlNodePtr child;
+
+	g_assert (!strcmp (parent->name, "conjunction"));
+	
+	for (child = parent->children; child; child = child->next) {
+		RhythmDBQueryData *data;
+
+		if (xmlNodeIsText (child))
+			continue;
+
+		data = g_new0 (RhythmDBQueryData, 1);
+
+		if (!strcmp (child->name, "subquery")) {
+			xmlNodePtr subquery;
+			data->type = RHYTHMDB_QUERY_SUBQUERY;
+			subquery = child->children;
+			while (xmlNodeIsText (subquery))
+				subquery = subquery->next;
+			
+			data->subquery = rhythmdb_query_deserialize (db, subquery);
+		} else if (!strcmp (child->name, "disjunction")) {
+			data->type = RHYTHMDB_QUERY_DISJUNCTION;
+		} else if (!strcmp (child->name, "like")) {
+			data->type = RHYTHMDB_QUERY_PROP_LIKE;
+		} else if (!strcmp (child->name, "equals")) {
+			data->type = RHYTHMDB_QUERY_PROP_EQUALS;
+		} else
+ 			g_assert_not_reached ();
+
+		if (!strcmp (child->name, "like") || !strcmp (child->name, "equals")) {
+			char *propstr = xmlGetProp (child, "prop");
+			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
+			g_free (propstr);
+
+			g_assert (propid >= 0 && propid < RHYTHMDB_NUM_PROPERTIES);
+
+			data->propid = propid;
+			data->val = g_new0 (GValue, 1);
+
+			read_encoded_property (db, child, data->propid, data->val);
+		} 
+
+		g_ptr_array_add (query, data);
+	}
+
+	return query;
 }
 
 RhythmDBEntry *

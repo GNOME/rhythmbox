@@ -40,7 +40,6 @@
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
-#include "rhythmdb-serialize.h"
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
@@ -141,8 +140,6 @@ struct RhythmDBTreePrivate
 	GHashTable *song_genres;
 	GHashTable *iradio_genres;
 
-	GHashTable *propname_map;
-
 	gboolean finalizing;
 };
 
@@ -205,7 +202,6 @@ rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 static void
 rhythmdb_tree_init (RhythmDBTree *db)
 {
-	guint i;
 	db->priv = g_new0 (RhythmDBTreePrivate, 1);
 
 	db->priv->entries = g_hash_table_new (g_str_hash, g_str_equal);
@@ -224,23 +220,6 @@ rhythmdb_tree_init (RhythmDBTree *db)
 							 (GDestroyNotify) g_free,
 							 NULL);
 
-	db->priv->propname_map = g_hash_table_new (g_str_hash, g_str_equal);
-
-	for (i = 0; i < RHYTHMDB_NUM_SAVED_PROPERTIES; i++) {
-		const char *name = rhythmdb_elt_name_from_propid (i);
-		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
-	}
-}
-
-static inline int
-propid_from_elt_name (RhythmDBTree *db, const char *name)
-{
-	gpointer ret, orig;	
-	if (g_hash_table_lookup_extended (db->priv->propname_map, name,
-					  &orig, &ret)) {
-		return GPOINTER_TO_INT (ret);
-	}
-	return -1;
 }
 
 static inline char *
@@ -349,8 +328,6 @@ rhythmdb_tree_finalize (GObject *object)
 
 	g_hash_table_destroy (db->priv->entries);
 
-	g_hash_table_destroy (db->priv->propname_map);
-
 	g_mem_chunk_destroy (db->priv->entry_memchunk);
 	g_mem_chunk_destroy (db->priv->property_memchunk);
 
@@ -426,7 +403,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
-		int val = propid_from_elt_name (ctx->db, name);
+		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), name);
 		if (val < 0)
 			break;
 		
@@ -665,7 +642,7 @@ g_free (encoded);							\
 
 		value = RHYTHMDB_TREE_ENTRY_VALUE (entry, i);
 
-		elt_name = rhythmdb_elt_name_from_propid (i);
+		elt_name = rhythmdb_nice_elt_name_from_propid ((RhythmDB *) ctx->db, i);
 
 		RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle);
 		RHYTHMDB_FWRITE (elt_name, 1, strlen (elt_name), ctx->handle);

@@ -38,7 +38,6 @@
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
-#include "rhythmdb-serialize.h"
 #include "rb-playlist-source.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
@@ -721,9 +720,18 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	g_free (tmp);
 
 	if (source->priv->automatic) {
-		GPtrArray *query = rhythmdb_query_deserialize (db, node);
-		gchar *limit_str = xmlGetProp (node, "limit");
-		guint limit = atoi (limit_str);
+		GPtrArray *query;
+		gchar *limit_str;
+		guint limit;
+
+		child = node->children;
+		while (xmlNodeIsText (child))
+			child = child->next;
+
+		query = rhythmdb_query_deserialize (db, child);
+		limit_str = xmlGetProp (node, "limit");
+		limit = atoi (limit_str);
+
 		rb_playlist_source_set_query (source, query, limit);
 		g_free (limit_str);
 	} else {

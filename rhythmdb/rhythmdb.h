@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-file-info.h>
+#include <libxml/tree.h>
 
 #include "config.h"
 
@@ -263,6 +264,14 @@ GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
 void		rhythmdb_query_free			(GPtrArray *query);
 GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
+
+void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
+							 xmlNodePtr node);
+
+GPtrArray *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
+
+inline const char *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, gint propid);
+inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const char *name);
 
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
