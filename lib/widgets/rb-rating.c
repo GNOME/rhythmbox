@@ -313,7 +313,7 @@ rb_rating_expose (GtkWidget *widget,
 							     widget->window,
 							     0, 0,
 							     OFFSET + i * icon_size, y_offset,
-							     icon_size, icon_size + y_offset,
+							     icon_size, icon_size,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
 			g_object_unref (G_OBJECT (pixbuf));
