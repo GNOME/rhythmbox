@@ -1226,6 +1226,8 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	gboolean is_all_query, sorting_matches;
 	const char *current_sorting_type;
 
+	rhythmdb_read_lock (source->priv->db);
+
 	if (source->priv->active_query) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
 						      G_CALLBACK (query_complete_cb),
@@ -1260,6 +1262,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 			rb_property_view_set_model (source->priv->albums,
 						    source->priv->cached_albums_model);
 			rb_entry_view_poll_model (source->priv->songs);
+			rhythmdb_read_unlock (source->priv->db);
 			return;
 		} else if (source->priv->cached_all_query) {
 			rb_debug ("sorting mismatch, freeing cached query");
@@ -1347,6 +1350,8 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
 
+	rhythmdb_read_unlock (source->priv->db);
+
 	query = construct_query_from_selection (source);
 	
 	if (!sync)
@@ -1363,15 +1368,26 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 static void
 query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source)
 {
+	RhythmDBPropertyModel *genre_model = rb_property_view_get_model (source->priv->genres);
+	RhythmDBPropertyModel *artist_model = rb_property_view_get_model (source->priv->artists);
+	RhythmDBPropertyModel *album_model = rb_property_view_get_model (source->priv->albums);
+
 	rb_debug ("query complete; resetting data models");
+
 	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_GENRE)
-		g_object_set (G_OBJECT (rb_property_view_get_model (source->priv->genres)),	
-			      "query-model", model, NULL);
+		g_object_set (G_OBJECT (genre_model), "query-model", model, NULL);
 	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ARTIST)
-		g_object_set (G_OBJECT (rb_property_view_get_model (source->priv->artists)),
-			      "query-model", model, NULL);
+		g_object_set (G_OBJECT (artist_model), "query-model", model, NULL);
 	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ALBUM)
-		g_object_set (G_OBJECT (rb_property_view_get_model (source->priv->albums)),
+		g_object_set (G_OBJECT (album_model), "query-model", model, NULL);
+	if (genre_model != source->priv->cached_genres_model)
+		g_object_set (G_OBJECT (source->priv->cached_genres_model),
+			      "query-model", model, NULL);
+	if (artist_model != source->priv->cached_artists_model)
+		g_object_set (G_OBJECT (source->priv->cached_artists_model),
+			      "query-model", model, NULL);
+	if (album_model != source->priv->cached_albums_model)
+		g_object_set (G_OBJECT (source->priv->cached_albums_model),
 			      "query-model", model, NULL);
 	source->priv->active_query = NULL;
 }
