@@ -44,6 +44,7 @@
 #include <string.h>
 #include <libxml/tree.h>
 #include <unistd.h>
+#include <math.h>
 
 #ifdef USE_XINE
 #include "gtk-xine.h"
@@ -137,6 +138,7 @@ struct RBPlayerPrivate
 	RBPlayerState state;
 
 #ifdef USE_XINE
+	GtkWidget *xine_toplevel_hack;
 	GtkXine *xine;
 #else
 	MonkeyMediaAudioStream *stream;
@@ -471,14 +473,19 @@ rb_player_init (RBPlayer *player)
 			    TRUE, TRUE, 0);
 
 #ifdef USE_XINE
+	player->priv->xine_toplevel_hack = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 	player->priv->xine = GTK_XINE (gtk_xine_new (-1, -1, FALSE));
+	gtk_container_add (GTK_CONTAINER (player->priv->xine_toplevel_hack),
+			   GTK_WIDGET (player->priv->xine));
 	gtk_widget_realize (GTK_WIDGET (player->priv->xine));
+
 	g_signal_connect (G_OBJECT (player->priv->xine),
 			  "error",
 			  G_CALLBACK (xine_error_cb), player);
 	g_signal_connect (G_OBJECT (player->priv->xine),
 			  "eos",
 			  G_CALLBACK (eos_cb), player);
+
 	while (gtk_xine_check (player->priv->xine) == FALSE)
 		usleep (100000);
 #else
@@ -513,7 +520,7 @@ rb_player_finalize (GObject *object)
 	rb_clear (player);
 
 #ifdef USE_XINE
-	g_object_unref (G_OBJECT (player->priv->xine));
+	gtk_widget_destroy (player->priv->xine_toplevel_hack);
 #else
 	g_object_unref (G_OBJECT (player->priv->mixer));
 #endif
@@ -1164,7 +1171,7 @@ sync_time (RBPlayer *player)
 		elapsed = player->priv->slider_drag_info.fake_elapsed;
 	else {
 #ifdef USE_XINE
-		elapsed = (long) (gtk_xine_get_current_time (player->priv->xine) / 1000);
+		elapsed = (long) gtk_xine_get_current_time (player->priv->xine) / 1000.0;
 #else
 		elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream));
 #endif
