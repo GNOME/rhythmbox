@@ -168,6 +168,11 @@ rb_source_class_init (RBSourceClass *klass)
 			      G_TYPE_NONE,
 			      0);
 
+	/**
+	 * Fires when the user changes the filter, either by changing the
+	 * contents of the search box or by selecting a different browser
+	 * entry.
+	 */
 	rb_source_signals[FILTER_CHANGED] =
 		g_signal_new ("filter_changed",
 			      RB_TYPE_SOURCE,

@@ -379,7 +379,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
 	{
 		if (!strcmp (name, "entry")) {
-			RhythmDBEntryType type;
+			RhythmDBEntryType type = -1;
 			gboolean type_set = FALSE;
 			for (; *attrs; attrs +=2) {
 				if (!strcmp (*attrs, "type")) {
@@ -878,6 +878,10 @@ get_or_create_genre (RhythmDBTree *db, RhythmDBEntryType type,
 	case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
 		table = db->priv->iradio_genres;
 		break;
+	default:
+		g_assert_not_reached ();
+		table = NULL;
+		break;
 	}
 
 	genre = g_hash_table_lookup (table, name);		
@@ -986,6 +990,10 @@ remove_entry_from_album (RhythmDBTree *db, RhythmDBTreeEntry *entry)
 		break;
 	case RHYTHMDB_ENTRY_TYPE_IRADIO_STATION:
 		table = db->priv->iradio_genres;
+		break;
+	default:
+		g_assert_not_reached ();
+		table = NULL;
 		break;
 	}
 

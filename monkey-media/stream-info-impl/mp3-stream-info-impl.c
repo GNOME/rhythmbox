@@ -639,7 +639,7 @@ MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_na
 	unsigned int nstrings, j; 
 	const struct id3_frame *frame;
 	const union id3_field *field;
-	const id3_ucs4_t *ucs4;
+	const id3_ucs4_t *ucs4 = NULL;
 	id3_utf8_t *utf8 = NULL;
 
 	frame = id3_tag_findframe (tag, field_name, 0);
@@ -666,6 +666,7 @@ MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_na
 
 	if (utf8 && !g_utf8_validate (utf8, -1, NULL)) {
 		g_warning ("Invalid UTF-8 in %s field in mp3 file\n", field_name);
+		/* Should rb_unicodify really be used to convert ucs4 data to utf8? */
 		utf8 = rb_unicodify ((char *) ucs4);
 	}
 

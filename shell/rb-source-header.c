@@ -326,8 +326,12 @@ rb_source_header_filter_changed_cb (RBSource *source,
 				   RBSourceHeader *header)
 {
 	rb_debug  ("filter changed for %p", source);
-	
-	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
+	/* To add this line back in, you need to add a search_changed signal,
+	 * make RBShufflePlayOrder at least listen to it, and change the
+	 * filter_changed notifies in all of the search functions to
+	 * search_change notifies.
+	 */
+	/* rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search)); */
 }
 
 static void

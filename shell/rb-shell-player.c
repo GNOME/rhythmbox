@@ -55,7 +55,8 @@
 #include "rb-volume.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
-#include "rb-history.h"
+
+#include "rb-play-order.h"
 
 typedef enum
 {
@@ -146,6 +147,8 @@ static void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 static void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
 
+static void rb_shell_player_set_play_order (RBShellPlayer *player);
+
 
 #ifdef HAVE_MMKEYS
 static void grab_mmkey (int key_code, GdkWindow *root);
@@ -191,7 +194,7 @@ struct RBShellPlayerPrivate
 
 	gboolean have_previous_entry;
 
-	RBHistory *history;	/* holds the last <arbitrary #> songs and any enqueued songs. */
+	RBPlayOrder *play_order;
 
 	gboolean buffering;
 
@@ -219,10 +222,12 @@ enum
 {
 	PROP_0,
 	PROP_SOURCE,
+	PROP_PLAYING_SOURCE,
 	PROP_COMPONENT,
 	PROP_TRAY_COMPONENT,
 	PROP_REPEAT,
 	PROP_SHUFFLE,
+	PROP_PLAY_ORDER,
 	PROP_PLAYING,
 	PROP_BUFFERING,
 };
@@ -263,9 +268,9 @@ gconf_key_changed (GConfClient *client,guint cnxn_id,
 {
 	if (strcmp (CONF_STATE_REPEAT, entry->key) == 0) {
 		g_object_notify (G_OBJECT (player), "repeat");
-	} else 	if (strcmp (CONF_STATE_SHUFFLE, entry->key) == 0) {
-		rb_history_clear (player->priv->history);
-		g_object_notify (G_OBJECT (player), "shuffle");
+	} else if (strcmp (CONF_STATE_PLAY_ORDER, entry->key) == 0) {
+		rb_shell_player_set_play_order (player);
+		g_object_notify (G_OBJECT (player), "play-order");
 	}
 }
 
@@ -325,7 +330,11 @@ rb_shell_player_set_shuffle (RBShellPlayer *player, gboolean new_val)
 	g_object_get (G_OBJECT (player), "shuffle", &old_val, NULL);
 	if (old_val != new_val) {
 		/* The notify signal will be emitted by the gconf notifier */
-		eel_gconf_set_boolean (CONF_STATE_SHUFFLE, new_val);
+		if (new_val) {
+			eel_gconf_set_string (CONF_STATE_PLAY_ORDER, "shuffle");
+		} else {
+			eel_gconf_set_string (CONF_STATE_PLAY_ORDER, "linear");
+		}
 	}
 }
 
@@ -349,6 +358,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING_SOURCE,
+					 g_param_spec_object ("playing-source",
+							      "RBSource",
+							      "RBSource object",
+							      RB_TYPE_SOURCE,
+							      G_PARAM_READABLE));
 
 	g_object_class_install_property (object_class,
 					 PROP_COMPONENT,
@@ -379,6 +396,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       "Whether shuffle is enabled or not", 
 							       FALSE,
 							       G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_PLAY_ORDER,
+					 g_param_spec_string ("play-order", 
+							      "play-order", 
+							      "What play order to use",
+							      "linear",
+							      G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING,
 					 g_param_spec_boolean ("playing", 
@@ -432,7 +456,7 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,
 							     construct_properties));
 
-	player->priv->history = rb_history_new (player->priv->db);
+	rb_shell_player_set_play_order (player);
 
 	return G_OBJECT (player);
 }
@@ -485,10 +509,10 @@ rb_shell_player_init (RBShellPlayer *player)
 			  G_CALLBACK (buffering_end_cb),
 			  player);
 
-	eel_gconf_notification_add (CONF_STATE_SHUFFLE,
+	eel_gconf_notification_add (CONF_STATE_REPEAT,
 				    (GConfClientNotifyFunc)gconf_key_changed,
 				    player);
-	eel_gconf_notification_add (CONF_STATE_REPEAT,
+	eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
 				    (GConfClientNotifyFunc)gconf_key_changed,
 				    player);
 
@@ -590,7 +614,7 @@ rb_shell_player_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
 
-	g_object_unref (G_OBJECT (player->priv->history));
+	g_object_unref (G_OBJECT (player->priv->play_order));
 
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
@@ -688,8 +712,13 @@ rb_shell_player_set_property (GObject *object,
 		break;
 
 	case PROP_SHUFFLE:
-		eel_gconf_set_boolean (CONF_STATE_SHUFFLE, 
-				       g_value_get_boolean (value));
+		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, 
+				      g_value_get_boolean (value) ? "shuffle" : "linear");
+		break;
+
+	case PROP_PLAY_ORDER:
+		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, 
+				      g_value_get_string (value));
 		break;
 
 	default:
@@ -711,6 +740,9 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, player->priv->selected_source);
 		break;
+	case PROP_PLAYING_SOURCE:
+		g_value_set_object (value, player->priv->source);
+		break;
 	case PROP_COMPONENT:
 		g_value_set_object (value, player->priv->component);
 		break;
@@ -720,9 +752,13 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_REPEAT:
 		g_value_set_boolean (value, eel_gconf_get_boolean (CONF_STATE_REPEAT));
 		break;
-
-	case PROP_SHUFFLE:
-		g_value_set_boolean (value, eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+	case PROP_SHUFFLE: {
+		char *play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+		g_value_set_boolean (value, (strcmp (play_order, "linear") != 0));
+		g_free (play_order);
+		} break;
+	case PROP_PLAY_ORDER:
+		g_value_set_string_take_ownership (value, eel_gconf_get_string (CONF_STATE_PLAY_ORDER));
 		break;
 	case PROP_PLAYING:
 		g_value_set_boolean (value, monkey_media_player_playing (player->priv->mmplayer));
@@ -934,60 +970,32 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	}
 
 	rb_debug ("Success!");
-	rb_history_set_playing (player->priv->history, entry);
 	rb_entry_view_set_playing_entry (songs, entry);
 	rb_shell_player_play (player);
 }
 
-static RhythmDBEntry*
-rb_shell_player_get_previous (RBShellPlayer *player)
+static void
+rb_shell_player_set_play_order (RBShellPlayer *player)
 {
-	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-	RhythmDBEntry *entry;
+	static char *current_play_order = NULL;
 
-	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		rb_debug ("choosing history entry");
-		entry = rb_history_back (player->priv->history);
-	} else {
-		rb_debug ("choosing previous linked entry");
-		entry = rb_entry_view_get_previous_entry (songs);
+	char *new_play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+	if (!new_play_order) {
+		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
+		new_play_order = g_strdup ("");
 	}
 
-	return entry;
-}
+	if (current_play_order == NULL
+			|| strcmp (current_play_order, new_play_order) != 0) {
+		g_free (current_play_order);
 
-static RhythmDBEntry *
-rb_shell_player_get_next (RBShellPlayer *player)
-{
-	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-	RhythmDBEntry *entry;
+		if (player->priv->play_order != NULL)
+			g_object_unref (player->priv->play_order);
 
-	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		if ((entry = rb_history_forward (player->priv->history))) {
-			rb_debug ("choosing enqueued entry");
-		} else {
-			rb_debug ("choosing random entry");
-			entry =  rb_entry_view_get_random_entry (songs);
-		}
-	} else {
-		rb_debug ("choosing next linked entry");
-		entry = rb_entry_view_get_next_entry (songs);
+		player->priv->play_order = rb_play_order_new (new_play_order, player);
+
+		current_play_order = new_play_order;
 	}
-
-	if (entry == NULL) {
-		/* It just so happens that this only happens when shuffle is
-		 * off. This will change when we implement shuffle, but the
-		 * code to deal with it will be different.  I think it should
-		 * go in rb_entry_view_get_next_entry() */
-		/* If repeat is enabled, loop back to the start */
-		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
-				&& rb_shell_player_have_first (player, player->priv->source)) {
-			rb_debug ("No next entry, but repeat is enabled");
-			entry = rb_entry_view_get_first_entry (songs);
-		}
-	}
-
-	return entry;
 }
 
 void
@@ -1022,8 +1030,9 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 		 */
 		if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
 			rb_debug ("doing previous");
-			entry = rb_shell_player_get_previous (player);
+			entry = rb_play_order_get_previous (player->priv->play_order);
 			if (entry) {
+				rb_play_order_go_previous (player->priv->play_order);
 				rb_shell_player_set_playing_entry (player, entry);
 			} else {
 				/* Is this the right thing to do when there's no previous song? */
@@ -1045,8 +1054,9 @@ void
 rb_shell_player_do_next (RBShellPlayer *player)
 {
 	if (player->priv->source != NULL) {
-		RhythmDBEntry *entry = rb_shell_player_get_next (player);
+		RhythmDBEntry *entry = rb_play_order_get_next (player->priv->play_order);
 		if (entry) {
+			rb_play_order_go_next (player->priv->play_order);
 			rb_shell_player_set_playing_entry (player, entry);
 		} else {
 			rb_debug ("No next entry, stopping playback");
@@ -1125,15 +1135,12 @@ rb_shell_player_playpause (RBShellPlayer *player)
 				rb_debug ("choosing first selected entry");
 				entry = (RhythmDBEntry*) selection->data;
 			} else {
-				if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-					rb_debug ("choosing random entry");
-					entry = rb_entry_view_get_random_entry (songs);
-				} else {
-					entry = rb_entry_view_get_first_entry (songs);
-				}
+				entry = rb_play_order_get_next (player->priv->play_order);
 			}
-			if (entry != NULL)
+			if (entry != NULL) {
+				rb_play_order_go_next (player->priv->play_order);
 				rb_shell_player_set_playing_entry (player, entry);
+			}
 		} else {
 			rb_shell_player_play (player);
 		}
@@ -1169,10 +1176,14 @@ rb_shell_player_cmd_stop (BonoboUIComponent *component,
 static void
 rb_shell_player_sync_control_state (RBShellPlayer *player)
 {
+	char *play_order;
+	
 	rb_debug ("syncing control state");
+	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
 	rb_bonobo_set_active (player->priv->component,
 			      CMD_PATH_SHUFFLE,
-			      eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+			      strcmp (play_order, "linear") != 0);
+	g_free (play_order);
 	rb_bonobo_set_active (player->priv->component,
 			      CMD_PATH_REPEAT,
 			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
@@ -1444,16 +1455,11 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 		not_empty = TRUE;
 
+		/* Should these be up to the play order? */
 		have_previous = monkey_media_player_get_uri (player->priv->mmplayer) != NULL;
 		player->priv->have_previous_entry = (rb_entry_view_get_previous_entry (songs) != NULL);
 
-		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-			have_next = TRUE;
-		} else if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
-			have_next = TRUE;
-		} else {
-			have_next = (rb_entry_view_get_next_entry (songs) != NULL);
-		}
+		have_next = rb_play_order_has_next (player->priv->play_order);
 	}
 
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button), not_empty);
@@ -1542,6 +1548,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 				  G_CALLBACK (rb_shell_player_playing_entry_deleted_cb),
 				  player);
 	}
+
+	g_object_notify (G_OBJECT (player), "playing-source");
 
 	player->priv->song = NULL;
 	player->priv->url = NULL;

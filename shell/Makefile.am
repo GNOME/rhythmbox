@@ -38,6 +38,16 @@ rhythmbox_SOURCES =              			\
 	rb-playlist-manager.h				\
 	rb-history.c					\
 	rb-history.h					\
+	rb-play-order.c					\
+	rb-play-order.h					\
+	rb-play-order-linear.c				\
+	rb-play-order-linear.h				\
+	rb-play-order-shuffle.c				\
+	rb-play-order-shuffle.h				\
+	rb-play-order-random-equal-weights.c		\
+	rb-play-order-random-equal-weights.h		\
+	rb-play-order-random-by-age.c			\
+	rb-play-order-random-by-age.h			\
 	rb-remote.c					\
 	rb-remote.h					\
 	rb-tray-icon.c					\

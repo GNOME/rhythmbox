@@ -149,8 +149,7 @@ rb_unicodify (const char *str)
 	char_encoding = get_encoding_from_locale (getenv ("LANG"));
 	if (char_encoding == NULL)
 		ret = NULL;
-
-	if (!ret)
+	else
 		ret = g_convert (str, -1, "UTF-8", char_encoding,
 				 NULL, NULL, NULL);
 	/* Failing that, try ISO-8859-1. */

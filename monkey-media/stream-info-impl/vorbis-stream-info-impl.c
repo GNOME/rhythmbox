@@ -467,7 +467,7 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER:
 		{
-			char *tmp, **parts;
+			char *tmp;
 			int num = -1;
 
 			g_value_init (value, G_TYPE_INT);
@@ -475,13 +475,12 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 			tmp = vorbis_comment_query (impl->priv->comment, "tracktotal", 0);
 			if (tmp != NULL) {
 				g_value_set_int (value, atoi (tmp));
-				g_strfreev (parts);
 				break;
 			}
 
 			tmp = vorbis_comment_query (impl->priv->comment, "tracknumber", 0);
 			if (tmp != NULL) {
-				parts = g_strsplit (tmp, "/", -1);
+				char **parts = g_strsplit (tmp, "/", -1);
 				
 				if (parts[0] != NULL && parts[1] != NULL) {
 					num = atoi (parts[1]);
@@ -489,8 +488,8 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 				} else 
 					g_value_set_int (value, -1);
 				
+				g_strfreev (parts);
 			}
-			g_strfreev (parts);
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:

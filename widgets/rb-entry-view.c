@@ -1100,14 +1100,14 @@ rb_entry_view_sync_sorting (RBEntryView *view)
 
 	if (!strchr (sorttype, ',')) {
 		g_warning ("malformed sort data");
-		goto free_out;
+		return;
 	}
 	
 	strs = g_strsplit (sorttype, ",", 0);
 
 	column = g_hash_table_lookup (view->priv->column_key_map, strs[0]);
 	if (!column)
-		return;
+		goto free_out;
 
 	if (!strcmp ("ascending", strs[1]))
 		direction = GTK_SORT_ASCENDING;
@@ -1307,9 +1307,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		title = _("_Quality");
 		key = "Quality";
 		break;
-	case RB_ENTRY_VIEW_COL_RATING:
-		g_assert_not_reached ();
-		break;
+	/* RB_ENTRY_VIEW_COL_RATING at bottom */
 	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
 		propid = RHYTHMDB_PROP_PLAY_COUNT;
 		cell_data->propid = propid;
@@ -1327,6 +1325,11 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
 		title = _("L_ast Played");
 		key = "LastPlayed";
+		break;
+	case RB_ENTRY_VIEW_COL_RATING:
+	default:
+		g_assert_not_reached ();
+		propid = -1;
 		break;
 	}
 
@@ -1567,7 +1570,7 @@ rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 
 	if (!rhythmdb_model_entry_to_iter (view->priv->model,
 					   entry, &iter)) {
-		// If the entry isn't in the entryview, the "next" entry is the first.
+		/* If the entry isn't in the entryview, the "next" entry is the first. */
 		return rb_entry_view_get_first_entry (view);
 	}
 	

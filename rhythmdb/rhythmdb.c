@@ -1328,6 +1328,7 @@ write_encoded_gvalue (xmlNodePtr node,
 		break;
 	default:
 		g_assert_not_reached ();
+		strval = NULL;
 		break;
 	}
 
