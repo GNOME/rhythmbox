@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <ctype.h>
+#include "rb-string-helpers.h"
 
 static void rb_windows_ini_file_class_init (RBWindowsINIFileClass *klass);
 static void rb_windows_ini_file_init (RBWindowsINIFile *view);
@@ -269,24 +270,6 @@ rb_windows_ini_file_lookup (RBWindowsINIFile *inifile, const char *section, cons
 }
 
 static void
-rb_windows_ini_file_unicodify (char **str)
-{
-	char *ret;
-	int bytes_read, bytes_written;
-	if (g_utf8_validate (*str, -1, NULL))
-		return;
-	/* The defacto encoding for Windows ini files seem to default
-	 * to iso-8859-1 */
-	ret = g_convert (*str, strlen (*str), "UTF-8", "ISO-8859-1",
-			 &bytes_read, &bytes_written, NULL);
-	/* Failing that, try the locale's encoding. */
-	if (!ret)
-		ret = g_locale_to_utf8 (*str, strlen (*str), &bytes_read, &bytes_written, NULL);
-	g_free (*str);
-	*str = ret;
-}
-
-static void
 rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 				       FILE *stream)
 {
@@ -321,9 +304,11 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 			/* Trim the ']', and lowercase */
 			cursection = g_strstrip (cursection);
 			cursection[strlen(cursection)-1] = '\0';
-			rb_windows_ini_file_unicodify (&cursection);
-			if (!cursection)
+			tmp = rb_unicodify (cursection, FALSE);
+			if (!tmp)
 				goto bad_encoding;
+			g_free (cursection);
+			cursection = tmp;
 			tmp = g_utf8_strdown (cursection, -1);
 			g_free (cursection);
 			cursection = tmp;
@@ -350,9 +335,11 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 			/* Trim the '=', and lowercase */
 			curident = g_strstrip (curident);
 			curident[strlen(curident)-1] = '\0';
-			rb_windows_ini_file_unicodify (&curident);
-			if (!curident)
+			tmp = rb_unicodify (curident, FALSE);
+			if (!tmp)
 				goto bad_encoding;
+			g_free (curident);
+			curident = tmp;
 			tmp = g_utf8_strdown (curident, -1);
 			g_free (curident);
 			curident = tmp;
@@ -364,9 +351,11 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 				goto lose;
 			}
 			curvalue[strlen(curvalue)-1] = '\0';
-			rb_windows_ini_file_unicodify (&curvalue);
-			if (!curvalue)
+			tmp = rb_unicodify (curvalue, FALSE);
+			if (!tmp)
 				goto bad_encoding;
+			g_free (curvalue);
+			curvalue = tmp;
 			g_hash_table_insert (cursectionhash ? cursectionhash : defaulthash, curident, curvalue);
 		}
 		else
