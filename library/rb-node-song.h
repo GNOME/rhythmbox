@@ -42,7 +42,8 @@ enum
 	RB_NODE_SONG_PROP_FILE_SIZE         = 11,
 	RB_NODE_SONG_PROP_LOCATION          = 12,
 	RB_NODE_SONG_PROP_MTIME             = 13,
-	RB_NODE_SONG_PROP_RESERVED          = 14
+	RB_NODE_SONG_PROP_RESERVED          = 14,
+	RB_NODE_SONG_PROP_RATING	    = 15
 };
 
 #define RB_TYPE_NODE_SONG         (rb_node_song_get_type ())

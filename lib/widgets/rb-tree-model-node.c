@@ -395,6 +395,10 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		return G_TYPE_BOOLEAN;
+		break;
+	case RB_TREE_MODEL_NODE_COL_RATING:
+		return G_TYPE_INT;
+		break;
 	default:
 		g_assert_not_reached ();
 		return G_TYPE_INVALID;
@@ -485,6 +489,17 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 			g_value_set_object (value, model->priv->playing_pixbuf);
 		else
 			g_value_set_object (value, NULL);
+		break;
+	case RB_TREE_MODEL_NODE_COL_RATING:
+		{
+			int rating  = rb_node_get_property_int (node, 
+								RB_NODE_SONG_PROP_RATING);
+			g_value_init (value, G_TYPE_INT);
+			if (rating < 0) 
+				rating = 0;
+
+			g_value_set_int (value, rating);
+		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 		rb_node_get_property (node,
@@ -777,6 +792,7 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_ALBUM,        "RB_TREE_MODEL_NODE_COL_ALBUM",        "album" },
 			{ RB_TREE_MODEL_NODE_COL_GENRE,        "RB_TREE_MODEL_NODE_COL_GENRE",        "genre" },
 			{ RB_TREE_MODEL_NODE_COL_DURATION,     "RB_TREE_MODEL_NODE_COL_DURATION",     "duration" },
+			{ RB_TREE_MODEL_NODE_COL_RATING,       "RB_TREE_MODEL_NODE_COL_RATING",       "rating" },
 			{ RB_TREE_MODEL_NODE_COL_PRIORITY,     "RB_TREE_MODEL_NODE_COL_PRIORITY",     "priority" },
 			{ RB_TREE_MODEL_NODE_COL_VISIBLE,      "RB_TREE_MODEL_NODE_COL_VISIBLE",      "visible" },
 			{ 0, 0, 0 }

@@ -43,6 +43,9 @@ G_BEGIN_DECLS
 #define RB_STOCK_VOLUME_MAX    "rhythmbox-volume-max"
 #define RB_STOCK_VOLUME_MUTE   "rhythmbox-volume-mute"
 #define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
+#define RB_STOCK_STAR          "rhythmbox-star"
+#define RB_STOCK_DOT           "rhythmbox-dot"
+#define RB_STOCK_BLANK         "rhythmbox-blank"
 
 void rb_stock_icons_init (void);
 

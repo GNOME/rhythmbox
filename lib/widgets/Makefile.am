@@ -26,6 +26,8 @@ librbwidgets_la_SOURCES =				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
 	rb-cell-renderer-pixbuf.h			\
+	rb-cell-renderer-rating.c			\
+	rb-cell-renderer-rating.h			\
 	rb-song-info.c					\
 	rb-song-info.h					\
 	rb-tree-model-sort.c				\

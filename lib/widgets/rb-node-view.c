@@ -38,6 +38,7 @@
 #include "rb-node-view.h"
 #include "rb-dialog.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-cell-renderer-rating.h"
 #include "rb-node-song.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
@@ -96,6 +97,9 @@ static void rb_node_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
 						    GConfEntry *entry,
 						    gpointer user_data);
+static void rb_node_view_rated_cb (RBCellRendererRating *cellrating,
+				   RBRatingResult *result,
+				   gpointer user_data);
 static void filter_changed_cb (RBNodeFilter *filter,
 		               RBNodeView *view);
 
@@ -633,18 +637,7 @@ rb_node_view_construct (RBNodeView *view)
 
 		/* so we got all info, now we can actually build the column */
 		gcolumn = gtk_tree_view_column_new ();
-		if (column != RB_TREE_MODEL_NODE_COL_PLAYING)
-		{
-			renderer = gtk_cell_renderer_text_new ();
-			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-			gtk_tree_view_column_set_attributes (gcolumn, renderer,
-							     "text", column,
-							     NULL);
-			gtk_tree_view_column_set_resizable (gcolumn, resizable);
-			gtk_tree_view_column_set_sizing (gcolumn,
-							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-		}
-		else
+		if (column == RB_TREE_MODEL_NODE_COL_PLAYING)
 		{
 			int width;
 			
@@ -656,6 +649,34 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
 			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 			gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
+		}
+		else if (column == RB_TREE_MODEL_NODE_COL_RATING)
+		{
+			int width;
+			
+			renderer = rb_cell_renderer_rating_new ();
+			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
+			gtk_tree_view_column_set_attributes (gcolumn, renderer,
+							     "rating", column,
+							     NULL);
+			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
+			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
+			gtk_tree_view_column_set_fixed_width (gcolumn, width * 5 + 5);
+
+			g_signal_connect (renderer, "rated",
+					  G_CALLBACK (rb_node_view_rated_cb), view);
+
+		}
+		else
+		{
+			renderer = gtk_cell_renderer_text_new ();
+			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
+			gtk_tree_view_column_set_attributes (gcolumn, renderer,
+							     "text", column,
+							     NULL);
+			gtk_tree_view_column_set_resizable (gcolumn, resizable);
+			gtk_tree_view_column_set_sizing (gcolumn,
+							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 		}
 
 		if (title != NULL)
@@ -718,6 +739,36 @@ rb_node_view_construct (RBNodeView *view)
 	}
 
 	xmlFreeDoc (doc);
+}
+
+static void
+rb_node_view_rated_cb (RBCellRendererRating *cellrating,
+		       RBRatingResult *result,
+		       gpointer user_data)
+{
+	RBNodeView *view = (RBNodeView *) user_data;
+	GtkTreeIter sort_iter, filter_iter, node_iter;
+	GtkTreePath *path;
+	RBNode *node;
+	GValue value = { 0, };
+
+	g_return_if_fail (result != NULL);
+	g_return_if_fail (result->rating >= 1 && result->rating <= 5 );
+	g_return_if_fail (result->path != NULL);
+
+	path = gtk_tree_path_new_from_string (result->path);
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter, path);
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&filter_iter, &sort_iter);
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &node_iter, &filter_iter);
+	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &node_iter);
+
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, result->rating);
+	rb_node_set_property (node,
+			      RB_NODE_SONG_PROP_RATING,
+			      &value);
 }
 
 static void
@@ -1047,6 +1098,14 @@ rb_node_view_sort_func (GtkTreeModel *model,
 			retval = g_utf8_collate (folda, foldb);
 			g_free (folda);
 			g_free (foldb);
+			break;
+		case G_TYPE_INT:
+			if (g_value_get_int (&a_value) < g_value_get_int (&b_value))
+				retval = 1;
+			else if (g_value_get_int (&a_value) == g_value_get_int (&b_value))
+				retval = 0;
+			else
+				retval = -1;
 			break;
 		case G_TYPE_OBJECT:
 			if ((g_value_get_object (&a_value) == NULL) && (g_value_get_object (&b_value) != NULL))
