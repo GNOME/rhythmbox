@@ -34,6 +34,7 @@
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
+#include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-volume.h"
@@ -99,14 +100,12 @@ static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
+static void impl_delete (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_can_pause (RBSource *player);
-static gboolean impl_have_artist_album	(RBSource *player);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
-static gboolean impl_have_url (RBSource *player);
 
 /* Misc */
 static const char *impl_get_status_fast (RBLibrarySource *source);
@@ -230,11 +229,15 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_extra_views = impl_get_extra_views;
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = impl_can_pause;
-	source_class->impl_have_artist_album = impl_have_artist_album;
+	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_delete = impl_delete;
+	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_get_artist = impl_get_artist;
 	source_class->impl_get_album = impl_get_album;
-	source_class->impl_have_url = impl_have_url;
+	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -715,18 +718,6 @@ impl_get_config_widget (RBSource *asource)
 	return source->priv->config_widget;
 }
 
-gboolean
-impl_can_pause (RBSource *source)
-{
-	return TRUE;
-}
-
-static gboolean
-impl_have_artist_album (RBSource *source)
-{
-	return TRUE;
-}
-
 static const char *
 impl_get_artist (RBSource *asource)
 {
@@ -753,12 +744,6 @@ impl_get_album (RBSource *asource)
 		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
 	else
 		return NULL;
-}
-
-static gboolean
-impl_have_url (RBSource *source)
-{
-	return FALSE;
 }
 
 static const char *
@@ -866,6 +851,16 @@ rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 	index = g_slist_index (source->priv->browser_views_group, widget);
 
 	eel_gconf_set_integer (CONF_UI_LIBRARY_BROWSER_VIEWS, index);
+}
+
+static void
+impl_delete (RBSource *asource)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	GList *l;
+
+	for (l = rb_node_view_get_selection (source->priv->songs); l != NULL; l = g_list_next (l))
+		rb_library_remove_node (source->priv->library, l->data);
 }
 
 static void

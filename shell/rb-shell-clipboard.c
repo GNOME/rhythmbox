@@ -21,6 +21,7 @@
 
 #include "rb-shell-clipboard.h"
 #include "rb-node.h"
+#include "rb-debug.h"
 #include "rb-bonobo-helpers.h"
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
@@ -51,6 +52,8 @@ static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static void node_destroyed_cb (RBNode *node,
 			       RBShellClipboard *clipboard);
+static void rb_shell_clipboard_nodeview_changed_cb (RBNodeView *view,
+						    RBShellClipboard *clipboard);
 
 #define CMD_PATH_CUT    "/commands/Cut"
 #define CMD_PATH_COPY   "/commands/Copy"
@@ -184,9 +187,28 @@ rb_shell_clipboard_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_SOURCE:
+		if (clipboard->priv->source != NULL)
+		{
+			RBNodeView *songs = rb_source_get_node_view (clipboard->priv->source);
+
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_clipboard_nodeview_changed_cb),
+							      clipboard);
+		}
 		clipboard->priv->source = g_value_get_object (value);
+		rb_debug ("selected source %p", g_value_get_object (value));
 
 		rb_shell_clipboard_sync (clipboard);
+
+		if (clipboard->priv->source != NULL)
+		{
+			RBNodeView *songs = rb_source_get_node_view (clipboard->priv->source);
+
+			g_signal_connect (G_OBJECT (songs),
+					  "changed",
+					  G_CALLBACK (rb_shell_clipboard_nodeview_changed_cb),
+					  clipboard);
+		}
 		break;
 	case PROP_COMPONENT:
 		clipboard->priv->component = g_value_get_object (value);
@@ -254,6 +276,8 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_paste = have_selection;
 	gboolean can_delete = have_selection;	
 	gboolean can_copy = have_selection;	
+
+	rb_debug ("syncing clipboard");
 	
 	if (have_selection)
 		can_cut = can_paste = rb_source_can_cut (clipboard->priv->source);
@@ -267,8 +291,8 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 				 CMD_PATH_CUT,
 				 can_cut);
 	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_PASTE,
-				 can_paste);
+				 CMD_PATH_DELETE,
+				 can_delete);
 	rb_bonobo_set_sensitive (clipboard->priv->component,
 				 CMD_PATH_COPY,
 				 can_copy);
@@ -276,7 +300,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	can_paste = can_paste && g_list_length (clipboard->priv->nodes) > 0;
 
 	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_DELETE,
+				 CMD_PATH_PASTE,
 				 can_paste);
 	/* We do it here because the song list view doesnt know about
 	 * the global paste status */
@@ -289,6 +313,7 @@ rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
 			    RBShellClipboard *clipboard,
 			    const char *verbname)
 {
+	rb_debug ("cut");
 	rb_shell_clipboard_set (clipboard,
 				rb_source_cut (clipboard->priv->source));
 }
@@ -298,6 +323,7 @@ rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
 			     RBShellClipboard *clipboard,
 			     const char *verbname)
 {
+	rb_debug ("copy");
 	rb_shell_clipboard_set (clipboard,
 				rb_source_copy (clipboard->priv->source));
 }
@@ -307,6 +333,7 @@ rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 			      RBShellClipboard *clipboard,
 			      const char *verbname)
 {
+	rb_debug ("paste");
 	rb_source_paste (clipboard->priv->source, clipboard->priv->nodes);
 }
 
@@ -315,6 +342,7 @@ rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
 	                       RBShellClipboard *clipboard,
 			       const char *verbname)
 {
+	rb_debug ("delete");
 	rb_source_delete (clipboard->priv->source);
 }
 
@@ -353,5 +381,13 @@ node_destroyed_cb (RBNode *node,
 {
 	clipboard->priv->nodes = g_list_remove (clipboard->priv->nodes, node);
 
+	rb_shell_clipboard_sync (clipboard);
+}
+
+static void
+rb_shell_clipboard_nodeview_changed_cb (RBNodeView *view,
+					RBShellClipboard *clipboard)
+{
+	rb_debug ("nodeview changed");
 	rb_shell_clipboard_sync (clipboard);
 }

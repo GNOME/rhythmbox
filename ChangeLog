@@ -1,5 +1,24 @@
 2003-07-28  Colin Walters  <walters@verbum.org>
 
+	* HACKING:
+	* lib/Makefile.am:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_set_property),
+	(rb_shell_clipboard_sync), (rb_shell_clipboard_cmd_cut),
+	(rb_shell_clipboard_cmd_copy), (rb_shell_clipboard_cmd_paste),
+	(rb_shell_clipboard_cmd_delete), (node_destroyed_cb),
+	(rb_shell_clipboard_nodeview_changed_cb):
+	* shell/rb-shell-player.c:
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(impl_get_browser_key), (impl_delete):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_browser_views_activated_cb), (impl_delete):
+	* sources/rb-source.c: (rb_source_class_init), (default_copy):
+	* sources/rb-source.h:
+
+	More cut&paste stuff.  Deletion appears to work now.
+
+2003-07-28  Colin Walters  <walters@verbum.org>
+
 	* AUTHORS:
 	* DOCUMENTERS:
 	* HACKING:

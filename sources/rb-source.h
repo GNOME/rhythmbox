@@ -96,6 +96,8 @@ typedef struct
 				   
 } RBSourceClass;
 
+typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
+
 GType		rb_source_get_type		(void);
 
 void		rb_source_notify_filter_changed	(RBSource *source);

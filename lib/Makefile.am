@@ -29,6 +29,8 @@ librb_la_SOURCES =					\
 	rb-cut-and-paste-code.h				\
 	rb-thread-helpers.c				\
 	rb-thread-helpers.h				\
+	rb-util.c					\
+	rb-util.h					\
 	rb-windows-ini-file.c				\
 	rb-windows-ini-file.h				\
 	rb-enums.h					\

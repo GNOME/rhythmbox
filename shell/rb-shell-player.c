@@ -133,7 +133,6 @@ static void cancel_buffering_clicked_cb (GtkWidget *button,
 					 gpointer data);
 void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
-static gboolean have_song_selection (RBShellPlayer *shell);
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"

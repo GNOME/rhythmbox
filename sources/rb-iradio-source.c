@@ -34,6 +34,7 @@
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
+#include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
@@ -85,10 +86,8 @@ static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
+static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static gboolean impl_can_pause (RBSource *player);
-static gboolean impl_have_artist_album	(RBSource *player);
-static gboolean impl_have_url (RBSource *player);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static void impl_buffering_done (RBSource *asource);
 
@@ -202,11 +201,13 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_search = impl_search;
 	source_class->impl_get_node_view = impl_get_node_view;
+	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_delete = impl_delete;
 	source_class->impl_song_properties = impl_song_properties;
-	source_class->impl_can_pause = impl_can_pause;
+	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_handle_eos = impl_handle_eos;
-	source_class->impl_have_artist_album = impl_have_artist_album;
-	source_class->impl_have_url = impl_have_url;
+	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_buffering_done = impl_buffering_done;
 
 	g_object_class_install_property (object_class,
@@ -420,24 +421,6 @@ impl_get_node_view (RBSource *asource)
 	return source->priv->stations;
 }
 
-gboolean
-impl_can_pause (RBSource *source)
-{
-	return FALSE;
-}
-
-static gboolean
-impl_have_artist_album (RBSource *source)
-{
-	return FALSE;
-}
-
-static gboolean
-impl_have_url (RBSource *source)
-{
-	return TRUE;
-}
-
 static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
@@ -504,6 +487,16 @@ static const char *
 impl_get_browser_key (RBSource *asource)
 {
 	return CONF_STATE_SHOW_BROWSER;
+}
+
+static void
+impl_delete (RBSource *asource)
+{
+	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+	GList *l;
+
+	for (l = rb_node_view_get_selection (source->priv->stations); l != NULL; l = g_list_next (l))
+		rb_iradio_backend_remove_node (source->priv->backend, l->data);
 }
 
 static void

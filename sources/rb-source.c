@@ -42,13 +42,14 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
-const char * default_get_browser_key (RBSource *status);
-GList *default_get_extra_views (RBSource *source);
-gboolean default_can_cut (RBSource *source);
-void default_song_properties (RBSource *source);
-GtkWidget * default_get_config_widget (RBSource *source);
-RBSourceEOFType default_handle_eos (RBSource *source);
-void default_buffering_done  (RBSource *source);
+static const char * default_get_browser_key (RBSource *status);
+static GList *default_get_extra_views (RBSource *source);
+static gboolean default_can_cut (RBSource *source);
+static GList *default_copy (RBSource *source);
+static void default_song_properties (RBSource *source);
+static GtkWidget * default_get_config_widget (RBSource *source);
+static RBSourceEOFType default_handle_eos (RBSource *source);
+static void default_buffering_done  (RBSource *source);
 
 struct RBSourcePrivate
 {
@@ -125,6 +126,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_can_cut = default_can_cut;
 	klass->impl_can_delete = default_can_cut;
 	klass->impl_can_copy = default_can_cut;
+	klass->impl_copy = default_copy;
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_buffering_done = default_buffering_done;
@@ -278,7 +280,7 @@ rb_source_get_status (RBSource *status)
 	return klass->impl_get_status (status);
 }
 
-const char *
+static const char *
 default_get_browser_key (RBSource *status)
 {
 	return NULL;
@@ -312,7 +314,7 @@ rb_source_get_node_view (RBSource *source)
 	return klass->impl_get_node_view (source);
 }
 
-GList *
+static GList *
 default_get_extra_views (RBSource *source)
 {
 	return NULL;
@@ -350,7 +352,7 @@ rb_source_search (RBSource *source, const char *text)
 	klass->impl_search (source, text);
 }
 
-GtkWidget *
+static GtkWidget *
 default_get_config_widget (RBSource *source)
 {
 	return NULL;
@@ -364,7 +366,7 @@ rb_source_get_config_widget (RBSource *source)
 	return klass->impl_get_config_widget (source);
 }
 
-gboolean
+static gboolean
 default_can_cut (RBSource *source)
 {
 	return FALSE;
@@ -401,6 +403,12 @@ rb_source_cut (RBSource *source)
 
 	return klass->impl_cut (source);
 }
+
+static GList *
+default_copy (RBSource *source)
+{
+	return g_list_copy (rb_node_view_get_selection (rb_source_get_node_view (source)));
+}
 	
 GList *
 rb_source_copy (RBSource *source)
@@ -426,7 +434,7 @@ rb_source_delete (RBSource *source)
 	klass->impl_delete (source);
 }
 
-void
+static void
 default_song_properties (RBSource *source)
 {
 	rb_error_dialog (_("No properties available."));
@@ -448,7 +456,7 @@ rb_source_can_pause (RBSource *source)
 	return klass->impl_can_pause (source);
 }
 
-RBSourceEOFType
+static RBSourceEOFType
 default_handle_eos (RBSource *source)
 {
 	return RB_SOURCE_EOF_NEXT;
@@ -494,7 +502,7 @@ rb_source_have_url (RBSource *source)
 	return klass->impl_have_url (source);
 }
 
-void
+static void
 default_buffering_done  (RBSource *source)
 {
 	rb_debug ("No implementation of buffering_done for active source");
