@@ -866,18 +866,25 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 static void
 rb_shell_player_playpause (RBShellPlayer *player)
 {
-	if (player->priv->playbutton_state == PLAY_BUTTON_STOP)
+	switch (player->priv->playbutton_state) {
+	case PLAY_BUTTON_STOP:
+		rb_debug ("setting playing source to NULL");
 		rb_shell_player_set_playing_source (player, NULL);
-	else if (monkey_media_player_playing (player->priv->mmplayer)) {
+		break;
+	case PLAY_BUTTON_PAUSE:
+		rb_debug ("pausing mm player");
 		monkey_media_player_pause (player->priv->mmplayer);
-	} else {
+		break;
+	case PLAY_BUTTON_PLAY:
+	{
 		RBNode *node;
 		if (player->priv->source == NULL) {
 			/* no current stream, pull one in from the currently
 			 * selected source */
+			rb_debug ("no playing source, using selected source");
 			rb_shell_player_set_playing_source (player, player->priv->selected_source);
 		}
-		
+
 		node = rb_shell_player_get_playing_node (player);
 		if (!node) {
 			RBNodeView *songs = rb_source_get_node_view (player->priv->source);
@@ -887,6 +894,10 @@ rb_shell_player_playpause (RBShellPlayer *player)
 		} else {
 			rb_shell_player_play (player);
 		}
+	}
+	break;
+	default:
+		g_assert_not_reached ();
 	}
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -1251,8 +1262,10 @@ rb_shell_player_set_playing_source (RBShellPlayer *player,
 	if (player->priv->source == source && source != NULL)
 		return;
 
-	if (player->priv->source != NULL && source == NULL) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);	
+	/* Stop the already playing source. */
+	if (player->priv->source != NULL) {
+		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		rb_debug ("source is already playing, stopping it");
 		rb_node_view_set_playing_node (songs, NULL);
 		rb_node_view_set_playing (songs, FALSE);
 	}
