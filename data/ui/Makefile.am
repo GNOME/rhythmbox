@@ -1,11 +1,7 @@
 ## arch-tag: Automake rules for XML user interface definition stuff
 
 uixmldir = $(datadir)/gnome-2.0/ui
-uixml_in_files = rhythmbox-ui.xml.in
-uixml_DATA = $(uixml_in_files:.xml.in=.xml)
+uixml_DATA = rhythmbox-ui.xml
 
-@INTLTOOL_XML_RULE@
+EXTRA_DIST = rhythmbox-ui.xml
 
-EXTRA_DIST = $(uixml_in_files)
-
-CLEANFILES = rhythmbox-ui.xml
