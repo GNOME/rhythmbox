@@ -8,7 +8,7 @@
   <!ENTITY user-guide SYSTEM "user-guide.xml">
   <!ENTITY version "0.0.3">
   <!ENTITY date "08.08.2003">
-  <!ENTITY application "<application>Music Player</application>">
+  <!ENTITY application "Music Player">
   <!ENTITY nyi "<note><para>Not yet implemented</para></note>">
   <!ENTITY playlist "playlist">
   <!ENTITY audio-formats "MP3, FLAC or Ogg/Vorbis">
@@ -48,7 +48,7 @@
 <!-- appropriate code -->
 
   <articleinfo>
-    <title>&application; Manual</title>
+    <title><application>&application;</application> Manual</title>
     <copyright>
       <year>2002</year>
       <holder>Mark Finlay</holder>
@@ -151,34 +151,46 @@
    </indexterm>
 
   <sect2 id="aboutsk">
-   <title>About &application;</title>
+      <title>About <application>&application;</application></title>
    <para>	
-&application; is a ID3 organized, music library and player for your &audio-formats; music files.
+	<application>&application;</application> is a ID3 organized, music library and player for your &audio-formats; music files.
 <!--
 &application; is a music player that lets you do everything from importing your audio cds into &audio-formats; format, to playing these music files and other music files you have. You can play your music with an assortment of visualization plugins and burn audio and MP3/OGG cds from your music files. It's a one-stop shopping application for all your music needs. -->
 
 </para>
 <para>
-Current &application; features include:
+	Current <application>&application;</application> features include:
 </para>
 <itemizedlist>
 	<listitem>
+	  <para>
 	Play &audio-formats; music files from your ID3 organized Library.
+	  </para>
 	</listitem>
 	<listitem>
+          <para>
 	Display information on the songs through meta-data reading.
+	  </para>
 	</listitem>
 	<listitem>
+	  <para>
 	Display songs in an organized view.
+	    </para>
 	</listitem>
 	<listitem>
+	  <para>
 	Create &playlist; by dragging and dropping from the Library view.
+	    </para>
 	</listitem>
 	<listitem>
+	  <para>
 	Search for entries in the Library.
+	    </para>
 	</listitem>
 	<listitem>
-	Listen to Internet radio stations. 
+	  <para>
+	Listen to Internet radio stations.
+	    </para>
 	</listitem>
 <!--	<listitem>
 	Visual effects to accompany the audio output.
@@ -198,7 +210,7 @@ Current &application; features include:
    <title>About this Document</title>
 
 <para>
-     This is the &application; User Guide.
+	This is the <application>&application;</application> User Guide.
    </para>
    <para>
      This package is maintained in <ulink type="http"
