@@ -636,6 +636,8 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 {
 	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
 	RBSource *playlist;
+	RBQueryCreatorLimitType type;
+	guint limit, limit_count = 0, limit_size = 0;
 	
 	switch (gtk_dialog_run (GTK_DIALOG (creator)))
 	{
@@ -645,10 +647,15 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 		return;
 	}
 
+	rb_query_creator_get_limit (creator, &type, &limit);
+	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
+		limit_count = limit;
+	if (type == RB_QUERY_CREATOR_LIMIT_MB)
+		limit_size = limit;
 	playlist = rb_playlist_manager_new_playlist (mgr, TRUE);
 	rb_playlist_source_set_query (RB_PLAYLIST_SOURCE (playlist),
 				      rb_query_creator_get_query (creator),
-				      rb_query_creator_get_limit (creator));
+				      limit_count, limit_size);
 	gtk_widget_destroy (GTK_WIDGET (creator));	
 }
 

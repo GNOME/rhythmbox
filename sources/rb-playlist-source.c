@@ -419,8 +419,10 @@ rb_playlist_source_get_model (RBPlaylistSource *source)
 }
 
 void
-rb_playlist_source_set_query (RBPlaylistSource *source, GPtrArray *query,
-			      guint limit)
+rb_playlist_source_set_query (RBPlaylistSource *source,
+			      GPtrArray *query,
+			      guint limit_count,
+			      guint limit_mb)
 {
 	RhythmDBQueryModel *query_model;
 	GtkTreeModel *model;
@@ -429,7 +431,9 @@ rb_playlist_source_set_query (RBPlaylistSource *source, GPtrArray *query,
 
 	source->priv->model = query_model
 		= rhythmdb_query_model_new_empty (source->priv->db);
-	g_object_set (G_OBJECT (source->priv->model), "max-size", limit, NULL);
+	g_object_set (G_OBJECT (source->priv->model),
+		      "max-count", limit_count,
+		      "max-size", limit_mb, NULL);
 
 	model = GTK_TREE_MODEL (query_model);
 
@@ -724,18 +728,29 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	if (source->priv->automatic) {
 		GPtrArray *query;
 		gchar *limit_str;
-		guint limit;
+		guint limit_count = 0;
+		guint limit_mb = 0;
 
 		child = node->children;
 		while (xmlNodeIsText (child))
 			child = child->next;
 
 		query = rhythmdb_query_deserialize (db, child);
-		limit_str = xmlGetProp (node, "limit");
-		limit = atoi (limit_str);
-
-		rb_playlist_source_set_query (source, query, limit);
-		g_free (limit_str);
+		limit_str = xmlGetProp (node, "limit-count");
+		if (!limit_str) /* Backwards compatibility */
+			limit_str = xmlGetProp (node, "limit");
+		if (limit_str) {
+			limit_count = atoi (limit_str);
+			g_free (limit_str);
+		}
+		limit_str = xmlGetProp (node, "limit-size");
+		if (limit_str) {
+			limit_mb = atoi (limit_str);
+			g_free (limit_str);
+		}
+		rb_playlist_source_set_query (source, query,
+					      limit_count,
+					      limit_mb);
 	} else {
 		for (child = node->children; child; child = child->next) {
 			char *location;
@@ -792,14 +807,19 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 						   &iter));
 	} else {
 		GPtrArray *query;
-		guint limit;
+		guint max_count;
+		guint max_size_mb;
 		char *limit_str;
 
-		g_object_get (G_OBJECT (source->priv->model), "max-size", &limit,
+		g_object_get (G_OBJECT (source->priv->model),
+			      "max-count", &max_count,
+			      "max-size", &max_size_mb,
 			      "query", &query, NULL);
-		limit_str = g_strdup_printf ("%d", limit);
-		
-		xmlSetProp (node, "limit", limit_str);
+		limit_str = g_strdup_printf ("%d", max_count);
+		xmlSetProp (node, "limit-count", limit_str);
+		g_free (limit_str);
+		limit_str = g_strdup_printf ("%d", max_size_mb);
+		xmlSetProp (node, "limit-size", limit_str);
 		g_free (limit_str);
 		rhythmdb_query_serialize (source->priv->db, query, node);
 	}

@@ -126,7 +126,8 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
-	guint max_size;
+	guint max_size_mb;
+	guint max_count;
 
 	gboolean cancelled;
 
@@ -150,6 +151,7 @@ enum
 	PROP_SORT_FUNC,
 	PROP_SORT_DATA,
 	PROP_MAX_SIZE,
+	PROP_MAX_COUNT,
 };
 
 enum
@@ -282,7 +284,15 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 					 PROP_MAX_SIZE,
 					 g_param_spec_int ("max-size",
 							   "maxsize",
-							   "maximum size",
+							   "maximum size (MB)",
+							   0, G_MAXINT, 0,
+							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_MAX_COUNT,
+					 g_param_spec_int ("max-count",
+							   "maxcount",
+							   "maximum count (songs)",
 							   0, G_MAXINT, 0,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
@@ -380,7 +390,10 @@ rhythmdb_query_model_set_property (GObject *object,
 		model->priv->sort_user_data = g_value_get_pointer (value);
 		break;
 	case PROP_MAX_SIZE:
-		model->priv->max_size = g_value_get_int (value);
+		model->priv->max_size_mb = g_value_get_int (value);
+		break;
+	case PROP_MAX_COUNT:
+		model->priv->max_count = g_value_get_int (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -411,7 +424,10 @@ rhythmdb_query_model_get_property (GObject *object,
 		g_value_set_pointer (value, model->priv->sort_user_data);
 		break;
 	case PROP_MAX_SIZE:
-		g_value_set_int (value, model->priv->max_size);
+		g_value_set_int (value, model->priv->max_size_mb);
+		break;
+	case PROP_MAX_COUNT:
+		g_value_set_int (value, model->priv->max_count);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -531,9 +547,10 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				     RhythmDBQueryModel *model)
 {
 	if (G_LIKELY (model->priv->query)) {
-		if (model->priv->max_size > 0
-		    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
+		if (model->priv->max_count > 0
+		    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
 			return;
+		/* Check size later */
 		
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
 			rhythmdb_query_model_add_entry (model, entry);
@@ -578,9 +595,10 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
 	struct RhythmDBQueryModelUpdate *update;
 
-	if (model->priv->max_size > 0
-	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
+	if (model->priv->max_count > 0
+	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
 		return;
+	/* Check size later */
 
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED;
@@ -667,12 +685,27 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
 		{
+			long size;
+			long duration;
+
 			/* we check again if the entry already exists in the hash table */
 			if (g_hash_table_lookup (model->priv->reverse_map, update->entry) != NULL)
 				break;
 
-			if (model->priv->max_size > 0
-			    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
+			if (model->priv->max_count > 0
+			    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
+				break;
+
+			rhythmdb_read_lock (model->priv->db);
+			size = rhythmdb_entry_get_long (model->priv->db, update->entry,
+							RHYTHMDB_PROP_FILE_SIZE);
+			duration = rhythmdb_entry_get_long (model->priv->db,
+							    update->entry,
+							    RHYTHMDB_PROP_DURATION);
+			rhythmdb_read_unlock (model->priv->db);
+
+			if (model->priv->max_size_mb > 0
+			    && ((model->priv->total_size + size) / (1024*1024)) >= model->priv->max_size_mb)
 				break;
 
 			if (model->priv->sort_func)
@@ -690,12 +723,8 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 					     update->entry,
 					     ptr);
 
-			rhythmdb_read_lock (model->priv->db);
-			model->priv->total_duration += rhythmdb_entry_get_long (model->priv->db, update->entry,
-										RHYTHMDB_PROP_DURATION);
-			model->priv->total_size += rhythmdb_entry_get_long (model->priv->db, update->entry,
-									    RHYTHMDB_PROP_FILE_SIZE);
-			rhythmdb_read_unlock (model->priv->db);
+			model->priv->total_duration += duration;
+			model->priv->total_size += size;
 
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 							      &iter);

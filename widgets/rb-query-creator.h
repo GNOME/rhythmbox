@@ -48,13 +48,21 @@ typedef struct
 	GtkDialogClass parent_class;
 } RBQueryCreatorClass;
 
+typedef enum
+{
+	RB_QUERY_CREATOR_LIMIT_COUNT,
+	RB_QUERY_CREATOR_LIMIT_MB,
+} RBQueryCreatorLimitType;	
+
 GType		rb_query_creator_get_type	(void);
 
 GtkWidget *	rb_query_creator_new		(RhythmDB *db);
 
 GPtrArray *	rb_query_creator_get_query	(RBQueryCreator *dlg);
 
-guint		rb_query_creator_get_limit	(RBQueryCreator *dlg);
+void		rb_query_creator_get_limit	(RBQueryCreator *dlg,
+						 RBQueryCreatorLimitType *type,
+						 guint *limit);
 
 G_END_DECLS
 

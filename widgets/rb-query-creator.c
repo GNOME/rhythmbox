@@ -380,13 +380,31 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 	return query;
 }
 
-guint
-rb_query_creator_get_limit (RBQueryCreator *dlg)
+void
+rb_query_creator_get_limit (RBQueryCreator *dlg, RBQueryCreatorLimitType *type,
+			    guint *limit)
 {
+	guint limitpos;
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dlg->priv->limit_check)))
-		return atoi (gtk_entry_get_text (GTK_ENTRY (dlg->priv->limit_entry)));
-
-	return 0;
+		*limit = atoi (gtk_entry_get_text (GTK_ENTRY (dlg->priv->limit_entry)));
+	else
+		*limit = 0;
+	limitpos = gtk_option_menu_get_history (GTK_OPTION_MENU (dlg->priv->limit_option));
+	switch (limitpos)
+	{
+	case 0:
+		*type = RB_QUERY_CREATOR_LIMIT_COUNT;
+		break;
+	case 1:
+		*type = RB_QUERY_CREATOR_LIMIT_MB;
+		break;
+	case 2:
+		*type = RB_QUERY_CREATOR_LIMIT_MB;
+		*limit *= 1000;
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 static void

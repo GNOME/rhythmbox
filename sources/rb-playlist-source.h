@@ -29,6 +29,7 @@
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rb-library-source.h"
+#include "rb-query-creator.h"
 #include "rhythmdb-query-model.h"
 
 G_BEGIN_DECLS
@@ -63,8 +64,10 @@ RBSource *	rb_playlist_source_new_from_xml	(RhythmDB *db,
 
 RhythmDBQueryModel *rb_playlist_source_get_model(RBPlaylistSource *source);
 
-void		rb_playlist_source_set_query	(RBPlaylistSource *source, GPtrArray *query,
-						 guint limit);
+void		rb_playlist_source_set_query	(RBPlaylistSource *source,
+						 GPtrArray *query,
+						 guint limit_count,
+						 guint limit_mb);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);
