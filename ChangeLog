@@ -2,6 +2,110 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-18 07:24:38 GMT	Colin Walters <walters@verbum.org>	patch-318
+
+    Summary:
+      don't unnecessarily reset filters/search on jump to playing song
+    Revision:
+      rhythmbox--mainline--0.6--patch-318
+
+    
+
+    modified files:
+     ChangeLog NEWS shell/rb-shell.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-11-18 06:58:36 GMT	Colin Walters <walters@verbum.org>	patch-317
+
+    Summary:
+      Scroll wheel over tray icon controls volume (Jon Kinred)
+    Revision:
+      rhythmbox--mainline--0.6--patch-317
+
+    
+
+    modified files:
+     ChangeLog NEWS shell/rb-tray-icon.c
+
+
+2003-11-18 06:39:53 GMT	Colin Walters <walters@verbum.org>	patch-316
+
+    Summary:
+      upd NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-316
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2003-11-18 06:30:28 GMT	Colin Walters <walters@verbum.org>	patch-315
+
+    Summary:
+      fix bonobo refcounting (Gustavo J. A. M. Carneiro)
+    Revision:
+      rhythmbox--mainline--0.6--patch-315
+
+    From Gustavo J. A. M. Carneiro <gustavo@users.sourceforge.net>:
+    
+    Always return a new reference to the property bag, to comply with the
+    bonobo reference counting guidelines.
+    
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2003-11-18 06:14:55 GMT	Colin Walters <walters@verbum.org>	patch-314
+
+    Summary:
+      upd NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-314
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2003-11-18 06:08:33 GMT	Colin Walters <walters@verbum.org>	patch-313
+
+    Summary:
+      handle multiply added songs (bz #127248)
+    Revision:
+      rhythmbox--mainline--0.6--patch-313
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-11-18 05:32:16 GMT	Colin Walters <walters@verbum.org>	patch-312
+
+    Summary:
+      reset selection after a model change (bz: #127258)
+    Revision:
+      rhythmbox--mainline--0.6--patch-312
+
+
+    modified files:
+     ChangeLog widgets/rb-entry-view.c
+
+
+2003-11-18 03:24:51 GMT	Colin Walters <walters@verbum.org>	patch-311
+
+    Summary:
+      upd NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-311
+
+
+    modified files:
+     ChangeLog NEWS
+
+
 2003-11-18 00:47:24 GMT	Colin Walters <walters@verbum.org>	patch-310
 
     Summary:
