@@ -13,10 +13,6 @@ librb_la_SOURCES =					\
 	rb-bonobo-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
-	e-splash.c					\
-	e-splash.h					\
-	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h				\
 	rb-node.c					\
 	rb-node.h					\
 	rb-node-search.c				\

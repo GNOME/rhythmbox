@@ -24,6 +24,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <libgnome/gnome-i18n.h>
+#include <gconf/gconf-client.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
@@ -92,6 +93,11 @@ static GList *rb_library_view_cut (RBViewClipboard *clipboard);
 static GList *rb_library_view_copy (RBViewClipboard *clipboard);
 static void rb_library_view_paste (RBViewClipboard *clipboard,
 		                   GList *nodes);
+static void paned_size_allocate_cb (GtkWidget *widget,
+				    GtkAllocation *allocation,
+		                    RBLibraryView *view);
+
+#define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
 
 struct RBLibraryViewPrivate
 {
@@ -113,6 +119,9 @@ struct RBLibraryViewPrivate
 	RBPlayer *player;
 
 	char *status;
+
+	GtkWidget *paned;
+	int paned_position;
 };
 
 enum
@@ -271,12 +280,12 @@ rb_library_view_set_property (GObject *object,
 	{
 	case PROP_LIBRARY:
 		{
-			GtkWidget *vpaned;
 			GtkWidget *hbox;
+			GConfClient *gconf_client;
 
 			view->priv->library = g_value_get_object (value);
 
-			vpaned = gtk_vpaned_new ();
+			view->priv->paned = gtk_vpaned_new ();
 
 			hbox = gtk_hbox_new (TRUE, 5);
 			view->priv->artists = rb_node_view_new (library_get_root (view->priv->library),
@@ -293,7 +302,13 @@ rb_library_view_set_property (GObject *object,
 					  G_CALLBACK (album_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (hbox), GTK_WIDGET (view->priv->albums));
-			gtk_paned_add1 (GTK_PANED (vpaned), hbox);
+			gtk_paned_add1 (GTK_PANED (view->priv->paned), hbox);
+			
+			/* this gets emitted when the paned thingie is moved */
+			g_signal_connect (G_OBJECT (hbox),
+					  "size_allocate",
+					  G_CALLBACK (paned_size_allocate_cb),
+					  view);
 
 			view->priv->songs = rb_node_view_new (library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
@@ -305,9 +320,16 @@ rb_library_view_set_property (GObject *object,
 					  "changed",
 					  G_CALLBACK (node_view_changed_cb),
 					  view);
-			gtk_paned_add2 (GTK_PANED (vpaned), GTK_WIDGET (view->priv->songs));
+			gtk_paned_add2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs));
 
-			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), vpaned);
+			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
+
+			gconf_client = gconf_client_get_default ();
+			view->priv->paned_position = gconf_client_get_int (gconf_client,
+									   CONF_STATE_PANED_POSITION,
+									   NULL);
+			g_object_unref (G_OBJECT (gconf_client));
+			gtk_paned_set_position (GTK_PANED (view->priv->paned), view->priv->paned_position);
 		}
 		break;
 	default:
@@ -723,4 +745,21 @@ static void
 rb_library_view_paste (RBViewClipboard *clipboard,
 		       GList *nodes)
 {
+}
+
+static void
+paned_size_allocate_cb (GtkWidget *widget,
+			GtkAllocation *allocation,
+		        RBLibraryView *view)
+{
+	GConfClient *gconf_client;
+	
+	view->priv->paned_position = gtk_paned_get_position (GTK_PANED (view->priv->paned));
+
+	gconf_client = gconf_client_get_default ();
+	gconf_client_set_int (gconf_client,
+			      CONF_STATE_PANED_POSITION,
+			      view->priv->paned_position,
+			      NULL);
+	g_object_unref (G_OBJECT (gconf_client));
 }

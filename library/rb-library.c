@@ -36,7 +36,6 @@
 #include "rb-library.h"
 #include "rb-library-watcher.h"
 #include "rb-node.h"
-#include "eel-gconf-extensions.h"
 
 #include "rb-library-private.h"
 #include "rb-library-thread.h"

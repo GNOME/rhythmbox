@@ -24,14 +24,16 @@
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-directory.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
+#include <gconf/gconf-client.h>
 #include <string.h>
 
 #include "rb-library-watcher.h"
-#include "eel-gconf-extensions.h"
 
 struct _FileWatcherPrivate
 {
 	GHashTable *handles;
+	
+	GConfClient *gconf_client;
 };
 
 /* all the different signals */
@@ -150,6 +152,8 @@ file_watcher_init (FileWatcher *w)
 	w->priv = g_new0 (FileWatcherPrivate, 1);
 
 	w->priv->handles = g_hash_table_new (g_str_hash, g_str_equal);
+
+	w->priv->gconf_client = gconf_client_get_default ();
 }
 
 /**
@@ -162,8 +166,10 @@ file_watcher_release_brakes (FileWatcher *w)
 	check_dirs (w);
 
 	/* init notifier */
-	eel_gconf_notification_add (CONF_FILE_WATCHER_URIS,
-				    (GConfClientNotifyFunc) pref_changed, w);
+	gconf_client_notify_add (w->priv->gconf_client,
+				 CONF_FILE_WATCHER_URIS,
+				 (GConfClientNotifyFunc) pref_changed,
+				 w, NULL, NULL);
 }
 
 /**
@@ -183,6 +189,8 @@ file_watcher_finalize (GObject *object)
 
 	g_hash_table_foreach_remove (s->priv->handles, (GHRFunc) remove, NULL);
 	g_hash_table_destroy (s->priv->handles);
+	
+	g_object_unref (G_OBJECT (s->priv->gconf_client));
 
 	g_free (s->priv);
 
@@ -345,7 +353,10 @@ check_dirs (FileWatcher *w)
 	GSList *uris, *l;
 
 	/* load dirs */
-	uris = eel_gconf_get_string_list (CONF_FILE_WATCHER_URIS);
+	uris = gconf_client_get_list (w->priv->gconf_client,
+				      CONF_FILE_WATCHER_URIS,
+				      GCONF_VALUE_STRING,
+				      NULL);
 
 	for (l = uris; l != NULL; l = g_slist_next (l))
 	{

@@ -98,9 +98,9 @@ static void rb_shell_quit (RBShell *shell);
 #define CMD_PATH_REPEAT  "/commands/Repeat"
 
 /* prefs */
-#define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/State/window_width"
-#define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/State/window_height"
-#define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/State/window_maximized"
+#define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/state/window_width"
+#define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/state/window_height"
+#define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
 
 typedef struct
 {
@@ -454,6 +454,8 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	default:
 		break;
 	}
+
+	rb_shell_window_save_state (shell);
 
 	return FALSE;
 }

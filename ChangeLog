@@ -1,3 +1,22 @@
+2002-06-14  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/rhythmbox.schemas:
+	* lib/Makefile.am:
+	* lib/e-splash.c:
+	* lib/e-splash.h:
+	* lib/eel-gconf-extensions.c:
+	* lib/eel-gconf-extensions.h:
+	* library/rb-library-watcher.c: (file_watcher_init),
+	(file_watcher_release_brakes), (file_watcher_finalize),
+	(check_dirs):
+	* library/rb-library.c:
+	* shell/rb-shell.c: (rb_shell_window_state_cb):
+	* views/rb-library-view.c: (rb_library_view_set_property),
+	(rb_library_view_paste), (paned_size_allocate_cb):
+
+	Save library paned position, change gconf key names to lowercase,
+	remove unused e-splash and eel-gconf-extensions.
+
 2002-06-13  Jorn Baayen  <jorn@nl.linux.org>
 
 	* Makefile.am:

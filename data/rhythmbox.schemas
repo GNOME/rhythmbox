@@ -1,8 +1,8 @@
 <gconfschemafile>
    <schemalist>
       <schema>
-        <key>/schemas/apps/rhythmbox/State/window_width</key>
-        <applyto>/apps/rhythmbox/State/window_width</applyto>
+        <key>/schemas/apps/rhythmbox/state/window_width</key>
+        <applyto>/apps/rhythmbox/state/window_width</applyto>
         <owner>rhythmbox</owner>
         <type>int</type>
         <default>-1</default>
@@ -10,8 +10,8 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/State/window_height</key>
-        <applyto>/apps/rhythmbox/State/window_height</applyto>
+        <key>/schemas/apps/rhythmbox/state/window_height</key>
+        <applyto>/apps/rhythmbox/state/window_height</applyto>
         <owner>rhythmbox</owner>
         <type>int</type>
         <default>-1</default>
@@ -19,11 +19,20 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/State/window_maximized</key>
-        <applyto>/apps/rhythmbox/State/window_maximized</applyto>
+        <key>/schemas/apps/rhythmbox/state/window_maximized</key>
+        <applyto>/apps/rhythmbox/state/window_maximized</applyto>
         <owner>rhythmbox</owner>
         <type>bool</type>
         <default>0</default>
+        <locale name="C">
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/library/paned_position</key>
+        <applyto>/apps/rhythmbox/state/library/paned_position</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>-1</default>
         <locale name="C">
         </locale>
       </schema>
