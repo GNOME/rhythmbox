@@ -1194,9 +1194,7 @@ rhythmdb_query_model_get_flags (GtkTreeModel *model)
 static gint
 rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model)
 {
-/* 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model); */
-
-	return RHYTHMDB_NUM_PROPERTIES;
+	return 2;
 }
 
 static GType
