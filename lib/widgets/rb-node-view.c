@@ -1096,6 +1096,8 @@ rb_node_view_select_none (RBNodeView *view)
 
 	gtk_tree_selection_unselect_all (view->priv->selection);
 
+	view->priv->selected_node = NULL;
+
 	view->priv->selection_lock = FALSE;
 }
 
