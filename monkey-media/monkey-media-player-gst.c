@@ -473,10 +473,9 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			       GError **error)
 {
 	GstDParamManager *dpman;
-	char *decoder_name = NULL;
 
 	/* The main playback pipeline at the end looks like:
-	 * { { src ! queue } ! { mad ! volume ! sink } }
+	 * { { src ! spider ! queue } ! { volume ! sink } }
 	 */
 	mp->priv->pipeline = gst_element_factory_make ("thread", "pipeline");
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
@@ -523,6 +522,20 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			      NULL);
 	}
 
+	mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
+	if (mp->priv->decoder == NULL) {
+		char *err = g_strdup_printf (_("Failed to create spider element; check your installation"));
+		g_set_error (error,
+			     MONKEY_MEDIA_PLAYER_ERROR,
+			     MONKEY_MEDIA_PLAYER_ERROR_NO_DEMUX_PLUGIN,
+			     err);
+		g_free (err);
+		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
+		return;
+	}
+	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->decoder);
+
 	/* The queue */
 	mp->priv->queue = gst_element_factory_make ("queue", "queue");
 	if (mp->priv->queue == NULL) {
@@ -537,21 +550,6 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	g_signal_connect (G_OBJECT (mp->priv->queue), "full",
 			  G_CALLBACK (queue_full_cb), mp);
 	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
-
-	mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
-	if (mp->priv->decoder == NULL) {
-		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
-					     decoder_name);
-		g_set_error (error,
-			     MONKEY_MEDIA_PLAYER_ERROR,
-			     MONKEY_MEDIA_PLAYER_ERROR_NO_DEMUX_PLUGIN,
-			     err);
-		g_free (err);
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
-		return;
-	}
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->decoder);
 
 	/* Volume */
 	mp->priv->volume = gst_element_factory_make ("volume", "volume");
@@ -585,8 +583,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);
 
-	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->sink, NULL);
-	gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->decoder, NULL);
+	gst_element_link_many (mp->priv->queue, mp->priv->volume, mp->priv->sink, NULL);
+	gst_element_link_many (mp->priv->src, mp->priv->decoder, mp->priv->queue, NULL);
 
 	g_signal_connect (G_OBJECT (mp->priv->sink), "eos",
 			  G_CALLBACK (eos_cb), mp);
