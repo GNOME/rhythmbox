@@ -1322,15 +1322,9 @@ rb_node_add_action (RBNode *node,
 gboolean
 rb_node_is_handled (RBNode *node)
 {
-	gboolean ret;
-	
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 
-	g_static_rw_lock_reader_lock (node->priv->lock);
-	ret = node->priv->handled;
-	g_static_rw_lock_reader_unlock (node->priv->lock);
-
-	return ret;
+	return node->priv->handled;
 }
 
 void
@@ -1338,9 +1332,7 @@ rb_node_set_handled (RBNode *node)
 {
 	g_return_if_fail (RB_IS_NODE (node));
 
-	g_static_rw_lock_writer_lock (node->priv->lock);
 	node->priv->handled = TRUE;
-	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
 void

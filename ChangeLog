@@ -1,5 +1,18 @@
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/Makefile.am:
+	* library/rb-node-iterator.c:
+	* library/rb-node-iterator.h:
+
+	Remove obsolete iterator.
+	
+	* library/rb-node.c: (rb_node_is_handled), (rb_node_set_handled):
+
+	Don't lock/unlock on _handled, the handled property only gets
+	touched from the main thread anyway.
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_first_node),
 	(rb_node_view_get_random_node),
 	(rb_node_view_get_next_random_node),

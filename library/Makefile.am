@@ -20,8 +20,6 @@ librblibrary_la_SOURCES =				\
 	rb-node-song.h					\
 	rb-node-filter.c				\
 	rb-node-filter.h				\
-	rb-node-iterator.c				\
-	rb-node-iterator.h				\
 	rb-library-dnd-types.h
 
 INCLUDES =						\
