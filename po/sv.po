@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-10-31 14:56+0100\n"
-"PO-Revision-Date: 2003-10-31 14:56+0100\n"
+"POT-Creation-Date: 2003-11-02 00:41+0100\n"
+"PO-Revision-Date: 2003-11-02 00:42+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -314,6 +314,10 @@ msgstr "Musikspelare"
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
 msgstr "Spela och organisera din musiksamling"
+
+#: data/rhythmbox.desktop.in.h:3 shell/main.c:104 widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Deselect all songs"
@@ -933,7 +937,7 @@ msgstr "Ogg Vorbis"
 msgid "Never"
 msgstr "Aldrig"
 
-#: rhythmdb/rhythmdb.c:999 sources/rb-source.c:308
+#: rhythmdb/rhythmdb.c:999
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -1026,10 +1030,6 @@ msgstr "Avsluta Rhythmbox"
 #: shell/main.c:96
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
-
-#: shell/main.c:104 widgets/rb-druid.c:218
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
 
 #: shell/main.c:192
 msgid ""
@@ -1135,7 +1135,7 @@ msgstr ""
 "bonobo-activation. Denna varning är inte allvarlig, men IPC kommer inte att "
 "fungera."
 
-#: shell/rb-shell.c:1346 shell/rb-tray-icon.c:218 widgets/rb-player.c:536
+#: shell/rb-shell.c:1346 shell/rb-tray-icon.c:218 widgets/rb-player.c:538
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -1143,19 +1143,19 @@ msgstr "Spelar inte"
 #, c-format
 msgid ""
 "%s\n"
-"Paused, %s remaining"
+"Paused, %s"
 msgstr ""
 "%s\n"
-"Gör paus, %s återstår"
+"Gör paus, %s"
 
 #: shell/rb-shell.c:1351
 #, c-format
 msgid ""
 "%s\n"
-"%s remaining"
+"%s"
 msgstr ""
 "%s\n"
-"%s återstår"
+"%s"
 
 #: shell/rb-shell.c:1385
 #, c-format
@@ -1284,11 +1284,11 @@ msgstr "Bibliotek"
 msgid "Add Location"
 msgstr "Lägg till plats"
 
-#: sources/rb-source.c:484
+#: sources/rb-source.c:475
 msgid "No properties available."
 msgstr "Inga egenskaper tillgängliga."
 
-#: sources/rb-source.c:567
+#: sources/rb-source.c:558
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
 
@@ -1353,10 +1353,10 @@ msgstr "Fel vid läsning av filnamn: %s"
 msgid "Choose a directory"
 msgstr "Välj en katalog"
 
-#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:801
+#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:812
 #, c-format
 msgid "%d:%02d"
-msgstr "%d:%02d"
+msgstr "%d.%02d"
 
 #: widgets/rb-link.c:332
 #, c-format
@@ -1379,26 +1379,31 @@ msgstr "_Fel"
 msgid "_File"
 msgstr "_Arkiv"
 
-#: widgets/rb-player.c:279
+#: widgets/rb-player.c:281
 msgid "Listening to "
 msgstr "Lyssnar på "
 
-#: widgets/rb-player.c:506
+#: widgets/rb-player.c:508
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: widgets/rb-player.c:517
+#: widgets/rb-player.c:519
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: widgets/rb-player.c:527
+#: widgets/rb-player.c:529
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: widgets/rb-player.c:799
+#: widgets/rb-player.c:802
 #, c-format
 msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d av %d:%02d"
+msgstr "%d.%02d av %d.%02d"
+
+#: widgets/rb-player.c:809
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "%d.%02d av %d.%02d återstår"
 
 #: widgets/rb-query-creator.c:44
 msgid "Title"
@@ -1413,7 +1418,7 @@ msgid "does not contain"
 msgstr "innehåller inte"
 
 #: widgets/rb-query-creator.c:167
-msgid "Create automatic playlist"
+msgid "Create Automatic Playlist"
 msgstr "Skapa automatisk spellista"
 
 #. this string can only be so long, or there wont be a search entry :)
@@ -1464,6 +1469,30 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Gör paus"
+
+#~ msgid "Create automatic playlist"
+#~ msgstr "Skapa automatisk spellista"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused, %s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Gör paus, %s återstår"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "%s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "%s återstår"
 
 #~ msgid "File name"
 #~ msgstr "Filnamn"
@@ -1591,7 +1620,7 @@ msgstr "-"
 #~ msgstr "Misslyckades med att läsa in biblioteket!"
 
 #~ msgid "%ld:%02ld"
-#~ msgstr "%ld:%02ld"
+#~ msgstr "%ld.%02ld"
 
 #~ msgid "<b>%.1f</b> days (%ld songs)"
 #~ msgstr "<b>%.1f</b> dagar (%ld låtar)"
@@ -1684,13 +1713,6 @@ msgstr "-"
 
 #~ msgid " by "
 #~ msgstr " av "
-
-#~ msgid ""
-#~ "%s\n"
-#~ "Paused"
-#~ msgstr ""
-#~ "%s\n"
-#~ "Gör paus"
 
 #~ msgid "Source List"
 #~ msgstr "Källista"
@@ -2281,7 +2303,7 @@ msgstr "-"
 #~ msgstr "%ld låtar, %ld.%02ld.%02ld total tid, %s"
 
 #~ msgid "%ld songs, %02ld:%02ld total time, %s"
-#~ msgstr "%ld låtar, %02ld:%02ld total tid, %s"
+#~ msgstr "%ld låtar, %02ld.%02ld total tid, %s"
 
 #~ msgid "Location: "
 #~ msgstr "Plats: "
