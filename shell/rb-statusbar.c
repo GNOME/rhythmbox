@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
+ *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -126,8 +127,8 @@ rb_statusbar_init (RBStatusbar *statusbar)
 {
 	statusbar->priv = g_new0 (RBStatusbarPrivate, 1);
 
-	statusbar->priv->shuffle = gtk_check_button_new_with_label (_("Shuffle"));
-	statusbar->priv->repeat = gtk_check_button_new_with_label (_("Repeat"));
+	statusbar->priv->shuffle = gtk_check_button_new_with_mnemonic (_("_Shuffle"));
+	statusbar->priv->repeat = gtk_check_button_new_with_mnemonic (_("_Repeat"));
 	g_signal_connect (G_OBJECT (statusbar->priv->shuffle), "toggled",
 			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
 	g_signal_connect (G_OBJECT (statusbar->priv->repeat), "toggled",

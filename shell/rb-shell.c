@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2002, 2003 Jorn Baayen
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -620,7 +620,7 @@ rb_shell_construct (RBShell *shell)
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, TRUE, 5);
+	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 

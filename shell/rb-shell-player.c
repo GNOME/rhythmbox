@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -150,7 +150,7 @@ struct RBShellPlayerPrivate
 	gboolean handling_error;
 
 	MonkeyMediaPlayer *mmplayer;
-	
+
 	GList *active_uris;
 
 	char *song;
@@ -165,7 +165,7 @@ struct RBShellPlayerPrivate
 	GtkWidget *prev_button;
 	GtkWidget *play_button;
 	GtkWidget *next_button;
-	
+
 	RBPlayer *player_widget;
 
 	GtkWidget *shuffle_button;
@@ -299,6 +299,8 @@ rb_shell_player_init (RBShellPlayer *player)
 		exit (1);
 	}
 
+	gtk_box_set_spacing (GTK_BOX (player), 12);
+
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "info",
 			  G_CALLBACK (info_available_cb),
@@ -323,7 +325,7 @@ rb_shell_player_init (RBShellPlayer *player)
 			  "buffering_begin",
 			  G_CALLBACK (buffering_begin_cb),
 			  player);
-	
+
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "buffering_end",
 			  G_CALLBACK (buffering_end_cb),
@@ -332,7 +334,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	monkey_media_player_set_volume (player->priv->mmplayer,
 					eel_gconf_get_float (CONF_STATE_VOLUME));
 
-	hbox = gtk_hbox_new (FALSE, 0);
+	hbox = gtk_hbox_new (FALSE, 5);
 
 	/* Previous button */
 	image = gtk_image_new_from_stock (RB_STOCK_PREVIOUS,
@@ -355,21 +357,20 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
-	
-	gtk_box_set_spacing (GTK_BOX (hbox), 4);
-	gtk_box_pack_start (GTK_BOX (player), hbox, FALSE, TRUE, 5);
 
-	alignment = gtk_alignment_new (0.0, 0.1, 0.5, 1.0);
+	gtk_box_pack_start (GTK_BOX (player), hbox, FALSE, TRUE, 0);
+
+	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
-/* 	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->player_widget)); */
-	gtk_box_pack_start_defaults (GTK_BOX (player), GTK_WIDGET (player->priv->player_widget));
+	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->player_widget));
+	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
 
 	image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->volume_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	gtk_box_pack_end (GTK_BOX (player), player->priv->volume_button, FALSE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (player), player->priv->volume_button, FALSE, FALSE, 0);
 
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
@@ -1008,14 +1009,17 @@ rb_shell_player_sync_status (RBShellPlayer *player)
 static void
 rb_shell_player_sync_with_source (RBShellPlayer *player)
 {
-	const char *nodetitle = NULL;
+	const char *nodetitle = NULL, *artist = NULL;
 	char *title;
-	
-	RBNode *node = rb_shell_player_get_playing_node (player);
+	RBNode *node;
+
+	node = rb_shell_player_get_playing_node (player);
 	rb_debug ("playing source: %p, active node: %p", player->priv->source, node);
 
-	if (node != NULL)
+	if (node != NULL) {
 		nodetitle = rb_node_get_property_string (node, RB_NODE_PROP_NAME);
+		artist = rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
+	}
 
 	if (player->priv->have_url)
 		rb_player_set_urldata (player->priv->player_widget,
@@ -1028,16 +1032,21 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	if (player->priv->song && nodetitle)
 		title = g_strdup_printf ("%s (%s)", player->priv->song,
 					 nodetitle);
+	else if (nodetitle && artist)
+		title = g_strdup_printf ("%s - %s", artist, nodetitle);
 	else if (nodetitle)
 		title = g_strdup (nodetitle);
 	else
-		title = g_strdup (_("Not Playing"));
+		title = NULL;
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
 
 	/* Sync the player */
-	rb_player_set_title (player->priv->player_widget, title);
+	if (player->priv->song)
+		rb_player_set_title (player->priv->player_widget, title);
+	else
+		rb_player_set_title (player->priv->player_widget, nodetitle);
 	g_free (title);
 	rb_player_set_playing_node (player->priv->player_widget, node);
 	rb_player_sync (player->priv->player_widget);
@@ -1084,7 +1093,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 					 rb_shell_player_have_first (player, source));
 
 	}
-	
+
 	rb_shell_player_set_play_button (player, pstate);
 }
 
@@ -1096,7 +1105,7 @@ rb_shell_player_set_playing_source (RBShellPlayer *player,
 		return;
 
 	if (player->priv->source != NULL && source == NULL) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);		
+		RBNodeView *songs = rb_source_get_node_view (player->priv->source);	
 		rb_node_view_set_playing_node (songs, NULL);
 		rb_node_view_set_playing (songs, FALSE);
 	}
@@ -1140,7 +1149,7 @@ MonkeyMediaPlayer *
 rb_shell_player_get_mm_player (RBShellPlayer *player)
 {
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), NULL);
-	
+
 	return player->priv->mmplayer;
 }
 
@@ -1176,7 +1185,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 		{
 		case RB_SOURCE_EOF_ERROR:
 			rb_error_dialog (_("Unexpected end of stream!"));
-			rb_shell_player_set_playing_source (player, NULL);			
+			rb_shell_player_set_playing_source (player, NULL);
 			break;
 		case RB_SOURCE_EOF_NEXT:
 			rb_shell_player_next (player);
@@ -1190,7 +1199,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 void
 error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 {
- 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	if (player->priv->handling_error)
 	{
 		rb_debug ("ignoring error: %s", err->message);
@@ -1233,7 +1242,7 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		   GValue *value,
 		   gpointer data)
 {
- 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	RBNodeView *songs;
 	RBNode *node;
 	gboolean changed = FALSE;
@@ -1257,7 +1266,7 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 	}
 
 	gdk_threads_enter ();
-	
+
 	songs = rb_source_get_node_view (player->priv->source);
 	node = rb_node_view_get_playing_node (songs);
 
@@ -1265,7 +1274,7 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		rb_debug ("Got info_available but no playing node!");
 		goto out_unlock;
 	}
-	
+
 	switch (field)
 	{
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE:
@@ -1336,13 +1345,13 @@ static gboolean
 buffering_tick_cb (GtkProgressBar *progress)
 {
 	g_return_val_if_fail (GTK_IS_PROGRESS_BAR (progress), FALSE);
-	
+
 	gdk_threads_enter ();
 
 	gtk_progress_bar_pulse (progress);
 
 	gdk_threads_leave ();
-	
+
 	return TRUE;
 }
 

@@ -20,6 +20,7 @@
 
 #include <gtk/gtkeventbox.h>
 #include <gtk/gtktooltips.h>
+#include <gtk/gtklabel.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-url.h>
@@ -27,7 +28,6 @@
 
 #include "rb-link.h"
 #include "rb-dialog.h"
-#include "rb-ellipsizing-label.h"
 
 typedef enum
 {
@@ -156,7 +156,7 @@ rb_link_init (RBLink *link)
 {
 	link->priv = g_new0 (RBLinkPrivate, 1);
 
-	link->priv->label = rb_ellipsizing_label_new ("");
+	link->priv->label = gtk_label_new ("");
 	gtk_misc_set_alignment (GTK_MISC (link->priv->label), 0.0, 0.5);
 
 	gtk_container_add (GTK_CONTAINER (link), link->priv->label);
@@ -214,7 +214,7 @@ rb_link_set_property (GObject *object,
 	case PROP_TEXT:
 		g_free (link->priv->text);
 		link->priv->text = g_strdup (g_value_get_string (value));
-		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (link->priv->label), link->priv->text);
+		gtk_label_set_text (GTK_LABEL (link->priv->label), link->priv->text);
 		break;
 	case PROP_TOOLTIP:
 		g_free (link->priv->tooltip);
@@ -374,14 +374,13 @@ rb_link_set_color (RBLink *link,
 
 	if (color == RB_LINK_NORMAL) {
 		pattrlist = pango_attr_list_new ();
-		attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+		attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
 		attr->start_index = 0;
 		attr->end_index = G_MAXINT;
 		pango_attr_list_insert (pattrlist, attr);
 		gtk_label_set_attributes (GTK_LABEL (link->priv->label), pattrlist);
 		pango_attr_list_unref (pattrlist);
-	}
-	else {
+	} else {
 		GtkStyle *rcstyle;
 		GdkColor *gdkcolor;
 
@@ -402,6 +401,10 @@ rb_link_set_color (RBLink *link,
 		attr->end_index = G_MAXINT;
 		pango_attr_list_insert (pattrlist, attr);
 		attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+		attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
 		attr->start_index = 0;
 		attr->end_index = G_MAXINT;
 		pango_attr_list_insert (pattrlist, attr);

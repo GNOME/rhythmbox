@@ -1,3 +1,28 @@
+2003-05-18  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/art/rhythmbox-volume-max.png:
+	* data/art/rhythmbox-volume-medium.png:
+	* data/art/rhythmbox-volume-min.png:
+	* data/art/rhythmbox-volume-mute.png:
+	* data/art/rhythmbox-volume-zero.png:
+	* lib/widgets/rb-link.c: (rb_link_init), (rb_link_set_property),
+	(rb_link_set_color):
+	* lib/widgets/rb-player.c: (rb_player_init), (rb_player_sync),
+	(rb_player_sync_time_locked), (rb_player_update_elapsed):
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_sync_with_source), (rb_shell_player_sync_buttons),
+	(rb_shell_player_set_playing_source),
+	(rb_shell_player_get_mm_player), (eos_cb), (error_cb),
+	(info_available_cb), (buffering_tick_cb):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* shell/rb-source-header.c:
+	* shell/rb-statusbar.c: (rb_statusbar_init):
+
+	UI stuff.
+
+	TODO:
+	- refactor title generation code, it's a *MESS*.
+
 2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/node-views/rb-node-view-songs.xml:

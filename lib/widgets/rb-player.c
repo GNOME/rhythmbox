@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -51,9 +51,6 @@ static void rb_player_get_property (GObject *object,
 static long rb_player_get_duration (RBPlayer *player);
 static void rb_player_set_show_timeline (RBPlayer *player,
 			                 gboolean show);
-static void rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_bix,
-						     GdkEventButton *event,
-					             RBPlayer *player);
 static gboolean rb_player_sync_time_locked (RBPlayer *player);
 static void rb_player_update_elapsed (RBPlayer *player);
 static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
@@ -61,16 +58,8 @@ static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event,
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
 static void slider_changed_callback (GtkWidget *widget, RBPlayer *player);
 
-typedef enum 
+typedef struct
 {
-	RB_PLAYER_STATE_MODE_ELAPSED,
-	RB_PLAYER_STATE_MODE_REMAINING,
-	RB_PLAYER_STATE_MODE_TOTAL
-} RBPlayerStateMode;
-
-typedef struct 
-{
-	RBPlayerStateMode mode;
 	long elapsed;
 	long duration;
 } RBPlayerState;
@@ -97,7 +86,6 @@ struct RBPlayerPrivate
 	guint slider_moved_timeout;
 	long latest_set_time;
 	guint value_changed_update_handler;
-	GtkWidget *elapsed_box;
 	GtkWidget *elapsed;
 
 	GtkWidget *textframe;
@@ -128,7 +116,7 @@ enum
 
 static GObjectClass *parent_class = NULL;
 
-#define SONG_MARKUP(xSONG) g_strdup_printf ("<span size=\"xx-large\">%s</span>", xSONG);
+#define SONG_MARKUP(xSONG) g_strdup_printf ("<big><b>%s</b></big>", xSONG);
 
 #define ALBUM_INFO_URL(xALBUM)   g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=%s", xALBUM);
 #define ARTIST_INFO_URL(xARTIST) g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST);
@@ -214,7 +202,9 @@ static void
 rb_player_init (RBPlayer *player)
 {
 	GtkWidget *hbox, *vbox, *textline, *urlline, *label, *align, *scalebox, *textvbox;
-	
+	PangoAttrList *attrlist;
+	PangoAttribute *attr;
+
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
 	player->priv->state = g_new0 (RBPlayerState, 1);
@@ -241,21 +231,21 @@ rb_player_init (RBPlayer *player)
 	/* Construct the Artist/Album display */
 	player->priv->textframe = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
-	
+
 	textline = player->priv->textline = gtk_hbox_new (FALSE, 0);
 	g_object_ref (G_OBJECT (textline));
 
-	label = gtk_label_new (_("From "));
+	label = gtk_label_new (_("from "));
 	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
-	
+
 	player->priv->album = rb_link_new ();
-	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->album), FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->album), FALSE, FALSE, 0);
 
 	label = gtk_label_new (_(" by "));
 	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
 
 	player->priv->artist = rb_link_new ();
-	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->artist), FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->artist), FALSE, FALSE, 0);
 
 	player->priv->textline_shown = FALSE;
 
@@ -275,9 +265,9 @@ rb_player_init (RBPlayer *player)
 	/* The slider */
 	player->priv->timeframe = gtk_hbox_new (FALSE, 0);
 
-	scalebox = player->priv->timeline = gtk_hbox_new (FALSE, 2);
+	scalebox = player->priv->timeline = gtk_vbox_new (FALSE, 0);
 	g_object_ref (G_OBJECT (scalebox));
-	
+
 	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
 	g_signal_connect (G_OBJECT (player->priv->scale),
@@ -299,28 +289,25 @@ rb_player_init (RBPlayer *player)
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
-	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
+	align = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
 	player->priv->elapsed = gtk_label_new ("0:00");
-	player->priv->elapsed_box = gtk_event_box_new ();
+	gtk_misc_set_padding (GTK_MISC (player->priv->elapsed), 2, 0);
+	attrlist = pango_attr_list_new ();
+	attr = pango_attr_scale_new (PANGO_SCALE_SMALL);
+	attr->start_index = 0;
+	attr->end_index = G_MAXINT;
+	pango_attr_list_insert (attrlist, attr);
+	gtk_label_set_attributes (GTK_LABEL (player->priv->elapsed), attrlist);
+	pango_attr_list_unref (attrlist);
 	player->priv->tips = gtk_tooltips_new ();
-	gtk_tooltips_set_tip (player->priv->tips,
-			      player->priv->elapsed_box,
-			      _("Elapsed time of the song. Click on it to display remaining and total time"),
-			      NULL);
-	g_signal_connect (G_OBJECT (player->priv->elapsed_box),
-			  "button_press_event",
-			  G_CALLBACK (rb_player_elapsed_button_press_event_cb),
-			  player);
-	gtk_container_add (GTK_CONTAINER (player->priv->elapsed_box), 
+	gtk_container_add (GTK_CONTAINER (align),
 			   player->priv->elapsed);
-	gtk_container_add (GTK_CONTAINER (align), 
-			   player->priv->elapsed_box);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-	gtk_box_pack_start_defaults (GTK_BOX (player), hbox);
-	gtk_box_pack_end_defaults (GTK_BOX (player), player->priv->timeframe);
+	gtk_box_pack_start (GTK_BOX (player), hbox, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (player), player->priv->timeframe, FALSE, FALSE, 0);
 
 	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_player_sync_time_locked, player);
 }
@@ -506,13 +493,13 @@ rb_player_sync (RBPlayer *player)
 				     _("Get more information on this station from the web"),
 				     player->priv->urllink);
 		}
-		
+
 		rb_player_set_show_timeline (player, have_duration);
 		if (have_duration)
 			rb_player_sync_time (player);
 	} else {
 		rb_debug ("not playing");
-		tmp = SONG_MARKUP (_("Not Playing"));
+		tmp = SONG_MARKUP (_("Not playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
@@ -589,14 +576,15 @@ gboolean
 rb_player_sync_time_locked (RBPlayer *player)
 {
 	gboolean ret;
+
 	gdk_threads_enter ();
-	
+
 	ret = rb_player_sync_time (player);
 
 	gdk_threads_leave ();
+
 	return ret;
 }
-	
 
 gboolean
 rb_player_sync_time (RBPlayer *player)
@@ -761,73 +749,27 @@ slider_changed_callback (GtkWidget *widget,
 }
 
 static void
-rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_box,
-					 GdkEventButton *event,
-			                 RBPlayer *player)
-{
-	switch (player->priv->state->mode) {
-	case RB_PLAYER_STATE_MODE_ELAPSED:
-		player->priv->state->mode = RB_PLAYER_STATE_MODE_REMAINING;
-		gtk_tooltips_set_tip (player->priv->tips,
-				      player->priv->elapsed_box,
-				      _("Remaining time of the song. Click on it to display total and elapsed time"),
-				      NULL);
-		break;
-	case RB_PLAYER_STATE_MODE_REMAINING:
-		player->priv->state->mode = RB_PLAYER_STATE_MODE_TOTAL;
-		gtk_tooltips_set_tip (player->priv->tips,
-				      player->priv->elapsed_box,
-				      _("Total time of the song. Click on it to display elapsed and remaining time"),
-				      NULL);
-		break;
-	case RB_PLAYER_STATE_MODE_TOTAL:
-		player->priv->state->mode = RB_PLAYER_STATE_MODE_ELAPSED;
-		gtk_tooltips_set_tip (player->priv->tips,
-				      player->priv->elapsed_box,
-				      _("Elapsed time of the song. Click on it to display remaining and total time"),
-				      NULL);
-		break;
-	}
-
-	rb_player_update_elapsed (player);
-}
-
-static void
 rb_player_update_elapsed (RBPlayer *player)
 {
 	char *elapsed_text;
-	int seconds = 0, minutes = 0;
+	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
 
 	/* sanity check */
 	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
 		return;
-		
-	switch (player->priv->state->mode) {
-	case RB_PLAYER_STATE_MODE_ELAPSED:
-		if (player->priv->state->elapsed > 0) {
-			minutes = player->priv->state->elapsed / 60;
-			seconds = player->priv->state->elapsed % 60;
-		}
+
+	if (player->priv->state->elapsed > 0) {
+		minutes = player->priv->state->elapsed / 60;
+		seconds = player->priv->state->elapsed % 60;
+	}
+	if (player->priv->state->duration > 0) {
+		minutes2 = player->priv->state->duration / 60;
+		seconds2 = player->priv->state->duration % 60;
+	}
+	if (seconds2 >= 0) {
+		elapsed_text = g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
+	} else {
 		elapsed_text = g_strdup_printf (_("%d:%02d"), minutes, seconds);
-		break;
-	case RB_PLAYER_STATE_MODE_REMAINING:
-		if (player->priv->state->duration > 0) {
-			seconds = player->priv->state->duration - player->priv->state->elapsed;
-			minutes = seconds / 60;
-			seconds = seconds % 60;
-		}
-		elapsed_text = g_strdup_printf (_("- %d:%02d"), minutes, seconds);
-		break;
-	case RB_PLAYER_STATE_MODE_TOTAL:
-		if (player->priv->state->duration > 0) {
-			minutes = player->priv->state->duration / 60;
-			seconds = player->priv->state->duration % 60;
-		}
-		elapsed_text = g_strdup_printf (_("Total: %d:%02d"), minutes, seconds);
-		break;
-	default:
-		elapsed_text = g_strdup_printf (_("Invalid mode"));
-		break;
 	}
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
