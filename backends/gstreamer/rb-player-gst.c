@@ -315,21 +315,7 @@ eos_cb (GstElement *element,
 	RBPlayer *mp)
 {
 	g_object_ref (G_OBJECT (mp));
-
-	if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
-		RBPlayerSignal *signal;
-		
-		signal = g_new0 (RBPlayerSignal, 1);
-		signal->object = mp;
-		signal->error = g_error_new_literal (RB_PLAYER_ERROR,
-						     RB_PLAYER_ERROR_GENERAL,
-						     _("Failed to close audio output sink"));
-		
-		g_object_ref (G_OBJECT (mp));
-		
-		g_idle_add ((GSourceFunc) error_signal_idle, signal);
-	} else
-		g_idle_add ((GSourceFunc) eos_signal_idle, mp);
+	g_idle_add ((GSourceFunc) eos_signal_idle, mp);
 }
 
 static void
