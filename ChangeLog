@@ -1,5 +1,18 @@
 2003-07-31  Colin Walters  <walters@verbum.org>
 
+	* library/rb-library.c: (rb_library_release_brakes),
+	(rb_library_finalize), (rb_library_periodic_save),
+	(rb_library_save):
+	* shell/rb-shell.c: (rb_shell_finalize):
+
+	Save the library periodically.  Also make library saving a bit
+	more atomic.
+
+	Also unref the library only after unreffing other things like the
+	group sources.
+
+2003-07-31  Colin Walters  <walters@verbum.org>
+
 	* sources/rb-group-source.c: (impl_get_status),
 	(impl_get_status_fast), (impl_get_status_full):
 	* sources/rb-library-source.c: (impl_get_status_fast),

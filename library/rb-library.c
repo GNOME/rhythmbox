@@ -53,6 +53,7 @@ static void sync_node (RBNode *node,
 		       RBLibrary *library,
 		       gboolean check_reparent,
 		       GError **error);
+static gboolean rb_library_periodic_save (RBLibrary *library);
 
 struct RBLibraryPrivate
 {
@@ -80,6 +81,8 @@ struct RBLibraryPrivate
 	GStaticRWLock *song_hash_lock;
 
 	char *xml_file;
+
+	guint idle_save_id;
 };
 
 enum
@@ -218,6 +221,9 @@ rb_library_release_brakes (RBLibrary *library)
 
 	rb_debug ("library: creating walker thread");
 	library->priv->walker_thread = rb_library_walker_thread_new (library);
+
+	library->priv->idle_save_id = g_timeout_add (6000, (GSourceFunc) rb_library_periodic_save,
+						     library);
 }
 
 gboolean
@@ -237,6 +243,8 @@ rb_library_finalize (GObject *object)
 	library = RB_LIBRARY (object);
 
 	g_return_if_fail (library->priv != NULL);
+
+	g_source_remove (library->priv->idle_save_id);
 
 	rb_debug ("library: finalizing");
 	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
@@ -546,6 +554,18 @@ rb_library_create_skels (RBLibrary *library)
 	rb_debug ("Done creating skels");
 }
 
+static gboolean
+rb_library_periodic_save (RBLibrary *library)
+{
+	if (rb_library_is_idle (library)) {
+		rb_debug ("doing periodic save");
+		rb_library_save (library);
+	} else {
+		rb_debug ("library is busy, skipping periodic save");
+	}
+	return TRUE;
+}
+
 static void
 rb_library_save (RBLibrary *library)
 {
@@ -577,7 +597,6 @@ rb_library_save (RBLibrary *library)
 		if (kid != library->priv->all_artists)
 			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_thaw (library->priv->all_genres);
 
 	children = rb_node_get_children (library->priv->all_artists);
 	for (i = 0; i < children->len; i++)
@@ -589,7 +608,6 @@ rb_library_save (RBLibrary *library)
 		if (kid != library->priv->all_albums)
 			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_thaw (library->priv->all_artists);
 
 	children = rb_node_get_children (library->priv->all_albums);
 	for (i = 0; i < children->len; i++)
@@ -601,7 +619,6 @@ rb_library_save (RBLibrary *library)
 		if (kid != library->priv->all_songs)
 			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_thaw (library->priv->all_albums);
 
 	children = rb_node_get_children (library->priv->all_songs);
 	for (i = 0; i < children->len; i++)
@@ -612,6 +629,10 @@ rb_library_save (RBLibrary *library)
 
 		rb_node_save_to_xml (kid, root);
 	}
+
+	rb_node_thaw (library->priv->all_genres);
+	rb_node_thaw (library->priv->all_artists);
+	rb_node_thaw (library->priv->all_albums);
 	rb_node_thaw (library->priv->all_songs);
 
 	xmlSaveFormatFile (tmpname->str, doc, 1);

@@ -47,6 +47,7 @@
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-node-db.h"
 #include "rb-stock-icons.h"
 #include "rb-sourcelist.h"
 #include "rb-string-helpers.h"
@@ -411,13 +412,14 @@ rb_shell_finalize (GObject *object)
 	g_list_free (shell->priv->groups);
 
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
+
+	gtk_widget_destroy (shell->priv->window);
+
 	/* hack to make the gdk thread lock available for freeing
 	 * the library.. evil */
 	g_object_unref (G_OBJECT (shell->priv->library));
 
 	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
-
-	gtk_widget_destroy (shell->priv->window);
 
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
