@@ -808,7 +808,7 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 	char **files, **filecur, *stored;
     
 	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
-	files = rb_ask_file_multiple (_("Choose files to add"),
+	files = rb_ask_file_multiple (_("Choose files or a directory to add"),
 				      stored,
 			              GTK_WINDOW (shell->priv->window));
 	g_free (stored);
