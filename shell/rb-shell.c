@@ -1874,11 +1874,10 @@ rb_shell_set_duration (RBShell *shell, const char *duration)
 static void
 rb_shell_set_window_title (RBShell *shell, const char *window_title)
 {
-	g_free (shell->priv->cached_title);
-	
 	if (window_title == NULL) {
 		rb_debug ("clearing title");
 
+		g_free (shell->priv->cached_title);
 		shell->priv->cached_title = NULL;
 		
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
@@ -1890,9 +1889,9 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 
 		if (shell->priv->cached_title &&
 		    !strcmp (shell->priv->cached_title, window_title)) {
-			shell->priv->cached_title = g_strdup (window_title);
 			return;
 		}
+		g_free (shell->priv->cached_title);
 		shell->priv->cached_title = g_strdup (window_title);
 
 		rb_debug ("setting title to \"%s\"", window_title);
