@@ -1,5 +1,17 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library-watcher.c: (rb_library_watcher_init),
+	(rb_library_watcher_finalize), (rb_library_watcher_load_files),
+	(rb_library_watcher_pref_changed_cb),
+	(rb_library_watcher_monitor_cb),
+	(rb_library_watcher_add_directory),
+	(rb_library_watcher_insert_file), (rb_library_watcher_remove_file),
+	(rb_library_watcher_timeout_cb), (rb_library_watcher_thread_main):
+
+	Make library watcher threaded.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-tree-model-node.c:
 	(rb_tree_model_node_set_property),
 	(filter_grandparent_destroyed_cb):

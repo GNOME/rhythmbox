@@ -35,7 +35,7 @@ static void rb_library_watcher_finalize (GObject *object);
 static void rb_library_watcher_get_files_foreach_cb (GnomeVFSURI *uri,
 					             gpointer unused,
 					             void **data);
-static void rb_library_watcher_load_files (RBLibraryWatcher *watcher);
+static void rb_library_watcher_load_files (RBLibraryWatcherPrivate *priv);
 static void rb_library_watcher_pref_changed_cb (GConfClient *client,
 				                guint cnxn_id,
 				                GConfEntry *entry,
@@ -44,18 +44,37 @@ static void rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 			                   const char *monitor_uri,
 			                   const char *info_uri,
 			                   GnomeVFSMonitorEventType event_type,
-			                   RBLibraryWatcher *watcher);
-static void rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
+			                   RBLibraryWatcherPrivate *priv);
+static void rb_library_watcher_add_directory (RBLibraryWatcherPrivate *priv,
 				              const char *dir);
-static void rb_library_watcher_insert_file (RBLibraryWatcher *watcher,
+static void rb_library_watcher_insert_file (RBLibraryWatcherPrivate *priv,
 				            const char *file);
-static void rb_library_watcher_remove_file (RBLibraryWatcher *watcher,
+static void rb_library_watcher_remove_file (RBLibraryWatcherPrivate *priv,
 				            const char *file);
+static gpointer rb_library_watcher_thread_main (RBLibraryWatcherPrivate *priv);
+static gboolean rb_library_watcher_timeout_cb (RBLibraryWatcher *watcher);
+
+typedef struct
+{
+	guint signal;
+	char *file;
+} SignalInfo;
 
 struct RBLibraryWatcherPrivate
 {
 	GHashTable *handles;
 	GHashTable *files;
+
+	guint timeout;
+
+	GMutex *signals_lock;
+	GList *signals;
+
+	GMutex *thread_lock;
+
+	gboolean check_dirs;
+
+	gboolean dead;
 };
 
 enum
@@ -160,7 +179,14 @@ rb_library_watcher_init (RBLibraryWatcher *watcher)
 				    (GConfClientNotifyFunc) rb_library_watcher_pref_changed_cb,
 				    watcher);
 
-	rb_library_watcher_load_files (watcher);
+	watcher->priv->timeout = g_timeout_add (10, (GSourceFunc) rb_library_watcher_timeout_cb, watcher);
+
+	watcher->priv->signals_lock = g_mutex_new ();
+	watcher->priv->thread_lock = g_mutex_new ();
+
+	watcher->priv->check_dirs = TRUE;
+
+	g_thread_create ((GThreadFunc) rb_library_watcher_thread_main, watcher->priv, TRUE, NULL);
 }
 
 static void
@@ -175,10 +201,13 @@ rb_library_watcher_finalize (GObject *object)
 
 	g_return_if_fail (watcher->priv != NULL);
 
-	g_hash_table_destroy (watcher->priv->handles);
-	g_hash_table_destroy (watcher->priv->files);
+	g_mutex_lock (watcher->priv->thread_lock);
 
-	g_free (watcher->priv);
+	g_source_remove (watcher->priv->timeout);
+
+	watcher->priv->dead = TRUE;
+
+	g_mutex_unlock (watcher->priv->thread_lock);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -218,20 +247,20 @@ rb_library_watcher_get_files (RBLibraryWatcher *watcher)
 }
 
 static void
-rb_library_watcher_load_files (RBLibraryWatcher *watcher)
+rb_library_watcher_load_files (RBLibraryWatcherPrivate *priv)
 {
 	GSList *dirs, *l;
 	char *base_folder;
 
 	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
-	rb_library_watcher_add_directory (watcher, base_folder);
+	rb_library_watcher_add_directory (priv, base_folder);
 	g_free (base_folder);
 
 	dirs = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
 
 	for (l = dirs; l != NULL; l = g_slist_next (l))
 	{
-		rb_library_watcher_add_directory (watcher, l->data);
+		rb_library_watcher_add_directory (priv, l->data);
 	}
 
 	g_slist_foreach (dirs, (GFunc) g_free, NULL);
@@ -244,7 +273,7 @@ rb_library_watcher_pref_changed_cb (GConfClient *client,
 				    GConfEntry *entry,
 				    RBLibraryWatcher *watcher)
 {
-	rb_library_watcher_load_files (watcher);
+	watcher->priv->check_dirs = TRUE;
 }
 
 static void
@@ -252,7 +281,7 @@ rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 			       const char *monitor_uri,
 			       const char *info_uri,
 			       GnomeVFSMonitorEventType event_type,
-			       RBLibraryWatcher *watcher)
+			       RBLibraryWatcherPrivate *priv)
 {
 	GnomeVFSFileInfo *info;
 	gboolean directory;
@@ -269,24 +298,32 @@ rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 	case GNOME_VFS_MONITOR_EVENT_CHANGED:
 		if (directory == FALSE)
 		{
-			g_signal_emit (G_OBJECT (watcher), rb_library_watcher_signals[FILE_CHANGED], 0,
-				       info_uri);
+			SignalInfo *signal;
+			
+			g_mutex_lock (priv->signals_lock);
+
+			signal = g_new0 (SignalInfo, 1);
+			signal->signal = rb_library_watcher_signals[FILE_CHANGED];
+			signal->file = g_strdup (info_uri);
+			priv->signals = g_list_append (priv->signals, signal);
+			
+			g_mutex_unlock (priv->signals_lock);
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
 		if (directory == FALSE)
 		{
-			rb_library_watcher_remove_file (watcher, info_uri);
+			rb_library_watcher_remove_file (priv, info_uri);
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_CREATED:
 		if (directory == FALSE)
 		{
-			rb_library_watcher_insert_file (watcher, info_uri);
+			rb_library_watcher_insert_file (priv, info_uri);
 		}
 		else
 		{
-			rb_library_watcher_add_directory (watcher, info_uri);
+			rb_library_watcher_add_directory (priv, info_uri);
 		}
 		break;
 	default:
@@ -295,7 +332,7 @@ rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 }
 
 static void
-rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
+rb_library_watcher_add_directory (RBLibraryWatcherPrivate *priv,
 				  const char *dir)
 {
 	GnomeVFSMonitorHandle *handle = NULL;
@@ -312,7 +349,7 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 	if (uri == NULL || gnome_vfs_uri_exists (uri) == FALSE)
 		return;
 
-	if (g_hash_table_lookup (watcher->priv->handles, uri) != NULL)
+	if (g_hash_table_lookup (priv->handles, uri) != NULL)
 	{
 		gnome_vfs_uri_unref (uri);
 		return;
@@ -341,7 +378,7 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 				subdir_uri_text = gnome_vfs_uri_to_string
 					(subdir_uri, GNOME_VFS_URI_HIDE_NONE);
 				gnome_vfs_uri_unref (subdir_uri);
-				rb_library_watcher_add_directory (watcher, subdir_uri_text);
+				rb_library_watcher_add_directory (priv, subdir_uri_text);
 				g_free (subdir_uri_text);
 			}
 
@@ -351,8 +388,8 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 		file_uri = gnome_vfs_uri_append_file_name (uri, info->name);
 		filename = gnome_vfs_uri_to_string (file_uri, GNOME_VFS_URI_HIDE_NONE);
 
-		if (g_hash_table_lookup (watcher->priv->files, file_uri) == NULL)
-			rb_library_watcher_insert_file (watcher, filename);
+		if (g_hash_table_lookup (priv->files, file_uri) == NULL)
+			rb_library_watcher_insert_file (priv, filename);
 
 		g_free (filename);
 		gnome_vfs_uri_unref (file_uri);
@@ -361,36 +398,116 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 	gnome_vfs_file_info_list_free (list);
 
 	gnome_vfs_monitor_add (&handle, text_uri, GNOME_VFS_MONITOR_DIRECTORY,
-			       (GnomeVFSMonitorCallback) rb_library_watcher_monitor_cb, watcher);
+			       (GnomeVFSMonitorCallback) rb_library_watcher_monitor_cb, priv);
 
 	g_free (text_uri);
 
 	if (handle != NULL)
-		g_hash_table_insert (watcher->priv->handles, uri, handle);
+		g_hash_table_insert (priv->handles, uri, handle);
 }
 
 static void
-rb_library_watcher_insert_file (RBLibraryWatcher *watcher,
+rb_library_watcher_insert_file (RBLibraryWatcherPrivate *priv,
 				const char *file)
 {
 	GnomeVFSURI *uri;
+	SignalInfo *signal;
 
 	uri = gnome_vfs_uri_new (file);
-	g_hash_table_insert (watcher->priv->files, uri, GINT_TO_POINTER (TRUE));
+	g_hash_table_insert (priv->files, uri, GINT_TO_POINTER (TRUE));
 
-	g_signal_emit (G_OBJECT (watcher), rb_library_watcher_signals[FILE_CREATED], 0, file);
+	g_mutex_lock (priv->signals_lock);
+
+	signal = g_new0 (SignalInfo, 1);
+	signal->signal = rb_library_watcher_signals[FILE_CREATED];
+	signal->file = g_strdup (file);
+	priv->signals = g_list_append (priv->signals, signal);
+		
+	g_mutex_unlock (priv->signals_lock);
 }
 
 static void
-rb_library_watcher_remove_file (RBLibraryWatcher *watcher,
+rb_library_watcher_remove_file (RBLibraryWatcherPrivate *priv,
 				const char *file)
 {
 	GnomeVFSURI *uri;
+	SignalInfo *signal;
 	
 	uri = gnome_vfs_uri_new (file);
-	g_hash_table_remove (watcher->priv->files, uri);
+	g_hash_table_remove (priv->files, uri);
 	gnome_vfs_uri_unref (uri);
 
-	g_signal_emit (G_OBJECT (watcher), rb_library_watcher_signals[FILE_DELETED], 0,
-		       file);
+	g_mutex_lock (priv->signals_lock);
+
+	signal = g_new0 (SignalInfo, 1);
+	signal->signal = rb_library_watcher_signals[FILE_DELETED];
+	signal->file = g_strdup (file);
+	priv->signals = g_list_append (priv->signals, signal);
+		
+	g_mutex_unlock (priv->signals_lock);
+}
+
+static gboolean
+rb_library_watcher_timeout_cb (RBLibraryWatcher *watcher)
+{
+	GList *list;
+	SignalInfo *signal;
+
+	if (watcher->priv->signals == NULL)
+		return TRUE;
+
+	g_mutex_lock (watcher->priv->signals_lock);
+
+	list = g_list_first (watcher->priv->signals);
+	signal = (SignalInfo *) list->data;
+	watcher->priv->signals = g_list_remove (watcher->priv->signals, signal);
+
+	g_mutex_unlock (watcher->priv->signals_lock);
+
+	g_signal_emit (G_OBJECT (watcher), signal->signal, 0, signal->file);
+	g_free (signal->file);
+	g_free (signal);
+
+	return TRUE;
+}
+
+static gpointer
+rb_library_watcher_thread_main (RBLibraryWatcherPrivate *priv)
+{
+	while (TRUE)
+	{
+		g_mutex_lock (priv->thread_lock);
+		if (priv->dead == TRUE)
+		{
+			GList *l;
+
+			g_mutex_free (priv->thread_lock);
+
+			g_hash_table_destroy (priv->handles);
+			g_hash_table_destroy (priv->files);
+
+			for (l = priv->signals; l != NULL; l = g_list_next (l))
+			{
+				SignalInfo *signal = (SignalInfo *) l->data;
+				g_free (signal->file);
+				g_free (signal);
+			}
+			g_list_free (priv->signals);
+			g_mutex_free (priv->signals_lock);
+
+			g_free (priv);
+			g_thread_exit (NULL);
+		}
+
+		if (priv->check_dirs == TRUE)
+		{
+			rb_library_watcher_load_files (priv);
+
+			priv->check_dirs = FALSE;
+		}
+
+		g_mutex_unlock (priv->thread_lock);
+		
+		g_usleep (10);
+	}
 }
