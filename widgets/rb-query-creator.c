@@ -165,7 +165,7 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	dlg->priv->queries = g_ptr_array_new ();
 
 	gtk_dialog_add_button (GTK_DIALOG (dlg),
-			       GTK_STOCK_CLOSE,
+			       GTK_STOCK_CANCEL,
 			       GTK_RESPONSE_CLOSE);
 	gtk_dialog_add_button (GTK_DIALOG (dlg),
 			       GTK_STOCK_NEW,
