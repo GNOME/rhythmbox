@@ -26,6 +26,8 @@
 /* FIXME better pause indication */
 /* FIXME figure proper whole album/all shuffle behaviour */
 /* FIXME playlist management button? */
+/* FIXME volume control */
+/* FIXME tooltip on ellipsized title label to show full name */
 
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
@@ -332,7 +334,7 @@ rb_player_init (RBPlayer *player)
 			    FALSE, FALSE, 0);
 
 	player->priv->second_button_box = gtk_hbox_new (FALSE, 5);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->second_button_box,
+	gtk_box_pack_end (GTK_BOX (hbox), player->priv->second_button_box,
 			    FALSE, FALSE, 0);
 
 	player->priv->previous = create_button_with_icon (RB_STOCK_PREVIOUS);
@@ -571,7 +573,7 @@ clear (RBPlayer *player)
 
 	kids = rb_node_get_children (player->priv->playlist);
 	rb_node_thaw (player->priv->playlist);
-	for (i = 0; i < kids->len; i++) {
+	for (i = kids->len - 1; i >= 0; i--) {
 		RBNode *kid;
 
 		kid = g_ptr_array_index (kids, i);
@@ -709,7 +711,7 @@ sync_info (RBPlayer *player)
 	else if (artist != NULL && title == NULL)
 		title_str = g_strdup_printf (_("%s - Unknown"), artist);
 	else if (artist == NULL && title != NULL)
-		title_str = g_strdup_printf (_("%s"), title);
+		title_str = g_strdup_printf ("%s", title);
 	else
 		title_str = NULL;
 
@@ -765,7 +767,10 @@ rb_player_queue_song (RBPlayer *player,
 	if (start_playing) {
 		prepend_song (player, song);
 		set_playing (player, song);
+		monkey_media_mixer_set_state (player->priv->mixer,
+					      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 		update_buttons (player);
+		sync_time (player);
 	} else {
 		append_song (player, song);
 	}

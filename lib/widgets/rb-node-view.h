@@ -50,11 +50,14 @@ typedef struct
 {
 	GtkScrolledWindowClass parent;
 
-	void (*node_selected)  (RBNodeView *view, RBNode *node);
-	void (*node_activated) (RBNodeView *view, RBNode *node);
+	void (*node_selected)          (RBNodeView *view, RBNode *node);
+	void (*node_activated)         (RBNodeView *view, RBNode *node);
+	void (*playing_node_removed)   (RBNodeView *view);
 
-	void (*changed)        (RBNodeView *view);
-	void (*show_popup)     (RBNodeView *view);
+	void (*changed)                (RBNodeView *view);
+	void (*have_selection_changed) (RBNodeView *view, gboolean have_selection);
+
+	void (*show_popup)             (RBNodeView *view);
 } RBNodeViewClass;
 
 GType       rb_node_view_get_type                 (void);
@@ -70,6 +73,7 @@ RBNode     *rb_node_view_get_playing_node         (RBNodeView *view);
 RBNode     *rb_node_view_get_next_node            (RBNodeView *view);
 RBNode     *rb_node_view_get_previous_node        (RBNodeView *view);
 RBNode     *rb_node_view_get_first_node           (RBNodeView *view);
+GList      *rb_node_view_get_rows                 (RBNodeView *view);
 
 gboolean    rb_node_view_have_selection           (RBNodeView *view);
 GList      *rb_node_view_get_selection            (RBNodeView *view);

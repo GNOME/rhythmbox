@@ -25,6 +25,7 @@
 #include <gtk/gtkhpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
+#include <gtk/gtkbutton.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <string.h>
@@ -86,6 +87,20 @@ static void songs_filter (RBLibraryView *view,
 	                  RBNode *genre,
 	                  RBNode *artist,
 			  RBNode *album);
+static void songs_node_activated_cb (RBNodeView *nodeview,
+			             RBNode *node,
+			             RBLibraryView *view);
+static void play_album_cb (GtkWidget *button,
+	                   RBLibraryView *view);
+static void play_album_later_cb (GtkWidget *button,
+	                         RBLibraryView *view);
+static void play_song_cb (GtkWidget *button,
+	                  RBLibraryView *view);
+static void play_song_later_cb (GtkWidget *button,
+	                        RBLibraryView *view);
+static void songs_changed_cb (RBNodeView *nodeview,
+		              RBLibraryView *view);
+static void check_button_sensitivity (RBLibraryView *view);
 
 #define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
 
@@ -96,7 +111,11 @@ struct RBLibraryViewPrivate
 	RBLibrary *library;
 
 	GtkWidget *browser;
-	GtkWidget *vbox;
+
+	GtkWidget *play_album;
+	GtkWidget *play_album_later;
+	GtkWidget *play_song;
+	GtkWidget *play_song_later;
 
 	RBNodeView *genres;
 	RBNodeView *albums;
@@ -301,9 +320,9 @@ rb_library_view_get_property (GObject *object,
 static void
 rb_library_view_construct (RBLibraryView *view)
 {
-	view->priv->vbox = gtk_vbox_new (FALSE, 5);
+	GtkWidget *buttonbox, *vbox;
 
-	gtk_container_add (GTK_CONTAINER (view), view->priv->vbox);
+	vbox = gtk_vbox_new (FALSE, 5);
 
 	view->priv->search = rb_search_entry_new ();
 
@@ -316,6 +335,33 @@ rb_library_view_construct (RBLibraryView *view)
 		(CONF_UI_BROWSER_VIEWS, (GConfClientNotifyFunc) browser_views_notifier, view);
 
 	view->priv->library = rb_get_library (view->priv->rb);
+
+	/* the buttons */
+	buttonbox = gtk_hbox_new (FALSE, 5);
+	gtk_box_pack_start (GTK_BOX (vbox), buttonbox,
+			    FALSE, FALSE, 0);
+
+	view->priv->play_album = gtk_button_new_with_mnemonic (_("_Play Album"));
+	g_signal_connect (G_OBJECT (view->priv->play_album),
+			  "clicked", G_CALLBACK (play_album_cb), view);
+	gtk_box_pack_start (GTK_BOX (buttonbox), view->priv->play_album,
+			    FALSE, FALSE, 0);
+	view->priv->play_album_later = gtk_button_new_with_mnemonic (_("Play Album _Later"));
+	g_signal_connect (G_OBJECT (view->priv->play_album_later),
+			  "clicked", G_CALLBACK (play_album_later_cb), view);
+	gtk_box_pack_start (GTK_BOX (buttonbox), view->priv->play_album_later,
+			    FALSE, FALSE, 0);
+
+	view->priv->play_song_later = gtk_button_new_with_mnemonic (_("Play Song Later"));
+	g_signal_connect (G_OBJECT (view->priv->play_song_later),
+			  "clicked", G_CALLBACK (play_song_later_cb), view);
+	gtk_box_pack_end (GTK_BOX (buttonbox), view->priv->play_song_later,
+			  FALSE, FALSE, 0);
+	view->priv->play_song = gtk_button_new_with_mnemonic (_("Play _Song"));
+	g_signal_connect (G_OBJECT (view->priv->play_song),
+			  "clicked", G_CALLBACK (play_song_cb), view);
+	gtk_box_pack_end (GTK_BOX (buttonbox), view->priv->play_song,
+			  FALSE, FALSE, 0);
 
 	view->priv->paned = gtk_hpaned_new ();
 
@@ -362,11 +408,23 @@ rb_library_view_construct (RBLibraryView *view)
 	gtk_box_pack_start (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->search), FALSE, TRUE, 0);
 
 	gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (view->priv->paned), vbox, TRUE, FALSE);
 
 	/* set up songs tree view */
 	view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 				              rb_file ("rb-node-view-songs.xml"),
 					      view->priv->songs_filter);
+	g_signal_connect (G_OBJECT (view->priv->songs),
+			  "node_activated",
+			  G_CALLBACK (songs_node_activated_cb),
+			  view);
+	g_signal_connect (G_OBJECT (view->priv->songs),
+			  "changed",
+			  G_CALLBACK (songs_changed_cb),
+			  view);
+
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (view->priv->songs),
+			    TRUE, TRUE, 0);
 
 	/* Drag'n'Drop for songs view */
 	g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
@@ -395,9 +453,7 @@ rb_library_view_construct (RBLibraryView *view)
 			  G_CALLBACK (paned_size_allocate_cb),
 			  view);
 
-	gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), TRUE, FALSE);
-
-	gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
+	gtk_container_add (GTK_CONTAINER (view), view->priv->paned);
 
 	view->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
 
@@ -409,6 +465,8 @@ rb_library_view_construct (RBLibraryView *view)
 
 	rb_node_view_select_node (view->priv->artists,
 			          rb_library_get_all_albums (view->priv->library));
+
+	check_button_sensitivity (view);
 }
 
 RBLibraryView *
@@ -431,6 +489,7 @@ ensure_node_selection (RBNodeView *view,
 		       gboolean *changing_flag)
 {
 	GList *selection = rb_node_view_get_selection (view);
+	RBNode *ret;
 
 	if (selection == NULL)
 	{
@@ -440,7 +499,11 @@ ensure_node_selection (RBNodeView *view,
 		selection = rb_node_view_get_selection (view);
 	}
 
-	return RB_NODE (selection->data);
+	ret = RB_NODE (selection->data);
+
+	g_list_free (selection);
+
+	return ret;
 }
 
 
@@ -700,4 +763,109 @@ songs_filter (RBLibraryView *view,
 								      RB_NODE_PROP_REAL_ALBUM, album),
 				       2);
 	rb_node_filter_done_changing (view->priv->songs_filter);
+}
+
+static void
+songs_node_activated_cb (RBNodeView *nodeview,
+			 RBNode *node,
+			 RBLibraryView *view)
+{
+	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+}
+
+static void
+play_song_cb (GtkWidget *button,
+	      RBLibraryView *view)
+{
+	GList *sel, *l;
+
+	sel = rb_node_view_get_selection (view->priv->songs);
+
+	for (l = sel; l != NULL; l = g_list_next (l)) {
+		RBNode *node;
+
+		node = (RBNode *) l->data;
+
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+	}
+
+	g_list_free (sel);
+}
+
+static void
+play_song_later_cb (GtkWidget *button,
+	            RBLibraryView *view)
+{
+	GList *sel, *l;
+
+	sel = rb_node_view_get_selection (view->priv->songs);
+
+	for (l = sel; l != NULL; l = g_list_next (l)) {
+		RBNode *node;
+
+		node = (RBNode *) l->data;
+
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+	}
+
+	g_list_free (sel);
+}
+
+static void
+play_album_cb (GtkWidget *button,
+	       RBLibraryView *view)
+{
+	GList *sel, *l;
+
+	sel = rb_node_view_get_rows (view->priv->songs);
+
+	for (l = sel; l != NULL; l = g_list_next (l)) {
+		RBNode *node;
+
+		node = (RBNode *) l->data;
+
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+	}
+
+	g_list_free (sel);
+}
+
+static void
+play_album_later_cb (GtkWidget *button,
+	             RBLibraryView *view)
+{
+	GList *sel, *l;
+
+	sel = rb_node_view_get_rows (view->priv->songs);
+
+	for (l = sel; l != NULL; l = g_list_next (l)) {
+		RBNode *node;
+
+		node = (RBNode *) l->data;
+
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+	}
+
+	g_list_free (sel);
+}
+
+static void
+songs_changed_cb (RBNodeView *nodeview,
+		  RBLibraryView *view)
+{
+	check_button_sensitivity (view);
+}
+
+static void
+check_button_sensitivity (RBLibraryView *view)
+{
+	gboolean have_sel, have_any;
+
+	have_sel = rb_node_view_have_selection (view->priv->songs);
+	have_any = (rb_node_view_get_first_node (view->priv->songs) != NULL);
+
+	gtk_widget_set_sensitive (view->priv->play_song, have_sel);
+	gtk_widget_set_sensitive (view->priv->play_song_later, have_sel);
+	gtk_widget_set_sensitive (view->priv->play_album, have_any);
+	gtk_widget_set_sensitive (view->priv->play_album_later, have_any);
 }

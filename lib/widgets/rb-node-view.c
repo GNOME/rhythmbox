@@ -64,10 +64,10 @@ static int rb_node_view_sort_func (GtkTreeModel *model,
 			           GtkTreeIter *a,
 			           GtkTreeIter *b,
 			           gpointer user_data);
-static void get_selection (GtkTreeModel *model,
-	                   GtkTreePath *path,
-	                   GtkTreeIter *iter,
-	                   void **data);
+static gboolean harvest_nodes (GtkTreeModel *model,
+	                       GtkTreePath *path,
+	                       GtkTreeIter *iter,
+	                       void **data);
 static void rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 				               RBNodeView *view);
 static void rb_node_view_row_activated_cb (GtkTreeView *treeview,
@@ -110,8 +110,8 @@ static int dumb_sort_func (GtkTreeModel *model,
 static void after_filter_changed_cb (RBNodeFilter *filter,
 			             RBNodeView *view);
 static gboolean rb_node_view_button_press_cb (GtkTreeView *treeview,
-			      		      GdkEventButton *event,
-			      		      RBNodeView *view);
+					      GdkEventButton *event,
+					      RBNodeView *view);
 static gboolean scroll_to_cell (GtkTreeView *treeview);
 
 struct RBNodeViewPrivate
@@ -158,6 +158,7 @@ enum
 	CHANGED,
 	SHOW_POPUP,
 	PLAYING_NODE_REMOVED,
+	HAVE_SEL_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -281,17 +282,25 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	
 	rb_node_view_signals[PLAYING_NODE_REMOVED] =
 		g_signal_new ("playing_node_removed",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeViewClass, changed),
+			      G_STRUCT_OFFSET (RBNodeViewClass, playing_node_removed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-
+	rb_node_view_signals[HAVE_SEL_CHANGED] =
+		g_signal_new ("have_selection_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeViewClass, have_selection_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__BOOLEAN,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_BOOLEAN);
 }
 
 static void
@@ -457,7 +466,7 @@ node_from_sort_iter_cb (RBTreeModelSort *model,
 		        RBNodeView *view)
 {
 	GtkTreeIter filter_iter, node_iter;
-	
+
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (model),
 							&filter_iter, iter);
 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
@@ -528,7 +537,7 @@ rb_node_view_construct (RBNodeView *view)
 			         G_CALLBACK (gtk_tree_sortable_sort_column_changed_cb),
 			         view,
 				 0);
-	
+
 	view->priv->treeview = GTK_WIDGET (rb_tree_view_new_with_model (view->priv->sortmodel));
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "button_press_event",
@@ -648,15 +657,15 @@ rb_node_view_construct (RBNodeView *view)
 		{
 			char **parts = g_strsplit (tmp, " ", 0);
 			int i;
-			
+
 			for (i = 0; parts != NULL && parts[i] != NULL; i++)
 			{
 				RBTreeModelNodeColumn col;
-				ev = g_enum_get_value_by_name (class, parts[i]);	
+				ev = g_enum_get_value_by_name (class, parts[i]);
 				col = ev->value;
 				sort_order = g_list_append (sort_order, GINT_TO_POINTER (col));
 			}
-			
+
 			g_strfreev (parts);
 		}
 		g_free (tmp);
@@ -668,7 +677,7 @@ rb_node_view_construct (RBNodeView *view)
 		if (column == RB_TREE_MODEL_NODE_COL_PLAYING)
 		{
 			int width;
-			
+
 			renderer = rb_cell_renderer_pixbuf_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
@@ -681,7 +690,7 @@ rb_node_view_construct (RBNodeView *view)
 		else if (column == RB_TREE_MODEL_NODE_COL_RATING)
 		{
 			int width;
-			
+
 			renderer = rb_cell_renderer_rating_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
@@ -691,7 +700,7 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 			gtk_tree_view_column_set_fixed_width (gcolumn, width * 5 + 5);
 
-			g_signal_connect_object (renderer, 
+			g_signal_connect_object (renderer,
 						 "rated",
 					         G_CALLBACK (rb_node_view_rated_cb),
 						 G_OBJECT (view),
@@ -723,7 +732,7 @@ rb_node_view_construct (RBNodeView *view)
 			if (sort_order != NULL)
 				gtk_tree_view_column_set_sort_column_id (gcolumn, column);
 		}
-		
+
 		gtk_tree_view_column_set_clickable (gcolumn, clickable);
 
 		rb_tree_view_column_set_sort_order (RB_TREE_VIEW_COLUMN (gcolumn), sort_order);
@@ -743,14 +752,14 @@ rb_node_view_construct (RBNodeView *view)
 
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
 
-		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), 
+		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 					     gcolumn);
-		
-		g_hash_table_insert (view->priv->columns, 
-				     GINT_TO_POINTER (column), 
+
+		g_hash_table_insert (view->priv->columns,
+				     GINT_TO_POINTER (column),
 				     gcolumn);
 	}
-		
+
 	if (view->priv->columns_key != NULL)
 	{
 		char *config = eel_gconf_get_string (view->priv->columns_key);
@@ -807,11 +816,11 @@ filter_changed_cb (RBNodeFilter *filter,
 		   RBNodeView *view)
 {
 	GtkWidget *window;
-	
+
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
 	window = gtk_widget_get_toplevel (GTK_WIDGET (view));
-	
+
 	if (window != NULL && window->window != NULL)
 	{
 		/* nice busy cursor */
@@ -916,7 +925,7 @@ rb_node_view_get_node (RBNodeView *view,
 			gtk_tree_path_free (path);
 			return NULL;
 		}
-		
+
 		found = gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &iter, path);
 
 		gtk_tree_path_free (path);
@@ -941,7 +950,7 @@ rb_node_view_get_next_node (RBNodeView *view)
 
 RBNode *
 rb_node_view_get_previous_node (RBNodeView *view)
-{	
+{
 	return rb_node_view_get_node (view, rb_node_view_get_playing_node (view), RB_DIRECTION_UP);
 }
 
@@ -962,8 +971,8 @@ rb_node_view_get_first_node (RBNodeView *view)
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
 }
 
-static void
-get_selection (GtkTreeModel *model,
+static gboolean
+harvest_nodes (GtkTreeModel *model,
 	       GtkTreePath *path,
 	       GtkTreeIter *iter,
 	       void **data)
@@ -978,25 +987,39 @@ get_selection (GtkTreeModel *model,
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (sortmodel, &iter3, iter2);
 	egg_tree_model_filter_convert_iter_to_child_iter (filtermodel, iter2, &iter3);
-	
+
 	node = rb_tree_model_node_node_from_iter (nodemodel, iter2);
 
 	gtk_tree_iter_free (iter2);
 
-	*list = g_list_prepend (*list, node);
+	*list = g_list_append (*list, node);
+
+	return FALSE;
 }
 
 GList *
 rb_node_view_get_selection (RBNodeView *view)
 {
 	GList *list = NULL;
-	
+
 	gtk_tree_selection_selected_foreach (view->priv->selection,
-					     (GtkTreeSelectionForeachFunc) get_selection,
+					     (GtkTreeSelectionForeachFunc) harvest_nodes,
 					     (void **) &list);
 	g_list_free (view->priv->nodeselection);
-	view->priv->nodeselection = list;
-	
+	view->priv->nodeselection = g_list_copy (list);
+
+	return list;
+}
+
+GList *
+rb_node_view_get_rows (RBNodeView *view)
+{
+	GList *list = NULL;
+
+	gtk_tree_model_foreach (GTK_TREE_MODEL (view->priv->sortmodel),
+				(GtkTreeModelForeachFunc) harvest_nodes,
+				(void **) &list);
+
 	return list;
 }
 
@@ -1021,7 +1044,7 @@ rb_node_view_sort_func (GtkTreeModel *model,
 
 		gtk_tree_model_get_value (model, a, column, &a_value);
 		gtk_tree_model_get_value (model, b, column, &b_value);
-		
+
 		switch (G_TYPE_FUNDAMENTAL (type))
 		{
 		case G_TYPE_BOOLEAN:
@@ -1132,6 +1155,8 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	{
 		view->priv->changed = TRUE;
 		view->priv->have_selection = available;
+
+		g_signal_emit (G_OBJECT (view), rb_node_view_signals[HAVE_SEL_CHANGED], 0, available);
 	}
 
 	if (selected_node != NULL && selected_node != view->priv->selected_node)
@@ -1140,6 +1165,8 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	}
 
 	view->priv->selected_node = selected_node;
+
+	g_list_free (sel);
 }
 
 gboolean
@@ -1156,7 +1183,7 @@ rb_node_view_row_activated_cb (GtkTreeView *treeview,
 {
 	GtkTreeIter iter, iter2;
 	RBNode *node;
-	
+
 	gtk_tree_model_get_iter (view->priv->sortmodel, &iter, path);
 	gtk_tree_model_sort_convert_iter_to_child_iter
 		(GTK_TREE_MODEL_SORT (view->priv->sortmodel), &iter2, &iter);
@@ -1240,7 +1267,7 @@ rb_node_view_select_node (RBNodeView *view,
 				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
 	visible = g_value_get_boolean (&val);
 	g_value_unset (&val);
-	
+
 	if (visible == FALSE)
 	{
 		view->priv->selection_lock = FALSE;
@@ -1253,7 +1280,7 @@ rb_node_view_select_node (RBNodeView *view,
 							&iter, &iter2);
 
 	gtk_tree_selection_select_iter (view->priv->selection, &iter);
-	
+
 	view->priv->selection_lock = FALSE;
 }
 
@@ -1268,7 +1295,7 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 
 	if (node == NULL)
 		return;
-	
+
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
 					   node, &iter);
 	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
@@ -1333,9 +1360,9 @@ root_child_removed_cb (RBNode *root,
 	/* playing node bit */
 	if (child == rb_node_view_get_playing_node (view))
 	{
-		g_signal_emit (G_OBJECT (view), 
-			       rb_node_view_signals[PLAYING_NODE_REMOVED], 
-			       0, 
+		g_signal_emit (G_OBJECT (view),
+			       rb_node_view_signals[PLAYING_NODE_REMOVED],
+			       0,
 			       child);
 	}
 
@@ -1414,23 +1441,23 @@ rb_node_view_columns_parse (RBNodeView *view,
 	GList *visible_columns = NULL;
 	GtkTreeViewColumn *column = NULL;
 	GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
-	
+
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (config != NULL);
 
 	/* the list of visible columns */
 	items = g_strsplit (config, ",", 0);
-	if (items != NULL) 
+	if (items != NULL)
 	{
 		for (i = 0; items[i] != NULL; i++)
 		{
 			ev = g_enum_get_value_by_name (class, items[i]);
 
-			if ((ev != NULL) 
-			    && (ev->value >= 0) 
+			if ((ev != NULL)
+			    && (ev->value >= 0)
 			    && (ev->value < RB_TREE_MODEL_NODE_NUM_COLUMNS))
 			{
-				visible_columns = g_list_append (visible_columns, 
+				visible_columns = g_list_append (visible_columns,
 								 GINT_TO_POINTER (ev->value));
 			}
 		}
@@ -1452,11 +1479,11 @@ rb_node_view_columns_parse (RBNodeView *view,
 		case RB_TREE_MODEL_NODE_NUM_COLUMNS:
 			/* nothing to do for these */
 			break;
-			
+
 		default:
-			column = g_hash_table_lookup (view->priv->columns, 
+			column = g_hash_table_lookup (view->priv->columns,
 						      GINT_TO_POINTER (i));
-			if (column != NULL) 
+			if (column != NULL)
 			{
 				gboolean visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL;
 				gtk_tree_view_column_set_visible (column, visible);

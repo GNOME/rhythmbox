@@ -554,6 +554,12 @@ rb_get_library (RB *rb)
 	return rb->priv->library;
 }
 
+RBPlayer *
+rb_get_player (RB *rb)
+{
+	return rb->priv->player;
+}
+
 void
 rb_set_title (RB *rb,
 	      const char *title)

@@ -1,3 +1,28 @@
+2003-01-04  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(node_from_sort_iter_cb), (rb_node_view_construct),
+	(filter_changed_cb), (rb_node_view_get_node),
+	(rb_node_view_get_previous_node), (harvest_nodes),
+	(rb_node_view_get_selection), (rb_node_view_get_rows),
+	(rb_node_view_sort_func), (rb_node_view_selection_changed_cb),
+	(rb_node_view_row_activated_cb), (rb_node_view_select_node),
+	(rb_node_view_scroll_to_node), (root_child_removed_cb),
+	(rb_node_view_columns_parse):
+	* lib/widgets/rb-node-view.h:
+	* library/rb-node.c:
+	* shell/rb-player.c: (rb_player_init), (clear), (sync_info),
+	(rb_player_queue_song):
+	* shell/rb.c: (rb_get_player):
+	* views/rb-library-view.c: (rb_library_view_construct),
+	(ensure_node_selection), (songs_filter), (songs_node_activated_cb),
+	(play_song_cb), (play_song_later_cb), (play_album_cb),
+	(play_album_later_cb), (songs_changed_cb),
+	(check_button_sensitivity):
+
+	Start doing the new new UI.
+
 2003-01-03  Artis Trops  <hornet@navigator.lv>
 
         * configure.in: Added Latvian (lv) to ALL_LINGUAS.

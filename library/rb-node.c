@@ -1560,7 +1560,7 @@ rb_node_new_id (void)
 	return ret;
 }
 
-static void
+static inline void
 id_factory_set_to (long new_factory_pos)
 {
 	id_factory = new_factory_pos + 1;
