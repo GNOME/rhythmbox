@@ -26,6 +26,7 @@
 #include <libgnome/gnome-program.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
+#include <libgnomeui/gnome-authentication-manager.h>
 #include <gtk/gtk.h>
 #include <bonobo/Bonobo.h>
 #include <bonobo/bonobo-main.h>
@@ -124,6 +125,8 @@ main (int argc, char **argv)
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
+
+	gnome_authentication_manager_init ();
 
 	g_random_set_seed (time(0));
 
