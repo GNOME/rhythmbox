@@ -348,7 +348,7 @@ rb_player_sync (RBPlayer *player)
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
 		const char *artist = rb_view_player_get_artist (player->priv->view_player);
-		char *escaped;
+		char *escaped, *s;
 
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);
@@ -356,12 +356,24 @@ rb_player_sync (RBPlayer *player)
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
-		tmp = ALBUM_INFO_URL (album);
+		s = tmp = g_strdup (album);
+		while ((tmp = strstr (tmp, " ")) != NULL)
+		{
+			*tmp = '|';
+		}
+		tmp = ALBUM_INFO_URL (s);
+		g_free (s);
 		rb_link_set (player->priv->album, album,
 			     _("Get information on this album from the web"), tmp);
 		g_free (tmp);
 
-		tmp = ARTIST_INFO_URL (artist);
+		s = tmp = g_strdup (artist);
+		while ((tmp = strstr (tmp, " ")) != NULL)
+		{
+			*tmp = '|';
+		}
+		tmp = ARTIST_INFO_URL (s);
+		g_free (s);
 		rb_link_set (player->priv->artist, artist,
 			     _("Get information on this artist from the web"), tmp);
 		g_free (tmp);
