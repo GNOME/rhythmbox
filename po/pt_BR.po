@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-13 16:01-0400\n"
-"PO-Revision-Date: 2004-04-13 16:01-0400\n"
+"POT-Creation-Date: 2004-04-15 17:52-0400\n"
+"PO-Revision-Date: 2004-04-05 22:11-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: GNOME-l10n-br <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Gêneros, artistas e álbuns"
 msgid "The following files couldn't be loaded:"
 msgstr "Os seguintes arquivos não foram carregados:"
 
-#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:3
+#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
 msgstr "Classificar automaticamente:"
 
@@ -194,7 +194,7 @@ msgstr "Localização:"
 msgid "Play count:"
 msgstr "Contagem de reproduzidas:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:11 data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "Ál_bum:"
 
@@ -220,10 +220,6 @@ msgstr "_Título:"
 #: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "_Número da faixa:"
-
-#: data/glade/song-info-multiple.glade.h:2
-msgid "A_lbum:"
-msgstr "Á_lbum:"
 
 #: data/glade/station-new.glade.h:3
 msgid "_Location:"
@@ -750,7 +746,12 @@ msgstr "Falha ao abrir o arquivo como Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:503 metadata/rb-metadata-gst.c:632
+#: metadata/rb-metadata-gst.c:288
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "Não há instalado nenhum plugin para lidar com arquivos %s."
+
+#: metadata/rb-metadata-gst.c:529 metadata/rb-metadata-gst.c:658
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -881,88 +882,80 @@ msgstr "%s, %s e %s"
 msgid "%s and %s"
 msgstr "%s e %s"
 
-#: shell/main.c:91
+#: shell/main.c:90
 msgid "Print the playing song and exit"
 msgstr "Mostra o nome da música em reprodução e sair"
 
-#: shell/main.c:92
+#: shell/main.c:91
 msgid "Print the playing song URI and exit"
 msgstr "Mostra o URI da música em reprodução e sair"
 
-#: shell/main.c:94
+#: shell/main.c:93
 msgid "Print the playing song length in seconds and exit"
 msgstr "Mostra a duração em segundos da música em reprodução e sair"
 
-#: shell/main.c:95
+#: shell/main.c:94
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Mostra o tempo decorrido da música em reprodução e sair"
 
-#: shell/main.c:96
+#: shell/main.c:95
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Move para um tempo específico na música em reprodução e sair"
 
-#: shell/main.c:98
+#: shell/main.c:97
 msgid "Toggle play/pause mode"
 msgstr "Alterna os modos reproduzir/pausar"
 
-#: shell/main.c:99
+#: shell/main.c:98
 msgid "Focus the running player"
 msgstr "Foca o reprodutor em execução"
 
-#: shell/main.c:100
+#: shell/main.c:99
 msgid "Jump to previous song"
 msgstr "Vai para a música anterior"
 
-#: shell/main.c:101
+#: shell/main.c:100
 msgid "Jump to next song"
 msgstr "Vai para a música seguinte"
 
-#: shell/main.c:103
+#: shell/main.c:102
 msgid "Toggle shuffling"
 msgstr "Alterna embaralhamento"
 
-#: shell/main.c:105
+#: shell/main.c:104
 msgid "Enable debugging code"
 msgstr "Habilita depuração de código"
 
-#: shell/main.c:106
+#: shell/main.c:105
 msgid "Do not update the library"
 msgstr "Não atualiza a biblioteca"
 
-#: shell/main.c:107
+#: shell/main.c:106
 msgid "Do not register the shell"
 msgstr "Não registra a shell"
 
-#: shell/main.c:108
+#: shell/main.c:107
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Não salva nenhum dado permanentemente (implica --no-registration)"
 
-#: shell/main.c:109
+#: shell/main.c:108
 msgid "Path for database file to use"
 msgstr "Caminho para o arquivo de banco de dados em uso"
 
-#: shell/main.c:110
+#: shell/main.c:109
 msgid "Quit Rhythmbox"
 msgstr "Sai do Rhythmbox"
 
-#: shell/main.c:118 widgets/rb-druid.c:218
+#: shell/main.c:124 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:213
-msgid ""
-"Rhythmbox does not currently work if GNOME sound events are are enabled and "
-"esdsink is in use."
-msgstr ""
-"Atualmente o Rhythmbox não funciona se os eventos de som do GNOME estiverem "
-"habilitados e esdsink estiver em uso."
-
-#: shell/main.c:252 shell/main.c:261
+#: shell/main.c:227 shell/main.c:236
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Uma excessão ocorreu '%s'"
 
-#: shell/main.c:325
+#: shell/main.c:300
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1501,3 +1494,13 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "A_lbum:"
+#~ msgstr "Á_lbum:"
+
+#~ msgid ""
+#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
+#~ "and esdsink is in use."
+#~ msgstr ""
+#~ "Atualmente o Rhythmbox não funciona se os eventos de som do GNOME "
+#~ "estiverem habilitados e esdsink estiver em uso."
