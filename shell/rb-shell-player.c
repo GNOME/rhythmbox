@@ -983,8 +983,8 @@ rb_shell_player_playpause (RBShellPlayer *player)
 			} else {
 				entry = rb_entry_view_get_first_entry (songs);
 			}
-			g_return_if_fail (entry != NULL);
-			rb_shell_player_set_playing_entry (player, entry);
+			if (entry != NULL)
+				rb_shell_player_set_playing_entry (player, entry);
 		} else {
 			rb_shell_player_play (player);
 		}
