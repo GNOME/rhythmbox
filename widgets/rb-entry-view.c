@@ -87,6 +87,7 @@ static void rb_entry_view_row_changed_cb (GtkTreeModel *model,
 					  GtkTreeIter *iter,
 					  RBEntryView *view);
 static gboolean emit_entry_changed (RBEntryView *view);
+static void queue_changed_sig (RBEntryView *view);
 static void rb_entry_view_sync_columns_visible (RBEntryView *view);
 static void rb_entry_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
@@ -585,6 +586,7 @@ rb_entry_view_set_property (GObject *object,
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
 		view->priv->model = new_model;
+		queue_changed_sig (view);
 
 		break;
 	}
