@@ -1117,21 +1117,12 @@ rb_group_view_cmd_song_info (BonoboUIComponent *component,
 			     RBGroupView *view,
 			     const char *verbname)
 {
-	GList *selected_nodes = NULL;
 	GtkWidget *song_info = NULL;
 
 	g_return_if_fail (view->priv->songs != NULL);
 
-	/* get the first node and show the song information dialog 
-	 * TODO show a different dialog for multiple songs */
-	selected_nodes = rb_node_view_get_selection (view->priv->songs);
-	if ((selected_nodes != NULL) &&
-	    (selected_nodes->data != NULL) &&
-	    (RB_IS_NODE (selected_nodes->data)))
-	{
-		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
-		gtk_widget_show_all (song_info);
-	}
+	song_info = rb_song_info_new (view->priv->songs);
+	gtk_widget_show_all (song_info);
 }
 
 static void

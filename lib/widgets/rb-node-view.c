@@ -77,9 +77,6 @@ static void gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 				                GtkTreePath *path,
 				                GtkTreeIter *iter,
 			                        RBNodeView *view);
-static RBNode *rb_node_view_get_node (RBNodeView *view,
-				      RBNode *start,
-		                      gboolean down);
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
 static gboolean rb_node_view_key_press_event_cb (GtkWidget *widget,
@@ -684,7 +681,7 @@ rb_node_view_get_playing_node (RBNodeView *view)
 	return rb_tree_model_node_get_playing_node (view->priv->nodemodel);
 }
 
-static RBNode *
+RBNode *
 rb_node_view_get_node (RBNodeView *view,
 		       RBNode *start,
 		       gboolean down)

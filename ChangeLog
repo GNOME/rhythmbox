@@ -1,3 +1,23 @@
+2002-08-13  Olivier Martin <omartin@ifrance.com>
+
+	* lib/widgets/rb-node-view.c:
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-song-info.c: (rb_song_info_class_init),
+	(rb_song_info_init), (rb_song_info_finalize),
+	(rb_song_info_set_property), (rb_song_info_get_property),
+	(rb_song_info_new), (rb_song_info_update_entry),
+	(rb_song_info_update_track), (rb_song_info_update_genre),
+	(rb_song_info_update_bitrate), (rb_song_info_update_channels),
+	(rb_song_info_update_size), (rb_song_info_update_duration),
+	(rb_song_info_update_location), (song_info_back_clicked_cb),
+	(song_info_forward_clicked_cb):
+	* lib/widgets/rb-song-info.h:
+	* views/rb-group-view.c: (rb_group_view_cmd_song_info):
+	* views/rb-library-view.c: (rb_library_view_cmd_song_info):
+
+	Add the buttons up/down to the song information dialog that
+	let you browse the songs from view.
+
 2002-08-11  Olivier Martin <omartin@ifrance.com>
             Jorn Baayen  <jorn@nl.linux.org>
 

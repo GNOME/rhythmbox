@@ -83,6 +83,9 @@ char       *rb_node_view_get_status        (RBNodeView *view);
 
 void        rb_node_view_scroll_to_node    (RBNodeView *view,
 					    RBNode *node);
+RBNode 	    *rb_node_view_get_node (RBNodeView *view,
+				    RBNode *start,
+				    gboolean down);
 
 G_END_DECLS
 

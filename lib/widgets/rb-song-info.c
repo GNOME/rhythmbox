@@ -32,6 +32,7 @@
 #include <monkey-media-stream-info.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
+#include "rb-node.h"
 #include "rb-song-info.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
@@ -62,33 +63,43 @@ static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       MonkeyMediaStreamInfoField field,
 		                       GtkWidget *widget);
 
+static void song_info_back_clicked_cb (GtkWidget *button,
+			   	       RBSongInfo *song_info);
+static void song_info_forward_clicked_cb (GtkWidget *button,
+					  RBSongInfo *song_info);
+
 struct RBSongInfoPrivate
 {
-	RBNode *node;
-	MonkeyMediaStreamInfo *info;
+	RBNodeView *node_view;
+
+	/* infrmation on the displayed song */
+	RBNode *current_node;
+	MonkeyMediaStreamInfo *current_info;
 
 	/* the dialog widgets */
 	GtkTooltips *tooltips;
-	GtkWidget *title;
-	GtkWidget *artist;
-	GtkWidget *album;
-	GtkWidget *date;
-	GtkWidget *track_cur;
-	GtkWidget *track_max;
-	GtkWidget *genre;
-	GtkWidget *comments;
-	GtkWidget *bitrate;
-	GtkWidget *channels;
-	GtkWidget *size;
-	GtkWidget *duration;
-	GtkWidget *location_ebox;
-	GtkWidget *location;
+	GtkWidget   *back;
+	GtkWidget   *forward;
+	GtkWidget   *title;
+	GtkWidget   *artist;
+	GtkWidget   *album;
+	GtkWidget   *date;
+	GtkWidget   *track_cur;
+	GtkWidget   *track_max;
+	GtkWidget   *genre;
+	GtkWidget   *comments;
+	GtkWidget   *bitrate;
+	GtkWidget   *channels;
+	GtkWidget   *size;
+	GtkWidget   *duration;
+	GtkWidget   *location_ebox;
+	GtkWidget   *location;
 };
 
 enum 
 {
 	PROP_0,
-	PROP_NODE
+	PROP_NODE_VIEW
 };
 
 static GObjectClass *parent_class = NULL;
@@ -132,11 +143,11 @@ rb_song_info_class_init (RBSongInfoClass *klass)
 	object_class->get_property = rb_song_info_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_NODE,
-					 g_param_spec_object ("node",
-					                      "RBNode",
-					                      "RBNode object",
-					                      RB_TYPE_NODE,
+					 PROP_NODE_VIEW,
+					 g_param_spec_object ("node_view",
+					                      "RBNodeView",
+					                      "RBNodeView object",
+					                      RB_TYPE_NODE_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_song_info_finalize;
@@ -147,11 +158,28 @@ rb_song_info_init (RBSongInfo *song_info)
 {
 	GladeXML *xml;
 	
+	/* create the dialog and some buttons back - forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
 
 	g_signal_connect (G_OBJECT (song_info),
 			  "response",
 			  G_CALLBACK (rb_song_info_response_cb),
+			  song_info);
+
+	song_info->priv->back = gtk_dialog_add_button (GTK_DIALOG (song_info),
+						       GTK_STOCK_GO_UP,
+						       GTK_RESPONSE_NONE);
+	g_signal_connect (G_OBJECT (song_info->priv->back),
+			  "clicked",
+			  G_CALLBACK (song_info_back_clicked_cb),
+			  song_info);
+
+	song_info->priv->forward =  gtk_dialog_add_button (GTK_DIALOG (song_info),
+							   GTK_STOCK_GO_DOWN, 
+							   GTK_RESPONSE_NONE);
+	g_signal_connect (G_OBJECT (song_info->priv->forward),
+			  "clicked",
+			  G_CALLBACK (song_info_forward_clicked_cb),
 			  song_info);
 
 	gtk_dialog_add_button (GTK_DIALOG (song_info),
@@ -203,7 +231,7 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
-	g_object_unref (G_OBJECT (song_info->priv->info));
+	g_object_unref (G_OBJECT (song_info->priv->current_info));
 
 	g_free (song_info->priv);
 
@@ -220,20 +248,29 @@ rb_song_info_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE:
+	case PROP_NODE_VIEW:
 		{
 			GValue location = { 0, };
-			RBNode *node;
+			RBNode *node = NULL;
+			RBNodeView *node_view = NULL;
 			MonkeyMediaStreamInfo *info;
+			GList *selected_nodes;
 
 			/* get the node */
-			node = g_value_get_object (value);
-			song_info->priv->node = node;
+			node_view = g_value_get_object (value);
+			song_info->priv->node_view = node_view;
+			selected_nodes = rb_node_view_get_selection (node_view);
+
+			if ((selected_nodes != NULL) &&
+			    (selected_nodes->data != NULL) &&
+			    (RB_IS_NODE (selected_nodes->data)))
+			{
+				song_info->priv->current_node = node = selected_nodes->data;
+			}
 
 			/* get the stream info */
 			rb_node_get_property (node, "location", &location);
 			info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
-			song_info->priv->info = info;
 			g_value_unset (&location);
 			
 			/* and fill it in */
@@ -256,8 +293,8 @@ rb_song_info_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE:
-		g_value_set_object (value, song_info->priv->node);
+	case PROP_NODE_VIEW:
+		g_value_set_object (value, song_info->priv->node_view);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -266,14 +303,14 @@ rb_song_info_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_song_info_new (RBNode *node)
+rb_song_info_new (RBNodeView *node_view)
 {
 	RBSongInfo *song_info;
 
-	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+	g_return_val_if_fail (RB_IS_NODE_VIEW (node_view), NULL);
 
 	/* create the dialog */
-	song_info = g_object_new (RB_TYPE_SONG_INFO, "node", node, NULL);
+	song_info = g_object_new (RB_TYPE_SONG_INFO, "node_view", node_view, NULL);
 
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
@@ -324,9 +361,9 @@ rb_song_info_update_entry (RBSongInfo *song_info,
 	GValue value = { 0, };
 	const char *text = NULL;
 
-	if (song_info->priv->info != NULL)
+	if (song_info->priv->current_info != NULL)
 	{
-		monkey_media_stream_info_get_value (song_info->priv->info, 
+		monkey_media_stream_info_get_value (song_info->priv->current_info, 
 						    field,
 						    &value);
 		text = g_value_get_string (&value);
@@ -349,7 +386,7 @@ rb_song_info_update_track (RBSongInfo *song_info)
 	const char *text;
 	char **tokens;
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
 					    &value);
 	text = g_value_get_string (&value);
@@ -377,7 +414,7 @@ rb_song_info_update_genre (RBSongInfo *song_info)
 
 	menu = gtk_menu_new ();
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
 					    &value);
 	genre = g_value_get_string (&value);
@@ -411,7 +448,7 @@ rb_song_info_update_bitrate (RBSongInfo *song_info)
 	GValue value = { 0, };
 	char *text;
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE,
 					    &value);
 	text = g_strdup_printf (_("%d kbps"), g_value_get_int (&value));
@@ -427,7 +464,7 @@ rb_song_info_update_channels (RBSongInfo *song_info)
 	char *text;
 	int channels;
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS,
 					    &value);
 	channels = g_value_get_int (&value);
@@ -456,7 +493,7 @@ rb_song_info_update_size (RBSongInfo *song_info)
 	char *text;
 	long size;
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
 					    &value);
 	size = g_value_get_long (&value);
@@ -474,7 +511,7 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 	long duration;
 	int minutes, seconds;
 
-	monkey_media_stream_info_get_value (song_info->priv->info, 
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
 					    &value);
 	duration = g_value_get_long (&value);
@@ -496,7 +533,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 	g_return_if_fail (song_info != NULL);
 
-	rb_node_get_property (song_info->priv->node,
+	rb_node_get_property (song_info->priv->current_node,
 			      "location",
 			      &value);
 	text = g_value_get_string (&value);
@@ -517,4 +554,56 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		g_free (tmp);
 	}
 	g_value_unset (&value);
+}
+
+static void
+song_info_back_clicked_cb (GtkWidget *button,
+			   RBSongInfo *song_info)
+{
+	GValue location = { 0, };
+	MonkeyMediaStreamInfo *info = NULL;
+	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
+					      song_info->priv->current_node,
+					      FALSE);
+
+	g_return_if_fail (node != NULL);
+
+	/* update the node view */
+	rb_node_view_select_node (song_info->priv->node_view, node);
+	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
+
+	/* update our node and info, then refresh the dlg */
+	song_info->priv->current_node = node;
+	rb_node_get_property (node, "location", &location);
+	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
+	song_info->priv->current_info = info;
+	g_value_unset (&location);
+			
+	rb_song_info_populate_dialog (song_info);
+}
+
+static void
+song_info_forward_clicked_cb (GtkWidget *button,
+			      RBSongInfo *song_info)
+{
+	GValue location = { 0, };
+	MonkeyMediaStreamInfo *info = NULL;
+	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
+					      song_info->priv->current_node,
+					      TRUE);
+
+	g_return_if_fail (node != NULL);
+
+	/* update the node view */
+	rb_node_view_select_node (song_info->priv->node_view, node);
+	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
+
+	/* update our node and info, then refresh the dlg */
+	song_info->priv->current_node = node;
+	rb_node_get_property (node, "location", &location);
+	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
+	song_info->priv->current_info = info;
+	g_value_unset (&location);
+			
+	rb_song_info_populate_dialog (song_info);
 }
