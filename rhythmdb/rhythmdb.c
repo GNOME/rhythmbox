@@ -877,8 +877,9 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 RhythmDBEntry *
 rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 {
-	RhythmDBEntry *entry;
+	RhythmDBEntry *entry = NULL;
 	char *realuri;
+	const char *mime;
 	GError *error = NULL;
 	GValue value = {0, };
 
@@ -905,8 +906,14 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	if (error) {
 		g_propagate_error (real_error, error);
 		rb_debug ("failed to read data from \"%s\"", uri);
-		g_free (realuri);
-		return NULL;
+		goto out_freeuri;
+	}
+
+	mime = rb_metadata_get_mime (db->priv->metadata);
+
+	if (!mime) {
+		rb_debug ("unsupported file");
+		goto out_freeuri;
 	}
 
 	rhythmdb_write_lock (db);
@@ -935,9 +942,10 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	g_value_unset (&value);
 
  out_dupentry:
+	rhythmdb_write_unlock_internal (db, FALSE);
+ out_freeuri:
 	g_free (realuri);
 
-	rhythmdb_write_unlock_internal (db, FALSE);
 	return entry;
 }
 

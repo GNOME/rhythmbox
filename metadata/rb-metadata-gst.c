@@ -476,6 +476,8 @@ rb_metadata_load (RBMetaData *md,
 	if (!rb_metadata_can_save (md, md->priv->type)) {
 		rb_debug ("ignoring file %s with detected type %s",
 			  uri, md->priv->type);
+		g_free (md->priv->type);
+		md->priv->type = NULL;
 		goto out;
 	}
 	
