@@ -247,7 +247,7 @@ rb_sidebar_button_init (RBSidebarButton *button)
 	gtk_box_pack_start (GTK_BOX (button->priv->box),
 			    button->label,
 			    FALSE,
-			    TRUE,
+			    FALSE,
 			    0);
 
 	/* entry for editing */
@@ -548,7 +548,7 @@ rb_sidebar_button_set_editing (RBSidebarButton *button,
 		gtk_box_pack_start (GTK_BOX (button->priv->box),
 				    button->label,
 				    FALSE,
-				    TRUE,
+				    FALSE,
 				    0);
 	}
 	else
@@ -558,7 +558,7 @@ rb_sidebar_button_set_editing (RBSidebarButton *button,
 		gtk_box_pack_start (GTK_BOX (button->priv->box),
 				    button->priv->entry,
 				    FALSE,
-				    TRUE,
+				    FALSE,
 				    0);
 		gtk_widget_grab_focus (button->priv->entry);
 	}

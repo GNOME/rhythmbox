@@ -421,12 +421,11 @@ rb_shell_construct (RBShell *shell)
 
 	hbox = gtk_hpaned_new ();
 	shell->priv->sidebar = rb_sidebar_new ();
-	gtk_widget_set_size_request (shell->priv->sidebar, 80, -1);
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
-	gtk_paned_add1 (GTK_PANED (hbox), shell->priv->sidebar);
-	gtk_paned_add2 (GTK_PANED (hbox), shell->priv->notebook);
+	gtk_paned_pack1 (GTK_PANED (hbox), shell->priv->sidebar, FALSE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (hbox), shell->priv->notebook, FALSE, FALSE);
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);

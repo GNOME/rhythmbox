@@ -364,7 +364,7 @@ rb_library_view_set_property (GObject *object,
 					  G_CALLBACK (album_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
-			gtk_paned_add1 (GTK_PANED (view->priv->paned), view->priv->browser);
+			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
 			
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
@@ -388,7 +388,7 @@ rb_library_view_set_property (GObject *object,
 					  "changed",
 					  G_CALLBACK (node_view_changed_cb),
 					  view);
-			gtk_paned_add2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs));
+			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), FALSE, FALSE);
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
 
