@@ -771,7 +771,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	if (num > 0)
 		tmp = g_strdup_printf ("%.2d", num);
 	else
-		tmp = g_strdup (_("Never"));
+		tmp = g_strdup (_("Unknown"));
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur),
 			    tmp);
 	g_free (tmp);
