@@ -921,6 +921,9 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 {
 	rb_node_view_scroll_to_node (view->priv->songs,
 				     rb_node_view_get_playing_node (view->priv->songs));
+	rb_node_view_select_none (view->priv->songs);
+	rb_node_view_select_node (view->priv->songs,
+				  rb_node_view_get_playing_node (view->priv->songs));
 }
 
 static void
