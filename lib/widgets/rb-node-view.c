@@ -887,7 +887,6 @@ rb_node_view_get_random_node (RBNodeView *view)
 			return node;
 		} else {
 			recur_count++;
-			g_message ("Trying for the %dnth time to get random node.\n", recur_count);
 			return rb_node_view_get_random_node (view);
 		}
 	}
