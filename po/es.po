@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2004-04-09 03:25+0200\n"
-"PO-Revision-Date: 2004-04-09 03:27+0200\n"
+"PO-Revision-Date: 2004-04-17 01:58+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -56,7 +56,7 @@ msgstr "Añadir si cualquier criterio coincide"
 
 #: data/glade/create-playlist.glade.h:3
 msgid "Create automatically updating playlist where:"
-msgstr "Crear una lista de actualización automática donde:"
+msgstr "Crear una lista automáticamente actualizada donde:"
 
 #: data/glade/create-playlist.glade.h:4
 msgid "GB"
@@ -152,7 +152,7 @@ msgstr "Artistas y álbumes"
 
 #: data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
-msgstr "Vistas del navegador"
+msgstr "Vistas del examinador"
 
 #: data/glade/library-prefs.glade.h:3
 msgid "Genres and artists"
@@ -217,7 +217,7 @@ msgstr "_Género: "
 
 #: data/glade/song-info.glade.h:14 data/glade/station-properties.glade.h:8
 msgid "_Rating:"
-msgstr "_Evaluación:"
+msgstr "_Puntuación:"
 
 #: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
@@ -318,7 +318,7 @@ msgstr "Examinar este género"
 
 #: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the browser"
-msgstr "Cambiar la visibilidad del navegador"
+msgstr "Cambiar la visibilidad del examinador"
 
 #: data/ui/rhythmbox-ui.xml.h:6
 msgid "Change the visibility of the main window"
@@ -430,13 +430,11 @@ msgstr "Pausar la reproducción"
 
 #: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:238
 msgid "Play first song again after all songs are played"
-msgstr ""
-"Reproducir la primera canción de nuevo después de que todas las canciones se "
-"reproduzcan"
+msgstr "Reproduce la primera canción otra vez después de que todas las canciones se hayan reproducido"
 
 #: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:233
 msgid "Play songs in a random order"
-msgstr "Reproducir canciones en orden aleatorio"
+msgstr "Reproduce las canciones en orden aleatorio"
 
 #: data/ui/rhythmbox-ui.xml.h:36
 msgid "Prefere_nces"
@@ -460,15 +458,15 @@ msgstr "Guardar una lista de reproducción en un archivo"
 
 #: data/ui/rhythmbox-ui.xml.h:44
 msgid "Set the browser to view only this album"
-msgstr "Establecer el visualizador para ver sólo este álbum"
+msgstr "Configurar el examinador para ver sólo este álbum"
 
 #: data/ui/rhythmbox-ui.xml.h:45
 msgid "Set the browser to view only this artist"
-msgstr "Establecer el visualizador para ver sólo este artista"
+msgstr "Configurar el examinador para ver sólo este artista"
 
 #: data/ui/rhythmbox-ui.xml.h:46
 msgid "Set the browser to view only this genre"
-msgstr "Establecer el visualizador para ver sólo este género"
+msgstr "Configurar el examinador para ver sólo este género"
 
 #: data/ui/rhythmbox-ui.xml.h:47
 msgid "Show information about the music player"
@@ -476,7 +474,7 @@ msgstr "Mostrar información sobre el reproductor de música"
 
 #: data/ui/rhythmbox-ui.xml.h:48
 msgid "Show information on the selected song"
-msgstr "Mostrar información de la canción seleccionada"
+msgstr "Mostrar información sobre la canción seleccionada"
 
 #: data/ui/rhythmbox-ui.xml.h:49
 msgid "Source _List"
@@ -488,11 +486,11 @@ msgstr "Comenzar reproducción"
 
 #: data/ui/rhythmbox-ui.xml.h:51
 msgid "Start playing the next song"
-msgstr "Comenzar reproducción de la siguiente canción"
+msgstr "Comenzar la reproducción de la siguiente canción"
 
 #: data/ui/rhythmbox-ui.xml.h:52
 msgid "Start playing the previous song"
-msgstr "Comenzar reproducción de la canción anterior"
+msgstr "Comenzar la reproducción de la canción anterior"
 
 #: data/ui/rhythmbox-ui.xml.h:53
 msgid "Stop playing"
@@ -508,7 +506,7 @@ msgstr "_Añadir a la biblioteca..."
 
 #: data/ui/rhythmbox-ui.xml.h:56
 msgid "_Browser"
-msgstr "_Navegador"
+msgstr "_Examinador"
 
 #: data/ui/rhythmbox-ui.xml.h:57
 msgid "_Contents"
@@ -693,7 +691,7 @@ msgstr "No se encuentra el ID TRM de esta canción"
 #: metadata/monkey-media/monkey-media-stream-info.c:767
 #: metadata/monkey-media/monkey-media-stream-info.c:831
 msgid "No information for this song found"
-msgstr "No hay información para esta canción"
+msgstr "No se encontró información para esta canción"
 
 #: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
 msgid "Invalid track number"
@@ -1102,7 +1100,7 @@ msgstr ""
 
 #: shell/rb-shell.c:1887 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
-msgstr "Sin reproducción"
+msgstr "No se está reproduciendo nada"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
 #: shell/rb-shell.c:1890
@@ -1133,9 +1131,9 @@ msgstr "%s (Pausado)"
 #: shell/rb-shell.c:1997
 msgid "translator_credits"
 msgstr ""
+"Francisco Javier F. <serrador@cvs.gnome.org>\n"
 "Xan López <xan@dimensis.com>\n"
 "Germán Poo-Caamaño <gpoo@ubiobio.cl>\n"
-"Francisco Javier F. <serrador@arrakis.es>\n"
 "Carlos Perelló Marín <carlos@gnome.org>"
 
 #: shell/rb-shell.c:2006
@@ -1173,11 +1171,11 @@ msgstr "Filtrar música por género, artista, álbum o título"
 
 #: shell/rb-source-header.c:190
 msgid "Show _Browser"
-msgstr "Mostrar _navegador"
+msgstr "Mostrar _examinador"
 
 #: shell/rb-source-header.c:191
 msgid "Hide _Browser"
-msgstr "Ocultar _navegador"
+msgstr "Ocultar _examinador"
 
 #: shell/rb-statusbar.c:235
 msgid "_Repeat"
@@ -1354,7 +1352,7 @@ msgstr "Baja"
 
 #: widgets/rb-entry-view.c:1072
 msgid "Regular"
-msgstr "Regular"
+msgstr "Media"
 
 #: widgets/rb-entry-view.c:1074
 msgid "High"
@@ -1366,7 +1364,7 @@ msgstr "Muy alta"
 
 #: widgets/rb-entry-view.c:1078
 msgid "Perfect"
-msgstr "Perfecto"
+msgstr "Perfecta"
 
 #: widgets/rb-entry-view.c:1284
 msgid "_Title"
@@ -1390,11 +1388,11 @@ msgstr "_Número de reproducciones"
 
 #: widgets/rb-entry-view.c:1355
 msgid "L_ast Played"
-msgstr "_Ultima reproducción"
+msgstr "_Última reproducción"
 
 #: widgets/rb-entry-view.c:1499
 msgid "Now Playing"
-msgstr "Reproduciendo ahora"
+msgstr "Reproduciendo"
 
 #: widgets/rb-header.c:280
 msgid "Listening to "
@@ -1440,7 +1438,7 @@ msgstr "Título"
 
 #: widgets/rb-query-creator.c:57
 msgid "Rating"
-msgstr "Evaluación"
+msgstr "Puntuación"
 
 #: widgets/rb-query-creator.c:62
 msgid "contains"
@@ -1464,7 +1462,7 @@ msgstr "menor que"
 
 #: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
-msgstr "Crear una lista de reproducción automática"
+msgstr "Crear una lista de automática de reproducción"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: widgets/rb-search-entry.c:118
