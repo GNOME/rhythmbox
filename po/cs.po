@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-22 12:50+0200\n"
-"PO-Revision-Date: 2003-09-22 21:55+0200\n"
+"POT-Creation-Date: 2003-09-27 12:52+0200\n"
+"PO-Revision-Date: 2003-09-27 15:40+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -46,53 +46,35 @@ msgstr "Načítám..."
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
-msgid "Finish"
-msgstr "Dokončit"
-
-#: data/glade/druid.glade.h:3
+#: data/glade/druid.glade.h:2
 msgid ""
-"In order to get started using Rhythmbox, this assistant will ask you some "
-"simple questions."
-msgstr ""
-"Abyste mohli začít používat Rhythmbox, položí vám tento asistent několik "
-"jednoduchých otázek."
-
-#: data/glade/druid.glade.h:4
-msgid "Library setup"
-msgstr "Nastavení knihovny"
-
-#: data/glade/druid.glade.h:5
-msgid ""
-"Rhythmbox needs to know where to find your music. You may choose to skip "
-"this step; instead, you can add music to your library at any point later. "
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox potřebuje vědet, kde najít vaši hudbu. Můžete tento krok přeskočit "
-"a přidat svou hudbudo knihovny kdykoli později. Vyberte prosím jednu z "
-"možností níže:"
+"Rhythmbox spravuje všechnu vaši hudbu v centrální \"knihovně\", abyste svou "
+"hudbu mohli snadno zobrazit, prohledávat a organizovat.\n"
+"Abyste tyto funkce mohli využívat, musíte Rhythmboxu říci, kde najít vaši "
+"hudbu. Můžete tento krok přeskočit a přidat svou hudbu do knihovny kdykoli "
+"později.\n"
+"Vyberte prosím jednu z možností níže:"
 
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:240
-msgid "Welcome to Rhythmbox"
-msgstr "Vítejte v Rhythmbox"
-
-#: data/glade/druid.glade.h:7
-msgid "You are now ready to start Rhythmbox."
-msgstr "Nyní jste připraveni spustit Rhythmbox."
-
-#: data/glade/druid.glade.h:8
+#: data/glade/druid.glade.h:5
 msgid "_Browse..."
 msgstr "_Probírat..."
 
-#: data/glade/druid.glade.h:9
+#: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
 msgstr "Zadat _umístění ručně:"
 
-#: data/glade/druid.glade.h:10
+#: data/glade/druid.glade.h:7
 msgid "_Path:"
 msgstr "_Cesta:"
 
-#: data/glade/druid.glade.h:11
+#: data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Přeskočit tento krok"
 
@@ -755,6 +737,10 @@ msgstr "Vykreslený obrázek."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
+#: lib/widgets/rb-druid.c:240
+msgid "Welcome to Rhythmbox"
+msgstr "Vítejte v Rhythmbox"
+
 #: lib/widgets/rb-druid.c:244
 msgid ""
 "Rhythmbox is the GNOME music player that lets you do\n"
@@ -774,6 +760,10 @@ msgstr ""
 #: lib/widgets/rb-druid.c:250
 msgid "Music library setup"
 msgstr "Nastavení knihovny hudby"
+
+#: lib/widgets/rb-druid.c:259
+msgid "Finish"
+msgstr "Dokončit"
 
 #: lib/widgets/rb-druid.c:261
 msgid ""
@@ -1111,7 +1101,7 @@ msgstr "Selhalo otevření souboru pro čtení"
 msgid "Error decoding FLAC file"
 msgstr "Chyba při dekódování souboru FLAC"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1443,6 +1433,19 @@ msgstr "Ždádné vlastnosti nejsou k dispozici."
 #: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Tento zdroj nepodporuje přetažení a puštění."
+
+#~ msgid ""
+#~ "In order to get started using Rhythmbox, this assistant will ask you some "
+#~ "simple questions."
+#~ msgstr ""
+#~ "Abyste mohli začít používat Rhythmbox, položí vám tento asistent několik "
+#~ "jednoduchých otázek."
+
+#~ msgid "Library setup"
+#~ msgstr "Nastavení knihovny"
+
+#~ msgid "You are now ready to start Rhythmbox."
+#~ msgstr "Nyní jste připraveni spustit Rhythmbox."
 
 #~ msgid ""
 #~ "%s\n"
