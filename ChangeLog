@@ -2,6 +2,94 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-01-23 05:48:28 GMT	Colin Walters <walters@verbum.org>	patch-34
+
+    Summary:
+      Add Michael Terry to AUTHORS
+    Revision:
+      rhythmbox--main--0.7--patch-34
+
+
+    modified files:
+     AUTHORS ChangeLog
+
+
+2004-01-23 05:47:49 GMT	Colin Walters <walters@verbum.org>	patch-33
+
+    Summary:
+      automatically adapt ratings (Michael Terry)
+    Revision:
+      rhythmbox--main--0.7--patch-33
+
+
+    modified files:
+     ChangeLog configure.ac iradio/rb-station-properties-dialog.c
+     lib/rb-marshal.list rhythmdb/rhythmdb-legacy.c
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     shell/rb-play-order-random-by-age-and-rating.c
+     shell/rb-play-order-random-by-rating.c shell/rb-shell-player.c
+     shell/rb-shell.c sources/rb-audiocd-source.c
+     sources/rb-iradio-source.c tests/test-rhythmdb-simple.c
+     widgets/rb-cell-renderer-rating.c
+     widgets/rb-cell-renderer-rating.h widgets/rb-entry-view.c
+     widgets/rb-rating.c widgets/rb-rating.h widgets/rb-song-info.c
+
+
+2004-01-23 05:31:46 GMT	Colin Walters <walters@verbum.org>	patch-32
+
+    Summary:
+      squish a minor memleak, kill off some dead code
+    Revision:
+      rhythmbox--main--0.7--patch-32
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c sources/rb-source.c
+
+
+2004-01-23 05:29:30 GMT	Colin Walters <walters@verbum.org>	patch-31
+
+    Summary:
+      new criteria "equals" for autoplaylist, refactor all the code to handle this (kinda ugly)
+    Revision:
+      rhythmbox--main--0.7--patch-31
+
+    
+    
+
+    modified files:
+     ChangeLog widgets/rb-query-creator.c
+
+
+2004-01-23 04:28:46 GMT	Colin Walters <walters@verbum.org>	patch-30
+
+    Summary:
+      some cleanups to autoplaylist DND
+    Revision:
+      rhythmbox--main--0.7--patch-30
+
+
+    modified files:
+     ChangeLog sources/rb-playlist-source.c
+
+
+2004-01-23 04:14:14 GMT	Colin Walters <walters@verbum.org>	patch-29
+
+    Summary:
+      create automatic playlists via DND (Jonatan Magnusson, cleanups by me) 
+    Revision:
+      rhythmbox--main--0.7--patch-29
+
+    
+    
+
+    modified files:
+     ChangeLog shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell.c
+     sources/rb-playlist-source.c sources/rb-sourcelist-model.c
+     widgets/rb-property-view.c
+
+
 2004-01-23 03:39:19 GMT	Colin Walters <walters@verbum.org>	patch-28
 
     Summary:
