@@ -283,11 +283,48 @@ if test x"$enable_musicbrainz" = xyes; then
 fi
 AM_CONDITIONAL(HAVE_MUSICBRAINZ,test "x$enable_musicbrainz" = "xyes")
 
-dnl Multimedia Keys support 
+AC_PATH_X
+
+CFLAGS="-I$x_includes $CFLAGS"
+LIBS="-L$x_libraries $LIBS"
+
+dnl Multimedia keys
+have_xfree=no
+AC_COMPILE_IFELSE([
+	#include <X11/XF86keysym.h>
+int main(int argc,char **argv) {
+  return 0;
+}
+], have_xfree=yes)
+AC_MSG_CHECKING(for XFree86 headers)
+AC_MSG_RESULT($have_xfree)
+if test x"$have_xfree" = "xyes" ; then
+	AC_DEFINE(HAVE_XFREE, 1, [defined if you have X11/XF86keysym.h])
+fi
+
+have_xsun=no
+AC_COMPILE_IFELSE([
+	#include <X11/Sunkeysym.h>
+int main(int argc,char **argv) {
+  return 0;
+}
+], have_xsun=yes)
+AC_MSG_CHECKING(for Sun X11 headers)
+AC_MSG_RESULT($have_xsun)
+if test x"$have_xsun" = "xyes" ; then
+	AC_DEFINE(HAVE_XSUN, 1, [defined if you have X11/Sunkeysym.h])
+fi
+
 AC_ARG_ENABLE(mmkeys, AC_HELP_STRING([--disable-mmkeys],
 					[build with Multimedia Keys support]))
-if test x"$enable_mmkeys" != xno; then
-	AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
+if test x"$have_xfree" = xyes || test x"$have_xsun" = xyes; then
+	if test x"$enable_mmkeys" != xno; then
+		AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
+	fi
+else
+	if test x"$enable_mmkeys" = xyes; then
+		AC_MSG_ERROR([Multimedia keys explicitly requested but no support found])
+	fi
 fi
 
 dnl CD Audio support		  
