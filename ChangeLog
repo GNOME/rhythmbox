@@ -1,3 +1,9 @@
+2003-08-13  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-main-thread.c (thread_main):
+	Reinstate node update throttling that was accidentally reverted in
+	the previous patch.
+
 2003-08-13  Colin Walters  <walters@debian.org>
 
 	* lib/widgets/rb-node-view.c: (playing_node_destroyed_cb),
