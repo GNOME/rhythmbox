@@ -829,7 +829,7 @@ rb_shell_construct (RBShell *shell)
 		g_object_unref (G_OBJECT (druid));
 	}
 	
-	gtk_widget_show_all (GTK_WIDGET (shell->priv->window));
+	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);
 }
 
