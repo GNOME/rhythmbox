@@ -46,6 +46,7 @@ rb_file (const char *filename)
 	int i;
 
 	static char *paths[] = {
+		SHARE_UNINSTALLED_DIR "/",
 		SHARE_UNINSTALLED_DIR "/glade/",
 		SHARE_UNINSTALLED_DIR "/art/",
 		SHARE_UNINSTALLED_DIR "/node-views/"

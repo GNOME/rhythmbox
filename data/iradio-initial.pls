@@ -1,8 +1,26 @@
 [playlist]
-numberofentries=2
+numberofentries=8
 file1=http://www.somafm.com/groovesalad.pls
 title1=Groove Salad
 genre1=Ambient
 file2=http://www.di.fm/mp3/trance128k.pls
 title2=Digitally Imported
 genre2=Trance
+file3=http://sc1.magnatune.com:8000/
+title3=Magnatune Classical: renaissance and baroque
+genre3=Classical
+file4=http://sc1.magnatune.com:8002/
+title4=Magnatune Electronica: downtempo, techno & trance
+genre4=Electronica
+file5=http://sc1.magnatune.com:8004/
+title5=Magnatune Metal: thrash and speed metal
+genre5=Metal
+file6=http://sc1.magnatune.com:8006/
+title6=Magnatune New Age
+genre6=New Age
+file7=http://sc1.magnatune.com:8008/
+title7=Magnatune Rock
+genre7=Rock
+file8=http://sc1.magnatune.com:8010/
+title8=Magnatune World Music: Indian, Celtic, Arabic, Baltic...
+genre8=World
