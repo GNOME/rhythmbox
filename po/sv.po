@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-01-26 21:37+0100\n"
-"PO-Revision-Date: 2003-01-26 21:38+0100\n"
+"POT-Creation-Date: 2003-02-10 02:24+0100\n"
+"PO-Revision-Date: 2003-02-10 02:25+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -303,7 +303,7 @@ msgstr "Ti_d"
 msgid "Tra_ck"
 msgstr "Sp_år"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -697,35 +697,36 @@ msgstr "Misslyckades med att aktivera Rhythmbox"
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-player.c:311
+#. TRANSLATOR: [song_label] by [artist]
+#: shell/rb-player.c:312
 msgid "by "
 msgstr "av "
 
-#: shell/rb-player.c:326
+#: shell/rb-player.c:327
 msgid "Drag to go to a particular moment in the song"
 msgstr "Dra för att gå till ett visst ställe i låten"
 
-#: shell/rb-player.c:371
+#: shell/rb-player.c:372
 msgid "Play the previous song"
 msgstr "Spela föregående låt"
 
-#: shell/rb-player.c:382
+#: shell/rb-player.c:383
 msgid "Play the next song"
 msgstr "Spela nästa låt"
 
-#: shell/rb-player.c:394
+#: shell/rb-player.c:395
 msgid "Shuffle the play list"
 msgstr "Blanda spellistan"
 
-#: shell/rb-player.c:403 shell/rb-player.c:411
+#: shell/rb-player.c:404 shell/rb-player.c:412
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: shell/rb-player.c:417
+#: shell/rb-player.c:418
 msgid "To play, add music to the play list"
 msgstr "Lägg till musik i spellistan för att spela"
 
-#: shell/rb-player.c:443
+#: shell/rb-player.c:444
 #, c-format
 msgid ""
 "Failed to create player, exiting. Error was:\n"
@@ -734,37 +735,37 @@ msgstr ""
 "Misslyckades med att skapa spelaren, avslutar. Felet var:\n"
 "%s"
 
-#: shell/rb-player.c:548
+#: shell/rb-player.c:549
 msgid "Start playback"
 msgstr "Starta uppspelning"
 
-#: shell/rb-player.c:554
+#: shell/rb-player.c:555
 msgid "Pause playback"
 msgstr "Gör paus i uppspelning"
 
-#: shell/rb-player.c:692
+#: shell/rb-player.c:693
 msgid "Disable repeating the play list"
 msgstr "Inaktivera upprepning av spellistan"
 
-#: shell/rb-player.c:696
+#: shell/rb-player.c:697
 msgid "Enable repeating the play list"
 msgstr "Aktivera upprepning av spellistan"
 
-#: shell/rb-player.c:791
+#: shell/rb-player.c:792
 msgid "Get information about this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: shell/rb-player.c:797
+#: shell/rb-player.c:798
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:799
+#: shell/rb-player.c:800
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Okänd"
 
-#: shell/rb-player.c:831
+#: shell/rb-player.c:832
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
@@ -773,17 +774,17 @@ msgstr ""
 "Misslyckades med att skapa ström, felet var:\n"
 "%s"
 
-#: shell/rb-player.c:926
+#: shell/rb-player.c:927
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Misslyckades med att tolka %s som spellista"
 
-#: shell/rb-player.c:1173
+#: shell/rb-player.c:1174
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld.%.2ld"
 
-#: shell/rb-player.c:1177
+#: shell/rb-player.c:1178
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Totalt %ld.%.2ld (%ld.%.2ld återstår)"
@@ -801,17 +802,27 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb.c:491
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb.c:502
-msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
-msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr "Huvudutvecklare:"
 
-#: shell/rb.c:503
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr "Bidragare:"
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright %s 2002, 2003 Jorn Baayen. Alla rättigheter förbehållna."
+
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
@@ -896,6 +907,9 @@ msgstr "Spela _låt"
 msgid "Start playing the selected song(s)"
 msgstr "Starta uppspelning av de markerade låtarna"
 
+#~ msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
+#~ msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förbehållna."
+
 #~ msgid "Repeat the play list"
 #~ msgstr "Upprepa spellistan"
 
@@ -919,9 +933,6 @@ msgstr "Starta uppspelning av de markerade låtarna"
 
 #~ msgid "_Actions"
 #~ msgstr "_Åtgärder"
-
-#~ msgid "Copyright  2002, 2003 Jorn Baayen. All rights reserved."
-#~ msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
 
 #~ msgid "Copyright 2002, 2003 Jorn Baayen. All rights reserved."
 #~ msgstr "Copyright 2002, 2003 Jorn Baayen. Alla rättigheter förehållna."
@@ -1320,9 +1331,6 @@ msgstr "Starta uppspelning av de markerade låtarna"
 
 #~ msgid "Go to the previous track"
 #~ msgstr "Gå till föregående spår"
-
-#~ msgid "_Controls"
-#~ msgstr "_Kontroller"
 
 #~ msgid "Choose a folder"
 #~ msgstr "Välj en mapp"
