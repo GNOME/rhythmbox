@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-06 11:32+0200\n"
-"PO-Revision-Date: 2003-08-06 11:33+0200\n"
+"POT-Creation-Date: 2003-08-10 21:44+0200\n"
+"PO-Revision-Date: 2003-08-10 21:45+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -39,71 +39,135 @@ msgstr "Rhythmbox-skalfabrik"
 msgid "Loading..."
 msgstr "Läser in..."
 
-#: data/glade/general-prefs.glade.h:1 data/glade/library-prefs.glade.h:1
-msgid "    "
-msgstr "    "
+#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:1
+#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
+#: data/glade/uri.glade.h:1
+msgid "*"
+msgstr "*"
 
-#: data/glade/general-prefs.glade.h:2
-msgid "<span weight=\"bold\">Visible Columns</span>"
-msgstr "<span weight=\"bold\">Synliga kolumner</span>"
+#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:258
+msgid "Finish"
+msgstr "Slutför"
 
-#: data/glade/general-prefs.glade.h:3
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:243
+msgid ""
+"In order to get started using\n"
+"Rhythmbox, this assistant will ask\n"
+"you some simple questions."
+msgstr ""
+"Denna guide kommer att fråga dig\n"
+"ett par enkla frågor för att du ska\n"
+"kunna komma igång med användningen\n"
+"av Rhythmbox."
+
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:249
+msgid "Library setup"
+msgstr "Bibliotekskonfiguration"
+
+#: data/glade/druid.glade.h:7
+msgid ""
+"Rhythmbox needs to know where to find your music.\n"
+"You may choose to skip this step; instead, you \n"
+"can add music to your library at any point later.\n"
+"\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox måste veta var det kan hitta din musik.\n"
+"Du kan välja att hoppa över detta steg och istället\n"
+"lägga till musik till ditt bibliotek vid ett senare\n"
+"tillfälle.\n"
+"\n"
+"Välj ett av alternativen nedan:"
+
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:239
+msgid "Welcome to Rhythmbox"
+msgstr "Välkommen till Rhythmbox"
+
+#: data/glade/druid.glade.h:13
+msgid ""
+"You are now ready to start\n"
+"Rhythmbox."
+msgstr ""
+"Du är nu redo att starta\n"
+"Rhythmbox."
+
+#: data/glade/druid.glade.h:15
+msgid "_Browse..."
+msgstr "_Bläddra..."
+
+#: data/glade/druid.glade.h:16
+msgid "_Enter location manually:"
+msgstr "_Ange plats manuellt:"
+
+#: data/glade/druid.glade.h:17
+msgid "_Path:"
+msgstr "_Sökväg:"
+
+#: data/glade/druid.glade.h:18
+msgid "_Skip this step"
+msgstr "_Hoppa över detta steg"
+
+#: data/glade/general-prefs.glade.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:1
 msgid "A_lbum"
 msgstr "A_lbum"
 
-#: data/glade/general-prefs.glade.h:4
+#: data/glade/general-prefs.glade.h:2
 msgid "Track _number"
 msgstr "Spår_nummer"
 
-#: data/glade/general-prefs.glade.h:5
+#: data/glade/general-prefs.glade.h:3
+msgid "Visible Columns"
+msgstr "Synliga kolumner"
+
+#: data/glade/general-prefs.glade.h:4
 msgid "_Artist"
 msgstr "_Artist"
 
-#: data/glade/general-prefs.glade.h:6
+#: data/glade/general-prefs.glade.h:5
 msgid "_Duration"
 msgstr "_Varaktighet"
 
-#: data/glade/general-prefs.glade.h:7
+#: data/glade/general-prefs.glade.h:6
 #: data/node-views/rb-node-view-genres.xml.h:1
 #: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "_Genre"
 
-#: data/glade/general-prefs.glade.h:8
+#: data/glade/general-prefs.glade.h:7
 msgid "_Last played"
 msgstr "_Senast spelad"
 
-#: data/glade/general-prefs.glade.h:9
+#: data/glade/general-prefs.glade.h:8
 msgid "_Play count"
 msgstr "_Spelräknare"
 
-#: data/glade/general-prefs.glade.h:10
+#: data/glade/general-prefs.glade.h:9
 #: data/node-views/rb-node-view-iradio-stations.xml.h:4
 msgid "_Quality"
 msgstr "_Kvalitet"
 
-#: data/glade/general-prefs.glade.h:11
+#: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
 #: data/node-views/rb-node-view-iradio-stations.xml.h:5
 #: data/node-views/rb-node-view-songs.xml.h:8
 msgid "_Rating"
 msgstr "_Betyg"
 
-#: data/glade/library-prefs.glade.h:2
-msgid "<b>Browser Views</b>"
-msgstr "<b>Bläddrarvyer</b>"
-
-#: data/glade/library-prefs.glade.h:3
+#: data/glade/library-prefs.glade.h:1
 msgid "Artists and albums"
 msgstr "Artister och album"
 
-#: data/glade/library-prefs.glade.h:4
+#: data/glade/library-prefs.glade.h:2
+msgid "Browser Views"
+msgstr "Bläddrarvyer"
+
+#: data/glade/library-prefs.glade.h:3
 msgid "Genres and artists"
 msgstr "Genrer och artister"
 
-#: data/glade/library-prefs.glade.h:5
+#: data/glade/library-prefs.glade.h:4
 msgid "Genres, artists and albums"
 msgstr "Genrer, artister och album"
 
@@ -111,142 +175,107 @@ msgstr "Genrer, artister och album"
 msgid "The following files couldn't be loaded:"
 msgstr "Följande filer kunde inte läsas in:"
 
-#: data/glade/song-info.glade.h:1
-msgid "   "
-msgstr "   "
-
-#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
-msgid "*"
-msgstr "*"
-
-#: data/glade/song-info.glade.h:3
-msgid "<b>Duration:</b>"
-msgstr "<b>Varaktighet:</b>"
-
-#: data/glade/song-info.glade.h:4
-msgid "<b>Encoding:</b>"
-msgstr "<b>Kodning:</b>"
-
-#: data/glade/song-info.glade.h:5
-msgid "<b>Last played:</b>"
-msgstr "<b>Senast spelad:</b>"
-
-#: data/glade/song-info.glade.h:6
-msgid "<b>Location:</b>"
-msgstr "<b>Plats:</b>"
-
-#: data/glade/song-info.glade.h:7
-msgid "<b>Name:</b>"
-msgstr "<b>Namn:</b>"
-
-#: data/glade/song-info.glade.h:8
-msgid "<b>Play count:</b>"
-msgstr "<b>Spelräknare:</b>"
-
-#: data/glade/song-info.glade.h:9
-msgid "<b>Quality:</b>"
-msgstr "<b>Kvalitet:</b>"
-
-#: data/glade/song-info.glade.h:10
-msgid "<b>_Album:</b>"
-msgstr "<b>_Album:</b>"
-
-#: data/glade/song-info.glade.h:11
-msgid "<b>_Artist:</b>"
-msgstr "<b>_Artist:</b>"
-
-#: data/glade/song-info.glade.h:12
-msgid "<b>_Comments:</b>"
-msgstr "<b>_Kommentarer:</b>"
-
-#: data/glade/song-info.glade.h:13
-msgid "<b>_Date:</b>"
-msgstr "<b>_Datum:</b>"
-
-#: data/glade/song-info.glade.h:14
-msgid "<b>_Genre:</b>"
-msgstr "<b>_Genre:</b>"
-
-#: data/glade/song-info.glade.h:15
-msgid "<b>_Rating:</b>"
-msgstr "<b>_Betyg:</b>"
-
-#: data/glade/song-info.glade.h:16
-msgid "<b>_Title:</b>"
-msgstr "<b>_Titel:</b>"
-
-#: data/glade/song-info.glade.h:17
-msgid "<b>_Track number:</b>"
-msgstr "<b>_Spårnummer:</b>"
-
-#: data/glade/song-info.glade.h:18
+#: data/glade/song-info.glade.h:2
 msgid "Basic"
 msgstr "Grundläggande"
 
-#: data/glade/song-info.glade.h:19
+#: data/glade/song-info.glade.h:3
 msgid "Details"
 msgstr "Detaljer"
 
-#: data/glade/song-info.glade.h:20
-msgid "_of"
-msgstr "_av"
+#: data/glade/song-info.glade.h:4
+msgid "Duration:"
+msgstr "Varaktighet:"
 
-#: data/glade/station-new.glade.h:1
-msgid " "
-msgstr " "
+#: data/glade/song-info.glade.h:5
+msgid "Encoding:"
+msgstr "Kodning:"
 
-#: data/glade/station-new.glade.h:3 data/glade/station-properties.glade.h:6
-msgid "_Genre: "
-msgstr "_Genre: "
+#: data/glade/song-info.glade.h:6
+msgid "Last played:"
+msgstr "Senast spelad:"
 
-#: data/glade/station-new.glade.h:4
-msgid "_Location: "
-msgstr "_Plats: "
+#: data/glade/song-info.glade.h:7
+msgid "Location:"
+msgstr "Plats:"
 
-#: data/glade/station-new.glade.h:5 data/glade/station-properties.glade.h:11
-msgid "_Title: "
-msgstr "_Titel: "
+#: data/glade/song-info.glade.h:8
+msgid "Name:"
+msgstr "Namn:"
 
-#: data/glade/station-new.glade.h:6
-msgid "dialog1"
-msgstr "dialog1"
+#: data/glade/song-info.glade.h:9
+msgid "Play count:"
+msgstr "Spelräknare:"
+
+#: data/glade/song-info.glade.h:10
+msgid "Quality:"
+msgstr "Kvalitet:"
+
+#: data/glade/song-info.glade.h:11
+msgid "_Album:"
+msgstr "_Album:"
+
+#: data/glade/song-info.glade.h:12
+msgid "_Artist:"
+msgstr "_Artist:"
+
+#: data/glade/song-info.glade.h:13
+msgid "_Comments:"
+msgstr "_Kommentarer:"
+
+#: data/glade/song-info.glade.h:14
+msgid "_Date:"
+msgstr "_Datum:"
+
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:7
+msgid "_Genre:"
+msgstr "_Genre:"
+
+#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:9
+msgid "_Rating:"
+msgstr "_Betyg:"
+
+#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:10
+msgid "_Title:"
+msgstr "_Titel:"
+
+#: data/glade/song-info.glade.h:18
+msgid "_Track number:"
+msgstr "_Spårnummer:"
+
+#: data/glade/song-info.glade.h:19
+msgid "_of:"
+msgstr "_av:"
+
+#: data/glade/station-new.glade.h:3
+msgid "_Location:"
+msgstr "_Plats:"
 
 #: data/glade/station-properties.glade.h:2
-msgid "42"
-msgstr "42"
+msgid "Locations"
+msgstr "Platser"
 
 #: data/glade/station-properties.glade.h:3
-msgid "Play Count: "
-msgstr "Spelräknare: "
+msgid "Play Count:"
+msgstr "Spelräknare:"
 
 #: data/glade/station-properties.glade.h:4
+msgid "Properties"
+msgstr "Egenskaper"
+
+#: data/glade/station-properties.glade.h:5
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
 msgstr "ons jan 01 1970 00.00.00 +0100"
 
-#: data/glade/station-properties.glade.h:5
-msgid "_Add: "
-msgstr "_Lägg till: "
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Last Played:"
-msgstr "_Senast spelad:"
+#: data/glade/station-properties.glade.h:6
+msgid "_Add:"
+msgstr "_Lägg till:"
 
 #: data/glade/station-properties.glade.h:8
-msgid "_Locations"
-msgstr "_Platser"
-
-#: data/glade/station-properties.glade.h:9 data/ui/rhythmbox-ui.xml.in.h:59
-msgid "_Properties"
-msgstr "_Egenskaper"
-
-#: data/glade/station-properties.glade.h:10
-msgid "_Rating: "
-msgstr "_Betyg: "
-
-#: data/glade/station-properties.glade.h:12
-msgid "blah Properties"
-msgstr "Egenskaper för blah"
+msgid "_Last Played:"
+msgstr "_Senast spelad:"
 
 #: data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
@@ -261,9 +290,6 @@ msgid "_Album"
 msgstr "_Album"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
-msgid "A_rtist"
-msgstr "A_rtist"
-
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:2
@@ -303,7 +329,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:579 shell/rb-shell.c:1026
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:586 shell/rb-shell.c:1037
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -319,19 +345,19 @@ msgstr "Avmarkera alla låtar"
 msgid "Eject Audio-CD"
 msgstr "Mata ut ljud-cd"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Scroll the view to the currently playing song"
 msgstr "Rulla vyn till den för tillfället spelade låten"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Select _All"
 msgstr "Markera _alla"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:31
 msgid "Select all songs"
 msgstr "Markera alla låtar"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:48
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_Edit"
 msgstr "_Redigera"
 
@@ -339,11 +365,11 @@ msgstr "_Redigera"
 msgid "_Eject Audio-CD..."
 msgstr "_Mata ut ljud-cd..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:53
 msgid "_Jump to Playing Song"
 msgstr "_Hoppa till aktuell låt"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:63
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:65
 msgid "_View"
 msgstr "_Visa"
 
@@ -447,127 +473,139 @@ msgstr "Inställ_ningar"
 msgid "Repea_t"
 msgstr "_Upprepa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:27
+msgid "Save a playlist to a file"
+msgstr "Spara en spellista i en fil"
+
+#: data/ui/rhythmbox-ui.xml.in.h:29
 msgid "Select N_one"
 msgstr "Markera _ingen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Show information about the music player"
 msgstr "Visa information om musikspelaren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "Show information on the selected song"
 msgstr "Visa information om den valda låten"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Start playing"
 msgstr "Starta uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "Start playing the next song"
 msgstr "Starta uppspelning av nästa låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Start playing the previous song"
 msgstr "Starta uppspelning av föregående låt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "Stop playing"
 msgstr "Stoppa uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "Toggle random playing order"
 msgstr "Slå på/av slumpvis spelordning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "Toggle repeat mode"
 msgstr "Slå på/av upprepningsläge"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "_About"
 msgstr "_Om"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Add to Library..."
 msgstr "_Lägg till i bibliotek..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Browser"
 msgstr "_Bläddrare"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "_Close"
 msgstr "S_täng"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "_Contents"
 msgstr "_Innehåll"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "_Copy"
 msgstr "_Kopiera"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "_Cut"
 msgstr "Klipp _ut"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_Delete"
 msgstr "_Ta bort"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Delete Playlist"
 msgstr "_Ta bort spellista"
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:50
 msgid "_Extract CD..."
 msgstr "_Extrahera cd..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 lib/widgets/rb-load-failure-dialog.c:143
+#: data/ui/rhythmbox-ui.xml.in.h:51 lib/widgets/rb-load-failure-dialog.c:143
 msgid "_File"
 msgstr "_Arkiv"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.in.h:52
 msgid "_Help"
 msgstr "_Hjälp"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-ui.xml.in.h:54
 msgid "_Load Playlist..."
 msgstr "_Läs in spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_Music"
 msgstr "_Musik"
 
-#: data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-ui.xml.in.h:56
 msgid "_New Playlist..."
 msgstr "_Ny spellista..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:56
+#: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Next"
 msgstr "_Nästa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:57
+#: data/ui/rhythmbox-ui.xml.in.h:58
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:58 shell/rb-shell-player.c:1116
+#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1125
 msgid "_Play"
 msgstr "_Spela"
 
 #: data/ui/rhythmbox-ui.xml.in.h:60
+msgid "_Properties"
+msgstr "_Egenskaper"
+
+#: data/ui/rhythmbox-ui.xml.in.h:61
+msgid "_Save Playlist..."
+msgstr "_Spara spellista..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:62
 msgid "_Show Window"
 msgstr "_Visa fönster"
 
-#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-statusbar.c:130
+#: data/ui/rhythmbox-ui.xml.in.h:63 shell/rb-statusbar.c:130
 msgid "_Shuffle"
 msgstr "_Blanda"
 
-#: data/ui/rhythmbox-ui.xml.in.h:62
+#: data/ui/rhythmbox-ui.xml.in.h:64
 msgid "_Source List"
 msgstr "_Källista"
 
-#: iradio/rb-iradio-backend.c:180 library/rb-library.c:515
+#: iradio/rb-iradio-backend.c:180 library/rb-library.c:570
 msgid "All"
 msgstr "Alla"
 
@@ -581,11 +619,11 @@ msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
 #: iradio/rb-iradio-backend.c:526 iradio/rb-iradio-backend.c:545
-#: iradio/rb-iradio-backend.c:546 lib/widgets/rb-tree-model-node.c:576
+#: iradio/rb-iradio-backend.c:546 lib/widgets/rb-tree-model-node.c:587
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
-#: iradio/rb-iradio-backend.c:739
+#: iradio/rb-iradio-backend.c:740
 msgid "Never"
 msgstr "Aldrig"
 
@@ -608,35 +646,31 @@ msgstr "Misslyckades med att tolka %s: %s"
 msgid "New Internet Radio Station"
 msgstr "Ny Internetradiokanal"
 
-#: iradio/rb-new-station-dialog.c:146
-msgid "_Don't Add"
-msgstr "Lägg i_nte till"
-
 #: iradio/rb-new-station-dialog.c:181
-#: monkey-media/monkey-media-stream-info.c:384
-#: monkey-media/monkey-media-stream-info.c:400
-#: monkey-media/monkey-media-stream-info.c:648 sources/rb-audiocd-source.c:978
-#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:231
-#: sources/rb-iradio-source.c:232 sources/rb-iradio-source.c:233
+#: monkey-media/monkey-media-stream-info.c:402
+#: monkey-media/monkey-media-stream-info.c:418
+#: monkey-media/monkey-media-stream-info.c:665 sources/rb-audiocd-source.c:978
+#: sources/rb-audiocd-source.c:985 sources/rb-iradio-source.c:235
+#: sources/rb-iradio-source.c:236 sources/rb-iradio-source.c:237
 msgid "Unknown"
 msgstr "Okänd"
 
-#: iradio/rb-station-properties-dialog.c:188 lib/widgets/rb-song-info.c:473
-#: lib/widgets/rb-song-info.c:487
+#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:568
+#: lib/widgets/rb-song-info.c:582
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
-#: iradio/rb-station-properties-dialog.c:388
+#: iradio/rb-station-properties-dialog.c:389
 #, c-format
 msgid "Properties for %s"
 msgstr "Egenskaper för %s"
 
-#: iradio/rb-station-properties-dialog.c:538
+#: iradio/rb-station-properties-dialog.c:539
 msgid "No locations specified!"
 msgstr "Inga platser angivna!"
 
-#: iradio/rb-station-properties-dialog.c:582
+#: iradio/rb-station-properties-dialog.c:583
 msgid "No location is selected."
 msgstr "Ingen plats är angiven."
 
@@ -644,7 +678,7 @@ msgstr "Ingen plats är angiven."
 msgid "No location specified."
 msgstr "Ingen plats angiven."
 
-#: iradio/rb-station-properties-dialog.c:606
+#: iradio/rb-station-properties-dialog.c:605
 msgid "Location is not a valid URL."
 msgstr "Platsen är inte en giltig URL."
 
@@ -665,6 +699,14 @@ msgstr ""
 "GConf-fel:\n"
 "  %s"
 
+#: lib/eggtrayicon.c:118
+msgid "Orientation"
+msgstr "Orientering"
+
+#: lib/eggtrayicon.c:119
+msgid "The orientation of the tray."
+msgstr "Orienteringen på lådan."
+
 #: lib/rb-file-helpers.c:76
 #, c-format
 msgid "Failed to find %s"
@@ -680,6 +722,16 @@ msgstr "%s finns, flytta undan den."
 msgid "Failed to create directory %s."
 msgstr "Misslyckades med att skapa katalogen %s."
 
+#: lib/rb-playlist.c:203
+#, c-format
+msgid "Couldn't write playlist: %s"
+msgstr "Kunde inte skriva spellista: %s"
+
+#: lib/rb-playlist.c:236
+#, c-format
+msgid "Couldn't open playlist: %s"
+msgstr "Kunde inte öppna spellista: %s"
+
 #. comma separated list of prefixes that are to
 #. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
@@ -691,10 +743,13 @@ msgstr " "
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/rb-windows-ini-file.c:375
-#, c-format
-msgid "Unable to parse %s: %s\n"
-msgstr "Kan inte tolka %s: %s\n"
+#: lib/widgets/gtktreemodelsort.c:306
+msgid "TreeModelSort Model"
+msgstr "TreeModelSort-modell"
+
+#: lib/widgets/gtktreemodelsort.c:307
+msgid "The model for the TreeModelSort to sort"
+msgstr "Modellen som TreeModelSort ska använda för sortering"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:106
 msgid "Pixbuf Object"
@@ -703,6 +758,23 @@ msgstr "Pixbuf-objekt"
 #: lib/widgets/rb-cell-renderer-pixbuf.c:107
 msgid "The pixbuf to render."
 msgstr "Pixbuf att rendera."
+
+#: lib/widgets/rb-druid.c:218 shell/main.c:82
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: lib/widgets/rb-druid.c:260
+msgid "You are now ready to start Rhythmbox."
+msgstr "Du är nu redo att starta Rhythmbox."
+
+#: lib/widgets/rb-druid.c:309
+#, c-format
+msgid "Error reading filename: %s"
+msgstr "Fel vid läsning av filnamn: %s"
+
+#: lib/widgets/rb-druid.c:324
+msgid "Choose a directory"
+msgstr "Välj en katalog"
 
 #: lib/widgets/rb-link.c:325
 #, c-format
@@ -721,7 +793,7 @@ msgstr "Fel vid inläsning av filer till biblioteket"
 msgid "_Error"
 msgstr "_Fel"
 
-#: lib/widgets/rb-node-view.c:686
+#: lib/widgets/rb-node-view.c:716
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
@@ -750,7 +822,7 @@ msgstr "Hämta information om denna artist från webben"
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1030 shell/rb-shell.c:1928
+#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2002
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -769,32 +841,28 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Sök:"
 
-#: lib/widgets/rb-song-info.c:196
-msgid "_Next Song"
-msgstr "_Nästa låt"
-
-#: lib/widgets/rb-song-info.c:229 lib/widgets/rb-song-info.c:492
+#: lib/widgets/rb-song-info.c:227 lib/widgets/rb-song-info.c:587
 msgid "Song Properties"
 msgstr "Låtegenskaper"
 
-#: lib/widgets/rb-song-info.c:774
+#: lib/widgets/rb-song-info.c:869
 msgid "on the desktop"
 msgstr "på skrivbordet"
 
-#: lib/widgets/rb-song-info.c:965
+#: lib/widgets/rb-song-info.c:1081
 #, c-format
-msgid "%d kbps "
-msgstr "%d kb/s "
+msgid "%d kbps"
+msgstr "%d kb/s"
 
-#: lib/widgets/rb-song-info.c:978
+#: lib/widgets/rb-song-info.c:1094
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:981
+#: lib/widgets/rb-song-info.c:1097
 msgid " (Stereo)"
 msgstr " (Stereo)"
 
-#: lib/widgets/rb-song-info.c:984
+#: lib/widgets/rb-song-info.c:1100
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d kanaler)"
@@ -813,16 +881,16 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:765
+#: library/rb-library.c:820
 msgid "Failed to load library!"
 msgstr "Misslyckades med att läsa in biblioteket!"
 
-#: library/rb-library.c:1028
+#: library/rb-library.c:1087
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1321
+#: library/rb-node.c:1339
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -868,107 +936,107 @@ msgid "Error getting leadout: %s"
 msgstr "Fel vid hämtande av paus: %s"
 
 #: monkey-media/monkey-media-player-gst-old.c:371
-#: monkey-media/monkey-media-player-gst.c:448
+#: monkey-media/monkey-media-player-gst.c:451
 msgid "Failed to create gnomevfssrc input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa gnomevfssrc-indataelement; kontrollera din "
 "installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:380
-#: monkey-media/monkey-media-player-gst.c:463
+#: monkey-media/monkey-media-player-gst.c:466
 msgid "Failed to create cdparanoia input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa cdparanoia-indataelement; kontrollera din "
 "installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:555
-#: monkey-media/monkey-media-player-gst.c:513
+#: monkey-media/monkey-media-player-gst-tmp.c:558
+#: monkey-media/monkey-media-player-gst.c:516
 msgid "Failed to create spider element; check your installation"
 msgstr ""
 "Misslyckades med att skapa spindelelement; kontrollera din installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:567
-#: monkey-media/monkey-media-player-gst.c:528
+#: monkey-media/monkey-media-player-gst-tmp.c:570
+#: monkey-media/monkey-media-player-gst.c:531
 msgid "Failed to create volume element; check your installation"
 msgstr "Misslyckades med att skapa volymelement; kontrollera din installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:585
-#: monkey-media/monkey-media-player-gst.c:549
+#: monkey-media/monkey-media-player-gst-tmp.c:588
+#: monkey-media/monkey-media-player-gst.c:552
 msgid "Could not create audio output element; check your settings"
 msgstr "Kunde inte skapa ljudutmatningselement; kontrollera dina inställningar"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:690
-#: monkey-media/monkey-media-player-gst.c:636
+#: monkey-media/monkey-media-player-gst-tmp.c:702
+#: monkey-media/monkey-media-player-gst.c:639
 msgid "No AudioCD support; check your settings"
 msgstr "Inget stöd för ljud-cd; kontrollera dina inställningar"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:506
+#: monkey-media/monkey-media-player-gst-tmp.c:509
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa %s-indataelelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:531
-#: monkey-media/monkey-media-player-gst.c:486
+#: monkey-media/monkey-media-player-gst-tmp.c:534
+#: monkey-media/monkey-media-player-gst.c:489
 msgid "Failed to create queue element; check your installation"
 msgstr "Misslyckades med att skapa köelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-xine.c:333
+#: monkey-media/monkey-media-player-xine.c:332
 msgid "Failed to set up an audio driver; check your installation"
 msgstr ""
 "Misslyckades med att konfigurera en ljuddrivrutin; kontrollera din "
 "installation"
 
-#: monkey-media/monkey-media-player-xine.c:421
+#: monkey-media/monkey-media-player-xine.c:420
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr "Ingen inmatningsinsticksmodul för %s; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:430
+#: monkey-media/monkey-media-player-xine.c:429
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "Ingen demuxinsticksmodul tillgänglig för %s; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:439
+#: monkey-media/monkey-media-player-xine.c:438
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Demux för %s misslyckades; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:447
+#: monkey-media/monkey-media-player-xine.c:446
 msgid "Internal error; check your installation."
 msgstr "Internt fel; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:456
+#: monkey-media/monkey-media-player-xine.c:455
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "Ljud för %s hanteras inte; kontrollera din installation."
 
-#: monkey-media/monkey-media-stream-info.c:306
+#: monkey-media/monkey-media-stream-info.c:308
 #, c-format
 msgid "Unsupported MIME type %s"
 msgstr "MIME-typen %s stöds inte"
 
-#: monkey-media/monkey-media-stream-info.c:311
+#: monkey-media/monkey-media-stream-info.c:313
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: monkey-media/monkey-media-stream-info.c:366
+#: monkey-media/monkey-media-stream-info.c:384
 #, c-format
 msgid "Track %.2d"
 msgstr "Spår %.2d"
 
-#: monkey-media/monkey-media-stream-info.c:730
-#: monkey-media/monkey-media-stream-info.c:794
+#: monkey-media/monkey-media-stream-info.c:749
+#: monkey-media/monkey-media-stream-info.c:814
 msgid "No TRM ID for this song"
 msgstr "Inget TRM-ID för denna låt"
 
-#: monkey-media/monkey-media-stream-info.c:746
-#: monkey-media/monkey-media-stream-info.c:809
+#: monkey-media/monkey-media-stream-info.c:765
+#: monkey-media/monkey-media-stream-info.c:829
 msgid "No information for this song found"
 msgstr "Ingen information för denna låt hittades"
 
@@ -1045,16 +1113,12 @@ msgstr "Avsluta Rhythmbox"
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
 
-#: shell/main.c:84
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
-#: shell/main.c:194
+#: shell/main.c:196
 msgid "Rhythmbox does not currently work if GNOME sound events are enabled."
 msgstr ""
 "Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är aktiverade."
 
-#: shell/main.c:234
+#: shell/main.c:236
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1063,93 +1127,60 @@ msgstr ""
 "Misslyckades med att aktivera skalet:\n"
 "%s"
 
-#: shell/rb-playlist.c:44
-#, c-format
-msgid "Unable to parse playlist entry \"%s\""
-msgstr "Kan inte tolka spellisteposten \"%s\""
-
-#: shell/rb-playlist.c:70
-#, c-format
-msgid "Unable to load playlist file \"%s\""
-msgstr "Kan inte läsa in spellistefilen \"%s\""
-
-#: shell/rb-playlist.c:90
-#, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no numberofentries header found"
-msgstr ""
-"Fel vid läsande av spellistefilen \"%s\":\n"
-" inget numberofentries-huvud hittades"
-
-#: shell/rb-playlist.c:186
-#, c-format
-msgid ""
-"Error reading playlist file \"%s\":\n"
-" no playlist header"
-msgstr ""
-"Fel vid läsande av spellistefilen \"%s\":\n"
-" inget spellistehuvud"
-
-#: shell/rb-shell-player.c:320
+#: shell/rb-shell-player.c:319
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:666
+#: shell/rb-shell-player.c:665
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
 # Osäker
-#: shell/rb-shell-player.c:737
+#: shell/rb-shell-player.c:736
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr "Alla reservplatser misslyckades, kan inte spela: %s\n"
 
-#: shell/rb-shell-player.c:1107
+#: shell/rb-shell-player.c:1116
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1108
+#: shell/rb-shell-player.c:1117
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1115
+#: shell/rb-shell-player.c:1124
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1123
+#: shell/rb-shell-player.c:1132
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1124
+#: shell/rb-shell-player.c:1133
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1347
+#: shell/rb-shell-player.c:1356
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
-#: shell/rb-shell-preferences.c:174
+#: shell/rb-shell-preferences.c:177
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-shell-preferences.c:212
+#: shell/rb-shell-preferences.c:225
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:477
+#: shell/rb-shell.c:499
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:502
-#, c-format
-msgid "Unable to handle URI \"%s\"\n"
-msgstr "Kan inte hantera URI:n \"%s\"\n"
-
-#: shell/rb-shell.c:780
+#: shell/rb-shell.c:787
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1162,12 +1193,12 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1044
+#: shell/rb-shell.c:1055
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1047
+#: shell/rb-shell.c:1058
 #, c-format
 msgid ""
 "%s\n"
@@ -1176,49 +1207,68 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1115
+#: shell/rb-shell.c:1127
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1124
+#: shell/rb-shell.c:1136
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1128
+#: shell/rb-shell.c:1140
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1136
-msgid "Music management and playback software for GNOME."
-msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
+#: shell/rb-shell.c:1164
+#, c-format
+msgid ""
+"Music management and playback software for GNOME.\n"
+"Audio backend: %s\n"
+"Audio formats: %s\n"
+msgstr ""
+"Musikhanterings- och uppspelningsprogramvara för GNOME.\n"
+"Ljudbakände: %s\n"
+"Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1272
+#: shell/rb-shell.c:1308
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1301
+#: shell/rb-shell.c:1337
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1756
-msgid "Create"
-msgstr "Skapa"
+#: shell/rb-shell.c:1377
+msgid "Save playlist"
+msgstr "Spara spellista"
 
-#: shell/rb-shell.c:1771
-msgid "Add Playlist"
-msgstr "Lägg till spellista"
+#: shell/rb-shell.c:1397
+msgid "There is already a playlist with that name."
+msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-shell.c:1782
+#: shell/rb-shell.c:1505
+msgid "Couldn't parse playlist"
+msgstr "Kunde inte tolka spellista"
+
+#: shell/rb-shell.c:1835
+msgid "C_reate"
+msgstr "S_kapa"
+
+#: shell/rb-shell.c:1850
+msgid "New Playlist"
+msgstr "Ny spellista"
+
+#: shell/rb-shell.c:1861
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-shell.c:1792
+#: shell/rb-shell.c:1866
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1796
+#: shell/rb-shell.c:1870
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
 
@@ -1260,45 +1310,45 @@ msgstr "Läser in cd-information"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d låtar, %d.%02d.%02d total tid"
 
-#: sources/rb-group-source.c:501 sources/rb-library-source.c:761
+#: sources/rb-group-source.c:525 sources/rb-library-source.c:778
 #, c-format
 msgid "%ld songs"
 msgstr "%ld låtar"
 
-#: sources/rb-group-source.c:542 sources/rb-library-source.c:808
+#: sources/rb-group-source.c:566 sources/rb-library-source.c:825
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> dagar (%ld låtar)"
 
-#: sources/rb-group-source.c:545 sources/rb-library-source.c:811
+#: sources/rb-group-source.c:569 sources/rb-library-source.c:828
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
 
-#: sources/rb-group-source.c:548 sources/rb-library-source.c:814
+#: sources/rb-group-source.c:572 sources/rb-library-source.c:831
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuter (%ld låtar)"
 
-#: sources/rb-group-source.c:686
+#: sources/rb-group-source.c:710
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
 
-#: sources/rb-iradio-source.c:368
+#: sources/rb-iradio-source.c:374
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:464
+#: sources/rb-iradio-source.c:487
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
 
-#: sources/rb-library-source.c:610
+#: sources/rb-library-source.c:611
 msgid "Library"
 msgstr "Bibliotek"
 
-#: sources/rb-library-source.c:920
+#: sources/rb-library-source.c:937
 msgid "Add Location"
 msgstr "Lägg till plats"
 
@@ -1309,6 +1359,153 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:544
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "Create"
+#~ msgstr "Skapa"
+
+#~ msgid ""
+#~ "In order to get started using Rhythmbox, this assistant will ask you some "
+#~ "simple questions."
+#~ msgstr ""
+#~ "Denna guide kommer att fråga dig ett par enkla frågor för att du ska "
+#~ "kunna komma igång med användningen av Rhythmbox."
+
+#~ msgid ""
+#~ "Rhythmbox needs to know where to find your music. You may choose to skip "
+#~ "this step; instead, you can add music to your library at any point "
+#~ "later.\n"
+#~ "Please choose one of the options below:"
+#~ msgstr ""
+#~ "Rhythmbox måste veta var det kan hitta din musik. Du kan välja att hoppa "
+#~ "över detta steg och istället lägga till musik till ditt bibliotek vid ett "
+#~ "senare tillfälle.\n"
+#~ "\n"
+#~ "Välj ett av alternativen nedan:"
+
+#~ msgid "_of"
+#~ msgstr "_av"
+
+#~ msgid "Save playlist to a file"
+#~ msgstr "Spara spellista i en fil"
+
+#~ msgid "Music management and playback software for GNOME."
+#~ msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
+
+#~ msgid "Add Playlist"
+#~ msgstr "Lägg till spellista"
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "<span weight=\"bold\">Visible Columns</span>"
+#~ msgstr "<span weight=\"bold\">Synliga kolumner</span>"
+
+#~ msgid "<b>Browser Views</b>"
+#~ msgstr "<b>Bläddrarvyer</b>"
+
+#~ msgid "   "
+#~ msgstr "   "
+
+#~ msgid "<b>Duration:</b>"
+#~ msgstr "<b>Varaktighet:</b>"
+
+#~ msgid "<b>Last played:</b>"
+#~ msgstr "<b>Senast spelad:</b>"
+
+#~ msgid "<b>Location:</b>"
+#~ msgstr "<b>Plats:</b>"
+
+#~ msgid "<b>Name:</b>"
+#~ msgstr "<b>Namn:</b>"
+
+#~ msgid "<b>Play count:</b>"
+#~ msgstr "<b>Spelräknare:</b>"
+
+#~ msgid "<b>Quality:</b>"
+#~ msgstr "<b>Kvalitet:</b>"
+
+#~ msgid "<b>_Album:</b>"
+#~ msgstr "<b>_Album:</b>"
+
+#~ msgid "<b>_Artist:</b>"
+#~ msgstr "<b>_Artist:</b>"
+
+#~ msgid "<b>_Comments:</b>"
+#~ msgstr "<b>_Kommentarer:</b>"
+
+#~ msgid "<b>_Date:</b>"
+#~ msgstr "<b>_Datum:</b>"
+
+#~ msgid "<b>_Genre:</b>"
+#~ msgstr "<b>_Genre:</b>"
+
+#~ msgid "<b>_Rating:</b>"
+#~ msgstr "<b>_Betyg:</b>"
+
+#~ msgid "<b>_Title:</b>"
+#~ msgstr "<b>_Titel:</b>"
+
+#~ msgid "<b>_Track number:</b>"
+#~ msgstr "<b>_Spårnummer:</b>"
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid "_Genre: "
+#~ msgstr "_Genre: "
+
+#~ msgid "_Title: "
+#~ msgstr "_Titel: "
+
+#~ msgid "dialog1"
+#~ msgstr "dialog1"
+
+#~ msgid "42"
+#~ msgstr "42"
+
+#~ msgid "_Rating: "
+#~ msgstr "_Betyg: "
+
+#~ msgid "blah Properties"
+#~ msgstr "Egenskaper för blah"
+
+#~ msgid "A_rtist"
+#~ msgstr "A_rtist"
+
+#~ msgid "_Don't Add"
+#~ msgstr "Lägg i_nte till"
+
+#~ msgid "Unable to parse %s: %s\n"
+#~ msgstr "Kan inte tolka %s: %s\n"
+
+#~ msgid "_Next Song"
+#~ msgstr "_Nästa låt"
+
+#~ msgid "%d kbps "
+#~ msgstr "%d kb/s "
+
+#~ msgid "Unable to parse playlist entry \"%s\""
+#~ msgstr "Kan inte tolka spellisteposten \"%s\""
+
+#~ msgid "Unable to load playlist file \"%s\""
+#~ msgstr "Kan inte läsa in spellistefilen \"%s\""
+
+#~ msgid ""
+#~ "Error reading playlist file \"%s\":\n"
+#~ " no numberofentries header found"
+#~ msgstr ""
+#~ "Fel vid läsande av spellistefilen \"%s\":\n"
+#~ " inget numberofentries-huvud hittades"
+
+#~ msgid ""
+#~ "Error reading playlist file \"%s\":\n"
+#~ " no playlist header"
+#~ msgstr ""
+#~ "Fel vid läsande av spellistefilen \"%s\":\n"
+#~ " inget spellistehuvud"
+
+#~ msgid "Unable to handle URI \"%s\"\n"
+#~ msgstr "Kan inte hantera URI:n \"%s\"\n"
 
 #~ msgid "Please enter a name for the new playlist"
 #~ msgstr "Ange ett namn för den nya spellistan"
@@ -1369,9 +1566,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Whether the action is enabled."
 #~ msgstr "Huruvida åtgärden är aktiverad."
 
-#~ msgid "Visible"
-#~ msgstr "Synlig"
-
 #~ msgid "Whether the action is visible."
 #~ msgstr "Huruvida åtgärden är synlig."
 
@@ -1380,12 +1574,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Separator"
 #~ msgstr "Avskiljare"
-
-#~ msgid "Orientation"
-#~ msgstr "Orientering"
-
-#~ msgid "The orientation of the toolbar"
-#~ msgstr "Orienteringen på verktygsraden"
 
 #~ msgid "Toolbar Style"
 #~ msgstr "Verktygsradsstil"
@@ -1500,23 +1688,11 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Start playing the selected song(s)"
 #~ msgstr "Starta uppspelning av de markerade låtarna"
 
-#~ msgid "Location:"
-#~ msgstr "Plats:"
-
 #~ msgid "Location"
 #~ msgstr "Plats"
 
-#~ msgid "Name:"
-#~ msgstr "Namn:"
-
-#~ msgid "Play count:"
-#~ msgstr "Spelräknare:"
-
 #~ msgid "Play count"
 #~ msgstr "Spelräknare"
-
-#~ msgid "Quality:"
-#~ msgstr "Kvalitet:"
 
 #~ msgid "Quality"
 #~ msgstr "Kvalitet"
@@ -1524,17 +1700,11 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "<b>Album:</b>"
 #~ msgstr "<b>Album:</b>"
 
-#~ msgid "_Album:"
-#~ msgstr "_Album:"
-
 #~ msgid "Album:"
 #~ msgstr "Album:"
 
 #~ msgid "<b>Artist:</b>"
 #~ msgstr "<b>Artist:</b>"
-
-#~ msgid "_Artist:"
-#~ msgstr "_Artist:"
 
 #~ msgid "Artist:"
 #~ msgstr "Artist:"
@@ -1544,9 +1714,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "<b>Comment:</b>"
 #~ msgstr "<b>Kommentar:</b>"
-
-#~ msgid "_Comments:"
-#~ msgstr "_Kommentarer:"
 
 #~ msgid "_Comments"
 #~ msgstr "_Kommentarer"
@@ -1572,9 +1739,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "<b>Genre:</b>"
 #~ msgstr "<b>Genre:</b>"
 
-#~ msgid "_Genre:"
-#~ msgstr "_Genre:"
-
 #~ msgid "Genre:"
 #~ msgstr "Genre:"
 
@@ -1583,9 +1747,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "<b>Rating:</b>"
 #~ msgstr "<b>Betyg:</b>"
-
-#~ msgid "_Rating:"
-#~ msgstr "_Betyg:"
 
 #~ msgid "Rating:"
 #~ msgstr "Betyg:"
@@ -1596,9 +1757,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "<b>Title:</b>"
 #~ msgstr "<b>Titel:</b>"
 
-#~ msgid "_Title:"
-#~ msgstr "_Titel:"
-
 #~ msgid "Title:"
 #~ msgstr "Titel:"
 
@@ -1607,9 +1765,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "<b>Track number:</b>"
 #~ msgstr "<b>Spårnummer:</b>"
-
-#~ msgid "_Track number:"
-#~ msgstr "_Spårnummer:"
 
 #~ msgid "_Track number"
 #~ msgstr "_Spårnummer"
@@ -1793,9 +1948,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Do not register with bonobo activation"
 #~ msgstr "Registrera inte med bonobo activation"
 
-#~ msgid "Failed to activate Rhythmbox"
-#~ msgstr "Misslyckades med att aktivera Rhythmbox"
-
 #~ msgid "by "
 #~ msgstr "av "
 
@@ -1840,9 +1992,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ "Misslyckades med att skapa flöde, felet var:\n"
 #~ "%s"
 
-#~ msgid "Failed to parse %s as playlist"
-#~ msgstr "Misslyckades med att tolka %s som spellista"
-
 #~ msgid "%ld:%.2ld"
 #~ msgstr "%ld.%.2ld"
 
@@ -1857,9 +2006,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Delete the currently selected music group"
 #~ msgstr "Ta bort den för tillfället valda musikgruppen"
-
-#~ msgid "P_roperties"
-#~ msgstr "E_genskaper"
 
 #~ msgid "Rename the currently selected music group"
 #~ msgstr "Byt namn på den för tillfället valda musikgruppen"
@@ -1957,9 +2103,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "library"
 #~ msgstr "bibliotek"
 
-#~ msgid "Browser Views"
-#~ msgstr "Bläddrarvyer"
-
 #~ msgid "%Y-%m-%d %H:%M:%S"
 #~ msgstr "%Y-%m-%d %H.%M.%S"
 
@@ -1971,9 +2114,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "%A, %B %-d %Y at %-H:%M:%S"
 #~ msgstr "%A %-d %B %Y klockan %H.%M.%S"
-
-#~ msgid "%d kbps"
-#~ msgstr "%d kb/s"
 
 #~ msgid "Mono"
 #~ msgstr "Mono"
@@ -2007,9 +2147,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "The mixer channel of which the volume is controlled."
 #~ msgstr "Mixerkanal vars volym styrs."
-
-#~ msgid "Couldn't open mixer device %s\n"
-#~ msgstr "Kunde inte öppna mixerenheten %s\n"
 
 #~ msgid ""
 #~ "warning: this version of gmix was compiled with a different version of\n"
@@ -2086,9 +2223,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Bit Rate:"
 #~ msgstr "Bithastighet:"
 
-#~ msgid "_Date:"
-#~ msgstr "_Datum:"
-
 #~ msgid "_Track Number:"
 #~ msgstr "_Spårnummer:"
 
@@ -2155,9 +2289,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Comments"
 #~ msgstr "Kommentarer"
-
-#~ msgid "_About Rhythmbox"
-#~ msgstr "_Om Rhythmbox"
 
 #~ msgid "Also Look for Music in These Folders"
 #~ msgstr "Leta efter musik även i dessa mappar"
