@@ -18,9 +18,9 @@
        type="toggle"/>
 
   <cmd name="SongInfo"
-       _tip="Show information on selected song"
+       _tip="Show information on the selected song"
        pixtype="stock"
-       pixname="gtk-dialog-info"/>
+       pixname="gtk-properties"/>
 
 </commands>
 
@@ -30,7 +30,7 @@
 
   <placeholder name="FileMenu">
 
-    <menuitem name="SongInfo" verb="SongInfo" _label="Song _Information" accel="*Control*i"/>
+    <menuitem name="SongInfo" verb="SongInfo" _label="Song _Information..." accel="*Control*i"/>
 
   </placeholder>
 

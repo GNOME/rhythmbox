@@ -1,3 +1,21 @@
+2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/glade/song-info.glade:
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/widgets/rb-song-info.c: (rb_song_info_get_type),
+	(rb_song_info_class_init), (rb_song_info_init),
+	(rb_song_info_finalize), (rb_song_info_set_property),
+	(rb_song_info_get_property), (rb_song_info_new),
+	(rb_song_info_response_cb), (rb_song_info_populate_dialog),
+	(rb_song_info_update_entry), (rb_song_info_update_track),
+	(rb_song_info_update_bitrate), (rb_song_info_update_channels),
+	(rb_song_info_update_size), (rb_song_info_update_duration),
+	(rb_song_info_update_location):
+
+	Fix leaks, bugs, and code duplication. Also polish some bits.
+
 2002-07-28  Olivier Martin  <omartin@ifrance.com>
 
 	* data/glade/Makefile.am:
