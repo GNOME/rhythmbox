@@ -1082,7 +1082,7 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
-				      FALSE, 0.0, 0.0);
+				      TRUE, 0.5, 0.0);
 
 	gtk_tree_path_free (path);
 }
