@@ -115,8 +115,8 @@ rb_ask_file_multiple (const char *title,
 					       NULL);
 
 	if (default_file != NULL)
-		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (filesel),
-					   	   default_file);
+		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (filesel),
+							 default_file);
 
 	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel),
 					      TRUE);
@@ -159,8 +159,8 @@ rb_ask_file (const char *title,
 					       NULL);
 
 	if (default_file != NULL)
-		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (filesel),
-					   	   default_file);
+		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (filesel),
+							 default_file);
 
 	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel),
 					      FALSE);

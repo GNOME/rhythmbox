@@ -2053,19 +2053,22 @@ ask_file_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
+	current_dir = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
+	eel_gconf_set_string (CONF_STATE_ADD_DIR, current_dir);
 
+
+	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
 	if (uri_list == NULL) {
-		current_dir = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
-		uri_list = g_slist_append (uri_list, current_dir);
+		uri_list = g_slist_append (uri_list, g_strdup (current_dir));
 	}
-	
+
 	shell->priv->show_db_errors = TRUE;
 
 	for (uris = uri_list; uris; uris = uris->next) {
 		if (g_utf8_validate ((char *)uris->data, -1, NULL)) 
 			rhythmdb_add_uri_async (shell->priv->db, (char *)uris->data);
 	}
+	g_slist_foreach (uri_list, (GFunc)g_free, NULL);
 	g_slist_free (uri_list);
 	g_free (current_dir);
 	gtk_widget_destroy (GTK_WIDGET (dialog));
