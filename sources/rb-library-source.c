@@ -412,7 +412,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
 	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db, CONF_STATE_LIBRARY_SORTING);
+	source->priv->songs = rb_entry_view_new (source->priv->db, CONF_STATE_LIBRARY_SORTING,
+						 TRUE, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE);

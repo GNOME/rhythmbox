@@ -135,6 +135,9 @@ struct RBEntryViewPrivate
 	RhythmDBEntry *playing_entry;
 	GtkTreeIter playing_entry_iter;
 
+	gboolean is_drag_source;
+	gboolean is_drag_dest;
+
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
 	
@@ -196,6 +199,8 @@ enum
 	PROP_MODEL,
 	PROP_PLAYING_ENTRY,
 	PROP_SORTING_KEY,
+	PROP_IS_DRAG_SOURCE,
+	PROP_IS_DRAG_DEST,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -271,6 +276,20 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      "sorting key",
 							      "",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_IS_DRAG_SOURCE,
+					 g_param_spec_boolean ("is-drag-source",
+							       "is drag source",
+							       "whether or not this is a drag source",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_IS_DRAG_DEST,
+					 g_param_spec_boolean ("is-drag-dest",
+							       "is drag dest",
+							       "whether or not this is a drag dest",
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	rb_entry_view_signals[ENTRY_ADDED] =
 		g_signal_new ("entry-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -615,6 +634,12 @@ rb_entry_view_set_property (GObject *object,
 			rb_entry_view_scroll_to_iter (view, &iter);
 	}
 	break;
+	case PROP_IS_DRAG_SOURCE:
+		view->priv->is_drag_source = g_value_get_boolean (value);
+		break;
+	case PROP_IS_DRAG_DEST:
+		view->priv->is_drag_dest = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -640,6 +665,12 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_PLAYING_ENTRY:
 		g_value_set_pointer (value, view->priv->playing_entry);
 		break;
+	case PROP_IS_DRAG_SOURCE:
+		g_value_set_boolean (value, view->priv->is_drag_source);
+		break;
+	case PROP_IS_DRAG_DEST:
+		g_value_set_boolean (value, view->priv->is_drag_dest);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -647,7 +678,8 @@ rb_entry_view_get_property (GObject *object,
 }
 
 RBEntryView *
-rb_entry_view_new (RhythmDB *db, const char *sort_key) 
+rb_entry_view_new (RhythmDB *db, const char *sort_key,
+		   gboolean is_drag_source, gboolean is_drag_dest) 
 {
 	RBEntryView *view;
 
@@ -659,6 +691,8 @@ rb_entry_view_new (RhythmDB *db, const char *sort_key)
 					   "shadow_type", GTK_SHADOW_IN,
 					    "db", db,
 					    "sort-key", sort_key,
+					    "is-drag-source", is_drag_source,
+					    "is-drag-dest", is_drag_dest,
 					   NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
@@ -1349,15 +1383,17 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
 	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
 
-	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
-						GDK_BUTTON1_MASK,
-						rb_entry_view_drag_types,
-						G_N_ELEMENTS (rb_entry_view_drag_types),
-						GDK_ACTION_COPY);
-	gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (view->priv->treeview),
-					      rb_entry_view_drag_types,
-					      G_N_ELEMENTS (rb_entry_view_drag_types),
-					      GDK_ACTION_COPY);
+	if (view->priv->is_drag_source)
+		gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
+							GDK_BUTTON1_MASK,
+							rb_entry_view_drag_types,
+							G_N_ELEMENTS (rb_entry_view_drag_types),
+							GDK_ACTION_COPY);
+	if (view->priv->is_drag_dest)
+		gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (view->priv->treeview),
+						      rb_entry_view_drag_types,
+						      G_N_ELEMENTS (rb_entry_view_drag_types),
+						      GDK_ACTION_COPY);
 	
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 

@@ -81,7 +81,8 @@ typedef struct
 
 GType		rb_entry_view_get_type			(void);
 
-RBEntryView *	rb_entry_view_new			(RhythmDB *db, const char *sort_key);
+RBEntryView *	rb_entry_view_new			(RhythmDB *db, const char *sort_key,
+							 gboolean drag_source, gboolean drag_dest);
 
 void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype);
 

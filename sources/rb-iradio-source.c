@@ -303,7 +303,8 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	source->priv->paned = gtk_hpaned_new ();
 
 	/* set up stations view */
-	source->priv->stations = rb_entry_view_new (source->priv->db, CONF_STATE_IRADIO_SORTING);
+	source->priv->stations = rb_entry_view_new (source->priv->db, CONF_STATE_IRADIO_SORTING,
+						    FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);

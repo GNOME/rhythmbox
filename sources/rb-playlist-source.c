@@ -252,7 +252,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->entries = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 		
-	source->priv->songs = rb_entry_view_new (source->priv->db, NULL);
+	source->priv->songs = rb_entry_view_new (source->priv->db, NULL, TRUE, TRUE);
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (source->priv->model));
 
