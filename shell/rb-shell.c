@@ -1614,7 +1614,8 @@ rb_shell_sync_paned (RBShell *shell)
 		if (maximized) {
 			gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
 			default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-			pos = pos * (float)actual_width/(float)default_width + 1;            
+			if (actual_width != default_width)
+				pos = pos * (float)actual_width/(float)default_width + 1;            
 		}
 		gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 					pos);
