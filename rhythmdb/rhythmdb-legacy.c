@@ -40,6 +40,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	guint rating = 0, play_count = 0;
 	gint track_number = -1;
 	glong duration = 0;
+	glong last_played = 0;
 	GValue val = {0, };
 
 	for (node_child = node->children; node_child != NULL; node_child = node_child->next) {
@@ -87,8 +88,11 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				play_count = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
-					
-					
+			case 17: /* RB_NODE_PROP_LAST_PLAYED */
+				xml = xmlNodeGetContent (node_child);
+				last_played = g_ascii_strtoull (xml, NULL, 10);
+				g_free (xml);
+				break;
 			}
 		}
 	}
@@ -110,36 +114,63 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 
 	entry = rhythmdb_entry_new (db, type, location);
 
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string_take_ownership (&val, title);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
+
+	if (genre) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string_take_ownership (&val, genre);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+	}
+
+	if (artist) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string_take_ownership (&val, artist);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+		g_value_unset (&val);
+	}
+
+	if (album) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string_take_ownership (&val, album);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+		g_value_unset (&val);
+	}
+
 	if (track_number >= 0) {
 		g_value_init (&val, G_TYPE_INT);
 		g_value_set_int (&val, track_number);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
 		g_value_unset (&val);
 	}
+
 	if (duration > 0) {
 		g_value_init (&val, G_TYPE_LONG);
 		g_value_set_long (&val, duration);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
 		g_value_unset (&val);
 	}
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string_take_ownership (&val, title);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_reset (&val);
-	if (genre) {
-		g_value_set_string_take_ownership (&val, genre);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
-	}
-	if (artist) {
-		g_value_set_string_take_ownership (&val, artist);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
-	}
-	if (album) {
-		g_value_set_string_take_ownership (&val, album);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
-	}
+
+	g_value_init (&val, G_TYPE_INT);
+	g_value_set_int (&val, rating);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_INT);
+	g_value_set_int (&val, play_count);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_LONG);
+	g_value_set_long (&val, last_played);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
+	g_value_unset (&val);
 
 	rhythmdb_write_unlock (db);
+
 	g_free (location);
 	return entry;
 free_out:
