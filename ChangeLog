@@ -1,3 +1,17 @@
+2003-08-19  Colin Walters  <walters@verbum.org>
+
+	* NEWS:
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-ui.xml.in:
+	* shell/rb-shell.c: (rb_shell_corba_grab_focus),
+	(rb_shell_construct), (rb_shell_cmd_show_window),
+	(tray_button_press_event_cb), (sync_tray_menu):
+
+	Rework tray icon so that the menu pops up on left click.
+	Kill off show/hide window thing, and just make it
+	"Show Window".  Also remove the associated GConf visibility
+	pref.
+
 2003-08-18  Colin Walters  <walters@verbum.org>
 
 	* lib/rb-marshal.list:

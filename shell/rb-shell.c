@@ -182,11 +182,9 @@ static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 Bonobo_UIComponent_EventType type,
 						 const char *state,
 						 RBShell *shell);
-static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
-				             const char *path,
-				             Bonobo_UIComponent_EventType type,
-				             const char *state,
-				             RBShell *shell);
+static void rb_shell_cmd_show_window (BonoboUIComponent *component,
+				      RBShell *shell,
+				      const char *verbname);
 static void rb_shell_load_playlists (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_window_visibility (RBShell *shell);
@@ -249,7 +247,6 @@ static void create_playlist (RBShell *shell, CreatePlaylistType type, GList *dat
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
-#define CONF_STATE_WINDOW_HIDDEN    CONF_PREFIX "/state/window_hidden"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
 
@@ -328,10 +325,10 @@ static RBBonoboUIListener rb_shell_listeners[] =
 	RB_BONOBO_UI_LISTENER_END
 };
 
-static RBBonoboUIListener rb_tray_listeners[] =
+static BonoboUIVerb rb_tray_verbs[] =
 {
-	RB_BONOBO_UI_LISTENER ("ShowWindow", (BonoboUIListenerFn) rb_shell_show_window_changed_cb),
-	RB_BONOBO_UI_LISTENER_END
+	BONOBO_UI_VERB ("ShowWindow", (BonoboUIVerbFn) rb_shell_cmd_show_window),
+	BONOBO_UI_VERB_END
 };
 
 static GObjectClass *parent_class;
@@ -538,7 +535,6 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 			   CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN, FALSE);
 
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gtk_widget_grab_focus (shell->priv->window);
@@ -654,9 +650,9 @@ rb_shell_construct (RBShell *shell)
 	rb_bonobo_add_listener_list_with_data (shell->priv->ui_component,
 					       rb_shell_listeners,
 					       shell);
-	rb_bonobo_add_listener_list_with_data (shell->priv->tray_icon_component,
-					       rb_tray_listeners,
-					       shell);
+	bonobo_ui_component_add_verb_list_with_data (shell->priv->tray_icon_component,
+						     rb_tray_verbs,
+						     shell);
 
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
@@ -723,9 +719,6 @@ rb_shell_construct (RBShell *shell)
 	/* sync state */
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
-				    shell);
-	eel_gconf_notification_add (CONF_STATE_WINDOW_HIDDEN,
-				    (GConfClientNotifyFunc) window_visibility_changed_cb,
 				    shell);
 	eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
 				    (GConfClientNotifyFunc) paned_changed_cb,
@@ -1129,14 +1122,13 @@ rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_show_window_changed_cb (BonoboUIComponent *component,
-				 const char *path,
-				 Bonobo_UIComponent_EventType type,
-				 const char *state,
-				 RBShell *shell)
+rb_shell_cmd_show_window (BonoboUIComponent *component,
+			  RBShell *shell,
+			  const char *verbname)
 {
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
-			       !rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
+	rb_debug ("showing window");
+	gtk_window_present (GTK_WINDOW (shell->priv->window));
+	gtk_widget_grab_focus (shell->priv->window);
 }
 
 static void
@@ -1710,33 +1702,6 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 }
 
 static void
-rb_shell_sync_window_visibility (RBShell *shell)
-{
-	gboolean visible;
-	static int window_x = -1;
-	static int window_y = -1;
-
-	rb_debug ("syncing visibility");
-	visible = !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN);
-	
-	if (visible == TRUE) {
-		if (window_x >= 0 && window_y >= 0) {
-			gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
-					 window_y);
-		}
-		gtk_widget_show (shell->priv->window);
-	} else {
-		gtk_window_get_position (GTK_WINDOW (shell->priv->window),
-					 &window_x, &window_y);
-		gtk_widget_hide (shell->priv->window);
-	}
-	
-	rb_bonobo_set_active (shell->priv->ui_component,
-			      CMD_PATH_SHOW_WINDOW,
-			      visible);
-}
-
-static void
 sourcelist_visibility_changed_cb (GConfClient *client,
 				  guint cnxn_id,
 				  GConfEntry *entry,
@@ -1987,21 +1952,11 @@ tray_button_press_event_cb (GtkWidget *ebox,
 			    GdkEventButton *event,
 			    RBShell *shell)
 {
-	switch (event->button)
-	{
-	case 1:
-		/* toggle mainwindow visibility */
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
-				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN));
-		break;
-	case 3:
-		/* contextmenu */
-		sync_tray_menu (shell);
-		bonobo_control_do_popup (shell->priv->tray_icon_control,
-					 event->button,
-					 event->time);
-		break;
-	}
+	/* contextmenu */
+	sync_tray_menu (shell);
+	bonobo_control_do_popup (shell->priv->tray_icon_control,
+				 event->button,
+				 event->time);
 }
 
 static void
@@ -2122,7 +2077,7 @@ sync_tray_menu (RBShell *shell)
 	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
 
 	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/popups/TrayPopup", TRUE, NULL);
-	bonobo_ui_node_set_attr (node, "name", "button3");
+	bonobo_ui_node_set_attr (node, "name", "button1");
 	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
 	bonobo_ui_node_free (node);
 
