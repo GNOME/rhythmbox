@@ -1,10 +1,7 @@
 nodeviewsdir = $(pkgdatadir)/node-views
 
-nodeviews_in_files = rb-node-view-songs.xml.in   \
-		     rb-node-view-albums.xml.in  \
-		     rb-node-view-artists.xml.in
-nodeviews_DATA = $(nodeviews_in_files:.xml.in=.xml)
-
-@INTLTOOL_XML_RULE@
+nodeviews_DATA = rb-node-view-songs.xml   \
+		 rb-node-view-albums.xml  \
+		 rb-node-view-artists.xml
 
 EXTRA_DIST = $(nodeviews_DATA)
