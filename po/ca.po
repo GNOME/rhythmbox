@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-29 16:39+0100\n"
-"PO-Revision-Date: 2004-01-29 16:40+0100\n"
+"POT-Creation-Date: 2004-02-05 17:16+0100\n"
+"PO-Revision-Date: 2004-02-05 17:19+0100\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,20 +27,6 @@ msgstr "Extensió del menú contexual del Nautilus per a Rhythmbox"
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Element del menú contextual del Nautilus per a Rhythmbox"
-
-#: corba/test-corba.c:55
-msgid "I could not initialize Bonobo"
-msgstr "No s'ha pogut iniciar Bonobo"
-
-#: corba/test-corba.c:62
-msgid "Could not create an instance of the sample echo component"
-msgstr "No s'ha pogut crear una instància del component eco de mostra"
-
-#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:242
-#: shell/main.c:251
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "S'ha produït una excepció «%s»"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -112,7 +98,7 @@ msgstr "_Camí:"
 msgid "_Skip this step"
 msgstr "_Omet aquest pas"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1314
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1318
 msgid "A_lbum"
 msgstr "À_lbum"
 
@@ -144,11 +130,11 @@ msgstr "Reproduïda per ú_ltima vegada"
 msgid "_Play count"
 msgstr "Compte de re_producció"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1344
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1348
 msgid "_Quality"
 msgstr "_Qualitat"
 
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1265
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1269
 msgid "_Rating"
 msgstr "P_untuació"
 
@@ -258,7 +244,7 @@ msgstr "Introduïu la _ubicació (URI) del fitxer que voleu afegir:"
 msgid "Open from URI"
 msgstr "Obre des d'un URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1112 shell/rb-shell.c:1719
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1112 shell/rb-shell.c:1711
 msgid "Music Player"
 msgstr "Reproductor de música"
 
@@ -270,7 +256,7 @@ msgstr "Reprodueix i organitza la vostra col·lecció de música"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:18
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:21
 msgid "Deselect all songs"
 msgstr "Deselecciona totes les cançons"
 
@@ -278,19 +264,19 @@ msgstr "Deselecciona totes les cançons"
 msgid "Eject Audio-CD"
 msgstr "Expulsa el CD d'àudio"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:36
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:39
 msgid "Scroll the view to the currently playing song"
 msgstr "Desplaça la vista a la cançó que s'està reproduint actualment"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:37
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:40
 msgid "Select _All"
 msgstr "Seleccion_a-ho tot"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:38
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:41
 msgid "Select all songs"
 msgstr "Selecciona totes les cançons"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:56
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:62
 msgid "_Edit"
 msgstr "_Edita"
 
@@ -298,11 +284,11 @@ msgstr "_Edita"
 msgid "_Eject Audio-CD..."
 msgstr "_Expulsa el CD d'àudio..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:59
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:65
 msgid "_Jump to Playing Song"
 msgstr "_Salta a la cançó en reproducció"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:73
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:79
 msgid "_View"
 msgstr "_Visualitza"
 
@@ -311,262 +297,286 @@ msgid "Add Lo_cation..."
 msgstr "Afegeix una ubi_cació..."
 
 #: data/ui/rhythmbox-ui.xml.h:2
+msgid "Browse this album"
+msgstr "Navega aquest àlbum"
+
+#: data/ui/rhythmbox-ui.xml.h:3
+msgid "Browse this artist"
+msgstr "Navega aquest artista"
+
+#: data/ui/rhythmbox-ui.xml.h:4
+msgid "Browse this genre"
+msgstr "Navega aquest gènere"
+
+#: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the browser"
 msgstr "Canvia la visibilitat del navegador"
 
-#: data/ui/rhythmbox-ui.xml.h:3
+#: data/ui/rhythmbox-ui.xml.h:6
 msgid "Change the visibility of the main window"
 msgstr "Canvia la visibilitat de la finestra principal"
 
-#: data/ui/rhythmbox-ui.xml.h:4
+#: data/ui/rhythmbox-ui.xml.h:7
 msgid "Change the visibility of the source list"
 msgstr "Canvia la visibilitat de la llista de fonts"
 
-#: data/ui/rhythmbox-ui.xml.h:5
+#: data/ui/rhythmbox-ui.xml.h:8
 msgid "Change the visibility of the statusbar"
 msgstr "Canvia la visibilitat de la barra d'estat"
 
-#: data/ui/rhythmbox-ui.xml.h:6
+#: data/ui/rhythmbox-ui.xml.h:9
 msgid "Change this automatic playlist"
 msgstr "Canvia aquesta llista de reproducció automàtica"
 
-#: data/ui/rhythmbox-ui.xml.h:7
+#: data/ui/rhythmbox-ui.xml.h:10
 msgid "Choose a location (URI) to be added to the library"
 msgstr "Selecciona una ubicació (URI) a afegir a la biblioteca"
 
-#: data/ui/rhythmbox-ui.xml.h:8
+#: data/ui/rhythmbox-ui.xml.h:11
 msgid "Choose a playlist to be loaded"
 msgstr "Selecciona una llista de reproducció a carregar"
 
-#: data/ui/rhythmbox-ui.xml.h:9
+#: data/ui/rhythmbox-ui.xml.h:12
 msgid "Choose files or a directory to be added to the library"
 msgstr "Selecciona fitxers o un directori a afegir a la biblioteca"
 
-#: data/ui/rhythmbox-ui.xml.h:10
+#: data/ui/rhythmbox-ui.xml.h:13
 msgid "Copy selection"
 msgstr "Còpia la selecció"
 
-#: data/ui/rhythmbox-ui.xml.h:11
+#: data/ui/rhythmbox-ui.xml.h:14
 msgid "Create a new Internet Radio station"
 msgstr "Crea una nova emissora de ràdio per Internet"
 
-#: data/ui/rhythmbox-ui.xml.h:12
+#: data/ui/rhythmbox-ui.xml.h:15
 msgid "Create a new automatically updating playlist"
 msgstr "Crea una nova llista de reproducció actualitzable automàticament"
 
-#: data/ui/rhythmbox-ui.xml.h:13
+#: data/ui/rhythmbox-ui.xml.h:16
 msgid "Create a new playlist"
 msgstr "Crea una nova llista de reproducció"
 
-#: data/ui/rhythmbox-ui.xml.h:14
+#: data/ui/rhythmbox-ui.xml.h:17
 msgid "Cu_t"
 msgstr "_Talla"
 
-#: data/ui/rhythmbox-ui.xml.h:15
+#: data/ui/rhythmbox-ui.xml.h:18
 msgid "Cut selection"
 msgstr "Talla la selecció"
 
-#: data/ui/rhythmbox-ui.xml.h:16
+#: data/ui/rhythmbox-ui.xml.h:19
 msgid "D_eselect All"
 msgstr "D_eselecciona-ho tot"
 
-#: data/ui/rhythmbox-ui.xml.h:17
+#: data/ui/rhythmbox-ui.xml.h:20
 msgid "Delete selection"
 msgstr "Suprimeix la selecció"
 
-#: data/ui/rhythmbox-ui.xml.h:19
+#: data/ui/rhythmbox-ui.xml.h:22
 msgid "Display music player help"
 msgstr "Mostra l'ajuda del reproductor de música"
 
-#: data/ui/rhythmbox-ui.xml.h:20
+#: data/ui/rhythmbox-ui.xml.h:23
 msgid "Edit music player preferences"
 msgstr "Edita les preferències del reproductor de música"
 
-#: data/ui/rhythmbox-ui.xml.h:21
+#: data/ui/rhythmbox-ui.xml.h:24
 msgid "Extract and import songs from a CD"
 msgstr "Extreu i importa cançons d'un CD"
 
-#: data/ui/rhythmbox-ui.xml.h:22
+#: data/ui/rhythmbox-ui.xml.h:25
 msgid "Import Lo_cation..."
 msgstr "Importa una ubi_cació..."
 
-#: data/ui/rhythmbox-ui.xml.h:23
+#: data/ui/rhythmbox-ui.xml.h:26
 msgid "Import _Audio CD..."
 msgstr "Import_a un CD d'àudio..."
 
-#: data/ui/rhythmbox-ui.xml.h:24
+#: data/ui/rhythmbox-ui.xml.h:27
 msgid "Make the main window smaller"
 msgstr "Fes la finestra principal més petita"
 
-#: data/ui/rhythmbox-ui.xml.h:25
+#: data/ui/rhythmbox-ui.xml.h:28
 msgid "New _Automatic Playlist..."
 msgstr "Nova llista de reproducció _automàtica..."
 
-#: data/ui/rhythmbox-ui.xml.h:26
+#: data/ui/rhythmbox-ui.xml.h:29
 msgid "New _Internet Radio Station"
 msgstr "Nova emissora de ràdio per _Internet"
 
-#: data/ui/rhythmbox-ui.xml.h:27
+#: data/ui/rhythmbox-ui.xml.h:30
 msgid "P_revious"
 msgstr "Ante_rior"
 
-#: data/ui/rhythmbox-ui.xml.h:28
+#: data/ui/rhythmbox-ui.xml.h:31
 msgid "Paste selection"
 msgstr "Enganxa la selecció"
 
-#: data/ui/rhythmbox-ui.xml.h:29
+#: data/ui/rhythmbox-ui.xml.h:32
 msgid "Pause playing"
 msgstr "Pausa la reproducció"
 
-#: data/ui/rhythmbox-ui.xml.h:30
+#: data/ui/rhythmbox-ui.xml.h:33
 msgid "Playlist"
 msgstr "Llista de reproducció"
 
-#: data/ui/rhythmbox-ui.xml.h:31
+#: data/ui/rhythmbox-ui.xml.h:34
 msgid "Prefere_nces"
 msgstr "Preferè_ncies"
 
-#: data/ui/rhythmbox-ui.xml.h:32
+#: data/ui/rhythmbox-ui.xml.h:35
 msgid "Quit the music player"
 msgstr "Surt del reproductor de música"
 
-#: data/ui/rhythmbox-ui.xml.h:33
+#: data/ui/rhythmbox-ui.xml.h:36
 msgid "Repea_t"
 msgstr "Repe_teix"
 
-#: data/ui/rhythmbox-ui.xml.h:34
+#: data/ui/rhythmbox-ui.xml.h:37
 msgid "S_tatusbar"
 msgstr "Barra d'es_tat"
 
-#: data/ui/rhythmbox-ui.xml.h:35
+#: data/ui/rhythmbox-ui.xml.h:38
 msgid "Save a playlist to a file"
 msgstr "Desa una llista de reproducció en un fitxer"
 
-#: data/ui/rhythmbox-ui.xml.h:39
+#: data/ui/rhythmbox-ui.xml.h:42
+msgid "Set the browser to view only this album"
+msgstr "Estableix el navegador per a només mostrar aquest àlbum"
+
+#: data/ui/rhythmbox-ui.xml.h:43
+msgid "Set the browser to view only this artist"
+msgstr "Estableix el navegador per a només mostrar aquest artista"
+
+#: data/ui/rhythmbox-ui.xml.h:44
+msgid "Set the browser to view only this genre"
+msgstr "Estableix el navegador per a només mostrar aquest gènere"
+
+#: data/ui/rhythmbox-ui.xml.h:45
 msgid "Show information about the music player"
 msgstr "Mostra informació sobre el reproductor de música"
 
-#: data/ui/rhythmbox-ui.xml.h:40
+#: data/ui/rhythmbox-ui.xml.h:46
 msgid "Show information on the selected song"
 msgstr "Mostra informació sobre la cançó seleccionada"
 
-#: data/ui/rhythmbox-ui.xml.h:41
+#: data/ui/rhythmbox-ui.xml.h:47
 msgid "Source _List"
 msgstr "_Llista de fonts"
 
-#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1483
+#: data/ui/rhythmbox-ui.xml.h:48 shell/rb-shell-player.c:1484
 msgid "Start playing"
 msgstr "Comença la reproducció"
 
-#: data/ui/rhythmbox-ui.xml.h:43
+#: data/ui/rhythmbox-ui.xml.h:49
 msgid "Start playing the next song"
 msgstr "Comença a reproduir la següent cançó"
 
-#: data/ui/rhythmbox-ui.xml.h:44
+#: data/ui/rhythmbox-ui.xml.h:50
 msgid "Start playing the previous song"
 msgstr "Comença a reproduir l'anterior cançó"
 
-#: data/ui/rhythmbox-ui.xml.h:45
+#: data/ui/rhythmbox-ui.xml.h:51
 msgid "Stop playing"
 msgstr "Atura la reproducció"
 
-#: data/ui/rhythmbox-ui.xml.h:46
+#: data/ui/rhythmbox-ui.xml.h:52
 msgid "Toggle random playing order"
 msgstr "Commuta el mode d'ordre aleatori"
 
-#: data/ui/rhythmbox-ui.xml.h:47
+#: data/ui/rhythmbox-ui.xml.h:53
 msgid "Toggle repeat mode"
 msgstr "Commuta el mode de repetició"
 
-#: data/ui/rhythmbox-ui.xml.h:48
+#: data/ui/rhythmbox-ui.xml.h:54
 msgid "_About"
 msgstr "_Quant a"
 
-#: data/ui/rhythmbox-ui.xml.h:49
+#: data/ui/rhythmbox-ui.xml.h:55
 msgid "_Add to Library..."
 msgstr "_Afegeix a la biblioteca..."
 
-#: data/ui/rhythmbox-ui.xml.h:50
+#: data/ui/rhythmbox-ui.xml.h:56
 msgid "_Browser"
 msgstr "_Navegador"
 
-#: data/ui/rhythmbox-ui.xml.h:51
+#: data/ui/rhythmbox-ui.xml.h:57
 msgid "_Contents"
 msgstr "_Continguts"
 
-#: data/ui/rhythmbox-ui.xml.h:52
+#: data/ui/rhythmbox-ui.xml.h:58
 msgid "_Control"
 msgstr "_Control"
 
-#: data/ui/rhythmbox-ui.xml.h:53
+#: data/ui/rhythmbox-ui.xml.h:59
 msgid "_Copy"
 msgstr "_Còpia"
 
-#: data/ui/rhythmbox-ui.xml.h:54
+#: data/ui/rhythmbox-ui.xml.h:60
 msgid "_Cut"
 msgstr "_Talla"
 
-#: data/ui/rhythmbox-ui.xml.h:55
+#: data/ui/rhythmbox-ui.xml.h:61
 msgid "_Delete"
 msgstr "_Suprimeix"
 
-#: data/ui/rhythmbox-ui.xml.h:57
+#: data/ui/rhythmbox-ui.xml.h:63
 msgid "_Help"
 msgstr "A_juda"
 
-#: data/ui/rhythmbox-ui.xml.h:58
+#: data/ui/rhythmbox-ui.xml.h:64
 msgid "_Import Folder..."
 msgstr "_Importa una carpeta..."
 
-#: data/ui/rhythmbox-ui.xml.h:60
+#: data/ui/rhythmbox-ui.xml.h:66
 msgid "_Load from file..."
 msgstr "_Importa des d'un fitxer..."
 
-#: data/ui/rhythmbox-ui.xml.h:61
+#: data/ui/rhythmbox-ui.xml.h:67
 msgid "_Music"
 msgstr "_Música"
 
-#: data/ui/rhythmbox-ui.xml.h:62
+#: data/ui/rhythmbox-ui.xml.h:68
 msgid "_New Playlist..."
 msgstr "_Nova llista de reproducció..."
 
-#: data/ui/rhythmbox-ui.xml.h:63
+#: data/ui/rhythmbox-ui.xml.h:69
 msgid "_Next"
 msgstr "Següe_nt"
 
-#: data/ui/rhythmbox-ui.xml.h:64
+#: data/ui/rhythmbox-ui.xml.h:70
 msgid "_Paste"
 msgstr "_Enganxa"
 
-#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1484
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1485
 msgid "_Play"
 msgstr "Re_produeix"
 
-#: data/ui/rhythmbox-ui.xml.h:66
+#: data/ui/rhythmbox-ui.xml.h:72
 msgid "_Properties"
 msgstr "_Propietats"
 
-#: data/ui/rhythmbox-ui.xml.h:67
+#: data/ui/rhythmbox-ui.xml.h:73
 msgid "_Quit"
 msgstr "_Surt"
 
-#: data/ui/rhythmbox-ui.xml.h:68
+#: data/ui/rhythmbox-ui.xml.h:74
 msgid "_Remove"
 msgstr "Sup_rimeix"
 
-#: data/ui/rhythmbox-ui.xml.h:69
+#: data/ui/rhythmbox-ui.xml.h:75
 msgid "_Save to file..."
 msgstr "De_sa a un fitxer..."
 
-#: data/ui/rhythmbox-ui.xml.h:70
+#: data/ui/rhythmbox-ui.xml.h:76
 msgid "_Show Window"
 msgstr "Mo_stra la finestra"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-statusbar.c:235
+#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:235
 msgid "_Shuffle"
 msgstr "_Ordre aleatori"
 
-#: data/ui/rhythmbox-ui.xml.h:72
+#: data/ui/rhythmbox-ui.xml.h:78
 msgid "_Small Display"
 msgstr "Vi_sualització petita"
 
@@ -579,10 +589,10 @@ msgstr "Nova emissora de ràdio per Internet"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:708 sources/rb-iradio-source.c:250
-#: sources/rb-iradio-source.c:251 sources/rb-iradio-source.c:252
-#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1047
-#: widgets/rb-entry-view.c:1074 widgets/rb-song-info.c:581
+#: rhythmdb/rhythmdb.c:693 sources/rb-iradio-source.c:249
+#: sources/rb-iradio-source.c:250 sources/rb-iradio-source.c:251
+#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1051
+#: widgets/rb-entry-view.c:1078 widgets/rb-song-info.c:581
 msgid "Unknown"
 msgstr "Desconegut"
 
@@ -736,7 +746,7 @@ msgstr "No s'ha pogut obrir el fitxer com Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:393 metadata/rb-metadata-gst.c:518
+#: metadata/rb-metadata-gst.c:439 metadata/rb-metadata-gst.c:564
 #: player/rb-player-gst.c:532
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -773,7 +783,8 @@ msgstr "No s'ha pogut crear l'element cua; comproveu la vostra instal·lació"
 
 #: player/rb-player-gst.c:520
 msgid "Failed to create typefind element; check your installation"
-msgstr "No s'ha pogut crear l'element cercatipus; comproveu la vostra instal·lació"
+msgstr ""
+"No s'ha pogut crear l'element cercatipus; comproveu la vostra instal·lació"
 
 #: player/rb-player-gst.c:551
 msgid "Failed to create volume element; check your installation"
@@ -797,91 +808,97 @@ msgstr "No s'ha pogut tancar la sortida d'àudio"
 msgid "No AudioCD support; check your settings"
 msgstr "No hi ha suport per a CD d'àudio; comproveu la vostra configuració"
 
-#: player/rb-player-xine.c:337
+#: player/rb-player-xine.c:338
 msgid "Failed to set up an audio driver; check your installation"
 msgstr ""
 "No s'ha pogut configurar un controlador d'àudio: comproveu la vostra "
 "instal·lació"
 
-#: player/rb-player-xine.c:437
+#: player/rb-player-xine.c:438
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr ""
 "No hi ha cap connector d'entrada disponible per a %s; comproveu la vostra "
 "instal·lació."
 
-#: player/rb-player-xine.c:446
+#: player/rb-player-xine.c:447
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "El connector demux no està disponible per a %s; comproveu la vostra "
 "instal·lació"
 
-#: player/rb-player-xine.c:455
+#: player/rb-player-xine.c:456
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "No s'ha pogut demultiplexar %s; comproveu la vostra instal·lació."
 
-#: player/rb-player-xine.c:463
+#: player/rb-player-xine.c:464
 msgid "Internal error; check your installation."
 msgstr "S'ha produït un error intern: comproveu la vostra instal·lació."
 
-#: player/rb-player-xine.c:471
+#: player/rb-player-xine.c:472
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "L'àudio de %s no està gestionat; comproveu la vostra instal·lació"
 
-#: rhythmdb/rhythmdb.c:775
+#: rhythmdb/rhythmdb.c:760
 msgid "<invalid filename>"
 msgstr "<nom de fitxer invàlid>"
 
-#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1013
+#: rhythmdb/rhythmdb.c:1291 widgets/rb-entry-view.c:1017
 #: widgets/rb-song-info.c:571 widgets/rb-song-info.c:810
 msgid "Never"
 msgstr "Mai"
 
-#: rhythmdb/rhythmdb.c:1308
+#: rhythmdb/rhythmdb.c:1293
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d-%m-%Y %H-%M"
 
-#: rhythmdb/rhythmdb.c:2162
+#: rhythmdb/rhythmdb.c:2038
 msgid "Loading songs..."
 msgstr "S'estan carregant les cançons..."
 
-#: rhythmdb/rhythmdb.c:2164
+#: rhythmdb/rhythmdb.c:2040
 msgid "Refreshing songs..."
 msgstr "S'estan refrescant les cançons..."
 
-#: rhythmdb/rhythmdb.c:2179
+#: rhythmdb/rhythmdb.c:2057
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d cançó"
 msgstr[1] "%d cançons"
 
-#: rhythmdb/rhythmdb.c:2187
-#, c-format
-msgid "%.1f day"
-msgid_plural "%.1f days"
-msgstr[0] "%.1f dia"
-msgstr[1] "%.1f dies"
-
-#: rhythmdb/rhythmdb.c:2190
+#: rhythmdb/rhythmdb.c:2064
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuts"
 
-#: rhythmdb/rhythmdb.c:2192
+#: rhythmdb/rhythmdb.c:2065 rhythmdb/rhythmdb.c:2075
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hora"
 msgstr[1] "%ld hores"
 
+#: rhythmdb/rhythmdb.c:2066
+#, c-format
+msgid "%ld day"
+msgid_plural "%ld days"
+msgstr[0] "%ld dia"
+msgstr[1] "%ld dies"
+
+#. Translators: the format is "X days, X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2070
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s, %s i %s"
+
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2196
+#: rhythmdb/rhythmdb.c:2078
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
@@ -952,6 +969,11 @@ msgstr ""
 "Actualment Rhythmbox no funciona si els sons pels esdeveniments del GNOME "
 "estan habilitats i el sistema de sortida d'esd està en ús."
 
+#: shell/main.c:242 shell/main.c:251
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "S'ha produït una excepció «%s»"
+
 #: shell/main.c:289
 #, c-format
 msgid ""
@@ -961,27 +983,27 @@ msgstr ""
 "No s'ha pogut activar la línia d'ordres:\n"
 "%s"
 
-#: shell/rb-play-order.c:232
+#: shell/rb-play-order.c:227
 msgid "Linear"
 msgstr "Lineal"
 
-#: shell/rb-play-order.c:233
+#: shell/rb-play-order.c:228
 msgid "Shuffle"
 msgstr "Ordre aleatori"
 
-#: shell/rb-play-order.c:234
+#: shell/rb-play-order.c:229
 msgid "Random with equal weights"
 msgstr "Aleatori amb pes equitatiu"
 
-#: shell/rb-play-order.c:235
+#: shell/rb-play-order.c:230
 msgid "Random by time since last play"
 msgstr "Aleatori per temps des de l'última reproducció"
 
-#: shell/rb-play-order.c:236
+#: shell/rb-play-order.c:231
 msgid "Random by rating"
 msgstr "Aleatori per puntuació"
 
-#: shell/rb-play-order.c:237
+#: shell/rb-play-order.c:232
 msgid "Random by time since last play and rating"
 msgstr "Aleatori per temps des de l'última reproducció i puntuació"
 
@@ -989,11 +1011,11 @@ msgstr "Aleatori per temps des de l'última reproducció i puntuació"
 msgid "Couldn't parse playlist"
 msgstr "No s'ha pogut analitzar la llista de reproducció"
 
-#: shell/rb-playlist-manager.c:745
+#: shell/rb-playlist-manager.c:634
 msgid "Load playlist"
 msgstr "Carrega la llista de reproducció"
 
-#: shell/rb-playlist-manager.c:799
+#: shell/rb-playlist-manager.c:671
 msgid "Save playlist"
 msgstr "Desa la llista de reproducció"
 
@@ -1003,12 +1025,12 @@ msgid "Failed to create the player: %s"
 msgstr "No s'ha pogut crear el reproductor: %s"
 
 #: shell/rb-shell-player.c:539
-msgid "Go to previous song"
-msgstr "Vés a l'anterior cançó"
+msgid "Play previous song"
+msgstr "Reprodueix l'anterior cançó"
 
 #: shell/rb-shell-player.c:568
-msgid "Go to next song"
-msgstr "Vés a la següent cançó"
+msgid "Play next song"
+msgstr "Reprodueix la següent cançó"
 
 #: shell/rb-shell-player.c:587
 msgid "Change the music volume"
@@ -1019,23 +1041,23 @@ msgstr "Canvia el volum de la música"
 msgid "Opening %s..."
 msgstr "S'està obrint %s..."
 
-#: shell/rb-shell-player.c:1475
+#: shell/rb-shell-player.c:1476
 msgid "Pause playback"
 msgstr "Pausa la reproducció"
 
-#: shell/rb-shell-player.c:1476
+#: shell/rb-shell-player.c:1477
 msgid "_Pause"
 msgstr "_Pausa"
 
-#: shell/rb-shell-player.c:1491
+#: shell/rb-shell-player.c:1492
 msgid "Stop playback"
 msgstr "Atura la reproducció"
 
-#: shell/rb-shell-player.c:1492
+#: shell/rb-shell-player.c:1493
 msgid "_Stop"
 msgstr "_Atura"
 
-#: shell/rb-shell-player.c:1825
+#: shell/rb-shell-player.c:1826
 msgid "Unexpected end of stream!"
 msgstr "Final del flux inesperat!"
 
@@ -1064,7 +1086,7 @@ msgstr "Si l'ordre aleatori està habilitat"
 msgid "Properties for the current song"
 msgstr "Propietats de la cançó actual"
 
-#: shell/rb-shell.c:1383
+#: shell/rb-shell.c:1375
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1075,12 +1097,12 @@ msgstr ""
 "Açò significa que heu instal·lat Rhythmbox en un prefix diferent que bonobo-"
 "activation; aquest avís és inofensiu, però l'IPC no funcionarà."
 
-#: shell/rb-shell.c:1693 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1685 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "No s'està reproduint"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1696
+#: shell/rb-shell.c:1688
 #, c-format
 msgid ""
 "%s\n"
@@ -1090,7 +1112,7 @@ msgstr ""
 "Pausat, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1700
+#: shell/rb-shell.c:1692
 #, c-format
 msgid ""
 "%s\n"
@@ -1100,40 +1122,40 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1735
+#: shell/rb-shell.c:1727
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausat)"
 
-#: shell/rb-shell.c:1803
+#: shell/rb-shell.c:1795
 msgid "translator_credits"
 msgstr "Jordi Mallach <jordi@sindominio.net>"
 
-#: shell/rb-shell.c:1812
+#: shell/rb-shell.c:1804
 msgid "Maintainers:"
 msgstr "Mantenidors:"
 
-#: shell/rb-shell.c:1815
+#: shell/rb-shell.c:1807
 msgid "Former Maintainers:"
 msgstr "Mantenidors anteriors:"
 
-#: shell/rb-shell.c:1818
+#: shell/rb-shell.c:1810
 msgid "Contributors:"
 msgstr "Contribuïdors:"
 
-#: shell/rb-shell.c:1820
+#: shell/rb-shell.c:1812
 msgid "Music management and playback software for GNOME."
 msgstr "Gestió i reproducció de música per al GNOME."
 
-#: shell/rb-shell.c:1990
+#: shell/rb-shell.c:1982
 msgid "Choose Files or Directory"
 msgstr "Seleccioneu fitxers o un directori"
 
-#: shell/rb-shell.c:2032
+#: shell/rb-shell.c:2024
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Per a extraure CD heu d'instal·lar el paquet Sound Juicer."
 
-#: shell/rb-shell.c:2039
+#: shell/rb-shell.c:2031
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "No s'ha pogut executar sound-juicer: %s"
@@ -1167,47 +1189,47 @@ msgstr ""
 msgid "Buffering..."
 msgstr "S'està emplenant la memòria intermèdia..."
 
-#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:445
+#: sources/rb-iradio-source.c:323 sources/rb-library-source.c:457
 #: widgets/rb-query-creator.c:55
 msgid "Genre"
 msgstr "Gènere"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:396
 msgid "Radio"
 msgstr "Ràdio"
 
-#: sources/rb-iradio-source.c:543
+#: sources/rb-iradio-source.c:542
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d emissora"
 msgstr[1] "%d emissores"
 
-#: sources/rb-library-source.c:459 widgets/rb-query-creator.c:53
+#: sources/rb-library-source.c:471 widgets/rb-query-creator.c:53
 msgid "Artist"
 msgstr "Artista"
 
-#: sources/rb-library-source.c:473 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:485 widgets/rb-query-creator.c:54
 msgid "Album"
 msgstr "Àlbum"
 
-#: sources/rb-library-source.c:579
+#: sources/rb-library-source.c:570
 msgid "Library"
 msgstr "Biblioteca"
 
-#: sources/rb-library-source.c:1040
+#: sources/rb-library-source.c:1094
 msgid "Add Location"
 msgstr "Afegeix una ubicació"
 
-#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1283
+#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1287
 msgid "Tra_ck"
 msgstr "_Pista"
 
-#: sources/rb-source.c:481
+#: sources/rb-source.c:495
 msgid "No properties available."
 msgstr "No hi han propietats disponibles."
 
-#: sources/rb-source.c:564
+#: sources/rb-source.c:578
 msgid "This source does not support drag and drop."
 msgstr "Aquesta font no suporta l'arrossega i deixa anar."
 
@@ -1253,13 +1275,12 @@ msgstr "Finalitza"
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Organize\" then \"Add "
-"to Library\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
 msgstr ""
 "Ara esteu preparats per a iniciar Rhythmbox.\n"
 "\n"
-"Recordeu que podeu afegir música a la biblioteca utilitzant «Organitza» i "
-"«Afegeix a la biblioteca», o important-la des de CD."
+"Recordeu que podeu afegir música a la biblioteca utilitzant «Música» i «Importa una carpeta», o important-la des de CD."
 
 #: widgets/rb-druid.c:309
 #, c-format
@@ -1270,60 +1291,60 @@ msgstr "S'ha produït un error en llegir el nom de fitxer: %s"
 msgid "Choose a directory"
 msgstr "Seleccioneu un directori"
 
-#: widgets/rb-entry-view.c:1049 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:1053 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:1080
 msgid "Very Low"
 msgstr "Molt baixa"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:1082
 msgid "Low"
 msgstr "Baixa"
 
-#: widgets/rb-entry-view.c:1080
+#: widgets/rb-entry-view.c:1084
 msgid "Regular"
 msgstr "Regular"
 
-#: widgets/rb-entry-view.c:1082
+#: widgets/rb-entry-view.c:1086
 msgid "High"
 msgstr "Alta"
 
-#: widgets/rb-entry-view.c:1084
+#: widgets/rb-entry-view.c:1088
 msgid "Very High"
 msgstr "Molt alta"
 
-#: widgets/rb-entry-view.c:1086
+#: widgets/rb-entry-view.c:1090
 msgid "Perfect"
 msgstr "Perfecta"
 
-#: widgets/rb-entry-view.c:1292
+#: widgets/rb-entry-view.c:1296
 msgid "_Title"
 msgstr "_Títol"
 
-#: widgets/rb-entry-view.c:1303
+#: widgets/rb-entry-view.c:1307
 msgid "Art_ist"
 msgstr "Art_ista:"
 
-#: widgets/rb-entry-view.c:1325
+#: widgets/rb-entry-view.c:1329
 msgid "Ge_nre"
 msgstr "Gè_nere"
 
-#: widgets/rb-entry-view.c:1335
+#: widgets/rb-entry-view.c:1339
 msgid "Ti_me"
 msgstr "Te_mps"
 
-#: widgets/rb-entry-view.c:1354
+#: widgets/rb-entry-view.c:1358
 msgid "_Play Count"
 msgstr "Com_pte de reproducció"
 
-#: widgets/rb-entry-view.c:1363
+#: widgets/rb-entry-view.c:1367
 msgid "L_ast Played"
 msgstr "Reproduïd_a per última vegada"
 
-#: widgets/rb-entry-view.c:1507
+#: widgets/rb-entry-view.c:1511
 msgid "Now Playing"
 msgstr "Ara reproduint"
 
@@ -1416,6 +1437,12 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "I could not initialize Bonobo"
+#~ msgstr "No s'ha pogut iniciar Bonobo"
+
+#~ msgid "Could not create an instance of the sample echo component"
+#~ msgstr "No s'ha pogut crear una instància del component eco de mostra"
 
 #~ msgid "Loading..."
 #~ msgstr "S'està carregant..."
