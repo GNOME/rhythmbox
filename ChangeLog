@@ -1,5 +1,17 @@
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (get_selection),
+	(rb_node_view_get_visible_nodes), (tree_view_size_allocate_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property):
+	* library/rb-node.c: (rb_node_add_child):
+
+	g_list_prepend instead of g_list_append,
+	ensure we never 100% empty the view when changing filter,
+	that way we avoid a build_level in the filter.
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-remote.c:
 
 	Include string.h.

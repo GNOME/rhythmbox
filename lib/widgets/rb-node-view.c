@@ -962,7 +962,7 @@ get_selection (GtkTreeModel *model,
 
 	gtk_tree_iter_free (iter2);
 
-	*list = g_list_append (*list, node);
+	*list = g_list_prepend (*list, node);
 }
 
 GList *
@@ -1373,7 +1373,7 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
 			continue;
 
-		ret = g_list_append (ret, l->data);
+		ret = g_list_prepend (ret, l->data);
 	}
 
 	rb_node_unlock (parent);
@@ -1408,11 +1408,10 @@ static void
 tree_view_size_allocate_cb (GtkWidget *widget,
 			    GtkAllocation *allocation)
 {
-	GList *columns, *l, *last_column;
+	GList *columns, *l;
 	int n_expand_columns = 0, total_requested_width = 0, left_over_width, width = 0;
 
 	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (widget));
-	last_column = g_list_last (columns);
 	for (l = columns; l != NULL; l = g_list_next (l))
 	{
 		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (l->data);
@@ -1473,7 +1472,7 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 				column->width = 0;
 		}
 
-		if (l == last_column &&
+		if (g_list_next (l) == NULL &&
 		    width + column->width < widget->allocation.width)
 		{
 			column->width += widget->allocation.width - column->width - width;

@@ -276,6 +276,7 @@ rb_tree_model_node_set_property (GObject *object,
 	case PROP_FILTER_PARENT:
 		{
 			RBNode *old = model->priv->filter_parent;
+			RBNode *to_hide = NULL;
 
 			model->priv->filter_parent = g_value_get_object (value);
 
@@ -288,16 +289,26 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+					RBNode *node;
+
+					node = RB_NODE (l->data);
+					
+					if (rb_node_is_handled (node) == FALSE)
 						continue;
+					if (g_list_next (l) == NULL) /* HACK: do not hide all nodes, so we don't
+									trigger build_level in the filtermodel */
+					{
+						to_hide = node;
+						continue;
+					}
 					if (model->priv->old_filter_artist != NULL)
 					{
-						if (rb_node_song_has_artist (RB_NODE (l->data),
+						if (rb_node_song_has_artist (node,
 									     model->priv->old_filter_artist))
-							rb_tree_model_node_update_node (model, RB_NODE (l->data));
+							rb_tree_model_node_update_node (model, node);
 					}
 					else
-						rb_tree_model_node_update_node (model, RB_NODE (l->data));
+						rb_tree_model_node_update_node (model, node);
 				}
 
 				rb_node_unlock (old);
@@ -323,16 +334,21 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+					RBNode *node;
+
+					node = RB_NODE (l->data);
+					
+					if (rb_node_is_handled (node) == FALSE)
 						continue;
+					
 					if (model->priv->filter_artist != NULL)
 					{
-						if (rb_node_song_has_artist (RB_NODE (l->data),
+						if (rb_node_song_has_artist (node,
 									     model->priv->filter_artist))
-							rb_tree_model_node_update_node (model, RB_NODE (l->data));
+							rb_tree_model_node_update_node (model, node);
 					}
 					else
-						rb_tree_model_node_update_node (model, RB_NODE (l->data));
+						rb_tree_model_node_update_node (model, node);
 				}
 
 				rb_node_unlock (model->priv->filter_parent);
@@ -353,6 +369,9 @@ rb_tree_model_node_set_property (GObject *object,
 							 G_CALLBACK (filter_parent_child_destroyed_cb),
 							 G_OBJECT (model), 0);
 			}
+
+			if (to_hide != NULL)
+				rb_tree_model_node_update_node (model, to_hide);
 		}
 		break;
 	case PROP_FILTER_ARTIST:

@@ -470,12 +470,12 @@ rb_node_add_child (RBNode *node,
 		return;
 	}
 
-	node->priv->children = g_list_append (node->priv->children, child);
+	node->priv->children = g_list_prepend (node->priv->children, child);
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	g_static_rw_lock_writer_lock (child->priv->lock);
-	child->priv->parents = g_list_append (child->priv->parents, node);
+	child->priv->parents = g_list_prepend (child->priv->parents, node);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
 
 	action = g_new0 (RBNodeAction, 1);
