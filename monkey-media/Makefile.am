@@ -50,6 +50,7 @@ endif
 #endif
 
 libmonkey_media_la_LIBADD = 					    \
+	$(top_builddir)/lib/librb.la \
 	$(top_builddir)/monkey-media/stream-info-impl/libstream-info-impl.la \
 	$(MONKEYMEDIA_LIBS)
 
@@ -59,6 +60,7 @@ INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"MonkeyMedia\"			\
 	-I$(top_srcdir) 				\
+	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/monkey-media/stream-info-impl		\
 	$(RHYTHMBOX_CFLAGS)
 

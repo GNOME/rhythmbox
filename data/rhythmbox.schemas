@@ -15,6 +15,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/use_autoplugger</key>
+        <applyto>/apps/rhythmbox/use_autoplugger</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+	<short>True if Rhythmbox should use the "spider" GStreamer element.</short>
+	<long>True if Rhythmbox should use the "spider" GStreamer element.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
         <applyto>/apps/rhythmbox/state/paned_position</applyto>
         <owner>rhythmbox</owner>

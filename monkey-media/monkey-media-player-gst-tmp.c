@@ -33,6 +33,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "monkey-media.h"
+#include "eel-gconf-extensions.h"
 #include "monkey-media-marshal.h"
 #include "monkey-media-private.h"
 #include "monkey-media-audio-cd.h"
@@ -474,6 +475,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			       GError **error)
 {
 	GstDParamManager *dpman;
+	char *decoder_name = NULL;
 
 	/* The main playback pipeline for iradio, at the end this looks like:
 	 * { { src ! queue } ! { mad ! volume ! sink } }
@@ -553,17 +555,28 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	}
 
 	/* The decoding element */
-	if (iradio_mode) {
-		mp->priv->decoder = gst_element_factory_make ("mad", "autoplugger");
-	} else {
-		mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
-	}
+	if (iradio_mode)
+		decoder_name = "mad";
+	else if (eel_gconf_get_boolean ("/apps/rhythmbox/use_autoplugger"))
+		decoder_name = "spider";
+	else if (g_str_has_suffix (uri, ".mp3"))
+		decoder_name = "mad";
+	else if (g_str_has_suffix (uri, ".ogg"))
+		decoder_name = "vorbisfile";
+	else if (g_str_has_suffix (uri, ".flac"))
+		decoder_name = "flacdec";
+	else
+		decoder_name = "spider";
 
+	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
 	if (mp->priv->decoder == NULL) {
+		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
+					     decoder_name);
 		g_set_error (error,
 			     MONKEY_MEDIA_PLAYER_ERROR,
 			     MONKEY_MEDIA_PLAYER_ERROR_NO_DEMUX_PLUGIN,
-			     _("Failed to create spider element; check your installation"));
+			     err);
+		g_free (err);
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 		return;
 	}
