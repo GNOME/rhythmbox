@@ -23,6 +23,8 @@ librbwidgets_la_SOURCES =				\
 	$(EGGFILES)					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
+	rb-cell-renderer-pixbuf.c			\
+	rb-cell-renderer-pixbuf.h			\
 	rb-cell-renderer-rating.c			\
 	rb-cell-renderer-rating.h			\
 	rb-song-info.c					\

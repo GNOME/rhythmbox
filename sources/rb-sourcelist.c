@@ -33,6 +33,7 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 #include "rb-tree-view-column.h"
+#include "rb-cell-renderer-pixbuf.h"
 
 struct RBSourceListPriv
 {

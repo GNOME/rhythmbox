@@ -26,7 +26,6 @@
 #include <gtk/gtkiconfactory.h>
 #include <gtk/gtktooltips.h>
 #include <gdk/gdkkeysyms.h>
-#include <gtk/gtkcellrendererpixbuf.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
@@ -41,6 +40,7 @@
 #include "rhythmdb.h"
 #include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
+#include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-string-helpers.h"
 #include "rb-stock-icons.h"
@@ -1357,7 +1357,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		
 		/* Playing icon column */
 		column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
-		renderer = gtk_cell_renderer_pixbuf_new ();
+		renderer = rb_cell_renderer_pixbuf_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,
 							 (GtkTreeCellDataFunc)
