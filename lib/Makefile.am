@@ -34,8 +34,7 @@ librb_la_SOURCES =					\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
-	eggtrayicon.c					\
-	eggtrayicon.h					\
+	$(EGGFILES)					\
 	rb-preferences.h	
 
 INCLUDES =						\
@@ -46,6 +45,13 @@ INCLUDES =						\
 	-I$(top_srcdir)/library				\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
+
+EGGFILES=						\
+	eggtrayicon.c					\
+	eggtrayicon.h
+EGGDIR=$(srcdir)/../../libegg/libegg/tray/
+regenerate-built-sources:
+	EGGFILES="$(EGGFILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
 
 BUILT_SOURCES=rb-marshal.c rb-marshal.h
 

@@ -19,10 +19,7 @@ librbwidgets_la_SOURCES =				\
 	rb-sourcelist.h					\
 	rb-sourcelist-model.c				\
 	rb-sourcelist-model.h				\
-	eggtreemodelfilter.c				\
-	eggtreemodelfilter.h				\
-	eggtreemultidnd.c				\
-	eggtreemultidnd.h				\
+	$(EGGFILES)					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
@@ -44,6 +41,14 @@ librbwidgets_la_SOURCES =				\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
+EGGFILES=						\
+	eggtreemodelfilter.c				\
+	eggtreemodelfilter.h				\
+	eggtreemultidnd.c				\
+	eggtreemultidnd.h
+EGGDIR=$(srcdir)/../../../libegg/libegg/treeviewutils/
+regenerate-built-sources:
+	EGGFILES="$(EGGFILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
 
 if GTK_TREE_MODEL_SORT_WORKAROUND
 librbwidgets_la_SOURCES += gtktreemodelsort.c

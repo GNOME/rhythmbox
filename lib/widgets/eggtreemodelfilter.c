@@ -21,9 +21,9 @@
 #include "eggtreemodelfilter.h"
 #include <gtk/gtksignal.h>
 #include <string.h>
-#include <libgnome/gnome-i18n.h>
 
 /* FIXME: remove this when we move it to GTK+ */
+#include "eggintl.h"
 
 /* ITER FORMAT:
  *

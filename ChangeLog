@@ -1,3 +1,18 @@
+2003-08-29  Bastien Nocera  <hadess@hadess.net>
+
+	* TODO: removed TODO item ("update-from-egg.sh")
+	* lib/Makefile.am:
+	* lib/update-from-egg.sh:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/eggintl.h: modified version of eggintl.h with i18n
+	so that the other egg files don't need modifications
+	* lib/widgets/eggtreemodelfilter.c:
+	* lib/widgets/eggtreemultidnd.c: (stop_drag_check),
+	(egg_tree_multi_drag_button_release_event),
+	(egg_tree_multi_drag_motion_event),
+	(egg_tree_multi_drag_button_press_event): updated from libegg
+	* lib/widgets/update-from-egg.sh:
+
 Fri, 29 Aug 2003 03:13:34 -0400  Colin Walters  <walters@verbum.org>
 
 	* rhythmdb/rhythmdb-entry-model.c: (rhythmdb_entry_model_get_type),
