@@ -61,8 +61,9 @@ GType       rb_node_view_get_type          (void);
 RBNodeView *rb_node_view_new               (RBNode *root,
 					    const char *view_desc_file);
 
-void        rb_node_view_set_filter_root   (RBNodeView *view,
-				            RBNode *root);
+void        rb_node_view_set_filter        (RBNodeView *view,
+				            RBNode *filter_parent,
+					    RBNode *filter_grandparent);
 
 void        rb_node_view_set_playing_node  (RBNodeView *view,
 					    RBNode *node);

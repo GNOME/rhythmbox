@@ -673,7 +673,7 @@ rb_library_timeout_cb (RBLibrary *library)
 	rb_node_add_child (album_node, node);
 	rb_node_add_child (library->priv->all_songs, node);
 	rb_node_add_grandparent (node, artist_node);
-	rb_node_add_grandparent (node, library->priv->all_artists);
+	rb_node_add_grandparent (node, library->priv->all_albums);
 
 	g_signal_connect_object (G_OBJECT (node),
 				 "destroyed",

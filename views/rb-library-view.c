@@ -39,6 +39,7 @@
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-node-song.h"
+#include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
@@ -439,7 +440,8 @@ artist_node_selected_cb (RBNodeView *view,
 			 RBNode *node,
 			 RBLibraryView *testview)
 {
-	rb_node_view_set_filter_root (testview->priv->albums, node);
+	rb_node_view_set_filter (testview->priv->albums, node,
+				 rb_library_get_all_genres (testview->priv->library));
 }
 
 static void
@@ -447,7 +449,10 @@ album_node_selected_cb (RBNodeView *view,
 			RBNode *node,
 			RBLibraryView *testview)
 {
-	rb_node_view_set_filter_root (testview->priv->songs, node);
+	GList *selection = rb_node_view_get_selection (testview->priv->artists);
+	rb_node_view_set_filter (testview->priv->songs, node,
+				 RB_NODE (selection->data));
+	g_list_free (selection);
 }
 
 static void

@@ -18,6 +18,7 @@
  *  $Id$
  *
  *  FIXME "Add/Remove columns" dialog
+ *  FIXME row_changed_cb moet ook changed emitted
  */
 
 #include <gtk/gtktreeview.h>
@@ -125,7 +126,8 @@ enum
 {
 	PROP_0,
 	PROP_ROOT,
-	PROP_FILTER_ROOT,
+	PROP_FILTER_PARENT,
+	PROP_FILTER_GRANDPARENT,
 	PROP_PLAYING_NODE,
 	PROP_VIEW_DESC_FILE
 };
@@ -182,10 +184,17 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_ROOT,
-					 g_param_spec_object ("filter-root",
-							      "Filter root node",
-							      "Filter root node",
+					 PROP_FILTER_PARENT,
+					 g_param_spec_object ("filter-parent",
+							      "Filter parent node",
+							      "Filter parent node",
+							      RB_TYPE_NODE,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_FILTER_GRANDPARENT,
+					 g_param_spec_object ("filter-grandparent",
+							      "Filter grandparent node",
+							      "Filter grandparent node",
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -293,14 +302,23 @@ rb_node_view_set_property (GObject *object,
 		view->priv->root = g_value_get_object (value);
 		rb_node_view_construct (view);
 		break;
-	case PROP_FILTER_ROOT:
+	case PROP_FILTER_PARENT:
 		{
 			g_assert (view->priv->nodemodel != NULL);
 
 			g_object_set_property (G_OBJECT (view->priv->nodemodel),
-				               "filter-root", value);
+				               "filter-parent", value);
 			
-			g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+			/* FIXME */
+			//g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+		}
+		break;
+	case PROP_FILTER_GRANDPARENT:
+		{
+			g_assert (view->priv->nodemodel != NULL);
+			
+			g_object_set_property (G_OBJECT (view->priv->nodemodel),
+					       "filter-grandparent", value);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -334,12 +352,20 @@ rb_node_view_get_property (GObject *object,
 	case PROP_ROOT:
 		g_value_set_object (value, view->priv->root);
 		break;
-	case PROP_FILTER_ROOT:
+	case PROP_FILTER_PARENT:
 		{
 			g_assert (view->priv->nodemodel != NULL);
 
 			g_object_get_property (G_OBJECT (view->priv->nodemodel),
-				               "filter-root", value);
+				               "filter-parent", value);
+		}
+		break;
+	case PROP_FILTER_GRANDPARENT:
+		{
+			g_assert (view->priv->nodemodel != NULL);
+
+			g_object_set_property (G_OBJECT (view->priv->nodemodel),
+					       "filter-grandparent", value);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -376,7 +402,7 @@ rb_node_view_new (RBNode *root,
 					   "shadow_type", GTK_SHADOW_IN,
 					   "view-desc-file", view_desc_file,
 					   "root", root,
-					   "filter-root", root,
+					   "filter-parent", root,
 					   NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
@@ -565,13 +591,15 @@ rb_node_view_construct (RBNodeView *view)
 }
 
 void
-rb_node_view_set_filter_root (RBNodeView *view,
-			      RBNode *root)
+rb_node_view_set_filter (RBNodeView *view,
+			 RBNode *filter_parent,
+			 RBNode *filter_grandparent)
 {
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
 	g_object_set (G_OBJECT (view),
-		      "filter-root", root,
+		      "filter-grandparent", filter_grandparent,
+		      "filter-parent", filter_parent,
 		      NULL);
 }
 

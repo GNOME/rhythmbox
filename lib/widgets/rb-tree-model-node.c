@@ -84,20 +84,21 @@ static void rb_tree_model_node_update_node (RBTreeModelNode *model,
 				            RBNode *node);
 static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
-static void filter_root_child_created_cb (RBNode *node,
-					  RBNode *child,
-					  RBTreeModelNode *model);
-static void filter_root_child_destroyed_cb (RBNode *node,
+static void filter_parent_child_created_cb (RBNode *node,
 					    RBNode *child,
 					    RBTreeModelNode *model);
-static void filter_root_destroyed_cb (RBNode *node,
-				      RBTreeModelNode *model);
+static void filter_parent_child_destroyed_cb (RBNode *node,
+					      RBNode *child,
+					      RBTreeModelNode *model);
+static void filter_parent_destroyed_cb (RBNode *node,
+				        RBTreeModelNode *model);
 
 struct RBTreeModelNodePrivate
 {
 	RBNode *root;
 
-	RBNode *filter_root;
+	RBNode *filter_parent;
+	RBNode *filter_grandparent;
 	RBNode *playing_node;
 
 	RBNodeIterator *iterator;
@@ -109,7 +110,8 @@ enum
 {
 	PROP_0,
 	PROP_ROOT,
-	PROP_FILTER_ROOT,
+	PROP_FILTER_PARENT,
+	PROP_FILTER_GRANDPARENT,
 	PROP_PLAYING_NODE
 };
 
@@ -174,10 +176,17 @@ rb_tree_model_node_class_init (RBTreeModelNodeClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_ROOT,
-					 g_param_spec_object ("filter-root",
-							      "Filter root node",
-							      "Filter root node",
+					 PROP_FILTER_PARENT,
+					 g_param_spec_object ("filter-parent",
+							      "Filter parent node",
+							      "Filter parent node",
+							      RB_TYPE_NODE,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_FILTER_GRANDPARENT,
+					 g_param_spec_object ("filter-grandparent",
+							      "Filter grandparent node",
+							      "Filter grandparent node",
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -270,11 +279,11 @@ rb_tree_model_node_set_property (GObject *object,
 				         G_OBJECT (model),
 					 0);
 		break;
-	case PROP_FILTER_ROOT:
+	case PROP_FILTER_PARENT:
 		{
-			RBNode *old = model->priv->filter_root;
+			RBNode *old = model->priv->filter_parent;
 
-			model->priv->filter_root = g_value_get_object (value);
+			model->priv->filter_parent = g_value_get_object (value);
 
 			if (old != NULL)
 			{
@@ -287,19 +296,19 @@ rb_tree_model_node_set_property (GObject *object,
 				}
 
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_root_child_created_cb),
+						                      G_CALLBACK (filter_parent_child_created_cb),
 				                		      model);
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_root_child_destroyed_cb),
+						                      G_CALLBACK (filter_parent_child_destroyed_cb),
 						                      model);
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_root_destroyed_cb),
+						                      G_CALLBACK (filter_parent_destroyed_cb),
 						                      model);
 			}
 
-			if (model->priv->filter_root != NULL)
+			if (model->priv->filter_parent != NULL)
 			{
-				GList *kids = rb_node_get_children (model->priv->filter_root);
+				GList *kids = rb_node_get_children (model->priv->filter_parent);
 				GList *l;
 
 				for (l = kids; l != NULL; l = g_list_next (l))
@@ -307,23 +316,26 @@ rb_tree_model_node_set_property (GObject *object,
 					rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
-				g_signal_connect_object (G_OBJECT (model->priv->filter_root),
+				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
 						         "child_created",
-						         G_CALLBACK (filter_root_child_created_cb),
+						         G_CALLBACK (filter_parent_child_created_cb),
 						         G_OBJECT (model),
 							 0);
-				g_signal_connect_object (G_OBJECT (model->priv->filter_root),
+				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
 						         "child_destroyed",
-						         G_CALLBACK (filter_root_child_destroyed_cb),
+						         G_CALLBACK (filter_parent_child_destroyed_cb),
 						         G_OBJECT (model),
 							 0);
-				g_signal_connect_object (G_OBJECT (model->priv->filter_root),
+				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
 						         "destroyed",
-						         G_CALLBACK (filter_root_destroyed_cb),
+						         G_CALLBACK (filter_parent_destroyed_cb),
 						         G_OBJECT (model),
 							 0);
 			}
 		}
+		break;
+	case PROP_FILTER_GRANDPARENT:
+		model->priv->filter_grandparent = g_value_get_object (value);
 		break;
 	case PROP_PLAYING_NODE:
 		{
@@ -356,8 +368,11 @@ rb_tree_model_node_get_property (GObject *object,
 	case PROP_ROOT:
 		g_value_set_object (value, model->priv->root);
 		break;
-	case PROP_FILTER_ROOT:
-		g_value_set_object (value, model->priv->filter_root);
+	case PROP_FILTER_PARENT:
+		g_value_set_object (value, model->priv->filter_parent);
+		break;
+	case PROP_FILTER_GRANDPARENT:
+		g_value_set_object (value, model->priv->filter_grandparent);
 		break;
 	case PROP_PLAYING_NODE:
 		g_value_set_object (value, model->priv->playing_node);
@@ -591,11 +606,19 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
-		if (model->priv->filter_root != NULL)
+		if (model->priv->filter_parent != NULL)
 		{
-			/* FIXME do grandparent checking */
-			g_value_set_boolean (value,
-					     rb_node_has_child (model->priv->filter_root, node));
+			if (model->priv->filter_grandparent != NULL)
+			{
+				g_value_set_boolean (value,
+						     rb_node_has_child (model->priv->filter_parent, node) &&
+						     rb_node_has_grandparent (node, model->priv->filter_grandparent));
+			}
+			else
+			{
+				g_value_set_boolean (value,
+						     rb_node_has_child (model->priv->filter_parent, node));
+			}
 		}
 		else
 		{
@@ -803,13 +826,15 @@ root_destroyed_cb (RBNode *node,
 }
 
 void
-rb_tree_model_node_set_filter_root (RBTreeModelNode *model,
-				    RBNode *root)
+rb_tree_model_node_set_filter (RBTreeModelNode *model,
+			       RBNode *filter_parent,
+			       RBNode *filter_grandparent)
 {
 	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
 
 	g_object_set (G_OBJECT (model),
-		      "filter-root", root,
+		      "filter-grandparent", filter_grandparent,
+		      "filter-parent", filter_parent,
 		      NULL);
 }
 
@@ -825,21 +850,7 @@ rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 }
 
 static void
-filter_root_child_created_cb (RBNode *node,
-			      RBNode *child,
-			      RBTreeModelNode *model)
-{
-	if (model->priv->root == NULL)
-		return;
-
-	if (rb_node_has_child (model->priv->root, child) == FALSE)
-		return;
-
-	rb_tree_model_node_update_node (model, child);
-}
-
-static void
-filter_root_child_destroyed_cb (RBNode *node,
+filter_parent_child_created_cb (RBNode *node,
 			        RBNode *child,
 			        RBTreeModelNode *model)
 {
@@ -853,10 +864,24 @@ filter_root_child_destroyed_cb (RBNode *node,
 }
 
 static void
-filter_root_destroyed_cb (RBNode *node,
-			  RBTreeModelNode *model)
+filter_parent_child_destroyed_cb (RBNode *node,
+			          RBNode *child,
+			          RBTreeModelNode *model)
 {
-	model->priv->filter_root = NULL;
+	if (model->priv->root == NULL)
+		return;
+
+	if (rb_node_has_child (model->priv->root, child) == FALSE)
+		return;
+
+	rb_tree_model_node_update_node (model, child);
+}
+
+static void
+filter_parent_destroyed_cb (RBNode *node,
+			    RBTreeModelNode *model)
+{
+	model->priv->filter_parent = NULL;
 
 	/* no need to do other stuff since we should have had a bunch of child_destroyed
 	 * signals already */
