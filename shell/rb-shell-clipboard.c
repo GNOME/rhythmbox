@@ -19,6 +19,8 @@
  */
 
 #include "rb-shell-clipboard.h"
+#include "rb-node.h"
+#include "rb-bonobo-helpers.h"
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -31,16 +33,49 @@ static void rb_shell_clipboard_get_property (GObject *object,
 				   	     guint prop_id,
 					     GValue *value,
 					     GParamSpec *pspec);
+static void rb_view_clipboard_changed_cb (RBViewClipboard *clipboard,
+			                  RBShellClipboard *shell_clipboard);
+static void rb_shell_clipboard_sync (RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
+			                RBShellClipboard *clipboard,
+			                const char *verbname);
+static void rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
+			                 RBShellClipboard *clipboard,
+			                 const char *verbname);
+static void rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
+			                  RBShellClipboard *clipboard,
+			                  const char *verbname);
+static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
+			            GList *nodes);
+static void rb_node_destroyed_cb (RBNode *node,
+		                  RBShellClipboard *clipboard);
+
+#define CMD_PATH_CUT   "/commands/Cut"
+#define CMD_PATH_COPY  "/commands/Copy"
+#define CMD_PATH_PASTE "/commands/Paste"
 
 struct RBShellClipboardPrivate
 {
 	RBViewClipboard *clipboard;
+
+	BonoboUIComponent *component;
+
+	GList *nodes;
 };
 
 enum
 {
 	PROP_0,
-	PROP_CLIPBOARD
+	PROP_CLIPBOARD,
+	PROP_COMPONENT
+};
+
+static BonoboUIVerb rb_shell_clipboard_verbs[] =
+{
+	BONOBO_UI_VERB ("Cut",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
+	BONOBO_UI_VERB ("Copy",  (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
+	BONOBO_UI_VERB ("Paste", (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
+	BONOBO_UI_VERB_END
 };
 
 static GObjectClass *parent_class = NULL;
@@ -92,6 +127,13 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      "RBViewClipboard object",
 							      RB_TYPE_VIEW_CLIPBOARD,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_COMPONENT,
+					 g_param_spec_object ("component",
+							      "BonoboUIComponent",
+							      "BonoboUIComponent object",
+							      BONOBO_TYPE_UI_COMPONENT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -111,6 +153,8 @@ rb_shell_clipboard_finalize (GObject *object)
 	shell_clipboard = RB_SHELL_CLIPBOARD (object);
 
 	g_return_if_fail (shell_clipboard->priv != NULL);
+
+	g_list_free (shell_clipboard->priv->nodes);
 	
 	g_free (shell_clipboard->priv);
 
@@ -128,7 +172,30 @@ rb_shell_clipboard_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_CLIPBOARD:
+		if (shell_clipboard->priv->clipboard != NULL)
+		{
+			g_signal_handlers_disconnect_by_func (G_OBJECT (shell_clipboard->priv->clipboard),
+							      G_CALLBACK (rb_view_clipboard_changed_cb),
+							      shell_clipboard);
+		}
+		
 		shell_clipboard->priv->clipboard = g_value_get_object (value);
+
+		if (shell_clipboard->priv->clipboard != NULL)
+		{
+			g_signal_connect (G_OBJECT (shell_clipboard->priv->clipboard),
+					  "clipboard_changed",
+					  G_CALLBACK (rb_view_clipboard_changed_cb),
+					  shell_clipboard);
+		}
+
+		rb_shell_clipboard_sync (shell_clipboard);
+		break;
+	case PROP_COMPONENT:
+		shell_clipboard->priv->component = g_value_get_object (value);
+		bonobo_ui_component_add_verb_list_with_data (shell_clipboard->priv->component,
+							     rb_shell_clipboard_verbs,
+							     shell_clipboard);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -148,6 +215,9 @@ rb_shell_clipboard_get_property (GObject *object,
 	{
 	case PROP_CLIPBOARD:
 		g_value_set_object (value, shell_clipboard->priv->clipboard);
+		break;
+	case PROP_COMPONENT:
+		g_value_set_object (value, shell_clipboard->priv->component);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -186,9 +256,94 @@ rb_shell_clipboard_new (BonoboUIComponent *component)
 {
 	RBShellClipboard *shell_clipboard;
 
-	shell_clipboard = g_object_new (RB_TYPE_SHELL_CLIPBOARD, NULL);
+	shell_clipboard = g_object_new (RB_TYPE_SHELL_CLIPBOARD,
+					"component", component,
+					NULL);
 
 	g_return_val_if_fail (shell_clipboard->priv != NULL, NULL);
 
 	return shell_clipboard;
+}
+
+static void
+rb_view_clipboard_changed_cb (RBViewClipboard *clipboard,
+			      RBShellClipboard *shell_clipboard)
+{
+	rb_shell_clipboard_sync (shell_clipboard);
+}
+
+static void
+rb_shell_clipboard_sync (RBShellClipboard *clipboard)
+{
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_CUT,
+				 rb_view_clipboard_can_cut (clipboard->priv->clipboard));
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_COPY,
+				 rb_view_clipboard_can_copy (clipboard->priv->clipboard));
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_PASTE,
+				 rb_view_clipboard_can_paste (clipboard->priv->clipboard) &&
+				 g_list_length (clipboard->priv->nodes) > 0);
+}
+
+static void
+rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
+			    RBShellClipboard *clipboard,
+			    const char *verbname)
+{
+	rb_shell_clipboard_set (clipboard,
+				rb_view_clipboard_cut (clipboard->priv->clipboard));
+}
+
+static void
+rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
+			     RBShellClipboard *clipboard,
+			     const char *verbname)
+{
+	rb_shell_clipboard_set (clipboard,
+				rb_view_clipboard_copy (clipboard->priv->clipboard));
+}
+
+static void
+rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
+			      RBShellClipboard *clipboard,
+			      const char *verbname)
+{
+	rb_view_clipboard_paste (clipboard->priv->clipboard, clipboard->priv->nodes);
+}
+
+static void
+rb_shell_clipboard_set (RBShellClipboard *clipboard,
+			GList *nodes)
+{
+	GList *l;
+
+	for (l = clipboard->priv->nodes; l != NULL; l = g_list_next (l))
+	{
+		g_signal_handlers_disconnect_by_func (G_OBJECT (l->data),
+						      G_CALLBACK (rb_node_destroyed_cb),
+						      clipboard);
+	}
+
+	g_list_free (clipboard->priv->nodes);
+
+	clipboard->priv->nodes = nodes;
+
+	for (l = nodes; l != NULL; l = g_list_next (l))
+	{
+		g_signal_connect (G_OBJECT (l->data),
+				  "destroyed",
+				  G_CALLBACK (rb_node_destroyed_cb),
+				  clipboard);
+	}
+}
+
+static void
+rb_node_destroyed_cb (RBNode *node,
+		      RBShellClipboard *clipboard)
+{
+	clipboard->priv->nodes = g_list_remove (clipboard->priv->nodes, node);
+
+	rb_shell_clipboard_sync (clipboard);
 }

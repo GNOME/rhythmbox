@@ -4,6 +4,29 @@
 
 2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_class_init),
+	(rb_shell_clipboard_finalize), (rb_shell_clipboard_set_property),
+	(rb_shell_clipboard_get_property), (rb_shell_clipboard_new),
+	(rb_view_clipboard_changed_cb), (rb_shell_clipboard_sync),
+	(rb_shell_clipboard_cmd_cut), (rb_shell_clipboard_cmd_copy),
+	(rb_shell_clipboard_cmd_paste), (rb_shell_clipboard_set),
+	(rb_node_destroyed_cb):
+	* tests/testview.c: (rb_test_view_get_type),
+	(rb_test_view_clipboard_init), (rb_test_view_status_get),
+	(rb_test_view_can_cut), (rb_test_view_can_copy),
+	(rb_test_view_can_paste), (rb_test_view_cut), (rb_test_view_copy),
+	(rb_test_view_paste):
+	* tests/testview2.c: (rb_test_view2_get_type),
+	(rb_test_view_clipboard_init), (rb_test_view_status_get),
+	(rb_test_view_can_cut), (rb_test_view_can_copy),
+	(rb_test_view_can_paste), (rb_test_view_cut), (rb_test_view_copy),
+	(rb_test_view_paste):
+
+	Implement clipboard.
+
+2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_selection_changed_cb):
 
 	Fix "node_selected" getting emitted twice.

@@ -48,6 +48,14 @@ static void rb_test_view_start_playing (RBViewPlayer *player);
 static void rb_test_view_stop_playing (RBViewPlayer *player);
 static void rb_test_view_status_init (RBViewStatusIface *iface);
 static const char *rb_test_view_status_get (RBViewStatus *status);
+static void rb_test_view_clipboard_init (RBViewClipboardIface *iface);
+static gboolean rb_test_view_can_cut (RBViewClipboard *clipboard);
+static gboolean rb_test_view_can_copy (RBViewClipboard *clipboard);
+static gboolean rb_test_view_can_paste (RBViewClipboard *clipboard);
+static GList *rb_test_view_cut (RBViewClipboard *clipboard);
+static GList *rb_test_view_copy (RBViewClipboard *clipboard);
+static void rb_test_view_paste (RBViewClipboard *clipboard,
+		                GList *nodes);
 
 struct RBTestView2Private
 {
@@ -85,7 +93,7 @@ rb_test_view2_get_type (void)
 		
 		static const GInterfaceInfo clipboard_info =
 		{
-			NULL,
+			(GInterfaceInitFunc) rb_test_view_clipboard_init,
 			NULL,
 			NULL
 		};
@@ -210,6 +218,17 @@ rb_test_view_status_init (RBViewStatusIface *iface)
 }
 
 static void
+rb_test_view_clipboard_init (RBViewClipboardIface *iface)
+{
+	iface->impl_can_cut   = rb_test_view_can_cut;
+	iface->impl_can_copy  = rb_test_view_can_copy;
+	iface->impl_can_paste = rb_test_view_can_paste;
+	iface->impl_cut       = rb_test_view_cut;
+	iface->impl_copy      = rb_test_view_copy;
+	iface->impl_paste     = rb_test_view_paste;
+}
+
+static void
 rb_test_view_set_shuffle (RBViewPlayer *player,
 			  gboolean shuffle)
 {
@@ -293,4 +312,40 @@ static const char *
 rb_test_view_status_get (RBViewStatus *status)
 {
 	return "Ja dacht je dat!";
+}
+
+static gboolean
+rb_test_view_can_cut (RBViewClipboard *clipboard)
+{
+	return FALSE;
+}
+
+static gboolean
+rb_test_view_can_copy (RBViewClipboard *clipboard)
+{
+	return FALSE;
+}
+
+static gboolean
+rb_test_view_can_paste (RBViewClipboard *clipboard)
+{
+	return FALSE;
+}
+
+static GList *
+rb_test_view_cut (RBViewClipboard *clipboard)
+{
+	return NULL;
+}
+
+static GList *
+rb_test_view_copy (RBViewClipboard *clipboard)
+{
+	return NULL;
+}
+
+static void
+rb_test_view_paste (RBViewClipboard *clipboard,
+		    GList *nodes)
+{
 }
