@@ -37,6 +37,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
 
+
 dnl Sound system
 WANT_XINE=
 AC_ARG_ENABLE(xine,
@@ -110,6 +111,21 @@ AC_ARG_ENABLE(broken_gstreamer,
 if test x$enable_broken_gstreamer != xno; then
 	AC_DEFINE(USE_BROKEN_GSTREAMER,1,[Define if you don't want to use GStreamer bug workarounds])
 fi
+
+
+dnl Workaround for the gtktreemodelsort bug
+
+AC_ARG_ENABLE(gtktreemodelsort_workaround,
+              AC_HELP_STRING([--enable-gtktreemodelsort-workaround],
+	                     [Enable use of a workaround for the gtk tree model sort bug which causes song jumping]),
+	      enable_gtktreemodelsort_workaround=yes)
+
+if test "x$enable_gtktreemodelsort_workaround" = "xyes"; then
+  AC_DEFINE(USE_GTK_TREE_MODEL_SORT_WORKAROUND,,[Define to enable the Gtk Tree Model Sort workaround])
+fi
+
+AM_CONDITIONAL(GTK_TREE_MODEL_SORT_WORKAROUND, test "x$enable_gtktreemodelsort_workaround" = "xyes")
+
 
 dnl Check for zlib
 
@@ -351,6 +367,11 @@ dnl else
 dnl 	AC_MSG_NOTICE([** Audio CD support is enabled])
 dnl 	AC_MSG_WARN([Audio CD support is experimental!])
 dnl fi
+if test x"$enable_gtktreemodelsort_workaround" != xyes; then
+	AC_MSG_NOTICE([   GtkTreeModelSort workaround disabled])
+else
+	AC_MSG_NOTICE([** GtkTreeModelSort workaround enabled])
+fi
 if test x"$missing_gst_elements" != x; then
 	AC_MSG_WARN([The following GStreamer elements could not be found at compile time: $missing_gst_elements])
 	AC_MSG_WARN([Rhythmbox will fail at runtime if these elements cannot be found])
