@@ -250,6 +250,49 @@ gul_tb_editor_right_clicked_cb (GtkWidget *b, GulTbEditor *tbe)
 	}
 }
 
+static void
+update_arrows_sensitivity (GulTbEditor *tbe)
+{
+	GtkTreeSelection *selection;
+	gboolean current_sel;
+	gboolean avail_sel;	
+	gboolean first = FALSE;
+	gboolean last = FALSE;
+	GtkTreeModel *tm;
+	GtkTreeIter iter;
+	GtkTreePath *path;
+
+	selection = gtk_tree_view_get_selection 
+		(GTK_TREE_VIEW (tbe->priv->current_view));
+	current_sel = gtk_tree_selection_get_selected (selection, &tm, &iter);
+	if (current_sel)
+	{
+		path = gtk_tree_model_get_path (tm, &iter);
+		first = !gtk_tree_path_prev (path);
+		last = !gtk_tree_model_iter_next (tm, &iter);	
+	}
+
+	selection = gtk_tree_view_get_selection 
+		(GTK_TREE_VIEW (tbe->priv->available_view));
+	avail_sel = gtk_tree_selection_get_selected (selection, &tm, &iter);
+	
+	gtk_widget_set_sensitive (tbe->priv->right_button, 
+				  avail_sel);
+	gtk_widget_set_sensitive (tbe->priv->left_button, 
+				  current_sel);
+	gtk_widget_set_sensitive (tbe->priv->up_button, 
+				  current_sel && !first);
+	gtk_widget_set_sensitive (tbe->priv->down_button,
+				  current_sel && !last);
+}
+
+static void
+gul_tb_editor_treeview_selection_changed_cb (GtkTreeSelection *selection,
+					     GulTbEditor *tbe)
+{
+	update_arrows_sensitivity (tbe);
+}
+
 static GulTbItem *
 gul_tb_editor_get_selected (GulTbEditor *tbe, GtkTreeView *tv)
 {
@@ -454,9 +497,11 @@ gul_tb_editor_setup_treeview (GulTbEditor *tbe, GtkTreeView *tv)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
+	GtkTreeSelection *selection;
 	
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_pixbuf_new ();
+	selection = gtk_tree_view_get_selection (tv);
 	
 	gtk_tree_view_column_pack_start (column, renderer, FALSE);
 	gtk_tree_view_column_set_attributes (column, renderer,
@@ -474,6 +519,8 @@ gul_tb_editor_setup_treeview (GulTbEditor *tbe, GtkTreeView *tv)
 
 	g_signal_connect (tv, "button-press-event", 
 			  G_CALLBACK (gul_tb_editor_treeview_button_press_event_cb), tbe);
+	g_signal_connect (selection, "changed",
+			  G_CALLBACK (gul_tb_editor_treeview_selection_changed_cb), tbe);
 }
 
 GulToolbar *
