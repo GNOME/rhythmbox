@@ -330,7 +330,7 @@ thread_main (RBLibraryMainThread *thread)
 						break;
 					}
 				} else {
-					rb_debug ("uri \"%s\" does not exist, adding new node", realuri);
+					rb_debug ("uri \"%s\" already exists", realuri);
 				}
 
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
@@ -344,6 +344,7 @@ thread_main (RBLibraryMainThread *thread)
 						break;
 
 					if (rb_uri_exists (realuri) == FALSE) {
+						rb_debug ("song \"%s\" was deleted", realuri);
 						rb_node_unref (song);
 						break;
 					}
@@ -358,6 +359,7 @@ thread_main (RBLibraryMainThread *thread)
 
 				/* just to be sure */
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
+				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				{
 					RBNode *song;

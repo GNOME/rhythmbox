@@ -341,7 +341,6 @@ load_initial (RBIRadioBackend *backend)
 		nodestation = rb_iradio_backend_new_station (locations, name, genre, "initial", backend);
 	}
 	rb_debug ("iradio-backend: done loading initial stations");
-	g_free ((char *) initial_file);
 	g_object_unref (G_OBJECT (it));
 	g_signal_emit (G_OBJECT (backend), rb_iradio_backend_signals[CHANGED], 0);
 }

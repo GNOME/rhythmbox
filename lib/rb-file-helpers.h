@@ -23,27 +23,28 @@
 
 G_BEGIN_DECLS
 
-const char *rb_file                   (const char *filename);
+const char *	rb_file			(const char *filename);
 
-const char *rb_dot_dir                (void);
+const char *	rb_dot_dir		(void);
 
-void        rb_ensure_dir_exists      (const char *dir);
+void		rb_ensure_dir_exists	(const char *dir);
 
-char       *rb_uri_resolve_symlink    (const char *uri);
-gboolean    rb_uri_is_directory       (const char *uri);
-gboolean    rb_uri_exists             (const char *uri);
-char       *rb_uri_resolve_relative   (const char *uri);
-gboolean    rb_uri_is_readable        (const char *uri);
-gboolean    rb_uri_is_writable        (const char *uri);
+char *		rb_uri_canonicalize	(const char *uri);
+char *		rb_uri_resolve_symlink	(const char *uri);
+gboolean	rb_uri_is_directory	(const char *uri);
+gboolean	rb_uri_exists		(const char *uri);
+char *		rb_uri_resolve_relative	(const char *uri);
+gboolean	rb_uri_is_readable	(const char *uri);
+gboolean	rb_uri_is_writable	(const char *uri);
 
-void        rb_uri_handle_recursively (const char *uri,
-				       GFunc func,
-				       GMutex *cancel_mutex,
-				       gboolean *cancelflag,
-				       gpointer user_data);
+void		rb_uri_handle_recursively(const char *uri,
+					  GFunc func,
+					  GMutex *cancel_mutex,
+					  gboolean *cancelflag,
+					  gpointer user_data);
 
-void        rb_file_helpers_init      (void);
-void        rb_file_helpers_shutdown  (void);
+void		rb_file_helpers_init	(void);
+void		rb_file_helpers_shutdown(void);
 
 G_END_DECLS
 

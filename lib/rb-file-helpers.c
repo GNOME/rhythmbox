@@ -169,6 +169,13 @@ rb_uri_is_directory (const char *uri)
 	return dir;
 }
 
+char *
+rb_uri_canonicalize (const char *uri)
+{
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	return gnome_vfs_uri_to_string (vfsuri, GNOME_VFS_URI_HIDE_NONE);
+}
+
 gboolean
 rb_uri_exists (const char *uri)
 {

@@ -1,5 +1,20 @@
 2003-08-01  Colin Walters  <walters@verbum.org>
 
+	* iradio/rb-iradio-backend.c: (load_initial):
+	* lib/rb-file-helpers.c: (rb_uri_canonicalize):
+	* lib/rb-file-helpers.h:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_get_song_by_location),
+	(sync_node), (rb_library_update_node):
+
+	Add some more debug statements.  And put in a missing break
+	statement that caused music reloading from a saved library to
+	fail.
+
+	Also don't g_free a const value in the iradio backend.
+
+2003-08-01  Colin Walters  <walters@verbum.org>
+
 	* lib/rb-file-monitor.c: (rb_file_monitor_add),
 	(rb_file_monitor_remove):
 	* library/rb-library-main-thread.c: (thread_main):

@@ -700,14 +700,19 @@ RBNode *
 rb_library_get_song_by_location (RBLibrary *library,
 			         const char *location)
 {
+	char *canonicalized_uri;
 	RBNode *ret;
+
+	canonicalized_uri = rb_uri_canonicalize (location);
 	
 	g_static_rw_lock_reader_lock (library->priv->song_hash_lock);
 	
 	ret = g_hash_table_lookup (library->priv->song_hash,
-				   location);
+				   canonicalized_uri);
 	
 	g_static_rw_lock_reader_unlock (library->priv->song_hash_lock);
+
+	g_free (canonicalized_uri);
 
 	return ret;
 }
@@ -1295,6 +1300,7 @@ sync_node (RBNode *node,
 	
 	info = monkey_media_stream_info_new (location, error);
 	if (G_UNLIKELY (info == NULL)) {
+		rb_debug ("failed to get info for song \"%s\"", location);
 		rb_node_unref (node);
 		return;
 	}
@@ -1356,8 +1362,10 @@ rb_library_update_node (RBLibrary *library,
 	mtime = rb_node_get_property_long (node,
 				           RB_NODE_PROP_MTIME);
 
-	if (info->mtime != mtime)
+	if (info->mtime != mtime) {
+		rb_debug ("mtime for file \"%s\" has changed", location);
 		sync_node (node, library, TRUE, error);
+	}
 	
 	gnome_vfs_file_info_unref (info);
 }
