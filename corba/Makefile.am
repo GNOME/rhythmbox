@@ -14,7 +14,7 @@ INCLUDES = 							\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE
 
-include_HEADERS = Rhythmbox.h
+noinst_HEADERS = Rhythmbox.h
 
 idldir = $(prefix)/share/idl
 idl_DATA = Rhythmbox.idl

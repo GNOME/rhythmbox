@@ -69,11 +69,13 @@ export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --make
 %{_libdir}/bonobo/librb-nautilus-context-menu.*
 %{_libdir}/bonobo/servers/*
 %{_libdir}/pkgconfig/*
-%{_includedir}/Rhythmbox.h
 #%{_datadir}/gnome/help/rhythmbox/C/*
 #%{_datadir}/omf/rhythmbox/rhythmbox-C.omf
 
 %changelog
+* Thu Aug 14 2003 William Jon McCann <mccann@jhu.edu>
+- Don't install Rhythmbox.h.
+
 * Wed Aug 13 2003 William Jon McCann <mccann@jhu.edu>
 - Updated dependencies and files
 
