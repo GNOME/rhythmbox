@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-24 03:10+0100\n"
-"PO-Revision-Date: 2003-11-24 03:12+0100\n"
+"POT-Creation-Date: 2003-12-21 23:16+0100\n"
+"PO-Revision-Date: 2003-12-21 23:18+0100\n"
 "Last-Translator: Predrag Krtolica <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -39,8 +39,8 @@ msgstr "Ne mogu da pokrenem Bonobo"
 msgid "Could not create an instance of the sample echo component"
 msgstr "Ne mogu da obrazujem primerak probne povratne komponente"
 
-#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:240
-#: shell/main.c:249
+#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:250
+#: shell/main.c:259
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Dogodio se izuzetak „%s“"
@@ -117,9 +117,7 @@ msgstr "_Putanja:"
 msgid "_Skip this step"
 msgstr "Pre_skoči ovaj korak"
 
-#: data/glade/general-prefs.glade.h:1
-#: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1249
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1282
 msgid "A_lbum"
 msgstr "A_lbum"
 
@@ -140,8 +138,6 @@ msgid "_Duration"
 msgstr "Tra_janje"
 
 #: data/glade/general-prefs.glade.h:6
-#: data/node-views/rb-node-view-genres.xml.h:1
-#: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "_Žanr"
 
@@ -153,15 +149,11 @@ msgstr "Posle_dnja izvedena"
 msgid "_Play count"
 msgstr "_Broj izvođenja"
 
-#: data/glade/general-prefs.glade.h:9
-#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1311
 msgid "_Quality"
 msgstr "_Kvalitet"
 
-#: data/glade/general-prefs.glade.h:10
-#: data/node-views/rb-node-view-cdaudio.xml.h:6
-#: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1200
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1233
 msgid "_Rating"
 msgstr "O_cena"
 
@@ -189,17 +181,17 @@ msgstr "Nije uspeo da učita naredne datoteke:"
 msgid "Basic"
 msgstr "Osnovni"
 
-#: data/glade/song-info.glade.h:3
+#: data/glade/song-info.glade.h:3 data/glade/station-properties.glade.h:2
+msgid "Bitrate:"
+msgstr "Bitova/s:"
+
+#: data/glade/song-info.glade.h:4
 msgid "Details"
 msgstr "Podaci"
 
-#: data/glade/song-info.glade.h:4
+#: data/glade/song-info.glade.h:5
 msgid "Duration:"
 msgstr "Trajanje:"
-
-#: data/glade/song-info.glade.h:5
-msgid "Encoding:"
-msgstr "Kodiranje:"
 
 #: data/glade/song-info.glade.h:6
 msgid "File name:"
@@ -218,64 +210,48 @@ msgid "Play count:"
 msgstr "Broj izvođenja:"
 
 #: data/glade/song-info.glade.h:10
-msgid "Quality:"
-msgstr "Kvalitet:"
-
-#: data/glade/song-info.glade.h:11
 msgid "_Album:"
 msgstr "A_lbum:"
 
-#: data/glade/song-info.glade.h:12
+#: data/glade/song-info.glade.h:11
 msgid "_Artist:"
 msgstr "I_zvođač:"
 
-#: data/glade/song-info.glade.h:13
-msgid "_Comments:"
-msgstr "_Primedbe:"
-
-#: data/glade/song-info.glade.h:14
-msgid "_Date:"
-msgstr "_Datum:"
-
-#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:5
+#: data/glade/song-info.glade.h:12 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "_Žanr:"
 
-#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
+#: data/glade/song-info.glade.h:13 data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "O_cene:"
 
-#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
-#: data/glade/station-properties.glade.h:8
+#: data/glade/song-info.glade.h:14 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:9
 msgid "_Title:"
 msgstr "_Naslov:"
 
-#: data/glade/song-info.glade.h:18
+#: data/glade/song-info.glade.h:15
 msgid "_Track number:"
 msgstr "Broj _pesme:"
-
-#: data/glade/song-info.glade.h:19
-msgid "_of:"
-msgstr "_od:"
 
 #: data/glade/station-new.glade.h:3
 msgid "_Location:"
 msgstr "_Adresa:"
 
-#: data/glade/station-properties.glade.h:2
+#: data/glade/station-properties.glade.h:3
 msgid "L_ocation:"
 msgstr "A_dresa:"
 
-#: data/glade/station-properties.glade.h:3
+#: data/glade/station-properties.glade.h:4
 msgid "Play Count:"
 msgstr "Pesma broj: "
 
-#: data/glade/station-properties.glade.h:4
+#: data/glade/station-properties.glade.h:5
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
 msgstr "sre, 01. jan 1970 00:00:00 +0200"
 
-#: data/glade/station-properties.glade.h:6
+#: data/glade/station-properties.glade.h:7
 msgid "_Last Played:"
 msgstr "_Poslednje izvedena:"
 
@@ -287,52 +263,7 @@ msgstr "Unesite _adresu (URI) datoteke koju želite da dodate:"
 msgid "Open from URI"
 msgstr "Otvori sa adrese"
 
-#: data/node-views/rb-node-view-albums.xml.h:1
-msgid "_Album"
-msgstr "A_lbum"
-
-#: data/node-views/rb-node-view-artists.xml.h:1
-#: data/node-views/rb-node-view-cdaudio.xml.h:2
-#: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1238
-msgid "Art_ist"
-msgstr "I_zvođač"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:3
-#: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1259
-msgid "Ge_nre"
-msgstr "_Žanr"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1269
-msgid "Ti_me"
-msgstr "V_reme"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:269
-#: widgets/rb-entry-view.c:1218
-msgid "Tra_ck"
-msgstr "P_esma"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:7
-#: data/node-views/rb-node-view-iradio-stations.xml.h:6
-#: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1227
-msgid "_Title"
-msgstr "_Naslov"
-
-#: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1290
-msgid "L_ast Played"
-msgstr "Zadnja izvo_đena"
-
-#: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1281
-msgid "_Play Count"
-msgstr "P_esma broj"
-
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:872 shell/rb-shell.c:1495
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:873 shell/rb-shell.c:1472
 msgid "Music Player"
 msgstr "Muzički program"
 
@@ -340,11 +271,11 @@ msgstr "Muzički program"
 msgid "Play and organize your music collection"
 msgstr "Organizuj i izvodi svoju muzičku zbirku"
 
-#: data/rhythmbox.desktop.in.h:3 shell/main.c:107 widgets/rb-druid.c:218
+#: data/rhythmbox.desktop.in.h:3 shell/main.c:111 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Ritam mašina"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:17
 msgid "Deselect all songs"
 msgstr "Poništi izbor svih pesama"
 
@@ -352,19 +283,19 @@ msgstr "Poništi izbor svih pesama"
 msgid "Eject Audio-CD"
 msgstr "Izbaci Zvučni CDa"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:35
 msgid "Scroll the view to the currently playing song"
 msgstr "Prevuci pogled na trenutno izvođenu pesmu"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:36
 msgid "Select _All"
 msgstr "O_znači sve"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:37
 msgid "Select all songs"
 msgstr "Označi sve pesme"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:55
 msgid "_Edit"
 msgstr "_Uređivanje"
 
@@ -372,271 +303,271 @@ msgstr "_Uređivanje"
 msgid "_Eject Audio-CD..."
 msgstr "Izbaci Zvu_čni CD"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:58
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:58
 msgid "_Jump to Playing Song"
 msgstr "Skoči na izvo_đenu pesmu"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:72
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:72
 msgid "_View"
 msgstr "P_regled"
 
-#: data/ui/rhythmbox-ui.xml.in.h:1
+#: data/ui/rhythmbox-ui.xml.h:1
 msgid "Add Lo_cation..."
 msgstr "Dodaj ad_resu..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:2
+#: data/ui/rhythmbox-ui.xml.h:2
 msgid "Change the visibility of the browser"
 msgstr "Promenite vidljivost pretraživača"
 
-#: data/ui/rhythmbox-ui.xml.in.h:3
+#: data/ui/rhythmbox-ui.xml.h:3
 msgid "Change the visibility of the main window"
 msgstr "Promenite vidljivost glavnog prozora"
 
-#: data/ui/rhythmbox-ui.xml.in.h:4
+#: data/ui/rhythmbox-ui.xml.h:4
 msgid "Change the visibility of the source list"
 msgstr "Promenite vidljivost izvornog spiska"
 
-#: data/ui/rhythmbox-ui.xml.in.h:5
+#: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the statusbar"
 msgstr "Promenite vidljivost linije sa stanjem"
 
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-ui.xml.h:6
 msgid "Choose a location (URI) to be added to the library"
 msgstr "Izaberite adresu (URI) za dodavanje u biblioteku"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
+#: data/ui/rhythmbox-ui.xml.h:7
 msgid "Choose a playlist to be loaded"
 msgstr "Izaberite spisak pesama koji želite da učitate"
 
-#: data/ui/rhythmbox-ui.xml.in.h:8
+#: data/ui/rhythmbox-ui.xml.h:8
 msgid "Choose files or a directory to be added to the library"
 msgstr "Izaberite datoteke ili direktorijum koji želite da dodate u biblioteku"
 
-#: data/ui/rhythmbox-ui.xml.in.h:9
+#: data/ui/rhythmbox-ui.xml.h:9
 msgid "Copy selection"
 msgstr "Umnoži izbor"
 
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-ui.xml.h:10
 msgid "Create a new Internet Radio station"
 msgstr "Napravi novu internet radio stanicu"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.h:11
 msgid "Create a new automatically updating playlist"
 msgstr "Napravi novi samoosvežavajući spisak pesama"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
+#: data/ui/rhythmbox-ui.xml.h:12
 msgid "Create a new playlist"
 msgstr "Napravi novi spisak pesama"
 
-#: data/ui/rhythmbox-ui.xml.in.h:13
+#: data/ui/rhythmbox-ui.xml.h:13
 msgid "Cu_t"
 msgstr "_Iseci"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.h:14
 msgid "Cut selection"
 msgstr "Iseci izabrano"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.h:15
 msgid "D_eselect All"
 msgstr "Označi _ništa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16
+#: data/ui/rhythmbox-ui.xml.h:16
 msgid "Delete selection"
 msgstr "Ukloni izbor"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18
+#: data/ui/rhythmbox-ui.xml.h:18
 msgid "Display music player help"
 msgstr "Prikaži pomoć muzičkog programa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19
+#: data/ui/rhythmbox-ui.xml.h:19
 msgid "Edit music player preferences"
 msgstr "Uredi postavke muzičkog programa"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.h:20
 msgid "Extract and import songs from a CD"
 msgstr "Izvuci i uvezi pesme sa CD-a"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.h:21
 msgid "Import Lo_cation..."
 msgstr "Putanja za _uvoz..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.h:22
 msgid "Import _Audio CD..."
 msgstr "Uvezi zvu_čni CD..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.h:23
 msgid "Make the main window smaller"
 msgstr "Učini glavni prozor manjim"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.h:24
 msgid "New _Automatic Playlist..."
 msgstr "Novi _automatski spisak pesama..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.h:25
 msgid "New _Internet Radio Station"
 msgstr "Nova _Internet radio stanica"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.h:26
 msgid "P_revious"
 msgstr "P_rethodni"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.h:27
 msgid "Paste selection"
 msgstr "Ubaci izabrano"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.h:28
 msgid "Pause playing"
 msgstr "Pauziraj izvođenje"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.h:29
 msgid "Playlist"
 msgstr "Spisak pesama"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.h:30
 msgid "Prefere_nces"
 msgstr "_Postavke"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.h:31
 msgid "Quit the music player"
 msgstr "Zatvori muzički program"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.h:32
 msgid "Repea_t"
 msgstr "Pono_vi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.h:33
 msgid "S_tatusbar"
 msgstr "Linija sa sta_njem"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.h:34
 msgid "Save a playlist to a file"
 msgstr "Sačuvaj spisak pesama u datoteku"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.h:38
 msgid "Show information about the music player"
 msgstr "Prikaži informaciju o muzičkom programu "
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.h:39
 msgid "Show information on the selected song"
 msgstr "Pokaži detalje izabrane pesme"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.h:40
 msgid "Source _List"
 msgstr "_Izvorni spisak"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1329
+#: data/ui/rhythmbox-ui.xml.h:41 shell/rb-shell-player.c:1355
 msgid "Start playing"
 msgstr "Počni izvođenje"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.h:42
 msgid "Start playing the next song"
 msgstr "Počni izvođenje sledeće pesme"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.h:43
 msgid "Start playing the previous song"
 msgstr "Počni izvođenje prethodne pesme"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.h:44
 msgid "Stop playing"
 msgstr "Zaustavi izvođenje"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.h:45
 msgid "Toggle random playing order"
 msgstr "Izaberi slučajan redosled izvođenja"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.h:46
 msgid "Toggle repeat mode"
 msgstr "Izaberi režim ponavljanja"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-ui.xml.h:47
 msgid "_About"
 msgstr "_O programu"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
+#: data/ui/rhythmbox-ui.xml.h:48
 msgid "_Add to Library..."
 msgstr "_Dodaj u biblioteku..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.h:49
 msgid "_Browser"
 msgstr "Pregle_dač"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50
+#: data/ui/rhythmbox-ui.xml.h:50
 msgid "_Contents"
 msgstr "_Sadržaj"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.h:51
 msgid "_Control"
 msgstr "Up_ravljanje"
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-ui.xml.h:52
 msgid "_Copy"
 msgstr "_Umnoži"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-ui.xml.h:53
 msgid "_Cut"
 msgstr "_Iseci"
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.h:54
 msgid "_Delete"
 msgstr "_Obriši"
 
-#: data/ui/rhythmbox-ui.xml.in.h:56
+#: data/ui/rhythmbox-ui.xml.h:56
 msgid "_Help"
 msgstr "_Pomoć"
 
-#: data/ui/rhythmbox-ui.xml.in.h:57
+#: data/ui/rhythmbox-ui.xml.h:57
 msgid "_Import folder..."
 msgstr "U_vezi direktorijum..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:59
+#: data/ui/rhythmbox-ui.xml.h:59
 msgid "_Load from file..."
 msgstr "Učitaj iz _datoteke..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:60
+#: data/ui/rhythmbox-ui.xml.h:60
 msgid "_Music"
 msgstr "_Muzika"
 
-#: data/ui/rhythmbox-ui.xml.in.h:61
+#: data/ui/rhythmbox-ui.xml.h:61
 msgid "_New Playlist..."
 msgstr "_Novi spisak pesama..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:62
+#: data/ui/rhythmbox-ui.xml.h:62
 msgid "_Next"
 msgstr "Sle_deći"
 
-#: data/ui/rhythmbox-ui.xml.in.h:63
+#: data/ui/rhythmbox-ui.xml.h:63
 msgid "_Paste"
 msgstr "U_baci"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1330
+#: data/ui/rhythmbox-ui.xml.h:64 shell/rb-shell-player.c:1356
 msgid "_Play"
 msgstr "Izv_edi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:65
+#: data/ui/rhythmbox-ui.xml.h:65
 msgid "_Properties"
 msgstr "_Osobine"
 
-#: data/ui/rhythmbox-ui.xml.in.h:66
+#: data/ui/rhythmbox-ui.xml.h:66
 msgid "_Quit"
 msgstr "_Izađi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:67
+#: data/ui/rhythmbox-ui.xml.h:67
 msgid "_Remove"
 msgstr "U_kloni"
 
-#: data/ui/rhythmbox-ui.xml.in.h:68
+#: data/ui/rhythmbox-ui.xml.h:68
 msgid "_Save to file..."
 msgstr "_Sačuvaj u datoteku..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:69
+#: data/ui/rhythmbox-ui.xml.h:69
 msgid "_Show Window"
 msgstr "Pr_ikaži prozor"
 
-#: data/ui/rhythmbox-ui.xml.in.h:70 shell/rb-statusbar.c:234
+#: data/ui/rhythmbox-ui.xml.h:70 shell/rb-statusbar.c:234
 msgid "_Shuffle"
 msgstr "Izme_šaj"
 
-#: data/ui/rhythmbox-ui.xml.in.h:71
+#: data/ui/rhythmbox-ui.xml.h:71
 msgid "_Small Display"
 msgstr "_Mali prikaz"
 
@@ -645,11 +576,12 @@ msgid "New Internet Radio Station"
 msgstr "Nova internet radio stanica"
 
 #: iradio/rb-new-station-dialog.c:182
-#: monkey-media/monkey-media-stream-info.c:404
-#: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 sources/rb-iradio-source.c:251
-#: sources/rb-iradio-source.c:252 sources/rb-iradio-source.c:253
-#: sources/rb-playlist-source.c:392
+#: metadata/monkey-media/monkey-media-stream-info.c:404
+#: metadata/monkey-media/monkey-media-stream-info.c:420
+#: metadata/monkey-media/monkey-media-stream-info.c:667
+#: sources/rb-iradio-source.c:250 sources/rb-iradio-source.c:251
+#: sources/rb-iradio-source.c:252 sources/rb-playlist-source.c:392
+#: widgets/rb-entry-view.c:1050
 msgid "Unknown"
 msgstr "Nepoznat"
 
@@ -657,13 +589,12 @@ msgstr "Nepoznat"
 msgid "All"
 msgstr "Sve"
 
-#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:621
-#: widgets/rb-song-info.c:639
+#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:522
 #, c-format
 msgid "%s Properties"
 msgstr "Osobine za %s"
 
-#: iradio/rb-station-properties-dialog.c:334
+#: iradio/rb-station-properties-dialog.c:338
 #, c-format
 msgid "Properties for %s"
 msgstr "Osobine za %s"
@@ -693,17 +624,17 @@ msgstr "Usmerenje"
 msgid "The orientation of the tray."
 msgstr "Usmerenje fioke."
 
-#: lib/rb-file-helpers.c:78
+#: lib/rb-file-helpers.c:74
 #, c-format
 msgid "Failed to find %s"
 msgstr "Neuspelo nalaženje %s"
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:99
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s postoji, molimo vas da ga sklonite."
 
-#: lib/rb-file-helpers.c:106
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Neuspelo stvaranje direktorijuma %s."
@@ -718,228 +649,165 @@ msgstr "Ne može da upiše spisak pesama: %s"
 msgid "Couldn't open playlist: %s"
 msgstr "Ne može da otvori spisak pesama: %s"
 
-#: monkey-media/monkey-media-audio-cd.c:220
-#, c-format
-msgid ""
-"%s does not point to a valid CDRom device. This may be caused by:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"%s ne pokazuje ka ispravnom CD uređaju. Uzrok može biti:\n"
-"a) podrška za CD nije ugrađena u Linuks jezgro\n"
-"b) Nemate prava da pristupite CD uređaju\n"
-"v) %s nije CD uređaj.\n"
-
-#: monkey-media/monkey-media-audio-cd.c:345
-#, c-format
-msgid "You do not seem to have permission to access %s."
-msgstr "Izgleda da nemate prava da pristupite %s."
-
-#: monkey-media/monkey-media-audio-cd.c:352
-#, c-format
-msgid ""
-"%s does not appear to point to a valid CD device. This may be because:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"%s ne pokazuje ka ispravnom CD uređaju. Uzrok može biti:\n"
-"a) podrška za CD nije ugrađena u Linuks jezgro\n"
-"b) Nemate prava da pristupite CD uređaju\n"
-"v) %s nije CD uređaj.\n"
-
-#: monkey-media/monkey-media-audio-cd.c:605
-#, c-format
-msgid "Error reading CD header: %s"
-msgstr "Greška pri čitanju CD zaglavlja: %s"
-
-#: monkey-media/monkey-media-audio-cd.c:731
-#, c-format
-msgid "Error getting leadout: %s"
-msgstr "Greška pri čitanju poslednje CD staze: %s"
-
-#: monkey-media/monkey-media-audio-quality.c:35
-msgid "Very low"
-msgstr "Veoma slab"
-
-#: monkey-media/monkey-media-audio-quality.c:36
-msgid "Low"
-msgstr "Slab"
-
-#: monkey-media/monkey-media-audio-quality.c:37
-msgid "Regular"
-msgstr "Običan"
-
-#: monkey-media/monkey-media-audio-quality.c:38
-msgid "High"
-msgstr "Visok"
-
-#: monkey-media/monkey-media-audio-quality.c:39
-msgid "Very high"
-msgstr "Veoma visok"
-
-#: monkey-media/monkey-media-audio-quality.c:40
-msgid "Lossless"
-msgstr "Bez gubitaka"
-
-#: monkey-media/monkey-media-player-gst.c:470
-#, c-format
-msgid "Failed to create %s input element; check your installation"
-msgstr "Neuspeh pri obrazovanju ulaznog elementa %s; proverite vašu instalaciju"
-
-#: monkey-media/monkey-media-player-gst.c:496
-msgid "Failed to create queue element; check your installation"
-msgstr "Neuspeh pri obrazovanju rednog elementa; proverite vašu instalaciju"
-
-#: monkey-media/monkey-media-player-gst.c:518
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Neuspeh pri obrazovanju elementa %s; proverite vašu instalaciju"
-
-#: monkey-media/monkey-media-player-gst.c:537
-msgid "Failed to create volume element; check your installation"
-msgstr "Neuspeh pri kreiranju elementa ozvučenja; proveriti instalaciju"
-
-#: monkey-media/monkey-media-player-gst.c:556
-msgid "Could not create audio output element; check your settings"
-msgstr "Nisam mogao da kreiram izlazni zvučni element; proveriti podešavanja"
-
-#: monkey-media/monkey-media-player-gst.c:672
-msgid "No AudioCD support; check your settings"
-msgstr "Ne postoji podrška za Audio CD; proveriti podešavanja"
-
-#: monkey-media/monkey-media-player-xine.c:335
-msgid "Failed to set up an audio driver; check your installation"
-msgstr "Neuspeh pri podešavanju drajvera za zvuk; proverite vašu instalaciju"
-
-#: monkey-media/monkey-media-player-xine.c:431
-#, c-format
-msgid "No input plugin available for %s; check your installation."
-msgstr "Nije dostupan dodatak za %s; proveriti instalaciju."
-
-#: monkey-media/monkey-media-player-xine.c:440
-#, c-format
-msgid "No demux plugin available for %s; check your installation."
-msgstr "Nije dostupan demux dodatak za %s; proveriti instalaciju."
-
-#: monkey-media/monkey-media-player-xine.c:449
-#, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr "Demux operacija za %s nije uspela; proveriti instalaciju."
-
-#: monkey-media/monkey-media-player-xine.c:457
-msgid "Internal error; check your installation."
-msgstr "Interna greška; proveriti instalaciju."
-
-#: monkey-media/monkey-media-player-xine.c:465
-#, c-format
-msgid "Audio of %s not handled; check your installation."
-msgstr "%s zvuk nije obrađivan; proveriti instalaciju."
-
-#: monkey-media/monkey-media-stream-info.c:310
+#: metadata/monkey-media/monkey-media-stream-info.c:310
 #, c-format
 msgid "Unsupported MIME type %s"
 msgstr "Nepodržan MIME tip %s"
 
-#: monkey-media/monkey-media-stream-info.c:315
+#: metadata/monkey-media/monkey-media-stream-info.c:315
 msgid "Unknown file type"
 msgstr "Nepoznat tip datoteke"
 
-#: monkey-media/monkey-media-stream-info.c:386
+#: metadata/monkey-media/monkey-media-stream-info.c:386
 #, c-format
 msgid "Track %.2d"
 msgstr "Staza %.2d"
 
-#: monkey-media/monkey-media-stream-info.c:751
-#: monkey-media/monkey-media-stream-info.c:816
+#: metadata/monkey-media/monkey-media-stream-info.c:751
+#: metadata/monkey-media/monkey-media-stream-info.c:816
 msgid "No TRM ID for this song"
 msgstr "Ne postoji identifikacioni broj za ovu pesmu"
 
-#: monkey-media/monkey-media-stream-info.c:767
-#: monkey-media/monkey-media-stream-info.c:831
+#: metadata/monkey-media/monkey-media-stream-info.c:767
+#: metadata/monkey-media/monkey-media-stream-info.c:831
 msgid "No information for this song found"
 msgstr "Informacije za ovu pesmu nisu nađene"
 
-#: monkey-media/monkey-media.c:232
-msgid "GStreamer options:"
-msgstr "GStreamer opcije"
-
-#: monkey-media/monkey-media.c:509
-#, c-format
-msgid "Please remove %s"
-msgstr "Molim Vas odrstanite %s"
-
-#: monkey-media/monkey-media.c:511
-#, c-format
-msgid "Failed to create directory %s"
-msgstr "Nisam uspeo da kreiram direktorijum %s"
-
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
+#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
 msgid "Invalid track number"
 msgstr "Neispravan broj numere"
 
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
+#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
 msgid "Audio CD track"
 msgstr "Audio CD numera"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:197
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "Nisam uspeo da otvorim datoteku za čitanje"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:249
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
 msgid "Error decoding FLAC file"
 msgstr "Greška pri dekodiranju FLAC datoteke"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
 msgid "FLAC"
 msgstr "FLAC"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
 msgid "Failed to gather information about the file"
 msgstr "Nisam uspeo da prikupim podatke o datoteci"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:561
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:561
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d Layer III"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:563
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:563
 msgid "MPEG 2.5 Layer III"
 msgstr "MPEG 2.5 Layer III"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
+msgid "Failed to recognise filetype"
+msgstr "Nisam uspeo da prepoznam vrstu datoteke"
+
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
+msgid "Failed to find an audio track"
+msgstr "Nisam uspeo da nađem zvučni zapis"
+
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
+msgid "MPEG-4 audio (MPEG-4 AAC)"
+msgstr "MPEG-4 zvuk (MPEG-4 AAC)"
+
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 msgid "Failed to seek file"
 msgstr "Nisam uspeo da pretražim datoteku"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
 msgid "Failed to open file as Ogg Vorbis"
 msgstr "Nisam uspeo da otvorim datoteku kao Ogg Vorbis"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:547
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: rhythmdb/rhythmdb.c:1053 widgets/rb-entry-view.c:993
+#: metadata/rb-metadata-gst.c:273 player/rb-player-gst.c:523
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Neuspeh pri obrazovanju elementa %s; proverite vašu instalaciju"
+
+#: metadata/rb-metadata-gst.c:318 metadata/rb-metadata-mm.c:202
+msgid "Operation not supported"
+msgstr "Operacija nije podržana"
+
+#: player/rb-player-gst.c:473
+#, c-format
+msgid "Failed to create %s input element; check your installation"
+msgstr "Neuspeh pri obrazovanju ulaznog elementa %s; proverite vašu instalaciju"
+
+#: player/rb-player-gst.c:501
+msgid "Failed to create queue element; check your installation"
+msgstr "Neuspeh pri obrazovanju rednog elementa; proverite vašu instalaciju"
+
+#: player/rb-player-gst.c:542
+msgid "Failed to create volume element; check your installation"
+msgstr "Neuspeh pri kreiranju elementa ozvučenja; proveriti instalaciju"
+
+#: player/rb-player-gst.c:561
+msgid "Could not create audio output element; check your settings"
+msgstr "Nisam mogao da kreiram izlazni zvučni element; proveriti podešavanja"
+
+#: player/rb-player-gst.c:677
+msgid "No AudioCD support; check your settings"
+msgstr "Ne postoji podrška za Audio CD; proveriti podešavanja"
+
+#: player/rb-player-xine.c:335
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Neuspeh pri podešavanju drajvera za zvuk; proverite vašu instalaciju"
+
+#: player/rb-player-xine.c:435
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Nije dostupan dodatak za %s; proveriti instalaciju."
+
+#: player/rb-player-xine.c:444
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Nije dostupan demux dodatak za %s; proveriti instalaciju."
+
+#: player/rb-player-xine.c:453
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demux operacija za %s nije uspela; proveriti instalaciju."
+
+#: player/rb-player-xine.c:461
+msgid "Internal error; check your installation."
+msgstr "Interna greška; proveriti instalaciju."
+
+#: player/rb-player-xine.c:469
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "%s zvuk nije obrađivan; proveriti instalaciju."
+
+#: rhythmdb/rhythmdb.c:1121 widgets/rb-entry-view.c:992
 msgid "Never"
 msgstr "Nikada"
 
-#: rhythmdb/rhythmdb.c:1055
+#: rhythmdb/rhythmdb.c:1123
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d.%m.%Y. %H:%M"
 
-#: rhythmdb/rhythmdb.c:1883
+#: rhythmdb/rhythmdb.c:1962
 msgid "Loading songs..."
 msgstr "Učitavam pesme..."
 
-#: rhythmdb/rhythmdb.c:1885
+#: rhythmdb/rhythmdb.c:1964
 msgid "Refreshing songs..."
 msgstr "Osvežavam pesme..."
 
-#: rhythmdb/rhythmdb.c:1900
+#: rhythmdb/rhythmdb.c:1979
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -947,7 +815,7 @@ msgstr[0] "%d pesma"
 msgstr[1] "%d pesme"
 msgstr[2] "%d pesama"
 
-#: rhythmdb/rhythmdb.c:1908
+#: rhythmdb/rhythmdb.c:1987
 #, c-format
 msgid "%.1f day"
 msgid_plural "%.1f days"
@@ -955,7 +823,7 @@ msgstr[0] "%.1f dan"
 msgstr[1] "%.1f dana"
 msgstr[2] "%.1f dana"
 
-#: rhythmdb/rhythmdb.c:1911
+#: rhythmdb/rhythmdb.c:1990
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -963,7 +831,7 @@ msgstr[0] "%ld minut"
 msgstr[1] "%ld minuta"
 msgstr[2] "%ld minuta"
 
-#: rhythmdb/rhythmdb.c:1913
+#: rhythmdb/rhythmdb.c:1992
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -972,64 +840,64 @@ msgstr[1] "%ld časa"
 msgstr[2] "%ld časova"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:1917
+#: rhythmdb/rhythmdb.c:1996
 #, c-format
 msgid "%s and %s"
 msgstr "%s i %s"
 
-#: shell/main.c:84
+#: shell/main.c:88
 msgid "Print the playing song and exit"
 msgstr "Ispiši pesmu koja se izvodi i izađi"
 
-#: shell/main.c:85
+#: shell/main.c:89
 msgid "Print the playing song URI and exit"
 msgstr "Ispiši adresu pesme koja se izvodi i izađi"
 
-#: shell/main.c:87
+#: shell/main.c:91
 msgid "Print the playing song length in seconds and exit"
 msgstr "Ispiši dužinu pesme koja se izvodi i izađi"
 
-#: shell/main.c:88
+#: shell/main.c:92
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Ispiši trajanje pesme koja se izvodi do sada i izađi"
 
-#: shell/main.c:89
+#: shell/main.c:93
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Premotaj na određeno vreme u pesmi koja se izvodi i izađi"
 
-#: shell/main.c:91
+#: shell/main.c:95
 msgid "Toggle play/pause mode"
 msgstr "Izaberi režim izvođenja/pauze"
 
-#: shell/main.c:92
+#: shell/main.c:96
+msgid "Focus the running player"
+msgstr "Fokusiraj pokrenuti muzički program"
+
+#: shell/main.c:97
 msgid "Jump to previous song"
 msgstr "Idi na prethodnu pesmu"
 
-#: shell/main.c:93
+#: shell/main.c:98
 msgid "Jump to next song"
 msgstr "Idi na sledeću pesmu"
 
-#: shell/main.c:95
+#: shell/main.c:100
 msgid "Enable debugging code"
 msgstr "Omogući pronalaženje grešaka u programu"
 
-#: shell/main.c:96
+#: shell/main.c:101
 msgid "Do not register the shell"
 msgstr "Nemoj prijaviti ljusku"
 
-#: shell/main.c:97
+#: shell/main.c:102
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Ne čuvaj nikakve podatke trajno (podrazumeva --no-registration)"
 
-#: shell/main.c:98
+#: shell/main.c:103
 msgid "Quit Rhythmbox"
 msgstr "Izađi iz Ritam mašine"
 
-#: shell/main.c:99
-msgid "MonkeyMedia options:"
-msgstr "MonkeyMedia opcije:"
-
-#: shell/main.c:199
+#: shell/main.c:209
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -1037,7 +905,7 @@ msgstr ""
 "Ritam mašina trenutno ne radi ukoliko su uključeni Gnomovi zvuči događaji i "
 "koristi se esdsink."
 
-#: shell/main.c:279
+#: shell/main.c:297
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1046,7 +914,7 @@ msgstr ""
 "Nije uspeo da pokrene ljusku:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:416 shell/rb-shell-player.c:862
+#: shell/rb-playlist-manager.c:416 shell/rb-shell-player.c:911
 msgid "Couldn't parse playlist"
 msgstr "Ne može da obradi spisak pesama"
 
@@ -1058,45 +926,45 @@ msgstr "Učitaj spisak pesama"
 msgid "Save playlist"
 msgstr "Sačuvaj spisak pesama"
 
-#: shell/rb-shell-player.c:451
+#: shell/rb-shell-player.c:485
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nije uspeo da počne sa puštanjem: %s"
 
-#: shell/rb-shell-player.c:512
+#: shell/rb-shell-player.c:549
 msgid "Go to previous song"
 msgstr "Idi na prethodnu pesmu"
 
-#: shell/rb-shell-player.c:541
+#: shell/rb-shell-player.c:578
 msgid "Go to next song"
 msgstr "Idi na sledeću pesmu"
 
-#: shell/rb-shell-player.c:560
+#: shell/rb-shell-player.c:597
 msgid "Change the music volume"
 msgstr "Izmeni jačinu zvuka"
 
-#: shell/rb-shell-player.c:837
+#: shell/rb-shell-player.c:886
 #, c-format
 msgid "Opening %s..."
 msgstr "Otvara %s..."
 
-#: shell/rb-shell-player.c:1321
+#: shell/rb-shell-player.c:1347
 msgid "Pause playback"
 msgstr "Pauziraj izvođenje"
 
-#: shell/rb-shell-player.c:1322
+#: shell/rb-shell-player.c:1348
 msgid "_Pause"
 msgstr "_Pauziraj"
 
-#: shell/rb-shell-player.c:1337
+#: shell/rb-shell-player.c:1363
 msgid "Stop playback"
 msgstr "Zaustavi izvođenje"
 
-#: shell/rb-shell-player.c:1338
+#: shell/rb-shell-player.c:1364
 msgid "_Stop"
 msgstr "_Zaustavi"
 
-#: shell/rb-shell-player.c:1668
+#: shell/rb-shell-player.c:1720
 msgid "Unexpected end of stream!"
 msgstr "Neočekivani kraj toka!"
 
@@ -1108,20 +976,20 @@ msgstr "Postavke muzičkog programa"
 msgid "General"
 msgstr "Opšte"
 
-#: shell/rb-shell.c:573
+#: shell/rb-shell.c:574
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Ne može da obradi adresu „%s“\n"
 
-#: shell/rb-shell.c:755
+#: shell/rb-shell.c:756
 msgid "Whether the main window is visible"
 msgstr "Da li se prikazuje glavni prozor"
 
-#: shell/rb-shell.c:759
+#: shell/rb-shell.c:760
 msgid "Properties for the current song"
 msgstr "Osobine tekuće pesme"
 
-#: shell/rb-shell.c:1137
+#: shell/rb-shell.c:1136
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1132,12 +1000,12 @@ msgstr ""
 "Ovo verovatno znači da ste instalirali Ritam mašinuna različitom mestu od "
 "bonobo aktivacije; ovo upozorenje je bezopasno, ali IPC neće raditi."
 
-#: shell/rb-shell.c:1469 shell/rb-tray-icon.c:227 widgets/rb-player.c:557
+#: shell/rb-shell.c:1446 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "Ne izvodi se"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1472
+#: shell/rb-shell.c:1449
 #, c-format
 msgid ""
 "%s\n"
@@ -1147,7 +1015,7 @@ msgstr ""
 "Pauzirana, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1476
+#: shell/rb-shell.c:1453
 #, c-format
 msgid ""
 "%s\n"
@@ -1157,12 +1025,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1511
+#: shell/rb-shell.c:1488
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (pauzirana)"
 
-#: shell/rb-shell.c:1579
+#: shell/rb-shell.c:1556
 msgid "translator_credits"
 msgstr ""
 "Predrag Krtolica <predrag_k@optusnet.com.au>\n"
@@ -1170,52 +1038,44 @@ msgstr ""
 "\n"
 "Prevod.org — prevod na srpski jezik."
 
-#: shell/rb-shell.c:1588
+#: shell/rb-shell.c:1565
 msgid "Maintainers:"
 msgstr "Održavaju:"
 
-#: shell/rb-shell.c:1591
+#: shell/rb-shell.c:1568
 msgid "Former Maintainers:"
 msgstr "Prethodno održavali:"
 
-#: shell/rb-shell.c:1594
+#: shell/rb-shell.c:1571
 msgid "Contributors:"
 msgstr "Doprineli:"
 
-# bug: "formats:%s" -> "formats: %s" (a space)
-#: shell/rb-shell.c:1617
-#, c-format
-msgid ""
-"Music management and playback software for GNOME.\n"
-"Audio backend: %s\n"
-"Audio formats:%s\n"
-msgstr ""
-"Program za organizaciju i puštanje muzike za Gnoma.\n"
-"Zvučni izlazi: %s\n"
-"Zvučni zapisi: %s\n"
+#: shell/rb-shell.c:1573
+msgid "Music management and playback software for GNOME."
+msgstr "Program za rukovođenje i puštanje muzike za Gnoma."
 
-#: shell/rb-shell.c:1730
+#: shell/rb-shell.c:1711
 msgid "Choose Files or Directory"
 msgstr "Izaberite datoteke ili direktorijum"
 
-#: shell/rb-shell.c:1772
+#: shell/rb-shell.c:1753
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Da izvučete muziku sa CD-a, morate instalirati paket Sound Juicer."
 
-#: shell/rb-shell.c:1779
+#: shell/rb-shell.c:1760
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Ne može da pokrene sound-juicer: %s"
 
-#: shell/rb-source-header.c:178
+#: shell/rb-source-header.c:177
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filtriraj prikaz muzike prema žanru, izvođaču, albumu ili naslovu"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:184
 msgid "Show _Browser"
 msgstr "Prikaži _kategorije"
 
-#: shell/rb-source-header.c:186
+#: shell/rb-source-header.c:185
 msgid "Hide _Browser"
 msgstr "Sakrij _kategorije"
 
@@ -1244,7 +1104,7 @@ msgstr "Žanr"
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:536
+#: sources/rb-iradio-source.c:538
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1264,15 +1124,19 @@ msgstr "Album"
 msgid "Library"
 msgstr "Biblioteka"
 
-#: sources/rb-library-source.c:992
+#: sources/rb-library-source.c:1002
 msgid "Add Location"
 msgstr "Dodaj adresu"
 
-#: sources/rb-source.c:475
+#: sources/rb-playlist-source.c:269 widgets/rb-entry-view.c:1251
+msgid "Tra_ck"
+msgstr "P_esma"
+
+#: sources/rb-source.c:480
 msgid "No properties available."
 msgstr "Nisu dostupne osobine."
 
-#: sources/rb-source.c:558
+#: sources/rb-source.c:563
 msgid "This source does not support drag and drop."
 msgstr "Ovaj izvor ne podržava prevlačenje i puštanje."
 
@@ -1335,14 +1199,88 @@ msgstr "Greška pri čitanju datoteke: %s"
 msgid "Choose a directory"
 msgstr "Izaberite direktorijum"
 
-#: widgets/rb-entry-view.c:1026 widgets/rb-player.c:837
+#: widgets/rb-entry-view.c:1025 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1429
+#: widgets/rb-entry-view.c:1052
+msgid "Very Low"
+msgstr "Veoma slab"
+
+#: widgets/rb-entry-view.c:1054
+msgid "Low"
+msgstr "Slab"
+
+#: widgets/rb-entry-view.c:1056
+msgid "Regular"
+msgstr "Običan"
+
+#: widgets/rb-entry-view.c:1058
+msgid "High"
+msgstr "Visok"
+
+#: widgets/rb-entry-view.c:1060
+msgid "Very High"
+msgstr "Veoma visok"
+
+#: widgets/rb-entry-view.c:1062
+msgid "Perfect"
+msgstr "Savršen"
+
+#: widgets/rb-entry-view.c:1260
+msgid "_Title"
+msgstr "_Naslov"
+
+#: widgets/rb-entry-view.c:1271
+msgid "Art_ist"
+msgstr "I_zvođač"
+
+#: widgets/rb-entry-view.c:1292
+msgid "Ge_nre"
+msgstr "_Žanr"
+
+#: widgets/rb-entry-view.c:1302
+msgid "Ti_me"
+msgstr "V_reme"
+
+#: widgets/rb-entry-view.c:1321
+msgid "_Play Count"
+msgstr "P_esma broj"
+
+#: widgets/rb-entry-view.c:1330
+msgid "L_ast Played"
+msgstr "Zadnja izvo_đena"
+
+#: widgets/rb-entry-view.c:1474
 msgid "Now Playing"
 msgstr "Sada pušta"
+
+#: widgets/rb-header.c:280
+msgid "Listening to "
+msgstr "Slušate "
+
+#: widgets/rb-header.c:517
+msgid "Get information on this album from the web"
+msgstr "Pogledajte podatke o ovom albumu sa veba"
+
+#: widgets/rb-header.c:536
+msgid "Get information on this artist from the web"
+msgstr "Pogledajte podatke o ovom umetniku sa veba"
+
+#: widgets/rb-header.c:564
+msgid "Get information on this station from the web"
+msgstr "Dobavi podatke o ovoj stanici sa veba"
+
+#: widgets/rb-header.c:827
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d od %d:%02d"
+
+#: widgets/rb-header.c:835
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "preostalo %d:%02d od %d:%02d"
 
 #: widgets/rb-load-failure-dialog.c:119
 msgid "Error loading files into library"
@@ -1355,32 +1293,6 @@ msgstr "_Greška"
 #: widgets/rb-load-failure-dialog.c:144
 msgid "_File"
 msgstr "_Datoteka"
-
-#: widgets/rb-player.c:280
-msgid "Listening to "
-msgstr "Slušate "
-
-#: widgets/rb-player.c:517
-msgid "Get information on this album from the web"
-msgstr "Pogledajte podatke o ovom albumu sa veba"
-
-#: widgets/rb-player.c:536
-msgid "Get information on this artist from the web"
-msgstr "Pogledajte podatke o ovom umetniku sa veba"
-
-#: widgets/rb-player.c:564
-msgid "Get information on this station from the web"
-msgstr "Dobavi podatke o ovoj stanici sa veba"
-
-#: widgets/rb-player.c:827
-#, c-format
-msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d od %d:%02d"
-
-#: widgets/rb-player.c:834
-#, c-format
-msgid "%d:%02d of %d:%02d remaining"
-msgstr "preostalo %d:%02d od %d:%02d"
 
 #: widgets/rb-query-creator.c:44
 msgid "Title"
@@ -1411,34 +1323,13 @@ msgstr "od"
 msgid "by"
 msgstr "od"
 
-#: widgets/rb-song-info.c:229 widgets/rb-song-info.c:644
+#: widgets/rb-song-info.c:215
 msgid "Song Properties"
 msgstr "Osobine pesme"
 
-#: widgets/rb-song-info.c:922
+#: widgets/rb-song-info.c:638
 msgid "on the desktop"
 msgstr "na radnoj površini"
-
-#: widgets/rb-song-info.c:1139
-#, c-format
-msgid "%d kbps"
-msgstr "%d kb/s "
-
-#: widgets/rb-song-info.c:1152
-msgid " (Mono)"
-msgstr " (mono)"
-
-#: widgets/rb-song-info.c:1155
-msgid " (Stereo)"
-msgstr " (stereo)"
-
-#: widgets/rb-song-info.c:1159
-#, c-format
-msgid " (%d channel)"
-msgid_plural " (%d channel)"
-msgstr[0] " (%d kanal)"
-msgstr[1] " (%d kanala)"
-msgstr[2] " (%d kanala)"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
@@ -1449,6 +1340,85 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "Encoding:"
+#~ msgstr "Kodiranje:"
+
+#~ msgid "Quality:"
+#~ msgstr "Kvalitet:"
+
+#~ msgid "_Comments:"
+#~ msgstr "_Primedbe:"
+
+#~ msgid "_Date:"
+#~ msgstr "_Datum:"
+
+#~ msgid "_of:"
+#~ msgstr "_od:"
+
+#~ msgid "_Album"
+#~ msgstr "A_lbum"
+
+#~ msgid ""
+#~ "%s does not point to a valid CDRom device. This may be caused by:\n"
+#~ "a) CD support is not compiled into Linux\n"
+#~ "b) You do not have the correct permissions to access the CD drive\n"
+#~ "c) %s is not the CD drive.\n"
+#~ msgstr ""
+#~ "%s ne pokazuje ka ispravnom CD uređaju. Uzrok može biti:\n"
+#~ "a) podrška za CD nije ugrađena u Linuks jezgro\n"
+#~ "b) Nemate prava da pristupite CD uređaju\n"
+#~ "v) %s nije CD uređaj.\n"
+
+#~ msgid "You do not seem to have permission to access %s."
+#~ msgstr "Izgleda da nemate prava da pristupite %s."
+
+#~ msgid ""
+#~ "%s does not appear to point to a valid CD device. This may be because:\n"
+#~ "a) CD support is not compiled into Linux\n"
+#~ "b) You do not have the correct permissions to access the CD drive\n"
+#~ "c) %s is not the CD drive.\n"
+#~ msgstr ""
+#~ "%s ne pokazuje ka ispravnom CD uređaju. Uzrok može biti:\n"
+#~ "a) podrška za CD nije ugrađena u Linuks jezgro\n"
+#~ "b) Nemate prava da pristupite CD uređaju\n"
+#~ "v) %s nije CD uređaj.\n"
+
+#~ msgid "Error reading CD header: %s"
+#~ msgstr "Greška pri čitanju CD zaglavlja: %s"
+
+#~ msgid "Error getting leadout: %s"
+#~ msgstr "Greška pri čitanju poslednje CD staze: %s"
+
+#~ msgid "Lossless"
+#~ msgstr "Bez gubitaka"
+
+#~ msgid "GStreamer options:"
+#~ msgstr "GStreamer opcije"
+
+#~ msgid "Please remove %s"
+#~ msgstr "Molim Vas odrstanite %s"
+
+#~ msgid "Failed to create directory %s"
+#~ msgstr "Nisam uspeo da kreiram direktorijum %s"
+
+#~ msgid "MonkeyMedia options:"
+#~ msgstr "MonkeyMedia opcije:"
+
+#~ msgid "%d kbps"
+#~ msgstr "%d kb/s "
+
+#~ msgid " (Mono)"
+#~ msgstr " (mono)"
+
+#~ msgid " (Stereo)"
+#~ msgstr " (stereo)"
+
+#~ msgid " (%d channel)"
+#~ msgid_plural " (%d channel)"
+#~ msgstr[0] " (%d kanal)"
+#~ msgstr[1] " (%d kanala)"
+#~ msgstr[2] " (%d kanala)"
 
 #~ msgid "Loading..."
 #~ msgstr "Učitava..."
