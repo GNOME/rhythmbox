@@ -91,6 +91,8 @@ gboolean    rb_node_view_get_node_visible         (RBNodeView *view,
 
 void        rb_node_view_scroll_to_node           (RBNodeView *view,
 					           RBNode *node);
+gboolean    rb_node_view_node_is_visible          (RBNodeView *view,
+						   RBNode *node);
 
 RBNode	   *rb_node_view_get_node                 (RBNodeView *view,
 				                   RBNode *start,

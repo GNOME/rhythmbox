@@ -325,37 +325,10 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_TYPE_BOOLEAN);
 }
 
-static gboolean
-make_view_idle (RBNodeView *view)
-{
-	view->priv->idle = TRUE;
-
-	return FALSE;
-}
-
-static void
-scroll_child_cb (GtkScrolledWindow *window,
-		 GtkScrollType scroll,
-		 gboolean horizontal,
-		 RBNodeView *view)
-{
-	view->priv->idle = FALSE;
-
-	/* do not autoscroll for 10s when having scrolled */
-	g_timeout_add (10000, (GSourceFunc) make_view_idle, view);
-}
-
 static void
 rb_node_view_init (RBNodeView *view)
 {
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
-
-	view->priv->idle = TRUE;
-
-	g_signal_connect (G_OBJECT (view),
-			  "scroll_child",
-			  G_CALLBACK (scroll_child_cb),
-			  view);
 }
 
 static void
@@ -507,8 +480,8 @@ rb_node_view_set_property (GObject *object,
 
 		rb_node_view_thaw (view);
 
-		if (view->priv->idle)
-			rb_node_view_scroll_to_node (view, g_value_get_pointer (value));
+		if (!rb_node_view_node_is_visible(view, new))
+			rb_node_view_scroll_to_node (view, new);
 	}
 	break;
 	case PROP_VIEW_DESC_FILE:
@@ -1716,6 +1689,45 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
 
 	gtk_tree_path_free (path);
+}
+
+gboolean
+rb_node_view_node_is_visible (RBNodeView *view,
+			      RBNode *node)
+{
+	GtkTreeIter iter, iter2;
+	GValue val = { 0, };
+	gboolean visible;
+	GtkTreePath *path;
+	GdkRectangle rect;
+
+	if (node == NULL)
+		return FALSE;
+
+	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
+					   node, &iter);
+	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
+				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
+	visible = g_value_get_boolean (&val);
+	g_value_unset (&val);
+
+	if (visible == FALSE)
+		return FALSE;
+
+	egg_tree_model_filter_convert_child_iter_to_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter2, &iter);
+	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter, &iter2);
+
+	path = gtk_tree_model_get_path (view->priv->sortmodel, &iter);
+	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (view->priv->treeview),
+				     path,
+				     gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
+				     &rect);
+
+	gtk_tree_path_free (path);
+
+	return rect.y != 0 && rect.height != 0;
 }
 
 static gboolean
