@@ -6,10 +6,12 @@
   <!ENTITY authors SYSTEM "authors.xml">
   <!ENTITY quick SYSTEM "quick-reference.xml">
   <!ENTITY user-guide SYSTEM "user-guide.xml">
-  <!ENTITY version "0.0.2">
-  <!ENTITY date "02.10.2002">
+  <!ENTITY version "0.0.3">
+  <!ENTITY date "08.08.2003">
   <!ENTITY application "<application>Music Player</application>">
   <!ENTITY nyi "<note><para>Not yet implemented</para></note>">
+  <!ENTITY playlist "playlist">
+  <!ENTITY audio-formats "MP3, FLAC or Ogg/Vorbis">
 ]>
 
 <!--
@@ -29,7 +31,13 @@
 	       Mark Humphreys <marquee@users.sourceforge.net>
 -->
 
-
+<!--
+      (Do not remove this comment block.)
+  Version: 0.0.3
+  Last modified: August 08, 2003
+  Maintainers:
+	       Mark Humphreys <marquee@users.sourceforge.net>
+-->
 
 <!-- =============Document Header ============================= -->
 <article id="index" lang="en">
@@ -142,9 +150,9 @@
   <sect2 id="aboutsk">
    <title>About &application;</title>
    <para>	
-&application; is a ID3 organized, music library and player for your Mp3 and Ogg Vorbis music files.
+&application; is a ID3 organized, music library and player for your &audio-formats; music files.
 <!--
-&application; is a music player that lets you do everything from importing your audio cds into mp3 or Ogg Vorbis format, to playing these music files and other music files you have. You can play your music with an assortment of visualization plugins and burn audio and MP3/OGG cds from your music files. It's a one-stop shopping application for all your music needs. -->
+&application; is a music player that lets you do everything from importing your audio cds into &audio-formats; format, to playing these music files and other music files you have. You can play your music with an assortment of visualization plugins and burn audio and MP3/OGG cds from your music files. It's a one-stop shopping application for all your music needs. -->
 
 </para>
 <para>
@@ -152,7 +160,7 @@ Current &application; features include:
 </para>
 <itemizedlist>
 	<listitem>
-	Play mp3 or ogg music files from your ID3 organized Library.
+	Play &audio-formats; music files from your ID3 organized Library.
 	</listitem>
 	<listitem>
 	Display information on the songs through meta-data reading.
@@ -161,15 +169,15 @@ Current &application; features include:
 	Display songs in an organized view.
 	</listitem>
 	<listitem>
-	Create Groups(Playlists) by dragging and dropping from the Library view.
+	Create &playlist; by dragging and dropping from the Library view.
 	</listitem>
 	<listitem>
 	Search for entries in the Library.
-	</listitem> <!--
+	</listitem>
 	<listitem>
 	Listen to Internet radio stations. 
 	</listitem>
-	<listitem>
+<!--	<listitem>
 	Visual effects to accompany the audio output.
 	</listitem>
 	<listitem>

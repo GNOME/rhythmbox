@@ -133,10 +133,9 @@ help_cb (GtkWidget *widget,
 {
 	GError *error = NULL;
 
-	gnome_help_display ("net-rhythmbox.xml", "prefs", &error);
+	gnome_help_display ("rhythmbox.xml", "prefs", &error);
 
-	if (error != NULL)
-	{
+	if (error != NULL) {
 		rb_error_dialog (error->message);
 
 		g_error_free (error);
