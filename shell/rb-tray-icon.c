@@ -268,6 +268,8 @@ rb_tray_icon_finalize (GObject *object)
 	tray = RB_TRAY_ICON (object);
 
 	g_return_if_fail (tray->priv != NULL);
+	
+	g_object_unref (tray->priv->tooltips);
 
 	g_free (tray->priv);
 

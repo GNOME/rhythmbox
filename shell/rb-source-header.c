@@ -255,13 +255,16 @@ rb_source_header_set_property (GObject *object,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
 								      header);
 			if (header->priv->search_key) {
+				gchar *temp = eel_gconf_get_string (header->priv->search_key);
+				
 				header->priv->search_notify_id
 					= eel_gconf_notification_add (header->priv->search_key,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_search_text_changed_cb,
 								      header);
 
 				rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
-							  eel_gconf_get_string (header->priv->search_key));
+							  temp);
+				g_free (temp);
 			}
 			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 						 "filter_changed",
@@ -367,6 +370,8 @@ rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
 				  searchtext);
 
 	rb_source_search (header->priv->selected_source, searchtext);
+
+	g_free (searchtext);
 }
 
 static void

@@ -594,6 +594,8 @@ rb_shell_player_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (player->priv->play_order));
 
+	g_object_unref (player->priv->tooltips);
+
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
 	
@@ -972,11 +974,13 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 			if (!strcmp (play_order, state_to_play_order[i][j]))
 				goto found;
 
+	g_free (play_order);
 	return FALSE;
 
 found:
 	*shuffle = i > 0;
 	*repeat = j > 0;
+	g_free (play_order);
 	return TRUE;
 }
 
