@@ -34,6 +34,7 @@ static void rb_metadata_finalize (GObject *object);
 struct RBMetaDataPrivate
 {
 	char *uri;
+	char *type;
   
 	GHashTable *metadata;
 };
@@ -83,6 +84,7 @@ rb_metadata_init (RBMetaData *md)
 	md->priv = g_new0 (RBMetaDataPrivate, 1);
 	
 	md->priv->uri = NULL;
+	md->priv->type = NULL;
 }
 
 static void
@@ -94,6 +96,7 @@ rb_metadata_finalize (GObject *object)
 
 	g_hash_table_destroy (md->priv->metadata);
 
+	g_free (md->priv->type);
 	g_free (md->priv->uri);
 
 	g_free (md->priv);
@@ -138,13 +141,18 @@ rb_metadata_load (RBMetaData *md,
 		  GError **error)
 {
 	MonkeyMediaStreamInfo *info = NULL;
+
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
 
+	g_free (md->priv->type);
+	md->priv->type = NULL;
+	
 	if (uri == NULL)
 		return;
 		
 	md->priv->uri = g_strdup (uri);
+	md->priv->type = gnome_vfs_get_mime_type (md->priv->uri);
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -235,25 +243,5 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 const char *
 rb_metadata_get_mime (RBMetaData *md)
 {
-	const char *metatype;
-	char *mimetype;
-	
-	mimetype = gnome_vfs_get_mime_type (md->priv->uri);
-	metatype = NULL;
-	
-	rb_debug ("mimetype is: %s", mimetype);
-	
-	if (!g_ascii_strcasecmp (mimetype, "audio/mpeg")) {
-		metatype = "id3tag";
-	}
-	else if (!g_ascii_strcasecmp (mimetype, "application/ogg")) {
-		metatype = NULL;
-	}
-	else if (!g_ascii_strcasecmp (mimetype, "audio/x-flac")) {
-		metatype = "flactag";
-	}		
-	
-	g_free (mimetype);
-	
-	return (metatype);
+	return (md->priv->type);
 }
