@@ -202,6 +202,29 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/ui/iradio_columns_setup</key>
+        <applyto>/apps/rhythmbox/ui/iradio_columns_setup</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>RB_TREE_MODEL_NODE_COL_GENRE,RB_TREE_MODEL_NODE_COL_QUALITY</default>
+        <locale name="C">
+	<short>List of columns in the Internet radio view.</short>
+	<long>The list of columns that will be shown in the list of Internet radio stations. You should edit 
+        this in the settings menu, unless you know what you are doing.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/iradio/show_browser</key>
+        <applyto>/apps/rhythmbox/state/iradio/show_browser</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+	  <short>Show browser in radio display</short>
+	  <long>Show the genre browser in the Internet Radio display.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/ui/browser_views</key>
         <applyto>/apps/rhythmbox/ui/browser_views</applyto>
         <owner>rhythmbox</owner>
@@ -216,6 +239,5 @@
         </long>
         </locale>
       </schema>
-
     </schemalist>
 </gconfschemafile>
