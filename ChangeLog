@@ -2,6 +2,120 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8
 #
 
+2004-04-28 15:44:21 GMT	Colin Walters <walters@verbum.org>	patch-32
+
+    Summary:
+      use rb_source_can_pause to determine previous button behavior (#141259) 
+    Revision:
+      rhythmbox--main--0.8--patch-32
+
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+
+2004-04-23 23:08:19 GMT	Christophe Fergeau <teuf@gnome.org>	patch-31
+
+    Summary:
+      RTL fixes for the rating widgets
+    Revision:
+      rhythmbox--main--0.8--patch-31
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-2
+       Fix RTL behaviour of the rating widget in the song property window
+    
+     * teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-3
+       Use a constant instead of hardcoding the max number of stars
+    
+     * teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-4
+       Fixed rating cell renderer for RTL
+    
+     * teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-5
+       Fixed rating cell renderer for RTL
+    
+
+    modified files:
+     ChangeLog widgets/rb-cell-renderer-rating.c
+     widgets/rb-rating.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-2
+     teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-3
+     teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-4
+     teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-5
+
+
+2004-04-23 22:15:43 GMT	Christophe Fergeau <teuf@gnome.org>	patch-30
+
+    Summary:
+      Fixed last know RTL issue ;)
+    Revision:
+      rhythmbox--main--0.8--patch-30
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-1
+       Fix last known RTL issue ;)
+    
+
+    modified files:
+     ChangeLog widgets/rb-tree-view.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--rtl--0.8--patch-1
+
+
+2004-04-23 22:08:39 GMT	Christophe Fergeau <teuf@gnome.org>	patch-29
+
+    Summary:
+      Fix compilation
+    Revision:
+      rhythmbox--main--0.8--patch-29
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+
+2004-04-23 20:48:34 GMT	Christophe Fergeau <teuf@gnome.org>	patch-28
+
+    Summary:
+      Fixes get_n_columns return value (2 and not RHYTHMBOX_NUM_PROPERTIES)
+    Revision:
+      rhythmbox--main--0.8--patch-28
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+
+
+2004-04-23 16:51:48 GMT	Colin Walters <walters@verbum.org>	patch-27
+
+    Summary:
+      avoid a crash if user's gconf installation is borked
+    Revision:
+      rhythmbox--main--0.8--patch-27
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+
+2004-04-23 16:39:58 GMT	Colin Walters <walters@verbum.org>	patch-26
+
+    Summary:
+      don't lose on empty playlist
+    Revision:
+      rhythmbox--main--0.8--patch-26
+
+
+    modified files:
+     ChangeLog lib/rb-playlist.c
+
+
 2004-04-23 03:25:57 GMT	Colin Walters <walters@verbum.org>	patch-25
 
     Summary:
