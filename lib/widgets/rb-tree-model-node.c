@@ -84,12 +84,6 @@ static void rb_tree_model_node_update_node (RBTreeModelNode *model,
 				            RBNode *node);
 static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
-static void filter_parent_child_created_cb (RBNode *node,
-					    RBNode *child,
-					    RBTreeModelNode *model);
-static void filter_parent_child_destroyed_cb (RBNode *node,
-					      RBNode *child,
-					      RBTreeModelNode *model);
 static void filter_parent_destroyed_cb (RBNode *node,
 				        RBTreeModelNode *model);
 
@@ -296,12 +290,6 @@ rb_tree_model_node_set_property (GObject *object,
 				}
 
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_parent_child_created_cb),
-				                		      model);
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_parent_child_destroyed_cb),
-						                      model);
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
 						                      G_CALLBACK (filter_parent_destroyed_cb),
 						                      model);
 			}
@@ -316,16 +304,6 @@ rb_tree_model_node_set_property (GObject *object,
 					rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
-				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
-						         "child_created",
-						         G_CALLBACK (filter_parent_child_created_cb),
-						         G_OBJECT (model),
-							 0);
-				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
-						         "child_destroyed",
-						         G_CALLBACK (filter_parent_child_destroyed_cb),
-						         G_OBJECT (model),
-							 0);
 				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
 						         "destroyed",
 						         G_CALLBACK (filter_parent_destroyed_cb),
@@ -531,7 +509,8 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 
 	g_value_init (value, rb_tree_model_node_get_column_type (tree_model, column));
 	
-	switch (column) {
+	switch (column)
+	{
 	case RB_TREE_MODEL_NODE_COL_PLAYING:
 		if (node == model->priv->playing_node)
 			g_value_set_object (value, model->priv->playing_pixbuf);
@@ -847,34 +826,6 @@ rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 	g_object_set (G_OBJECT (model),
 		      "playing-node", node,
 		      NULL);
-}
-
-static void
-filter_parent_child_created_cb (RBNode *node,
-			        RBNode *child,
-			        RBTreeModelNode *model)
-{
-	if (model->priv->root == NULL)
-		return;
-
-	if (rb_node_has_child (model->priv->root, child) == FALSE)
-		return;
-
-	rb_tree_model_node_update_node (model, child);
-}
-
-static void
-filter_parent_child_destroyed_cb (RBNode *node,
-			          RBNode *child,
-			          RBTreeModelNode *model)
-{
-	if (model->priv->root == NULL)
-		return;
-
-	if (rb_node_has_child (model->priv->root, child) == FALSE)
-		return;
-
-	rb_tree_model_node_update_node (model, child);
 }
 
 static void

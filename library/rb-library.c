@@ -701,7 +701,7 @@ rb_library_timeout_cb (RBLibrary *library)
 	g_free (genre);
 	g_free (artist);
 	g_free (album);
-	
+
 	return TRUE;
 }
 

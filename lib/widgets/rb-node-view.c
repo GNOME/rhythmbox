@@ -1121,13 +1121,14 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 	if (event->keyval != GDK_Delete)
 		return FALSE;
 
-	sel = rb_node_view_get_selection (view);
+	sel = g_list_copy (rb_node_view_get_selection (view));
 	for (l = sel; l != NULL; l = g_list_next (l))
 	{
-		RBNode *node = l->data;
+		RBNode *node = RB_NODE (l->data);
 
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
 	}
+	g_list_free (sel);
 
 	return FALSE;
 }

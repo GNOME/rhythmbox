@@ -415,15 +415,15 @@ rb_shell_construct (RBShell *shell)
 
 	gtk_widget_show_all (vbox);
 
-	/* initialize views */
-
 	shell->priv->library = rb_library_new ();
 
-	/* FIXME */
+	/* initialize views */
 	library_view = rb_library_view_new (container,
 				            shell->priv->library);
 	rb_shell_append_view (shell, library_view);
-	rb_shell_select_view (shell, library_view);
+	rb_shell_select_view (shell, library_view); /* select this one by default */
+
+	/* FIXME */
 	testview = rb_test_view2_new (container);
 	rb_shell_append_view (shell, testview);
 	rb_shell_select_view (shell, testview);

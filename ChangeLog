@@ -1,5 +1,18 @@
 2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_key_press_event_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (rb_tree_model_node_get_value),
+	(rb_tree_model_node_set_playing_node):
+	* library/rb-library.c: (rb_library_timeout_cb):
+	* library/rb-node.c: (rb_node_finalize), (rb_node_add_child):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* views/rb-library-view.c: (rb_library_view_cut):
+
+	Fix library refcounting.
+
+2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
 	(rb_node_view_finalize), (rb_node_view_get_selection),
 	(rb_node_view_selection_changed_cb), (rb_node_view_have_selection),

@@ -208,6 +208,7 @@ rb_node_finalize (GObject *object)
 {
 	RBNode *node;
 	GList *l;
+	RBNodeType type;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_NODE (object));
@@ -216,29 +217,35 @@ rb_node_finalize (GObject *object)
 
 	g_return_if_fail (node->priv != NULL);
 
+	type = rb_node_get_node_type (node);
+
 	if (id_to_node_hash != NULL)
 		g_hash_table_remove (id_to_node_hash, node);
 
 	/* decrement parent refcount */
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
-		g_object_unref (G_OBJECT (l->data));
-		if (G_OBJECT (l->data)->ref_count == 1)
+		if ((type != RB_NODE_TYPE_ALL_GENRES) &&
+		    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
+		    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
+		    (type != RB_NODE_TYPE_ALL_SONGS))
 		{
-			/* since we start with a refcount of one,
-			 * all the child references are gone now,
-			 * so we take the last reference too unless
-			 * it was one of the "All" nodes */
-			RBNodeType type;
-
-			type = rb_node_get_node_type (RB_NODE (l->data));
-
-			if ((type != RB_NODE_TYPE_ALL_GENRES) &&
-			    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
-			    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
-			    (type != RB_NODE_TYPE_ALL_SONGS))
+			RBNode *node2 = RB_NODE (l->data);
+			
+			g_object_unref (G_OBJECT (node2));
+			
+			/* initial refcount .. */
+			if (G_OBJECT (node2)->ref_count == 1)
 			{
-				g_object_unref (G_OBJECT (l->data));
+				RBNodeType type2 = rb_node_get_node_type (node2);
+
+				if ((type2 != RB_NODE_TYPE_ALL_GENRES) &&
+				    (type2 != RB_NODE_TYPE_ALL_ARTISTS) &&
+				    (type2 != RB_NODE_TYPE_ALL_ALBUMS) &&
+				    (type2 != RB_NODE_TYPE_ALL_SONGS))
+				{
+					g_object_unref (G_OBJECT (node2));
+				}
 			}
 		}
 	}
@@ -321,13 +328,23 @@ void
 rb_node_add_child (RBNode *node,
 		   RBNode *child)
 {
+	RBNodeType type;
+	
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 	
 	node->priv->children = g_list_append (node->priv->children, child);
 	child->priv->parents = g_list_append (child->priv->parents, node);
-
-	g_object_ref (G_OBJECT (node));
+	
+	/* dont increase the refcount when we add the child to an all node */
+	type = rb_node_get_node_type (child);
+	if ((type != RB_NODE_TYPE_ALL_GENRES) &&
+	    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
+	    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
+	    (type != RB_NODE_TYPE_ALL_SONGS))
+	{
+		g_object_ref (G_OBJECT (node));
+	}
 
 	g_signal_connect (G_OBJECT (child),
 			  "destroyed",
