@@ -13,11 +13,8 @@ Tasks:
 * Disc number support
 * Better random mode
 * Album cover support
-* Feature to rename files to sane filenames (a la Nautilus?)
-* Manual [Sisob]
 * Better alert dialogs
 * Sane defaults (pane pos, window size, show browser by default)
-* Focus window when restoring from panel
 * Access keys in song info should highlight contents
 * Better genre in songinfo: separate styles and genres? (Use sentence case in genre dropdown in any case)
 * Group views need to be reorderable
@@ -25,7 +22,6 @@ Tasks:
 * update-from-egg.sh
 * .keys file
 * Use RBFileMonitor in song-info
-* overlay icon on source to indicate playing (?)
 * Contextmenu on nodeview (?)
 
 - Medium:
@@ -33,9 +29,8 @@ Tasks:
   
 * Implement internet radio [Walters]
 * Implement audio cd [Kenneth]
-* Move volume code to be a volume object in MonkeyMedia
 * Implement tag editing
-* Smart tag fixing
+* Tag fixing with musicbrainz
 * CD ripping
 * Ellipsize artist/album link widgets
 * Smart playlists
@@ -43,35 +38,67 @@ Tasks:
 * "Open stream" feature
 * File mass tagging
 * Autoscroll to playing node after perioud of interface inactivity (?)
-* View->jump to... (a la XMMS) (Should scroll artist/album?) (?)
 * First time startup stuff (Wizard)
 * Browser & search support for groups
 * Save library and groups periodically
 * Select groups from applet (?)
 * Properly drawn DND hints on sidebar
-* Fix delete (slow? what happens on "double-delete"?)
-* Support opening groups in new windows for easy editing
+* Support opening groups in new windows for easy editing (?)
 * Multiple tag support in songinfo and rb itself
 * Multiple songs of same node in a group
-* Track num navigation in group not working?
 * Save treeview state and filtering state
 * Save/restore toolbar position
 * "View browser" should work with gconf notifier
-* Songinfo issues (dialog getting hidden on filtering change)
-* Node in multiple roots - with just one handled flag? wont work ..
-* Sort when a non-All node is shown? 
-* Toolbar editor button sensitivity
 * Support for custom volume on songs + edition in the song info [Olive]
+* Better icons for library, groups, appicon, and trayicon.
+* Ellipsizing celltextrenderer
+* Multiple selection in artist/album browser
+* DNDing whole multiple-artist albums is broken, should prolly bundle
+  a filter object or something iwth the dnd.
+* Search: Enter should start playing selected search result, arrows should
+  move sel up and down (a la xmms)
+* When the browser is hidden it gives warnings
+* s/Quit/Close
+* Ditch filepicker when we have a decent filemanager in gnome
+* Previous/Next is slow on a big treeview
+* Figure out right behaviour for current song pointer in songinfo vs. selected row
+* Songinfo should connect to some changed signal on the RBNode
+* Don't sort on tracknum by default for groups
+* Mute menuitem
+* check Quality: high or Quality: High capitalization with the HIG
+* Figure proper tracknunber format (01 vs. 01 of 11)
+* Statusbar text should maybe left aligned (?)
+* Good, direct-manipulation toolbar editor
+* Help buttons in toolbar editor and properties dialog
+* Genre browser
+* Rating should prelight to indicate it's editable
+* Fade out on exit (?)
+* Song queue thing (?)
+* Fast sorting for all columns (?)
+* Columns resizable and reorderable once we can save the state
+* Fix delete slowness
+* Statusmessage when changing filtering should be something like "Filtering..."
+* Jump to current song tb button
+* Show browser tb button
+* Play in sidebar c ontextmenu? doubleclick to play? (?)
+* Pointer-cursor with small clock when adding to lib (HIG)
+* Periodically save lib and groups
+* Replace sidebar with list, so we can have more groups, and make the
+  playing source bold.
+* Different playing icon for playing than for paused
+* Reintroduce watched folders? (?) (gnome-wide monitoring service?)
+* "Narrowing view", ie only selecting currently playing artist/album
+* DnD to applet
+* File mass tagging
 
 - Hard:
   ====
 * Use medusa to find all ogg/mp3 on the user's system
 * Re-enable monitoring when FAM is fixed
+* Incremental statusbar updating while loading
 
 - Trascendence:
   ============
 
 * All actions should be reversable (undo/redo support) everywhere, so we dont
 need confirmation dialogs
-
-
