@@ -1055,7 +1055,8 @@ rb_playlist_add_directory (RBPlaylist *playlist, const char *url,
 		char *str, *fullpath;
 
 		if (info->name != NULL && (strcmp (info->name, ".") == 0
-					|| strcmp (info->name, "..") == 0)) {
+					   || strcmp (info->name, "..") == 0
+					   || strncmp (info->name, ".Trash", strlen (".Trash")))) {
 			res = gnome_vfs_directory_read_next (handle, info);
 			continue;
 		}
