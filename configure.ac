@@ -23,18 +23,6 @@ if test x"$GCC" = xyes; then
   CFLAGS=`echo $CFLAGS | sed -e 's/-O2//'`
 fi
 
-if test x"$GCC" = "xyes"; then
-AC_MSG_CHECKING([gcc argument to enable C99])
-saved_CFLAGS="$CFLAGS"
-CFLAGS="$CFLAGS -std=c99"
-AC_COMPILE_IFELSE([
-#include <stdio.h>
-#include <unistd.h>
-
-int main(int argc, char **argv) { printf("%s\n", __func__); exit(0); }
-],[AC_MSG_RESULT([-std=c99])],[CFLAGS="$saved_CFLAGS"; AC_MSG_RESULT([C99 not available])])
-fi
-
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
 [AC_LANG_PROGRAM([[
