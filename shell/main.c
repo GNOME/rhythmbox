@@ -24,6 +24,8 @@
 #include <bonobo/bonobo-main.h>
 #include <glade/glade-init.h>
 #include <monkey-media.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "config.h"
 #include "rb-shell.h"
@@ -64,6 +66,8 @@ main (int argc, char **argv)
 
 	CORBA_exception_init (&ev);
 
+	srandom (time (NULL));
+	
 	rb_debug_init (debug);
 	rb_file_helpers_init ();
 

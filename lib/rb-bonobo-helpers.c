@@ -18,6 +18,8 @@
  *  $Id$
  */
 
+#include <stdlib.h>
+
 #include "rb-bonobo-helpers.h"
 
 void
@@ -68,4 +70,19 @@ rb_bonobo_set_active (BonoboUIComponent *component,
 {
 	bonobo_ui_component_set_prop (component, path, "state",
 				      active ? "1" : "0", NULL);
+}
+
+gboolean
+rb_bonobo_get_active (BonoboUIComponent *component,
+		      const char *path)
+{
+	gboolean ret = FALSE;
+	char *prop;
+
+	prop = bonobo_ui_component_get_prop (component, path, "state", NULL);
+	if (prop != NULL)
+		ret = atoi (prop);
+	g_free (prop);
+
+	return ret;
 }

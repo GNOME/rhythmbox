@@ -30,8 +30,6 @@ static void rb_test_view2_class_init (RBTestView2Class *klass);
 static void rb_test_view2_init (RBTestView2 *view);
 static void rb_test_view2_finalize (GObject *object);
 static void rb_test_view_player_init (RBViewPlayerIface *iface);
-static RBViewPlayerResult rb_test_view_get_shuffle (RBViewPlayer *player);
-static RBViewPlayerResult rb_test_view_get_repeat (RBViewPlayer *player);
 static void rb_test_view_set_shuffle (RBViewPlayer *player,
 			              gboolean shuffle);
 static void rb_test_view_set_repeat (RBViewPlayer *player,
@@ -187,8 +185,6 @@ rb_test_view2_new (BonoboUIComponent *component)
 static void
 rb_test_view_player_init (RBViewPlayerIface *iface)
 {
-	iface->impl_get_shuffle   = rb_test_view_get_shuffle;
-	iface->impl_get_repeat    = rb_test_view_get_repeat;
 	iface->impl_set_shuffle   = rb_test_view_set_shuffle;
 	iface->impl_set_repeat    = rb_test_view_set_repeat;
 	iface->impl_have_next     = rb_test_view_have_next;
@@ -203,18 +199,6 @@ rb_test_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_get_stream    = rb_test_view_get_stream;
 	iface->impl_start_playing = rb_test_view_start_playing;
 	iface->impl_stop_playing  = rb_test_view_stop_playing;
-}
-
-static RBViewPlayerResult
-rb_test_view_get_shuffle (RBViewPlayer *player)
-{
-	return RB_VIEW_PLAYER_NOT_SUPPORTED;
-}
-
-static RBViewPlayerResult
-rb_test_view_get_repeat (RBViewPlayer *player)
-{
-	return RB_VIEW_PLAYER_NOT_SUPPORTED;
 }
 
 static void

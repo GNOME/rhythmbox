@@ -90,22 +90,6 @@ rb_view_player_base_init (gpointer g_iface)
 	initialized = TRUE;
 }
 
-RBViewPlayerResult
-rb_view_player_get_shuffle (RBViewPlayer *player)
-{
-	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
-
-	return iface->impl_get_shuffle (player);
-}
-
-RBViewPlayerResult
-rb_view_player_get_repeat (RBViewPlayer *player)
-{
-	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
-
-	return iface->impl_get_repeat (player);
-}
-
 void
 rb_view_player_set_shuffle (RBViewPlayer *player,
                             gboolean shuffle)

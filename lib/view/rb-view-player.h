@@ -49,9 +49,6 @@ typedef struct
 	void (*start_playing) (RBViewPlayer *player);
 
 	/* methods */
-	RBViewPlayerResult      (*impl_get_shuffle)   (RBViewPlayer *player);
-	RBViewPlayerResult      (*impl_get_repeat)    (RBViewPlayer *player);
-
 	void                    (*impl_set_shuffle)   (RBViewPlayer *player,
 					               gboolean shuffle);
 	void                    (*impl_set_repeat)    (RBViewPlayer *player,
@@ -78,9 +75,6 @@ typedef struct
 } RBViewPlayerIface;
 
 GType                   rb_view_player_get_type       (void);
-
-RBViewPlayerResult      rb_view_player_get_shuffle    (RBViewPlayer *player);
-RBViewPlayerResult      rb_view_player_get_repeat     (RBViewPlayer *player);
 
 void                    rb_view_player_set_shuffle    (RBViewPlayer *player,
 						       gboolean shuffle);

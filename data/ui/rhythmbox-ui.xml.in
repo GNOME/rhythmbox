@@ -31,6 +31,20 @@
 	     pixname="rhythmbox-next"
 	     _tip="Go to the next track"
 	     priority="1"/>
+
+	<cmd name="Shuffle"
+	     pixtype="stock"
+	     pixname="rhythmbox-shuffle"
+	     _tip="Random playing order"
+	     priority="1"
+	     type="toggle"/>
+
+	<cmd name="Repeat"
+	     pixtype="stock"
+	     pixname="rhythmbox-repeat"
+	     _tip="Toggle repeat mode"
+	     priority="1"
+	     type="toggle"/>
         
 </commands>
 
@@ -102,8 +116,8 @@
 
 	<separator/>
 	
-	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" type="toggle"/>
-	<menuitem name="Repeat" _label="_Repeat" verb="Repeat" type="toggle"/>
+	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle"/>
+	<menuitem name="Repeat" _label="_Repeat" verb="Repeat"/>
 
 </submenu>
 
@@ -143,11 +157,7 @@
 	<separator/>
         <toolitem name="Shuffle" 
 		  _label="Shuffle"
-		  priority="1"
-		  _tip="Shuffle playing order"
-                  pixtype="stock" pixname="rhythmbox-shuffle"
-                  verb="Shuffle"
-		  type="toggle"/> 
+                  verb="Shuffle"/> 
 	<separator/>
         <toolitem name="Visuals" 
 		  _label="Visuals"

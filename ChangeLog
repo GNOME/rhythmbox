@@ -1,5 +1,29 @@
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* README: update cvs module name
+	
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-bonobo-helpers.c: (rb_bonobo_set_active),
+	(rb_bonobo_get_active):
+	* lib/rb-bonobo-helpers.h:
+	* lib/view/rb-view-player.c:
+	* lib/view/rb-view-player.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_first_node),
+	(rb_node_view_get_random_node):
+	* lib/widgets/rb-node-view.h:
+	* shell/main.c: (main):
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_set_window_title), (rb_shell_cmd_shuffle),
+	(rb_shell_cmd_repeat):
+	* tests/testview.c: (rb_test_view_player_init),
+	(rb_test_view_set_shuffle), (rb_test_view_set_repeat),
+	(rb_test_view_next), (rb_test_view_previous):
+	* tests/testview2.c: (rb_test_view_player_init):
+
+	implement shuffle/repeat
+
+2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
 	(rb_node_view_get_node), (rb_node_view_get_first_node),
 	(get_selection), (rb_node_view_row_activated_cb),

@@ -70,6 +70,7 @@ RBNode     *rb_node_view_get_playing_node  (RBNodeView *view);
 RBNode     *rb_node_view_get_next_node     (RBNodeView *view);
 RBNode     *rb_node_view_get_previous_node (RBNodeView *view);
 RBNode     *rb_node_view_get_first_node    (RBNodeView *view);
+RBNode     *rb_node_view_get_random_node   (RBNodeView *view);
 
 GList      *rb_node_view_get_selection     (RBNodeView *view);
 

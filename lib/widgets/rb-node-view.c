@@ -25,6 +25,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 #include <libxml/tree.h>
+#include <stdlib.h>
 
 #include "gtktreemodelfilter.h"
 #include "rb-tree-model-node.h"
@@ -626,6 +627,33 @@ rb_node_view_get_first_node (RBNodeView *view)
 
 	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
 				       &iter);
+
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter2, &iter);
+	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter, &iter2);
+
+	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+}
+
+RBNode *
+rb_node_view_get_random_node (RBNodeView *view)
+{
+	GtkTreePath *path;
+	GtkTreeIter iter, iter2;
+	char *path_str;
+	int index;
+
+	index = random () % gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL);
+
+	path_str = g_strdup_printf ("%d", index);
+	path = gtk_tree_path_new_from_string (path_str);
+	g_free (path_str);
+
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel),
+				 &iter, path);
+
+	gtk_tree_path_free (path);
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter2, &iter);

@@ -43,6 +43,7 @@
 #include "rb-shell-player.h"
 #include "rb-shell-status.h"
 #include "rb-shell-clipboard.h"
+#include "rb-bonobo-helpers.h"
 /* FIXME */
 #include "testview.h"
 #include "testview2.h"
@@ -70,6 +71,15 @@ static void rb_shell_set_window_title (RBShell *shell,
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
+static void rb_shell_cmd_shuffle (BonoboUIComponent *component,
+		                  RBShell *shell,
+		                  const char *verbname);
+static void rb_shell_cmd_repeat (BonoboUIComponent *component,
+		                 RBShell *shell,
+		                 const char *verbname);
+
+#define CMD_PATH_SHUFFLE "/commands/Shuffle"
+#define CMD_PATH_REPEAT  "/commands/Repeat"
 
 struct RBShellPrivate
 {
@@ -87,6 +97,13 @@ struct RBShellPrivate
 	RBShellPlayer *player_shell;
 	RBShellStatus *status_shell;
 	RBShellClipboard *clipboard_shell;
+};
+
+static BonoboUIVerb rb_shell_verbs[] =
+{
+	BONOBO_UI_VERB ("Shuffle", (BonoboUIVerbFn) rb_shell_cmd_shuffle),
+	BONOBO_UI_VERB ("Repeat",  (BonoboUIVerbFn) rb_shell_cmd_repeat),
+	BONOBO_UI_VERB_END
 };
 
 static GObjectClass *parent_class;
@@ -283,6 +300,10 @@ rb_shell_construct (RBShell *shell)
 			       DATADIR,
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
+
+	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
+						     rb_shell_verbs,
+						     shell);
 
 	/* initialize shell services */
 	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component);
@@ -487,5 +508,37 @@ rb_shell_set_window_title (RBShell *shell,
 	{
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 				      window_title);
+	}
+}
+
+static void
+rb_shell_cmd_shuffle (BonoboUIComponent *component,
+		      RBShell *shell,
+		      const char *verbname)
+{
+	gboolean shuffle = rb_bonobo_get_active (component, CMD_PATH_SHUFFLE);
+	GList *l;
+
+	for (l = shell->priv->views; l != NULL; l = g_list_next (l))
+	{
+		RBViewPlayer *player = RB_VIEW_PLAYER (l->data);
+
+		rb_view_player_set_shuffle (player, shuffle);
+	}
+}
+
+static void
+rb_shell_cmd_repeat (BonoboUIComponent *component,
+		     RBShell *shell,
+		     const char *verbname)
+{
+	gboolean repeat = rb_bonobo_get_active (component, CMD_PATH_REPEAT);
+	GList *l;
+
+	for (l = shell->priv->views; l != NULL; l = g_list_next (l))
+	{
+		RBViewPlayer *player = RB_VIEW_PLAYER (l->data);
+
+		rb_view_player_set_repeat (player, repeat);
 	}
 }

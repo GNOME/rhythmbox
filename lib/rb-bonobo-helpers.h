@@ -25,24 +25,26 @@
 
 G_BEGIN_DECLS
 
-void rb_bonobo_set_label (BonoboUIComponent *component,
-			  const char *path,
-			  const char *label);
-void rb_bonobo_set_tip   (BonoboUIComponent *component,
-			  const char *path,
-			  const char *tip);
-void rb_bonobo_set_icon  (BonoboUIComponent *component,
-			  const char *path,
-			  const char *stock_icon);
-void rb_bonobo_set_verb  (BonoboUIComponent *component,
-			  const char *path,
-			  const char *verb);
-void rb_bonobo_set_sensitive (BonoboUIComponent *component,
-			      const char *path,
-			      gboolean sensitive);
-void rb_bonobo_set_active (BonoboUIComponent *component,
-			   const char *path,
-			   gboolean active);
+void     rb_bonobo_set_label     (BonoboUIComponent *component,
+			          const char *path,
+			          const char *label);
+void     rb_bonobo_set_tip       (BonoboUIComponent *component,
+			          const char *path,
+			          const char *tip);
+void     rb_bonobo_set_icon      (BonoboUIComponent *component,
+			          const char *path,
+			          const char *stock_icon);
+void     rb_bonobo_set_verb      (BonoboUIComponent *component,
+			          const char *path,
+			          const char *verb);
+void     rb_bonobo_set_sensitive (BonoboUIComponent *component,
+			          const char *path,
+			          gboolean sensitive);
+void     rb_bonobo_set_active    (BonoboUIComponent *component,
+			          const char *path,
+			          gboolean active);
+gboolean rb_bonobo_get_active    (BonoboUIComponent *component,
+			          const char *path);
 
 G_END_DECLS
 
