@@ -38,6 +38,7 @@
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-window-icon.h>
 #include <libgnomeui/gnome-about.h>
+#include <libgnomeui/gnome-client.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <string.h>
@@ -224,6 +225,18 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBShell *shell);
 static void tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
 
+static gboolean save_yourself_cb (GnomeClient *client, 
+                                  gint phase,
+                                  GnomeSaveStyle save_style,
+                                  gboolean shutdown,
+                                  GnomeInteractStyle interact_style,
+                                  gboolean fast,
+                                  RBShell *shell);
+
+static void session_die_cb (GnomeClient *client, RBShell *shell);
+static void rb_shell_session_init (RBShell *shell);
+
+
 static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 } };
 
 #define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
@@ -252,6 +265,8 @@ struct RBShellPrivate
 	GtkWidget *hsep;
 
 	GList *sources;
+
+	gboolean play_queued;
 
 	gboolean db_dirty;
 	guint async_state_save_id;
@@ -382,6 +397,8 @@ rb_shell_init (RBShell *shell)
 	gnome_window_icon_set_default_from_file (file);
 	g_free (file);
 	
+        rb_shell_session_init (shell);
+
 	eel_gconf_monitor_add (CONF_PREFIX);
 
 }
@@ -498,6 +515,7 @@ idle_do_action (struct RBShellAction *data)
 	char *unquoted = NULL;
 	
 	GDK_THREADS_ENTER ();
+	rb_debug ("entering idle_do_action");
 
 	data->tries++;
 
@@ -507,31 +525,41 @@ idle_do_action (struct RBShellAction *data)
 
 	if (entry) {
 		switch (data->type) {
-		case RB_SHELL_ACTION_JUMP:
-			rb_shell_jump_to_entry (data->shell, entry);
-			break;
 		case RB_SHELL_ACTION_PLAY:
+			rb_debug ("doing play action");
 			rb_shell_play_entry (data->shell, entry);
+			/* fall through */ 
+		case RB_SHELL_ACTION_JUMP:
+			rb_debug ("doing jump action");
+			rb_shell_jump_to_entry (data->shell, entry);
 			break;
 		}
 	} else if (data->tries < 4) {
+		rb_debug ("entry not added yet, queueing retry");
 		g_timeout_add (500 + data->tries*200, (GSourceFunc) idle_do_action, data);
-		return TRUE;
+		goto out_unlock;
 	} else
 		g_warning ("No entry %s in db", data->uri);
 
-	GDK_THREADS_LEAVE ();
+	data->shell->priv->play_queued = FALSE;
 
 	g_free (unquoted);
 	g_free (data->uri);
 	g_free (data);
+
+ out_unlock:
+	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
 
 static void
 rb_shell_queue_jump (RBShell *shell, const char *uri)
 {
-	struct RBShellAction *data = g_new0 (struct RBShellAction, 1);
+	struct RBShellAction *data;
+
+	rb_debug ("queueing jump");
+
+	data = g_new0 (struct RBShellAction, 1);
 	data->shell = shell;
 	data->uri = g_strdup (uri);
 	data->type = RB_SHELL_ACTION_JUMP;
@@ -541,7 +569,15 @@ rb_shell_queue_jump (RBShell *shell, const char *uri)
 static void
 rb_shell_queue_play (RBShell *shell, const char *uri)
 {
-	struct RBShellAction *data = g_new0 (struct RBShellAction, 1);
+	struct RBShellAction *data;
+
+	if (shell->priv->play_queued) {
+		rb_debug ("file already queued for playback");
+		return;
+	}
+	rb_debug ("queueing play");
+
+	data = g_new0 (struct RBShellAction, 1);
 	data->shell = shell;
 	data->uri = g_strdup (uri);
 	data->type = RB_SHELL_ACTION_PLAY;
@@ -553,6 +589,8 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
                      CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+
+	rb_debug ("corba quit");
 
 	GDK_THREADS_ENTER ();
 
@@ -569,6 +607,8 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	RBPlaylist *parser;
 
+	rb_debug ("handling uri: %s", uri);
+
 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 	if (!vfsuri) {
 		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
@@ -577,9 +617,12 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 
 	parser = rb_playlist_new ();
 	if (rb_playlist_can_handle (uri)) {
+		rb_debug ("parsing uri as playlist: %s", uri);
 		uri = rb_playlist_manager_parse_file (shell->priv->playlist_manager, uri);
-	} else 
+	} else {
+		rb_debug ("async adding uri: %s", uri);
 		rhythmdb_add_uri_async (shell->priv->db, uri);
+	}
 
 	rb_shell_queue_play (shell, uri);
 	g_object_unref (G_OBJECT (parser));
@@ -592,6 +635,7 @@ rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	rb_debug ("async adding uri: %s", uri);
 	rhythmdb_add_uri_async (shell->priv->db, uri);
 }
 
@@ -601,6 +645,7 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	rb_debug ("grabbing focus");
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gtk_widget_grab_focus (shell->priv->window);
 }
@@ -729,6 +774,7 @@ rb_shell_corba_get_player_properties (PortableServer_Servant _servant,
 {	
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	rb_debug ("getting player properties");
 	if (shell->priv->pb == NULL) {
 		gchar *params_to_map[] = {"repeat", "shuffle", "playing", 
 					  NULL};
@@ -775,6 +821,7 @@ rb_shell_corba_playpause (PortableServer_Servant _servant,
 			  CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got playpause");
 	rb_shell_player_playpause (shell->priv->player_shell);
 }
 
@@ -784,6 +831,7 @@ rb_shell_corba_select (PortableServer_Servant _servant,
 		       CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got select");
 	rb_shell_queue_jump (shell, uri);
 }
 
@@ -793,6 +841,7 @@ rb_shell_corba_play (PortableServer_Servant _servant,
 		     CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got play");
 	rb_shell_queue_play (shell, uri);
 }
 
@@ -801,6 +850,7 @@ rb_shell_corba_next (PortableServer_Servant _servant,
 		     CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got next");
 	rb_shell_player_do_next (shell->priv->player_shell);
 }
 
@@ -809,6 +859,7 @@ rb_shell_corba_previous (PortableServer_Servant _servant,
 			 CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got previous");
 	rb_shell_player_do_previous (shell->priv->player_shell);
 }
 
@@ -817,6 +868,7 @@ rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
 				 CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got playing time");
 	return rb_shell_player_get_playing_time (shell->priv->player_shell);
 }
 
@@ -825,6 +877,8 @@ rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 				 CORBA_long time, CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("got set playing time");
+	rb_debug ("got milk?");
 	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
 }
 
@@ -2090,4 +2144,44 @@ tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 						   GTK_WINDOW (shell->priv->window));
 	g_signal_connect (G_OBJECT (shell->priv->tray_icon), "delete_event",
 			  G_CALLBACK (tray_deleted_cb), shell);
+}
+
+static void 
+session_die_cb (GnomeClient *client, 
+                RBShell *shell)
+{
+        rb_debug ("session die");
+        rb_shell_quit (shell);
+}
+
+static gboolean
+save_yourself_cb (GnomeClient *client, 
+                  gint phase,
+                  GnomeSaveStyle save_style,
+                  gboolean shutdown,
+                  GnomeInteractStyle interact_style,
+                  gboolean fast,
+                  RBShell *shell)
+{
+        rb_debug ("session save yourself");
+        rb_shell_sync_state (shell);
+        return TRUE;
+}
+
+static void
+rb_shell_session_init (RBShell *shell)
+{
+        GnomeClient *client;
+
+        client = gnome_master_client ();
+
+        g_signal_connect (G_OBJECT (client), 
+                          "save_yourself",
+                          G_CALLBACK (save_yourself_cb),
+                          shell);
+
+        g_signal_connect (G_OBJECT (client),
+                          "die",
+                          G_CALLBACK (session_die_cb),
+                          shell);
 }
