@@ -312,7 +312,6 @@ static void
 rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 {
 	g_return_if_fail (dialog->priv->current_entry != NULL);
-	rhythmdb_write_lock (dialog->priv->db);
 	rb_station_properties_dialog_update_location (dialog);
 	rb_station_properties_dialog_update_title (dialog);
 	rb_station_properties_dialog_update_title_entry (dialog);
@@ -320,16 +319,17 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 	rb_station_properties_dialog_update_play_count (dialog);
 	rb_station_properties_dialog_update_last_played (dialog);
 	rb_station_properties_dialog_update_rating (dialog);
-	rhythmdb_write_unlock (dialog->priv->db);
 }
 
 static void
 rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 {
 	char *name, *tmp;
+	rhythmdb_read_lock (dialog->priv->db);
 	name = rhythmdb_entry_get_string (dialog->priv->db,
 					  dialog->priv->current_entry,
 					  RHYTHMDB_PROP_TITLE);
+	rhythmdb_read_unlock (dialog->priv->db);
 	tmp = g_strdup_printf (_("Properties for %s"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free (tmp);
@@ -395,10 +395,12 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, score);
+	rhythmdb_write_lock (dialog->priv->db);
 	rhythmdb_entry_set (dialog->priv->db,
 			    dialog->priv->current_entry,
 			    RHYTHMDB_PROP_RATING,
 			    &value);
+	rhythmdb_write_unlock (dialog->priv->db);
 	g_value_unset (&value);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
@@ -409,9 +411,15 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 static void
 rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog)
 {
-	char *text = g_strdup_printf ("%d", rhythmdb_entry_get_int (dialog->priv->db,
-								    dialog->priv->current_entry,
-								    RHYTHMDB_PROP_PLAY_COUNT));
+	int val;
+	char *text;
+
+	rhythmdb_read_lock (dialog->priv->db);
+	val = rhythmdb_entry_get_int (dialog->priv->db,
+				      dialog->priv->current_entry,
+				      RHYTHMDB_PROP_PLAY_COUNT);
+	rhythmdb_read_unlock (dialog->priv->db);
+	text = g_strdup_printf ("%d", val);
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
 	g_free (text);
 }
@@ -427,7 +435,7 @@ rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dial
 					 RHYTHMDB_PROP_LAST_PLAYED_STR);
 	rhythmdb_read_unlock (dialog->priv->db);
 	
-	gtk_entry_set_text (GTK_ENTRY (dialog->priv->lastplayed), tmp);
+	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), tmp);
 	g_free (tmp);
 }
 
@@ -438,9 +446,11 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
+	rhythmdb_read_lock (dialog->priv->db);
 	rating = rhythmdb_entry_get_int (dialog->priv->db,
 					 dialog->priv->current_entry,
 					 RHYTHMDB_PROP_RATING);
+	rhythmdb_read_unlock (dialog->priv->db);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
 		      "score", rating, NULL);
@@ -454,6 +464,7 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
 	GValue val = {0,};
 
+	rhythmdb_write_lock (dialog->priv->db);
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, title);
 	rhythmdb_entry_set (dialog->priv->db,
@@ -471,4 +482,5 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	rhythmdb_entry_set (dialog->priv->db,
 			    dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION, &val);
 	g_value_unset (&val);
+	rhythmdb_write_unlock (dialog->priv->db);
 }

@@ -547,13 +547,13 @@ impl_delete (RBSource *asource)
 static void
 impl_song_properties (RBSource *asource)
 {
-/* 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource); */
-/* 	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations, source->priv->db); */
-/* 	rb_debug ("in song properties"); */
-/* 	if (dialog) */
-/* 		gtk_widget_show_all (dialog); */
-/* 	else */
-/* 		rb_debug ("no selection!"); */
+	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
+	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations);
+	rb_debug ("in song properties");
+	if (dialog)
+		gtk_widget_show_all (dialog);
+	else
+		rb_debug ("no selection!");
 }
 
 static void
