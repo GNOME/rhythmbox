@@ -46,7 +46,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#include "Rhythmbox.h"
+#include <Rhythmbox.h>
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -246,7 +246,7 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
-static void tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
+static gboolean tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
 
 typedef RBSource *(*SourceCreateFunc)(RBShell *, RhythmDB *db, 
 				      BonoboUIComponent *component);
@@ -1279,7 +1279,7 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	rb_debug ("shell: setting up tray icon");
-	tray_deleted_cb (NULL, NULL, shell);
+	tray_destroy_cb (NULL, NULL, shell);
 
 	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
 						     rb_shell_verbs,
@@ -1854,7 +1854,7 @@ rb_shell_set_duration (RBShell *shell, const char *duration)
 {
 	gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
 	char *tooltip;
-		
+
 	if (shell->priv->cached_title == NULL) 
 		tooltip = g_strdup (_("Not playing"));
 	else if (!playing) {
@@ -1866,7 +1866,7 @@ rb_shell_set_duration (RBShell *shell, const char *duration)
 		tooltip = g_strdup_printf (_("%s\n%s"),
 					   shell->priv->cached_title, duration);
 	}
-	
+
 	rb_tray_icon_set_tooltip (shell->priv->tray_icon, tooltip);
 	g_free (tooltip);
 }
@@ -2529,9 +2529,11 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 	return rb_source_show_popup (target);
 }
 
-static void
-tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
+static gboolean
+tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 {
+	shell->priv->tray_icon = NULL;
+
 	if (shell->priv->tray_icon) {
 		rb_debug ("caught delete_event for tray icon");
 		gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
@@ -2542,8 +2544,12 @@ tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 						   shell->priv->ui_component,
 						   shell->priv->db,
 						   GTK_WINDOW (shell->priv->window));
-	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "delete_event",
-				 G_CALLBACK (tray_deleted_cb), shell, 0);
+ 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy-event",
+				 G_CALLBACK (tray_destroy_cb), shell, 0);
+ 
+ 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
+ 
+ 	return TRUE;
 }
 
 static void 
