@@ -1,5 +1,12 @@
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_status),
+	(rb_node_view_get_n_rows):
+
+	Don't walk the list of nodes twice.
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/Makefile.am:
 	* library/rb-node-iterator.c:
 	* library/rb-node-iterator.h:

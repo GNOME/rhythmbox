@@ -86,7 +86,6 @@ static gboolean rb_node_view_key_press_event_cb (GtkWidget *widget,
 				                 RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
 static int rb_node_view_get_n_rows (RBNodeView *view);
-static GList *rb_node_view_get_visible_nodes (RBNodeView *view);
 static void root_child_destroyed_cb (RBNode *root,
 			             RBNode *child,
 			             RBNodeView *view);
@@ -1135,23 +1134,39 @@ rb_node_view_get_status (RBNodeView *view)
 {
 	char *ret, *size;
 	int hours, minutes, seconds;
-	GList *visible, *l;
 	GnomeVFSFileSize n_bytes = 0;
 	long n_seconds = 0;
 	int n_songs = 0;
+	RBNode *parent = NULL, *artist = NULL;
 
-	visible = rb_node_view_get_visible_nodes (view);
+	rb_tree_model_node_get_filter (view->priv->nodemodel,
+				       &parent, &artist);
 
-	for (l = visible; l != NULL; l = g_list_next (l))
+	if (parent != NULL)
 	{
-		RBNode *node = RB_NODE (l->data);
-		
-		n_songs++;
-		n_seconds += rb_node_song_get_duration_raw (node);
-		n_bytes += rb_node_song_get_file_size_raw (node);
-	}
+		GList *l, *kids;
 
-	g_list_free (visible);
+		kids = rb_node_get_children (parent);
+
+		for (l = kids; l != NULL; l = g_list_next (l))
+		{
+			RBNode *node;
+			
+			if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+				continue;
+			if (artist != NULL &&
+			    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
+				continue;
+
+			node = RB_NODE (l->data);
+
+			n_songs++;
+			n_seconds += rb_node_song_get_duration_raw (node);
+			n_bytes += rb_node_song_get_file_size_raw (node);
+		}
+		
+		rb_node_unlock (parent);
+	}
 
 	size = gnome_vfs_format_file_size_for_display (n_bytes);
 
@@ -1353,36 +1368,6 @@ rb_node_view_get_n_rows (RBNodeView *view)
 	rb_node_unlock (parent);
 
 	return n_rows;
-}
-
-static GList *
-rb_node_view_get_visible_nodes (RBNodeView *view)
-{
-	RBNode *parent = NULL, *artist = NULL;
-	GList *ret = NULL, *l, *kids;
-
-	rb_tree_model_node_get_filter (view->priv->nodemodel,
-				       &parent, &artist);
-
-	if (parent == NULL)
-		return ret;
-
-	kids = rb_node_get_children (parent);
-
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
-			continue;
-		if (artist != NULL &&
-		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
-			continue;
-
-		ret = g_list_prepend (ret, l->data);
-	}
-
-	rb_node_unlock (parent);
-
-	return ret;
 }
 
 static void
