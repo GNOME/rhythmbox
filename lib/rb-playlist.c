@@ -483,13 +483,16 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url, gpointer data)
 	g_free (contents);
 
 	for (i = 0; lines[i] != NULL; i++) {
+		if (lines[i][0] == '#' || lines[i][0] == '\0')
+			continue;
 		/* Either it's a URI, or it has a proper path ... */
 		if (strstr(lines[i], "://") != NULL
 				|| lines[i][0] == G_DIR_SEPARATOR) {
 			/* We use the same code for .ram and m3u playlists,
 			 * and .ram files can contain .smil entries */
-			if (rb_playlist_parse (playlist, lines[i]) == TRUE)
-				retval = TRUE;
+			rb_playlist_parse (playlist, lines[i]);
+			rb_playlist_add_one_url (playlist, lines[i], NULL);
+			retval = TRUE;
 		} else if (lines[i][0] == '\\' && lines[i][1] == '\\') {
 			/* ... Or it's in the windows smb form
 			 * (\\machine\share\filename), Note drive names
