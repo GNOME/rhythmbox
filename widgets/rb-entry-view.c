@@ -1536,21 +1536,30 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 			      GtkTreePath *path,
 			      RBEntryView *view)
 {
-	if (view->priv->playing_entry) {
+	RhythmDBEntry *entry = entry_from_tree_path (view, path);
+	glong duration;
+	glong size;
 
-		GtkTreePath *playing_entry_path = gtk_tree_model_get_path (model, &view->priv->playing_entry_iter);
-
-		if (gtk_tree_path_compare (playing_entry_path, path) == 0) {
-			view->priv->playing_entry = NULL;
-
-			rb_debug ("emitting playing entry destroyed");
-
-			g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED],
-				       0, view->priv->playing_entry);
-		}
-
-		gtk_tree_path_free (playing_entry_path);
+	if (entry == view->priv->playing_entry) {
+		view->priv->playing_entry = NULL;
+		
+		rb_debug ("emitting playing entry destroyed");
+		
+		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED],
+			       0, view->priv->playing_entry);
 	}
+	
+	rhythmdb_read_lock (view->priv->db);
+	
+	duration = rhythmdb_entry_get_long (view->priv->db, entry,
+					    RHYTHMDB_PROP_DURATION);
+	size = rhythmdb_entry_get_long (view->priv->db, entry,
+					RHYTHMDB_PROP_FILE_SIZE);
+
+	rhythmdb_read_unlock (view->priv->db);
+
+	view->priv->total_duration -= duration;
+	view->priv->total_size -= size;
 	
 	rb_debug ("row deleted");
 	queue_changed_sig (view);
