@@ -315,6 +315,7 @@ rb_link_set (RBLink *link,
 			      "text", text,
 			      "tooltip", tooltip,
 			      "url", url,
+			      "active", (gboolean) TRUE,
 			      NULL);
 
 	else
