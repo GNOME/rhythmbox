@@ -23,6 +23,7 @@
 #include <gtk/gtkvpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
+#include <libgnome/gnome-i18n.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
@@ -32,6 +33,7 @@
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
 #include "rb-player.h"
+#include "rb-dialog.h"
 #include "testview.h"
 
 static void rb_test_view_class_init (RBTestViewClass *klass);
@@ -45,12 +47,12 @@ static void rb_test_view_get_property (GObject *object,
 			               guint prop_id,
 			               GValue *value,
 			               GParamSpec *pspec);
-static void album_node_activated_cb (RBNodeView *view,
+static void album_node_selected_cb (RBNodeView *view,
+			            RBNode *node,
+			            RBTestView *testview);
+static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
 			             RBTestView *testview);
-static void artist_node_activated_cb (RBNodeView *view,
-			              RBNode *node,
-			              RBTestView *testview);
 static void rb_test_view_player_init (RBViewPlayerIface *iface);
 static RBViewPlayerResult rb_test_view_get_shuffle (RBViewPlayer *player);
 static RBViewPlayerResult rb_test_view_get_repeat (RBViewPlayer *player);
@@ -70,6 +72,15 @@ static GdkPixbuf *rb_test_view_get_pixbuf (RBViewPlayer *player);
 static MonkeyMediaAudioStream *rb_test_view_get_stream (RBViewPlayer *player);
 static void rb_test_view_start_playing (RBViewPlayer *player);
 static void rb_test_view_stop_playing (RBViewPlayer *player);
+static void rb_test_view_set_playing_node (RBTestView *view,
+			                   RBNode *node);
+static void song_activated_cb (RBNodeView *view,
+		               RBNode *node,
+		               RBTestView *test_view);
+static void node_view_changed_cb (RBNodeView *view,
+		                  RBTestView *test_view);
+static void song_eos_cb (MonkeyMediaStream *stream,
+	                 RBTestView *view);
 
 struct RBTestViewPrivate
 {
@@ -80,6 +91,10 @@ struct RBTestViewPrivate
 	RBNodeView *songs;
 
 	GtkWidget *vbox;
+
+	MonkeyMediaAudioStream *playing_stream;
+
+	char *title;
 };
 
 enum
@@ -219,6 +234,8 @@ rb_test_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
+	g_free (view->priv->title);
+
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -248,20 +265,28 @@ rb_test_view_set_property (GObject *object,
 						                rb_file ("rb-node-view-artists.xml"));
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
-					  G_CALLBACK (artist_node_activated_cb),
+					  G_CALLBACK (artist_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (hbox), GTK_WIDGET (view->priv->artists));
 			view->priv->albums = rb_node_view_new (library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
-					  G_CALLBACK (album_node_activated_cb),
+					  G_CALLBACK (album_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (hbox), GTK_WIDGET (view->priv->albums));
 			gtk_paned_add1 (GTK_PANED (vpaned), hbox);
 
 			view->priv->songs = rb_node_view_new (library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
+			g_signal_connect (G_OBJECT (view->priv->songs),
+					  "node_activated",
+					  G_CALLBACK (song_activated_cb),
+					  view);
+			g_signal_connect (G_OBJECT (view->priv->songs),
+					  "changed",
+					  G_CALLBACK (node_view_changed_cb),
+					  view);
 			gtk_paned_add2 (GTK_PANED (vpaned), GTK_WIDGET (view->priv->songs));
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), vpaned);
@@ -308,17 +333,17 @@ rb_test_view_new (BonoboUIComponent *component, Library *library)
 }
 
 static void
-artist_node_activated_cb (RBNodeView *view,
-			  RBNode *node,
-			  RBTestView *testview)
+artist_node_selected_cb (RBNodeView *view,
+			 RBNode *node,
+			 RBTestView *testview)
 {
 	rb_node_view_set_filter_root (testview->priv->albums, node);
 }
 
 static void
-album_node_activated_cb (RBNodeView *view,
-			 RBNode *node,
-			 RBTestView *testview)
+album_node_selected_cb (RBNodeView *view,
+			RBNode *node,
+			RBTestView *testview)
 {
 	rb_node_view_set_filter_root (testview->priv->songs, node);
 }
@@ -371,47 +396,103 @@ rb_test_view_set_repeat (RBViewPlayer *player,
 static RBViewPlayerResult
 rb_test_view_have_next (RBViewPlayer *player)
 {
-	return RB_VIEW_PLAYER_NOT_SUPPORTED;
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *next;
+
+	next = rb_node_view_get_next_node (view->priv->songs);
+	
+	return (next != NULL);
 }
 
 static RBViewPlayerResult
 rb_test_view_have_previous (RBViewPlayer *player)
 {
-	return RB_VIEW_PLAYER_NOT_SUPPORTED;
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *previous;
+
+	previous = rb_node_view_get_previous_node (view->priv->songs);
+
+	return (previous != NULL);
 }
 
 static void
 rb_test_view_next (RBViewPlayer *player)
 {
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+	
+	node = rb_node_view_get_next_node (view->priv->songs);
+
+	rb_test_view_set_playing_node (view, node);
 }
 
 static void
 rb_test_view_previous (RBViewPlayer *player)
 {
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+	
+	node = rb_node_view_get_previous_node (view->priv->songs);
+
+	rb_test_view_set_playing_node (view, node);
 }
 
 static const char *
 rb_test_view_get_title (RBViewPlayer *player)
 {
-	return g_strdup ("Hadjaha!");
+	RBTestView *view = RB_TEST_VIEW (player);
+
+	return (const char *) view->priv->title;
 }
 
 static const char *
 rb_test_view_get_artist (RBViewPlayer *player)
 {
-	return NULL;
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+
+	if (node != NULL)
+	{
+		node = rb_node_get_grandparent (node);
+		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+	}
+	else
+		return NULL;
 }
 
 static const char *
 rb_test_view_get_album (RBViewPlayer *player)
 {
-	return NULL;
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+
+	if (node != NULL)
+	{
+		node = rb_node_get_parent (node);
+		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+	}
+	else
+		return NULL;
 }
 
 static const char *
 rb_test_view_get_song (RBViewPlayer *player)
 {
-	return NULL;
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+
+	if (node != NULL)
+	{
+		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+	}
+	else
+		return NULL;
 }
 
 static GdkPixbuf *
@@ -423,15 +504,91 @@ rb_test_view_get_pixbuf (RBViewPlayer *player)
 static MonkeyMediaAudioStream *
 rb_test_view_get_stream (RBViewPlayer *player)
 {
-	return NULL;
+	RBTestView *view = RB_TEST_VIEW (player);
+
+	return view->priv->playing_stream;
 }
 
 static void
 rb_test_view_start_playing (RBViewPlayer *player)
 {
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+
+	node = rb_node_view_get_first_node (view->priv->songs);
+
+	rb_test_view_set_playing_node (view, node);
 }
 
 static void
 rb_test_view_stop_playing (RBViewPlayer *player)
 {
+	RBTestView *view = RB_TEST_VIEW (player);
+
+	rb_test_view_set_playing_node (view, NULL);
+}
+
+static void
+rb_test_view_set_playing_node (RBTestView *view,
+			       RBNode *node)
+{
+	rb_node_view_set_playing_node (view->priv->songs, node);
+
+	g_free (view->priv->title);
+
+	if (node == NULL)
+	{
+		view->priv->playing_stream = NULL;
+
+		view->priv->title = NULL;
+	}
+	else
+	{
+		GError *error = NULL;
+		const char *uri = rb_node_get_string_property (node, SONG_PROPERTY_URI);
+		const char *artist = rb_node_get_string_property (rb_node_get_grandparent (node), NODE_PROPERTY_NAME);
+		const char *song = rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+
+		g_assert (uri != NULL);
+		
+		view->priv->playing_stream = monkey_media_audio_stream_new (uri, &error);
+		if (error != NULL)
+		{
+			rb_error_dialog (_("Failed to create stream for %s, error was:\n%s"),
+					 uri, error->message);
+			g_error_free (error);
+		}
+		
+		g_signal_connect (G_OBJECT (view->priv->playing_stream),
+				  "end_of_stream",
+				  G_CALLBACK (song_eos_cb),
+				  view);
+		
+		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
+	}
+}
+
+static void
+song_activated_cb (RBNodeView *view,
+		   RBNode *node,
+		   RBTestView *test_view)
+{
+	rb_test_view_set_playing_node (test_view, node);
+
+	rb_view_player_changed (RB_VIEW_PLAYER (test_view));
+}
+
+static void
+node_view_changed_cb (RBNodeView *view,
+		      RBTestView *test_view)
+{
+
+	rb_view_player_changed (RB_VIEW_PLAYER (test_view));
+}
+
+static void
+song_eos_cb (MonkeyMediaStream *stream,
+	     RBTestView *view)
+{
+	rb_test_view_next (RB_VIEW_PLAYER (view));
 }

@@ -51,20 +51,27 @@ typedef struct
 	void (*node_activated) (RBNodeView *view, RBNode *node);
 
 	void (*have_selection) (RBNodeView *view, gboolean selection);
+
+	void (*changed)        (RBNodeView *view);
 } RBNodeViewClass;
 
-GType       rb_node_view_get_type         (void);
+GType       rb_node_view_get_type          (void);
 
-RBNodeView *rb_node_view_new              (RBNode *root,
-					   const char *view_desc_file);
+RBNodeView *rb_node_view_new               (RBNode *root,
+					    const char *view_desc_file);
 
-void        rb_node_view_set_filter_root  (RBNodeView *view,
-				           RBNode *root);
+void        rb_node_view_set_filter_root   (RBNodeView *view,
+				            RBNode *root);
 
-void        rb_node_view_set_playing_node (RBNodeView *view,
-					   RBNode *node);
+void        rb_node_view_set_playing_node  (RBNodeView *view,
+					    RBNode *node);
+RBNode     *rb_node_view_get_playing_node  (RBNodeView *view);
 
-GList      *rb_node_view_get_selection    (RBNodeView *view);
+RBNode     *rb_node_view_get_next_node     (RBNodeView *view);
+RBNode     *rb_node_view_get_previous_node (RBNodeView *view);
+RBNode     *rb_node_view_get_first_node    (RBNodeView *view);
+
+GList      *rb_node_view_get_selection     (RBNodeView *view);
 
 G_END_DECLS
 

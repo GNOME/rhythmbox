@@ -371,29 +371,23 @@ static void
 rb_shell_player_set_play_button (RBShellPlayer *player,
 			         PlayButtonState state)
 {
-	const char *tlabel = NULL, *mlabel = NULL, *icon = NULL, *verb = NULL, *tip = NULL;
+	const char *tlabel = NULL, *mlabel = NULL, *verb = NULL;
 
 	switch (state)
 	{
 	case PLAY_BUTTON_PAUSE:
 		tlabel = _("Pause");
 		mlabel = _("_Pause");
-		tip = _("Temporarily stop playing");
-		icon = RB_STOCK_PAUSE;
 		verb = "Pause";
 		break;
 	case PLAY_BUTTON_PLAY:
 		tlabel = _("Play");
 		mlabel = _("_Play");
-		tip = _("Start playing");
-		icon = RB_STOCK_PLAY;
 		verb = "Play";
 		break;
 	case PLAY_BUTTON_STOP:
 		tlabel = _("Stop");
 		mlabel = _("_Stop");
-		tip = _("Stop playing");
-		icon = RB_STOCK_STOP;
 		verb = "Stop";
 		break;
 	default:
@@ -403,8 +397,6 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 
 	rb_bonobo_set_label (player->priv->component, TOOLBAR_PATH_PLAY, tlabel);
 	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
-	rb_bonobo_set_tip (player->priv->component, CMD_PATH_PLAY, tip);
-	rb_bonobo_set_icon (player->priv->component, CMD_PATH_PLAY, icon);
 	rb_bonobo_set_verb (player->priv->component, CMD_PATH_PLAY, verb);
 }
 

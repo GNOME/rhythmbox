@@ -57,6 +57,15 @@ static void rb_node_view_row_activated_cb (GtkTreeView *treeview,
 			                   GtkTreePath *path,
 			                   GtkTreeViewColumn *column,
 			                   RBNodeView *view);
+static void rb_tree_model_node_row_inserted_cb (RBTreeModelNode *model,
+				                GtkTreePath *path,
+				                GtkTreeIter *iter,
+				                RBNodeView *view);
+static void rb_tree_model_node_row_deleted_cb (RBTreeModelNode *model,
+				               GtkTreePath *path,
+			                       RBNodeView *view);
+static RBNode *rb_node_view_get_node (RBNodeView *view,
+		                      gboolean down);
 
 struct RBNodeViewPrivate
 {
@@ -79,6 +88,7 @@ enum
 	NODE_SELECTED,
 	NODE_ACTIVATED,
 	HAVE_SELECTION,
+	CHANGED,
 	LAST_SIGNAL
 };
 
@@ -194,6 +204,15 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	rb_node_view_signals[CHANGED] =
+		g_signal_new ("changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeViewClass, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -241,6 +260,8 @@ rb_node_view_set_property (GObject *object,
 
 			g_object_set_property (G_OBJECT (view->priv->nodemodel),
 				               "filter-root", value);
+			
+			g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -332,6 +353,14 @@ rb_node_view_construct (RBNodeView *view)
 	char *tmp;
 
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
+	g_signal_connect (G_OBJECT (view->priv->nodemodel),
+			  "row_inserted",
+			  G_CALLBACK (rb_tree_model_node_row_inserted_cb),
+			  view);
+	g_signal_connect (G_OBJECT (view->priv->nodemodel),
+			  "row_deleted",
+			  G_CALLBACK (rb_tree_model_node_row_deleted_cb),
+			  view);
 	view->priv->filtermodel = gtk_tree_model_filter_new_with_model (GTK_TREE_MODEL (view->priv->nodemodel),
 							                RB_TREE_MODEL_NODE_COL_VISIBLE,
 							                NULL);
@@ -500,6 +529,103 @@ rb_node_view_set_playing_node (RBNodeView *view,
 		      NULL);
 }
 
+RBNode *
+rb_node_view_get_playing_node (RBNodeView *view)
+{
+	RBNode *node;
+	
+	g_return_val_if_fail (RB_IS_NODE_VIEW (view), NULL);
+
+	g_object_get (G_OBJECT (view),
+		      "playing-node", &node,
+		      NULL);
+
+	return node;
+}
+
+static RBNode *
+rb_node_view_get_node (RBNodeView *view,
+		       gboolean down)
+{
+	RBNode *playing_node = rb_node_view_get_playing_node (view);
+	GtkTreeIter iter;
+	GValue val = {0, };
+	gboolean visible, found;
+	GtkTreePath *path;
+
+	g_assert (playing_node != NULL);
+
+	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
+					   playing_node, &iter);
+	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
+				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
+	visible = g_value_get_boolean (&val);
+	g_value_unset (&val);
+
+	if (visible == FALSE)
+		return NULL;
+
+	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter, &iter);
+	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter, &iter);
+
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->sortmodel), &iter);
+
+	if (down == TRUE)
+		gtk_tree_path_down (path);
+	else
+	{
+		if (gtk_tree_path_up (path) == FALSE)
+		{
+			gtk_tree_path_free (path);
+			return NULL;
+		}
+	}
+
+	found = gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &iter, path);
+
+	gtk_tree_path_free (path);
+
+	if (found == FALSE)
+		return NULL;
+
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter, &iter);
+	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter, &iter);
+
+	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+}
+
+RBNode *
+rb_node_view_get_next_node (RBNodeView *view)
+{
+	return rb_node_view_get_node (view, TRUE);
+}
+
+RBNode *
+rb_node_view_get_previous_node (RBNodeView *view)
+{	
+	return rb_node_view_get_node (view, FALSE);
+}
+
+RBNode *
+rb_node_view_get_first_node (RBNodeView *view)
+{
+	GtkTreeIter iter;
+	
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
+				       &iter);
+
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&iter, &iter);
+	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &iter, &iter);
+	
+	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+}
+
 static void
 get_selection (GtkTreeModel *model,
 	       GtkTreePath *path,
@@ -637,4 +763,21 @@ rb_node_view_row_activated_cb (GtkTreeView *treeview,
 	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &iter);
 
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_ACTIVATED], 0, node);
+}
+
+static void
+rb_tree_model_node_row_inserted_cb (RBTreeModelNode *model,
+				    GtkTreePath *path,
+				    GtkTreeIter *iter,
+				    RBNodeView *view)
+{
+	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+}
+
+static void
+rb_tree_model_node_row_deleted_cb (RBTreeModelNode *model,
+				   GtkTreePath *path,
+			           RBNodeView *view)
+{
+	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
 }
