@@ -429,6 +429,10 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv->volume_button = GTK_WIDGET (rb_volume_new ());
 
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
+			      GTK_WIDGET (player->priv->volume_button), 
+			      _("Volume Control"), NULL);
+
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
 	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 0);
