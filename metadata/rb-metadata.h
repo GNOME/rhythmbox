@@ -93,7 +93,7 @@ RBMetaData *	rb_metadata_new		(void);
 
 GType		rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field);
 
-gboolean	rb_metadata_can_save	(RBMetaData *md);
+gboolean	rb_metadata_can_save	(RBMetaData *md, const char *mimetype);
 
 void		rb_metadata_load	(RBMetaData *md,
 					 const char *uri,
@@ -101,6 +101,8 @@ void		rb_metadata_load	(RBMetaData *md,
 
 void		rb_metadata_save	(RBMetaData *md,
 					 GError **error);
+
+const char *	rb_metadata_get_mime	(RBMetaData *md);
 
 gboolean	rb_metadata_get		(RBMetaData *md, RBMetaDataField field,
 					 GValue *val);

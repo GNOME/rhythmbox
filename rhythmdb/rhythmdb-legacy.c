@@ -93,7 +93,12 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				g_free (xml);
 				break;
 			case 12: /* RB_NODE_PROP_LOCATION */
-				location = xmlNodeGetContent (node_child);
+			{
+				char *tmp;
+        			tmp = xmlNodeGetContent (node_child);
+				location = gnome_vfs_escape_path_string (tmp);
+				g_free (tmp);
+			}
 				break;
 			case 13: /* RB_NODE_PROP_MTIME */
 				xml = xmlNodeGetContent (node_child);

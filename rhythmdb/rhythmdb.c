@@ -658,6 +658,14 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	return ret;
 }
 
+gboolean
+rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry)
+{
+	return rb_metadata_can_save (db->priv->metadata,
+				     rhythmdb_entry_get_string (db, entry,
+								RHYTHMDB_PROP_MIMETYPE));
+}
+
 /* Threading: any thread
  */
 static void
@@ -697,7 +705,16 @@ set_metadata_string_default_unknown (RhythmDB *db, RhythmDBEntry *entry,
 static void
 set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 {
+	const char *mime;
 	GValue val = {0,};
+
+	g_value_init (&val, G_TYPE_STRING);
+	mime = rb_metadata_get_mime (db->priv->metadata);
+	if (mime) {
+		g_value_set_string (&val, mime);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MIMETYPE, &val);
+	}
+	g_value_unset (&val);
 
 	/* track number */
 	if (!rb_metadata_get (db->priv->metadata,
@@ -1446,6 +1463,8 @@ rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
 		return "last-played-str";
 	case RHYTHMDB_PROP_BITRATE:
 		return "bitrate";
+	case RHYTHMDB_PROP_MIMETYPE:
+		return "mimetype";
 	default:
 		g_assert_not_reached ();
 	}
@@ -1848,6 +1867,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate"),
+			ENUM_ENTRY (RHYTHMDB_PROP_MIMETYPE, "Mime Type (gchararray)"),
 			{ 0, 0, 0 }
 		};
 

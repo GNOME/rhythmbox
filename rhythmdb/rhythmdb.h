@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Header for RhythmDB - Rhythmbox backend queryable database
  *
- *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -59,8 +59,8 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_LESS,
 } RhythmDBQueryType;
 
-#define RHYTHMDB_NUM_PROPERTIES 23
-#define RHYTHMDB_NUM_SAVED_PROPERTIES 14
+#define RHYTHMDB_NUM_PROPERTIES 24
+#define RHYTHMDB_NUM_SAVED_PROPERTIES 15
 
 typedef enum
 {
@@ -78,11 +78,12 @@ typedef enum
 	RHYTHMDB_PROP_PLAY_COUNT,
 	RHYTHMDB_PROP_LAST_PLAYED,
 	RHYTHMDB_PROP_BITRATE,
+	RHYTHMDB_PROP_MIMETYPE,
 } RhythmDBPropType;
 
 typedef enum
 {
-	RHYTHMDB_PROP_TITLE_SORT_KEY = 14,
+	RHYTHMDB_PROP_TITLE_SORT_KEY = 15,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
 	RHYTHMDB_PROP_ARTIST_SORT_KEY,
 	RHYTHMDB_PROP_ALBUM_SORT_KEY,
@@ -183,6 +184,8 @@ void		rhythmdb_read_lock	(RhythmDB *db);
 void		rhythmdb_write_lock	(RhythmDB *db);
 void		rhythmdb_read_unlock	(RhythmDB *db);
 void		rhythmdb_write_unlock	(RhythmDB *db);
+
+gboolean	rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry);
 
 RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
 

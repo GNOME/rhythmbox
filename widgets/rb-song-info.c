@@ -82,6 +82,8 @@ struct RBSongInfoPrivate
 	RhythmDBEntry *current_entry;
 	GList *selected_entries;
 
+	gboolean editable;
+
 	/* the dialog widgets */
 	GtkWidget   *backward;
 	GtkWidget   *forward;
@@ -91,10 +93,13 @@ struct RBSongInfoPrivate
 	GtkWidget   *title;
 	GtkWidget   *title_label;
 	GtkWidget   *artist;
+	GtkWidget   *artist_label;
 	GtkWidget   *album;
+	GtkWidget   *album_label;
+	GtkWidget   *genre;
+	GtkWidget   *genre_label;
 	GtkWidget   *track_cur;
 	GtkWidget   *track_cur_label;
-	GtkWidget   *genre;
 
 	GtkWidget   *bitrate;
 	GtkWidget   *duration;
@@ -279,12 +284,14 @@ rb_song_info_init (RBSongInfo *song_info)
 		GtkWidget *label;
 
 		label = glade_xml_get_widget (xml, "album_label");
+		song_info->priv->album_label = label;
 		str_final = g_strdup_printf ("<b>%s</b>",
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
 		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "artist_label");
+		song_info->priv->artist_label = label;
 		str_final = g_strdup_printf ("<b>%s</b>",
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
@@ -297,6 +304,7 @@ rb_song_info_init (RBSongInfo *song_info)
 		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "genre_label");
+		song_info->priv->genre_label = label;
 		str_final = g_strdup_printf ("<b>%s</b>",
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
@@ -481,7 +489,8 @@ rb_song_info_response_cb (GtkDialog *dialog,
 			  RBSongInfo *song_info)
 {
 	if (response_id == GTK_RESPONSE_CLOSE) {
-		rb_song_info_sync_entries (RB_SONG_INFO (dialog));
+		if (song_info->priv->editable)
+			rb_song_info_sync_entries (RB_SONG_INFO (dialog));
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 	}
 }
@@ -739,6 +748,8 @@ static gboolean
 rb_song_info_update_current_values (RBSongInfo *song_info)
 {
 	GList *selected_entries;
+	GList *tem;
+	gboolean editable = TRUE;
 	gboolean multiselect = FALSE;
 
 	g_list_free (song_info->priv->selected_entries);
@@ -752,6 +763,16 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 		return FALSE;
 	}
 
+	rhythmdb_read_lock (song_info->priv->db);
+	for (tem = selected_entries; tem; tem = tem->next)
+		if (!rhythmdb_entry_is_editable (song_info->priv->db,
+						 selected_entries->data)) {
+			editable = FALSE;
+			multiselect = TRUE; /* Just to avoid more conditionals */
+			break;
+		}
+	rhythmdb_read_unlock (song_info->priv->db);
+
 	if (selected_entries->next == NULL) {
 		song_info->priv->current_entry = selected_entries->data;
 		song_info->priv->selected_entries = NULL;
@@ -762,12 +783,20 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 		multiselect = TRUE;
 	}
 
-	if (multiselect) 
+	if (multiselect && editable) 
 		gtk_notebook_remove_page (GTK_NOTEBOOK (song_info->priv->notebook), 1);
 	gtk_widget_set_sensitive (song_info->priv->title, !multiselect);
 	gtk_widget_set_sensitive (song_info->priv->title_label, !multiselect);
+	gtk_widget_set_sensitive (song_info->priv->artist, editable);
+	gtk_widget_set_sensitive (song_info->priv->artist_label, editable);
+	gtk_widget_set_sensitive (song_info->priv->album, editable);
+	gtk_widget_set_sensitive (song_info->priv->album_label, editable);
+	gtk_widget_set_sensitive (song_info->priv->genre, editable);
+	gtk_widget_set_sensitive (song_info->priv->genre_label, editable);
 	gtk_widget_set_sensitive (song_info->priv->track_cur, !multiselect);
 	gtk_widget_set_sensitive (song_info->priv->track_cur_label, !multiselect);
+
+	song_info->priv->editable = editable;
 	return TRUE;
 }
 

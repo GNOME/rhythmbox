@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Implementation of metadata reading using GStreamer
  *
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,6 +46,12 @@ struct RBMetaDataPrivate
 	gboolean eos;
 	GError *error;
 };
+
+static struct
+{
+	const char *mimetype;
+	const char *plugin;
+} rb_metadata_type_map[] = {{"application/x-id3", "id3tag"}, };
 
 static GObjectClass *parent_class = NULL;
 
@@ -372,9 +378,13 @@ rb_metadata_load (RBMetaData *md,
 }
 
 gboolean
-rb_metadata_can_save (RBMetaData *md)
+rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
-	return TRUE;
+	int i;
+	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
+		if (!strcmp (rb_metadata_type_map[i].mimetype, mimetype))
+			return TRUE;
+	return FALSE;
 }
 
 static void
@@ -404,6 +414,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
 	GnomeVFSResult result;
+	int i;
 
 	g_return_if_fail (md->priv->uri != NULL);
 	g_return_if_fail (md->priv->type != NULL);
@@ -423,11 +434,13 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
 	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
 
-	if (!strcmp (md->priv->type, "audio/x-vorbis"))
-		plugin_name = "vorbisfile";
-	else if (!strcmp (md->priv->type, "application/x-id3"))
-		plugin_name = "id3tag";
-	else {
+	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
+		if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type)) {
+			plugin_name = rb_metadata_type_map[i].plugin;
+			break;
+		}
+	
+	if (!plugin_name) {
 		g_set_error (error,
 			     RB_METADATA_ERROR,
 			     RB_METADATA_ERROR_UNSUPPORTED,
@@ -505,6 +518,12 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field,
 		return TRUE;
 	}
 	return FALSE;
+}
+
+const char *
+rb_metadata_get_mime (RBMetaData *md)
+{
+	return md->priv->type;
 }
 
 gboolean

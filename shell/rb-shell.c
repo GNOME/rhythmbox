@@ -1829,15 +1829,18 @@ ask_file_response_cb (GtkDialog *dialog,
 	filecur = files;
 
 	if (*filecur != NULL) {
-		char *tmp;
+		char *tmp, *tmp2;
 		GnomeVFSResult result;
 		GnomeVFSFileInfo *info = gnome_vfs_file_info_new ();
 
 		if ((result = gnome_vfs_get_file_info (*filecur, info, GNOME_VFS_FILE_INFO_DEFAULT| GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE)) == GNOME_VFS_OK) {
-			if (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY)
+			if (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) 
 				tmp = g_strconcat (*filecur, "/", NULL);
-			else
-				tmp = g_path_get_dirname (*filecur);
+			else {
+				tmp2 = g_path_get_dirname (*filecur);
+				tmp = g_strconcat (tmp2, "/", NULL);
+				g_free (tmp2);
+			}
 			eel_gconf_set_string (CONF_STATE_ADD_DIR, tmp);
 			g_free (tmp);
 		}

@@ -36,4 +36,4 @@ EXTRA_DIST = Rhythmbox.idl
 
 ## idl compiler generates an unused variable at the top of Rhythmbox-common.c,
 ## which breaks -Werror on Mac OSX.
-CFLAGS := $(CFLAGS) -Wno-error
+AM_CFLAGS = -Wno-error
