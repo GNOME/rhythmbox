@@ -142,7 +142,6 @@ rb_view_player_next (RBViewPlayer *player)
 	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
 
 	iface->impl_next (player);
-	iface->impl_jump_to_current (player);
 
 	rb_view_player_notify_changed (player);
 }
@@ -153,7 +152,6 @@ rb_view_player_previous (RBViewPlayer *player)
 	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
 
 	iface->impl_previous (player);
-	iface->impl_jump_to_current (player);
 
 	rb_view_player_notify_changed (player);
 }
@@ -244,4 +242,12 @@ void
 rb_view_player_notify_playing (RBViewPlayer *player)
 {
 	g_signal_emit (G_OBJECT (player), rb_view_player_signals[START_PLAYING], 0);
+}
+
+void
+rb_view_player_jump_to_current (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	iface->impl_jump_to_current (player);
 }

@@ -95,6 +95,8 @@ RBViewPlayerResult      rb_view_player_have_previous    (RBViewPlayer *player);
 void                    rb_view_player_next             (RBViewPlayer *player);
 void                    rb_view_player_previous         (RBViewPlayer *player);
 
+void                    rb_view_player_jump_to_current  (RBViewPlayer *player);
+
 const char             *rb_view_player_get_title        (RBViewPlayer *player);
 
 const char             *rb_view_player_get_artist       (RBViewPlayer *player);

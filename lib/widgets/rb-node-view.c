@@ -1649,7 +1649,7 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
   GtkTreeViewColumn *column;
   GtkAllocation allocation;
   gint width = 0, n_expand_columns = 0, left_over_width = 0, total_requested_width = 0;
-  gint max_width, min_width, expand_col_num;
+  gint min_width, expand_col_num, n_cols = 0;
   gboolean invalidate_all = FALSE;
   GArray *expand_col_widths;
 
@@ -1710,21 +1710,13 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
 	  g_array_append_val (expand_col_widths, col_width);
         }
 
+      n_cols++;
       last_column = list;
     }
 
   left_over_width = widget->allocation.width - total_requested_width;
 
-  if (n_expand_columns > 1)
-    {
-      max_width = widget->allocation.width / (n_expand_columns - 1); /* tunable */
-      min_width = widget->allocation.width / (n_expand_columns + 2); /* tunable */
-    }
-  else
-    {
-      max_width = widget->allocation.width;
-      min_width = widget->allocation.width / (n_expand_columns + 2); /* tunable */
-    }
+  min_width = widget->allocation.width / n_cols;
 
   while (left_over_width < 0)
     {

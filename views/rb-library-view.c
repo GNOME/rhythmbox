@@ -714,7 +714,7 @@ rb_library_view_jump_to_current (RBViewPlayer *player)
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
-	node  = rb_node_view_get_playing_node (view->priv->songs);
+	node = rb_node_view_get_playing_node (view->priv->songs);
 	if (node != NULL)
 	{
 		rb_node_view_scroll_to_node (view->priv->songs, node);
@@ -1091,14 +1091,13 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 	if (rb_node_view_get_node_visible (view->priv->songs, node) == FALSE)
 	{
 		/* adjust filtering to show it */
-		rb_node_view_select_node (view->priv->artists,
-					  rb_node_song_get_artist (RB_NODE_SONG (node)));
-		rb_node_view_select_node (view->priv->albums,
-					  rb_node_song_get_album (RB_NODE_SONG (node)));
+		rb_node_view_scroll_to_node (view->priv->artists,
+					     rb_node_song_get_artist (RB_NODE_SONG (node)));
+		rb_node_view_scroll_to_node (view->priv->albums,
+					     rb_node_song_get_album (RB_NODE_SONG (node)));
 	}
 
 	rb_node_view_scroll_to_node (view->priv->songs, node);
-	rb_node_view_select_node (view->priv->songs, node);
 }
 
 static void
