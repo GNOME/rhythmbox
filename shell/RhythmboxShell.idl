@@ -5,6 +5,8 @@ module GNOME
 	interface RhythmboxShell : Bonobo::Unknown
 	{
 		void addToLibrary (in string uri);
+
+		void grabFocus ();
 	
 		void quit ();
 	};

@@ -171,4 +171,9 @@ rb_handle_cmdline (char **argv, int argc)
 	{
 		GNOME_RhythmboxShell_quit (shell, &ev);
 	}
+
+	/* at the very least, we focus the window */
+	GNOME_RhythmboxShell_grabFocus (shell, &ev);
+
+	
 }

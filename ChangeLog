@@ -1,3 +1,20 @@
+2002-09-13  James Willcox  <jwillcox@gnome.org>
+
+	* shell/RhythmboxShell.idl:  added a grabFocus() method.
+	* shell/main.c: (rb_handle_cmdline):  grab the focus of the existing
+	instance.
+	* shell/rb-shell.c: (rb_shell_class_init),
+	(rb_shell_corba_grab_focus), (rb_shell_sync_window_visibility):
+	Implemented the grabFocus method.
+	
+	Fixes #76562 (mostly)
+
+2002-09-13  James Willcox  <jwillcox@gnome.org>
+
+	* shell/rb-shell.c: (rb_shell_sync_window_visibility):
+	Save the position of the window when hiding, and restore it
+	when showing.  Nice when showing/hiding the window with the tray app.
+
 2002-09-13  Olivier Martin <oleevye@wanadoo.fr>
 
 	* lib/widgets/rb-song-info.c: (rb_song_info_new):

@@ -68,6 +68,8 @@ static void rb_shell_corba_quit (PortableServer_Servant _servant,
 static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 					   const CORBA_char *uri,
 					   CORBA_Environment *ev);
+static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
+				       CORBA_Environment *ev);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -343,6 +345,7 @@ rb_shell_class_init (RBShellClass *klass)
 
 	epv->quit         = rb_shell_corba_quit;
 	epv->addToLibrary = rb_shell_corba_add_to_library;
+	epv->grabFocus    = rb_shell_corba_grab_focus;
 }
 
 static void
@@ -457,6 +460,23 @@ rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
 	rb_library_add_uri (shell->priv->library, (char *) uri);
+}
+
+static void
+rb_shell_corba_grab_focus (PortableServer_Servant _servant,
+			   CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	gboolean visible;
+
+	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
+	if (visible)
+	{
+		gtk_window_present (GTK_WINDOW (shell->priv->window));
+		gtk_widget_grab_focus (shell->priv->window);
+	}
+	else
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 }
 
 void
@@ -1414,13 +1434,23 @@ static void
 rb_shell_sync_window_visibility (RBShell *shell)
 {
 	gboolean visible;
+	static int window_x = 0;
+	static int window_y = 0;
 
 	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
 	
 	if (visible == TRUE)
+	{
+		gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
+				 window_y);
 		gtk_widget_show_now (shell->priv->window);
+	}
 	else
+	{
+		gtk_window_get_position (GTK_WINDOW (shell->priv->window),
+					 &window_x, &window_y);
 		gtk_widget_hide (shell->priv->window);
+	}
 	
 	rb_bonobo_set_active (shell->priv->ui_component,
 			      CMD_PATH_SHOW_WINDOW,
