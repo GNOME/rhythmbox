@@ -1496,7 +1496,7 @@ rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 GtkWidget *
 rb_shell_new_group_dialog (RBShell *shell)
 {
-	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox;
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align, *vbox2;
 	GList *selection;
 	char *tmp;
 	
@@ -1524,8 +1524,10 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION,
 					  GTK_ICON_SIZE_DIALOG);
-	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
-	vbox = gtk_vbox_new (FALSE, 6);
+	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), image);
+	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
+	vbox = gtk_vbox_new (FALSE, 0);
 
 	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new music group."));
 	label = gtk_label_new (tmp);
@@ -1533,16 +1535,19 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
+	vbox2 = gtk_vbox_new (FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (vbox), vbox2, FALSE, TRUE, 0);
+	
 	entry = gtk_entry_new ();
 	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
-	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox2), entry, FALSE, TRUE, 0);
 
-	cbox = gtk_check_button_new_with_label (_("Add the selected songs to the new group."));
+	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new group"));
 	selection = rb_view_get_selection (shell->priv->selected_view);
 	if (selection == NULL)
 		gtk_widget_set_sensitive (cbox, FALSE);
-	gtk_box_pack_start (GTK_BOX (vbox), cbox, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox2), cbox, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
