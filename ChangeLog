@@ -2,6 +2,70 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-09 21:59:33 GMT	Colin Walters <walters@verbum.org>	patch-130
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-130
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/it.po po/no.po
+
+
+2004-03-09 21:51:36 GMT	Colin Walters <walters@verbum.org>	patch-129
+
+    Summary:
+      merge from mterry: automatic rating work
+    Revision:
+      rhythmbox--main--0.7--patch-129
+
+    Patches applied:
+    
+     * mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-3
+       change default rating from 3.0 to 2.5
+    
+     * mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-4
+       per-entry auto-rating
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-shell-player.c
+     sources/rb-iradio-source.c widgets/rb-cell-renderer-rating.c
+     widgets/rb-entry-view.c widgets/rb-rating.c
+     widgets/rb-song-info.c
+
+    new patches:
+     mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-3
+     mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-4
+
+
+2004-03-09 18:29:25 GMT	Colin Walters <walters@verbum.org>	patch-128
+
+    Summary:
+      use rb_ask_dir on druid load
+    Revision:
+      rhythmbox--main--0.7--patch-128
+
+
+    modified files:
+     ChangeLog widgets/rb-druid.c
+
+
+2004-03-09 18:27:31 GMT	Colin Walters <walters@verbum.org>	patch-127
+
+    Summary:
+      add new rb_ask_dir API
+    Revision:
+      rhythmbox--main--0.7--patch-127
+
+
+    modified files:
+     ChangeLog lib/rb-dialog.c lib/rb-dialog.h
+
+
 2004-03-09 04:55:52 GMT	Colin Walters <walters@verbum.org>	patch-126
 
     Summary:
