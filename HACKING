@@ -2,18 +2,18 @@ In order to keep the code nice and clean we have a few requirements you'll
 need to stick to in order to get your patch accepted:
 
 - use 8-space tabs for indentation
-- curly brackets are on a new line
-- please compare with NULL or FALSE isntead of using "!"
+- curly brackets are NOT on a new line (we are slowly converting the code)
 - if statements are written like this: "if (this != that)"
 - g_list_next/previous is preferred to list->next or list->previous
 - every function should have a prototype
 - callback functions have a suffix _cb
 
-  Comment blocks are written like this:
+  Important comment blocks are written like this:
   
 /**
  * bla_bla_cb: This is an example comment block
  */
 
-Do NOT commit to this module without permission from me (jorn on IRC,
-jorn@nl.linux.org email addy)
+You may commit small, obvious fixes to this module.  Anything larger
+should be run by Colin Walters <walters@debian.org>, unless you
+know I've given you blanket commit permission.
