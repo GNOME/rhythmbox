@@ -75,6 +75,7 @@ static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 						   double score,
 						   RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
+static GtkWidget * boldify_label (GtkWidget *label);
 
 struct RBStationPropertiesDialogPrivate
 {
@@ -195,6 +196,14 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
 	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
 
+	boldify_label (glade_xml_get_widget (xml, "titleLabel"));
+	boldify_label (glade_xml_get_widget (xml, "genreLabel"));
+	boldify_label (glade_xml_get_widget (xml, "locationLabel"));
+	boldify_label (glade_xml_get_widget (xml, "ratingLabel"));
+	boldify_label (glade_xml_get_widget (xml, "lastplayedDescLabel"));
+	boldify_label (glade_xml_get_widget (xml, "playcountDescLabel"));
+	boldify_label (glade_xml_get_widget (xml, "bitrateDescLabel"));
+
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating, 
 				 "rated",
@@ -279,6 +288,17 @@ rb_station_properties_dialog_new (RBEntryView *entry_view)
 	rb_station_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
+}
+
+static GtkWidget *
+boldify_label (GtkWidget *label)
+{
+	gchar *str_final;
+	str_final = g_strdup_printf ("<b>%s</b>",
+				     gtk_label_get_label (GTK_LABEL (label)));
+	gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+	g_free (str_final);
+	return label;
 }
 
 static void
