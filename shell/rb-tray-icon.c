@@ -393,8 +393,9 @@ static void
 rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 				    RBTrayIcon *icon)
 {
+	float volume;
 	rb_debug ("tray button scroll");
-	float volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+	volume = eel_gconf_get_float (CONF_STATE_VOLUME);
 	switch(event->scroll.direction) {
 	case GDK_SCROLL_UP:
 		volume += 0.1;
