@@ -172,7 +172,10 @@ struct RBShellPlayerPrivate
 	guint buffering_progress_idle_id;
 
 	GtkWidget *prev_button;
-	GtkWidget *play_button;
+	GtkWidget *play_pause_stop_button;
+	GtkWidget *play_image;
+	GtkWidget *pause_image;
+	GtkWidget *stop_image;
 	GtkWidget *next_button;
 
 	RBPlayer *player_widget;
@@ -357,12 +360,20 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect_swapped (G_OBJECT (player->priv->prev_button),
 				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
 
-	/* Play button */
-	image = gtk_image_new_from_stock (RB_STOCK_PLAY,
-					  GTK_ICON_SIZE_LARGE_TOOLBAR);
-	player->priv->play_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->play_button), image);
-	g_signal_connect_swapped (G_OBJECT (player->priv->play_button),
+	/* Button images */
+	player->priv->play_image = gtk_image_new_from_stock (RB_STOCK_PLAY,
+							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (player->priv->play_image);
+	player->priv->pause_image = gtk_image_new_from_stock (RB_STOCK_PAUSE,
+							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (player->priv->pause_image);
+	player->priv->stop_image = gtk_image_new_from_stock (RB_STOCK_STOP,
+							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (player->priv->stop_image);
+
+	player->priv->play_pause_stop_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button), player->priv->play_image);
+	g_signal_connect_swapped (G_OBJECT (player->priv->play_pause_stop_button),
 				  "clicked", G_CALLBACK (rb_shell_player_playpause), player);
 
 	/* Next button */
@@ -374,7 +385,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_button, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (player), hbox, FALSE, TRUE, 0);
@@ -1031,27 +1042,40 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 {
 	const char *tlabel = NULL, *mlabel = NULL, *verb = NULL;
 
+	gtk_container_remove (GTK_CONTAINER (player->priv->play_pause_stop_button),
+			      gtk_bin_get_child (GTK_BIN (player->priv->play_pause_stop_button)));
+
 	switch (state)
 	{
 	case PLAY_BUTTON_PAUSE:
+		rb_debug ("setting pause button");
 		tlabel = _("Pause");
 		mlabel = _("_Pause");
 		verb = "Pause";
+		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
+				   player->priv->pause_image);
 		break;
 	case PLAY_BUTTON_PLAY:
+		rb_debug ("setting play button");
 		tlabel = _("Play");
 		mlabel = _("_Play");
 		verb = "Play";
+		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
+				   player->priv->play_image);
 		break;
 	case PLAY_BUTTON_STOP:
+		rb_debug ("setting STOP button");
 		tlabel = _("Stop");
 		mlabel = _("_Stop");
 		verb = "Stop";
+		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
+				   player->priv->stop_image);
 		break;
 	default:
 		g_error ("Should not get here!");
 		break;
 	}
+	gtk_widget_show_all (GTK_WIDGET (player->priv->play_pause_stop_button));
 
 	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
 	rb_bonobo_set_label (player->priv->component, TRAY_PATH_PLAY, mlabel);
@@ -1129,6 +1153,9 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS,
 				 have_previous);
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->prev_button), have_previous);
+
+	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button),
+				  rb_shell_player_have_first (player, source));
 
 	have_next = rb_shell_player_have_next (player, source);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT,
