@@ -38,11 +38,15 @@ typedef struct RBTreeModelSortPrivate RBTreeModelSortPrivate;
 typedef struct
 {
 	GtkTreeModelSort parent;
+
+	RBTreeModelSortPrivate *priv;
 } RBTreeModelSort;
 
 typedef struct
 {
 	GtkTreeModelSortClass parent_class;
+
+	void (*uri_from_iter) (RBTreeModelSort *model, GtkTreeIter *iter, void **uri);
 } RBTreeModelSortClass;
 
 GType		rb_tree_model_sort_get_type	(void);

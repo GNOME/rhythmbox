@@ -24,7 +24,6 @@
 #include <gtk/gtkvpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
-#include <gtk/gtktooltips.h>
 #include <libgnome/gnome-i18n.h>
 #include <bonobo/bonobo-ui-component.h>
 
@@ -173,8 +172,6 @@ struct RBLibraryViewPrivate
 	char *artist;
 	char *album;
 	char *song;
-
-	GtkTooltips *tips;
 };
 
 enum
@@ -307,11 +304,6 @@ rb_library_view_init (RBLibraryView *view)
 			  G_CALLBACK (rb_library_view_drop_cb), view);
 	gtk_drag_dest_set (GTK_WIDGET (button), GTK_DEST_DEFAULT_ALL,
 			   target_table, 1, GDK_ACTION_COPY);
-	view->priv->tips = gtk_tooltips_new ();
-	gtk_tooltips_set_tip (view->priv->tips,
-			      GTK_WIDGET (button),
-			      _("Drop files here to add them to the library"),
-			      NULL);
 
 	g_object_set (G_OBJECT (view),
 		      "sidebar-button", button,
@@ -1010,14 +1002,14 @@ rb_library_view_cmd_song_info (BonoboUIComponent *component,
 }
 
 static void
-rb_library_view_drop_cb (GtkWidget	  *widget,
-			 GdkDragContext     *context,
-			 gint                x,
-			 gint                y,
-			 GtkSelectionData   *data,
-			 guint               info,
-			 guint               time,
-			 gpointer            user_data)
+rb_library_view_drop_cb (GtkWidget *widget,
+			 GdkDragContext *context,
+			 gint x,
+			 gint y,
+			 GtkSelectionData *data,
+			 guint info,
+			 guint time,
+			 gpointer user_data)
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (user_data);
 	GList *list, *uri_list, *i;
@@ -1030,14 +1022,11 @@ rb_library_view_drop_cb (GtkWidget	  *widget,
 		return;
 	}
 
-	i = list;
 	uri_list = NULL;
 
-	while (i != NULL)
+	for (i = list; i != NULL; i = g_list_next (i))
 	{
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string (
-					(const GnomeVFSURI*) i->data, 0));
-		i = i->next;
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 	}
 	gnome_vfs_uri_list_free (list);
 
@@ -1047,13 +1036,9 @@ rb_library_view_drop_cb (GtkWidget	  *widget,
 		return;
 	}
 
-
-	uri_list = g_list_reverse (uri_list);
 	for (i = uri_list; i != NULL; i = i->next)
 	{
-		char *uri = g_strdup (i->data);
-
-		// TODO Check if this is a dir or a file
+		char *uri = i->data;
 
 		if (uri != NULL)
 		{
@@ -1061,7 +1046,6 @@ rb_library_view_drop_cb (GtkWidget	  *widget,
 		}
 
 		g_free (uri);
-		g_free (i->data);
 	}
 
 	g_list_free (uri_list);

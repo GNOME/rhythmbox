@@ -415,6 +415,24 @@ rb_node_view_new (RBNode *root,
 }
 
 static void
+uri_from_sort_iter_cb (RBTreeModelSort *model,
+		       GtkTreeIter *iter,
+		       void **uri,
+		       RBNodeView *view)
+{
+	GtkTreeIter filter_iter, node_iter;
+	RBNode *node;
+	
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (model),
+							&filter_iter, iter);
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &node_iter, &filter_iter);
+	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &node_iter);
+
+	*uri = rb_node_song_get_location (node);
+}
+
+static void
 rb_node_view_construct (RBNodeView *view)
 {
 	xmlDocPtr doc;
@@ -433,6 +451,11 @@ rb_node_view_construct (RBNodeView *view)
 	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 						  RB_TREE_MODEL_NODE_COL_VISIBLE);
 	view->priv->sortmodel = rb_tree_model_sort_new (view->priv->filtermodel);
+	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
+				 "uri_from_iter",
+				 G_CALLBACK (uri_from_sort_iter_cb),
+				 view,
+				 0);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
 			         "row_inserted",
 			         G_CALLBACK (gtk_tree_model_sort_row_inserted_cb),

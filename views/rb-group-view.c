@@ -24,7 +24,6 @@
 #include <gtk/gtkvpaned.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
-#include <gtk/gtktooltips.h>
 #include <libgnome/gnome-i18n.h>
 #include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
@@ -162,8 +161,6 @@ struct RBGroupViewPrivate
 
 	char *file;
 	char *name;
-
-	GtkTooltips *tips;
 };
 
 enum
@@ -347,11 +344,6 @@ rb_group_view_init (RBGroupView *view)
 			  G_CALLBACK (rb_group_view_drop_cb), view);
 	gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_table, 1, GDK_ACTION_COPY);
-	view->priv->tips = gtk_tooltips_new ();
-	gtk_tooltips_set_tip (view->priv->tips,
-			      GTK_WIDGET (button),
-			      _("Drop songs here to add them in this group"),
-			      NULL);
 
 	g_signal_connect (G_OBJECT (view->priv->songs),
 			  "node_activated",
@@ -1168,14 +1160,14 @@ dnd_add_handled_cb (RBLibraryAction *action,
 }
 
 static void
-rb_group_view_drop_cb (GtkWidget	  *widget,
-		       GdkDragContext     *context,
-		       gint                x,
-		       gint                y,
-		       GtkSelectionData   *data,
-		       guint               info,
-		       guint               time,
-		       gpointer            user_data)
+rb_group_view_drop_cb (GtkWidget *widget,
+		       GdkDragContext *context,
+		       gint x,
+		       gint y,
+		       GtkSelectionData *data,
+		       guint info,
+		       guint time,
+		       gpointer user_data)
 {
 	RBGroupView *view = RB_GROUP_VIEW (user_data);
 	GList *list, *uri_list, *i;
@@ -1188,14 +1180,11 @@ rb_group_view_drop_cb (GtkWidget	  *widget,
 		return;
 	}
 
-	i = list;
 	uri_list = NULL;
 
-	while (i != NULL)
+	for (i = list; i != NULL; i = g_list_next (i))
 	{
-		uri_list = g_list_prepend (uri_list, gnome_vfs_uri_to_string (
-					(const GnomeVFSURI*) i->data, 0));
-		i = i->next;
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 	}
 	gnome_vfs_uri_list_free (list);
 
@@ -1205,11 +1194,11 @@ rb_group_view_drop_cb (GtkWidget	  *widget,
 		return;
 	}
 
-
-	uri_list = g_list_reverse (uri_list);
 	for (i = uri_list; i != NULL; i = i->next)
 	{
-		char *uri = g_strdup (i->data);
+		char *uri = i->data;
+
+		g_message ("Received %s", uri);
 
 		if (uri != NULL)
 		{
@@ -1234,7 +1223,6 @@ rb_group_view_drop_cb (GtkWidget	  *widget,
 		}
 
 		g_free (uri);
-		g_free (i->data);
 	}
 
 	g_list_free (uri_list);
