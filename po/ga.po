@@ -1,17 +1,18 @@
-# arch-tag: Irish translations for rhythmbox.
-# Copyright (C) 2002, 2003 Jorn Baayen, Colin Walters
+# Irish translations for rhythmbox.
+# Copyright (C) 2002, 2003,2004 Jorn Baayen, Colin Walters
 # This file is distributed under the same license as rhythmbox.
 # David O'Callaghan <david.ocallaghan@cs.tcd.ie>, 2003.
+# Alastair McKinstry <mckinstry@debian.org>, 2004.
 # 
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome 2.6\n"
+"Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-11-28 15:38+0100\n"
-"PO-Revision-Date: 2003-12-24 20:59+0000\n"
-"Last-Translator: David O'Callaghan <david.ocallaghan@cs.tcd.ie>\n"
-"Language-Team: Irish\n"
+"PO-Revision-Date: 2004-03-21 19:33+0000\n"
+"Last-Translator: Alastair McKinstry <mckinstry@debian.org>\n"
+"Language-Team: Irish <gaeilge-gnulinux@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,11 +46,11 @@ msgstr ""
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
-msgstr ""
+msgstr "Blaosc Rhythmbox"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
-msgstr ""
+msgstr "Monarchan blaosc do Rhythmbox"
 
 #: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
 #: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
@@ -93,7 +94,7 @@ msgstr ""
 
 #: data/glade/druid.glade.h:5
 msgid "_Browse..."
-msgstr ""
+msgstr "_Brábhsáil..."
 
 #: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
@@ -680,9 +681,8 @@ msgid "Orientation"
 msgstr "Treoshuíomh "
 
 #: lib/eggtrayicon.c:119
-#, fuzzy
 msgid "The orientation of the tray."
-msgstr "Treoshuíomh an "
+msgstr ""
 
 #: lib/rb-file-helpers.c:78
 #, c-format
@@ -846,12 +846,12 @@ msgstr ""
 
 #: monkey-media/monkey-media.c:232
 msgid "GStreamer options:"
-msgstr ""
+msgstr "Roghnachais GStreamer:"
 
 #: monkey-media/monkey-media.c:509
 #, c-format
 msgid "Please remove %s"
-msgstr ""
+msgstr "Bain as %s, le do thoil"
 
 #: monkey-media/monkey-media.c:511
 #, c-format
@@ -871,7 +871,7 @@ msgstr "Rian dlúthdhiosca ceoil"
 #: monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
-msgstr ""
+msgstr "Teip ag oscailt comhad a leámh"
 
 #: monkey-media/stream-info-impl/flac-stream-info-impl.c:249
 msgid "Error decoding FLAC file"
@@ -1006,11 +1006,11 @@ msgstr ""
 
 #: shell/main.c:98
 msgid "Quit Rhythmbox"
-msgstr ""
+msgstr "Ealu as Rhythmbox"
 
 #: shell/main.c:99
 msgid "MonkeyMedia options:"
-msgstr ""
+msgstr "Roghnachais MonkeyMedia:"
 
 #: shell/main.c:199
 msgid ""
@@ -1065,7 +1065,7 @@ msgstr ""
 
 #: shell/rb-shell-player.c:1322
 msgid "_Pause"
-msgstr ""
+msgstr "_Cas"
 
 #: shell/rb-shell-player.c:1337
 msgid "Stop playback"
@@ -1138,7 +1138,9 @@ msgstr ""
 
 #: shell/rb-shell.c:1579
 msgid "translator_credits"
-msgstr "David O’Callaghan <david.ocallaghan@cs.tcd.ie>"
+msgstr 
+"David O’Callaghan <david.ocallaghan@cs.tcd.ie>\n"
+"Alastair McKinstry <mckinstry@computer.org>"
 
 #: shell/rb-shell.c:1588
 msgid "Maintainers:"
@@ -1171,7 +1173,7 @@ msgstr ""
 #: shell/rb-shell.c:1779
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
-msgstr ""
+msgstr "Teip ag rith sound-juicer: %s"
 
 #: shell/rb-source-header.c:178
 msgid "Filter music display by genre, artist, album, or title"
@@ -1389,7 +1391,7 @@ msgstr "ar an deasc"
 #: widgets/rb-song-info.c:1139
 #, c-format
 msgid "%d kbps"
-msgstr ""
+msgstr "%d kps"
 
 #: widgets/rb-song-info.c:1152
 msgid " (Mono)"
@@ -1400,7 +1402,7 @@ msgid " (Stereo)"
 msgstr " (Steiréafón)"
 
 #: widgets/rb-song-info.c:1159
-#, fuzzy, c-format
+#,  c-format
 msgid " (%d channel)"
 msgstr " (%d bealach)"
 
@@ -1413,9 +1415,3 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
-
-#~ msgid "Loading..."
-#~ msgstr "Ag lódail..."
-
-#~ msgid "Failed to find an audio track"
-#~ msgstr "Ní raibh rian ceoil ar fáil"
