@@ -91,8 +91,8 @@ static gboolean rb_playlist_source_periodic_save (RBPlaylistSource *source);
 static void name_notify_cb (GObject *obj, const char *property, gpointer unused);
 
 
-#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
-#define PLAYLIST_SOURCE_POPUP_PATH "/popups/GroupSourceList"
+#define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/PlaylistSongsList"
+#define PLAYLIST_SOURCE_POPUP_PATH "/popups/PlaylistSourceList"
 
 struct RBPlaylistSourcePrivate
 {
