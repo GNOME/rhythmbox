@@ -327,23 +327,11 @@ if test x"$have_xfree" = "xyes" ; then
 	AC_DEFINE(HAVE_XFREE, 1, [defined if you have X11/XF86keysym.h])
 fi
 
-have_xsun=no
-AC_COMPILE_IFELSE([
-	#include <X11/Sunkeysym.h>
-int main(int argc,char **argv) {
-  return 0;
-}
-], have_xsun=yes)
-AC_MSG_CHECKING(for Sun X11 headers)
-AC_MSG_RESULT($have_xsun)
-if test x"$have_xsun" = "xyes" ; then
-	AC_DEFINE(HAVE_XSUN, 1, [defined if you have X11/Sunkeysym.h])
-fi
-
 AC_ARG_ENABLE(mmkeys, AC_HELP_STRING([--disable-mmkeys],
 					[don't build with Multimedia Keys support]))
-if test x"$have_xfree" = xyes || test x"$have_xsun" = xyes; then
+if test x"$have_xfree" = xyes; then
 	if test x"$enable_mmkeys" != xno; then
+		enable_mmkeys=yes
 		AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
 	fi
 else
@@ -482,6 +470,11 @@ if test x"$enable_mp4" != "xyes"; then
 	AC_MSG_NOTICE([   MPEG-4 support is disabled])
 else
 	AC_MSG_NOTICE([** MPEG-4 support is enabled])
+fi
+if test x"$enable_mmkeys" != "xyes"; then
+	AC_MSG_NOTICE([   Multimedia keys support is disabled])
+else
+	AC_MSG_NOTICE([** Multimedia keys support is enabled])
 fi
 if test x"$enable_dashboard" != "xyes"; then
 	AC_MSG_NOTICE([   Dashboard support is disabled])
