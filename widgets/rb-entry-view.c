@@ -583,6 +583,7 @@ rb_entry_view_set_property (GObject *object,
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
 		view->priv->model = new_model;
+		view->priv->have_selection = FALSE;
 		queue_changed_sig (view);
 
 		break;
