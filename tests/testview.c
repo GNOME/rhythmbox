@@ -559,7 +559,10 @@ rb_test_view_start_playing (RBViewPlayer *player)
 	RBTestView *view = RB_TEST_VIEW (player);
 	RBNode *node;
 
-	node = rb_node_view_get_first_node (view->priv->songs);
+	if (view->priv->shuffle == FALSE)
+		node = rb_node_view_get_first_node (view->priv->songs);
+	else
+		node = rb_node_view_get_random_node (view->priv->songs);
 
 	rb_test_view_set_playing_node (view, node);
 }

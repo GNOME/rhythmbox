@@ -35,7 +35,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "config.h"
 #include "RhythmboxShell.h"
 #include "rb-shell.h"
 #include "rb-debug.h"

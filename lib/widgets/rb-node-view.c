@@ -18,6 +18,7 @@
  *  $Id$
  *
  *  FIXME "Add/Remove columns" dialog
+ *  FIXME popup menu with "Delete song", "Get info", "Play", and make delete key work
  */
 
 #include <gtk/gtktreeview.h>
@@ -661,7 +662,8 @@ rb_node_view_get_random_node (RBNodeView *view)
 	char *path_str;
 	int index;
 
-	index = random () % gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL);
+	index = g_random_int_range (0,
+			            (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL) - 1));
 
 	path_str = g_strdup_printf ("%d", index);
 	path = gtk_tree_path_new_from_string (path_str);

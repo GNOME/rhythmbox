@@ -75,8 +75,6 @@ main (int argc, char **argv)
 
 	CORBA_exception_init (&ev);
 
-	srandom (time (NULL));
-	
 	rb_debug_init (debug);
 	rb_file_helpers_init ();
 

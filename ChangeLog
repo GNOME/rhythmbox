@@ -1,3 +1,18 @@
+2002-06-13  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_random_node):
+	* shell/main.c: (main):
+
+	Use glib random rather than system random.
+	
+	* shell/rb-shell.c:
+
+	Fix duplicate config.h include.
+	
+	* tests/testview.c: (rb_test_view_start_playing):
+
+	Get a random node when starting playing if shuffle is turned on.
+
 2002-06-13  Kenneth Christiansen  <kenneth@gnu.org>
 
 	* lib/eel-gconf-extensions.c:
