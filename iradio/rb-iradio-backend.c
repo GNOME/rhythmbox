@@ -680,6 +680,7 @@ rb_iradio_backend_new_station (GList *locations, const char *name,
 		return NULL;
 
 	rb_node_signal_connect_object (node, RB_NODE_DESTROY, (RBNodeCallback) finalize_node, NULL);
+	rb_node_ref (node);
 
 	/* Name */
 	g_value_init (&value , G_TYPE_STRING);

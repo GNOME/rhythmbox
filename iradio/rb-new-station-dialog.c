@@ -254,9 +254,11 @@ rb_new_station_dialog_new (RBIRadioBackend *backend)
 	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "backend", backend, NULL);
 	
 	genrenames = rb_iradio_backend_get_genre_names (backend);
-	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
-				       genrenames);
-	g_list_free (genrenames);
+	if (genrenames != NULL) {
+		gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
+					       genrenames);
+		g_list_free (genrenames);
+	}
 
 	g_return_val_if_fail (dialog->priv != NULL, NULL);
 

@@ -1,3 +1,12 @@
+2003-08-06  Colin Walters  <walters@rhythmbox.org>
+
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_new_station):
+	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_new):
+
+	Be sure to ref a node created from a dialog or restored from disk.
+	Also don't crash if there are no genres, and we're creating a new
+	station.
+
 2003-08-06  Colin Walters  <walters@verbum.org>
 
 	* configure.ac:
