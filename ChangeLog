@@ -5,6 +5,11 @@
 	
 	* lib/rb-windows-ini-file.c (rb_windows_ini_file_parse_from_stream):
 	Trim trailing newline from values.
+	
+	* lib/widgets/rb-link.c (rb_link_set): Make active on non-null set.
+	
+	* lib/widgets/rb-sidebar-button.c (rb_sidebar_button_init):
+	Center-justify labels.
 
 2002-11-28  Olivier Martin <oleevye@wanadoo.fr>
 
