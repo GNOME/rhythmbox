@@ -18,7 +18,7 @@ schemadir = $(sysconfdir)/gconf/schemas
 schema_DATA = rhythmbox.schemas
 
 install-schemas: $(schema_DATA)
-	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMAS_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(schema_DATA)
+	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMAS_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(top_srcdir)/data/$(schema_DATA)
 
 if INSTALL_SCHEMAS
 install-data-local: install-schemas

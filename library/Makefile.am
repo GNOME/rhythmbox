@@ -21,4 +21,4 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librblibrary_la_LDFLAGS = -export-dynamic
-librblibrary_la_LIBADD = $(top_srcdir)/lib/librb.la
+librblibrary_la_LIBADD = $(top_builddir)/lib/librb.la
