@@ -62,6 +62,13 @@ struct TotemPlParserClass {
 
 typedef enum
 {
+	TOTEM_PL_PARSER_PLS,
+	TOTEM_PL_PARSER_M3U,
+	TOTEM_PL_PARSER_M3U_DOS,
+} TotemPlParserType;
+
+typedef enum
+{
 	TOTEM_PL_PARSER_ERROR_VFS_OPEN,
 	TOTEM_PL_PARSER_ERROR_VFS_WRITE,
 } TotemPlParserError;
@@ -76,7 +83,8 @@ GtkType    totem_pl_parser_get_type (void);
 
 gboolean   totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
 				  TotemPlParserIterFunc func,
-				  const char *output, GError **error);
+				  const char *output, TotemPlParserType type,
+				  GError **error);
 void	   totem_pl_parser_add_ignored_scheme (TotemPlParser *parser,
 					       const char *scheme);
 TotemPlParserResult totem_pl_parser_parse (TotemPlParser *parser, const char *url, gboolean fallback);

@@ -45,10 +45,11 @@
 #define READ_CHUNK_SIZE 8192
 #define MIME_READ_CHUNK_SIZE 1024
 
-typedef gboolean (*PlaylistCallback) (TotemPlParser *parser, const char *url, gpointer data);
+typedef TotemPlParserResult (*PlaylistCallback) (TotemPlParser *parser, const char *url, gpointer data);
 static gboolean totem_pl_parser_scheme_is_ignored (TotemPlParser *parser, const char *url);
 static gboolean totem_pl_parser_ignore (TotemPlParser *parser, const char *url);
 static TotemPlParserResult totem_pl_parser_parse_internal (TotemPlParser *parser, const char *url);
+static TotemPlParserResult totem_pl_parser_add_asx (TotemPlParser *parser, const char *url, gpointer data);
 
 typedef struct {
 	char *mimetype;
@@ -172,6 +173,23 @@ my_gnome_vfs_get_mime_type_with_data (const char *uri, gpointer *data)
 	return mimetype;
 }
 
+static char*
+totem_pl_parser_base_url (const char *url)
+{
+	/* Yay, let's reconstruct the base by hand */
+	GnomeVFSURI *uri, *parent;
+	char *base;
+
+	uri = gnome_vfs_uri_new (url);
+	parent = gnome_vfs_uri_get_parent (uri);
+	base = gnome_vfs_uri_to_string (parent, 0);
+
+	gnome_vfs_uri_unref (uri);
+	gnome_vfs_uri_unref (parent);
+
+	return base;
+}
+
 static gboolean
 write_string (GnomeVFSHandle *handle, const char *buf, GError **error)
 {
@@ -223,9 +241,10 @@ totem_pl_parser_num_entries (TotemPlParser *parser, GtkTreeModel *model,
 	return num_entries - ignored;
 }
 
-gboolean
-totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
-		   TotemPlParserIterFunc func, const char *output, GError **error)
+static gboolean
+totem_pl_parser_write_pls (TotemPlParser *parser, GtkTreeModel *model,
+		TotemPlParserIterFunc func, const char *output,
+		GError **error)
 {
 	GnomeVFSHandle *handle;
 	GnomeVFSResult res;
@@ -249,8 +268,8 @@ totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
 		g_set_error(error,
 			    TOTEM_PL_PARSER_ERROR,
 			    TOTEM_PL_PARSER_ERROR_VFS_OPEN,
-			    _("Couldn't open parser: %s"),
-			    gnome_vfs_result_to_string (res));
+			    _("Couldn't open file '%s': %s"),
+			    output, gnome_vfs_result_to_string (res));
 		return FALSE;
 	}
 
@@ -264,7 +283,10 @@ totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
 	success = write_string (handle, buf, error);
 	g_free (buf);
 	if (success == FALSE)
+	{
+		gnome_vfs_close (handle);
 		return FALSE;
+	}
 
 	for (i = 1; i <= num_entries_total; i++) {
 		GtkTreeIter iter;
@@ -289,6 +311,7 @@ totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
 		g_free (url);
 		if (success == FALSE)
 		{
+			gnome_vfs_close (handle);
 			g_free (title);
 			return FALSE;
 		}
@@ -298,11 +321,182 @@ totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
 		g_free (buf);
 		g_free (title);
 		if (success == FALSE)
+		{
+			gnome_vfs_close (handle);
 			return FALSE;
+		}
 	}
 
 	gnome_vfs_close (handle);
 	return TRUE;
+}
+
+static char *
+totem_pl_parser_relative (const char *url, const char *output)
+{
+	char *url_base, *output_base;
+	char *base, *needle;
+
+	base = NULL;
+	url_base = totem_pl_parser_base_url (url);
+	output_base = totem_pl_parser_base_url (output);
+
+	needle = strstr (url_base, output_base);
+	if (needle != NULL)
+	{
+		GnomeVFSURI *uri;
+		char *newurl;
+
+		uri = gnome_vfs_uri_new (url);
+		newurl = gnome_vfs_uri_to_string (uri, 0);
+		if (newurl[strlen (output_base)] == '/') {
+			base = g_strdup (newurl + strlen (output_base) + 1);
+		} else {
+			base = g_strdup (newurl + strlen (output_base));
+		}
+		gnome_vfs_uri_unref (uri);
+		g_free (newurl);
+
+		/* And finally unescape the string */
+		newurl = gnome_vfs_unescape_string (base, NULL);
+		g_free (base);
+		base = newurl;
+	}
+
+	g_free (url_base);
+	g_free (output_base);
+
+	return base;
+}
+
+static char *
+totem_pl_parser_url_to_dos (const char *url, const char *output)
+{
+	char *retval, *i;
+
+	retval = totem_pl_parser_relative (url, output);
+
+	if (retval == NULL)
+		retval = g_strdup (url);
+
+	/* Don't change URIs, but change smb:// */
+	if (g_str_has_prefix (retval, "smb://") != FALSE)
+	{
+		char *tmp;
+		tmp = g_strdup (retval + strlen ("smb:"));
+		g_free (retval);
+		retval = tmp;
+	}
+
+	if (strstr (retval, "://") != NULL)
+		return retval;
+
+	i = retval;
+	while (*i != '\0')
+	{
+		if (*i == '/')
+			*i = '\\';
+		i++;
+	}
+
+	return retval;
+}
+
+static gboolean
+totem_pl_parser_write_m3u (TotemPlParser *parser, GtkTreeModel *model,
+		TotemPlParserIterFunc func, const char *output,
+		gboolean dos_compatible, GError **error)
+{
+	GnomeVFSHandle *handle;
+	GnomeVFSResult res;
+	int num_entries_total, i;
+	gboolean success;
+	char *buf;
+
+	res = gnome_vfs_open (&handle, output, GNOME_VFS_OPEN_WRITE);
+	if (res == GNOME_VFS_ERROR_NOT_FOUND) {
+		res = gnome_vfs_create (&handle, output,
+				GNOME_VFS_OPEN_WRITE, FALSE,
+				GNOME_VFS_PERM_USER_WRITE
+				| GNOME_VFS_PERM_USER_READ
+				| GNOME_VFS_PERM_GROUP_READ);
+	}
+
+	if (res != GNOME_VFS_OK) {
+		g_set_error(error,
+			    TOTEM_PL_PARSER_ERROR,
+			    TOTEM_PL_PARSER_ERROR_VFS_OPEN,
+			    _("Couldn't open file '%s': %s"),
+			    output, gnome_vfs_result_to_string (res));
+		return FALSE;
+	}
+
+	num_entries_total = gtk_tree_model_iter_n_children (model, NULL);
+
+	for (i = 1; i <= num_entries_total; i++) {
+		GtkTreeIter iter;
+		char *path, *url, *title;
+
+		path = g_strdup_printf ("%d", i - 1);
+		gtk_tree_model_get_iter_from_string (model, &iter, path);
+		g_free (path);
+
+		func (model, &iter, &url, &title);
+
+		if (totem_pl_parser_scheme_is_ignored (parser, url) != FALSE)
+		{
+			g_free (url);
+			g_free (title);
+			continue;
+		}
+
+		if (dos_compatible != FALSE)
+		{
+			char *dos;
+
+			dos = totem_pl_parser_url_to_dos (url, output);
+			buf = g_strdup_printf ("%s\r\n", dos);
+			g_free (dos);
+		} else {
+			char *relative;
+
+			relative = totem_pl_parser_relative (url, output);
+			buf = g_strdup_printf ("%s\n", relative);
+			g_free (relative);
+		}
+
+		success = write_string (handle, url, error);
+
+		if (success == FALSE)
+		{
+			gnome_vfs_close (handle);
+			return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+totem_pl_parser_write (TotemPlParser *parser, GtkTreeModel *model,
+		TotemPlParserIterFunc func, const char *output,
+		TotemPlParserType type, GError **error)
+{
+	switch (type)
+	{
+	case TOTEM_PL_PARSER_PLS:
+		return totem_pl_parser_write_pls (parser, model, func,
+				output, error);
+	case TOTEM_PL_PARSER_M3U:
+	case TOTEM_PL_PARSER_M3U_DOS:
+		return totem_pl_parser_write_m3u (parser, model, func,
+				output, (type == TOTEM_PL_PARSER_M3U_DOS),
+				error);
+	default:
+		g_assert_not_reached ();
+	}
+
+	return FALSE;
 }
 
 static GnomeVFSResult
@@ -364,23 +558,6 @@ my_eel_read_entire_file (const char *uri,
 	return GNOME_VFS_OK;
 }
 
-static char*
-totem_pl_parser_base_url (const char *url)
-{
-	/* Yay, let's reconstruct the base by hand */
-	GnomeVFSURI *uri, *parent;
-	char *base;
-
-	uri = gnome_vfs_uri_new (url);
-	parent = gnome_vfs_uri_get_parent (uri);
-	base = gnome_vfs_uri_to_string (parent, 0);
-
-	gnome_vfs_uri_unref (uri);
-	gnome_vfs_uri_unref (parent);
-
-	return base;
-}
-
 static int
 read_ini_line_int (char **lines, const char *key)
 {
@@ -434,7 +611,7 @@ read_ini_line_string (char **lines, const char *key, gboolean dos_mode)
 				retval[len-2] = '\n';
 				retval[len-1] = '\0';
 			}
-			    
+
 			g_strfreev (bits);
 		}
 	}
@@ -466,7 +643,6 @@ totem_pl_parser_finalize (GObject *object)
 static void
 totem_pl_parser_add_one_url (TotemPlParser *parser, const char *url, const char *title)
 {
-	
 	g_signal_emit (G_OBJECT (parser), totem_pl_parser_table_signals[ENTRY],
 		       0, url, title, NULL);
 }
@@ -479,16 +655,16 @@ totem_pl_parser_add_one_url_ext (TotemPlParser *parser, const char *url, const c
 		       0, url, title, genre);
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_ram (TotemPlParser *parser, const char *url, gpointer data)
 {
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 	char *contents, **lines;
 	int size, i;
 	const char *split_char;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	contents = g_realloc (contents, size + 1);
 	contents[size] = '\0';
@@ -506,7 +682,7 @@ totem_pl_parser_add_ram (TotemPlParser *parser, const char *url, gpointer data)
 		if (strcmp (lines[i], "") == 0)
 			continue;
 
-		retval = TRUE;
+		retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 
 		/* Either it's a URI, or it has a proper path ... */
 		if (strstr(lines[i], "://") != NULL
@@ -562,10 +738,10 @@ totem_pl_parser_get_extinfo_title (gboolean extinfo, char **lines, int i)
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_m3u (TotemPlParser *parser, const char *url, gpointer data)
 {
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 	char *contents, **lines;
 	int size, i;
 	const char *split_char;
@@ -593,7 +769,7 @@ totem_pl_parser_add_m3u (TotemPlParser *parser, const char *url, gpointer data)
 		if (lines[i][0] == '\0')
 			continue;
 
-		retval = TRUE;
+		retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 
 		/* Ignore comments, but mark it if we have extra info */
 		if (lines[i][0] == '#') {
@@ -645,16 +821,16 @@ totem_pl_parser_add_m3u (TotemPlParser *parser, const char *url, gpointer data)
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_asf_parser (TotemPlParser *parser, const char *url,
 		gpointer data)
 {
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 	char *contents, **lines, *ref;
 	int size;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	contents = g_realloc (contents, size + 1);
 	contents[size] = '\0';
@@ -664,39 +840,40 @@ totem_pl_parser_add_asf_parser (TotemPlParser *parser, const char *url,
 
 	ref = read_ini_line_string (lines, "Ref1", FALSE);
 
-	if (ref == NULL)
-		goto bail;
+	if (ref == NULL) {
+		g_strfreev (lines);
+		return totem_pl_parser_add_asx (parser, url, data);
+	}
 
 	/* change http to mms, thanks Microsoft */
-	if (strncmp ("http", ref, 4) == 0)
+	if (g_str_has_prefix (ref, "http") != FALSE)
 		memcpy(ref, "mmsh", 4);
 
 	totem_pl_parser_add_one_url (parser, ref, NULL);
-	retval = TRUE;
+	retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 	g_free (ref);
 
-bail:
 	g_strfreev (lines);
 
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_pls (TotemPlParser *parser, const char *url, gpointer data)
 {
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 	char *contents, **lines;
 	int size, i, num_entries;
 	char *split_char;
 	gboolean dos_mode = FALSE;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	if (size == 0)
 	{
 		g_free (contents);
-		return TRUE;
+		return TOTEM_PL_PARSER_RESULT_SUCCESS;
 	}
 
 	contents = g_realloc (contents, size + 1);
@@ -704,8 +881,9 @@ totem_pl_parser_add_pls (TotemPlParser *parser, const char *url, gpointer data)
 
 	/* figure out whether we're a unix pls or dos pls */
 	if (strstr(contents,"\x0d") == NULL)
+	{
 		split_char = "\n";
-	else {
+	} else {
 		split_char = "\x0d\n";
 		dos_mode = TRUE;
 	}
@@ -722,7 +900,7 @@ totem_pl_parser_add_pls (TotemPlParser *parser, const char *url, gpointer data)
 	if (num_entries == -1)
 		goto bail;
 
-	retval = TRUE;
+	retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 
 	for (i = 1; i <= num_entries; i++) {
 		char *file, *title, *genre;
@@ -836,14 +1014,14 @@ parse_asx_entries (TotemPlParser *parser, char *base, xmlDocPtr doc,
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_asx (TotemPlParser *parser, const char *url, gpointer data)
 {
 	xmlDocPtr doc;
 	xmlNodePtr node;
 	char *contents = NULL, *base;
 	int size;
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
 		return FALSE;
@@ -860,29 +1038,29 @@ totem_pl_parser_add_asx (TotemPlParser *parser, const char *url, gpointer data)
 	if(!doc || !doc->children || !doc->children->name) {
 		if (doc != NULL)
 			xmlFreeDoc(doc);
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 	}
 
 	base = totem_pl_parser_base_url (url);
 
 	for (node = doc->children; node != NULL; node = node->next)
 		if (parse_asx_entries (parser, base, doc, node) != FALSE)
-			retval = TRUE;
+			retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 
 	g_free (base);
 	xmlFreeDoc(doc);
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_ra (TotemPlParser *parser, const char *url, gpointer data)
 {
 	if (data == NULL
-			|| (strncmp (data, "http://", strlen ("http://")) != 0
-			&& strncmp (data, "rtsp://", strlen ("rtsp://")) != 0
-			    && strncmp (data, "pnm://", strlen ("pnm://")) != 0)) {
+			|| (g_str_has_prefix (data, "http://") == FALSE
+			&& g_str_has_prefix (data, "rtsp://") == FALSE
+			&& g_str_has_prefix (data, "pnm://") == FALSE)) {
 		totem_pl_parser_add_one_url (parser, url, NULL);
-		return TRUE;
+		return TOTEM_PL_PARSER_RESULT_SUCCESS;
 	}
 
 	return totem_pl_parser_add_ram (parser, url, NULL);
@@ -967,17 +1145,17 @@ parse_smil_entries (TotemPlParser *parser, char *base, xmlDocPtr doc,
 	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_smil (TotemPlParser *parser, const char *url, gpointer data)
 {
 	xmlDocPtr doc;
 	xmlNodePtr node;
 	char *contents = NULL, *base;
 	int size;
-	gboolean retval = FALSE;
+	gboolean retval = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 
 	if (my_eel_read_entire_file (url, &size, &contents) != GNOME_VFS_OK)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	contents = g_realloc (contents, size + 1);
 	contents[size] = '\0';
@@ -993,61 +1171,56 @@ totem_pl_parser_add_smil (TotemPlParser *parser, const char *url, gpointer data)
 			|| g_ascii_strcasecmp (doc->children->name,
 				"smil") != 0) {
 		if (doc != NULL)
-			xmlFreeDoc(doc);
-		return FALSE;
+			xmlFreeDoc (doc);
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 	}
 
 	base = totem_pl_parser_base_url (url);
 
 	for (node = doc->children; node != NULL; node = node->next)
 		if (parse_smil_entries (parser, base, doc, node) != FALSE)
-			retval = TRUE;
+			retval = TOTEM_PL_PARSER_RESULT_SUCCESS;
 
-	return FALSE;
+	xmlFreeDoc (doc);
+
+	return retval;
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_asf (TotemPlParser *parser, const char *url, gpointer data)
 {
-	if (data == NULL) {
+	if (data != NULL &&
+		g_str_has_prefix (data, "[Reference]") == FALSE) {
 		totem_pl_parser_add_one_url (parser, url, NULL);
-		return TRUE;
-	}
-
-	if (strncmp (data, "[Reference]", strlen ("[Reference]")) != 0) {
-		totem_pl_parser_add_one_url (parser, url, NULL);
-		return TRUE;
+		return TOTEM_PL_PARSER_RESULT_SUCCESS;
 	}
 
 	return totem_pl_parser_add_asf_parser (parser, url, data);
 }
 
 #if HAVE_LIBGNOME_DESKTOP
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_desktop (TotemPlParser *parser, const char *url, gpointer data)
 {
 	GnomeDesktopItem *ditem;
 	int type;
-	gboolean retval;
 	const char *path, *display_name;
 
 	ditem = gnome_desktop_item_new_from_file (url, 0, NULL);
 	if (ditem == NULL)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	type = gnome_desktop_item_get_entry_type (ditem);
 	if (type != GNOME_DESKTOP_ITEM_TYPE_LINK) {
 		gnome_desktop_item_unref (ditem);
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 	}
 
 	path = gnome_desktop_item_get_string (ditem, "URL");
 	if (path == NULL) {
 		gnome_desktop_item_unref (ditem);
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 	}
-
-	retval = TRUE;
 
 	display_name = gnome_desktop_item_get_localestring (ditem, "Name");
 	if (totem_pl_parser_ignore (parser, path) == FALSE) {
@@ -1058,7 +1231,7 @@ totem_pl_parser_add_desktop (TotemPlParser *parser, const char *url, gpointer da
 	}
 	gnome_desktop_item_unref (ditem);
 
-	return retval;
+	return TOTEM_PL_PARSER_RESULT_SUCCESS;
 }
 #endif
 
@@ -1078,18 +1251,17 @@ totem_pl_parser_dir_compare (GnomeVFSFileInfo *a, GnomeVFSFileInfo *b)
 	}
 }
 
-static gboolean
+static TotemPlParserResult
 totem_pl_parser_add_directory (TotemPlParser *parser, const char *url,
 			   gpointer data)
 {
 	GList *list, *l;
 	GnomeVFSResult res;
-	gboolean retval = FALSE;
 
 	res = gnome_vfs_directory_list_load (&list, url,
 			GNOME_VFS_FILE_INFO_DEFAULT);
 	if (res != GNOME_VFS_OK)
-		return FALSE;
+		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	list = g_list_sort (list, (GCompareFunc) totem_pl_parser_dir_compare);
 	l = list;
@@ -1113,7 +1285,6 @@ totem_pl_parser_add_directory (TotemPlParser *parser, const char *url,
 		if (totem_pl_parser_parse_internal (parser, fullpath) != TOTEM_PL_PARSER_RESULT_SUCCESS)
 			totem_pl_parser_add_one_url (parser, fullpath, NULL);
 
-		retval = TRUE;
 		g_free (str);
 		l = l->next;
 	}
@@ -1121,7 +1292,7 @@ totem_pl_parser_add_directory (TotemPlParser *parser, const char *url,
 	g_list_foreach (list, (GFunc) gnome_vfs_file_info_unref, NULL);
 	g_list_free (list);
 
-	return retval;
+	return TOTEM_PL_PARSER_RESULT_SUCCESS;
 }
 
 /* These ones need a special treatment, mostly parser formats */
@@ -1147,7 +1318,6 @@ static PlaylistTypes dual_types[] = {
 	{ "text/plain", totem_pl_parser_add_ra },
 	{ "video/x-ms-asf", totem_pl_parser_add_asf },
 	{ "video/x-ms-wmv", totem_pl_parser_add_asf },
-	{ "audio/x-mp3", totem_pl_parser_add_m3u },
 };
 
 static gboolean
@@ -1161,7 +1331,7 @@ totem_pl_parser_scheme_is_ignored (TotemPlParser *parser, const char *url)
 	for (l = parser->priv->ignore_schemes; l != NULL; l = l->next)
 	{
 		const char *scheme = l->data;
-		if (strncmp (url, scheme, strlen (scheme)) == 0)
+		if (g_str_has_prefix (url, scheme) != FALSE)
 			return TRUE;
 	}
 
@@ -1189,6 +1359,13 @@ totem_pl_parser_ignore (TotemPlParser *parser, const char *url)
 		if (strcmp (dual_types[i].mimetype, mimetype) == 0)
 			return FALSE;
 
+	/* It's a remote file that could be an m3u file */
+	if (strcmp (mimetype, "audio/x-mp3") == 0)
+	{
+		if (strstr (url, "m3u") != NULL)
+			return FALSE;
+	}
+
 	return TRUE;
 }
 
@@ -1200,7 +1377,7 @@ totem_pl_parser_parse_internal (TotemPlParser *parser, const char *url)
 	gpointer data = NULL;
 	gboolean ret = FALSE;
 
-	if (parser->priv->recurse_level > 3)
+	if (parser->priv->recurse_level > 4)
 		return TOTEM_PL_PARSER_RESULT_ERROR;
 
 	parser->priv->recurse_level++;
@@ -1225,16 +1402,20 @@ totem_pl_parser_parse_internal (TotemPlParser *parser, const char *url)
 
 	for (i = 0; i < G_N_ELEMENTS(dual_types); i++) {
 		if (strcmp (dual_types[i].mimetype, mimetype) == 0) {
+			if (data == NULL) {
+				mimetype = my_gnome_vfs_get_mime_type_with_data (url, &data);
+			}
 			ret = (* dual_types[i].func) (parser, url, data);
 			g_free (data);
 			break;
 		}
 	}
-	
-	if (parser->priv->fallback) {
+
+	if (ret == FALSE && parser->priv->fallback) {
 		totem_pl_parser_add_one_url (parser, url, NULL);
 		return TOTEM_PL_PARSER_RESULT_SUCCESS;
 	}
+
 	if (ret)
 		return TOTEM_PL_PARSER_RESULT_SUCCESS;
 	else
@@ -1248,7 +1429,7 @@ totem_pl_parser_parse (TotemPlParser *parser, const char *url,
 	g_return_val_if_fail (TOTEM_IS_PL_PARSER (parser), TOTEM_PL_PARSER_RESULT_UNHANDLED);
 	g_return_val_if_fail (url != NULL, TOTEM_PL_PARSER_RESULT_UNHANDLED);
 
-	parser->priv->recurse_level = 1;
+	parser->priv->recurse_level = 0;
 	parser->priv->fallback = fallback;
 	return totem_pl_parser_parse_internal (parser, url);
 }
@@ -1262,3 +1443,4 @@ totem_pl_parser_add_ignored_scheme (TotemPlParser *parser,
 	parser->priv->ignore_schemes = g_list_prepend
 		(parser->priv->ignore_schemes, g_strdup (scheme));
 }
+

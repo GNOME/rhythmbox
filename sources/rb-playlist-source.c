@@ -748,7 +748,8 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 	playlist = totem_pl_parser_new ();
 
 	totem_pl_parser_write (playlist, GTK_TREE_MODEL (source->priv->model),
-			       playlist_iter_func, uri, &error);
+			       playlist_iter_func, uri, TOTEM_PL_PARSER_PLS, 
+			       &error);
 	if (error != NULL)
 		rb_error_dialog (NULL, _("Couldn't save playlist"),
 				 "%s", error->message);
