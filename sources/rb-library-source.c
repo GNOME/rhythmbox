@@ -638,6 +638,8 @@ genres_selected_cb (RBPropertyView *propview, GList *genres,
 	g_list_free (libsource->priv->selected_genres);
 	libsource->priv->selected_genres = genres;
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE);
+
+	rb_source_notify_filter_changed (RB_SOURCE (libsource));
 }
 
 static void
@@ -661,6 +663,8 @@ artists_selected_cb (RBPropertyView *propview, GList *artists,
 	g_list_free (libsource->priv->selected_artists);
 	libsource->priv->selected_artists = artists;
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST);
+
+	rb_source_notify_filter_changed (RB_SOURCE (libsource));
 }
 
 static void
@@ -684,6 +688,8 @@ albums_selected_cb (RBPropertyView *propview, GList *albums,
 	g_list_free (libsource->priv->selected_albums);
 	libsource->priv->selected_albums = albums;
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
+
+	rb_source_notify_filter_changed (RB_SOURCE (libsource));
 }
 
 static void
@@ -745,6 +751,8 @@ impl_search (RBSource *asource, const char *search_text)
 	g_free (source->priv->search_text);
 	source->priv->search_text = search_text != NULL ? g_utf8_casefold (search_text, -1) : NULL;
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
+
+	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
 
@@ -797,8 +805,10 @@ impl_reset_filters (RBSource *asource)
 	g_free (source->priv->search_text);
 	source->priv->search_text = NULL;
 
-	if (changed)
+	if (changed) {
 		rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
+		rb_source_notify_filter_changed (RB_SOURCE (source));
+	}
 }
   
 static GtkWidget *

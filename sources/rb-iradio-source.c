@@ -459,6 +459,8 @@ impl_search (RBSource *asource, const char *search_text)
 	else
 		source->priv->search_text = NULL;
 	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
+
+	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
 static RBEntryView *
@@ -639,6 +641,8 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 	g_free (iradio_source->priv->selected_genre);
 	iradio_source->priv->selected_genre = g_strdup (name);
 	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
+
+	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
 }
 
 static void

@@ -114,14 +114,15 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/state/shuffle</key>
-        <applyto>/apps/rhythmbox/state/shuffle</applyto>
-        <owner>rhytbhmbox</owner>
-        <type>bool</type>
-        <default>0</default>
+        <key>/schemas/apps/rhythmbox/state/play_order</key>
+        <applyto>/apps/rhythmbox/state/play_order</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>linear</default>
         <locale name="C">
-	<short>Shuffle mode</short>
-	<long>If true, rhythmbox will use a random playing order.</long>
+	<short>Order to play songs in</short>
+	<long>Value identifies the order songs are played in. Legal values are:
+	"linear", "shuffle", "random-equal-weights", "random-by-age".</long>
         </locale>
       </schema>
       <schema>

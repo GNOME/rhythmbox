@@ -19,8 +19,23 @@
  *
  */
 
+/**
+ * RBHistory is a linked list that maintains a "current" pointer and can delete
+ * an arbitrary element in O(1) time. It is also responsible for ref-ing and
+ * unref-ing the entries it holds. However, I'm considering moving that
+ * responsibility to whoever owns the RBHistory using a deletion callback. If
+ * that happens, RBHistory will be a pure data structure and can probable lose
+ * the GObject-ness.
+ *
+ * I may also add another "enqueued" pointer to help manage a queue of next
+ * songs under shuffle.
+ *
+ * All operations take O(1) time unless noted otherwise.
+ */
+
 #include <glib/glist.h>
 #include "rhythmdb.h"
+#include "rb-shell-player.h"
 
 #ifndef __RB_HISTORY_H
 #define __RB_HISTORY_H
@@ -51,32 +66,57 @@ typedef struct
 
 GType                   rb_history_get_type	(void);
 
-RBHistory *		rb_history_new		(RhythmDB *db);
+RBHistory *		rb_history_new		(gboolean truncate_on_play);
 
-RhythmDBEntry *		rb_history_forward	(RBHistory *hist);
-RhythmDBEntry *		rb_history_back		(RBHistory *hist);
+guint			rb_history_length	(RBHistory *hist);
+
+RhythmDBEntry *		rb_history_first	(RBHistory *hist);
+RhythmDBEntry *		rb_history_previous	(RBHistory *hist);
+RhythmDBEntry *		rb_history_current	(RBHistory *hist);
+RhythmDBEntry *		rb_history_next		(RBHistory *hist);
+RhythmDBEntry *		rb_history_last		(RBHistory *hist);
+
+/** These move around within the history but never go beyond the head or tail */
+void			rb_history_go_first	(RBHistory *hist);
+void			rb_history_go_previous	(RBHistory *hist);
+void			rb_history_go_next	(RBHistory *hist);
+void			rb_history_go_last	(RBHistory *hist);
 
 /** 
- * If entry != hist->current->data, replaces the section of the list after 
- * current with a link containing entry 
+ * Sets the song after "current" to @entry and, depending on the value of the
+ * "truncate-on-play" property, may remove the entries after this.
  */
 void			rb_history_set_playing	(RBHistory *hist, RhythmDBEntry *entry);
-
-/** 
- * I'm assuming this is only called when rb_history_back() failed, but the
- * code will still work if it's not.
- */
-void			rb_history_prepend	(RBHistory *hist, RhythmDBEntry *entry);
 
 /**
  * Adds entry onto the end of the history list
  */
-void			rb_history_enqueue	(RBHistory *hist, RhythmDBEntry *entry);
+void			rb_history_append	(RBHistory *hist, RhythmDBEntry *entry);
 
 /**
- * Makes the history empty
+ * Gets the index of the current entry.
+ * Takes O(index) time.
  */
+guint			rb_history_get_current_index	(RBHistory *hist);
+
+/**
+ * Inserts @entry at @index within the history list. 0<=@index<=size
+ * Takes O(@index) time.
+ */
+void			rb_history_insert_at_index	(RBHistory *hist, RhythmDBEntry *entry, guint index);
+
+/**
+ * If the entry is in the history, removes all instances of it. Unrefs the
+ * entry and decrements the list size.
+ */
+void			rb_history_remove_entry	(RBHistory *hist, RhythmDBEntry *entry);
+
+/** Empties the history list */
 void			rb_history_clear	(RBHistory *hist);
+
+/** Returns a copy of the whole history in order. Caller must free the result.
+ * Takes O(size) time. */
+GPtrArray *		rb_history_dump		(RBHistory *hist);
 
 G_END_DECLS
 

@@ -159,6 +159,7 @@ rb_gvalue_compare (GValue *a, GValue *b)
 	case G_TYPE_OBJECT:
 	default:
 		g_assert_not_reached ();
+		retval = 0;
 		break;
 	}
 	return retval;

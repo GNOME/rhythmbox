@@ -828,8 +828,9 @@ rb_player_get_elapsed_string (RBPlayer *player)
 		} else {
 			int remaining = player->priv->state->duration - elapsed;
 			int remaining_minutes = remaining / 60;
-			// remaining could conceivably be negative. This would be a bug,
-			// but the elapsed time will display right with the abs().
+			/* remaining could conceivably be negative. This would
+			 * be a bug, but the elapsed time will display right
+			 * with the abs(). */
 			int remaining_seconds = abs (remaining % 60);
 			return g_strdup_printf (_("%d:%02d of %d:%02d remaining"), remaining_minutes, remaining_seconds, minutes2, seconds2);
 		}
