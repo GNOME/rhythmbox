@@ -52,12 +52,16 @@ typedef struct
 	GtkScrolledWindowClass parent;
 
 	void (*property_selected)          (RBPropertyView *view, const char *name);
+	void (*properties_selected)        (RBPropertyView *view, GList *properties);
 	void (*property_activated)         (RBPropertyView *view, const char *name);
 } RBPropertyViewClass;
 
 GType		rb_property_view_get_type		(void);
 
 RBPropertyView *rb_property_view_new			(RhythmDB *db, guint propid);
+
+void		rb_property_view_set_selection_mode	(RBPropertyView *view,
+							 GtkSelectionMode mode);
 
 void		rb_property_view_reset			(RBPropertyView *view);
 

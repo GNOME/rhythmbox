@@ -87,6 +87,7 @@ struct RBPropertyViewPrivate
 enum
 {
 	PROPERTY_SELECTED,
+	PROPERTIES_SELECTED,
 	PROPERTY_ACTIVATED,
 	LAST_SIGNAL
 };
@@ -190,6 +191,17 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+
+	rb_property_view_signals[PROPERTIES_SELECTED] =
+		g_signal_new ("properties-selected",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPropertyViewClass, properties_selected),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
 }
 
 static void
@@ -307,18 +319,27 @@ rb_property_view_new (RhythmDB *db, guint propid)
 	RBPropertyView *view;
 
 	view = RB_PROPERTY_VIEW (g_object_new (RB_TYPE_PROPERTY_VIEW,
-					   "hadjustment", NULL,
-					   "vadjustment", NULL,
-					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
-					   "vscrollbar_policy", GTK_POLICY_ALWAYS,
-					   "shadow_type", GTK_SHADOW_IN,
-					    "db", db,
-					    "prop", propid,
-					   NULL));
+					       "hadjustment", NULL,
+					       "vadjustment", NULL,
+					       "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+					       "vscrollbar_policy", GTK_POLICY_ALWAYS,
+					       "shadow_type", GTK_SHADOW_IN,
+					       "db", db,
+					       "prop", propid,
+					       NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
 
 	return view;
+}
+
+void
+rb_property_view_set_selection_mode	(RBPropertyView *view,
+					 GtkSelectionMode mode)
+{
+	g_return_if_fail (mode == GTK_SELECTION_SINGLE || mode == GTK_SELECTION_MULTIPLE);
+	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview)),
+				     mode);
 }
 
 void
@@ -447,10 +468,45 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
-	if (gtk_tree_selection_get_selected (view->priv->selection, &model, &iter)) {
-		gtk_tree_model_get (model, &iter, 0, &selected_prop, 1, &is_all, -1);
-		g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
-			       is_all ? NULL : selected_prop);
+	if (gtk_tree_selection_get_mode (selection) == GTK_SELECTION_MULTIPLE) {
+		GList *selected_rows, *tem;
+		GList *selected_properties = NULL;
+		
+		selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
+		for (tem = selected_rows; tem; tem = tem->next) {
+			g_assert (gtk_tree_model_get_iter (model, &iter, tem->data));
+			gtk_tree_model_get (model, &iter, 0, &selected_prop, 1, &is_all, -1);
+			if (is_all) {
+				g_list_free (selected_properties);
+				selected_properties = NULL;
+				break;
+			}
+			selected_properties = g_list_append (selected_properties,
+							     g_strdup (selected_prop));
+		}
+
+		g_list_foreach (selected_rows, (GFunc) gtk_tree_path_free, NULL);
+		g_list_free (selected_rows);
+
+		if (is_all) {
+			g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+							 G_CALLBACK (rb_property_view_selection_changed_cb),
+							 view);
+			gtk_tree_selection_unselect_all (selection);
+			gtk_tree_model_get_iter_first (model, &iter);
+			gtk_tree_selection_select_iter (selection, &iter);
+			g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+							   G_CALLBACK (rb_property_view_selection_changed_cb),
+							   view);
+		}
+		g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTIES_SELECTED], 0,
+			       selected_properties);
+	} else {
+		if (gtk_tree_selection_get_selected (view->priv->selection, &model, &iter)) {
+			gtk_tree_model_get (model, &iter, 0, &selected_prop, 1, &is_all, -1);
+			g_signal_emit (G_OBJECT (view), rb_property_view_signals[PROPERTY_SELECTED], 0,
+				       is_all ? NULL : selected_prop);
+		}
 	}
 }
 
