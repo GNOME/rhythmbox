@@ -125,6 +125,7 @@
 	fix strcmp (foo, bar != 0) ;)
 
 2002-06-10  Olivier Martin <omartin@ifrance.com>
+
 	* shell/rb-shell.c: fixed a bug in corba error handling
 
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
@@ -181,3 +182,2008 @@
 2002-06-09  Jorn Baayen  <jorn@nl.linux.org>
 
 	* checked in new skels
+
+2002-06-05  Jorn Baayen  <jorn@nl.linux.org>
+
+	* Makefile.am: fix rpm builds
+
+2002-06-01 Olivier Martin <omartin@ifrance.com>
+
+	* queue/queue.c: updated the queue to handle seeking
+
+2002-05-29  Jorn Baayen  <jorn@nl.linux.org>
+
+	* acconfig.h (ADDED):
+	* configure.in:
+	* Makefile.am: refactor configure
+	
+	* queue/queue.c: take out seeking stuff for now so that we compile
+	fine with the new monkeymedia.
+
+2002-05-25  Rosanna Yuen  <zana@webwynk.net>
+
+	* utils/e-splash.c (e_splash_construct): Going out on a limb and
+	assuming that Rhyhtmbox isn't intentional...
+
+2002-05-15  Jorn Baayen  <jorn@nl.linux.org>
+
+	* playlist/library-thread.c:
+	* queue/queue.c: quick and dirty port to the new monkeymedia
+	
+2002-05-05  Cody Russell  <cody@jhu.edu>
+
+	* utils/Makefile.am: Fixed the libegg includes to be ../libegg/libegg
+
+2002-04-20  Jorn Baayen <jorn@nl.linux.org>
+	
+	* playlist/songs-view.c: fix up songs_view_get_next, bad kris! :)
+	
+2002-04-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-private.c:
+	* src/rhythmbox-automation.c: fix warnings
+
+	* queue/queue.c: fix eos, this is a hack, need to really rewrite queue
+	for the new mm
+
+	* configure.in: put Werror back.
+	
+2002-04-18  James Willcox <jwillcox@cs.indiana.edu>
+
+	* utils/rb-image-button.c: draw focus for proper a11y
+
+2002-04-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in:
+	* playlist/library-private.c:
+	* playlist/library-thread.c:
+	* queue/queue.c: port to new monkey-media
+
+2002-04-17  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: install .schemas from $(srcdir)
+	* configure.in: pump up version number
+	* src/Makefile.am: added RhythmBoxAutomation.idl to the EXTRA_DIST
+
+2002-04-14  Bastien Nocera  <hadess@hadess.net>
+
+	* applet/Makefile.am: add GNOME_RhythmBoxApplet.xml to the dist
+	* configure.in: disable -Werror for now, it's bad
+
+2002-04-14  Bastien Nocera  <hadess@hadess.net>
+
+	* */Makefile.am: use LTLIBRARIES instead of static ones,
+	make sure that RhythmBoxAutomation.h exists when compiling the applet
+
+2002-04-14  Jorn Baayen <jorn@nl.linux.org>
+
+	* NEWS:
+	* configure.in: bump version number to 0.2
+	
+	* applet/applet.c: turn of applet for release
+
+2002-04-14  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/prefs.c: fix prefs dialog getting filled too many times	
+	
+Sat Apr 13 23:57:04 2002  Kristian Rietveld  <kris@gtk.org>
+
+	* utils/treeview-utils.[ch] (store_iter_to_sort_iter): remove the
+	ugly return &iter2 hack
+	(store_path_to_sort_path): free path1 (fix memleak)
+
+	* playlist/library-ui.c (queue_request_next_cb): change usage
+	of store_iter_to_sort_iter
+
+	* playlist/songs-view.c: make this code more sane,
+	rewrote parts of songs_view_get_first, songs_view_get_real_next,
+	songs_view_get_real_prev, added songs_view_iter_in_sort_model
+
+2002-04-13  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: added doc/
+
+	* playlist/node-search.c: add simplified uri instead
+	of name when it is NULL 
+
+	* playlist/songs-view.c, ui/ui.c: small cleanups
+	
+2002-04-12  Thomas Vander Stichele <thomas@apestaart.org>
+
+	Checked by Bastien Nocera <hadess@hadess.net>
+ 
+       * added RhythmBoxAutomation.h in src to SOURCES so it gets built
+
+2002-04-11  Jorn Baayen <jorn@nl.linux.org>
+
+	* doc/rhythmbox.png: added png version of the design thing
+
+2002-04-11  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/sourcelist.c:
+	* ui/sourcelist.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/state-manager.c:
+	* playlist/state-manager.h: make the text in the cell in the sourcelist bold
+	when the source is playing.
+
+2002-04-11  Jorn Baayen <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* doc/Makefile.am (ADDED):
+	* doc/rhythmbox.dia (ADDED): add a simple
+	dia file showing the overall design.
+
+2002-04-11  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h:
+	* utils/rbtreemodelfilter.c:
+	* utils/rbtreemodelfilter.h: get rid of all
+	GtkTreeRowReference usage as Seth suggested on
+	GUAD3C.
+
+2002-04-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: "9 of 10" songs isntead of "9/10"
+
+2002-04-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/source-manager.c:
+	* utils/rbtreemodelfilter.c:
+	* utils/rbtreemodelfilter.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h:
+	* queue/queue.c: fix fixmies, use GtkTreeIters 
+	rather than GtkTreeRowReferences in the songsview.
+
+2002-04-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-ui.c:
+	* ui/sourcelist.c:
+	* ui/sourcelist.h:
+	* ui/ui.c:
+	* ui/ui.h: when adding a new playlist do not popup a dialog asking
+	for a name but instead make the cell editable.
+
+	* queue/queue.c: decrease maximum playing time value since gcc2
+	didnt like it.
+
+2002-04-02  Bastien Nocera  <hadess@hadess.net>
+
+	* */Makefile.am, configure.in: don't hard-code the -export-dynamic
+	flags and let libtool/automake figure it out
+
+2002-04-02  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c: remove unused function
+
+2002-04-01  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/source-manager.c:
+	* playlist/state-manager.c: mark construct only properties as
+	G_PARAM_CONSTRUCT_ONLY
+
+2002-04-01  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/main.c:
+	* src/main.h:
+	* src/rhythmbox-automation.c:
+	* src/rhythmbox-automation.h:
+	* ui/ui.c: small exiting cleanup
+
+2002-04-01  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/*.{c,h}:
+	* queue/*.{c,h}:
+	* utils/*.{c,h}: use G_{BEGIN,END}_DECLS in headers,
+	add CVS ID to files.
+
+2002-03-31  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/Makefile.am:
+	* utils/gtktreemodelfilter.* (REMOVED):
+	* utils/rbtreemodelfilter.c: cleanup, use
+	stock gtktreemodelfilter again.
+
+2002-03-31  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/lcd.png:
+	* ui/control-bar.c: lcd shadow uses theme colors. you'll need gtk
+	cvs for this.
+
+2002-03-31  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/rbtreemodelfilter.c:
+	* queue/queue.c: use properties
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/rb-image-button.c: fix broken redraw logic
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/rhythmbox.glade:
+	* ui/control-bar.c: do some spacing magic,
+	use theme font in lcd. fixes worst ugliness.
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/source-manager.c:
+	* playlist/state-manager.c: g_object_install_property doesnt like 0 ids
+	
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c:
+	* playlist/node-utils.c: fix wrong albums being
+	returned by song_get_album
+
+2002-03-29  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library-private.c:
+	* utils/rb-image-button.c:
+
+	#if'def out unused functions that cause -Werror problems in
+	GCC 2.x
+	
+	* playlist/songs-view.c: (songs_view_init):
+
+	Turn on horizontal scrolling again, pending the complete column
+	resizing fix.
+	
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/file-watcher.c:
+	* playlist/file-watcher.h:
+	* playlist/library.c:
+	* playlist/library.h:
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/node.h:
+	* playlist/node-search.h:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/songs-view.h:
+	* playlist/source-manager.c:
+	* playlist/source-manaher.h:
+	* playlist/state-manager.c:
+	* playlist/state-manager.h:
+	* queue/queue.c:
+	* queue/queue.h:
+	* src/main.c: objects use properties now (and some more gobject-related
+	cleanups)
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/Makefile.am:
+	* utils/control-bar.c (ADDED):
+	* utils/control-bar.h (ADDED):
+	* utils/toolbar.c (REMOVED):
+	* utils/toolbar.h (REMOVED):
+	* utils/ui.h: rename toolbar files to control-bar
+	
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/toolbar.c: don't unref tooltips on finalize,
+	cuased shutdown warning
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+	
+	* utils/rb-image-button.c: fix insensitive
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/rhythmbox.glade:
+	* ui/toolbar.c:
+	* utils/Makefile.am:
+	* utils/gnome-image-button.c (REMOVED):
+	* utils/gnome-image-button.h (REMOVED):
+	* utils/rb-image-button.c (ADDED):
+	* utils/rb-image-button.h (ADDED): add imagebutton rewrite by snorp,
+	update toolbar code to use it. It's still got some issues though;
+	expose seems borked (try to open a menu, the button gets mangled),
+	and insensitive is, imho, ugly :)
+
+	* queue/queue.c:
+	* playlist/library-private.c: fix monkey-sound includes
+
+2002-03-30  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/toolbar.c:
+	* ui/toolbar.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: action buttons are now
+	merged into the UI
+
+	* rhythmbox.schemas:
+	* configure.in:
+	* playlist/file-watcher.c:
+	* playlist/library.c:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/source-manager.c:
+	* queue/queue.c:
+	* ui/prefs.c:
+	* ui/ui.c:
+	* utils/Makefile.am:
+	* utils/eel-gconf-extensions.c (ADDED):
+	* utils/eel-gconf-extensions.h (ADDED):
+	* utils/misc.c:
+	* utils/state.c: add our own version of the gconf extensions
+	(with some more extensions :P), remove eel dependency.
+	(since eel isn't available anymore, we cannot use eel-stock-dialogs,
+	so the code that used it is ifdeffed out for now)
+
+	* playlist/songs-view.c: format track string to be prettier
+	(9/12 -> 09/12, 2 -> 02)
+
+	* playlist/library-ui.c:
+	* playlist/songs-view.c: hide horizontal scrollbars.
+	we need a way to tell the songsview treeview to give
+	the columns the right size so they fit. havent found
+	out yet how to do that though.
+
+2002-03-29  Seth Nickell  <snickell@stanford.edu>
+
+	* ui/data/rhythmbox-repeat.png:
+	* ui/data/rhythmbox-shuffle.png:
+
+	Create makeshift shuffle and repeat icons. They
+	aren't great, but at least they communicate
+	their respective concepts better than lightbulbs ;-)
+	
+	* ui/data/rhythmbox.glade:
+
+	Make playlist management buttons non-homogeneous.
+
+2002-03-29  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library-ui.c: (library_ui_init):
+	* playlist/songs-view.c: (songs_view_init):
+	* ui/data/Makefile.am:
+	* ui/data/player.glade:
+	* ui/data/rhythmbox.glade:
+	* ui/sourcelist.c: (sourcelist_init), (sourcelist_finalize),
+	(sourcelist_new), (treeview_get_selection_single),
+	(sourcelist_init_interface):
+	* ui/sourcelist.h:
+	* ui/statusbar.c: (statusbar_init), (statusbar_finalize),
+	(statusbar_new), (statusbar_init_interface):
+	* ui/statusbar.h:
+	* ui/toolbar.c: (control_bar_init), (control_bar_finalize),
+	(control_bar_new), (build_string_for_display),
+	(render_stock_pixbufs_if_necessary), (control_bar_init_interface):
+	* ui/toolbar.h:
+	* ui/ui.c: (ui_init):
+
+	Use glade for all static (non-custom) widgetry. This makes it *much*
+	easier to experiment with interface changes and add new items to the
+	interface. Also makes it easier to clean up spacing and alignment.
+
+	Also go back to search label below for the time being since everyone's
+	all up in arms about that.
+	
+	Before people get annoyed at it being uglier, I'm not quite done ;-)
+
+2002-03-28  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-ui.c:
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: heavy songsview cleanup,
+	should fix freezes when nothing is selected.
+
+	* src/main.c: hide the window when shutting down,
+	makes it look a bit more responsive.
+
+2002-03-28  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/Makefile.am:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/source-manager.c:
+	* playlist/state-manager.c (ADDED):
+	* playlist/state-manager.h (ADDED): the source's playing state
+	management is now done through state-manager.
+
+2002-03-27  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: squash some nasty little bugs
+
+2002-03-27  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c: done with cleanups
+
+2002-03-27  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-ui.c:
+	* playlist/source-manager.c:
+	* playlist/songs-view.c: cleanups, optimzations. still working
+	on node_set_playing stuff, please don't touch.
+
+2002-03-26  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library-private.c: (library_private_add_song):
+
+	Add search nodes later so they already have album setup
+	so we can add album search keys to them.
+	
+	* playlist/library.c: (library_add_uri):
+	* playlist/library.h:
+
+	Add more properties, this time for type.
+	
+	* playlist/node-search.c: (node_search_add_song),
+	(create_combinations), (create_key_from_string):
+	* playlist/node-search.h:
+
+	Allow for searching by album and artist.
+	
+	* playlist/node-utils.c: (node_get_child_songs):
+	* playlist/node-utils.h:
+
+	Add a convenient function that retrieves all the songs
+	at or beneath a given node.
+
+2002-03-26  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h:
+	* utils/Makefile.am:
+	* utils/gtktreemodelfilter.c (ADDED):
+	* utils/gtktreemodelfilter.h (ADDED):
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h:
+	* utils/rbtreemodelfilter.c (ADDED):
+	* utils/rbtreemodelfilter.h (ADDED): new RBTreeModelFilter object which does
+	all the tricky filtering stuff for us, so we can keep the filtering code
+	in the sources clean. Needed to make some stuff in gtktreemodelfilter
+	global though (which will be fixed by _kris_ properly at some point).
+
+2002-03-26  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c: remove "library_row" mess
+
+	* playlist/playlist-ui.c: fix some searching issues
+
+2002-03-26  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: make filtering more
+	generic, searching works in the playlist too now.
+	Need to remove the obsolete filtering bits from
+	libraryui, will do that tonight.
+
+2002-03-26  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/ui.c: set window title to "RhythmBox" when not
+	playing.
+
+2002-03-26  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* ui/ui.c: fix crash when trying to play
+	something with multiple playlsits.
+
+	Also let me stress this again, *PLEASE* keep coding
+	style consistent when adding stuff to existing files
+	at least, spending my time fixing the mess is not
+	the most exciting thing to do.
+
+2002-03-25  Seth Nickell  <snickell@stanford.edu>
+
+	* ui/toolbar.c: (control_bar_init):
+
+	Make search box labeling HIG compliant and/or more usable.
+
+2002-03-25  Seth Nickell  <snickell@stanford.edu>
+
+	* ui/toolbar.c: (control_bar_init):
+
+	Remove spacing between the "Search" label and the entry,
+	add a keyboard shortcut for the search label, and point
+	it at the entry.
+
+2002-03-25  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library-ui.c: (node_set_playing):
+	* playlist/node-utils.c: (song_get_album):
+	* playlist/node-utils.h:
+	* playlist/playlist-ui.c: (node_set_playing):
+	* playlist/source-manager.c: (source_manager_release_brakes),
+	(idle_func):
+	* ui/toolbar.c: (control_bar_set_lcd_song),
+	(control_bar_set_state), (colorify_lcd),
+	(build_string_for_display):
+	* ui/toolbar.h:
+	* ui/ui.c: (ui_init), (ui_set_song), (ui_set_elapsed_time):
+	* ui/ui.h:
+
+	Clean up UI vs. data abstraction by moving display functions
+	into the UI. This also allows us to set the window title
+	without worrying about truncation (let the window manager or
+	tasklist do that ;-).
+
+	* src/main.c: (rb_shutdown):
+
+	Get rid of the "shutdown" window. This was really bad UI.
+	You should *desperately* avoid popping up windows the user
+	did not ask for. "Splash" screens are offensive enough.
+	
+2002-03-25  Seth Nickell  <snickell@stanford.edu>
+
+	* ui/toolbar.c: (control_bar_init):
+
+	Raise the lcd-title font size to 12 pt.
+	
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* AUTHORS:
+	* ui/ui.c: add olive
+	
+	* playlist/library-ui.c: fix some remaining issues
+
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/toolbar.c:
+	* playlist/library-ui.c: push the limits
+
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library.h:
+	* playlist/library-private.h:
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: clean up the mess with "All" nodes,
+	optimize filtering performance.
+
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c: improve searching performance
+
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas:
+	* playlist/library-ui.c: browser visiblity is saved now,
+	off by default
+
+	* ui/prefs.c: fix column selector
+
+2002-03-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* ui/data/Makefile.am:
+	* ui/data/action-library.png (REMOVED):
+	* ui/data/action-playlist.png (REMOVED):
+	* ui/data/rhythmbox-action-library.png (ADDED):
+	* ui/data/rhythmbox-action-playlist.png (ADDED):
+	* ui/icons.c:
+	* ui/icons.h: register action icons with stock system
+
+2002-03-25  Bastien Nocera  <hadess@hadess.net>
+
+	* playlist/library-ui.c: (ui_source_selected_cb):
+	* playlist/playlist-ui.c: (playlist_ui_set_manager),
+	(node_set_playing), (ui_source_selected_cb):
+	* ui/toolbar.c: (control_bar_set_action_button):
+	cleanups and various NULL checks
+
+2002-03-25  Bastien Nocera  <hadess@hadess.net>
+
+	* playlist/library-ui.c: (ui_source_selected_cb):
+	don't assume that it will find the pixmap
+	* src/main.c: (handle_command_line): don't assert on server
+	it will work fine without
+
+2002-03-24  Olivier Martin <omartin@ifrance.com>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* ui/data/Makefile.am:
+	* ui/data/action-library.png (ADDED):
+	* ui/data/action-playlist.png (ADDED):
+	* ui/toolbar.c: action button
+
+2002-03-24  Jorn Baayen <jorn@nl.linux.org>
+
+	* applet/Makefile.am:
+	* applet/applet.c:
+	* applet/applet.h (ADDED):
+	* src/Makefile.am:
+	* src/main.c:
+	* src/rhythmbox-automation.c: put applet in the main executable,
+	can be started using rhythmbox --new-applet. Doesnt work 
+	yet though ;)
+	
+	* playlist/playlist-ui.c: use new searching stuff in playlist too,
+	doesnt work yet. i need to do some treeview-util modding to get
+	it to work, please leave it to me.
+
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: remove unused stuff
+
+2002-03-24  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library-ui.c:
+	* playlist/library.c: (library_search):
+	* playlist/node-search.c: (node_search_run_search):
+
+	Comment out unused function for now. Get searching working.
+	
+2002-03-24  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/Makefile.am:
+	* playlist/library-private.c: (library_private_add_song),
+	(remove_node_cb):
+	* playlist/library-private.h:
+	* playlist/library-thread.c: (update_song), (set_node_to_fileinfo):
+	* playlist/library-ui.c: (add_artist), (add_album), (ui_query_cb):
+	* playlist/library.c: (library_init), (library_finalize),
+	(library_add_uri), (library_search):
+	* playlist/library.h:
+	* playlist/node-search.c: (node_search_get_type),
+	(node_search_class_init), (node_search_init),
+	(node_search_finalize), (node_search_new), (node_search_add_node),
+	(node_search_run_search), (create_combinations),
+	(create_key_from_string), (free_node_list):
+	* playlist/node-search.h:
+	* playlist/node-utils.c: (node_build_string_for_display):
+	* playlist/songs-view.c: (songs_view_update_node_internal):
+
+	Add search code and hook it in in a non-functioning way that hopefully
+	Jorn will know how to do right ;-)
+	
+2002-03-24  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/RhythmBoxAutomation.idl:
+	* src/main.c:
+	* src/rhythmbox-automation.c:
+	* ui/ui.c: add some commandline options
+
+2002-03-24  Jorn Baayen <jorn@nl.linux.org>
+	
+	* applet/GNOME_RhythmBoxApplet_Factory.server.in:
+	* src/RhythmBoxAutomation.idl:
+	* src/main.c:
+	* src/rhythmbox-automation.c: clean up our IDL, applet will
+	live in the rhythmbox exe instaed of a separate app
+	(saves a lot of dirty shouldThisAndThatBeSensitive corba calls).
+
+2002-03-24  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/main.c:
+	* src/rhythmbox-automation.c: fix up corba stuff, should work now
+
+2002-03-24  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/main.c: reshuffle stuff to have an init() and
+	shutdown() function, and add a small "Exiting..." window
+	when rb quits. Not noticable on a fast box, but i think
+	it's good feedback for slower machines.
+
+	* playlist/library-ui.c: add a private function for showing & hiding the
+	browser widgets for olive, who is working on the action button code.
+
+2002-03-24  Bastien Nocera  <hadess@hadess.net>
+
+	* src/main.c: (main), (init): no dirty global when not necessary,
+	made at 3 o'clock... that's all i can do in 2 minutes
+
+2002-03-23  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/sourcelist.c: do not call gtk_notebook_remove_page, page will be removed
+	when the source destroys itself.
+
+	* playlist/playlist-ui.c: disconnect manager signals on finalize
+
+2002-03-23  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.h:
+	* playlist/songs-view.c: the SongsView is a GtkWidget now
+
+2002-03-23  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas:
+	* playlist/Makefile.am:
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-manager.c (REMOVED):
+	* playlist/playlist-manager.h (REMOVED):
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/source-manager.c (ADDED):
+	* playlist/source-manager.h (ADDED):
+	* src/main.c:
+	* src/main.h:
+	* ui/statusbar.c:
+	* ui/toolbar.c:
+	* ui/ui.c:
+	* utils/Makefile.am:
+	* utils/prefs-strings.h (REMOVED):
+	* utils/state.c: clean up apis in playlist/, next thing i will do
+	is make a Source object from which the playlistui, libraryui,
+	and other sources will inherit (to remove some code duplication).
+
+2002-03-22  Jorn Baayen <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* configure.in:
+	* rhythmbox.schemas:
+	* GNOME_RhythmBox_Automation.server.in (ADDED):
+	* applet/Makefile.am (ADDED):
+	* applet/GNOME_RhythmBoxApplet.xml (ADDED):
+	* applet/GNOME_RhythmBoxApplet_Factory.server.in (ADDED):
+	* applet/applet.c (ADDED):
+	* src/RhythmBoxAutomation.idl (ADDED):
+	* src/main.c:
+	* src/main.h:
+	* src/rhythmbox-automation.c (ADDED):
+	* src/rhythmbox-automation.h (ADDED):
+	* playlist/library-ui.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-manager.h:
+	* playlist/playlist-ui.c:
+	* ui/ui.c:
+	* ui/ui.h:
+	* ui/toolbar.c:
+	* ui/toolbar.h:
+	* utils/prefs-strings.h:
+	* queue/queue.c:
+	* queue/queue.h: beginnings of corba support, some totally b0rk applet
+	skels, and the Queue object cleanup done. Lots of cleanups to come,
+	and please ignore the corba and panel stuff for now - it's totally
+	fucked up (will fix later, commiting now to avoid conflicts).
+
+	Dont even think about fixing or even looking at corba/applet,
+	i will change everything for sure. Just ignore those bits now.
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/lcdhscale.c: dont try to get arrow_displacement_x and y
+	props since they are not available in older versions of gtk,
+	and we dont use them.
+	
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/prefs.c: song column not configurable anymore,
+	since if it's not there you cannot select songs anymore.
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node-utils.c: do not strlen if the string
+	is NULL.
+	
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/e-splash.c: remove gal dep
+
+2002-03-21  Olivier Martin <omartin@ifrance.com>
+            Jakub Steiner <jimmac@ximian.com>
+	    Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/Makefile.am:
+	* ui/data/splash.png:
+	* ui/data/splash-ui.png (ADDED):
+	* ui/data/splash-queue.png (ADDED):
+	* ui/data/splash-library.png (ADDED):
+	* utils/Makefile.am:
+	* utils/e-splash.c (ADDED):
+	* utils/e-splash.h (ADDED):
+	* src/main.c: better and cooler splashscreen.
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/ui.c: ask for a name when adding a new playlist
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-manager.h:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: implement all of the "Edit" menu.
+
+2002-03-21  Bastien Nocera  <hadess@hadess.net>
+
+	* utils/misc.c: (string_request_dialog):
+	* utils/misc.h: added string request helper function
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas:
+	* utils/prefs-strings.h:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-manager.c: save shuffle/repeat setting
+
+2002-03-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/player.glade:
+	* ui/ui.c:
+	* ui/ui.h:
+	* playlist/playlist-manager.c: implemented a lot of menubar stuff
+
+2002-03-21  Seth Nickell  <snickell@stanford.edu>
+
+	* ui/ui.c: (control_bar_search_activate_cb):
+
+	*whew* Finally tracked down what was making the search bar
+	segfault. Signal set to return NULL, but no value (or NULL)
+	was being passed to it. So it trashed memory on the call
+	return stack, causing gdb to be totally useless. I love
+	the linux toolchain.
+
+2002-03-20  Seth Nickell  <snickell@stanford.edu>
+
+	* data/classification-mistakes.xml:
+
+	Added a file for storing artists & albums that are
+	really the same, and artists & albums that are similar
+	and we want to make sure end up in different categories.
+
+	Go through your music collection and add to this file
+	so we'll have a good database to work from when we
+	write this code!
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-thread.c: if artist or album are NULL set them
+	to "" so that they are put in the invisible "unknown" nodes.
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: up libgnomecanvas dependency to 0.113.0
+	
+	* playlist/library-thread.c: use the polished fileinfo field
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/songs-view.c: tracknum is a char* now
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-private.c:
+	* playlist/library-private.h:
+	* playlist/library.c: fix "multiple artist" albums again. Seth,
+	I didnt put the album_to_node hash back without reason. Songs
+	with the same album string get grouped into one album again,
+	but an album can have multiple parent artists (that is what
+	the grandparent stuff is for, to discover the artist belonging
+	to a song).
+
+	This way you still can filter Artist->Album and see all the songs
+	by just that artist from the album node, or you can view the whole
+	album if you have the "All" artist selected.
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/toolbar.c: fix slider
+
+2002-03-20  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/Makefile.am:
+	* ui/lcdhscale.c (ADDED):
+	* ui/lcdhscale.h (ADDED):
+	* ui/toolbar.c:
+	* ui/toolbar.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* playlist/playlist-manager.c: 
+	* queue/queue.c:
+	* queue/queue.h: implement a seek slider. Seeking wont
+	work yet though since gnomevfssrc hasnt been updated for new gstreamer
+	seeking bits yet.
+
+2002-03-20  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library.c: (library_release_brakes):
+
+	Bump up the refresh speed. This will make it more likely to bring
+	out any threading errors (which we definitely want to root out,
+	if any exist).
+
+2002-03-20  Seth Nickell  <snickell@stanford.edu>
+
+        Major rewrite of the library code... Now uses a background thread
+	for disk I/O (actually, that's not entirely true, yet, but it will
+	be, and ID3 reading is done entirely off the thread).
+
+	It will load slightly slower from the XML library than before, but
+	that is easy to fix. Performance of that will eventually be much
+	faster, as we can now defer almost everything to post-display. The
+	neat thing is if you delete the library and reload it will bubble
+	files in very nicely :-)
+	
+	* playlist/Makefile.am:
+	* playlist/library-private.c: (library_private_remove_song),
+	(library_private_add_song), (library_private_build_id),
+	(library_private_append_node_signal), (is_node),
+	(library_private_add_artist_if_needed),
+	(library_private_add_album_if_needed), (remove_node_cb):
+	* playlist/library-private.h:
+	* playlist/library-thread.c: (get_mtime), (library_thread_main),
+	(update_song), (set_node_to_fileinfo):
+	* playlist/library-thread.h:
+	* playlist/library-ui.c: (node_created_cb):
+	* playlist/library.c: (library_init), (library_release_brakes),
+	(library_finalize), (library_add_uri), (library_remove_uri),
+	(file_changed_cb), (update_song), (library_load_song_from_xml),
+	(library_load_album_from_xml), (library_load_artist_from_xml),
+	(get_mtime), (process_node_signals):
+	* playlist/node-utils.c: (song_get_album),
+	(node_build_string_for_display):
+	* playlist/songs-view.c: (songs_view_update_node_internal):
+
+	Rewrite to use threads, and fix code that made bad assumptions
+	about nodes always having an Album or Artist associated with them.
+	(It turns out the old i/o code was creating empty album and artist
+	nodes, which is probably not a good thing)
+
+	* src/main.c: (main):
+
+	Initialize threading system if necessary, call "break in
+	debugger" function.
+
+	* src/Makefile.am:
+	* src/debug.c:
+	* src/debug.h:
+	
+	Add functions that allow for breaking in the debugger on Criticals
+	and Warnings. Makes them *much* easier to track down. It should
+	have no effect when the program is not run in a debugger.
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-manager.c:
+	* queue/queue.c: fix async problems
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* queue/queue.c:
+	* queue/queue.h: get elapsed time working
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/Makefile.am:
+	* ui/data/rhythmbox-lcd-toggle.png (ADDED):
+	* ui/toolbar.c:
+	* ui/toolbar.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* utils/node-utils.c:
+	* utils/node-utils.h:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: start working on lcd
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/statusbar.c: make status label selectable
+	
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: missed a few statusbar update moments
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: show statusbar messages
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas:
+	* utils/prefs-strings.h:
+	* playlist/playlist-manager.c:
+	* queue/queue.h:
+	* queue/queue.c: save/restore volume
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library-ui.c:
+	* playlist/node.c:
+	* playlist/node.h: make new xml saving code "grandparent-aware",
+	dont put NULL albums/artists in treeviews again.
+
+2002-03-19  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c:
+	* playlist/node.h:
+	* playlist/node-utils.c:
+	* playlist/node-utils.h:
+	* playlist/library.c: replace artist userdata hack with 
+	node_get/set_grandparent.
+
+2002-03-19  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/library.c: (library_init), (library_add_uri),
+	(library_save_artist_node), (library_load_song_from_xml),
+	(library_load_album_from_xml), (library_load_artist_from_xml):
+	* playlist/node.c: (node_init), (node_finalize), (node_new),
+	(node_has_child), (node_set_xml_name), (save_string_property),
+	(save_int_property), (save_child_node), (node_save_to_xml):
+	* playlist/node.h:
+
+	Make node saving functions completely generic and move them
+	into the node itself. Now we can just set whatever properties
+	we want on the node, and they'll get saved to disk without
+	problems (can also recursively save children).
+	
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: fix export-dynamic stuff
+	
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: implement function that builds a statusbar
+	message. will hook up to ui tomorrow.
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c: fix removing "various artist" albums again
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: add --export-dynamic
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: depend on monkey-sound 0.4.1
+
+	* playlist/library.c: use fileinfo polishing in monkey-sound
+
+	* utils/treeview-utils.c: more utf8 aware sorting func
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: remove all references to bonobo
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* ui/data/*:
+	* ui/Makefile.am:
+	* ui/icons.c (ADDED):
+	* ui/icons.h (ADDED):
+	* ui/statusbar.c:
+	* ui/toolbar.c:
+	* src/main.c: register icons with the stock system
+
+2002-03-18  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/playlist-ui.c: library/playlist code utf8 safe
+
+	* playlist/songs-view.c: fix a deadlock
+	
+2002-03-17  Olivier Martin <omartin@ifrance.com>
+            Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/Makefile.am:
+	* ui/data/splash.png (ADDED):
+	* ui/ui.c:
+	* ui/ui.h:
+	* src/main.c: splashscreen
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/toolbar.c: finally fix playbutton. I was using the wrong
+	marshaller, feh.
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* src/main.c: implement shuffle/repeat. Right lightbulb
+	is repeat, left lightbulb is shuffle. We need proper images :)
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* FAQ: added
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: make more friendly to other auto* versions,
+	fix by Jelmer Vernooij <jelmer@nl.linux.org>.
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: invalidate rows after playing
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+	
+	* ui/prefs.c:
+	* playlist/songs-view.c: share column strings array
+
+2002-03-17  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: implement Smart Sorting[tm].
+	Smart Sorting[tm] is a new and exciting technology that
+	enables intelligent sorting of the playlist widget.
+	(Example: if two albums have the same name, rb looks
+	at the track. This results in better sorting)
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c: do mtime matching
+	(startup time will the first prolly be huge, since there's no mtime yet
+	and all songs will be re-checked)
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: songs_view_get_first returns the first
+	node if no selection, or the selected node.
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: dont allow multiple copies of one node
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: set number of items in "All" node
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library-ui.c:
+	* playlist/node.c:
+	* playlist/playlist-manager.c: single item addition/removal support
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: cleanup
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas:
+	* playlist/songs-view.c:
+	* ui/data/prefs.glade:
+	* ui/prefs.c:
+	* utils/prefs-strings.h: playlist column configurability
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/sourcelist.c:
+	* ui/sourcelist.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h:
+	* playlist/library-ui.c: same trick, but give library priority
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c: sort album/artist lists by default,
+	but keep "All" on the top.
+
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: if a song is paused, set a paused image
+	into the songsview
+	
+2002-03-16  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/treeview-utils.c:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: cleanups, fix the play button
+
+	* ui/data/prefs.glade: make explanation label selectable
+
+2002-03-14  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/Makefile.am:
+	* ui/data/lcd.png (ADDED):
+	* ui/toolbar.c: beginnings of lcd stuff, i'm not sure rounded corners
+	are a good idea - they're ugly imho.
+	
+2002-03-14  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/playlist-manager.c: save library again, fix library
+	saving for the feared "Various artist albums". feared "Various artist albums". 
+
+2002-03-13  Seth Nickell  <snickell@stanford.edu>
+
+	* rhythmbox.desktop.in:
+	* ui/data/player.glade:
+	* ui/ui.c: (window_about_cb):
+
+	Capitalize the name "RhythmBox" consistently.
+
+2002-03-13  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c:
+	* playlist/node.h:
+	* playlist/node-utils.h:
+	* playlist/library.c:
+	* playlist/library-ui.c: fix item removal for double parented
+	nodes (ie multiple artist albums). I dont like this double
+	parenting shit... i dont know a better way to do it atm though :(
+
+2002-03-13  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h:
+	* utils/treeview-utils.c: search entry resets library browsing
+	settings, browsing resets search entry.
+
+2002-03-12  Seth Nickell  <snickell@stanford.edu>
+
+	* Makefile.am:
+	* rhythmbox.desktop:
+	* rhythmbox.desktop.in:
+
+	Use intltool for the .desktop file rather than putting the
+	translations directly in the file.
+	
+	Revise to cover the things we currently can do, don't want users
+	expecting more from RhythmBox than it currently does ;-) We can
+	add things to the description once we support them.
+	
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* ui/ui.c;
+	* ui/ui.h:
+	* ui/toolbar.c:
+	* ui/toolbar.h: clear search entry on source change
+
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: check rewind/forward sensitivity on
+	toggle selection change
+
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-ui.c:
+	* playlist/library-ui.c: init some vars to NULL
+
+2002-03-12  Bastien Nocera  <hadess@hadess.net>
+
+	* src/main.c: (main): new error dialog with details
+	* utils/misc.c: (error_dialog_destroy),
+	(error_dialog_with_details): new functions
+	* utils/misc.h: new prototype
+
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+	
+	* playlist/library-ui.c: init some unused vars to NULL
+
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/Makefile.am:
+	* playlist/library.c:
+	* playlist/node-utils.c (ADDED):
+	* playlist/node-utils.h:
+	* utils/treeview-utils.c: put albums with the same name (also from
+	different artists) into one album node, but only show the songs
+	that also belong to the selected artist when browsing.
+	(This fixes #74348)
+
+2002-03-12  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/main.c: remove bonobo stuff
+
+2002-03-12  Olivier Martin <omartin@ifrance.com>
+
+	* ui/toolbar.c: pack volume slider under the control buttons
+
+2002-03-11  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* ui/toolbar.c:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: implement library/playlist searching
+	-> needs optimization. Seth, you had some cool algo for a char
+	tree right?
+
+2002-03-10  Marco Pesenti Gritti <mpeseng@tin.it>
+
+	* queue/queue.c: renaming to match new media
+	object interface
+	
+2002-03-10  Bastien Nocera  <hadess@hadess.net>
+
+	* src/main.c: (main): more error checks, use dialog for error
+	* utils/misc.c: (error_dialog): added error_dialog util function
+	* utils/misc.h: added error_dialog header
+
+2002-03-10  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: small cleanups
+	* utils/treeview-utils.c:
+	
+2002-03-10  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: check rewind/forward sensitivity
+	on filtering change
+
+2002-03-10  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: fix a few bugs
+	* ui/prefs.c: fix compile
+
+2002-03-10  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/prefs.c: prevent adding NULL watched dirs
+
+==== RELEASED 0.1
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/ui.c: make library directories menuitem work
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* all: Add Seth as an Official Developer :)
+
+2002-03-09  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/songs-view.c: (songs_view_update_node_internal):
+
+	If there's no song name, display the file name.
+
+2002-03-09  Seth Nickell  <snickell@stanford.edu>
+
+        Move away from using a toolbar.
+	
+	* ui/data/player.glade:
+	* ui/toolbar.c: (control_bar_get_type), (control_bar_class_init),
+	(control_bar_init), (control_bar_finalize), (control_bar_new),
+	(control_bar_set_ui), (control_bar_get_ui),
+	(control_bar_set_action_button), (control_bar_get_action_button),
+	(control_bar_set_lcd_text), (control_bar_get_lcd_text),
+	(control_bar_set_state), (control_bar_get_state),
+	(control_bar_set_rewind_sensitive),
+	(control_bar_get_rewind_sensitive),
+	(control_bar_set_forward_sensitive),
+	(control_bar_get_forward_sensitive), (control_bar_set_volume),
+	(control_bar_get_volume), (control_bar_set_offset),
+	(control_bar_get_offset), (rewind_clicked_cb), (play_clicked_cb),
+	(forward_clicked_cb), (volume_adjustment_value_changed_cb),
+	(search_entry_activate_cb):
+	* ui/toolbar.h:
+	* ui/ui.c: (ui_init), (ui_finalize), (ui_set_state),
+	(ui_set_can_rewind), (ui_set_can_forward), (ui_set_action_button),
+	(ui_set_volume), (ui_set_offset), (ui_set_display),
+	(control_bar_play_clicked_cb), (control_bar_rewind_clicked_cb),
+	(control_bar_forward_clicked_cb), (control_bar_search_activate_cb),
+	(control_bar_volume_changed_cb), (control_bar_offset_changed_cb),
+	(control_bar_action_clicked_cb), (statusbar_shuffle_clicked_cb),
+	(statusbar_repeat_clicked_cb), (statusbar_new_playlist_clicked_cb),
+	(sourcelist_source_selected_cb), (sourcelist_source_deleted_cb),
+	(sourcelist_source_edited_cb):
+	* ui/ui.h:
+
+	Renname functions from "toolbar" to "control_bar" so as not to
+	cause confusion.
+	
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: Finished "Operation Cleanup"
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: optimize loading
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: more cleanups, fixes
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/file-watcher.c:;
+	* playlist/library.c:
+	* playlist/library.h:
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-manager.c: cleanups
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: optimized filtering, should work a lot
+	faster now for large libraries.
+
+2002-03-09  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/statusbar.c: fix a warning
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/data/Makefile.am:
+	* ui/data/prefs.glade (ADDED):
+	* ui/Makefile.am:
+	* ui/prefs.c (ADDED):
+	* ui/ui.c: implement a simple prefswin
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c:
+	* playlist/playlist-ui.c: fix a few crashes
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-manager.c: fix "Play" behaviour
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-ui.c: rename rbp file on name change,
+	remove on delete.
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library.h:
+	* playlist/node.c:
+	* playlist/node.h:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c: fix xml library loading, finish
+	playlist loading/saving
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+	
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h: fix crash on exit, beginnings
+	of playlist saving (doesnt load yet).
+
+	* README: added mailinglist and irc channel info
+
+2002-03-08  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c: fix sorting on playing time, fix bugs
+	when a playing playlist or node was removed.
+
+2002-03-07  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: fix get_first_item for empty sources
+	
+2002-03-07  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/songs-view.c:
+	* playlist/songs-view.h:
+	* queue/queue.c:
+	* queue/queue.h:
+	* ui/data/Makefile.am:
+	* ui/data/stop.png (ADDED):
+	* ui/toolbar.c:
+	* ui/toolbar.h:
+	* ui/ui.c:
+	* ui/ui.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: playlist/library actions use the
+	selection from the new checkboxes instead of the treeview
+	selection, implement toolbar button behaviour like in iTunes.
+
+2002-03-07  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c: dont write empty nodes
+
+	* playlist/library.c: dont add non-existant songs from the xml
+	file
+
+	* other files: assorted fixes
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c: create the albums hashtable when an artist
+	is read
+	
+2002-03-05  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/file-watcher.c: (add_uri):
+
+	Convert to a GnomeVFSURI first, and use GnomeVFS's path
+	building functions. This ensures the URI is properly escaped,
+	encoded, and some other nice things.
+	
+	* playlist/library.c: (library_save_song_node),
+	(library_save_album_node), (library_save_artist_node),
+	(library_save_to_file)
+
+	Functions for saving the current library to disk. Eventually
+	these should probably be moved into node.c
+	
+	* playlist/library.c: (library_load_song_from_xml),
+	(library_load_album_from_xml), (library_load_artist_from_xml),
+	(library_load_from_file)
+
+	Functions for loading a library from disk. Eventually
+	these should probably be moved into node.c
+	
+	* playlist/library.c: (library_init), (library_finalize)
+
+	Deal with new structure, a list of nodes to be refreshed
+	in the background.
+	
+	* playlist/library.c: (library_add_uri)
+
+	If a Node already exists for this URI, use it. But make sure
+	that we update it from disk in the background (add it to the
+	list of nodes to be refreshed).
+	
+	* playlist/library.c: (file_changed_cb)
+
+	Accomodate fixes to node.c and node.h to handle memory management
+	and const strings consistently in their APIs.
+	
+	* playlist/library.h:
+
+	Add new functions for loading and saving files.
+	
+	* playlist/node.c: (node_get_string_property),
+	(node_get_int_property), (node_set_string_property),
+	(node_set_int_property), (property_compare):
+	* playlist/node.h:
+
+	Deal with memory management better, use const where appropriate.
+	
+	* playlist/playlist-manager.c: (playlist_manager_release_brakes):
+
+	Call load and save functions on the library. Really, we should
+	call save in other places too, or maybe somewhere else entirely,
+	(for example when you add individiual songs), but this fixes the
+	worst bug from not saving, which is huge load time on new dirs.
+	
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/ui.c: add a missing return
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* TODO:
+	* playlist/file-watcher.c:
+	* playlist/library-ui.c:
+	* playlist/library.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/songs-view.c:
+	* playlist/songs-viwe.h:
+	* queue/queue.c:
+	* queue/queue.h:
+	* ui/toolbar.c:
+	* ui/ui.c: implement the play/rewind/forward toolbar buttons,
+	and the volume slider.
+
+2002-03-06  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/file-watcher.c: (add_uri):
+
+	Convert to a GnomeVFSURI first, and use GnomeVFS's path
+	building functions. This ensures the URI is properly escaped,
+	encoded, and some other nice things.
+
+	* playlist/node.c: (node_get_string_property),
+	(node_get_int_property), (node_set_string_property),
+	(node_set_int_property), (property_compare):
+	* playlist/node.h:
+
+	Deal with memory management better, use const where appropriate.
+
+	* src/main.c: (main):
+
+	Use ~/.gnome/rhythmbox instead of ~/.rhythmbox, and build the
+	path correctly using g_build_filename instead of g_strconcat (which
+	can get the seperators wrong on some systems).
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/glade.c: fix warning
+
+	* HACKING: updated
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in: add -Werror to force people writing clean code
+
+	* src/main.c: fix compiler warning
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* utils/Makefile.am: copy treeview stuff before compiling
+
+2002-03-06  Jorn Baayen <jorn@nl.linux.org>
+
+	* HACKING:
+	* Makefile.am: add hacking guidelines
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/songs-view.c: have the first column have the right size
+	by default
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/Makefile.am:
+	* playlist/library-ui.c:
+	* playlist/songs-view.c (ADDED):
+	* playlist/songs-view.c (ADDED):
+	* playlist/playlist-ui.c:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: split duplicate code from the sources
+	out to shared files
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library-ui.c:
+	* playlist/node.c:
+	* playlist/playlist-ui.h:
+	* utils/treeview-utils.c:
+	* utils/treeview-utils.h: fix all FIXMEs in playlist/
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/file-watcher.c: load dir if a dir add was noticed
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* THANKS: added
+
+2002-03-05  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/file-watcher.c:
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/library.c:
+	* playlist/node.c:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* queue/queue.c:
+	* ui/sourcelist.c: tons of fixes and cleanups
+
+2002-03-04  Seth Nickell  <snickell@stanford.edu>
+
+	* src/Makefile.am:
+	* src/main.c: (main):
+
+	Set the default icon.
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* queue/queue.c: s/component/player, since monkey-sound isnt a component
+	anymore.
+
+	* configure.in: depend on monkey-sound 0.4
+
+2002-03-04  Seth Nickell  <snickell@stanford.edu>
+
+	* queue/queue.c: (queue_init), (queue_finalize), (queue_set_state),
+	(queue_set_current_uri), (song_played_cb):
+
+	Convert to use monkey-sound as library rather than monkey-sound
+	as component ;-)
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c: cleanups, fixes - still need to split out
+	the duped code between the two to a separate file.
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* playlist/playlist-manager.c: fix copy/paste, only allow
+	one source to be playing at the time
+
+2002-03-04  Seth Nickell  <snickell@stanford.edu>
+
+	* playlist/file-watcher.c: (add_uri):
+
+	Recurse into sub-directories (and monitor them, of
+	course).
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/playlist-ui.c:
+	* playlist/playlist-ui.h:
+	* ui/data/player.glade:
+	* ui/ui.c:
+	* ui/ui.h:
+	* utils/Makefile.am:
+	* utils/treeview-utils.c (ADDED):
+	* utils/treeview-utils.h (ADDED): implement playlists. You can add
+	stuff to a playlist by using the copy & paste menuitems. They arent
+	saved yet though.
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/sourcelist.c: fix keynav
+
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/Makefile.am:
+	* playlist/playlist-manager.c:
+	* playlist/playlist-ui.c (ADDED):
+	* playlist/playlist-ui.h (ADDED):
+	* playlist/playlist.h (REMOVED):
+	* ui/sourcelist.c:
+	* utils/prefs-strings.h: implement playlist skeletons, there's
+	no way to copy songs into them yet.
+	
+2002-03-04  Jorn Baayen <jorn@nl.linux.org>
+
+	* Makefile.am: add spec to DIST
+
+2002-03-04  Bastien Nocera  <hadess@hadess.net>
+
+	* utils/Makefile.am: copy the filter model files to the
+	current dir from the libegg cvs included dir
+
+2002-03-04  Bastien Nocera  <hadess@hadess.net>
+
+	* playlist/library-ui.c: (add_song), (add_album):
+	declarations are either at the top, or at the beginning of a new
+	section in C, no C++-style "wherever you want" declarations,
+	don't compare a boolean to a NULL pointer
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/node-utils.h: add some more node helpers to increase
+	code readability
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/node.c:
+	* playlist/node.h:
+	* playlist/library-ui.c: cleanups
+	* playlist/node-utils.h (ADDED): some handy node utils
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/Makefile.am:
+	* ui/Makefile.am:
+	* utils/Makefile.am:
+	* utils/gtktreemodelfilter.{c,h}: we cvs include libegg now
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/library-ui.c: select "All" in the albums list when a different
+	artist is selected
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/library-ui.c: take sort into account when jumping to next
+	song
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* src/library-ui.c: remove treemodelfilter hacks, add a
+	gtktreemodelsort so sorting works
+	* utils/gtktreemodelfilter.{c,h}: updated
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* rhythmbox.desktop:
+	* rhythmbox.png (ADDED): add appicon
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in:
+	* Makefile.am: use intltool rather than xml-i18n-tools, install
+	.desktop file
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* configure.in:
+	* Makefile.am:
+	* rhythmbox.spec (REMOVED):
+	* rhythmbox.spec.in (ADDED): use @VERSION@ for spec generation,
+	use AC_PATH_PROG to discover the location of gconftool-2.
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* TODO: updated
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* ui/Makefile.am:
+	* ui/ui-marshal.list (REMOVED):
+	* ui/ui.c:
+	* ui/sourcelist.c:
+	* utils/Makefile.am:
+	* utils/rhythmbox-marshal.list (ADDED):
+	* playlist/file-watcher.c: move marshal list to utils, add a BOOL_STRING
+	marshal for the file watcher.
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c: fix requesting of next song when none can be found
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-manager.c: gobjectify LibraryUI, implement queueing
+	and playing indication.
+
+2002-03-03  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: don't do gconf fu if DESTDIR is set
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* playlist/library-ui.h:
+	* playlist/playlist-manager.c:
+	* queue/queue.c:
+	* queue/queue.h: implement queue object, doubleclicking on an item
+	in the library will start playing that row now. it doesnt switch
+	to the next yet when it's done playing, but that wont be hard
+	to add. Also ui playing reflection isnt done yet, will do tomorrow.
+	Really need sleep now :)
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/file-watcher.c: support tilde in paths, check whether paths
+	exist
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library.c:
+	* playlist/library-ui.c: get filtering working, needed some hacks
+	to wrok around treefilter bugs. A little unstable as well, *blames gtk*.
+
+2002-03-03  Jorn Baayen <jorn@nl.linux.org>
+
+	* rhythmbox.schemas: use ~/Music by default as watched dir
+
+2002-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: hard-code gconftool-2
+
+2002-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.in: gconf macro stuff
+
+2002-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: use $(GCONFTOOL) macro instead of hardcoding
+	gconftool
+
+2002-03-02  Jorn Baayen <jorn@nl.linux.org>
+
+	* playlist/library-ui.c:
+	* utils/gtktreemodelfilter.{c,h} (ADDED): implement filtering.
+	Doesnt work though. Seems like gtktreemodelfilter does do
+	absolutely nothing. filter example works though, odd.
+
+2002-03-02  Jorn Baayen <jorn@nl.linux.org>
+
+	* all: library mostly functional again, only filtering is left
+	to be implemented. There's no ui for setting the watched dirs yet,
+	this needs to be done by setting the gconf key.
+
+2002-03-01  Jorn Baayen <jorn@nl.linux.org>
+
+	* all: lotsa new stuff, s/symphonia/rhythmbox, add hadess
+
+2002-02-28  Jorn Baayen <jorn@nl.linux.org>
+
+	* all: skeletons for most stuff, compiles again now
+
+2002-02-27  Jorn Baayen <jorn@nl.linux.org>
+
+	* all: everything reordered according to the new design, use
+	mediaplayer-component
+
+2002-02-01  Jorn Baayen <jorn@nl.linux.org>
+
+	* component/fileinfo.c:
+	* player/*: cleanups, fixes
+
+2002-01-25  Jorn Baayen <jorn@nl.linux.org>
+
+	* component/fileinfo.c: cleanups
+	
+	* player/Makefile.am:
+	* player/window.c (ADDED):
+	* player/window.h (ADDED): skeleton for a PlayerWindow object
+
+	Let's start writing stuff in here ;)
+
+2002-01-21  Marco Pesenti Gritti <mpeseng@tin.it>
+
+	* configure.in:
+	* component/Makefile.am: use pkgconfig for idl dirs
+	
+2002-01-21  Jorn Baayen <jorn@nl.linux.org>
+
+	* AUTHORS (ADDED):
+	* CHangeLog (ADDED):
+	* NEWS (ADDED):
+	* README (ADDED):
+	* autogen.sh (ADDED):
+	* configure.in (ADDED):
+	* Makefile.am (ADDED):
+	* component/Makefile.am (ADDED):
+	* component/main.c (ADDED):
+	* equalizer/Makefile.am (ADDED):
+	* player/Makefile.am (ADDED):
+	* playlist/Makefile.am (ADDED): initial stuff. we depend on gnome2, and
+	gstreamer compiled with --enable-glib2. gstreamer2 needs libxml1, btw.
