@@ -1053,12 +1053,18 @@ rb_shell_player_playpause (RBShellPlayer *player)
 		entry = rb_shell_player_get_playing_entry (player);
 		if (entry == NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
-			
-			if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-				rb_debug ("choosing random entry");
-				entry =  rb_entry_view_get_random_entry (songs);
+
+			GList* selection = rb_entry_view_get_selected_entries (songs);
+			if (selection != NULL) {
+				rb_debug ("choosing first selected entry");
+				entry = (RhythmDBEntry*) selection->data;
 			} else {
-				entry = rb_entry_view_get_first_entry (songs);
+				if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+					rb_debug ("choosing random entry");
+					entry = rb_entry_view_get_random_entry (songs);
+				} else {
+					entry = rb_entry_view_get_first_entry (songs);
+				}
 			}
 			if (entry != NULL)
 				rb_shell_player_set_playing_entry (player, entry);
@@ -1356,10 +1362,10 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
         gboolean not_small;
 
-	rb_debug ("syncing with source %p", source);
-
 	source = rb_shell_player_get_playing_entry (player) == NULL ?
 		 player->priv->selected_source : player->priv->source;
+
+	rb_debug ("syncing with source %p", source);
 
 	/* If we have a source and it's not empty, next and prev depend
 	 * on the availability of the next/prev entry. However if we are 

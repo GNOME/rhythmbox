@@ -1527,8 +1527,10 @@ rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 	g_return_val_if_fail (entry != NULL, NULL);
 
 	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					   entry, &iter))
-		return NULL;
+					   entry, &iter)) {
+		// If the entry isn't in the entryview, the "next" entry is the first.
+		return rb_entry_view_get_first_entry (view);
+	}
 	
 	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->model),
 				      &iter))
