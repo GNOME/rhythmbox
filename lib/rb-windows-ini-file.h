@@ -44,15 +44,15 @@ typedef struct {
 	GObjectClass parent;
 } RBWindowsINIFileClass;
 
-GType     rb_windows_ini_file_get_type    (void);
+GType              rb_windows_ini_file_get_type    (void);
 
-RBWindowsINIFile *rb_windows_ini_file_new (const char *filename);
+RBWindowsINIFile  *rb_windows_ini_file_new (const char *filename);
 
-GList *rb_windows_ini_file_get_sections (RBWindowsINIFile *inifile);
+GList             *rb_windows_ini_file_get_sections (RBWindowsINIFile *inifile);
 
-GList *rb_windows_ini_file_get_keys (RBWindowsINIFile *inifile, const char *section);
+GList             *rb_windows_ini_file_get_keys (RBWindowsINIFile *inifile, const char *section);
 
-const char *rb_windows_ini_file_lookup (RBWindowsINIFile *inifile, const char *section, const char *key);
+const char        *rb_windows_ini_file_lookup (RBWindowsINIFile *inifile, const char *section, const char *key);
 
 G_END_DECLS
 
