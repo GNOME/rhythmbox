@@ -75,6 +75,11 @@ static gboolean rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_des
 							GtkTreePath *dest,
 							GtkTreeViewDropPosition pos,
 							GtkSelectionData  *selection_data);
+static gboolean rhythmdb_query_model_row_drop_position (RbTreeDragDest   *drag_dest,
+							GtkTreePath       *dest_path,
+							GList *targets,
+							GtkTreeViewDropPosition *pos);
+
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model);
 static GType rhythmdb_query_model_get_column_type (GtkTreeModel *tree_model, int index);
@@ -350,7 +355,7 @@ rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
 	iface->drag_data_received = rhythmdb_query_model_drag_data_received;
 	iface->row_drop_possible = rhythmdb_query_model_row_drop_possible;
-	iface->row_drop_position = NULL;
+	iface->row_drop_position = rhythmdb_query_model_row_drop_position;
 }
 
 static void
@@ -1146,6 +1151,15 @@ rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
 	return model->priv->sort_func == NULL;
+}
+
+static gboolean
+rhythmdb_query_model_row_drop_position (RbTreeDragDest   *drag_dest,
+					GtkTreePath       *dest_path,
+					GList *targets,
+					GtkTreeViewDropPosition *pos)
+{
+	return TRUE;
 }
 
 static GtkTreeModelFlags

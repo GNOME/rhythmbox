@@ -107,7 +107,7 @@ static GtkWidget * create_criteria_option_menu (const RBQueryCreatorCriteriaOpti
 static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu);
 static GtkWidget * get_box_widget_at_pos (GtkBox *box, guint pos);
 
-static void append_row (RBQueryCreator *dialog);
+static GtkWidget * append_row (RBQueryCreator *dialog);
 static void add_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
 static void remove_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
 static void limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator);
@@ -124,6 +124,7 @@ struct RBQueryCreatorPrivate
 	GtkSizeGroup *button_size_group;
 
 	GtkBox *vbox;
+	GList *rows;
 
 	GtkWidget *addbutton;
 	GtkWidget *disjunction_check;
@@ -281,6 +282,7 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_entry));
 	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (dlg->priv->addbutton));
 	gtk_box_pack_start_defaults (dlg->priv->vbox, GTK_WIDGET (hbox));
+	dlg->priv->rows = g_list_prepend (dlg->priv->rows, hbox);
 
 	mainbox = glade_xml_get_widget (xml, "main_vbox");
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), mainbox, FALSE, FALSE, 0);
@@ -311,6 +313,8 @@ rb_query_creator_finalize (GObject *object)
 	g_object_unref (G_OBJECT (dlg->priv->criteria_size_group));
 	g_object_unref (G_OBJECT (dlg->priv->entry_size_group));
 	g_object_unref (G_OBJECT (dlg->priv->button_size_group));
+
+	g_list_free (dlg->priv->rows);
 	
 	g_free (dlg->priv);
 
@@ -373,7 +377,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 			     int limit_count, int limit_size)
 {
 	int i;
-	GList *rows;
+	GList *rows = creator->priv->rows;
 	gboolean disjunction = FALSE;
 	RhythmDBQueryData *qdata;
 	GPtrArray *subquery;
@@ -391,22 +395,24 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 			append_row (creator);
 	}
 	
-	rows = gtk_container_get_children (GTK_CONTAINER (creator->priv->vbox));
-
 	for (i = 0; i < subquery->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
-		GtkOptionMenu *propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
-										  0));
-		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
-										       1));
+		GtkOptionMenu *propmenu;
+		GtkOptionMenu *criteria_menu;
 
 		if (data->type == RHYTHMDB_QUERY_DISJUNCTION) {
 			disjunction = TRUE;
 			continue;
 		}
+
+		propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data), 0));
 		
 		select_property_from_value (GTK_WIDGET (propmenu), property_options,
 					    G_N_ELEMENTS (property_options), data->propid);
+
+		criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
+									1));
+
 		select_criteria_from_value (creator,
 					    GTK_WIDGET (criteria_menu), data->propid,
 					    data->type);
@@ -418,7 +424,7 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 		} else {
 			RBRating *rating = RB_RATING (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
 			g_object_set (G_OBJECT (rating), "score",
-				      g_value_get_double (data->val));
+				      g_value_get_double (data->val), NULL);
 		}
 		rows = rows->next;
 	}
@@ -443,7 +449,7 @@ rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
 static GtkWidget *
 get_box_widget_at_pos (GtkBox *box, guint pos)
 {
-	GtkWidget *ret;
+	GtkWidget *ret = NULL;
 	GList *children = gtk_container_get_children (GTK_CONTAINER (box));
 	GList *tem;
 	for (tem = children; tem; tem = tem->next) {
@@ -535,7 +541,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 	
 	sub_query = g_ptr_array_new ();
 	
-	rows = gtk_container_get_children (GTK_CONTAINER (dlg->priv->vbox));
+	rows = dlg->priv->rows;
 	for (row = rows; row; row = row->next) {
 		GtkOptionMenu *propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
 										  0));
@@ -596,8 +602,6 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 			       RHYTHMDB_QUERY_SUBQUERY,
 			       sub_query,
 			       RHYTHMDB_QUERY_END);
-	g_list_free (rows);
-	
 	return query;
 }
 
@@ -640,7 +644,7 @@ limit_toggled_cb (GtkWidget *limit, RBQueryCreator *dialog)
 static GtkWidget *
 lookup_row_by_widget (RBQueryCreator *dialog, GtkWidget *widget)
 {
-	GList *rows = gtk_container_get_children (GTK_CONTAINER (dialog->priv->vbox));
+	GList *rows = dialog->priv->rows;
 	GList *row;
 	GtkWidget *ret = NULL;
 	guint i;
@@ -654,7 +658,6 @@ lookup_row_by_widget (RBQueryCreator *dialog, GtkWidget *widget)
 			break;
 		}
 	}
-	g_list_free (rows);
 	return ret;
 }
 
@@ -667,6 +670,7 @@ remove_button_click_cb (GtkWidget *button, RBQueryCreator *dialog)
 	g_assert (row);
 	gtk_container_remove (GTK_CONTAINER (dialog->priv->vbox),
 			      GTK_WIDGET (row));
+	dialog->priv->rows = g_list_remove (dialog->priv->rows, row);
 }
 
 static void
@@ -675,7 +679,7 @@ add_button_click_cb (GtkWidget *button, RBQueryCreator *creator)
 	append_row (creator);
 }
 
-static void
+static GtkWidget *
 append_row (RBQueryCreator *dialog)
 {
 	GtkWidget *option;
@@ -687,7 +691,7 @@ append_row (RBQueryCreator *dialog)
 	GList *rows;
 	guint len;
 
-	rows = gtk_container_get_children (GTK_CONTAINER (dialog->priv->vbox));
+	rows = dialog->priv->rows;
 	len = g_list_length (rows);
 	last_hbox = GTK_BOX (get_box_widget_at_pos (dialog->priv->vbox, len-1));
 	g_object_ref (G_OBJECT (dialog->priv->addbutton));
@@ -702,6 +706,7 @@ append_row (RBQueryCreator *dialog)
 
 	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
 	gtk_box_pack_start_defaults (GTK_BOX (dialog->priv->vbox), GTK_WIDGET (hbox));
+	dialog->priv->rows = g_list_prepend (dialog->priv->rows, hbox);
 	gtk_box_reorder_child (dialog->priv->vbox, GTK_WIDGET (hbox), -1);
 
 	/* This is the main (leftmost) GtkOptionMenu, for types. */
@@ -725,6 +730,7 @@ append_row (RBQueryCreator *dialog)
 	g_object_unref (G_OBJECT (dialog->priv->addbutton));
 
 	gtk_widget_show_all (GTK_WIDGET (dialog->priv->vbox));
+	return GTK_WIDGET (hbox);
 }
 
 static void

@@ -573,6 +573,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
 	eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
 				    (GConfClientNotifyFunc) rb_library_source_browser_views_changed, source);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 	return G_OBJECT (source);
 }
 

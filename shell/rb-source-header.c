@@ -242,8 +242,6 @@ rb_source_header_set_property (GObject *object,
 							      header);
 		}
 
-		rb_source_header_clear_search (header);
-		
 		header->priv->selected_source = g_value_get_object (value);
 		rb_debug ("selected source %p", g_value_get_object (value));
 

@@ -1733,7 +1733,11 @@ rb_shell_source_deleted_cb (RBSource *source,
 		RBSource *library_source;
 		library_source = rb_shell_get_source_by_entry_type (shell, 
 								    RHYTHMDB_ENTRY_TYPE_SONG);
+		/* Set the gconf key */
 		rb_shell_select_source (shell, library_source);
+		/* Deal with it immediately, since we can't reference
+		 * the old source anymore. */
+		rb_shell_select_source_internal (shell, library_source);
 	}
 
 	shell->priv->sources = g_list_remove (shell->priv->sources, source);
