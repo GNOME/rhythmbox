@@ -1,3 +1,17 @@
+2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_select_node),
+	(root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c: (root_child_added_cb):
+	* library/rb-library.c:
+	* library/rb-node.c: (remove_child), (rb_node_dispose),
+	(child_changed), (rb_node_new_from_xml), (real_add_child),
+	(rb_node_add_child), (real_remove_child), (rb_node_remove_child),
+	(id_factory_set_to), (write_lock_to_read_lock),
+	(read_lock_to_write_lock):
+
+	Some node improvements, still needs a lot of work.
+
 2002-10-09  Jorn Baayen  <jorn@nl.linux.org>
 
 	* TODO:

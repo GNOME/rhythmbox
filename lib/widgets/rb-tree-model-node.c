@@ -877,13 +877,13 @@ root_child_added_cb (RBNode *node,
 		     RBNode *child,
 		     RBTreeModelNode *model)
 {
+	/* FIXME do locking of n_children and last_kid */
 	GtkTreePath *path;
 	GtkTreeIter iter;
 
 	model->priv->n_children++;
 
-	if (model->priv->last_kid == NULL)
-		model->priv->last_kid = child;
+	model->priv->last_kid = child;
 
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 

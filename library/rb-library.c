@@ -257,6 +257,7 @@ rb_library_get_all_songs (RBLibrary *library)
 	return library->priv->all_songs;
 }
 
+/* FIXME locking .. */
 static void
 genre_added_cb (RBNode *node,
 		RBNode *child,

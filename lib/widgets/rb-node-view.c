@@ -1221,14 +1221,14 @@ rb_node_view_select_node (RBNodeView *view,
 	view->priv->selection_lock = TRUE;
 
 	rb_node_view_select_none (view);
-	
+
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
 					   node, &iter);
 	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
 				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
 	visible = g_value_get_boolean (&val);
 	g_value_unset (&val);
-
+	
 	if (visible == FALSE)
 	{
 		view->priv->selection_lock = FALSE;
@@ -1338,6 +1338,7 @@ root_child_removed_cb (RBNode *root,
 		       RBNode *child,
 		       RBNodeView *view)
 {
+	/* FIXME locking */
 	RBNode *node;
 
 	if (view->priv->keep_selection == FALSE)

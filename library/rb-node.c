@@ -16,6 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
+ *
+ *  FIXME eigen lock schrijven ipv gstaticrwlock hacks
  */
 
 #include <stdlib.h>
@@ -50,7 +52,6 @@ static void real_remove_child (RBNode *node,
 			       gboolean remove_from_child);
 static void real_add_child (RBNode *node,
 		            RBNode *child);
-static void emit_signals_and_release_lock (RBNode *node);
 static void read_lock_to_write_lock (RBNode *node);
 static void write_lock_to_read_lock (RBNode *node);
 
@@ -72,8 +73,6 @@ struct RBNodePrivate
 
 	GHashTable *parents;
 	GPtrArray *children;
-
-	GQueue *unsent_signals;
 };
 
 enum
@@ -82,7 +81,7 @@ enum
 	PROP_ID
 };
 
-typedef enum
+enum
 {
 	DESTROYED,
 	RESTORED,
@@ -91,22 +90,7 @@ typedef enum
 	CHILD_REORDERED,
 	CHILD_REMOVED,
 	LAST_SIGNAL
-} SignalID;
-
-typedef struct
-{
-	SignalID id;
-
-	gpointer arg1;
-	int arg2;
-	int arg3;
-} Signal;
-
-static void add_signal (RBNode *node,
-			SignalID signal_id,
-			gpointer arg1,
-			int arg2,
-			int arg3);
+};
 
 static GObjectClass *parent_class = NULL;
 
@@ -308,10 +292,7 @@ remove_child (long id,
 
 	real_remove_child (node_info->node, node, TRUE, FALSE);
 
-	//g_static_rw_lock_writer_unlock (node_info->node->priv->lock);
-	write_lock_to_read_lock (node);
-	emit_signals_and_release_lock (node_info->node);
-	read_lock_to_write_lock (node);
+	g_static_rw_lock_writer_unlock (node_info->node->priv->lock);
 }
 
 static void
@@ -328,7 +309,7 @@ rb_node_dispose (GObject *object)
 	g_ptr_array_index (id_to_node, node->priv->id) = NULL;
 
 	g_static_rw_lock_writer_unlock (id_to_node_lock);
-	
+
 	/* remove from DAG */
 	g_hash_table_foreach (node->priv->parents,
 			      (GHFunc) remove_child,
@@ -346,10 +327,15 @@ rb_node_dispose (GObject *object)
 		g_static_rw_lock_writer_unlock (child->priv->lock);
 	}
 
-	add_signal (node, DESTROYED, NULL, -1, -1);
+	GDK_THREADS_ENTER ();
+	write_lock_to_read_lock (node);
 
-//	g_static_rw_lock_writer_unlock (node->priv->lock);
-	emit_signals_and_release_lock (node);
+	g_signal_emit (G_OBJECT (node), rb_node_signals[DESTROYED], 0);
+
+	read_lock_to_write_lock (node);
+	GDK_THREADS_LEAVE ();
+
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -414,105 +400,6 @@ rb_node_new (void)
 	g_return_val_if_fail (node->priv != NULL, NULL);
 
 	return node;
-}
-
-/* FIXME less args */
-static void
-add_signal (RBNode *node,
-	    SignalID signal_id,
-	    gpointer arg1,
-	    int arg2,
-	    int arg3)
-{
-	Signal *signal;
-	
-	if (node->priv->unsent_signals == NULL)
-		node->priv->unsent_signals = g_queue_new ();
-
-	signal = g_new0 (Signal, 1);
-	
-	signal->id = signal_id;
-	signal->arg1 = arg1;
-	signal->arg2 = arg2;
-	signal->arg3 = arg3;
-	
-	g_queue_push_tail (node->priv->unsent_signals, signal);
-}
-
-static void
-write_lock_to_read_lock (RBNode *node)
-{
-	g_static_mutex_lock (&node->priv->lock->mutex);
-	node->priv->lock->read_counter++;
-	g_static_mutex_unlock (&node->priv->lock->mutex);
-
-	g_static_rw_lock_writer_unlock (node->priv->lock);
-}
-
-static void
-read_lock_to_write_lock (RBNode *node)
-{
-	g_static_mutex_lock (&node->priv->lock->mutex);
-	node->priv->lock->read_counter--;
-	g_static_mutex_unlock (&node->priv->lock->mutex);
-
-	g_static_rw_lock_writer_lock (node->priv->lock);
-}
-
-static void
-emit_signals_and_release_lock (RBNode *node)
-{
-	GQueue *queue;
-
-	queue = node->priv->unsent_signals;
-	node->priv->unsent_signals = NULL;
-
-	if (queue == NULL) {
-		g_static_rw_lock_writer_unlock (node->priv->lock);
-		return;
-	}
-
-	g_static_mutex_lock (&node->priv->lock->mutex);
-	node->priv->lock->read_counter++;
-	g_static_mutex_unlock (&node->priv->lock->mutex);
-
-	GDK_THREADS_ENTER ();
-	
-	g_static_rw_lock_writer_unlock (node->priv->lock);
-	
-	while (!g_queue_is_empty (queue)) {
-		Signal *signal;
-		
-		signal = g_queue_pop_head (queue);
-
-		switch (signal->id)
-		{
-		case DESTROYED:
-		case RESTORED:
-			g_signal_emit (G_OBJECT (node), rb_node_signals[signal->id], 0);
-			break;
-		case CHILD_ADDED:
-		case CHILD_CHANGED:
-		case CHILD_REMOVED:
-			g_signal_emit (G_OBJECT (node), rb_node_signals[signal->id], 0,
-				       signal->arg1);
-			break;
-		case CHILD_REORDERED:
-			g_signal_emit (G_OBJECT (node), rb_node_signals[signal->id], 0,
-				       signal->arg1, signal->arg2, signal->arg3);
-			break;
-		default:
-			break;
-		}
-		
-		g_free (signal);
-	}
-
-	g_queue_free (queue);
-
-	g_static_rw_lock_reader_unlock (node->priv->lock);
-	
-	GDK_THREADS_LEAVE ();
 }
 
 long
@@ -599,9 +486,17 @@ child_changed (long id,
 {
 	g_static_rw_lock_writer_lock (node_info->node->priv->lock);
 
-	add_signal (node_info->node, CHILD_CHANGED, node, -1, -1);
+	GDK_THREADS_ENTER ();
+	write_lock_to_read_lock (node_info->node);
+	write_lock_to_read_lock (node);
+	
+	g_signal_emit (G_OBJECT (node_info->node), rb_node_signals[CHILD_CHANGED], 0, node);
 
-	emit_signals_and_release_lock (node_info->node);
+	read_lock_to_write_lock (node_info->node);
+	read_lock_to_write_lock (node);
+	GDK_THREADS_LEAVE ();
+
+	g_static_rw_lock_writer_unlock (node_info->node->priv->lock);
 }
 
 static void
@@ -1110,10 +1005,15 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 		}
 	}
 
-	add_signal (node, RESTORED, NULL, -1, -1);
+	GDK_THREADS_ENTER ();
+	write_lock_to_read_lock (node);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[RESTORED], 0);
+
+	read_lock_to_write_lock (node);
+	GDK_THREADS_LEAVE ();
 	
-	emit_signals_and_release_lock (node);
-//	g_static_rw_lock_writer_unlock (node->priv->lock);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 	
 	return node;
 }
@@ -1128,18 +1028,28 @@ real_add_child (RBNode *node,
 				 GINT_TO_POINTER (node->priv->id)) != NULL) {
 		return;
 	}
-	
+
+	GDK_THREADS_ENTER ();
+
 	g_ptr_array_add (node->priv->children, child);
 
 	node_info = g_new0 (RBNodeParent, 1);
 	node_info->node  = node;
 	node_info->index = node->priv->children->len - 1;
-	
+
 	g_hash_table_insert (child->priv->parents,
 			     GINT_TO_POINTER (node->priv->id),
 			     node_info);
 
-	add_signal (node, CHILD_ADDED, child, -1, -1);
+	write_lock_to_read_lock (node);
+	write_lock_to_read_lock (child);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_ADDED], 0, child);
+
+	read_lock_to_write_lock (node);
+	read_lock_to_write_lock (child);
+
+	GDK_THREADS_LEAVE ();
 }
 
 void
@@ -1154,10 +1064,8 @@ rb_node_add_child (RBNode *node,
 
 	real_add_child (node, child);
 
-//	g_static_rw_lock_writer_unlock (node->priv->lock);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
-
-	emit_signals_and_release_lock (node);
 }
 
 static void
@@ -1168,7 +1076,15 @@ real_remove_child (RBNode *node,
 {
 	RBNodeParent *node_info;
 
-	add_signal (node, CHILD_REMOVED, child, -1, -1);
+	GDK_THREADS_ENTER ();
+
+	write_lock_to_read_lock (node);
+	write_lock_to_read_lock (child);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REMOVED], 0, child);
+
+	read_lock_to_write_lock (node);
+	read_lock_to_write_lock (child);
 
 	node_info = g_hash_table_lookup (child->priv->parents,
 			                 GINT_TO_POINTER (node->priv->id));
@@ -1192,9 +1108,16 @@ real_remove_child (RBNode *node,
 			old_index = borked_node_info->index;
 			borked_node_info->index = node_info->index;
 
-			add_signal (node, CHILD_REORDERED,
-				    borked_node, old_index - 1, borked_node_info->index);
-//			add_signal (node, CHILD_CHANGED, borked_node, -1, -1);
+			write_lock_to_read_lock (node);
+			write_lock_to_read_lock (borked_node);
+
+			/* -1 because this was the last node, but since the removed signal is
+			 * emitted already we need to correct for the shortening */
+			g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REORDERED], 0,
+				       borked_node, old_index - 1, borked_node_info->index);
+
+			read_lock_to_write_lock (node);
+			read_lock_to_write_lock (borked_node);
 
 			g_static_rw_lock_writer_unlock (borked_node->priv->lock);
 		}
@@ -1204,6 +1127,8 @@ real_remove_child (RBNode *node,
 		g_hash_table_remove (child->priv->parents,
 				     GINT_TO_POINTER (node->priv->id));
 	}
+
+	GDK_THREADS_LEAVE ();
 }
 
 void
@@ -1218,10 +1143,8 @@ rb_node_remove_child (RBNode *node,
 
 	real_remove_child (node, child, TRUE, TRUE);
 
-	//g_static_rw_lock_writer_unlock (node->priv->lock);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
-
-	emit_signals_and_release_lock (node);
 }
 
 gboolean
@@ -1422,4 +1345,24 @@ id_factory_set_to (long new_factory_pos)
 	id_factory = new_factory_pos + 1;
 
 	g_mutex_unlock (id_factory_lock);
+}
+
+static void
+write_lock_to_read_lock (RBNode *node)
+{
+	g_static_mutex_lock (&node->priv->lock->mutex);
+	node->priv->lock->read_counter++;
+	g_static_mutex_unlock (&node->priv->lock->mutex);
+
+	g_static_rw_lock_writer_unlock (node->priv->lock);
+}
+
+static void
+read_lock_to_write_lock (RBNode *node)
+{
+	g_static_mutex_lock (&node->priv->lock->mutex);
+	node->priv->lock->read_counter--;
+	g_static_mutex_unlock (&node->priv->lock->mutex);
+
+	g_static_rw_lock_writer_lock (node->priv->lock);
 }
