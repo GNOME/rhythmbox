@@ -96,6 +96,8 @@ static void rb_node_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
 						    GConfEntry *entry,
 						    gpointer user_data);
+static void filter_changed_cb (RBNodeFilter *filter,
+		               RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -129,7 +131,7 @@ struct RBNodeViewPrivate
 	guint gconf_notification_id;
 	GHashTable *columns;
 
-	RBLibrary *library;
+	RBNodeFilter *filter;
 };
 
 enum
@@ -145,12 +147,10 @@ enum
 {
 	PROP_0,
 	PROP_ROOT,
-	PROP_FILTER_PARENT,
-	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
 	PROP_VIEW_COLUMNS_KEY,
 	PROP_VIEW_DESC_FILE,
-	PROP_LIBRARY
+	PROP_FILTER
 };
 
 static GObjectClass *parent_class = NULL;
@@ -205,20 +205,6 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_PARENT,
-					 g_param_spec_object ("filter-parent",
-							      "Filter parent node",
-							      "Filter parent node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_FILTER_ARTIST,
-					 g_param_spec_object ("filter-artist",
-							      "Filter artist node",
-							      "Filter artist node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
 					 PROP_PLAYING_NODE,
 					 g_param_spec_object ("playing-node",
 							      "Playing node",
@@ -235,16 +221,16 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_VIEW_COLUMNS_KEY,
 					 g_param_spec_string ("columns-key",
-							       "Columns key",
-							       "Columns key",
-							       NULL,
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      "Columns key",
+							      "Columns key",
+							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "Library object",
-							      "Library object",
-							      RB_TYPE_LIBRARY,
+					 PROP_FILTER,
+					 g_param_spec_object ("filter",
+							      "Filter object",
+							      "Filter object",
+							      RB_TYPE_NODE_FILTER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_node_view_signals[NODE_ACTIVATED] =
@@ -349,23 +335,6 @@ rb_node_view_set_property (GObject *object,
 	case PROP_ROOT:
 		{
 			view->priv->root = g_value_get_object (value);
-			rb_node_view_construct (view);
-		}
-		break;
-	case PROP_FILTER_PARENT:
-		{
-			g_assert (view->priv->nodemodel != NULL);
-
-			g_object_set_property (G_OBJECT (view->priv->nodemodel),
-				               "filter-parent", value);
-		}
-		break;
-	case PROP_FILTER_ARTIST:
-		{
-			g_assert (view->priv->nodemodel != NULL);
-			
-			g_object_set_property (G_OBJECT (view->priv->nodemodel),
-					       "filter-artist", value);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -384,8 +353,16 @@ rb_node_view_set_property (GObject *object,
 		g_free (view->priv->columns_key);
 		view->priv->columns_key = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_LIBRARY:
-		view->priv->library = g_value_get_object (value);
+	case PROP_FILTER:
+		view->priv->filter = g_value_get_object (value);
+
+		if (view->priv->filter != NULL)
+		{
+			g_signal_connect (G_OBJECT (view->priv->filter),
+					  "changed",
+					  G_CALLBACK (filter_changed_cb),
+					  view);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -406,22 +383,6 @@ rb_node_view_get_property (GObject *object,
 	case PROP_ROOT:
 		g_value_set_object (value, view->priv->root);
 		break;
-	case PROP_FILTER_PARENT:
-		{
-			g_assert (view->priv->nodemodel != NULL);
-
-			g_object_get_property (G_OBJECT (view->priv->nodemodel),
-				               "filter-parent", value);
-		}
-		break;
-	case PROP_FILTER_ARTIST:
-		{
-			g_assert (view->priv->nodemodel != NULL);
-
-			g_object_get_property (G_OBJECT (view->priv->nodemodel),
-					       "filter-artist", value);
-		}
-		break;
 	case PROP_PLAYING_NODE:
 		{
 			g_assert (view->priv->nodemodel != NULL);
@@ -436,8 +397,8 @@ rb_node_view_get_property (GObject *object,
 	case PROP_VIEW_COLUMNS_KEY:
 		g_value_set_string (value, view->priv->columns_key);
 		break;
-	case PROP_LIBRARY:
-		g_value_set_object (value, view->priv->library);
+	case PROP_FILTER:
+		g_value_set_object (value, view->priv->filter);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -449,7 +410,7 @@ RBNodeView *
 rb_node_view_new (RBNode *root,
 		  const char *view_desc_file,
 		  const char *columns_conf_key,
-		  RBLibrary *library)
+		  RBNodeFilter *filter)
 {
 	RBNodeView *view;
 
@@ -457,7 +418,7 @@ rb_node_view_new (RBNode *root,
 	g_assert (g_file_test (view_desc_file, G_FILE_TEST_EXISTS) == TRUE);
 
 	view = RB_NODE_VIEW (g_object_new (RB_TYPE_NODE_VIEW,
-					   "library", library,
+					   "filter", filter,
 					   "hadjustment", NULL,
 					   "vadjustment", NULL,
 					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -466,8 +427,9 @@ rb_node_view_new (RBNode *root,
 					   "view-desc-file", view_desc_file,
 					   "columns-key", columns_conf_key,
 					   "root", root,
-					   "filter-parent", root,
 					   NULL));
+
+	rb_node_view_construct (view);
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
 
@@ -510,7 +472,7 @@ rb_node_view_construct (RBNodeView *view)
 
 	view->priv->columns = g_hash_table_new (NULL, NULL);
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root,
-							view->priv->library);
+							view->priv->filter);
 	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
 							     NULL);
 	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
@@ -758,10 +720,9 @@ rb_node_view_construct (RBNodeView *view)
 	xmlFreeDoc (doc);
 }
 
-void
-rb_node_view_set_filter (RBNodeView *view,
-			 RBNode *filter_parent,
-			 RBNode *filter_artist)
+static void
+filter_changed_cb (RBNodeFilter *filter,
+		   RBNodeView *view)
 {
 	GtkWidget *window;
 	
@@ -778,15 +739,12 @@ rb_node_view_set_filter (RBNodeView *view,
 		gdk_cursor_unref (cursor);
 
 		gdk_flush ();
-	}
 
-	g_object_set (G_OBJECT (view),
-		      "filter-artist", filter_artist,
-		      "filter-parent", filter_parent,
-		      NULL);
-
-	if (window != NULL && window->window != NULL)
 		gdk_window_set_cursor (window->window, NULL);
+
+		/* no flush: this will cause the cursor to be reset
+		 * only when the UI is free again */
+	}
 }
 
 void
@@ -1207,39 +1165,31 @@ rb_node_view_get_status (RBNodeView *view)
 	GnomeVFSFileSize n_bytes = 0;
 	long n_seconds = 0;
 	int n_songs = 0;
-	RBNode *parent = NULL, *artist = NULL;
+	GPtrArray *kids;
+	int i;
 
-	rb_tree_model_node_get_filter (view->priv->nodemodel,
-				       &parent, &artist);
+	kids = rb_node_get_children (view->priv->root);
 
-	if (parent != NULL)
+	for (i = 0; i < kids->len; i++)
 	{
-		GPtrArray *kids;
-		int i;
+		RBNode *node;
 
-		kids = rb_node_get_children (parent);
-
-		for (i = 0; i < kids->len; i++)
-		{
-			RBNode *node;
-
-			node = g_ptr_array_index (kids, i);
-			
-			if (artist != NULL &&
-			    rb_node_song_has_artist (RB_NODE_SONG (node), artist, view->priv->library) == FALSE)
-				continue;
-
-			n_songs++;
-
-			n_seconds += rb_node_get_property_long (node,
-								RB_NODE_SONG_PROP_REAL_DURATION);
-
-			n_bytes += rb_node_get_property_long (node,
-							      RB_NODE_SONG_PROP_FILE_SIZE);
-		}
+		node = g_ptr_array_index (kids, i);
 		
-		rb_node_thaw (parent);
+		if (view->priv->filter != NULL &&
+		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
+			continue;
+
+		n_songs++;
+
+		n_seconds += rb_node_get_property_long (node,
+							RB_NODE_SONG_PROP_REAL_DURATION);
+
+		n_bytes += rb_node_get_property_long (node,
+						      RB_NODE_SONG_PROP_FILE_SIZE);
 	}
+		
+	rb_node_thaw (view->priv->root);
 
 	size = gnome_vfs_format_file_size_for_display (n_bytes);
 
@@ -1377,28 +1327,25 @@ rb_node_view_is_empty (RBNodeView *view)
 static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
-	RBNode *parent = NULL, *artist = NULL;
 	GPtrArray *kids;
 	int n_rows = 0, i;
 
-	rb_tree_model_node_get_filter (view->priv->nodemodel,
-				       &parent, &artist);
-
-	if (parent == NULL)
-		return n_rows;
-
-	kids = rb_node_get_children (parent);
+	kids = rb_node_get_children (view->priv->root);
 	
 	for (i = 0; i < kids->len; i++)
 	{
-		if (artist != NULL &&
-		    rb_node_song_has_artist (g_ptr_array_index (kids, i), artist, view->priv->library) == FALSE)
+		RBNode *node;
+
+		node = g_ptr_array_index (kids, i);
+
+		if (view->priv->filter != NULL &&
+		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
 			continue;
 
 		n_rows++;
 	}
 
-	rb_node_thaw (parent);
+	rb_node_thaw (view->priv->root);
 
 	return n_rows;
 }

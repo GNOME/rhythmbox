@@ -51,6 +51,11 @@ typedef struct
 	void (*finished_preloading) (RBLibrary *lib);
 } RBLibraryClass;
 
+enum
+{
+	RB_ALL_NODE_PROP_PRIORITY = 14
+};
+
 GType                 rb_library_get_type             (void);
 
 RBLibrary            *rb_library_new                  (void);

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
+ *            (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,13 +24,9 @@
 
 #include <glib-object.h>
 
-#include "rb-library.h"
+#include "rb-node.h"
 
 G_BEGIN_DECLS
-
-#define RB_TYPE_NODE_FILTER_TYPE (rb_node_filter_type_get_type ())
-
-GType rb_node_filter_type_get_type (void);
 
 #define RB_TYPE_NODE_FILTER         (rb_node_filter_get_type ())
 #define RB_NODE_FILTER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE_FILTER, RBNodeFilter))
@@ -51,18 +48,50 @@ typedef struct
 {
 	GObjectClass parent;
 
+	void (*changed) (RBNodeFilter *filter);
 } RBNodeFilterClass;
+
+typedef enum
+{
+	RB_NODE_FILTER_EXPRESSION_ALWAYS_TRUE,           /* args: none */
+	RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,           /* args: RBNode *a, RBNode *b */
+	RB_NODE_FILTER_EXPRESSION_HAS_PARENT,            /* args: RBNode *parent */
+	RB_NODE_FILTER_EXPRESSION_HAS_CHILD,             /* args: RBNode *child */     
+	RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,      /* args: int prop_id, RBNode *node */
+	RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,  /* args: int prop_id, const char *string */
+	RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS,    /* args: int prop_id, const char *string */
+	RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS,       /* args: int prop_id, int int */
+	RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN,  /* args: int prop_id, int int */
+	RB_NODE_FILTER_EXPRESSION_INT_PROP_LESS_THAN     /* args: int prop_id, int int */
+} RBNodeFilterExpressionType;
+
+typedef struct RBNodeFilterExpression RBNodeFilterExpression;
+
+/* The filter starts iterating over all expressions at level 0,
+ * if one of them is TRUE it continues to level 1, etc.
+ * If it still has TRUE when there are no more expressions at the
+ * next level, the result is TRUE. Otherwise, it's FALSE.
+ */
 
 GType         rb_node_filter_get_type       (void);
 
-RBNodeFilter *rb_node_filter_new            (RBLibrary *library);
+RBNodeFilter *rb_node_filter_new            (void);
 
-RBNode       *rb_node_filter_get_root       (RBNodeFilter *filter);
+void          rb_node_filter_add_expression (RBNodeFilter *filter,
+					     RBNodeFilterExpression *expression,
+					     int level);
 
-void	      rb_node_filter_set_expression (RBNodeFilter *filter,
-					     const char *expression);
+void          rb_node_filter_empty          (RBNodeFilter *filter);
 
-void	      rb_node_filter_abort_search   (RBNodeFilter *filter);
+void          rb_node_filter_done_changing  (RBNodeFilter *filter);
+
+gboolean      rb_node_filter_evaluate       (RBNodeFilter *filter,
+					     RBNode *node);
+
+RBNodeFilterExpression *rb_node_filter_expression_new  (RBNodeFilterExpressionType,
+						        ...);
+/* no need to free unless you didn't add the expression to a filter */
+void                    rb_node_filter_expression_free (RBNodeFilterExpression *expression);
 
 G_END_DECLS
 

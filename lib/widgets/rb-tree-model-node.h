@@ -24,7 +24,7 @@
 #include <gtk/gtktreemodel.h>
 
 #include "rb-node.h"
-#include "rb-library.h"
+#include "rb-node-filter.h"
 
 G_BEGIN_DECLS
 
@@ -72,20 +72,13 @@ typedef struct
 GType            rb_tree_model_node_get_type         (void);
 
 RBTreeModelNode *rb_tree_model_node_new              (RBNode *root,
-						      RBLibrary *library);
+						      RBNodeFilter *filter);
 
 RBNode          *rb_tree_model_node_node_from_iter   (RBTreeModelNode *model,
 						      GtkTreeIter *iter);
 void             rb_tree_model_node_iter_from_node   (RBTreeModelNode *model,
 						      RBNode *node,
 						      GtkTreeIter *iter);
-
-void             rb_tree_model_node_set_filter       (RBTreeModelNode *model,
-						      RBNode *filter_parent,
-						      RBNode *filter_artist);
-void             rb_tree_model_node_get_filter       (RBTreeModelNode *model,
-						      RBNode **filter_parent,
-						      RBNode **filter_artist);
 
 void             rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 						      RBNode *node);

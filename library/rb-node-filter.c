@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
+ *            (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,54 +21,56 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdarg.h>
 
-#include "rb-debug.h"
 #include "rb-node-filter.h"
-#include "rb-node-song.h"
 
 static void rb_node_filter_class_init (RBNodeFilterClass *klass);
 static void rb_node_filter_init (RBNodeFilter *node);
 static void rb_node_filter_finalize (GObject *object);
-static void rb_node_filter_set_object_property (GObject *object,
-						guint prop_id,
-						const GValue *value,
-						GParamSpec *pspec);
-static void rb_node_filter_get_object_property (GObject *object, 
-						guint prop_id,
-						GValue *value,
-						GParamSpec *pspec);
-static gpointer thread_main (RBNodeFilterPrivate *priv);
-
-
-typedef enum
-{
-	LAST_SIGNAL
-} RBNodeFilterSignal;
-
-struct RBNodeFilterPrivate
-{
-	RBLibrary *library;
-
-	GMutex *expr_lock;
-	gboolean expr_changed;
-	char *expression;
-
-	GMutex *lock;
-	GThread *thread;
-	gboolean dead;
-	gboolean done;
-
-	RBNode *root;
-};
+static gboolean rb_node_filter_expression_evaluate (RBNodeFilterExpression *expression,
+						    RBNode *node);
 
 enum
 {
-	PROP_0,
-	PROP_EXPRESSION,
-	PROP_LIBRARY
+	CHANGED,
+	LAST_SIGNAL
+};
+
+struct RBNodeFilterPrivate
+{
+	GPtrArray *levels;
+};
+
+struct RBNodeFilterExpression
+{
+	RBNodeFilterExpressionType type;
+
+	union
+	{
+		struct
+		{
+			RBNode *a;
+			RBNode *b;
+		} node_args;
+
+		struct
+		{
+			int prop_id;
+
+			union
+			{
+				RBNode *node;
+				char *string;
+				int number;
+			} second_arg;
+		} prop_args;
+	} args;
 };
 
 static GObjectClass *parent_class = NULL;
+
+static guint rb_node_filter_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_node_filter_get_type (void)
@@ -106,24 +109,15 @@ rb_node_filter_class_init (RBNodeFilterClass *klass)
 
 	object_class->finalize = rb_node_filter_finalize;
 
-	object_class->set_property = rb_node_filter_set_object_property;
-	object_class->get_property = rb_node_filter_get_object_property;
-
-	g_object_class_install_property (object_class,
-					 PROP_EXPRESSION,
-					 g_param_spec_string ("expression", 
-							      "Expression string", 
-							      "Expression string", 
-							      NULL,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library", 
-							      "Library object", 
-							      "Library object", 
-							      RB_TYPE_LIBRARY,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
+	rb_node_filter_signals[CHANGED] =
+		g_signal_new ("changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeFilterClass, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -131,12 +125,7 @@ rb_node_filter_init (RBNodeFilter *filter)
 {
 	filter->priv = g_new0 (RBNodeFilterPrivate, 1);
 
-	g_assert (filter->priv != NULL);
-
-	filter->priv->root = rb_node_new ();
-
-	filter->priv->lock = g_mutex_new ();
-	filter->priv->expr_lock = g_mutex_new ();
+	filter->priv->levels = g_ptr_array_new ();
 }
 
 static void
@@ -151,96 +140,19 @@ rb_node_filter_finalize (GObject *object)
 
 	g_return_if_fail (filter->priv != NULL);
 
-	g_mutex_lock (filter->priv->lock);
-	filter->priv->dead = TRUE;
-	g_mutex_unlock (filter->priv->lock);
+	rb_node_filter_empty (filter);
+
+	g_ptr_array_free (filter->priv->levels, FALSE);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-rb_node_filter_set_object_property (GObject *object,
-		                    guint prop_id,
-		                    const GValue *value,
-		                    GParamSpec *pspec)
-{
-	RBNodeFilter *filter = RB_NODE_FILTER (object);
-
-	switch (prop_id)
-	{
-	case PROP_EXPRESSION:
-		{
-			GPtrArray *kids;
-			int i;
-
-			kids = rb_node_get_children (filter->priv->root);
-			for (i = kids->len - 1; i >= 0; i--)
-				rb_node_remove_child (filter->priv->root,
-						      g_ptr_array_index (kids, i));
-			rb_node_thaw (filter->priv->root);
-			filter->priv->done = FALSE;
-
-			/* set the new expression to search */
-			g_mutex_lock (filter->priv->expr_lock);
-			if (filter->priv->expression != NULL)
-				g_free (filter->priv->expression);
-			filter->priv->expression = g_strdup (g_value_get_string (value));
-			filter->priv->expr_changed = TRUE;
-			g_mutex_unlock (filter->priv->expr_lock);
-		}
-		break;
-	case PROP_LIBRARY:
-		{
-			filter->priv->library = g_value_get_object (value);
-
-			filter->priv->thread = g_thread_create ((GThreadFunc) thread_main,
-								filter->priv, TRUE, NULL);
-			g_thread_set_priority (filter->priv->thread,
-					       G_THREAD_PRIORITY_LOW);
-		}
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_node_filter_get_object_property (GObject *object,
-		                    guint prop_id,
-		                    GValue *value,
-		                    GParamSpec *pspec)
-{
-	RBNodeFilter *filter = RB_NODE_FILTER (object);
-
-	switch (prop_id)
-	{
-	case PROP_EXPRESSION:
-		{
-			g_mutex_lock (filter->priv->expr_lock);
-			g_value_set_string (value, filter->priv->expression);
-			g_mutex_unlock (filter->priv->expr_lock);
-		}
-		break;
-	case PROP_LIBRARY:
-		{
-			g_value_set_object (value, filter->priv->library);
-		}
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-
 RBNodeFilter *
-rb_node_filter_new (RBLibrary *library)
+rb_node_filter_new (void)
 {
 	RBNodeFilter *filter;
 
 	filter = RB_NODE_FILTER (g_object_new (RB_TYPE_NODE_FILTER,
-					       "library", library,
 					       NULL));
 
 	g_return_val_if_fail (filter->priv != NULL, NULL);
@@ -248,134 +160,223 @@ rb_node_filter_new (RBLibrary *library)
 	return filter;
 }
 
-RBNode *
-rb_node_filter_get_root (RBNodeFilter *filter)
+void
+rb_node_filter_add_expression (RBNodeFilter *filter,
+			       RBNodeFilterExpression *exp,
+			       int level)
 {
-	g_return_val_if_fail (filter != NULL, NULL);
+	while (level >= filter->priv->levels->len)
+		g_ptr_array_add (filter->priv->levels, NULL);
 
-	return filter->priv->root;
+	g_ptr_array_index (filter->priv->levels, level) =
+		g_list_append (g_ptr_array_index (filter->priv->levels, level), exp);
 }
 
 void
-rb_node_filter_set_expression (RBNodeFilter *filter,
-			       const char *expression)
+rb_node_filter_empty (RBNodeFilter *filter)
 {
-	g_return_if_fail (filter != NULL);
-	g_return_if_fail (expression != NULL);
-
-	g_object_set (G_OBJECT (filter),
-		      "expression", expression,
-		      NULL);
-}
-
-void 
-rb_node_filter_abort_search (RBNodeFilter *filter)
-{
-	g_return_if_fail (filter != NULL);
-
-	g_mutex_lock (filter->priv->expr_lock);
-	filter->priv->expr_changed = TRUE;
-	g_mutex_unlock (filter->priv->expr_lock);
-}
-
-static gpointer
-thread_main (RBNodeFilterPrivate *priv)
-{
-	while (TRUE)
-	{
-		RBNode *node;
-		GPtrArray *kids;
-		char *expression = NULL;
-		int results = 0, i;
-		RBProfiler *p;
-
-		g_mutex_lock (priv->lock);
-		if (priv->dead == TRUE)
-		{
-			g_mutex_unlock (priv->lock);
-			g_mutex_free (priv->lock);
-			g_mutex_free (priv->expr_lock);
-			g_free (priv->expression);
-			g_free (priv);
-			g_thread_exit (NULL);
-		}
-		g_mutex_unlock (priv->lock);
+	int i;
 	
-		if ((priv->expression == NULL) ||
-		    (priv->done == TRUE))
+	for (i = filter->priv->levels->len - 1; i >= 0; i--)
+	{
+		GList *list, *l;
+
+		list = g_ptr_array_index (filter->priv->levels, i);
+
+		for (l = list; l != NULL; l = g_list_next (l))
 		{
-			g_mutex_unlock (priv->lock);
-			g_usleep (10);
-			continue;
+			RBNodeFilterExpression *exp;
+
+			exp = (RBNodeFilterExpression *) l->data;
+
+			rb_node_filter_expression_free (exp);
 		}
 
-		/* Check the expression is correct */
-		g_mutex_lock (priv->expr_lock);
-		if (priv->expression != NULL)
-			expression = g_utf8_casefold (priv->expression, -1);
-		g_strstrip (expression);
-		priv->expr_changed = FALSE;
-		g_mutex_unlock (priv->expr_lock);
+		g_list_free (list);
 
-		/* start finding nodes */
-		node = rb_library_get_all_songs (priv->library);
-		kids = rb_node_get_children (node);
+		g_ptr_array_remove_index (filter->priv->levels, i);
+	}
+}
 
-		p = rb_profiler_new ("Searching ...");
-		for (i = 0; i < kids->len; i++)
+void
+rb_node_filter_done_changing (RBNodeFilter *filter)
+{
+	g_signal_emit (G_OBJECT (filter), rb_node_filter_signals[CHANGED], 0);
+}
+
+gboolean
+rb_node_filter_evaluate (RBNodeFilter *filter,
+			 RBNode *node)
+{
+	int i;
+
+	for (i = 0; i < filter->priv->levels->len; i++)
+	{
+		GList *l, *list;
+		gboolean match;
+
+		match = FALSE;
+
+		list = g_ptr_array_index (filter->priv->levels, i);
+
+		for (l = list; l != NULL; l = g_list_next (l))
 		{
-			char *title, *artist, *album;
-			gboolean found = FALSE;
-			gboolean aborted = FALSE;
-
-			/* verify if search has been aborted */
-			g_mutex_lock (priv->expr_lock);
-			aborted = priv->expr_changed;
-			g_mutex_unlock (priv->expr_lock);
-
-			if (aborted == TRUE)
+			if (rb_node_filter_expression_evaluate (l->data, node) == TRUE)
+			{
+				match = TRUE;
 				break;
-
-			/* check the title - artist - album */
-			node = g_ptr_array_index (kids, i);
-			
-			title = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_PROP_NAME), -1);
-			if (strstr (title, expression) != NULL)
-				found = TRUE;
-			g_free (title);
-
-			if (found == FALSE)
-			{
-				artist = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST), -1);
-				if (strstr (artist, expression) != NULL)
-					found = TRUE;
-				g_free (artist);
-			}
-
-			if (found == FALSE)
-			{
-				album = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM), -1);
-				if (strstr (album, expression) != NULL)
-					found = TRUE;
-				g_free (album);
-			}
-
-			if (found == TRUE)
-			{
-				rb_node_add_child (priv->root, node);
-				results++;
 			}
 		}
 
-		rb_node_thaw (node);
-
-		g_free (expression);
-
-		priv->done = TRUE;
-
-		rb_profiler_dump (p);
-		rb_profiler_free (p);
+		if (match == FALSE)
+			return FALSE;
 	}
 
-	return NULL;
+	return TRUE;
+}
+
+RBNodeFilterExpression *
+rb_node_filter_expression_new (RBNodeFilterExpressionType type,
+			       ...)
+{
+	RBNodeFilterExpression *exp;
+	va_list valist;
+
+	va_start (valist, type);
+
+	exp = g_new0 (RBNodeFilterExpression, 1);
+
+	exp->type = type;
+
+	switch (type)
+	{
+	case RB_NODE_FILTER_EXPRESSION_NODE_EQUALS:
+		exp->args.node_args.a = va_arg (valist, RBNode *);
+		exp->args.node_args.b = va_arg (valist, RBNode *);
+		break;
+	case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
+	case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
+		exp->args.node_args.a = va_arg (valist, RBNode *);
+		break;
+	case RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS:
+		exp->args.prop_args.prop_id = va_arg (valist, int);
+		exp->args.prop_args.second_arg.node = va_arg (valist, RBNode *);
+		break;
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
+		exp->args.prop_args.prop_id = va_arg (valist, int);
+		exp->args.prop_args.second_arg.string = g_strdup (va_arg (valist, char *));
+		break;
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN:
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_LESS_THAN:
+		exp->args.prop_args.prop_id = va_arg (valist, int);
+		exp->args.prop_args.second_arg.number = va_arg (valist, int);
+		break;
+	default:
+		break;
+	}
+
+	va_end (valist);
+
+	return exp;
+}
+
+void
+rb_node_filter_expression_free (RBNodeFilterExpression *exp)
+{
+	switch (exp->type)
+	{
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
+		g_free (exp->args.prop_args.second_arg.string);
+		break;
+	default:
+		break;
+	}
+	
+	g_free (exp);
+}
+
+static gboolean
+rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
+				    RBNode *node)
+{
+	switch (exp->type)
+	{
+	case RB_NODE_FILTER_EXPRESSION_ALWAYS_TRUE:
+		return TRUE;
+	case RB_NODE_FILTER_EXPRESSION_NODE_EQUALS:
+		return (exp->args.node_args.a == exp->args.node_args.b);
+	case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
+		return rb_node_has_child (exp->args.node_args.a, node);
+	case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
+		return rb_node_has_child (node, exp->args.node_args.a);
+	case RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS:
+	{
+		RBNode *prop;
+
+		prop = rb_node_get_property_node (node,
+						  exp->args.prop_args.prop_id);
+		
+		return (prop == exp->args.prop_args.second_arg.node);
+	}
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
+	{
+		const char *prop;
+
+		prop = rb_node_get_property_string (node,
+						    exp->args.prop_args.prop_id);
+
+		if (prop == NULL)
+			return FALSE;
+
+		/* FIXME should be case insensitive */
+		return (strstr (prop, exp->args.prop_args.second_arg.string) != NULL);
+	}
+	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
+	{
+		const char *prop;
+
+		prop = rb_node_get_property_string (node,
+						    exp->args.prop_args.prop_id);
+
+		if (prop == NULL)
+			return FALSE;
+
+		/* FIXME */
+		return (strcmp (prop, exp->args.prop_args.second_arg.string) == 0);
+	}
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
+	{
+		int prop;
+
+		prop = rb_node_get_property_int (node,
+						 exp->args.prop_args.prop_id);
+
+		return (prop == exp->args.prop_args.second_arg.number);
+	}
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN:
+	{
+		int prop;
+
+		prop = rb_node_get_property_int (node,
+						 exp->args.prop_args.prop_id);
+
+		return (prop > exp->args.prop_args.second_arg.number);
+	}
+	case RB_NODE_FILTER_EXPRESSION_INT_PROP_LESS_THAN:
+	{
+		int prop;
+
+		prop = rb_node_get_property_int (node,
+						 exp->args.prop_args.prop_id);
+
+		return (prop < exp->args.prop_args.second_arg.number);
+	}
+	default:
+		break;
+	}
+
+	return FALSE;
 }

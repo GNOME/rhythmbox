@@ -337,7 +337,7 @@ rb_group_view_init (RBGroupView *view)
 	view->priv->songs = rb_node_view_new (view->priv->group,
 				              rb_file ("rb-node-view-songs.xml"),
 					      "/apps/rhythmbox/ui/columns_setup",
-					      view->priv->library);
+					      NULL);
 	g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 			  G_CALLBACK (rb_group_view_node_removed_cb), view);
 
@@ -956,10 +956,13 @@ rb_group_view_paste (RBViewClipboard *clipboard,
 	}
 }
 
-static gboolean
-remove_nodes (RBGroupView *view)
+static void
+rb_group_view_delete (RBViewClipboard *clipboard)
 {
+	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 	GList *sel, *l;
+
+	GDK_THREADS_LEAVE ();
 
 	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
 	for (l = sel; l != NULL; l = g_list_next (l))
@@ -968,15 +971,7 @@ remove_nodes (RBGroupView *view)
 	}
 	g_list_free (sel);
 
-	return FALSE;
-}
-
-static void
-rb_group_view_delete (RBViewClipboard *clipboard)
-{
-	RBGroupView *view = RB_GROUP_VIEW (clipboard);
-
-	g_idle_add ((GSourceFunc) remove_nodes, view);
+	GDK_THREADS_ENTER ();
 }
 
 static void
@@ -1385,4 +1380,3 @@ rb_group_view_node_removed_cb (RBNode *node,
 {
 	rb_group_view_set_playing_node (view, NULL);
 }
-

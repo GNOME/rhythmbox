@@ -1,5 +1,47 @@
 2002-10-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/preferences.glade:
+	* data/glade/song-info.glade:
+
+	Fix caps to be hig-compliant.
+	
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_set_property), (rb_node_view_get_property),
+	(rb_node_view_new), (rb_node_view_construct), (filter_changed_cb),
+	(rb_node_view_get_status), (rb_node_view_get_n_rows):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_class_init), (filter_changed_cb),
+	(rb_tree_model_node_set_property),
+	(rb_tree_model_node_get_property), (rb_tree_model_node_new),
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_get_playing_node):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-library.c: (rb_library_create_skels):
+	* library/rb-library.h:
+	* library/rb-node-filter.c: (rb_node_filter_class_init),
+	(rb_node_filter_init), (rb_node_filter_finalize),
+	(rb_node_filter_new), (rb_node_filter_add_expression),
+	(rb_node_filter_empty), (rb_node_filter_done_changing),
+	(rb_node_filter_evaluate), (rb_node_filter_expression_new),
+	(rb_node_filter_expression_free),
+	(rb_node_filter_expression_evaluate):
+	* library/rb-node-filter.h:
+	* library/rb-node-song.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(window_visibility_changed_cb):
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_delete), (rb_group_view_node_removed_cb):
+	* views/rb-library-view.c: (rb_library_view_finalize),
+	(rb_library_view_set_property), (artist_node_selected_cb),
+	(album_node_selected_cb), (rb_library_view_delete),
+	(rb_library_view_search_cb), (albums_filter), (songs_filter):
+
+	New filtering mechanism.
+
+2002-10-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_show):
 
 	Immediately show/hide window.

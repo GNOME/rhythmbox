@@ -80,44 +80,29 @@ static void root_child_added_cb (RBNode *node,
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
 		                   RBTreeModelNode *model);
-static void filter_parent_child_added_cb (RBNode *node,
-					  RBNode *child,
-					  RBTreeModelNode *model);
-static void filter_parent_child_removed_cb (RBNode *node,
-					    RBNode *child,
-					    RBTreeModelNode *model);
 static void rb_tree_model_node_update_node (RBTreeModelNode *model,
 				            RBNode *node,
 					    int idx);
 static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
-static void filter_parent_destroyed_cb (RBNode *node,
-				        RBTreeModelNode *model);
-static void filter_artist_destroyed_cb (RBNode *node,
-				             RBTreeModelNode *model);
 
 struct RBTreeModelNodePrivate
 {
 	RBNode *root;
 
-	RBNode *filter_parent;
-	RBNode *filter_artist;
-	RBNode *old_filter_artist;
 	RBNode *playing_node;
 
 	GdkPixbuf *playing_pixbuf;
 
-	RBLibrary *library;
+	RBNodeFilter *filter;
 };
 
 enum
 {
 	PROP_0,
 	PROP_ROOT,
-	PROP_FILTER_PARENT,
-	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
-	PROP_LIBRARY
+	PROP_FILTER
 };
 
 static GObjectClass *parent_class = NULL;
@@ -181,20 +166,6 @@ rb_tree_model_node_class_init (RBTreeModelNodeClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_PARENT,
-					 g_param_spec_object ("filter-parent",
-							      "Filter parent node",
-							      "Filter parent node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_FILTER_ARTIST,
-					 g_param_spec_object ("filter-artist",
-							      "Filter artist node",
-							      "Filter artist node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
 					 PROP_PLAYING_NODE,
 					 g_param_spec_object ("playing-node",
 							      "Playing node",
@@ -202,11 +173,11 @@ rb_tree_model_node_class_init (RBTreeModelNodeClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "Library object",
-							      "Library object",
-							      RB_TYPE_LIBRARY,
+					 PROP_FILTER,
+					 g_param_spec_object ("filter",
+							      "Filter object",
+							      "Filter object",
+							      RB_TYPE_NODE_FILTER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
@@ -251,6 +222,25 @@ rb_tree_model_node_finalize (GObject *object)
 }
 
 static void
+filter_changed_cb (RBNodeFilter *filter,
+		   RBTreeModelNode *model)
+{
+	GPtrArray *kids;
+	int i;
+
+	kids = rb_node_get_children (model->priv->root);
+	
+	for (i = 0; i < kids->len; i++)
+	{
+		rb_tree_model_node_update_node (model,
+						g_ptr_array_index (kids, i),
+						i);
+	}
+
+	rb_node_thaw (model->priv->root);
+}
+
+static void
 rb_tree_model_node_set_property (GObject *object,
 			         guint prop_id,
 			         const GValue *value,
@@ -285,126 +275,6 @@ rb_tree_model_node_set_property (GObject *object,
 					 0);
 
 		break;
-	case PROP_FILTER_PARENT:
-		{
-			RBNode *old = model->priv->filter_parent;
-			int i = -1;
-
-			model->priv->filter_parent = g_value_get_object (value);
-
-			if (old != NULL)
-			{
-				GPtrArray *kids;
-				int l;
-				gboolean is_root = (old == model->priv->root);
-
-				kids = rb_node_get_children (old);
-
-				for (l = 0; l < kids->len; l++)
-				{
-					RBNode *node;
-
-					node = g_ptr_array_index (kids, l);
-					
-					if (is_root)
-						i++;
-					
-					if (model->priv->old_filter_artist != NULL)
-					{
-						if (rb_node_song_has_artist (RB_NODE_SONG (node),
-									     model->priv->old_filter_artist,
-									     model->priv->library))
-							rb_tree_model_node_update_node (model, node, i);
-					}
-					else
-						rb_tree_model_node_update_node (model, node, i);
-				}
-
-				rb_node_thaw (old);
-
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_parent_destroyed_cb),
-						                      model);
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_parent_child_added_cb),
-						                      model);
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
-						                      G_CALLBACK (filter_parent_child_removed_cb),
-						                      model);
-
-			}
-
-			if (model->priv->filter_parent != NULL)
-			{
-				GPtrArray *kids;
-				int l;
-				gboolean is_root = (model->priv->filter_parent == model->priv->root);
-
-				i = -1;
-
-				kids = rb_node_get_children (model->priv->filter_parent);
-
-				for (l = 0; l < kids->len; l++)
-				{
-					RBNode *node;
-
-					node = g_ptr_array_index (kids, l);
-					
-					if (is_root)
-						i++;
-					
-					if (model->priv->filter_artist != NULL)
-					{
-						if (rb_node_song_has_artist (RB_NODE_SONG (node),
-									     model->priv->filter_artist,
-									     model->priv->library))
-							rb_tree_model_node_update_node (model, node, i);
-					}
-					else
-						rb_tree_model_node_update_node (model, node, i);
-				}
-
-				rb_node_thaw (model->priv->filter_parent);
-
-				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
-						         "destroyed",
-						         G_CALLBACK (filter_parent_destroyed_cb),
-						         G_OBJECT (model), 0);
-	
-				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
-							 "child_added",
-							 G_CALLBACK (filter_parent_child_added_cb),
-							 G_OBJECT (model), 0);
-
-				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
-							 "child_removed",
-							 G_CALLBACK (filter_parent_child_removed_cb),
-							 G_OBJECT (model), 0);
-			}
-		}
-		break;
-	case PROP_FILTER_ARTIST:
-		{
-			if (model->priv->old_filter_artist != NULL)
-			{
-				g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->old_filter_artist),
-						                      G_CALLBACK (filter_artist_destroyed_cb),
-						                      model);
-			}
-
-			model->priv->old_filter_artist = model->priv->filter_artist;
-			model->priv->filter_artist = g_value_get_object (value);
-
-			if (model->priv->filter_artist != NULL)
-			{
-				g_signal_connect_object (G_OBJECT (model->priv->filter_artist),
-						         "destroyed",
-						         G_CALLBACK (filter_artist_destroyed_cb),
-						         G_OBJECT (model),
-							 0);
-			}
-		}
-		break;
 	case PROP_PLAYING_NODE:
 		{
 			RBNode *old = model->priv->playing_node;
@@ -417,9 +287,17 @@ rb_tree_model_node_set_property (GObject *object,
 				rb_tree_model_node_update_node (model, model->priv->playing_node, -1);
 		}
 		break;
-	case PROP_LIBRARY:
-		model->priv->library = g_value_get_object (value);
-		break;
+	case PROP_FILTER:
+		model->priv->filter = g_value_get_object (value);
+
+		if (model->priv->filter != NULL)
+		{
+			g_signal_connect (G_OBJECT (model->priv->filter),
+					  "changed",
+					  G_CALLBACK (filter_changed_cb),
+					  model);
+		}
+		break;	
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -439,17 +317,11 @@ rb_tree_model_node_get_property (GObject *object,
 	case PROP_ROOT:
 		g_value_set_object (value, model->priv->root);
 		break;
-	case PROP_FILTER_PARENT:
-		g_value_set_object (value, model->priv->filter_parent);
-		break;
-	case PROP_FILTER_ARTIST:
-		g_value_set_object (value, model->priv->filter_artist);
-		break;
 	case PROP_PLAYING_NODE:
 		g_value_set_object (value, model->priv->playing_node);
 		break;
-	case PROP_LIBRARY:
-		g_value_set_object (value, model->priv->library);
+	case PROP_FILTER:
+		g_value_set_object (value, model->priv->filter);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -459,12 +331,12 @@ rb_tree_model_node_get_property (GObject *object,
 
 RBTreeModelNode *
 rb_tree_model_node_new (RBNode *root,
-			RBLibrary *library)
+			RBNodeFilter *filter)
 {
 	RBTreeModelNode *model;
 
 	model = RB_TREE_MODEL_NODE (g_object_new (RB_TYPE_TREE_MODEL_NODE,
-						  "library", library,
+						  "filter", filter,
 						  "root", root,
 						  NULL));
 
@@ -513,7 +385,6 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	{
 	case RB_TREE_MODEL_NODE_COL_PLAYING:
 		return GDK_TYPE_PIXBUF;
-		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
@@ -521,15 +392,12 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 		return G_TYPE_STRING;
-		break;
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		return G_TYPE_BOOLEAN;
-		break;
 	default:
 		g_assert_not_reached ();
 		return G_TYPE_INVALID;
-		break;
 	}
 }
 
@@ -651,21 +519,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		g_value_init (value, G_TYPE_BOOLEAN);
 
-		if (model->priv->filter_parent != NULL)
+		if (model->priv->filter != NULL)
 		{
-			if (model->priv->filter_artist != NULL)
-			{
-				g_value_set_boolean (value,
-						     rb_node_has_child (model->priv->filter_parent, node) &&
-						     rb_node_song_has_artist (RB_NODE_SONG (node),
-									      model->priv->filter_artist,
-									      model->priv->library));
-			}
-			else
-			{
-				g_value_set_boolean (value,
-						     rb_node_has_child (model->priv->filter_parent, node));
-			}
+			g_value_set_boolean (value,
+					     rb_node_filter_evaluate (model->priv->filter, node));
 		}
 		else
 		{
@@ -676,11 +533,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		{
 			g_value_init (value, G_TYPE_BOOLEAN);
 
+			/* ! because of sorting; 1 goes after 0 .. */
 			g_value_set_boolean (value,
-					     (node != rb_library_get_all_genres (model->priv->library)) &&
-					     (node != rb_library_get_all_artists (model->priv->library)) &&
-					     (node != rb_library_get_all_albums (model->priv->library)) &&
-					     (node != rb_library_get_all_songs (model->priv->library)));
+					     !rb_node_get_property_boolean (node,
+						                            RB_ALL_NODE_PROP_PRIORITY));
 		}
 		break;
 	default:
@@ -845,22 +701,6 @@ root_child_added_cb (RBNode *node,
 }
 
 static void
-filter_parent_child_added_cb (RBNode *node, 
-			      RBNode *child,
-			      RBTreeModelNode *model)
-{
-	rb_tree_model_node_update_node (model, child, -1);
-}
-
-static void
-filter_parent_child_removed_cb (RBNode *node, 
-			        RBNode *child,
-				RBTreeModelNode *model)
-{
-	rb_tree_model_node_update_node (model, child, -1);
-}
-
-static void
 rb_tree_model_node_update_node (RBTreeModelNode *model,
 				RBNode *node,
 				int idx)
@@ -903,30 +743,6 @@ root_destroyed_cb (RBNode *node,
 }
 
 void
-rb_tree_model_node_set_filter (RBTreeModelNode *model,
-			       RBNode *filter_parent,
-			       RBNode *filter_artist)
-{
-	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
-
-	g_object_set (G_OBJECT (model),
-		      "filter-artist", filter_artist,
-		      "filter-parent", filter_parent,
-		      NULL);
-}
-
-void
-rb_tree_model_node_get_filter (RBTreeModelNode *model,
-			       RBNode **filter_parent,
-			       RBNode **filter_artist)
-{
-	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
-
-	*filter_parent = model->priv->filter_parent;
-	*filter_artist = model->priv->filter_artist;
-}
-
-void
 rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 			             RBNode *node)
 {
@@ -943,30 +759,6 @@ rb_tree_model_node_get_playing_node (RBTreeModelNode *model)
 	g_return_val_if_fail (RB_IS_TREE_MODEL_NODE (model), NULL);
 
 	return model->priv->playing_node;
-}
-
-static void
-filter_parent_destroyed_cb (RBNode *node,
-			    RBTreeModelNode *model)
-{
-	model->priv->filter_parent = NULL;
-
-	/* no need to do other stuff since we should have had a bunch of child_removed
-	 * signals already */
-}
-
-static void
-filter_artist_destroyed_cb (RBNode *node,
-				 RBTreeModelNode *model)
-{
-	if (node == model->priv->filter_artist)
-		model->priv->filter_artist = NULL;
-
-	if (node == model->priv->old_filter_artist)
-		model->priv->old_filter_artist = NULL;
-
-	/* no need to do other stuff since we should have had a bunch of child_removed
-	 * signals already */
 }
 
 GType
