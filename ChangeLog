@@ -1,5 +1,14 @@
 2003-08-13  Yann Rouillard  <yann@cvs.gnome.org>
 
+	* lib/widgets/eggtreemultidnd.c: (egg_tree_multi_drag_button_press_event),
+	(stop_drag_check):
+
+ 	Correct the bugs that occurs when trying to drag and drop a set of songs selected.
+	It used to unselect the others and just selects the song clicked, now it effectively
+	drag and drop them.
+
+2003-08-13  Yann Rouillard  <yann@cvs.gnome.org>
+
 	* lib/widgets/eggtreemultidnd.c: (egg_tree_multi_drag_button_press_event):
 
 	Make Ctrl+Click correctly deselect a previously selected song.
@@ -15,7 +24,7 @@
 	* lib/widgets/rb-node-view.c: (queue_changed_sig): Switch the
 	node view changed thing back to being an idle handler instead of
 	a 1-sec timeout.
-	
+
 2003-08-13  Colin Walters  <walters@verbum.org>
 
 	* library/rb-library.c: (rb_library_get_modification_time),
@@ -42,7 +51,6 @@
 	Queue a one-time idle handler on a change to the node view, instead of
 	polling every 50 microseconds.
 
->>>>>>> 1.620
 2003-08-13  Douglas McMorris  <virage83@mail.utexas.edu>
 
 	* lib/widgets/rb-volume.c: (clicked_cb): Move the volume display below
