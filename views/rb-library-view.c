@@ -116,6 +116,9 @@ static void rb_library_view_show_browser_changed_cb (BonoboUIComponent *componen
 					             const char *state,
 					             RBLibraryView *view);
 static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
+static void song_deleted_cb (RBNodeView *view,
+		             RBNode *node,
+		             RBLibraryView *library_view);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -374,6 +377,10 @@ rb_library_view_set_property (GObject *object,
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "node_activated",
 					  G_CALLBACK (song_activated_cb),
+					  view);
+			g_signal_connect (G_OBJECT (view->priv->songs),
+					  "node_deleted",
+					  G_CALLBACK (song_deleted_cb),
 					  view);
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "changed",
@@ -740,6 +747,14 @@ song_activated_cb (RBNodeView *view,
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
 	rb_view_player_notify_playing (RB_VIEW_PLAYER (library_view));
+}
+
+static void
+song_deleted_cb (RBNodeView *view,
+		 RBNode *node,
+		 RBLibraryView *library_view)
+{
+	rb_library_remove_node (RB_LIBRARY (library_view->priv->library), node);
 }
 
 static void

@@ -90,6 +90,9 @@ static void rb_shell_cmd_quit (BonoboUIComponent *component,
 static void rb_shell_cmd_music_folders (BonoboUIComponent *component,
 		                        RBShell *shell,
 		                        const char *verbname);
+static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
+			                 RBShell *shell,
+			                 const char *verbname);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_repeat_changed_cb (BonoboUIComponent *component,
 			                const char *path,
@@ -153,6 +156,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
 	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
 	BONOBO_UI_VERB ("MusicFolders", (BonoboUIVerbFn) rb_shell_cmd_music_folders),
+	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB_END
 };
 
@@ -777,6 +781,23 @@ rb_shell_cmd_music_folders (BonoboUIComponent *component,
 	}
 
 	gtk_widget_show_all (shell->priv->prefs);
+}
+
+static void
+rb_shell_cmd_add_to_library (BonoboUIComponent *component,
+			     RBShell *shell,
+			     const char *verbname)
+{
+	char *file;
+
+	file = rb_ask_file (_("Choose a file to add"),
+			    GTK_WINDOW (shell->priv->window));
+	if (file == NULL)
+		return;
+
+	rb_library_add_file (shell->priv->library, file);
+
+	g_free (file);
 }
 
 static void
