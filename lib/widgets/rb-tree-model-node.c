@@ -632,10 +632,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 			type = rb_node_get_node_type (node);
 			
 			g_value_set_boolean (value,
-					     (type == RB_NODE_TYPE_ALL_GENRES) ||
-					     (type == RB_NODE_TYPE_ALL_ARTISTS) ||
-					     (type == RB_NODE_TYPE_ALL_ALBUMS) ||
-					     (type == RB_NODE_TYPE_ALL_SONGS));
+					     (type != RB_NODE_TYPE_ALL_GENRES) &&
+					     (type != RB_NODE_TYPE_ALL_ARTISTS) &&
+					     (type != RB_NODE_TYPE_ALL_ALBUMS) &&
+					     (type != RB_NODE_TYPE_ALL_SONGS));
 		}
 		break;
 	default:

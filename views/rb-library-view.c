@@ -390,6 +390,9 @@ rb_library_view_set_property (GObject *object,
 			rb_library_view_show_browser (view, view->priv->show_browser);
 			
 			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
+			
+			rb_node_view_select_node (view->priv->artists,
+			 		          rb_library_get_all_albums (view->priv->library));
 		}
 		break;
 	default:
@@ -442,6 +445,8 @@ artist_node_selected_cb (RBNodeView *view,
 {
 	rb_node_view_set_filter (testview->priv->albums, node,
 				 rb_library_get_all_genres (testview->priv->library));
+	rb_node_view_select_node (testview->priv->albums,
+				  rb_library_get_all_songs (testview->priv->library));
 }
 
 static void

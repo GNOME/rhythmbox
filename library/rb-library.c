@@ -655,6 +655,9 @@ rb_library_timeout_cb (RBLibrary *library)
 		g_hash_table_insert (library->priv->artist_to_node, g_strdup (artist), artist_node);
 	}
 
+	if (rb_node_has_child (genre_node, artist_node) == FALSE)
+		rb_node_add_child (genre_node, artist_node);
+
 	if (album_node == NULL)
 	{
 		album_node = rb_node_new (RB_NODE_TYPE_ALBUM);
@@ -669,6 +672,9 @@ rb_library_timeout_cb (RBLibrary *library)
 		
 		g_hash_table_insert (library->priv->album_to_node, g_strdup (album), album_node);
 	}
+
+	if (rb_node_has_child (artist_node, album_node) == FALSE)
+		rb_node_add_child (artist_node, album_node);
 
 	rb_node_add_child (album_node, node);
 	rb_node_add_child (library->priv->all_songs, node);
