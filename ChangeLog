@@ -1,5 +1,15 @@
 2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-preferences.h:
+	* library/rb-node.c: (rb_node_dispose), (rb_node_action_queue_cb),
+	(rb_node_system_init), (rb_node_system_shutdown),
+	(rb_node_add_action):
+
+	Lock actions_idle_func ..
+
+2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_n_rows),
 	(rb_node_view_get_visible_nodes):
 	* lib/widgets/rb-tree-model-node.c:

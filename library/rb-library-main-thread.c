@@ -191,6 +191,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 	{
 		RBLibraryActionQueue *queue;
 		int i = 0;
+		gboolean empty;
 
 		g_mutex_lock (priv->lock);
 		
@@ -203,7 +204,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 		}
 
 		queue = rb_library_get_action_queue (priv->library);
-		while (rb_library_action_queue_is_empty (queue) == FALSE && i <= 10)
+		empty = rb_library_action_queue_is_empty (queue);
+		while (empty == FALSE && i <= 10)
 		{
 			RBLibraryActionType type;
 			char *uri;
@@ -258,7 +260,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 
 		g_mutex_unlock (priv->lock);
 
-		g_usleep (10);
+		if (empty == TRUE)
+			g_usleep (10);
 	}
 
 	return NULL;

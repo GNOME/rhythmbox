@@ -118,6 +118,7 @@ static GStaticRWLock *uri_to_song_lock    = NULL;
 static GQueue *actions = NULL;
 static GStaticRWLock *actions_lock = NULL;
 static guint actions_idle_func = 0;
+static GMutex *actions_idle_func_lock = NULL;
 
 GType
 rb_node_get_type (void)
@@ -284,13 +285,17 @@ rb_node_dispose (GObject *object)
 	{
 		RBNode *node2 = RB_NODE (l->data);
 
+		g_static_rw_lock_writer_lock (node2->priv->lock);
 		node2->priv->children = g_list_remove (node2->priv->children, node);
+		g_static_rw_lock_writer_unlock (node2->priv->lock);
 	}
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
 
+		g_static_rw_lock_writer_lock (node2->priv->lock);
 		node2->priv->parents = g_list_remove (node2->priv->parents, node);
+		g_static_rw_lock_writer_unlock (node2->priv->lock);
 	}
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
@@ -356,7 +361,9 @@ rb_node_action_queue_cb (gpointer node_reference)
 
 	if (empty == TRUE)
 	{
+		g_mutex_lock (actions_idle_func_lock);
 		actions_idle_func = 0;
+		g_mutex_unlock (actions_idle_func_lock);
 		return FALSE;
 	}
 
@@ -1113,6 +1120,8 @@ rb_node_system_init (void)
 	actions_lock = g_new0 (GStaticRWLock, 1);
 	g_static_rw_lock_init (actions_lock);
 
+	actions_idle_func_lock = g_mutex_new ();
+
 	id_to_node_hash = g_hash_table_new (NULL, NULL);
 	id_to_node_hash_lock = g_new0 (GStaticRWLock, 1);
 	g_static_rw_lock_init (id_to_node_hash_lock);
@@ -1148,6 +1157,8 @@ rb_node_system_shutdown (void)
 	g_return_if_fail (actions_lock != NULL);
 
 	g_source_remove (actions_idle_func);
+
+	g_mutex_free (actions_idle_func_lock);
 
 	g_static_rw_lock_free (actions_lock);
 
@@ -1230,12 +1241,19 @@ rb_node_add_action (RBNode *node,
 	g_queue_push_tail (actions, action);
 	g_static_rw_lock_writer_unlock (actions_lock);
 
+	fprintf (stderr, "added an action\n");
+
 	/* add the idle function that will emit signals */
+	g_mutex_lock (actions_idle_func_lock);
 	if (actions_idle_func == 0)
 	{
+		fprintf (stderr, "initiated timeout\n");
 		actions_idle_func = g_idle_add_full (100,
 						     (GSourceFunc) rb_node_action_queue_cb, 
 						     NULL, 
 						     NULL);
 	}
+	g_mutex_unlock (actions_idle_func_lock);
+
+	fprintf (stderr, "done adding action\n");
 }
