@@ -7,14 +7,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2004-04-13 12:27+0200\n"
-"PO-Revision-Date: 2004-04-13 12:29+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2004-04-14 12:08+0200\n"
+"PO-Revision-Date: 2004-04-14 12:08+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Report-Msgid-Bugs-To: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
@@ -38,7 +38,7 @@ msgid "Rhythmbox shell factory"
 msgstr "Rhythmbox-skalfabrik"
 
 #: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
-#: data/glade/song-info-multiple.glade.h:1 data/glade/song-info.glade.h:1
+#: data/glade/song-info.glade.h:1 data/glade/song-info-multiple.glade.h:1
 #: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
 #: data/glade/uri.glade.h:1
 msgid "*"
@@ -156,27 +156,9 @@ msgstr "Genrer, artister och album"
 msgid "The following files couldn't be loaded:"
 msgstr "Följande filer kunde inte läsas in:"
 
-#: data/glade/song-info-multiple.glade.h:2
-msgid "A_lbum:"
-msgstr "A_lbum:"
-
-#: data/glade/song-info-multiple.glade.h:3 data/glade/song-info.glade.h:2
+#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
 msgstr "Betygsätt automatiskt:"
-
-#: data/glade/song-info-multiple.glade.h:4 data/glade/song-info.glade.h:12
-msgid "_Artist:"
-msgstr "_Artist:"
-
-#: data/glade/song-info-multiple.glade.h:5 data/glade/song-info.glade.h:13
-#: data/glade/station-new.glade.h:2 data/glade/station-properties.glade.h:6
-msgid "_Genre:"
-msgstr "_Genre:"
-
-#: data/glade/song-info-multiple.glade.h:6 data/glade/song-info.glade.h:14
-#: data/glade/station-properties.glade.h:8
-msgid "_Rating:"
-msgstr "_Betyg:"
 
 #: data/glade/song-info.glade.h:3
 msgid "Basic"
@@ -210,9 +192,23 @@ msgstr "Plats:"
 msgid "Play count:"
 msgstr "Spelräknare:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:11 data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "_Album:"
+
+#: data/glade/song-info.glade.h:12 data/glade/song-info-multiple.glade.h:4
+msgid "_Artist:"
+msgstr "_Artist:"
+
+#: data/glade/song-info.glade.h:13 data/glade/song-info-multiple.glade.h:5
+#: data/glade/station-new.glade.h:2 data/glade/station-properties.glade.h:6
+msgid "_Genre:"
+msgstr "_Genre:"
+
+#: data/glade/song-info.glade.h:14 data/glade/song-info-multiple.glade.h:6
+#: data/glade/station-properties.glade.h:8
+msgid "_Rating:"
+msgstr "_Betyg:"
 
 #: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
@@ -748,7 +744,12 @@ msgstr "Misslyckades med att öppna filen som Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:503 metadata/rb-metadata-gst.c:632
+#: metadata/rb-metadata-gst.c:288
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "Det finns ingen insticksmodul installerad för att hantera en %s-fil."
+
+#: metadata/rb-metadata-gst.c:529 metadata/rb-metadata-gst.c:658
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -879,89 +880,81 @@ msgstr "%s, %s och %s"
 msgid "%s and %s"
 msgstr "%s och %s"
 
-#: shell/main.c:91
+#: shell/main.c:90
 msgid "Print the playing song and exit"
 msgstr "Skriv ut den spelade låten och avsluta"
 
-#: shell/main.c:92
+#: shell/main.c:91
 msgid "Print the playing song URI and exit"
 msgstr "Skriv ut URI:n för den spelade låten och avsluta"
 
-#: shell/main.c:94
+#: shell/main.c:93
 msgid "Print the playing song length in seconds and exit"
 msgstr "Skriv ut den spelade låtlängden i sekunder och avsluta"
 
-#: shell/main.c:95
+#: shell/main.c:94
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Skriv ut den förflutna tiden för den spelade låten och avsluta"
 
-#: shell/main.c:96
+#: shell/main.c:95
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Spola om möjligt till den angivna tiden i den spelade låten och avsluta"
 
-#: shell/main.c:98
+#: shell/main.c:97
 msgid "Toggle play/pause mode"
 msgstr "Växla uppspelnings-/pausläge"
 
-#: shell/main.c:99
+#: shell/main.c:98
 msgid "Focus the running player"
 msgstr "Fokusera den körande spelaren"
 
-#: shell/main.c:100
+#: shell/main.c:99
 msgid "Jump to previous song"
 msgstr "Hoppa till föregående låt"
 
-#: shell/main.c:101
+#: shell/main.c:100
 msgid "Jump to next song"
 msgstr "Hoppa till nästa låt"
 
-#: shell/main.c:103
+#: shell/main.c:102
 msgid "Toggle shuffling"
 msgstr "Växla blandning"
 
-#: shell/main.c:105
+#: shell/main.c:104
 msgid "Enable debugging code"
 msgstr "Aktivera felsökningsläge"
 
-#: shell/main.c:106
+#: shell/main.c:105
 msgid "Do not update the library"
 msgstr "Uppdatera inte biblioteket"
 
-#: shell/main.c:107
+#: shell/main.c:106
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/main.c:108
+#: shell/main.c:107
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Spara inte några data permanent (förutsätter --no-registration)"
 
-#: shell/main.c:109
+#: shell/main.c:108
 msgid "Path for database file to use"
 msgstr "Sökväg till databasfilen att använda"
 
-#: shell/main.c:110
+#: shell/main.c:109
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: shell/main.c:118 widgets/rb-druid.c:218
+#: shell/main.c:124 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:213
-msgid ""
-"Rhythmbox does not currently work if GNOME sound events are are enabled and "
-"esdsink is in use."
-msgstr ""
-"Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är aktiverade "
-"och esdsink används."
-
-#: shell/main.c:252 shell/main.c:261
+#: shell/main.c:227 shell/main.c:236
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Ett undantag inträffade \"%s\""
 
-#: shell/main.c:325
+#: shell/main.c:300
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1497,6 +1490,16 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "A_lbum:"
+#~ msgstr "A_lbum:"
+
+#~ msgid ""
+#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
+#~ "and esdsink is in use."
+#~ msgstr ""
+#~ "Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är "
+#~ "aktiverade och esdsink används."
 
 #~ msgid "Sink"
 #~ msgstr "Utgång"
