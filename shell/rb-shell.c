@@ -428,8 +428,6 @@ rb_shell_finalize (GObject *object)
 	gtk_widget_hide (shell->priv->window);
 	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 	
 	eel_gconf_monitor_remove ("/apps/rhythmbox");
 
@@ -456,7 +454,11 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv->sidebar_layout_file);
 
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
+	/* hack to make the gdk thread lock available for freeing
+	 * the library.. evil */
+	GDK_THREADS_LEAVE ();
 	g_object_unref (G_OBJECT (shell->priv->library));
+	GDK_THREADS_ENTER ();
 
 	if (shell->priv->remote != NULL)
 		g_object_unref (G_OBJECT (shell->priv->remote));
@@ -491,7 +493,11 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	GDK_THREADS_ENTER ();
+	
 	rb_shell_quit (shell);
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -625,8 +631,8 @@ rb_shell_construct (RBShell *shell)
 	if (gul_toolbar_listen_to_gconf (toolbar, CONF_TOOLBAR_SETUP) == FALSE)
         {
                 /* FIXME: make this a dialog? */
-                g_warning ("An incorrect toolbar configuration has been found, \
-			   resetting to the default");
+                g_warning ("An incorrect toolbar configuration has been found,"
+			    "resetting to the default");
 
                 /* this is to make sure we get a toolbar, even if the
                    setup is wrong or there is no schema */
@@ -761,8 +767,6 @@ rb_shell_show (RBLibrary *library,
 	/* GO GO GO */
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 }
 
 char *
@@ -1121,22 +1125,22 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	const char *authors[] =
 	{
  		"Lead developers:",
-		"Jorn Baayen (jorn AT nl.linux.org)",
-		"Olivier Martin (oleevye AT wanadoo.fr)",
+		"Jorn Baayen (jorn@nl.linux.org)",
+		"Olivier Martin (oleevye@wanadoo.fr)",
  		"",
 		"Contributors:",
-		"Kenneth Christiansen (kenneth AT gnu.org)",
-		"Mark Finlay (sisob AT eircom.net)",
-		"Marco Pesenti Gritti (marco AT it.gnome.org)",
-		"Laurens Krol (website) (laurens.krol AT planet.nl)",
-		"Seth Nickell (snickell AT stanford.edu)",
-		"Bastien Nocera (hadess AT hadess.net)",
-		"Jan Arne Petersen (jpetersen AT gnome-de.org)",
-		"Kristian Rietveld (kris AT gtk.org)",
-		"Christian Schaller (uraeus AT linuxrising.org)",
-		"Dennis Smit (synap AT yourbase.nl)",
-		"Colin Walters (walters AT gnu.org)",
-		"James Willcox (jwillcox AT gnome.org)",
+		"Kenneth Christiansen (kenneth@gnu.org)",
+		"Mark Finlay (sisob@eircom.net)",
+		"Marco Pesenti Gritti (marco@it.gnome.org)",
+		"Laurens Krol (laurens.krol@planet.nl)",
+		"Seth Nickell (snickell@stanford.edu)",
+		"Bastien Nocera (hadess@hadess.net)",
+		"Jan Arne Petersen (jpetersen@gnome-de.org)",
+		"Kristian Rietveld (kris@gtk.org)",
+		"Christian Schaller (uraeus@linuxrising.org)",
+		"Dennis Smit (synap@yourbase.nl)",
+		"Colin Walters (walters@gnu.org)",
+		"James Willcox (jwillcox@gnome.org)",
 		NULL
 	};
 
@@ -1277,7 +1281,7 @@ rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
 	{
 		p->tb_editor = gul_tb_editor_new ();
 		g_object_add_weak_pointer (G_OBJECT (p->tb_editor),
-					   (void **)&p->tb_editor);
+					   (void **) &p->tb_editor);
 	}
 	else
 	{
@@ -1289,6 +1293,7 @@ rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
 				  shell->priv->window); 
         gul_tb_editor_set_toolbar (p->tb_editor, current);
         gul_tb_editor_set_available (p->tb_editor, avail);
+
         g_object_unref (avail);
         g_object_unref (current);
 
@@ -1428,7 +1433,7 @@ ask_string_response_cb (GtkDialog *dialog,
 			RBNode *node;
 				
 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
-			node = rb_node_get_song_by_uri (uri);
+			node = rb_library_get_song_by_location (shell->priv->library, uri);
 
 			if (node != NULL)
 			{
@@ -1439,6 +1444,7 @@ ask_string_response_cb (GtkDialog *dialog,
 			{
 				/* will add these nodes to the newly created group */
 				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri);
+				g_object_set_data (G_OBJECT (group), "library", shell->priv->library);
                                 g_signal_connect_object (G_OBJECT (action),
                                                          "handled", 
                                                          G_CALLBACK (dnd_add_handled_cb),
@@ -1636,15 +1642,18 @@ static void
 rb_shell_sync_window_visibility (RBShell *shell)
 {
 	gboolean visible;
-	static int window_x = 0;
-	static int window_y = 0;
+	static int window_x = -1;
+	static int window_y = -1;
 
 	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
 	
 	if (visible == TRUE)
 	{
-		gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
-				 window_y);
+		if (window_x >= 0 && window_y >= 0)
+		{
+			gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
+					 window_y);
+		}
 		gtk_widget_show_now (shell->priv->window);
 	}
 	else
@@ -1710,7 +1719,8 @@ add_uri (const char *uri,
 {
 	RBNode *node;
 
-	node = rb_node_get_song_by_uri (uri);
+	node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (view), "library"),
+					        uri);
 
 	if (node != NULL)
 	{
@@ -1735,7 +1745,8 @@ dnd_add_handled_cb (RBLibraryAction *action,
 		{
 			RBNode *node;
 
-			node = rb_node_get_song_by_uri (uri);
+			node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (view), "library"),
+								uri);
 
 			if (node != NULL)
 			{
@@ -1756,6 +1767,13 @@ dnd_add_handled_cb (RBLibraryAction *action,
 }
 
 static void
+handle_songs_func (RBNode *node,
+		   RBGroupView *group)
+{
+	rb_group_view_add_node (group, node);
+}
+
+static void
 rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 			     GdkDragContext *context,
 			     int x, int y,
@@ -1770,89 +1788,29 @@ rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 		{
 			long id;
 			RBNode *node;
+			RBGroupView *group;
 
 			id = atol (data->data);
-			node = rb_node_from_id (id);
+			node = rb_node_get_from_id (id);
 
 			if (node == NULL)
 				break;
-
-			switch (rb_node_get_node_type (node))
-			{
-			case RB_NODE_TYPE_ALL_SONGS:
-			case RB_NODE_TYPE_ALBUM:
-				/* create a group containing the songs of this
-				 * album, with the name of the album */
-				{
-					RBGroupView *group;
-					GValue value = { 0, };
-					GList *kids, *l;
-
-					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
-								                  shell->priv->library));
+			
+			group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
+						                  shell->priv->library));
 					
-					rb_node_get_property (node,
-							      RB_NODE_PROP_NAME,
-							      &value);
-					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
-					g_value_unset (&value);
+			rb_group_view_set_name (RB_GROUP_VIEW (group),
+						rb_node_get_property_string (node,
+								             RB_NODE_PROP_NAME));
 
-					kids = rb_node_get_children (node);
-					for (l = kids; l != NULL; l = g_list_next (l))
-					{
-						rb_group_view_add_node (group, RB_NODE (l->data));
-					}
-					g_list_free (kids);
-					
-					shell->priv->groups = g_list_append (shell->priv->groups, group);
-					rb_shell_append_view (shell, RB_VIEW (group));
-				}
-				break;
-			case RB_NODE_TYPE_ALL_ALBUMS:
-			case RB_NODE_TYPE_ARTIST:
-				/* create a group containing the songs of this
-				 * artist, with the name of the artist */
-				{
-					RBGroupView *group;
-					GValue value = { 0, };
-					GList *kids, *l;
 
-					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
-								                  shell->priv->library));
-					
-					rb_node_get_property (node,
-							      RB_NODE_PROP_NAME,
-							      &value);
-					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
-					g_value_unset (&value);
+			rb_library_handle_songs (shell->priv->library,
+						 node,
+						 (GFunc) handle_songs_func,
+						 group);
 
-					kids = rb_node_get_children (node);
-					for (l = kids; l != NULL; l = g_list_next (l))
-					{
-						RBNode *kid;
-						GList *kids2, *j;
-
-						kid = RB_NODE (l->data);
-
-						if (rb_node_get_node_type (kid) == RB_NODE_TYPE_ALL_SONGS)
-							continue;
-
-						kids2 = rb_node_get_children (kid);
-						for (j = kids2; j != NULL; j = g_list_next (j))
-						{
-							rb_group_view_add_node (group, RB_NODE (j->data));
-						}
-						g_list_free (kids2);
-					}
-					g_list_free (kids);
-					
-					shell->priv->groups = g_list_append (shell->priv->groups, group);
-					rb_shell_append_view (shell, RB_VIEW (group));
-				}
-				break;
-			default:
-				break;
-			}
+			shell->priv->groups = g_list_append (shell->priv->groups, group);
+			rb_shell_append_view (shell, RB_VIEW (group));
 		}
 		break;
 	case RB_LIBRARY_DND_URI_LIST:
@@ -1974,7 +1932,8 @@ tray_drop_cb (GtkWidget *widget,
 	      GtkSelectionData *data,
 	      guint info,
 	      guint time,
-	      RBShell *shell) {
+	      RBShell *shell)
+{
 	GList *list, *uri_list, *i;
 	GtkTargetList *tlist;
 	gboolean ret;

@@ -21,51 +21,73 @@
 #ifndef __RB_NODE_SONG_H
 #define __RB_NODE_SONG_H
 
-#include <libgnomevfs/gnome-vfs-ops.h>
-
-#include "rb-library.h"
 #include "rb-node.h"
+#include "rb-library.h"
 
 G_BEGIN_DECLS
 
 /* properties */
 enum
 {
-	RB_SONG_PROP_GENRE             = 1,
-	RB_SONG_PROP_ARTIST            = 2,
-	RB_SONG_PROP_ALBUM             = 3,
-	RB_SONG_PROP_REAL_GENRE        = 4,
-	RB_SONG_PROP_REAL_ARTIST       = 5,
-	RB_SONG_PROP_REAL_ALBUM        = 6,
-	RB_SONG_PROP_TRACK_NUMBER      = 7,
-	RB_SONG_PROP_REAL_TRACK_NUMBER = 8,
-	RB_SONG_PROP_DURATION          = 9,
-	RB_SONG_PROP_REAL_DURATION     = 10,
-	RB_SONG_PROP_FILE_SIZE         = 11,
-	RB_SONG_PROP_LOCATION          = 12,
-	RB_SONG_PROP_MTIME             = 13
+	RB_NODE_SONG_PROP_GENRE             = 1,
+	RB_NODE_SONG_PROP_ARTIST            = 2,
+	RB_NODE_SONG_PROP_ALBUM             = 3,
+	RB_NODE_SONG_PROP_REAL_GENRE        = 4,
+	RB_NODE_SONG_PROP_REAL_ARTIST       = 5,
+	RB_NODE_SONG_PROP_REAL_ALBUM        = 6,
+	RB_NODE_SONG_PROP_TRACK_NUMBER      = 7,
+	RB_NODE_SONG_PROP_REAL_TRACK_NUMBER = 8,
+	RB_NODE_SONG_PROP_DURATION          = 9,
+	RB_NODE_SONG_PROP_REAL_DURATION     = 10,
+	RB_NODE_SONG_PROP_FILE_SIZE         = 11,
+	RB_NODE_SONG_PROP_LOCATION          = 12,
+	RB_NODE_SONG_PROP_MTIME             = 13
 };
 
-/* management */
-void             rb_node_song_init                 (RBNode *node,
-				                    const char *uri,
-						    RBLibrary *library);
+#define RB_TYPE_NODE_SONG         (rb_node_song_get_type ())
+#define RB_NODE_SONG(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE_SONG, RBNodeSong))
+#define RB_NODE_SONG_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_NODE_SONG, RBNodeSongClass))
+#define RB_IS_NODE_SONG(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_NODE_SONG))
+#define RB_IS_NODE_SONG_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_NODE_SONG))
+#define RB_NODE_SONG_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_NODE_SONG, RBNodeSongClass))
 
-void             rb_node_song_update_if_changed    (RBNode *node,
-						    RBLibrary *library);
+typedef struct RBNodeSongPrivate RBNodeSongPrivate;
 
-void             rb_node_song_restore              (RBNode *node);
+typedef struct
+{
+	RBNode parent;
+} RBNodeSong;
 
-/* inheritance path */
-RBNode          *rb_node_song_get_genre            (RBNode *node);
-gboolean         rb_node_song_has_genre            (RBNode *node,
-						    RBNode *genre);
-RBNode          *rb_node_song_get_artist           (RBNode *node);
-gboolean         rb_node_song_has_artist           (RBNode *node,
-						    RBNode *artist);
-RBNode          *rb_node_song_get_album            (RBNode *node);
-gboolean         rb_node_song_has_album            (RBNode *node,
-						    RBNode *album);
+typedef struct
+{
+	RBNodeClass parent;
+} RBNodeSongClass;
+
+GType       rb_node_song_get_type          (void);
+
+RBNodeSong *rb_node_song_new               (const char *location,
+					    RBLibrary *library);
+
+/* if the stored mtime on the node differs from the file's actual mtime,
+ * resync the node */
+void        rb_node_song_update_if_changed (RBNodeSong *song,
+					    RBLibrary *library);
+
+/* convenience property wrappers: */
+RBNode     *rb_node_song_get_genre         (RBNodeSong *song);
+gboolean    rb_node_song_has_genre         (RBNodeSong *song,
+				            RBNode *genre,
+					    RBLibrary *library);
+
+RBNode     *rb_node_song_get_artist        (RBNodeSong *song);
+gboolean    rb_node_song_has_artist        (RBNodeSong *song,
+				            RBNode *artist,
+					    RBLibrary *library);
+
+RBNode     *rb_node_song_get_album         (RBNodeSong *song);
+gboolean    rb_node_song_has_album         (RBNodeSong *song,
+				            RBNode *album,
+					    RBLibrary *library);
 
 G_END_DECLS
 

@@ -272,7 +272,8 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (shell_player->priv != NULL);
 
-	g_object_unref (G_OBJECT (shell_player->priv->mixer));
+	/* FIXME hangs somewhere in gstreamer .. */
+	/*g_object_unref (G_OBJECT (shell_player->priv->mixer));*/
 
 	if (shell_player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (shell_player->priv->remote));

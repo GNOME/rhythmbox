@@ -27,23 +27,6 @@
 
 G_BEGIN_DECLS
 
-typedef enum
-{
-	RB_NODE_TYPE_GENERIC,
-	RB_NODE_TYPE_ALL_GENRES,
-	RB_NODE_TYPE_GENRE,
-	RB_NODE_TYPE_ALL_ARTISTS,
-	RB_NODE_TYPE_ARTIST,
-	RB_NODE_TYPE_ALL_ALBUMS,
-	RB_NODE_TYPE_ALBUM,
-	RB_NODE_TYPE_ALL_SONGS,
-	RB_NODE_TYPE_SONG
-} RBNodeType;
-
-#define RB_TYPE_NODE_TYPE (rb_node_type_get_type ())
-
-GType rb_node_type_get_type (void);
-
 #define RB_TYPE_NODE         (rb_node_get_type ())
 #define RB_NODE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE, RBNode))
 #define RB_NODE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_NODE, RBNodeClass))
@@ -66,23 +49,31 @@ typedef struct
 
 	/* signals */
 	void (*destroyed)       (RBNode *node);
+	void (*restored)        (RBNode *node);
 
-	void (*child_created)   (RBNode *node, RBNode *child);
+	void (*child_added)     (RBNode *node, RBNode *child);
 	void (*child_changed)   (RBNode *node, RBNode *child);
-	void (*child_destroyed) (RBNode *node, RBNode *child);
+	void (*child_reordered) (RBNode *node, RBNode *child,
+				 int old_index, int new_index);
+	void (*child_removed)   (RBNode *node, RBNode *child);
 } RBNodeClass;
 
 GType       rb_node_get_type              (void);
 
-RBNode     *rb_node_new                   (RBNodeType type);
+RBNode     *rb_node_new                   (void);
 
-/* ID */
+/* unique node ID */
 long        rb_node_get_id                (RBNode *node);
 
-RBNode     *rb_node_from_id               (int id);
+RBNode     *rb_node_get_from_id           (long id);
 
-/* Node type */
-RBNodeType  rb_node_get_node_type         (RBNode *node);
+/* refcounting */
+void        rb_node_ref                   (RBNode *node);
+void        rb_node_unref                 (RBNode *node);
+
+/* locking */
+void        rb_node_freeze                (RBNode *node);
+void        rb_node_thaw                  (RBNode *node);
 
 /* property interface */
 enum
@@ -91,81 +82,58 @@ enum
 };
 
 void        rb_node_set_property          (RBNode *node,
-				           int property,
+				           int property_id,
 				           const GValue *value);
-void        rb_node_get_property          (RBNode *node,
-				           int property,
+gboolean    rb_node_get_property          (RBNode *node,
+				           int property_id,
 				           GValue *value);
 
-/* parents */
-GList      *rb_node_get_parents           (RBNode *node);
-void        rb_node_add_parent            (RBNode *node,
-				           RBNode *parent);
-void        rb_node_remove_parent         (RBNode *node,
-				           RBNode *parent);
-gboolean    rb_node_has_parent            (RBNode *node,
-				           RBNode *parent);
+const char *rb_node_get_property_string   (RBNode *node,
+					   int property_id);
+gboolean    rb_node_get_property_boolean  (RBNode *node,
+					   int property_id);
+long        rb_node_get_property_long     (RBNode *node,
+					   int property_id);
+int         rb_node_get_property_int      (RBNode *node,
+					   int property_id);
+double      rb_node_get_property_double   (RBNode *node,
+					   int property_id);
+float       rb_node_get_property_float    (RBNode *node,
+					   int property_id);
+RBNode     *rb_node_get_property_node     (RBNode *node,
+					   int property_id);
 
-RBNode     *rb_node_get_nth_parent        (RBNode *node,
-				           int n);
-int         rb_node_parent_index          (RBNode *node,
-				           RBNode *parent);
-int         rb_node_n_parents             (RBNode *node);
-
-/* children */
-GList      *rb_node_get_children          (RBNode *node);
-void        rb_node_add_child             (RBNode *node,
-				           RBNode *child);
-void        rb_node_remove_child          (RBNode *node,
-				           RBNode *child);
-gboolean    rb_node_has_child             (RBNode *node,
-				           RBNode *child);
-
-RBNode     *rb_node_get_nth_child         (RBNode *node,
-				           int n);
-int         rb_node_child_index           (RBNode *node,
-				           RBNode *child);
-int         rb_node_n_children            (RBNode *node);
-
-/* XML */
+/* xml storage */
 void        rb_node_save_to_xml           (RBNode *node,
-			                   xmlNodePtr parent_xml_node);
+					   xmlNodePtr parent_xml_node);
 RBNode     *rb_node_new_from_xml          (xmlNodePtr xml_node);
 
-/* refcounting */
-RBNode     *rb_node_ref                   (RBNode *node);
-void        rb_node_unref                 (RBNode *node);
-
-/* sync */
-gboolean    rb_node_is_handled            (RBNode *node);
-void        rb_node_set_handled           (RBNode *node);
-
-int         rb_node_n_handled_children    (RBNode *node);
-RBNode     *rb_node_get_nth_handled_child (RBNode *node,
-					   int n);
-int         rb_node_handled_child_index   (RBNode *node,
+/* DAG structure */
+void        rb_node_add_child             (RBNode *node,
+					   RBNode *child);
+void        rb_node_remove_child          (RBNode *node,
+					   RBNode *child);
+gboolean    rb_node_has_child             (RBNode *node,
 					   RBNode *child);
 
-/* locking */
-void        rb_node_lock                  (RBNode *node);
-void        rb_node_unlock                (RBNode *node);
+/* Note that rb_node_get_children freezes the node; you'll have to thaw it when done.
+ * This is to prevent the data getting changed from another thread. */
+GPtrArray  *rb_node_get_children          (RBNode *node);
+int         rb_node_get_n_children        (RBNode *node);
+RBNode     *rb_node_get_nth_child         (RBNode *node,
+					   int n);
+int         rb_node_get_child_index       (RBNode *node,
+					   RBNode *child);
+RBNode     *rb_node_get_next_child        (RBNode *node,
+					   RBNode *child);
+RBNode     *rb_node_get_previous_child    (RBNode *node,
+					   RBNode *child);
 
-/* navigation */
-RBNode     *rb_node_get_next              (RBNode *parent,
-					   RBNode *node);
-RBNode     *rb_node_get_previous          (RBNode *parent,
-					   RBNode *node);
+/* node id services */
+void        rb_node_system_init           (void);
+void        rb_node_system_shutdown       (void);
 
-/* genre/artist/album hashes */
-RBNode     *rb_node_get_genre_by_name  (const char *name);
-RBNode     *rb_node_get_artist_by_name (const char *name);
-RBNode     *rb_node_get_album_by_name  (const char *name);
-RBNode     *rb_node_get_song_by_uri    (const char *uri);
-
-/* action queue */
-void rb_node_system_init     (void);
-void rb_node_system_shutdown (void);
-void rb_node_system_flush    (void);
+long        rb_node_new_id                (void);
 
 G_END_DECLS
 

@@ -84,14 +84,11 @@ static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
 static int rb_node_view_get_n_rows (RBNodeView *view);
-static void root_child_destroyed_cb (RBNode *root,
-			             RBNode *child,
-			             RBNodeView *view);
+static void root_child_removed_cb (RBNode *root,
+			           RBNode *child,
+			           RBNodeView *view);
 static void tree_view_size_allocate_cb (GtkWidget *widget,
 			                GtkAllocation *allocation);
-static void child_deleted_cb (RBNode *node,
-			      RBNode *child,
-			      RBNodeView *view);
 static gboolean rb_node_view_is_empty (RBNodeView *view);
 static void rb_node_view_columns_parse (RBNodeView *view,
 					const char *config);
@@ -131,6 +128,8 @@ struct RBNodeViewPrivate
 	char *columns_key;
 	guint gconf_notification_id;
 	GHashTable *columns;
+
+	RBLibrary *library;
 };
 
 enum
@@ -149,8 +148,9 @@ enum
 	PROP_FILTER_PARENT,
 	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
+	PROP_VIEW_COLUMNS_KEY,
 	PROP_VIEW_DESC_FILE,
-	PROP_VIEW_COLUMNS_KEY
+	PROP_LIBRARY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -239,6 +239,13 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							       "Columns key",
 							       NULL,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY,
+					 g_param_spec_object ("library",
+							      "Library object",
+							      "Library object",
+							      RB_TYPE_LIBRARY,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_node_view_signals[NODE_ACTIVATED] =
 		g_signal_new ("node_activated",
@@ -343,12 +350,6 @@ rb_node_view_set_property (GObject *object,
 		{
 			view->priv->root = g_value_get_object (value);
 			rb_node_view_construct (view);
-
-			g_signal_connect_object (G_OBJECT (view->priv->root),
-						 "child_destroyed",
-						 G_CALLBACK (child_deleted_cb),
-						 G_OBJECT (view),
-						 0);
 		}
 		break;
 	case PROP_FILTER_PARENT:
@@ -382,6 +383,9 @@ rb_node_view_set_property (GObject *object,
 	case PROP_VIEW_COLUMNS_KEY:
 		g_free (view->priv->columns_key);
 		view->priv->columns_key = g_strdup (g_value_get_string (value));
+		break;
+	case PROP_LIBRARY:
+		view->priv->library = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -432,6 +436,9 @@ rb_node_view_get_property (GObject *object,
 	case PROP_VIEW_COLUMNS_KEY:
 		g_value_set_string (value, view->priv->columns_key);
 		break;
+	case PROP_LIBRARY:
+		g_value_set_object (value, view->priv->library);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -441,7 +448,8 @@ rb_node_view_get_property (GObject *object,
 RBNodeView *
 rb_node_view_new (RBNode *root,
 		  const char *view_desc_file,
-		  const char *columns_conf_key)
+		  const char *columns_conf_key,
+		  RBLibrary *library)
 {
 	RBNodeView *view;
 
@@ -449,6 +457,7 @@ rb_node_view_new (RBNode *root,
 	g_assert (g_file_test (view_desc_file, G_FILE_TEST_EXISTS) == TRUE);
 
 	view = RB_NODE_VIEW (g_object_new (RB_TYPE_NODE_VIEW,
+					   "library", library,
 					   "hadjustment", NULL,
 					   "vadjustment", NULL,
 					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -494,13 +503,14 @@ rb_node_view_construct (RBNodeView *view)
 	char *tmp;
 
 	g_signal_connect_object (G_OBJECT (view->priv->root),
-			         "child_destroyed",
-			         G_CALLBACK (root_child_destroyed_cb),
+			         "child_removed",
+			         G_CALLBACK (root_child_removed_cb),
 				 view,
 				 0);
 
 	view->priv->columns = g_hash_table_new (NULL, NULL);
-	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
+	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root,
+							view->priv->library);
 	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
 							     NULL);
 	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
@@ -1186,39 +1196,31 @@ rb_node_view_get_status (RBNodeView *view)
 
 	if (parent != NULL)
 	{
-		GList *l, *kids;
+		GPtrArray *kids;
+		int i;
 
 		kids = rb_node_get_children (parent);
 
-		for (l = kids; l != NULL; l = g_list_next (l))
+		for (i = 0; i < kids->len; i++)
 		{
 			RBNode *node;
-			GValue value = { 0, };
-			
-			if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
-				continue;
-			if (artist != NULL &&
-			    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
-				continue;
 
-			node = RB_NODE (l->data);
+			node = g_ptr_array_index (kids, i);
+			
+			if (artist != NULL &&
+			    rb_node_song_has_artist (RB_NODE_SONG (node), artist, view->priv->library) == FALSE)
+				continue;
 
 			n_songs++;
 
-			rb_node_get_property (node,
-					      RB_SONG_PROP_REAL_DURATION,
-					      &value);
-			n_seconds += g_value_get_long (&value);
-			g_value_unset (&value);
+			n_seconds += rb_node_get_property_long (node,
+								RB_NODE_SONG_PROP_REAL_DURATION);
 
-			rb_node_get_property (node,
-					      RB_SONG_PROP_FILE_SIZE,
-					      &value);
-			n_bytes += g_value_get_long (&value);
-			g_value_unset (&value);
+			n_bytes += rb_node_get_property_long (node,
+							      RB_NODE_SONG_PROP_FILE_SIZE);
 		}
 		
-		rb_node_unlock (parent);
+		rb_node_thaw (parent);
 	}
 
 	size = gnome_vfs_format_file_size_for_display (n_bytes);
@@ -1267,14 +1269,14 @@ rb_node_view_select_node (RBNodeView *view,
 	view->priv->selection_lock = TRUE;
 
 	rb_node_view_select_none (view);
-	
+
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
 					   node, &iter);
 	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
 				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
 	visible = g_value_get_boolean (&val);
 	g_value_unset (&val);
-
+	
 	if (visible == FALSE)
 	{
 		view->priv->selection_lock = FALSE;
@@ -1335,9 +1337,13 @@ rb_node_view_timeout_cb (RBNodeView *view)
 	if (view->priv->changed == FALSE)
 		return TRUE;
 
+	GDK_THREADS_ENTER ();
+
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
 
 	view->priv->changed = FALSE;
+
+	GDK_THREADS_LEAVE ();
 
 	return TRUE;
 }
@@ -1354,8 +1360,8 @@ static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
 	RBNode *parent = NULL, *artist = NULL;
-	GList *l, *kids;
-	int n_rows = 0;
+	GPtrArray *kids;
+	int n_rows = 0, i;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
 				       &parent, &artist);
@@ -1365,29 +1371,37 @@ rb_node_view_get_n_rows (RBNodeView *view)
 
 	kids = rb_node_get_children (parent);
 	
-	for (l = kids; l != NULL; l = g_list_next (l))
+	for (i = 0; i < kids->len; i++)
 	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
-			continue;
 		if (artist != NULL &&
-		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
+		    rb_node_song_has_artist (g_ptr_array_index (kids, i), artist, view->priv->library) == FALSE)
 			continue;
 
 		n_rows++;
 	}
 
-	rb_node_unlock (parent);
+	rb_node_thaw (parent);
 
 	return n_rows;
 }
 
 static void
-root_child_destroyed_cb (RBNode *root,
-			 RBNode *child,
-			 RBNodeView *view)
+root_child_removed_cb (RBNode *root,
+		       RBNode *child,
+		       RBNodeView *view)
 {
 	RBNode *node;
 
+	/* playing node bit */
+	if (child == rb_node_view_get_playing_node (view))
+	{
+		g_signal_emit (G_OBJECT (view), 
+			       rb_node_view_signals[PLAYING_NODE_REMOVED], 
+			       0, 
+			       child);
+	}
+
+	/* selection bit */
 	if (view->priv->keep_selection == FALSE)
 		return;
 	if (g_list_find (view->priv->nodeselection, child) == NULL)
@@ -1531,30 +1545,6 @@ rb_node_view_enable_drag_source (RBNodeView *view,
 	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
 						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 						targets, n_targets, GDK_ACTION_COPY);
-}
-
-static void
-child_deleted_cb (RBNode *node,
-		  RBNode *child,
-		  RBNodeView *view)
-{
-	RBNode *playing_node = NULL;
-
-	g_return_if_fail (view != NULL);
-	g_return_if_fail (child != NULL);
-
-	playing_node = rb_node_view_get_playing_node (view);
-	if (playing_node != NULL)
-	{
-		if (rb_node_get_id (child) ==
-		    rb_node_get_id (playing_node))
-		{
-			g_signal_emit (G_OBJECT (view), 
-				       rb_node_view_signals[PLAYING_NODE_REMOVED], 
-				       0, 
-				       playing_node);
-		}
-	}
 }
 
 static void

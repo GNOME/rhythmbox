@@ -15,7 +15,11 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+<<<<<<< rb-node-view.h
  *  $Id$
+=======
+ *  $Id$
+>>>>>>> 1.18.2.1
  */
 
 #ifndef __RB_NODE_VIEW_H
@@ -26,6 +30,7 @@
 
 #include "rb-tree-model-node.h"
 #include "rb-enums.h"
+#include "rb-library.h"
 
 G_BEGIN_DECLS
 
@@ -59,7 +64,8 @@ GType       rb_node_view_get_type          (void);
 
 RBNodeView *rb_node_view_new                (RBNode *root,
 					     const char *view_desc_file,
-					     const char *columns_conf_key);
+					     const char *columns_conf_key,
+					     RBLibrary *library);
 
 void        rb_node_view_set_filter         (RBNodeView *view,
 				             RBNode *filter_parent,

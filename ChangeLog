@@ -1,3 +1,154 @@
+2002-10-18  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property):
+	* library/rb-library-xml-thread.c: (rb_library_xml_thread_init),
+	(rb_library_xml_thread_new), (rb_library_xml_thread_set_property),
+	(thread_main):
+	* library/rb-library.c: (rb_library_finalize):
+	* library/rb-node.c: (rb_node_dispose), (child_changed),
+	(rb_node_set_property), (rb_node_save_to_xml),
+	(rb_node_new_from_xml), (real_add_child), (rb_node_add_child),
+	(real_remove_child), (rb_node_remove_child):
+	* shell/main.c: (main), (rb_handle_cmdline):
+	* shell/rb-shell-player.c: (rb_shell_player_finalize):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_corba_quit),
+	(rb_shell_construct), (rb_shell_show):
+	* views/rb-group-view.c: (remove_nodes), (rb_group_view_delete):
+	* views/rb-library-view.c: (delete_nodes),
+	(rb_library_view_delete):
+
+	Nodes seem to be working relatively well now.
+
+2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(rb_node_view_timeout_cb), (root_child_removed_cb),
+	(rb_node_view_enable_drag_source):
+	* lib/widgets/rb-player.c: (rb_player_sync_time):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (rb_tree_model_node_get_path),
+	(rb_tree_model_node_iter_n_children), (root_child_removed_cb),
+	(root_child_added_cb), (root_child_reordered_cb):
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(genre_added_cb), (artist_added_cb), (album_added_cb),
+	(song_added_cb), (genre_removed_cb), (artist_removed_cb),
+	(album_removed_cb), (song_removed_cb),
+	(rb_library_get_genre_by_name), (rb_library_get_artist_by_name),
+	(rb_library_get_album_by_name), (rb_library_get_song_by_location):
+	* library/rb-node.c: (real_add_child):
+	* views/rb-group-view.c: (song_eos_cb):
+	* views/rb-library-view.c: (song_eos_cb):
+
+	More library fixage, still buggy ...
+
+2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_select_node),
+	(root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c: (root_child_added_cb):
+	* library/rb-library.c:
+	* library/rb-node.c: (remove_child), (rb_node_dispose),
+	(child_changed), (rb_node_new_from_xml), (real_add_child),
+	(rb_node_add_child), (real_remove_child), (rb_node_remove_child),
+	(id_factory_set_to), (write_lock_to_read_lock),
+	(read_lock_to_write_lock):
+
+	Some node improvements, still needs a lot of work.
+
+2002-10-09  Jorn Baayen  <jorn@nl.linux.org>
+
+	* TODO:
+	* data/glade/toolbar-editor.glade:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-marshal.list:
+	* lib/widgets/eggtreemodelfilter.c:
+	(egg_tree_model_filter_build_level):
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_set_property), (rb_node_view_get_property),
+	(rb_node_view_new), (rb_node_view_construct),
+	(rb_node_view_get_status), (rb_node_view_get_n_rows),
+	(root_child_removed_cb):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-sidebar.c: (rb_sidebar_remove):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_title),
+	(rb_song_info_update_location), (song_info_forward_clicked_cb),
+	(rb_song_info_update_current_values):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_class_init), (rb_tree_model_node_set_property),
+	(rb_tree_model_node_get_property), (rb_tree_model_node_new),
+	(rb_tree_model_node_get_iter), (rb_tree_model_node_get_path),
+	(rb_tree_model_node_get_value), (rb_tree_model_node_iter_next),
+	(rb_tree_model_node_iter_nth_child), (root_child_removed_cb),
+	(root_child_added_cb), (filter_parent_child_added_cb),
+	(filter_parent_child_removed_cb), (root_child_reordered_cb),
+	(root_destroyed_cb), (filter_parent_destroyed_cb),
+	(filter_artist_destroyed_cb):
+	* lib/widgets/rb-tree-model-node.h:
+	* lib/widgets/rb-tree-model-sort.c:
+	(rb_tree_model_sort_multi_drag_data_get):
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-xml-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_init), (rb_library_finalize),
+	(genre_added_cb), (artist_added_cb), (album_added_cb),
+	(song_added_cb), (genre_removed_cb), (artist_removed_cb),
+	(album_removed_cb), (song_removed_cb), (rb_library_create_skels),
+	(rb_library_save), (rb_library_finished_preloading),
+	(rb_library_get_genre_by_name), (rb_library_get_artist_by_name),
+	(rb_library_get_album_by_name), (rb_library_get_song_by_location),
+	(rb_library_handle_songs):
+	* library/rb-library.h:
+	* library/rb-node-filter.c: (rb_node_filter_init),
+	(rb_node_filter_set_object_property), (thread_main):
+	* library/rb-node-song.c: (rb_node_song_get_type),
+	(rb_node_song_class_init), (rb_node_song_init),
+	(rb_node_song_finalize), (rb_node_song_new), (is_different),
+	(set_value), (set_mtime), (set_duration), (set_track_number),
+	(set_genre), (set_artist), (set_album), (rb_node_song_sync),
+	(rb_node_song_update_if_changed), (rb_node_song_get_genre),
+	(rb_node_song_get_artist), (rb_node_song_get_album),
+	(rb_node_song_has_genre), (rb_node_song_has_artist),
+	(rb_node_song_has_album), (rb_node_song_restored):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_get_type), (rb_node_class_init),
+	(int_equal), (int_hash), (rb_node_init), (rb_node_finalize),
+	(remove_child), (rb_node_dispose), (rb_node_set_object_property),
+	(rb_node_get_object_property), (rb_node_new), (add_signal),
+	(write_lock_to_read_lock), (read_lock_to_write_lock),
+	(emit_signals_and_release_lock), (rb_node_get_id),
+	(rb_node_get_from_id), (rb_node_ref), (rb_node_unref),
+	(rb_node_freeze), (rb_node_thaw), (child_changed),
+	(real_set_property), (rb_node_set_property),
+	(rb_node_get_property), (rb_node_get_property_string),
+	(rb_node_get_property_boolean), (rb_node_get_property_long),
+	(rb_node_get_property_int), (rb_node_get_property_double),
+	(rb_node_get_property_float), (rb_node_get_property_node),
+	(save_parent), (rb_node_save_to_xml), (rb_node_new_from_xml),
+	(real_add_child), (rb_node_add_child), (real_remove_child),
+	(rb_node_remove_child), (rb_node_has_child),
+	(rb_node_get_children), (rb_node_get_n_children),
+	(rb_node_get_nth_child), (rb_node_get_child_index),
+	(rb_node_get_next_child), (rb_node_get_previous_child),
+	(rb_node_system_init), (rb_node_system_shutdown), (rb_node_new_id),
+	(id_factory_set_to):
+	* library/rb-node.h:
+	* shell/rb-shell.c:
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_finalize), (rb_group_view_get_artist),
+	(rb_group_view_get_album), (rb_group_view_get_song),
+	(rb_group_view_get_duration), (rb_group_view_set_playing_node),
+	(rb_group_view_save), (rb_group_view_load), (add_uri),
+	(dnd_add_handled_cb), (handle_songs_func), (rb_group_view_drop_cb),
+	(rb_group_view_add_list_uri):
+	* views/rb-library-view.c: (rb_library_view_finalize),
+	(rb_library_view_set_property), (artist_node_selected_cb),
+	(album_node_selected_cb), (rb_library_view_get_artist),
+	(rb_library_view_get_album), (rb_library_view_get_song),
+	(rb_library_view_get_duration), (rb_library_view_set_playing_node),
+	(rb_library_view_cmd_current_song):
+
+	Yes, this is big.
+
 2002-10-07 Marco Pesenti Gritti <marco@it.gnome.org>
 
 	* data/Makefile.am: fix a type that was preventing
@@ -64,6 +215,28 @@
 2002-10-08 Alex Duggan <aldug@gnome.org>
 
 	* lib/toolbar/Makefile.am: fix make dist so it includes gul-gobject-misc.h
+
+2002-10-18  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property):
+	* library/rb-library-xml-thread.c: (rb_library_xml_thread_init),
+	(rb_library_xml_thread_new), (rb_library_xml_thread_set_property),
+	(thread_main):
+	* library/rb-library.c: (rb_library_finalize):
+	* library/rb-node.c: (rb_node_dispose), (child_changed),
+	(rb_node_set_property), (rb_node_save_to_xml),
+	(rb_node_new_from_xml), (real_add_child), (rb_node_add_child),
+	(real_remove_child), (rb_node_remove_child):
+	* shell/main.c: (main), (rb_handle_cmdline):
+	* shell/rb-shell-player.c: (rb_shell_player_finalize):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_corba_quit),
+	(rb_shell_construct), (rb_shell_show):
+	* views/rb-group-view.c: (remove_nodes), (rb_group_view_delete):
+	* views/rb-library-view.c: (delete_nodes),
+	(rb_library_view_delete):
+
+	Nodes seem to be working relatively well now.
 
 2002-10-07 Marco Pesenti Gritti <marco@it.gnome.org>
 

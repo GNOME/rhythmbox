@@ -1,69 +1,78 @@
 TODO
 ====
 
+Names in brackets denotes who is working on a given issue.
+(?) denotes a suggestion which needs discussion.
+
 Tasks:
 ======
 
-* Disc number support?
+- Easy:
+  ====
+  
+* Disc number support
 * In info dialog mtime, play count, last played, file kind, sample rate
 * Better random mode
-* Implement internet radio [walters]
-* Implement audio cd [kenneth]
-* Move volume code to be a volume object in monkeymedia
+* Album cover support
+* Feature to rename files to sane filenames (a la Nautilus?)
+* Manual [Sisob]
+* Better alert dialogs
+* Sane defaults (pane pos, window size, show browser by default)
+* Focus window when restoring from panel
+* Access keys in song info should highlight contents
+* Better genre in songinfo: separate styles and genres? (Use sentence case in genre dropdown in any case)
+* Group views need to be reorderable
+* Stop button in systray menu doesnt make sense: just keep it pause/playnig
+* update-from-egg.sh
+* .keys file
+
+- Medium:
+  ======
+  
+* Implement internet radio [Walters]
+* Implement audio cd [Kenneth]
+* Move volume code to be a volume object in MonkeyMedia
 * Implement tag editing
 * Smart tag fixing
-* Album cover support
 * CD ripping
 * Ellipsize artist/album link widgets
 * Smart playlists
-* Feature to rename files to sane filenames
-* Visualization
+* Visualization (FX Plugins) [Sienap]
 * "Open stream" feature
+* File mass tagging
+* Groups not working anymore (Jorn knows how to fix)
+* Autoscroll to playing node after perioud of interface inactivity (?)
+* View->jump to... (a la XMMS) (Should scroll artist/album?) (?)
+* First time startup stuff (Wizard)
+* Browser & search support for groups
+* Save library and groups periodically
+* Select groups from applet (?)
+* Properly drawn DND hints on sidebar
+* Fix delete (slow? what happens on "double-delete"?)
+* Support opening groups in new windows for easy editing
+* Multiple tag support in songinfo and rb itself
+* Multiple selecton in artist/album lists (campd's filter object?)
+* Multiple songs of same node in a group
+* Track num navigation in group not working?
+* Save treeview state and filtering state
+* Save/restore toolbar position [Olive?]
+* "View browser" should work with gconf notifier
+* Songinfo issues (dialog getting hidden on filtering change)
+* Node in multiple roots - with just one handled flag? wont work ..
+* Sort when a non-All node is shown? 
+
+- Hard:
+  ====
+* Use medusa to find all ogg/mp3 on the user's system
+* Crash on exit (Yet Another)
+* Re-enable monitoring when FAM is fixed
+* Filtering speedup (CRACK_NODE?) [Jorn?]
+
+- Trascendence:
+  ============
+
 * All actions should be reversable (undo/redo support) everywhere, so we dont
 need confirmation dialogs
-* File mass tagging
-* Save treeview state
-* Group views need to be reorderable
-* Save filtering state
-* First time startup stuff
-* Filtering speedup
-* Songinfo issues (dialog getting hidden on filtering change)
-* Save library and groups periodically
-* Sane defaults (pane pos, window size, show browser by default)
-* Fix delete (slow? what happens on "double-delete"?)
-* Autoscroll to playing node after perioud of interface inactivity?
-* Support opening groups in new windows for easy editing
-* Better alert dialogs
-* Manual [sisob]
-* Toolbar editor
-* Save/restore toolbar position
-* Better genre in songinfo: separate styles and genres? (USe sentence case in genre dropdown in any case)
-* Access keys in song info should highlight contents
-* Multiple selecton in artist/album lists (campd's filter object?)
-* Name and Location fields in songinfo dialog, support file renaming
- (Name filename, location for path - a la nautilus)
-* Properly draw DND hints on sidebar
-* "Jump to playing song" should switch to playing source
-* Track num navigation in group not working?
-* "View browser" should work with gconf notifier
-* Re-enable monitoring when FAM is fixed
-* Sort when a non-All node is shown? 
-* Crash on exit
-* .kets file?
-* update-from-egg.sh
-* view->Show current album/artist or something?
-* view->jump to... (a la xmms) ?
-* multiple tag support in songinfo and rb itself
-* select groups from applet?
-* focus window when restoring from panel
-* Stop button in systray menu doesnt make sense: just keep it pause/playnig
-* groups not working anymore?
-* node in multiple roots - with just one handled flag? wont work ..
-* use medusa to find all ogg/mp3 on the user's system
-* browser & search support for groups
-* loading groups is borken
-* multiple songs of same node in group
-* jump to shold also ascroll to artist/album
 
 
 Olive's TODO

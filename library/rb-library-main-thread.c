@@ -252,12 +252,10 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_node_get_song_by_uri (realuri) == NULL)
+				if (rb_library_get_song_by_location (priv->library, realuri) == NULL)
 				{
-					RBNode *song;
-					
-					song = rb_node_new (RB_NODE_TYPE_SONG);
-					rb_node_song_init (song, realuri, priv->library);
+					rb_node_song_new (realuri,
+							  priv->library);
 				}
 
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
@@ -266,7 +264,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				{
 					RBNode *song;
 
-					song = rb_node_get_song_by_uri (realuri);
+					song = rb_library_get_song_by_location (priv->library, realuri);
 					if (song == NULL)
 						break;
 
@@ -276,7 +274,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 						break;
 					}
 
-					rb_node_song_update_if_changed (song, priv->library);
+					rb_node_song_update_if_changed (RB_NODE_SONG (song), priv->library);
 				}
 
 				/* just to be sure */
@@ -286,7 +284,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				{
 					RBNode *song;
 
-					song = rb_node_get_song_by_uri (realuri);
+					song = rb_library_get_song_by_location (priv->library, realuri);
 					if (song == NULL)
 						break;
 

@@ -25,6 +25,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <libgnome/gnome-i18n.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <string.h>
 
@@ -59,13 +60,13 @@ static void rb_library_view_get_property (GObject *object,
 			                  GParamSpec *pspec);
 static void album_node_selected_cb (RBNodeView *view,
 			            RBNode *node,
-			            RBLibraryView *testview);
+			            RBLibraryView *libview);
 static void artist_or_album_activated_cb (RBNodeView *view,
 					  RBNode *node,
 					  RBLibraryView *library_view);
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
-			             RBLibraryView *testview);
+			             RBLibraryView *libview);
 static void rb_library_view_player_init (RBViewPlayerIface *iface);
 static void rb_library_view_set_shuffle (RBViewPlayer *player,
 			                 gboolean shuffle);
@@ -181,10 +182,6 @@ struct RBLibraryViewPrivate
 
 	gboolean show_browser;
 	gboolean lock;
-
-	char *artist;
-	char *album;
-	char *song;
 
 	RBNodeFilter *filter;
 };
@@ -358,10 +355,6 @@ rb_library_view_finalize (GObject *object)
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
-	g_free (view->priv->album);
-	g_free (view->priv->artist);
-	g_free (view->priv->song);
-
 	g_object_unref (G_OBJECT (view->priv->filter));
 
 	g_object_unref (G_OBJECT (view->priv->browser));
@@ -398,7 +391,8 @@ rb_library_view_set_property (GObject *object,
 			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"),
-								NULL);
+								NULL,
+								view->priv->library);
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
@@ -414,7 +408,8 @@ rb_library_view_set_property (GObject *object,
 			/* set up albums treeview */
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"),
-							       NULL);
+							       NULL,
+							       view->priv->library);
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
@@ -430,7 +425,8 @@ rb_library_view_set_property (GObject *object,
 			/* set up songs tree view */
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"),
-							      "/apps/rhythmbox/ui/columns_setup");
+							      "/apps/rhythmbox/ui/columns_setup",
+							      view->priv->library);
 
 			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 					  G_CALLBACK (rb_library_view_node_removed_cb), view);
@@ -535,38 +531,38 @@ rb_library_view_new (BonoboUIContainer *container,
 static void
 artist_node_selected_cb (RBNodeView *view,
 			 RBNode *node,
-			 RBLibraryView *testview)
+			 RBLibraryView *libview)
 {
-	rb_node_view_set_filter (testview->priv->albums, node, NULL);
-	rb_node_view_select_node (testview->priv->albums,
-				  rb_library_get_all_songs (testview->priv->library));
+	rb_node_view_set_filter (libview->priv->albums, node, NULL);
+	rb_node_view_select_node (libview->priv->albums,
+				  rb_library_get_all_songs (libview->priv->library));
 
-	rb_node_filter_abort_search (testview->priv->filter);
-	rb_search_entry_clear (testview->priv->search);
+	rb_node_filter_abort_search (libview->priv->filter);
+	rb_search_entry_clear (libview->priv->search);
 
-	rb_node_view_set_filter (testview->priv->songs,
-				 rb_library_get_all_songs (testview->priv->library),
+	rb_node_view_set_filter (libview->priv->songs,
+				 rb_library_get_all_songs (libview->priv->library),
 				 node);
 }
 
 static void
 album_node_selected_cb (RBNodeView *view,
 			RBNode *node,
-			RBLibraryView *testview)
+			RBLibraryView *libview)
 {
-	GList *selection = rb_node_view_get_selection (testview->priv->artists);
+	GList *selection = rb_node_view_get_selection (libview->priv->artists);
 
 	if (selection == NULL)
 	{
-		rb_node_view_select_node (testview->priv->artists,
-					  rb_library_get_all_albums (testview->priv->library));
-		selection = rb_node_view_get_selection (testview->priv->artists);
+		rb_node_view_select_node (libview->priv->artists,
+					  rb_library_get_all_albums (libview->priv->library));
+		selection = rb_node_view_get_selection (libview->priv->artists);
 	}
 
-	rb_node_filter_abort_search (testview->priv->filter);
-	rb_search_entry_clear (testview->priv->search);
+	rb_node_filter_abort_search (libview->priv->filter);
+	rb_search_entry_clear (libview->priv->search);
 
-	rb_node_view_set_filter (testview->priv->songs, node,
+	rb_node_view_set_filter (libview->priv->songs, node,
 				 RB_NODE (selection->data));
 }
 
@@ -719,21 +715,7 @@ rb_library_view_get_artist (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		g_free (view->priv->artist);
-		
-		rb_node_get_property (node,
-				      RB_SONG_PROP_ARTIST,
-				      &value);
-		
-		view->priv->artist = g_strdup (g_value_get_string (&value));
-
-		g_value_unset (&value);
-		
-		return (const char *) view->priv->artist;
-	}
+		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST);
 	else
 		return NULL;
 }
@@ -747,21 +729,7 @@ rb_library_view_get_album (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		g_free (view->priv->album);
-		
-		rb_node_get_property (node,
-				      RB_SONG_PROP_ALBUM,
-				      &value);
-		
-		view->priv->album = g_strdup (g_value_get_string (&value));
-
-		g_value_unset (&value);
-		
-		return (const char *) view->priv->album;
-	}
+		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM);
 	else
 		return NULL;
 }
@@ -775,21 +743,7 @@ rb_library_view_get_song (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		rb_node_get_property (node,
-				      RB_NODE_PROP_NAME,
-				      &value);
-		
-		g_free (view->priv->song);
-		
-		view->priv->song = g_strdup (g_value_get_string (&value));
-		
-		g_value_unset (&value);
-
-		return (const char *) view->priv->song;
-	}
+		return rb_node_get_property_string (node, RB_NODE_PROP_NAME);
 	else
 		return NULL;
 }
@@ -803,20 +757,7 @@ rb_library_view_get_duration (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		long ret;
-
-		rb_node_get_property (node, 
-				      RB_SONG_PROP_REAL_DURATION,
-				      &value);
-		
-		ret = g_value_get_long (&value);
-		
-		g_value_unset (&value);
-		
-		return ret;
-	}
+		return rb_node_get_property_long (node, RB_NODE_SONG_PROP_REAL_DURATION);
 	else
 		return -1;
 }
@@ -884,12 +825,9 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		const char *artist = rb_library_view_get_artist (RB_VIEW_PLAYER (view));
 		const char *song = rb_library_view_get_song (RB_VIEW_PLAYER (view));
 		const char *uri;
-		GValue value = { 0, };
 
-		rb_node_get_property (node, 
-				      RB_SONG_PROP_LOCATION,
-				      &value);
-		uri = g_value_get_string (&value);
+		uri = rb_node_get_property_string (node, 
+				                   RB_NODE_SONG_PROP_LOCATION);
 
 		g_assert (uri != NULL);
 		
@@ -899,7 +837,6 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 			rb_error_dialog (_("Failed to create stream for %s, error was:\n%s"),
 					 uri, error->message);
 			g_error_free (error);
-			g_value_unset (&value);
 			return;
 		}
 		
@@ -911,8 +848,6 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
 		
 		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, TRUE);
-
-		g_value_unset (&value);
 	}
 }
 
@@ -942,9 +877,13 @@ static void
 song_eos_cb (MonkeyMediaStream *stream,
 	     RBLibraryView *view)
 {
+	GDK_THREADS_ENTER ();
+	
 	rb_library_view_next (RB_VIEW_PLAYER (view));
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (view));
+
+	GDK_THREADS_LEAVE ();
 }
 
 static RBNode *
@@ -1057,10 +996,9 @@ rb_library_view_paste (RBViewClipboard *clipboard,
 {
 }
 
-static void
-rb_library_view_delete (RBViewClipboard *clipboard)
+static gboolean
+delete_nodes (RBLibraryView *view)
 {
-	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
 	GList *sel, *l;
 
 	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
@@ -1069,6 +1007,16 @@ rb_library_view_delete (RBViewClipboard *clipboard)
 		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
 	}
 	g_list_free (sel);
+
+	return FALSE;
+}
+
+static void
+rb_library_view_delete (RBViewClipboard *clipboard)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+
+	g_idle_add ((GSourceFunc) delete_nodes, view);
 }
 
 static void
@@ -1108,9 +1056,9 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 	{
 		/* adjust filtering to show it */
 		rb_node_view_select_node (view->priv->artists,
-					  rb_node_song_get_artist (node));
+					  rb_node_song_get_artist (RB_NODE_SONG (node)));
 		rb_node_view_select_node (view->priv->albums,
-					  rb_node_song_get_album (node));
+					  rb_node_song_get_album (RB_NODE_SONG (node)));
 	}
 
 	rb_node_view_scroll_to_node (view->priv->songs, node);

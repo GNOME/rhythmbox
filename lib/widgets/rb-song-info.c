@@ -412,18 +412,15 @@ rb_song_info_update_title (RBSongInfo *song_info)
 	{
 		if (song_info->priv->current_node != NULL)
 		{
-			GValue val = { 0, };
+			const char *url;
 			char *tmp;
 
-			rb_node_get_property (song_info->priv->current_node,
-					      RB_SONG_PROP_LOCATION,
-					      &val);
+			url = rb_node_get_property_string (song_info->priv->current_node,
+					                   RB_NODE_SONG_PROP_LOCATION);
 
-			tmp = g_strdup_printf (_("%s Properties"), g_value_get_string (&val));
+			tmp = g_strdup_printf (_("%s Properties"), url);
 			gtk_window_set_title (GTK_WINDOW (song_info), tmp);
 			g_free (tmp);
-
-			g_value_unset (&val);
 		}
 		else
 			gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
@@ -639,17 +636,14 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 static void
 rb_song_info_update_location (RBSongInfo *song_info)
 {
-	GValue value = { 0, };
 	const char *text;
 	char *basename;
 
 	g_return_if_fail (song_info != NULL);
 
-	rb_node_get_property (song_info->priv->current_node,
-			      RB_SONG_PROP_LOCATION,
-			      &value);
+	text = rb_node_get_property_string (song_info->priv->current_node,
+			                    RB_NODE_SONG_PROP_LOCATION);
 
-	text = g_value_get_string (&value);
 	if (text != NULL)
 	{
 		char *tmp;
@@ -666,14 +660,13 @@ rb_song_info_update_location (RBSongInfo *song_info)
 				      tmp, NULL);
 		g_free (tmp);
 	}
-	g_value_unset (&value);
 }
 
 static void
 song_info_forward_clicked_cb (GtkWidget *button,
 			      RBSongInfo *song_info)
 {
-	GValue location = { 0, };
+	const char *url;
 	MonkeyMediaStreamInfo *info = NULL;
 	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
 					      song_info->priv->current_node,
@@ -684,13 +677,11 @@ song_info_forward_clicked_cb (GtkWidget *button,
 	/* update our node and info, then refresh the dlg */
 	song_info->priv->current_node = node;
 
-	rb_node_get_property (node,
-			      RB_SONG_PROP_LOCATION,
-			      &location);
+	url = rb_node_get_property_string (node,
+			                   RB_NODE_SONG_PROP_LOCATION);
 	
-	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
+	info = monkey_media_stream_info_new (url, NULL);
 	song_info->priv->current_info = info;
-	g_value_unset (&location);
 
 	/* update the node view */
 	rb_node_view_select_node (song_info->priv->node_view, node);
@@ -741,7 +732,7 @@ rb_song_info_view_changed_cb (RBNodeView *node_view,
 static gboolean
 rb_song_info_update_current_values (RBSongInfo *song_info)
 {
-	GValue location = { 0, };
+	const char *url;
 	RBNode *node = NULL;
 	MonkeyMediaStreamInfo *info;
 	GList *selected_nodes;
@@ -763,14 +754,11 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 	song_info ->priv->current_node = node = selected_nodes->data;
 
 	/* get the stream info */
-	rb_node_get_property (node,
-			      RB_SONG_PROP_LOCATION,
-			      &location);
+	url = rb_node_get_property_string (node,
+			                   RB_NODE_SONG_PROP_LOCATION);
 
-	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
+	info = monkey_media_stream_info_new (url, NULL);
 	song_info->priv->current_info = info;
-	g_value_unset (&location);
 
 	return TRUE;
 }
-

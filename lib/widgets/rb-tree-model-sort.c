@@ -233,7 +233,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 				GtkTreePath *path = gtk_tree_row_reference_get_path (i->data);
 				RBNode *node = NULL;
 				char *tmp, *tmp2;
-				GValue value = { 0, };
+				const char *value;
 
 				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 				g_signal_emit (G_OBJECT (model), 
@@ -243,11 +243,9 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 				if (node == NULL)
 					return FALSE;
 
-				rb_node_get_property (node,
-						      RB_SONG_PROP_LOCATION,
-						      &value);
-				tmp = g_strdup (g_value_get_string (&value));	
-				g_value_unset (&value);
+				value = rb_node_get_property_string (node,
+						                     RB_NODE_SONG_PROP_LOCATION);
+				tmp = g_strdup (value);	
 
 				if (drag_data != NULL)
 				{
