@@ -60,6 +60,7 @@ struct RBLinkPrivate
 	char *text;
 	char *tooltip;
 	char *url;
+	gboolean active;
 
 	GtkTooltips *tooltips;
 
@@ -72,7 +73,8 @@ enum
 	PROP_0,
 	PROP_TEXT,
 	PROP_TOOLTIP,
-	PROP_URL
+	PROP_URL,
+	PROP_ACTIVE
 };
 
 static GObjectClass *parent_class = NULL;
@@ -138,6 +140,13 @@ rb_link_class_init (RBLinkClass *klass)
 							      "Link URL",
 							      NULL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_ACTIVE,
+					 g_param_spec_boolean ("active",
+							       "Active",
+							       "Whether or not the link is active",
+							       TRUE,
+							       G_PARAM_READWRITE));
 }
 
 static void
@@ -151,6 +160,8 @@ rb_link_init (RBLink *link)
 	gtk_label_set_use_markup (GTK_LABEL (link->priv->label), TRUE);
 
 	gtk_container_add (GTK_CONTAINER (link), link->priv->label);
+
+	link->priv->active = TRUE;
 
 	link->priv->tooltips = gtk_tooltips_new ();
 
@@ -235,6 +246,14 @@ rb_link_set_property (GObject *object,
 			link->priv->url = g_strdup (g_value_get_string (value));
 		}
 		break;
+	case PROP_ACTIVE:
+		link->priv->active = g_value_get_boolean (value);
+		rb_link_set_text (link, link->priv->normal_color);
+		if (link->priv->active)
+			gtk_tooltips_enable (link->priv->tooltips); 
+		else
+			gtk_tooltips_disable (link->priv->tooltips); 
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -259,6 +278,9 @@ rb_link_get_property (GObject *object,
 		break;
 	case PROP_URL:
 		g_value_set_string (value, link->priv->url);
+		break;
+	case PROP_ACTIVE:
+		g_value_set_boolean (value, link->priv->active);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -287,13 +309,20 @@ rb_link_set (RBLink *link,
 	g_return_if_fail (RB_IS_LINK (link));
 	g_return_if_fail (text != NULL);
 	g_return_if_fail (tooltip != NULL);
-	g_return_if_fail (url != NULL);
 
-	g_object_set (G_OBJECT (link),
-		      "text", text,
-		      "tooltip", tooltip,
-		      "url", url,
-		      NULL);
+	if (url != NULL)
+		g_object_set (G_OBJECT (link),
+			      "text", text,
+			      "tooltip", tooltip,
+			      "url", url,
+			      NULL);
+
+	else
+		g_object_set (G_OBJECT (link),
+			      "text", text,
+			      "tooltip", tooltip,
+			      "active", (gboolean) FALSE,
+			      NULL);
 }
 
 static gboolean
@@ -303,7 +332,7 @@ rb_link_button_press_event_cb (GtkWidget *widget,
 {
 	GError *error = NULL;
 	
-	if (event->button != 1)
+	if (event->button != 1 || !link->priv->active)
 		return TRUE;
 
 	gnome_url_show (link->priv->url, &error);
@@ -323,6 +352,8 @@ rb_link_enter_notify_event_cb (GtkWidget *widget,
 			       GdkEventCrossing *event,
 			       RBLink *link)
 {
+	if (!link->priv->active)
+		return TRUE;
 	rb_link_set_text (link, link->priv->prelight_color);
 
 	return TRUE;
@@ -333,6 +364,8 @@ rb_link_leave_notify_event_cb (GtkWidget *widget,
 			       GdkEventCrossing *event,
 			       RBLink *link)
 {
+	if (!link->priv->active)
+		return TRUE;
 	rb_link_set_text (link, link->priv->normal_color);
 
 	return TRUE;
@@ -345,8 +378,10 @@ rb_link_set_text (RBLink *link,
 	char *text, *escaped;
 	
 	escaped = g_markup_escape_text (link->priv->text, -1);
-	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"single\">%s</span>",
-				color->red, color->green, color->blue, escaped);
+	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"%s\">%s</span>",
+				color->red & 0xFF, color->green & 0xFF, color->blue & 0xFF,
+				link->priv->active ? "single" : "none",
+				escaped);
 	g_free (escaped);
 	gtk_label_set_markup (GTK_LABEL (link->priv->label), text);
 	g_free (text);
