@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-07-11 02:54+0200\n"
-"PO-Revision-Date: 2002-07-11 02:55+0200\n"
+"POT-Creation-Date: 2002-07-21 22:49+0200\n"
+"PO-Revision-Date: 2002-07-21 22:49+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -346,17 +346,36 @@ msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
 
-#: lib/widgets/rb-player.c:177
+#: lib/widgets/rb-player.c:199
 msgid "From "
 msgstr "Från "
 
-#: lib/widgets/rb-player.c:183
+#: lib/widgets/rb-player.c:205
 msgid " by "
 msgstr " av "
 
-#: lib/widgets/rb-player.c:338
+#: lib/widgets/rb-player.c:367
 msgid "Not Playing"
 msgstr "Spelar inte"
+
+#: lib/widgets/rb-player.c:530
+#, c-format
+msgid "%d:%02d"
+msgstr "%d:%02d"
+
+#: lib/widgets/rb-player.c:539
+#, c-format
+msgid "- %d:%02d"
+msgstr "- %d:%02d"
+
+#: lib/widgets/rb-player.c:547
+#, c-format
+msgid "Total: %d:%02d"
+msgstr "Totalt: %d:%02d"
+
+#: lib/widgets/rb-player.c:550
+msgid "Invalid mode"
+msgstr "Ogiltigt läge"
 
 #: lib/widgets/rb-search-entry.c:115
 msgid "Search:"
