@@ -11,7 +11,11 @@ art_DATA = rhythmbox-next.png      \
 	   rhythmbox-group.png     \
 	   rhythmbox-playing.png   \
 	   rhythmbox-album.png     \
-	   about-logo.png
+	   about-logo.png          \
+	   splash.png	           \
+	   splash-groups.png       \
+	   splash-ui.png           \
+	   splash-library.png
 
 artdir = $(pkgdatadir)/art
 

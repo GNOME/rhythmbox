@@ -1,5 +1,29 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/art/Makefile.am:
+	* data/art/splash-groups.png:
+	* data/art/splash-library.png:
+	* data/art/splash-ui.png:
+	* data/art/splash.png:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/e-splash.c:
+	(widget_realize_callback_for_backing_store),
+	(e_make_widget_backing_stored), (create_darkened_pixbuf),
+	(icon_new), (icon_free), (layout_icons), (layout_idle_cb),
+	(schedule_relayout), (impl_destroy), (class_init), (init),
+	(button_press_event), (e_splash_construct), (e_splash_new),
+	(e_splash_add_icon), (e_splash_set_icon_highlight):
+	* lib/widgets/e-splash.h:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct):
+
+	Put splashscreen back.
+
+	Note: I did implement loading the xml stuff in an idle so
+	that stuff gets inserted into the ui on startup on the fly,
+	but it was about 5 times slower than just doing it "under the splash".
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library.c: (rb_library_load), (rb_library_save),
 	(rb_library_timeout_cb), (rb_library_thread_process_changed_node):
 	* library/rb-node.c: (rb_node_add_child),

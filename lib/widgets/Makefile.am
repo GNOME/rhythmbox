@@ -18,7 +18,9 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.c					\
 	rb-volume.h					\
 	gtktreemodelfilter.c				\
-	gtktreemodelfilter.h
+	gtktreemodelfilter.h				\
+	e-splash.c					\
+	e-splash.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
