@@ -7,7 +7,6 @@ glade_DATA =	general-prefs.glade	  	\
 		station-new.glade		\
 		station-properties.glade	\
 		create-playlist.glade		\
-		buffering-dialog.glade		\
 		druid.glade			\
 		uri.glade
 
