@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
-"POT-Creation-Date: 2002-11-06 04:44+0100\n"
-"PO-Revision-Date: 2002-11-06 16:26GMT\n"
+"POT-Creation-Date: 2002-11-13 12:19+0100\n"
+"PO-Revision-Date: 2002-11-13 12:19GMT\n"
 "Last-Translator: Michal Bukovjan <bukm@centrum.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -601,64 +601,67 @@ msgstr ""
 "Při přechodu na %s nastala chyba:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:547
+#: lib/widgets/rb-node-view.c:548
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Selhalo zpracování %s jako souboru s rozvržením NodeView"
 
-#: lib/widgets/rb-node-view.c:1328
+#: lib/widgets/rb-node-view.c:1329
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time, %s"
 msgstr "%d skladeb, %d:%02d:%02d celkový čas, %s"
 
-#: lib/widgets/rb-player.c:208
+#: lib/widgets/rb-player.c:207
 msgid "From "
 msgstr "Od "
 
-#: lib/widgets/rb-player.c:214
+#: lib/widgets/rb-player.c:213
 msgid " by "
 msgstr " od "
 
-#: lib/widgets/rb-player.c:253 lib/widgets/rb-player.c:668
-msgid "Elapsed time of the song. Click on it to display remaining and total time"
+#: lib/widgets/rb-player.c:252 lib/widgets/rb-player.c:645
+msgid ""
+"Elapsed time of the song. Click on it to display remaining and total time"
 msgstr "Uplynulý čas skladby. Kliknutím zobrazíte zbývající a celkový čas"
 
-#: lib/widgets/rb-player.c:392
+#: lib/widgets/rb-player.c:383
 msgid "Get information on this album from the web"
 msgstr "Získat informace o tomto albu ze sítě"
 
-#: lib/widgets/rb-player.c:403
+#: lib/widgets/rb-player.c:393
 msgid "Get information on this artist from the web"
 msgstr "Získat informace o tomto umělci ze sítě"
 
-#: lib/widgets/rb-player.c:413
+#: lib/widgets/rb-player.c:401
 msgid "Not Playing"
 msgstr "Nepřehrává se"
 
-#: lib/widgets/rb-player.c:654
-msgid "Remaining time of the song. Click on it to display total and elapsed time"
+#: lib/widgets/rb-player.c:631
+msgid ""
+"Remaining time of the song. Click on it to display total and elapsed time"
 msgstr "Zbývající čas skladby. Kliknutím zobrazíte celkový a uplynulý čas"
 
-#: lib/widgets/rb-player.c:661
-msgid "Total time of the song. Click on it to display elapsed and remaining time"
+#: lib/widgets/rb-player.c:638
+msgid ""
+"Total time of the song. Click on it to display elapsed and remaining time"
 msgstr "Celkový čas skladby. Kliknutím zobrazíte uplynulý a zbývající čas"
 
-#: lib/widgets/rb-player.c:694
+#: lib/widgets/rb-player.c:669
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:703
+#: lib/widgets/rb-player.c:677
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:711
+#: lib/widgets/rb-player.c:684
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Celkem: %d:%02d"
 
-#: lib/widgets/rb-player.c:714
+#: lib/widgets/rb-player.c:687
 msgid "Invalid mode"
 msgstr "Neplatný režim"
 
@@ -753,24 +756,24 @@ msgid "%.2d of %.2d"
 msgstr "%.2d z %.2d"
 
 #: library/rb-node-song.c:766
-msgid "%Y-%m-%d %H:%M:%S"
-msgstr "%d. %m %Y %H:%M:%S"
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d. %m %Y %H:%M"
 
 #: library/rb-node.c:806 library/rb-node.c:812 library/rb-node.c:843
 msgid "Never"
 msgstr "Nikdy"
 
 #: library/rb-node.c:834
-msgid "Today at %-H:%M:%S"
-msgstr "Dnes v %-H:%M:%S"
+msgid "Today at %-H:%M"
+msgstr "Dnes v %-H:%M"
 
 #: library/rb-node.c:836
-msgid "Yesterday at %-H:%M:%S"
-msgstr "Včera v %-H:%M:%S"
+msgid "Yesterday at %-H:%M"
+msgstr "Včera v %-H:%M"
 
 #: library/rb-node.c:838
-msgid "%A, %B %-d %Y at %-H:%M:%S"
-msgstr "%A, %-d. %B %Y v %-H:%M:%S"
+msgid "%A, %B %-d %Y at %-H:%M"
+msgstr "%A, %-d. %B %Y v %-H:%M"
 
 #: shell/main.c:59
 msgid "Enable debugging code"
@@ -843,7 +846,7 @@ msgstr ""
 "s jinou předponou než bonobo-activation; toto varování\n"
 "je neškodné, ale nebude správně fungovat IPC.\n"
 
-#: shell/rb-shell.c:993 shell/rb-shell.c:2008
+#: shell/rb-shell.c:993 shell/rb-shell.c:2009
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
@@ -861,35 +864,35 @@ msgstr ""
 "%s\n"
 "Pozastaveno"
 
-#: shell/rb-shell.c:1156
+#: shell/rb-shell.c:1157
 msgid "translator_credits"
 msgstr "Michal Bukovjan <bukm@centrum.cz>"
 
-#: shell/rb-shell.c:1167
+#: shell/rb-shell.c:1168
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright ©2002 Jorn Baayen"
 
-#: shell/rb-shell.c:1168
+#: shell/rb-shell.c:1169
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro prostředí GNOME"
 
-#: shell/rb-shell.c:1370
+#: shell/rb-shell.c:1371
 msgid "Choose Files or Directory"
 msgstr "Vyberte soubory nebo adresář"
 
-#: shell/rb-shell.c:1857
+#: shell/rb-shell.c:1858
 msgid "Create"
 msgstr "Vytvořit"
 
-#: shell/rb-shell.c:1881
+#: shell/rb-shell.c:1882
 msgid "Please enter a name for the new music group."
 msgstr "Zadejte prosím název nové skupiny hudby."
 
-#: shell/rb-shell.c:1891
+#: shell/rb-shell.c:1892
 msgid "Untitled"
 msgstr "Nepojmenovaná"
 
-#: shell/rb-shell.c:1895
+#: shell/rb-shell.c:1896
 msgid "Add the _selected songs to the new group"
 msgstr "Přidat vybrané _skladby do této nové skupiny"
 
@@ -901,7 +904,7 @@ msgstr "skupina hudby"
 msgid "Unnamed"
 msgstr "Bez názvu"
 
-#: views/rb-group-view.c:786 views/rb-library-view.c:862
+#: views/rb-group-view.c:788 views/rb-library-view.c:861
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -910,7 +913,7 @@ msgstr ""
 "Nelze vytvořit stream pro %s, chyba byla:\n"
 "%s"
 
-#: views/rb-group-view.c:1112
+#: views/rb-group-view.c:1114
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Nelze zpracovat %s jako soubor se skupinami"
@@ -919,7 +922,6 @@ msgstr "Nelze zpracovat %s jako soubor se skupinami"
 msgid "library"
 msgstr "knihovna"
 
-#: views/rb-library-view.c:324 views/rb-library-view.c:1220
+#: views/rb-library-view.c:324 views/rb-library-view.c:1213
 msgid "Library"
 msgstr "Knihovna"
-
