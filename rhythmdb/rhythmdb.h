@@ -24,11 +24,11 @@
 G_BEGIN_DECLS
 
 #define RHYTHMDB_TYPE      (rhythmdb_get_type ())
-#define RHYTHMDB(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE_DB, RhythmDB))
-#define RHYTHMDB_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RHYTHMDB_TYPE_DB, RhythmDBClass))
-#define RHYTHMDB_IS(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE_DB))
-#define RHYTHMDB_IS_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE_DB))
-#define RHYTHMDB_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE_DB, RhythmDBClass))
+#define RHYTHMDB(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE, RhythmDB))
+#define RHYTHMDB_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RHYTHMDB_TYPE, RhythmDBClass))
+#define RHYTHMDB_IS(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RHYTHMDB_TYPE))
+#define RHYTHMDB_IS_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RHYTHMDB_TYPE))
+#define RHYTHMDB_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RHYTHMDB_TYPE, RhythmDBClass))
 
 enum
 {
@@ -44,7 +44,7 @@ GType rhythmdb_query_get_type (void);
 
 #define RHYTHMDB_QUERY (rhythmdb_query_get_type ())
 
-typedef struct RhythmDBEntry RhythmDBEntry;
+typedef gpointer RhythmDBEntry;
 
 typedef struct
 {
@@ -60,6 +60,32 @@ typedef struct
 	/* signals */
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*entry_added)		(RhythmDBEntry *entry);
+
+	/* virtual methods */
+	void		(*impl_lock)		(RhythmDB *db);
+	void		(*impl_unlock)		(RhythmDB *db);
+	RhythmDBEntry *	(*rhythmdb_entry_new)	(RhythmDB *db);
+
+	void		(*rhythmdb_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
+						 guint propid, GValue *value);
+
+	void		(*rhythmdb_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,
+						 guint propid, GValue *value);
+
+	void		(*rhythmdb_entry_delete)(RhythmDB *db, RhythmDBEntry *entry);
+#define DEFINE_GETTER (name, TYPE) \
+	TYPE		(*rhythmdb_entry_get_ ## name) (RhythmDB *db, RhythmDBEntry *entry, guint property_id);
+	DEFINE_GETTER (string, const char *)
+	DEFINE_GETTER (boolean, gboolean)
+	DEFINE_GETTER (long, long)
+	DEFINE_GETTER (int, int)
+	DEFINE_GETTER (double, double)
+	DEFINE_GETTER (float, float)
+	DEFINE_GETTER (pointer, pointer)
+#undef DEFINE_GETTER
+	GtkTreeModel *	(*rhythmdb_do_entry_query)(RhythmDB *db, va_list args);
+	GtkTreeModel *	(*rhythmdb_do_property_query)(RhythmDB *db, const char *property, va_list args);
+
 } RhythmDBClass;
 
 GType		rhythmdb_get_type	(void);
