@@ -662,7 +662,7 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 	rb_query_creator_get_limit (creator, &type, &limit);
 	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
 		limit_count = limit;
-	if (type == RB_QUERY_CREATOR_LIMIT_MB)
+	else if (type == RB_QUERY_CREATOR_LIMIT_MB)
 		limit_size = limit;
 	rb_playlist_source_set_query (playlist,
 				      rb_query_creator_get_query (creator),
@@ -684,7 +684,6 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 		gtk_widget_destroy (GTK_WIDGET (creator));	
 		return;
 	}
-
 
 	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
 

@@ -142,7 +142,7 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
-	guint max_size_mb;
+	GnomeVFSFileSize max_size;
 	guint max_count;
 
 	gboolean cancelled;
@@ -386,7 +386,7 @@ rhythmdb_query_model_set_property (GObject *object,
 		model->priv->sort_user_data = g_value_get_pointer (value);
 		break;
 	case PROP_MAX_SIZE:
-		model->priv->max_size_mb = g_value_get_int (value);
+		model->priv->max_size = g_value_get_int (value) * 1024 * 1024;
 		break;
 	case PROP_MAX_COUNT:
 		model->priv->max_count = g_value_get_int (value);
@@ -420,7 +420,7 @@ rhythmdb_query_model_get_property (GObject *object,
 		g_value_set_pointer (value, model->priv->sort_user_data);
 		break;
 	case PROP_MAX_SIZE:
-		g_value_set_int (value, model->priv->max_size_mb);
+		g_value_set_int (value, model->priv->max_size / (1024 * 1024));
 		break;
 	case PROP_MAX_COUNT:
 		g_value_set_int (value, model->priv->max_count);
@@ -781,8 +781,8 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 					    entry, RHYTHMDB_PROP_DURATION);
 	rhythmdb_read_unlock (model->priv->db);
 
-	if (model->priv->max_size_mb > 0
-	    && ((model->priv->total_size + size) / (1024*1024)) >= model->priv->max_size_mb)
+	if (model->priv->max_size > 0
+	    && (model->priv->total_size + size >= model->priv->max_size))
 		return;
 
 	rhythmdb_entry_ref (model->priv->db, entry);
