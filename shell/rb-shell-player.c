@@ -1720,7 +1720,8 @@ rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 			root = gdk_screen_get_root_window (screen);
 
 			for (j = 0; j < 4 ; j++) {
-				grab_mmkey (keycodes[j], root);
+				if (keycodes[j] != 0)
+					grab_mmkey (keycodes[j], root);
 			}
 
 			gdk_window_add_filter (root, filter_mmkeys,
