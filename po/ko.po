@@ -1,25 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Young-Ho, Cha <ganadist@mizi.com>, 2002, 2003
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox 0.3.0.99\n"
-"POT-Creation-Date: 2002-11-06 21:15+0900\n"
-"PO-Revision-Date: 2002-11-06 12:47+0900\n"
+"Project-Id-Version: rhythmbox 0.4.1.99\n"
+"POT-Creation-Date: 2003-01-07 20:16+0900\n"
+"PO-Revision-Date: 2003-01-07 22:56+0900\n"
 "Last-Translator: Young-Ho, Cha <ganadist@mizi.com>\n"
 "Language-Team: GTP Korean <gnome-kr-translation@gnome.or.kr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/GNOME_Rhythmbox_Shell.server.in.h:1
+#: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
 msgstr "리듬박스 쉘"
 
-#: data/GNOME_Rhythmbox_Shell.server.in.h:2
+#: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
 msgstr "리듬박스 쉘 팩토리"
 
@@ -28,71 +27,90 @@ msgid "    "
 msgstr "    "
 
 #: data/glade/preferences.glade.h:2
+msgid "<b>Browser Views</b>"
+msgstr "<b>찾아 보기</b>"
+
+#: data/glade/preferences.glade.h:3
 msgid "<span weight=\"bold\">Appearance</span>"
 msgstr "<span weight=\"bold\">모양새</span>"
 
-#: data/glade/preferences.glade.h:3
+#: data/glade/preferences.glade.h:4
 msgid "<span weight=\"bold\">Visible Columns</span>"
 msgstr "<span weight=\"bold\">보이는 칸</span>"
 
-#: data/glade/preferences.glade.h:4 data/node-views/rb-node-view-songs.xml.h:1
+#: data/glade/preferences.glade.h:5 data/node-views/rb-node-view-songs.xml.h:1
 msgid "A_lbum"
 msgstr "앨범(_L)"
 
-#: data/glade/preferences.glade.h:5
+#: data/glade/preferences.glade.h:6
+msgid "Artists and albums"
+msgstr "가수와 앨범"
+
+#: data/glade/preferences.glade.h:7
+msgid "Genres and artists"
+msgstr "장르와 가수"
+
+#: data/glade/preferences.glade.h:8
+msgid "Genres, artists and albums"
+msgstr "장르, 가수및 앨범"
+
+#: data/glade/preferences.glade.h:9
 msgid "Preferences"
 msgstr "기본 설정"
 
-#: data/glade/preferences.glade.h:6
+#: data/glade/preferences.glade.h:10
 msgid "Show _toolbar as:"
-msgstr "도구막대 모양:"
+msgstr "도구막대 모양(_T):"
 
-#: data/glade/preferences.glade.h:7
+#: data/glade/preferences.glade.h:11
 msgid "Text _below icons"
 msgstr "아이콘 밑에 글자(_B)"
 
-#: data/glade/preferences.glade.h:8
+#: data/glade/preferences.glade.h:12
 msgid "Text b_eside icons"
 msgstr "아이콘 옆에 글자(_E)"
 
-#: data/glade/preferences.glade.h:9
+#: data/glade/preferences.glade.h:13
 msgid "Track _number"
 msgstr "트랙 번호(_N)"
 
-#: data/glade/preferences.glade.h:10
+#: data/glade/preferences.glade.h:14
 msgid "_Artist"
 msgstr "가수(_A)"
 
-#: data/glade/preferences.glade.h:11
+#: data/glade/preferences.glade.h:15
 msgid "_Desktop default"
 msgstr "바탕환경 기본값(_D)"
 
-#: data/glade/preferences.glade.h:12
+#: data/glade/preferences.glade.h:16
 msgid "_Duration"
 msgstr "시간(_D)"
 
-#: data/glade/preferences.glade.h:13
+#: data/glade/preferences.glade.h:17
+#: data/node-views/rb-node-view-genres.xml.h:1
+#: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "장르(_G)"
 
-#: data/glade/preferences.glade.h:14
+#: data/glade/preferences.glade.h:18
 msgid "_Icons"
 msgstr "아이콘(_I)"
 
-#: data/glade/preferences.glade.h:15
+#: data/glade/preferences.glade.h:19
 msgid "_Last played"
-msgstr "마지막으로 연주된 곡(_L)"
+msgstr "최근에 연주된 시간(_L)"
 
-#: data/glade/preferences.glade.h:16
+#: data/glade/preferences.glade.h:20
 msgid "_Play count"
-msgstr ""
+msgstr "연주 횟수(_P)"
 
-#: data/glade/preferences.glade.h:17
+#: data/glade/preferences.glade.h:21
+#: data/node-views/rb-node-view-iradio-stations.xml.h:5
 #: data/node-views/rb-node-view-songs.xml.h:8
 msgid "_Rating"
-msgstr ""
+msgstr "점수(_R)"
 
-#: data/glade/preferences.glade.h:18
+#: data/glade/preferences.glade.h:22
 msgid "_Text"
 msgstr "글자(_T)"
 
@@ -100,7 +118,8 @@ msgstr "글자(_T)"
 msgid "   "
 msgstr "   "
 
-#: data/glade/song-info.glade.h:2
+#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -114,7 +133,7 @@ msgstr "<span weight=\"bold\">인코딩:</span>"
 
 #: data/glade/song-info.glade.h:5
 msgid "<span weight=\"bold\">Last played: </span>"
-msgstr "<span weight=\"bold\">마지막으로 연주된 곡: </span>"
+msgstr "<span weight=\"bold\">최근에 연주된 시간: </span>"
 
 #: data/glade/song-info.glade.h:6
 msgid "<span weight=\"bold\">Location: </span>"
@@ -126,7 +145,7 @@ msgstr "<span weight=\"bold\">이름:</span>"
 
 #: data/glade/song-info.glade.h:8
 msgid "<span weight=\"bold\">Play count: </span>"
-msgstr ""
+msgstr "<span weight=\"bold\">연주 횟수: </span>"
 
 #: data/glade/song-info.glade.h:9
 msgid "<span weight=\"bold\">Quality:</span>"
@@ -154,7 +173,7 @@ msgstr "<span weight=\"bold\">장르(_G):</span>"
 
 #: data/glade/song-info.glade.h:15
 msgid "<span weight=\"bold\">_Rating:</span>"
-msgstr ""
+msgstr "<span weight=\"bold\">점수(_R):</span>"
 
 #: data/glade/song-info.glade.h:16
 msgid "<span weight=\"bold\">_Title:</span>"
@@ -166,31 +185,76 @@ msgstr "<span weight=\"bold\">트랙 번호:</span>"
 
 #: data/glade/song-info.glade.h:18
 msgid "Basic"
-msgstr ""
+msgstr "기본"
 
 #: data/glade/song-info.glade.h:19
 msgid "Details"
-msgstr ""
+msgstr "자세히"
 
 #: data/glade/song-info.glade.h:20
 msgid "_of"
-msgstr ""
+msgstr "중(_O)"
 
-#: data/glade/toolbar-editor.glade.h:1
-msgid "<b>Cu_rrent Controls</b>"
-msgstr "<b>현재 컨트롤(_R)</b>"
+#: data/glade/station-new.glade.h:2
+msgid "Genre: "
+msgstr "장르: "
 
-#: data/glade/toolbar-editor.glade.h:2
-msgid "<b>_Available Controls</b>"
-msgstr "<b>쓸 수 있는 컨트롤(_A)</b>"
+#: data/glade/station-new.glade.h:3
+msgid "Location: "
+msgstr "위치: "
 
-#: data/glade/toolbar-editor.glade.h:3
-msgid "Toolbar Editor"
-msgstr "도구막대 편집기"
+#: data/glade/station-new.glade.h:4 iradio/rb-new-station-dialog.c:151
+msgid "New Internet Radio Station"
+msgstr "새 인터넷 라디오 방송국"
 
-#: data/glade/toolbar-editor.glade.h:4
-msgid "_Reset to defaults"
-msgstr "기본값으로 되돌림(_R)"
+#: data/glade/station-new.glade.h:5
+msgid "Title: "
+msgstr "제목: "
+
+#: data/glade/station-properties.glade.h:2
+msgid "42"
+msgstr "42"
+
+#: data/glade/station-properties.glade.h:3
+msgid "Play Count: "
+msgstr "연주 횟수: "
+
+#: data/glade/station-properties.glade.h:4
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr "1970, 1월 01, 수 00:00:00 +0900"
+
+#: data/glade/station-properties.glade.h:5
+msgid "_Add: "
+msgstr "더하기(_A):"
+
+#: data/glade/station-properties.glade.h:6
+msgid "_Genre: "
+msgstr "장르(_G): "
+
+#: data/glade/station-properties.glade.h:7
+msgid "_Last Played:"
+msgstr "최근에 연주된 시간(_L):"
+
+#: data/glade/station-properties.glade.h:8
+msgid "_Locations"
+msgstr "위치(_L)"
+
+#: data/glade/station-properties.glade.h:9
+#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:22
+msgid "_Properties"
+msgstr "등록 정보(_P)"
+
+#: data/glade/station-properties.glade.h:10
+msgid "_Rating: "
+msgstr "점수(_R): "
+
+#: data/glade/station-properties.glade.h:11
+msgid "_Title: "
+msgstr "제목(_T): "
+
+#: data/glade/station-properties.glade.h:12
+msgid "blah Properties"
+msgstr "등록 정보"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
 msgid "_Album"
@@ -200,17 +264,35 @@ msgstr "앨범(_A)"
 msgid "A_rtist"
 msgstr "가수(_R)"
 
-#: data/node-views/rb-node-view-songs.xml.h:2
-msgid "Art_ist"
-msgstr "가수(_I)"
-
+#: data/node-views/rb-node-view-iradio-stations.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:3
 msgid "Ge_nre"
 msgstr "장르(_N)"
 
+#: data/node-views/rb-node-view-iradio-stations.xml.h:2
 #: data/node-views/rb-node-view-songs.xml.h:4
 msgid "L_ast Played"
-msgstr "마지막으로 연주된 곡(_A)"
+msgstr "최근에 연주된 시간(_A)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:7
+msgid "_Play Count"
+msgstr "연주 횟수(_P)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+msgid "_Quality"
+msgstr "음질(_Q)"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:9
+#: data/node-views/rb-node-view-playlist.xml.h:2
+msgid "_Title"
+msgstr "제목(_T)"
+
+#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-playlist.xml.h:1
+msgid "Art_ist"
+msgstr "가수(_I)"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
 msgid "Ti_me"
@@ -220,80 +302,155 @@ msgstr "시간(_M)"
 msgid "Tra_ck"
 msgstr "트랙(_C)"
 
-#: data/node-views/rb-node-view-songs.xml.h:7
-msgid "_Play Count"
-msgstr ""
-
-#: data/node-views/rb-node-view-songs.xml.h:9
-msgid "_Title"
-msgstr "제목(_T)"
-
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:599 shell/rb-shell.c:989
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
 msgid "Music Player"
 msgstr "음악 연주기"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr ""
+msgstr "음악 모음을 연주하고 정리합니다"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:1
-msgid "Delete the currently selected music group"
-msgstr "지금 선택한 음악 묶음을 지웁니다"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:2
-#: data/ui/rhythmbox-library-view.xml.in.h:2
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1
+#: data/ui/rhythmbox-group-view.xml.in.h:6
+#: data/ui/rhythmbox-library-view.xml.in.h:4
 msgid "Deselect all songs"
 msgstr "모든 노래를 선택 취소합니다"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:3
-msgid "Rename the currently selected music group"
-msgstr "지금 선택한 노래 묶음의 이름을 바꿉니다"
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:2
+msgid "Eject Audio-CD"
+msgstr "음악 CD 꺼내기"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:3
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3
+#: data/ui/rhythmbox-group-view.xml.in.h:10
+#: data/ui/rhythmbox-library-view.xml.in.h:5
 msgid "Scroll the view to the currently playing song"
-msgstr "지금 연주하는 노래 보기를 스크롤합니다"
+msgstr "지금 연주하는 노래를 목록에 보이게 합니다"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:5
-#: data/ui/rhythmbox-library-view.xml.in.h:4
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4
+#: data/ui/rhythmbox-group-view.xml.in.h:11
+#: data/ui/rhythmbox-library-view.xml.in.h:6
 msgid "Select _All"
 msgstr "모두 선택(_A)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:6
-#: data/ui/rhythmbox-library-view.xml.in.h:5
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5
+#: data/ui/rhythmbox-group-view.xml.in.h:12
+#: data/ui/rhythmbox-library-view.xml.in.h:7
 msgid "Select all songs"
 msgstr "모든 노래를 선택합니다"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:7
-msgid "_Delete Group"
-msgstr "묶음 지우기(_D)"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:8
-#: data/ui/rhythmbox-library-view.xml.in.h:7 data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6
+#: data/ui/rhythmbox-group-view.xml.in.h:17
+#: data/ui/rhythmbox-iradio-view.xml.in.h:5
+#: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:16
 msgid "_Edit"
 msgstr "고치기(_E)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:8
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:7
+msgid "_Eject Audio-CD..."
+msgstr "음악 CD 꺼내기(_E)..."
+
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8
+#: data/ui/rhythmbox-group-view.xml.in.h:18
+#: data/ui/rhythmbox-library-view.xml.in.h:13
 msgid "_Jump to Playing Song"
 msgstr "연주하는 노래로 옮김(_J)"
 
-#: data/ui/rhythmbox-group-view.xml.in.h:10
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9
+#: data/ui/rhythmbox-group-view.xml.in.h:21
+#: data/ui/rhythmbox-iradio-view.xml.in.h:8
+#: data/ui/rhythmbox-library-view.xml.in.h:15
+msgid "_View"
+msgstr "보기(_V)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:1
+#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:2
+msgid "Copy selection"
+msgstr "선택한 것을 복사합니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:3
+msgid "Cu_t"
+msgstr "자르기(_T)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:4
+msgid "Cut selection"
+msgstr "선택한 것을 자릅니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:4
+#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:5
+msgid "Delete selection"
+msgstr "선택한 것을 지웁니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:5
+msgid "Delete the currently selected music group"
+msgstr "지금 선택한 음악 묶음을 지웁니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:7
+msgid "P_roperties"
+msgstr "등록 정보(_R)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:8
+msgid "Paste selection"
+msgstr "선택한 것을 붙입니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:9
+msgid "Rename the currently selected music group"
+msgstr "지금 선택한 노래 묶음의 이름을 바꿉니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:13
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:10
+msgid "Show information on the selected song"
+msgstr "선택한 노래에 대한 정보를 보여줍니다"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:14
+#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:14
+msgid "_Copy"
+msgstr "복사(_C)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:15
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:15
+msgid "_Delete"
+msgstr "지우기(_D)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:16
+msgid "_Delete Group"
+msgstr "묶음 지우기(_D)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:19 data/ui/rhythmbox-ui.xml.in.h:20
+msgid "_Paste"
+msgstr "붙이기(_P)"
+
+#: data/ui/rhythmbox-group-view.xml.in.h:20
 msgid "_Rename Group..."
 msgstr "묶음 이름 바꾸기(_R)..."
 
-#: data/ui/rhythmbox-group-view.xml.in.h:11
-#: data/ui/rhythmbox-library-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:49
-msgid "_View"
-msgstr "보기(_V)"
+#: data/ui/rhythmbox-iradio-view.xml.in.h:1
+msgid "Change the visibility of the genre browser"
+msgstr "장르 창을 보이거나 숨깁니다"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:2
+msgid "Scroll the view to the currently playing station"
+msgstr "지금 연주하는 방송국을 목록에 보이게 합니다"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:3
+msgid "Show information on the selected station"
+msgstr "선택한 방송국에 대한 정보를 보여줍니다"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:4
+#: data/ui/rhythmbox-library-view.xml.in.h:9
+msgid "_Browser"
+msgstr "찾아보기(_B)"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:6
+msgid "_Jump to Playing Station"
+msgstr "연주하는 방송국으로 옮김(_J)"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:7
+msgid "_New Internet Radio Station"
+msgstr "새 인터넷 라디오 방송국(_N)"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:1
 msgid "Change the visibility of the artist and album browser"
 msgstr ""
-
-#: data/ui/rhythmbox-library-view.xml.in.h:6
-msgid "_Browser"
-msgstr "찾아보기(_B)"
 
 #: data/ui/rhythmbox-test-view-2.xml.in.h:1
 msgid "Oh neej!!"
@@ -304,192 +461,108 @@ msgid "_Actions"
 msgstr ""
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
-msgid "Change the visibility of the main window"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:2
-msgid "Change the visibility of the side pane"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:3
-msgid "Change the visibility of the statusbar"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:4
-msgid "Change the visibility of the toolbar"
-msgstr ""
-
-#: data/ui/rhythmbox-ui.xml.in.h:5
-msgid "Choose files or a directory to be added to the library"
-msgstr ""
+msgid "Close the music player"
+msgstr "음악 연주기를 닫습니다"
 
 #: data/ui/rhythmbox-ui.xml.in.h:6
-msgid "Copy selection"
-msgstr "선택한 것을 복사합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:7
-msgid "Create a new music group"
-msgstr "새 음악 묶음을 만듭니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:8
-msgid "Cu_t"
-msgstr "자르기(_T)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Cut selection"
-msgstr "선택한 것을 자릅니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:10
-msgid "Delete selection"
-msgstr "선택한 것을 지웁니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "Display music player help"
 msgstr "음악 연주기의 도움말을 봅니다"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
-msgid "Edit music player preferences"
-msgstr "음악 연주기의 설정을 고칩니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "Edit the toolbar"
-msgstr "도구 막대를 고칩니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "P_revious"
 msgstr "이전(_R)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
-msgid "Paste selection"
-msgstr "선택한 것을 붙입니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:16
-msgid "Pause playing"
-msgstr "연주를 잠시 멈춥니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:17
-msgid "Prefere_nces"
-msgstr "기본 설정(_N)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:18
-msgid "Quit the music player"
-msgstr "음악 연주기를 마칩니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:19
-msgid "Repea_t"
-msgstr "반복(_T)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Show information about the music player"
 msgstr "음악 연주기에 대한 정보를 보여줍니다"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
-msgid "Show information on the selected song"
-msgstr "선택한 노래에 대한 정보를 보여줍니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:22
-msgid "St_atusbar"
-msgstr "상태 막대(_A)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:23
-msgid "Start playing"
-msgstr "연주를 시작합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:24
-msgid "Start playing the next song"
-msgstr "다음 곡을 연주 시작합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:25
-msgid "Start playing the previous song"
-msgstr "이전 곡을 연주 시작합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:26
-msgid "Stop playing"
-msgstr "연주를 멈춥니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:27
-msgid "T_oolbar"
-msgstr "도구 막대(_O)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:28
-msgid "Toggle random playing order"
-msgstr "임의 순수 연주를 토글합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:29
-msgid "Toggle repeat mode"
-msgstr "반복 모드를 토글합니다"
-
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "_About"
-msgstr ""
+msgstr "정보(_A)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
-msgid "_Add to Library..."
-msgstr ""
+#: data/ui/rhythmbox-ui.xml.in.h:12
+msgid "_Close"
+msgstr "닫기(_C)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:13
 msgid "_Contents"
-msgstr ""
+msgstr "내용(_C)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
-msgid "_Copy"
-msgstr "복사(_C)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:34
-msgid "_Delete"
-msgstr "지우기(_D)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "_Help"
 msgstr "도움말(_H)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
-msgid "_Music"
-msgstr "음악(_M)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:38
-msgid "_New Group..."
-msgstr "새 묶음(_N)..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "_Next"
 msgstr "다음(_N)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "_Organize"
-msgstr ""
+msgstr "정리(_O)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
-msgid "_Paste"
-msgstr "붙이기(_P)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:42 shell/rb-shell-player.c:518
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "_Play"
 msgstr "연주(_P)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
-msgid "_Properties"
-msgstr "등록 정보(_P)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:44
-msgid "_Quit"
-msgstr "마침(_Q)"
-
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "_Show Window"
 msgstr "창 보기(_S)"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
-msgid "_Shuffle"
-msgstr ""
+#: iradio/rb-iradio-backend.c:146 library/rb-library.c:450
+msgid "All"
+msgstr "모두"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
-msgid "_Side Pane"
-msgstr "가장자리 창(_S)"
+#: iradio/rb-iradio-backend.c:329
+#, c-format
+msgid "Failed to parse %s\n"
+msgstr "%s(을)를 분석 실패\n"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
-msgid "_Toolbar"
-msgstr "도구 막대(_T)"
+#: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:569
+msgid "(Unknown)"
+msgstr "(알 수 없음)"
+
+#: iradio/rb-iradio-yp-xmlfile.c:224
+#, c-format
+msgid "Failed to open %s: %s"
+msgstr "%s 열기 실패: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:454
+#, c-format
+msgid "Failed to read %s: %s"
+msgstr "%s 읽기 실패: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:460
+#, c-format
+msgid "Failed to parse %s: %s"
+msgstr "%s 분석 실패: %s"
+
+#: iradio/rb-station-properties-dialog.c:187 lib/widgets/rb-song-info.c:475
+#: lib/widgets/rb-song-info.c:489
+#, c-format
+msgid "%s Properties"
+msgstr "%s 등록 정보"
+
+#: iradio/rb-station-properties-dialog.c:382
+#, c-format
+msgid "Properties for %s"
+msgstr "%s 등록 정보"
+
+#: iradio/rb-station-properties-dialog.c:545
+msgid "No locations specified!"
+msgstr "위치가 지정되지 않았습니다!"
+
+#: iradio/rb-station-properties-dialog.c:589
+msgid "No location is selected."
+msgstr "위치가 선택되지 않았습니다."
+
+#: iradio/rb-station-properties-dialog.c:606
+msgid "No location specified."
+msgstr "위치가 지정되지 않았습니다."
+
+#: iradio/rb-station-properties-dialog.c:613
+msgid "Location is not a valid URL."
+msgstr "위치가 올바른 URL이 아닙니다."
 
 #: lib/eel-gconf-extensions.c:66
 #, c-format
@@ -526,63 +599,10 @@ msgstr "THE , DJ "
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: lib/toolbar/gul-tbi-separator.c:131
-msgid "Separator"
-msgstr "구분자"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:249
-#: lib/toolbar/gul-tbi-std-toolitem.c:370
-msgid "Previous"
-msgstr "이전"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:252
-#: lib/toolbar/gul-tbi-std-toolitem.c:375 shell/rb-shell-player.c:517
-msgid "Play"
-msgstr "연주"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:255
-#: lib/toolbar/gul-tbi-std-toolitem.c:380
-msgid "Next"
-msgstr "다음"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:258
-#: lib/toolbar/gul-tbi-std-toolitem.c:385
-msgid "Shuffle"
-msgstr "임의 연주"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:261
-#: lib/toolbar/gul-tbi-std-toolitem.c:390
-msgid "Repeat"
-msgstr "반복 연주"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:264
-#: lib/toolbar/gul-tbi-std-toolitem.c:395
-msgid "Cut"
-msgstr "자르기"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:267
-#: lib/toolbar/gul-tbi-std-toolitem.c:400
-msgid "Copy"
-msgstr "복사"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:270
-#: lib/toolbar/gul-tbi-std-toolitem.c:405
-msgid "Paste"
-msgstr "붙이기"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:273
-#: lib/toolbar/gul-tbi-std-toolitem.c:410
-msgid "Properties"
-msgstr "등록 정보"
-
-#: lib/toolbar/gul-tbi-std-toolitem.c:276
-#: lib/toolbar/gul-tbi-std-toolitem.c:415
-msgid "Add to Library"
+#: lib/rb-windows-ini-file.c:374
+#, c-format
+msgid "Unable to parse %s: %s\n"
 msgstr ""
-
-#: lib/toolbar/gul-tbi-volume.c:145
-msgid "Volume"
-msgstr "소리크기"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:106
 msgid "Pixbuf Object"
@@ -592,114 +612,21 @@ msgstr ""
 msgid "The pixbuf to render."
 msgstr ""
 
-#: lib/widgets/rb-link.c:312
+#: lib/widgets/rb-link.c:326
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
 "%s"
 msgstr ""
 
-#: lib/widgets/rb-node-view.c:547
+#: lib/widgets/rb-node-view.c:566
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr ""
 
-#: lib/widgets/rb-node-view.c:1328
-#, c-format
-msgid "%d songs, %d:%02d:%02d total time, %s"
-msgstr "%d개의 노래, %d:%02d:%02d 전체시간, %s"
-
-#: lib/widgets/rb-player.c:208
-msgid "From "
-msgstr ""
-
-#: lib/widgets/rb-player.c:214
-msgid " by "
-msgstr ""
-
-#: lib/widgets/rb-player.c:253 lib/widgets/rb-player.c:668
-msgid ""
-"Elapsed time of the song. Click on it to display remaining and total time"
-msgstr ""
-
-#: lib/widgets/rb-player.c:392
-msgid "Get information on this album from the web"
-msgstr "앨범에 대한 정보를 웹에서 찾아봅니다"
-
-#: lib/widgets/rb-player.c:403
-msgid "Get information on this artist from the web"
-msgstr "가수에 대한 정보를 웹에서 찾아봅니다"
-
-#: lib/widgets/rb-player.c:413
-msgid "Not Playing"
-msgstr ""
-
-#: lib/widgets/rb-player.c:654
-msgid ""
-"Remaining time of the song. Click on it to display total and elapsed time"
-msgstr ""
-
-#: lib/widgets/rb-player.c:661
-msgid ""
-"Total time of the song. Click on it to display elapsed and remaining time"
-msgstr ""
-
-#: lib/widgets/rb-player.c:694
-#, c-format
-msgid "%d:%02d"
-msgstr "%d:%02d"
-
-#: lib/widgets/rb-player.c:703
-#, c-format
-msgid "- %d:%02d"
-msgstr "- %d:%02d"
-
-#: lib/widgets/rb-player.c:711
-#, c-format
-msgid "Total: %d:%02d"
-msgstr "전체: %d:%02d"
-
-#: lib/widgets/rb-player.c:714
-msgid "Invalid mode"
-msgstr ""
-
 #: lib/widgets/rb-search-entry.c:115
-msgid "_Search:"
-msgstr "찾기(_S):"
-
-#: lib/widgets/rb-sidebar-button.c:249
-msgid "/_Open"
-msgstr "/열기(_O)"
-
-#: lib/widgets/rb-sidebar-button.c:251
-msgid "/_Rename..."
-msgstr "/이름 바꿈(_R)..."
-
-#: lib/widgets/rb-sidebar-button.c:252
-msgid "/_Delete"
-msgstr "/지우기(_D)"
-
-#: lib/widgets/rb-sidebar-button.c:495
-msgid "/Rename..."
-msgstr "/이름 바꿈..."
-
-#: lib/widgets/rb-sidebar-button.c:498
-msgid "/Delete"
-msgstr "/지우기"
-
-#: lib/widgets/rb-sidebar-button.c:661
-#, c-format
-msgid "Please enter a new name for this %s."
-msgstr "%s의 새로운 이름을 넣어주십시오."
-
-#: lib/widgets/rb-sidebar-button.c:662
-msgid "Rename"
-msgstr "이름 바꾸기"
-
-#: lib/widgets/rb-sidebar.c:421
-#, c-format
-msgid "Failed to parse %s as sidebar layout file"
-msgstr ""
+msgid "_Search song:"
+msgstr "노래 찾기(_S):"
 
 #: lib/widgets/rb-song-info.c:197
 msgid "_Next Song"
@@ -709,14 +636,9 @@ msgstr "다음 노래(_N)"
 msgid "Song Properties"
 msgstr "노래 등록 정보"
 
-#: lib/widgets/rb-song-info.c:475 lib/widgets/rb-song-info.c:489
-#, c-format
-msgid "%s Properties"
-msgstr "%s 등록 정보"
-
 #: lib/widgets/rb-song-info.c:776
 msgid "on the desktop"
-msgstr ""
+msgstr "바탕 화면"
 
 #: lib/widgets/rb-song-info.c:980
 #, c-format
@@ -738,178 +660,284 @@ msgstr " (%d 채널)"
 
 #: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
 msgid "Click to mute"
-msgstr ""
+msgstr "누르면 소리가 나지 않습니다"
 
 #: lib/widgets/rb-volume.c:381
 msgid "Click to unmute"
-msgstr ""
+msgstr "누르면 소리가 납니다"
 
-#: library/rb-library.c:448
-msgid "All"
-msgstr "모두"
-
-#: library/rb-node-song.c:314
-#, c-format
-msgid "%.2d of %.2d"
-msgstr "%2$.2d개중 %1$.2d개"
-
-#: library/rb-node-song.c:766
-msgid "%Y-%m-%d %H:%M:%S"
-msgstr "%Y-%m-%d %H:%M:%S"
-
-#: library/rb-node.c:806 library/rb-node.c:812 library/rb-node.c:843
+#: library/rb-node.c:866 library/rb-node.c:872 library/rb-node.c:903
 msgid "Never"
+msgstr "없음"
+
+#: library/rb-node.c:894
+msgid "Today at %-H:%M"
+msgstr "오늘 %-H:%M"
+
+#: library/rb-node.c:896
+msgid "Yesterday at %-H:%M"
+msgstr "어제 %-H:%M"
+
+#: library/rb-node.c:898
+msgid "%A, %B %-d %Y at %-H:%M"
+msgstr "%Y %B %-d %A %-H:%M"
+
+#: library/rb-node.c:1642
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: shell/main.c:62
+msgid ""
+"Well well well...\n"
+"\n"
+"Gentoo eh? You'll run into problems. We know. Don't bug us.\n"
+"\n"
+"Have a nice day."
 msgstr ""
+"어라?...\n"
+"\n"
+"문제가 생겼나요? 젠투를 쓰시는군요. 버그인거 알고 있으니 그냥 관두세요.\n"
+"\n"
+"좋은 하루 되세요."
 
-#: library/rb-node.c:834
-msgid "Today at %-H:%M:%S"
-msgstr "오늘 %-H:%M:%S"
-
-#: library/rb-node.c:836
-msgid "Yesterday at %-H:%M:%S"
-msgstr "어제 %-H:%M:%S"
-
-#: library/rb-node.c:838
-msgid "%A, %B %-d %Y at %-H:%M:%S"
-msgstr "%Y %B %-d %A %-H:%M:%S"
-
-#: shell/main.c:59
+#: shell/main.c:78
 msgid "Enable debugging code"
 msgstr "디버깅 코드 쓰기"
 
-#: shell/main.c:60
-msgid "Do not register the shell"
+#: shell/main.c:79
+msgid "Do not register with bonobo activation"
 msgstr ""
 
-#: shell/main.c:61
+#: shell/main.c:80
 msgid "Quit Rhythmbox"
 msgstr "리듬박스 마침"
 
-#: shell/main.c:62
+#: shell/main.c:81
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia 옵션:"
 
-#: shell/main.c:70
+#: shell/main.c:89
 msgid "Rhythmbox"
 msgstr "리듬박스"
 
-#: shell/main.c:158
-#, c-format
-msgid ""
-"Failed to activate the shell:\n"
-"%s"
+#: shell/main.c:208
+msgid "Failed to activate Rhythmbox"
 msgstr ""
 
-#: shell/rb-shell-player.c:233
-#, c-format
-msgid ""
-"Failed to create the mixer, error was:\n"
-"%s"
-msgstr ""
-
-#: shell/rb-shell-player.c:512
-msgid "Pause"
-msgstr "잠시 멈춤"
-
-#: shell/rb-shell-player.c:513
-msgid "_Pause"
-msgstr "잠시 멈춤(_P)"
-
-#: shell/rb-shell-player.c:522
-msgid "Stop"
-msgstr "멈춤"
-
-#: shell/rb-shell-player.c:523
-msgid "_Stop"
-msgstr "멈춤(_S)"
-
-#: shell/rb-shell-preferences.c:158
+#: shell/rb-shell-preferences.c:173
 msgid "Music Player Preferences"
 msgstr "음악 연주기 기본 설정"
 
-#: shell/rb-shell.c:586
+#: shell/rb-player.c:304
+msgid " by "
+msgstr " 가수: "
+
+#: shell/rb-player.c:319
+msgid "Drag to go to a particular moment in the song"
+msgstr ""
+
+#: shell/rb-player.c:364
+msgid "Play the previous song"
+msgstr "이전 곡을 연주 합니다"
+
+#: shell/rb-player.c:371
+msgid "Start playback"
+msgstr "연주를 시작합니다"
+
+#: shell/rb-player.c:378
+msgid "Pause playback"
+msgstr "연주를 잠시 멈춥니다"
+
+#: shell/rb-player.c:385
+msgid "Play the next song"
+msgstr "다음 곡을 연주 시작합니다"
+
+#: shell/rb-player.c:393
+msgid "Repeat the play list"
+msgstr "연주 목록을 반복합니다"
+
+#: shell/rb-player.c:400
+msgid "Shuffle the play list"
+msgstr "연주 목록에서 임의로 연주합니다"
+
+#. 'Empty playlist' label
+#: shell/rb-player.c:406
+msgid ""
+"Not playing\n"
+"\n"
+"To play, add music to the play list"
+msgstr ""
+"연주하지 않음\n"
+"\n"
+"연주를 시작하려면 음악을 연주목록에 더하십시오"
+
+#: shell/rb-player.c:411
+msgid "Not playing"
+msgstr "연주하지 않음"
+
+#: shell/rb-player.c:436
 #, c-format
 msgid ""
-"Failed to register the shell: %s\n"
+"Failed to create mixer, exiting. Error was:\n"
+"%s"
+msgstr ""
+"믹서를 만들 수 없습니다, 나갑니다. 오류:\n"
+"%s"
+
+#: shell/rb-player.c:739
+msgid "Get information about this album from the web"
+msgstr "앨범에 대한 정보를 웹에서 찾아봅니다"
+
+#: shell/rb-player.c:745
+msgid "Get information about this artist from the web"
+msgstr "가수에 대한 정보를 웹에서 찾아봅니다"
+
+#: shell/rb-player.c:752
+#, c-format
+msgid "Track %d from "
+msgstr "%d 번 트랙 앨범:"
+
+#: shell/rb-player.c:756
+msgid "From "
+msgstr "앨범: "
+
+#: shell/rb-player.c:761
+#, c-format
+msgid "%s - %s"
+msgstr "%s - %s"
+
+#: shell/rb-player.c:763
+#, c-format
+msgid "%s - Unknown"
+msgstr "%s - 알 수 없음"
+
+#: shell/rb-player.c:788
+#, c-format
+msgid ""
+"Failed to create stream, error was:\n"
+"%s"
+msgstr ""
+"스트림을 만들 수 없습니다. 오류:\n"
+"%s"
+
+#: shell/rb-player.c:872
+#, c-format
+msgid "Failed to parse %s as playlist"
+msgstr ""
+
+#: shell/rb-player.c:1105
+#, c-format
+msgid "%ld:%.2ld"
+msgstr "%ld:%.2ld"
+
+#: shell/rb-player.c:1109
+#, c-format
+msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
+msgstr "전체 %ld:%.2ld (%ld:%.2ld 남음)"
+
+#. this is not critical, but worth a warning nevertheless
+#: shell/rb.c:285
+msgid ""
+"Failed to register Rhythmbox with bonobo activation:\n"
 "This probably means that you installed RB in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
+"bonobo activation에 리듬박스를 등록 실패하였습니다:\n"
+"리듬박스의 설치위치가 bonobo-activation의 \n"
+"설치위치가 달라서 그런 것입니다; 동작은 하지만\n"
+"IPC는 안될것입니다.\n"
 
-#: shell/rb-shell.c:993 shell/rb-shell.c:2008
-msgid "Not playing"
-msgstr "연주하지 않음"
-
-#: shell/rb-shell.c:1006
-#, c-format
-msgid "%s (Paused)"
-msgstr "%s (잠시 멈춤)"
-
-#: shell/rb-shell.c:1011
-#, c-format
-msgid ""
-"%s\n"
-"Paused"
-msgstr ""
-"%s\n"
-"잠시 멈춤"
-
-#: shell/rb-shell.c:1156
+#: shell/rb.c:491
 msgid "translator_credits"
 msgstr "차영호 <ganadist@mizi.com>, 2002"
 
-#: shell/rb-shell.c:1167
-msgid "Copyright 2002 Jorn Baayen"
-msgstr "Copyright 2002 Jorn Baayen"
+#: shell/rb.c:502
+msgid "Copyright  2002 Jorn Baayen. All rights reserved."
+msgstr "Copyright  2002 Jorn Baayen. All rights reserved."
 
-#: shell/rb-shell.c:1168
+#: shell/rb.c:503
 msgid "Music management and playback software for GNOME."
 msgstr "그놈용 음악 관리및 연주 소프트웨어"
 
-#: shell/rb-shell.c:1370
-msgid "Choose Files or Directory"
-msgstr "파일이나 디렉토리를 선택하십시오"
+#: views/rb-audiocd-view.c:268
+msgid "music audiocd"
+msgstr "음악 CD"
 
-#: shell/rb-shell.c:1857
-msgid "Create"
-msgstr "만들기"
+#: views/rb-audiocd-view.c:271
+msgid "Audio-CD"
+msgstr "음악 CD"
 
-#: shell/rb-shell.c:1881
-msgid "Please enter a name for the new music group."
-msgstr "새로운 음악 묶음의 이름을 넣으십시오."
-
-#: shell/rb-shell.c:1891
-msgid "Untitled"
-msgstr "제목 없음"
-
-#: shell/rb-shell.c:1895
-msgid "Add the _selected songs to the new group"
-msgstr "선택한 노래를 새 묶음에 더함(_S)"
-
-#: views/rb-group-view.c:311
-msgid "music group"
-msgstr "음악 묶음"
-
-#: views/rb-group-view.c:314
-msgid "Unnamed"
-msgstr "이름 없음"
-
-#: views/rb-group-view.c:786 views/rb-library-view.c:862
+#: views/rb-audiocd-view.c:671 views/rb-iradio-view.c:764
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
 "%s"
 msgstr ""
+"%s의 스트림 만들기 실패, 오류:\n"
+"%s"
 
-#: views/rb-group-view.c:1112
+#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
+#: views/rb-iradio-view.c:782
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#: views/rb-audiocd-view.c:1075
 #, c-format
-msgid "Failed to parse %s as group file"
-msgstr ""
+msgid "Failed to parse %s as disc info file"
+msgstr "%s(을)를 디스크 정보 파일로 분석 실패"
 
-#: views/rb-library-view.c:321
-msgid "library"
-msgstr ""
+#: views/rb-audiocd-view.c:1197
+#, c-format
+msgid "%d songs, %d:%02d:%02d total time"
+msgstr "%d개의 노래, %d:%02d:%02d 전체시간"
 
-#: views/rb-library-view.c:324 views/rb-library-view.c:1220
-msgid "Library"
+#: views/rb-iradio-view.c:305
+msgid "iradio"
+msgstr "i라디오"
+
+#: views/rb-iradio-view.c:308 views/rb-iradio-view.c:1147
+msgid ""
+"Internet\n"
+"Radio"
 msgstr ""
+"인터넷\n"
+"라디오"
+
+#: views/rb-iradio-view.c:980
+#, c-format
+msgid "%d total stations in %d distinct genres"
+msgstr "%d개의 방송국, %d개의 장르"
+
+#: views/rb-library-view.c:349
+msgid "_Play Album"
+msgstr "앨범 연주(_P)"
+
+#: views/rb-library-view.c:352
+msgid "Start playing this album"
+msgstr "앨범 연주를 시작합니다"
+
+#: views/rb-library-view.c:357
+msgid "Play Album _Later"
+msgstr "나중에 앨범 연주(_L)"
+
+#: views/rb-library-view.c:360
+msgid "Enqueue this album for later playback"
+msgstr "이 앨범을 다음 연주때 시작합니다"
+
+#: views/rb-library-view.c:366
+msgid "Play Song Later"
+msgstr "나중에 노래 연주"
+
+#: views/rb-library-view.c:369
+msgid "Enqueue the selected song(s) for later playback"
+msgstr "선택한 곡을 다음 연주때 시작합니다"
+
+#: views/rb-library-view.c:374
+msgid "Play _Song"
+msgstr "노래 연주(_S)"
+
+#: views/rb-library-view.c:377
+msgid "Start playing the selected song(s)"
+msgstr "선택한 곡을 연주 시작합니다"
+
