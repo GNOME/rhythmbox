@@ -97,34 +97,6 @@ main (int argc, char **argv)
 			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd"))
 		sound_events_borked = TRUE;
 	
-
-	/* workaround for non utf8 LC_COLLATE */
-	old_collate = g_strdup_printf ("LC_COLLATE=%s",
-				       g_getenv ("LC_COLLATE"));
-	if (old_collate == NULL || strstr (old_collate, "UTF-8") == NULL)
-	{
-		char *lang = NULL, *new_collate;
-		const char *env;
-
-		env = g_getenv ("LANG");
-		if (env == NULL)
-		{
-			env = "C";
-		}
-
-		if (strlen (env) >=5)
-			lang = g_strndup (g_getenv ("LANG"), 5);
-		else
-			lang = g_strdup ("en_US");
-
-		new_collate = g_strdup_printf ("LC_COLLATE=%s.UTF-8",
-					       lang);
-		putenv (new_collate);
-
-		g_free (lang);
-		g_free (new_collate);
-	}
-	
 	gdk_threads_init ();
 
 	CORBA_exception_init (&ev);
