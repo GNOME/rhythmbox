@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS = 1.7
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
 
-SUBDIRS = lib monkey-media rhythmdb widgets sources iradio corba shell data po component help
+SUBDIRS = lib monkey-media rhythmdb widgets sources iradio corba shell data po component help tests
 
 EXTRA_DIST = 			\
 	autogen.sh		\
