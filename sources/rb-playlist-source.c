@@ -558,7 +558,9 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 {
 	RhythmDBEntry *entry;
 
-	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) == NULL);
+	if (g_hash_table_lookup (source->priv->entries, location))
+		return;
+
 	g_hash_table_insert (source->priv->entries,
 			     g_strdup (location), GINT_TO_POINTER (1));
 	rhythmdb_read_lock (source->priv->db);
