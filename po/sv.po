@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-08-14 00:39+0200\n"
-"PO-Revision-Date: 2002-08-14 00:39+0200\n"
+"POT-Creation-Date: 2002-08-19 02:14+0200\n"
+"PO-Revision-Date: 2002-08-19 02:15+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "Filstorlek: "
 msgid "Location: "
 msgstr "Plats: "
 
-#: data/glade/song-info.glade.h:17 lib/widgets/rb-song-info.c:396
+#: data/glade/song-info.glade.h:17 lib/widgets/rb-song-info.c:406
 msgid "of"
 msgstr "av"
 
@@ -129,7 +129,7 @@ msgstr "Titel"
 msgid "Track"
 msgstr "Spår"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:356 shell/rb-shell.c:680
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:359 shell/rb-shell.c:684
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -272,7 +272,7 @@ msgstr "Klistra in markering"
 msgid "Pause playing"
 msgstr "Gör paus i uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:13 shell/rb-shell-player.c:400
+#: data/ui/rhythmbox-ui.xml.in.h:13 shell/rb-shell-player.c:418
 msgid "Play"
 msgstr "Spela"
 
@@ -340,7 +340,7 @@ msgstr "_Nästa låt"
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32 shell/rb-shell-player.c:401
+#: data/ui/rhythmbox-ui.xml.in.h:32 shell/rb-shell-player.c:419
 msgid "_Play"
 msgstr "_Spela"
 
@@ -380,6 +380,17 @@ msgstr "%s finns, flytta undan den."
 msgid "Failed to create directory %s."
 msgstr "Misslyckades med att skapa katalogen %s."
 
+#. comma separated list of prefixes that are to
+#. * be appended as suffix
+#: lib/rb-string-helpers.c:33
+msgid "THE ,DJ "
+msgstr " "
+
+#: lib/rb-string-helpers.c:48
+#, c-format
+msgid "%s, %s"
+msgstr "%s, %s"
+
 #: lib/widgets/eggtreemodelfilter.c:271
 msgid "The child model"
 msgstr "Barnmodellen"
@@ -413,12 +424,12 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:482
+#: lib/widgets/rb-node-view.c:530
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:1026
+#: lib/widgets/rb-node-view.c:1074
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
@@ -431,7 +442,7 @@ msgstr "Från "
 msgid " by "
 msgstr " av "
 
-#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:537
+#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:550
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
@@ -446,40 +457,45 @@ msgstr "Hämta information om detta album från webben"
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: lib/widgets/rb-player.c:388
+#: lib/widgets/rb-player.c:396
+#, c-format
+msgid "Playing from the %s"
+msgstr "Spelar från %s"
+
+#: lib/widgets/rb-player.c:401
 msgid "Not Playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:523
+#: lib/widgets/rb-player.c:536
 msgid ""
 "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr ""
 "Återstående speltid för låten. Klicka på den för att visa total och förlupen "
 "tid"
 
-#: lib/widgets/rb-player.c:530
+#: lib/widgets/rb-player.c:543
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
 "Total speltid för låten. Klicka på den för att visa förlupen och återstående "
 "tid"
 
-#: lib/widgets/rb-player.c:563
+#: lib/widgets/rb-player.c:576
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:572
+#: lib/widgets/rb-player.c:585
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:580
+#: lib/widgets/rb-player.c:593
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Totalt: %d:%02d"
 
-#: lib/widgets/rb-player.c:583
+#: lib/widgets/rb-player.c:596
 msgid "Invalid mode"
 msgstr "Ogiltigt läge"
 
@@ -505,44 +521,33 @@ msgstr "Byt namn på %s"
 msgid "Enter a new name for this %s:"
 msgstr "Ange ett nytt namn för denna %s:"
 
-#: lib/widgets/rb-sidebar.c:393
+#: lib/widgets/rb-sidebar.c:401
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Misslyckades med att tolka %s som sidopanellayoutfil"
 
-#: lib/widgets/rb-song-info.c:191
+#: lib/widgets/rb-song-info.c:202
 msgid "Song Information"
 msgstr "Låtinformation"
 
-#: lib/widgets/rb-song-info.c:430
+#: lib/widgets/rb-song-info.c:440
 msgid "Unknown"
 msgstr "Okänd"
 
-#: lib/widgets/rb-song-info.c:454
+#: lib/widgets/rb-song-info.c:464
 #, c-format
 msgid "%d kbps"
 msgstr "%d kb/s"
 
-#: lib/widgets/rb-song-info.c:474
+#: lib/widgets/rb-song-info.c:484
 #, c-format
 msgid "%d Mono"
 msgstr "%d mono"
 
-#: lib/widgets/rb-song-info.c:477
+#: lib/widgets/rb-song-info.c:487
 #, c-format
 msgid "%d Stereo"
 msgstr "%d stereo"
-
-#. comma separated list of prefixes that are to
-#. * be appended as suffix
-#: lib/widgets/rb-tree-model-node.c:650
-msgid "THE ,DJ "
-msgstr " "
-
-#: lib/widgets/rb-tree-model-node.c:663
-#, c-format
-msgid "%s, %s"
-msgstr "%s, %s"
 
 #: lib/widgets/rb-volume.c:177
 msgid "Mixer channel"
@@ -608,7 +613,7 @@ msgstr ""
 "Misslyckades med att aktivera skalet:\n"
 "%s"
 
-#: shell/rb-shell-player.c:204
+#: shell/rb-shell-player.c:214
 #, c-format
 msgid ""
 "Failed to create the mixer, error was:\n"
@@ -617,19 +622,19 @@ msgstr ""
 "Misslyckades med att skapa mixern, felet var:\n"
 "%s"
 
-#: shell/rb-shell-player.c:395
+#: shell/rb-shell-player.c:413
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:396
+#: shell/rb-shell-player.c:414
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:405
+#: shell/rb-shell-player.c:423
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:406
+#: shell/rb-shell-player.c:424
 msgid "_Stop"
 msgstr "_Stopp"
 
@@ -641,54 +646,50 @@ msgstr "Inställningar"
 msgid "Choose a folder"
 msgstr "Välj en mapp"
 
-#: shell/rb-shell.c:346
+#: shell/rb-shell.c:349
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Misslyckades med att registrera skalet: %s\n"
 
-#: shell/rb-shell.c:754
+#: shell/rb-shell.c:758
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:765
+#: shell/rb-shell.c:769
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:766
+#: shell/rb-shell.c:770
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:811
+#: shell/rb-shell.c:815
 msgid "Choose files or a directory to add"
 msgstr "Välj filer eller en katalog att lägga till"
 
-#: shell/rb-shell.c:849
+#: shell/rb-shell.c:853
 msgid "Enter a name"
 msgstr "Ange ett namn"
 
-#: shell/rb-shell.c:850
+#: shell/rb-shell.c:854
 msgid "Enter a name for the new music group:"
 msgstr "Ange ett namn för den nya musikgruppen:"
 
-#: shell/rb-shell.c:851
+#: shell/rb-shell.c:855
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:298
+#: views/rb-group-view.c:307
 msgid "music group"
 msgstr "musikgrupp"
 
-#: views/rb-group-view.c:301
+#: views/rb-group-view.c:310
 msgid "Unnamed"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:353
-msgid "Drop songs here to add them in this group"
-msgstr "Släpp låtar här för att lägga till dem i denna grupp"
-
-#: views/rb-group-view.c:798 views/rb-library-view.c:773
+#: views/rb-group-view.c:807 views/rb-library-view.c:776
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -697,22 +698,24 @@ msgstr ""
 "Misslyckades med att skapa ström för %s, felet var:\n"
 "%s"
 
-#: views/rb-group-view.c:1050
+#: views/rb-group-view.c:1061
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
 
-#: views/rb-library-view.c:297
+#: views/rb-library-view.c:303
 msgid "library"
 msgstr "bibliotek"
 
-#: views/rb-library-view.c:300
+#: views/rb-library-view.c:306 views/rb-library-view.c:1078
 msgid "Library"
 msgstr "Bibliotek"
 
-#: views/rb-library-view.c:313
-msgid "Drop files here to add them to the library"
-msgstr "Släpp filer här för att lägga till dem i biblioteket"
+#~ msgid "Drop songs here to add them in this group"
+#~ msgstr "Släpp låtar här för att lägga till dem i denna grupp"
+
+#~ msgid "Drop files here to add them to the library"
+#~ msgstr "Släpp filer här för att lägga till dem i biblioteket"
 
 #~ msgid "Choose files or a folder to be added to the library"
 #~ msgstr "Välj filer eller en mapp att lägga till i biblioteket"
