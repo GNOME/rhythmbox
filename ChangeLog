@@ -1,3 +1,8 @@
+2003-08-24  Colin Walters  <walters@verbum.org>
+
+	* shell/main.c (main): Only lose if GNOME sound events are
+	enabled AND esdsink is enabled.  This ignores xine for now.
+
 2003-08-22  Colin Walters  <walters@verbum.org>
 
 	* HACKING: Update.

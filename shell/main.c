@@ -33,6 +33,10 @@
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#ifdef HAVE_GSTREAMER
+#include <gst/gst.h>
+#include <gst/gconf/gconf.h>
+#endif
 
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -91,10 +95,13 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
+#ifdef HAVE_GSTREAMER	
 	/* rb currently does not work with esd + gnome event sounds enabled */
 	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds")
-			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd"))
+			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd")
+	    && strstr (gst_gconf_get_string ("default/audiosink"), "esdsink"))
 		sound_events_borked = TRUE;
+#endif
 	
 	gdk_threads_init ();
 
@@ -160,7 +167,7 @@ sound_error_dialog (gpointer unused)
 
 	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_ERROR, GTK_BUTTONS_OK,
-					 _("Rhythmbox does not currently work if GNOME sound events are enabled."));
+					 _("Rhythmbox does not currently work if GNOME sound events are are enabled and esdsink is in use."));
 	gtk_dialog_run (GTK_DIALOG (dialog));
 
 	bonobo_main_quit ();
