@@ -219,7 +219,7 @@ rb_handle_cmdline (char **argv, int argc,
 		tmp = rb_uri_resolve_relative (argv[i]);
 			
 		if (rb_uri_exists (tmp) == TRUE)
-			GNOME_RhythmboxShell_addToLibrary (shell, tmp, &ev);
+			GNOME_RhythmboxShell_handleFile (shell, tmp, &ev);
 
 		g_free (tmp);
 	}
