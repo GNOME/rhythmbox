@@ -1,14 +1,14 @@
 # Swedish messages for rhythmbox.
-# Copyright (C) 2002 Free Software Foundation, Inc.
-# Christian Rose <menthos@menthos.com>, 2002.
+# Copyright (C) 2002, 2003 Free Software Foundation, Inc.
+# Christian Rose <menthos@menthos.com>, 2002, 2003.
 #
 # $Id$
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-12-18 12:24+0100\n"
-"PO-Revision-Date: 2002-12-18 12:24+0100\n"
+"POT-Creation-Date: 2003-01-07 20:22+0100\n"
+"PO-Revision-Date: 2003-01-07 20:22+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -303,7 +303,7 @@ msgstr "Ti_d"
 msgid "Tra_ck"
 msgstr "Sp_år"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:564
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -519,7 +519,7 @@ msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
 #: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
-#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:559
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:569
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
@@ -613,7 +613,7 @@ msgstr "Pixbuf-objekt"
 msgid "The pixbuf to render."
 msgstr "Pixbuf att rendera."
 
-#: lib/widgets/rb-link.c:342
+#: lib/widgets/rb-link.c:326
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -622,7 +622,7 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:557
+#: lib/widgets/rb-node-view.c:566
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
@@ -669,23 +669,23 @@ msgstr "Klicka för att tysta"
 msgid "Click to unmute"
 msgstr "Klicka för att avtysta"
 
-#: library/rb-node.c:864 library/rb-node.c:870 library/rb-node.c:901
+#: library/rb-node.c:866 library/rb-node.c:872 library/rb-node.c:903
 msgid "Never"
 msgstr "Aldrig"
 
-#: library/rb-node.c:892
+#: library/rb-node.c:894
 msgid "Today at %-H:%M"
 msgstr "Idag klockan %H.%M"
 
-#: library/rb-node.c:894
+#: library/rb-node.c:896
 msgid "Yesterday at %-H:%M"
 msgstr "Igår klockan %H.%M"
 
-#: library/rb-node.c:896
+#: library/rb-node.c:898
 msgid "%A, %B %-d %Y at %-H:%M"
 msgstr "%A %-d %B %Y klockan %H.%M"
 
-#: library/rb-node.c:1640
+#: library/rb-node.c:1642
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -731,26 +731,54 @@ msgstr "Misslyckades med att aktivera Rhythmbox"
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-player.c:285
+#: shell/rb-player.c:304
 msgid " by "
 msgstr " av "
 
+#: shell/rb-player.c:319
+msgid "Drag to go to a particular moment in the song"
+msgstr "Dra för att gå till ett visst ställe i låten"
+
+#: shell/rb-player.c:364
+msgid "Play the previous song"
+msgstr "Spela föregående låt"
+
+#: shell/rb-player.c:371
+msgid "Start playback"
+msgstr "Starta uppspelning"
+
+#: shell/rb-player.c:378
+msgid "Pause playback"
+msgstr "Gör paus i uppspelning"
+
+#: shell/rb-player.c:385
+msgid "Play the next song"
+msgstr "Spela nästa låt"
+
+#: shell/rb-player.c:393
+msgid "Repeat the play list"
+msgstr "Upprepa spellistan"
+
+#: shell/rb-player.c:400
+msgid "Shuffle the play list"
+msgstr "Blanda spellistan"
+
 #. 'Empty playlist' label
-#: shell/rb-player.c:365
+#: shell/rb-player.c:406
 msgid ""
 "Not playing\n"
 "\n"
-"To play, add music to the playlist"
+"To play, add music to the play list"
 msgstr ""
 "Spelar inte\n"
 "\n"
 "Lägg till musik i spellistan för att spela"
 
-#: shell/rb-player.c:370
+#: shell/rb-player.c:411
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: shell/rb-player.c:395
+#: shell/rb-player.c:436
 #, c-format
 msgid ""
 "Failed to create mixer, exiting. Error was:\n"
@@ -759,39 +787,34 @@ msgstr ""
 "Misslyckades med att skapa mixern, avslutar. Felet var:\n"
 "%s"
 
-#: shell/rb-player.c:686
+#: shell/rb-player.c:739
 msgid "Get information about this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: shell/rb-player.c:692
+#: shell/rb-player.c:745
 msgid "Get information about this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: shell/rb-player.c:699
+#: shell/rb-player.c:752
 #, c-format
 msgid "Track %d from "
 msgstr "Spår %d från "
 
-#: shell/rb-player.c:703
+#: shell/rb-player.c:756
 msgid "From "
 msgstr "Från "
 
-#: shell/rb-player.c:708
+#: shell/rb-player.c:761
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:710
+#: shell/rb-player.c:763
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Okänd"
 
-#: shell/rb-player.c:712
-#, c-format
-msgid "%s"
-msgstr "%s"
-
-#: shell/rb-player.c:735
+#: shell/rb-player.c:788
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
@@ -800,12 +823,17 @@ msgstr ""
 "Misslyckades med att skapa ström, felet var:\n"
 "%s"
 
-#: shell/rb-player.c:968
+#: shell/rb-player.c:872
+#, c-format
+msgid "Failed to parse %s as playlist"
+msgstr "Misslyckades med att tolka %s som spellista"
+
+#: shell/rb-player.c:1105
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld.%.2ld"
 
-#: shell/rb-player.c:972
+#: shell/rb-player.c:1109
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Totalt %ld.%.2ld (%ld.%.2ld återstår)"
@@ -845,8 +873,7 @@ msgstr "musik-ljud-cd"
 msgid "Audio-CD"
 msgstr "Ljud-cd"
 
-#: views/rb-audiocd-view.c:671 views/rb-group-view.c:830
-#: views/rb-iradio-view.c:764
+#: views/rb-audiocd-view.c:671 views/rb-iradio-view.c:764
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -870,19 +897,6 @@ msgstr "Misslyckades med att tolka %s som diskinformationsfil"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d låtar, %d.%02d.%02d total tid"
 
-#: views/rb-group-view.c:343
-msgid "music group"
-msgstr "musikgrupp"
-
-#: views/rb-group-view.c:346
-msgid "Unnamed"
-msgstr "Namnlös"
-
-#: views/rb-group-view.c:1156
-#, c-format
-msgid "Failed to parse %s as group file"
-msgstr "Misslyckades med att tolka %s som gruppfil"
-
 #: views/rb-iradio-view.c:305
 msgid "iradio"
 msgstr "iradio"
@@ -900,20 +914,49 @@ msgstr ""
 msgid "%d total stations in %d distinct genres"
 msgstr "totalt %d kanaler inom %d unika genrer"
 
-#~ msgid "Pause playing"
-#~ msgstr "Gör paus i uppspelning"
+#: views/rb-library-view.c:349
+msgid "_Play Album"
+msgstr "_Spela album"
+
+#: views/rb-library-view.c:352
+msgid "Start playing this album"
+msgstr "Starta uppspelning av detta album"
+
+#: views/rb-library-view.c:357
+msgid "Play Album _Later"
+msgstr "Spela album s_enare"
+
+#: views/rb-library-view.c:360
+msgid "Enqueue this album for later playback"
+msgstr "Kölägg detta album för senare uppspelning"
+
+#: views/rb-library-view.c:366
+msgid "Play Song Later"
+msgstr "Spela låt senare"
+
+#: views/rb-library-view.c:369
+msgid "Enqueue the selected song(s) for later playback"
+msgstr "Kölägg de markerade låtarna för senare uppspelning"
+
+#: views/rb-library-view.c:374
+msgid "Play _Song"
+msgstr "Spela _låt"
+
+#: views/rb-library-view.c:377
+msgid "Start playing the selected song(s)"
+msgstr "Starta uppspelning av de markerade låtarna"
+
+#~ msgid "%s"
+#~ msgstr "%s"
+
+#~ msgid "music group"
+#~ msgstr "musikgrupp"
+
+#~ msgid "Unnamed"
+#~ msgstr "Namnlös"
 
 #~ msgid "Repea_t"
 #~ msgstr "_Upprepa"
-
-#~ msgid "Start playing"
-#~ msgstr "Starta uppspelning"
-
-#~ msgid "Start playing the next song"
-#~ msgstr "Starta uppspelning av nästa låt"
-
-#~ msgid "Start playing the previous song"
-#~ msgstr "Starta uppspelning av föregående låt"
 
 #~ msgid "Toggle random playing order"
 #~ msgstr "Slå på/av slumpvis spelordning"
@@ -926,9 +969,6 @@ msgstr "totalt %d kanaler inom %d unika genrer"
 
 #~ msgid "_Shuffle"
 #~ msgstr "_Blanda"
-
-#~ msgid "Empty playlist"
-#~ msgstr "Tom spellista"
 
 #~ msgid "Copyright (C) 2002 Jorn Baayen. All rights reserved."
 #~ msgstr "Copyright 2002 Jorn Baayen. Alla rättigheter förehållna."
