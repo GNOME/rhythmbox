@@ -108,8 +108,9 @@ static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBEntryView *view);
-static gboolean rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry *entry,
-						GtkTreeIter *iter);
+static void rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry *entry,
+					    gboolean *realized, gboolean *visible,
+					    GtkTreeIter *iter);
 static void rb_entry_view_scroll_to_iter (RBEntryView *view,
 					  GtkTreeIter *iter);
 
@@ -537,6 +538,7 @@ rb_entry_view_set_property (GObject *object,
 		GtkTreeIter iter;
 		GtkTreePath *path;
 		RhythmDBEntry *entry;
+		gboolean realized, visible;
 
 		entry = g_value_get_pointer (value);
 		
@@ -569,9 +571,12 @@ rb_entry_view_set_property (GObject *object,
 		}
 
 		if (view->priv->playing_entry
-		    && view->priv->playing_entry_in_view
-		    && !rb_entry_view_entry_is_visible (view, view->priv->playing_entry, &iter))
-			rb_entry_view_scroll_to_iter (view, &iter);
+		    && view->priv->playing_entry_in_view) {
+		    rb_entry_view_entry_is_visible (view, view->priv->playing_entry,
+						    &realized, &visible, &iter);
+		    if (realized && !visible)
+			    rb_entry_view_scroll_to_iter (view, &iter);
+		}
 	}
 	break;
 	case PROP_IS_DRAG_SOURCE:
@@ -1844,11 +1849,14 @@ rb_entry_view_get_entry_visible (RBEntryView *view,
 				 RhythmDBEntry *entry)
 {
 	GtkTreeIter unused;
+	gboolean realized, visible;
 
 	if (view->priv->playing_model != view->priv->model)
 		return FALSE;
 
-	return rb_entry_view_entry_is_visible (view, entry, &unused);
+	rb_entry_view_entry_is_visible (view, entry, &realized, &visible,
+					&unused);
+	return realized && visible;
 }
 
 gboolean
@@ -1861,22 +1869,29 @@ rb_entry_view_get_entry_contained (RBEntryView *view,
 						   entry, &unused);
 }
 
-static gboolean
+static void
 rb_entry_view_entry_is_visible (RBEntryView *view,
 				RhythmDBEntry *entry,
+				gboolean *realized,
+				gboolean *visible,
 				GtkTreeIter *iter)
 {
 	GtkTreePath *path;
 	GdkRectangle rect;
 
-	g_return_val_if_fail (entry != NULL, FALSE);
+	*realized = FALSE;
+	*visible = FALSE;
+
+	g_return_if_fail (entry != NULL);
 
 	if (!GTK_WIDGET_REALIZED (view))
-		return FALSE;
+		return;
+
+	*realized = TRUE;
 
 	if (!rhythmdb_query_model_entry_to_iter (view->priv->model,
 						 entry, iter))
-		return FALSE;
+		return;
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
 	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (view->priv->treeview),
@@ -1886,7 +1901,7 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 
 	gtk_tree_path_free (path);
 
-	return rect.y != 0 && rect.height != 0;
+	*visible = (rect.y != 0 && rect.height != 0);
 }
 
 static gboolean
