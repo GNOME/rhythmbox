@@ -67,6 +67,7 @@ static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
+static gboolean impl_can_cut (RBSource *asource);
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
@@ -170,9 +171,9 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_rename = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
-	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_cut = impl_can_cut;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_can_delete = impl_can_cut;
 	source_class->impl_cut = impl_cut;
 	source_class->impl_paste = impl_paste;
 	source_class->impl_delete = impl_delete;
@@ -479,36 +480,44 @@ impl_get_entry_view (RBSource *asource)
 	return source->priv->songs;
 }
 
+static gboolean
+impl_can_cut (RBSource *asource)
+{
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	return !source->priv->automatic;
+}
+
 static GList *
 impl_cut (RBSource *asource)
 {
-/* 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource); */
-/* 	GList *sel = rb_node_view_get */
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	GList *sel = rb_entry_view_get_selected_entries (source->priv->songs);
+	GList *tem;
 
-/* 	for (; sel != NULL; sel = g_list_next (sel)) */
-/* 		rb_node_remove_child (source->priv->root, sel->data); */
+	for (tem = sel; tem; tem = tem->next)
+		rb_playlist_source_remove_entry (source, tem->data);
 
-/* 	return sel; */
-	return NULL;
+	return sel;
 }
 
 static void
-impl_paste (RBSource *asource, GList *nodes)
+impl_paste (RBSource *asource, GList *entries)
 {
-/* 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource); */
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
-/* 	for (; nodes; nodes = g_list_next (nodes)) */
-/* 		rb_playlist_source_add_node (source, nodes->data); */
+	for (; entries; entries = g_list_next (entries))
+		rb_playlist_source_add_entry (source, entries->data);
 }
 
 static void
 impl_delete (RBSource *asource)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	GList *l;
-
-	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l))
-		rb_playlist_source_remove_entry (source, l->data);
+	GList *sel, *tem;
+	sel = rb_entry_view_get_selected_entries (source->priv->songs);
+	for (tem = sel; tem != NULL; tem = tem->next)
+		rb_playlist_source_remove_entry (source, tem->data);
+	g_list_free (sel);
 }
 
 static void

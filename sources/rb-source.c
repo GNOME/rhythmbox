@@ -428,7 +428,7 @@ rb_source_cut (RBSource *source)
 static GList *
 default_copy (RBSource *source)
 {
-	return g_list_copy (rb_entry_view_get_selected_entries (rb_source_get_entry_view (source)));
+	return rb_entry_view_get_selected_entries (rb_source_get_entry_view (source));
 }
 	
 GList *

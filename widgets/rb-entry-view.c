@@ -151,7 +151,6 @@ struct RBEntryViewPrivate
 	struct RBEntryViewReverseSortingData *reverse_sorting_data;
 
 	gboolean have_selection;
-	GList *entry_selection;
 
 	gboolean keep_selection;
 
@@ -417,8 +416,6 @@ rb_entry_view_finalize (GObject *object)
 		g_source_remove (view->priv->change_sig_id);
 
 	g_source_remove (view->priv->model_poll_id);
-
-	g_list_free (view->priv->entry_selection);
 
 	if (view->priv->gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->gconf_notification_id);
@@ -1604,8 +1601,6 @@ rb_entry_view_get_selected_entries (RBEntryView *view)
 	gtk_tree_selection_selected_foreach (view->priv->selection,
 					     (GtkTreeSelectionForeachFunc) harvest_entries,
 					     (gpointer) &list);
-	g_list_free (view->priv->entry_selection);
-	view->priv->entry_selection = g_list_copy (list);
 
 	return list;
 }
