@@ -711,6 +711,7 @@ slider_moved_timeout (RBHeader *player)
 	rb_player_set_time (player->priv->mmplayer, new);
 
 	player->priv->latest_set_time = new;
+	player->priv->slider_moved_timeout = 0;
 	
 	gdk_threads_leave ();
 
