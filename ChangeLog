@@ -1,3 +1,64 @@
+2003-05-24  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-shell.c: (rb_shell_construct):
+
+	Put the sourcelist on the right in RTL locales.
+
+2003-05-24  Colin Walters  <walters@verbum.org>
+
+	* README:
+	* TODO:
+	* data/node-views/rb-node-view-cdaudio.xml:
+	* data/node-views/rb-node-view-iradio-stations.xml:
+	* data/node-views/rb-node-view-songs.xml:
+	* iradio/rb-iradio-backend.c:
+	* iradio/rb-node-station.c: (rb_node_station_new):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_update_play_count),
+	(rb_station_properties_dialog_update_last_played):
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_selection),
+	(rb_node_view_get_rows):
+	* lib/widgets/rb-player.c: (rb_player_get_duration):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_play_count),
+	(rb_song_info_update_last_played):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-library.h:
+	* library/rb-node-song.c: (rb_node_song_new), (set_duration),
+	(set_track_number):
+	* library/rb-node.c: (rb_node_update_play_statistics):
+	* library/rb-node.h:
+	* shell/rb-shell-player.c: (eos_cb):
+	* shell/rb-shell-preferences.c:
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync):
+	* sources/rb-library-source.c: (impl_get_status_full):
+	* sources/rb-song-info-helpers.c: (rb_song_set_duration):
+	* views/.cvsignore:
+	* views/Makefile.am:
+	* views/rb-audiocd-view.c:
+	* views/rb-audiocd-view.h:
+	* views/rb-iradio-view.c:
+	* views/rb-iradio-view.h:
+	* views/rb-library-view.c:
+	* views/rb-library-view.h:
+	* views/rb-song-info-helpers.c:
+	* views/rb-song-info-helpers.h:
+	* views/rb-view-cmd.c:
+	* views/rb-view-cmd.h:
+
+	Remove old views cruft.  Fix all the insanity wrt PROP_X, PROP_REAL_X
+	and X_STR, etc., and standardize on just PROP_X and PROP_X_STR.  This
+	makes sorting on those columns work too.  Remove PROP_TRACK_NUMBER_STR
+	and just generate it dynamically in the treeview to save memory.
+
+	Update play statistics after a song is done playing.
+
+	Very minor updates to TODO and README.
+
 2003-05-24  Geert-Jan Van den Bogaerde <gvdbogaerde@pandora.be>
 
 	* data/node-views/rb-node-view-songs.xml:

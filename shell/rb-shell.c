@@ -603,8 +603,13 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->source_header), FALSE, TRUE, 0);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
 
-	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
+	if (gtk_widget_get_default_direction () != GTK_TEXT_DIR_RTL) {
+		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
+	} else {
+		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
+	}
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);

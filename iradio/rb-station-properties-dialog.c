@@ -467,30 +467,18 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 static void
 rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog)
 {
-	const char *text = NULL;
-
-	text = rb_node_get_property_string (RB_NODE (dialog->priv->current_node),
-                                            RB_NODE_PROP_NUM_PLAYS);
-
-	if (text == NULL || strlen (text) == 0)
-	{
-		text = "0";
-	}
-
+	char *text = g_strdup_printf ("%d", rb_node_get_property_int (RB_NODE (dialog->priv->current_node),
+								      RB_NODE_PROP_PLAY_COUNT));
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
+	g_free (text);
 }
 
 static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
-	char *text = NULL;
-
-	text = rb_node_get_property_time (dialog->priv->current_node,
-					  RB_NODE_PROP_LAST_PLAYED);
-
-	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed), text);
-
-	g_free (text);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed),
+			    rb_node_get_property_string (RB_NODE (dialog->priv->current_node),
+							 RB_NODE_PROP_LAST_PLAYED_STR));
 }
 
 static void

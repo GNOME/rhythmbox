@@ -227,18 +227,25 @@ rb_node_station_new (GList *locations, const char *name,
 	g_value_unset (&value);
 
 	/* Number of plays */
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, "");
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, 0);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_NUM_PLAYS,
+			      RB_NODE_PROP_PLAY_COUNT,
+			      &value);
+	g_value_unset (&value);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, 0);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_LAST_PLAYED,
 			      &value);
 	g_value_unset (&value);
 
 	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, "");
+	g_value_set_string (&value, _("Never"));
 	/* Last played time */
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+			      RB_NODE_PROP_LAST_PLAYED_STR,
 			      &value);
 	g_value_unset (&value);
 
