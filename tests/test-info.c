@@ -100,23 +100,13 @@ print_result (MonkeyMediaStreamInfo *i)
 		g_print ("(no length available)\n");
 }
 
-int
-main (int argc, char **argv)
+static int
+do_file (const char *uri)
 {
 	MonkeyMediaStreamInfo *i;
-	gchar *uri;
 	GError *err = NULL;
 
-	if (argc != 2) {
-		g_print ("Usage: %s <uri>\n", argv[0]);
-		return 1;
-	}
-
-	monkey_media_init (&argc, &argv);
-
-	uri = argv[1];
-
-	g_print ("mimetype:	%s\n", gnome_vfs_get_mime_type (uri));
+	g_print ("mimetype:     %s\n", gnome_vfs_get_mime_type (uri));
 
 	i = monkey_media_stream_info_new (uri, &err);
 	if (err != NULL)
@@ -124,9 +114,29 @@ main (int argc, char **argv)
 		g_warning ("Failed: %s", err->message);
 		g_error_free (err);
 		return -1;
+	} else {
+		print_result(i);
 	}
-	print_result(i);
-	g_object_unref (G_OBJECT (i)); 
+	g_object_unref (G_OBJECT (i));
+}
+
+int
+main (int argc, char **argv)
+{
+	gchar *uri;
+	int i;
+
+	if (argc < 2) {
+		g_print ("Usage: %s <uris>\n", argv[0]);
+		return 1;
+	}
+
+	monkey_media_init (&argc, &argv);
+
+	for (i = 1; i < argc; i++)
+	{
+		do_file (argv[i]);
+	}
 
 	monkey_media_shutdown ();
 
