@@ -80,15 +80,15 @@ static void next_cb (GtkWidget *widget, RBPlayer *player);
 static void shuffle_cb (GtkWidget *widget, RBPlayer *player);
 static void repeat_cb (GtkWidget *widget, RBPlayer *player);
 static void eos_cb (MonkeyMediaPlayer *mm_player, RBPlayer *player);
+static void tick_cb (MonkeyMediaPlayer *mm_player, long elapsed, RBPlayer *player);
 static void node_activated_cb (RBNodeView *view, RBNode *song, RBPlayer *player);
 static gboolean slider_pressed_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
 static gboolean slider_moved_cb (GtkWidget *widget, GdkEventMotion *event, RBPlayer *player);
 static gboolean slider_released_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
 static void slider_changed_cb (GtkWidget *widget, RBPlayer *player);
 static void nullify_info (RBPlayer *player);
-static gboolean sync_time_timeout (RBPlayer *player);
 static void rb_clear (RBPlayer *player);
-static void sync_time (RBPlayer *player);
+static void sync_time (RBPlayer *player, long known_elapsed);
 static void check_song_tooltip (RBPlayer *player);
 static void song_label_size_allocate_cb (GtkWidget *widget,
 			                 GtkAllocation *allocation,
@@ -448,8 +448,9 @@ rb_player_init (RBPlayer *player)
 	g_signal_connect (G_OBJECT (player->priv->player),
 			  "eos",
 			  G_CALLBACK (eos_cb), player);
-
-	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) sync_time_timeout, player);
+	g_signal_connect (G_OBJECT (player->priv->player),
+			  "tick",
+			  G_CALLBACK (tick_cb), player);
 
 	gtk_widget_show_all (GTK_WIDGET (player));
 
@@ -895,7 +896,7 @@ rb_player_set_state (RBPlayer *player,
 
 	update_buttons (player);
 
-	sync_time (player);
+	sync_time (player, -1);
 }
 
 RBPlayerState
@@ -1101,11 +1102,19 @@ eos_cb (MonkeyMediaPlayer *mm_player,
 
 	update_buttons (player);
 
-	sync_time (player);
+	sync_time (player, -1);
 
 	check_view_state (player);
 
 	GDK_THREADS_LEAVE ();
+}
+
+static void
+tick_cb (MonkeyMediaPlayer *mm_player,
+	 long elapsed,
+	 RBPlayer *player)
+{
+	sync_time (player, elapsed);
 }
 
 static void
@@ -1135,7 +1144,7 @@ do_real_seek (RBPlayer *player)
 }
 
 static void
-sync_time (RBPlayer *player)
+sync_time (RBPlayer *player, long known_elapsed)
 {
 	long elapsed, duration;
 	double progress = 0.0;
@@ -1144,7 +1153,10 @@ sync_time (RBPlayer *player)
 	if (player->priv->slider_drag_info.slider_dragging)
 		elapsed = player->priv->slider_drag_info.fake_elapsed;
 	else {
-		elapsed = monkey_media_player_get_time (player->priv->player);
+		if (known_elapsed >= 0)
+			elapsed = known_elapsed;
+		else
+			elapsed = monkey_media_player_get_time (player->priv->player);
 	}
 
 	duration = rb_node_get_property_long (player->priv->playing, RB_NODE_PROP_REAL_DURATION);
@@ -1204,7 +1216,7 @@ slider_moved_cb (GtkWidget *widget,
 
         player->priv->slider_drag_info.fake_elapsed = (long) (progress * duration);
 
-	sync_time (player);
+	sync_time (player, -1);
 
         if (player->priv->slider_drag_info.slider_moved_timeout != 0) {
                 g_source_remove (player->priv->slider_drag_info.slider_moved_timeout);
@@ -1226,7 +1238,7 @@ slider_released_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player)
 
         player->priv->slider_drag_info.slider_dragging = FALSE;
 
-	sync_time (player);
+	sync_time (player, -1);
 
         if (player->priv->slider_drag_info.slider_moved_timeout != 0) {
                 g_source_remove (player->priv->slider_drag_info.slider_moved_timeout);
@@ -1257,20 +1269,6 @@ slider_changed_cb (GtkWidget *widget, RBPlayer *player)
                 player->priv->slider_drag_info.value_changed_update_handler =
                         g_idle_add ((GSourceFunc) slider_changed_idle, player);
         }
-}
-
-static gboolean
-sync_time_timeout (RBPlayer *player)
-{
-	if (player->priv->slider_drag_info.slider_dragging)
-		return TRUE;
-
-	if (player->priv->playing == NULL)
-		return TRUE;
-
-	sync_time (player);
-
-	return TRUE;
 }
 
 static void

@@ -255,13 +255,10 @@ rb_volume_finalize (GObject *object)
 static void
 update_mixer (RBVolume *volume)
 {
-	if (volume->priv->mute) {
-		monkey_media_player_set_volume (volume->priv->player,
-					        0.0);
-	} else {
-		monkey_media_player_set_volume (volume->priv->player,
-					        volume->priv->vol);
-	}
+	monkey_media_player_set_volume (volume->priv->player,
+				        volume->priv->vol);
+	monkey_media_player_set_mute (volume->priv->player,
+				      volume->priv->mute);
 }
 
 static void
