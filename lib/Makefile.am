@@ -17,6 +17,8 @@ librb_la_SOURCES =					\
 	rb-bonobo-helpers.h				\
 	rb-glade-helpers.c				\
 	rb-glade-helpers.h				\
+	rb-glist-wrapper.c				\
+	rb-glist-wrapper.h				\
 	rb-string-helpers.c				\
 	rb-string-helpers.h				\
 	rb-stock-icons.c				\
