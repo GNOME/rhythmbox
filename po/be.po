@@ -1,25 +1,26 @@
-# #-#-#-#-#  be.po (rhythmbox.HEAD.be)  #-#-#-#-#
-# arch-tag: translation of rhythmbox.HEAD.be.po to Belarusian
-# This file is distributed under the same license as the PACKAGE package.
-# Copyright (C) 2003 THE PACKAGE'S COPYRIGHT HOLDER
+# Беларускі пераклад rhythmbox.
+# This file is distributed under the same license as the rhythmbox.HEAD.be package.
+# Copyright (C) 2003 THE rhythmbox.HEAD.be'S COPYRIGHT HOLDER
 # Vital Khilko <dojlid@mova.org>, 2003.
+# Ales Nyakhaychyk <nab@mail.by>, 2003.
 #
-#, fuzzy
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox.HEAD.be\n"
+"Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-09-10 04:46+0200\n"
-"PO-Revision-Date: 2003-09-10 12:10+0300\n"
-"Last-Translator: Vital Khilko <dojlid@mova.org>\n"
+"POT-Creation-Date: 2003-11-21 20:29-0500\n"
+"PO-Revision-Date: 2003-12-09 22:48+0200\n"
+"Last-Translator: Ales Nyakhaychyk <nab@mail.by>\n"
 "Language-Team: Belarusian <i18n@mova.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.0.2\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
-msgid "Add To Music Player Library"
-msgstr "Дадаць да музычнае бібліятэкі"
+msgid "Add to Music Library"
+msgstr "Дадаць да музычнай бібліятэкі"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
@@ -28,6 +29,20 @@ msgstr "Пашырэньне зьместу мэню наўтылюса для R
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Пункт мэню Rhythmbox для наўтылюса"
+
+#: corba/test-corba.c:55
+msgid "I could not initialize Bonobo"
+msgstr "Немагчыма распачаць Баноба"
+
+#: corba/test-corba.c:62
+msgid "Could not create an instance of the sample echo component"
+msgstr "Немагчыма стварыць прыклад кампанэнта рэха"
+
+#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:240
+#: shell/main.c:249
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "Здарылася выключэньне \"%s\""
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -41,74 +56,71 @@ msgstr "Вытворчасьць абалонкі Rhythmbox"
 msgid "Loading..."
 msgstr "Загрузка..."
 
-#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:1
-#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
-#: data/glade/uri.glade.h:1
+#: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
+#: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
-msgid "Finish"
-msgstr "Фініш"
+#: data/glade/create-playlist.glade.h:2
+msgid "Add if any criteria are matched"
+msgstr "Дадаць, калі супадае любы крытэр"
 
-#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:244
+#: data/glade/create-playlist.glade.h:3
+msgid "Create automatically updating playlist where:"
+msgstr "Стварыць новы самаабнаўляльны сьпіс дзе:"
+
+#: data/glade/create-playlist.glade.h:4
+msgid "GB"
+msgstr "Гб"
+
+#: data/glade/create-playlist.glade.h:5
+msgid "MB"
+msgstr "Мб"
+
+#: data/glade/create-playlist.glade.h:6
+msgid "_Limit to: "
+msgstr "Аб_межаваць:"
+
+#: data/glade/create-playlist.glade.h:7
+msgid "songs"
+msgstr "песьні"
+
+#: data/glade/druid.glade.h:2
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
-msgstr ""
-"Перад тым як выкарыстоўваць Rhythmbox,\n"
-"гэты памочнік запытае вас колькі простых\n"
-"пытаньняў."
-
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:250
-msgid "Library setup"
-msgstr "Усталёўка бібліятэкі"
-
-#: data/glade/druid.glade.h:7
-msgid ""
-"Rhythmbox needs to know where to find your music.\n"
-"You may choose to skip this step; instead, you \n"
-"can add music to your library at any point later.\n"
-"\n"
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox мусіць ведаць дзе знаходзіцца ваша музыка.\n"
-"Вы можаце прапусьціць гэты крок  і замест гэтага дадаць\n"
-"потым любы пункт да вашае музычнае бібліятэкі.\n"
-"\n"
-"Калі ласка выбярыце адзін з выбараў:"
+"Рытмбокс (\"Rhythmbox\") кіруе ўсёй вашай музыкай ў галоўнай музычнай "
+"\"бібліятэцы\", таму вы можаце лёгка працавць з ёю.\n"
+"З мэтаю выкарыстаньня гэтае магчымасьці, вы мусіце паказаць Рытмбоксу, дзе "
+"шукаць вашую музыку. Вы можаце прапусьціць зараз гэты крок, бо потым вы зможаце "
+"дадаць музыку ў вашую бібліятэку ў лючы час.\n"
+"Калі ласка зрабіце выбар:"
 
-#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:240
-msgid "Welcome to Rhythmbox"
-msgstr "Вітаем у Rhythmbox"
-
-#: data/glade/druid.glade.h:13
-msgid ""
-"You are now ready to start\n"
-"Rhythmbox."
-msgstr "Вы зараз гатовыя да запуску\n"
-"Rhythmbox."
-
-#: data/glade/druid.glade.h:15
+#: data/glade/druid.glade.h:5
 msgid "_Browse..."
 msgstr "_Прагледзіць..."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
 msgstr "_Пазначце разьмяшчэньне асабіста:"
 
-#: data/glade/druid.glade.h:17
+#: data/glade/druid.glade.h:7
 msgid "_Path:"
 msgstr "_Шлях:"
 
-#: data/glade/druid.glade.h:18
+#: data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Прапусьціць гэты крок"
 
 #: data/glade/general-prefs.glade.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
+#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1249
 msgid "A_lbum"
 msgstr "_Альбом"
 
@@ -150,7 +162,7 @@ msgstr "_Якасьць"
 #: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
 #: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8
+#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1200
 msgid "_Rating"
 msgstr "_Рэйтынг"
 
@@ -191,16 +203,16 @@ msgid "Encoding:"
 msgstr "Кадаваньне:"
 
 #: data/glade/song-info.glade.h:6
+msgid "File name:"
+msgstr "Назва файла:"
+
+#: data/glade/song-info.glade.h:7
 msgid "Last played:"
 msgstr "Апошняе прайграваньне:"
 
-#: data/glade/song-info.glade.h:7
+#: data/glade/song-info.glade.h:8
 msgid "Location:"
 msgstr "Разьмяшчэньне: "
-
-#: data/glade/song-info.glade.h:8
-msgid "Name:"
-msgstr "Назва:"
 
 #: data/glade/song-info.glade.h:9
 msgid "Play count:"
@@ -283,50 +295,55 @@ msgstr "_Альбом"
 #: data/node-views/rb-node-view-artists.xml.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1238
 msgid "Art_ist"
-msgstr "Вы_канаўца"
+msgstr "В_ыканаўца"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:3
 #: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1259
 msgid "Ge_nre"
 msgstr "Жа_нр"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1269
 msgid "Ti_me"
 msgstr "_Час"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:269
+#: widgets/rb-entry-view.c:1218
 msgid "Tra_ck"
 msgstr "_Запіс"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:7
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
 #: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9
+#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1227
 msgid "_Title"
 msgstr "_Назва"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4
+#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1290
 msgid "L_ast Played"
 msgstr "_Апошні прайграваны"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7
+#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1281
 msgid "_Play Count"
 msgstr "_Лік прайграваньня"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:671 shell/rb-shell.c:1244
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:872 shell/rb-shell.c:1495
 msgid "Music Player"
 msgstr "Прайгравальнік музыкі"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
 msgstr "Прайграе й каталягізуе вашыя музычныя калекцыі"
+
+#: data/rhythmbox.desktop.in.h:3 shell/main.c:107 widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Рытмбокс"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Deselect all songs"
@@ -336,19 +353,19 @@ msgstr "Адмяніць вылучэньне усіх запісаў"
 msgid "Eject Audio-CD"
 msgstr "Вызваліць аўдыё дыск"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:35
 msgid "Scroll the view to the currently playing song"
 msgstr "Пракрутка прагляду запіса які зараз гучыць"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "Select _All"
 msgstr "Вылучыць _усе"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:37
 msgid "Select all songs"
 msgstr "Вылучыць усе запісы"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:55
 msgid "_Edit"
 msgstr "_Рэдагаваньне"
 
@@ -356,13 +373,13 @@ msgstr "_Рэдагаваньне"
 msgid "_Eject Audio-CD..."
 msgstr "_Вызваленьне аўдыё дыска..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:57
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:58
 msgid "_Jump to Playing Song"
-msgstr "_Скочыць да запісу які прайграецца"
+msgstr "Пера_скочыць да сьпева, які гучыць"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:71
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:72
 msgid "_View"
-msgstr "Вы_гляд"
+msgstr "_Выгляд"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
 msgid "Add Lo_cation..."
@@ -382,7 +399,7 @@ msgstr "Зьмяніць бачнасьць сьпіса крыніц"
 
 #: data/ui/rhythmbox-ui.xml.in.h:5
 msgid "Change the visibility of the statusbar"
-msgstr "Зьмяніць бачнасьць панэлі стану"
+msgstr "Зьмяніць бачнасьць радка стану"
 
 #: data/ui/rhythmbox-ui.xml.in.h:6
 msgid "Choose a location (URI) to be added to the library"
@@ -397,32 +414,32 @@ msgid "Choose files or a directory to be added to the library"
 msgstr "Выбярыце файлы ці каталёг для даданьня да бібліятэкі"
 
 #: data/ui/rhythmbox-ui.xml.in.h:9
-msgid "Close the music player"
-msgstr "Закрыць прайгравальнік"
-
-#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Copy selection"
 msgstr "Капіяваць вылучанае"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Create a new Internet Radio station"
 msgstr "Стварыць новую інтэрнэт-радыёстанцыю"
+
+#: data/ui/rhythmbox-ui.xml.in.h:11
+msgid "Create a new automatically updating playlist"
+msgstr "Стварыць новы самаабнаўляльны сьпіс"
 
 #: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Create a new playlist"
 msgstr "Стварыць новы сьпіс прайграваньня"
 
 #: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "Create a new smart playlist"
-msgstr "Стварыць новы \"разумны\" сьпіс прайграваньня"
-
-#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Cu_t"
 msgstr "_Выразаць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Cut selection"
 msgstr "Выразаць вылучанае"
+
+#: data/ui/rhythmbox-ui.xml.in.h:15
+msgid "D_eselect All"
+msgstr "Развылучыць ус_ё"
 
 #: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Delete selection"
@@ -437,211 +454,192 @@ msgid "Edit music player preferences"
 msgstr "Рэдагаваць уласьцівасьці музычнага прайгравальніка"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
-msgid "Extract songs from a CD"
-msgstr "Запіс песьняў з дыска"
+msgid "Extract and import songs from a CD"
+msgstr "Выцягнуць і імпартаваць сьпевы з музычнага дыска"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
+msgid "Import Lo_cation..."
+msgstr "Дадаць з_находжаньне..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "Import _Audio CD..."
+msgstr "Імпартаваць _музычны дыск..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Make the main window smaller"
 msgstr "Зрабіць асноўнае акно меншым"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
-msgid "New _Internet Radio Station"
-msgstr "Новая _інтэрнэт-радыёстанцыя "
-
-#: data/ui/rhythmbox-ui.xml.in.h:23
-msgid "New _Smart Playlist..."
-msgstr "Новы \"разумны\" сьпіс..."
-
 #: data/ui/rhythmbox-ui.xml.in.h:24
-msgid "P_revious"
-msgstr "Пап_ярэдняя"
+msgid "New _Automatic Playlist..."
+msgstr "Новы самаа_бнаўляльны сьпіс..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:25
+msgid "New _Internet Radio Station"
+msgstr "Новая _інтарнэт-радыёстанцыя"
+
+#: data/ui/rhythmbox-ui.xml.in.h:26
+msgid "P_revious"
+msgstr "Пап_ярэдні"
+
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Paste selection"
 msgstr "Уставіць вылучанае"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Pause playing"
 msgstr "Прыпыніць прайграваньне"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:29
+msgid "Playlist"
+msgstr "Сьпіс"
+
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Prefere_nces"
 msgstr "_Перавагі"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:31
+msgid "Quit the music player"
+msgstr "Выйсьці з музычнага прайгравальніка"
+
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Repea_t"
-msgstr "Па_ўтор"
+msgstr "Паўт_ор"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "S_tatusbar"
-msgstr "Панэля _стану"
+msgstr "Радок с_тану"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Save a playlist to a file"
 msgstr "Захаваньне сьпіса прайграваньня ў файл"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
-msgid "Select N_one"
-msgstr "Скінуць _вылучэньне"
-
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "Show information about the music player"
 msgstr "Адлюстраваць інфармацыю пра прайгравальнік"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "Show information on the selected song"
 msgstr "Адлюстраваць інфармацыю пра вылучаную песьню"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "Source _List"
 msgstr "_Сьпіс крыніц"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1335
 msgid "Start playing"
 msgstr "Распачаць прайграваньне"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "Start playing the next song"
 msgstr "Распачаць прайграваньне наступнае песьні"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "Start playing the previous song"
 msgstr "Распачаць прайграваньне папярэдняе песьні"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "Stop playing"
 msgstr "Спыніць прайграваньне"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:45
 msgid "Toggle random playing order"
 msgstr "Пераключыць выпадковы парадак прайграваньня"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "Toggle repeat mode"
 msgstr "Пераключыць рэжым паўтору"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_About"
 msgstr "_Пра праграму"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Add to Library..."
 msgstr "_Дадаць да бібліятэкі..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_Browser"
 msgstr "_Праглядальнік"
 
-#: data/ui/rhythmbox-ui.xml.in.h:47
-msgid "_Close"
-msgstr "За_крыць"
-
-#: data/ui/rhythmbox-ui.xml.in.h:48
+#: data/ui/rhythmbox-ui.xml.in.h:50
 msgid "_Contents"
 msgstr "_Зьмест"
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.in.h:51
+msgid "_Control"
+msgstr "_Кіраваньне"
+
+#: data/ui/rhythmbox-ui.xml.in.h:52
 msgid "_Copy"
 msgstr "_Капіяваць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50
+#: data/ui/rhythmbox-ui.xml.in.h:53
 msgid "_Cut"
 msgstr "_Выразаць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.in.h:54
 msgid "_Delete"
 msgstr "Вы_даліць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
-msgid "_Delete Playlist"
-msgstr "_Выдаліць сьпіс прайграваньня"
-
-#: data/ui/rhythmbox-ui.xml.in.h:54
-msgid "_Extract CD..."
-msgstr "_Вызваліць аўдыё дыск..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:55 lib/widgets/rb-load-failure-dialog.c:144
-msgid "_File"
-msgstr "_Файл"
-
 #: data/ui/rhythmbox-ui.xml.in.h:56
 msgid "_Help"
-msgstr "_Дапамога"
+msgstr "_Даведка"
 
-#: data/ui/rhythmbox-ui.xml.in.h:58
-msgid "_Load Playlist..."
-msgstr "_Загрузіць сьпіс прайграваньня..."
+#: data/ui/rhythmbox-ui.xml.in.h:57
+msgid "_Import folder..."
+msgstr "_Імпартаваць каталёг..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:59
+msgid "_Load from file..."
+msgstr "Загр_узіць з файла..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Music"
 msgstr "_Музыка"
 
-#: data/ui/rhythmbox-ui.xml.in.h:60
+#: data/ui/rhythmbox-ui.xml.in.h:61
 msgid "_New Playlist..."
 msgstr "_Новы сьпіс прайграваньня..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:61
-msgid "_Next"
-msgstr "_Наступнае"
-
 #: data/ui/rhythmbox-ui.xml.in.h:62
+msgid "_Next"
+msgstr "_Наступны"
+
+#: data/ui/rhythmbox-ui.xml.in.h:63
 msgid "_Paste"
 msgstr "_Уставіць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:63 shell/rb-shell-player.c:1117
+#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1336
 msgid "_Play"
 msgstr "_Граць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64
+#: data/ui/rhythmbox-ui.xml.in.h:65
 msgid "_Properties"
 msgstr "_Уласьцівасьці"
 
-#: data/ui/rhythmbox-ui.xml.in.h:65
-msgid "_Rename"
-msgstr "_Зьмяніць назву"
-
 #: data/ui/rhythmbox-ui.xml.in.h:66
-msgid "_Rename Playlist"
-msgstr "_Зьмяніць назву сьпіса"
+msgid "_Quit"
+msgstr "Вы_йсьці"
 
 #: data/ui/rhythmbox-ui.xml.in.h:67
-msgid "_Save Playlist..."
-msgstr "_Захаваць сьпіс..."
+msgid "_Remove"
+msgstr "Вы_даліць"
 
 #: data/ui/rhythmbox-ui.xml.in.h:68
+msgid "_Save to file..."
+msgstr "Заха_ваць у файл..."
+
+#: data/ui/rhythmbox-ui.xml.in.h:69
 msgid "_Show Window"
 msgstr "_Адлюстраваць акно"
 
-#: data/ui/rhythmbox-ui.xml.in.h:69 shell/rb-statusbar.c:161
+#: data/ui/rhythmbox-ui.xml.in.h:70 shell/rb-statusbar.c:228
 msgid "_Shuffle"
-msgstr "_Шуфляваць"
+msgstr "П_ерамяшаць"
 
-#: data/ui/rhythmbox-ui.xml.in.h:70
+#: data/ui/rhythmbox-ui.xml.in.h:71
 msgid "_Small Display"
 msgstr "_Малое адлюстраваньне"
-
-#: iradio/rb-iradio-backend.c:181 iradio/rb-iradio-backend.c:555
-#: iradio/rb-new-station-dialog.c:292 library/rb-library.c:745
-msgid "All"
-msgstr "Усё"
-
-#: iradio/rb-iradio-backend.c:339
-msgid "Unable to find file \"iradio-initial.xml\""
-msgstr "Немагчыма адшукаць файл \"iradio-initial.xml\""
-
-#: iradio/rb-iradio-backend.c:369
-#, c-format
-msgid "Failed to parse %s\n"
-msgstr "Памылка разбору %s\n"
-
-#: iradio/rb-iradio-backend.c:512 iradio/rb-iradio-backend.c:531
-#: iradio/rb-iradio-backend.c:532 lib/widgets/rb-tree-model-node.c:589
-msgid "(Unknown)"
-msgstr "(Невядома)"
-
-#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb.c:498
-msgid "Never"
-msgstr "Ніколі"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
@@ -650,20 +648,23 @@ msgstr "Новая інтэрнэт-радыёстанцыя "
 #: iradio/rb-new-station-dialog.c:182
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
-#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:234
-#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
-#: sources/rb-playlist-source.c:365 sources/rb-playlist-source.c:381
+#: monkey-media/monkey-media-stream-info.c:667 sources/rb-iradio-source.c:251
+#: sources/rb-iradio-source.c:252 sources/rb-iradio-source.c:253
+#: sources/rb-playlist-source.c:392
 msgid "Unknown"
 msgstr "Невядома"
 
-#: iradio/rb-station-properties-dialog.c:178 lib/widgets/rb-song-info.c:569
-#: lib/widgets/rb-song-info.c:583
+#: iradio/rb-new-station-dialog.c:303 rhythmdb/rhythmdb-property-model.c:363
+msgid "All"
+msgstr "Усё"
+
+#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:621
+#: widgets/rb-song-info.c:639
 #, c-format
 msgid "%s Properties"
 msgstr "%s Уласьцівасьці"
 
-#: iradio/rb-station-properties-dialog.c:349
+#: iradio/rb-station-properties-dialog.c:334
 #, c-format
 msgid "Properties for %s"
 msgstr "Уласьцівасьці %s"
@@ -693,17 +694,17 @@ msgstr "Арыентацыя"
 msgid "The orientation of the tray."
 msgstr "Арыентацыя сподка."
 
-#: lib/rb-file-helpers.c:77
+#: lib/rb-file-helpers.c:78
 #, c-format
 msgid "Failed to find %s"
 msgstr "Памылка пошуку %s"
 
-#: lib/rb-file-helpers.c:102
+#: lib/rb-file-helpers.c:103
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s існуе, калі ласка, перанясіце гэта ў іншае мейсца."
 
-#: lib/rb-file-helpers.c:105
+#: lib/rb-file-helpers.c:106
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Памылка стварэньня каталёга %s."
@@ -717,207 +718,6 @@ msgstr "Немагчыма запісаць сьпіс: %s"
 #, c-format
 msgid "Couldn't open playlist: %s"
 msgstr "Немагчыма адкрыць сьпіс прайграваньня: %s"
-
-#. comma separated list of prefixes that are to
-#. * be appended as suffix, NOTE: notice the spaces placement
-#: lib/rb-string-helpers.c:34
-msgid "THE ,DJ "
-msgstr "Дзі-Джэй"
-
-#: lib/rb-string-helpers.c:49
-#, c-format
-msgid "%s, %s"
-msgstr "%s, %s"
-
-#: lib/widgets/eggtreemodelfilter.c:267
-msgid "The child model"
-msgstr "Спадчыная мадэля"
-
-#: lib/widgets/eggtreemodelfilter.c:268
-msgid "The model for the filtermodel to filter"
-msgstr "Мадэля для мадэляў фільтараў"
-
-#: lib/widgets/eggtreemodelfilter.c:275
-msgid "The virtual root"
-msgstr "Віртуальны корань"
-
-#: lib/widgets/eggtreemodelfilter.c:276
-msgid "The virtual root (relative to the child model) for this filtermodel"
-msgstr "Віртуальны корань (адносна спадчынай мадэлі) для мадэлі фільтара"
-
-#: lib/widgets/gtktreemodelsort.c:306
-msgid "TreeModelSort Model"
-msgstr "Разнавід для TreeModelSort"
-
-#: lib/widgets/gtktreemodelsort.c:307
-msgid "The model for the TreeModelSort to sort"
-msgstr "Разнавід для ўпарадкаваньня TreeModelSort"
-
-#: lib/widgets/rb-cell-renderer-pixbuf.c:109
-msgid "Pixbuf Object"
-msgstr "Аб'ект Pixbuf"
-
-#: lib/widgets/rb-cell-renderer-pixbuf.c:110
-msgid "The pixbuf to render."
-msgstr "Pixbuf для стварэньня відарыса."
-
-#: lib/widgets/rb-druid.c:219 shell/main.c:101
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
-#: lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Вы зараз гатовыя да запуску Rhythmbox."
-
-#: lib/widgets/rb-druid.c:310
-#, c-format
-msgid "Error reading filename: %s"
-msgstr "Памылка чытаньня назвы файла: %s"
-
-#: lib/widgets/rb-druid.c:325
-msgid "Choose a directory"
-msgstr "Выбярыце каталёг"
-
-#: lib/widgets/rb-link.c:332
-#, c-format
-msgid ""
-"There was an error going to %s:\n"
-"%s"
-msgstr ""
-"Адбылася памылка ў %s:\n"
-"%s"
-
-#: lib/widgets/rb-load-failure-dialog.c:119
-msgid "Error loading files into library"
-msgstr "Памылка загрузкі файлаў у бібліятэку"
-
-#: lib/widgets/rb-load-failure-dialog.c:136
-msgid "_Error"
-msgstr "_Памылка"
-
-#: lib/widgets/rb-node-view.c:788
-#, c-format
-msgid "Failed to parse %s as NodeView layout file"
-msgstr "Збой разбора %s як файла NodeView"
-
-#: lib/widgets/rb-player.c:269
-msgid "Listening to "
-msgstr "Праслухоўваньне у "
-
-#: lib/widgets/rb-player.c:474
-msgid "Get information on this album from the web"
-msgstr "Атрымаць інфармацыю пра гэты альбом з павуціньня"
-
-#: lib/widgets/rb-player.c:485
-msgid "Get information on this artist from the web"
-msgstr "Атрымаць інфармацыю пра гэтага выканаўцу з павуціньня"
-
-#: lib/widgets/rb-player.c:495
-msgid "Get more information on this station from the web"
-msgstr "Атрымаць інфармацыю пра гэтую станцыю з павуціньня"
-
-#: lib/widgets/rb-player.c:504 shell/rb-shell.c:1220 shell/rb-tray-icon.c:222
-msgid "Not playing"
-msgstr "Не прайграецца"
-
-#: lib/widgets/rb-player.c:769
-#, c-format
-msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d of %d:%02d"
-
-#: lib/widgets/rb-player.c:771
-#, c-format
-msgid "%d:%02d"
-msgstr "%d:%02d"
-
-#. this string can only be so long, or there wont be a search entry :)
-#: lib/widgets/rb-search-entry.c:118
-msgid "_Search:"
-msgstr "_Пошук:"
-
-#: lib/widgets/rb-song-display-box.c:116
-msgid "from "
-msgstr "з "
-
-#: lib/widgets/rb-song-display-box.c:119
-msgid "by "
-msgstr "ад "
-
-#: lib/widgets/rb-song-info.c:228 lib/widgets/rb-song-info.c:588
-msgid "Song Properties"
-msgstr "Уласьцівасьці запісу"
-
-#: lib/widgets/rb-song-info.c:870
-msgid "on the desktop"
-msgstr "на стальце"
-
-#: lib/widgets/rb-song-info.c:1082
-#, c-format
-msgid "%d kbps"
-msgstr "%d Кб/с"
-
-#: lib/widgets/rb-song-info.c:1095
-msgid " (Mono)"
-msgstr " (Мона)"
-
-#: lib/widgets/rb-song-info.c:1098
-msgid " (Stereo)"
-msgstr " (Стэрэа)"
-
-#: lib/widgets/rb-song-info.c:1101
-#, c-format
-msgid " (%d channels)"
-msgstr " (%d каналаў)"
-
-#: lib/widgets/rb-sourcelist.c:188
-msgid "_Source"
-msgstr "_Крыніца"
-
-#. Translators - The + and - refer to increasing and decreasing the volume.
-#. ** I don't know if there are sensible alternatives in other languages
-#: lib/widgets/rb-volume.c:233
-msgid "+"
-msgstr "+"
-
-#: lib/widgets/rb-volume.c:234
-msgid "-"
-msgstr "-"
-
-#: library/rb-library.c:976
-msgid "Failed to load library!"
-msgstr "Збой у часе загрузкі бібліятэкі!"
-
-#: library/rb-library.c:1243
-#, c-format
-msgid "%ld:%02ld"
-msgstr "%ld:%02ld"
-
-#: library/rb-library.c:1544
-msgid "Loading songs..."
-msgstr "Загрузка песень..."
-
-#: library/rb-library.c:1557
-msgid "Refreshing songs..."
-msgstr "Абнаўленьне песьняў..."
-
-#: library/rb-library.c:1643
-#, c-format
-msgid "<b>%.1f</b> days (%ld songs)"
-msgstr "<b>%.1f</b> дзён (%ld песень)"
-
-#: library/rb-library.c:1646
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> гадзіны і <b>%ld</b> хвіліны (%ld песень)"
-
-#: library/rb-library.c:1649
-#, c-format
-msgid "<b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> хвіліны (%ld песень)"
-
-#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:500
-msgid "%Y-%m-%d %H:%M"
-msgstr "%Y-%m-%d %H:%M"
 
 #: monkey-media/monkey-media-audio-cd.c:220
 #, c-format
@@ -961,79 +761,104 @@ msgstr "Памылка чытаньня загалоўка аўдыё дыска
 msgid "Error getting leadout: %s"
 msgstr "Памылка атрыманьня leadout: %s"
 
+#: monkey-media/monkey-media-audio-quality.c:35
+msgid "Very low"
+msgstr "Вельмі нізкая"
+
+#: monkey-media/monkey-media-audio-quality.c:36
+msgid "Low"
+msgstr "Нізкая"
+
+#: monkey-media/monkey-media-audio-quality.c:37
+msgid "Regular"
+msgstr "Звычайная"
+
+#: monkey-media/monkey-media-audio-quality.c:38
+msgid "High"
+msgstr "Высокая"
+
+#: monkey-media/monkey-media-audio-quality.c:39
+msgid "Very high"
+msgstr "Вельмі высокая"
+
+#: monkey-media/monkey-media-audio-quality.c:40
+msgid "Lossless"
+msgstr "Меншыя страты"
+
 #: monkey-media/monkey-media-player-gst-old.c:371
-#: monkey-media/monkey-media-player-gst.c:453
+#: monkey-media/monkey-media-player-gst.c:455
 msgid "Failed to create gnomevfssrc input element; check your installation"
 msgstr ""
 "Збой пад час стварэньня уваходнага элемэнта gnomevfssrc; праверце вашу "
 "ўсталёўку"
 
 #: monkey-media/monkey-media-player-gst-old.c:380
-#: monkey-media/monkey-media-player-gst.c:468
+#: monkey-media/monkey-media-player-gst.c:470
 msgid "Failed to create cdparanoia input element; check your installation"
-msgstr ""
-"Збой стварэньня уваходнага элемэнта cdparanoia; праверце вашу ўсталёўку"
+msgstr "Збой стварэньня уваходнага элемэнта cdparanoia; праверце вашу ўсталёўку"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:562
-#: monkey-media/monkey-media-player-gst.c:518
+#: monkey-media/monkey-media-player-gst.c:520
 msgid "Failed to create spider element; check your installation"
 msgstr "Збой пад час стварэньня элемэнта adder; праверце вашу ўсталёўку"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:574
-#: monkey-media/monkey-media-player-gst.c:533
+#: monkey-media/monkey-media-player-gst-tmp.c:597
+#: monkey-media/monkey-media-player-gst.c:535
 msgid "Failed to create volume element; check your installation"
 msgstr "Збой пад час стварэньня элемэнта гучнасьці; праверце вашу ўсталёўку"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:592
-#: monkey-media/monkey-media-player-gst.c:554
+#: monkey-media/monkey-media-player-gst-tmp.c:616
+#: monkey-media/monkey-media-player-gst.c:556
 msgid "Could not create audio output element; check your settings"
 msgstr "Немагчыма стварыць выхадны элемэнт аўдыё; праверце вашу ўсталёўку"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:708
-#: monkey-media/monkey-media-player-gst.c:641
+#: monkey-media/monkey-media-player-gst-tmp.c:733
+#: monkey-media/monkey-media-player-gst.c:643
 msgid "No AudioCD support; check your settings"
 msgstr "Адсутнічае падтрымка аўдыёдыскаў; праверце вашыя ўсталяваньні"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:513
+#: monkey-media/monkey-media-player-gst-tmp.c:517
 #, c-format
 msgid "Failed to create %s input element; check your installation"
-msgstr ""
-"Збой пад час стварэньня ўваходнага элемэнта %s; праверце вашу ўсталёўку"
+msgstr "Збой пад час стварэньня ўваходнага элемэнта %s; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:538
-#: monkey-media/monkey-media-player-gst.c:491
+#: monkey-media/monkey-media-player-gst-tmp.c:543
+#: monkey-media/monkey-media-player-gst.c:493
 msgid "Failed to create queue element; check your installation"
 msgstr "Збой пад час стварэньня элемэнта чаргі; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-xine.c:334
+#: monkey-media/monkey-media-player-gst-tmp.c:578
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Немагчыма стварыць элемэнт %s; праверце вашую ўсталёўку"
+
+#: monkey-media/monkey-media-player-xine.c:335
 msgid "Failed to set up an audio driver; check your installation"
 msgstr "Збой наладкі драйвэра аўдыё; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-xine.c:422
+#: monkey-media/monkey-media-player-xine.c:431
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr "Адсутнічае ўваходны дадатак для %s; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-xine.c:431
+#: monkey-media/monkey-media-player-xine.c:440
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
-msgstr ""
-"Адсутнічае дадатак дэмультыплексаваньня для %s; праверце вашу ўсталёўку"
+msgstr "Адсутнічае дадатак дэмультыплексаваньня для %s; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-xine.c:440
+#: monkey-media/monkey-media-player-xine.c:449
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Збой дэмульціплексаваньня для %s; праверце вашу ўсталёўку"
 
-#: monkey-media/monkey-media-player-xine.c:448
+#: monkey-media/monkey-media-player-xine.c:457
 msgid "Internal error; check your installation."
 msgstr "Нутраная памылка; праверце вашу ўстаёўку."
 
-#: monkey-media/monkey-media-player-xine.c:457
+#: monkey-media/monkey-media-player-xine.c:465
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "Аўдыё ад %s не апрацавана; праверце вашу ўсталёўку."
@@ -1062,16 +887,16 @@ msgstr "Няма ідэнтыфікатара TRM для гэтае песьні
 msgid "No information for this song found"
 msgstr "Няма інфармацыі для гэтае песьні"
 
-#: monkey-media/monkey-media.c:228
+#: monkey-media/monkey-media.c:232
 msgid "GStreamer options:"
 msgstr "Выбары GStreamer:"
 
-#: monkey-media/monkey-media.c:505
+#: monkey-media/monkey-media.c:509
 #, c-format
 msgid "Please remove %s"
 msgstr "Калі ласка, выдаліце %s"
 
-#: monkey-media/monkey-media.c:507
+#: monkey-media/monkey-media.c:511
 #, c-format
 msgid "Failed to create directory %s"
 msgstr "Збой пад час стварэньня каталёга %s"
@@ -1086,7 +911,7 @@ msgstr "Запіс на аўдыё дыске"
 
 #: monkey-media/stream-info-impl/flac-stream-info-impl.c:197
 #: monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "Збой адкрыцьця файла для чытаньня"
@@ -1095,14 +920,22 @@ msgstr "Збой адкрыцьця файла для чытаньня"
 msgid "Error decoding FLAC file"
 msgstr "Памылка дэкадаваньня файла FLAC"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
 msgid "FLAC"
 msgstr "FLAC"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:469
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
+msgid "Failed to gather information about the file"
+msgstr "Немагчыма здабыць зьвесткі аб файле"
+
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:561
 #, c-format
 msgid "MPEG %d Layer III"
-msgstr "MPEG %d Layer III"
+msgstr "MPEG %d узровень III"
+
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:563
+msgid "MPEG 2.5 Layer III"
+msgstr "MPEG 2.5 узровень III"
 
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 msgid "Failed to seek file"
@@ -1112,66 +945,113 @@ msgstr "Збой пошуку па файле"
 msgid "Failed to open file as Ogg Vorbis"
 msgstr "Збой адкрыцьця файла Ogg Vorbis"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:539
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:547
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: shell/main.c:79
+#: rhythmdb/rhythmdb.c:1053 widgets/rb-entry-view.c:993
+msgid "Never"
+msgstr "Ніколі"
+
+#: rhythmdb/rhythmdb.c:1055
+msgid "%Y-%m-%d %H:%M"
+msgstr "%Y-%m-%d %H:%M"
+
+#: rhythmdb/rhythmdb.c:1883
+msgid "Loading songs..."
+msgstr "Загрузка песень..."
+
+#: rhythmdb/rhythmdb.c:1885
+msgid "Refreshing songs..."
+msgstr "Абнаўленьне песьняў..."
+
+#: rhythmdb/rhythmdb.c:1900
+#, c-format
+msgid "%d song"
+msgstr "%d песьні"
+
+#: rhythmdb/rhythmdb.c:1908
+#, c-format
+msgid "%.1f day"
+msgstr "%.1f дзень"
+
+#: rhythmdb/rhythmdb.c:1911
+#, c-format
+msgid "%ld minute"
+msgstr "%ld хвіліна"
+
+#: rhythmdb/rhythmdb.c:1913
+#, c-format
+msgid "%ld hour"
+msgstr "%ld гадзіна"
+
+#. Translators: the format is "X hours and X minutes"
+#: rhythmdb/rhythmdb.c:1917
+#, c-format
+msgid "%s and %s"
+msgstr "%s і %s"
+
+#: shell/main.c:84
 msgid "Print the playing song and exit"
 msgstr "Надрукаваць песьню якая прайграецца й выйсьці"
 
-#: shell/main.c:80
+#: shell/main.c:85
 msgid "Print the playing song URI and exit"
 msgstr "Надрукаваць URI песьні й выйсьці"
 
-#: shell/main.c:82
+#: shell/main.c:87
 msgid "Print the playing song length in seconds and exit"
 msgstr "Надрукаваць працягласьць песьні й выйсьці"
 
-#: shell/main.c:83
+#: shell/main.c:88
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Надрукаваць застаўшыся час й выйсьці"
 
-#: shell/main.c:84
+#: shell/main.c:89
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Перайсьці да пазначанага часу ў песьне, калі гэта магчыма, і выйсьці"
 
-#: shell/main.c:86
+#: shell/main.c:91
 msgid "Toggle play/pause mode"
 msgstr "Пераключыць рэжым прайграваньня"
 
-#: shell/main.c:87
+#: shell/main.c:92
 msgid "Jump to previous song"
 msgstr "Скочыць да папярэдняе песьні"
 
-#: shell/main.c:88
+#: shell/main.c:93
 msgid "Jump to next song"
 msgstr "Скочыць да наступнае песьні"
 
-#: shell/main.c:90
+#: shell/main.c:95
 msgid "Enable debugging code"
 msgstr "Уключыць код атладкі"
 
-#: shell/main.c:91
+#: shell/main.c:96
 msgid "Do not register the shell"
 msgstr "Не рэгістраваць абалонку"
 
-#: shell/main.c:92
+#: shell/main.c:97
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr "Не захоўваць даньні на сталай аснове (мае на ўвазе --no-registration)"
+
+#: shell/main.c:98
 msgid "Quit Rhythmbox"
 msgstr "Выйсьці з Rhythmbox"
 
-#: shell/main.c:93
+#: shell/main.c:99
 msgid "MonkeyMedia options:"
 msgstr "Выбары MonkeyMedia:"
 
-#: shell/main.c:186
+#: shell/main.c:199
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
-msgstr "Rhythmbox пакуль не працуе калі ўключаны гукі падзеяў у GNOME"
-" і выкарыстоўваецца esdsink."
+msgstr ""
+"Рытмбокс пакуль не працуе, калі ўключана агучваньне падзеяў у GNOME і "
+"выкарыстоўваецца esdsink."
 
-#: shell/main.c:226
+#: shell/main.c:279
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1180,98 +1060,57 @@ msgstr ""
 "Збой актывацыі абалонкі:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:549
-msgid "Load playlist"
-msgstr "Загрузка сьпіса прайграваньня"
-
-#: shell/rb-playlist-manager.c:589
-msgid "There is already a playlist with that name."
-msgstr "Тутака ужо маецца сьпіс з гэткай назвай."
-
-#: shell/rb-playlist-manager.c:639
-msgid "Save playlist"
-msgstr "Захаваць сьпіс прайграваньня"
-
-#: shell/rb-playlist-manager.c:756
+#: shell/rb-playlist-manager.c:416
 msgid "Couldn't parse playlist"
 msgstr "Немагчыма разабраць сьпіс прайграваньня"
 
-#: shell/rb-playlist-manager.c:808 shell/rb-playlist-manager.c:848
-#: shell/rb-playlist-manager.c:923
-msgid "Untitled"
-msgstr "Бяз назвы"
+#: shell/rb-playlist-manager.c:705
+msgid "Load playlist"
+msgstr "Загрузка сьпіса прайграваньня"
 
-#: shell/rb-playlist-manager.c:816
-msgid "C_reate"
-msgstr "С_тварыць"
+#: shell/rb-playlist-manager.c:759
+msgid "Save playlist"
+msgstr "Захаваць сьпіс прайграваньня"
 
-#: shell/rb-playlist-manager.c:831
-msgid "New Playlist"
-msgstr "Новы сьпіс прайграваньня"
-
-#: shell/rb-playlist-manager.c:842
-msgid "Please enter a name for the new playlist:"
-msgstr "Калі ласка, пазначце назву для новага сьпіса:"
-
-#: shell/rb-playlist-manager.c:859
-msgid "Add the _selected songs to the new playlist"
-msgstr "Дадаць _вылучаныя песьні да новага сьпіса"
-
-#: shell/rb-playlist-manager.c:890
-msgid "R_ename"
-msgstr "Зьмяніць _назву"
-
-#: shell/rb-playlist-manager.c:905
-msgid "Rename Playlist"
-msgstr "Зьмяніць назву сьпіс прайграваньня..."
-
-#: shell/rb-playlist-manager.c:916
-msgid "Please enter a new name for the playlist:"
-msgstr "Калі ласка, пазначце назву для cьпіса:"
-
-#: shell/rb-shell-player.c:345
+#: shell/rb-shell-player.c:447
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Збой стварэньня прайгравальніка: %s"
 
-#: shell/rb-shell-player.c:399
-msgid "Previous"
-msgstr "Папярэдняя"
+#: shell/rb-shell-player.c:508
+msgid "Go to previous song"
+msgstr "Перайсьці да папярэдняй песьні"
 
-#: shell/rb-shell-player.c:428
-msgid "Next"
-msgstr "Наступная"
+#: shell/rb-shell-player.c:537
+msgid "Go to next song"
+msgstr "Перайсьці да наступнай песьні"
 
-#: shell/rb-shell-player.c:447
-msgid "Volume Control"
-msgstr "Кіраваньне гучнасьцю"
+#: shell/rb-shell-player.c:556
+msgid "Change the music volume"
+msgstr "Зьмяніць гучнасьць музыкі"
 
-#: shell/rb-shell-player.c:660
+#: shell/rb-shell-player.c:830
 #, c-format
 msgid "Opening %s..."
 msgstr "Адкрыцьцё %s..."
 
-#: shell/rb-shell-player.c:1108
-msgid "Pause"
-msgstr "Прыпыніць"
+#: shell/rb-shell-player.c:1327
+msgid "Pause playback"
+msgstr "Прыпыніць прайграваньне"
 
-#: shell/rb-shell-player.c:1109
+#: shell/rb-shell-player.c:1328
 msgid "_Pause"
 msgstr "_Прыпыніць"
 
-#: shell/rb-shell-player.c:1116
-msgid "Play"
-msgstr "Граць"
+#: shell/rb-shell-player.c:1343
+msgid "Stop playback"
+msgstr "Спыніць прайграваньне"
 
-#: shell/rb-shell-player.c:1124
-msgid "Stop"
-msgstr "Спыніць"
-
-#: shell/rb-shell-player.c:1125
+#: shell/rb-shell-player.c:1344
 msgid "_Stop"
 msgstr "_Спыніць"
 
-#: shell/rb-shell-player.c:1444
+#: shell/rb-shell-player.c:1672
 msgid "Unexpected end of stream!"
 msgstr "Нечаканы канец плыні!"
 
@@ -1283,152 +1122,506 @@ msgstr "Уласьцівасьці музычнага прайгравальні
 msgid "General"
 msgstr "Асноўнае"
 
-#: shell/rb-shell.c:492
+#: shell/rb-shell.c:573
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Немагчыма разабраць URI \"%s\"\n"
 
-#: shell/rb-shell.c:891
+#: shell/rb-shell.c:755
+msgid "Whether the main window is visible"
+msgstr "Ці зьяўляецца асноўнае вакно бачным"
+
+#: shell/rb-shell.c:759
+msgid "Properties for the current song"
+msgstr "Уласьцівасьці бягучае песьні"
+
+#: shell/rb-shell.c:1137
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a\n"
-"different prefix than bonobo-activation; this\n"
-"warning is harmless, but IPC will not work.\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
-"Збой рэгістрацыі абалонкі: %s\n"
-"Верагодна Rhythmbox быў усталяваны у \n"
-"іншым за bonobo-activation прэфіксе; гэтае\n"
-"папярэджаньне няістотнае, але IPC не будзе працаваць.\n"
+"Немагчыма зарэгістраваць абалонку: %s\n"
+"Верагодна, Рытмбокс быў усталяваны з іншым прэфіксам, чымся ў bonobo-activation; "
+"гэтае папярэджаньне неістотнае, але IPC працаваць ня будзе."
 
-#: shell/rb-shell.c:1222
+#: shell/rb-shell.c:1469 shell/rb-tray-icon.c:227 widgets/rb-player.c:557
+msgid "Not playing"
+msgstr "Не прайграецца"
+
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1472
 #, c-format
 msgid ""
 "%s\n"
-"Paused, %s remaining"
+"Paused, %s"
 msgstr ""
 "%s\n"
-"Прыпынена, %s засталося"
+"Прыпынена, %s"
 
-#: shell/rb-shell.c:1225
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1476
 #, c-format
 msgid ""
 "%s\n"
-"%s remaining"
+"%s"
 msgstr ""
 "%s\n"
-"%s засталося"
+"%s"
 
-#: shell/rb-shell.c:1258
+#. Translators: %s is the song name
+#: shell/rb-shell.c:1511
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Прыпынена)"
 
-#: shell/rb-shell.c:1323
+#: shell/rb-shell.c:1579
 msgid "translator_credits"
 msgstr ""
-"Belarusian Language Linux Team\n"
-"Пляцоўка:    http://www.mova.linux.by\n"
-"Э.  пошта: <i18n@mova.org>"
+"Віталь ХІЛЬКО <dojlid@mova.org>\n"
+"Алесь НЯХАЙЧЫК <nab@mail.by>"
 
-#: shell/rb-shell.c:1332
+#: shell/rb-shell.c:1588
 msgid "Maintainers:"
-msgstr "Майнтайнэры:"
+msgstr "Падтрымлівальнікі:"
 
-#: shell/rb-shell.c:1336
+#: shell/rb-shell.c:1591
+msgid "Former Maintainers:"
+msgstr "Утваральныя падтымвальнікі:"
+
+#: shell/rb-shell.c:1594
 msgid "Contributors:"
 msgstr "Памочнікі:"
 
-#: shell/rb-shell.c:1360
+#: shell/rb-shell.c:1617
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
 "Audio backend: %s\n"
-"Audio formats: %s\n"
-msgstr "Праграмны пакет кіраваньня й прайграваньня музыкі для GNOME.\n"
-"Заснаваны на:·%s\n"
-"Фарматы аўдыё:·%s\n"
+"Audio formats:%s\n"
+msgstr ""
+"Праграма для кіраваньня й прайграваньня музыкай у GNOME.\n"
+"Рухавік: %s\n"
+"Гукавыя фарматы: %s\n"
 
-#: shell/rb-shell.c:1473
+#: shell/rb-shell.c:1730
 msgid "Choose Files or Directory"
 msgstr "Выбярыце файлы ці каталёг"
 
-#: shell/rb-shell.c:1515
+#: shell/rb-shell.c:1772
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Каб здабыць запісы з дыска вы мусіце ўсталяваць пакет Sound Juicer."
 
-#: shell/rb-shell.c:1522
+#: shell/rb-shell.c:1779
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Немагчыма запусьціць \"Гукавыціскалку\": %s"
 
-#: shell/rb-source-header.c:172
-msgid "Show _Browser"
-msgstr "Паказаць _праглядальнік"
+#: shell/rb-source-header.c:178
+msgid "Filter music display by genre, artist, album, or title"
+msgstr "Фільтраваньне бачнае музыкі па жанрах, выканаўцах, альбомах ці назвах"
 
-#: shell/rb-source-header.c:173
+#: shell/rb-source-header.c:185
+msgid "Show _Browser"
+msgstr "Паказаць аг_лядальнік"
+
+#: shell/rb-source-header.c:186
 msgid "Hide _Browser"
 msgstr "Схаваць _праглядальнік"
 
-#: shell/rb-statusbar.c:162
+#: shell/rb-statusbar.c:231
+msgid "Play songs in a random order"
+msgstr "Прайграваць песьні ў адвольным парадку"
+
+#: shell/rb-statusbar.c:233
 msgid "_Repeat"
-msgstr "_Паўтор"
+msgstr "Паўт_ор"
 
-#: sources/rb-audiocd-source.c:298
-msgid "music audiocd"
-msgstr "музычны дыск"
+#: shell/rb-statusbar.c:236
+msgid "Play first song again after all songs are played"
+msgstr "Прайграваць першы сьпеў нанова, пасьля заканчэньня прайграваньня ўсіх сьпеваў"
 
-#: sources/rb-audiocd-source.c:301
-msgid "Audio CD"
-msgstr "Аўдыё дыск"
+#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:430
+#: widgets/rb-query-creator.c:47
+msgid "Genre"
+msgstr "Жанра"
 
-#: sources/rb-audiocd-source.c:932
-msgid "Retrieving MusicBrainz data"
-msgstr "Атрыманьне даньняў MusicBrainz"
-
-#: sources/rb-audiocd-source.c:1094
-#, c-format
-msgid "Failed to parse %s as disc info file"
-msgstr "Памылка разбора %s як інфармацыі аб дыске"
-
-#: sources/rb-audiocd-source.c:1164
-msgid "Loading CD information"
-msgstr "Загрузка зьвестак аб дыске"
-
-#: sources/rb-audiocd-source.c:1231
-#, c-format
-msgid "%d songs, %d:%02d:%02d total time"
-msgstr "%d запісаў, %d:%02d:%02d часу агулам"
-
-#: sources/rb-iradio-source.c:359
+#: sources/rb-iradio-source.c:397
 msgid "Radio"
 msgstr "Радыё"
 
-#: sources/rb-iradio-source.c:486
+#: sources/rb-iradio-source.c:531
 #, c-format
-msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
-msgstr "<b>%d</b> агулам станцый у <b>%d</b> выразных жанрах"
+msgid "%d station"
+msgstr "%d станцыяў"
 
-#: sources/rb-library-source.c:532
+#: sources/rb-library-source.c:444 widgets/rb-query-creator.c:45
+msgid "Artist"
+msgstr "Выканаўца"
+
+#: sources/rb-library-source.c:458 widgets/rb-query-creator.c:46
+msgid "Album"
+msgstr "Альбом"
+
+#: sources/rb-library-source.c:561
 msgid "Library"
 msgstr "Бібліятэка"
 
-#: sources/rb-library-source.c:879
+#: sources/rb-library-source.c:992
 msgid "Add Location"
 msgstr "Дадаць разьмяшчэньне"
 
-#: sources/rb-playlist-source.c:603
-#, c-format
-msgid "Failed to parse %s as playlist file"
-msgstr "Памылка разбора %s як файла сьпіса прайграваньня"
-
-#: sources/rb-source.c:415
+#: sources/rb-source.c:475
 msgid "No properties available."
 msgstr "Уласьцівасьці недаступныя."
 
-#: sources/rb-source.c:498
+#: sources/rb-source.c:558
 msgid "This source does not support drag and drop."
 msgstr "Гэтая крыніца не падтрымлівае захоп-кіданьне."
+
+#: sources/rb-sourcelist.c:194
+msgid "_Source"
+msgstr "_Крыніца"
+
+#: widgets/rb-cell-renderer-pixbuf.c:109
+msgid "Pixbuf Object"
+msgstr "Аб'ект Pixbuf"
+
+#: widgets/rb-cell-renderer-pixbuf.c:110
+msgid "The pixbuf to render."
+msgstr "Pixbuf для стварэньня відарыса."
+
+#: widgets/rb-druid.c:239
+msgid "Welcome to Rhythmbox"
+msgstr "Вітаем у Рытмбокс"
+
+#: widgets/rb-druid.c:243
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+"Рытмбокс (анг. музчная скрыня)- гэта музычны прайгравальнік для GNOME "
+"які дазваляе вам рабіць усё: прайграваць вашыя музычныя файлы, слухаць "
+"інтарнэт-радыё, імпартаваць музыку з музычных дыскаў і шмат чаго яшчэ.\n"
+"\n"
+"Гэты чараўнік дапаможа вам пачаць працу, задаўшы вам простыя пытаньні."
+
+#: widgets/rb-druid.c:249
+msgid "Music library setup"
+msgstr "Наладка музычнае бібліятэкі"
+
+#: widgets/rb-druid.c:258
+msgid "Finish"
+msgstr "Фініш"
+
+#: widgets/rb-druid.c:260
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Organize\" then \"Add "
+"to Library\", or by importing it from CDs."
+msgstr ""
+"Вы ўжо падрыхтаваныя для запуску Рытмбокса.\n"
+"\n"
+"Запомніце, што вы можаце дадаць музыку ў фанатэку з выкарыстаньнем \"Зладзіць\" "
+"затым \"Дадаць да бібліятэкі\" ці імпартаваўшы іх з музычнага дыска."
+
+#: widgets/rb-druid.c:309
+#, c-format
+msgid "Error reading filename: %s"
+msgstr "Памылка чытаньня назвы файла: %s"
+
+#: widgets/rb-druid.c:324
+msgid "Choose a directory"
+msgstr "Выбярыце каталёг"
+
+#: widgets/rb-entry-view.c:1026 widgets/rb-player.c:837
+#, c-format
+msgid "%d:%02d"
+msgstr "%d:%02d"
+
+#: widgets/rb-entry-view.c:1429
+msgid "Now Playing"
+msgstr "Ідзе прайграваньне"
+
+#: widgets/rb-load-failure-dialog.c:119
+msgid "Error loading files into library"
+msgstr "Памылка загрузкі файлаў у бібліятэку"
+
+#: widgets/rb-load-failure-dialog.c:136
+msgid "_Error"
+msgstr "_Памылка"
+
+#: widgets/rb-load-failure-dialog.c:144
+msgid "_File"
+msgstr "_Файл"
+
+#: widgets/rb-player.c:280
+msgid "Listening to "
+msgstr "Праслухоўваньне у "
+
+#: widgets/rb-player.c:517
+msgid "Get information on this album from the web"
+msgstr "Атрымаць інфармацыю пра гэты альбом з павуціньня"
+
+#: widgets/rb-player.c:536
+msgid "Get information on this artist from the web"
+msgstr "Атрымаць інфармацыю пра гэтага выканаўцу з павуціньня"
+
+#: widgets/rb-player.c:564
+msgid "Get information on this station from the web"
+msgstr "Атрымаць зьвесткі пра гэтую станцыю з павуціньня"
+
+#: widgets/rb-player.c:827
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d of %d:%02d"
+
+#: widgets/rb-player.c:834
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "%d:%02d з %d:%02d засталося"
+
+#: widgets/rb-query-creator.c:44
+msgid "Title"
+msgstr "Назва"
+
+#: widgets/rb-query-creator.c:52
+msgid "contains"
+msgstr "зьмяшчае"
+
+#: widgets/rb-query-creator.c:53
+msgid "does not contain"
+msgstr "не зьмяшчае"
+
+#: widgets/rb-query-creator.c:181
+msgid "Create Automatic Playlist"
+msgstr "Стварыць новы самаабнаўляльны сьпіс"
+
+#. this string can only be so long, or there wont be a search entry :)
+#: widgets/rb-search-entry.c:118
+msgid "_Search:"
+msgstr "По_шук:"
+
+#: widgets/rb-song-display-box.c:113
+msgid "from"
+msgstr "з альбому"
+
+#: widgets/rb-song-display-box.c:115
+msgid "by"
+msgstr "выканаўцы"
+
+#: widgets/rb-song-info.c:229 widgets/rb-song-info.c:644
+msgid "Song Properties"
+msgstr "Уласьцівасьці запісу"
+
+#: widgets/rb-song-info.c:922
+msgid "on the desktop"
+msgstr "на стальце"
+
+#: widgets/rb-song-info.c:1139
+#, c-format
+msgid "%d kbps"
+msgstr "%d Кб/с"
+
+#: widgets/rb-song-info.c:1152
+msgid " (Mono)"
+msgstr " (Мона)"
+
+#: widgets/rb-song-info.c:1155
+msgid " (Stereo)"
+msgstr " (Стэрэа)"
+
+#: widgets/rb-song-info.c:1159
+#, c-format
+msgid " (%d channel)"
+msgstr " (%d канал)"
+
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: widgets/rb-volume.c:233
+msgid "+"
+msgstr "+"
+
+#: widgets/rb-volume.c:234
+msgid "-"
+msgstr "-"
+
+#~ msgid ""
+#~ "In order to get started using\n"
+#~ "Rhythmbox, this assistant will ask\n"
+#~ "you some simple questions."
+#~ msgstr ""
+#~ "Перад тым як выкарыстоўваць Rhythmbox,\n"
+#~ "гэты памочнік запытае вас колькі простых\n"
+#~ "пытаньняў."
+
+#~ msgid ""
+#~ "You are now ready to start\n"
+#~ "Rhythmbox."
+#~ msgstr ""
+#~ "Вы зараз гатовыя да запуску\n"
+#~ "Rhythmbox."
+
+#~ msgid "Name:"
+#~ msgstr "Назва:"
+
+#~ msgid "Select N_one"
+#~ msgstr "Скінуць _вылучэньне"
+
+#~ msgid "_Close"
+#~ msgstr "За_крыць"
+
+#~ msgid "_Delete Playlist"
+#~ msgstr "_Выдаліць сьпіс прайграваньня"
+
+#~ msgid "_Extract CD..."
+#~ msgstr "_Вызваліць аўдыё дыск..."
+
+#~ msgid "_Load Playlist..."
+#~ msgstr "_Загрузіць сьпіс прайграваньня..."
+
+#~ msgid "_Rename Playlist"
+#~ msgstr "_Зьмяніць назву сьпіса"
+
+#~ msgid "Unable to find file \"iradio-initial.xml\""
+#~ msgstr "Немагчыма адшукаць файл \"iradio-initial.xml\""
+
+#~ msgid "Failed to parse %s\n"
+#~ msgstr "Памылка разбору %s\n"
+
+#~ msgid "(Unknown)"
+#~ msgstr "(Невядома)"
+
+#~ msgid "THE ,DJ "
+#~ msgstr "Дзі-Джэй"
+
+#~ msgid "The child model"
+#~ msgstr "Спадчыная мадэля"
+
+#~ msgid "The model for the filtermodel to filter"
+#~ msgstr "Мадэля для мадэляў фільтараў"
+
+#~ msgid "The virtual root"
+#~ msgstr "Віртуальны корань"
+
+#~ msgid "The virtual root (relative to the child model) for this filtermodel"
+#~ msgstr "Віртуальны корань (адносна спадчынай мадэлі) для мадэлі фільтара"
+
+#~ msgid "TreeModelSort Model"
+#~ msgstr "Разнавід для TreeModelSort"
+
+#~ msgid "The model for the TreeModelSort to sort"
+#~ msgstr "Разнавід для ўпарадкаваньня TreeModelSort"
+
+#~ msgid "You are now ready to start Rhythmbox."
+#~ msgstr "Вы зараз гатовыя да запуску Rhythmbox."
+
+#~ msgid ""
+#~ "There was an error going to %s:\n"
+#~ "%s"
+#~ msgstr ""
+#~ "Адбылася памылка ў %s:\n"
+#~ "%s"
+
+#~ msgid "Failed to parse %s as NodeView layout file"
+#~ msgstr "Збой разбора %s як файла NodeView"
+
+#~ msgid "Failed to load library!"
+#~ msgstr "Збой у часе загрузкі бібліятэкі!"
+
+#~ msgid "%ld:%02ld"
+#~ msgstr "%ld:%02ld"
+
+#~ msgid "<b>%.1f</b> days (%ld songs)"
+#~ msgstr "<b>%.1f</b> дзён (%ld песень)"
+
+#~ msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+#~ msgstr "<b>%ld</b> гадзіны і <b>%ld</b> хвіліны (%ld песень)"
+
+#~ msgid "<b>%ld</b> minutes (%ld songs)"
+#~ msgstr "<b>%ld</b> хвіліны (%ld песень)"
+
+#~ msgid "There is already a playlist with that name."
+#~ msgstr "Тутака ужо маецца сьпіс з гэткай назвай."
+
+#~ msgid "Untitled"
+#~ msgstr "Бяз назвы"
+
+#~ msgid "C_reate"
+#~ msgstr "С_тварыць"
+
+#~ msgid "Please enter a name for the new playlist:"
+#~ msgstr "Калі ласка, пазначце назву для новага сьпіса:"
+
+#~ msgid "Add the _selected songs to the new playlist"
+#~ msgstr "Дадаць _вылучаныя песьні да новага сьпіса"
+
+#~ msgid "R_ename"
+#~ msgstr "Зьмяніць _назву"
+
+#~ msgid "Rename Playlist"
+#~ msgstr "Зьмяніць назву сьпіс прайграваньня..."
+
+#~ msgid "Please enter a new name for the playlist:"
+#~ msgstr "Калі ласка, пазначце назву для cьпіса:"
+
+#~ msgid "Previous"
+#~ msgstr "Папярэдняя"
+
+#~ msgid "Next"
+#~ msgstr "Наступная"
+
+#~ msgid "Pause"
+#~ msgstr "Прыпыніць"
+
+#~ msgid "Play"
+#~ msgstr "Граць"
+
+#~ msgid "Stop"
+#~ msgstr "Спыніць"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused, %s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Прыпынена, %s засталося"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "%s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "%s засталося"
+
+#~ msgid "music audiocd"
+#~ msgstr "музычны дыск"
+
+#~ msgid "Audio CD"
+#~ msgstr "Аўдыё дыск"
+
+#~ msgid "Retrieving MusicBrainz data"
+#~ msgstr "Атрыманьне даньняў MusicBrainz"
+
+#~ msgid "Failed to parse %s as disc info file"
+#~ msgstr "Памылка разбора %s як інфармацыі аб дыске"
+
+#~ msgid "Loading CD information"
+#~ msgstr "Загрузка зьвестак аб дыске"
+
+#~ msgid "%d songs, %d:%02d:%02d total time"
+#~ msgstr "%d запісаў, %d:%02d:%02d часу агулам"
+
+#~ msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
+#~ msgstr "<b>%d</b> агулам станцый у <b>%d</b> выразных жанрах"
+
+#~ msgid "Failed to parse %s as playlist file"
+#~ msgstr "Памылка разбора %s як файла сьпіса прайграваньня"
 
 #~ msgid "<b>Loading...</b>"
 #~ msgstr "<b>Загрузка...</b>"
@@ -1591,13 +1784,6 @@ msgstr "Гэтая крыніца не падтрымлівае захоп-кі�
 #~ msgid "Unable to handle URI \"%s\"\n"
 #~ msgstr "Немагчыма апрацаваць URI \"%s\"\n"
 
-#~ msgid ""
-#~ "%s\n"
-#~ "Paused"
-#~ msgstr ""
-#~ "%s\n"
-#~ "Прыпынена"
-
 #~ msgid "Lead developers:"
 #~ msgstr "Лідэры распрацоўкі:"
 
@@ -1609,9 +1795,6 @@ msgstr "Гэтая крыніца не падтрымлівае захоп-кі�
 
 #~ msgid "Unnamed"
 #~ msgstr "Бяз назвы"
-
-#~ msgid "%ld songs"
-#~ msgstr "%ld песьні"
 
 #~ msgid "Failed to create thread element"
 #~ msgstr "Збой пад час стварэньня элемэнта ніці"
@@ -1715,9 +1898,6 @@ msgstr "Гэтая крыніца не падтрымлівае захоп-кі�
 #~ msgid "Oh neej!!"
 #~ msgstr "О не!!"
 
-#~ msgid "_Actions"
-#~ msgstr "_Дзеяньні"
-
 #~ msgid ""
 #~ "Not playing\n"
 #~ "\n"
@@ -1736,9 +1916,6 @@ msgstr "Гэтая крыніца не падтрымлівае захоп-кі�
 
 #~ msgid "Track %d from "
 #~ msgstr "Запіс %d з "
-
-#~ msgid "%s - %s"
-#~ msgstr "%s - %s"
 
 #~ msgid "%s - Unknown"
 #~ msgstr "%s - Невядома"
@@ -1765,3 +1942,4 @@ msgstr "Гэтая крыніца не падтрымлівае захоп-кі�
 #~ msgstr ""
 #~ "Інтэрнэт\n"
 #~ "радыё"
+
