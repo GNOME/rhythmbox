@@ -44,6 +44,7 @@ rb_node_song_sync (RBNode *node,
 	GnomeVFSFileInfo *vfsinfo;
 	char *tmp, *location;
 	long minutes = 0, seconds = 0;
+	int min, max;
 	gboolean virgin;
 
 	location = rb_node_song_get_location (node);
@@ -57,14 +58,34 @@ rb_node_song_sync (RBNode *node,
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
+					    0,
 				            &value);
+	min = g_value_get_int (&value);
+	g_value_unset (&value);
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER,
+					    0,
+				            &value);
+	max = g_value_get_int (&value);
+	g_value_unset (&value);
+	
+	if (min >= 0 && max == -1)
+		tmp = g_strdup_printf ("%.2d", min);
+	else if (min >= 0 && max >= 0)
+		tmp = g_strdup_printf (_("%.2d of %.2d"), min, max);
+	else
+		tmp = g_strdup ("");
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, tmp);
 	rb_node_set_property (node,
 			      "track_number",
 			      &value);
+	g_free (tmp);
 	g_value_unset (&value);
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
+					    0,
 				            &value);
 	rb_node_set_property (node,
 			      "duration_raw",
@@ -86,6 +107,7 @@ rb_node_song_sync (RBNode *node,
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
+					    0,
 				            &value);
 	rb_node_set_property (node,
 			      "file_size_raw",
@@ -102,6 +124,7 @@ rb_node_song_sync (RBNode *node,
 
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+					    0,
 				            &value);
 	rb_node_set_property (node,
 			      "name",
@@ -135,6 +158,7 @@ rb_node_song_sync (RBNode *node,
 
 		monkey_media_stream_info_get_value (info,
 					            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+						    0,
 					            &value);
 		if (virgin == FALSE &&
 		    strcmp (rb_node_song_get_genre (node), g_value_get_string (&value)))
@@ -157,6 +181,7 @@ rb_node_song_sync (RBNode *node,
 
 		monkey_media_stream_info_get_value (info,
 					            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
+						    0,
 					            &value);
 		if (virgin == FALSE &&
 		    strcmp (rb_node_song_get_artist (node), g_value_get_string (&value)))
@@ -179,6 +204,7 @@ rb_node_song_sync (RBNode *node,
 
 		monkey_media_stream_info_get_value (info,
 					            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
+						    0,
 					            &value);
 		if (virgin == FALSE &&
 		    strcmp (rb_node_song_get_album (node), g_value_get_string (&value)))

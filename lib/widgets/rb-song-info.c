@@ -384,6 +384,7 @@ rb_song_info_update_title (RBSongInfo *song_info)
 	{
 		monkey_media_stream_info_get_value (song_info->priv->current_info, 
 						    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+						    0,
 						    &value);
 		text = g_value_get_string (&value);
 	}
@@ -437,6 +438,7 @@ rb_song_info_update_comments (RBSongInfo *song_info)
 	{
 		monkey_media_stream_info_get_value (song_info->priv->current_info, 
 						    MONKEY_MEDIA_STREAM_INFO_FIELD_COMMENT,
+						    0,
 						    &value);
 		text = g_value_get_string (&value);
 	}
@@ -462,26 +464,36 @@ static void
 rb_song_info_update_track (RBSongInfo *song_info)
 {
 	GValue value = { 0, };
-	const char *text;
-	char **tokens;
+	int val;
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
+					    0,
 					    &value);
-	text = g_value_get_string (&value);
-
-	if (text != NULL)
+	val = g_value_get_int (&value);
+	if (val >= 0)
 	{
-		tokens = g_strsplit (text, _("of"), 2);
-	
-		if (tokens[0] != NULL)
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur), g_strstrip (tokens[0]));
-		if (tokens[1] != NULL)
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), g_strstrip (tokens[1]));
+		char *tmp;
+		tmp = g_strdup_printf ("%.2d", val);
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur), tmp);
+		g_free (tmp);
+	}
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (song_info->priv->current_info, 
+					    MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER,
+					    0,
+					    &value);
+	val = g_value_get_int (&value);
+	if (val >= 0)
+	{
+		char *tmp;
+		tmp = g_strdup_printf ("%.2d", val);
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), tmp);
+		g_free (tmp);
 	}
 	g_value_unset (&value);
 }
-
 
 static void
 rb_song_info_update_entry (RBSongInfo *song_info,
@@ -495,6 +507,7 @@ rb_song_info_update_entry (RBSongInfo *song_info,
 	{
 		monkey_media_stream_info_get_value (song_info->priv->current_info, 
 						    field,
+						    0,
 						    &value);
 		text = g_value_get_string (&value);
 	}
@@ -517,6 +530,7 @@ rb_song_info_update_genre (RBSongInfo *song_info)
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+					    0,
 					    &value);
 	genre = g_value_get_string (&value);
 
@@ -538,6 +552,7 @@ rb_song_info_update_bitrate (RBSongInfo *song_info)
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE,
+					    0,
 					    &value);
 	text = g_strdup_printf (_("%d kbps"), g_value_get_int (&value));
 	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate), text);
@@ -554,6 +569,7 @@ rb_song_info_update_channels (RBSongInfo *song_info)
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS,
+					    0,
 					    &value);
 	channels = g_value_get_int (&value);
 	switch (channels)
@@ -583,6 +599,7 @@ rb_song_info_update_size (RBSongInfo *song_info)
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
+					    0,
 					    &value);
 	size = g_value_get_long (&value);
 	text = gnome_vfs_format_file_size_for_display (size);
@@ -601,6 +618,7 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 
 	monkey_media_stream_info_get_value (song_info->priv->current_info, 
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
+					    0,
 					    &value);
 	duration = g_value_get_long (&value);
 	minutes = duration / 60;
