@@ -1148,6 +1148,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	const char *documenters[] =
 	{
+		"Luca Ferretti (elle.uca@libero.it)",
 		"Mark Finlay (sisob@eircom.net)",
 		"Mark Humphreys (marquee@users.sourceforge.net)",
 		NULL
