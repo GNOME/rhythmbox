@@ -67,7 +67,6 @@ static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
-static void impl_search (RBSource *source, const char *text);
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *entries);
 static void impl_delete (RBSource *source);
@@ -174,8 +173,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_get_entry_view = impl_get_entry_view;
-	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_search = impl_search;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -642,11 +640,6 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 /* 	} */
 
 /* 	g_list_free (uri_list); */
-}
-
-static void
-impl_search (RBSource *asource, const char *search_text)
-{
 }
 
 static void

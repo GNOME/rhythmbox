@@ -241,6 +241,11 @@ rb_source_header_set_property (GObject *object,
 					  header);
 			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 						  rb_source_can_search (header->priv->selected_source));
+			if (!header->priv->browser_key &&
+			    !rb_source_can_search (header->priv->selected_source))
+				gtk_widget_hide (GTK_WIDGET (header));
+			else
+				gtk_widget_show (GTK_WIDGET (header));
 		}
 		rb_source_header_sync_control_state (header);
 		
