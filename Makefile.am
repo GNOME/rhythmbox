@@ -17,4 +17,3 @@ CLEANFILES =				\
 	./intltool-extract 		\
 	./intltool-merge 		\
 	./intltool-update
-

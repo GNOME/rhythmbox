@@ -2,7 +2,22 @@ In order to keep the code nice and clean we have a few requirements you'll
 need to stick to in order to get your patch accepted:
 
 - use 8-space tabs for indentation
-- curly brackets are NOT on a new line (we are slowly converting the code)
+- curly brackets are NOT on a new line, except for function definitions.
+  (we are slowly converting the code)
+
+  Here is a correctly indented sample:
+
+void
+foo (const char *bla, gpointer cow)
+{
+	if (!strcmp (bla, cow)) {
+		g_print ("moo!");
+		return;
+	}
+
+	...
+}	
+
 - if statements are written like this: "if (this != that)"
 - g_list_next/previous is preferred to list->next or list->previous
 - every function should have a prototype

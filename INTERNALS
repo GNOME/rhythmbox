@@ -61,7 +61,7 @@ The Library is the main part of Rhythmbox; it is the thing that lets
 you play local files.  We'll go over some of the most important things,
 and then come back to it later once we know more.
 
-*** RBNode, RBNodeSong
+*** RBNode
 
 Understanding RBNode (library/rb-node.c) is crucial.  RBNode is not
 just used by the Library actually; every other source uses it as well.
@@ -73,11 +73,6 @@ types; e.g. a string, integer, or a pointer to another node.
 
 These dynamic properties pretty much correspond to the song
 metadata you can see like song length, duration, location, etc.
-
-However, the songs are not represented directly by RBNode instances.
-Instead, the library has a subclass of RBNode called RBNodeSong.  This
-is subclass just is a bit more convenient to work with for the library
-than RBNode directly.
 
 **** The tree structure
 So where does the parent/children relationship come in?

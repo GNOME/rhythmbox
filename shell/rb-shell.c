@@ -151,9 +151,9 @@ static void rb_shell_cmd_load_playlist (BonoboUIComponent *component,
 static void rb_shell_cmd_new_playlist (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
-/* static void rb_shell_cmd_new_station (BonoboUIComponent *component, */
-/* 				      RBShell *shell, */
-/* 				      const char *verbname); */
+static void rb_shell_cmd_new_station (BonoboUIComponent *component,
+				      RBShell *shell,
+				      const char *verbname);
 static void rb_shell_cmd_delete_group (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
@@ -289,7 +289,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddLocation",  (BonoboUIVerbFn) rb_shell_cmd_add_location),
 	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_shell_cmd_load_playlist),
  	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_shell_cmd_new_playlist),
-/* 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station), */
+	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
 	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
 	BONOBO_UI_VERB ("DeletePlaylist",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB_END
@@ -1073,38 +1073,23 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		    RBShell *shell,
 		    const char *verbname)
 {
+	const char **tem;
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
 
 	const char *authors[] =
 	{
 		"",
-		"Jorn Baayen (jorn@nl.linux.org)",
-		"Colin Walters (walters@verbum.org)",
+#include "MAINTAINERS.tab"
 		"",
-		"",
-		"Kenneth Christiansen (kenneth@gnu.org)",
-		"Mark Finlay (sisob@eircom.net)",
-		"Marco Pesenti Gritti (marco@it.gnome.org)",
-		"Mark Humphreys (marquee@users.sourceforge.net)",
-		"Laurens Krol (laurens.krol@planet.nl)",
-		"Xan Lopez (xan@dimensis.com)",
-		"Olivier Martin (oleevye@wanadoo.fr)",
-		"Seth Nickell (snickell@stanford.edu)",
-		"Bastien Nocera (hadess@hadess.net)",
-		"Jan Arne Petersen (jpetersen@gnome-de.org)",
-		"Kristian Rietveld (kris@gtk.org)",
-		"Christian Schaller (uraeus@linuxrising.org)",
-		"Dennis Smit (synap@yourbase.nl)",
-		"James Willcox (jwillcox@gnome.org)",
+		NULL,
+#include "AUTHORS.tab"
 		NULL
 	};
 
 	const char *documenters[] =
 	{
-		"Luca Ferretti (elle.uca@libero.it)",
-		"Mark Finlay (sisob@eircom.net)",
-		"Mark Humphreys (marquee@users.sourceforge.net)",
+#include "DOCUMENTERS.tab"
 		NULL
 	};
 
@@ -1118,8 +1103,15 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
-	authors[0] = _("Lead developers:");
-	authors[4] = _("Contributors:");
+	authors[0] = _("Maintainers:");
+	tem = authors;
+	while (1) {
+		if (*tem == NULL) {
+			*tem = _("Contributors:");
+			break;
+		}
+		tem++;
+	}
 
 	about = gnome_about_new ("Rhythmbox", VERSION,
 				 "Copyright \xc2\xa9 2002, 2003 Jorn Baayen, Colin Walters",
@@ -1449,18 +1441,17 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 }
 
 
-/* static void */
-/* rb_shell_cmd_new_station (BonoboUIComponent *component, */
-/* 			  RBShell *shell, */
-/* 			  const char *verbname) */
-/* { */
-/* 	GtkWidget *dialog; */
-/* 	rb_debug ("Got new station command"); */
-/* 	dialog = rb_new_station_dialog_new (shell->priv->iradio_backend); */
-/* 	gtk_dialog_run (GTK_DIALOG (dialog)); */
-/* 	gtk_widget_destroy (dialog); */
-/* } */
-
+static void
+rb_shell_cmd_new_station (BonoboUIComponent *component,
+			  RBShell *shell,
+			  const char *verbname)
+{
+	GtkWidget *dialog;
+	rb_debug ("Got new station command");
+	dialog = rb_new_station_dialog_new (shell->priv->iradio_backend);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
+}
 
 static void
 rb_shell_quit (RBShell *shell)
