@@ -23,6 +23,7 @@
 
 #include <stdarg.h>
 #include <glib/gtypes.h>
+#include <glib-object.h>
 
 G_BEGIN_DECLS
 
