@@ -1,3 +1,30 @@
+2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_get_type),
+	(rb_sourcelist_init), (rb_sourcelist_new), (rb_sourcelist_append):
+	* lib/widgets/rb-sourcelist.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_sync_sourcelist_visibility):
+	* sources/rb-iradio-source.c: (rb_iradio_source_init),
+	(impl_get_description):
+	* sources/rb-library-source.c: (rb_library_source_init):
+
+	Sourcelist fixes:
+	- Use standard treeview header
+	- Use standard font size
+	- Smaller icon size to fit standard font size better
+	- RBSourceList is a scrolledwindow instead of a vbox,
+	  pack treeview directly into scrolledwindow instead of
+	  the whole thing into a scrolledwin manually (that would have
+	  broken for scrolling)
+
+	TODO:
+	- in-place editing (F2)
+	- make playing source bold
+	- doubleclick should start playing
+	- needs to be sorted (with priority stuff to have library on top etc)
+	- paned pos needs to be saved
+
 2003-05-16  Colin Walters  <walters@verbum.org>
 
 	* lib/rb-preferences.h:

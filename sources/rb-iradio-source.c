@@ -238,7 +238,7 @@ rb_iradio_source_init (RBIRadioSource *source)
 
 	source->priv->pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_IRADIO,
-						       GTK_ICON_SIZE_LARGE_TOOLBAR,
+						       GTK_ICON_SIZE_MENU,
 						       NULL);
 	gtk_widget_destroy (dummy);
 }
@@ -377,7 +377,7 @@ rb_iradio_source_new (BonoboUIContainer *container,
 static const char *
 impl_get_description (RBSource *source)
 {
-	return _("Internet\nRadio");
+	return _("Radio");
 }
 
 static GdkPixbuf *

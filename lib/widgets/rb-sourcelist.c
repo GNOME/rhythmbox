@@ -36,10 +36,8 @@
 
 struct RBSourceListPriv
 {
-	GtkWidget *srclabel;
-	
 	GtkWidget *treeview;
-	
+
 	GtkListStore *store;
 	GtkTreeSelection *selection;
 };
@@ -80,7 +78,7 @@ rb_sourcelist_get_type (void)
 			(GInstanceInitFunc) rb_sourcelist_init
 		};
 
-		rb_sourcelist_type = g_type_register_static (GTK_TYPE_VBOX, "RBSourceList",
+		rb_sourcelist_type = g_type_register_static (GTK_TYPE_SCROLLED_WINDOW, "RBSourceList",
 							     &rb_sourcelist_info, 0);
 	}
 	
@@ -117,49 +115,32 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *gcolumn;
-	int width;
-	PangoAttrList *titleattrs = pango_attr_list_new ();
-	PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
 
-	attr->start_index = 0;
-	attr->end_index = G_MAXINT;
-	pango_attr_list_insert (titleattrs, attr);
-		
 	sourcelist->priv = g_new0 (RBSourceListPriv, 1);
 
-	sourcelist->priv->srclabel = gtk_label_new (_("Sources"));
-	gtk_label_set_justify (GTK_LABEL (sourcelist->priv->srclabel), GTK_JUSTIFY_CENTER);
-	gtk_label_set_attributes (GTK_LABEL (sourcelist->priv->srclabel), titleattrs);
-
 	sourcelist->priv->store = gtk_list_store_new (4, GDK_TYPE_PIXBUF, G_TYPE_STRING, G_TYPE_POINTER, PANGO_TYPE_ATTR_LIST);
-	
-	sourcelist->priv->treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sourcelist->priv->store));
-	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
 
-	gtk_box_pack_start (GTK_BOX (sourcelist), sourcelist->priv->srclabel, FALSE, FALSE, 0);
+	sourcelist->priv->treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sourcelist->priv->store));
 
 	/* Set up the pixbuf column */
 	renderer = gtk_cell_renderer_pixbuf_new ();
-	gcolumn = (GtkTreeViewColumn *) gtk_tree_view_column_new_with_attributes ("ERROR", renderer,
-										  "pixbuf", RB_SOURCELIST_COLUMN_PIXBUF,
-										  NULL);
-	gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_icon_size_lookup (GTK_ICON_SIZE_LARGE_TOOLBAR, &width, NULL);
-	gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
+	gcolumn = gtk_tree_view_column_new ();
+	gtk_tree_view_column_set_title (gcolumn, _("_Source"));
 	gtk_tree_view_column_set_clickable (gcolumn, FALSE);
 	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), gcolumn);
-	
+
+	gtk_tree_view_column_pack_start (gcolumn, renderer, FALSE);
+	gtk_tree_view_column_set_attributes (gcolumn, renderer,
+				             "pixbuf", RB_SOURCELIST_COLUMN_PIXBUF,
+					     NULL);
+
 	/* Set up the name column */
 	renderer = gtk_cell_renderer_text_new ();
-	gcolumn = (GtkTreeViewColumn *) gtk_tree_view_column_new_with_attributes ("SourceSource", renderer,
-										  "text", RB_SOURCELIST_COLUMN_NAME,
-										  "attributes", RB_SOURCELIST_COLUMN_ATTRIBUTES,
-										  NULL);
-	gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-	gtk_tree_view_column_set_clickable (gcolumn, TRUE);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (sourcelist->priv->treeview), gcolumn);
-
-	gtk_box_pack_start_defaults (GTK_BOX (sourcelist), sourcelist->priv->treeview);
+	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
+	gtk_tree_view_column_set_attributes (gcolumn, renderer,
+					     "text", RB_SOURCELIST_COLUMN_NAME,
+					     "attributes", RB_SOURCELIST_COLUMN_ATTRIBUTES,
+					     NULL);
 
 	sourcelist->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sourcelist->priv->treeview));
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->selection),
@@ -183,7 +164,20 @@ rb_sourcelist_finalize (GObject *object)
 GtkWidget *
 rb_sourcelist_new (void)
 {
-	return g_object_new (RB_TYPE_SOURCELIST, NULL);
+	RBSourceList *sourcelist;
+
+	sourcelist = RB_SOURCELIST (g_object_new (RB_TYPE_SOURCELIST,
+						  "hadjustment", NULL,
+						  "vadjustment", NULL,
+					          "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
+					          "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
+					          "shadow_type", GTK_SHADOW_IN,
+					          NULL));
+
+	gtk_container_add (GTK_CONTAINER (sourcelist),
+			   sourcelist->priv->treeview);
+
+	return GTK_WIDGET (sourcelist);
 }
 
 void
@@ -191,15 +185,10 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 		      RBSource *source)
 {
 	GtkTreeIter iter;
-	PangoAttrList *largerattrs = pango_attr_list_new ();
-	PangoAttribute *largerattr = pango_attr_scale_new ((PANGO_SCALE_MEDIUM + PANGO_SCALE_LARGE)/2.0);
-	
+	PangoAttrList *attrs = pango_attr_list_new ();
+
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 	g_return_if_fail (RB_IS_SOURCE (source));
-
-	largerattr->start_index = 0;
-	largerattr->end_index = G_MAXINT;
-	pango_attr_list_insert (largerattrs, largerattr);
 
 	gtk_list_store_append (sourcelist->priv->store, &iter);
 
@@ -207,7 +196,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			    RB_SOURCELIST_COLUMN_PIXBUF, rb_source_get_pixbuf (source),
 			    RB_SOURCELIST_COLUMN_NAME, rb_source_get_description (source),
 			    RB_SOURCELIST_COLUMN_SOURCE, source,
-			    RB_SOURCELIST_COLUMN_ATTRIBUTES, largerattrs,
+			    RB_SOURCELIST_COLUMN_ATTRIBUTES, attrs,
 			    -1);
 }
 
@@ -242,7 +231,7 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 
 	g_assert (gtk_tree_selection_get_selected (sourcelist->priv->selection,
 						   &cindy, &iter));
-	
+
 	gtk_tree_model_get (cindy, &iter,
 			    RB_SOURCELIST_COLUMN_SOURCE, &target, -1);
 	g_return_if_fail (RB_IS_SOURCE (target));

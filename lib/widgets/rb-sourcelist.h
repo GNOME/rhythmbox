@@ -22,43 +22,44 @@
 #ifndef __RB_SOURCELIST_H
 #define __RB_SOURCELIST_H
 
-#include <gtk/gtkvbox.h>
+#include <gtk/gtkscrolledwindow.h>
 
 #include "rb-source.h"
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_SOURCELIST		(rb_sourcelist_get_type ())
-#define RB_SOURCELIST(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_SOURCELIST, RBSourceList))
-#define RB_SOURCELIST_CLASS(klass)	(G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_SOURCELIST, RBSourceListClass))
-#define RB_IS_SOURCELIST(obj)		(G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_SOURCELIST))
-#define RB_IS_SOURCELIST_CLASS(klass)	(G_TYPE_CHECK_CLASS_TYPE ((obj), RB_TYPE_SOURCELIST))
-#define RB_SOURCELIST_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_SOURCELIST, RBSourceListClass))
+#define RB_TYPE_SOURCELIST	      (rb_sourcelist_get_type ())
+#define RB_SOURCELIST(obj)	      (G_TYPE_CHECK_INSTANCE_CAST ((obj), RB_TYPE_SOURCELIST, RBSourceList))
+#define RB_SOURCELIST_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), RB_TYPE_SOURCELIST, RBSourceListClass))
+#define RB_IS_SOURCELIST(obj)	      (G_TYPE_CHECK_INSTANCE_TYPE ((obj), RB_TYPE_SOURCELIST))
+#define RB_IS_SOURCELIST_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), RB_TYPE_SOURCELIST))
+#define RB_SOURCELIST_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_SOURCELIST, RBSourceListClass))
 
 typedef struct RBSourceListPriv RBSourceListPriv;
 
 typedef struct RBSourceList
 {
-	GtkVBox parent;
+	GtkScrolledWindow parent;
 
 	RBSourceListPriv *priv;
 } RBSourceList;
 
 typedef struct RBSourceListClass
 {
-	GtkVBoxClass parent_class;
+	GtkScrolledWindowClass parent_class;
 
-	void	(*selected)	(RBSourceList *list, RBSource *source);
+	void (*selected) (RBSourceList *list, RBSource *source);
 } RBSourceListClass;
 
-GType		rb_sourcelist_get_type	(void);
+GType	   rb_sourcelist_get_type (void);
 
-GtkWidget *	rb_sourcelist_new	(void);
+GtkWidget *rb_sourcelist_new	  (void);
 
-void		rb_sourcelist_append	(RBSourceList *sourcelist,
-					 RBSource *source);
+void	   rb_sourcelist_append	  (RBSourceList *sourcelist,
+				   RBSource *source);
 
-void		rb_sourcelist_select	(RBSourceList *sourcelist, RBSource *source);
+void	   rb_sourcelist_select	  (RBSourceList *sourcelist,
+				   RBSource *source);
 
 G_END_DECLS
 
