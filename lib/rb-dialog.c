@@ -80,6 +80,7 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 					 GTK_DIALOG_MODAL,
 					 type,
 					 GTK_BUTTONS_OK,
+					 "%s",
 					 buffer);
 
 	g_signal_connect_swapped (GTK_OBJECT (dialog), "response",
