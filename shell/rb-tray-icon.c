@@ -42,6 +42,7 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "rb-preferences.h"
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
@@ -56,6 +57,8 @@ static void rb_tray_icon_get_property (GObject *object,
 					  GParamSpec *pspec);
 static void rb_tray_set_visibility (RBTrayIcon *tray, int state);
 static void rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
+						RBTrayIcon *icon);
+static void rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 						RBTrayIcon *icon);
 static void sync_menu (RBTrayIcon *tray);
 static void rb_tray_icon_show_window_changed_cb (BonoboUIComponent *component,
@@ -222,6 +225,10 @@ rb_tray_icon_init (RBTrayIcon *icon)
 			  "button_press_event",
 			  G_CALLBACK (rb_tray_icon_button_press_event_cb),
 			  icon);
+	g_signal_connect (G_OBJECT (icon->priv->ebox),
+			  "scroll_event",
+			  G_CALLBACK (rb_tray_icon_scroll_event_cb),
+			  icon);
 	gtk_drag_dest_set (icon->priv->ebox, GTK_DEST_DEFAULT_ALL, target_uri, 1, GDK_ACTION_COPY);
 	g_signal_connect (G_OBJECT (icon->priv->ebox), "drag_data_received",
 			  G_CALLBACK (rb_tray_icon_drop_cb), icon);
@@ -368,6 +375,32 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 	default:
 		break;
 	}
+}
+
+static void
+rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
+				    RBTrayIcon *icon)
+{
+	rb_debug ("tray button scroll");
+	float volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+	switch(event->scroll.direction) {
+	case GDK_SCROLL_UP:
+		volume += 0.1;
+		if (volume > 1.0)
+			volume = 1.0;
+		break;
+	case GDK_SCROLL_DOWN:
+		volume -= 0.1;
+		if (volume < 0)
+			volume = 0;
+		break;
+	case GDK_SCROLL_LEFT:
+	case GDK_SCROLL_RIGHT:
+		break;
+	}
+	
+	rb_debug ("got scroll, setting volume to %f", volume);
+	eel_gconf_set_float (CONF_STATE_VOLUME, volume);
 }
 
 static void
