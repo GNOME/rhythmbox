@@ -25,6 +25,7 @@
 #include <gtk/gtkhscale.h>
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkstock.h>
+#include <gtk/gtktooltips.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
@@ -93,6 +94,7 @@ struct RBPlayerPrivate
 	GtkWidget *textframe;
 	GtkWidget *textline;
 	gboolean textline_shown;
+	GtkTooltips *tips;
 	RBLink *artist;
 	RBLink *album;
 
@@ -226,6 +228,11 @@ rb_player_init (RBPlayer *player)
 	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
 	player->priv->elapsed = gtk_label_new ("0:00");
 	player->priv->elapsed_box = gtk_event_box_new ();
+	player->priv->tips = gtk_tooltips_new ();
+	gtk_tooltips_set_tip (player->priv->tips,
+			      player->priv->elapsed_box,
+			      _("Elapsed time of the song. Click on it to display remaining and total time"),
+			      NULL);
 	g_signal_connect (G_OBJECT (player->priv->elapsed_box),
 			  "button_press_event",
 			  G_CALLBACK (rb_player_elapsed_button_press_event_cb),
@@ -497,12 +504,24 @@ rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_box,
 	{
 	case RB_PLAYER_STATE_MODE_ELAPSED:
 		player->priv->state->mode = RB_PLAYER_STATE_MODE_REMAINING;
+		gtk_tooltips_set_tip (player->priv->tips,
+				      player->priv->elapsed_box,
+				      _("Remaining time of the song. Click on it to display total and elapsed time"),
+				      NULL);
 		break;
 	case RB_PLAYER_STATE_MODE_REMAINING:
 		player->priv->state->mode = RB_PLAYER_STATE_MODE_TOTAL;
+		gtk_tooltips_set_tip (player->priv->tips,
+				      player->priv->elapsed_box,
+				      _("Total time of the song. Click on it to display elapsed and remaining time"),
+				      NULL);
 		break;
 	case RB_PLAYER_STATE_MODE_TOTAL:
 		player->priv->state->mode = RB_PLAYER_STATE_MODE_ELAPSED;
+		gtk_tooltips_set_tip (player->priv->tips,
+				      player->priv->elapsed_box,
+				      _("Elapsed time of the song. Click on it to display remaining and total time"),
+				      NULL);
 		break;
 	}
 
