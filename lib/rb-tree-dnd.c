@@ -711,9 +711,10 @@ rb_tree_dnd_add_drag_source_support (GtkTreeView *tree_view,
 				 gint n_targets,
 				 GdkDragAction actions)
 {
+	RbTreeDndData *priv_data = NULL;
  	g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
-	RbTreeDndData *priv_data = init_rb_tree_dnd_data (GTK_WIDGET(tree_view));
+	priv_data = init_rb_tree_dnd_data (GTK_WIDGET(tree_view));
 
 	if (!priv_data->button_press_event_handler) {
 
@@ -747,9 +748,10 @@ rb_tree_dnd_add_drag_dest_support (GtkTreeView *tree_view,
 			       gint n_targets,
 			       GdkDragAction actions)
 {
+	RbTreeDndData *priv_data = NULL;
 	g_return_if_fail (GTK_IS_TREE_VIEW (tree_view));
 
-	RbTreeDndData *priv_data = init_rb_tree_dnd_data (GTK_WIDGET(tree_view));
+	priv_data = init_rb_tree_dnd_data (GTK_WIDGET(tree_view));
 
 	if (!priv_data->drag_leave_handler) {
 
