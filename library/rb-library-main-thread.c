@@ -320,60 +320,20 @@ thread_main (RBLibraryMainThread *thread)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_library_get_song_by_location (thread->priv->library, realuri) == NULL) {
-					rb_debug ("uri \"%s\" does not exist, adding new node", realuri);
-					rb_library_new_node (thread->priv->library,
-							     realuri,
-							     &error);
-					if (error != NULL) {
-						push_err (thread, uri, error);
-						break;
-					}
-				} else {
-					rb_debug ("uri \"%s\" already exists", realuri);
-				}
-
-				rb_file_monitor_add (rb_file_monitor_get (), realuri);
+				rb_library_add_uri_sync (thread->priv->library, uri, &error);
 				break;
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
-				{
-					RBNode *song;
-
-					song = rb_library_get_song_by_location (thread->priv->library, realuri);
-					if (song == NULL)
-						break;
-
-					if (rb_uri_exists (realuri) == FALSE) {
-						rb_debug ("song \"%s\" was deleted", realuri);
-						rb_node_unref (song);
-						break;
-					}
-
-					rb_debug ("updating existing node \"%s\"", realuri);
-					rb_library_update_node (thread->priv->library, song, &error);
-					if (error != NULL) {
-						push_err (thread, uri, error);
-						break;
-					}
-				}
-
-				/* just to be sure */
-				rb_file_monitor_add (rb_file_monitor_get (), realuri);
+				rb_library_update_uri (thread->priv->library, uri, &error);
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
-				{
-					RBNode *song;
-
-					song = rb_library_get_song_by_location (thread->priv->library, realuri);
-					if (song == NULL)
-						break;
-
-					rb_node_unref (song);
-				}
-
-				rb_file_monitor_remove (rb_file_monitor_get (), realuri);
+				rb_library_remove_uri (thread->priv->library, uri);
 				break;
 			default:
+				break;
+			}
+
+			if (error != NULL) {
+				push_err (thread, uri, error);
 				break;
 			}
 

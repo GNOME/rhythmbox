@@ -57,6 +57,15 @@ RBLibrary *		rb_library_new                  (void);
 
 RBLibraryAction *	rb_library_add_uri              (RBLibrary *library,
 							 const char *uri);
+/* These methods are called asynchronously by the library main thread. */
+void			rb_library_add_uri_sync         (RBLibrary *library,
+							 const char *uri,
+							 GError **error);
+void			rb_library_update_uri           (RBLibrary *library,
+							 const char *uri,
+							 GError **error);
+void			rb_library_remove_uri           (RBLibrary *library,
+							 const char *uri);
 
 RBNode *		rb_library_new_node		(RBLibrary *library,
 							 const char *location,

@@ -31,8 +31,8 @@ librb_la_SOURCES =					\
 	rb-thread-helpers.h				\
 	rb-util.c					\
 	rb-util.h					\
-	rb-windows-ini-file.c				\
-	rb-windows-ini-file.h				\
+	rb-playlist.c					\
+	rb-playlist.h					\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\

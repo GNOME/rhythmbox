@@ -117,6 +117,9 @@
     <cmd name="LoadPlaylist"
 	 _tip="Choose a playlist to be loaded"/>
 
+    <cmd name="SavePlaylist"
+	 _tip="Save a playlist to a file"/>
+
     <cmd name="ShowSourceList"
 	 _tip="Change the visibility of the source list"
 	 type="toggle"/>
@@ -162,10 +165,11 @@
       <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
       <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
       <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
+      <menuitem name="SavePlaylist" verb="SavePlaylist" _label="_Save Playlist..."/>
 
       <separator/>
 
-      <menuitem name="FileGroupDelete" verb="FileGroupDelete" _label="_Delete Playlist"/>
+      <menuitem name="FileDeletePlaylist" verb="FileDeletePlaylist" _label="_Delete Playlist"/>
 
       <separator/>
 
@@ -316,7 +320,7 @@
     </popup>
 
     <popup name="GroupSourceList">
-      <menuitem name="GroupDelete"
+      <menuitem name="DeletePlaylist"
 		_label="_Delete"
 		_tip="Delete selection"
 		pixtype="stock" pixname="gtk-delete"

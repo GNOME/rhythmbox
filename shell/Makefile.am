@@ -25,8 +25,6 @@ rhythmbox_SOURCES =              			\
 	rb-source-header.h				\
 	rb-statusbar.c					\
 	rb-statusbar.h					\
-	rb-playlist.c					\
-	rb-playlist.h					\
 	rb-shell-preferences.c				\
 	rb-shell-preferences.h				\
 	rb-shell-clipboard.c				\

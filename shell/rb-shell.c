@@ -74,7 +74,6 @@
 #include "rb-shell-preferences.h"
 #include "rb-group-source.h"
 #include "rb-file-monitor.h"
-#include "rb-windows-ini-file.h"
 #include "rb-library-dnd-types.h"
 #include "rb-volume.h"
 #include "rb-thread-helpers.h"
@@ -152,16 +151,19 @@ static void rb_shell_cmd_add_location (BonoboUIComponent *component,
 static void rb_shell_cmd_load_playlist (BonoboUIComponent *component,
 					RBShell *shell,
 					const char *verbname);
+static void rb_shell_cmd_save_playlist (BonoboUIComponent *component,
+					RBShell *shell,
+					const char *verbname);
 static void rb_shell_cmd_new_playlist (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
 static void rb_shell_cmd_new_station (BonoboUIComponent *component,
 				      RBShell *shell,
 				      const char *verbname);
-static void rb_shell_cmd_delete_group (BonoboUIComponent *component,
+static void rb_shell_cmd_delete_playlist (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
-static void rb_shell_cmd_rename_group (BonoboUIComponent *component,
+static void rb_shell_cmd_rename_playlist (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
 static void rb_shell_cmd_extract_cd (BonoboUIComponent *component,
@@ -183,7 +185,7 @@ static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 				             Bonobo_UIComponent_EventType type,
 				             const char *state,
 				             RBShell *shell);
-static void rb_shell_load_music_groups (RBShell *shell);
+static void rb_shell_load_playlists (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_window_visibility (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
@@ -207,8 +209,6 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
 					 GtkSelectionData *data,
 					 RBShell *shell);
-static void dnd_add_handled_cb (RBLibraryAction *action,
-		                RBGroupSource *source);
 static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
@@ -230,12 +230,16 @@ typedef enum
 {
 	CREATE_GROUP_WITH_URI_LIST,
 	CREATE_GROUP_WITH_NODE_LIST,
+	CREATE_GROUP_WITH_FILE,
 	CREATE_GROUP_WITH_SELECTION
 } CreateGroupType;
 
+static void create_group (RBShell *shell, CreateGroupType type, GList *data);
+
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
-#define CMD_PATH_GROUP_DELETE   "/commands/FileGroupDelete"
+#define CMD_PATH_PLAYLIST_DELETE   "/commands/FileDeletePlaylist"
+#define CMD_PATH_PLAYLIST_SAVE   "/commands/SavePlaylist"
 #define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
 #define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
 
@@ -290,6 +294,8 @@ struct RBShellPrivate
 	BonoboUIComponent *tray_icon_component;
 
 	RBVolume *volume;
+
+	RBGroupSource *loading_group;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -301,11 +307,12 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("AddLocation",  (BonoboUIVerbFn) rb_shell_cmd_add_location),
 	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_shell_cmd_load_playlist),
+	BONOBO_UI_VERB ("SavePlaylist", (BonoboUIVerbFn) rb_shell_cmd_save_playlist),
  	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_shell_cmd_new_playlist),
 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
-	BONOBO_UI_VERB ("FileGroupDelete",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
-	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
-	BONOBO_UI_VERB ("GroupDelete",  (BonoboUIVerbFn) rb_shell_cmd_delete_group),
+	BONOBO_UI_VERB ("FileDeletePlaylist",(BonoboUIVerbFn) rb_shell_cmd_delete_playlist),
+	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_playlist),
+	BONOBO_UI_VERB ("DeletePlaylist",  (BonoboUIVerbFn) rb_shell_cmd_delete_playlist),
 	BONOBO_UI_VERB ("ExtractCD",  (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
 	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_cmd_current_song),
 	BONOBO_UI_VERB_END
@@ -405,8 +412,8 @@ rb_shell_finalize (GObject *object)
 	eel_gconf_monitor_remove (CONF_PREFIX);
 
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
-
-       bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
+	
+	bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
 
 
 	rb_debug ("Unregistered with Bonobo Activation");
@@ -466,43 +473,46 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 }
 
 static void
+handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
+{
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
+	/* We assume all HTTP is iradio.  This is probably a broken assumption,
+	 * but it's very difficult to really fix...
+	 */
+	if (strncmp ("http", scheme, 4) == 0) {
+		GList *tmp = g_list_append (NULL, (char*) uri);
+		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, tmp, title, NULL);
+		g_list_free (tmp);
+	} else
+		rb_library_add_uri (shell->priv->library, (char *) uri);
+	gnome_vfs_uri_unref (vfsuri);
+}
+
+static void
 rb_shell_corba_handle_file (PortableServer_Servant _servant,
 			    const CORBA_char *uri,
 			    CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	RBPlaylist *parser;
 
 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 	if (!vfsuri) {
 		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
 		return;
 	}
-	if (gnome_vfs_uri_is_local (vfsuri))
-	{
-		char *localpath = gnome_vfs_get_local_path_from_uri (uri);
- 		char *mimetype = gnome_vfs_get_mime_type (localpath);
-		if (mimetype && strncmp ("audio/x-scpls", mimetype, 13) == 0) {
-			char *firsturi;
-			firsturi = rb_playlist_load (shell->priv->library,
-						     shell->priv->iradio_backend,
-						     localpath);
-			if (firsturi != NULL) {
-/* 				rb_shell_player_play_search (shell->priv->player_shell, */
-/* 							     firsturi); */
-				g_free (firsturi);
-			}
-		}
-		else
-			rb_library_add_uri (shell->priv->library, (char *) uri);
-	} else {
-		const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
-		if (strncmp ("http", scheme, 4) == 0)
-			rb_iradio_backend_add_station_from_uri (shell->priv->iradio_backend, uri);
-		else {
-			rb_error_dialog (_("Unable to handle URI \"%s\"\n"), uri);
-			return;
-		}
-	}
+
+	parser = rb_playlist_new ();	
+	g_signal_connect (G_OBJECT (parser), "entry",
+			  G_CALLBACK (handle_playlist_entry_cb), shell);
+
+	/* Try parsing it as a playlist; otherwise just try adding it to
+	 * the library.
+	 */
+	if (!rb_playlist_parse (parser, uri))
+		rb_library_add_uri (shell->priv->library, uri);
+	g_object_unref (G_OBJECT (parser));
 }
 
 static void
@@ -512,7 +522,7 @@ rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
-	rb_library_add_uri (shell->priv->library, (char *) uri);
+	rb_library_add_uri (shell->priv->library, uri);
 }
 
 static void
@@ -789,8 +799,8 @@ rb_shell_construct (RBShell *shell)
 	rb_debug ("Registered with Bonobo Activation");
 
 	/* now that the lib is loaded, we can load the music groups */
-	rb_debug ("shell: loading music groups");
-	rb_shell_load_music_groups (shell);
+	rb_debug ("shell: loading playlists");
+	rb_shell_load_playlists (shell);
 
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");
@@ -968,7 +978,7 @@ rb_shell_remove_source (RBShell *shell,
 
 	if (g_list_find (shell->priv->groups, source) != NULL) {
 		shell->priv->groups = g_list_remove (shell->priv->groups, source);
-		rb_group_source_remove_file (RB_GROUP_SOURCE (source));
+		rb_group_source_delete (RB_GROUP_SOURCE (source));
 	}
 
 	rb_sourcelist_remove (RB_SOURCELIST (shell->priv->sourcelist), source);
@@ -1002,7 +1012,10 @@ rb_shell_select_source (RBShell *shell,
 				     RB_SOURCE (source));
 	rb_statusbar_set_source (shell->priv->statusbar,
 				 RB_SOURCE (source));
-	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_GROUP_DELETE,
+	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_PLAYLIST_DELETE,
+				 g_list_find (shell->priv->groups,
+					      shell->priv->selected_source) != NULL);
+	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_PLAYLIST_SAVE,
 				 g_list_find (shell->priv->groups,
 					      shell->priv->selected_source) != NULL);
 }
@@ -1235,32 +1248,27 @@ load_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
 			   RBShell *shell)
 {
-	char **files, **filecur;
+	char *file;
+	GList *tem;
 
 	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
-	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));
+	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (files == NULL)
+	if (file == NULL)
 		return;
-
-	filecur = files;
 
 	shell->priv->show_library_errors = TRUE;
 
-	while (*filecur != NULL) {
-		if (g_utf8_validate (*filecur, -1, NULL))
-			rb_playlist_load (shell->priv->library,
-					  shell->priv->iradio_backend, *filecur);
-		filecur++;
-	}
+	tem = g_list_append (NULL, file);
+	create_group (shell, CREATE_GROUP_WITH_FILE, tem);
 
-	g_strfreev (files);
+	shell->priv->show_library_errors = FALSE;
 }
 
 static void
@@ -1312,6 +1320,70 @@ rb_shell_cmd_load_playlist (BonoboUIComponent *component,
 }
 
 static void
+save_playlist_response_cb (GtkDialog *dialog,
+			   int response_id,
+			   RBShell *shell)
+{
+	char *file;
+
+	if (response_id != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (file == NULL)
+		return;
+
+	rb_group_source_save_playlist (RB_GROUP_SOURCE (shell->priv->selected_source), file);
+	g_free (file);
+}
+
+static void
+rb_shell_cmd_save_playlist (BonoboUIComponent *component,
+			    RBShell *shell,
+			    const char *verbname)
+{
+	GtkWidget *dialog;
+    
+	dialog = rb_ask_file_multiple (_("Save playlist"),
+				      NULL,
+			              GTK_WINDOW (shell->priv->window));
+
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (save_playlist_response_cb),
+			  shell);
+}
+
+static void
+add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri)
+{
+	RBNode *node;
+	GError *error = NULL;
+
+	rb_library_add_uri_sync (shell->priv->library, uri, &error);
+	if (error)
+		return; /* FIXME */
+
+	node = rb_library_get_song_by_location (shell->priv->library, uri);
+
+	g_return_if_fail (node != NULL);
+
+	/* add this node to the newly created group */
+	rb_group_source_add_node (group, node);
+}
+
+static void
+handle_playlist_entry_into_group_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
+{
+	add_uri_to_group (shell, RB_GROUP_SOURCE (shell->priv->loading_group), uri);
+}
+
+static void
 ask_string_response_cb (GtkDialog *dialog,
 			int response_id,
 			RBShell *shell)
@@ -1358,56 +1430,48 @@ ask_string_response_cb (GtkDialog *dialog,
 	{
 	case CREATE_GROUP_WITH_NODE_LIST:
 		for (l = data; l != NULL; l = g_list_next (l))
-		{
 			rb_group_source_add_node (RB_GROUP_SOURCE (group),
 						  l->data);
-		}
 		break;
+	case CREATE_GROUP_WITH_FILE:
+	{
+		RBPlaylist *parser = rb_playlist_new ();
+		g_signal_connect (G_OBJECT (parser), "entry",
+				  G_CALLBACK (handle_playlist_entry_into_group_cb),
+				  shell);
+		
+		shell->priv->loading_group = RB_GROUP_SOURCE (group);
+		if (!rb_playlist_parse (parser, g_list_first (data)->data))
+			rb_error_dialog (_("Couldn't parse playlist"));
+		shell->priv->loading_group = NULL;
+		g_free (g_list_first (data)->data);
+		g_list_free (data);
+	}
+	break;
 	case CREATE_GROUP_WITH_URI_LIST:
 		for (l = data; l != NULL; l = g_list_next (l)) {
 			char *uri;
-			RBNode *node;
-				
 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
-			node = rb_library_get_song_by_location (shell->priv->library, uri);
-
-			if (node != NULL) {
-				/* add this node to the newly created group */
-				rb_group_source_add_node (RB_GROUP_SOURCE (group), node);
-			}
-			else {
-				/* will add these nodes to the newly created group */
-				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri);
-				g_object_set_data (G_OBJECT (group), "library", shell->priv->library);
-                                g_signal_connect_object (G_OBJECT (action),
-                                                         "handled",
-                                                         G_CALLBACK (dnd_add_handled_cb),
-                                                         G_OBJECT (group),
-                                                         0);
-			}
-
+			add_uri_to_group (shell, RB_GROUP_SOURCE (group), uri);
 			g_free (uri);
 		}
 		gnome_vfs_uri_list_free (data);
 		break;
 	case CREATE_GROUP_WITH_SELECTION:
-		{
-			/* add the current selection if the user checked */
-			if (add_selection) {
-				RBNodeView *nodeview = rb_source_get_node_view (shell->priv->selected_source);
-				GList *i = NULL;
-				GList *selection = rb_node_view_get_selection (nodeview);
-				for (i  = selection; i != NULL; i = g_list_next (i))
-					rb_group_source_add_node (RB_GROUP_SOURCE (group), i->data);
-			}
+		/* add the current selection if the user checked */
+		if (add_selection) {
+			RBNodeView *nodeview = rb_source_get_node_view (shell->priv->selected_source);
+			GList *i = NULL;
+			GList *selection = rb_node_view_get_selection (nodeview);
+			for (i  = selection; i != NULL; i = g_list_next (i))
+				rb_group_source_add_node (RB_GROUP_SOURCE (group), i->data);
 		}
-		break;
+	break;
 	}
 }
 
 static void
-create_group (RBShell *shell, CreateGroupType type,
-	      GList *data)
+create_group (RBShell *shell, CreateGroupType type, GList *data)
 {
 	GtkWidget *dialog;
 	
@@ -1431,20 +1495,20 @@ rb_shell_cmd_new_playlist (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_rename_group (BonoboUIComponent *component,
-			   RBShell *shell,
-			   const char *verbname)
+rb_shell_cmd_rename_playlist (BonoboUIComponent *component,
+			      RBShell *shell,
+			      const char *verbname)
 {
 	rb_debug ("FIXME");
 }
 
 static void
-rb_shell_cmd_delete_group (BonoboUIComponent *component,
+rb_shell_cmd_delete_playlist (BonoboUIComponent *component,
 			   RBShell *shell,
 			   const char *verbname)
 {
 	rb_debug ("Deleting source %p", shell->priv->selected_source);
-
+	
 	rb_shell_remove_source (shell, shell->priv->selected_source);
 }
 
@@ -1480,7 +1544,7 @@ rb_shell_quit (RBShell *shell)
 }
 
 static void
-rb_shell_load_music_groups (RBShell *shell)
+rb_shell_load_playlists (RBShell *shell)
 {
 	char *path;
 	GnomeVFSDirectoryHandle *handle;
@@ -1612,52 +1676,6 @@ paned_changed_cb (GConfClient *client,
 	rb_shell_sync_paned (shell);
 }
 
-
-static void
-add_uri (const char *uri,
-	 RBGroupSource *source)
-{
-	RBNode *node;
-
-	node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
-					        uri);
-
-	if (node != NULL)
-		rb_group_source_add_node (source, node);
-}
-
-static void
-dnd_add_handled_cb (RBLibraryAction *action,
-		    RBGroupSource *source)
-{
-	char *uri;
-	RBLibraryActionType type;
-
-	rb_library_action_get (action,
-			       &type,
-			       &uri);
-
-	switch (type)
-	{
-	case RB_LIBRARY_ACTION_ADD_FILE:
-	{
-		RBNode *node;
-		
-		node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
-							uri);
-		
-		if (node != NULL)
-			rb_group_source_add_node (source, node);
-	}
-	break;
-	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-		rb_uri_handle_recursively (uri, (GFunc) add_uri,
-					   NULL, NULL, source);
-		break;
-	default:
-		break;
-	}
-}
 
 static void
 handle_songs_func (RBNode *node,

@@ -66,13 +66,15 @@ void		rb_group_source_set_name      (RBGroupSource *group,
 
 const char *	rb_group_source_get_file      (RBGroupSource *group);
 
-void		rb_group_source_remove_file   (RBGroupSource *group);
-
 void		rb_group_source_save          (RBGroupSource *source);
 void		rb_group_source_load          (RBGroupSource *source);
 
+void		rb_group_source_save_playlist (RBGroupSource *source,
+					       const char *uri);
 void		rb_group_source_add_node      (RBGroupSource *source, 
 					       RBNode *node);
+
+void		rb_group_source_delete		(RBGroupSource *source);
 
 G_END_DECLS
 

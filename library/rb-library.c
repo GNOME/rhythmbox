@@ -39,6 +39,7 @@
 #include "rb-library-action-queue.h"
 #include "rb-glist-wrapper.h"
 #include "rb-string-helpers.h"
+#include "rb-file-monitor.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-marshal.h"
@@ -310,6 +311,59 @@ rb_library_add_uri (RBLibrary *library,
 					            TRUE,
 					            RB_LIBRARY_ACTION_ADD_DIRECTORY,
 					            uri);
+}
+
+void
+rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
+{
+	if (rb_library_get_song_by_location (library, uri) == NULL) {
+		rb_debug ("uri \"%s\" does not exist, adding new node", uri);
+		rb_library_new_node (library, uri, error);
+		if (error && *error)
+			return;
+	} else {
+		rb_debug ("uri \"%s\" already exists", uri);
+	}
+	
+	rb_file_monitor_add (rb_file_monitor_get (), uri);
+}
+
+void
+rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
+{
+	RBNode *song;
+	
+	song = rb_library_get_song_by_location (library, uri);
+	if (song == NULL)
+		return;
+	
+	if (rb_uri_exists (uri) == FALSE) {
+		rb_debug ("song \"%s\" was deleted", uri);
+		rb_node_unref (song);
+		return;
+	}
+	
+	rb_debug ("updating existing node \"%s\"", uri);
+	rb_library_update_node (library, song, error);
+	if (error && *error) {
+		return;
+	}
+
+	/* just to be sure */
+	rb_file_monitor_add (rb_file_monitor_get (), uri);
+}
+
+void rb_library_remove_uri (RBLibrary *library, const char *uri)
+{
+	RBNode *song;
+	
+	song = rb_library_get_song_by_location (library, uri);
+	if (song == NULL)
+		return;
+
+	rb_node_unref (song);
+
+	rb_file_monitor_remove (rb_file_monitor_get (), uri);
 }
 
 void

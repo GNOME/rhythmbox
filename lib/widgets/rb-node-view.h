@@ -100,6 +100,8 @@ void	    rb_node_view_enable_drag_source       (RBNodeView *view,
 					           const GtkTargetEntry *targets,
 					           int n_targets);
 
+RBTreeModelNode *rb_node_view_get_model		(RBNodeView *view);
+
 G_END_DECLS
 
 #endif /* __RB_NODE_VIEW_H */

@@ -494,6 +494,13 @@ rb_node_view_new (RBNode *root,
 	return view;
 }
 
+RBTreeModelNode *
+rb_node_view_get_model (RBNodeView *view)
+{
+	g_return_val_if_fail (RB_IS_NODE_VIEW (view), NULL);
+	return view->priv->nodemodel;
+}
+
 static void
 node_from_sort_iter_cb (RBTreeModelSort *model,
 		        GtkTreeIter *iter,

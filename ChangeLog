@@ -1,3 +1,47 @@
+2003-08-07  Colin Walters  <walters@verbum.org>
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/rb-marshal.list:
+	* lib/rb-windows-ini-file.c:
+	* lib/rb-windows-ini-file.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_model):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_add_uri),
+	(rb_library_add_uri_sync), (rb_library_update_uri),
+	(rb_library_remove_uri):
+	* library/rb-library.h:
+	* shell/Makefile.am:
+	* shell/rb-playlist.c:
+	* shell/rb-playlist.h:
+	* shell/rb-shell.c: (rb_shell_finalize),
+	(handle_playlist_entry_cb), (rb_shell_corba_handle_file),
+	(rb_shell_corba_add_to_library), (rb_shell_construct),
+	(rb_shell_remove_source), (rb_shell_select_source),
+	(load_playlist_response_cb), (save_playlist_response_cb),
+	(rb_shell_cmd_save_playlist), (add_uri_to_group),
+	(handle_playlist_entry_into_group_cb), (ask_string_response_cb),
+	(create_group), (rb_shell_cmd_rename_playlist),
+	(rb_shell_cmd_delete_playlist), (rb_shell_load_playlists):
+	* sources/rb-group-source.c: (rb_group_source_finalize),
+	(rb_group_source_delete), (impl_search), (playlist_iter_func),
+	(rb_group_source_save_playlist):
+	* sources/rb-group-source.h:
+
+	Fairly major playlist stuff rewriting.  We stole Totem's playlist
+	parser, hacked it up a lot, and turned it into RBPlaylist.
+	Playlists can now be saved, and loaded more reliably.
+	Killed off RBWindowsINIFile, like the piece it was.
+
+	Oh, and also playlist deletion works again ;)
+	This fixes bug #119281.
+
 2003-08-06  Colin Walters  <walters@rhythmbox.org>
 
 	* shell/rb-shell.c: (ask_file_response_cb):

@@ -33,6 +33,7 @@
 #include "rb-node-view.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
+#include "rb-playlist.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-group-source.h"
@@ -116,6 +117,8 @@ struct RBGroupSourcePrivate
 	char *description;
 
 	guint idle_save_id;
+
+	gboolean deleted;
 };
 
 enum
@@ -254,7 +257,8 @@ rb_group_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
-	rb_group_source_save (source);
+	if (!source->priv->deleted)
+		rb_group_source_save (source);
 
 	g_source_remove (source->priv->idle_save_id);
 
@@ -728,9 +732,11 @@ rb_group_source_load (RBGroupSource *source)
 
 
 void
-rb_group_source_remove_file (RBGroupSource *source)
+rb_group_source_delete (RBGroupSource *source)
 {
+	g_source_remove (source->priv->idle_save_id);
 	unlink (source->priv->file);
+	source->priv->deleted = TRUE;
 }
 
 /* rb_group_view_add_node: append a node to this group
@@ -959,4 +965,31 @@ impl_search (RBSource *asource, const char *search_text)
 					       0);
 		rb_node_filter_done_changing (source->priv->filter);
 	}
+}
+
+static void
+playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **title)
+{
+	gtk_tree_model_get (model, iter, RB_TREE_MODEL_NODE_COL_LOCATION, uri,
+			    RB_TREE_MODEL_NODE_COL_TITLE, title, -1);
+}
+
+void
+rb_group_source_save_playlist (RBGroupSource *source, const char *uri)
+{
+	RBPlaylist *playlist;
+	RBTreeModelNode *nodemodel;
+	GError *error = NULL;
+	rb_debug ("saving playlist");
+
+	playlist = rb_playlist_new ();
+	/* We use a nodemodel because it's the interface to RBPlaylist,
+	 * due to compatibility with other programs (totem).
+	 */
+	nodemodel = rb_tree_model_node_new (source->priv->group, NULL);
+
+	rb_playlist_write (playlist, GTK_TREE_MODEL (nodemodel),
+			   playlist_iter_func, uri, &error);
+	if (error != NULL)
+		rb_error_dialog ("%s", error->message);
 }

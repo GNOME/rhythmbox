@@ -415,6 +415,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_DURATION_STR:
 	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR:
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR:
+	case RB_TREE_MODEL_NODE_COL_LOCATION:
 		return G_TYPE_STRING;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
@@ -649,6 +650,9 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 							   g_strdup_printf ("%d", count));
 	}
 	break;
+	case RB_TREE_MODEL_NODE_COL_LOCATION:
+		rb_node_get_property (node, RB_NODE_PROP_LOCATION, value);
+		break;
 	default:
 		g_assert_not_reached ();
 		break;
@@ -905,6 +909,7 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,	   "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",      "last played" },
 			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR,  "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR",  "last played (string format)" },
 			{ RB_TREE_MODEL_NODE_COL_QUALITY,	   "RB_TREE_MODEL_NODE_COL_QUALITY",	      "quality" },
+			{ RB_TREE_MODEL_NODE_COL_LOCATION,	   "RB_TREE_MODEL_NODE_COL_LOCATION",	      "location" },
 			{ 0, 0, 0 }
 		};
 
