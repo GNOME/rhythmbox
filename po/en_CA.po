@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-23 23:47-0400\n"
-"PO-Revision-Date: 2004-09-23 15:31-0400\n"
+"POT-Creation-Date: 2004-09-27 18:07-0400\n"
+"PO-Revision-Date: 2004-09-27 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: English/Canada <adamw@FreeBSD.org>\n"
 "MIME-Version: 1.0\n"
@@ -336,15 +336,15 @@ msgstr "%s Properties"
 msgid "Properties for %s"
 msgstr "Properties for %s"
 
-#: lib/totem-pl-parser.c:188
+#: lib/totem-pl-parser.c:206
 #, c-format
 msgid "Couldn't write parser: %s"
 msgstr "Couldn't write parser: %s"
 
-#: lib/totem-pl-parser.c:252
+#: lib/totem-pl-parser.c:309 lib/totem-pl-parser.c:432
 #, c-format
-msgid "Couldn't open parser: %s"
-msgstr "Couldn't open parser: %s"
+msgid "Couldn't open file '%s': %s"
+msgstr "Couldn't open file '%s': %s"
 
 #: metadata/rb-metadata-gst.c:358
 #, c-format
@@ -1286,7 +1286,7 @@ msgstr "Add Location"
 msgid "Tra_ck"
 msgstr "Tra_ck"
 
-#: sources/rb-playlist-source.c:753
+#: sources/rb-playlist-source.c:754
 msgid "Couldn't save playlist"
 msgstr "Couldn't save playlist"
 
