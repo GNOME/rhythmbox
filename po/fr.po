@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.4.99.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-16 01:35+0200\n"
-"PO-Revision-Date: 2003-08-16 00:59+0200\n"
+"POT-Creation-Date: 2003-08-16 11:41+0200\n"
+"PO-Revision-Date: 2003-08-16 11:41+0200\n"
 "Last-Translator: Christophe Merlet (RedFox) <redfox@redfoxcenter.org>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add To Music Player Library"
-msgstr "Ajouter à la bibliothèque du lecteur de musiques"
+msgstr "Ajouter à la bibliothèque du lecteur de musique"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
@@ -322,7 +322,7 @@ msgstr "D_ernière lecture"
 msgid "_Play Count"
 msgstr "_Nombre de lecture"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1059
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1060
 msgid "Music Player"
 msgstr "Lecteur de musique"
 
@@ -336,7 +336,7 @@ msgstr "Désélectionner toutes les chansons"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:2
 msgid "Eject Audio-CD"
-msgstr "Ejecter le CD audio"
+msgstr "Éjecter le CD audio"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Scroll the view to the currently playing song"
@@ -598,7 +598,8 @@ msgstr "_Aléatoire"
 msgid "_Source List"
 msgstr "_Liste des sources"
 
-#: iradio/rb-iradio-backend.c:183 library/rb-library.c:663
+#: iradio/rb-iradio-backend.c:183 iradio/rb-iradio-backend.c:572
+#: iradio/rb-new-station-dialog.c:291 library/rb-library.c:663
 msgid "All"
 msgstr "Tout"
 
@@ -784,7 +785,7 @@ msgstr "Obtenir des informations sur cet artiste depuis le Web"
 msgid "Get more information on this station from the web"
 msgstr "Obtenir plus d'informations sur cette station depuis le Web"
 
-#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1063 shell/rb-shell.c:2023
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1064 shell/rb-shell.c:2048
 msgid "Not playing"
 msgstr "Ne joue pas"
 
@@ -1187,12 +1188,12 @@ msgstr ""
 "Cet avertissment est sans-conséquence, mais les IPC\n"
 " ne fonctionneront pas.\n"
 
-#: shell/rb-shell.c:1077
+#: shell/rb-shell.c:1078
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (En pause)"
 
-#: shell/rb-shell.c:1080
+#: shell/rb-shell.c:1081
 #, c-format
 msgid ""
 "%s\n"
@@ -1201,7 +1202,7 @@ msgstr ""
 "%s\n"
 "Pause"
 
-#: shell/rb-shell.c:1149
+#: shell/rb-shell.c:1150
 msgid "translator_credits"
 msgstr ""
 "Mainteneur :\n"
@@ -1213,15 +1214,15 @@ msgstr ""
 "Gildas Guillemot <g.guillemot@laposte.net>\n"
 "Laurent RICHARD <laurent.richard@lilit.be>"
 
-#: shell/rb-shell.c:1158
+#: shell/rb-shell.c:1159
 msgid "Maintainers:"
 msgstr "Mainteneurs :"
 
-#: shell/rb-shell.c:1162
+#: shell/rb-shell.c:1163
 msgid "Contributors:"
 msgstr "Contributeurs :"
 
-#: shell/rb-shell.c:1186
+#: shell/rb-shell.c:1187
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1232,43 +1233,43 @@ msgstr ""
 "Moteur audio : %s\n"
 "Formats audio : %s\n"
 
-#: shell/rb-shell.c:1329
+#: shell/rb-shell.c:1330
 msgid "Choose Files or Directory"
 msgstr "Choisissez des fichiers ou des répertoires"
 
-#: shell/rb-shell.c:1358
+#: shell/rb-shell.c:1359
 msgid "Load playlist"
 msgstr "Charger la liste de lecture"
 
-#: shell/rb-shell.c:1398
+#: shell/rb-shell.c:1399
 msgid "Save playlist"
 msgstr "Enregistrer la liste de lecture"
 
-#: shell/rb-shell.c:1418
+#: shell/rb-shell.c:1419
 msgid "There is already a playlist with that name."
 msgstr "Il y a déjà une liste de lecture avec ce nom."
 
-#: shell/rb-shell.c:1525
+#: shell/rb-shell.c:1526
 msgid "Couldn't parse playlist"
 msgstr "Impossible d'interpréter la liste de lecture"
 
-#: shell/rb-shell.c:1856
+#: shell/rb-shell.c:1881
 msgid "C_reate"
 msgstr "C_réer"
 
-#: shell/rb-shell.c:1871
+#: shell/rb-shell.c:1896
 msgid "New Playlist"
 msgstr "Nouvelle liste de lecture"
 
-#: shell/rb-shell.c:1882
+#: shell/rb-shell.c:1907
 msgid "Please enter a name for the new playlist:"
 msgstr "Veuillez saisir un nom pour la nouvelle liste de lecture :"
 
-#: shell/rb-shell.c:1887
+#: shell/rb-shell.c:1912
 msgid "Untitled"
 msgstr "Sans titre"
 
-#: shell/rb-shell.c:1891
+#: shell/rb-shell.c:1916
 msgid "Add the _selected songs to the new playlist"
 msgstr "Ajouter les _chansons sélectionnées à la nouvelle liste de lecture"
 
@@ -1960,14 +1961,14 @@ msgstr "Cette source ne supporte pas le glisser/déposer."
 #~ msgstr "de"
 
 #~ msgid "<b>Imported Music Folder</b>"
-#~ msgstr "<b>Répertoire Audio Importé</b>"
+#~ msgstr "<b>Dossier Audio Importé</b>"
 
 #~ msgid ""
 #~ "All music you import from CD or the internet will be stored\n"
 #~ "in this folder."
 #~ msgstr ""
 #~ "Toute chanson importée depuis un CD ou d'Internet sera stocké\n"
-#~ "dans ce répertoire."
+#~ "dans ce dossier."
 
 #~ msgid "Rhythmbox Music Player"
 #~ msgstr "Lecteur Audio Rhythmbox"
@@ -1982,22 +1983,22 @@ msgstr "Cette source ne supporte pas le glisser/déposer."
 #~ msgstr "Aller à la piste précédente"
 
 #~ msgid "Choose a folder"
-#~ msgstr "Choisissez un répertoire"
+#~ msgstr "Choisissez un dossier"
 
 #~ msgid "<b>Also Look for Music in These Folders</b>"
-#~ msgstr "<b>Rechercher Aussi de la Musique dans ces Répertoires</b>"
+#~ msgstr "<b>Rechercher aussi de la musique dans ces dossiers</b>"
 
 #~ msgid "<b>Choose a folder to add</b>"
-#~ msgstr "<b>Choisissez un répertoire à ajouter</b>"
+#~ msgstr "<b>Choisissez un dossier à ajouter</b>"
 
 #~ msgid "<b>Searching /data/music...</b>"
 #~ msgstr "<b>Recherche /des données /de la musique</b>"
 
 #~ msgid "Choose Folder"
-#~ msgstr "Choisissez ce répertoire"
+#~ msgstr "Choisissez ce dossier"
 
 #~ msgid "Searching for Music Folders"
-#~ msgstr "Recherche de répertoires de musique"
+#~ msgstr "Recherche de dossiers de musique"
 
 #~ msgid "Bit Rate: "
 #~ msgstr "Bit Rate: "
@@ -2012,13 +2013,13 @@ msgstr "Cette source ne supporte pas le glisser/déposer."
 #~ msgstr "Indique où Rhymbox doit rechercher des fichiers audio"
 
 #~ msgid "_Music Folders..."
-#~ msgstr "_Répertoires de musique..."
+#~ msgstr "_Dossiers de musique..."
 
 #~ msgid "Music Folders"
-#~ msgstr "Répertoires de musique"
+#~ msgstr "Dossiers de musique"
 
 #~ msgid "Folder"
-#~ msgstr "Répertoire"
+#~ msgstr "Dossier"
 
 #~ msgid "Enter a name"
 #~ msgstr "Saisissez un nom"
