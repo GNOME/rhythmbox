@@ -53,10 +53,10 @@ if $have_autoconf ; then : ; else
 	DIE=1
 fi
 
-if automake-1.8 --version < /dev/null > /dev/null 2>&1; then
-  AUTOMAKE=automake-1.8
-  ACLOCAL=aclocal-1.8
-else
+#if automake-1.8 --version < /dev/null > /dev/null 2>&1; then
+#  AUTOMAKE=automake-1.8
+#  ACLOCAL=aclocal-1.8
+#else
   if automake-1.7 --version < /dev/null > /dev/null 2>&1; then
     AUTOMAKE=automake-1.7
     ACLOCAL=aclocal-1.7
@@ -67,7 +67,7 @@ else
 	echo "(or a newer version if it is available)"
 	DIE=1
    fi
-fi
+#fi
 
 if test "$DIE" -eq 1; then
 	exit 1
