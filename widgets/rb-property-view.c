@@ -95,6 +95,7 @@ enum
 	PROP_DB,
 	PROP_PROP,
 	PROP_TITLE,
+	PROP_MODEL,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -165,6 +166,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      "title",
 							      "title",
 							      "",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_MODEL,
+					 g_param_spec_object ("property-model",
+							      "property model",
+							      "RhythmDBPropertyModel",
+							      RHYTHMDB_TYPE_PROPERTY_MODEL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
@@ -255,6 +263,30 @@ rb_property_view_set_property (GObject *object,
 	case PROP_TITLE:
 		view->priv->title = g_value_dup_string (value);
 		break;
+	case PROP_MODEL:
+	{
+		GtkTreeIter iter;
+
+		view->priv->prop_model = g_value_get_object (value);
+
+		if (!view->priv->prop_model)
+			break;
+
+		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
+					 GTK_TREE_MODEL (view->priv->prop_model));
+
+		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+						 G_CALLBACK (rb_property_view_selection_changed_cb),
+						 view);
+		
+		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter);
+		gtk_tree_selection_select_iter (view->priv->selection, &iter);
+		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+						   G_CALLBACK (rb_property_view_selection_changed_cb),
+						   view);
+
+	}
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -279,6 +311,9 @@ rb_property_view_get_property (GObject *object,
 		break;
 	case PROP_TITLE:
 		g_value_set_string (value, view->priv->title);
+		break;
+	case PROP_MODEL:
+		g_value_set_object (value, view->priv->prop_model);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -319,23 +354,12 @@ rb_property_view_set_selection_mode (RBPropertyView *view,
 void
 rb_property_view_reset (RBPropertyView *view)
 {
-	GtkTreeIter iter;
+	RhythmDBPropertyModel *model;
 	
-	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
+	model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 
-	gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
-				 GTK_TREE_MODEL (view->priv->prop_model));
-	g_object_unref (G_OBJECT (view->priv->prop_model));
-	
-	g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-					 G_CALLBACK (rb_property_view_selection_changed_cb),
-					 view);
-	
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter);
-	gtk_tree_selection_select_iter (view->priv->selection, &iter);
-	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-					   G_CALLBACK (rb_property_view_selection_changed_cb),
-					   view);
+	g_object_set (G_OBJECT (view), "property-model", model, NULL);
+	g_object_unref (G_OBJECT (model));
 }
 
 void

@@ -179,6 +179,9 @@ struct RBLibrarySourcePrivate
 	char *album;
 
 	RhythmDBQueryModel *cached_all_query;
+	RhythmDBPropertyModel *cached_genres_model;
+	RhythmDBPropertyModel *cached_artists_model;
+	RhythmDBPropertyModel *cached_albums_model;
 	char *cached_sorting_type;
 	
 	RhythmDBQueryModel *model;
@@ -368,6 +371,10 @@ rb_library_source_finalize (GObject *object)
 	g_free (source->priv->status);
 	g_free (source->priv->artist);
 	g_free (source->priv->album);
+
+	g_free (source->priv->cached_sorting_type);
+	if (source->priv->cached_all_query)
+		g_object_unref (G_OBJECT (source->priv->cached_all_query));
 
 	g_free (source->priv);
 
@@ -1281,12 +1288,23 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	if (is_all_query) {
 		if (sorting_matches) {
 			rb_debug ("cached query hit");
+			source->priv->model = source->priv->cached_all_query;
+			source->priv->active_query = NULL;
 			rb_entry_view_set_model (source->priv->songs,
 						 RHYTHMDB_MODEL (source->priv->cached_all_query));
+			g_object_set (G_OBJECT (source->priv->genres),
+				      "property-model", source->priv->cached_genres_model, NULL);
+			g_object_set (G_OBJECT (source->priv->artists),
+				      "property-model", source->priv->cached_artists_model, NULL);
+			g_object_set (G_OBJECT (source->priv->albums),
+				      "property-model", source->priv->cached_albums_model, NULL);
 			return;
 		} else if (source->priv->cached_all_query) {
 			rb_debug ("sorting mismatch, freeing cached query");
 			g_object_unref (source->priv->cached_all_query);
+			g_object_unref (source->priv->cached_genres_model);
+			g_object_unref (source->priv->cached_artists_model);
+			g_object_unref (source->priv->cached_albums_model);
 			g_free (source->priv->cached_sorting_type);
 		}
 	}
@@ -1332,7 +1350,16 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 		rb_debug ("caching new query");
 		source->priv->cached_all_query = query_model;
 		source->priv->cached_sorting_type = g_strdup (current_sorting_type);
+		g_object_get (G_OBJECT (source->priv->genres), "property-model",
+			      &source->priv->cached_genres_model, NULL);
+		g_object_get (G_OBJECT (source->priv->artists), "property-model",
+			      &source->priv->cached_artists_model, NULL);
+		g_object_get (G_OBJECT (source->priv->albums), "property-model",
+			      &source->priv->cached_albums_model, NULL);
 		g_object_ref (G_OBJECT (source->priv->cached_all_query));
+		g_object_ref (G_OBJECT (source->priv->cached_genres_model));
+		g_object_ref (G_OBJECT (source->priv->cached_artists_model));
+		g_object_ref (G_OBJECT (source->priv->cached_albums_model));
 	}
 
 	model = GTK_TREE_MODEL (query_model);
@@ -1366,7 +1393,9 @@ struct RBLibrarySourceQueryCompleteData
 static gboolean
 idle_do_query_complete (struct RBLibrarySourceQueryCompleteData *data)
 {
+
 	GDK_THREADS_ENTER ();
+	
 	if (data->source->priv->active_query != data->model)
 		goto out;
 

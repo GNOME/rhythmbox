@@ -128,6 +128,8 @@ struct RhythmDBQueryModelPrivate
 
 	guint max_size;
 
+	gboolean cancelled;
+
 	glong total_duration;
 	GnomeVFSFileSize total_size;
 
@@ -483,10 +485,19 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 			     "db", db, NULL);
 }
 
+static void
+rhythmdb_query_model_cancel (RhythmDBModel *rmodel)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
+	rb_debug ("cancelling query");
+	model->priv->cancelled = TRUE;
+}
+
 void
 rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 {
-	g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
+	if (G_LIKELY (!model->priv->cancelled))
+		g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
 }
 
 gboolean
@@ -494,12 +505,6 @@ rhythmdb_query_model_has_pending_changes (RhythmDBModel *rmodel)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	return g_async_queue_length (model->priv->pending_updates) > 0;
-}
-
-static void
-rhythmdb_query_model_cancel (RhythmDBModel *model)
-{
-	rb_debug ("cancelling query");
 }
 
 static gboolean
@@ -640,6 +645,9 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 	struct RhythmDBQueryModelUpdate *update;
 	guint count = 0;
 
+	if (G_UNLIKELY (model->priv->cancelled))
+		return FALSE;
+
 	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL) {
 		GtkTreePath *path;
 		GtkTreeIter iter;
@@ -748,7 +756,7 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		processed = g_list_prepend (processed, update);
 
 		count++;
-		if (timeout && count / 4 > 0) {
+		if (timeout && count / 8 > 0) {
 			/* Do this here at the bottom, so we do at least one update. */
 			g_get_current_time (&now);
 			if (compare_times (timeout,&now) < 0)
@@ -791,7 +799,7 @@ rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 
-	if (ptr == NULL)
+	if (G_UNLIKELY (ptr == NULL))
 		return FALSE;
 
 	iter->stamp = model->priv->stamp;
