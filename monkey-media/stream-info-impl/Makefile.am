@@ -28,6 +28,10 @@ if HAVE_MP3
 libstream_info_impl_la_SOURCES += mp3-stream-info-impl.c mp3-stream-info-impl.h 
 endif
 
+if HAVE_MP4
+libstream_info_impl_la_SOURCES += mp4-stream-info-impl.c mp4-stream-info-impl.h
+endif
+
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"MonkeyMedia\"			\

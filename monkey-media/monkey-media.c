@@ -55,6 +55,9 @@
 #ifdef HAVE_FLAC
 #include "flac-stream-info-impl.h"
 #endif
+#ifdef HAVE_MP4
+#include "mp4-stream-info-impl.h"
+#endif
 
 static void monkey_media_init_internal (void);
 static void monkey_media_audio_driver_changed (GConfClient *client, guint cnxn_id,
@@ -197,6 +200,10 @@ monkey_media_init_internal (void)
 		       TYPE_MP3_STREAM_INFO_IMPL);
 	register_type ("audio/x-wav",
 		       TYPE_MP3_STREAM_INFO_IMPL);
+#endif
+#ifdef HAVE_MP4
+	register_type ("audio/x-m4a",
+		       TYPE_MP4_STREAM_INFO_IMPL);
 #endif
 #ifdef HAVE_AUDIOCD
 	register_type ("audiocd",

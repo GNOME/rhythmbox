@@ -1599,7 +1599,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 #ifdef HAVE_GSTREAMER
 		backend = "GStreamer";
 #else
-		backend = "Xine";
+		backend = "xine-lib";
 #endif		
 #ifdef HAVE_MP3
 		g_string_append (formats, "MP3 ");
@@ -1610,7 +1610,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 #ifdef HAVE_FLAC
 		g_string_append (formats, "FLAC ");
 #endif
-		
+
 		comment = g_strdup_printf (_("Music management and playback software for GNOME.\nAudio backend: %s\nAudio formats: %s\n"), backend, formats->str);
 
 		g_string_free (formats, TRUE);
