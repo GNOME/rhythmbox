@@ -2,6 +2,111 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-11-16 16:57:04 GMT	Colin Walters <walters@verbum.org>	patch-24
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-24
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/POTFILES.in po/ca.po po/ja.po
+
+
+2003-11-16 16:46:28 GMT	Colin Walters <walters@verbum.org>	patch-23
+
+    Summary:
+      reimplement unicodify to look for legacy charsets
+    Revision:
+      rhythmbox--mainline--0.7--patch-23
+
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c lib/rb-string-helpers.h
+     monkey-media/stream-info-impl/Makefile.am
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     shell/main.c
+
+
+2003-11-16 01:23:15 GMT	Colin Walters <walters@verbum.org>	patch-22
+
+    Summary:
+      note that TODO is very out of date
+    Revision:
+      rhythmbox--mainline--0.7--patch-22
+
+
+    modified files:
+     ChangeLog TODO
+
+
+2003-11-15 16:25:09 GMT	Colin Walters <walters@verbum.org>	patch-21
+
+    Summary:
+      merge from 0.6, and fix ChangeLog0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-21
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-304
+       upd NEWS
+    
+
+    new files:
+     ChangeLog0.6
+
+    removed files:
+     ChangeLog0.6
+
+    modified files:
+     ChangeLog NEWS
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-304
+
+
+2003-11-15 06:29:56 GMT	Colin Walters <walters@verbum.org>	patch-20
+
+    Summary:
+      play button fixes (jyasskin)
+    Revision:
+      rhythmbox--mainline--0.7--patch-20
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+       When the current song isn't in the entryview, make the next button start the first song.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+       Potential solution to bug #123374 and related complaints.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-10
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+       Fix use of uninitialized variable
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+       Merge bugfixes
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c widgets/rb-entry-view.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+
+
 2003-11-15 06:11:32 GMT	Colin Walters <walters@verbum.org>	patch-19
 
     Summary:
