@@ -148,8 +148,8 @@ struct RBEntryViewPrivate
 
 	char *columns_key;
 	guint gconf_notification_id;
-	GHashTable *columns;
-	GHashTable *allowed_columns;
+	GHashTable *propid_column_map;
+	GHashTable *allowed_properties;
 
 	gboolean sorting_enabled;
 	int saved_sort_column_id;
@@ -382,7 +382,7 @@ rb_entry_view_finalize (GObject *object)
 	if (view->priv->gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->gconf_notification_id);
 
-	g_hash_table_destroy (view->priv->columns);
+	g_hash_table_destroy (view->priv->propid_column_map);
 
 	g_object_unref (G_OBJECT (view->priv->sortmodel));
 	g_object_unref (G_OBJECT (view->priv->query_model));
@@ -769,8 +769,8 @@ rb_entry_view_search_equal (GtkTreeModel *model,
 	return retval;
 }
 
-static RhythmDBPropType
-column_number_from_name (const char *name)
+static gint
+propid_from_name (const char *name)
 {
 	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
 	GEnumClass *unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
@@ -795,7 +795,7 @@ parse_columns_as_glist (const char *str)
 	int i;
 
 	for (i = 0; parts != NULL && parts[i] != NULL; i++)
-		ret = g_list_append (ret, GINT_TO_POINTER (column_number_from_name (parts[i])));
+		ret = g_list_append (ret, GINT_TO_POINTER (propid_from_name (parts[i])));
 
 	g_strfreev (parts);
 
@@ -965,8 +965,8 @@ rb_entry_view_construct (RBEntryView *view)
 	tool_tips = gtk_tooltips_new ();
 	gtk_tooltips_enable (tool_tips);
 
-	view->priv->columns = g_hash_table_new (NULL, NULL);
-	view->priv->allowed_columns = g_hash_table_new (NULL, NULL);
+	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
+	view->priv->allowed_properties = g_hash_table_new (NULL, NULL);
 
 
 	view->priv->treeview = GTK_WIDGET (rb_tree_view_new ());
@@ -1040,12 +1040,12 @@ rb_entry_view_construct (RBEntryView *view)
 	if (tmp != NULL) {
 		GList *l = parse_columns_as_glist (tmp);
 		for (; l != NULL; l = g_list_next (l)) {
-			g_hash_table_insert (view->priv->allowed_columns,
+			g_hash_table_insert (view->priv->allowed_properties,
 					     l->data, GINT_TO_POINTER (1));
 		}
 		g_list_free (l);
 	}
-	rb_debug ("allowed columns: %s", tmp);
+	rb_debug ("allowed properties: %s", tmp);
 	g_free (tmp);
 
 	tmp = xmlGetProp (child, "keep-selection");
@@ -1081,7 +1081,7 @@ rb_entry_view_construct (RBEntryView *view)
 	colnum = 1;
 	for (child = child->children; child != NULL; child = child->next) {
 		char *propname;
-		RhythmDBPropType proptype;
+		gint proptype;
 		char *title = NULL;
 		gboolean reorderable = FALSE, resizable = FALSE;
 		gboolean default_sort_column = FALSE, expand = FALSE;
@@ -1094,7 +1094,7 @@ rb_entry_view_construct (RBEntryView *view)
 		if (propname == NULL)
 			continue;
 		else {
-			proptype = column_number_from_name (propname);
+			proptype = propid_from_name (propname);
 			if (proptype < 0) {
 				fprintf (stderr, "Unknown column %s!\n", propname);
 				continue;
@@ -1133,7 +1133,7 @@ rb_entry_view_construct (RBEntryView *view)
 			int i;
 
 			for (i = 0; parts != NULL && parts[i] != NULL; i++) {
-				RhythmDBPropType prop = column_number_from_name (parts[i]);
+				gint prop = propid_from_name (parts[i]);
 				g_assert (prop >= 0 && prop < RHYTHMDB_NUM_PROPERTIES);
 				sort_order = g_list_append (sort_order, GINT_TO_POINTER (prop));
 			}
@@ -1233,6 +1233,8 @@ rb_entry_view_construct (RBEntryView *view)
 		  tooltip_active = FALSE;
 		  g_free (tips);
 		}
+		g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (proptype),
+				     gcolumn);
 		colnum++;
 	}
 
@@ -1892,13 +1894,13 @@ rb_entry_view_columns_parse (RBEntryView *view,
 	items = g_strsplit (config, ",", 0);
 	if (items != NULL) {
 		for (i = 0; items[i] != NULL; i++) {
-			int value = column_number_from_name (items[i]);
+			int value = propid_from_name (items[i]);
 
 			if ((value >= 0)
 			    && (value < RHYTHMDB_NUM_PROPERTIES)) {
-				if (g_hash_table_lookup (view->priv->allowed_columns,
+				if (g_hash_table_lookup (view->priv->allowed_properties,
 							 GINT_TO_POINTER (value)) == NULL) {
-					rb_debug ("column %s is not allowed", items[i]);
+					rb_debug ("property column %s is not allowed", items[i]);
 					continue;
 				}
 				visible_columns = g_list_append (visible_columns,
@@ -1911,24 +1913,15 @@ rb_entry_view_columns_parse (RBEntryView *view,
 
 	/* set the visibility for all columns */
 	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES+1; i++) {
-		switch (i)
-		{
-		case 0: /* Playing */
-		case RHYTHMDB_PROP_TITLE+1:
-			break;
-			
-		default:
-			column = g_hash_table_lookup (view->priv->columns,
-						      GINT_TO_POINTER (i));
-			if (column != NULL) {
-				/* RHYTHMDB FIXME */
- 				/* gboolean visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL; */
-				/* gtk_tree_view_column_set_visible (column, visible); */
-
-				gtk_tree_view_column_set_visible (column, TRUE);
-			}
-			break;
-
+		gboolean visible;
+		column = g_hash_table_lookup (view->priv->propid_column_map,
+					      GINT_TO_POINTER (i));
+		if (column) {
+			if (i == RHYTHMDB_PROP_TITLE)
+				visible = TRUE;
+			else
+				visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL;
+			gtk_tree_view_column_set_visible (column, visible);
 		}
 	}
 

@@ -333,23 +333,23 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 	int i;
 
 	if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->artist_check))
-		colname = "RB_TREE_MODEL_NODE_COL_ARTIST";
+		colname = "RHYTHMDB_PROP_ARTIST";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->album_check))
-		colname = "RB_TREE_MODEL_NODE_COL_ALBUM";
+		colname = "RHYTHMDB_PROP_ALBUM";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->genre_check))
-		colname = "RB_TREE_MODEL_NODE_COL_GENRE";
+		colname = "RHYTHMDB_PROP_GENRE";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
-		colname = "RB_TREE_MODEL_NODE_COL_DURATION_STR";
+		colname = "RHYTHMDB_PROP_DURATION";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
-		colname = "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR";
+		colname = "RHYTHMDB_PROP_TRACK_NUMBER";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->rating_check))
-		colname = "RB_TREE_MODEL_NODE_COL_RATING";
+		colname = "RHYTHMDB_PROP_RATING";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->play_count_check))
-		colname = "RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR";
+		colname = "RHYTHMDB_PROP_PLAY_COUNT";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
-		colname = "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR";
+		colname = "RHYTHMDB_PROP_LAST_PLAYED_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
-		colname = "RB_TREE_MODEL_NODE_COL_QUALITY";
+		colname = "RHYTHMDB_PROP_QUALITY";
 	else
 		g_assert_not_reached ();
 
@@ -388,31 +388,31 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	{
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check), 
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ARTIST") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_ARTIST") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ALBUM") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_ALBUM") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_GENRE") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION_STR") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_DURATION") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_TRACK_NUMBER") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_RATING") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_PLAY_COUNT") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_LAST_PLAYED_STR") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_QUALITY") != NULL);
+			 strstr (columns, "RHYTHMDB_PROP_QUALITY") != NULL);
 	}
 
 	g_free (columns);
