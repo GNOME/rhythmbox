@@ -2,6 +2,83 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-01-18 09:54:29 GMT	Colin Walters <walters@verbum.org>	patch-17
+
+    Summary:
+      use -std=c89
+    Revision:
+      rhythmbox--main--0.7--patch-17
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-01-18 09:48:55 GMT	Colin Walters <walters@verbum.org>	patch-16
+
+    Summary:
+      move more warning flags into conditional part
+    Revision:
+      rhythmbox--main--0.7--patch-16
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-01-18 06:41:21 GMT	Colin Walters <walters@verbum.org>	patch-15
+
+    Summary:
+      lots of GCC warnings work 
+    Revision:
+      rhythmbox--main--0.7--patch-15
+
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-159
+       new CFLAGS warning framework, stolen from gnome-keyring
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-160
+       fix all the various bugs turned up by the new warnings
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-161
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-162
+       use C95 by default, and add -Wdeclaration-after-statement
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-163
+       fix all the bugs the previous commit revealed
+    
+
+    modified files:
+     ChangeLog configure.ac lib/eggtrayicon.c lib/rb-debug.c
+     lib/rb-dialog.c lib/rb-playlist.c lib/rb-tree-dnd.c
+     player/rb-player-gst.c rhythmdb/rhythmdb.c
+     shell/rb-play-order.c shell/rb-play-order.h shell/rb-shell.c
+     widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-159
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-160
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-161
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-162
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-163
+
+
+2004-01-18 05:42:28 GMT	Colin Walters <walters@verbum.org>	patch-14
+
+    Summary:
+      C89 fixes (Scott Wheeler)
+    Revision:
+      rhythmbox--main--0.7--patch-14
+
+
+    modified files:
+     ChangeLog shell/rb-history.c shell/rb-play-order-random.c
+
+
 2004-01-18 05:19:14 GMT	Colin Walters <walters@verbum.org>	patch-13
 
     Summary:
