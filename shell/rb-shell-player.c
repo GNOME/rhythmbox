@@ -796,7 +796,6 @@ rb_shell_player_next (RBShellPlayer *player)
 		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
 		    && rb_shell_player_have_first (player, player->priv->source)) {
 			rb_debug ("No next node, but repeat is enabled");
-			RBNodeView *songs = rb_source_get_node_view (player->priv->source);
 			node = rb_node_view_get_first_node (songs);
 		} else {
 			rb_debug ("No next node, stopping playback");
@@ -1477,7 +1476,10 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 	GtkWidget *progress;
 	rb_debug ("got buffering_begin_cb");
 
-	g_return_if_fail (!monkey_media_player_playing (mmplayer));
+	if (!monkey_media_player_playing (mmplayer)) {
+		rb_debug ("not playing, ignoring");
+		return;
+	}
 	g_return_if_fail (player->priv->buffering_dialog != NULL);
 
 	gdk_threads_enter ();
