@@ -1,3 +1,26 @@
+2003-08-13  Colin Walters  <walters@gnu.org>
+
+	* lib/widgets/rb-node-view.c: (playing_node_destroyed_cb),
+	(root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c: (playing_node_destroyed_cb),
+	(root_child_removed_cb), (root_child_added_cb),
+	(root_child_changed_cb), (root_children_reordered_cb),
+	(root_destroyed_cb):
+	* library/rb-node-db.c: (rb_node_db_init), (rb_node_db_finalize),
+	(rb_node_db_get_node_from_id), (rb_node_db_lock),
+	(rb_node_db_unlock):
+	* library/rb-node-db.h:
+	* library/rb-node.c: (rb_node_dispose),
+	(rb_node_set_property_internal), (rb_node_add_child),
+	(rb_node_remove_child_unlocked), (rb_node_remove_child),
+	(rb_node_sort_children), (rb_node_reorder_children):
+	* shell/rb-shell-clipboard.c: (node_destroyed_cb):
+
+	Rewrite node locking.  Siiiiiigh.  This is a step towards
+	fixing bug #119753, but it doesn't actually fix it.
+
+	I am not sure what the real fix will be...
+	
 2003-08-13  Colin Walters  <walters@verbum.org>
 
 	* sources/rb-group-source.c (impl_get_status_fast);

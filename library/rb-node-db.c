@@ -37,6 +37,8 @@ struct RBNodeDbPrivate
 {
 	char *name;
 
+	GMutex *global_lock;
+
 	GMutex *id_factory_lock;
 	long id_factory;
 
@@ -151,6 +153,8 @@ rb_node_db_init (RBNodeDb *db)
 
 	db->priv->name = NULL;
 
+	db->priv->global_lock = g_mutex_new ();
+
 	/* id to node */
 	db->priv->id_to_node = g_ptr_array_new ();
 
@@ -184,6 +188,8 @@ rb_node_db_finalize (GObject *object)
 	g_static_rw_lock_free (db->priv->id_to_node_lock);
 
 	g_mutex_free (db->priv->id_factory_lock);
+
+	g_mutex_free (db->priv->global_lock);
 
 	g_free (db->priv->name);
 
@@ -245,6 +251,19 @@ rb_node_db_get_node_from_id (RBNodeDb *db, long id)
 	g_static_rw_lock_reader_unlock (db->priv->id_to_node_lock);
 
 	return ret;
+}
+
+void
+rb_node_db_lock (RBNodeDb *db)
+{
+	g_mutex_lock (db->priv->global_lock);
+}
+
+
+void
+rb_node_db_unlock (RBNodeDb *db)
+{
+	g_mutex_unlock (db->priv->global_lock);
 }
 
 long

@@ -58,6 +58,10 @@ RBNodeDb   *rb_node_db_new			(const char *name);
 
 const char   *rb_node_db_get_name		(RBNodeDb *db);
 
+void		rb_node_db_lock			(RBNodeDb *db);
+
+void		rb_node_db_unlock		(RBNodeDb *db);
+
 RBNode     *rb_node_db_get_node_from_id	(RBNodeDb *db,
 						 long id);
 

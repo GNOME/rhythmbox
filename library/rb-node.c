@@ -33,7 +33,6 @@
 
 #include "rb-node.h"
 // #include "rb-string.h"
-#include "rb-thread-helpers.h"
 #include "rb-cut-and-paste-code.h"
 
 static void rb_node_signal_disconnect_internal (RBNode *node, int signal_id);
@@ -322,7 +321,7 @@ rb_node_dispose (RBNode *node, RBNode *locked_child)
 
 	read_lock_to_write_lock (node);
 
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	/* remove from DAG */
 	g_hash_table_foreach (node->parents,
@@ -351,7 +350,7 @@ rb_node_dispose (RBNode *node, RBNode *locked_child)
 
 	_rb_node_db_remove_id (node->db, node->id);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 RBNode *
@@ -544,7 +543,7 @@ rb_node_set_property_internal (RBNode *node,
 	g_return_if_fail (property_id >= 0);
 	g_return_if_fail (value != NULL);
 
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	if (lock)
 		g_static_rw_lock_writer_lock (node->lock);
@@ -574,7 +573,7 @@ rb_node_set_property_internal (RBNode *node,
 	if (lock)
 		g_static_rw_lock_reader_unlock (node->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 void
@@ -926,7 +925,7 @@ rb_node_add_child_unlocked (RBNode *node, RBNode *child)
 void
 rb_node_add_child (RBNode *node, RBNode *child)
 {
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	g_return_if_fail (RB_IS_NODE (node));
 	
@@ -943,14 +942,14 @@ rb_node_add_child (RBNode *node, RBNode *child)
 	g_static_rw_lock_reader_unlock (node->lock);
 	g_static_rw_lock_reader_unlock (child->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 void
 rb_node_remove_child_unlocked (RBNode *node,
 			       RBNode *child)
 {
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	g_return_if_fail (RB_IS_NODE (node));
 
@@ -960,14 +959,14 @@ rb_node_remove_child_unlocked (RBNode *node,
 
 	g_static_rw_lock_writer_unlock (node->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 void
 rb_node_remove_child (RBNode *node,
 		        RBNode *child)
 {
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	g_return_if_fail (RB_IS_NODE (node));
 
@@ -979,7 +978,7 @@ rb_node_remove_child (RBNode *node,
 	g_static_rw_lock_writer_unlock (node->lock);
 	g_static_rw_lock_writer_unlock (child->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 gboolean
@@ -1030,7 +1029,7 @@ rb_node_sort_children (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (compare_func != NULL);
 
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	g_static_rw_lock_writer_lock (node->lock);
 
@@ -1071,7 +1070,7 @@ rb_node_sort_children (RBNode *node,
 
 	g_static_rw_lock_reader_unlock (node->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 void
@@ -1084,7 +1083,7 @@ rb_node_reorder_children (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (new_order != NULL);
 
-	rb_thread_helpers_lock_gdk ();
+	rb_node_db_lock (node->db);
 
 	g_static_rw_lock_writer_lock (node->lock);
 
@@ -1113,7 +1112,7 @@ rb_node_reorder_children (RBNode *node,
 
 	g_static_rw_lock_reader_unlock (node->lock);
 
-	rb_thread_helpers_unlock_gdk ();
+	rb_node_db_unlock (node->db);
 }
 
 GPtrArray *

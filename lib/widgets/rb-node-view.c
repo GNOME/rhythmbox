@@ -49,6 +49,7 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-string-helpers.h"
+#include "rb-thread-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
 #include "rb-tree-view.h"
@@ -1602,8 +1603,13 @@ static void
 playing_node_destroyed_cb (RBNode *node, RBNodeView *view)
 {
 	rb_debug ("emitting playing node removed");
+	rb_thread_helpers_lock_gdk ();
+
 	g_signal_emit (G_OBJECT (view), rb_node_view_signals[PLAYING_NODE_REMOVED],
 		       0, node);
+
+	rb_thread_helpers_unlock_gdk ();
+	rb_debug ("done emitting playing node removed");
 }
 
 static void
@@ -1615,6 +1621,8 @@ root_child_removed_cb (RBNode *root,
 	/* FIXME!  This function does absolutely nothing right now.
 	 * should it? */
 
+	rb_thread_helpers_lock_gdk ();
+
 	/* selection bit */
 	if (view->priv->keep_selection == FALSE)
 		return;
@@ -1622,6 +1630,8 @@ root_child_removed_cb (RBNode *root,
 		return;
 
 	rb_node_view_select_node (view, NULL);
+
+	rb_thread_helpers_unlock_gdk ();
 }
 
 gboolean
