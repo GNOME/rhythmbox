@@ -58,6 +58,5 @@ void                            monkey_media_set_cd_playback_mode              (
 G_END_DECLS
 
 #include "monkey-media-stream-info.h"
-#include "monkey-media-includes.h"
 
 #endif /* __MONKEY_MEDIA_H */

@@ -434,7 +434,6 @@ Makefile
 lib/Makefile
 metadata/Makefile
 metadata/monkey-media/Makefile
-metadata/monkey-media/monkey-media-includes.h
 metadata/monkey-media/stream-info-impl/Makefile
 metadata/monkey-media/stream-info-impl/id3-vfs/Makefile
 player/Makefile

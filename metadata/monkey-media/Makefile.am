@@ -6,13 +6,11 @@ noinst_LTLIBRARIES = libmonkey-media.la
 
 BUILT_SOURCES =						\
 	monkey-media-marshal.c				\
-	monkey-media-marshal.h				\
-	monkey-media-includes.h
+	monkey-media-marshal.h
 
 libmonkey_media_la_SOURCES =				\
 	monkey-media.h					\
 	monkey-media-stream-info.h			\
-	monkey-media-includes.h				\
 	monkey-media.c					\
 	monkey-media-stream-info.c			\
 	monkey-media-private.h				\
