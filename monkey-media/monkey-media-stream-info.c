@@ -337,11 +337,27 @@ monkey_media_stream_info_new (const char *uri, GError **error)
 }
 
 static gboolean
-sanitize_values (MonkeyMediaStreamInfo *info,
+sanitize_values (gboolean ret,
+		 MonkeyMediaStreamInfo *info,
 		 MonkeyMediaStreamInfoField field,
 		 GValue *value)
 {
-	gboolean ret;
+	if (ret == TRUE)
+	{
+		/* Convert "\0" to NULL */
+		if (G_VALUE_HOLDS (value, G_TYPE_STRING))
+		{
+			const char *str;
+
+			str = g_value_get_string (value);
+			if (str[0] != '\0')
+				return TRUE;
+		} else {
+			return TRUE;
+		}
+
+		g_value_unset (value);
+	}
 
 	switch (field) 
 	{
@@ -389,7 +405,7 @@ sanitize_values (MonkeyMediaStreamInfo *info,
 				g_free (unescaped_basename);
 				g_free (utf8_basename);
 			}
-			
+
 			ret = TRUE;
 		}
 		break;
@@ -498,8 +514,7 @@ monkey_media_stream_info_get_value (MonkeyMediaStreamInfo *info,
 
 	ret = klass->get_value (info, field, index, value);
 
-	if (ret == FALSE)
-		ret = sanitize_values (info, field, value);
+	ret = sanitize_values (ret, info, field, value);
 
 	return ret;
 }
