@@ -97,12 +97,6 @@ static void rb_shell_player_cmd_current_song (BonoboUIComponent *component,
 static void rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 					   RBShellPlayer *player,
 					   const char *verbname);
-static void rb_shell_player_cmd_sl_delete (BonoboUIComponent *component,
-					   RBShellPlayer *player,
-					   const char *verbname);
-static void rb_shell_player_cmd_sl_copy (BonoboUIComponent *component,
-					 RBShellPlayer *player,
-					 const char *verbname);
 static void rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 					       RBShellPlayer *player,
 					       const char *verbname);
@@ -116,6 +110,9 @@ static void rb_shell_player_set_playing_source (RBShellPlayer *player,
 static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 
+static void rb_shell_player_playing_node_removed_cb (RBNodeView *view,
+						     RBNode *node,
+						     RBShellPlayer *playa);
 static void rb_shell_player_nodeview_changed_cb (RBNodeView *view,
 						 RBShellPlayer *playa);
 static void rb_shell_player_node_activated_cb (RBNodeView *view,
@@ -221,8 +218,6 @@ static BonoboUIVerb rb_shell_player_verbs[] =
 	BONOBO_UI_VERB ("Next",		(BonoboUIVerbFn) rb_shell_player_cmd_next),
 	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_player_cmd_current_song),
 	BONOBO_UI_VERB ("SongInfo",	(BonoboUIVerbFn) rb_shell_player_cmd_song_info),
-	BONOBO_UI_VERB ("SLDelete",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_delete),
-	BONOBO_UI_VERB ("SLCopy",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_copy),
 	BONOBO_UI_VERB ("SLProperties",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_properties),
 	BONOBO_UI_VERB_END
 };
@@ -464,6 +459,10 @@ rb_shell_player_set_property (GObject *object,
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+							      player);
+
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 							      G_CALLBACK (rb_shell_player_nodeview_changed_cb),
 							      player);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
@@ -487,6 +486,11 @@ rb_shell_player_set_property (GObject *object,
 		{
 			RBNodeView *songs = rb_source_get_node_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
+
+			g_signal_connect (G_OBJECT (songs),
+					  "playing_node_removed",
+					  G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+					  player);
 
 			g_signal_connect (G_OBJECT (songs),
 					  "changed",
@@ -994,31 +998,6 @@ rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_player_cmd_sl_delete (BonoboUIComponent *component,
-			       RBShellPlayer *player,
-			       const char *verbname)
-{
-	rb_debug ("sl delete");
-	if (rb_source_can_delete (player->priv->selected_source))
-		rb_source_delete (player->priv->selected_source);
-	else
-		rb_debug ("this source can't copy");
-}
-
-static void
-rb_shell_player_cmd_sl_copy (BonoboUIComponent *component,
-			     RBShellPlayer *player,
-			     const char *verbname)
-{
-	rb_debug ("sl copy");
-
-	if (rb_source_can_copy (player->priv->selected_source))
-		rb_source_copy (player->priv->selected_source);
-	else
-		rb_debug ("this source can't copy");
-}
-
-static void
 rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 				   RBShellPlayer *player,
 				   const char *verbname)
@@ -1047,6 +1026,15 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 {
 	rb_debug ("next");
 	rb_shell_player_do_next (player);
+}
+
+static void
+rb_shell_player_playing_node_removed_cb (RBNodeView *view,
+					 RBNode *node,
+					 RBShellPlayer *playa)
+{
+	rb_debug ("playing node removed!");
+	rb_shell_player_set_playing_source (playa, NULL);
 }
 
 static void

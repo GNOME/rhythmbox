@@ -1,3 +1,15 @@
+2003-07-30  Colin Walters  <cwalters@gnome.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_cmd_delete),
+	(rb_shell_clipboard_cmd_sl_delete),
+	(rb_shell_clipboard_cmd_sl_copy):
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_cmd_next),
+	(rb_shell_player_playing_node_removed_cb):
+
+	Make deleting a playing node work.
+
 2003-07-30  Colin Walters  <walters@rhythmbox.org>
 
 	* data/ui/Makefile.am:

@@ -293,9 +293,9 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, playing_node_removed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      0);
+			      1, G_TYPE_POINTER);
 	rb_node_view_signals[HAVE_SEL_CHANGED] =
 		g_signal_new ("have_selection_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),

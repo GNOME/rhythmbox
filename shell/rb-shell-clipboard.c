@@ -48,6 +48,12 @@ static void rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 static void rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
 					   RBShellClipboard *clipboard,
 					   const char *verbname);
+static void rb_shell_clipboard_cmd_sl_delete (BonoboUIComponent *component,
+					      RBShellClipboard *clipboard,
+					      const char *verbname);
+static void rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
+					    RBShellClipboard *clipboard,
+					    const char *verbname);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static void node_destroyed_cb (RBNode *node,
@@ -85,6 +91,8 @@ static BonoboUIVerb rb_shell_clipboard_verbs[] =
 	BONOBO_UI_VERB ("Copy",     (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
 	BONOBO_UI_VERB ("Paste",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
 	BONOBO_UI_VERB ("Delete",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_delete),
+	BONOBO_UI_VERB ("SLDelete", (BonoboUIVerbFn) rb_shell_clipboard_cmd_sl_delete),
+	BONOBO_UI_VERB ("SLCopy",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_sl_copy),
 	BONOBO_UI_VERB_END
 };
 
@@ -346,6 +354,24 @@ rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
 {
 	rb_debug ("delete");
 	rb_source_delete (clipboard->priv->source);
+}
+
+static void
+rb_shell_clipboard_cmd_sl_delete (BonoboUIComponent *component,
+				  RBShellClipboard *clipboard,
+				  const char *verbname)
+{
+	rb_debug ("sl delete");
+	rb_source_delete (clipboard->priv->source);
+}
+
+static void
+rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
+				RBShellClipboard *clipboard,
+				const char *verbname)
+{
+	rb_debug ("sl copy");
+	rb_source_copy (clipboard->priv->source);
 }
 
 static void
