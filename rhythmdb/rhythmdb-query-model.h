@@ -39,6 +39,8 @@ G_BEGIN_DECLS
 
 typedef struct RhythmDBQueryModelPrivate RhythmDBQueryModelPrivate;
 
+#define RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK 32
+
 typedef struct
 {
 	GObject parent;
@@ -66,6 +68,7 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
+void			rhythmdb_query_model_add_entries(RhythmDBQueryModel *model, GPtrArray *entries);
 
 void			rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
 

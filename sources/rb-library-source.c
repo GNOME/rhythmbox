@@ -924,17 +924,17 @@ impl_search (RBSource *asource, const char *search_text)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
-	/* Always search if we haven't done our first query yet. */
-	if (source->priv->cached_all_query != NULL) {
-		if (search_text == NULL && source->priv->search_text == NULL)
-			return;
-		if (search_text != NULL &&
-		    source->priv->search_text != NULL
-		    && !strcmp (search_text, source->priv->search_text))
-			return;
-	}
+	if (search_text == NULL && source->priv->search_text == NULL)
+		return;
+	if (search_text != NULL &&
+	    source->priv->search_text != NULL
+	    && !strcmp (search_text, source->priv->search_text))
+		return;
 
-	rb_debug ("doing search for \"%s\"", search_text);
+	if (search_text[0] == '\0')
+		search_text = NULL;
+
+	rb_debug ("doing search for \"%s\"", search_text ? search_text : "(NULL)");
 
 	g_free (source->priv->search_text);
 	source->priv->search_text = search_text != NULL ? g_utf8_casefold (search_text, -1) : NULL;

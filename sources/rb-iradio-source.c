@@ -349,6 +349,9 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 				    source);
 	gtk_widget_show_all (GTK_WIDGET (source));
+
+	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_ALL);
+
 	return G_OBJECT (source);
 }
 

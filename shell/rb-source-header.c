@@ -357,12 +357,18 @@ rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
 					       GConfEntry *entry,
 					       RBSourceHeader *header)
 {
-	rb_debug ("gconf search text changed");
+	char *searchtext;
 
 	g_return_if_fail (header->priv->search_key != NULL);
+	
+	rb_debug ("gconf search text changed");
 
-	rb_source_search (header->priv->selected_source,
-			  eel_gconf_get_string (header->priv->search_key));
+	searchtext = eel_gconf_get_string (header->priv->search_key);
+
+	rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
+				  searchtext);
+
+	rb_source_search (header->priv->selected_source, searchtext);
 }
 
 static void

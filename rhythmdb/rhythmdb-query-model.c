@@ -110,12 +110,13 @@ static GtkTargetList *rhythmdb_query_model_drag_target_list = NULL;
 struct RhythmDBQueryModelUpdate
 {
 	enum {
-		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED,
+		RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE,
 	} type;
 	RhythmDBEntry *entry;
+	GPtrArray *entries;
 
 	/* Only used for _ROW_CHANGED */
 	RhythmDBPropType prop;
@@ -461,9 +462,15 @@ rhythmdb_query_model_free_pending_update (RhythmDBQueryModel *model,
 					  struct RhythmDBQueryModelUpdate *update)
 {
 	switch (update->type) {
-	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
-		rhythmdb_entry_unref (model->priv->db, update->entry);
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
+	{
+		guint i;
+		for (i = 0; i < update->entries->len; i++)
+			rhythmdb_entry_unref (model->priv->db,
+					      g_ptr_array_index (update->entries, i));
 		break;
+		g_ptr_array_free (update->entries, TRUE);
+	}
 	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
 		rhythmdb_entry_unref (model->priv->db, update->entry);
 		g_value_unset (&update->old);
@@ -639,9 +646,10 @@ rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 /* Threading: Called from the database context, holding a db write lock
  */
 void
-rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 {
 	struct RhythmDBQueryModelUpdate *update;
+	guint i;
 
 	if (model->priv->max_count > 0
 	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
@@ -649,13 +657,24 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 	/* Check size later */
 
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
-	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED;
-	update->entry = entry;
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
+	update->entries = entries;
 
 	/* Called with a locked database */
-	rhythmdb_entry_ref_unlocked (model->priv->db, entry);
+	for (i = 0; i < update->entries->len; i++)
+		rhythmdb_entry_ref_unlocked (model->priv->db,
+					     g_ptr_array_index (update->entries, i));
 
 	g_async_queue_push (model->priv->pending_updates, update);
+}
+
+void
+rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+{
+	GPtrArray *entries = g_ptr_array_new ();
+
+	g_ptr_array_add (entries, entry);
+	rhythmdb_query_model_add_entries (model, entries);
 }
 
 
@@ -843,9 +862,11 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		iter.stamp = model->priv->stamp;
 
 		switch (update->type) {
-		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
+		case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
 		{
-			rhythmdb_query_model_do_insert (model, update->entry);
+			guint i;
+			for (i = 0; i < update->entries->len; i++)
+				rhythmdb_query_model_do_insert (model, g_ptr_array_index (update->entries, i));
 			break;
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:

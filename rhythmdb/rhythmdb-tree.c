@@ -1814,6 +1814,7 @@ split_query_by_disjunctions (RhythmDBTree *db, GPtrArray *query)
 struct RhythmDBTreeQueryGatheringData
 {
 	RhythmDBTree *db;
+	GPtrArray *queue;
 	GHashTable *entries;
 	RhythmDBQueryModel *main_model;
 };
@@ -1855,8 +1856,12 @@ handle_entry_match (RhythmDB *db, RhythmDBTreeEntry *entry,
 	if (data->entries
 	    && g_hash_table_lookup (data->entries, entry))
 		return;
-		
-	rhythmdb_query_model_add_entry (data->main_model, entry);
+
+	if (data->queue->len > RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK) {
+		rhythmdb_query_model_add_entries (data->main_model, data->queue);
+		data->queue = g_ptr_array_new ();
+	} else
+		g_ptr_array_add (data->queue, entry);
 }
 
 static void
@@ -1869,8 +1874,11 @@ rhythmdb_tree_do_full_query (RhythmDB *adb,
 	struct RhythmDBTreeQueryGatheringData *data = g_new0 (struct RhythmDBTreeQueryGatheringData, 1);
 
 	data->main_model = RHYTHMDB_QUERY_MODEL (main_model);
+	data->queue = g_ptr_array_new ();
 
 	do_query_recurse (db, query, (RhythmDBTreeTraversalFunc) handle_entry_match, data, cancel);
+
+	rhythmdb_query_model_add_entries (data->main_model, data->queue);
 
 	g_free (data);
 }
