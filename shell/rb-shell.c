@@ -397,6 +397,9 @@ rb_shell_finalize (GObject *object)
 
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
 
+       bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
+
+
 	rb_debug ("Unregistered with Bonobo Activation");
 	
 	/* REWRITEFIXME */
@@ -564,6 +567,7 @@ rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 void
 rb_shell_construct (RBShell *shell)
 {
+	gboolean registration_failed;
 	CORBA_Object corba_object;
 	CORBA_Environment ev;
 	BonoboWindow *win;
@@ -573,25 +577,6 @@ rb_shell_construct (RBShell *shell)
 	g_return_if_fail (RB_IS_SHELL (shell));
 
 	rb_debug ("Constructing shell");
-
-	/* register with CORBA */
-	CORBA_exception_init (&ev);
-	
-	corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
-	if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
-	{
-		/* this is not critical, but worth a warning nevertheless */
-		char *msg = rb_shell_corba_exception_to_string (&ev);
-		g_message (_("Failed to register the shell: %s\n"
-			     "This probably means that you installed RB in a\n"
-			     "different prefix than bonobo-activation; this\n"
-			     "warning is harmless, but IPC will not work.\n"), msg);
-		g_free (msg);
-	}
-
-	CORBA_exception_free (&ev);
-
-	rb_debug ("Registered with Bonobo Activation");
 
 	/* initialize UI */
 	win = BONOBO_WINDOW (bonobo_window_new ("Rhythmbox shell",
@@ -782,6 +767,30 @@ rb_shell_construct (RBShell *shell)
 /*         } */
 /* 	else */
 /* 		rb_debug ("No AudioCD device is available!"); */
+	
+	/* register with CORBA */
+	CORBA_exception_init (&ev);
+	
+	corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
+	if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
+		registration_failed = TRUE;
+
+	if (bonobo_activation_active_server_register (RB_FACTORY_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
+		registration_failed = TRUE;
+
+	if (registration_failed) {
+		/* this is not critical, but worth a warning nevertheless */
+		char *msg = rb_shell_corba_exception_to_string (&ev);
+		g_message (_("Failed to register the shell: %s\n"
+			     "This probably means that you installed RB in a\n"
+			     "different prefix than bonobo-activation; this\n"
+			     "warning is harmless, but IPC will not work.\n"), msg);
+		g_free (msg);
+	}
+		
+	CORBA_exception_free (&ev);
+
+	rb_debug ("Registered with Bonobo Activation");
 
 	/* now that the lib is loaded, we can load the music groups */
 	rb_debug ("shell: loading music groups");

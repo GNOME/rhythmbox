@@ -29,6 +29,7 @@
 G_BEGIN_DECLS
 
 #define RB_SHELL_OAFIID "OAFIID:GNOME_Rhythmbox"
+#define RB_FACTORY_OAFIID "OAFIID:GNOME_Rhythmbox_Factory"
 
 #define RB_TYPE_SHELL         (rb_shell_get_type ())
 #define RB_SHELL(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL, RBShell))

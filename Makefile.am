@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = 1.7
 
-SUBDIRS = monkey-media lib sources library iradio corba shell data po help tests
+SUBDIRS = monkey-media lib sources library iradio corba shell data po help tests component
 
 EXTRA_DIST = 			\
 	autogen.sh		\

@@ -314,6 +314,7 @@ sources/Makefile
 help/Makefile
 help/C/Makefile
 po/Makefile.in
+component/Makefile
 rhythmbox.spec
 ])
 

@@ -1,3 +1,22 @@
+2003-08-01  Yann Rouillard <y.rouillard@laposte.net>
+	    Mark Humphreys <marquee@users.sourceforge.net>
+	    Colin Walters  <walters@verbum.org>
+
+	* Makefile.am:
+	* component/Makefile.am:
+	* component/Rhythmbox_Nautilus_Context_Menu.server.in.in:
+	* component/libmain.c: (rhythmbox_shlib_make_object):
+	* component/rb-nautilus-context-menu.c:
+	(impl_Bonobo_Listener_event),
+	(rb_nautilus_context_menu_class_init),
+	(rb_nautilus_context_menu_init):
+	* component/rb-nautilus-context-menu.h:
+	* configure.ac:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct):
+	* shell/rb-shell.h:
+
+	Add Nautilus context menu.
+	
 2003-08-01  Colin Walters  <walters@verbum.org>
 
 	* AUTHORS: Add Yann Rouillard <y.rouillard@laposte.net>, and order it
