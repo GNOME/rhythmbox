@@ -862,7 +862,7 @@ rb_group_view_get_previous_node (RBGroupView *view)
 	if (view->priv->shuffle == FALSE)
 		node = rb_node_view_get_previous_node (view->priv->songs);
 	else
-		node = rb_node_view_get_random_node (view->priv->songs);
+		node = rb_node_view_get_previous_random_node (view->priv->songs);
 
 	return node;
 }
@@ -885,7 +885,7 @@ rb_group_view_get_first_node (RBGroupView *view)
 		}
 	}
 	else
-		node = rb_node_view_get_random_node (view->priv->songs);
+		node = rb_node_view_get_next_random_node (view->priv->songs);
 
 	return node;
 }
@@ -904,7 +904,7 @@ rb_group_view_get_next_node (RBGroupView *view)
 		}
 	}
 	else
-		node = rb_node_view_get_random_node (view->priv->songs);
+		node = rb_node_view_get_next_random_node (view->priv->songs);
 
 	return node;
 }

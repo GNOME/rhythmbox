@@ -126,6 +126,9 @@ struct RBNodeViewPrivate
 	guint timeout;
 
 	gboolean selection_lock;
+
+	GList *current_random;
+	GList *random_nodes;
 };
 
 enum
@@ -275,6 +278,9 @@ rb_node_view_init (RBNodeView *view)
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
 
 	view->priv->timeout = g_timeout_add (50, (GSourceFunc) rb_node_view_timeout_cb, view);
+
+	view->priv->current_random = NULL;
+	view->priv->random_nodes = NULL;
 }
 
 static void
@@ -298,6 +304,8 @@ rb_node_view_finalize (GObject *object)
 	g_object_unref (G_OBJECT (view->priv->sortmodel));
 	g_object_unref (G_OBJECT (view->priv->filtermodel));
 	g_object_unref (G_OBJECT (view->priv->nodemodel));
+
+	g_list_free (view->priv->random_nodes);
 	
 	g_free (view->priv);
 
@@ -819,9 +827,30 @@ rb_node_view_get_first_node (RBNodeView *view)
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
 }
 
-RBNode *
+static gboolean
+rb_node_view_node_is_repeat (RBNodeView *view, RBNode *node)
+{
+	GList *tmp;
+
+	tmp = view->priv->random_nodes;
+
+	while (tmp) {
+		RBNode *tmp_node = tmp->data;
+
+		if (tmp_node == node)
+			return TRUE;
+
+		tmp = tmp->next;
+	}
+
+	return FALSE;
+}
+
+static RBNode *
 rb_node_view_get_random_node (RBNodeView *view)
 {
+	static int recur_count = 0;
+	RBNode *node;
 	GtkTreePath *path;
 	GtkTreeIter iter, iter2;
 	char *path_str;
@@ -850,7 +879,66 @@ rb_node_view_get_random_node (RBNodeView *view)
 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter, &iter2);
 
-	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
+
+	if (rb_node_view_node_is_repeat (view, node)) {
+		if (recur_count > 5) {
+			recur_count = 0;
+
+			/* we give up, we are returning a repeat */
+			return node;
+		} else {
+			recur_count++;
+			g_message ("Trying for the %dnth time to get random node.\n", recur_count);
+			return rb_node_view_get_random_node (view);
+		}
+	}
+	
+	recur_count = 0;
+
+	return node;
+}
+
+RBNode *
+rb_node_view_get_next_random_node (RBNodeView *view)
+{
+	RBNode *node;
+
+	if (rb_node_view_get_n_rows (view) == 0)
+		return NULL;
+
+	if (view->priv->current_random != NULL &&
+	    view->priv->current_random->next != NULL) {
+		view->priv->current_random = view->priv->current_random->next;
+		node = (RBNode *)view->priv->current_random->data;
+	} else {
+		node = rb_node_view_get_random_node (view);
+		view->priv->random_nodes = g_list_append (view->priv->random_nodes, node);
+		view->priv->current_random = g_list_last (view->priv->random_nodes);
+	}
+
+	return node;
+}
+
+RBNode *
+rb_node_view_get_previous_random_node (RBNodeView *view)
+{
+	RBNode *node;
+
+	if (rb_node_view_get_n_rows (view) == 0)
+		return NULL;
+
+	if (view->priv->current_random != NULL &&
+	    view->priv->current_random->prev != NULL) {
+		view->priv->current_random = view->priv->current_random->prev;
+		node = (RBNode *)view->priv->current_random->data;
+	} else {
+		node = rb_node_view_get_random_node (view);
+		view->priv->random_nodes = g_list_prepend (view->priv->random_nodes, node);
+		view->priv->current_random = view->priv->random_nodes;
+	}
+
+	return node;
 }
 
 static void
