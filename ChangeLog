@@ -1,3 +1,15 @@
+2002-11-04  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-ellipsizing-label.c: (rb_ellipsizing_label_init),
+	(real_finalize), (rb_ellipsizing_label_new),
+	(rb_ellipsizing_label_set_text), (rb_ellipsizing_label_set_markup),
+	(rb_ellipsizing_label_set_mode), (real_size_allocate):
+	* lib/widgets/rb-ellipsizing-label.h:
+	* lib/widgets/rb-player.c: (rb_player_init):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_location):
+
+	Ellipsizing label cleanup.
+
 2002-11-03  Marco Pesenti Gritti  <mpeseng@tin.it>
 
 	* lib/toolbar/toolbar-editor.c:

@@ -755,7 +755,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 		if (tmp != NULL)
 		{
-			RB_ELLIPSIZING_LABEL (song_info->priv->name)->mode = RB_ELLIPSIZE_END;
+			rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (song_info->priv->name), RB_ELLIPSIZE_END);
 			rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->name), tmp);
 		}
 
@@ -777,7 +777,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		}
 		g_free (desktopdir);
 		
-		RB_ELLIPSIZING_LABEL (song_info->priv->location)->mode = RB_ELLIPSIZE_END;
+		rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (song_info->priv->location), RB_ELLIPSIZE_END);
 		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->location), tmp);
 		g_free (tmp);
 	}

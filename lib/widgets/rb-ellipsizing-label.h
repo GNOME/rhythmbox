@@ -1,5 +1,3 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
-
 /* eel-ellipsizing-label.h: Subclass of GtkLabel that ellipsizes the text.
 
    Copyright (C) 2001 Eazel, Inc.
@@ -27,15 +25,13 @@
 
 #include <gtk/gtklabel.h>
 
-#define GUL_TYPE_ELLIPSIZING_LABEL            (rb_ellipsizing_label_get_type ())
-#define RB_ELLIPSIZING_LABEL(obj)            (GTK_CHECK_CAST ((obj), GUL_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabel))
-#define RB_ELLIPSIZING_LABEL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), GUL_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabelClass))
-#define GUL_IS_ELLIPSIZING_LABEL(obj)         (GTK_CHECK_TYPE ((obj), GUL_TYPE_ELLIPSIZING_LABEL))
-#define GUL_IS_ELLIPSIZING_LABEL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GUL_TYPE_ELLIPSIZING_LABEL))
+#define RB_TYPE_ELLIPSIZING_LABEL            (rb_ellipsizing_label_get_type ())
+#define RB_ELLIPSIZING_LABEL(obj)             (GTK_CHECK_CAST ((obj), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabel))
+#define RB_ELLIPSIZING_LABEL_CLASS(klass)     (GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabelClass))
+#define RB_IS_ELLIPSIZING_LABEL(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_ELLIPSIZING_LABEL))
+#define RB_IS_ELLIPSIZING_LABEL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_ELLIPSIZING_LABEL))
 
-typedef struct RBEllipsizingLabel	      RBEllipsizingLabel;
-typedef struct RBEllipsizingLabelClass	      RBEllipsizingLabelClass;
-typedef struct RBEllipsizingLabelDetails     RBEllipsizingLabelDetails;
+typedef struct RBEllipsizingLabelPrivate RBEllipsizingLabelPrivate;
 
 typedef enum {
         RB_ELLIPSIZE_START,
@@ -43,22 +39,31 @@ typedef enum {
         RB_ELLIPSIZE_END
 } RBEllipsizeMode;
 
-struct RBEllipsizingLabel {
+typedef struct
+{
 	GtkLabel parent;
-	RBEllipsizingLabelDetails *details;
-	RBEllipsizeMode mode;
-};
 
-struct RBEllipsizingLabelClass {
+	RBEllipsizingLabelPrivate *priv;
+} RBEllipsizingLabel;
+
+typedef struct
+{
 	GtkLabelClass parent_class;
-};
+} RBEllipsizingLabelClass;
 
 GtkType    rb_ellipsizing_label_get_type 	(void);
-GtkWidget *rb_ellipsizing_label_new      	(const char          *string);
-void       rb_ellipsizing_label_set_text 	(RBEllipsizingLabel *label,
-					  	 const char          *string);
-void       rb_ellipsizing_label_set_markup 	(RBEllipsizingLabel *label,
-					    	 const char          *string);
 
+GtkWidget *rb_ellipsizing_label_new      	(const char *string);
+
+void       rb_ellipsizing_label_set_mode        (RBEllipsizingLabel *label,
+						 RBEllipsizeMode mode);
+
+void       rb_ellipsizing_label_set_text 	(RBEllipsizingLabel *label,
+					  	 const char *string);
+
+void       rb_ellipsizing_label_set_markup 	(RBEllipsizingLabel *label,
+					    	 const char *string);
+
+G_END_DECLS
 
 #endif /* RB_ELLIPSIZING_LABEL_H */

@@ -12,7 +12,7 @@
    The Gnome Library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+   Library General Public License for more priv.
 
    You should have received a copy of the GNU Library General Public
    License along with the Gnome Library; see the file COPYING.LIB.  If not,
@@ -27,9 +27,11 @@
 
 #include <string.h>
 
-struct RBEllipsizingLabelDetails
+struct RBEllipsizingLabelPrivate
 {
 	char *full_text;
+
+	RBEllipsizeMode mode;
 };
 
 static void rb_ellipsizing_label_class_init (RBEllipsizingLabelClass *class);
@@ -607,9 +609,9 @@ rb_ellipsizing_label_get_type (void)
 static void
 rb_ellipsizing_label_init (RBEllipsizingLabel *label)
 {
-	label->details = g_new0 (RBEllipsizingLabelDetails, 1);
+	label->priv = g_new0 (RBEllipsizingLabelPrivate, 1);
 
-	label->mode = -1;
+	label->priv->mode = -1;
 }
 
 static void
@@ -619,8 +621,8 @@ real_finalize (GObject *object)
 
 	label = RB_ELLIPSIZING_LABEL (object);
 
-	g_free (label->details->full_text);
-	g_free (label->details);
+	g_free (label->priv->full_text);
+	g_free (label->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -630,7 +632,7 @@ rb_ellipsizing_label_new (const char *string)
 {
 	RBEllipsizingLabel *label;
   
-	label = g_object_new (GUL_TYPE_ELLIPSIZING_LABEL, NULL);
+	label = g_object_new (RB_TYPE_ELLIPSIZING_LABEL, NULL);
 	rb_ellipsizing_label_set_text (label, string);
   
 	return GTK_WIDGET (label);
@@ -640,34 +642,43 @@ void
 rb_ellipsizing_label_set_text (RBEllipsizingLabel *label, 
 				const char          *string)
 {
-	g_return_if_fail (GUL_IS_ELLIPSIZING_LABEL (label));
+	g_return_if_fail (RB_IS_ELLIPSIZING_LABEL (label));
 
-	if (rb_str_is_equal (string, label->details->full_text)) {
+	if (rb_str_is_equal (string, label->priv->full_text)) {
 		return;
 	}
 
-	g_free (label->details->full_text);
-	label->details->full_text = g_strdup (string);
+	g_free (label->priv->full_text);
+	label->priv->full_text = g_strdup (string);
 
 	/* Queues a resize as side effect */
-	gtk_label_set_text (GTK_LABEL (label), label->details->full_text);
+	gtk_label_set_text (GTK_LABEL (label), label->priv->full_text);
 }
 
 void
 rb_ellipsizing_label_set_markup (RBEllipsizingLabel *label, 
 				 const char          *string)
 {
-	g_return_if_fail (GUL_IS_ELLIPSIZING_LABEL (label));
+	g_return_if_fail (RB_IS_ELLIPSIZING_LABEL (label));
 
-	if (rb_str_is_equal (string, label->details->full_text)) {
+	if (rb_str_is_equal (string, label->priv->full_text)) {
 		return;
 	}
 
-	g_free (label->details->full_text);
-	label->details->full_text = g_strdup (string);
+	g_free (label->priv->full_text);
+	label->priv->full_text = g_strdup (string);
 
 	/* Queues a resize as side effect */
-	gtk_label_set_markup (GTK_LABEL (label), label->details->full_text);
+	gtk_label_set_markup (GTK_LABEL (label), label->priv->full_text);
+}
+
+void
+rb_ellipsizing_label_set_mode (RBEllipsizingLabel *label,
+		               RBEllipsizeMode mode)
+{
+	g_return_if_fail (RB_IS_ELLIPSIZING_LABEL (label));
+
+	label->priv->mode = mode;
 }
 
 static void
@@ -696,13 +707,13 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	 */
 
 	if (GTK_LABEL (label)->layout != NULL) {
-		if (label->details->full_text == NULL) {
+		if (label->priv->full_text == NULL) {
 			pango_layout_set_text (GTK_LABEL (label)->layout, "", -1);
 		} else {
 			RBEllipsizeMode mode;
 
-			if (label->mode != -1)
-				mode = label->mode;
+			if (label->priv->mode != -1)
+				mode = label->priv->mode;
 
 			if (ABS (GTK_MISC (label)->xalign - 0.5) < 1e-12)
 				mode = RB_ELLIPSIZE_MIDDLE;
@@ -712,7 +723,7 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 				mode = RB_ELLIPSIZE_START;
 			
 			gul_pango_layout_set_text_ellipsized (GTK_LABEL (label)->layout,
-							      label->details->full_text,
+							      label->priv->full_text,
 							      allocation->width,
 							      mode,
 							      markup);
