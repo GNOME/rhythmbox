@@ -84,7 +84,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_XOPEN_SOURCE
+	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 BUILT_SOURCES = $(tab_files)
 
