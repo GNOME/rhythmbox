@@ -57,7 +57,6 @@ static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *
 static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 						    GtkTreeIter *iter);
 static void rhythmdb_query_model_cancel (RhythmDBModel *model);
-static gboolean rhythmdb_query_model_sortable (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_has_pending_changes (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
@@ -329,7 +328,6 @@ rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 	iface->entry_to_iter = rhythmdb_query_model_entry_to_iter;
 	iface->poll = rhythmdb_query_model_poll;
 	iface->cancel = rhythmdb_query_model_cancel;
-	iface->sortable = rhythmdb_query_model_sortable;
 	iface->has_pending_changes = rhythmdb_query_model_has_pending_changes;
 }
 
@@ -526,12 +524,6 @@ rhythmdb_query_model_has_pending_changes (RhythmDBModel *rmodel)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	return g_async_queue_length (model->priv->pending_updates) > 0;
-}
-
-static gboolean
-rhythmdb_query_model_sortable (RhythmDBModel *model)
-{
-	return TRUE;
 }
 
 static inline GSequencePtr

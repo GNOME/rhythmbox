@@ -47,7 +47,6 @@ static gboolean rhythmdb_playlist_model_entry_to_iter (RhythmDBModel *rmodel, Rh
 						 GtkTreeIter *iter);
 static void rhythmdb_playlist_model_cancel (RhythmDBModel *model);
 static gboolean rhythmdb_playlist_model_poll (RhythmDBModel *model, GTimeVal *timeout);
-static gboolean rhythmdb_playlist_model_sortable (RhythmDBModel *model);
 
 static GtkTreeModelFlags rhythmdb_playlist_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_playlist_model_get_n_columns (GtkTreeModel *tree_model);
@@ -214,7 +213,6 @@ rhythmdb_playlist_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 	iface->entry_to_iter = rhythmdb_playlist_model_entry_to_iter;
 	iface->poll = rhythmdb_playlist_model_poll;
 	iface->cancel = rhythmdb_playlist_model_cancel;
-	iface->sortable = rhythmdb_playlist_model_sortable;
 }
 
 static void
@@ -334,12 +332,6 @@ rhythmdb_playlist_model_new (RhythmDB *db, GPtrArray *query)
 static void
 rhythmdb_playlist_model_cancel (RhythmDBModel *model)
 {
-}
-
-static gboolean
-rhythmdb_playlist_model_sortable (RhythmDBModel *model)
-{
-	return TRUE;
 }
 
 static void

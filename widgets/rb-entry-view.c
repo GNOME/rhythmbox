@@ -531,8 +531,6 @@ rb_entry_view_set_property (GObject *object,
 		break;
 	case PROP_MODEL:
 	{
-		gboolean sortable;
-		GList *tem;
 		RhythmDBModel *new_model;
 		struct RBEntryViewColumnSortData *sort_data;
 		
@@ -556,11 +554,7 @@ rb_entry_view_set_property (GObject *object,
 					 view,
 					 0);
 
-		sortable = rhythmdb_model_sortable (new_model);
-		for (tem = view->priv->clickable_columns; tem; tem = tem->next)
-			gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (tem->data), sortable);
-
-		if (sortable && view->priv->sorting_column) {
+		if (view->priv->sorting_column) {
 			sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
 							 view->priv->sorting_column);
 			g_assert (sort_data);
@@ -1308,7 +1302,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 	gtk_tree_view_column_set_title (column, title);
 	gtk_tree_view_column_set_reorderable (column, FALSE);
 
-	if (gtk_tree_view_column_get_clickable)
+	if (gtk_tree_view_column_get_clickable (column))
 		view->priv->clickable_columns = g_list_append (view->priv->clickable_columns, column);
 
 	g_signal_connect_object (G_OBJECT (column), "clicked",

@@ -73,14 +73,6 @@ rhythmdb_model_cancel (RhythmDBModel *model)
 }
 
 gboolean
-rhythmdb_model_sortable (RhythmDBModel *model)
-{
-	RhythmDBModelIface *iface = RHYTHMDB_MODEL_GET_IFACE (model);
-
-	return iface->sortable (model);
-}
-
-gboolean
 rhythmdb_model_has_pending_changes (RhythmDBModel *model)
 {
 	RhythmDBModelIface *iface = RHYTHMDB_MODEL_GET_IFACE (model);

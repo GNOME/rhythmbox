@@ -42,7 +42,6 @@ typedef struct
 						 GtkTreeIter *iter);
 	gboolean	(*poll)			(RhythmDBModel *model, GTimeVal *timeout);
 	void		(*cancel)		(RhythmDBModel *model);
-	gboolean	(*sortable)		(RhythmDBModel *model);
 	gboolean	(*has_pending_changes)	(RhythmDBModel *model);
 } RhythmDBModelIface;
 
@@ -55,7 +54,6 @@ gboolean	rhythmdb_model_poll		(RhythmDBModel *model, GTimeVal *timeout);
 
 
 void		rhythmdb_model_cancel		(RhythmDBModel *model);
-gboolean	rhythmdb_model_sortable		(RhythmDBModel *model);
 
 gboolean	rhythmdb_model_has_pending_changes (RhythmDBModel *model);
 
