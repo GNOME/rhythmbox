@@ -87,6 +87,8 @@ static void album_selected_cb (RBPropertyView *propview, const char *name,
 			       RBLibrarySource *libsource);
 static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 			    struct RBLibrarySourceEntryAddData *data);
+static void
+songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -431,6 +433,10 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "changed",
 			  G_CALLBACK (songs_view_changed_cb),
 			  source);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "sort-order-changed",
+			  G_CALLBACK (songs_view_sort_order_changed_cb),
+			  source);
 
 	/* set up genres treeview */
 	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE);
@@ -627,6 +633,13 @@ album_selected_cb (RBPropertyView *propview, const char *name,
 	g_free (libsource->priv->selected_album);
 	libsource->priv->selected_album = g_strdup (name);
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM, FALSE);
+}
+
+static void
+songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
+{
+	rb_debug ("sort order changed");
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH, FALSE);
 }
 
 static const char *

@@ -104,6 +104,13 @@ static void rb_entry_view_scroll_to_iter (RBEntryView *view,
 					  GtkTreeIter *iter);
 static gboolean poll_model (RBEntryView *view);
 
+struct RBEntryViewReverseSortingData
+{
+	GCompareDataFunc func;
+	gpointer data;
+};
+
+static gint reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data);
 
 struct RBEntryViewPrivate
 {
@@ -123,6 +130,8 @@ struct RBEntryViewPrivate
 	GdkPixbuf *paused_pixbuf;
 
 	GtkTreeViewColumn *sorting_column;
+	gint sorting_order;
+	struct RBEntryViewReverseSortingData *reverse_sorting_data;
 
 	gboolean have_selection;
 	GList *entry_selection;
@@ -490,9 +499,21 @@ rb_entry_view_set_property (GObject *object,
 			sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
 							 view->priv->sorting_column);
 			g_assert (sort_data);
-			
-			g_object_set (G_OBJECT (new_model), "sort-func",
-				      sort_data->func, "sort-data", sort_data->data, NULL);
+
+			if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
+				g_object_set (G_OBJECT (new_model), "sort-func",
+					      sort_data->func, "sort-data", sort_data->data, NULL);
+			} else {
+				g_free (view->priv->reverse_sorting_data);
+				view->priv->reverse_sorting_data
+					= g_new (struct RBEntryViewReverseSortingData, 1);
+				view->priv->reverse_sorting_data->func = sort_data->func;
+				view->priv->reverse_sorting_data->data = sort_data->data;
+				
+				g_object_set (G_OBJECT (new_model), "sort-func",
+					      reverse_sorting_func, "sort-data",
+					      view->priv->reverse_sorting_data, NULL);
+			}
 		}
 
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
@@ -621,6 +642,12 @@ rb_entry_view_get_model (RBEntryView *view)
 {
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (view), NULL);
 	return view->priv->query_model;
+}
+
+static gint
+reverse_sorting_func (gpointer a, gpointer b, struct RBEntryViewReverseSortingData *data)
+{
+	return - data->func (a, b, data->data);
 }
 
 /* Sweet name, eh? */
@@ -876,7 +903,6 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 static void
 rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 {
-	GtkSortType order;
 	gboolean is_sorted;
 	GList *columns, *tem;
 
@@ -891,17 +917,17 @@ rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 	g_list_free (columns);
   
 	if (is_sorted) {
-		order = gtk_tree_view_column_get_sort_order (column);
-		if (order == GTK_SORT_ASCENDING)
-			order = GTK_SORT_DESCENDING;
+		view->priv->sorting_order = gtk_tree_view_column_get_sort_order (column);
+		if (view->priv->sorting_order == GTK_SORT_ASCENDING)
+			view->priv->sorting_order = GTK_SORT_DESCENDING;
 		else
-			order = -1;
+			view->priv->sorting_order = -1;
 	} else
-		order = GTK_SORT_ASCENDING;
+		view->priv->sorting_order = GTK_SORT_ASCENDING;
 
-	if (order != -1) {
+	if (view->priv->sorting_order != -1) {
 		gtk_tree_view_column_set_sort_indicator (column, TRUE);
-		gtk_tree_view_column_set_sort_order (column, order);
+		gtk_tree_view_column_set_sort_order (column, view->priv->sorting_order);
 
 		rb_debug ("emitting sort order changed");
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0); 
