@@ -237,7 +237,7 @@ typedef enum
 #define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
 #define CONF_STATE_ADD_DIR          "/apps/rhythmbox/state/add_dir"
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
-#define CONF_TOOLBAR_SETUP	    "/apps/rhythmbox/toolbar_setup"
+#define CONF_TOOLBAR_SETUP	    "/apps/rhythmbox/ui/toolbar_setup"
 
 #define RB_SHELL_REMOTE_VOLUME_INTERVAL 10
 

@@ -1,5 +1,16 @@
 2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/song-info.glade:
+
+	Remove unnecessary event_box from the track number label.
+	
+	* data/rhythmbox.schemas:
+	* shell/rb-shell.c:
+
+	Move toolbar_setup key into ui/
+
+2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-player.c: (rb_player_init), (rb_player_sync_time),
 	(slider_press_callback), (slider_moved_callback),
 	(slider_release_callback), (changed_idle_callback),
