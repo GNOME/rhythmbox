@@ -55,7 +55,7 @@ static void rhythmdb_tree_save (RhythmDB *rdb);
 static RhythmDBEntry * rhythmdb_tree_entry_new (RhythmDB *db, RhythmDBEntryType type,
 						const char *uri);
 static void rhythmdb_tree_entry_set (RhythmDB *db, RhythmDBEntry *entry,
-				guint propid, GValue *value);
+				     guint propid, const GValue *value);
 
 static void rhythmdb_tree_entry_get (RhythmDB *db, RhythmDBEntry *entry,
 				guint propid, GValue *value);
@@ -1060,7 +1060,7 @@ remove_entry_from_album (RhythmDBTree *db, RhythmDBTreeEntry *entry)
 
 static void
 rhythmdb_tree_entry_set (RhythmDB *adb, RhythmDBEntry *aentry,
-			 guint propid, GValue *value)
+			 guint propid, const GValue *value)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);

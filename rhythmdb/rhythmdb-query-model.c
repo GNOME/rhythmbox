@@ -32,6 +32,7 @@
 #include "rb-thread-helpers.h"
 #include "gsequence.h"
 #include "rb-tree-dnd.h"
+#include "rb-marshal.h"
 
 static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
@@ -56,7 +57,8 @@ static void rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   RhythmDBQueryModel *model);
+						   RhythmDBPropType prop, const GValue *old,
+						   const GValue *new, RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
@@ -115,6 +117,11 @@ struct RhythmDBQueryModelUpdate
 		RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE,
 	} type;
 	RhythmDBEntry *entry;
+
+	/* Only used for _ROW_CHANGED */
+	RhythmDBPropType prop;
+	GValue old;
+	GValue new;
 };
 
 struct RhythmDBQueryModelPrivate
@@ -163,6 +170,7 @@ enum
 enum
 {
 	COMPLETE,
+	ENTRY_PROP_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -291,6 +299,15 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							   0, G_MAXINT, 0,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	rhythmdb_query_model_signals[ENTRY_PROP_CHANGED] =
+		g_signal_new ("entry-prop-changed",
+			      RHYTHMDB_TYPE_QUERY_MODEL,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_prop_changed),
+			      NULL, NULL,
+			      rb_marshal_VOID__POINTER_INT_POINTER_POINTER,
+			      G_TYPE_NONE, 4, G_TYPE_POINTER,
+			      G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -556,7 +573,8 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 
 static void
 rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-				       RhythmDBQueryModel *model)
+				       RhythmDBPropType prop, const GValue *old,
+				       const GValue *new, RhythmDBQueryModel *model)
 {
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
 		struct RhythmDBQueryModelUpdate *update;
@@ -566,6 +584,11 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		update = g_new (struct RhythmDBQueryModelUpdate, 1);
 		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED;
 		update->entry = entry;
+		update->prop = prop;
+		g_value_init (&update->old, G_VALUE_TYPE (old));
+		g_value_copy (old, &update->old);
+		g_value_init (&update->new, G_VALUE_TYPE (new));
+		g_value_copy (new, &update->new);
 	
 		/* Called with a locked database */
 		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
@@ -778,6 +801,7 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 			gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 						     path, &iter);
 			gtk_tree_path_free (path);
+			break;
 		}
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
 		{
@@ -786,6 +810,10 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 
 			if (ptr == NULL)
 				break;
+
+			g_signal_emit (G_OBJECT (model),
+				       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+				       update->entry, update->prop, &update->old, &update->new);
 
 			iter.user_data = ptr;
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
@@ -842,6 +870,8 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 			break;
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
 			rhythmdb_entry_unref (model->priv->db, update->entry);
+			g_value_unset (&update->old);
+			g_value_unset (&update->new);
 			break;
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
 			/* Unref twice; once because we were holding a ref originally

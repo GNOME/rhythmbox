@@ -135,7 +135,8 @@ typedef struct
 	/* signals */
 	void	(*entry_added)		(RhythmDBEntry *entry);
 	void	(*entry_restored)	(RhythmDBEntry *entry);
-	void	(*entry_changed)	(RhythmDBEntry *entry);
+	void	(*entry_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
+					 const GValue *old, const GValue *new);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(RhythmDBEntry *entry);
 	void	(*legacy_load_complete)	(RhythmDBEntry *entry);
@@ -150,7 +151,7 @@ typedef struct
 						 const char *uri);
 
 	void		(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
-						 guint propid, GValue *value);
+						 guint propid, const GValue *value);
 
 	void		(*impl_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, GValue *value);

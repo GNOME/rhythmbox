@@ -45,12 +45,21 @@ static void rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 						     GtkTreePath *path,
 						     GtkTreeIter *iter,
 						     RhythmDBPropertyModel *propmodel);
+static void rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+						     RhythmDBPropType prop, const GValue *old,
+						     const GValue *new,
+						     RhythmDBPropertyModel *propmodel);
 static void rhythmdb_property_model_row_deleted_cb (GtkTreeModel *model,
 						    GtkTreePath *path,
 						    RhythmDBPropertyModel *propmodel);
 static void rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry);
-static gboolean rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
-						RhythmDBEntry *entry);
+static void rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
+					    RhythmDBEntry *entry);
+static void rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
+							 const char *propstr,
+							 const char *sort_key);
+static void rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
+							 const char *propstr);
 static GtkTreeModelFlags rhythmdb_property_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_property_model_get_n_columns (GtkTreeModel *tree_model);
 static GType rhythmdb_property_model_get_column_type (GtkTreeModel *tree_model, int index);
@@ -283,9 +292,9 @@ rhythmdb_property_model_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
 							      G_CALLBACK (rhythmdb_property_model_row_deleted_cb),
 							      model);
-/* 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model), */
-/* 							      G_CALLBACK (rhythmdb_property_model_row_changed_cb), */
-/* 							      model); */
+			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
+							      G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
+							      model);
 			g_object_unref (G_OBJECT (model->priv->query_model));
 		}
 		
@@ -302,11 +311,11 @@ rhythmdb_property_model_set_property (GObject *object,
 						 G_CALLBACK (rhythmdb_property_model_row_deleted_cb),
 						 model,
 						 0);
-/* 			g_signal_connect_object (G_OBJECT (model->priv->query_model), */
-/* 						 "row_changed", */
-/* 						 G_CALLBACK (rhythmdb_property_model_row_changed_cb), */
-/* 						 model, */
-/* 						 0); */
+			g_signal_connect_object (G_OBJECT (model->priv->query_model),
+						 "entry-prop-changed",
+						 G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
+						 model,
+						 0);
 			g_object_ref (G_OBJECT (model->priv->query_model));
 		}
 		break;
@@ -434,6 +443,19 @@ rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 }
 
 static void
+rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+					 RhythmDBPropType prop, const GValue *old,
+					 const GValue *new,
+					 RhythmDBPropertyModel *propmodel)
+{
+	if (prop != propmodel->priv->propid)
+		return;
+
+	rhythmdb_property_model_delete_prop (propmodel, g_value_get_string (old));
+	rhythmdb_property_model_insert (propmodel, entry);
+}
+
+static void
 rhythmdb_property_model_row_deleted_cb (GtkTreeModel *model,
 					GtkTreePath *path,
 					RhythmDBPropertyModel *propmodel)
@@ -451,26 +473,36 @@ rhythmdb_property_model_compare (RhythmDBPropertyModelEntry *a, RhythmDBProperty
 static void
 rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry)
 {
+	char *propstr;
+	char *sort_key;
+
+	rhythmdb_read_lock (model->priv->db);
+	propstr = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry,
+						       model->priv->propid));
+	sort_key = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry,
+							model->priv->sort_propid));
+	rhythmdb_read_unlock (model->priv->db);
+
+	rhythmdb_property_model_insert_prop (model, propstr, sort_key);
+	g_free (propstr);
+	g_free (sort_key);	
+}
+
+static void
+rhythmdb_property_model_insert_prop (RhythmDBPropertyModel *model,
+				     const char *propstr,
+				     const char *sort_key)
+{
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	GSequencePtr ptr;
-	const char *propstr;
-	const char *sort_key;	
-
-	rhythmdb_read_lock (model->priv->db);
-	propstr = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
-	rhythmdb_read_unlock (model->priv->db);
 
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_ptr_get_data (ptr);
 		prop->refcount++;
 		return;
 	}
-
-	rhythmdb_read_lock (model->priv->db);
-	sort_key = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->sort_propid);
-	rhythmdb_read_unlock (model->priv->db);
 
 	prop = g_mem_chunk_alloc (model->priv->property_memchunk);
 	prop->name = g_strdup (propstr);
@@ -489,19 +521,28 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	gtk_tree_path_free (path);
 }
 
-gboolean
+void
 rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 				RhythmDBEntry *entry)
 {
+	char *propstr;
+
+	rhythmdb_read_lock (model->priv->db);
+	propstr = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid));
+	rhythmdb_read_unlock (model->priv->db);
+	
+	rhythmdb_property_model_delete_prop (model, propstr);
+	g_free (propstr);
+}
+	
+static void
+rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
+				     const char *propstr)
+{
 	GSequencePtr ptr;
-	const char *propstr;
 	RhythmDBPropertyModelEntry *prop;
 	GtkTreePath *path;
 	GtkTreeIter iter;
-
-	rhythmdb_read_lock (model->priv->db);
-	propstr = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
-	rhythmdb_read_unlock (model->priv->db);
 
 	g_assert ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr)));
 
@@ -509,7 +550,7 @@ rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
 	prop->refcount--;
 	if (prop->refcount > 0)
-		return FALSE;
+		return;
 
 	iter.stamp = model->priv->stamp;
 	iter.user_data = ptr;
@@ -523,7 +564,7 @@ rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 	g_free (prop->name);
 	g_free (prop->sort_key);
 	g_mem_chunk_free (model->priv->property_memchunk, prop);
-	return TRUE;
+	return;
 }
 
 static GtkTreeModelFlags

@@ -64,8 +64,8 @@ struct RhythmDBPrivate
 	GAsyncQueue *add_queue;
 	GAsyncQueue *action_queue;
 
-	GHashTable *added_entries;
-	GHashTable *changed_entries;
+	GList *added_entries;
+	GList *changed_entries;
 
 	GHashTable *propname_map;
 
@@ -95,6 +95,14 @@ struct RhythmDBQueryThreadData
 	GtkTreeModel *main_model;
 	gboolean lock;
 	gboolean cancel;
+};
+
+struct RhythmDBEntryChangeData
+{
+	RhythmDBEntry *entry;
+	RhythmDBPropType prop;
+	GValue old;
+	GValue new;
 };
 
 static void rhythmdb_class_init (RhythmDBClass *klass);
@@ -222,9 +230,9 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1, G_TYPE_POINTER);
+			      rb_marshal_VOID__POINTER_INT_POINTER_POINTER,
+			      G_TYPE_NONE, 4, G_TYPE_POINTER,
+			      G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
@@ -539,35 +547,31 @@ void
 rhythmdb_write_lock (RhythmDB *db)
 {
 	g_static_rw_lock_writer_lock (&db->priv->lock);
-}
 
-static void
-emit_entry_changed (RhythmDBEntry *entry, gpointer unused,
-		    RhythmDB *db)
-{
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry);
-}
-
-static void
-emit_entry_added (RhythmDBEntry *entry, gpointer unused,
-		  RhythmDB *db)
-{
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
+	db->priv->added_entries = NULL;
+	db->priv->changed_entries = NULL;
 }
 
 void
 rhythmdb_write_unlock (RhythmDB *db)
 {
-	if (db->priv->changed_entries) {
-		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
-		g_hash_table_destroy (db->priv->changed_entries);
-		db->priv->changed_entries = NULL;
+	GList *tem;
+
+	for (tem = db->priv->changed_entries; tem; tem = tem->next) {
+		struct RhythmDBEntryChangeData *data = tem->data;
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
+			       data->prop, &data->old, &data->new);
+		g_value_unset (&data->old);
+		g_value_unset (&data->new);
+		g_free (data);
 	}
-	if (db->priv->added_entries) {
-		g_hash_table_foreach (db->priv->added_entries, (GHFunc) emit_entry_added, db);
-		g_hash_table_destroy (db->priv->added_entries);
-		db->priv->added_entries = NULL;
-	}
+	g_list_free (db->priv->changed_entries);
+	db->priv->changed_entries = NULL;
+
+	for (tem = db->priv->added_entries; tem; tem = tem->next)
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
+	g_list_free (db->priv->added_entries);
+	db->priv->added_entries = NULL;
 		 
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
 }
@@ -602,11 +606,9 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	
 	ret = klass->impl_entry_new (db, type, uri);
 	rb_debug ("emitting entry added");
-	if (!db->priv->changed_entries)
-		db->priv->added_entries = g_hash_table_new (NULL, NULL);
 
 	if (ret != NULL)
-		g_hash_table_insert (db->priv->added_entries, ret, NULL);
+		db->priv->added_entries = g_list_append (db->priv->added_entries, ret);
 	return ret;
 }
 
@@ -1032,6 +1034,7 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		    guint propid, GValue *value)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	struct RhythmDBEntryChangeData *changedata;
 
 #ifndef G_DISABLE_ASSERT	
 	switch (G_VALUE_TYPE (value))
@@ -1054,10 +1057,14 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 
 	db_enter (db, TRUE);
 
-	if (!db->priv->changed_entries)
-		db->priv->changed_entries = g_hash_table_new (NULL, NULL);
-
-	g_hash_table_insert (db->priv->changed_entries, entry, NULL);
+	changedata = g_new0 (struct RhythmDBEntryChangeData, 1);
+	changedata->entry = entry;
+	changedata->prop = propid;
+	g_value_init (&changedata->old, G_VALUE_TYPE (value));
+	klass->impl_entry_get (db, entry, propid, &changedata->old);
+	g_value_init (&changedata->new, G_VALUE_TYPE (value));
+	g_value_copy (value, &changedata->new);
+	db->priv->changed_entries = g_list_append (db->priv->changed_entries, changedata);
 
 	klass->impl_entry_set (db, entry, propid, value);
 

@@ -112,6 +112,10 @@ static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
 static void rb_shell_db_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 				    RBShell *shell);
+static void rb_shell_db_changed_prop_cb (RhythmDB *db, RhythmDBEntry *entry,
+					 RhythmDBPropType prop, const GValue *old,
+					 const GValue *new, RBShell *shell);
+
 
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
@@ -418,6 +422,14 @@ rb_shell_db_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 			RBShell *shell)
 {
 	shell->priv->db_dirty = TRUE;
+}
+
+static void
+rb_shell_db_changed_prop_cb (RhythmDB *db, RhythmDBEntry *entry,
+			     RhythmDBPropType prop, const GValue *old, const GValue *new,
+			     RBShell *shell)
+{
+	rb_shell_db_changed_cb (db, entry, shell);
 }
 
 static void
@@ -929,7 +941,7 @@ rb_shell_construct (RBShell *shell)
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->db),
 				 "entry_changed",
-				 G_CALLBACK (rb_shell_db_changed_cb),
+				 G_CALLBACK (rb_shell_db_changed_prop_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->db),
 				 "entry_deleted",
