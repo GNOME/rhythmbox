@@ -1346,10 +1346,12 @@ idle_do_query_complete (struct RBLibrarySourceQueryCompleteData *data)
 {
 
 	GDK_THREADS_ENTER ();
-	
+
+	rb_debug ("query complete");
 	if (data->source->priv->active_query != data->model)
 		goto out;
 
+	rb_debug ("resetting data models");
 	if (data->source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_GENRE)
 		g_object_set (G_OBJECT (rb_property_view_get_model (data->source->priv->genres)),
 			      "query-model", data->model, NULL);

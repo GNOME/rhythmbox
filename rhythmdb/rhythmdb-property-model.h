@@ -57,6 +57,8 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
+
+	void (*pre_row_deletion) (void);
 } RhythmDBPropertyModelClass;
 
 GType			rhythmdb_property_model_get_type	(void);

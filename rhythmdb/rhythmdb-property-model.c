@@ -106,6 +106,12 @@ struct RhythmDBPropertyModelPrivate
 
 enum
 {
+	PRE_ROW_DELETION,
+	LAST_SIGNAL
+};
+
+enum
+{
 	PROP_0,
 	PROP_RHYTHMDB,
 	PROP_QUERY,
@@ -114,6 +120,8 @@ enum
 };
 
 static GObjectClass *parent_class = NULL;
+
+static guint rhythmdb_property_model_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rhythmdb_property_model_get_type (void)
@@ -164,6 +172,16 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 	object_class->get_property = rhythmdb_property_model_get_property;
 
 	object_class->finalize = rhythmdb_property_model_finalize;
+
+	rhythmdb_property_model_signals[PRE_ROW_DELETION] =
+		g_signal_new ("pre-row-deletion",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBPropertyModelClass, pre_row_deletion),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	g_object_class_install_property (object_class,
 					 PROP_RHYTHMDB,
@@ -488,6 +506,7 @@ rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 	g_assert ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr)));
 
 	prop = g_sequence_ptr_get_data (ptr);
+	rb_debug ("deleting \"%s\": refcount: %d", propstr, prop->refcount);
 	prop->refcount--;
 	if (prop->refcount > 0)
 		return FALSE;
@@ -496,6 +515,7 @@ rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 	iter.user_data = ptr;
 
 	path = rhythmdb_property_model_get_path (GTK_TREE_MODEL (model), &iter);
+	g_signal_emit (G_OBJECT (model), rhythmdb_property_model_signals[PRE_ROW_DELETION], 0);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
 	g_sequence_remove (ptr);

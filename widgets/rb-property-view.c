@@ -60,9 +60,11 @@ static void rb_property_view_row_activated_cb (GtkTreeView *treeview,
 			                   RBPropertyView *view);
 static void rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 						   RBPropertyView *view);
-static void rb_property_view_row_deleted_cb (GtkTreeModel *model,
-					     GtkTreePath *path,
-					     RBPropertyView *view);
+static void rb_property_view_pre_row_deleted_cb (RhythmDBPropertyModel *model,
+						 RBPropertyView *view);
+static void rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
+						  GtkTreePath *path,
+						  RBPropertyView *view);
 
 struct RBPropertyViewPrivate
 {
@@ -78,6 +80,8 @@ struct RBPropertyViewPrivate
 
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
+
+	gboolean handling_row_deletion;
 
 	guint refresh_idle_id;
 };
@@ -269,6 +273,15 @@ rb_property_view_set_property (GObject *object,
 	{
 		GtkTreeIter iter;
 
+		if (view->priv->prop_model) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+							      G_CALLBACK (rb_property_view_pre_row_deleted_cb),
+							      view);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->prop_model),
+							      G_CALLBACK (rb_property_view_post_row_deleted_cb),
+							      view);
+		}
+
 		view->priv->prop_model = g_value_get_object (value);
 
 		if (!view->priv->prop_model)
@@ -278,10 +291,15 @@ rb_property_view_set_property (GObject *object,
 					 GTK_TREE_MODEL (view->priv->prop_model));
 
 		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
-					 "row_deleted",
-					 G_CALLBACK (rb_property_view_row_deleted_cb),
+					 "pre-row-deletion",
+					 G_CALLBACK (rb_property_view_pre_row_deleted_cb),
 					 view,
 					 0);
+		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
+					 "row_deleted",
+					 G_CALLBACK (rb_property_view_post_row_deleted_cb),
+					 view,
+					 G_CONNECT_AFTER);
 
 		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
 						 G_CALLBACK (rb_property_view_selection_changed_cb),
@@ -386,23 +404,34 @@ rb_property_view_set_model (RBPropertyView *view, RhythmDBPropertyModel *model)
 }
 
 static void
-rb_property_view_row_deleted_cb (GtkTreeModel *model,
-				 GtkTreePath *path,
-				 RBPropertyView *view)
+rb_property_view_pre_row_deleted_cb (RhythmDBPropertyModel *model,
+				     RBPropertyView *view)
 {
-	g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
-					 G_CALLBACK (rb_property_view_selection_changed_cb),
-					 view);
+	view->priv->handling_row_deletion = TRUE;
+	rb_debug ("pre row deleted");
+}
+
+static void
+rb_property_view_post_row_deleted_cb (GtkTreeModel *model,
+				      GtkTreePath *path,
+				      RBPropertyView *view)
+{
+	view->priv->handling_row_deletion = FALSE;
+	rb_debug ("post row deleted");
 	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
 		GtkTreeIter first_iter;
+		rb_debug ("no rows selected, signalling reset");
 		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model),
 					       &first_iter);
+		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
+						 G_CALLBACK (rb_property_view_selection_changed_cb),
+						 view);
 		gtk_tree_selection_select_iter (view->priv->selection, &first_iter);
 		g_signal_emit (G_OBJECT (view), rb_property_view_signals[SELECTION_RESET], 0);
+		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+						   G_CALLBACK (rb_property_view_selection_changed_cb),
+						   view);
 	}
-	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-					   G_CALLBACK (rb_property_view_selection_changed_cb),
-					   view);
 }
 
 guint
@@ -512,6 +541,10 @@ rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 	GtkTreeModel *model;
 	GtkTreeIter iter;
 
+	if (view->priv->handling_row_deletion)
+		return;
+
+	rb_debug ("selection changed");
 	if (gtk_tree_selection_get_mode (selection) == GTK_SELECTION_MULTIPLE) {
 		GList *selected_rows, *tem;
 		GList *selected_properties = NULL;
