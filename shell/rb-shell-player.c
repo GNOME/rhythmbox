@@ -216,7 +216,6 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 {
 	GError *error = NULL;
 	GtkWidget *align, *vbox;
-//	RBVolume *volume;
 
 	shell_player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
@@ -235,13 +234,6 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_box_pack_end (GTK_BOX (shell_player), vbox, FALSE, TRUE, 0);
-
-#if 0
-	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
-	align = gtk_alignment_new (1.0, 0.0, 0.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (volume));
-	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, FALSE, 0);
-#endif
 
 	shell_player->priv->bin = gtk_hbox_new (FALSE, 0);
 	align = gtk_alignment_new (1.0, 1.0, 0.0, 0.0);
