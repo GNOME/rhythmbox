@@ -62,7 +62,8 @@ RBPlayer     *rb_player_new            (RB *rb);
 
 void          rb_player_queue_song     (RBPlayer *player,
 			                RBNode *song,
-			                gboolean start_playing);
+			                gboolean start_playing,
+					gboolean scroll_to);
 
 RBNode       *rb_player_get_song       (RBPlayer *player);
 

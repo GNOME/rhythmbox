@@ -84,6 +84,9 @@ static void root_child_added_cb (RBNode *node,
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
 		                   RBTreeModelNode *model);
+static void root_children_reordered_cb (RBNode *node,
+			                int *new_order,
+			                RBTreeModelNode *model);
 static inline void rb_tree_model_node_update_node (RBTreeModelNode *model,
 				                   RBNode *node,
 					           int idx);
@@ -283,6 +286,11 @@ rb_tree_model_node_set_property (GObject *object,
 				         G_OBJECT (model),
 					 0);
 		g_signal_connect_object (G_OBJECT (model->priv->root),
+					 "children_reordered",
+					 G_CALLBACK (root_children_reordered_cb),
+					 G_OBJECT (model),
+					 0);
+		g_signal_connect_object (G_OBJECT (model->priv->root),
 				         "destroyed",
 				         G_CALLBACK (root_destroyed_cb),
 				         G_OBJECT (model),
@@ -292,9 +300,9 @@ rb_tree_model_node_set_property (GObject *object,
 	case PROP_PLAYING_NODE:
 		{
 			RBNode *old = model->priv->playing_node;
-	
+
 			model->priv->playing_node = g_value_get_object (value);
-	
+
 			if (old != NULL)
 				rb_tree_model_node_update_node (model, old, -1);
 			if (model->priv->playing_node != NULL)
@@ -822,6 +830,18 @@ root_child_changed_cb (RBNode *node,
 		       RBTreeModelNode *model)
 {
 	rb_tree_model_node_update_node (model, child, -1);
+}
+
+static void
+root_children_reordered_cb (RBNode *node,
+			    int *new_order,
+			    RBTreeModelNode *model)
+{
+	GtkTreePath *path;
+
+	path = gtk_tree_path_new ();
+	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model), path, NULL, new_order);
+	gtk_tree_path_free (path);
 }
 
 static void

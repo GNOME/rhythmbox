@@ -19,7 +19,7 @@ MONKEYMEDIA_REQUIRED=0.6.1.99
 AC_SUBST(MONKEYMEDIA_REQUIRED)
 
 PKG_CHECK_MODULES(RHYTHMBOX,                    \
-                  gtk+-2.0                      \
+                  gtk+-2.0 >= 2.2.0             \
                   libgnomeui-2.0                \
 		  libglade-2.0                  \
 		  gnome-vfs-2.0                 \

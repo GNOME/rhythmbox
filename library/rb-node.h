@@ -48,12 +48,13 @@ typedef struct
 	GObjectClass parent;
 
 	/* signals */
-	void (*destroyed)     (RBNode *node);
-	void (*restored)      (RBNode *node);
+	void (*destroyed)          (RBNode *node);
+	void (*restored)           (RBNode *node);
 
-	void (*child_added)   (RBNode *node, RBNode *child);
-	void (*child_changed) (RBNode *node, RBNode *child);
-	void (*child_removed) (RBNode *node, RBNode *child);
+	void (*child_added)        (RBNode *node, RBNode *child);
+	void (*child_changed)      (RBNode *node, RBNode *child);
+	void (*child_removed)      (RBNode *node, RBNode *child);
+	void (*children_reordered) (RBNode *node, int *new_order);
 } RBNodeClass;
 
 GType       rb_node_get_type              (void);
@@ -143,6 +144,8 @@ void        rb_node_remove_child          (RBNode *node,
 					   RBNode *child);
 gboolean    rb_node_has_child             (RBNode *node,
 					   RBNode *child);
+void        rb_node_reorder_children      (RBNode *node,
+					   int *new_order);
 
 /* Note that rb_node_get_children freezes the node; you'll have to thaw it when done.
  * This is to prevent the data getting changed from another thread. */

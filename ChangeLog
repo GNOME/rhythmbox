@@ -1,5 +1,28 @@
 2003-01-19  Jorn Baayen  <jorn@nl.linux.org>
 
+	* configure.in:
+
+	Depend on gtk 2.2.
+	
+	* lib/widgets/rb-node-view.c: (rb_node_view_finalize):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (root_child_changed_cb),
+	(root_children_reordered_cb):
+	* library/rb-node-song.c: (set_mtime), (set_duration):
+	* library/rb-node.c: (rb_node_class_init), (rb_node_has_child),
+	(rb_node_reorder_children):
+	* library/rb-node.h:
+	* shell/rb-player.c: (rb_player_init), (rb_shuffle),
+	(sync_repeat_mode), (append_song), (rb_player_queue_song):
+	* shell/rb-player.h:
+	* views/rb-library-view.c: (songs_node_activated_cb),
+	(play_song_cb), (play_song_later_cb), (play_album_cb),
+	(play_album_later_cb):
+
+	Some cleanups, implement shuffle, scroll improvements.
+
+2003-01-19  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/rhythmbox.schemas:
 	* lib/widgets/rb-node-view.c: (make_view_idle), (scroll_child_cb),
 	(rb_node_view_init), (rb_node_view_set_property),

@@ -830,24 +830,26 @@ songs_node_activated_cb (RBNodeView *nodeview,
 			 RBNode *node,
 			 RBLibraryView *view)
 {
-	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, TRUE);
 }
 
 static void
 play_song_cb (GtkWidget *button,
 	      RBLibraryView *view)
 {
-	GList *sel, *l;
+	GList *sel, *l, *last;
 	gboolean once = TRUE;
 
 	sel = rb_node_view_get_selection (view->priv->songs);
+
+	last = g_list_last (sel);
 
 	for (l = sel; l != NULL; l = g_list_next (l)) {
 		RBNode *node;
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, once);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, once, (l == last));
 
 		once = FALSE;
 	}
@@ -859,16 +861,18 @@ static void
 play_song_later_cb (GtkWidget *button,
 	            RBLibraryView *view)
 {
-	GList *sel, *l;
+	GList *sel, *l, *last;
 
 	sel = rb_node_view_get_selection (view->priv->songs);
+
+	last = g_list_last (sel);
 
 	for (l = sel; l != NULL; l = g_list_next (l)) {
 		RBNode *node;
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, (l == last));
 	}
 
 	g_list_free (sel);
@@ -878,17 +882,19 @@ static void
 play_album_cb (GtkWidget *button,
 	       RBLibraryView *view)
 {
-	GList *sel, *l;
+	GList *sel, *l, *last;
 	gboolean once = TRUE;
 
 	sel = rb_node_view_get_rows (view->priv->songs);
+
+	last = g_list_last (sel);
 
 	for (l = sel; l != NULL; l = g_list_next (l)) {
 		RBNode *node;
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, once);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, once, (l == last));
 
 		once = FALSE;
 	}
@@ -900,16 +906,18 @@ static void
 play_album_later_cb (GtkWidget *button,
 	             RBLibraryView *view)
 {
-	GList *sel, *l;
+	GList *sel, *l, *last;
 
 	sel = rb_node_view_get_rows (view->priv->songs);
+
+	last = g_list_last (sel);
 
 	for (l = sel; l != NULL; l = g_list_next (l)) {
 		RBNode *node;
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, (l == last));
 	}
 
 	g_list_free (sel);

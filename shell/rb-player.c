@@ -21,7 +21,6 @@
 /* FIXME fix up button crack and summary bits? */
 /* FIXME reorderable */
 
-/* FIXME scroll to playing node */
 /* FIXME volume control */
 /* FIXME treeview row tooltips if it doesnt fit */
 /* FIXME playlist management button? */
@@ -386,9 +385,6 @@ rb_player_init (RBPlayer *player)
 			  G_CALLBACK (next_cb), player);
 
 	player->priv->repeat   = create_button_with_icon (RB_STOCK_REPEAT, TRUE);
-	gtk_tooltips_set_tip (player->priv->tooltips,
-			      player->priv->repeat,
-			      _("Repeat the play list"), NULL);
 	pack_button (player, player->priv->repeat, TRUE);
 	g_signal_connect (G_OBJECT (player->priv->repeat), "clicked",
 			  G_CALLBACK (repeat_cb), player);
@@ -652,8 +648,33 @@ rb_clear (RBPlayer *player)
 static void
 rb_shuffle (RBPlayer *player)
 {
-	/* FIXME */
+	GPtrArray *kids;
+	int *new_order, i;
+
+	kids = rb_node_get_children (player->priv->playlist);
+
+	new_order = g_new (int, kids->len);
+	memset (new_order, -1, sizeof (int) * kids->len);
+
+	for (i = 0; i < kids->len; i++) {
+		int rnd;
+
+		do {
+			rnd = g_random_int_range (0, kids->len);
+		} while (new_order[rnd] != -1);
+
+		new_order[rnd] = i;
+	}
+
+	rb_node_thaw (player->priv->playlist);
+
+	rb_node_reorder_children (player->priv->playlist, new_order);
+	g_free (new_order);
+
 	update_buttons (player);
+
+	if (player->priv->playing)
+		rb_node_view_scroll_to_node (player->priv->playlist_view, player->priv->playing);
 }
 
 static void
@@ -663,6 +684,15 @@ sync_repeat_mode (RBPlayer *player)
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (player->priv->repeat),
 				      player->priv->repeat_mode);
+
+	if (player->priv->repeat_mode)
+		gtk_tooltips_set_tip (player->priv->tooltips,
+				      player->priv->repeat,
+				      _("Disable repeating the play list"), NULL);
+	else
+		gtk_tooltips_set_tip (player->priv->tooltips,
+				      player->priv->repeat,
+				      _("Enable repeating the play list"), NULL);
 
 	update_buttons (player);
 }
@@ -703,8 +733,6 @@ append_song (RBPlayer *player, RBNode *song)
 	}
 
 	update_buttons (player);
-
-	rb_node_view_scroll_to_node (player->priv->playlist_view, node);
 
 	return node;
 }
@@ -820,18 +848,23 @@ nullify_info (RBPlayer *player)
 void
 rb_player_queue_song (RBPlayer *player,
 		      RBNode *song,
-		      gboolean start_playing)
+		      gboolean start_playing,
+		      gboolean scroll_to)
 {
-	if (start_playing) {
-		RBNode *real;
+	RBNode *real;
 
+	if (start_playing) {
 		real = append_song (player, song);
 		set_playing (player, real);
 
 		rb_player_set_state (player, RB_PLAYER_PLAYING);
 	} else {
-		append_song (player, song);
+		real = append_song (player, song);
 	}
+
+	if (scroll_to)
+		rb_node_view_scroll_to_node (player->priv->playlist_view, real);
+
 }
 
 RBNode *

@@ -217,19 +217,19 @@ set_mtime (RBNodeSong *node, const char *location)
 {
 	GnomeVFSFileInfo *info;
 	GValue val = { 0, };
-	
+
 	info = gnome_vfs_file_info_new ();
-	
+
 	gnome_vfs_get_file_info (location, info,
 				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-	
+
 	g_value_init (&val, G_TYPE_LONG);
 	g_value_set_long (&val, info->mtime);
-	
+
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_PROP_MTIME,
 			      &val);
-	
+
 	g_value_unset (&val);
 
 	gnome_vfs_file_info_unref (info);
@@ -243,7 +243,7 @@ set_duration (RBNodeSong *node,
 	GValue string_val = { 0, };
 	long minutes = 0, seconds = 0;
 	char *tmp;
-	
+
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
 					    0,
@@ -251,18 +251,18 @@ set_duration (RBNodeSong *node,
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_PROP_REAL_DURATION,
 			      &val);
-	
+
 	g_value_init (&string_val, G_TYPE_STRING);
 
 	if (g_value_get_long (&val) > 0) {
 		minutes = g_value_get_long (&val) / 60;
 		seconds = g_value_get_long (&val) % 60;
 	}
-	
-	tmp = g_strdup_printf ("%ld:%02ld", minutes, seconds);
+
+	tmp = g_strdup_printf (_("%ld:%02ld"), minutes, seconds);
 	g_value_set_string (&string_val, tmp);
 	g_free (tmp);
-	
+
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_PROP_DURATION,
 			      &string_val);

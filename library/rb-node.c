@@ -100,6 +100,7 @@ enum
 	CHILD_ADDED,
 	CHILD_CHANGED,
 	CHILD_REMOVED,
+	CHILDREN_REORDERED,
 	LAST_SIGNAL
 };
 
@@ -209,6 +210,16 @@ rb_node_class_init (RBNodeClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_NODE);
+	rb_node_signals[CHILDREN_REORDERED] =
+		g_signal_new ("children_reordered",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeClass, children_reordered),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
 }
 
 static gboolean
@@ -1336,6 +1347,48 @@ rb_node_has_child (RBNode *node,
 	g_static_rw_lock_reader_unlock (child->priv->lock);
 
 	return ret;
+}
+
+void
+rb_node_reorder_children (RBNode *node,
+			  int *new_order)
+{
+	GPtrArray *newkids;
+	int i;
+
+	g_return_if_fail (RB_IS_NODE (node));
+	g_return_if_fail (new_order != NULL);
+
+	lock_gdk ();
+
+	g_static_rw_lock_writer_lock (node->priv->lock);
+
+	newkids = g_ptr_array_new ();
+	g_ptr_array_set_size (newkids, node->priv->children->len);
+
+	for (i = 0; i < node->priv->children->len; i++) {
+		RBNode *child;
+		RBNodeParent *node_info;
+
+		child = g_ptr_array_index (node->priv->children, i);
+
+		g_ptr_array_index (newkids, new_order[i]) = child;
+
+		node_info = g_hash_table_lookup (child->priv->parents,
+					         GINT_TO_POINTER (node->priv->id));
+		node_info->index = new_order[i];
+	}
+
+	g_ptr_array_free (node->priv->children, FALSE);
+	node->priv->children = newkids;
+
+	write_lock_to_read_lock (node);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILDREN_REORDERED], 0, new_order);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	unlock_gdk ();
 }
 
 GPtrArray *
