@@ -193,6 +193,8 @@ rb_node_filter_set_object_property (GObject *object,
 
 			filter->priv->thread = g_thread_create ((GThreadFunc) thread_main,
 								filter->priv, TRUE, NULL);
+			g_thread_set_priority (filter->priv->thread,
+					       G_THREAD_PRIORITY_LOW);
 		}
 		break;
 	default:
@@ -264,6 +266,16 @@ rb_node_filter_set_expression (RBNodeFilter *filter,
 		      NULL);
 }
 
+void 
+rb_node_filter_abort_search (RBNodeFilter *filter)
+{
+	g_return_if_fail (filter != NULL);
+
+	g_mutex_lock (filter->priv->expr_lock);
+	filter->priv->expr_changed = TRUE;
+	g_mutex_unlock (filter->priv->expr_lock);
+}
+
 static gpointer
 thread_main (RBNodeFilterPrivate *priv)
 {
@@ -320,9 +332,7 @@ thread_main (RBNodeFilterPrivate *priv)
 			g_mutex_unlock (priv->expr_lock);
 
 			if (aborted == TRUE)
-			{
 				break;
-			}
 
 			/* check the title - artist - album */
 			node = RB_NODE (l->data);

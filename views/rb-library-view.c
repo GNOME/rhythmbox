@@ -392,6 +392,9 @@ rb_library_view_set_property (GObject *object,
 			view->priv->browser = gtk_hbox_new (TRUE, 5);
 			g_object_ref (G_OBJECT (view->priv->browser));
 
+			/* Initialize the filter */
+			view->priv->filter = rb_node_filter_new (view->priv->library);
+
 			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"));
@@ -479,9 +482,6 @@ rb_library_view_set_property (GObject *object,
 			
 			rb_node_view_select_node (view->priv->artists,
 			 		          rb_library_get_all_albums (view->priv->library));
-
-			/* Initialize the filter */
-			view->priv->filter = rb_node_filter_new (view->priv->library);
 		}
 		break;
 	default:
@@ -535,10 +535,13 @@ artist_node_selected_cb (RBNodeView *view,
 	rb_node_view_set_filter (testview->priv->albums, node, NULL);
 	rb_node_view_select_node (testview->priv->albums,
 				  rb_library_get_all_songs (testview->priv->library));
+
+	rb_node_filter_abort_search (testview->priv->filter);
+	rb_search_entry_clear (testview->priv->search);
+
 	rb_node_view_set_filter (testview->priv->songs,
 				 rb_library_get_all_songs (testview->priv->library),
 				 node);
-	rb_search_entry_clear (testview->priv->search);
 }
 
 static void
@@ -555,9 +558,11 @@ album_node_selected_cb (RBNodeView *view,
 		selection = rb_node_view_get_selection (testview->priv->artists);
 	}
 
+	rb_node_filter_abort_search (testview->priv->filter);
+	rb_search_entry_clear (testview->priv->search);
+
 	rb_node_view_set_filter (testview->priv->songs, node,
 				 RB_NODE (selection->data));
-	rb_search_entry_clear (testview->priv->search);
 }
 
 static void 

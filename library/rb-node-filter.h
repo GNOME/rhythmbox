@@ -62,6 +62,8 @@ RBNode       *rb_node_filter_get_root       (RBNodeFilter *filter);
 void	      rb_node_filter_set_expression (RBNodeFilter *filter,
 					     const char *expression);
 
+void	      rb_node_filter_abort_search   (RBNodeFilter *filter);
+
 G_END_DECLS
 
 #endif /* __RB_NODE_FILTER_H */
