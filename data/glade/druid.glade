@@ -23,15 +23,15 @@
 	<widget class="GnomeDruidPageEdge" id="druidpagestart1">
 	  <property name="visible">True</property>
 	  <property name="position">GNOME_EDGE_START</property>
-	  <property name="title" translatable="yes">Welcome to Rhythmbox</property>
-	  <property name="text" translatable="yes">In order to get started using Rhythmbox, this assistant will ask you some simple questions.</property>
+	  <property name="title" translatable="yes"></property>
+	  <property name="text" translatable="yes"></property>
 	</widget>
       </child>
 
       <child>
 	<widget class="GnomeDruidPageStandard" id="druidpagestandard1">
 	  <property name="visible">True</property>
-	  <property name="title" translatable="yes">Library setup</property>
+	  <property name="title" translatable="yes"></property>
 
 	  <child internal-child="vbox">
 	    <widget class="GtkVBox" id="druid-vbox1">
@@ -49,7 +49,9 @@
 		  <child>
 		    <widget class="GtkLabel" id="label1">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Rhythmbox needs to know where to find your music. You may choose to skip this step; instead, you can add music to your library at any point later. Please choose one of the options below:</property>
+		      <property name="label" translatable="yes">Rhythmbox manages all of your music in a central music &quot;library&quot;, so you can easily view, search, and organize it.
+In order to use this feature, you need to tell Rhythmbox where to find your music.  You may choose to skip this step; instead, you can add music to your library at any point later.
+Please choose one of the options below:</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -270,8 +272,8 @@
 	<widget class="GnomeDruidPageEdge" id="druidpagefinish1">
 	  <property name="visible">True</property>
 	  <property name="position">GNOME_EDGE_FINISH</property>
-	  <property name="title" translatable="yes">Finish</property>
-	  <property name="text" translatable="yes">You are now ready to start Rhythmbox.</property>
+	  <property name="title" translatable="yes"></property>
+	  <property name="text" translatable="yes"></property>
 	</widget>
       </child>
     </widget>
