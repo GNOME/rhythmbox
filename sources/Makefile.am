@@ -10,7 +10,7 @@ libsourcesimpl_la_SOURCES =		\
 	rb-sourcelist-model.c		\
 	rb-sourcelist-model.h		\
 	rb-library-source.c		\
-	rb-library-source.h
+	rb-library-source.h		
 #	rb-iradio-source.c		\
 #	rb-iradio-source.h		\
 #	rb-playlist-source.c            \

@@ -127,7 +127,6 @@ static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player);
-static void update_play_statistics (RhythmDB *db, RhythmDBEntry *entry);
 static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
 static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
 static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
@@ -1455,43 +1454,6 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 
 
 static void
-update_play_statistics (RhythmDB *db, RhythmDBEntry *entry)
-{
-	char *time_string;
-	time_t now;
-	GValue value = { 0, };
-
-	g_value_init (&value, G_TYPE_INT);
-
-	rhythmdb_write_lock (db);
-	
-	g_value_set_int (&value, rhythmdb_entry_get_int (db, entry,
-							 RHYTHMDB_PROP_PLAY_COUNT) + 1);
-
-	/* Increment current play count */
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
-	g_value_unset (&value);
-	
-	/* Reset the last played time */
-	time (&now);
-
-	g_value_init (&value, G_TYPE_LONG);
-	g_value_set_long (&value, now);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
-	g_value_unset (&value);
-
-	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
-
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, time_string);
-	g_free (time_string);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED_STR, &value);
-	g_value_unset (&value);
-
-	rhythmdb_write_unlock (db);
-}
-
-static void
 eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
@@ -1499,14 +1461,15 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 
 	GDK_THREADS_ENTER ();
 
-	if (player->priv->source != NULL)
-	{
+	if (player->priv->source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 
 		rb_debug ("updating play statistics");
 
 		rb_entry_view_freeze (songs);
-		update_play_statistics (player->priv->db, rb_shell_player_get_playing_entry (player));
+		rb_source_update_play_statistics (player->priv->source,
+						  player->priv->db,
+						  rb_shell_player_get_playing_entry (player));
 		rb_entry_view_thaw (songs);
 
 		switch (rb_source_handle_eos (player->priv->source))

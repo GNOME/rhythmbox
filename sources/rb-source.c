@@ -24,10 +24,12 @@
 #include <bonobo/bonobo-ui-component.h>
 #include <bonobo/bonobo-ui-util.h>
 #include <libgnome/gnome-i18n.h>
+#include <time.h>
 
 #include "rb-source.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-cut-and-paste-code.h"
 #include "rb-bonobo-helpers.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
@@ -272,6 +274,43 @@ void
 rb_source_notify_filter_changed (RBSource *status)
 {
 	g_signal_emit (G_OBJECT (status), rb_source_signals[FILTER_CHANGED], 0);
+}
+
+void
+rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry *entry)
+{
+	char *time_string;
+	time_t now;
+	GValue value = { 0, };
+
+	g_value_init (&value, G_TYPE_INT);
+
+	rhythmdb_write_lock (db);
+	
+	g_value_set_int (&value, rhythmdb_entry_get_int (db, entry,
+							 RHYTHMDB_PROP_PLAY_COUNT) + 1);
+
+	/* Increment current play count */
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
+	g_value_unset (&value);
+	
+	/* Reset the last played time */
+	time (&now);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, now);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
+	g_value_unset (&value);
+
+	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, time_string);
+	g_free (time_string);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED_STR, &value);
+	g_value_unset (&value);
+
+	rhythmdb_write_unlock (db);
 }
 
 RBEntryView *

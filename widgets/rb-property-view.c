@@ -338,6 +338,13 @@ rb_property_view_handle_entry_addition	(RBPropertyView *view,
 	rhythmdb_property_model_append_entry (view->priv->prop_model, entry);
 }
 
+guint
+rb_property_view_get_num_properties (RBPropertyView *view)
+{
+	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->prop_model),
+					       NULL)-1;
+}
+
 static void
 rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 				 GtkTreeModel *tree_model, GtkTreeIter *iter,

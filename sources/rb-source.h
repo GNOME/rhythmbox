@@ -110,6 +110,9 @@ void		rb_source_notify_filter_changed	(RBSource *source);
 
 void		rb_source_notify_status_changed (RBSource *status);
 
+void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
+						 RhythmDBEntry *entry);
+
 /* general interface */
 const char *	rb_source_get_status		(RBSource *source);
 

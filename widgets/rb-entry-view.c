@@ -1665,6 +1665,13 @@ gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 	queue_changed_sig (view);
 }
 
+guint
+rb_entry_view_get_num_entries (RBEntryView *view)
+{
+	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->query_model),
+					       NULL);
+}
+
 void
 rb_entry_view_select_all (RBEntryView *view)
 {

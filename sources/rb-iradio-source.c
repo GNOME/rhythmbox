@@ -1,7 +1,6 @@
 /* 
  *  arch-tag: Implementation of Internet Radio source object
  *
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -34,7 +33,8 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
-#include "rb-node-view.h"
+#include "rb-entry-view.h"
+#include "rb-property-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-preferences.h"
@@ -44,10 +44,11 @@
 #include "rb-volume.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
-#include "rb-node-filter.h"
 
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
+static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
+					      GObjectConstructParam *construct_properties);
 static void rb_iradio_source_finalize (GObject *object);
 static void rb_iradio_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -57,12 +58,9 @@ static void rb_iradio_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
-static void genre_node_selected_cb (RBNodeView *view,
-				     RBNode *node,
-				     RBIRadioSource *source);
-static void rb_iradio_source_songs_show_popup_cb (RBNodeView *view,
-						RBNode *node,
-						RBIRadioSource *source);
+static void rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
+						  RhythmDBEntry *entry,
+						  RBIRadioSource *source);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBIRadioSource *source);
@@ -70,25 +68,23 @@ static void rb_iradio_source_state_pref_changed (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
 						 RBIRadioSource *source);
-
 static void rb_iradio_source_show_browser (RBIRadioSource *source,
 					   gboolean show);
-
 static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
+static void genre_selected_cb (RBPropertyView *propview, const char *name,
+			       RBIRadioSource *iradio_source);
 
 /* source methods */
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
-static RBNodeView *impl_get_node_view (RBSource *source);
+static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static void impl_buffering_done (RBSource *asource);
 
-static void stations_filter (RBIRadioSource *source,
-			     RBNode *genre);
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 					     RBIRadioSource *source);
 
@@ -105,14 +101,14 @@ void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 
 struct RBIRadioSourcePrivate
 {
-	RBIRadioBackend *backend;
+	RhythmDB *db;
 
 	GtkWidget *vbox;
 
 	GdkPixbuf *pixbuf;
 
-	RBNodeView *genres;
-	RBNodeView *stations;
+	RBPropertyView *genres;
+	RBEntryView *stations;
 
 	gboolean async_playcount_update_queued;
 	guint async_playcount_update_id;
@@ -129,9 +125,6 @@ struct RBIRadioSourcePrivate
 
 	gboolean lock;
 
-	gboolean changing_genre;
-	RBNodeFilter *stations_filter;
-
 	gboolean loading_prefs;
 
 	GtkWidget *genre_check;
@@ -141,15 +134,15 @@ struct RBIRadioSourcePrivate
 	GtkWidget *quality_check;
 
 	guint async_idlenum;
-	gboolean async_node_destroyed;
+	gboolean async_entry_destroyed;
 	guint async_signum;
-	RBNode *async_update_node;
+	RhythmDB *async_update_entry;
 };
 
 enum
 {
 	PROP_0,
-	PROP_BACKEND
+	PROP_DB,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -192,6 +185,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_iradio_source_finalize;
+	object_class->constructor = rb_iradio_source_constructor;
 
 	object_class->set_property = rb_iradio_source_set_property;
 	object_class->get_property = rb_iradio_source_get_property;
@@ -201,7 +195,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
-	source_class->impl_get_node_view = impl_get_node_view;
+	source_class->impl_get_entry_view = impl_get_entry_view;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
 	source_class->impl_song_properties = impl_song_properties;
@@ -212,11 +206,11 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_buffering_done = impl_buffering_done;
 
 	g_object_class_install_property (object_class,
-					 PROP_BACKEND,
-					 g_param_spec_object ("backend",
-							      "Backend",
-							      "IRadio Backend",
-							      RB_TYPE_IRADIO_BACKEND,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB database",
+							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	
 }
@@ -263,11 +257,59 @@ rb_iradio_source_finalize (GObject *object)
 	g_free (source->priv->title);
 	g_free (source->priv->status);
 
-	g_object_unref (G_OBJECT (source->priv->stations_filter));
-
 	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static GObject *
+rb_library_source_constructor (GType type, guint n_construct_properties,
+			       GObjectConstructParam *construct_properties)
+{
+	RBLibrarySource *source;
+	RBLibrarySourceClass *klass;
+	GObjectClass *parent_class;  
+	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (type));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	source = RB_IRADIO_SOURCE (parent_class->constructor (type, n_construct_properties,
+							      construct_properties));
+
+	source->priv->paned = gtk_hpaned_new ();
+
+	/* set up genre entry view */
+	source->priv->genres = rb_property_view_new (source->priv->db,
+						     RHYTHMDB_PROP_GENRE);
+	g_signal_connect (G_OBJECT (source->priv->genres),
+			  "property-selected",
+			  G_CALLBACK (genre_selected_cb),
+			  source);
+
+	g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy",
+		      GTK_POLICY_AUTOMATIC, NULL);
+	g_object_ref (G_OBJECT (source->priv->genres));
+
+	/* set up stations view */
+	source->priv->stations = rb_entry_view_new (source->priv->db,
+						    rb_file ("rb-entry-view-iradio.xml"));
+	g_signal_connect (G_OBJECT (source->priv->stations),
+			  "size_allocate",
+			  G_CALLBACK (paned_size_allocate_cb),
+			  source);
+	g_signal_connect (G_OBJECT (source->priv->stations), "show_popup",
+			  G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source);
+
+	gtk_paned_pack2 (GTK_PANED (source->priv->paned),
+			 GTK_WIDGET (source->priv->stations), TRUE, FALSE);
+
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
+
+	rb_iradio_source_state_prefs_sync (source);
+	eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
+				    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
+				    source);
+			
+	gtk_widget_show_all (GTK_WIDGET (source));
 }
 
 static void
@@ -280,51 +322,9 @@ rb_iradio_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_BACKEND:
-	{
-		source->priv->backend = g_value_get_object (value);
-
-		source->priv->paned = gtk_hpaned_new ();
-
-		/* Initialize the filters */
-		source->priv->stations_filter = rb_node_filter_new ();
-
-		/* set up genre node view */
-		source->priv->genres = rb_node_view_new (rb_iradio_backend_get_all_genres (source->priv->backend),
-						       rb_file ("rb-node-view-iradio-genres.xml"),
-						       NULL);
-
-		g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy", GTK_POLICY_AUTOMATIC, NULL);
-		g_object_ref (G_OBJECT (source->priv->genres));
-
-		g_signal_connect (G_OBJECT (source->priv->genres),
-				  "node_selected",
-				  G_CALLBACK (genre_node_selected_cb),
-				  source);
-
-		/* set up stations tree view */
-		source->priv->stations = rb_node_view_new (rb_iradio_backend_get_all_stations (source->priv->backend),
-							 rb_file ("rb-node-view-iradio-stations.xml"),
-							 source->priv->stations_filter);
-		g_signal_connect (G_OBJECT (source->priv->stations),
-				  "size_allocate",
-				  G_CALLBACK (paned_size_allocate_cb),
-				  source);
-		g_signal_connect (G_OBJECT (source->priv->stations), "show_popup",
-				  G_CALLBACK (rb_iradio_source_songs_show_popup_cb), source);
-
-		gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->stations), TRUE, FALSE);
-
-		gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
-
-		rb_iradio_source_state_prefs_sync (source);
-		eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
-					    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
-					    source);
-			
-		gtk_widget_show_all (GTK_WIDGET (source));
+	case PROP_DB:
+		source->priv->db = g_value_get_object (value);
 		break;
-	}
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -341,8 +341,8 @@ rb_iradio_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_BACKEND:
-		g_value_set_object (value, source->priv->backend);
+	case PROP_DB:
+		g_value_set_object (value, source->priv->db);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -351,13 +351,13 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (RBIRadioBackend *backend)
+rb_iradio_source_new (RhythmDB *db)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
-					  "backend", backend,
+					  "db", db,
 					  NULL));
 
 	return source;
@@ -384,8 +384,6 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	rhythmdb_write_unlock (db);
 }
 
-
-
 static GdkPixbuf *
 impl_get_pixbuf (RBSource *asource)
 {
@@ -399,26 +397,10 @@ impl_search (RBSource *asource, const char *search_text)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 
-	/* resets the filter */
-	if (search_text == NULL || strcmp (search_text, "") == 0) {
-		rb_node_view_select_node (source->priv->genres,
-		 		          rb_iradio_backend_get_all_stations (source->priv->backend));
-	} else {
-		rb_node_view_select_none (source->priv->genres);
-
-		rb_node_filter_empty (source->priv->stations_filter);
-		rb_node_filter_add_expression (source->priv->stations_filter,
-					       rb_node_filter_expression_new (source->priv->stations_filter,
-									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
-									      RB_NODE_PROP_NAME,
-									      search_text),
-					       0);
-		rb_node_filter_done_changing (source->priv->stations_filter);
-	}
 }
 
-static RBNodeView *
-impl_get_node_view (RBSource *asource)
+static RBEntryView *
+impl_get_entry_view (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 
@@ -434,44 +416,32 @@ impl_handle_eos (RBSource *asource)
 struct RBIRadioAsyncPlayStatisticsData
 {
 	RBIRadioSource *source;
-	RBNode *node;
+	RhythmDBEntry *entry;
 };
-
-static void
-async_node_update_destroyed_cb (RBNode *node, gpointer data)
-{
-	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
-	rb_debug ("node to be updated was destroyed");
-
-	source->priv->async_node_destroyed = TRUE;
-}
 
 static gboolean
 rb_iradio_source_async_update_play_statistics (gpointer data)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
-	RBNode *playing_node;
+	RhythmDBEntry *playing_entry;
 
 	rb_debug ("entering async handler");
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
-
-	if (!source->priv->async_node_destroyed) {
-		playing_node = rb_node_view_get_playing_node (source->priv->stations);
-		rb_debug ("async updating play statistics, node: %p playing node: %p",
-			  source->priv->async_update_node, playing_node);
-		if (source->priv->async_update_node == playing_node)
-			rb_node_update_play_statistics (source->priv->async_update_node);
-
-		rb_node_signal_disconnect (source->priv->async_update_node,
-					   source->priv->async_signum);
-	} else {
-		rb_debug ("async node destroyed");
-	}
-	source->priv->async_update_node = NULL;
+	playing_entry = rb_entry_view_get_playing_node (source->priv->stations);
+	rb_debug ("async updating play statistics, entry: %p playing entry: %p",
+		  source->priv->async_update_entry, playing_entry);
+	if (source->priv->async_update_entry == playing_entry)
+		rb_source_update_play_statistics (source,
+						  source->priv->db,
+						  source->priv->async_update_entry);
+	source->priv->async_update_entry = NULL;
 		
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
+
+	rhythmdb_entry_unref (source->priv->db, source->priv->async_update_entry);
+
 	return FALSE;
 }
 
@@ -479,23 +449,19 @@ static void
 impl_buffering_done (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	RBNode *node = rb_node_view_get_playing_node (source->priv->stations);
+	RhythmDBEntry *entry = rb_node_view_get_playing_entry (source->priv->stations);
 
-	rb_debug ("queueing async play statistics update, node: %p", node);
+	rb_debug ("queueing async play statistics update, entry: %p", entry);
 
-	if (source->priv->async_update_node != NULL) {
+	if (source->priv->async_update_entry != NULL) {
 		rb_debug ("async handler already queued, removing");
-		rb_node_signal_disconnect (source->priv->async_update_node,
-					   source->priv->async_signum);
+		rhythmdb_entry_unref (source->priv->db, source->priv->async_update_entry);
 		g_source_remove (source->priv->async_idlenum);
 	}
 
-	source->priv->async_node_destroyed = FALSE;
-	source->priv->async_update_node = node;
- 	source->priv->async_signum =
-		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
-					       (RBNodeCallback) async_node_update_destroyed_cb,
-					       G_OBJECT (source));
+	source->priv->async_entry_destroyed = FALSE;
+	source->priv->async_update_entry = entry;
+	rhythmdb_entry_ref (source->priv->db, source->priv->async_update_entry);
 	source->priv->async_idlenum =
 		g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
 			       source);
@@ -507,8 +473,8 @@ impl_get_status (RBSource *asource)
  	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	char *ret;
 	ret = g_strdup_printf (_("<b>%d</b> total stations in <b>%d</b> distinct genres"),
-			       rb_iradio_backend_get_station_count (source->priv->backend),
-			       rb_iradio_backend_get_genre_count (source->priv->backend));
+			       rb_entry_view_get_num_entries (source->priv->stations),
+			       rb_property_view_get_num_properties (source->priv->genres));
 	return ret;
 }
 
@@ -524,16 +490,15 @@ impl_delete (RBSource *asource)
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	GList *l;
 
-	for (l = rb_node_view_get_selection (source->priv->stations); l != NULL; l = g_list_next (l))
-		rb_iradio_backend_remove_node (source->priv->backend, l->data);
+	for (l = rb_entry_view_get_selection (source->priv->stations); l != NULL; l = g_list_next (l))
+		rhythmdb_entry_unref (source->priv->db, l->data);
 }
 
 static void
 impl_song_properties (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations,
-							      source->priv->backend);
+	GtkWidget *dialog = rb_station_properties_dialog_new (source->priv->stations, source->priv->db);
 	rb_debug ("in song properties");
 	if (dialog)
 		gtk_widget_show_all (dialog);
@@ -574,9 +539,9 @@ rb_iradio_source_state_pref_changed (GConfClient *client,
 
 
 static void
-rb_iradio_source_songs_show_popup_cb (RBNodeView *view,
-				      RBNode *node,
-				      RBIRadioSource *source)
+rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
+				      RhythmDBEntry *entry,
+				      RBIRadioSource *source);
 {
 	GtkWidget *menu;
 	GtkWidget *window;
@@ -613,20 +578,12 @@ ensure_node_selection (RBNodeView *view,
 }
 
 static void
-genre_node_selected_cb (RBNodeView *view,
-			RBNode *node,
-			RBIRadioSource *source)
+genre_selected_cb (RBPropertyView *propview, const char *name,
+		   RBIRadioSource *iradio_source)
 {
-	RBNode *genre = NULL;
-	if (source->priv->changing_genre == TRUE)
-		return;
-
-	genre = ensure_node_selection (view,
-				       rb_iradio_backend_get_all_genres(source->priv->backend),
-				       &source->priv->changing_genre);
-
-	rb_source_notify_filter_changed (RB_SOURCE (source));
-	stations_filter (source, genre);
+	g_free (iradio_source->priv->selected_genre);
+	iradio_source->priv->selected_genre = g_strdup (name);
+	rb_iradio_source_do_query (iradio_source);
 }
 
 static void

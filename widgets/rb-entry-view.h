@@ -90,6 +90,8 @@ void		rb_entry_view_select_none		(RBEntryView *view);
 void		rb_entry_view_select_entry		(RBEntryView *view,
 							 RhythmDBEntry *entry);
 
+guint		rb_entry_view_get_num_entries		(RBEntryView *view);
+
 gboolean	rb_entry_view_get_entry_visible		(RBEntryView *view,
 							 RhythmDBEntry *entry);
 
