@@ -48,6 +48,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/lib/view			\
 	-I$(top_srcdir)/library				\
+	-I$(top_srcdir)/iradio				\
 	-I$(top_builddir)/lib 				\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
