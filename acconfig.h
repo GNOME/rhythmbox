@@ -3,3 +3,4 @@
 #undef HAVE_GETTEXT
 #undef GETTEXT_PACKAGE
 #undef HAVE_LC_MESSAGES
+#undef HAVE_REMOTE

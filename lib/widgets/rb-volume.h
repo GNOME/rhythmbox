@@ -54,8 +54,12 @@ GType     rb_volume_get_type    (void);
 
 RBVolume *rb_volume_new         (int channel);
 
+int	  rb_volume_get		(RBVolume *volume);
 void      rb_volume_set         (RBVolume *volume,
 				 int value);
+
+gboolean  rb_volume_get_mute	(RBVolume *volume);
+void      rb_volume_set_mute	(RBVolume *volume, gboolean mute);
 
 int       rb_volume_get_channel (RBVolume *volume);
 void      rb_volume_set_channel (RBVolume *volume,

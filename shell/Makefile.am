@@ -18,7 +18,9 @@ rhythmbox_SOURCES =              			\
 	rb-shell-clipboard.c				\
 	rb-shell-clipboard.h				\
 	rb-shell-preferences.c				\
-	rb-shell-preferences.h
+	rb-shell-preferences.h				\
+	rb-remote.c					\
+	rb-remote.h
 
 rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \

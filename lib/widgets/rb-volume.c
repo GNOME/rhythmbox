@@ -360,25 +360,14 @@ volume_mute_cb (GtkWidget *button,
 		GdkEventButton *event,
 		RBVolume *volume)
 {
+	gboolean mute;
+
 	if (event->button != 1)
 		return;
 
-	if (volume->priv->mute == FALSE)
-		volume->priv->mute = TRUE;
-	else
-		volume->priv->mute = FALSE;
+	mute = volume->priv->mute^1;
 	
-	if (volume->priv->mute == TRUE)
-		gtk_tooltips_set_tip (volume->priv->tooltip,
-				volume->priv->indicator,
-				_("Click to unmute"), NULL);
-	else
-		gtk_tooltips_set_tip (volume->priv->tooltip,
-				volume->priv->indicator,
-				_("Click to mute"), NULL);
-
-	rb_volume_update_image (volume);
-	update_mixer (volume);
+	rb_volume_set_mute (volume, mute);
 }
 
 static gboolean
@@ -585,6 +574,14 @@ rb_volume_new (int channel)
 	return volume;
 }
 
+int
+rb_volume_get (RBVolume *volume)
+{
+	g_return_val_if_fail (RB_IS_VOLUME (volume), -1);
+
+	return volume->priv->vol;
+}
+
 void
 rb_volume_set (RBVolume *volume,
 	       int value)
@@ -619,4 +616,28 @@ rb_volume_set_channel (RBVolume *volume,
 		g_error (_("Invalid channel number"));
 		break;
 	}
+}
+
+void
+rb_volume_set_mute (RBVolume *volume, gboolean mute)
+{
+	volume->priv->mute = mute;
+
+	if (volume->priv->mute == TRUE)
+		gtk_tooltips_set_tip (volume->priv->tooltip,
+				volume->priv->indicator,
+				_("Click to unmute"), NULL);
+	else
+		gtk_tooltips_set_tip (volume->priv->tooltip,
+				volume->priv->indicator,
+				_("Click to mute"), NULL);
+
+	rb_volume_update_image (volume);
+	update_mixer (volume);
+}
+
+gboolean
+rb_volume_get_mute (RBVolume *volume)
+{
+	return volume->priv->mute;
 }

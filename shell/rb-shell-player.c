@@ -30,6 +30,9 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-dialog.h"
 #include "rb-player.h"
+#include "rb-remote.h"
+
+#define RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL 10
 
 typedef enum
 {
@@ -82,6 +85,11 @@ static void rb_shell_player_sync_with_selected_player (RBShellPlayer *player);
 static void rb_shell_player_player_changed_cb (RBViewPlayer *view_player,
 				               RBShellPlayer *player);
 
+#ifdef HAVE_REMOTE
+static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
+				       RBShellPlayer *player);
+#endif
+
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
 #define TOOLBAR_PATH_PLAY  "/Toolbar/Play"
@@ -104,6 +112,8 @@ struct RBShellPlayerPrivate
 	MonkeyMediaAudioStream *current_stream;
 
 	RBPlayer *player_widget;
+
+	RBRemote *remote;
 
 	GtkWidget *bin;
 };
@@ -239,6 +249,15 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 	align = gtk_alignment_new (1.0, 1.0, 0.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (align), shell_player->priv->bin);
 	gtk_box_pack_end (GTK_BOX (vbox), align, FALSE, FALSE, 0);
+
+#ifdef HAVE_REMOTE
+	shell_player->priv->remote = rb_remote_new ();
+	g_signal_connect (shell_player->priv->remote, "button_pressed",
+			  G_CALLBACK (rb_shell_player_remote_cb),
+			  shell_player);
+#else
+	shell_player->priv->remote = NULL;
+#endif
 }
 
 static void
@@ -254,6 +273,9 @@ rb_shell_player_finalize (GObject *object)
 	g_return_if_fail (shell_player->priv != NULL);
 
 	g_object_unref (G_OBJECT (shell_player->priv->mixer));
+
+	if (shell_player->priv->remote != NULL)
+		g_object_unref (G_OBJECT (shell_player->priv->remote));
 	
 	g_free (shell_player->priv);
 
@@ -399,7 +421,8 @@ rb_shell_player_cmd_previous (BonoboUIComponent *component,
 			      RBShellPlayer *player,
 			      const char *verbname)
 {
-	rb_view_player_previous (player->priv->player);
+	if (player->priv->player)
+		rb_view_player_previous (player->priv->player);
 }
 
 static void
@@ -450,7 +473,8 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 			  RBShellPlayer *player,
 			  const char *verbname)
 {
-	rb_view_player_next (player->priv->player);
+	if (player->priv->player)
+		rb_view_player_next (player->priv->player);
 }
 
 static void
@@ -707,3 +731,52 @@ rb_shell_player_sync_with_selected_player (RBShellPlayer *player)
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY, sensitive);
 	}
 }
+
+#ifdef HAVE_REMOTE
+static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
+				       RBShellPlayer *player)
+{
+	MonkeyMediaAudioStream *stream = NULL;
+	long elapsed;
+
+	if (player->priv->player != NULL)
+		stream = rb_view_player_get_stream (player->priv->player);
+
+	switch (cmd) {
+		case RB_REMOTE_COMMAND_PLAY:
+			rb_shell_player_cmd_play (NULL, player, NULL);
+			break;
+		case RB_REMOTE_COMMAND_PAUSE:
+			rb_shell_player_cmd_pause (NULL, player, NULL);
+			break;
+		case RB_REMOTE_COMMAND_NEXT:
+			rb_shell_player_cmd_next (NULL, player, NULL);
+			break;
+		case RB_REMOTE_COMMAND_PREVIOUS:
+			rb_shell_player_cmd_previous (NULL, player, NULL);
+			break;
+		case RB_REMOTE_COMMAND_SEEK_FORWARD:
+			if (stream == NULL)
+				return;
+
+			elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
+
+			elapsed += RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL;
+
+			monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), elapsed);
+			break;
+		case RB_REMOTE_COMMAND_SEEK_BACKWARD:
+			if (stream == NULL)
+				return;
+
+			elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
+
+			elapsed -= RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL;
+
+			monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), elapsed);
+			break;
+		default:
+			break;
+	}
+}
+#endif

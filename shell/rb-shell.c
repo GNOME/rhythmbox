@@ -56,6 +56,7 @@
 #include "rb-file-monitor.h"
 #include "rb-library-dnd-types.h"
 #include "rb-volume.h"
+#include "rb-remote.h"
 #include "eel-gconf-extensions.h"
 #include "eggtrayicon.h"
 
@@ -182,6 +183,11 @@ GtkWidget *rb_shell_new_group_dialog (RBShell *shell);
 static void setup_tray_icon (RBShell *shell);
 static void sync_tray_menu (RBShell *shell);
 
+#ifdef HAVE_REMOTE
+static void rb_shell_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
+				RBShell *shell);
+#endif
+
 static const GtkTargetEntry target_table[] =
 	{
 		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST },
@@ -214,6 +220,8 @@ typedef enum
 #define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
 #define CONF_STATE_ADD_DIR          "/apps/rhythmbox/state/add_dir"
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
+
+#define RB_SHELL_REMOTE_VOLUME_INTERVAL 10
 
 typedef struct
 {
@@ -258,6 +266,9 @@ struct RBShellPrivate
 	GtkTooltips *tray_icon_tooltip;
 	BonoboControl *tray_icon_control;
 	BonoboUIComponent *tray_icon_component;
+
+	RBRemote *remote;
+	RBVolume *volume;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -354,6 +365,14 @@ rb_shell_init (RBShell *shell)
 	shell->priv->state = g_new0 (RBShellWindowState, 1);
 
 	eel_gconf_monitor_add ("/apps/rhythmbox");
+
+#ifdef HAVE_REMOTE
+	shell->priv->remote = rb_remote_new ();
+	g_signal_connect (shell->priv->remote, "button_pressed",
+			  G_CALLBACK (rb_shell_remote_cb), shell);
+#else
+	shell->priv->remote = NULL;
+#endif
 }
 
 static void
@@ -394,6 +413,9 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->player_shell));
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 	g_object_unref (G_OBJECT (shell->priv->library));
+
+	if (shell->priv->remote != NULL)
+		g_object_unref (G_OBJECT (shell->priv->remote));
 
 	g_free (shell->priv->state);
 
@@ -507,6 +529,7 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox", NULL);
 
 	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	shell->priv->volume = volume;
 	gtk_widget_show_all (GTK_WIDGET (volume));
 	control = bonobo_control_new (GTK_WIDGET (volume));
 	bonobo_ui_component_object_set (shell->priv->ui_component,
@@ -1762,3 +1785,60 @@ sync_tray_menu (RBShell *shell)
 	bonobo_ui_component_set_tree (pcomp, "/", node, NULL);
 	bonobo_ui_node_free (node);
 }
+
+#ifdef HAVE_REMOTE
+static void
+rb_shell_remote_cb (RBRemote *remote, RBRemoteCommand cmd, RBShell *shell)
+{
+	gboolean shuffle;
+	gboolean repeat;
+	int volume;
+	gboolean mute;
+
+	switch (cmd) {
+		case RB_REMOTE_COMMAND_SHUFFLE:
+			shuffle = rb_bonobo_get_active (shell->priv->ui_component,
+							CMD_PATH_SHUFFLE);
+			shuffle ^= 1;
+
+			rb_bonobo_set_active (shell->priv->ui_component,
+					      CMD_PATH_SHUFFLE,
+					      shuffle);
+			break;
+		case RB_REMOTE_COMMAND_REPEAT:
+			repeat = rb_bonobo_get_active (shell->priv->ui_component,
+							CMD_PATH_REPEAT);
+			repeat ^= 1;
+
+			rb_bonobo_set_active (shell->priv->ui_component,
+					      CMD_PATH_REPEAT,
+					      repeat);
+			break;
+		case RB_REMOTE_COMMAND_VOLUME_UP:
+			volume = rb_volume_get (shell->priv->volume);
+
+			volume += RB_SHELL_REMOTE_VOLUME_INTERVAL;
+
+			rb_volume_set (shell->priv->volume, volume);
+			break;
+		case RB_REMOTE_COMMAND_VOLUME_DOWN:
+			volume = rb_volume_get (shell->priv->volume);
+
+			volume -= RB_SHELL_REMOTE_VOLUME_INTERVAL;
+
+			rb_volume_set (shell->priv->volume, volume);
+			break;
+		case RB_REMOTE_COMMAND_MUTE:
+			mute = rb_volume_get_mute (shell->priv->volume);
+			mute ^= 1;
+			rb_volume_set_mute (shell->priv->volume, mute);
+			break;
+		case RB_REMOTE_COMMAND_QUIT:
+			/* FIXME: this is ridiculously broken */
+			rb_shell_quit (shell);
+			break;
+		default:
+			break;
+	}
+}
+#endif

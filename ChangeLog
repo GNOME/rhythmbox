@@ -1,3 +1,17 @@
+2002-09-09  James Willcox  <jwillcox@gnome.org>
+
+	* Added support for controlling Rhythmbox with IR remotes.
+
+	* lib/widgets/rb-volume.[ch] (rb_volume_get, rb_volume_get_mute,
+	rb_volume_set_mute):  New methods, needed for proper IR remote
+	support.
+
+	* shell/rb-remote.c:  New object, handles events received from IR
+	remotes, converts them to a GObject signal.
+
+	* shell/rb-shell.c:  Hold a RBRemote object, listen to events.
+	* shell/rb-shell-player.c:  Same as above
+
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/glade/song-info.glade:

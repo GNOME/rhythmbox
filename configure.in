@@ -26,6 +26,13 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  bonobo-activation-2.0		\
 		  libgnomecanvas-2.0 >= 1.113.0 \
 		  monkey-media >= $MONKEYMEDIA_REQUIRED)
+
+AC_CHECK_LIB(lirc_client, lirc_init,
+		[ AC_CHECK_HEADER(lirc/lirc_client.h,
+			[ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS -llirc_client"
+			AC_DEFINE(HAVE_REMOTE)]
+			,,) ] ,)
+
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
 
@@ -80,6 +87,7 @@ fi
 dnl uninstalled share dir
 AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])
 AC_SUBST(DATADIR_UNINST)
+
 
 AC_OUTPUT([ 
 Makefile
