@@ -2,6 +2,63 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-02 04:55:13 GMT	Colin Walters <walters@verbum.org>	patch-53
+
+    Summary:
+      playlist fixes, library query fixes
+    Revision:
+      rhythmbox--main--0.7--patch-53
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-183
+       be sure to add uris from bare .m3u files too
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-184
+       rewrite library querying and model updates 
+    
+
+    modified files:
+     ChangeLog lib/rb-playlist.c rhythmdb/rhythmdb-query-model.c
+     sources/rb-library-source.c widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-183
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-184
+
+
+2004-01-30 20:44:06 GMT	Colin Walters <walters@verbum.org>	patch-52
+
+    Summary:
+      merge from me: metadata bits
+    Revision:
+      rhythmbox--main--0.7--patch-52
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-179
+       attempt to catch fakesink handoff and use it to query for length
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-180
+       fix caps leak
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-181
+       fix up length queries
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-182
+       merge from main
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-179
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-180
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-181
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-182
+
+
 2004-01-30 07:27:59 GMT	Colin Walters <walters@verbum.org>	patch-51
 
     Summary:
