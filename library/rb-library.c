@@ -927,7 +927,7 @@ rb_library_thread_main (RBLibraryPrivate *priv)
 
 		g_mutex_unlock (priv->thread_lock);
 
-		usleep (10);
+		g_usleep (10);
 	}
 
 	return NULL;
