@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define RB_LIBRARY_XML_VERSION "1.4"
+#define RB_LIBRARY_XML_VERSION "2.0"
 
 #define RB_TYPE_LIBRARY         (rb_library_get_type ())
 #define RB_LIBRARY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY, RBLibrary))
@@ -62,8 +62,18 @@ RBLibrary *		rb_library_new                  (void);
 
 RBLibraryAction *	rb_library_add_uri              (RBLibrary *library,
 							 const char *uri);
+
+RBNode *		rb_library_new_node		(RBLibrary *library,
+							 const char *location,
+							 GError **error);
+
+void			rb_library_update_node		(RBLibrary *library,
+							 RBNode *node,
+							 GError **error);
 void			rb_library_remove_node          (RBLibrary *library,
 							 RBNode *node);
+
+RBNodeDb *		rb_library_get_node_db		(RBLibrary *library);
 
 void			rb_library_release_brakes       (RBLibrary *library);
 

@@ -23,15 +23,21 @@
 #include <libgnome/gnome-init.h>
 #include <libxml/tree.h>
 #include <gtk/gtkmain.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
+#include <libgnomevfs/gnome-vfs-file-info.h>
+#include <libgnomevfs/gnome-vfs-ops.h>
+#include <monkey-media.h>
 #include <unistd.h>
 #include <string.h>
 
+#include "rb-node-db.h"
+#include "rb-node-common.h"
 #include "rb-library.h"
 #include "rb-library-walker-thread.h"
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
-#include "rb-node-song.h"
 #include "rb-glist-wrapper.h"
+#include "rb-string-helpers.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
 #include "rb-file-helpers.h"
@@ -42,6 +48,10 @@ static void rb_library_finalize (GObject *object);
 static void rb_library_save (RBLibrary *library);
 static void rb_library_create_skels (RBLibrary *library);
 static void rb_library_load (RBLibrary *library);
+static void sync_node (RBNode *node,
+		       RBLibrary *library,
+		       gboolean check_reparent,
+		       GError **error);
 
 struct RBLibraryPrivate
 {
@@ -50,6 +60,8 @@ struct RBLibraryPrivate
 
 	RBLibraryActionQueue *walker_queue;
 	RBLibraryActionQueue *main_queue;
+
+	RBNodeDb *db;
 
 	RBNode *all_genres;
 	RBNode *all_artists;
@@ -138,14 +150,13 @@ static void
 rb_library_init (RBLibrary *library)
 {
 	char *libname = g_strdup_printf ("library-%s.xml", RB_LIBRARY_XML_VERSION);
-	rb_node_system_init ();
 
 	/* ensure these types have been registered: */
-	rb_node_get_type ();
 	rb_glist_wrapper_get_type ();
-	rb_node_song_get_type ();
 	
 	library->priv = g_new0 (RBLibraryPrivate, 1);
+
+	library->priv->db = rb_node_db_new (RB_NODE_DB_LIBRARY);
 
 	library->priv->xml_file = g_build_filename (rb_dot_dir (),
 						    libname,
@@ -218,8 +229,6 @@ static void
 rb_library_finalize (GObject *object)
 {
 	RBLibrary *library;
-	GPtrArray *children;
-	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_LIBRARY (object));
@@ -238,17 +247,12 @@ rb_library_finalize (GObject *object)
 
 	rb_library_save (library);
 
-	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
-	children = rb_node_get_children (library->priv->all_songs);
-	rb_node_thaw (library->priv->all_songs);
-	for (i = children->len - 1; i >= 0; i--) {
-		rb_node_unref (g_ptr_array_index (children, i));
-	}
-	
 	rb_node_unref (library->priv->all_songs);
 	rb_node_unref (library->priv->all_albums);
 	rb_node_unref (library->priv->all_artists);
 	rb_node_unref (library->priv->all_genres);
+
+	g_object_unref (library->priv->db);
 
 	g_hash_table_destroy (library->priv->genre_hash);
 	g_hash_table_destroy (library->priv->artist_hash);
@@ -263,8 +267,6 @@ rb_library_finalize (GObject *object)
 	g_free (library->priv->xml_file);
 
 	g_free (library->priv);
-
-	rb_node_system_shutdown ();
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -305,7 +307,13 @@ void
 rb_library_remove_node (RBLibrary *library,
 			RBNode *node)
 {
-	rb_node_unref (RB_NODE (node));
+	rb_node_unref (node);
+}
+
+RBNodeDb *
+rb_library_get_node_db (RBLibrary *library)
+{
+	return library->priv->db;
 }
 
 RBNode *
@@ -446,57 +454,49 @@ rb_library_create_skels (RBLibrary *library)
 	/* create a boostrap setup */
 	GValue value = { 0, };
 
-	library->priv->all_genres  = rb_node_new ();
-	library->priv->all_artists = rb_node_new ();
-	library->priv->all_albums  = rb_node_new ();
-	library->priv->all_songs   = rb_node_new ();
-
-	g_signal_connect_object (G_OBJECT (library->priv->all_genres),
-				 "child_added",
-				 G_CALLBACK (genre_added_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_artists),
-				 "child_added",
-				 G_CALLBACK (artist_added_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_albums),
-				 "child_added",
-				 G_CALLBACK (album_added_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_songs),
-				 "child_added",
-				 G_CALLBACK (song_added_cb),
-				 G_OBJECT (library),
-				 0);
-
-	g_signal_connect_object (G_OBJECT (library->priv->all_genres),
-				 "child_removed",
-				 G_CALLBACK (genre_removed_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_artists),
-				 "child_removed",
-				 G_CALLBACK (artist_removed_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_albums),
-				 "child_removed",
-				 G_CALLBACK (album_removed_cb),
-				 G_OBJECT (library),
-				 0);
-	g_signal_connect_object (G_OBJECT (library->priv->all_songs),
-				 "child_removed",
-				 G_CALLBACK (song_removed_cb),
-				 G_OBJECT (library),
-				 0);
+	library->priv->all_genres  = rb_node_new_with_id (library->priv->db, LIBRARY_GENRES_NODE_ID);
+	library->priv->all_artists = rb_node_new_with_id (library->priv->db, LIBRARY_ARTISTS_NODE_ID);
+	library->priv->all_albums  = rb_node_new_with_id (library->priv->db, LIBRARY_ALBUMS_NODE_ID);
+	library->priv->all_songs   = rb_node_new_with_id (library->priv->db, LIBRARY_SONGS_NODE_ID);
 
 	rb_node_ref (library->priv->all_genres);
 	rb_node_ref (library->priv->all_artists);
 	rb_node_ref (library->priv->all_albums);
 	rb_node_ref (library->priv->all_songs);
+
+	rb_node_signal_connect_object (library->priv->all_genres,
+				       RB_NODE_CHILD_ADDED,
+				       (RBNodeCallback) genre_added_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_artists,
+				       RB_NODE_CHILD_ADDED,
+				       (RBNodeCallback) artist_added_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_albums,
+				       RB_NODE_CHILD_ADDED,
+				       (RBNodeCallback) album_added_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_songs,
+				       RB_NODE_CHILD_ADDED,
+				       (RBNodeCallback) song_added_cb,
+				       G_OBJECT (library));
+				 
+	rb_node_signal_connect_object (library->priv->all_genres,
+				       RB_NODE_CHILD_REMOVED,
+				       (RBNodeCallback) genre_removed_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_artists,
+				       RB_NODE_CHILD_REMOVED,
+				       (RBNodeCallback) artist_removed_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_albums,
+				       RB_NODE_CHILD_REMOVED,
+				       (RBNodeCallback) album_removed_cb,
+				       G_OBJECT (library));
+	rb_node_signal_connect_object (library->priv->all_songs,
+				       RB_NODE_CHILD_REMOVED,
+				       (RBNodeCallback) song_removed_cb,
+				       G_OBJECT (library)); 
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, _("All"));
@@ -696,7 +696,7 @@ rb_library_handle_songs (RBLibrary *library,
 			 GFunc func,
 			 gpointer user_data)
 {
-	if (G_OBJECT_TYPE (node) == RB_TYPE_NODE_SONG)
+	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
 	{
 		(*func) (node, user_data);
 	}
@@ -757,16 +757,14 @@ rb_library_load (RBLibrary *library)
 	for (child = root->children; child != NULL; child = child->next)
 	{
 		RBNode *node;
+		const char *location;
 		
-		node = rb_node_new_from_xml (child);
+		node = rb_node_new_from_xml (library->priv->db, child);
 
-		if (RB_IS_NODE_SONG (node))
-		{
-			const char *location;
 
-			location = rb_node_get_property_string (node,
-						                RB_NODE_PROP_LOCATION);
-					
+		location = rb_node_get_property_string (node,
+							RB_NODE_PROP_LOCATION);
+		if (location != NULL) {
 			rb_debug ("library: queueing %s for updating", location);
 			rb_library_action_queue_add (library->priv->main_queue,
 						     FALSE,
@@ -780,4 +778,561 @@ rb_library_load (RBLibrary *library)
 
 	xmlFreeDoc (doc);
 	rb_debug ("library: done loading");
+}
+
+static void
+finalize_node (RBNode *node)
+{
+	RBNode *parent;
+
+	parent = rb_node_get_property_pointer (node,
+					    RB_NODE_PROP_REAL_ALBUM);
+	if (G_LIKELY (parent != NULL))
+		rb_node_unref (parent);
+	parent = rb_node_get_property_pointer (node,
+					    RB_NODE_PROP_REAL_ARTIST);
+	if (G_LIKELY (parent != NULL))
+		rb_node_unref (parent);
+	parent = rb_node_get_property_pointer (node,
+					    RB_NODE_PROP_REAL_GENRE);
+	if (G_LIKELY (parent != NULL))
+		rb_node_unref (parent);
+}
+
+RBNode *
+rb_library_new_node (RBLibrary *library,
+		     const char *location,
+		     GError **error)
+{
+	RBNode *node;
+	GValue value = { 0, };
+
+	g_return_val_if_fail (location != NULL, NULL);
+	g_return_val_if_fail (RB_IS_LIBRARY (library), NULL);
+
+	node = rb_node_new (library->priv->db); 
+
+	if (G_UNLIKELY (node == NULL))
+		return NULL;
+
+	rb_node_signal_connect_object (node, RB_NODE_DESTROY, (RBNodeCallback) finalize_node, NULL);
+
+	/* Location */
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, location);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_LOCATION,
+			      &value);
+	g_value_unset (&value);
+
+	/* Number of plays */
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, 0);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_PLAY_COUNT,
+			      &value);
+	g_value_unset (&value);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, 0);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_LAST_PLAYED,
+			      &value);
+	g_value_unset (&value);
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, "Never");
+	/* Last played time */
+	rb_node_set_property (node,
+			      RB_NODE_PROP_LAST_PLAYED_STR,
+			      &value);
+
+	g_value_unset (&value);
+
+	sync_node (node, library, FALSE, error);
+	if (error && *error)
+		return NULL;
+
+	return node;
+}
+
+static gboolean
+is_different (RBNode *node, int property, GValue *value)
+{
+	gboolean equal;
+	const char *string;
+
+	string = rb_node_get_property_string (node, property);
+
+	equal = (strcmp (string, g_value_get_string (value)) == 0);
+
+	return !equal;
+}
+
+static void
+set_node_value (RBNode *node, int property,
+		MonkeyMediaStreamInfo *info,
+		MonkeyMediaStreamInfoField field)
+{
+	GValue val = { 0, };
+
+	monkey_media_stream_info_get_value (info,
+					    field,
+					    0,
+					    &val);
+
+	rb_node_set_property (node,
+			      property,
+			      &val);
+
+	g_value_unset (&val);
+}
+
+static void
+set_node_title (RBNode *node, MonkeyMediaStreamInfo *info)
+{
+	GValue val = { 0, };
+	char *collated, *folded;
+
+	monkey_media_stream_info_get_value (info,
+					    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+					    0,
+					    &val);
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_NAME,
+			      &val);
+
+	folded = g_utf8_casefold (g_value_get_string (&val), -1);
+	g_value_unset (&val);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+	
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_NAME_SORT_KEY,
+			      &val);
+	g_value_unset (&val);
+}
+
+static void
+set_node_mtime (RBNode *node, const char *location)
+{
+	GnomeVFSFileInfo *info;
+	GValue val = { 0, };
+
+	info = gnome_vfs_file_info_new ();
+
+	gnome_vfs_get_file_info (location, info,
+				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	g_value_init (&val, G_TYPE_LONG);
+	g_value_set_long (&val, info->mtime);
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_MTIME,
+			      &val);
+
+	g_value_unset (&val);
+
+	gnome_vfs_file_info_unref (info);
+}
+
+static void
+set_node_duration (RBNode *node,
+		   MonkeyMediaStreamInfo *info)
+{
+	GValue val = { 0, };
+	GValue string_val = { 0, };
+	long minutes = 0, seconds = 0;
+	char *tmp;
+
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
+					    0,
+				            &val);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_DURATION,
+			      &val);
+
+	g_value_init (&string_val, G_TYPE_STRING);
+
+	if (g_value_get_long (&val) > 0) {
+		minutes = g_value_get_long (&val) / 60;
+		seconds = g_value_get_long (&val) % 60;
+	}
+
+	tmp = g_strdup_printf (_("%ld:%02ld"), minutes, seconds);
+	g_value_set_string (&string_val, tmp);
+	g_free (tmp);
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_DURATION_STR,
+			      &string_val);
+
+	g_value_unset (&string_val);
+
+	g_value_unset (&val);
+}
+
+static void
+set_node_track_number (RBNode *node,
+		       MonkeyMediaStreamInfo *info)
+{
+	GValue val = { 0, };
+	int cur;
+
+	if (monkey_media_stream_info_get_value (info,
+				                MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
+					        0,
+				                &val) == FALSE)
+	{
+		g_value_init (&val, G_TYPE_INT);
+		g_value_set_int (&val, -1);
+	}
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_TRACK_NUMBER,
+			      &val);
+	cur = g_value_get_int (&val);
+	g_value_unset (&val);
+}
+
+static gboolean
+set_node_genre (RBNode *node,
+		MonkeyMediaStreamInfo *info,
+		RBLibrary *library,
+		gboolean check_reparent)
+{
+	GValue val = { 0, };
+	RBNode *genre;
+
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+					    0,
+				            &val);
+
+	if (check_reparent == TRUE &&
+	    is_different (node, RB_NODE_PROP_GENRE, &val) == TRUE) {
+		g_value_unset (&val);
+
+		return TRUE;
+	}
+	
+	genre = rb_library_get_genre_by_name (library,
+					      g_value_get_string (&val));
+	
+	if (genre == NULL) {
+		GValue value = { 0, };
+		char *folded, *key;
+
+		genre = rb_node_new (library->priv->db);
+
+		rb_node_set_property (genre,
+				      RB_NODE_PROP_NAME,
+				      &val);
+
+		folded = g_utf8_casefold (g_value_get_string (&val), -1);
+		key = g_utf8_collate_key (folded, -1);
+		g_free (folded);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, key);
+		g_free (key);
+
+		rb_node_set_property (genre,
+				      RB_NODE_PROP_NAME_SORT_KEY,
+				      &value);
+
+		g_value_unset (&value);
+
+		rb_node_add_child (rb_library_get_all_genres (library), genre);
+	}
+	
+	if (check_reparent == FALSE)
+		rb_node_ref (genre);
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_GENRE,
+			      &val);
+		
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_POINTER);
+	g_value_set_pointer (&val, genre);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_REAL_GENRE,
+			      &val);
+	g_value_unset (&val);
+
+	return FALSE;
+}
+
+static gboolean
+set_node_artist (RBNode *node,
+		 MonkeyMediaStreamInfo *info,
+		 RBLibrary *library,
+		 gboolean check_reparent)
+{
+	GValue val = { 0, };
+	RBNode *artist;
+	char *swapped, *collated, *folded;
+	gboolean new = FALSE;
+
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
+					    0,
+				            &val);
+
+	if (check_reparent == TRUE &&
+	    is_different (node, RB_NODE_PROP_ARTIST, &val) == TRUE) {
+		g_value_unset (&val);
+
+		return TRUE;
+	}
+	
+	swapped = rb_prefix_to_suffix (g_value_get_string (&val));
+	if (swapped == NULL)
+		swapped = g_strdup (g_value_get_string (&val));
+	
+	artist = rb_library_get_artist_by_name (library,
+						swapped);
+	
+	if (artist == NULL) {
+		GValue swapped_val = { 0, };
+		GValue value = { 0, };
+		char *folded, *key;
+		
+		artist = rb_node_new (library->priv->db);
+
+		g_value_init (&swapped_val, G_TYPE_STRING);
+		g_value_set_string (&swapped_val, swapped);
+		rb_node_set_property (artist,
+				      RB_NODE_PROP_NAME,
+				      &swapped_val);
+		g_value_unset (&swapped_val);
+
+		folded = g_utf8_casefold (swapped, -1);
+		key = g_utf8_collate_key (folded, -1);
+		g_free (folded);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, key);
+		g_free (key);
+
+		rb_node_set_property (artist,
+				      RB_NODE_PROP_NAME_SORT_KEY,
+				      &value);
+
+		g_value_unset (&value);
+
+		new = TRUE;
+	}
+
+	if (check_reparent == FALSE) {
+		rb_node_add_child (rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE),
+				   artist);
+
+		rb_node_ref (artist);
+	}
+
+	rb_node_set_property (node,
+			      RB_NODE_PROP_ARTIST,
+			      &val);
+		
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	folded = g_utf8_casefold (swapped, -1);
+	g_free (swapped);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_ARTIST_SORT_KEY,
+			      &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_POINTER);
+	g_value_set_pointer (&val, artist);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_REAL_ARTIST,
+			      &val);
+	g_value_unset (&val);
+
+	if (new == TRUE)
+		rb_node_add_child (rb_library_get_all_artists (library), artist);
+
+	return FALSE;
+}
+
+static gboolean
+set_node_album (RBNode *node,
+		MonkeyMediaStreamInfo *info,
+		RBLibrary *library,
+		gboolean check_reparent)
+{
+	GValue val = { 0, };
+	RBNode *album;
+	char *collated, *folded;
+	gboolean new = FALSE;
+
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
+					    0,
+				            &val);
+
+	if (check_reparent == TRUE &&
+	    is_different (node, RB_NODE_PROP_ALBUM, &val) == TRUE) {
+		g_value_unset (&val);
+
+		return TRUE;
+	}
+	
+	album = rb_library_get_album_by_name (library,
+					      g_value_get_string (&val));
+	
+	if (album == NULL) {
+		GValue value = { 0, };
+		char *folded, *key;
+
+		album = rb_node_new (library->priv->db);
+
+		rb_node_set_property (album,
+				      RB_NODE_PROP_NAME,
+				      &val);
+
+		folded = g_utf8_casefold (g_value_get_string (&val), -1);
+		key = g_utf8_collate_key (folded, -1);
+		g_free (folded);
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, key);
+		g_free (key);
+
+		rb_node_set_property (album,
+				      RB_NODE_PROP_NAME_SORT_KEY,
+				      &value);
+
+		g_value_unset (&value);
+
+		new = TRUE;
+	}
+
+	if (check_reparent == FALSE) {
+		rb_node_add_child (rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ARTIST),
+				   album);
+	
+		rb_node_ref (album);
+	}
+	
+	rb_node_set_property (node,
+			      RB_NODE_PROP_ALBUM,
+			      &val);
+		
+	folded = g_utf8_casefold (g_value_get_string (&val), -1);
+	g_value_unset (&val);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, collated);
+	g_free (collated);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_ALBUM_SORT_KEY,
+			      &val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_POINTER);
+	g_value_set_pointer (&val, album);
+	rb_node_set_property (node,
+			      RB_NODE_PROP_REAL_ALBUM,
+			      &val);
+	g_value_unset (&val);
+
+	if (new == TRUE)
+		rb_node_add_child (rb_library_get_all_albums (library), album);
+
+	return FALSE;
+}
+
+static void
+sync_node (RBNode *node,
+	   RBLibrary *library,
+	   gboolean check_reparent,
+	   GError **error)
+{
+	MonkeyMediaStreamInfo *info;
+	const char *location;
+
+	location = rb_node_get_property_string (node,
+				                RB_NODE_PROP_LOCATION);
+	
+	info = monkey_media_stream_info_new (location, error);
+	if (G_UNLIKELY (info == NULL)) {
+		rb_node_unref (node);
+		return;
+	}
+
+	/* track number */
+	set_node_track_number (node, info);
+
+	/* duration */
+	set_node_duration (node, info);
+
+	/* filesize */
+	set_node_value (node, RB_NODE_PROP_FILE_SIZE,
+			info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE);
+
+	/* title */
+	set_node_title (node, info);
+
+	/* mtime */
+	set_node_mtime (node, location);
+
+	/* genre, artist & album */
+	if (set_node_genre (node, info, library, check_reparent) == TRUE ||
+	    set_node_artist (node, info, library, check_reparent) == TRUE ||
+	    set_node_album (node, info, library, check_reparent) == TRUE) {
+		/* reparent */
+		rb_node_unref (node);
+
+		rb_library_add_uri (library, location);
+	}
+
+	if (check_reparent == FALSE) {
+		rb_node_add_child (rb_library_get_all_songs (library), node);
+		rb_node_add_child (rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ALBUM),
+				   node);
+	}
+
+	g_object_unref (G_OBJECT (info));
+}
+
+void
+rb_library_update_node (RBLibrary *library,
+			RBNode *node,
+			GError **error)
+{
+	GnomeVFSFileInfo *info;
+	const char *location;
+	long mtime;
+
+	g_return_if_fail (RB_IS_NODE (node));
+	g_return_if_fail (RB_IS_LIBRARY (library));
+
+	info = gnome_vfs_file_info_new ();
+	
+	location = rb_node_get_property_string (node,
+						RB_NODE_PROP_LOCATION);
+	gnome_vfs_get_file_info (location, info,
+				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	mtime = rb_node_get_property_long (node,
+				           RB_NODE_PROP_MTIME);
+
+	if (info->mtime != mtime)
+		sync_node (node, library, TRUE, error);
+	
+	gnome_vfs_file_info_unref (info);
 }

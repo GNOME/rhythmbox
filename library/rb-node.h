@@ -18,63 +18,32 @@
  *  $Id$
  */
 
-#ifndef __RB_NODE_H
-#define __RB_NODE_H
 
-#include <glib-object.h>
+#ifndef RB_NODE_H
+#define RB_NODE_H
 
 #include <libxml/tree.h>
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_NODE         (rb_node_get_type ())
-#define RB_NODE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE, RBNode))
-#define RB_NODE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_NODE, RBNodeClass))
-#define RB_IS_NODE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_NODE))
-#define RB_IS_NODE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_NODE))
-#define RB_NODE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_NODE, RBNodeClass))
+/* convenience macro to check node validity */
 
-typedef struct RBNodePrivate RBNodePrivate;
+#define RB_IS_NODE(o)	(o != NULL)
 
-typedef struct
+typedef struct RBNode RBNode;
+
+typedef enum
 {
-	GObject parent;
+	RB_NODE_DESTROY,           /* RBNode *node */
+	RB_NODE_RESTORED,          /* RBNode *node */
+	RB_NODE_CHILD_ADDED,       /* RBNode *node, RBNode *child */
+	RB_NODE_CHILD_CHANGED,     /* RBNode *node, RBNode *child */
+	RB_NODE_CHILD_REMOVED,     /* RBNode *node, RBNode *child, guint old_index */
+	RB_NODE_CHILDREN_REORDERED /* RBNode *node, int *new_order */
+} RBNodeSignalType;
 
-	RBNodePrivate *priv;
-} RBNode;
+#include "rb-node-db.h"
 
-typedef struct
-{
-	GObjectClass parent;
-
-	/* signals */
-	void (*destroyed)          (RBNode *node);
-	void (*restored)           (RBNode *node);
-
-	void (*child_added)        (RBNode *node, RBNode *child);
-	void (*child_changed)      (RBNode *node, RBNode *child);
-	void (*child_removed)      (RBNode *node, RBNode *child);
-	void (*children_reordered) (RBNode *node, int *new_order);
-} RBNodeClass;
-
-GType       rb_node_get_type              (void);
-
-RBNode     *rb_node_new                   (void);
-
-/* unique node ID */
-long        rb_node_get_id                (RBNode *node);
-
-RBNode     *rb_node_get_from_id           (long id);
-
-/* refcounting */
-void        rb_node_ref                   (RBNode *node);
-void        rb_node_unref                 (RBNode *node);
-
-/* locking */
-void        rb_node_freeze                (RBNode *node);
-void        rb_node_thaw                  (RBNode *node);
-
-/* property interface */
 /* properties */
 enum
 {
@@ -104,77 +73,95 @@ enum
 	/* 23-99 are reserved */
 };
 
+typedef void (*RBNodeCallback) (RBNode *node, ...);
+
+RBNode   *rb_node_new                   (RBNodeDb *db);
+
+RBNode   *rb_node_new_with_id           (RBNodeDb *db,
+					     gulong reserved_id);
+
+RBNodeDb *rb_node_get_db		    (RBNode *node);
+
+/* unique node ID */
+long        rb_node_get_id                (RBNode *node);
+
+/* refcounting */
+void        rb_node_ref                   (RBNode *node);
+void        rb_node_unref                 (RBNode *node);
+
+/* locking */
+void        rb_node_freeze                (RBNode *node);
+void        rb_node_thaw                  (RBNode *node);
+
+/* signals */
+int         rb_node_signal_connect_object (RBNode *node,
+					     RBNodeSignalType type,
+					     RBNodeCallback callback,
+					     GObject *object);
+
+void        rb_node_signal_disconnect     (RBNode *node,
+					     int signal_id);
+
+/* properties */
 void        rb_node_set_property          (RBNode *node,
-				           int property_id,
-				           const GValue *value);
+				             guint property_id,
+				             const GValue *value);
 gboolean    rb_node_get_property          (RBNode *node,
-				           int property_id,
-				           GValue *value);
+				             guint property_id,
+				             GValue *value);
 
 const char *rb_node_get_property_string   (RBNode *node,
-					   int property_id);
+					     guint property_id);
 gboolean    rb_node_get_property_boolean  (RBNode *node,
-					   int property_id);
+					     guint property_id);
 long        rb_node_get_property_long     (RBNode *node,
-					   int property_id);
+					     guint property_id);
 int         rb_node_get_property_int      (RBNode *node,
-					   int property_id);
+					     guint property_id);
 double      rb_node_get_property_double   (RBNode *node,
-					   int property_id);
+					     guint property_id);
 float       rb_node_get_property_float    (RBNode *node,
-					   int property_id);
-RBNode     *rb_node_get_property_node     (RBNode *node,
-					   int property_id);
-GObject    *rb_node_get_property_object   (RBNode *node,
-					   int property_id);
+					     guint property_id);
+gpointer    rb_node_get_property_pointer  (RBNode *node,
+					   guint property_id);
 /* free return value */
 char       *rb_node_get_property_time     (RBNode *node,
-					   int property_id);
+					     guint property_id);
 
 /* xml storage */
-void        rb_node_save_to_xml           (RBNode *node,
-					   xmlNodePtr parent_xml_node);
-RBNode     *rb_node_new_from_xml          (xmlNodePtr xml_node);
+void          rb_node_save_to_xml         (RBNode *node,
+					     xmlNodePtr parent_xml_node);
+RBNode     *rb_node_new_from_xml        (RBNodeDb *db,
+					     xmlNodePtr xml_node);
 
 /* DAG structure */
 void        rb_node_add_child             (RBNode *node,
-					   RBNode *child);
+					     RBNode *child);
 void        rb_node_remove_child          (RBNode *node,
-					   RBNode *child);
+					     RBNode *child);
+void	    rb_node_sort_children	    (RBNode *node,
+					     GCompareFunc compare_func);
 gboolean    rb_node_has_child             (RBNode *node,
-					   RBNode *child);
-void        rb_node_reorder_children      (RBNode *node,
-					   int *new_order);
+					     RBNode *child);
+
+void	    rb_node_reorder_children	    (RBNode *node,
+					     int *new_order);
 
 /* Note that rb_node_get_children freezes the node; you'll have to thaw it when done.
  * This is to prevent the data getting changed from another thread. */
-GPtrArray  *rb_node_get_children          (RBNode *node);
-int         rb_node_get_n_children        (RBNode *node);
-RBNode     *rb_node_get_nth_child         (RBNode *node,
-					   int n);
-int         rb_node_get_child_index       (RBNode *node,
-					   RBNode *child);
-RBNode     *rb_node_get_next_child        (RBNode *node,
-					   RBNode *child);
-RBNode     *rb_node_get_previous_child    (RBNode *node,
-					   RBNode *child);
-
-/* node cloning (all clones have the same properties, but a different
- * family) */
-RBNode     *rb_node_new_clone             (RBNode *node);
-
-RBNode     *rb_node_clone_of              (RBNode *node);
-
-/* node id services */
-void        rb_node_system_init           (void);
-void        rb_node_system_shutdown       (void);
-
-long        rb_node_new_id                (void);
-
+GPtrArray    *rb_node_get_children        (RBNode *node);
+int           rb_node_get_n_children      (RBNode *node);
+RBNode     *rb_node_get_nth_child       (RBNode *node,
+					     guint n);
+int           rb_node_get_child_index     (RBNode *node,
+					     RBNode *child);
+RBNode     *rb_node_get_next_child      (RBNode *node,
+					     RBNode *child);
+RBNode     *rb_node_get_previous_child  (RBNode *node,
+					     RBNode *child);
 
 /* Update 'play' statistics */
 void        rb_node_update_play_statistics (RBNode *node);
-
 
 G_END_DECLS
 

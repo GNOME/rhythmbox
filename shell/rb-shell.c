@@ -1353,7 +1353,7 @@ ask_string_response_cb (GtkDialog *dialog,
 		for (l = data; l != NULL; l = g_list_next (l))
 		{
 			rb_group_source_add_node (RB_GROUP_SOURCE (group),
-						  RB_NODE (l->data));
+						  l->data);
 		}
 		break;
 	case CREATE_GROUP_WITH_URI_LIST:
@@ -1694,7 +1694,9 @@ sourcelist_drag_finished_cb (RBSourceList *sourcelist,
 			RBGroupSource *group;
 
 			id = atol (data->data);
-			node = rb_node_get_from_id (id);
+			/* FIXME */
+                        /* node = rb_node_db_get_node_from_id (library->priv->db, id); */
+			node = NULL;
 
 			if (node == NULL)
 				break;

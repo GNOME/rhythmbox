@@ -162,11 +162,10 @@ rb_player_class_init (RBPlayerClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_NODE,
-					 g_param_spec_object ("node",
-							      "RBNode",
-							      "RBNode",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
+					 g_param_spec_pointer ("node",
+							       "RBNode",
+							       "RBNode",
+							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
 					 g_param_spec_object ("player",
@@ -370,7 +369,7 @@ rb_player_set_property (GObject *object,
 
 	switch (prop_id) {
 	case PROP_NODE:
-		player->priv->node = g_value_get_object (value);
+		player->priv->node = g_value_get_pointer (value);
 		break;
 	case PROP_PLAYER:
 		player->priv->mmplayer = g_value_get_object (value);

@@ -44,7 +44,6 @@
 #include "rb-song-info.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
-#include "rb-node-song.h"
 #include "rb-rating.h"
 #include "rb-ellipsizing-label.h"
 
@@ -872,7 +871,7 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 static void
 rb_song_info_update_play_count (RBSongInfo *song_info)
 {
-	char *text = g_strdup_printf ("%d", rb_node_get_property_int (RB_NODE (song_info->priv->current_node),
+	char *text = g_strdup_printf ("%d", rb_node_get_property_int (song_info->priv->current_node,
 								      RB_NODE_PROP_PLAY_COUNT));
 	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 }
@@ -881,7 +880,7 @@ static void
 rb_song_info_update_last_played (RBSongInfo *song_info)
 {
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played),
-			    rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
+			    rb_node_get_property_string (song_info->priv->current_node,
 							 RB_NODE_PROP_LAST_PLAYED_STR));
 }
 

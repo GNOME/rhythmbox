@@ -19,8 +19,8 @@
  *  $Id$
  */
 
-#ifndef __RB_NODE_FILTER_H
-#define __RB_NODE_FILTER_H
+#ifndef RB_NODE_FILTER_H
+#define RB_NODE_FILTER_H
 
 #include <glib-object.h>
 
@@ -57,7 +57,7 @@ typedef enum
 	RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,           /* args: RBNode *a, RBNode *b */
 	RB_NODE_FILTER_EXPRESSION_EQUALS,                /* args: RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_HAS_PARENT,            /* args: RBNode *parent */
-	RB_NODE_FILTER_EXPRESSION_HAS_CHILD,             /* args: RBNode *child */     
+	RB_NODE_FILTER_EXPRESSION_HAS_CHILD,             /* args: RBNode *child */
 	RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,      /* args: int prop_id, RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,     /* args: int prop_id, RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,  /* args: int prop_id, const char *string */
@@ -77,26 +77,26 @@ typedef struct RBNodeFilterExpression RBNodeFilterExpression;
  * next level, the result is TRUE. Otherwise, it's FALSE.
  */
 
-GType         rb_node_filter_get_type       (void);
+GType           rb_node_filter_get_type       (void);
 
 RBNodeFilter *rb_node_filter_new            (void);
 
-void          rb_node_filter_add_expression (RBNodeFilter *filter,
-					     RBNodeFilterExpression *expression,
-					     int level);
+void            rb_node_filter_add_expression (RBNodeFilter *filter,
+					         RBNodeFilterExpression *expression,
+					         int level);
 
-void          rb_node_filter_empty          (RBNodeFilter *filter);
+void            rb_node_filter_empty          (RBNodeFilter *filter);
 
-void          rb_node_filter_done_changing  (RBNodeFilter *filter);
+void            rb_node_filter_done_changing  (RBNodeFilter *filter);
 
-gboolean      rb_node_filter_evaluate       (RBNodeFilter *filter,
-					     RBNode *node);
+gboolean        rb_node_filter_evaluate       (RBNodeFilter *filter,
+					         RBNode *node);
 
 RBNodeFilterExpression *rb_node_filter_expression_new  (RBNodeFilterExpressionType,
-						        ...);
+						            ...);
 /* no need to free unless you didn't add the expression to a filter */
-void                    rb_node_filter_expression_free (RBNodeFilterExpression *expression);
+void                      rb_node_filter_expression_free (RBNodeFilterExpression *expression);
 
 G_END_DECLS
 
-#endif /* __RB_NODE_FILTER_H */
+#endif /* RB_NODE_FILTER_H */

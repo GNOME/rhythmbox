@@ -13,8 +13,9 @@ librblibrary_la_SOURCES =				\
 	rb-library-action.h				\
 	rb-node.c					\
 	rb-node.h					\
-	rb-node-song.c					\
-	rb-node-song.h					\
+	rb-node-db.c					\
+	rb-node-db.h					\
+	rb-node-common.h				\
 	rb-node-filter.c				\
 	rb-node-filter.h				\
 	rb-library-dnd-types.h

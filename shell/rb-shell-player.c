@@ -699,7 +699,7 @@ rb_shell_player_open_node (RBShellPlayer *player, RBNode *node, GError **error)
 	const char *location = rb_node_get_property_string (node,
 							    RB_NODE_PROP_LOCATION);
 	RBGListWrapper *glistwrap =
-		RB_GLIST_WRAPPER (rb_node_get_property_object (node, RB_NODE_PROP_ALT_LOCATIONS));
+		RB_GLIST_WRAPPER (rb_node_get_property_pointer (node, RB_NODE_PROP_ALT_LOCATIONS));
 
 	rb_shell_player_open_location (player, location, error);
 	if (*error == NULL)

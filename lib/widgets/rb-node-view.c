@@ -37,11 +37,10 @@
 #include "rb-tree-model-sort.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
+#include "rb-library.h"
 #include "rb-debug.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
-#include "rb-node-song.h"
-#include "rb-node-station.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
@@ -224,18 +223,16 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ROOT,
-					 g_param_spec_object ("root",
-							      "Root node",
-							      "Root node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_pointer ("root",
+							       "Root node",
+							       "Root node",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_NODE,
-					 g_param_spec_object ("playing-node",
-							      "Playing node",
-							      "Playing node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
+					 g_param_spec_pointer ("playing-node",
+							       "Playing node",
+							       "Playing node",
+							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_VIEW_DESC_FILE,
 					 g_param_spec_string ("view-desc-file",
@@ -260,7 +257,7 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
 			      1,
-			      RB_TYPE_NODE);
+			      G_TYPE_POINTER);
 	rb_node_view_signals[NODE_SELECTED] =
 		g_signal_new ("node_selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -270,7 +267,7 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
 			      1,
-			      RB_TYPE_NODE);
+			      G_TYPE_POINTER);
 	rb_node_view_signals[CHANGED] =
 		g_signal_new ("changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -392,7 +389,7 @@ rb_node_view_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ROOT:
-		view->priv->root = g_value_get_object (value);
+		view->priv->root = g_value_get_pointer (value);
 		break;
 	case PROP_PLAYING_NODE:
 		g_assert (view->priv->nodemodel != NULL);
@@ -401,7 +398,7 @@ rb_node_view_set_property (GObject *object,
 			               "playing-node", value);
 
 		if (view->priv->idle)
-			rb_node_view_scroll_to_node (view, g_value_get_object (value));
+			rb_node_view_scroll_to_node (view, g_value_get_pointer (value));
 		break;
 	case PROP_VIEW_DESC_FILE:
 		g_free (view->priv->view_desc_file);
@@ -616,11 +613,10 @@ rb_node_view_construct (RBNodeView *view)
 	xmlNodePtr child;
 	char *tmp;
 
-	g_signal_connect_object (G_OBJECT (view->priv->root),
-			         "child_removed",
-			         G_CALLBACK (root_child_removed_cb),
-				 view,
-				 0);
+	rb_node_signal_connect_object (view->priv->root,
+				       RB_NODE_CHILD_REMOVED,
+				       (RBNodeCallback) root_child_removed_cb,
+				       G_OBJECT (view));
 
 	view->priv->columns = g_hash_table_new (NULL, NULL);
 	view->priv->allowed_columns = g_hash_table_new (NULL, NULL);
@@ -1377,7 +1373,7 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	sel = rb_node_view_get_selection (view);
 	available = (sel != NULL);
 	if (sel != NULL)
-		selected_node = RB_NODE ((g_list_first (sel))->data);
+		selected_node = (g_list_first (sel))->data;
 
 	if (available != view->priv->have_selection)
 	{

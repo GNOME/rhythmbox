@@ -22,7 +22,6 @@
 #include <string.h>
 
 #include "rb-node.h"
-#include "rb-node-song.h"
 #include "rb-tree-model-sort.h"
 #include "eggtreemultidnd.h"
 #include "rb-library-dnd-types.h"

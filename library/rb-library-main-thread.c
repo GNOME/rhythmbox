@@ -22,7 +22,6 @@
 #include <gdk/gdk.h>
 
 #include "rb-library-main-thread.h"
-#include "rb-node-song.h"
 #include "rb-file-helpers.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
@@ -323,9 +322,9 @@ thread_main (RBLibraryMainThread *thread)
 			case RB_LIBRARY_ACTION_ADD_FILE:
 				if (rb_library_get_song_by_location (thread->priv->library, realuri) == NULL)
 				{
-					rb_node_song_new (realuri,
-							  thread->priv->library,
-							  &error);
+					rb_library_new_node (thread->priv->library,
+							     realuri,
+							     &error);
 					if (error != NULL) {
 						push_err (thread, uri, error);
 						break;
@@ -348,7 +347,7 @@ thread_main (RBLibraryMainThread *thread)
 						break;
 					}
 
-					rb_node_song_update_if_changed (RB_NODE_SONG (song), thread->priv->library, &error);
+					rb_library_update_node (thread->priv->library, song, &error);
 					if (error != NULL) {
 						push_err (thread, uri, error);
 						break;

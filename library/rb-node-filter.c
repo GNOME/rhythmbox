@@ -29,7 +29,7 @@ static void rb_node_filter_class_init (RBNodeFilterClass *klass);
 static void rb_node_filter_init (RBNodeFilter *node);
 static void rb_node_filter_finalize (GObject *object);
 static gboolean rb_node_filter_expression_evaluate (RBNodeFilterExpression *expression,
-						    RBNode *node);
+						      RBNode *node);
 
 enum
 {
@@ -162,8 +162,8 @@ rb_node_filter_new (void)
 
 void
 rb_node_filter_add_expression (RBNodeFilter *filter,
-			       RBNodeFilterExpression *exp,
-			       int level)
+			         RBNodeFilterExpression *exp,
+			         int level)
 {
 	while (level >= filter->priv->levels->len)
 		g_ptr_array_add (filter->priv->levels, NULL);
@@ -212,7 +212,7 @@ rb_node_filter_done_changing (RBNodeFilter *filter)
  */
 gboolean
 rb_node_filter_evaluate (RBNodeFilter *filter,
-			 RBNode *node)
+			   RBNode *node)
 {
 	int i;
 
@@ -240,7 +240,7 @@ rb_node_filter_evaluate (RBNodeFilter *filter,
 
 RBNodeFilterExpression *
 rb_node_filter_expression_new (RBNodeFilterExpressionType type,
-			       ...)
+			         ...)
 {
 	RBNodeFilterExpression *exp;
 	va_list valist;
@@ -319,7 +319,7 @@ rb_node_filter_expression_free (RBNodeFilterExpression *exp)
 
 static gboolean
 rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
-				    RBNode *node)
+				      RBNode *node)
 {
 	switch (exp->type)
 	{
@@ -337,8 +337,8 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 	{
 		RBNode *prop;
 
-		prop = rb_node_get_property_node (node,
-						  exp->args.prop_args.prop_id);
+		prop = rb_node_get_property_pointer (node,
+						     exp->args.prop_args.prop_id);
 		
 		return (prop == exp->args.prop_args.second_arg.node);
 	}
@@ -354,7 +354,7 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 			RBNode *child;
 			
 			child = g_ptr_array_index (children, i);
-			prop = rb_node_get_property_node 
+			prop = rb_node_get_property_pointer 
 				(child, exp->args.prop_args.prop_id);
 		
 			if (prop == exp->args.prop_args.second_arg.node)
@@ -375,7 +375,6 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 
 		prop = rb_node_get_property_string (node,
 						    exp->args.prop_args.prop_id);
-
 		if (prop == NULL)
 			return FALSE;
 
@@ -451,7 +450,7 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 
 		prop = rb_node_get_property_int (node,
 						 exp->args.prop_args.prop_id);
-
+		g_print ("%d %d\n", prop, exp->args.prop_args.second_arg.number);
 		return (prop < exp->args.prop_args.second_arg.number);
 	}
 	default:

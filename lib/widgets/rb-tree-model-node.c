@@ -28,10 +28,9 @@
 
 #include "rb-tree-model-node.h"
 #include "rb-stock-icons.h"
-#include "rb-node-song.h"
 #include "rb-string-helpers.h"
 #include "rb-node.h"
-#include "rb-node-song.h"
+#include "rb-library.h"
 #include "rb-debug.h"
 
 static void rb_tree_model_node_class_init (RBTreeModelNodeClass *klass);
@@ -172,18 +171,16 @@ rb_tree_model_node_class_init (RBTreeModelNodeClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_ROOT,
-					 g_param_spec_object ("root",
-							      "Root node",
-							      "Root node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+					 g_param_spec_pointer ("root",
+							       "Root node",
+							       "Root node",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_NODE,
-					 g_param_spec_object ("playing-node",
-							      "Playing node",
-							      "Playing node",
-							      RB_TYPE_NODE,
-							      G_PARAM_READWRITE));
+					 g_param_spec_pointer ("playing-node",
+							       "Playing node",
+							       "Playing node",
+							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_FILTER,
 					 g_param_spec_object ("filter",
@@ -268,40 +265,35 @@ rb_tree_model_node_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ROOT:
-		model->priv->root = g_value_get_object (value);
+		model->priv->root = g_value_get_pointer (value);
 
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-				         "child_added",
-				         G_CALLBACK (root_child_added_cb),
-				         G_OBJECT (model),
-					 0);
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-				         "child_removed",
-				         G_CALLBACK (root_child_removed_cb),
-				         G_OBJECT (model),
-					 0);
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-				         "child_changed",
-				         G_CALLBACK (root_child_changed_cb),
-				         G_OBJECT (model),
-					 0);
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-					 "children_reordered",
-					 G_CALLBACK (root_children_reordered_cb),
-					 G_OBJECT (model),
-					 0);
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-				         "destroyed",
-				         G_CALLBACK (root_destroyed_cb),
-				         G_OBJECT (model),
-					 0);
+		rb_node_signal_connect_object (model->priv->root,
+					       RB_NODE_CHILD_ADDED,
+					       (RBNodeCallback) root_child_added_cb,
+					       G_OBJECT (model));
+		rb_node_signal_connect_object (model->priv->root,
+					       RB_NODE_CHILD_REMOVED,
+					       (RBNodeCallback) root_child_removed_cb,
+					       G_OBJECT (model));
+		rb_node_signal_connect_object (model->priv->root,
+					       RB_NODE_CHILD_CHANGED,
+					       (RBNodeCallback) root_child_changed_cb,
+					       G_OBJECT (model));
+		rb_node_signal_connect_object (model->priv->root,
+					       RB_NODE_CHILDREN_REORDERED,
+					       (RBNodeCallback) root_children_reordered_cb,
+					       G_OBJECT (model));
+		rb_node_signal_connect_object (model->priv->root,
+					       RB_NODE_DESTROY,
+					       (RBNodeCallback) root_destroyed_cb,
+					       G_OBJECT (model));
 
 		break;
 	case PROP_PLAYING_NODE:
 		{
 			RBNode *old = model->priv->playing_node;
 
-			model->priv->playing_node = g_value_get_object (value);
+			model->priv->playing_node = g_value_get_pointer (value);
 
 			if (old != NULL)
 				rb_tree_model_node_update_node (model, old, -1);
@@ -338,10 +330,10 @@ rb_tree_model_node_get_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ROOT:
-		g_value_set_object (value, model->priv->root);
+		g_value_set_pointer (value, model->priv->root);
 		break;
 	case PROP_PLAYING_NODE:
-		g_value_set_object (value, model->priv->playing_node);
+		g_value_set_pointer (value, model->priv->playing_node);
 		break;
 	case PROP_FILTER:
 		g_value_set_object (value, model->priv->filter);
@@ -494,7 +486,7 @@ rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 	if (model->priv->root == NULL)
 		return NULL;
 
-	node = RB_NODE (iter->user_data);
+	node = iter->user_data;
 
 	if (node == model->priv->root)
 		return gtk_tree_path_new ();
@@ -520,7 +512,7 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	if (model->priv->root == NULL)
 		return;
 
-	node = RB_NODE (iter->user_data);
+	node = iter->user_data;
 
 	switch (column)
 	{
@@ -695,7 +687,7 @@ rb_tree_model_node_iter_next (GtkTreeModel *tree_model,
 	if (model->priv->root == NULL)
 		return FALSE;
 	
-	node = RB_NODE (iter->user_data);
+	node = iter->user_data;
 
 	if (node == model->priv->root)
 		return FALSE;
@@ -791,7 +783,7 @@ RBNode *
 rb_tree_model_node_node_from_iter (RBTreeModelNode *model,
 				   GtkTreeIter *iter)
 {
-	return RB_NODE (iter->user_data);
+	return iter->user_data;
 }
 
 void
