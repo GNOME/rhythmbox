@@ -830,9 +830,15 @@ rb_shell_player_next (RBShellPlayer *player)
 static void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
+	RBNode *node;
 	RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-	rb_node_view_select_node (songs,
-				  rb_node_view_get_playing_node (songs));
+
+	node = rb_shell_player_get_playing_node (player);	
+
+	g_return_if_fail (node != NULL);
+	
+	rb_node_view_scroll_to_node (songs, node);
+	rb_node_view_select_node (songs, rb_node_view_get_playing_node (songs));
 }
 
 static void
@@ -996,19 +1002,11 @@ rb_shell_player_cmd_current_song (BonoboUIComponent *component,
 				  RBShellPlayer *player,
 				  const char *verbname)
 {
-	RBNodeView *songs;
-	RBNode *node;
-
 	rb_debug ("current song");
 
 	g_return_if_fail (player->priv->source != NULL);
 
-	songs = rb_source_get_node_view (player->priv->source);
-	node = rb_shell_player_get_playing_node (player);	
-
-	g_return_if_fail (node != NULL);
-	
-	rb_node_view_scroll_to_node (songs, node);
+	rb_shell_player_jump_to_current (player);
 }
 
 static void

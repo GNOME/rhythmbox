@@ -13,7 +13,10 @@ menus, preferences, and most of the user interface in general.  The core
 component of the shell is RBShell, in shell/rb-shell.c.  It acts as
 kind of a catch-all for the various bits of glue needed to keep
 Rhythmbox working together.  It handles most of the menu callbacks,
-and it also forms the main widget which holds all of the widgets below.
+handles the playlist addition/deletion interface, maintains
+the tray icon, and forms the main widget which holds all of the widgets below.
+Unfortunately because of this rb-shell.c is getting a fairly big, and
+we plan to break it up into smaller classes eventually.
 
 There are other more specialized components of the shell, such as
 RBShellPlayer. RBShellPlayer is a widget which handles the
@@ -44,7 +47,8 @@ one of the simpler ones is:
 gboolean	rb_source_can_pause		(RBSource *player);
 
 So here, a source returns TRUE if it can pause (i.e. pause button should
-be displayed).
+be displayed).  Another example is the rb_source_get_status method,
+which is called to display a status string at the bottom of the window.
 
 The RBShell maintains a list of available RBSources.
 
@@ -66,20 +70,36 @@ and then come back to it later once we know more.
 Understanding RBNode (library/rb-node.c) is crucial.  RBNode is not
 just used by the Library actually; every other source uses it as well.
 RBNode is therefore a pretty abstract thing.  Essentially, it
-is a node in a tree, which can have both parents and children.  An
-RBNode also has a dynamic set of properties associated with it.  A
+is a node in a tree, which can have both parents and children.  We
+will examine how the tree structure is used shortly.
+
+**** Dynamic properties
+
+An RBNode also has a dynamic set of properties associated with it.  A
 property has both a name and a value.  The value can be of many different
 types; e.g. a string, integer, or a pointer to another node. 
 
 These dynamic properties pretty much correspond to the song
 metadata you can see like song length, duration, location, etc.
 
-**** The tree structure
-So where does the parent/children relationship come in?
-Rhythmbox maintains a sort of database of your music.  This is what
-allows it implement the browser (filtering by genre, artist, album).
-As we said, an RBNode is part of a tree.  The Library sets up a tree
-(actually technically it's more like a forest) which looks like this:
+**** Thread safety
+
+If you look at the RBNode code, you will notice that it has a lot
+of thread locking.  That's because any thread can manipulate the
+node database concurrently.  Each RBNode contains a read/write
+mutex.  With just one or two sepcial exceptions, all the locking is
+handled transparently by the rb_node_* functions.  It is safe to
+call e.g. rb_node_set_property from any thread at any time, and
+this is in fact done.
+
+*** The tree structure (RBLibrary)
+
+So where does this RBNode parent/children relationship come in?
+Rhythmbox maintains a sort of tree structured database of your music.
+This is what allows it implement the browser (filtering by genre, artist,
+album). As we said, an RBNode is part of a tree.  The Library sets up a
+tree (actually technically it's more like a forest) which looks like
+this:
 
 
        	  Genre1               	     Genre2                  Genre3
@@ -99,6 +119,17 @@ you're really changing the RB_NODE_PROP_NAME of an RBNode.  If you
 change the artist of an RBNode, it is reparented to the new artist
 (and a new album is created if necessary).
 
+**** The "All" nodes maintained by RBLibrary/RBIRadioBackend
+
+Actually, the tree is slightly more complicated than this; besides
+The Genre->Artist->Album->Song chains, there are also special
+"All" nodes.  These represent the bold "All" entries you see
+on the display.  Thee "All" nodes basically point to
+all of one class of node.  For example, there is an "All Songs"
+node, which is the parent of every song.
+This allows us to easily iterate over all songs, and will come
+in handy in a minute when we look at RBNodeView. 
+
 **** Saving/loading
 
 RBNode also has a generic "serialization" infrastructure, which
@@ -114,13 +145,17 @@ Now that we understand that Rhythmbox has this tree database of our
 music, a logical question: how is it displayed to the user?  Well,
 that's the job of an RBNodeView (lib/widgets/rb-node-view.[ch]).
 
-An RBNodeView basically takes the RBNode tree and presents it
-using a GtkTreeView.  Simply speaking, an RBNodeView contains
-both a GtkTreeView and an RBTreeModelNode.  The RBTreeModelNode takes
-care of the details of implementing the GtkTreeModel interface (see
-the GTK+ docs for more details).  Then we just use a GtkTreeView to
-show that to the user.  RBNodeView hooks in a number of callbacks and
-sorting things and filtering things, but this is the general idea.
+An RBNodeView basically takes an RBNode and presents it all of its
+children using a GtkTreeView.  Remember special the "All" nodes?
+This is where they come in; for example, the Library has four
+RBNodeViews; one corresponding to  each "All" node.  
+
+Simply speaking, an RBNodeView contains both a GtkTreeView and an
+RBTreeModelNode.  The RBTreeModelNode takes care of the details of
+implementing the GtkTreeModel interface (see the GTK+ docs for more
+details).  Then we just use a GtkTreeView to show that to the user.
+RBNodeView hooks in a number of callbacks and sorting things and
+filtering things, but this is the general idea.
 
 *** Usage
 
@@ -165,6 +200,16 @@ Genre->Artist->Album->Song tree, the hierarchy simply looks like:
 Genre->Song.  This hierarchy is maintained by the RBIRadioBackend.
 The RBIRadioSource handles most of the user-interface bits such
 as popping up dialog boxes and filtering and such.
+
+** The Playlist (Group) Source
+
+Currently the term "group" is used in a number of places in the Rhythmbox
+source code.  This term is deprecated in favor of "playlist", and we
+are slowly working to convert.
+
+Once we have the library and RBNode, the playlist source is actually pretty
+easy to implement.  It maintains a single RBNode similar to the "All" node
+of the other sources.  This node is the parent of all the songs in the playlist.
 
 Local Variables:
 mode: outline
