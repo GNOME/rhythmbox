@@ -2,6 +2,76 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-09 05:53:41 GMT	Colin Walters <walters@verbum.org>	patch-265
+
+    Summary:
+      remove unused RhythmDBPlaylistModel
+    Revision:
+      rhythmbox--mainline--0.6--patch-265
+
+
+    removed files:
+     rhythmdb/rhythmdb-playlist-model.c
+     rhythmdb/rhythmdb-playlist-model.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am
+
+
+2003-11-09 05:43:41 GMT	Colin Walters <walters@verbum.org>	patch-264
+
+    Summary:
+      only enable clicking on columns if we can sort
+    Revision:
+      rhythmbox--mainline--0.6--patch-264
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+     rhythmdb/rhythmdb-playlist-model.c
+     rhythmdb/rhythmdb-query-model.c widgets/rb-entry-view.c
+
+
+2003-11-09 05:23:21 GMT	Colin Walters <walters@verbum.org>	patch-263
+
+    Summary:
+      make cut & paste really work
+    Revision:
+      rhythmbox--mainline--0.6--patch-263
+
+
+    modified files:
+     ChangeLog sources/rb-playlist-source.c sources/rb-source.c
+     widgets/rb-entry-view.c
+
+
+2003-11-09 05:01:22 GMT	Colin Walters <walters@verbum.org>	patch-262
+
+    Summary:
+      implement MB/GB limits for automatic playlists
+    Revision:
+      rhythmbox--mainline--0.6--patch-262
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+     shell/rb-playlist-manager.c sources/rb-playlist-source.c
+     sources/rb-playlist-source.h widgets/rb-query-creator.c
+     widgets/rb-query-creator.h
+
+
+2003-11-09 04:25:51 GMT	Colin Walters <walters@verbum.org>	patch-261
+
+    Summary:
+      add Yann's DND work to NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-261
+
+
+    modified files:
+     ChangeLog NEWS
+
+
 2003-11-09 04:20:32 GMT	Colin Walters <walters@verbum.org>	patch-260
 
     Summary:
