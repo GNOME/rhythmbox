@@ -1,3 +1,10 @@
+2003-08-06  Colin Walters  <walters@rhythmbox.org>
+
+	* shell/rb-shell.c: (ask_file_response_cb):
+
+	Canonicalize a URI before adding it to the library.  This
+	closes #119299.
+
 2003-08-06  Colin Walters  <walters@verbum.org>
 
 	* data/glade/druid.glade:

@@ -1218,8 +1218,12 @@ ask_file_response_cb (GtkDialog *dialog,
 	shell->priv->show_library_errors = TRUE;
     
 	while (*filecur != NULL) {
-		if (g_utf8_validate (*filecur, -1, NULL))
-			rb_library_add_uri (shell->priv->library, *filecur);
+		char *canonuri;
+		if (g_utf8_validate (*filecur, -1, NULL)) {
+			canonuri = rb_uri_canonicalize (*filecur);
+			rb_library_add_uri (shell->priv->library, canonuri);
+			g_free (canonuri);
+		}
 		filecur++;
 	}
 
