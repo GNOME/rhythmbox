@@ -1,0 +1,138 @@
+* Rhythmbox Internals
+
+This document will attempt to gather up some of the bits and pieces
+I've learned while hacking Rhythmbox.  Rhythmbox is fairly complex,
+and while some people would claim it is unnecessarily so, I think
+writing a good music player is just not as simple as you might
+think at first.  So, let's begin.
+
+** The Shell  (RBShell, RBShellPlayer, RBSourceHeader, RBStatusBar, RBShellPreferences)
+
+The shell is the outer Rhythmbox framework.  It controls the playback,
+menus, preferences, and most of the user interface in general.  The core
+component of the shell is RBShell, in shell/rb-shell.c.  It acts as
+kind of a catch-all for the various bits of glue needed to keep
+Rhythmbox working together.  It handles most of the menu callbacks,
+and it also forms the main widget which holds all of the widgets below.
+
+There are other more specialized components of the shell, such as
+RBShellPlayer. RBShellPlayer is a widget which handles the
+play/previous/next buttons, and contains various other widgets for the
+status display and volume.  RBShellPlayer is a pretty important class,
+because it contains a lot of the playback logic.
+
+RBSourceHeader is that thingy with the "Hide Browser" button and the search
+entry.
+
+RBStatusBar is the thing on the bottom with the Shuffle and Repeat buttons
+and the status output.
+
+RBShellPreferences manages the user preferences.  It is just a dialog box
+which pops up when you hit Edit->Preferences.
+
+** Sources
+
+Rhythmbox has an idea of multiple music "sources", like the Library
+and (Internet) Radio.  All of these sources derive from RBSource
+(sources/rb-source.[ch]), which is an abstract base class.  RBSource
+has a number of methods which the specific sources like the Library
+implement.  For example, one of the simpler ones is:
+
+gboolean	rb_source_can_pause		(RBSource *player);
+
+So here, a source returns TRUE if it can pause (i.e. pause button should
+be displayed).
+
+The RBShell maintains a list of available RBSources.
+
+** A first look at the Library
+
+The Library is the main part of Rhythmbox; it is the thing that lets
+you play local files.  We'll go over some of the most important things,
+and then come back to it later once we know more.
+
+*** RBNode, RBNodeSong
+
+Understanding RBNode (library/rb-node.c) is crucial.  RBNode is not
+just used by the Library actually; every other source uses it as well.
+RBNode is therefore a pretty abstract thing.  Essentially, it
+is a node in a tree, which can have both a parent and children.  An
+RBNode also has a dynamic set of properties associated with it.
+
+These dynamic properties pretty much correspond to the song
+metadata you can see like song length, duration, location, etc.
+
+However, the songs are not represented directly by RBNode instances.
+Instead, the library has a subclass of RBNode called RBNodeSong.  This
+is subclass just is a bit more convenient to work with for the library
+than RBNode directly.
+
+**** The tree structure
+So where does the parent/children relationship come in?
+Rhythmbox maintains a sort of database of your music.  This is what
+allows it implement the browser (filtering by genre, artist, album).
+As we said, an RBNode is part of a tree.  The Library sets up a tree
+(actually technically it's more like a forest) which looks like this:
+
+
+       	  Genre1               	     Genre2                  Genre3
+         /	---	    	       |       	       	       ...
+        /	   \-	    	       |
+       Artist1	    Artist2	     Artist3
+     --	  |   ---      	 ---	       	--  -----
+   -/  	  |	 \-	    Album4     	  \      \---
+Album1  Album2   Album3--      	--    	  Album5   Album6---
+  |	  /  \	   ---	 \-- 	  \-- 	    \----    ----   \---
+  |	-/    \	      \-    \-	     \-	     \	 \---	 \---	\--
+Song1  Song2  Song3   Song4 Song5    Song6   Song7  Song8  Song9  Song10
+
+This hierarchy is the core of what Rhythmbox presents to the user.
+When you go into the song properties dialog and edit a song title,
+you're really changing the RB_NODE_PROP_NAME of an RBNode.  If you
+change the artist of an RBNode, it is reparented to the new artist
+(and a new album is created if necessary).
+
+**** Saving/loading
+
+RBNode also has a generic "serialization" infrastructure, which
+converts an RBNode to XML, which is then saved to disk.  This is
+how Rhythmbox stores information about songs.  If you look in
+~/.gnome2/rhythmbox, you should see several XML files there.
+Essentially that file just contains property IDs (which correspond
+to the values in library/rb-node.h), and their values.
+
+** Node Views (RBNodeView)
+
+Now that we understand that Rhythmbox has this tree database of our
+music, a logical question: how is it displayed to the user?  Well,
+that's the job of an RBNodeView (lib/widgets/rb-node-view.[ch]).
+
+An RBNodeView basically takes the RBNode tree and presents it
+using a GtkTreeView.  Simply speaking, an RBNodeView contains
+both a GtkTreeView and an RBTreeModelNode.  The RBTreeModelNode takes
+care of the details of implementing the GtkTreeModel interface (see
+the GTK+ docs for more details).  Then we just use a GtkTreeView to
+show that to the user.  RBNodeView hooks in a number of callbacks and
+sorting things and filtering things, but this is the general idea.
+
+*** Usage
+
+Each RBSource has at least one RBNodeView.  This is also very important
+to understand.  RBSource has a method which looks like this:
+
+RBNodeView *	(*impl_get_node_view)	(RBSource *source);
+
+This method is called by RBShellPlayer to access a source's RBNodeView.
+The RBNodeView maintains state, such as which song is selected.  When
+a song is double-clicked, a signal is emitted which RBShellPlayer catches,
+and then gets the currently selected RBNode, and uses it to play the song.
+
+*** Filtering
+
+In addition to providing a view of the RBNode tree, the RBNodeView
+also takes care of filtering it, using an RBNodeFilter
+(library/rb-node-filter.[ch]).  
+
+Local Variables:
+mode: outline
+End:
