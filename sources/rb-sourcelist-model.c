@@ -32,7 +32,7 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
-static const GtkTargetEntry rb_sourcelist_model_drag_types[] = { { "application/x-rhythmbox-source", 0, 0 },};
+static const GtkTargetEntry rb_sourcelist_model_drag_types[] = { { "text/uri-list", 0, 0 }, { "application/x-rhythmbox-source", 0, 0 },};
 
 static GtkTargetList *rb_sourcelist_model_drag_target_list = NULL;
 
@@ -282,6 +282,13 @@ rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 	g_return_val_if_fail (RB_IS_SOURCELIST_MODEL (drag_dest), FALSE);
 	model = RB_SOURCELIST_MODEL (drag_dest);
 
+	if (selection_data->type == gdk_atom_intern ("text/uri-list", TRUE)
+	    && !dest)
+		return FALSE;
+
+	if (!dest)
+		return TRUE;
+			
 	/* Call the superclass method */
 	return gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (GTK_LIST_STORE (model)),
 						     dest, selection_data);
@@ -312,9 +319,15 @@ rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
 				       GtkTreeViewDropPosition *pos)
 {
 	GtkTreeModel *model = GTK_TREE_MODEL (drag_dest);
+
+	if (g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE))) {
+		if (!dest_path)
+			return FALSE;
+		*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+		return TRUE;
+	}
 	
-	if (!(g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE))
-	      || g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE)))) {
+	if (!g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE))) {
 		rb_debug ("unsupported type");
 		return FALSE;
 	}

@@ -578,6 +578,9 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 			gdk_drag_status (context, 0, time);
 
 			return TRUE;
+		} else if (!filter_drop_position (widget, context, path, &pos)) {
+			gdk_drag_status (context, 0, time);
+			return TRUE;
 		}
 	}
 	else

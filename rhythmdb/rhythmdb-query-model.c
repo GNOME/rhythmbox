@@ -876,6 +876,7 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED:
 		{
 			guint i;
+			rb_debug ("inserting %d rows", update->entries->len);
 			for (i = 0; i < update->entries->len; i++)
 				rhythmdb_query_model_do_insert (model, g_ptr_array_index (update->entries, i));
 			break;

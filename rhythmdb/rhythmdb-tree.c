@@ -1862,11 +1862,11 @@ handle_entry_match (RhythmDB *db, RhythmDBTreeEntry *entry,
 	    && g_hash_table_lookup (data->entries, entry))
 		return;
 
+	g_ptr_array_add (data->queue, entry);
 	if (data->queue->len > RHYTHMDB_QUERY_MODEL_SUGGESTED_UPDATE_CHUNK) {
 		rhythmdb_query_model_add_entries (data->main_model, data->queue);
 		data->queue = g_ptr_array_new ();
-	} else
-		g_ptr_array_add (data->queue, entry);
+	}
 }
 
 static void
