@@ -77,7 +77,7 @@ rb_string_helpers_init (void)
 		insert_locales (encodings, "GB2312", "zh_CN", NULL);
 	}
 	insert_locales (encodings, "EUC-JP", "ja", NULL);
-	insert_locales (encodings, "EUC-KR", "ko", NULL);
+	insert_locales (encodings, "UHC", "ko", NULL);
 	/*insert_locales (encodings, "GEORGIAN-ACADEMY", NULL);*/
 	insert_locales (encodings, "GEORGIAN-PS", "ka", NULL);
 	insert_locales (encodings, "ISO-8859-1", "br", "ca", "da", "de", "en", "es", "eu", "fi", "fr", "gl", "it", "nl", "wa", "no", "pt", "pt", "sv", NULL);
