@@ -440,6 +440,7 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
 
+	rhythmdb_read_lock (source->priv->db);
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 
 	g_object_unref (G_OBJECT (query_model));

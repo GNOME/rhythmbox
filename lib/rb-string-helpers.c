@@ -112,14 +112,13 @@ get_encoding_from_locale (const char *locale)
 {
 	char lang[3];
 	const char *encoding;
-	static GHashTable *encodings = NULL;
 
 	if (locale == NULL)
 		return NULL;
 
-	/* if locale includes encoding, use it */
+	/* if locale includes encoding (that isn't UTF-8), use it */
 	encoding = strchr (locale, '.');
-	if (encoding != NULL) {
+	if (encoding != NULL && strncmp (encoding, ".UTF-8", 6)) {
 		return encoding+1;
 	}
 
@@ -137,7 +136,7 @@ get_encoding_from_locale (const char *locale)
 char *
 rb_unicodify (const char *str)
 {
-	char *ret;
+	char *ret = NULL;
 	const char *char_encoding;
 
 	/* Try validating it as UTF-8 first */

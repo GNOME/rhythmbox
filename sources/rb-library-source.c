@@ -1235,6 +1235,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	gboolean is_all_query, sorting_matches;
 	const char *current_sorting_type;
 
+	/* Unlocked */
 	rhythmdb_read_lock (source->priv->db);
 
 	if (source->priv->active_query) {
@@ -1358,8 +1359,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 				 source, 0);
 	
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
-
-	rhythmdb_read_unlock (source->priv->db);
 
 	query = construct_query_from_selection (source);
 	
