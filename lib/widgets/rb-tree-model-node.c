@@ -544,8 +544,21 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				    rb_node_get_string_property (node, SONG_PROPERTY_TRACK_NUMBER));
 		break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
-		g_value_set_string (value,
-				    rb_node_get_string_property (node, SONG_PROPERTY_DURATION));
+		{
+			char *duration;
+			int seconds = rb_node_get_int_property (node, SONG_PROPERTY_DURATION);
+			int minutes = 0;
+
+			if (seconds > 0)
+			{
+				minutes = seconds / 60;
+				seconds = seconds % 60;
+			}
+
+			duration = g_strdup_printf ("%d:%02d", minutes, seconds);
+			g_value_set_string (value, duration);
+			g_free (duration);
+		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		if (model->priv->filter_root != NULL)

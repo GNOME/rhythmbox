@@ -46,7 +46,7 @@ static GObjectClass *parent_class = NULL;
 guint library_signals[LAST_SIGNAL] = { 0 };
 
 const char *string_properties[] = {"name", "date", "genre", "comment", "codecinfo", "tracknum", NULL};
-const char *int_properties[]    = {"bitrate", "filesize", "length", "mtime", NULL};
+const char *int_properties[]    = {"bitrate", "filesize", "duration", "mtime", NULL};
 
 /* object funtion prototypes */
 static void library_class_init (LibraryClass *klass);

@@ -224,14 +224,7 @@ set_node_to_fileinfo (RBNode *song, MonkeyMediaStreamInfo *info)
 	monkey_media_stream_info_get_value (info,
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
 					    &val);
-	if (g_value_get_long (&val) > 0)
-	{
-		int minutes = g_value_get_long (&val) / 60;
-		int seconds = g_value_get_long (&val) % 60;
-		char *time = g_strdup_printf ("%d:%.2d", minutes, seconds);
-		rb_node_set_string_property (song, SONG_PROPERTY_DURATION, 
-					     time);
-	}
+	rb_node_set_int_property (song, "duration", g_value_get_long (&val));
 	g_value_unset (&val);
 	rb_node_set_int_property (song, "mtime", get_mtime (song));
 }

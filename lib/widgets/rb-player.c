@@ -50,6 +50,9 @@ static void rb_player_set_show_timeline (RBPlayer *player,
 			                 gboolean show);
 static void rb_player_set_show_textline (RBPlayer *player,
 			                 gboolean show);
+static gboolean rb_player_sync_time (RBPlayer *player);
+static void rb_player_adjustment_changed_cb (GtkAdjustment *adjustment,
+				             RBPlayer *player);
 
 struct RBPlayerPrivate
 {
@@ -62,6 +65,8 @@ struct RBPlayerPrivate
 	GtkWidget *timeline;
 	gboolean timeline_shown;
 	GtkWidget *scale;
+	GtkAdjustment *adjustment;
+	gboolean lock_adjustment;
 	GtkWidget *elapsed;
 
 	GtkWidget *textframe;
@@ -69,6 +74,8 @@ struct RBPlayerPrivate
 	gboolean textline_shown;
 	RBLink *artist;
 	RBLink *album;
+
+	guint timeout;
 };
 
 enum
@@ -181,7 +188,13 @@ rb_player_init (RBPlayer *player)
 
 	scalebox = player->priv->timeline = gtk_hbox_new (FALSE, 2);
 	g_object_ref (G_OBJECT (scalebox));
-	player->priv->scale = gtk_hscale_new (NULL);
+	
+	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.1));
+	g_signal_connect (G_OBJECT (player->priv->adjustment),
+			  "changed",
+			  G_CALLBACK (rb_player_adjustment_changed_cb),
+			  player);
+	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
@@ -191,6 +204,8 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
 	gtk_container_add (GTK_CONTAINER (player), hbox);
+
+	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_player_sync_time, player);
 }
 
 static void
@@ -204,6 +219,8 @@ rb_player_finalize (GObject *object)
 	player = RB_PLAYER (object);
 
 	g_return_if_fail (player->priv != NULL);
+
+	g_source_remove (player->priv->timeout);
 
 	g_object_unref (G_OBJECT (player->priv->textline));
 	g_object_unref (G_OBJECT (player->priv->timeline));
@@ -303,6 +320,8 @@ rb_player_sync (RBPlayer *player)
 
 		rb_player_set_show_textline (player, TRUE);
 		rb_player_set_show_timeline (player, TRUE);
+
+		rb_player_sync_time (player);
 	}
 	else
 	{
@@ -361,4 +380,67 @@ rb_player_set_show_timeline (RBPlayer *player,
 		gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
 		gtk_widget_show_all (player->priv->timeline);
 	}
+}
+
+static gboolean
+rb_player_sync_time (RBPlayer *player)
+{
+	MonkeyMediaAudioStream *stream;
+	char *elapsed;
+	int seconds = 0, minutes = 0;
+	long duration;
+
+	if (player->priv->view_player == NULL)
+		return TRUE;
+	
+	stream = rb_view_player_get_stream (player->priv->view_player);
+	if (stream == NULL)
+		return TRUE;
+
+	duration = rb_view_player_get_duration (player->priv->view_player);
+	seconds = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
+
+	if (duration > -1)
+	{
+		double progress = 0;
+
+		if (seconds > 0)
+			progress = (double) seconds / duration;
+
+		player->priv->lock_adjustment = TRUE;
+		gtk_adjustment_set_value (player->priv->adjustment, progress);
+		player->priv->lock_adjustment = FALSE;
+		gtk_widget_set_sensitive (player->priv->scale, TRUE);
+	}
+	else
+	{
+		player->priv->lock_adjustment = TRUE;
+		gtk_adjustment_set_value (player->priv->adjustment, 0);
+		player->priv->lock_adjustment = FALSE;
+		gtk_widget_set_sensitive (player->priv->scale, FALSE);
+	}
+
+	if (seconds > 0)
+	{
+		minutes = seconds / 60;
+		seconds = seconds % 60;
+	}
+	
+	elapsed = g_strdup_printf ("%d:%02d", minutes, seconds);
+	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed);
+	g_free (elapsed);
+
+	return TRUE;
+}
+
+static void
+rb_player_adjustment_changed_cb (GtkAdjustment *adjustment,
+				 RBPlayer *player)
+{
+	MonkeyMediaAudioStream *stream = rb_view_player_get_stream (player->priv->view_player);
+	double progress = gtk_adjustment_get_value (adjustment);
+	long duration = rb_view_player_get_duration (player->priv->view_player);
+	long new = (long) progress * duration;
+	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
+	rb_player_sync_time (player);
 }

@@ -65,6 +65,7 @@ typedef struct
 	const char             *(*impl_get_artist)    (RBViewPlayer *player);
 	const char             *(*impl_get_album)     (RBViewPlayer *player);
 	const char             *(*impl_get_song)      (RBViewPlayer *player);
+	long                    (*impl_get_duration)  (RBViewPlayer *player);
 
 	GdkPixbuf              *(*impl_get_pixbuf)    (RBViewPlayer *player);
 
@@ -92,6 +93,7 @@ const char             *rb_view_player_get_title      (RBViewPlayer *player);
 const char             *rb_view_player_get_artist     (RBViewPlayer *player);
 const char             *rb_view_player_get_album      (RBViewPlayer *player);
 const char             *rb_view_player_get_song       (RBViewPlayer *player);
+long                    rb_view_player_get_duration   (RBViewPlayer *player);
 
 GdkPixbuf              *rb_view_player_get_pixbuf     (RBViewPlayer *player);
 

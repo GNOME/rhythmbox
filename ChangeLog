@@ -1,5 +1,22 @@
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/view/rb-view-player.c: (rb_view_player_get_duration):
+	* lib/view/rb-view-player.h:
+	* lib/widgets/rb-player.c: (rb_player_init), (rb_player_finalize),
+	(rb_player_sync), (rb_player_set_show_timeline),
+	(rb_player_sync_time), (rb_player_adjustment_changed_cb):
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_value):
+	* library/rb-library-thread.c: (set_node_to_fileinfo):
+	* library/rb-library.c:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct):
+	* tests/testview.c: (rb_test_view_player_init),
+	(rb_test_view_get_song), (rb_test_view_get_duration):
+
+	Get slider and elapsed time label working.
+
+2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-player.c: (rb_player_init), (rb_player_finalize),
 	(rb_player_set_property), (rb_player_new), (rb_player_sync),
 	(rb_view_player_changed_cb), (rb_player_set_show_textline),

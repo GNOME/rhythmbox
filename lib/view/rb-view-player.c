@@ -180,6 +180,14 @@ rb_view_player_get_song (RBViewPlayer *player)
 	return iface->impl_get_song (player);
 }
 
+long
+rb_view_player_get_duration (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	return iface->impl_get_duration (player);
+}
+
 GdkPixbuf *
 rb_view_player_get_pixbuf (RBViewPlayer *player)
 {

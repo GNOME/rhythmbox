@@ -97,6 +97,8 @@ struct RBShellPrivate
 	RBShellPlayer *player_shell;
 	RBShellStatus *status_shell;
 	RBShellClipboard *clipboard_shell;
+
+	Library *library;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -212,6 +214,7 @@ rb_shell_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (shell->priv->player_shell));
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
+	g_object_unref (G_OBJECT (shell->priv->library));
 
 	g_free (shell->priv);
 
@@ -249,7 +252,6 @@ rb_shell_construct (RBShell *shell)
 	Bonobo_UIContainer corba_container;
 	GtkWidget *hbox, *vbox;
 	RBView *testview;
-	Library *library;/* FIXME */
 
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -334,12 +336,12 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize views */
 
-	library = library_new ();
-	library_release_brakes (library);
+	shell->priv->library = library_new ();
+	library_release_brakes (shell->priv->library);
 
 	/* FIXME */
 	testview = rb_test_view_new (shell->priv->ui_component,
-				     library);
+				     shell->priv->library);
 	rb_shell_append_view (shell, testview);
 	rb_shell_select_view (shell, testview);
 	testview = rb_test_view2_new (shell->priv->ui_component);

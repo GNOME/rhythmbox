@@ -45,6 +45,21 @@
 	     _tip="Toggle repeat mode"
 	     priority="1"
 	     type="toggle"/>
+
+	<cmd name="Cut"
+	     pixtype="stock"
+	     pixname="gtk-cut"
+	     _tip="Cut selection"/>
+
+	<cmd name="Copy"
+	     pixtype="stock"
+	     pixname="gtk-copy"
+	     _tip="Copy selection"/>
+
+	<cmd name="Paste"
+	     pixtype="stock"
+	     pixname="gtk-paste"
+	     _tip="Paste selection"/>
         
 </commands>
 
@@ -52,7 +67,7 @@
 
 <submenu name="File" _label="_File">
         
-        <menuitem name="FileNewWindow" verb="" _label="_New Playlist"
+        <menuitem name="FileNewWindow" verb="" _label="_New Group"
 	pixtype="stock" pixname="gtk-new"/>
         <menuitem name="FileNewWindo" verb="" _label="_Add to Library..."
 	pixtype="stock" pixname="gtk-open"/>
@@ -70,32 +85,15 @@
 
 <submenu name="Edit" _label="_Edit">
 
-	<menuitem name="Undo" verb="Undo" _label="_Undo" accel="*Control*Z"
-	pixtype="stock" pixname="gtk-undo"/>
-	<menuitem name="Redo" verb="Redo" _label="_Redo" accel="*Control*R"
-	pixtype="stock" pixname="gtk-redo"/>
-
-	<separator/>
-
-        <menuitem name="EditCut" verb="" _label="Cu_t" accel="*Control*X"/>
+        <menuitem name="Cut" verb="Cut" _label="Cu_t" accel="*Control*X"/>
 	
-        <menuitem name="EditCopy" verb="" _label="_Copy" accel="*Control*c"/>
+        <menuitem name="Copy" verb="Copy" _label="_Copy" accel="*Control*c"/>
 	
-        <menuitem name="EditPaste" verb="" _label="_Paste" accel="*Control*v"/>
+        <menuitem name="Paste" verb="Paste" _label="_Paste" accel="*Control*v"/>
 	
 	<separator/> 
 
-        <menuitem name="EditSelectAll" verb="" _label="Select _All"/>
-        <menuitem name="EditSelectNone" verb="" _label="Select _None"/>
-        <menuitem name="EditSelectNone" verb="" _label="Show _Current Song"/>
-
-	<separator/>
-
-	<menuitem name="EditFind" verb="" _label="_Find..."/>
-	<menuitem name="EditFindNext" verb="" _label="Find Ne_xt"/>
-	<menuitem name="EditFindPrev" verb="" _label="Find Pre_vious"/>
-
-	<separator/>
+	<placeholder name="EditMenu"/>
 
 	<menuitem name="EditPrefs" 
          _label="P_references..." 

@@ -66,6 +66,7 @@ static const char *rb_test_view_get_title (RBViewPlayer *player);
 static const char *rb_test_view_get_artist (RBViewPlayer *player);
 static const char *rb_test_view_get_album (RBViewPlayer *player);
 static const char *rb_test_view_get_song (RBViewPlayer *player);
+static long rb_test_view_get_duration (RBViewPlayer *player);
 static GdkPixbuf *rb_test_view_get_pixbuf (RBViewPlayer *player);
 static MonkeyMediaAudioStream *rb_test_view_get_stream (RBViewPlayer *player);
 static void rb_test_view_start_playing (RBViewPlayer *player);
@@ -364,6 +365,7 @@ rb_test_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_get_artist    = rb_test_view_get_artist;
 	iface->impl_get_album     = rb_test_view_get_album;
 	iface->impl_get_song      = rb_test_view_get_song;
+	iface->impl_get_duration  = rb_test_view_get_duration;
 	iface->impl_get_pixbuf    = rb_test_view_get_pixbuf;
 	iface->impl_get_stream    = rb_test_view_get_stream;
 	iface->impl_start_playing = rb_test_view_start_playing;
@@ -488,6 +490,22 @@ rb_test_view_get_song (RBViewPlayer *player)
 	}
 	else
 		return NULL;
+}
+
+static long
+rb_test_view_get_duration (RBViewPlayer *player)
+{
+	RBTestView *view = RB_TEST_VIEW (player);
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+
+	if (node != NULL)
+	{
+		return rb_node_get_int_property (node, SONG_PROPERTY_DURATION);
+	}
+	else
+		return -1;
 }
 
 static GdkPixbuf *
