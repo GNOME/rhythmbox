@@ -310,6 +310,9 @@ read_action (RBLibraryMainThread *thread, GAsyncQueue *queue)
 	GTimeVal timeout;
 	RBLibraryAction *action;
 
+	if (am_dead (thread))
+		return NULL;
+
 	g_get_current_time (&timeout);
 	g_time_val_add (&timeout, G_USEC_PER_SEC);
 	
