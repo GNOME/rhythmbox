@@ -63,15 +63,11 @@ fi
 
 dnl dashboard support
 AC_ARG_ENABLE(dashboard,
-	      [  --disable-dashboard	  Disable dashboard support (http://www.nat.org/dashboard) (default enabled)])
-if test "x$enable_dashboard" = "xno" ; then
-   echo "Disabling dashboard support"
-else
-   echo "Building dashboard support"
-   enable_dashboard=yes
+	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)],enable_dashboard=yes,enable_dashboard=no)
+if test "x$enable_dashboard" == "xyes" ; then
    AC_DEFINE([WITH_DASHBOARD], 1, [Define to enable support for dashboard (http://www.nat.org/dashboard)])
 fi
-AM_CONDITIONAL(WITH_DASHBOARD, test x"$with_dashboard" = xyes)
+AM_CONDITIONAL(WITH_DASHBOARD, test x"$enable_dashboard" = xyes)
 
 dnl Sound system
 WANT_XINE=
@@ -223,7 +219,6 @@ if test "x$enable_mp3" != "xno"; then
           AC_MSG_ERROR([For MP3 support, you need libid3tag 15.0b or later (or --disable-mp3)])
 	fi
         ID3TAG_LIBS="-lid3tag"
-        AC_SUBST(ID3TAG_LIBS)
     fi
   fi
 fi
