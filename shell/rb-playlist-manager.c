@@ -660,13 +660,11 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	{
 		RBPlaylist *parser = rb_playlist_new ();
-		RBSource *playlist = rb_playlist_manager_new_playlist (mgr, FALSE);
 
 		g_signal_connect (G_OBJECT (parser), "entry",
 				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
 				  mgr);
 
-		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist);
 		if (!rb_playlist_parse (parser, escaped_file))
 			rb_error_dialog (_("Couldn't parse playlist"));
 		mgr->priv->loading_playlist = NULL;
@@ -773,5 +771,15 @@ static void
 handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
 					const char *genre, RBPlaylistManager *mgr)
 {
+	if (rb_uri_is_iradio (uri)) {
+		rb_iradio_source_add_station (mgr->priv->iradio_source,
+					      uri, title, genre);
+		return;
+	}
+
+	if (!mgr->priv->loading_playlist) {
+		mgr->priv->loading_playlist =
+			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, FALSE));
+	}
 	add_uri_to_playlist (mgr, mgr->priv->loading_playlist, uri, title);
 }

@@ -508,7 +508,8 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	if (!db->priv->changed_entries)
 		db->priv->added_entries = g_hash_table_new (NULL, NULL);
 
-	g_hash_table_insert (db->priv->added_entries, ret, NULL);
+	if (ret != NULL)
+		g_hash_table_insert (db->priv->added_entries, ret, NULL);
 	return ret;
 }
 

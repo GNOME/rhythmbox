@@ -405,13 +405,17 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 
 	rhythmdb_write_lock (source->priv->db);
 
-	entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
+	if (!entry)
+		entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, title);
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_reset (&val);
-	g_value_set_string (&val, genre);
-	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
+	if (genre) {
+		g_value_reset (&val);
+		g_value_set_string (&val, genre);
+		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
+	}
 	g_value_unset (&val);
 		
 	rhythmdb_write_unlock (source->priv->db);

@@ -96,10 +96,10 @@ assert_valid_tree_entry (RhythmDBTreeEntry *entry)
 #endif
 
 static RhythmDBEntry *rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type);
-static void rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
-					RhythmDBEntryType type, const char *uri,
-					const char *genrename, const char *artistname,
-					const char *albumname);
+static gboolean rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
+					    RhythmDBEntryType type, const char *uri,
+					    const char *genrename, const char *artistname,
+					    const char *albumname);
 
 static void destroy_tree_property (RhythmDBTreeProperty *prop);
 static RhythmDBTreeProperty *get_or_create_album (RhythmDBTree *db, RhythmDBTreeProperty *artist,
@@ -794,7 +794,7 @@ rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type)
 	return ret;
 }
 
-static void
+static gboolean
 rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 			    RhythmDBEntryType type,
 			    const char *uri,
@@ -806,7 +806,7 @@ rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 	char *new_uri;
 
 	if (g_hash_table_lookup (db->priv->entries, uri))
-		return;
+		return FALSE;
 
 	/* Initialize the tree structure. */
 	genre = get_or_create_genre (db, type, genrename);
@@ -818,6 +818,7 @@ rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 	g_hash_table_insert (db->priv->entries, new_uri, entry);
 	g_value_set_string_take_ownership (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION),
 					   new_uri);
+	return TRUE;
 }
 
 
@@ -831,7 +832,10 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntryType type, const char *uri)
 
 	ret = rhythmdb_tree_entry_allocate (db, type);
 
-	rhythmdb_tree_entry_insert (db, ret, type, uri, "", "", "");
+	if (!rhythmdb_tree_entry_insert (db, ret, type, uri, "", "", "")) {
+		rhythmdb_tree_entry_destroy (db, ret);
+		return NULL;
+	}
 
 	sanity_check_database (db);
 
