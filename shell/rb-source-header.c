@@ -270,6 +270,9 @@ rb_source_header_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, header->priv->selected_source);
 		break;
+	case PROP_COMPONENT:
+		g_value_set_object (value, header->priv->component);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;

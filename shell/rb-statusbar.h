@@ -51,7 +51,7 @@ typedef struct
 
 GType			rb_statusbar_get_type	(void);
 
-RBStatusbar *		rb_statusbar_new	(void);
+RBStatusbar *		rb_statusbar_new	(BonoboUIComponent *component);
 
 void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);

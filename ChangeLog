@@ -1,3 +1,21 @@
+2003-08-18  Colin Walters  <cwalters@gnome.org>
+
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-preferences.h:
+	* shell/rb-shell-preferences.h:
+	* shell/rb-shell.c: (rb_shell_construct):
+	* shell/rb-source-header.c: (rb_source_header_get_property):
+	* shell/rb-statusbar.c: (rb_statusbar_class_init),
+	(rb_statusbar_init), (rb_statusbar_set_property),
+	(rb_statusbar_get_property), (rb_statusbar_new),
+	(rb_statusbar_sync_state), (rb_statusbar_state_changed_cb),
+	(rb_statusbar_view_statusbar_changed_cb):
+	* shell/rb-statusbar.h:
+
+	Add ability to hide the statusbar.  Some GConf preferences
+	cleanups.
+
 2003-08-18  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_button_press_cb):

@@ -26,11 +26,6 @@
 
 G_BEGIN_DECLS
 
-#define CONF_UI_DIR               CONF_PREFIX "/ui"
-#define CONF_UI_STATUSBAR_HIDDEN  CONF_PREFIX "/ui/statusbar_hidden"
-#define CONF_UI_SOURCELIST_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
-#define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
-
 #define RB_TYPE_SHELL_PREFERENCES         (rb_shell_preferences_get_type ())
 #define RB_SHELL_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferences))
 #define RB_SHELL_PREFERENCES_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesClass))

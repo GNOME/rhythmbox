@@ -25,9 +25,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
+#include <bonobo/bonobo-ui-util.h>
 
 #include "rb-statusbar.h"
 #include "rb-thread-helpers.h"
+#include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
 #include "rb-search-entry.h"
 #include "rb-debug.h"
@@ -47,7 +49,7 @@ static void rb_statusbar_get_property (GObject *object,
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
 static void rb_statusbar_status_changed_cb (RBSource *source,
 					    RBStatusbar *statusbar);
-static void rb_statusbar_sync_toggles (RBStatusbar *statusbar);
+static void rb_statusbar_sync_state (RBStatusbar *statusbar);
 static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   guint cnxn_id,
 					   GConfEntry *entry,
@@ -55,19 +57,38 @@ static void rb_statusbar_state_changed_cb (GConfClient *client,
 
 static void rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 					    RBStatusbar *statusbar);
+static void rb_statusbar_view_statusbar_changed_cb (BonoboUIComponent *component,
+						    const char *path,
+						    Bonobo_UIComponent_EventType type,
+						    const char *state,
+						    RBStatusbar *statusbar);
+
+#define CMD_PATH_VIEW_STATUSBAR	"/commands/ViewStatusbar"
+
+static RBBonoboUIListener rb_statusbar_listeners[] =
+{
+	RB_BONOBO_UI_LISTENER ("ViewStatusbar", (BonoboUIListenerFn) rb_statusbar_view_statusbar_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
+};
+
 
 struct RBStatusbarPrivate
 {
 	RBSource *selected_source;
 
+	BonoboUIComponent *component;
+
 	GtkWidget *shuffle;
 	GtkWidget *repeat;
 	GtkWidget *status;
+
+	GtkWidget *progress;
 };
 
 enum
 {
 	PROP_0,
+	PROP_COMPONENT,
 	PROP_SOURCE,
 };
 
@@ -120,6 +141,13 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_COMPONENT,
+					 g_param_spec_object ("component",
+							      "BonoboUIComponent",
+							      "BonoboUIComponent object",
+							      BONOBO_TYPE_UI_COMPONENT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -148,8 +176,9 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	gtk_box_pack_end (GTK_BOX (statusbar),
 			  GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
 
-	rb_statusbar_sync_toggles (statusbar);
-
+	eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
+				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
+				    statusbar);
 	eel_gconf_notification_add (CONF_STATE_SHUFFLE,
 				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
 				    statusbar);
@@ -204,7 +233,15 @@ rb_statusbar_set_property (GObject *object,
 					  statusbar);
 		}
 		rb_statusbar_sync_with_source (statusbar);
-		
+
+		break;
+	case PROP_COMPONENT:
+		statusbar->priv->component = g_value_get_object (value);
+		rb_bonobo_add_listener_list_with_data (statusbar->priv->component,
+						       rb_statusbar_listeners,
+						       statusbar);
+
+		rb_statusbar_sync_state (statusbar);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -225,6 +262,9 @@ rb_statusbar_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, statusbar->priv->selected_source);
 		break;
+	case PROP_COMPONENT:
+		g_value_set_object (value, statusbar->priv->component);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -244,9 +284,10 @@ rb_statusbar_set_source (RBStatusbar *statusbar,
 }
 
 RBStatusbar *
-rb_statusbar_new (void)
+rb_statusbar_new (BonoboUIComponent *component)
 {
 	RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
+					       "component", component,
 					       NULL);
 
 	g_return_val_if_fail (statusbar->priv != NULL, NULL);
@@ -274,13 +315,23 @@ rb_statusbar_status_changed_cb (RBSource *source,
 }
 
 static void
-rb_statusbar_sync_toggles (RBStatusbar *statusbar)
+rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
-	rb_debug ("syncing toggles");
+	gboolean hidden;
+	rb_debug ("syncing state");
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
 				      eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
 				      eel_gconf_get_boolean (CONF_STATE_REPEAT));
+	
+	hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
+	if (hidden)
+		gtk_widget_hide (GTK_WIDGET (statusbar));
+	else
+		gtk_widget_show (GTK_WIDGET (statusbar));
+	rb_bonobo_set_active (statusbar->priv->component,
+			      CMD_PATH_VIEW_STATUSBAR,
+			      !hidden);
 }
 
 static void
@@ -291,7 +342,7 @@ rb_statusbar_state_changed_cb (GConfClient *client,
 {
 	rb_debug ("state changed");
 	
-	rb_statusbar_sync_toggles (statusbar);
+	rb_statusbar_sync_state (statusbar);
 }
 
 static void
@@ -304,3 +355,16 @@ rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 	eel_gconf_set_boolean (CONF_STATE_REPEAT,
 			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat)));
 }
+
+static void
+rb_statusbar_view_statusbar_changed_cb (BonoboUIComponent *component,
+					const char *path,
+					Bonobo_UIComponent_EventType type,
+					const char *state,
+					RBStatusbar *statusbar)
+{
+	rb_debug ("got view statusbar toggle");
+	eel_gconf_set_boolean (CONF_UI_STATUSBAR_HIDDEN,
+			       !rb_bonobo_get_active (component, CMD_PATH_VIEW_STATUSBAR));
+}
+

@@ -27,6 +27,10 @@ G_BEGIN_DECLS
 #define CONF_PREFIX "/apps/rhythmbox"
 
 #define CONF_FIRST_TIME CONF_PREFIX "/first_time_flag"
+#define CONF_UI_DIR               CONF_PREFIX "/ui"
+#define CONF_UI_STATUSBAR_HIDDEN  CONF_PREFIX "/ui/statusbar_hidden"
+#define CONF_UI_SOURCELIST_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
+#define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
 #define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/browser_views"
 #define CONF_STATE_SHUFFLE	CONF_PREFIX "/state/shuffle"
 #define CONF_STATE_REPEAT	CONF_PREFIX "/state/repeat"

@@ -67,6 +67,28 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/ui/sourcelist_hidden</key>
+	<applyto>/apps/rhythmbox/ui/sourcelist_hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Source list visibility</short>
+	<long>If true, the main source list is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/statusbar_hidden</key>
+	<applyto>/apps/rhythmbox/ui/statusbar_hidden</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Statusbar visibility</short>
+	<long>If true, the statusbar is hidden.</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/repeat</key>
         <applyto>/apps/rhythmbox/state/repeat</applyto>
         <owner>rhythmbox</owner>
