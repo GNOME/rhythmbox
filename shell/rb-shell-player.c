@@ -1670,7 +1670,7 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 	XEvent *xev;
 	XKeyEvent *key;
 	RBShellPlayer *player;
-
+	RBSource *source; 
 	xev = (XEvent *) xevent;
 	if (xev->type != KeyPress) {
 		return GDK_FILTER_CONTINUE;
@@ -1680,6 +1680,9 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 
 	player = (RBShellPlayer *)data;
 
+	source = rb_shell_player_get_playing_node (player) == NULL ?
+			player->priv->selected_source : player->priv->source;
+
 	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {	
 		rb_shell_player_playpause (player);
 		return GDK_FILTER_REMOVE;
@@ -1687,10 +1690,12 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 		rb_shell_player_set_playing_source (player, NULL);
 		return GDK_FILTER_REMOVE;		
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
-		rb_shell_player_do_previous (player);
+		if (rb_shell_player_have_previous (player, source))
+			rb_shell_player_do_previous (player);
 		return GDK_FILTER_REMOVE;		
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode) {
-		rb_shell_player_do_next (player);
+		if (rb_shell_player_have_next (player, source))
+			rb_shell_player_do_next (player);
 		return GDK_FILTER_REMOVE;
 	} else {
 		return GDK_FILTER_CONTINUE;

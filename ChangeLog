@@ -1,3 +1,10 @@
+2003-08-18  Jan Arne Petersen  <jpetersen@uni-bonn.de>
+
+	* shell/rb-shell-player.c: (filter_mmkeys):
+
+	Don't segfault on back/forward if there are no
+	such songs.
+
 2003-08-18  Yann Rouillard  <yann@cvs.gnome.org>
 
 	* lib/widgets/rb-volume.c (rb_volume_init), (clicked_cb),
