@@ -50,6 +50,7 @@
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
+#include "rb-util.h"
 
 static void rb_volume_class_init (RBVolumeClass *klass);
 static void rb_volume_init (RBVolume *link);
@@ -144,16 +145,16 @@ rb_volume_init (RBVolume *volume)
 
 	gtk_container_add (GTK_CONTAINER (volume), volume->priv->button);
 
-	volume->priv->max_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
+	volume->priv->max_image = rb_image_new_from_stock (RB_STOCK_VOLUME_MAX,
 							     GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (G_OBJECT (volume->priv->max_image));
-	volume->priv->medium_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MEDIUM,
+	volume->priv->medium_image = rb_image_new_from_stock (RB_STOCK_VOLUME_MEDIUM,
 							     GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (G_OBJECT (volume->priv->medium_image));
-	volume->priv->min_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MIN,
+	volume->priv->min_image = rb_image_new_from_stock (RB_STOCK_VOLUME_MIN,
 							   GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (G_OBJECT (volume->priv->min_image));
-	volume->priv->zero_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_ZERO,
+	volume->priv->zero_image = rb_image_new_from_stock (RB_STOCK_VOLUME_ZERO,
 							    GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (G_OBJECT (volume->priv->zero_image));
 

@@ -115,10 +115,15 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 	displaybox->priv->by = gtk_label_new (_("by"));
 	displaybox->artist = (GnomeHRef *) gnome_href_new ("", "");
 
-	gtk_box_pack_start (box, displaybox->priv->from, FALSE, FALSE, 0);
-	gtk_box_pack_start (box, GTK_WIDGET (displaybox->album), FALSE, FALSE, 0);
-	gtk_box_pack_start (box, displaybox->priv->by, FALSE, FALSE, 0);
-	gtk_box_pack_start (box, GTK_WIDGET (displaybox->artist), FALSE, FALSE, 0);
+
+	gtk_box_pack_start (box, displaybox->priv->from, 
+			    FALSE, FALSE, 0);
+	gtk_box_pack_start (box, GTK_WIDGET (displaybox->album),
+			    FALSE, FALSE, 0);
+	gtk_box_pack_start (box, displaybox->priv->by, 
+			    FALSE, FALSE, 0);
+	gtk_box_pack_start (box, GTK_WIDGET (displaybox->artist), 
+			    FALSE, FALSE, 0);
 }
 
 GtkWidget*
@@ -203,10 +208,21 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		shown = -1;
 		
 	remain = widget->allocation;
-	do_allocation (displaybox->priv->from,          shown, &remain);
-	do_allocation (GTK_WIDGET (displaybox->album),  width, &remain);
-	do_allocation (displaybox->priv->by,            -1,    &remain);
-	do_allocation (GTK_WIDGET (displaybox->artist), -1,    &remain);
+	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL) {
+		remain.x += remain.width;
+	}
+/*	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_LTR) {*/
+		do_allocation (displaybox->priv->from,         shown, &remain);
+		do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
+		do_allocation (displaybox->priv->by,           -1,    &remain);
+		do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
+/*	} else {
+		do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
+		do_allocation (displaybox->priv->by,           -1,    &remain);
+		do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
+		do_allocation (displaybox->priv->from,         shown, &remain);
+
+		}*/
 }
 
 static int
@@ -227,11 +243,16 @@ do_allocation (GtkWidget *widget, int size, GtkAllocation *allocation)
 	width = displaybox_get_childwidth (widget);
 	if (size != -1)
 		width = MIN (width, size);
-
-	child_allocation.x = allocation->x;
+	
 	child_allocation.width = MIN (width, allocation->width);
 	allocation->width -= child_allocation.width;
-	allocation->x += child_allocation.width;
+	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL) {
+		allocation->x -= child_allocation.width;
+		child_allocation.x = allocation->x;
+	} else {
+		child_allocation.x = allocation->x;
+		allocation->x += child_allocation.width;
+	}
 
 	child_allocation.height = allocation->height;
 	child_allocation.y = allocation->y;

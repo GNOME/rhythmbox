@@ -1316,6 +1316,7 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 				g_strdup (key), g_free);
 
 	rb_debug ("appending column: %p (%s)", column, title);
+	/*	gtk_tree_view_insert_column (GTK_TREE_VIEW (view->priv->treeview), column, 0); */
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
 
 	sortdata = g_new (struct RBEntryViewColumnSortData, 1);

@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include <glib/gtypes.h>
 #include <glib-object.h>
+#include <gtk/gtkimage.h>
 
 G_BEGIN_DECLS
 
@@ -32,6 +33,8 @@ gboolean rb_true_function (gpointer dummy);
 gboolean rb_false_function (gpointer dummy);
 
 gboolean rb_gvalue_compare (GValue *a, GValue *b);
+
+GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 
 G_END_DECLS
 

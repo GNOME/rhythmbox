@@ -58,7 +58,7 @@
 #include "rb-iradio-source.h"
 #include "rb-library-source.h"
 #include "eel-gconf-extensions.h"
-
+#include "rb-util.h"
 #include "rb-play-order.h"
 
 #ifdef HAVE_XIDLE_EXTENSION
@@ -430,8 +430,10 @@ rb_shell_player_init (RBShellPlayer *player)
 	GError *error = NULL;
 	GtkWidget *hbox, *image;
 	GtkWidget *alignment;
+	GtkWidget *player_wid;
 
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
+	player_wid = GTK_WIDGET (player);
 
 	player->priv->mmplayer = rb_player_new (&error);
 	if (error != NULL) {
@@ -498,8 +500,8 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_tooltips_enable (player->priv->tooltips);
 
 	/* Previous button */
-	image = gtk_image_new_from_stock (RB_STOCK_PREVIOUS,
-					  GTK_ICON_SIZE_LARGE_TOOLBAR);
+	image = rb_image_new_from_stock (RB_STOCK_PREVIOUS,
+					 GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	player->priv->prev_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
@@ -510,14 +512,14 @@ rb_shell_player_init (RBShellPlayer *player)
 			      _("Play previous song"), NULL);
 
 	/* Button images */
-	player->priv->play_image = gtk_image_new_from_stock (RB_STOCK_PLAY,
-							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	player->priv->play_image = rb_image_new_from_stock (RB_STOCK_PLAY,
+							    GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->play_image);
-	player->priv->pause_image = gtk_image_new_from_stock (RB_STOCK_PAUSE,
+	player->priv->pause_image = rb_image_new_from_stock (RB_STOCK_PAUSE,
 							     GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->pause_image);
-	player->priv->stop_image = gtk_image_new_from_stock (RB_STOCK_STOP,
-							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	player->priv->stop_image = rb_image_new_from_stock (RB_STOCK_STOP,
+							    GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->stop_image);
 
 	player->priv->play_pause_stop_button = gtk_button_new ();
@@ -528,8 +530,8 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_playpause), player);
 
 	/* Next button */
-	image = gtk_image_new_from_stock (RB_STOCK_NEXT,
-					  GTK_ICON_SIZE_LARGE_TOOLBAR);
+	image = rb_image_new_from_stock (RB_STOCK_NEXT,
+					 GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->next_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
 	g_signal_connect_swapped (G_OBJECT (player->priv->next_button),
