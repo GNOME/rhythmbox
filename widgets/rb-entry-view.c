@@ -1468,15 +1468,11 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 
 	rb_entry_view_freeze (view);
 
-	rhythmdb_write_lock (view->priv->db);
-
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, rating);
-	rhythmdb_entry_set (view->priv->db, entry, RHYTHMDB_PROP_RATING,
-			    &value);
+	rhythmdb_entry_queue_set (view->priv->db, entry, RHYTHMDB_PROP_RATING,
+				  &value);
 	g_value_unset (&value);
-
-	rhythmdb_write_unlock (view->priv->db);
 
 	rb_entry_view_thaw (view);
 }

@@ -30,6 +30,7 @@
 #include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
+#include "rb-thread-helpers.h"
 #include "gsequence.h"
 #include "rb-tree-dnd.h"
 
@@ -110,6 +111,7 @@ struct RhythmDBQueryModelUpdate
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED,
 		RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED,
+		RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE,
 	} type;
 	RhythmDBEntry *entry;
 };
@@ -135,6 +137,8 @@ struct RhythmDBQueryModelPrivate
 
 	GSequence *entries;
 	GHashTable *reverse_map;
+
+	GAsyncQueue *query_complete;
 
 	/* row_inserted/row_changed/row_deleted */
 	GAsyncQueue *pending_updates;
@@ -443,6 +447,7 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->entries = g_sequence_new (NULL);
 	model->priv->reverse_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
+	model->priv->query_complete = g_async_queue_new ();
 	model->priv->pending_updates = g_async_queue_new ();
 
 	model->priv->reorder_drag_and_drop = FALSE;
@@ -475,6 +480,7 @@ rhythmdb_query_model_finalize (GObject *object)
 		}
 	}
 
+	g_async_queue_unref (model->priv->query_complete);
 	g_async_queue_unref (model->priv->pending_updates);
 
 	g_free (model->priv);
@@ -507,16 +513,22 @@ rhythmdb_query_model_new_empty (RhythmDB *db)
 static void
 rhythmdb_query_model_cancel (RhythmDBModel *rmodel)
 {
-/* 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel); */
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	rb_debug ("cancelling query");
-/* 	model->priv->cancelled = TRUE; */
+	g_async_queue_push (model->priv->query_complete, GINT_TO_POINTER (1));
 }
 
 void
 rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 {
-	if (G_LIKELY (!model->priv->cancelled))
-		g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
+	struct RhythmDBQueryModelUpdate *update;
+
+	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
+	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE;
+
+	g_async_queue_push (model->priv->pending_updates, update);
+	if (!rb_thread_helpers_in_main_thread ())
+		g_async_queue_pop (model->priv->query_complete);
 }
 
 gboolean
@@ -777,6 +789,12 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			g_hash_table_remove (model->priv->reverse_map, update->entry);
 			break;
 		}
+		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
+		{
+			g_signal_emit (G_OBJECT (model), rhythmdb_query_model_signals[COMPLETE], 0);
+			g_async_queue_push (model->priv->query_complete, GINT_TO_POINTER (1));
+			break;
+		}
 		}
 
 		processed = g_list_prepend (processed, update);
@@ -806,6 +824,8 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			   in the update queue. */
 			rhythmdb_entry_unref (model->priv->db, update->entry);
 			rhythmdb_entry_unref (model->priv->db, update->entry);
+			break;
+		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
 			break;
 		}
 

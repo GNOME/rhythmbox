@@ -191,6 +191,9 @@ RhythmDBEntry *	rhythmdb_add_song	(RhythmDB *db, const char *uri, GError **error
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
+void		rhythmdb_entry_queue_set(RhythmDB *db, RhythmDBEntry *entry,
+					 guint propid, GValue *value);
+
 void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 

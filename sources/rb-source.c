@@ -287,13 +287,11 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 
 	g_value_init (&value, G_TYPE_INT);
 
-	rhythmdb_write_lock (db);
-	
 	g_value_set_int (&value, rhythmdb_entry_get_int (db, entry,
 							 RHYTHMDB_PROP_PLAY_COUNT) + 1);
 
 	/* Increment current play count */
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
+	rhythmdb_entry_queue_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
 	g_value_unset (&value);
 	
 	/* Reset the last played time */
@@ -301,10 +299,8 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 
 	g_value_init (&value, G_TYPE_LONG);
 	g_value_set_long (&value, now);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
+	rhythmdb_entry_queue_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
 	g_value_unset (&value);
-
-	rhythmdb_write_unlock (db);
 }
 
 RBEntryView *
