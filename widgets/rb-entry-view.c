@@ -941,7 +941,7 @@ rb_entry_view_construct (RBEntryView *view)
 	view->priv->allowed_columns = g_hash_table_new (NULL, NULL);
 
 
-	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
+	view->priv->treeview = GTK_WIDGET (rb_tree_view_new ());
 
 	query_model = rhythmdb_query_model_new_empty (view->priv->db);
 	rb_entry_view_set_query_model (view, query_model);
@@ -1204,6 +1204,8 @@ rb_entry_view_construct (RBEntryView *view)
 		}
 
 		gtk_tree_view_column_set_clickable (gcolumn, clickable);
+
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
 
 		if (default_sort_column == TRUE) {
 			view->priv->sorting_enabled = TRUE;
