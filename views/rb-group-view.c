@@ -1241,7 +1241,6 @@ rb_group_view_drop_cb (GtkWidget *widget,
 
 	if (info == RB_LIBRARY_DND_NODE_ID)
 	{
-		int i;
 		long id;
 		RBNode *node = NULL;
 
