@@ -146,7 +146,7 @@ rb_volume_init (RBVolume *volume)
 	gtk_container_add (GTK_CONTAINER (volume), volume->priv->button);
 
 	volume->priv->max_image = rb_image_new_from_stock (RB_STOCK_VOLUME_MAX,
-							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+							   GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (G_OBJECT (volume->priv->max_image));
 	volume->priv->medium_image = rb_image_new_from_stock (RB_STOCK_VOLUME_MEDIUM,
 							     GTK_ICON_SIZE_LARGE_TOOLBAR);

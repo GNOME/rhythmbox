@@ -211,18 +211,10 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL) {
 		remain.x += remain.width;
 	}
-/*	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_LTR) {*/
-		do_allocation (displaybox->priv->from,         shown, &remain);
-		do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
-		do_allocation (displaybox->priv->by,           -1,    &remain);
-		do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
-/*	} else {
-		do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
-		do_allocation (displaybox->priv->by,           -1,    &remain);
-		do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
-		do_allocation (displaybox->priv->from,         shown, &remain);
-
-		}*/
+	do_allocation (displaybox->priv->from,         shown, &remain);
+	do_allocation (GTK_WIDGET (displaybox->album), width, &remain);
+	do_allocation (displaybox->priv->by,           -1,    &remain);
+	do_allocation (GTK_WIDGET (displaybox->artist),-1,    &remain);
 }
 
 static int

@@ -430,10 +430,8 @@ rb_shell_player_init (RBShellPlayer *player)
 	GError *error = NULL;
 	GtkWidget *hbox, *image;
 	GtkWidget *alignment;
-	GtkWidget *player_wid;
 
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
-	player_wid = GTK_WIDGET (player);
 
 	player->priv->mmplayer = rb_player_new (&error);
 	if (error != NULL) {
