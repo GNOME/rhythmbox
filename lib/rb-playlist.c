@@ -699,7 +699,8 @@ rb_playlist_add_pls (RBPlaylist *playlist, const char *url,
 	g_free (contents);
 
 	/* [playlist] */
-	if (g_ascii_strncasecmp (lines[0], "[playlist]",
+	if (!lines[0]
+	    || g_ascii_strncasecmp (lines[0], "[playlist]",
 				(gsize)strlen ("[playlist]")) != 0)
 		goto bail;
 
