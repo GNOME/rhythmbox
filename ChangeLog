@@ -1,3 +1,15 @@
+2003-08-13  Colin Walters  <walters@rhythmbox.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_scroll_to_node):
+
+	Don't free a path before using it in gtk_tree_view_set_cursor.
+	This almost certainly closes #119193.
+	
+	* monkey-media/stream-info-impl/flac-stream-info-impl.c:
+	(FLAC_metadata_callback):
+
+	Make it compile with -Werror.
+
 2003-08-12  Colin Walters  <walters@verbum.org>
 
 	* AUTHORS: Add Joshua.

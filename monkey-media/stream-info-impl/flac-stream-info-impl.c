@@ -326,7 +326,6 @@ FLAC_metadata_callback (const FLAC__StreamDecoder *decoder, const FLAC__StreamMe
 			FLAC__StreamMetadata_VorbisComment_Entry entry = vc_block->comments[c];
 			char *null_terminated_comment = malloc (entry.length + 1);
 			gchar** parts;
-			int equal_sign_loc;
 
 			memcpy (null_terminated_comment, entry.entry, entry.length);
 			null_terminated_comment[entry.length] = '\0';
