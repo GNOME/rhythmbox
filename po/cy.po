@@ -1,25 +1,25 @@
 # arch-tag: Rhythmbox yn Gymraeg.
 # This file is distributed under the same license as the Rhythmbox package.
 # Keith Willoughby <keith@flat222.org>, 2003.
-# Dafydd Harries <daf@parnassus.ath.cx>, 2003.
+# Dafydd Harries <daf@parnassus.ath.cx>, 2003 2004.
 # Telsa Gwynne <hobbit@aloss.ukuu.org.uk>, 2003.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-11-11 00:02+0000\n"
-"PO-Revision-Date: 2003-11-10 17:28+0000\n"
+"POT-Creation-Date: 2004-03-01 18:13+0000\n"
+"PO-Revision-Date: 2004-03-01 18:13+0000\n"
 "Last-Translator: Telsa Gwynne <hobbit@aloss.ukuu.org.uk>\n"
 "Language-Team: Welsh <gnome-cy@pengwyn.linux.org.uk>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n==1)\n"
+"Plural-Forms: nplurals=2; plural=(n==2) ? 1 : 0\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
-msgid "Add To Music Player Library"
-msgstr "Ychwanegu I'r Llyfrgell Cerddoriaeth"
+msgid "Add to Music Library"
+msgstr "Ychwanegu i'r Llyfrgell Cerddoriaeth"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
@@ -29,20 +29,6 @@ msgstr "Estyniad dewislen cyd-destun Nautilus ar gyfer Rhythmbox"
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Eitem dewislen cyd-destun Nautilus Rhythmbox"
 
-#: corba/test-corba.c:55
-msgid "I could not initialize Bonobo"
-msgstr "Methais gychwyn Bonobo"
-
-#: corba/test-corba.c:62
-msgid "Could not create an instance of the sample echo component"
-msgstr "Methu creu enghraifft o'r cydran eco sampl"
-
-#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:237
-#: shell/main.c:247
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "Digwyddodd eithriad '%s'"
-
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
 msgstr "Plisgyn Rhymthbox"
@@ -50,10 +36,6 @@ msgstr "Plisgyn Rhymthbox"
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
 msgstr "Ffatri Plisgyn Rhythmbox"
-
-#: data/glade/buffering-dialog.glade.h:1
-msgid "Loading..."
-msgstr "Llwytho..."
 
 #: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
 #: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
@@ -117,9 +99,7 @@ msgstr "_Llwybr:"
 msgid "_Skip this step"
 msgstr "_Sgipio'r cam hyn"
 
-#: data/glade/general-prefs.glade.h:1
-#: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1218
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
 msgid "A_lbum"
 msgstr "A_lbwm"
 
@@ -140,8 +120,6 @@ msgid "_Duration"
 msgstr "_Parhad"
 
 #: data/glade/general-prefs.glade.h:6
-#: data/node-views/rb-node-view-genres.xml.h:1
-#: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -153,15 +131,11 @@ msgstr "_Chwareuwyd ddiwethaf"
 msgid "_Play count"
 msgstr "_Cyfrif chwaraeon"
 
-#: data/glade/general-prefs.glade.h:9
-#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1336
 msgid "_Quality"
 msgstr "_Ansawdd"
 
-#: data/glade/general-prefs.glade.h:10
-#: data/node-views/rb-node-view-cdaudio.xml.h:6
-#: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1170
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1257
 msgid "_Rating"
 msgstr "Se_renau"
 
@@ -189,17 +163,17 @@ msgstr "Wedi methu llwytho y feiliau hyn:"
 msgid "Basic"
 msgstr "Sylfaenol"
 
-#: data/glade/song-info.glade.h:3
+#: data/glade/song-info.glade.h:3 data/glade/station-properties.glade.h:2
+msgid "Bitrate:"
+msgstr "Cyfradd did:"
+
+#: data/glade/song-info.glade.h:4
 msgid "Details"
 msgstr "Manylion"
 
-#: data/glade/song-info.glade.h:4
+#: data/glade/song-info.glade.h:5
 msgid "Duration:"
 msgstr "Parhad:"
-
-#: data/glade/song-info.glade.h:5
-msgid "Encoding:"
-msgstr "Amgodiad:"
 
 #: data/glade/song-info.glade.h:6
 msgid "File name:"
@@ -218,64 +192,48 @@ msgid "Play count:"
 msgstr "Cyfrif chwaraeon:"
 
 #: data/glade/song-info.glade.h:10
-msgid "Quality:"
-msgstr "Ansawdd:"
-
-#: data/glade/song-info.glade.h:11
 msgid "_Album:"
 msgstr "_Albwm:"
 
-#: data/glade/song-info.glade.h:12
+#: data/glade/song-info.glade.h:11
 msgid "_Artist:"
 msgstr "_Artist:"
 
-#: data/glade/song-info.glade.h:13
-msgid "_Comments:"
-msgstr "_Sylwadau:"
-
-#: data/glade/song-info.glade.h:14
-msgid "_Date:"
-msgstr "_Dyddiad:"
-
-#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:5
+#: data/glade/song-info.glade.h:12 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "_Genre:"
 
-#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
+#: data/glade/song-info.glade.h:13 data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "_Serenau:"
 
-#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
-#: data/glade/station-properties.glade.h:8
+#: data/glade/song-info.glade.h:14 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:9
 msgid "_Title:"
 msgstr "_Teitl:"
 
-#: data/glade/song-info.glade.h:18
+#: data/glade/song-info.glade.h:15
 msgid "_Track number:"
 msgstr "Rhif _trac:"
-
-#: data/glade/song-info.glade.h:19
-msgid "_of:"
-msgstr "_o:"
 
 #: data/glade/station-new.glade.h:3
 msgid "_Location:"
 msgstr "_Lleoliad:"
 
-#: data/glade/station-properties.glade.h:2
+#: data/glade/station-properties.glade.h:3
 msgid "L_ocation:"
 msgstr "Lle_oliad:"
 
-#: data/glade/station-properties.glade.h:3
+#: data/glade/station-properties.glade.h:4
 msgid "Play Count:"
 msgstr "Cyfrif Chwaraeon:"
 
-#: data/glade/station-properties.glade.h:4
+#: data/glade/station-properties.glade.h:5
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
 msgstr "Mer, Ion 01, 1970 00:00:00 -0500"
 
-#: data/glade/station-properties.glade.h:6
+#: data/glade/station-properties.glade.h:7
 msgid "_Last Played:"
 msgstr "Chwareuwyd ddi_wethaf:"
 
@@ -287,52 +245,7 @@ msgstr "Rhowch _lleoliad (URI) y ffeil rydych eisiau ychwanegu:"
 msgid "Open from URI"
 msgstr "Agor o URI"
 
-#: data/node-views/rb-node-view-albums.xml.h:1
-msgid "_Album"
-msgstr "_Albwm"
-
-#: data/node-views/rb-node-view-artists.xml.h:1
-#: data/node-views/rb-node-view-cdaudio.xml.h:2
-#: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1208
-msgid "Art_ist"
-msgstr "Art_ist"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:3
-#: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1228
-msgid "Ge_nre"
-msgstr "Ge_nre"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1238
-msgid "Ti_me"
-msgstr "A_mser"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:269
-#: widgets/rb-entry-view.c:1188
-msgid "Tra_ck"
-msgstr "Tra_c"
-
-#: data/node-views/rb-node-view-cdaudio.xml.h:7
-#: data/node-views/rb-node-view-iradio-stations.xml.h:6
-#: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1197
-msgid "_Title"
-msgstr "_Teitl"
-
-#: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1259
-msgid "L_ast Played"
-msgstr "Ch_areuwyd ddiwethaf"
-
-#: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1250
-msgid "_Play Count"
-msgstr "_Cyfrif Chwaraeon"
-
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:872 shell/rb-shell.c:1493
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1860
 msgid "Music Player"
 msgstr "Chwaraewr Cerddoriaeth"
 
@@ -340,11 +253,11 @@ msgstr "Chwaraewr Cerddoriaeth"
 msgid "Play and organize your music collection"
 msgstr "Chwarae a threfni eich casgliad cerddoriaeth"
 
-#: data/rhythmbox.desktop.in.h:3 shell/main.c:106 widgets/rb-druid.c:218
+#: data/rhythmbox.desktop.in.h:3 shell/main.c:115 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:21
 msgid "Deselect all songs"
 msgstr "Dad-ddewis pob cân"
 
@@ -352,19 +265,19 @@ msgstr "Dad-ddewis pob cân"
 msgid "Eject Audio-CD"
 msgstr "Allfwrw CD-Sain"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:41
 msgid "Scroll the view to the currently playing song"
 msgstr "Sgrolio yr olwg i'r cân sy'n chwarae"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.in.h:36
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:42
 msgid "Select _All"
 msgstr "Dewis _Popeth"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:43
 msgid "Select all songs"
 msgstr "Dewis pob cân"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.in.h:55
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:62
 msgid "_Edit"
 msgstr "_Golygu"
 
@@ -372,271 +285,299 @@ msgstr "_Golygu"
 msgid "_Eject Audio-CD..."
 msgstr "_Allfwrw CD Sain..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:58
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:65
 msgid "_Jump to Playing Song"
 msgstr "_Neidio i'r cân sy'n chwarae"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:72
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:79
 msgid "_View"
 msgstr "_Golwg"
 
-#: data/ui/rhythmbox-ui.xml.in.h:1
+#: data/ui/rhythmbox-ui.xml.h:1
 msgid "Add Lo_cation..."
 msgstr "_Ychwanegu Lleoliad..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:2
+#: data/ui/rhythmbox-ui.xml.h:2
+msgid "Browse this album"
+msgstr "Pori'r albwm hwn"
+
+#: data/ui/rhythmbox-ui.xml.h:3
+msgid "Browse this artist"
+msgstr "Pori'r artist hwn"
+
+#: data/ui/rhythmbox-ui.xml.h:4
+msgid "Browse this genre"
+msgstr "Pori'r genre hwn"
+
+#: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the browser"
 msgstr "Newid gwelededd y porwr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:3
+#: data/ui/rhythmbox-ui.xml.h:6
 msgid "Change the visibility of the main window"
 msgstr "Newid gwelededd y brif-ffenestr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:4
+#: data/ui/rhythmbox-ui.xml.h:7
 msgid "Change the visibility of the source list"
 msgstr "Newid gwelededd y rhestr tardd"
 
-#: data/ui/rhythmbox-ui.xml.in.h:5
+#: data/ui/rhythmbox-ui.xml.h:8
 msgid "Change the visibility of the statusbar"
 msgstr "Newid gwelededd y bar cyflwr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-ui.xml.h:9
+msgid "Change this automatic playlist"
+msgstr "Newid y rhestr chwarae awtomatig hwn"
+
+#: data/ui/rhythmbox-ui.xml.h:10
 msgid "Choose a location (URI) to be added to the library"
 msgstr "Dewiswch lleoliad (URI) i ychwanegu i'r llyfrgell"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
+#: data/ui/rhythmbox-ui.xml.h:11
 msgid "Choose a playlist to be loaded"
 msgstr "Dewiswch rhestr chwarae i'w lwytho"
 
-#: data/ui/rhythmbox-ui.xml.in.h:8
+#: data/ui/rhythmbox-ui.xml.h:12
 msgid "Choose files or a directory to be added to the library"
 msgstr "Dewiswch ffeiliau neu cyfeidiadur i ychwanegu i'r llyfrgell"
 
-#: data/ui/rhythmbox-ui.xml.in.h:9
+#: data/ui/rhythmbox-ui.xml.h:13
 msgid "Copy selection"
 msgstr "Copïo dewisiad"
 
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-ui.xml.h:14
 msgid "Create a new Internet Radio station"
 msgstr "Creu Gorsaf Radio Rhyngrwyd"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.h:15
 msgid "Create a new automatically updating playlist"
 msgstr "Creu rhestr chwarae newydd sy'n diweddaru'n awtomatig"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
+#: data/ui/rhythmbox-ui.xml.h:16
 msgid "Create a new playlist"
 msgstr "Creu rhestr chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:13
+#: data/ui/rhythmbox-ui.xml.h:17
 msgid "Cu_t"
 msgstr "_Tori"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.h:18
 msgid "Cut selection"
 msgstr "Tori dewisiad"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.h:19
 msgid "D_eselect All"
 msgstr "_Datddewis Popeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16
+#: data/ui/rhythmbox-ui.xml.h:20
 msgid "Delete selection"
 msgstr "Dileu dewisiad"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18
+#: data/ui/rhythmbox-ui.xml.h:22
 msgid "Display music player help"
 msgstr "Dangos cymorth y chwaraewr cerddoriaeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19
+#: data/ui/rhythmbox-ui.xml.h:23
 msgid "Edit music player preferences"
 msgstr "Golygu hoffterau y chwaraewr cerddoriaeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.h:24
 msgid "Extract and import songs from a CD"
 msgstr "Echdynnu a mewnforio caneuon o CD"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.h:25
 msgid "Import Lo_cation..."
 msgstr "_Mewnforio Lleoliad..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.h:26
 msgid "Import _Audio CD..."
 msgstr "Mewnforio CD _Sain..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.h:27
 msgid "Make the main window smaller"
 msgstr "Gwneud y prif ffenest yn llai"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.h:28
 msgid "New _Automatic Playlist..."
 msgstr "Rhestr Chwarae _Awtomatig Newydd..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.h:29
 msgid "New _Internet Radio Station"
 msgstr "Gorsaf Radio _Rhyngrwyd Newydd"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.h:30
+msgid "P_laylist"
+msgstr "Rhestr _Chwarae"
+
+#: data/ui/rhythmbox-ui.xml.h:31
 msgid "P_revious"
 msgstr "Blaeno_rol"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.h:32
 msgid "Paste selection"
 msgstr "Gludo Dewisiad"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.h:33
 msgid "Pause playing"
 msgstr "Seibio chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
-msgid "Playlist"
-msgstr "Rhestr chwarae"
+#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:243
+msgid "Play first song again after all songs are played"
+msgstr "Ail-chwarae'r gân gyntaf ar ôl i bob cân gael ei chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:238
+msgid "Play songs in a random order"
+msgstr "Chwarae caneuon mewn trefn ar hap"
+
+#: data/ui/rhythmbox-ui.xml.h:36
 msgid "Prefere_nces"
 msgstr "_Hoffterau"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.h:37
 msgid "Quit the music player"
 msgstr "Cau y chwaraewr cerddoriaeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.h:38
 msgid "Repea_t"
 msgstr "_Ailadrodd"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.h:39
 msgid "S_tatusbar"
 msgstr "Bar _Cyflwr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.h:40
 msgid "Save a playlist to a file"
 msgstr "Cadw rhestr chwarae i ffeil"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.h:44
+msgid "Set the browser to view only this album"
+msgstr "Gosod y porwr i weld yr albwm hwn yn unig"
+
+#: data/ui/rhythmbox-ui.xml.h:45
+msgid "Set the browser to view only this artist"
+msgstr "Gosod y porwr i weld yr artist hwn yn unig"
+
+#: data/ui/rhythmbox-ui.xml.h:46
+msgid "Set the browser to view only this genre"
+msgstr "Gosod y porwr i weld y genre hwn yn unig"
+
+#: data/ui/rhythmbox-ui.xml.h:47
 msgid "Show information about the music player"
 msgstr "Dangos gwybodaeth ynghylch y chwaraewr cerddoriaeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.h:48
 msgid "Show information on the selected song"
 msgstr "Dangos gwybodaeth am y cân dewisiedig"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.h:49
 msgid "Source _List"
 msgstr "_Rhestr Tardd"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1264
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1490
 msgid "Start playing"
 msgstr "Dechrau chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.h:51
 msgid "Start playing the next song"
 msgstr "Dechrau chwarae y cân nesaf"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.h:52
 msgid "Start playing the previous song"
 msgstr "Dechrau chwarae y cân blaenorol"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.h:53
 msgid "Stop playing"
 msgstr "Gorffen chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
-msgid "Toggle random playing order"
-msgstr "Togli trefn chwarae ar hap"
-
-#: data/ui/rhythmbox-ui.xml.in.h:46
-msgid "Toggle repeat mode"
-msgstr "Togli modd ailadrodd"
-
-#: data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-ui.xml.h:54
 msgid "_About"
 msgstr "_Ynghylch"
 
-#: data/ui/rhythmbox-ui.xml.in.h:48
+#: data/ui/rhythmbox-ui.xml.h:55
 msgid "_Add to Library..."
 msgstr "_Ychwanegu i'r Llyfrgell..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:49
+#: data/ui/rhythmbox-ui.xml.h:56
 msgid "_Browser"
 msgstr "_Porwr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50
+#: data/ui/rhythmbox-ui.xml.h:57
 msgid "_Contents"
 msgstr "_Cynnwys"
 
-#: data/ui/rhythmbox-ui.xml.in.h:51
+#: data/ui/rhythmbox-ui.xml.h:58
 msgid "_Control"
 msgstr "_Rheoli"
 
-#: data/ui/rhythmbox-ui.xml.in.h:52
+#: data/ui/rhythmbox-ui.xml.h:59
 msgid "_Copy"
 msgstr "_Copïo"
 
-#: data/ui/rhythmbox-ui.xml.in.h:53
+#: data/ui/rhythmbox-ui.xml.h:60
 msgid "_Cut"
 msgstr "_Tori"
 
-#: data/ui/rhythmbox-ui.xml.in.h:54
+#: data/ui/rhythmbox-ui.xml.h:61
 msgid "_Delete"
 msgstr "_Dileu"
 
-#: data/ui/rhythmbox-ui.xml.in.h:56
+#: data/ui/rhythmbox-ui.xml.h:63
 msgid "_Help"
 msgstr "_Cymorth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:57
-msgid "_Import folder..."
-msgstr "_Mewnforio plygell..."
+#: data/ui/rhythmbox-ui.xml.h:64
+msgid "_Import Folder..."
+msgstr "_Mewnforio Plygell..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:59
+#: data/ui/rhythmbox-ui.xml.h:66
 msgid "_Load from file..."
 msgstr "_Llwytho o ffeil..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:60
+#: data/ui/rhythmbox-ui.xml.h:67
 msgid "_Music"
 msgstr "_Cerddoriaeth"
 
-#: data/ui/rhythmbox-ui.xml.in.h:61
+#: data/ui/rhythmbox-ui.xml.h:68
 msgid "_New Playlist..."
 msgstr "Rhestr Chwarae _Newydd..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:62
+#: data/ui/rhythmbox-ui.xml.h:69
 msgid "_Next"
 msgstr "_Nesaf"
 
-#: data/ui/rhythmbox-ui.xml.in.h:63
+#: data/ui/rhythmbox-ui.xml.h:70
 msgid "_Paste"
 msgstr "_Gludo"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1265
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1491
 msgid "_Play"
 msgstr "_Chwarae"
 
-#: data/ui/rhythmbox-ui.xml.in.h:65
+#: data/ui/rhythmbox-ui.xml.h:72
 msgid "_Properties"
 msgstr "_Priodweddau"
 
-#: data/ui/rhythmbox-ui.xml.in.h:66
+#: data/ui/rhythmbox-ui.xml.h:73
 msgid "_Quit"
 msgstr "_Gadael"
 
-#: data/ui/rhythmbox-ui.xml.in.h:67
+#: data/ui/rhythmbox-ui.xml.h:74
 msgid "_Remove"
 msgstr "_Tynnu"
 
-#: data/ui/rhythmbox-ui.xml.in.h:68
+#: data/ui/rhythmbox-ui.xml.h:75
 msgid "_Save to file..."
 msgstr "_Cadw at ffeil..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:69
+#: data/ui/rhythmbox-ui.xml.h:76
 msgid "_Show Window"
 msgstr "Dango_s Ffenestr"
 
-#: data/ui/rhythmbox-ui.xml.in.h:70 shell/rb-statusbar.c:228
+#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:235
 msgid "_Shuffle"
 msgstr "_Sifrydi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:71
+#: data/ui/rhythmbox-ui.xml.h:78
 msgid "_Small Display"
 msgstr "Dangosiad _Bychan"
 
@@ -645,25 +586,28 @@ msgid "New Internet Radio Station"
 msgstr "Gorsaf Radio Rhyngrwyd Newydd"
 
 #: iradio/rb-new-station-dialog.c:182
-#: monkey-media/monkey-media-stream-info.c:404
-#: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 sources/rb-iradio-source.c:251
-#: sources/rb-iradio-source.c:252 sources/rb-iradio-source.c:253
-#: sources/rb-playlist-source.c:392
+#: iradio/rb-station-properties-dialog.c:440
+#: metadata/monkey-media/monkey-media-stream-info.c:404
+#: metadata/monkey-media/monkey-media-stream-info.c:420
+#: metadata/monkey-media/monkey-media-stream-info.c:667
+#: rhythmdb/rhythmdb.c:714 sources/rb-ipod-source.c:173
+#: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
+#: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
+#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
+#: widgets/rb-song-info.c:597
 msgid "Unknown"
 msgstr "Anhysbys"
 
-#: iradio/rb-new-station-dialog.c:303 rhythmdb/rhythmdb-property-model.c:363
+#: iradio/rb-new-station-dialog.c:309 rhythmdb/rhythmdb-property-model.c:372
 msgid "All"
 msgstr "Popeth"
 
-#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:621
-#: widgets/rb-song-info.c:639
+#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:548
 #, c-format
 msgid "%s Properties"
 msgstr "Priodweddau %s"
 
-#: iradio/rb-station-properties-dialog.c:334
+#: iradio/rb-station-properties-dialog.c:338
 #, c-format
 msgid "Properties for %s"
 msgstr "Priodweddau ar gyfer %s"
@@ -685,372 +629,313 @@ msgstr ""
 "Gwall GConf:\n"
 "  %s"
 
-#: lib/eggtrayicon.c:118
+#: lib/eggtrayicon.c:120
 msgid "Orientation"
 msgstr "Cyfeiriadaeth"
 
-#: lib/eggtrayicon.c:119
+#: lib/eggtrayicon.c:121
 msgid "The orientation of the tray."
 msgstr "Cyfeiriadaeth yr hambwrdd"
 
-#: lib/rb-file-helpers.c:78
+#: lib/rb-file-helpers.c:75
 #, c-format
 msgid "Failed to find %s"
 msgstr "Wedi methu canfod %s"
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:100
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "Mae %s yn bodoli, symudwch ef mas o'r ffordd os gwelwch yn dda"
 
-#: lib/rb-file-helpers.c:106
+#: lib/rb-file-helpers.c:103
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Methwyd creu cyfeiriafur %s."
 
-#: lib/rb-playlist.c:208
+#: lib/rb-playlist.c:217
 #, c-format
 msgid "Couldn't write playlist: %s"
 msgstr "Methwyd ysgrifennu rhestr chwarae: %s"
 
-#: lib/rb-playlist.c:241
+#: lib/rb-playlist.c:250
 #, c-format
 msgid "Couldn't open playlist: %s"
 msgstr "Methwyd agor rhestr chwarae: %s"
 
-#. comma separated list of prefixes that are to
-#. * be appended as suffix, NOTE: notice the spaces placement
-#: lib/rb-string-helpers.c:34
-msgid "THE ,DJ "
-msgstr "THE ,DJ ,Y ,YR "
-
-#: lib/rb-string-helpers.c:49
-#, c-format
-msgid "%s, %s"
-msgstr "%s, %s"
-
-#: monkey-media/monkey-media-audio-cd.c:220
-#, c-format
-msgid ""
-"%s does not point to a valid CDRom device. This may be caused by:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"Nid yw %s yn pwyntio i ddyfais CD-ROM dilys. Gall hyn fod oherwydd:\n"
-"a) Nad oes cynhaliaeth CD wedi crynhoi tu fewn in Linux\n"
-"b) Nad oes gennych ganiatadau cywir i gyrchu'r gyrriant CD\n"
-"c) Nid %s yw'r gyrriant CD.\n"
-
-#: monkey-media/monkey-media-audio-cd.c:345
-#, c-format
-msgid "You do not seem to have permission to access %s."
-msgstr "Ymddenys nid oes gennych ganiatad i gyrchu %s."
-
-#: monkey-media/monkey-media-audio-cd.c:352
-#, c-format
-msgid ""
-"%s does not appear to point to a valid CD device. This may be because:\n"
-"a) CD support is not compiled into Linux\n"
-"b) You do not have the correct permissions to access the CD drive\n"
-"c) %s is not the CD drive.\n"
-msgstr ""
-"Ymddengys nad yw %s yn pwyntio i ddyfais CD dilys. Gall hyn fod oherwydd:\n"
-"a) Nad oes cynhaliaeth CD wedi crynhoi tu fewn in Linux\n"
-"b) Nad oes gennych ganiatadau gywir i gyrchu'r gyrriant CD\n"
-"c) Nid %s yw'r gyrriant CD.\n"
-
-#: monkey-media/monkey-media-audio-cd.c:605
-#, c-format
-msgid "Error reading CD header: %s"
-msgstr "Gwall wrth darllen pennawd CD: %s"
-
-#: monkey-media/monkey-media-audio-cd.c:731
-#, c-format
-msgid "Error getting leadout: %s"
-msgstr "Gwall wrth gael \"leadout\": %s"
-
-#: monkey-media/monkey-media-audio-quality.c:35
-msgid "Very low"
-msgstr "Isel iawn"
-
-#: monkey-media/monkey-media-audio-quality.c:36
-msgid "Low"
-msgstr "Isel"
-
-#: monkey-media/monkey-media-audio-quality.c:37
-msgid "Regular"
-msgstr "Arferol"
-
-#: monkey-media/monkey-media-audio-quality.c:38
-msgid "High"
-msgstr "Uchel"
-
-#: monkey-media/monkey-media-audio-quality.c:39
-msgid "Very high"
-msgstr "Uchel iawn"
-
-#: monkey-media/monkey-media-audio-quality.c:40
-msgid "Lossless"
-msgstr "Digolled"
-
-#: monkey-media/monkey-media-player-gst-old.c:371
-#: monkey-media/monkey-media-player-gst.c:455
-msgid "Failed to create gnomevfssrc input element; check your installation"
-msgstr "Wedi methu creu elfen mewnbwn gnomevfssrc; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-old.c:380
-#: monkey-media/monkey-media-player-gst.c:470
-msgid "Failed to create cdparanoia input element; check your installation"
-msgstr "Wedi methu creu elfen mewnbwn cdparanoia; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst.c:520
-msgid "Failed to create spider element; check your installation"
-msgstr "Wedi methu creu elfen \"spider\"; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:597
-#: monkey-media/monkey-media-player-gst.c:535
-msgid "Failed to create volume element; check your installation"
-msgstr "Wedi methu creu elfen lefel sain; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:616
-#: monkey-media/monkey-media-player-gst.c:556
-msgid "Could not create audio output element; check your settings"
-msgstr "Wedi methu creu elfen allbwn sain; gwiriwch eich gosodiadau"
-
-#: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:733
-#: monkey-media/monkey-media-player-gst.c:643
-msgid "No AudioCD support; check your settings"
-msgstr "Dim cynhaliaeth CD Sain; gwiriwch eich gosodiadau"
-
-#: monkey-media/monkey-media-player-gst-tmp.c:517
-#, c-format
-msgid "Failed to create %s input element; check your installation"
-msgstr "Wedi methi creu elfen mewnbwn %s; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-tmp.c:543
-#: monkey-media/monkey-media-player-gst.c:493
-msgid "Failed to create queue element; check your installation"
-msgstr "Wedi methu creu elfen ciw; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-gst-tmp.c:578
-#, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "Wedi methi creu elfen mewnbwn %s; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-xine.c:336
-msgid "Failed to set up an audio driver; check your installation"
-msgstr "Wedi methu gosod gyrrydd sain; gwiriwch eich ymsefydliad"
-
-#: monkey-media/monkey-media-player-xine.c:424
-#, c-format
-msgid "No input plugin available for %s; check your installation."
-msgstr "Nid oes ategyn ar gael ar gyfer %s; gwiriwch eich ymsefydliad."
-
-#: monkey-media/monkey-media-player-xine.c:433
-#, c-format
-msgid "No demux plugin available for %s; check your installation."
-msgstr "Nid oes ategyn demux ar gael ar gyfer %s; gwiriwch eich ymsefydliad."
-
-#: monkey-media/monkey-media-player-xine.c:442
-#, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr "Demux wedi methu ar gyfer %s; gwiriwch eich ymsefydliad."
-
-#: monkey-media/monkey-media-player-xine.c:450
-msgid "Internal error; check your installation."
-msgstr "Gwall mewnol; gwiriwch eich ymsefydliad."
-
-#: monkey-media/monkey-media-player-xine.c:458
-#, c-format
-msgid "Audio of %s not handled; check your installation."
-msgstr "Sain %s heb ei drin; gwiriwch eich ymsefydliad."
-
-#: monkey-media/monkey-media-stream-info.c:310
+#: metadata/monkey-media/monkey-media-stream-info.c:310
 #, c-format
 msgid "Unsupported MIME type %s"
 msgstr "Math MIME %s heb ei gynnal"
 
-#: monkey-media/monkey-media-stream-info.c:315
+#: metadata/monkey-media/monkey-media-stream-info.c:315
 msgid "Unknown file type"
 msgstr "Math ffeil anhysbys"
 
-#: monkey-media/monkey-media-stream-info.c:386
+#: metadata/monkey-media/monkey-media-stream-info.c:386
 #, c-format
 msgid "Track %.2d"
 msgstr "Trac %.2d"
 
-#: monkey-media/monkey-media-stream-info.c:751
-#: monkey-media/monkey-media-stream-info.c:816
+#: metadata/monkey-media/monkey-media-stream-info.c:751
+#: metadata/monkey-media/monkey-media-stream-info.c:816
 msgid "No TRM ID for this song"
 msgstr "Nid oes ID TRM ar gyfer y cân hwn"
 
-#: monkey-media/monkey-media-stream-info.c:767
-#: monkey-media/monkey-media-stream-info.c:831
+#: metadata/monkey-media/monkey-media-stream-info.c:767
+#: metadata/monkey-media/monkey-media-stream-info.c:831
 msgid "No information for this song found"
 msgstr "Dim gwybodaeth am y cân hwn wedi darganfod"
 
-#: monkey-media/monkey-media.c:228
-msgid "GStreamer options:"
-msgstr "Opsiynnau GStreamer:"
-
-#: monkey-media/monkey-media.c:505
-#, c-format
-msgid "Please remove %s"
-msgstr "Gwaredwch %s os gwelwch yn dda"
-
-#: monkey-media/monkey-media.c:507
-#, c-format
-msgid "Failed to create directory %s"
-msgstr "Methwyd creu cyfeiriadur %s"
-
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
+#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
 msgid "Invalid track number"
 msgstr "Rhif trac annilys"
 
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
+#: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
 msgid "Audio CD track"
 msgstr "Trac CD sain"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:197
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "Wedi methu agor ffeil ar gyfer darllen"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:249
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
 msgid "Error decoding FLAC file"
 msgstr "Gwall wrth ddadgodio ffeil FLAC"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
+#: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
 msgid "FLAC"
 msgstr "FLAC"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:469
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
+msgid "Failed to gather information about the file"
+msgstr "Methwyd casglu gwybodaeth ynghylch y ffeil"
+
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d Haen III"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
+msgid "MPEG 2.5 Layer III"
+msgstr "MPEG 2.5 Haen III"
+
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
+msgid "Failed to recognise filetype"
+msgstr "Methwyd adnabod math y ffeil"
+
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
+msgid "Failed to find an audio track"
+msgstr "Methwyd canfod trac sain"
+
+#: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
+msgid "MPEG-4 audio (MPEG-4 AAC)"
+msgstr "Sain MPEG-4 (AAC MPEG-4)"
+
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 msgid "Failed to seek file"
 msgstr "Wedi methu chwilio ffeil"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
 msgid "Failed to open file as Ogg Vorbis"
 msgstr "Wedi methu agor ffeil fel Ogg Vorbis"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:547
+#: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: rhythmdb/rhythmdb.c:1057 widgets/rb-entry-view.c:964
+#: metadata/rb-metadata-gst.c:459 metadata/rb-metadata-gst.c:588
+#: player/rb-player-gst.c:565
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Wedi methi creu elfen mewnbwn %s; gwiriwch eich ymsefydliad"
+
+#: metadata/rb-metadata-mm.c:205
+msgid "Operation not supported"
+msgstr "Ni chynhelir y weithred"
+
+#: player/rb-player-gst.c:325 player/rb-player-gst.c:758
+msgid "Failed to close audio output sink"
+msgstr "Methwyd cau'r sinc allbwn sain"
+
+#: player/rb-player-gst.c:412 player/rb-player-gst.c:622
+#: player/rb-player-gst.c:632
+msgid "Could not start pipeline playing"
+msgstr "Methwyd cychwyn chwarae'r bibell"
+
+#: player/rb-player-gst.c:528
+msgid "Could not create audio output element; check your settings"
+msgstr "Wedi methu creu elfen allbwn sain; gwiriwch eich gosodiadau"
+
+#: player/rb-player-gst.c:589
+msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+msgstr "Methwyd cychwyn yr amserlennydd. A wnaethoch chi rhedeg gst-register?"
+
+#: player/rb-player-gst.c:644
+msgid "Could not pause playback"
+msgstr "Methwyd seibio chwarae"
+
+#: player/rb-player-gst.c:653
+msgid "Could not close output sink"
+msgstr "Methwyd cau'r sinc allbwn"
+
+#: player/rb-player-gst.c:699
+msgid "No AudioCD support; check your settings"
+msgstr "Dim cynhaliaeth CD Sain; gwiriwch eich gosodiadau"
+
+#: player/rb-player-xine.c:339
+msgid "Failed to set up an audio driver; check your installation"
+msgstr "Wedi methu gosod gyrrydd sain; gwiriwch eich ymsefydliad"
+
+#: player/rb-player-xine.c:439
+#, c-format
+msgid "No input plugin available for %s; check your installation."
+msgstr "Nid oes ategyn ar gael ar gyfer %s; gwiriwch eich ymsefydliad."
+
+#: player/rb-player-xine.c:448
+#, c-format
+msgid "No demux plugin available for %s; check your installation."
+msgstr "Nid oes ategyn demux ar gael ar gyfer %s; gwiriwch eich ymsefydliad."
+
+#: player/rb-player-xine.c:457
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "Demux wedi methu ar gyfer %s; gwiriwch eich ymsefydliad."
+
+#: player/rb-player-xine.c:465
+msgid "Internal error; check your installation."
+msgstr "Gwall mewnol; gwiriwch eich ymsefydliad."
+
+#: player/rb-player-xine.c:473
+#, c-format
+msgid "Audio of %s not handled; check your installation."
+msgstr "Sain %s heb ei drin; gwiriwch eich ymsefydliad."
+
+#: rhythmdb/rhythmdb.c:792
+msgid "<invalid filename>"
+msgstr "<enw ffeil annilys>"
+
+#: rhythmdb/rhythmdb.c:1323 widgets/rb-entry-view.c:1005
+#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:805
 msgid "Never"
 msgstr "Byth"
 
-#: rhythmdb/rhythmdb.c:1059
+#: rhythmdb/rhythmdb.c:1325
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:1887
+#: rhythmdb/rhythmdb.c:2102
 msgid "Loading songs..."
 msgstr "Llwytho caneuon..."
 
-#: rhythmdb/rhythmdb.c:1889
+#: rhythmdb/rhythmdb.c:2104
 msgid "Refreshing songs..."
 msgstr "Yn adnewyddu caneuon..."
 
-#: rhythmdb/rhythmdb.c:1904
+#: rhythmdb/rhythmdb.c:2121
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d cân"
-msgstr[1] "%d cân"
+msgstr[1] "%d gân"
 
-#: rhythmdb/rhythmdb.c:1912
-#, c-format
-msgid "%.1f day"
-msgid_plural "%.1f days"
-msgstr[0] "%.1f dydd"
-msgstr[1] "%.1f dydd"
-
-#: rhythmdb/rhythmdb.c:1915
+#: rhythmdb/rhythmdb.c:2128
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld munud"
-msgstr[1] "%ld munud"
+msgstr[1] "%ld funud"
 
-#: rhythmdb/rhythmdb.c:1917
+#: rhythmdb/rhythmdb.c:2129 rhythmdb/rhythmdb.c:2139
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld awr"
 msgstr[1] "%ld awr"
 
-#: rhythmdb/rhythmdb.c:1920
+#: rhythmdb/rhythmdb.c:2130
+#, c-format
+msgid "%ld day"
+msgid_plural "%ld days"
+msgstr[0] "%.1f dydd"
+msgstr[1] "%.1f ddydd"
+
+#. Translators: the format is "X days, X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2134
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s, %s a %s"
+
+#. Translators: the format is "X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2142
 #, c-format
 msgid "%s and %s"
 msgstr "%s a %s"
 
-#: shell/main.c:83
+#: shell/main.c:90
 msgid "Print the playing song and exit"
 msgstr "Argraffu'r cân sy'n chwarae a therfynu"
 
-#: shell/main.c:84
+#: shell/main.c:91
 msgid "Print the playing song URI and exit"
 msgstr "Argraffu URI y cân sy'n chwarae a therfynu"
 
-#: shell/main.c:86
+#: shell/main.c:93
 msgid "Print the playing song length in seconds and exit"
 msgstr "Argraffu hyd y cân sy'n chwarae a therfynu"
 
-#: shell/main.c:87
+#: shell/main.c:94
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Argraffu faint o'r cân cyfredol sydd wedi chwarae a therfynu"
 
-#: shell/main.c:88
+#: shell/main.c:95
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Chwilio i'r amser penodedig yn y gân sy'n chwarae os yn bosib a therfynu"
 
-#: shell/main.c:90
+#: shell/main.c:97
 msgid "Toggle play/pause mode"
 msgstr "Togli modd chwarae/seibio"
 
-#: shell/main.c:91
+#: shell/main.c:98
+msgid "Focus the running player"
+msgstr "Ffocysu'r chwaraewr sy'n rhedeg"
+
+#: shell/main.c:99
 msgid "Jump to previous song"
 msgstr "Neidio i'r cân blaenorol"
 
-#: shell/main.c:92
+#: shell/main.c:100
 msgid "Jump to next song"
 msgstr "_Neidio i'r cân nesaf"
 
-#: shell/main.c:94
+#: shell/main.c:102
 msgid "Enable debugging code"
 msgstr "Galluogi'r côd datnamu"
 
-#: shell/main.c:95
+#: shell/main.c:103
+msgid "Do not update the library"
+msgstr "Peidio a diweddaru'r llyfrgell"
+
+#: shell/main.c:104
 msgid "Do not register the shell"
 msgstr "Peidio a chofrestri'r plisgyn"
 
-#: shell/main.c:96
+#: shell/main.c:105
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Peidio a cadw data yn arhosol (yn awgrymu --no-registration)"
 
-#: shell/main.c:97
+#: shell/main.c:106
+msgid "Path for database file to use"
+msgstr "Y llwybr i'r ffeil cronfa data i'w ddefnyddio"
+
+#: shell/main.c:107
 msgid "Quit Rhythmbox"
 msgstr "Gadael Rhythmbox"
 
-#: shell/main.c:98
-msgid "MonkeyMedia options:"
-msgstr "Opsiynnau MonkeyMedia:"
-
-#: shell/main.c:196
+#: shell/main.c:210
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -1058,7 +943,12 @@ msgstr ""
 "Nid yw Rhythmbox yn gweithio ar hyn o bryd os yw digwyddiadau sain GNOME "
 "wedi eu galluogi a mae esdsink mewn defnydd."
 
-#: shell/main.c:277
+#: shell/main.c:249 shell/main.c:258
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "Digwyddodd eithriad '%s'"
+
+#: shell/main.c:296
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1067,57 +957,81 @@ msgstr ""
 "Methwyd gweithredoli y plisgyn:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:416
+#: shell/rb-play-order.c:227
+msgid "Linear"
+msgstr "Llinol"
+
+#: shell/rb-play-order.c:228
+msgid "Shuffle"
+msgstr "Sifrydi"
+
+#: shell/rb-play-order.c:229
+msgid "Random with equal weights"
+msgstr "Ar hap gyda phwysau cyfartal"
+
+#: shell/rb-play-order.c:230
+msgid "Random by time since last play"
+msgstr "Ar hap yn ôl yr amser ers chwaraewyd ddiwethaf"
+
+#: shell/rb-play-order.c:231
+msgid "Random by rating"
+msgstr "Ar hap yn ôl y gradd"
+
+#: shell/rb-play-order.c:232
+msgid "Random by time since last play and rating"
+msgstr "Ar hap yn ôl yr amser ers chwarae diwethaf a gradd"
+
+#: shell/rb-playlist-manager.c:422 shell/rb-shell-player.c:897
 msgid "Couldn't parse playlist"
 msgstr "Wedi methu gramadegu'r rhestr chwarae"
 
-#: shell/rb-playlist-manager.c:705
+#: shell/rb-playlist-manager.c:647
 msgid "Load playlist"
 msgstr "Llwytho rhestr chwarae"
 
-#: shell/rb-playlist-manager.c:759
+#: shell/rb-playlist-manager.c:684
 msgid "Save playlist"
 msgstr "Cadw rhestr chwarae"
 
-#: shell/rb-shell-player.c:441
+#: shell/rb-shell-player.c:479
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Wedi methu creu y chwaraewr: %s"
 
-#: shell/rb-shell-player.c:502
-msgid "Go to previous song"
-msgstr "Mynd i'r cân blaenorol"
+#: shell/rb-shell-player.c:544
+msgid "Play previous song"
+msgstr "Chwarae'r cân blaenorol"
 
-#: shell/rb-shell-player.c:531
-msgid "Go to next song"
-msgstr "Mynd i'r cân nesaf"
+#: shell/rb-shell-player.c:573
+msgid "Play next song"
+msgstr "Chwarae'r cân nesaf"
 
-#: shell/rb-shell-player.c:550
+#: shell/rb-shell-player.c:592
 msgid "Change the music volume"
 msgstr "Newid sain y gerddoriaeth"
 
-#: shell/rb-shell-player.c:789
+#: shell/rb-shell-player.c:870
 #, c-format
 msgid "Opening %s..."
 msgstr "Yn agor %s..."
 
-#: shell/rb-shell-player.c:1256
+#: shell/rb-shell-player.c:1482
 msgid "Pause playback"
 msgstr "Seibio chwarae"
 
-#: shell/rb-shell-player.c:1257
+#: shell/rb-shell-player.c:1483
 msgid "_Pause"
 msgstr "_Seibio"
 
-#: shell/rb-shell-player.c:1272
+#: shell/rb-shell-player.c:1498
 msgid "Stop playback"
 msgstr "Gorffen chwarae"
 
-#: shell/rb-shell-player.c:1273
+#: shell/rb-shell-player.c:1499
 msgid "_Stop"
 msgstr "_Atal"
 
-#: shell/rb-shell-player.c:1601
+#: shell/rb-shell-player.c:1832
 msgid "Unexpected end of stream!"
 msgstr "Diwedd anisgwyl i'r llif!"
 
@@ -1129,20 +1043,24 @@ msgstr "Hoffterau Chwaraewr Cerddoriaeth"
 msgid "General"
 msgstr "Cyffredinol"
 
-#: shell/rb-shell.c:573
+#: shell/rb-shell.c:842
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Wedi methu gramadegu URI \"%s\"\n"
 
-#: shell/rb-shell.c:755
+#: shell/rb-shell.c:1040
 msgid "Whether the main window is visible"
 msgstr "A ydy'r prif ffenest yn weladwy"
 
-#: shell/rb-shell.c:759
+#: shell/rb-shell.c:1045
+msgid "Whether shuffle is enabled"
+msgstr "A ydi sifrydi wedi ei alluogi"
+
+#: shell/rb-shell.c:1049
 msgid "Properties for the current song"
 msgstr "Priodweddau ar gyfer y cân cyfredol"
 
-#: shell/rb-shell.c:1137
+#: shell/rb-shell.c:1471
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1154,11 +1072,12 @@ msgstr ""
 "bonobo-activation; mae'r rhybudd hyn yn ddiniwed, ond ni fydd cyfathrebu "
 "rhyngbroses (IPC) yn gweithio."
 
-#: shell/rb-shell.c:1469 shell/rb-tray-icon.c:218 widgets/rb-player.c:541
+#: shell/rb-shell.c:1834 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "Dim yn chwarae"
 
-#: shell/rb-shell.c:1471
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1837
 #, c-format
 msgid ""
 "%s\n"
@@ -1167,7 +1086,8 @@ msgstr ""
 "%s\n"
 "Wedi seibio, %s"
 
-#: shell/rb-shell.c:1474
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: shell/rb-shell.c:1841
 #, c-format
 msgid ""
 "%s\n"
@@ -1176,119 +1096,172 @@ msgstr ""
 "%s\n"
 "%s"
 
-#: shell/rb-shell.c:1508
+#. Translators: %s is the song name
+#: shell/rb-shell.c:1876
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Wedi Seibio)"
 
-#: shell/rb-shell.c:1576
+#: shell/rb-shell.c:1944
 msgid "translator_credits"
 msgstr ""
 "Keith Willoughby <keith@flat222.org>\n"
 "Dafydd Harries <daf@parnassus.ath.cx>\n"
 "Telsa Gwynne <hobbit@aloss.ukuu.org.uk>"
 
-#: shell/rb-shell.c:1585
+#: shell/rb-shell.c:1953
 msgid "Maintainers:"
 msgstr "Cynhalwyr:"
 
-#: shell/rb-shell.c:1588
+#: shell/rb-shell.c:1956
 msgid "Former Maintainers:"
 msgstr "Cynhalwyr Blaenorol:"
 
-#: shell/rb-shell.c:1591
+#: shell/rb-shell.c:1959
 msgid "Contributors:"
 msgstr "Cyfrannwyr:"
 
-#: shell/rb-shell.c:1611
-#, c-format
-msgid ""
-"Music management and playback software for GNOME.\n"
-"Audio backend: %s\n"
-"Audio formats: %s\n"
-msgstr ""
-"Rhaglen trefnu a chwarae cerddoriaeth ar gyfer GNOME.\n"
-"Cefn ôl sain: %s\n"
-"Fformadau sain: %s\n"
+#: shell/rb-shell.c:1961
+msgid "Music management and playback software for GNOME."
+msgstr "Meddalwedd trefnu a chwarae cerddoriaeth ar gyfer GNOME."
 
-#: shell/rb-shell.c:1724
+#: shell/rb-shell.c:2134
 msgid "Choose Files or Directory"
 msgstr "Dewisiwch Ffeiliau neu Gyfeiriadur"
 
-#: shell/rb-shell.c:1766
+#: shell/rb-shell.c:2180
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Er mwyn echdynnu CD mae'n rhaid i chi ymsefydlu'r pecyn Sound Juicer"
 
-#: shell/rb-shell.c:1773
+#: shell/rb-shell.c:2187
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Methwyd rhedeg sound-juicer: %s"
 
-#: shell/rb-source-header.c:178
+#: shell/rb-source-header.c:183
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Hidlo'r dangosydd cerddoriaeth yn ôl artist, albwm, neu theitl"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:190
 msgid "Show _Browser"
 msgstr "Dangos y _Porwr"
 
-#: shell/rb-source-header.c:186
+#: shell/rb-source-header.c:191
 msgid "Hide _Browser"
 msgstr "Cuddio'r Porwr"
 
-#: shell/rb-statusbar.c:231
-msgid "Play songs in a random order"
-msgstr "Chwarae caneuon mewn trefn ar hap"
-
-#: shell/rb-statusbar.c:233
+#: shell/rb-statusbar.c:240
 msgid "_Repeat"
 msgstr "_Ailadrodd"
 
-#: shell/rb-statusbar.c:236
-msgid "Play first song again after all songs are played"
-msgstr "Ail-chwarae'r gân gyntaf ar ôl i bob cân gael ei chwarae"
+#: shell/rb-statusbar.c:446
+msgid "Buffering..."
+msgstr "Yn byfferu..."
 
-#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:431
-#: widgets/rb-query-creator.c:47
+#: sources/itunesdb.c:459
+msgid "Master-PL"
+msgstr "Meistr-Rhestr-Chwarae"
+
+#: sources/itunesdb.c:461
+msgid "Playlist"
+msgstr "Rhestr chwarae"
+
+#: sources/itunesdb.c:813
+#, c-format
+msgid "Error reading \"%s\".\n"
+msgstr "Gwall wrth ddarllen \"%s\".\n"
+
+#: sources/itunesdb.c:821
+#, c-format
+msgid "\"%s\" is not a iTunesDB.\n"
+msgstr "Nid yw \"%s\" yn iTunesDB.\n"
+
+#: sources/itunesdb.c:1061
+#, c-format
+msgid "Could not open \"%s\" file for reading.\n"
+msgstr "Methwyd agor y ffeil \"%s\" er mwyn darllen.\n"
+
+#: sources/itunesdb.c:1568
+#, c-format
+msgid "Could not open iTunesDB \"%s\" for writing.\n"
+msgstr "Methwyd agor yr iTunesDB \"%s\" er mwyn ysgrifennu.\n"
+
+#. an error occured
+#: sources/itunesdb.c:1580
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s).\n"
+msgstr "Gwall wrth ailenwi '%s' i '%s' (%s).\n"
+
+#: sources/itunesdb.c:1716
+#, c-format
+msgid "Could not open file \"%s\" for reading.\n"
+msgstr "Methwyd agor y ffeil \"%s\" ar gyfer darllen.\n"
+
+#: sources/itunesdb.c:1723
+#, c-format
+msgid "Could not open file \"%s\" for writing.\n"
+msgstr "Methwyd agor y ffeil \"%s\" ar gyfer ysgrifennu.\n"
+
+#. error -- not end of file!
+#: sources/itunesdb.c:1736
+#, c-format
+msgid "Error reading file \"%s\".\n"
+msgstr "Gwall wrth darllen y ffeil \"%s\".\n"
+
+#: sources/itunesdb.c:1748
+#, c-format
+msgid "Error writing PC file \"%s\".\n"
+msgstr "Gwall wrth ysgrifennu ffeil PC: \"%s\".\n"
+
+#: sources/rb-ipod-source.c:117
+msgid "iPod"
+msgstr "iPod"
+
+#: sources/rb-iradio-source.c:328 sources/rb-library-source.c:513
+#: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Genre"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:403
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:531
+#: sources/rb-iradio-source.c:559
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d gorsaf"
 msgstr[1] "%d gorsaf"
 
-#: sources/rb-library-source.c:445 widgets/rb-query-creator.c:45
+#: sources/rb-library-source.c:527 widgets/rb-query-creator.c:54
 msgid "Artist"
 msgstr "Artist"
 
-#: sources/rb-library-source.c:459 widgets/rb-query-creator.c:46
+#: sources/rb-library-source.c:541 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Albwm"
 
-#: sources/rb-library-source.c:562
+#: sources/rb-library-source.c:649
 msgid "Library"
 msgstr "Llyfrgell"
 
-#: sources/rb-library-source.c:993
+#: sources/rb-library-source.c:1192
 msgid "Add Location"
 msgstr "Ywchwanegu Lleoliad"
 
-#: sources/rb-source.c:475
+#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1275
+msgid "Tra_ck"
+msgstr "Tra_c"
+
+#: sources/rb-source.c:528
 msgid "No properties available."
 msgstr "Dim priodweddau ar gael."
 
-#: sources/rb-source.c:558
+#: sources/rb-source.c:611
 msgid "This source does not support drag and drop."
 msgstr "Ni chynhelir llusgo a gollwng gan y tardd hyn."
 
-#: sources/rb-sourcelist.c:193
+#: sources/rb-sourcelist.c:194
 msgid "_Source"
 msgstr "_Tardd"
 
@@ -1330,31 +1303,105 @@ msgstr "Gorffen"
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Organize\" then \"Add "
-"to Library\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
 msgstr ""
 "Rydych yn awr yn barod i gychwyn Rhythmbox.\n"
 "\n"
 "Cofiwch y gallwch ychwanegu cerddoriaeth i'r llyfrgell gan ddefnyddio "
-"\"Trefnu\" yna \"Ychwanegu i'r Llyfrgell\", neu gan ei fewnforio o CD."
+"\"Cerddoriaeth\" yna \"Mewnforio Plygell\", neu gan ei fewnforio o CD."
 
-#: widgets/rb-druid.c:309
+#: widgets/rb-druid.c:318
 #, c-format
 msgid "Error reading filename: %s"
 msgstr "Gwall wrth darllen enw ffeil: %s"
 
-#: widgets/rb-druid.c:324
+#: widgets/rb-druid.c:333
 msgid "Choose a directory"
 msgstr "Dewiswch gyfeiriadur"
 
-#: widgets/rb-entry-view.c:997 widgets/rb-player.c:815
+#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1399
+#: widgets/rb-entry-view.c:1068
+msgid "Very Low"
+msgstr "Isel Iawn"
+
+#: widgets/rb-entry-view.c:1070
+msgid "Low"
+msgstr "Isel"
+
+#: widgets/rb-entry-view.c:1072
+msgid "Regular"
+msgstr "Arferol"
+
+#: widgets/rb-entry-view.c:1074
+msgid "High"
+msgstr "Uchel"
+
+#: widgets/rb-entry-view.c:1076
+msgid "Very High"
+msgstr "Uchel Iawn"
+
+#: widgets/rb-entry-view.c:1078
+msgid "Perfect"
+msgstr "Perffaith"
+
+#: widgets/rb-entry-view.c:1284
+msgid "_Title"
+msgstr "_Teitl"
+
+#: widgets/rb-entry-view.c:1295
+msgid "Art_ist"
+msgstr "Art_ist"
+
+#: widgets/rb-entry-view.c:1317
+msgid "Ge_nre"
+msgstr "Ge_nre"
+
+#: widgets/rb-entry-view.c:1327
+msgid "Ti_me"
+msgstr "A_mser"
+
+#: widgets/rb-entry-view.c:1346
+msgid "_Play Count"
+msgstr "_Cyfrif Chwaraeon"
+
+#: widgets/rb-entry-view.c:1355
+msgid "L_ast Played"
+msgstr "Ch_areuwyd ddiwethaf"
+
+#: widgets/rb-entry-view.c:1499
 msgid "Now Playing"
 msgstr "Yn chwarae nawr"
+
+#: widgets/rb-header.c:280
+msgid "Listening to "
+msgstr "Yn grwando i "
+
+#: widgets/rb-header.c:517
+msgid "Get information on this album from the web"
+msgstr "Cael gwybodaeth ar yr albwm hyn oddi'r gwe"
+
+#: widgets/rb-header.c:536
+msgid "Get information on this artist from the web"
+msgstr "Cael gwybodaeth ar yr artist hyn oddi'r gwe"
+
+#: widgets/rb-header.c:564
+msgid "Get information on this station from the web"
+msgstr "Cyrchu gwybodaeth ynghylch y gorsaf hwn o'r we"
+
+#: widgets/rb-header.c:827
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d o %d:%02d"
+
+#: widgets/rb-header.c:835
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "%d:%02d o %d:%02d ar ôl"
 
 #: widgets/rb-load-failure-dialog.c:119
 msgid "Error loading files into library"
@@ -1368,33 +1415,35 @@ msgstr "_Gwall"
 msgid "_File"
 msgstr "_Ffeil"
 
-#: widgets/rb-player.c:280
-msgid "Listening to "
-msgstr "Yn grwando i "
-
-#: widgets/rb-player.c:805
-#, c-format
-msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d o %d:%02d"
-
-#: widgets/rb-player.c:812
-#, c-format
-msgid "%d:%02d of %d:%02d remaining"
-msgstr "%d:%02d o %d:%02d ar ôl"
-
-#: widgets/rb-query-creator.c:44
+#: widgets/rb-query-creator.c:53
 msgid "Title"
 msgstr "Teitl"
 
-#: widgets/rb-query-creator.c:52
+#: widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "Serenau"
+
+#: widgets/rb-query-creator.c:62
 msgid "contains"
 msgstr "yn cynnwys"
 
-#: widgets/rb-query-creator.c:53
+#: widgets/rb-query-creator.c:63
 msgid "does not contain"
 msgstr "ddim yn cynnwys"
 
-#: widgets/rb-query-creator.c:181
+#: widgets/rb-query-creator.c:64 widgets/rb-query-creator.c:69
+msgid "equals"
+msgstr "yn hafal i"
+
+#: widgets/rb-query-creator.c:70
+msgid "greater than"
+msgstr "yn fwy na"
+
+#: widgets/rb-query-creator.c:71
+msgid "less than"
+msgstr "yn llai na"
+
+#: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
 msgstr "Creu Rhestr Chwarae Awtomatig"
 
@@ -1411,33 +1460,18 @@ msgstr "o"
 msgid "by"
 msgstr "gan"
 
-#: widgets/rb-song-info.c:229 widgets/rb-song-info.c:644
+#: widgets/rb-song-info.c:245
 msgid "Song Properties"
 msgstr "Priodweddau Cân"
 
-#: widgets/rb-song-info.c:922
-msgid "on the desktop"
-msgstr "ar y penbwrdd"
-
-#: widgets/rb-song-info.c:1139
+#: widgets/rb-song-info.c:595
 #, c-format
 msgid "%d kbps"
 msgstr "%d cb/e"
 
-#: widgets/rb-song-info.c:1152
-msgid " (Mono)"
-msgstr " (Unsain)"
-
-#: widgets/rb-song-info.c:1155
-msgid " (Stereo)"
-msgstr " (Stereo)"
-
-#: widgets/rb-song-info.c:1159
-#, c-format
-msgid " (%d channel)"
-msgid_plural " (%d channel)"
-msgstr[0] "(%d sianel)"
-msgstr[1] "(%d sianel)"
+#: widgets/rb-song-info.c:658
+msgid "on the desktop"
+msgstr "ar y penbwrdd"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
@@ -1449,21 +1483,131 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
+#~ msgid "Methwyd open \"%s\" file for reading.\n"
+#~ msgstr "Methwyd agor ffeil \"%s\" er mwyn darllen.\n"
+
+#~ msgid "I could not initialize Bonobo"
+#~ msgstr "Methais gychwyn Bonobo"
+
+#~ msgid "Could not create an instance of the sample echo component"
+#~ msgstr "Methu creu enghraifft o'r cydran eco sampl"
+
+#~ msgid "Loading..."
+#~ msgstr "Llwytho..."
+
+#~ msgid "Encoding:"
+#~ msgstr "Amgodiad:"
+
+#~ msgid "Quality:"
+#~ msgstr "Ansawdd:"
+
+#~ msgid "_Comments:"
+#~ msgstr "_Sylwadau:"
+
+#~ msgid "_Date:"
+#~ msgstr "_Dyddiad:"
+
+#~ msgid "_of:"
+#~ msgstr "_o:"
+
+#~ msgid "_Album"
+#~ msgstr "_Albwm"
+
+#~ msgid "Toggle random playing order"
+#~ msgstr "Togli trefn chwarae ar hap"
+
+#~ msgid "Toggle repeat mode"
+#~ msgstr "Togli modd ailadrodd"
+
+#~ msgid "THE ,DJ "
+#~ msgstr "THE ,DJ ,Y ,YR "
+
+#~ msgid "%s, %s"
+#~ msgstr "%s, %s"
+
+#~ msgid ""
+#~ "%s does not point to a valid CDRom device. This may be caused by:\n"
+#~ "a) CD support is not compiled into Linux\n"
+#~ "b) You do not have the correct permissions to access the CD drive\n"
+#~ "c) %s is not the CD drive.\n"
+#~ msgstr ""
+#~ "Nid yw %s yn pwyntio i ddyfais CD-ROM dilys. Gall hyn fod oherwydd:\n"
+#~ "a) Nad oes cynhaliaeth CD wedi crynhoi tu fewn in Linux\n"
+#~ "b) Nad oes gennych ganiatadau cywir i gyrchu'r gyrriant CD\n"
+#~ "c) Nid %s yw'r gyrriant CD.\n"
+
+#~ msgid "You do not seem to have permission to access %s."
+#~ msgstr "Ymddenys nid oes gennych ganiatad i gyrchu %s."
+
+#~ msgid ""
+#~ "%s does not appear to point to a valid CD device. This may be because:\n"
+#~ "a) CD support is not compiled into Linux\n"
+#~ "b) You do not have the correct permissions to access the CD drive\n"
+#~ "c) %s is not the CD drive.\n"
+#~ msgstr ""
+#~ "Ymddengys nad yw %s yn pwyntio i ddyfais CD dilys. Gall hyn fod "
+#~ "oherwydd:\n"
+#~ "a) Nad oes cynhaliaeth CD wedi crynhoi tu fewn in Linux\n"
+#~ "b) Nad oes gennych ganiatadau gywir i gyrchu'r gyrriant CD\n"
+#~ "c) Nid %s yw'r gyrriant CD.\n"
+
+#~ msgid "Error reading CD header: %s"
+#~ msgstr "Gwall wrth darllen pennawd CD: %s"
+
+#~ msgid "Error getting leadout: %s"
+#~ msgstr "Gwall wrth gael \"leadout\": %s"
+
+#~ msgid "Lossless"
+#~ msgstr "Digolled"
+
+#~ msgid "Failed to create gnomevfssrc input element; check your installation"
+#~ msgstr ""
+#~ "Wedi methu creu elfen mewnbwn gnomevfssrc; gwiriwch eich ymsefydliad"
+
+#~ msgid "Failed to create cdparanoia input element; check your installation"
+#~ msgstr "Wedi methu creu elfen mewnbwn cdparanoia; gwiriwch eich ymsefydliad"
+
+#~ msgid "Failed to create spider element; check your installation"
+#~ msgstr "Wedi methu creu elfen \"spider\"; gwiriwch eich ymsefydliad"
+
+#~ msgid "Failed to create volume element; check your installation"
+#~ msgstr "Wedi methu creu elfen lefel sain; gwiriwch eich ymsefydliad"
+
+#~ msgid "Failed to create %s input element; check your installation"
+#~ msgstr "Wedi methi creu elfen mewnbwn %s; gwiriwch eich ymsefydliad"
+
+#~ msgid "Failed to create queue element; check your installation"
+#~ msgstr "Wedi methu creu elfen ciw; gwiriwch eich ymsefydliad"
+
+#~ msgid "GStreamer options:"
+#~ msgstr "Opsiynnau GStreamer:"
+
+#~ msgid "Please remove %s"
+#~ msgstr "Gwaredwch %s os gwelwch yn dda"
+
+#~ msgid "Failed to create directory %s"
+#~ msgstr "Methwyd creu cyfeiriadur %s"
+
+#~ msgid "MonkeyMedia options:"
+#~ msgstr "Opsiynnau MonkeyMedia:"
+
+#~ msgid " (Mono)"
+#~ msgstr " (Unsain)"
+
+#~ msgid " (Stereo)"
+#~ msgstr " (Stereo)"
+
+#~ msgid " (%d channel)"
+#~ msgid_plural " (%d channel)"
+#~ msgstr[0] "(%d sianel)"
+#~ msgstr[1] "(%d sianel)"
+
 #~ msgid ""
 #~ "There was an error going to %s:\n"
 #~ "%s"
 #~ msgstr ""
 #~ "Roedd gwall wrth fynd i %s:\n"
 #~ "%s"
-
-#~ msgid "Get information on this album from the web"
-#~ msgstr "Cael gwybodaeth ar yr albwm hyn oddi'r gwe"
-
-#~ msgid "Get information on this artist from the web"
-#~ msgstr "Cael gwybodaeth ar yr artist hyn oddi'r gwe"
-
-#~ msgid "Get more information on this station from the web"
-#~ msgstr "Cael gwybodaeth ar yr orsaf hyn oddi'r gwe"
 
 #~ msgid ""
 #~ "In order to get started using\n"
@@ -1618,9 +1762,6 @@ msgstr "-"
 
 #~ msgid "Played"
 #~ msgstr "Chwareuwyd"
-
-#~ msgid "Rating"
-#~ msgstr "Serenau"
 
 #~ msgid "Search Songs"
 #~ msgstr "Chwilio Caneuon"
