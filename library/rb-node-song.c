@@ -205,22 +205,22 @@ rb_node_song_sync (RBNode *node,
 			rb_node_set_property (node, "genre", &newvalue);
 			g_value_unset (&newvalue);
 
-			rb_node_ref (node);
+			rb_node_ref (genre_node);
 
 			g_value_init (&newvalue, G_TYPE_LONG);
 			g_value_set_long (&newvalue, rb_node_get_id (artist_node));
 			rb_node_set_property (node, "artist", &newvalue);
 			g_value_unset (&newvalue);
 
-			rb_node_ref (node);
+			rb_node_ref (artist_node);
 
 			g_value_init (&newvalue, G_TYPE_LONG);
 			g_value_set_long (&newvalue, rb_node_get_id (album_node));
 			rb_node_set_property (node, "album", &newvalue);
 			g_value_unset (&newvalue);
 
-			rb_node_ref (node);
-		
+			rb_node_ref (album_node);
+
 			rb_node_add_child (genre_node, rb_library_get_all_albums (library));
 			rb_node_add_child (rb_library_get_all_genres (library), genre_node);
 			rb_node_add_child (genre_node, artist_node);

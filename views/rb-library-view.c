@@ -837,6 +837,10 @@ artist_deleted_cb (RBNodeView *view,
 	{
 		GList *j, *kids2;
 
+		if (rb_node_get_node_type (RB_NODE (l->data)) !=
+		    RB_NODE_TYPE_ALBUM)
+			continue;
+
 		kids2 = rb_node_get_children (RB_NODE (l->data));
 
 		for (j = kids2; j != NULL; j = g_list_next (j))
