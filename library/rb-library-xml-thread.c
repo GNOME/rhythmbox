@@ -291,9 +291,6 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			case RB_NODE_TYPE_ARTIST:
 				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
 				break;
-			case RB_NODE_TYPE_SONG:
-				rb_node_song_update_if_newer (node, priv->library);
-				break;
 			default:
 				break;
 			}
