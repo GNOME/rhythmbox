@@ -259,6 +259,8 @@ rb_shell_finalize (GObject *object)
         RBShell *shell = RB_SHELL (object);
 
 	gtk_widget_hide (shell->priv->window);
+	
+	gtk_main_iteration (); /* make sure the window is gone */
 
 	eel_gconf_monitor_remove ("/apps/rhythmbox");
 

@@ -51,8 +51,6 @@ typedef struct
 	void (*node_activated) (RBNodeView *view, RBNode *node);
 	void (*node_deleted)   (RBNodeView *view, RBNode *node);
 
-	void (*have_selection) (RBNodeView *view, gboolean selection);
-
 	void (*changed)        (RBNodeView *view);
 } RBNodeViewClass;
 
@@ -74,6 +72,7 @@ RBNode     *rb_node_view_get_previous_node (RBNodeView *view);
 RBNode     *rb_node_view_get_first_node    (RBNodeView *view);
 RBNode     *rb_node_view_get_random_node   (RBNodeView *view);
 
+gboolean    rb_node_view_have_selection    (RBNodeView *view);
 GList      *rb_node_view_get_selection     (RBNodeView *view);
 void        rb_node_view_select_all        (RBNodeView *view);
 void        rb_node_view_select_none       (RBNodeView *view);

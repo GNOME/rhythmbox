@@ -112,6 +112,7 @@ struct RBNodeViewPrivate
 	char *view_desc_file;
 
 	gboolean have_selection;
+	GList *nodeselection;
 
 	gboolean keep_selection;
 
@@ -126,7 +127,6 @@ enum
 	NODE_SELECTED,
 	NODE_ACTIVATED,
 	NODE_DELETED,
-	HAVE_SELECTION,
 	CHANGED,
 	LAST_SIGNAL
 };
@@ -251,16 +251,6 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_NODE);
-	rb_node_view_signals[HAVE_SELECTION] =
-		g_signal_new ("have_selection",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeViewClass, have_selection),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
 	rb_node_view_signals[CHANGED] =
 		g_signal_new ("changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -293,6 +283,8 @@ rb_node_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	g_source_remove (view->priv->timeout);
+
+	g_list_free (view->priv->nodeselection);
 
 	g_free (view->priv->view_desc_file);
 
@@ -817,6 +809,8 @@ rb_node_view_get_selection (RBNodeView *view)
 	gtk_tree_selection_selected_foreach (view->priv->selection,
 					     (GtkTreeSelectionForeachFunc) get_selection,
 					     (void **) &list);
+	g_list_free (view->priv->nodeselection);
+	view->priv->nodeselection = list;
 	
 	return list;
 }
@@ -896,11 +890,10 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	available = (sel != NULL);
 	if (sel != NULL)
 		selected_node = RB_NODE ((g_list_first (sel))->data);
-	g_list_free (sel);
 
 	if (available != view->priv->have_selection)
 	{
-		g_signal_emit (G_OBJECT (view), rb_node_view_signals[HAVE_SELECTION], 0, available);
+		view->priv->changed = TRUE;
 		view->priv->have_selection = available;
 	}
 
@@ -910,6 +903,12 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	}
 
 	view->priv->selected_node = selected_node;
+}
+
+gboolean
+rb_node_view_have_selection (RBNodeView *view)
+{
+	return view->priv->have_selection;
 }
 
 static void
@@ -1129,7 +1128,6 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
 	}
-	g_list_free (sel);
 
 	return FALSE;
 }

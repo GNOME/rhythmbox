@@ -464,7 +464,6 @@ album_node_selected_cb (RBNodeView *view,
 	GList *selection = rb_node_view_get_selection (testview->priv->artists);
 	rb_node_view_set_filter (testview->priv->songs, node,
 				 RB_NODE (selection->data));
-	g_list_free (selection);
 }
 
 static void
@@ -764,6 +763,7 @@ node_view_changed_cb (RBNodeView *view,
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
 	rb_view_status_notify_changed (RB_VIEW_STATUS (library_view));
+	rb_view_clipboard_notify_changed (RB_VIEW_CLIPBOARD (library_view));
 }
 
 static void
@@ -821,13 +821,13 @@ rb_library_view_status_get (RBViewStatus *status)
 static gboolean
 rb_library_view_can_cut (RBViewClipboard *clipboard)
 {
-	return FALSE;
+	return rb_node_view_have_selection (RB_LIBRARY_VIEW (clipboard)->priv->songs);
 }
 
 static gboolean
 rb_library_view_can_copy (RBViewClipboard *clipboard)
 {
-	return FALSE;
+	return rb_node_view_have_selection (RB_LIBRARY_VIEW (clipboard)->priv->songs);
 }
 
 static gboolean
@@ -839,13 +839,24 @@ rb_library_view_can_paste (RBViewClipboard *clipboard)
 static GList *
 rb_library_view_cut (RBViewClipboard *clipboard)
 {
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+	GList *sel, *l;
+
+	sel = rb_node_view_get_selection (view->priv->songs);
+	for (l = sel; l != NULL; l = g_list_next (l))
+	{
+		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
+	}
+	
 	return NULL;
 }
 
 static GList *
 rb_library_view_copy (RBViewClipboard *clipboard)
 {
-	return NULL;
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+
+	return rb_node_view_get_selection (view->priv->songs);
 }
 
 static void

@@ -1,5 +1,20 @@
 2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_finalize), (rb_node_view_get_selection),
+	(rb_node_view_selection_changed_cb), (rb_node_view_have_selection),
+	(rb_node_view_key_press_event_cb):
+	* lib/widgets/rb-node-view.h:
+	* shell/rb-shell.c: (rb_shell_finalize):
+	* views/rb-library-view.c: (album_node_selected_cb),
+	(node_view_changed_cb), (rb_library_view_can_cut),
+	(rb_library_view_can_copy), (rb_library_view_cut),
+	(rb_library_view_copy):
+
+	Implement clipboard on the library view.
+
+2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library.c: (rb_library_init):
 
 	Check the new_nodes queue every 10 instead of every 100 ms,
