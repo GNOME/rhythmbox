@@ -1,3 +1,10 @@
+2003-08-18  Benjamin Otte  <in7y118@public.uni-hamburg.de>
+
+	* monkey-media/mokey-media-player-gst-tmp.c:
+	
+	When going to PAUSED, set the sink to NULL. This releases the audio
+	device and doesn't hurt when going to PLAYING later.
+
 2003-08-18  Colin Walters  <walters@verbum.org>
 
 	* NEWS: Update.

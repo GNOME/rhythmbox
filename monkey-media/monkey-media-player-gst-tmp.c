@@ -281,6 +281,8 @@ eos_cb (GstElement *element,
 {
 	g_object_ref (G_OBJECT (mp));
 
+	gst_element_set_state (mp->priv->sink, GST_STATE_NULL);
+
 	g_idle_add ((GSourceFunc) eos_signal_idle, mp);
 }
 
@@ -657,6 +659,8 @@ monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 	} else {
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_PAUSED);
+		gst_element_set_state (mp->priv->sink,
+				       GST_STATE_NULL);
 	}
 }
 
@@ -796,6 +800,8 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 
 	gst_element_set_state (mp->priv->pipeline,
 			       GST_STATE_PAUSED);
+	gst_element_set_state (mp->priv->sink,
+			       GST_STATE_NULL);
 }
 
 gboolean
