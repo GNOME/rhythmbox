@@ -18,6 +18,10 @@
  *  $Id$
  */
 
+/* FIXME fix up button crack and summary bits? */
+/* FIXME reorderable */
+/* FIXME shuffle/repeat */
+
 /* FIXME scroll to playing node */
 /* FIXME volume control */
 /* FIXME treeview row tooltips if it doesnt fit */
@@ -37,6 +41,8 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
+#include <libxml/tree.h>
+#include <unistd.h>
 
 #include "rb-player.h"
 #include "rb-stock-icons.h"
@@ -80,7 +86,7 @@ static gboolean slider_released_cb (GtkWidget *widget, GdkEventButton *event, RB
 static void slider_changed_cb (GtkWidget *widget, RBPlayer *player);
 static void nullify_info (RBPlayer *player);
 static gboolean sync_time_timeout (RBPlayer *player);
-static void clear (RBPlayer *player);
+static void rb_clear (RBPlayer *player);
 static void sync_time (RBPlayer *player);
 static void check_song_tooltip (RBPlayer *player);
 static void song_label_size_allocate_cb (GtkWidget *widget,
@@ -142,6 +148,8 @@ enum
 	PROP_0,
 	PROP_RB
 };
+
+#define PLAYLIST_XML_VERSION "1.0"
 
 static GObjectClass *parent_class = NULL;
 
@@ -449,7 +457,7 @@ rb_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	clear (player);
+	rb_clear (player);
 
 	g_object_unref (G_OBJECT (player->priv->mixer));
 
@@ -548,7 +556,7 @@ update_buttons (RBPlayer *player)
 }
 
 static void
-next (RBPlayer *player)
+rb_next (RBPlayer *player)
 {
 	set_playing (player, rb_node_view_get_next_node (player->priv->playlist_view));
 
@@ -563,7 +571,7 @@ next (RBPlayer *player)
 }
 
 static void
-previous (RBPlayer *player)
+rb_previous (RBPlayer *player)
 {
 	set_playing (player, rb_node_view_get_previous_node (player->priv->playlist_view));
 
@@ -578,7 +586,7 @@ previous (RBPlayer *player)
 }
 
 static void
-play (RBPlayer *player)
+rb_play (RBPlayer *player)
 {
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
@@ -591,7 +599,7 @@ play (RBPlayer *player)
 }
 
 static void
-pause (RBPlayer *player)
+rb_pause (RBPlayer *player)
 {
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PAUSED);
@@ -604,7 +612,7 @@ pause (RBPlayer *player)
 }
 
 static void
-clear (RBPlayer *player)
+rb_clear (RBPlayer *player)
 {
 	GPtrArray *kids;
 	int i;
@@ -624,7 +632,7 @@ clear (RBPlayer *player)
 }
 
 static void
-shuffle (RBPlayer *player)
+rb_shuffle (RBPlayer *player)
 {
 	/* FIXME */
 	update_buttons (player);
@@ -847,19 +855,94 @@ rb_player_load_playlist (RBPlayer *player,
 			 const char *uri,
 			 GError **error)
 {
-	clear (player);
+	xmlDocPtr doc;
+	xmlNodePtr child, root;
+	char *tmp;
+
+	g_return_if_fail (RB_IS_PLAYER (player));
+
+	rb_clear (player);
+
+	if (g_file_test (uri, G_FILE_TEST_EXISTS) == FALSE)
+		return;
+
+	doc = xmlParseFile (uri);
+	if (doc == NULL) {
+		rb_warning_dialog (_("Failed to parse %s as playlist"), uri);
+		return;
+	}
+
+	root = xmlDocGetRootElement (doc);
+
+	tmp = xmlGetProp (root, "version");
+	if (tmp == NULL || strcmp (tmp, PLAYLIST_XML_VERSION) != 0) {
+		g_free (tmp);
+		xmlFreeDoc (doc);
+		unlink (uri);
+		return;
+	}
+	g_free (tmp);
+
+	for (child = root->children; child != NULL; child = child->next) {
+		long id;
+		RBNode *node;
+
+		tmp = xmlGetProp (child, "id");
+		if (tmp == NULL)
+			continue;
+		id = atol (tmp);
+		g_free (tmp);
+
+		node = rb_node_get_from_id (id);
+
+		if (node == NULL)
+			continue;
+
+		rb_node_add_child (player->priv->playlist, node);
+	}
+
+	xmlFreeDoc (doc);
 
 	update_buttons (player);
-
-	/* FIXME */
 }
 
 void
 rb_player_save_playlist (RBPlayer *player,
 			 const char *uri,
+			 const char *name,
 			 GError **error)
 {
-	/* FIXME */
+	xmlDocPtr doc;
+	xmlNodePtr root;
+	GPtrArray *kids;
+	int i;
+
+	g_return_if_fail (RB_IS_PLAYER (player));
+
+	xmlIndentTreeOutput = TRUE;
+	doc = xmlNewDoc ("1.0");
+
+	root = xmlNewDocNode (doc, NULL, "rhythmbox_playlist", NULL);
+	xmlSetProp (root, "version", PLAYLIST_XML_VERSION);
+	xmlSetProp (root, "name", name);
+	xmlDocSetRootElement (doc, root);
+
+	kids = rb_node_get_children (player->priv->playlist);
+	for (i = 0; i < kids->len; i++) {
+		RBNode *node = g_ptr_array_index (kids, i);
+		xmlNodePtr xmlnode;
+		char *tmp;
+
+		xmlnode = xmlNewChild (root, NULL, "node_pointer", NULL);
+
+		tmp = g_strdup_printf ("%ld", rb_node_get_id (node));
+		xmlSetProp (xmlnode, "id", tmp);
+		g_free (tmp);
+	}
+	rb_node_thaw (player->priv->playlist);
+
+	xmlSaveFormatFile (uri, doc, 1);
+	xmlFreeDoc (doc);
 }
 
 static void
@@ -905,35 +988,35 @@ static void
 play_cb (GtkWidget *widget,
 	 RBPlayer *player)
 {
-	play (player);
+	rb_play (player);
 }
 
 static void
 pause_cb (GtkWidget *widget,
 	 RBPlayer *player)
 {
-	pause (player);
+	rb_pause (player);
 }
 
 static void
 previous_cb (GtkWidget *widget,
 	 RBPlayer *player)
 {
-	previous (player);
+	rb_previous (player);
 }
 
 static void
 next_cb (GtkWidget *widget,
 	 RBPlayer *player)
 {
-	next (player);
+	rb_next (player);
 }
 
 static void
 shuffle_cb (GtkWidget *widget,
 	    RBPlayer *player)
 {
-	shuffle (player);
+	rb_shuffle (player);
 }
 
 static void

@@ -71,6 +71,7 @@ void                  rb_player_load_playlist (RBPlayer *player,
 
 void                  rb_player_save_playlist (RBPlayer *player,
 			                       const char *uri,
+					       const char *name,
 			                       GError **error);
 
 G_END_DECLS

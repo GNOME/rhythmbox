@@ -1,5 +1,20 @@
 2003-01-05  Jorn Baayen  <jorn@nl.linux.org>
 
+	* shell/rb-player.c: (rb_player_finalize), (rb_next),
+	(rb_previous), (rb_play), (rb_pause), (rb_clear), (rb_shuffle),
+	(rb_player_load_playlist), (rb_player_save_playlist), (play_cb),
+	(pause_cb), (previous_cb), (next_cb), (shuffle_cb):
+	* shell/rb-player.h:
+
+	Implement saving/restoring playlists, just no UI yet.
+	
+	* views/rb-group-view.c:
+	* views/rb-group-view.h:
+
+	Remove these.
+
+2003-01-05  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/art/Makefile.am:
 	* data/art/rhythmbox-paused.png:
 	* lib/rb-stock-icons.c: (rb_stock_icons_init):
