@@ -26,7 +26,6 @@
 #include <libgnome/gnome-program.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
-#include <libgnomeui/gnome-authentication-manager.h>
 #include <gtk/gtk.h>
 #include <bonobo/Bonobo.h>
 #include <bonobo/bonobo-main.h>
@@ -86,7 +85,7 @@ main (int argc, char **argv)
 	RBShell *rb_shell;
 	char **new_argv;
 
-	const struct poptOption popt_options[] =
+	struct poptOption popt_options[] =
 	{
 		{ "print-playing",	0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
 		{ "print-playing-path",	0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
@@ -108,6 +107,9 @@ main (int argc, char **argv)
 		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file", 0,  POPT_ARG_STRING,          &rhythmdb_file,                             0, N_("Path for database file to use"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
+#ifdef HAVE_GSTREAMER
+		{NULL, '\0', POPT_ARG_INCLUDE_TABLE, NULL, 0, "GStreamer", NULL},
+#endif
 		POPT_TABLEEND
 	};
 
@@ -117,6 +119,11 @@ main (int argc, char **argv)
 	new_argv = g_realloc (new_argv, (argc+2)*sizeof(char*));
 	new_argv[argc] = g_strdup ("--disable-sound");
 	new_argv[argc+1] = NULL;
+
+#ifdef HAVE_GSTREAMER	
+	popt_options[(sizeof(popt_options)/sizeof(popt_options[0]))-2].arg
+		= (void *) gst_init_get_popt_table ();
+#endif
 
 	gtk_set_locale ();
 	program = gnome_program_init (PACKAGE, VERSION,
@@ -144,7 +151,6 @@ main (int argc, char **argv)
 #endif
 
 #ifdef HAVE_GSTREAMER	
-	gst_init_with_popt_table (&argc, &argv, popt_options);
 	gst_control_init (&argc, &argv);
 #endif
 #ifdef WITH_MONKEYMEDIA

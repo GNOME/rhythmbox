@@ -177,6 +177,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 				 sourcelist, 0);
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->model);
+	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
 
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
 				 "row_activated",
