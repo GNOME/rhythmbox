@@ -39,6 +39,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	char *album = NULL;
 	guint rating = 0, play_count = 0;
 	gint track_number = -1;
+	glong duration = 0;
 	GValue val = {0, };
 
 	for (node_child = node->children; node_child != NULL; node_child = node_child->next) {
@@ -65,7 +66,12 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				break;
 			case 8: /* RB_NODE_PROP_TRACK_NUMBER */
 				xml = xmlNodeGetContent (node_child);
-				track_number = atoi (xml);
+				track_number = g_ascii_strtoull (xml, NULL, 10);
+				g_free (xml);
+				break;
+			case 9: /* RB_NODE_PROP_DURATION */
+				xml = xmlNodeGetContent (node_child);
+				duration = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
 			case 12: /* RB_NODE_PROP_LOCATION */
@@ -73,12 +79,12 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				break;
 			case 15: /* RB_NODE_PROP_RATING */
 				xml = xmlNodeGetContent (node_child);
-				rating = atoi (xml);
+				rating = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
 			case 16: /* RB_NODE_PROP_PLAY_COUNT */
 				xml = xmlNodeGetContent (node_child);
-				play_count = atoi (xml);
+				play_count = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
 					
@@ -108,6 +114,12 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 		g_value_init (&val, G_TYPE_INT);
 		g_value_set_int (&val, track_number);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+		g_value_unset (&val);
+	}
+	if (duration > 0) {
+		g_value_init (&val, G_TYPE_LONG);
+		g_value_set_long (&val, duration);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
 		g_value_unset (&val);
 	}
 	g_value_init (&val, G_TYPE_STRING);

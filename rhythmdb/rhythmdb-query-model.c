@@ -526,7 +526,7 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 			if (compare_times (timeout,&now) < 0)
 				break;
 		}
-	} 
+	}
 	
 	for (tem = processed; tem; tem = tem->next) {
 		struct RhythmDBQueryModelUpdate *update = tem->data;

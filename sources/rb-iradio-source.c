@@ -47,6 +47,13 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
+typedef enum
+{
+	RB_IRADIO_QUERY_TYPE_ALL,
+	RB_IRADIO_QUERY_TYPE_GENRE,
+	RB_IRADIO_QUERY_TYPE_SEARCH,
+} RBIRadioQueryType;
+
 static void rb_iradio_source_class_init (RBIRadioSourceClass *klass);
 static void rb_iradio_source_init (RBIRadioSource *source);
 static GObject *rb_iradio_source_constructor (GType type, guint n_construct_properties,
@@ -86,7 +93,7 @@ static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
 static void impl_buffering_done (RBSource *asource);
-static void rb_iradio_source_do_query (RBIRadioSource *source);
+static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType type);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 					     RBIRadioSource *source);
@@ -312,7 +319,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
 				    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
 				    source);
-	rb_iradio_source_do_query (source);
+	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_ALL);
 			
 	gtk_widget_show_all (GTK_WIDGET (source));
 	return G_OBJECT (source);
@@ -404,7 +411,7 @@ impl_search (RBSource *asource, const char *search_text)
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	g_free (source->priv->search_text);
 	source->priv->search_text = g_utf8_casefold (search_text, -1);
-	rb_iradio_source_do_query (source);
+	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
 }
 
 static RBEntryView *
@@ -574,7 +581,7 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 {
 	g_free (iradio_source->priv->selected_genre);
 	iradio_source->priv->selected_genre = g_strdup (name);
-	rb_iradio_source_do_query (iradio_source);
+	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
 }
 
 static void
@@ -603,7 +610,7 @@ entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 }
 
 static void
-rb_iradio_source_do_query (RBIRadioSource *source)
+rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 {
 	RhythmDBQueryModel *query_model;
 	GtkTreeModel *model;
@@ -638,12 +645,14 @@ rb_iradio_source_do_query (RBIRadioSource *source)
 					      G_CALLBACK (entry_added_cb),
 					      NULL);
 
-	rb_property_view_reset (source->priv->genres);
-	g_free (source->priv->selected_genre);
-	source->priv->selected_genre = NULL;
-	g_signal_connect (G_OBJECT (source->priv->stations),
-			  "entry-added", G_CALLBACK (entry_added_cb),
-			  source->priv->genres);
+	if (qtype < RB_IRADIO_QUERY_TYPE_ALL) {
+		rb_property_view_reset (source->priv->genres);
+		g_free (source->priv->selected_genre);
+		source->priv->selected_genre = NULL;
+		g_signal_connect (G_OBJECT (source->priv->stations),
+				  "entry-added", G_CALLBACK (entry_added_cb),
+				  source->priv->genres);
+	}
 
 	genre_query = rhythmdb_query_copy (query);
 
