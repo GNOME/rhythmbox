@@ -90,6 +90,7 @@ static void rb_song_info_view_changed_cb (RBEntryView *entry_view,
 static void rb_song_info_rated_cb (RBRating *rating,
 				   int score,
 				   RBSongInfo *song_info);
+static void rb_song_info_mnemonic_cb (GtkWidget *target);
 static void cleanup (RBSongInfo *dlg);
 
 struct RBSongInfoPrivate
@@ -368,6 +369,40 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_max), FALSE);
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (song_info->priv->comments), FALSE);
 
+	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
+	g_signal_connect (G_OBJECT (song_info->priv->title),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->artist),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->album),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->date),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->track_cur),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->track_max),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (GTK_COMBO (song_info->priv->genre)->entry),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (song_info->priv->comments),
+			  "mnemonic-activate",
+			  G_CALLBACK (rb_song_info_mnemonic_cb),
+			  NULL);
+
 	/* this widget has to be customly created */
 	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (song_info->priv->rating, 
@@ -508,6 +543,20 @@ rb_song_info_rated_cb (RBRating *rating,
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
 		      NULL);
+}
+
+static void
+rb_song_info_mnemonic_cb (GtkWidget *target)
+{
+	g_return_if_fail (GTK_IS_EDITABLE (target) || GTK_IS_TEXT_VIEW (target));
+
+	gtk_widget_grab_focus (target);
+
+	if (GTK_IS_EDITABLE (target)) {
+		gtk_editable_select_region (GTK_EDITABLE (target), 0, -1);
+	} else { /* GtkTextViews need special treatment */
+		g_signal_emit_by_name (G_OBJECT (target), "select-all");
+	}
 }
 
 static void 
