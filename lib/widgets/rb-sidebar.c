@@ -352,10 +352,10 @@ rb_sidebar_remove (RBSidebar *sidebar,
 	{
 		if (GTK_TOGGLE_BUTTON (button)->active == TRUE)
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (next->data), TRUE);
-		sidebar->priv->radiogroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON (next->data));
 	}
-	else
-		sidebar->priv->radiogroup = NULL;
+
+	sidebar->priv->radiogroup = g_slist_remove (sidebar->priv->radiogroup,
+						    button);
 
 	sidebar->priv->buttons = g_list_remove (sidebar->priv->buttons,
 						button);
