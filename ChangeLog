@@ -1,3 +1,14 @@
+2002-10-27  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c: (get_path_real),
+	(rb_tree_model_node_get_path), (root_child_removed_cb),
+	(root_child_added_cb), (rb_tree_model_node_update_node):
+	* library/rb-node.c: (node_from_id_real), (rb_node_get_from_id),
+	(rb_node_new_from_xml), (get_child_index_real),
+	(rb_node_get_next_child), (rb_node_get_previous_child):
+
+	Inline some very frequently used functions.
+
 2002-10-27  Kristian Rietveld  <kris@gtk.org>
 
 	* lib/widgets/rb-cell-renderer-rating.c

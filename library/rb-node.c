@@ -46,20 +46,22 @@ static void rb_node_get_object_property (GObject *object,
 			                 GValue *value,
 			                 GParamSpec *pspec);
 static void id_factory_set_to (long new_factory_pos);
-static void real_set_property (RBNode *node,
-		               int property_id,
-		               GValue *value);
-static void real_remove_child (RBNode *node,
-		               RBNode *child,
-			       gboolean remove_from_parent,
-			       gboolean remove_from_child);
-static void real_add_child (RBNode *node,
-		            RBNode *child);
+static inline void real_set_property (RBNode *node,
+		                      int property_id,
+		                      GValue *value);
+static inline void real_remove_child (RBNode *node,
+		                      RBNode *child,
+			              gboolean remove_from_parent,
+			              gboolean remove_from_child);
+static inline void real_add_child (RBNode *node,
+		                   RBNode *child);
 static void read_lock_to_write_lock (RBNode *node);
 static void write_lock_to_read_lock (RBNode *node);
 static void lock_gdk (void);
 static void unlock_gdk (void);
-static RBNode *rb_node_get_from_id_real (long id);
+static inline RBNode *node_from_id_real (long id);
+static inline int get_child_index_real (RBNode *node,
+		                        RBNode *child);
 
 typedef struct
 {
@@ -409,8 +411,8 @@ rb_node_get_id (RBNode *node)
 	return ret;
 }
 
-static RBNode *
-rb_node_get_from_id_real (long id)
+static inline RBNode *
+node_from_id_real (long id)
 {
 	RBNode *ret = NULL;
 	
@@ -429,7 +431,7 @@ rb_node_get_from_id (long id)
 
 	g_static_rw_lock_reader_lock (id_to_node_lock);
 
-	ret = rb_node_get_from_id_real (id);
+	ret = node_from_id_real (id);
 	
 	g_static_rw_lock_reader_unlock (id_to_node_lock);
 
@@ -492,7 +494,7 @@ child_changed (long id,
 	g_static_rw_lock_reader_unlock (node_info->node->priv->lock);
 }
 
-static void
+static inline void
 real_set_property (RBNode *node,
 		   int property_id,
 		   GValue *value)
@@ -1007,7 +1009,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			parent_id = atol (xml);
 			g_free (xml);
 
-			parent = rb_node_get_from_id_real (parent_id);
+			parent = node_from_id_real (parent_id);
 
 			if (parent != NULL)
 			{
@@ -1057,7 +1059,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			{
 				RBNode *property_node;
 
-				property_node = rb_node_get_from_id_real (atol (xml));
+				property_node = node_from_id_real (atol (xml));
 				
 				g_value_set_pointer (value, property_node);
 				break;
@@ -1078,7 +1080,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	return node;
 }
 
-static void
+static inline void
 real_add_child (RBNode *node,
 		RBNode *child)
 {
@@ -1125,7 +1127,7 @@ rb_node_add_child (RBNode *node,
 	unlock_gdk ();
 }
 
-static void
+static inline void
 real_remove_child (RBNode *node,
 		   RBNode *child,
 		   gboolean remove_from_parent,
@@ -1262,6 +1264,21 @@ rb_node_get_nth_child (RBNode *node,
 	return ret;
 }
 
+static inline int
+get_child_index_real (RBNode *node,
+		      RBNode *child)
+{
+	RBNodeParent *node_info;
+
+	node_info = g_hash_table_lookup (child->priv->parents,
+					 GINT_TO_POINTER (node->priv->id));
+
+	if (node_info == NULL)
+		return -1;
+
+	return node_info->index;
+}
+
 int
 rb_node_get_child_index (RBNode *node,
 			 RBNode *child)
@@ -1302,7 +1319,7 @@ rb_node_get_next_child (RBNode *node,
 	g_static_rw_lock_reader_lock (node->priv->lock);
 	g_static_rw_lock_reader_lock (child->priv->lock);
 
-	idx = rb_node_get_child_index (node, child);
+	idx = get_child_index_real (node, child);
 
 	if ((idx + 1) < node->priv->children->len) {
 		ret = g_ptr_array_index (node->priv->children, idx + 1);
@@ -1329,7 +1346,7 @@ rb_node_get_previous_child (RBNode *node,
 	g_static_rw_lock_reader_lock (node->priv->lock);
 	g_static_rw_lock_reader_lock (child->priv->lock);
 
-	idx = rb_node_get_child_index (node, child);
+	idx = get_child_index_real (node, child);
 
 	if ((idx - 1) >= 0) {
 		ret = g_ptr_array_index (node->priv->children, idx - 1);

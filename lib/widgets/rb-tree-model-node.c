@@ -82,11 +82,13 @@ static void root_child_added_cb (RBNode *node,
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
 		                   RBTreeModelNode *model);
-static void rb_tree_model_node_update_node (RBTreeModelNode *model,
-				            RBNode *node,
-					    int idx);
+static inline void rb_tree_model_node_update_node (RBTreeModelNode *model,
+				                   RBNode *node,
+					           int idx);
 static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
+static inline GtkTreePath *get_path_real (RBTreeModelNode *model,
+	                                  RBNode *node);
 
 struct RBTreeModelNodePrivate
 {
@@ -440,12 +442,23 @@ rb_tree_model_node_get_iter (GtkTreeModel *tree_model,
 	return TRUE;
 }
 
+static inline GtkTreePath *
+get_path_real (RBTreeModelNode *model,
+	       RBNode *node)
+{
+	GtkTreePath *retval;
+
+	retval = gtk_tree_path_new ();
+	gtk_tree_path_append_index (retval, rb_node_get_child_index (model->priv->root, node));
+
+	return retval;
+}
+
 static GtkTreePath *
 rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 			     GtkTreeIter *iter)
 {
 	RBTreeModelNode *model = RB_TREE_MODEL_NODE (tree_model);
-	GtkTreePath *retval;
 	RBNode *node;
 
 	g_return_val_if_fail (RB_IS_TREE_MODEL_NODE (tree_model), NULL);
@@ -461,10 +474,7 @@ rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 	if (node == model->priv->root)
 		return gtk_tree_path_new ();
 	
-	retval = gtk_tree_path_new ();
-	gtk_tree_path_append_index (retval, rb_node_get_child_index (model->priv->root, node));
-
-	return retval;
+	return get_path_real (model, node);
 }
 
 static void
@@ -723,14 +733,11 @@ root_child_removed_cb (RBNode *node,
 		       RBTreeModelNode *model)
 {
 	GtkTreePath *path;
-	GtkTreeIter iter;
 
 	if (node == model->priv->playing_node)
 		model->priv->playing_node = NULL;
 
-	rb_tree_model_node_iter_from_node (model, child, &iter);
-
-	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+	path = get_path_real (model, child);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
 }
@@ -745,12 +752,12 @@ root_child_added_cb (RBNode *node,
 
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 
-	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+	path = get_path_real (model, child);
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
 }
 
-static void
+static inline void
 rb_tree_model_node_update_node (RBTreeModelNode *model,
 				RBNode *node,
 				int idx)
@@ -767,7 +774,7 @@ rb_tree_model_node_update_node (RBTreeModelNode *model,
 	}
 	else
 	{
-		path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+		path = get_path_real (model, node);
 	}
 
 	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
