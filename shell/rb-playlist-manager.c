@@ -773,31 +773,24 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 static void
 add_uri_to_playlist (RBPlaylistManager *mgr, RBPlaylistSource *playlist, const char *uri, const char *title)
 {
-/* 	GError *error = NULL; */
-	/* RHYTHMDB FIXME */
-	return;
-/* 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri); */
-/* 	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri); */
+	GError *error = NULL;
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 
-/* 	if (rb_uri_is_iradio (scheme)) { */
-/* 		rb_iradio_source_add_station (mgr->priv->iradio_source, uri, title, NULL); */
-/* 		goto out; */
-/* 	} */
+	if (rb_uri_is_iradio (scheme)) {
+		rb_iradio_source_add_station (mgr->priv->iradio_source, uri, title, NULL);
+		goto out;
+	}
 
-/* 	rb_library_add_uri (mgr->priv->library, uri, &error); */
-/* 	if (error) { */
-/* 		rb_debug ("error loading URI %s", uri); */
-/* 		goto out; /\* FIXME *\/ */
-/* 	} */
+	rhythmdb_add_song (mgr->priv->db, uri, &error);
+	if (error) {
+		rb_debug ("error loading URI %s", uri);
+		goto out; /* FIXME */
+	}
 
-/* 	node = rb_library_get_song_by_location (mgr->priv->library, uri); */
-
-/* 	g_return_if_fail (node != NULL); */
-
-/* 	/\* add this node to the newly created playlist *\/ */
-/* 	rb_playlist_source_add_entry (playlist, node); */
-/* out: */
-/* 	gnome_vfs_uri_unref (vfsuri); */
+	rb_playlist_source_add_location (playlist, uri);
+out:
+	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void

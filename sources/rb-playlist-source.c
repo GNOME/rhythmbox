@@ -560,9 +560,15 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) == NULL);
 	g_hash_table_insert (source->priv->entries,
 			     g_strdup (location), GINT_TO_POINTER (1));
+	rhythmdb_read_lock (source->priv->db);
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	if (entry != NULL)
+	if (entry)
+		rhythmdb_entry_ref_unlocked (source->priv->db, entry);
+	rhythmdb_read_unlock (source->priv->db);
+	if (entry != NULL) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
+		rhythmdb_entry_unref (source->priv->db, entry);
+	}
 }
 
 
