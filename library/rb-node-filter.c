@@ -298,6 +298,7 @@ thread_main (RBNodeFilterPrivate *priv)
 		g_mutex_lock (priv->expr_lock);
 		if (priv->expression != NULL)
 			expression = g_utf8_casefold (priv->expression, -1);
+		g_strstrip (expression);
 		priv->expr_changed = FALSE;
 		g_mutex_unlock (priv->expr_lock);
 
