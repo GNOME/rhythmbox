@@ -73,6 +73,7 @@ static void rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *
 							     const char *verbname);
 static void handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
 						    const char *genre, RBPlaylistManager *mgr);
+static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
 
 struct RBPlaylistManagerPrivate
 {
@@ -279,6 +280,8 @@ rb_playlist_manager_init (RBPlaylistManager *mgr)
 
 	mgr->priv->saving = FALSE;
 	mgr->priv->dirty = FALSE;
+
+	mgr->priv->thread_reaper_id = g_idle_add ((GSourceFunc) reap_dead_playlist_threads, mgr);
 }
 
 static gboolean
