@@ -1,21 +1,12 @@
 TODO
 ====
 
-I'm currently working on:
-=========================
+Tasks:
+======
 
-Features:
----------
-* Implement small view
 * Volume label instead of icon??
 * Contextmenu on nodeview
-
-Open tasks:
-===========
-
 * Column editor/more columns (rating, last played, play count)
-* More select number of genres, with None and Custom like in iTunes.
-  If one of the many id3 ones have been used, we can use custom.
 * Disc number support?
 * In info dialog mtime, play count, last played, file kind, sample rate
 * Better random mode
@@ -36,9 +27,41 @@ Open tasks:
 need confirmation dialogs
 * File mass tagging
 * Save treeview state
-* Group views need to be reorderable, so no sorting
+* Group views need to be reorderable
 * Save filtering state
-
+* First time startup stuff
+* Filtering speedup
+* Songinfo issues (dialog getting hidden on filtering change)
+* Save library and groups periodically
+* Global RBPlayer widget
+* Sane defaults (pane pos, window size, show browser by default)
+* Fix delete (slow? what happens on "double-delete"?)
+* Autoscroll to playing node after perioud of interface inactivity?
+* Support opening groups in new windows for easy editing
+* Better alert dialogs
+* Manual
+* Toolbar editor
+* Save/restore toolbar position
+* Better genre in songinfo: separate styles and genres? (USe sentence case in genre dropdown in any case)
+* Access keys in song info should highlight contents
+* Multiple selecton in artist/album lists (campd's filter object?)
+* Doubleclick artist or album to start playing from it
+* Name and Location fields in songinfo dialog, support file renaming
+ (Name filename, location for path - a la nautilus)
+* Shift-F12 popup on sidebar
+* Properly draw DND hints on sidebar
+* "Jump to playing song" should switch to playing source
+* Track num navigation in group not working?
+* "View browser" should work with gconf notifier
+* Re-enable monitoring when FAM is fixed
+* Sort when a non-All node is shown? 
+* Crash on exit
+* .kets file?
+* update-from-egg.sh
+* tray icon should support drops
+* view->Show current album/artist or something?
+* view->jump to... (a la xmms) ?
+* multiple tag support in songinfo and rb itself
 
 Olive's TODO
 ============
