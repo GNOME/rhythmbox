@@ -780,7 +780,8 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "show_popup",
 			  G_CALLBACK (rb_shell_show_popup_cb), shell);
 
-	shell->priv->statusbar = rb_statusbar_new (shell->priv->ui_component);
+	shell->priv->statusbar = rb_statusbar_new (shell->priv->library,
+						   shell->priv->ui_component);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
 				       G_N_ELEMENTS (target_table));

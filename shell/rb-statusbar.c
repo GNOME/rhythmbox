@@ -29,6 +29,7 @@
 #include <bonobo/bonobo-ui-util.h>
 
 #include "rb-statusbar.h"
+#include "rb-library.h"
 #include "rb-thread-helpers.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
@@ -55,6 +56,7 @@ static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   GConfEntry *entry,
 					   RBStatusbar *statusbar);
 
+static gboolean poll_library_status (RBStatusbar *status);
 static void rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 					    RBStatusbar *statusbar);
 static void rb_statusbar_view_statusbar_changed_cb (BonoboUIComponent *component,
@@ -79,6 +81,8 @@ struct RBStatusbarPrivate
 {
 	RBSource *selected_source;
 
+	RBLibrary *library;
+
 	BonoboUIComponent *component;
 
 	GtkTooltips *tooltips;
@@ -89,6 +93,9 @@ struct RBStatusbarPrivate
 
 	GtkWidget *progress;
 
+	gboolean library_status_displayed;
+	guint library_poll_id;
+
 	gboolean idle_tick_running;
 	guint idle_tick_id;
 };
@@ -96,6 +103,7 @@ struct RBStatusbarPrivate
 enum
 {
 	PROP_0,
+	PROP_LIBRARY,
 	PROP_COMPONENT,
 	PROP_SOURCE,
 };
@@ -142,6 +150,13 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 	object_class->set_property = rb_statusbar_set_property;
 	object_class->get_property = rb_statusbar_get_property;
 
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY,
+					 g_param_spec_object ("library",
+							      "RBLibrary",
+							      "RBLibrary object",
+							      RB_TYPE_LIBRARY,
+							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
 					 g_param_spec_object ("source",
@@ -227,7 +242,9 @@ rb_statusbar_finalize (GObject *object)
 	if (statusbar->priv->idle_tick_running) {
 		g_source_remove (statusbar->priv->idle_tick_id);
 	}
-
+	if (statusbar->priv->library_poll_id)
+		g_source_remove (statusbar->priv->library_poll_id);
+	
 	g_free (statusbar->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -243,6 +260,11 @@ rb_statusbar_set_property (GObject *object,
 
 	switch (prop_id)
 	{
+	case PROP_LIBRARY:
+		statusbar->priv->library = g_value_get_object (value);
+		statusbar->priv->library_poll_id
+			= g_idle_add ((GSourceFunc) poll_library_status, statusbar);
+		break;
 	case PROP_SOURCE:
 		if (statusbar->priv->selected_source != NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (statusbar->priv->selected_source);
@@ -298,6 +320,9 @@ rb_statusbar_get_property (GObject *object,
 
 	switch (prop_id)
 	{
+	case PROP_LIBRARY:
+		g_value_set_object (value, statusbar->priv->library);
+		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, statusbar->priv->selected_source);
 		break;
@@ -320,6 +345,27 @@ rb_statusbar_set_source (RBStatusbar *statusbar,
 	g_object_set (G_OBJECT (statusbar),
 		      "source", source,
 		      NULL);
+}
+
+static gboolean
+poll_library_status (RBStatusbar *status)
+{
+	char *str;
+
+	GDK_THREADS_ENTER ();
+
+	str = rb_library_get_status (status->priv->library);
+
+	if ((status->priv->library_status_displayed = (str != NULL))) {
+		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
+	}
+	g_free (str);
+
+	status->priv->library_poll_id = 
+		g_timeout_add (250, (GSourceFunc) poll_library_status,
+			       status);
+	GDK_THREADS_LEAVE ();
+	return FALSE;
 }
 
 static gboolean
@@ -358,9 +404,10 @@ rb_statusbar_set_progress (RBStatusbar *statusbar, double progress)
 
 
 RBStatusbar *
-rb_statusbar_new (BonoboUIComponent *component)
+rb_statusbar_new (RBLibrary *library, BonoboUIComponent *component)
 {
 	RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
+					       "library", library,
 					       "component", component,
 					       NULL);
 
@@ -372,7 +419,8 @@ rb_statusbar_new (BonoboUIComponent *component)
 static void
 rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 {
-	if (statusbar->priv->selected_source != NULL) {
+	if (statusbar->priv->selected_source != NULL
+		&& !statusbar->priv->library_status_displayed) {
 		const char *status = rb_source_get_status (statusbar->priv->selected_source);
 		rb_debug  ("got status: %s", status);
 
