@@ -1700,7 +1700,7 @@ rb_node_view_node_is_visible (RBNodeView *view,
 	GtkTreePath *path;
 	GdkRectangle rect;
 
-	if (node == NULL)
+	if (node == NULL || !GTK_WIDGET_REALIZED (view))
 		return FALSE;
 
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
