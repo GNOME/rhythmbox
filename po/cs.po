@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-14 04:11+0200\n"
-"PO-Revision-Date: 2004-04-14 13:50+0200\n"
+"POT-Creation-Date: 2004-04-15 15:31+0200\n"
+"PO-Revision-Date: 2004-04-15 16:21+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -158,7 +158,7 @@ msgstr "Žánry, umělci a alba"
 msgid "The following files couldn't be loaded:"
 msgstr "Následující soubory nemohly být načteny:"
 
-#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:3
+#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
 msgstr "Automaticky hodnotit:"
 
@@ -194,7 +194,7 @@ msgstr "Umístění:"
 msgid "Play count:"
 msgstr "Počet hraní:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:11 data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "_Album:"
 
@@ -220,10 +220,6 @@ msgstr "_Název:"
 #: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "Číslo _stopy:"
-
-#: data/glade/song-info-multiple.glade.h:2
-msgid "A_lbum:"
-msgstr "A_lbum:"
 
 #: data/glade/station-new.glade.h:3
 msgid "_Location:"
@@ -750,7 +746,12 @@ msgstr "Nemohu otevřít soubor jako formát Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:503 metadata/rb-metadata-gst.c:632
+#: metadata/rb-metadata-gst.c:288
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "Pro obsluhu souboru %s není nainstalován žádný zásuvný modul."
+
+#: metadata/rb-metadata-gst.c:529 metadata/rb-metadata-gst.c:658
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -882,89 +883,81 @@ msgstr "%s, %s a %s"
 msgid "%s and %s"
 msgstr "%s a %s"
 
-#: shell/main.c:91
+#: shell/main.c:90
 msgid "Print the playing song and exit"
 msgstr "Vytisknout přehrávanou skladbu a skončit"
 
-#: shell/main.c:92
+#: shell/main.c:91
 msgid "Print the playing song URI and exit"
 msgstr "Vytisknout URI přehrávané skladby a skončit"
 
-#: shell/main.c:94
+#: shell/main.c:93
 msgid "Print the playing song length in seconds and exit"
 msgstr "Vytisknout délky přehrávané skladby v sekundách a skončit"
 
-#: shell/main.c:95
+#: shell/main.c:94
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Vytisknout čas uplynulý při přehrávání skladby a skončit"
 
-#: shell/main.c:96
+#: shell/main.c:95
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Přesunout se na určený čas v přehrávané skladbě, pokud je to možné, a skončit"
 
-#: shell/main.c:98
+#: shell/main.c:97
 msgid "Toggle play/pause mode"
 msgstr "Přepnout režim přehrávání/pozastavení"
 
-#: shell/main.c:99
+#: shell/main.c:98
 msgid "Focus the running player"
 msgstr "Aktivovat běžící přehrávač"
 
-#: shell/main.c:100
+#: shell/main.c:99
 msgid "Jump to previous song"
 msgstr "Přejít na předchozí skladbu"
 
-#: shell/main.c:101
+#: shell/main.c:100
 msgid "Jump to next song"
 msgstr "Přejít na následující skladbu"
 
-#: shell/main.c:103
+#: shell/main.c:102
 msgid "Toggle shuffling"
 msgstr "Přepnout míchání"
 
-#: shell/main.c:105
+#: shell/main.c:104
 msgid "Enable debugging code"
 msgstr "Povolit ladící kód"
 
-#: shell/main.c:106
+#: shell/main.c:105
 msgid "Do not update the library"
 msgstr "Neaktualizovat knihovnu"
 
-#: shell/main.c:107
+#: shell/main.c:106
 msgid "Do not register the shell"
 msgstr "Neregistrovat shell"
 
-#: shell/main.c:108
+#: shell/main.c:107
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Neukládat natrvalo žádná data (implikuje --no-registration)"
 
-#: shell/main.c:109
+#: shell/main.c:108
 msgid "Path for database file to use"
 msgstr "Cesta k souboru databáze, který používat"
 
-#: shell/main.c:110
+#: shell/main.c:109
 msgid "Quit Rhythmbox"
 msgstr "Ukončit aplikaci Rhythmbox"
 
-#: shell/main.c:118 widgets/rb-druid.c:218
+#: shell/main.c:124 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:213
-msgid ""
-"Rhythmbox does not currently work if GNOME sound events are are enabled and "
-"esdsink is in use."
-msgstr ""
-"Rhythmbox momentálně nefunguje, když jsou povoleny zvukové události GNOME a "
-"používá se esdsink."
-
-#: shell/main.c:252 shell/main.c:261
+#: shell/main.c:227 shell/main.c:236
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Došlo k výjimce '%s'"
 
-#: shell/main.c:325
+#: shell/main.c:300
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1500,6 +1493,16 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "A_lbum:"
+#~ msgstr "A_lbum:"
+
+#~ msgid ""
+#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
+#~ "and esdsink is in use."
+#~ msgstr ""
+#~ "Rhythmbox momentálně nefunguje, když jsou povoleny zvukové události GNOME "
+#~ "a používá se esdsink."
 
 #~ msgid "Failed to create thread element; check your GStreamer installation"
 #~ msgstr ""
