@@ -1,0 +1,780 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- arch-tag: The user guide for the Japanese Rhythmbox DocBook documentation
+  -->
+
+<sect1 id="rb-window">
+<title>&application; ウィンドウ</title>
+	<sect2 id="rb-window-intro">
+	<title>概要<!-- Overview --></title>
+
+	<para>&application; ウィンドウで好みの音楽の情報を表示したり演奏したりできます。
+	図1 は &application; ウィンドウでライブラリを表示しているところです。
+	<!-- The &application; window enables you to display and play your favorite music. Figure 1 shows the &application; window displaying the library. --></para>
+	<figure id="fig-rb-window">
+	<title>&application; ウィンドウ内でのライブラリの表示
+	<!-- The Library in the &application; Window --></title>
+	<screenshot>
+	<mediaobject>
+  		<imageobject>
+    		<imagedata fileref="figures/rb-window.png" format="PNG"/>
+  		</imageobject>
+  		<textobject>
+		<phrase>&application; ウィンドウでライブラリを表示しているところです。
+		<!-- Show the &application; window showing Library. -->
+		Callouts: メニューバー、プレイヤーエリア、表示ペイン、サイドペイン、ステータスバー
+		<!-- Callouts: Menubar, Player area, View pane, Side pane, Statusbar. -->
+		</phrase>
+  		</textobject>
+	</mediaobject>
+	</screenshot>
+	</figure>
+	<para>表 1 は &application; ウィンドウ各部の説明です。
+	<!-- Table 1 describes the components of &application; window. --></para>
+
+	<table frame="topbot" id="table-rb-window">
+	<title>&application; ウィンドウコンポーネント<!-- Window Components --></title>
+	<tgroup cols="2" colsep="0" rowsep="0"><colspec colname="COLSPEC0" colwidth="29.39*"/>
+	<colspec colname="COLSPEC1" colwidth="70.61*"/>
+	<thead>
+		<row rowsep="1">
+			<entry valign="top">コンポーネント<!-- Component --></entry>
+			<entry valign="top">説明<!-- Description --></entry>
+		</row>
+	</thead>
+	<tbody>
+		<row>
+			<entry valign="top">メニューバー<!-- Menubar --></entry>
+			<entry valign="top">&application; の機能を実行するために使うメニュー
+			<!-- Contains menus that you use to perform
+			tasks in &application;. --></entry>
+		</row>
+		<row>
+			<entry valign="top">サイドペイン<!-- Side pane --></entry>
+			<entry valign="top">ライブラリと &playlist; を切り替えられます。
+			<!-- Enable you to switch between Library and &playlist;. --></entry>
+		</row>
+		<row>
+			<entry valign="top">プレイヤーエリア<!-- Player area --></entry>
+			<entry valign="top">今演奏しているトラックについての詳細へのアクセスを提供し、
+			またライブラリの中から語句やフレーズで検索することができます。
+			<!-- Provides access to details about the
+			currently playing track and, in Library, enable you to
+			search for a particular word or phrase. --></entry>
+		</row>
+		<row>
+			<entry valign="top">ビューペイン<!-- View pane --></entry>
+			<entry valign="top">
+			<itemizedlist>
+			<listitem><para>ライブラリ</para></listitem>
+			<listitem><para>グループ</para></listitem>
+<!--			<listitem><para>音楽 CD</para></listitem> -->		
+			<listitem><para>インターネットラジオ</para></listitem> 
+			</itemizedlist>	のリストの中から聴けるトラックを表示します。
+			<!-- Displays a list of available tracks from:<itemizedlist>
+			<listitem><para>Library</para></listitem>
+			<listitem><para>Music groups</para></listitem>
+<!- -			<listitem><para>Audio CDs</para></listitem> - ->
+			<listitem><para>Internet radio</para></listitem> 
+			</itemizedlist>	 -->
+			</entry>
+		</row>
+		<row>
+			<entry valign="top">ステータスバー<!-- Statusbar --></entry>
+			<entry valign="top">ビューペインの中のトラックについての広範な情報を表示します。
+			<!-- Displays global informations about tracks in View Pane. --></entry>
+		</row>
+
+	</tbody>
+	</tgroup>
+	</table>
+	</sect2>
+
+<sect2 id="intro-sidebar">
+<title>サイドペイン<!-- The Side Pane --></title>
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-sidebar.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>ライブラリと &playlist; アイコンを表示するサイドペイン
+		<!-- Shows side pane with library and &playlist; icons. -->
+		</phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+	<para>サイドペインでライブラリやインターネットラジオ、&playlist;
+	にアクセスできます。サイドペインには以下のアイコンを含めることができます:
+	<!-- The side pane is where you can access your music library internet radio and
+	your &playlist;  <!- - and CDs - ->.The side pane can contain	
+	the following icons: -->
+	<itemizedlist>
+		<listitem>すべての曲を表示する、&application; ライブラリ
+		<!-- The &application; library, where all of the
+		imported songs will appear. -->
+		</listitem>
+		<listitem>インポートした曲からつくった &playlist;
+		<!-- Any &playlist;  that have been created from imported songs. -->
+		</listitem> 
+ 		<listitem>インターネットラジオ局
+		<!-- Listen to Internet Radio stations. --></listitem> 
+		<!--
+		<listitem>Audio CD's inserted into the computer's CD
+		drives.
+		</listitem> 
+		-->
+	</itemizedlist>
+	</para>
+</sect2>
+
+<sect2 id="player-area">
+<title>プレイヤーエリア<!-- The Player Area --></title>
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-player.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>プレイヤーエリアの表示<!-- Shows player area --></phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+	<para>'プレイヤー' エリアは現在演奏中のトラックに関する詳細へのアクセスを提供しています。
+	何も演奏していないときは何の情報も表示されません。
+	'演奏'を選択するとトラック名とその下にアーティスト名、アルバム名が表示されます。
+	<!-- The 'player' area provides access to details about the
+	currently playing track. When a track is not being played, this
+	area shows no information. When 'Play' is selected, the track name
+	is displayed, and underneath, the artist and the album names. -->
+	</para>
+	<para>またトラッカーは演奏の進み具合を表示するディスプレイでもあります。
+	トラッカーにフォーカスがあたっているとき演奏中のトラックを矢印キーによって早送りあるいは巻戻しできます。
+	<!-- A tracker is also displays, showing the progress of the
+	playing. When tracker has focus, the arrow keys can be used to
+	Fast-Forward or Rewind the playing track. --></para>
+	<tip><para>アーティスト名かアルバム名(下に表示されています)をクリックすると
+	'allmusic.com' の該当するページが読み込まれます。
+	<!-- Clicking on the artist or album name (where they are
+	underlined) will load the appropriate 'allmusic.com' page. -->
+	</para>
+	</tip>
+	<tip><para>ホィールマウスを使っていれば、
+	マウスカーソルが音量ボタン上にあるときにスクロールのアップダウンで音量を調整できます。
+	<!-- If you are using a mouse with a scroll wheel, you can 
+	adjust the volume by scrolling up or down while the mouse pointer 
+	is over the volume button. --></para>
+	</tip>
+</sect2>
+</sect1>
+
+<sect1 id="Usage">
+<title><!-- Using -->&application; の使い方</title>
+
+	<sect2 id="Playing">
+	<title>音楽を演奏する<!-- Playing Music --></title>
+
+		<para>トラックを演奏するには選択して
+		ツールバーの <guibutton>演奏</guibutton>
+		ボタンを押すか単にトラックをダブルクリックして演奏を開始します。
+		<!-- To play a track, either select the track and press the
+		<guibutton>Play</guibutton> button on the toolbar, or simply
+		double-click on the track to start playing. -->
+		</para>
+		<para>トラックの演奏が終了すると、&application;
+		はビューペインのリストに表示されている次のトラックを演奏します。
+		<!-- When track ends, &application; jump to play next track 
+		in the list showed in view pane. --></para>
+		<para>ライブラリ内では、アーティストまたはアルバムの全曲を
+		<link linkend="browser">ライブラリブラウザ</link> 内の
+		<guilabel>アルバム</guilabel> または <guilabel>アーティスト</guilabel>
+		エントリを選択するだけで演奏することができます。
+		<!-- In Library you can play all song from an artist or a
+		single album simply select <guilabel>Album</guilabel>
+		or <guilabel>Artist</guilabel> entry in 
+		<link linkend="browser">library browser</link>. --></para>
+		
+		<sect3 id="shuffle">
+		<title>シャッフル<!-- Shuffle --></title>
+			<screenshot>
+			<mediaobject>
+				<imageobject>
+				<imagedata fileref="figures/rb-shuffle.png"
+				format="PNG"/>
+				</imageobject>
+				<textobject>
+				<phrase>ステータスバー内のシャッフルボタン
+				<!-- Shows shuffle button in statusbar. -->
+				</phrase>
+				</textobject>
+			</mediaobject>
+			</screenshot>
+			<para>このオプションを選択するとブラウザ内のトラックを
+			'ランダムな' 順番で演奏します。
+			<!-- When this option is selected, the tracks in the
+			browser are played in 'random' order. --></para>
+		</sect3>
+
+		<sect3 id="repeat">
+		<title>リピート<!-- Repeat --></title>
+			<screenshot>
+			<mediaobject>
+				<imageobject>
+				<imagedata fileref="figures/rb-repeat.png"
+				format="PNG"/>
+				</imageobject>
+				<textobject>
+				<phrase>ステータスバー内のリピートボタン
+				<!-- Shows repeat button in statusbar. -->
+				</phrase>
+				</textobject>
+			</mediaobject>
+			</screenshot>
+		<para>このオプションを選択すると、
+		ブラウザ内の最後のトラックの演奏が終るとリストの最初の曲に戻って演奏を続けます。
+		<!-- When this option is selected, when the last track in the
+		browser is played, the list is repeated from the beginning. -->
+		</para>
+		</sect3>
+
+		<sect3 id="next-previous">
+		<title>次へ/演奏/前へ<!-- Next/Play/Previous --></title>
+			<screenshot>
+			<mediaobject>
+				<imageobject>
+				<imagedata fileref="figures/rb-nextprev.png"
+				format="PNG"/>
+				</imageobject>
+				<textobject>
+				<phrase>ツールバー内の [次へ/前へ] ボタン
+				<!-- Shows repeat button in toolbar. -->
+				</phrase>
+				</textobject>
+			</mediaobject>
+			</screenshot>
+			<para>[次へ/前へ] ボタンは演奏中のトラックをとばすのに使えます。
+			曲が演奏中なら[前へ] ボタンでその先頭に戻って演奏し直します。
+			[演奏] ボタンは現在選択しているトラックを演奏します。
+			もし演奏中であればこのボタンは一時停止のアイコンに変ります。
+			<!-- The Next and Previous buttons can be used to skip between tracks
+ 			whilst playing. If a song is currently playing, the previous button will restart the
+ 			song. Clicking on the Play button will start &application; playing the current track.
+			Whilst playing this will change to a Pause icon. --></para>
+
+		</sect3>
+
+		<sect3 id="volume">
+		<title>音量調整<!-- Volume Control --></title>
+			<screenshot>
+			<mediaobject>
+				<imageobject>
+				<imagedata fileref="figures/rb-volume-changer.png"
+				format="PNG"/>
+				</imageobject>
+				<textobject>
+				<phrase>ツールバー内の音量調整スライダ
+				<!-- Shows volume slider in toolbar. -->
+				</phrase>
+				</textobject>
+			</mediaobject>
+			</screenshot>
+			<para>プレイヤーエリアの右側に音量調整ボタンがあります。
+			拡声器のアイコンをクリックすると音量調整スライダが表示されます。
+			上下にスライドすることで音量を大きくしたり小さくしたりできます。
+			この拡声器アイコンは音量を反映して変化します。
+			<!-- volume control in the right hand of the player area.
+			Clicking on the loudspeaker icon will show the volume slider.
+			Sliding this up and down will increase and decrease the volume.
+			The loudspeaker icon will change to reflect the relative volume. -->
+			</para>
+		</sect3>
+
+	</sect2>
+
+
+	<sect2 id="library">
+	<title>ライブラリ<!-- The Library --></title>
+
+		<para>&application; ライブラリで音楽ファイルを整理して見ることができます。
+		アーティストまたはアルバム単位でライブラリを見ることができます。
+		一度曲をライブラリに追加すれば直接あるいは &playlist;
+		に追加することでプレイリストの一部として演奏することができます。
+		<!-- The &application; Library is an organized view of
+		your music files. You can browse the Library by artist or
+		by album. Once you have added a song to your Library you
+		can play it directly or add it to a &playlist; to be played as
+		part of a playlist. --></para>
+		<para>
+		<menuchoice><guimenu>整理</guimenu><guimenuitem>ライブラリへ追加...</guimenuitem></menuchoice>
+		を選択すると音楽ファイルを &application; ライブラリに追加できます。
+		フォルダを選択すればそのすべてのサブフォルダ内の音楽ファイルがライブラリに追加されます。
+		<!-- Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>Add to Library...
+		</guimenuitem></menuchoice> to add music files to &application; Library. If you select a folder,
+		all music file in all subfolders will be added to Library. -->
+		</para>
+		<warning>
+		<para>ライブラリは、システムの各ユーザーについて固有で、
+		ホームディレクトリ内の
+		<filename class="directory">.gnome2/rhythmbox</filename>
+		ディレクトリにあります。
+		<!-- The library is located in the <filename
+		class="directory">.gnome2/rhythmbox</filename> directory
+		in your home directory. It is unique for each user on
+		your system. --></para>
+		<para>このディレクトリを削除または移動すると &application; 
+		を次回起動したときに新しい空のライブラリが作成されます。
+		<!-- If you delete or move this directory a new, empty
+		library will be created when the application is next
+		opened. --></para>
+		</warning>
+
+		<sect3 id="adding">
+		<title>曲を追加する<!-- Adding Songs --></title>
+			<para>次に示すいくつかの方法で曲をライブラリに追加することができます:
+			<!-- A song can be added to the library in a few
+			ways, as shown below; -->
+			<itemizedlist>
+				<listitem><menuchoice><guimenu>整理</guimenu><guimenuitem>ライブラリへ追加...</guimenuitem></menuchoice>
+				を選択
+					<!-- Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>Add to Library...</guimenuitem></menuchoice> -->
+				</listitem>
+				<listitem>他のアプリケーション
+				(例えば Nautilus) からドラッグアンドドロップ。
+				<!-- Drag and drop from other applications.
+				eg. Nautilus -->
+				</listitem>
+				<listitem>Nautilus で曲/フォルダを 
+				&application; コンテキストメニューを使って開く。
+				<!-- Opening a song/directory from Nautilus 
+				with &application;, using the context menu. -->
+	 			<screenshot>
+ 					<mediaobject>
+		 				<imageobject>
+		 				<imagedata fileref="figures/rb-context-menu.png"
+		 				format="PNG"/>
+		 				</imageobject>
+		 				<textobject>
+		 				<phrase>Nautilus の &application; コンテキストメニュー
+						<!-- The &application; context menu in Nautilus. --></phrase>
+		 				</textobject>
+	 				</mediaobject>
+	 			</screenshot>
+				</listitem>
+			</itemizedlist>
+			</para>
+		</sect3>
+
+		<sect3 id="delete">
+		<title>曲を削除<!-- Deleting Songs --></title>
+			<para>曲をライブラリから削除するには単に曲を選んで
+			<menuchoice><guimenu>編集</guimenu><guimenuitem>削除</guimenuitem></menuchoice>
+			を選択するか、<shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut>
+			キーを押します。
+			<!-- To delete songs from the library, simply select
+			the song then choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice> item or press the
+			 <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key. -->
+			</para>
+			<para>アルバム(またはアーティスト)の最後のエントリが削除されると、
+			ライブラリブラウザから対応するエントリもまた削除されます。
+			<!-- Once the last entry of an album (or artist) is
+			deleted, the appropriate entry is also deleted from	
+			Library browser. --></para>
+		</sect3>
+
+		<sect3 id="browser">
+		<title>ブラウザを使う<!-- Using the Browser --></title>
+			<para>ブラウザでライブラリを楽にブラウズしたり、アーティストや
+			現在演奏中のトラックのアルバムを見たりできます。
+			これらは &playlist; を見ているときには表示されません。
+			<menuchoice><guimenu>表示</guimenu><guimenuitem>ブラウザ</guimenuitem></menuchoice>
+			を選択してブラウザの表示/非表示を切り替えて下さい。
+			<!-- The Browser allows the library to be easily
+			browsed, showing the artist, then album of the current
+			track. It is not shown when viewing a &playlist;<!-\- or
+			audio CD-\->. Choose <menuchoice><guimenu>View</guimenu><guimenuitem>Browser</guimenuitem></menuchoice> to change browser visibility. -->
+			</para>
+			<screenshot>
+				<mediaobject>
+				<imageobject>
+				<imagedata fileref="figures/rb-browser.png"
+				format="PNG"/>
+				</imageobject>
+				<textobject>
+				<phrase><!-- The -->&application; ブラウザ<!-- browser --></phrase>
+				</textobject>
+				</mediaobject>
+			</screenshot>
+			<para>最初のブラウザ設定のデフォルトではアーティストとすべてのトラックが表示されています。
+			個別のアーティストを選択するとそのアーティストのすべてのアルバムがアルバムリストに表示され、
+			それらアルバムのすべてのトラックがトラックリストに表示されます。
+			アルバムを選択するとそのアルバムのトラックだけがトラックリストに表示されます。
+			<!-- When started, the browser defaults to viewing all
+			artists, and all tracks. Selecting an individual artist
+			will change the Album list to show all albums by this
+			artist, and the track list changes to show all tracks
+			for these albums. Selecting an album will change the
+			track list to show only the contents of this album. -->
+			</para>  
+		</sect3>
+
+<sect3 id="properties">
+<title>プロパティ<!-- Properties --></title>
+<para>
+<menuchoice><guimenu>編集</guimenu><guimenuitem>プロパティ</guimenuitem></menuchoice>
+を選択すると個別のトラックのプロパティを表示できます。
+<!-- Choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Properties</guimenuitem></menuchoice> to view the properties of a particular track . -->
+</para>
+<para>
+<guilabel>基本情報</guilabel> タブには曲のタイトルやアーティスト、作成日時といった詳細が表示されます。
+<!-- The <guilabel>Basic</guilabel> tab shows the details of the song, as Title, Artist, Date. -->
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-basic.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>基本的な曲情報<!-- Basic song properties --></phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+</para>
+
+<para>
+ダイアログの <guilabel>詳細情報</guilabel> タブにはファイルとそのエンコーディングについてより詳細な情報が表示されます。
+またファイルに関する <xref linkend="statistics" /> も表示されます。
+<!-- The <guilabel>Details</guilabel> tab of the dialog shows more detailed information about the file itself and its encoding. It also shows the <xref linkend="statistics"/> associated with the file. -->
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-adv.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>曲の詳細なプロパティ<!-- Details song properties --></phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+
+</para>
+
+
+</sect3>
+
+<sect3 id="search">
+<title>検索<!-- Searching --></title>
+<para>特定の語句やフレーズで &application; ライブラリを検索するには、検索フィールドに入力します。
+そうすると検索条件に合致するすべてのエントリがトラックリスト内に表示されます。
+<!-- To search the &application; library for a particular word or phrase, type into the search field, and the view will show all the entries that have the search criteria will be shown the in the tracks list. --></para>
+<figure id="fig-search">
+<title>名前エントリの検索<!-- Search name entry --></title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-search.png">
+</graphic>
+</screenshot>
+</figure>
+</sect3>
+</sect2>
+
+<sect2 id="statistics">
+<title>状態<!-- Statistics --></title>
+
+<para>&application;  はライブラリ利用の状態を保持することができます。
+&application; は自動的に演奏回数と最後に演奏した日時を記録し、それぞれのトラックについてレーティングすることができます。
+各々の曲の <xref linkend="properties" />ダイアログの <guilabel>詳細情報</guilabel>
+タブ、またはすべての曲が表示されているライブラリのビューペインで直接に、
+あるいは <xref linkend="prefs" /> ダイアログで適切なカラムを追加できる
+&playlist; によって、これらの情報にアクセスすることができます。
+<!-- &application; can maintain statistics on the use of the library. &application; automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through <guilabel>Additional</guilabel> tab in <xref linkend="properties"/> dialog for each song or directly in the View Pane for all songs displayed in Library or &playlist;; you can add proper columns via the <xref linkend="prefs"/> dialog. --></para>
+<figure id="fig-rb-stats">
+<title>ビューペインでの &application; の状態表示<!-- statistic in View Pane --></title>
+<screenshot>
+<mediaobject>
+  <imageobject>
+    <imagedata fileref="figures/rb-stats.png" format="PNG"/>
+  </imageobject>
+  <textobject>
+	<phrase>Show all statistic FIXME</phrase>
+  </textobject>
+</mediaobject>
+</screenshot>
+</figure>
+<sect3 id="statistics-rating">
+<title>レーティング<!-- Ratings --></title>
+<para>レーティングによってライブラリの各々の曲について星 1 個から 5 個まで重み付けをすることができます。
+曲をレーティングするには:
+<!-- This allows each song in the library to be rated on a scale of 1 to 5 stars. To rate a song: -->
+	<itemizedlist>
+	<listitem><para>曲を選び、<menuchoice><guimenu>編集</guimenu><guimenuitem>ファイル情報</guimenuitem></menuchoice>
+	から <guilabel>詳細情報</guilabel> タブを選択、 <guilabel>レーティング</guilabel>
+	エントリで希望のレートに設定します。
+	<!-- Select the song, choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Properties</guimenuitem></menuchoice>, select <guilabel>Details</guilabel> tab, click in different part of <guilabel>Rating</guilabel> entry to set required rating --></para></listitem>
+	<listitem><para>ビューペインの<guilabel>レーティング</guilabel> カラムで希望のレートに設定します。
+	<!-- Click in different parts of the <guilabel>Rating</guilabel> column in View Pane to set the required rating. --></para></listitem>
+	</itemizedlist>
+</para>
+</sect3>
+<sect3 id="statistics-plays">
+<title>演奏回数<!-- Number of plays --></title>
+<para>トラックを最後まで演奏する度に演奏回数が 1 増えます。
+これによってライブラリ内のどの曲がもっとも好みであるか簡単に見分けがつきます。
+<!-- Each time a track has completed playing, its play count is incremented by 1. This will allow the most popular songs in the library to be easily identified. --></para>
+</sect3>
+<sect3 id="statistics-last">
+<title>最後に演奏した日時<!-- Last played time --></title>
+<para>演奏回数が増えるとその最後に演奏した日時も記録されます。
+<!-- When the play count is incremented, the last played time is also recorded. --></para>
+</sect3>
+
+</sect2>
+
+<sect2 id="groups">
+<title>演奏一覧<!-- Playlists --></title>
+
+<para>&playlist; は &application; ライブラリ内で曲から臨機応変に作成し、
+アーティスト/アルバムライブラリのデフォルトとは異なる方法で並べ替えできます。
+<!-- A &playlist; is an ad hoc list that has been created from songs in &application; library, to have a different sorting method from artist/album library default. -->
+</para>
+<para>&playlist; は特定のジャンル、アーティストのグループ、あるいは同じような雰囲気の曲や好みに応じた曲のリストです。
+<!-- It might consist of a list of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood', or whatever you want. --></para>
+
+<para>&playlist; の内容を表示するには、サイドペインの目的のアイコンをクリックするだけで、
+そうするとビューペインに内容が表示されます。
+<!-- To display the contents of a &playlist;, simply click on the required icon in side pane, and the view pane will change to show the contents. --></para>
+
+<sect3 id="groups-add">
+<title>曲を追加する<!-- Adding Songs --></title>
+ 
+  <para>&playlist; をつくるには次のようにします:
+  <!-- To create a &playlist; use one of the following methods: --></para>
+
+  <itemizedlist>
+    <listitem>ライブラリからサイドペインのライブラリブラウザへトラック、アルバムまたはアーティストをドラッグします。
+    &playlist; ができたとき、その名前はデフォルトではアーティスト(アーティストをドロップしたとき)か、
+    アルバム名(アルバムのとき)、またそれがトラックならダイアログが表示され、グループ名を入力するように求めます
+    (デフォルトでは '無題' です)。
+    <!-- Drag a 'track', 'album' or 'artist' from library or library browser to the side pane. When the &playlist; is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled'). -->
+    </listitem>
+    <listitem>
+    <menuchoice><guimenu>整理</guimenu><guimenuitem>新規グループ</guimenuitem></menuchoice> を選択します。
+    再びダイアログが名前の入力を求め、そしてトラック群が選択されているならつまんで
+    <guilabel>選択トラックを追加</guilabel> オプションボックスでそれらをグループに追加します。
+    <!-- Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>New Group</guimenuitem></menuchoice>. Again a dialog is displayed prompting for a name, and if any tracks are selected, tick the <guilabel>Add selected track</guilabel> option box to add them to the group. -->
+    </listitem>
+  </itemizedlist>
+
+  <para>既存のグループに曲やアルバム、アーティストを追加するには、
+  サイドペインの &playlist; アイコンにライブラリからそれらをドラッグアンドドロップするだけです。
+  <!-- To add songs, album or artist to an already existing group just drag and drop it from the library to the &playlist;''s icon in the side pane. --></para>
+
+<figure id="fig-groups-create">
+<title><!-- Dialog to create a new -->新規 &playlist; を作成するダイアログ</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-group-create.png">
+</graphic>
+</screenshot>
+</figure>
+
+</sect3>
+<sect3 id="groups-delete">
+<title>曲の削除<!-- Deleting Songs --></title>
+<para>&playlist; から曲を削除するには単に曲を選択し、
+<menuchoice><guimenu>編集</guimenu><guimenuitem>削除</guimenuitem></menuchoice><guimenu>編集</guimenu>
+を選択するか、<shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> キーを押します。
+<!-- To delete songs from a &playlist;, simply select the song then choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice><guimenu>Edit</guimenu> or simply press the  <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key. -->
+</para>
+</sect3>
+<sect3 id="groups-modify">
+<title><!-- Modifying a -->&playlist; の変更</title>
+<para>サイドペインのグループアイコンを右クリックすると <guimenu>グループメニュー</guimenu>
+が表示され、&playlist; の変更や削除ができるようになります。
+<guimenuitem>名前の変更</guimenuitem>
+を選択すると新規グループ名入力のためのプロンプトが表示されます。
+<guimenuitem>削除</guimenuitem> を選択すると &playlist; が削除されます。
+ただし、&playlist; 内のものはライブラリからは削除されません。
+単にプレイリストが削除されるだけです。
+<!-- Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. This will allow the renaming and deletion of the &playlist;. Selecting the <guimenuitem>Rename</guimenuitem> will display a prompt for the new name of the group. Selecting the <guimenuitem>Delete</guimenuitem> will delete the &playlist; (note that the 'content' of the &playlist; is not removed from the library, just the 'playlist'. -->
+</para>
+</sect3>
+</sect2>
+
+<!--
+<sect2 id="cd">
+<title>Audio CDs</title>
+<sect3 id="cd-playing">
+<title>Playing</title>
+<para>When a CD is inserted to the CD drive, it will appear in the side pane, and the songs on it can be displayed in &application;''s main window.</para>
+<para>To play and pause playback, or to skip forward or backwards, use the same controls as used for playing from the library.</para>
+</sect3>
+<sect3 id="cd-ripping">
+<title>Ripping</title>
+<para>...</para>
+</sect3>
+<sect3 id="cd-buring">
+<title>Burning</title>
+<para>...</para>
+</sect3>
+
+</sect2>
+-->
+
+<sect2 id="internet-radio">
+<title>インターネットラジオ<!-- Internet Radio --></title>
+<sect3 id="radio-overview">
+<title>インターネット経由でラジオを聴く<!-- Listening via Internet --></title>
+<para>ストリーム音楽ファイルを聴くのにインターネットラジオチューナーを使うことができます。
+<!-- The Internet Radio tuner can be used to listen to streamed audio files. --></para>
+
+<figure id="fig-iradio">
+<title>インターネットラジオ<!-- Internet Radio in &application; --></title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-iradio.png"/>
+</screenshot>
+</figure>
+
+</sect3>
+
+<sect3 id="iradio-adding">
+<title>放送局を追加<!-- Adding a station --></title>
+<para>
+<menuchoice><guimenuitem>新規インターネットラジオ曲を追加</guimenuitem></menuchoice>
+メニューオプションで新しい放送局をインターネットラジオチューナーに追加することができます。
+<!-- New stations can be added to the Internet Radio tuner, using the <menuchoice><guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice> menuoption. --></para>
+<figure id="fig-add-station">
+<title>新規放送局を &application; に追加<!-- Adding a new station to &application; --></title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-iradio-add.png"/>
+</screenshot>
+</figure>
+</sect3>
+
+</sect2>
+
+
+<sect2 id="notification-area">
+<title>パネルアプレット<!-- Panel Applet --></title>
+
+<para>通知エリアは GNOME の機能であり、プログラム実行中にアプリケーションが小さなアイコンをパネルに追加し、
+そのトレイから &application; をコントロールできるようにします。
+<!-- The Notification Area is a Gnome feature that allows applications to add a small icon to the panel
+while the program is running. &application; adds it''s icon to the notification area and this allows you to control &application; from your tray. --></para>
+
+<para>通知エリアで &application; アイコンを使うと次のコマンドがアプリケーションに送られます。
+<!-- Using the &application; icon in the notification area, the following commands can be sent to the application: -->
+</para>
+<para>
+<itemizedlist>
+<listitem>
+演奏 | 一時停止 &mdash; 現在選択している曲を演奏 / 一時停止。曲が演奏中かどうかで変ります。
+<!-- Play | Pause &mdash; Play or Pause the currently selected song. This item changes depending on whether a song is playing or not. -->
+</listitem>
+<listitem>
+前へ &mdash; プレイリストの前の曲ヘスキップ。
+Previous &mdash; Skip to previous song in playlist.
+</listitem>
+<listitem>
+次へ &mdash; プレイリストの次の曲へスキップ。
+<!-- Next &mdash; Skip to next song in playlist. -->
+</listitem>
+<listitem>
+ウィンドウを表示 &mdash; &application; ウィンドウを表示するかどうか選択。
+<!-- Show Window &mdash; choose whether or not the &application; window is visible or not. -->
+</listitem>
+
+</itemizedlist>
+<tip><para>ホィール付きマウスを使っているのなら、
+マウスカーソルがパネルアプレット上にあるときにスクロールのアップダウンで音量を調整することができます。
+<!-- If you are using a mouse with a scroll wheel, you can adjust the volume by scrolling up or down while the mouse pointer is over the panel applet. --></para>
+</tip>
+</para>
+
+<figure id="fig-notification">
+<title>GNOME 通知エリア内の &application;<!-- in the Gnome Notification Area --></title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-notification-area.png"/>
+</screenshot>
+</figure>
+
+<figure id="fig-notification-menu">
+<title>通知エリア (メニューを表示)<!-- Notification Area (showing menu) --></title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-notification-area-menu.png"/>
+</screenshot>
+</figure>
+</sect2>
+</sect1>
+
+<sect1 id="customize">
+<title><!-- Customizing -->&application; をカスタマイズ</title>
+
+	<para>&application; を必要や好みに合わせてカスタマイズできます。
+	この節では &application; のカスタマイズの方法について説明します。
+	<!-- You can customize &application; to suit your requirements and
+	preferences. This section describes how to customize &application;. -->
+	</para>
+
+	<sect2 id="prefs">
+	<title>設定<!-- Preferences --></title>
+
+		<para><guilabel>設定<!-- Preferences --></guilabel>
+		ダイアログを使うと &application; の表示をカスタマイズできます。
+		<guilabel>設定</guilabel> ダイアログを表示するには
+		<menuchoice><guimenu>編集</guimenu><guimenuitem>設定</guimenuitem>
+		</menuchoice> を選択します。
+		<!-- Using the <guilabel>Preferences</guilabel> dialog you can
+		customize how you want &application; to look. To display the
+		<guilabel>Preferences</guilabel> dialog, choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Preferences
+</guimenuitem></menuchoice>. -->
+		</para>
+
+ 		<sect3 id="prefs-view">
+ 		<title>カラム<!-- Columns --></title>
+ 			<para>ダイアログのこのセクションでどのカラムが表示されるか選択できます。
+			<!-- This section of the dialog allows you to select
+ 			which columns will be displayed. -->
+ 			</para>
+ 		<figure id="fig-general-preferences">
+ 		<title>全般<!-- General Preferences --></title>
+		<screenshot>
+			<mediaobject>
+			<imageobject>
+			<imagedata fileref="figures/rb-prefs-general.png" 
+			format="PNG"/>
+			</imageobject>
+			<textobject>
+			<phrase>&application; 全般の設定ダイアログ
+			<!-- Show the general &application; preferences dialog. -->
+			</phrase>
+			</textobject>
+			</mediaobject>
+		</screenshot>
+		</figure>
+		</sect3>
+
+		<sect3 id="prefs-library">
+		<title>ブラウザ設定<!-- Browser preferences --></title>
+			<para>ダイアログのこのセクションではブラウザがどのように表示されるかを選択できます。
+			<!-- This section of the dialog allows you to select
+			how the browser will be displayed. -->
+			</para>
+		<figure id="fig-preferences">
+ 		<title>ライブラリ設定<!-- Library Preferences --></title>
+		<screenshot>
+ 			<mediaobject>
+ 			<imageobject>
+ 			<imagedata fileref="figures/rb-prefs-library.png" 
+ 			format="PNG"/>
+ 			</imageobject>
+ 			<textobject>
+ 			<phrase>ライブラリ設定ダイアログ
+			<!-- Show the library preferences dialog. -->
+ 			</phrase>
+ 			</textobject>
+ 			</mediaobject>
+		</screenshot>
+		</figure>
+		</sect3>
+	</sect2>
+</sect1>

@@ -26,4 +26,5 @@ DISTCLEANFILES =			\
 	intltool-update
 
 CLEANFILES = ./po/.intltool-merge-cache 	\
-	     ./help/C/rhythmbox-C.omf.out
+	     ./help/C/rhythmbox-C.omf.out	\
+	     ./help/ja/rhythmbox-ja.omf.out

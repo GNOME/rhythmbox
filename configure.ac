@@ -457,6 +457,7 @@ data/rhythmbox.pc
 sources/Makefile
 help/Makefile
 help/C/Makefile
+help/ja/Makefile
 po/Makefile.in
 tests/Makefile
 rhythmbox.spec
