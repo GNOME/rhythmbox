@@ -2,6 +2,105 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-03 06:26:14 GMT	Colin Walters <walters@verbum.org>	patch-56
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-56
+
+
+    new files:
+     po/.arch-ids/az.po.id po/.arch-ids/lt.po.id po/az.po po/lt.po
+
+    removed files:
+     po/az.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/cs.po po/de.po po/el.po
+     po/es.po po/fi.po po/ko.po po/no.po po/pl.po
+
+
+2004-02-03 06:18:45 GMT	Colin Walters <walters@verbum.org>	patch-55
+
+    Summary:
+      merge from me: DND fixes, new context menu, dead code elimination 
+    Revision:
+      rhythmbox--main--0.7--patch-55
+
+    
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-188
+       filter drag positions by what the model says
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-189
+       implement reordering of sources
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-190
+       remove legacy library loading, kill off some other dead code
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-191
+       more dead code elimination
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-192
+       add BonoboUIComponent property to sources
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-193
+       implement "Browse this genre/artist/album" context menu
+    
+
+    removed files:
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-legacy.h
+
+    modified files:
+     ChangeLog data/ui/rhythmbox-ui.xml lib/rb-tree-dnd.c
+     rhythmdb/Makefile.am rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-property-model.h rhythmdb/rhythmdb.c
+     shell/rb-playlist-manager.c shell/rb-shell.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-library-source.h sources/rb-source.c
+     sources/rb-sourcelist-model.c sources/rb-sourcelist.c
+     widgets/rb-property-view.c widgets/rb-property-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-188
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-189
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-190
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-191
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-192
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-193
+
+
+2004-02-02 11:54:32 GMT	Colin Walters <walters@verbum.org>	patch-54
+
+    Summary:
+      more misc. bugfixes, plus INTERNALS update
+    Revision:
+      rhythmbox--main--0.7--patch-54
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-185
+       attempt to update INTERNALS
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-186
+       don't save default float/double values to rhythmdb.xml either
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-187
+       always queue deletion updates even if the entry isn't in the model now
+    
+
+    modified files:
+     ChangeLog INTERNALS rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-tree.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-185
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-186
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-187
+
+
 2004-02-02 04:55:13 GMT	Colin Walters <walters@verbum.org>	patch-53
 
     Summary:
