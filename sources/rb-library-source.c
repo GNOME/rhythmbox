@@ -1573,8 +1573,4 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		
 	rhythmdb_query_free (query);
 	g_object_unref (G_OBJECT (query_model));
-
-	rb_debug ("polling");
-	rb_entry_view_poll_model (source->priv->songs);
-	rb_debug ("done polling");
 }

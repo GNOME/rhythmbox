@@ -58,6 +58,7 @@ struct RBPlayerPrivate
 	GstElement *decoder;
 	GstElement *volume;
 	GstElement *audioconvert;
+	GstElement *audioscale;
 	GstElement *sink;
 
 	GError *error;
@@ -519,6 +520,9 @@ rb_player_construct (RBPlayer *mp,
 	MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert);
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->audioconvert);
 
+	MAKE_ELEMENT_OR_LOSE(audioscale, audioscale);
+	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->audioscale);
+
 	/* Output sink */
 	mp->priv->sink = gst_gconf_get_default_audio_sink ();
 	if (mp->priv->sink == NULL) {
@@ -645,6 +649,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			return FALSE;
 		}
 			
+#if 0
 		rb_debug ("setting sink to NULL");
 		if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
 			g_set_error (error,
@@ -653,6 +658,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 				     _("Could not close output sink"));
 			return FALSE;
 		}
+#endif
 	}
 	return TRUE;
 }
