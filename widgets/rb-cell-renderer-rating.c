@@ -58,7 +58,7 @@ static void rb_cell_renderer_rating_render (GtkCellRenderer *cell,
 					    GdkRectangle *background_area,
 					    GdkRectangle *cell_area,
 					    GdkRectangle *expose_area,
-					    guint flags);
+					    GtkCellRendererState flags);
 static gboolean rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 					          GdkEvent *event, 
 					          GtkWidget *widget,
