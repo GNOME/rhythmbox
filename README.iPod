@@ -1,0 +1,21 @@
+How to build and use Rhythmbox with iPod support:
+
+* configure Rhythmbox with --enable-ipod
+* mount your ipod to /mnt/ipod (or create a /apps/qahog/mount_path gconf key
+  containing the path where your iPod is mounted)
+* your iPod songs should appear in the iPod source from the sidebar
+
+
+FIXME/TODO:
+
+* Show/Hide the iPod source icon according to iPod presence
+* Add some UI to "Eject iPod" (this will perform a "stop" to close the current
+  file)
+* Detect song type to avoid adding songs we can't play to the library
+* Read playlists from the iPod 
+
+Long term:
+* Monitor changes in the iTunesDB and properly update song display
+* Copy songs from and to the iPod
+
+arch-tag: explains the non obvious steps to get the iPod working together with Rhythmbox

@@ -288,7 +288,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	RBIRadioSource *source;
 	RBIRadioSourceClass *klass;
 	GObjectClass *parent_class;  
-	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (type));
+	klass = RB_IRADIO_SOURCE_CLASS (g_type_class_peek (RB_TYPE_IRADIO_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_IRADIO_SOURCE (parent_class->constructor (type, n_construct_properties,
@@ -388,14 +388,19 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (RhythmDB *db)
+rb_iradio_source_new (RBShell *shell, RhythmDB *db, 
+		      BonoboUIComponent *component)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
 					  "db", db,
+					  "component", component,
 					  NULL));
+
+	rb_shell_register_entry_type_for_source (shell, source, 
+						 RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
 
 	return source;
 }

@@ -23,8 +23,8 @@
 #define __RB_LIBRARY_SOURCE_H
 
 #include <gtk/gtkwindow.h>
-#include <bonobo/bonobo-ui-component.h>
 
+#include "rb-shell.h"
 #include "rb-source.h"
 #include "rhythmdb.h"
 
@@ -53,7 +53,10 @@ typedef struct
 
 GType		rb_library_source_get_type	(void);
 
-RBSource *	rb_library_source_new		(RhythmDB *db, BonoboUIComponent *component);
+RBSource *      rb_library_source_new           (RBShell *shell, RhythmDB *db, 
+					 	 BonoboUIComponent *component);
+
+
 void		rb_library_source_show_browser	(RBLibrarySource *source,
 						 gboolean show);
 

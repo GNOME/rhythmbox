@@ -28,6 +28,7 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-no-star.png       \
 	   rhythmbox-audiocd.png       \
 	   rhythmbox-dnd.png           \
+	   rhythmbox-ipod.png	       \
 	   about-logo.png
 
 artdir = $(pkgdatadir)/art

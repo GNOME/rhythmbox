@@ -26,6 +26,8 @@ INCLUDES =						\
 	-I$(top_srcdir)/widgets 			\
 	-I$(top_srcdir)/library 			\
 	-I$(top_srcdir)/iradio				\
+	-I$(top_srcdir)/corba				\
+	-I$(top_srcdir)/shell				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -35,3 +37,11 @@ INCLUDES =						\
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LIBADD = $(top_builddir)/rhythmdb/librhythmdb.la $(top_builddir)/widgets/librbwidgets.la
+
+if USE_IPOD
+libsourcesimpl_la_SOURCES +=         \
+	rb-ipod-source.c             \
+	rb-ipod-source.h	     \
+	itunesdb.c		     \
+	itunesdb.h
+endif

@@ -231,7 +231,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	GObjectClass *parent_class;  
 	GtkWidget *dummy = gtk_tree_view_new ();
 
-	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (type));
+	klass = RB_PLAYLIST_SOURCE_CLASS (g_type_class_peek (RB_TYPE_PLAYLIST_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_PLAYLIST_SOURCE (parent_class->constructor (type, n_construct_properties,

@@ -70,7 +70,7 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
-	PROP_COMPONENT,
+	PROP_COMPONENT
 };
 
 enum

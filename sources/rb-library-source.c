@@ -45,7 +45,6 @@
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
-#include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-search-entry.h"
@@ -187,6 +186,8 @@ struct RBLibrarySourcePrivate
 
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
+
+	RhythmDBEntryType entry_type;
 };
 
 static BonoboUIVerb rb_library_source_verbs[] =
@@ -200,8 +201,9 @@ static BonoboUIVerb rb_library_source_verbs[] =
 enum
 {
 	PROP_0,
-	PROP_DB,
-	PROP_LIBRARY,
+	PROP_DB,	
+	PROP_ICON,
+	PROP_ENTRY_TYPE
 };
 
 static GObjectClass *parent_class = NULL;
@@ -278,6 +280,23 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 							      "RhythmDB database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_ICON,
+					 g_param_spec_object ("icon",
+							      "Icon",
+							      "Source Icon",
+							      GDK_TYPE_PIXBUF,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_TYPE,
+					 g_param_spec_uint ("entry-type",
+							    "Entry type",
+							    "Type of the entries which should be displayed by this source",
+							    0,
+							    G_MAXINT,
+							    RHYTHMDB_ENTRY_TYPE_SONG,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 }
 
 static void
@@ -343,7 +362,6 @@ rb_library_source_ui_pref_changed (GConfClient *client,
 static void
 rb_library_source_init (RBLibrarySource *source)
 {
-	GtkWidget *dummy = gtk_tree_view_new ();
 	source->priv = g_new0 (RBLibrarySourcePrivate, 1);
 
 	/* Drag'n'Drop */
@@ -351,13 +369,6 @@ rb_library_source_init (RBLibrarySource *source)
 	source->priv->vbox = gtk_vbox_new (FALSE, 5);
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
-
-	source->priv->pixbuf = gtk_widget_render_icon (dummy,
-						       RB_STOCK_LIBRARY,
-						       GTK_ICON_SIZE_LARGE_TOOLBAR,
-						       NULL);
-
-	gtk_widget_destroy (dummy);
 }
 
 static void
@@ -417,7 +428,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	GObjectClass *parent_class;  
 	BonoboUIComponent *component;
 
-	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (type));
+	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
@@ -536,6 +547,16 @@ rb_library_source_set_property (GObject *object,
 	case PROP_DB:
 		source->priv->db = g_value_get_object (value);
 		break;
+	case PROP_ICON:
+		if (source->priv->pixbuf) {
+			g_object_unref (G_OBJECT (source->priv->pixbuf));
+		}
+		source->priv->pixbuf = g_value_get_object (value);
+		g_object_ref (source->priv->pixbuf);
+		break;
+	case PROP_ENTRY_TYPE:
+		source->priv->entry_type = g_value_get_uint (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -555,6 +576,12 @@ rb_library_source_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
 		break;
+	case PROP_ICON:
+		g_value_set_object (value, source->priv->pixbuf);
+		break;
+	case PROP_ENTRY_TYPE:
+		g_value_set_uint (value, source->priv->entry_type);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -562,18 +589,30 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (RhythmDB *db, BonoboUIComponent *component)
+rb_library_source_new (RBShell *shell, RhythmDB *db, 
+		       BonoboUIComponent *component)
 {
 	RBSource *source;
+	GtkWidget *dummy = gtk_tree_view_new ();
+	GdkPixbuf *icon;
+
+	icon = gtk_widget_render_icon (dummy, RB_STOCK_LIBRARY,
+				       GTK_ICON_SIZE_LARGE_TOOLBAR,
+				       NULL);
+	gtk_widget_destroy (dummy);
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
-					  "component", component,
+					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "db", db,
+					  "component", component,
+					  "icon", icon,
 					  NULL));
-
+	rb_shell_register_entry_type_for_source (shell, source, 
+						 RHYTHMDB_ENTRY_TYPE_SONG);
 	return source;
 }
+
 
 static gboolean
 string_list_equal (GList *a, GList *b)
@@ -1230,12 +1269,15 @@ static GPtrArray *
 construct_query_from_selection (RBLibrarySource *source)
 {
 	GPtrArray *query;
+	RhythmDBEntryType entry_type;
 
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      RHYTHMDB_ENTRY_TYPE_SONG,
+				      entry_type,
 				      RHYTHMDB_QUERY_END);
+
 	/* select where type="song"
 	 */
 
@@ -1341,8 +1383,9 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			source->priv->search_text == NULL);
 	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->songs);
 	sorting_matches = source->priv->cached_sorting_type
-		&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
+	&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
 	rb_debug ("current sorting: %s, match: %s", current_sorting_type, sorting_matches ? "TRUE" : "FALSE" );
+
 	if (is_all_query) {
 		if (sorting_matches) {
 			rb_debug ("cached query hit");

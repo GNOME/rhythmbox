@@ -47,17 +47,29 @@ if test x"$have_gtk_23" = xyes; then
    AC_DEFINE(HAVE_GTK_2_3, 1, [Define if you have GTK+ 2.3.0 or better])
 fi
 
+dnl iPod support
+dnl enable_ipod = "no"
+AC_ARG_ENABLE(ipod,
+              AC_HELP_STRING([--enable-ipod],
+	                     [Enable iPod support in Rhythmbox]))
+AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
+if test x"$enable_ipod" = xyes; then
+	AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
+fi
+
 dnl Database
 AC_ARG_WITH(database,
               AC_HELP_STRING([--with-database=tree],
 			     [Select the database to use]),,
 	      with_database=tree)
 AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
-if test x"$with_database" != xtree; then
-	AC_MSG_ERROR([Unknown database selected])
+
+if test x"$with_database" = xtree; then
+        AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
 else
-	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
-fi	
+        AC_MSG_ERROR([Unknown database selected])
+fi
+
 
 dnl Database debugging
 AC_ARG_WITH(rhythmdb-debug,
@@ -575,10 +587,16 @@ dnl else
 dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 dnl fi
 if test x"$with_player" = xgstreamer; then
-	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR player is enabled])
+	AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
 else
 	AC_MSG_NOTICE([** xine player is enabled])
 fi
+if test x"$enable_ipod" = xyes; then
+	AC_MSG_NOTICE([** iPod integration enabled])
+else
+	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+
 dnl if test "x$enable_audiocd" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   Audio CD support is disabled])
 dnl else
