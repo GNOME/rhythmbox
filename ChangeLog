@@ -1,3 +1,21 @@
+2003-08-06  Colin Walters  <walters@debian.org>
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* monkey-media/monkey-media-player-gst-tmp.c:
+	(monkey_media_player_sync_pipeline):
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_songs_show_popup_cb), (ensure_node_selection),
+	(genre_node_selected_cb), (rb_iradio_source_show_browser):
+	* sources/rb-library-source.c:
+	(rb_library_source_songs_show_popup_cb), (ensure_node_selection):
+
+	Reimplement popup menu for iradio source.
+
+	Minor indentation fixups in iradio source and library source.
+
+	Also start playback timer after we've started playing, and not before,
+	to accomodate for GStreamer startup lag.
+
 2003-08-06  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell-player.c: (rb_shell_player_playpause):

@@ -530,13 +530,13 @@ rb_iradio_source_state_pref_changed (GConfClient *client,
 
 static void
 rb_iradio_source_songs_show_popup_cb (RBNodeView *view,
-				    RBNode *node,
-				    RBIRadioSource *source)
+				      RBNode *node,
+				      RBIRadioSource *source)
 {
 	GtkWidget *menu;
 	GtkWidget *window;
 
-	window = gtk_widget_get_ancestor (GTK_WIDGET (source),
+	window = gtk_widget_get_ancestor (GTK_WIDGET (view),
 					  BONOBO_TYPE_WINDOW);
 
 	menu = gtk_menu_new ();
@@ -557,8 +557,7 @@ ensure_node_selection (RBNodeView *view,
 {
 	GList *selection = rb_node_view_get_selection (view);
 
-	if (selection == NULL)
-	{
+	if (selection == NULL) {
 		*changing_flag = TRUE;
 		rb_node_view_select_node (view, all_node);
 		*changing_flag = FALSE;
@@ -581,8 +580,8 @@ genre_node_selected_cb (RBNodeView *view,
 				       rb_iradio_backend_get_all_genres(source->priv->backend),
 				       &source->priv->changing_genre);
 
-	stations_filter (source, genre);
 	rb_source_notify_filter_changed (RB_SOURCE (source));
+	stations_filter (source, genre);
 }
 
 static void
@@ -591,13 +590,10 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 {
 	GtkWidget *genreswidget = GTK_WIDGET (source->priv->genres);
 
-	if (show == TRUE)
-	{
+	if (show == TRUE) {
 		gtk_paned_pack1 (GTK_PANED (source->priv->paned), genreswidget, FALSE, FALSE);
 		gtk_widget_show_all (genreswidget);
-	}
-	else if (show == FALSE)
-	{
+	} else if (show == FALSE) {
 		GList *children = gtk_container_get_children (GTK_CONTAINER (source->priv->paned));
 		gtk_widget_hide (genreswidget);
 		if (g_list_find (children, genreswidget))

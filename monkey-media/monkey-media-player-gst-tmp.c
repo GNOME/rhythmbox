@@ -641,8 +641,6 @@ monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 {
 	if (mp->priv->playing) {
 		
-		g_timer_start (mp->priv->timer);
-
 		if (iradio_mode) {
 			g_object_ref (G_OBJECT (mp));
 			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
@@ -652,6 +650,7 @@ monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 			gst_element_set_state (mp->priv->pipeline,
 					       GST_STATE_PLAYING);
 		}
+		g_timer_start (mp->priv->timer);
 	} else {
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_PAUSED);

@@ -350,8 +350,8 @@ rb_library_source_finalize (GObject *object)
 
 static void
 rb_library_source_songs_show_popup_cb (RBNodeView *view,
-				     RBNode *node,
-				     RBLibrarySource *library_source)
+				       RBNode *node,
+				       RBLibrarySource *library_source)
 {
 	GtkWidget *menu;
 	GtkWidget *window;
@@ -536,8 +536,7 @@ ensure_node_selection (RBNodeView *source,
 {
 	GList *selection = rb_node_view_get_selection (source);
 
-	if (selection == NULL)
-	{
+	if (selection == NULL) {
 		*changing_flag = TRUE;
 		rb_node_view_select_node (source, all_node);
 		*changing_flag = FALSE;
