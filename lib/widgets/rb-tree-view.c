@@ -191,25 +191,6 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
         break;
     }
 
-  /* brute force resize */
-  while (left_over_width < 0)
-    {
-      int i;
-
-      for (i = 0; i < expand_col_widths->len && left_over_width < 0; i++)
-        {
-	  int size = g_array_index (expand_col_widths, int, i);
-
-	  if (size > 0)
-            {
-	      size--;
-	      left_over_width++;
-	    }
-
-	  g_array_index (expand_col_widths, int, i) = size;
-	}
-    }
-
   expand_col_num = 0;
 
   for (list = tree_view->priv->columns; list != NULL; list = list->next)
@@ -263,7 +244,16 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
       orig_width = column->width;
 
       if (list == last_column)
-        column->width = widget->allocation.width - width;
+        {
+          int newsize;
+
+	  newsize = widget->allocation.width - width;
+
+	  if (real_requested_width < newsize)
+            column->width = newsize;
+	  else
+            column->width = real_requested_width;
+        }
       else if (rb_tree_view_column_get_expand (RB_TREE_VIEW_COLUMN (column)) == TRUE)
         {
           if (left_over_width > 0)
