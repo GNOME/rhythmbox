@@ -2,6 +2,55 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-13 08:03:03 GMT	Colin Walters <walters@verbum.org>	patch-64
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-64
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-363
+       implement Quality column and metadata reading for it
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-364
+       attempt to implement iradio quality display
+    
+
+    modified files:
+     ChangeLog data/glade/station-properties.glade
+     iradio/rb-station-properties-dialog.c
+     monkey-media/monkey-media-audio-quality.h
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-363
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-364
+
+
+2003-12-13 06:38:01 GMT	Colin Walters <walters@verbum.org>	patch-63
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-63
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-362
+       avoid memory corruption when saving playlists
+    
+
+    modified files:
+     ChangeLog sources/rb-playlist-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-362
+
+
 2003-12-13 02:10:42 GMT	Colin Walters <walters@verbum.org>	patch-62
 
     Summary:
