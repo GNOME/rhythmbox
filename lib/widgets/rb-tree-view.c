@@ -265,6 +265,9 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
       else
         column->width = real_requested_width;
 
+      if (column->width > widget->allocation.width)
+        column->width = widget->allocation.width;
+
       g_object_notify (G_OBJECT (column), "width");
       allocation.width = column->width;
       gtk_widget_size_allocate (column->button, &allocation);

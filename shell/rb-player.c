@@ -977,14 +977,14 @@ play_cb (GtkWidget *widget,
 
 static void
 pause_cb (GtkWidget *widget,
-	 RBPlayer *player)
+	  RBPlayer *player)
 {
 	rb_pause (player);
 }
 
 static void
 previous_cb (GtkWidget *widget,
-	 RBPlayer *player)
+	     RBPlayer *player)
 {
 	rb_previous (player);
 }
