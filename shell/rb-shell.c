@@ -199,6 +199,7 @@ static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
 						 Bonobo_UIComponent_EventType type,
 						 const char *state,
 						 RBShell *shell);
+static void rb_shell_legacy_load_complete_cb (RBLibrary *library, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
@@ -732,7 +733,9 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->library = rb_library_new (shell->priv->db);
 	if (!rhythmdb_exists) {
 		rb_debug ("loading legacy library db");
-		rb_library_load_legacy (shell->priv->db);
+		g_signal_connect (G_OBJECT (shell->priv->library), "legacy-load-complete",
+				  G_CALLBACK (rb_shell_legacy_load_complete_cb), shell);
+		rb_library_load_legacy (shell->priv->library);
 	}
 
 	rb_debug ("shell: setting up tray icon");
@@ -928,8 +931,8 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	/* now that the lib is loaded, we can load the music playlists */
-	rb_debug ("shell: loading playlists");
-	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
+/* 	rb_debug ("shell: loading playlists"); */
+/* 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager); */
 
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");
@@ -1559,6 +1562,13 @@ rb_shell_quit (RBShell *shell)
 	rb_debug ("Quitting");
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
+}
+
+static void
+rb_shell_legacy_load_complete_cb (RBLibrary *library, RBShell *shell)
+{
+	rb_debug ("legacy load complete");
+	rb_playlist_manager_load_legacy_playlists (shell->priv->playlist_manager);
 }
 
 static void

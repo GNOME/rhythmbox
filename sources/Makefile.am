@@ -12,9 +12,9 @@ libsourcesimpl_la_SOURCES =		\
 	rb-library-source.c		\
 	rb-library-source.h		\
 	rb-iradio-source.c		\
-	rb-iradio-source.h		
-#	rb-playlist-source.c            \
-#	rb-playlist-source.h		
+	rb-iradio-source.h		\
+	rb-playlist-source.c            \
+	rb-playlist-source.h		
 #	rb-audiocd-source.c		
 #	rb-audiocd-source.h
 #endif

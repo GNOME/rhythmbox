@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 #include <bonobo/bonobo-ui-util.h>
+#include <libxml/tree.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <string.h>
@@ -81,6 +82,7 @@ static void create_playlist (RBPlaylistManager *mgr, CreatePlaylistType type, GL
 
 struct RBPlaylistManagerPrivate
 {
+	RhythmDB *db;
 	RBSource *selected_source;
 
 	BonoboUIComponent *component;
@@ -309,6 +311,8 @@ rb_playlist_manager_set_property (GObject *object,
 		break;
 	case PROP_LIBRARY:
 		mgr->priv->library = g_value_get_object (value);
+		g_object_get (G_OBJECT (mgr->priv->library), "db",
+			      &mgr->priv->db, NULL);
 		break;
 	case PROP_LIBRARY_SOURCE:
 		mgr->priv->libsource = g_value_get_object (value);
@@ -388,28 +392,56 @@ rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 	return mgr;
 }
 
-/* static void */
-/* rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr) */
-/* { */
-/* 	rb_debug ("removing playlist %p", source); */
-/* 	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source); */
-/* } */
+static void
+rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr)
+{
+	rb_debug ("removing playlist %p", source);
+	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source);
+}
 
-/* static void */
-/* append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source) */
-/* { */
-/* 	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source); */
-/* 	g_signal_connect (G_OBJECT (source), "deleted", */
-/* 			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr); */
-/* 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0, */
-/* 		       source); */
-/* } */
+static void
+append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
+{
+	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source);
+	g_signal_connect (G_OBJECT (source), "deleted",
+			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr);
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
+		       source);
+}
 
-/* FIXME! It is very dirty that we have to pass the library source
- * in here.
- */
+static void
+rb_playlist_manager_load_legacy_playlist (RBPlaylistManager *mgr,
+					  xmlNodePtr root,
+					  RBPlaylistSource *source)
+{
+	xmlNodePtr child;
+	for (child = root->children; child != NULL; child = child->next) {
+		long id;
+		char *tmp;
+		RhythmDBEntry *entry;
+		const char *location;
+
+		tmp = xmlGetProp (child, "id");
+		if (tmp == NULL)
+			continue;
+		id = atol (tmp);
+		g_free (tmp);
+
+		entry = rb_library_legacy_id_to_entry (mgr->priv->library, id);
+		if (!entry) {
+			rb_debug ("invalid legacy id %d", id);
+			continue;
+		}
+
+		location = rhythmdb_entry_get_string (mgr->priv->db, entry,
+						      RHYTHMDB_PROP_LOCATION);
+
+		rb_playlist_source_add_location (source, location);
+	}
+}
+
 void
-rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
+rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr)
 {
 	char *oldpath, *path;
 	GnomeVFSDirectoryHandle *handle;
@@ -434,22 +466,52 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 
 	info = gnome_vfs_file_info_new ();
 	while ((result = gnome_vfs_directory_read_next (handle, info)) == GNOME_VFS_OK) {
-		RBSource *playlist;
-		char *filepath;
+		RBPlaylistSource *playlist;
+		RhythmDBQueryModel *model;
+		char *filepath, *name, *xml;
+		xmlDocPtr doc;
+		xmlNodePtr root;
 
 		if (info->name[0] == '.')
 			continue;
 
 		filepath = g_build_filename (path, info->name, NULL);
 
-		/* RHYTHMDB FIXME */
-		playlist = NULL;
-/* 		playlist = rb_playlist_source_new_from_file (mgr->priv->library, */
-/* 							     mgr->priv->libsource, */
-/* 							     filepath); */
-/* 		if (playlist != NULL) */
-/* 			append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist)); */
+		doc = xmlParseFile (filepath);
+		
+		if (doc == NULL)
+			continue;
 
+		root = xmlDocGetRootElement (doc);
+		xml = xmlGetProp (root, "version");
+		if (xml == NULL || strcmp (xml, "1.0") != 0) {
+			g_free (xml);
+			xmlFreeDoc (doc);
+			continue;
+		}
+		g_free (xml);
+
+		name = xmlGetProp (root, "name");
+		if (name == NULL) {
+			xmlFreeDoc (doc);
+			continue;
+		}
+
+		rhythmdb_read_lock (mgr->priv->db);
+
+		playlist = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library));
+		g_object_set (G_OBJECT (playlist), "name", name, NULL);
+		g_free (name);
+
+		model = rb_playlist_source_get_model (playlist);
+		
+		rb_playlist_manager_load_legacy_playlist (mgr, root,
+							  playlist);
+
+		append_new_playlist_source (mgr, playlist);
+
+		rhythmdb_read_unlock (mgr->priv->db);
+		xmlFreeDoc (doc);
 		g_free (filepath);
 	}
 

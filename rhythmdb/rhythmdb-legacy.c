@@ -28,7 +28,7 @@
 
 RhythmDBEntry *
 rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
-			      xmlNodePtr node)
+			      xmlNodePtr node, guint *id)
 {
 	xmlNodePtr node_child;
 	RhythmDBEntry *entry;
@@ -42,12 +42,21 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	glong duration = 0;
 	glong last_played = 0;
 	GValue val = {0, };
+	char *xml;
+
+	xml = xmlGetProp (node, "id");
+	
+	if (id && xml) 
+		*id = atoi (xml);
+	else if (id)
+		*id = 0;
+	g_free (xml);
 
 	for (node_child = node->children; node_child != NULL; node_child = node_child->next) {
 		if (strcmp (node_child->name, "property") == 0) {
-			char *xml = xmlGetProp (node_child, "id");
 			guint propid;
 
+			xml = xmlGetProp (node_child, "id");
 			propid = atoi (xml);
 			g_free (xml);
 				
@@ -168,6 +177,8 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	g_value_set_long (&val, last_played);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &val);
 	g_value_unset (&val);
+
+	rhythmdb_entry_ref_unlocked (db, entry);
 
 	rhythmdb_write_unlock (db);
 

@@ -51,8 +51,9 @@ typedef struct
 
 	/* signals */
 	void	(*error)	(const char *uri, const char *msg);
-	void	(*progress)(double val);
+	void	(*progress)	(double val);
 	void	(*status_changed)();
+	void	(*legacy_load_complete)();
 } RBLibraryClass;
 
 GType			rb_library_get_type		(void);
@@ -68,7 +69,8 @@ void			rb_library_add_uri		(RBLibrary *library,
 void			rb_library_update_entry		(RBLibrary *library,
 							 RhythmDBEntry *entry, GError **error);
 
-void			rb_library_load_legacy		(RhythmDB *db);
+void			rb_library_load_legacy		(RBLibrary *library);
+RhythmDBEntry *		rb_library_legacy_id_to_entry	(RBLibrary *library, guint id);
 
 void			rb_library_release_brakes       (RBLibrary *library);
 void			rb_library_shutdown		(RBLibrary *library);

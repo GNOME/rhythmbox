@@ -87,6 +87,8 @@ struct RBLibraryPrivate
 
 	RhythmDB *db;
 
+	GHashTable *legacy_id_map;
+
 	RBAtomic refresh_count;
 
 	gboolean status_poll_queued;
@@ -109,6 +111,7 @@ enum
 	ERROR,
 	STATUS_CHANGED,
 	PROGRESS,
+	LEGACY_LOAD_COMPLETE,
 	LAST_SIGNAL,
 };
 
@@ -192,6 +195,15 @@ rb_library_class_init (RBLibraryClass *klass)
 			      rb_marshal_VOID__DOUBLE,
 			      G_TYPE_NONE,
 			      1, G_TYPE_DOUBLE);
+	rb_library_signals[LEGACY_LOAD_COMPLETE] =
+		g_signal_new ("legacy-load-complete",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryClass, legacy_load_complete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -200,6 +212,7 @@ rb_library_init (RBLibrary *library)
 	library->priv = g_new0 (RBLibraryPrivate, 1);
 	library->priv->main_queue = g_async_queue_new ();
 	library->priv->add_queue = g_async_queue_new ();
+	library->priv->legacy_id_map = g_hash_table_new (NULL, NULL);
 }
 
 static void
@@ -673,27 +686,54 @@ rb_library_compute_status_normal (gint n_songs, glong duration)
 typedef struct
 {
 	RhythmDB *db;
+	RBLibrary *library;
 	char *libname;
 } RBLibraryLegacyLoadData;
+
+RhythmDBEntry *
+rb_library_legacy_id_to_entry (RBLibrary *library, guint id)
+{
+	return g_hash_table_lookup (library->priv->legacy_id_map, GINT_TO_POINTER (id));
+}
+
+static gboolean
+emit_legacy_load_complete (RBLibrary *library)
+{
+	g_signal_emit (G_OBJECT (library), rb_library_signals[LEGACY_LOAD_COMPLETE], 0);
+	g_hash_table_destroy (library->priv->legacy_id_map);
+	g_object_unref (G_OBJECT (library));
+	return FALSE;
+}
 
 gpointer
 legacy_load_thread_main (RBLibraryLegacyLoadData *data)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root, child;
+	guint id;
 
 	doc = xmlParseFile (data->libname);
 
-	if (doc == NULL)
+	if (doc == NULL) {
+		g_object_unref (G_OBJECT (data->library));
 		goto free_exit;
+	}
 
 	rb_debug ("parsing entries");
 	root = xmlDocGetRootElement (doc);
 	for (child = root->children; child != NULL; child = child->next) {
-		rhythmdb_legacy_parse_rbnode (data->db, RHYTHMDB_ENTRY_TYPE_SONG, child);
+		RhythmDBEntry *entry = 
+			rhythmdb_legacy_parse_rbnode (data->db, RHYTHMDB_ENTRY_TYPE_SONG, child,
+						      &id);
+
+		if (id > 0)
+			g_hash_table_insert (data->library->priv->legacy_id_map, GINT_TO_POINTER (id),
+					     entry);
 	}
 	xmlFreeDoc (doc);
 
+	/* steals the library ref */
+	g_idle_add ((GSourceFunc) emit_legacy_load_complete, data->library);
 	rb_debug ("legacy load thread exiting");
 free_exit:
 	g_object_unref (G_OBJECT (data->db));
@@ -705,7 +745,7 @@ free_exit:
 
 
 void
-rb_library_load_legacy (RhythmDB *db)
+rb_library_load_legacy (RBLibrary *library)
 {
 	RBLibraryLegacyLoadData *data;
 	char *libname = g_build_filename (rb_dot_dir (), "library-2.1.xml", NULL);
@@ -716,9 +756,11 @@ rb_library_load_legacy (RhythmDB *db)
 	}
 
 	data = g_new0 (RBLibraryLegacyLoadData, 1);
-	data->db = db;
+	g_object_get (G_OBJECT (library), "db", &data->db, NULL);
 	g_object_ref (G_OBJECT (data->db));
 	data->libname = libname;
+	data->library = library;
+	g_object_ref (G_OBJECT (data->library));
 	
 	rb_debug ("kicking off library legacy loading thread");
 	g_thread_create ((GThreadFunc) legacy_load_thread_main, data, FALSE, NULL);

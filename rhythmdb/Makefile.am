@@ -11,6 +11,8 @@ librhythmdb_la_SOURCES =				\
 	rhythmdb-model.c				\
 	rhythmdb-property-model.h			\
 	rhythmdb-property-model.c			\
+	rhythmdb-playlist-model.h			\
+	rhythmdb-playlist-model.c			\
 	rhythmdb-query-model.h				\
 	rhythmdb-query-model.c
 

@@ -51,6 +51,7 @@ static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *
 static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 						    GtkTreeIter *iter);
 static void rhythmdb_query_model_cancel (RhythmDBModel *model);
+static gboolean rhythmdb_query_model_sortable (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
@@ -104,8 +105,6 @@ struct RhythmDBQueryModelPrivate
 
 	GSequence *entries;
 	GHashTable *reverse_map;
-	
-	GMutex *lock;
 	
 	/* row_inserted/row_changed/row_deleted */
 	GAsyncQueue *pending_updates;
@@ -254,6 +253,7 @@ rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 	iface->entry_to_iter = rhythmdb_query_model_entry_to_iter;
 	iface->poll = rhythmdb_query_model_poll;
 	iface->cancel = rhythmdb_query_model_cancel;
+	iface->sortable = rhythmdb_query_model_sortable;
 }
 
 static void
@@ -340,8 +340,6 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->entries = g_sequence_new (NULL);
 	model->priv->reverse_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
-	model->priv->lock = g_mutex_new ();
-
 	model->priv->pending_updates = g_async_queue_new ();
 }
 
@@ -355,6 +353,8 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	model = RHYTHMDB_QUERY_MODEL (object);
 
+	g_return_if_fail (model->priv != NULL);
+
 	g_hash_table_destroy (model->priv->reverse_map);
 	g_sequence_free (model->priv->entries);
 
@@ -362,10 +362,6 @@ rhythmdb_query_model_finalize (GObject *object)
 		rhythmdb_query_free (model->priv->query);
 
 	g_async_queue_unref (model->priv->pending_updates);
-
-	g_mutex_free (model->priv->lock);
-
-	g_return_if_fail (model->priv != NULL);
 
 	g_free (model->priv);
 
@@ -410,6 +406,12 @@ static void
 rhythmdb_query_model_cancel (RhythmDBModel *model)
 {
 	rb_debug ("cancelling query");
+}
+
+static gboolean
+rhythmdb_query_model_sortable (RhythmDBModel *model)
+{
+	return TRUE;
 }
 
 static inline GSequencePtr
@@ -531,9 +533,15 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
 		{
-			ptr = g_sequence_insert_sorted (model->priv->entries, update->entry,
-							model->priv->sort_func,
-							model->priv->sort_user_data);
+			if (model->priv->sort_func)
+				ptr = g_sequence_insert_sorted (model->priv->entries, update->entry,
+								model->priv->sort_func,
+								model->priv->sort_user_data);
+			else {
+				ptr = g_sequence_get_end_ptr (model->priv->entries);
+				g_sequence_insert (ptr, update->entry);
+				ptr = g_sequence_ptr_prev (ptr);
+			}
 
 			iter.user_data = ptr;
 			g_hash_table_insert (model->priv->reverse_map,
@@ -667,9 +675,16 @@ rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model)
 static GType
 rhythmdb_query_model_get_column_type (GtkTreeModel *tree_model, int index)
 {
-	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (tree_model);
-
-	return rhythmdb_get_property_type (model->priv->db, index);
+	switch (index)
+	{
+	case 0:
+		return G_TYPE_POINTER;
+	case 1:
+		return G_TYPE_INT;
+	default:
+		g_assert_not_reached ();
+		return G_TYPE_INVALID;
+	}
 }
 
 static gboolean
@@ -723,8 +738,19 @@ rhythmdb_query_model_get_value (GtkTreeModel *tree_model, GtkTreeIter *iter,
 
 	entry = g_sequence_ptr_get_data (iter->user_data);
 
-	g_value_init (value, G_TYPE_POINTER);
-	g_value_set_pointer (value, entry);
+	switch (column)
+	{
+	case 0:
+		g_value_init (value, G_TYPE_POINTER);
+		g_value_set_pointer (value, entry);
+		break;
+	case 1:
+		g_value_init (value, G_TYPE_INT);
+		g_value_set_int (value, g_sequence_ptr_get_position (iter->user_data)+1);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 static gboolean

@@ -707,7 +707,7 @@ rb_iradio_source_load_legacy (RhythmDB *db)
 	root = xmlDocGetRootElement (doc);
 	for (child = root->children; child != NULL; child = child->next) {
 		rhythmdb_legacy_parse_rbnode (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-					      child);
+					      child, NULL);
 	}
 	xmlFreeDoc (doc);
 }

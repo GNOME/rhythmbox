@@ -65,6 +65,8 @@ RBPlaylistManager *	rb_playlist_manager_new		(BonoboUIComponent *component, GtkW
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
 							 RBSource *player);
 
+void			rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr);
+
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
 void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr);

@@ -28,7 +28,7 @@
 G_BEGIN_DECLS
 
 RhythmDBEntry *	rhythmdb_legacy_parse_rbnode		(RhythmDB *db, RhythmDBEntryType type,
-							 xmlNodePtr node);
+							 xmlNodePtr node, guint *id);
 
 G_END_DECLS
 

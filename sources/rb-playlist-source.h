@@ -28,6 +28,7 @@
 #include "rb-source.h"
 #include "rb-library.h"
 #include "rb-library-source.h"
+#include "rhythmdb-query-model.h"
 
 G_BEGIN_DECLS
 
@@ -54,25 +55,18 @@ typedef struct
 
 GType		rb_playlist_source_get_type	(void);
 
-RBSource *	rb_playlist_source_new		(RBLibrary *library,
-						 RBLibrarySource *libsource);
+RBSource *	rb_playlist_source_new		(RBLibrary *library);
 
-RBSource *	rb_playlist_source_new_from_file(RBLibrary *library,
-						 RBLibrarySource *libsource,
-						 const char *file);
-
-void		rb_playlist_source_do_rename	(RBPlaylistSource *source, GtkWindow *parent);
-
-const char *	rb_playlist_source_get_file	(RBPlaylistSource *group);
-
-void		rb_playlist_source_save		(RBPlaylistSource *source);
-void		rb_playlist_source_load		(RBPlaylistSource *source);
+RhythmDBQueryModel *rb_playlist_source_get_model(RBPlaylistSource *source);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);
 
 void		rb_playlist_source_add_entry	(RBPlaylistSource *source, 
 						 RhythmDBEntry *entry);
+
+void		rb_playlist_source_add_location	(RBPlaylistSource *source, 
+						 const char *location);
 
 void		rb_playlist_source_delete	(RBPlaylistSource *source);
 
