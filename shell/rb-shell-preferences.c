@@ -322,7 +322,7 @@ ui_pref_changed (GConfClient *client,
 		 GConfEntry *entry,
 		 RBShellPreferences *shell_preferences)
 {
-	if (prefs->priv->loading == TRUE)
+	if (shell_preferences->priv->loading == TRUE)
 		return;
 
 	rb_shell_preferences_sync (shell_preferences);
