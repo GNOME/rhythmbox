@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-12-13 04:50+0100\n"
-"PO-Revision-Date: 2002-12-13 04:50+0100\n"
+"POT-Creation-Date: 2002-12-17 09:05+0100\n"
+"PO-Revision-Date: 2002-12-17 09:06+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -285,13 +285,13 @@ msgid "_Quality"
 msgstr "_Kvalitet"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
-#: data/node-views/rb-node-view-playlist.xml.h:2
 #: data/node-views/rb-node-view-songs.xml.h:9
+#: data/node-views/rb-node-view-playlist.xml.h:2
 msgid "_Title"
 msgstr "_Titel"
 
-#: data/node-views/rb-node-view-playlist.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-playlist.xml.h:1
 msgid "Art_ist"
 msgstr "Art_ist"
 
@@ -658,15 +658,10 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:567
+#: lib/widgets/rb-node-view.c:557
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
-
-#: lib/widgets/rb-node-view.c:1367
-#, c-format
-msgid "%ld songs, %ld:%02ld:%02ld total time, %s"
-msgstr "%ld låtar, %ld.%02ld.%02ld total tid, %s"
 
 #: lib/widgets/rb-search-entry.c:115
 msgid "_Search song:"
@@ -768,21 +763,53 @@ msgstr "Rhythmbox"
 msgid "Failed to activate Rhythmbox"
 msgstr "Misslyckades med att aktivera Rhythmbox"
 
-#: shell/rb-player.c:192
-msgid "Not playing"
-msgstr "Spelar inte"
-
-#: shell/rb-player.c:213
-msgid "From "
-msgstr "Från "
-
-#: shell/rb-player.c:219
-msgid " by "
-msgstr " av "
-
 #: shell/rb-shell-preferences.c:173
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
+
+#: shell/rb-player.c:262
+msgid " by "
+msgstr " av "
+
+#. 'No playlist' label FIXME
+#: shell/rb-player.c:319
+msgid "Empty playlist"
+msgstr "Tom spellista"
+
+#: shell/rb-player.c:346
+#, c-format
+msgid ""
+"Failed to create mixer, exiting. Error was:\n"
+"%s"
+msgstr ""
+"Misslyckades med att skapa mixern, avslutar. Felet var:\n"
+"%s"
+
+#: shell/rb-player.c:576
+msgid "Get information about this album from the web"
+msgstr "Hämta information om detta album från webben"
+
+#: shell/rb-player.c:580
+msgid "Get information about this artist from the web"
+msgstr "Hämta information om denna artist från webben"
+
+#: shell/rb-player.c:587
+#, c-format
+msgid "Track %d from "
+msgstr "Spår %d från "
+
+#: shell/rb-player.c:591
+msgid "From "
+msgstr "Från "
+
+#: shell/rb-player.c:614
+#, c-format
+msgid ""
+"Failed to create stream, error was:\n"
+"%s"
+msgstr ""
+"Misslyckades med att skapa ström, felet var:\n"
+"%s"
 
 #. this is not critical, but worth a warning nevertheless
 #: shell/rb.c:286
@@ -804,8 +831,8 @@ msgstr ""
 "Skicka synpunkter på översättningen till sv@li.org"
 
 #: shell/rb.c:503
-msgid "Copyright 2002 Jorn Baayen"
-msgstr "Copyright 2002 Jorn Baayen"
+msgid "Copyright  2002 Jorn Baayen. All rights reserved."
+msgstr "Copyright 2002 Jorn Baayen. Alla rättigheter förehållna."
 
 #: shell/rb.c:504
 msgid "Music management and playback software for GNOME."
@@ -873,6 +900,18 @@ msgstr ""
 #, c-format
 msgid "%d total stations in %d distinct genres"
 msgstr "totalt %d kanaler inom %d unika genrer"
+
+#~ msgid "Copyright (C) 2002 Jorn Baayen. All rights reserved."
+#~ msgstr "Copyright 2002 Jorn Baayen. Alla rättigheter förehållna."
+
+#~ msgid "Playlist"
+#~ msgstr "Spellista"
+
+#~ msgid "%ld songs, %ld:%02ld:%02ld total time, %s"
+#~ msgstr "%ld låtar, %ld.%02ld.%02ld total tid, %s"
+
+#~ msgid "Not playing"
+#~ msgstr "Spelar inte"
 
 #~ msgid "<b>Cu_rrent Controls</b>"
 #~ msgstr "<b>Ak_tuella kontroller</b>"
@@ -973,12 +1012,6 @@ msgstr "totalt %d kanaler inom %d unika genrer"
 #~ "Förlupen speltid för låten. Klicka på den för att visa återstående och "
 #~ "total tid"
 
-#~ msgid "Get information on this album from the web"
-#~ msgstr "Hämta information om detta album från webben"
-
-#~ msgid "Get information on this artist from the web"
-#~ msgstr "Hämta information om denna artist från webben"
-
 #~ msgid "Not Playing"
 #~ msgstr "Spelar inte"
 
@@ -1032,13 +1065,6 @@ msgstr "totalt %d kanaler inom %d unika genrer"
 
 #~ msgid "%.2d of %.2d"
 #~ msgstr "%.2d av %.2d"
-
-#~ msgid ""
-#~ "Failed to create the mixer, error was:\n"
-#~ "%s"
-#~ msgstr ""
-#~ "Misslyckades med att skapa mixern, felet var:\n"
-#~ "%s"
 
 #~ msgid "Pause"
 #~ msgstr "Paus"
