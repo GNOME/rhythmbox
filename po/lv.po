@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-01-01 04:50+0100\n"
-"PO-Revision-Date: 2003-01-02 16:34+0200\n"
-"Last-Translator: Artis Trops <hornet@navigators.lv>\n"
+"POT-Creation-Date: 2003-01-08 04:52+0100\n"
+"PO-Revision-Date: 2003-01-08 16:31+0200\n"
+"Last-Translator: Artis Trops <hornet@navigator.lv>\n"
 "Language-Team: Latvian <ll10nt@os.lv>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -308,7 +308,7 @@ msgstr "Ce_liņš"
 
 #: data/rhythmbox.desktop.in.h:1
 #: shell/rb.c:297
-#: shell/rb.c:564
+#: shell/rb.c:570
 msgid "Music Player"
 msgstr "Mūzikas Atskaņotājs"
 
@@ -531,17 +531,13 @@ msgstr "Viss"
 
 #: iradio/rb-iradio-backend.c:329
 #, c-format
-msgid ""
-"Failed to parse %s\n"
-""
-msgstr ""
-"Neizdevās parsēt %s\n"
-""
+msgid "Failed to parse %s\n"
+msgstr "Neizdevās parsēt %s\n"
 
 #: iradio/rb-iradio-backend.c:455
 #: iradio/rb-iradio-backend.c:472
 #: iradio/rb-iradio-backend.c:473
-#: lib/widgets/rb-tree-model-node.c:559
+#: lib/widgets/rb-tree-model-node.c:569
 msgid "(Unknown)"
 msgstr "(Nezināms)"
 
@@ -590,11 +586,9 @@ msgstr "Lokācija nav derīgs URL."
 
 #: lib/eel-gconf-extensions.c:66
 #, c-format
-msgid ""
-"GConf error:\n"
+msgid "GConf error:\n"
 "  %s"
-msgstr ""
-"GConf kļūda:\n"
+msgstr "GConf kļūda:\n"
 "  %s"
 
 #: lib/rb-file-helpers.c:76
@@ -625,12 +619,8 @@ msgstr "%s, %s"
 
 #: lib/rb-windows-ini-file.c:374
 #, c-format
-msgid ""
-"Unable to parse %s: %s\n"
-""
-msgstr ""
-"Nespēju parsēt %s: %s\n"
-""
+msgid "Unable to parse %s: %s\n"
+msgstr "Nespēju parsēt %s: %s\n"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:106
 msgid "Pixbuf Object"
@@ -640,16 +630,14 @@ msgstr "Pixbuf Objekts"
 msgid "The pixbuf to render."
 msgstr "Pixbuf, ko renderēt."
 
-#: lib/widgets/rb-link.c:342
+#: lib/widgets/rb-link.c:326
 #, c-format
-msgid ""
-"There was an error going to %s:\n"
+msgid "There was an error going to %s:\n"
 "%s"
-msgstr ""
-"Bija kļūda, ejot uz %s:\n"
+msgstr "Bija kļūda, ejot uz %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:557
+#: lib/widgets/rb-node-view.c:566
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Neizdevās parsēt %s as NodeView izkārtojuma fails"
@@ -698,25 +686,25 @@ msgstr "Klikšķis, lai klusinātu"
 msgid "Click to unmute"
 msgstr "Klikšķis, lai atklusinātu"
 
-#: library/rb-node.c:864
-#: library/rb-node.c:870
-#: library/rb-node.c:901
+#: library/rb-node.c:866
+#: library/rb-node.c:872
+#: library/rb-node.c:903
 msgid "Never"
 msgstr "Nekad"
 
-#: library/rb-node.c:892
+#: library/rb-node.c:894
 msgid "Today at %-H:%M"
 msgstr "Šodien, plkst. %-H:%M"
 
-#: library/rb-node.c:894
+#: library/rb-node.c:896
 msgid "Yesterday at %-H:%M"
 msgstr "Vakardien, plkst. %-H:%M"
 
-#: library/rb-node.c:896
+#: library/rb-node.c:898
 msgid "%A, %B %-d %Y at %-H:%M"
 msgstr "%A, %B %-d %Y plkst. %-H:%M"
 
-#: library/rb-node.c:1640
+#: library/rb-node.c:1642
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
@@ -762,81 +750,99 @@ msgstr "Neizdevās aktivēt Rhythmbox"
 msgid "Music Player Preferences"
 msgstr "Mūzikas Atskaņotāja Preferences"
 
-#: shell/rb-player.c:285
+#: shell/rb-player.c:304
 msgid " by "
 msgstr " no "
 
-#. 'Empty playlist' label
-#: shell/rb-player.c:365
-msgid ""
-"Not playing\n"
-"\n"
-"To play, add music to the playlist"
-msgstr ""
-"Neatskaņoju\n"
-"\n"
-"Lai atskaņotu, pievienojiet mūziku repertuāram"
+#: shell/rb-player.c:319
+msgid "Drag to go to a particular moment in the song"
+msgstr "Velciet, lai nokļūtu konkrētā dziesmas vietā"
 
-#: shell/rb-player.c:370
+#: shell/rb-player.c:364
+msgid "Play the previous song"
+msgstr "Atskaņot iepriekšējo dziesmu"
+
+#: shell/rb-player.c:371
+msgid "Start playback"
+msgstr "Sākt atskaņošanu"
+
+#: shell/rb-player.c:378
+msgid "Pause playback"
+msgstr "Pauzēt atskaņošanu"
+
+#: shell/rb-player.c:385
+msgid "Play the next song"
+msgstr "Atskaņot nākošo dziesmu"
+
+#: shell/rb-player.c:393
+msgid "Repeat the play list"
+msgstr "Atkārtot repertuāru"
+
+#: shell/rb-player.c:400
+msgid "Shuffle the play list"
+msgstr "Sajaukt repertuāru"
+
+#: shell/rb-player.c:410
+#: shell/rb-player.c:417
 msgid "Not playing"
 msgstr "Neatskaņou"
 
-#: shell/rb-player.c:395
+#: shell/rb-player.c:423
+msgid "To play, add music to the play list"
+msgstr "Lai atskaņotu, pievienojiet mūziku repertuāram"
+
+#: shell/rb-player.c:447
 #, c-format
-msgid ""
-"Failed to create mixer, exiting. Error was:\n"
+msgid "Failed to create mixer, exiting. Error was:\n"
 "%s"
-msgstr ""
-"Nezidevās izveidot mikseri, izeju. Kļūda bija:\n"
+msgstr "Nezidevās izveidot mikseri, izeju. Kļūda bija:\n"
 "%s"
 
-#: shell/rb-player.c:686
+#: shell/rb-player.c:750
 msgid "Get information about this album from the web"
 msgstr "Dabūt informāciju par šo albumu no tīmekļa"
 
-#: shell/rb-player.c:692
+#: shell/rb-player.c:756
 msgid "Get information about this artist from the web"
 msgstr "Dabūt informāciju par šo izpildītāju no tīmekļa"
 
-#: shell/rb-player.c:699
+#: shell/rb-player.c:763
 #, c-format
 msgid "Track %d from "
 msgstr "Celiņš %d no "
 
-#: shell/rb-player.c:703
+#: shell/rb-player.c:767
 msgid "From "
 msgstr "No"
 
-#: shell/rb-player.c:708
+#: shell/rb-player.c:772
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:710
+#: shell/rb-player.c:774
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Nezināms"
 
-#: shell/rb-player.c:712
+#: shell/rb-player.c:799
 #, c-format
-msgid "%s"
-msgstr "%s"
-
-#: shell/rb-player.c:735
-#, c-format
-msgid ""
-"Failed to create stream, error was:\n"
+msgid "Failed to create stream, error was:\n"
 "%s"
-msgstr ""
-"Neizdevās izveidot straumi, kļūda bija:\n"
+msgstr "Neizdevās izveidot straumi, kļūda bija:\n"
 "%s"
 
-#: shell/rb-player.c:968
+#: shell/rb-player.c:883
+#, c-format
+msgid "Failed to parse %s as playlist"
+msgstr "Neizdevās parsēt %s kā repertuāru"
+
+#: shell/rb-player.c:1116
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld:%.2ld"
 
-#: shell/rb-player.c:972
+#: shell/rb-player.c:1120
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Kopā %ld:%.2ld (%ld:%.2ld atlicis)"
@@ -848,13 +854,11 @@ msgid ""
 "This probably means that you installed RB in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
-""
 msgstr ""
 "Neizdevās reģistrēt Rhythmbox ar bonobo aktivāciju:\n"
 "Tas visdrīzāk nozīmē, ka jūs uzinstalējāt RB\n"
 "citā priedēklī, nekā bonobo-activation; šis\n"
 "brīdinājums ir nekaitīgs, bet IPC nedarbosies.\n"
-""
 
 #: shell/rb.c:491
 msgid "translator_credits"
@@ -877,14 +881,11 @@ msgid "Audio-CD"
 msgstr "Audio-CD"
 
 #: views/rb-audiocd-view.c:671
-#: views/rb-group-view.c:830
 #: views/rb-iradio-view.c:764
 #, c-format
-msgid ""
-"Failed to create stream for %s, error was:\n"
+msgid "Failed to create stream for %s, error was:\n"
 "%s"
-msgstr ""
-"Neizdevās izveidot straumi priekš %s, kļūda bija:\n"
+msgstr "Neizdevās izveidot straumi priekš %s, kļūda bija:\n"
 "%s"
 
 #: views/rb-audiocd-view.c:961
@@ -903,34 +904,51 @@ msgstr "Neizdevās parsēt %s kā diska info failu"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d dziesmas, %d:%02d:%02d kopējais laiks"
 
-#: views/rb-group-view.c:343
-msgid "music group"
-msgstr "mūzikas grupa"
-
-#: views/rb-group-view.c:346
-msgid "Unnamed"
-msgstr "Nenosaukts"
-
-#: views/rb-group-view.c:1156
-#, c-format
-msgid "Failed to parse %s as group file"
-msgstr "Neizdevās parsēt %s kā grupas failu"
-
 #: views/rb-iradio-view.c:305
 msgid "iradio"
 msgstr "iradio"
 
 #: views/rb-iradio-view.c:308
 #: views/rb-iradio-view.c:1147
-msgid ""
-"Internet\n"
+msgid "Internet\n"
 "Radio"
-msgstr ""
-"Internet\n"
+msgstr "Internet\n"
 "Radio"
 
 #: views/rb-iradio-view.c:980
 #, c-format
 msgid "%d total stations in %d distinct genres"
 msgstr "%d stacijas kopā %d atšķirīgos žanros"
+
+#: views/rb-library-view.c:349
+msgid "_Play Album"
+msgstr "_Atskaņot Albumu"
+
+#: views/rb-library-view.c:352
+msgid "Start playing this album"
+msgstr "Sākt šī albuma atskaņošanu"
+
+#: views/rb-library-view.c:357
+msgid "Play Album _Later"
+msgstr "Atskaņot Albumu _Vēlāk"
+
+#: views/rb-library-view.c:360
+msgid "Enqueue this album for later playback"
+msgstr "Iekļaut šo albumu vēlākai atskaņošanai"
+
+#: views/rb-library-view.c:366
+msgid "Play Song Later"
+msgstr "Atskaņot Dziesmu Vēlāk"
+
+#: views/rb-library-view.c:369
+msgid "Enqueue the selected song(s) for later playback"
+msgstr "Iekļaut izvēlētās dziesmu(as) vēlākai atskaņošanai"
+
+#: views/rb-library-view.c:374
+msgid "Play _Song"
+msgstr "Atskaņot _Dziesmu"
+
+#: views/rb-library-view.c:377
+msgid "Start playing the selected song(s)"
+msgstr "Sākt atskaņot izvēlētās dziesmu(as)"
 
