@@ -472,8 +472,13 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv->mmplayer = rb_player_new (&error);
 	if (error != NULL) {
-		rb_error_dialog (_("Failed to create the player: %s"), error->message);
-		g_error_free (error);
+		GtkWidget *dialog;
+		dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
+						 GTK_MESSAGE_ERROR,
+						 GTK_BUTTONS_CLOSE,
+						 _("Failed to create the player: %s"),
+						 error->message);
+		gtk_dialog_run (GTK_DIALOG (dialog));
 		exit (1);
 	}
 

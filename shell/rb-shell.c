@@ -284,6 +284,7 @@ enum
 	PROP_ARGC,
 	PROP_ARGV,
 	PROP_NO_REGISTRATION,
+	PROP_NO_UPDATE,
 	PROP_DRY_RUN,
 	PROP_RHYTHMDB_FILE,
 	PROP_SELECTED_SOURCE
@@ -327,6 +328,7 @@ struct RBShellPrivate
 	int argc;
 	char **argv;
 	gboolean no_registration;
+	gboolean no_update;
 	gboolean dry_run;
 	char *rhythmdb_file;
 
@@ -461,6 +463,14 @@ rb_shell_class_init (RBShellClass *klass)
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
+					 PROP_NO_UPDATE,
+					 g_param_spec_boolean ("no-update", 
+							       "no-update", 
+							       "Whether or not to update the library", 
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
 					 PROP_DRY_RUN,
 					 g_param_spec_boolean ("dry-run", 
 							       "dry-run", 
@@ -525,6 +535,9 @@ rb_shell_set_property (GObject *object,
 	case PROP_NO_REGISTRATION:
 		shell->priv->no_registration = g_value_get_boolean (value);
 		break;
+	case PROP_NO_UPDATE:
+		shell->priv->no_update = g_value_get_boolean (value);
+		break;
 	case PROP_DRY_RUN:
 		shell->priv->dry_run = g_value_get_boolean (value);
 		if (shell->priv->dry_run)
@@ -557,6 +570,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_NO_REGISTRATION:
 		g_value_set_boolean (value, shell->priv->no_registration);
+		break;
+	case PROP_NO_UPDATE:
+		g_value_set_boolean (value, shell->priv->no_update);
 		break;
 	case PROP_DRY_RUN:
 		g_value_set_boolean (value, shell->priv->dry_run);
@@ -676,13 +692,15 @@ rb_shell_finalize (GObject *object)
 }
 
 RBShell *
-rb_shell_new (int argc, char **argv, gboolean no_registration, gboolean dry_run,
+rb_shell_new (int argc, char **argv, gboolean no_registration,
+	      gboolean no_update, gboolean dry_run,
 	      char *rhythmdb)
 {
 	RBShell *s;
 
 	s = g_object_new (RB_TYPE_SHELL, "argc", argc, "argv", argv,
 			  "no-registration", no_registration,
+			  "no-update", no_update,
 			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, NULL);
 
 	return s;
@@ -1204,6 +1222,8 @@ rb_shell_construct (RBShell *shell)
 
 		if (shell->priv->dry_run)
 			g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
+		if (shell->priv->no_update)
+			g_object_set (G_OBJECT (shell->priv->db), "no-update", TRUE, NULL);
 
 		if (rhythmdb_exists) {
 			g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",

@@ -60,7 +60,9 @@ typedef struct
 GType		rb_shell_get_type	(void);
 
 RBShell *	rb_shell_new		(int argc, char **argv,
-					 gboolean no_registration, gboolean dry_run,
+					 gboolean no_registration,
+					 gboolean no_update,
+					 gboolean dry_run,
 					 char *rhythmdb);
 
 void		rb_shell_construct	(RBShell *shell);

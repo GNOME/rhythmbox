@@ -22,13 +22,13 @@
 #include "rb-util.h"
 
 gboolean
-rb_true_function (gpointer dummy, ...)
+rb_true_function (gpointer dummy)
 {
 	return TRUE;
 }
 
 gboolean
-rb_false_function (gpointer dummy, ...)
+rb_false_function (gpointer dummy)
 {
 	return FALSE;
 }

@@ -607,6 +607,17 @@ RBPlayer *
 rb_player_new (GError **error)
 {
 	RBPlayer *mp;
+	GstElement *dummy;
+
+	dummy = gst_element_factory_make ("fakesink", "fakesink");
+	if (!dummy
+	    || !gst_scheduler_factory_make (NULL, GST_ELEMENT (dummy))) {
+		g_set_error (error, RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     "%s",
+			     _("Couldn't initialize scheduler.  Did you run gst-register?"));
+		return NULL;
+	}
 
 	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL));
 

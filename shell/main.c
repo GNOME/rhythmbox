@@ -64,6 +64,7 @@ static CORBA_Environment ev;
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
+static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
 static gboolean print_playing = FALSE;
@@ -99,6 +100,7 @@ main (int argc, char **argv)
 		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
 		
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
+		{ "no-update", 0,  POPT_ARG_NONE,          &no_update,                              0, N_("Do not update the library"), NULL },
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file", 0,  POPT_ARG_STRING,          &rhythmdb_file,                             0, N_("Path for database file to use"), NULL },
@@ -166,7 +168,8 @@ main (int argc, char **argv)
 		if (sound_events_borked) {
 			g_idle_add ((GSourceFunc) sound_error_dialog, NULL);
 		} else {
-			rb_shell = rb_shell_new (argc, argv, no_registration, dry_run, rhythmdb_file);
+			rb_shell = rb_shell_new (argc, argv, no_registration,
+						 no_update, dry_run, rhythmdb_file);
 			
 			g_idle_add ((GSourceFunc) rb_init, rb_shell);
 		}

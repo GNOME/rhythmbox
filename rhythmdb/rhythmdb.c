@@ -62,6 +62,7 @@ struct RhythmDBPrivate
 	GAsyncQueue *action_queue;
 
 	gboolean dry_run;
+	gboolean no_update;
 
 	gboolean writelocked;
 	guint readlocks;
@@ -131,6 +132,7 @@ enum
 	PROP_0,
 	PROP_NAME,
 	PROP_DRY_RUN,
+	PROP_NO_UPDATE,
 };
 
 enum
@@ -202,6 +204,13 @@ rhythmdb_class_init (RhythmDBClass *klass)
 					 g_param_spec_boolean ("dry-run",
 							       "dry run",
 							       "Whether or not changes should be saved",
+							       FALSE,
+							       G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_NO_UPDATE,
+					 g_param_spec_boolean ("no-update",
+							       "no update",
+							       "Whether or not to update the database",
 							       FALSE,
 							       G_PARAM_READWRITE));
 	rhythmdb_signals[ENTRY_ADDED] =
@@ -520,6 +529,9 @@ rhythmdb_set_property (GObject *object,
 	case PROP_DRY_RUN:
 		source->priv->dry_run = g_value_get_boolean (value);
 		break;
+	case PROP_NO_UPDATE:
+		source->priv->no_update = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -541,6 +553,9 @@ rhythmdb_get_property (GObject *object,
 		break;
 	case PROP_DRY_RUN:
 		g_value_set_boolean (value, source->priv->dry_run);
+		break;
+	case PROP_NO_UPDATE:
+		g_value_set_boolean (value, source->priv->no_update);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2026,7 +2041,8 @@ void
 rhythmdb_emit_entry_restored (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_RESTORED], 0, entry);
-	if (rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
+	if (!db->priv->no_update
+	    && rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
 		rhythmdb_entry_ref_unlocked (db, entry);
 		g_async_queue_push (db->priv->update_queue, entry);
 	}
