@@ -1505,8 +1505,9 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 
 	rb_debug ("doing query");
 
-	if (data->lock)
-		rhythmdb_read_lock (db);
+	/* Async queries now expect the db to be locked */
+/* 	if (data->lock) */
+/* 		rhythmdb_read_lock (db); */
 	
 	klass->impl_do_full_query (db, data->query,
 				   data->main_model,
@@ -1530,6 +1531,8 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
 				     GPtrArray *query)
 {
 	struct RhythmDBQueryThreadData *data;
+
+	db_enter (db, FALSE);
 
 	data = g_new0 (struct RhythmDBQueryThreadData, 1);
 	data->query = rhythmdb_query_copy (query);
