@@ -24,6 +24,7 @@
 #include <libgnome/gnome-program.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
+#include <gtk/gtk.h>
 #include <bonobo/bonobo-main.h>
 #include <glade/glade-init.h>
 #include <monkey-media.h>
@@ -62,6 +63,7 @@ main (int argc, char **argv)
 		POPT_TABLEEND
 	};
 
+	gtk_set_locale ();
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE, argc, argv,
 				      GNOME_PARAM_POPT_TABLE, popt_options,
