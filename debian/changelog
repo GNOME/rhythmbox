@@ -1,8 +1,38 @@
-rhythmbox (0.4.99-1) unstable; urgency=low
+rhythmbox (0.4.99.5-1) unstable; urgency=low
 
-  * CVS snapshot.
+  * New upstream prerelease (Closes: #204115)
 
- -- Colin Walters <walters@debian.org>  Mon, 11 Aug 2003 19:17:23 -0400
+    Sorry Debian Unstable users, you're my guinea pigs.  This is
+    a prerelease.  It does however fix a near-infinite number of bugs,
+    some of which you can see below.  So overall, I doubt anyone
+    would want to stay with the old package.  If you don't like this,
+    please don't file bugs.  Instead, you will have to fork a copy
+    of net-rhythmbox yourself.
+
+    Now, since this is a prerelease - I am interested in bug reports.
+    You may file bugs in the Debian Bug Tracking System, but I would
+    much prefer that you file them in the upstream Bugzilla:
+    http://bugzilla.gnome.org/
+
+    However, it does break compatibility with the old library cache
+    format; you will have to re-add all of your files to the library.  The
+    upstream author is kind of a lazy bastard, and doesn't really have
+    time to write transition scripts (which would be quite difficult
+    anyways).  Sorry about that.
+  
+    - Rhythmbox follows links, this is intentional (Closes: #169488)
+    - Alphabetical sorting is fixed (Closes: #172089)
+    - Playlist saving is more reliable (Closes: #182815)
+    - Tray icon recreates itself (Closes: #192557)
+    - Setting properties on iradio stations works (Closes: #193686)
+    - Control-J is consistent with menu item (Closes: #173634)
+    - Groks .m3u files (Closes: #182596)
+    - GStreamer threading is more reliable (Closes: #178283)
+    - Shuffling code is refactored, should not hang (Closes: #192556)
+    - Playing files with : in name works (Closes: #188511)
+    - Repeat in single-song playlists works (Closes: #188477)
+
+ -- Colin Walters <walters@debian.org>  Fri, 15 Aug 2003 21:31:23 -0400
 
 rhythmbox (0.4.8-5) unstable; urgency=low
 
