@@ -7,14 +7,14 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-10 11:09+0200\n"
-"PO-Revision-Date: 2004-04-10 11:10+0200\n"
+"POT-Creation-Date: 2004-04-13 12:27+0200\n"
+"PO-Revision-Date: 2004-04-13 12:29+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Report-Msgid-Bugs-To: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
@@ -38,8 +38,9 @@ msgid "Rhythmbox shell factory"
 msgstr "Rhythmbox-skalfabrik"
 
 #: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
-#: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
-#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
+#: data/glade/song-info-multiple.glade.h:1 data/glade/song-info.glade.h:1
+#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
+#: data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -131,11 +132,7 @@ msgstr "_Senast spelad"
 msgid "_Play count"
 msgstr "_Spelräknare"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1336
-msgid "_Quality"
-msgstr "_Kvalitet"
-
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1257
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1257
 msgid "_Rating"
 msgstr "_Betyg"
 
@@ -159,9 +156,27 @@ msgstr "Genrer, artister och album"
 msgid "The following files couldn't be loaded:"
 msgstr "Följande filer kunde inte läsas in:"
 
-#: data/glade/song-info.glade.h:2
+#: data/glade/song-info-multiple.glade.h:2
+msgid "A_lbum:"
+msgstr "A_lbum:"
+
+#: data/glade/song-info-multiple.glade.h:3 data/glade/song-info.glade.h:2
 msgid "Automatically rate:"
 msgstr "Betygsätt automatiskt:"
+
+#: data/glade/song-info-multiple.glade.h:4 data/glade/song-info.glade.h:12
+msgid "_Artist:"
+msgstr "_Artist:"
+
+#: data/glade/song-info-multiple.glade.h:5 data/glade/song-info.glade.h:13
+#: data/glade/station-new.glade.h:2 data/glade/station-properties.glade.h:6
+msgid "_Genre:"
+msgstr "_Genre:"
+
+#: data/glade/song-info-multiple.glade.h:6 data/glade/song-info.glade.h:14
+#: data/glade/station-properties.glade.h:8
+msgid "_Rating:"
+msgstr "_Betyg:"
 
 #: data/glade/song-info.glade.h:3
 msgid "Basic"
@@ -198,19 +213,6 @@ msgstr "Spelräknare:"
 #: data/glade/song-info.glade.h:11
 msgid "_Album:"
 msgstr "_Album:"
-
-#: data/glade/song-info.glade.h:12
-msgid "_Artist:"
-msgstr "_Artist:"
-
-#: data/glade/song-info.glade.h:13 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:6
-msgid "_Genre:"
-msgstr "_Genre:"
-
-#: data/glade/song-info.glade.h:14 data/glade/station-properties.glade.h:8
-msgid "_Rating:"
-msgstr "_Betyg:"
 
 #: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
@@ -249,7 +251,7 @@ msgstr "Ange _platsen (URI) för den fil du vill lägga till:"
 msgid "Open from URI"
 msgstr "Öppna från URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1230 shell/rb-shell.c:1913
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1213 shell/rb-shell.c:1884
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -586,11 +588,11 @@ msgid "New Internet Radio Station"
 msgstr "Ny Internetradiokanal"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:440
+#: iradio/rb-station-properties-dialog.c:460
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:769 sources/rb-ipod-source.c:175
+#: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
 #: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
 #: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
 #: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
@@ -602,12 +604,12 @@ msgstr "Okänd"
 msgid "All"
 msgstr "Alla"
 
-#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:750
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:750
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
-#: iradio/rb-station-properties-dialog.c:338
+#: iradio/rb-station-properties-dialog.c:358
 #, c-format
 msgid "Properties for %s"
 msgstr "Egenskaper för %s"
@@ -746,7 +748,7 @@ msgstr "Misslyckades med att öppna filen som Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:502 metadata/rb-metadata-gst.c:631
+#: metadata/rb-metadata-gst.c:503 metadata/rb-metadata-gst.c:632
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -816,49 +818,49 @@ msgstr "Internt fel; kontrollera din installation."
 msgid "Audio of %s not handled; check your installation."
 msgstr "Ljud för %s hanteras inte; kontrollera din installation."
 
-#: rhythmdb/rhythmdb.c:847
+#: rhythmdb/rhythmdb.c:845
 msgid "<invalid filename>"
 msgstr "<ogiltigt filnamn>"
 
-#: rhythmdb/rhythmdb.c:1464 widgets/rb-entry-view.c:1005
+#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:1005
 #: widgets/rb-song-info.c:773 widgets/rb-song-info.c:953
 msgid "Never"
 msgstr "Aldrig"
 
-#: rhythmdb/rhythmdb.c:1466
+#: rhythmdb/rhythmdb.c:1464
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
-#: rhythmdb/rhythmdb.c:2193
+#: rhythmdb/rhythmdb.c:2191
 msgid "Loading songs..."
 msgstr "Läser in låtar..."
 
-#: rhythmdb/rhythmdb.c:2195
+#: rhythmdb/rhythmdb.c:2193
 msgid "Refreshing songs..."
 msgstr "Uppdaterar låtar..."
 
-#: rhythmdb/rhythmdb.c:2212
+#: rhythmdb/rhythmdb.c:2210
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d låt"
 msgstr[1] "%d låtar"
 
-#: rhythmdb/rhythmdb.c:2219
+#: rhythmdb/rhythmdb.c:2217
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minut"
 msgstr[1] "%ld minuter"
 
-#: rhythmdb/rhythmdb.c:2220 rhythmdb/rhythmdb.c:2230
+#: rhythmdb/rhythmdb.c:2218 rhythmdb/rhythmdb.c:2228
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld timme"
 msgstr[1] "%ld timmar"
 
-#: rhythmdb/rhythmdb.c:2221
+#: rhythmdb/rhythmdb.c:2219
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -866,13 +868,13 @@ msgstr[0] "%ld dag"
 msgstr[1] "%ld dagar"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2225
+#: rhythmdb/rhythmdb.c:2223
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s och %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2233
+#: rhythmdb/rhythmdb.c:2231
 #, c-format
 msgid "%s and %s"
 msgstr "%s och %s"
@@ -1058,24 +1060,24 @@ msgstr "Inställningar för musikspelare"
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:860
+#: shell/rb-shell.c:838
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:1080
+#: shell/rb-shell.c:1059
 msgid "Whether the main window is visible"
 msgstr "Huruvida huvudfönstret är synligt"
 
-#: shell/rb-shell.c:1085
+#: shell/rb-shell.c:1064
 msgid "Whether shuffle is enabled"
 msgstr "Huruvida blanda är aktiverat"
 
-#: shell/rb-shell.c:1089
+#: shell/rb-shell.c:1068
 msgid "Properties for the current song"
 msgstr "Egenskaper för den aktuella låten"
 
-#: shell/rb-shell.c:1514
+#: shell/rb-shell.c:1485
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1087,12 +1089,12 @@ msgstr ""
 "bonobo-activation. Denna varning är inte allvarlig, men IPC kommer inte att "
 "fungera."
 
-#: shell/rb-shell.c:1887 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1858 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
 msgid "Not playing"
 msgstr "Spelar inte"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1890
+#: shell/rb-shell.c:1861
 #, c-format
 msgid ""
 "%s\n"
@@ -1102,7 +1104,7 @@ msgstr ""
 "Gör paus, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1894
+#: shell/rb-shell.c:1865
 #, c-format
 msgid ""
 "%s\n"
@@ -1112,42 +1114,42 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1929
+#: shell/rb-shell.c:1900
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1997
+#: shell/rb-shell.c:1968
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:2006
+#: shell/rb-shell.c:1977
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:2009
+#: shell/rb-shell.c:1980
 msgid "Former Maintainers:"
 msgstr "Tidigare ansvariga:"
 
-#: shell/rb-shell.c:2012
+#: shell/rb-shell.c:1983
 msgid "Contributors:"
 msgstr "Bidragsgivare:"
 
-#: shell/rb-shell.c:2014
+#: shell/rb-shell.c:1985
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:2195
+#: shell/rb-shell.c:2166
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:2241
+#: shell/rb-shell.c:2212
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "För att extrahera cd-skivor måste du installera paketet Sound Juicer."
 
-#: shell/rb-shell.c:2248
+#: shell/rb-shell.c:2219
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kunde inte köra sound-juicer: %s"
@@ -1230,7 +1232,7 @@ msgstr "Genre"
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:577
+#: sources/rb-iradio-source.c:590
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1325,7 +1327,7 @@ msgstr "Fel vid läsning av filnamn: %s"
 msgid "Choose a directory"
 msgstr "Välj en katalog"
 
-#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:839
+#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:872
 #, c-format
 msgid "%d:%02d"
 msgstr "%d.%02d"
@@ -1370,6 +1372,10 @@ msgstr "Ge_nre"
 msgid "Ti_me"
 msgstr "Ti_d"
 
+#: widgets/rb-entry-view.c:1336
+msgid "_Quality"
+msgstr "_Kvalitet"
+
 #: widgets/rb-entry-view.c:1346
 msgid "_Play Count"
 msgstr "_Spelräknare"
@@ -1382,28 +1388,28 @@ msgstr "S_enast spelad"
 msgid "Now Playing"
 msgstr "Spelar nu"
 
-#: widgets/rb-header.c:280
+#: widgets/rb-header.c:277
 msgid "Listening to "
 msgstr "Lyssnar på "
 
-#: widgets/rb-header.c:517
+#: widgets/rb-header.c:539
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: widgets/rb-header.c:536
+#: widgets/rb-header.c:558
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: widgets/rb-header.c:564
+#: widgets/rb-header.c:586
 msgid "Get information on this station from the web"
 msgstr "Hämta information om denna kanal från webben"
 
-#: widgets/rb-header.c:828
+#: widgets/rb-header.c:861
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d.%02d av %d.%02d"
 
-#: widgets/rb-header.c:836
+#: widgets/rb-header.c:869
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d.%02d av %d.%02d återstår"
