@@ -158,6 +158,7 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 static void
 rb_source_header_init (RBSourceHeader *header)
 {
+	GtkWidget *align;
 	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
 
 	gtk_box_set_spacing (GTK_BOX (header), 5);
@@ -174,9 +175,12 @@ rb_source_header_init (RBSourceHeader *header)
 			  G_CALLBACK (rb_source_header_disclosure_toggled_cb), header);
 
 	gtk_box_pack_start (GTK_BOX (header),
-			    GTK_WIDGET (header->priv->disclosure), TRUE, TRUE, 0);
+			    GTK_WIDGET (header->priv->disclosure), FALSE, TRUE, 0);
+
+	align = gtk_alignment_new (1.0, 0.5, 0.5, 1.0);
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (header->priv->search));
 	gtk_box_pack_end (GTK_BOX (header),
-			  GTK_WIDGET (header->priv->search), FALSE, FALSE, 0);
+			  align, TRUE, TRUE, 0);
 }
 
 static void

@@ -96,6 +96,9 @@ static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   RBShell *shell);
 static void rb_shell_sync_window_state (RBShell *shell);
 static void rb_shell_sync_paned (RBShell *shell);
+static void paned_size_allocate_cb (GtkWidget *widget,
+				    GtkAllocation *allocation,
+				    RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static void source_selected_cb (RBSourceList *sourcelist,
@@ -592,6 +595,10 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
+	g_signal_connect (G_OBJECT (shell->priv->notebook),
+			  "size_allocate",
+			  G_CALLBACK (paned_size_allocate_cb),
+			  shell);
 
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->source_header), FALSE, TRUE, 0);
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
@@ -1430,8 +1437,20 @@ window_visibility_changed_cb (GConfClient *client,
 static void
 rb_shell_sync_paned (RBShell *shell)
 {
-	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
-				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
+	int position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+	if (position > 0)
+		gtk_paned_set_position (GTK_PANED (shell->priv->paned),
+					position);
+}
+
+static void
+paned_size_allocate_cb (GtkWidget *widget,
+			GtkAllocation *allocation,
+		        RBShell *shell)
+{
+	rb_debug ("paned size allocate");
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
+			       gtk_paned_get_position (GTK_PANED (shell->priv->paned)));
 }
 
 static void

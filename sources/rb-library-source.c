@@ -82,15 +82,15 @@ static void rb_library_source_drop_cb (GtkWidget        *widget,
 
 static void songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source);
 
-void rb_library_source_sync_browser (RBLibrarySource *source);
-static void rb_library_source_browser_visibility_changed_cb (GConfClient *client,
-							     guint cnxn_id,
-							     GConfEntry *entry,
-							     RBLibrarySource *source);
+static void rb_library_source_state_pref_changed (GConfClient *client,
+						 guint cnxn_id,
+						 GConfEntry *entry,
+						 RBLibrarySource *source);
 static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       RBLibrarySource *source); 
+static void rb_library_source_state_prefs_sync (RBLibrarySource *source);
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
@@ -129,6 +129,7 @@ void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_UI_LIBRARY_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
+#define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
 
@@ -154,9 +155,7 @@ struct RBLibrarySourcePrivate
 	char *status;
 
 	GtkWidget *paned;
-	int paned_position;
 
-	gboolean show_browser;
 	gboolean lock;
 
 	RBNodeFilter *artists_filter;
@@ -165,8 +164,6 @@ struct RBLibrarySourcePrivate
 
 	gboolean changing_artist;
 	gboolean changing_genre;
-
-	guint views_notif;
 
 	gboolean loading_prefs;
 
@@ -294,12 +291,16 @@ update_browser_views_visibility (RBLibrarySource *source)
 }
 
 static void
-browser_views_notifier (GConfClient *client,
-			guint cnxn_id,
-			GConfEntry *entry,
-			RBLibrarySource *source)
+rb_library_source_ui_pref_changed (GConfClient *client,
+				   guint cnxn_id,
+				   GConfEntry *entry,
+				   RBLibrarySource *source)
 {
+	rb_debug ("ui pref changed");
 	update_browser_views_visibility (source);
+
+	if (source->priv->config_widget)
+		rb_library_source_preferences_sync (source);
 }
 
 static void
@@ -314,10 +315,6 @@ rb_library_source_init (RBLibrarySource *source)
 
 	gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 
-
-	source->priv->views_notif = eel_gconf_notification_add
-		(CONF_UI_LIBRARY_BROWSER_VIEWS, (GConfClientNotifyFunc) browser_views_notifier, source);
-	
 	source->priv->pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_LIBRARY,
 						       GTK_ICON_SIZE_MENU,
@@ -337,17 +334,12 @@ rb_library_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
-	/* save state */
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, source->priv->paned_position);
-
 	g_free (source->priv->title);
 	g_free (source->priv->status);
 
 	g_object_unref (G_OBJECT (source->priv->artists_filter));
 	g_object_unref (G_OBJECT (source->priv->songs_filter));
 	g_object_unref (G_OBJECT (source->priv->albums_filter));
-
-	eel_gconf_notification_remove (source->priv->views_notif);
 
 	g_free (source->priv);
 
@@ -479,17 +471,14 @@ rb_library_source_set_property (GObject *object,
 
 			gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
 
-			source->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
-
 			gtk_widget_show_all (GTK_WIDGET (source));
 
-			gtk_paned_set_position (GTK_PANED (source->priv->paned), source->priv->paned_position);
-
-			eel_gconf_notification_add (CONF_STATE_SHOW_BROWSER,
-						    (GConfClientNotifyFunc) rb_library_source_browser_visibility_changed_cb,
+			rb_library_source_state_prefs_sync (source);
+			eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
+						    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 						    source);
-			
-			rb_library_source_sync_browser (source);
+			eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
+						    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
 
 			update_browser_views_visibility (source);
 
@@ -727,9 +716,6 @@ impl_get_config_widget (RBSource *asource)
 
 	g_object_unref (G_OBJECT (xml));
 	
-	eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
-				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed,
-				    source);
 	rb_library_source_preferences_sync (source);
 	return source->priv->config_widget;
 }
@@ -866,13 +852,11 @@ rb_library_source_preferences_sync (RBLibrarySource *source)
 {
 	GSList *list;
 
-	source->priv->loading_prefs = TRUE;
+	rb_debug ("syncing pref dialog state");
 
 	list = g_slist_nth (source->priv->browser_views_group,
 			    eel_gconf_get_integer (CONF_UI_LIBRARY_BROWSER_VIEWS));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
-
-	source->priv->loading_prefs = FALSE;
 }
 
 void
@@ -887,18 +871,6 @@ rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 	index = g_slist_index (source->priv->browser_views_group, widget);
 
 	eel_gconf_set_integer (CONF_UI_LIBRARY_BROWSER_VIEWS, index);
-}
-
-static void
-rb_library_source_ui_pref_changed (GConfClient *client,
-				   guint cnxn_id,
-				   GConfEntry *entry,
-				   RBLibrarySource *source)
-{
-	if (source->priv->loading_prefs == TRUE)
-		return;
-
-	rb_library_source_preferences_sync (source);
 }
 
 static void
@@ -921,7 +893,33 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBLibrarySource *source)
 {
-	source->priv->paned_position = gtk_paned_get_position (GTK_PANED (source->priv->paned));
+	/* save state */
+	rb_debug ("paned size allocate");
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
+			       gtk_paned_get_position (GTK_PANED (source->priv->paned)));
+}
+
+static void
+rb_library_source_state_prefs_sync (RBLibrarySource *source)
+{
+	rb_debug ("syncing state");
+	gtk_paned_set_position (GTK_PANED (source->priv->paned),
+				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
+	
+	if (eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER))
+		gtk_widget_show (source->priv->browser);
+	else
+		gtk_widget_hide (source->priv->browser);
+}
+
+static void
+rb_library_source_state_pref_changed (GConfClient *client,
+				     guint cnxn_id,
+				     GConfEntry *entry,
+				     RBLibrarySource *source)
+{
+	rb_debug ("state prefs changed");
+	rb_library_source_state_prefs_sync (source);
 }
 
 static void
@@ -930,28 +928,6 @@ songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source)
 	rb_debug ("got node view change");
 	rb_source_notify_status_changed (RB_SOURCE (source));
 }
-
-void
-rb_library_source_sync_browser (RBLibrarySource *source)
-{
-	gboolean show = eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER);
-
-	if (show)
-		gtk_widget_show (source->priv->browser);
-	else
-		gtk_widget_hide (source->priv->browser);
-}
-
-static void
-rb_library_source_browser_visibility_changed_cb (GConfClient *client,
-						 guint cnxn_id,
-						 GConfEntry *entry,
-						 RBLibrarySource *source)
-{
-	rb_debug ("browser visibility changed"); 
-	rb_library_source_sync_browser (source);
-}
-
 
 void
 rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
