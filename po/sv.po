@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-01-07 20:22+0100\n"
-"PO-Revision-Date: 2003-01-07 20:22+0100\n"
+"POT-Creation-Date: 2003-01-08 11:09+0100\n"
+"PO-Revision-Date: 2003-01-08 11:10+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -763,22 +763,15 @@ msgstr "Upprepa spellistan"
 msgid "Shuffle the play list"
 msgstr "Blanda spellistan"
 
-#. 'Empty playlist' label
-#: shell/rb-player.c:406
-msgid ""
-"Not playing\n"
-"\n"
-"To play, add music to the play list"
-msgstr ""
-"Spelar inte\n"
-"\n"
-"Lägg till musik i spellistan för att spela"
-
-#: shell/rb-player.c:411
+#: shell/rb-player.c:410 shell/rb-player.c:417
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: shell/rb-player.c:436
+#: shell/rb-player.c:423
+msgid "To play, add music to the play list"
+msgstr "Lägg till musik i spellistan för att spela"
+
+#: shell/rb-player.c:447
 #, c-format
 msgid ""
 "Failed to create mixer, exiting. Error was:\n"
@@ -787,34 +780,34 @@ msgstr ""
 "Misslyckades med att skapa mixern, avslutar. Felet var:\n"
 "%s"
 
-#: shell/rb-player.c:739
+#: shell/rb-player.c:750
 msgid "Get information about this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: shell/rb-player.c:745
+#: shell/rb-player.c:756
 msgid "Get information about this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: shell/rb-player.c:752
+#: shell/rb-player.c:763
 #, c-format
 msgid "Track %d from "
 msgstr "Spår %d från "
 
-#: shell/rb-player.c:756
+#: shell/rb-player.c:767
 msgid "From "
 msgstr "Från "
 
-#: shell/rb-player.c:761
+#: shell/rb-player.c:772
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:763
+#: shell/rb-player.c:774
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Okänd"
 
-#: shell/rb-player.c:788
+#: shell/rb-player.c:799
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
@@ -823,17 +816,17 @@ msgstr ""
 "Misslyckades med att skapa ström, felet var:\n"
 "%s"
 
-#: shell/rb-player.c:872
+#: shell/rb-player.c:883
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Misslyckades med att tolka %s som spellista"
 
-#: shell/rb-player.c:1105
+#: shell/rb-player.c:1116
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld.%.2ld"
 
-#: shell/rb-player.c:1109
+#: shell/rb-player.c:1120
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Totalt %ld.%.2ld (%ld.%.2ld återstår)"
