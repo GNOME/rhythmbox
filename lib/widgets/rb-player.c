@@ -225,8 +225,6 @@ rb_player_init (RBPlayer *player)
 	 *         GtkLabel		(priv->elapsed)
 	 */
 	GtkWidget *hbox, *vbox, *textline, *urlline, *label, *align, *scalebox, *textvbox;
-	PangoAttrList *attrlist;
-	PangoAttribute *attr;
 
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
@@ -315,13 +313,6 @@ rb_player_init (RBPlayer *player)
 	align = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
 	player->priv->elapsed = gtk_label_new ("0:00");
 	gtk_misc_set_padding (GTK_MISC (player->priv->elapsed), 2, 0);
-	attrlist = pango_attr_list_new ();
-	attr = pango_attr_scale_new (PANGO_SCALE_SMALL);
-	attr->start_index = 0;
-	attr->end_index = G_MAXINT;
-	pango_attr_list_insert (attrlist, attr);
-	gtk_label_set_attributes (GTK_LABEL (player->priv->elapsed), attrlist);
-	pango_attr_list_unref (attrlist);
 	player->priv->tips = gtk_tooltips_new ();
 	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
