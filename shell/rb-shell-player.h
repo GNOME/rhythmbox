@@ -18,7 +18,7 @@
  *  $Id$
  */
 
-#include <gtk/gtktable.h>
+#include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <monkey-media.h>
 
@@ -40,14 +40,14 @@ typedef struct RBShellPlayerPrivate RBShellPlayerPrivate;
 
 typedef struct
 {
-	GtkTable parent;
+	GtkHBox parent;
 
 	RBShellPlayerPrivate *priv;
 } RBShellPlayer;
 
 typedef struct
 {
-	GtkTableClass parent_class;
+	GtkHBoxClass parent_class;
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 } RBShellPlayerClass;
@@ -66,9 +66,6 @@ void			rb_shell_player_stop		(RBShellPlayer *shell_player);
 
 void			rb_shell_player_set_shuffle	(RBShellPlayer *shell_player,
 							 gboolean shuffle);
-
-void			rb_shell_player_play_search	(RBShellPlayer *shell_player,
-							 const char *text);
 
 MonkeyMediaPlayer *	rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 

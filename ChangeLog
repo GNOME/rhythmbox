@@ -1,3 +1,34 @@
+2003-05-10  Colin Walters  <cwalters@gnome.org>
+
+	* data/glade/Makefile.am:
+	* data/glade/buffering-dialog.glade:
+	* data/glade/general-prefs.glade:
+	* data/glade/library-prefs.glade:
+	* data/glade/preferences.glade:
+	* data/glade/station-new.glade:
+	* data/glade/station-properties.glade:
+	* data/glade/uri.glade:
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/widgets/rb-player.c: (rb_player_init):
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
+	* shell/Makefile.am:
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_set_property), (buffering_end_cb):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_construct):
+	* shell/rb-source-header.c: (rb_source_header_get_type),
+	(rb_source_header_class_init), (rb_source_header_init),
+	(rb_source_header_finalize), (rb_source_header_set_property),
+	(rb_source_header_get_property), (rb_source_header_set_source),
+	(rb_source_header_new), (rb_source_header_filter_changed_cb),
+	(rb_source_header_search_cb):
+	* shell/rb-source-header.h:
+
+	Second iteration.  We're getting closer to the new UI.  Lots of
+	stuff is still broken.  Remove some XOSD cruft and other bits, add
+	some GConf schema entries, update the glade files, and other bits.
+
 2003-05-10  Colin Walters  <walters@verbum.org>
 
 	* Makefile.am:

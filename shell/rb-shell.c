@@ -53,6 +53,7 @@
 #include "rb-source.h"
 #include "rb-preferences.h"
 #include "rb-shell-player.h"
+#include "rb-source-header.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist.h"
 #include "rb-bonobo-helpers.h"
@@ -238,6 +239,7 @@ struct RBShellPrivate
 	GList *sources;
 
 	RBShellPlayer *player_shell;
+	RBSourceHeader *source_header;
 
 	RBLibrary *library;
 	RBSource *library_source;
@@ -567,16 +569,6 @@ rb_shell_construct (RBShell *shell)
 			  G_CALLBACK (rb_shell_window_delete_cb),
 			  shell);
 
-#ifdef HAVE_ACME
-	/* Connect the keys */
-	rb_debug ("adding key_press_event callback");
-	gtk_widget_add_events (shell->priv->window, GDK_KEY_PRESS_MASK);
-	g_signal_connect (G_OBJECT(shell->priv->window), "key_press_event",
-			G_CALLBACK (rb_shell_window_key_press_cb), 
-			shell);
-#endif
-	
-
 	rb_debug ("shell: creating container area");
 	shell->priv->container = bonobo_window_get_ui_container (win);
 
@@ -621,6 +613,7 @@ rb_shell_construct (RBShell *shell)
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
 			  shell);
+	shell->priv->source_header = rb_source_header_new ();
 
 	shell->priv->paned = gtk_hpaned_new ();
 
@@ -635,23 +628,23 @@ rb_shell_construct (RBShell *shell)
 	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (shell->priv->sourcelist_scrollwin),
 					       shell->priv->sourcelist);
 
-/* 	g_signal_connect (G_OBJECT (shell->priv->sidebar), */
-/* 			  "drag_finished", */
-/* 			  G_CALLBACK (rb_sidebar_drag_finished_cb), */
-/* 			  shell); */
-
+	vbox = gtk_vbox_new (FALSE, 0);
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->source_header), FALSE, TRUE, 0);
+	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
+
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist_scrollwin, FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->notebook, TRUE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
 	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, TRUE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 
 	bonobo_window_set_contents (win, vbox);

@@ -274,7 +274,6 @@ rb_player_init (RBPlayer *player)
 
 	/* The slider */
 	player->priv->timeframe = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), player->priv->timeframe, FALSE, FALSE, 0);
 
 	scalebox = player->priv->timeline = gtk_hbox_new (FALSE, 2);
 	g_object_ref (G_OBJECT (scalebox));
@@ -320,7 +319,8 @@ rb_player_init (RBPlayer *player)
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
-	gtk_container_add (GTK_CONTAINER (player), hbox);
+	gtk_box_pack_start_defaults (GTK_BOX (player), hbox);
+	gtk_box_pack_end_defaults (GTK_BOX (player), player->priv->timeframe);
 
 	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_player_sync_time_locked, player);
 }

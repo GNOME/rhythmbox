@@ -67,6 +67,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/shuffle</key>
+        <applyto>/apps/rhythmbox/state/shuffle</applyto>
+        <owner>rhytbhmbox</owner>
+        <type>bool</type>
+        <default>0</default>
+        <locale name="C">
+	<short>Shuffle mode</short>
+	<long>If true, rhythmbox will use a random playing order.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/add_dir</key>
         <applyto>/apps/rhythmbox/state/add_dir</applyto>
         <owner>rhythmbox</owner>
@@ -89,17 +100,6 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/state/library/paned_position</key>
-        <applyto>/apps/rhythmbox/state/library/paned_position</applyto>
-        <owner>rhythmbox</owner>
-        <type>int</type>
-        <default>-1</default>
-        <locale name="C">
-	<short>Library paned position</short>
-	<long>Library paned position.</long>
-        </locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/state/library/show_browser</key>
         <applyto>/apps/rhythmbox/state/library/show_browser</applyto>
         <owner>rhythmbox</owner>
@@ -111,27 +111,15 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/ui/columns_setup</key>
-        <applyto>/apps/rhythmbox/ui/columns_setup</applyto>
-        <owner>rhythmbox</owner>
+        <key>/schemas/apps/net-rhythmbox/ui/columns_setup</key>
+        <applyto>/apps/net-rhythmbox/ui/columns_setup</applyto>
+        <owner>net-rhythmbox</owner>
         <type>string</type>
-        <default>RB_TREE_MODEL_COL_TRACK_NUMBER,RB_TREE_MODEL_NODE_COL_ARTIST,RB_TREE_MODEL_NODE_COL_ALBUM,RB_TREE_MODEL_NODE_COL_DURATION</default>
+        <default>RB_TREE_MODEL_COL_TRACK_NUMBER,RB_TREE_MODEL_NODE_COL_ARTIST,RB_TREE_MODEL_NODE_COL_ALBUM,RB_TREE_MODEL_NODE_COL_GENRE,RB_TREE_MODEL_NODE_COL_DURATION</default>
         <locale name="C">
-	<short>List of columns in the songs view.</short>
-	<long>The list of columns that will be shown in the list of songs. You should edit 
-        this in the settings menu, unless you know what you are doing.</long>
-        </locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/iradio_columns_setup</key>
-        <applyto>/apps/rhythmbox/ui/iradio_columns_setup</applyto>
-        <owner>rhythmbox</owner>
-        <type>string</type>
-        <default>RB_TREE_MODEL_NODE_COL_GENRE,RB_TREE_MODEL_NODE_COL_QUALITY</default>
-        <locale name="C">
-	<short>List of columns in the Internet radio view.</short>
-	<long>The list of columns that will be shown in the list of Internet radio stations. You should edit 
-        this in the settings menu, unless you know what you are doing.</long>
+	<short>List of active columns.</short>
+	<long>The list of columns that will be shown.  If a source
+              doesn't support a particular column, it won't be displayed. </long>
         </locale>
       </schema>
       <schema>
@@ -146,13 +134,13 @@
         </locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/ui/browser_views</key>
-        <applyto>/apps/rhythmbox/ui/browser_views</applyto>
+        <key>/schemas/apps/rhythmbox/library/ui/browser_views</key>
+        <applyto>/apps/rhythmbox/library/ui/browser_views</applyto>
         <owner>rhythmbox</owner>
         <type>int</type>
         <default>0</default>
         <locale name="C">
-	<short>Views to show in the browser.</short>
+	<short>Views to show in the library browser.</short>
 	<long>
 	0 Artists, Albums
 	1 Genres, Artists

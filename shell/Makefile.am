@@ -13,6 +13,8 @@ rhythmbox_SOURCES =              			\
 	rb-shell.h					\
 	rb-shell-player.c				\
 	rb-shell-player.h				\
+	rb-source-header.c				\
+	rb-source-header.h				\
 	rb-playlist.c					\
 	rb-playlist.h					\
 	rb-shell-preferences.c				\

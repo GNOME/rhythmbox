@@ -20,7 +20,6 @@
  */
 
 #include <gtk/gtk.h>
-#include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <bonobo/bonobo-ui-util.h>
 #include <config.h>
@@ -39,17 +38,11 @@
 #include "rb-thread-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
-#include "rb-search-entry.h"
 #include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
-#ifdef HAVE_ACME
-#include <X11/XF86keysym.h>
-#endif
-
-#define RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL 10
 
 typedef enum
 {
@@ -114,9 +107,6 @@ static void rb_shell_player_node_activated_cb (RBNodeView *view,
 static void rb_shell_player_extra_node_activated_cb (RBNodeView *view,
 						     RBNode *node,
 						     RBShellPlayer *playa);
-static void rb_shell_player_filter_changed_cb (RBSource *source, RBShellPlayer *player);
-static void rb_shell_player_search_cb (RBSearchEntry *search,
-				       const char *text, RBShellPlayer *player);
 static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
@@ -180,12 +170,17 @@ struct RBShellPlayerPrivate
 	GtkWidget *buffering_dialog;
 	guint buffering_progress_idle_id;
 
+	GtkWidget *prev_button;
+	GtkWidget *play_button;
+	GtkWidget *next_button;
+	
 	RBPlayer *player_widget;
 
-	RBRemote *remote;
+	GtkWidget *shuffle_button;
+	GtkWidget *volume_button;
+	GtkWidget *magic_button;
 
-	GtkWidget *bin;
-	GtkWidget *search;
+	RBRemote *remote;
 };
 
 enum
@@ -299,7 +294,7 @@ static void
 rb_shell_player_init (RBShellPlayer *player)
 {
 	GError *error = NULL;
-	GtkWidget *align, *vbox;
+	GtkWidget *hbox, *image;
 
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
@@ -344,27 +339,55 @@ rb_shell_player_init (RBShellPlayer *player)
 	monkey_media_player_set_volume (player->priv->mmplayer,
 					eel_gconf_get_float (CONF_STATE_VOLUME));
 
-	gtk_box_set_spacing (GTK_BOX (player), 5);
+	hbox = gtk_hbox_new (FALSE, 0);
+
+	/* Previous button */
+	image = gtk_image_new_from_stock (RB_STOCK_PREVIOUS,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->prev_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
+
+	/* Play button */
+	image = gtk_image_new_from_stock (RB_STOCK_PLAY,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->play_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->play_button), image);
+
+	/* Next button */
+	image = gtk_image_new_from_stock (RB_STOCK_NEXT,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->next_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
+
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_button, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
+
+	gtk_box_pack_start_defaults (GTK_BOX (player), hbox);
 
 	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
-	gtk_box_pack_start (GTK_BOX (player),
-			    GTK_WIDGET (player->priv->player_widget), TRUE, TRUE, 0);
+	gtk_box_pack_start_defaults (GTK_BOX (player), GTK_WIDGET (player->priv->player_widget));
 
-	vbox = gtk_vbox_new (FALSE, 5);
-	gtk_box_pack_end (GTK_BOX (player), vbox, FALSE, TRUE, 0);
+	hbox = gtk_hbox_new (FALSE, 0);
+	/* Play button */
+	image = gtk_image_new_from_stock (RB_STOCK_SHUFFLE,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->shuffle_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->shuffle_button), image);
+	
+	image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->volume_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	player->priv->bin = gtk_hbox_new (FALSE, 0);
-	align = gtk_alignment_new (1.0, 1.0, 0.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (align), player->priv->bin);
-	gtk_box_pack_end (GTK_BOX (vbox), align, FALSE, FALSE, 0);
+	player->priv->magic_button = gtk_button_new_from_stock (GTK_STOCK_EXECUTE);
+	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	player->priv->search = GTK_WIDGET (rb_search_entry_new ());
-	gtk_container_add (GTK_CONTAINER (player->priv->bin), player->priv->search);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->shuffle_button, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->volume_button, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), player->priv->magic_button, FALSE, TRUE, 0);
 
-	g_signal_connect (G_OBJECT (player->priv->search),
-			  "search",
-			  G_CALLBACK (rb_shell_player_search_cb),
-			  player);
+	gtk_box_pack_end (GTK_BOX (player), hbox, FALSE, TRUE, 0);
 
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
@@ -432,9 +455,6 @@ rb_shell_player_set_property (GObject *object,
 								      player);
 			g_list_free (extra_views);
 			
-			g_signal_handlers_disconnect_by_func (G_OBJECT (player->priv->selected_source),
-							      G_CALLBACK (rb_shell_player_filter_changed_cb),
-							      player);
 		}
 		
 		player->priv->selected_source = g_value_get_object (value);
@@ -462,10 +482,6 @@ rb_shell_player_set_property (GObject *object,
 						  G_CALLBACK (rb_shell_player_extra_node_activated_cb),
 						  player);
 				
-			g_signal_connect (G_OBJECT (player->priv->selected_source),
-					  "filter_changed",
-					  G_CALLBACK (rb_shell_player_filter_changed_cb),
-					  player);
 		}
 		
 		break;
@@ -974,57 +990,6 @@ static void rb_shell_player_extra_node_activated_cb (RBNodeView *view,
 }
 
 static void
-rb_shell_player_filter_changed_cb (RBSource *source,
-				   RBShellPlayer *player)
-{
-	rb_debug  ("filter changed for %p", source);
-	
-	rb_search_entry_clear (RB_SEARCH_ENTRY (player->priv->search));
-}
-
-static void
-rb_shell_player_search_cb (RBSearchEntry *search,
-			   const char *text,
-			   RBShellPlayer *player)
-{
-	rb_debug  ("searching for \"%s\"", text);
-	
-	rb_source_search (player->priv->selected_source, text);
-}
-
-/* static void */
-/* rb_shell_player_shuffle (RBShellPlayer *player) */
-/* { */
-/* 	GPtrArray *kids; */
-/* 	int *new_order, i; */
-
-/* 	kids = rb_node_get_children (player->priv->playlist); */
-
-/* 	new_order = g_new (int, kids->len); */
-/* 	memset (new_order, -1, sizeof (int) * kids->len); */
-
-/* 	for (i = 0; i < kids->len; i++) { */
-/* 		int rnd; */
-
-/* 		do { */
-/* 			rnd = g_random_int_range (0, kids->len); */
-/* 		} while (new_order[rnd] != -1); */
-
-/* 		new_order[rnd] = i; */
-/* 	} */
-
-/* 	rb_node_thaw (player->priv->playlist); */
-
-/* 	rb_node_reorder_children (player->priv->playlist, new_order); */
-/* 	g_free (new_order); */
-
-/* 	update_buttons (player); */
-
-/* 	if (player->priv->playing) */
-/* 		rb_node_view_scroll_to_node (player->priv->playlist_view, player->priv->playing); */
-/* } */
-
-static void
 rb_shell_player_set_play_button (RBShellPlayer *player,
 			         PlayButtonState state)
 {
@@ -1175,22 +1140,6 @@ rb_shell_player_set_playing_source (RBShellPlayer *player,
 		rb_shell_player_stop (player);
 
 	rb_shell_player_sync_with_source (player);
-}
-
-void
-rb_shell_player_play_search (RBShellPlayer *player,
-			     const char *text)
-{
-	rb_shell_player_set_playing_source (player, NULL);
-	if (player->priv->selected_source != NULL) {
-		rb_debug ("trying play_search with text \"%s\"", text);
-		/* REWRITEFIXME */
-/* 		rb_source_play_search (player->priv->selected_source, */
-/* 				       text); */
-	} else
-		rb_error_dialog (_("No active player!"));
-	
-	rb_shell_player_play (player);
 }
 
 void
@@ -1493,79 +1442,3 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 
 	gdk_threads_leave ();
 }
-
-#ifdef HAVE_REMOTE
-static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
-				       RBShellPlayer *player)
-{
-	long elapsed;
-
-	switch (cmd) {
-		case RB_REMOTE_COMMAND_PLAY:
-			rb_shell_player_cmd_play (NULL, player, NULL);
-			break;
-		case RB_REMOTE_COMMAND_PAUSE:
-			rb_shell_player_cmd_pause (NULL, player, NULL);
-			break;
-		case RB_REMOTE_COMMAND_NEXT:
-			rb_shell_player_cmd_next (NULL, player, NULL);
-			break;
-		case RB_REMOTE_COMMAND_PREVIOUS:
-			rb_shell_player_cmd_previous (NULL, player, NULL);
-			break;
-		case RB_REMOTE_COMMAND_SEEK_FORWARD:
-			if (!monkey_media_player_playing (player->priv->mmplayer))
-				return;
-
-			elapsed = monkey_media_player_get_time (player->priv->mmplayer);
-
-			elapsed += RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL;
-
-			monkey_media_player_set_time (player->priv->mmplayer, elapsed);
-			break;
-		case RB_REMOTE_COMMAND_SEEK_BACKWARD:
-			if (!monkey_media_player_playing (player->priv->mmplayer))
-				return;
-
-			elapsed = monkey_media_player_get_time (player->priv->mmplayer);
-
-			elapsed -= RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL;
-
-			monkey_media_player_set_time (player->priv->mmplayer, elapsed);
-			break;
-		default:
-			break;
-	}
-}
-#endif
-
-#ifdef HAVE_ACME
-gboolean
-rb_shell_player_handle_key (RBShellPlayer *player, guint keyval)
-{
- 	gboolean retval = TRUE;
-	rb_debug ("handling key %ud", keyval);
- 	switch (keyval) {
- 	case XF86XK_AudioPlay:
- 	case XF86XK_AudioPause:
-		if (!player->priv->mmplayer)
-			break;
-		if (monkey_media_player_playing (player->priv->mmplayer))
-			rb_shell_player_cmd_pause (NULL, player, NULL);
-		else
-			rb_shell_player_cmd_play (NULL, player, NULL);
- 		break;
- 	case XF86XK_AudioPrev:
-		if (rb_shell_player_have_previous (player, player->priv->selected_source) == TRUE)
- 			rb_shell_player_previous (player);
- 		break;
- 	case XF86XK_AudioNext:
-	    	if (rb_shell_player_have_next (player, player->priv->selected_source) == TRUE)
-			rb_shell_player_next (player);
- 		break;
- 	default:
- 		retval = FALSE;
- 	}
- 	return retval;
-}
-#endif 
