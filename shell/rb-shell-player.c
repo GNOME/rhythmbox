@@ -2076,7 +2076,6 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 	XEvent *xev;
 	XKeyEvent *key;
 	RBShellPlayer *player;
-	RBSource *source; 
 	xev = (XEvent *) xevent;
 	if (xev->type != KeyPress) {
 		return GDK_FILTER_CONTINUE;
@@ -2086,11 +2085,13 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 
 	player = (RBShellPlayer *)data;
 
-	source = rb_shell_player_get_playing_entry (player) == NULL ?
-			player->priv->selected_source : player->priv->source;
-
 	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {	
 		rb_shell_player_playpause (player);
+		return GDK_FILTER_REMOVE;
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause) == key->keycode) {	
+		if (rb_shell_player_get_playing	(player)) {
+			rb_shell_player_playpause (player);
+		}
 		return GDK_FILTER_REMOVE;
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop) == key->keycode) {
 		rb_shell_player_set_playing_source (player, NULL);
@@ -2109,7 +2110,7 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 static void
 rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 {
-	gint keycodes[] = {0, 0, 0, 0};
+	gint keycodes[] = {0, 0, 0, 0, 0};
 	GdkDisplay *display;
 	GdkScreen *screen;
 	GdkWindow *root;
@@ -2119,6 +2120,7 @@ rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 	keycodes[1] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop);
 	keycodes[2] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev);
 	keycodes[3] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext);
+	keycodes[4] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPause);
 
 	display = gdk_display_get_default ();
 
@@ -2128,7 +2130,7 @@ rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
 		if (screen != NULL) {
 			root = gdk_screen_get_root_window (screen);
 
-			for (j = 0; j < 4 ; j++) {
+			for (j = 0; j < G_N_ELEMENTS (keycodes) ; j++) {
 				if (keycodes[j] != 0)
 					grab_mmkey (keycodes[j], root);
 			}
