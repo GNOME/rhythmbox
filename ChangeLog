@@ -1,5 +1,11 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library-watcher.c: (rb_library_watcher_add_directory):
+
+	Don't break if FAM is not running.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
 	(rb_node_view_get_node), (rb_node_view_get_next_node),
 	(rb_node_view_get_previous_node), (rb_node_view_get_first_node),

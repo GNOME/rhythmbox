@@ -23,6 +23,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "rb-library-watcher.h"
 #include "rb-library-preferences.h"
@@ -297,7 +298,7 @@ static void
 rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 				  const char *dir)
 {
-	GnomeVFSMonitorHandle *handle;
+	GnomeVFSMonitorHandle *handle = NULL;
 	GList *list, *l;
 	GnomeVFSURI *uri, *subdir_uri, *file_uri;
 	char *tmp, *text_uri, *subdir_uri_text;
@@ -362,11 +363,10 @@ rb_library_watcher_add_directory (RBLibraryWatcher *watcher,
 	gnome_vfs_monitor_add (&handle, text_uri, GNOME_VFS_MONITOR_DIRECTORY,
 			       (GnomeVFSMonitorCallback) rb_library_watcher_monitor_cb, watcher);
 
-	g_assert (handle != NULL);
-
-	g_hash_table_insert (watcher->priv->handles, uri, handle);
-
 	g_free (text_uri);
+
+	if (handle != NULL)
+		g_hash_table_insert (watcher->priv->handles, uri, handle);
 }
 
 static void
