@@ -962,6 +962,10 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 	char *play_order;
 
 	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+	if (!play_order) {
+		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
+		return FALSE;
+	}
 
 	for (i = 0; i < G_N_ELEMENTS(state_to_play_order); i++)
 		for (j = 0; j < G_N_ELEMENTS(state_to_play_order[0]); j++)
@@ -999,8 +1003,8 @@ static void
 rb_shell_player_sync_play_order (RBShellPlayer *player)
 {
 	static char *current_play_order = NULL;
-
 	char *new_play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+
 	if (!new_play_order) {
 		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
 		new_play_order = g_strdup ("");
