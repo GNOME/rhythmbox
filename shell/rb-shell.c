@@ -1276,9 +1276,10 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 		char *title;
 
 		if (shell->priv->cached_title &&
-		    !strcmp (shell->priv->cached_title, window_title))
+		    !strcmp (shell->priv->cached_title, window_title)) {
+			shell->priv->cached_title = g_strdup (window_title);
 			return;
-		
+		}
 		shell->priv->cached_title = g_strdup (window_title);
 
 		rb_debug ("setting title to \"%s\"", window_title);
