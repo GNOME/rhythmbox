@@ -24,6 +24,7 @@
 #include <glib.h>
 
 #include "rhythmdb.h"
+#include "rhythmdb-query-model.h"
 
 #ifndef RHYTHMDB_PROPERTY_MODEL_H
 #define RHYTHMDB_PROPERTY_MODEL_H
@@ -61,15 +62,6 @@ typedef struct
 GType			rhythmdb_property_model_get_type	(void);
 
 RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBPropType propid);
-
-void			rhythmdb_property_model_insert		(RhythmDBPropertyModel *model,
-								 RhythmDBEntry *entry);
-gboolean		rhythmdb_property_model_delete_iter	(RhythmDBPropertyModel *model,
-								 GtkTreeIter *iter);
-
-void			rhythmdb_property_model_entry_to_iter	(RhythmDBPropertyModel *model,
-								 RhythmDBEntry *entry,
-								 GtkTreeIter *iter);
 
 G_END_DECLS
 

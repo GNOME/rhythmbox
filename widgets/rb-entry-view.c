@@ -1717,8 +1717,6 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       GtkTreeIter *iter,
 			       RBEntryView *view)
 {
-	RhythmDBEntry *entry = entry_from_tree_iter (view, iter);
-	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }
 

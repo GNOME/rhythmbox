@@ -68,11 +68,10 @@ void		rb_property_view_set_selection_mode	(RBPropertyView *view,
 
 void		rb_property_view_reset			(RBPropertyView *view);
 
-void		rb_property_view_handle_entry_addition	(RBPropertyView *view,
-							 RhythmDBEntry *entry);
+RhythmDBPropertyModel * rb_property_view_get_model	(RBPropertyView *view);
 
-void		rb_property_view_handle_entry_deletion	(RBPropertyView *view,
-							 RhythmDBEntry *entry); 
+void		rb_property_view_set_model		(RBPropertyView *view,
+							 RhythmDBPropertyModel *model);
 
 guint		rb_property_view_get_num_properties	(RBPropertyView *view);
 

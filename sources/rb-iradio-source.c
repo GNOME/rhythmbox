@@ -73,10 +73,6 @@ static void rb_iradio_source_get_property (GObject *object,
 static void rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 						  RhythmDBEntry *entry,
 						  RBIRadioSource *source);
-static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
-			    RBPropertyView *propview);
-static void entry_deleted_cb (RBEntryView *view, RhythmDBEntry *entry,
-			      RBPropertyView *propview);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBIRadioSource *source);
@@ -150,7 +146,6 @@ struct RBIRadioSourcePrivate
 	gboolean loading_prefs;
 
 	RBIRadioQueryType query_type;
-	guint genre_add_handler_id;
 	char *search_text;
 	char *selected_genre;
 
@@ -326,13 +321,6 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 			  "property-selected",
 			  G_CALLBACK (genre_selected_cb),
 			  source);
-	source->priv->genre_add_handler_id =
-		g_signal_connect (G_OBJECT (source->priv->stations),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->genres);
-	g_signal_connect (G_OBJECT (source->priv->stations),
-			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
-			  source->priv->genres);
 
 	g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy",
 		      GTK_POLICY_AUTOMATIC, NULL);
@@ -638,20 +626,6 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 }
 
 static void
-entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
-		RBPropertyView *propview)
-{
-	rb_property_view_handle_entry_addition (propview, entry);
-}
-
-static void
-entry_deleted_cb (RBEntryView *view, RhythmDBEntry *entry,
-		  RBPropertyView *propview)
-{
-	rb_property_view_handle_entry_deletion (propview, entry);
-}
-
-static void
 rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 {
 	RhythmDBQueryModel *query_model;
@@ -684,15 +658,10 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 				       RHYTHMDB_QUERY_END);
 	}
 
-	g_signal_handler_block (G_OBJECT (source->priv->stations),
-				source->priv->genre_add_handler_id);
-
 	if (qtype < RB_IRADIO_QUERY_TYPE_GENRE) {
 		rb_property_view_reset (source->priv->genres);
 		g_free (source->priv->selected_genre);
 		source->priv->selected_genre = NULL;
-		g_signal_handler_unblock (G_OBJECT (source->priv->stations),
-					  source->priv->genre_add_handler_id);
 	}
 
 	genre_query = rhythmdb_query_copy (query);
@@ -710,9 +679,9 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	model = GTK_TREE_MODEL (query_model);
 
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
-	if (qtype >= RB_IRADIO_QUERY_TYPE_GENRE)
-		g_signal_handler_unblock (G_OBJECT (source->priv->stations),
-					  source->priv->genre_add_handler_id);
+/* 	if (qtype >= RB_IRADIO_QUERY_TYPE_GENRE) */
+/* 		g_signal_handler_unblock (G_OBJECT (source->priv->stations), */
+/* 					  source->priv->genre_add_handler_id); */
 
 	rhythmdb_query_free (genre_query);
 	rhythmdb_query_free (query);

@@ -61,6 +61,9 @@ static void rb_property_view_row_activated_cb (GtkTreeView *treeview,
 			                   RBPropertyView *view);
 static void rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 						   RBPropertyView *view);
+static void rb_property_view_row_deleted_cb (GtkTreeModel *model,
+					     GtkTreePath *path,
+					     RBPropertyView *view);
 
 struct RBPropertyViewPrivate
 {
@@ -275,6 +278,12 @@ rb_property_view_set_property (GObject *object,
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (view->priv->prop_model));
 
+		g_signal_connect_object (G_OBJECT (view->priv->prop_model),
+					 "row_deleted",
+					 G_CALLBACK (rb_property_view_row_deleted_cb),
+					 view,
+					 0);
+
 		g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
 						 G_CALLBACK (rb_property_view_selection_changed_cb),
 						 view);
@@ -362,24 +371,29 @@ rb_property_view_reset (RBPropertyView *view)
 	g_object_unref (G_OBJECT (model));
 }
 
-void
-rb_property_view_handle_entry_addition	(RBPropertyView *view,
-					 RhythmDBEntry *entry)
+RhythmDBPropertyModel *
+rb_property_view_get_model (RBPropertyView *view)
 {
-	rhythmdb_property_model_insert (view->priv->prop_model, entry);
+	RhythmDBPropertyModel *model;
+	
+	g_object_get (G_OBJECT (view), "property-model", &model, NULL);
+	return model;
 }
 
 void
-rb_property_view_handle_entry_deletion (RBPropertyView *view,
-					RhythmDBEntry *entry)
+rb_property_view_set_model (RBPropertyView *view, RhythmDBPropertyModel *model)
 {
-	GtkTreeIter iter;
+	g_object_set (G_OBJECT (view), "property-model", model, NULL);
+}
+
+static void
+rb_property_view_row_deleted_cb (GtkTreeModel *model,
+				 GtkTreePath *path,
+				 RBPropertyView *view)
+{
 	g_signal_handlers_block_by_func (G_OBJECT (view->priv->selection),
 					 G_CALLBACK (rb_property_view_selection_changed_cb),
 					 view);
-	rhythmdb_property_model_entry_to_iter (view->priv->prop_model, entry, &iter);
-	rhythmdb_property_model_delete_iter (view->priv->prop_model, &iter);
-
 	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
 		GtkTreeIter first_iter;
 		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model),
@@ -390,7 +404,6 @@ rb_property_view_handle_entry_deletion (RBPropertyView *view,
 	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
 					   G_CALLBACK (rb_property_view_selection_changed_cb),
 					   view);
-
 }
 
 guint
