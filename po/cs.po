@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-07-19 04:39+0200\n"
-"PO-Revision-Date: 2004-07-19 15:15+0200\n"
+"POT-Creation-Date: 2004-07-21 04:39+0200\n"
+"PO-Revision-Date: 2004-07-21 14:53+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "Zadejte _umístění (URI) souboru, který chcete přidat:"
 msgid "Open from URI"
 msgstr "Otevřít URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:743 shell/rb-shell.c:1355
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:748 shell/rb-shell.c:1360
 msgid "Music Player"
 msgstr "Přehrávač hudby"
 
@@ -260,7 +260,7 @@ msgstr "Odvybrat všechny skladby"
 msgid "Eject Audio-CD"
 msgstr "Vysunout zvukové CD"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:346
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:351
 msgid "Scroll the view to the currently playing song"
 msgstr "Posunout pohled na právě hranou skladbu"
 
@@ -273,7 +273,7 @@ msgid "Select all songs"
 msgstr "Vybrat všechny skladby"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6 shell/rb-playlist-manager.c:144
-#: shell/rb-shell.c:315
+#: shell/rb-shell.c:317
 msgid "_Edit"
 msgstr "Ú_pravy"
 
@@ -281,11 +281,11 @@ msgstr "Ú_pravy"
 msgid "_Eject Audio-CD..."
 msgstr "_Vysunout zvukové CD..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:345
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:350
 msgid "_Jump to Playing Song"
 msgstr "Pře_jít na hranou skladbu"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:316
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:318
 msgid "_View"
 msgstr "_Zobrazit"
 
@@ -745,7 +745,7 @@ msgstr "Neočekávaný konec proudu!"
 msgid "Playback error"
 msgstr "Chyba při přehrávání"
 
-#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1510
+#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1515
 msgid "Couldn't display help"
 msgstr "Nemohu zobrazit nápovědu"
 
@@ -757,104 +757,112 @@ msgstr "Nastavení Přehrávače hudby"
 msgid "General"
 msgstr "Obecné"
 
-#: shell/rb-shell.c:314
+#: shell/rb-shell.c:316
 msgid "_Music"
 msgstr "_Hudba"
 
-#: shell/rb-shell.c:317
+#: shell/rb-shell.c:319
 msgid "_Control"
 msgstr "_Ovládání"
 
-#: shell/rb-shell.c:318
+#: shell/rb-shell.c:320
 msgid "_Help"
 msgstr "_Nápověda"
 
-#: shell/rb-shell.c:320
+#: shell/rb-shell.c:322
 msgid "New _Internet Radio Station"
 msgstr "Nová stanice _internetového rádia"
 
-#: shell/rb-shell.c:321
+#: shell/rb-shell.c:323
 msgid "Create a new Internet Radio station"
 msgstr "Vytvořit novou stanici internetového rádia"
 
-#: shell/rb-shell.c:324
+#: shell/rb-shell.c:326
 msgid "_Import Folder..."
 msgstr "_Importovat adresář..."
 
-#: shell/rb-shell.c:325
+#: shell/rb-shell.c:327
 msgid "Choose folder to be added to the Library"
 msgstr "Zvolte adresář, který přidat do knihovny"
 
-#: shell/rb-shell.c:327
+#: shell/rb-shell.c:329
 msgid "Import _File..."
 msgstr "_Importovat soubor..."
 
-#: shell/rb-shell.c:328
+#: shell/rb-shell.c:330
 msgid "Choose file to be added to the Library"
 msgstr "Zvolte soubor, který přidat do knihovny"
 
-#: shell/rb-shell.c:330
+#: shell/rb-shell.c:332
 msgid "Import _Audio CD..."
 msgstr "Importovat zvukové _CD..."
 
-#: shell/rb-shell.c:331
+#: shell/rb-shell.c:333
 msgid "Extract and import songs from a CD"
 msgstr "Extrahovat a importovat skladby z CD"
 
-#: shell/rb-shell.c:333
+#: shell/rb-shell.c:335
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: shell/rb-shell.c:334
+#: shell/rb-shell.c:336
 msgid "Show information about the music player"
 msgstr "Zobrazení informací o přehrávači hudby"
 
-#: shell/rb-shell.c:336
+#: shell/rb-shell.c:338
 msgid "_Contents"
 msgstr "_Obsah"
 
-#: shell/rb-shell.c:337
+#: shell/rb-shell.c:339
 msgid "Display music player help"
 msgstr "Zobrazení nápovědy přehrávače hudby"
 
-#: shell/rb-shell.c:339
+#: shell/rb-shell.c:341
 msgid "_Quit"
 msgstr "U_končit"
 
-#: shell/rb-shell.c:340
+#: shell/rb-shell.c:342
 msgid "Quit the music player"
 msgstr "Ukončit přehrávač hudby"
 
-#: shell/rb-shell.c:342
+#: shell/rb-shell.c:344
 msgid "Prefere_nces"
 msgstr "_Nastavení"
 
-#: shell/rb-shell.c:343
+#: shell/rb-shell.c:345
 msgid "Edit music player preferences"
 msgstr "Upravit nastavení přehrávače hudby"
 
-#: shell/rb-shell.c:353
+#: shell/rb-shell.c:347
+msgid "Show _all"
+msgstr "Zobrazit _vše"
+
+#: shell/rb-shell.c:348
+msgid "Show all items in this music source"
+msgstr "Zobrazit všechny položky tohoto zdroje hudby"
+
+#: shell/rb-shell.c:358
 msgid "Source _List"
 msgstr "_Seznam zdrojů"
 
-#: shell/rb-shell.c:354
+#: shell/rb-shell.c:359
 msgid "Change the visibility of the source list"
 msgstr "Změnit viditelnost seznamu zdrojů"
 
-#: shell/rb-shell.c:356
+#: shell/rb-shell.c:361
 msgid "_Small Display"
 msgstr "_Malé zobrazení"
 
-#: shell/rb-shell.c:357
+#: shell/rb-shell.c:362
 msgid "Make the main window smaller"
 msgstr "Zmenšit hlavní okno"
 
-#: shell/rb-shell.c:1330 shell/rb-tray-icon.c:203 widgets/rb-header.c:567
+#: shell/rb-shell.c:1335 shell/rb-tray-icon.c:203 widgets/rb-header.c:567
 msgid "Not playing"
 msgstr "Nepřehrávám"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1333
+#: shell/rb-shell.c:1338
 #, c-format
 msgid ""
 "%s\n"
@@ -864,7 +872,7 @@ msgstr ""
 "Pozastaveno, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1337
+#: shell/rb-shell.c:1342
 #, c-format
 msgid ""
 "%s\n"
@@ -874,54 +882,55 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1371
+#: shell/rb-shell.c:1376
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: shell/rb-shell.c:1432
+#: shell/rb-shell.c:1437
 msgid "translator_credits"
 msgstr ""
 "Michal Bukovjan <bukm@centrum.cz>\n"
 "Miloslav Trmač <mitr@volny.cz>"
 
-#: shell/rb-shell.c:1441
+#: shell/rb-shell.c:1446
 msgid "Maintainers:"
 msgstr "Správci:"
 
-#: shell/rb-shell.c:1444
+#: shell/rb-shell.c:1449
 msgid "Former Maintainers:"
 msgstr "Dřívější správci:"
 
-#: shell/rb-shell.c:1447
+#: shell/rb-shell.c:1452
 msgid "Contributors:"
 msgstr "Přispěli:"
 
-#: shell/rb-shell.c:1449
+#: shell/rb-shell.c:1454
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro GNOME."
 
-#: shell/rb-shell.c:1570 widgets/rb-druid.c:319
+#: shell/rb-shell.c:1575 widgets/rb-druid.c:319
 msgid "Load folder into Library"
 msgstr "Načíst adresář do knihovny"
 
-#: shell/rb-shell.c:1591
+#: shell/rb-shell.c:1596
 msgid "Load file into Library"
 msgstr "Načíst soubor do knihovny"
 
-#: shell/rb-shell.c:1624
+#: shell/rb-shell.c:1629
 msgid "CD Ripper not found"
 msgstr "Ripper CD nenalezen"
 
-#: shell/rb-shell.c:1625
+#: shell/rb-shell.c:1630
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
-msgstr "Pro extrahování CD musíte nainstalovat balíček CD ripperu Sound Juicer."
+msgstr ""
+"Pro extrahování CD musíte nainstalovat balíček CD ripperu Sound Juicer."
 
-#: shell/rb-shell.c:1633
+#: shell/rb-shell.c:1638
 msgid "Couldn't run CD Ripper"
 msgstr "Nemohu spustit CD ripper"
 
-#: shell/rb-shell.c:1634
+#: shell/rb-shell.c:1639
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Při spouštění sound-juicer došlo k chybě: %s"
