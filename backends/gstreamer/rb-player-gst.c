@@ -536,7 +536,7 @@ rb_player_construct (RBPlayer *mp,
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);
 
-	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->audioconvert, mp->priv->sink, NULL);
+	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->audioconvert, mp->priv->audioscale, mp->priv->sink, NULL);
 	if (iradio_mode)
 		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->typefind, mp->priv->decoder, NULL);
 	else
