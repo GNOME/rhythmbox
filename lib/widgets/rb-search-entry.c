@@ -112,6 +112,7 @@ rb_search_entry_init (RBSearchEntry *entry)
 
 	entry->priv = g_new0 (RBSearchEntryPrivate, 1);
 
+	/* this string can only be so long, or there wont be a search entry :) */
 	label = gtk_label_new_with_mnemonic (_("_Search song:"));
 	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
 

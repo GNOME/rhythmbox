@@ -57,7 +57,7 @@
 
 enum {
 	PROP_0,
-	PROP_MIXER
+	PROP_PLAYER
 };
 
 struct _RBVolumePrivate {
@@ -78,7 +78,7 @@ struct _RBVolumePrivate {
 	
 	GtkTooltips *tooltip;
 
-	MonkeyMediaMixer *mixer;
+	MonkeyMediaPlayer *player;
 };
 
 #define VOLUME_MAX 1.0
@@ -120,11 +120,11 @@ rb_volume_class_init (RBVolumeClass *klass)
 	object_class->finalize = rb_volume_finalize;
 
 	g_object_class_install_property (object_class,
-					 PROP_MIXER,
-					 g_param_spec_object ("mixer",
-							      "Mixer object",
-							      "MonkeyMediaMixer object",
-							      MONKEY_MEDIA_TYPE_MIXER,
+					 PROP_PLAYER,
+					 g_param_spec_object ("player",
+							      "Player object",
+							      "MonkeyMediaPlayer object",
+							      MONKEY_MEDIA_TYPE_PLAYER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
@@ -208,10 +208,10 @@ rb_volume_set_property (GObject *object,
 	RBVolume *volume = RB_VOLUME (object);
 
 	switch (prop_id) {
-	case PROP_MIXER:
-		volume->priv->mixer = g_value_get_object (value);
+	case PROP_PLAYER:
+		volume->priv->player = g_value_get_object (value);
 		
-		volume->priv->vol = monkey_media_mixer_get_volume (volume->priv->mixer);
+		volume->priv->vol = monkey_media_player_get_volume (volume->priv->player);
 
 		rb_volume_update_slider (volume);
 		rb_volume_update_image (volume);
@@ -230,8 +230,8 @@ rb_volume_get_property (GObject *object,
 	RBVolume *volume = RB_VOLUME (object);
 
 	switch (prop_id) {
-	case PROP_MIXER:
-		g_value_set_object (value, volume->priv->mixer);
+	case PROP_PLAYER:
+		g_value_set_object (value, volume->priv->player);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -255,10 +255,13 @@ rb_volume_finalize (GObject *object)
 static void
 update_mixer (RBVolume *volume)
 {
-	monkey_media_mixer_set_volume (volume->priv->mixer,
-				       volume->priv->vol);
-	monkey_media_mixer_set_mute (volume->priv->mixer,
-				     volume->priv->mute);
+	if (volume->priv->mute) {
+		monkey_media_player_set_volume (volume->priv->player,
+					        0.0);
+	} else {
+		monkey_media_player_set_volume (volume->priv->player,
+					        volume->priv->vol);
+	}
 }
 
 static void
@@ -341,12 +344,12 @@ rb_volume_update_image (RBVolume *volume)
 }
 
 RBVolume *
-rb_volume_new (MonkeyMediaMixer *mixer)
+rb_volume_new (MonkeyMediaPlayer *player)
 {
 	RBVolume *volume;
 
 	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME,
-					  "mixer", mixer,
+					  "player", player,
 					  NULL));
 
 	return volume;

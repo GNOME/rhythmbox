@@ -1,5 +1,33 @@
 2003-01-12  Jorn Baayen  <jorn@nl.linux.org>
 
+	* Makefile.am:
+	* configure.in:
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
+	* lib/widgets/rb-volume.c: (rb_volume_class_init),
+	(rb_volume_set_property), (rb_volume_get_property), (update_mixer),
+	(rb_volume_new):
+	* lib/widgets/rb-volume.h:
+	* shell/Makefile.am:
+	* shell/rb-player.c: (rb_player_init), (rb_player_finalize),
+	(insert_song), (prepend_song), (append_song), (set_playing),
+	(rb_player_queue_song), (rb_player_set_state), (eos_cb),
+	(do_real_seek), (sync_time):
+	* shell/rb.c: (rb_cmd_about):
+	* xine-output/Makefile.am:
+	* xine-output/debug.h:
+	* xine-output/gtk-xine.c:
+	* xine-output/gtk-xine.h:
+	* xine-output/gtkxine-marshal.list:
+	* xine-output/input_gnomevfs.c:
+	* xine-output/scrsaver.c:
+	* xine-output/scrsaver.h:
+	* xine-output/video-utils.c:
+	* xine-output/video-utils.h:
+
+	Use mm xine stuff.
+
+2003-01-12  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-player.c: (set_playing):
 
 	Fix for the gst stuff.

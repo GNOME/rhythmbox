@@ -45,12 +45,7 @@
 #include <libxml/tree.h>
 #include <unistd.h>
 #include <math.h>
-
-#ifdef USE_XINE
-#include "gtk-xine.h"
-#else
 #include <monkey-media.h>
-#endif
 
 #include "rb-debug.h"
 #include "rb-player.h"
@@ -87,7 +82,7 @@ static void previous_cb (GtkWidget *widget, RBPlayer *player);
 static void next_cb (GtkWidget *widget, RBPlayer *player);
 static void shuffle_cb (GtkWidget *widget, RBPlayer *player);
 static void repeat_cb (GtkWidget *widget, RBPlayer *player);
-static void eos_cb (gpointer xine_or_mm_object, RBPlayer *player);
+static void eos_cb (MonkeyMediaPlayer *mm_player, RBPlayer *player);
 static void node_activated_cb (RBNodeView *view, RBNode *song, RBPlayer *player);
 static gboolean slider_pressed_cb (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
 static gboolean slider_moved_cb (GtkWidget *widget, GdkEventMotion *event, RBPlayer *player);
@@ -136,13 +131,7 @@ struct RBPlayerPrivate
 
 	RBPlayerState state;
 
-#ifdef USE_XINE
-	GtkWidget *xine_toplevel_hack;
-	GtkXine *xine;
-#else
-	MonkeyMediaAudioStream *stream;
-	MonkeyMediaMixer *mixer;
-#endif
+	MonkeyMediaPlayer *player;
 
 	guint timeout;
 
@@ -246,16 +235,6 @@ pack_button (RBPlayer *player, GtkWidget *widget,
 	gtk_box_pack_start (box, widget, FALSE, FALSE, 0);
 }
 
-#ifdef USE_XINE
-static void
-xine_error_cb (GtkXine *xine,
-	       GtkXineError error,
-	       const char *message)
-{
-	fprintf (stderr, "xine error: %s\n", message);
-}
-#endif
-
 static void
 rb_player_init (RBPlayer *player)
 {
@@ -263,9 +242,7 @@ rb_player_init (RBPlayer *player)
 	GtkWidget *artist_box, *scale_box, *song_box;
 	PangoAttribute *attr;
 	PangoAttrList *pattrlist;
-#ifndef USE_XINE
 	GError *error = NULL;
-#endif
 
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
@@ -465,30 +442,17 @@ rb_player_init (RBPlayer *player)
 			    GTK_WIDGET (player->priv->playlist_view),
 			    TRUE, TRUE, 0);
 
-#ifdef USE_XINE
-	player->priv->xine_toplevel_hack = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-	player->priv->xine = GTK_XINE (gtk_xine_new (-1, -1, FALSE));
-	gtk_container_add (GTK_CONTAINER (player->priv->xine_toplevel_hack),
-			   GTK_WIDGET (player->priv->xine));
-	gtk_widget_realize (GTK_WIDGET (player->priv->xine));
+	player->priv->player = monkey_media_player_new (&error);
 
-	g_signal_connect (G_OBJECT (player->priv->xine),
-			  "error",
-			  G_CALLBACK (xine_error_cb), player);
-	g_signal_connect (G_OBJECT (player->priv->xine),
-			  "eos",
-			  G_CALLBACK (eos_cb), player);
-
-	while (gtk_xine_check (player->priv->xine) == FALSE)
-		usleep (100000);
-#else
-	player->priv->mixer = monkey_media_mixer_new (&error);
 	if (error != NULL) {
-		rb_error_dialog (_("Failed to create mixer, exiting. Error was:\n%s"), error->message);
+		rb_error_dialog (_("Failed to create player, exiting. Error was:\n%s"), error->message);
 		g_error_free (error);
 		exit (-1);
 	}
-#endif
+
+	g_signal_connect (G_OBJECT (player->priv->player),
+			  "eos",
+			  G_CALLBACK (eos_cb), player);
 
 	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) sync_time_timeout, player);
 
@@ -512,11 +476,7 @@ rb_player_finalize (GObject *object)
 
 	rb_clear (player);
 
-#ifdef USE_XINE
-	gtk_widget_destroy (player->priv->xine_toplevel_hack);
-#else
-	g_object_unref (G_OBJECT (player->priv->mixer));
-#endif
+	g_object_unref (G_OBJECT (player->priv->player));
 
 	g_free (player->priv);
 
@@ -674,7 +634,7 @@ append_repeat_node (RBPlayer *player)
 	update_buttons (player);
 }
 
-static void
+static RBNode *
 insert_song (RBPlayer *player, RBNode *song, int index)
 {
 	RBNode *node;
@@ -696,18 +656,20 @@ insert_song (RBPlayer *player, RBNode *song, int index)
 	}
 
 	update_buttons (player);
+
+	return node;
 }
 
-static void
+static RBNode *
 prepend_song (RBPlayer *player, RBNode *song)
 {
-	insert_song (player, song, 0);
+	return insert_song (player, song, 0);
 }
 
-static void
+static RBNode *
 append_song (RBPlayer *player, RBNode *song)
 {
-	insert_song (player, song, -1);
+	return insert_song (player, song, -1);
 }
 
 #if 0
@@ -782,6 +744,9 @@ sync_info (RBPlayer *player)
 static void
 set_playing (RBPlayer *player, RBNode *song)
 {
+	if (player->priv->playing == song)
+		return;
+
 	player->priv->playing = song;
 
 	rb_node_view_set_playing_node (player->priv->playlist_view, song);
@@ -789,33 +754,16 @@ set_playing (RBPlayer *player, RBNode *song)
 	if (song == NULL)
 		nullify_info (player);
 	else {
-#ifndef USE_XINE
 		GError *error = NULL;
-#endif
 
-#ifdef USE_XINE
-		gtk_xine_stop (player->priv->xine);
-		gtk_xine_close (player->priv->xine);
-		gtk_xine_open (player->priv->xine,
-			       rb_node_get_property_string (song, RB_NODE_PROP_LOCATION));
-		if (player->priv->state == RB_PLAYER_PAUSED ||
-		    player->priv->state == RB_PLAYER_PLAYING)
-			rb_player_set_state (player, player->priv->state);
-#else
-		player->priv->stream = monkey_media_audio_stream_new (rb_node_get_property_string (song, RB_NODE_PROP_LOCATION), &error);
+		monkey_media_player_open (player->priv->player,
+					  rb_node_get_property_string (song, RB_NODE_PROP_LOCATION),
+					  &error);
 		if (error != NULL) {
 			rb_error_dialog (_("Failed to create stream, error was:\n%s"), error->message);
 			g_error_free (error);
 			return;
 		}
-
-		g_signal_connect (G_OBJECT (player->priv->stream), "end_of_stream",
-				  G_CALLBACK (eos_cb), player);
-
-		monkey_media_mixer_append_audio_stream (player->priv->mixer, player->priv->stream);
-		monkey_media_mixer_set_playing_audio_stream (player->priv->mixer, player->priv->stream);
-		g_object_unref (G_OBJECT (player->priv->stream));
-#endif
 
 		sync_info (player);
 	}
@@ -836,8 +784,11 @@ rb_player_queue_song (RBPlayer *player,
 		      gboolean start_playing)
 {
 	if (start_playing) {
-		prepend_song (player, song);
-		set_playing (player, song);
+		RBNode *real;
+
+		real = prepend_song (player, song);
+		set_playing (player, real);
+
 		rb_player_set_state (player, RB_PLAYER_PLAYING);
 	} else {
 		append_song (player, song);
@@ -856,47 +807,17 @@ rb_player_set_state (RBPlayer *player,
 {
 	player->priv->state = state;
 
-#ifdef USE_XINE
 	switch (state) {
 	case RB_PLAYER_STOPPED:
-		gtk_xine_stop (player->priv->xine);
-		gtk_xine_close (player->priv->xine);
+		monkey_media_player_close (player->priv->player);
 		break;
 	case RB_PLAYER_PLAYING:
-		if (!gtk_xine_is_playing (player->priv->xine)) {
-			gtk_xine_play (player->priv->xine, 0, 0);
-		}
-
-		if (gtk_xine_get_speed (player->priv->xine) == SPEED_PAUSE) {
-			gtk_xine_set_speed (player->priv->xine,
-					    SPEED_NORMAL);
-		}
+		monkey_media_player_play (player->priv->player);
 		break;
 	case RB_PLAYER_PAUSED:
-		if (!gtk_xine_is_playing (player->priv->xine)) {
-			gtk_xine_play (player->priv->xine, 0, 0);
-		}
-
-		gtk_xine_set_speed (player->priv->xine,
-				    SPEED_PAUSE);
+		monkey_media_player_pause (player->priv->player);
 		break;
 	}
-#else
-	switch (state) {
-	case RB_PLAYER_STOPPED:
-		monkey_media_mixer_set_state (player->priv->mixer,
-					      MONKEY_MEDIA_MIXER_STATE_STOPPED);
-		break;
-	case RB_PLAYER_PLAYING:
-		monkey_media_mixer_set_state (player->priv->mixer,
-					      MONKEY_MEDIA_MIXER_STATE_PLAYING);
-		break;
-	case RB_PLAYER_PAUSED:
-		monkey_media_mixer_set_state (player->priv->mixer,
-					      MONKEY_MEDIA_MIXER_STATE_PAUSED);
-		break;
-	}
-#endif
 
 	check_view_state (player);
 
@@ -1088,10 +1009,12 @@ repeat_cb (GtkWidget *widget,
 }
 
 static void
-eos_cb (gpointer xine_or_mm_object,
+eos_cb (MonkeyMediaPlayer *mm_player,
 	RBPlayer *player)
 {
 	RBNode *next;
+
+	GDK_THREADS_ENTER ();
 
 	next = rb_node_view_get_next_node (player->priv->playlist_view);
 	if (next == NULL) {
@@ -1104,6 +1027,8 @@ eos_cb (gpointer xine_or_mm_object,
 	update_buttons (player);
 
 	sync_time (player);
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -1126,11 +1051,7 @@ do_real_seek (RBPlayer *player)
 	progress = gtk_adjustment_get_value (player->priv->song_adjustment);
 
 	new = (long) (progress * duration);
-#ifdef USE_XINE
-	gtk_xine_play (player->priv->xine, 0, (guint) (new * 1000));
-#else
-	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream), new);
-#endif
+	monkey_media_player_set_time (player->priv->player, new);
 
 	if (new != player->priv->slider_drag_info.latest_set_time)
 		player->priv->slider_drag_info.latest_set_time = new;
@@ -1146,11 +1067,7 @@ sync_time (RBPlayer *player)
 	if (player->priv->slider_drag_info.slider_dragging)
 		elapsed = player->priv->slider_drag_info.fake_elapsed;
 	else {
-#ifdef USE_XINE
-		elapsed = (long) gtk_xine_get_current_time (player->priv->xine) / 1000.0;
-#else
-		elapsed = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->stream));
-#endif
+		elapsed = monkey_media_player_get_time (player->priv->player);
 	}
 
 	duration = rb_node_get_property_long (player->priv->playing, RB_NODE_PROP_REAL_DURATION);

@@ -499,7 +499,7 @@ rb_cmd_about (BonoboUIComponent *component,
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
 	about = gnome_about_new ("Rhythmbox", VERSION,
-				 _("Copyright © 2002 Jorn Baayen. All rights reserved."),
+				 _("Copyright © 2002, 2003 Jorn Baayen. All rights reserved."),
 				 _("Music management and playback software for GNOME."),
 				 (const char **) authors,
 				 (const char **) documenters,

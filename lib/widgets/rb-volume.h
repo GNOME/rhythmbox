@@ -47,7 +47,7 @@ typedef struct {
 
 GType     rb_volume_get_type    (void);
 
-RBVolume *rb_volume_new         (MonkeyMediaMixer *mixer);
+RBVolume *rb_volume_new         (MonkeyMediaPlayer *player);
 
 int	  rb_volume_get		(RBVolume *volume);
 void      rb_volume_set         (RBVolume *volume,
