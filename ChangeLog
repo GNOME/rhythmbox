@@ -2,6 +2,298 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2004-09-10 05:15:36 GMT	Colin Walters <walters@verbum.org>	patch-120
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.9--patch-120
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/da.po
+
+
+2004-09-10 05:12:22 GMT	Colin Walters <walters@verbum.org>	patch-119
+
+    Summary:
+      only free reverse sort data when model is actually destroyed
+    Revision:
+      rhythmbox--main--0.9--patch-119
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+     widgets/rb-entry-view.c
+
+
+2004-09-10 03:35:10 GMT	Colin Walters <walters@verbum.org>	patch-118
+
+    Summary:
+      remove "manually" from druid prompt
+    Revision:
+      rhythmbox--main--0.9--patch-118
+
+
+    modified files:
+     ChangeLog data/glade/druid.glade
+
+
+2004-09-09 21:00:03 GMT	Christophe Fergeau <teuf@gnome.org>	patch-117
+
+    Summary:
+      Commit metadata writing support, needs to be enabled explicitly in configure since it's really experimental
+    Revision:
+      rhythmbox--main--0.9--patch-117
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8--patch-50
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-1
+       Huge commit since I stupidly forgot to do a commit right after star merging the stable branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-2
+       This commit should result in a tree which is identical to the main rhythmbox--main--0.8 branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-3
+       This patch should be enough to add basic (and ugly code-wise) tagging support to the main stable rhythmbox branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-4
+       Fixed a string and removed a useless variable
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-5
+       Incredibly ugly code, but at least flac and mp3 tag editing works
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-6
+       Cleaned up rb-metadata-gst.c so that it can be merged to the main arch repo, but I broke things at the same time :(
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-7
+       Fixed a bug in flac tagging, but it still doesn't work properly
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-8
+       Worked around strange opt scheduler issues when unreffing the pipeline
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-9
+       More tagging work, should be mostly done, only filter out tags that are unknown to GStreamer, made the tag setting function more generic
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-10
+       Raised gst-plugins requirement
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-11
+       Star merge with rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-12
+       Reverted star merge from 0.9 branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-13
+       Star merge with 0.8 branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-14
+       Removed debugging g_print
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-1
+       Merged tag support from the 0.8 branch
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-2
+       Started to merge the tag saving stuff in rhythmdb.c, compilation not tested...
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-3
+       Started to merge the tag saving stuff in rhythmdb.c, compilation not tested...
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-4
+       Reimplemented rhythmdb_entry_get
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-9
+       Reenabled most of the metadata saving code, added a rhythmdb_entry_sync function which emits the necessary signals and call rhythmdb_entry_set
+    
+     * teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-10
+       Small fix, and now tag writing seems to workmake
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-1
+       Merged changes from the rhythmbox--tags--0.9 branch to the latest rhythmbox--main--0.9 branch, star-merge didn't seem to work properly, hence the new branch...
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-15
+       Reimplement context menus
+    
+
+    modified files:
+     ChangeLog configure.ac metadata/rb-metadata-gst.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h widgets/rb-song-info.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--base-0
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-1
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-2
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-3
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-4
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-5
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-6
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-7
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-8
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-9
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-10
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-11
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-12
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-13
+     teuf@gnome.org--2004/rhythmbox--tag--0.8--patch-14
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-1
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-2
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-3
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-4
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-9
+     teuf@gnome.org--2004/rhythmbox--tags--0.9--patch-10
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-1
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-15
+
+
+2004-09-09 18:52:56 GMT	Christophe Fergeau <teuf@gnome.org>	patch-116
+
+    Summary:
+      Reimplement context menus
+    Revision:
+      rhythmbox--main--0.9--patch-116
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-9
+       RBSource now has a reference to RBShell, this makes it easier to get global resources, like the database or the GtkUIManager
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-10
+       Library context menu is back! Woohoo ;)
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-11
+       Library source popup menu is now there too.
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-12
+       Readded iradio list context menu
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-13
+       Propage a RBShell to rb-playlist-source through rb-playlist-manager
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-14
+       Finish readding context menus
+    
+
+    modified files:
+     ChangeLog data/ui/rhythmbox-ui.xml lib/rb-util.c lib/rb-util.h
+     shell/rb-play-order.c shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell-player.c
+     shell/rb-shell-player.h shell/rb-shell.c
+     sources/rb-ipod-source.c sources/rb-ipod-source.h
+     sources/rb-iradio-source.c sources/rb-iradio-source.h
+     sources/rb-library-source.c sources/rb-library-source.h
+     sources/rb-playlist-source.c sources/rb-playlist-source.h
+     sources/rb-source.c sources/rb-source.h
+     widgets/rb-entry-view.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-9
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-10
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-11
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-12
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-13
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-14
+
+
+2004-09-09 18:50:47 GMT	Christophe Fergeau <teuf@gnome.org>	patch-115
+
+    Summary:
+      Call gtk_action_group_set_translation_domain to properly translate menus generated using GTK Action API
+    Revision:
+      rhythmbox--main--0.9--patch-115
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-8
+       Call gtk_action_group_set_translation_domain to properly translate menus generated using GTK Action API
+    
+
+    modified files:
+     ChangeLog po/fr.po shell/rb-shell-player.c shell/rb-shell.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-8
+
+
+2004-09-09 18:49:30 GMT	Christophe Fergeau <teuf@gnome.org>	patch-114
+
+    Summary:
+      The runtime gstreamer version check is now obsolete since we require a newer one at compile time
+    Revision:
+      rhythmbox--main--0.9--patch-114
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-4
+       The runtime gstreamer version check is now obsolete since we require a newer one at compile time
+    
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-4
+
+
+2004-09-09 18:47:54 GMT	Christophe Fergeau <teuf@gnome.org>	patch-113
+
+    Summary:
+      Do not add files with no known mime type to the library
+    Revision:
+      rhythmbox--main--0.9--patch-113
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-3
+       Do not add files with unknown mime types to the library
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-3
+
+
+2004-09-09 18:46:50 GMT	Christophe Fergeau <teuf@gnome.org>	patch-112
+
+    Summary:
+      Make RbSourceListModel inherit from GtkTreeModelFilter, should fix drag and drop issues
+    Revision:
+      rhythmbox--main--0.9--patch-112
+
+    Patches applied:
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-6
+       Hide TreeModelFilter in RbSourceListModel instead of explicitly creating it in RbSourceList. The big win is that dnd works out of the box. A small drawback is that Walters will think I'm stubborn to resurrect a patch he didn't like ;)
+    
+     * teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-7
+       Fix small typo
+    
+
+    modified files:
+     ChangeLog sources/rb-sourcelist-model.c
+     sources/rb-sourcelist-model.h sources/rb-sourcelist.c
+
+    new patches:
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-6
+     teuf@gnome.org--2004/rhythmbox--tags-merge--0.9--patch-7
+
+
+2004-09-03 17:51:00 GMT	Christophe Fergeau <teuf@gnome.org>	patch-111
+
+    Summary:
+      Added totempl-parser.list to EXTRA_DIST
+    Revision:
+      rhythmbox--main--0.9--patch-111
+
+
+    modified files:
+     ChangeLog lib/Makefile.am
+
+
 2004-09-03 03:09:06 GMT	Colin Walters <walters@verbum.org>	patch-110
 
     Summary:
