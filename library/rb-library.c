@@ -524,7 +524,9 @@ rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **erro
 	
 	if (rb_uri_exists (location) == FALSE) {
 		rb_debug ("song \"%s\" was deleted", location);
+		rhythmdb_write_lock (library->priv->db);
 		rhythmdb_entry_delete (library->priv->db, entry);
+		rhythmdb_write_unlock (library->priv->db);
 		goto out;
 	}
 
