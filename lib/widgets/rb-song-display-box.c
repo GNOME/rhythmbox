@@ -213,7 +213,6 @@ static void
 do_allocation (GtkWidget *widget, int size, GtkAllocation *allocation)
 {
 	GtkAllocation child_allocation;
-	GtkRequisition requisition;
 	int width;
 
 	width = displaybox_get_childwidth (widget);
