@@ -69,6 +69,10 @@ static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
 static gboolean print_playing = FALSE;
+static gboolean print_playing_artist = FALSE;
+static gboolean print_playing_album = FALSE;
+static gboolean print_playing_track = FALSE;
+static gboolean print_playing_genre = FALSE;
 static gboolean print_playing_path = FALSE;
 static gboolean playpause       = FALSE;
 static gboolean focus           = FALSE;
@@ -102,6 +106,10 @@ main (int argc, char **argv)
 	struct poptOption popt_options[] =
 	{
 		{ "print-playing",	0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
+		{ "print-playing-artist",	0,  POPT_ARG_NONE,  &print_playing_artist,                        0, N_("Print the playing song artist and exit"),  NULL },
+		{ "print-playing-album",	0,  POPT_ARG_NONE,  &print_playing_album,                         0, N_("Print the playing song album and exit"),   NULL },
+		{ "print-playing-track",	0,  POPT_ARG_NONE,  &print_playing_track,                         0, N_("Print the playing song track and exit"),   NULL },
+		{ "print-playing-genre",	0,  POPT_ARG_NONE,  &print_playing_genre,                         0, N_("Print the playing song genre and exit"),   NULL },
 		{ "print-playing-path",	0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
         
         { "print-song-length",	0,  POPT_ARG_NONE,			&print_song_length,		0, N_("Print the playing song length in seconds and exit"),	NULL },
@@ -293,6 +301,10 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 
 	song = NULL;
 	if (print_playing
+	    || print_playing_artist
+	    || print_playing_album
+	    || print_playing_track
+	    || print_playing_genre
 	    || print_playing_path
 	    || print_song_length ) {
 		rb_debug ("retrieving playing song");
@@ -302,6 +314,18 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 
 	if (print_playing)
 		g_print ("%s\n", song ? song->title : "");
+
+	if (print_playing_artist)
+		g_print ("%s\n", song ? song->artist : "");
+
+	if (print_playing_album)
+		g_print ("%s\n", song ? song->album : "");
+
+	if (print_playing_track)
+		g_print ("%ld\n", song ? song->track_number : -1);
+
+	if (print_playing_genre)
+		g_print ("%s\n", song ? song->genre : "");
 	
 	if (print_playing_path)
 		g_print ("%s\n", song ? song->uri : "");
