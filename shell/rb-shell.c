@@ -1248,6 +1248,8 @@ rb_shell_construct (RBShell *shell)
 						 G_CALLBACK (rb_shell_load_complete_cb), shell,
 						 0);
 			rhythmdb_load (shell->priv->db);
+		} else {
+			shell->priv->load_complete = TRUE;
 		}
 	}
 	g_signal_connect_object (G_OBJECT (shell->priv->db),
