@@ -446,6 +446,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
 		str = NULL;
 		changed = TRUE;
 	} else if (buffering) {
+		rb_debug("synchronizing status, showing buffering state");
 		g_free (str);
 		str = g_strdup_printf ("<b>%s</b>",
 				       _("Buffering..."));

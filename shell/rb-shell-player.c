@@ -152,6 +152,7 @@ static void info_available_cb (RBPlayer *player,
 static void buffering_end_cb (RBPlayer *player, gpointer data);
 static void buffering_begin_cb (RBPlayer *player, gpointer data);
 static void buffering_progress_cb (RBPlayer *player, int progress, gpointer data);
+static void rb_shell_player_enable_buffering (RBShellPlayer *player);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
@@ -2008,21 +2009,32 @@ info_available_cb (RBPlayer *mmplayer,
 }
 
 static void
-buffering_begin_cb (RBPlayer *mmplayer,
-		    gpointer data)
+rb_shell_player_enable_buffering (RBShellPlayer *player)
 {
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	player->priv->buffering = TRUE;
-	g_object_notify (G_OBJECT (player), "buffering");
+	if (!player->priv->buffering) {
+		rb_debug("enabling buffering");
+		player->priv->buffering = TRUE;
+		g_object_notify (G_OBJECT (player), "buffering");
+	}
 }
 
 static void
 rb_shell_player_disable_buffering (RBShellPlayer *player)
 {
 	if (player->priv->buffering) {
+		rb_debug("disabling buffering");
 		player->priv->buffering = FALSE;
 		g_object_notify (G_OBJECT (player), "buffering");
 	}
+}
+
+static void
+buffering_begin_cb (RBPlayer *mmplayer,
+		    gpointer data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+	rb_debug ("got buffering_begin_cb");
+	rb_shell_player_enable_buffering (player);
 }
 
 static void
@@ -2047,8 +2059,15 @@ buffering_progress_cb (RBPlayer *mmplayer,
 	GDK_THREADS_ENTER();
 
 	if (progress == 100)
+	{
+		rb_shell_player_disable_buffering (player);
 		rb_shell_player_sync_with_source (player);
-
+	}	
+	else
+	{
+		rb_shell_player_enable_buffering (player);
+	}
+	
 	GDK_THREADS_LEAVE();
 }
 
