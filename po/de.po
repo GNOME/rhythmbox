@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
-"POT-Creation-Date: 2003-01-25 11:50+0100\n"
-"PO-Revision-Date: 2003-01-25 11:50+0100\n"
-"Last-Translator: Christian Meyer <chrisime@gnome-de.org>\n"
+"POT-Creation-Date: 2003-02-03 18:49+0100\n"
+"PO-Revision-Date: 2003-02-03 18:49+0100\n"
+"Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -302,7 +302,7 @@ msgstr "_Dauer"
 msgid "Tra_ck"
 msgstr "Titel_nummer"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Musik-Player"
 
@@ -811,18 +811,28 @@ msgstr ""
 "Kommunikation mit anderen Prozessen, die sog. IPC, funktioniert jedoch "
 "nicht.\n"
 
-#: shell/rb.c:491
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr ""
 "Benjamin Greiner <benjamin.greiner@gmx.net>\n"
 "Christian Meyer <chrisime@gnome.org>\n"
 "Christian Neumair <chris@gnome-de.org>"
 
-#: shell/rb.c:502
-msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
-msgstr "Copyright © 2002, 2003 Jorn Baayen. Alle Rechte vorbehalten."
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr "Federführende Entwickler:"
 
-#: shell/rb.c:503
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr "Mitwirkende:"
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, fuzzy, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright %s 2002, 2003 Jorn Baayen. Alle Rechte vorbehalten."
+
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME-Software zur Verwaltung und Wiedergabe Ihrer Musiksammlung"
 
