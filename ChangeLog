@@ -1,3 +1,16 @@
+2002-10-30  Jorn Baayen  <jorn@nl.linux.org>
+
+	* README:
+
+	Updated pointer to rb list.
+	
+	* lib/rb-file-helpers.c: (have_uid), (have_gid),
+	(rb_uri_is_readable), (rb_uri_is_writable),
+	(rb_uri_handle_recursively):
+	* lib/rb-file-helpers.h:
+
+	Fix #91319, add functions for checking file read/writeability.
+
 2002-10-29  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_finalize):

@@ -512,6 +512,79 @@ rb_uri_resolve_relative (const char *location)
 	return uri;
 }
 
+static gboolean
+have_uid (guint uid)
+{
+	return (uid == getuid ());
+}
+
+static gboolean
+have_gid (guint gid)
+{
+	gid_t gids[100];
+	int n_groups, i;
+
+	n_groups = getgroups (100, gids);
+
+	for (i = 0; i < n_groups; i++)
+	{
+		if (gids[i] == getegid ())
+			continue;
+		if (gids[i] == gid)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+gboolean
+rb_uri_is_readable (const char *text_uri)
+{
+	GnomeVFSFileInfo *info;
+	gboolean ret = FALSE;
+
+	info = gnome_vfs_file_info_new ();
+	if (info == NULL)
+		return FALSE;
+	if (gnome_vfs_get_file_info (text_uri, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS) != GNOME_VFS_OK)
+		return FALSE;
+
+	if ((info->permissions & GNOME_VFS_PERM_OTHER_READ) ||
+	    ((info->permissions & GNOME_VFS_PERM_USER_READ) &&
+	     (have_uid (info->uid) == TRUE)) ||
+	    ((info->permissions & GNOME_VFS_PERM_GROUP_READ) &&
+	     (have_gid (info->gid) == TRUE)))
+		ret = TRUE;
+
+	gnome_vfs_file_info_unref (info);
+
+	return ret;
+}
+
+gboolean
+rb_uri_is_writable (const char *text_uri)
+{
+	GnomeVFSFileInfo *info;
+	gboolean ret = FALSE;
+
+	info = gnome_vfs_file_info_new ();
+	if (info == NULL)
+		return FALSE;
+	if (gnome_vfs_get_file_info (text_uri, info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS) != GNOME_VFS_OK)
+		return FALSE;
+
+	if ((info->permissions & GNOME_VFS_PERM_OTHER_WRITE) ||
+	    ((info->permissions & GNOME_VFS_PERM_USER_WRITE) &&
+	     (have_uid (info->uid) == TRUE)) ||
+	    ((info->permissions & GNOME_VFS_PERM_GROUP_WRITE) &&
+	     (have_gid (info->gid) == TRUE)))
+		ret = TRUE;
+
+	gnome_vfs_file_info_unref (info);
+
+	return ret;
+}
+
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,
@@ -522,10 +595,11 @@ rb_uri_handle_recursively (const char *text_uri,
 
 	uri = gnome_vfs_uri_new (text_uri);
 
-	gnome_vfs_directory_list_load (&list, text_uri,
-				       (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
-					GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
-					GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
+	if (gnome_vfs_directory_list_load (&list, text_uri,
+				           (GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
+					    GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE |
+					    GNOME_VFS_FILE_INFO_FOLLOW_LINKS)) != GNOME_VFS_OK)
+		return;
 
 	for (l = list; l != NULL; l = g_list_next (l))
 	{
@@ -534,7 +608,7 @@ rb_uri_handle_recursively (const char *text_uri,
 		char *file_uri_text;
 
 		info = (GnomeVFSFileInfo *) l->data;
-
+		
 		file_uri = gnome_vfs_uri_append_path (uri, info->name);
 		if (file_uri == NULL)
 			continue;

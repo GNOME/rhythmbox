@@ -33,6 +33,8 @@ char       *rb_uri_resolve_symlink    (const char *uri);
 gboolean    rb_uri_is_directory       (const char *uri);
 gboolean    rb_uri_exists             (const char *uri);
 char       *rb_uri_resolve_relative   (const char *uri);
+gboolean    rb_uri_is_readable        (const char *uri);
+gboolean    rb_uri_is_writable        (const char *uri);
 
 void        rb_uri_handle_recursively (const char *uri,
 				       GFunc func,
