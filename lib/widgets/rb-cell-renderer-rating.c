@@ -138,17 +138,14 @@ rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 							     RB_STOCK_SET_STAR,
 							     GTK_ICON_SIZE_MENU,
 							     NULL);
-	g_assert (cellrating->priv->pix_star);
 	cellrating->priv->pix_unset_star = gtk_widget_render_icon (dummy,
 							           RB_STOCK_UNSET_STAR,
 							           GTK_ICON_SIZE_MENU,
 							           NULL);
-	g_assert (cellrating->priv->pix_unset_star);
 	cellrating->priv->pix_blank = gtk_widget_render_icon (dummy,
 							      RB_STOCK_NO_STAR,
 							      GTK_ICON_SIZE_MENU,
 							      NULL);
-	g_assert (cellrating->priv->pix_blank);
 
 	gtk_widget_destroy (dummy);
 }

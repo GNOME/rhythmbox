@@ -108,7 +108,6 @@ rb_debug_init (gboolean debug)
 		"GnomeVFSMonikers",
 		"Gtk",
 		"Rhythmbox",
-		"RhythmDB",
 		"MonkeyMedia",
 		"ORBit",
 		"ZVT",

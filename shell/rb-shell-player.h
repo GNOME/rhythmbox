@@ -2,7 +2,6 @@
  *  arch-tag: Header for object implementing main playback logic
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -74,8 +73,8 @@ void			rb_shell_player_stop		(RBShellPlayer *player);
 void			rb_shell_player_do_previous	(RBShellPlayer *player);
 void			rb_shell_player_do_next		(RBShellPlayer *player);
 
-long			rb_shell_player_get_playing_time(RBShellPlayer *player);
-void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);
+long			rb_shell_player_get_playing_time (RBShellPlayer *player);
+void			rb_shell_player_set_playing_time (RBShellPlayer *player, long time);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
 void			rb_shell_player_set_shuffle	(RBShellPlayer *shell_player,
@@ -87,7 +86,7 @@ gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player);
 
 const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
 
-void			rb_shell_player_sync_buttons	(RBShellPlayer *player);
+void			rb_shell_player_sync_buttons (RBShellPlayer *player);
 
 
 #ifdef HAVE_ACME

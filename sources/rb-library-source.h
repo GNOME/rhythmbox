@@ -51,13 +51,15 @@ typedef struct
 	RBSourceClass parent;
 } RBLibrarySourceClass;
 
-GType		rb_library_source_get_type	(void);
+GType		rb_library_source_get_type (void);
 
-RBSource *	rb_library_source_new		(RhythmDB *db, RBLibrary *library);
-void		rb_library_source_show_browser	(RBLibrarySource *source,
-						 gboolean show);
+RBSource *	rb_library_source_new      (RBLibrary *library);
+void		rb_library_source_show_browser (RBLibrarySource *source,
+						gboolean show);
 
-void		rb_library_source_add_location	(RBLibrarySource *source, GtkWindow *win);
+void		rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win);
+
+gboolean	rb_library_source_eval_filter (RBLibrarySource *source, RBNode *node);
 
 G_END_DECLS
 

@@ -22,7 +22,6 @@
 #include <gtk/gtkmarshal.h>
 #include <string.h>
 
-#include "rhythmdb.h"
 #include "rb-node.h"
 #include "rb-tree-model-sort.h"
 #include "eggtreemultidnd.h"
@@ -47,7 +46,7 @@ struct RBTreeModelSortPrivate
 
 enum
 {
-	ENTRY_FROM_ITER,
+	NODE_FROM_ITER,
 	LAST_SIGNAL
 };
 
@@ -111,7 +110,7 @@ rb_tree_model_sort_class_init (RBTreeModelSortClass *klass)
 
 	object_class->finalize = rb_tree_model_sort_finalize;
 
-	rb_tree_model_sort_signals[ENTRY_FROM_ITER] =
+	rb_tree_model_sort_signals[NODE_FROM_ITER] =
 		g_signal_new ("node_from_iter",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
@@ -182,7 +181,7 @@ rb_tree_model_sort_multi_row_draggable (EggTreeMultiDragSource *drag_source, GLi
 		path = gtk_tree_row_reference_get_path (l->data);
 		gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_source), &iter, path);
 		g_signal_emit (G_OBJECT (drag_source), 
-			       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
+			       rb_tree_model_sort_signals[NODE_FROM_ITER], 
 			       0, &iter, &node);
 
 		if (node == NULL)
@@ -233,7 +232,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 
 			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 			g_signal_emit (G_OBJECT (model), 
-				       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
+				       rb_tree_model_sort_signals[NODE_FROM_ITER], 
 				       0, &iter, &node);
 
 			if (node == NULL)
@@ -256,7 +255,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 
 				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 				g_signal_emit (G_OBJECT (model), 
-					       rb_tree_model_sort_signals[ENTRY_FROM_ITER], 
+					       rb_tree_model_sort_signals[NODE_FROM_ITER], 
 					       0, &iter, &node);
 
 				if (node == NULL)

@@ -37,6 +37,7 @@
 #include "rb-dialog.h"
 #include "rb-stock-icons.h"
 #include "rb-library.h"
+#include "rb-iradio-backend.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
@@ -65,8 +66,8 @@ static void rb_playlist_manager_cmd_rename_playlist (BonoboUIComponent *componen
 static void rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
 						     RBPlaylistManager *mgr,
 						     const char *verbname);
-/* static GtkWidget * rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname); */
-/* static void ask_rename_response_cb (GtkDialog *dialog, int response_id, RBPlaylistManager *mgr); */
+static GtkWidget * rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname);
+static void ask_rename_response_cb (GtkDialog *dialog, int response_id, RBPlaylistManager *mgr);
 static GtkWidget * rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr);
 
 typedef enum
@@ -86,7 +87,7 @@ struct RBPlaylistManagerPrivate
 	BonoboUIComponent *component;
 	RBLibrary *library;
 	RBLibrarySource *libsource;
-	RBIRadioSource *iradio_source;
+	RBIRadioBackend *iradio_backend;
 	GtkWindow *window;
 
 	GList *playlists;
@@ -102,7 +103,7 @@ enum
 	PROP_SOURCE,
 	PROP_LIBRARY,
 	PROP_LIBRARY_SOURCE,
-	PROP_IRADIO_SOURCE,
+	PROP_IRADIO_BACKEND,
 };
 
 enum
@@ -212,14 +213,13 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	/* RHYTHMDB FIXME */
-/* 	g_object_class_install_property (object_class, */
-/* 					 PROP_IRADIO_SOURCE, */
-/* 					 g_param_spec_object ("iradio-source", */
-/* 							      "IRadioSource", */
-/* 							      "IRadioSource", */
-/* 							      RB_TYPE_IRADIO_SOURCE, */
-/* 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY)); */
+	g_object_class_install_property (object_class,
+					 PROP_IRADIO_BACKEND,
+					 g_param_spec_object ("iradio-backend",
+							      "IRadioBackend",
+							      "IRadioBackend",
+							      RB_TYPE_IRADIO_BACKEND,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	rb_playlist_manager_signals[PLAYLIST_ADDED] =
 		g_signal_new ("playlist_added",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -314,8 +314,8 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_LIBRARY_SOURCE:
 		mgr->priv->libsource = g_value_get_object (value);
 		break;
-	case PROP_IRADIO_SOURCE:
-		mgr->priv->iradio_source = g_value_get_object (value);
+	case PROP_IRADIO_BACKEND:
+		mgr->priv->iradio_backend = g_value_get_object (value);
 		break;
 	case PROP_WINDOW:
 		mgr->priv->window = g_value_get_object (value);
@@ -348,8 +348,8 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_LIBRARY_SOURCE:
 		g_value_set_object (value, mgr->priv->libsource);
 		break;
-	case PROP_IRADIO_SOURCE:
-		g_value_set_object (value, mgr->priv->iradio_source);
+	case PROP_IRADIO_BACKEND:
+		g_value_set_object (value, mgr->priv->iradio_backend);
 		break;
 	case PROP_WINDOW:
 		g_value_set_object (value, mgr->priv->window);
@@ -374,14 +374,14 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr, RBSource *source)
 RBPlaylistManager *
 rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 			 RBLibrary *library, RBLibrarySource *libsource,
-			 RBIRadioSource *iradio_source)
+			 RBIRadioBackend *backend)
 {
 	RBPlaylistManager *mgr = g_object_new (RB_TYPE_PLAYLIST_MANAGER,
 					       "component", component,
 					       "window", window,
 					       "library", library,
 					       "library_source", libsource,
-/* 					       "iradio_source", iradio_source, */
+					       "iradio_backend", backend,
 					       NULL);
 
 	g_return_val_if_fail (mgr->priv != NULL, NULL);
@@ -389,22 +389,22 @@ rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 	return mgr;
 }
 
-/* static void */
-/* rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr) */
-/* { */
-/* 	rb_debug ("removing playlist %p", source); */
-/* 	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source); */
-/* } */
+static void
+rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr)
+{
+	rb_debug ("removing playlist %p", source);
+	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source);
+}
 
-/* static void */
-/* append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source) */
-/* { */
-/* 	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source); */
-/* 	g_signal_connect (G_OBJECT (source), "deleted", */
-/* 			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr); */
-/* 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0, */
-/* 		       source); */
-/* } */
+static void
+append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
+{
+	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source);
+	g_signal_connect (G_OBJECT (source), "deleted",
+			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr);
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
+		       source);
+}
 
 /* FIXME! It is very dirty that we have to pass the library source
  * in here.
@@ -443,13 +443,11 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 
 		filepath = g_build_filename (path, info->name, NULL);
 
-		/* RHYTHMDB FIXME */
-		playlist = NULL;
-/* 		playlist = rb_playlist_source_new_from_file (mgr->priv->library, */
-/* 							     mgr->priv->libsource, */
-/* 							     filepath); */
-/* 		if (playlist != NULL) */
-/* 			append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist)); */
+		playlist = rb_playlist_source_new_from_file (mgr->priv->library,
+							     mgr->priv->libsource,
+							     filepath);
+		if (playlist != NULL)
+			append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 
 		g_free (filepath);
 	}
@@ -462,11 +460,10 @@ out:
 void
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 {
-	/* RHYTHMDB FIXME */
-/* 	GList *tmp; */
-/* 	rb_debug ("saving playlists"); */
-/* 	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next) */
-/* 		rb_playlist_source_save (RB_PLAYLIST_SOURCE (tmp->data)); */
+	GList *tmp;
+	rb_debug ("saving playlists");
+	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
+		rb_playlist_source_save (RB_PLAYLIST_SOURCE (tmp->data));
 }
 
 static void
@@ -482,22 +479,21 @@ rb_playlist_manager_cmd_rename_playlist (BonoboUIComponent *component,
 					 RBPlaylistManager *mgr,
 					 const char *verbname)
 {
-	/* RHYTHMDB FIXME */
-/* 	GtkWidget *dialog; */
-/* 	RBPlaylistSource *playlist; */
-/* 	char *oldname; */
+	GtkWidget *dialog;
+	RBPlaylistSource *playlist;
+	char *oldname;
 
-/* 	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source); */
-/* 	g_return_if_fail (playlist != NULL); */
+	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	g_return_if_fail (playlist != NULL);
 
-/* 	g_object_get (G_OBJECT (playlist), "name", &oldname, NULL); */
+	g_object_get (G_OBJECT (playlist), "name", &oldname, NULL);
 
-/* 	dialog = rb_playlist_manager_rename_playlist_dialog (mgr, oldname); */
+	dialog = rb_playlist_manager_rename_playlist_dialog (mgr, oldname);
 
-/* 	g_signal_connect (G_OBJECT (dialog), */
-/* 			  "response", */
-/* 			  G_CALLBACK (ask_rename_response_cb), */
-/* 			  mgr); */
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_rename_response_cb),
+			  mgr);
 }
 
 static void
@@ -576,8 +572,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 	if (file == NULL)
 		return;
 
-	/* RHYTHMDB FIXME */
-/* 	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), file); */
+	rb_playlist_source_save_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source), file);
 	g_free (file);
 }
 
@@ -598,42 +593,41 @@ rb_playlist_manager_validate_name (RBPlaylistManager *mgr, const char *name, gbo
 	return TRUE;
 }
 
-/* static void */
-/* ask_rename_response_cb (GtkDialog *dialog, */
-/* 			int response_id, */
-/* 			RBPlaylistManager *mgr) */
-/* { */
-/* 	GtkWidget *entry; */
-/* 	char *name; */
+static void
+ask_rename_response_cb (GtkDialog *dialog,
+			int response_id,
+			RBPlaylistManager *mgr)
+{
+	GtkWidget *entry;
+	char *name;
 
-/* 	rb_debug ("rename response"); */
+	rb_debug ("rename response");
 
-/* 	if (response_id != GTK_RESPONSE_OK) { */
-/* 		gtk_widget_destroy (GTK_WIDGET (dialog)); */
-/* 		return; */
-/* 	} */
+	if (response_id != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
 
-/* 	entry = g_object_get_data (G_OBJECT (dialog), "entry"); */
-/* 	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry))); */
+	entry = g_object_get_data (G_OBJECT (dialog), "entry");
+	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 
-/* 	gtk_widget_destroy (GTK_WIDGET (dialog)); */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-/* 	if (name == NULL) {  /\* user didn't put anything *\/ */
-/* 		return; */
-/* 	} else { */
-/* 		RBPlaylistSource *ret; */
+	if (name == NULL) {  /* user didn't put anything */
+		return;
+	} else {
+		RBPlaylistSource *ret;
 
-/* 		if (!rb_playlist_manager_validate_name (mgr, name, TRUE)) */
-/* 			goto out; */
+		if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
+			goto out;
 
-/* 		/\* ret = RB_PLAYLIST_SOURCE (mgr->priv->selected_source); *\/ */
-/* 		ret = NULL; */
-/* 		g_object_set (G_OBJECT (ret), "name", name, NULL); */
-/* 	} */
+		ret = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
+		g_object_set (G_OBJECT (ret), "name", name, NULL);
+	}
 
-/* out: */
-/* 	g_free(name); */
-/* } */
+out:
+	g_free(name);
+}
 
 static void
 rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
@@ -658,9 +652,8 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 	if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
 		return NULL;
 
-	ret = NULL;
-/* 	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library, */
-/* 							  mgr->priv->libsource)); */
+	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library,
+							  mgr->priv->libsource));
 	g_object_set (G_OBJECT (ret), "name", name, NULL);
 	return ret;
 }
@@ -668,31 +661,30 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 static void
 add_uri_to_playlist (RBPlaylistManager *mgr, RBPlaylistSource *playlist, const char *uri, const char *title)
 {
-/* 	GError *error = NULL; */
-	/* RHYTHMDB FIXME */
-	return;
-/* 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri); */
-/* 	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri); */
+	RBNode *node;
+	GError *error = NULL;
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 
-/* 	if (rb_uri_is_iradio (scheme)) { */
-/* 		rb_iradio_source_add_station (mgr->priv->iradio_source, uri, title, NULL); */
-/* 		goto out; */
-/* 	} */
+	if (strncmp ("http", scheme, 4) == 0) {
+		rb_iradio_backend_add_station_full (mgr->priv->iradio_backend, uri, title, NULL);
+		goto out;
+	}
 
-/* 	rb_library_add_uri (mgr->priv->library, uri, &error); */
-/* 	if (error) { */
-/* 		rb_debug ("error loading URI %s", uri); */
-/* 		goto out; /\* FIXME *\/ */
-/* 	} */
+	rb_library_add_uri_sync (mgr->priv->library, uri, &error);
+	if (error) {
+		rb_debug ("error loading URI %s", uri);
+		goto out; /* FIXME */
+	}
 
-/* 	node = rb_library_get_song_by_location (mgr->priv->library, uri); */
+	node = rb_library_get_song_by_location (mgr->priv->library, uri);
 
-/* 	g_return_if_fail (node != NULL); */
+	g_return_if_fail (node != NULL);
 
-/* 	/\* add this node to the newly created playlist *\/ */
-/* 	rb_playlist_source_add_entry (playlist, node); */
-/* out: */
-/* 	gnome_vfs_uri_unref (vfsuri); */
+	/* add this node to the newly created playlist */
+	rb_playlist_source_add_node (playlist, node);
+out:
+	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void
@@ -742,16 +734,15 @@ read_playlist_name_cb (GtkDialog *dialog,
 	if (playlist == NULL)
 		return;
 
-	/* RHYTHMDB FIXME */
-/* 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist)); */
+	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 
 	g_free (name);
 
 	switch (type)
 	{
 	case CREATE_PLAYLIST_WITH_NODE_LIST:
-/* 		for (l = data; l != NULL; l = g_list_next (l)) */
-/* 			rb_playlist_source_add_entry (RB_PLAYLIST_SOURCE (playlist), l->data); */
+		for (l = data; l != NULL; l = g_list_next (l))
+			rb_playlist_source_add_node (RB_PLAYLIST_SOURCE (playlist), l->data);
 		break;
 	case CREATE_PLAYLIST_WITH_FILE:
 	{
@@ -760,7 +751,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
 				  mgr);
 
-/* 		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist); */
+		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist);
 		if (!rb_playlist_parse (parser, g_list_first (data)->data))
 			rb_error_dialog (_("Couldn't parse playlist"));
 		mgr->priv->loading_playlist = NULL;
@@ -774,7 +765,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 		for (l = data; l != NULL; l = g_list_next (l)) {
 			char *uri;
 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
-/* 			add_uri_to_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), uri, NULL); */
+			add_uri_to_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), uri, NULL);
 			g_free (uri);
 		}
 		gnome_vfs_uri_list_free (data);
@@ -782,11 +773,11 @@ read_playlist_name_cb (GtkDialog *dialog,
 	case CREATE_PLAYLIST_WITH_SELECTION:
 		/* add the current selection if the user checked */
 		if (add_selection) {
-/* 			RBEntryView *entryview = rb_source_get_entry_view (mgr->priv->selected_source); */
-/* 			GList *i = NULL; */
-/* 			GList *selection = rb_entry_view_get_selected_entries (entryview); */
-/* 			for (i  = selection; i != NULL; i = g_list_next (i)) */
-/* 				rb_playlist_source_add_entry (RB_PLAYLIST_SOURCE (playlist), i->data); */
+			RBNodeView *nodeview = rb_source_get_node_view (mgr->priv->selected_source);
+			GList *i = NULL;
+			GList *selection = rb_node_view_get_selection (nodeview);
+			for (i  = selection; i != NULL; i = g_list_next (i))
+				rb_playlist_source_add_node (RB_PLAYLIST_SOURCE (playlist), i->data);
 		}
 	break;
 	}
@@ -811,7 +802,7 @@ create_playlist (RBPlaylistManager *mgr, CreatePlaylistType type, GList *data)
 static GtkWidget *
 rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 {
-	RBEntryView *entryview;
+	RBNodeView *nodeview;
 	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align;
 	GList *selection;
 	char *default_name = g_strdup(_("Untitled"));
@@ -866,8 +857,8 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	g_free (default_name);
 
 	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new playlist"));
-	entryview = rb_source_get_entry_view (mgr->priv->selected_source);
-	selection = rb_entry_view_get_selected_entries (entryview);
+	nodeview = rb_source_get_node_view (mgr->priv->selected_source);
+	selection = rb_node_view_get_selection (nodeview);
 	if (selection == NULL)
 		gtk_widget_set_sensitive (cbox, FALSE);
 	gtk_box_pack_start (GTK_BOX (vbox), cbox, FALSE, TRUE, 0);
@@ -886,66 +877,66 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	return dialog;
 }
 
-/* static GtkWidget * */
-/* rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname) */
-/* { */
-/* 	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *align; */
+static GtkWidget *
+rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname)
+{
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *align;
 
-/* 	dialog = gtk_dialog_new_with_buttons ("", */
-/* 					      NULL, */
-/* 					      0, */
-/* 					      GTK_STOCK_CANCEL, */
-/* 					      GTK_RESPONSE_CANCEL, */
-/* 					      _("R_ename"), */
-/* 					      GTK_RESPONSE_OK, */
-/* 					      NULL); */
-/* 	gtk_dialog_set_default_response (GTK_DIALOG (dialog), */
-/* 					 GTK_RESPONSE_OK); */
-/* 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE); */
-/* 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5); */
-/* 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2); */
+	dialog = gtk_dialog_new_with_buttons ("",
+					      NULL,
+					      0,
+					      GTK_STOCK_CANCEL,
+					      GTK_RESPONSE_CANCEL,
+					      _("R_ename"),
+					      GTK_RESPONSE_OK,
+					      NULL);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+					 GTK_RESPONSE_OK);
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-/* 	gtk_window_set_transient_for (GTK_WINDOW (dialog), */
-/* 				      GTK_WINDOW (mgr->priv->window)); */
-/* 	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE); */
-/* 	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE); */
-/* 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE); */
+	gtk_window_set_transient_for (GTK_WINDOW (dialog),
+				      GTK_WINDOW (mgr->priv->window));
+	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 
-/* 	gtk_window_set_title (GTK_WINDOW (dialog), _("Rename Playlist")); */
+	gtk_window_set_title (GTK_WINDOW (dialog), _("Rename Playlist"));
 
-/* 	hbox = gtk_hbox_new (FALSE, 12); */
-/* 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5); */
-/* 	image = gtk_image_new_from_stock (RB_STOCK_PLAYLIST, */
-/* 					  GTK_ICON_SIZE_DIALOG); */
-/* 	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0); */
-/* 	gtk_container_add (GTK_CONTAINER (align), image); */
-/* 	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0); */
-/* 	vbox = gtk_vbox_new (FALSE, 6); */
+	hbox = gtk_hbox_new (FALSE, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+	image = gtk_image_new_from_stock (RB_STOCK_PLAYLIST,
+					  GTK_ICON_SIZE_DIALOG);
+	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), image);
+	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
+	vbox = gtk_vbox_new (FALSE, 6);
 
-/* 	label = gtk_label_new (_("Please enter a new name for the playlist:")); */
-/* 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5); */
-/* 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0); */
+	label = gtk_label_new (_("Please enter a new name for the playlist:"));
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
-/* 	entry = gtk_entry_new (); */
+	entry = gtk_entry_new ();
 
-/* 	if (oldname == NULL) { */
-/* 		oldname = _("Untitled"); */
-/* 	} */
+	if (oldname == NULL) {
+		oldname = _("Untitled");
+	}
 
-/* 	gtk_entry_set_text (GTK_ENTRY (entry), oldname); */
+	gtk_entry_set_text (GTK_ENTRY (entry), oldname);
 
-/* 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE); */
-/* 	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0); */
-/* 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0); */
-/* 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox); */
+	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
+	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
 
-/* 	gtk_widget_show_all (hbox); */
-/* 	gtk_widget_show_all (vbox); */
-/* 	gtk_widget_grab_focus (entry); */
+	gtk_widget_show_all (hbox);
+	gtk_widget_show_all (vbox);
+	gtk_widget_grab_focus (entry);
 
-/* 	g_object_set_data (G_OBJECT (dialog), "entry", entry); */
+	g_object_set_data (G_OBJECT (dialog), "entry", entry);
 
-/* 	gtk_widget_show_all (dialog); */
+	gtk_widget_show_all (dialog);
 
-/* 	return dialog; */
-/* } */
+	return dialog;
+}

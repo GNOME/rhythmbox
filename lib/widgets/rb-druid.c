@@ -413,7 +413,7 @@ rb_druid_page3_finish_cb (GnomeDruidPage *druid_page, GtkWidget *druid_widget,
 		
 		rb_debug ("page2 next; adding %s to library", uri);
 		    
-		rb_library_add_uri_async (druid->priv->library, uri);
+		rb_library_add_uri (druid->priv->library, uri);
 		g_free (uri);
 	}
 	eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);

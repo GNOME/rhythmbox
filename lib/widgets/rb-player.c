@@ -68,8 +68,7 @@ typedef struct
 
 struct RBPlayerPrivate
 {
-	RhythmDB *db;
-	RhythmDBEntry *entry;
+	RBNode *node;
 
 	char *title;
 	char *urltext, *urllink;
@@ -108,9 +107,8 @@ struct RBPlayerPrivate
 enum
 {
 	PROP_0,
-	PROP_DB,
 	PROP_PLAYER,
-	PROP_ENTRY,
+	PROP_NODE,
 	PROP_TITLE,
 	PROP_URLTEXT,
 	PROP_URLLINK,
@@ -163,18 +161,10 @@ rb_player_class_init (RBPlayerClass *klass)
 	object_class->get_property = rb_player_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB object",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
-					 PROP_ENTRY,
-					 g_param_spec_pointer ("entry",
-							       "RhythmDBEntry",
-							       "RhythmDBEntry pointer",
+					 PROP_NODE,
+					 g_param_spec_pointer ("node",
+							       "RBNode",
+							       "RBNode",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
@@ -356,11 +346,8 @@ rb_player_set_property (GObject *object,
 	RBPlayer *player = RB_PLAYER (object);
 
 	switch (prop_id) {
-	case PROP_DB:
-		player->priv->db = g_value_get_object (value);
-		break;
-	case PROP_ENTRY:
-		player->priv->entry = g_value_get_pointer (value);
+	case PROP_NODE:
+		player->priv->node = g_value_get_pointer (value);
 		break;
 	case PROP_PLAYER:
 		player->priv->mmplayer = g_value_get_object (value);
@@ -391,11 +378,8 @@ rb_player_get_property (GObject *object,
 	RBPlayer *player = RB_PLAYER (object);
 
 	switch (prop_id) {
-	case PROP_DB:
-		g_value_set_object (value, player->priv->db);
-		break;
-	case PROP_ENTRY:
-		g_value_set_object (value, player->priv->entry);
+	case PROP_NODE:
+		g_value_set_object (value, player->priv->node);
 		break;
 	case PROP_PLAYER:
 		g_value_set_object (value, player->priv->mmplayer);
@@ -430,13 +414,14 @@ rb_player_new (MonkeyMediaPlayer *mmplayer)
 }
 
 void
-rb_player_set_playing_entry (RBPlayer *player, RhythmDBEntry *entry)
+rb_player_set_playing_node (RBPlayer *player, RBNode *node)
 {
-	g_object_set (G_OBJECT (player), "entry", entry, NULL);
+	g_object_set (G_OBJECT (player), "node", node, NULL);
 }
 
 void
-rb_player_set_title (RBPlayer *player, const char *title)
+rb_player_set_title (RBPlayer *player,
+		     const char *title)
 {
 	g_object_set (G_OBJECT (player), "title", title, NULL);
 }
@@ -444,13 +429,9 @@ rb_player_set_title (RBPlayer *player, const char *title)
 static long
 rb_player_get_duration (RBPlayer *player)
 {
-	if (player->priv->entry) {
-		rhythmdb_read_lock (player->priv->db);
-		rhythmdb_entry_get_long (player->priv->db,
-					 player->priv->entry,
-					 RHYTHMDB_PROP_DURATION);
-		rhythmdb_read_unlock (player->priv->db);
-	}
+	if (player->priv->node)
+		return rb_node_get_property_long (player->priv->node,
+						  RB_NODE_PROP_DURATION);
 	return -1;
 }
 
@@ -459,25 +440,15 @@ rb_player_sync (RBPlayer *player)
 {
 	char *tmp;
 
-	rb_debug ("syncing with node = %p", player->priv->entry);
-	if (player->priv->entry != NULL) {
+	rb_debug ("syncing with node = %p", player->priv->node);
+	if (player->priv->node != NULL) {
 		const char *song = player->priv->title;
 		char *escaped, *s;
 		gboolean have_duration = rb_player_get_duration (player) > 0;
-		const char *album; 
-		const char *artist; 
-
-		rhythmdb_read_lock (player->priv->db);
-
-		album = rhythmdb_entry_get_string (player->priv->db,
-						   player->priv->entry,
-						   RHYTHMDB_PROP_ALBUM);
-
-		artist = rhythmdb_entry_get_string (player->priv->db,
-						    player->priv->entry,
-						    RHYTHMDB_PROP_ARTIST);
-
-		rhythmdb_read_unlock (player->priv->db);
+		const char *album = rb_node_get_property_string (player->priv->node,
+								 RB_NODE_PROP_ALBUM);
+		const char *artist = rb_node_get_property_string (player->priv->node,
+								  RB_NODE_PROP_ARTIST);
 
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);

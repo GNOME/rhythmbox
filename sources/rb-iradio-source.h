@@ -24,6 +24,7 @@
 #define __RB_IRADIO_SOURCE_H
 
 #include "rb-source.h"
+#include "rb-iradio-backend.h"
 
 G_BEGIN_DECLS
 
@@ -50,10 +51,7 @@ typedef struct
 
 GType		rb_iradio_source_get_type (void);
 
-RBSource *	rb_iradio_source_new      (RhythmDB *db);
-
-void		rb_iradio_source_add_station (RBIRadioSource *source,
-					      const char *uri, const char *title, const char *genre);
+RBSource *	rb_iradio_source_new      (RBIRadioBackend *backend);
 
 G_END_DECLS
 

@@ -25,7 +25,7 @@
 
 #include <gtk/gtkhbox.h>
 
-#include "rhythmdb.h"
+#include "rb-node.h"
 #include "monkey-media-player.h"
 
 G_BEGIN_DECLS
@@ -55,8 +55,8 @@ GType		rb_player_get_type		(void);
 
 RBPlayer *	rb_player_new			(MonkeyMediaPlayer *player);
 
-void		rb_player_set_playing_entry	(RBPlayer *player,
-						 RhythmDBEntry *entry);
+void		rb_player_set_playing_node	(RBPlayer *player,
+						 RBNode *node);
 
 void		rb_player_set_title		(RBPlayer *player,
 						 const char *title);

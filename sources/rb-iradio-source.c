@@ -363,29 +363,6 @@ rb_iradio_source_new (RBIRadioBackend *backend)
 	return source;
 }
 
-static void
-rb_iradio_source_add_station (RBIRadioSource *source,
-			      const char *uri, const char *title, const char *genre)
-{
-	RhythmDBEntry *entry;
-	GValue val = { 0, };
-
-	rhythmdb_write_lock (db);
-
-	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, title);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_reset (&val);
-	g_value_set_string (&val, genre);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
-	g_value_unset (&val);
-		
-	rhythmdb_write_unlock (db);
-}
-
-
-
 static GdkPixbuf *
 impl_get_pixbuf (RBSource *asource)
 {

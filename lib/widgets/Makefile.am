@@ -5,12 +5,10 @@ noinst_LTLIBRARIES = librbwidgets.la
 librbwidgets_la_SOURCES =				\
 	rb-song-display-box.c				\
 	rb-song-display-box.h				\
+	rb-tree-model-node.c				\
+	rb-tree-model-node.h				\
 	rb-node-view.c					\
 	rb-node-view.h					\
-	rb-entry-view.c					\
-	rb-entry-view.h					\
-	rb-property-view.c				\
-	rb-property-view.h				\
 	rb-search-entry.c				\
 	rb-search-entry.h				\
 	rb-link.c					\
@@ -21,6 +19,10 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	rb-druid.c					\
 	rb-druid.h					\
+	rb-sourcelist.c					\
+	rb-sourcelist.h					\
+	rb-sourcelist-model.c				\
+	rb-sourcelist-model.h				\
 	eggintl.h					\
 	$(EGGFILES)					\
 	rb-ellipsizing-label.c				\
@@ -33,14 +35,14 @@ librbwidgets_la_SOURCES =				\
 	rb-song-info.h					\
 	rb-load-failure-dialog.c			\
 	rb-load-failure-dialog.h			\
+	rb-tree-model-sort.c				\
+	rb-tree-model-sort.h				\
 	gtktreeprivate.h				\
 	gtkrbtree.h					\
 	rb-rating.c					\
 	rb-rating.h					\
-	rb-tree-model-node.c				\
-	rb-tree-model-node.h				\
-	rb-tree-model-sort.c				\
-	rb-tree-model-sort.h				\
+	rb-tree-view.c					\
+	rb-tree-view.h					\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
@@ -67,15 +69,14 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
-	-I$(top_builddir)/lib 				\
-	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/sources				\
 	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/iradio				\
+	-I$(top_builddir)/lib 				\
 	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIBADD = $(top_builddir)/monkey-media/libmonkey-media.la $(top_builddir)/lib/librb.la $(top_builddir)/rhythmdb/librhythmdb.la 
+librbwidgets_la_LIDADD = $(top_builddir)/sources/libsources.la  $(top_builddir)/monkey-media/libmonkey-media.la 

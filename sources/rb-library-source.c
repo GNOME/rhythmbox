@@ -32,12 +32,9 @@
 #include "rb-source.h"
 #include "rb-library-source.h"
 
-#include "rhythmdb-property-model.h"
-#include "rb-property-view.h"
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
-#include "rb-entry-view.h"
-#include "rb-property-view.h"
+#include "rb-node-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
@@ -48,21 +45,12 @@
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-library-dnd-types.h"
+#include "rb-node-filter.h"
 #include "rb-search-entry.h"
 #include "rb-preferences.h"
 
-typedef enum
-{
-	RB_LIBRARY_QUERY_TYPE_SEARCH,
-	RB_LIBRARY_QUERY_TYPE_GENRE,
-	RB_LIBRARY_QUERY_TYPE_ARTIST,
-	RB_LIBRARY_QUERY_TYPE_ALBUM,
-} RBLibraryQueryType;
-
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
-static GObject *rb_library_source_constructor (GType type, guint n_construct_properties,
-					       GObjectConstructParam *construct_properties);
 static void rb_library_source_finalize (GObject *object);
 static void rb_library_source_set_property (GObject *object,
 			                  guint prop_id,
@@ -72,26 +60,28 @@ static void rb_library_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
-static void genre_selected_cb (RBPropertyView *propview, const char *name,
-			       RBLibrarySource *libsource);
-static void artist_selected_cb (RBPropertyView *propview, const char *name,
-			       RBLibrarySource *libsource);
-static void album_selected_cb (RBPropertyView *propview, const char *name,
-			       RBLibrarySource *libsource);
-
+static void album_node_selected_cb (RBNodeView *source,
+			            RBNode *node,
+			            RBLibrarySource *libsource);
+static void genre_node_selected_cb (RBNodeView *source,
+			             RBNode *node,
+			             RBLibrarySource *libsource);
+static void artist_node_selected_cb (RBNodeView *source,
+			             RBNode *node,
+			             RBLibrarySource *libsource);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibrarySource *source);
-/* static void rb_library_source_drop_cb (GtkWidget        *widget, */
-/* 				       GdkDragContext   *context, */
-/* 				       gint              x, */
-/* 				       gint              y, */
-/* 				       GtkSelectionData *data, */
-/* 				       guint             info, */
-/* 				       guint             time, */
-/* 				       gpointer          user_data); */
+static void rb_library_source_drop_cb (GtkWidget        *widget,
+				       GdkDragContext   *context,
+				       gint              x,
+				       gint              y,
+				       GtkSelectionData *data,
+				       guint             info,
+				       guint             time,
+				       gpointer          user_data);
 
-static void songs_view_changed_cb (RBEntryView *view, RBLibrarySource *source);
+static void songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source);
 
 static void library_status_changed_cb (RBLibrary *library, RBLibrarySource *source);
 
@@ -110,7 +100,7 @@ static void rb_library_source_preferences_sync (RBLibrarySource *source);
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
-static RBEntryView *impl_get_entry_view (RBSource *source);
+static RBNodeView *impl_get_node_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
 static void impl_delete (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -120,8 +110,16 @@ static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
-static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
-static void query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source);
+
+static void artists_filter (RBLibrarySource *source,
+	                    RBNode *genre);
+static void albums_filter (RBLibrarySource *source,
+			   RBNode *genre,
+	                   RBNode *artist);
+static void songs_filter (RBLibrarySource *source,
+	                  RBNode *genre,
+	                  RBNode *artist,
+			  RBNode *album);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
@@ -138,8 +136,6 @@ void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 
 struct RBLibrarySourcePrivate
 {
-	RhythmDB *db;
-	
 	RBLibrary *library;
 
 	GtkWidget *browser;
@@ -147,33 +143,37 @@ struct RBLibrarySourcePrivate
 
 	GdkPixbuf *pixbuf;
 
-	RBPropertyView *genres;
-	RBPropertyView *artists;
-	RBPropertyView *albums;
-	RBEntryView *songs;
+	RBNodeView *genres;
+	RBNodeView *albums;
+	RBNodeView *artists;
+	RBNodeView *songs;
 
 	GtkWidget *paned;
 
 	gboolean lock;
 
 	char *status;
-
-	char *search_text;
-	char *selected_genre;
-	char *selected_artist;
-	char *selected_album;
 	
+	RBNodeFilter *artists_filter;
+	RBNodeFilter *songs_filter;
+	RBNodeFilter *albums_filter;
+
+	gboolean changing_artist;
+	gboolean changing_genre;
+
 	gboolean loading_prefs;
 
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
+
+	gboolean filter_changed;
 };
 
 enum
 {
 	PROP_0,
-	PROP_DB,
-	PROP_LIBRARY,
+	PROP_PLAYER,
+	PROP_LIBRARY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -222,7 +222,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_library_source_finalize;
-	object_class->constructor = rb_library_source_constructor;
 
 	object_class->set_property = rb_library_source_set_property;
 	object_class->get_property = rb_library_source_get_property;
@@ -232,7 +231,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
-	source_class->impl_get_entry_view = impl_get_entry_view;
+	source_class->impl_get_node_view = impl_get_node_view;
 	source_class->impl_get_extra_views = impl_get_extra_views;
 	source_class->impl_get_config_widget = impl_get_config_widget;
 	source_class->impl_song_properties = impl_song_properties;
@@ -255,14 +254,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 							      "Library",
 							      RB_TYPE_LIBRARY,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB database",
-							      RHYTHMDB_TYPE,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -282,12 +273,18 @@ update_browser_views_visibility (RBLibrarySource *source)
 			gtk_widget_show (artists);
 			gtk_widget_show (albums);
 			
+			rb_node_view_select_node (source->priv->genres,
+				  		  rb_library_get_all_artists 
+						  (source->priv->library));
 		break;
 		case 1:
 			gtk_widget_show (genres);
 			gtk_widget_show (artists);
 			gtk_widget_hide (albums);
 
+			rb_node_view_select_node (source->priv->albums,
+				  		  rb_library_get_all_songs 
+						  (source->priv->library));	
 		break;
 		case 2:
 			gtk_widget_show (genres);
@@ -349,13 +346,17 @@ rb_library_source_finalize (GObject *object)
 
 	rb_debug ("finalizing library source");
 
+	g_object_unref (G_OBJECT (source->priv->artists_filter));
+	g_object_unref (G_OBJECT (source->priv->songs_filter));
+	g_object_unref (G_OBJECT (source->priv->albums_filter));
+
 	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
-rb_library_source_songs_show_popup_cb (RBEntryView *view,
+rb_library_source_songs_show_popup_cb (RBNodeView *view,
 				       RBLibrarySource *library_source)
 {
 	GtkWidget *menu;
@@ -375,111 +376,6 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 	gtk_object_sink (GTK_OBJECT (menu));
 }
 
-static GObject *
-rb_library_source_constructor (GType type, guint n_construct_properties,
-			       GObjectConstructParam *construct_properties)
-{
-	RBLibrarySource *source;
-	RBLibrarySourceClass *klass;
-	GObjectClass *parent_class;  
-	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (type));
-
-	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
-	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
-							       construct_properties));
-
-	g_signal_connect (G_OBJECT (source->priv->library),
-			  "status-changed",
-			  G_CALLBACK (library_status_changed_cb),
-			  source);
-
-	source->priv->paned = gtk_vpaned_new ();
-
-	source->priv->browser = gtk_hbox_new (TRUE, 5);
-
-	/* set up genres treeview */
-	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE);
-	g_signal_connect (G_OBJECT (source->priv->genres),
-			  "property-selected",
-			  G_CALLBACK (genre_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
-
-	/* set up artist treeview */
-	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
-	g_signal_connect (G_OBJECT (source->priv->artists),
-			  "property-selected",
-			  G_CALLBACK (artist_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
-
-	/* set up albums treeview */
-	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
-	g_signal_connect (G_OBJECT (source->priv->albums),
-			  "property-selected",
-			  G_CALLBACK (album_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
-	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
-
-	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db, rb_file ("rb-entry-view-library.xml"));
-
-	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
-			  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "changed",
-			  G_CALLBACK (songs_view_changed_cb),
-			  source);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
-
-	/* Drag'n'Drop for songs view */
-/* 	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1); */
-
-/* 	/\* Drag'n'Drop for albums view *\/ */
-/* 	g_signal_connect (G_OBJECT (source->priv->albums), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->albums), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->albums, target_id, 1); */
-
-/* 	/\* Drag'n'Drop for artists view *\/ */
-/* 	g_signal_connect (G_OBJECT (source->priv->artists), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->artists), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->artists, target_id, 1); */
-
-	/* this gets emitted when the paned thingie is moved */
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "size_allocate",
-			  G_CALLBACK (paned_size_allocate_cb),
-			  source);
-
-	gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
-
-	gtk_widget_show_all (GTK_WIDGET (source));
-
-	rb_library_source_state_prefs_sync (source);
-	rb_library_source_ui_prefs_sync (source);
-	eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
-				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
-				    source);
-	eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
-				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
-	return G_OBJECT (source);
-}
-
-
 static void
 rb_library_source_set_property (GObject *object,
 			      guint prop_id,
@@ -490,11 +386,117 @@ rb_library_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_DB:
-		source->priv->db = g_value_get_object (value);
-		break;
 	case PROP_LIBRARY:
-		source->priv->library = g_value_get_object (value);
+		{
+			source->priv->library = g_value_get_object (value);
+
+			g_signal_connect (G_OBJECT (source->priv->library),
+					  "status-changed",
+					  G_CALLBACK (library_status_changed_cb),
+					  source);
+
+			source->priv->paned = gtk_vpaned_new ();
+
+			source->priv->browser = gtk_hbox_new (TRUE, 5);
+
+			/* Initialize the filters */
+			source->priv->artists_filter = rb_node_filter_new ();
+			source->priv->songs_filter = rb_node_filter_new ();
+			source->priv->albums_filter = rb_node_filter_new ();
+
+			/* set up genres treeview */
+			source->priv->genres = rb_node_view_new 
+				(rb_library_get_all_genres (source->priv->library),
+				 rb_file ("rb-node-view-genres.xml"),
+				 NULL);
+			g_signal_connect (G_OBJECT (source->priv->genres),
+					  "node_selected",
+					  G_CALLBACK (genre_node_selected_cb),
+					  source);
+
+			gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
+
+
+			/* set up artist treeview */
+			source->priv->artists = rb_node_view_new (rb_library_get_all_artists (source->priv->library),
+						                rb_file ("rb-node-view-artists.xml"),
+								source->priv->artists_filter);
+			g_signal_connect (G_OBJECT (source->priv->artists),
+					  "node_selected",
+					  G_CALLBACK (artist_node_selected_cb),
+					  source);
+
+
+			gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
+
+			/* set up albums treeview */
+			source->priv->albums = rb_node_view_new (rb_library_get_all_albums (source->priv->library),
+						               rb_file ("rb-node-view-albums.xml"),
+							       source->priv->albums_filter);
+			g_signal_connect (G_OBJECT (source->priv->albums),
+					  "node_selected",
+					  G_CALLBACK (album_node_selected_cb),
+					  source);
+
+			gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
+			gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
+
+			/* set up songs tree view */
+			source->priv->songs = rb_node_view_new (rb_library_get_all_songs (source->priv->library),
+						              rb_file ("rb-node-view-songs.xml"),
+							      source->priv->songs_filter);
+
+			g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
+					  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
+			g_signal_connect (G_OBJECT (source->priv->songs),
+					  "changed",
+					  G_CALLBACK (songs_view_changed_cb),
+					  source);
+
+			/* Drag'n'Drop for songs view */
+			g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
+					  G_CALLBACK (rb_library_source_drop_cb), source);
+			gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL,
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1);
+
+			/* Drag'n'Drop for albums view */
+			g_signal_connect (G_OBJECT (source->priv->albums), "drag_data_received",
+					  G_CALLBACK (rb_library_source_drop_cb), source);
+			gtk_drag_dest_set (GTK_WIDGET (source->priv->albums), GTK_DEST_DEFAULT_ALL,
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (source->priv->albums, target_id, 1);
+
+			/* Drag'n'Drop for artists view */
+			g_signal_connect (G_OBJECT (source->priv->artists), "drag_data_received",
+					  G_CALLBACK (rb_library_source_drop_cb), source);
+			gtk_drag_dest_set (GTK_WIDGET (source->priv->artists), GTK_DEST_DEFAULT_ALL,
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (source->priv->artists, target_id, 1);
+
+			/* this gets emitted when the paned thingie is moved */
+			g_signal_connect (G_OBJECT (source->priv->songs),
+					  "size_allocate",
+					  G_CALLBACK (paned_size_allocate_cb),
+					  source);
+
+			gtk_paned_pack2 (GTK_PANED (source->priv->paned), GTK_WIDGET (source->priv->songs), TRUE, FALSE);
+
+			gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
+
+			gtk_widget_show_all (GTK_WIDGET (source));
+
+			rb_library_source_state_prefs_sync (source);
+			rb_library_source_ui_prefs_sync (source);
+			eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
+						    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
+						    source);
+			eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
+						    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
+
+			rb_node_view_select_node (source->priv->artists,
+					          rb_library_get_all_albums (source->priv->library));
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -515,9 +517,6 @@ rb_library_source_get_property (GObject *object,
 	case PROP_LIBRARY:
 		g_value_set_object (value, source->priv->library);
 		break;
-	case PROP_DB:
-		g_value_set_object (value, source->priv->db);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -525,64 +524,90 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (RhythmDB *db, RBLibrary *library)
+rb_library_source_new (RBLibrary *library)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
-					  "db", db,
 					  "library", library,
 					  NULL));
 
 	return source;
 }
 
-/* static RBNode * */
-/* ensure_node_selection (RBEntryView *source, */
-/* 		       RBNode *all_node, */
-/* 		       gboolean *changing_flag) */
-/* { */
-/* 	GList *selection = rb_node_view_get_selection (source); */
+static RBNode *
+ensure_node_selection (RBNodeView *source,
+		       RBNode *all_node,
+		       gboolean *changing_flag)
+{
+	GList *selection = rb_node_view_get_selection (source);
 
-/* 	if (selection == NULL) { */
-/* 		*changing_flag = TRUE; */
-/* 		rb_node_view_select_node (source, all_node); */
-/* 		*changing_flag = FALSE; */
-/* 		selection = rb_node_view_get_selection (source); */
-/* 	} */
+	if (selection == NULL) {
+		*changing_flag = TRUE;
+		rb_node_view_select_node (source, all_node);
+		*changing_flag = FALSE;
+		selection = rb_node_view_get_selection (source);
+	}
 
-/* 	return selection->data; */
-/* } */
+	return selection->data;
+}
+
 
 static void
-genre_selected_cb (RBPropertyView *propview, const char *name,
-		   RBLibrarySource *libsource)
+genre_node_selected_cb (RBNodeView *view,
+			RBNode *node,
+			RBLibrarySource *source)
 {
-	rb_debug ("genre selected"); 
-	g_free (libsource->priv->selected_genre);
-	libsource->priv->selected_genre = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE);
+	if (source->priv->changing_genre == TRUE)
+		return;
+
+	artists_filter (source, node);
+	rb_node_view_select_node (source->priv->artists,
+				  rb_library_get_all_albums (source->priv->library));
+
+	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
 static void
-artist_selected_cb (RBPropertyView *propview, const char *name,
-		   RBLibrarySource *libsource)
+artist_node_selected_cb (RBNodeView *view,
+			 RBNode *node,
+			 RBLibrarySource *source)
 {
-	rb_debug ("artist selected"); 
-	g_free (libsource->priv->selected_artist);
-	libsource->priv->selected_artist = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ARTIST);
+	RBNode *genre;
+
+	if (source->priv->changing_artist == TRUE)
+		return;
+
+	genre = ensure_node_selection (source->priv->genres,
+			               rb_library_get_all_artists (source->priv->library),
+				       &source->priv->changing_genre);
+
+	albums_filter (source, genre, node);
+	rb_node_view_select_node (source->priv->albums,
+				  rb_library_get_all_songs (source->priv->library));
+
+	rb_source_notify_filter_changed (RB_SOURCE (source));
 }
 
 static void
-album_selected_cb (RBPropertyView *propview, const char *name,
-		   RBLibrarySource *libsource)
+album_node_selected_cb (RBNodeView *view,
+			RBNode *node,
+			RBLibrarySource *source)
 {
-	rb_debug ("album selected"); 
-	g_free (libsource->priv->selected_album);
-	libsource->priv->selected_album = g_strdup (name);
-	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM);
+	RBNode *artist;
+	RBNode *genre;
+
+	genre = ensure_node_selection (source->priv->genres,
+			               rb_library_get_all_artists (source->priv->library),
+				       &source->priv->changing_genre);
+	artist = ensure_node_selection (source->priv->artists,
+			                rb_library_get_all_albums (source->priv->library),
+				        &source->priv->changing_artist);
+
+	rb_source_notify_filter_changed (RB_SOURCE (source));
+
+	songs_filter (source, genre, artist, node);
 }
 
 static const char *
@@ -590,12 +615,10 @@ impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	g_free (source->priv->status);
-	/* RHYTHMDB FIXME */
-/* 	source->priv->status = rb_library_compute_status (source->priv->library, */
-/* 							  rb_library_get_all_songs (source->priv->library), */
-/* 							  source->priv->songs_filter); */
-/* 	return source->priv->status; */
-	return "Not implemented yet";
+	source->priv->status = rb_library_compute_status (source->priv->library,
+							  rb_library_get_all_songs (source->priv->library),
+							  source->priv->songs_filter);
+	return source->priv->status;
 }
 
 static const char *
@@ -617,23 +640,52 @@ impl_search (RBSource *asource, const char *search_text)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
-	if (search_text == NULL && source->priv->search_text == NULL)
-		return;
-	if (search_text != NULL &&
-	    source->priv->search_text != NULL
-	    && !strcmp (search_text, source->priv->search_text))
-		return;
+		/* resets the filter */
+	if (search_text == NULL || strcmp (search_text, "") == 0) {
+		rb_node_view_select_node (source->priv->genres,
+				          rb_library_get_all_artists (source->priv->library));
+	} else {
+		rb_node_view_select_none (source->priv->genres);
+		rb_node_view_select_none (source->priv->artists);
+		rb_node_view_select_none (source->priv->albums);
 
-	rb_debug ("doing search for \"%s\"", search_text);
+		artists_filter (source, rb_library_get_all_artists (source->priv->library));
+		albums_filter (source, rb_library_get_all_artists (source->priv->library),
+			             rb_library_get_all_albums (source->priv->library));
 
-	g_free (source->priv->search_text);
-	source->priv->search_text = g_utf8_casefold (search_text, -1);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
+		rb_node_filter_empty (source->priv->songs_filter);
+		rb_node_filter_add_expression (source->priv->songs_filter,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_PROP_NAME,
+									      search_text),
+					       0);
+		rb_node_filter_add_expression (source->priv->songs_filter,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_PROP_ARTIST,
+									      search_text),
+					       0);
+		rb_node_filter_add_expression (source->priv->songs_filter,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_PROP_ALBUM,
+									      search_text),
+					       0);
+		rb_node_filter_add_expression (source->priv->songs_filter,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_PROP_GENRE,
+									      search_text),
+					       0);
+
+		rb_node_filter_done_changing (source->priv->songs_filter);
+	}
 }
 
 
-static RBEntryView *
-impl_get_entry_view (RBSource *asource)
+static RBNodeView *
+impl_get_node_view (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
@@ -692,44 +744,28 @@ static const char *
 impl_get_artist (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	RhythmDBEntry *entry;
-	const char *ret;
+	RBNode *node;
 
-	entry = rb_entry_view_get_playing_entry (source->priv->songs);
+	node = rb_node_view_get_playing_node (source->priv->songs);
 
-	if (entry != NULL) {
-		rhythmdb_read_lock (source->priv->db);
-		
-		ret = rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST);
-
-		rhythmdb_read_unlock (source->priv->db);
-
-		return ret;
-	} else {
+	if (node != NULL)
+		return rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
+	else
 		return NULL;
-	}
 }
 
 static const char *
 impl_get_album (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	RhythmDBEntry *entry;
-	const char *ret;
+	RBNode *node;
 
-	entry = rb_entry_view_get_playing_entry (source->priv->songs);
+	node = rb_node_view_get_playing_node (source->priv->songs);
 
-	if (entry != NULL) {
-		rhythmdb_read_lock (source->priv->db);
-
-		ret = rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM);
-		
-		rhythmdb_read_unlock (source->priv->db);
-
-		return ret;
-	} else {
+	if (node != NULL)
+		return rb_node_get_property_string (node, RB_NODE_PROP_ALBUM);
+	else
 		return NULL;
-	}
 }
 
 
@@ -765,23 +801,22 @@ impl_delete (RBSource *asource)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GList *l;
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l))
-		rhythmdb_entry_unref (source->priv->db, l->data);
+	for (l = rb_node_view_get_selection (source->priv->songs); l != NULL; l = g_list_next (l))
+		rb_library_remove_node (source->priv->library, l->data);
 }
 
 static void
 impl_song_properties (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-/* 	GtkWidget *song_info = NULL; */
+	GtkWidget *song_info = NULL;
 
 	g_return_if_fail (source->priv->songs != NULL);
 
-	/* RHYTHMDB FIXME */
-/* 	song_info = rb_song_info_new (source->priv->songs); */
-/* 	if (song_info) */
-/* 		gtk_widget_show_all (song_info); */
-/* 	else */
+	song_info = rb_song_info_new (source->priv->songs);
+	if (song_info)
+		gtk_widget_show_all (song_info);
+	else
 		rb_debug ("failed to create dialog, or no selection!");
 }
 
@@ -826,12 +861,12 @@ library_status_changed_cb (RBLibrary *library, RBLibrarySource *source)
 }
 
 static void
-songs_view_changed_cb (RBEntryView *view, RBLibrarySource *source)
+songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source)
 {
-/* 	rb_debug ("got node view change"); */
-/* 	if (source->priv->filter_changed) */
-/* 		rb_source_notify_status_changed (RB_SOURCE (source)); */
-/* 	source->priv->filter_changed = FALSE; */
+	rb_debug ("got node view change");
+	if (source->priv->filter_changed)
+		rb_source_notify_status_changed (RB_SOURCE (source));
+	source->priv->filter_changed = FALSE;
 }
 
 void
@@ -875,7 +910,7 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 		if (uri != NULL) {
 			GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 			if (vfsuri != NULL) {
-				rb_library_add_uri_async (source->priv->library, uri);
+				rb_library_add_uri (source->priv->library, uri);
 				gnome_vfs_uri_unref (vfsuri);
 			} else
 				rb_debug ("invalid uri: \"%s\"", uri);
@@ -888,6 +923,15 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 	}
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
+}
+
+gboolean
+rb_library_source_eval_filter (RBLibrarySource *source, RBNode *node)
+{
+	if (rb_node_filter_evaluate (source->priv->songs_filter, node) == FALSE)
+		return FALSE;
+
+	return TRUE;
 }
 
 static gboolean
@@ -918,7 +962,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rb_library_add_uri_async (source->priv->library, uri);
+			rb_library_add_uri (source->priv->library, uri);
 
 		g_free (uri);
 	}
@@ -935,166 +979,119 @@ impl_show_popup (RBSource *source)
 }
 
 static void
-entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
-		RBPropertyView *propview)
+rb_library_source_drop_cb (GtkWidget *widget,
+			 GdkDragContext *context,
+			 gint x,
+			 gint y,
+			 GtkSelectionData *data,
+			 guint info,
+			 guint time,
+			 gpointer user_data)
 {
-	rb_property_view_handle_entry_addition (propview, entry);
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (user_data);
+	GtkTargetList *tlist;
+	gboolean ret;
+
+	rb_debug ("checking target");
+
+	tlist = gtk_target_list_new (target_uri, 1);
+	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
+	gtk_target_list_unref (tlist);
+
+	if (ret == FALSE)
+		return;
+
+	if (!impl_receive_drag (RB_SOURCE (source), data)) {
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
 static void
-rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
+artists_filter (RBLibrarySource *source, RBNode *genre)
 {
-	RhythmDBQueryModel *query_model;
-	GtkTreeModel *model;
-	GPtrArray *query;
-	GPtrArray *genre_query;
-	GPtrArray *artist_query;
-	GPtrArray *album_query;
-
-	query = rhythmdb_query_parse (source->priv->db,
-				      RHYTHMDB_QUERY_PROP_EQUALS,
-				      RHYTHMDB_PROP_TYPE,
-				      RHYTHMDB_ENTRY_TYPE_SONG,
-				      RHYTHMDB_QUERY_END);
-
-	if (source->priv->search_text) {
-		GPtrArray *subquery = rhythmdb_query_parse (source->priv->db,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_GENRE,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_DISJUNCTION,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_ARTIST,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_DISJUNCTION,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_ALBUM,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_DISJUNCTION,
-							    RHYTHMDB_QUERY_PROP_LIKE,
-							    RHYTHMDB_PROP_TITLE,
-							    source->priv->search_text,
-							    RHYTHMDB_QUERY_END);
-		rhythmdb_query_append (source->priv->db,
-				       query,
-				       RHYTHMDB_QUERY_SUBQUERY,
-				       subquery,
-				       RHYTHMDB_QUERY_END);
-	}
-
-	g_signal_handlers_disconnect_matched (G_OBJECT (source->priv->songs),
-					      G_SIGNAL_MATCH_FUNC,
-					      g_signal_lookup ("entry-added",
-							       RB_TYPE_ENTRY_VIEW),
-					      0,
-					      NULL,
-					      G_CALLBACK (entry_added_cb),
-					      NULL);
-
-
-	if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
-		rb_property_view_reset (source->priv->genres);
-		g_free (source->priv->selected_genre);
-		source->priv->selected_genre = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->genres);
-	}
-	if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
-		rb_property_view_reset (source->priv->artists);
-		g_free (source->priv->selected_artist);
-		source->priv->selected_artist = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->artists);
-	}
-	if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
-		rb_property_view_reset (source->priv->albums);
-		g_free (source->priv->selected_album);
-		source->priv->selected_album = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->albums);
-	}
-
-	genre_query = rhythmdb_query_copy (query);
-
-	if (source->priv->selected_genre)
-		rhythmdb_query_append (source->priv->db,
-				       query,
-				       RHYTHMDB_QUERY_PROP_EQUALS,
-				       RHYTHMDB_PROP_GENRE,
-				       source->priv->selected_genre,
-				       RHYTHMDB_QUERY_END);
-	artist_query = rhythmdb_query_copy (query);
-
-	if (source->priv->selected_artist)
-		rhythmdb_query_append (source->priv->db,
-				       query,
-				       RHYTHMDB_QUERY_PROP_EQUALS,
-				       RHYTHMDB_PROP_ARTIST,
-				       source->priv->selected_artist,
-				       RHYTHMDB_QUERY_END);
-	album_query = rhythmdb_query_copy (query);	
-
-	if (source->priv->selected_album)
-		rhythmdb_query_append (source->priv->db,
-				       query,
-				       RHYTHMDB_QUERY_PROP_EQUALS,
-				       RHYTHMDB_PROP_ALBUM,
-				       source->priv->selected_album,
-				       RHYTHMDB_QUERY_END);
-
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
-	model = GTK_TREE_MODEL (query_model);
-
-	g_signal_connect (G_OBJECT (query_model),
-			  "complete", G_CALLBACK (query_complete_cb),
-			  source);
-
-	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
-
-	rhythmdb_query_free (genre_query);
-	rhythmdb_query_free (artist_query);
-	rhythmdb_query_free (album_query);
-	rhythmdb_query_free (query);
-	
-	rb_entry_view_set_query_model (source->priv->songs, query_model);
+	rb_node_filter_empty (source->priv->artists_filter);
+	rb_node_filter_add_expression (source->priv->artists_filter,
+				       rb_node_filter_expression_new (source->priv->artists_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_albums (source->priv->library)),
+				       0);
+	rb_node_filter_add_expression (source->priv->artists_filter,
+				       rb_node_filter_expression_new (source->priv->artists_filter,
+								      RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+								      genre),
+				       0);
+	rb_node_filter_done_changing (source->priv->artists_filter);
 }
 
 static void
-query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source)
+albums_filter (RBLibrarySource *source, RBNode *genre, RBNode *artist)
 {
-	rb_debug ("query complete");
+	rb_node_filter_empty (source->priv->albums_filter);
+	rb_node_filter_add_expression (source->priv->albums_filter,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      genre, rb_library_get_all_artists (source->priv->library)),
+				       0);
+	rb_node_filter_add_expression (source->priv->albums_filter,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_songs (source->priv->library)),
+				       0);
+	rb_node_filter_add_expression (source->priv->albums_filter,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
+								      RB_NODE_PROP_REAL_GENRE, genre),
+				       0);
+	rb_node_filter_add_expression (source->priv->albums_filter,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_songs (source->priv->library)),
+				       1);
+	rb_node_filter_add_expression (source->priv->albums_filter,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+								      artist),
+				       1);
+	rb_node_filter_done_changing (source->priv->albums_filter);
 }
 
-/* static void */
-/* rb_library_source_drop_cb (GtkWidget *widget, */
-/* 			 GdkDragContext *context, */
-/* 			 gint x, */
-/* 			 gint y, */
-/* 			 GtkSelectionData *data, */
-/* 			 guint info, */
-/* 			 guint time, */
-/* 			 gpointer user_data) */
-/* { */
-/* 	RBLibrarySource *source = RB_LIBRARY_SOURCE (user_data); */
-/* 	GtkTargetList *tlist; */
-/* 	gboolean ret; */
-
-/* 	rb_debug ("checking target"); */
-
-/* 	tlist = gtk_target_list_new (target_uri, 1); */
-/* 	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE); */
-/* 	gtk_target_list_unref (tlist); */
-
-/* 	if (ret == FALSE) */
-/* 		return; */
-
-/* 	if (!impl_receive_drag (RB_SOURCE (source), data)) { */
-/* 		gtk_drag_finish (context, FALSE, FALSE, time); */
-/* 		return; */
-/* 	} */
-
-/* 	gtk_drag_finish (context, TRUE, FALSE, time); */
-/* } */
+static void
+songs_filter (RBLibrarySource *source, RBNode *genre, RBNode *artist, RBNode *album)
+{
+	rb_node_filter_empty (source->priv->songs_filter);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      genre, rb_library_get_all_artists (source->priv->library)),
+				       0);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+								      RB_NODE_PROP_REAL_GENRE, genre),
+				       0);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      artist, rb_library_get_all_albums (source->priv->library)),
+				       1);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+								      RB_NODE_PROP_REAL_ARTIST, artist),
+				       1);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      album, rb_library_get_all_songs (source->priv->library)),
+				       2);
+	rb_node_filter_add_expression (source->priv->songs_filter,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+								      RB_NODE_PROP_REAL_ALBUM, album),
+				       2);
+	rb_node_filter_done_changing (source->priv->songs_filter);
+	source->priv->filter_changed = TRUE;
+}

@@ -26,7 +26,7 @@
 #include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-ui-component.h>
 
-#include "rb-entry-view.h"
+#include "rb-node-view.h"
 
 G_BEGIN_DECLS
 
@@ -66,7 +66,7 @@ typedef struct
 
 	const char *	(*impl_get_browser_key)	(RBSource *source);
 
-	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
+	RBNodeView *	(*impl_get_node_view)	(RBSource *source);
 	GList *		(*impl_get_extra_views)	(RBSource *source);
 
 	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
@@ -82,7 +82,7 @@ typedef struct
 	
 	GList *		(*impl_cut)		(RBSource *source);
 	GList *		(*impl_copy)		(RBSource *source);
-	void		(*impl_paste)		(RBSource *source, GList *entries);
+	void		(*impl_paste)		(RBSource *source, GList *nodes);
 	void		(*impl_delete)		(RBSource *source);
 
 	void		(*impl_song_properties)	(RBSource *source);
@@ -115,7 +115,7 @@ const char *	rb_source_get_status		(RBSource *source);
 
 const char *	rb_source_get_browser_key	(RBSource *source);
 
-RBEntryView *	rb_source_get_entry_view	(RBSource *source);
+RBNodeView *	rb_source_get_node_view		(RBSource *source);
 
 GList *		rb_source_get_extra_views	(RBSource *source);
 
@@ -134,7 +134,7 @@ gboolean	rb_source_can_copy		(RBSource *source);
 
 GList *		rb_source_cut			(RBSource *source);
 GList *		rb_source_copy			(RBSource *source);
-void		rb_source_paste			(RBSource *source, GList *entries);
+void		rb_source_paste			(RBSource *source, GList *nodes);
 void		rb_source_delete		(RBSource *source);
 
 void		rb_source_song_properties	(RBSource *source);

@@ -50,7 +50,7 @@ typedef struct
 
 GType             rb_shell_clipboard_get_type		(void);
 
-RBShellClipboard *rb_shell_clipboard_new		(BonoboUIComponent *component, RhythmDB *db);
+RBShellClipboard *rb_shell_clipboard_new		(BonoboUIComponent *component);
 
 void              rb_shell_clipboard_set_source		(RBShellClipboard *shell_clipboard,
 							 RBSource *source);
