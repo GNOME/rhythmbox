@@ -2,6 +2,183 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-23 05:29:35 GMT	Colin Walters <walters@verbum.org>	patch-107
+
+    Summary:
+      ignore changes on disconnected models
+    Revision:
+      rhythmbox--mainline--0.7--patch-107
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+
+
+2003-12-23 05:19:47 GMT	Colin Walters <walters@verbum.org>	patch-106
+
+    Summary:
+      fix up bitrate in iradio properties dialog
+    Revision:
+      rhythmbox--mainline--0.7--patch-106
+
+
+    modified files:
+     ChangeLog iradio/rb-station-properties-dialog.c
+
+
+2003-12-23 05:19:33 GMT	Colin Walters <walters@verbum.org>	patch-105
+
+    Summary:
+      unset temporary gvalue
+    Revision:
+      rhythmbox--mainline--0.7--patch-105
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-12-23 05:14:24 GMT	Colin Walters <walters@verbum.org>	patch-104
+
+    Summary:
+      actually copy old gvalue for changed signal
+    Revision:
+      rhythmbox--mainline--0.7--patch-104
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-12-23 05:04:29 GMT	Colin Walters <walters@verbum.org>	patch-103
+
+    Summary:
+      merge tag writing bits from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-103
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-16
+       make info dialog data writable, first cut at changing props
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-17
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-18
+       make tracknum editing work, make artist editable
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-19
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-20
+       implement atomic vfs temp file creation
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-21
+       minor renames
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-22
+       much hackery on metadata writing; doesn't work yet due to gst borkage...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-23
+       hack hack hack
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-24
+       she compiles...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-25
+       actually rename file into place
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade lib/rb-file-helpers.c
+     lib/rb-file-helpers.h metadata/rb-metadata-gst.c
+     metadata/rb-metadata.h rhythmdb/rhythmdb.c
+     widgets/rb-song-info.c widgets/rb-song-info.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-22
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-23
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-24
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-25
+
+
+2003-12-22 16:20:49 GMT	Colin Walters <walters@verbum.org>	patch-102
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-102
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-387
+       dist dashboard.c
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-389
+       make file dialogs resizable
+    
+
+    modified files:
+     ChangeLog lib/rb-dialog.c shell/Makefile.am
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-387
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-389
+
+
+2003-12-22 06:17:40 GMT	Colin Walters <walters@verbum.org>	patch-101
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-101
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-373
+       gcc-2.95 compile fixes (Kaj-Michael Lang)
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-373
+
+
+2003-12-22 05:15:02 GMT	Colin Walters <walters@verbum.org>	patch-100
+
+    Summary:
+      be sure to zero allocated structure
+    Revision:
+      rhythmbox--mainline--0.7--patch-100
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+
+
+2003-12-22 05:14:47 GMT	Colin Walters <walters@verbum.org>	patch-99
+
+    Summary:
+      hardcode mad for now with gst
+    Revision:
+      rhythmbox--mainline--0.7--patch-99
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
 2003-12-22 05:06:12 GMT	Colin Walters <walters@verbum.org>	patch-98
 
     Summary:
