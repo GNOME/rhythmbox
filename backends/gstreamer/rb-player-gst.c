@@ -436,6 +436,14 @@ rb_player_construct (RBPlayer *mp,
 	 *  { src ! spider ! volume ! sink }
 	 */
 	mp->priv->pipeline = gst_element_factory_make ("thread", "pipeline");
+	if (!mp->priv->pipeline) {
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     "%s",
+			     _("Failed to create thread element; check your GStreamer installation"));
+		return;
+	}
 	/* FIXME */
 #if 0
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
