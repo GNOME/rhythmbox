@@ -218,7 +218,7 @@ rb_metadata_get (RBMetaData *md, RBMetaDataField field,
 
 gboolean
 rb_metadata_set (RBMetaData *md, RBMetaDataField field,
-		 GValue *val)
+		 const GValue *val)
 {
 	return FALSE;
 }
