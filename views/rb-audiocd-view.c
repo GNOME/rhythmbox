@@ -129,6 +129,7 @@ gboolean rb_audiocd_discinfo_load (RBAudiocdView *view);
 void update_musicbrainz_info_thread (RBAudiocdView *view);
 
 void rb_audiocd_refresh_cd (RBAudiocdView *view);
+char *rb_audiocd_get_status (RBAudiocdView *view);
 
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -785,7 +786,7 @@ rb_audiocd_view_status_get (RBViewStatus *status)
 	RBAudiocdView *view = RB_AUDIOCD_VIEW (status);
 
 	g_free (view->priv->status);
-	view->priv->status = rb_node_view_get_status (view->priv->songs);
+	view->priv->status = rb_audiocd_get_status (view);
 
 	return (const char *) view->priv->status;
 }
@@ -1155,4 +1156,40 @@ rb_audiocd_refresh_cd (RBAudiocdView *view)
         view->priv->thread = g_thread_create ((GThreadFunc) update_musicbrainz_info_thread,
                                               view, TRUE, NULL);
 
+}
+
+char *
+rb_audiocd_get_status (RBAudiocdView *view)
+{
+	char *ret;
+	int hours, minutes, seconds;
+	long n_seconds = 0;
+	int n_songs = 0;
+	GPtrArray *kids;
+	int i;
+
+        kids = rb_node_get_children (view->priv->audiocd);
+
+	for (i = 0; i < kids->len; i++)
+	{
+		RBNode *node;
+
+		node = g_ptr_array_index (kids, i);
+		
+		n_songs++;
+
+		n_seconds += rb_node_get_property_long (node,
+							RB_NODE_SONG_PROP_REAL_DURATION);
+	}
+		
+	rb_node_thaw (view->priv->audiocd);
+
+	hours   = n_seconds / (60 * 60);
+	minutes = n_seconds / 60 - hours * 60;
+	seconds = n_seconds % 60;
+
+	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d total time"),
+			       n_songs, hours, minutes, seconds);
+
+	return ret;
 }
