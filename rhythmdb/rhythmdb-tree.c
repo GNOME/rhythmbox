@@ -865,6 +865,9 @@ rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 	RhythmDBTreeProperty *genre;
 	char *new_uri;
 
+	if (g_hash_table_lookup (db->priv->entries, new_uri))
+		return;
+
 	/* Initialize the tree structure. */
 	genre = get_or_create_genre (db, type, genrename);
 	artist = get_or_create_artist (db, genre, artistname);
@@ -872,7 +875,6 @@ rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 
 	new_uri = g_strdup (uri);
 
-	g_assert (!g_hash_table_lookup (db->priv->entries, new_uri));
 	g_hash_table_insert (db->priv->entries, new_uri, entry);
 	g_value_set_string_take_ownership (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION),
 					   new_uri);
