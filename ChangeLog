@@ -1,5 +1,18 @@
 2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-node.c: (child_changed), (real_set_property),
+	(rb_node_set_property), (rb_node_new_from_xml), (real_add_child),
+	(rb_node_add_child):
+
+	Remove some unnecessary locking.
+	
+	* views/rb-library-view.c: (artist_node_selected_cb),
+	(album_node_selected_cb):
+
+	Small searching speedup.
+
+2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library-main-thread.c:
 	(rb_library_main_thread_finalize), (thread_main):
 	* library/rb-library-walker-thread.c:

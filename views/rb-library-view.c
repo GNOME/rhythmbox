@@ -190,6 +190,8 @@ struct RBLibraryViewPrivate
 
 	RBNodeFilter *songs_filter;
 	RBNodeFilter *albums_filter;
+
+	gboolean changing_artist;
 };
 
 enum
@@ -541,6 +543,9 @@ artist_node_selected_cb (RBNodeView *view,
 			 RBNode *node,
 			 RBLibraryView *libview)
 {
+	if (libview->priv->changing_artist == TRUE)
+		return;
+
 	albums_filter (libview, node);
 	rb_node_view_select_node (libview->priv->albums,
 				  rb_library_get_all_songs (libview->priv->library));
@@ -557,8 +562,10 @@ album_node_selected_cb (RBNodeView *view,
 
 	if (selection == NULL)
 	{
+		libview->priv->changing_artist = TRUE;
 		rb_node_view_select_node (libview->priv->artists,
 					  rb_library_get_all_albums (libview->priv->library));
+		libview->priv->changing_artist = FALSE;
 		selection = rb_node_view_get_selection (libview->priv->artists);
 	}
 

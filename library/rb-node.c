@@ -483,11 +483,7 @@ child_changed (long id,
 {
 	g_static_rw_lock_reader_lock (node_info->node->priv->lock);
 
-	write_lock_to_read_lock (node);
-	
 	g_signal_emit (G_OBJECT (node_info->node), rb_node_signals[CHILD_CHANGED], 0, node);
-
-	read_lock_to_write_lock (node);
 
 	g_static_rw_lock_reader_unlock (node_info->node->priv->lock);
 }
@@ -510,10 +506,6 @@ real_set_property (RBNode *node,
 	}
 	
 	g_ptr_array_index (node->priv->properties, property_id) = value;
-	
-	g_hash_table_foreach (node->priv->parents,
-			      (GHFunc) child_changed,
-			      node);
 }
 
 void
@@ -536,9 +528,15 @@ rb_node_set_property (RBNode *node,
 	g_value_copy (value, new);
 
 	real_set_property (node, property_id, new);
-	
-	g_static_rw_lock_writer_unlock (node->priv->lock);
 
+	write_lock_to_read_lock (node);
+
+	g_hash_table_foreach (node->priv->parents,
+			      (GHFunc) child_changed,
+			      node);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+	
 	unlock_gdk ();
 }
 
@@ -911,6 +909,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	char *xml;
 	long id;
 	GType type;
+	GList *parents = NULL, *l;
 	
 	g_return_val_if_fail (xml_node != NULL, NULL);
 
@@ -953,8 +952,10 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 				g_static_rw_lock_writer_lock (parent->priv->lock);
 
 				real_add_child (parent, node);
-				
-				g_static_rw_lock_writer_unlock (parent->priv->lock);
+
+				write_lock_to_read_lock (parent);
+
+				parents = g_list_append (parents, parent);
 			}
 		} else if (strcmp (xml_child->name, "property") == 0) {
 			GType value_type;
@@ -1015,6 +1016,14 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 
 	write_lock_to_read_lock (node);
 
+	for (l = parents; l != NULL; l = g_list_next (l))
+	{
+		g_signal_emit (G_OBJECT (l->data), rb_node_signals[CHILD_ADDED],
+			       0, node);
+		g_static_rw_lock_reader_unlock (RB_NODE (l->data)->priv->lock);
+	}
+	g_list_free (parents);
+
 	g_signal_emit (G_OBJECT (node), rb_node_signals[RESTORED], 0);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
@@ -1044,14 +1053,6 @@ real_add_child (RBNode *node,
 	g_hash_table_insert (child->priv->parents,
 			     GINT_TO_POINTER (node->priv->id),
 			     node_info);
-
-	write_lock_to_read_lock (node);
-	write_lock_to_read_lock (child);
-
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_ADDED], 0, child);
-
-	read_lock_to_write_lock (node);
-	read_lock_to_write_lock (child);
 }
 
 void
@@ -1068,8 +1069,13 @@ rb_node_add_child (RBNode *node,
 
 	real_add_child (node, child);
 
-	g_static_rw_lock_writer_unlock (node->priv->lock);
-	g_static_rw_lock_writer_unlock (child->priv->lock);
+	write_lock_to_read_lock (node);
+	write_lock_to_read_lock (child);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_ADDED], 0, child);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+	g_static_rw_lock_reader_unlock (child->priv->lock);
 	
 	unlock_gdk ();
 }
