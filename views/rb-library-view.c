@@ -401,7 +401,6 @@ rb_library_view_set_property (GObject *object,
 			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"),
-								NULL,
 								NULL);
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
@@ -418,7 +417,6 @@ rb_library_view_set_property (GObject *object,
 			/* set up albums treeview */
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"),
-							       NULL,
 							       view->priv->albums_filter);
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
@@ -435,7 +433,6 @@ rb_library_view_set_property (GObject *object,
 			/* set up songs tree view */
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"),
-							      "/apps/rhythmbox/ui/columns_setup",
 							      view->priv->songs_filter);
 
 			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",

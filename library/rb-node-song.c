@@ -138,6 +138,7 @@ rb_node_song_new (const char *location,
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_SONG_PROP_NUM_PLAYS,
 			      &value);
+
 	/* Last played time */
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,

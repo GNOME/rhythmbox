@@ -153,7 +153,6 @@ enum
 	PROP_0,
 	PROP_ROOT,
 	PROP_PLAYING_NODE,
-	PROP_VIEW_COLUMNS_KEY,
 	PROP_VIEW_DESC_FILE,
 	PROP_FILTER
 };
@@ -221,13 +220,6 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 					 g_param_spec_string ("view-desc-file",
 							      "View description",
 							      "View description",
-							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_VIEW_COLUMNS_KEY,
-					 g_param_spec_string ("columns-key",
-							      "Columns key",
-							      "Columns key",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
@@ -354,10 +346,6 @@ rb_node_view_set_property (GObject *object,
 		g_free (view->priv->view_desc_file);
 		view->priv->view_desc_file = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_VIEW_COLUMNS_KEY:
-		g_free (view->priv->columns_key);
-		view->priv->columns_key = g_strdup (g_value_get_string (value));
-		break;
 	case PROP_FILTER:
 		view->priv->filter = g_value_get_object (value);
 
@@ -399,9 +387,6 @@ rb_node_view_get_property (GObject *object,
 	case PROP_VIEW_DESC_FILE:
 		g_value_set_string (value, view->priv->view_desc_file);
 		break;
-	case PROP_VIEW_COLUMNS_KEY:
-		g_value_set_string (value, view->priv->columns_key);
-		break;
 	case PROP_FILTER:
 		g_value_set_object (value, view->priv->filter);
 		break;
@@ -414,7 +399,6 @@ rb_node_view_get_property (GObject *object,
 RBNodeView *
 rb_node_view_new (RBNode *root,
 		  const char *view_desc_file,
-		  const char *columns_conf_key,
 		  RBNodeFilter *filter)
 {
 	RBNodeView *view;
@@ -430,7 +414,6 @@ rb_node_view_new (RBNode *root,
 					   "vscrollbar_policy", GTK_POLICY_ALWAYS,
 					   "shadow_type", GTK_SHADOW_IN,
 					   "view-desc-file", view_desc_file,
-					   "columns-key", columns_conf_key,
 					   "root", root,
 					   NULL));
 
@@ -564,10 +547,12 @@ rb_node_view_construct (RBNodeView *view)
 		view->priv->keep_selection = bool_to_int (tmp);
 	g_free (tmp);
 
+	view->priv->columns_key = xmlGetProp (doc->children, "column-visibility-pref");
+
 	for (child = doc->children->children; child != NULL; child = child->next)
 	{
 		char *title = NULL;
-		gboolean visible = FALSE, reorderable = FALSE, resizable = FALSE, clickable = TRUE;
+		gboolean reorderable = FALSE, resizable = FALSE, clickable = TRUE;
 		gboolean default_sort_column = FALSE, expand = FALSE;
 		GList *sort_order = NULL;
 		RBTreeModelNodeColumn column;
@@ -586,11 +571,6 @@ rb_node_view_construct (RBNodeView *view)
 
 		title = xmlGetProp (child, "_title");
 		
-		tmp = xmlGetProp (child, "visible");
-		if (tmp != NULL)
-			visible = bool_to_int (tmp);
-		g_free (tmp);
-
 		tmp = xmlGetProp (child, "reorderable");
 		if (tmp != NULL)
 			reorderable = bool_to_int (tmp);
@@ -713,8 +693,6 @@ rb_node_view_construct (RBNodeView *view)
 		}
 
 		g_object_set_data (G_OBJECT (gcolumn), "expand", GINT_TO_POINTER (expand));
-
-		gtk_tree_view_column_set_visible (gcolumn, visible);
 
 		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), 
 					     gcolumn);
