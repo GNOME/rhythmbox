@@ -2,6 +2,47 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-02 21:39:22 GMT	Colin Walters <walters@verbum.org>	patch-111
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-111
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/el.po
+
+
+2004-03-02 21:37:46 GMT	Colin Walters <walters@verbum.org>	patch-110
+
+    Summary:
+      merge from me: property def cleanup, more misc bugfixes 
+    Revision:
+      rhythmbox--main--0.7--patch-110
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-241
+       define property XML names in GEnum descriptions
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-242
+       don't do prelighting (avoids bug with selection colors)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-243
+       handle models with null query in entry change cb
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+     widgets/rb-cell-renderer-rating.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-241
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-242
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-243
+
+
 2004-03-01 22:45:41 GMT	Colin Walters <walters@verbum.org>	patch-109
 
     Summary:
