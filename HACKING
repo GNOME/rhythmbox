@@ -42,6 +42,7 @@ foo (const char *bla, gpointer cow)
 	} else {
 		do_something (cow);	
 		do_something_else (bla, cow);
+	}
 
 	if (foo)
 	    return;
