@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of Rhythmbox playlist management object
  *
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
@@ -67,7 +67,7 @@ static void rb_playlist_manager_cmd_rename_playlist (BonoboUIComponent *componen
 static void rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
 						     RBPlaylistManager *mgr,
 						     const char *verbname);
-static GtkWidget * rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr);
+static GtkWidget * rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname);
 static void ask_rename_response_cb (GtkDialog *dialog, int response_id, RBPlaylistManager *mgr);
 static GtkWidget * rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr);
 
@@ -418,7 +418,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 		rb_debug ("Renaming legacy group dir");
 		gnome_vfs_move (oldpath, path, TRUE);
 	}
-		
+
 	g_free (oldpath);
 
 	if ((result = gnome_vfs_directory_open (&handle, path, GNOME_VFS_FILE_INFO_FOLLOW_LINKS))
@@ -472,9 +472,16 @@ rb_playlist_manager_cmd_rename_playlist (BonoboUIComponent *component,
 					 const char *verbname)
 {
 	GtkWidget *dialog;
-	
-	dialog = rb_playlist_manager_rename_playlist_dialog (mgr);
-	
+	RBPlaylistSource *playlist;
+	char *oldname;
+
+	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	g_return_if_fail (playlist != NULL);
+
+	g_object_get (G_OBJECT (playlist), "name", &oldname, NULL);
+
+	dialog = rb_playlist_manager_rename_playlist_dialog (mgr, oldname);
+
 	g_signal_connect (G_OBJECT (dialog),
 			  "response",
 			  G_CALLBACK (ask_rename_response_cb),
@@ -496,7 +503,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
 			   RBPlaylistManager *mgr)
 {
-	char *file;
+	char *file, *escaped_file;
 	GList *tem;
 
 	if (response_id != GTK_RESPONSE_OK) {
@@ -511,14 +518,17 @@ load_playlist_response_cb (GtkDialog *dialog,
 	if (file == NULL)
 		return;
 
-	rb_debug ("loading playlist from %s", file);
+	escaped_file = gnome_vfs_get_uri_from_local_path (file);
+	g_free (file);
 
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0); 
+	rb_debug ("loading playlist from %s", escaped_file);
 
-	tem = g_list_append (NULL, file);
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
+
+	tem = g_list_append (NULL, escaped_file);
 	create_playlist (mgr, CREATE_PLAYLIST_WITH_FILE, tem);
 
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0); 
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
 }
 
 static void
@@ -527,7 +537,7 @@ rb_playlist_manager_cmd_load_playlist (BonoboUIComponent *component,
 				       const char *verbname)
 {
 	GtkWidget *dialog;
-    
+
 	dialog = rb_ask_file_multiple (_("Load playlist"), NULL,
 			              GTK_WINDOW (mgr->priv->window));
 
@@ -559,7 +569,7 @@ save_playlist_response_cb (GtkDialog *dialog,
 }
 
 static gboolean
-rb_playlist_manager_validate_name (RBPlaylistManager *mgr, const char *name)
+rb_playlist_manager_validate_name (RBPlaylistManager *mgr, const char *name, gboolean error_dialog)
 {
 	GList *tem;
 	char *temname;
@@ -567,7 +577,8 @@ rb_playlist_manager_validate_name (RBPlaylistManager *mgr, const char *name)
 	for (tem = mgr->priv->playlists; tem; tem = g_list_next (tem)) {
 		g_object_get (G_OBJECT (tem->data), "name", &temname, NULL);
 		if (!strcmp (temname, name)) {
-			rb_error_dialog (_("There is already a playlist with that name."));
+			if (error_dialog)
+				rb_error_dialog (_("There is already a playlist with that name."));
 			return FALSE;
 		}
 	}
@@ -598,8 +609,8 @@ ask_rename_response_cb (GtkDialog *dialog,
 		return;
 	} else {
 		RBPlaylistSource *ret;
-		
-		if (!rb_playlist_manager_validate_name (mgr, name))
+
+		if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
 			goto out;
 
 		ret = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
@@ -630,7 +641,7 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 {
 	RBPlaylistSource *ret;
 
-	if (!rb_playlist_manager_validate_name (mgr, name))
+	if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
 		return NULL;
 
 	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library,
@@ -704,7 +715,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 	add_selection = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbox));
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
-	
+
 	if (name == NULL) {
 		if (type == CREATE_PLAYLIST_WITH_URI_LIST)
 			gnome_vfs_uri_list_free (data);
@@ -731,7 +742,7 @@ read_playlist_name_cb (GtkDialog *dialog,
 		g_signal_connect (G_OBJECT (parser), "entry",
 				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
 				  mgr);
-		
+
 		mgr->priv->loading_playlist = RB_PLAYLIST_SOURCE (playlist);
 		if (!rb_playlist_parse (parser, g_list_first (data)->data))
 			rb_error_dialog (_("Couldn't parse playlist"));
@@ -768,7 +779,7 @@ static void
 create_playlist (RBPlaylistManager *mgr, CreatePlaylistType type, GList *data)
 {
 	GtkWidget *dialog;
-	
+
 	dialog = rb_playlist_manager_new_playlist_dialog (mgr);
 
 	g_object_set_data (G_OBJECT (dialog), "type", GINT_TO_POINTER (type));
@@ -786,7 +797,10 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	RBNodeView *nodeview;
 	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align;
 	GList *selection;
-	
+	char *default_name = g_strdup(_("Untitled"));
+	int count = 1;
+	GList *tem;
+
 	dialog = gtk_dialog_new_with_buttons ("",
 					      NULL,
 					      0,
@@ -801,7 +815,7 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), 
+	gtk_window_set_transient_for (GTK_WINDOW (dialog),
 				      GTK_WINDOW (mgr->priv->window));
 	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
@@ -822,10 +836,18 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
+	/* looking for unused playlist name */
+	while (!rb_playlist_manager_validate_name (mgr, default_name, FALSE)) {
+  		char *new_name = g_strdup_printf ("%s %d", _("Untitled"), ++count);
+		g_free (default_name);
+		default_name = new_name;
+	}
+
 	entry = gtk_entry_new ();
-	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
+	gtk_entry_set_text (GTK_ENTRY (entry), default_name);
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+	g_free (default_name);
 
 	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new playlist"));
 	nodeview = rb_source_get_node_view (mgr->priv->selected_source);
@@ -849,10 +871,10 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 }
 
 static GtkWidget *
-rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr)
+rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr, char *oldname)
 {
 	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *align;
-	
+
 	dialog = gtk_dialog_new_with_buttons ("",
 					      NULL,
 					      0,
@@ -889,7 +911,13 @@ rb_playlist_manager_rename_playlist_dialog (RBPlaylistManager *mgr)
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
 	entry = gtk_entry_new ();
-	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
+
+	if (oldname == NULL) {
+		oldname = _("Untitled");
+	}
+
+	gtk_entry_set_text (GTK_ENTRY (entry), oldname);
+
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);

@@ -1,3 +1,17 @@
+2003-09-02  Yann Rouillard <yann@cvs.gnome.org>
+                                                                                       
+        * shell/rb-playlist-manager.c: (load_playlist_response_cb):
+                                                                                       
+        Escaped the playlist filename to load.
+                                                                                       
+        * shell/rb-playlist-manager.c: (rb_playlist_manager_validate_name),
+        (rb_playlist_manager_new_playlist_dialog),
+        (rb_playlist_manager_rename_playlist_dialog):
+                                                                                       
+        Tiny ui improvements: new playlist dialog now always
+        displays an unused playlist name, and rename playlist
+        dialog displays the previous name instead of "Untitled".
+
 2003-09-02  James Willcox  <jwillcox@gnome.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
@@ -119,7 +133,7 @@
 	
 2003-09-01  Yann Rouillard <yann@cvs.gnome.org>
 
-	* rb-shell.c: (rb_shell_construct):
+	* shell/rb-shell.c: (rb_shell_construct):
 
 	Moved library creation before tray icon initialization.
 	This fixes segmentation fault when dnd'ing on tray icon.
