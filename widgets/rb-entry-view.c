@@ -504,18 +504,22 @@ rb_entry_view_set_property (GObject *object,
 			g_assert (sort_data);
 
 			if (view->priv->sorting_order != GTK_SORT_DESCENDING) {
-				g_object_set (G_OBJECT (new_model), "sort-func",
-					      sort_data->func, "sort-data", sort_data->data, NULL);
+				g_object_set (G_OBJECT (new_model),
+					      "sort-func", sort_data->func,
+					      "sort-data", sort_data->data,
+					      "sort-data-destroy", NULL,
+					      NULL);
 			} else {
-				g_free (view->priv->reverse_sorting_data);
 				view->priv->reverse_sorting_data
 					= g_new (struct RBEntryViewReverseSortingData, 1);
 				view->priv->reverse_sorting_data->func = sort_data->func;
 				view->priv->reverse_sorting_data->data = sort_data->data;
 				
-				g_object_set (G_OBJECT (new_model), "sort-func",
-					      reverse_sorting_func, "sort-data",
-					      view->priv->reverse_sorting_data, NULL);
+				g_object_set (G_OBJECT (new_model),
+					      "sort-func", reverse_sorting_func,
+					      "sort-data", view->priv->reverse_sorting_data,
+					      "sort-data-destroy", g_free,
+					      NULL);
 			}
 		}
 

@@ -127,6 +127,7 @@ struct RhythmDBQueryModelPrivate
 
 	GCompareDataFunc sort_func;
 	gpointer sort_user_data;
+	GDestroyNotify sort_destroy_notify;
 
 	GPtrArray *query;
 
@@ -162,6 +163,7 @@ enum
 	PROP_QUERY,
 	PROP_SORT_FUNC,
 	PROP_SORT_DATA,
+	PROP_SORT_DATA_DESTROY,
 	PROP_MAX_SIZE,
 	PROP_MAX_COUNT,
 };
@@ -284,6 +286,13 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							       G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
+					 PROP_SORT_DATA_DESTROY,
+					 g_param_spec_pointer ("sort-data-destroy",
+							      "GDestroyNotify",
+							      "Sort data destroy function",
+							       G_PARAM_READWRITE));
+
+	g_object_class_install_property (object_class,
 					 PROP_MAX_SIZE,
 					 g_param_spec_int ("max-size",
 							   "maxsize",
@@ -375,6 +384,9 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_SORT_DATA:
 		model->priv->sort_user_data = g_value_get_pointer (value);
 		break;
+	case PROP_SORT_DATA_DESTROY:
+		model->priv->sort_destroy_notify  = g_value_get_pointer (value);
+		break;
 	case PROP_MAX_SIZE:
 		model->priv->max_size = g_value_get_int (value) * 1024 * 1024;
 		break;
@@ -408,6 +420,9 @@ rhythmdb_query_model_get_property (GObject *object,
 		break;
 	case PROP_SORT_DATA:
 		g_value_set_pointer (value, model->priv->sort_user_data);
+		break;
+	case PROP_SORT_DATA_DESTROY:
+		g_value_set_pointer (value, model->priv->sort_destroy_notify);
 		break;
 	case PROP_MAX_SIZE:
 		g_value_set_int (value, model->priv->max_size / (1024 * 1024));
@@ -508,6 +523,10 @@ rhythmdb_query_model_finalize (GObject *object)
 	g_return_if_fail (model->priv != NULL);
 
 	rb_debug ("finalizing query model");
+
+	if (model->priv->sort_user_data &&
+	    model->priv->sort_destroy_notify)
+		model->priv->sort_destroy_notify (model->priv->sort_user_data);
 
 	g_source_remove (model->priv->model_poll_id);
 
