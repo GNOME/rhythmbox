@@ -238,7 +238,7 @@ typedef enum
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
 #define CONF_TOOLBAR_SETUP	    "/apps/rhythmbox/ui/toolbar_setup"
 
-#define RB_SHELL_REMOTE_VOLUME_INTERVAL 0.4
+#define RB_SHELL_REMOTE_VOLUME_INTERVAL 0.1
 
 #define DEFAULT_TOOLBAR_SETUP \
         "previous=std_toolitem(item=previous);" \
