@@ -2,6 +2,50 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2004-01-08 23:44:25 GMT	Colin Walters <walters@verbum.org>	patch-398
+
+    Summary:
+      when a propview is hidden, remove any query it implies
+    Revision:
+      rhythmbox--mainline--0.6--patch-398
+
+
+    modified files:
+     ChangeLog sources/rb-library-source.c
+
+
+2004-01-08 23:35:21 GMT	Colin Walters <walters@verbum.org>	patch-397
+
+    Summary:
+      always initialize artist/album in songinfo to avoid ORBit crash
+    Revision:
+      rhythmbox--mainline--0.6--patch-397
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2004-01-08 23:31:36 GMT	Colin Walters <walters@verbum.org>	patch-396
+
+    Summary:
+      rename some functions in rb-shell-player.h, attempt to fix corba bugs 
+    Revision:
+      rhythmbox--mainline--0.6--patch-396
+
+    rb_shell_player_get_source is now rb_shell_player_get_playing_source, and
+    rb_shell_player_set_source is now rb_shell_player_set_selected_source.  The old
+    names were highly confusing.
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c
+
+
 2004-01-08 22:55:08 GMT	Colin Walters <walters@verbum.org>	patch-395
 
     Summary:
