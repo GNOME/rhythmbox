@@ -32,6 +32,7 @@
 #include "rb-marshal.h"
 #include "rb-thread-helpers.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-glist-wrapper.h"
 
 static void rb_node_class_init (RBNodeClass *klass);
 static void rb_node_init (RBNode *node);
@@ -62,7 +63,9 @@ static inline void unlock_gdk (void);
 static inline RBNode *node_from_id_real (long id);
 static inline int get_child_index_real (RBNode *node,
 		                        RBNode *child);
-
+static gpointer
+rb_node_get_property_pointer (RBNode *node,
+			      int property_id);
 typedef struct
 {
 	RBNode *node;
@@ -758,9 +761,9 @@ rb_node_get_property_float (RBNode *node,
 	return retval;
 }
 
-RBNode *
-rb_node_get_property_node (RBNode *node,
-			   int property_id)
+static gpointer
+rb_node_get_property_pointer (RBNode *node,
+			      int property_id)
 {
 	GValue *ret;
 	RBNode *retval;
@@ -782,6 +785,43 @@ rb_node_get_property_node (RBNode *node,
 	}
 	
 	retval = g_value_get_pointer (ret);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return retval;
+}
+
+RBNode *
+rb_node_get_property_node (RBNode *node,
+			   int property_id)
+{
+	return (RBNode *) rb_node_get_property_pointer (node, property_id);
+}
+
+GObject *
+rb_node_get_property_object (RBNode *node,
+			     int property_id)
+{
+	GValue *ret;
+	GObject *retval;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+	g_return_val_if_fail (property_id >= 0, NULL);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	if (property_id >= node->priv->properties->len) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return NULL;
+	}
+
+	ret = g_ptr_array_index (node->priv->properties, property_id);
+	if (ret == NULL) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return NULL;
+	}
+	
+	retval = G_OBJECT (g_value_get_object (ret));
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
@@ -941,7 +981,7 @@ rb_node_save_to_xml (RBNode *node,
 		{
 			RBNode *prop_node;
 
-			prop_node = g_value_get_pointer (value);
+			prop_node = RB_NODE (g_value_get_pointer (value));
 
 			g_assert (prop_node != NULL);
 
@@ -953,6 +993,34 @@ rb_node_save_to_xml (RBNode *node,
 			
 			g_static_rw_lock_reader_unlock (prop_node->priv->lock);
 			break;
+		}
+		case G_TYPE_OBJECT:
+		{
+			GObject *obj = G_OBJECT (g_value_get_object (value));
+			GType objtype = G_OBJECT_TYPE (obj);
+			xmlSetProp (value_xml_node, "object_type", g_type_name (objtype));
+			/* FIXME: if we wanted to do this right, each
+			 * object would implement a Serializable
+			 * interface or something */
+			if (objtype == RB_TYPE_GLIST_WRAPPER)
+			{
+				RBGListWrapper *listwrap = RB_GLIST_WRAPPER (obj);
+				GList *cur = rb_glist_wrapper_get_list (listwrap);
+				for (; cur; cur = cur->next)
+				{
+					xmlNodePtr subnode = xmlNewChild (value_xml_node, NULL, "entry", NULL);
+					/* Assume the entries in a list are strings for now */
+					xml = xmlEncodeEntitiesReentrant (NULL, (char *) cur->data);
+					xmlNodeSetContent (subnode, xml);
+					g_free (xml);
+				}
+				break;
+			}
+			else
+			{
+				g_assert_not_reached ();
+				break;
+			}
 		}
 		default:
 			g_assert_not_reached ();
@@ -992,6 +1060,8 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	xml = xmlGetProp (xml_node, "type");
 	type = g_type_from_name (xml);
 	g_free (xml);
+
+	fprintf(stderr, "Creating a new object of type %p from XML\n", (gpointer) type);
 
 	node = RB_NODE (g_object_new (type,
 				      "id", id,
@@ -1062,6 +1132,38 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 				property_node = node_from_id_real (atol (xml));
 				
 				g_value_set_pointer (value, property_node);
+				break;
+			}
+			case G_TYPE_OBJECT:
+			{
+				GType obj_type;
+				xml = xmlGetProp (xml_child, "object_type");
+				obj_type = g_type_from_name (xml);
+				g_free (xml);
+				/* Since we don't have method
+				 * reflection in GObject, there's no
+				 * way to find a general deserialize
+				 * method, even if we know the class;
+				 * we could do something truly evil
+				 * using dlopen(), but let's not think
+				 * about that. */
+				if (obj_type == RB_TYPE_GLIST_WRAPPER)
+				{
+					GList *newlist = NULL;
+					xmlNodePtr list_child = xml_child;
+					RBGListWrapper *listwrapper = g_object_new (RB_TYPE_GLIST_WRAPPER, NULL);
+					/* Free the unneeded string allocated above */
+					g_free (xml);
+					for (; list_child; list_child = list_child->next) 
+						newlist = g_list_prepend (newlist, xmlNodeGetContent (xml_child));
+					rb_glist_wrapper_set_list (listwrapper, newlist);
+					g_value_set_object (value, listwrapper);
+				}
+				else
+				{
+					g_assert_not_reached ();
+					break;
+				}
 				break;
 			}
 			default:
@@ -1439,4 +1541,51 @@ unlock_gdk (void)
 {
 	if (rb_thread_helpers_in_main_thread () == FALSE)
 		GDK_THREADS_LEAVE ();
+}
+
+void        
+rb_node_update_play_statistics (RBNode *node)
+{
+	char *play_count, *time_string;
+	time_t now;
+	GValue value = { 0, };
+
+	g_return_if_fail (RB_IS_NODE (node));
+
+	/* Increment current play count */
+	play_count = (char *) rb_node_get_property_string (RB_NODE (node),
+				                           RB_NODE_PROP_NUM_PLAYS);
+
+	if (play_count != NULL)
+		play_count = g_strdup_printf ("%ld", atol (play_count) + 1);
+	else
+		play_count = g_strdup ("1");
+		
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, play_count);
+	g_free (play_count);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_NUM_PLAYS,
+			      &value);
+	g_value_unset (&value);
+
+	/* Reset the last played time */
+	time (&now);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, now);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_LAST_PLAYED,
+			      &value);
+	g_value_unset (&value);
+
+	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, time_string);
+	g_free (time_string);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+			      &value);
+	g_value_unset (&value);
 }
