@@ -77,7 +77,7 @@ GtkWidget* gst_hig_dialog_new      (GtkWindow         *parent,
                                     const gchar       *primary_text,
                                     const gchar       *secondary_text,
                                     const gchar       *first_button_text,
-                                    ...) G_GNUC_PRINTF (6, 7);
+                                    ...);
 
 void       gst_hig_dialog_set_primary_text (GstHigDialog *dialog,
                                             const gchar  *message_format,

@@ -538,7 +538,6 @@ hal_udi_is_ipod (const char *udi)
 		 */
 		return FALSE;
 	}
-
 	parent_udi = hal_device_get_property_string (ctx, udi,
 			"info.parent");
 	parent_name = hal_device_get_property_string (ctx, parent_udi,

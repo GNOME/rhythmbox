@@ -778,7 +778,7 @@ rb_song_info_update_bitrate (RBSongInfo *song_info)
 	bitrate = song_info->priv->current_entry->bitrate;
 
 	if (bitrate > 0)
-		tmp = g_strdup_printf (_("%d kbps"), bitrate);
+		tmp = g_strdup_printf (_("%lu kbps"), bitrate);
 	else
 		tmp = g_strdup (_("Unknown"));
 	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate),

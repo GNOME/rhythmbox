@@ -435,7 +435,7 @@ if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
 	-Wcast-align -Wsign-compare \
-	-Werror -std=c89 \
+	-Werror -std=gnu89 \
 	$CFLAGS"
 
 	for option in -Wno-strict-aliasing -Wno-sign-compare -Wdeclaration-after-statement; do
