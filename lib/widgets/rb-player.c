@@ -127,8 +127,7 @@ rb_player_get_type (void)
 {
 	static GType rb_player_type = 0;
 
-	if (rb_player_type == 0)
-	{
+	if (rb_player_type == 0) {
 		static const GTypeInfo our_info =
 		{
 			sizeof (RBPlayerClass),
@@ -300,26 +299,21 @@ rb_player_set_property (GObject *object,
 {
 	RBPlayer *player = RB_PLAYER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_VIEW_PLAYER:
 		if (player->priv->view_player != NULL)
-		{
 			g_signal_handlers_disconnect_by_func (G_OBJECT (player->priv->view_player),
 							      G_CALLBACK (rb_view_player_changed_cb),
 							      object);
-		}
 		
 		player->priv->view_player = g_value_get_object (value);
 
 		if (player->priv->view_player != NULL)
-		{
 			g_signal_connect_object (G_OBJECT (player->priv->view_player),
 						 "changed",
 						 G_CALLBACK (rb_view_player_changed_cb),
 						 object,
 						 0);
-		}
 
 		rb_player_sync (player);
 		break;
@@ -337,8 +331,7 @@ rb_player_get_property (GObject *object,
 {
 	RBPlayer *player = RB_PLAYER (object);
 
-	switch (prop_id)
-	{
+	switch (prop_id) {
 	case PROP_VIEW_PLAYER:
 		g_value_set_object (value, player->priv->view_player);
 		break;
@@ -364,12 +357,11 @@ static void
 rb_player_sync (RBPlayer *player)
 {
 
-//	GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);
+	/*GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);*/
 	char *tmp;
 
 	if (player->priv->view_player != NULL &&
-	    rb_view_player_get_stream (player->priv->view_player) != NULL)
-	{
+	    rb_view_player_get_stream (player->priv->view_player) != NULL) {
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
 		const char *artist = rb_view_player_get_artist (player->priv->view_player);
@@ -383,9 +375,8 @@ rb_player_sync (RBPlayer *player)
 
 		s = tmp = g_strdup (album);
 		while ((tmp = strstr (tmp, " ")) != NULL)
-		{
 			*tmp = '|';
-		}
+		
 		tmp = ALBUM_INFO_URL (s);
 		g_free (s);
 		rb_link_set (player->priv->album, album,
@@ -394,9 +385,8 @@ rb_player_sync (RBPlayer *player)
 
 		s = tmp = g_strdup (artist);
 		while ((tmp = strstr (tmp, " ")) != NULL)
-		{
 			*tmp = '|';
-		}
+		
 		tmp = ARTIST_INFO_URL (s);
 		g_free (s);
 		rb_link_set (player->priv->artist, artist,
@@ -407,9 +397,7 @@ rb_player_sync (RBPlayer *player)
 		rb_player_set_show_timeline (player, TRUE);
 
 		rb_player_sync_time (player);
-	}
-	else
-	{
+	} else {
 		tmp = SONG_MARKUP (_("Not Playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
@@ -444,8 +432,7 @@ rb_player_set_show_textline (RBPlayer *player,
 
 	if (show == FALSE)
 		gtk_container_remove (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
-	else
-	{
+	else {
 		gtk_container_add (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
 		gtk_widget_show_all (player->priv->textline);
 	}
@@ -462,8 +449,7 @@ rb_player_set_show_timeline (RBPlayer *player,
 	
 	if (show == FALSE)
 		gtk_container_remove (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
-	else
-	{
+	else {
 		gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
 		gtk_widget_show_all (player->priv->timeline);
 	}
@@ -484,17 +470,14 @@ rb_player_sync_time (RBPlayer *player)
 
 	stream = rb_view_player_get_stream (player->priv->view_player);
 	if (stream == NULL)
-	{
 		return TRUE;
-	}
 
 	player->priv->state->duration = duration =
 		rb_view_player_get_duration (player->priv->view_player);
 	player->priv->state->elapsed = seconds =
 		monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
 
-	if (duration > -1)
-	{
+	if (duration > -1) {
 		double progress = 0.0;
 
 		if (seconds > 0)
@@ -504,9 +487,7 @@ rb_player_sync_time (RBPlayer *player)
 		gtk_adjustment_set_value (player->priv->adjustment, progress);
 		player->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (player->priv->scale, TRUE);
-	}
-	else
-	{
+	} else {
 		player->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
 		player->priv->slider_locked = FALSE;
@@ -569,13 +550,12 @@ slider_moved_callback (GtkWidget *widget,
 
 	rb_player_update_elapsed (player);
 
-	if (player->priv->slider_moved_timeout != 0)
-	{
+	if (player->priv->slider_moved_timeout != 0) {
 		g_source_remove (player->priv->slider_moved_timeout);
 		player->priv->slider_moved_timeout = 0;
 	}
 	player->priv->slider_moved_timeout =
-		g_timeout_add (100, (GSourceFunc) slider_moved_timeout, player);
+		g_timeout_add (40, (GSourceFunc) slider_moved_timeout, player);
 	
 	return FALSE;
 }
@@ -607,8 +587,7 @@ slider_release_callback (GtkWidget *widget,
 
 	rb_player_sync_time (player);
 
-	if (player->priv->slider_moved_timeout != 0)
-	{
+	if (player->priv->slider_moved_timeout != 0) {
 		g_source_remove (player->priv->slider_moved_timeout);
 		player->priv->slider_moved_timeout = 0;
 	}
@@ -632,8 +611,7 @@ slider_changed_callback (GtkWidget *widget,
 {
 	if (player->priv->slider_dragging == FALSE &&
 	    player->priv->slider_locked == FALSE &&
-	    player->priv->value_changed_update_handler == 0)
-	{
+	    player->priv->value_changed_update_handler == 0) {
 		player->priv->slider_dragging = TRUE;
 		player->priv->value_changed_update_handler =
 			g_idle_add ((GSourceFunc) changed_idle_callback, player);
@@ -645,8 +623,7 @@ rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_box,
 					 GdkEventButton *event,
 			                 RBPlayer *player)
 {
-	switch (player->priv->state->mode)
-	{
+	switch (player->priv->state->mode) {
 	case RB_PLAYER_STATE_MODE_ELAPSED:
 		player->priv->state->mode = RB_PLAYER_STATE_MODE_REMAINING;
 		gtk_tooltips_set_tip (player->priv->tips,
@@ -683,19 +660,16 @@ rb_player_update_elapsed (RBPlayer *player)
 	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
 		return;
 		
-	switch (player->priv->state->mode)
- 	{
+	switch (player->priv->state->mode) {
 	case RB_PLAYER_STATE_MODE_ELAPSED:
-		if (player->priv->state->elapsed > 0)
-		{
+		if (player->priv->state->elapsed > 0) {
 			minutes = player->priv->state->elapsed / 60;
 			seconds = player->priv->state->elapsed % 60;
 		}
 		elapsed_text = g_strdup_printf (_("%d:%02d"), minutes, seconds);
 		break;
 	case RB_PLAYER_STATE_MODE_REMAINING:
-		if (player->priv->state->duration > 0)
-		{
+		if (player->priv->state->duration > 0) {
 			seconds = player->priv->state->duration - player->priv->state->elapsed;
 			minutes = seconds / 60;
 			seconds = seconds % 60;
@@ -703,8 +677,7 @@ rb_player_update_elapsed (RBPlayer *player)
 		elapsed_text = g_strdup_printf (_("- %d:%02d"), minutes, seconds);
 		break;
 	case RB_PLAYER_STATE_MODE_TOTAL:
-		if (player->priv->state->duration > 0)
-		{
+		if (player->priv->state->duration > 0) {
 			minutes = player->priv->state->duration / 60;
 			seconds = player->priv->state->duration % 60;
 		}

@@ -1,3 +1,16 @@
+2002-11-06  Xan Lopez  <xan@dimensis.com>
+
+	* lib/widgets/rb-player.c: (rb_player_get_type),
+	(rb_player_set_property), (rb_player_get_property),
+	(rb_player_sync), (rb_player_set_show_textline),
+	(rb_player_set_show_timeline), (rb_player_sync_time),
+	(slider_moved_callback), (slider_release_callback),
+	(slider_changed_callback),
+	(rb_player_elapsed_button_press_event_cb),
+	(rb_player_update_elapsed):
+
+	Cleanups, better seek timeout.
+
 2002-11-06  Stanislav Brabec  <sbrabec@suse.cz>
 
 	* configure.in: Added cs to ALL_LINGUAS.
