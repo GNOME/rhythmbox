@@ -26,22 +26,22 @@
 
 G_BEGIN_DECLS
 
-void   rb_error_dialog      (const char *format, ...);
-void   rb_warning_dialog    (const char *format, ...);
-void   rb_message_dialog    (const char *format, ...);
+void       rb_error_dialog      (const char *format, ...);
+void       rb_warning_dialog    (const char *format, ...);
+void       rb_message_dialog    (const char *format, ...);
 
-char **rb_ask_file_multiple (const char *title,
-			     const char *default_file,
-			     GtkWindow *parent);
+GtkWidget *rb_ask_file_multiple (const char *title,
+			         const char *default_file,
+			         GtkWindow *parent);
 
-char  *rb_ask_file          (const char *title,
-			     const char *default_file,
-			     GtkWindow *parent);
+GtkWidget *rb_ask_file          (const char *title,
+			         const char *default_file,
+			         GtkWindow *parent);
 
-char  *rb_ask_string        (const char *title,
-			     const char *question,
-			     const char *default_text,
-			     GtkWindow *parent);
+GtkWidget *rb_ask_string        (const char *question,
+			         const char *accept_button_text,
+			         const char *default_text,
+			         GtkWindow *parent);
 
 G_END_DECLS
 

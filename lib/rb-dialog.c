@@ -84,13 +84,12 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 	gtk_widget_destroy (dialog);
 }
 
-char **
+GtkWidget *
 rb_ask_file_multiple (const char *title,
 		      const char *default_file,
 		      GtkWindow *parent)
 {
 	GtkWidget *filesel;
-	char **ret = NULL;
 
 	filesel = gtk_file_selection_new (title);
 	if (default_file != NULL)
@@ -101,21 +100,23 @@ rb_ask_file_multiple (const char *title,
 
 	gtk_window_set_transient_for (GTK_WINDOW (filesel),
 				      parent);
-	if (gtk_dialog_run (GTK_DIALOG (filesel)) == GTK_RESPONSE_OK)
-		ret = gtk_file_selection_get_selections (GTK_FILE_SELECTION (filesel));
+	gtk_window_set_modal (GTK_WINDOW (filesel),
+			      FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
+					    TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (filesel), FALSE);
 
-	gtk_widget_destroy (filesel);
+	gtk_widget_show_all (filesel);
 
-	return ret;
+	return filesel;
 }
 
-char *
+GtkWidget *
 rb_ask_file (const char *title,
 	     const char *default_file,
 	     GtkWindow *parent)
 {
 	GtkWidget *filesel;
-	char *ret = NULL;
 
 	filesel = gtk_file_selection_new (title);
 	if (default_file != NULL)
@@ -125,42 +126,59 @@ rb_ask_file (const char *title,
 
 	gtk_window_set_transient_for (GTK_WINDOW (filesel),
 				      parent);
-	if (gtk_dialog_run (GTK_DIALOG (filesel)) == GTK_RESPONSE_OK)
-		ret = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (filesel)));
+	gtk_window_set_modal (GTK_WINDOW (filesel),
+			      FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
+					    TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (filesel), FALSE);
+	
+	gtk_widget_show_all (filesel);
 
-	gtk_widget_destroy (filesel);
-
-	return ret;
+	return filesel;
 }
 
-char *
-rb_ask_string (const char *title,
-	       const char *question,
+GtkWidget *
+rb_ask_string (const char *question,
+	       const char *accept_button_text,
 	       const char *default_text,
 	       GtkWindow *parent)
 {
 	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox;
-	int response;
+	char *tmp;
 
-	dialog = gtk_dialog_new_with_buttons (title,
-					      parent,
-					      GTK_DIALOG_MODAL,
+	dialog = gtk_dialog_new_with_buttons ("",
+					      NULL,
+					      0,
 					      GTK_STOCK_CANCEL,
 					      GTK_RESPONSE_CANCEL,
-					      GTK_STOCK_OK,
+					      accept_button_text,
 					      GTK_RESPONSE_OK,
 					      NULL);
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 12);
 
-	hbox = gtk_hbox_new (FALSE, 5);
+	gtk_window_set_transient_for (GTK_WINDOW (dialog),
+				      parent);
+	gtk_window_set_modal (GTK_WINDOW (dialog),
+			      FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog),
+					    TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+
+	hbox = gtk_hbox_new (FALSE, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
 	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION,
 					  GTK_ICON_SIZE_DIALOG);
 	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
 
-	vbox = gtk_vbox_new (FALSE, 5);
+	vbox = gtk_vbox_new (FALSE, 0);
 
-	label = gtk_label_new (question);
+	tmp = g_strdup_printf ("%s\n", question);
+	label = gtk_label_new (tmp);
+	g_free (tmp);
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
 
@@ -171,24 +189,13 @@ rb_ask_string (const char *title,
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
-	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 	gtk_widget_show_all (hbox);
 
 	gtk_widget_grab_focus (entry);
 
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_CANCEL)
-	{
-		gtk_widget_destroy (dialog);
+	g_object_set_data (G_OBJECT (dialog), "entry", entry);
 
-		return NULL;
-	}
-	else
-	{
-		char *ret = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+	gtk_widget_show_all (dialog);
 
-		gtk_widget_destroy (dialog);
-		
-		return ret;
-	}
+	return dialog;
 }

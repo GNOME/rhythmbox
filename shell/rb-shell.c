@@ -805,18 +805,22 @@ rb_shell_cmd_preferences (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_add_to_library (BonoboUIComponent *component,
-			     RBShell *shell,
-			     const char *verbname)
+ask_file_response_cb (GtkDialog *dialog,
+		      int response_id,
+		      RBShell *shell)
 {
 	char **files, **filecur, *stored;
-    
-	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
-	files = rb_ask_file_multiple (_("Choose files or a directory to add"),
-				      stored,
-			              GTK_WINDOW (shell->priv->window));
-	g_free (stored);
-	
+
+	if (response_id != GTK_RESPONSE_OK)
+	{
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
 	if (files == NULL)
 		return;
 
@@ -843,17 +847,44 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_new_group (BonoboUIComponent *component,
-			RBShell *shell,
-			const char *verbname)
+rb_shell_cmd_add_to_library (BonoboUIComponent *component,
+			     RBShell *shell,
+			     const char *verbname)
 {
+	char *stored;
+	GtkWidget *dialog;
+    
+	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
+	dialog = rb_ask_file_multiple (_("Choose Files or Directory"),
+				      stored,
+			              GTK_WINDOW (shell->priv->window));
+	g_free (stored);
+
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_file_response_cb),
+			  shell);
+}
+
+static void
+ask_string_response_cb (GtkDialog *dialog,
+			int response_id,
+			RBShell *shell)
+{
+	GtkWidget *entry;
 	RBView *group;
 	char *name;
 
-	name = rb_ask_string (_("Enter a name"),
-			      _("Enter a name for the new music group:"),
-			      _("Untitled"),
-			      GTK_WINDOW (shell->priv->window));
+	if (response_id != GTK_RESPONSE_OK)
+	{
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	entry = g_object_get_data (G_OBJECT (dialog), "entry");
+	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 	
 	if (name == NULL)
 		return;
@@ -868,6 +899,24 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 	g_free (name);
 
 	rb_shell_save_music_groups (shell);
+}
+
+static void
+rb_shell_cmd_new_group (BonoboUIComponent *component,
+			RBShell *shell,
+			const char *verbname)
+{
+	GtkWidget *dialog;
+	
+	dialog = rb_ask_string (_("Please enter a name for the new music group."),
+			       _("Create"),
+			       _("Untitled"),
+			       GTK_WINDOW (shell->priv->window));
+
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_string_response_cb),
+			  shell);
 }
 
 static void

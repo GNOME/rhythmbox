@@ -25,6 +25,7 @@
 #include <gtk/gtkstock.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtkeventbox.h>
+#include <gtk/gtkdialog.h>
 #include <gtk/gtkdnd.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
@@ -101,6 +102,8 @@ struct RBSidebarButtonPrivate
 	GtkWidget *dnd_label;
 
 	GtkTargetList *targets;
+
+	GtkWidget *rename_dialog;
 };
 
 enum
@@ -326,6 +329,9 @@ rb_sidebar_button_finalize (GObject *object)
 	
 	gtk_widget_destroy (button->priv->dnd_widget);
 
+	if (button->priv->rename_dialog != NULL)
+		gtk_widget_destroy (button->priv->rename_dialog);
+
 	g_object_unref (G_OBJECT (button->priv->popup_factory));
 
 	g_free (button->unique_id);
@@ -542,20 +548,27 @@ rb_sidebar_button_drag_begin_cb (GtkWidget *widget,
 	gtk_drag_set_icon_widget (context, button->priv->dnd_widget, -2, -2);
 }
 
-void
-rb_sidebar_button_rename (RBSidebarButton *button)
+static void
+ask_string_response_cb (GtkDialog *dialog,
+			int response_id,
+			RBSidebarButton *button)
 {
-	char *new, *title, *question;
+	GtkWidget *entry;
+	char *new;
 
-	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
+	button->priv->rename_dialog = NULL;
 
-	title = g_strdup_printf (_("Rename %s"), button->priv->button_name);
-	question = g_strdup_printf (_("Enter a new name for this %s:"), button->priv->button_name);
-	new = rb_ask_string (title, question, button->priv->text,
-			     GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (button))));
-	g_free (title);
-	g_free (question);
-	
+	if (response_id != GTK_RESPONSE_OK)
+	{
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	entry = g_object_get_data (G_OBJECT (dialog), "entry");
+	new = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
 	if (new == NULL)
 		return;
 
@@ -567,6 +580,33 @@ rb_sidebar_button_rename (RBSidebarButton *button)
 		       rb_sidebar_button_signals[EDITED], 0);
 
 	g_free (new);
+}
+
+void
+rb_sidebar_button_rename (RBSidebarButton *button)
+{
+	GtkWidget *dialog;
+	char *question;
+
+	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
+
+	if (button->priv->rename_dialog != NULL)
+	{
+		gdk_window_raise (button->priv->rename_dialog->window);
+		return;
+	}
+
+	question = g_strdup_printf (_("Please enter a new name for this %s."), button->priv->button_name);
+	dialog = rb_ask_string (question, _("Rename"), button->priv->text,
+			        GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (button))));
+	g_free (question);
+
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_string_response_cb),
+			  button);
+
+	button->priv->rename_dialog = dialog;
 }
 
 void
