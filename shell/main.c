@@ -122,7 +122,7 @@ main (int argc, char **argv)
 #endif
 
 #ifdef HAVE_GSTREAMER	
-	gst_init (&argc, &argv);
+	gst_init_with_popt_table (&argc, &argv, popt_options);
 	gst_control_init (&argc, &argv);
 	/* rb currently does not work with esd + gnome event sounds enabled */
 	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds")
