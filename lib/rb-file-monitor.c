@@ -117,7 +117,8 @@ rb_file_monitor_class_init (RBFileMonitorClass *klass)
 static void
 handle_free (RBFileMonitorHandle *handle)
 {
-	gnome_vfs_monitor_cancel (handle->handle);
+	if (handle->handle != NULL)
+		gnome_vfs_monitor_cancel (handle->handle);
 	g_hash_table_destroy (handle->files);
 	g_free (handle);
 }
@@ -223,8 +224,11 @@ rb_file_monitor_add (RBFileMonitor *monitor,
 						       (GDestroyNotify) g_free,
 						       NULL);
 		
-		gnome_vfs_monitor_add (&(handle->handle), dir, GNOME_VFS_MONITOR_DIRECTORY,
-				       (GnomeVFSMonitorCallback) monitor_callback, handle);
+		if (0)
+		{
+			gnome_vfs_monitor_add (&(handle->handle), dir, GNOME_VFS_MONITOR_DIRECTORY,
+					       (GnomeVFSMonitorCallback) monitor_callback, handle);
+		}
 
 		g_hash_table_insert (monitor->priv->dir_to_handle, g_strdup (dir), handle);
 	}
