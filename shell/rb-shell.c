@@ -1248,7 +1248,6 @@ rb_shell_construct (RBShell *shell)
 			g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
 						 G_CALLBACK (rb_shell_load_complete_cb), shell,
 						 0);
-			rhythmdb_load (shell->priv->db);
 		} else {
 			shell->priv->load_complete = TRUE;
 		}
@@ -1484,6 +1483,10 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	/* GO GO GO! */
+	if (rhythmdb_exists) {
+		rb_debug ("loading database");
+		rhythmdb_load (shell->priv->db);
+	}
 	rb_debug ("shell: syncing window state");
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
