@@ -318,7 +318,7 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 						    FALSE, FALSE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE);
-	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_QUALITY);
+/* 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_QUALITY); */
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT);
 	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED);

@@ -348,8 +348,9 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 		colname = "RHYTHMDB_PROP_PLAY_COUNT";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
 		colname = "RHYTHMDB_PROP_LAST_PLAYED";
-	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
-		colname = "RHYTHMDB_PROP_QUALITY";
+	else if (shell_preferences->priv->quality_check
+		 && butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
+		colname = "RHYTHMDB_PROP_BITRATE";
 	else
 		g_assert_not_reached ();
 
@@ -410,9 +411,10 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
 			 strstr (columns, "RHYTHMDB_PROP_LAST_PLAYED") != NULL);
-		gtk_toggle_button_set_active
-			(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
-			 strstr (columns, "RHYTHMDB_PROP_QUALITY") != NULL);
+		if (shell_preferences->priv->quality_check)
+			gtk_toggle_button_set_active
+				(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
+				 strstr (columns, "RHYTHMDB_PROP_BITRATE") != NULL);
 	}
 
 	g_free (columns);
