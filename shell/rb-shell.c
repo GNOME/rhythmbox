@@ -2052,6 +2052,11 @@ ask_file_response_cb (GtkDialog *dialog,
 #ifndef HAVE_GTK_2_3
 	char **files, **filecur;
 
+	if (response_id != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
 	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
