@@ -1733,20 +1733,23 @@ window_visibility_changed_cb (GConfClient *client,
 static void
 rb_shell_sync_paned (RBShell *shell)
 {
-    int actual_width, default_width, pos;
-    gboolean maximized;
-    maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+	int actual_width, default_width, pos;
+	gboolean maximized;
+
+	maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
 	pos = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+
 	rb_debug ("syncing paned to %d", pos);
+
 	if (pos > 0) {
-        if (maximized) {
-            gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
-            default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-            pos = pos * (float)actual_width/(float)default_width + 1;            
-        }
-        gtk_paned_set_position (GTK_PANED (shell->priv->paned),
+		if (maximized) {
+			gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
+			default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
+			pos = pos * (float)actual_width/(float)default_width + 1;            
+		}
+		gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 					pos);
-    }
+	}
 }
 
 static void
@@ -1754,19 +1757,21 @@ paned_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBShell *shell)
 {
-    int actual_width, default_width, pos;
-    gboolean maximized;
+	int actual_width, default_width, pos;
+	gboolean maximized;
+
 	rb_debug ("paned size allocate");
-    maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
-    pos = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
+
+	maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+	pos = gtk_paned_get_position (GTK_PANED (shell->priv->paned));
     
-    if (maximized) {
-       gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
-       default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
-       pos = pos * (float)default_width/(float)actual_width;
-    }
+	if (maximized) {
+		gtk_window_get_size (GTK_WINDOW (shell->priv->window), &actual_width, NULL);
+		default_width =  eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH);
+		pos = pos * (float)default_width/(float)actual_width;
+	}
     
-    eel_gconf_set_integer (CONF_STATE_PANED_POSITION, pos); 
+	eel_gconf_set_integer (CONF_STATE_PANED_POSITION, pos); 
 }
 
 static void
