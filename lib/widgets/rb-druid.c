@@ -240,7 +240,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	gnome_druid_append_page (druid->priv->druid, page);
 	gnome_druid_set_page (druid->priv->druid, page);
 	gnome_druid_page_edge_set_text (GNOME_DRUID_PAGE_EDGE (page),
-					_("In order to get started using\nRhythmbox, this assisstant will ask\nyou some simple questions. "));
+					_("In order to get started using\nRhythmbox, this assistant will ask\nyou some simple questions."));
 
 	/* page 2 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_standard_new ());
