@@ -8,14 +8,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-19 20:15+0200\n"
-"PO-Revision-Date: 2004-02-19 20:14+0200\n"
+"POT-Creation-Date: 2004-02-23 17:18+0200\n"
+"PO-Revision-Date: 2004-02-23 17:28+0200\n"
 "Last-Translator: Žygimantas Beručka <uid0@tuxfamily.org>\n"
 "Language-Team: Lithuanian <komp_lt@konferencijos.lt>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && (n%100<10 || n%100>=20) ? 1 : 2);"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -590,10 +590,11 @@ msgstr "Nauja Interneto radijo stotis"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:708 sources/rb-iradio-source.c:249
-#: sources/rb-iradio-source.c:250 sources/rb-iradio-source.c:251
-#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1051
-#: widgets/rb-entry-view.c:1078 widgets/rb-song-info.c:581
+#: rhythmdb/rhythmdb.c:708 sources/rb-ipod-source.c:173
+#: sources/rb-iradio-source.c:249 sources/rb-iradio-source.c:250
+#: sources/rb-iradio-source.c:251 sources/rb-playlist-source.c:393
+#: widgets/rb-entry-view.c:1051 widgets/rb-entry-view.c:1078
+#: widgets/rb-song-info.c:581
 msgid "Unknown"
 msgstr "Nežinomas"
 
@@ -745,8 +746,8 @@ msgstr "Nepavyko atidaryti bylos kaip Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:439 metadata/rb-metadata-gst.c:564
-#: player/rb-player-gst.c:532
+#: metadata/rb-metadata-gst.c:455 metadata/rb-metadata-gst.c:584
+#: player/rb-player-gst.c:565
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Nepavyko sukurti %s elemento; patikrinkit Jūsų įdiegimą"
@@ -755,54 +756,33 @@ msgstr "Nepavyko sukurti %s elemento; patikrinkit Jūsų įdiegimą"
 msgid "Operation not supported"
 msgstr "Operacija nepalaikoma"
 
-#: player/rb-player-gst.c:324 player/rb-player-gst.c:787
+#: player/rb-player-gst.c:325 player/rb-player-gst.c:758
 msgid "Failed to close audio output sink"
 msgstr "Nepavyko uždaryti audio išvesties kriauklės"
 
-#: player/rb-player-gst.c:411 player/rb-player-gst.c:651
-#: player/rb-player-gst.c:661
+#: player/rb-player-gst.c:412 player/rb-player-gst.c:622
+#: player/rb-player-gst.c:632
 msgid "Could not start pipeline playing"
 msgstr "Negalėjau pradėti konvejerio grojimo"
 
-#: player/rb-player-gst.c:440
-msgid "Failed to create thread element; check your GStreamer installation"
-msgstr "Nepavyko sukurti gijos elemento; patikrinkit Jūsų GStreamer įdiegimą"
-
-#: player/rb-player-gst.c:474
-#, c-format
-msgid "Failed to create %s input element; check your installation"
-msgstr "Nepavyko sukurti %s įvesties elemento; patikrinkit Jūsų įdiegimą"
-
-#: player/rb-player-gst.c:503
-msgid "Failed to create queue element; check your installation"
-msgstr "Nepavyko sukurti eilės elemento; patikrinkit Jūsų įdiegimą"
-
-#: player/rb-player-gst.c:520
-msgid "Failed to create typefind element; check your installation"
-msgstr "Nepavyko sukurti typefind elemento; patikrinkit Jūsų įdiegimą"
-
-#: player/rb-player-gst.c:551
-msgid "Failed to create volume element; check your installation"
-msgstr "Nepavyko sukurti garso elemento; patikrinkit Jūsų įdiegimą"
-
-#: player/rb-player-gst.c:570
+#: player/rb-player-gst.c:528
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "Negalėjau sukurti audio išvesties elemento; patikrinkit Jūsų nustatymus"
 
-#: player/rb-player-gst.c:618
+#: player/rb-player-gst.c:589
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Negaliu inicializuoti planuotojo.  Ar paleidote gst-register?"
 
-#: player/rb-player-gst.c:673
+#: player/rb-player-gst.c:644
 msgid "Could not pause playback"
 msgstr "Negalėjau sulaikyti grojimo"
 
-#: player/rb-player-gst.c:682
+#: player/rb-player-gst.c:653
 msgid "Could not close output sink"
 msgstr "Negalėjau uždaryti išvesties kriauklės"
 
-#: player/rb-player-gst.c:728
+#: player/rb-player-gst.c:699
 msgid "No AudioCD support; check your settings"
 msgstr "Nėra AudioCD palaikymo; patikrinkit Jūsų nustatymus"
 
@@ -959,7 +939,7 @@ msgstr "Duomenų bazės bylos kelias"
 msgid "Quit Rhythmbox"
 msgstr "Išeiti iš Rhythmbox"
 
-#: shell/main.c:207
+#: shell/main.c:208
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -967,12 +947,12 @@ msgstr ""
 "Rhythmbox šiuo metu neveikia jeigu įjungti GNOME garso įvykiai ir naudojama "
 "esdsink."
 
-#: shell/main.c:246 shell/main.c:255
+#: shell/main.c:247 shell/main.c:256
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Įvyko išimtis '%s'"
 
-#: shell/main.c:293
+#: shell/main.c:294
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1179,6 +1159,65 @@ msgstr "Kart_oti"
 msgid "Buffering..."
 msgstr "Buferiuojama..."
 
+#: sources/itunesdb.c:459
+msgid "Master-PL"
+msgstr ""
+
+#: sources/itunesdb.c:461
+msgid "Playlist"
+msgstr "Grojaraštis"
+
+#: sources/itunesdb.c:813
+#, c-format
+msgid "Error reading \"%s\".\n"
+msgstr "Klaida skaitant „%s“.\n"
+
+#: sources/itunesdb.c:821
+#, c-format
+msgid "\"%s\" is not a iTunesDB.\n"
+msgstr "„%s“ nėra iTunesDB.\n"
+
+#: sources/itunesdb.c:1061
+#, c-format
+msgid "Could not open \"%s\" file for reading.\n"
+msgstr "Nepavyko atidaryti bylos „%s“ skaitymui.\n"
+
+#: sources/itunesdb.c:1568
+#, c-format
+msgid "Could not open iTunesDB \"%s\" for writing.\n"
+msgstr "Negaliu atidaryti iTunesDB „%s“ rašymui.\n"
+
+#. an error occured
+#: sources/itunesdb.c:1580
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s).\n"
+msgstr "Klaida pervadinant '%s' į '%s' (%s).\n"
+
+#: sources/itunesdb.c:1716
+#, c-format
+msgid "Could not open file \"%s\" for reading.\n"
+msgstr "Nepavyko atidaryti bylos „%s“ skaitymui.\n"
+
+#: sources/itunesdb.c:1723
+#, c-format
+msgid "Could not open file \"%s\" for writing.\n"
+msgstr "Nepavyko atidaryti bylos „%s“ rašymui.\n"
+
+#. error -- not end of file!
+#: sources/itunesdb.c:1736
+#, c-format
+msgid "Error reading file \"%s\".\n"
+msgstr "Klaida skaitant bylą „%s“.\n"
+
+#: sources/itunesdb.c:1748
+#, c-format
+msgid "Error writing PC file \"%s\".\n"
+msgstr "Klaida rašant AK bylą „%s“.\n"
+
+#: sources/rb-ipod-source.c:117
+msgid "iPod"
+msgstr "iPod"
+
 #: sources/rb-iradio-source.c:323 sources/rb-library-source.c:510
 #: widgets/rb-query-creator.c:55
 msgid "Genre"
@@ -1277,7 +1316,7 @@ msgstr ""
 #: widgets/rb-druid.c:309
 #, c-format
 msgid "Error reading filename: %s"
-msgstr "Klaida skaitant bylos vardą: %s"
+msgstr "Klaida skaitant bylą: %s"
 
 #: widgets/rb-druid.c:324
 msgid "Choose a directory"
@@ -1428,6 +1467,22 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "Failed to create thread element; check your GStreamer installation"
+#~ msgstr ""
+#~ "Nepavyko sukurti gijos elemento; patikrinkit Jūsų GStreamer įdiegimą"
+
+#~ msgid "Failed to create %s input element; check your installation"
+#~ msgstr "Nepavyko sukurti %s įvesties elemento; patikrinkit Jūsų įdiegimą"
+
+#~ msgid "Failed to create queue element; check your installation"
+#~ msgstr "Nepavyko sukurti eilės elemento; patikrinkit Jūsų įdiegimą"
+
+#~ msgid "Failed to create typefind element; check your installation"
+#~ msgstr "Nepavyko sukurti typefind elemento; patikrinkit Jūsų įdiegimą"
+
+#~ msgid "Failed to create volume element; check your installation"
+#~ msgstr "Nepavyko sukurti garso elemento; patikrinkit Jūsų įdiegimą"
 
 #~ msgid "Toggle random playing order"
 #~ msgstr "Perjungti grojimą atsitiktine tvarka"
