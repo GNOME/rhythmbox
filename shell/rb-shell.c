@@ -235,6 +235,7 @@ static void create_playlist (RBShell *shell, CreatePlaylistType type, GList *dat
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 #define CMD_PATH_PLAYLIST_DELETE   "/commands/FileDeletePlaylist"
+#define CMD_PATH_PLAYLIST_RENAME   "/commands/FileRenamePlaylist"
 #define CMD_PATH_PLAYLIST_SAVE   "/commands/SavePlaylist"
 #define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
 #define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
@@ -1041,6 +1042,9 @@ rb_shell_select_source (RBShell *shell,
 	rb_statusbar_set_source (shell->priv->statusbar,
 				 RB_SOURCE (source));
 	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_PLAYLIST_DELETE,
+				 g_list_find (shell->priv->playlists,
+					      shell->priv->selected_source) != NULL);
+	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_PLAYLIST_RENAME,
 				 g_list_find (shell->priv->playlists,
 					      shell->priv->selected_source) != NULL);
 	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_PLAYLIST_SAVE,
