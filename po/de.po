@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
-"POT-Creation-Date: 2003-01-09 18:29+0100\n"
+"POT-Creation-Date: 2003-01-15 15:09+0100\n"
 "PO-Revision-Date: 2003-01-09 18:26+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -311,7 +311,6 @@ msgid "Play and organize your music collection"
 msgstr "Ihre Musiksammlung abspielen und organisieren"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1
-#: data/ui/rhythmbox-group-view.xml.in.h:6
 #: data/ui/rhythmbox-library-view.xml.in.h:4
 msgid "Deselect all songs"
 msgstr "Auswahl aufheben"
@@ -321,26 +320,22 @@ msgid "Eject Audio-CD"
 msgstr "Audio-CD auswerfen"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:3
-#: data/ui/rhythmbox-group-view.xml.in.h:10
 #: data/ui/rhythmbox-library-view.xml.in.h:5
 msgid "Scroll the view to the currently playing song"
 msgstr ""
 "Die Ansicht rollen, sodass der momentan abgespielten Titel sichtbar ist"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:4
-#: data/ui/rhythmbox-group-view.xml.in.h:11
 #: data/ui/rhythmbox-library-view.xml.in.h:6
 msgid "Select _All"
 msgstr "_Alle auswählen"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:5
-#: data/ui/rhythmbox-group-view.xml.in.h:12
 #: data/ui/rhythmbox-library-view.xml.in.h:7
 msgid "Select all songs"
 msgstr "Alle Titel auswählen"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6
-#: data/ui/rhythmbox-group-view.xml.in.h:17
 #: data/ui/rhythmbox-iradio-view.xml.in.h:5
 #: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:16
 msgid "_Edit"
@@ -351,78 +346,15 @@ msgid "_Eject Audio-CD..."
 msgstr "Audio-CD _auswerfen..."
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:8
-#: data/ui/rhythmbox-group-view.xml.in.h:18
 #: data/ui/rhythmbox-library-view.xml.in.h:13
 msgid "_Jump to Playing Song"
 msgstr "Zum momentan _gespielten Titel springen"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:9
-#: data/ui/rhythmbox-group-view.xml.in.h:21
 #: data/ui/rhythmbox-iradio-view.xml.in.h:8
 #: data/ui/rhythmbox-library-view.xml.in.h:15
 msgid "_View"
 msgstr "_Ansicht"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:1
-#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:2
-msgid "Copy selection"
-msgstr "Auswahl kopieren"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:3
-msgid "Cu_t"
-msgstr "_Ausschneiden"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:4
-msgid "Cut selection"
-msgstr "Auswahl ausschneiden"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:4
-#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:5
-msgid "Delete selection"
-msgstr "Auswahl löschen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:5
-msgid "Delete the currently selected music group"
-msgstr "Die gewählte Musikgruppe löschen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:7
-msgid "P_roperties"
-msgstr "Ei_genschaften"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:8
-msgid "Paste selection"
-msgstr "Auswahl einfügen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:9
-msgid "Rename the currently selected music group"
-msgstr "Die gewählte Musikgruppe umbenennen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:13
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:10
-msgid "Show information on the selected song"
-msgstr "Informationen zum gewählten Titel anzeigen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:14
-#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:14
-msgid "_Copy"
-msgstr "_Kopieren"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:15
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:15
-msgid "_Delete"
-msgstr "_Löschen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:16
-msgid "_Delete Group"
-msgstr "Gruppe _löschen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:19 data/ui/rhythmbox-ui.xml.in.h:20
-msgid "_Paste"
-msgstr "E_infügen"
-
-#: data/ui/rhythmbox-group-view.xml.in.h:20
-msgid "_Rename Group..."
-msgstr "Grupe _umbenennen...."
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:1
 msgid "Change the visibility of the genre browser"
@@ -454,17 +386,37 @@ msgstr "_Neuer Internet-Radio-Sender"
 msgid "Change the visibility of the artist and album browser"
 msgstr "Den Interpreten- und Albenbrowser zeigen/verbergen"
 
-#: data/ui/rhythmbox-test-view-2.xml.in.h:1
-msgid "Oh neej!!"
-msgstr "Och nee!!"
+#: data/ui/rhythmbox-library-view.xml.in.h:2 data/ui/rhythmbox-ui.xml.in.h:2
+msgid "Copy selection"
+msgstr "Auswahl kopieren"
 
-#: data/ui/rhythmbox-test-view-2.xml.in.h:2
-msgid "_Actions"
-msgstr "_Aktionen"
+#: data/ui/rhythmbox-library-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.in.h:5
+msgid "Delete selection"
+msgstr "Auswahl löschen"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:10
+msgid "Show information on the selected song"
+msgstr "Informationen zum gewählten Titel anzeigen"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:10 data/ui/rhythmbox-ui.xml.in.h:14
+msgid "_Copy"
+msgstr "_Kopieren"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:15
+msgid "_Delete"
+msgstr "_Löschen"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
 msgid "Close the music player"
 msgstr "Den Musik-Player schließen"
+
+#: data/ui/rhythmbox-ui.xml.in.h:3
+msgid "Cu_t"
+msgstr "_Ausschneiden"
+
+#: data/ui/rhythmbox-ui.xml.in.h:4
+msgid "Cut selection"
+msgstr "Auswahl ausschneiden"
 
 #: data/ui/rhythmbox-ui.xml.in.h:6
 msgid "Display music player help"
@@ -473,6 +425,10 @@ msgstr "Hilfe zum Musik-Player anzeigen"
 #: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "P_revious"
 msgstr "_Vorigen"
+
+#: data/ui/rhythmbox-ui.xml.in.h:8
+msgid "Paste selection"
+msgstr "Auswahl einfügen"
 
 #: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Show information about the music player"
@@ -501,6 +457,10 @@ msgstr "_Nächster"
 #: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "_Organize"
 msgstr "_Organisieren"
+
+#: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "_Paste"
+msgstr "E_infügen"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "_Play"
@@ -616,7 +576,7 @@ msgstr "Pixbuf-Objekt"
 msgid "The pixbuf to render."
 msgstr "Der darzustellende Pixbuf."
 
-#: lib/widgets/rb-link.c:326
+#: lib/widgets/rb-link.c:325
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -625,12 +585,13 @@ msgstr ""
 "Beim Wechsel nach »%s« ist ein Fehler aufgetreten:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:566
+#: lib/widgets/rb-node-view.c:630
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "»%s« konnte nicht als NodeView-Layout-Datei verarbeitet werden"
 
-#: lib/widgets/rb-search-entry.c:115
+#. this string can only be so long, or there wont be a search entry :)
+#: lib/widgets/rb-search-entry.c:116
 msgid "_Search song:"
 msgstr "Titel _suchen:"
 
@@ -665,12 +626,12 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d Kanäle)"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
+#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:388
 msgid "Click to mute"
 msgstr "Stummschalten"
 
 # »Lautschalten« gefiele mir, aber gibt's das überhaupt?
-#: lib/widgets/rb-volume.c:381
+#: lib/widgets/rb-volume.c:384
 msgid "Click to unmute"
 msgstr "Stummschalten aufheben"
 
@@ -737,87 +698,73 @@ msgstr "Rhythmbox aktiviert werden"
 msgid "Music Player Preferences"
 msgstr "Einstellungen des Musik-Players"
 
-#: shell/rb-player.c:304
-msgid " by "
-msgstr " von "
+#: shell/rb-player.c:302
+msgid "by "
+msgstr "von "
 
-#: shell/rb-player.c:319
+#: shell/rb-player.c:317
 msgid "Drag to go to a particular moment in the song"
 msgstr ""
 "Ziehen Sie diesen Schalter an eine bestimmte Stelle, um zur entsprechenden "
 "Stelle im Titel zu springen"
 
-#: shell/rb-player.c:364
+#: shell/rb-player.c:362
 msgid "Play the previous song"
 msgstr "Den vorigen Titel wiedergeben"
 
-#: shell/rb-player.c:371
+#: shell/rb-player.c:369
 msgid "Start playback"
 msgstr "Wiedergabe starten"
 
-#: shell/rb-player.c:378
+#: shell/rb-player.c:376
 msgid "Pause playback"
 msgstr "Wiedergabe unterbrechen"
 
-#: shell/rb-player.c:385
+#: shell/rb-player.c:383
 msgid "Play the next song"
 msgstr "Den nächsten Titel wiedergeben"
 
-#: shell/rb-player.c:393
+#: shell/rb-player.c:391
 msgid "Repeat the play list"
 msgstr "Die Playliste wiederholen"
 
-#: shell/rb-player.c:400
+#: shell/rb-player.c:398
 msgid "Shuffle the play list"
 msgstr "Die Playliste in zufälliger Reihenfolge wiedergeben"
 
-#: shell/rb-player.c:410 shell/rb-player.c:417
+#: shell/rb-player.c:407 shell/rb-player.c:415
 msgid "Not playing"
 msgstr "Keine Wiedergabe"
 
 # CHECK
-#: shell/rb-player.c:423
+#: shell/rb-player.c:421
 msgid "To play, add music to the play list"
 msgstr "Fügen Sie Musik zur Playliste hinzu, um die Wiedergabe zu ermöglichen"
 
-# CHECK
-#: shell/rb-player.c:447
+#: shell/rb-player.c:448
 #, c-format
 msgid ""
-"Failed to create mixer, exiting. Error was:\n"
+"Failed to create player, exiting. Error was:\n"
 "%s"
 msgstr ""
-"Mixer konnte nicht erzeugt werden. Fehler:\n"
+"Player konnte nicht erzeugt werden. Fehler:\n"
 "%s"
 
-#: shell/rb-player.c:750
-msgid "Get information about this album from the web"
-msgstr "Informationen zu diesem Album aus dem Internet abrufen"
-
-#: shell/rb-player.c:756
+#: shell/rb-player.c:725
 msgid "Get information about this artist from the web"
 msgstr "Informationen zu diesem Interpreten aus dem Internet abrufen"
 
-#: shell/rb-player.c:763
-#, c-format
-msgid "Track %d from "
-msgstr "Titel %d von "
-
-#: shell/rb-player.c:767
-msgid "From "
-msgstr "Aus "
-
-#: shell/rb-player.c:772
+#: shell/rb-player.c:731
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:774
+#: shell/rb-player.c:733
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Unbekannt"
 
-#: shell/rb-player.c:799
+#: shell/rb-player.c:765
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
@@ -826,17 +773,17 @@ msgstr ""
 "Datenstrom für konnte nicht erstellt werden. Fehler:\n"
 "%s"
 
-#: shell/rb-player.c:883
+#: shell/rb-player.c:855
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "»%s« konnte nicht als Playliste verarbeitet werden"
 
-#: shell/rb-player.c:1116
+#: shell/rb-player.c:1090
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld:%.2ld"
 
-#: shell/rb-player.c:1120
+#: shell/rb-player.c:1094
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Insgesamt %ld:%.2ld (%ld:%.2ld verbleibend)"
@@ -863,8 +810,8 @@ msgstr ""
 "Benjamin Greiner <benjamin.greiner@gmx.net>"
 
 #: shell/rb.c:502
-msgid "Copyright  2002 Jorn Baayen. All rights reserved."
-msgstr "Copyright © 2002 Jorn Baayen. Alle Rechte vorbehalten."
+msgid "Copyright  2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Copyright © 2002, 2003 Jorn Baayen. Alle Rechte vorbehalten."
 
 #: shell/rb.c:503
 msgid "Music management and playback software for GNOME."
@@ -919,37 +866,67 @@ msgstr ""
 msgid "%d total stations in %d distinct genres"
 msgstr "Insgesamt %d Radio-Sender mit %d verschiedenen Generes"
 
-#: views/rb-library-view.c:349
+#: views/rb-library-view.c:358
 msgid "_Play Album"
 msgstr "Album _wiedergeben"
 
-#: views/rb-library-view.c:352
+#: views/rb-library-view.c:361
 msgid "Start playing this album"
 msgstr "Dieses Album wiedergeben"
 
-#: views/rb-library-view.c:357
+#: views/rb-library-view.c:366
 msgid "Play Album _Later"
 msgstr "Album _später wiedergeben"
 
-#: views/rb-library-view.c:360
+#: views/rb-library-view.c:369
 msgid "Enqueue this album for later playback"
 msgstr "Dieses Album zur späteren Wiedergabe vormerken"
 
-#: views/rb-library-view.c:366
+#: views/rb-library-view.c:375
 msgid "Play Song Later"
 msgstr "Titel später wiedergeben"
 
-#: views/rb-library-view.c:369
+#: views/rb-library-view.c:378
 msgid "Enqueue the selected song(s) for later playback"
 msgstr "Den oder die gewählten Titel zur späteren Wiedergabe vormerken"
 
-#: views/rb-library-view.c:374
+#: views/rb-library-view.c:383
 msgid "Play _Song"
 msgstr "_Titel wiedergeben"
 
-#: views/rb-library-view.c:377
+#: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "Den oder die ausgewählten Titel wiedergeben"
+
+#~ msgid "Delete the currently selected music group"
+#~ msgstr "Die gewählte Musikgruppe löschen"
+
+#~ msgid "P_roperties"
+#~ msgstr "Ei_genschaften"
+
+#~ msgid "Rename the currently selected music group"
+#~ msgstr "Die gewählte Musikgruppe umbenennen"
+
+#~ msgid "_Delete Group"
+#~ msgstr "Gruppe _löschen"
+
+#~ msgid "_Rename Group..."
+#~ msgstr "Grupe _umbenennen...."
+
+#~ msgid "Oh neej!!"
+#~ msgstr "Och nee!!"
+
+#~ msgid "_Actions"
+#~ msgstr "_Aktionen"
+
+#~ msgid "Get information about this album from the web"
+#~ msgstr "Informationen zu diesem Album aus dem Internet abrufen"
+
+#~ msgid "Track %d from "
+#~ msgstr "Titel %d von "
+
+#~ msgid "From "
+#~ msgstr "Aus "
 
 #~ msgid "%s"
 #~ msgstr "%s"
