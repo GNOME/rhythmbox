@@ -1,5 +1,12 @@
 2002-06-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library.c: (rb_library_timeout_cb):
+
+	Append grandparents before we do the parents,
+	so that the treemodel handles filtering right.
+
+2002-06-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library.c: (rb_library_load),
 	(rb_library_thread_process_new_song),
 	(rb_library_thread_process_changed_node):
