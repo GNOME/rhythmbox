@@ -1839,7 +1839,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	}
 #endif
 	about = gnome_about_new ("Rhythmbox", VERSION,
-				 "Copyright \xc2\xa9 2002, 2003, 2004 Jorn Baayen, Colin Walters",
+				 "Copyright \xc2\xa9 2003, 2004 Colin Walters\nCopyright \xc2\xa9 2002, 2003 Jorn Baayen",
 				 comment->str,
 				 (const char **) authors,
 				 (const char **) documenters,
