@@ -1,5 +1,26 @@
 2002-10-28  Jorn Baayen  <jorn@nl.linux.org>
 
+	* configure.in:
+	* data/rhythmbox.schemas:
+	* lib/widgets/rb-volume.c: (rb_volume_class_init),
+	(rb_volume_instance_init), (rb_volume_set_property),
+	(rb_volume_get_property), (rb_volume_finalize), (update_mixer),
+	(volume_mute_cb), (rb_volume_update_image), (rb_volume_new),
+	(rb_volume_set):
+	* lib/widgets/rb-volume.h:
+	* library/rb-node-filter.c:
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_finalize), (rb_shell_player_get_state),
+	(rb_shell_player_get_mixer):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (setup_volume_control),
+	(rb_shell_toolbar_changed_cb), (rb_shell_construct):
+
+	Use the relative volume instead of the system volume
+	in the volume widget.
+
+2002-10-28  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-player.c: (slider_press_callback),
 	(slider_moved_timeout), (slider_moved_callback),
 	(slider_release_callback):

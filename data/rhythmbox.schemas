@@ -1,17 +1,6 @@
 <gconfschemafile>
    <schemalist>
       <schema>
-        <key>/schemas/apps/rhythmbox/library/base_folder</key>
-	<applyto>/apps/rhythmbox/library/base_folder</applyto>
-	<owner>rhythmbox</owner>
-	<type>string</type>
-	<default>~/Music</default>
-	<locale name="C">
-	<short>Base music folder</short>
-	<long>Ripped music and other files will be stored in this directory.</long>
-	</locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/music_groups</key>
 	<applyto>/apps/rhythmbox/music_groups</applyto>
 	<owner>rhythmbox</owner>
@@ -153,6 +142,17 @@
         <locale name="C">
 	<short>"Add to library" filesel state</short>
 	<long>"Add to library" filesel state.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/volume</key>
+        <applyto>/apps/rhythmbox/state/volume</applyto>
+        <owner>rhythmbox</owner>
+        <type>float</type>
+        <default>1.0</default>
+        <locale name="C">
+	<short>Volume level</short>
+	<long>Volume level.</long>
         </locale>
       </schema>
       <schema>

@@ -238,7 +238,7 @@ typedef enum
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
 #define CONF_TOOLBAR_SETUP	    "/apps/rhythmbox/ui/toolbar_setup"
 
-#define RB_SHELL_REMOTE_VOLUME_INTERVAL 10
+#define RB_SHELL_REMOTE_VOLUME_INTERVAL 0.4
 
 #define DEFAULT_TOOLBAR_SETUP \
         "previous=std_toolitem(item=previous);" \
@@ -529,14 +529,14 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 }
 
 static RBVolume *
-setup_volume_control (GulToolbar *toolbar)
+setup_volume_control (RBShell *shell)
 {
 	RBVolume *volume;
 	GulTbItem *it;
 	
-	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	volume = rb_volume_new (rb_shell_player_get_mixer (shell->priv->player_shell));
 	gtk_widget_show_all (GTK_WIDGET (volume));
-	it = gul_toolbar_get_item_by_id (toolbar, "volume");
+	it = gul_toolbar_get_item_by_id (shell->priv->toolbar, "volume");
         if (it != NULL)
         {
 		GtkWidget *box;
@@ -553,7 +553,7 @@ rb_shell_toolbar_changed_cb (GulToolbar *gt, RBShell *shell)
 {
         if (shell->priv->toolbar != NULL)
         {
-                shell->priv->volume = setup_volume_control (shell->priv->toolbar);
+                shell->priv->volume = setup_volume_control (shell);
         }
 }
 
@@ -628,24 +628,6 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
 
-	/* Toolbar */
-	toolbar = gul_toolbar_new ();
-	shell->priv->toolbar = toolbar;
-	g_signal_connect (toolbar, "changed", G_CALLBACK (rb_shell_toolbar_changed_cb), shell);
-	if (gul_toolbar_listen_to_gconf (toolbar, CONF_TOOLBAR_SETUP) == FALSE)
-        {
-                /* FIXME: make this a dialog? */
-                g_warning ("An incorrect toolbar configuration has been found,"
-			    "resetting to the default");
-
-                /* this is to make sure we get a toolbar, even if the
-                   setup is wrong or there is no schema */
-                eel_gconf_set_string (CONF_TOOLBAR_SETUP, DEFAULT_TOOLBAR_SETUP);
-        }
-	bview = gul_tb_bonobo_view_new ();
-	gul_tb_bonobo_view_set_path (bview, shell->priv->ui_component, "/Toolbar");
-	gul_tb_bonobo_view_set_toolbar (bview, toolbar);
-	
 	/* tray icon */
 	setup_tray_icon (shell);
 
@@ -706,6 +688,24 @@ rb_shell_construct (RBShell *shell)
 	bonobo_window_set_contents (win, vbox);
 
 	gtk_widget_show_all (vbox);
+
+	/* Toolbar */
+	toolbar = gul_toolbar_new ();
+	shell->priv->toolbar = toolbar;
+	g_signal_connect (toolbar, "changed", G_CALLBACK (rb_shell_toolbar_changed_cb), shell);
+	if (gul_toolbar_listen_to_gconf (toolbar, CONF_TOOLBAR_SETUP) == FALSE)
+        {
+                /* FIXME: make this a dialog? */
+                g_warning ("An incorrect toolbar configuration has been found,"
+			    "resetting to the default");
+
+                /* this is to make sure we get a toolbar, even if the
+                   setup is wrong or there is no schema */
+                eel_gconf_set_string (CONF_TOOLBAR_SETUP, DEFAULT_TOOLBAR_SETUP);
+        }
+	bview = gul_tb_bonobo_view_new ();
+	gul_tb_bonobo_view_set_path (bview, shell->priv->ui_component, "/Toolbar");
+	gul_tb_bonobo_view_set_toolbar (bview, toolbar);
 
 	/* sync state */
 	eel_gconf_notification_add (CONF_UI_TOOLBAR_VISIBLE,

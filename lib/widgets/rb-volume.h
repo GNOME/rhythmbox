@@ -22,6 +22,7 @@
 #define __RB_VOLUME_H
 
 #include <gtk/gtkhbox.h>
+#include <monkey-media.h>
 
 G_BEGIN_DECLS
 
@@ -44,15 +45,9 @@ typedef struct {
 	GtkHBoxClass parent;
 } RBVolumeClass;
 
-enum {
-	RB_VOLUME_CHANNEL_PCM,
-	RB_VOLUME_CHANNEL_CD,
-	RB_VOLUME_CHANNEL_MASTER
-};
-
 GType     rb_volume_get_type    (void);
 
-RBVolume *rb_volume_new         (int channel);
+RBVolume *rb_volume_new         (MonkeyMediaMixer *mixer);
 
 int	  rb_volume_get		(RBVolume *volume);
 void      rb_volume_set         (RBVolume *volume,
@@ -60,10 +55,6 @@ void      rb_volume_set         (RBVolume *volume,
 
 gboolean  rb_volume_get_mute	(RBVolume *volume);
 void      rb_volume_set_mute	(RBVolume *volume, gboolean mute);
-
-int       rb_volume_get_channel (RBVolume *volume);
-void      rb_volume_set_channel (RBVolume *volume,
-				 int channel);
 
 G_END_DECLS
 

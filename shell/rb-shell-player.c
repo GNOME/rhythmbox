@@ -31,6 +31,7 @@
 #include "rb-dialog.h"
 #include "rb-player.h"
 #include "rb-remote.h"
+#include "eel-gconf-extensions.h"
 
 #define RB_SHELL_PLAYER_REMOTE_SEEK_INTERVAL 10
 
@@ -94,6 +95,8 @@ static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
 #define CMD_PATH_PLAY     "/commands/Play"
 #define CMD_PATH_PREVIOUS "/commands/Previous"
 #define CMD_PATH_NEXT     "/commands/Next"
+
+#define CONF_STATE_VOLUME "/apps/rhythmbox/state/volume"
 
 struct RBShellPlayerPrivate
 {
@@ -231,6 +234,9 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 		g_error_free (error);
 	}
 
+	monkey_media_mixer_set_volume (shell_player->priv->mixer,
+				       eel_gconf_get_float (CONF_STATE_VOLUME));
+
 	gtk_box_set_spacing (GTK_BOX (shell_player), 5);
 
 	shell_player->priv->player_widget = rb_player_new ();
@@ -266,6 +272,9 @@ rb_shell_player_finalize (GObject *object)
 	shell_player = RB_SHELL_PLAYER (object);
 
 	g_return_if_fail (shell_player->priv != NULL);
+
+	eel_gconf_set_float (CONF_STATE_VOLUME,
+			     monkey_media_mixer_get_volume (shell_player->priv->mixer));
 
 	/* FIXME hangs somewhere in gstreamer .. */
 	/*g_object_unref (G_OBJECT (shell_player->priv->mixer));*/
@@ -684,6 +693,14 @@ rb_shell_player_get_state (RBShellPlayer *shell_player)
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (shell_player), -1);
 
 	return monkey_media_mixer_get_state (shell_player->priv->mixer);
+}
+
+MonkeyMediaMixer *
+rb_shell_player_get_mixer (RBShellPlayer *shell_player)
+{
+	g_return_val_if_fail (RB_IS_SHELL_PLAYER (shell_player), NULL);
+	
+	return shell_player->priv->mixer;
 }
 
 static void

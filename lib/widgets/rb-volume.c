@@ -43,12 +43,8 @@
 
 #include <math.h>
 #include <stdio.h>
-#include <sys/stat.h>
-#include <sys/ioctl.h>
 #include <unistd.h>
-#include <fcntl.h>
 #include <string.h>
-#include <errno.h>
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
@@ -59,52 +55,9 @@
 #include "rb-volume.h"
 #include "rb-stock-icons.h"
 
-#ifdef HAVE_LINUX_SOUNDCARD_H
-#include <linux/soundcard.h>
-#define OSS_API
-#elif HAVE_MACHINE_SOUNDCARD_H
-#include <machine/soundcard.h>
-#define OSS_API
-#elif HAVE_SYS_SOUNDCARD_H
-#include <sys/soundcard.h>
-#define OSS_API
-#elif HAVE_SOUNDCARD_H
-#include <soundcard.h>
-#define OSS_API
-#elif HAVE_SYS_AUDIOIO_H
-#include <sys/audioio.h>
-#define SUN_API
-#elif HAVE_SYS_AUDIO_IO_H
-#include <sys/audio.io.h>
-#define SUN_API
-#elif HAVE_SUN_AUDIOIO_H
-#include <sun/audioio.h>
-#define SUN_API
-#elif HAVE_DMEDIA_AUDIO_H
-#define IRIX_API
-#include <dmedia/audio.h>
-#else
-#error No soundcard definition!
-#endif /* SOUNDCARD_H */
-
-#ifdef OSS_API
-#define VOLUME_MAX 100
-#endif
-#ifdef SUN_API
-#define VOLUME_MAX 255
-#endif
-#ifdef IRIX_API
-#define VOLUME_MAX 255
-#endif
-
-/* Kills header mismatch warnings */
-#ifdef OSS_GETVERSION
-#undef OSS_GETVERSION
-#endif
-
 enum {
-	PROP_BOGUS,
-	PROP_CHANNEL
+	PROP_0,
+	PROP_MIXER
 };
 
 struct _RBVolumePrivate {
@@ -119,25 +72,16 @@ struct _RBVolumePrivate {
 	GdkPixbuf *volume_zero_pixbuf;
 	GdkPixbuf *volume_mute_pixbuf;
 
-	int mixerfd;
-	int vol;
-	int timeout;
-	int channel;
+	float vol;
 
 	gboolean mute;
 	
 	GtkTooltips *tooltip;
 
-#ifdef IRIX_API
-	/* Note: we are using the obsolete API to increase portability.
-	 * /usr/sbin/audiopanel provides many more options...
-	 */
-#define MAX_PV_BUF 4
-	long pv_buf[MAX_PV_BUF] = {
-		AL_LEFT_SPEAKER_GAIN, 0L, AL_RIGHT_SPEAKER_GAIN, 0L
-	};
-#endif
+	MonkeyMediaMixer *mixer;
 };
+
+#define VOLUME_MAX 4.0
 
 static void rb_volume_class_init (RBVolumeClass *klass);
 static void rb_volume_instance_init (RBVolume *volume);
@@ -158,15 +102,8 @@ static void volume_mute_cb (GtkWidget* button,
 static gboolean volume_scroll_cb (GtkWidget *button,
 				  GdkEvent *event,
 				  RBVolume *volume);
-static gboolean timeout_cb (RBVolume *volume);
 static void rb_volume_update_slider (RBVolume *volume);
 static void rb_volume_update_image (RBVolume *volume);
-
-static gboolean open_mixer (RBVolume *volume,
-			    const char *device,
-			    int channel);
-static int read_mixer (RBVolume *volume);
-static void update_mixer (RBVolume *volume);
 
 /* Boilerplate. */
 GNOME_CLASS_BOILERPLATE (RBVolume, rb_volume, GtkHBox, GTK_TYPE_HBOX);
@@ -183,14 +120,12 @@ rb_volume_class_init (RBVolumeClass *klass)
 	object_class->finalize = rb_volume_finalize;
 
 	g_object_class_install_property (object_class,
-					 PROP_CHANNEL,
-					 g_param_spec_int ("channel",
-							   _("Mixer channel"),
-							   _("The mixer channel of which the volume is controlled."),
-							   RB_VOLUME_CHANNEL_PCM,
-							   RB_VOLUME_CHANNEL_MASTER,
-							   RB_VOLUME_CHANNEL_MASTER,
-							   G_PARAM_READWRITE));
+					 PROP_MIXER,
+					 g_param_spec_object ("mixer",
+							      "Mixer object",
+							      "MonkeyMediaMixer object",
+							      MONKEY_MEDIA_TYPE_MIXER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -245,7 +180,7 @@ rb_volume_instance_init (RBVolume *volume)
 	gtk_widget_show (priv->indicator);
 
 	/* Volume slider */
-	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 1, 5, 0);
+	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 1.0, 2.0, 0);
 	priv->slider = gtk_hscale_new (GTK_ADJUSTMENT (priv->adjustment));
 	gtk_range_set_inverted (GTK_RANGE (priv->slider), TRUE);
 	gtk_scale_set_draw_value (GTK_SCALE (priv->slider), FALSE);
@@ -271,56 +206,12 @@ rb_volume_set_property (GObject *object,
 			GParamSpec *pspec)
 {
 	RBVolume *volume = RB_VOLUME (object);
-	RBVolumePrivate *priv = volume->priv;
-	const char *device;
-	gboolean retval;
-#ifdef SUN_API
-	char *ctl = NULL;
-#endif
 
 	switch (prop_id) {
-	case PROP_CHANNEL:
-		if (priv->mixerfd != 0)
-			close (volume->priv->mixerfd);
-
-		if (priv->timeout != 0)
-			gtk_timeout_remove (priv->timeout);
-
-		priv->channel = g_value_get_int (value);
-
-#ifdef OSS_API
-		/* /dev/sound/mixer for devfs */
-		device = "/dev/mixer";
-		retval = open_mixer (volume, device, priv->channel);
-		if (!retval) {
-			device = "/dev/sound/mixer";
-			retval = open_mixer (volume, device, priv->channel);
-		}
-#endif
-#ifdef SUN_API
-		if (!(ctl = g_getenv ("AUDIODEV")))
-			ctl = "/dev/audio";
-		device = g_strdup_printf ("%sctl", ctl);
-		retval = open_mixer (volume, device, priv->channel);
-#endif
-
-		if (!retval) {
-			GtkWidget *dialog;
-			dialog = gtk_message_dialog_new (NULL,
-							 GTK_DIALOG_DESTROY_WITH_PARENT,
-							 GTK_MESSAGE_ERROR,
-							 GTK_BUTTONS_CLOSE,
-							 _("Couldn't open mixer device %s\n"),
-							 device);
-			gtk_dialog_run (GTK_DIALOG (dialog));
-			gtk_widget_destroy (dialog);
-		}
-
-		priv->vol = read_mixer (volume);
-
-		priv->timeout = gtk_timeout_add (500,
-						 (GSourceFunc)timeout_cb,
-						 volume);
+	case PROP_MIXER:
+		volume->priv->mixer = g_value_get_object (value);
+		
+		volume->priv->vol = monkey_media_mixer_get_volume (volume->priv->mixer);
 
 		rb_volume_update_slider (volume);
 		rb_volume_update_image (volume);
@@ -339,8 +230,8 @@ rb_volume_get_property (GObject *object,
 	RBVolume *volume = RB_VOLUME (object);
 
 	switch (prop_id) {
-	case PROP_CHANNEL:
-		g_value_set_int (value, volume->priv->channel);
+	case PROP_MIXER:
+		g_value_set_object (value, volume->priv->mixer);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -351,11 +242,23 @@ static void
 rb_volume_finalize (GObject *object)
 {
 	RBVolume *volume = RB_VOLUME (object);
-
-	if (volume->priv->timeout != 0)
-		gtk_timeout_remove (volume->priv->timeout);
+	
+	g_object_unref (G_OBJECT (volume->priv->volume_max_pixbuf));
+	g_object_unref (G_OBJECT (volume->priv->volume_medium_pixbuf));
+	g_object_unref (G_OBJECT (volume->priv->volume_min_pixbuf));
+	g_object_unref (G_OBJECT (volume->priv->volume_zero_pixbuf));
+	g_object_unref (G_OBJECT (volume->priv->volume_mute_pixbuf));
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+update_mixer (RBVolume *volume)
+{
+	monkey_media_mixer_set_volume (volume->priv->mixer,
+				       volume->priv->vol);
+	monkey_media_mixer_set_mute (volume->priv->mixer,
+				     volume->priv->mute);
 }
 
 static void
@@ -377,7 +280,7 @@ volume_mute_cb (GtkWidget *button,
 	if (event->button != 1)
 		return;
 
-	mute = volume->priv->mute^1;
+	mute = !volume->priv->mute;
 	
 	rb_volume_set_mute (volume, mute);
 }
@@ -408,24 +311,6 @@ volume_scroll_cb (GtkWidget *button,
 	return TRUE;
 }
 
-static gboolean
-timeout_cb (RBVolume *volume)
-{
-	int vol;
-
-	if (volume->priv->mute)
-		return TRUE;
-
-	vol = read_mixer (volume);
-
-	if (vol != volume->priv->vol) {
-		volume->priv->vol = vol;
-		rb_volume_update_slider (volume);
-	}
-
-	return TRUE;
-}
-
 static void
 rb_volume_update_slider (RBVolume *volume)
 {
@@ -445,9 +330,9 @@ rb_volume_update_image (RBVolume *volume)
 		pixbuf = volume->priv->volume_mute_pixbuf;
 	else if (vol <= 0)
 		pixbuf = volume->priv->volume_zero_pixbuf;
-	else if (vol <= VOLUME_MAX / 3)
+	else if (vol <= (VOLUME_MAX / 3))
 		pixbuf = volume->priv->volume_min_pixbuf;
-	else if (vol <= 2 * VOLUME_MAX / 3)
+	else if (vol <= 2 * (VOLUME_MAX / 3))
 		pixbuf = volume->priv->volume_medium_pixbuf;
 	else
 		pixbuf = volume->priv->volume_max_pixbuf;
@@ -455,158 +340,13 @@ rb_volume_update_image (RBVolume *volume)
 	gtk_image_set_from_pixbuf (GTK_IMAGE (volume->priv->indicator_image), pixbuf);
 }
 
-static gboolean
-open_mixer (RBVolume *volume,
-	    const char *device,
-	    int channel)
-{
-	RBVolumePrivate *priv = volume->priv;
-	int res;
-#ifdef OSS_API
-	int devmask;
-
-	priv->mixerfd = open (device, O_RDWR, 0);
-#endif
-#ifdef SUN_API
-	priv->mixerfd = open (device, O_RDWR);
-#endif
-#ifdef IRIX_API
-	/* This is a result code, not a file descriptor, and we ignore
-	 * the values read.  But the call is useful to see if we can
-	 * access the default output port.
-	 */
-	priv->mixerfd = ALgetparams (AL_DEFAULT_DEVICE, priv->pv_buf, MAX_PV_BUF);
-#endif
-	if (priv->mixerfd < 0) {
-		/* Probably should die more gracefully. */
-		return FALSE;
-	}
-
-	/* Check driver-version. */
-#ifdef OSS_GETVERSION
-	{
-		int ver;
-
-		res = ioctl (priv->mixerfd, OSS_GETVERSION, &ver);
-		if ((res == 0) && (ver != SOUND_VERSION)) {
-			g_message (_("warning: this version of gmix was "
-						"compiled with a different "
-						"version of\nsoundcard.h.\n"));
-		}
-	}
-#endif
-#ifdef OSS_API
-	/* Check whether this mixer actually supports the channel we're going to
-	 * try to monitor.
-	 */
-	res = ioctl (priv->mixerfd, MIXER_READ (SOUND_MIXER_DEVMASK), &devmask);
-	if (res != 0) {
-		char *s = g_strdup_printf (_("Querying available channels of "
-					     "mixer device %s failed\n"), device);
-		gnome_error_dialog (s);
-		g_free (s);
-		return TRUE;
-	} else if (devmask & SOUND_MASK_PCM && channel == RB_VOLUME_CHANNEL_PCM) {
-		priv->channel = SOUND_MIXER_PCM;
-	} else if (devmask & SOUND_MASK_CD && channel == RB_VOLUME_CHANNEL_CD) {
-		priv->channel = SOUND_MIXER_CD;
-	} else if (devmask & SOUND_MASK_VOLUME) {
-		priv->channel = SOUND_MIXER_VOLUME;
-	} else {
-		char *s = g_strdup_printf (_("Mixer device %s has neither volume"
-					     " nor PCM channels.\n"), device);
-		gnome_error_dialog (s);
-		g_free (s);
-		return TRUE;
-	}
-#endif
-	return TRUE;
-}
-
-static int
-read_mixer (RBVolume *volume)
-{
-	RBVolumePrivate *priv = volume->priv;
-	int vol, r, l;
-#ifdef OSS_API
-	/* If we couldn't open the mixer. */
-	if (priv->mixerfd < 0)
-		return 0;
-
-	ioctl (priv->mixerfd, MIXER_READ (priv->channel), &vol);
-
-	l = vol & 0xff;
-	r = (vol & 0xff00) >> 8;
-
-	return (r + l) / 2;
-#endif
-#ifdef SUN_API
-	audio_info_t ainfo;
-	AUDIO_INITINFO (&ainfo);
-	ioctl (priv->mixerfd, AUDIO_GETINFO, &ainfo);
-	return (ainfo.play.gain);
-#endif
-#ifdef IRIX_API
-	/* Average the current gain settings.  If we can't read the
-	 * current levels use the values from the previous read.
-	 */
-	(void) ALgetparams (AL_DEFAULT_DEVICE, priv->pv_buf, MAX_PV_BUF);
-	return (priv->pv_buf[1] + priv->pv_buf[3]) / 2;
-#endif
-}
-
-static void
-update_mixer (RBVolume *volume)
-{
-	RBVolumePrivate *priv = volume->priv;
-	int vol = priv->vol;
-	int tvol;
-	
-#ifdef OSS_API
-	/* If we couldn't open the mixer. */
-	if (priv->mixerfd < 0)
-		return;
-	
-	if (priv->mute)
-		tvol = 0;
-	else
-		tvol = (vol << 8) + vol;
-	
-	ioctl (priv->mixerfd, MIXER_WRITE (priv->channel), &tvol);
-	ioctl (priv->mixerfd, MIXER_WRITE (SOUND_MIXER_SPEAKER), &tvol);
-#endif
-#ifdef SUN_API
-	audio_info_t ainfo;
-	AUDIO_INITINFO (&ainfo);
-	
-	if (priv->mute)
-		ainfo.play.gain = 0;
-	else
-		ainfo.play.gain = priv->vol;
-	ioctl (priv->mixerfd, AUDIO_SETINFO, &ainfo);
-#endif
-#ifdef IRIX_API
-	if (priv->mute)
-		tvol = 0;
-	else {
-		if (vol < 0) 
-			tvol = 0;
-		else if (vol > VOLUME_MAX)
-			tvol = VOLUME_MAX;
-		else
-			tvol = vol;
-	}
-	priv->pv_buf[1] = priv->pv_buf[3] = tvol;
-	(void) ALsetparams (AL_DEFAULT_DEVICE, priv->pv_buf, MAX_PV_BUF);
-#endif
-}
-
 RBVolume *
-rb_volume_new (int channel)
+rb_volume_new (MonkeyMediaMixer *mixer)
 {
 	RBVolume *volume;
 
-	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME, "channel", channel,
+	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME,
+					  "mixer", mixer,
 					  NULL));
 
 	return volume;
@@ -628,32 +368,6 @@ rb_volume_set (RBVolume *volume,
 
 	volume->priv->vol = value;
 	rb_volume_update_slider (volume);
-}
-
-int
-rb_volume_get_channel (RBVolume *volume)
-{
-	g_return_val_if_fail (RB_IS_VOLUME (volume), -1);
-
-	return volume->priv->channel;
-}
-
-void
-rb_volume_set_channel (RBVolume *volume,
-		       int channel)
-{
-	g_return_if_fail (RB_IS_VOLUME (volume));
-
-	switch (channel) {
-	case RB_VOLUME_CHANNEL_PCM:
-	case RB_VOLUME_CHANNEL_CD:
-	case RB_VOLUME_CHANNEL_MASTER:
-		g_object_set (G_OBJECT (volume), "channel", channel, NULL);
-		break;
-	default:
-		g_error (_("Invalid channel number"));
-		break;
-	}
 }
 
 void

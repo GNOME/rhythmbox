@@ -64,7 +64,9 @@ RBViewPlayer         *rb_shell_player_get_player (RBShellPlayer *shell_player);
 
 void                  rb_shell_player_stop       (RBShellPlayer *shell_player);
 
-MonkeyMediaMixerState rb_shell_player_get_state (RBShellPlayer *shell_player);
+MonkeyMediaMixer     *rb_shell_player_get_mixer  (RBShellPlayer *shell_player);
+
+MonkeyMediaMixerState rb_shell_player_get_state  (RBShellPlayer *shell_player);
 
 G_END_DECLS
 

@@ -204,6 +204,12 @@ rb_node_filter_done_changing (RBNodeFilter *filter)
 	g_signal_emit (G_OBJECT (filter), rb_node_filter_signals[CHANGED], 0);
 }
 
+/*
+ * We go through each level evaluating the filter expressions. 
+ * Every time we get a match we immediately do a break and jump
+ * to the next level. We'll return FALSE if we arrive to a level 
+ * without matches, TRUE otherwise.
+ */
 gboolean
 rb_node_filter_evaluate (RBNodeFilter *filter,
 			 RBNode *node)
