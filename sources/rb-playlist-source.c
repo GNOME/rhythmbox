@@ -576,16 +576,20 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 {
 	RhythmDBEntry *entry;
 
-	if (g_hash_table_lookup (source->priv->entries, location))
+	rhythmdb_read_lock (source->priv->db);
+	if (g_hash_table_lookup (source->priv->entries, location)) {
+		rhythmdb_read_unlock (source->priv->db);
 		return;
+	}
 
 	g_hash_table_insert (source->priv->entries,
 			     g_strdup (location), GINT_TO_POINTER (1));
-	rhythmdb_read_lock (source->priv->db);
+
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
 	if (entry)
 		rhythmdb_entry_ref_unlocked (source->priv->db, entry);
 	rhythmdb_read_unlock (source->priv->db);
+
 	if (entry != NULL) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 		rhythmdb_entry_unref (source->priv->db, entry);
@@ -707,8 +711,6 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	xmlNodePtr child;
 	char *tmp;
 
-	rhythmdb_read_lock (db);
-
 	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db, FALSE));
 
 	tmp = xmlGetProp (node, "type");
@@ -748,8 +750,6 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 			rb_playlist_source_add_location (source, location);
 		}
 	}
-
-	rhythmdb_read_unlock (db);
 
 	return RB_SOURCE (source);
 }
