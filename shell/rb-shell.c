@@ -717,7 +717,6 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 {
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
-	char *file;
 
 	const char *authors[] =
 	{
@@ -742,9 +741,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		return;
 	}
 
-	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
-	pixbuf = gdk_pixbuf_new_from_file (file, NULL);
-	g_free (file);
+	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
 	about = gnome_about_new ("Rhythmbox", VERSION,
 				 _("Copyright 2002 Jorn Baayen"),
