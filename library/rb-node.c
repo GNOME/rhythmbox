@@ -1248,7 +1248,7 @@ rb_node_add_action (RBNode *node,
 	g_mutex_lock (actions_idle_func_lock);
 	if (actions_idle_func == 0)
 	{
-		actions_idle_func = g_idle_add_full (100,
+		actions_idle_func = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
 						     (GSourceFunc) rb_node_action_queue_cb, 
 						     NULL, 
 						     NULL);
