@@ -169,7 +169,7 @@ rb_ask_file_save (const char *title,
 					       GTK_FILE_CHOOSER_ACTION_SAVE,
 					       GTK_STOCK_CANCEL, 
 					       GTK_RESPONSE_CANCEL,
-					       GTK_STOCK_OPEN, 
+					       GTK_STOCK_SAVE, 
 					       GTK_RESPONSE_OK,
 					       NULL);
 	if (default_file != NULL)

@@ -790,7 +790,11 @@ save_playlist_response_cb (GtkDialog *dialog,
 		return;
 	}
 
+#ifndef HAVE_GTK_2_3
 	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
+#else
+	file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
+#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
