@@ -18,6 +18,8 @@
  *  $Id$
  */
 
+#include <gdk/gdk.h>
+
 #include "rb-library-main-thread.h"
 #include "rb-node-song.h"
 #include "rb-file-helpers.h"
@@ -230,8 +232,6 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 	while (TRUE)
 	{
 		RBLibraryActionQueue *queue;
-		int i = 0;
-		gboolean empty;
 
 		g_mutex_lock (priv->lock);
 		
@@ -242,7 +242,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 		}
 
 		queue = rb_library_get_main_queue (priv->library);
-		while (rb_library_action_queue_is_empty (queue) == FALSE && i <= 10)
+		while (rb_library_action_queue_is_empty (queue) == FALSE)
 		{
 			RBLibraryActionType type;
 			char *uri, *realuri;
@@ -304,16 +304,9 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			g_free (realuri);
 
 			rb_library_action_queue_pop_head (queue);
-
-			i++;
 		}
 
-		empty = rb_library_action_queue_is_empty (queue);
-
 		g_mutex_unlock (priv->lock);
-
-		if (empty == TRUE)
-			g_usleep (10);
 	}
 
 	return NULL;

@@ -55,6 +55,7 @@ typedef enum
 {
 	RB_NODE_FILTER_EXPRESSION_ALWAYS_TRUE,           /* args: none */
 	RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,           /* args: RBNode *a, RBNode *b */
+	RB_NODE_FILTER_EXPRESSION_EQUALS,                /* args: RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_HAS_PARENT,            /* args: RBNode *parent */
 	RB_NODE_FILTER_EXPRESSION_HAS_CHILD,             /* args: RBNode *child */     
 	RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,      /* args: int prop_id, RBNode *node */

@@ -358,7 +358,6 @@ set_genre (RBNodeSong *node,
 				      RB_NODE_PROP_NAME,
 				      &val);
 
-		rb_node_add_child (genre, rb_library_get_all_albums (library));
 		rb_node_add_child (rb_library_get_all_genres (library), genre);
 	}
 	
@@ -422,7 +421,6 @@ set_artist (RBNodeSong *node,
 				      &swapped_val);
 		g_value_unset (&swapped_val);
 
-		rb_node_add_child (artist, rb_library_get_all_songs (library));
 		rb_node_add_child (rb_library_get_all_artists (library), artist);
 	}
 

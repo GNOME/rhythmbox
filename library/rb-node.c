@@ -59,6 +59,7 @@ static void read_lock_to_write_lock (RBNode *node);
 static void write_lock_to_read_lock (RBNode *node);
 static void lock_gdk (void);
 static void unlock_gdk (void);
+static RBNode *rb_node_get_from_id_real (long id);
 
 typedef struct
 {
@@ -408,6 +409,17 @@ rb_node_get_id (RBNode *node)
 	return ret;
 }
 
+static RBNode *
+rb_node_get_from_id_real (long id)
+{
+	RBNode *ret = NULL;
+	
+	if (id < id_to_node->len)
+		ret = g_ptr_array_index (id_to_node, id);;
+
+	return ret;
+}
+
 RBNode *
 rb_node_get_from_id (long id)
 {
@@ -416,10 +428,9 @@ rb_node_get_from_id (long id)
 	g_return_val_if_fail (id > 0, NULL);
 
 	g_static_rw_lock_reader_lock (id_to_node_lock);
-	
-	if (id < id_to_node->len)
-		ret = g_ptr_array_index (id_to_node, id);;
 
+	ret = rb_node_get_from_id_real (id);
+	
 	g_static_rw_lock_reader_unlock (id_to_node_lock);
 
 	return ret;
@@ -954,6 +965,9 @@ rb_node_save_to_xml (RBNode *node,
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
+/* this function assumes it's safe to not lock anything while loading,
+ * this is at least true for the case where we're loading the library xml file
+ * from the main loop */
 RBNode *
 rb_node_new_from_xml (xmlNodePtr xml_node)
 {
@@ -962,7 +976,6 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	char *xml;
 	long id;
 	GType type;
-	GList *parents = NULL, *l;
 	
 	g_return_val_if_fail (xml_node != NULL, NULL);
 
@@ -978,15 +991,11 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	type = g_type_from_name (xml);
 	g_free (xml);
 
-	lock_gdk ();
-
 	node = RB_NODE (g_object_new (type,
 				      "id", id,
 				      NULL));
 
 	g_return_val_if_fail (node->priv != NULL, NULL);
-
-	g_static_rw_lock_writer_lock (node->priv->lock);
 
 	for (xml_child = xml_node->children; xml_child != NULL; xml_child = xml_child->next) {
 		if (strcmp (xml_child->name, "parent") == 0) {
@@ -998,17 +1007,14 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			parent_id = atol (xml);
 			g_free (xml);
 
-			parent = rb_node_get_from_id (parent_id);
+			parent = rb_node_get_from_id_real (parent_id);
 
 			if (parent != NULL)
 			{
-				g_static_rw_lock_writer_lock (parent->priv->lock);
-
 				real_add_child (parent, node);
-
-				write_lock_to_read_lock (parent);
-
-				parents = g_list_append (parents, parent);
+				
+				g_signal_emit (G_OBJECT (parent), rb_node_signals[CHILD_ADDED],
+					       0, node);
 			}
 		} else if (strcmp (xml_child->name, "property") == 0) {
 			GType value_type;
@@ -1051,7 +1057,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			{
 				RBNode *property_node;
 
-				property_node = rb_node_get_from_id (atol (xml));
+				property_node = rb_node_get_from_id_real (atol (xml));
 				
 				g_value_set_pointer (value, property_node);
 				break;
@@ -1067,22 +1073,8 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 		}
 	}
 
-	write_lock_to_read_lock (node);
-
-	for (l = parents; l != NULL; l = g_list_next (l))
-	{
-		g_signal_emit (G_OBJECT (l->data), rb_node_signals[CHILD_ADDED],
-			       0, node);
-		g_static_rw_lock_reader_unlock (RB_NODE (l->data)->priv->lock);
-	}
-	g_list_free (parents);
-
 	g_signal_emit (G_OBJECT (node), rb_node_signals[RESTORED], 0);
 
-	g_static_rw_lock_reader_unlock (node->priv->lock);
-
-	unlock_gdk ();
-	
 	return node;
 }
 
@@ -1394,11 +1386,7 @@ rb_node_new_id (void)
 static void
 id_factory_set_to (long new_factory_pos)
 {
-	g_mutex_lock (id_factory_lock);
-	
 	id_factory = new_factory_pos + 1;
-
-	g_mutex_unlock (id_factory_lock);
 }
 
 /* evillish hacks to temporarily readlock->writelock and v.v. */

@@ -1264,6 +1264,10 @@ albums_filter (RBLibraryView *view,
 {
 	rb_node_filter_empty (view->priv->albums_filter);
 	rb_node_filter_add_expression (view->priv->albums_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_songs (view->priv->library)),
+				       0);
+	rb_node_filter_add_expression (view->priv->albums_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
 								      parent),
 				       0);

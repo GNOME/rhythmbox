@@ -47,8 +47,6 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
-
-	void (*finished_preloading) (RBLibrary *lib);
 } RBLibraryClass;
 
 enum
@@ -60,14 +58,12 @@ GType                 rb_library_get_type             (void);
 
 RBLibrary            *rb_library_new                  (void);
 
-void                  rb_library_release_brakes       (RBLibrary *library);
-
-void                  rb_library_finished_preloading  (RBLibrary *library);
-
 RBLibraryAction      *rb_library_add_uri              (RBLibrary *library,
 					               const char *uri);
 void                  rb_library_remove_node          (RBLibrary *library,
 					               RBNode *node);
+
+void                  rb_library_release_brakes       (RBLibrary *library);
 
 RBNode               *rb_library_get_all_genres       (RBLibrary *library);
 RBNode               *rb_library_get_all_artists      (RBLibrary *library);

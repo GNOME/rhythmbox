@@ -1,5 +1,26 @@
 2002-10-26  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/Makefile.am:
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-xml-thread.c:
+	* library/rb-library-xml-thread.h:
+	* library/rb-library.c: (rb_library_class_init), (rb_library_init),
+	(rb_library_release_brakes), (rb_library_finalize),
+	(rb_library_handle_songs), (rb_library_load):
+	* library/rb-library.h:
+	* library/rb-node-filter.c: (rb_node_filter_expression_new),
+	(rb_node_filter_expression_evaluate):
+	* library/rb-node-filter.h:
+	* library/rb-node-song.c: (set_genre), (set_artist):
+	* library/rb-node.c: (rb_node_get_from_id_real),
+	(rb_node_get_from_id), (rb_node_new_from_xml), (id_factory_set_to):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* views/rb-library-view.c: (albums_filter):
+
+	XML loading speedups.
+
+2002-10-26  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/rhythmbox-ui.xml.in:
 
 	Strings polish.

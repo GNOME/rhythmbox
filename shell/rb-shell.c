@@ -156,8 +156,6 @@ static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 				               GtkAllocation *allocation,
 				               RBShell *shell);
-static void rb_shell_show (RBLibrary *library,
-			   gpointer   user_data);
 static void rb_shell_sync_toolbar_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_sync_sidebar_visibility (RBShell *shell);
@@ -754,25 +752,17 @@ rb_shell_construct (RBShell *shell)
 			      CMD_PATH_REPEAT,
 			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
 
-	g_signal_connect (shell->priv->library, "finished_preloading",
-			  G_CALLBACK (rb_shell_show), shell);
-
+	/* GO GO GO! */
 	rb_library_release_brakes (shell->priv->library);
-}
-
-static void
-rb_shell_show (RBLibrary *library,
-	       gpointer   user_data)
-{
-	RBShell *shell = RB_SHELL (user_data);
-
-	/* GO GO GO */
+	
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
 	GDK_THREADS_ENTER ();
+
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
+
 	GDK_THREADS_LEAVE ();
 }
 

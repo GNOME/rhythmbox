@@ -21,13 +21,13 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
+#include <libxml/tree.h>
 #include <gtk/gtkmain.h>
 #include <unistd.h>
 #include <string.h>
 
 #include "rb-library.h"
 #include "rb-library-walker-thread.h"
-#include "rb-library-xml-thread.h"
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
 #include "rb-node-song.h"
@@ -39,13 +39,11 @@ static void rb_library_init (RBLibrary *library);
 static void rb_library_finalize (GObject *object);
 static void rb_library_save (RBLibrary *library);
 static void rb_library_create_skels (RBLibrary *library);
-static void xml_thread_done_loading_cb (RBLibraryXMLThread *thread,
-			                RBLibrary *library);
+static void rb_library_load (RBLibrary *library);
 
 struct RBLibraryPrivate
 {
 	RBLibraryWalkerThread *walker_thread;
-	RBLibraryXMLThread *xml_thread;
 	RBLibraryMainThread *main_thread;
 
 	RBLibraryActionQueue *walker_queue;
@@ -107,15 +105,6 @@ rb_library_class_init (RBLibraryClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_library_finalize;
-
-	g_signal_new ("finished_preloading",
-		      G_OBJECT_CLASS_TYPE (object_class),
-		      G_SIGNAL_RUN_LAST,
-		      G_STRUCT_OFFSET (RBLibraryClass, finished_preloading),
-		      NULL, NULL,
-		      g_cclosure_marshal_VOID__VOID,
-		      G_TYPE_NONE,
-		      0);
 }
 
 static void
@@ -158,8 +147,18 @@ rb_library_init (RBLibrary *library)
 
 	library->priv->main_queue = rb_library_action_queue_new ();
 	library->priv->walker_queue = rb_library_action_queue_new ();
+}
 
+void
+rb_library_release_brakes (RBLibrary *library)
+{
+	/* and off we go */
+	rb_library_load (library);
+
+	/* create these after having loaded the xml to avoid extra loading time */
 	library->priv->main_thread = rb_library_main_thread_new (library);
+
+	library->priv->walker_thread = rb_library_walker_thread_new (library);
 }
 
 static void
@@ -177,8 +176,6 @@ rb_library_finalize (GObject *object)
 	g_return_if_fail (library->priv != NULL);
 
 	g_object_unref (G_OBJECT (library->priv->main_thread));
-	if (library->priv->xml_thread != NULL)
-		g_object_unref (G_OBJECT (library->priv->xml_thread));
 	g_object_unref (G_OBJECT (library->priv->walker_thread));
 	g_object_unref (G_OBJECT (library->priv->main_queue));
 	g_object_unref (G_OBJECT (library->priv->walker_queue));
@@ -554,14 +551,6 @@ rb_library_save (RBLibrary *library)
 	xmlSaveFormatFileEnc (library->priv->xml_file, doc, "UTF-8", 1);
 }
 
-static void
-xml_thread_done_loading_cb (RBLibraryXMLThread *thread,
-			    RBLibrary *library)
-{
-	g_object_unref (G_OBJECT (library->priv->xml_thread));
-	library->priv->xml_thread = NULL;
-}
-
 RBLibraryActionQueue *
 rb_library_get_main_queue (RBLibrary *library)
 {
@@ -572,34 +561,6 @@ RBLibraryActionQueue *
 rb_library_get_walker_queue (RBLibrary *library)
 {
 	return library->priv->walker_queue;
-}
-
-void
-rb_library_release_brakes (RBLibrary *library)
-{
-	library->priv->xml_thread = rb_library_xml_thread_new (library,
-							       library->priv->xml_file);
-	g_signal_connect (G_OBJECT (library->priv->xml_thread), "done_loading",
-			  G_CALLBACK (xml_thread_done_loading_cb), library);
-
-	library->priv->walker_thread = rb_library_walker_thread_new (library);
-}
-
-static gboolean
-rb_library_finished_preloading_handler (RBLibrary *lib)
-{
-	g_signal_emit_by_name (lib, "finished_preloading", 0);
-
-	return FALSE;
-}
-
-void
-rb_library_finished_preloading (RBLibrary *library)
-{
-	g_idle_add_full (0,
-			 (GSourceFunc) rb_library_finished_preloading_handler,
-			 library,
-			 NULL);
 }
 
 RBNode *
@@ -688,12 +649,68 @@ rb_library_handle_songs (RBLibrary *library,
 
 			n = g_ptr_array_index (kids, i);
 			
-			if ((rb_library_get_all_artists (library) != n) &&
-			    (rb_library_get_all_albums (library) != n) &&
-			    (rb_library_get_all_songs (library) != n))
-				rb_library_handle_songs (library, n, func, user_data);
+			rb_library_handle_songs (library, n, func, user_data);
 		}
 
 		rb_node_thaw (node);
 	}
+}
+
+static void
+rb_library_load (RBLibrary *library)
+{
+	xmlDocPtr doc;
+	xmlNodePtr root, child;
+	char *tmp;
+	RBProfiler *p;
+
+	if (g_file_test (library->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
+		return;
+
+	doc = xmlParseFile (library->priv->xml_file);
+
+	if (doc == NULL)
+	{
+		unlink (library->priv->xml_file);
+		return;
+	}
+
+	root = xmlDocGetRootElement (doc);
+
+	tmp = xmlGetProp (root, "version");
+	if (tmp == NULL || strcmp (tmp, RB_LIBRARY_XML_VERSION) != 0)
+	{
+		g_free (tmp);
+		unlink (library->priv->xml_file);
+		xmlFreeDoc (doc);
+		return;
+	}
+	g_free (tmp);
+
+	p = rb_profiler_new ("XML loader");
+
+	for (child = root->children; child != NULL; child = child->next)
+	{
+		RBNode *node;
+		
+		node = rb_node_new_from_xml (child);
+
+		if (RB_IS_NODE_SONG (node))
+		{
+			const char *location;
+
+			location = rb_node_get_property_string (node,
+						                RB_NODE_SONG_PROP_LOCATION);
+					
+			rb_library_action_queue_add (library->priv->main_queue,
+						     FALSE,
+						     RB_LIBRARY_ACTION_UPDATE_FILE,
+						     location);
+		}
+	}
+
+	rb_profiler_dump (p);
+	rb_profiler_free (p);
+
+	xmlFreeDoc (doc);
 }

@@ -7,8 +7,6 @@ librblibrary_la_SOURCES =				\
 	rb-library-walker-thread.h			\
 	rb-library-main-thread.c			\
 	rb-library-main-thread.h			\
-	rb-library-xml-thread.c				\
-	rb-library-xml-thread.h				\
 	rb-library-action-queue.c			\
 	rb-library-action-queue.h			\
 	rb-library-preferences.h			\

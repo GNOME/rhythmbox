@@ -254,6 +254,7 @@ rb_node_filter_expression_new (RBNodeFilterExpressionType type,
 		exp->args.node_args.a = va_arg (valist, RBNode *);
 		exp->args.node_args.b = va_arg (valist, RBNode *);
 		break;
+	case RB_NODE_FILTER_EXPRESSION_EQUALS:
 	case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
 	case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
 		exp->args.node_args.a = va_arg (valist, RBNode *);
@@ -322,6 +323,8 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 		return TRUE;
 	case RB_NODE_FILTER_EXPRESSION_NODE_EQUALS:
 		return (exp->args.node_args.a == exp->args.node_args.b);
+	case RB_NODE_FILTER_EXPRESSION_EQUALS:
+		return (exp->args.node_args.a == node);	
 	case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
 		return rb_node_has_child (exp->args.node_args.a, node);
 	case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
