@@ -1,0 +1,123 @@
+/*
+ *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ *
+ *  $Id$
+ */
+
+#ifndef __RB_SOURCE_H
+#define __RB_SOURCE_H
+
+#include <gtk/gtkhbox.h>
+#include <bonobo/bonobo-ui-component.h>
+
+#include "rb-node-view.h"
+
+G_BEGIN_DECLS
+
+typedef enum {
+	RB_SOURCE_EOF_ERROR,
+	RB_SOURCE_EOF_NEXT,
+} RBSourceEOFType;
+
+
+#define RB_TYPE_SOURCE         (rb_source_get_type ())
+#define RB_SOURCE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SOURCE, RBSource))
+#define RB_SOURCE_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_SOURCE, RBSourceClass))
+#define RB_IS_SOURCE(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_SOURCE))
+#define RB_IS_SOURCE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SOURCE))
+#define RB_SOURCE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SOURCE, RBSourceClass))
+
+typedef struct RBSourcePrivate RBSourcePrivate;
+
+typedef struct
+{
+	GtkHBox parent;
+
+	RBSourcePrivate *priv;
+} RBSource;
+
+typedef struct
+{
+	GtkHBoxClass parent;
+	
+	/* signals */
+	void (*status_changed)	(RBSource *source);
+	void (*filter_changed)	(RBSource *source);
+
+	/* methods */
+	const char *	(*impl_get_status)	(RBSource *source);
+
+	RBNodeView *	(*impl_get_node_view)	(RBSource *source);
+	GList *		(*impl_get_extra_views)	(RBSource *source);
+
+	const char *	(*impl_get_description)	(RBSource *source);
+
+	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
+
+	void		(*impl_search)		(RBSource *source, const char *text);
+	GtkWidget *	(*impl_get_config_widget)(RBSource *source);
+
+	void		(*impl_song_properties)	(RBSource *player);
+
+	gboolean	(*impl_can_pause)	(RBSource *player);
+	RBSourceEOFType	(*impl_handle_eos)	(RBSource *player);
+	
+	gboolean	(*impl_have_artist_album)(RBSource *player);
+	const char *	(*impl_get_artist)	(RBSource *player);
+	const char *	(*impl_get_album)	(RBSource *player);
+	gboolean	(*impl_have_url)	(RBSource *player);
+	void		(*impl_buffering_done)	(RBSource *player);
+				   
+} RBSourceClass;
+
+GType		rb_source_get_type		(void);
+
+void		rb_source_notify_filter_changed	(RBSource *source);
+
+/* general interface */
+const char *	rb_source_get_status		(RBSource *source);
+
+RBNodeView *	rb_source_get_node_view		(RBSource *player);
+
+GList *		rb_source_get_extra_views	(RBSource *player);
+
+const char *	rb_source_get_description	(RBSource *source);
+
+GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
+
+void		rb_source_deleted		(RBSource *source);
+
+void		rb_source_search		(RBSource *source,
+						 const char *text);
+
+GtkWidget *	rb_source_get_config_widget	(RBSource *source);
+
+void		rb_source_song_properties	(RBSource *source);
+
+gboolean	rb_source_can_pause		(RBSource *player);
+RBSourceEOFType	rb_source_handle_eos		(RBSource *player);
+
+gboolean	rb_source_have_artist_album	(RBSource *player);
+const char *	rb_source_get_artist		(RBSource *player);
+const char *	rb_source_get_album		(RBSource *player);
+gboolean	rb_source_have_url		(RBSource *player);
+void		rb_source_buffering_done	(RBSource *player);
+
+G_END_DECLS
+
+#endif /* __RB_SOURCE_H */
