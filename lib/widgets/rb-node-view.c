@@ -261,7 +261,7 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, node_activated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
@@ -271,7 +271,7 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, node_selected),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
