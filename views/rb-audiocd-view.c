@@ -281,11 +281,11 @@ rb_audiocd_view_init (RBAudiocdView *view)
 
         view->priv->cd = monkey_media_audio_cd_new (NULL);
 	g_assert (view->priv->cd != NULL);
-        
+
         monkey_media_audio_cd_available (view->priv->cd, NULL);
         
-
 	view->priv->audiocd = rb_node_new ();
+        
 
 	view->priv->songs = rb_node_view_new (view->priv->audiocd,
 				              rb_file ("rb-node-view-songs.xml"),
@@ -346,6 +346,12 @@ rb_audiocd_view_finalize (GObject *object)
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+gboolean
+rb_audiocd_is_cd_available (RBAudiocdView *audiocd)
+{
+        return monkey_media_audio_cd_available (audiocd->priv->cd, NULL);
 }
 
 static void

@@ -67,6 +67,7 @@ void 	    rb_audiocd_view_add_node      (RBAudiocdView *view,
                                            RBNode *node);
 
 void        rb_audiocd_refresh_cd         (RBAudiocdView *view);
+gboolean    rb_audiocd_is_cd_available    (RBAudiocdView *view);
 
 G_END_DECLS
 
