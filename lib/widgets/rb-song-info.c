@@ -263,60 +263,99 @@ rb_song_info_init (RBSongInfo *song_info)
 
 	/* We add now the Pango attributes (look at bug #99867 and #97061) */
 	{
-		PangoAttrList *pattrlist = pango_attr_list_new ();
-                PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+		gchar *str_final;
 		GtkWidget *label;
-                                                                                
-                attr->start_index = 0;
-                attr->end_index = G_MAXINT;
-                pango_attr_list_insert (pattrlist, attr);
 
 		label = glade_xml_get_widget (xml, "comments_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "date_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "album_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "artist_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
-
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
+		
 		label = glade_xml_get_widget (xml, "title_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "genre_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "trackn_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "name_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "rating_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "location_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "last_played_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "play_count_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "duration_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "quality_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "encoding_label");
-                gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
 		
-                pango_attr_list_unref (pattrlist);
 	}
 
 	/* make those fields not editable for now */
