@@ -85,7 +85,7 @@ INCLUDES = 						\
 	-DDATADIR=\""$(datadir)"\"			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
-	-D_XOPEN_SOURCE
+	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 if USE_MONKEYMEDIA
 INCLUDES += -I$(top_srcdir)/metadata/monkey-media

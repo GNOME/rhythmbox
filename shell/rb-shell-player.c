@@ -58,6 +58,13 @@
 
 #include "rb-play-order.h"
 
+#ifdef WITH_DASHBOARD
+#include <stdio.h>
+#include <glib.h>
+#include <sys/time.h>
+#include "dashboard.c"
+#endif /* WITH_DASHBOARD */
+
 typedef enum
 {
 	PLAY_BUTTON_PLAY,
@@ -978,6 +985,8 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	rb_debug ("Success!");
 	rb_entry_view_set_playing_entry (songs, entry);
 	rb_shell_player_play (player);
+	rb_shell_player_sync_with_source (player);
+	rb_shell_player_sync_buttons (player);
 }
 
 static void
@@ -1384,6 +1393,12 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	char *title;
 	RhythmDBEntry *entry;
 	char *duration;
+#ifdef WITH_DASHBOARD
+	const char *album = NULL;	
+	const char *genre = NULL;	
+	const char *url = NULL;	
+        char *cluepacket;
+#endif
 
 	entry = rb_shell_player_get_playing_entry (player);
 	rb_debug ("playing source: %p, active entry: %p", player->priv->source, entry);
@@ -1395,6 +1410,12 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 							 entry, RHYTHMDB_PROP_TITLE);
 		artist = rhythmdb_entry_get_string (player->priv->db, entry,
 						    RHYTHMDB_PROP_ARTIST);
+#ifdef WITH_DASHBOARD
+		album = rhythmdb_entry_get_string (player->priv->db, entry,
+						    RHYTHMDB_PROP_ALBUM);
+		genre = rhythmdb_entry_get_string (player->priv->db, entry,
+						    RHYTHMDB_PROP_GENRE);
+#endif
 
 		rhythmdb_read_unlock (player->priv->db);
 	}
@@ -1433,6 +1454,23 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	g_free (title);
 	rb_header_set_playing_entry (player->priv->header_widget, entry);
 	rb_header_sync (player->priv->header_widget);
+#ifdef WITH_DASHBOARD
+        /* Send cluepacket to dashboard */
+	if (player->priv->playbutton_state == PLAY_BUTTON_PLAY) {
+        	cluepacket =
+			dashboard_build_cluepacket_then_free_clues ("Music Player",
+								    TRUE, 
+								    url, 
+								    dashboard_build_clue (entry_title, "title", 10),
+								    dashboard_build_clue (artist, "artist", 10),
+								    dashboard_build_clue (album, "album", 10),
+								    dashboard_build_clue (genre, "genre", 10),
+								    NULL);
+		
+        	dashboard_send_raw_cluepacket (cluepacket);
+        	g_free (cluepacket);
+	}
+#endif
 }
 
 void

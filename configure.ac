@@ -60,6 +60,18 @@ else
 	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
 fi	
 
+dnl dashboard support
+AC_ARG_ENABLE(dashboard,
+	      [  --disable-dashboard	  Disable dashboard support (http://www.nat.org/dashboard) (default enabled)])
+if test "x$enable_dashboard" = "xno" ; then
+   echo "Disabling dashboard support"
+else
+   echo "Building dashboard support"
+   enable_dashboard=yes
+   AC_DEFINE([WITH_DASHBOARD], 1, [Define to enable support for dashboard (http://www.nat.org/dashboard)])
+fi
+AM_CONDITIONAL(WITH_DASHBOARD, test x"$with_dashboard" = xyes)
+
 dnl Sound system
 AC_ARG_WITH(player,
             AC_HELP_STRING([--with-player=gstreamer|xine],[Select the player to use]),,
@@ -486,6 +498,11 @@ if test x"$enable_mp4" != "xyes"; then
 else
 	AC_MSG_NOTICE([** MPEG-4 support is enabled])
 fi
+fi
+if test x"$enable_dashboard" != "xyes"; then
+	AC_MSG_NOTICE([   Dashboard support is disabled])
+else
+	AC_MSG_NOTICE([** Dashboard support is enabled])
 fi
 dnl if test x"$enable_musicbrainz" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
