@@ -18,17 +18,16 @@
  *  $Id$
  */
 
-/* FIXME support duplicates..... */
+/* FIXME support duplicates..... rb_node_new_clone? */
 /* FIXME give playing row different bg color */
 /* FIXME different icon for playing and paused */
-/* FIXME node_activated */
-/* FIXME eos */
 /* FIXME tooltips on buttons */
 /* FIXME Whole track foo of bar thing should ellipsize */
-/* FIXME fix rblink markup */
-/* FIXME reintroduce elapsed time goodies */
+/* FIXME fix rblink markup; change cursor when over it */
 /* FIXME update window title again */
 /* FIXME better pause indication */
+/* FIXME tooltip on elapsed label should tell total and remaining time */
+/* FIXME figure proper whole album/all shuffle behaviour */
 
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
@@ -39,6 +38,7 @@
 #include <gtk/gtknotebook.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
+#include <string.h>
 
 #include "rb-player.h"
 #include "rb-stock-icons.h"
@@ -72,8 +72,13 @@ static void play_cb (GtkWidget *widget, RBPlayer *player);
 static void pause_cb (GtkWidget *widget, RBPlayer *player);
 static void previous_cb (GtkWidget *widget, RBPlayer *player);
 static void next_cb (GtkWidget *widget, RBPlayer *player);
+static void shuffle_cb (GtkWidget *widget, RBPlayer *player);
+static void repeat_cb (GtkWidget *widget, RBPlayer *player);
+static void eos_cb (MonkeyMediaStream *stream, RBPlayer *player);
+static void node_activated_cb (RBNodeView *view, RBNode *song, RBPlayer *player);
 static void nullify_info (RBPlayer *player);
 static gboolean sync_time (RBPlayer *player);
+static void clear (RBPlayer *player);
 
 struct RBPlayerPrivate
 {
@@ -312,10 +317,14 @@ rb_player_init (RBPlayer *player)
 
 	player->priv->repeat   = create_button_with_icon (RB_STOCK_REPEAT);
 	pack_button (player, player->priv->repeat, TRUE);
+	g_signal_connect (G_OBJECT (player->priv->repeat), "clicked",
+			  G_CALLBACK (repeat_cb), player);
 	player->priv->shuffle  = create_button_with_icon (RB_STOCK_SHUFFLE);
 	pack_button (player, player->priv->shuffle, TRUE);
+	g_signal_connect (G_OBJECT (player->priv->shuffle), "clicked",
+			  G_CALLBACK (shuffle_cb), player);
 
-	/* 'No playlist' label FIXME */
+	/* 'Empty playlist' label FIXME */
 	label = gtk_label_new (_("Empty playlist"));
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
@@ -335,6 +344,8 @@ rb_player_init (RBPlayer *player)
 							NULL);
 	g_signal_connect (G_OBJECT (player->priv->playlist_view), "drag_data_received",
 			  G_CALLBACK (drag_data_received_cb), player);
+	g_signal_connect (G_OBJECT (player->priv->playlist_view), "node_activated",
+			  G_CALLBACK (node_activated_cb), player);
 	gtk_drag_dest_set (GTK_WIDGET (player->priv->playlist_view), GTK_DEST_DEFAULT_ALL,
 			   target_table, 1, GDK_ACTION_COPY);
 	gtk_box_pack_start (GTK_BOX (player),
@@ -367,6 +378,8 @@ rb_player_finalize (GObject *object)
 	player = RB_PLAYER (object);
 
 	g_return_if_fail (player->priv != NULL);
+
+	clear (player);
 
 	g_object_unref (G_OBJECT (player->priv->mixer));
 
@@ -471,6 +484,8 @@ next (RBPlayer *player)
 
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+
+	update_buttons (player);
 }
 
 static void
@@ -480,6 +495,8 @@ previous (RBPlayer *player)
 
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+
+	update_buttons (player);
 }
 
 static void
@@ -514,6 +531,20 @@ clear (RBPlayer *player)
 }
 
 static void
+shuffle (RBPlayer *player)
+{
+	/* FIXME */
+	update_buttons (player);
+}
+
+static void
+append_repeat_node (RBPlayer *player)
+{
+	/* FIXME */
+	update_buttons (player);
+}
+
+static void
 insert_song (RBPlayer *player, RBNode *song, int index)
 {
 	/* FIXME */
@@ -523,9 +554,9 @@ insert_song (RBPlayer *player, RBNode *song, int index)
 		set_playing (player, song);
 
 		monkey_media_mixer_set_state (player->priv->mixer, MONKEY_MEDIA_MIXER_STATE_PAUSED);
-	} else {
-		update_buttons (player);
 	}
+
+	update_buttons (player);
 }
 
 static void
@@ -560,25 +591,41 @@ delete_song (RBPlayer *player, RBNode *song)
 }
 #endif
 
-#define ALBUM_INFO_URL(xALBUM)   "http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=xALBUM"
-#define ARTIST_INFO_URL(xARTIST) "http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=xARTIST"
+static char *
+escape_for_allmusic (char *in)
+{
+	char *tmp = in;
+
+	while ((tmp = strstr (tmp, " ")) != NULL)
+		*tmp = '|';
+
+	return in;
+}
+
+#define ALBUM_INFO_URL(xALBUM)   escape_for_allmusic (g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=%s", xALBUM))
+#define ARTIST_INFO_URL(xARTIST) escape_for_allmusic (g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST))
 
 static void
 sync_info (RBPlayer *player)
 {
 	const char *text;
+	char *url;
 	int num;
 
 	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
 	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (player->priv->song_label), text);
 
 	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ALBUM);
-	rb_link_set (RB_LINK (player->priv->album_link), text, _("Get information about this album from the web"),
-		     ALBUM_INFO_URL (text));
+	url = ALBUM_INFO_URL (text);
+	rb_link_set (RB_LINK (player->priv->album_link), text,
+		     _("Get information about this album from the web"), url);
+	g_free (url);
 
 	text = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ARTIST);
-	rb_link_set (RB_LINK (player->priv->artist_link), text, _("Get information about this artist from the web"),
-		     ARTIST_INFO_URL (text));
+	url = ARTIST_INFO_URL (text);
+	rb_link_set (RB_LINK (player->priv->artist_link), text,
+		     _("Get information about this artist from the web"), url);
+	g_free (url);
 
 	num = rb_node_get_property_int (player->priv->playing, RB_NODE_PROP_REAL_TRACK_NUMBER);
 	if (num > 0) {
@@ -596,17 +643,13 @@ sync_info (RBPlayer *player)
 static void
 set_playing (RBPlayer *player, RBNode *song)
 {
-	/* FIXME */
 	player->priv->playing = song;
 
 	rb_node_view_set_playing_node (player->priv->playlist_view, song);
 
-	update_buttons (player);
-
 	if (song == NULL)
 		nullify_info (player);
-	else
-	{
+	else {
 		GError *error = NULL;
 
 		player->priv->stream = monkey_media_audio_stream_new (rb_node_get_property_string (song, RB_NODE_PROP_LOCATION), &error);
@@ -615,6 +658,10 @@ set_playing (RBPlayer *player, RBNode *song)
 			g_error_free (error);
 			return;
 		}
+
+		g_signal_connect (G_OBJECT (player->priv->stream), "end_of_stream",
+				  G_CALLBACK (eos_cb), player);
+
 		monkey_media_mixer_append_audio_stream (player->priv->mixer, player->priv->stream);
 		monkey_media_mixer_set_playing_audio_stream (player->priv->mixer, player->priv->stream);
 		g_object_unref (G_OBJECT (player->priv->stream));
@@ -637,6 +684,7 @@ rb_player_queue_song (RBPlayer *player,
 	if (start_playing) {
 		prepend_song (player, song);
 		set_playing (player, song);
+		update_buttons (player);
 	} else {
 		append_song (player, song);
 	}
@@ -669,6 +717,8 @@ rb_player_load_playlist (RBPlayer *player,
 			 GError **error)
 {
 	clear (player);
+
+	update_buttons (player);
 
 	/* FIXME */
 }
@@ -746,6 +796,42 @@ next_cb (GtkWidget *widget,
 	 RBPlayer *player)
 {
 	next (player);
+}
+
+static void
+shuffle_cb (GtkWidget *widget,
+	    RBPlayer *player)
+{
+	shuffle (player);
+}
+
+static void
+repeat_cb (GtkWidget *widget,
+	   RBPlayer *player)
+{
+	append_repeat_node (player);
+}
+
+static void
+eos_cb (MonkeyMediaStream *stream,
+	RBPlayer *player)
+{
+	set_playing (player, rb_node_view_get_next_node (player->priv->playlist_view));
+
+	update_buttons (player);
+}
+
+static void
+node_activated_cb (RBNodeView *view,
+		   RBNode *song,
+		   RBPlayer *player)
+{
+	set_playing (player, song);
+
+	monkey_media_mixer_set_state (player->priv->mixer,
+				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+
+	update_buttons (player);
 }
 
 /* FIXME re-intro seeking */

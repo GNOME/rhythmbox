@@ -117,10 +117,10 @@ rb_search_entry_init (RBSearchEntry *entry)
 
 	entry->priv->entry = gtk_entry_new ();
 	gtk_widget_set_size_request (GTK_WIDGET (entry->priv->entry), 50, -1);
-	
+
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
 				       entry->priv->entry);
-	
+
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
 
 	g_signal_connect (G_OBJECT (entry->priv->entry),
