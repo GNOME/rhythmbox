@@ -276,7 +276,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("AddLocation",  (BonoboUIVerbFn) rb_shell_cmd_add_location),
 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
-	BONOBO_UI_VERB ("ExtractCD",  (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
+	BONOBO_UI_VERB ("ExtractCD",    (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
 	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_cmd_current_song),
 	BONOBO_UI_VERB_END
 };
@@ -730,11 +730,6 @@ rb_shell_construct (RBShell *shell)
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
 	rb_shell_select_source (shell, shell->priv->library_source); /* select this one by default */
-
-	/* Look for Sound Juicer */
-	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_EXTRACT_CD, 
-			g_find_program_in_path ("sound-juicer") != NULL);
-
 
 	/* load library */
 	rb_debug ("shell: loading library");
@@ -1343,9 +1338,19 @@ rb_shell_cmd_extract_cd (BonoboUIComponent *component,
 			 RBShell *shell,
 			 const char *verbname)
 {
-	GError *err = NULL;
-	g_spawn_command_line_async ("sound-juicer", &err);
-	g_clear_error(&err);
+	GError *error = NULL;
+
+	if (g_find_program_in_path ("sound-juicer") == NULL) {
+		rb_error_dialog (_("To extract CDs you must install the Sound Juicer package."));
+		return;
+	}
+
+	g_spawn_command_line_async ("sound-juicer", &error);
+
+	if (error != NULL)
+		rb_error_dialog (_("Couldn't run sound-juicer: %s"), error->message);
+
+	g_clear_error (&error);
 }
 
 static void

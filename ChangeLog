@@ -1,3 +1,15 @@
+Sat, 30 Aug 2003 07:30:31 -0400  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_cmd_extract_cd):
+
+	Always enable Extract CD option, but just display an
+	error message if Sound Juicer isn't installed.
+	
+	* sources/rb-playlist-source.c: (filename_from_name):
+
+	Don't try to guess at multiple names.
+
 Sat, 30 Aug 2003 06:54:46 -0400  Colin Walters  <walters@verbum.org>
 
 	* iradio/rb-iradio-backend.c: (rb_iradio_backend_finalize):

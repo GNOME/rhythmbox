@@ -791,30 +791,22 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 static char *
 filename_from_name (const char *name)
 {
-	char *tmp, *ret = NULL, *asciiname;
-	int i = 0;
+	GString *filename;
+	char *tmp;
+	char *ret;
 
 	g_assert (name != NULL);
 
-	asciiname = g_filename_from_utf8 (name, -1, NULL, NULL, NULL);
+	filename = g_string_new ("");
 
-	tmp = g_strconcat (asciiname, ".xml", NULL);
+	tmp = g_filename_from_utf8 (name, -1, NULL, NULL, NULL);
+	g_string_append (filename, tmp);
+	g_free (tmp);
 
-	while (ret == NULL) {
-		char *tmp2 = g_build_filename (rb_dot_dir (), "playlists", tmp, NULL);
-		g_free (tmp);
-		
-		if (g_file_test (tmp2, G_FILE_TEST_EXISTS) == FALSE)
-			ret = tmp2;
-		else {
-			tmp = g_strdup_printf ("%s%d.xml", asciiname, i);
-			g_free (tmp2);
-		}
+	g_string_append (filename, ".xml");
 
-		i++;
-	}
-
-	g_free (asciiname);
+	ret = g_build_filename (rb_dot_dir (), "playlists", filename->str, NULL);
+	g_string_free (filename, TRUE);
 
 	return ret;
 }
