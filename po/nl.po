@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
-"POT-Creation-Date: 2003-01-16 02:51+0100\n"
+"POT-Creation-Date: 2003-02-18 04:02+0100\n"
 "PO-Revision-Date: 2003-01-16 13:08+0100\n"
 "Last-Translator: Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
 "Language-Team:  <nl@li.org>\n"
@@ -64,11 +64,11 @@ msgstr "Laat _toolbar zien als:"
 
 #: data/glade/preferences.glade.h:11
 msgid "Text _below icons"
-msgstr "Tekst _onder iconen"
+msgstr "Tekst _onder pictogrammen"
 
 #: data/glade/preferences.glade.h:12
 msgid "Text b_eside icons"
-msgstr "Tekst _naast iconen"
+msgstr "Tekst _naast pictogrammen"
 
 #: data/glade/preferences.glade.h:13
 msgid "Track _number"
@@ -94,7 +94,7 @@ msgstr "_Genre"
 
 #: data/glade/preferences.glade.h:18
 msgid "_Icons"
-msgstr "_Iconen"
+msgstr "_Pictogrammen"
 
 #: data/glade/preferences.glade.h:19
 msgid "_Last played"
@@ -302,7 +302,7 @@ msgstr "Ti_jd"
 msgid "Tra_ck"
 msgstr "Tra_ck"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:570
+#: data/rhythmbox.desktop.in.h:1 shell/rb.c:297 shell/rb.c:578
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -478,7 +478,7 @@ msgid "Failed to parse %s\n"
 msgstr "Niet begrepen %s\n"
 
 #: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
-#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:569
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:582
 msgid "(Unknown)"
 msgstr "(Onbekend)"
 
@@ -581,7 +581,7 @@ msgstr ""
 "Er is een fout opgetreden tijdens het gaan naar %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:630
+#: lib/widgets/rb-node-view.c:653
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr ""
@@ -623,31 +623,36 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d kanalen)"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:388
+#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
 msgid "Click to mute"
 msgstr "Klik voor stilte"
 
-#: lib/widgets/rb-volume.c:384
+#: lib/widgets/rb-volume.c:381
 msgid "Click to unmute"
 msgstr "Klik om stilte op te heffen"
 
-#: library/rb-node.c:866 library/rb-node.c:872 library/rb-node.c:903
+#: library/rb-node-song.c:262
+#, fuzzy, c-format
+msgid "%ld:%02ld"
+msgstr "%ld:%.2ld"
+
+#: library/rb-node.c:877 library/rb-node.c:883 library/rb-node.c:914
 msgid "Never"
 msgstr "Nooit"
 
-#: library/rb-node.c:894
+#: library/rb-node.c:905
 msgid "Today at %-H:%M"
 msgstr "Vandaag op %-H:%M"
 
-#: library/rb-node.c:896
+#: library/rb-node.c:907
 msgid "Yesterday at %-H:%M"
 msgstr "Gisteren op %-H:%M"
 
-#: library/rb-node.c:898
+#: library/rb-node.c:909
 msgid "%A, %B %-d %Y at %-H:%M"
 msgstr "%A, %B %-d %Y op %-H:%M"
 
-#: library/rb-node.c:1642
+#: library/rb-node.c:1695
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
@@ -694,47 +699,36 @@ msgstr "Kan Rhythmbox niet activeren"
 msgid "Music Player Preferences"
 msgstr "Muziekspeler voorkeuren"
 
-#: shell/rb-player.c:302
+#. TRANSLATOR: [song_label] by [artist]
+#: shell/rb-player.c:312
 msgid "by "
 msgstr "door "
 
-#: shell/rb-player.c:317
+#: shell/rb-player.c:327
 msgid "Drag to go to a particular moment in the song"
 msgstr "Sleep om een bepaald moment in het liedje af te spelen"
 
-#: shell/rb-player.c:362
+#: shell/rb-player.c:372
 msgid "Play the previous song"
 msgstr "Speel het vorige liedje af"
-
-#: shell/rb-player.c:369
-msgid "Start playback"
-msgstr "Begin met afspelen"
-
-#: shell/rb-player.c:376
-msgid "Pause playback"
-msgstr "Pauzeer het afspelen"
 
 #: shell/rb-player.c:383
 msgid "Play the next song"
 msgstr "Speel het volgende liedje af"
 
-#: shell/rb-player.c:391
-msgid "Repeat the play list"
-msgstr "Herhaal de afspeellijst"
-
-#: shell/rb-player.c:398
+#: shell/rb-player.c:395
 msgid "Shuffle the play list"
 msgstr "Herschik de afspeellijst willekeurig"
 
-#: shell/rb-player.c:407 shell/rb-player.c:415
+#: shell/rb-player.c:404 shell/rb-player.c:412
 msgid "Not playing"
 msgstr "Niet bezig met afspelen"
 
-#: shell/rb-player.c:421
+#: shell/rb-player.c:418
 msgid "To play, add music to the play list"
 msgstr "Om muziek af te spelen, voeg muziek toe aan de afspeellijst"
 
-#: shell/rb-player.c:448
+#: shell/rb-player.c:444
 #, c-format
 msgid ""
 "Failed to create player, exiting. Error was:\n"
@@ -743,38 +737,56 @@ msgstr ""
 "Kan geen afspeler aanmaken, bezig met afsluiten. De fout was:\n"
 "%s "
 
-#: shell/rb-player.c:725
+#: shell/rb-player.c:549
+msgid "Start playback"
+msgstr "Begin met afspelen"
+
+#: shell/rb-player.c:555
+msgid "Pause playback"
+msgstr "Pauzeer het afspelen"
+
+#: shell/rb-player.c:693
+#, fuzzy
+msgid "Disable repeating the play list"
+msgstr "Herhaal de afspeellijst"
+
+#: shell/rb-player.c:697
+#, fuzzy
+msgid "Enable repeating the play list"
+msgstr "Herhaal de afspeellijst"
+
+#: shell/rb-player.c:792
 msgid "Get information about this artist from the web"
 msgstr "Haal informatie op over deze artiest via het internet"
 
-#: shell/rb-player.c:731
+#: shell/rb-player.c:798
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:733
+#: shell/rb-player.c:800
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Onbekend"
 
-#: shell/rb-player.c:765
+#: shell/rb-player.c:832
 #, c-format
 msgid ""
 "Failed to create stream, error was:\n"
 "%s"
 msgstr "Kan geen gegevensstroom aanmaken. De fout was: %s"
 
-#: shell/rb-player.c:855
+#: shell/rb-player.c:927
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Kan %s niet verwerken als afspeellijst"
 
-#: shell/rb-player.c:1090
+#: shell/rb-player.c:1174
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld:%.2ld"
 
-#: shell/rb-player.c:1094
+#: shell/rb-player.c:1178
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Totaal %ld:%.2ld (%ld:%.2ld resterend)"
@@ -792,17 +804,27 @@ msgstr ""
 "andere prefix heeft geinstalleerd dat bonobo-activation;\n"
 "Deze waarschuwing is onschuldig, maar IPC zal niet werken.\n"
 
-#: shell/rb.c:491
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr "Kees van den Broek <kvdb@NOSPAMkvdb.net>"
 
-#: shell/rb.c:502
-msgid "Copyright  2002, 2003 Jorn Baayen. All rights reserved."
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr ""
+
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr ""
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, fuzzy, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
 msgstr "Copyright  2002, 2003 Jorn Baayen. Alle rechten voorbehouden."
 
-#: shell/rb.c:503
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
-msgstr "Een muziek beheer en afspeel applicatie voor GNOME."
+msgstr "Een muziek beheer en afspeel programma voor GNOME."
 
 #: views/rb-audiocd-view.c:268
 msgid "music audiocd"
