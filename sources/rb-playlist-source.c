@@ -781,7 +781,6 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	RBPlaylistSource *source;
 	xmlNodePtr child;
 	char *tmp;
-	char *internal_name;
 
 	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db, FALSE));
 
@@ -794,18 +793,15 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
 	g_free (tmp);
 
-	tmp = xmlGetProp (node, "serial");
-	if (tmp) {
-		internal_name = g_strdup_printf ("<playlist:%s>", tmp);
-	} else {
+	tmp = xmlGetProp (node, "internal-name");
+	if (!tmp) {
 		GTimeVal serial;
 		/* Hm.  Upgrades. */
 		g_get_current_time (&serial);
-		internal_name = g_strdup_printf ("<playlist:%ld:%ld>",
-						 serial.tv_sec, serial.tv_usec);
+		tmp = g_strdup_printf ("<playlist:%ld:%ld>",
+				       serial.tv_sec, serial.tv_usec);
 	}
-	g_object_set (G_OBJECT (source), "internal-name", internal_name, NULL);
-	g_free (internal_name);
+	g_object_set (G_OBJECT (source), "internal-name", tmp, NULL);
 	g_free (tmp);
 
 	if (source->priv->automatic) {
@@ -857,11 +853,14 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 {
 	xmlNodePtr node;
 	char *name;
+	char *internal_name;
 	GtkTreeIter iter;
 	
 	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
-	g_object_get (G_OBJECT (source), "name", &name, NULL);
+	g_object_get (G_OBJECT (source), "name", &name,
+		      "internal-name", &internal_name, NULL);
 	xmlSetProp (node, "name", name);
+	xmlSetProp (node, "internal-name", internal_name);
 	xmlSetProp (node, "type", source->priv->automatic ? "automatic" : "static");
 	
 	if (!source->priv->automatic) {

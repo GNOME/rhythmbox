@@ -1421,7 +1421,7 @@ rb_shell_construct (RBShell *shell)
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
-	rb_shell_sync_selected_source (shell);
+	rb_shell_select_source_internal (shell, library_source);
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -1774,8 +1774,14 @@ rb_shell_select_source_internal (RBShell *shell,
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
 				       gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), GTK_WIDGET (source)));
 
+	g_signal_handlers_block_by_func (G_OBJECT (shell->priv->sourcelist),
+					 G_CALLBACK (source_selected_cb),
+					 shell);
 	rb_sourcelist_select (RB_SOURCELIST (shell->priv->sourcelist),
 			      source);
+	g_signal_handlers_unblock_by_func (G_OBJECT (shell->priv->sourcelist),
+					   G_CALLBACK (source_selected_cb),
+					   shell);
 	
 	/* update services */
 	rb_shell_clipboard_set_source (shell->priv->clipboard_shell,
@@ -2186,7 +2192,10 @@ rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
 {
 	rb_debug ("load complete");
 	GDK_THREADS_ENTER ();
+
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
+
+	rb_shell_sync_selected_source (shell);
 	GDK_THREADS_LEAVE ();
 }
 
