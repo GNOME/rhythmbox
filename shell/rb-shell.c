@@ -762,7 +762,7 @@ idle_do_action (struct RBShellAction *data)
 		g_timeout_add (500 + data->tries*200, (GSourceFunc) idle_do_action, data);
 		goto out_unlock;
 	} else
-		g_warning ("No entry %s in db", data->uri);
+		rb_debug ("No entry %s in db", data->uri);
 
 	data->shell->priv->play_queued = FALSE;
 
@@ -843,12 +843,15 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	if (rb_playlist_can_handle (uri)) {
 		rb_debug ("parsing uri as playlist: %s", uri);
 		uri = rb_playlist_manager_parse_file (shell->priv->playlist_manager, uri);
+		if (!uri)
+			goto out;
 	} else {
 		rb_debug ("async adding uri: %s", uri);
 		rhythmdb_add_uri_async (shell->priv->db, uri);
 	}
 
 	rb_shell_queue_play (shell, uri);
+out:
 	g_object_unref (G_OBJECT (parser));
 }
 
