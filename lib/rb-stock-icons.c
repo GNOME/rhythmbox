@@ -2,6 +2,7 @@
  *  arch-tag: Implementation of Rhythmbox icon loading
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,6 +46,7 @@ rb_stock_icons_init (void)
 		RB_STOCK_REPEAT,
 		RB_STOCK_VISUALS,
 		RB_STOCK_PLAYLIST,
+		RB_STOCK_PLAYLIST_MENU,
 		RB_STOCK_LIBRARY,
 		RB_STOCK_IRADIO,
 		RB_STOCK_PLAYING,
@@ -57,6 +59,7 @@ rb_stock_icons_init (void)
 		RB_STOCK_VOLUME_MUTE,
 		RB_STOCK_TRAY_ICON,
 		RB_STOCK_SET_STAR,
+		RB_STOCK_SMART_PLAYLIST,
 		RB_STOCK_UNSET_STAR,
 		RB_STOCK_NO_STAR,
 		RB_STOCK_DND_ICON,
@@ -66,8 +69,7 @@ rb_stock_icons_init (void)
 	factory = gtk_icon_factory_new ();
 	gtk_icon_factory_add_default (factory);
 
-	for (i = 0; i < (int) G_N_ELEMENTS (items); i++)
-	{
+	for (i = 0; i < (int) G_N_ELEMENTS (items); i++) {
 		GtkIconSet *icon_set;
 		GdkPixbuf *pixbuf;
 		char *fn;

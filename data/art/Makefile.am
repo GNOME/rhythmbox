@@ -10,6 +10,7 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-visuals.png       \
 	   rhythmbox-repeat.png        \
 	   rhythmbox-playlist.png      \
+	   rhythmbox-playlist-menu.png \
            rhythmbox-library.png       \
            rhythmbox-iradio.png        \
 	   rhythmbox-playing.png       \
@@ -22,11 +23,11 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-volume-zero.png   \
 	   rhythmbox-tray-icon.png     \
 	   rhythmbox-set-star.png      \
+	   rhythmbox-smart-playlist.png \
 	   rhythmbox-unset-star.png    \
 	   rhythmbox-no-star.png       \
 	   rhythmbox-audiocd.png       \
 	   rhythmbox-dnd.png           \
-	   rhythmbox-sound-juicer.png  \
 	   about-logo.png
 
 artdir = $(pkgdatadir)/art
