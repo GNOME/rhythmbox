@@ -2045,40 +2045,44 @@ rhythmdb_get_status (RhythmDB *db)
 char *
 rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize size)
 {
-	float days;
-	long hours, minutes, seconds;
+	long days, hours, minutes, seconds;
 	char *songcount;
 	char *time;
 	char *size_str;
 	char *ret;
+	const char *minutefmt;
+	const char *hourfmt;	
+	const char *dayfmt;
 
 	songcount = g_strdup_printf (ngettext ("%d song", "%d songs", n_songs), n_songs);
 
-	days    = (float) duration / (float) (60 * 60 * 24); 
-	hours   = duration / (60 * 60);
-	minutes = duration / 60 - hours * 60;
+	days    = duration / (60 * 60 * 24); 
+	hours   = (duration / (60 * 60)) - (days * 24);
+	minutes = (duration / 60) - ((days * 24 * 60) + (hours * 60));
 	seconds = duration % 60;
 
-	if (days >= 1.0) {
-		time = ngettext ("%.1f day", "%.1f days", days);
-		time = g_strdup_printf (time, days);			
+	minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
+	hourfmt = ngettext ("%ld hour", "%ld hours", hours);
+	dayfmt = ngettext ("%ld day", "%ld days", days);
+	if (days >= 1) {
+		char *fmt;
+		/* Translators: the format is "X days, X hours and X minutes" */
+		fmt = g_strdup_printf (_("%s, %s and %s"), dayfmt, hourfmt, minutefmt);
+		time = g_strdup_printf (fmt, days, hours, minutes);
+		g_free (fmt);
 	} else {
-		const char *minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
 		if (hours >= 1) {		
 			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
 			char *fmt;
-			if (minutes > 0) {
-				/* Translators: the format is "X hours and X minutes" */
-				fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
-			} else {
-				/* Translators: the format is "X hours" */
-				fmt = g_strdup_printf ("%s", hourfmt);
-			}
+			/* Translators: the format is "X hours and X minutes" */
+			fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
 			time = g_strdup_printf (fmt, hours, minutes);
 			g_free (fmt);
-		} else 
+		} else {
 			time = g_strdup_printf (minutefmt, minutes);
+		}
 	}
+
 	size_str = gnome_vfs_format_file_size_for_display (size);
 	ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
 	g_free (songcount);
