@@ -29,6 +29,8 @@
 
 #include <id3tag.h>
 
+#include "rb-string-helpers.h"
+
 #include "id3-vfs/id3-vfs.h"
 
 #include "monkey-media-stream-info.h"
@@ -606,11 +608,8 @@ MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag, const char *field_na
 	}
 
 	if (utf8 && !g_utf8_validate (utf8, -1, NULL)) {
-		size_t read, written;
-
 		g_warning ("Invalid UTF-8 in %s field in mp3 file\n", field_name);
-
-		utf8 = g_locale_to_utf8 ((char *) ucs4, -1, &read, &written, NULL);
+		utf8 = rb_unicodify ((char *) ucs4);
 	}
 
 	return utf8;
