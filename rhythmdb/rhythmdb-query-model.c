@@ -576,6 +576,10 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBPropType prop, const GValue *old,
 				       const GValue *new, RhythmDBQueryModel *model)
 {
+	if (!model->priv->connected) {
+		return;
+	}
+
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
 		struct RhythmDBQueryModelUpdate *update;
 
