@@ -283,6 +283,7 @@ rb_library_finalize (GObject *object)
 	g_free (library->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+	rb_debug ("library finalization complete");
 }
 
 RBLibrary *
@@ -874,6 +875,8 @@ finalize_node (RBNode *node)
 {
 	RBNode *parent;
 	
+	rb_debug ("finalizing %p", node);
+
 	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ALBUM);
 	if (G_LIKELY (parent != NULL))
 		rb_node_unref_with_locked_child (parent, node);

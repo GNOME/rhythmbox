@@ -339,6 +339,8 @@ rb_library_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
+	rb_debug ("finalizing library source");
+
 	g_object_unref (G_OBJECT (source->priv->artists_filter));
 	g_object_unref (G_OBJECT (source->priv->songs_filter));
 	g_object_unref (G_OBJECT (source->priv->albums_filter));

@@ -257,6 +257,8 @@ rb_iradio_source_finalize (GObject *object)
 
 	g_return_if_fail (source->priv != NULL);
 
+	rb_debug ("finalizing iradio source");
+
 	g_free (source->priv->name);
 	g_free (source->priv->song);
 	g_free (source->priv->title);
@@ -440,6 +442,7 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 
 	gdk_threads_enter ();
 
+
 	if (!source->priv->async_node_destroyed) {
 		playing_node = rb_node_view_get_playing_node (source->priv->stations);
 		rb_debug ("async updating play statistics, node: %p playing node: %p",
@@ -449,6 +452,8 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 
 		rb_node_signal_disconnect (source->priv->async_update_node,
 					   source->priv->async_signum);
+	} else {
+		rb_debug ("async node destroyed");
 	}
 		
 	gdk_threads_leave ();

@@ -36,6 +36,8 @@
 #include "rb-thread-helpers.h"
 #include "rb-cut-and-paste-code.h"
 
+static void rb_node_signal_disconnect_internal (RBNode *node, int signal_id);
+
 typedef struct
 {
 	RBNode *node;
@@ -290,7 +292,7 @@ static void
 signal_object_weak_notify (RBNodeSignalData *signal_data,
                            GObject *where_the_object_was)
 {
-	rb_node_signal_disconnect (signal_data->node, signal_data->id);
+	rb_node_signal_disconnect_internal (signal_data->node, signal_data->id);
 }
 
 static void
@@ -1249,9 +1251,9 @@ rb_node_get_previous_child (RBNode *node,
 
 int
 rb_node_signal_connect_object (RBNode *node,
-				 RBNodeSignalType type,
-				 RBNodeCallback callback,
-				 GObject *object)
+			       RBNodeSignalType type,
+			       RBNodeCallback callback,
+			       GObject *object)
 {
 	RBNodeSignalData *signal_data;
 	int ret;
@@ -1279,14 +1281,32 @@ rb_node_signal_connect_object (RBNode *node,
 	return ret;
 }
 
-void
-rb_node_signal_disconnect (RBNode *node,
-			     int signal_id)
+static void
+rb_node_signal_disconnect_internal (RBNode *node,
+				    int signal_id)
 {
 	g_return_if_fail (RB_IS_NODE (node));
 
 	g_hash_table_remove (node->signals,
 			     GINT_TO_POINTER (signal_id));
+}
+
+void
+rb_node_signal_disconnect (RBNode *node,
+			   int signal_id)
+{
+	RBNodeSignalData *signal_data;
+	g_return_if_fail (RB_IS_NODE (node));
+
+	signal_data = g_hash_table_lookup (node->signals,
+					   GINT_TO_POINTER (signal_id));
+	
+	if (signal_data->data)
+		g_object_weak_unref (G_OBJECT (signal_data->data),
+				     (GWeakNotify) signal_object_weak_notify,
+				     signal_data);
+
+	rb_node_signal_disconnect_internal (node, signal_id);
 }
 
 void

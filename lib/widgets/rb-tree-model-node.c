@@ -870,6 +870,8 @@ static void
 root_destroyed_cb (RBNode *node,
 		   RBTreeModelNode *model)
 {
+	rb_debug ("root (%p) destroyed", node);
+
 	model->priv->root = NULL;
 
 	/* no need to do other stuff since we should have had a bunch of child_removed

@@ -1,5 +1,26 @@
 2003-08-09  Colin Walters  <walters@verbum.org>
 
+	* .gdbinit:
+	
+	New gdb macros file, with our collection of handy macros.
+	
+	* iradio/rb-iradio-backend.c: (finalize_node):
+	* lib/widgets/rb-tree-model-node.c: (root_destroyed_cb):
+	* library/rb-library.c: (rb_library_finalize), (finalize_node):
+	* library/rb-node.c: (signal_object_weak_notify),
+	(rb_node_signal_connect_object),
+	(rb_node_signal_disconnect_internal), (rb_node_signal_disconnect):
+	* sources/rb-iradio-source.c: (rb_iradio_source_finalize),
+	(rb_iradio_source_async_update_play_statistics):
+	* sources/rb-library-source.c: (rb_library_source_finalize):
+
+	Be sure to remove weak references to objects when disconnecting
+	a node signal.  This closes #119497, a blocker.
+
+	Also add more debugging statements in places.
+
+2003-08-09  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell.c: (rb_shell_cmd_about):
 
 	Display backend and supported audio formats in about dialog.
