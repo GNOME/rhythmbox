@@ -28,6 +28,7 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkoptionmenu.h>
 #include <glade/glade.h>
+#include <libgnome/gnome-help.h>
 #include <string.h>
 
 #include "rb-file-helpers.h"
@@ -56,6 +57,7 @@ const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text"
 struct RBShellPreferencesPrivate
 {
 	GtkWidget *toolbar_check;
+	GtkWidget *style_hbox;
 	GtkWidget *statusbar_check;
 	GtkWidget *sidebar_check;
 	GtkWidget *style_optionmenu;
@@ -107,9 +109,26 @@ rb_shell_preferences_class_init (RBShellPreferencesClass *klass)
 }
 
 static void
+help_cb (GtkWidget *widget,
+	 RBShellPreferences *shell_preferences)
+{
+	GError *error = NULL;
+
+	gnome_help_display ("rhythmbox.xml", "prefs", &error);
+
+	if (error != NULL)
+	{
+		g_warning (error->message);
+
+		g_error_free (error);
+	}
+}
+
+static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GladeXML *xml;
+	GtkWidget *help;
 	
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
@@ -129,6 +148,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
 			       GTK_STOCK_CLOSE,
 			       GTK_RESPONSE_CLOSE);
+	help = gtk_dialog_add_button (GTK_DIALOG (shell_preferences),
+			              GTK_STOCK_HELP,
+			              GTK_RESPONSE_HELP);
+	g_signal_connect (G_OBJECT (help), "clicked",
+			  G_CALLBACK (help_cb), shell_preferences);
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
 
@@ -136,11 +160,11 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_window_set_resizable (GTK_WINDOW (shell_preferences), FALSE);
 
 	xml = rb_glade_xml_new ("preferences.glade",
-				"preferences_vbox",
+				"preferences_hbox",
 				shell_preferences);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell_preferences)->vbox),
-			   glade_xml_get_widget (xml, "preferences_vbox"));
+			   glade_xml_get_widget (xml, "preferences_hbox"));
 
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences), 7);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell_preferences)->vbox), 8);
@@ -148,6 +172,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	shell_preferences->priv->toolbar_check =
 		glade_xml_get_widget (xml, "toolbar_check");
+	shell_preferences->priv->style_hbox =
+		glade_xml_get_widget (xml, "style_hbox");
 	shell_preferences->priv->statusbar_check =
 		glade_xml_get_widget (xml, "statusbar_check");
 	shell_preferences->priv->sidebar_check =
@@ -228,6 +254,8 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->toolbar_check),
 				      eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
+	gtk_widget_set_sensitive (shell_preferences->priv->style_hbox,
+				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->statusbar_check),
 				      eel_gconf_get_boolean (CONF_UI_STATUSBAR_VISIBLE));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->sidebar_check),
