@@ -134,13 +134,24 @@ else if test "x$with_player" = "xgstreamer"; then
 	dnl And we can also ask for the right version of gstreamer
 	HAVE_SOUNDSYSTEM=no
 
-	dnl try 0.7, in the future also 0.8
-	GST_MAJORMINOR=0.7
-	GST_REQUIRED_VERSION=0.7.4
+	GST_MAJORMINOR=0.8
+	GST_REQUIRED_VERSION=0.8.0
 	PKG_CHECK_MODULES(SOUNDSYSTEM, \
 		gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
 		gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
 		HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
+
+
+	dnl try 0.7
+	if test x"$HAVE_SOUNDSYSTEM" = xno; then
+	   	AC_MSG_WARN([Couldn't find GStreamer 0.8, trying 0.7])
+		GST_MAJORMINOR=0.7
+		GST_REQUIRED_VERSION=0.7.4
+			PKG_CHECK_MODULES(SOUNDSYSTEM, \
+			gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
+			gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
+			HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
+	fi
 
 	dnl Give error and exit if we don't have gstreamer
 	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
