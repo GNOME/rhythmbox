@@ -24,6 +24,7 @@
 G_BEGIN_DECLS
 
 char *rb_prefix_to_suffix (const char *string);
+int   rb_utf8_strncasecmp (gconstpointer a, gconstpointer b);
 
 G_END_DECLS
 
