@@ -97,6 +97,11 @@
 #define VOLUME_MAX 255
 #endif
 
+/* Kills header mismatch warnings */
+#ifdef OSS_GETVERSION
+#undef OSS_GETVERSION
+#endif
+
 enum {
 	PROP_BOGUS,
 	PROP_CHANNEL
@@ -375,7 +380,7 @@ open_mixer (RBVolume *volume,
 	    int channel)
 {
 	RBVolumePrivate *priv = volume->priv;
-	int res, ver;
+	int res;
 #ifdef OSS_API
 	int devmask;
 
@@ -398,10 +403,15 @@ open_mixer (RBVolume *volume,
 
 	/* Check driver-version. */
 #ifdef OSS_GETVERSION
-	res = ioctl (priv->mixerfd, OSS_GETVERSION, &ver);
-	if ((res == 0) && (ver != SOUND_VERSION)) {
-		g_message (_("warning: this version of gmix was compiled "
-			     "with a different version of\nsoundcard.h.\n"));
+	{
+		int ver;
+
+		res = ioctl (priv->mixerfd, OSS_GETVERSION, &ver);
+		if ((res == 0) && (ver != SOUND_VERSION)) {
+			g_message (_("warning: this version of gmix was "
+						"compiled with a different "
+						"version of\nsoundcard.h.\n"));
+		}
 	}
 #endif
 #ifdef OSS_API
