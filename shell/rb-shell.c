@@ -34,9 +34,10 @@
 #include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-window-icon.h>
 #include <libgnomeui/gnome-about.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <string.h>
+#include <ctype.h>
 #include <sys/stat.h>
 
 #include "RhythmboxShell.h"
@@ -45,6 +46,7 @@
 #include "rb-dialog.h"
 #include "rb-stock-icons.h"
 #include "rb-sidebar.h"
+#include "rb-string-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-view.h"
 #include "rb-shell-player.h"
@@ -53,10 +55,13 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-library.h"
 #include "rb-library-view.h"
+#include "rb-iradio-backend.h"
+#include "rb-iradio-view.h"
 #include "rb-audiocd-view.h"
 #include "rb-shell-preferences.h"
 #include "rb-group-view.h"
 #include "rb-file-monitor.h"
+#include "rb-windows-ini-file.h"
 #include "rb-library-dnd-types.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
@@ -72,11 +77,16 @@ static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_corba_quit (PortableServer_Servant _servant,
                                  CORBA_Environment *ev);
+static void rb_shell_corba_handle_file (PortableServer_Servant _servant,
+					const CORBA_char *uri,
+					CORBA_Environment *ev);
 static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 					   const CORBA_char *uri,
 					   CORBA_Environment *ev);
 static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 				       CORBA_Environment *ev);
+static void rb_shell_grok_playlist_file (RBShell *shell, const char *filename);
+void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -294,6 +304,8 @@ struct RBShellPrivate
 
 	RBLibrary *library;
 
+	RBIRadioBackend *iradio_backend;
+
 	RBView *selected_view;
 
 	RBShellWindowState *state;
@@ -390,6 +402,7 @@ rb_shell_class_init (RBShellClass *klass)
         object_class->finalize = rb_shell_finalize;
 
 	epv->quit         = rb_shell_corba_quit;
+	epv->handleFile   = rb_shell_corba_handle_file;
 	epv->addToLibrary = rb_shell_corba_add_to_library;
 	epv->grabFocus    = rb_shell_corba_grab_focus;
 }
@@ -465,6 +478,7 @@ rb_shell_finalize (GObject *object)
 	 * the library.. evil */
 	g_object_unref (G_OBJECT (shell->priv->library));
 
+	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
 	if (shell->priv->remote != NULL)
 		g_object_unref (G_OBJECT (shell->priv->remote));
 
@@ -503,6 +517,202 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 	rb_shell_quit (shell);
 
 	GDK_THREADS_LEAVE ();
+}
+
+static void
+rb_shell_corba_handle_file (PortableServer_Servant _servant,
+			    const CORBA_char *uri,
+			    CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
+	if (!vfsuri)
+	{
+		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
+		return;
+	}
+	if (gnome_vfs_uri_is_local (vfsuri))
+	{
+		char *localpath = gnome_vfs_get_local_path_from_uri (uri);
+ 		char *mimetype = gnome_vfs_get_mime_type (localpath);
+		fprintf (stderr, "got mimetype %s for local uri %s\n", mimetype, localpath);
+		if (mimetype && strncmp ("audio/x-scpls", mimetype, 13) == 0)
+		{
+			fprintf (stderr, "loading %s as playlist\n", uri);
+			rb_shell_grok_playlist_file (shell, localpath);
+		}
+		else
+		{
+			fprintf (stderr, "adding %s to library\n", uri);
+			rb_library_add_uri (shell->priv->library, (char *) uri);
+		}
+	}
+	else
+	{
+		const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
+		if (strncmp ("http", scheme, 4) == 0)
+		{
+			fprintf (stderr, "adding station from %s\n", uri);
+			rb_iradio_backend_add_station_from_uri (shell->priv->iradio_backend, uri);
+		}
+		else
+		{
+			rb_error_dialog (_("Unable to handle URI \"%s\"\n"), uri);
+			return;
+		}
+	}
+}
+
+static void
+rb_shell_grok_playlist_file (RBShell *shell, const char *filename)
+{
+	RBWindowsINIFile *plsfile = rb_windows_ini_file_new (filename);
+	GList *keys, *entry;
+	if (!plsfile)
+	{
+		fprintf (stderr, "couldn't parse playlist file\n");
+		rb_error_dialog (_("Unable to parse playlist file \"%s\""));
+		return;
+	}
+	
+	keys = rb_windows_ini_file_get_sections (plsfile);
+	if ((entry = g_list_find_custom (keys, "playlist", rb_utf8_strncasecmp))
+	    || (entry = g_list_find_custom (keys, "default", rb_utf8_strncasecmp)))
+	{
+		char *section = (char *) entry->data;
+		GList *sectionkeys = rb_windows_ini_file_get_keys (plsfile, section);
+		GList *sectionentry = g_list_find_custom (sectionkeys, "numberofentries", rb_utf8_strncasecmp);
+		long numentries, i;
+
+		GList *locations = NULL;
+		char *title = NULL;
+		long prevlocation = 0; 
+
+		if (!sectionentry)
+		{
+			fprintf (stderr, "no numberofentries\n");
+			rb_error_dialog (_("Error reading playlist file \"%s\":\n no numberofentries header found"),
+					 filename);
+			goto section_parse_error;
+		}
+		numentries = atol (rb_windows_ini_file_lookup (plsfile, section,
+							       "numberofentries"));
+		fprintf (stderr, "numentries: %ld\n", numentries);
+		for (i = 1; i <= numentries; i++)
+		{
+			char keystr[60];
+			const char *curtitle;
+			const char *uri;
+			snprintf (keystr, sizeof(keystr), "file%ld", i);
+			sectionentry = g_list_find_custom (sectionkeys, keystr, rb_utf8_strncasecmp);
+			if (!sectionentry)
+				continue;
+			uri = rb_windows_ini_file_lookup (plsfile, section, keystr);
+			snprintf (keystr, sizeof(keystr), "title%ld", i);
+			sectionentry = g_list_find_custom (sectionkeys, keystr, rb_utf8_strncasecmp);
+			if (!sectionentry)
+				curtitle = NULL;
+			else
+				curtitle = rb_windows_ini_file_lookup (plsfile, section, keystr);
+			fprintf (stderr, "uri: %s title: %s\n", uri, curtitle);
+			if (curtitle && !strncmp ("(#", curtitle, 2))
+			{
+				char *rest = (char*)curtitle+2;
+				long curlocation = strtol (curtitle+2, &rest, 10);
+				if (curlocation == prevlocation+1)
+				{
+					/* Yes, parsing in C sucks. */
+					while (isspace (*rest))
+						rest++;
+					if (*rest != '-')
+						goto end_multiple;
+					rest++;
+					while (isspace (*rest))
+						rest++;
+					while (isdigit (*rest))
+						rest++;
+					if (*rest != '/')
+						goto end_multiple;
+					rest++;
+					while (isdigit (*rest))
+						rest++;
+					if (*rest != ')')
+						goto end_multiple;
+					rest++;
+					while (isspace (*rest))
+						rest++;
+					if (title == NULL)
+						title = rest;
+				}
+				else
+					goto end_multiple;
+
+				/* Ok, if all the above worked, then
+				 * this is another entry in a
+				 * multiple-entry file */
+				fprintf (stderr, "pushing uri\n");
+				locations = g_list_prepend (locations, (char *) uri);
+				prevlocation = curlocation;
+			}
+			else
+			{
+				fprintf (stderr, "inserting single entry\n");
+				rb_shell_handle_playlist_entry (shell, g_list_prepend(NULL, (char *) uri), curtitle);
+				locations = NULL;
+				title = NULL;
+				prevlocation = 0;
+			}
+			continue;
+		end_multiple:
+			fprintf (stderr, "ending multiple\n");
+			if (locations)
+				rb_shell_handle_playlist_entry (shell, locations, title);
+			locations = g_list_prepend(NULL, (char *) uri);
+			rb_shell_handle_playlist_entry (shell, locations, curtitle);
+			locations = NULL;
+			title = NULL;
+			prevlocation = 0;
+		}
+		if (locations)
+			rb_shell_handle_playlist_entry (shell, locations, title);
+	section_parse_error:
+		g_list_free (sectionkeys);
+	}
+	else
+	{
+		fprintf (stderr, "no playlist header\n");
+		rb_error_dialog (_("Error reading playlist file \"%s\":\n no playlist header"),
+				 filename);
+	}
+
+	g_list_free (keys);
+}
+
+void
+rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title)
+{
+	GnomeVFSURI *vfsuri = gnome_vfs_uri_new ((char *) locations->data);
+	const char *scheme;
+	if (!vfsuri)
+	{
+		rb_error_dialog (_("Unable to parse playlist entry \"%s\""),
+				 (char *) locations->data);
+		return;
+	}
+	scheme = gnome_vfs_uri_get_scheme (vfsuri);
+	if (strncmp ("http", scheme, 4) == 0)
+	{
+		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, locations, title, NULL);
+	}
+	else
+	{
+		GList *tem; 
+		/* In reality there should only be one.  */
+		for (tem = locations; tem; tem = tem->next)
+			rb_library_add_uri (shell->priv->library, (char *) locations->data);
+		g_list_free (locations);
+	}
 }
 
 static void
@@ -571,6 +781,7 @@ rb_shell_construct (RBShell *shell)
 	GtkWidget *vbox;
 	RBView *library_view;
         RBView *audiocd_view;
+	RBView *iradio_view;
 	GulToolbar *toolbar;
 	GulTbBonoboView *bview;
 	
@@ -738,6 +949,12 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_append_view (shell, library_view);
 	rb_shell_select_view (shell, library_view); /* select this one by default */
 
+	shell->priv->iradio_backend = g_object_new(RB_TYPE_IRADIO_BACKEND, NULL);
+	/* FIXME allow other choices? */
+	iradio_view = rb_iradio_view_new (shell->priv->container,
+					  shell->priv->iradio_backend);
+	rb_shell_append_view (shell, iradio_view);
+
 	/* now that we restored all views we can restore the layout */
 	rb_sidebar_load_layout (RB_SIDEBAR (shell->priv->sidebar),
 				shell->priv->sidebar_layout_file);
@@ -756,6 +973,11 @@ rb_shell_construct (RBShell *shell)
 
 	/* load library */
 	rb_library_release_brakes (shell->priv->library);
+
+ 	rb_iradio_backend_load (shell->priv->iradio_backend);
+
+/* 	g_signal_connect (shell->priv->iradio_backend, "done-loading", */
+/* 			  G_CALLBACK (rb_shell_show), shell); */
 	
         if (rb_audiocd_is_any_device_available () == TRUE)
         {
