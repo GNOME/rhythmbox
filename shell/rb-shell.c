@@ -196,6 +196,11 @@ static const GtkTargetEntry target_table[] =
 		{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
 	};
 
+static const GtkTargetEntry target_uri [] =
+	{
+		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }
+	};
+
 typedef enum
 {
 	CREATE_GROUP_WITH_URI_LIST,
@@ -1765,6 +1770,65 @@ tray_button_press_event_cb (GtkWidget *ebox,
 }
 
 static void
+tray_drop_cb (GtkWidget *widget,
+	      GdkDragContext *context,
+	      gint x,
+	      gint y,
+	      GtkSelectionData *data,
+	      guint info,
+	      guint time,
+	      RBShell *shell) {
+	GList *list, *uri_list, *i;
+	GtkTargetList *tlist;
+	gboolean ret;
+
+	tlist = gtk_target_list_new (target_uri, 1);
+	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
+	gtk_target_list_unref (tlist);
+
+	if (ret == FALSE)
+		return;
+
+	list = gnome_vfs_uri_list_parse (data->data);
+
+	if (list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+	uri_list = NULL;
+
+	for (i = list; i != NULL; i = g_list_next (i))
+	{
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+	}
+	gnome_vfs_uri_list_free (list);
+
+	if (uri_list == NULL)
+	{
+		gtk_drag_finish (context, FALSE, FALSE, time);
+		return;
+	}
+
+	for (i = uri_list; i != NULL; i = i->next)
+	{
+		char *uri = i->data;
+
+		if (uri != NULL)
+		{
+			rb_library_add_uri (shell->priv->library, uri);
+		}
+
+		g_free (uri);
+	}
+
+	g_list_free (uri_list);
+
+	gtk_drag_finish (context, TRUE, FALSE, time);
+}
+
+static void
 setup_tray_icon (RBShell *shell)
 {
 	GtkWidget *ebox, *image;
@@ -1782,6 +1846,10 @@ setup_tray_icon (RBShell *shell)
 			  "button_press_event",
 			  G_CALLBACK (tray_button_press_event_cb),
 			  shell);
+	gtk_drag_dest_set (ebox, GTK_DEST_DEFAULT_ALL,			                                   target_uri, 1, GDK_ACTION_COPY);
+	g_signal_connect (G_OBJECT (ebox), "drag_data_received",
+			  G_CALLBACK (tray_drop_cb), shell);
+
 	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
 					  GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (ebox), image);
