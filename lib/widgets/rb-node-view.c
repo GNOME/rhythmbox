@@ -514,6 +514,7 @@ rb_node_view_construct (RBNodeView *view)
 		GtkTreeViewColumn *gcolumn;
 		GtkCellRenderer *renderer;
 		GEnumValue *ev;
+		gboolean default_sort_column = FALSE;
 
 		/* get props from the xml file */
 		tmp = xmlGetProp (child, "column");
@@ -545,6 +546,11 @@ rb_node_view_construct (RBNodeView *view)
 			clickable = atoi (tmp);
 		g_free (tmp);
 
+		tmp = xmlGetProp (child, "default-sort-column");
+		if (tmp != NULL)
+			default_sort_column = atoi (tmp);
+		g_free (tmp);
+
 		tmp = xmlGetProp (child, "sort-order");
 		if (tmp != NULL)
 		{
@@ -567,6 +573,7 @@ rb_node_view_construct (RBNodeView *view)
 
 		/* so we got all info, now we can actually build the column */
 		gcolumn = gtk_tree_view_column_new ();
+
 		if (column != RB_TREE_MODEL_NODE_COL_PLAYING)
 		{
 			renderer = gtk_cell_renderer_text_new ();
@@ -589,25 +596,22 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 			gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
 		}
+
 		if (title != NULL)
 		{
 			gtk_tree_view_column_set_title (gcolumn, _(title));
 			g_free (title);
 		}
+
 		gtk_tree_view_column_set_reorderable (gcolumn, reorderable);
+
 		if (clickable == TRUE)
 		{
 			if (sort_order != NULL)
 				gtk_tree_view_column_set_sort_column_id (gcolumn, column);
 		}
-		else
-		{
-			gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-							      column, GTK_SORT_ASCENDING);
-			gtk_tree_view_column_set_clickable (gcolumn, FALSE);
-		}
-		gtk_tree_view_column_set_visible (gcolumn, visible);
-		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), gcolumn);
+		
+		gtk_tree_view_column_set_clickable (gcolumn, clickable);
 
 		gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
 						 column,
@@ -616,6 +620,16 @@ rb_node_view_construct (RBNodeView *view)
 		g_object_set_data_full (G_OBJECT (gcolumn),
 					"sort-order", sort_order,
 					(GDestroyNotify) g_list_free);
+
+		if (default_sort_column == TRUE)
+		{
+			gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+							      column, GTK_SORT_ASCENDING);
+		}
+
+		gtk_tree_view_column_set_visible (gcolumn, visible);
+
+		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), gcolumn);
 	}
 
 	xmlFreeDoc (doc);
