@@ -795,7 +795,6 @@ rhythmdb_tree_save (RhythmDB *rdb)
 
 	fprintf (f, "%s\n", "</rhythmdb>");
 
-	fsync (fileno (f));
 	fclose (f);
 
 	rename (savepath->str, name);
