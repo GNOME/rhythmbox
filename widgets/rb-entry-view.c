@@ -1089,6 +1089,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
 		sort_func = (GCompareDataFunc) rb_entry_view_artist_sort_func;
+		real_sort_data = view;
 		title = _("Art_ist");
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
