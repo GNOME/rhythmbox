@@ -843,7 +843,8 @@ rb_node_type_get_type (void)
 			{ RB_NODE_TYPE_ALL_ALBUMS,  "RB_NODE_TYPE_ALL_ALBUMS",  "all_albums"  },
 			{ RB_NODE_TYPE_ALBUM,       "RB_NODE_TYPE_ALBUM",       "album"       },
 			{ RB_NODE_TYPE_ALL_SONGS,   "RB_NODE_TYPE_ALL_SONGS",   "all_songs"   },
-			{ RB_NODE_TYPE_SONG,        "RB_NODE_TYPE_SONG",        "song"        }
+			{ RB_NODE_TYPE_SONG,        "RB_NODE_TYPE_SONG",        "song"        },
+			{ 0, 0, 0 }
 		};
 
 		etype = g_enum_register_static ("RBNodeType", values);
@@ -866,7 +867,8 @@ rb_node_property_get_type (void)
 			{ RB_NODE_PROPERTY_SONG_DURATION,     "RB_NODE_PROPERTY_SONG_DURATION",     "song_duration" },
 			{ RB_NODE_PROPERTY_SONG_LOCATION,     "RB_NODE_PROPERTY_SONG_LOCATION",     "song_location" },
 			{ RB_NODE_PROPERTY_SONG_FILE_SIZE,    "RB_NODE_PROPERTY_SONG_FILE_SIZE",    "file_size" },
-			{ RB_NODE_PROPERTY_SONG_MTIME,        "RB_NODE_PROPERTY_SONG_MTIME",        "mtime" }
+			{ RB_NODE_PROPERTY_SONG_MTIME,        "RB_NODE_PROPERTY_SONG_MTIME",        "mtime" },
+			{ 0, 0, 0 }
 		};
 
 		etype = g_enum_register_static ("RBNodeProperty", values);
