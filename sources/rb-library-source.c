@@ -824,7 +824,7 @@ impl_get_status_full (RBLibrarySource *source)
 			continue;
 
 		secs = rb_node_get_property_long (node,
-						  RB_NODE_PROP_REAL_DURATION);
+						  RB_NODE_PROP_DURATION);
 		if (secs < 0)
 			g_warning ("Invalid duration value for node %p", node);
 		else

@@ -1649,29 +1649,22 @@ unlock_gdk (void)
 void
 rb_node_update_play_statistics (RBNode *node)
 {
-	char *play_count, *time_string;
+	char *time_string;
 	time_t now;
 	GValue value = { 0, };
 
 	g_return_if_fail (RB_IS_NODE (node));
 
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, rb_node_get_property_int (RB_NODE (node),
+							   RB_NODE_PROP_PLAY_COUNT) + 1);
+
 	/* Increment current play count */
-	play_count = (char *) rb_node_get_property_string (RB_NODE (node),
-				                           RB_NODE_PROP_NUM_PLAYS);
-
-	if (play_count != NULL)
-		play_count = g_strdup_printf ("%ld", atol (play_count) + 1);
-	else
-		play_count = g_strdup ("1");
-
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, play_count);
-	g_free (play_count);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_NUM_PLAYS,
+			      RB_NODE_PROP_PLAY_COUNT,
 			      &value);
 	g_value_unset (&value);
-
+	
 	/* Reset the last played time */
 	time (&now);
 
@@ -1688,7 +1681,7 @@ rb_node_update_play_statistics (RBNode *node)
 	g_value_set_string (&value, time_string);
 	g_free (time_string);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+			      RB_NODE_PROP_LAST_PLAYED_STR,
 			      &value);
 	g_value_unset (&value);
 }

@@ -132,16 +132,25 @@ rb_node_song_new (const char *location,
 	g_value_unset (&value);
 
 	/* Number of plays */
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, "");
-
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, 0);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_NUM_PLAYS,
+			      RB_NODE_PROP_PLAY_COUNT,
 			      &value);
+	g_value_unset (&value);
 
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, 0);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_LAST_PLAYED,
+			      &value);
+	g_value_unset (&value);
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, "Never");
 	/* Last played time */
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+			      RB_NODE_PROP_LAST_PLAYED_STR,
 			      &value);
 
 	g_value_unset (&value);
@@ -249,7 +258,7 @@ set_duration (RBNodeSong *node,
 					    0,
 				            &val);
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_REAL_DURATION,
+			      RB_NODE_PROP_DURATION,
 			      &val);
 
 	g_value_init (&string_val, G_TYPE_STRING);
@@ -264,7 +273,7 @@ set_duration (RBNodeSong *node,
 	g_free (tmp);
 
 	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_DURATION,
+			      RB_NODE_PROP_DURATION_STR,
 			      &string_val);
 
 	g_value_unset (&string_val);
@@ -278,7 +287,6 @@ set_track_number (RBNodeSong *node,
 {
 	GValue val = { 0, };
 	int cur;
-	char *tmp;
 
 	if (monkey_media_stream_info_get_value (info,
 				                MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
@@ -293,17 +301,6 @@ set_track_number (RBNodeSong *node,
 			      RB_NODE_PROP_TRACK_NUMBER,
 			      &val);
 	cur = g_value_get_int (&val);
-	g_value_unset (&val);
-
-	g_value_init (&val, G_TYPE_STRING);
-	if (cur > 0)
-		tmp = g_strdup_printf ("%d", cur);
-	else
-		tmp = g_strdup ("");
-	g_value_set_string_take_ownership (&val, tmp);
-	rb_node_set_property (RB_NODE (node),
-			      RB_NODE_PROP_TRACK_NUMBER_STR,
-			      &val);
 	g_value_unset (&val);
 }
 

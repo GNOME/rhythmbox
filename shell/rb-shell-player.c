@@ -1281,6 +1281,9 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 
 	if (player->priv->source != NULL)
 	{
+		rb_debug ("updating play statistics");
+		rb_node_update_play_statistics (rb_shell_player_get_playing_node (player));
+
 		switch (rb_source_handle_eos (player->priv->source))
 		{
 		case RB_SOURCE_EOF_ERROR:

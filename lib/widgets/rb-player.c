@@ -453,7 +453,7 @@ rb_player_get_duration (RBPlayer *player)
 {
 	if (player->priv->node)
 		return rb_node_get_property_long (player->priv->node,
-						  RB_NODE_PROP_REAL_DURATION);
+						  RB_NODE_PROP_DURATION);
 	return -1;
 }
 

@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -414,11 +415,11 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
 	case RB_TREE_MODEL_NODE_COL_ALBUM_KEY:
 	case RB_TREE_MODEL_NODE_COL_GENRE:
-	case RB_TREE_MODEL_NODE_COL_DURATION:
-	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
-	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 	case RB_TREE_MODEL_NODE_COL_QUALITY:
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR:
+	case RB_TREE_MODEL_NODE_COL_DURATION_STR:
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR:
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR:
 		return G_TYPE_STRING;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
@@ -427,8 +428,10 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
 	case RB_TREE_MODEL_NODE_COL_RATING:
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 		return G_TYPE_INT;
-	case RB_TREE_MODEL_NODE_COL_REAL_DURATION:
+	case RB_TREE_MODEL_NODE_COL_DURATION:
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
 		return G_TYPE_LONG;
 	default:
 		g_assert_not_reached ();
@@ -624,30 +627,54 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR:
-		rb_node_get_property (node,
-				      RB_NODE_PROP_TRACK_NUMBER_STR,
-				      value);
-		break;
+	{
+		int count = rb_node_get_property_int (node,
+						      RB_NODE_PROP_TRACK_NUMBER);
+		g_value_init (value, G_TYPE_STRING);
+		if (count <= 0)
+			g_value_set_string (value, "");
+		else
+			g_value_set_string_take_ownership (value,
+							   g_strdup_printf ("%d", count));
+	}
+	break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 		rb_node_get_property (node,
 				      RB_NODE_PROP_DURATION,
 				      value);
 		break;
-	case RB_TREE_MODEL_NODE_COL_REAL_DURATION:
+	case RB_TREE_MODEL_NODE_COL_DURATION_STR:
 		rb_node_get_property (node,
-				      RB_NODE_PROP_REAL_DURATION,
+				      RB_NODE_PROP_DURATION_STR,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
 		rb_node_get_property (node,
-				      RB_NODE_PROP_LAST_PLAYED_SIMPLE,
+				      RB_NODE_PROP_LAST_PLAYED,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_LAST_PLAYED_STR,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 		rb_node_get_property (node,
-				      RB_NODE_PROP_NUM_PLAYS,
+				      RB_NODE_PROP_PLAY_COUNT,
 				      value);
 		break;
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR:
+	{
+		int count = rb_node_get_property_int (node,
+						      RB_NODE_PROP_PLAY_COUNT);
+		g_value_init (value, G_TYPE_STRING);
+		if (count <= 0)
+			g_value_set_string (value, "");
+		else
+			g_value_set_string_take_ownership (value,
+							   g_strdup_printf ("%d", count));
+	}
+	break;
 	default:
 		g_assert_not_reached ();
 		break;
@@ -900,12 +927,14 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_ALBUM_KEY,        "RB_TREE_MODEL_NODE_COL_ALBUM_KEY",        "album (g_utf_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_GENRE,            "RB_TREE_MODEL_NODE_COL_GENRE",            "genre" },
 			{ RB_TREE_MODEL_NODE_COL_DURATION,         "RB_TREE_MODEL_NODE_COL_DURATION",         "duration" },
-			{ RB_TREE_MODEL_NODE_COL_REAL_DURATION,    "RB_TREE_MODEL_NODE_COL_REAL_DURATION",    "duration (long format)" },
+			{ RB_TREE_MODEL_NODE_COL_DURATION_STR,     "RB_TREE_MODEL_NODE_COL_DURATION_STR",     "duration (string format)" },
 			{ RB_TREE_MODEL_NODE_COL_RATING,           "RB_TREE_MODEL_NODE_COL_RATING",           "rating" },
 			{ RB_TREE_MODEL_NODE_COL_PRIORITY,         "RB_TREE_MODEL_NODE_COL_PRIORITY",         "priority" },
 			{ RB_TREE_MODEL_NODE_COL_VISIBLE,          "RB_TREE_MODEL_NODE_COL_VISIBLE",          "visible" },
 			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT,       "RB_TREE_MODEL_NODE_COL_PLAY_COUNT",       "play count" },
-			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,      "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",      "last played" },
+			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR,   "RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR",   "play count (string format)" },
+			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,	   "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",      "last played" },
+			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR,  "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR",  "last played (string format)" },
 			{ RB_TREE_MODEL_NODE_COL_QUALITY,	   "RB_TREE_MODEL_NODE_COL_QUALITY",	      "quality" },
 			{ 0, 0, 0 }
 		};

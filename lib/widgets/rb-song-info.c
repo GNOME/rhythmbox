@@ -872,30 +872,17 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 static void
 rb_song_info_update_play_count (RBSongInfo *song_info)
 {
-	const char *text = NULL;
-
-	text = rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
-                                            RB_NODE_PROP_NUM_PLAYS);
-
-	if (text == NULL || strlen (text) == 0)
-	{
-		text = "0";
-	}
-
+	char *text = g_strdup_printf ("%d", rb_node_get_property_int (RB_NODE (song_info->priv->current_node),
+								      RB_NODE_PROP_PLAY_COUNT));
 	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 }
 
 static void
 rb_song_info_update_last_played (RBSongInfo *song_info)
 {
-	char *text = NULL;
-
-	text = rb_node_get_property_time (song_info->priv->current_node,
-					  RB_NODE_PROP_LAST_PLAYED);
-
-	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), text);
-
-	g_free (text);
+	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played),
+			    rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
+							 RB_NODE_PROP_LAST_PLAYED_STR));
 }
 
 static void

@@ -58,7 +58,7 @@ rb_song_set_duration (RBNode *node,
         g_return_if_fail (success == TRUE);
 
 	rb_node_set_property (node,
-			      RB_NODE_PROP_REAL_DURATION,
+			      RB_NODE_PROP_DURATION,
 			      &val);
 	
 	g_value_init (&string_val, G_TYPE_STRING);
@@ -74,7 +74,7 @@ rb_song_set_duration (RBNode *node,
 	g_free (tmp);
 	
 	rb_node_set_property (node,
-			      RB_NODE_PROP_DURATION,
+			      RB_NODE_PROP_DURATION_STR,
 			      &string_val);
 
 	g_value_unset (&string_val);

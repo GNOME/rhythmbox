@@ -1167,7 +1167,7 @@ rb_node_view_get_selection (RBNodeView *view)
 
 	gtk_tree_selection_selected_foreach (view->priv->selection,
 					     (GtkTreeSelectionForeachFunc) harvest_nodes,
-					     (void **) &list);
+					     (gpointer) &list);
 	g_list_free (view->priv->nodeselection);
 	view->priv->nodeselection = g_list_copy (list);
 
@@ -1181,7 +1181,7 @@ rb_node_view_get_rows (RBNodeView *view)
 
 	gtk_tree_model_foreach (GTK_TREE_MODEL (view->priv->sortmodel),
 				(GtkTreeModelForeachFunc) harvest_nodes,
-				(void **) &list);
+				(gpointer) &list);
 
 	return list;
 }

@@ -326,15 +326,15 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->genre_check))
 		colname = "RB_TREE_MODEL_NODE_COL_GENRE";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
-		colname = "RB_TREE_MODEL_NODE_COL_DURATION";
+		colname = "RB_TREE_MODEL_NODE_COL_DURATION_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
 		colname = "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->rating_check))
 		colname = "RB_TREE_MODEL_NODE_COL_RATING";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->play_count_check))
-		colname = "RB_TREE_MODEL_NODE_COL_PLAY_COUNT";
+		colname = "RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
-		colname = "RB_TREE_MODEL_NODE_COL_LAST_PLAYED";
+		colname = "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
 		colname = "RB_TREE_MODEL_NODE_COL_QUALITY";
 	else
@@ -384,7 +384,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION_STR") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR") != NULL);
@@ -393,10 +393,10 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT") != NULL);
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT_STR") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED_STR") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_QUALITY") != NULL);
