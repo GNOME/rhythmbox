@@ -1302,9 +1302,10 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 				column->width = 0;
 		}
 
-		if (l == last_column)
+		if (l == last_column &&
+		    width + column->width < widget->allocation.width)
 		{
-			column->width = widget->allocation.width - width;
+			column->width += widget->allocation.width - column->width - width;
 		}
 		else if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (column), "expand")) == TRUE)
 		{
