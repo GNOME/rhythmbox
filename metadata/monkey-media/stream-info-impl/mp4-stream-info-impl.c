@@ -282,7 +282,6 @@ MP4_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VARIABLE_BIT_RATE:
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
 		return 1;
@@ -443,10 +442,6 @@ MP4_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_init (value, G_TYPE_INT);
 		g_value_set_int (value, MP4GetTrackBitRate (impl->priv->file,
 							    impl->priv->track_id) / 1000);
-		break;
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
-		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
-		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate (MP4GetTrackBitRate (impl->priv->file, impl->priv->track_id)));
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		g_value_init (value, G_TYPE_STRING);

@@ -532,7 +532,6 @@ FLAC_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VARIABLE_BIT_RATE:
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
@@ -768,10 +767,6 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_init (value, G_TYPE_INT);
 		g_value_set_int (value, impl->priv->file_size * 8 / 1024.0f /  /* kilobits */
 					((float)stream_info->total_samples / stream_info->sample_rate)); /* seconds */
-		break;
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
-		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
-		g_value_set_enum (value, MONKEY_MEDIA_AUDIO_QUALITY_LOSSLESS);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		g_value_init (value, G_TYPE_STRING);
