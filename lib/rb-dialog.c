@@ -81,3 +81,20 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 
 	gtk_widget_destroy (dialog);
 }
+
+char *
+rb_ask_file (const char *title, GtkWindow *parent)
+{
+	GtkWidget *filesel;
+	char *ret = NULL;
+
+	filesel = gtk_file_selection_new (title);
+	gtk_window_set_transient_for (GTK_WINDOW (filesel),
+				      parent);
+	if (gtk_dialog_run (GTK_DIALOG (filesel)) == GTK_RESPONSE_OK)
+		ret = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (filesel)));
+
+	gtk_widget_destroy (filesel);
+
+	return ret;
+}

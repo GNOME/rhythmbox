@@ -11,6 +11,8 @@ librb_la_SOURCES =					\
 	rb-file-helpers.h				\
 	rb-bonobo-helpers.c				\
 	rb-bonobo-helpers.h				\
+	rb-glade-helpers.c				\
+	rb-glade-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
 	rb-node.c					\

@@ -18,20 +18,17 @@
  *  $Id$
  */
 
-#ifndef __RB_DIALOG_H
-#define __RB_DIALOG_H
+#include <glade/glade.h>
 
-#include <gtk/gtkwindow.h>
-#include <stdarg.h>
+#ifndef __RB_BONOBO_HELPERS_H
+#define __RB_BONOBO_HELPERS_H
 
 G_BEGIN_DECLS
 
-void  rb_error_dialog   (const char *format, ...);
-void  rb_warning_dialog (const char *format, ...);
-void  rb_message_dialog (const char *format, ...);
-
-char *rb_ask_file       (const char *title, GtkWindow *parent);
+GladeXML *rb_glade_xml_new (const char *file,
+			    const char *root,
+			    gpointer user_data);
 
 G_END_DECLS
 
-#endif /* __RB_DIALOG_H */
+#endif /* __RB_BONOBO_HELPERS_H */

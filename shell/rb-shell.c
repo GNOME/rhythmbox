@@ -50,6 +50,7 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-library.h"
 #include "rb-library-view.h"
+#include "rb-shell-preferences.h"
 /* FIXME */
 #include "testview2.h"
 /* FIXME */
@@ -92,6 +93,9 @@ static void rb_shell_cmd_about (BonoboUIComponent *component,
 static void rb_shell_cmd_quit (BonoboUIComponent *component,
 		               RBShell *shell,
 			       const char *verbname);
+static void rb_shell_cmd_music_folders (BonoboUIComponent *component,
+		                        RBShell *shell,
+		                        const char *verbname);
 static void rb_shell_quit (RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
@@ -131,14 +135,17 @@ struct RBShellPrivate
 	RBView *selected_view;
 
 	RBShellWindowState *state;
+
+	GtkWidget *prefs;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
 {
-	BONOBO_UI_VERB ("Shuffle", (BonoboUIVerbFn) rb_shell_cmd_shuffle),
-	BONOBO_UI_VERB ("Repeat",  (BonoboUIVerbFn) rb_shell_cmd_repeat),
-	BONOBO_UI_VERB ("About",   (BonoboUIVerbFn) rb_shell_cmd_about),
-	BONOBO_UI_VERB ("Quit",    (BonoboUIVerbFn) rb_shell_cmd_quit),
+	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_shuffle),
+	BONOBO_UI_VERB ("Repeat",       (BonoboUIVerbFn) rb_shell_cmd_repeat),
+	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
+	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
+	BONOBO_UI_VERB ("MusicFolders", (BonoboUIVerbFn) rb_shell_cmd_music_folders),
 	BONOBO_UI_VERB_END
 };
 
@@ -255,6 +262,9 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->library));
 
 	g_free (shell->priv->state);
+
+	if (shell->priv->prefs != NULL)
+		gtk_widget_destroy (shell->priv->prefs);
 
 	g_free (shell->priv);
 
@@ -729,6 +739,22 @@ rb_shell_cmd_quit (BonoboUIComponent *component,
 		   const char *verbname)
 {
 	rb_shell_quit (shell);
+}
+
+static void
+rb_shell_cmd_music_folders (BonoboUIComponent *component,
+		            RBShell *shell,
+		            const char *verbname)
+{
+	if (shell->priv->prefs == NULL)
+	{
+		shell->priv->prefs = rb_shell_preferences_new ();
+
+		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
+					      GTK_WINDOW (shell->priv->window));
+	}
+
+	gtk_widget_show_all (shell->priv->prefs);
 }
 
 static void

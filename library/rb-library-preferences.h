@@ -1,10 +1,10 @@
 /*
- *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,20 +18,17 @@
  *  $Id$
  */
 
-#ifndef __RB_DIALOG_H
-#define __RB_DIALOG_H
-
-#include <gtk/gtkwindow.h>
-#include <stdarg.h>
+#ifndef __RB_LIBRARY_PREFERENCES_H
+#define __RB_LIBRARY_PREFERENCES_H
 
 G_BEGIN_DECLS
 
-void  rb_error_dialog   (const char *format, ...);
-void  rb_warning_dialog (const char *format, ...);
-void  rb_message_dialog (const char *format, ...);
+#define CONF_LIBRARY_DIR              "/apps/rhythmbox/library"
 
-char *rb_ask_file       (const char *title, GtkWindow *parent);
+#define CONF_LIBRARY_BASE_FOLDER      "/apps/rhythmbox/library/base_folder"
+#define CONF_LIBRARY_INCLUDE_AUDIO_CD "/apps/rhythmbox/library/include_audio_cd"
+#define CONF_LIBRARY_MUSIC_FOLDERS    "/apps/rhythmbox/library/music_folders"
 
 G_END_DECLS
 
-#endif /* __RB_DIALOG_H */
+#endif /* __RB_LIBRARY_PREFERENCES_H */

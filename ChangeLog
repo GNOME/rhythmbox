@@ -1,3 +1,34 @@
+2002-06-14  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/glade/music-folders.glade:
+	* data/rhythmbox.schemas:
+	* lib/Makefile.am:
+	* lib/rb-dialog.c: (rb_ask_file):
+	* lib/rb-dialog.h:
+	* lib/rb-glade-helpers.c: (rb_glade_xml_new),
+	(glade_signal_connect_func):
+	* lib/rb-glade-helpers.h:
+	* library/Makefile.am:
+	* library/rb-library-preferences.h:
+	* shell/Makefile.am:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_get_type),
+	(rb_shell_preferences_class_init), (rb_shell_preferences_init),
+	(rb_shell_preferences_finalize), (rb_shell_preferences_new),
+	(rb_shell_preferences_window_delete_cb),
+	(rb_shell_preferences_response_cb), (rb_shell_preferences_sync),
+	(folders_selection_changed_cb), (get_folders), (get_rows),
+	(music_base_folder_entry_changed_cb),
+	(music_base_folder_browse_clicked_cb), (add_folder_clicked_cb),
+	(remove_folder_clicked_cb), (include_audiocd_check_toggled_cb),
+	(library_pref_changed), (folders_sync_to_gconf),
+	(folders_row_edited_cb), (folders_treeview_key_press_event_cb):
+	* shell/rb-shell-preferences.h:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_cmd_quit),
+	(rb_shell_cmd_music_folders):
+
+	Add a prefswin (note that the watcher doesnt look to the prefs yet),
+	glade helpers, and a filesel helper.
+
 2002-06-14  Kenneth Christiansen  <kenneth@gnu.org>
 
 	* po/POTFILES.skip: Skip some files.
