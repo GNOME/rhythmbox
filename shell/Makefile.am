@@ -41,6 +41,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/library/librblibrary.la	        \
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/corba/librbcorba.la	        \
+	$(top_builddir)/monkey-media/libmonkey-media.la \
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -56,6 +57,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/library                    	\
+	-I$(top_builddir)/monkey-media			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\

@@ -22,7 +22,8 @@ INCLUDES =						\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/lib/widgets			\
 	-I$(top_srcdir)/library				\
+	-I$(top_srcdir)/monkey-media			\
 	$(RHYTHMBOX_CFLAGS)
 
 librbiradio_la_LDFLAGS = -export-dynamic
-librbiradio_la_LIBADD = $(top_builddir)/lib/librb.la
+librbiradio_la_LIBADD = $(top_builddir)/lib/librb.la $(top_builddir)/monkey-media/libmonkey-media.la

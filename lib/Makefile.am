@@ -66,4 +66,5 @@ rb-marshal.h: rb-marshal.list
 librb_la_LDFLAGS = -export-dynamic
 librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la
 
+
 EXTRA_DIST = rb-marshal.list

@@ -1,3 +1,238 @@
+2003-07-31  Colin Walters  <walters@rhythmbox.org>
+
+	* INSTALL:
+	* INSTALL.GNU:
+	* INSTALL.quick:
+	* Makefile.am:
+	* acconfig.h:
+	* autogen.sh:
+	* configure.ac:
+	* configure.in:
+	* corba/.cvsignore:
+	* iradio/Makefile.am:
+	* lib/Makefile.am:
+	* lib/widgets/Makefile.am:
+	* library/Makefile.am:
+	* macros/gst-element-check-0.6.m4:
+	* macros/ogg.m4:
+	* macros/vorbis.m4:
+	* monkey-media/.cvsignore:
+	* monkey-media/Makefile.am:
+	* monkey-media/monkey-media-audio-cd-private.h:
+	* monkey-media/monkey-media-audio-cd.c:
+	(monkey_media_audio_cd_get_type),
+	(monkey_media_audio_cd_class_init), (is_cdrom_device),
+	(monkey_media_audio_cd_device_available),
+	(monkey_media_audio_cd_init), (monkey_media_audio_cd_finalize),
+	(monkey_media_audio_cd_set_property),
+	(monkey_media_audio_cd_get_property),
+	(monkey_media_audio_cd_unref_if_around),
+	(monkey_media_audio_cd_new), (monkey_media_audio_cd_open),
+	(monkey_media_audio_cd_close), (monkey_media_audio_cd_open_tray),
+	(monkey_media_audio_cd_close_tray),
+	(monkey_media_audio_cd_available), (rfc822_binary), (ensure_sync),
+	(poll_event_cb), (monkey_media_audio_cd_get_disc_id),
+	(monkey_media_audio_cd_get_track_duration),
+	(monkey_media_audio_cd_get_track_offset),
+	(monkey_media_audio_cd_have_track),
+	(monkey_media_audio_cd_get_n_tracks),
+	(monkey_media_audio_cd_list_tracks),
+	(monkey_media_audio_cd_free_tracks),
+	(monkey_media_audio_cd_error_quark):
+	* monkey-media/monkey-media-audio-cd.h:
+	* monkey-media/monkey-media-audio-quality.c:
+	(monkey_media_audio_quality_get_type),
+	(monkey_media_audio_quality_from_bit_rate),
+	(monkey_media_audio_quality_to_string):
+	* monkey-media/monkey-media-audio-quality.h:
+	* monkey-media/monkey-media-includes.h.in:
+	* monkey-media/monkey-media-marshal.list:
+	* monkey-media/monkey-media-musicbrainz.c:
+	(monkey_media_musicbrainz_get_type),
+	(monkey_media_musicbrainz_class_init),
+	(monkey_media_musicbrainz_init),
+	(monkey_media_musicbrainz_finalize),
+	(monkey_media_musicbrainz_unref_if_around),
+	(monkey_media_musicbrainz_new), (free_track), (free_info),
+	(load_album_file), (save_album_file), (load_info_track),
+	(load_info_cd), (monkey_media_musicbrainz_load_info),
+	(monkey_media_musicbrainz_query), (proxy_settings_changed),
+	(server_settings_changed), (sync_proxy_settings),
+	(sync_server_settings):
+	* monkey-media/monkey-media-musicbrainz.h:
+	* monkey-media/monkey-media-player-gst-old.c:
+	(monkey_media_player_get_type), (monkey_media_player_class_init),
+	(tick_timeout), (monkey_media_player_init),
+	(monkey_media_player_finalize), (eos_signal_idle), (eos_cb),
+	(error_signal_idle), (error_cb), (info_signal_idle),
+	(deep_notify_cb), (monkey_media_player_construct),
+	(monkey_media_player_new), (monkey_media_player_error_quark),
+	(monkey_media_player_open), (monkey_media_player_close),
+	(monkey_media_player_get_uri), (monkey_media_player_play),
+	(monkey_media_player_pause), (monkey_media_player_playing),
+	(monkey_media_player_set_volume), (monkey_media_player_get_volume),
+	(monkey_media_player_set_mute), (monkey_media_player_get_mute),
+	(monkey_media_player_seekable), (monkey_media_player_set_time),
+	(monkey_media_player_get_time):
+	* monkey-media/monkey-media-player-gst-tmp.c:
+	(monkey_media_player_get_type), (monkey_media_player_class_init),
+	(tick_timeout), (monkey_media_player_init),
+	(monkey_media_player_finalize), (eos_signal_idle),
+	(buffering_begin_signal_idle), (buffering_end_signal_idle),
+	(eos_cb), (error_signal_idle), (error_cb), (info_signal_idle),
+	(unicodify), (monkey_media_unicodify), (deep_notify_cb),
+	(queue_full_cb), (monkey_media_player_construct),
+	(monkey_media_player_new), (monkey_media_player_error_quark),
+	(monkey_media_player_sync_pipeline), (monkey_media_player_open),
+	(monkey_media_player_close), (monkey_media_player_get_uri),
+	(monkey_media_player_play), (monkey_media_player_pause),
+	(monkey_media_player_playing), (monkey_media_player_set_volume),
+	(monkey_media_player_get_volume), (monkey_media_player_set_mute),
+	(monkey_media_player_get_mute), (monkey_media_player_seekable),
+	(monkey_media_player_set_time), (monkey_media_player_get_time):
+	* monkey-media/monkey-media-player-gst.c:
+	(monkey_media_player_get_type), (monkey_media_player_class_init),
+	(tick_timeout), (monkey_media_player_init),
+	(monkey_media_player_finalize), (eos_signal_idle), (eos_cb),
+	(error_signal_idle), (error_cb), (info_signal_idle),
+	(deep_notify_cb), (buffering_begin_signal_idle),
+	(buffering_end_signal_idle), (queue_full_cb),
+	(monkey_media_player_construct), (monkey_media_player_new),
+	(monkey_media_player_error_quark), (monkey_media_player_open),
+	(monkey_media_player_close), (monkey_media_player_get_uri),
+	(monkey_media_player_play), (monkey_media_player_pause),
+	(monkey_media_player_playing), (monkey_media_player_set_volume),
+	(monkey_media_player_get_volume), (monkey_media_player_set_mute),
+	(monkey_media_player_get_mute), (monkey_media_player_seekable),
+	(monkey_media_player_set_time), (monkey_media_player_get_time):
+	* monkey-media/monkey-media-player-xine.c:
+	(monkey_media_player_get_type), (monkey_media_player_class_init),
+	(tick_timeout), (monkey_media_player_init),
+	(monkey_media_player_finalize), (signal_idle), (xine_event),
+	(monkey_media_player_construct), (monkey_media_player_new),
+	(monkey_media_player_error_quark), (monkey_media_player_open),
+	(monkey_media_player_close), (monkey_media_player_get_uri),
+	(monkey_media_player_play), (monkey_media_player_pause),
+	(monkey_media_player_playing), (can_set_volume),
+	(monkey_media_player_set_volume), (monkey_media_player_get_volume),
+	(monkey_media_player_set_mute), (monkey_media_player_get_mute),
+	(monkey_media_player_seekable), (monkey_media_player_set_time),
+	(monkey_media_player_get_time):
+	* monkey-media/monkey-media-player.h:
+	* monkey-media/monkey-media-private.h:
+	* monkey-media/monkey-media-stream-info.c:
+	(monkey_media_stream_info_field_get_type),
+	(monkey_media_stream_info_uri_is_supported),
+	(monkey_media_stream_info_error_quark),
+	(monkey_media_stream_info_get_type),
+	(monkey_media_stream_info_class_init),
+	(monkey_media_stream_info_init),
+	(monkey_media_stream_info_finalize),
+	(monkey_media_stream_info_set_property),
+	(monkey_media_stream_info_get_property),
+	(monkey_media_stream_info_new), (sanitize_values),
+	(monkey_media_stream_info_get_n_values),
+	(monkey_media_stream_info_get_value_list),
+	(monkey_media_stream_info_free_value_list),
+	(monkey_media_stream_info_get_value),
+	(monkey_media_stream_info_set_value),
+	(monkey_media_stream_info_list_all_genres),
+	(monkey_media_stream_info_genre_to_index),
+	(monkey_media_stream_info_index_to_genre), (clear_values),
+	(monkey_media_stream_info_get_value_net),
+	(monkey_media_stream_info_sync_from_net):
+	* monkey-media/monkey-media-stream-info.h:
+	* monkey-media/monkey-media.c: (monkey_media_init),
+	(nonkey_media_init_with_popt_table), (register_type),
+	(monkey_media_init_internal), (monkey_media_get_popt_table),
+	(monkey_media_get_supported_filename_extensions),
+	(monkey_media_shutdown), (monkey_media_main),
+	(monkey_media_main_quit), (monkey_media_get_audio_driver),
+	(monkey_media_set_audio_driver),
+	(monkey_media_audio_driver_changed), (monkey_media_get_cd_drive),
+	(monkey_media_set_cd_drive), (monkey_media_cd_drive_changed),
+	(monkey_media_get_cd_playback_mode),
+	(monkey_media_set_cd_playback_mode),
+	(monkey_media_cd_playback_mode_changed), (popt_callback),
+	(monkey_media_is_alive), (monkey_media_get_impl_for),
+	(monkey_media_get_stream_info_impl_for), (monkey_media_get_dir),
+	(monkey_media_mkdir):
+	* monkey-media/monkey-media.h:
+	* monkey-media/sha1.c: (sha_transform), (sha_init), (sha_update),
+	(sha_final), (sha_stream), (sha_print), (sha_version):
+	* monkey-media/sha1.h:
+	* monkey-media/stream-info-impl/.cvsignore:
+	* monkey-media/stream-info-impl/Makefile.am:
+	* monkey-media/stream-info-impl/audiocd-stream-info-impl.c:
+	(audiocd_stream_info_impl_get_type),
+	(audiocd_stream_info_impl_class_init),
+	(audiocd_stream_info_impl_init),
+	(audiocd_stream_info_impl_finalize),
+	(audiocd_stream_info_impl_open_stream),
+	(audiocd_stream_info_impl_get_value),
+	(audiocd_stream_info_impl_set_value),
+	(audiocd_stream_info_impl_get_n_values):
+	* monkey-media/stream-info-impl/audiocd-stream-info-impl.h:
+	* monkey-media/stream-info-impl/flac-stream-info-impl.c:
+	(FLAC_stream_info_impl_get_type),
+	(FLAC_stream_info_impl_class_init), (FLAC_stream_info_impl_init),
+	(FLAC_stream_info_impl_finalize),
+	(FLAC_stream_info_impl_open_stream),
+	(FLAC_stream_info_impl_get_n_values),
+	(FLAC_stream_info_impl_get_value),
+	(FLAC_stream_info_impl_set_value),
+	(FLAC_stream_info_impl_id3_tag_get_utf8):
+	* monkey-media/stream-info-impl/flac-stream-info-impl.h:
+	* monkey-media/stream-info-impl/id3-vfs/.cvsignore:
+	* monkey-media/stream-info-impl/id3-vfs/Makefile.am:
+	* monkey-media/stream-info-impl/id3-vfs/field.h:
+	* monkey-media/stream-info-impl/id3-vfs/file.h:
+	* monkey-media/stream-info-impl/id3-vfs/global.h:
+	* monkey-media/stream-info-impl/id3-vfs/id3-vfs.c: (query_tag),
+	(read_tag), (update_primary), (add_tag), (search_tags),
+	(finish_file), (new_file), (id3_vfs_open), (id3_vfs_close),
+	(id3_vfs_tag), (id3_vfs_update), (extractI4), (is_mphead),
+	(is_xhead), (id3_vfs_bitrate), (id3_vfs_samplerate),
+	(id3_vfs_channels), (id3_vfs_vbr), (id3_vfs_version):
+	* monkey-media/stream-info-impl/id3-vfs/id3-vfs.h:
+	* monkey-media/stream-info-impl/id3-vfs/tag.h:
+	* monkey-media/stream-info-impl/mp3-stream-info-impl.c:
+	(MP3_stream_info_impl_get_type), (MP3_stream_info_impl_class_init),
+	(MP3_stream_info_impl_init), (MP3_stream_info_impl_finalize),
+	(MP3_stream_info_impl_open_stream),
+	(MP3_stream_info_impl_get_n_values),
+	(MP3_stream_info_impl_get_value), (MP3_stream_info_impl_set_value),
+	(MP3_stream_info_impl_id3_tag_get_utf8):
+	* monkey-media/stream-info-impl/mp3-stream-info-impl.h:
+	* monkey-media/stream-info-impl/ogg-helper.c: (ogg_helper_read),
+	(ogg_helper_seek), (ogg_helper_close), (ogg_helper_close_dummy),
+	(ogg_helper_tell):
+	* monkey-media/stream-info-impl/ogg-helper.h:
+	* monkey-media/stream-info-impl/vorbis-stream-info-impl.c:
+	(vorbis_stream_info_impl_get_type),
+	(vorbis_stream_info_impl_class_init),
+	(vorbis_stream_info_impl_init), (vorbis_stream_info_impl_finalize),
+	(vorbis_stream_info_impl_open_stream),
+	(vorbis_stream_info_impl_get_n_values),
+	(vorbis_stream_info_impl_get_strvalue_utf8),
+	(vorbis_stream_info_impl_get_value),
+	(vorbis_stream_info_impl_set_value):
+	* monkey-media/stream-info-impl/vorbis-stream-info-impl.h:
+	* shell/.cvsignore:
+	* shell/Makefile.am:
+	* sources/Makefile.am:
+	* tests/.cvsignore:
+	* tests/Makefile.am:
+	* tests/test-cd.c: (eos), (main):
+	* tests/test-cmdline.c: (buffering_begin_cb), (buffering_end_cb),
+	(eos), (info), (error_cb), (main):
+	* tests/test-info.c: (print_result), (main):
+
+	Commit of doom.
+
+	This merges monkey-media into the tree, updates to the latest
+	autotools (we now require Automake 1.7), and um, other stuff.
+
 2003-07-31  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell.c (struct RBShellPrivate): Comment out AudioCD thingy.
