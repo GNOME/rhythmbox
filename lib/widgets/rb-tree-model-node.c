@@ -81,6 +81,12 @@ static void root_child_created_cb (RBNode *node,
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
 		                   RBTreeModelNode *model);
+static void filter_parent_child_created_cb (RBNode *node,
+					    RBNode *child,
+					    RBTreeModelNode *model);
+static void filter_parent_child_destroyed_cb (RBNode *node,
+					      RBNode *child,
+					      RBTreeModelNode *model);
 static void rb_tree_model_node_update_node (RBTreeModelNode *model,
 				            RBNode *node);
 static void root_destroyed_cb (RBNode *node,
@@ -309,6 +315,13 @@ rb_tree_model_node_set_property (GObject *object,
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
 						                      G_CALLBACK (filter_parent_destroyed_cb),
 						                      model);
+				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
+						                      G_CALLBACK (filter_parent_child_created_cb),
+						                      model);
+				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
+						                      G_CALLBACK (filter_parent_child_destroyed_cb),
+						                      model);
+
 			}
 
 			if (model->priv->filter_parent != NULL)
@@ -339,6 +352,16 @@ rb_tree_model_node_set_property (GObject *object,
 						         G_CALLBACK (filter_parent_destroyed_cb),
 						         G_OBJECT (model),
 							 0);
+	
+				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
+							 "child_created",
+							 G_CALLBACK (filter_parent_child_created_cb),
+							 G_OBJECT (model), 0);
+
+				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
+							 "child_destroyed",
+							 G_CALLBACK (filter_parent_child_destroyed_cb),
+							 G_OBJECT (model), 0);
 			}
 		}
 		break;
@@ -895,6 +918,22 @@ root_child_created_cb (RBNode *node,
 	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
+}
+
+static void
+filter_parent_child_created_cb (RBNode *node, 
+				RBNode *child,
+				RBTreeModelNode *model)
+{
+	rb_tree_model_node_update_node (model, child);
+}
+
+static void
+filter_parent_child_destroyed_cb (RBNode *node, 
+				  RBNode *child,
+				  RBTreeModelNode *model)
+{
+	rb_tree_model_node_update_node (model, child);
 }
 
 static void

@@ -116,7 +116,8 @@ rb_search_entry_init (RBSearchEntry *entry)
 	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
 
 	entry->priv->entry = gtk_entry_new ();
-	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, TRUE, TRUE, 0);
+	gtk_widget_set_size_request (GTK_WIDGET (entry->priv->entry), 100, -1);
+	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, FALSE, FALSE, 0);
 
 	g_signal_connect (G_OBJECT (entry->priv->entry),
 			  "changed",
@@ -188,7 +189,7 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 		entry->priv->timeout = 0;
 	}
 
-	entry->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_search_entry_timeout_cb, entry);
+	entry->priv->timeout = g_timeout_add (300, (GSourceFunc) rb_search_entry_timeout_cb, entry);
 }
 
 static gboolean
@@ -196,6 +197,7 @@ rb_search_entry_timeout_cb (RBSearchEntry *entry)
 {
 	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[SEARCH], 0,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
+	entry->priv->timeout = 0;
 
 	return FALSE;
 }

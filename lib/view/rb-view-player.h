@@ -22,6 +22,7 @@
 #define __RB_VIEW_PLAYER_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gtk/gtkwidget.h>
 #include <monkey-media.h>
 
 #include "rb-view.h"

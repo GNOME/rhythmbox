@@ -50,9 +50,11 @@ typedef struct
 	
 	void (*deleted) (RBView *view);
 
-	const char *(*impl_get_description) (RBView *view);
+	const char *(*impl_get_description)  (RBView *view);
 
-	GList      *(*impl_get_selection)   (RBView *view);
+	GList      *(*impl_get_selection)    (RBView *view);
+
+	GtkWidget  *(*impl_get_extra_widget) (RBView *view);
 } RBViewClass;
 
 GType              rb_view_get_type           (void);
@@ -77,6 +79,8 @@ const char        *rb_view_get_description    (RBView *view);
 void               rb_view_deleted            (RBView *view);
 
 GList		  *rb_view_get_selection      (RBView *view);
+
+GtkWidget         *rb_view_get_extra_widget   (RBView *view);
 
 G_END_DECLS
 

@@ -460,3 +460,13 @@ rb_view_get_selection (RBView *view)
 
 	return klass->impl_get_selection (view);
 }
+
+GtkWidget *
+rb_view_get_extra_widget (RBView *view)
+{
+	RBViewClass *klass;
+
+	klass = RB_VIEW_GET_CLASS (view);
+
+	return klass->impl_get_extra_widget (view);
+}

@@ -18,6 +18,7 @@
  *  $Id$
  */
 
+#include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
 #include <bonobo/bonobo-ui-util.h>
 #include <config.h>
@@ -28,7 +29,6 @@
 #include "rb-stock-icons.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-dialog.h"
-#include "rb-volume.h"
 #include "rb-player.h"
 
 typedef enum
@@ -104,6 +104,8 @@ struct RBShellPlayerPrivate
 	MonkeyMediaAudioStream *current_stream;
 
 	RBPlayer *player_widget;
+
+	GtkWidget *bin;
 };
 
 enum
@@ -213,8 +215,8 @@ static void
 rb_shell_player_init (RBShellPlayer *shell_player)
 {
 	GError *error = NULL;
-	GtkWidget *align;
-	RBVolume *volume;
+	GtkWidget *align, *vbox;
+//	RBVolume *volume;
 
 	shell_player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
@@ -231,10 +233,20 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 	gtk_box_pack_start (GTK_BOX (shell_player),
 			    GTK_WIDGET (shell_player->priv->player_widget), TRUE, TRUE, 0);
 
+	vbox = gtk_vbox_new (FALSE, 5);
+	gtk_box_pack_end (GTK_BOX (shell_player), vbox, FALSE, TRUE, 0);
+
+#if 0
 	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
-	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
+	align = gtk_alignment_new (1.0, 0.0, 0.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (volume));
-	gtk_box_pack_end (GTK_BOX (shell_player), align, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), align, FALSE, FALSE, 0);
+#endif
+
+	shell_player->priv->bin = gtk_hbox_new (FALSE, 0);
+	align = gtk_alignment_new (1.0, 1.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), shell_player->priv->bin);
+	gtk_box_pack_end (GTK_BOX (vbox), align, FALSE, FALSE, 0);
 }
 
 static void
@@ -263,6 +275,7 @@ rb_shell_player_set_property (GObject *object,
 			      GParamSpec *pspec)
 {
 	RBShellPlayer *shell_player = RB_SHELL_PLAYER (object);
+	GtkWidget *extra;
 
 	switch (prop_id)
 	{
@@ -275,6 +288,13 @@ rb_shell_player_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (shell_player->priv->selected_player),
 							      G_CALLBACK (rb_shell_player_player_changed_cb),
 							      shell_player);
+			
+			extra = rb_view_get_extra_widget (RB_VIEW (shell_player->priv->selected_player));
+			if (extra != NULL)
+			{
+				gtk_widget_hide (extra);
+				gtk_container_remove (GTK_CONTAINER (shell_player->priv->bin), extra);
+			}
 		}
 		
 		shell_player->priv->selected_player = g_value_get_object (value);
@@ -293,6 +313,14 @@ rb_shell_player_set_property (GObject *object,
 
 		rb_shell_player_update_play_button (shell_player);
 		rb_shell_player_sync_with_selected_player (shell_player);
+
+		extra = rb_view_get_extra_widget (RB_VIEW (shell_player->priv->selected_player));
+		if (extra != NULL)
+		{
+			gtk_container_add (GTK_CONTAINER (shell_player->priv->bin), extra);
+			gtk_widget_show_all (extra);
+		}
+		
 		break;
 	case PROP_COMPONENT:
 		shell_player->priv->component = g_value_get_object (value);

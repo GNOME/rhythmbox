@@ -124,6 +124,8 @@ struct RBNodeViewPrivate
 
 	gboolean changed;
 	guint timeout;
+
+	gboolean selection_lock;
 };
 
 enum
@@ -963,6 +965,9 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 	RBNode *selected_node = NULL;
 	GList *sel;
 
+	if (view->priv->selection_lock == TRUE)
+		return;
+
 	sel = rb_node_view_get_selection (view);
 	available = (sel != NULL);
 	if (sel != NULL)
@@ -1087,7 +1092,11 @@ rb_node_view_select_all (RBNodeView *view)
 void
 rb_node_view_select_none (RBNodeView *view)
 {
+	view->priv->selection_lock = TRUE;
+
 	gtk_tree_selection_unselect_all (view->priv->selection);
+
+	view->priv->selection_lock = FALSE;
 }
 
 void
@@ -1101,6 +1110,8 @@ rb_node_view_select_node (RBNodeView *view,
 	if (node == NULL)
 		return;
 
+	view->priv->selection_lock = TRUE;
+
 	rb_node_view_select_none (view);
 	
 	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
@@ -1111,7 +1122,10 @@ rb_node_view_select_node (RBNodeView *view,
 	g_value_unset (&val);
 
 	if (visible == FALSE)
+	{
+		view->priv->selection_lock = FALSE;
 		return;
+	}
 
 	egg_tree_model_filter_convert_child_iter_to_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter2, &iter);
@@ -1119,6 +1133,8 @@ rb_node_view_select_node (RBNodeView *view,
 							&iter, &iter2);
 
 	gtk_tree_selection_select_iter (view->priv->selection, &iter);
+	
+	view->priv->selection_lock = FALSE;
 }
 
 void

@@ -138,6 +138,7 @@ static void rb_group_view_add_list_uri (RBGroupView *view, GList *list);
 static void rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node);
 static void rb_group_view_node_removed_cb (RBNode *node,
 					   RBGroupView *view);
+static GtkWidget *rb_group_view_get_extra_widget (RBView *base_view);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -276,8 +277,9 @@ rb_group_view_class_init (RBGroupViewClass *klass)
 	object_class->set_property = rb_group_view_set_property;
 	object_class->get_property = rb_group_view_get_property;
 
-	view_class->impl_get_description = impl_get_description;
-	view_class->impl_get_selection   = impl_get_selection;
+	view_class->impl_get_description  = impl_get_description;
+	view_class->impl_get_selection    = impl_get_selection;
+	view_class->impl_get_extra_widget = rb_group_view_get_extra_widget;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -743,6 +745,12 @@ rb_group_view_get_stream (RBViewPlayer *player)
 	RBGroupView *view = RB_GROUP_VIEW (player);
 
 	return view->priv->playing_stream;
+}
+
+static GtkWidget *
+rb_group_view_get_extra_widget (RBView *base_view)
+{
+	return NULL;
 }
 
 static void

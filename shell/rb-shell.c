@@ -55,6 +55,7 @@
 #include "rb-group-view.h"
 #include "rb-file-monitor.h"
 #include "rb-library-dnd-types.h"
+#include "rb-volume.h"
 #include "eel-gconf-extensions.h"
 #include "eggtrayicon.h"
 
@@ -200,6 +201,8 @@ typedef enum
 #define CMD_PATH_VIEW_STATUSBAR "/commands/ShowStatusbar"
 #define CMD_PATH_VIEW_SIDEBAR   "/commands/ShowSidebar"
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
+
+#define PATH_VOLUME "/Toolbar/Volume"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/state/window_width"
@@ -444,6 +447,8 @@ rb_shell_construct (RBShell *shell)
 	Bonobo_UIContainer corba_container;
 	GtkWidget *vbox;
 	RBView *library_view;
+	BonoboControl *control;
+	RBVolume *volume;
 
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -500,6 +505,15 @@ rb_shell_construct (RBShell *shell)
 			       DATADIR,
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
+
+	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	gtk_widget_show_all (GTK_WIDGET (volume));
+	control = bonobo_control_new (GTK_WIDGET (volume));
+	bonobo_ui_component_object_set (shell->priv->ui_component,
+					PATH_VOLUME,
+					BONOBO_OBJREF (control),
+					NULL);
+	bonobo_object_unref (control);
 
 	/* tray icon */
 	setup_tray_icon (shell);

@@ -1,3 +1,40 @@
+2002-09-07  Olivier Martin  <omartin@ifrance.com>
+            Jorn Baayen  <jorn@nl.linux.org>
+
+	* NEWS:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/view/rb-view-player.h:
+	* lib/view/rb-view.c: (rb_view_get_extra_widget):
+	* lib/view/rb-view.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_selection_changed_cb),
+	(rb_node_view_select_none), (rb_node_view_select_node):
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_init),
+	(rb_search_entry_changed_cb), (rb_search_entry_timeout_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (root_child_created_cb),
+	(filter_parent_child_created_cb),
+	(filter_parent_child_destroyed_cb):
+	* library/Makefile.am:
+	* library/rb-node-filter.c: (rb_node_filter_get_type),
+	(rb_node_filter_class_init), (rb_node_filter_init),
+	(rb_node_filter_finalize), (rb_node_filter_set_object_property),
+	(rb_node_filter_get_object_property), (rb_node_filter_new),
+	(rb_node_filter_get_root), (rb_node_filter_set_expression),
+	(thread_main):
+	* library/rb-node-filter.h:
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_set_property):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* views/rb-group-view.c: (rb_group_view_class_init),
+	(rb_group_view_get_stream), (rb_group_view_get_extra_widget):
+	* views/rb-library-view.c: (rb_library_view_class_init),
+	(rb_library_view_init), (rb_library_view_finalize),
+	(rb_library_view_set_property), (artist_node_selected_cb),
+	(album_node_selected_cb), (rb_library_view_get_extra_widget),
+	(rb_library_view_node_removed_cb), (rb_library_view_search_cb):
+
+	Search!
+
 2002-09-05  Jorn Baayen  <jorn@nl.linux.org>
 
 	* library/rb-node.c: (rb_node_dispose):
