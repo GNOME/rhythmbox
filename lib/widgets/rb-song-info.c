@@ -24,6 +24,9 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtktooltips.h>
+#include <gtk/gtkmenu.h>
+#include <gtk/gtkoptionmenu.h>
+#include <gtk/gtkmenuitem.h>
 #include <glade/glade.h>
 #include <string.h>
 #include <monkey-media-stream-info.h>
@@ -54,6 +57,7 @@ static void rb_song_info_update_channels (RBSongInfo *song_info);
 static void rb_song_info_update_size (RBSongInfo *song_info);
 static void rb_song_info_update_duration (RBSongInfo *song_info);
 static void rb_song_info_update_location (RBSongInfo *song_info);
+static void rb_song_info_update_genre (RBSongInfo *song_info);
 static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       MonkeyMediaStreamInfoField field,
 		                       GtkWidget *widget);
@@ -300,7 +304,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 				   MONKEY_MEDIA_STREAM_INFO_FIELD_DATE,
 				   song_info->priv->date);
 	rb_song_info_update_track (song_info);
-	// TODO: genre
+	rb_song_info_update_genre (song_info);
 	rb_song_info_update_entry (song_info,
 				   MONKEY_MEDIA_STREAM_INFO_FIELD_COMMENT,
 				   song_info->priv->comments);
@@ -359,6 +363,45 @@ rb_song_info_update_track (RBSongInfo *song_info)
 			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), tokens[1]);
 	}
 	g_value_unset (&value);
+}
+
+static void
+rb_song_info_update_genre (RBSongInfo *song_info)
+{
+	GtkWidget *menu;
+	GList *l;
+	int index = -1, i = 0;
+	const char *genre;
+	GValue value = { 0, };
+
+	menu = gtk_menu_new ();
+
+	monkey_media_stream_info_get_value (song_info->priv->info, 
+					    MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+					    &value);
+	genre = g_value_get_string (&value);
+	
+	for (l = monkey_media_stream_info_list_all_genres (); l != NULL; l = g_list_next (l))
+	{
+		GtkWidget *item;
+
+		item = gtk_menu_item_new_with_label (l->data);
+		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+		gtk_widget_show (item);
+
+		if (genre == NULL && strcmp (_("Unknown"), l->data))
+			index = i;
+		if (genre != NULL && strcmp (genre, l->data) == 0)
+			index = i;
+		i++;
+	}
+
+	g_value_unset (&value);
+	
+	gtk_option_menu_set_menu (GTK_OPTION_MENU (song_info->priv->genre),
+				  menu);
+	gtk_option_menu_set_history (GTK_OPTION_MENU (song_info->priv->genre),
+				     index);
 }
 
 static void
@@ -458,12 +501,19 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	text = g_value_get_string (&value);
 	if (text != NULL)
 	{
+		char *tmp;
+		
 		basename = g_path_get_basename (text);
-		gtk_label_set_text (GTK_LABEL (song_info->priv->location), basename);
+		tmp = gnome_vfs_unescape_string_for_display (basename);
+		g_free (basename);
+		gtk_label_set_text (GTK_LABEL (song_info->priv->location), tmp);
+		g_free (tmp);
+	
+		tmp = gnome_vfs_unescape_string_for_display (text);
 		gtk_tooltips_set_tip (song_info->priv->tooltips,
 				      song_info->priv->location_ebox,
-				      text, NULL);
-		g_free (basename);
+				      tmp, NULL);
+		g_free (tmp);
 	}
 	g_value_unset (&value);
 }
