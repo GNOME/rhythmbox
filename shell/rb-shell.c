@@ -614,11 +614,11 @@ rb_shell_sync_state (RBShell *shell)
 	}
 	
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
+	rb_playlist_manager_save_playlists_blocking (shell->priv->playlist_manager);
 
 	rb_debug ("saving db");
 	rhythmdb_read_lock (shell->priv->db);
-	rhythmdb_save (shell->priv->db);
+	rhythmdb_save_blocking (shell->priv->db);
 	rhythmdb_read_unlock (shell->priv->db);
 	return FALSE;
 }
@@ -632,6 +632,28 @@ idle_save_state (RBShell *shell)
 
 	GDK_THREADS_LEAVE ();
 	return FALSE;
+}
+
+static gboolean
+idle_save_rhythmdb (RhythmDB *db)
+{
+	if (RHYTHMDB_IS (db)) {
+		rhythmdb_read_lock (db);
+		rhythmdb_save (db);
+		rhythmdb_read_unlock (db);
+	}
+	
+	return TRUE;
+}
+
+static gboolean
+idle_save_playlist_manager (RBPlaylistManager *mgr)
+{
+	if (RB_IS_PLAYLIST_MANAGER (mgr)) {
+		rb_playlist_manager_save_playlists (mgr);
+	}
+
+	return TRUE;
 }
 
 static void
@@ -1427,6 +1449,8 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_finish",
 				 G_CALLBACK (rb_shell_playlist_load_finish_cb), shell, 0);
 
+	g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
+		
 	rb_shell_sync_window_state (shell);
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
@@ -1486,7 +1510,10 @@ rb_shell_construct (RBShell *shell)
 	if (rhythmdb_exists) {
 		rb_debug ("loading database");
 		rhythmdb_load (shell->priv->db);
+		rb_debug ("adding db save-when-needed thread");
+		g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
 	}
+	
 	rb_debug ("shell: syncing window state");
 	rb_shell_sync_paned (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));

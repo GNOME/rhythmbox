@@ -80,6 +80,12 @@ struct RhythmDBPrivate
 
 	GMutex *exit_mutex;
 	gboolean exiting;
+	
+	GCond *saving_condition;
+	GMutex *saving_mutex;
+
+	gboolean saving;
+	gboolean dirty;
 };
 
 struct RhythmDBAction
@@ -143,6 +149,7 @@ enum
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
+	SAVE_COMPLETE,
 	ERROR,
 	LAST_SIGNAL
 };
@@ -263,6 +270,17 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+
+	rhythmdb_signals[SAVE_COMPLETE] =
+		g_signal_new ("save_complete",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, save_complete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
 	rhythmdb_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -469,6 +487,13 @@ rhythmdb_init (RhythmDB *db)
 	g_async_queue_ref (db->priv->main_thread_cancel);
 	g_async_queue_ref (db->priv->action_queue);
 	g_thread_create ((GThreadFunc) action_thread_main, db, FALSE, NULL);
+	
+	db->priv->saving_condition = g_cond_new ();
+	db->priv->saving_mutex = g_mutex_new ();
+
+	db->priv->exiting = FALSE;
+	db->priv->saving = FALSE;
+	db->priv->dirty = FALSE;
 }
 
 gboolean
@@ -530,6 +555,9 @@ rhythmdb_finalize (GObject *object)
 	g_thread_pool_free (db->priv->query_thread_pool, TRUE, FALSE);
 
 	g_async_queue_unref (db->priv->status_queue);
+
+	g_mutex_free (db->priv->saving_mutex);
+	g_cond_free (db->priv->saving_condition);
 
 	g_free (db->priv->column_types);
 
@@ -940,7 +968,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	g_value_set_boolean (&value, TRUE);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_AUTO_RATE, &value);
 	g_value_unset (&value);
-
+	
  out_dupentry:
 	rhythmdb_write_unlock_internal (db, FALSE);
  out_freeuri:
@@ -1032,7 +1060,7 @@ add_thread_main (RhythmDB *db)
 		else
 			rb_uri_handle_recursively (uri, (GFunc) add_file,
 						   &db->priv->exiting, db);
-
+						 
 		if (error != NULL)
 			push_err (db, realuri, error);
 
@@ -1203,6 +1231,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
 	g_async_queue_push (db->priv->status_queue, db);
+	
 	return NULL;
 }
 
@@ -1211,17 +1240,85 @@ rhythmdb_load (RhythmDB *db)
 {
 	g_object_ref (G_OBJECT (db));
 	db->priv->outstanding_threads++;
-	g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, TRUE, NULL);
+	g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, FALSE, NULL);
+}
+
+static void
+rhythmdb_save_worker (RhythmDB *db)
+{
+	RhythmDBClass *klass;
+	
+	g_mutex_lock (db->priv->saving_mutex);
+
+	if (db->priv->saving) {
+		rb_debug ("already saving, ignoring");
+		g_mutex_unlock (db->priv->saving_mutex);
+		return;
+	}
+
+	if (!db->priv->dirty) {
+		rb_debug ("no save needed, ignoring");
+		g_mutex_unlock (db->priv->saving_mutex);
+		return;
+	}
+
+	db->priv->saving = TRUE;
+
+	g_mutex_unlock (db->priv->saving_mutex);
+
+	rb_debug ("saving rhythmdb");
+			
+	klass = RHYTHMDB_GET_CLASS (db);
+	db_enter (db, FALSE);
+	klass->impl_save (db);
+
+	g_mutex_lock (db->priv->saving_mutex);
+
+	db->priv->saving = FALSE;
+	db->priv->dirty = FALSE;
+
+	g_mutex_unlock (db->priv->saving_mutex);
+
+	g_cond_broadcast (db->priv->saving_condition);
+}
+
+static gpointer
+rhythmdb_save_thread_main (RhythmDB *db)
+{
+	rb_debug ("entering save thread");
+	
+	rhythmdb_save_worker (db);
+
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[SAVE_COMPLETE], 0);
+	g_async_queue_push (db->priv->status_queue, db);
+	
+	return NULL;
 }
 
 void
 rhythmdb_save (RhythmDB *db)
 {
-	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	rb_debug ("saving the rhythmdb in the background");
 
-	db_enter (db, FALSE);
+	g_object_ref (G_OBJECT (db));
+	db->priv->outstanding_threads++;
 	
-	klass->impl_save (db);
+	g_thread_create ((GThreadFunc) rhythmdb_save_thread_main, db, FALSE, NULL);
+}
+
+void
+rhythmdb_save_blocking (RhythmDB *db)
+{
+	rb_debug("saving the rhythmdb and blocking");
+	
+	rhythmdb_save_worker (db);
+	
+	g_mutex_lock (db->priv->saving_mutex);
+
+	while (db->priv->saving)
+		g_cond_wait (db->priv->saving_condition, db->priv->saving_mutex);
+
+	g_mutex_unlock (db->priv->saving_mutex);
 }
 
 static void
@@ -1301,6 +1398,9 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	klass->impl_entry_set (db, entry, propid, value);
 
 	rhythmdb_entry_sync_mirrored (db, entry, propid, value);
+	
+	/* set the dirty state */
+	db->priv->dirty = TRUE;
 }
 
 void
@@ -1393,6 +1493,9 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 	rhythmdb_emit_entry_deleted (db, entry);
 	
 	klass->impl_entry_delete (db, entry);
+	
+	/* deleting an entry makes the db dirty */
+	db->priv->dirty = TRUE;
 }
 
 void

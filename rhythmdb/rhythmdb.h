@@ -47,7 +47,6 @@ typedef gint32 RhythmDBEntryType;
 #define RHYTHMDB_ENTRY_TYPE_SONG (rhythmdb_entry_song_get_type ())
 #define RHYTHMDB_ENTRY_TYPE_IRADIO_STATION (rhythmdb_entry_iradio_get_type ())
 
-
 typedef enum
 {
 	RHYTHMDB_QUERY_END,
@@ -153,6 +152,7 @@ typedef struct
 					 const GValue *old, const GValue *new);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(RhythmDBEntry *entry);
+	void	(*save_complete)	(RhythmDBEntry *entry);
 	void	(*error)		(const char *uri, const char *msg);
 
 	/* virtual methods */
@@ -194,6 +194,7 @@ void		rhythmdb_shutdown	(RhythmDB *db);
 void		rhythmdb_load		(RhythmDB *db);
 
 void		rhythmdb_save		(RhythmDB *db);
+void		rhythmdb_save_blocking	(RhythmDB *db);
 
 void		rhythmdb_read_lock	(RhythmDB *db);
 void		rhythmdb_write_lock	(RhythmDB *db);
@@ -313,7 +314,7 @@ RhythmDBEntryType rhythmdb_entry_register_type          (void);
 
 RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
-
+RhythmDBEntryType rhythmdb_entry_icecast_get_type        (void);
 
 
 G_END_DECLS

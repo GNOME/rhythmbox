@@ -1600,6 +1600,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		rb_header_set_title (player->priv->header_widget, entry_title);
 	g_free (title);
+	
 	rb_header_set_playing_entry (player->priv->header_widget, entry);
 	rb_header_sync (player->priv->header_widget);
 }
@@ -2073,6 +2074,7 @@ buffering_progress_cb (RBPlayer *mmplayer,
 	{
 		rb_shell_player_disable_buffering (player);
 		rb_shell_player_sync_with_source (player);
+		rb_shell_player_sync_buttons (player);
 	}	
 	else
 	{

@@ -93,6 +93,17 @@ struct RBPlaylistManagerPrivate
 	RBPlaylistSource *loading_playlist;
 
 	char *firsturi;
+
+	guint thread_reaper_id;
+
+	GAsyncQueue *status_queue;
+	gint outstanding_threads;
+
+	GCond *saving_condition;
+	GMutex *saving_mutex;
+
+	gboolean saving;
+	gboolean dirty;
 };
 
 enum
@@ -260,7 +271,35 @@ static void
 rb_playlist_manager_init (RBPlaylistManager *mgr)
 {
 	mgr->priv = g_new0 (RBPlaylistManagerPrivate, 1);
+
+	mgr->priv->status_queue = g_async_queue_new ();
+
+	mgr->priv->saving_condition = g_cond_new ();
+	mgr->priv->saving_mutex = g_mutex_new ();
+
+	mgr->priv->saving = FALSE;
+	mgr->priv->dirty = FALSE;
 }
+
+static gboolean
+reap_dead_playlist_threads (RBPlaylistManager *mgr)
+{
+	GObject *obj;
+
+	while ((obj = g_async_queue_try_pop (mgr->priv->status_queue)) != NULL) {
+		GDK_THREADS_ENTER ();
+		g_object_unref (obj);
+		mgr->priv->outstanding_threads--;
+		GDK_THREADS_LEAVE ();
+	}
+
+	GDK_THREADS_ENTER ();
+	mgr->priv->thread_reaper_id = g_timeout_add (5000, (GSourceFunc) reap_dead_playlist_threads, mgr);
+	GDK_THREADS_LEAVE ();
+	
+	return FALSE;
+}
+
 
 static void
 rb_playlist_manager_finalize (GObject *object)
@@ -274,6 +313,18 @@ rb_playlist_manager_finalize (GObject *object)
 
 	g_return_if_fail (mgr->priv != NULL);
 
+	g_source_remove (mgr->priv->thread_reaper_id);
+	
+	while (mgr->priv->outstanding_threads > 0) {
+		GObject *obj = g_async_queue_pop (mgr->priv->status_queue);
+		g_object_unref (obj);
+		mgr->priv->outstanding_threads--;
+	}
+	
+	g_async_queue_unref (mgr->priv->status_queue);
+
+	g_mutex_free (mgr->priv->saving_mutex);
+	g_cond_free (mgr->priv->saving_condition);
 
 	g_list_free (mgr->priv->playlists);
 
@@ -480,16 +531,37 @@ out:
 	g_free (file);
 }
 
-void
-rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
+static void
+rb_playlist_manager_save_playlists_worker (RBPlaylistManager *mgr)
 {
-	char *file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
-	char *tmpname = g_strconcat (file, ".tmp", NULL);
+	char *file;
+	char *tmpname;
 	GList *tmp;
 	xmlDocPtr doc;
 	xmlNodePtr root;
 
+	g_mutex_lock (mgr->priv->saving_mutex);
+
+	if (mgr->priv->saving) {
+		rb_debug ("already saving, ignoring");	
+		g_mutex_unlock (mgr->priv->saving_mutex);
+		return;
+	}
+
+	if (!mgr->priv->dirty) {
+		rb_debug ("no save needed, ignoring");
+		g_mutex_unlock (mgr->priv->saving_mutex);
+		return;
+	}
+
+	mgr->priv->saving = TRUE;
+
+	g_mutex_unlock (mgr->priv->saving_mutex);
+
 	rb_debug ("saving playlists");
+			
+	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
+	tmpname = g_strconcat (file, ".tmp", NULL);
 
 	doc = xmlNewDoc ("1.0");
 
@@ -504,6 +576,53 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 	xmlFreeDoc (doc);
 	g_free (tmpname);
 	g_free (file);
+
+	g_mutex_lock (mgr->priv->saving_mutex);
+
+	mgr->priv->saving = FALSE;
+	mgr->priv->dirty = FALSE;
+
+	g_mutex_unlock (mgr->priv->saving_mutex);
+
+	g_cond_broadcast (mgr->priv->saving_condition);
+}
+
+static gpointer
+rb_playlist_manager_save_thread_main (RBPlaylistManager *mgr)
+{
+	rb_debug ("entering save thread");
+	
+	rb_playlist_manager_save_playlists_worker (mgr);
+
+	g_async_queue_push (mgr->priv->status_queue, mgr);
+	
+	return NULL;
+}
+
+void
+rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
+{
+	rb_debug ("saving the playlists in the background");
+
+	g_object_ref (G_OBJECT (mgr));
+	mgr->priv->outstanding_threads++;
+	
+	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, mgr, FALSE, NULL);
+}
+
+void
+rb_playlist_manager_save_playlists_blocking (RBPlaylistManager *mgr)
+{
+	rb_debug("saving the playlists and blocking");
+	
+	rb_playlist_manager_save_playlists_worker (mgr);
+	
+	g_mutex_lock (mgr->priv->saving_mutex);
+
+	while (mgr->priv->saving)
+		g_cond_wait (mgr->priv->saving_condition, mgr->priv->saving_mutex);
+
+	g_mutex_unlock (mgr->priv->saving_mutex);
 }
 
 RBSource *

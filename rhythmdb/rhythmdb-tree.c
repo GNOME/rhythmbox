@@ -427,8 +427,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 					const char *typename = *(attrs+1);
 					if (!strcmp (typename, "song"))
 						type = RHYTHMDB_ENTRY_TYPE_SONG;
-					else 
+					else if (!strcmp (typename, "iradio"))
 						type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+					else
+						return;
 					type_set = TRUE;
 					break;
 				}
