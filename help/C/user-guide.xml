@@ -91,7 +91,7 @@
 	</screenshot>
 	<para>The side pane is where you can access your music library internet radio and
 	your &playlist;  <!-- and CDs -->.The side pane can contain	
-	the following icons:
+	the following icons:</para>
 	<itemizedlist>
 		<listitem>The &application; library, where all of the
 		imported songs will appear.
@@ -105,6 +105,8 @@
 		</listitem> 
 		-->
 	</itemizedlist>
+	<para>
+	The display of the side pane can be toggled on or off by selecting <menuchoice><guimenu>View</guimenu><guimenuitem>Source List</guimenuitem></menuchoice>
 	</para>
 </sect2>
 
@@ -137,6 +139,39 @@
 	adjust the volume by scrolling up or down while the mouse pointer 
 	is over the volume button.</para>
 	</tip>
+</sect2>
+<sect2 id="status-area">
+<title>The Statusbar</title>
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-statusbar.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>Shows statusbar</phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+	<para>The statusbar contains additional information about the songs in the library or the &playlist;. In the left corner are two buttons for shuffling or repeating the songs. The display of the statusbar can be toggled on or off by selecting <menuchoice><guimenu>View</guimenu><guimenuitem>Statusbar</guimenuitem></menuchoice></para>
+</sect2>
+
+<sect2 id="rb-window-small">
+<title>&application; Minimized Window</title>
+
+	<para>By using <menuchoice><guimenu>View</guimenu><guimenuitem>Small Display</guimenuitem></menuchoice> the &application; window will be minimized displaying only the play area.</para>
+	<screenshot>
+	<mediaobject>
+		<imageobject>
+			<imagedata fileref="figures/rb-window-small.png"
+			format="PNG"/>
+		</imageobject>
+		<textobject>
+		<phrase>Shows player area in small display mode</phrase>
+		</textobject>
+	</mediaobject>
+	</screenshot>
+
 </sect2>
 </sect1>
 
@@ -269,7 +304,7 @@
 			ways, as shown below;
 			<itemizedlist>
 				<listitem>
-					Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>Add to Library...</guimenuitem></menuchoice>
+					Choose <menuchoice><guimenu>Music</guimenu>             <guimenuitem>Import Folder</guimenuitem></menuchoice> to add a single file or a whole folder to the library.
 				</listitem>
 				<listitem>
 				Drag and drop from other applications.
@@ -425,45 +460,71 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 <sect2 id="groups">
 <title>Playlists</title>
 
-<para>A &playlist; is an ad hoc list that has been created from songs in &application; library, to have a different sorting method from artist/album library default.
-</para>
-<para>It might consist of a list of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood', or whatever you want.</para>
+<para>A &playlist; is an ad hoc list that has been created from songs in &application; library, to have a different sorting method from artist/album library default. It might consist of a list of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood', or whatever you want.</para>
 
 <para>To display the contents of a &playlist;, simply click on the required icon in side pane, and the view pane will change to show the contents.</para>
 
-<sect3 id="groups-add">
-<title>Adding Songs</title>
+<sect3 id="groups-create">
+<title>Creating &playlist;s</title>
  
   <para>To create a &playlist; use one of the following methods:</para>
 
   <itemizedlist>
     <listitem>
-    Drag a 'track', 'album' or 'artist' from library or library browser to the side pane. When the &playlist; is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled').	
+    Choose <menuchoice><guimenu>Music</guimenu><guimenuitem>Playlist</guimenuitem><guimenuitem>New Playlist...</guimenuitem></menuchoice>. The new &playlist; will appear in the side pane and ask you for the name of the new &playlist;. Enter your desired name into the empty textbox.
+
+    	<figure id="fig-groups-create">
+	<title>Dialog to create a new &playlist;</title>
+	<screenshot>
+	<graphic format="PNG" fileref="figures/rb-group-create.png">
+	</graphic>
+	</screenshot>
+	</figure>
     </listitem>
     <listitem>    
-    Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>New Group</guimenuitem></menuchoice>. Again a dialog is displayed prompting for a name, and if any tracks are selected, tick the <guilabel>Add selected track</guilabel> option box to add them to the group.
+    Choose <menuchoice><guimenu>Music</guimenu><guimenuitem>Playlist</guimenuitem><guimenuitem>New Automatic Playlist...</guimenuitem></menuchoice>. A dialog is displayed prompting for your desired inclusion or exclusion criterias. You may add more filters by clicking the <menuchoice><guimenu>Add</guimenu></menuchoice> button. Once you are done a new &playlist; will be created basing on your selctions in the side pane. Enter in the empty texbox your desired name for the Automatic &playlist;.
+    	<figure id="fig-groups-auto">
+	<title>Dialog to create a new automatic &playlist; </title>
+	<screenshot>
+	<graphic format="PNG" fileref="figures/rb-group-auto.png">
+	</graphic>
+	</screenshot>
+	</figure>
+    </listitem>
+    <listitem>
+    Choose <menuchoice><guimenu>Music</guimenu><guimenuitem>Playlist</guimenuitem><guimenuitem>Load Playlist...</guimenuitem></menuchoice> to load a previously saved &playlist; into &application;.
     </listitem>
   </itemizedlist>
 
-  <para>To add songs, album or artist to an already existing group just drag and drop it from the library to the &playlist;''s icon in the side pane.</para>
 
-<figure id="fig-groups-create">
-<title>Dialog to create a new &playlist;</title>
-<screenshot>
-<graphic format="PNG" fileref="figures/rb-group-create.png">
-</graphic>
-</screenshot>
-</figure>
 
 </sect3>
+
+<sect3 id="groups-add">
+<title>Adding Songs</title> 
+  <para>To add songs, album or artist to an already existing group just drag and drop it from the library to the &playlist;''s icon in the side pane.</para>
+</sect3>
+
 <sect3 id="groups-delete">
 <title>Deleting Songs</title>
 <para>To delete songs from a &playlist;, simply select the song then choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice><guimenu>Edit</guimenu> or simply press the  <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key.</para>
 </sect3>
-<sect3 id="groups-modify">
-<title>Modifying a &playlist;</title>
-<para>Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. This will allow the renaming and deletion of the &playlist;. Selecting the <guimenuitem>Rename</guimenuitem> will display a prompt for the new name of the group. Selecting the <guimenuitem>Delete</guimenuitem> will delete the &playlist; (note that the 'content' of the &playlist; is not removed from the library, just the 'playlist'.</para>
+
+<sect3 id="groups-remove">
+	<title>Remove a &playlist;</title>
+	<para>Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. This will allow the deletion of the &playlist;. Selecting the <guimenuitem>Delete</guimenuitem> will delete the &playlist; (note that the 'content' of the &playlist; is not removed from the library, just the 'playlist'. An alternative way to do this is <menuchoice><guimenu>Music</guimenu><guimenuitem>Playlist</guimenuitem><guimenuitem>Remove...</guimenuitem></menuchoice>.</para>
 </sect3>
+
+<sect3 id="groups-arrange">
+	<title>Changing the order of the &playlist;s in the side pane</title>
+	<para>To change the position of the &playlist; in the side pane simply drag it on the position you want to have it. The library and the radio playlist will remain always on top.</para>
+</sect3>
+
+<sect3 id="groups-modify">
+	<title>Modify an automatic &playlist;</title>
+	<para>Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. Selecting the <guimenuitem>Edit</guimenuitem> will allow you to modify the filters of the &playlist;.</para>
+</sect3>
+
 </sect2>
 
 <!--
@@ -503,13 +564,24 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 
 <sect3 id="iradio-adding">
 <title>Adding a station</title>
-<para>New stations can be added to the Internet Radio tuner, using the <menuchoice><guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice> menuoption.</para>
+<para>New stations can be added to the Internet Radio tuner, using the <menuchoice><guimenu>Music</guimenu><guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice> menuoption.</para>
 <figure id="fig-add-station">
 <title>Adding a new station to &application;</title>
 <screenshot>
 <graphic format="PNG" fileref="figures/rb-iradio-add.png"/>
 </screenshot>
 </figure>
+</sect3>
+
+<sect3 id="iradio-modify">
+<title>Changing the settings of a station</title>
+<para>The settings of the Internet Radio stations can be changed, using the <menuchoice><guimenu>Music</guimenu><guimenuitem>Preferences</guimenuitem></menuchoice> menuoption.</para>
+</sect3>
+
+<sect3 id="iradio-delete">
+<title>Removing a station</title>
+<para>Internet Radio stations can be removed from the tuner list. Right click on the station and
+select <guimenuitem>Delete</guimenuitem> to remove the station from the list.</para>
 </sect3>
 
 </sect2>
@@ -616,6 +688,31 @@ Show Window &mdash; choose whether or not the &application; window is visible or
  			</textobject>
  			</mediaobject>
 		</screenshot>
+		</figure>
+		</sect3>
+
+		<sect3 id="prefs-ipod">
+		<title>iPod preferences</title>
+			<para>This section of the dialog allows you to select
+			how the iPod browser will be displayed.
+			</para>
+		<figure id="fig-preferences">
+ 		<title>Library Preferences</title>
+		<screenshot>
+ 			<mediaobject>
+ 			<imageobject>
+ 			<imagedata fileref="figures/rb-prefs-ipod.png" 
+ 			format="PNG"/>
+ 			</imageobject>
+ 			<textobject>
+ 			<phrase>Show the iPod preferences dialog.
+ 			</phrase>
+ 			</textobject>
+ 			</mediaobject>
+		</screenshot>
+			<para>Changing the preferences here will also change
+			the settings of the library.
+			</para>
 		</figure>
 		</sect3>
 	</sect2>
