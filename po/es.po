@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD.es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-09 20:55+0200\n"
+"POT-Creation-Date: 2003-08-10 20:10+0200\n"
 "PO-Revision-Date: 2003-08-09 22:15+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -534,7 +534,7 @@ msgstr "_Acerca de"
 
 #: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Add to Library..."
-msgstr "_Añadir a la bibliotecai..."
+msgstr "_Añadir a la biblioteca..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Browser"
@@ -666,8 +666,8 @@ msgstr "Nueva estación de radio"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:529
-#: lib/widgets/rb-song-info.c:543
+#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:610
+#: lib/widgets/rb-song-info.c:624
 #, c-format
 msgid "%s Properties"
 msgstr "Propiedades de %s"
@@ -833,7 +833,7 @@ msgstr "Obtener información de este artista en Internet"
 msgid "Get more information on this station from the web"
 msgstr "Obtener información de esta estación en Internet"
 
-#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2005
+#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2008
 msgid "Not playing"
 msgstr "Sin reproducción"
 
@@ -852,28 +852,28 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Buscar:"
 
-#: lib/widgets/rb-song-info.c:227 lib/widgets/rb-song-info.c:548
+#: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:629
 msgid "Song Properties"
 msgstr "Propiedades de la canción"
 
-#: lib/widgets/rb-song-info.c:830
+#: lib/widgets/rb-song-info.c:911
 msgid "on the desktop"
 msgstr "en el escritorio"
 
-#: lib/widgets/rb-song-info.c:1042
+#: lib/widgets/rb-song-info.c:1123
 #, c-format
 msgid "%d kbps "
 msgstr "%d kbps "
 
-#: lib/widgets/rb-song-info.c:1055
+#: lib/widgets/rb-song-info.c:1136
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:1058
+#: lib/widgets/rb-song-info.c:1139
 msgid " (Stereo)"
 msgstr " (Estéreo)"
 
-#: lib/widgets/rb-song-info.c:1061
+#: lib/widgets/rb-song-info.c:1142
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d canales)"
@@ -965,7 +965,8 @@ msgstr ""
 #: monkey-media/monkey-media-player-gst-tmp.c:558
 #: monkey-media/monkey-media-player-gst.c:516
 msgid "Failed to create spider element; check your installation"
-msgstr "Ha ocurrido un error al crear el elemento dspider; compruebe su instalación"
+msgstr ""
+"Ha ocurrido un error al crear el elemento dspider; compruebe su instalación"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
 #: monkey-media/monkey-media-player-gst-tmp.c:570
@@ -1012,12 +1013,14 @@ msgstr ""
 #: monkey-media/monkey-media-player-xine.c:420
 #, c-format
 msgid "No input plugin available for %s; check your installation."
-msgstr "No hay una extensión de entrada disponible para %s; compruebe su instalación."
+msgstr ""
+"No hay una extensión de entrada disponible para %s; compruebe su instalación."
 
 #: monkey-media/monkey-media-player-xine.c:429
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
-msgstr "No hay una extensión «demux» disponible para %s; compruebe su instalación"
+msgstr ""
+"No hay una extensión «demux» disponible para %s; compruebe su instalación"
 
 #: monkey-media/monkey-media-player-xine.c:438
 #, c-format
@@ -1080,7 +1083,7 @@ msgid "Audio CD track"
 msgstr "Pista de CD de audio"
 
 #: monkey-media/stream-info-impl/flac-stream-info-impl.c:154
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:157
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:165
 msgid "Failed to open file for reading"
 msgstr "Ha ocurrido un error al abrir el archivo para lectura"
@@ -1089,7 +1092,7 @@ msgstr "Ha ocurrido un error al abrir el archivo para lectura"
 msgid "FLAC"
 msgstr "FLAC"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:469
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:487
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d capa 3"
@@ -1158,7 +1161,8 @@ msgstr "Abriendo %s..."
 #: shell/rb-shell-player.c:736
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
-msgstr "Todas las ubicaciones de salvaguarda han fallado, no se puede reproducir %s\n"
+msgstr ""
+"Todas las ubicaciones de salvaguarda han fallado, no se puede reproducir %s\n"
 
 #: shell/rb-shell-player.c:1116
 msgid "Pause"
@@ -1267,27 +1271,27 @@ msgstr "Guardar lista de reproducción"
 msgid "There is already a playlist with that name."
 msgstr "Ya hay una lista de reproducción con ese nombre."
 
-#: shell/rb-shell.c:1504
+#: shell/rb-shell.c:1505
 msgid "Couldn't parse playlist"
 msgstr "No se ha podido analizar la lista de reproducción"
 
-#: shell/rb-shell.c:1833
+#: shell/rb-shell.c:1836
 msgid "Create"
 msgstr "Crear"
 
-#: shell/rb-shell.c:1848
+#: shell/rb-shell.c:1851
 msgid "Add Playlist"
 msgstr "Añadir lista de reproducción"
 
-#: shell/rb-shell.c:1859
+#: shell/rb-shell.c:1862
 msgid "Please enter a name for the new playlist:"
 msgstr "Introduzca un nombre para la nueva lista de reproducción:"
 
-#: shell/rb-shell.c:1869
+#: shell/rb-shell.c:1872
 msgid "Untitled"
 msgstr "Sin título"
 
-#: shell/rb-shell.c:1873
+#: shell/rb-shell.c:1876
 msgid "Add the _selected songs to the new playlist"
 msgstr "Añadir las canciones _seleccionadas a la nueva lista de reproducción"
 
@@ -1318,7 +1322,8 @@ msgstr "Obteniendo datos de MusicBrainz"
 #: sources/rb-audiocd-source.c:1093
 #, c-format
 msgid "Failed to parse %s as disc info file"
-msgstr "Ha ocurrido un error al procesar %s como archivo de información de disco"
+msgstr ""
+"Ha ocurrido un error al procesar %s como archivo de información de disco"
 
 #: sources/rb-audiocd-source.c:1163
 msgid "Loading CD information"
@@ -1329,27 +1334,27 @@ msgstr "Cargando información del CD"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d canciones, %d:%02d:%02d de tiempo total"
 
-#: sources/rb-group-source.c:506 sources/rb-library-source.c:778
+#: sources/rb-group-source.c:525 sources/rb-library-source.c:778
 #, c-format
 msgid "%ld songs"
 msgstr "%ld canciones"
 
-#: sources/rb-group-source.c:547 sources/rb-library-source.c:825
+#: sources/rb-group-source.c:566 sources/rb-library-source.c:825
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> días (%ld canciones)"
 
-#: sources/rb-group-source.c:550 sources/rb-library-source.c:828
+#: sources/rb-group-source.c:569 sources/rb-library-source.c:828
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> horas y <b>%ld</b> minutos (%ld canciones)"
 
-#: sources/rb-group-source.c:553 sources/rb-library-source.c:831
+#: sources/rb-group-source.c:572 sources/rb-library-source.c:831
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minutos (%ld canciones)"
 
-#: sources/rb-group-source.c:691
+#: sources/rb-group-source.c:710
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Ha ocurrido un error al procesar %s como grupo de archivos"
@@ -1393,4 +1398,3 @@ msgstr "Esta fuente no soporta arrastrar y soltar."
 
 #~ msgid "A_rtist"
 #~ msgstr "_Artista"
-
