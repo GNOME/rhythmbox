@@ -22,6 +22,7 @@
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreemodelsort.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
