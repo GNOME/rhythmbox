@@ -45,14 +45,18 @@ static void rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
 static void rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 			                  RBShellClipboard *clipboard,
 			                  const char *verbname);
+static void rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
+					   RBShellClipboard *clipboard,
+					   const char *verbname);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static void rb_node_destroyed_cb (RBNode *node,
 		                  RBShellClipboard *clipboard);
 
-#define CMD_PATH_CUT   "/commands/Cut"
-#define CMD_PATH_COPY  "/commands/Copy"
-#define CMD_PATH_PASTE "/commands/Paste"
+#define CMD_PATH_CUT    "/commands/Cut"
+#define CMD_PATH_COPY   "/commands/Copy"
+#define CMD_PATH_PASTE  "/commands/Paste"
+#define CMD_PATH_DELETE "/commands/Delete"
 
 struct RBShellClipboardPrivate
 {
@@ -72,9 +76,10 @@ enum
 
 static BonoboUIVerb rb_shell_clipboard_verbs[] =
 {
-	BONOBO_UI_VERB ("Cut",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
-	BONOBO_UI_VERB ("Copy",  (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
-	BONOBO_UI_VERB ("Paste", (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
+	BONOBO_UI_VERB ("Cut",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
+	BONOBO_UI_VERB ("Copy",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
+	BONOBO_UI_VERB ("Paste",  (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
+	BONOBO_UI_VERB ("Delete", (BonoboUIVerbFn) rb_shell_clipboard_cmd_delete),
 	BONOBO_UI_VERB_END
 };
 
@@ -101,8 +106,8 @@ rb_shell_clipboard_get_type (void)
 		};
 
 		rb_shell_clipboard_type = g_type_register_static (G_TYPE_OBJECT,
-							       "RBShellClipboard",
-							       &our_info, 0);
+							          "RBShellClipboard",
+							          &our_info, 0);
 	}
 
 	return rb_shell_clipboard_type;
@@ -279,6 +284,9 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 				 CMD_PATH_PASTE,
 				 rb_view_clipboard_can_paste (clipboard->priv->clipboard) &&
 				 g_list_length (clipboard->priv->nodes) > 0);
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_DELETE,
+				 rb_view_clipboard_can_delete (clipboard->priv->clipboard));
 }
 
 static void
@@ -305,6 +313,14 @@ rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 			      const char *verbname)
 {
 	rb_view_clipboard_paste (clipboard->priv->clipboard, clipboard->priv->nodes);
+}
+
+static void
+rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
+	                       RBShellClipboard *clipboard,
+			       const char *verbname)
+{
+	rb_view_clipboard_delete (clipboard->priv->clipboard);
 }
 
 static void

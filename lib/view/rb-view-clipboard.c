@@ -104,6 +104,14 @@ rb_view_clipboard_can_paste (RBViewClipboard *clipboard)
 	return iface->impl_can_paste (clipboard);
 }
 
+gboolean
+rb_view_clipboard_can_delete (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	return iface->impl_can_delete (clipboard);
+}
+
 GList *
 rb_view_clipboard_cut (RBViewClipboard *clipboard)
 {
@@ -137,6 +145,14 @@ rb_view_clipboard_paste (RBViewClipboard *clipboard,
 	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
 
 	iface->impl_paste (clipboard, nodes);
+}
+
+void
+rb_view_clipboard_delete (RBViewClipboard *clipboard)
+{
+	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
+
+	iface->impl_delete (clipboard);
 }
 
 void

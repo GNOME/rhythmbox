@@ -250,13 +250,12 @@ rb_library_xml_thread_get_property (GObject *object,
 static gpointer
 thread_main (RBLibraryXMLThreadPrivate *priv)
 {
-	gint media_files = 0;
+	int media_files = 0;
 
 	static RBProfiler *p = NULL;
 
 	priv->finished_preloading = FALSE;
 
-	
 	while (TRUE)
 	{
 		int i = 0;

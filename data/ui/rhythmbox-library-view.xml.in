@@ -14,7 +14,7 @@
        pixname="gtk-jump-to"/>
 
   <cmd name="ShowBrowser"
-       _tip="Toggle the artist and album browser visibility"
+       _tip="Change the visibility of the artist and album browser"
        type="toggle"/>
 
   <cmd name="SongInfo"
@@ -26,16 +26,6 @@
 
 <menu>
 
-<submenu name="File" _label="_File">
-
-  <placeholder name="FileMenu">
-
-    <menuitem name="SongInfo" verb="SongInfo" _label="Song _Information..." accel="*Control*i"/>
-
-  </placeholder>
-
-</submenu>
-
 <submenu name="Edit" _label="_Edit">
 
   <placeholder name="EditMenu">
@@ -44,25 +34,28 @@
 
     <menuitem name="SelectAll" verb="SelectAll" _label="Select _All" accel="*Control*a"/>
 
-    <menuitem name="SelectNone" verb="SelectNone" _label="Select _None"/>
-  
+    <separator/>
+
+    <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*i"/>
+
   </placeholder>
 
 </submenu>
 
-<placeholder name="ActionsMenu">
 
-  <submenu name="View" _label="_View">
-  
-    <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
+<submenu name="View" _label="_View">
 
+  <placeholder name="ViewMenu">
+
+    <menuitem name="ShowBrowser" verb="ShowBrowser" _label="_Browser"/>
+    
     <separator/>
 
-    <menuitem name="ShowBrowser" verb="ShowBrowser" _label="Show _Browser" accel="*Control*b"/>
-    
-  </submenu>
-  
-</placeholder>
+    <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
+
+  </placeholder>
+ 
+</submenu>
 
 </menu>
 

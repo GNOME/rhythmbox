@@ -103,6 +103,39 @@ rb_bonobo_get_active (BonoboUIComponent *component,
 }
 
 void
+rb_bonobo_set_visible (BonoboUIComponent *component,
+		       const char *path,
+		       gboolean visible)
+{
+	bonobo_ui_component_set_prop (component, path, "hidden",
+				      visible ? "0" : "1", NULL);
+}
+
+gboolean
+rb_bonobo_get_visible (BonoboUIComponent *component,
+		       const char *path)
+{
+	gboolean ret = FALSE;
+	char *prop;
+
+	prop = bonobo_ui_component_get_prop (component, path, "hidden", NULL);
+	if (prop != NULL)
+		ret = atoi (prop);
+	g_free (prop);
+
+	return ret;
+}
+
+void
+rb_bonobo_set_look (BonoboUIComponent *component,
+		    const char *path,
+		    const char *look)
+{
+	bonobo_ui_component_set_prop (component, path, "look",
+				      look, NULL);
+}
+
+void
 rb_bonobo_add_listener_list_with_data (BonoboUIComponent *component,
 				       const RBBonoboUIListener *list,
 				       gpointer user_data)

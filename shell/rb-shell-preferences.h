@@ -25,6 +25,12 @@
 
 G_BEGIN_DECLS
 
+#define CONF_UI_DIR               "/apps/rhythmbox/ui"
+#define CONF_UI_TOOLBAR_VISIBLE   "/apps/rhythmbox/ui/toolbar_visible"
+#define CONF_UI_STATUSBAR_VISIBLE "/apps/rhythmbox/ui/statusbar_visible"
+#define CONF_UI_SIDEBAR_VISIBLE   "/apps/rhythmbox/ui/sidebar_visible"
+#define CONF_UI_TOOLBAR_STYLE     "/apps/rhythmbox/ui/toolbar_style"
+
 #define RB_TYPE_SHELL_PREFERENCES         (rb_shell_preferences_get_type ())
 #define RB_SHELL_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferences))
 #define RB_SHELL_PREFERENCES_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_SHELL_PREFERENCES, RBShellPreferencesClass))

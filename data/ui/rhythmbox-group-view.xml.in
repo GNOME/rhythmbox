@@ -30,22 +30,16 @@
 
 <menu>
 
-<submenu name="File" _label="_File">
+<submenu name="File">
 
   <placeholder name="SourceMenu">
 
-    <menuitem name="RenameGroup" verb="RenameGroup" _label="_Rename Group..."/>
+    <menuitem name="RenameGroup" verb="RenameGroup" _label="_Rename Group..." accel="F2"/>
     
     <menuitem name="DeleteGroup" verb="DeleteGroup" _label="_Delete Group"/>
 
   </placeholder>
 
-  <placeholder name="FileMenu">
-
-    <menuitem name="SongInfo" verb="SongInfo" _label="Song _Information..." accel="*Control*i"/>
-
-  </placeholder>
-  
 </submenu>
 
 <submenu name="Edit" _label="_Edit">
@@ -56,21 +50,25 @@
 
     <menuitem name="SelectAll" verb="SelectAll" _label="Select _All" accel="*Control*a"/>
 
-    <menuitem name="SelectNone" verb="SelectNone" _label="Select _None"/>
-  
+    <separator/>
+
+    <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*i"/>
+
   </placeholder>
 
 </submenu>
 
-<placeholder name="ActionsMenu">
+<submenu name="View" _label="_View">
 
-  <submenu name="View" _label="_View">
-  
+  <placeholder name="ViewMenu">
+
+    <separator/>
+
     <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
 
-  </submenu>
-  
-</placeholder>
+  </placeholder>
+
+</submenu>
 
 </menu>
 

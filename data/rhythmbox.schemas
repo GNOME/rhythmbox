@@ -12,18 +12,6 @@
 	</locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/library/music_folders</key>
-	<applyto>/apps/rhythmbox/library/music_folders</applyto>
-	<owner>rhythmbox</owner>
-	<type>list</type>
-	<list_type>string</list_type>
-	<default>[]</default>
-	<locale name="C">
-	<short>List of other music folders</short>
-	<long>A list of other folders where music should be loaded from.</long>
-	</locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/music_groups</key>
 	<applyto>/apps/rhythmbox/music_groups</applyto>
 	<owner>rhythmbox</owner>
@@ -33,6 +21,50 @@
 	<locale name="C">
 	<short>List of music groups</short>
 	<long>A list of filenames where the current music groups are stored.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/toolbar_visible</key>
+	<applyto>/apps/rhythmbox/ui/toolbar_visible</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>Toolbar visibility</short>
+	<long>Boolean controlling whether the toolbar is visible or not.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/statusbar_visible</key>
+	<applyto>/apps/rhythmbox/ui/statusbar_visible</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>Statusbar visibility</short>
+	<long>Boolean controlling whether the statusbar is visible or not.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/sidebar_visible</key>
+	<applyto>/apps/rhythmbox/ui/sidebar_visible</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>Sidebar visibility</short>
+	<long>Boolean controlling whether the sidebar is visible or not.</long>
+	</locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/toolbar_style</key>
+	<applyto>/apps/rhythmbox/ui/toolbar_style</applyto>
+	<owner>rhythmbox</owner>
+	<type>string</type>
+	<default>desktop_default</default>
+	<locale name="C">
+	<short>Toolbar style</short>
+	<long>Toolbar style description.</long>
 	</locale>
       </schema>
       <schema>

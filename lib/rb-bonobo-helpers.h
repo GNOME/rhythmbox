@@ -60,6 +60,14 @@ void     rb_bonobo_set_active    (BonoboUIComponent *component,
 			          gboolean active);
 gboolean rb_bonobo_get_active    (BonoboUIComponent *component,
 			          const char *path);
+void     rb_bonobo_set_visible   (BonoboUIComponent *component,
+				  const char *path,
+				  gboolean visible);
+gboolean rb_bonobo_get_visible   (BonoboUIComponent *component,
+				  const char *path);
+void     rb_bonobo_set_look      (BonoboUIComponent *component,
+				  const char *path,
+				  const char *look);
 
 G_END_DECLS
 

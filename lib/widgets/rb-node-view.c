@@ -128,7 +128,6 @@ enum
 {
 	NODE_SELECTED,
 	NODE_ACTIVATED,
-	NODE_DELETED,
 	CHANGED,
 	LAST_SIGNAL
 };
@@ -240,16 +239,6 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, node_selected),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      RB_TYPE_NODE);
-	rb_node_view_signals[NODE_DELETED] =
-		g_signal_new ("node_deleted",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeViewClass, node_deleted),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
@@ -1168,22 +1157,6 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 	gunichar c;
 	char utf8[7];
 	GList *properties = NULL, *selection;
-	
-	if (event->keyval == GDK_Delete)
-	{
-		GList *sel, *l;
-
-		sel = g_list_copy (rb_node_view_get_selection (view));
-		for (l = sel; l != NULL; l = g_list_next (l))
-		{
-			RBNode *node = RB_NODE (l->data);
-
-			g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
-		}
-		g_list_free (sel);
-
-		return FALSE;
-	}
 	
 	c = gdk_keyval_to_unicode (event->keyval);
 	if (g_unichar_isgraph (c) == FALSE)

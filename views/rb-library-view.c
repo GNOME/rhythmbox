@@ -96,10 +96,12 @@ static void rb_library_view_clipboard_init (RBViewClipboardIface *iface);
 static gboolean rb_library_view_can_cut (RBViewClipboard *clipboard);
 static gboolean rb_library_view_can_copy (RBViewClipboard *clipboard);
 static gboolean rb_library_view_can_paste (RBViewClipboard *clipboard);
+static gboolean rb_library_view_can_delete (RBViewClipboard *clipboard);
 static GList *rb_library_view_cut (RBViewClipboard *clipboard);
 static GList *rb_library_view_copy (RBViewClipboard *clipboard);
 static void rb_library_view_paste (RBViewClipboard *clipboard,
 		                   GList *nodes);
+static void rb_library_view_delete (RBViewClipboard *clipboard);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibraryView *view);
@@ -118,9 +120,6 @@ static void rb_library_view_show_browser_changed_cb (BonoboUIComponent *componen
 					             const char *state,
 					             RBLibraryView *view);
 static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
-static void song_deleted_cb (RBNodeView *view,
-		             RBNode *node,
-		             RBLibraryView *library_view);
 static void rb_library_view_cmd_song_info (BonoboUIComponent *component,
 				           RBLibraryView *view,
 				           const char *verbname);
@@ -136,12 +135,6 @@ static const char *impl_get_description (RBView *view);
 static void rb_library_view_set_playing_view (RBViewPlayer *player,
 				              RBView *view);
 static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
-static void album_deleted_cb (RBNodeView *view,
-		              RBNode *node,
-		              RBLibraryView *library_view);
-static void artist_deleted_cb (RBNodeView *view,
-		               RBNode *node,
-		               RBLibraryView *library_view);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -398,20 +391,12 @@ rb_library_view_set_property (GObject *object,
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
-			g_signal_connect (G_OBJECT (view->priv->artists),
-					  "node_deleted",
-					  G_CALLBACK (artist_deleted_cb),
-					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
-					  view);
-			g_signal_connect (G_OBJECT (view->priv->albums),
-					  "node_deleted",
-					  G_CALLBACK (album_deleted_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
@@ -434,10 +419,6 @@ rb_library_view_set_property (GObject *object,
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "node_activated",
 					  G_CALLBACK (song_activated_cb),
-					  view);
-			g_signal_connect (G_OBJECT (view->priv->songs),
-					  "node_deleted",
-					  G_CALLBACK (song_deleted_cb),
 					  view);
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "changed",
@@ -553,12 +534,14 @@ rb_library_view_status_init (RBViewStatusIface *iface)
 static void
 rb_library_view_clipboard_init (RBViewClipboardIface *iface)
 {
-	iface->impl_can_cut   = rb_library_view_can_cut;
-	iface->impl_can_copy  = rb_library_view_can_copy;
-	iface->impl_can_paste = rb_library_view_can_paste;
-	iface->impl_cut       = rb_library_view_cut;
-	iface->impl_copy      = rb_library_view_copy;
-	iface->impl_paste     = rb_library_view_paste;
+	iface->impl_can_cut    = rb_library_view_can_cut;
+	iface->impl_can_copy   = rb_library_view_can_copy;
+	iface->impl_can_paste  = rb_library_view_can_paste;
+	iface->impl_can_delete = rb_library_view_can_delete;
+	iface->impl_cut        = rb_library_view_cut;
+	iface->impl_copy       = rb_library_view_copy;
+	iface->impl_paste      = rb_library_view_paste;
+	iface->impl_delete     = rb_library_view_delete;
 }
 
 static void
@@ -817,61 +800,6 @@ song_activated_cb (RBNodeView *view,
 }
 
 static void
-song_deleted_cb (RBNodeView *view,
-		 RBNode *node,
-		 RBLibraryView *library_view)
-{
-	rb_library_remove_node (RB_LIBRARY (library_view->priv->library), node);
-}
-
-static void
-artist_deleted_cb (RBNodeView *view,
-		   RBNode *node,
-		   RBLibraryView *library_view)
-{
-	GList *l, *kids;
-
-	kids = rb_node_get_children (node);
-
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		GList *j, *kids2;
-
-		if (rb_node_get_node_type (RB_NODE (l->data)) !=
-		    RB_NODE_TYPE_ALBUM)
-			continue;
-
-		kids2 = rb_node_get_children (RB_NODE (l->data));
-
-		for (j = kids2; j != NULL; j = g_list_next (j))
-		{
-			rb_node_unref (RB_NODE (j->data));
-		}
-
-		g_list_free (kids2);
-	}
-
-	g_list_free (kids);
-}
-
-static void
-album_deleted_cb (RBNodeView *view,
-		  RBNode *node,
-		  RBLibraryView *library_view)
-{
-	GList *l, *kids;
-
-	kids = rb_node_get_children (node);
-		
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		rb_node_unref (RB_NODE (l->data));
-	}
-
-	g_list_free (kids);
-}
-
-static void
 node_view_changed_cb (RBNodeView *view,
 		      RBLibraryView *library_view)
 {
@@ -938,7 +866,7 @@ rb_library_view_status_get (RBViewStatus *status)
 static gboolean
 rb_library_view_can_cut (RBViewClipboard *clipboard)
 {
-	return rb_node_view_have_selection (RB_LIBRARY_VIEW (clipboard)->priv->songs);
+	return FALSE;
 }
 
 static gboolean
@@ -953,19 +881,15 @@ rb_library_view_can_paste (RBViewClipboard *clipboard)
 	return FALSE;
 }
 
+static gboolean
+rb_library_view_can_delete (RBViewClipboard *clipboard)
+{
+	return rb_node_view_have_selection (RB_LIBRARY_VIEW (clipboard)->priv->songs);
+}
+
 static GList *
 rb_library_view_cut (RBViewClipboard *clipboard)
 {
-	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
-	GList *sel, *l;
-
-	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
-	for (l = sel; l != NULL; l = g_list_next (l))
-	{
-		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
-	}
-	g_list_free (sel);
-	
 	return NULL;
 }
 
@@ -981,6 +905,20 @@ static void
 rb_library_view_paste (RBViewClipboard *clipboard,
 		       GList *nodes)
 {
+}
+
+static void
+rb_library_view_delete (RBViewClipboard *clipboard)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+	GList *sel, *l;
+
+	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
+	for (l = sel; l != NULL; l = g_list_next (l))
+	{
+		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
+	}
+	g_list_free (sel);
 }
 
 static void

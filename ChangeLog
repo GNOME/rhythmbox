@@ -1,3 +1,48 @@
+2002-08-23  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/glade/Makefile.am:
+	* data/node-views/rb-node-view-songs.xml:
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-bonobo-helpers.c: (rb_bonobo_set_visible),
+	(rb_bonobo_get_visible), (rb_bonobo_set_look):
+	* lib/rb-bonobo-helpers.h:
+	* lib/view/rb-view-clipboard.c: (rb_view_clipboard_can_delete),
+	(rb_view_clipboard_paste), (rb_view_clipboard_delete):
+	* lib/view/rb-view-clipboard.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_key_press_event_cb):
+	* lib/widgets/rb-node-view.h:
+	* library/rb-library-xml-thread.c: (thread_main):
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_get_type),
+	(rb_shell_clipboard_sync), (rb_shell_clipboard_cmd_paste),
+	(rb_shell_clipboard_cmd_delete):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync), (ui_pref_changed), (style_changed_cb),
+	(show_toolbar_toggled_cb), (show_sidebar_toggled_cb),
+	(show_statusbar_toggled_cb):
+	* shell/rb-shell-preferences.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_view_toolbar_changed_cb),
+	(rb_shell_view_statusbar_changed_cb),
+	(rb_shell_view_sidebar_changed_cb), (rb_shell_list_views),
+	(rb_shell_sync_toolbar_visibility),
+	(rb_shell_sync_statusbar_visibility),
+	(rb_shell_sync_sidebar_visibility), (rb_shell_sync_toolbar_style),
+	(toolbar_visibility_changed_cb), (statusbar_visibility_changed_cb),
+	(sidebar_visibility_changed_cb), (toolbar_style_changed_cb):
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_clipboard_init), (rb_group_view_can_delete),
+	(rb_group_view_paste), (rb_group_view_delete):
+	* views/rb-library-view.c: (rb_library_view_set_property),
+	(rb_library_view_clipboard_init), (rb_library_view_can_cut),
+	(rb_library_view_can_delete), (rb_library_view_cut),
+	(rb_library_view_paste), (rb_library_view_delete):
+
+	More HIG-compliant menu system, prefswin.
+
 2002-08-23  Kristian Rietveld  <kris@gtk.org>
 
 	* lib/widgets/eggtreemodelfilter.c

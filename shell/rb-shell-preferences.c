@@ -24,12 +24,14 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkentry.h>
 #include <gdk/gdkkeysyms.h>
+#include <gtk/gtkbox.h>
+#include <gtk/gtktogglebutton.h>
+#include <gtk/gtkoptionmenu.h>
 #include <glade/glade.h>
 #include <string.h>
 
 #include "rb-file-helpers.h"
 #include "rb-shell-preferences.h"
-#include "rb-library-preferences.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "eel-gconf-extensions.h"
@@ -44,16 +46,19 @@ static void rb_shell_preferences_response_cb (GtkDialog *dialog,
 				              int response_id,
 				              RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_sync (RBShellPreferences *shell_preferences);
-static void library_pref_changed (GConfClient *client,
-		                  guint cnxn_id,
-		                  GConfEntry *entry,
-		                  RBShellPreferences *shell_preferences);
+static void ui_pref_changed (GConfClient *client,
+		             guint cnxn_id,
+		             GConfEntry *entry,
+		             RBShellPreferences *shell_preferences);
+
+const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text" };
 
 struct RBShellPreferencesPrivate
 {
-	GtkWidget *base_folder_entry;
-
-	gboolean lock;
+	GtkWidget *toolbar_check;
+	GtkWidget *statusbar_check;
+	GtkWidget *sidebar_check;
+	GtkWidget *style_optionmenu;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -103,8 +108,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
-	eel_gconf_notification_add (CONF_LIBRARY_DIR,
-				    (GConfClientNotifyFunc) library_pref_changed,
+	eel_gconf_notification_add (CONF_UI_DIR,
+				    (GConfClientNotifyFunc) ui_pref_changed,
 				    shell_preferences);
 
 	g_signal_connect (G_OBJECT (shell_preferences),
@@ -124,15 +129,25 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Preferences"));
 
-	xml = rb_glade_xml_new ("music-folders.glade",
-				"music_folders_vbox",
+	xml = rb_glade_xml_new ("preferences.glade",
+				"preferences_vbox",
 				shell_preferences);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell_preferences)->vbox),
-			   glade_xml_get_widget (xml, "music_folders_vbox"));
+			   glade_xml_get_widget (xml, "preferences_vbox"));
 
-	shell_preferences->priv->base_folder_entry =
-		glade_xml_get_widget (xml, "music_base_folder_entry");
+	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences), 7);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell_preferences)->vbox), 8);
+	gtk_dialog_set_has_separator (GTK_DIALOG (shell_preferences), FALSE);
+
+	shell_preferences->priv->toolbar_check =
+		glade_xml_get_widget (xml, "toolbar_check");
+	shell_preferences->priv->statusbar_check =
+		glade_xml_get_widget (xml, "statusbar_check");
+	shell_preferences->priv->sidebar_check =
+		glade_xml_get_widget (xml, "sidebar_check");
+	shell_preferences->priv->style_optionmenu =
+		glade_xml_get_widget (xml, "style_optionmenu");
 
 	g_object_unref (G_OBJECT (xml));
 
@@ -191,51 +206,64 @@ rb_shell_preferences_response_cb (GtkDialog *dialog,
 static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
-	char *base_folder;
+	char *style;
+	int index = 0, i;
 
-	if (shell_preferences->priv->lock == TRUE)
-		return;
-	shell_preferences->priv->lock = TRUE;
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->toolbar_check),
+				      eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->statusbar_check),
+				      eel_gconf_get_boolean (CONF_UI_STATUSBAR_VISIBLE));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->sidebar_check),
+				      eel_gconf_get_boolean (CONF_UI_SIDEBAR_VISIBLE));
 
-	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
-
-	gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry),
-			    base_folder);
-	g_free (base_folder);
-	
-	shell_preferences->priv->lock = FALSE;
-}
-
-void
-music_base_folder_entry_changed_cb (GtkEditable *editable,
-				    RBShellPreferences *shell_preferences)
-{
-	if (shell_preferences->priv->lock == TRUE)
-		return;
-
-	eel_gconf_set_string (CONF_LIBRARY_BASE_FOLDER,
-			      gtk_entry_get_text (GTK_ENTRY (editable)));
-}
-
-void
-music_base_folder_browse_clicked_cb (GtkWidget *button,
-				     RBShellPreferences *shell_preferences)
-{
-#if 0
-	char *ret = rb_ask_file (_("Choose a folder"),
-				 gtk_entry_get_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry)),
-				 GTK_WINDOW (shell_preferences));
-	if (ret != NULL)
-		gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry), ret);
-	g_free (ret);
-#endif
+	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
+	for (i = 0; i < G_N_ELEMENTS (styles); i++)
+	{
+		if (strcmp (styles[i], style) == 0)
+			index = i;
+	}
+	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
+				     index);
+	g_free (style);
 }
 
 static void
-library_pref_changed (GConfClient *client,
-		      guint cnxn_id,
-		      GConfEntry *entry,
-		      RBShellPreferences *shell_preferences)
+ui_pref_changed (GConfClient *client,
+		 guint cnxn_id,
+		 GConfEntry *entry,
+		 RBShellPreferences *shell_preferences)
 {
 	rb_shell_preferences_sync (shell_preferences);
+}
+
+void
+style_changed_cb (GtkOptionMenu *menu,
+		  RBShellPreferences *prefs)
+{
+	eel_gconf_set_string (CONF_UI_TOOLBAR_STYLE,
+			      styles[gtk_option_menu_get_history (menu)]);
+}
+
+void
+show_toolbar_toggled_cb (GtkToggleButton *button,
+			 RBShellPreferences *prefs)
+{
+	eel_gconf_set_boolean (CONF_UI_TOOLBAR_VISIBLE,
+			       gtk_toggle_button_get_active (button));
+}
+
+void
+show_sidebar_toggled_cb (GtkToggleButton *button,
+			 RBShellPreferences *prefs)
+{
+	eel_gconf_set_boolean (CONF_UI_SIDEBAR_VISIBLE,
+			       gtk_toggle_button_get_active (button));
+}
+
+void
+show_statusbar_toggled_cb (GtkToggleButton *button,
+			   RBShellPreferences *prefs)
+{
+	eel_gconf_set_boolean (CONF_UI_STATUSBAR_VISIBLE,
+			       gtk_toggle_button_get_active (button));
 }

@@ -112,6 +112,21 @@ static void rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
 			                 Bonobo_UIComponent_EventType type,
 			                 const char *state,
 			                 RBShell *shell);
+static void rb_shell_view_toolbar_changed_cb (BonoboUIComponent *component,
+			                      const char *path,
+			                      Bonobo_UIComponent_EventType type,
+			                      const char *state,
+			                      RBShell *shell);
+static void rb_shell_view_statusbar_changed_cb (BonoboUIComponent *component,
+			                        const char *path,
+			                        Bonobo_UIComponent_EventType type,
+			                        const char *state,
+			                        RBShell *shell);
+static void rb_shell_view_sidebar_changed_cb (BonoboUIComponent *component,
+			                      const char *path,
+			                      Bonobo_UIComponent_EventType type,
+			                      const char *state,
+			                      RBShell *shell);
 static void rb_shell_load_music_groups (RBShell *shell);
 static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
@@ -119,9 +134,32 @@ static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 				               RBShell *shell);
 static void rb_shell_show (RBLibrary *library,
 			   gpointer   user_data);
+static void rb_shell_sync_toolbar_visibility (RBShell *shell);
+static void rb_shell_sync_statusbar_visibility (RBShell *shell);
+static void rb_shell_sync_sidebar_visibility (RBShell *shell);
+static void rb_shell_sync_toolbar_style (RBShell *shell);
+static void toolbar_visibility_changed_cb (GConfClient *client,
+			                   guint cnxn_id,
+			                   GConfEntry *entry,
+			                   RBShell *shell);
+static void statusbar_visibility_changed_cb (GConfClient *client,
+				             guint cnxn_id,
+				             GConfEntry *entry,
+				             RBShell *shell);
+static void sidebar_visibility_changed_cb (GConfClient *client,
+			                   guint cnxn_id,
+			                   GConfEntry *entry,
+			                   RBShell *shell);
+static void toolbar_style_changed_cb (GConfClient *client,
+			              guint cnxn_id,
+			              GConfEntry *entry,
+			              RBShell *shell);
 
-#define CMD_PATH_SHUFFLE "/commands/Shuffle"
-#define CMD_PATH_REPEAT  "/commands/Repeat"
+#define CMD_PATH_SHUFFLE        "/commands/Shuffle"
+#define CMD_PATH_REPEAT         "/commands/Repeat"
+#define CMD_PATH_VIEW_TOOLBAR   "/commands/ShowToolbar"
+#define CMD_PATH_VIEW_STATUSBAR "/commands/ShowStatusbar"
+#define CMD_PATH_VIEW_SIDEBAR   "/commands/ShowSidebar"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/state/window_width"
@@ -186,8 +224,11 @@ static BonoboUIVerb rb_shell_verbs[] =
 
 static RBBonoboUIListener rb_shell_listeners[] =
 {
-	RB_BONOBO_UI_LISTENER ("Shuffle", (BonoboUIListenerFn) rb_shell_shuffle_changed_cb),
-	RB_BONOBO_UI_LISTENER ("Repeat",  (BonoboUIListenerFn) rb_shell_repeat_changed_cb),
+	RB_BONOBO_UI_LISTENER ("Shuffle",       (BonoboUIListenerFn) rb_shell_shuffle_changed_cb),
+	RB_BONOBO_UI_LISTENER ("Repeat",        (BonoboUIListenerFn) rb_shell_repeat_changed_cb),
+	RB_BONOBO_UI_LISTENER ("ShowToolbar",   (BonoboUIListenerFn) rb_shell_view_toolbar_changed_cb),
+	RB_BONOBO_UI_LISTENER ("ShowStatusbar", (BonoboUIListenerFn) rb_shell_view_statusbar_changed_cb),
+	RB_BONOBO_UI_LISTENER ("ShowSidebar",   (BonoboUIListenerFn) rb_shell_view_sidebar_changed_cb),
 	RB_BONOBO_UI_LISTENER_END
 };
 
@@ -445,6 +486,25 @@ rb_shell_construct (RBShell *shell)
 	bonobo_window_set_contents (win, vbox);
 
 	gtk_widget_show_all (vbox);
+
+	/* sync state */
+	eel_gconf_notification_add (CONF_UI_TOOLBAR_VISIBLE,
+				    (GConfClientNotifyFunc) toolbar_visibility_changed_cb,
+				    shell);
+	eel_gconf_notification_add (CONF_UI_STATUSBAR_VISIBLE,
+				    (GConfClientNotifyFunc) statusbar_visibility_changed_cb,
+				    shell);
+	eel_gconf_notification_add (CONF_UI_SIDEBAR_VISIBLE,
+				    (GConfClientNotifyFunc) sidebar_visibility_changed_cb,
+				    shell);
+	eel_gconf_notification_add (CONF_UI_TOOLBAR_STYLE,
+				    (GConfClientNotifyFunc) toolbar_style_changed_cb,
+				    shell);
+
+	rb_shell_sync_toolbar_visibility (shell);
+	rb_shell_sync_statusbar_visibility (shell);
+	rb_shell_sync_sidebar_visibility (shell);
+	rb_shell_sync_toolbar_style (shell);
 
 	shell->priv->library = rb_library_new ();
 
@@ -760,6 +820,39 @@ rb_shell_repeat_changed_cb (BonoboUIComponent *component,
 }
 
 static void
+rb_shell_view_toolbar_changed_cb (BonoboUIComponent *component,
+			          const char *path,
+			          Bonobo_UIComponent_EventType type,
+			          const char *state,
+			          RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_TOOLBAR_VISIBLE,
+			       rb_bonobo_get_active (component, CMD_PATH_VIEW_TOOLBAR));
+}
+
+static void
+rb_shell_view_statusbar_changed_cb (BonoboUIComponent *component,
+			            const char *path,
+			            Bonobo_UIComponent_EventType type,
+			            const char *state,
+			            RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_STATUSBAR_VISIBLE,
+			       rb_bonobo_get_active (component, CMD_PATH_VIEW_STATUSBAR));
+}
+
+static void
+rb_shell_view_sidebar_changed_cb (BonoboUIComponent *component,
+			          const char *path,
+			          Bonobo_UIComponent_EventType type,
+			          const char *state,
+			          RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_SIDEBAR_VISIBLE,
+			       rb_bonobo_get_active (component, CMD_PATH_VIEW_SIDEBAR));
+}
+
+static void
 rb_shell_cmd_about (BonoboUIComponent *component,
 		    RBShell *shell,
 		    const char *verbname)
@@ -1020,4 +1113,110 @@ GList *
 rb_shell_list_views (RBShell *shell)
 {
 	return shell->priv->views;
+}
+
+static void
+rb_shell_sync_toolbar_visibility (RBShell *shell)
+{
+	gboolean visible;
+
+	visible = eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE);
+
+	rb_bonobo_set_visible (shell->priv->ui_component,
+			       "/Toolbar",
+			       visible);
+
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_VIEW_TOOLBAR,
+			      visible);
+}
+
+static void
+rb_shell_sync_statusbar_visibility (RBShell *shell)
+{
+	gboolean visible;
+
+	visible = eel_gconf_get_boolean (CONF_UI_STATUSBAR_VISIBLE);
+	
+	if (visible)
+		gtk_widget_show (GTK_WIDGET (shell->priv->status_shell));
+	else
+		gtk_widget_hide (GTK_WIDGET (shell->priv->status_shell));
+
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_VIEW_STATUSBAR,
+			      visible);
+}
+
+static void
+rb_shell_sync_sidebar_visibility (RBShell *shell)
+{
+	gboolean visible;
+
+	visible = eel_gconf_get_boolean (CONF_UI_SIDEBAR_VISIBLE);
+	
+	if (visible)
+		gtk_widget_show (GTK_WIDGET (shell->priv->sidebar));
+	else
+		gtk_widget_hide (GTK_WIDGET (shell->priv->sidebar));
+	
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_VIEW_SIDEBAR,
+			      visible);
+}
+
+static void
+rb_shell_sync_toolbar_style (RBShell *shell)
+{
+	char *style;
+
+	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
+	
+	if (strcmp (style, "desktop_default") == 0)
+	{
+		g_free (style);
+		style = g_strdup ("");
+	}
+	
+	rb_bonobo_set_look (shell->priv->ui_component,
+			    "/Toolbar",
+			    style);
+
+	g_free (style);
+}
+
+static void
+toolbar_visibility_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBShell *shell)
+{
+	rb_shell_sync_toolbar_visibility (shell);
+}
+
+static void
+statusbar_visibility_changed_cb (GConfClient *client,
+				 guint cnxn_id,
+				 GConfEntry *entry,
+				 RBShell *shell)
+{
+	rb_shell_sync_statusbar_visibility (shell);
+}
+
+static void
+sidebar_visibility_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBShell *shell)
+{
+	rb_shell_sync_sidebar_visibility (shell);
+}
+
+static void
+toolbar_style_changed_cb (GConfClient *client,
+			  guint cnxn_id,
+			  GConfEntry *entry,
+			  RBShell *shell)
+{
+	rb_shell_sync_toolbar_style (shell);
 }

@@ -95,10 +95,12 @@ static void rb_group_view_clipboard_init (RBViewClipboardIface *iface);
 static gboolean rb_group_view_can_cut (RBViewClipboard *clipboard);
 static gboolean rb_group_view_can_copy (RBViewClipboard *clipboard);
 static gboolean rb_group_view_can_paste (RBViewClipboard *clipboard);
+static gboolean rb_group_view_can_delete (RBViewClipboard *clipboard);
 static GList *rb_group_view_cut (RBViewClipboard *clipboard);
 static GList *rb_group_view_copy (RBViewClipboard *clipboard);
 static void rb_group_view_paste (RBViewClipboard *clipboard,
 		                 GList *nodes);
+static void rb_group_view_delete (RBViewClipboard *clipboard);
 static void rb_group_view_cmd_select_all (BonoboUIComponent *component,
 				          RBGroupView *view,
 				          const char *verbname);
@@ -108,9 +110,6 @@ static void rb_group_view_cmd_select_none (BonoboUIComponent *component,
 static void rb_group_view_cmd_current_song (BonoboUIComponent *component,
 				            RBGroupView *view,
 				            const char *verbname);
-static void song_deleted_cb (RBNodeView *view,
-		             RBNode *node,
-		             RBGroupView *group_view);
 static void sidebar_button_edited_cb (RBSidebarButton *button,
 			              RBGroupView *view);
 static char *filename_from_name (const char *name);
@@ -362,10 +361,6 @@ rb_group_view_init (RBGroupView *view)
 			  G_CALLBACK (song_activated_cb),
 			  view);
 	g_signal_connect (G_OBJECT (view->priv->songs),
-			  "node_deleted",
-			  G_CALLBACK (song_deleted_cb),
-			  view);
-	g_signal_connect (G_OBJECT (view->priv->songs),
 			  "changed",
 			  G_CALLBACK (node_view_changed_cb),
 			  view);
@@ -570,12 +565,14 @@ rb_group_view_status_init (RBViewStatusIface *iface)
 static void
 rb_group_view_clipboard_init (RBViewClipboardIface *iface)
 {
-	iface->impl_can_cut   = rb_group_view_can_cut;
-	iface->impl_can_copy  = rb_group_view_can_copy;
-	iface->impl_can_paste = rb_group_view_can_paste;
-	iface->impl_cut       = rb_group_view_cut;
-	iface->impl_copy      = rb_group_view_copy;
-	iface->impl_paste     = rb_group_view_paste;
+	iface->impl_can_cut    = rb_group_view_can_cut;
+	iface->impl_can_copy   = rb_group_view_can_copy;
+	iface->impl_can_paste  = rb_group_view_can_paste;
+	iface->impl_can_delete = rb_group_view_can_delete;
+	iface->impl_cut        = rb_group_view_cut;
+	iface->impl_copy       = rb_group_view_copy;
+	iface->impl_paste      = rb_group_view_paste;
+	iface->impl_delete     = rb_group_view_delete;
 }
 
 static void
@@ -834,14 +831,6 @@ song_activated_cb (RBNodeView *view,
 }
 
 static void
-song_deleted_cb (RBNodeView *view,
-		 RBNode *node,
-		 RBGroupView *group_view)
-{
-	rb_node_remove_child (group_view->priv->group, node);
-}
-
-static void
 node_view_changed_cb (RBNodeView *view,
 		      RBGroupView *group_view)
 {
@@ -923,6 +912,12 @@ rb_group_view_can_paste (RBViewClipboard *clipboard)
 	return TRUE;
 }
 
+static gboolean
+rb_group_view_can_delete (RBViewClipboard *clipboard)
+{
+	return rb_node_view_have_selection (RB_GROUP_VIEW (clipboard)->priv->songs);
+}
+
 static GList *
 rb_group_view_cut (RBViewClipboard *clipboard)
 {
@@ -957,6 +952,20 @@ rb_group_view_paste (RBViewClipboard *clipboard,
 	{
 		rb_node_add_child (view->priv->group, RB_NODE (l->data));
 	}
+}
+
+static void
+rb_group_view_delete (RBViewClipboard *clipboard)
+{
+	RBGroupView *view = RB_GROUP_VIEW (clipboard);
+	GList *sel, *l;
+
+	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
+	for (l = sel; l != NULL; l = g_list_next (l))
+	{
+		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
+	}
+	g_list_free (sel);
 }
 
 static void

@@ -5,7 +5,7 @@
 	<cmd name="Previous"
 	     pixtype="stock"
 	     pixname="rhythmbox-previous"
-	     _tip="Go to the previous track"
+	     _tip="Start playing the previous song"
 	     priority="1"/>
 	     
 	<cmd name="Play"
@@ -29,7 +29,7 @@
 	<cmd name="Next"
 	     pixtype="stock"
 	     pixname="rhythmbox-next"
-	     _tip="Go to the next track"
+	     _tip="Start playing the next song"
 	     priority="1"/>
 
 	<cmd name="Shuffle"
@@ -61,6 +61,9 @@
 	     pixname="gtk-paste"
 	     _tip="Paste selection"/>
 
+	<cmd name="Delete"
+	     _tip="Delete selection"/>
+
 	<cmd name="About"
 	     pixtype="stock"
 	     pixname="gnome-stock-about"
@@ -86,19 +89,31 @@
 	     pixname="gtk-open"
 	     _tip="Choose files or a directory to be added to the library"/>
 
+	<cmd name="ShowToolbar"
+	     _tip="Change the visibility of the toolbar"
+	     type="toggle"/>
+
+	<cmd name="ShowStatusbar"
+	     _tip="Change the visibility of the statusbar"
+	     type="toggle"/>
+
+	<cmd name="ShowSidebar"
+	     _tip="Change the visibility of the sidebar"
+	     type="toggle"/>
+
 </commands>
 
 <menu>
 
-<submenu name="File" _label="_File">
+<submenu name="File" _label="_Organize">
         
-        <menuitem name="NewGroup" verb="NewGroup" _label="_New Group"/>
+        <menuitem name="NewGroup" verb="NewGroup" _label="_New Group..." accel="*Control*n"/>
 
 	<placeholder name="SourceMenu"/>
 
 	<separator/>
 
-        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..."/>
+        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
 
 	<placeholder name="FileMenu"/>
 
@@ -115,20 +130,38 @@
         <menuitem name="Copy" verb="Copy" _label="_Copy" accel="*Control*c"/>
 	
         <menuitem name="Paste" verb="Paste" _label="_Paste" accel="*Control*v"/>
-	
+
+	<menuitem name="Delete" verb="Delete" _label="_Delete" accel="Delete"/>
+
 	<placeholder name="EditMenu"/>
+
+	<separator/>
+
+	<menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
 
 </submenu>
 
-<submenu name="Controls" _label="_Controls">
+<submenu name="View" _label="_View">
+
+	<menuitem name="Toolbar" verb="ShowToolbar" _label="_Toolbar"/>
+	
+	<menuitem name="Sidebar" verb="ShowSidebar" _label="S_idebar"/>
+
+	<menuitem name="Statusbar" verb="ShowStatusbar" _label="_Statusbar"/>
+
+	<placeholder name="ViewMenu"/>
+
+</submenu>
+
+<submenu name="Controls" _label="_Music">
 
 	<menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
 
 	<separator/>
 
-	<menuitem name="Next" _label="_Next Song" verb="Next" accel="*Control*n"/>
+	<menuitem name="Previous" _label="P_revious Song" verb="Previous" accel="*Control*Left"/>
 
-	<menuitem name="Previous" _label="P_revious Song" verb="Previous" accel="*Control*p"/>
+	<menuitem name="Next" _label="_Next Song" verb="Next" accel="*Control*Right"/>
 
 	<separator/>
 	
@@ -137,8 +170,6 @@
 	<menuitem name="Repeat" _label="_Repeat" verb="Repeat" accel="*Control*r"/>
 
 </submenu>
-
-<placeholder name="ActionsMenu"/>
 
 <submenu name="Help" _label="_Help">
 

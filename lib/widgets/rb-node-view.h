@@ -50,7 +50,6 @@ typedef struct
 
 	void (*node_selected)  (RBNodeView *view, RBNode *node);
 	void (*node_activated) (RBNodeView *view, RBNode *node);
-	void (*node_deleted)   (RBNodeView *view, RBNode *node);
 
 	void (*changed)        (RBNodeView *view);
 } RBNodeViewClass;
