@@ -35,8 +35,6 @@ librbwidgets_la_SOURCES =				\
 	gtkrbtree.h					\
 	rb-rating.c					\
 	rb-rating.h					\
-	rb-tree-model-sort.c				\
-	rb-tree-model-sort.h				\
 	rb-tree-view.c					\
 	rb-tree-view.h					\
 	rb-tree-view-column.c				\
@@ -50,15 +48,6 @@ EGGFILES=						\
 EGGDIR=$(srcdir)/../../../libegg/libegg/treeviewutils/
 regenerate-built-sources:
 	EGGFILES="$(EGGFILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
-
-if GTK_TREE_MODEL_SORT_WORKAROUND
-librbwidgets_la_SOURCES += gtktreemodelsort.c
-librbwidgets_la_SOURCES += gtktreemodelsort.h
-librbwidgets_la_SOURCES += gtktreedatalist.c
-librbwidgets_la_SOURCES += gtktreedatalist.h
-librbwidgets_la_SOURCES += gtkintl.h
-endif
-
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -161,19 +161,6 @@ AC_ARG_ENABLE(gstreamer_workarounds,
 AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
 AM_CONDITIONAL(USE_GSTREAMER_WORKAROUNDS, test x"$disable_gstreamer_workarounds" != xyes)
 
-dnl Workaround for the gtktreemodelsort bug
-disable_gtktreemodelsort_workaround=yes
-AC_ARG_ENABLE(gtktreemodelsort_workaround,
-              AC_HELP_STRING([--disable-gtktreemodelsort-workaround],
-	                     [Disable use of a workaround for the GtkTreeModelSort bug which causes song jumping]),,
-	      disable_gtktreemodelsort_workaround=no)
-
-if test "x$disable_gtktreemodelsort_workaround" != "xyes"; then
-  AC_DEFINE(USE_GTK_TREE_MODEL_SORT_WORKAROUND,,[Define to enable the GtkTreeModelSort workaround])
-fi
-
-AM_CONDITIONAL(GTK_TREE_MODEL_SORT_WORKAROUND, test "x$disable_gtktreemodelsort_workaround" != "xyes")
-
 dnl Workaround for the gtktreeview bug
 disable_gtktreeview_workaround=yes
 AC_ARG_ENABLE(gtktreeview_workaround,
@@ -461,11 +448,6 @@ dnl else
 dnl 	AC_MSG_NOTICE([** Audio CD support is enabled])
 dnl 	AC_MSG_WARN([Audio CD support is experimental!])
 dnl fi
-if test x"$disable_gtktreemodelsort_workaround" = xyes; then
-	AC_MSG_NOTICE([   GtkTreeModelSort workaround disabled])
-else
-	AC_MSG_NOTICE([** GtkTreeModelSort workaround enabled])
-fi
 if test x"$disable_gtktreeview_workaround" = xyes; then
 	AC_MSG_NOTICE([   GtkTreeView workaround disabled])
 else
