@@ -483,12 +483,11 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 			if (tmp != NULL) {
 				parts = g_strsplit (tmp, "/", -1);
 				
-				if (parts[0] != NULL && parts[1] != NULL)
+				if (parts[0] != NULL && parts[1] != NULL) {
 					num = atoi (parts[1]);
-				
-				g_value_set_int (value, num);
-				
-				g_value_set_int (value, -1);
+					g_value_set_int (value, num);
+				} else 
+					g_value_set_int (value, -1);
 				
 			}
 			g_strfreev (parts);

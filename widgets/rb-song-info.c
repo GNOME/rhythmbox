@@ -643,25 +643,20 @@ rb_song_info_update_track (RBSongInfo *song_info)
 	GValue value = { 0, };
 	gboolean res = FALSE;
 
-	if (song_info->priv->current_info != NULL)
-	{
+	if (song_info->priv->current_info != NULL) {
 		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
 							  MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
 							  0, &value);
 	}
 
-	if (res == TRUE)
-	{
+	if (res == TRUE) {
 		val = g_value_get_int (&value);
-	}
-	else 
-	{
+	} else {
 		g_value_init (&value, G_TYPE_INT);
 		g_value_set_int (&value, 0);
 	}
 
-	if (val >= 0)
-	{
+	if (val >= 0) {
 		char *tmp;
 		tmp = g_strdup_printf ("%.2d", val);
 		gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur), tmp);
@@ -671,29 +666,27 @@ rb_song_info_update_track (RBSongInfo *song_info)
 	g_value_unset (&value);
 
 	res = FALSE;
-	if (song_info->priv->current_info != NULL)
-	{
+	if (song_info->priv->current_info != NULL) {
 		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
 							  MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER,
 							  0, &value);
 	}
 
-	if (res == TRUE)
-	{
+	if (res == TRUE) {
 		val = g_value_get_int (&value);
-	}
-	else 
-	{
+	} else {
+		val = 0;
 		g_value_init (&value, G_TYPE_INT);
 		g_value_set_int (&value, 0);
 	}
 
-	if (val >= 0)
-	{
+	if (val > 0) {
 		char *tmp;
 		tmp = g_strdup_printf ("%.2d", val);
 		gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), tmp);
 		g_free (tmp);
+	} else {
+		gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), "");
 	}
 
 	g_value_unset (&value);
