@@ -306,6 +306,7 @@ rb_property_view_set_property (GObject *object,
 						 view);
 		
 		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model), &iter);
+		gtk_tree_selection_unselect_all (view->priv->selection);
 		gtk_tree_selection_select_iter (view->priv->selection, &iter);
 		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
 						   G_CALLBACK (rb_property_view_selection_changed_cb),

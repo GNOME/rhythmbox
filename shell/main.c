@@ -232,13 +232,12 @@ get_song_info (GNOME_Rhythmbox shell)
 {
 	Bonobo_PropertyBag pb;
 	CORBA_any *any;
-	GNOME_Rhythmbox_SongInfo *song_info;
+	GNOME_Rhythmbox_SongInfo *song_info = NULL;
 
 	pb = GNOME_Rhythmbox_getPlayerProperties (shell, &ev);
 	if (BONOBO_EX (&ev)) {
 		char *err = bonobo_exception_get_text (&ev);
 		g_warning (_("An exception occured '%s'"), err);
-		CORBA_free (pb);
 		return NULL;
 	}
 
@@ -249,7 +248,7 @@ get_song_info (GNOME_Rhythmbox shell)
 		char *err = bonobo_exception_get_text (&ev);
 		g_warning (_("An exception occured '%s'"), err);
 		g_free (err);
-		CORBA_free (pb);
+		bonobo_object_release_unref ((Bonobo_Unknown) pb, &ev);
 		return NULL;
 	}
 	
@@ -261,7 +260,7 @@ get_song_info (GNOME_Rhythmbox shell)
 		CORBA_free (any);
 	}
 
-	CORBA_free (pb);
+	bonobo_object_release_unref ((Bonobo_Unknown) pb, &ev);
 	return song_info;
 }
 
