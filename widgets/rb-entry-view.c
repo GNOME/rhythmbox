@@ -1207,6 +1207,8 @@ rb_entry_view_construct (RBEntryView *view)
 
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
 
+		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
+
 		if (default_sort_column == TRUE) {
 			view->priv->sorting_enabled = TRUE;
 			view->priv->default_sort_column_id = column;

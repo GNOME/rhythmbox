@@ -41,6 +41,8 @@ librbwidgets_la_SOURCES =				\
 	rb-tree-model-node.h				\
 	rb-tree-model-sort.c				\
 	rb-tree-model-sort.h				\
+	rb-tree-view.c					\
+	rb-tree-view.h					\
 	rb-tree-view-column.c				\
 	rb-tree-view-column.h
 
