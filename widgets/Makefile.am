@@ -11,8 +11,6 @@ librbwidgets_la_SOURCES =				\
 	rb-property-view.h				\
 	rb-search-entry.c				\
 	rb-search-entry.h				\
-	rb-link.c					\
-	rb-link.h					\
 	rb-player.c					\
 	rb-player.h					\
 	rb-volume.c					\

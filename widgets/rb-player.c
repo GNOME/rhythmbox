@@ -34,7 +34,6 @@
 
 #include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
-#include "rb-link.h"
 #include "rb-player.h"
 #include "rb-debug.h"
 #include "rb-ellipsizing-label.h"
@@ -100,7 +99,7 @@ struct RBPlayerPrivate
 	GtkWidget *urlframe;
 	GtkWidget *urlline;
 	gboolean urlline_shown;
-	RBLink *url;
+	GnomeHRef *url;
 
 	guint timeout;
 	
@@ -223,13 +222,13 @@ rb_player_init (RBPlayer *player)
 	 *           GtkHBox		(priv->textframe)
 	 *	       RBSongDisplayBox (priv->displaybox)
 	 *               GtkLabel	("from")
-	 *               RBLink		(priv->displaybox->album)
+	 *               GnomeHRef	(priv->displaybox->album)
 	 *               GtkLabel	("by")
-	 *               RBLink		(priv->displaybox->artist)
+	 *               GnomeHRef	(priv->displaybox->artist)
 	 *           GtkHBox		(priv->urlframe)
 	 *	       GtkHBox		(priv->urlline)
 	 *               GtkLabel	("Listening to")
-	 *               RBLink		(priv->url)
+	 *               GnomeHRef	(priv->url)
 	 *   GtkAlignment		(priv->timeframe)
 	 *     GtkVBox			(priv->timeline)
 	 *       GtkHScale		(priv->scale)
@@ -280,7 +279,7 @@ rb_player_init (RBPlayer *player)
 
 	label = gtk_label_new (_("Listening to "));
 	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (label), FALSE, TRUE, 0);
-	player->priv->url = rb_link_new();
+	player->priv->url = (GnomeHRef *) gnome_href_new ("", "");
 	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (player->priv->url), FALSE, TRUE, 0);
 	player->priv->urlline_shown = FALSE;
 
@@ -504,8 +503,8 @@ rb_player_sync (RBPlayer *player)
 				*tmp = '|';
 			tmp = ALBUM_INFO_URL (s);
 			g_free (s);
-			rb_link_set (player->priv->displaybox->album, album,
-				     _("Get information on this album from the web"), tmp);
+			gnome_href_set_url (player->priv->displaybox->album, tmp);
+			gnome_href_set_text (player->priv->displaybox->album, album);
 			g_free (tmp);
 
 			s = tmp = g_strdup (artist);
@@ -515,8 +514,8 @@ rb_player_sync (RBPlayer *player)
 			}
 			tmp = ARTIST_INFO_URL (s);
 			g_free (s);
-			rb_link_set (player->priv->displaybox->artist, artist,
-				     _("Get information on this artist from the web"), tmp);
+			gnome_href_set_url (player->priv->displaybox->artist, tmp);
+			gnome_href_set_text (player->priv->displaybox->artist, artist);
 			g_free (tmp);
 		}
 
@@ -525,9 +524,8 @@ rb_player_sync (RBPlayer *player)
 			g_return_if_fail (player->priv->urltext != NULL);
 			rb_debug ("urlline shown, urltext: %s urllink: %s",
 				  player->priv->urltext, player->priv->urllink);
-			rb_link_set (player->priv->url, player->priv->urltext,
-				     _("Get more information on this station from the web"),
-				     player->priv->urllink);
+			gnome_href_set_url (player->priv->url, player->priv->urllink);
+			gnome_href_set_text (player->priv->url, player->priv->urltext);
 		}
 
 		rb_player_set_show_timeline (player, have_duration);

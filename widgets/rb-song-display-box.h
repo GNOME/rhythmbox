@@ -36,7 +36,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkbox.h>
 
-#include "rb-link.h"
+#include <libgnomeui/libgnomeui.h>
 
 #define RB_TYPE_SONG_DISPLAY_BOX	(rb_song_display_box_get_type ())
 #define RB_SONG_DISPLAY_BOX(obj)	(GTK_CHECK_CAST ((obj), RB_TYPE_SONG_DISPLAY_BOX, RBSongDisplayBox))
@@ -48,8 +48,8 @@ typedef struct
 
 	RBSongDisplayBoxPrivate *priv;
 
-	RBLink *album;
-	RBLink *artist;
+	GnomeHRef *album;
+	GnomeHRef *artist;
 } RBSongDisplayBox;
 
 typedef struct

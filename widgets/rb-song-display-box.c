@@ -33,7 +33,6 @@
 
 #include <libgnome/gnome-i18n.h>
 
-#include "rb-link.h"
 #include "rb-song-display-box.h"
 #include "rb-debug.h"
 
@@ -41,7 +40,6 @@
 struct RBSongDisplayBoxPrivate
 {
 	GtkWidget *from;
-	GtkWidget *byspace;
 	GtkWidget *by;
 };
 
@@ -112,15 +110,13 @@ rb_song_display_box_init (RBSongDisplayBox *displaybox)
 	box->spacing = 0;
 	box->homogeneous = FALSE;
 
-	displaybox->priv->from = gtk_label_new (_("from "));
-	displaybox->album = rb_link_new ();
-	displaybox->priv->byspace = gtk_label_new (" ");
-	displaybox->priv->by = gtk_label_new (_("by "));
-	displaybox->artist = rb_link_new ();
+	displaybox->priv->from = gtk_label_new (_("from"));
+	displaybox->album = (GnomeHRef *) gnome_href_new ("", "");
+	displaybox->priv->by = gtk_label_new (_("by"));
+	displaybox->artist = (GnomeHRef *) gnome_href_new ("", "");
 
 	gtk_box_pack_start (box, displaybox->priv->from, FALSE, FALSE, 0);
 	gtk_box_pack_start (box, GTK_WIDGET (displaybox->album), FALSE, FALSE, 0);
-	gtk_box_pack_start (box, displaybox->priv->byspace, FALSE, FALSE, 0);
 	gtk_box_pack_start (box, displaybox->priv->by, FALSE, FALSE, 0);
 	gtk_box_pack_start (box, GTK_WIDGET (displaybox->artist), FALSE, FALSE, 0);
 }
@@ -188,10 +184,9 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	displaybox = RB_SONG_DISPLAY_BOX (widget);
   	widget->allocation = *allocation;
 
-	/* calculate how much room we have for the 'album' RBLink */
+	/* calculate how much room we have for the 'album' link */
 	width = allocation->width;
 	width -= displaybox_get_childwidth (displaybox->priv->from);
-	width -= displaybox_get_childwidth (displaybox->priv->byspace);
 	width -= displaybox_get_childwidth (displaybox->priv->by);
 	width -= displaybox_get_childwidth (GTK_WIDGET (displaybox->artist));
 
@@ -210,7 +205,6 @@ rb_song_display_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	remain = widget->allocation;
 	do_allocation (displaybox->priv->from,          shown, &remain);
 	do_allocation (GTK_WIDGET (displaybox->album),  width, &remain);
-	do_allocation (displaybox->priv->byspace,       shown, &remain);
 	do_allocation (displaybox->priv->by,            -1,    &remain);
 	do_allocation (GTK_WIDGET (displaybox->artist), -1,    &remain);
 }
@@ -219,9 +213,6 @@ static int
 displaybox_get_childwidth (GtkWidget *widget)
 {
 	GtkRequisition requisition;
-
-	if (RB_IS_LINK (widget))
-		return rb_link_get_full_text_size (RB_LINK (widget));
 
 	gtk_widget_get_child_requisition (widget, &requisition);
   	return requisition.width;
