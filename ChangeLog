@@ -1,3 +1,14 @@
+2003-01-14  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/ui/Makefile.am:
+
+	Remove some old files.
+	
+	* shell/rb-player.c: (set_playing):
+
+	No need to close the stream, monkey_media_player_open already
+	does that for us.
+
 2003-01-13  Bastien Nocera  <hadess@hadess.net>
 
 	* shell/rb-player.c: (set_playing): close the stream before opening a

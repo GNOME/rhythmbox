@@ -1,10 +1,6 @@
 uixmldir = $(datadir)/gnome-2.0/ui
 uixml_in_files = rhythmbox-ui.xml.in           \
-                 rhythmbox-library-view.xml.in \
-		 rhythmbox-group-view.xml.in   \
-                 rhythmbox-iradio-view.xml.in \
-		 rhythmbox-audiocd-view.xml.in \
-                 rhythmbox-test-view-2.xml.in
+                 rhythmbox-library-view.xml.in
 uixml_DATA = $(uixml_in_files:.xml.in=.xml)
 
 @INTLTOOL_XML_RULE@
