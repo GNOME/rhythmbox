@@ -394,16 +394,6 @@ static gunichar2 *get_mhod (iPodParser *parser, gint32 *ml, gint32 *mty)
   return fixup_utf16(entry_utf16);
 }
 
-#if (G_BYTE_ORDER == G_BIG_ENDIAN)
-/* Get length of utf16 string in number of characters (words) */
-static guint32 utf16_strlen (gunichar2 *utf16)
-{
-  guint32 i=0;
-  while (utf16[i] != 0) ++i;
-  return i;
-}
-#endif
-
 /* get a PL, return pos where next PL should be, name and content */
 static iPodPlaylist * get_pl(iPodParser *parser) 
 {
