@@ -92,6 +92,7 @@ static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view
 /* source methods */
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
+static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -115,6 +116,7 @@ void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/iradio/paned_position"
 #define CONF_STATE_IRADIO_SORTING CONF_PREFIX "/state/iradio/sorting"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/iradio/show_browser"
+#define CONF_STATE_SEARCH_TEXT   CONF_PREFIX "/state/iradio/search_text"
 
 struct RBIRadioSourcePrivate
 {
@@ -135,6 +137,8 @@ struct RBIRadioSourcePrivate
 
 	gboolean shuffle;
 	gboolean repeat;
+
+	gboolean initialized;
 
 	char *status;
 
@@ -213,6 +217,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
+	source_class->impl_get_search_key  = impl_get_search_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -343,8 +348,6 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	eel_gconf_notification_add (CONF_FIRST_TIME,
 				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 				    source);
-	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_ALL);
-			
 	gtk_widget_show_all (GTK_WIDGET (source));
 	return G_OBJECT (source);
 }
@@ -395,6 +398,7 @@ rb_iradio_source_new (RBShell *shell, RhythmDB *db,
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
+					  "internal-name", "<radio>",
 					  "db", db,
 					  "component", component,
 					  NULL));
@@ -452,12 +456,17 @@ static void
 impl_search (RBSource *asource, const char *search_text)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	if (search_text == NULL && source->priv->search_text == NULL)
-		return;
-	if (search_text != NULL &&
-	    source->priv->search_text != NULL
-	    && !strcmp (search_text, source->priv->search_text))
-		return;
+
+	if (source->priv->initialized) {
+		if (search_text == NULL && source->priv->search_text == NULL)
+			return;
+		if (search_text != NULL &&
+		    source->priv->search_text != NULL
+		    && !strcmp (search_text, source->priv->search_text))
+			return;
+	}
+
+	source->priv->initialized = TRUE;
 	if (search_text != NULL && search_text[0] == '\0')
 		search_text = NULL;
 
@@ -553,6 +562,12 @@ static const char *
 impl_get_browser_key (RBSource *asource)
 {
 	return CONF_STATE_SHOW_BROWSER;
+}
+
+static const char *
+impl_get_search_key (RBSource *asource)
+{
+	return CONF_STATE_SEARCH_TEXT;
 }
 
 static void

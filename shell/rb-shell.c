@@ -147,6 +147,7 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
+static void rb_shell_select_source_internal (RBShell *shell, RBSource *source);
 static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
@@ -233,6 +234,12 @@ static void paned_changed_cb (GConfClient *client,
 			      guint cnxn_id,
 			      GConfEntry *entry,
 			      RBShell *shell);
+static void rb_shell_sync_selected_source (RBShell *shell);
+
+static void selected_source_changed_cb (GConfClient *client,
+					guint cnxn_id,
+					GConfEntry *entry,
+					RBShell *shell);
 #ifdef HAVE_AUDIOCD
 static void audiocd_changed_cb (MonkeyMediaAudioCD *cd,
 				gboolean available,
@@ -302,6 +309,7 @@ enum
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
+#define CONF_STATE_SELECTED_SOURCE  CONF_PREFIX "/state/selected_source"
 
 struct RBShellPrivate
 {
@@ -1346,6 +1354,9 @@ rb_shell_construct (RBShell *shell)
 
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
+	eel_gconf_notification_add (CONF_STATE_SELECTED_SOURCE,
+				    (GConfClientNotifyFunc) selected_source_changed_cb,
+				    shell);
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
@@ -1410,7 +1421,7 @@ rb_shell_construct (RBShell *shell)
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
-	rb_shell_select_source (shell, library_source); /* select this one by default */
+	rb_shell_sync_selected_source (shell);
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -1662,6 +1673,8 @@ static void
 rb_shell_append_source (RBShell *shell,
 			RBSource *source)
 {
+	char *search_text;
+	
 	shell->priv->sources
 		= g_list_append (shell->priv->sources, source);
 
@@ -1675,6 +1688,12 @@ rb_shell_append_source (RBShell *shell,
 
 	rb_sourcelist_append (RB_SOURCELIST (shell->priv->sourcelist),
 			      source);
+
+	if (rb_source_can_search (source)) {
+		search_text = eel_gconf_get_string (rb_source_get_search_key (source));
+		rb_source_search (source, search_text);
+		g_free (search_text);
+	}
 }
 
 static void
@@ -1721,6 +1740,16 @@ rb_shell_source_deleted_cb (RBSource *source,
 static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
+{
+	char *internalname;
+
+	g_object_get (G_OBJECT (source), "internal-name", &internalname, NULL);
+	eel_gconf_set_string (CONF_STATE_SELECTED_SOURCE, internalname);
+}
+
+static void
+rb_shell_select_source_internal (RBShell *shell,
+				 RBSource *source)
 {
 	RBEntryView *view;
 
@@ -2287,6 +2316,35 @@ paned_changed_cb (GConfClient *client,
 	rb_shell_sync_paned (shell);
 }
 
+static void
+rb_shell_sync_selected_source (RBShell *shell)
+{
+	char *internalname;
+	GList *tmp;
+
+	internalname = eel_gconf_get_string (CONF_STATE_SELECTED_SOURCE);
+
+	for (tmp = shell->priv->sources; tmp ; tmp = tmp->next) {
+		const char *tmpname;
+		g_object_get (G_OBJECT (tmp->data), "internal-name", &tmpname, NULL);
+		if (!strcmp (internalname, tmpname)) {
+			rb_shell_select_source_internal (shell, tmp->data);
+			return;
+		}
+	}
+	g_warning ("unknown source %s!", internalname);
+	rb_shell_select_source_internal (shell, rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG));
+}
+
+
+static void
+selected_source_changed_cb (GConfClient *client,
+			    guint cnxn_id,
+			    GConfEntry *entry,
+			    RBShell *shell)
+{
+	rb_shell_sync_selected_source (shell);
+}
 
 static void
 sourcelist_drag_received_cb (RBSourceList *sourcelist,

@@ -781,6 +781,7 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	RBPlaylistSource *source;
 	xmlNodePtr child;
 	char *tmp;
+	char *internal_name;
 
 	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db, FALSE));
 
@@ -788,8 +789,23 @@ rb_playlist_source_new_from_xml	(RhythmDB *db,
 	if (!strcmp (tmp, "automatic"))
 		source->priv->automatic = TRUE;
 	g_free (tmp);
+
 	tmp = xmlGetProp (node, "name");
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
+	g_free (tmp);
+
+	tmp = xmlGetProp (node, "serial");
+	if (tmp) {
+		internal_name = g_strdup_printf ("<playlist:%s>", tmp);
+	} else {
+		GTimeVal serial;
+		/* Hm.  Upgrades. */
+		g_get_current_time (&serial);
+		internal_name = g_strdup_printf ("<playlist:%ld:%ld>",
+						 serial.tv_sec, serial.tv_usec);
+	}
+	g_object_set (G_OBJECT (source), "internal-name", internal_name, NULL);
+	g_free (internal_name);
 	g_free (tmp);
 
 	if (source->priv->automatic) {

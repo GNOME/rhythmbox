@@ -57,6 +57,10 @@ static void rb_source_header_search_cb (RBSearchEntry *search,
 					RBSourceHeader *header);
 static void rb_source_header_disclosure_toggled_cb (GtkToggleButton *disclosure,
 						    gpointer data);
+static void rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
+							   guint cnxn_id,
+							   GConfEntry *entry,
+							   RBSourceHeader *header);
 static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 							  guint cnxn_id,
 							  GConfEntry *entry,
@@ -79,7 +83,9 @@ struct RBSourceHeaderPrivate
 	GtkWidget *disclosure;
 
 	guint browser_notify_id;
+	guint search_notify_id;
 	const char *browser_key;
+	const char *search_key;
 };
 
 enum
@@ -228,6 +234,8 @@ rb_source_header_set_property (GObject *object,
 		{
 			if (header->priv->browser_key)
 				eel_gconf_notification_remove (header->priv->browser_notify_id);
+			if (header->priv->search_key)
+				eel_gconf_notification_remove (header->priv->search_notify_id);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
@@ -242,11 +250,21 @@ rb_source_header_set_property (GObject *object,
 		if (header->priv->selected_source != NULL)
 		{
 			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
+			header->priv->search_key = rb_source_get_search_key (header->priv->selected_source);
 			if (header->priv->browser_key)
 				header->priv->browser_notify_id
 					= eel_gconf_notification_add (header->priv->browser_key,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
 								      header);
+			if (header->priv->search_key) {
+				header->priv->search_notify_id
+					= eel_gconf_notification_add (header->priv->search_key,
+								      (GConfClientNotifyFunc) rb_source_header_gconf_search_text_changed_cb,
+								      header);
+
+				rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
+							  eel_gconf_get_string (header->priv->search_key));
+			}
 			g_signal_connect (G_OBJECT (header->priv->selected_source),
 					  "filter_changed",
 					  G_CALLBACK (rb_source_header_filter_changed_cb),
@@ -334,13 +352,27 @@ rb_source_header_filter_changed_cb (RBSource *source,
 }
 
 static void
+rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
+					       guint cnxn_id,
+					       GConfEntry *entry,
+					       RBSourceHeader *header)
+{
+	rb_debug ("gconf search text changed");
+
+	g_return_if_fail (header->priv->search_key != NULL);
+
+	rb_source_search (header->priv->selected_source,
+			  eel_gconf_get_string (header->priv->search_key));
+}
+
+static void
 rb_source_header_search_cb (RBSearchEntry *search,
 			    const char *text,
 			    RBSourceHeader *header)
 {
 	rb_debug  ("searching for \"%s\"", text);
-	
-	rb_source_search (header->priv->selected_source, text);
+
+	eel_gconf_set_string (header->priv->search_key, text);
 }
 
 void

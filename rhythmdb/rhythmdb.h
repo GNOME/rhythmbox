@@ -152,7 +152,6 @@ typedef struct
 					 const GValue *old, const GValue *new);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(RhythmDBEntry *entry);
-	void	(*legacy_load_complete)	(RhythmDBEntry *entry);
 	void	(*error)		(const char *uri, const char *msg);
 
 	/* virtual methods */
@@ -305,9 +304,6 @@ inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const char *name);
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
-
-void		rhythmdb_load_legacy			(RhythmDB *db);
-RhythmDBEntry * rhythmdb_legacy_id_to_entry		(RhythmDB *db, guint id);
 
 char *		rhythmdb_get_status			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,

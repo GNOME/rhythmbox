@@ -45,6 +45,7 @@ static void rb_source_get_property (GObject *object,
 					GParamSpec *pspec);
 
 static const char * default_get_browser_key (RBSource *status);
+static const char * default_get_search_key (RBSource *status);
 static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
@@ -62,6 +63,7 @@ static void default_delete_thyself (RBSource *source);
 struct RBSourcePrivate
 {
 	char *name;
+	char *internal_name;
 	
 	BonoboUIComponent *component;
 };
@@ -70,6 +72,7 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
+	PROP_INTERNAL_NAME,
 	PROP_COMPONENT
 };
 
@@ -126,6 +129,7 @@ rb_source_class_init (RBSourceClass *klass)
 	object_class->get_property = rb_source_get_property;
 
 	klass->impl_get_browser_key = default_get_browser_key;
+	klass->impl_get_search_key = default_get_search_key;
 	klass->impl_get_extra_views = default_get_extra_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
@@ -149,6 +153,14 @@ rb_source_class_init (RBSourceClass *klass)
 							      "Interface name",
 							      NULL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_INTERNAL_NAME,
+					 g_param_spec_string ("internal-name",
+							      "Internal name",
+							      "Internal name",
+							      NULL,
+							      G_PARAM_READWRITE));
+
 	g_object_class_install_property (object_class,
 					 PROP_COMPONENT,
 					 g_param_spec_pointer ("component",
@@ -234,6 +246,10 @@ rb_source_set_property (GObject *object,
 		g_free (source->priv->name);
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
+	case PROP_INTERNAL_NAME:
+		g_free (source->priv->internal_name);
+		source->priv->internal_name = g_strdup (g_value_get_string (value));
+		break;
 	case PROP_COMPONENT:
 		source->priv->component = g_value_get_pointer (value);
 		break;
@@ -255,6 +271,9 @@ rb_source_get_property (GObject *object,
 	{
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
+		break;
+	case PROP_INTERNAL_NAME:
+		g_value_set_string (value, source->priv->internal_name);
 		break;
 	case PROP_COMPONENT:
 		g_value_set_pointer (value, source->priv->component);
@@ -279,12 +298,26 @@ default_get_browser_key (RBSource *status)
 	return NULL;
 }
 
+static const char *
+default_get_search_key (RBSource *status)
+{
+	return NULL;
+}
+
 const char *
 rb_source_get_browser_key (RBSource *status)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
 
 	return klass->impl_get_browser_key (status);
+}
+
+const char *
+rb_source_get_search_key (RBSource *status)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
+
+	return klass->impl_get_search_key (status);
 }
 
 void

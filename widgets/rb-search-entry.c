@@ -182,6 +182,13 @@ rb_search_entry_clear (RBSearchEntry *entry)
 	entry->priv->clearing = FALSE;
 }
 
+void
+rb_search_entry_set_text (RBSearchEntry *entry, const char *text)
+{
+	gtk_entry_set_text (GTK_ENTRY (entry->priv->entry),
+			    text ? text : "");
+}
+
 static void
 rb_search_entry_changed_cb (GtkEditable *editable,
 			    RBSearchEntry *entry)

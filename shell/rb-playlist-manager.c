@@ -88,6 +88,8 @@ struct RBPlaylistManagerPrivate
 
 	GList *playlists;
 
+	guint playlist_serial;
+
 	RBPlaylistSource *loading_playlist;
 
 	char *firsturi;
@@ -509,7 +511,18 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 				  const char *suggested_name, gboolean automatic)
 {
 	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
-	g_object_set (G_OBJECT (playlist), "name", suggested_name ? suggested_name : "", NULL);
+	GTimeVal serial;
+	char *internal;
+
+	g_get_current_time (&serial);
+	internal = g_strdup_printf ("<playlist:%ld:%ld>", serial.tv_sec,
+				    serial.tv_usec);
+	
+	g_object_set (G_OBJECT (playlist),
+		      "name", suggested_name ? suggested_name : "",
+		      "internal-name", internal,
+		      NULL);
+	g_free (internal);
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	return playlist;

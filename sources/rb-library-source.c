@@ -117,6 +117,7 @@ static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
+static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
@@ -145,6 +146,7 @@ static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 #define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/ui/library/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
+#define CONF_STATE_SEARCH_TEXT   CONF_PREFIX "/state/library/search_text"
 
 struct RBLibrarySourcePrivate
 {
@@ -253,6 +255,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
+	source_class->impl_get_search_key = impl_get_search_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -548,8 +551,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
 
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
-
 	/* this gets emitted when the paned thingie is moved */
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "size_allocate",
@@ -645,6 +646,7 @@ rb_library_source_new (RBShell *shell, RhythmDB *db,
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
+					  "internal-name", "<library>",
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "db", db,
 					  "component", component,
@@ -903,6 +905,12 @@ impl_get_browser_key (RBSource *source)
 	return CONF_STATE_SHOW_BROWSER;
 }
 
+static const char *
+impl_get_search_key (RBSource *source)
+{
+	return CONF_STATE_SEARCH_TEXT;
+}
+
 static GdkPixbuf *
 impl_get_pixbuf (RBSource *asource)
 {
@@ -916,12 +924,15 @@ impl_search (RBSource *asource, const char *search_text)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 
-	if (search_text == NULL && source->priv->search_text == NULL)
-		return;
-	if (search_text != NULL &&
-	    source->priv->search_text != NULL
-	    && !strcmp (search_text, source->priv->search_text))
-		return;
+	/* Always search if we haven't done our first query yet. */
+	if (source->priv->cached_all_query != NULL) {
+		if (search_text == NULL && source->priv->search_text == NULL)
+			return;
+		if (search_text != NULL &&
+		    source->priv->search_text != NULL
+		    && !strcmp (search_text, source->priv->search_text))
+			return;
+	}
 
 	rb_debug ("doing search for \"%s\"", search_text);
 

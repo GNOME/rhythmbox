@@ -26,6 +26,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/selected_source</key>
+        <applyto>/apps/rhythmbox/state/selected_source</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>Library</default>
+        <locale name="C">
+	<short>Default selected source.</short>
+	<long>Default selected source.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
         <applyto>/apps/rhythmbox/state/paned_position</applyto>
         <owner>rhythmbox</owner>
@@ -160,6 +171,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/library/search_text</key>
+        <applyto>/apps/rhythmbox/state/library/search_text</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+	<short>String used for filtering library view.</short>
+	<long>String used for filtering library view.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/library/sorting</key>
         <applyto>/apps/rhythmbox/state/library/sorting</applyto>
         <owner>rhythmbox</owner>
@@ -227,6 +249,17 @@
         <short>Whether to show elapsed or remaining time</short>
         <long>If true, the elapsed time will be shown in song duration
               displays. Otherwise the remaining time will be shown.</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/iradio/search_text</key>
+        <applyto>/apps/rhythmbox/state/iradio/search_text</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default></default>
+        <locale name="C">
+	<short>String used for filtering radio view.</short>
+	<long>String used for filtering radio view.</long>
         </locale>
       </schema>
       <schema>

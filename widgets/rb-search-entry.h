@@ -55,6 +55,9 @@ RBSearchEntry *	rb_search_entry_new      (void);
 
 void		rb_search_entry_clear    (RBSearchEntry *entry);
 
+
+void		rb_search_entry_set_text (RBSearchEntry *entry, const char *text);
+
 gboolean	rb_search_entry_searching(RBSearchEntry *entry);
 
 G_END_DECLS

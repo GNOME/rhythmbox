@@ -30,10 +30,10 @@ G_BEGIN_DECLS
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 #define rb_debug(...) rb_debug_real (__func__, __FILE__, __LINE__, __VA_ARGS__)
-#elif defined(__GNUC__) && __GNUC__ >= 2
+#elif defined(__GNUC__) && __GNUC__ >= 3
 #define rb_debug(...) rb_debug_real (__FUNCTION__, __FILE__, __LINE__, __VA_ARGS__)
 #else
-#define rb_debug(...) rb_debug_real ("", __FILE__, __LINE__, __VA_ARGS__)
+#define rb_debug
 #endif
 
 void rb_debug_init             (gboolean debug);
