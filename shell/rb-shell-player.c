@@ -1474,7 +1474,6 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 		    gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	GladeXML *xml;
 	rb_debug ("got buffering_begin_cb");
 
 	if (!monkey_media_player_playing (mmplayer)) {
