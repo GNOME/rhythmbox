@@ -31,6 +31,7 @@
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
 #include "rb-node-song.h"
+#include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
 
@@ -114,6 +115,7 @@ rb_library_init (RBLibrary *library)
 
 	/* ensure these types have been registered: */
 	rb_node_get_type ();
+	rb_glist_wrapper_get_type ();
 	rb_node_song_get_type ();
 	
 	library->priv = g_new0 (RBLibraryPrivate, 1);
@@ -328,7 +330,7 @@ song_added_cb (RBNode *node,
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
 	
 	g_hash_table_insert (library->priv->song_hash,
-			     (char *) rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION),
+			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_LOCATION),
 			     child);
 	
 	g_static_rw_lock_writer_unlock (library->priv->song_hash_lock);
@@ -381,7 +383,7 @@ song_removed_cb (RBNode *node,
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
 
 	g_hash_table_remove (library->priv->song_hash,
-			     rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION));
+			     rb_node_get_property_string (child, RB_NODE_PROP_LOCATION));
 	
 	g_static_rw_lock_writer_unlock (library->priv->song_hash_lock);
 }
@@ -702,7 +704,7 @@ rb_library_load (RBLibrary *library)
 			const char *location;
 
 			location = rb_node_get_property_string (node,
-						                RB_NODE_SONG_PROP_LOCATION);
+						                RB_NODE_PROP_LOCATION);
 					
 			rb_library_action_queue_add (library->priv->main_queue,
 						     FALSE,
