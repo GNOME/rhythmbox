@@ -351,7 +351,7 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 			curident = g_strstrip (curident);
 			curident[strlen(curident)-1] = '\0';
 			rb_windows_ini_file_unicodify (&curident);
-			if (!cursection)
+			if (!curident)
 				goto bad_encoding;
 			tmp = g_utf8_strdown (curident, -1);
 			g_free (curident);
@@ -364,7 +364,7 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 				goto lose;
 			}
 			rb_windows_ini_file_unicodify (&curvalue);
-			if (!cursection)
+			if (!curvalue)
 				goto bad_encoding;
 			g_hash_table_insert (cursectionhash ? cursectionhash : defaulthash, curident, curvalue);
 		}
