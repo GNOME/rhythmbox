@@ -71,6 +71,7 @@ static void rb_song_info_update_last_played (RBSongInfo *song_info);
 static void rb_song_info_update_bitrate (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
+static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
 static void rb_song_info_backward_clicked_cb (GtkWidget *button,
 					      RBSongInfo *song_info);
@@ -98,9 +99,7 @@ struct RBSongInfoPrivate
 	GtkWidget   *title;
 	GtkWidget   *artist;
 	GtkWidget   *album;
-	GtkWidget   *date;
 	GtkWidget   *track_cur;
-	GtkWidget   *track_max;
 	GtkWidget   *genre;
 
 	GtkWidget   *bitrate;
@@ -109,7 +108,6 @@ struct RBSongInfoPrivate
 	GtkWidget   *location;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
-	GtkWidget   *encoding;
 	GtkWidget   *rating;
 };
 
@@ -228,9 +226,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
 	song_info->priv->artist        = glade_xml_get_widget (xml, "song_info_artist");
 	song_info->priv->album         = glade_xml_get_widget (xml, "song_info_album");
-	song_info->priv->date          = glade_xml_get_widget (xml, "song_info_date");
 	song_info->priv->track_cur     = glade_xml_get_widget (xml, "song_info_track_cur");
-	song_info->priv->track_max     = glade_xml_get_widget (xml, "song_info_track_max");
 	song_info->priv->genre         = glade_xml_get_widget (xml, "song_info_genre");
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
@@ -242,7 +238,6 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_widget_show (song_info->priv->location);
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
-	song_info->priv->encoding      = glade_xml_get_widget (xml, "song_info_encoding");
 	cont = glade_xml_get_widget (xml, "song_info_name_container");
 	song_info->priv->name = rb_ellipsizing_label_new ("");
 	gtk_misc_set_alignment (GTK_MISC (song_info->priv->name), 0.0, 0.5);
@@ -254,12 +249,6 @@ rb_song_info_init (RBSongInfo *song_info)
 	{
 		gchar *str_final;
 		GtkWidget *label;
-
-		label = glade_xml_get_widget (xml, "date_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "album_label");
 		str_final = g_strdup_printf ("<b>%s</b>",
@@ -333,21 +322,13 @@ rb_song_info_init (RBSongInfo *song_info)
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
 		g_free (str_final);
 
-		label = glade_xml_get_widget (xml, "encoding_label");
-		str_final = g_strdup_printf ("<b>%s</b>",
-					     gtk_label_get_label GTK_LABEL (label));
-		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
-		g_free (str_final);
-		
 	}
 
 	/* make those fields not editable for now */
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->title), FALSE);
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->artist), FALSE);
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->album), FALSE);
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->date), FALSE);
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_cur), FALSE);
-	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->track_max), FALSE);
 
 	/* whenever you press a mnemonic, the associated GtkEntry's text gets highlighted */
 	g_signal_connect (G_OBJECT (song_info->priv->title),
@@ -366,15 +347,7 @@ rb_song_info_init (RBSongInfo *song_info)
 			  "mnemonic-activate",
 			  G_CALLBACK (rb_song_info_mnemonic_cb),
 			  NULL);
-	g_signal_connect (G_OBJECT (song_info->priv->date),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
 	g_signal_connect (G_OBJECT (song_info->priv->track_cur),
-			  "mnemonic-activate",
-			  G_CALLBACK (rb_song_info_mnemonic_cb),
-			  NULL);
-	g_signal_connect (G_OBJECT (song_info->priv->track_max),
 			  "mnemonic-activate",
 			  G_CALLBACK (rb_song_info_mnemonic_cb),
 			  NULL);
@@ -422,18 +395,20 @@ rb_song_info_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ENTRY_VIEW:
-		{
-			RBEntryView *entry_view = g_value_get_object (value);
-			song_info->priv->entry_view = entry_view;
-			g_object_get (G_OBJECT (entry_view), "db", &song_info->priv->db, NULL);
+	{
+		RBEntryView *entry_view = g_value_get_object (value);
+		song_info->priv->entry_view = entry_view;
+		g_object_get (G_OBJECT (entry_view), "db", &song_info->priv->db, NULL);
+		
+		rb_song_info_update_current_values (song_info);
 
-			g_signal_connect_object (G_OBJECT (entry_view),
-						 "changed",
-						 G_CALLBACK (rb_song_info_view_changed_cb),
-						 song_info,
+		g_signal_connect_object (G_OBJECT (entry_view),
+					 "changed",
+					 G_CALLBACK (rb_song_info_view_changed_cb),
+					 song_info,
 						 G_CONNECT_AFTER);
-		}
-		break;
+	}
+	break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -730,6 +705,23 @@ rb_song_info_view_changed_cb (RBEntryView *entry_view,
 {
 	/* update next button sensitivity */
 	rb_song_info_update_buttons (song_info);
+}
+
+static gboolean
+rb_song_info_update_current_values (RBSongInfo *song_info)
+{
+	GList *selected_entries;
+
+	selected_entries = rb_entry_view_get_selected_entries (song_info->priv->entry_view);
+
+	if ((selected_entries == NULL) || (selected_entries->data == NULL)) {
+		song_info->priv->current_entry = NULL;
+		gtk_widget_destroy (GTK_WIDGET (song_info));
+		return FALSE;
+	}
+
+	song_info->priv->current_entry = selected_entries->data;
+	return TRUE;
 }
 
 static void
