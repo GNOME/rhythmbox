@@ -294,30 +294,20 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				GdkRectangle *background_area,
 				GdkRectangle *cell_area,
 				GdkRectangle *expose_area,
-				guint flags)
+				GtkCellRendererState flags)
 
 {
 	int i, icon_width;
 	int offset = 0;
-	gboolean selected, prelight;
+	gboolean selected;
 	GdkRectangle pix_rect, draw_rect;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
-	int mouse_x, mouse_y;
 
 	rb_cell_renderer_rating_get_size (cell, widget, cell_area,
 					  &pix_rect.x,
 					  &pix_rect.y,
 					  &pix_rect.width,
 					  &pix_rect.height);
-	
-	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
-	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
-					     mouse_x,
-					     mouse_y,
-					     &mouse_x,
-					     &mouse_y);
-
-	prelight = FALSE;
   
 	pix_rect.x += cell_area->x;
 	pix_rect.y += cell_area->y;
@@ -329,10 +319,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) == FALSE)
 		return;
 
-	if (mouse_x >= pix_rect.x && mouse_x <= pix_rect.x + pix_rect.width)
-		prelight = TRUE;
-
-	selected = flags;
+	selected = (flags & GTK_CELL_RENDERER_SELECTED);
 	
 	for (i = 0; i < 5; i++) {
 		GdkPixbuf *buf;
@@ -357,7 +344,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 		else
 			buf = cellrating->priv->pix_blank;
 
-		if (prelight == FALSE || selected == FALSE)
+		if (selected == FALSE)
 			offset = 120;
 
 		buf = eel_create_colorized_pixbuf (buf,

@@ -620,7 +620,8 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
 		struct RhythmDBQueryModelUpdate *update;
 
-		if (!rhythmdb_evaluate_query (db, model->priv->query, entry)) {
+		if (model->priv->query &&
+		    !rhythmdb_evaluate_query (db, model->priv->query, entry)) {
 			rhythmdb_query_model_remove_entry (model, entry);
 			return;
 		}
