@@ -3,6 +3,8 @@ noinst_LTLIBRARIES = libviews.la
 libviews_la_SOURCES =					\
 	rb-library-view.c				\
 	rb-library-view.h				\
+	rb-iradio-view.c				\
+	rb-iradio-view.h				\
 	rb-view-cmd.c					\
 	rb-view-cmd.h					\
         rb-group-view.c                                 \
@@ -21,6 +23,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/lib/view 			\
 	-I$(top_srcdir)/lib/widgets 			\
 	-I$(top_srcdir)/library 			\
+	-I$(top_srcdir)/iradio				\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
