@@ -1,3 +1,171 @@
+2003-10-08 04:51:46 GMT	Colin Walters <walters@verbum.org>	patch-90
+
+    Summary:
+      reimplement progress meter for refreshing/loading
+    Revision:
+      rhythmbox--mainline--0.6--patch-90
+
+
+    modified files:
+     library/rb-library.c library/rb-library.h shell/rb-shell.c
+     shell/rb-statusbar.c shell/rb-statusbar.h
+
+
+2003-10-07 23:50:43 GMT	Colin Walters <walters@verbum.org>	patch-89
+
+    Summary:
+      update POTFILES.in
+    Revision:
+      rhythmbox--mainline--0.6--patch-89
+
+
+    modified files:
+     po/POTFILES.in
+
+
+2003-10-07 23:12:11 GMT	Colin Walters <walters@verbum.org>	patch-88
+
+    Summary:
+      don't redo a query if it's exactly the same as the current query 
+    Revision:
+      rhythmbox--mainline--0.6--patch-88
+
+    
+
+    modified files:
+     sources/rb-library-source.c
+
+
+2003-10-07 21:27:48 GMT	Colin Walters <walters@verbum.org>	patch-87
+
+    Summary:
+      be sure to read unlock after readlocking 
+    Revision:
+      rhythmbox--mainline--0.6--patch-87
+
+    
+
+    modified files:
+     sources/rb-playlist-source.c
+
+
+2003-10-07 21:18:52 GMT	Colin Walters <walters@verbum.org>	patch-86
+
+    Summary:
+      yann@cvs.gnome.org: playlist, deletion fixes
+    Revision:
+      rhythmbox--mainline--0.6--patch-86
+
+    Patches applied:
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-81
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+       Fix incorrect Last played time display
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+       Add library entry deletion (is this correct ?)
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+       Add playlist entry deletion
+    
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb-tree.h
+     rhythmdb/rhythmdb.c sources/rb-library-source.c
+     sources/rb-playlist-source.c sources/rb-playlist-source.h
+
+    new patches:
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+
+
+2003-10-07 20:59:33 GMT	Colin Walters <walters@verbum.org>	patch-85
+
+    Summary:
+      use GnomeVFSFileSize for total size, so as to not overflow
+    Revision:
+      rhythmbox--mainline--0.6--patch-85
+
+
+    modified files:
+     library/rb-library.c library/rb-library.h
+     rhythmdb/rhythmdb-legacy.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-10-07 20:44:42 GMT	Colin Walters <walters@verbum.org>	patch-84
+
+    Summary:
+      various status fixes 
+    Revision:
+      rhythmbox--mainline--0.6--patch-84
+
+    Use ngettext for library status, and start displaying file size.
+    Push duration/size computation into RBEntryView.
+    Implement playlist status.
+    
+
+    modified files:
+     library/rb-library.c library/rb-library.h
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-playlist-source.c sources/rb-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+
+2003-10-07 17:11:33 GMT	Colin Walters <walters@verbum.org>	patch-83
+
+    Summary:
+      implement tooltips on shuffle/repeat/search, and fix other tooltips
+    Revision:
+      rhythmbox--mainline--0.6--patch-83
+
+
+    modified files:
+     shell/rb-shell-player.c shell/rb-source-header.c
+     shell/rb-statusbar.c
+
+
+2003-10-07 16:50:14 GMT	Colin Walters <walters@verbum.org>	patch-82
+
+    Summary:
+      implement Luca Ferretti's menu cleanups 
+    Revision:
+      rhythmbox--mainline--0.6--patch-82
+
+    
+
+    new files:
+     data/art/.arch-ids/rhythmbox-playlist-menu.png.id
+     data/art/.arch-ids/rhythmbox-smart-playlist.png.id
+     data/art/rhythmbox-playlist-menu.png
+     data/art/rhythmbox-smart-playlist.png
+
+    removed files:
+     data/art/.arch-ids/rhythmbox-sound-juicer.png.id
+     data/art/rhythmbox-sound-juicer.png
+
+    modified files:
+     data/art/Makefile.am data/ui/rhythmbox-ui.xml.in
+     lib/rb-stock-icons.c lib/rb-stock-icons.h
+
+
+2003-10-06 19:10:04 GMT	Colin Walters <walters@verbum.org>	patch-81
+
+    Summary:
+      update ChangeLog, NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-81
+
+
+    modified files:
+     ChangeLog NEWS
+
+
 2003-10-06 17:54:55 GMT	Colin Walters <walters@verbum.org>	patch-80
 
     Summary:
