@@ -74,6 +74,8 @@ struct RBSourceHeaderPrivate
 
 	BonoboUIComponent *component;
 
+	GtkTooltips *tooltips;
+
 	GtkWidget *search;
 	GtkWidget *disclosure;
 
@@ -158,13 +160,23 @@ static void
 rb_source_header_init (RBSourceHeader *header)
 {
 	GtkWidget *align;
+	GtkEventBox *ebox;
 	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
+
+	header->priv->tooltips = gtk_tooltips_new ();
+	gtk_tooltips_enable (header->priv->tooltips);
 
 	gtk_table_set_homogeneous (GTK_TABLE (header), TRUE);
 	gtk_table_set_col_spacings (GTK_TABLE (header), 5);
 	gtk_table_resize (GTK_TABLE (header), 1, 3);
 
+	ebox = GTK_EVENT_BOX (gtk_event_box_new ());
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (header->priv->tooltips), 
+			      GTK_WIDGET (ebox), 
+			      _("Filter music display by genre, artist, album, or title"),
+			      NULL);
+	gtk_container_add (GTK_CONTAINER (ebox), GTK_WIDGET (header->priv->search));
 
 	g_signal_connect (G_OBJECT (header->priv->search), "search",
 			  G_CALLBACK (rb_source_header_search_cb), header);
@@ -179,7 +191,7 @@ rb_source_header_init (RBSourceHeader *header)
 			           header->priv->disclosure, 0, 2, 0, 1);
 
 	align = gtk_alignment_new (1.0, 0.5, 1.0, 1.0);
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (header->priv->search));
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (ebox));
 	gtk_table_attach_defaults (GTK_TABLE (header),
 			           align, 2, 3, 0, 1);
 }

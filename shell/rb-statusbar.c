@@ -81,6 +81,8 @@ struct RBStatusbarPrivate
 
 	BonoboUIComponent *component;
 
+	GtkTooltips *tooltips;
+
 	GtkWidget *shuffle;
 	GtkWidget *repeat;
 	GtkWidget *status;
@@ -161,8 +163,18 @@ rb_statusbar_init (RBStatusbar *statusbar)
 {
 	statusbar->priv = g_new0 (RBStatusbarPrivate, 1);
 
+	statusbar->priv->tooltips = gtk_tooltips_new ();
+	gtk_tooltips_enable (statusbar->priv->tooltips);
+
 	statusbar->priv->shuffle = gtk_check_button_new_with_mnemonic (_("_Shuffle"));
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (statusbar->priv->tooltips), 
+			      GTK_WIDGET (statusbar->priv->shuffle), 
+			      _("Play songs in a random order"), NULL);
+
 	statusbar->priv->repeat = gtk_check_button_new_with_mnemonic (_("_Repeat"));
+	gtk_tooltips_set_tip (GTK_TOOLTIPS (statusbar->priv->tooltips), 
+			      GTK_WIDGET (statusbar->priv->repeat), 
+			      _("Play first song again after all songs are played"), NULL);
 	g_signal_connect (G_OBJECT (statusbar->priv->shuffle), "toggled",
 			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
 	g_signal_connect (G_OBJECT (statusbar->priv->repeat), "toggled",

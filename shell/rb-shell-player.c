@@ -401,7 +401,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->prev_button), 
-			      _("Previous"), NULL);
+			      _("Go to previous song"), NULL);
 
 	/* Button images */
 	player->priv->play_image = gtk_image_new_from_stock (RB_STOCK_PLAY,
@@ -430,7 +430,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->next_button), 
-			      _("Next"), NULL);
+			      _("Go to next song"), NULL);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_pause_stop_button, FALSE, TRUE, 0);
@@ -449,7 +449,7 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->volume_button), 
-			      _("Volume Control"), NULL);
+			      _("Change the music volume"), NULL);
 
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
@@ -1127,7 +1127,7 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 	{
 	case PLAY_BUTTON_PAUSE:
 		rb_debug ("setting pause button");
-		tlabel = _("Pause");
+		tlabel = _("Pause playback");
 		mlabel = _("_Pause");
 		verb = "Pause";
 		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
@@ -1135,7 +1135,7 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 		break;
 	case PLAY_BUTTON_PLAY:
 		rb_debug ("setting play button");
-		tlabel = _("Play");
+		tlabel = _("Start playing");
 		mlabel = _("_Play");
 		verb = "Play";
 		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
@@ -1143,7 +1143,7 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 		break;
 	case PLAY_BUTTON_STOP:
 		rb_debug ("setting STOP button");
-		tlabel = _("Stop");
+		tlabel = _("Stop playback");
 		mlabel = _("_Stop");
 		verb = "Stop";
 		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
