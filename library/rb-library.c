@@ -279,6 +279,7 @@ rb_library_finalize (GObject *object)
 	g_return_if_fail (library->priv != NULL);
 
 	rb_debug ("library: finalizing");
+	g_object_unref (G_OBJECT (library->priv->db));
 
 	g_free (library->priv);
 
@@ -302,6 +303,7 @@ rb_library_set_property (GObject *object,
 					 "entry_restored",
 					 G_CALLBACK (rb_library_entry_restored_cb),
         				 library, 0);
+		g_object_ref (G_OBJECT (library->priv->db));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -563,7 +565,6 @@ rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **erro
 
 	rhythmdb_write_lock (library->priv->db);
 	
-	rb_debug ("updating existing entry \"%s\"", location);
 	synchronize_entry_with_data (library, entry, metadata);
 	g_free (metadata);
 	rhythmdb_entry_unref_unlocked (library->priv->db, entry);
@@ -583,8 +584,6 @@ out:
 static void
 synchronize_entry_with_data (RBLibrary *library, RhythmDBEntry *entry, RBLibraryEntryUpdateData *data)
 {
-	rb_debug ("synchronizing entry %p", entry);
-
 	rhythmdb_entry_set (library->priv->db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &data->track_number_val);
 	rhythmdb_entry_set (library->priv->db, entry, RHYTHMDB_PROP_DURATION, &data->duration_val);
 	rhythmdb_entry_set (library->priv->db, entry, RHYTHMDB_PROP_FILE_SIZE, &data->file_size_val);

@@ -54,13 +54,15 @@ struct RBLibraryLoadErrorData {
 struct RBLibraryMainThreadPrivate
 {
 	RBLibrary *library;
-	RhythmDB *db;
 
 	GThread *main_thread;
 	GThread *add_thread;
 
+	gboolean cancel;
+
 	GList *failed_loads;
 
+	GAsyncQueue *shutdown_queue;
 	GAsyncQueue *queue;
 	GAsyncQueue *add_queue;
 };
@@ -174,6 +176,7 @@ rb_library_main_thread_init (RBLibraryMainThread *thread)
 			  "file_removed",
 			  G_CALLBACK (file_removed_cb),
 			  thread);
+	thread->priv->shutdown_queue = g_async_queue_new ();
 }
 
 static GObject *
@@ -190,8 +193,10 @@ rb_library_main_thread_constructor (GType type, guint n_construct_properties,
 								    construct_properties));
 
 
+	g_async_queue_ref (thread->priv->shutdown_queue);
 	thread->priv->main_thread = g_thread_create ((GThreadFunc) main_thread_main,
 						     thread, FALSE, NULL);
+	g_async_queue_ref (thread->priv->shutdown_queue);
 	thread->priv->add_thread = g_thread_create ((GThreadFunc) add_thread_main,
 						    thread, FALSE, NULL);
 	return G_OBJECT (thread);
@@ -208,6 +213,14 @@ rb_library_main_thread_finalize (GObject *object)
 	thread = RB_LIBRARY_MAIN_THREAD (object);
 
 	g_return_if_fail (thread->priv != NULL);
+
+	thread->priv->cancel = TRUE;
+	/* Read back the cancellation ACKs */
+	g_async_queue_pop (thread->priv->shutdown_queue);
+	rb_debug ("acknowledged cancellation");
+	g_async_queue_pop (thread->priv->shutdown_queue);
+	rb_debug ("acknowledged cancellation");
+	g_async_queue_unref (thread->priv->shutdown_queue);
 
 	g_free (thread->priv);
 
@@ -310,7 +323,11 @@ read_action (RBLibraryMainThread *thread, GAsyncQueue *queue)
 	g_get_current_time (&timeout);
 	g_time_val_add (&timeout, G_USEC_PER_SEC);
 	
+	if (G_UNLIKELY (thread->priv->cancel))
+		return NULL;
 	while ((action = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
+		if (G_UNLIKELY (thread->priv->cancel))
+			return NULL;
 		g_get_current_time (&timeout);
 		g_time_val_add (&timeout, G_USEC_PER_SEC);
 	}
@@ -326,12 +343,11 @@ main_thread_main (RBLibraryMainThread *thread)
 		GError *error = NULL;
 		RhythmDBEntry *entry;
 
-		entry = read_action (thread->priv->queue);
+		entry = read_action (thread, thread->priv->queue);
 
 		if (entry == NULL)
 			break;
 
-		rb_debug ("popped entry from update queue");
 		rb_library_update_entry (thread->priv->library, entry, &error);
 
 		if (error != NULL) {
@@ -343,6 +359,8 @@ main_thread_main (RBLibraryMainThread *thread)
 
 	rb_debug ("exiting");
 	g_async_queue_unref (thread->priv->queue);
+	g_async_queue_push (thread->priv->shutdown_queue, GINT_TO_POINTER (1));
+	g_async_queue_unref (thread->priv->shutdown_queue);
 	g_thread_exit (NULL);
 	return NULL;
 }
@@ -353,7 +371,6 @@ add_file (const char *filename,
 {
 	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, filename);
 	
-	rb_debug ("queueing ADD_FILE for %s", filename);
 	g_async_queue_push (thread->priv->add_queue, action);
 }
 
@@ -376,7 +393,6 @@ add_thread_main (RBLibraryMainThread *thread)
 
 		realuri = rb_uri_resolve_symlink (uri);
 
-		rb_debug ("popped action from add queue, type: %d uri: %s", type, uri);
 		switch (type)
 		{
 		case RB_LIBRARY_ACTION_ADD_FILE:
@@ -406,6 +422,8 @@ add_thread_main (RBLibraryMainThread *thread)
 
 	rb_debug ("exiting");
 	g_async_queue_unref (thread->priv->add_queue);
+	g_async_queue_push (thread->priv->shutdown_queue, GINT_TO_POINTER (1));
+	g_async_queue_unref (thread->priv->shutdown_queue);
 	g_thread_exit (NULL);
 	return NULL;
 }

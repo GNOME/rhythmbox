@@ -25,6 +25,7 @@
 #include "rhythmdb-property-model.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
+#include <gdk/gdk.h>
 #include <libgnome/gnome-i18n.h>
 #include "rb-string-helpers.h"
 #include "rb-thread-helpers.h"
@@ -39,14 +40,15 @@ struct RhythmDBPrivate
 
 	GType *column_types;
 
-	GThread *load_thread;
-
 	GThreadPool *query_thread_pool;
 	GThreadPool *property_query_thread_pool;
 
 	GHashTable *changed_entries;
 
+	guint thread_reaper_id;
+
 	GAsyncQueue *status_queue;
+	gint outstanding_threads;
 
 	GMutex *exit_mutex;
 	gboolean exiting;
@@ -72,6 +74,7 @@ static void rhythmdb_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
+gboolean reap_dead_threads (RhythmDB *db);
 gpointer query_thread_main (struct RhythmDBQueryThreadData *data, RhythmDB *db);
 gpointer property_query_thread_main (struct RhythmDBQueryThreadData *data, RhythmDB *db);
 
@@ -225,8 +228,8 @@ rhythmdb_init (RhythmDB *db)
 
 	g_static_rw_lock_init (&db->priv->lock);
 
-	db->priv->exit_mutex = g_mutex_new ();
-
+	db->priv->status_queue = g_async_queue_new ();
+	
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
 	unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
 
@@ -254,6 +257,27 @@ rhythmdb_init (RhythmDB *db)
 							 db, 3, TRUE, NULL);
 	db->priv->property_query_thread_pool = g_thread_pool_new ((GFunc) property_query_thread_main,
 								  db, 3, TRUE, NULL);
+	db->priv->thread_reaper_id
+		= g_idle_add ((GSourceFunc) reap_dead_threads, db);
+}
+
+gboolean
+reap_dead_threads (RhythmDB *db)
+{
+	GObject *obj;
+
+	while ((obj = g_async_queue_try_pop (db->priv->status_queue)) != NULL) {
+		GDK_THREADS_ENTER ();
+		g_object_unref (obj);
+		db->priv->outstanding_threads--;
+		GDK_THREADS_LEAVE ();
+	}
+
+	GDK_THREADS_ENTER ();
+	db->priv->thread_reaper_id
+		= g_timeout_add (5000, (GSourceFunc) reap_dead_threads, db);
+	GDK_THREADS_LEAVE ();
+	return FALSE;
 }
 
 void
@@ -262,9 +286,14 @@ rhythmdb_shutdown (RhythmDB *db)
 	g_return_if_fail (RHYTHMDB_IS (db));
 
 	db->priv->exiting = TRUE;
+	
+	g_source_remove (db->priv->thread_reaper_id);
 
-	if (db->priv->load_thread)
-		g_thread_join (db->priv->load_thread);
+	while (db->priv->outstanding_threads > 0) {
+		GObject *obj = g_async_queue_pop (db->priv->status_queue);
+		g_object_unref (obj);
+		db->priv->outstanding_threads--;
+	}
 }
 
 static void
@@ -283,6 +312,8 @@ rhythmdb_finalize (GObject *object)
 
 	g_thread_pool_free (db->priv->query_thread_pool, TRUE, FALSE);
 	g_thread_pool_free (db->priv->property_query_thread_pool, TRUE, FALSE);
+
+	g_async_queue_unref (db->priv->status_queue);
 
 	g_free (db->priv->column_types);
 
@@ -400,26 +431,16 @@ rhythmdb_load_thread_main (RhythmDB *db)
 	klass->impl_load (db, &db->priv->exiting);
 
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
-	g_object_unref (G_OBJECT (db));
+	g_async_queue_push (db->priv->status_queue, db);
 	return NULL;
 }
 
 void
 rhythmdb_load (RhythmDB *db)
 {
-	g_assert (!db->priv->load_thread);
 	g_object_ref (G_OBJECT (db));
-	db->priv->load_thread =
-		g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, TRUE, NULL);
-}
-
-void
-rhythmdb_load_join (RhythmDB *db)
-{
-	g_assert (db->priv->load_thread);
-
-	g_thread_join (db->priv->load_thread);
-	db->priv->load_thread = NULL;
+	db->priv->outstanding_threads++;
+	g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, TRUE, NULL);
 }
 
 void
@@ -714,7 +735,6 @@ property_query_thread_main (struct RhythmDBQueryThreadData *data,
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
 	rb_debug ("doing property query");
-	g_object_ref (G_OBJECT (data->main_model));
 	if (data->lock)
 		rhythmdb_read_lock (db);
 
@@ -726,10 +746,10 @@ property_query_thread_main (struct RhythmDBQueryThreadData *data,
 
 	rb_debug ("completed");
 	rhythmdb_property_model_complete (RHYTHMDB_PROPERTY_MODEL (data->main_model));
-	g_object_unref (G_OBJECT (data->main_model));
 
 	rhythmdb_query_free (data->query);
 	g_free (data);
+	g_async_queue_push (db->priv->status_queue, data->main_model);
 	return NULL;
 }
 
@@ -748,6 +768,8 @@ rhythmdb_do_property_query_ptrarray (RhythmDB *db, guint property_id,
 	data->lock = FALSE;
 	data->cancel = FALSE;
 
+	g_object_ref (G_OBJECT (data->main_model));
+	db->priv->outstanding_threads++;
 	property_query_thread_main (data, db);
 
 	*model = data->main_model;
@@ -768,6 +790,8 @@ rhythmdb_do_property_query_ptrarray_async (RhythmDB *db, guint property_id,
 	data->lock = TRUE;
 	data->cancel = FALSE;
 
+	g_object_ref (G_OBJECT (model));
+	db->priv->outstanding_threads++;
 	g_thread_pool_push (db->priv->property_query_thread_pool, data, NULL);
 }
 
@@ -818,7 +842,6 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
 	rb_debug ("doing query");
-	g_object_ref (G_OBJECT (data->main_model));
 
 	rhythmdb_read_lock (db);
 	
@@ -830,10 +853,10 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 
 	rb_debug ("completed");
 	rhythmdb_query_model_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
-	g_object_unref (G_OBJECT (data->main_model));
 
 	rhythmdb_query_free (data->query);
 	g_free (data);
+	g_async_queue_push (db->priv->status_queue, data->main_model);
 	return NULL;
 }
 
@@ -851,6 +874,8 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
 	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
 		      "query", query, NULL);
 
+	g_object_ref (G_OBJECT (main_model));
+	db->priv->outstanding_threads++;
 	g_thread_pool_push (db->priv->query_thread_pool, data, NULL);
 }
 
@@ -885,6 +910,8 @@ rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
 		      "query", query, NULL);
 
+	g_object_ref (G_OBJECT (main_model));
+	db->priv->outstanding_threads++;
 	query_thread_main (data, db);
 	while (rhythmdb_model_poll (RHYTHMDB_MODEL (main_model), NULL))
 		;

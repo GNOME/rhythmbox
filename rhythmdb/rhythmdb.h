@@ -165,8 +165,6 @@ void		rhythmdb_shutdown	(RhythmDB *db);
  */
 void		rhythmdb_load		(RhythmDB *db);
 
-void		rhythmdb_load_join	(RhythmDB *db);
-
 void		rhythmdb_save		(RhythmDB *db);
 
 void		rhythmdb_read_lock	(RhythmDB *db);

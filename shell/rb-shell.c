@@ -721,8 +721,9 @@ rb_shell_construct (RBShell *shell)
 		g_free (fname);
 
 		if (rhythmdb_exists) {
-			g_signal_connect (G_OBJECT (shell->priv->db), "load-complete",
-					  G_CALLBACK (rb_shell_load_complete_cb), shell);
+			g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
+						 G_CALLBACK (rb_shell_load_complete_cb), shell,
+						 0);
 			rhythmdb_load (shell->priv->db);
 		}
 	}
@@ -731,8 +732,9 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->library = rb_library_new (shell->priv->db);
 	if (!rhythmdb_exists) {
 		rb_debug ("loading legacy library db");
-		g_signal_connect (G_OBJECT (shell->priv->library), "legacy-load-complete",
-				  G_CALLBACK (rb_shell_legacy_load_complete_cb), shell);
+		g_signal_connect_object (G_OBJECT (shell->priv->library), "legacy-load-complete",
+					 G_CALLBACK (rb_shell_legacy_load_complete_cb), shell,
+					 0);
 		rb_library_load_legacy (shell->priv->library);
 	}
 
