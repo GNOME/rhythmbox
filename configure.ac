@@ -454,7 +454,7 @@ AC_PATH_PROG(GCONFTOOL, gconftool-2)
 AC_SUBST(RHYTHMBOX_CFLAGS)
 AC_SUBST(RHYTHMBOX_LIBS)
 
-ALL_LINGUAS="am ar az be bg ca cs cy da de el en_CA en_GB es et fi fr ga hr hu id it ja ko lt lv mn ms nl no pl pt pt_BR ro ru sr sr@Latn sv tr uk vi zh_TW"
+ALL_LINGUAS="am ar az be bg ca cs cy da de el en_CA en_GB es et fi fr ga hr hu id it ja ko lt lv mn ms nl no pl pt pt_BR ro ru sr sr@Latn sv tr uk vi zh_TW zh_CN"
 
 GETTEXT_PACKAGE=rhythmbox
 AC_SUBST(GETTEXT_PACKAGE)
