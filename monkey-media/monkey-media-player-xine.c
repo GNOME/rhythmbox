@@ -335,6 +335,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			     _("Failed to set up an audio driver; check your installation"));
 	}
 
+#ifndef HAVE_NULL_VIDEO
 	mp->priv->video_driver = xine_open_video_driver (mp->priv->xine, "none",
 							 XINE_VISUAL_TYPE_NONE, NULL);
 
@@ -351,6 +352,9 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	}
 	entry.num_value = 5;
 	xine_config_update_entry (mp->priv->xine, &entry);
+#else
+	mp->priv->video_driver = NULL;
+#endif
 
 	mp->priv->stream = xine_stream_new (mp->priv->xine,
 				            mp->priv->audio_driver,
