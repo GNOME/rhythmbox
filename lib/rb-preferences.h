@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 #define CONF_UI_SMALL_DISPLAY     CONF_PREFIX "/ui/small_display"
 #define CONF_UI_OBSOLETE_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
 #define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/rhythmdb_columns_setup"
+#define CONF_UI_TIME_DISPLAY CONF_PREFIX "/ui/time_display"
 #define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/browser_views"
 #define CONF_STATE_SHUFFLE	CONF_PREFIX "/state/shuffle"
 #define CONF_STATE_REPEAT	CONF_PREFIX "/state/repeat"

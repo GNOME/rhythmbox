@@ -1345,10 +1345,10 @@ rb_shell_set_duration (RBShell *shell, const char *duration)
 	if (shell->priv->cached_title == NULL) 
 		tooltip = g_strdup (_("Not playing"));
 	else if (!playing) {
-		tooltip = g_strdup_printf (_("%s\nPaused, %s remaining"),
+		tooltip = g_strdup_printf (_("%s\nPaused, %s"),
 					 shell->priv->cached_title, duration);
 	} else {
-		tooltip = g_strdup_printf (_("%s\n%s remaining"),
+		tooltip = g_strdup_printf (_("%s\n%s"),
 					   shell->priv->cached_title, duration);
 	}
 	

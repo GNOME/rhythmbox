@@ -205,6 +205,18 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/ui/time_display</key>
+        <applyto>/apps/rhythmbox/ui/time_display</applyto>
+        <owner>rhythmbox</owner>
+        <type>bool</type>
+        <default>1</default>
+        <locale name="C">
+        <short>Whether to show elapsed or remaining time</short>
+        <long>If true, the elapsed time will be shown in song duration
+              displays. Otherwise the remaining time will be shown.</long>
+        </locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/iradio/show_browser</key>
         <applyto>/apps/rhythmbox/state/iradio/show_browser</applyto>
         <owner>rhythmbox</owner>

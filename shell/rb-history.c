@@ -147,6 +147,12 @@ rb_history_finalize (GObject *object)
 
 	hist = RB_HISTORY (object);
 
+	/* unref all of the stored entries */
+	for (GList *cur = hist->priv->head; cur; cur = g_list_next (cur)) {
+		rhythmdb_entry_unref (hist->priv->db, cur->data);
+	}
+
+	g_hash_table_destroy (hist->priv->entry_to_link);
 	g_list_free (hist->priv->head);
 	g_free (hist->priv);
 

@@ -38,6 +38,8 @@
 #include "rb-player.h"
 #include "rb-debug.h"
 #include "rb-ellipsizing-label.h"
+#include "rb-preferences.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *player);
@@ -796,7 +798,16 @@ rb_player_get_elapsed_string (RBPlayer *player)
 	if (player->priv->state->duration > 0) {
 		minutes2 = player->priv->state->duration / 60;
 		seconds2 = player->priv->state->duration % 60;
-		return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
+		if (eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY)) {
+			return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
+		} else {
+			int remaining = player->priv->state->duration - elapsed;
+			int remaining_minutes = remaining / 60;
+			// remaining could conceivably be negative. This would be a bug,
+			// but the elapsed time will display right with the abs().
+			int remaining_seconds = abs (remaining % 60);
+			return g_strdup_printf (_("%d:%02d of %d:%02d remaining"), remaining_minutes, remaining_seconds, minutes2, seconds2);
+		}
 	} else {
 		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
 	}
