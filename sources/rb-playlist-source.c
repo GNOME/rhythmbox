@@ -91,6 +91,7 @@ static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/PlaylistSongsList"
 #define PLAYLIST_SOURCE_POPUP_PATH "/popups/PlaylistSourceList"
+#define PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH "/popups/AutomaticPlaylistSourceList"
 
 struct RBPlaylistSourcePrivate
 {
@@ -447,6 +448,20 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 	rb_entry_view_poll_model (source->priv->songs);
 }
 
+void
+rb_playlist_source_get_query (RBPlaylistSource *source,
+			      GPtrArray **query,
+			      guint *limit_count,
+			      guint *limit_mb)
+{
+	g_assert (source->priv->automatic);
+
+	g_object_get (G_OBJECT (source->priv->model),
+		      "query", query,
+		      "max-count", limit_count,
+		      "max-size", limit_mb, NULL);
+}
+
 static const char *
 impl_get_status (RBSource *asource)
 {
@@ -552,9 +567,13 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 }
 
 static gboolean
-impl_show_popup (RBSource *source)
+impl_show_popup (RBSource *asource)
 {
-	rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_POPUP_PATH);
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	if (source->priv->automatic)
+		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH);
+	else
+		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 

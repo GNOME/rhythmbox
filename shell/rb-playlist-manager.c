@@ -68,6 +68,9 @@ static void rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *c
 static void rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
 						     RBPlaylistManager *mgr,
 						     const char *verbname);
+static void rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *component,
+							     RBPlaylistManager *mgr,
+							     const char *verbname);
 static void handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
 						    const char *genre, RBPlaylistManager *mgr);
 
@@ -123,6 +126,7 @@ static BonoboUIVerb rb_playlist_manager_verbs[] =
 	BONOBO_UI_VERB ("SavePlaylist", (BonoboUIVerbFn) rb_playlist_manager_cmd_save_playlist),
 	BONOBO_UI_VERB ("FileDeletePlaylist",(BonoboUIVerbFn) rb_playlist_manager_cmd_delete_playlist),
 	BONOBO_UI_VERB ("DeletePlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_delete_playlist),
+ 	BONOBO_UI_VERB ("EditAutomaticPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_edit_automatic_playlist),
 	BONOBO_UI_VERB_END
 };
 
@@ -630,14 +634,30 @@ rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
 }
 
 static void
+rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
+					    RBPlaylistSource *playlist,
+					    RBQueryCreator *creator)
+{
+	RBQueryCreatorLimitType type;
+	guint limit, limit_count = 0, limit_size = 0;
+
+	rb_query_creator_get_limit (creator, &type, &limit);
+	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
+		limit_count = limit;
+	if (type == RB_QUERY_CREATOR_LIMIT_MB)
+		limit_size = limit;
+	rb_playlist_source_set_query (playlist,
+				      rb_query_creator_get_query (creator),
+				      limit_count, limit_size);
+}
+
+static void
 rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 						RBPlaylistManager *mgr,
 						const char *verbname)
 {
 	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
 	RBSource *playlist;
-	RBQueryCreatorLimitType type;
-	guint limit, limit_count = 0, limit_size = 0;
 	
 	switch (gtk_dialog_run (GTK_DIALOG (creator)))
 	{
@@ -646,16 +666,35 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 		gtk_widget_destroy (GTK_WIDGET (creator));	
 		return;
 	}
-
-	rb_query_creator_get_limit (creator, &type, &limit);
-	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
-		limit_count = limit;
-	if (type == RB_QUERY_CREATOR_LIMIT_MB)
-		limit_size = limit;
 	playlist = rb_playlist_manager_new_playlist (mgr, TRUE);
-	rb_playlist_source_set_query (RB_PLAYLIST_SOURCE (playlist),
-				      rb_query_creator_get_query (creator),
-				      limit_count, limit_size);
+
+	rb_playlist_manager_set_automatic_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), creator); 
+
+	gtk_widget_destroy (GTK_WIDGET (creator));	
+}
+
+static void
+rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *component,
+						 RBPlaylistManager *mgr,
+						 const char *verbname)
+{
+	RBQueryCreator *creator;
+	RBPlaylistSource *playlist;
+	GPtrArray *query;
+	guint limit_count = 0, limit_size = 0;
+	
+
+	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
+	rb_playlist_source_get_query (playlist, &query, &limit_count, &limit_size);
+
+	creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
+								     query,
+								     limit_count,
+								     limit_size));	
+
+	gtk_dialog_run (GTK_DIALOG (creator));
+
+	rb_playlist_manager_set_automatic_playlist (mgr, playlist, creator);
 	gtk_widget_destroy (GTK_WIDGET (creator));	
 }
 

@@ -55,6 +55,8 @@ const RBQueryCreatorOption criteria_options[] =
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
 static void rb_query_creator_init (RBQueryCreator *dlg);
+static GObject *rb_query_creator_constructor (GType type, guint n_construct_properties,
+					      GObjectConstructParam *construct_properties);
 static void rb_query_creator_finalize (GObject *object);
 static void rb_query_creator_set_property (GObject *object,
 					      guint prop_id,
@@ -64,12 +66,18 @@ static void rb_query_creator_get_property (GObject *object,
 					      guint prop_id,
 					      GValue *value,
 					      GParamSpec *pspec);
+static void select_menuitem_from_value (GtkWidget *option_menu,
+					const RBQueryCreatorOption *options,
+					int length, int val);
+
 static void setup_option_menu (GtkWidget *option_menu,
 			       const RBQueryCreatorOption *options,
 			       int length, gboolean activate_first);
 static GtkWidget * create_option_menu (const RBQueryCreatorOption *options,
 				      int length, gboolean activate_first);
 static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu);
+static GtkWidget * get_box_widget_at_pos (GtkBox *box, guint pos);
+
 static void append_row (RBQueryCreator *dialog);
 static void add_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
 static void remove_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
@@ -78,6 +86,8 @@ static void limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator);
 struct RBQueryCreatorPrivate
 {
 	RhythmDB *db;
+
+	gboolean creating;
 	
 	GtkSizeGroup *property_size_group;
 	GtkSizeGroup *criteria_size_group;
@@ -100,6 +110,7 @@ enum
 {
 	PROP_0,
 	PROP_DB,
+	PROP_CREATING,
 };
 
 GType
@@ -138,6 +149,7 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_query_creator_finalize;
+	object_class->constructor = rb_query_creator_constructor;
 	object_class->set_property = rb_query_creator_set_property;
 	object_class->get_property = rb_query_creator_get_property;
 
@@ -148,11 +160,23 @@ rb_query_creator_class_init (RBQueryCreatorClass *klass)
 							      "RhythmDB database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_CREATING,
+					 g_param_spec_boolean ("creating",
+							       "creating",
+							       "Whether or not we're creating a new playlist",
+							       TRUE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
-static void
-rb_query_creator_init (RBQueryCreator *dlg)
+static GObject *
+rb_query_creator_constructor (GType type, guint n_construct_properties,
+			      GObjectConstructParam *construct_properties)
 {
+	RBQueryCreator *dlg;
+	RBQueryCreatorClass *klass;
+	GObjectClass *parent_class;  
 	GladeXML *xml;
 	GtkWidget *mainbox;
 	GtkBox *hbox;
@@ -160,16 +184,24 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	GtkWidget *first_criteria;
 	GtkWidget *first_entry;
 
-	dlg->priv = g_new0 (RBQueryCreatorPrivate, 1);
 
-	dlg->priv->queries = g_ptr_array_new ();
-
-	gtk_dialog_add_button (GTK_DIALOG (dlg),
-			       GTK_STOCK_CANCEL,
-			       GTK_RESPONSE_CLOSE);
-	gtk_dialog_add_button (GTK_DIALOG (dlg),
-			       GTK_STOCK_NEW,
-			       GTK_RESPONSE_OK);
+	klass = RB_QUERY_CREATOR_CLASS (g_type_class_peek (type));
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	dlg = RB_QUERY_CREATOR (parent_class->constructor (type, n_construct_properties,
+							   construct_properties));
+	
+	if (dlg->priv->creating) { 
+		gtk_dialog_add_button (GTK_DIALOG (dlg),
+				       GTK_STOCK_CANCEL,
+				       GTK_RESPONSE_CLOSE);
+		gtk_dialog_add_button (GTK_DIALOG (dlg),
+				       GTK_STOCK_NEW,
+				       GTK_RESPONSE_OK);
+	} else {
+		gtk_dialog_add_button (GTK_DIALOG (dlg),
+				       GTK_STOCK_CLOSE,
+				       GTK_RESPONSE_CLOSE);
+	}
 	gtk_dialog_set_default_response (GTK_DIALOG (dlg),
 					 GTK_RESPONSE_CLOSE);
 
@@ -224,6 +256,14 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	mainbox = glade_xml_get_widget (xml, "main_vbox");
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), mainbox, FALSE, FALSE, 0);
 	gtk_widget_show_all (GTK_WIDGET (dlg));
+
+	return G_OBJECT (dlg);
+}
+
+static void
+rb_query_creator_init (RBQueryCreator *dlg)
+{
+	dlg->priv = g_new0 (RBQueryCreatorPrivate, 1);
 }
 
 static void
@@ -238,8 +278,6 @@ rb_query_creator_finalize (GObject *object)
 
 	g_return_if_fail (dlg->priv != NULL);
 
-	g_ptr_array_free (dlg->priv->queries, TRUE);
-
 	g_object_unref (G_OBJECT (dlg->priv->property_size_group));
 	g_object_unref (G_OBJECT (dlg->priv->criteria_size_group));
 	g_object_unref (G_OBJECT (dlg->priv->entry_size_group));
@@ -252,9 +290,9 @@ rb_query_creator_finalize (GObject *object)
 
 static void
 rb_query_creator_set_property (GObject *object,
-				  guint prop_id,
-				  const GValue *value,
-				  GParamSpec *pspec)
+			       guint prop_id,
+			       const GValue *value,
+			       GParamSpec *pspec)
 {
 	RBQueryCreator *dlg = RB_QUERY_CREATOR (object);
 
@@ -262,6 +300,9 @@ rb_query_creator_set_property (GObject *object,
 	{
 	case PROP_DB:
 		dlg->priv->db = g_value_get_object (value);
+		break;
+	case PROP_CREATING:
+		dlg->priv->creating = g_value_get_boolean (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -282,6 +323,9 @@ rb_query_creator_get_property (GObject *object,
 	case PROP_DB:
 		g_value_set_object (value, dlg->priv->db);
 		break;
+	case PROP_CREATING:
+		g_value_set_boolean (value, dlg->priv->creating);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -293,6 +337,69 @@ GtkWidget *
 rb_query_creator_new (RhythmDB *db)
 {
 	return g_object_new (RB_TYPE_QUERY_CREATOR, "db", db, NULL);
+}
+
+static void
+rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
+			     int limit_count, int limit_size)
+{
+	int i;
+	GList *rows;
+	gboolean disjunction = FALSE;
+	RhythmDBQueryData *qdata;
+	GPtrArray *subquery;
+
+	g_assert (query->len == 2);
+
+	qdata = g_ptr_array_index (query, 1);
+	g_assert (qdata->type == RHYTHMDB_QUERY_SUBQUERY);
+
+	subquery = qdata->subquery;
+
+	for (i = 0; i < subquery->len - 1; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
+		if (data->type != RHYTHMDB_QUERY_DISJUNCTION)
+			append_row (creator);
+	}
+	
+	rows = gtk_container_get_children (GTK_CONTAINER (creator->priv->vbox));
+
+	for (i = 0; i < subquery->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
+		GtkOptionMenu *propmenu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
+										  0));
+		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
+										       1));
+		GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
+
+		if (data->type == RHYTHMDB_QUERY_DISJUNCTION) {
+			disjunction = TRUE;
+			continue;
+		}
+		
+		select_menuitem_from_value (GTK_WIDGET (propmenu), property_options,
+					    G_N_ELEMENTS (property_options), data->propid);
+		select_menuitem_from_value (GTK_WIDGET (criteria_menu), criteria_options,
+					    G_N_ELEMENTS (criteria_options), data->type);
+		gtk_entry_set_text (text, g_value_get_string (data->val));
+		rows = rows->next;
+	}
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (creator->priv->disjunction_check),
+				      disjunction);
+}
+
+GtkWidget *
+rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
+				 int limit_count, int limit_size)
+{
+	RBQueryCreator *creator = g_object_new (RB_TYPE_QUERY_CREATOR, "db", db,
+						"creating", FALSE, NULL);
+	if (!creator)
+		return NULL;
+
+	rb_query_creator_load_query (creator, query, limit_count, limit_size);
+	return GTK_WIDGET (creator);
 }
 
 static GtkWidget *
@@ -490,6 +597,22 @@ append_row (RBQueryCreator *dialog)
 	g_object_unref (G_OBJECT (dialog->priv->addbutton));
 
 	gtk_widget_show_all (GTK_WIDGET (dialog->priv->vbox));
+}
+
+static void
+select_menuitem_from_value (GtkWidget *option_menu,
+			    const RBQueryCreatorOption *options,
+			    int length, int val)
+{
+	int i;
+	
+	for (i = 0; i < length; i++) {
+		if (val == options[i].val) {
+			gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), i);
+			return;
+		}
+	}
+	g_assert_not_reached ();
 }
 
 /* Stolen from jamboree */

@@ -69,6 +69,11 @@ void		rb_playlist_source_set_query	(RBPlaylistSource *source,
 						 guint limit_count,
 						 guint limit_mb);
 
+void		rb_playlist_source_get_query	(RBPlaylistSource *source,
+						 GPtrArray **query,
+						 guint *limit_count,
+						 guint *limit_mb);
+
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);
 
