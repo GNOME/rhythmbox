@@ -65,9 +65,10 @@ static void rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
 					    const char *verbname);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
-static void entry_deleted_cb (RhythmDB *db,
-			      RhythmDBEntry *entry,
-			      RBShellClipboard *clipboard);
+static gboolean rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard);
+static void rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 RBShellClipboard *clipboard);
 static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 						     RBShellClipboard *clipboard);
 
@@ -85,6 +86,10 @@ struct RBShellClipboardPrivate
 	BonoboUIComponent *component;
 
 	GHashTable *signal_hash;
+
+	GAsyncQueue *deleted_queue;
+
+	guint idle_sync_id;
 
 	GList *entries;
 };
@@ -184,6 +189,10 @@ rb_shell_clipboard_init (RBShellClipboard *shell_clipboard)
 
 	shell_clipboard->priv->signal_hash = g_hash_table_new_full (g_direct_hash, g_direct_equal,
 								    NULL, g_free);
+
+	shell_clipboard->priv->deleted_queue = g_async_queue_new ();
+
+	shell_clipboard->priv->idle_sync_id = g_idle_add ((GSourceFunc) rb_shell_clipboard_idle_poll_deletions, shell_clipboard); 
 }
 
 static void
@@ -201,6 +210,11 @@ rb_shell_clipboard_finalize (GObject *object)
 	g_hash_table_destroy (shell_clipboard->priv->signal_hash);
 
 	g_list_free (shell_clipboard->priv->entries);
+
+	g_async_queue_unref (shell_clipboard->priv->deleted_queue);
+
+	if (shell_clipboard->priv->idle_sync_id)
+		g_source_remove (shell_clipboard->priv->idle_sync_id);
 	
 	g_free (shell_clipboard->priv);
 
@@ -224,7 +238,7 @@ rb_shell_clipboard_constructor (GType type, guint n_construct_properties,
 	
 	g_signal_connect_object (G_OBJECT (clip->priv->db),
 				 "entry_deleted",
-				 G_CALLBACK (entry_deleted_cb),
+				 G_CALLBACK (rb_shell_clipboard_entry_deleted_cb),
 				 clip, 0);
 
 	return G_OBJECT (clip);
@@ -272,10 +286,6 @@ rb_shell_clipboard_set_property (GObject *object,
 		break;
 	case PROP_DB:
 		clipboard->priv->db = g_value_get_object (value);
-		g_signal_connect_object (G_OBJECT (clipboard->priv->db),
-					 "entry_deleted",
-					 G_CALLBACK (entry_deleted_cb),
-					 clipboard, 0);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -473,17 +483,70 @@ rb_shell_clipboard_set (RBShellClipboard *clipboard,
 	clipboard->priv->entries = entries;
 }
 
-static void
-entry_deleted_cb (RhythmDB *db,
-		  RhythmDBEntry *entry,
-		  RBShellClipboard *clipboard)
+static gboolean
+rb_shell_clipboard_process_deletions (RBShellClipboard *clipboard)
 {
-	GList *old_entries = clipboard->priv->entries;
-	
-	clipboard->priv->entries = g_list_remove (clipboard->priv->entries, entry);
+	RhythmDBEntry *entry;
 
-	if (old_entries)
-		rb_shell_clipboard_sync (clipboard);
+	if (clipboard->priv->entries) {
+		GList *tem, *finished = NULL;
+		gboolean processed = FALSE;
+
+		while ((entry = g_async_queue_try_pop (clipboard->priv->deleted_queue)) != NULL) {
+			clipboard->priv->entries = g_list_remove (clipboard->priv->entries, entry);
+			finished = g_list_prepend (finished, entry);
+			processed = TRUE;
+		}
+
+		if (processed)
+			rb_shell_clipboard_sync (clipboard);
+
+		for (tem = finished; tem; tem = tem->next)
+			rhythmdb_entry_unref (clipboard->priv->db, tem->data);
+		g_list_free (finished);
+
+		return processed;
+	} else {
+		/* Fast path for when there's nothing in the clipboard */
+		while ((entry = g_async_queue_try_pop (clipboard->priv->deleted_queue)) != NULL)
+			rhythmdb_entry_unref (clipboard->priv->db, entry);
+		return FALSE;
+	}
+}
+
+static gboolean
+rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard)
+{
+	gboolean did_sync;
+
+	GDK_THREADS_ENTER ();
+
+	did_sync = rb_shell_clipboard_process_deletions (clipboard);
+
+	if (did_sync)
+		clipboard->priv->idle_sync_id =
+			g_idle_add_full (G_PRIORITY_LOW,
+					 (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
+					 clipboard, NULL);
+	else
+		clipboard->priv->idle_sync_id =
+			g_timeout_add (300,
+				       (GSourceFunc) rb_shell_clipboard_idle_poll_deletions,
+				       clipboard);
+
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
+static void
+rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
+				     RhythmDBEntry *entry,
+				     RBShellClipboard *clipboard)
+{
+	rhythmdb_entry_ref_unlocked (db, entry);
+	g_async_queue_push (clipboard->priv->deleted_queue, entry);
 }
 
 static void
