@@ -164,7 +164,7 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	gtk_dialog_set_default_response (GTK_DIALOG (dlg),
 					 GTK_RESPONSE_CLOSE);
 
-	gtk_window_set_title (GTK_WINDOW (dlg), _("Create automatic playlist"));
+	gtk_window_set_title (GTK_WINDOW (dlg), _("Create Automatic Playlist"));
 
 	gtk_container_set_border_width (GTK_CONTAINER (dlg), 5);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dlg)->vbox), 2);
