@@ -301,6 +301,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			       GError **error)
 {
 	const char *audio_driver;
+	xine_cfg_entry_t entry;
 
 	mp->priv->xine = xine_new ();
 
@@ -338,6 +339,20 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 
 	mp->priv->video_driver = xine_open_video_driver (mp->priv->xine, "none",
 							 XINE_VISUAL_TYPE_NONE, NULL);
+
+	/* Reduce the number of buffers to lower the memory usage */
+	memset (&entry, 0, sizeof (entry));
+	if (!xine_config_lookup_entry (mp->priv->xine,
+				"video.num_buffers", &entry))
+	{
+		xine_config_register_num (mp->priv->xine,
+				"video.num_buffers", 5, 0, NULL, 10,
+				NULL, NULL);
+		xine_config_lookup_entry (mp->priv->xine,
+				"video.num_buffers", &entry);
+	}
+	entry.num_value = 5;
+	xine_config_update_entry (mp->priv->xine, &entry);
 
 	mp->priv->stream = xine_stream_new (mp->priv->xine,
 				            mp->priv->audio_driver,
@@ -397,6 +412,7 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 
 	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
 
+	xine_stop (mp->priv->stream);
 	xine_close (mp->priv->stream);
 
 	g_free (mp->priv->uri);
