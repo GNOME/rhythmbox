@@ -1,3 +1,233 @@
+2003-09-16 21:13:25 GMT	Colin Walters <walters@verbum.org>	patch-66
+
+    Summary:
+      trivial updates
+    Revision:
+      rhythmbox--mainline--1.0--patch-66
+
+    trivial updates
+    
+
+    modified files:
+     README
+
+
+2003-09-16 21:10:43 GMT	Colin Walters <walters@verbum.org>	patch-65
+
+    Summary:
+      note INTERNALS is out of date
+    Revision:
+      rhythmbox--mainline--1.0--patch-65
+
+    note INTERNALS is out of date
+    
+
+    modified files:
+     INTERNALS
+
+
+2003-09-16 20:27:55 GMT	Colin Walters <walters@verbum.org>	patch-64
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-64
+
+
+    modified files:
+     po/ChangeLog po/it.po
+
+
+2003-09-15 18:57:20 GMT	Colin Walters <walters@verbum.org>	patch-63
+
+    Summary:
+      use new untagged-source directive
+    Revision:
+      rhythmbox--mainline--1.0--patch-63
+
+    use new untagged-source directive
+    
+
+    modified files:
+     {arch}/=tagging-method
+
+
+2003-09-15 04:10:15 GMT	Colin Walters <walters@verbum.org>	patch-62
+
+    Summary:
+      merge with desrt
+    Revision:
+      rhythmbox--mainline--1.0--patch-62
+
+    merge with desrt
+    
+    Patches applied:
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-9
+       walters pre-0.5.4 changes
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-10
+       gobject init/finalize improvements to rbsongdisplaybox, cleanup on ellipsizing
+    
+
+    modified files:
+     lib/widgets/rb-ellipsizing-label.c
+     lib/widgets/rb-song-display-box.c
+
+    new patches:
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-9
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-10
+
+
+2003-09-15 01:30:51 GMT	Colin Walters <walters@verbum.org>	patch-61
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-61
+
+
+    modified files:
+     po/ChangeLog po/be.po
+
+
+2003-09-15 01:27:27 GMT	Colin Walters <walters@verbum.org>	patch-60
+
+    Summary:
+      help updates from Mark Humphreys <mmarquee@btinternet.com>
+    Revision:
+      rhythmbox--mainline--1.0--patch-60
+
+    help updates from Mark Humphreys <mmarquee@btinternet.com>
+    
+
+    modified files:
+     help/C/quick-reference.xml help/C/user-guide.xml
+
+
+2003-09-12 03:34:26 GMT	Colin Walters <walters@verbum.org>	patch-59
+
+    Summary:
+      be sure to exit a thread even if the action queue is nonempty
+    Revision:
+      rhythmbox--mainline--1.0--patch-59
+
+    be sure to exit a thread even if the action queue is nonempty
+    
+
+    modified files:
+     library/rb-library-main-thread.c
+
+
+2003-09-11 01:12:26 GMT	Colin Walters <walters@verbum.org>	patch-58
+
+    Summary:
+      update po/ChangeLog
+    Revision:
+      rhythmbox--mainline--1.0--patch-58
+
+    update po/ChangeLog
+    
+
+    modified files:
+     po/ChangeLog
+
+
+2003-09-10 22:21:07 GMT	Colin Walters <walters@verbum.org>	patch-57
+
+    Summary:
+      add missing file to dist, from William Jon McCann <mccannwj@pha.jhu.edu>
+    Revision:
+      rhythmbox--mainline--1.0--patch-57
+
+    add missing file to dist, from William Jon McCann <mccannwj@pha.jhu.edu>
+    
+
+    modified files:
+     ChangeLog lib/widgets/Makefile.am
+
+
+2003-09-10 22:14:08 GMT	Colin Walters <walters@verbum.org>	patch-56
+
+    Summary:
+      spec file fixes from William Jon McCann <mccannwj@pha.jhu.edu>
+    Revision:
+      rhythmbox--mainline--1.0--patch-56
+
+    spec file fixes from William Jon McCann <mccannwj@pha.jhu.edu>
+    
+
+    modified files:
+     ChangeLog rhythmbox.spec.in
+
+
+2003-09-10 20:37:33 GMT	Colin Walters <walters@verbum.org>	patch-55
+
+    Summary:
+      sync with CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-55
+
+    sync with CVS
+    
+
+    modified files:
+     po/ChangeLog po/cs.po po/es.po po/pl.po po/pt.po
+
+
+2003-09-10 20:34:16 GMT	Colin Walters <walters@verbum.org>	patch-54
+
+    Summary:
+      Hardcode use of mad/vorbisfile/flacdec, until spider works
+    Revision:
+      rhythmbox--mainline--1.0--patch-54
+
+    Hardcode use of mad/vorbisfile/flacdec, until spider works
+    
+
+    modified files:
+     NEWS monkey-media/monkey-media-player-gst-tmp.c
+
+	
+2003-09-10 04:51:32 GMT	Colin Walters <walters@verbum.org>	patch-53
+
+    Summary:
+      don't try to use errors as formatting messages
+    Revision:
+      rhythmbox--mainline--1.0--patch-53
+
+    don't try to use errors as formatting messages
+    
+
+    modified files:
+     lib/rb-dialog.c
+
+
+2003-09-09 07:41:02 GMT	Colin Walters <walters@verbum.org>	patch-52
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--1.0--patch-52
+
+
+    modified files:
+     ChangeLog
+
+
+2003-09-09 07:38:57 GMT	Colin Walters <walters@verbum.org>	patch-51
+
+    Summary:
+      move lib before rhythmdb in build order
+    Revision:
+      rhythmbox--mainline--1.0--patch-51
+
+    move lib before rhythmdb in build order
+    
+
+    modified files:
+     Makefile.am
+
 2003-09-10  William Jon McCann  <mccann@jhu.edu>
  
 	* lib/widgets/Makefile.am (librbwidgets_la_SOURCES):
