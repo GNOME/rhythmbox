@@ -932,6 +932,9 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			case G_TYPE_LONG:
 				g_value_set_long (&value, atol (tmp));
 				break;
+			case G_TYPE_POINTER:
+				g_value_set_pointer (&value, rb_node_from_id (atol (tmp)));
+				break;
 			default:
 				g_warning ("Unhandled value type: %s", g_type_name (value_type));
 				break;
@@ -1077,6 +1080,9 @@ rb_node_save_property (char *property,
 		break;
 	case G_TYPE_LONG:
 		value_string = g_strdup_printf ("%ld", g_value_get_long (value));
+		break;
+	case G_TYPE_POINTER:
+		value_string = g_strdup_printf ("%ld", rb_node_get_id (g_value_get_pointer (value)));
 		break;
 	default:
 		g_warning ("Unhandled value type");

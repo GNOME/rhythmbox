@@ -1,3 +1,15 @@
+2002-09-10  Jorn Baayen  <jorn@nl.linux.org>
+
+	* library/rb-node-song.c: (rb_node_song_sync),
+	(rb_node_song_get_genre_raw), (rb_node_song_get_artist_raw),
+	(rb_node_song_get_album_raw):
+	* library/rb-node.c: (rb_node_new_from_xml),
+	(rb_node_save_property):
+
+	Don't store artist/album/genre of a song in ID form!!!!
+	This way we always had to lookup the actual node
+	in the biiiiig node hash ... evil!
+
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-tree-model-node.c:

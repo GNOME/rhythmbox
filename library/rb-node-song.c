@@ -227,22 +227,22 @@ rb_node_song_sync (RBNode *node,
 
 		if (virgin == TRUE)
 		{
-			g_value_init (&newvalue, G_TYPE_LONG);
-			g_value_set_long (&newvalue, rb_node_get_id (genre_node));
+			g_value_init (&newvalue, G_TYPE_POINTER);
+			g_value_set_pointer (&newvalue, genre_node);
 			rb_node_set_property (node, "genre", &newvalue);
 			g_value_unset (&newvalue);
 
 			rb_node_ref (genre_node);
 
-			g_value_init (&newvalue, G_TYPE_LONG);
-			g_value_set_long (&newvalue, rb_node_get_id (artist_node));
+			g_value_init (&newvalue, G_TYPE_POINTER);
+			g_value_set_pointer (&newvalue, artist_node);
 			rb_node_set_property (node, "artist", &newvalue);
 			g_value_unset (&newvalue);
 
 			rb_node_ref (artist_node);
 
-			g_value_init (&newvalue, G_TYPE_LONG);
-			g_value_set_long (&newvalue, rb_node_get_id (album_node));
+			g_value_init (&newvalue, G_TYPE_POINTER);
+			g_value_set_pointer (&newvalue, album_node);
 			rb_node_set_property (node, "album", &newvalue);
 			g_value_unset (&newvalue);
 
@@ -440,7 +440,7 @@ rb_node_song_get_genre_raw (RBNode *node)
 	rb_node_get_property (node,
 			      "genre",
 			      &value);
-	ret = rb_node_from_id (g_value_get_long (&value));
+	ret = g_value_get_pointer (&value);
 	g_value_unset (&value);
 
 	return ret;
@@ -472,7 +472,7 @@ rb_node_song_get_artist_raw (RBNode *node)
 	rb_node_get_property (node,
 			      "artist",
 			      &value);
-	ret = rb_node_from_id (g_value_get_long (&value));
+	ret = g_value_get_pointer (&value);
 	g_value_unset (&value);
 
 	return ret;
@@ -504,7 +504,7 @@ rb_node_song_get_album_raw (RBNode *node)
 	rb_node_get_property (node,
 			      "album",
 			      &value);
-	ret = rb_node_from_id (g_value_get_long (&value));
+	ret = g_value_get_pointer (&value);
 	g_value_unset (&value);
 
 	return ret;
