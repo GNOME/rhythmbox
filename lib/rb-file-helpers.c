@@ -24,11 +24,15 @@
 #include <string.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
+#include <libgnome/gnome-init.h>
+#include <sys/stat.h>
 
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 
 static GHashTable *files = NULL;
+
+static char *dot_dir = NULL;
 
 const char *
 rb_file (const char *filename)
@@ -66,6 +70,33 @@ rb_file (const char *filename)
 	return NULL;
 }
 
+const char *
+rb_dot_dir (void)
+{
+	if (dot_dir == NULL)
+	{
+		dot_dir = g_build_filename (g_get_home_dir (),
+					    GNOME_DOT_GNOME,
+					    "rhythmbox",
+					    NULL);
+	}
+	
+	return dot_dir;
+}
+
+void
+rb_ensure_dir_exists (const char *dir)
+{
+	if (g_file_test (dir, G_FILE_TEST_IS_DIR) == FALSE)
+	{
+		if (g_file_test (dir, G_FILE_TEST_EXISTS) == TRUE)
+			rb_error_dialog (_("%s exists, please move it out of the way."), dir);
+		
+		if (mkdir (dir, 488) != 0)
+			rb_error_dialog (_("Failed to create directory %s."), dir);
+	}
+}
+
 void
 rb_file_helpers_init (void)
 {
@@ -79,4 +110,6 @@ void
 rb_file_helpers_shutdown (void)
 {
 	g_hash_table_destroy (files);
+
+	g_free (dot_dir);
 }

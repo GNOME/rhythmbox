@@ -1,3 +1,35 @@
+2002-07-01  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* lib/rb-file-helpers.c: (rb_dot_dir), (rb_ensure_dir_exists),
+	(rb_file_helpers_shutdown):
+	* lib/rb-file-helpers.h:
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_class_init),
+	(rb_sidebar_button_set_property),
+	(rb_sidebar_button_entry_activate_cb):
+	* lib/widgets/rb-sidebar.c: (rb_sidebar_init),
+	(rb_sidebar_finalize), (rb_sidebar_append), (rb_sidebar_remove),
+	(rb_sidebar_load_layout),
+	(rb_sidebar_event_box_drag_data_received_cb),
+	(rb_sidebar_get_button_coords), (rb_sidebar_button_from_id):
+	* library/rb-library.c: (rb_library_init):
+	* library/rb-node.c: (rb_node_remove_child),
+	(rb_node_new_from_xml):
+	* library/rb-node.h:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_set):
+	* shell/rb-shell.c: (rb_shell_init), (rb_shell_save_music_groups):
+	* views/rb-group-view.c: (rb_group_view_finalize),
+	(rb_group_view_set_property), (rb_group_view_new),
+	(rb_group_view_new_from_file), (song_deleted_cb),
+	(rb_group_view_cut), (rb_group_view_copy),
+	(sidebar_button_edited_cb), (rb_group_view_save),
+	(rb_group_view_load), (filename_from_name):
+	* views/rb-group-view.h:
+	* views/rb-library-view.c: (rb_library_view_copy):
+
+	Fully implement music groups.
+
 2002-06-30  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/art/rhythmbox-playing.png:

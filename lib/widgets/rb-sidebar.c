@@ -27,6 +27,7 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libxml/tree.h>
+#include <string.h>
 
 #include "rb-dialog.h"
 #include "rb-sidebar.h"
@@ -35,7 +36,6 @@
 
 struct _RBSidebarPriv
 {
-	GHashTable *id_to_button;
 	GList *buttons;
 
 	GtkWidget *event_box;
@@ -88,6 +88,8 @@ static void rb_sidebar_event_box_drag_leave_cb (GtkWidget *widget,
 static void rb_sidebar_get_button_coords (GtkWidget *w,
 			                  int *x1, int *y1, 
 			                  int *x2, int *y2);
+static RBSidebarButton *rb_sidebar_button_from_id (RBSidebar *sidebar,
+			                           const char *unique_id);
 
 static GtkVBoxClass *parent_class = NULL;
 
@@ -153,8 +155,6 @@ rb_sidebar_init (RBSidebar *bar)
 					GTK_POLICY_NEVER,
 					GTK_POLICY_AUTOMATIC);
 
-	bar->priv->id_to_button = g_hash_table_new (g_str_hash, g_str_equal);
-
 	bar->priv->event_box = gtk_event_box_new ();
 	gtk_drag_dest_set (bar->priv->event_box,
 			   GTK_DEST_DEFAULT_ALL,
@@ -206,8 +206,6 @@ static void
 rb_sidebar_finalize (GObject *object)
 {
 	RBSidebar *bar = RB_SIDEBAR (object);
-
-	g_hash_table_destroy (bar->priv->id_to_button);
 
 	g_list_free (bar->priv->buttons);
 
@@ -303,7 +301,6 @@ rb_sidebar_append (RBSidebar *sidebar,
 
 	rb_sidebar_button_style_set (button);
 
-	g_hash_table_insert (sidebar->priv->id_to_button, button->unique_id, button);
 	sidebar->priv->buttons = g_list_append (sidebar->priv->buttons,
 						button);
 
@@ -339,7 +336,6 @@ rb_sidebar_remove (RBSidebar *sidebar,
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (next->data), TRUE);
 	}
 
-	g_hash_table_remove (sidebar->priv->id_to_button, button->unique_id);
 	sidebar->priv->buttons = g_list_remove (sidebar->priv->buttons,
 						button);
 
@@ -408,8 +404,7 @@ rb_sidebar_load_layout (RBSidebar *sidebar,
 		unique_id = xmlGetProp (child, "unique_id");
 		if (unique_id == NULL)
 			continue;
-		button = g_hash_table_lookup (sidebar->priv->id_to_button,
-					      unique_id);
+		button = rb_sidebar_button_from_id (sidebar, unique_id);
 		g_free (unique_id);
 
 		if (button == NULL)
@@ -471,7 +466,7 @@ rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 			gboolean move = TRUE;
 
 			/* DND data is in format: unique_id */
-			button = g_hash_table_lookup (sidebar->priv->id_to_button, dnd_info);
+			button = rb_sidebar_button_from_id (sidebar, dnd_info);
 
 			g_assert (button != NULL);
 
@@ -648,4 +643,21 @@ rb_sidebar_get_button_coords (GtkWidget *w,
 	if (y1) *y1 = oy;
 	if (x2) *x2 = ox + width;
 	if (y2) *y2 = oy + height;
+}
+
+static RBSidebarButton *
+rb_sidebar_button_from_id (RBSidebar *sidebar,
+			   const char *unique_id)
+{
+	GList *l;
+
+	for (l = sidebar->priv->buttons; l != NULL; l = g_list_next (l))
+	{
+		RBSidebarButton *btn = RB_SIDEBAR_BUTTON (l->data);
+
+		if (strcmp (btn->unique_id, unique_id) == 0)
+			return btn;
+	}
+
+	return NULL;
 }

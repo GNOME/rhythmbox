@@ -322,14 +322,15 @@ rb_shell_clipboard_set (RBShellClipboard *clipboard,
 
 	g_list_free (clipboard->priv->nodes);
 
-	clipboard->priv->nodes = g_list_copy (nodes);
+	clipboard->priv->nodes = nodes;
 
 	for (l = nodes; l != NULL; l = g_list_next (l))
 	{
-		g_signal_connect (G_OBJECT (l->data),
-				  "destroyed",
-				  G_CALLBACK (rb_node_destroyed_cb),
-				  clipboard);
+		g_signal_connect_object (G_OBJECT (l->data),
+				         "destroyed",
+				         G_CALLBACK (rb_node_destroyed_cb),
+				         G_OBJECT (clipboard),
+					 0);
 	}
 }
 

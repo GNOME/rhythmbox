@@ -25,7 +25,9 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <libgnome/gnome-i18n.h>
+#include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
+#include <unistd.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
@@ -107,6 +109,7 @@ static void song_deleted_cb (RBNodeView *view,
 		             RBGroupView *group_view);
 static void sidebar_button_edited_cb (RBSidebarButton *button,
 			              RBGroupView *view);
+static char *filename_from_name (const char *name);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 
@@ -333,8 +336,6 @@ rb_group_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	/* FIXME save to xml */
-
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
@@ -342,7 +343,8 @@ rb_group_view_finalize (GObject *object)
 	g_free (view->priv->artist);
 	g_free (view->priv->song);
 
-	g_object_unref (G_OBJECT (view->priv->group));
+	g_free (view->priv->name);
+	g_free (view->priv->file);
 
 	g_free (view->priv);
 
@@ -361,22 +363,32 @@ rb_group_view_set_property (GObject *object,
 	{
 	case PROP_LIBRARY:
 		view->priv->library = g_value_get_object (value);
-
-		/* FIXME load from xml */
 		break;
 	case PROP_FILE:
+		g_free (view->priv->file);
+
 		view->priv->file = g_strdup (g_value_get_string (value));
-		
-		/* FIXME remove old one, create new one */
+
+		g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (view))),
+			      "unique_id", view->priv->file,
+			      NULL);
 		break;
 	case PROP_NAME:
-		view->priv->name = g_strdup (g_value_get_string (value));
+		{
+			char *file;
+			
+			g_free (view->priv->name);
+		
+			view->priv->name = g_strdup (g_value_get_string (value));
 
-//		g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (view))),
-//			      "text", view->priv->name,
-//			      NULL);
+			g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (view))),
+				      "text", view->priv->name,
+				      NULL);
 
-		/* FIXME change filename */
+			file = filename_from_name (view->priv->name);
+			g_object_set (object, "file", file, NULL);
+			g_free (file);
+		}
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -420,8 +432,8 @@ rb_group_view_new (BonoboUIContainer *container,
 				      "ui-name", "GroupView",
 				      "container", container,
 				      "library", library,
-				      "verbs", rb_group_view_verbs,
 				      "file", "Untitled",
+				      "verbs", rb_group_view_verbs,
 				      NULL));
 
 	return view;
@@ -439,9 +451,11 @@ rb_group_view_new_from_file (BonoboUIContainer *container,
 				      "ui-name", "GroupView",
 				      "container", container,
 				      "library", library,
-				      "verbs", rb_group_view_verbs,
 				      "file", file,
+				      "verbs", rb_group_view_verbs,
 				      NULL));
+
+	rb_group_view_load (RB_GROUP_VIEW (view));
 
 	return view;
 }
@@ -748,8 +762,7 @@ song_deleted_cb (RBNodeView *view,
 		 RBNode *node,
 		 RBGroupView *group_view)
 {
-	// FIXME
-//	rb_node_remove_child (view->priv->group, node);
+	rb_node_remove_child (group_view->priv->group, node);
 }
 
 static void
@@ -838,11 +851,10 @@ rb_group_view_cut (RBViewClipboard *clipboard)
 	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 	GList *sel, *l;
 
-	sel = rb_node_view_get_selection (view->priv->songs);
+	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
 	for (l = sel; l != NULL; l = g_list_next (l))
 	{
-		//FIXME
-//		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
+		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
 	}
 	
 	return sel;
@@ -853,7 +865,7 @@ rb_group_view_copy (RBViewClipboard *clipboard)
 {
 	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 
-	return rb_node_view_get_selection (view->priv->songs);
+	return g_list_copy (rb_node_view_get_selection (view->priv->songs));
 }
 
 static void
@@ -907,4 +919,123 @@ sidebar_button_edited_cb (RBSidebarButton *button,
 	rb_group_view_set_name (view, text);
 
 	g_free (text);
+}
+
+void
+rb_group_view_save (RBGroupView *view)
+{
+	xmlDocPtr doc;
+	GList *l;
+	char *dir;
+
+	g_return_if_fail (RB_IS_GROUP_VIEW (view));
+
+	dir = g_build_filename (rb_dot_dir (), "groups", NULL);
+	rb_ensure_dir_exists (dir);
+	g_free (dir);
+
+	xmlIndentTreeOutput = TRUE;
+	doc = xmlNewDoc ("1.0");
+	doc->children = xmlNewDocNode (doc, NULL, "RBGroup", NULL);
+
+	xmlSetProp (doc->children, "name", view->priv->name);
+
+	for (l = rb_node_get_children (view->priv->group); l != NULL; l = g_list_next (l))
+	{
+		RBNode *node = RB_NODE (l->data);
+		xmlNodePtr xmlnode;
+		char *tmp;
+
+		xmlnode = xmlNewChild (doc->children, NULL, "RBNodePointer", NULL);
+
+		tmp = g_strdup_printf ("%ld", rb_node_get_id (node));
+		xmlSetProp (xmlnode, "id", tmp);
+		g_free (tmp);
+	}
+
+	xmlSaveFormatFile (view->priv->file, doc, 1);
+	xmlFreeDoc (doc);
+}
+
+void
+rb_group_view_load (RBGroupView *view)
+{
+	xmlDocPtr doc;
+	xmlNodePtr child;
+	char *name;
+	
+	g_return_if_fail (RB_IS_GROUP_VIEW (view));
+
+	if (g_file_test (view->priv->file, G_FILE_TEST_EXISTS) == FALSE)
+		return;
+
+	doc = xmlParseFile (view->priv->file);
+
+	if (doc == NULL)
+	{
+		rb_warning_dialog (_("Failed to parse %s as group file"), view->priv->file);
+		return;
+	}
+
+	name = xmlGetProp (doc->children, "name");
+
+	for (child = doc->children->children; child != NULL; child = child->next)
+	{
+		long id;
+		char *tmp;
+		RBNode *node;
+
+		tmp = xmlGetProp (child, "id");
+		if (tmp == NULL)
+			continue;
+		id = atol (tmp);
+		g_free (tmp);
+
+		node = rb_node_from_id (id);
+
+		if (node == NULL)
+			continue;
+
+		rb_node_add_child (view->priv->group, node);
+	}
+
+	xmlFreeDoc (doc);
+
+	unlink (view->priv->file);
+
+	rb_group_view_set_name (view, name);
+	g_free (name);
+}
+
+static char *
+filename_from_name (const char *name)
+{
+	char *tmp, *ret = NULL, *asciiname;
+	int i = 0;
+
+	g_assert (name != NULL);
+
+	asciiname = g_filename_from_utf8 (name, -1, NULL, NULL, NULL);
+
+	tmp = g_strconcat (asciiname, ".xml", NULL);
+
+	while (ret == NULL)
+	{
+		char *tmp2 = g_build_filename (rb_dot_dir (), "groups", tmp, NULL);
+		g_free (tmp);
+		
+		if (g_file_test (tmp2, G_FILE_TEST_EXISTS) == FALSE)
+			ret = tmp2;
+		else
+		{
+			tmp = g_strdup_printf ("%s%d.xml", asciiname, i);
+			g_free (tmp2);
+		}
+
+		i++;
+	}
+
+	g_free (asciiname);
+
+	return ret;
 }

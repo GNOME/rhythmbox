@@ -30,6 +30,7 @@
 #include "rb-library-watcher.h"
 #include "rb-node-song.h"
 #include "rb-debug.h"
+#include "rb-file-helpers.h"
 
 static void rb_library_class_init (RBLibraryClass *klass);
 static void rb_library_init (RBLibrary *library);
@@ -162,9 +163,7 @@ rb_library_init (RBLibrary *library)
 	library->priv->changed_nodes_lock = g_mutex_new ();
 	library->priv->new_nodes_lock = g_mutex_new ();
 
-	library->priv->xml_file = g_build_filename (g_get_home_dir (),
-						    GNOME_DOT_GNOME,
-						    "rhythmbox",
+	library->priv->xml_file = g_build_filename (rb_dot_dir (),
 						    "library.xml",
 						    NULL);
 
@@ -794,6 +793,7 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	g_free (file);
 }
 
+/* FIXME! !!!!!!!!!!!!!!! */
 static void
 rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 				        RBNode *node)

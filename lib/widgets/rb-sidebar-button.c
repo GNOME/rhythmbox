@@ -158,7 +158,7 @@ rb_sidebar_button_class_init (RBSidebarButtonClass *klass)
 							      "Unique ID",
 							      "Unique ID",
 							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_STOCK_ID,
 					 g_param_spec_string ("stock_id",
@@ -400,8 +400,6 @@ rb_sidebar_button_set_property (GObject *object,
 		gtk_entry_set_text (GTK_ENTRY (button->priv->entry),
 				    button->priv->text);
 		gtk_editable_select_region (GTK_EDITABLE (button->priv->entry), 0, -1);
-		g_signal_emit (G_OBJECT (button),
-			       rb_sidebar_button_signals[EDITED], 0);
 		break;
 	case PROP_STATIC:
 		button->priv->is_static = g_value_get_boolean (value);
@@ -577,6 +575,9 @@ rb_sidebar_button_entry_activate_cb (GtkWidget *entry,
 	g_object_set (G_OBJECT (button),
 		      "text", text,
 		      NULL);
+
+	g_signal_emit (G_OBJECT (button),
+		       rb_sidebar_button_signals[EDITED], 0);
 
 	g_free (text);
 }

@@ -859,7 +859,7 @@ rb_library_view_copy (RBViewClipboard *clipboard)
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
 
-	return rb_node_view_get_selection (view->priv->songs);
+	return g_list_copy (rb_node_view_get_selection (view->priv->songs));
 }
 
 static void

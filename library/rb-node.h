@@ -91,7 +91,7 @@ GType       rb_node_get_type         (void);
 RBNode     *rb_node_new              (RBNodeType type);
 
 /* ID */
-int         rb_node_get_id           (RBNode *node);
+long        rb_node_get_id           (RBNode *node);
 
 RBNode     *rb_node_from_id          (int id);
 
@@ -123,6 +123,8 @@ gboolean    rb_node_has_parent       (RBNode *node,
 /* children */
 GList      *rb_node_get_children     (RBNode *node);
 void        rb_node_add_child        (RBNode *node,
+				      RBNode *child);
+void        rb_node_remove_child     (RBNode *node,
 				      RBNode *child);
 gboolean    rb_node_has_child        (RBNode *node,
 				      RBNode *child);

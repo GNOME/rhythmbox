@@ -386,6 +386,41 @@ rb_node_add_child (RBNode *node,
 	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_CREATED], 0, child);
 }
 
+void
+rb_node_remove_child (RBNode *node,
+		      RBNode *child)
+{
+	RBNodeType type;
+	
+	g_return_if_fail (RB_IS_NODE (node));
+	g_return_if_fail (RB_IS_NODE (child));
+
+	if (g_list_find (node->priv->children, child) == NULL)
+		return;
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_DESTROYED], 0, child);
+	
+	node->priv->children = g_list_remove (node->priv->children, child);
+	child->priv->parents = g_list_remove (child->priv->parents, node);
+	
+	/* dont increase the refcount when we add the child to an all node */
+	type = rb_node_get_node_type (child);
+	if ((type != RB_NODE_TYPE_ALL_GENRES) &&
+	    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
+	    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
+	    (type != RB_NODE_TYPE_ALL_SONGS))
+	{
+		g_object_unref (G_OBJECT (node));
+	}
+
+	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
+					      G_CALLBACK (rb_node_child_destroyed_cb),
+		 			      node);
+	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
+			  		      G_CALLBACK (rb_node_child_changed_cb),
+			  		      node);
+}
+
 GList *
 rb_node_get_parents (RBNode *node)
 {
@@ -429,7 +464,7 @@ rb_node_child_destroyed_cb (RBNode *child,
 	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_DESTROYED], 0, child);
 }
 
-int
+long
 rb_node_get_id (RBNode *node)
 {
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
@@ -706,9 +741,9 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			g_free (tmp);
 
 			parent = rb_node_from_id (id);
-			g_assert (parent != NULL);
 			
-			rb_node_add_child (parent, node);
+			if (parent != NULL)
+				rb_node_add_child (parent, node);
 		}
 		else if (strcmp (child->name, "property") == 0)
 		{

@@ -229,33 +229,15 @@ rb_shell_class_init (RBShellClass *klass)
 static void
 rb_shell_init (RBShell *shell) 
 {
-	char *dirname, *file;
+	char *file;
 	
 	shell->priv = g_new0 (RBShellPrivate, 1);
 
-	dirname = g_build_filename (g_get_home_dir (),
-				    GNOME_DOT_GNOME,
-				    "rhythmbox",
-				    NULL);
+	rb_ensure_dir_exists (rb_dot_dir ());
 
-	if (g_file_test (dirname, G_FILE_TEST_IS_DIR) == FALSE)
-	{
-		if (g_file_test (dirname, G_FILE_TEST_EXISTS) == TRUE)
-		{
-			rb_error_dialog (_("%s exists, please move it out of the way."), dirname);
-		}
-		
-		if (mkdir (dirname, 488) != 0)
-		{
-			rb_error_dialog (_("Failed to create directory %s."), dirname);
-		}
-	}
-
-	shell->priv->sidebar_layout_file = g_build_filename (dirname,
+	shell->priv->sidebar_layout_file = g_build_filename (rb_dot_dir (),
 							     "sidebar_layout.xml",
 							     NULL);
-
-	g_free (dirname);
 
 	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
 	gnome_window_icon_set_default_from_file (file);
@@ -927,6 +909,7 @@ rb_shell_save_music_groups (RBShell *shell)
 
 		groups = g_slist_append (groups,
 					 (char *) rb_group_view_get_file (group));
+		rb_group_view_save (group);
 	}
 	
 	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups);

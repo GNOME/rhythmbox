@@ -25,6 +25,10 @@ G_BEGIN_DECLS
 
 const char *rb_file                  (const char *filename);
 
+const char *rb_dot_dir               (void);
+
+void        rb_ensure_dir_exists     (const char *dir);
+
 void        rb_file_helpers_init     (void);
 void        rb_file_helpers_shutdown (void);
 
