@@ -222,8 +222,8 @@ rb_library_release_brakes (RBLibrary *library)
 	rb_debug ("library: creating walker thread");
 	library->priv->walker_thread = rb_library_walker_thread_new (library);
 
-	library->priv->idle_save_id = g_timeout_add (6000, (GSourceFunc) rb_library_periodic_save,
-						     library);
+	library->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_library_periodic_save,
+						  library);
 }
 
 gboolean
@@ -563,7 +563,9 @@ rb_library_periodic_save (RBLibrary *library)
 	} else {
 		rb_debug ("library is busy, skipping periodic save");
 	}
-	return TRUE;
+	library->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
+						     (GSourceFunc) rb_library_periodic_save, library);
+	return FALSE;
 }
 
 static void

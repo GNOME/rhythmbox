@@ -1,3 +1,29 @@
+2003-08-01  Colin Walters  <walters@verbum.org>
+
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),
+	(rb_iradio_backend_finalize), (genre_removed_cb),
+	(rb_iradio_backend_periodic_save), (rb_iradio_backend_save):
+	* library/rb-library.c: (rb_library_release_brakes),
+	(rb_library_periodic_save):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(ask_string_response_cb), (rb_shell_cmd_delete_group),
+	(rb_shell_load_music_groups):
+	* sources/rb-group-source.c: (rb_group_source_init),
+	(rb_group_source_finalize), (rb_group_source_set_property),
+	(impl_get_status_full), (rb_group_source_periodic_save),
+	(rb_group_source_save), (rb_group_source_load), (add_uri),
+	(dnd_add_handled_cb), (rb_group_source_drop_cb),
+	(rb_group_source_add_list_uri), (filename_from_name):
+
+	Make library saving time random.
+
+	Add periodic (semi-random) saving for the iradio source.
+	Make its saving atomic, and fix a memory leak there too.  Also
+	make group source saving periodic and atomic.
+
+	Have groups save themselves on unref, instead of the shell
+	doing it.
+
 2003-08-01  Yann Rouillard <y.rouillard@laposte.net>
 	    Mark Humphreys <marquee@users.sourceforge.net>
 	    Colin Walters  <walters@verbum.org>

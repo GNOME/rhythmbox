@@ -47,9 +47,10 @@ static void rb_iradio_backend_finalize (GObject *object);
 
 static void rb_iradio_backend_save (RBIRadioBackend *backend);
 static void genre_added_cb (RBNode *node, RBNode *child, RBIRadioBackend *backend);
-static void genre_removed_cb (RBNode *node, RBNode *child, RBIRadioBackend *backend);
+static void genre_removed_cb (RBNode *node, RBNode *child, guint last_id, RBIRadioBackend *backend);
 static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 							      const char *uri);
+static gboolean rb_iradio_backend_periodic_save (RBIRadioBackend *backend);
 
 #define RB_IRADIO_BACKEND_XML_VERSION "2.0"
 
@@ -64,6 +65,8 @@ struct RBIRadioBackendPrivate
 	GStaticRWLock *genre_hash_lock;
 
 	char *xml_file;
+
+	guint idle_save_id;
 };
 
 enum
@@ -197,6 +200,9 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 
 	rb_node_add_child (backend->priv->all_genres,
 			   backend->priv->all_stations);
+
+	backend->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_iradio_backend_periodic_save,
+						  backend);
 }
 
 static void
@@ -210,6 +216,8 @@ rb_iradio_backend_finalize (GObject *object)
 	backend = RB_IRADIO_BACKEND (object);
 
 	g_return_if_fail (backend->priv != NULL);
+
+	g_source_remove (backend->priv->idle_save_id);
 
 	rb_iradio_backend_save (backend);
 
@@ -286,6 +294,7 @@ genre_added_cb (RBNode *node,
 static void
 genre_removed_cb (RBNode *node,
 		  RBNode *child,
+		  guint last_id,
 		  RBIRadioBackend *backend)
 {
 	g_static_rw_lock_writer_lock (backend->priv->genre_hash_lock);
@@ -385,6 +394,17 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 	load_initial (backend);
 }
 
+static gboolean
+rb_iradio_backend_periodic_save (RBIRadioBackend *backend)
+{
+	rb_debug ("doing periodic save");
+	rb_iradio_backend_save (backend);
+	backend->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
+						     (GSourceFunc) rb_iradio_backend_periodic_save,
+						     backend);
+	return FALSE;
+}
+
 static void
 rb_iradio_backend_save (RBIRadioBackend *backend)
 {
@@ -392,8 +412,11 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 	xmlNodePtr root;
 	GPtrArray *children;
 	int i;
+	GString *tmpname = g_string_new (backend->priv->xml_file);
 
-	rb_debug ("iradio-backend: saving");
+	rb_debug ("iradio backend: saving");
+
+	g_string_append (tmpname, ".tmp");
 
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
@@ -415,7 +438,6 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 			rb_node_save_to_xml (kid, root);
 		}
 	}
-	rb_node_thaw (backend->priv->all_genres);
 
 	children = rb_node_get_children (backend->priv->all_stations);
 	for (i = 0; i < children->len; i++)
@@ -426,10 +448,17 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 		
 		rb_node_save_to_xml (kid, root);
 	}
+
+	rb_node_thaw (backend->priv->all_genres);
 	rb_node_thaw (backend->priv->all_stations);
 
-	xmlSaveFormatFile (backend->priv->xml_file, doc, 1);
-	rb_debug ("iradio-backend: done saving");
+	xmlSaveFormatFile (tmpname->str, doc, 1);
+	rename (tmpname->str, backend->priv->xml_file);
+
+	g_string_free (tmpname, TRUE);
+	xmlFreeDoc (doc);
+
+	rb_debug ("iradio backend: done saving");
 }
 
 void

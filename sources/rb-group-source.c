@@ -88,6 +88,7 @@ static void rb_group_source_drop_cb (GtkWidget *widget,
 static void rb_group_source_add_list_uri (RBGroupSource *source,
 					  GList *list);
 static char * filename_from_name (const char *name);
+static gboolean rb_group_source_periodic_save (RBGroupSource *source);
 
 
 #define GROUP_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
@@ -111,6 +112,8 @@ struct RBGroupSourcePrivate
 	char *file;
 	char *name;
 	char *description;
+
+	guint idle_save_id;
 };
 
 enum
@@ -231,6 +234,8 @@ rb_group_source_init (RBGroupSource *source)
 {
 	source->priv = g_new0 (RBGroupSourcePrivate, 1);
 
+	source->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_group_source_periodic_save,
+						 source);
 }
 
 static void
@@ -244,6 +249,8 @@ rb_group_source_finalize (GObject *object)
 	source = RB_GROUP_SOURCE (object);
 
 	g_return_if_fail (source->priv != NULL);
+
+	rb_group_source_save (source);
 
 	rb_node_unref (source->priv->group);
 
@@ -313,9 +320,6 @@ rb_group_source_set_property (GObject *object,
 
 		source->priv->file = g_strdup (g_value_get_string (value));
 
-/* 		g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (source))), */
-/* 			      "unique_id", source->priv->file, */
-/* 			      NULL); */
 		break;
 	case PROP_NAME:
 		{
@@ -327,8 +331,7 @@ rb_group_source_set_property (GObject *object,
 			source->priv->name = g_strdup (g_value_get_string (value));
 			source->priv->description = g_strdup (source->priv->name);
 
-			if (source->priv->file == NULL)
-			{
+			if (source->priv->file == NULL) {
 				file = filename_from_name (source->priv->name);
 				g_object_set (object, "file", file, NULL);
 				g_free (file);
@@ -505,8 +508,7 @@ impl_get_status_full (RBGroupSource *source)
 
 	len = 0;
 
-	for (i = 0; i < kids->len; i++)
-	{
+	for (i = 0; i < kids->len; i++) {
 		long secs;
 		RBNode *node;
 
@@ -596,64 +598,20 @@ songs_view_changed_cb (RBNodeView *view, RBGroupSource *source)
 	rb_source_notify_status_changed (RB_SOURCE (source));
 }
 
-/* static void */
-/* song_update_statistics (RBGroupSource *source) */
-/* { */
-/* 	RBNode *node; */
-
-/* 	node = rb_node_view_get_playing_node (source->priv->songs); */
-/* 	rb_node_update_play_statistics (node); */
-/* } */
-
-/* static GList * */
-/* rb_group_source_cut (RBViewClipboard *clipboard) */
-/* { */
-/* 	RBGroupSource *source = RB_GROUP_SOURCE (clipboard); */
-/* 	GList *sel, *l; */
-
-/* 	sel = g_list_copy (rb_node_view_get_selection (source->priv->songs)); */
-/* 	for (l = sel; l != NULL; l = g_list_next (l)) */
-/* 	{ */
-/* 		rb_node_remove_child (source->priv->group, RB_NODE (l->data)); */
-/* 	} */
-	
-/* 	return sel; */
-/* } */
-
-/* static GList * */
-/* rb_group_source_copy (RBViewClipboard *clipboard) */
-/* { */
-/* 	RBGroupSource *source = RB_GROUP_SOURCE (clipboard); */
-
-/* 	return g_list_copy (rb_node_view_get_selection (source->priv->songs)); */
-/* } */
-
-/* static void */
-/* rb_group_source_paste (RBViewClipboard *clipboard, */
-/* 		     GList *nodes) */
-/* { */
-/* 	RBGroupSource *source = RB_GROUP_SOURCE (clipboard); */
-/* 	GList *l; */
-
-/* 	for (l = nodes; l != NULL; l = g_list_next (l)) */
-/* 	{ */
-/* 		rb_group_source_add_node (view, RB_NODE (l->data)); */
-/* 	} */
-/* } */
-
-/* static void */
-/* rb_group_source_delete (RBViewClipboard *clipboard) */
-/* { */
-/* 	RBGroupSource *source = RB_GROUP_SOURCE (clipboard); */
-/* 	GList *sel, *l; */
-
-/* 	sel = g_list_copy (rb_node_view_get_selection (source->priv->songs)); */
-/* 	for (l = sel; l != NULL; l = g_list_next (l)) */
-/* 	{ */
-/* 		rb_node_remove_child (source->priv->group, RB_NODE (l->data)); */
-/* 	} */
-/* 	g_list_free (sel); */
-/* } */
+static gboolean
+rb_group_source_periodic_save (RBGroupSource *source)
+{
+	if (rb_library_is_idle (source->priv->library)) {
+		rb_debug ("doing periodic save");
+		rb_group_source_save (source);
+	} else {
+		rb_debug ("library is busy, skipping periodic save");
+	}
+	source->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
+						    (GSourceFunc) rb_group_source_periodic_save,
+						    source);
+	return FALSE;
+}
 
 void
 rb_group_source_save (RBGroupSource *source)
@@ -679,8 +637,7 @@ rb_group_source_save (RBGroupSource *source)
 	xmlDocSetRootElement (doc, root);
 
 	kids = rb_node_get_children (source->priv->group);
-	for (i = 0; i < kids->len; i++)
-	{
+	for (i = 0; i < kids->len; i++) {
 		RBNode *node = g_ptr_array_index (kids, i);
 		xmlNodePtr xmlnode;
 		char *tmp;
@@ -693,7 +650,13 @@ rb_group_source_save (RBGroupSource *source)
 	}
 	rb_node_thaw (source->priv->group);
 
-	xmlSaveFormatFile (source->priv->file, doc, 1);
+	{
+		GString *tmpname = g_string_new (source->priv->file);
+		g_string_append (tmpname, ".tmp");
+		xmlSaveFormatFile (tmpname->str, doc, 1);
+		g_string_free (tmpname, TRUE);
+	}
+
 	xmlFreeDoc (doc);
 }
 
@@ -711,8 +674,7 @@ rb_group_source_load (RBGroupSource *source)
 
 	doc = xmlParseFile (source->priv->file);
 
-	if (doc == NULL)
-	{
+	if (doc == NULL) {
 		rb_warning_dialog (_("Failed to parse %s as group file"), source->priv->file);
 		return;
 	}
@@ -720,8 +682,7 @@ rb_group_source_load (RBGroupSource *source)
 	root = xmlDocGetRootElement (doc);
 
 	tmp = xmlGetProp (root, "version");
-	if (tmp == NULL || strcmp (tmp, RB_GROUP_XML_VERSION) != 0)
-	{
+	if (tmp == NULL || strcmp (tmp, RB_GROUP_XML_VERSION) != 0) {
 		g_free (tmp);
 		xmlFreeDoc (doc);
 		unlink (source->priv->file);
@@ -731,8 +692,7 @@ rb_group_source_load (RBGroupSource *source)
 
 	name = xmlGetProp (root, "name");
 
-	for (child = root->children; child != NULL; child = child->next)
-	{
+	for (child = root->children; child != NULL; child = child->next) {
 		long id;
 		char *tmp;
 		RBNode *node;
@@ -787,9 +747,7 @@ add_uri (const char *uri,
 	node = rb_library_get_song_by_location (source->priv->library, uri);
 
 	if (node != NULL)
-	{
 		rb_group_source_add_node (source, node);
-	}
 }
 
 static void
@@ -806,26 +764,18 @@ dnd_add_handled_cb (RBLibraryAction *action,
 	switch (type)
 	{
 	case RB_LIBRARY_ACTION_ADD_FILE:
-		{
-			RBNode *node;
-
-			node = rb_library_get_song_by_location (source->priv->library, uri);
-
-			if (node != NULL)
-			{
-				rb_group_source_add_node (source, node);
-			}
-		}
-		break;
+	{
+		RBNode *node;
+		
+		node = rb_library_get_song_by_location (source->priv->library, uri);
+		
+		if (node != NULL)
+			rb_group_source_add_node (source, node);
+	}
+	break;
 	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-		{
-			rb_uri_handle_recursively (uri,
-						   (GFunc) add_uri,
-						   NULL,
-						   NULL,
-						   source);
-		}
-		break;
+		rb_uri_handle_recursively (uri, (GFunc) add_uri, NULL, NULL, source);
+	break;
 	default:
 		break;
 	}
@@ -882,13 +832,13 @@ impl_show_popup (RBSource *source)
  */
 static void
 rb_group_source_drop_cb (GtkWidget *widget,
-		       GdkDragContext *context,
-		       gint x,
-		       gint y,
-		       GtkSelectionData *data,
-		       guint info,
-		       guint time,
-		       gpointer user_data)
+			 GdkDragContext *context,
+			 gint x,
+			 gint y,
+			 GtkSelectionData *data,
+			 guint info,
+			 guint time,
+			 gpointer user_data)
 {
 	RBGroupSource *source = RB_GROUP_SOURCE (user_data);
 	GtkTargetList *tlist;
@@ -918,29 +868,23 @@ rb_group_source_add_list_uri (RBGroupSource *source,
 	g_return_if_fail (list != NULL);
 
 	for (i = list; i != NULL; i = g_list_next (i))
-	{
 		uri_list = g_list_append (uri_list, 
 					  gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-	}
+
 	gnome_vfs_uri_list_free (list);
 
 	if (uri_list == NULL) return;
 
-	for (i = uri_list; i != NULL; i = i->next)
-	{
+	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 
-		if (uri != NULL)
-		{
+		if (uri != NULL) {
 			RBNode *node = rb_library_get_song_by_location (source->priv->library, uri);
 
 			/* add the node, if already present in the library */
 			if (node != NULL)
-			{
 				rb_group_source_add_node (source, node);
-			}
-			else
-			{
+			else {
 				RBLibraryAction *action = rb_library_add_uri (source->priv->library, uri);
 				g_signal_connect_object (G_OBJECT (action),
 						         "handled",
@@ -968,15 +912,13 @@ filename_from_name (const char *name)
 
 	tmp = g_strconcat (asciiname, ".xml", NULL);
 
-	while (ret == NULL)
-	{
+	while (ret == NULL) {
 		char *tmp2 = g_build_filename (rb_dot_dir (), "groups", tmp, NULL);
 		g_free (tmp);
 		
 		if (g_file_test (tmp2, G_FILE_TEST_EXISTS) == FALSE)
 			ret = tmp2;
-		else
-		{
+		else {
 			tmp = g_strdup_printf ("%s%d.xml", asciiname, i);
 			g_free (tmp2);
 		}

@@ -177,7 +177,6 @@ static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 				             const char *state,
 				             RBShell *shell);
 static void rb_shell_load_music_groups (RBShell *shell);
-static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_window_visibility (RBShell *shell);
 static gboolean rb_shell_update_source_status (RBShell *shell);
@@ -402,9 +401,6 @@ rb_shell_finalize (GObject *object)
 
 	rb_debug ("Unregistered with Bonobo Activation");
 	
-	/* REWRITEFIXME */
-	rb_shell_save_music_groups (shell);
-
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
 
@@ -567,7 +563,7 @@ rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 void
 rb_shell_construct (RBShell *shell)
 {
-	gboolean registration_failed;
+	gboolean registration_failed = FALSE;
 	CORBA_Object corba_object;
 	CORBA_Environment ev;
 	BonoboWindow *win;
@@ -1431,8 +1427,6 @@ ask_string_response_cb (GtkDialog *dialog,
 		}
 		break;
 	}
-
-	rb_shell_save_music_groups (shell);
 }
 
 static void
@@ -1480,7 +1474,6 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 		rb_group_source_remove_file (RB_GROUP_SOURCE (shell->priv->selected_source));
 		shell->priv->groups = g_list_remove (shell->priv->groups, shell->priv->selected_source);
 		
-		rb_shell_save_music_groups (shell);
 	}
 
 	rb_shell_remove_source (shell, shell->priv->selected_source);
@@ -1555,24 +1548,6 @@ rb_shell_load_music_groups (RBShell *shell)
 	gnome_vfs_file_info_unref (info);
 out:
 	g_free (path);
-}
-
-static void
-rb_shell_save_music_groups (RBShell *shell)
-{
-	GSList *groups = NULL;
-	GList *l;
-
-	for (l = shell->priv->groups; l != NULL; l = g_list_next (l))
-	{
-		RBGroupSource *group = RB_GROUP_SOURCE (l->data);
-
-		groups = g_slist_append (groups,
-					 (char *) rb_group_source_get_file (group));
-		rb_group_source_save (group);
-	}
-	
-	g_slist_free (groups);
 }
 
 static void
