@@ -1,5 +1,27 @@
 2002-11-03  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/song-info.glade:
+	* lib/widgets/rb-ellipsizing-label.c: (rb_ellipsizing_label_init),
+	(real_size_allocate):
+	* lib/widgets/rb-ellipsizing-label.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(filter_changed_cb), (after_filter_changed_cb), (dumb_sort_func),
+	(rb_node_view_get_status):
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_finalize), (rb_song_info_rated_cb),
+	(rb_song_info_populate_dialog), (rb_song_info_update_location),
+	(rb_song_info_forward_clicked_cb), (rb_song_info_view_changed_cb),
+	(rb_song_info_update_play_count), (rb_song_info_update_encoding),
+	(cleanup):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value):
+	* lib/widgets/rb-tree-model-node.h:
+
+	Songinfo UI cleanup, fix sorting.
+
+2002-11-03  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/Makefile.am:
 	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
 	(rb_node_view_columns_parse):

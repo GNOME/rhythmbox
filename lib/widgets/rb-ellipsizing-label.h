@@ -37,9 +37,16 @@ typedef struct RBEllipsizingLabel	      RBEllipsizingLabel;
 typedef struct RBEllipsizingLabelClass	      RBEllipsizingLabelClass;
 typedef struct RBEllipsizingLabelDetails     RBEllipsizingLabelDetails;
 
+typedef enum {
+        RB_ELLIPSIZE_START,
+        RB_ELLIPSIZE_MIDDLE,
+        RB_ELLIPSIZE_END
+} RBEllipsizeMode;
+
 struct RBEllipsizingLabel {
 	GtkLabel parent;
 	RBEllipsizingLabelDetails *details;
+	RBEllipsizeMode mode;
 };
 
 struct RBEllipsizingLabelClass {

@@ -24,7 +24,6 @@
 #include <gtk/gtkstock.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtkentry.h>
-#include <gtk/gtktooltips.h>
 #include <gtk/gtkmenu.h>
 #include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkmenuitem.h>
@@ -47,6 +46,7 @@
 #include "rb-dialog.h"
 #include "rb-node-song.h"
 #include "rb-rating.h"
+#include "rb-ellipsizing-label.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -66,15 +66,12 @@ static void rb_song_info_populate_dialog (RBSongInfo *song_info);
 static void rb_song_info_update_title (RBSongInfo *song_info);
 static void rb_song_info_update_track (RBSongInfo *song_info);
 static void rb_song_info_update_quality (RBSongInfo *song_info);
-static void rb_song_info_update_channels (RBSongInfo *song_info);
-static void rb_song_info_update_size (RBSongInfo *song_info);
 static void rb_song_info_update_duration (RBSongInfo *song_info);
 static void rb_song_info_update_location (RBSongInfo *song_info);
 static void rb_song_info_update_genre (RBSongInfo *song_info);
-static void rb_song_info_update_mtime (RBSongInfo *song_info);
 static void rb_song_info_update_play_count (RBSongInfo *song_info);
 static void rb_song_info_update_last_played (RBSongInfo *song_info);
-static void rb_song_info_update_mime_type (RBSongInfo *song_info);
+static void rb_song_info_update_encoding (RBSongInfo *song_info);
 static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       MonkeyMediaStreamInfoField field,
 		                       GtkWidget *widget);
@@ -90,6 +87,7 @@ static void rb_song_info_view_changed_cb (RBNodeView *node_view,
 static void rb_song_info_rated_cb (RBRating *rating,
 				   int score,
 				   RBSongInfo *song_info);
+static void cleanup (RBSongInfo *dlg);
 
 struct RBSongInfoPrivate
 {
@@ -100,8 +98,8 @@ struct RBSongInfoPrivate
 	MonkeyMediaStreamInfo *current_info;
 
 	/* the dialog widgets */
-	GtkTooltips *tooltips;
 	GtkWidget   *forward;
+
 	GtkWidget   *title;
 	GtkWidget   *artist;
 	GtkWidget   *album;
@@ -110,17 +108,14 @@ struct RBSongInfoPrivate
 	GtkWidget   *track_max;
 	GtkWidget   *genre;
 	GtkWidget   *comments;
+
 	GtkWidget   *quality;
-	GtkWidget   *channels;
-	GtkWidget   *size;
 	GtkWidget   *duration;
-	GtkWidget   *location_ebox;
 	GtkWidget   *name;
 	GtkWidget   *location;
-	GtkWidget   *mtime;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
-	GtkWidget   *mime_type;
+	GtkWidget   *encoding;
 	GtkWidget   *rating;
 };
 
@@ -185,7 +180,7 @@ static void
 rb_song_info_init (RBSongInfo *song_info)
 {
 	GladeXML *xml;
-	GtkWidget *close, *label, *image, *hbox, *align;
+	GtkWidget *close, *label, *image, *hbox, *align, *cont;
 	
 	/* create the dialog and some buttons forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
@@ -196,9 +191,6 @@ rb_song_info_init (RBSongInfo *song_info)
 			  song_info);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (song_info), FALSE);
-
-	gtk_button_box_set_layout (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area),
-				   GTK_BUTTONBOX_START);
 
 	song_info->priv->forward = gtk_button_new ();
 
@@ -230,9 +222,6 @@ rb_song_info_init (RBSongInfo *song_info)
 	close = gtk_dialog_add_button (GTK_DIALOG (song_info),
 			               GTK_STOCK_CLOSE,
 			               GTK_RESPONSE_CLOSE);
-	gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area), 
-					    close, 
-					    TRUE);
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 7);
@@ -249,7 +238,6 @@ rb_song_info_init (RBSongInfo *song_info)
 			   glade_xml_get_widget (xml, "song_info_vbox"));
 
 	/* get the widgets from the XML */
-	song_info->priv->tooltips      = gtk_tooltips_new ();
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
 	song_info->priv->artist        = glade_xml_get_widget (xml, "song_info_artist");
 	song_info->priv->album         = glade_xml_get_widget (xml, "song_info_album");
@@ -259,17 +247,22 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->genre         = glade_xml_get_widget (xml, "song_info_genre");
 	song_info->priv->comments      = glade_xml_get_widget (xml, "song_info_comments");
 	song_info->priv->quality       = glade_xml_get_widget (xml, "song_info_quality");
-	song_info->priv->channels      = glade_xml_get_widget (xml, "song_info_channels");
-	song_info->priv->size          = glade_xml_get_widget (xml, "song_info_size");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
-	song_info->priv->location_ebox = glade_xml_get_widget (xml, "song_info_location_ebox");
-	song_info->priv->location      = glade_xml_get_widget (xml, "song_info_location");
-	song_info->priv->mtime         = glade_xml_get_widget (xml, "song_info_mtime");
+	cont = glade_xml_get_widget (xml, "song_info_location_container");
+	song_info->priv->location = rb_ellipsizing_label_new ("");
+	gtk_misc_set_alignment (GTK_MISC (song_info->priv->location), 0.0, 0.5);
+	gtk_label_set_selectable (GTK_LABEL (song_info->priv->location), TRUE);
+	gtk_container_add (GTK_CONTAINER (cont), song_info->priv->location);
+	gtk_widget_show (song_info->priv->location);
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
-	song_info->priv->mime_type     = glade_xml_get_widget (xml, "song_info_kind");
-	song_info->priv->name          = glade_xml_get_widget (xml, "song_info_name");
-
+	song_info->priv->encoding      = glade_xml_get_widget (xml, "song_info_encoding");
+	cont = glade_xml_get_widget (xml, "song_info_name_container");
+	song_info->priv->name = rb_ellipsizing_label_new ("");
+	gtk_misc_set_alignment (GTK_MISC (song_info->priv->name), 0.0, 0.5);
+	gtk_label_set_selectable (GTK_LABEL (song_info->priv->name), TRUE);
+	gtk_container_add (GTK_CONTAINER (cont), song_info->priv->name);
+	gtk_widget_show (song_info->priv->name);
 
 	/* make those fields not editable for now */
 	gtk_entry_set_editable (GTK_ENTRY (song_info->priv->title), FALSE);
@@ -286,9 +279,9 @@ rb_song_info_init (RBSongInfo *song_info)
 				 "rated",
 				 G_CALLBACK (rb_song_info_rated_cb),
 				 G_OBJECT (song_info), 0);
-	gtk_table_attach_defaults (GTK_TABLE (glade_xml_get_widget (xml, "song_info_additional")),
-				   GTK_WIDGET (song_info->priv->rating),
-				   1, 2, 10, 11);
+	gtk_container_add (GTK_CONTAINER (glade_xml_get_widget (xml, "song_info_rating_container")),
+			   song_info->priv->rating);
+
 	/* default focus */
 	gtk_widget_grab_focus (song_info->priv->title);
 
@@ -309,7 +302,7 @@ rb_song_info_finalize (GObject *object)
 
 	if (song_info->priv->current_info != NULL)
 	{
-		g_object_unref (G_OBJECT (song_info->priv->current_info));
+		cleanup (song_info);
 	}
 
 	g_free (song_info->priv);
@@ -414,8 +407,11 @@ rb_song_info_rated_cb (RBRating *rating,
 			      RB_NODE_SONG_PROP_RATING,
 			      &value);
 	g_value_unset (&value);
-}
 
+	g_object_set (G_OBJECT (song_info->priv->rating),
+		      "score", score,
+		      NULL);
+}
 
 static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
@@ -438,14 +434,11 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_genre (song_info);
 	rb_song_info_update_comments (song_info);
 	rb_song_info_update_quality (song_info);
-	rb_song_info_update_channels (song_info);
-	rb_song_info_update_size (song_info);
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
-	rb_song_info_update_mtime (song_info);
 	rb_song_info_update_play_count (song_info);
 	rb_song_info_update_last_played (song_info);
-	rb_song_info_update_mime_type (song_info);
+	rb_song_info_update_encoding (song_info);
 	rb_song_info_update_rating (song_info);
 }
 
@@ -703,85 +696,6 @@ rb_song_info_update_quality (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_update_channels (RBSongInfo *song_info)
-{
-	GValue value = { 0, };
-	char *text;
-	int channels = 0;
-	gboolean res = FALSE;
-
-	if (song_info->priv->current_info != NULL)
-	{
-		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
-							  MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS,
-							  0, &value);
-	}
-
-	if (res == TRUE)
-	{
-		channels = g_value_get_int (&value);
-	}
-	else
-	{
-		g_value_init (&value, G_TYPE_INT);
-		g_value_set_int (&value, 0);
-	}
-
-	switch (channels)
-	{
-		case 1:
-			text = g_strdup (_("Mono"));
-			break;
-		case 2:
-			text = g_strdup (_("Stereo"));
-			break;
-		default:
-			text = g_strdup_printf ("%d", channels);
-			break;
-	}
-
-	gtk_label_set_text (GTK_LABEL (song_info->priv->channels), text);
-
-	g_free (text);
-	g_value_unset (&value);
-}
-
-static void
-rb_song_info_update_size (RBSongInfo *song_info)
-{
-	GValue value = { 0, };
-	char *text = NULL;
-	long size = 0;
-	gboolean res = FALSE;
-
-	if (song_info->priv->current_info != NULL)
-	{
-		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
-							  MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
-							  0, &value);
-	}
-
-	if (res == TRUE)
-	{
-		size = g_value_get_long (&value);
-		text = gnome_vfs_format_file_size_for_display (size);
-	}
-	else 
-	{
-		g_value_init (&value, G_TYPE_INT);
-		g_value_set_int (&value, 0);
-	}
-
-	if (text != NULL)
-	{
-		gtk_label_set_text (GTK_LABEL (song_info->priv->size), text);
-		g_free (text);
-	}
-
-	g_value_unset (&value);
-}
-
-static void
 rb_song_info_update_duration (RBSongInfo *song_info)
 {
 	GValue value = { 0, };
@@ -824,7 +738,7 @@ static void
 rb_song_info_update_location (RBSongInfo *song_info)
 {
 	const char *text;
-	char *basename, *dir;
+	char *basename, *dir, *desktopdir;
 
 	g_return_if_fail (song_info != NULL);
 
@@ -841,7 +755,8 @@ rb_song_info_update_location (RBSongInfo *song_info)
 
 		if (tmp != NULL)
 		{
-			gtk_label_set_text (GTK_LABEL (song_info->priv->name), tmp);
+			RB_ELLIPSIZING_LABEL (song_info->priv->name)->mode = RB_ELLIPSIZE_END;
+			rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->name), tmp);
 		}
 
 		g_free (tmp);
@@ -853,8 +768,17 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		g_free (tmp);
 		tmp = gnome_vfs_unescape_string_for_display (dir);
 		g_free (dir);
+
+		desktopdir = g_build_filename (g_get_home_dir (), ".gnome-desktop", NULL);
+		if (strcmp (tmp, desktopdir) == 0)
+		{
+			g_free (tmp);
+			tmp = g_strdup (_("on the desktop"));
+		}
+		g_free (desktopdir);
 		
-		gtk_label_set_text (GTK_LABEL (song_info->priv->location), tmp);
+		RB_ELLIPSIZING_LABEL (song_info->priv->location)->mode = RB_ELLIPSIZE_END;
+		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->location), tmp);
 		g_free (tmp);
 	}
 }
@@ -872,6 +796,8 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 	/* update the node view */
 	rb_node_view_select_node (song_info->priv->node_view, node);
 	rb_node_view_scroll_to_node (song_info->priv->node_view, node);
+
+	cleanup (song_info);
 
 	if (rb_song_info_update_current_values (song_info) == TRUE)
 		rb_song_info_populate_dialog (song_info);
@@ -898,24 +824,12 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 				  node != NULL);
 }
 
-/*
- * rb_song_info_view_changed_cb: when the view has changed
- * we need to refresh the information displayed
- */
 static void
 rb_song_info_view_changed_cb (RBNodeView *node_view,
 			      RBSongInfo *song_info)
 {
-	/* the view has changed, so we reload the node information */
-	g_object_unref (G_OBJECT (song_info->priv->current_info));
-
-	if (rb_song_info_update_current_values (song_info) == FALSE)
-	{
-		return;
-	}
-
-	/* and refresh */
-	rb_song_info_populate_dialog (song_info);
+	/* update next button sensitivity */
+	rb_song_info_update_buttons (song_info);
 }
 
 /*
@@ -957,19 +871,6 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_update_mtime (RBSongInfo *song_info)
-{
-	char *text = NULL;
-
-	text = rb_node_get_property_time (song_info->priv->current_node,
-					  RB_NODE_SONG_PROP_MTIME);
-
-	gtk_label_set_text (GTK_LABEL (song_info->priv->mtime), text);
-
-	g_free (text);
-}
-
-static void
 rb_song_info_update_play_count (RBSongInfo *song_info)
 {
 	const char *text = NULL;
@@ -977,6 +878,10 @@ rb_song_info_update_play_count (RBSongInfo *song_info)
 	text = rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
                                             RB_NODE_SONG_PROP_NUM_PLAYS);
 
+	if (text == NULL || strlen (text) == 0)
+	{
+		text = "0";
+	}
 
 	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 }
@@ -1018,34 +923,44 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_update_mime_type (RBSongInfo *song_info)
+rb_song_info_update_encoding (RBSongInfo *song_info)
 {
-	char *text_mime = NULL;
 	const char *text_codec = NULL;
+	int channels = -1, bitrate = -1;
 	GValue value = { 0, };
 	gboolean res = FALSE;
-	const char *location = NULL;
-	g_return_if_fail (song_info != NULL);
+	GString *string;
 
-	location = rb_node_get_property_string (song_info->priv->current_node,
-			                    RB_NODE_SONG_PROP_LOCATION);
-
-	if (location != NULL)
+	if (song_info->priv->current_info != NULL)
 	{
-		GnomeVFSFileInfo *info;
-
-		/* Get the mime_type from GnomeVFS */	
-		info = gnome_vfs_file_info_new ();
-	
-		gnome_vfs_get_file_info (location, info,
-				GNOME_VFS_FILE_INFO_GET_MIME_TYPE |
-				GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-
-		text_mime = g_strdup (info->mime_type);
-		gnome_vfs_file_info_unref (info);
+		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
+							  MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE,
+							  0, &value);
 	}
 
-	/* Get the codec from monkey-media */
+	if (res == TRUE)
+	{
+		bitrate = g_value_get_int (&value);
+		g_value_unset (&value);
+	}
+
+	res = FALSE;
+
+	if (song_info->priv->current_info != NULL)
+	{
+		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
+							  MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS,
+							  0, &value);
+	}
+
+	if (res == TRUE)
+	{
+		channels = g_value_get_int (&value);
+		g_value_unset (&value);
+	}
+
+	res = FALSE;
+
 	if (song_info->priv->current_info != NULL)
 	{
 		res = monkey_media_stream_info_get_value (song_info->priv->current_info, 
@@ -1057,29 +972,46 @@ rb_song_info_update_mime_type (RBSongInfo *song_info)
 	{
 		text_codec = g_value_get_string (&value);
 	}
-	else
+
+	string = g_string_new ("");
+
+	if (bitrate >= 0)
 	{
-		g_value_init (&value, G_TYPE_STRING);
-		g_value_set_string (&value, "");
+		g_string_append_printf (string, _("%d kbps "), bitrate);
 	}
 
-	if (text_mime != NULL)
+	if (text_codec != NULL)
 	{
-		if (text_codec == NULL)
-		{
-			gtk_label_set_text (GTK_LABEL (song_info->priv->mime_type), text_mime);
-		}
-		else
-		{
-			char *text  = NULL;
+		g_string_append (string, text_codec);
+	}
 
-			text = g_strdup_printf ("%s (%s)", text_mime, text_codec);
-			gtk_label_set_text (GTK_LABEL (song_info->priv->mime_type), text);
-
-			g_free (text);
+	if (channels >= 0)
+	{
+		switch (channels)
+		{
+		case 1:
+			g_string_append (string, _(" (Mono)"));
+			break;
+		case 2:
+			g_string_append (string, _(" (Stereo)"));
+			break;
+		default:
+			g_string_append_printf (string, _(" (%d channels)"), channels);
+			break;
 		}
 	}
 
-	g_free (text_mime);
-	g_value_unset (&value);
+	gtk_label_set_text (GTK_LABEL (song_info->priv->encoding), string->str);
+		
+	g_string_free (string, TRUE);
+
+	if (res == TRUE)
+		g_value_unset (&value);
+}
+
+static void
+cleanup (RBSongInfo *dlg)
+{
+	if (dlg->priv->current_info != NULL)
+		g_object_unref (G_OBJECT (dlg->priv->current_info));
 }

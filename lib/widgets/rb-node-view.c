@@ -143,6 +143,9 @@ struct RBNodeViewPrivate
 	GHashTable *columns;
 
 	RBNodeFilter *filter;
+
+	int saved_sort_column_id;
+	GtkSortType saved_sort_type;
 };
 
 enum
@@ -559,6 +562,11 @@ rb_node_view_construct (RBNodeView *view)
 		view->priv->keep_selection = bool_to_int (tmp);
 	g_free (tmp);
 
+	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					 RB_TREE_MODEL_NODE_COL_DUMMY,
+					 dumb_sort_func,
+					 NULL, NULL);
+
 	view->priv->columns_key = xmlGetProp (doc->children, "column-visibility-pref");
 
 	for (child = doc->children->children; child != NULL; child = child->next)
@@ -773,7 +781,6 @@ filter_changed_cb (RBNodeFilter *filter,
 		   RBNodeView *view)
 {
 	GtkWidget *window;
-	int sort_column_id;
 	
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
@@ -797,47 +804,30 @@ filter_changed_cb (RBNodeFilter *filter,
 	}
 
 	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-					          &sort_column_id, NULL) == FALSE)
+					          &view->priv->saved_sort_column_id, &view->priv->saved_sort_type) == FALSE)
+	{
+		view->priv->saved_sort_column_id = -1;
 		return;
+	}
 
 	/* set a dumb sort func so that we dont get slow
 	 * row insertion sorting */
-	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
-					 sort_column_id,
-					 dumb_sort_func,
-					 NULL, NULL);
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					      RB_TREE_MODEL_NODE_COL_DUMMY,
+					      view->priv->saved_sort_type);
 }
 
 static void
 after_filter_changed_cb (RBNodeFilter *filter,
 			 RBNodeView *view)
 {
-	GList *sort_order;
-	GtkTreeViewColumn *column = NULL;
-	int sort_column_id;
-	GList *l;
-	GtkSortType order;
-	
-	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-					          &sort_column_id, &order) == FALSE)
+	if (view->priv->saved_sort_column_id == -1)
 		return;
 
-	for (l = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview)); l != NULL; l = g_list_next (l))
-	{
-		if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (l->data), "sort-column")) == sort_column_id)
-		{
-			column = l->data;
-			break;
-		}
-	}
-	g_assert (column != NULL);
-	sort_order = g_object_get_data (G_OBJECT (column), "sort-order");
-
 	/* put the proper sort function back */
-	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
-				         sort_column_id,
-					 rb_node_view_sort_func,
-					 sort_order, NULL);
+	gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					      view->priv->saved_sort_column_id,
+					      view->priv->saved_sort_type);
 }
 
 void
@@ -1192,7 +1182,7 @@ dumb_sort_func (GtkTreeModel *model,
 		GtkTreeIter *b,
 		gpointer user_data)
 {
-	return -1;
+	return 1;
 }
 
 static void
@@ -1324,7 +1314,7 @@ rb_node_view_get_status (RBNodeView *view)
 	minutes = n_seconds / 60 - hours * 60;
 	seconds = n_seconds % 60;
 
-	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d playing time, %s"),
+	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d total time, %s"),
 			       n_songs, hours, minutes, seconds, size);
 
 	g_free (size);

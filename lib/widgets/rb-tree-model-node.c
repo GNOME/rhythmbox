@@ -403,6 +403,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
 	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 		return G_TYPE_STRING;
+	case RB_TREE_MODEL_NODE_COL_DUMMY:
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		return G_TYPE_BOOLEAN;
@@ -599,6 +600,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 					     !rb_node_get_property_boolean (node,
 						                            RB_ALL_NODE_PROP_PRIORITY));
 		}
+		break;
+	case RB_TREE_MODEL_NODE_COL_DUMMY:
+		g_value_init (value, G_TYPE_BOOLEAN);
+		g_value_set_boolean (value, FALSE);
 		break;
 	default:
 		g_assert_not_reached ();

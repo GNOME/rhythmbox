@@ -27,12 +27,6 @@
 
 #include <string.h>
 
-typedef enum {
-        RB_ELLIPSIZE_START,
-        RB_ELLIPSIZE_MIDDLE,
-        RB_ELLIPSIZE_END
-} RBEllipsizeMode;
-
 struct RBEllipsizingLabelDetails
 {
 	char *full_text;
@@ -614,6 +608,8 @@ static void
 rb_ellipsizing_label_init (RBEllipsizingLabel *label)
 {
 	label->details = g_new0 (RBEllipsizingLabelDetails, 1);
+
+	label->mode = -1;
 }
 
 static void
@@ -704,6 +700,9 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 			pango_layout_set_text (GTK_LABEL (label)->layout, "", -1);
 		} else {
 			RBEllipsizeMode mode;
+
+			if (label->mode != -1)
+				mode = label->mode;
 
 			if (ABS (GTK_MISC (label)->xalign - 0.5) < 1e-12)
 				mode = RB_ELLIPSIZE_MIDDLE;
