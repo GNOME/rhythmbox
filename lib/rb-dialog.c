@@ -107,7 +107,7 @@ rb_ask_file_multiple (const char *title,
 #else
 	filesel = gtk_file_chooser_dialog_new (title, 
 					       parent, 
-					       GTK_FILE_CHOOSER_ACTION_OPEN,
+					       GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 					       GTK_STOCK_CANCEL, 
 					       GTK_RESPONSE_CANCEL,
 					       GTK_STOCK_OPEN, 
