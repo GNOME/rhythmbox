@@ -413,7 +413,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize UI */
 	win = BONOBO_WINDOW (bonobo_window_new ("Rhythmbox shell",
-						_("Rhythmbox Music Player")));
+						_("Music Player")));
 
 	shell->priv->window = GTK_WIDGET (win);
 
@@ -768,7 +768,7 @@ rb_shell_set_window_title (RBShell *shell,
 	if (window_title == NULL)
 	{
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
-				      _("Rhythmbox Music Player"));
+				      _("Music Player"));
 	}
 	else
 	{
