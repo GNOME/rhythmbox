@@ -1718,6 +1718,31 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
 
   min_width = widget->allocation.width / n_cols;
 
+  /* gently resize */
+  while (left_over_width < 0)
+    {
+      gboolean did_something = FALSE;
+      int i;
+
+      for (i = 0; i < expand_col_widths->len && left_over_width < 0; i++)
+        {
+	  int size = g_array_index (expand_col_widths, int, i);
+
+	  if (size > min_width)
+	    { 
+	      size--;
+	      left_over_width++;
+	      did_something = TRUE;
+	    }
+
+	  g_array_index (expand_col_widths, int, i) = size;
+	}
+
+      if (did_something == FALSE)
+        break;
+    }
+
+  /* brute force resize */
   while (left_over_width < 0)
     {
       int i;
@@ -1726,8 +1751,8 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
         {
 	  int size = g_array_index (expand_col_widths, int, i);
 
-	  if (size > min_width && left_over_width < 0)
-	    { 
+	  if (size > 0)
+            {
 	      size--;
 	      left_over_width++;
 	    }
