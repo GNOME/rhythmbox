@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
-"POT-Creation-Date: 2002-08-27 19:28+0200\n"
-"PO-Revision-Date: 2002-08-27 19:25+0100\n"
+"POT-Creation-Date: 2002-08-29 23:41+0200\n"
+"PO-Revision-Date: 2002-08-29 23:41+0100\n"
 "Last-Translator: Christian Neumair <christian-neumair@web.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -59,7 +59,7 @@ msgstr "_Desktop-Vorgabe"
 
 #: data/glade/preferences.glade.h:10
 msgid "_Icons"
-msgstr "_Icons"
+msgstr "Nur _Icons"
 
 #: data/glade/preferences.glade.h:11
 msgid "_Show Toolbar As:"
@@ -67,7 +67,7 @@ msgstr "Werkzeugleiste _anzeigen als:"
 
 #: data/glade/preferences.glade.h:12
 msgid "_Text"
-msgstr "_Text"
+msgstr "Nur _Text"
 
 #: data/glade/song-info.glade.h:1
 msgid "   "
@@ -157,15 +157,15 @@ msgstr "Titel"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
 msgid "Track"
-msgstr "Titel"
+msgstr "Titelnummer"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:444 shell/rb-shell.c:808
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:441 shell/rb-shell.c:805
 msgid "Music Player"
 msgstr "Musik-Player"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Ihre Musiksammlung abspielen und Ihre organisieren"
+msgstr "Ihre Musiksammlung abspielen und organisieren"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:1
 msgid "Delete the currently selected music group"
@@ -174,7 +174,7 @@ msgstr "Die markierte Musikgruppe löschen"
 #: data/ui/rhythmbox-group-view.xml.in.h:2
 #: data/ui/rhythmbox-library-view.xml.in.h:2
 msgid "Deselect all songs"
-msgstr "Markierung aller Lieder entfernen"
+msgstr "Markierung aufheben"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:3
 msgid "Rename the currently selected music group"
@@ -188,7 +188,7 @@ msgstr "Die Ansicht zum momentan abgespielten Song scrollen"
 #: data/ui/rhythmbox-group-view.xml.in.h:5
 #: data/ui/rhythmbox-library-view.xml.in.h:4
 msgid "Select _All"
-msgstr "_Alles markieren"
+msgstr "Alles _markieren"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:6
 #: data/ui/rhythmbox-library-view.xml.in.h:5
@@ -205,14 +205,14 @@ msgid "_Delete Group"
 msgstr "Gruppe _löschen"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:32
 msgid "_Edit"
 msgstr "_Bearbeiten"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:10
 #: data/ui/rhythmbox-library-view.xml.in.h:9
 msgid "_Jump to Playing Song"
-msgstr "Zum momentan _gespielten Lied springen"
+msgstr "Zum momentan _gespielten Song springen"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:11
 #: data/ui/rhythmbox-library-view.xml.in.h:10
@@ -224,7 +224,7 @@ msgid "_Rename Group..."
 msgstr "Grupe _umbenennen...."
 
 #: data/ui/rhythmbox-group-view.xml.in.h:13
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:45
 msgid "_View"
 msgstr "_Ansicht"
 
@@ -270,158 +270,150 @@ msgid "Create a new music group"
 msgstr "Eine neue Musikgruppe erstellen"
 
 #: data/ui/rhythmbox-ui.xml.in.h:7
-msgid "Create a new music group from the selected songs"
-msgstr "Eine neue Musikgruppe von den markierten Songs erstellen"
-
-#: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Cu_t"
 msgstr "_Ausschneiden"
 
-#: data/ui/rhythmbox-ui.xml.in.h:9
+#: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Cut selection"
 msgstr "Markierung ausschneiden"
 
-#: data/ui/rhythmbox-ui.xml.in.h:10
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Delete selection"
 msgstr "Markierung löschen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:11
+#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Edit Rhythmbox preferences"
 msgstr "Rhythmbox-Einstellungen festlegen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
+#: data/ui/rhythmbox-ui.xml.in.h:11
 msgid "Next"
 msgstr "Nächster"
 
-#: data/ui/rhythmbox-ui.xml.in.h:13
+#: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "P_revious Song"
-msgstr "_Voriges Lied"
+msgstr "_Voriger Song"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.in.h:13
 msgid "Paste selection"
 msgstr "Markierung einfügen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Pause playing"
 msgstr "Abspielen pausieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16 shell/rb-shell-player.c:418
+#: data/ui/rhythmbox-ui.xml.in.h:15 shell/rb-shell-player.c:418
 msgid "Play"
 msgstr "Abspielen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Prefere_nces"
 msgstr "_Einstellungen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Previous"
 msgstr "Voriger"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19 shell/main.c:59
+#: data/ui/rhythmbox-ui.xml.in.h:18 shell/main.c:59
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox beenden"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "S_idebar"
 msgstr "S_eitenleiste"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:20
 msgid "Show information about Rhythmbox"
 msgstr "Informationen zu Rhythmbox anzeigen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Shuffle"
 msgstr "Zufall"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:22
 msgid "Start playing"
 msgstr "Abspielen starten"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Start playing the next song"
 msgstr "Den nächsten Song abspielen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Start playing the previous song"
 msgstr "Den vorigen Song abspielen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Stop playing"
 msgstr "Abspielen stoppen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "Toggle random playing order"
 msgstr "Zufällige Abspielreihenfolge aktivieren/deaktivieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Toggle repeat mode"
-msgstr "Wiederholungsmodus aktivieren"
+msgstr "Wiederholungsmodus aktivieren/deaktivieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "_About"
 msgstr "_Info"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:29
 msgid "_Add to Library..."
 msgstr "Zur Bibliothek _hinzufügen..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "_Copy"
 msgstr "_Kopieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:31
 msgid "_Delete"
 msgstr "_Löschen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "_Music"
 msgstr "_Musik"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
-msgid "_New Group from Selection..."
-msgstr "_Neue Gruppe aus Markierung..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "_New Group..."
 msgstr "_Neue Gruppe..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:38 lib/widgets/rb-song-info.c:186
+#: data/ui/rhythmbox-ui.xml.in.h:36 lib/widgets/rb-song-info.c:186
 msgid "_Next Song"
-msgstr "_Nächstes Lied"
+msgstr "_Nächster Song"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "_Organize"
 msgstr "_Organisieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "_Paste"
 msgstr "E_infügen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:419
+#: data/ui/rhythmbox-ui.xml.in.h:39 shell/rb-shell-player.c:419
 msgid "_Play"
 msgstr "_Abspielen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:40
 msgid "_Quit"
 msgstr "_Beenden"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Repeat"
 msgstr "_Wiederholen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Shuffle"
 msgstr "_Zufall"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:43
 msgid "_Statusbar"
 msgstr "_Statusleiste"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "_Toolbar"
 msgstr "_Werkzeugleiste"
 
@@ -509,18 +501,18 @@ msgstr "%d Songs, %d:%02d:%02d Spielzeit, %s"
 
 #: lib/widgets/rb-player.c:201
 msgid "From "
-msgstr "Von"
+msgstr "Aus "
 
 #: lib/widgets/rb-player.c:207
 msgid " by "
-msgstr " von"
+msgstr " von "
 
 #: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:550
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
-"Verstrichene Zeit des Songs. Klicken Sie darauf, um die verbleibende und die "
-"Gesamtzeit anzuzeigen."
+"Verstrichene Zeit des Songs. Klicken Sie hierauf, um die verbleibende Zeit "
+"anzuzeigen."
 
 #: lib/widgets/rb-player.c:367
 msgid "Get information on this album from the web"
@@ -531,7 +523,7 @@ msgid "Get information on this artist from the web"
 msgstr "Informationen zu diesem Interpreten aus dem Internet erhalten"
 
 #: lib/widgets/rb-player.c:396
-#, fuzzy, c-format
+#, c-format
 msgid "Playing from the %s"
 msgstr "Vom %s wird abgespielt"
 
@@ -543,15 +535,15 @@ msgstr "Nichts zu tun"
 msgid ""
 "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr ""
-"Verbleibende Zeit des Songs. Klicken Sie darauf, um die verstrichene und die "
-"Gesamtzeit anzuzeigen."
+"Verbleibende Zeit des Songs. Klicken Sie hierauf, um die Gesamtzeit "
+"anzuzeigen."
 
 #: lib/widgets/rb-player.c:543
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
-"Gesamtzeit des Songs. Klicken Sie darauf, um die verstrichene und "
-"verbleibende Zeit anzuzeigen."
+"Gesamtzeit des Songs. Klicken Sie darauf, um die verbleibende Zeit "
+"anzuzeigen."
 
 #: lib/widgets/rb-player.c:576
 #, c-format
@@ -696,7 +688,7 @@ msgstr "Befehlszeile nicht registrieren"
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-Optionen:"
 
-#: shell/main.c:74
+#: shell/main.c:67
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -734,40 +726,44 @@ msgstr "Stopp"
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell.c:434
+#: shell/rb-shell.c:431
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Die Befehlszeile »%s« konnte nicht registriert werden\n"
 
-#: shell/rb-shell.c:915
+#: shell/rb-shell.c:912
 msgid "translator_credits"
 msgstr ""
 "Christian Neumair <christian-neumair@web.de>\n"
 "Christian Meyer <chrisime@gnome.org>"
 
-#: shell/rb-shell.c:926
+#: shell/rb-shell.c:923
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "(C) 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:927
+#: shell/rb-shell.c:924
 msgid "Music management and playback software for GNOME."
 msgstr "Musikverwaltungs und -abspiel-Software für GNOME"
 
-#: shell/rb-shell.c:1015
+#: shell/rb-shell.c:1012
 msgid "Choose Files or Directory"
 msgstr "Wählen Sie Dateien oder ein Verzeichnis"
 
-#: shell/rb-shell.c:1118
-msgid "Please enter a name for the new music group."
-msgstr "Geben Sie einen Namen für die neue Musikgruppe an."
-
-#: shell/rb-shell.c:1119
+#: shell/rb-shell.c:1508
 msgid "Create"
 msgstr "Erstellen"
 
-#: shell/rb-shell.c:1120
+#: shell/rb-shell.c:1532
+msgid "Please enter a name for the new music group."
+msgstr "Geben Sie einen Namen für die neue Musikgruppe an."
+
+#: shell/rb-shell.c:1542
 msgid "Untitled"
 msgstr "Unbenannt"
+
+#: shell/rb-shell.c:1546
+msgid "Add the _selected songs to the new group"
+msgstr "Die _markierten Songs zur neuen Gruppe hinzufügen"
 
 #: views/rb-group-view.c:319
 msgid "music group"
