@@ -365,7 +365,7 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *ren
 				 GtkTreeModel *tree_model, GtkTreeIter *iter,
 				 RBPropertyView *view)
 {
-	const char *str;
+	char *str;
 	gboolean bold;
 
 	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &str,
@@ -374,6 +374,7 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *ren
 	g_object_set (G_OBJECT (renderer), "text", str,
 		      "weight", G_UNLIKELY (bold) ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
 		      NULL);
+	g_free (str);
 }
 
 
