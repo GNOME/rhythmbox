@@ -368,7 +368,7 @@ egg_tree_multi_drag_button_press_event (GtkWidget      *widget,
       priv_data->event_list = g_slist_append (priv_data->event_list, gdk_event_copy ((GdkEvent*)event));
       return TRUE;
     }
-  
+
   if (event->type == GDK_2BUTTON_PRESS)
     return FALSE;
 
@@ -384,32 +384,26 @@ egg_tree_multi_drag_button_press_event (GtkWidget      *widget,
       (GTK_WIDGET_GET_CLASS (tree_view))->button_press_event (widget, event);
 
       if (gtk_tree_selection_path_is_selected (selection, path))
-    {
-      priv_data->pressed_button = event->button;
-      priv_data->x = event->x;
-      priv_data->y = event->y;
-      priv_data->event_list = g_slist_append (priv_data->event_list, gdk_event_copy ((GdkEvent*)event));
-      priv_data->motion_notify_handler =
+      {
+        priv_data->pressed_button = event->button;
+        priv_data->x = event->x;
+        priv_data->y = event->y;
+        priv_data->event_list = g_slist_append (priv_data->event_list, gdk_event_copy ((GdkEvent*)event));
+        priv_data->motion_notify_handler =
 	g_signal_connect (G_OBJECT (tree_view), "motion_notify_event", G_CALLBACK (egg_tree_multi_drag_motion_event), NULL);
       priv_data->button_release_handler =
 	g_signal_connect (G_OBJECT (tree_view), "button_release_event", G_CALLBACK (egg_tree_multi_drag_button_release_event), NULL);
 
-      if (priv_data->drag_data_get_handler == 0) 
-	{
-	  priv_data->drag_data_get_handler =
+        if (priv_data->drag_data_get_handler == 0)
+	  {
+	    priv_data->drag_data_get_handler =
 	    g_signal_connect (G_OBJECT (tree_view), "drag_data_get", G_CALLBACK (egg_tree_multi_drag_drag_data_get), NULL);
-	}
-
+	  }
+        }
 
       gtk_tree_path_free (path);
-        
+      /* We called the default handler so we don't let the default handler run */
       return TRUE;
-    }
-
-    if (path)
-      {
-	gtk_tree_path_free (path);
-      }
     }
 
   return FALSE;
