@@ -295,7 +295,6 @@ AC_OUTPUT([
 Makefile
 lib/Makefile
 lib/widgets/Makefile
-lib/egg/Makefile
 library/Makefile
 iradio/Makefile
 corba/Makefile
