@@ -2,6 +2,60 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-09 04:20:32 GMT	Colin Walters <walters@verbum.org>	patch-260
+
+    Summary:
+      major DND work (yann)
+    Revision:
+      rhythmbox--mainline--0.6--patch-260
+
+    Patches applied:
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-17
+       merge with Colin
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-18
+       merge with rhythmbox--treednd
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--base-0
+       tag of yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-16
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-1
+       custom tree dnd begins to work
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-2
+       Improved tree dnd interface, cleaned up code, ...
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-3
+       added move drag and drop support
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-4
+       some renaming
+    
+
+    new files:
+     lib/.arch-ids/rb-tree-dnd.c.id lib/.arch-ids/rb-tree-dnd.h.id
+     lib/rb-tree-dnd.c lib/rb-tree-dnd.h
+
+    removed files:
+     lib/.arch-ids/eggtreemultidnd.c.id
+     lib/.arch-ids/eggtreemultidnd.h.id lib/eggtreemultidnd.c
+     lib/eggtreemultidnd.h
+
+    modified files:
+     ChangeLog lib/Makefile.am rhythmdb/rhythmdb-query-model.c
+     widgets/rb-entry-view.c widgets/rb-property-view.c
+
+    new patches:
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-17
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-18
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-3
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-4
+
+
 2003-11-09 03:15:14 GMT	Colin Walters <walters@verbum.org>	patch-259
 
     Summary:
