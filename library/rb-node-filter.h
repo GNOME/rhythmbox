@@ -92,8 +92,9 @@ void            rb_node_filter_done_changing  (RBNodeFilter *filter);
 gboolean        rb_node_filter_evaluate       (RBNodeFilter *filter,
 					         RBNode *node);
 
-RBNodeFilterExpression *rb_node_filter_expression_new  (RBNodeFilterExpressionType,
-						            ...);
+RBNodeFilterExpression *rb_node_filter_expression_new  (RBNodeFilter *filter,
+							RBNodeFilterExpressionType,
+							...);
 /* no need to free unless you didn't add the expression to a filter */
 void                      rb_node_filter_expression_free (RBNodeFilterExpression *expression);
 

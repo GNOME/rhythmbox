@@ -1,6 +1,7 @@
 /* 
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
  *            (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *            (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +25,7 @@
 #include <stdarg.h>
 
 #include "rb-node-filter.h"
+#include "rb-debug.h"
 
 static void rb_node_filter_class_init (RBNodeFilterClass *klass);
 static void rb_node_filter_init (RBNodeFilter *node);
@@ -238,9 +240,57 @@ rb_node_filter_evaluate (RBNodeFilter *filter,
 	return TRUE;
 }
 
+void
+handle_deleted_node_cb (RBNode *node, RBNodeFilter *filter)
+{
+	int i;
+	for (i = 0; i < filter->priv->levels->len; i++) {
+		GList *l, *list;
+		gboolean handled;
+		GList *new = NULL;
+
+		handled = FALSE;
+
+		list = g_ptr_array_index (filter->priv->levels, i);
+
+		for (l = list; l != NULL; l = g_list_next (l)) {
+			gboolean delete;
+			RBNodeFilterExpression *exp = (RBNodeFilterExpression *) l->data;
+
+			switch (exp->type)
+			{
+			case RB_NODE_FILTER_EXPRESSION_NODE_EQUALS:
+				delete = exp->args.node_args.a == node
+					|| exp->args.node_args.b == node;
+				break;
+			case RB_NODE_FILTER_EXPRESSION_EQUALS:
+			case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
+			case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
+				delete = exp->args.node_args.a == node;
+				break;
+			case RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS:
+			case RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS:
+				delete = exp->args.prop_args.second_arg.node == node;
+			default:
+				delete = FALSE;
+				break;
+			}
+			
+			if (!delete)
+				new = g_list_prepend (new, l->data);
+			else 
+				rb_debug ("caught node to delete: i: %d", i);
+		}
+		
+		g_ptr_array_index (filter->priv->levels, i) = new;
+		g_list_free (list);
+	}
+}
+
 RBNodeFilterExpression *
-rb_node_filter_expression_new (RBNodeFilterExpressionType type,
-			         ...)
+rb_node_filter_expression_new (RBNodeFilter *filter,
+			       RBNodeFilterExpressionType type,
+			       ...)
 {
 	RBNodeFilterExpression *exp;
 	va_list valist;
@@ -256,16 +306,28 @@ rb_node_filter_expression_new (RBNodeFilterExpressionType type,
 	case RB_NODE_FILTER_EXPRESSION_NODE_EQUALS:
 		exp->args.node_args.a = va_arg (valist, RBNode *);
 		exp->args.node_args.b = va_arg (valist, RBNode *);
+		rb_node_signal_connect_object (exp->args.node_args.a, RB_NODE_DESTROY,
+					       (RBNodeCallback) handle_deleted_node_cb,
+					       G_OBJECT (filter));
+		rb_node_signal_connect_object (exp->args.node_args.b, RB_NODE_DESTROY,
+					       (RBNodeCallback) handle_deleted_node_cb,
+					       G_OBJECT (filter));
 		break;
 	case RB_NODE_FILTER_EXPRESSION_EQUALS:
 	case RB_NODE_FILTER_EXPRESSION_HAS_PARENT:
 	case RB_NODE_FILTER_EXPRESSION_HAS_CHILD:
 		exp->args.node_args.a = va_arg (valist, RBNode *);
+		rb_node_signal_connect_object (exp->args.node_args.a, RB_NODE_DESTROY,
+					       (RBNodeCallback) handle_deleted_node_cb,
+					       G_OBJECT (filter));
 		break;
 	case RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS:
 	case RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS:
 		exp->args.prop_args.prop_id = va_arg (valist, int);
 		exp->args.prop_args.second_arg.node = va_arg (valist, RBNode *);
+		rb_node_signal_connect_object (exp->args.prop_args.second_arg.node, RB_NODE_DESTROY,
+					       (RBNodeCallback) handle_deleted_node_cb,
+					       G_OBJECT (filter));
 		break;
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:

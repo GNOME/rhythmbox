@@ -960,7 +960,8 @@ impl_search (RBSource *asource, const char *search_text)
 
 		rb_node_filter_empty (source->priv->filter);
 		rb_node_filter_add_expression (source->priv->filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_NAME,
 									      search_text),
 					       0);

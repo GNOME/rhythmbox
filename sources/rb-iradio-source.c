@@ -394,7 +394,8 @@ impl_search (RBSource *asource, const char *search_text)
 
 		rb_node_filter_empty (source->priv->stations_filter);
 		rb_node_filter_add_expression (source->priv->stations_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->stations_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_NAME,
 									      search_text),
 					       0);
@@ -625,11 +626,13 @@ stations_filter (RBIRadioSource *source,
 {
 	rb_node_filter_empty (source->priv->stations_filter);
 	rb_node_filter_add_expression (source->priv->stations_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+				       rb_node_filter_expression_new (source->priv->stations_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
 								      rb_iradio_backend_get_all_stations (source->priv->backend)),
 				       0);
 	rb_node_filter_add_expression (source->priv->stations_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+				       rb_node_filter_expression_new (source->priv->stations_filter,
+								      RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
 								      parent),
 				       0);
 	rb_node_filter_done_changing (source->priv->stations_filter);

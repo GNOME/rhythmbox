@@ -646,22 +646,26 @@ impl_search (RBSource *asource, const char *search_text)
 
 		rb_node_filter_empty (source->priv->songs_filter);
 		rb_node_filter_add_expression (source->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_NAME,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (source->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_ARTIST,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (source->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_ALBUM,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (source->priv->songs_filter,
-					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+					       rb_node_filter_expression_new (source->priv->songs_filter,
+									      RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
 									      RB_NODE_PROP_GENRE,
 									      search_text),
 					       0);
@@ -1044,11 +1048,13 @@ artists_filter (RBLibrarySource *source,
 {
 	rb_node_filter_empty (source->priv->artists_filter);
 	rb_node_filter_add_expression (source->priv->artists_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+				       rb_node_filter_expression_new (source->priv->artists_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
 								      rb_library_get_all_albums (source->priv->library)),
 				       0);
 	rb_node_filter_add_expression (source->priv->artists_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+				       rb_node_filter_expression_new (source->priv->artists_filter,
+								      RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
 								      genre),
 				       0);
 	rb_node_filter_done_changing (source->priv->artists_filter);
@@ -1061,23 +1067,28 @@ albums_filter (RBLibrarySource *source,
 {
 	rb_node_filter_empty (source->priv->albums_filter);
 	rb_node_filter_add_expression (source->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
 								      genre, rb_library_get_all_artists (source->priv->library)),
 				       0);
 	rb_node_filter_add_expression (source->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
 								      rb_library_get_all_songs (source->priv->library)),
 				       0);
 	rb_node_filter_add_expression (source->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
 								      RB_NODE_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (source->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_EQUALS,
 								      rb_library_get_all_songs (source->priv->library)),
 				       1);
 	rb_node_filter_add_expression (source->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+				       rb_node_filter_expression_new (source->priv->albums_filter,
+								      RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
 								      artist),
 				       1);
 	rb_node_filter_done_changing (source->priv->albums_filter);
@@ -1091,27 +1102,33 @@ songs_filter (RBLibrarySource *source,
 {
 	rb_node_filter_empty (source->priv->songs_filter);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
 								      genre, rb_library_get_all_artists (source->priv->library)),
 				       0);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
 								      RB_NODE_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
 								      artist, rb_library_get_all_albums (source->priv->library)),
 				       1);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
 								      RB_NODE_PROP_REAL_ARTIST, artist),
 				       1);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
 								      album, rb_library_get_all_songs (source->priv->library)),
 				       2);
 	rb_node_filter_add_expression (source->priv->songs_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+				       rb_node_filter_expression_new (source->priv->songs_filter,
+								      RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
 								      RB_NODE_PROP_REAL_ALBUM, album),
 				       2);
 	rb_node_filter_done_changing (source->priv->songs_filter);

@@ -1,3 +1,17 @@
+2003-08-08  Colin Walters  <walters@verbum.org>
+
+	* library/rb-node-filter.c: (handle_deleted_node_cb),
+	(rb_node_filter_expression_new):
+	* library/rb-node-filter.h:
+	* sources/rb-group-source.c: (impl_search):
+	* sources/rb-iradio-source.c: (impl_search), (stations_filter):
+	* sources/rb-library-source.c: (impl_search), (artists_filter),
+	(albums_filter), (songs_filter):
+
+	Watch for nodes to be deleted in RBNodeFilter, and remove them
+	from the filter.  This closes #119027, a blocker.  Thanks
+	Benjamin Otte for pointing out the problem area!
+
 2003-08-09  Carlos Perelló Marín <carlos@gnome.org>
 
 	* data/glade/druid.glade:
