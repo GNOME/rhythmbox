@@ -833,7 +833,9 @@ rb_shell_player_open_playlist_location (RBPlaylist *playlist, const char *uri,
 		return;
 	}
 
-	rb_player_play (player->priv->mmplayer);
+	rb_player_play (player->priv->mmplayer, &error);
+	if (error)
+		player->priv->playlist_parse_error = g_error_copy (error);
 
 	g_object_notify (G_OBJECT (player), "playing");
 }
@@ -855,7 +857,9 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	was_playing = rb_player_playing (player->priv->mmplayer);
 
-	rb_player_close (player->priv->mmplayer);
+	rb_player_close (player->priv->mmplayer, error);
+	if (error && *error)
+		return;
 
 	if (rb_uri_is_iradio (location) != FALSE
 	    && rb_playlist_can_handle (location) != FALSE) {
@@ -885,7 +889,9 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	if (error && *error)
 		return;
 
-	rb_player_play (player->priv->mmplayer);
+	rb_player_play (player->priv->mmplayer, error);
+	if (error && *error)
+		return;
 
 	if (!was_playing) {
 		g_object_notify (G_OBJECT (player), "playing");
@@ -913,13 +919,15 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 
 
 static void
-rb_shell_player_play (RBShellPlayer *player)
+rb_shell_player_play (RBShellPlayer *player, GError **error)
 {
 	RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 
-	rb_entry_view_set_playing (songs, TRUE);
+	rb_player_play (player->priv->mmplayer, error);
+	if (error && *error)
+		return;
 
-	rb_player_play (player->priv->mmplayer);
+	rb_entry_view_set_playing (songs, TRUE);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -937,6 +945,8 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	songs = rb_source_get_entry_view (player->priv->source);
 
 	rb_shell_player_open_entry (player, entry, &error);
+	if (error == NULL)
+		rb_shell_player_play (player, &error);
 
 	if (error != NULL) {
 		rb_error_dialog (error->message);
@@ -945,7 +955,6 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 
 	rb_debug ("Success!");
 	rb_entry_view_set_playing_entry (songs, entry);
-	rb_shell_player_play (player);
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
 }
@@ -1081,6 +1090,7 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 void
 rb_shell_player_playpause (RBShellPlayer *player)
 {
+	GError *error = NULL;
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 
 	switch (player->priv->playbutton_state) {
@@ -1118,7 +1128,10 @@ rb_shell_player_playpause (RBShellPlayer *player)
 				rb_shell_player_set_playing_entry (player, entry);
 			}
 		} else {
-			rb_shell_player_play (player);
+			rb_shell_player_play (player, &error);
+			if (error) {
+				rb_shell_player_set_playing_source (player, NULL);
+			}
 		}
 	}
 	break;
@@ -1577,13 +1590,18 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 void
 rb_shell_player_stop (RBShellPlayer *player)
 {
+	GError *error = NULL;
 	rb_debug ("stopping");
 
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 
 	if (rb_player_playing (player->priv->mmplayer))
 		rb_player_pause (player->priv->mmplayer);
-	rb_player_close (player->priv->mmplayer);
+	rb_player_close (player->priv->mmplayer, &error);
+	if (error) {
+		rb_error_dialog (error->message);
+		g_error_free (error);
+	}
 }
 
 gboolean

@@ -66,6 +66,9 @@ struct RhythmDBPrivate
 
 	gboolean dry_run;
 
+	gboolean writelocked;
+	guint readlocks;
+
 	GList *added_entries;
 	GList *changed_entries;
 
@@ -635,11 +638,13 @@ rhythmdb_error_quark (void)
 static inline void
 db_enter (RhythmDB *db, gboolean write)
 {
+#ifdef RHYTHMDB_ENABLE_SANITY_CHECK
 	if (write) 
 		g_assert (db->priv->lock.have_writer);
 	else
 		g_assert (db->priv->lock.read_counter > 0
 			  || db->priv->lock.have_writer);
+#endif
 }
 
 RhythmDBEntry *
@@ -752,8 +757,14 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	if (!rb_metadata_get (db->priv->metadata,
 			      RB_METADATA_FIELD_TITLE,
 			      &val) || g_value_get_string (&val)[0] == '\0') {
+		char *utf8name;
+		utf8name = g_filename_to_utf8 (db->priv->vfsinfo->name, -1, NULL, NULL, NULL);
+		if (!utf8name) {
+			utf8name = g_strdup (_("<invalid filename>"));
+		}
 		g_value_init (&val, G_TYPE_STRING);
-		g_value_set_string (&val, db->priv->vfsinfo->name);
+		g_value_set_string (&val, utf8name);
+		g_free (utf8name);
 	}
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);

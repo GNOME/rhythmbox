@@ -84,9 +84,9 @@ void		rb_player_open       (RBPlayer *mp,
 
 const char *	rb_player_get_uri    (RBPlayer *mp);
 
-void		rb_player_close      (RBPlayer *mp);
+void		rb_player_close      (RBPlayer *mp, GError **error);
 
-void		rb_player_play       (RBPlayer *mp);
+void		rb_player_play       (RBPlayer *mp, GError **error);
 
 void		rb_player_pause      (RBPlayer *mp);
 

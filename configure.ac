@@ -64,6 +64,14 @@ else
 	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
 fi	
 
+dnl Database debugging
+AC_ARG_WITH(rhythmdb-debug,
+              AC_HELP_STRING([--with-rhythmdb-debug=0|1|2],
+			     [Level of RhythmDB sanity checking]),,with_rhythmdb_debug=0)
+if test x"${with_rhythmdb_debug}" != x0; then
+   AC_DEFINE_UNQUOTED([RHYTHMDB_ENABLE_SANITY_CHECK], "${with_rhythmdb_debug}", [Define to the level of RhythmDB sanity checking])
+fi
+
 dnl dashboard support
 AC_ARG_ENABLE(dashboard,
 	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)],enable_dashboard=yes,enable_dashboard=no)
@@ -469,6 +477,9 @@ if test x"$with_database" = xtree; then
 	AC_MSG_NOTICE([** Tree database is enabled])
 else
 	AC_MSG_ERROR([Unknown database!])
+fi
+if test x"${with_rhythmdb_debug}" != x0; then
+	AC_MSG_NOTICE([** RhythmDB sanity checking enabled (may be slow!)])
 fi
 if test x"$with_metadata" = xmonkeymedia; then
 	AC_MSG_NOTICE([** Monkey-Media metadata is enabled])

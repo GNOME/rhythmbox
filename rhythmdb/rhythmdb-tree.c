@@ -279,14 +279,14 @@ get_entry_album_folded (RhythmDBTreeEntry *entry)
 static inline void
 sanity_check_entry_tree (RhythmDBTreeEntry *entry)
 {
-#ifdef RHYTHMDB_ENABLE_SANITY_CHECK
+#if defined(RHYTHMDB_ENABLE_SANITY_CHECK) && RHYTHMDB_ENABLE_SANITY_CHECK > 1
 	RHYTHMDB_TREE_ENTRY (entry); 
 	RHYTHMDB_TREE_PROPERTY (entry->album); 
 	RHYTHMDB_TREE_PROPERTY (entry->album->parent); 
 	RHYTHMDB_TREE_PROPERTY (entry->album->parent->parent); 
 #endif
 }
-#ifdef RHYTHMDB_ENABLE_SANITY_CHECK
+#if defined(RHYTHMDB_ENABLE_SANITY_CHECK) && RHYTHMDB_ENABLE_SANITY_CHECK > 1
 static void
 sanity_check_entry_tree_from_hash (gpointer unused, RhythmDBTreeEntry *entry)
 {
@@ -296,7 +296,7 @@ sanity_check_entry_tree_from_hash (gpointer unused, RhythmDBTreeEntry *entry)
 static void
 sanity_check_database (RhythmDBTree *db)
 {
-#ifdef RHYTHMDB_ENABLE_SANITY_CHECK
+#if defined(RHYTHMDB_ENABLE_SANITY_CHECK) && RHYTHMDB_ENABLE_SANITY_CHECK > 1
 	g_hash_table_foreach (db->priv->entries, (GHFunc) sanity_check_entry_tree_from_hash, NULL);
 #endif
 }
