@@ -18,16 +18,20 @@
  *  $Id$
  */
 
+#include <config.h>
+#include <libgnome/gnome-i18n.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <gdk/gdk.h>
+#include <time.h>
 
 #include "rb-node.h"
 #include "rb-debug.h"
 #include "rb-enums.h"
 #include "rb-marshal.h"
 #include "rb-shell.h"
+#include "rb-cut-and-paste-code.h"
 
 static void rb_node_class_init (RBNodeClass *klass);
 static void rb_node_init (RBNode *node);
@@ -776,6 +780,66 @@ rb_node_get_property_node (RBNode *node,
 	}
 	
 	retval = g_value_get_pointer (ret);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return retval;
+}
+
+char *
+rb_node_get_property_time (RBNode *node,
+			   int property_id)
+{
+	GValue *ret;
+	long mtime;
+	char *retval;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+	g_return_val_if_fail (property_id >= 0, NULL);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	if (property_id >= node->priv->properties->len) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return g_strdup (_("Never"));
+	}
+
+	ret = g_ptr_array_index (node->priv->properties, property_id);
+	if (ret == NULL) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return g_strdup (_("Never"));
+	}
+	
+	mtime = g_value_get_long (ret);
+
+	if (retval >= 0) {
+		GDate *now, *file_date;
+		guint32 file_date_age;
+		const char *format = NULL;
+
+		now = g_date_new ();
+		g_date_set_time (now, time (NULL));
+
+		file_date = g_date_new ();
+		g_date_set_time (file_date, mtime);
+
+		file_date_age = (g_date_get_julian (now) - g_date_get_julian (file_date));
+
+		g_date_free (file_date);
+		g_date_free (now);
+
+		if (file_date_age == 0) {
+			format = _("Today at %-H:%M:%S");
+		} else if (file_date_age == 1) {
+			format = _("Yesterday at %-H:%M:%S");
+		} else {
+			format = _("%A, %B %-d %Y at %-H:%M:%S");
+		}
+
+		retval = eel_strdup_strftime (format, localtime (&mtime));
+	} else {
+		retval = g_strdup (_("Never"));
+	}
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 

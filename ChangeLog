@@ -1,3 +1,42 @@
+2002-10-24  Mark Humphreys  <marquee@users.sourceforge.net>
+            Jorn Baayen  <jorn@nl.linux.org>
+
+	* TODO:
+	* data/glade/preferences.glade:
+	* data/glade/song-info.glade:
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/Makefile.am:
+	* lib/widgets/rb-cell-renderer-pixbuf.c:
+	(rb_cell_renderer_pixbuf_get_size):
+	* lib/widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_activate):
+	* lib/widgets/rb-node-view.c: (rb_node_view_sort_func):
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_populate_dialog), (rb_song_info_update_mtime),
+	(rb_song_info_update_play_count),
+	(rb_song_info_update_last_played):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-node-song.c: (rb_node_song_new),
+	(rb_node_song_restored), (rb_node_song_update_play_statistics):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_get_property_node),
+	(rb_node_get_property_time):
+	* library/rb-node.h:
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync), (show_columns_changed_cb):
+	* shell/rb-shell.c: (rb_shell_cmd_about):
+	* views/rb-group-view.c: (song_update_statistics), (song_eos_cb):
+	* views/rb-library-view.c: (rb_library_view_set_property),
+	(song_update_statistics), (song_eos_cb):
+
+	'Last Played' and 'Play Count' now recorded. Viewed in the song info 	
+	dialog, and available as selectable columns from the preference
+	dialog.
+
 2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
 
 	* library/rb-node.c: (child_changed), (real_set_property),

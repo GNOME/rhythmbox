@@ -24,10 +24,13 @@
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnome/gnome-i18n.h>
 #include <monkey-media.h>
+#include <time.h>
 #include <string.h>
 
 #include "rb-node-song.h"
 #include "rb-string-helpers.h"
+#include "rb-debug.h"
+#include "rb-cut-and-paste-code.h"
 
 static void rb_node_song_class_init (RBNodeSongClass *klass);
 static void rb_node_song_init (RBNodeSong *node);
@@ -120,11 +123,26 @@ rb_node_song_new (const char *location,
 
 	g_return_val_if_fail (RB_NODE (node)->priv != NULL, NULL);
 
+	/* Location */
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, location);
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_SONG_PROP_LOCATION,
 			      &value);
+	g_value_unset (&value);
+
+	/* Number of plays */
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, "");
+
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_NUM_PLAYS,
+			      &value);
+	/* Last played time */
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
+			      &value);
+
 	g_value_unset (&value);
 
 	rb_node_song_sync (node, library, FALSE);
@@ -601,4 +619,51 @@ rb_node_song_restored (RBNode *node)
 	rb_node_ref (rb_node_song_get_genre (RB_NODE_SONG (node)));
 	rb_node_ref (rb_node_song_get_artist (RB_NODE_SONG (node)));
 	rb_node_ref (rb_node_song_get_album (RB_NODE_SONG (node)));
+}
+
+void        
+rb_node_song_update_play_statistics (RBNode *node)
+{
+	char *play_count, *time_string;
+	time_t now;
+	GValue value = { 0, };
+
+	g_return_if_fail (RB_IS_NODE_SONG (node));
+
+	/* Increment current play count */
+	play_count = (char *) rb_node_get_property_string (RB_NODE (node),
+				                           RB_NODE_SONG_PROP_NUM_PLAYS);
+
+	if (play_count != NULL)
+		play_count = g_strdup_printf ("%ld", atol (play_count) + 1);
+	else
+		play_count = g_strdup ("1");
+		
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, play_count);
+	g_free (play_count);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_NUM_PLAYS,
+			      &value);
+	g_value_unset (&value);
+
+	/* Reset the last played time */
+	time (&now);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, now);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_LAST_PLAYED,
+			      &value);
+	g_value_unset (&value);
+
+	time_string = eel_strdup_strftime (_("%d-%m-%Y %H:%M:%S"), localtime (&now));
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, time_string);
+	g_free (time_string);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
+			      &value);
+	g_value_unset (&value);
 }

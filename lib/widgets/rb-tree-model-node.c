@@ -22,6 +22,7 @@
 #include <gtk/gtktreeview.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <libgnome/gnome-i18n.h>
+#include <time.h>
 #include <string.h>
 
 #include "rb-tree-model-node.h"
@@ -29,6 +30,7 @@
 #include "rb-node-song.h"
 #include "rb-string-helpers.h"
 #include "rb-node.h"
+#include "rb-node-song.h"
 
 static void rb_tree_model_node_class_init (RBTreeModelNodeClass *klass);
 static void rb_tree_model_node_init (RBTreeModelNode *model);
@@ -391,6 +393,8 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_GENRE:
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 	case RB_TREE_MODEL_NODE_COL_DURATION:
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 		return G_TYPE_STRING;
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
@@ -525,6 +529,16 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 		rb_node_get_property (node,
 				      RB_NODE_SONG_PROP_DURATION,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
+		rb_node_get_property (node,
+				      RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
+		rb_node_get_property (node,
+				      RB_NODE_SONG_PROP_NUM_PLAYS,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
@@ -791,6 +805,8 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_RATING,       "RB_TREE_MODEL_NODE_COL_RATING",       "rating" },
 			{ RB_TREE_MODEL_NODE_COL_PRIORITY,     "RB_TREE_MODEL_NODE_COL_PRIORITY",     "priority" },
 			{ RB_TREE_MODEL_NODE_COL_VISIBLE,      "RB_TREE_MODEL_NODE_COL_VISIBLE",      "visible" },
+			{ RB_TREE_MODEL_NODE_COL_PLAY_COUNT,   "RB_TREE_MODEL_NODE_COL_PLAY_COUNT",   "play count" },
+			{ RB_TREE_MODEL_NODE_COL_LAST_PLAYED,  "RB_TREE_MODEL_NODE_COL_LAST_PLAYED",  "last played" },
 			{ 0, 0, 0 }
 		};
 
@@ -799,3 +815,4 @@ rb_tree_model_node_column_get_type (void)
 
 	return etype;
 }
+

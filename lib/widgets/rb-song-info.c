@@ -69,6 +69,8 @@ static void rb_song_info_update_duration (RBSongInfo *song_info);
 static void rb_song_info_update_location (RBSongInfo *song_info);
 static void rb_song_info_update_genre (RBSongInfo *song_info);
 static void rb_song_info_update_mtime (RBSongInfo *song_info);
+static void rb_song_info_update_play_count (RBSongInfo *song_info);
+static void rb_song_info_update_last_played (RBSongInfo *song_info);
 static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       MonkeyMediaStreamInfoField field,
 		                       GtkWidget *widget);
@@ -80,7 +82,6 @@ static void song_info_forward_clicked_cb (GtkWidget *button,
 					  RBSongInfo *song_info);
 static void rb_song_info_view_changed_cb (RBNodeView *node_view,
 					  RBSongInfo *song_info);
-static char *eel_strdup_strftime (const char *format, struct tm *time_pieces);
 
 struct RBSongInfoPrivate
 {
@@ -108,6 +109,8 @@ struct RBSongInfoPrivate
 	GtkWidget   *location_ebox;
 	GtkWidget   *location;
 	GtkWidget   *mtime;
+	GtkWidget   *play_count;
+	GtkWidget   *last_played;
 };
 
 enum 
@@ -249,6 +252,8 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->location_ebox = glade_xml_get_widget (xml, "song_info_location_ebox");
 	song_info->priv->location      = glade_xml_get_widget (xml, "song_info_location");
 	song_info->priv->mtime      = glade_xml_get_widget (xml, "song_info_mtime");
+	song_info->priv->play_count      = glade_xml_get_widget (xml, "song_info_playcount");
+	song_info->priv->last_played     = glade_xml_get_widget (xml, "song_info_lastplayed");
 
 	/* default focus */
 	gtk_widget_grab_focus (song_info->priv->title);
@@ -382,6 +387,8 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
 	rb_song_info_update_mtime (song_info);
+	rb_song_info_update_play_count (song_info);
+	rb_song_info_update_last_played (song_info);
 }
 
 static void
@@ -773,190 +780,36 @@ static void
 rb_song_info_update_mtime (RBSongInfo *song_info)
 {
 	char *text = NULL;
-	const char *format = NULL;
-	long mtime = 0L;
 
-	GDate *now;
-	GDate *file_date;
-	guint32 file_date_age;
-		
-	mtime = rb_node_get_property_long (RB_NODE (song_info->priv->current_node),
-                                         RB_NODE_SONG_PROP_MTIME);
-	
-	now = g_date_new ();
-	g_date_set_time (now, time (NULL));
-	
-	file_date = g_date_new ();
-	g_date_set_time (file_date, mtime);
-	
-	file_date_age = (g_date_get_julian (now) - g_date_get_julian (file_date));	
-
-	g_date_free (file_date);
-	g_date_free (now);
-	
-        if (file_date_age == 0) 
-	{
-        	format = "Today at %-I:%M:%S";
-	} 
-	else if (file_date_age == 1) 
-	{
-		format = "Yesterday at %-H:%M:%S";
- 	} 
-	else if (file_date_age < 7) 
-	{
-		format = "%A, %B %-d %Y at %-H:%M:%S";
-	} 
-	else
-	{
-		format = "%A, %B %-d %Y at %-H:%M:%S";
-	}
-
-	text = eel_strdup_strftime (format, localtime (&mtime));
+	text = rb_node_get_property_time (song_info->priv->current_node,
+					  RB_NODE_SONG_PROP_MTIME);
 
 	gtk_label_set_text (GTK_LABEL (song_info->priv->mtime), text);
+
 	g_free (text);
 }
 
-/* Legal conversion specifiers, as specified in the C standard. */
-#define C_STANDARD_STRFTIME_CHARACTERS "aAbBcdHIjmMpSUwWxXyYZ"
-#define C_STANDARD_NUMERIC_STRFTIME_CHARACTERS "dHIjmMSUwWyY"
-
-/**
- * eel_strdup_strftime:
- *
- * Cover for standard date-and-time-formatting routine strftime that returns
- * a newly-allocated string of the correct size. The caller is responsible
- * for g_free-ing the returned string.
- *
- * Besides the buffer management, there are two differences between this
- * and the library strftime:
- *
- *   1) The modifiers "-" and "_" between a "%" and a numeric directive
- *      are defined as for the GNU version of strftime. "-" means "do not
- *      pad the field" and "_" means "pad with spaces instead of zeroes".
- *   2) Non-ANSI extensions to strftime are flagged at runtime with a
- *      warning, so it's easy to notice use of the extensions without
- *      testing with multiple versions of the library.
- *
- * @format: format string to pass to strftime. See strftime documentation
- * for details.
- * @time_pieces: date/time, in struct format.
- * 
- * Return value: Newly allocated string containing the formatted time.
- **/
-static char *
-eel_strdup_strftime (const char *format, struct tm *time_pieces)
+static void
+rb_song_info_update_play_count (RBSongInfo *song_info)
 {
-	GString *string;
-	const char *remainder, *percent;
-	char code[3], buffer[512];
-	char *piece, *result, *converted;
-	size_t string_length;
-	gboolean strip_leading_zeros, turn_leading_zeros_to_spaces;
+	const char *text = NULL;
 
-	/* Format could be translated, and contain UTF-8 chars,
-	 * so convert to locale encoding which strftime uses */
-	converted = g_locale_from_utf8 (format, -1, NULL, NULL, NULL);
-	g_return_val_if_fail (converted != NULL, NULL);
-	
-	string = g_string_new ("");
-	remainder = converted;
+	text = rb_node_get_property_string (RB_NODE (song_info->priv->current_node),
+                                            RB_NODE_SONG_PROP_NUM_PLAYS);
 
-	/* Walk from % character to % character. */
-	for (;;) {
-		percent = strchr (remainder, '%');
-		if (percent == NULL) {
-			g_string_append (string, remainder);
-			break;
-		}
-		g_string_append_len (string, remainder,
-				     percent - remainder);
 
-		/* Handle the "%" character. */
-		remainder = percent + 1;
-		switch (*remainder) {
-		case '-':
-			strip_leading_zeros = TRUE;
-			turn_leading_zeros_to_spaces = FALSE;
-			remainder++;
-			break;
-		case '_':
-			strip_leading_zeros = FALSE;
-			turn_leading_zeros_to_spaces = TRUE;
-			remainder++;
-			break;
-		case '%':
-			g_string_append_c (string, '%');
-			remainder++;
-			continue;
-		case '\0':
-			g_warning ("Trailing %% passed to eel_strdup_strftime");
-			g_string_append_c (string, '%');
-			continue;
-		default:
-			strip_leading_zeros = FALSE;
-			turn_leading_zeros_to_spaces = FALSE;
-			break;
-		}
-		
-		if (strchr (C_STANDARD_STRFTIME_CHARACTERS, *remainder) == NULL) {
-			g_warning ("eel_strdup_strftime does not support "
-				   "non-standard escape code %%%c",
-				   *remainder);
-		}
-
-		/* Convert code to strftime format. We have a fixed
-		 * limit here that each code can expand to a maximum
-		 * of 512 bytes, which is probably OK. There's no
-		 * limit on the total size of the result string.
-		 */
-		code[0] = '%';
-		code[1] = *remainder;
-		code[2] = '\0';
-		string_length = strftime (buffer, sizeof (buffer),
-					  code, time_pieces);
-		if (string_length == 0) {
-			/* We could put a warning here, but there's no
-			 * way to tell a successful conversion to
-			 * empty string from a failure.
-			 */
-			buffer[0] = '\0';
-		}
-
-		/* Strip leading zeros if requested. */
-		piece = buffer;
-		if (strip_leading_zeros || turn_leading_zeros_to_spaces) {
-			if (strchr (C_STANDARD_NUMERIC_STRFTIME_CHARACTERS, *remainder) == NULL) {
-				g_warning ("eel_strdup_strftime does not support "
-					   "modifier for non-numeric escape code %%%c%c",
-					   remainder[-1],
-					   *remainder);
-			}
-			if (*piece == '0') {
-				do {
-					piece++;
-				} while (*piece == '0');
-				if (!g_ascii_isdigit (*piece)) {
-				    piece--;
-				}
-			}
-			if (turn_leading_zeros_to_spaces) {
-				memset (buffer, ' ', piece - buffer);
-				piece = buffer;
-			}
-		}
-		remainder++;
-
-		/* Add this piece. */
-		g_string_append (string, piece);
-	}
-	
-	/* Convert the string back into utf-8. */
-	result = g_locale_to_utf8 (string->str, -1, NULL, NULL, NULL);
-
-	g_string_free (string, TRUE);
-	g_free (converted);
-
-	return result;
+	gtk_label_set_text (GTK_LABEL (song_info->priv->play_count), text);
 }
 
+static void
+rb_song_info_update_last_played (RBSongInfo *song_info)
+{
+	char *text = NULL;
+
+	text = rb_node_get_property_time (song_info->priv->current_node,
+					  RB_NODE_SONG_PROP_LAST_PLAYED);
+
+	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), text);
+
+	g_free (text);
+}

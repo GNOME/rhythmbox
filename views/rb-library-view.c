@@ -475,7 +475,7 @@ rb_library_view_set_property (GObject *object,
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "changed",
 					  G_CALLBACK (node_view_changed_cb),
-					  view);
+					  view);	
 
 			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), FALSE, FALSE);
 
@@ -884,10 +884,22 @@ node_view_changed_cb (RBNodeView *view,
 }
 
 static void
+song_update_statistics (RBLibraryView *view)
+{
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+	rb_node_song_update_play_statistics (node);
+}
+
+static void
 song_eos_cb (MonkeyMediaStream *stream,
 	     RBLibraryView *view)
 {
+
 	GDK_THREADS_ENTER ();
+
+	song_update_statistics (view);
 	
 	rb_library_view_next (RB_VIEW_PLAYER (view));
 

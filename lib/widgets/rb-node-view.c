@@ -1111,6 +1111,14 @@ rb_node_view_sort_func (GtkTreeModel *model,
 			else
 				retval = -1;
 			break;
+		case G_TYPE_LONG:
+			if (g_value_get_long (&a_value) < g_value_get_long (&b_value))
+				retval = 1;
+			else if (g_value_get_long (&a_value) == g_value_get_long (&b_value))
+				retval = 0;
+			else
+				retval = -1;
+			break;
 		case G_TYPE_OBJECT:
 			if ((g_value_get_object (&a_value) == NULL) && (g_value_get_object (&b_value) != NULL))
 				retval = -1;

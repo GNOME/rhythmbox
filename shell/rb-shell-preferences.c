@@ -66,6 +66,8 @@ struct RBShellPreferencesPrivate
 	GtkWidget *duration_check;
 	GtkWidget *track_check;
 	GtkWidget *rating_check;
+	GtkWidget *play_count_check;
+	GtkWidget *last_played_check;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -190,6 +192,10 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "track_check");
 	shell_preferences->priv->rating_check =
 		glade_xml_get_widget (xml, "rating_check");
+	shell_preferences->priv->play_count_check =
+		glade_xml_get_widget (xml, "play_count_check");
+	shell_preferences->priv->last_played_check =
+		glade_xml_get_widget (xml, "last_played_check");
 
 	g_object_unref (G_OBJECT (xml));
 
@@ -275,6 +281,12 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
 				      strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
 
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT") != NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
+
+
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	for (i = 0; i < G_N_ELEMENTS (styles); i++)
 	{
@@ -348,6 +360,11 @@ show_columns_changed_cb (GtkToggleButton *button,
 		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_TRACK_NUMBER", conf);
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->rating_check)) == TRUE)
 		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_RATING", conf);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->play_count_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_PLAY_COUNT", conf);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->last_played_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_LAST_PLAYED", conf);
+
 
 	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, conf);
 

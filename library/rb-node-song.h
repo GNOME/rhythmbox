@@ -29,21 +29,24 @@ G_BEGIN_DECLS
 /* properties */
 enum
 {
-	RB_NODE_SONG_PROP_GENRE             = 1,
-	RB_NODE_SONG_PROP_ARTIST            = 2,
-	RB_NODE_SONG_PROP_ALBUM             = 3,
-	RB_NODE_SONG_PROP_REAL_GENRE        = 4,
-	RB_NODE_SONG_PROP_REAL_ARTIST       = 5,
-	RB_NODE_SONG_PROP_REAL_ALBUM        = 6,
-	RB_NODE_SONG_PROP_TRACK_NUMBER      = 7,
-	RB_NODE_SONG_PROP_REAL_TRACK_NUMBER = 8,
-	RB_NODE_SONG_PROP_DURATION          = 9,
-	RB_NODE_SONG_PROP_REAL_DURATION     = 10,
-	RB_NODE_SONG_PROP_FILE_SIZE         = 11,
-	RB_NODE_SONG_PROP_LOCATION          = 12,
-	RB_NODE_SONG_PROP_MTIME             = 13,
-	RB_NODE_SONG_PROP_RESERVED          = 14,
-	RB_NODE_SONG_PROP_RATING	    = 15
+	RB_NODE_SONG_PROP_GENRE              = 1,
+	RB_NODE_SONG_PROP_ARTIST             = 2,
+	RB_NODE_SONG_PROP_ALBUM              = 3,
+	RB_NODE_SONG_PROP_REAL_GENRE         = 4,
+	RB_NODE_SONG_PROP_REAL_ARTIST        = 5,
+	RB_NODE_SONG_PROP_REAL_ALBUM         = 6,
+	RB_NODE_SONG_PROP_TRACK_NUMBER       = 7,
+	RB_NODE_SONG_PROP_REAL_TRACK_NUMBER  = 8,
+	RB_NODE_SONG_PROP_DURATION           = 9,
+	RB_NODE_SONG_PROP_REAL_DURATION      = 10,
+	RB_NODE_SONG_PROP_FILE_SIZE          = 11,
+	RB_NODE_SONG_PROP_LOCATION           = 12,
+	RB_NODE_SONG_PROP_MTIME              = 13,
+	RB_NODE_SONG_PROP_RESERVED           = 14,
+	RB_NODE_SONG_PROP_RATING	     = 15,
+ 	RB_NODE_SONG_PROP_NUM_PLAYS          = 16,
+ 	RB_NODE_SONG_PROP_LAST_PLAYED        = 17,
+	RB_NODE_SONG_PROP_LAST_PLAYED_SIMPLE = 18
 };
 
 #define RB_TYPE_NODE_SONG         (rb_node_song_get_type ())
@@ -65,31 +68,35 @@ typedef struct
 	RBNodeClass parent;
 } RBNodeSongClass;
 
-GType       rb_node_song_get_type          (void);
+GType       rb_node_song_get_type              (void);
 
-RBNodeSong *rb_node_song_new               (const char *location,
-					    RBLibrary *library);
+RBNodeSong *rb_node_song_new                   (const char *location,
+					        RBLibrary *library);
 
 /* if the stored mtime on the node differs from the file's actual mtime,
  * resync the node */
-void        rb_node_song_update_if_changed (RBNodeSong *song,
-					    RBLibrary *library);
+void        rb_node_song_update_if_changed     (RBNodeSong *song,
+					        RBLibrary *library);
 
 /* convenience property wrappers: */
-RBNode     *rb_node_song_get_genre         (RBNodeSong *song);
-gboolean    rb_node_song_has_genre         (RBNodeSong *song,
-				            RBNode *genre,
-					    RBLibrary *library);
+RBNode     *rb_node_song_get_genre             (RBNodeSong *song);
+gboolean    rb_node_song_has_genre             (RBNodeSong *song,
+				                RBNode *genre,
+					        RBLibrary *library);
 
-RBNode     *rb_node_song_get_artist        (RBNodeSong *song);
-gboolean    rb_node_song_has_artist        (RBNodeSong *song,
-				            RBNode *artist,
-					    RBLibrary *library);
+RBNode     *rb_node_song_get_artist            (RBNodeSong *song);
+gboolean    rb_node_song_has_artist            (RBNodeSong *song,
+				                RBNode *artist,
+					        RBLibrary *library);
 
-RBNode     *rb_node_song_get_album         (RBNodeSong *song);
-gboolean    rb_node_song_has_album         (RBNodeSong *song,
-				            RBNode *album,
-					    RBLibrary *library);
+RBNode     *rb_node_song_get_album             (RBNodeSong *song);
+gboolean    rb_node_song_has_album             (RBNodeSong *song,
+				                RBNode *album,
+					        RBLibrary *library);
+
+/* Update 'play' statistics */
+void        rb_node_song_update_play_statistics (RBNode *node);
+
 
 G_END_DECLS
 

@@ -818,10 +818,21 @@ node_view_changed_cb (RBNodeView *view,
 }
 
 static void
+song_update_statistics (RBGroupView *view)
+{
+	RBNode *node;
+
+	node = rb_node_view_get_playing_node (view->priv->songs);
+	rb_node_song_update_play_statistics (node);
+}
+
+static void
 song_eos_cb (MonkeyMediaStream *stream,
 	     RBGroupView *view)
 {
 	GDK_THREADS_ENTER ();
+
+	song_update_statistics (view);
 	
 	rb_group_view_next (RB_VIEW_PLAYER (view));
 

@@ -104,6 +104,9 @@ float       rb_node_get_property_float    (RBNode *node,
 					   int property_id);
 RBNode     *rb_node_get_property_node     (RBNode *node,
 					   int property_id);
+/* free return value */
+char       *rb_node_get_property_time     (RBNode *node,
+					   int property_id);
 
 /* xml storage */
 void        rb_node_save_to_xml           (RBNode *node,
