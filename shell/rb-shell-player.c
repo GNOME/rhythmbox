@@ -62,18 +62,21 @@ static void rb_shell_player_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
+static void rb_shell_player_do_previous (RBShellPlayer *player);
 static void rb_shell_player_cmd_previous (BonoboUIComponent *component,
 			                  RBShellPlayer *player,
 			                  const char *verbname);
 static void rb_shell_player_cmd_play (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
+static void rb_shell_player_playpause (RBShellPlayer *player);
 static void rb_shell_player_cmd_pause (BonoboUIComponent *component,
 			               RBShellPlayer *player,
 			               const char *verbname);
 static void rb_shell_player_cmd_stop (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
+static void rb_shell_player_do_next (RBShellPlayer *player);
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
@@ -350,18 +353,24 @@ rb_shell_player_init (RBShellPlayer *player)
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->prev_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
+	g_signal_connect_swapped (G_OBJECT (player->priv->prev_button),
+				  "clicked", G_CALLBACK (rb_shell_player_do_previous), player);
 
 	/* Play button */
 	image = gtk_image_new_from_stock (RB_STOCK_PLAY,
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->play_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->play_button), image);
+	g_signal_connect_swapped (G_OBJECT (player->priv->play_button),
+				  "clicked", G_CALLBACK (rb_shell_player_playpause), player);
 
 	/* Next button */
 	image = gtk_image_new_from_stock (RB_STOCK_NEXT,
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->next_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
+	g_signal_connect_swapped (G_OBJECT (player->priv->next_button),
+				  "clicked", G_CALLBACK (rb_shell_player_do_next), player);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_button, FALSE, TRUE, 0);
@@ -769,11 +778,8 @@ rb_shell_player_next (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_cmd_previous (BonoboUIComponent *component,
-			      RBShellPlayer *player,
-			      const char *verbname)
+rb_shell_player_do_previous (RBShellPlayer *player)
 {
-	rb_debug ("previous");
 	if (monkey_media_player_get_time (player->priv->mmplayer) < 3 &&
 	    rb_shell_player_have_previous (player, player->priv->selected_source) == TRUE)
 	{
@@ -791,27 +797,48 @@ rb_shell_player_cmd_previous (BonoboUIComponent *component,
 }
 
 static void
+rb_shell_player_cmd_previous (BonoboUIComponent *component,
+			      RBShellPlayer *player,
+			      const char *verbname)
+{
+	rb_debug ("previous");
+	rb_shell_player_do_previous (player);
+}
+
+static void
 rb_shell_player_cmd_play (BonoboUIComponent *component,
 			  RBShellPlayer *player,
 			  const char *verbname)
 {
-	RBNode *node;
 	rb_debug ("play!");
-	if (player->priv->source == NULL) {
-		/* no current stream, pull one in from the currently
-		 * selected source */
-		rb_shell_player_set_playing_source (player, player->priv->selected_source);
-	}
+	rb_shell_player_playpause (player);
+}
 
-	node = rb_shell_player_get_playing_node (player);
-	if (!node) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-		node = rb_node_view_get_first_node (songs);
-		g_return_if_fail (node != NULL);
-		rb_shell_player_set_playing_node (player, node);
+static void
+rb_shell_player_playpause (RBShellPlayer *player)
+{
+	if (monkey_media_player_playing (player->priv->mmplayer)) {
+		monkey_media_player_pause (player->priv->mmplayer);
 	} else {
-		rb_shell_player_play (player);
+		RBNode *node;
+		if (player->priv->source == NULL) {
+			/* no current stream, pull one in from the currently
+			 * selected source */
+			rb_shell_player_set_playing_source (player, player->priv->selected_source);
+		}
+		
+		node = rb_shell_player_get_playing_node (player);
+		if (!node) {
+			RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+			node = rb_node_view_get_first_node (songs);
+			g_return_if_fail (node != NULL);
+			rb_shell_player_set_playing_node (player, node);
+		} else {
+			rb_shell_player_play (player);
+		}
 	}
+	rb_shell_player_sync_with_source (player);
+	rb_shell_player_sync_buttons (player);
 }
 
 static void
@@ -820,10 +847,8 @@ rb_shell_player_cmd_pause (BonoboUIComponent *component,
 			   const char *verbname)
 {
 	rb_debug ("This appears to be a mild setback for the stop faction");
-	monkey_media_player_pause (player->priv->mmplayer);
+	rb_shell_player_playpause (player);
 
-	rb_shell_player_sync_with_source (player);
-	rb_shell_player_sync_buttons (player);
 }
 
 static void
@@ -914,11 +939,8 @@ rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_player_cmd_next (BonoboUIComponent *component,
-			  RBShellPlayer *player,
-			  const char *verbname)
+rb_shell_player_do_next (RBShellPlayer *player)
 {
-	rb_debug ("next");
 	if (player->priv->source != NULL)
 	{
 		rb_shell_player_next (player);
@@ -926,6 +948,15 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 		/* FIXME: uncomment - disabled for 0.4 release */
 		//rb_source_jump_to_current (player->priv->source);
 	}
+}
+
+static void
+rb_shell_player_cmd_next (BonoboUIComponent *component,
+			  RBShellPlayer *player,
+			  const char *verbname)
+{
+	rb_debug ("next");
+	rb_shell_player_do_next (player);
 }
 
 static void
@@ -1064,15 +1095,21 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	RBSource *source = rb_shell_player_get_playing_node (player) == NULL ?
 		player->priv->selected_source : player->priv->source;
 	RBNodeView *songs = rb_source_get_node_view (source);
+	gboolean have_previous, have_next;
 
 	rb_debug ("syncing with source %p", source);
 
+	have_previous = rb_shell_player_have_previous (player, source);
+	
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS,
-				 rb_shell_player_have_previous (player,
-								source));
+				 have_previous);
+	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->prev_button), have_previous);
+
+	have_next = rb_shell_player_have_next (player, source);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT,
-				 rb_shell_player_have_next (player,
-							    source));
+				 have_next);
+	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->next_button), have_next);
+
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
 				 rb_shell_player_get_playing_node (player) != NULL);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
