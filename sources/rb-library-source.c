@@ -343,7 +343,7 @@ rb_library_source_init (RBLibrarySource *source)
 
 	source->priv->pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_LIBRARY,
-						       GTK_ICON_SIZE_MENU,
+						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
 	gtk_widget_destroy (dummy);
 }

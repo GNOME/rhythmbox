@@ -258,7 +258,7 @@ rb_iradio_source_init (RBIRadioSource *source)
 
 	source->priv->pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_IRADIO,
-						       GTK_ICON_SIZE_MENU,
+						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
 	gtk_widget_destroy (dummy);
 }

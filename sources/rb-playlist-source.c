@@ -288,11 +288,11 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 		
 	source->priv->normal_pixbuf = gtk_widget_render_icon (dummy,
 						       RB_STOCK_PLAYLIST,
-						       GTK_ICON_SIZE_MENU,
+						       GTK_ICON_SIZE_LARGE_TOOLBAR,
 						       NULL);
 	source->priv->smartypants_pixbuf = gtk_widget_render_icon (dummy,
 								   RB_STOCK_AUTOMATIC_PLAYLIST,
-								   GTK_ICON_SIZE_MENU,
+								   GTK_ICON_SIZE_LARGE_TOOLBAR,
 								   NULL);
 	gtk_widget_destroy (dummy);
 		
