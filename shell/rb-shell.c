@@ -954,9 +954,10 @@ shell_pb_get_prop (BonoboPropertyBag *bag,
 
 	case PROP_SHUFFLE:
 	{
-		char *play_order;
-		g_object_get (G_OBJECT (player), "play-order", &play_order, NULL);
-		BONOBO_ARG_SET_BOOLEAN (arg, !strcmp ("shuffle", play_order));
+		gboolean shuffle, repeat;
+		rb_shell_player_get_playback_state (player,
+						    &shuffle, &repeat);
+		BONOBO_ARG_SET_BOOLEAN (arg, shuffle);
 		break;
 	}
 
@@ -1162,6 +1163,10 @@ rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
 	
 	g_assert (strcmp (pspec->name, "playing-entry") == 0);
 	song_info = get_song_info_from_player (shell);
+	if (!song_info) {
+		rb_debug ("no song info returned!");
+		return;
+	}
 	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
 	arg->_value = (gpointer)song_info;
 	shell_notify_pb_changes (shell, "song", arg);
