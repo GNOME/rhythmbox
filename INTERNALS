@@ -33,10 +33,13 @@ which pops up when you hit Edit->Preferences.
 ** Sources
 
 Rhythmbox has an idea of multiple music "sources", like the Library
-and (Internet) Radio.  All of these sources derive from RBSource
-(sources/rb-source.[ch]), which is an abstract base class.  RBSource
-has a number of methods which the specific sources like the Library
-implement.  For example, one of the simpler ones is:
+and (Internet) Radio.  The RBSource classes are basically the
+user interface part of the "source" concept.
+
+All of these sources derive from RBSource (sources/rb-source.[ch]),
+which is an abstract base class.  RBSource has a number of methods
+which the specific sources like the Library implement.  For example,
+one of the simpler ones is:
 
 gboolean	rb_source_can_pause		(RBSource *player);
 
@@ -44,6 +47,13 @@ So here, a source returns TRUE if it can pause (i.e. pause button should
 be displayed).
 
 The RBShell maintains a list of available RBSources.
+
+** Backends
+
+Currently, all RBSource instances have a "backend" too.  The RBLibrarySource
+has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  As you might
+expect, while the RBSource components act as a "frontend", the various
+backends maintain all the data and don't deal much with user interfaces.
 
 ** A first look at the Library
 
@@ -132,6 +142,32 @@ and then gets the currently selected RBNode, and uses it to play the song.
 In addition to providing a view of the RBNode tree, the RBNodeView
 also takes care of filtering it, using an RBNodeFilter
 (library/rb-node-filter.[ch]).  
+
+** More on the Library
+
+When you add music or delete music in the library, you might notice that it happens
+"in the background".  This is because there is are several separate threads
+dedicated to processing addition/removal/update requests on the library.
+
+The main one is (unsurprisingly) called RBLibraryMainThread.  This class
+continually reads the main RBLibraryActionQueue (which is a queue of pending
+requests from the user), and processes them.  For instance, an
+RB_LIBRARY_ACTION_ADD_FILE request causes a new node to be created.
+Note that the node system itself has the required locks needed for this to work.
+
+There is a secondary thread RBLibraryWalkerThread which is dedicated to handling
+recursive library additions.  It has its own RBLibraryActionQueue instance, and
+it watches for RB_LIBRARY_ACTION_ADD_DIRECTORY requests.  It then recursively
+traverses the URI and adds RB_LIBRARY_ACTION_ADD_FILE requests to the main
+queue.
+
+** The Radio Source
+
+Internet radio is handled similarly to the library.  Instead of the
+Genre->Artist->Album->Song tree, the hierarchy simply looks like:
+Genre->Song.  This hierarchy is maintained by the RBIRadioBackend.
+The RBIRadioSource handles most of the user-interface bits such
+as popping up dialog boxes and filtering and such.
 
 Local Variables:
 mode: outline
