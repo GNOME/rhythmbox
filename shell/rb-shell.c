@@ -2479,9 +2479,6 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 
 	rb_shell_select_source (shell, source);
 
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-
 	if (!rb_entry_view_get_entry_contained (songs, entry)) {
 		rb_source_search (shell->priv->selected_source, NULL);
 	}
