@@ -522,7 +522,8 @@ impl_get_status (RBSource *asource)
 static const char *
 impl_get_status_fast (RBGroupSource *source)
 {
-	return g_strdup_printf (_("%ld songs"), rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
+	return g_strdup_printf (_("%ld songs"),
+				(long) rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
 }
 
 static const char *
