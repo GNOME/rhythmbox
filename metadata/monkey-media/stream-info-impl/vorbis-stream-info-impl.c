@@ -532,8 +532,8 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
-		g_value_init (value, G_TYPE_UINT64);
-		g_value_set_uint64 (value, ov_time_total (&impl->priv->vf, -1));
+		g_value_init (value, G_TYPE_LONG);
+		g_value_set_long (value, ov_time_total (&impl->priv->vf, -1));
 		break;
 
 	/* audio bits */

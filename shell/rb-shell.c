@@ -925,7 +925,7 @@ get_song_info_from_player (RBShell *shell)
 	song_info->genre = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_GENRE));
 	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
 	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
-	song_info->duration = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_DURATION);
+	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
 	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_BITRATE);
 	song_info->filesize = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_FILE_SIZE);
 	song_info->rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);

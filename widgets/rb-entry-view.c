@@ -1027,8 +1027,8 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 
 	rhythmdb_read_lock (data->view->priv->db);
 
-	duration  = rhythmdb_entry_get_uint64 (data->view->priv->db, entry,
-					       data->propid);
+	duration  = rhythmdb_entry_get_long (data->view->priv->db, entry,
+					     data->propid);
 
 	rhythmdb_read_unlock (data->view->priv->db);
 

@@ -69,7 +69,7 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_PERFORMER),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
-				     GINT_TO_POINTER (G_TYPE_UINT64));
+				     GINT_TO_POINTER (G_TYPE_LONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_CODEC),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_BITRATE),
