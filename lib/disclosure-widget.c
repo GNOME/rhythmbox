@@ -319,7 +319,7 @@ cddb_disclosure_new (const char *shown,
 {
 	CDDBDisclosure *disclosure;
 
-	disclosure = g_object_new (cddb_disclosure_get_type (), "label", shown, NULL);
+	disclosure = g_object_new (cddb_disclosure_get_type (), "label", shown, "use_underline", TRUE, NULL);
 
 	disclosure->priv->shown = g_strdup (shown);
 	disclosure->priv->hidden = g_strdup (hidden);

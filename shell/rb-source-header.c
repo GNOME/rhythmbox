@@ -170,8 +170,8 @@ rb_source_header_init (RBSourceHeader *header)
 	g_signal_connect (G_OBJECT (header->priv->search), "search",
 			  G_CALLBACK (rb_source_header_search_cb), header);
 
-	header->priv->disclosure = cddb_disclosure_new (_("Show Browser"),
-							_("Hide Browser"));
+	header->priv->disclosure = cddb_disclosure_new (_("Show _Browser"),
+							_("Hide _Browser"));
 	gtk_widget_set_sensitive (header->priv->disclosure, FALSE);
 	g_signal_connect (G_OBJECT (header->priv->disclosure), "toggled",
 			  G_CALLBACK (rb_source_header_disclosure_toggled_cb), header);
