@@ -1,6 +1,7 @@
 noinst_LTLIBRARIES = libgultoolbar.la
 
 libgultoolbar_la_SOURCES =				\
+	gul-gobject-misc.h				\
 	gul-tbi-separator.c				\
 	gul-tbi-separator.h				\
 	gul-toolbar-bonobo-view.c			\
