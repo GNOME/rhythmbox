@@ -75,14 +75,17 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 
 	vsnprintf (buffer, 1024, format, args);
 
-	dialog = gtk_message_dialog_new (NULL, 0,
+	dialog = gtk_message_dialog_new (NULL,
+					 GTK_DIALOG_MODAL,
 					 type,
 					 GTK_BUTTONS_OK,
 					 buffer);
 
-	gtk_dialog_run (GTK_DIALOG (dialog));
+	g_signal_connect_swapped (GTK_OBJECT (dialog), "response",
+				  G_CALLBACK (gtk_widget_destroy),
+				  GTK_OBJECT (dialog));
 
-	gtk_widget_destroy (dialog);
+	gtk_widget_show (GTK_WIDGET (dialog));
 }
 
 GtkWidget *
