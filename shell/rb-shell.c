@@ -342,7 +342,7 @@ rb_shell_construct (RBShell *shell)
 	{
 		/* this is not critical, but worth a warning nevertheless */
 		char *msg = rb_shell_corba_exception_to_string (&ev);
-		rb_warning_dialog (_("Failed to register the shell:\n%s"), msg);
+		g_message (_("Failed to register the shell: %s\n"), msg);
 		g_free (msg);
 	}
 
