@@ -2,7 +2,7 @@
  *  arch-tag: The Rhythmbox main entrypoint
  *
  *  Copyright (C) 2002 Jorn Baayen
- *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
+ *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

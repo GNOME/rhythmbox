@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Header for dialog that displays errors during library loading
  *
- *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
+ *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
