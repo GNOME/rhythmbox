@@ -1,5 +1,14 @@
 2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library.c: (rb_library_init):
+
+	Check the new_nodes queue every 10 instead of every 100 ms,
+	makes song loading a lost faster. 10 seems to still be "slow"
+	enough to leave CPU usage minimal, if rhythmbox starts eating
+	100% cpu for you please let me know.
+
+2002-06-19  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-shell.c: (rb_shell_cmd_music_folders),
 	(rb_shell_cmd_add_to_library):
 

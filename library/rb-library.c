@@ -201,7 +201,7 @@ rb_library_init (RBLibrary *library)
 
 	rb_debug ("rb_library_init: stage 3 completed");
 
-	library->priv->timeout = g_timeout_add (100, (GSourceFunc) rb_library_timeout_cb, library);
+	library->priv->timeout = g_timeout_add (10, (GSourceFunc) rb_library_timeout_cb, library);
 
 	library->priv->thread = g_thread_create ((GThreadFunc) rb_library_thread_main,
 						 library->priv, TRUE, NULL);
