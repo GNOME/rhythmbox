@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of main Rhythmbox shell
  *
@@ -127,8 +128,29 @@ static CORBA_long rb_shell_corba_get_playing_time (PortableServer_Servant _serva
 static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 						   CORBA_long time, CORBA_Environment *ev);
 
+static void rb_shell_corba_set_rating (PortableServer_Servant _servant,
+					CORBA_long rating, CORBA_Environment *ev);
 static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
 
+static void rb_shell_corba_toggle_hide (PortableServer_Servant _servant,
+					CORBA_Environment *ev);
+
+static void rb_shell_corba_toggle_mute (PortableServer_Servant _servant,
+				        CORBA_Environment *ev);
+
+static CORBA_float rb_shell_corba_get_volume (PortableServer_Servant _servant,
+						CORBA_Environment *ev);
+static void rb_shell_corba_set_volume (PortableServer_Servant _servant,
+				CORBA_float vol,
+				CORBA_Environment *ev);
+static void rb_shell_corba_volume_up (PortableServer_Servant _servant,
+					CORBA_Environment *ev);
+static void rb_shell_corba_volume_down (PortableServer_Servant _servant,
+					CORBA_Environment *ev);
+
+static void rb_shell_corba_skip (PortableServer_Servant _servant,
+				CORBA_long offset,
+				CORBA_Environment *ev);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -308,6 +330,7 @@ enum
 struct RBShellPrivate
 {
 	GtkWidget *window;
+        gboolean iconified;
 
 	BonoboUIComponent *ui_component;
 	BonoboUIContainer *container;
@@ -439,7 +462,15 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->next = rb_shell_corba_next;
 	epv->getPlayingTime = rb_shell_corba_get_playing_time;
 	epv->setPlayingTime = rb_shell_corba_set_playing_time;
+	epv->setRating = rb_shell_corba_set_rating;
 	epv->getPlayerProperties = rb_shell_corba_get_player_properties;
+	epv->toggleHide = rb_shell_corba_toggle_hide;
+	epv->toggleMute = rb_shell_corba_toggle_mute;
+	epv->getVolume = rb_shell_corba_get_volume;
+	epv->setVolume = rb_shell_corba_set_volume;
+	epv->volumeUp = rb_shell_corba_volume_up;
+	epv->volumeDown = rb_shell_corba_volume_down;
+	epv->skip = rb_shell_corba_skip;
 
 	g_object_class_install_property (object_class,
 					 PROP_ARGC,
@@ -881,6 +912,7 @@ enum PlayerProperties {
 	PROP_VISIBILITY,
 	PROP_SONG,
 	PROP_SHUFFLE,
+	PROP_REPEAT,
 };
 
 
@@ -964,6 +996,15 @@ shell_pb_get_prop (BonoboPropertyBag *bag,
 		break;
 	}
 
+	case PROP_REPEAT:
+	{
+		gboolean shuffle, repeat;
+		rb_shell_player_get_playback_state (player,
+						    &shuffle, &repeat);
+		BONOBO_ARG_SET_BOOLEAN (arg, repeat);
+		break;
+	}
+
 	case PROP_SONG: {
 		GNOME_Rhythmbox_SongInfo *ret_val;
 		
@@ -1020,6 +1061,22 @@ shell_pb_set_prop (BonoboPropertyBag *bag,
 		break;
 	}
 
+	case PROP_REPEAT:
+	{
+		gboolean repeat;
+		gboolean shuffle;
+
+
+		rb_shell_player_get_playback_state (player, &shuffle,
+						    &repeat);
+		repeat = BONOBO_ARG_GET_BOOLEAN (arg);
+
+		rb_shell_player_set_playback_state (player,
+						    shuffle,
+						    repeat);
+		break;
+	}
+
 	default:
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
 		break;
@@ -1064,7 +1121,13 @@ rb_shell_corba_get_player_properties (PortableServer_Servant _servant,
 		/* Manually install the other properties */
 		bonobo_property_bag_add (shell->priv->pb, "shuffle", 
 					 PROP_SHUFFLE, BONOBO_ARG_BOOLEAN, NULL, 
-					 _("Whether shuffle is enabled"), 0);
+					 _("Whether shuffle is enabled"), 
+					 (Bonobo_PROPERTY_READABLE | Bonobo_PROPERTY_WRITEABLE));
+
+		bonobo_property_bag_add (shell->priv->pb, "repeat", 
+					 PROP_REPEAT, BONOBO_ARG_BOOLEAN, NULL, 
+					 _("Whether repeat is enabled"), 
+					 (Bonobo_PROPERTY_READABLE | Bonobo_PROPERTY_WRITEABLE));
 
 		bonobo_property_bag_add (shell->priv->pb, "song", 
 					 PROP_SONG, TC_GNOME_Rhythmbox_SongInfo, NULL, 
@@ -1143,6 +1206,112 @@ rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
 }
 
+static void 
+rb_shell_corba_toggle_hide (PortableServer_Servant _servant,
+                            CORBA_Environment *ev) 
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("corba toggle hide");
+        if (shell->priv->iconified) {
+                gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
+                rb_shell_corba_grab_focus (_servant, ev);
+                shell->priv->iconified = FALSE;
+        } else {
+                gtk_window_iconify (GTK_WINDOW (shell->priv->window));
+                shell->priv->iconified = TRUE;
+        }
+}
+
+static void 
+rb_shell_corba_toggle_mute (PortableServer_Servant _servant,
+                            CORBA_Environment *ev) 
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("corba toggle mute");
+        rb_shell_player_toggle_mute (shell->priv->player_shell);
+}
+
+static CORBA_float 
+rb_shell_corba_get_volume (PortableServer_Servant _servant,
+                           CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("corba get volume");        
+	return rb_shell_player_get_volume (shell->priv->player_shell);
+}
+
+static void 
+rb_shell_corba_set_volume (PortableServer_Servant _servant,
+                           CORBA_float vol,
+                           CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("corba set volume %f", vol);
+	return rb_shell_player_set_volume (shell->priv->player_shell, vol);
+}
+
+static void 
+rb_shell_corba_volume_up (PortableServer_Servant _servant,
+                          CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+        float vol;
+	rb_debug ("corba volume up");
+        vol = rb_shell_player_get_volume (shell->priv->player_shell);
+        rb_shell_player_set_volume (shell->priv->player_shell, vol+0.1);
+}
+
+static void 
+rb_shell_corba_volume_down (PortableServer_Servant _servant,
+                            CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+        float vol;
+	rb_debug ("corba volume down");
+        vol = rb_shell_player_get_volume (shell->priv->player_shell);
+        rb_shell_player_set_volume (shell->priv->player_shell, vol-0.1);
+}
+
+static void 
+rb_shell_corba_skip (PortableServer_Servant _servant,
+                     CORBA_long offset,
+                     CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_debug ("corba skip %ld", offset);
+        rb_shell_player_seek (shell->priv->player_shell, offset);
+}
+
+static void
+rb_shell_corba_set_rating (PortableServer_Servant _servant,
+				 CORBA_long rating, CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	RhythmDBEntry *entry;
+	RhythmDB *db = shell->priv->db;
+	RBEntryView *view;
+	RBSource *playing_source;
+	GValue value = {0, };
+
+	rb_debug ("got set rating");
+
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, rating);
+
+	playing_source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	if (playing_source != NULL) {
+	    view = rb_source_get_entry_view (playing_source);
+	    g_object_get (G_OBJECT (view), "playing_entry", &entry, NULL);
+	    if (entry != NULL) {
+			rhythmdb_write_lock (db);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
+			rhythmdb_write_unlock (db);
+	    }
+	}
+
+	g_value_unset (&value);
+}
+
 
 static void
 rb_shell_property_changed_generic_cb (GObject *object,
@@ -1216,6 +1385,7 @@ rb_shell_construct (RBShell *shell)
 						_("Music Player")));
 
 	shell->priv->window = GTK_WIDGET (win);
+        shell->priv->iconified = FALSE;
 
 	g_signal_connect_object (G_OBJECT (win), "window-state-event",
 				 G_CALLBACK (rb_shell_window_state_cb),

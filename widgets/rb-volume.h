@@ -51,6 +51,8 @@ GType		rb_volume_get_type	(void);
 
 RBVolume *	rb_volume_new		(void);
 
+void            rb_volume_set_volume (RBVolume *volume, float vol);
+
 G_END_DECLS
 
 #endif /* __RB_VOLUME_H */

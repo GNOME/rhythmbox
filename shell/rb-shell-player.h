@@ -105,6 +105,10 @@ void			rb_shell_player_set_playback_state(RBShellPlayer *player,
 gboolean                rb_shell_player_get_playback_state(RBShellPlayer *player,
 							   gboolean *shuffle,
 							   gboolean *repeat);
+void                    rb_shell_player_set_volume      (RBShellPlayer *player, float vol);
+float                   rb_shell_player_get_volume      (RBShellPlayer *player);
+void                    rb_shell_player_seek            (RBShellPlayer *player, long offset);
+void                    rb_shell_player_toggle_mute     (RBShellPlayer *player);
 
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);

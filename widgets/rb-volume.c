@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of Rhythmbox volume control button
  * 
@@ -280,10 +281,17 @@ static void
 rb_volume_sync_volume (RBVolume *volume)
 {
 	float vol;
-	GtkWidget *image;
 
 	vol = eel_gconf_get_float (CONF_STATE_VOLUME);
 	rb_debug ("current volume is %f", vol);
+        rb_volume_set_volume (volume, vol);
+}
+
+void
+rb_volume_set_volume (RBVolume *volume, float vol)
+{
+        GtkWidget *image;
+
 	gtk_container_remove (GTK_CONTAINER (volume->priv->button),
 			      gtk_bin_get_child (GTK_BIN (volume->priv->button)));
 

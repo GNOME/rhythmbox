@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: The Rhythmbox main entrypoint
  *
@@ -72,6 +73,11 @@ static gboolean playpause       = FALSE;
 static gboolean focus           = FALSE;
 static gboolean previous        = FALSE;
 static gboolean next            = FALSE;
+static gboolean volume_up       = FALSE;
+static gboolean volume_down     = FALSE;
+static gboolean toggle_mute     = FALSE;
+static gboolean rate_up         = FALSE;
+static gboolean rate_down       = FALSE;
 static gboolean shuffle         = FALSE;
 static gboolean print_play_time = FALSE;
 static gboolean print_song_length = FALSE;
@@ -98,6 +104,11 @@ main (int argc, char **argv)
 		{ "focus",	    0,  POPT_ARG_NONE,			&focus,	        	0, N_("Focus the running player"),     NULL },
 		{ "previous",		    0,  POPT_ARG_NONE,			&previous,	        	0, N_("Jump to previous song"),     NULL },
 		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
+		{ "volume-up",		        0,  POPT_ARG_NONE,			&volume_up,		        	0, N_("Turn up volume"),     NULL },
+		{ "volume-down",       	        0,  POPT_ARG_NONE,			&volume_down,		        	0, N_("Turn down volume"),     NULL },
+		{ "toggle-mute",		0,  POPT_ARG_NONE,			&toggle_mute,		        	0, N_("Toggle muting"),     NULL },
+		{ "rate-up",		        0,  POPT_ARG_NONE,			&rate_up,		        	0, N_("Increase rating"),     NULL },
+		{ "rate-down",       	        0,  POPT_ARG_NONE,			&rate_down,		        	0, N_("Decrease rating"),     NULL },
 		
 		{ "shuffle",		        0,  POPT_ARG_NONE,			&shuffle,		        	0, N_("Toggle shuffling"),     NULL },
 
@@ -319,6 +330,45 @@ rb_handle_cmdline (char **argv, int argc,
 		
 		return;
 	}
+
+	if (rate_up)
+	{
+		GNOME_Rhythmbox_SongInfo *song_info;
+
+		song_info = get_song_info (shell);
+		if (song_info != NULL) {
+			GNOME_Rhythmbox_setRating (shell, song_info->rating + 1, &ev);
+			CORBA_free (song_info);
+		}
+		grab_focus = FALSE;
+	}
+
+	if (rate_down)
+	{
+		GNOME_Rhythmbox_SongInfo *song_info;
+
+		song_info = get_song_info (shell);
+		if (song_info != NULL) {
+			GNOME_Rhythmbox_setRating (shell, song_info->rating - 1, &ev);
+			CORBA_free (song_info);
+		}
+		grab_focus = FALSE;
+	}
+
+        if (volume_up) {
+                GNOME_Rhythmbox_volumeUp (shell, &ev);
+		grab_focus = FALSE;
+        }
+
+        if (volume_down) {
+                GNOME_Rhythmbox_volumeDown (shell, &ev);
+		grab_focus = FALSE;
+        }
+
+        if (toggle_mute) {
+                GNOME_Rhythmbox_toggleMute (shell, &ev);
+		grab_focus = FALSE;
+        }
 
 	if (print_playing)
 	{

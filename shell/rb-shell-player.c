@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 8 -*- */
 /* 
  *  arch-tag: Implementation of main playback logic object
  *
@@ -245,6 +246,7 @@ struct RBShellPlayerPrivate
 
 	GtkWidget *shuffle_button;
 	GtkWidget *volume_button;
+        float mute;
 	GtkWidget *magic_button;
 
 	RBRemote *remote;
@@ -553,6 +555,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
 
 	player->priv->volume_button = GTK_WIDGET (rb_volume_new ());
+        player->priv->mute = -1.0;
 
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->volume_button), 
@@ -989,6 +992,44 @@ found:
 	*repeat = j > 0;
 	g_free (play_order);
 	return TRUE;
+}
+
+void
+rb_shell_player_set_volume (RBShellPlayer *player, float vol) 
+{
+	if (vol < 0.0)
+		vol = 0.0;
+	else if (vol > 1.0)
+		vol = 1.0;
+        rb_player_set_volume (player->priv->mmplayer, vol);
+        rb_volume_set_volume (RB_VOLUME (player->priv->volume_button), vol);
+}
+
+float
+rb_shell_player_get_volume (RBShellPlayer *player) 
+{
+        return rb_player_get_volume (player->priv->mmplayer); 
+}
+
+void
+rb_shell_player_seek (RBShellPlayer *player, long offset)
+{
+        if (rb_player_seekable (player->priv->mmplayer)) {
+	        long time = rb_player_get_time (player->priv->mmplayer);
+		rb_player_set_time (player->priv->mmplayer, time + offset);
+	}
+}
+
+void
+rb_shell_player_toggle_mute (RBShellPlayer *player)
+{
+        if (player->priv->mute >= 0) {
+                rb_shell_player_set_volume (player, player->priv->mute);
+                player->priv->mute = -1;
+        } else {
+                player->priv->mute = rb_shell_player_get_volume (player);
+                rb_shell_player_set_volume (player, 0);
+        }
 }
 
 static void 
