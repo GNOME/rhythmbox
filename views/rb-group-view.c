@@ -1212,8 +1212,6 @@ rb_group_view_drop_cb (GtkWidget *widget,
 	{
 		char *uri = i->data;
 
-		g_message ("Received %s", uri);
-
 		if (uri != NULL)
 		{
 			RBNode *node = rb_node_get_song_by_uri (uri);

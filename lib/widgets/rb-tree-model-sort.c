@@ -173,7 +173,7 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 {
 	guint target_info;
 	GList *i;
-	char *uri_list = "";
+	char *uri_list = NULL;
 	RBTreeModelSort *model = RB_TREE_MODEL_SORT (drag_source);
 	
 	if (drag_target_list == NULL)
@@ -197,11 +197,16 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 
 		g_signal_emit (G_OBJECT (model), rb_tree_model_sort_signals[URI_FROM_ITER], 0, &iter, &tmp);
-		tmp2 = g_strdup (uri_list);
-		g_free (uri_list);
-		uri_list = g_strdup_printf ("%s\r\n%s", tmp2, tmp);
-		g_free (tmp2);
-		g_free (tmp);
+		if (uri_list != NULL)
+		{
+			tmp2 = g_strdup (uri_list);
+			g_free (uri_list);
+			uri_list = g_strdup_printf ("%s\r\n%s", tmp2, tmp);
+			g_free (tmp2);
+			g_free (tmp);
+		}
+		else
+			uri_list = tmp;
 	}
 
 	g_free (model->priv->uri_list);
