@@ -835,6 +835,9 @@ rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type)
 		/* Hack to ensure all string values are initialized. */
 		if (val_type == G_TYPE_STRING)
 			g_value_set_static_string (RHYTHMDB_TREE_ENTRY_VALUE (ret, i), "");
+
+		if (i == RHYTHMDB_PROP_TRACK_NUMBER)
+			g_value_set_int (RHYTHMDB_TREE_ENTRY_VALUE (ret, i), -1);
 	}
 	g_value_set_int (RHYTHMDB_TREE_ENTRY_VALUE (ret, RHYTHMDB_PROP_TYPE), type);
 

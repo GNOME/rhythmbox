@@ -67,7 +67,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				break;
 			case 8: /* RB_NODE_PROP_TRACK_NUMBER */
 				xml = xmlNodeGetContent (node_child);
-				track_number = g_ascii_strtoull (xml, NULL, 10);
+				track_number = atoi (xml);
 				g_free (xml);
 				break;
 			case 9: /* RB_NODE_PROP_DURATION */
