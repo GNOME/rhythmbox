@@ -126,7 +126,13 @@ main (int argc, char **argv)
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
 
+	/* Disabled because it breaks internet radio and other things -
+	 * doing synchronous calls in the main thread causes deadlock.
+	 * This is too hard to fix right now, so we punt.
+	 */
+#if 0
 	gnome_authentication_manager_init ();
+#endif
 
 	g_random_set_seed (time(0));
 
