@@ -8,8 +8,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-25 15:14+0200\n"
-"PO-Revision-Date: 2003-08-25 15:13+0200\n"
+"POT-Creation-Date: 2003-08-27 13:55+0200\n"
+"PO-Revision-Date: 2003-08-27 13:55+0200\n"
 "Last-Translator: Predrag Krtolica <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -391,7 +391,7 @@ msgstr "Zadnja izvo_đena"
 msgid "_Play Count"
 msgstr "P_esma broj"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:604 shell/rb-shell.c:1066
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1070
 msgid "Music Player"
 msgstr "Muzički program"
 
@@ -651,7 +651,7 @@ msgstr "Sle_deći"
 msgid "_Paste"
 msgstr "U_baci"
 
-#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-shell-player.c:1122
+#: data/ui/rhythmbox-ui.xml.in.h:61 shell/rb-shell-player.c:1113
 msgid "_Play"
 msgstr "Izv_edi"
 
@@ -888,7 +888,7 @@ msgstr "Pogledajte podatke o ovom umetniku sa veba"
 msgid "Get more information on this station from the web"
 msgstr "Pogledajte podatke o ovoj stanici sa veba"
 
-#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1070 shell/rb-shell.c:2134
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1074 shell/rb-shell.c:2138
 msgid "Not playing"
 msgstr "Ne izvodi se"
 
@@ -958,12 +958,12 @@ msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
 #: library/rb-library.c:1564
-msgid "<b>Loading songs...</b>"
-msgstr "<b>Učitava pesme...</b>"
+msgid "Loading songs..."
+msgstr "Učitava pesme..."
 
 #: library/rb-library.c:1577
-msgid "<b>Refreshing songs...</b>"
-msgstr "<b>Osvežava pesme...</b>"
+msgid "Refreshing songs..."
+msgstr "Osvežava pesme..."
 
 # bug: plural-forms
 #: library/rb-library.c:1661
@@ -1237,32 +1237,32 @@ msgstr "Sledeća"
 msgid "Volume Control"
 msgstr "Upravljanje jačinom zvuka"
 
-#: shell/rb-shell-player.c:697
+#: shell/rb-shell-player.c:688
 #, c-format
 msgid "Opening %s..."
 msgstr "Otvara %s..."
 
-#: shell/rb-shell-player.c:1113
+#: shell/rb-shell-player.c:1104
 msgid "Pause"
 msgstr "Pauza"
 
-#: shell/rb-shell-player.c:1114
+#: shell/rb-shell-player.c:1105
 msgid "_Pause"
 msgstr "_Pauziraj"
 
-#: shell/rb-shell-player.c:1121
+#: shell/rb-shell-player.c:1112
 msgid "Play"
 msgstr "Pusti"
 
-#: shell/rb-shell-player.c:1129
+#: shell/rb-shell-player.c:1120
 msgid "Stop"
 msgstr "Zaustavi"
 
-#: shell/rb-shell-player.c:1130
+#: shell/rb-shell-player.c:1121
 msgid "_Stop"
 msgstr "_Zaustavi"
 
-#: shell/rb-shell-player.c:1364
+#: shell/rb-shell-player.c:1368
 msgid "Unexpected end of stream!"
 msgstr "Neočekivani kraj toka!"
 
@@ -1274,12 +1274,12 @@ msgstr "Postavke muzičkog programa"
 msgid "General"
 msgstr "Opšte"
 
-#: shell/rb-shell.c:504
+#: shell/rb-shell.c:505
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Ne može da obradi adresu „%s“\n"
 
-#: shell/rb-shell.c:806
+#: shell/rb-shell.c:807
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1292,12 +1292,12 @@ msgstr ""
 "različitom mestu od bonobo aktivacije; ovo\n"
 "upozorenje je bezopasno, ali IPC neće raditi.\n"
 
-#: shell/rb-shell.c:1084
+#: shell/rb-shell.c:1088
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (pauzirana)"
 
-#: shell/rb-shell.c:1087
+#: shell/rb-shell.c:1091
 #, c-format
 msgid ""
 "%s\n"
@@ -1306,7 +1306,7 @@ msgstr ""
 "%s\n"
 "Pauzirana"
 
-#: shell/rb-shell.c:1155
+#: shell/rb-shell.c:1159
 msgid "translator_credits"
 msgstr ""
 "Predrag Krtolica <predrag_k@optusnet.com.au>\n"
@@ -1314,15 +1314,15 @@ msgstr ""
 "\n"
 "Prevod.org — prevod na srpski jezik."
 
-#: shell/rb-shell.c:1164
+#: shell/rb-shell.c:1168
 msgid "Maintainers:"
 msgstr "Održavaju:"
 
-#: shell/rb-shell.c:1168
+#: shell/rb-shell.c:1172
 msgid "Contributors:"
 msgstr "Doprineli:"
 
-#: shell/rb-shell.c:1192
+#: shell/rb-shell.c:1196
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1333,55 +1333,55 @@ msgstr ""
 "Zvučni izlazi: %s\n"
 "Zvučni zapisi: %s\n"
 
-#: shell/rb-shell.c:1335
+#: shell/rb-shell.c:1339
 msgid "Choose Files or Directory"
 msgstr "Izaberite datoteke ili direktorijum"
 
-#: shell/rb-shell.c:1364
+#: shell/rb-shell.c:1368
 msgid "Load playlist"
 msgstr "Učitaj spisak pesama"
 
-#: shell/rb-shell.c:1427 shell/rb-shell.c:1465
+#: shell/rb-shell.c:1431 shell/rb-shell.c:1469
 msgid "There is already a playlist with that name."
 msgstr "Već postoji spisak pesama sa tim imenom."
 
-#: shell/rb-shell.c:1445
+#: shell/rb-shell.c:1449
 msgid "Save playlist"
 msgstr "Sačuvaj spisak pesama"
 
-#: shell/rb-shell.c:1572
+#: shell/rb-shell.c:1576
 msgid "Couldn't parse playlist"
 msgstr "Ne može da obradi spisak pesama"
 
-#: shell/rb-shell.c:1919
+#: shell/rb-shell.c:1923
 msgid "C_reate"
 msgstr "Nap_ravi"
 
-#: shell/rb-shell.c:1934
+#: shell/rb-shell.c:1938
 msgid "New Playlist"
 msgstr "Novi spisak pesama"
 
-#: shell/rb-shell.c:1945
+#: shell/rb-shell.c:1949
 msgid "Please enter a name for the new playlist:"
 msgstr "Molim unesite ime za novi spisak pesama:"
 
-#: shell/rb-shell.c:1950 shell/rb-shell.c:2016
+#: shell/rb-shell.c:1954 shell/rb-shell.c:2020
 msgid "Untitled"
 msgstr "Neimenovani"
 
-#: shell/rb-shell.c:1954
+#: shell/rb-shell.c:1958
 msgid "Add the _selected songs to the new playlist"
 msgstr "Dodaj _odabrane pesme u novi spisak pesama"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:1989
 msgid "R_ename"
 msgstr "Pre_imenuj"
 
-#: shell/rb-shell.c:2000
+#: shell/rb-shell.c:2004
 msgid "Rename Playlist"
 msgstr "Preimenuj spisak pesama"
 
-#: shell/rb-shell.c:2011
+#: shell/rb-shell.c:2015
 msgid "Please enter a new name for the playlist:"
 msgstr "Molim unesite novo ime za spisak pesama"
 
