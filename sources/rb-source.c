@@ -44,6 +44,7 @@ static void rb_source_get_property (GObject *object,
 
 const char * default_get_browser_key (RBSource *status);
 GList *default_get_extra_views (RBSource *source);
+gboolean default_can_cut (RBSource *source);
 void default_song_properties (RBSource *source);
 GtkWidget * default_get_config_widget (RBSource *source);
 RBSourceEOFType default_handle_eos (RBSource *source);
@@ -121,6 +122,9 @@ rb_source_class_init (RBSourceClass *klass)
 
 	klass->impl_get_browser_key = default_get_browser_key;
 	klass->impl_get_extra_views = default_get_extra_views;
+	klass->impl_can_cut = default_can_cut;
+	klass->impl_can_delete = default_can_cut;
+	klass->impl_can_copy = default_can_cut;
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
 	klass->impl_buffering_done = default_buffering_done;
@@ -358,6 +362,68 @@ rb_source_get_config_widget (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_config_widget (source);
+}
+
+gboolean
+default_can_cut (RBSource *source)
+{
+	return FALSE;
+}
+
+gboolean
+rb_source_can_cut (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_cut (source);
+}
+
+gboolean
+rb_source_can_delete (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_delete (source);
+}
+
+gboolean
+rb_source_can_copy (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_can_copy (source);
+}
+
+GList *
+rb_source_cut (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_cut (source);
+}
+	
+GList *
+rb_source_copy (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_copy (source);
+}
+
+void
+rb_source_paste (RBSource *source, GList *nodes)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_paste (source, nodes);
+}
+
+void
+rb_source_delete (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_delete (source);
 }
 
 void

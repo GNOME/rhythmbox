@@ -21,6 +21,8 @@ rhythmbox_SOURCES =              			\
 	rb-playlist.h					\
 	rb-shell-preferences.c				\
 	rb-shell-preferences.h				\
+	rb-shell-clipboard.c				\
+	rb-shell-clipboard.h				\
 	rb-remote.c					\
 	rb-remote.h
 

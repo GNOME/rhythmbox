@@ -133,6 +133,7 @@ static void cancel_buffering_clicked_cb (GtkWidget *button,
 					 gpointer data);
 void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
+static gboolean have_song_selection (RBShellPlayer *shell);
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
@@ -204,13 +205,13 @@ enum
 
 static BonoboUIVerb rb_shell_player_verbs[] =
 {
-	BONOBO_UI_VERB ("Previous",    (BonoboUIVerbFn) rb_shell_player_cmd_previous),
-	BONOBO_UI_VERB ("Play",        (BonoboUIVerbFn) rb_shell_player_cmd_play),
-	BONOBO_UI_VERB ("Pause",       (BonoboUIVerbFn) rb_shell_player_cmd_pause),
-	BONOBO_UI_VERB ("Stop",        (BonoboUIVerbFn) rb_shell_player_cmd_stop),
-	BONOBO_UI_VERB ("Next",        (BonoboUIVerbFn) rb_shell_player_cmd_next),
-	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_shell_player_cmd_current_song),
-	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_shell_player_cmd_song_info),
+	BONOBO_UI_VERB ("Previous",	(BonoboUIVerbFn) rb_shell_player_cmd_previous),
+	BONOBO_UI_VERB ("Play",		(BonoboUIVerbFn) rb_shell_player_cmd_play),
+	BONOBO_UI_VERB ("Pause",	(BonoboUIVerbFn) rb_shell_player_cmd_pause),
+	BONOBO_UI_VERB ("Stop",		(BonoboUIVerbFn) rb_shell_player_cmd_stop),
+	BONOBO_UI_VERB ("Next",		(BonoboUIVerbFn) rb_shell_player_cmd_next),
+	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_player_cmd_current_song),
+	BONOBO_UI_VERB ("SongInfo",	(BonoboUIVerbFn) rb_shell_player_cmd_song_info),
 	BONOBO_UI_VERB_END
 };
 

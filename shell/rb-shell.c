@@ -53,6 +53,7 @@
 #include "rb-file-helpers.h"
 #include "rb-source.h"
 #include "rb-preferences.h"
+#include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
 #include "rb-statusbar.h"
@@ -153,14 +154,12 @@ static void rb_shell_cmd_new_playlist (BonoboUIComponent *component,
 /* static void rb_shell_cmd_new_station (BonoboUIComponent *component, */
 /* 				      RBShell *shell, */
 /* 				      const char *verbname); */
-static void
-rb_shell_cmd_delete_group (BonoboUIComponent *component,
-			   RBShell *shell,
-			   const char *verbname);
-static void
-rb_shell_cmd_rename_group (BonoboUIComponent *component,
-			   RBShell *shell,
-			   const char *verbname);
+static void rb_shell_cmd_delete_group (BonoboUIComponent *component,
+				       RBShell *shell,
+				       const char *verbname);
+static void rb_shell_cmd_rename_group (BonoboUIComponent *component,
+				       RBShell *shell,
+				       const char *verbname);
 GtkWidget * rb_shell_new_group_dialog (RBShell *shell);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
@@ -195,14 +194,13 @@ static void paned_changed_cb (GConfClient *client,
 /* 				gboolean available, */
 /* 				gpointer data); */
 #endif
-/* REWRITEFIXME */
-/* static void rb_sidebar_drag_finished_cb (RBSidebar *sidebar, */
-/* 			                 GdkDragContext *context, */
-/* 			                 int x, int y, */
-/* 			                 GtkSelectionData *data, */
-/* 			                 guint info, */
-/* 			                 guint time, */
-/* 			                 RBShell *shell); */
+static void sourcelist_drag_finished_cb (RBSourceList *sourcelist,
+					 GdkDragContext *context,
+					 int x, int y,
+					 GtkSelectionData *data,
+					 guint info,
+					 guint time,
+					 RBShell *shell);
 static void dnd_add_handled_cb (RBLibraryAction *action,
 		                RBGroupSource *source);
 static void setup_tray_icon (RBShell *shell);
@@ -252,6 +250,7 @@ struct RBShellPrivate
 	GList *sources;
 
 	RBShellPlayer *player_shell;
+	RBShellClipboard *clipboard_shell;
 	RBSourceHeader *source_header;
 	RBStatusbar *statusbar;
 
@@ -405,6 +404,7 @@ rb_shell_finalize (GObject *object)
 
 	g_list_free (shell->priv->groups);
 
+	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 	/* hack to make the gdk thread lock available for freeing
 	 * the library.. evil */
 	g_object_unref (G_OBJECT (shell->priv->library));
@@ -643,6 +643,7 @@ rb_shell_construct (RBShell *shell)
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
 			  shell);
+	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 	shell->priv->source_header = rb_source_header_new (shell->priv->ui_component);
 
 	shell->priv->paned = gtk_hpaned_new ();
@@ -975,6 +976,8 @@ rb_shell_select_source (RBShell *shell,
 			      source);
 	
 	/* update services */
+	rb_shell_clipboard_set_source (shell->priv->clipboard_shell,
+				       RB_SOURCE (source));
 	rb_shell_player_set_source (shell->priv->player_shell,
 				    RB_SOURCE (source));
 	rb_source_header_set_source (shell->priv->source_header,
@@ -1444,6 +1447,7 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 {
 	rb_debug ("FIXME");
 }
+
 
 /* static void */
 /* rb_shell_cmd_new_station (BonoboUIComponent *component, */

@@ -74,16 +74,25 @@ typedef struct
 	void		(*impl_search)		(RBSource *source, const char *text);
 	GtkWidget *	(*impl_get_config_widget)(RBSource *source);
 
-	void		(*impl_song_properties)	(RBSource *player);
-
-	gboolean	(*impl_can_pause)	(RBSource *player);
-	RBSourceEOFType	(*impl_handle_eos)	(RBSource *player);
+	gboolean	(*impl_can_cut)		(RBSource *source);
+	gboolean	(*impl_can_delete)	(RBSource *source);
+	gboolean	(*impl_can_copy)	(RBSource *source);
 	
-	gboolean	(*impl_have_artist_album)(RBSource *player);
-	const char *	(*impl_get_artist)	(RBSource *player);
-	const char *	(*impl_get_album)	(RBSource *player);
-	gboolean	(*impl_have_url)	(RBSource *player);
-	void		(*impl_buffering_done)	(RBSource *player);
+	GList *		(*impl_cut)		(RBSource *source);
+	GList *		(*impl_copy)		(RBSource *source);
+	void		(*impl_paste)		(RBSource *source, GList *nodes);
+	void		(*impl_delete)		(RBSource *source);
+
+	void		(*impl_song_properties)	(RBSource *source);
+
+	gboolean	(*impl_can_pause)	(RBSource *source);
+	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
+	
+	gboolean	(*impl_have_artist_album)(RBSource *source);
+	const char *	(*impl_get_artist)	(RBSource *source);
+	const char *	(*impl_get_album)	(RBSource *source);
+	gboolean	(*impl_have_url)	(RBSource *source);
+	void		(*impl_buffering_done)	(RBSource *source);
 				   
 } RBSourceClass;
 
@@ -96,11 +105,11 @@ void		rb_source_notify_status_changed (RBSource *status);
 /* general interface */
 const char *	rb_source_get_status		(RBSource *source);
 
-const char *	rb_source_get_browser_key	(RBSource *player);
+const char *	rb_source_get_browser_key	(RBSource *source);
 
-RBNodeView *	rb_source_get_node_view		(RBSource *player);
+RBNodeView *	rb_source_get_node_view		(RBSource *source);
 
-GList *		rb_source_get_extra_views	(RBSource *player);
+GList *		rb_source_get_extra_views	(RBSource *source);
 
 const char *	rb_source_get_description	(RBSource *source);
 
@@ -111,16 +120,25 @@ void		rb_source_search		(RBSource *source,
 
 GtkWidget *	rb_source_get_config_widget	(RBSource *source);
 
+gboolean	rb_source_can_cut		(RBSource *source);
+gboolean	rb_source_can_delete		(RBSource *source);
+gboolean	rb_source_can_copy		(RBSource *source);
+
+GList *		rb_source_cut			(RBSource *source);
+GList *		rb_source_copy			(RBSource *source);
+void		rb_source_paste			(RBSource *source, GList *nodes);
+void		rb_source_delete		(RBSource *source);
+
 void		rb_source_song_properties	(RBSource *source);
 
-gboolean	rb_source_can_pause		(RBSource *player);
-RBSourceEOFType	rb_source_handle_eos		(RBSource *player);
+gboolean	rb_source_can_pause		(RBSource *source);
+RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
 
-gboolean	rb_source_have_artist_album	(RBSource *player);
-const char *	rb_source_get_artist		(RBSource *player);
-const char *	rb_source_get_album		(RBSource *player);
-gboolean	rb_source_have_url		(RBSource *player);
-void		rb_source_buffering_done	(RBSource *player);
+gboolean	rb_source_have_artist_album	(RBSource *source);
+const char *	rb_source_get_artist		(RBSource *source);
+const char *	rb_source_get_album		(RBSource *source);
+gboolean	rb_source_have_url		(RBSource *source);
+void		rb_source_buffering_done	(RBSource *source);
 
 G_END_DECLS
 

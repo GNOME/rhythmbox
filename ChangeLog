@@ -1,5 +1,34 @@
 2003-07-28  Colin Walters  <walters@verbum.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+	* shell/Makefile.am:
+	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_get_type),
+	(rb_shell_clipboard_class_init), (rb_shell_clipboard_init),
+	(rb_shell_clipboard_finalize), (rb_shell_clipboard_set_property),
+	(rb_shell_clipboard_get_property), (rb_shell_clipboard_set_source),
+	(rb_shell_clipboard_new), (rb_shell_clipboard_sync),
+	(rb_shell_clipboard_cmd_cut), (rb_shell_clipboard_cmd_copy),
+	(rb_shell_clipboard_cmd_paste), (rb_shell_clipboard_cmd_delete),
+	(rb_shell_clipboard_set), (node_destroyed_cb):
+	* shell/rb-shell-clipboard.h:
+	* shell/rb-shell-player.c:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(rb_shell_select_source):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_get_config_widget), (default_can_cut),
+	(rb_source_can_cut), (rb_source_can_delete), (rb_source_can_copy),
+	(rb_source_cut), (rb_source_copy), (rb_source_paste),
+	(rb_source_delete):
+	* sources/rb-source.h:
+
+	Reinstate some cut&paste infrastructure.
+
+	Also rename "Organize" menu to "File", because it's just as clear
+	as "Organize" in this case and will be more familiar to refugees
+	from other OSes.
+
+2003-07-28  Colin Walters  <walters@verbum.org>
+
 	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init):
 	* iradio/rb-iradio-backend.h:
 	* lib/widgets/rb-node-view.c: (node_from_sort_iter_cb):
