@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "rb-node.h"
+#include "rb-debug.h"
 
 static void rb_node_class_init (RBNodeClass *klass);
 static void rb_node_init (RBNode *node);
@@ -83,6 +84,8 @@ struct RBNodePrivate
 	GList *children;
 
 	GHashTable *properties;
+
+	gboolean handled;
 
 	GStaticRWLock *lock;
 };
@@ -349,6 +352,34 @@ rb_node_get_object_property (GObject *object,
 	}
 }
 
+static void
+rb_node_system_handle_action (RBNodeAction *action)
+{
+	switch (action->type)
+	{
+	case RB_NODE_ACTION_UNREF:
+		g_object_unref (G_OBJECT (action->node));
+		break;
+	case RB_NODE_ACTION_SIGNAL:
+		if (action->user_data != NULL)
+		{
+			if (action->signal == CHILD_CREATED)
+				rb_node_set_handled (RB_NODE (action->user_data));
+			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
+				       action->user_data);
+		}
+		else
+		{
+			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
+		}
+		break;
+	default:
+		break;
+	}
+
+	g_free (action);
+}
+
 static gboolean
 rb_node_action_queue_cb (gpointer node_reference)
 {
@@ -372,27 +403,7 @@ rb_node_action_queue_cb (gpointer node_reference)
 		action = g_queue_pop_head (actions);
 		g_static_rw_lock_writer_unlock (actions_lock);
 
-		switch (action->type)
-		{
-		case RB_NODE_ACTION_UNREF:
-			g_object_unref (G_OBJECT (action->node));
-			break;
-		case RB_NODE_ACTION_SIGNAL:
-			if (action->user_data != NULL)
-			{
-				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
-					       action->user_data);
-			}
-			else
-			{
-				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
-			}
-			break;
-		default:
-			break;
-		}
-
-		g_free (action);
+		rb_node_system_handle_action (action);
 	}
 
 	return TRUE;
@@ -1188,6 +1199,29 @@ rb_node_system_shutdown (void)
 	g_static_rw_lock_free (uri_to_song_lock);
 }
 
+void
+rb_node_system_flush (void)
+{
+	while (TRUE)
+	{
+		RBNodeAction *action;
+		gboolean empty;
+		
+		g_static_rw_lock_reader_lock (actions_lock);
+		empty = g_queue_is_empty (actions);
+		g_static_rw_lock_reader_unlock (actions_lock);
+
+		if (empty == TRUE)
+			break;
+		
+		g_static_rw_lock_writer_lock (actions_lock);
+		action = g_queue_pop_head (actions);
+		g_static_rw_lock_writer_unlock (actions_lock);
+
+		rb_node_system_handle_action (action);
+	}
+}
+
 RBNode *
 rb_node_get_genre_by_name (const char *name)
 {
@@ -1254,4 +1288,20 @@ rb_node_add_action (RBNode *node,
 						     NULL);
 	}
 	g_mutex_unlock (actions_idle_func_lock);
+}
+
+gboolean
+rb_node_is_handled (RBNode *node)
+{
+	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
+
+	return node->priv->handled;
+}
+
+void
+rb_node_set_handled (RBNode *node)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+
+	node->priv->handled = TRUE;
 }

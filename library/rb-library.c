@@ -136,9 +136,9 @@ rb_library_finalize (GObject *object)
 		g_object_unref (G_OBJECT (library->priv->watcher_thread));
 	g_object_unref (G_OBJECT (library->priv->queue));
 
-	rb_node_system_shutdown ();
-
 	rb_library_save (library);
+
+	rb_node_system_shutdown ();
 
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
 	children = rb_node_get_children (library->priv->all_songs);
@@ -218,6 +218,11 @@ rb_library_create_skels (RBLibrary *library)
 	library->priv->all_artists = rb_node_new (RB_NODE_TYPE_ALL_ARTISTS);
 	library->priv->all_albums  = rb_node_new (RB_NODE_TYPE_ALL_ALBUMS);
 	library->priv->all_songs   = rb_node_new (RB_NODE_TYPE_ALL_SONGS);
+
+	rb_node_set_handled (library->priv->all_genres);
+	rb_node_set_handled (library->priv->all_artists);
+	rb_node_set_handled (library->priv->all_albums);
+	rb_node_set_handled (library->priv->all_songs);
 	
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, _("All"));
@@ -241,6 +246,12 @@ rb_library_create_skels (RBLibrary *library)
 			   library->priv->all_albums);
 	rb_node_add_child (library->priv->all_albums,
 			   library->priv->all_songs);
+	
+	rb_debug ("Gonna flush");
+
+	rb_node_system_flush ();
+
+	rb_debug ("Done creating skels");
 }
 
 static void
@@ -248,6 +259,8 @@ rb_library_save (RBLibrary *library)
 {
 	xmlDocPtr doc;
 	GList *children, *l;
+
+	rb_node_system_flush ();
 	
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;

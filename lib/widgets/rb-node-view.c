@@ -684,7 +684,7 @@ rb_node_view_get_playing_node (RBNodeView *view)
 RBNode *
 rb_node_view_get_node (RBNodeView *view,
 		       RBNode *start,
-		       gboolean down)
+		       RBDirection direction)
 {
 	GtkTreeIter iter, iter2;
 	GValue val = {0, };
@@ -707,7 +707,7 @@ rb_node_view_get_node (RBNodeView *view,
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter, &iter2);
 
-	if (down == TRUE)
+	if (direction == RB_DIRECTION_DOWN)
 	{
 		if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->sortmodel), &iter) == FALSE)
 			return NULL;
@@ -742,13 +742,13 @@ rb_node_view_get_node (RBNodeView *view,
 RBNode *
 rb_node_view_get_next_node (RBNodeView *view)
 {
-	return rb_node_view_get_node (view, rb_node_view_get_playing_node (view), TRUE);
+	return rb_node_view_get_node (view, rb_node_view_get_playing_node (view), RB_DIRECTION_DOWN);
 }
 
 RBNode *
 rb_node_view_get_previous_node (RBNodeView *view)
 {	
-	return rb_node_view_get_node (view, rb_node_view_get_playing_node (view), FALSE);
+	return rb_node_view_get_node (view, rb_node_view_get_playing_node (view), RB_DIRECTION_UP);
 }
 
 RBNode *
@@ -1162,6 +1162,8 @@ rb_node_view_get_n_rows (RBNodeView *view)
 	
 	for (l = kids; l != NULL; l = g_list_next (l))
 	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+			continue;
 		if (artist != NULL &&
 		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
 			continue;
@@ -1190,6 +1192,8 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 
 	for (l = kids; l != NULL; l = g_list_next (l))
 	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+			continue;
 		if (artist != NULL &&
 		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
 			continue;
@@ -1222,9 +1226,9 @@ root_child_destroyed_cb (RBNode *root,
 	if (g_list_find (view->priv->nodeselection, child) == NULL)
 		return;
 
-	node = rb_node_view_get_node (view, child, TRUE);
+	node = rb_node_view_get_node (view, child, RB_DIRECTION_DOWN);
 	if (node == NULL)
-		node = rb_node_view_get_node (view, child, FALSE);
+		node = rb_node_view_get_node (view, child, RB_DIRECTION_UP);
 	if (node == NULL)
 		return;
 

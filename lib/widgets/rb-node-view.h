@@ -24,6 +24,7 @@
 #include <gtk/gtkscrolledwindow.h>
 
 #include "rb-tree-model-node.h"
+#include "rb-enums.h"
 
 G_BEGIN_DECLS
 
@@ -83,9 +84,10 @@ char       *rb_node_view_get_status        (RBNodeView *view);
 
 void        rb_node_view_scroll_to_node    (RBNodeView *view,
 					    RBNode *node);
-RBNode 	    *rb_node_view_get_node (RBNodeView *view,
-				    RBNode *start,
-				    gboolean down);
+
+RBNode 	   *rb_node_view_get_node          (RBNodeView *view,
+				            RBNode *start,
+				            RBDirection direction);
 
 G_END_DECLS
 

@@ -121,9 +121,6 @@ rb_library_watcher_thread_init (RBLibraryWatcherThread *thread)
 	eel_gconf_notification_add (CONF_LIBRARY_BASE_FOLDER,
 				    (GConfClientNotifyFunc) pref_changed_cb,
 				    thread);
-	eel_gconf_notification_add (CONF_LIBRARY_MUSIC_FOLDERS,
-				    (GConfClientNotifyFunc) pref_changed_cb,
-				    thread);
 
 	thread->priv->dirty = TRUE;
 }
@@ -287,7 +284,6 @@ thread_main (RBLibraryWatcherThreadPrivate *priv)
 
 		if (priv->dirty == TRUE)
 		{
-			GSList *dirs, *l;
 			char *base_folder;
 			
 			priv->dirty = FALSE;
@@ -295,16 +291,6 @@ thread_main (RBLibraryWatcherThreadPrivate *priv)
 			base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
 			add_directory (priv, base_folder);
 			g_free (base_folder);
-
-			dirs = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
-
-			for (l = dirs; l != NULL; l = g_slist_next (l))
-			{
-				add_directory (priv, l->data);
-				g_free (l->data);
-			}
-
-			g_slist_free (dirs);
 		}
 
 		g_mutex_unlock (priv->lock);

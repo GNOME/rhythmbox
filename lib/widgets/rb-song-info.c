@@ -564,7 +564,7 @@ song_info_back_clicked_cb (GtkWidget *button,
 	MonkeyMediaStreamInfo *info = NULL;
 	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
 					      song_info->priv->current_node,
-					      FALSE);
+					      RB_DIRECTION_UP);
 
 	g_return_if_fail (node != NULL);
 
@@ -590,7 +590,7 @@ song_info_forward_clicked_cb (GtkWidget *button,
 	MonkeyMediaStreamInfo *info = NULL;
 	RBNode *node = rb_node_view_get_node (song_info->priv->node_view,
 					      song_info->priv->current_node,
-					      TRUE);
+					      RB_DIRECTION_DOWN);
 
 	g_return_if_fail (node != NULL);
 

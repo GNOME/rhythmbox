@@ -1,10 +1,10 @@
 /*
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -18,15 +18,17 @@
  *  $Id$
  */
 
-#ifndef __RB_LIBRARY_PREFERENCES_H
-#define __RB_LIBRARY_PREFERENCES_H
+#ifndef __RB_ENUMS_H
+#define __RB_ENUMS_H
 
 G_BEGIN_DECLS
 
-#define CONF_LIBRARY_DIR           "/apps/rhythmbox/library"
-
-#define CONF_LIBRARY_BASE_FOLDER   "/apps/rhythmbox/library/base_folder"
+typedef enum
+{
+	RB_DIRECTION_UP,
+	RB_DIRECTION_DOWN
+} RBDirection;
 
 G_END_DECLS
 
-#endif /* __RB_LIBRARY_PREFERENCES_H */
+#endif /* __RB_ENUMS_H */

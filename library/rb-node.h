@@ -132,6 +132,10 @@ RBNode     *rb_node_new_from_xml       (xmlNodePtr xml_node);
 RBNode     *rb_node_ref                (RBNode *node);
 void        rb_node_unref              (RBNode *node);
 
+/* sync */
+gboolean    rb_node_is_handled         (RBNode *node);
+void        rb_node_set_handled        (RBNode *node);
+
 /* genre/artist/album hashes */
 RBNode     *rb_node_get_genre_by_name  (const char *name);
 RBNode     *rb_node_get_artist_by_name (const char *name);
@@ -141,6 +145,7 @@ RBNode     *rb_node_get_song_by_uri    (const char *uri);
 /* action queue */
 void rb_node_system_init     (void);
 void rb_node_system_shutdown (void);
+void rb_node_system_flush    (void);
 
 G_END_DECLS
 

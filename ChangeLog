@@ -1,3 +1,39 @@
+2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/glade/music-folders.glade:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-enums.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_node),
+	(rb_node_view_get_next_node), (rb_node_view_get_previous_node),
+	(rb_node_view_get_n_rows), (rb_node_view_get_visible_nodes),
+	(root_child_destroyed_cb):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-song-info.c: (song_info_back_clicked_cb),
+	(song_info_forward_clicked_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (rb_node_n_handled_children),
+	(rb_node_get_nth_handled_child), (rb_node_handled_child_index),
+	(rb_tree_model_node_get_iter), (rb_tree_model_node_get_path),
+	(rb_tree_model_node_iter_n_children),
+	(rb_tree_model_node_iter_nth_child):
+	* library/rb-library-preferences.h:
+	* library/rb-library-watcher-thread.c:
+	(rb_library_watcher_thread_init), (thread_main):
+	* library/rb-library.c: (rb_library_finalize),
+	(rb_library_create_skels), (rb_library_save):
+	* library/rb-node-iterator.c: (rb_node_iterator_next):
+	* library/rb-node.c: (rb_node_system_handle_action),
+	(rb_node_action_queue_cb), (rb_node_system_flush),
+	(rb_node_add_action), (rb_node_is_handled), (rb_node_set_handled):
+	* library/rb-node.h:
+	* shell/rb-shell-player.c: (rb_shell_player_stop):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync), (library_pref_changed):
+	* shell/rb-shell.c: (rb_shell_cmd_preferences):
+
+	Fix async problems, this seems to fix sorting as well. Also started
+	removing extra music folders.
+
 2002-08-13  Olivier Martin <omartin@ifrance.com>
 
 	* lib/widgets/rb-node-view.c:

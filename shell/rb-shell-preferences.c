@@ -22,10 +22,6 @@
 #include <libgnome/gnome-i18n.h>
 #include <gtk/gtkstock.h>
 #include <gtk/gtklabel.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkliststore.h>
-#include <gtk/gtktreeselection.h>
-#include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkentry.h>
 #include <gdk/gdkkeysyms.h>
 #include <glade/glade.h>
@@ -47,42 +43,15 @@ static gboolean rb_shell_preferences_window_delete_cb (GtkWidget *window,
 static void rb_shell_preferences_response_cb (GtkDialog *dialog,
 				              int response_id,
 				              RBShellPreferences *shell_preferences);
-static void folders_selection_changed_cb (GtkTreeSelection *selection,
-			                  RBShellPreferences *shell_preferences);
-static gboolean get_folders (GtkTreeModel *model,
-		             GtkTreePath *path,
-		             GtkTreeIter *iter,
-		             void **data);
-static gboolean get_rows (GtkTreeModel *model,
-		          GtkTreePath *path,
-		          GtkTreeIter *iter,
-		          void **data);
 static void rb_shell_preferences_sync (RBShellPreferences *shell_preferences);
 static void library_pref_changed (GConfClient *client,
 		                  guint cnxn_id,
 		                  GConfEntry *entry,
 		                  RBShellPreferences *shell_preferences);
-static void folders_sync_to_gconf (RBShellPreferences *shell_preferences);
-static void folders_row_edited_cb (GtkCellRendererText *renderer,
-		                   const char *path_str,
-		                   const char *new_text,
-		                   RBShellPreferences *shell_preferences);
-
-enum
-{
-	FOLDERS_COL_URI,
-	FOLDERS_COL_EDITABLE,
-	FOLDERS_NUM_COLUMNS
-};
 
 struct RBShellPreferencesPrivate
 {
 	GtkWidget *base_folder_entry;
-
-	GtkWidget *folders_treeview;
-	GtkListStore *folders_store;
-	GtkTreeSelection *folders_selection;
-	GtkWidget *folders_remove_button;
 
 	gboolean lock;
 };
@@ -131,7 +100,6 @@ static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GladeXML *xml;
-	GtkCellRenderer *renderer;
 	
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
@@ -154,7 +122,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_dialog_set_default_response (GTK_DIALOG (shell_preferences),
 					 GTK_RESPONSE_CLOSE);
 
-	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Music Folders"));
+	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Preferences"));
 
 	xml = rb_glade_xml_new ("music-folders.glade",
 				"music_folders_vbox",
@@ -165,36 +133,6 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 
 	shell_preferences->priv->base_folder_entry =
 		glade_xml_get_widget (xml, "music_base_folder_entry");
-	shell_preferences->priv->folders_treeview =
-		glade_xml_get_widget (xml, "music_folders_treeview");
-	shell_preferences->priv->folders_remove_button =
-		glade_xml_get_widget (xml, "remove_folder_button");
-
-	/* set up folders treeview */
-	shell_preferences->priv->folders_store = gtk_list_store_new (FOLDERS_NUM_COLUMNS,
-								     G_TYPE_STRING,
-								     G_TYPE_BOOLEAN);
-	gtk_tree_view_set_model (GTK_TREE_VIEW (shell_preferences->priv->folders_treeview),
-				 GTK_TREE_MODEL (shell_preferences->priv->folders_store));
-	shell_preferences->priv->folders_selection =
-		gtk_tree_view_get_selection (GTK_TREE_VIEW (shell_preferences->priv->folders_treeview));
-	gtk_tree_selection_set_mode (shell_preferences->priv->folders_selection,
-				     GTK_SELECTION_MULTIPLE);
-	g_signal_connect (G_OBJECT (shell_preferences->priv->folders_selection),
-			  "changed",
-			  G_CALLBACK (folders_selection_changed_cb),
-			  shell_preferences);
-	renderer = gtk_cell_renderer_text_new ();
-	g_signal_connect (G_OBJECT (renderer),
-			  "edited",
-			  G_CALLBACK (folders_row_edited_cb),
-			  shell_preferences);
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (shell_preferences->priv->folders_treeview),
-						     FOLDERS_COL_URI, _("Folder"), renderer,
-						     "text", FOLDERS_COL_URI,
-						     "editable", FOLDERS_COL_EDITABLE,
-						     NULL);
-	gtk_widget_set_sensitive (shell_preferences->priv->folders_remove_button, FALSE);
 
 	g_object_unref (G_OBJECT (xml));
 
@@ -254,80 +192,18 @@ static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
 	char *base_folder;
-	GSList *music_folders, *l;
 
 	if (shell_preferences->priv->lock == TRUE)
 		return;
 	shell_preferences->priv->lock = TRUE;
 
 	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
-	music_folders = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
 
 	gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry),
 			    base_folder);
-	gtk_list_store_clear (GTK_LIST_STORE (shell_preferences->priv->folders_store));
-	for (l = music_folders; l != NULL; l = g_slist_next (l))
-	{
-		char *uri = l->data;
-		GtkTreeIter iter;
-
-		gtk_list_store_append (shell_preferences->priv->folders_store, &iter);
-		gtk_list_store_set (shell_preferences->priv->folders_store, &iter,
-				    FOLDERS_COL_URI, uri,
-				    FOLDERS_COL_EDITABLE, TRUE,
-				    -1);
-	}
-
-	g_slist_foreach (music_folders, (GFunc) g_free, NULL);
-	g_slist_free (music_folders);
 	g_free (base_folder);
 	
 	shell_preferences->priv->lock = FALSE;
-}
-
-static void
-folders_selection_changed_cb (GtkTreeSelection *selection,
-			      RBShellPreferences *shell_preferences)
-{
-	GSList *folders = NULL;
-
-	gtk_tree_selection_selected_foreach (shell_preferences->priv->folders_selection,
-					     (GtkTreeSelectionForeachFunc) get_folders,
-					     (void **) &folders);
-
-	gtk_widget_set_sensitive (shell_preferences->priv->folders_remove_button,
-				  (g_slist_length (folders) > 0));
-
-	g_slist_free (folders);
-}
-
-static gboolean
-get_folders (GtkTreeModel *model,
-	     GtkTreePath *path,
-	     GtkTreeIter *iter,
-	     void **data)
-{
-	GSList **ret = (GSList **) data;
-	GValue val = { 0, };
-
-	gtk_tree_model_get_value (model, iter, FOLDERS_COL_URI, &val);
-
-	*ret = g_slist_append (*ret, (char *) g_value_get_string (&val));
-
-	return FALSE;
-}
-
-static gboolean
-get_rows (GtkTreeModel *model,
-	  GtkTreePath *path,
-	  GtkTreeIter *iter,
-	  void **data)
-{
-	GSList **ret = (GSList **) data;
-	
-	*ret = g_slist_append (*ret, gtk_tree_row_reference_new (model, path));
-
-	return FALSE;
 }
 
 void
@@ -351,57 +227,6 @@ music_base_folder_browse_clicked_cb (GtkWidget *button,
 	g_free (ret);
 }
 
-void
-add_folder_clicked_cb (GtkWidget *button,
-		       RBShellPreferences *shell_preferences)
-{
-	GtkTreeIter iter;
-	char *uri;
-
-	uri = rb_ask_file (_("Choose a folder"), GTK_WINDOW (shell_preferences));
-
-	if (uri == NULL || strlen (uri) < 1)
-	{
-		g_free (uri);
-		return;
-	}
-
-	gtk_list_store_append (shell_preferences->priv->folders_store, &iter);
-	gtk_list_store_set (shell_preferences->priv->folders_store, &iter,
-			    FOLDERS_COL_URI, uri,
-			    FOLDERS_COL_EDITABLE, TRUE,
-			    -1);
-
-	g_free (uri);
-	
-	folders_sync_to_gconf (shell_preferences);
-}
-
-void
-remove_folder_clicked_cb (GtkWidget *button,
-			  RBShellPreferences *shell_preferences)
-{
-	GSList *list = NULL, *l;
-	
-	gtk_tree_selection_selected_foreach (shell_preferences->priv->folders_selection,
-					     (GtkTreeSelectionForeachFunc) get_rows,
-					     (void **) &list);
-
-	for (l = list; l != NULL; l = g_slist_next (l))
-	{
-		GtkTreeRowReference *ref = l->data;
-		GtkTreeIter iter;
-		gtk_tree_model_get_iter (GTK_TREE_MODEL (shell_preferences->priv->folders_store),
-					 &iter, gtk_tree_row_reference_get_path (ref));
-		gtk_list_store_remove (shell_preferences->priv->folders_store, &iter);
-		gtk_tree_row_reference_free (ref);
-	}
-
-	g_slist_free (list);
-	
-	folders_sync_to_gconf (shell_preferences);
-}
-
 static void
 library_pref_changed (GConfClient *client,
 		      guint cnxn_id,
@@ -409,51 +234,4 @@ library_pref_changed (GConfClient *client,
 		      RBShellPreferences *shell_preferences)
 {
 	rb_shell_preferences_sync (shell_preferences);
-}
-
-static void
-folders_sync_to_gconf (RBShellPreferences *shell_preferences)
-{
-	GSList *folders = NULL;
-
-	gtk_tree_model_foreach (GTK_TREE_MODEL (shell_preferences->priv->folders_store),
-				(GtkTreeModelForeachFunc) get_folders, (void **) &folders);
-
-	eel_gconf_set_string_list (CONF_LIBRARY_MUSIC_FOLDERS,
-				   folders);
-
-	g_slist_foreach (folders, (GFunc) g_free, NULL);
-	g_slist_free (folders);
-}
-
-static void
-folders_row_edited_cb (GtkCellRendererText *renderer,
-		       const char *path_str,
-		       const char *new_text,
-		       RBShellPreferences *shell_preferences)
-{
-	GtkTreePath *path;
-	GtkTreeIter iter;
-
-	path = gtk_tree_path_new_from_string (path_str);
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (shell_preferences->priv->folders_store),
-				 &iter, path);
-	gtk_list_store_set (shell_preferences->priv->folders_store, &iter,
-			    FOLDERS_COL_URI, new_text, -1);
-	gtk_tree_path_free (path);
-	
-	folders_sync_to_gconf (shell_preferences);
-}
-
-gboolean
-folders_treeview_key_press_event_cb (GtkWidget *widget,
-				     GdkEventKey *event,
-				     RBShellPreferences *shell_preferences)
-{
-	if (event->keyval != GDK_Delete)
-		return TRUE;
-	
-	remove_folder_clicked_cb (widget, shell_preferences);
-
-	return FALSE;
 }

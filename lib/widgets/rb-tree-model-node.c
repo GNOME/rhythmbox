@@ -291,6 +291,8 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
+					if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+						continue;
 					if (model->priv->old_filter_artist != NULL)
 					{
 						if (rb_node_song_has_artist (RB_NODE (l->data),
@@ -317,6 +319,8 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
+					if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
+						continue;
 					if (model->priv->filter_artist != NULL)
 					{
 						if (rb_node_song_has_artist (RB_NODE (l->data),
@@ -436,6 +440,78 @@ rb_tree_model_node_tree_model_init (GtkTreeModelIface *iface)
 	iface->iter_parent     = rb_tree_model_node_iter_parent;
 }
 
+static int
+rb_node_n_handled_children (RBNode *node)
+{
+	GList *kids, *l;
+	int i = 0;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+
+	kids = rb_node_get_children (node);
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+			i++;
+	}
+	g_list_free (kids);
+
+	return i;
+}
+
+static RBNode *
+rb_node_get_nth_handled_child (RBNode *node,
+			       int n)
+{
+	GList *kids, *l;
+	RBNode *ret = NULL;
+	int i = 0;
+
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+
+	kids = rb_node_get_children (node);
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+		{
+			if (i == n)
+			{
+				ret = RB_NODE (l->data);
+				break;
+			}
+			i++;
+		}
+	}
+	g_list_free (kids);
+
+	return ret;
+}
+
+static int
+rb_node_handled_child_index (RBNode *node,
+			     RBNode *child)
+{
+	GList *kids, *l;
+	int i = 0;
+
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+	g_return_val_if_fail (RB_IS_NODE (child), -1);
+
+	kids = rb_node_get_children (node);
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+		{
+			if (RB_NODE (l->data) == child)
+				break;
+			i++;
+		}
+	}
+	g_list_free (kids);
+
+	return i;
+}
+
 static guint
 rb_tree_model_node_get_flags (GtkTreeModel *tree_model)
 {
@@ -495,11 +571,11 @@ rb_tree_model_node_get_iter (GtkTreeModel *tree_model,
 
 	i = gtk_tree_path_get_indices (path)[0];
 
-	if (i >= rb_node_n_children (model->priv->root))
+	if (i >= rb_node_n_handled_children (model->priv->root))
 		return FALSE;
 
 	iter->stamp = model->stamp;
-	iter->user_data = rb_node_get_nth_child (model->priv->root, i);
+	iter->user_data = rb_node_get_nth_handled_child (model->priv->root, i);
 	
 	return TRUE;
 }
@@ -526,7 +602,7 @@ rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 		return gtk_tree_path_new ();
 	
 	retval = gtk_tree_path_new ();
-	gtk_tree_path_append_index (retval, rb_node_child_index (model->priv->root, node));
+	gtk_tree_path_append_index (retval, rb_node_handled_child_index (model->priv->root, node));
 
 	return retval;
 }
@@ -753,7 +829,7 @@ rb_tree_model_node_iter_n_children (GtkTreeModel *tree_model,
 		return 0;
 
 	if (iter == NULL)
-		return rb_node_n_children (model->priv->root);
+		return rb_node_n_handled_children (model->priv->root);
 
 	g_return_val_if_fail (model->stamp == iter->stamp, -1);
 
@@ -777,7 +853,7 @@ rb_tree_model_node_iter_nth_child (GtkTreeModel *tree_model,
 	if (parent != NULL)
 		return FALSE;
 
-	node = rb_node_get_nth_child (model->priv->root, n);
+	node = rb_node_get_nth_handled_child (model->priv->root, n);
 
 	if (node != NULL)
 	{
