@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-10-30 00:29+0100\n"
-"PO-Revision-Date: 2002-10-30 00:30+0100\n"
+"POT-Creation-Date: 2002-11-01 01:09+0100\n"
+"PO-Revision-Date: 2002-11-01 01:10+0100\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -52,7 +52,7 @@ msgid "Show _toolbar as:"
 msgstr "Visa _verktygsrad som:"
 
 #: data/glade/preferences.glade.h:8
-msgid "Show s_idebar"
+msgid "Show s_ide pane"
 msgstr "Visa s_idopanel"
 
 #: data/glade/preferences.glade.h:9
@@ -236,7 +236,7 @@ msgstr "_Spelräknare"
 msgid "_Title"
 msgstr "_Titel"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:597 shell/rb-shell.c:985
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:599 shell/rb-shell.c:989
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -316,7 +316,7 @@ msgid "Change the visibility of the main window"
 msgstr "Ändra synligheten på huvudfönstret"
 
 #: data/ui/rhythmbox-ui.xml.in.h:2
-msgid "Change the visibility of the sidebar"
+msgid "Change the visibility of the side pane"
 msgstr "Ändra synligheten på sidopanelen"
 
 #: data/ui/rhythmbox-ui.xml.in.h:3
@@ -388,16 +388,16 @@ msgid "Repea_t"
 msgstr "_Upprepa"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
-msgid "S_idebar"
-msgstr "S_idopanel"
-
-#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Show information about the music player"
 msgstr "Visa information om musikspelaren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Show information on the selected song"
 msgstr "Visa information om den valda låten"
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "St_atusbar"
+msgstr "St_atusrad"
 
 #: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Start playing"
@@ -492,8 +492,8 @@ msgid "_Shuffle"
 msgstr "_Blanda"
 
 #: data/ui/rhythmbox-ui.xml.in.h:47
-msgid "_Statusbar"
-msgstr "_Statusrad"
+msgid "_Side Pane"
+msgstr "_Sidopanel"
 
 #: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Toolbar"
@@ -614,7 +614,7 @@ msgstr ""
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:1324
+#: lib/widgets/rb-node-view.c:1323
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
@@ -760,7 +760,7 @@ msgstr "Alla"
 msgid "%.2d of %.2d"
 msgstr "%.2d av %.2d"
 
-#: library/rb-node-song.c:758
+#: library/rb-node-song.c:766
 msgid "%Y-%m-%d %H:%M:%S"
 msgstr "%Y-%m-%d %H.%M.%S"
 
@@ -780,27 +780,27 @@ msgstr "Igår klockan %H.%M.%S"
 msgid "%A, %B %-d %Y at %-H:%M:%S"
 msgstr "%A %-d %B klockan %H.%M.%S"
 
-#: shell/main.c:58
+#: shell/main.c:59
 msgid "Enable debugging code"
 msgstr "Aktivera felsökningsläge"
 
-#: shell/main.c:59
+#: shell/main.c:60
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/main.c:60
+#: shell/main.c:61
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: shell/main.c:61
+#: shell/main.c:62
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
 
-#: shell/main.c:68
+#: shell/main.c:70
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:156
+#: shell/main.c:158
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -838,7 +838,7 @@ msgstr "_Stopp"
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-shell.c:584
+#: shell/rb-shell.c:586
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -852,16 +852,16 @@ msgstr ""
 "Denna varning är inte allvarlig, men IPC\n"
 "kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:989 shell/rb-shell.c:2000
+#: shell/rb-shell.c:993 shell/rb-shell.c:2008
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: shell/rb-shell.c:1002
+#: shell/rb-shell.c:1006
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1007
+#: shell/rb-shell.c:1011
 #, c-format
 msgid ""
 "%s\n"
@@ -870,37 +870,37 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1152
+#: shell/rb-shell.c:1156
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1163
+#: shell/rb-shell.c:1167
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:1164
+#: shell/rb-shell.c:1168
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:1361
+#: shell/rb-shell.c:1370
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1849
+#: shell/rb-shell.c:1857
 msgid "Create"
 msgstr "Skapa"
 
-#: shell/rb-shell.c:1873
+#: shell/rb-shell.c:1881
 msgid "Please enter a name for the new music group."
 msgstr "Ange ett namn för den nya musikgruppen."
 
-#: shell/rb-shell.c:1883
+#: shell/rb-shell.c:1891
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1887
+#: shell/rb-shell.c:1895
 msgid "Add the _selected songs to the new group"
 msgstr "Lägg till de _markerade låtarna till den nya gruppen"
 
@@ -912,7 +912,7 @@ msgstr "musikgrupp"
 msgid "Unnamed"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:769 views/rb-library-view.c:842
+#: views/rb-group-view.c:769 views/rb-library-view.c:845
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -930,9 +930,12 @@ msgstr "Misslyckades med att tolka %s som gruppfil"
 msgid "library"
 msgstr "bibliotek"
 
-#: views/rb-library-view.c:321 views/rb-library-view.c:1191
+#: views/rb-library-view.c:321 views/rb-library-view.c:1192
 msgid "Library"
 msgstr "Bibliotek"
+
+#~ msgid "S_idebar"
+#~ msgstr "S_idopanel"
 
 #~ msgid "Mixer channel"
 #~ msgstr "Mixerkanal"
