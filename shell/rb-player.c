@@ -1223,7 +1223,7 @@ slider_moved_cb (GtkWidget *widget,
                 player->priv->slider_drag_info.slider_moved_timeout = 0;
         }
         player->priv->slider_drag_info.slider_moved_timeout =
-                g_timeout_add (40, (GSourceFunc) slider_moved_idle, player);
+                g_timeout_add (10, (GSourceFunc) slider_moved_idle, player);
 
         return FALSE;
 }
