@@ -65,6 +65,7 @@ static gboolean dry_run		= FALSE;
 static gboolean print_playing = FALSE;
 static gboolean print_playing_path = FALSE;
 static gboolean playpause       = FALSE;
+static gboolean focus           = FALSE;
 static gboolean previous        = FALSE;
 static gboolean next            = FALSE;
 static gboolean print_play_time = FALSE;
@@ -89,6 +90,7 @@ main (int argc, char **argv)
         { "set-play-time", 	    0,  POPT_ARG_LONG,			&seek_time,				0, N_("Seek to the specified time in playing song if possible and exit"),	NULL },
         
 		{ "play-pause",		    0,  POPT_ARG_NONE,			&playpause,	        	0, N_("Toggle play/pause mode"),     NULL },
+		{ "focus",	    0,  POPT_ARG_NONE,			&focus,	        	0, N_("Focus the running player"),     NULL },
 		{ "previous",		    0,  POPT_ARG_NONE,			&previous,	        	0, N_("Jump to previous song"),     NULL },
 		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
 		
@@ -272,6 +274,14 @@ rb_handle_cmdline (char **argv, int argc,
 	int i;
 	gboolean grab_focus = TRUE;
 	
+	/*
+	 * All 'remote control' type actions should set grab_focus 
+	 * to false.  There are two ways to focus the window.  
+	 * Running 'rhythmbox' with no arguments when it is already
+	 * running.  Explicitly adding the --focus argument combined 
+	 * with other 'remote control' arguments.
+	 */
+
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)
 	{
@@ -294,7 +304,6 @@ rb_handle_cmdline (char **argv, int argc,
 			CORBA_free (song_info);
 		}
 		grab_focus = FALSE;
-
 	}
 	
 	if (print_playing_path)
@@ -338,13 +347,22 @@ rb_handle_cmdline (char **argv, int argc,
 	}
 	
 	if (playpause)
+	{
 		GNOME_Rhythmbox_playPause (shell, &ev);
+		grab_focus = FALSE;
+	}
 
 	if (previous)
+	{
 		GNOME_Rhythmbox_previous (shell, &ev);
+		grab_focus = FALSE;
+	}
 
 	if (next)
+	{
 		GNOME_Rhythmbox_next (shell, &ev);
+		grab_focus = FALSE;
+	}
 
 	for (i = 1; i < argc; i++)
 	{
@@ -354,17 +372,19 @@ rb_handle_cmdline (char **argv, int argc,
 			
 		if (rb_uri_exists (tmp) == TRUE) {
 			GNOME_Rhythmbox_handleFile (shell, tmp, &ev);
-			grab_focus = TRUE;
 		}
 		
 		g_free (tmp);
-		
+		grab_focus = FALSE;
 	}
 	
 	if (quit == TRUE)
 	{
 		GNOME_Rhythmbox_quit (shell, &ev);
 	}
+
+	if (focus)
+		grab_focus = TRUE;
 
 	/* at the very least, we focus the window */
 	if (already_running == TRUE && grab_focus == TRUE)
