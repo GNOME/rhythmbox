@@ -349,6 +349,13 @@ rb_audiocd_view_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+
+gboolean
+rb_audiocd_is_any_device_available ()
+{
+        return monkey_media_audio_cd_device_available ();
+}
+
 gboolean
 rb_audiocd_is_cd_available (RBAudiocdView *audiocd)
 {

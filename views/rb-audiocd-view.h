@@ -49,25 +49,26 @@ typedef struct
 	RBViewClass parent;
 } RBAudiocdViewClass;
 
-GType       rb_audiocd_view_get_type      (void);
+GType       rb_audiocd_view_get_type           (void);
 
-RBView     *rb_audiocd_view_new           (BonoboUIContainer *container);
+RBView     *rb_audiocd_view_new                (BonoboUIContainer *container);
 
-void        rb_audiocd_view_set_name      (RBAudiocdView *audiocd,
-                                           const char *name);
+void        rb_audiocd_view_set_name           (RBAudiocdView *audiocd,
+                                                const char *name);
 
-const char *rb_audiocd_view_get_file      (RBAudiocdView *audiocd);
+const char *rb_audiocd_view_get_file           (RBAudiocdView *audiocd);
 
-void        rb_audiocd_view_remove_file   (RBAudiocdView *audiocd);
+void        rb_audiocd_view_remove_file        (RBAudiocdView *audiocd);
 
-void        rb_audiocd_view_save          (RBAudiocdView *view);
-void        rb_audiocd_view_load          (RBAudiocdView *view);
+void        rb_audiocd_view_save               (RBAudiocdView *view);
+void        rb_audiocd_view_load               (RBAudiocdView *view);
 
-void 	    rb_audiocd_view_add_node      (RBAudiocdView *view, 
-                                           RBNode *node);
+void 	    rb_audiocd_view_add_node           (RBAudiocdView *view,
+                                                RBNode *node);
 
-void        rb_audiocd_refresh_cd         (RBAudiocdView *view);
-gboolean    rb_audiocd_is_cd_available    (RBAudiocdView *view);
+void        rb_audiocd_refresh_cd              (RBAudiocdView *view);
+gboolean    rb_audiocd_is_cd_available         (RBAudiocdView *view);
+gboolean    rb_audiocd_is_any_device_available ();
 
 G_END_DECLS
 

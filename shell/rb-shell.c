@@ -759,10 +759,13 @@ rb_shell_construct (RBShell *shell)
 	
         audiocd_view = rb_audiocd_view_new (shell->priv->container);
 
-        if (rb_audiocd_is_cd_available (RB_AUDIOCD_VIEW (audiocd_view)) == TRUE)
+        if (rb_audiocd_is_any_device_available () == TRUE)
         {
-                rb_shell_append_view (shell, audiocd_view);
-                rb_audiocd_refresh_cd (RB_AUDIOCD_VIEW (audiocd_view));
+                if (rb_audiocd_is_cd_available (RB_AUDIOCD_VIEW (audiocd_view)) == TRUE)
+                {
+                        rb_shell_append_view (shell, audiocd_view);
+                        rb_audiocd_refresh_cd (RB_AUDIOCD_VIEW (audiocd_view));
+                }
         }
 
 	/* now that the lib is loaded, we can load the music groups */
