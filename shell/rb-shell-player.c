@@ -724,6 +724,7 @@ rb_shell_player_get_property (GObject *object,
 			play_order = g_strdup ("linear");
 		g_value_set_string_take_ownership (value, play_order);
 		break;
+	}
 	case PROP_PLAYING:
 		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
 		break;
