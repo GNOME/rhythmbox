@@ -322,10 +322,10 @@ rb_node_view_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (view->priv->sortmodel));
 	g_object_unref (G_OBJECT (view->priv->filtermodel));
-	g_object_unref (G_OBJECT (view->priv->nodemodel));
 	/* FIXME workaround for a gtk bug (#96851) */
-	if (G_OBJECT (view->priv->nodemodel)->ref_count >= 1)
+	if (G_OBJECT (view->priv->nodemodel)->ref_count > 1)
 		g_object_unref (G_OBJECT (view->priv->nodemodel));
+	g_object_unref (G_OBJECT (view->priv->nodemodel));
 
 	g_list_free (view->priv->random_nodes);
 	
