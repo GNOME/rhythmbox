@@ -103,5 +103,5 @@ rb_random_by_age_and_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmD
 
 	rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
 
-	return log (seconds_since_last_play) * rating;
+	return log (seconds_since_last_play) * (rating + 1.0);
 }
