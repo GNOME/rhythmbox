@@ -263,7 +263,7 @@ struct RBShellPrivate
 	RBIRadioBackend *iradio_backend;
  	RBIRadioSource *iradio_source;
 
-	MonkeyMediaAudioCD *cd;
+/* 	MonkeyMediaAudioCD *cd; */
 
 	RBSource *selected_source;
 
