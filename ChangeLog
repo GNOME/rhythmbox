@@ -7,6 +7,13 @@
 
 2003-08-18  Colin Walters  <walters@verbum.org>
 
+	* monkey-media/stream-info-impl/mp3-stream-info-impl.c:
+	(MP3_stream_info_impl_id3_tag_get_utf8):
+
+	Don't die if id3_ucs4_utf8duplicate returns NULL.
+	
+2003-08-18  Colin Walters  <walters@verbum.org>
+
 	* NEWS: Update.
 	* configure.ac: Bump to 0.5.1.99.
 
