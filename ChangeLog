@@ -2,6 +2,87 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-30 14:44:20 GMT	David Dollar <david@grepninja.com>	patch-181
+
+    Summary:
+      squashed xine backend file-add bug
+    Revision:
+      rhythmbox--main--0.7--patch-181
+
+    Patches applied:
+    
+     * david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-3
+       squashed xine backend file-add bug
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-mm.c
+
+    new patches:
+     david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-3
+
+
+2004-03-30 13:41:49 GMT	Colin Walters <walters@verbum.org>	patch-180
+
+    Summary:
+      play order cleanup: remove repeat GConf key, only export shuffle/repeat from RBShellPlayer 
+    Revision:
+      rhythmbox--main--0.7--patch-180
+
+    This also fixes the notification of changes from RBShellPlayer.
+    TODO: fix up CORBA interface
+    
+
+    modified files:
+     ChangeLog data/rhythmbox.schemas lib/rb-preferences.h
+     shell/rb-play-order-shuffle.c shell/rb-shell-player.c
+     shell/rb-shell-player.h shell/rb-statusbar.c
+
+
+2004-03-30 06:06:43 GMT	David Dollar <david@grepninja.com>	patch-179
+
+    Summary:
+      made iradio source take an entry-type property for easier inheritance
+    Revision:
+      rhythmbox--main--0.7--patch-179
+
+    Patches applied:
+    
+     * david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-2
+       made iradio source take an entry-type property for easier inheritance
+    
+
+    modified files:
+     ChangeLog sources/rb-iradio-source.c
+
+    new patches:
+     david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-2
+
+
+2004-03-30 05:47:01 GMT	David Dollar <david@grepninja.com>	patch-178
+
+    Summary:
+      made the previous button not 'start-over' for iradio sources, found and squashed xine metadata mime detection bugs
+    Revision:
+      rhythmbox--main--0.7--patch-178
+
+    Patches applied:
+    
+     * david@grepninja.com--2004/rhythmbox--grepninja--0.7--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7--patch-177
+    
+     * david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-1
+       made the previous button not 'start-over' for iradio sources, found and squashed xine metadata mime detection bugs
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-mm.c shell/rb-shell-player.c
+
+    new patches:
+     david@grepninja.com--2004/rhythmbox--grepninja--0.7--base-0
+     david@grepninja.com--2004/rhythmbox--grepninja--0.7--patch-1
+
+
 2004-03-29 21:08:36 GMT	Colin Walters <walters@verbum.org>	patch-177
 
     Summary:
