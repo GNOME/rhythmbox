@@ -6,8 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
-"POT-Creation-Date: 2003-05-30 21:24+0200\n"
-"PO-Revision-Date: 2003-05-31 01:21+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-07-15 16:58+0200\n"
+"PO-Revision-Date: 2003-07-15 21:12+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -295,7 +296,7 @@ msgstr "N_aposledy hrané"
 msgid "_Play Count"
 msgstr "_Počet hraní"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:922
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:577 shell/rb-shell.c:989
 msgid "Music Player"
 msgstr "Přehrávač hudby"
 
@@ -557,7 +558,7 @@ msgstr "Usp_ořádat"
 msgid "_Paste"
 msgstr "V_ložit"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1064
+#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1075
 msgid "_Play"
 msgstr "_Hrát"
 
@@ -738,15 +739,15 @@ msgstr ""
 "Při přechodu na %s nastala chyba:\n"
 "%s"
 
-#: lib/widgets/rb-load-failure-dialog.c:108
+#: lib/widgets/rb-load-failure-dialog.c:118
 msgid "Error loading files into library"
 msgstr "Chyba při načítání souborů do knihovny"
 
-#: lib/widgets/rb-load-failure-dialog.c:125
+#: lib/widgets/rb-load-failure-dialog.c:135
 msgid "_File"
 msgstr "_Soubor"
 
-#: lib/widgets/rb-load-failure-dialog.c:133
+#: lib/widgets/rb-load-failure-dialog.c:143
 msgid "_Error"
 msgstr "_Chyba"
 
@@ -779,7 +780,7 @@ msgstr "Získat informace o tomto umělci z WWW"
 msgid "Get more information on this station from the web"
 msgstr "Získat více informací o této stanici z WWW"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:926 shell/rb-shell.c:1732
+#: lib/widgets/rb-player.c:526 shell/rb-shell.c:993 shell/rb-shell.c:1799
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
@@ -840,27 +841,35 @@ msgstr "Kliknutím umlčíte"
 msgid "Click to unmute"
 msgstr "Kliknutím přestane mlčet"
 
-#: shell/main.c:63
+#: shell/main.c:65
+msgid "Print the playing song and exit"
+msgstr "Vytisknout přehrávanou skladbu a skončit"
+
+#: shell/main.c:66
+msgid "Print the playing song URI and exit"
+msgstr "Vytisknout URI přehrávané skladby a skončit"
+
+#: shell/main.c:67
 msgid "Enable debugging code"
 msgstr "Povolit ladící kód"
 
-#: shell/main.c:64
+#: shell/main.c:68
 msgid "Do not register the shell"
 msgstr "Neregistrovat shell"
 
-#: shell/main.c:65
+#: shell/main.c:69
 msgid "Quit Rhythmbox"
 msgstr "Ukončit aplikaci Rhythmbox"
 
-#: shell/main.c:66
+#: shell/main.c:70
 msgid "MonkeyMedia options:"
 msgstr "Volby MonkeyMedia:"
 
-#: shell/main.c:76
+#: shell/main.c:80
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:195
+#: shell/main.c:200
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -897,17 +906,17 @@ msgstr ""
 "Chyba při čtení souboru seznamu skladeb \"%s\":\n"
 " žádná hlavička playlist"
 
-#: shell/rb-shell.c:440
+#: shell/rb-shell.c:448
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Nelze zpracovat URI \"%s\"\n"
 
-#: shell/rb-shell.c:474
+#: shell/rb-shell.c:482
 #, c-format
 msgid "Unable to handle URI \"%s\"\n"
 msgstr "Nelze obsloužit URI \"%s\"\n"
 
-#: shell/rb-shell.c:522
+#: shell/rb-shell.c:564
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -920,12 +929,12 @@ msgstr ""
 "s jiným prefixem než bonobo-activation; toto varování\n"
 "je neškodné, ale nebude fungovat IPC.\n"
 
-#: shell/rb-shell.c:942
+#: shell/rb-shell.c:1009
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: shell/rb-shell.c:945
+#: shell/rb-shell.c:1012
 #, c-format
 msgid ""
 "%s\n"
@@ -934,66 +943,66 @@ msgstr ""
 "%s\n"
 "Pozastaveno"
 
-#: shell/rb-shell.c:1028
+#: shell/rb-shell.c:1095
 msgid "translator_credits"
 msgstr "Michal Bukovjan <bukm@centrum.cz>"
 
-#: shell/rb-shell.c:1038
+#: shell/rb-shell.c:1105
 msgid "Lead developers:"
 msgstr "Vedoucí vývojáři:"
 
-#: shell/rb-shell.c:1039
+#: shell/rb-shell.c:1106
 msgid "Contributors:"
 msgstr "Přispěli:"
 
-#: shell/rb-shell.c:1043
+#: shell/rb-shell.c:1110
 msgid "Music management and playback software for GNOME."
 msgstr "Software pro správu a přehrávání hudby pro prostředí GNOME"
 
-#: shell/rb-shell.c:1186
+#: shell/rb-shell.c:1253
 msgid "Choose Files or Directory"
 msgstr "Vyberte soubory nebo adresář"
 
-#: shell/rb-shell.c:1215
+#: shell/rb-shell.c:1282
 msgid "Load playlist"
 msgstr "Načíst seznam skladeb"
 
-#: shell/rb-shell-player.c:314
+#: shell/rb-shell-player.c:315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nelze vytvořit přehrávač: %s"
 
-#: shell/rb-shell-player.c:644
+#: shell/rb-shell-player.c:650
 #, c-format
 msgid "Opening %s..."
 msgstr "Otevírám %s..."
 
-#: shell/rb-shell-player.c:715
+#: shell/rb-shell-player.c:721
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr "Všechna náhradní umístění selhala, nemohu přehrávat: %s\n"
 
-#: shell/rb-shell-player.c:1055
+#: shell/rb-shell-player.c:1066
 msgid "Pause"
 msgstr "Pozastavit"
 
-#: shell/rb-shell-player.c:1056
+#: shell/rb-shell-player.c:1067
 msgid "_Pause"
 msgstr "_Pozastavit"
 
-#: shell/rb-shell-player.c:1063
+#: shell/rb-shell-player.c:1074
 msgid "Play"
 msgstr "Hrát"
 
-#: shell/rb-shell-player.c:1071
+#: shell/rb-shell-player.c:1082
 msgid "Stop"
 msgstr "Zastavit"
 
-#: shell/rb-shell-player.c:1072
+#: shell/rb-shell-player.c:1083
 msgid "_Stop"
 msgstr "Za_stavit"
 
-#: shell/rb-shell-player.c:1290
+#: shell/rb-shell-player.c:1301
 msgid "Unexpected end of stream!"
 msgstr "Neočekávaný konec proudu!"
 
@@ -1076,7 +1085,7 @@ msgstr "Nelze zpracovat %s jako soubor skupin"
 msgid "Radio"
 msgstr "Rádio"
 
-#: sources/rb-iradio-source.c:479
+#: sources/rb-iradio-source.c:498
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "Celkem <b>%d</b> stanic s <b>%d</b> různými žánry"
