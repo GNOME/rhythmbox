@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-08-03 18:51+0300\n"
-"PO-Revision-Date: 2004-02-04 21:44+0200\n"
+"POT-Creation-Date: 2004-09-02 11:08+0300\n"
+"PO-Revision-Date: 2004-09-03 11:09+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -240,7 +240,7 @@ msgstr "_Syötä tiedoston, jonka haluat ladata, sijainti (URI):"
 msgid "Open from URI"
 msgstr "Avaa URIsta"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:748 shell/rb-shell.c:1360
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:793 shell/rb-shell.c:1405
 msgid "Music Player"
 msgstr "Musiikkisoitin"
 
@@ -260,7 +260,7 @@ msgstr "Unohda kappaleiden valinnat"
 msgid "Eject Audio-CD"
 msgstr "Avaa CD-kelkka"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:351
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:367
 msgid "Scroll the view to the currently playing song"
 msgstr "Siirrä näkymä soivaan kappaleeseen"
 
@@ -273,7 +273,7 @@ msgid "Select all songs"
 msgstr "Valitse kaikki kappaleet"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6 shell/rb-playlist-manager.c:144
-#: shell/rb-shell.c:317
+#: shell/rb-shell.c:333
 msgid "_Edit"
 msgstr "_Muokkaa"
 
@@ -281,11 +281,11 @@ msgstr "_Muokkaa"
 msgid "_Eject Audio-CD..."
 msgstr "_Avaa CD-kelkka..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:350
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:366
 msgid "_Jump to Playing Song"
 msgstr "_Siirry soivaan kappaleeseen"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:318
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:334
 msgid "_View"
 msgstr "_Näytä"
 
@@ -295,7 +295,7 @@ msgstr "Uusi radiokanava"
 
 #: iradio/rb-new-station-dialog.c:182
 #: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:965
-#: sources/rb-ipod-source.c:251 sources/rb-iradio-source.c:263
+#: sources/rb-ipod-source.c:238 sources/rb-iradio-source.c:263
 #: sources/rb-iradio-source.c:264 sources/rb-iradio-source.c:265
 #: sources/rb-playlist-source.c:392 widgets/rb-entry-view.c:907
 #: widgets/rb-entry-view.c:931 widgets/rb-song-info.c:783
@@ -477,69 +477,73 @@ msgstr "%s, %s ja %s"
 msgid "%s and %s"
 msgstr "%s ja %s"
 
-#: shell/main.c:81
+#: shell/main.c:104
 msgid "Print the playing song and exit"
 msgstr "Näytä soitettava kappale ja poistu"
 
-#: shell/main.c:82
+#: shell/main.c:105
 msgid "Print the playing song URI and exit"
 msgstr "Näytä soitettavan kappaleen URI ja poistu"
 
-#: shell/main.c:84
+#: shell/main.c:107
 msgid "Print the playing song length in seconds and exit"
 msgstr "Näytä soitettavan kappaleen pituus sekunteina ja poistu"
 
-#: shell/main.c:85
+#: shell/main.c:108
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Näytä soitettavan tiedoston soitettu aika ja poistu"
 
-#: shell/main.c:86
+#: shell/main.c:109
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 "Siirry annetuun aikaan soitettavassa kappalessa, jos mahdollista, ja poistu"
 
-#: shell/main.c:88
+#: shell/main.c:111
 msgid "Toggle play/pause mode"
 msgstr "Vaihtele soitto/tauko tilaa"
 
-#: shell/main.c:89
+#: shell/main.c:112
 msgid "Focus the running player"
 msgstr "Kohdista suoritettavana olevaan soittimeen"
 
-#: shell/main.c:90
+#: shell/main.c:113
 msgid "Jump to previous song"
 msgstr "Hyppää edelliseen kappaleeseen"
 
-#: shell/main.c:91
+#: shell/main.c:114
 msgid "Jump to next song"
 msgstr "Hyppää seuraavaan kappaleeseen"
 
-#: shell/main.c:93
+#: shell/main.c:116
 msgid "Toggle shuffling"
 msgstr "Vaihtele satunnaissoittoa"
 
-#: shell/main.c:95
+#: shell/main.c:118
 msgid "Enable debugging code"
 msgstr "Ota käyttöön kehityskoodi"
 
-#: shell/main.c:96
+#: shell/main.c:119
 msgid "Do not update the library"
 msgstr "Älä päivitä kirjastoa"
 
-#: shell/main.c:97
+#: shell/main.c:120
+msgid "Do not register the shell"
+msgstr "Älä rekisteröi kuorta"
+
+#: shell/main.c:121
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr ""
 "Älä tallenna mitään tietoja pysyvästi (sivuvaikutuksena --no-registration)"
 
-#: shell/main.c:98
+#: shell/main.c:122
 msgid "Path for database file to use"
 msgstr "Käytettävän tietokantatiedoston polku"
 
-#: shell/main.c:99
+#: shell/main.c:123
 msgid "Quit Rhythmbox"
 msgstr "Lopeta musiikkisoitin"
 
-#: shell/main.c:122 widgets/rb-druid.c:218
+#: shell/main.c:146 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Musiikkisoitin"
 
@@ -742,7 +746,7 @@ msgstr "Virta loppui odottamattomasti!"
 msgid "Playback error"
 msgstr "Soittovirhe"
 
-#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1515
+#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1560
 msgid "Couldn't display help"
 msgstr "Ohjetta ei voitu näyttää"
 
@@ -754,112 +758,112 @@ msgstr "Musiikkisoittimen asetukset"
 msgid "General"
 msgstr "Yleiset"
 
-#: shell/rb-shell.c:316
+#: shell/rb-shell.c:332
 msgid "_Music"
 msgstr "_Soitto"
 
-#: shell/rb-shell.c:319
+#: shell/rb-shell.c:335
 msgid "_Control"
 msgstr "_Ohjaus"
 
-#: shell/rb-shell.c:320
+#: shell/rb-shell.c:336
 msgid "_Help"
 msgstr "_Ohje"
 
-#: shell/rb-shell.c:322
+#: shell/rb-shell.c:338
 msgid "New _Internet Radio Station"
 msgstr "Uusi _Internet-radiokanava"
 
-#: shell/rb-shell.c:323
+#: shell/rb-shell.c:339
 msgid "Create a new Internet Radio station"
 msgstr "Luo uusi Internetradiokanava"
 
-#: shell/rb-shell.c:326
+#: shell/rb-shell.c:342
 msgid "_Import Folder..."
 msgstr "_Tuo kansio..."
 
-#: shell/rb-shell.c:327
+#: shell/rb-shell.c:343
 msgid "Choose folder to be added to the Library"
 msgstr "Valitse kansio, joka lisätään musiikkikirjastoon"
 
-#: shell/rb-shell.c:329
+#: shell/rb-shell.c:345
 msgid "Import _File..."
 msgstr "_Tuo tiedosto..."
 
-#: shell/rb-shell.c:330
+#: shell/rb-shell.c:346
 msgid "Choose file to be added to the Library"
 msgstr "Valitse tiedosto, joka lisätään kirjastoon"
 
-#: shell/rb-shell.c:332
+#: shell/rb-shell.c:348
 msgid "Import _Audio CD..."
 msgstr "Tuo _CD-levy..."
 
-#: shell/rb-shell.c:333
+#: shell/rb-shell.c:349
 msgid "Extract and import songs from a CD"
 msgstr "Lue ja tuo kappaleita CD-levyltä"
 
-#: shell/rb-shell.c:335
+#: shell/rb-shell.c:351
 msgid "_About"
 msgstr "_Tietoja"
 
-#: shell/rb-shell.c:336
+#: shell/rb-shell.c:352
 msgid "Show information about the music player"
 msgstr "Näytä tietoja musiikkisoittimesta"
 
-#: shell/rb-shell.c:338
+#: shell/rb-shell.c:354
 msgid "_Contents"
 msgstr "_Sisältö"
 
-#: shell/rb-shell.c:339
+#: shell/rb-shell.c:355
 msgid "Display music player help"
 msgstr "Näytä musiikkisoittimen ohje"
 
-#: shell/rb-shell.c:341
+#: shell/rb-shell.c:357
 msgid "_Quit"
 msgstr "_Lopeta"
 
-#: shell/rb-shell.c:342
+#: shell/rb-shell.c:358
 msgid "Quit the music player"
 msgstr "Lopeta musiikkisoitin"
 
-#: shell/rb-shell.c:344
+#: shell/rb-shell.c:360
 msgid "Prefere_nces"
 msgstr "_Asetukset"
 
-#: shell/rb-shell.c:345
+#: shell/rb-shell.c:361
 msgid "Edit music player preferences"
 msgstr "Muokkaa musiikkisoittimen asetuksia"
 
-#: shell/rb-shell.c:347
+#: shell/rb-shell.c:363
 msgid "Show _all"
 msgstr "Näytä _kaikki"
 
-#: shell/rb-shell.c:348
+#: shell/rb-shell.c:364
 msgid "Show all items in this music source"
 msgstr "Näytä kaikki kohteet tässä musiikkilähteessä"
 
-#: shell/rb-shell.c:358
+#: shell/rb-shell.c:374
 msgid "Source _List"
 msgstr "Lähde_lista"
 
-#: shell/rb-shell.c:359
+#: shell/rb-shell.c:375
 msgid "Change the visibility of the source list"
 msgstr "Muuta lähdelistan näkyvyyttä"
 
-#: shell/rb-shell.c:361
+#: shell/rb-shell.c:377
 msgid "_Small Display"
 msgstr "_Pieni näyttö"
 
-#: shell/rb-shell.c:362
+#: shell/rb-shell.c:378
 msgid "Make the main window smaller"
 msgstr "Pienennä pääikkuna"
 
-#: shell/rb-shell.c:1335 shell/rb-tray-icon.c:203 widgets/rb-header.c:567
+#: shell/rb-shell.c:1380 shell/rb-tray-icon.c:203 widgets/rb-header.c:567
 msgid "Not playing"
 msgstr "Soitto pysäytetty"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1338
+#: shell/rb-shell.c:1383
 #, c-format
 msgid ""
 "%s\n"
@@ -869,7 +873,7 @@ msgstr ""
 "Pysäytetty, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1342
+#: shell/rb-shell.c:1387
 #, c-format
 msgid ""
 "%s\n"
@@ -879,55 +883,55 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1376
+#: shell/rb-shell.c:1421
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: shell/rb-shell.c:1437
+#: shell/rb-shell.c:1482
 msgid "translator_credits"
 msgstr ""
 "Hile Tuohela, 2002-2003\n"
 "\n"
 "http://gnome-fi.org/"
 
-#: shell/rb-shell.c:1446
+#: shell/rb-shell.c:1491
 msgid "Maintainers:"
 msgstr "Ylläpitäjät:"
 
-#: shell/rb-shell.c:1449
+#: shell/rb-shell.c:1494
 msgid "Former Maintainers:"
 msgstr "Aikaisemmat ylläpitäjät:"
 
-#: shell/rb-shell.c:1452
+#: shell/rb-shell.c:1497
 msgid "Contributors:"
 msgstr "Avustajat:"
 
-#: shell/rb-shell.c:1454
+#: shell/rb-shell.c:1499
 msgid "Music management and playback software for GNOME."
 msgstr "Musiikin hallinta- ja soitto-ohjelma Gnomeen"
 
-#: shell/rb-shell.c:1575 widgets/rb-druid.c:319
+#: shell/rb-shell.c:1620 widgets/rb-druid.c:319
 msgid "Load folder into Library"
 msgstr "Lisää kansio musiikkikirjastoon"
 
-#: shell/rb-shell.c:1596
+#: shell/rb-shell.c:1641
 msgid "Load file into Library"
 msgstr "Lataa tiedosto musiikkikirjastoon"
 
-#: shell/rb-shell.c:1629
+#: shell/rb-shell.c:1674
 msgid "CD Ripper not found"
 msgstr "CD-lukijaa ei löytynyt"
 
-#: shell/rb-shell.c:1630
+#: shell/rb-shell.c:1675
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "CD-levyjen tuonti vaatii, etää Sound Juicer ohjelma on asennettu."
 
-#: shell/rb-shell.c:1638
+#: shell/rb-shell.c:1683
 msgid "Couldn't run CD Ripper"
 msgstr "CD-lukijaa ei voitu suorittaa"
 
-#: shell/rb-shell.c:1639
+#: shell/rb-shell.c:1684
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Virhe suoritettaessa sound-juiceria: %s"
@@ -1018,7 +1022,7 @@ msgstr "Virhe luettaessa tiedostoa \"%s\".\n"
 msgid "Error writing PC file \"%s\".\n"
 msgstr "Virhe kirjoitettaessa PC-tiedostoa \"%s\".\n"
 
-#: sources/rb-ipod-source.c:228
+#: sources/rb-ipod-source.c:215
 msgid "iPod"
 msgstr "iPod"
 
@@ -1070,7 +1074,7 @@ msgstr "Toimenpide ei ole tuettu"
 msgid "This source does not support drag and drop."
 msgstr "Tämä lähde ei tue vetoa ja tiputusta."
 
-#: sources/rb-sourcelist.c:225
+#: sources/rb-sourcelist.c:226
 msgid "_Source"
 msgstr "_Lähde"
 
@@ -1279,11 +1283,11 @@ msgstr "_Hae:"
 
 #: widgets/rb-song-display-box.c:113
 msgid "from"
-msgstr "lähteestä"
+msgstr " "
 
 #: widgets/rb-song-display-box.c:115
 msgid "by"
-msgstr "esittäjänä"
+msgstr "-"
 
 #: widgets/rb-song-info.c:267
 msgid "Song Properties"
@@ -1465,9 +1469,6 @@ msgstr "-"
 
 #~ msgid "Refreshing songs..."
 #~ msgstr "Virkistetään kappaleita..."
-
-#~ msgid "Do not register the shell"
-#~ msgstr "Älä rekisteröi kuorta"
 
 #~ msgid "An exception occured '%s'"
 #~ msgstr "Tapahtui poikkeus '%s'"
