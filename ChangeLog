@@ -1,3 +1,10 @@
+2003-08-03  Colin Walters  <walters@rhythmbox.org>
+
+	* monkey-media/stream-info-impl/id3-vfs/id3-vfs.c: (search_tags):
+
+	Try not to lose completely if we have an ID3v1 tag, and reading an
+	ID3v2 tag fails.
+
 2003-08-03  Yann Rouillard <y.rouillard@laposte.net>
 
 	* NEWS:

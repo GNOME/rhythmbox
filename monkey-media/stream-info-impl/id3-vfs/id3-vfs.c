@@ -268,7 +268,10 @@ int search_tags(struct id3_vfs_file *file)
 
   if (0) {
   fail:
-    result = -1;
+    if (file->flags & ID3_FILE_FLAG_ID3V1)
+	    result = 0;
+    else
+	   result = -1;
   }
 
   if (gnome_vfs_tell(file->iofile, &save_position) != GNOME_VFS_OK)
