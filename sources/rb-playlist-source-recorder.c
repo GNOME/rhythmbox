@@ -182,7 +182,7 @@ rb_playlist_source_recorder_device_menu_create (void)
 
         widget = bacon_cd_selection_new ();
         g_object_set (widget, "file-image", FALSE, NULL);
-        /*g_object_set (widget, "show-recorders-only", TRUE, NULL);*/
+        g_object_set (widget, "show-recorders-only", TRUE, NULL);
 
 	value = eel_gconf_get_string (CONF_STATE_BURN_DEVICE);
         if (value) {

@@ -61,7 +61,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  libglade-2.0                  \
 		  gnome-vfs-2.0 >= 2.6          \
 		  gnome-vfs-module-2.0          \
-		  libnautilus-burn >= 2.7.6	\
+		  libnautilus-burn >= 2.8.3	\
 		  $USE_HAL)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
