@@ -71,6 +71,8 @@ void			rb_library_remove_uri           (RBLibrary *library,
 
 void			rb_library_operation_end        (RBLibrary *library);
 
+GTimeVal		rb_library_get_modification_time(RBLibrary *library);		
+
 RBNode *		rb_library_new_node		(RBLibrary *library,
 							 const char *location,
 							 GError **error);

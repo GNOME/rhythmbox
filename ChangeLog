@@ -1,5 +1,18 @@
 2003-08-13  Colin Walters  <walters@verbum.org>
 
+	* lib/widgets/rb-node-view.c: (queue_changed_sig):
+	* library/rb-library.c: (rb_library_get_modification_time),
+	(song_added_cb), (song_removed_cb):
+	* library/rb-library.h:
+	* sources/rb-group-source.c: (impl_get_status):
+	* sources/rb-library-source.c: (rb_library_source_finalize),
+	(impl_get_status):
+
+	Implement status display caching for the library and playlist
+	sources.
+
+2003-08-13  Colin Walters  <walters@verbum.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_init),
 	(rb_node_view_finalize), (queue_changed_sig),
 	(rb_node_view_selection_changed_cb),

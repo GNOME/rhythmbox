@@ -84,6 +84,8 @@ struct RBLibraryPrivate
 	GStaticRWLock *album_hash_lock;
 	GStaticRWLock *song_hash_lock;
 
+	GTimeVal mod_time;
+
 	char *xml_file;
 
 	guint idle_save_id;
@@ -372,6 +374,11 @@ rb_library_operation_end (RBLibrary *library)
 	rb_thread_helpers_unlock_gdk ();
 }
 
+GTimeVal
+rb_library_get_modification_time (RBLibrary *library)
+{
+	return library->priv->mod_time;
+}
 
 void rb_library_remove_uri (RBLibrary *library, const char *uri)
 {
@@ -471,6 +478,8 @@ song_added_cb (RBNode *node,
 	       RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
+
+	g_get_current_time (&library->priv->mod_time);
 	
 	g_hash_table_insert (library->priv->song_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_LOCATION),
@@ -528,6 +537,8 @@ song_removed_cb (RBNode *node,
 		 RBLibrary *library)
 {
 	g_static_rw_lock_writer_lock (library->priv->song_hash_lock);
+
+	g_get_current_time (&library->priv->mod_time);
 
 	g_hash_table_remove (library->priv->song_hash,
 			     rb_node_get_property_string (child, RB_NODE_PROP_LOCATION));

@@ -160,6 +160,9 @@ struct RBLibrarySourcePrivate
 
 	gboolean loading_prefs;
 
+	GTimeVal cached_mod_time;
+	char *cached_status;
+
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
 };
@@ -344,6 +347,8 @@ rb_library_source_finalize (GObject *object)
 	g_object_unref (G_OBJECT (source->priv->artists_filter));
 	g_object_unref (G_OBJECT (source->priv->songs_filter));
 	g_object_unref (G_OBJECT (source->priv->albums_filter));
+
+	g_free (source->priv->cached_status);
 
 	g_free (source->priv);
 
@@ -765,10 +770,28 @@ static const char *
 impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	GTimeVal mod_time = rb_library_get_modification_time (source->priv->library);
+	const char *ret;
+
+	if (source->priv->cached_mod_time.tv_sec > mod_time.tv_sec ||
+	    (source->priv->cached_mod_time.tv_sec == mod_time.tv_sec
+	     && source->priv->cached_mod_time.tv_usec > mod_time.tv_usec)) {
+		rb_debug ("returning cached status");
+		return source->priv->cached_status;
+	}
+	
+	rb_debug ("returning new status");
+	
 	if (!rb_library_is_idle (source->priv->library))
-		return impl_get_status_fast (source);
+		ret = impl_get_status_fast (source);
 	else
-		return impl_get_status_full (source);
+		ret = impl_get_status_full (source);
+
+	g_get_current_time (&source->priv->cached_mod_time);
+	g_free (source->priv->cached_status);
+	source->priv->cached_status = g_strdup (ret);
+
+	return ret;
 }
 
 static const char *
