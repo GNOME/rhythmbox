@@ -1390,9 +1390,9 @@ out:
 static void
 query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source)
 {
-	rb_debug ("query complete");
 	struct RBLibrarySourceQueryCompleteData *data
 		= g_new0 (struct RBLibrarySourceQueryCompleteData, 1);
+	rb_debug ("query complete");
 	data->model = model;
 	data->source = source;
 	g_object_ref (G_OBJECT (model));
