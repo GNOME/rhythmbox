@@ -1322,10 +1322,10 @@ char *
 rb_node_view_get_status (RBNodeView *view)
 {
 	char *ret, *size;
-	int hours, minutes, seconds;
+	long hours, minutes, seconds;
 	GnomeVFSFileSize n_bytes = 0;
 	long n_seconds = 0;
-	int n_songs = 0;
+	long n_songs = 0;
 	GPtrArray *kids;
 	int i;
 
@@ -1336,7 +1336,7 @@ rb_node_view_get_status (RBNodeView *view)
 		RBNode *node;
 
 		node = g_ptr_array_index (kids, i);
-		
+
 		if (view->priv->filter != NULL &&
 		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
 			continue;
@@ -1349,7 +1349,7 @@ rb_node_view_get_status (RBNodeView *view)
 		n_bytes += rb_node_get_property_long (node,
 						      RB_NODE_SONG_PROP_FILE_SIZE);
 	}
-		
+
 	rb_node_thaw (view->priv->root);
 
 	size = gnome_vfs_format_file_size_for_display (n_bytes);
@@ -1358,7 +1358,7 @@ rb_node_view_get_status (RBNodeView *view)
 	minutes = n_seconds / 60 - hours * 60;
 	seconds = n_seconds % 60;
 
-	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d total time, %s"),
+	ret = g_strdup_printf (_("%ld songs, %ld:%02ld:%02ld total time, %s"),
 			       n_songs, hours, minutes, seconds, size);
 
 	g_free (size);

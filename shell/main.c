@@ -90,16 +90,13 @@ main (int argc, char **argv)
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
 
-	gdk_threads_init ();
-
-	check_gentoo ();
-
 #ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 #endif
+	check_gentoo ();
 
 	/* workaround for non utf8 LC_COLLATE */
 	old_collate = g_strdup_printf ("LC_COLLATE=%s",
@@ -127,6 +124,8 @@ main (int argc, char **argv)
 		g_free (lang);
 		g_free (new_collate);
 	}
+	
+	gdk_threads_init ();
 
 	CORBA_exception_init (&ev);
 

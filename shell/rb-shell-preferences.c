@@ -68,6 +68,8 @@ struct RBShellPreferencesPrivate
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
 	GSList *browser_views_group;
+
+	gboolean loading;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -132,7 +134,7 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	GladeXML *xml;
 	GtkWidget *help;
 	GtkWidget *tmp;
-	
+
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
 	eel_gconf_notification_add (CONF_UI_DIR,
@@ -195,8 +197,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	shell_preferences->priv->browser_views_group =
 		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
 					(GTK_RADIO_BUTTON (tmp))));
-					
-	
+
+
 	g_object_unref (G_OBJECT (xml));
 
 	rb_shell_preferences_sync (shell_preferences);
@@ -261,34 +263,36 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	int index = 0, i;
 	GSList *list;
 
+	shell_preferences->priv->loading = TRUE;
+
 	gtk_widget_set_sensitive (shell_preferences->priv->style_optionmenu,
 				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
 
 	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 	if (columns != NULL)
 	{
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check), 
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ARTIST") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ALBUM") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT") != NULL);
-		gtk_toggle_button_set_active 
+		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
 	}
@@ -301,13 +305,15 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	}
 	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
 				     index);
-	
+
 	list = g_slist_nth (shell_preferences->priv->browser_views_group,
 			    eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
 
 	g_free (columns);
 	g_free (style);
+
+	shell_preferences->priv->loading = FALSE;
 }
 
 static void
@@ -316,6 +322,9 @@ ui_pref_changed (GConfClient *client,
 		 GConfEntry *entry,
 		 RBShellPreferences *shell_preferences)
 {
+	if (prefs->priv->loading == TRUE)
+		return;
+
 	rb_shell_preferences_sync (shell_preferences);
 }
 
@@ -324,6 +333,9 @@ browser_views_activated_cb (GtkWidget *widget,
 			    RBShellPreferences *prefs)
 {
 	int index;
+
+	if (prefs->priv->loading == TRUE)
+		return;
 
 	index = g_slist_index (prefs->priv->browser_views_group, widget);
 

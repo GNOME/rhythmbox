@@ -1008,7 +1008,7 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		const char *song = rb_library_view_get_song (RB_VIEW_PLAYER (view));
 		const char *uri;
 
-		uri = rb_node_get_property_string (node, 
+		uri = rb_node_get_property_string (node,
 				                   RB_NODE_SONG_PROP_LOCATION);
 
 		g_assert (uri != NULL);
