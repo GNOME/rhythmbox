@@ -101,6 +101,7 @@ static gboolean rb_node_view_scroll_to_string (RBNodeView *view,
 static void child_deleted_cb (RBNode *node,
 			      RBNode *child,
 			      RBNodeView *view);
+static gboolean rb_node_view_is_empty (RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -813,11 +814,9 @@ rb_node_view_get_first_node (RBNodeView *view)
 {
 	GtkTreeIter iter, iter2;
 
-	if (rb_node_view_get_n_rows (view) == 0)
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
+				           &iter) == FALSE)
 		return NULL;
-
-	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
-				       &iter);
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter2, &iter);
@@ -856,7 +855,7 @@ rb_node_view_get_random_node (RBNodeView *view)
 	char *path_str;
 	int index, n_rows;
 
-	if (rb_node_view_get_n_rows (view) == 0)
+	if (rb_node_view_is_empty (view) == TRUE)
 		return NULL;
 
 	n_rows = rb_node_view_get_n_rows (view);
@@ -904,7 +903,7 @@ rb_node_view_get_next_random_node (RBNodeView *view)
 {
 	RBNode *node;
 
-	if (rb_node_view_get_n_rows (view) == 0)
+	if (rb_node_view_is_empty (view) == TRUE)
 		return NULL;
 
 	if (view->priv->current_random != NULL &&
@@ -925,7 +924,7 @@ rb_node_view_get_previous_random_node (RBNodeView *view)
 {
 	RBNode *node;
 
-	if (rb_node_view_get_n_rows (view) == 0)
+	if (rb_node_view_is_empty (view) == TRUE)
 		return NULL;
 
 	if (view->priv->current_random != NULL &&
@@ -970,12 +969,9 @@ rb_node_view_get_selection (RBNodeView *view)
 {
 	GList *list = NULL;
 	
-	if (rb_node_view_get_n_rows (view) > 0)
-	{
-		gtk_tree_selection_selected_foreach (view->priv->selection,
-						     (GtkTreeSelectionForeachFunc) get_selection,
-						     (void **) &list);
-	}
+	gtk_tree_selection_selected_foreach (view->priv->selection,
+					     (GtkTreeSelectionForeachFunc) get_selection,
+					     (void **) &list);
 	g_list_free (view->priv->nodeselection);
 	view->priv->nodeselection = list;
 	
@@ -1318,6 +1314,14 @@ rb_node_view_timeout_cb (RBNodeView *view)
 	view->priv->changed = FALSE;
 
 	return TRUE;
+}
+
+static gboolean
+rb_node_view_is_empty (RBNodeView *view)
+{
+	GtkTreeIter iter;
+
+	return (gtk_tree_model_get_iter_first (view->priv->sortmodel, &iter) == FALSE);
 }
 
 static int
