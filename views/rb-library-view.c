@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -218,7 +218,7 @@ enum
 	PROP_LIBRARY
 };
 
-static BonoboUIVerb rb_library_view_verbs[] = 
+static BonoboUIVerb rb_library_view_verbs[] =
 {
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_library_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_library_view_cmd_select_none),
@@ -229,7 +229,7 @@ static BonoboUIVerb rb_library_view_verbs[] =
 	BONOBO_UI_VERB_END
 };
 
-static RBBonoboUIListener rb_library_view_listeners[] = 
+static RBBonoboUIListener rb_library_view_listeners[] =
 {
 	RB_BONOBO_UI_LISTENER ("ShowBrowser", (BonoboUIListenerFn) rb_library_view_show_browser_changed_cb),
 	RB_BONOBO_UI_LISTENER_END
@@ -238,9 +238,9 @@ static RBBonoboUIListener rb_library_view_listeners[] =
 static GObjectClass *parent_class = NULL;
 
 /* dnd */
-static const GtkTargetEntry target_uri [] = 
+static const GtkTargetEntry target_uri [] =
 		{ { RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST } };
-static const GtkTargetEntry target_id [] = 
+static const GtkTargetEntry target_id [] =
 		{ { RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID } };
 
 GType
@@ -269,14 +269,14 @@ rb_library_view_get_type (void)
 			NULL,
 			NULL
 		};
-		
+
 		static const GInterfaceInfo clipboard_info =
 		{
 			(GInterfaceInitFunc) rb_library_view_clipboard_init,
 			NULL,
 			NULL
 		};
-		
+
 		static const GInterfaceInfo status_info =
 		{
 			(GInterfaceInitFunc) rb_library_view_status_init,
@@ -287,7 +287,7 @@ rb_library_view_get_type (void)
 		rb_library_view_type = g_type_register_static (RB_TYPE_VIEW,
 							       "RBLibraryView",
 							       &our_info, 0);
-		
+
 		g_type_add_interface_static (rb_library_view_type,
 					     RB_TYPE_VIEW_PLAYER,
 					     &player_info);
@@ -337,7 +337,7 @@ update_browser_views_visibility (RBLibraryView *view)
 	GtkWidget *genres = GTK_WIDGET (view->priv->genres);
 	GtkWidget *artists = GTK_WIDGET (view->priv->artists);
 	GtkWidget *albums = GTK_WIDGET (view->priv->albums);
-	
+
 	views = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
 
 	switch (views)
@@ -362,13 +362,13 @@ update_browser_views_visibility (RBLibraryView *view)
 
 static void
 browser_views_notifier (GConfClient *client,
- 			guint cnxn_id,
- 			GConfEntry *entry,
- 			RBLibraryView *view)
+			guint cnxn_id,
+			GConfEntry *entry,
+			RBLibraryView *view)
 {
 	rb_node_view_select_node (view->priv->genres,
 				  rb_library_get_all_artists (view->priv->library));
-	
+
 	update_browser_views_visibility (view);
 }
 
@@ -376,7 +376,7 @@ static void
 rb_library_view_init (RBLibraryView *view)
 {
 	RBSidebarButton *button;
-	
+
 	view->priv = g_new0 (RBLibraryViewPrivate, 1);
 
 	button = rb_sidebar_button_new ("RbLibraryView",
@@ -408,8 +408,8 @@ rb_library_view_init (RBLibraryView *view)
 			  "search",
 			  G_CALLBACK (rb_library_view_search_cb),
 			  view);
-	
-	view->priv->views_notif = eel_gconf_notification_add 
+
+	view->priv->views_notif = eel_gconf_notification_add
 		(CONF_UI_BROWSER_VIEWS, (GConfClientNotifyFunc) browser_views_notifier, view);
 }
 
@@ -434,11 +434,11 @@ rb_library_view_finalize (GObject *object)
 	g_object_unref (G_OBJECT (view->priv->artists_filter));
 	g_object_unref (G_OBJECT (view->priv->songs_filter));
 	g_object_unref (G_OBJECT (view->priv->albums_filter));
-	
+
 	g_object_unref (G_OBJECT (view->priv->search));
 
 	eel_gconf_notification_remove (view->priv->views_notif);
-	
+
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -447,17 +447,17 @@ rb_library_view_finalize (GObject *object)
 static void
 rb_library_view_songs_show_popup_cb (RBNodeView *view,
 				     RBNode *node,
-		   		     RBLibraryView *library_view)
+				     RBLibraryView *library_view)
 {
 	GtkWidget *menu;
 	GtkWidget *window;
-	
-	window = gtk_widget_get_ancestor (GTK_WIDGET (view), 
+
+	window = gtk_widget_get_ancestor (GTK_WIDGET (view),
 					  BONOBO_TYPE_WINDOW);
-	
+
 	menu = gtk_menu_new ();
-	
-	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu), 
+
+	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu),
 			         LIBRARY_VIEW_SONGS_POPUP_PATH);
 
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
@@ -538,7 +538,7 @@ rb_library_view_set_property (GObject *object,
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
-			
+
 			/* set up songs tree view */
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"),
@@ -548,7 +548,7 @@ rb_library_view_set_property (GObject *object,
 					  G_CALLBACK (rb_library_view_node_removed_cb), view);
 			g_signal_connect (G_OBJECT (view->priv->songs), "show_popup",
 					  G_CALLBACK (rb_library_view_songs_show_popup_cb), view);
-			
+
 			/* Drag'n'Drop for songs view */
 			g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
 					  G_CALLBACK (rb_library_view_drop_cb), view);
@@ -569,7 +569,7 @@ rb_library_view_set_property (GObject *object,
 			gtk_drag_dest_set (GTK_WIDGET (view->priv->artists), GTK_DEST_DEFAULT_ALL,
 					   target_uri, 1, GDK_ACTION_COPY);
 			rb_node_view_enable_drag_source (view->priv->artists, target_id, 1);
-	
+
 			/* this gets emitted when the paned thingie is moved */
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "size_allocate",
@@ -583,7 +583,7 @@ rb_library_view_set_property (GObject *object,
 			g_signal_connect (G_OBJECT (view->priv->songs),
 					  "changed",
 					  G_CALLBACK (node_view_changed_cb),
-					  view);	
+					  view);
 
 			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), TRUE, FALSE);
 
@@ -596,15 +596,15 @@ rb_library_view_set_property (GObject *object,
 
 			gtk_paned_set_position (GTK_PANED (view->priv->paned), view->priv->paned_position);
 			rb_library_view_show_browser (view, view->priv->show_browser);
-			
+
 			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
 			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_SONG_INFO,
 					       rb_node_view_have_selection (view->priv->songs));
 
 			update_browser_views_visibility (view);
-			
+
 			rb_node_view_select_node (view->priv->artists,
-			 		          rb_library_get_all_albums (view->priv->library));
+					          rb_library_get_all_albums (view->priv->library));
 		}
 		break;
 	default:
@@ -728,10 +728,10 @@ album_node_selected_cb (RBNodeView *view,
 		      node);
 }
 
-static void 
+static void
 browser_view_node_activated_cb (RBNodeView *view,
-			   	RBNode *node,
-			   	RBLibraryView *library_view)
+				RBNode *node,
+				RBLibraryView *library_view)
 {
 	RBNode *first_node;
 
@@ -825,7 +825,7 @@ rb_library_view_have_next (RBViewPlayer *player)
 	RBNode *next;
 
 	next = rb_library_view_get_next_node (view, TRUE);
-	
+
 	return (next != NULL);
 }
 
@@ -847,7 +847,7 @@ rb_library_view_next (RBViewPlayer *player)
 	RBNode *node;
 
 	node = rb_library_view_get_next_node (view, FALSE);
-	
+
 	rb_library_view_set_playing_node (view, node);
 }
 
@@ -856,13 +856,13 @@ rb_library_view_previous (RBViewPlayer *player)
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
-		
+
 	node = rb_library_view_get_previous_node (view, FALSE);
-	
+
 	rb_library_view_set_playing_node (view, node);
 }
 
-static void 
+static void
 rb_library_view_jump_to_current (RBViewPlayer *player)
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
@@ -1007,7 +1007,7 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 				                   RB_NODE_SONG_PROP_LOCATION);
 
 		g_assert (uri != NULL);
-		
+
 		view->priv->playing_stream = monkey_media_audio_stream_new (uri, &error);
 		if (error != NULL)
 		{
@@ -1016,14 +1016,14 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 			g_error_free (error);
 			return;
 		}
-		
+
 		g_signal_connect (G_OBJECT (view->priv->playing_stream),
 				  "end_of_stream",
 				  G_CALLBACK (song_eos_cb),
 				  view);
-		
+
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
-		
+
 		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, TRUE);
 	}
 }
@@ -1067,7 +1067,7 @@ song_eos_cb (MonkeyMediaStream *stream,
 	GDK_THREADS_ENTER ();
 
 	song_update_statistics (view);
-	
+
 	rb_library_view_next (RB_VIEW_PLAYER (view));
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (view));
@@ -1080,7 +1080,7 @@ rb_library_view_get_previous_node (RBLibraryView *view,
 				   gboolean just_check)
 {
 	RBNode *node;
-	
+
 	if (view->priv->shuffle == FALSE)
 		node = rb_node_view_get_previous_node (view->priv->songs);
 	else
@@ -1122,7 +1122,7 @@ rb_library_view_get_next_node (RBLibraryView *view,
 			       gboolean just_check)
 {
 	RBNode *node;
-	
+
 	if (view->priv->shuffle == FALSE)
 	{
 		node = rb_node_view_get_next_node (view->priv->songs);
@@ -1253,7 +1253,7 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 				  const char *verbname)
 {
 	RBNode *node = rb_node_view_get_playing_node (view->priv->songs);
-	
+
 	if (rb_node_view_get_node_visible (view->priv->songs, node) == FALSE)
 	{
 		/* adjust filtering to show it */

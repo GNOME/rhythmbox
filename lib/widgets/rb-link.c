@@ -379,7 +379,7 @@ rb_link_set_text (RBLink *link,
 	
 	escaped = g_markup_escape_text (link->priv->text, -1);
 	text = g_strdup_printf ("<span foreground=\"#%02X%02X%02X\" underline=\"%s\">%s</span>",
-				color->red & 0xFF, color->green & 0xFF, color->blue & 0xFF,
+				color->red, color->green, color->blue,
 				link->priv->active ? "single" : "none",
 				escaped);
 	g_free (escaped);

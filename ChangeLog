@@ -1,3 +1,26 @@
+2002-11-17  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/glade/preferences.glade:
+
+	Fix caps.
+	
+	* lib/widgets/rb-link.c: (rb_link_set_text):
+
+	Fix some weird color corruption that someone somehow slipped in?
+	
+	* views/rb-library-view.c: (rb_library_view_get_type),
+	(update_browser_views_visibility), (browser_views_notifier),
+	(rb_library_view_init), (rb_library_view_finalize),
+	(rb_library_view_songs_show_popup_cb),
+	(rb_library_view_set_property), (browser_view_node_activated_cb),
+	(rb_library_view_have_next), (rb_library_view_next),
+	(rb_library_view_previous), (rb_library_view_set_playing_node),
+	(song_eos_cb), (rb_library_view_get_previous_node),
+	(rb_library_view_get_next_node),
+	(rb_library_view_cmd_current_song):
+
+	Remove some unnecessary spaces and tabs (thanks to vim)
+
 2002-11-17 Marco Pesenti Gritti <marco@it.gnome.org>
 	
 	* data/rhythmbox.schemas:
