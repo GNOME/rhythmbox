@@ -5,17 +5,29 @@ Overview of Changes in Rhythmbox 0.7.1
 * Ignore files with unknown MIME types [Colin Walters]
 * Support for Rating criteria in automatic playlists [Colin Walters]
 * Disc number tags [Christophe Fergeau]
-* Fix GStreamer configure checks [Christophe Fergeau]
+* Per-song automatic rating is now configurable [Michael Terry]
+* Improved multiselection dialog [Colin Walters]
+* Fix GStreamer configure checks [Christophe Fergeau, Colin Walters]
+* Use weighted random algorithm when using Shuffle+Repeat [Jeffrey Yasskin]
 * Remove Bonobo statusbar for now [Colin Walters]
 * Disable "Browse by..." context menu if browser isn't enabled [Colin Walters]
 * Some state saving: search text, selected source [Colin Walters]
 * Use GtkFileChooser in startup druid too [Christophe Fergeau, Colin Walters]
 * Add audioconvert in pipeline [Colin Walters]
-* Loads of various bugfixes
+* Don't do prelighting on ratings (avoids theme color issues) [Colin Walters]
+* Actually save library if it didn't exist before [Christophe Fergeau]
+* Use GAtomic if available [Christophe Fergeau]
+* Improved Xing header parsing [Christophe Fergeau]
+* Improved duration reading using GStreamer [Christophe Fergeau]
+* Fix flac configury [foser@gentoo.org]
+* Don't set sink to NULL to avoid pausing issue [Colin Walters]
+* Fix occasional deadlock on startup [Colin Walters]
+* Other various bugfixes
 
 New translations:
 
 bg (Peter Slavov)
+uk (Yuriy Syrota)
 
 Updated translations:
 
@@ -33,6 +45,11 @@ fi (Ilkka Tuohela)
 ca (Jordi Mallach)
 kr (Changwoo Ryu)
 nl (Kees van den Broek)
+et (Priit Laes)
+sv (Christian Rose)
+el (Kostas Papadimas)
+it (Luca Ferretti)
+pl (Artur Flinta)
 
 Overview of Changes in Rhythmbox 0.7.0: "My, your music looks tasty..."
 ======================================
