@@ -27,8 +27,9 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <glib.h>
-#include <string.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
+#include <string.h>
 
 #include "rb-library.h"
 #include "rb-library-private.h"

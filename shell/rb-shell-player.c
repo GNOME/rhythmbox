@@ -19,6 +19,7 @@
  */
 
 #include <bonobo/bonobo-ui-util.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <monkey-media.h>
 

@@ -26,6 +26,7 @@
 #include <gtk/gtkentry.h>
 #include <gtk/gtkeventbox.h>
 #include <gtk/gtkdnd.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 

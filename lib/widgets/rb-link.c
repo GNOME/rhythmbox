@@ -21,6 +21,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkeventbox.h>
 #include <gtk/gtktooltips.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-url.h>
 #include <string.h>

@@ -25,6 +25,7 @@
 #include <gtk/gtkhscale.h>
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkstock.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 

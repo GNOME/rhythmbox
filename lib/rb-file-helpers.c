@@ -22,6 +22,7 @@
 #include <glib.h>
 #include <stdio.h>
 #include <string.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 
 #include "rb-file-helpers.h"

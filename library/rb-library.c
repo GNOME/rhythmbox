@@ -23,6 +23,7 @@
  *  $Id$
  */
 
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <string.h>

@@ -18,6 +18,7 @@
  *  $Id$
  */
 
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 

@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <gtk/gtk.h>
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libxml/tree.h>
 
