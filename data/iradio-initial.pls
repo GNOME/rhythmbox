@@ -1,5 +1,5 @@
 [playlist]
-numberofentries=9
+numberofentries=11
 file1=http://www.somafm.com/groovesalad.pls
 title1=Groove Salad
 genre1=Ambient
@@ -27,3 +27,12 @@ genre8=World
 file9=http://broadband.afterhoursdjs.org:8008/
 title9=AfterHoursDJs.org - All live, all the time!
 genre9=Electronica
+file10=http://www.smoothbeats.com/listen.pls
+title10=Smoothbeats.com
+genre10=Hip Hop
+file11=http://www.smoothbeats.com/listen2.pls
+title11=Smoothbeats.com 2
+genre11=Hip Hop
+
+
+
