@@ -1602,16 +1602,19 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		backend = "xine-lib";
 #endif		
 #ifdef HAVE_MP3
-		g_string_append (formats, "MP3 ");
+		g_string_append (formats, " MP3");
 #endif
 #ifdef HAVE_VORBIS
-		g_string_append (formats, "Vorbis ");
+		g_string_append (formats, " Vorbis");
 #endif
 #ifdef HAVE_FLAC
-		g_string_append (formats, "FLAC ");
+		g_string_append (formats, " FLAC");
+#endif
+#ifdef HAVE_MP4
+		g_string_append (formats, " MPEG-4");
 #endif
 
-		comment = g_strdup_printf (_("Music management and playback software for GNOME.\nAudio backend: %s\nAudio formats: %s\n"), backend, formats->str);
+		comment = g_strdup_printf (_("Music management and playback software for GNOME.\nAudio backend: %s\nAudio formats:%s\n"), backend, formats->str);
 
 		g_string_free (formats, TRUE);
 	}
