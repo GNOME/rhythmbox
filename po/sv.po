@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-22 17:57+0200\n"
-"PO-Revision-Date: 2003-08-22 17:58+0200\n"
+"POT-Creation-Date: 2003-08-25 07:23+0200\n"
+"PO-Revision-Date: 2003-08-25 07:24+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -389,7 +389,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1081
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:604 shell/rb-shell.c:1066
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -822,7 +822,7 @@ msgstr "Pixbuf-objekt"
 msgid "The pixbuf to render."
 msgstr "Pixbuf att rendera."
 
-#: lib/widgets/rb-druid.c:218 shell/main.c:81
+#: lib/widgets/rb-druid.c:218 shell/main.c:85
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -885,7 +885,7 @@ msgstr "Hämta information om denna artist från webben"
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1085 shell/rb-shell.c:2149
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1070 shell/rb-shell.c:2134
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -1180,36 +1180,39 @@ msgstr "Misslyckades med att öppna filen som Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: shell/main.c:68
+#: shell/main.c:72
 msgid "Print the playing song and exit"
 msgstr "Skriv ut den spelade låten och avsluta"
 
-#: shell/main.c:69
+#: shell/main.c:73
 msgid "Print the playing song URI and exit"
 msgstr "Skriv ut URI:n för den spelade låten och avsluta"
 
-#: shell/main.c:70
+#: shell/main.c:74
 msgid "Enable debugging code"
 msgstr "Aktivera felsökningsläge"
 
-#: shell/main.c:71
+#: shell/main.c:75
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/main.c:72
+#: shell/main.c:76
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: shell/main.c:73
+#: shell/main.c:77
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
 
-#: shell/main.c:163
-msgid "Rhythmbox does not currently work if GNOME sound events are enabled."
+#: shell/main.c:170
+msgid ""
+"Rhythmbox does not currently work if GNOME sound events are are enabled and "
+"esdsink is in use."
 msgstr ""
-"Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är aktiverade."
+"Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är aktiverade "
+"och esdsink används."
 
-#: shell/main.c:203
+#: shell/main.c:210
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1272,12 +1275,12 @@ msgstr "Inställningar för musikspelare"
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:505
+#: shell/rb-shell.c:504
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:821
+#: shell/rb-shell.c:806
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1290,12 +1293,12 @@ msgstr ""
 "i ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1099
+#: shell/rb-shell.c:1084
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1102
+#: shell/rb-shell.c:1087
 #, c-format
 msgid ""
 "%s\n"
@@ -1304,21 +1307,21 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1170
+#: shell/rb-shell.c:1155
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1179
+#: shell/rb-shell.c:1164
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1183
+#: shell/rb-shell.c:1168
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1207
+#: shell/rb-shell.c:1192
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1329,55 +1332,55 @@ msgstr ""
 "Ljudbakände: %s\n"
 "Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1350
+#: shell/rb-shell.c:1335
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1379
+#: shell/rb-shell.c:1364
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1442 shell/rb-shell.c:1480
+#: shell/rb-shell.c:1427 shell/rb-shell.c:1465
 msgid "There is already a playlist with that name."
 msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-shell.c:1460
+#: shell/rb-shell.c:1445
 msgid "Save playlist"
 msgstr "Spara spellista"
 
-#: shell/rb-shell.c:1587
+#: shell/rb-shell.c:1572
 msgid "Couldn't parse playlist"
 msgstr "Kunde inte tolka spellista"
 
-#: shell/rb-shell.c:1934
+#: shell/rb-shell.c:1919
 msgid "C_reate"
 msgstr "S_kapa"
 
-#: shell/rb-shell.c:1949
+#: shell/rb-shell.c:1934
 msgid "New Playlist"
 msgstr "Ny spellista"
 
-#: shell/rb-shell.c:1960
+#: shell/rb-shell.c:1945
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-shell.c:1965 shell/rb-shell.c:2031
+#: shell/rb-shell.c:1950 shell/rb-shell.c:2016
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1969
+#: shell/rb-shell.c:1954
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
 
-#: shell/rb-shell.c:2000
+#: shell/rb-shell.c:1985
 msgid "R_ename"
 msgstr "B_yt namn"
 
-#: shell/rb-shell.c:2015
+#: shell/rb-shell.c:2000
 msgid "Rename Playlist"
 msgstr "Byt namn på spellista"
 
-#: shell/rb-shell.c:2026
+#: shell/rb-shell.c:2011
 msgid "Please enter a new name for the playlist:"
 msgstr "Ange ett nytt namn för spellistan:"
 
@@ -1448,6 +1451,12 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:501
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid ""
+#~ "Rhythmbox does not currently work if GNOME sound events are are enabled."
+#~ msgstr ""
+#~ "Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är "
+#~ "aktiverade."
 
 #~ msgid "Rename..."
 #~ msgstr "Byt namn..."
