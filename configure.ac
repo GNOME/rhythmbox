@@ -42,9 +42,9 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  bonobo-activation-2.0)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
-PKG_CHECK_MODULES(UNUSED, gtk+-2.0 >= 2.3.0, [have_gtk_23=yes], [have_gtk_23=no])
+PKG_CHECK_MODULES(UNUSED, gtk+-2.0 >= 2.4.0, [have_gtk_23=yes], [have_gtk_23=no])
 if test x"$have_gtk_23" = xyes; then
-   AC_DEFINE(HAVE_GTK_2_3, 1, [Define if you have GTK+ 2.3.0 or better])
+   AC_DEFINE(HAVE_GTK_2_3, 1, [Define if you have GTK+ 2.4.0 or better])
 fi
 AM_CONDITIONAL(WITH_GTK22, test x"$have_gtk_23" != xyes)
 
