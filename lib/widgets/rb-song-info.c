@@ -359,9 +359,9 @@ rb_song_info_update_track (RBSongInfo *song_info)
 		tokens = g_strsplit (text, _("of"), 2);
 	
 		if (tokens[0] != NULL)
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur), tokens[0]);
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur), g_strstrip (tokens[0]));
 		if (tokens[1] != NULL)
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), tokens[1]);
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_max), g_strstrip (tokens[1]));
 	}
 	g_value_unset (&value);
 }
