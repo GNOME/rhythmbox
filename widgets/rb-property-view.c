@@ -268,8 +268,8 @@ rb_property_view_set_property (GObject *object,
 		g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
 						   G_CALLBACK (rb_property_view_selection_changed_cb),
 						   view);
-		break;
 	}
+	break;
 	case PROP_PROP:
 		view->priv->propid = g_value_get_enum (value);
 		break;
