@@ -62,6 +62,7 @@ struct RBRatingPrivate
 	int score;
 
 	GdkPixbuf *pix_star;
+	GdkPixbuf *pix_dot;
 	GdkPixbuf *pix_blank;
 };
 
@@ -86,10 +87,8 @@ rb_rating_get_type (void)
 {
         static GType rb_rating_type = 0;
 
-        if (rb_rating_type == 0)
-        {
-                static const GTypeInfo our_info =
-                {
+        if (rb_rating_type == 0) {
+                static const GTypeInfo our_info = {
                         sizeof (RBRatingClass),
                         NULL, /* base_init */
                         NULL, /* base_finalize */
@@ -166,8 +165,6 @@ rb_rating_init (RBRating *rating)
 					 dummy->style->text[GTK_STATE_NORMAL].blue + COLOR_OFFSET);
 	g_object_unref (G_OBJECT (pixbuf));
 
-
-
 	pixbuf = gtk_widget_render_icon (dummy,
 					 RB_STOCK_NO_STAR,
 					 GTK_ICON_SIZE_MENU,
@@ -177,6 +174,16 @@ rb_rating_init (RBRating *rating)
 					 dummy->style->text[GTK_STATE_NORMAL].red,
 					 dummy->style->text[GTK_STATE_NORMAL].green,
 					 dummy->style->text[GTK_STATE_NORMAL].blue);
+	g_object_unref (G_OBJECT (pixbuf));
+
+	pixbuf = gtk_widget_render_icon (dummy,
+					 RB_STOCK_UNSET_STAR,
+					 GTK_ICON_SIZE_MENU,
+					 NULL);
+	rating->priv->pix_dot = eel_create_colorized_pixbuf (pixbuf,
+							     dummy->style->text[GTK_STATE_NORMAL].red,
+							     dummy->style->text[GTK_STATE_NORMAL].green,
+							     dummy->style->text[GTK_STATE_NORMAL].blue);
 	g_object_unref (G_OBJECT (pixbuf));
 
 	gtk_widget_destroy (dummy);
@@ -196,6 +203,7 @@ rb_rating_finalize (GObject *object)
 	rating = RB_RATING (object);
 
 	g_object_unref (G_OBJECT (rating->priv->pix_star));
+	g_object_unref (G_OBJECT (rating->priv->pix_dot));
 	g_object_unref (G_OBJECT (rating->priv->pix_blank));
 	g_free (rating->priv);
 
@@ -210,8 +218,7 @@ rb_rating_get_property (GObject *object,
 {
 	RBRating *rating = RB_RATING (object);
   
-	switch (param_id)
-	{
+	switch (param_id) {
 	case PROP_SCORE:
 		g_value_set_int (value, rating->priv->score);
 		break;
@@ -230,8 +237,7 @@ rb_rating_set_property (GObject *object,
 {
 	RBRating *rating= RB_RATING (object);
   
-	switch (param_id)
-	{
+	switch (param_id) {
 	case PROP_SCORE:
 		rating->priv->score = g_value_get_int (value);
 		gtk_widget_queue_draw (GTK_WIDGET (rating));
@@ -278,8 +284,7 @@ rb_rating_expose (GtkWidget *widget,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
-	if (GTK_WIDGET_DRAWABLE (widget) == TRUE)
-	{
+	if (GTK_WIDGET_DRAWABLE (widget) == TRUE) {
 		int i;
 		RBRating *rating = RB_RATING (widget);
 
@@ -308,14 +313,13 @@ rb_rating_expose (GtkWidget *widget,
 
 
 		/* draw the stars */
-		for (i = 0; i < MAX_SCORE; i++)
-		{
+		for (i = 0; i < MAX_SCORE; i++) {
 			GdkPixbuf *pixbuf;
 
 			if (i < rating->priv->score)
 				pixbuf = rating->priv->pix_star;
 			else
-				pixbuf = rating->priv->pix_blank;
+				pixbuf = rating->priv->pix_dot;
 
 			if (pixbuf == NULL)
 				return FALSE;
@@ -350,8 +354,7 @@ rb_rating_button_press_cb (GtkWidget *widget,
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 
 	/* ensure the user clicks within the good area */
-	if (mouse_x >= 0 && mouse_x <= widget->allocation.width)
-	{
+	if (mouse_x >= 0 && mouse_x <= widget->allocation.width) {
 		if (mouse_x <= X_OFFSET)
 			score = 0;
 		else
