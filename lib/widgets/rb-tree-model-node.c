@@ -595,11 +595,14 @@ rb_tree_model_node_get_iter (GtkTreeModel *tree_model,
 
 	i = gtk_tree_path_get_indices (path)[0];
 
-	if (i >= rb_node_n_handled_children (model->priv->root))
-		return FALSE;
-
 	iter->stamp = model->stamp;
 	iter->user_data = rb_node_get_nth_handled_child (model->priv->root, i);
+
+	if (iter->user_data == NULL)
+	{
+		iter->stamp = 0;
+		return FALSE;
+	}
 	
 	return TRUE;
 }
