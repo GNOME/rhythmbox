@@ -18,6 +18,7 @@
  *  $Id$
  */
 
+#include <gtk/gtkalignment.h>
 #include <bonobo/bonobo-ui-util.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
@@ -27,6 +28,8 @@
 #include "rb-stock-icons.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-dialog.h"
+#include "rb-volume.h"
+#include "rb-player.h"
 
 typedef enum
 {
@@ -100,7 +103,7 @@ struct RBShellPlayerPrivate
 
 	MonkeyMediaAudioStream *current_stream;
 
-	RBShell *shell;
+	RBPlayer *player_widget;
 };
 
 enum
@@ -108,8 +111,7 @@ enum
 	PROP_0,
 	PROP_PLAYER,
 	PROP_COMPONENT,
-	PROP_TRAY_COMPONENT,
-	PROP_SHELL
+	PROP_TRAY_COMPONENT
 };
 
 enum
@@ -153,7 +155,7 @@ rb_shell_player_get_type (void)
 			(GInstanceInitFunc) rb_shell_player_init
 		};
 
-		rb_shell_player_type = g_type_register_static (G_TYPE_OBJECT,
+		rb_shell_player_type = g_type_register_static (GTK_TYPE_HBOX,
 							       "RBShellPlayer",
 							       &our_info, 0);
 	}
@@ -194,13 +196,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_SHELL,
-					 g_param_spec_object ("shell",
-							      "Shell",
-							      "Shell",
-							      RB_TYPE_SHELL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
@@ -218,7 +213,9 @@ static void
 rb_shell_player_init (RBShellPlayer *shell_player)
 {
 	GError *error = NULL;
-	
+	GtkWidget *align;
+	RBVolume *volume;
+
 	shell_player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
 	shell_player->priv->mixer = monkey_media_mixer_new (&error);
@@ -227,6 +224,17 @@ rb_shell_player_init (RBShellPlayer *shell_player)
 		rb_error_dialog (_("Failed to create the mixer, error was:\n%s"), error->message);
 		g_error_free (error);
 	}
+
+	gtk_box_set_spacing (GTK_BOX (shell_player), 5);
+
+	shell_player->priv->player_widget = rb_player_new ();
+	gtk_box_pack_start (GTK_BOX (shell_player),
+			    GTK_WIDGET (shell_player->priv->player_widget), TRUE, TRUE, 0);
+
+	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (volume));
+	gtk_box_pack_end (GTK_BOX (shell_player), align, FALSE, TRUE, 0);
 }
 
 static void
@@ -299,9 +307,6 @@ rb_shell_player_set_property (GObject *object,
 							     rb_shell_player_verbs,
 							     shell_player);
 		break;
-	case PROP_SHELL:
-		shell_player->priv->shell = g_value_get_object (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -326,9 +331,6 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_TRAY_COMPONENT:
 		g_value_set_object (value, shell_player->priv->tray_component);
-		break;
-	case PROP_SHELL:
-		g_value_set_object (value, shell_player->priv->shell);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -358,13 +360,11 @@ rb_shell_player_get_player (RBShellPlayer *shell_player)
 
 RBShellPlayer *
 rb_shell_player_new (BonoboUIComponent *component,
-		     BonoboUIComponent *tray_component,
-		     RBShell *shell)
+		     BonoboUIComponent *tray_component)
 {
 	RBShellPlayer *shell_player;
 
 	shell_player = g_object_new (RB_TYPE_SHELL_PLAYER,
-				     "shell", shell,
 				     "component", component,
 				     "tray-component", tray_component,
 				     NULL);
@@ -606,8 +606,6 @@ static void
 rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 				    RBViewPlayer *player)
 {
-	GList *l;
-
 	if (shell_player->priv->player == player && player != NULL)
 		return;
 
@@ -620,6 +618,7 @@ rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 	}
 
 	shell_player->priv->player = player;
+	rb_player_set_view (shell_player->priv->player_widget, player);
 
 	if (shell_player->priv->player != NULL)
 	{
@@ -635,14 +634,6 @@ rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 	rb_shell_player_sync_with_player (shell_player);
 
 	rb_shell_player_update_play_button (shell_player);
-
-	for (l = rb_shell_list_views (shell_player->priv->shell); l != NULL; l = g_list_next (l))
-	{
-		rb_view_player_set_playing_view (RB_VIEW_PLAYER (l->data),
-						 shell_player->priv->player != NULL ?
-						 RB_VIEW (shell_player->priv->player) :
-						 NULL);
-	}
 }
 
 static void

@@ -34,7 +34,6 @@
 #include "rb-view-status.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
-#include "rb-player.h"
 #include "rb-dialog.h"
 #include "rb-library-view.h"
 #include "rb-volume.h"
@@ -139,9 +138,6 @@ static void rb_library_view_drop_cb (GtkWidget        *widget,
 				     gpointer          user_data);
 static const char *impl_get_description (RBView *view);
 static GList *impl_get_selection (RBView *view);
-static void rb_library_view_set_playing_view (RBViewPlayer *player,
-				              RBView *view);
-static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
 static void rb_library_view_node_removed_cb (RBNode *node,
 					     RBLibraryView *view);
 
@@ -170,9 +166,6 @@ struct RBLibraryViewPrivate
 	gboolean shuffle;
 	gboolean repeat;
 
-	RBPlayer *player;
-	RBVolume *volume;
-
 	char *status;
 
 	GtkWidget *paned;
@@ -184,8 +177,6 @@ struct RBLibraryViewPrivate
 	char *artist;
 	char *album;
 	char *song;
-
-	RBView *playing_view;
 };
 
 enum
@@ -307,7 +298,6 @@ static void
 rb_library_view_init (RBLibraryView *view)
 {
 	RBSidebarButton *button;
-	GtkWidget *hbox, *align;
 	
 	view->priv = g_new0 (RBLibraryViewPrivate, 1);
 
@@ -331,20 +321,6 @@ rb_library_view_init (RBLibraryView *view)
 		      NULL);
 
 	view->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	view->priv->player = rb_player_new (RB_VIEW_PLAYER (view));
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (view->priv->player),
-			    TRUE, TRUE, 0);
-
-	view->priv->volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
-	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (view->priv->volume));
-	gtk_box_pack_end (GTK_BOX (hbox), align, FALSE, TRUE, 0);
-
-	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
-			    hbox,
-			    FALSE, TRUE, 0);
 
 #if 0
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
@@ -589,8 +565,6 @@ rb_library_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_get_stream       = rb_library_view_get_stream;
 	iface->impl_start_playing    = rb_library_view_start_playing;
 	iface->impl_stop_playing     = rb_library_view_stop_playing;
-	iface->impl_set_playing_view = rb_library_view_set_playing_view;
-	iface->impl_get_playing_view = rb_library_view_get_playing_view;
 }
 
 static void
@@ -1184,26 +1158,8 @@ impl_get_selection (RBView *view)
 }
 
 static void
-rb_library_view_set_playing_view (RBViewPlayer *player,
-				  RBView *view)
-{
-	RBLibraryView *lv = RB_LIBRARY_VIEW (player);
-
-	lv->priv->playing_view = view;
-}
-
-static RBView *
-rb_library_view_get_playing_view (RBViewPlayer *player)
-{
-	RBLibraryView *lv = RB_LIBRARY_VIEW (player);
-
-	return lv->priv->playing_view;
-}
-
-static void
 rb_library_view_node_removed_cb (RBNode *node,
 				 RBLibraryView *view)
 {
 	rb_library_view_set_playing_node (view, NULL);
 }
-

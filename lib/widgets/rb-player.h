@@ -50,7 +50,10 @@ typedef struct
 
 GType     rb_player_get_type (void);
 
-RBPlayer *rb_player_new      (RBViewPlayer *view_player);
+RBPlayer *rb_player_new      (void);
+
+void      rb_player_set_view (RBPlayer *player,
+			      RBViewPlayer *view);
 
 G_END_DECLS
 

@@ -162,7 +162,7 @@ rb_player_class_init (RBPlayerClass *klass)
 							      "RBViewPlayer",
 							      "RBVoewPlayer",
 							      RB_TYPE_VIEW_PLAYER,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 }
 
 static void
@@ -284,13 +284,23 @@ rb_player_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_VIEW_PLAYER:
+		if (player->priv->view_player != NULL)
+		{
+			g_signal_handlers_disconnect_by_func (G_OBJECT (player->priv->view_player),
+							      G_CALLBACK (rb_view_player_changed_cb),
+							      object);
+		}
+		
 		player->priv->view_player = g_value_get_object (value);
 
-		g_signal_connect_object (G_OBJECT (player->priv->view_player),
-					 "changed",
-					 G_CALLBACK (rb_view_player_changed_cb),
-					 object,
-					 0);
+		if (player->priv->view_player != NULL)
+		{
+			g_signal_connect_object (G_OBJECT (player->priv->view_player),
+						 "changed",
+						 G_CALLBACK (rb_view_player_changed_cb),
+						 object,
+						 0);
+		}
 
 		rb_player_sync (player);
 		break;
@@ -320,15 +330,11 @@ rb_player_get_property (GObject *object,
 }
 
 RBPlayer *
-rb_player_new (RBViewPlayer *view_player)
+rb_player_new (void)
 {
 	RBPlayer *player;
 
-	g_return_val_if_fail (RB_IS_VIEW_PLAYER (view_player), NULL);
-	
-	player = RB_PLAYER (g_object_new (RB_TYPE_PLAYER,
-					  "view-player", view_player,
-					  NULL));
+	player = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL));
 
 	g_return_val_if_fail (player->priv != NULL, NULL);
 
@@ -339,11 +345,11 @@ static void
 rb_player_sync (RBPlayer *player)
 {
 
-	MonkeyMediaAudioStream *stream = rb_view_player_get_stream (player->priv->view_player);
 //	GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);
 	char *tmp;
 
-	if (stream != NULL)
+	if (player->priv->view_player != NULL &&
+	    rb_view_player_get_stream (player->priv->view_player) != NULL)
 	{
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
@@ -385,20 +391,7 @@ rb_player_sync (RBPlayer *player)
 	}
 	else
 	{
-		RBView *playing;
-		const char *desc;
-		
-		playing = rb_view_player_get_playing_view (player->priv->view_player);
-		if (playing != NULL)
-		{
-			char *s;
-			desc = rb_view_get_description (playing);
-			s = g_strdup_printf (_("Playing from the %s"), desc);
-			tmp = SONG_MARKUP (s);
-			g_free (s);
-		}
-		else
-			tmp = SONG_MARKUP (_("Not Playing"));
+		tmp = SONG_MARKUP (_("Not Playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
@@ -599,4 +592,15 @@ rb_player_update_elapsed (RBPlayer *player)
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);
+}
+
+void
+rb_player_set_view (RBPlayer *player,
+	            RBViewPlayer *view)
+{
+	g_return_if_fail (RB_IS_PLAYER (player));
+
+	g_object_set (G_OBJECT (player),
+		      "view-player", view,
+		      NULL);
 }

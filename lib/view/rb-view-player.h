@@ -76,10 +76,6 @@ typedef struct
 
 	void                    (*impl_start_playing)    (RBViewPlayer *player);
 	void                    (*impl_stop_playing)     (RBViewPlayer *player);
-
-	void                    (*impl_set_playing_view) (RBViewPlayer *player,
-							  RBView *view);
-	RBView                 *(*impl_get_playing_view) (RBViewPlayer *player);
 } RBViewPlayerIface;
 
 GType                   rb_view_player_get_type         (void);
@@ -109,10 +105,6 @@ MonkeyMediaAudioStream *rb_view_player_get_stream       (RBViewPlayer *player);
 
 void                    rb_view_player_start_playing    (RBViewPlayer *player);
 void                    rb_view_player_stop_playing     (RBViewPlayer *player);
-
-void                    rb_view_player_set_playing_view (RBViewPlayer *player,
-							 RBView *view);
-RBView                 *rb_view_player_get_playing_view (RBViewPlayer *player);
 
 void                    rb_view_player_notify_changed   (RBViewPlayer *player);
 

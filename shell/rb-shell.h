@@ -53,13 +53,11 @@ typedef struct
         POA_GNOME_RhythmboxShell__epv epv;
 } RBShellClass;
 
-GType    rb_shell_get_type   (void);
+GType    rb_shell_get_type  (void);
 
-RBShell *rb_shell_new        (void);
+RBShell *rb_shell_new       (void);
 
-void     rb_shell_construct  (RBShell *shell);
-
-GList   *rb_shell_list_views (RBShell *shell);
+void     rb_shell_construct (RBShell *shell);
 
 /* utilities */
 

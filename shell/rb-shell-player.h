@@ -18,10 +18,10 @@
  *  $Id$
  */
 
+#include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <monkey-media.h>
 
-#include "rb-shell.h"
 #include "rb-view-player.h"
 
 #ifndef __RB_SHELL_PLAYER_H
@@ -40,14 +40,14 @@ typedef struct RBShellPlayerPrivate RBShellPlayerPrivate;
 
 typedef struct
 {
-	GObject parent;
+	GtkHBox parent;
 
 	RBShellPlayerPrivate *priv;
 } RBShellPlayer;
 
 typedef struct
 {
-	GObjectClass parent_class;
+	GtkHBoxClass parent_class;
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 } RBShellPlayerClass;
@@ -55,8 +55,7 @@ typedef struct
 GType                 rb_shell_player_get_type   (void);
 
 RBShellPlayer        *rb_shell_player_new        (BonoboUIComponent *component,
-						  BonoboUIComponent *tray_component,
-					          RBShell *shell);
+						  BonoboUIComponent *tray_component);
 
 void                  rb_shell_player_set_player (RBShellPlayer *shell_player,
 					          RBViewPlayer *player);

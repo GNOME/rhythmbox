@@ -57,43 +57,44 @@ typedef struct
 
 GType       rb_node_view_get_type          (void);
 
-RBNodeView *rb_node_view_new               (RBNode *root,
-					    const char *view_desc_file);
+RBNodeView *rb_node_view_new                (RBNode *root,
+					     const char *view_desc_file);
 
-void        rb_node_view_set_filter        (RBNodeView *view,
-				            RBNode *filter_parent,
-					    RBNode *filter_artist);
+void        rb_node_view_set_filter         (RBNodeView *view,
+				             RBNode *filter_parent,
+					     RBNode *filter_artist);
 
-void        rb_node_view_set_playing_node  (RBNodeView *view,
-					    RBNode *node);
-RBNode     *rb_node_view_get_playing_node  (RBNodeView *view);
+void        rb_node_view_set_playing_node   (RBNodeView *view,
+					     RBNode *node);
+RBNode     *rb_node_view_get_playing_node   (RBNodeView *view);
 
-RBNode     *rb_node_view_get_next_node     (RBNodeView *view);
-RBNode     *rb_node_view_get_previous_node (RBNodeView *view);
-RBNode     *rb_node_view_get_first_node    (RBNodeView *view);
-RBNode     *rb_node_view_get_random_node   (RBNodeView *view);
+RBNode     *rb_node_view_get_next_node      (RBNodeView *view);
+RBNode     *rb_node_view_get_previous_node  (RBNodeView *view);
+RBNode     *rb_node_view_get_first_node     (RBNodeView *view);
+RBNode     *rb_node_view_get_random_node    (RBNodeView *view);
 
-gboolean    rb_node_view_have_selection    (RBNodeView *view);
-GList      *rb_node_view_get_selection     (RBNodeView *view);
-void        rb_node_view_select_all        (RBNodeView *view);
-void        rb_node_view_select_none       (RBNodeView *view);
-void        rb_node_view_select_node       (RBNodeView *view,
-					    RBNode *node);
+gboolean    rb_node_view_have_selection     (RBNodeView *view);
+GList      *rb_node_view_get_selection      (RBNodeView *view);
+void        rb_node_view_select_all         (RBNodeView *view);
+void        rb_node_view_select_none        (RBNodeView *view);
+void        rb_node_view_select_node        (RBNodeView *view,
+					     RBNode *node);
 
-char       *rb_node_view_get_status        (RBNodeView *view);
+char       *rb_node_view_get_status         (RBNodeView *view);
 
-gboolean    rb_node_view_get_node_visible  (RBNodeView *view,
-					    RBNode *node);
+gboolean    rb_node_view_get_node_visible   (RBNodeView *view,
+					     RBNode *node);
 
-void        rb_node_view_scroll_to_node    (RBNodeView *view,
-					    RBNode *node);
+void        rb_node_view_scroll_to_node     (RBNodeView *view,
+					     RBNode *node);
 
-RBNode 	   *rb_node_view_get_node          (RBNodeView *view,
-				            RBNode *start,
-				            RBDirection direction);
+RBNode 	   *rb_node_view_get_node           (RBNodeView *view,
+				             RBNode *start,
+				             RBDirection direction);
+
 void	    rb_node_view_enable_drag_source (RBNodeView *view,
 					     const GtkTargetEntry *targets,
-					     gint n_targets);
+					     int n_targets);
 
 G_END_DECLS
 

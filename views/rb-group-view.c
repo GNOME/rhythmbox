@@ -37,7 +37,6 @@
 #include "rb-view-status.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
-#include "rb-player.h"
 #include "rb-dialog.h"
 #include "rb-group-view.h"
 #include "rb-volume.h"
@@ -135,9 +134,6 @@ static void rb_group_view_drop_cb (GtkWidget        *widget,
 				   gpointer          user_data);
 static const char *impl_get_description (RBView *view);
 static GList *impl_get_selection (RBView *view);
-static void rb_group_view_set_playing_view (RBViewPlayer *player,
-                                            RBView *view);
-static RBView *rb_group_view_get_playing_view (RBViewPlayer *player);
 static void rb_group_view_add_list_uri (RBGroupView *view, GList *list);
 static void rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node);
 static void rb_group_view_node_removed_cb (RBNode *node,
@@ -163,9 +159,6 @@ struct RBGroupViewPrivate
 	gboolean shuffle;
 	gboolean repeat;
 
-	RBPlayer *player;
-	RBVolume *volume;
-
 	char *status;
 
 	char *artist;
@@ -175,8 +168,6 @@ struct RBGroupViewPrivate
 	char *file;
 	char *name;
 	char *description;
-
-	RBView *playing_view;
 };
 
 enum
@@ -315,7 +306,6 @@ static void
 rb_group_view_init (RBGroupView *view)
 {
 	RBSidebarButton *button;
-	GtkWidget *hbox, *align;
 	
 	view->priv = g_new0 (RBGroupViewPrivate, 1);
 
@@ -336,20 +326,6 @@ rb_group_view_init (RBGroupView *view)
 		      NULL);
 
 	view->priv->vbox = gtk_vbox_new (FALSE, 5);
-
-	view->priv->player = rb_player_new (RB_VIEW_PLAYER (view));
-	hbox = gtk_hbox_new (FALSE, 5);
-	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (view->priv->player),
-			    TRUE, TRUE, 0);
-
-	view->priv->volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
-	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (view->priv->volume));
-	gtk_box_pack_end (GTK_BOX (hbox), align, FALSE, TRUE, 0);
-
-	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
-			    hbox,
-			    FALSE, TRUE, 0);
 
 #if 0
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
@@ -575,8 +551,6 @@ rb_group_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_get_stream       = rb_group_view_get_stream;
 	iface->impl_start_playing    = rb_group_view_start_playing;
 	iface->impl_stop_playing     = rb_group_view_stop_playing;
-	iface->impl_set_playing_view = rb_group_view_set_playing_view;
-	iface->impl_get_playing_view = rb_group_view_get_playing_view;
 }
 
 static void
@@ -1415,23 +1389,6 @@ impl_get_selection (RBView *view)
 	RBGroupView *gv = RB_GROUP_VIEW (view);
 
 	return rb_node_view_get_selection (gv->priv->songs);
-}
-
-static void
-rb_group_view_set_playing_view (RBViewPlayer *player,
-                                RBView *view)
-{
-        RBGroupView *gv = RB_GROUP_VIEW (player);
-
-        gv->priv->playing_view = view;
-}
-
-static RBView *
-rb_group_view_get_playing_view (RBViewPlayer *player)
-{
-        RBGroupView *gv = RB_GROUP_VIEW (player);
-
-        return gv->priv->playing_view;
 }
 
 /* rb_group_view_add_node: append a node to this group

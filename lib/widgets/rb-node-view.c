@@ -16,8 +16,6 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  *  $Id$
- *
- *  FIXME "Add/Remove columns" dialog
  */
 
 #include <gtk/gtktreeview.h>
@@ -1497,7 +1495,7 @@ rb_node_view_get_node_visible (RBNodeView *view,
 void
 rb_node_view_enable_drag_source (RBNodeView *view,
 				 const GtkTargetEntry *targets,
-				 gint n_targets)
+				 int n_targets)
 {
 	g_return_if_fail (view != NULL);
 

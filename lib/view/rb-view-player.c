@@ -233,25 +233,6 @@ rb_view_player_stop_playing (RBViewPlayer *player)
 }
 
 void
-rb_view_player_set_playing_view (RBViewPlayer *player,
-				 RBView *view)
-{
-	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
-
-	iface->impl_set_playing_view (player, view);
-
-	rb_view_player_notify_changed (player);
-}
-
-RBView *
-rb_view_player_get_playing_view (RBViewPlayer *player)
-{
-	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
-
-	return iface->impl_get_playing_view (player);
-}
-
-void
 rb_view_player_notify_changed (RBViewPlayer *player)
 {
 	g_signal_emit (G_OBJECT (player), rb_view_player_signals[CHANGED], 0);
