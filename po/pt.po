@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 2.4\n"
 "Report-Msgid-Bugs-To: Duarte Loreto <happyguy_pt@hotmail.com>\n"
-"POT-Creation-Date: 2003-09-21 02:51+0100\n"
-"PO-Revision-Date: 2003-09-21 02:55+0000\n"
+"POT-Creation-Date: 2003-09-27 16:38+0100\n"
+"PO-Revision-Date: 2003-09-27 16:40+0000\n"
 "Last-Translator: Duarte Loreto <happyguy_pt@hotmail.com>\n"
 "Language-Team: Portuguese <gnome_pt@yahoogroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -45,53 +45,35 @@ msgstr "A Ler..."
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
-msgid "Finish"
-msgstr "Terminar"
-
-#: data/glade/druid.glade.h:3
+#: data/glade/druid.glade.h:2
 msgid ""
-"In order to get started using Rhythmbox, this assistant will ask you some "
-"simple questions."
-msgstr ""
-"Por forma a poder utilizar o Rhythmbox, este assistente irá colocar-lhe "
-"algumas simples questões."
-
-#: data/glade/druid.glade.h:4 lib/widgets/rb-druid.c:250
-msgid "Library setup"
-msgstr "Configuração biblioteca"
-
-#: data/glade/druid.glade.h:5
-msgid ""
-"Rhythmbox needs to know where to find your music. You may choose to skip "
-"this step; instead, you can add music to your library at any point later. "
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox tem de saber onde pode encontrar a sua música. Pode escolher "
-"passar à frente este passo; poderá adicionar mais tarde música à sua "
-"biblioteca. Seleccione uma das opções abaixo:"
+"Rhythmbox gere toda a sua música numa \"biblioteca\" central de música, pelo "
+"que poderá facilmente ve-la, procura-la e organiza-la.\n"
+"Para utilizar esta funcionalidade, Rhythmbox tem de saber onde pode encontrar "
+"a sua música.  Pode escolher passar à frente este passo; poderá adicionar mais "
+"tarde música à sua biblioteca.\n"
+"Seleccione uma das opções abaixo:"
 
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:240
-msgid "Welcome to Rhythmbox"
-msgstr "Bem vindo ao Rhythmbox"
-
-#: data/glade/druid.glade.h:7 lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Está agora pronto a iniciar o Rhythmbox."
-
-#: data/glade/druid.glade.h:8
+#: data/glade/druid.glade.h:5
 msgid "_Browse..."
 msgstr "_Navegar..."
 
-#: data/glade/druid.glade.h:9
+#: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
 msgstr "_Introduzir localização manualmente:"
 
-#: data/glade/druid.glade.h:10
+#: data/glade/druid.glade.h:7
 msgid "_Path:"
 msgstr "_Caminho:"
 
-#: data/glade/druid.glade.h:11
+#: data/glade/druid.glade.h:8
 msgid "_Skip this step"
 msgstr "_Saltar este passo"
 
@@ -754,15 +736,49 @@ msgstr "A imagem a renderizar."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
+#: lib/widgets/rb-druid.c:240
+msgid "Welcome to Rhythmbox"
+msgstr "Bem vindo ao Rhythmbox"
+
 #: lib/widgets/rb-druid.c:244
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
+"Rhythmbox is the GNOME music player that lets you do\n"
+"everything: play your music files, listen to Internet Radio,\n"
+"import music from CDs, and much more.\n"
+"\n"
+"This assistant will help you get started by\n"
+"asking you some simple questions."
 msgstr ""
-"Por forma a poder utilizar o\n"
-"Rhythmbox, este assistente irá colocar\n"
-"algumas questões simples."
+"Rhythmbox é o reprodutor de música GNOME que lhe permite\n"
+"fazer tudo: ouvir os seus ficheiros de música, Rádio na Internet,\n"
+"importar música de CDs e muito mais.\n"
+"\n"
+"Este assistente irá ajuda-lo na configuração\n"
+"inicial fazendo-lhe umas questões simples."
+
+#: lib/widgets/rb-druid.c:250
+msgid "Music library setup"
+msgstr "Configuração biblioteca de música"
+
+#: lib/widgets/rb-druid.c:259
+msgid "Finish"
+msgstr "Terminar"
+
+#: lib/widgets/rb-druid.c:261
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music\n"
+"to the library using \"Organize\"\n"
+"then \"Add to Library\", or by importing\n"
+"it from CDs."
+msgstr ""
+"Está agora pronto para iniciar o Rhythmbox.\n"
+"\n"
+"Lembre-se de que poderá adicionar música\n"
+"à sua biblioteca utilizando \"Organizar\"\n"
+"depois \"Adicionar à Biblioteca\", ou\n"
+"importando-a de CDs."
 
 #: lib/widgets/rb-druid.c:310
 #, c-format
@@ -1088,7 +1104,7 @@ msgstr "Falha ao abrir ficheiro para leitura"
 msgid "Error decoding FLAC file"
 msgstr "Erro ao descodificar ficheiro FLAC"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:760
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1420,6 +1436,25 @@ msgstr "Nenhuma propriedade disponível."
 #: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Esta origem não suporta arrastar e largar."
+
+#~ msgid ""
+#~ "In order to get started using Rhythmbox, this assistant will ask you some "
+#~ "simple questions."
+#~ msgstr ""
+#~ "Por forma a poder utilizar o Rhythmbox, este assistente irá colocar-lhe "
+#~ "algumas simples questões."
+
+#~ msgid "You are now ready to start Rhythmbox."
+#~ msgstr "Está agora pronto a iniciar o Rhythmbox."
+
+#~ msgid ""
+#~ "In order to get started using\n"
+#~ "Rhythmbox, this assistant will ask\n"
+#~ "you some simple questions."
+#~ msgstr ""
+#~ "Por forma a poder utilizar o\n"
+#~ "Rhythmbox, este assistente irá colocar\n"
+#~ "algumas questões simples."
 
 #~ msgid ""
 #~ "You are now ready to start\n"
