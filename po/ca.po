@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.7.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-25 18:28+0100\n"
-"PO-Revision-Date: 2004-01-25 18:28+0100\n"
+"POT-Creation-Date: 2004-01-29 16:39+0100\n"
+"PO-Revision-Date: 2004-01-29 16:40+0100\n"
 "Last-Translator: Jordi Mallach <jordi@sindominio.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -737,7 +737,7 @@ msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
 #: metadata/rb-metadata-gst.c:393 metadata/rb-metadata-gst.c:518
-#: player/rb-player-gst.c:523
+#: player/rb-player-gst.c:532
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "No s'ha pogut crear l'element %s; comproveu la vostra instal·lació"
@@ -746,50 +746,54 @@ msgstr "No s'ha pogut crear l'element %s; comproveu la vostra instal·lació"
 msgid "Operation not supported"
 msgstr "L'operació no és suportada"
 
-#: player/rb-player-gst.c:322 player/rb-player-gst.c:761
+#: player/rb-player-gst.c:324 player/rb-player-gst.c:776
 msgid "Failed to close audio output sink"
 msgstr "No s'ha pogut tancar la sortida d'àudio"
 
-#: player/rb-player-gst.c:406 player/rb-player-gst.c:628
-#: player/rb-player-gst.c:637
+#: player/rb-player-gst.c:411 player/rb-player-gst.c:640
+#: player/rb-player-gst.c:650
 msgid "Could not start pipeline playing"
 msgstr "No s'ha pogut iniciar la reproducció del conducte"
 
-#: player/rb-player-gst.c:435
+#: player/rb-player-gst.c:440
 msgid "Failed to create thread element; check your GStreamer installation"
 msgstr ""
 "No s'ha pogut crear l'element fil; comproveu la vostra instal·lació de "
 "GStreamer"
 
-#: player/rb-player-gst.c:469
+#: player/rb-player-gst.c:474
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "No s'ha pogut crear l'element d'entrada %s; comproveu la vostra instal·lació"
 
-#: player/rb-player-gst.c:497
+#: player/rb-player-gst.c:503
 msgid "Failed to create queue element; check your installation"
 msgstr "No s'ha pogut crear l'element cua; comproveu la vostra instal·lació"
 
-#: player/rb-player-gst.c:542
+#: player/rb-player-gst.c:520
+msgid "Failed to create typefind element; check your installation"
+msgstr "No s'ha pogut crear l'element cercatipus; comproveu la vostra instal·lació"
+
+#: player/rb-player-gst.c:551
 msgid "Failed to create volume element; check your installation"
 msgstr "No s'ha pogut crear l'element volum; comproveu la vostra instal·lació"
 
-#: player/rb-player-gst.c:561
+#: player/rb-player-gst.c:570
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "No s'ha pogut crear un element de sortida d'àudio; comproveu la vostra "
 "configuració"
 
-#: player/rb-player-gst.c:648
+#: player/rb-player-gst.c:662
 msgid "Could not pause playback"
 msgstr "No s'ha pogut pausar la reproducció"
 
-#: player/rb-player-gst.c:656
+#: player/rb-player-gst.c:671
 msgid "Could not close output sink"
 msgstr "No s'ha pogut tancar la sortida d'àudio"
 
-#: player/rb-player-gst.c:702
+#: player/rb-player-gst.c:717
 msgid "No AudioCD support; check your settings"
 msgstr "No hi ha suport per a CD d'àudio; comproveu la vostra configuració"
 
@@ -1479,10 +1483,6 @@ msgstr "-"
 #~ msgstr ""
 #~ "No s'ha pogut crear l'element d'entrada cdparanoia; comproveu la vostra "
 #~ "instal·lació"
-
-#~ msgid "Failed to create spider element; check your installation"
-#~ msgstr ""
-#~ "No s'ha pogut crear l'element aranya; comproveu la vostra instal·lació"
 
 #~ msgid "GStreamer options:"
 #~ msgstr "Opcions de GStreamer:"
