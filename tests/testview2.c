@@ -96,8 +96,8 @@ rb_test_view2_get_type (void)
 		};
 
 		rb_test_view2_type = g_type_register_static (RB_TYPE_VIEW,
-							    "RBTestView2",
-							    &our_info, 0);
+							     "RBTestView2",
+							     &our_info, 0);
 
 		g_type_add_interface_static (rb_test_view2_type,
 					     RB_TYPE_VIEW_PLAYER,
@@ -157,9 +157,9 @@ rb_test_view2_finalize (GObject *object)
 	RBTestView2 *view;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_TEST_VIEW (object));
+	g_return_if_fail (RB_IS_TEST_VIEW2 (object));
 
-	view = RB_TEST_VIEW (object);
+	view = RB_TEST_VIEW2 (object);
 
 	g_return_if_fail (view->priv != NULL);
 
@@ -173,7 +173,7 @@ rb_test_view2_new (BonoboUIComponent *component)
 {
 	RBView *view;
 
-	view = RB_VIEW (g_object_new (RB_TYPE_TEST_VIEW,
+	view = RB_VIEW (g_object_new (RB_TYPE_TEST_VIEW2,
 				      "ui-file", "rhythmbox-test-view-2.xml",
 				      "ui-name", "TestView2",
 				      "component", component,

@@ -25,12 +25,12 @@
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_TEST_VIEW         (rb_test_view2_get_type ())
-#define RB_TEST_VIEW(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_TEST_VIEW, RBTestView2))
-#define RB_TEST_VIEW2_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_TEST_VIEW, RBTestView2Class))
-#define RB_IS_TEST_VIEW(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_TEST_VIEW))
-#define RB_IS_TEST_VIEW2_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_TEST_VIEW))
-#define RB_TEST_VIEW2_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_TEST_VIEW, RBTestView2Class))
+#define RB_TYPE_TEST_VIEW2         (rb_test_view2_get_type ())
+#define RB_TEST_VIEW2(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_TEST_VIEW2, RBTestView2))
+#define RB_TEST_VIEW2_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_TEST_VIEW2, RBTestView2Class))
+#define RB_IS_TEST_VIEW2(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_TEST_VIEW2))
+#define RB_IS_TEST_VIEW2_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_TEST_VIEW2))
+#define RB_TEST_VIEW2_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_TEST_VIEW2, RBTestView2Class))
 
 typedef struct RBTestView2Private RBTestView2Private;
 
