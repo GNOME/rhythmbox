@@ -487,7 +487,8 @@ rb_player_sync (RBPlayer *player)
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
-		rb_player_set_show_artist_album (player, (album != NULL && artist != NULL));
+		rb_player_set_show_artist_album (player, (album != NULL && artist != NULL)
+						 && (strlen (album) > 0 && strlen (artist) > 0));
 
 		if (player->priv->displaybox_shown)
 		{
