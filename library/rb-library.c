@@ -1561,7 +1561,7 @@ rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filte
 	gboolean adding_songs = !queue_is_empty (library->priv->add_queue);
 
 	if (adding_songs)
-		ret = g_strdup_printf (_("<b>Loading songs...</b>"));
+		ret = g_strdup_printf ("<b>%s</b>", _("Loading songs..."));
 	else if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
 		guint refresh_count;
 		
@@ -1574,7 +1574,7 @@ rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filte
 			library->priv->status_poll_queued = TRUE;
 		}
 	
-		ret = g_strdup_printf (_("<b>Refreshing songs...</b>"));
+		ret = g_strdup_printf ("<b>%s</b>", _("Refreshing songs..."));
 	}
 
 	if (adding_songs || library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
