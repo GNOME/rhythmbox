@@ -2,6 +2,77 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-26 23:05:45 GMT	Colin Walters <walters@verbum.org>	patch-96
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-96
+
+
+    new files:
+     po/.arch-ids/bg.po.id po/.arch-ids/ko.po.id po/bg.po po/ko.po
+
+    removed files:
+     po/ko.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/ca.po po/nl.po
+
+
+2004-02-25 19:17:31 GMT	Christophe Fergeau <teuf@gnome.org>	patch-95
+
+    Summary:
+      Merged support for disc number tags
+    Revision:
+      rhythmbox--main--0.7--patch-95
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7--patch-71
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-1
+       Added support for DISC tag in the xine backend, dunno if it's properly read since I don't have any mp3 with this tag set available ;)
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-2
+       Sorting by disc works with the xine backend
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-3
+       Implemented disc number support for GStreamer too, it requires to patch gstreamer though ;)
+    
+     * teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-4
+       Make it compile with GStreamer HEAD now that it supports disc tags
+    
+
+    modified files:
+     ChangeLog metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/rb-metadata-common.c metadata/rb-metadata-gst.c
+     metadata/rb-metadata-mm.c metadata/rb-metadata.h
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     widgets/rb-entry-view.c
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--base-0
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-1
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-2
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-3
+     teuf@gnome.org--2003/rhythmbox--disc--0.7--patch-4
+
+
+2004-02-25 18:28:08 GMT	Christophe Fergeau <teuf@gnome.org>	patch-94
+
+    Summary:
+      Fix duration display in song properties
+    Revision:
+      rhythmbox--main--0.7--patch-94
+
+
+    modified files:
+     ChangeLog widgets/rb-song-info.c
+
+
 2004-02-23 20:53:52 GMT	Colin Walters <walters@verbum.org>	patch-93
 
     Summary:
