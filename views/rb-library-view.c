@@ -137,6 +137,8 @@ static GList *impl_get_selection (RBView *view);
 static void rb_library_view_set_playing_view (RBViewPlayer *player,
 				              RBView *view);
 static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
+static void rb_library_view_node_removed_cb (RBNode *node,
+					     RBLibraryView *view);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -409,6 +411,8 @@ rb_library_view_set_property (GObject *object,
 			
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
+			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
+					  G_CALLBACK (rb_library_view_node_removed_cb), view);
 
 			/* Drag'n'Drop for songs view */
 			g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
@@ -1131,3 +1135,11 @@ rb_library_view_get_playing_view (RBViewPlayer *player)
 
 	return lv->priv->playing_view;
 }
+
+static void
+rb_library_view_node_removed_cb (RBNode *node,
+				 RBLibraryView *view)
+{
+	rb_library_view_set_playing_node (view, NULL);
+}
+

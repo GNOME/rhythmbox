@@ -138,6 +138,8 @@ static void rb_group_view_set_playing_view (RBViewPlayer *player,
 static RBView *rb_group_view_get_playing_view (RBViewPlayer *player);
 static void rb_group_view_add_list_uri (RBGroupView *view, GList *list);
 static void rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node);
+static void rb_group_view_node_removed_cb (RBNode *node,
+					   RBGroupView *view);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -358,6 +360,8 @@ rb_group_view_init (RBGroupView *view)
 
 	view->priv->songs = rb_node_view_new (view->priv->group,
 				              rb_file ("rb-node-view-songs.xml"));
+	g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
+			  G_CALLBACK (rb_group_view_node_removed_cb), view);
 
 	/* Drag'n'Drop */
 	rb_sidebar_button_add_dnd_targets (button,
@@ -1417,3 +1421,11 @@ rb_group_view_add_node (RBGroupView *view,
 
 	rb_node_add_child (view->priv->group, node);
 }
+
+static void
+rb_group_view_node_removed_cb (RBNode *node,
+			       RBGroupView *view)
+{
+	rb_group_view_set_playing_node (view, NULL);
+}
+
