@@ -1,0 +1,331 @@
+rhythmbox (0.4.99-1) unstable; urgency=low
+
+  * CVS snapshot.
+
+ -- Colin Walters <walters@debian.org>  Mon, 11 Aug 2003 19:17:23 -0400
+
+rhythmbox (0.4.8-5) unstable; urgency=low
+
+  * debian/control:
+    - Remove Build-Depends on libgstreamer-core-libs-dev.
+    - Remove Depends on gstreamer-core.
+    - Build-Depend on the latest libgstreamer0.6-dev.
+    - Build-Depend on the latest cdbs.
+  
+ -- Colin Walters <walters@debian.org>  Sat,  7 Jun 2003 01:47:20 -0400
+
+rhythmbox (0.4.8-4) unstable; urgency=low
+
+  * debian/control:
+    - Bump Standards-Version: 3.5.10, no changes required.
+    - Build-Depend on cdbs.
+    - Remove Build-Depends on xlibs-pic, now that libxosd2-dev has
+      picked it up.
+    - Change Section to gnome.
+  * debian/rules:
+    - Convert to cdbs.
+  * debian/rocks:
+    - Removed.
+
+ -- Colin Walters <walters@debian.org>  Sun, 25 May 2003 05:08:35 -0400
+
+rhythmbox (0.4.8-3) unstable; urgency=low
+
+  * The "Pfizer Launches 'Zoloft For Everything' Ad Campaign" release.
+  * debian/control:
+    - Add Build-Depends on xlibs-pic; this should make the powerpc buildd
+    happy.
+
+ -- Colin Walters <walters@debian.org>  Wed, 14 May 2003 16:34:01 -0400
+
+rhythmbox (0.4.8-2) unstable; urgency=low
+
+  * The "Dozens Dead In Chicago-Area Meatwave" release.
+  * debian/control:
+    - Add Build-Depends on xlibs-pic (Closes: #192561).
+  * debian/patches/getline-ssizet.patch:
+    - New patch, should fix build failures on ia64 and alpha.
+
+ -- Colin Walters <walters@debian.org>  Sat, 10 May 2003 00:10:36 -0400
+
+rhythmbox (0.4.8-1) unstable; urgency=low
+
+  * The "Bush To Lovely Chilean Ambassador: 'I Must Paint You'" release.
+  * New upstream release.
+    - Really restore shuffle state (Closes: #188951)
+  * debian/control:
+    - Bump Build-Depends on musicbrainz to 2.0.0.
+    - Bump Build-Depends on gstreamer to 0.6.1.
+    - Standards-Version: 3.5.9, no changes required.
+    - Update description.
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+
+ -- Colin Walters <walters@debian.org>  Wed,  7 May 2003 15:07:35 -0400
+
+rhythmbox (0.4.6-1) unstable; urgency=low
+
+  * The "Marilyn Manson Now Going Door-To-Door Trying To Shock People"
+    release.
+  * If this release fixes one of the bugs you reported, please close it!
+  * New upstream release.
+  * debian/rocks:
+    - Include NEWS, README in /usr/share/doc/rhythmbox (Closes: #179430)
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+
+ -- Colin Walters <walters@debian.org>  Fri, 11 Apr 2003 23:43:52 -0400
+
+rhythmbox (0.4.5-6) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on the latest libvorbis-dev.
+  * debian/rocks:
+    - Disable -Werror.
+
+ -- Colin Walters <walters@debian.org>  Thu, 13 Mar 2003 18:09:53 -0500
+
+rhythmbox (0.4.5-5) unstable; urgency=low
+
+  * debian/control:
+    - Add Depends on gstreamer-core (Closes: #182114).
+
+ -- Colin Walters <walters@debian.org>  Sat, 22 Feb 2003 18:38:41 -0500
+
+rhythmbox (0.4.5-4) unstable; urgency=low
+
+  * debian/control:
+    - Add Build-Depends on gstreamer-gconf.
+
+ -- Colin Walters <walters@debian.org>  Sat, 15 Feb 2003 11:18:16 -0500
+
+rhythmbox (0.4.5-3) unstable; urgency=low
+
+  * debian/control:
+    - Add missing comma in Build-Depends.
+
+ -- Colin Walters <walters@debian.org>  Sat, 15 Feb 2003 02:10:42 -0500
+
+rhythmbox (0.4.5-2) unstable; urgency=low
+
+  * debian/control:
+    - Add Build-Depends on libflac-dev.
+
+ -- Colin Walters <walters@debian.org>  Fri, 14 Feb 2003 23:58:59 -0500
+
+rhythmbox (0.4.5-1) unstable; urgency=low
+
+  * New upstream (literally).  This package is now built from the
+  netRhythmbox branch.  This is a one-time temporary release, until
+  the next version of Rhythmbox.
+  * debian/control:
+    - Merge in dependencies from monkey-media.  Include
+    gstreamer-core-libs (Closes: #179905).
+
+ -- Colin Walters <walters@debian.org>  Thu,  6 Feb 2003 23:44:44 -0500
+
+rhythmbox (0.4.1-8) unstable; urgency=low
+
+  * NMU (with maintainer's permission)
+  * recompile against gstreamer-0.6 and monkey-media
+
+ -- David Schleef <ds@schleef.org>  Mon, 10 Feb 2003 22:11:28 -0800
+
+rhythmbox (0.4.1-7) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on the latest monkey-media (Closes: #177971).
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+
+ -- Colin Walters <walters@debian.org>  Wed, 22 Jan 2003 15:05:36 -0500
+
+rhythmbox (0.4.1-6) unstable; urgency=low
+
+  * debian/README.Debian:
+    - Note on how to change output sink.
+  * debian/patches/no-double-filename-escape.patch:
+    - New patch, created thanks to debugging from
+    Aleksey Kliger <aleksey+@cs.cmu.edu> (Closes: #169486).
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+
+ -- Colin Walters <walters@debian.org>  Fri, 10 Jan 2003 18:46:23 -0500
+
+rhythmbox (0.4.1-5) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on the latest monkey-media.
+    - Minor description tweaks again.
+
+ -- Colin Walters <walters@debian.org>  Mon, 23 Dec 2002 03:20:03 -0500
+
+rhythmbox (0.4.1-4) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on scrollkeeper.  Doh.
+
+ -- Colin Walters <walters@debian.org>  Sun, 15 Dec 2002 22:07:25 -0500
+
+rhythmbox (0.4.1-3) unstable; urgency=low
+
+  * debian/rocks:
+    - Also remove omf_timestamp file in clean rule, in an attempt to fix
+      build failures on i386.
+
+ -- Colin Walters <walters@debian.org>  Sun, 15 Dec 2002 14:02:55 -0500
+
+rhythmbox (0.4.1-2) unstable; urgency=low
+
+  * debian/control:
+    - Make description suck less.
+    - Build-Depend on the latest monkey-media.
+
+ -- Colin Walters <walters@debian.org>  Thu, 12 Dec 2002 16:54:54 -0500
+
+rhythmbox (0.4.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - Build-Depend on the latest monkey-media.
+  * debian/patches/fix-color-value-overflow-in-link.patch:
+    - Incorporated upstream; deleted.
+  * debian/patches/no-crash-on-null-LANG.patch:
+    - Incorporated upstream; deleted.
+  * debian/patches/no-crash-on-null-column-preferences.patch:
+    - Incorporated upstream; deleted.
+
+ -- Colin Walters <walters@debian.org>  Wed, 11 Dec 2002 14:10:45 -0500
+
+rhythmbox (0.4.0-4) unstable; urgency=low
+
+  * debian/rocks:
+    - Fix up XML references.
+    - Remove extra cruft in deb-extra-clean rule.
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+  * debian/postinst, debian/postrm:
+    - Old, obsolete files; deleted.
+  * debian/menu:
+    - Renamed to rhythmbox.menu, so dh_installmenu actually does something
+      with it.
+
+ -- Colin Walters <walters@debian.org>  Wed, 11 Dec 2002 01:32:40 -0500
+
+rhythmbox (0.4.0-3) unstable; urgency=low
+
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+  * debian/patches/fix-color-value-overflow-in-link.patch:
+    - Use a width of 4 instead of 2.
+  * debian/patches/no-crash-on-null-LANG.patch:
+    - New patch.
+  * debian/control:
+    - Build-Depend on the latest monkey-media.
+
+ -- Colin Walters <walters@debian.org>  Tue,  3 Dec 2002 10:49:05 -0500
+
+rhythmbox (0.4.0-2) unstable; urgency=low
+
+  * debian/rules:
+    - Update to latest version of Colin's Build System.
+  * debian/rocks:
+    - Use GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1 instead of
+      GCONF_DISABLE_SCHEMA_MAKEFILE_INSTALL=1.
+  * debian/patches/fix-color-value-overflow-in-link.patch,
+    debian/patches/no-crash-on-null-column-preferences.patch:
+    - New patches from Sjoerd Simons <sjoerd@luon.net>
+      (Closes: #169199, #169204).
+
+ -- Colin Walters <walters@debian.org>  Fri, 15 Nov 2002 11:49:08 -0500
+
+rhythmbox (0.4.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - Build-Depend on latest version of monkey-media.
+    - Don't Build-Depend on dbs or automake1.6.
+  * debian/rules:
+    - Use Colin's Build System.
+
+ -- Colin Walters <walters@debian.org>  Thu, 14 Nov 2002 11:42:57 -0500
+
+rhythmbox (0.3.0+release-7) unstable; urgency=low
+
+  * The "I love making the i386 users wait for the autobuilders" release.
+  * debian/control:
+    - Build-Depend on latest version of monkey-media (Closes: #168402).
+    - Bump Standards-Version to 3.5.7.
+  * debian/rules:
+    - Support DEB_BUILD_OPTIONS=noopt instead of debug.
+
+ -- Colin Walters <walters@debian.org>  Tue, 12 Nov 2002 21:22:58 -0500
+
+rhythmbox (0.3.0+release-6) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on latest version of monkey-media (Closes: #168402).
+    - Note that Internet radio isn't implemented yet.
+  * debian/patches/gconf-schema-fix.patch:
+    - New.
+  * README.Debian:
+    - Remove outdated information (Closes: #167709).
+
+ -- Colin Walters <walters@debian.org>  Sat,  9 Nov 2002 11:33:02 -0500
+
+rhythmbox (0.3.0+release-5) unstable; urgency=low
+
+  * The "Maybe this and monkey-media should be in the same tarball..." release.
+  * debian/control:
+    - Build-Depend on latest version of monkey-media.
+
+ -- Colin Walters <walters@debian.org>  Thu, 10 Oct 2002 12:36:12 -0400
+
+rhythmbox (0.3.0+release-4) unstable; urgency=low
+
+  * The "This version of rhythmbox is a bit old, but it actually works" release.
+  * First upload to sid!  (Closes: #154919)
+  * debian/control:
+    - Build-Depend on latest version of monkey-media.
+
+ -- Colin Walters <walters@debian.org>  Thu, 10 Oct 2002 12:36:12 -0400
+
+rhythmbox (0.3.0+release-3) unstable; urgency=low
+
+  * Recompile against gstreamer packages in experimental, not my own local
+    hacked-up .debs of CVS.
+
+ -- Colin Walters <walters@debian.org>  Wed,  2 Oct 2002 20:58:59 -0400
+
+rhythmbox (0.3.0+release-2) unstable; urgency=low
+
+  * debian/control:
+    - Build-Depend on the latest versions of libpanel-applet2-dev and
+      libgnomevfs2-dev.  Remove Build-Dependency on obsolete libgnutls-dev
+      package.
+    - Update description to reflect the fact that the features list is at
+      the moment a blatant set of lies.
+
+ -- Colin Walters <walters@debian.org>  Sun, 29 Sep 2002 15:23:59 -0400
+
+rhythmbox (0.3.0+release-1) unstable; urgency=low
+
+  * New upstream version.
+  * debian/control:
+    - [rhythmbox]: Depend on scrollkeeper.
+
+ -- Colin Walters <walters@debian.org>  Fri, 16 Aug 2002 22:54:00 -0400
+
+rhythmbox (0.3.0+cvs20020730-2) unstable; urgency=low
+
+  * debian/control:
+    - [src:rhythmbox] Tighten up Build-Depends.
+
+ -- Colin Walters <walters@debian.org>  Wed, 31 Jul 2002 14:13:20 -0400
+
+rhythmbox (0.3.0+cvs20020730-1) unstable; urgency=low
+
+  * Initial Release (Closes: #151346, #154919).
+
+ -- Colin Walters <walters@debian.org>  Wed, 31 Jul 2002 01:01:06 -0400
+

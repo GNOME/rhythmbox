@@ -1,0 +1,15 @@
+#! /bin/sh
+# -*- coding: utf-8 -*-
+# Post-removal script for rhythmbox
+# Copyright © 2002 Colin Walters <walters@debian.org>
+
+set -e
+
+if [ "$1" = remove ]; then
+	scrollkeeper-update -q
+fi
+
+#DEBHELPER#
+
+exit 0
+

@@ -1,0 +1,27 @@
+Source: rhythmbox
+Section: gnome
+Priority: optional
+Maintainer: Colin Walters <walters@debian.org>
+Build-Depends: cdbs (>= 0.4.5.2), debhelper (>= 4.1.0), libpanel-applet2-dev (>= 2.0.6-1),
+ libgnome2-dev (>= 2.0.5-1), libgtk2.0-dev (>= 2.2.1-1), scrollkeeper, 
+ libgnomeui-dev (>= 2.0.5-5), gconf2, libgnomevfs2-dev (>= 2.0.4-1),
+ docbook-xsl (>= 1.54.1), docbook-utils (>= 0.6.11),
+ libgstreamer0.6-dev (>= 0.6.2-1), gstreamer-plugin-libs-dev (>= 0.6.2),
+ gstreamer-gconf, libmusicbrainz2-dev (>= 2.0.0),
+ libflac-dev, libid3tag0-dev, libvorbis-dev (>= 1.0.0-3),
+Standards-Version: 3.5.10
+
+Package: rhythmbox
+Architecture: any
+Depends: ${shlibs:Depends}, vorbis-tools, scrollkeeper, gconf2, gstreamer-gnomevfs, gstreamer-misc, gstreamer-mad, gstreamer-vorbis, gstreamer-oss | gstreamer-audiosink
+Recommends: esound
+Description: music player and organizer for GNOME 
+ Rhythmbox is a very easy to use music playing and management program
+ which supports a wide range of audio formats (including mp3 and ogg).
+ The current version also supports Internet Radio.
+ .
+ Development at the moment is quite rapid, and future versions will
+ have even more features, including:
+  - Metadata (tag) editing and automatic assignment
+  - Audio CD burning
+  - Visualization

@@ -1,0 +1,16 @@
+#! /bin/sh
+# -*- coding: utf-8 -*-
+# Post-installation script for rhythmbox
+# Copyright © 2002,2003 Colin Walters <walters@debian.org>
+
+set -e
+
+if [ "$1" = configure ]; then
+	HOME=/root GCONF_CONFIG_SOURCE=xml::/etc/gconf/gconf.xml.defaults /usr/bin/gconftool-2 --makefile-install-rule /etc/gconf/schemas/rhythmbox.schemas > /dev/null
+	scrollkeeper-update -q
+fi
+
+#DEBHELPER#
+
+exit 0
+
