@@ -339,18 +339,26 @@ update_browser_views_visibility (RBLibraryView *view)
 	GtkWidget *albums = GTK_WIDGET (view->priv->albums);
 
 	views = eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS);
-
+	
 	switch (views)
 	{
 		case 0:
 			gtk_widget_hide (genres);
 			gtk_widget_show (artists);
 			gtk_widget_show (albums);
+			
+			rb_node_view_select_node (view->priv->genres,
+				  		  rb_library_get_all_artists 
+						  (view->priv->library));
 		break;
 		case 1:
 			gtk_widget_show (genres);
 			gtk_widget_show (artists);
 			gtk_widget_hide (albums);
+
+			rb_node_view_select_node (view->priv->albums,
+				  		  rb_library_get_all_songs 
+						  (view->priv->library));	
 		break;
 		case 2:
 			gtk_widget_show (genres);
@@ -366,9 +374,6 @@ browser_views_notifier (GConfClient *client,
 			GConfEntry *entry,
 			RBLibraryView *view)
 {
-	rb_node_view_select_node (view->priv->genres,
-				  rb_library_get_all_artists (view->priv->library));
-
 	update_browser_views_visibility (view);
 }
 
