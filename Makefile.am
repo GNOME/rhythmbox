@@ -17,7 +17,8 @@ EXTRA_DIST = 			\
 	MAINTAINERS		\
 	MAINTAINERS.old		\
 	DOCUMENTERS		\
-	INTERNALS
+	INTERNALS		\
+	README.iPod
 
 DISTCLEANFILES =			\
 	intltool-extract		\

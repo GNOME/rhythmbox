@@ -116,6 +116,7 @@ rb_ipod_source_new (RBShell *shell, RhythmDB *db, BonoboUIComponent *component)
 	source = RB_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "name", _("iPod"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_IPOD,
+					  "internal-name", "<ipod>",
 					  "icon", icon,
 					  "db", db,
 					  "component", component,
@@ -147,8 +148,9 @@ ipod_get_itunesdb_path (void)
 	gchar *result;
 	gchar *mount_path = ipod_get_mount_path ();
 
-	result = g_build_filename (G_DIR_SEPARATOR_S, mount_path,
-				   "iPod_Control/iTunes/iTunesDB", NULL);
+	result = g_build_filename (mount_path,
+				   "iPod_Control/iTunes/iTunesDB", 
+				   NULL);
 	g_free (mount_path);
 	return result;
 }

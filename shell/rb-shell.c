@@ -966,8 +966,9 @@ shell_pb_get_prop (BonoboPropertyBag *bag,
 
 	case PROP_SONG: {
 		GNOME_Rhythmbox_SongInfo *ret_val;
+		
 		ret_val = get_song_info_from_player (shell);
-		(GNOME_Rhythmbox_SongInfo*)arg->_value = ret_val;
+		arg->_value = (gpointer)ret_val;
 		if (ret_val == NULL) {
 			arg->_type = TC_null;
 		} else {
@@ -1145,7 +1146,7 @@ rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
 	g_assert (strcmp (pspec->name, "playing-entry") == 0);
 	song_info = get_song_info_from_player (shell);
 	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
-	(GNOME_Rhythmbox_SongInfo*)arg->_value = song_info;
+	arg->_value = (gpointer)song_info;
 	shell_notify_pb_changes (shell, "song", arg);
 	/* FIXME: arg should be released somehow */
 
@@ -2361,6 +2362,7 @@ rb_shell_sync_selected_source (RBShell *shell)
 		const char *tmpname;
 		g_object_get (G_OBJECT (tmp->data), "internal-name", &tmpname, NULL);
 		if (!strcmp (internalname, tmpname)) {
+			g_assert (tmp->data != NULL);
 			rb_shell_select_source_internal (shell, tmp->data);
 			return;
 		}
