@@ -2,6 +2,107 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-12-19 03:53:55 GMT	Colin Walters <walters@verbum.org>	patch-376
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-376
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/be.po po/cs.po
+
+
+2003-12-19 00:01:38 GMT	Colin Walters <walters@verbum.org>	patch-375
+
+    Summary:
+      kill off unused RhythmDBModel
+    Revision:
+      rhythmbox--mainline--0.6--patch-375
+
+
+    removed files:
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-playlist-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-12-18 23:13:47 GMT	Colin Walters <walters@verbum.org>	patch-374
+
+    Summary:
+      don't save default values
+    Revision:
+      rhythmbox--mainline--0.6--patch-374
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+
+2003-12-18 16:09:54 GMT	Colin Walters <walters@verbum.org>	patch-373
+
+    Summary:
+      gcc-2.95 compile fixes (Kaj-Michael Lang)
+    Revision:
+      rhythmbox--mainline--0.6--patch-373
+
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+
+
+2003-12-18 06:02:21 GMT	Colin Walters <walters@verbum.org>	patch-372
+
+    Summary:
+      release 0.6.2
+    Revision:
+      rhythmbox--mainline--0.6--patch-372
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2003-12-18 04:46:11 GMT	Colin Walters <walters@verbum.org>	patch-371
+
+    Summary:
+      remove statusbar for now
+    Revision:
+      rhythmbox--mainline--0.6--patch-371
+
+
+    modified files:
+     ChangeLog data/ui/rhythmbox-ui.xml
+
+
+2003-12-18 03:26:10 GMT	Colin Walters <walters@verbum.org>	patch-370
+
+    Summary:
+      merge rhythmdb fixes from 0.7, update NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-370
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-81
+       ignore unknown elements in rhythmdb
+    
+
+    modified files:
+     ChangeLog NEWS rhythmdb/rhythmdb-tree.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-81
+
+
 2003-12-17 02:28:34 GMT	Colin Walters <walters@verbum.org>	patch-369
 
     Summary:
