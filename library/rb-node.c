@@ -208,8 +208,6 @@ static void
 rb_node_finalize (GObject *object)
 {
 	RBNode *node;
-	GList *l;
-	RBNodeType type;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_NODE (object));
@@ -218,6 +216,27 @@ rb_node_finalize (GObject *object)
 
 	g_return_if_fail (node->priv != NULL);
 
+	g_list_free (node->priv->grandchildren);
+	g_list_free (node->priv->grandparents);
+	g_list_free (node->priv->children);
+	g_list_free (node->priv->parents);
+
+	g_hash_table_destroy (node->priv->properties);
+
+	g_free (node->priv);
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
+
+static void
+rb_node_dispose (GObject *object)
+{
+	RBNode *node = RB_NODE (object);
+	GList *l;
+	RBNodeType type;
+
+	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
+	
 	type = rb_node_get_node_type (node);
 
 	if (id_to_node_hash != NULL)
@@ -252,40 +271,24 @@ rb_node_finalize (GObject *object)
 			}
 		}
 	}
-	g_list_free (node->priv->parents);
 	for (l = node->priv->grandparents; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
 
 		node2->priv->grandchildren = g_list_remove (node2->priv->grandchildren, node);
 	}
-	g_list_free (node->priv->grandparents);
 	for (l = node->priv->grandchildren; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
 
 		node2->priv->grandparents = g_list_remove (node2->priv->grandparents, node);
 	}
-	g_list_free (node->priv->grandchildren);
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
 
 		node2->priv->parents = g_list_remove (node2->priv->parents, node);
 	}
-	g_list_free (node->priv->children);
-
-	g_hash_table_destroy (node->priv->properties);
-
-	g_free (node->priv);
-
-	G_OBJECT_CLASS (parent_class)->finalize (object);
-}
-
-static void
-rb_node_dispose (GObject *object)
-{
-	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }

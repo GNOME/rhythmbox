@@ -1,5 +1,22 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_get_node), (rb_node_view_get_next_node),
+	(rb_node_view_get_previous_node), (rb_node_view_get_first_node),
+	(rb_node_view_get_random_node),
+	(gtk_tree_model_sort_row_deleted_cb), (rb_node_view_get_n_rows),
+	(rb_node_view_get_visible_nodes), (select_node),
+	(root_child_destroyed_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (root_child_destroyed_cb),
+	(filter_parent_destroyed_cb), (filter_grandparent_destroyed_cb):
+	* library/rb-node.c: (rb_node_finalize), (rb_node_dispose):
+
+	Fix some bugs when the view is empty, and work around
+	the treemodelfilter corruption bug.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-shell-player.c: (rb_shell_player_finalize):
 
 	Don't unref mixer for now, creates crashes.

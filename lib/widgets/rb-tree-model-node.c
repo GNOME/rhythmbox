@@ -86,6 +86,8 @@ static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
 static void filter_parent_destroyed_cb (RBNode *node,
 				        RBTreeModelNode *model);
+static void filter_grandparent_destroyed_cb (RBNode *node,
+				             RBTreeModelNode *model);
 
 struct RBTreeModelNodePrivate
 {
@@ -313,7 +315,27 @@ rb_tree_model_node_set_property (GObject *object,
 		}
 		break;
 	case PROP_FILTER_GRANDPARENT:
-		model->priv->filter_grandparent = g_value_get_object (value);
+		{
+			RBNode *old = model->priv->filter_grandparent;
+			
+			model->priv->filter_grandparent = g_value_get_object (value);
+
+			if (old != NULL)
+			{
+				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
+						                      G_CALLBACK (filter_grandparent_destroyed_cb),
+						                      model);
+			}
+
+			if (model->priv->filter_grandparent != NULL)
+			{
+				g_signal_connect_object (G_OBJECT (model->priv->filter_grandparent),
+						         "destroyed",
+						         G_CALLBACK (filter_grandparent_destroyed_cb),
+						         G_OBJECT (model),
+							 0);
+			}
+		}
 		break;
 	case PROP_PLAYING_NODE:
 		{
@@ -756,7 +778,7 @@ root_child_destroyed_cb (RBNode *node,
 
 	if (node == model->priv->playing_node)
 		model->priv->playing_node = NULL;
-
+	
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 
 	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
@@ -852,6 +874,16 @@ filter_parent_destroyed_cb (RBNode *node,
 			    RBTreeModelNode *model)
 {
 	model->priv->filter_parent = NULL;
+
+	/* no need to do other stuff since we should have had a bunch of child_destroyed
+	 * signals already */
+}
+
+static void
+filter_grandparent_destroyed_cb (RBNode *node,
+				 RBTreeModelNode *model)
+{
+	model->priv->filter_grandparent = NULL;
 
 	/* no need to do other stuff since we should have had a bunch of child_destroyed
 	 * signals already */
