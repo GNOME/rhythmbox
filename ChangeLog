@@ -1,3 +1,18 @@
+2003-05-16  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-preferences.h:
+	* shell/rb-shell-player.c: (rb_shell_player_init):
+	* shell/rb-shell.c: (rb_shell_construct), (rb_shell_select_source):
+	* shell/rb-source-header.c: (rb_source_header_set_property):
+	* shell/rb-statusbar.c: (rb_statusbar_init),
+	(rb_statusbar_set_property), (rb_statusbar_sync_with_source),
+	(rb_statusbar_status_changed_cb), (rb_statusbar_sync_toggles),
+	(rb_statusbar_state_changed_cb), (rb_statusbar_toggle_changed_cb):
+	* sources/rb-library-source.c: (rb_library_source_set_property),
+	(paned_size_allocate_cb), (songs_view_changed_cb):
+
+	Make status work.  Fix up toolbar sizes.  Other various bits.
+
 2003-05-16  Colin Walters  <cwalters@gnome.org>
 
 	* configure.in:

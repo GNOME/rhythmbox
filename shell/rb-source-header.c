@@ -67,7 +67,7 @@ struct RBSourceHeaderPrivate
 	GtkWidget *search;
 	GtkWidget *disclosure;
 
-	guint brower_notify_id;
+	guint browser_notify_id;
 	const char *browser_key;
 };
 
@@ -181,7 +181,7 @@ rb_source_header_set_property (GObject *object,
 		if (header->priv->selected_source != NULL)
 		{
 			if (header->priv->browser_key)
-				eel_gconf_notification_remove (header->priv->brower_notify_id);
+				eel_gconf_notification_remove (header->priv->browser_notify_id);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
@@ -195,7 +195,7 @@ rb_source_header_set_property (GObject *object,
 		{
 			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
 			if (header->priv->browser_key)
-				header->priv->brower_notify_id
+				header->priv->browser_notify_id
 					= eel_gconf_notification_add (header->priv->browser_key,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
 								      header);

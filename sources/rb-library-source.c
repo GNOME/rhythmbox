@@ -80,6 +80,8 @@ static void rb_library_source_drop_cb (GtkWidget        *widget,
 				       guint             time,
 				       gpointer          user_data);
 
+static void songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source);
+
 void rb_library_source_sync_browser (RBLibrarySource *source);
 static void rb_library_source_browser_visibility_changed_cb (GConfClient *client,
 							     guint cnxn_id,
@@ -441,6 +443,10 @@ rb_library_source_set_property (GObject *object,
 
 			g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 					  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
+			g_signal_connect (G_OBJECT (source->priv->songs),
+					  "changed",
+					  G_CALLBACK (songs_view_changed_cb),
+					  source);
 
 			/* Drag'n'Drop for songs view */
 			g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received",
@@ -929,6 +935,13 @@ paned_size_allocate_cb (GtkWidget *widget,
 		        RBLibrarySource *source)
 {
 	source->priv->paned_position = gtk_paned_get_position (GTK_PANED (source->priv->paned));
+}
+
+static void
+songs_view_changed_cb (RBNodeView *view, RBLibrarySource *source)
+{
+	rb_debug ("got node view change");
+	rb_source_notify_status_changed (RB_SOURCE (source));
 }
 
 void

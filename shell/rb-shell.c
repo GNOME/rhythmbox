@@ -233,6 +233,7 @@ struct RBShellPrivate
 
 	RBShellPlayer *player_shell;
 	RBSourceHeader *source_header;
+	RBStatusbar *statusbar;
 
 	RBLibrary *library;
 	RBSource *library_source;
@@ -599,6 +600,7 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->paned = gtk_hpaned_new ();
 
 	shell->priv->sourcelist = rb_sourcelist_new ();
+	shell->priv->statusbar = rb_statusbar_new ();
 
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "selected",
 			  G_CALLBACK (source_selected_cb), shell);
@@ -627,7 +629,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, TRUE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (rb_statusbar_new ()), FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 
 	bonobo_window_set_contents (win, vbox);
 
@@ -877,6 +879,8 @@ rb_shell_select_source (RBShell *shell,
 				    RB_SOURCE (source));
 	rb_source_header_set_source (shell->priv->source_header,
 				     RB_SOURCE (source));
+	rb_statusbar_set_source (shell->priv->statusbar,
+				 RB_SOURCE (source));
 }
 
 static void

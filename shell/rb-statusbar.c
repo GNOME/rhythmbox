@@ -43,8 +43,17 @@ static void rb_statusbar_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
+static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
 static void rb_statusbar_status_changed_cb (RBSource *source,
-						RBStatusbar *statusbar);
+					    RBStatusbar *statusbar);
+static void rb_statusbar_sync_toggles (RBStatusbar *statusbar);
+static void rb_statusbar_state_changed_cb (GConfClient *client,
+					   guint cnxn_id,
+					   GConfEntry *entry,
+					   RBStatusbar *statusbar);
+
+static void rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
+					    RBStatusbar *statusbar);
 
 struct RBStatusbarPrivate
 {
@@ -119,6 +128,11 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
 	statusbar->priv->shuffle = gtk_check_button_new_with_label (_("Shuffle"));
 	statusbar->priv->repeat = gtk_check_button_new_with_label (_("Repeat"));
+	g_signal_connect (G_OBJECT (statusbar->priv->shuffle), "toggled",
+			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
+	g_signal_connect (G_OBJECT (statusbar->priv->repeat), "toggled",
+			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
+	
 	statusbar->priv->status = gtk_label_new ("Status goes here");
 	gtk_label_set_justify (GTK_LABEL (statusbar->priv->status), GTK_JUSTIFY_RIGHT);
 
@@ -131,6 +145,15 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
 	gtk_box_pack_start (GTK_BOX (statusbar),
 			    GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+
+	rb_statusbar_sync_toggles (statusbar);
+
+	eel_gconf_notification_add (CONF_STATE_SHUFFLE,
+				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
+				    statusbar);
+	eel_gconf_notification_add (CONF_STATE_REPEAT,
+				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
+				    statusbar);
 }
 
 static void
@@ -174,10 +197,11 @@ rb_statusbar_set_property (GObject *object,
 		if (statusbar->priv->selected_source != NULL)
 		{
 			g_signal_connect (G_OBJECT (statusbar->priv->selected_source),
-					  "filter_changed",
+					  "status_changed",
 					  G_CALLBACK (rb_statusbar_status_changed_cb),
 					  statusbar);
 		}
+		rb_statusbar_sync_with_source (statusbar);
 		
 		break;
 	default:
@@ -229,13 +253,52 @@ rb_statusbar_new (void)
 }
 
 static void
+rb_statusbar_sync_with_source (RBStatusbar *statusbar)
+{
+	if (statusbar->priv->selected_source != NULL) {
+		const char *status = rb_source_get_status (statusbar->priv->selected_source);
+		rb_debug  ("got status: %s", status);
+		
+		gtk_label_set_text (GTK_LABEL (statusbar->priv->status), status);
+	}
+}
+
+static void
 rb_statusbar_status_changed_cb (RBSource *source,
 				RBStatusbar *statusbar)
 {
-	const char *status;
 	rb_debug  ("status changed for %p", source);
+	rb_statusbar_sync_with_source (statusbar);
+}
 
-	status = rb_source_get_status (source);
+static void
+rb_statusbar_sync_toggles (RBStatusbar *statusbar)
+{
+	rb_debug ("syncing toggles");
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
+				      eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
+				      eel_gconf_get_boolean (CONF_STATE_REPEAT));
+}
+
+static void
+rb_statusbar_state_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBStatusbar *statusbar)
+{
+	rb_debug ("state changed");
 	
-	gtk_label_set_text (GTK_LABEL (statusbar->priv->status), status);
+	rb_statusbar_sync_toggles (statusbar);
+}
+
+static void
+rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
+				RBStatusbar *statusbar)
+{
+	rb_debug ("toggle changed");
+	eel_gconf_set_boolean (CONF_STATE_SHUFFLE,
+			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle)));
+	eel_gconf_set_boolean (CONF_STATE_REPEAT,
+			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat)));
 }

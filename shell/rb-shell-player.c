@@ -138,9 +138,6 @@ void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
 #define CMD_PATH_SONG_INFO	"/commands/SongInfo"
 
 #define CONF_STATE		CONF_PREFIX "/state"
-#define CONF_STATE_SHUFFLE	CONF_PREFIX "/state/shuffle"
-#define CONF_STATE_REPEAT	CONF_PREFIX "/state/repeat"
-#define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
 
 struct RBShellPlayerPrivate
 {
@@ -290,6 +287,7 @@ rb_shell_player_init (RBShellPlayer *player)
 {
 	GError *error = NULL;
 	GtkWidget *hbox, *image;
+	GtkWidget *alignment;
 
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
@@ -338,19 +336,19 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	/* Previous button */
 	image = gtk_image_new_from_stock (RB_STOCK_PREVIOUS,
-					  GTK_ICON_SIZE_BUTTON);
+					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->prev_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->prev_button), image);
 
 	/* Play button */
 	image = gtk_image_new_from_stock (RB_STOCK_PLAY,
-					  GTK_ICON_SIZE_BUTTON);
+					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->play_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->play_button), image);
 
 	/* Next button */
 	image = gtk_image_new_from_stock (RB_STOCK_NEXT,
-					  GTK_ICON_SIZE_BUTTON);
+					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->next_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);
 
@@ -359,13 +357,15 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
 	
 	gtk_box_set_spacing (GTK_BOX (hbox), 4);
-	gtk_box_pack_start_defaults (GTK_BOX (player), hbox);
+	gtk_box_pack_start (GTK_BOX (player), hbox, FALSE, TRUE, 5);
 
+	alignment = gtk_alignment_new (0.0, 0.1, 0.5, 1.0);
 	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
+/* 	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->player_widget)); */
 	gtk_box_pack_start_defaults (GTK_BOX (player), GTK_WIDGET (player->priv->player_widget));
 
 	image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
-					  GTK_ICON_SIZE_BUTTON);
+					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->volume_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
