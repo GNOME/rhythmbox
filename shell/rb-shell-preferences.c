@@ -253,24 +253,33 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
 
 	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_ARTIST") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_ALBUM") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT") != NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
-				      strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
-
+	if (columns != NULL)
+	{
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check), 
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ARTIST") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_ALBUM") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->play_count_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_PLAY_COUNT") != NULL);
+		gtk_toggle_button_set_active 
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
+	}
 
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	for (i = 0; i < G_N_ELEMENTS (styles); i++)
