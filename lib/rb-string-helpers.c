@@ -2,6 +2,7 @@
  *  arch-tag: Implementation of various string-related utility functions
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,45 +24,141 @@
 #include <libgnome/gnome-i18n.h>
 #include <glib.h>
 #include <string.h>
+#include <stdlib.h>
 
 #include "rb-string-helpers.h"
 
-char *
-rb_prefix_to_suffix (const char *string)
+static GHashTable *encodings;
+
+/* stolen from gnome-desktop-item.c */
+static gboolean
+check_locale (const char *locale)
 {
-	/* comma separated list of prefixes that are to
-	 * be appended as suffix, NOTE: notice the spaces placement */
-	static const char *prefix_to_suffix = N_("THE ,DJ ");
-	char **items;
-	char *foldedname = g_utf8_casefold (string, -1);
-	int i;
-	char *str = NULL;
+	GIConv cd = g_iconv_open ("UTF-8", locale);
+	if ((GIConv)-1 == cd)
+		return FALSE;
+	g_iconv_close (cd);
+	return TRUE;
+}
 
-	items = g_strsplit (_(prefix_to_suffix), ",", 0);
-	for (i = 0; items[i] != NULL; i++)
-	{
-		char *foldedprefix = g_utf8_casefold (items[i], -1);
-		
-		if (strncmp (foldedname, foldedprefix, strlen (foldedprefix)) == 0)
-		{
-			char *tmp = g_strndup (string, strlen (items[i]));
-			tmp = g_strchomp (tmp);
-			/* Translators: the format is "Prefix, Artist name" */
-			str = g_strdup_printf (_("%s, %s"), string + strlen (items[i]), tmp);
-			g_free (tmp);
-			g_free (foldedprefix);
+/* stolen from gnome-desktop-item.c */
+static void
+insert_locales (GHashTable *encodings, char *enc, ...)
+{
+	va_list args;
+	char *s;
+
+	va_start (args, enc);
+	for (;;) {
+		s = va_arg (args, char *);
+		if (s == NULL)
 			break;
-		}
-		g_free (foldedprefix);
+		g_hash_table_insert (encodings, s, enc);
 	}
-	g_strfreev (items);
+	va_end (args);
+}
 
-	g_free (foldedname);
+/* stolen from gnome-desktop-item.c */
+void
+rb_string_helpers_init (void)
+{
+/* make a standard conversion table from the desktop standard spec */
+	encodings = g_hash_table_new (g_str_hash, g_str_equal);
 
-	if (str == NULL)
-		str = g_strdup (string);
+	/* "C" is plain ascii */
+	insert_locales (encodings, "ASCII", "C", NULL);
 
-	return str;
+	insert_locales (encodings, "ARMSCII-8", "by", NULL);
+	insert_locales (encodings, "BIG5", "zh_TW", NULL);
+	insert_locales (encodings, "CP1251", "be", "bg", NULL);
+	if (check_locale ("EUC-CN")) {
+		insert_locales (encodings, "EUC-CN", "zh_CN", NULL);
+	} else {
+		insert_locales (encodings, "GB2312", "zh_CN", NULL);
+	}
+	insert_locales (encodings, "EUC-JP", "ja", NULL);
+	insert_locales (encodings, "EUC-KR", "ko", NULL);
+	/*insert_locales (encodings, "GEORGIAN-ACADEMY", NULL);*/
+	insert_locales (encodings, "GEORGIAN-PS", "ka", NULL);
+	insert_locales (encodings, "ISO-8859-1", "br", "ca", "da", "de", "en", "es", "eu", "fi", "fr", "gl", "it", "nl", "wa", "no", "pt", "pt", "sv", NULL);
+	insert_locales (encodings, "ISO-8859-2", "cs", "hr", "hu", "pl", "ro", "sk", "sl", "sq", "sr", NULL);
+	insert_locales (encodings, "ISO-8859-3", "eo", NULL);
+	insert_locales (encodings, "ISO-8859-5", "mk", "sp", NULL);
+	insert_locales (encodings, "ISO-8859-7", "el", NULL);
+	insert_locales (encodings, "ISO-8859-9", "tr", NULL);
+	insert_locales (encodings, "ISO-8859-13", "lt", "lv", "mi", NULL);
+	insert_locales (encodings, "ISO-8859-14", "ga", "cy", NULL);
+	insert_locales (encodings, "ISO-8859-15", "et", NULL);
+	insert_locales (encodings, "KOI8-R", "ru", NULL);
+	insert_locales (encodings, "KOI8-U", "uk", NULL);
+	if (check_locale ("TCVN-5712")) {
+		insert_locales (encodings, "TCVN-5712", "vi", NULL);
+	} else {
+		insert_locales (encodings, "TCVN", "vi", NULL);
+	}
+	insert_locales (encodings, "TIS-620", "th", NULL);
+	/*insert_locales (encodings, "VISCII", NULL);*/
+}
+
+void
+rb_string_helpers_shutdown (void)
+{
+	g_hash_table_destroy (encodings);
+}
+
+/* stolen from gnome-desktop-item.c */
+static const char *
+get_encoding_from_locale (const char *locale)
+{
+	char lang[3];
+	const char *encoding;
+	static GHashTable *encodings = NULL;
+
+	if (locale == NULL)
+		return NULL;
+
+	/* if locale includes encoding, use it */
+	encoding = strchr (locale, '.');
+	if (encoding != NULL) {
+		return encoding+1;
+	}
+
+	/* first try the entire locale (at this point ll_CC) */
+	encoding = g_hash_table_lookup (encodings, locale);
+	if (encoding != NULL)
+		return encoding;
+
+	/* Try just the language */
+	strncpy (lang, locale, 2);
+	lang[2] = '\0';
+	return g_hash_table_lookup (encodings, lang);
+}
+
+char *
+rb_unicodify (const char *str)
+{
+	char *ret;
+	const char *char_encoding;
+
+	/* Try validating it as UTF-8 first */
+	if (g_utf8_validate (str, -1, NULL))
+		return g_strdup (str);
+
+	/* Failing that, try the legacy encoding associated
+	   with the locale. */
+	char_encoding = get_encoding_from_locale (getenv ("LANG"));
+	if (char_encoding == NULL)
+		ret = NULL;
+
+	if (!ret)
+		ret = g_convert (str, -1, "UTF-8", char_encoding,
+				 NULL, NULL, NULL);
+	/* Failing that, try ISO-8859-1. */
+	if (!ret)
+		ret = g_convert (str, -1, "UTF-8", "ISO-8859-1",
+				 NULL, NULL, NULL);
+
+	return ret;
 }
 
 int
@@ -72,32 +169,6 @@ rb_utf8_strncasecmp (gconstpointer a, gconstpointer b)
 	int ret = g_utf8_collate (al, bl);
 	g_free (al);
 	g_free (bl);
-	return ret;
-}
-
-char *
-rb_unicodify (const char *str, gboolean try_iso1_first)
-{
-	char *ret;
-	int bytes_read, bytes_written;
-
-	if (g_utf8_validate (str, -1, NULL))
-		return g_strdup (str);
-
-	/* A lot of stuff we get over the network is ISO-8859-1. */
-	if (try_iso1_first)
-		ret = g_convert (str, strlen (str), "UTF-8", "ISO-8859-1",
-				 &bytes_read, &bytes_written, NULL);
-	else
-		ret = NULL;
-
-	/* Failing that, try the locale's encoding. */
-	if (!ret)
-		ret = g_locale_to_utf8 (str, strlen (str), &bytes_read, &bytes_written, NULL);
-	if (!ret)
-		ret = g_convert (str, strlen (str), "UTF-8", "ISO-8859-1",
-				 &bytes_read, &bytes_written, NULL);
-
 	return ret;
 }
 

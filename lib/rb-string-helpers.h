@@ -2,6 +2,7 @@
  *  arch-tag: Header for various string-related utility functions
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,13 +25,14 @@
 
 G_BEGIN_DECLS
 
-char *rb_prefix_to_suffix	(const char *string);
+void	rb_string_helpers_init		(void);
+void	rb_string_helpers_shutdown	(void);
 
-int   rb_utf8_strncasecmp	(gconstpointer a, gconstpointer b);
+char *	rb_unicodify			(const char *str);
 
-char *rb_unicodify		(const char *str, gboolean try_iso1_first);
+int	rb_utf8_strncasecmp		(gconstpointer a, gconstpointer b);
 
-char *rb_get_sort_key		(const char *string);
+char *	rb_get_sort_key			(const char *string);
 
 G_END_DECLS
 

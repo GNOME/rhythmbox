@@ -46,6 +46,7 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
+#include "rb-string-helpers.h"
 #include "rb-thread-helpers.h"
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
@@ -134,6 +135,7 @@ main (int argc, char **argv)
 		rb_debug_init (debug);
 
 	rb_file_helpers_init ();
+	rb_string_helpers_init ();
 
 	if (no_registration == FALSE && dry_run == FALSE) {
 		object = bonobo_activation_activate_from_id (RB_SHELL_OAFIID,
@@ -177,6 +179,7 @@ main (int argc, char **argv)
 	CORBA_exception_free (&ev);
 
 	rb_file_helpers_shutdown ();
+	rb_string_helpers_shutdown ();
 
 	monkey_media_shutdown ();
 
