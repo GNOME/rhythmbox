@@ -374,7 +374,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize UI */
 	win = BONOBO_WINDOW (bonobo_window_new ("Rhythmbox shell",
-						"Rhythmbox"));
+						_("Music Player")));
 
 	shell->priv->window = GTK_WIDGET (win);
 
