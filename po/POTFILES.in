@@ -1,6 +1,7 @@
 component/Rhythmbox_Nautilus_Context_Menu.server.in.in
 data/GNOME_Rhythmbox.server.in
 data/glade/buffering-dialog.glade
+data/glade/druid.glade
 data/glade/general-prefs.glade
 data/glade/library-prefs.glade
 data/glade/load-failure.glade
@@ -25,10 +26,13 @@ iradio/rb-new-station-dialog.c
 iradio/rb-station-properties-dialog.c
 lib/disclosure-widget.c
 lib/eel-gconf-extensions.c
+lib/eggtrayicon.c
 lib/rb-file-helpers.c
+lib/rb-playlist.c
 lib/rb-string-helpers.c
-lib/rb-windows-ini-file.c
+lib/widgets/gtktreemodelsort.c
 lib/widgets/rb-cell-renderer-pixbuf.c
+lib/widgets/rb-druid.c
 lib/widgets/rb-link.c
 lib/widgets/rb-load-failure-dialog.c
 lib/widgets/rb-node-view.c
@@ -52,7 +56,6 @@ monkey-media/stream-info-impl/flac-stream-info-impl.c
 monkey-media/stream-info-impl/mp3-stream-info-impl.c
 monkey-media/stream-info-impl/vorbis-stream-info-impl.c
 shell/main.c
-shell/rb-playlist.c
 shell/rb-shell-player.c
 shell/rb-shell-preferences.c
 shell/rb-shell.c
