@@ -325,7 +325,9 @@ rb_library_finalize (GObject *object)
 
 	g_return_if_fail (library->priv != NULL);
 
-	g_source_remove (library->priv->idle_save_id);
+	if (library->priv->idle_save_id != 0) {
+		g_source_remove (library->priv->idle_save_id);
+	}
 
 	rb_debug ("library: finalizing");
 

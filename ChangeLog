@@ -1,5 +1,13 @@
 2003-08-29  Bastien Nocera  <hadess@hadess.net>
 
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_finalize):
+	* library/rb-library.c: (rb_library_finalize): fixed warnings on
+	exit when no data is in the libraries
+	* monkey-media/stream-info-impl/mp3-stream-info-impl.c:
+	removed unused includes
+
+2003-08-29  Bastien Nocera  <hadess@hadess.net>
+
 	* TODO: removed TODO item (".keys file")
 	* data/.cvsignore: upd
 	* data/Makefile.am: added rules to generate rhythmbox.keys from

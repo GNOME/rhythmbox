@@ -221,7 +221,9 @@ rb_iradio_backend_finalize (GObject *object)
 
 	g_return_if_fail (backend->priv != NULL);
 
-	g_source_remove (backend->priv->idle_save_id);
+	if (backend->priv->idle_save_id != 0) {
+		g_source_remove (backend->priv->idle_save_id);
+	}
 
 	rb_iradio_backend_save (backend);
 

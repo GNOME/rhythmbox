@@ -22,8 +22,6 @@
  */
 
 #include <libgnomevfs/gnome-vfs.h>
-#include <libgnomevfs/gnome-vfs-mime-utils.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
 #include <stdlib.h>
 
