@@ -52,8 +52,8 @@ static void rb_player_set_show_timeline (RBPlayer *player,
 static void rb_player_set_show_textline (RBPlayer *player,
 			                 gboolean show);
 static gboolean rb_player_sync_time (RBPlayer *player);
-static void rb_player_adjustment_changed_cb (GtkAdjustment *adjustment,
-				             RBPlayer *player);
+static void rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
+				                   RBPlayer *player);
 
 struct RBPlayerPrivate
 {
@@ -192,8 +192,8 @@ rb_player_init (RBPlayer *player)
 	
 	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	g_signal_connect (G_OBJECT (player->priv->adjustment),
-			  "changed",
-			  G_CALLBACK (rb_player_adjustment_changed_cb),
+			  "value_changed",
+			  G_CALLBACK (rb_player_adjustment_value_changed_cb),
 			  player);
 	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
@@ -435,13 +435,22 @@ rb_player_sync_time (RBPlayer *player)
 }
 
 static void
-rb_player_adjustment_changed_cb (GtkAdjustment *adjustment,
-				 RBPlayer *player)
+rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
+				       RBPlayer *player)
 {
-	MonkeyMediaAudioStream *stream = rb_view_player_get_stream (player->priv->view_player);
-	double progress = gtk_adjustment_get_value (adjustment);
-	long duration = rb_view_player_get_duration (player->priv->view_player);
-	long new = (long) progress * duration;
+	MonkeyMediaAudioStream *stream;
+	double progress;
+	long duration, new;
+
+	if (player->priv->lock_adjustment == TRUE)
+		return;
+
+	stream = rb_view_player_get_stream (player->priv->view_player);
+	progress = gtk_adjustment_get_value (adjustment);
+	duration = rb_view_player_get_duration (player->priv->view_player);
+	new = (long) progress * duration;
+	
 	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
+
 	rb_player_sync_time (player);
 }
