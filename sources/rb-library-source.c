@@ -689,7 +689,7 @@ impl_search (RBSource *asource, const char *search_text)
 	rb_debug ("doing search for \"%s\"", search_text);
 
 	g_free (source->priv->search_text);
-	source->priv->search_text = g_utf8_casefold (search_text, -1);
+	source->priv->search_text = search_text != NULL ? g_utf8_casefold (search_text, -1) : NULL;
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH, FALSE);
 }
 
