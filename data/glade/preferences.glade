@@ -347,10 +347,29 @@
 		  <property name="spacing">6</property>
 
 		  <child>
+		    <widget class="GtkCheckButton" id="track_check">
+		      <property name="visible">True</property>
+		      <property name="can_focus">True</property>
+		      <property name="label" translatable="yes">Show t_rack number</property>
+		      <property name="use_underline">True</property>
+		      <property name="relief">GTK_RELIEF_NORMAL</property>
+		      <property name="active">False</property>
+		      <property name="inconsistent">False</property>
+		      <property name="draw_indicator">True</property>
+		      <signal name="toggled" handler="show_columns_changed_cb" last_modification_time="Wed, 16 Oct 2002 06:42:43 GMT"/>
+		    </widget>
+		    <packing>
+		      <property name="padding">0</property>
+		      <property name="expand">False</property>
+		      <property name="fill">False</property>
+		    </packing>
+		  </child>
+
+		  <child>
 		    <widget class="GtkCheckButton" id="artist_check">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Show '_Artist'</property>
+		      <property name="label" translatable="yes">Show _artist</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="active">False</property>
@@ -369,7 +388,7 @@
 		    <widget class="GtkCheckButton" id="album_check">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Show 'A_lbum'</property>
+		      <property name="label" translatable="yes">Show a_lbum</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="active">False</property>
@@ -388,7 +407,7 @@
 		    <widget class="GtkCheckButton" id="genre_check">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Show '_Genre'</property>
+		      <property name="label" translatable="yes">Show _genre</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="active">False</property>
@@ -407,7 +426,7 @@
 		    <widget class="GtkCheckButton" id="duration_check">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
-		      <property name="label" translatable="yes">Show '_Duration'</property>
+		      <property name="label" translatable="yes">Show _duration</property>
 		      <property name="use_underline">True</property>
 		      <property name="relief">GTK_RELIEF_NORMAL</property>
 		      <property name="active">False</property>

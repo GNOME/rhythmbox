@@ -63,6 +63,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *album_check;
 	GtkWidget *genre_check;
 	GtkWidget *duration_check;
+	GtkWidget *track_check;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -161,6 +162,8 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "genre_check");
 	shell_preferences->priv->duration_check =
 		glade_xml_get_widget (xml, "duration_check");
+	shell_preferences->priv->track_check =
+		glade_xml_get_widget (xml, "track_check");
 
 	g_object_unref (G_OBJECT (xml));
 
@@ -239,6 +242,8 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 				      strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
 				      strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER") != NULL);
 
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	for (i = 0; i < G_N_ELEMENTS (styles); i++)
@@ -308,6 +313,8 @@ show_columns_changed_cb (GtkToggleButton *button,
 		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_GENRE", conf);
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->duration_check)) == TRUE)
 		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_DURATION", conf);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->track_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_TRACK_NUMBER", conf);
 
 	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, conf);
 
