@@ -54,4 +54,4 @@ librb_la_SOURCES += $(BUILT_SOURCES)
 
 librb_la_LDFLAGS = -export-dynamic
 
-EXTRA_DIST = rb-marshal.list
+EXTRA_DIST = rb-marshal.list totemplparser-marshal.list
