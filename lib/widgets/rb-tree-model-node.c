@@ -87,7 +87,8 @@ static void filter_parent_child_destroyed_cb (RBNode *node,
 					      RBNode *child,
 					      RBTreeModelNode *model);
 static void rb_tree_model_node_update_node (RBTreeModelNode *model,
-				            RBNode *node);
+				            RBNode *node,
+					    int idx);
 static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
 static void filter_parent_destroyed_cb (RBNode *node,
@@ -277,6 +278,7 @@ rb_tree_model_node_set_property (GObject *object,
 		{
 			RBNode *old = model->priv->filter_parent;
 			RBNode *to_hide = NULL;
+			int i = -1;
 
 			model->priv->filter_parent = g_value_get_object (value);
 
@@ -284,6 +286,7 @@ rb_tree_model_node_set_property (GObject *object,
 			{
 				GList *kids;
 				GList *l;
+				gboolean is_root = (old == model->priv->root);
 
 				kids = rb_node_get_children (old);
 
@@ -295,20 +298,25 @@ rb_tree_model_node_set_property (GObject *object,
 					
 					if (rb_node_is_handled (node) == FALSE)
 						continue;
+					
+					if (is_root)
+						i++;
+					
 					if (g_list_next (l) == NULL) /* HACK: do not hide all nodes, so we don't
 									trigger build_level in the filtermodel */
 					{
 						to_hide = node;
 						continue;
 					}
+					
 					if (model->priv->old_filter_artist != NULL)
 					{
 						if (rb_node_song_has_artist (node,
 									     model->priv->old_filter_artist))
-							rb_tree_model_node_update_node (model, node);
+							rb_tree_model_node_update_node (model, node, i);
 					}
 					else
-						rb_tree_model_node_update_node (model, node);
+						rb_tree_model_node_update_node (model, node, i);
 				}
 
 				rb_node_unlock (old);
@@ -329,6 +337,9 @@ rb_tree_model_node_set_property (GObject *object,
 			{
 				GList *kids;
 				GList *l;
+				gboolean is_root = (model->priv->filter_parent == model->priv->root);
+
+				i = -1;
 
 				kids = rb_node_get_children (model->priv->filter_parent);
 
@@ -340,15 +351,18 @@ rb_tree_model_node_set_property (GObject *object,
 					
 					if (rb_node_is_handled (node) == FALSE)
 						continue;
+
+					if (is_root)
+						i++;
 					
 					if (model->priv->filter_artist != NULL)
 					{
 						if (rb_node_song_has_artist (node,
 									     model->priv->filter_artist))
-							rb_tree_model_node_update_node (model, node);
+							rb_tree_model_node_update_node (model, node, i);
 					}
 					else
-						rb_tree_model_node_update_node (model, node);
+						rb_tree_model_node_update_node (model, node, i);
 				}
 
 				rb_node_unlock (model->priv->filter_parent);
@@ -371,7 +385,7 @@ rb_tree_model_node_set_property (GObject *object,
 			}
 
 			if (to_hide != NULL)
-				rb_tree_model_node_update_node (model, to_hide);
+				rb_tree_model_node_update_node (model, to_hide, -1);
 		}
 		break;
 	case PROP_FILTER_ARTIST:
@@ -403,9 +417,9 @@ rb_tree_model_node_set_property (GObject *object,
 			model->priv->playing_node = g_value_get_object (value);
 	
 			if (old != NULL)
-				rb_tree_model_node_update_node (model, old);
+				rb_tree_model_node_update_node (model, old, -1);
 			if (model->priv->playing_node != NULL)
-				rb_tree_model_node_update_node (model, model->priv->playing_node);
+				rb_tree_model_node_update_node (model, model->priv->playing_node, -1);
 		}
 		break;
 	default:
@@ -864,7 +878,7 @@ filter_parent_child_created_cb (RBNode *node,
 				RBNode *child,
 				RBTreeModelNode *model)
 {
-	rb_tree_model_node_update_node (model, child);
+	rb_tree_model_node_update_node (model, child, -1);
 }
 
 static void
@@ -872,19 +886,29 @@ filter_parent_child_destroyed_cb (RBNode *node,
 				  RBNode *child,
 				  RBTreeModelNode *model)
 {
-	rb_tree_model_node_update_node (model, child);
+	rb_tree_model_node_update_node (model, child, -1);
 }
 
 static void
 rb_tree_model_node_update_node (RBTreeModelNode *model,
-				RBNode *node)
+				RBNode *node,
+				int idx)
 {
 	GtkTreePath *path;
 	GtkTreeIter iter;
 
 	rb_tree_model_node_iter_from_node (model, node, &iter);
 
-	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+	if (idx >= 0)
+	{
+		path = gtk_tree_path_new ();
+		gtk_tree_path_append_index (path, idx);
+	}
+	else
+	{
+		path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+	}
+
 	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
 }
@@ -894,7 +918,7 @@ root_child_changed_cb (RBNode *node,
 		       RBNode *child,
 		       RBTreeModelNode *model)
 {
-	rb_tree_model_node_update_node (model, child);
+	rb_tree_model_node_update_node (model, child, -1);
 }
 
 static void

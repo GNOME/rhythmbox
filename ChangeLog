@@ -1,5 +1,18 @@
 2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property),
+	(filter_parent_child_created_cb),
+	(filter_parent_child_destroyed_cb),
+	(rb_tree_model_node_update_node), (root_child_changed_cb):
+
+	If the filter parent is the same as the root node,
+	we use the node index to generate the path to emit
+	the row_changed signal, instead of looking it up
+	on the node.
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_status),
 	(rb_node_view_get_n_rows):
 
