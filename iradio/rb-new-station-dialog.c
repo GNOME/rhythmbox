@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
+ *  Copyright (C) 2002,2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -256,6 +256,7 @@ rb_new_station_dialog_new (RBIRadioBackend *backend)
 	genrenames = rb_iradio_backend_get_genre_names (backend);
 	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
 				       genrenames);
+	g_list_free (genrenames);
 
 	g_return_val_if_fail (dialog->priv != NULL, NULL);
 

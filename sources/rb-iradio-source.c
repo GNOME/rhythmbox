@@ -60,9 +60,6 @@ static void rb_iradio_source_get_property (GObject *object,
 static void genre_node_selected_cb (RBNodeView *view,
 				     RBNode *node,
 				     RBIRadioSource *source);
-static void genre_activated_cb (RBNodeView *view,
-				RBNode *node,
-				RBIRadioSource *source);
 static void rb_iradio_source_songs_show_popup_cb (RBNodeView *view,
 						RBNode *node,
 						RBIRadioSource *source);
@@ -281,12 +278,6 @@ rb_iradio_source_set_property (GObject *object,
 	{
 		source->priv->backend = g_value_get_object (value);
 
-		/* REWRITEFIXME ? */
-/* 		g_signal_connect (G_OBJECT (source->priv->backend), */
-/* 				  "changed", */
-/* 				  G_CALLBACK (backend_changed_cb), */
-/* 				  source); */
-
 		source->priv->paned = gtk_hpaned_new ();
 
 		/* Initialize the filters */
@@ -303,10 +294,6 @@ rb_iradio_source_set_property (GObject *object,
 		g_signal_connect (G_OBJECT (source->priv->genres),
 				  "node_selected",
 				  G_CALLBACK (genre_node_selected_cb),
-				  source);
-		g_signal_connect (G_OBJECT (source->priv->genres),
-				  "node_activated",
-				  G_CALLBACK (genre_activated_cb),
 				  source);
 
 		/* set up stations tree view */
@@ -446,7 +433,7 @@ rb_iradio_source_async_update_play_statistics (struct RBIRadioAsyncPlayStatistic
 	if (data->node == playing_node)
 		rb_node_update_play_statistics (data->node);
 
-/* 	rb_node_unref (data->node); */
+	rb_node_unref (data->node);
 
 	g_free (data);
 	gdk_threads_leave ();
@@ -462,8 +449,7 @@ impl_buffering_done (RBSource *asource)
 
 	rb_debug ("queueing async play statistics update, node: %p", node);
 
-/*	FIXME reffing/unreffing causes a crash? */
-/*  	rb_node_ref (node); */
+ 	rb_node_ref (node);
 	
 	data->source = source;
 	data->node = node;
@@ -599,18 +585,6 @@ genre_node_selected_cb (RBNodeView *view,
 
 	stations_filter (source, genre);
 	rb_source_notify_filter_changed (RB_SOURCE (source));
-}
-
-static void 
-genre_activated_cb (RBNodeView *view,
-		    RBNode *node,
-		    RBIRadioSource *source)
-{
-/* 	RBNode *first_node; */
-
-	g_return_if_fail (source != NULL);
-
-	/* REWRITEFIXME */
 }
 
 static void

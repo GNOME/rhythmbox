@@ -193,13 +193,15 @@ rb_load_failure_dialog_new (void)
 void
 rb_load_failure_dialog_add (RBLoadFailureDialog *dlg, const char *uri, const char *error)
 {
+	char *dispuri = gnome_vfs_unescape_string_for_display (uri);
 	GtkTreeIter iter;
 	gtk_list_store_append (dlg->priv->liststore, &iter);
 
 	gtk_list_store_set (dlg->priv->liststore, &iter,
-			    RB_LOAD_FAILURE_DIALOG_COLUMN_URI, uri,
+			    RB_LOAD_FAILURE_DIALOG_COLUMN_URI, dispuri,
 			    RB_LOAD_FAILURE_DIALOG_COLUMN_MESSAGE, error,
 			    -1);
+	g_free (dispuri);
 }
 
 static void

@@ -1,3 +1,27 @@
+2003-08-02  Colin Walters  <walters@verbum.org>
+
+	* iradio/rb-iradio-backend.c: (load_initial),
+	(rb_iradio_backend_load), (rb_iradio_backend_save),
+	(rb_iradio_backend_lookup_station_by_title),
+	(rb_iradio_backend_lookup_station_by_location),
+	(rb_iradio_backend_add_station_from_uri),
+	(rb_iradio_backend_add_station_full),
+	(rb_iradio_backend_get_genre_names):
+	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_new):
+	* lib/widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_add):
+	* sources/rb-iradio-source.c: (rb_iradio_source_set_property),
+	(rb_iradio_source_async_update_play_statistics),
+	(impl_buffering_done), (genre_node_selected_cb):
+
+	Fix minor memory leak in new station dialog.  Unquote URIs
+	for display in load failure dialog.  Indentation fixes
+	to iradio backend.
+
+	Remove some old cruft in iradio source.  Also now that
+	the node system is fixed, we can hold refs to the station
+	in the async update handler.
+
 2003-08-02  Colin Walters  <walters@debian.org>
 
 	* sources/rb-group-source.c: (impl_get_status_full):
