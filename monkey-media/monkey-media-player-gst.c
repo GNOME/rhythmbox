@@ -348,41 +348,6 @@ info_signal_idle (MonkeyMediaPlayerSignal *signal)
 	return FALSE;
 }
 
-#if GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 6
-static char *
-unicodify (const char *str, int len, ...)
-{
-	char *ret = NULL, *cset;
-	va_list args;
-	int bytes_read, bytes_written;
-
-	if (g_utf8_validate (str, len, NULL))
-		return g_strndup (str, len >= 0 ? len : strlen (str));
-
-	va_start (args, len);
-	while ((cset = va_arg (args, char *)) != NULL)
-	{
-		if (!strcmp (cset, "locale"))
-			ret = g_locale_to_utf8 (str, len, &bytes_read,
-						&bytes_written, NULL);
-		else
-			ret = g_convert (str, len, "UTF-8", cset,
-					 &bytes_read, &bytes_written, NULL);
-		if (ret)
-			break;
-	}
-	va_end (args);
-
-	return ret;
-}
-
-static char *
-monkey_media_unicodify (const char *str)
-{
-	return unicodify (str, -1, "locale", "ISO-8859-1", NULL);
-}
-#endif
-
 static void
 deep_notify_cb (GstElement *element, GstElement *orig,
 	        GParamSpec *pspec, MonkeyMediaPlayer *player)
@@ -422,18 +387,6 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 	}
 	/* FIXME end hack */
 
-#if GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 6
-	if (G_VALUE_TYPE (value) == G_TYPE_STRING
-		&& g_value_get_string (value) != NULL)
-	{
-		char *u8value = monkey_media_unicodify (g_value_get_string (value));
-		if (u8value)
-			g_value_set_string_take_ownership (value, u8value);
-		else
-			ev = NULL;
-	}
-#endif	
-
 	if (ev != NULL)
 	{
 		MonkeyMediaPlayerSignal *signal;
@@ -468,14 +421,19 @@ queue_full_cb (GstQueue *queue,
 
 static void
 monkey_media_player_construct (MonkeyMediaPlayer *mp,
+			       gboolean iradio_mode,
 			       gboolean audiocd_mode,
 			       const char *uri,
 			       GError **error)
 {
 	GstDParamManager *dpman;
+	char *decoder_name = NULL;
 
-	/* The main playback pipeline at the end looks like:
-	 * { { src ! spider ! queue } ! { volume ! sink } }
+	/* The main playback pipeline for iradio, at the end this looks like:
+	 * { { src ! queue } ! { mad ! volume ! sink } }
+	 *
+	 * For local files, it just looks like:
+	 *  { src ! spider ! volume ! sink }
 	 */
 	mp->priv->pipeline = gst_element_factory_make ("thread", "pipeline");
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
@@ -488,11 +446,17 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 				  "error",
 				  G_CALLBACK (error_cb),
 				  mp);
-	
-	mp->priv->waiting_bin = gst_element_factory_make ("thread", "waiting_bin");
-	mp->priv->srcthread = gst_element_factory_make ("thread", "srcthread");
-	gst_bin_add_many (GST_BIN (mp->priv->pipeline),
-			  mp->priv->srcthread, mp->priv->waiting_bin, NULL);
+
+	/* Construct the two threads */
+	if (iradio_mode) {
+		mp->priv->waiting_bin = gst_element_factory_make ("thread", "waiting_bin");
+		mp->priv->srcthread = gst_element_factory_make ("thread", "srcthread");
+		gst_bin_add_many (GST_BIN (mp->priv->pipeline),
+				  mp->priv->srcthread, mp->priv->waiting_bin, NULL);
+	} else {
+		mp->priv->waiting_bin = mp->priv->pipeline;
+		mp->priv->srcthread = mp->priv->pipeline;
+	}
 
 	/* Construct elements */
 
@@ -522,9 +486,37 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			      NULL);
 	}
 
-	mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
+	/* The queue */
+	if (iradio_mode) {
+		mp->priv->queue = gst_element_factory_make ("queue", "queue");
+		if (mp->priv->queue == NULL) {
+			g_set_error (error,
+				     MONKEY_MEDIA_PLAYER_ERROR,
+				     MONKEY_MEDIA_PLAYER_ERROR_NO_QUEUE_PLUGIN,
+				     _("Failed to create queue element; check your installation"));
+			gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+			mp->priv->pipeline = NULL;
+			return;
+		}
+		g_signal_connect (G_OBJECT (mp->priv->queue), "full",
+				  G_CALLBACK (queue_full_cb), mp);
+		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
+	}
+
+	/* The decoding element */
+	if (iradio_mode)
+#ifdef HAVE_MP3
+		decoder_name = "mad";
+#else
+		decoder_name = "vorbisfile";
+#endif
+	else
+		decoder_name = "spider";
+
+	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
 	if (mp->priv->decoder == NULL) {
-		char *err = g_strdup_printf (_("Failed to create spider element; check your installation"));
+		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
+					     decoder_name);
 		g_set_error (error,
 			     MONKEY_MEDIA_PLAYER_ERROR,
 			     MONKEY_MEDIA_PLAYER_ERROR_NO_DEMUX_PLUGIN,
@@ -534,22 +526,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 		mp->priv->pipeline = NULL;
 		return;
 	}
-	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->decoder);
-
-	/* The queue */
-	mp->priv->queue = gst_element_factory_make ("queue", "queue");
-	if (mp->priv->queue == NULL) {
-	  g_set_error (error,
-		       MONKEY_MEDIA_PLAYER_ERROR,
-		       MONKEY_MEDIA_PLAYER_ERROR_NO_QUEUE_PLUGIN,
-		       _("Failed to create queue element; check your installation"));
-	  gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-	  mp->priv->pipeline = NULL;
-	  return;
-	}
-	g_signal_connect (G_OBJECT (mp->priv->queue), "full",
-			  G_CALLBACK (queue_full_cb), mp);
-	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
+	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->decoder);
 
 	/* Volume */
 	mp->priv->volume = gst_element_factory_make ("volume", "volume");
@@ -583,8 +560,11 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	}
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);
 
-	gst_element_link_many (mp->priv->queue, mp->priv->volume, mp->priv->sink, NULL);
-	gst_element_link_many (mp->priv->src, mp->priv->decoder, mp->priv->queue, NULL);
+	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->sink, NULL);
+	if (iradio_mode)
+		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->decoder, NULL);
+	else
+		gst_element_link_many (mp->priv->src, mp->priv->decoder, NULL);
 
 	g_signal_connect (G_OBJECT (mp->priv->sink), "eos",
 			  G_CALLBACK (eos_cb), mp);
@@ -632,11 +612,15 @@ void
 monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 {
 	if (mp->priv->playing) {
-		g_object_ref (G_OBJECT (mp));
-		g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
-		gst_element_set_state (mp->priv->srcthread,
-				       GST_STATE_PLAYING);
-		g_timer_start (mp->priv->timer);
+		if (iradio_mode) {
+			g_object_ref (G_OBJECT (mp));
+			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
+			gst_element_set_state (mp->priv->srcthread,
+					       GST_STATE_PLAYING);
+		} else {
+			gst_element_set_state (mp->priv->pipeline,
+					       GST_STATE_PLAYING);
+		}
 	} else {
 		gst_element_set_state (mp->priv->pipeline,
 				       GST_STATE_PAUSED);
@@ -670,7 +654,7 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 		return;
 	}
 
-	monkey_media_player_construct (mp, audiocd_mode, uri, error);
+	monkey_media_player_construct (mp, iradio_mode, audiocd_mode, uri, error);
 	if (error && *error)
 		return;
 
