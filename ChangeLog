@@ -1,5 +1,11 @@
 2002-12-10  Colin Walters  <walters@debian.org>
 
+	* iradio/rb-iradio-backend.c (rb_iradio_backend_finalize): Disable
+	iradio saving for now.
+	(toplevel): Don't include rb-iradio-yp-shoutcast.h.
+
+2002-12-10  Colin Walters  <walters@debian.org>
+
 	* Makefile.am (SUBDIRS): Add iradio.
 	
 	* configure.in: Ditto.
