@@ -1,5 +1,22 @@
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-player.c: (rb_player_init), (rb_player_finalize),
+	(rb_player_set_property), (rb_player_new), (rb_player_sync),
+	(rb_view_player_changed_cb), (rb_player_set_show_textline),
+	(rb_player_set_show_timeline):
+
+	Sync player widget with player object, only elapsed time
+	and seeking hadnling left.
+	
+	* tests/testview.c: (rb_test_view_have_next),
+	(rb_test_view_have_previous), (rb_test_view_next),
+	(rb_test_view_previous), (song_eos_cb),
+	(rb_test_view_get_previous_node), (rb_test_view_get_next_node):
+	
+	Fix prev/next sensitivity when in shuffle or repeat mode.
+
+2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* README: update cvs module name
 	
 	* data/ui/rhythmbox-ui.xml.in:

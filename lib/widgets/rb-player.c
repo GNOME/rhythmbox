@@ -43,6 +43,13 @@ static void rb_player_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
+static void rb_view_player_changed_cb (RBViewPlayer *view_player,
+			               RBPlayer *player);
+static void rb_player_sync (RBPlayer *player);
+static void rb_player_set_show_timeline (RBPlayer *player,
+			                 gboolean show);
+static void rb_player_set_show_textline (RBPlayer *player,
+			                 gboolean show);
 
 struct RBPlayerPrivate
 {
@@ -50,8 +57,16 @@ struct RBPlayerPrivate
 
 	GtkWidget *image;
 	GtkWidget *song;
+
+	GtkWidget *timeframe;
+	GtkWidget *timeline;
+	gboolean timeline_shown;
 	GtkWidget *scale;
 	GtkWidget *elapsed;
+
+	GtkWidget *textframe;
+	GtkWidget *textline;
+	gboolean textline_shown;
 	RBLink *artist;
 	RBLink *album;
 };
@@ -63,6 +78,11 @@ enum
 };
 
 static GObjectClass *parent_class = NULL;
+
+#define SONG_MARKUP(xSONG) g_strdup_printf ("<span size=\"xx-large\"><b>%s</b></span>", xSONG);
+
+#define ALBUM_INFO_URL(xALBUM)   g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=2&sql=%s", xALBUM);
+#define ARTIST_INFO_URL(xARTIST) g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST);
 
 GType
 rb_player_get_type (void)
@@ -124,8 +144,7 @@ rb_player_init (RBPlayer *player)
 
 	hbox = gtk_hbox_new (FALSE, 10);
 
-	player->priv->image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_INFO,
-							GTK_ICON_SIZE_DIALOG);
+	player->priv->image = gtk_image_new ();
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->image, FALSE, TRUE, 0);
 
 	vbox = gtk_vbox_new (FALSE, 5);
@@ -136,36 +155,38 @@ rb_player_init (RBPlayer *player)
 	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
 	player->priv->song = gtk_label_new ("");
 	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
-	gtk_label_set_markup (GTK_LABEL (player->priv->song),
-			      _("<span size=\"xx-large\"><b>Born Slippy</b></span>"));
 	gtk_container_add (GTK_CONTAINER (align), player->priv->song);
 	gtk_box_pack_start (GTK_BOX (textvbox), align, FALSE, FALSE, 0);
 
-	textline = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (textvbox), textline, FALSE, TRUE, 0);
+	player->priv->textframe = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
+	
+	textline = player->priv->textline = gtk_hbox_new (FALSE, 0);
+	g_object_ref (G_OBJECT (textline));
 
 	label = gtk_label_new (_("from "));
 	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
 	
 	player->priv->album = rb_link_new ();
-	rb_link_set (player->priv->album, "Second Toughest In The Infants", "album");
 	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->album), FALSE, TRUE, 0);
 
 	label = gtk_label_new (_(" by "));
 	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
 
 	player->priv->artist = rb_link_new ();
-	rb_link_set (player->priv->artist, "Underworld", "artist");
 	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->artist), FALSE, TRUE, 0);
 
-	scalebox = gtk_hbox_new (FALSE, 2);
+	player->priv->timeframe = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), player->priv->timeframe, FALSE, FALSE, 0);
+
+	scalebox = player->priv->timeline = gtk_hbox_new (FALSE, 2);
+	g_object_ref (G_OBJECT (scalebox));
 	player->priv->scale = gtk_hscale_new (NULL);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
 	player->priv->elapsed = gtk_label_new ("0:00");
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->elapsed, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), scalebox, FALSE, FALSE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
@@ -184,6 +205,9 @@ rb_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
+	g_object_unref (G_OBJECT (player->priv->textline));
+	g_object_unref (G_OBJECT (player->priv->timeline));
+
 	g_free (player->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -201,6 +225,14 @@ rb_player_set_property (GObject *object,
 	{
 	case PROP_VIEW_PLAYER:
 		player->priv->view_player = g_value_get_object (value);
+
+		g_signal_connect_object (G_OBJECT (player->priv->view_player),
+					 "changed",
+					 G_CALLBACK (rb_view_player_changed_cb),
+					 object,
+					 0);
+
+		rb_player_sync (player);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -241,4 +273,92 @@ rb_player_new (RBViewPlayer *view_player)
 	g_return_val_if_fail (player->priv != NULL, NULL);
 
 	return player;
+}
+
+static void
+rb_player_sync (RBPlayer *player)
+{
+
+	MonkeyMediaAudioStream *stream = rb_view_player_get_stream (player->priv->view_player);
+	GdkPixbuf *pixbuf = rb_view_player_get_pixbuf (player->priv->view_player);
+	char *tmp;
+
+	if (stream != NULL)
+	{
+		const char *song   = rb_view_player_get_song   (player->priv->view_player);
+		const char *album  = rb_view_player_get_album  (player->priv->view_player);
+		const char *artist = rb_view_player_get_artist (player->priv->view_player);
+
+		tmp = SONG_MARKUP (song);
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
+		g_free (tmp);
+
+		tmp = ALBUM_INFO_URL (album);
+		rb_link_set (player->priv->album, album, tmp);
+		g_free (tmp);
+
+		tmp = ARTIST_INFO_URL (artist);
+		rb_link_set (player->priv->artist, artist, tmp);
+		g_free (tmp);
+
+		rb_player_set_show_textline (player, TRUE);
+		rb_player_set_show_timeline (player, TRUE);
+	}
+	else
+	{
+		tmp = SONG_MARKUP (_("Not Playing"));
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
+		g_free (tmp);
+
+		rb_player_set_show_textline (player, FALSE);
+		rb_player_set_show_timeline (player, FALSE);
+	}
+
+	if (pixbuf != NULL)
+		gtk_image_set_from_pixbuf (GTK_IMAGE (player->priv->image), pixbuf);
+	else
+		gtk_image_set_from_stock (GTK_IMAGE (player->priv->image), RB_STOCK_ALBUM, GTK_ICON_SIZE_DIALOG);
+}
+
+static void
+rb_view_player_changed_cb (RBViewPlayer *view_player,
+			   RBPlayer *player)
+{
+	rb_player_sync (player);
+}
+
+static void
+rb_player_set_show_textline (RBPlayer *player,
+			     gboolean show)
+{
+	if (player->priv->textline_shown == show)
+		return;
+
+	player->priv->textline_shown = show;
+
+	if (show == FALSE)
+		gtk_container_remove (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
+	else
+	{
+		gtk_container_add (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
+		gtk_widget_show_all (player->priv->textline);
+	}
+}
+
+static void
+rb_player_set_show_timeline (RBPlayer *player,
+			     gboolean show)
+{
+	if (player->priv->timeline_shown == show)
+		return;
+
+	player->priv->timeline_shown = show;
+	
+	if (show == FALSE)
+		gtk_container_remove (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
+	else
+	{
+		gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
+		gtk_widget_show_all (player->priv->timeline);
+	}
 }

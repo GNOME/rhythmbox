@@ -79,6 +79,8 @@ static void node_view_changed_cb (RBNodeView *view,
 		                  RBTestView *test_view);
 static void song_eos_cb (MonkeyMediaStream *stream,
 	                 RBTestView *view);
+static RBNode *rb_test_view_get_previous_node (RBTestView *view);
+static RBNode *rb_test_view_get_next_node (RBTestView *view);
 
 struct RBTestViewPrivate
 {
@@ -392,7 +394,7 @@ rb_test_view_have_next (RBViewPlayer *player)
 	RBTestView *view = RB_TEST_VIEW (player);
 	RBNode *next;
 
-	next = rb_node_view_get_next_node (view->priv->songs);
+	next = rb_test_view_get_next_node (view);
 	
 	return (next != NULL);
 }
@@ -403,7 +405,7 @@ rb_test_view_have_previous (RBViewPlayer *player)
 	RBTestView *view = RB_TEST_VIEW (player);
 	RBNode *previous;
 
-	previous = rb_node_view_get_previous_node (view->priv->songs);
+	previous = rb_test_view_get_previous_node (view);
 
 	return (previous != NULL);
 }
@@ -413,18 +415,9 @@ rb_test_view_next (RBViewPlayer *player)
 {
 	RBTestView *view = RB_TEST_VIEW (player);
 	RBNode *node;
-	
-	if (view->priv->shuffle == FALSE)
-	{
-		node = rb_node_view_get_next_node (view->priv->songs);
-		if (node == NULL && view->priv->repeat == TRUE)
-		{
-			node = rb_node_view_get_first_node (view->priv->songs);
-		}
-	}
-	else
-		node = rb_node_view_get_random_node (view->priv->songs);
 
+	node = rb_test_view_get_next_node (view);
+	
 	rb_test_view_set_playing_node (view, node);
 }
 
@@ -433,12 +426,9 @@ rb_test_view_previous (RBViewPlayer *player)
 {
 	RBTestView *view = RB_TEST_VIEW (player);
 	RBNode *node;
-	
-	if (view->priv->shuffle == FALSE)
-		node = rb_node_view_get_previous_node (view->priv->songs);
-	else
-		node = rb_node_view_get_random_node (view->priv->songs);
 
+	node = rb_test_view_get_previous_node (view);
+	
 	rb_test_view_set_playing_node (view, node);
 }
 
@@ -598,4 +588,36 @@ song_eos_cb (MonkeyMediaStream *stream,
 	     RBTestView *view)
 {
 	rb_test_view_next (RB_VIEW_PLAYER (view));
+}
+
+static RBNode *
+rb_test_view_get_previous_node (RBTestView *view)
+{
+	RBNode *node;
+	
+	if (view->priv->shuffle == FALSE)
+		node = rb_node_view_get_previous_node (view->priv->songs);
+	else
+		node = rb_node_view_get_random_node (view->priv->songs);
+
+	return node;
+}
+
+static RBNode *
+rb_test_view_get_next_node (RBTestView *view)
+{
+	RBNode *node;
+	
+	if (view->priv->shuffle == FALSE)
+	{
+		node = rb_node_view_get_next_node (view->priv->songs);
+		if (node == NULL && view->priv->repeat == TRUE)
+		{
+			node = rb_node_view_get_first_node (view->priv->songs);
+		}
+	}
+	else
+		node = rb_node_view_get_random_node (view->priv->songs);
+
+	return node;
 }
