@@ -1,5 +1,11 @@
 2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library-watcher.c: (rb_library_watcher_add_directory):
+
+	Don't use gnome_vfs_monitor for now, too buggy.
+
+2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-song-info.c: (rb_song_info_update_track):
 
 	strstrip tracknum tokens

@@ -402,8 +402,11 @@ rb_library_watcher_add_directory (RBLibraryWatcherPrivate *priv,
 
 	gnome_vfs_file_info_list_free (list);
 
-	gnome_vfs_monitor_add (&handle, text_uri, GNOME_VFS_MONITOR_DIRECTORY,
-			       (GnomeVFSMonitorCallback) rb_library_watcher_monitor_cb, priv);
+	if (0) //FIXME
+	{
+		gnome_vfs_monitor_add (&handle, text_uri, GNOME_VFS_MONITOR_DIRECTORY,
+				       (GnomeVFSMonitorCallback) rb_library_watcher_monitor_cb, priv);
+	}
 
 	g_free (text_uri);
 
