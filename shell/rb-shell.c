@@ -1034,9 +1034,14 @@ ask_string_response_cb (GtkDialog *dialog,
 	CreateGroupType type;
 	GList *data, *l;
 
+	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type"));
+	data = g_object_get_data (G_OBJECT (dialog), "data");
+
 	if (response_id != GTK_RESPONSE_OK)
 	{
 		gtk_widget_destroy (GTK_WIDGET (dialog));
+		if (type == CREATE_GROUP_WITH_URI_LIST)
+			gnome_vfs_uri_list_free (data);
 		return;
 	}
 
@@ -1046,7 +1051,11 @@ ask_string_response_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 	
 	if (name == NULL)
+	{
+		if (type == CREATE_GROUP_WITH_URI_LIST)
+			gnome_vfs_uri_list_free (data);
 		return;
+	}
 
 	group = rb_group_view_new (shell->priv->container,
 				   shell->priv->library);
@@ -1054,9 +1063,6 @@ ask_string_response_cb (GtkDialog *dialog,
 	shell->priv->groups = g_list_append (shell->priv->groups, group);
 	rb_shell_append_view (shell, group);
 	g_free (name);
-
-	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type"));
-	data = g_object_get_data (G_OBJECT (dialog), "data");
 
 	switch (type)
 	{
