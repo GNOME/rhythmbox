@@ -754,22 +754,26 @@ load_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
 			   RBPlaylistManager *mgr)
 {
-	char *file, *escaped_file;
+	char *file = NULL;
+	char *escaped_file = NULL;
 
 	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
+#ifndef HAVE_GTK_2_3
 	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
+	escaped_file = gnome_vfs_get_uri_from_local_path (file);
+	g_free (file);
+#else
+	escaped_file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
+#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	if (file == NULL)
 		return;
-
-	escaped_file = gnome_vfs_get_uri_from_local_path (file);
-	g_free (file);
 
 	rb_playlist_manager_parse_file (mgr, escaped_file);
 	g_free (escaped_file);
