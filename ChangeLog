@@ -1,3 +1,15 @@
+2003-08-14  Colin Walters  <walters@verbum.org>
+
+	* library/rb-library-walker-thread.c: (add_file), (thread_main):
+	* library/rb-library.c: (rb_library_is_idle),
+	(rb_library_finalize), (rb_library_add_uri):
+
+	When we try popping the action queue to see whether the library
+	is busy or not, be sure to re-add the item we possibly popped.
+	This closes #119895.
+
+	Also add some more debugging bits in various places.
+
 2003-08-13  David Holmes  <dholmes@myrealbox.com>
 
 	* lib/widgets/rb-volume.c: (scroll_cb): Don't allow the volume

@@ -251,10 +251,19 @@ rb_library_release_brakes (RBLibrary *library)
 						  library);
 }
 
+/* We don't particularly care about race conditions here.  This function
+ * is just supposed to give some feedback about whether the library
+ * is busy or not, it doesn't have to be precise.
+ */
 gboolean
 rb_library_is_idle (RBLibrary *library)
 {
-	return g_async_queue_try_pop (library->priv->main_queue) == NULL;
+	gpointer data = g_async_queue_try_pop (library->priv->main_queue);
+	if (data == NULL)
+		return TRUE;
+
+	g_async_queue_push (library->priv->main_queue, data);
+	return FALSE;
 }
 
 static void
@@ -270,7 +279,6 @@ rb_library_finalize (GObject *object)
 	g_return_if_fail (library->priv != NULL);
 
 	g_source_remove (library->priv->idle_save_id);
-
 
 	rb_debug ("library: finalizing");
 	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
@@ -365,7 +373,7 @@ rb_library_add_uri (RBLibrary *library, const char *uri)
 {
 	if (rb_uri_is_directory (uri) == FALSE) {
 		RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, uri);
-		rb_debug ("queueing action");
+		rb_debug ("queueing ADD_FILE for %s", uri);
 		g_async_queue_push (library->priv->main_queue, action);
 	} else {
 		RBLibraryWalkerThread *thread = rb_library_walker_thread_new (library, uri);
@@ -376,7 +384,7 @@ rb_library_add_uri (RBLibrary *library, const char *uri)
 		library->priv->walker_threads = g_list_append (library->priv->walker_threads, thread);
 		g_mutex_unlock (library->priv->walker_mutex);
 
-		rb_debug ("starting walker thread");
+		rb_debug ("starting walker thread for URI %s", uri);
 
 		rb_library_walker_thread_start (thread);
 	}
