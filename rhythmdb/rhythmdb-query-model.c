@@ -754,8 +754,8 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	rhythmdb_read_lock (model->priv->db);
 	size = rhythmdb_entry_get_uint64 (model->priv->db, entry,
 					  RHYTHMDB_PROP_FILE_SIZE);
-	duration = rhythmdb_entry_get_long (model->priv->db,
-					    entry, RHYTHMDB_PROP_DURATION);
+	duration = rhythmdb_entry_get_uint64 (model->priv->db,
+					      entry, RHYTHMDB_PROP_DURATION);
 	rhythmdb_read_unlock (model->priv->db);
 
 	if (model->priv->max_size_mb > 0

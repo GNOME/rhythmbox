@@ -413,16 +413,26 @@ rb_metadata_load (RBMetaData *md,
 		 * of the metadata, and should know the length now.
 		 */
 		GstFormat format = GST_FORMAT_TIME;
-		gint64 length;
-		
-		if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
-			GValue *newval = g_new0 (GValue, 1);
+		guint64 length;
+		GValue *newval;
+
+		newval = g_hash_table_lookup (md->priv->metadata, 
+					      GINT_TO_POINTER (RB_METADATA_FIELD_DURATION));
+
+		if (newval != NULL) {
+			/* The duration reported by GStreamer is in ns while 
+			 * Rhythmbox wants it in seconds, so convert it here
+			 */
+			length = g_value_get_uint64 (newval);
+			g_value_set_uint64 (newval, length/(1000*1000*1000));
+		} else if (gst_element_query (md->priv->sink, GST_QUERY_TOTAL, &format, &length)) {
+			newval = g_new0 (GValue, 1);
 
 			rb_debug ("duration query succeeded");
 			
-			g_value_init (newval, G_TYPE_LONG);
-			/* FIXME - use guint64 for duration? */
-			g_value_set_long (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
+			g_value_init (newval, G_TYPE_UINT64);
+			g_value_set_uint64 (newval, length/(1000*1000*1000));
+
 			g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
 					     newval);
 		} else {

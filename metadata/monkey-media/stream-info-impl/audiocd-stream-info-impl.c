@@ -256,9 +256,9 @@ audiocd_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 				  monkey_media_audio_cd_get_track_duration (impl->priv->cd, impl->priv->track, NULL) * 176400);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:                /* long */
-		g_value_init (value, G_TYPE_LONG);
-		g_value_set_long (value,
-				  monkey_media_audio_cd_get_track_duration (impl->priv->cd, impl->priv->track, NULL));
+		g_value_init (value, G_TYPE_UINT64);
+		g_value_set_uint64 (value,
+				    monkey_media_audio_cd_get_track_duration (impl->priv->cd, impl->priv->track, NULL));
 		break;
 	/* audio bits */
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_HAS_AUDIO:               /* boolean */

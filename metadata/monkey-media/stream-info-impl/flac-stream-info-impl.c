@@ -745,8 +745,8 @@ FLAC_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_set_long (value, impl->priv->file_size);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
-		g_value_init (value, G_TYPE_LONG);
-		g_value_set_long (value, stream_info->total_samples / stream_info->sample_rate);
+		g_value_init (value, G_TYPE_UINT64);
+		g_value_set_uint64 (value, stream_info->total_samples / stream_info->sample_rate);
 		break;
 
 	/* audio bits */

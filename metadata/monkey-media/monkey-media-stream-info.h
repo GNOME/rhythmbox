@@ -55,7 +55,7 @@ typedef enum
 
 	/* generic stream information */
 	MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,               /* long */
-	MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,                /* long */
+	MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,                /* uint64 */
 
 	/* audio bits */
 	MONKEY_MEDIA_STREAM_INFO_FIELD_HAS_AUDIO,               /* boolean */

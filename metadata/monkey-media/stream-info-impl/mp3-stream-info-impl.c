@@ -553,7 +553,7 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
-		g_value_init (value, G_TYPE_LONG);
+		g_value_init (value, G_TYPE_UINT64);
 
 		if (impl->priv->info_num->vbr == 0)
 		{
@@ -568,11 +568,11 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 			g_value_unset (&val);
 
 			if (impl->priv->info_num->bitrate > 0)
-				g_value_set_long (value, ((double) size / 1000.0f) / ((double) impl->priv->info_num->bitrate / 8.0f / 1000.0f));
+				g_value_set_uint64 (value, ((double) size / 1000.0f) / ((double) impl->priv->info_num->bitrate / 8.0f / 1000.0f));
 			else
-				g_value_set_long (value, 0);
+				g_value_set_uint64 (value, 0);
 		} else {
-			g_value_set_long (value, impl->priv->info_num->time);
+			g_value_set_uint64 (value, impl->priv->info_num->time);
 		}
 		break;
 
