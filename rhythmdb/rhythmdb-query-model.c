@@ -228,6 +228,10 @@ rhythmdb_query_model_set_property (GObject *object,
 					 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
 					 model, 0);
 		g_signal_connect_object (G_OBJECT (model->priv->db),
+					 "entry_restored",
+					 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
+					 model, 0);
+		g_signal_connect_object (G_OBJECT (model->priv->db),
 					 "entry_deleted",
 					 G_CALLBACK (rhythmdb_query_model_entry_deleted_cb),
 					 model, 0);
