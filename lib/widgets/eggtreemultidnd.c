@@ -189,7 +189,7 @@ egg_tree_multi_drag_button_release_event (GtkWidget      *widget,
 
   priv_data = g_object_get_data (G_OBJECT (widget), EGG_TREE_MULTI_DND_STRING);
 
-  for (l = priv_data->event_list; l != NULL; l = l->next) 
+  for (l = priv_data->event_list->next; l != NULL; l = l->next)
     gtk_propagate_event (widget, l->data);
   
   stop_drag_check (widget);
@@ -379,7 +379,11 @@ egg_tree_multi_drag_button_press_event (GtkWidget      *widget,
 
   selection = gtk_tree_view_get_selection (tree_view);
 
-  if (path && gtk_tree_selection_path_is_selected (selection, path))
+  if (path)
+    {
+      (GTK_WIDGET_GET_CLASS (tree_view))->button_press_event (widget, event);
+
+      if (gtk_tree_selection_path_is_selected (selection, path))
     {
       priv_data->pressed_button = event->button;
       priv_data->x = event->x;
@@ -395,13 +399,17 @@ egg_tree_multi_drag_button_press_event (GtkWidget      *widget,
 	  priv_data->drag_data_get_handler =
 	    g_signal_connect (G_OBJECT (tree_view), "drag_data_get", G_CALLBACK (egg_tree_multi_drag_drag_data_get), NULL);
 	}
-      
+
+
+      gtk_tree_path_free (path);
+        
       return TRUE;
     }
 
-  if (path) 
-    {
-      gtk_tree_path_free (path);
+    if (path)
+      {
+	gtk_tree_path_free (path);
+      }
     }
 
   return FALSE;
