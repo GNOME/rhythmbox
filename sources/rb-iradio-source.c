@@ -162,12 +162,15 @@ struct RBIRadioSourcePrivate
 	gboolean async_entry_destroyed;
 	guint async_signum;
 	RhythmDB *async_update_entry;
+
+	RhythmDBEntryType entry_type;
 };
 
 enum
 {
 	PROP_0,
 	PROP_DB,
+	PROP_ENTRY_TYPE
 };
 
 static GObjectClass *parent_class = NULL;
@@ -238,6 +241,15 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 							      "RhythmDB database",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_ENTRY_TYPE,
+					 g_param_spec_uint ("entry-type",
+							    "Entry type",
+							    "Type of the entries which should be displayed by this source",
+							    0,
+							    G_MAXINT,
+							    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	
 }
 
@@ -368,6 +380,9 @@ rb_iradio_source_set_property (GObject *object,
 	case PROP_DB:
 		source->priv->db = g_value_get_object (value);
 		break;
+	case PROP_ENTRY_TYPE:
+		source->priv->entry_type = g_value_get_uint (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -386,6 +401,9 @@ rb_iradio_source_get_property (GObject *object,
 	{
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
+		break;
+	case PROP_ENTRY_TYPE:
+		g_value_set_uint (value, source->priv->entry_type);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -693,17 +711,19 @@ rb_iradio_source_show_browser (RBIRadioSource *source,
 static void
 rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 {
+	RhythmDBEntryType entry_type;
 	RhythmDBQueryModel *query_model;
 	RhythmDBPropertyModel *genre_model;
 	GtkTreeModel *model;
 	GPtrArray *query;
 
+	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
 	rhythmdb_read_lock (source->priv->db);
 	source->priv->query_type = qtype;
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
-				      RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+				      entry_type,
 				      RHYTHMDB_QUERY_END);
 
 	if (source->priv->search_text) {
