@@ -53,9 +53,9 @@ static struct
 	const char *mimetype;
 	const char *plugin;
 } rb_metadata_type_map[] = {
-#if 0
 	{"application/x-id3", "id3tag"},
-#endif
+	{"application/ogg", NULL},
+	{"audio/x-flac", "flactag"},
 };
 
 static GObjectClass *parent_class = NULL;
@@ -428,6 +428,22 @@ rb_metadata_load (RBMetaData *md,
 		rb_debug ("caught eos without handoff!");
 	
 	gst_element_set_state (pipeline, GST_STATE_NULL);
+
+	if (!md->priv->type) {
+		rb_debug ("couldn't get MIME type for %s", uri);
+		goto out;
+	}
+
+	/* FIXME
+	 * For now, we simply ignore files with an unknown MIME
+	 * type. This will be fixed once GStreamer gives us
+	 * a good way to detect audio. */
+	if (!rb_metadata_can_save (md, md->priv->type)) {
+		rb_debug ("ignoring file %s with detected type %s",
+			  uri, md->priv->type);
+		goto out;
+	}
+	
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
 	}
@@ -447,10 +463,14 @@ rb_metadata_load (RBMetaData *md,
 gboolean
 rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
+	/* Disabled until we can save reliably.
+	 */
+#if 0
 	int i;
 	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
 		if (!strcmp (rb_metadata_type_map[i].mimetype, mimetype))
 			return TRUE;
+#endif
 	return FALSE;
 }
 
