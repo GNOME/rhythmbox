@@ -2260,17 +2260,26 @@ rb_shell_quit (RBShell *shell)
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
 
-static void
-rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
+static gboolean
+idle_handle_load_complete (RBShell *shell)
 {
-	rb_debug ("load complete");
 	GDK_THREADS_ENTER ();
+
+	rb_debug ("load complete");
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	rb_shell_sync_selected_source (shell);
 	shell->priv->load_complete = TRUE;
 
 	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
+static void
+rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
+{
+	g_idle_add ((GSourceFunc) idle_handle_load_complete, shell);
 }
 
 static void
