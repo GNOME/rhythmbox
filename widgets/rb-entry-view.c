@@ -1073,9 +1073,9 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 
 	str = rhythmdb_entry_get_string (data->view->priv->db, entry, data->propid);
 
-	rhythmdb_read_unlock (data->view->priv->db);
-
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+
+	rhythmdb_read_unlock (data->view->priv->db);
 }
 
 static void
