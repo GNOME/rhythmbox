@@ -33,6 +33,7 @@
 #include "rb-link.h"
 #include "rb-player.h"
 #include "rb-string-helpers.h"
+#include "rb-ellipsizing-label.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *player);
@@ -159,14 +160,13 @@ rb_player_init (RBPlayer *player)
 	vbox = gtk_vbox_new (FALSE, 5);
 
 	textvbox = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), textvbox, FALSE, TRUE, 0);
-
-	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
-	player->priv->song = gtk_label_new ("");
-	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
-	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);
-	gtk_container_add (GTK_CONTAINER (align), player->priv->song);
-	gtk_box_pack_start (GTK_BOX (textvbox), align, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), textvbox, TRUE, TRUE, 0);
+	
+	player->priv->song = rb_ellipsizing_label_new ("");
+ 	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
+ 	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);	
+	gtk_misc_set_alignment (GTK_MISC(player->priv->song), 0, 0);
+	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->song, FALSE, TRUE, 0);
 
 	player->priv->textframe = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
@@ -317,7 +317,7 @@ rb_player_sync (RBPlayer *player)
 		g_free (compressed);
 		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
+		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
 		tmp = ALBUM_INFO_URL (album);
@@ -336,7 +336,7 @@ rb_player_sync (RBPlayer *player)
 	else
 	{
 		tmp = SONG_MARKUP (_("Not Playing"));
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
+		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
 		rb_player_set_show_textline (player, FALSE);

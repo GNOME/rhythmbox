@@ -21,11 +21,8 @@ librbwidgets_la_SOURCES =				\
 	gtktreemodelfilter.h				\
 	e-splash.c					\
 	e-splash.h					\
-	eel-ellipsizing-label.c				\
-	eel-ellipsizing-label.h				\
-	eel-gtk-macros.h				\
-	eel-pango-extensions.c				\
-	eel-pango-extensions.h				\
+	rb-ellipsizing-label.c				\
+	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
 	rb-cell-renderer-pixbuf.h
 

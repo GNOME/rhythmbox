@@ -285,7 +285,7 @@ rb_group_view_init (RBGroupView *view)
 	view->priv->player = rb_player_new (RB_VIEW_PLAYER (view));
 	hbox = gtk_hbox_new (FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (view->priv->player),
-			    FALSE, TRUE, 0);
+			    TRUE, TRUE, 0);
 
 	view->priv->volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
 	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);

@@ -32,7 +32,7 @@
 
 #include "rb-sidebar.h"
 #include "rb-sidebar-button.h"
-#include "eel-ellipsizing-label.h"
+#include "rb-ellipsizing-label.h"
 
 static void rb_sidebar_button_class_init (RBSidebarButtonClass *klass);
 static void rb_sidebar_button_init (RBSidebarButton *button);
@@ -246,7 +246,7 @@ rb_sidebar_button_init (RBSidebarButton *button)
 			    0);
 	
 	/* label */
-	button->label = eel_ellipsizing_label_new ("");
+	button->label = rb_ellipsizing_label_new ("");
 	g_signal_connect (G_OBJECT (button->label),
 			  "size_allocate",
 			  G_CALLBACK (rb_sidebar_button_label_size_allocate_cb),
@@ -324,7 +324,7 @@ rb_sidebar_button_init (RBSidebarButton *button)
 			    TRUE,
 			    0);
 	
-	button->priv->dnd_label = eel_ellipsizing_label_new ("");
+	button->priv->dnd_label = rb_ellipsizing_label_new ("");
 	gtk_box_pack_start (GTK_BOX (dnd_vbox),
 			    button->priv->dnd_label,
 			    FALSE,
@@ -399,9 +399,9 @@ rb_sidebar_button_set_property (GObject *object,
 		if (button->priv->text != NULL)
 			g_free (button->priv->text);
 		button->priv->text = g_strdup (g_value_get_string (value));
-		eel_ellipsizing_label_set_text (EEL_ELLIPSIZING_LABEL (button->label),
+		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (button->label),
 				                button->priv->text);
-		eel_ellipsizing_label_set_text (EEL_ELLIPSIZING_LABEL (button->priv->dnd_label),
+		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (button->priv->dnd_label),
 				                button->priv->text);
 		gtk_entry_set_text (GTK_ENTRY (button->priv->entry),
 				    button->priv->text);
