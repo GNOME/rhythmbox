@@ -51,7 +51,6 @@ struct RBPlayerPrivate
 	char *configfile;
 
 	float volume;
-	gboolean mute;
 
 	GTimer *timer;
 	long timer_add;
@@ -601,10 +600,8 @@ rb_player_set_volume (RBPlayer *mp,
 		if (can_set_volume (mp) == FALSE)
 			return;
 
-		if (!mp->priv->mute) {
-			xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_AMP_LEVEL,
-					CLAMP (volume * 100, 0, 100));
-		}
+		xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_AMP_LEVEL,
+				CLAMP (volume * 100, 0, 100));
 	}
 
 	mp->priv->volume = volume;
@@ -616,34 +613,6 @@ rb_player_get_volume (RBPlayer *mp)
 	g_return_val_if_fail (RB_IS_PLAYER (mp), 0.0);
 
 	return mp->priv->volume;
-}
-
-void
-rb_player_set_mute (RBPlayer *mp,
-			      gboolean mute)
-{
-	g_return_if_fail (RB_IS_PLAYER (mp));
-
-	if (mp->priv->stream != NULL) {
-		if (can_set_volume (mp) == FALSE)
-			return;
-
-		if (mute)
-			xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_VOLUME, 0);
-		else
-			xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_VOLUME,
-					CLAMP (mp->priv->volume * 100, 0, 100));
-	}
-
-	mp->priv->mute = mute;
-}
-
-gboolean
-rb_player_get_mute (RBPlayer *mp)
-{
-	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
-
-	return mp->priv->mute;
 }
 
 gboolean

@@ -74,7 +74,6 @@ struct RBPlayerPrivate
 
 	GstDParam *volume_dparam;
 	float cur_volume;
-	gboolean mute;
 
 	GTimer *timer;
 	long timer_add;
@@ -549,9 +548,6 @@ rb_player_construct (RBPlayer *mp,
 	g_object_set (G_OBJECT (mp->priv->volume_dparam),
 		      "value_double", mp->priv->cur_volume,
 		      NULL);
-	g_object_set (G_OBJECT (mp->priv->volume),
-		      "mute", mp->priv->mute,
-		      NULL);
 
 	if (mp->priv->timer)
 		g_timer_destroy (mp->priv->timer);
@@ -879,30 +875,6 @@ rb_player_get_volume (RBPlayer *mp)
 	g_return_val_if_fail (RB_IS_PLAYER (mp), 0.0);
 
 	return mp->priv->cur_volume;
-}
-
-void
-rb_player_set_mute (RBPlayer *mp,
-			      gboolean mute)
-{
-	g_return_if_fail (RB_IS_PLAYER (mp));
-
-	if (mp->priv->pipeline != NULL)
-		g_object_set (G_OBJECT (mp->priv->volume),
-			      "mute",
-			      mute,
-			      NULL);
-	else
-
-	mp->priv->mute = mute;
-}
-
-gboolean
-rb_player_get_mute (RBPlayer *mp)
-{
-	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
-
-	return mp->priv->mute;
 }
 
 gboolean
