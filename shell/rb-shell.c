@@ -938,11 +938,11 @@ rb_shell_construct (RBShell *shell)
 			 shell->priv->sourcelist, TRUE, TRUE);
 	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
 
-	vbox = gtk_vbox_new (FALSE, 5);
-	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
+	vbox = gtk_vbox_new (FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox), 0);
  	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);	
  	shell->priv->hsep = gtk_hseparator_new ();
- 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->hsep, FALSE, FALSE, 0);
+ 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->hsep, FALSE, FALSE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 

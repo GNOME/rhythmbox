@@ -554,6 +554,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	rb_shell_player_sync_volume (player);
 
 	hbox = gtk_hbox_new (FALSE, 5);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 
 	player->priv->tooltips = gtk_tooltips_new ();
 	gtk_tooltips_enable (player->priv->tooltips);
@@ -620,7 +621,7 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
-	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 5);
 
 	player->priv->gconf_state_id = 
 		eel_gconf_notification_add (CONF_STATE_VOLUME,

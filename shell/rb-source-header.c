@@ -192,8 +192,11 @@ rb_source_header_init (RBSourceHeader *header)
 
 	align = gtk_alignment_new (1.0, 0.5, 1.0, 1.0);
 	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (ebox));
-	gtk_table_attach_defaults (GTK_TABLE (header),
-			           align, 2, 3, 0, 1);
+	gtk_table_attach (GTK_TABLE (header),
+			  align, 2, 3, 0, 1, 
+			  GTK_EXPAND | GTK_FILL,
+			  GTK_EXPAND | GTK_FILL,
+			  5, 0);
 }
 
 static void

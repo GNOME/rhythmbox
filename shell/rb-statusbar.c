@@ -204,6 +204,8 @@ rb_statusbar_construct (GType                  type,
         
         statusbar = RB_STATUSBAR (object);
 
+	gtk_container_set_border_width (GTK_CONTAINER (statusbar), 5);
+
 	rb_statusbar_sync_state (statusbar);
 
         g_signal_connect_object (G_OBJECT (statusbar->priv->player),
