@@ -61,12 +61,11 @@ msgstr "*"
 
 #: data/glade/create-playlist.glade.h:2
 msgid "Add if any criteria are matched"
-msgstr ""
+msgstr "如果符合任何一項條件都加入"
 
 #: data/glade/create-playlist.glade.h:3
-#, fuzzy
 msgid "Create automatically updating playlist where:"
-msgstr "新增播放清單"
+msgstr "新增可自動更新的播放清單而符合以下條件："
 
 #: data/glade/create-playlist.glade.h:4
 msgid "GB"
@@ -80,9 +79,10 @@ msgstr "MB"
 msgid "_Limit to: "
 msgstr "限制為(_L)："
 
+# Limit to [number] {songs|GB|MB} -- Abel
 #: data/glade/create-playlist.glade.h:7
 msgid "songs"
-msgstr "樂曲"
+msgstr "首樂曲"
 
 #: data/glade/druid.glade.h:2
 msgid ""
@@ -122,7 +122,7 @@ msgstr "專輯(_L)"
 
 #: data/glade/general-prefs.glade.h:2
 msgid "Track _number"
-msgstr ""
+msgstr "音軌編號(_N)"
 
 #: data/glade/general-prefs.glade.h:3
 msgid "Visible Columns"
@@ -168,7 +168,7 @@ msgstr "藝人及專輯"
 
 #: data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
-msgstr ""
+msgstr "樂曲分類窗格會顯示："
 
 #: data/glade/library-prefs.glade.h:3
 msgid "Genres and artists"
@@ -200,7 +200,7 @@ msgstr "編碼："
 
 #: data/glade/song-info.glade.h:6
 msgid "File name:"
-msgstr ""
+msgstr "檔案名稱："
 
 #: data/glade/song-info.glade.h:7
 msgid "Last played:"
@@ -250,7 +250,7 @@ msgstr "標題(_T)："
 
 #: data/glade/song-info.glade.h:18
 msgid "_Track number:"
-msgstr ""
+msgstr "音軌編號(_T)："
 
 #: data/glade/song-info.glade.h:19
 msgid "_of:"
@@ -270,7 +270,7 @@ msgstr "播放次數："
 
 #: data/glade/station-properties.glade.h:4
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr ""
+msgstr "Wed, Jan 01, 1970 00:00:00 -0500"
 
 #: data/glade/station-properties.glade.h:6
 msgid "_Last Played:"
@@ -278,7 +278,7 @@ msgstr "最後播放時間(_L)："
 
 #: data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr "請輸入準備加入的檔案位置[URI](_L)："
+msgstr "請輸入準備加入的檔案位置(_URI)："
 
 #: data/glade/uri.glade.h:3
 msgid "Open from URI"
@@ -310,7 +310,7 @@ msgstr "長度(_M)"
 #: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:269
 #: widgets/rb-entry-view.c:1188
 msgid "Tra_ck"
-msgstr ""
+msgstr "音軌編號(_C)"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:7
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
@@ -451,7 +451,7 @@ msgstr "修改音樂播放程式偏好設定"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
 msgid "Extract and import songs from a CD"
-msgstr ""
+msgstr "由光碟匯入樂曲"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Import Lo_cation..."
@@ -583,11 +583,11 @@ msgstr "求助(_H)"
 
 #: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Import folder..."
-msgstr ""
+msgstr "匯入資料夾(_I)..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:59
 msgid "_Load from file..."
-msgstr ""
+msgstr "載入檔案內容(_L)..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Music"
@@ -635,7 +635,7 @@ msgstr "隨機編排次序(_S)"
 
 #: data/ui/rhythmbox-ui.xml.in.h:71
 msgid "_Small Display"
-msgstr ""
+msgstr "縮小畫面(_S)"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
@@ -671,7 +671,7 @@ msgstr "箭頭大小"
 
 #: lib/disclosure-widget.c:295
 msgid "Size of the expander arrow"
-msgstr ""
+msgstr "用作展開資料的箭頭的尺寸"
 
 #: lib/eel-gconf-extensions.c:67
 #, c-format
@@ -769,27 +769,27 @@ msgstr ""
 
 #: monkey-media/monkey-media-audio-quality.c:35
 msgid "Very low"
-msgstr ""
+msgstr "非常低"
 
 #: monkey-media/monkey-media-audio-quality.c:36
 msgid "Low"
-msgstr ""
+msgstr "低"
 
 #: monkey-media/monkey-media-audio-quality.c:37
 msgid "Regular"
-msgstr ""
+msgstr "普通"
 
 #: monkey-media/monkey-media-audio-quality.c:38
 msgid "High"
-msgstr ""
+msgstr "高"
 
 #: monkey-media/monkey-media-audio-quality.c:39
 msgid "Very high"
-msgstr ""
+msgstr "非常高"
 
 #: monkey-media/monkey-media-audio-quality.c:40
 msgid "Lossless"
-msgstr ""
+msgstr "無失真"
 
 #: monkey-media/monkey-media-player-gst-old.c:371
 #: monkey-media/monkey-media-player-gst.c:455
@@ -993,28 +993,27 @@ msgstr "%s %s"
 
 #: shell/main.c:83
 msgid "Print the playing song and exit"
-msgstr "印出播放中的樂曲後立即結束"
+msgstr "印出播放中的樂曲名稱並立即結束"
 
 #: shell/main.c:84
 msgid "Print the playing song URI and exit"
-msgstr "印出代表播放中的樂曲的 URI 後立即結束"
+msgstr "印出代表播放中的樂曲的 URI 並立即結束"
 
 #: shell/main.c:86
 msgid "Print the playing song length in seconds and exit"
-msgstr "印出播放中的樂曲的長度(秒數)後立即結束"
+msgstr "印出播放中的樂曲的長度(秒數)並立即結束"
 
 #: shell/main.c:87
-#, fuzzy
 msgid "Print the current elapsed time of playing song and exit"
-msgstr "印出播放中的樂曲後立即結束"
+msgstr "印出樂曲已播放的時間並立即結束"
 
 #: shell/main.c:88
 msgid "Seek to the specified time in playing song if possible and exit"
-msgstr ""
+msgstr "盡可能搜尋至播放中的樂曲的指定時間並立即結束"
 
 #: shell/main.c:90
 msgid "Toggle play/pause mode"
-msgstr ""
+msgstr "切換播放/暫停狀態"
 
 #: shell/main.c:91
 msgid "Jump to previous song"
@@ -1218,11 +1217,11 @@ msgstr ""
 
 #: shell/rb-source-header.c:185
 msgid "Show _Browser"
-msgstr ""
+msgstr "顯示樂曲分類窗格(_B)"
 
 #: shell/rb-source-header.c:186
 msgid "Hide _Browser"
-msgstr ""
+msgstr "隱藏樂曲分類窗格(_B)"
 
 #: shell/rb-statusbar.c:231
 msgid "Play songs in a random order"
@@ -1366,11 +1365,11 @@ msgstr "標題"
 
 #: widgets/rb-query-creator.c:52
 msgid "contains"
-msgstr ""
+msgstr "包含"
 
 #: widgets/rb-query-creator.c:53
 msgid "does not contain"
-msgstr ""
+msgstr "不包含"
 
 #: widgets/rb-query-creator.c:181
 msgid "Create Automatic Playlist"
