@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"POT-Creation-Date: 2002-10-27 02:41+0200\n"
+"POT-Creation-Date: 2002-10-27 02:12+0100\n"
 "PO-Revision-Date: 2002-05-21 22:07+0200\n"
 "Last-Translator: Kenneth Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -538,7 +538,7 @@ msgstr "Mislykkedes at oprette katalogen %s."
 #. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
 msgid "THE ,DJ "
-msgstr "THE, DJ, HET"
+msgstr "THE, DJ, HET "
 
 #: lib/rb-string-helpers.c:48
 #, c-format
@@ -617,6 +617,8 @@ msgstr " af "
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
+"Antal sek. afspillet af sangen. Klik for at se antal sek. tilbage, samt "
+"total tid"
 
 #: lib/widgets/rb-player.c:389
 msgid "Get information on this album from the web"
@@ -639,6 +641,8 @@ msgstr ""
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
+"Total længde af sangen. Klik for at se antal sek. afspillet, samt antal sek. "
+"tilbage"
 
 #: lib/widgets/rb-player.c:655
 #, c-format
@@ -751,12 +755,12 @@ msgstr ""
 #: lib/widgets/rb-volume.c:504
 #, c-format
 msgid "Querying available channels of mixer device %s failed\n"
-msgstr ""
+msgstr "Forespørgsel af tilgængelige kanaler for mixerenheden %s mislykkedes\n"
 
 #: lib/widgets/rb-volume.c:516
 #, c-format
 msgid "Mixer device %s has neither volume nor PCM channels.\n"
-msgstr ""
+msgstr "Mixerenheden %s har hverken lydstyrke eller PCM-kanaler.\n"
 
 #: lib/widgets/rb-volume.c:654
 msgid "Invalid channel number"
@@ -793,7 +797,7 @@ msgstr "I går kl. %-H:%M:%S"
 
 #: library/rb-node.c:836
 msgid "%A, %B %-d %Y at %-H:%M:%S"
-msgstr "%A, %B %-d %Y kl. %-H:%M:%S"
+msgstr "%A, %-d. %B %Y, kl. %-H:%M:%S"
 
 #: shell/main.c:58
 msgid "Enable debugging code"
@@ -801,7 +805,7 @@ msgstr "Aktivér aflusingstilstand"
 
 #: shell/main.c:59
 msgid "Do not register the shell"
-msgstr ""
+msgstr "Registrér ikke shellen"
 
 #: shell/main.c:60
 msgid "Quit Rhythmbox"
@@ -901,9 +905,8 @@ msgid "Create"
 msgstr "Opret"
 
 #: shell/rb-shell.c:1874
-#, fuzzy
 msgid "Please enter a name for the new music group."
-msgstr "Opret ny musiksamling"
+msgstr "Indtast et navn for den nye sætliste"
 
 #: shell/rb-shell.c:1884
 msgid "Untitled"
@@ -922,18 +925,18 @@ msgid "Unnamed"
 msgstr "Unavngivet"
 
 #: views/rb-group-view.c:790 views/rb-library-view.c:855
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
 "%s"
 msgstr ""
-"Oprettelse af mixer mislykkedes, fejlen var:\n"
+"Oprettelse af strømmen %s fejlede; fejlen var:\n"
 "%s"
 
 #: views/rb-group-view.c:1094
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse %s as group file"
-msgstr "Mislykkedes at parse %s som 'sidebar layout'-fil"
+msgstr "Mislykkedes at syntaksanalysere %s sætliste-fil"
 
 #: views/rb-library-view.c:321
 msgid "library"
