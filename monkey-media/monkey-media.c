@@ -195,6 +195,8 @@ monkey_media_init_internal (void)
 		       TYPE_MP3_STREAM_INFO_IMPL);
 	register_type ("audio/mpeg",
 		       TYPE_MP3_STREAM_INFO_IMPL);
+	register_type ("audio/x-wav",
+		       TYPE_MP3_STREAM_INFO_IMPL);
 #endif
 #ifdef HAVE_AUDIOCD
 	register_type ("audiocd",
