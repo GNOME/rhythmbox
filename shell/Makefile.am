@@ -89,3 +89,5 @@ INCLUDES = 						\
 BUILT_SOURCES = $(tab_files)
 
 CLEANFILES = $(BUILT_SOURCES)
+
+EXTRA_DIST = dashboard.c
