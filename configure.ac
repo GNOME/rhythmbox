@@ -69,7 +69,9 @@ AC_ARG_WITH(database,
 AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
 if test x"$with_database" != xtree; then
 	AC_MSG_ERROR([Unknown database selected])
-fi
+else
+	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
+fi	
 
 dnl Sound system
 WANT_XINE=
@@ -183,11 +185,32 @@ if test "x$disable_gtktreeview_workaround" != "xyes"; then
   AC_DEFINE(USE_GTK_TREE_VIEW_WORKAROUND,,[Define to enable the GtkTreeView workaround])
 fi
 
-
-dnl Check for zlib
-
-AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR(zlib needed!))
-LIBS="$LIBS -lz"
+dnl Stolen from D-BUS configury
+dnl Atomic integers (checks by Sebastian Wilhelmi for GLib)
+AC_MSG_CHECKING([whether to use inline assembler routines for atomic integers])
+have_atomic_inc=no
+if test x"$GCC" = xyes; then
+  if test "x$enable_ansi" = "xyes"; then
+    AC_MSG_RESULT([no])
+  else
+    case $host_cpu in
+      i386)
+        AC_MSG_RESULT([no])
+        ;;
+      i?86)
+        AC_MSG_RESULT([i486])
+        AC_DEFINE_UNQUOTED(RB_USE_ATOMIC_INT_486, 1, [Use atomic integer implementation for 486])
+        have_atomic_inc=yes
+        ;;
+      *)
+        AC_MSG_RESULT([no])
+        ;;
+    esac
+  fi
+fi
+if test x$have_atomic_inc = xyes ; then
+  AC_DEFINE_UNQUOTED(RB_HAVE_ATOMIC_INT, 1, [Some atomic integer implementation present])
+fi
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
@@ -370,9 +393,9 @@ AC_SUBST(DATADIR_UNINST)
 
 AC_OUTPUT([ 
 Makefile
-rhythmdb/Makefile
 lib/Makefile
-lib/widgets/Makefile
+rhythmdb/Makefile
+widgets/Makefile
 library/Makefile
 iradio/Makefile
 corba/Makefile
@@ -382,6 +405,7 @@ data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
 data/node-views/Makefile
+data/views/Makefile
 data/rhythmbox.pc
 monkey-media/Makefile
 monkey-media/monkey-media-includes.h

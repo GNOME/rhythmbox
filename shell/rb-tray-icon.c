@@ -418,7 +418,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rb_library_add_uri (icon->priv->library, uri);
+			rb_library_add_uri_async (icon->priv->library, uri);
 
 		g_free (uri);
 	}

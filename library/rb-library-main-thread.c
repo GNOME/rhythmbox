@@ -31,6 +31,8 @@
 
 static void rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass);
 static void rb_library_main_thread_init (RBLibraryMainThread *thread);
+static GObject *rb_library_main_thread_constructor (GType type, guint n_construct_properties,
+						    GObjectConstructParam *construct_properties);
 static void rb_library_main_thread_finalize (GObject *object);
 static void rb_library_main_thread_set_property (GObject *object,
                                                  guint prop_id,
@@ -52,23 +54,21 @@ struct RBLibraryLoadErrorData {
 struct RBLibraryMainThreadPrivate
 {
 	RBLibrary *library;
+	RhythmDB *db;
 
 	GThread *main_thread;
 	GThread *add_thread;
 
-	GMutex *lock;
-	gboolean dead;
-
 	GList *failed_loads;
 
-	GAsyncQueue *main_queue;
+	GAsyncQueue *queue;
 	GAsyncQueue *add_queue;
 };
 
 enum
 {
 	PROP_0,
-	PROP_LIBRARY
+	PROP_LIBRARY,
 };
 
 enum
@@ -117,10 +117,11 @@ rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_library_main_thread_finalize;
+	object_class->constructor = rb_library_main_thread_constructor;
 
 	object_class->set_property = rb_library_main_thread_set_property;
         object_class->get_property = rb_library_main_thread_get_property;
-		                        
+
         g_object_class_install_property (object_class,
                                          PROP_LIBRARY,
                                          g_param_spec_object ("library",
@@ -165,8 +166,6 @@ rb_library_main_thread_init (RBLibraryMainThread *thread)
 {
 	thread->priv = g_new0 (RBLibraryMainThreadPrivate, 1);
 
-	thread->priv->lock = g_mutex_new ();
-
 	g_signal_connect (G_OBJECT (rb_file_monitor_get ()),
 			  "file_changed",
 			  G_CALLBACK (file_changed_cb),
@@ -175,6 +174,27 @@ rb_library_main_thread_init (RBLibraryMainThread *thread)
 			  "file_removed",
 			  G_CALLBACK (file_removed_cb),
 			  thread);
+}
+
+static GObject *
+rb_library_main_thread_constructor (GType type, guint n_construct_properties,
+				    GObjectConstructParam *construct_properties)
+{
+	RBLibraryMainThread *thread;
+	RBLibraryMainThreadClass *klass;
+	GObjectClass *parent_class;  
+	klass = RB_LIBRARY_MAIN_THREAD_CLASS (g_type_class_peek (type));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	thread = RB_LIBRARY_MAIN_THREAD (parent_class->constructor (type, n_construct_properties,
+								    construct_properties));
+
+
+	thread->priv->main_thread = g_thread_create ((GThreadFunc) main_thread_main,
+						     thread, FALSE, NULL);
+	thread->priv->add_thread = g_thread_create ((GThreadFunc) add_thread_main,
+						    thread, FALSE, NULL);
+	return G_OBJECT (thread);
 }
 
 static void
@@ -188,15 +208,6 @@ rb_library_main_thread_finalize (GObject *object)
 	thread = RB_LIBRARY_MAIN_THREAD (object);
 
 	g_return_if_fail (thread->priv != NULL);
-
-	g_mutex_lock (thread->priv->lock);
-	thread->priv->dead = TRUE;
-	g_mutex_unlock (thread->priv->lock);
-
-	g_thread_join (thread->priv->main_thread);
-	g_thread_join (thread->priv->add_thread);
-
-	g_mutex_free (thread->priv->lock);
 
 	g_free (thread->priv);
 
@@ -232,15 +243,11 @@ rb_library_main_thread_set_property (GObject *object,
 	case PROP_LIBRARY:
 		thread->priv->library = g_value_get_object (value);                    
 		
-		thread->priv->main_queue = rb_library_get_main_queue (thread->priv->library);
-		g_async_queue_ref (thread->priv->main_queue);
+		thread->priv->queue = rb_library_get_main_queue (thread->priv->library);
+		g_async_queue_ref (thread->priv->queue);
 		thread->priv->add_queue = rb_library_get_add_queue (thread->priv->library);
 		g_async_queue_ref (thread->priv->add_queue);
 	
-		thread->priv->main_thread = g_thread_create ((GThreadFunc) main_thread_main,
-								thread, TRUE, NULL);
-		thread->priv->add_thread = g_thread_create ((GThreadFunc) add_thread_main,
-							    thread, TRUE, NULL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -294,24 +301,11 @@ push_err (RBLibraryMainThread *thread, const char *uri, GError *error)
 	g_idle_add ((GSourceFunc) signal_err_idle, loaderr);
 }
 
-static gboolean
-am_dead (RBLibraryMainThread *thread)
-{
-	gboolean ret;
-	g_mutex_lock (thread->priv->lock);
-	ret = thread->priv->dead;
-	g_mutex_unlock (thread->priv->lock);
-	return ret;
-}
-
 static RBLibraryAction *
 read_action (RBLibraryMainThread *thread, GAsyncQueue *queue)
 {
 	GTimeVal timeout;
 	RBLibraryAction *action;
-
-	if (am_dead (thread))
-		return NULL;
 
 	g_get_current_time (&timeout);
 	g_time_val_add (&timeout, G_USEC_PER_SEC);
@@ -319,9 +313,6 @@ read_action (RBLibraryMainThread *thread, GAsyncQueue *queue)
 	while ((action = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
 		g_get_current_time (&timeout);
 		g_time_val_add (&timeout, G_USEC_PER_SEC);
-
-		if (am_dead (thread))
-			return NULL;
 	}
 
 	return action;
@@ -332,50 +323,39 @@ main_thread_main (RBLibraryMainThread *thread)
 {
 	while (TRUE)
 	{
-		RBLibraryAction *action;
-		RBLibraryActionType type;
-		char *uri, *realuri;
 		GError *error = NULL;
+		RhythmDBEntry *entry;
 
-		action = read_action (thread, thread->priv->main_queue);
+		entry = g_async_queue_pop (thread->priv->queue);
 
-		if (action == NULL)
+		if (entry == NULL)
 			break;
 
-		rb_library_action_get (action, &type, &uri);
-
-		realuri = rb_uri_resolve_symlink (uri);
-
-		rb_debug ("popped action from main queue, type: %d uri: %s", type, uri);
-		switch (type)
-		{
-		case RB_LIBRARY_ACTION_UPDATE_FILE:
-			rb_library_update_uri (thread->priv->library, realuri, &error);
-			break;
-		case RB_LIBRARY_ACTION_REMOVE_FILE:
-			rb_library_remove_uri (thread->priv->library, realuri);
-			break;
-		default:
-			g_assert_not_reached ();
-			break;
-		}
+		rb_debug ("popped entry from update queue");
+		rb_library_update_entry (thread->priv->library, entry, &error);
 
 		if (error != NULL) {
-			push_err (thread, realuri, error);
+			push_err (thread, NULL, error);
 		}
-
-		g_free (realuri);
-		g_object_unref (G_OBJECT (action));
 			
 		g_usleep (10);
 	}
 
 	rb_debug ("exiting");
-	g_async_queue_unref (thread->priv->main_queue);
+	g_async_queue_unref (thread->priv->queue);
 	g_thread_exit (NULL);
 	return NULL;
 }
 
+static void
+add_file (const char *filename,
+	  RBLibraryMainThread *thread)
+{
+	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, filename);
+	
+	rb_debug ("queueing ADD_FILE for %s", filename);
+	g_async_queue_push (thread->priv->add_queue, action);
+}
 
 static gpointer
 add_thread_main (RBLibraryMainThread *thread)
@@ -400,8 +380,15 @@ add_thread_main (RBLibraryMainThread *thread)
 		switch (type)
 		{
 		case RB_LIBRARY_ACTION_ADD_FILE:
-			rb_library_add_uri_sync (thread->priv->library, realuri, &error);
+		{
+			if (rb_uri_is_directory (uri) == FALSE) {
+				rb_library_add_uri (thread->priv->library, realuri, &error);
+			} else {
+				rb_uri_handle_recursively (uri, (GFunc) add_file, NULL, NULL, thread);
+
+			}
 			break;
+		}
 		default:
 			g_assert_not_reached ();
 			break;

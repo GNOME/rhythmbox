@@ -20,7 +20,7 @@
  */
 
 #include <gtk/gtkdialog.h>
-#include "rb-iradio-backend.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_NEW_STATION_DIALOG_H
 #define __RB_NEW_STATION_DIALOG_H
@@ -50,7 +50,7 @@ typedef struct
 
 GType      rb_new_station_dialog_get_type (void);
 
-GtkWidget *rb_new_station_dialog_new      (RBIRadioBackend *backend);
+GtkWidget *rb_new_station_dialog_new      (RhythmDB *db);
 
 G_END_DECLS
 

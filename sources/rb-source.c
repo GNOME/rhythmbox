@@ -274,12 +274,12 @@ rb_source_notify_filter_changed (RBSource *status)
 	g_signal_emit (G_OBJECT (status), rb_source_signals[FILTER_CHANGED], 0);
 }
 
-RBNodeView *
-rb_source_get_node_view (RBSource *source)
+RBEntryView *
+rb_source_get_entry_view (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_node_view (source);
+	return klass->impl_get_entry_view (source);
 }
 
 static GList *
@@ -382,7 +382,7 @@ rb_source_cut (RBSource *source)
 static GList *
 default_copy (RBSource *source)
 {
-	return g_list_copy (rb_node_view_get_selection (rb_source_get_node_view (source)));
+	return g_list_copy (rb_entry_view_get_selected_entries (rb_source_get_entry_view (source)));
 }
 	
 GList *

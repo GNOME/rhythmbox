@@ -25,9 +25,8 @@
 #include <bonobo/bonobo-ui-util.h>
 #include "rb-source.h"
 #include "rb-library.h"
-#include "rb-iradio-backend.h"
-/* FIXME */
 #include "rb-library-source.h"
+#include "rb-iradio-source.h"
 
 G_BEGIN_DECLS
 
@@ -61,7 +60,7 @@ GType			rb_playlist_manager_get_type	(void);
 
 RBPlaylistManager *	rb_playlist_manager_new		(BonoboUIComponent *component, GtkWindow *window,
 							 RBLibrary *library, RBLibrarySource *libsource,
-							 RBIRadioBackend *backend);
+							 RBIRadioSource *iradio_source);
 
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
 							 RBSource *player);

@@ -23,8 +23,7 @@
 #ifndef __RB_LIBRARY_H
 #define __RB_LIBRARY_H
 
-#include "rb-node.h"
-#include "rb-node-filter.h"
+#include "rhythmdb.h"
 
 G_BEGIN_DECLS
 
@@ -58,62 +57,23 @@ typedef struct
 
 GType			rb_library_get_type		(void);
 
-RBLibrary *		rb_library_new                  (void);
+RBLibrary *		rb_library_new                  (RhythmDB *db);
 
-void			rb_library_add_uri              (RBLibrary *library,
+void			rb_library_add_uri_async	(RBLibrary *library,
 							 const char *uri);
 /* These methods are called asynchronously by the library main thread. */
-void			rb_library_add_uri_sync         (RBLibrary *library,
+void			rb_library_add_uri		(RBLibrary *library,
 							 const char *uri,
 							 GError **error);
-gboolean		rb_library_update_uri           (RBLibrary *library,
-							 const char *uri,
-							 GError **error);
-void			rb_library_remove_uri           (RBLibrary *library,
-							 const char *uri);
+void			rb_library_update_entry		(RBLibrary *library,
+							 RhythmDBEntry *entry, GError **error);
 
-RBNode *		rb_library_new_node		(RBLibrary *library,
-							 const char *location,
-							 GError **error);
-
-gboolean		rb_library_update_node		(RBLibrary *library,
-							 RBNode *node,
-							 GError **error);
-void			rb_library_remove_node          (RBLibrary *library,
-							 RBNode *node);
-
-RBNodeDb *		rb_library_get_node_db		(RBLibrary *library);
-
-void			rb_library_load			(RBLibrary *library);
 void			rb_library_release_brakes       (RBLibrary *library);
 void			rb_library_shutdown		(RBLibrary *library);
-
-gboolean		rb_library_is_idle		(RBLibrary *library);
-
-RBNode *		rb_library_get_all_genres       (RBLibrary *library);
-RBNode *		rb_library_get_all_artists      (RBLibrary *library);
-RBNode *		rb_library_get_all_albums       (RBLibrary *library);
-RBNode *		rb_library_get_all_songs        (RBLibrary *library);
-
-RBNode *		rb_library_get_genre_by_name    (RBLibrary *library,
-							 const char *genre);
-RBNode *		rb_library_get_artist_by_name   (RBLibrary *library,
-							 const char *artist);
-RBNode *		rb_library_get_album_by_name    (RBLibrary *library,
-							 const char *album);
-RBNode *		rb_library_get_song_by_location (RBLibrary *library,
-							 const char *location);
 
 GAsyncQueue *		rb_library_get_main_queue       (RBLibrary *library);
 
 GAsyncQueue *		rb_library_get_add_queue       (RBLibrary *library);
-
-void			rb_library_handle_songs         (RBLibrary *library,
-							 RBNode *node,
-							 GFunc func,
-							 gpointer user_data);
-
-char *			rb_library_compute_status	(RBLibrary *library, RBNode *root, RBNodeFilter *filter);
 
 G_END_DECLS
 

@@ -48,7 +48,7 @@
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-node-db.h"
+#include "rhythmdb-tree.h"
 #include "rb-stock-icons.h"
 #include "rb-sourcelist.h"
 #include "rb-string-helpers.h"
@@ -67,7 +67,6 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-library.h"
 #include "rb-library-source.h"
-#include "rb-iradio-backend.h"
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
@@ -260,6 +259,8 @@ struct RBShellPrivate
 
 	GList *sources;
 
+	RhythmDB *db;
+
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
 	RBSourceHeader *source_header;
@@ -272,7 +273,6 @@ struct RBShellPrivate
 	GList *supported_media_extensions;
 	gboolean show_library_errors;
 
-	RBIRadioBackend *iradio_backend;
  	RBIRadioSource *iradio_source;
 
 #ifdef HAVE_AUDIOCD
@@ -424,11 +424,19 @@ rb_shell_finalize (GObject *object)
 
 	rb_library_shutdown (shell->priv->library);
 
+	rb_debug ("shutting down DB");
+	rhythmdb_shutdown (shell->priv->db);
+
 	rb_debug ("unreffing library");
 	g_object_unref (G_OBJECT (shell->priv->library));
 
-	rb_debug ("unreffing iradio backend");
-	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
+	rb_debug ("saving db");
+	rhythmdb_read_lock (shell->priv->db);
+	rhythmdb_save (shell->priv->db);
+	rhythmdb_read_unlock (shell->priv->db);
+
+	rb_debug ("unreffing DB");
+	g_object_unref (G_OBJECT (shell->priv->db));
 
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
@@ -473,10 +481,12 @@ handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *tit
 	/* We assume all HTTP is iradio.  This is probably a broken assumption,
 	 * but it's very difficult to really fix...
 	 */
-	if (rb_uri_is_iradio (uri) != FALSE)
-		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, uri, title, genre);
-	else
-		rb_library_add_uri (shell->priv->library, (char *) uri);
+	if (rb_uri_is_iradio (uri) != FALSE) {
+		/* RHYTHMDB FIXME */
+/* 		rb_iradio_source_add_station (shell->priv->iradio_source, uri, title, genre); */
+	} else {
+		rb_library_add_uri_async (shell->priv->library, (char *) uri);
+	}
 }
 
 static void
@@ -501,7 +511,7 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	 * the library.
 	 */
 	if (!rb_playlist_parse (parser, uri))
-		rb_library_add_uri (shell->priv->library, uri);
+		rb_library_add_uri_async (shell->priv->library, uri);
 	g_object_unref (G_OBJECT (parser));
 }
 
@@ -512,7 +522,7 @@ rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
-	rb_library_add_uri (shell->priv->library, uri);
+	rb_library_add_uri_async (shell->priv->library, uri);
 }
 
 static void
@@ -704,8 +714,18 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
 
+	/* Initialize the database */
+	rb_debug ("creating database object");
+	{
+		char *fname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+		shell->priv->db = rhythmdb_tree_new (fname);
+		g_free (fname);
+
+		rhythmdb_load (shell->priv->db);
+	}
+
 	rb_debug ("shell: creating library");
-	shell->priv->library = rb_library_new ();
+	shell->priv->library = rb_library_new (shell->priv->db);
 
 	rb_debug ("shell: setting up tray icon");
 	tray_deleted_cb (NULL, NULL, shell);
@@ -736,7 +756,8 @@ rb_shell_construct (RBShell *shell)
 			  "duration_changed",
 			  G_CALLBACK (rb_shell_player_duration_changed_cb),
 			  shell);
-	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
+	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component,
+							       shell->priv->db);
 	shell->priv->source_header = rb_source_header_new (shell->priv->ui_component);
 
 	shell->priv->paned = gtk_hpaned_new ();
@@ -819,20 +840,21 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize sources */
 	rb_debug ("shell: creating library source");
-	shell->priv->library_source = rb_library_source_new (shell->priv->library);
+	shell->priv->library_source = rb_library_source_new (shell->priv->db, shell->priv->library);
 	rb_shell_append_source (shell, shell->priv->library_source);
 
-	rb_debug ("shell: creating iradio backend");
-	shell->priv->iradio_backend = g_object_new (RB_TYPE_IRADIO_BACKEND, NULL);
 	rb_debug ("shell: creating iradio source");
-	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell->priv->iradio_backend));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
+	/* RHYTHMDB FIXME */
+/* 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell->priv->db)); */
+/* 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source)); */
 
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->ui_component,
 								 GTK_WINDOW (shell->priv->window),
 								 shell->priv->library,
 								 RB_LIBRARY_SOURCE (shell->priv->library_source),
-								 shell->priv->iradio_backend);
+								 /* RHYTHMDB FIXME */
+/* 								 RB_IRADIO_SOURCE (shell->priv->iradio_source)); */
+								 NULL);
 
 	g_signal_connect (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 			  G_CALLBACK (rb_shell_playlist_added_cb), shell);
@@ -846,13 +868,6 @@ rb_shell_construct (RBShell *shell)
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
 	rb_shell_select_source (shell, shell->priv->library_source); /* select this one by default */
-
-	/* load library */
-	rb_debug ("shell: loading library");
-	rb_library_load (shell->priv->library);
-
-	rb_debug ("shell: loading iradio");
- 	rb_iradio_backend_load (shell->priv->iradio_backend);
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -1452,7 +1467,7 @@ ask_file_response_cb (GtkDialog *dialog,
 	while (*filecur != NULL) {
 		if (g_utf8_validate (*filecur, -1, NULL)) {
 			char *uri = gnome_vfs_get_uri_from_local_path (*filecur);
-			rb_library_add_uri (shell->priv->library, uri);
+			rb_library_add_uri_async (shell->priv->library, uri);
 			g_free (uri);
 		}
 		filecur++;
@@ -1499,7 +1514,7 @@ rb_shell_cmd_new_station (BonoboUIComponent *component,
 {
 	GtkWidget *dialog;
 	rb_debug ("Got new station command");
-	dialog = rb_new_station_dialog_new (shell->priv->iradio_backend);
+	dialog = rb_new_station_dialog_new (shell->priv->db);
 	gtk_dialog_run (GTK_DIALOG (dialog));
 	gtk_widget_destroy (dialog);
 }
@@ -1655,13 +1670,6 @@ paned_changed_cb (GConfClient *client,
 }
 
 
-/* static void */
-/* handle_songs_func (RBNode *node, */
-/* 		   RBPlaylistSource *playlist) */
-/* { */
-/* 	rb_playlist_source_add_node (playlist, node); */
-/* } */
-
 static void
 sourcelist_drag_received_cb (RBSourceList *sourcelist,
 			     RBSource *source,
@@ -1720,26 +1728,27 @@ rb_shell_cmd_current_song (BonoboUIComponent *component,
 static void
 rb_shell_jump_to_current (RBShell *shell)
 {
-	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
-	RBNodeView *songs;
-	RBNode *playing;
+	/* RHYTHMDB FIXME */
+/* 	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell); */
+/* 	RBNodeView *songs; */
+/* 	RBNode *playing; */
 
-	g_return_if_fail (source != NULL);
+/* 	g_return_if_fail (source != NULL); */
 
-	songs = rb_source_get_node_view (source);
+/* 	songs = rb_source_get_node_view (source); */
 
-	playing = rb_node_view_get_playing_node (songs);
+/* 	playing = rb_node_view_get_playing_node (songs); */
 
-	g_return_if_fail (playing != NULL);
+/* 	g_return_if_fail (playing != NULL); */
 
-	if (!rb_node_view_get_node_visible (songs, playing)) {
-		rb_source_header_clear_search (shell->priv->source_header);
-	}
-	rb_shell_select_source (shell, source);
-	if (!rb_node_view_get_node_visible (songs, playing)) {
-		rb_source_search (shell->priv->selected_source, NULL);
-	}
-	rb_shell_player_jump_to_current (shell->priv->player_shell);
+/* 	if (!rb_node_view_get_node_visible (songs, playing)) { */
+/* 		rb_source_header_clear_search (shell->priv->source_header); */
+/* 	} */
+/* 	rb_shell_select_source (shell, source); */
+/* 	if (!rb_node_view_get_node_visible (songs, playing)) { */
+/* 		rb_source_search (shell->priv->selected_source, NULL); */
+/* 	} */
+/* 	rb_shell_player_jump_to_current (shell->priv->player_shell); */
 }
 
 static gboolean

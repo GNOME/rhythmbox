@@ -57,7 +57,7 @@ static void rb_station_properties_dialog_get_property (GObject *object,
 						       guint prop_id,
 						       GValue *value, 
 						       GParamSpec *pspec);
-static gboolean rb_station_properties_dialog_get_current_node (RBStationPropertiesDialog *dialog);
+static gboolean rb_station_properties_dialog_get_current_entry (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_response_cb (GtkDialog *gtkdialog,
@@ -77,9 +77,9 @@ static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog
 
 struct RBStationPropertiesDialogPrivate
 {
-	RBNodeView *node_view;
-	RBNode *current_node;
-	RBIRadioBackend *backend;
+	RBEntryView *entry_view;
+	RhythmDB *db;
+	RhythmDBEntry *current_entry;
 
 	GtkWidget   *title;
 	GtkWidget   *genre;
@@ -94,7 +94,7 @@ struct RBStationPropertiesDialogPrivate
 enum 
 {
 	PROP_0,
-	PROP_NODE_VIEW,
+	PROP_ENTRY_VIEW,
 	PROP_BACKEND
 };
 
@@ -139,19 +139,11 @@ rb_station_properties_dialog_class_init (RBStationPropertiesDialogClass *klass)
 	object_class->get_property = rb_station_properties_dialog_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_NODE_VIEW,
-					 g_param_spec_object ("node-view",
-					                      "RBNodeView",
-					                      "RBNodeView object",
-					                      RB_TYPE_NODE_VIEW,
-					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
-					 PROP_BACKEND,
-					 g_param_spec_object ("backend",
-					                      "RBIRadioBackend",
-					                      "RBIRadioBackend object",
-					                      RB_TYPE_IRADIO_BACKEND,
+					 PROP_ENTRY_VIEW,
+					 g_param_spec_object ("entry-view",
+					                      "RBEntryView",
+					                      "RBEntryView object",
+					                      RB_TYPE_ENTRY_VIEW,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_station_properties_dialog_finalize;
@@ -237,11 +229,10 @@ rb_station_properties_dialog_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
-		dialog->priv->node_view = g_value_get_object (value);
-		break;
-	case PROP_BACKEND:
-		dialog->priv->backend = g_value_get_object (value);
+	case PROP_ENTRY_VIEW:
+		dialog->priv->entry_view = g_value_get_object (value);
+		g_object_get (G_OBJECT (dialog->priv->entry_view), "db",
+			      &dialog->priv->db, NULL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -259,11 +250,8 @@ rb_station_properties_dialog_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
-		g_value_set_object (value, dialog->priv->node_view);
-		break;
-	case PROP_BACKEND:
-		g_value_set_object (value, dialog->priv->backend);
+	case PROP_ENTRY_VIEW:
+		g_value_set_object (value, dialog->priv->entry_view);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -272,20 +260,16 @@ rb_station_properties_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_station_properties_dialog_new (RBNodeView *node_view, RBIRadioBackend *backend)
+rb_station_properties_dialog_new (RBEntryView *entry_view)
 {
 	RBStationPropertiesDialog *dialog;
 
-	g_return_val_if_fail (RB_IS_NODE_VIEW (node_view), NULL);
-	g_return_val_if_fail (RB_IS_IRADIO_BACKEND (backend), NULL);
+	g_return_val_if_fail (RB_IS_ENTRY_VIEW (entry_view), NULL);
 
 	dialog = g_object_new (RB_TYPE_STATION_PROPERTIES_DIALOG,
-			       "node-view", node_view,
-			       "backend", backend, NULL);
-	g_return_val_if_fail (dialog->priv != NULL, NULL);
+			       "entry-view", entry_view, NULL);
 
-	if (!rb_station_properties_dialog_get_current_node (dialog))
-	{
+	if (!rb_station_properties_dialog_get_current_entry (dialog)) {
 		g_object_unref (G_OBJECT (dialog));
 		return NULL;
 	}
@@ -307,30 +291,28 @@ cleanup:
 }
 
 static gboolean
-rb_station_properties_dialog_get_current_node (RBStationPropertiesDialog *dialog)
+rb_station_properties_dialog_get_current_entry (RBStationPropertiesDialog *dialog)
 {
-	GList *selected_nodes;
+	GList *selected_entries;
 	
-	/* get the node */
-	selected_nodes = rb_node_view_get_selection (dialog->priv->node_view);
+	/* get the entry */
+	selected_entries = rb_entry_view_get_selected_entries (dialog->priv->entry_view);
 
-	if ((selected_nodes == NULL) ||
-	    (selected_nodes->data == NULL) ||
-	    (RB_IS_NODE (selected_nodes->data) == FALSE))
-	{
-		dialog->priv->current_node = NULL;
+	if ((selected_entries == NULL) ||
+	    (selected_entries->data == NULL)) {
+		dialog->priv->current_entry = NULL;
 		return FALSE;
 	}
 
-	dialog->priv->current_node = selected_nodes->data;
+	dialog->priv->current_entry = selected_entries->data;
 	return TRUE;
 }
 
 static void
 rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 {
-	g_return_if_fail (dialog->priv->current_node != NULL);
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
+	g_return_if_fail (dialog->priv->current_entry != NULL);
+	rhythmdb_write_lock (dialog->priv->db);
 	rb_station_properties_dialog_update_location (dialog);
 	rb_station_properties_dialog_update_title (dialog);
 	rb_station_properties_dialog_update_title_entry (dialog);
@@ -338,14 +320,16 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 	rb_station_properties_dialog_update_play_count (dialog);
 	rb_station_properties_dialog_update_last_played (dialog);
 	rb_station_properties_dialog_update_rating (dialog);
+	rhythmdb_write_unlock (dialog->priv->db);
 }
 
 static void
 rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 {
 	const char *name, *tmp;
-	name = rb_node_get_property_string (dialog->priv->current_node,
-					    RB_NODE_PROP_NAME);
+	name = rhythmdb_entry_get_string (dialog->priv->db,
+					  dialog->priv->current_entry,
+					  RHYTHMDB_PROP_TITLE);
 	tmp = g_strdup_printf (_("Properties for %s"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free ((char*) tmp);
@@ -355,24 +339,27 @@ static void
 rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dialog)
 {
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title),
-			    rb_node_get_property_string (dialog->priv->current_node,
-							 RB_NODE_PROP_NAME));
+			    rhythmdb_entry_get_string (dialog->priv->db,
+						       dialog->priv->current_entry,
+						       RHYTHMDB_PROP_TITLE));
 }
 
 static void
 rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 {
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre),
-			    rb_node_get_property_string (dialog->priv->current_node,
-							 RB_NODE_PROP_GENRE));
+			    rhythmdb_entry_get_string (dialog->priv->db,
+						       dialog->priv->current_entry,
+						       RHYTHMDB_PROP_GENRE));
 }
 
 static void
 rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 {
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location),
-			    rb_node_get_property_string (dialog->priv->current_node,
-							 RB_NODE_PROP_LOCATION));
+			    rhythmdb_entry_get_string (dialog->priv->db,
+						       dialog->priv->current_entry,
+						       RHYTHMDB_PROP_LOCATION));
 }
 
 static void
@@ -384,15 +371,15 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 
 	g_return_if_fail (RB_IS_RATING (rating));
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, score);
-	rb_node_set_property (dialog->priv->current_node,
-			      RB_NODE_PROP_RATING,
-			      &value);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry,
+			    RHYTHMDB_PROP_RATING,
+			    &value);
 	g_value_unset (&value);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
@@ -403,8 +390,9 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 static void
 rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog)
 {
-	char *text = g_strdup_printf ("%d", rb_node_get_property_int (dialog->priv->current_node,
-								      RB_NODE_PROP_PLAY_COUNT));
+	char *text = g_strdup_printf ("%d", rhythmdb_entry_get_int (dialog->priv->db,
+								    dialog->priv->current_entry,
+								    RHYTHMDB_PROP_PLAY_COUNT));
 	gtk_label_set_text (GTK_LABEL (dialog->priv->playcount), text);
 	g_free (text);
 }
@@ -413,29 +401,24 @@ static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
 	gtk_label_set_text (GTK_LABEL (dialog->priv->lastplayed),
-			    rb_node_get_property_string (dialog->priv->current_node,
-							 RB_NODE_PROP_LAST_PLAYED_STR));
+			    rhythmdb_entry_get_string (dialog->priv->db,
+						       dialog->priv->current_entry,
+						       RHYTHMDB_PROP_LAST_PLAYED_STR));
 }
 
 static void
 rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 {
-	GValue value = { 0, };
+	guint rating;
 
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
-	if (rb_node_get_property (dialog->priv->current_node,
-				  RB_NODE_PROP_RATING,
-				  &value) == FALSE) {
-		g_value_init (&value, G_TYPE_INT);
-		g_value_set_int (&value, 0);
-	}
+	rating = rhythmdb_entry_get_int (dialog->priv->db,
+					 dialog->priv->current_entry,
+					 RHYTHMDB_PROP_RATING);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
-		      "score", g_value_get_int (&value),
-		      NULL);
-
-	g_value_unset (&value);
+		      "score", rating, NULL);
 }
 
 static void
@@ -446,20 +429,21 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
 	GValue val = {0,};
 
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
-
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, title);
-	rb_node_set_property (dialog->priv->current_node, RB_NODE_PROP_NAME, &val);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, genre);
-	rb_node_set_property (dialog->priv->current_node, RB_NODE_PROP_GENRE, &val);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, location);
-	rb_node_set_property (dialog->priv->current_node, RB_NODE_PROP_LOCATION, &val);
+	rhythmdb_entry_set (dialog->priv->db,
+			    dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION, &val);
 	g_value_unset (&val);
 }

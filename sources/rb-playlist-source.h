@@ -71,8 +71,8 @@ void		rb_playlist_source_load		(RBPlaylistSource *source);
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);
 
-void		rb_playlist_source_add_node	(RBPlaylistSource *source, 
-						 RBNode *node);
+void		rb_playlist_source_add_entry	(RBPlaylistSource *source, 
+						 RhythmDBEntry *entry);
 
 void		rb_playlist_source_delete	(RBPlaylistSource *source);
 

@@ -21,7 +21,7 @@
  */
 
 #include "rb-shell-clipboard.h"
-#include "rb-node.h"
+#include "rhythmdb.h"
 #include "rb-debug.h"
 #include "rb-bonobo-helpers.h"
 
@@ -63,10 +63,11 @@ static void rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
 					    const char *verbname);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
-static void node_destroyed_cb (RBNode *node,
-			       RBShellClipboard *clipboard);
-static void rb_shell_clipboard_nodeview_changed_cb (RBNodeView *view,
-						    RBShellClipboard *clipboard);
+static void entry_deleted_cb (RhythmDB *db,
+			      RhythmDBEntry *entry,
+			      RBShellClipboard *clipboard);
+static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
+						     RBShellClipboard *clipboard);
 
 #define CMD_PATH_CUT    "/commands/Cut"
 #define CMD_PATH_COPY   "/commands/Copy"
@@ -76,13 +77,14 @@ static void rb_shell_clipboard_nodeview_changed_cb (RBNodeView *view,
 
 struct RBShellClipboardPrivate
 {
+	RhythmDB *db;
 	RBSource *source;
 
 	BonoboUIComponent *component;
 
 	GHashTable *signal_hash;
 
-	GList *nodes;
+	GList *entries;
 };
 
 enum
@@ -90,6 +92,7 @@ enum
 	PROP_0,
 	PROP_SOURCE,
 	PROP_COMPONENT,
+	PROP_DB,
 };
 
 static BonoboUIVerb rb_shell_clipboard_verbs[] =
@@ -161,6 +164,14 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB database",
+							      RHYTHMDB_TYPE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 }
 
 static void
@@ -186,7 +197,7 @@ rb_shell_clipboard_finalize (GObject *object)
 
 	g_hash_table_destroy (shell_clipboard->priv->signal_hash);
 
-	g_list_free (shell_clipboard->priv->nodes);
+	g_list_free (shell_clipboard->priv->entries);
 	
 	g_free (shell_clipboard->priv);
 
@@ -206,10 +217,10 @@ rb_shell_clipboard_set_property (GObject *object,
 	case PROP_SOURCE:
 		if (clipboard->priv->source != NULL)
 		{
-			RBNodeView *songs = rb_source_get_node_view (clipboard->priv->source);
+			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_clipboard_nodeview_changed_cb),
+							      G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 							      clipboard);
 		}
 		clipboard->priv->source = g_value_get_object (value);
@@ -219,11 +230,11 @@ rb_shell_clipboard_set_property (GObject *object,
 
 		if (clipboard->priv->source != NULL)
 		{
-			RBNodeView *songs = rb_source_get_node_view (clipboard->priv->source);
+			RBEntryView *songs = rb_source_get_entry_view (clipboard->priv->source);
 
 			g_signal_connect (G_OBJECT (songs),
 					  "changed",
-					  G_CALLBACK (rb_shell_clipboard_nodeview_changed_cb),
+					  G_CALLBACK (rb_shell_clipboard_entryview_changed_cb),
 					  clipboard);
 		}
 		break;
@@ -232,6 +243,13 @@ rb_shell_clipboard_set_property (GObject *object,
 		bonobo_ui_component_add_verb_list_with_data (clipboard->priv->component,
 							     rb_shell_clipboard_verbs,
 							     clipboard);
+		break;
+	case PROP_DB:
+		clipboard->priv->db = g_value_get_object (value);
+		g_signal_connect_object (G_OBJECT (clipboard->priv->db),
+					 "entry_deleted",
+					 G_CALLBACK (entry_deleted_cb),
+					 clipboard, 0);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -255,6 +273,9 @@ rb_shell_clipboard_get_property (GObject *object,
 	case PROP_COMPONENT:
 		g_value_set_object (value, clipboard->priv->component);
 		break;
+	case PROP_DB:
+		g_value_set_object (value, clipboard->priv->db);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -272,12 +293,13 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 }
 
 RBShellClipboard *
-rb_shell_clipboard_new (BonoboUIComponent *component)
+rb_shell_clipboard_new (BonoboUIComponent *component, RhythmDB *db)
 {
 	RBShellClipboard *shell_clipboard;
 
 	shell_clipboard = g_object_new (RB_TYPE_SHELL_CLIPBOARD,
 					"component", component,
+					"db", db,
 					NULL);
 
 	g_return_val_if_fail (shell_clipboard->priv != NULL, NULL);
@@ -288,7 +310,7 @@ rb_shell_clipboard_new (BonoboUIComponent *component)
 static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
-	gboolean have_selection = rb_node_view_have_selection (rb_source_get_node_view (clipboard->priv->source));
+	gboolean have_selection = rb_entry_view_have_selection (rb_source_get_entry_view (clipboard->priv->source));
 	gboolean can_cut = have_selection;	
 	gboolean can_paste = have_selection;
 	gboolean can_delete = have_selection;	
@@ -316,7 +338,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 				 CMD_PATH_COPY,
 				 can_copy);
 
-	can_paste = can_paste && g_list_length (clipboard->priv->nodes) > 0;
+	can_paste = can_paste && g_list_length (clipboard->priv->entries) > 0;
 
 	rb_bonobo_set_sensitive (clipboard->priv->component,
 				 CMD_PATH_PASTE,
@@ -332,11 +354,11 @@ rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
 				   RBShellClipboard *clipboard,
 				   const char *verbname)
 {
-	RBNodeView *nodeview;
+	RBEntryView *entryview;
 	rb_debug ("select all");
 
-	nodeview = rb_source_get_node_view (clipboard->priv->source);
-	rb_node_view_select_all (nodeview);
+	entryview = rb_source_get_entry_view (clipboard->priv->source);
+	rb_entry_view_select_all (entryview);
 }
 
 static void
@@ -344,11 +366,11 @@ rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
 				    RBShellClipboard *clipboard,
 				    const char *verbname)
 {
-	RBNodeView *nodeview;
+	RBEntryView *entryview;
 	rb_debug ("select none");
 
-	nodeview = rb_source_get_node_view (clipboard->priv->source);
-	rb_node_view_select_none (nodeview);
+	entryview = rb_source_get_entry_view (clipboard->priv->source);
+	rb_entry_view_select_none (entryview);
 }
 
 static void
@@ -377,7 +399,7 @@ rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
 			      const char *verbname)
 {
 	rb_debug ("paste");
-	rb_source_paste (clipboard->priv->source, clipboard->priv->nodes);
+	rb_source_paste (clipboard->priv->source, clipboard->priv->entries);
 }
 
 static void
@@ -409,46 +431,27 @@ rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
 
 static void
 rb_shell_clipboard_set (RBShellClipboard *clipboard,
-			GList *nodes)
+			GList *entries)
 {
-	GList *l;
+	g_list_free (clipboard->priv->entries);
 
-	for (l = clipboard->priv->nodes; l != NULL; l = g_list_next (l))
-	{
-		guint *id = g_hash_table_lookup (clipboard->priv->signal_hash, l->data);
-		g_assert (id);
-		rb_node_signal_disconnect (l->data, *id);
-		g_hash_table_remove (clipboard->priv->signal_hash, l->data);
-	}
-
-	g_list_free (clipboard->priv->nodes);
-
-	clipboard->priv->nodes = nodes;
-
-	for (l = nodes; l != NULL; l = g_list_next (l))
-	{
-		guint *id = g_new (guint, 1);
-		*id = rb_node_signal_connect_object (l->data,
-						     RB_NODE_DESTROY,
-						     (RBNodeCallback) node_destroyed_cb,
-						     G_OBJECT (clipboard));
-		g_hash_table_insert (clipboard->priv->signal_hash, l->data, id);
-	}
+	clipboard->priv->entries = entries;
 }
 
 static void
-node_destroyed_cb (RBNode *node,
-		   RBShellClipboard *clipboard)
+entry_deleted_cb (RhythmDB *db,
+		  RhythmDBEntry *entry,
+		  RBShellClipboard *clipboard)
 {
-	clipboard->priv->nodes = g_list_remove (clipboard->priv->nodes, node);
+	clipboard->priv->entries = g_list_remove (clipboard->priv->entries, entry);
 
 	rb_shell_clipboard_sync (clipboard);
 }
 
 static void
-rb_shell_clipboard_nodeview_changed_cb (RBNodeView *view,
-					RBShellClipboard *clipboard)
+rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
+					 RBShellClipboard *clipboard)
 {
-	rb_debug ("nodeview changed");
+	rb_debug ("entryview changed");
 	rb_shell_clipboard_sync (clipboard);
 }

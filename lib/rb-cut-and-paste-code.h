@@ -35,6 +35,7 @@ GdkPixbuf *eel_create_colorized_pixbuf (GdkPixbuf *src,
 					int green_value,
 					int blue_value);
 
+
 G_END_DECLS
 
 #endif /* __RB_CUT_AND_PASTE_CODE_H */

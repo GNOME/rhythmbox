@@ -20,12 +20,14 @@
  */
 
 #include "rhythmdb.h"
+#include "rhythmdb-query-model.h"
+#include "rhythmdb-property-model.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
-#include <gdk/gdk.h>
 #include <libgnome/gnome-i18n.h>
 #include "rb-string-helpers.h"
 #include "rb-thread-helpers.h"
+#include "rb-debug.h"
 #include "rb-cut-and-paste-code.h"
 
 static void rhythmdb_class_init (RhythmDBClass *klass);
@@ -50,8 +52,26 @@ struct RhythmDBPrivate
 
 	GThread *load_thread;
 
+	GHashTable *query_threads;
+
 	GMutex *exit_mutex;
 	gboolean exiting;
+};
+
+struct RhythmDBQueryThreadInfo
+{
+	GThread *thread;
+	gboolean cancel;
+};
+
+struct RhythmDBQueryThreadData
+{
+	RhythmDB *db;
+	GPtrArray *query;
+	guint propid;
+	GtkTreeModel *main_model;
+	gboolean *cancel;
+	gboolean lock;
 };
 
 enum
@@ -63,12 +83,8 @@ enum
 enum
 {
 	ENTRY_ADDED,
-	GENRE_ADDED,
-	ARTIST_ADDED,
-	ALBUM_ADDED,
-	GENRE_DELETED,
-	ARTIST_DELETED,
-	ALBUM_DELETED,
+	ENTRY_RESTORED,
+	ENTRY_DELETED,
 	LAST_SIGNAL
 };
 
@@ -135,65 +151,25 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_TYPE_NONE,
 			      1, G_TYPE_POINTER);
 
-	rhythmdb_signals[GENRE_DELETED] =
-		g_signal_new ("genre_deleted",
+	rhythmdb_signals[ENTRY_DELETED] =
+		g_signal_new ("entry_deleted",
 			      RHYTHMDB_TYPE,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, genre_deleted),
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
+			      1, G_TYPE_POINTER);
 
-	rhythmdb_signals[ARTIST_DELETED] =
-		g_signal_new ("artist_deleted",
+	rhythmdb_signals[ENTRY_RESTORED] =
+		g_signal_new ("entry_restored",
 			      RHYTHMDB_TYPE,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, artist_deleted),
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_restored),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
+			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
-
-	rhythmdb_signals[ALBUM_DELETED] =
-		g_signal_new ("album_deleted",
-			      RHYTHMDB_TYPE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, album_deleted),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
-
-	rhythmdb_signals[GENRE_ADDED] =
-		g_signal_new ("genre_added",
-			      RHYTHMDB_TYPE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, genre_added),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
-
-	rhythmdb_signals[ARTIST_ADDED] =
-		g_signal_new ("artist_added",
-			      RHYTHMDB_TYPE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, artist_added),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
-
-	rhythmdb_signals[ALBUM_ADDED] =
-		g_signal_new ("album_added",
-			      RHYTHMDB_TYPE,
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, album_added),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__STRING,
-			      G_TYPE_NONE,
-			      1, G_TYPE_STRING);
+			      1, G_TYPE_POINTER);
 }
 
 static GType
@@ -231,6 +207,8 @@ rhythmdb_init (RhythmDB *db)
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
 	unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
 
+	g_assert (prop_class->n_values + unsaved_prop_class->n_values == RHYTHMDB_NUM_PROPERTIES);
+	g_assert (prop_class->n_values == RHYTHMDB_NUM_SAVED_PROPERTIES);
 	db->priv->column_types = g_new (GType, RHYTHMDB_NUM_PROPERTIES);
 	
 	/* Now, extract the GType of each column from the enum descriptions,
@@ -248,6 +226,8 @@ rhythmdb_init (RhythmDB *db)
 	
 	g_type_class_unref (prop_class);
 	g_type_class_unref (unsaved_prop_class);
+
+	db->priv->query_threads = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 void
@@ -261,6 +241,8 @@ rhythmdb_shutdown (RhythmDB *db)
 
 	if (db->priv->load_thread)
 		g_thread_join (db->priv->load_thread);
+
+	db->priv->query_threads = g_hash_table_new (g_direct_hash, g_direct_equal);
 }
 
 static void
@@ -278,6 +260,8 @@ rhythmdb_finalize (GObject *object)
 	g_static_rw_lock_free (&db->priv->lock);
 
 	g_mutex_free (db->priv->exit_mutex);
+
+	g_hash_table_destroy (db->priv->query_threads);
 
 	g_free (db->priv->column_types);
 
@@ -329,32 +313,24 @@ rhythmdb_get_property (GObject *object,
 void
 rhythmdb_read_lock (RhythmDB *db)
 {
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_LEAVE ();
 	g_static_rw_lock_reader_lock (&db->priv->lock);
 }
 
 void
 rhythmdb_read_unlock (RhythmDB *db)
 {
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_ENTER ();
 	g_static_rw_lock_reader_unlock (&db->priv->lock);
 }
 
 void
 rhythmdb_write_lock (RhythmDB *db)
 {
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_LEAVE ();
 	g_static_rw_lock_writer_lock (&db->priv->lock);
 }
 
 void
 rhythmdb_write_unlock (RhythmDB *db)
 {
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_ENTER ();
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
 }
 
@@ -377,6 +353,7 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	db_enter (db, TRUE);
 	
 	ret = klass->impl_entry_new (db, type, uri);
+	rb_debug ("emitting entry added");
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, ret);
 	return ret;
 }
@@ -403,16 +380,10 @@ rhythmdb_load (RhythmDB *db)
 void
 rhythmdb_load_join (RhythmDB *db)
 {
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_LEAVE ();
-
 	g_assert (db->priv->load_thread);
 
 	g_thread_join (db->priv->load_thread);
 	db->priv->load_thread = NULL;
-
-	if (rb_thread_helpers_in_main_thread ())
-		GDK_THREADS_ENTER ();
 }
 
 void
@@ -432,6 +403,20 @@ set_sort_key_value (RhythmDB *db, RhythmDBClass *klass,
 {
 	GValue val = {0, };
 	char *key = rb_get_sort_key (str);
+
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string_take_ownership (&val, key);
+	klass->impl_entry_set (db, entry, propid, &val);
+	g_value_unset (&val);
+}
+
+static void
+set_folded_value (RhythmDB *db, RhythmDBClass *klass,
+		  RhythmDBEntry *entry, guint propid,
+		  const char *str)
+{
+	GValue val = {0, };
+	char *key = g_utf8_casefold (str, -1);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string_take_ownership (&val, key);
@@ -470,20 +455,29 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	/* Handle any mirrored (unsaved) properties */
 	switch (propid)
 	{
-	case RHYTHMDB_PROP_NAME:
+	case RHYTHMDB_PROP_TITLE:
 		set_sort_key_value (db, klass, entry,
-				    RHYTHMDB_PROP_NAME_SORT_KEY,
+				    RHYTHMDB_PROP_TITLE_SORT_KEY,
 				    g_value_get_string (value));
+		set_folded_value (db, klass, entry,
+				  RHYTHMDB_PROP_TITLE_FOLDED,
+				  g_value_get_string (value));
 		break;
 	case RHYTHMDB_PROP_ARTIST:
 		set_sort_key_value (db, klass, entry,
 				    RHYTHMDB_PROP_ARTIST_SORT_KEY,
 				    g_value_get_string (value));
+		set_folded_value (db, klass, entry,
+				  RHYTHMDB_PROP_ARTIST_FOLDED,
+				  g_value_get_string (value));
 		break;
 	case RHYTHMDB_PROP_ALBUM:
 		set_sort_key_value (db, klass, entry,
 				    RHYTHMDB_PROP_ALBUM_SORT_KEY,
 				    g_value_get_string (value));
+		set_folded_value (db, klass, entry,
+				  RHYTHMDB_PROP_ALBUM_FOLDED,
+				  g_value_get_string (value));
 		break;
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
@@ -527,23 +521,56 @@ rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	
 	db_enter (db, TRUE);
+
+	rhythmdb_emit_entry_deleted (db, entry);
 	
 	klass->impl_entry_delete (db, entry);
 }
 
-static GPtrArray *
-parse_query (RhythmDB *db, va_list args)
+GPtrArray *
+rhythmdb_query_copy (GPtrArray *array)
+{
+	guint i;
+	GPtrArray *ret;
+
+	if (!array)
+		return NULL;
+	
+	ret = g_ptr_array_sized_new (array->len);	
+	for (i = 0; i < array->len; i++) {
+		RhythmDBQueryData *data = g_ptr_array_index (array, i);
+		RhythmDBQueryData *new_data = g_new0 (RhythmDBQueryData, 1);
+		new_data->type = data->type;
+		new_data->propid = data->propid;
+		if (data->val) {
+			new_data->val = g_new0 (GValue, 1);
+			g_value_init (new_data->val, G_VALUE_TYPE (data->val));
+			g_value_copy (data->val, new_data->val);
+		}
+		if (data->subquery)
+			new_data->subquery = rhythmdb_query_copy (data->subquery);
+		g_ptr_array_add (ret, new_data);
+	}
+
+	return ret;
+}
+
+GPtrArray *
+rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 {
 	RhythmDBQueryType query;
 	GPtrArray *ret = g_ptr_array_new ();
 	char *error;
 	
 	while ((query = va_arg (args, RhythmDBQueryType)) != RHYTHMDB_QUERY_END) {
-		RhythmDBQueryData *data = g_new (RhythmDBQueryData, 1);
+		RhythmDBQueryData *data = g_new0 (RhythmDBQueryData, 1);
 		data->type = query;
 		switch (query)
 		{
 		case RHYTHMDB_QUERY_DISJUNCTION:
+			break;
+		case RHYTHMDB_QUERY_SUBQUERY:
+			data->subquery = va_arg (args, GPtrArray *);
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
@@ -563,15 +590,56 @@ parse_query (RhythmDB *db, va_list args)
 	return ret;
 }
 
-static void
-free_query (GPtrArray *query)
+GPtrArray *
+rhythmdb_query_parse (RhythmDB *db, ...)
+{
+	GPtrArray *ret;
+	va_list args;
+
+	va_start (args, db);
+
+	ret = rhythmdb_query_parse_valist (db, args);
+
+	va_end (args);
+
+	return ret;
+}
+
+void
+rhythmdb_query_append (RhythmDB *db, GPtrArray *query, ...)
+{
+	va_list args;
+	guint i;
+	GPtrArray *new = g_ptr_array_new ();
+
+	va_start (args, query);
+
+	new = rhythmdb_query_parse_valist (db, args);
+
+	for (i = 0; i < new->len; i++)
+		g_ptr_array_add (query, g_ptr_array_index (new, i));
+
+	g_ptr_array_free (new, FALSE);
+
+	va_end (args);
+}
+
+void
+rhythmdb_query_free (GPtrArray *query)
 {
 	guint i;
+
+	if (query == NULL)
+		return;
+	
 	for (i = 0; i < query->len; i++) {
 		RhythmDBQueryData *data = g_ptr_array_index (query, i);
 		switch (data->type)
 		{
 		case RHYTHMDB_QUERY_DISJUNCTION:
+			break;
+		case RHYTHMDB_QUERY_SUBQUERY:
+			rhythmdb_query_free (data->subquery);
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
@@ -590,47 +658,88 @@ free_query (GPtrArray *query)
 	g_ptr_array_free (query, TRUE);
 }
 
-/* GtkTreeModel * */
-/* rhythmdb_do_entry_query (RhythmDB *db, ...) */
-/* { */
-/* 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db); */
-/* 	GtkTreeModel *ret; */
-/* 	GPtrArray *query; */
-/* 	va_list args; */
+gpointer
+property_query_thread_main (struct RhythmDBQueryThreadData *data)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (data->db);
 
-/* 	db_enter (db, FALSE); */
+	rb_debug ("doing property query");
+	g_object_ref (G_OBJECT (data->main_model));
+	if (data->lock)
+		rhythmdb_read_lock (data->db);
 
-/* 	va_start (args, db); */
+	klass->impl_do_property_query (data->db, data->propid,
+				       data->query, data->main_model);
 
-/* 	query = parse_query (args); */
+	if (data->lock)
+		rhythmdb_read_unlock (data->db);
 
-/* 	ret = klass->impl_do_entry_query (db, query); */
+	rb_debug ("completed");
+	rhythmdb_property_model_complete (RHYTHMDB_PROPERTY_MODEL (data->main_model));
+	g_object_unref (G_OBJECT (data->main_model));
 
-/* 	free_query (query); */
-/* 	va_end (args); */
-/* 	return ret; */
-/* } */
+	rhythmdb_query_free (data->query);
+	g_free (data);
+	return NULL;
+}
 
-/* GtkTreeModel * */
-/* rhythmdb_do_property_query (RhythmDB *db, guint property_id, ...) */
-/* { */
-/* 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db); */
-/* 	GtkTreeModel *ret; */
-/* 	GPtrArray *query; */
-/* 	va_list args; */
+void
+rhythmdb_do_property_query_ptrarray (RhythmDB *db, guint property_id,
+				     GtkTreeModel **model, GPtrArray *query)
+{
+	struct RhythmDBQueryThreadData *data;
 
-/* 	db_enter (db, FALSE); */
+	db_enter (db, FALSE);
 
-/* 	va_start (args); */
+	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data->db = db;
+	data->propid = property_id;
+	data->query = rhythmdb_query_copy (query);
+	data->main_model = GTK_TREE_MODEL (rhythmdb_property_model_new (db, property_id, query));
+	data->lock = FALSE;
 
-/* 	query = parse_query (args); */
+	property_query_thread_main (data);
 
-/* 	ret = klass->impl_do_property_query (db, property_id, query); */
+	*model = data->main_model;
+}
 
-/* 	free_query (query); */
-/* 	va_end (args); */
-/* 	return ret; */
-/* } */
+void
+rhythmdb_do_property_query_ptrarray_async (RhythmDB *db, guint property_id,
+					   GtkTreeModel *model, GPtrArray *query)
+{
+	struct RhythmDBQueryThreadData *data;
+
+	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data->db = db;
+	data->propid = property_id;
+	data->query = rhythmdb_query_copy (query);
+	data->main_model = model;
+	data->lock = TRUE;
+
+	g_thread_create ((GThreadFunc) property_query_thread_main, data, FALSE, NULL);
+
+/* 	g_hash_table_insert (db->priv->query_threads, main_model, info); */
+}
+
+void
+rhythmdb_do_property_query (RhythmDB *db, guint property_id, GtkTreeModel **model, ...)
+{
+	GPtrArray *query;
+	va_list args;
+
+	db_enter (db, FALSE);
+
+	va_start (args, model);
+
+	query = rhythmdb_query_parse_valist (db, args);
+
+	rhythmdb_do_property_query_ptrarray (db, property_id, model, query);
+
+	rhythmdb_query_free (query);
+
+	va_end (args);
+}
+
 
 RhythmDBEntry *
 rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri)
@@ -642,27 +751,126 @@ rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri)
 	return klass->impl_lookup_by_location (db, uri);
 }
 
-
-void
-rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel **main_model,
-			GtkTreeModel **genre_model,
-			GtkTreeModel **artist_model,
-			GtkTreeModel **album_model, ...)
+gboolean
+rhythmdb_evaluate_query (RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-	GPtrArray *query;
-	va_list args;
 
 	db_enter (db, FALSE);
 
-	va_start (args, album_model);
+	return klass->impl_evaluate_query (db, query, entry);
+}
 
-	query = parse_query (db, args);
+gpointer
+query_thread_main (struct RhythmDBQueryThreadData *data)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (data->db);
 
-	klass->impl_do_full_query (db, query, main_model, genre_model, artist_model, album_model);
+	rb_debug ("doing query");
+	g_object_ref (G_OBJECT (data->main_model));
 
-	free_query (query);
+	rhythmdb_read_lock (data->db);
+	
+	klass->impl_do_full_query (data->db, data->query,
+				   data->main_model,
+				   data->cancel);
+
+	rhythmdb_read_unlock (data->db);
+
+	rb_debug ("completed");
+	rhythmdb_query_model_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
+	g_object_unref (G_OBJECT (data->main_model));
+
+	rhythmdb_query_free (data->query);
+	g_free (data);
+	return NULL;
+}
+
+void
+rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
+				     GPtrArray *query)
+{
+	struct RhythmDBQueryThreadData *data;
+	struct RhythmDBQueryThreadInfo *info;
+
+	info = g_new0 (struct RhythmDBQueryThreadInfo, 1);
+	info->cancel = FALSE;
+
+	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data->db = db;
+	data->query = rhythmdb_query_copy (query);
+	data->main_model = main_model;
+	data->cancel = &info->cancel;
+
+	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
+		      "query", query, NULL);
+
+	info->thread = g_thread_create ((GThreadFunc) query_thread_main, data, FALSE, NULL);
+
+	g_hash_table_insert (db->priv->query_threads, main_model, info);
+}
+
+void
+rhythmdb_do_full_query_async (RhythmDB *db, GtkTreeModel *main_model, ...)
+{
+	GPtrArray *query;
+	va_list args;
+
+	va_start (args, main_model);
+
+	query = rhythmdb_query_parse_valist (db, args);
+
+	rhythmdb_do_full_query_async_parsed (db, main_model, query);
+
+	rhythmdb_query_free (query);
+
 	va_end (args);
+}
+
+void
+rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel *main_model, ...)
+{
+	GPtrArray *query;
+	va_list args;
+	gboolean cancel = FALSE;
+	struct RhythmDBQueryThreadData *data;
+
+	db_enter (db, FALSE);
+
+	va_start (args, main_model);
+
+	query = rhythmdb_query_parse_valist (db, args);
+
+	data = g_new0 (struct RhythmDBQueryThreadData, 1);
+	data->db = db;
+	data->query = rhythmdb_query_copy (query);
+	data->main_model = main_model;
+	data->cancel = &cancel;
+
+	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
+		      "query", query, NULL);
+
+	query_thread_main (data);
+
+	va_end (args);
+}
+
+void
+rhythmdb_query_cancel (RhythmDB *db, GtkTreeModel *query_model)
+{
+	struct RhythmDBQueryThreadInfo *info =
+		g_hash_table_lookup (db->priv->query_threads, query_model);
+
+	if (!info) {
+		rb_debug ("query is not running, not cancelling");
+		return;
+	}
+
+	rb_debug ("cancelling query");
+
+	info->cancel = TRUE;
+	/* FIXME memory leak here, we need to remove the thread from the hash
+ 	 * and free info.  Keep a weak ref somewhere? */
 }
 
 GType rhythmdb_get_property_type (RhythmDB *db, guint property_id)
@@ -688,6 +896,7 @@ rhythmdb_query_get_type (void)
 
 			ENUM_ENTRY (RHYTHMDB_QUERY_END, "Query end marker"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_DISJUNCTION, "Disjunctive marker"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_SUBQUERY, "Subquery"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "Property equivalence"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "Fuzzy property matching"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_GREATER, "True iff property1 > property2"),
@@ -712,12 +921,12 @@ rhythmdb_prop_get_type (void)
 		{
 
 			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gint)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_NAME, "Name (gchararray)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gint)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gint)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong)"),
@@ -745,10 +954,15 @@ rhythmdb_unsaved_prop_get_type (void)
 		static const GEnumValue values[] =
 		{
 
-			ENUM_ENTRY (RHYTHMDB_PROP_NAME_SORT_KEY, "Name sort key (gchararray)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_SORT_KEY, "Title sort key (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_SORT_KEY, "Genre sort key (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_SORT_KEY, "Artist sort key (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_SORT_KEY, "Album sort key (gchararray)"),
+
+			ENUM_ENTRY (RHYTHMDB_PROP_TITLE_FOLDED, "Title folded (gchararray)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_GENRE_FOLDED, "Genre folded (gchararray)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray)"),
 			{ 0, 0, 0 }
 		};
@@ -783,49 +997,19 @@ DEFINE_GETTER(float, float, FLOAT, 0)
 #undef DEFINE_GETTER
 
 void
-rhythmdb_emit_genre_added (RhythmDB *db, const char *genre)
+rhythmdb_emit_entry_added (RhythmDB *db, RhythmDBEntry *entry)
 {
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[GENRE_ADDED], 0, genre);
-	rb_thread_helpers_unlock_gdk ();
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, entry);
 }
 
 void
-rhythmdb_emit_artist_added (RhythmDB *db, const char *artist)
+rhythmdb_emit_entry_restored (RhythmDB *db, RhythmDBEntry *entry)
 {
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ARTIST_ADDED], 0, artist);
-	rb_thread_helpers_unlock_gdk ();
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_RESTORED], 0, entry);
 }
 
 void
-rhythmdb_emit_album_added (RhythmDB *db, const char *album)
+rhythmdb_emit_entry_deleted (RhythmDB *db, RhythmDBEntry *entry)
 {
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ALBUM_ADDED], 0, album);
-	rb_thread_helpers_unlock_gdk ();
-}
-
-void
-rhythmdb_emit_genre_deleted (RhythmDB *db, const char *genre)
-{
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[GENRE_DELETED], 0, genre);
-	rb_thread_helpers_unlock_gdk ();
-}
-
-void
-rhythmdb_emit_artist_deleted (RhythmDB *db, const char *artist)
-{
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ARTIST_DELETED], 0, artist);
-	rb_thread_helpers_unlock_gdk ();
-}
-
-void
-rhythmdb_emit_album_deleted (RhythmDB *db, const char *album)
-{
-	rb_thread_helpers_lock_gdk ();
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ALBUM_DELETED], 0, album);
-	rb_thread_helpers_unlock_gdk ();
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 }

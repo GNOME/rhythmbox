@@ -56,7 +56,7 @@ static void rb_new_station_dialog_entry_changed_cb (GtkEntry *entry,
 
 struct RBNewStationDialogPrivate
 {
-	RBIRadioBackend *backend;
+	RhythmDB *db;
 
 	GtkWidget   *title;
 	GtkWidget   *genre;
@@ -68,7 +68,7 @@ struct RBNewStationDialogPrivate
 enum 
 {
 	PROP_0,
-	PROP_BACKEND
+	PROP_DB
 };
 
 static GObjectClass *parent_class = NULL;
@@ -112,11 +112,11 @@ rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
 	object_class->get_property = rb_new_station_dialog_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_BACKEND,
-					 g_param_spec_object ("backend",
-					                      "RBIRadioBackend",
-					                      "RBIRadioBackend object",
-					                      RB_TYPE_IRADIO_BACKEND,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+					                      "RhythmDB",
+					                      "RhythmDB object",
+					                      RHYTHMDB_TYPE,
 					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	object_class->finalize = rb_new_station_dialog_finalize;
@@ -216,8 +216,8 @@ rb_new_station_dialog_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_BACKEND:
-		dialog->priv->backend = g_value_get_object (value);
+	case PROP_DB:
+		dialog->priv->db = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -235,8 +235,8 @@ rb_new_station_dialog_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_BACKEND:
-		g_value_set_object (value, dialog->priv->backend);
+	case PROP_DB:
+		g_value_set_object (value, dialog->priv->db);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -245,16 +245,17 @@ rb_new_station_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_new_station_dialog_new (RBIRadioBackend *backend)
+rb_new_station_dialog_new (RhythmDB *db)
 {
 	RBNewStationDialog *dialog;
 	GList *genrenames;
 
-	g_return_val_if_fail (RB_IS_IRADIO_BACKEND (backend), NULL);
+	g_return_val_if_fail (RHYTHMDB_IS (db), NULL);
 
-	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "backend", backend, NULL);
+	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "db", db, NULL);
 
-	genrenames = rb_iradio_backend_get_genre_names (backend);
+/* 	genrenames = rb_iradio_backend_get_genre_names (backend); */
+	genrenames = NULL;
 	if (genrenames != NULL) {
 		gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
 					       genrenames);
@@ -273,11 +274,12 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 {
 	if (response_id != GTK_RESPONSE_OK)
 		goto cleanup;
-	rb_iradio_backend_new_station (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)),
-				       gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)),
-				       gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)),
-				       "user",
-				       dialog->priv->backend);
+	/* RHYTHMDB FIXME */ 
+/* 	rb_iradio_backend_new_station (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)), */
+/* 				       gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)), */
+/* 				       gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)), */
+/* 				       "user", */
+/* 				       dialog->priv->backend); */
  cleanup:
 	return;
 }

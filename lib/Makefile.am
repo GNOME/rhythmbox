@@ -1,10 +1,10 @@
 ## arch-tag: Automake rules for misc. utility functions
 
-SUBDIRS = widgets
-
 noinst_LTLIBRARIES = librb.la
 
 librb_la_SOURCES =					\
+	rb-atomic.h					\
+	rb-atomic.c					\
 	rb-debug.c					\
 	rb-debug.h					\
 	rb-dialog.c					\
@@ -17,6 +17,8 @@ librb_la_SOURCES =					\
 	rb-marshal.h					\
 	disclosure-widget.c				\
 	disclosure-widget.h				\
+	gsequence.c					\
+	gsequence.h					\
 	rb-bonobo-helpers.c				\
 	rb-bonobo-helpers.h				\
 	rb-glade-helpers.c				\
@@ -45,6 +47,7 @@ INCLUDES =						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/library				\
+	-I$(top_srcdir)/rhythmdb			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
@@ -66,7 +69,5 @@ rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 
 librb_la_LDFLAGS = -export-dynamic
-librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la
-
 
 EXTRA_DIST = rb-marshal.list

@@ -27,6 +27,8 @@
 #include <gtk/gtktreemodel.h>
 #include <stdarg.h>
 
+#include "config.h"
+
 G_BEGIN_DECLS
 
 #define RHYTHMDB_TYPE      (rhythmdb_get_type ())
@@ -46,19 +48,20 @@ typedef enum
 {
 	RHYTHMDB_QUERY_END,
 	RHYTHMDB_QUERY_DISJUNCTION,
+	RHYTHMDB_QUERY_SUBQUERY,
 	RHYTHMDB_QUERY_PROP_EQUALS,
 	RHYTHMDB_QUERY_PROP_LIKE,
 	RHYTHMDB_QUERY_PROP_GREATER,
 	RHYTHMDB_QUERY_PROP_LESS,
 } RhythmDBQueryType;
 
-#define RHYTHMDB_NUM_PROPERTIES 19
+#define RHYTHMDB_NUM_PROPERTIES 23
 #define RHYTHMDB_NUM_SAVED_PROPERTIES 14
 
 typedef enum
 {
 	RHYTHMDB_PROP_TYPE,
-	RHYTHMDB_PROP_NAME,
+	RHYTHMDB_PROP_TITLE,
 	RHYTHMDB_PROP_GENRE,
 	RHYTHMDB_PROP_ARTIST,
 	RHYTHMDB_PROP_ALBUM,
@@ -75,10 +78,14 @@ typedef enum
 
 typedef enum
 {
-	RHYTHMDB_PROP_NAME_SORT_KEY = 14,
+	RHYTHMDB_PROP_TITLE_SORT_KEY = 14,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
 	RHYTHMDB_PROP_ARTIST_SORT_KEY,
 	RHYTHMDB_PROP_ALBUM_SORT_KEY,
+	RHYTHMDB_PROP_TITLE_FOLDED,
+	RHYTHMDB_PROP_GENRE_FOLDED,
+	RHYTHMDB_PROP_ARTIST_FOLDED,
+	RHYTHMDB_PROP_ALBUM_FOLDED,
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
 } RhythmDBUnsavedPropType;
 
@@ -94,6 +101,7 @@ typedef struct {
 	guint type;
 	guint propid;
 	GValue *val;
+	GPtrArray *subquery;
 } RhythmDBQueryData;
 
 typedef void RhythmDBEntry;
@@ -113,13 +121,8 @@ typedef struct
 
 	/* signals */
 	void	(*entry_added)		(RhythmDBEntry *entry);
-
-	void	(*genre_added)		(RhythmDBEntry *entry, const char *genre);
-	void	(*artist_added)		(RhythmDBEntry *entry, const char *artist);
-	void	(*album_added)		(RhythmDBEntry *entry, const char *album);
-	void	(*genre_deleted)	(RhythmDBEntry *entry, const char *genre);
-	void	(*artist_deleted)	(RhythmDBEntry *entry, const char *artist);
-	void	(*album_deleted)	(RhythmDBEntry *entry, const char *album);
+	void	(*entry_restored)	(RhythmDBEntry *entry);
+	void	(*entry_deleted)	(RhythmDBEntry *entry);
 
 	/* virtual methods */
 
@@ -138,11 +141,14 @@ typedef struct
 	void		(*impl_entry_delete)	(RhythmDB *db, RhythmDBEntry *entry);
 	RhythmDBEntry *	(*impl_lookup_by_location)(RhythmDB *db, const char *uri);
 
+	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
+
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
-						 GtkTreeModel **main_model,
-						 GtkTreeModel **genre_model,
-						 GtkTreeModel **artist_model,
-						 GtkTreeModel **album_model);
+						 GtkTreeModel *main_model,
+						 gboolean *cancel);
+
+	void		(*impl_do_property_query)(RhythmDB *db, guint propid, GPtrArray *query,
+						  GtkTreeModel *main_model);
 
 } RhythmDBClass;
 
@@ -174,6 +180,15 @@ void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
+#ifndef WITH_RHYTHMDB_TREE
+#define rhythmdb_entry_ref(DB, ENTRY) 
+#define rhythmdb_entry_ref_unlocked(DB, ENTRY) 
+#define rhythmdb_entry_unref(DB, ENTRY) 
+#define rhythmdb_entry_unref_unlocked(DB, ENTRY) 
+#else
+#include "rhythmdb-tree.h"
+#endif
+
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 
 const char *	rhythmdb_entry_get_string	(RhythmDB *db,
@@ -200,20 +215,24 @@ gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 
+/* GtkTreeModel *	rhythmdb_do_entry_query			(RhythmDB *db, ...); */
+
+gboolean	rhythmdb_evaluate_query			(RhythmDB *db, GPtrArray *query,
+							 RhythmDBEntry *entry);
+
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.
  * The extended arguments alternate between RhythmDBQueryType args
  * and their values.  Here's an example:
  *
- * rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Classical",
+ * rhythmdb_do_full_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Classical",
  *                          RHYTHMDB_QUERY_PROP_GREATER, "rating", 5,
  *                          RHYTHMDB_QUERY_END);
  *
- * Actually, you wouldn't literally specify "Classical" as above.  More on that
- * issue below.
- *
  */
-/* GtkTreeModel *	rhythmdb_do_entry_query			(RhythmDB *db, ...); */
+void		rhythmdb_do_full_query			(RhythmDB *db,
+							 GtkTreeModel *main_model,
+							 ...);
 
 /* This is a specialized query to return a flat list of metadata,
  * e.g. genre/artist/album.  The varargs are the same as for the
@@ -221,23 +240,35 @@ RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri
  * as constructing a list of all entries which match the query, and then
  * returning the values of the attribute as a set.
  */
-/* GtkTreeModel *	rhythmdb_do_property_query		(RhythmDB *db, guint property_id, ...); */
+void		rhythmdb_do_property_query		(RhythmDB *db, guint property_id,
+							 GtkTreeModel **model, ...);
 
-void		rhythmdb_do_full_query			(RhythmDB *db,
-							 GtkTreeModel **main_model,
-							 GtkTreeModel **genre_model,
-							 GtkTreeModel **artist_model,
-							 GtkTreeModel **album_model, ...);
+void		rhythmdb_do_property_query_async	(RhythmDB *db, guint property_id,
+							 GtkTreeModel *model, ...);
+
+void		rhythmdb_do_property_query_ptrarray	(RhythmDB *db, guint property_id,
+							 GtkTreeModel **model, GPtrArray *query);
+
+void		rhythmdb_do_property_query_ptrarray_async(RhythmDB *db, guint property_id,
+							  GtkTreeModel *model, GPtrArray *query);
+
+void		rhythmdb_do_full_query_async		(RhythmDB *db, GtkTreeModel *main_model, ...);
+
+void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db, GtkTreeModel *main_model,
+							 GPtrArray *query);
+
+void		rhythmdb_query_cancel			(RhythmDB *db, GtkTreeModel *query_model);
 
 GType		rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
 
-void		rhythmdb_emit_genre_deleted		(RhythmDB *db, const char *genre);
-void		rhythmdb_emit_artist_deleted		(RhythmDB *db, const char *artist);
-void		rhythmdb_emit_album_deleted		(RhythmDB *db, const char *album);
+GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
+void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
+void		rhythmdb_query_free			(GPtrArray *query);
+GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
 
-void		rhythmdb_emit_genre_added		(RhythmDB *db, const char *genre);
-void		rhythmdb_emit_artist_added		(RhythmDB *db, const char *artist);
-void		rhythmdb_emit_album_added		(RhythmDB *db, const char *album);
+void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
+void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
+void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
 G_END_DECLS
 

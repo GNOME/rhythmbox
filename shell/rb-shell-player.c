@@ -26,6 +26,7 @@
 #include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
@@ -38,11 +39,13 @@
 #include <gdk/gdkx.h>
 #endif /* HAVE_MMKEYS */
 
+#include "rb-property-view.h"
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
 #include "rb-glade-helpers.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-thread-helpers.h"
+#include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
 #include "rb-debug.h"
@@ -102,28 +105,29 @@ static void rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 					       const char *verbname);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
-							 gboolean sync_node_view);
+							 gboolean sync_entry_view);
 static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 
-static void rb_shell_player_playing_node_removed_cb (RBNodeView *view,
-						     RBNode *node,
-						     RBShellPlayer *playa);
-static void rb_shell_player_nodeview_changed_cb (RBNodeView *view,
-						 RBShellPlayer *playa);
-static void rb_shell_player_node_activated_cb (RBNodeView *view,
-					       RBNode *node,
-					       RBShellPlayer *playa);
-static void rb_shell_player_extra_node_activated_cb (RBNodeView *view,
-						     RBNode *node,
-						     RBShellPlayer *playa);
+static void rb_shell_player_playing_entry_deleted_cb (RBEntryView *view,
+						      RhythmDBEntry *entry,
+						      RBShellPlayer *playa);
+static void rb_shell_player_entry_view_changed_cb (RBEntryView *view,
+						   RBShellPlayer *playa);
+static void rb_shell_player_entry_activated_cb (RBEntryView *view,
+						RhythmDBEntry *entry,
+						RBShellPlayer *playa);
+static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
+						       const char *name,
+						       RBShellPlayer *playa);
 static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player);
+static void update_play_statistics (RhythmDB *db, RhythmDBEntry *entry);
 static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
 static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
 static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
@@ -162,6 +166,8 @@ static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
 
 struct RBShellPlayerPrivate
 {
+	RhythmDB *db;
+	
 	RBSource *selected_source;
 	RBSource *source;
 
@@ -179,7 +185,7 @@ struct RBShellPlayerPrivate
 	gboolean have_artist_album;
 	char *url;
 
-	gboolean have_previous_node;
+	gboolean have_previous_entry;
 
 	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
@@ -501,22 +507,23 @@ rb_shell_player_set_property (GObject *object,
 	case PROP_SOURCE:
 		if (player->priv->selected_source != NULL)
 		{
-			RBNodeView *songs = rb_source_get_node_view (player->priv->selected_source);
+			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_nodeview_changed_cb),
+							      G_CALLBACK (rb_shell_player_entry_view_changed_cb),
 							      player);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_node_activated_cb),
+							      G_CALLBACK (rb_shell_player_entry_activated_cb),
 							      player);
 			for (; extra_views; extra_views = extra_views->next)
 				g_signal_handlers_disconnect_by_func (G_OBJECT (extra_views->data),
-								      G_CALLBACK (rb_shell_player_extra_node_activated_cb),
+								      G_CALLBACK (rb_shell_player_property_row_activated_cb),
 								      player);
 			g_list_free (extra_views);
 			
 		}
+
 		
 		player->priv->selected_source = g_value_get_object (value);
 		rb_debug ("selected source %p", g_value_get_object (value));
@@ -526,24 +533,30 @@ rb_shell_player_set_property (GObject *object,
 
 		if (player->priv->selected_source != NULL)
 		{
-			RBNodeView *songs = rb_source_get_node_view (player->priv->selected_source);
+			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
 			g_signal_connect (G_OBJECT (songs),
 					  "changed",
-					  G_CALLBACK (rb_shell_player_nodeview_changed_cb),
+					  G_CALLBACK (rb_shell_player_entry_view_changed_cb),
 					  player);
 			g_signal_connect (G_OBJECT (songs),
-					  "node_activated",
-					  G_CALLBACK (rb_shell_player_node_activated_cb),
+					  "entry-activated",
+					  G_CALLBACK (rb_shell_player_entry_activated_cb),
 					  player);
 			for (; extra_views; extra_views = extra_views->next)
 				g_signal_connect (G_OBJECT (extra_views->data),
-						  "node_activated",
-						  G_CALLBACK (rb_shell_player_extra_node_activated_cb),
+						  "property-activated",
+						  G_CALLBACK (rb_shell_player_property_row_activated_cb),
 						  player);
 
 			g_list_free (extra_views);
+			
+			/* Set database object */
+			g_object_get (G_OBJECT (player->priv->selected_source),
+				      "db", &player->priv->db, NULL);
+			g_object_set (G_OBJECT (player->priv->player_widget),
+				      "db", player->priv->db, NULL);
 		}
 		
 		break;
@@ -629,13 +642,13 @@ rb_shell_player_new (BonoboUIComponent *component,
 	return player;
 }
 
-static RBNode *
-rb_shell_player_get_playing_node (RBShellPlayer *player)
+static RhythmDBEntry *
+rb_shell_player_get_playing_entry (RBShellPlayer *player)
 {
-	RBNodeView *songs;
+	RBEntryView *songs;
 	if (player->priv->source) {
-		songs = rb_source_get_node_view (player->priv->source);
-		return rb_node_view_get_playing_node (songs);
+		songs = rb_source_get_entry_view (player->priv->source);
+		return rb_entry_view_get_playing_entry (songs);
 	}
 	return NULL;
 }
@@ -643,10 +656,10 @@ rb_shell_player_get_playing_node (RBShellPlayer *player)
 static gboolean
 rb_shell_player_have_first (RBShellPlayer *player, RBSource *source)
 {
-	RBNodeView *songs;
+	RBEntryView *songs;
 	if (source) {
-		songs = rb_source_get_node_view (source);
-		return rb_node_view_get_first_node (songs) != NULL;
+		songs = rb_source_get_entry_view (source);
+		return rb_entry_view_get_first_entry (songs) != NULL;
 	}
 	return FALSE;
 }
@@ -687,10 +700,16 @@ rb_shell_player_open_location (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_open_node (RBShellPlayer *player, RBNode *node, GError **error)
+rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	const char *location = rb_node_get_property_string (node,
-							    RB_NODE_PROP_LOCATION);
+	const char *location;
+
+	rhythmdb_read_lock (player->priv->db);
+
+	location = rhythmdb_entry_get_string (player->priv->db, entry,
+					      RHYTHMDB_PROP_LOCATION);
+
+	rhythmdb_read_unlock (player->priv->db);
 
 	rb_shell_player_open_location (player, location, error);
 	if (*error == NULL)
@@ -726,9 +745,9 @@ duration_signal_idle (RBShellPlayer *player)
 static void
 rb_shell_player_play (RBShellPlayer *player)
 {
-	RBNodeView *songs = rb_source_get_node_view (player->priv->selected_source);
+	RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 
-	rb_node_view_set_playing (songs, TRUE);
+	rb_entry_view_set_playing (songs, TRUE);
 
 	monkey_media_player_play (player->priv->mmplayer);
 
@@ -741,17 +760,17 @@ rb_shell_player_play (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_set_playing_node (RBShellPlayer *player, RBNode *node)
+rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 {
 	GError *error = NULL;
-	RBNodeView *songs;
+	RBEntryView *songs;
 	
 	g_return_if_fail (player->priv->source != NULL);
-	g_return_if_fail (node != NULL);
+	g_return_if_fail (entry != NULL);
 	
-	songs = rb_source_get_node_view (player->priv->source);
+	songs = rb_source_get_entry_view (player->priv->source);
 
-	rb_shell_player_open_node (player, node, &error);
+	rb_shell_player_open_entry (player, entry, &error);
 
 	if (error != NULL) {
 		rb_error_dialog (error->message);
@@ -759,81 +778,83 @@ rb_shell_player_set_playing_node (RBShellPlayer *player, RBNode *node)
 	}
 
 	rb_debug ("Success!");
-	rb_node_view_set_playing_node (songs, node);
+	rb_entry_view_set_playing_entry (songs, entry);
 	rb_shell_player_play (player);
 }
 
 static void
 rb_shell_player_previous (RBShellPlayer *player)
 {
-	RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-	RBNode *node;
+	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
+	RhythmDBEntry *entry;
 
 	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		rb_debug ("choosing random node");
-		node =  rb_node_view_get_random_node (songs);
+		rb_debug ("choosing random entry");
+		/* RHYTHMDB FIXME */
+/* 		entry =  rb_entry_view_get_random_entry (songs); */
 	} else {
-		rb_debug ("choosing previous linked node");
-		node = rb_node_view_get_previous_node (songs);
+		rb_debug ("choosing previous linked entry");
+		entry = rb_entry_view_get_previous_entry (songs);
 	}
-	if (node == NULL) {
-		rb_debug ("No previous node, stopping playback");
+	if (entry == NULL) {
+		rb_debug ("No previous entry, stopping playback");
 		rb_shell_player_set_playing_source (player, NULL);
 		return;
 	}
 
-	rb_shell_player_set_playing_node (player, node);
+	rb_shell_player_set_playing_entry (player, entry);
 }
 
 static void
 rb_shell_player_next (RBShellPlayer *player)
 {
-	RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-	RBNode *node;
+	RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
+	RhythmDBEntry *entry;
 
 	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-		rb_debug ("choosing random node");
-		node =  rb_node_view_get_random_node (songs);
+		rb_debug ("choosing random entry");
+		/* RHYTHMDB FIXME */
+		/* entry =  rb_entry_view_get_random_entry (songs); */
 	} else {
-		rb_debug ("choosing next linked node");
-		node = rb_node_view_get_next_node (songs);
+		rb_debug ("choosing next linked entry");
+		entry = rb_entry_view_get_next_entry (songs);
 	}
 
-	if (node == NULL) {
+	if (entry == NULL) {
 		/* If repeat is enabled, loop back to the start */
 		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)
 		    && rb_shell_player_have_first (player, player->priv->source)) {
-			rb_debug ("No next node, but repeat is enabled");
-			node = rb_node_view_get_first_node (songs);
+			rb_debug ("No next entry, but repeat is enabled");
+			entry = rb_entry_view_get_first_entry (songs);
 		} else {
-			rb_debug ("No next node, stopping playback");
+			rb_debug ("No next entry, stopping playback");
 			rb_shell_player_set_playing_source (player, NULL);
 			return;
 		}
 	}
 
-	rb_shell_player_set_playing_node (player, node);
+	rb_shell_player_set_playing_entry (player, entry);
 }
 
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
 	RBSource *source;
-	RBNode *node;
-	RBNodeView *songs;
+	RhythmDBEntry *entry;
+	RBEntryView *songs;
 
 	source = player->priv->source ? player->priv->source :
 		player->priv->selected_source;
 
-	songs = rb_source_get_node_view (source);
+	songs = rb_source_get_entry_view (source);
 
-	node = rb_shell_player_get_playing_node (player);	
+	entry = rb_shell_player_get_playing_entry (player);	
 
-	if (node == NULL)
+	if (entry == NULL)
 		return;
 	
-	rb_node_view_scroll_to_node (songs, node);
-	rb_node_view_select_node (songs, rb_node_view_get_playing_node (songs));
+	rb_entry_view_scroll_to_entry (songs, entry);
+	rb_entry_view_select_entry (songs, rb_entry_view_get_playing_entry (songs));
 }
 
 void
@@ -906,7 +927,7 @@ rb_shell_player_playpause (RBShellPlayer *player)
 		break;
 	case PLAY_BUTTON_PLAY:
 	{
-		RBNode *node;
+		RhythmDBEntry *entry;
 		if (player->priv->source == NULL) {
 			/* no current stream, pull one in from the currently
 			 * selected source */
@@ -914,18 +935,19 @@ rb_shell_player_playpause (RBShellPlayer *player)
 			rb_shell_player_set_playing_source (player, player->priv->selected_source);
 		}
 
-		node = rb_shell_player_get_playing_node (player);
-		if (!node) {
-			RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		entry = rb_shell_player_get_playing_entry (player);
+		if (entry == NULL) {
+			RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 			
 			if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-				rb_debug ("choosing random node");
-				node =  rb_node_view_get_random_node (songs);
+				rb_debug ("choosing random entry");
+				/* RHYTHMDB FIXME */
+				/* entry =  rb_entry_view_get_random_entry (songs); */
 			} else {
-				node = rb_node_view_get_first_node (songs);
+				entry = rb_entry_view_get_first_entry (songs);
 			}
-			g_return_if_fail (node != NULL);
-			rb_shell_player_set_playing_node (player, node);
+			g_return_if_fail (entry != NULL);
+			rb_shell_player_set_playing_entry (player, entry);
 		} else {
 			rb_shell_player_play (player);
 		}
@@ -1039,57 +1061,59 @@ rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_player_playing_node_removed_cb (RBNodeView *view,
-					 RBNode *node,
-					 RBShellPlayer *playa)
+rb_shell_player_playing_entry_deleted_cb (RBEntryView *view,
+					  RhythmDBEntry *entry,
+					  RBShellPlayer *playa)
 {
-	rb_debug ("playing node removed!");
-	/* Here we are called via a signal from the node view.
-	 * Thus, we ensure we don't call back into the node view
-	 * to change things again.  When the playing node is removed,
-	 * the node view takes care of setting itself to stop playing.
+	rb_debug ("playing entry removed!");
+	/* Here we are called via a signal from the entry view.
+	 * Thus, we ensure we don't call back into the entry view
+	 * to change things again.  When the playing entry is removed,
+	 * the entry view takes care of setting itself to stop playing.
 	 */
 	rb_shell_player_set_playing_source_internal (playa, NULL, FALSE);
 }
 
 static void
-rb_shell_player_nodeview_changed_cb (RBNodeView *view,
-				     RBShellPlayer *playa)
+rb_shell_player_entry_view_changed_cb (RBEntryView *view,
+				       RBShellPlayer *playa)
 {
-	rb_debug ("nodeview changed");
+	rb_debug ("entry view changed");
 	rb_shell_player_sync_buttons (playa);
 }
 
 static void
-rb_shell_player_node_activated_cb (RBNodeView *view,
-				   RBNode *node,
+rb_shell_player_entry_activated_cb (RBEntryView *view,
+				   RhythmDBEntry *entry,
 				   RBShellPlayer *playa)
 {
-	g_return_if_fail (node != NULL);
+	g_return_if_fail (entry != NULL);
 
-	rb_debug  ("got node %p activated", node);
+	rb_debug  ("got entry %p activated", entry);
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 
-	rb_shell_player_set_playing_node (playa, node);
+	rb_shell_player_set_playing_entry (playa, entry);
 }
 
-static void rb_shell_player_extra_node_activated_cb (RBNodeView *view,
-						     RBNode *node,
-						     RBShellPlayer *playa)
+static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
+						       const char *name,
+						       RBShellPlayer *playa)
 {
-	RBNodeView *songs;
-	g_return_if_fail (node != NULL);
+	RhythmDBEntry *entry;
+	RBEntryView *songs;
 
-	rb_debug  ("got extra node %p activated", node);
+	rb_debug  ("got property activated");
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 
-	songs = rb_source_get_node_view (playa->priv->source);
-	node = rb_node_view_get_first_node (songs);
-	g_return_if_fail (node != NULL);
+	/* RHYTHMDBFIXME - do we need to wait here until the query is finished?
+	 */
+	songs = rb_source_get_entry_view (playa->priv->source);
+	entry = rb_entry_view_get_first_entry (songs);
+	g_return_if_fail (entry != NULL);
 
-	rb_shell_player_set_playing_node (playa, node);
+	rb_shell_player_set_playing_entry (playa, entry);
 }
 
 static void
@@ -1149,34 +1173,40 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 static void
 rb_shell_player_sync_with_source (RBShellPlayer *player)
 {
-	const char *nodetitle = NULL, *artist = NULL;
+	const char *entry_title = NULL, *artist = NULL;
 	char *title;
-	RBNode *node;
+	RhythmDBEntry *entry;
 	char *duration;
 
-	node = rb_shell_player_get_playing_node (player);
-	rb_debug ("playing source: %p, active node: %p", player->priv->source, node);
+	entry = rb_shell_player_get_playing_entry (player);
+	rb_debug ("playing source: %p, active entry: %p", player->priv->source, entry);
 
-	if (node != NULL) {
-		nodetitle = rb_node_get_property_string (node, RB_NODE_PROP_NAME);
-		artist = rb_node_get_property_string (node, RB_NODE_PROP_ARTIST);
+	if (entry != NULL) {
+		rhythmdb_read_lock (player->priv->db);
+
+		entry_title = rhythmdb_entry_get_string (player->priv->db,
+							 entry, RHYTHMDB_PROP_TITLE);
+		artist = rhythmdb_entry_get_string (player->priv->db, entry,
+						    RHYTHMDB_PROP_ARTIST);
+
+		rhythmdb_read_unlock (player->priv->db);
 	}
 
 	if (player->priv->have_url)
 		rb_player_set_urldata (player->priv->player_widget,
-				       nodetitle,
+				       entry_title,
 				       player->priv->url);
 	else
 		rb_player_set_urldata (player->priv->player_widget,
 				       NULL, NULL);
 
-	if (player->priv->song && nodetitle)
+	if (player->priv->song && entry_title)
 		title = g_strdup_printf ("%s (%s)", player->priv->song,
-					 nodetitle);
-	else if (nodetitle && artist)
-		title = g_strdup_printf ("%s - %s", artist, nodetitle);
-	else if (nodetitle)
-		title = g_strdup (nodetitle);
+					 entry_title);
+	else if (entry_title && artist)
+		title = g_strdup_printf ("%s - %s", artist, entry_title);
+	else if (entry_title)
+		title = g_strdup (entry_title);
 	else
 		title = NULL;
 
@@ -1192,9 +1222,9 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	if (player->priv->song)
 		rb_player_set_title (player->priv->player_widget, title);
 	else
-		rb_player_set_title (player->priv->player_widget, nodetitle);
+		rb_player_set_title (player->priv->player_widget, entry_title);
 	g_free (title);
-	rb_player_set_playing_node (player->priv->player_widget, node);
+	rb_player_set_playing_entry (player->priv->player_widget, entry);
 	rb_player_sync (player->priv->player_widget);
 }
 
@@ -1210,29 +1240,29 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	rb_debug ("syncing with source %p", source);
 
-	source = rb_shell_player_get_playing_node (player) == NULL ?
+	source = rb_shell_player_get_playing_entry (player) == NULL ?
 		 player->priv->selected_source : player->priv->source;
 
 	/* If we have a source and it's not empty, next and prev depend
-	 * on the availability of the next/prev node. However if we are 
+	 * on the availability of the next/prev entry. However if we are 
 	 * shuffling only next make sense and if we are repeating next
 	 * is always ok (restart)
 	 */
 	if (source && rb_shell_player_have_first (player, source)) {
-		RBNodeView *songs;
-		songs = rb_source_get_node_view (source);
+		RBEntryView *songs;
+		songs = rb_source_get_entry_view (source);
 
 		not_empty = TRUE;
 
 		have_previous = monkey_media_player_get_uri (player->priv->mmplayer) != NULL;
-		player->priv->have_previous_node = (rb_node_view_get_previous_node (songs) != NULL);
+		player->priv->have_previous_entry = (rb_entry_view_get_previous_entry (songs) != NULL);
 
 		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 			have_next = TRUE;
 		} else if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
 			have_next = TRUE;
 		} else {
-			have_next = (rb_node_view_get_next_node (songs) != NULL);
+			have_next = (rb_entry_view_get_next_entry (songs) != NULL);
 		}
 	}
 
@@ -1244,13 +1274,13 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
         not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
-				 rb_shell_player_get_playing_node (player) != NULL
+				 rb_shell_player_get_playing_entry (player) != NULL
 				 && not_small );
 
 	{
-		RBNodeView *view = rb_source_get_node_view (player->priv->selected_source);
+		RBEntryView *view = rb_source_get_entry_view (player->priv->selected_source);
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
-					 rb_node_view_have_selection (view));
+					 rb_entry_view_have_selection (view));
 	}
 
 	if (monkey_media_player_playing (player->priv->mmplayer)) {
@@ -1290,7 +1320,7 @@ rb_shell_player_set_playing_source (RBShellPlayer *player,
 static void
 rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 					     RBSource *source,
-					     gboolean sync_node_view)
+					     gboolean sync_entry_view)
 
 {
 	if (player->priv->source == source && source != NULL)
@@ -1300,24 +1330,24 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 
 	/* Stop the already playing source. */
 	if (player->priv->source != NULL) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-		if (sync_node_view) {
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
+		if (sync_entry_view) {
 			rb_debug ("source is already playing, stopping it");
-			rb_node_view_set_playing_node (songs, NULL);
-			rb_node_view_set_playing (songs, FALSE);
+			rb_entry_view_set_playing_entry (songs, NULL);
+			rb_entry_view_set_playing (songs, FALSE);
 		}
 		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-						      G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+						      G_CALLBACK (rb_shell_player_playing_entry_deleted_cb),
 						      player);
 	}
 	
 	player->priv->source = source;
 
 	if (source != NULL) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 		g_signal_connect (G_OBJECT (songs),
-				  "playing_node_removed",
-				  G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+				  "playing_entry_deleted",
+				  G_CALLBACK (rb_shell_player_playing_entry_deleted_cb),
 				  player);
 	}
 
@@ -1388,19 +1418,25 @@ rb_shell_player_set_playing_time (RBShellPlayer *player, long time)
 long
 rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
 {
-	RBNode *current_node;
+	RhythmDBEntry *current_entry;
+	long ret;
 	
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), -1);
 	
-	current_node = rb_shell_player_get_playing_node (player);
+	current_entry = rb_shell_player_get_playing_entry (player);
 
-	if (current_node == NULL)
-	{
-		rb_debug ("Did not get playing node : return -1 as length");
+	if (current_entry == NULL) {
+		rb_debug ("Did not get playing entry : return -1 as length");
 		return -1;
 	}
 	
-	return rb_node_get_property_long (current_node, RB_NODE_PROP_DURATION);
+	rhythmdb_read_lock (player->priv->db);
+	
+	ret = rhythmdb_entry_get_long (player->priv->db, current_entry,
+				       RHYTHMDB_PROP_DURATION);
+	
+	rhythmdb_read_unlock (player->priv->db);
+	return ret;
 }
 
 static void
@@ -1420,6 +1456,44 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 	}
 }
 
+
+static void
+update_play_statistics (RhythmDB *db, RhythmDBEntry *entry)
+{
+	char *time_string;
+	time_t now;
+	GValue value = { 0, };
+
+	g_value_init (&value, G_TYPE_INT);
+
+	rhythmdb_write_lock (db);
+	
+	g_value_set_int (&value, rhythmdb_entry_get_int (db, entry,
+							 RHYTHMDB_PROP_PLAY_COUNT) + 1);
+
+	/* Increment current play count */
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
+	g_value_unset (&value);
+	
+	/* Reset the last played time */
+	time (&now);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, now);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
+	g_value_unset (&value);
+
+	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
+
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, time_string);
+	g_free (time_string);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED_STR, &value);
+	g_value_unset (&value);
+
+	rhythmdb_write_unlock (db);
+}
+
 static void
 eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 {
@@ -1430,13 +1504,13 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 
 	if (player->priv->source != NULL)
 	{
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 
 		rb_debug ("updating play statistics");
 
-		rb_node_view_freeze (songs);
-		rb_node_update_play_statistics (rb_shell_player_get_playing_node (player));
-		rb_node_view_thaw (songs);
+		rb_entry_view_freeze (songs);
+		update_play_statistics (player->priv->db, rb_shell_player_get_playing_entry (player));
+		rb_entry_view_thaw (songs);
 
 		switch (rb_source_handle_eos (player->priv->source))
 		{
@@ -1500,12 +1574,12 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		   gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	RBNodeView *songs;
-	RBNode *node;
+	RBEntryView *songs;
+	RhythmDBEntry *entry;
 	gboolean changed = FALSE;
 	char *valcontents;
-	GEnumValue *enumvalue = g_enum_get_value(g_type_class_peek(MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD),
-						 field);
+	GEnumValue *enumvalue = g_enum_get_value (g_type_class_peek (MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD),
+						  field);
 	valcontents = g_strdup_value_contents (value);
 	rb_debug ("info: %s -> %s; source: %p uri: %s\n",
 		  enumvalue->value_name,
@@ -1524,11 +1598,11 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 
 	gdk_threads_enter ();
 
-	songs = rb_source_get_node_view (player->priv->source);
-	node = rb_node_view_get_playing_node (songs);
+	songs = rb_source_get_entry_view (player->priv->source);
+	entry = rb_entry_view_get_playing_entry (songs);
 
-	if (node == NULL) {
-		rb_debug ("Got info_available but no playing node!");
+	if (entry == NULL) {
+		rb_debug ("Got info_available but no playing entry!");
 		goto out_unlock;
 	}
 
@@ -1577,7 +1651,9 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		rb_debug ("Got stream quality: \"%s\"", qualitystr);
 		g_value_init (&newval, G_TYPE_STRING);
 		g_value_set_string_take_ownership (&newval, qualitystr);
-		rb_node_set_property (node, RB_NODE_PROP_QUALITY, &newval);
+		rhythmdb_write_lock (player->priv->db);
+		rhythmdb_entry_set (player->priv->db, entry, RHYTHMDB_PROP_QUALITY, &newval);
+		rhythmdb_write_unlock (player->priv->db);
 		g_value_unset (&newval);
 		break;
 	}
@@ -1760,7 +1836,7 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 
 	player = (RBShellPlayer *)data;
 
-	source = rb_shell_player_get_playing_node (player) == NULL ?
+	source = rb_shell_player_get_playing_entry (player) == NULL ?
 			player->priv->selected_source : player->priv->source;
 
 	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {	
