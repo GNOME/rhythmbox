@@ -1,3 +1,10 @@
+2002-11-07  Olivier Martin <oleevye@wanadoo.fr>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_scroll_to_node),
+	(scroll_to_cell):
+	
+	Fix autojump behaviour.	
+
 2002-11-07  Jorn Baayen  <jorn@nl.linux.org>
 
 	* shell/rb-shell.c: (rb_shell_append_view):
@@ -202,7 +209,7 @@
 
 	Jump to current song when Back/Next is pressed.
 
-2002-11-02  Olivier  <oleevye@wanadoo.fr>
+2002-11-02  Olivier Martin <oleevye@wanadoo.fr>
 
 	* lib/widgets/rb-rating.c: (rb_rating_expose):
 

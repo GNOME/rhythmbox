@@ -110,6 +110,7 @@ static int dumb_sort_func (GtkTreeModel *model,
 		           gpointer user_data);
 static void after_filter_changed_cb (RBNodeFilter *filter,
 			             RBNodeView *view);
+static gboolean scroll_to_cell (GtkTreeView *treeview);
 
 struct RBNodeViewPrivate
 {
@@ -1418,13 +1419,24 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 
 	path = gtk_tree_model_get_path (view->priv->sortmodel, &iter);
 
-	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
-				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
-				      TRUE, 0.5, 0.0);
+	/* remove this hack when rb requires GTK+ HEAD */
+	g_object_set_data (G_OBJECT (view->priv->treeview), "cell_path", path);
+	g_idle_add ((GSourceFunc) scroll_to_cell, view->priv->treeview);
+
 	gtk_tree_view_set_cursor (GTK_TREE_VIEW (view->priv->treeview), path,
 				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
+}
 
+static gboolean
+scroll_to_cell (GtkTreeView *treeview)
+{
+	GtkTreePath *path = g_object_get_data (G_OBJECT (treeview), "cell_path");
+	gtk_tree_view_scroll_to_cell (treeview, path,
+				      gtk_tree_view_get_column (treeview, 0),
+				      TRUE, 0.5, 0.0);
 	gtk_tree_path_free (path);
+
+	return FALSE;
 }
 
 static gboolean
