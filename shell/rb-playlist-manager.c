@@ -772,7 +772,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
-	if (file == NULL)
+	if (escaped_file == NULL)
 		return;
 
 	rb_playlist_manager_parse_file (mgr, escaped_file);
