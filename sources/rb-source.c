@@ -21,7 +21,6 @@
 
 #include <config.h>
 #include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-ui-container.h>
 #include <bonobo/bonobo-ui-util.h>
 #include <libgnome/gnome-i18n.h>
 
@@ -53,12 +52,12 @@ static RBSourceEOFType default_handle_eos (RBSource *source);
 static void default_buffering_done  (RBSource *source);
 static gboolean default_receive_drag  (RBSource *source, GtkSelectionData *data);
 static gboolean default_show_popup  (RBSource *source);
+static void default_delete_thyself (RBSource *source);
 
 struct RBSourcePrivate
 {
 	char *name;
 	
-	BonoboUIContainer *container;
 	BonoboUIComponent *component;
 };
 
@@ -66,13 +65,13 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
-	PROP_CONTAINER,
 };
 
 enum
 {
 	STATUS_CHANGED,
 	FILTER_CHANGED,
+	DELETED,
 	LAST_SIGNAL
 };
 
@@ -133,6 +132,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_get_config_widget = default_get_config_widget;
 	klass->impl_receive_drag = default_receive_drag;
 	klass->impl_show_popup = default_show_popup;
+	klass->impl_delete_thyself = default_delete_thyself;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -141,13 +141,15 @@ rb_source_class_init (RBSourceClass *klass)
 							      "Interface name",
 							      NULL,
 							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_CONTAINER,
-					 g_param_spec_object ("container",
-							      "BonoboUIContainer",
-							      "BonoboUIContainer object",
-							      BONOBO_TYPE_UI_CONTAINER,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	rb_source_signals[DELETED] =
+		g_signal_new ("deleted",
+			      RB_TYPE_SOURCE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSourceClass, status_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	rb_source_signals[STATUS_CHANGED] =
 		g_signal_new ("status_changed",
@@ -211,9 +213,6 @@ rb_source_set_property (GObject *object,
 	case PROP_NAME:
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_CONTAINER:
-		source->priv->container = g_value_get_object (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -232,9 +231,6 @@ rb_source_get_property (GObject *object,
 	{
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
-		break;
-	case PROP_CONTAINER:
-		g_value_set_object (value, source->priv->container);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -524,3 +520,17 @@ rb_source_show_popup (RBSource *source)
 	return klass->impl_show_popup (source);
 }
 
+
+static void
+default_delete_thyself (RBSource *source)
+{
+}
+
+void
+rb_source_delete_thyself (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
+	return klass->impl_delete_thyself (source);
+}

@@ -21,6 +21,7 @@
 #ifndef __RB_LIBRARY_SOURCE_H
 #define __RB_LIBRARY_SOURCE_H
 
+#include <gtk/gtkwindow.h>
 #include <bonobo/bonobo-ui-container.h>
 
 #include "rb-source.h"
@@ -51,8 +52,7 @@ typedef struct
 
 GType		rb_library_source_get_type (void);
 
-RBSource *	rb_library_source_new      (BonoboUIContainer *container,
-					    RBLibrary *library);
+RBSource *	rb_library_source_new      (RBLibrary *library);
 void		rb_library_source_show_browser (RBLibrarySource *source,
 						gboolean show);
 

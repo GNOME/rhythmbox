@@ -312,7 +312,7 @@ status_tick_cb (GtkProgressBar *progress)
 }
 
 void
-rb_statusbar_set_progress (RBStatusbar *statusbar, float progress)
+rb_statusbar_set_progress (RBStatusbar *statusbar, double progress)
 {
 	if (progress > 1.0)
 		progress = 1.0;

@@ -51,7 +51,7 @@ typedef struct
 
 	/* signals */
 	void	(*error)	(const char *uri, const char *msg);
-	void	(*progress)(float val);
+	void	(*progress)(double val);
 	void	(*status_changed)();
 } RBLibraryClass;
 

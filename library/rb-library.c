@@ -108,8 +108,6 @@ struct RBLibraryPrivate
 
 	guint refresh_count;
 
-	guint idle_save_id;
-
 	gboolean status_poll_queued;
 	guint status_poll_id;
 
@@ -196,9 +194,9 @@ rb_library_class_init (RBLibraryClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBLibraryClass, progress),
 			      NULL, NULL,
-			      rb_marshal_VOID__FLOAT,
+			      rb_marshal_VOID__DOUBLE,
 			      G_TYPE_NONE,
-			      1, G_TYPE_FLOAT);
+			      1, G_TYPE_DOUBLE);
 }
 
 static void
@@ -325,10 +323,6 @@ rb_library_finalize (GObject *object)
 
 	g_return_if_fail (library->priv != NULL);
 
-	if (library->priv->idle_save_id != 0) {
-		g_source_remove (library->priv->idle_save_id);
-	}
-
 	rb_debug ("library: finalizing");
 
 	g_mutex_free (library->priv->walker_mutex);
@@ -408,14 +402,14 @@ signal_progress_changed (RBLibrary *library)
 	if (!queue_is_empty (library->priv->add_queue)) {
 		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0, -1.0);
 	} else if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
-		float total;
-		float refresh_count;
+		double total;
+		double refresh_count;
 
 		g_mutex_lock (library->priv->lock);
-		refresh_count = (float) library->priv->refresh_count;
+		refresh_count = (double) library->priv->refresh_count;
 		g_mutex_unlock (library->priv->lock);
 
-		total = (float) rb_node_get_n_children (library->priv->all_songs);
+		total = (double) rb_node_get_n_children (library->priv->all_songs);
 		
 		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0,
 			       refresh_count / total);
@@ -483,8 +477,8 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 
 signal:
 	if (!library->priv->in_shutdown) {
-		signal_status_changed (library);
 		signal_progress_changed (library);
+		signal_status_changed (library);
 	}
 }
 
@@ -522,8 +516,8 @@ rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 	ret = TRUE;
 out:
-	signal_status_changed (library);
 	signal_progress_changed (library);
+	signal_status_changed (library);
 	return ret;
 }
 
@@ -1587,6 +1581,8 @@ poll_status_update (gpointer data)
 
 		if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH)
 			library->priv->state = LIBRARY_STATE_NONE;
+
+		g_get_current_time (&library->priv->mod_time);
 
 		library->priv->status_poll_queued = FALSE;
 

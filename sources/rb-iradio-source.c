@@ -350,14 +350,12 @@ rb_iradio_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_iradio_source_new (BonoboUIContainer *container,
-		    RBIRadioBackend *backend)
+rb_iradio_source_new (RBIRadioBackend *backend)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
-					  "container", container,
 					  "backend", backend,
 					  NULL));
 

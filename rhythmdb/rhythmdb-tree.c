@@ -51,14 +51,9 @@ static GtkTreeModel * rhythmdb_tree_do_property_query (RhythmDB *db, guint prope
 static void finalize_tree_property (RhythmDB *db, RhythmDBTreeProperty *prop);
 static void unref_tree_property (RhythmDB *db, RhythmDBTreeProperty *prop);
 
-struct RhythmDBTreeData
-{
-	struct RhythmDBTreeProperty *parent;
-};
-
 typdef struct RhythmDBTreeProperty
 {
-	struct RhythmDBTreeData treedata;
+	struct RhythmDBTreeProperty *parent;
 	char *name;
 	char *sort_key;
 	GHashTable *children;
@@ -68,7 +63,7 @@ typdef struct RhythmDBTreeProperty
 
 typedef struct RhythmDBTreeEntry
 {
-	struct RhythmDBTreeData treedata;
+	struct RhythmDBTreeProperty *parent;
 	GValue properties[RHYTHMDB_NUM_PROPERTIES];
 } RhythmDBTreeEntry;
 
@@ -439,19 +434,22 @@ destroy_tree_property (RhythmDB *db, RhythmDBTreeProperty *prop)
 	g_ptr_array_free (prop->children);
 }
 
+typedef void (*RhythmDBTreeTraversalFunc) (RhythmDB *db, RhythmDBTreeEntry *entry, gpointer data);
+
 struct RhythmDBTreeTraversalData
 {
 	RhythmDB *db;
 	GPtrArray *query;
-	GHashTable *set;
+	RhythmDBTreeTraversalFunc func;
+	gpointer data;
 };
 
 static gboolean
 evaluate_conjunctive_subquery (RhythmDB *db, RhythmDBQuery *query, RhythmDBTreeEntry *entry)
 {
 	enum RhythmDBQueryType i;
-	for (i = 0; i < query->query->len; i++) {
-		struct RhythmDBQueryData *data = g_ptr_array_index (query->query, i);
+	for (i = 0; i < query->len; i++) {
+		struct RhythmDBQueryData *data = g_ptr_array_index (query, i);
 		switch (i) {
 		case RHYTHMDB_QUERY_PROP_LIKE:
 			if (G_VALUE_TYPE (data->val) == G_TYPE_STRING) {
@@ -460,7 +458,7 @@ evaluate_conjunctive_subquery (RhythmDB *db, RhythmDBQuery *query, RhythmDBTreeE
 				stra = g_value_get_string (ENTRY_VALUE (entry, data->propid));
 				strb = g_value_get_string (data->val);
 				return strstr (strb, stra);
-			} 
+			}
 			/* Deliberately fall through here */
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			if (rb_gvalue_compare (ENTRY_VALUE (entry, data->propid), data->val) != 0)
@@ -485,7 +483,7 @@ do_conjunction (RhythmDBTreeEntry *entry, gpointer unused,
 {
 	/* Finally, we actually evaluate the query! */
 	if (evaluate_conjunctive_subquery (data->db, data->query, entry))
-		g_hash_table_insert (data->set, entry, NULL);
+		data->func (data->db, entry, data->data);
 }
 
 static void
@@ -569,7 +567,7 @@ conjunctive_query_artists (const char *name, RhythmDBTreeProperty *genre,
 }
 
 static void
-conjunctive_query (RhythmDB *db, GPtrArray *query, GHashTable *set)
+conjunctive_query (RhythmDB *db, GPtrArray *query, RhythmDBTreeTraversalFunc func, gpointer data)
 {
 	GList *subqueries;
 	int genre_query_idx = -1;
@@ -593,7 +591,8 @@ conjunctive_query (RhythmDB *db, GPtrArray *query, GHashTable *set)
 	traversal_data = g_new (struct RhythmDBTreeTraversalData, 1);
 	traversal_data->db = db;
 	traversal_data->query = query;
-	traversal_data->set = set;
+	traversal_data->func = func;
+	traversal_data->data = data;
 	
 	if (genre_query_idx >= 0) {
 		RhythmDBTreeProperty *genre;
@@ -654,6 +653,12 @@ split_query_by_disjunctions (RhythmDB *db, RhythmDBQuery *query)
 	return conjuctions;
 }
 
+static void
+handle_entry_match (RhythmDB *db, RhythmDBTreeEntry *entry, GHashTable *set)
+{
+	g_hash_table_insert (set, entry, NULL);
+}
+
 static GHashTable *
 build_entry_query_set (RhythmDB *db, RhythmDBQuery *query)
 {
@@ -664,7 +669,7 @@ build_entry_query_set (RhythmDB *db, RhythmDBQuery *query)
 	conjuctions = split_query_by_disjunctions (db, query);
 
 	for (tem = conjuctions; tem; tem = tem->next)
-		conjunctive_query (db, tem->data, result_set);
+		conjunctive_query (db, tem->data, handle_entry_match, result_set);
 
 	g_list_free (conjunctions);
 	return result_set;
@@ -680,7 +685,72 @@ rhythmdb_tree_do_entry_query (RhythmDB *db, RhythmDBQuery *query)
 	return GTK_TREE_MODEL (rhythmdb_entry_model_new_from_hash (result_set));
 }
 
+struct RhythmDBTreePropertyGatheringData
+{
+	guint prop_id;
+	GHashTable *set;
+};
+
+static void
+gather_property (RhythmDBTreeEntry *entry, gpointer unused,
+		 struct RhythmDBTreePropertyGatheringData *data)
+{
+	g_hash_table_insert (data->set, ENTRY_VALUE (entry, data->prop_id), NULL);
+}
+
+static GHashTable *
+gather_property_set (RhythmDB *db, guint prop_id, GHashTable *table)
+{
+	GHashTable *ret;
+	struct RhythmDBTreePropertyGatheringData *data;
+
+	ret = g_hash_table_new (g_direct_hash, g_direct_equal);
+	
+	data = g_new (struct RhythmDBTreePropertyGatheringData, 1);
+	data->prop_id = prop_id;
+	data->set = ret;
+
+	g_hash_table_foreach (table, gather_property, data);
+
+	g_free (data);
+	return ret;
+}
+
+static void
+handle_entry_match (RhythmDB *db, RhythmDBTreeEntry *entry, GHashTable *set)
+{
+	g_hash_table_insert (set, entry, NULL);
+}
+
+
 static GtkTreeModel *
 rhythmdb_tree_do_property_query (RhythmDB *db, guint property_id, RhythmDBQuery *query)
 {
+	GHashTable *result_set;
+	
+	switch (property_id)
+	{
+	case RHYTHMDB_PROP_GENRE:
+	case RHYTHMDB_PROP_ARTIST:
+	case RHYTHMDB_PROP_ALBUM:
+		break;
+		
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+	
 }
+
+void
+rhythmdb_tree_do_full_query (RhythmDB *db,
+			     GPtrArray *query,
+			     GtkTreeModel **main_model,
+			     GtkTreeModel **genre_model,
+			     GtkTreeModel **artist_model,
+			     GtkTreeModle **album_model)
+{
+	
+
+}
+

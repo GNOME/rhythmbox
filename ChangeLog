@@ -1,3 +1,53 @@
+Sat, 30 Aug 2003 06:54:46 -0400  Colin Walters  <walters@verbum.org>
+
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_finalize):
+	* lib/rb-marshal.list:
+	* library/rb-library.c: (rb_library_class_init),
+	(rb_library_finalize), (signal_progress_changed),
+	(rb_library_add_uri_sync), (rb_library_update_uri),
+	(poll_status_update):
+	* library/rb-library.h:
+	* rhythmdb/rhythmdb-entry-model.h:
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery),
+	(do_conjunction), (conjunctive_query), (handle_entry_match),
+	(build_entry_query_set), (gather_property), (gather_property_set),
+	(rhythmdb_tree_do_property_query), (rhythmdb_tree_do_full_query):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set):
+	* rhythmdb/rhythmdb.h:
+	* shell/Makefile.am:
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(rb_shell_library_progress_cb), (rb_shell_append_source),
+	(rb_shell_playlist_added_cb), (rb_shell_playlist_load_start_cb),
+	(rb_shell_playlist_load_finish_cb), (rb_shell_source_deleted_cb),
+	(rb_shell_select_source), (rb_shell_cmd_extract_cd),
+	(sourcelist_drag_received_cb), (rb_shell_jump_to_current):
+	* shell/rb-statusbar.c: (rb_statusbar_set_progress):
+	* shell/rb-statusbar.h:
+	* sources/rb-iradio-source.c: (rb_iradio_source_new):
+	* sources/rb-iradio-source.h:
+	* sources/rb-library-source.c: (rb_library_source_new):
+	* sources/rb-library-source.h:
+	* sources/rb-playlist-source.c: (rb_playlist_source_new),
+	(rb_playlist_source_new_from_file), (name_notify_cb),
+	(rb_playlist_source_delete):
+	* sources/rb-playlist-source.h:
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_set_property), (rb_source_get_property),
+	(default_delete_thyself), (rb_source_delete_thyself):
+	* sources/rb-source.h:
+
+	Move all the playlist stuff out of RBShell and into
+	RBPlaylistManager.
+
+	Remove some unused idle_save_id cruft.
+
+	Fix up setting the library status a bit so we don't get
+	stuck "Refreshing Library..." when it's actually done.
+
+	Avoid deleting the playlist files on startup.
+
+	Some more work on RhythmDB.
+
 Fri, 29 Aug 2003 15:18:57 -0400  Colin Walters  <walters@verbum.org>
 
 	* AUTHORS:

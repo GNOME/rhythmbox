@@ -449,6 +449,28 @@ rhythmdb_do_property_query (RhythmDB *db, guint property_id, ...)
 	return ret;
 }
 
+void
+rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel **main_model,
+			GtkTreeModel **genre_model,
+			GtkTreeModel **artist_model,
+			GtkTreeModle **album_model, ...)
+{
+	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	GPtrArray *query;
+	va_list args;
+
+	g_assert (db->priv->locklevel > 0);
+
+	va_start (args);
+
+	query = parse_query (args);
+
+	klass->impl_do_full_query (db, query, main_model, genre_model, artist_model, album_model);
+
+	free_query (query);
+	va_end (args);
+}
+
 GType rhythmdb_get_property_type (RhythmDB *db, guint property_id)
 {
 	g_return_val_if_fail (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES,

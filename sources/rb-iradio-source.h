@@ -22,8 +22,6 @@
 #ifndef __RB_IRADIO_SOURCE_H
 #define __RB_IRADIO_SOURCE_H
 
-#include <bonobo/bonobo-ui-container.h>
-
 #include "rb-source.h"
 #include "rb-iradio-backend.h"
 
@@ -52,8 +50,7 @@ typedef struct
 
 GType		rb_iradio_source_get_type (void);
 
-RBSource *	rb_iradio_source_new      (BonoboUIContainer *container,
-					   RBIRadioBackend *backend);
+RBSource *	rb_iradio_source_new      (RBIRadioBackend *backend);
 
 G_END_DECLS
 

@@ -32,14 +32,14 @@ G_BEGIN_DECLS
 
 typedef struct
 {
-	GObject parent;
+	GtkListStore parent;
 
 	RhythmDBEntryModelPrivate *priv;
 } RhythmDBEntryModel;
 
 typedef struct
 {
-	GObjectClass parent;
+	GtkListStoreClass parent;
 
 } RhythmDBEntryModelClass;
 

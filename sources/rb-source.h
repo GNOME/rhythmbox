@@ -58,6 +58,7 @@ typedef struct
 	/* signals */
 	void (*status_changed)	(RBSource *source);
 	void (*filter_changed)	(RBSource *source);
+	void (*deleted)		(RBSource *source);
 
 	/* methods */
 	const char *	(*impl_get_status)	(RBSource *source);
@@ -97,6 +98,7 @@ typedef struct
 	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
 	gboolean	(*impl_show_popup)	(RBSource *source);
 				   
+	void		(*impl_delete_thyself)	(RBSource *source);
 } RBSourceClass;
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
@@ -148,6 +150,8 @@ void		rb_source_buffering_done	(RBSource *source);
 gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
 
 gboolean	rb_source_show_popup		(RBSource *source);
+
+void		rb_source_delete_thyself	(RBSource *source);
 
 G_END_DECLS
 

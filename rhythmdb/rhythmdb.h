@@ -122,6 +122,9 @@ typedef struct
 
 	GPtrArray *	(*impl_do_entry_query)	(RhythmDB *db, GPtrArray *query);
 	GPtrArray *	(*impl_do_property_query)(RhythmDB *db, guint property_id, GPtrArray *query);
+	void		(*rhythmdb_do_full_query)(RhythmDB *db, GtkTreeModel **main_model,
+						  GtkTreeModel **genre_model, GtkTreeModel **artist_model,
+						  GtkTreeModle **album_model, ...);
 
 } RhythmDBClass;
 
@@ -189,6 +192,12 @@ GtkTreeModel *	rhythmdb_do_entry_query			(RhythmDB *db, ...);
  * returning the values of the attribute as a set.
  */
 GtkTreeModel *	rhythmdb_do_property_query		(RhythmDB *db, guint property_id, ...);
+
+void		rhythmdb_do_full_query			(RhythmDB *db,
+							 GtkTreeModel **main_model,
+							 GtkTreeModel **genre_model,
+							 GtkTreeModel **artist_model,
+							 GtkTreeModle **album_model, ...);
 
 GType		rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
 

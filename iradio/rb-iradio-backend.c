@@ -69,8 +69,6 @@ struct RBIRadioBackendPrivate
 	GStaticRWLock *genre_hash_lock;
 
 	char *xml_file;
-
-	guint idle_save_id;
 };
 
 enum
@@ -220,10 +218,6 @@ rb_iradio_backend_finalize (GObject *object)
 	backend = RB_IRADIO_BACKEND (object);
 
 	g_return_if_fail (backend->priv != NULL);
-
-	if (backend->priv->idle_save_id != 0) {
-		g_source_remove (backend->priv->idle_save_id);
-	}
 
 	rb_iradio_backend_save (backend);
 

@@ -113,8 +113,6 @@ struct RBPlaylistSourcePrivate
 
 	char *file;
 
-	guint idle_save_id;
-
 	gboolean deleted;
 };
 
@@ -357,15 +355,13 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (BonoboUIContainer *container,
-		     RBLibrary *library,
-		     RBLibrarySource *libsource)
+rb_playlist_source_new (RBLibrary *library,
+			RBLibrarySource *libsource)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
-					  "container", container,
 					  "library", library,
 					  "libsource", libsource,
 					  NULL));
@@ -374,16 +370,14 @@ rb_playlist_source_new (BonoboUIContainer *container,
 }
 
 RBSource *
-rb_playlist_source_new_from_file (BonoboUIContainer *container,
-			       RBLibrary *library,
-			       RBLibrarySource *libsource,
-			       const char *file)
+rb_playlist_source_new_from_file (RBLibrary *library,
+				  RBLibrarySource *libsource,
+				  const char *file)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
-					  "container", container,
 					  "library", library,
 					  "libsource", libsource,
 					  NULL));
@@ -408,11 +402,12 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer unused)
 
 		g_object_get (obj, "name", &name, NULL);
 
-		if (source->priv->file) {
+		file = filename_from_name (name);
+
+		if (source->priv->file && strcmp (file, source->priv->file)) {
 			unlink (source->priv->file);
 		}
-			
-		file = filename_from_name (name);
+
 		g_object_set (obj, "file", file, NULL);
 		g_free (file);
 	}
@@ -650,7 +645,6 @@ rb_playlist_source_load (RBPlaylistSource *source)
 void
 rb_playlist_source_delete (RBPlaylistSource *source)
 {
-	g_source_remove (source->priv->idle_save_id);
 	unlink (source->priv->file);
 	source->priv->deleted = TRUE;
 }

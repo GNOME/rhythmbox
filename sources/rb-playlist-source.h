@@ -53,14 +53,14 @@ typedef struct
 
 GType		rb_playlist_source_get_type	(void);
 
-RBSource *	rb_playlist_source_new		(BonoboUIContainer *container,
-						 RBLibrary *library,
+RBSource *	rb_playlist_source_new		(RBLibrary *library,
 						 RBLibrarySource *libsource);
 
-RBSource *	rb_playlist_source_new_from_file(BonoboUIContainer *container,
-						 RBLibrary *library,
+RBSource *	rb_playlist_source_new_from_file(RBLibrary *library,
 						 RBLibrarySource *libsource,
 						 const char *file);
+
+void		rb_playlist_source_do_rename	(RBPlaylistSource *source, GtkWindow *parent);
 
 const char *	rb_playlist_source_get_file	(RBPlaylistSource *group);
 

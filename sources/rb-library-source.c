@@ -523,14 +523,12 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (BonoboUIContainer *container,
-		       RBLibrary *library)
+rb_library_source_new (RBLibrary *library)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
-					  "container", container,
 					  "library", library,
 					  NULL));
 
