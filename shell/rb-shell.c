@@ -1572,7 +1572,6 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	comment = g_string_new (_("Music management and playback software for GNOME."));
 #ifdef WITH_MONKEYMEDIA
 	{
-		char *temstr;
 		const char *backend;
 		GString *formats = g_string_new ("");
 
