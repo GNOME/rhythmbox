@@ -762,7 +762,7 @@ rb_shell_corba_get_player_properties (PortableServer_Servant _servant,
 	 * return a corba exception
 	 */
 	
-	return CORBA_Object_duplicate (BONOBO_OBJREF (shell->priv->pb), NULL);
+	return bonobo_object_dup_ref (BONOBO_OBJREF (shell->priv->pb), NULL);
 }
 
 static void
