@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-08-03 16:10+0200\n"
-"PO-Revision-Date: 2002-08-03 16:11+0200\n"
+"POT-Creation-Date: 2002-08-04 00:19+0200\n"
+"PO-Revision-Date: 2002-08-04 00:20+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -120,32 +120,28 @@ msgid "of"
 msgstr "av"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-songs.xml.h:1
 msgid "Album"
 msgstr "Album"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:2
 msgid "Artist"
 msgstr "Artist"
 
-#: data/node-views/rb-node-view-songs.xml.h:1
-msgid "#"
-msgstr "Nr"
-
-#: data/node-views/rb-node-view-songs.xml.h:4
-msgid "Genre"
-msgstr "Genre"
-
-#: data/node-views/rb-node-view-songs.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.h:3
 msgid "Time"
 msgstr "Tid"
 
-#: data/node-views/rb-node-view-songs.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:4
 msgid "Title"
 msgstr "Titel"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:377
+#: data/node-views/rb-node-view-songs.xml.h:5
+msgid "Track"
+msgstr "Spår"
+
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:378
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -433,12 +429,12 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:477
+#: lib/widgets/rb-node-view.c:484
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:1004
+#: lib/widgets/rb-node-view.c:1034
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
@@ -665,7 +661,7 @@ msgstr "Mapp"
 msgid "Choose a folder"
 msgstr "Välj en mapp"
 
-#: shell/rb-shell.c:367
+#: shell/rb-shell.c:368
 #, c-format
 msgid ""
 "Failed to register the shell:\n"
@@ -674,33 +670,33 @@ msgstr ""
 "Misslyckades med att registrera skalet:\n"
 "%s"
 
-#: shell/rb-shell.c:784
+#: shell/rb-shell.c:785
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:795
+#: shell/rb-shell.c:796
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:796
+#: shell/rb-shell.c:797
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:840
+#: shell/rb-shell.c:841
 msgid "Choose a file to add"
 msgstr "Välj en fil att lägga till"
 
-#: shell/rb-shell.c:858
+#: shell/rb-shell.c:859
 msgid "Enter a name"
 msgstr "Ange ett namn"
 
-#: shell/rb-shell.c:859
+#: shell/rb-shell.c:860
 msgid "Enter a name for the new music group:"
 msgstr "Ange ett namn för den nya musikgruppen:"
 
-#: shell/rb-shell.c:860
+#: shell/rb-shell.c:861
 msgid "Untitled"
 msgstr "Namnlös"
 
@@ -733,6 +729,12 @@ msgstr "bibliotek"
 #: views/rb-library-view.c:286
 msgid "Library"
 msgstr "Bibliotek"
+
+#~ msgid "#"
+#~ msgstr "Nr"
+
+#~ msgid "Genre"
+#~ msgstr "Genre"
 
 #~ msgid "Music group"
 #~ msgstr "Musikgrupp"
