@@ -174,13 +174,6 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 		g_value_unset (&val);
 	}
 
-	if (quality >= 0) {
-		g_value_init (&val, G_TYPE_INT);
-		g_value_set_int (&val, quality);
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_QUALITY, &val);
-		g_value_unset (&val);
-	}
-
 	if (duration > 0) {
 		g_value_init (&val, G_TYPE_LONG);
 		g_value_set_long (&val, duration);

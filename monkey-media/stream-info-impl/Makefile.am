@@ -6,7 +6,7 @@ noinst_LTLIBRARIES = libstream-info-impl.la
 
 libstream_info_impl_la_SOURCES =
 if USE_ID3VFS
-libstream_info_impl_la_LIBADD = $(top_builddir)/monkey-media/stream-info-impl/id3-vfs/libid3-vfs.la
+libstream_info_impl_la_LIBADD = $(top_builddir)/metadata/monkey-media/stream-info-impl/id3-vfs/libid3-vfs.la
 else
 libstream_info_impl_la_LIBADD = 
 endif
@@ -37,5 +37,5 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"MonkeyMedia\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
-	-I$(top_srcdir)/monkey-media			\
+	-I$(top_srcdir)/metadata/monkey-media		\
 	$(RHYTHMBOX_CFLAGS)

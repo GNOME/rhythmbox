@@ -649,8 +649,8 @@ get_song_info_from_player (RBShell *shell)
 	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
 	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
 	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
-	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_QUALITY);
-	song_info->filesize = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_FILE_SIZE);
+	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_BITRATE);
+	song_info->filesize = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_FILE_SIZE);
 	song_info->rating = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_RATING);
 	song_info->play_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
 	song_info->last_played = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
@@ -1059,8 +1059,6 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->show_db_errors = FALSE;
 	gtk_widget_hide (shell->priv->load_error_dialog);
 
-	shell->priv->supported_media_extensions = monkey_media_get_supported_filename_extensions ();
-
 	g_signal_connect (G_OBJECT (shell->priv->db), "error",
 			  G_CALLBACK (rb_shell_db_error_cb), shell);
 
@@ -1301,37 +1299,15 @@ rb_shell_db_error_cb (RhythmDB *db,
 		      const char *uri, const char *msg,
 		      RBShell *shell)
 {
-	GList *tem;
-	GnomeVFSURI *vfsuri;
-	gchar *basename;
-	gssize baselen;
-
 	rb_debug ("got db error, showing: %s",
 		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
 	
 	if (!shell->priv->show_db_errors)
 		return;
 
-	vfsuri = gnome_vfs_uri_new (uri);
-	basename = gnome_vfs_uri_extract_short_name (vfsuri);
-	baselen = strlen (basename);
-	
-	for (tem = shell->priv->supported_media_extensions; tem != NULL; tem = g_list_next (tem)) {
-		gssize extlen = strlen (tem->data);
-		if (extlen >= baselen)
-			continue;
-		if (!strncmp (basename + (baselen - extlen), tem->data, extlen)) {
-			rb_debug ("\"%s\" matches \"%s\"", basename, tem->data);
-			rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
-						    uri, msg);
-			gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
-			goto out;
-		}
-	}
-	rb_debug ("\"%s\" has unknown extension, ignoring", basename);
-out:
-	g_free (basename);
-	gnome_vfs_uri_unref (vfsuri);
+	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
+				    uri, msg);
+	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
 }
 
 static void

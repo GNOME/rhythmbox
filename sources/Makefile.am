@@ -29,7 +29,6 @@ INCLUDES =						\
 	-I$(top_srcdir)/widgets 			\
 	-I$(top_srcdir)/library 			\
 	-I$(top_srcdir)/iradio				\
-	-I$(top_srcdir)/monkey-media			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -38,4 +37,4 @@ INCLUDES =						\
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
-libsourcesimpl_la_LIBADD = $(top_builddir)/monkey-media/libmonkey-media.la $(top_builddir)/rhythmdb/librhythmdb.la $(top_builddir)/widgets/librbwidgets.la
+libsourcesimpl_la_LIBADD = $(top_builddir)/rhythmdb/librhythmdb.la $(top_builddir)/widgets/librbwidgets.la

@@ -21,7 +21,6 @@
 
 #include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-ui-component.h>
-#include <monkey-media.h>
 
 #include "rb-source.h"
 

@@ -698,7 +698,7 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 				gboolean lock)
 {
 	GSequencePtr ptr;
-	long size;
+	guint64 size;
 	long duration;
 
 	/* we check again if the entry already exists in the hash table */
@@ -711,8 +711,8 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 
 	if (lock)
 		rhythmdb_read_lock (model->priv->db);
-	size = rhythmdb_entry_get_long (model->priv->db, entry,
-					RHYTHMDB_PROP_FILE_SIZE);
+	size = rhythmdb_entry_get_uint64 (model->priv->db, entry,
+					  RHYTHMDB_PROP_FILE_SIZE);
 	duration = rhythmdb_entry_get_long (model->priv->db,
 					    entry, RHYTHMDB_PROP_DURATION);
 	if (lock)
@@ -760,8 +760,8 @@ rhythmdb_query_model_do_delete (RhythmDBQueryModel *model,
 		rhythmdb_read_lock (model->priv->db);
 	model->priv->total_duration -= rhythmdb_entry_get_long (model->priv->db, entry,
 								RHYTHMDB_PROP_DURATION);
-	model->priv->total_size -= rhythmdb_entry_get_long (model->priv->db, entry,
-							    RHYTHMDB_PROP_FILE_SIZE);
+	model->priv->total_size -= rhythmdb_entry_get_uint64 (model->priv->db, entry,
+							      RHYTHMDB_PROP_FILE_SIZE);
 	if (lock)
 		rhythmdb_read_unlock (model->priv->db);
 

@@ -1,6 +1,8 @@
 ## arch-tag: Automake rules for test programs
 ## Process this file with automake to produce Makefile.in
 
+if FALSE
+
 #TESTS = test-rhythmdb-simple test-rhythmdb-indexing \
 #		  test-rhythmdb-query test-rhythmdb-tree-serialization \
 #		  test-rhythmdb-tree-deserialization \
@@ -8,7 +10,7 @@
 
 TESTS = 
 
-noinst_PROGRAMS = test-info test-cmdline $(TESTS)
+noinst_PROGRAMS = test-cmdline $(TESTS)
 
 test_rhythmdb_simple_SOURCES = test-rhythmdb-simple.c
 test_rhythmdb_simple_LDADD =					\
@@ -47,14 +49,6 @@ test_rhythmdb_view_LDADD =					\
 	$(top_builddir)/widgets/librbwidgets.la			\
 	$(RHYTHMBOX_LIBS)
 
-test_info_SOURCES = test-info.c
-
-test_info_LDADD =						\
-	$(top_builddir)/monkey-media/libmonkey-media.la		\
-	$(RHYTHMBOX_LIBS)
-
-test_info_LDFLAGS = -export-dynamic
-
 test_cmdline_SOURCES = test-cmdline.c
 
 test_cmdline_LDADD =						\
@@ -85,5 +79,6 @@ INCLUDES = 							\
 	-I$(top_srcdir)/rhythmdb				\
 	-I$(top_srcdir)/widgets
 
+endif
 
 EXTRA_DIST = deserialization-test1.xml deserialization-test2.xml deserialization-test3.xml

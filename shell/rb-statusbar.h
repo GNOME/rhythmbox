@@ -20,7 +20,6 @@
  */
 
 #include <gtk/gtkhbox.h>
-#include <monkey-media.h>
 
 #include "rb-shell-player.h"
 #include "rb-source.h"

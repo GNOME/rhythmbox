@@ -28,8 +28,6 @@
 
 #include <glib-object.h>
 
-#include "monkey-media-audio-quality.h"
-
 G_BEGIN_DECLS
 
 typedef enum

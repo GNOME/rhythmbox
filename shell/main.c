@@ -32,7 +32,6 @@
 #include <libbonobo.h>
 #include <bonobo/bonobo-property-bag-client.h>
 #include <glade/glade-init.h>
-#include <monkey-media.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
@@ -40,6 +39,10 @@
 #ifdef HAVE_GSTREAMER
 #include <gst/gst.h>
 #include <gst/gconf/gconf.h>
+#include <gst/control/control.h>
+#endif
+#ifdef WITH_MONKEYMEDIA
+#include "monkey-media.h"
 #endif
 
 #include "rb-shell.h"
@@ -98,7 +101,6 @@ main (int argc, char **argv)
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
-		{ NULL,              '\0', POPT_ARG_INCLUDE_TABLE, (poptOption *) monkey_media_get_popt_table (), 0, N_("MonkeyMedia options:"),      NULL },
 		POPT_TABLEEND
 	};
 
@@ -120,11 +122,16 @@ main (int argc, char **argv)
 #endif
 
 #ifdef HAVE_GSTREAMER	
+	gst_init (&argc, &argv);
+	gst_control_init (&argc, &argv);
 	/* rb currently does not work with esd + gnome event sounds enabled */
 	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds")
 			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd")
 	    && strstr (gst_gconf_get_string ("default/audiosink"), "esdsink"))
 		sound_events_borked = TRUE;
+#endif
+#ifdef WITH_MONKEYMEDIA
+	monkey_media_init (&argc, &argv);
 #endif
 	
 	gdk_threads_init ();
@@ -180,10 +187,11 @@ main (int argc, char **argv)
 	/* cleanup */
 	CORBA_exception_free (&ev);
 
+#ifdef WITH_MONKEYMEDIA
+	monkey_media_shutdown ();
+#endif
 	rb_file_helpers_shutdown ();
 	rb_string_helpers_shutdown ();
-
-	monkey_media_shutdown ();
 
 	return 0;
 }

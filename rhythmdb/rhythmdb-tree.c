@@ -503,6 +503,10 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_value_set_long (value, g_ascii_strtoull (ctx->buf->str, NULL, 10));
 			g_string_free (ctx->buf, TRUE);
 			break;
+		case G_TYPE_UINT64:
+			g_value_set_uint64 (value, g_ascii_strtoull (ctx->buf->str, NULL, 10));
+			g_string_free (ctx->buf, TRUE);
+			break;
 		case G_TYPE_FLOAT:
 			g_value_set_float (value, g_ascii_strtod (ctx->buf->str, NULL));
 			g_string_free (ctx->buf, TRUE);
@@ -677,6 +681,9 @@ g_free (encoded);							\
 			break;
 		case G_TYPE_LONG:
 			RHYTHMDB_FWRITE_SMALLTYPE (ctx->handle, "%ld", long);
+			break;
+		case G_TYPE_UINT64:
+			RHYTHMDB_FWRITE_SMALLTYPE (ctx->handle, "%llu", uint64);
 			break;
 		case G_TYPE_FLOAT:
 			RHYTHMDB_FWRITE_SMALLTYPE (ctx->handle, "%f", float);

@@ -554,10 +554,6 @@ vorbis_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_init (value, G_TYPE_BOOLEAN);
 		g_value_set_boolean (value, TRUE);
 		break;
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
-		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
-		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate ((int) (impl->priv->info->bitrate_nominal / 1000)));
-		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		/* FIXME */
 		g_value_init (value, G_TYPE_STRING);

@@ -34,40 +34,40 @@
 
 #include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
-#include "rb-player.h"
+#include "rb-header.h"
 #include "rb-debug.h"
 #include "rb-ellipsizing-label.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
-static void rb_player_class_init (RBPlayerClass *klass);
-static void rb_player_init (RBPlayer *player);
-static void rb_player_finalize (GObject *object);
-static void rb_player_set_property (GObject *object,
+static void rb_header_class_init (RBHeaderClass *klass);
+static void rb_header_init (RBHeader *player);
+static void rb_header_finalize (GObject *object);
+static void rb_header_set_property (GObject *object,
 				    guint prop_id,
 				    const GValue *value,
 				    GParamSpec *pspec);
-static void rb_player_get_property (GObject *object,
+static void rb_header_get_property (GObject *object,
 				    guint prop_id,
 				    GValue *value,
 				    GParamSpec *pspec);
-static long rb_player_get_duration (RBPlayer *player);
-static void rb_player_set_show_timeline (RBPlayer *player,
+static long rb_header_get_duration (RBHeader *player);
+static void rb_header_set_show_timeline (RBHeader *player,
 			                 gboolean show);
-static gboolean rb_player_sync_time_locked (RBPlayer *player);
-static void rb_player_update_elapsed (RBPlayer *player);
-static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
-static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBPlayer *player);
-static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
-static void slider_changed_callback (GtkWidget *widget, RBPlayer *player);
+static gboolean rb_header_sync_time_locked (RBHeader *player);
+static void rb_header_update_elapsed (RBHeader *player);
+static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
+static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *player);
+static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
+static void slider_changed_callback (GtkWidget *widget, RBHeader *player);
 
 typedef struct
 {
 	long elapsed;
 	long duration;
-} RBPlayerState;
+} RBHeaderState;
 
-struct RBPlayerPrivate
+struct RBHeaderPrivate
 {
 	RhythmDB *db;
 	RhythmDBEntry *entry;
@@ -75,7 +75,7 @@ struct RBPlayerPrivate
 	char *title;
 	char *urltext, *urllink;
 
-	MonkeyMediaPlayer *mmplayer;
+	RBPlayer *mmplayer;
 
 	GtkWidget *image;
 	GtkWidget *song;
@@ -103,14 +103,14 @@ struct RBPlayerPrivate
 
 	guint timeout;
 	
-	RBPlayerState *state;
+	RBHeaderState *state;
 };
 
 enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_PLAYER,
+	PROP_HEADER,
 	PROP_ENTRY,
 	PROP_TITLE,
 	PROP_URLTEXT,
@@ -125,43 +125,43 @@ static GObjectClass *parent_class = NULL;
 #define ARTIST_INFO_URL(xARTIST) g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=1&sql=%s", xARTIST);
 
 GType
-rb_player_get_type (void)
+rb_header_get_type (void)
 {
-	static GType rb_player_type = 0;
+	static GType rb_header_type = 0;
 
-	if (rb_player_type == 0) {
+	if (rb_header_type == 0) {
 		static const GTypeInfo our_info =
 		{
-			sizeof (RBPlayerClass),
+			sizeof (RBHeaderClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) rb_player_class_init,
+			(GClassInitFunc) rb_header_class_init,
 			NULL,
 			NULL,
-			sizeof (RBPlayer),
+			sizeof (RBHeader),
 			0,
-			(GInstanceInitFunc) rb_player_init
+			(GInstanceInitFunc) rb_header_init
 		};
 
-		rb_player_type = g_type_register_static (GTK_TYPE_HBOX,
-							 "RBPlayer",
+		rb_header_type = g_type_register_static (GTK_TYPE_HBOX,
+							 "RBHeader",
 							 &our_info, 0);
 	}
 
-	return rb_player_type;
+	return rb_header_type;
 }
 
 static void
-rb_player_class_init (RBPlayerClass *klass)
+rb_header_class_init (RBHeaderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->finalize = rb_player_finalize;
+	object_class->finalize = rb_header_finalize;
 
-	object_class->set_property = rb_player_set_property;
-	object_class->get_property = rb_player_get_property;
+	object_class->set_property = rb_header_set_property;
+	object_class->get_property = rb_header_get_property;
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -178,11 +178,11 @@ rb_player_class_init (RBPlayerClass *klass)
 							       "RhythmDBEntry pointer",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_PLAYER,
+					 PROP_HEADER,
 					 g_param_spec_object ("player",
 							      "Player",
 							      "MonkeyMediaPlayer",
-							      MONKEY_MEDIA_TYPE_PLAYER,
+							      RB_TYPE_PLAYER,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_TITLE,
@@ -209,11 +209,11 @@ rb_player_class_init (RBPlayerClass *klass)
 }
 
 static void
-rb_player_init (RBPlayer *player)
+rb_header_init (RBHeader *player)
 {
 	/**
 	 * The children in this widget look like this:
-	 * RBPlayer
+	 * RBHeader
 	 *   GtkHBox
 	 *     GtkVBox
 	 *       GtkAlignment
@@ -237,9 +237,9 @@ rb_player_init (RBPlayer *player)
 	 */
 	GtkWidget *hbox, *vbox, *urlline, *label, *align, *scalebox, *textvbox;
 
-	player->priv = g_new0 (RBPlayerPrivate, 1);
+	player->priv = g_new0 (RBHeaderPrivate, 1);
 
-	player->priv->state = g_new0 (RBPlayerState, 1);
+	player->priv->state = g_new0 (RBHeaderState, 1);
 
 	hbox = gtk_hbox_new (FALSE, 10);
 
@@ -321,18 +321,18 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (player), hbox, TRUE, TRUE, 0);
 	gtk_box_pack_end (GTK_BOX (player), align, FALSE, FALSE, 0);
 
-	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_player_sync_time_locked, player);
+	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_header_sync_time_locked, player);
 }
 
 static void
-rb_player_finalize (GObject *object)
+rb_header_finalize (GObject *object)
 {
-	RBPlayer *player;
+	RBHeader *player;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_PLAYER (object));
+	g_return_if_fail (RB_IS_HEADER (object));
 
-	player = RB_PLAYER (object);
+	player = RB_HEADER (object);
 
 	g_return_if_fail (player->priv != NULL);
 
@@ -349,12 +349,12 @@ rb_player_finalize (GObject *object)
 }
 
 static void
-rb_player_set_property (GObject *object,
+rb_header_set_property (GObject *object,
 			guint prop_id,
 			const GValue *value,
 			GParamSpec *pspec)
 {
-	RBPlayer *player = RB_PLAYER (object);
+	RBHeader *player = RB_HEADER (object);
 
 	switch (prop_id) {
 	case PROP_DB:
@@ -363,7 +363,7 @@ rb_player_set_property (GObject *object,
 	case PROP_ENTRY:
 		player->priv->entry = g_value_get_pointer (value);
 		break;
-	case PROP_PLAYER:
+	case PROP_HEADER:
 		player->priv->mmplayer = g_value_get_object (value);
 		break;
 	case PROP_TITLE:
@@ -384,12 +384,12 @@ rb_player_set_property (GObject *object,
 }
 
 static void 
-rb_player_get_property (GObject *object,
+rb_header_get_property (GObject *object,
 			guint prop_id,
 			GValue *value,
 			GParamSpec *pspec)
 {
-	RBPlayer *player = RB_PLAYER (object);
+	RBHeader *player = RB_HEADER (object);
 
 	switch (prop_id) {
 	case PROP_DB:
@@ -398,7 +398,7 @@ rb_player_get_property (GObject *object,
 	case PROP_ENTRY:
 		g_value_set_object (value, player->priv->entry);
 		break;
-	case PROP_PLAYER:
+	case PROP_HEADER:
 		g_value_set_object (value, player->priv->mmplayer);
 		break;
 	case PROP_TITLE:
@@ -416,12 +416,12 @@ rb_player_get_property (GObject *object,
 	}
 }
 
-RBPlayer *
-rb_player_new (MonkeyMediaPlayer *mmplayer)
+RBHeader *
+rb_header_new (RBPlayer *mmplayer)
 {
-	RBPlayer *player;
+	RBHeader *player;
 
-	player = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, "player", mmplayer,
+	player = RB_HEADER (g_object_new (RB_TYPE_HEADER, "player", mmplayer,
 					  "title", NULL,
 					  "spacing", 6, NULL));
 
@@ -431,19 +431,19 @@ rb_player_new (MonkeyMediaPlayer *mmplayer)
 }
 
 void
-rb_player_set_playing_entry (RBPlayer *player, RhythmDBEntry *entry)
+rb_header_set_playing_entry (RBHeader *player, RhythmDBEntry *entry)
 {
 	g_object_set (G_OBJECT (player), "entry", entry, NULL);
 }
 
 void
-rb_player_set_title (RBPlayer *player, const char *title)
+rb_header_set_title (RBHeader *player, const char *title)
 {
 	g_object_set (G_OBJECT (player), "title", title, NULL);
 }
 
 static long
-rb_player_get_duration (RBPlayer *player)
+rb_header_get_duration (RBHeader *player)
 {
 	long ret;
 	if (player->priv->entry) {
@@ -458,7 +458,7 @@ rb_player_get_duration (RBPlayer *player)
 }
 
 void
-rb_player_sync (RBPlayer *player)
+rb_header_sync (RBHeader *player)
 {
 	char *tmp;
 
@@ -466,7 +466,7 @@ rb_player_sync (RBPlayer *player)
 	if (player->priv->entry != NULL) {
 		const char *song = player->priv->title;
 		char *escaped, *s;
-		gboolean have_duration = rb_player_get_duration (player) > 0;
+		gboolean have_duration = rb_header_get_duration (player) > 0;
 		const char *album; 
 		const char *artist; 
 		GtkTooltips *artist_href_tips, *album_href_tips;
@@ -489,7 +489,7 @@ rb_player_sync (RBPlayer *player)
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
-		rb_player_set_show_artist_album (player, (album != NULL && artist != NULL)
+		rb_header_set_show_artist_album (player, (album != NULL && artist != NULL)
 						 && (strlen (album) > 0 && strlen (artist) > 0));
 
 		if (player->priv->displaybox_shown)
@@ -547,9 +547,9 @@ rb_player_sync (RBPlayer *player)
 			gnome_href_set_text (player->priv->url, player->priv->urltext);
 		}
 
-		rb_player_set_show_timeline (player, have_duration);
+		rb_header_set_show_timeline (player, have_duration);
 		if (have_duration)
-			rb_player_sync_time (player);
+			rb_header_sync_time (player);
 	} else {
 		GtkTooltips *iradio_href_tips;
 
@@ -564,9 +564,9 @@ rb_player_sync (RBPlayer *player)
 				      _("Get information on this station from the web"),
 				      NULL);
 
-		rb_player_set_urldata (player, NULL, NULL);
-		rb_player_set_show_artist_album (player, FALSE);
-		rb_player_set_show_timeline (player, FALSE);
+		rb_header_set_urldata (player, NULL, NULL);
+		rb_header_set_show_artist_album (player, FALSE);
+		rb_header_set_show_timeline (player, FALSE);
 	}
 
 #if 0
@@ -578,7 +578,7 @@ rb_player_sync (RBPlayer *player)
 }
 
 void
-rb_player_set_urldata (RBPlayer *player,
+rb_header_set_urldata (RBHeader *player,
 		       const char *urltext,
 		       const char *urllink)
 {
@@ -600,7 +600,7 @@ rb_player_set_urldata (RBPlayer *player,
 }
 
 void
-rb_player_set_show_artist_album (RBPlayer *player,
+rb_header_set_show_artist_album (RBHeader *player,
 				 gboolean show)
 {
 	if (player->priv->displaybox_shown == show)
@@ -617,7 +617,7 @@ rb_player_set_show_artist_album (RBPlayer *player,
 }
 
 static void
-rb_player_set_show_timeline (RBPlayer *player,
+rb_header_set_show_timeline (RBHeader *player,
 			     gboolean show)
 {
 	if (player->priv->timeline_shown == show)
@@ -634,13 +634,13 @@ rb_player_set_show_timeline (RBPlayer *player,
 }
 
 gboolean
-rb_player_sync_time_locked (RBPlayer *player)
+rb_header_sync_time_locked (RBHeader *player)
 {
 	gboolean ret;
 
 	gdk_threads_enter ();
 
-	ret = rb_player_sync_time (player);
+	ret = rb_header_sync_time (player);
 
 	gdk_threads_leave ();
 
@@ -648,7 +648,7 @@ rb_player_sync_time_locked (RBPlayer *player)
 }
 
 gboolean
-rb_player_sync_time (RBPlayer *player)
+rb_header_sync_time (RBHeader *player)
 {
 	int seconds;
 	long duration;
@@ -660,9 +660,9 @@ rb_player_sync_time (RBPlayer *player)
 		return TRUE;
 
 	player->priv->state->duration = duration =
-		rb_player_get_duration (player);
+		rb_header_get_duration (player);
 	player->priv->state->elapsed = seconds =
-		monkey_media_player_get_time (player->priv->mmplayer);
+		rb_player_get_time (player->priv->mmplayer);
 
 	if (duration > -1) {
 		double progress = 0.0;
@@ -681,7 +681,7 @@ rb_player_sync_time (RBPlayer *player)
 		gtk_widget_set_sensitive (player->priv->scale, FALSE);
 	}
 
-	rb_player_update_elapsed (player);
+	rb_header_update_elapsed (player);
 
 	return TRUE;
 }
@@ -689,7 +689,7 @@ rb_player_sync_time (RBPlayer *player)
 static gboolean
 slider_press_callback (GtkWidget *widget,
 		       GdkEventButton *event,
-		       RBPlayer *player)
+		       RBHeader *player)
 {
 	player->priv->slider_dragging = TRUE;
 	player->priv->latest_set_time = -1;
@@ -697,7 +697,7 @@ slider_press_callback (GtkWidget *widget,
 }
 
 static gboolean
-slider_moved_timeout (RBPlayer *player)
+slider_moved_timeout (RBHeader *player)
 {
 	double progress;
 	long duration, new;
@@ -705,10 +705,10 @@ slider_moved_timeout (RBPlayer *player)
 	gdk_threads_enter ();
 	
 	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (player->priv->scale)));
-	duration = rb_player_get_duration (player);
+	duration = rb_header_get_duration (player);
 	new = (long) (progress * duration);
 	
-	monkey_media_player_set_time (player->priv->mmplayer, new);
+	rb_player_set_time (player->priv->mmplayer, new);
 
 	player->priv->latest_set_time = new;
 	
@@ -720,7 +720,7 @@ slider_moved_timeout (RBPlayer *player)
 static gboolean
 slider_moved_callback (GtkWidget *widget,
 		       GdkEventMotion *event,
-		       RBPlayer *player)
+		       RBHeader *player)
 {
 	GtkAdjustment *adjustment;
 	double progress;
@@ -732,11 +732,11 @@ slider_moved_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	duration = rb_player_get_duration (player);
+	duration = rb_header_get_duration (player);
 
 	player->priv->state->elapsed = (long) (progress * duration);
 
-	rb_player_update_elapsed (player);
+	rb_header_update_elapsed (player);
 
 	if (player->priv->slider_moved_timeout != 0) {
 		g_source_remove (player->priv->slider_moved_timeout);
@@ -751,7 +751,7 @@ slider_moved_callback (GtkWidget *widget,
 static gboolean
 slider_release_callback (GtkWidget *widget,
 			 GdkEventButton *event,
-			 RBPlayer *player)
+			 RBHeader *player)
 {
 	double progress;
 	long duration, new;
@@ -763,15 +763,15 @@ slider_release_callback (GtkWidget *widget,
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	progress = gtk_adjustment_get_value (adjustment);
-	duration = rb_player_get_duration (player);
+	duration = rb_header_get_duration (player);
 	new = (long) (progress * duration);
 
 	if (new != player->priv->latest_set_time)
-		monkey_media_player_set_time (player->priv->mmplayer, new);
+		rb_player_set_time (player->priv->mmplayer, new);
 
 	player->priv->slider_dragging = FALSE;
 
-	rb_player_sync_time (player);
+	rb_header_sync_time (player);
 
 	if (player->priv->slider_moved_timeout != 0) {
 		g_source_remove (player->priv->slider_moved_timeout);
@@ -782,7 +782,7 @@ slider_release_callback (GtkWidget *widget,
 }
 
 static gboolean
-changed_idle_callback (RBPlayer *player)
+changed_idle_callback (RBHeader *player)
 {
 
 	gdk_threads_enter ();
@@ -798,7 +798,7 @@ changed_idle_callback (RBPlayer *player)
 
 static void
 slider_changed_callback (GtkWidget *widget,
-		         RBPlayer *player)
+		         RBHeader *player)
 {
 	if (player->priv->slider_dragging == FALSE &&
 	    player->priv->slider_locked == FALSE &&
@@ -810,10 +810,10 @@ slider_changed_callback (GtkWidget *widget,
 }
 
 char *
-rb_player_get_elapsed_string (RBPlayer *player)
+rb_header_get_elapsed_string (RBHeader *player)
 {
 	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
-	guint elapsed = monkey_media_player_get_time (player->priv->mmplayer);
+	guint elapsed = rb_player_get_time (player->priv->mmplayer);
 
 	if (elapsed > 0) {
 		minutes = elapsed / 60;
@@ -840,7 +840,7 @@ rb_player_get_elapsed_string (RBPlayer *player)
 }
 
 static void
-rb_player_update_elapsed (RBPlayer *player)
+rb_header_update_elapsed (RBHeader *player)
 {
 	char *elapsed_text;
 
@@ -848,7 +848,7 @@ rb_player_update_elapsed (RBPlayer *player)
 	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
 		return;
 
-	elapsed_text = rb_player_get_elapsed_string (player);
+	elapsed_text = rb_header_get_elapsed_string (player);
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);

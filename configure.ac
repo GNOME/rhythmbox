@@ -49,10 +49,9 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
 
 dnl Database
-
 AC_ARG_WITH(database,
-              AC_HELP_STRING([--database],
-			     [Select the database to use (default: tree)]),,
+              AC_HELP_STRING([--with-database=tree],
+			     [Select the database to use]),,
 	      with_database=tree)
 AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
 if test x"$with_database" != xtree; then
@@ -61,12 +60,23 @@ else
 	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
 fi	
 
+dnl Tagging
+AC_ARG_WITH(metadata,
+              AC_HELP_STRING([--with-metadata=monkeymedia],
+			     [Select the metadata reader to use]),,
+	      with_metadata=monkeymedia)
+AM_CONDITIONAL(USE_MONKEYMEDIA, test x"$with_metadata" = xmonkeymedia)
+if test x"$with_metadata" != xmonkeymedia; then
+	AC_MSG_ERROR([Unknown metadata reader selected])
+else
+	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
+fi	
+
 dnl Sound system
-WANT_XINE=
-AC_ARG_ENABLE(xine,
-              [  --enable-xine		Enable use of xine instead of gstreamer],
-	      WANT_XINE=1)
-if test "x$WANT_XINE" = "x1"; then
+AC_ARG_WITH(player,
+            AC_HELP_STRING([--with-player=gstreamer|xine],[Select the player to use]),,
+	    with_player=gstreamer)
+if test "x$with_player" = "xxine"; then
 	SOUNDSYSTEM_DEPS="libxine >= 1.0.0"
 	AC_SUBST(SOUNDSYSTEM_DEPS)
 
@@ -104,7 +114,7 @@ if test "x$WANT_XINE" = "x1"; then
 		],(AC_DEFINE(HAVE_NULL_VIDEO,1,[Define if you have the NULL video feature in xine-lib])))
 	CFLAGS="$SAVE_CFLAGS"
 	LIBS="$SAVE_LIBS"
-else
+else if test "x$with_player" = "xgstreamer"; then
 	dnl Now we're ready to ask for gstreamer libs and cflags
 	dnl And we can also ask for the right version of gstreamer
 	HAVE_SOUNDSYSTEM=no
@@ -135,6 +145,9 @@ else
 	AM_GST_ELEMENT_CHECK(volume,,missing_gst_elements="$missing_gst_elements volume")
 	AM_GST_ELEMENT_CHECK(osssink,, AM_GST_ELEMENT_CHECK(alsasink,,missing_gst_output_element=yes))
 
+else
+	AC_MSG_ERROR([Unknown player $with_player])
+fi
 fi
 
 AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
@@ -187,6 +200,7 @@ dnl Check for libid3tag
 
 AC_ARG_ENABLE(mp3, AC_HELP_STRING([--disable-mp3],
 				[don't build with MP3 support]))
+if test x"$with_metadata" = xmonkeymedia; then
 if test "x$enable_mp3" != "xno"; then
   PKG_CHECK_MODULES(ID3TAG, id3tag >= 0.15.0b, enable_mp3=yes, enable_mp3=no)
 fi
@@ -199,12 +213,14 @@ fi
 if test "x$enable_mp3" = "xyes"; then
    AC_DEFINE(HAVE_MP3,,[Define if we have MP3 support])
 fi
+fi
 AM_CONDITIONAL(HAVE_MP3,test "x$enable_mp3" = "xyes")
 
 dnl Check for libmp4v2
 
 AC_ARG_ENABLE(mp4, AC_HELP_STRING([--disable-mp4],
 			[don't build with MPEG-4 support]))
+if test x"$with_metadata" = xmonkeymedia; then
 if test "x$enable_mp4" != "xno"; then
   AC_CHECK_HEADER(mp4.h, [AC_CHECK_HEADER(mpeg4ip.h, [enable_mp4=yes],)],)
 fi
@@ -212,13 +228,14 @@ if test "x$enable_mp4" = "xyes"; then
   LIBS="$LIBS -lmp4v2 -lstdc++"
   AC_DEFINE(HAVE_MP4,,[Define if we have MPEG-4 support])
 fi
-
+fi
 AM_CONDITIONAL(HAVE_MP4, test "x$enable_mp4" = "xyes")
 
 dnl Check for Ogg Vorbis
 
 AC_ARG_ENABLE(vorbis, AC_HELP_STRING([--disable-vorbis],
 				[don't build with Ogg Vorbis support]))
+if test x"$with_metadata" = xmonkeymedia; then
 if test x"$enable_vorbis" != xno; then
   MM_PATH_OGG(enable_vorbis=yes,enable_vorbis=no)
   if test x"$enable_vorbis" = xyes; then
@@ -235,12 +252,14 @@ fi
 if test "x$enable_vorbis" = "xyes"; then
    AC_DEFINE(HAVE_VORBIS,,[Define if we have Ogg Vorbis support])
 fi
+fi
 AM_CONDITIONAL(HAVE_VORBIS,test "x$enable_vorbis" = "xyes")
 
 dnl Check for FLAC
 
 AC_ARG_ENABLE(flac, AC_HELP_STRING([--disable-flac],
 				[don't build with flac support]))
+if test x"$with_metadata" = xmonkeymedia; then
 if test x"$enable_flac" = xyes && test x"$enable_mp3" != xyes; then
   AC_MSG_ERROR([libid3tag is required for FLAC support])  
 fi
@@ -252,6 +271,7 @@ if test "x$enable_flac" = "xyes"; then
 fi  
 if test "x$enable_flac" = "xyes"; then
    AC_DEFINE(HAVE_FLAC,,[Define if we have FLAC support])
+fi
 fi
 AM_CONDITIONAL(HAVE_FLAC,test "x$enable_flac" = "xyes")
 
@@ -403,6 +423,12 @@ AC_SUBST(DATADIR_UNINST)
 AC_OUTPUT([ 
 Makefile
 lib/Makefile
+metadata/Makefile
+metadata/monkey-media/Makefile
+metadata/monkey-media/monkey-media-includes.h
+metadata/monkey-media/stream-info-impl/Makefile
+metadata/monkey-media/stream-info-impl/id3-vfs/Makefile
+player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
 iradio/Makefile
@@ -414,10 +440,6 @@ data/art/Makefile
 data/glade/Makefile
 data/node-views/Makefile
 data/rhythmbox.pc
-monkey-media/Makefile
-monkey-media/monkey-media-includes.h
-monkey-media/stream-info-impl/Makefile
-monkey-media/stream-info-impl/id3-vfs/Makefile
 sources/Makefile
 help/Makefile
 help/C/Makefile
@@ -430,7 +452,15 @@ rhythmbox.spec
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])
 if test x"$with_database" = xtree; then
 	AC_MSG_NOTICE([** Tree database is enabled])
+else
+	AC_MSG_ERROR([Unknown database!])
 fi
+if test x"$with_metadata" = xmonkeymedia; then
+	AC_MSG_NOTICE([** Monkey-Media metadata is enabled])
+else
+	AC_MSG_ERROR([Unknown metadata reader!])
+fi
+if test x"$with_metadata" = xmonkeymedia; then
 if test x"$enable_mp3" != "xyes"; then
 	AC_MSG_NOTICE([   MP3 support is disabled])
 else
@@ -450,6 +480,7 @@ if test x"$enable_mp4" != "xyes"; then
 	AC_MSG_NOTICE([   MPEG-4 support is disabled])
 else
 	AC_MSG_NOTICE([** MPEG-4 support is enabled])
+fi
 fi
 dnl if test x"$enable_musicbrainz" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])

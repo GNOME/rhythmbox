@@ -20,60 +20,60 @@
  *
  */
 
-#ifndef __RB_PLAYER_H
-#define __RB_PLAYER_H
+#ifndef __RB_HEADER_H
+#define __RB_HEADER_H
 
 #include <gtk/gtkhbox.h>
 
 #include "rhythmdb.h"
-#include "monkey-media-player.h"
+#include "rb-player.h"
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_PLAYER         (rb_player_get_type ())
-#define RB_PLAYER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_PLAYER, RBPlayer))
-#define RB_PLAYER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_PLAYER, RBPlayerClass))
-#define RB_IS_PLAYER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_PLAYER))
-#define RB_IS_PLAYER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAYER))
-#define RB_PLAYER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAYER, RBPlayerClass))
+#define RB_TYPE_HEADER         (rb_header_get_type ())
+#define RB_HEADER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_HEADER, RBHeader))
+#define RB_HEADER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_HEADER, RBHeaderClass))
+#define RB_IS_HEADER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_HEADER))
+#define RB_IS_HEADER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_HEADER))
+#define RB_HEADER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_HEADER, RBHeaderClass))
 
-typedef struct RBPlayerPrivate RBPlayerPrivate;
+typedef struct RBHeaderPrivate RBHeaderPrivate;
 
 typedef struct
 {
 	GtkHBox parent;
 
-	RBPlayerPrivate *priv;
-} RBPlayer;
+	RBHeaderPrivate *priv;
+} RBHeader;
 
 typedef struct
 {
 	GtkHBoxClass parent;
-} RBPlayerClass;
+} RBHeaderClass;
 
-GType		rb_player_get_type		(void);
+GType		rb_header_get_type		(void);
 
-RBPlayer *	rb_player_new			(MonkeyMediaPlayer *player);
+RBHeader *	rb_header_new			(RBPlayer *player);
 
-void		rb_player_set_playing_entry	(RBPlayer *player,
+void		rb_header_set_playing_entry	(RBHeader *player,
 						 RhythmDBEntry *entry);
 
-void		rb_player_set_title		(RBPlayer *player,
+void		rb_header_set_title		(RBHeader *player,
 						 const char *title);
 
-void		rb_player_set_show_artist_album	(RBPlayer *player,
+void		rb_header_set_show_artist_album	(RBHeader *player,
 						 gboolean show);
 
-void		rb_player_set_urldata		(RBPlayer *player,
+void		rb_header_set_urldata		(RBHeader *player,
 						 const char *urltext,
 						 const char *urllink);
 
-void		rb_player_sync			(RBPlayer *player);
+void		rb_header_sync			(RBHeader *player);
 
-gboolean	rb_player_sync_time		(RBPlayer *player);
+gboolean	rb_header_sync_time		(RBHeader *player);
 
-char *		rb_player_get_elapsed_string	(RBPlayer *player);
+char *		rb_header_get_elapsed_string	(RBHeader *player);
 
 G_END_DECLS
 
-#endif /* __RB_PLAYER_H */
+#endif /* __RB_HEADER_H */

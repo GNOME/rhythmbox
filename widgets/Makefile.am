@@ -11,8 +11,8 @@ librbwidgets_la_SOURCES =				\
 	rb-property-view.h				\
 	rb-search-entry.c				\
 	rb-search-entry.h				\
-	rb-player.c					\
-	rb-player.h					\
+	rb-header.c					\
+	rb-header.h					\
 	rb-volume.c					\
 	rb-volume.h					\
 	rb-druid.c					\
@@ -45,14 +45,14 @@ INCLUDES =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_builddir)/lib 				\
+	-I$(top_srcdir)/player				\
+	-I$(top_srcdir)/metadata			\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/sources				\
 	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/iradio				\
-	-I$(top_srcdir)/monkey-media			\
-	-I$(top_builddir)/monkey-media			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIBADD = $(top_builddir)/monkey-media/libmonkey-media.la $(top_builddir)/lib/librb.la $(top_builddir)/rhythmdb/librhythmdb.la 
+librbwidgets_la_LIBADD = $(top_builddir)/lib/librb.la $(top_builddir)/rhythmdb/librhythmdb.la 

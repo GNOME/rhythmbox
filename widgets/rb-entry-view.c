@@ -32,8 +32,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "monkey-media-audio-quality.h"
-
 #include "rb-tree-dnd.h"
 #include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
@@ -1038,24 +1036,31 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 				      struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
-	char *str;
-	MonkeyMediaAudioQuality quality;
+	guint bitrate;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
 	rhythmdb_read_lock (data->view->priv->db);
 
-	quality = rhythmdb_entry_get_int (data->view->priv->db, entry,
+	bitrate = rhythmdb_entry_get_int (data->view->priv->db, entry,
 					  data->propid);
 
 	rhythmdb_read_unlock (data->view->priv->db);
 
-	if (quality > 0) {
-		str = monkey_media_audio_quality_to_string (quality);
-		g_object_set (G_OBJECT (renderer), "text", str, NULL);
-		g_free (str);
-	} else {
+	if (bitrate <= 0) {
 		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
+	} else if (bitrate <= 80) {
+		g_object_set (G_OBJECT (renderer), "text", _("Very Low"), NULL);
+	} else if (bitrate <= 112) {
+		g_object_set (G_OBJECT (renderer), "text", _("Low"), NULL);
+	} else if (bitrate <= 160) {
+		g_object_set (G_OBJECT (renderer), "text", _("Regular"), NULL);
+	} else if (bitrate <= 224) {
+		g_object_set (G_OBJECT (renderer), "text", _("High"), NULL);
+	} else if (bitrate <= 1410) {
+		g_object_set (G_OBJECT (renderer), "text", _("Very High"), NULL);
+	} else {
+		g_object_set (G_OBJECT (renderer), "text", _("Perfect"), NULL);
 	}
 }
 
@@ -1299,7 +1304,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		key = "Time";
 		break;
 	case RB_ENTRY_VIEW_COL_QUALITY:
-		propid = RHYTHMDB_PROP_QUALITY;
+		propid = RHYTHMDB_PROP_BITRATE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
 		sort_data->propid = cell_data->propid;
@@ -2038,8 +2043,8 @@ rb_entry_view_sync_columns_visible (RBEntryView *view)
 		for (i = 0; items[i] != NULL && *(items[i]); i++) {
 			int value = propid_from_name (items[i]);
 
-			g_assert ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES));
-			visible_properties = g_list_append (visible_properties, GINT_TO_POINTER (value));
+			if ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES))
+				visible_properties = g_list_append (visible_properties, GINT_TO_POINTER (value));
 		}
 		g_strfreev (items);
 	}

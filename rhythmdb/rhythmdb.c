@@ -26,8 +26,7 @@
 #include "rhythmdb-legacy.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
-#include "monkey-media.h"
-#include "monkey-media-stream-info.h"
+#include "rb-metadata.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 #include <gdk/gdk.h>
@@ -54,6 +53,10 @@ struct RhythmDBPrivate
 	GThreadPool *query_thread_pool;
 
 	GHashTable *legacy_id_map;
+
+	/* Used for metadata reading */
+	RBMetaData *metadata;
+	GnomeVFSFileInfo *vfsinfo;
 
 	gboolean query_in_progress;
 
@@ -291,6 +294,8 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->action_queue = g_async_queue_new ();
 
 	db->priv->status_queue = g_async_queue_new ();
+
+	db->priv->metadata = rb_metadata_new ();
 	
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
 	unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
@@ -390,6 +395,8 @@ rhythmdb_finalize (GObject *object)
 	db = RHYTHMDB (object);
 
 	g_return_if_fail (db->priv != NULL);
+
+	g_object_unref (db->priv->metadata);
 
 	g_static_rw_lock_free (&db->priv->lock);
 
@@ -533,133 +540,110 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 	return ret;
 }
 
-typedef struct 
-{
-	GValue track_number_val;
-	GValue file_size_val;
-	GValue title_val;
-	GValue duration_val;
-	GValue quality_val;
-	GValue mtime_val;
-	GValue genre_val;
-	GValue artist_val;
-	GValue album_val;
-} RhythmDBEntryUpdateData;
-
 /* Threading: any thread
  */
-static RhythmDBEntryUpdateData *
-read_metadata (const char *location, GError **error)
+static void
+read_metadata_async (RhythmDB *db, const char *location, GError **real_error)
 {
-	RhythmDBEntryUpdateData *data = g_new0 (RhythmDBEntryUpdateData, 1);
-	MonkeyMediaStreamInfo *info;
-	GnomeVFSFileInfo *vfsinfo;
-	GValue tem = {0,};
+	GError *error = NULL;
 
-	info = monkey_media_stream_info_new (location, error);
-	if (G_UNLIKELY (info == NULL)) {
-		g_free (data);
-		return NULL;
-	}
+	rb_metadata_load (db->priv->metadata, location, &error);
+	if (error != NULL)
+		g_propagate_error (real_error, error);
 
-	/* track number */
-	if (monkey_media_stream_info_get_value (info,
-				                MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
-					        0, &data->track_number_val) == FALSE) {
-		g_value_init (&data->track_number_val, G_TYPE_INT);
-		g_value_set_int (&data->track_number_val, -1);
-	}
-
-	/* duration */
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
-					    0, &data->duration_val);
-
-	/* quality */
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY,
-					    0, &tem);
-	g_value_init (&data->quality_val, G_TYPE_INT);
-	g_value_set_int (&data->quality_val, g_value_get_enum (&tem));
-
-	/* filesize */
-	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
-					    0, &data->file_size_val);
-
-	/* title */
-	monkey_media_stream_info_get_value (info,
-					    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
-					    0, &data->title_val);
-	if (*(g_value_get_string (&data->title_val)) == '\0') {
-		GnomeVFSURI *vfsuri;
-		char *fname;
-
-		vfsuri = gnome_vfs_uri_new (location);
-		fname = gnome_vfs_uri_extract_short_name (vfsuri);
-		g_value_set_string_take_ownership (&data->title_val, fname);
-		gnome_vfs_uri_unref (vfsuri);
-	}
-
-	vfsinfo = gnome_vfs_file_info_new ();
-
-	gnome_vfs_get_file_info (location, vfsinfo, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-
-	/* mtime */
-	g_value_init (&data->mtime_val, G_TYPE_LONG);
-	g_value_set_long (&data->mtime_val, vfsinfo->mtime);
-
-	gnome_vfs_file_info_unref (vfsinfo);
-
-	/* genre */
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
-					    0,
-				            &data->genre_val);
-
-	/* artist */
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
-					    0,
-				            &data->artist_val);
-
-	/* album */
-	monkey_media_stream_info_get_value (info,
-				            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
-					    0,
-				            &data->album_val);
-	g_object_unref (G_OBJECT (info));
-	return data;
+	if (db->priv->vfsinfo)
+		gnome_vfs_file_info_unref (db->priv->vfsinfo);
+	db->priv->vfsinfo = gnome_vfs_file_info_new ();
+	gnome_vfs_get_file_info (location, db->priv->vfsinfo, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
 }
 
 static void
-synchronize_entry_with_data (RhythmDB *db, RhythmDBEntry *entry, RhythmDBEntryUpdateData *data)
+synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 {
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &data->track_number_val);
-	g_value_unset (&data->track_number_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &data->duration_val);
-	g_value_unset (&data->duration_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_QUALITY, &data->quality_val);
-	g_value_unset (&data->quality_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &data->file_size_val);
-	g_value_unset (&data->file_size_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &data->title_val);
-	g_value_unset (&data->title_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &data->mtime_val);
-	g_value_unset (&data->mtime_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &data->genre_val);
-	g_value_unset (&data->genre_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &data->artist_val);
-	g_value_unset (&data->artist_val);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &data->album_val);
-	g_value_unset (&data->album_val);
+	GValue val = {0,};
+
+	/* track number */
+	if (!rb_metadata_get (db->priv->metadata,
+			      RB_METADATA_FIELD_TRACK_NUMBER,
+			      &val)) {
+		g_value_init (&val, G_TYPE_INT);
+		g_value_set_int (&val, -1);
+	}
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+	g_value_unset (&val);
+
+	/* duration */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_DURATION,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &val);
+		g_value_unset (&val);
+	}
+
+	/* bitrate */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_BITRATE,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_BITRATE, &val);
+		g_value_unset (&val);
+	}
+
+	/* filesize */
+	g_value_init (&val, G_TYPE_UINT64);
+	g_value_set_uint64 (&val, db->priv->vfsinfo->size);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	g_value_unset (&val);
+
+	/* title */
+	if (!rb_metadata_get (db->priv->metadata,
+			      RB_METADATA_FIELD_TITLE,
+			      &val)) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, db->priv->vfsinfo->name);
+	}
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	g_value_unset (&val);
+
+	/* mtime */
+	g_value_init (&val, G_TYPE_LONG);
+	g_value_set_long (&val, db->priv->vfsinfo->mtime);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &val);
+	g_value_unset (&val);
+
+	gnome_vfs_file_info_unref (db->priv->vfsinfo);
+	db->priv->vfsinfo = NULL;
+
+	/* genre */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_GENRE,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+	}
+
+	/* artist */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_ARTIST,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
+		g_value_unset (&val);
+	}
+
+	/* album */
+	if (rb_metadata_get (db->priv->metadata,
+			     RB_METADATA_FIELD_ALBUM,
+			     &val)) {
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+		g_value_unset (&val);
+	}
 }
 
 RhythmDBEntry *
-rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
+rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 {
 	RhythmDBEntry *entry;
 	char *realuri;
-	RhythmDBEntryUpdateData *metadata;
+	GError *error = NULL;
 	GValue last_time = {0, };
 
 	realuri = rb_uri_resolve_symlink (uri);
@@ -671,7 +655,9 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	if (entry) {
 		rhythmdb_entry_ref_unlocked (db, entry);
 		rhythmdb_write_unlock (db);
-		update_song (db, entry, error);
+		update_song (db, entry, &error);
+		if (error != NULL)
+			g_propagate_error (real_error, error);
 		rhythmdb_entry_unref (db, entry);
 		return entry;
 	}
@@ -679,8 +665,9 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	rhythmdb_write_unlock (db);
 
 	/* Don't do file access with the db write lock held */
-	metadata = read_metadata (uri, error);
-	if (!metadata) {
+	read_metadata_async (db, uri, &error);
+	if (error) {
+		g_propagate_error (real_error, error);
 		rb_debug ("failed to read data from \"%s\"", uri);
 		g_free (realuri);
 		return NULL;
@@ -691,7 +678,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, realuri);
 	if (entry == NULL)
 		goto out_dupentry;
-	synchronize_entry_with_data (db, entry, metadata);
+	synchronize_entry_with_metadata (db, entry);
 
 	/* initialize the last played date to 0=never */
 	g_value_init (&last_time, G_TYPE_LONG);
@@ -700,7 +687,6 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	g_value_unset (&last_time);
 
  out_dupentry:
-	g_free (metadata);
 	g_free (realuri);
 
 	rhythmdb_write_unlock (db);
@@ -986,6 +972,7 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	case G_TYPE_BOOLEAN:
 	case G_TYPE_INT:
 	case G_TYPE_LONG:
+	case G_TYPE_UINT64:
 	case G_TYPE_FLOAT:
 	case G_TYPE_DOUBLE:
 		break;
@@ -1280,8 +1267,8 @@ rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
 		return "last-played";
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		return "last-played-str";
-	case RHYTHMDB_PROP_QUALITY:
-		return "quality";
+	case RHYTHMDB_PROP_BITRATE:
+		return "bitrate";
 	default:
 		g_assert_not_reached ();
 	}
@@ -1319,6 +1306,9 @@ write_encoded_gvalue (xmlNodePtr node,
 		break;
 	case G_TYPE_LONG:
 		strval = g_strdup_printf ("%ld", g_value_get_long (val));
+		break;
+	case G_TYPE_UINT64:
+		strval = g_strdup_printf ("%llu", g_value_get_uint64 (val));
 		break;
 	case G_TYPE_FLOAT:
 		strval = g_strdup_printf ("%f", g_value_get_float (val));
@@ -1363,6 +1353,9 @@ read_encoded_property (RhythmDB *db,
 		break;
 	case G_TYPE_LONG:
 		g_value_set_long (val, g_ascii_strtoull (content, NULL, 10));
+		break;
+	case G_TYPE_UINT64:
+		g_value_set_uint64 (val, g_ascii_strtoull (content, NULL, 10));
 		break;
 	case G_TYPE_FLOAT:
 		g_value_set_float (val, g_ascii_strtod (content, NULL));
@@ -1668,13 +1661,13 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (glong)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (glong)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_QUALITY, "Quality (gint)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate (gint)"),
 			{ 0, 0, 0 }
 		};
 
@@ -1744,6 +1737,7 @@ rhythmdb_entry_get_ ## NAME (RhythmDB *db, RhythmDBEntry *entry, guint propid) \
 DEFINE_GETTER(boolean, gboolean, BOOLEAN, FALSE)
 DEFINE_GETTER(pointer, gpointer, POINTER, NULL)
 DEFINE_GETTER(long, long, LONG, 0)
+DEFINE_GETTER(uint64, guint64, UINT64, 0)
 DEFINE_GETTER(int, int, INT, 0)
 DEFINE_GETTER(double, double, DOUBLE, 0)
 DEFINE_GETTER(float, float, FLOAT, 0)

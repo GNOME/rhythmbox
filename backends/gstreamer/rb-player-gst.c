@@ -1,5 +1,4 @@
-/*  monkey-media
- *
+/*
  *  arch-tag: Implementation of GStreamer backends, with workarounds for bugs
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
@@ -30,20 +29,17 @@
 #include <gst/control/dparam_smooth.h>
 #include <math.h>
 #include <string.h>
+#include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
-#include "monkey-media.h"
-#include "monkey-media-marshal.h"
-#include "monkey-media-private.h"
-#include "monkey-media-audio-cd.h"
-#include "monkey-media-audio-cd-private.h"
+#include "rb-player.h"
 
-static void monkey_media_player_class_init (MonkeyMediaPlayerClass *klass);
-static void monkey_media_player_init (MonkeyMediaPlayer *mp);
-static void monkey_media_player_finalize (GObject *object);
+static void rb_player_class_init (RBPlayerClass *klass);
+static void rb_player_init (RBPlayer *mp);
+static void rb_player_finalize (GObject *object);
 
-struct MonkeyMediaPlayerPrivate
+struct RBPlayerPrivate
 {
 	char *uri;
 
@@ -58,7 +54,9 @@ struct MonkeyMediaPlayerPrivate
 	GstElement *volume;
 	GstElement *sink;
 
+#ifdef HAVE_AUDIOCD
 	MonkeyMediaAudioCD *cd;
+#endif
 
 	gboolean iradio_mode;
 	gboolean playing;
@@ -84,41 +82,44 @@ typedef enum
 	ERROR,
 	TICK,
 	LAST_SIGNAL
-} MonkeyMediaPlayerSignalType;
+} RBPlayerSignalType;
 
 typedef struct
 {
-	MonkeyMediaPlayer *object;
+	RBPlayer *object;
+	/* FIXME */
+#if 0
 	MonkeyMediaStreamInfoField info_field;
+#endif	
 	GError *error;
 	GValue *info;
-} MonkeyMediaPlayerSignal;
+} RBPlayerSignal;
 
-static guint monkey_media_player_signals[LAST_SIGNAL] = { 0 };
+static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
 GType
-monkey_media_player_get_type (void)
+rb_player_get_type (void)
 {
 	static GType type = 0;
 
 	if (type == 0) {
 		static const GTypeInfo our_info =
 		{
-			sizeof (MonkeyMediaPlayerClass),
+			sizeof (RBPlayerClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) monkey_media_player_class_init,
+			(GClassInitFunc) rb_player_class_init,
 			NULL,
 			NULL,
-			sizeof (MonkeyMediaPlayer),
+			sizeof (RBPlayer),
 			0,
-			(GInstanceInitFunc) monkey_media_player_init,
+			(GInstanceInitFunc) rb_player_init,
 		};
 
 		type = g_type_register_static (G_TYPE_OBJECT,
-					       "MonkeyMediaPlayer",
+					       "RBPlayer",
 					       &our_info, 0);
 	}
 
@@ -126,67 +127,70 @@ monkey_media_player_get_type (void)
 }
 
 static void
-monkey_media_player_class_init (MonkeyMediaPlayerClass *klass)
+rb_player_class_init (RBPlayerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->finalize = monkey_media_player_finalize;
+	object_class->finalize = rb_player_finalize;
 
-	monkey_media_player_signals[EOS] =
+	rb_player_signals[EOS] =
 		g_signal_new ("eos",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, eos),
+			      G_STRUCT_OFFSET (RBPlayerClass, eos),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	monkey_media_player_signals[INFO] =
+	/* FIXME */
+#if 0
+	rb_player_signals[INFO] =
 		g_signal_new ("info",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, info),
+			      G_STRUCT_OFFSET (RBPlayerClass, info),
 			      NULL, NULL,
 			      monkey_media_marshal_VOID__ENUM_POINTER,
 			      G_TYPE_NONE,
 			      2,
 			      MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD,
 			      G_TYPE_POINTER);
-	monkey_media_player_signals[BUFFERING_BEGIN] =
+#endif
+	rb_player_signals[BUFFERING_BEGIN] =
 		g_signal_new ("buffering_begin",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, buffering_begin),
+			      G_STRUCT_OFFSET (RBPlayerClass, buffering_begin),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	monkey_media_player_signals[BUFFERING_END] =
+	rb_player_signals[BUFFERING_END] =
 		g_signal_new ("buffering_end",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, buffering_end),
+			      G_STRUCT_OFFSET (RBPlayerClass, buffering_end),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	monkey_media_player_signals[ERROR] =
+	rb_player_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, error),
+			      G_STRUCT_OFFSET (RBPlayerClass, error),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
-	monkey_media_player_signals[TICK] =
+	rb_player_signals[TICK] =
 		g_signal_new ("tick",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (MonkeyMediaPlayerClass, tick),
+			      G_STRUCT_OFFSET (RBPlayerClass, tick),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__LONG,
 			      G_TYPE_NONE,
@@ -195,23 +199,23 @@ monkey_media_player_class_init (MonkeyMediaPlayerClass *klass)
 }
 
 static gboolean
-tick_timeout (MonkeyMediaPlayer *mp)
+tick_timeout (RBPlayer *mp)
 {
 	if (mp->priv->playing == FALSE)
 		return TRUE;
 
-	g_signal_emit (G_OBJECT (mp), monkey_media_player_signals[TICK], 0,
-		       monkey_media_player_get_time (mp));
+	g_signal_emit (G_OBJECT (mp), rb_player_signals[TICK], 0,
+		       rb_player_get_time (mp));
 
 	return TRUE;
 }
 
 static void
-monkey_media_player_init (MonkeyMediaPlayer *mp)
+rb_player_init (RBPlayer *mp)
 {
-	gint ms_period = 1000 / MONKEY_MEDIA_PLAYER_TICK_HZ;
+	gint ms_period = 1000 / RB_PLAYER_TICK_HZ;
 
-	mp->priv = g_new0 (MonkeyMediaPlayerPrivate, 1);
+	mp->priv = g_new0 (RBPlayerPrivate, 1);
 
 #ifdef HAVE_AUDIOCD
 	mp->priv->cd = monkey_media_audio_cd_new (NULL);
@@ -221,11 +225,11 @@ monkey_media_player_init (MonkeyMediaPlayer *mp)
 }
 
 static void
-monkey_media_player_finalize (GObject *object)
+rb_player_finalize (GObject *object)
 {
-	MonkeyMediaPlayer *mp;
+	RBPlayer *mp;
 
-	mp = MONKEY_MEDIA_PLAYER (object);
+	mp = RB_PLAYER (object);
 
 	g_source_remove (mp->priv->tick_timeout_id);
 
@@ -250,9 +254,9 @@ monkey_media_player_finalize (GObject *object)
 }
 
 static gboolean
-eos_signal_idle (MonkeyMediaPlayer *mp)
+eos_signal_idle (RBPlayer *mp)
 {
-	g_signal_emit (G_OBJECT (mp), monkey_media_player_signals[EOS], 0);
+	g_signal_emit (G_OBJECT (mp), rb_player_signals[EOS], 0);
 
 	g_object_unref (G_OBJECT (mp));
 
@@ -260,11 +264,11 @@ eos_signal_idle (MonkeyMediaPlayer *mp)
 }
 
 static gboolean
-buffering_begin_signal_idle (MonkeyMediaPlayer *mp)
+buffering_begin_signal_idle (RBPlayer *mp)
 {
 	GDK_THREADS_ENTER ();
 
-	g_signal_emit (G_OBJECT (mp), monkey_media_player_signals[BUFFERING_BEGIN], 0);
+	g_signal_emit (G_OBJECT (mp), rb_player_signals[BUFFERING_BEGIN], 0);
 	g_object_unref (G_OBJECT (mp));
 
 	GDK_THREADS_LEAVE ();
@@ -273,11 +277,11 @@ buffering_begin_signal_idle (MonkeyMediaPlayer *mp)
 }
 
 static gboolean
-buffering_end_signal_idle (MonkeyMediaPlayer *mp)
+buffering_end_signal_idle (RBPlayer *mp)
 {
 	GDK_THREADS_ENTER ();
 
-	g_signal_emit (G_OBJECT (mp), monkey_media_player_signals[BUFFERING_END], 0);
+	g_signal_emit (G_OBJECT (mp), rb_player_signals[BUFFERING_END], 0);
 	g_object_unref (G_OBJECT (mp));
 
 	GDK_THREADS_LEAVE ();
@@ -288,7 +292,7 @@ buffering_end_signal_idle (MonkeyMediaPlayer *mp)
 
 static void
 eos_cb (GstElement *element,
-	MonkeyMediaPlayer *mp)
+	RBPlayer *mp)
 {
 	g_object_ref (G_OBJECT (mp));
 
@@ -298,15 +302,15 @@ eos_cb (GstElement *element,
 }
 
 static gboolean
-error_signal_idle (MonkeyMediaPlayerSignal *signal)
+error_signal_idle (RBPlayerSignal *signal)
 {
 	g_signal_emit (G_OBJECT (signal->object),
-		       monkey_media_player_signals[ERROR], 0,
+		       rb_player_signals[ERROR], 0,
 		       signal->error);
 
 	/* close if not already closing */
 	if (signal->object->priv->uri != NULL)
-		monkey_media_player_close (signal->object);
+		rb_player_close (signal->object);
 
 	g_object_unref (G_OBJECT (signal->object));
 	g_error_free (signal->error);
@@ -319,14 +323,14 @@ static void
 error_cb (GstElement *element,
 	  GObject *arg1,
 	  char *errmsg,
-	  MonkeyMediaPlayer *mp)
+	  RBPlayer *mp)
 {
-	MonkeyMediaPlayerSignal *signal;
+	RBPlayerSignal *signal;
 
-	signal = g_new0 (MonkeyMediaPlayerSignal, 1);
+	signal = g_new0 (RBPlayerSignal, 1);
 	signal->object = mp;
-	signal->error = g_error_new_literal (MONKEY_MEDIA_PLAYER_ERROR,
-					     MONKEY_MEDIA_PLAYER_ERROR_GENERAL,
+	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
+					     RB_PLAYER_ERROR_GENERAL,
 					     errmsg);
 
 	g_object_ref (G_OBJECT (mp));
@@ -334,11 +338,13 @@ error_cb (GstElement *element,
 	g_idle_add ((GSourceFunc) error_signal_idle, signal);
 }
 
+/* FIXME */
+#if 0
 static gboolean
-info_signal_idle (MonkeyMediaPlayerSignal *signal)
+info_signal_idle (RBPlayerSignal *signal)
 {
 	g_signal_emit (G_OBJECT (signal->object),
-		       monkey_media_player_signals[INFO], 0,
+		       rb_player_signals[INFO], 0,
 		       signal->info_field, signal->info);
 
 	g_object_unref (G_OBJECT (signal->object));
@@ -350,7 +356,7 @@ info_signal_idle (MonkeyMediaPlayerSignal *signal)
 
 static void
 deep_notify_cb (GstElement *element, GstElement *orig,
-	        GParamSpec *pspec, MonkeyMediaPlayer *player)
+	        GParamSpec *pspec, RBPlayer *player)
 {
 	GValue *value;
 	GEnumClass *class;
@@ -358,7 +364,7 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 
 	if (!(pspec->flags & G_PARAM_READABLE)) return;
 
-	class = g_type_class_ref (MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD);
+	class = g_type_class_ref (RB_TYPE_STREAM_INFO_FIELD);
 
 	value = g_new0 (GValue, 1);
 	g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
@@ -366,9 +372,9 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 
 	/* Other properties from the gnomevfssrc go here */
 	if (strcmp (pspec->name, "iradio-title") == 0)
-		ev = g_enum_get_value (class, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE);
+		ev = g_enum_get_value (class, RB_STREAM_INFO_FIELD_TITLE);
 	if (ev == NULL && strcmp (pspec->name, "iradio-url") == 0)
-		ev = g_enum_get_value (class, MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION);
+		ev = g_enum_get_value (class, RB_STREAM_INFO_FIELD_LOCATION);
 	if (ev == NULL)
 		ev = g_enum_get_value_by_nick (class, pspec->name);
 
@@ -382,9 +388,9 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 	/* FIXME end hack */
 
 	if (ev != NULL) {
-		MonkeyMediaPlayerSignal *signal;
+		RBPlayerSignal *signal;
 
-		signal = g_new0 (MonkeyMediaPlayerSignal, 1);
+		signal = g_new0 (RBPlayerSignal, 1);
 
 		signal->info_field = ev->value;
 		signal->info = value;
@@ -397,12 +403,13 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 
 	g_type_class_unref (class);
 }
+#endif
 
 static void
 queue_full_cb (GstQueue *queue,
 	       gpointer data)     
 {
-	MonkeyMediaPlayer *mp = MONKEY_MEDIA_PLAYER (data);
+	RBPlayer *mp = RB_PLAYER (data);
 
 	g_signal_handlers_block_by_func (G_OBJECT (mp->priv->queue),
 					 G_CALLBACK (queue_full_cb),
@@ -413,7 +420,7 @@ queue_full_cb (GstQueue *queue,
 }
 
 static void
-monkey_media_player_construct (MonkeyMediaPlayer *mp,
+rb_player_construct (RBPlayer *mp,
 			       gboolean iradio_mode,
 			       gboolean audiocd_mode,
 			       const char *uri,
@@ -429,10 +436,13 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	 *  { src ! spider ! volume ! sink }
 	 */
 	mp->priv->pipeline = gst_element_factory_make ("thread", "pipeline");
+	/* FIXME */
+#if 0
 	g_signal_connect (G_OBJECT (mp->priv->pipeline),
 			  "deep_notify",
 			  G_CALLBACK (deep_notify_cb),
 			  mp);
+#endif
 
 	mp->priv->error_signal_id =
 		g_signal_connect (G_OBJECT (mp->priv->pipeline),
@@ -458,8 +468,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 		: gst_element_factory_make ("gnomevfssrc", "src");
 	if (mp->priv->src == NULL) {
 		g_set_error (error,
-			     MONKEY_MEDIA_PLAYER_ERROR,
-			     MONKEY_MEDIA_PLAYER_ERROR_NO_INPUT_PLUGIN,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_NO_INPUT_PLUGIN,
 			     _("Failed to create %s input element; check your installation"),
 			     audiocd_mode ? "cdparanoia" : "gnomevfssrc");
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
@@ -468,6 +478,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	}
 	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->src);
 
+#ifdef HAVE_AUDIOCD
 	if (audiocd_mode) {
 		g_object_set (G_OBJECT (mp->priv->src),
 			      "paranoia-mode",
@@ -478,14 +489,15 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 			      monkey_media_get_cd_drive (),
 			      NULL);
 	}
+#endif
 
 	/* The queue */
 	if (iradio_mode) {
 		mp->priv->queue = gst_element_factory_make ("queue", "queue");
 		if (mp->priv->queue == NULL) {
 			g_set_error (error,
-				     MONKEY_MEDIA_PLAYER_ERROR,
-				     MONKEY_MEDIA_PLAYER_ERROR_NO_QUEUE_PLUGIN,
+				     RB_PLAYER_ERROR,
+				     RB_PLAYER_ERROR_NO_QUEUE_PLUGIN,
 				     _("Failed to create queue element; check your installation"));
 			gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 			mp->priv->pipeline = NULL;
@@ -511,8 +523,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
 					     decoder_name);
 		g_set_error (error,
-			     MONKEY_MEDIA_PLAYER_ERROR,
-			     MONKEY_MEDIA_PLAYER_ERROR_NO_DEMUX_PLUGIN,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_NO_DEMUX_PLUGIN,
 			     err);
 		g_free (err);
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
@@ -525,8 +537,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	mp->priv->volume = gst_element_factory_make ("volume", "volume");
 	if (mp->priv->volume == NULL) {
 		g_set_error (error,
-			     MONKEY_MEDIA_PLAYER_ERROR,
-			     MONKEY_MEDIA_PLAYER_ERROR_NO_VOLUME_PLUGIN,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_NO_VOLUME_PLUGIN,
 			     _("Failed to create volume element; check your installation"));
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 		mp->priv->pipeline = NULL;
@@ -544,8 +556,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	mp->priv->sink = gst_gconf_get_default_audio_sink ();
 	if (mp->priv->sink == NULL) {
 		g_set_error (error,
-			     MONKEY_MEDIA_PLAYER_ERROR,
-			     MONKEY_MEDIA_PLAYER_ERROR_NO_AUDIO,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_NO_AUDIO,
 			     _("Could not create audio output element; check your settings"));
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 		mp->priv->pipeline = NULL;
@@ -581,28 +593,28 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	mp->priv->timer_add = 0;
 }
 
-MonkeyMediaPlayer *
-monkey_media_player_new (GError **error)
+RBPlayer *
+rb_player_new (GError **error)
 {
-	MonkeyMediaPlayer *mp;
+	RBPlayer *mp;
 
-	mp = MONKEY_MEDIA_PLAYER (g_object_new (MONKEY_MEDIA_TYPE_PLAYER, NULL));
+	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL));
 
 	return mp;
 }
 
 GQuark
-monkey_media_player_error_quark (void)
+rb_player_error_quark (void)
 {
 	static GQuark quark = 0;
 	if (!quark)
-		quark = g_quark_from_static_string ("monkey_media_player_error");
+		quark = g_quark_from_static_string ("rb_player_error");
 
 	return quark;
 }
 
 void
-monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
+rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode)
 {
 	if (mp->priv->playing) {
 		if (iradio_mode) {
@@ -624,14 +636,14 @@ monkey_media_player_sync_pipeline (MonkeyMediaPlayer *mp, gboolean iradio_mode)
 }
 
 void
-monkey_media_player_open (MonkeyMediaPlayer *mp,
+rb_player_open (RBPlayer *mp,
 			  const char *uri,
 			  GError **error)
 {
 	gboolean audiocd_mode = uri && g_str_has_prefix (uri, "audiocd://");
 	gboolean iradio_mode = uri && g_str_has_prefix (uri, "http://");
 
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	if (mp->priv->pipeline) {
 		gst_element_set_state (mp->priv->pipeline,
@@ -648,7 +660,7 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 		return;
 	}
 
-	monkey_media_player_construct (mp, iradio_mode, audiocd_mode, uri, error);
+	rb_player_construct (mp, iradio_mode, audiocd_mode, uri, error);
 	if (error && *error)
 		return;
 
@@ -660,8 +672,8 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 
 		if (!mp->priv->cd) {
 			g_set_error (error,
-				     MONKEY_MEDIA_PLAYER_ERROR,
-				     MONKEY_MEDIA_PLAYER_ERROR_INTERNAL,
+				     RB_PLAYER_ERROR,
+				     RB_PLAYER_ERROR_INTERNAL,
 				     _("No AudioCD support; check your settings"));
 			return;
 		}
@@ -698,13 +710,13 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = 0;
 
-	monkey_media_player_sync_pipeline (mp, iradio_mode);
+	rb_player_sync_pipeline (mp, iradio_mode);
 }
 
 void
-monkey_media_player_close (MonkeyMediaPlayer *mp)
+rb_player_close (RBPlayer *mp)
 {
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	mp->priv->playing = FALSE;
 
@@ -722,29 +734,29 @@ monkey_media_player_close (MonkeyMediaPlayer *mp)
 }
 
 const char *
-monkey_media_player_get_uri (MonkeyMediaPlayer *mp)
+rb_player_get_uri (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), NULL);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), NULL);
 
 	return mp->priv->uri;
 }
 
 void
-monkey_media_player_play (MonkeyMediaPlayer *mp)
+rb_player_play (RBPlayer *mp)
 {
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	mp->priv->playing = TRUE;
 
 	g_return_if_fail (mp->priv->pipeline != NULL);
 
-	monkey_media_player_sync_pipeline (mp, mp->priv->iradio_mode);
+	rb_player_sync_pipeline (mp, mp->priv->iradio_mode);
 }
 
 void
-monkey_media_player_pause (MonkeyMediaPlayer *mp)
+rb_player_pause (RBPlayer *mp)
 {
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	if (!mp->priv->playing)
 		return;
@@ -764,18 +776,18 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 }
 
 gboolean
-monkey_media_player_playing (MonkeyMediaPlayer *mp)
+rb_player_playing (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), FALSE);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 
 	return mp->priv->playing;
 }
 
 void
-monkey_media_player_set_volume (MonkeyMediaPlayer *mp,
+rb_player_set_volume (RBPlayer *mp,
 				float volume)
 {
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
 	if (mp->priv->pipeline != NULL) {
@@ -789,18 +801,18 @@ monkey_media_player_set_volume (MonkeyMediaPlayer *mp,
 }
 
 float
-monkey_media_player_get_volume (MonkeyMediaPlayer *mp)
+rb_player_get_volume (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), 0.0);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), 0.0);
 
 	return mp->priv->cur_volume;
 }
 
 void
-monkey_media_player_set_mute (MonkeyMediaPlayer *mp,
+rb_player_set_mute (RBPlayer *mp,
 			      gboolean mute)
 {
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 
 	if (mp->priv->pipeline != NULL)
 		g_object_set (G_OBJECT (mp->priv->volume),
@@ -813,17 +825,17 @@ monkey_media_player_set_mute (MonkeyMediaPlayer *mp,
 }
 
 gboolean
-monkey_media_player_get_mute (MonkeyMediaPlayer *mp)
+rb_player_get_mute (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), FALSE);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 
 	return mp->priv->mute;
 }
 
 gboolean
-monkey_media_player_seekable (MonkeyMediaPlayer *mp)
+rb_player_seekable (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), FALSE);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 	g_return_val_if_fail (mp->priv->pipeline != NULL, FALSE);
 
 	/* FIXME we're lying here, no idea how to fix this though, without trying
@@ -832,12 +844,12 @@ monkey_media_player_seekable (MonkeyMediaPlayer *mp)
 }
 
 void
-monkey_media_player_set_time (MonkeyMediaPlayer *mp,
+rb_player_set_time (RBPlayer *mp,
 			      long time)
 {
 	GstEvent *event;
 
-	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
+	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (time >= 0);
 
 	g_return_if_fail (mp->priv->pipeline != NULL);
@@ -857,9 +869,9 @@ monkey_media_player_set_time (MonkeyMediaPlayer *mp,
 }
 
 long
-monkey_media_player_get_time (MonkeyMediaPlayer *mp)
+rb_player_get_time (RBPlayer *mp)
 {
-	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), -1);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), -1);
 
 	if (mp->priv->pipeline != NULL)
 		return (long) floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5) + mp->priv->timer_add;

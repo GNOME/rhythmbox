@@ -23,9 +23,9 @@
 #include <gtk/gtkhbox.h>
 #include <bonobo/bonobo-arg.h>
 #include <bonobo/bonobo-ui-component.h>
-#include <monkey-media.h>
 
 #include "rb-source.h"
+#include "rb-player.h"
 #include "rhythmdb.h"
 
 #ifndef __RB_SHELL_PLAYER_H
@@ -91,7 +91,7 @@ long			rb_shell_player_get_playing_time(RBShellPlayer *player);
 void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
-MonkeyMediaPlayer *	rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
+RBPlayer *		rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 
 gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player);
 

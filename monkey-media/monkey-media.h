@@ -33,16 +33,7 @@ G_BEGIN_DECLS
 
 void				monkey_media_init				(int *argc, char ***argv);
 
-void				monkey_media_init_with_popt_table		(int *argc, char ***argv,
-										 const struct poptOption *popt_options);
-
-const struct poptOption *	monkey_media_get_popt_table			(void);
-
 void				monkey_media_shutdown				(void);
-
-void				monkey_media_main				(void);
-
-void				monkey_media_main_quit				(void);
 
 GList *				monkey_media_get_supported_filename_extensions	(void);
 
@@ -66,9 +57,7 @@ void                            monkey_media_set_cd_playback_mode              (
 
 G_END_DECLS
 
-#include "monkey-media-player.h"
 #include "monkey-media-stream-info.h"
-#include "monkey-media-audio-quality.h"
 #include "monkey-media-includes.h"
 
 #endif /* __MONKEY_MEDIA_H */

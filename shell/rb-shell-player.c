@@ -31,7 +31,6 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libgnome/gnome-i18n.h>
-#include <monkey-media.h>
 
 #ifdef HAVE_MMKEYS
 #include <X11/Xlib.h>
@@ -51,6 +50,7 @@
 #include "rb-preferences.h"
 #include "rb-debug.h"
 #include "rb-player.h"
+#include "rb-header.h"
 #include "rb-playlist.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
@@ -133,18 +133,21 @@ static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player);
-static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
-static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
-static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
+static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
+static void eos_cb (RBPlayer *player, gpointer data);
+static void error_cb (RBPlayer *player, GError *err, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, GError *err,
 				   gboolean lock);
 
-static void info_available_cb (MonkeyMediaPlayer *player,
+/* FIXME */
+#if 0
+static void info_available_cb (RBPlayer *player,
 			       MonkeyMediaStreamInfoField field,
 			       GValue *value,
 			       gpointer data);
-static void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
-static void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
+#endif
+static void buffering_end_cb (RBPlayer *player, gpointer data);
+static void buffering_begin_cb (RBPlayer *player, gpointer data);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
 
 static void rb_shell_player_set_play_order (RBShellPlayer *player);
@@ -183,7 +186,7 @@ struct RBShellPlayerPrivate
 
 	gboolean handling_error;
 
-	MonkeyMediaPlayer *mmplayer;
+	RBPlayer *mmplayer;
 
 	GList *active_uris;
 
@@ -209,7 +212,7 @@ struct RBShellPlayerPrivate
 	GtkWidget *stop_image;
 	GtkWidget *next_button;
 
-	RBPlayer *player_widget;
+	RBHeader *header_widget;
 
 	GtkWidget *shuffle_button;
 	GtkWidget *volume_button;
@@ -470,7 +473,7 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv = g_new0 (RBShellPlayerPrivate, 1);
 
-	player->priv->mmplayer = monkey_media_player_new (&error);
+	player->priv->mmplayer = rb_player_new (&error);
 	if (error != NULL) {
 		rb_error_dialog (_("Failed to create the player: %s"), error->message);
 		g_error_free (error);
@@ -479,10 +482,13 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 
+	/* FIXME */
+#if 0
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "info",
 			  G_CALLBACK (info_available_cb),
 			  player);
+#endif	
 
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "eos",
@@ -573,8 +579,8 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (player), alignment, FALSE, TRUE, 0);
 
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
-	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
-	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->player_widget));
+	player->priv->header_widget = rb_header_new (player->priv->mmplayer);
+	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->header_widget));
 	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
 
 	player->priv->volume_button = GTK_WIDGET (rb_volume_new ());
@@ -610,7 +616,7 @@ rb_shell_player_finalize (GObject *object)
 	g_return_if_fail (player->priv != NULL);
 
 	eel_gconf_set_float (CONF_STATE_VOLUME,
-			     monkey_media_player_get_volume (player->priv->mmplayer));
+			     rb_player_get_volume (player->priv->mmplayer));
 
 	g_object_unref (G_OBJECT (player->priv->mmplayer));
 
@@ -685,7 +691,7 @@ rb_shell_player_set_property (GObject *object,
 			/* Set database object */
 			g_object_get (G_OBJECT (player->priv->selected_source),
 				      "db", &player->priv->db, NULL);
-			g_object_set (G_OBJECT (player->priv->player_widget),
+			g_object_set (G_OBJECT (player->priv->header_widget),
 				      "db", player->priv->db, NULL);
 		}
 		
@@ -761,7 +767,7 @@ rb_shell_player_get_property (GObject *object,
 		g_value_set_string_take_ownership (value, eel_gconf_get_string (CONF_STATE_PLAY_ORDER));
 		break;
 	case PROP_PLAYING:
-		g_value_set_boolean (value, monkey_media_player_playing (player->priv->mmplayer));
+		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
 		break;
 	case PROP_BUFFERING:
 		g_value_set_boolean (value, player->priv->buffering);
@@ -846,10 +852,10 @@ rb_shell_player_open_playlist_location (RBPlaylist *playlist, const char *uri,
 {
 	GError *error = NULL;
 
-	if (monkey_media_player_playing (player->priv->mmplayer))
+	if (rb_player_playing (player->priv->mmplayer))
 		return;
 
-	monkey_media_player_open (player->priv->mmplayer, uri, &error);
+	rb_player_open (player->priv->mmplayer, uri, &error);
 	if (error != NULL) {
 		if (player->priv->playlist_parse_error != NULL) {
 			g_error_free (player->priv->playlist_parse_error);
@@ -859,7 +865,7 @@ rb_shell_player_open_playlist_location (RBPlaylist *playlist, const char *uri,
 		return;
 	}
 
-	monkey_media_player_play (player->priv->mmplayer);
+	rb_player_play (player->priv->mmplayer);
 
 	g_object_notify (G_OBJECT (player), "playing");
 }
@@ -879,9 +885,9 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	g_free (unescaped);
 	g_free (msg);
 
-	was_playing = monkey_media_player_playing (player->priv->mmplayer);
+	was_playing = rb_player_playing (player->priv->mmplayer);
 
-	monkey_media_player_close (player->priv->mmplayer);
+	rb_player_close (player->priv->mmplayer);
 
 	if (rb_uri_is_iradio (location) != FALSE
 	    && rb_playlist_can_handle (location) != FALSE) {
@@ -898,7 +904,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 				     _("Couldn't parse playlist"));
 		}
 		g_object_unref (playlist);
-		if (!monkey_media_player_playing (player->priv->mmplayer)) {
+		if (!rb_player_playing (player->priv->mmplayer)) {
 			if (error) {
 				*error = g_error_copy (player->priv->playlist_parse_error);
 				g_error_free (player->priv->playlist_parse_error);
@@ -907,11 +913,11 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		}
 		return;
 	}
-	monkey_media_player_open (player->priv->mmplayer, location, error);
+	rb_player_open (player->priv->mmplayer, location, error);
 	if (error && *error)
 		return;
 
-	monkey_media_player_play (player->priv->mmplayer);
+	rb_player_play (player->priv->mmplayer);
 
 	if (!was_playing) {
 		g_object_notify (G_OBJECT (player), "playing");
@@ -945,7 +951,7 @@ rb_shell_player_play (RBShellPlayer *player)
 
 	rb_entry_view_set_playing (songs, TRUE);
 
-	monkey_media_player_play (player->priv->mmplayer);
+	rb_player_play (player->priv->mmplayer);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -1028,7 +1034,7 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 		/* If we're in the first 2 seconds go to the previous song,
 		 * else restart the current one.
 		 */
-		if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
+		if (rb_player_get_time (player->priv->mmplayer) < 3) {
 			rb_debug ("doing previous");
 			entry = rb_play_order_get_previous (player->priv->play_order);
 			if (entry) {
@@ -1037,13 +1043,13 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 			} else {
 				/* Is this the right thing to do when there's no previous song? */
 				rb_debug ("No previous entry, restarting song");
-				monkey_media_player_set_time (player->priv->mmplayer, 0);
-				rb_player_sync_time (player->priv->player_widget);
+				rb_player_set_time (player->priv->mmplayer, 0);
+				rb_header_sync_time (player->priv->header_widget);
 			}
 		} else {
 			rb_debug ("restarting song");
-			monkey_media_player_set_time (player->priv->mmplayer, 0);
-			rb_player_sync_time (player->priv->player_widget);
+			rb_player_set_time (player->priv->mmplayer, 0);
+			rb_header_sync_time (player->priv->header_widget);
 		}
 
 		rb_shell_player_jump_to_current (player);
@@ -1114,7 +1120,7 @@ rb_shell_player_playpause (RBShellPlayer *player)
 		break;
 	case PLAY_BUTTON_PAUSE:
 		rb_debug ("pausing mm player");
-		monkey_media_player_pause (player->priv->mmplayer);
+		rb_player_pause (player->priv->mmplayer);
 		break;
 	case PLAY_BUTTON_PLAY:
 	{
@@ -1197,7 +1203,7 @@ rb_shell_player_sync_volume (RBShellPlayer *player)
 		volume = 0.0;
 	else if (volume > 1.0)
 		volume = 1.0;
-	monkey_media_player_set_volume (player->priv->mmplayer,
+	rb_player_set_volume (player->priv->mmplayer,
 					volume);
 }
 
@@ -1394,11 +1400,11 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	}
 
 	if (player->priv->have_url)
-		rb_player_set_urldata (player->priv->player_widget,
+		rb_header_set_urldata (player->priv->header_widget,
 				       entry_title,
 				       player->priv->url);
 	else
-		rb_player_set_urldata (player->priv->player_widget,
+		rb_header_set_urldata (player->priv->header_widget,
 				       NULL, NULL);
 
 	if (player->priv->song && entry_title)
@@ -1411,7 +1417,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		title = NULL;
 
-	duration = rb_player_get_elapsed_string (player->priv->player_widget);
+	duration = rb_header_get_elapsed_string (player->priv->header_widget);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
@@ -1421,12 +1427,12 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 
 	/* Sync the player */
 	if (player->priv->song)
-		rb_player_set_title (player->priv->player_widget, title);
+		rb_header_set_title (player->priv->header_widget, title);
 	else
-		rb_player_set_title (player->priv->player_widget, entry_title);
+		rb_header_set_title (player->priv->header_widget, entry_title);
 	g_free (title);
-	rb_player_set_playing_entry (player->priv->player_widget, entry);
-	rb_player_sync (player->priv->player_widget);
+	rb_header_set_playing_entry (player->priv->header_widget, entry);
+	rb_header_sync (player->priv->header_widget);
 }
 
 void
@@ -1456,7 +1462,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		not_empty = TRUE;
 
 		/* Should these be up to the play order? */
-		have_previous = monkey_media_player_get_uri (player->priv->mmplayer) != NULL;
+		have_previous = rb_player_get_uri (player->priv->mmplayer) != NULL;
 		player->priv->have_previous_entry = (rb_entry_view_get_previous_entry (songs) != NULL);
 
 		have_next = rb_play_order_has_next (player->priv->play_order);
@@ -1479,7 +1485,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 					 rb_entry_view_have_selection (view));
 	}
 
-	if (monkey_media_player_playing (player->priv->mmplayer)) {
+	if (rb_player_playing (player->priv->mmplayer)) {
 		if (player->priv->source == player->priv->selected_source
 		    && rb_source_can_pause (RB_SOURCE (player->priv->selected_source)))
 			pstate = PLAY_BUTTON_PAUSE;
@@ -1489,7 +1495,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY, TRUE);
 
 	} else  {
-		if (monkey_media_player_get_uri (player->priv->mmplayer) == NULL) {
+		if (rb_player_get_uri (player->priv->mmplayer) == NULL) {
 			pstate = PLAY_BUTTON_PLAY;
 		} else {
 			if (player->priv->source == player->priv->selected_source)
@@ -1571,9 +1577,9 @@ rb_shell_player_stop (RBShellPlayer *player)
 
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 
-	if (monkey_media_player_playing (player->priv->mmplayer))
-		monkey_media_player_pause (player->priv->mmplayer);
-	monkey_media_player_close (player->priv->mmplayer);
+	if (rb_player_playing (player->priv->mmplayer))
+		rb_player_pause (player->priv->mmplayer);
+	rb_player_close (player->priv->mmplayer);
 }
 
 gboolean
@@ -1581,10 +1587,10 @@ rb_shell_player_get_playing (RBShellPlayer *player)
 {
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), -1);
 
-	return monkey_media_player_playing (player->priv->mmplayer);
+	return rb_player_playing (player->priv->mmplayer);
 }
 
-MonkeyMediaPlayer *
+RBPlayer *
 rb_shell_player_get_mm_player (RBShellPlayer *player)
 {
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), NULL);
@@ -1597,7 +1603,7 @@ rb_shell_player_get_playing_time (RBShellPlayer *player)
 {
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), 0);
 	
-	return monkey_media_player_get_time (player->priv->mmplayer);
+	return rb_player_get_time (player->priv->mmplayer);
 }
 
 void
@@ -1605,8 +1611,8 @@ rb_shell_player_set_playing_time (RBShellPlayer *player, long time)
 {
 	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
 	
-	if (monkey_media_player_seekable (player->priv->mmplayer))
-		monkey_media_player_set_time (player->priv->mmplayer, time);
+	if (rb_player_seekable (player->priv->mmplayer))
+		rb_player_set_time (player->priv->mmplayer, time);
 }
 
 long
@@ -1652,7 +1658,7 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 
 
 static void
-eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
+eos_cb (RBPlayer *mmplayer, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("eos!");
@@ -1711,27 +1717,27 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 }
 
 static void
-error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
+error_cb (RBPlayer *mmplayer, GError *err, gpointer data)
 {
 	rb_shell_player_error ((RBShellPlayer *)data, err, TRUE);
 }
 
 static void
-tick_cb (MonkeyMediaPlayer *mmplayer, long elapsed, gpointer data)
+tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 
 	GDK_THREADS_ENTER ();
 
-	rb_player_sync_time (player->priv->player_widget);
+	rb_header_sync_time (player->priv->header_widget);
 
-	if (monkey_media_player_playing (mmplayer)) {
+	if (rb_player_playing (mmplayer)) {
 		static int callback_runs = 0;
 		callback_runs++;
-		if (callback_runs >= MONKEY_MEDIA_PLAYER_TICK_HZ) {
+		if (callback_runs >= RB_PLAYER_TICK_HZ) {
 			gchar *duration;
 
-			duration = rb_player_get_elapsed_string (player->priv->player_widget);
+			duration = rb_header_get_elapsed_string (player->priv->header_widget);
 			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED],
 				       0, duration);
 			g_free (duration);
@@ -1743,8 +1749,10 @@ tick_cb (MonkeyMediaPlayer *mmplayer, long elapsed, gpointer data)
 	GDK_THREADS_LEAVE ();
 }
 
+	/* FIXME */
+#if 0
 static void
-info_available_cb (MonkeyMediaPlayer *mmplayer,
+info_available_cb (RBPlayer *mmplayer,
 		   MonkeyMediaStreamInfoField field,
 		   GValue *value,
 		   gpointer data)
@@ -1761,13 +1769,13 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		  enumvalue->value_name,
 		  valcontents,
 		  player->priv->source,
-		  monkey_media_player_get_uri (player->priv->mmplayer));
+		  rb_player_get_uri (player->priv->mmplayer));
 	g_free (valcontents);
 
 	/* Sanity check, this signal may come in after we stopped the
 	 * player */
 	if (player->priv->source == NULL
-	    || !monkey_media_player_get_uri (player->priv->mmplayer)) {
+	    || !rb_player_get_uri (player->priv->mmplayer)) {
 		rb_debug ("Got info_available but no playing source!");
 		return;
 	}
@@ -1846,9 +1854,10 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
  out_unlock:
 	gdk_threads_leave ();
 }
+#endif
 
 static void
-buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
+buffering_begin_cb (RBPlayer *mmplayer,
 		    gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
@@ -1866,7 +1875,7 @@ rb_shell_player_disable_buffering (RBShellPlayer *player)
 }
 
 static void
-buffering_end_cb (MonkeyMediaPlayer *mmplayer,
+buffering_end_cb (RBPlayer *mmplayer,
 		  gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);

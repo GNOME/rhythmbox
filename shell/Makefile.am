@@ -55,13 +55,14 @@ rhythmbox_SOURCES =              			\
 
 rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
+	$(top_builddir)/metadata/librbmetadata.la	\
+	$(top_builddir)/player/librbplayer.la		\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/corba/librbcorba.la	        \
-	$(top_builddir)/monkey-media/libmonkey-media.la \
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -71,20 +72,25 @@ INCLUDES = 						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib                        	\
+	-I$(top_srcdir)/metadata                       	\
+	-I$(top_srcdir)/player                       	\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/corba                    	\
 	-I$(top_builddir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
-	-I$(top_srcdir)/monkey-media			\
-	-I$(top_builddir)/monkey-media			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE
+
+if USE_MONKEYMEDIA
+INCLUDES += -I$(top_srcdir)/metadata/monkey-media
+endif
+ 
 
 BUILT_SOURCES = $(tab_files)
 

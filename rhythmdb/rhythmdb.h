@@ -77,7 +77,7 @@ typedef enum
 	RHYTHMDB_PROP_RATING,
 	RHYTHMDB_PROP_PLAY_COUNT,
 	RHYTHMDB_PROP_LAST_PLAYED,
-	RHYTHMDB_PROP_QUALITY,
+	RHYTHMDB_PROP_BITRATE,
 } RhythmDBPropType;
 
 typedef enum
@@ -215,6 +215,9 @@ gboolean	rhythmdb_entry_get_boolean	(RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 guint property_id);
 long		rhythmdb_entry_get_long		(RhythmDB *db,
+						 RhythmDBEntry *entry,
+						 guint property_id);
+guint64		rhythmdb_entry_get_uint64	(RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 guint property_id);
 int		rhythmdb_entry_get_int		(RhythmDB *db,

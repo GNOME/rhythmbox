@@ -19,12 +19,12 @@ librhythmdb_la_SOURCES += rhythmdb-tree.h rhythmdb-tree.c
 endif
 
 librhythmdb_la_LDFLAGS = -export-dynamic
-librhythmdb_la_LIBADD = $(top_builddir)/monkey-media/libmonkey-media.la $(top_builddir)/lib/librb.la
+librhythmdb_la_LIBADD = $(top_builddir)/lib/librb.la $(top_builddir)/metadata/librbmetadata.la 
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"RhythmDB\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
-	-I$(top_srcdir)/monkey-media			\
+	-I$(top_srcdir)/metadata			\
 	$(RHYTHMBOX_CFLAGS)

@@ -40,7 +40,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "monkey-media-audio-quality.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
@@ -69,7 +68,7 @@ static void rb_station_properties_dialog_update (RBStationPropertiesDialog *dial
 static void rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialog);
-static void rb_station_properties_dialog_update_quality (RBStationPropertiesDialog *dialog);
+static void rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_rated_cb (RBRating *rating,
@@ -88,7 +87,7 @@ struct RBStationPropertiesDialogPrivate
 	GtkWidget   *location;
 	GtkWidget   *lastplayed;
 	GtkWidget   *playcount;
-	GtkWidget   *quality;
+	GtkWidget   *bitrate;
 	GtkWidget   *rating;
 	GtkWidget   *okbutton;
 	GtkWidget   *cancelbutton;
@@ -194,7 +193,7 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 
 	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
-	dialog->priv->quality = glade_xml_get_widget (xml, "qualityLabel");
+	dialog->priv->bitrate = glade_xml_get_widget (xml, "bitrateLabel");
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating, 
@@ -321,7 +320,7 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 	rb_station_properties_dialog_update_title_entry (dialog);
 	rb_station_properties_dialog_update_genre (dialog);
 	rb_station_properties_dialog_update_play_count (dialog);
-	rb_station_properties_dialog_update_quality (dialog);
+	rb_station_properties_dialog_update_bitrate (dialog);
 	rb_station_properties_dialog_update_last_played (dialog);
 	rb_station_properties_dialog_update_rating (dialog);
 }
@@ -427,22 +426,19 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 }
 
 static void
-rb_station_properties_dialog_update_quality (RBStationPropertiesDialog *dialog)
+rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 {
-	MonkeyMediaAudioQuality val;
+	int val;
 	char *text;
 
 	rhythmdb_read_lock (dialog->priv->db);
 	val = rhythmdb_entry_get_int (dialog->priv->db,
 				      dialog->priv->current_entry,
-				      RHYTHMDB_PROP_QUALITY);
+				      RHYTHMDB_PROP_BITRATE);
 	rhythmdb_read_unlock (dialog->priv->db);
-	if (val > 0)
-		text = monkey_media_audio_quality_to_string (val);
-	else
-		text = g_strdup (_("Unknown"));
+	text = g_strdup_printf ("%d", val);
 
-	gtk_label_set_text (GTK_LABEL (dialog->priv->quality), text);
+	gtk_label_set_text (GTK_LABEL (dialog->priv->bitrate), text);
 	g_free (text);
 }
 
