@@ -514,9 +514,10 @@ idle_do_action (struct RBShellAction *data)
 			rb_shell_play_entry (data->shell, entry);
 			break;
 		}
-	} else if (data->tries < 4)
+	} else if (data->tries < 4) {
 		g_timeout_add (500 + data->tries*200, (GSourceFunc) idle_do_action, data);
-	else
+		return TRUE;
+	} else
 		g_warning ("No entry %s in db", data->uri);
 
 	GDK_THREADS_LEAVE ();
