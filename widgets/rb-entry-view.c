@@ -108,7 +108,7 @@ static gboolean rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry
 						GtkTreeIter *iter);
 static void rb_entry_view_scroll_to_iter (RBEntryView *view,
 					  GtkTreeIter *iter);
-static gboolean poll_model (RBEntryView *view);
+static gboolean idle_poll_model (RBEntryView *view);
 
 struct RBEntryViewReverseSortingData
 {
@@ -1237,7 +1237,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		g_object_unref (G_OBJECT (query_model));
 	}
 		
-	view->priv->model_poll_id = g_idle_add ((GSourceFunc) poll_model, view);
+	view->priv->model_poll_id = g_idle_add ((GSourceFunc) idle_poll_model, view);
 
 	return G_OBJECT (view);
 }
@@ -1813,11 +1813,29 @@ rb_entry_view_set_playing (RBEntryView *view,
 	rb_entry_view_thaw (view);
 }
 
-static gboolean
-poll_model (RBEntryView *view)
+gboolean
+rb_entry_view_poll_model (RBEntryView *view)
 {
 	GTimeVal timeout;
 	gboolean did_sync;
+
+	g_get_current_time (&timeout);
+	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
+
+	did_sync = rhythmdb_model_poll (view->priv->model, &timeout);
+	if (did_sync) {
+		g_source_remove (view->priv->model_poll_id);
+		view->priv->model_poll_id =
+			g_idle_add ((GSourceFunc) idle_poll_model, view);
+	}
+	return did_sync;
+}
+
+static gboolean
+idle_poll_model (RBEntryView *view)
+{
+	gboolean did_sync;
+	GTimeVal timeout;
 
 	g_get_current_time (&timeout);
 	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
@@ -1828,10 +1846,10 @@ poll_model (RBEntryView *view)
 
 	if (did_sync)
 		view->priv->model_poll_id =
-			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) poll_model, view, NULL);
+			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) idle_poll_model, view, NULL);
 	else
 		view->priv->model_poll_id =
-			g_timeout_add (300, (GSourceFunc) poll_model, view);
+			g_timeout_add (300, (GSourceFunc) idle_poll_model, view);
 
 	GDK_THREADS_LEAVE ();
 
