@@ -1366,7 +1366,8 @@ rb_group_view_add_node (RBGroupView *view,
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (node != NULL);
 
-	rb_node_add_child (view->priv->group, node);
+	if (rb_node_has_child (view->priv->group, node) == FALSE)
+		rb_node_add_child (view->priv->group, node);
 }
 
 static void
