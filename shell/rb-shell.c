@@ -410,7 +410,6 @@ rb_shell_finalize (GObject *object)
 
 	g_free (shell->priv->sidebar_layout_file);
 
-	gtk_object_unref (GTK_OBJECT (shell->priv->player_shell));
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 	g_object_unref (G_OBJECT (shell->priv->library));
 
