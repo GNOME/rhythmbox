@@ -434,6 +434,8 @@ rb_entry_view_finalize (GObject *object)
 	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
 	g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
 
+	g_free (view->priv->sorting_key);
+
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -454,6 +456,7 @@ rb_entry_view_set_property (GObject *object,
 		view->priv->db = g_value_get_object (value);
 		break;
 	case PROP_SORTING_KEY:
+		g_free (view->priv->sorting_key);
 		view->priv->sorting_key = g_value_dup_string (value);
 		break;
 	case PROP_MODEL:
