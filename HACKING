@@ -7,21 +7,34 @@ need to follow this.  Here's a summary:
   (we are slowly converting the code)
 - if statements are written like this: "if (this != that)"
 - Major functions should have prototypes
+- There should be a space between a function call and the parameters
 - callback functions should have a suffix _cb
 
 Rhythmbox is also highly object-oriented using GObject.  Any major
 additions should generally go into their own class, and not be bolted onto
 an existing one.
 
-Any patches you send should be in unified diff format (-u option to patch).
+Any regular patches you send should be in unified diff format (-u
+option to patch).
 
-Most importantly, Rhythmbox is developed using the Arch revision control
-system.  If you want to make any major changes, it is highly recommended
-that you create your own branch of the source tree, and work from there.
-When you are done, you can send a message to rhythmbox-devel@gnome.org,
-or post a bugzilla bug with a merge request.
-For more information about this, see:
+Rhythmbox is developed using the Arch revision control system.  For
+simple changes, you can just get a copy of the source tree, and hack
+away.  Then, you can get a changeset by doing:
+
+tla changes -o /tmp/my-changes.cset
+
+You can then tar this up (it'll be a directory) and send it via email.
+
+If you want to make any major changes, it is highly recommended that
+you create your own branch of the source tree, and work from there.
+That way you can publish your archive somewhere, and we can directly
+merge your changes.
+
+When you are done, you can send a message to
+rhythmbox-devel@gnome.org, or post a bugzilla bug with a merge
+request.  For more information about this, see:
 http://web.rhythmbox.org/development.html
+
 
 Finally, here is some sample code written in the correct style:
 
