@@ -434,9 +434,6 @@ if test x"$WANT_XINE" != "x1"; then
 	else
 		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
 	fi
-	if test x"$GST_MAJORMINOR" = x0.7; then	
-		AC_MSG_WARN([Rhythmbox is currently known to have problems with GStreamer 0.7])
-	fi
 else
 	AC_MSG_NOTICE([** xine backend is enabled])
 fi
