@@ -382,13 +382,10 @@ impl_search (RBSource *asource, const char *search_text)
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 
 	/* resets the filter */
-	if (search_text == NULL || strcmp (search_text, "") == 0)
-	{
+	if (search_text == NULL || strcmp (search_text, "") == 0) {
 		rb_node_view_select_node (source->priv->genres,
 		 		          rb_iradio_backend_get_all_stations (source->priv->backend));
-	}
-	else
-	{
+	} else {
 		rb_node_view_select_none (source->priv->genres);
 
 		rb_node_filter_empty (source->priv->stations_filter);
