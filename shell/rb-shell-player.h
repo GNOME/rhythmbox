@@ -71,6 +71,8 @@ MonkeyMediaPlayer *	rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 
 gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player);
 
+const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
+
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);
 #endif

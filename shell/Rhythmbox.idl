@@ -9,6 +9,9 @@ module GNOME
 		void handleFile (in string uri);
 
 		void grabFocus ();
+
+		string getPlayingTitle ();
+		string getPlayingPath ();
 	
 		void quit ();
 	};

@@ -912,8 +912,13 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 static void
 rb_shell_player_sync_volume (RBShellPlayer *player)
 {
+	float volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+	if (volume < 0.0)
+		volume = 0.0;
+	else if (volume > 1.0)
+		volume = 1.0;
 	monkey_media_player_set_volume (player->priv->mmplayer,
-					eel_gconf_get_float (CONF_STATE_VOLUME));
+					volume);
 }
 
 static void
@@ -1560,3 +1565,10 @@ gboolean rb_shell_volume_scroll (GtkWidget *widget, GdkEvent *event, gpointer da
 	monkey_media_player_set_volume(player->priv->mmplayer, cur_volume);                                                                              
   return FALSE;
 }
+
+const char *
+rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
+{
+	return shell_player->priv->url;
+}
+

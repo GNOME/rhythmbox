@@ -1,3 +1,17 @@
+2003-07-14  Colin Walters  <walters@verbum.org>
+
+	* shell/Rhythmbox.idl:
+	* shell/main.c: (main), (rb_handle_cmdline):
+	* shell/rb-shell-player.c: (rb_shell_player_sync_volume),
+	(rb_shell_player_get_playing_path):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_class_init),
+	(rb_shell_corba_grab_focus), (rb_shell_corba_get_playing_title),
+	(rb_shell_corba_get_playing_path):
+
+	Add --print-playing and --print-playing-path cmdline arguments, and
+	corresponding CORBA interface calls.
+
 2003-06-16  Danilo Šegan  <dsegan@gmx.net>
 
 	* configure.in: Added "sr" and "sr@Latn" to ALL_LINGUAS.

@@ -49,6 +49,8 @@ static CORBA_Environment ev;
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
+static gboolean print_playing = FALSE;
+static gboolean print_playing_path = FALSE;
 
 int
 main (int argc, char **argv)
@@ -60,6 +62,8 @@ main (int argc, char **argv)
 
 	const struct poptOption popt_options[] =
 	{
+		{ "print-playing",   0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
+		{ "print-playing-path", 0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
@@ -187,6 +191,7 @@ rb_handle_cmdline (char **argv, int argc,
 {
 	GNOME_Rhythmbox shell;
 	int i;
+	char *ret;
 
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)
@@ -197,6 +202,11 @@ rb_handle_cmdline (char **argv, int argc,
 		
 		return;
 	}
+
+	if (print_playing)
+		printf ("%s\n", GNOME_Rhythmbox_getPlayingTitle (shell, &ev));
+	if (print_playing_path)
+		printf ("%s\n", GNOME_Rhythmbox_getPlayingPath (shell, &ev));
 
 	for (i = 1; i < argc; i++)
 	{
@@ -216,6 +226,6 @@ rb_handle_cmdline (char **argv, int argc,
 	}
 
 	/* at the very least, we focus the window */
-	if (already_running == TRUE)
+	if (already_running == TRUE && !(print_playing_path || print_playing))
 		GNOME_Rhythmbox_grabFocus (shell, &ev);
 }

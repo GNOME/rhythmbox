@@ -28,6 +28,7 @@
 #include <bonobo/bonobo-control-frame.h>
 #include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <config.h>
 #include <libgnome/libgnome.h>
 #include <libgnome/gnome-i18n.h>
@@ -88,6 +89,11 @@ static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 					   CORBA_Environment *ev);
 static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 				       CORBA_Environment *ev);
+static char * rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
+						CORBA_Environment *ev);
+static char * rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+
 void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
@@ -338,6 +344,8 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->handleFile   = rb_shell_corba_handle_file;
 	epv->addToLibrary = rb_shell_corba_add_to_library;
 	epv->grabFocus    = rb_shell_corba_grab_focus;
+	epv->getPlayingTitle = rb_shell_corba_get_playing_title;
+	epv->getPlayingPath = rb_shell_corba_get_playing_path;
 }
 
 static void
@@ -496,6 +504,40 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gtk_widget_grab_focus (shell->priv->window);
+}
+
+static CORBA_char *
+rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
+				  CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	const char *str;
+	CORBA_char *ret;
+
+	GDK_THREADS_ENTER ();
+	str = gtk_window_get_title (GTK_WINDOW (shell->priv->window));
+	ret = CORBA_string_alloc (strlen (str));
+	strcpy (ret, str);
+	GDK_THREADS_LEAVE ();
+	return ret;
+}
+
+static CORBA_char *
+rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	const char *str;
+	CORBA_char *ret;
+	
+	GDK_THREADS_ENTER ();
+	str = rb_shell_player_get_playing_path (shell->priv->player_shell);
+	if (str == NULL)
+		str = "";
+	ret = CORBA_string_alloc (strlen (str));
+	strcpy (ret, str);
+	GDK_THREADS_LEAVE ();
+	return ret;
 }
 
 void
