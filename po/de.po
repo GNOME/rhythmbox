@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.5.99\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-24 20:24+0200\n"
-"PO-Revision-Date: 2003-10-24 20:18+0200\n"
+"POT-Creation-Date: 2003-10-25 20:12+0200\n"
+"PO-Revision-Date: 2003-10-25 20:12+0200\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -95,7 +95,7 @@ msgstr "Diesen Schritt ü_berspringen"
 
 #: data/glade/general-prefs.glade.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1234
+#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1236
 msgid "A_lbum"
 msgstr "Alb_um"
 
@@ -137,7 +137,7 @@ msgstr "_Qualität"
 #: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
 #: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1186
+#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1188
 msgid "_Rating"
 msgstr "Bewe_rtung"
 
@@ -178,16 +178,16 @@ msgid "Encoding:"
 msgstr "Kodierung:"
 
 #: data/glade/song-info.glade.h:6
+msgid "File name:"
+msgstr "Dateiname:"
+
+#: data/glade/song-info.glade.h:7
 msgid "Last played:"
 msgstr "Letzte Wiedergabe:"
 
-#: data/glade/song-info.glade.h:7
+#: data/glade/song-info.glade.h:8
 msgid "Location:"
 msgstr "Speicherort:"
-
-#: data/glade/song-info.glade.h:8
-msgid "Name:"
-msgstr "Name"
 
 #: data/glade/song-info.glade.h:9
 msgid "Play count:"
@@ -270,41 +270,41 @@ msgstr "A_lbum"
 #: data/node-views/rb-node-view-artists.xml.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1224
+#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1226
 msgid "Art_ist"
 msgstr "_Interpret"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:3
 #: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1244
+#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1246
 msgid "Ge_nre"
 msgstr "_Genre"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1254
+#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1256
 msgid "Ti_me"
 msgstr "_Dauer"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:5
 #: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:268
-#: widgets/rb-entry-view.c:1204
+#: widgets/rb-entry-view.c:1206
 msgid "Tra_ck"
 msgstr "T.-_Nr."
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:7
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
 #: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1213
+#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1215
 msgid "_Title"
 msgstr "_Titel"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1275
+#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "_Letzte Wiedergabe"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1266
+#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "_Wiedergegeben"
 
@@ -635,8 +635,8 @@ msgstr "Unbekannt"
 msgid "All"
 msgstr "Alle"
 
-#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:572
-#: widgets/rb-song-info.c:590
+#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:621
+#: widgets/rb-song-info.c:639
 #, c-format
 msgid "%s Properties"
 msgstr "Eigenschaften von %s"
@@ -792,14 +792,13 @@ msgstr ""
 "Installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:566
 #: monkey-media/monkey-media-player-gst.c:520
 msgid "Failed to create spider element; check your installation"
 msgstr ""
 "Spider-Element konnte nicht angelegt werden; überprüfen Sie die Installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:578
+#: monkey-media/monkey-media-player-gst-tmp.c:591
 #: monkey-media/monkey-media-player-gst.c:535
 msgid "Failed to create volume element; check your installation"
 msgstr ""
@@ -807,7 +806,7 @@ msgstr ""
 "Installation"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:596
+#: monkey-media/monkey-media-player-gst-tmp.c:609
 #: monkey-media/monkey-media-player-gst.c:556
 msgid "Could not create audio output element; check your settings"
 msgstr ""
@@ -815,23 +814,29 @@ msgstr ""
 "Einstellungen"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:712
+#: monkey-media/monkey-media-player-gst-tmp.c:725
 #: monkey-media/monkey-media-player-gst.c:643
 msgid "No AudioCD support; check your settings"
 msgstr "Keine Unterstützung von Audio-CDs; überprüfen Sie Ihre Einstellungen"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:516
+#: monkey-media/monkey-media-player-gst-tmp.c:518
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "Eingabeelement %s konnte nicht angelegt werden; überprüfen Sie die "
 "Installation"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:541
+#: monkey-media/monkey-media-player-gst-tmp.c:543
 #: monkey-media/monkey-media-player-gst.c:493
 msgid "Failed to create queue element; check your installation"
 msgstr ""
 "Queue-Element konnte nicht angelegt werden; überprüfen Sie die Installation"
+
+#: monkey-media/monkey-media-player-gst-tmp.c:573
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr ""
+"Element %s konnte nicht angelegt werden; überprüfen Sie die Installation"
 
 #: monkey-media/monkey-media-player-xine.c:336
 msgid "Failed to set up an audio driver; check your installation"
@@ -941,51 +946,51 @@ msgstr "Datei konnte nicht als Ogg Vorbis geöffnet werden"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: rhythmdb/rhythmdb.c:994 widgets/rb-entry-view.c:980
+#: rhythmdb/rhythmdb.c:996 widgets/rb-entry-view.c:982
 msgid "Never"
 msgstr "Nie"
 
-#: rhythmdb/rhythmdb.c:996 sources/rb-source.c:308
+#: rhythmdb/rhythmdb.c:998 sources/rb-source.c:308
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d.%m.%Y %H:%M"
 
-#: rhythmdb/rhythmdb.c:1811
+#: rhythmdb/rhythmdb.c:1813
 msgid "Loading songs..."
 msgstr "Titel werden eingelesen..."
 
-#: rhythmdb/rhythmdb.c:1813
+#: rhythmdb/rhythmdb.c:1815
 msgid "Refreshing songs..."
 msgstr "Titel werden aufgefrischt..."
 
-#: rhythmdb/rhythmdb.c:1828
+#: rhythmdb/rhythmdb.c:1830
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d Titel"
 msgstr[1] "%d Titel"
 
-#: rhythmdb/rhythmdb.c:1836
+#: rhythmdb/rhythmdb.c:1838
 #, c-format
 msgid "%.1f day"
 msgid_plural "%.1f days"
 msgstr[0] "%.1f Tag"
 msgstr[1] "%.1f Tage"
 
-#: rhythmdb/rhythmdb.c:1839
+#: rhythmdb/rhythmdb.c:1841
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld Minute"
 msgstr[1] "%ld Minuten"
 
-#: rhythmdb/rhythmdb.c:1841
+#: rhythmdb/rhythmdb.c:1843
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld Stunde"
 msgstr[1] "%ld Stunden"
 
-#: rhythmdb/rhythmdb.c:1844
+#: rhythmdb/rhythmdb.c:1846
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -1282,7 +1287,7 @@ msgstr "Genre"
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:509
+#: sources/rb-iradio-source.c:518
 #, c-format
 msgid "%d total stations in %d distinct genres"
 msgstr "Insgesamt %d Radiosender in %d verschiedenen Generes"
@@ -1299,7 +1304,7 @@ msgstr "Album"
 msgid "Library"
 msgstr "Bibliothek"
 
-#: sources/rb-library-source.c:986
+#: sources/rb-library-source.c:993
 msgid "Add Location"
 msgstr "Speicherort hinzufügen"
 
@@ -1372,7 +1377,7 @@ msgstr "Fehler beim Lesen des Dateinamens: %s"
 msgid "Choose a directory"
 msgstr "Ein Verzeichnis wählen"
 
-#: widgets/rb-entry-view.c:1013 widgets/rb-player.c:801
+#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:801
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -1431,7 +1436,7 @@ msgstr "enthält"
 msgid "does not contain"
 msgstr "enthält nicht"
 
-#: widgets/rb-query-creator.c:169
+#: widgets/rb-query-creator.c:167
 msgid "Create automatic playlist"
 msgstr "Automatische Wiedergabeliste anlegen"
 
@@ -1440,37 +1445,37 @@ msgstr "Automatische Wiedergabeliste anlegen"
 msgid "_Search:"
 msgstr "_Suche:"
 
-#: widgets/rb-song-display-box.c:113
+#: widgets/rb-song-display-box.c:115
 msgid "from "
 msgstr "aus "
 
-#: widgets/rb-song-display-box.c:116
+#: widgets/rb-song-display-box.c:118
 msgid "by "
 msgstr "von "
 
-#: widgets/rb-song-info.c:228 widgets/rb-song-info.c:595
+#: widgets/rb-song-info.c:229 widgets/rb-song-info.c:644
 msgid "Song Properties"
 msgstr "Titel-Eigenschaften"
 
-#: widgets/rb-song-info.c:873
+#: widgets/rb-song-info.c:922
 msgid "on the desktop"
 msgstr "auf dem Desktop"
 
 # womöglich sogar kbps, es ist gebräuchlich
-#: widgets/rb-song-info.c:1090
+#: widgets/rb-song-info.c:1139
 #, c-format
 msgid "%d kbps"
 msgstr "%d kB/S"
 
-#: widgets/rb-song-info.c:1103
+#: widgets/rb-song-info.c:1152
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: widgets/rb-song-info.c:1106
+#: widgets/rb-song-info.c:1155
 msgid " (Stereo)"
 msgstr " (Stereo)"
 
-#: widgets/rb-song-info.c:1109
+#: widgets/rb-song-info.c:1158
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d Kanäle)"
@@ -1484,27 +1489,3 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
-
-#~ msgid "_Rename"
-#~ msgstr "_Umbenennen"
-
-#~ msgid "_Rename..."
-#~ msgstr "_Umbenennen..."
-
-#~ msgid "There is already a playlist with that name."
-#~ msgstr "Es existiert bereits eine gleichnamige Wiedergabeliste."
-
-#~ msgid "Untitled"
-#~ msgstr "Namenlos"
-
-#~ msgid "C_reate"
-#~ msgstr "A_nlegen"
-
-#~ msgid "New Playlist"
-#~ msgstr "Wiedergabeliste anlegen"
-
-#~ msgid "Please enter a name for the new playlist:"
-#~ msgstr "Bitte geben Sie einen Namen für die anzulegende Wiedergabeliste an:"
-
-#~ msgid "Add the _selected songs to the new playlist"
-#~ msgstr "Die _gewählten Titel zur anzulegenden Wiedergabeliste hinzufügen"

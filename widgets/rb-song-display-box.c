@@ -29,6 +29,8 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
+#include <config.h>
+
 #include <libgnome/gnome-i18n.h>
 
 #include "rb-link.h"

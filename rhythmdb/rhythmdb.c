@@ -19,6 +19,8 @@
  *
  */
 
+#include <config.h>
+
 #include "rhythmdb.h"
 #include "rhythmdb-model.h"
 #include "rhythmdb-legacy.h"
