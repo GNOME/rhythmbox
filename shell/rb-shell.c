@@ -2003,7 +2003,7 @@ rb_shell_jump_to_current (RBShell *shell)
 	songs = rb_source_get_entry_view (source);
 	playing = rb_entry_view_get_playing_entry (songs);
 
-	rb_shell_jump_to_entry (shell, playing);
+	rb_shell_jump_to_entry_with_source (shell, source, playing);
 }
 
 static gboolean
