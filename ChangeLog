@@ -1,3 +1,10 @@
+2003-08-27  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac:
+	* monkey-media/monkey-media-player-xine.c:
+	(monkey_media_player_pause): automatically detect older versions of
+	xine-lib and disable the "close audio device on pause" feature
+
 2003-08-26  Colin Walters  <walters@verbum.org>
 
 	* NEWS:

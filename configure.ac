@@ -60,6 +60,20 @@ if test "x$WANT_XINE" = "x1"; then
 
 	RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
 	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
+
+	dnl Remove when xine-lib is newer than rc0
+	SAVE_CFLAGS="$CFLAGS"
+	CFLAGS="$RHYTHMBOX_CFLAGS"
+	SAVE_LIBS="$LIBS"
+	LIBS="$RHYTHMBOX_LIBS"
+	AC_TRY_COMPILE([
+		#include <xine.h>
+		],[
+		int arg = 0, foo;
+		foo = XINE_PARAM_AUDIO_CLOSE_DEVICE;
+		],(AC_DEFINE(HAVE_XINE_CLOSE,1,[Define if you have the audio device close feature in xine-lib])))
+	CFLAGS="$SAVE_CFLAGS"
+	LIBS="$SAVE_LIBS"
 else
 	dnl Now we're ready to ask for gstreamer libs and cflags
 	dnl And we can also ask for the right version of gstreamer
