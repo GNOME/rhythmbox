@@ -165,6 +165,14 @@ rb_library_xml_thread_finalize (GObject *object)
 		g_mutex_lock (thread->priv->lock);
 		thread->priv->dead = TRUE;
 		g_mutex_unlock (thread->priv->lock);
+
+		g_thread_join (thread->priv->thread);
+
+		g_mutex_free (thread->priv->lock);
+		if (thread->priv->doc != NULL)
+			xmlFreeDoc (thread->priv->doc);
+		g_free (thread->priv->filename);
+		g_free (thread->priv);
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -264,12 +272,6 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 		if (priv->dead == TRUE)
 		{
 			g_mutex_unlock (priv->lock);
-			g_mutex_free (priv->lock);
-			if (priv->doc != NULL)
-				xmlFreeDoc (priv->doc);
-			g_free (priv->filename);
-			g_free (priv);
-			priv->object->priv = NULL;
 			g_thread_exit (NULL);
 		}
 

@@ -130,6 +130,12 @@ rb_library_walker_thread_finalize (GObject *object)
 	thread->priv->dead = TRUE;
 	g_mutex_unlock (thread->priv->lock);
 
+	g_thread_join (thread->priv->thread);
+
+	g_mutex_free (thread->priv->lock);
+
+	g_free (thread->priv);
+
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -226,8 +232,6 @@ thread_main (RBLibraryWalkerThreadPrivate *priv)
 		if (priv->dead == TRUE)
 		{
 			g_mutex_unlock (priv->lock);
-			g_mutex_free (priv->lock);
-			g_free (priv);
 			g_thread_exit (NULL);
 		}
 

@@ -328,11 +328,9 @@ rb_node_dispose (GObject *object)
 		g_static_rw_lock_writer_unlock (child->priv->lock);
 	}
 
-	write_lock_to_read_lock (node);
+	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	g_signal_emit (G_OBJECT (node), rb_node_signals[DESTROYED], 0);
-
-	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	unlock_gdk ();
 

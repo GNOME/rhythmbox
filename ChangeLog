@@ -1,5 +1,17 @@
 2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library-main-thread.c:
+	(rb_library_main_thread_finalize), (thread_main):
+	* library/rb-library-walker-thread.c:
+	(rb_library_walker_thread_finalize), (thread_main):
+	* library/rb-library-xml-thread.c:
+	(rb_library_xml_thread_finalize), (thread_main):
+	* library/rb-node.c: (rb_node_dispose):
+
+	Cleaner way to exit threads.
+
+2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/art/Makefile.am:
 	* data/art/rhythmbox-blank.png:
 	* data/art/rhythmbox-dot.png:
