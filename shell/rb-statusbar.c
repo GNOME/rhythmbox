@@ -99,6 +99,7 @@ struct RBStatusbarPrivate
 
 	gboolean entry_view_busy;
 	gboolean library_busy;
+	gboolean buffering;
 	guint idle_tick_id;
 };
 
@@ -409,6 +410,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
 {
 	char *str;
 	gboolean library_busy_changed;
+	gboolean buffering_changed;
 	gboolean library_is_busy;
 	gboolean buffering;
 	gboolean entry_view_busy = FALSE;
@@ -428,6 +430,8 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
 	g_object_get (G_OBJECT (status->priv->player), "buffering",
 		      &buffering, NULL);
+	buffering_changed = status->priv->buffering && !buffering;
+	status->priv->buffering = buffering;	
 
 	/* Set up the status display */
 	if (status->priv->library_busy) {
@@ -442,7 +446,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
 		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
 		g_free (str);
 		str = NULL;
-	} else if (library_busy_changed) {
+	} else if (library_busy_changed || buffering_changed) {
 		rb_statusbar_sync_with_source (status);
 		changed = TRUE;
 	}
