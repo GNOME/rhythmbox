@@ -67,8 +67,6 @@ typedef struct
 	RBNodeView *	(*impl_get_node_view)	(RBSource *source);
 	GList *		(*impl_get_extra_views)	(RBSource *source);
 
-	const char *	(*impl_get_description)	(RBSource *source);
-
 	GdkPixbuf *	(*impl_get_pixbuf)	(RBSource *source);
 
 	gboolean	(*impl_can_search)	(RBSource *source);
@@ -117,8 +115,6 @@ const char *	rb_source_get_browser_key	(RBSource *source);
 RBNodeView *	rb_source_get_node_view		(RBSource *source);
 
 GList *		rb_source_get_extra_views	(RBSource *source);
-
-const char *	rb_source_get_description	(RBSource *source);
 
 GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
 

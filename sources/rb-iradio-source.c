@@ -78,7 +78,6 @@ static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
-static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -198,7 +197,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -358,20 +356,12 @@ rb_iradio_source_new (BonoboUIContainer *container,
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
-					  "ui-file", "rhythmbox-iradio-view.xml",
-					  "ui-name", "IRadioSource",
-					  "config-name", "Internet Radio",
+					  "name", _("Radio"),
 					  "container", container,
 					  "backend", backend,
 					  NULL));
 
 	return source;
-}
-
-static const char *
-impl_get_description (RBSource *source)
-{
-	return _("Radio");
 }
 
 static GdkPixbuf *

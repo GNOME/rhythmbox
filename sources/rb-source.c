@@ -56,10 +56,8 @@ static gboolean default_show_popup  (RBSource *source);
 
 struct RBSourcePrivate
 {
-	char *ui_file;
-	char *ui_name;
-	char *config_name;
-
+	char *name;
+	
 	BonoboUIContainer *container;
 	BonoboUIComponent *component;
 };
@@ -67,9 +65,7 @@ struct RBSourcePrivate
 enum
 {
 	PROP_0,
-	PROP_UI_FILE,
-	PROP_UI_NAME,
-	PROP_CONFIG_NAME,
+	PROP_NAME,
 	PROP_CONTAINER,
 };
 
@@ -139,26 +135,12 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_show_popup = default_show_popup;
 
 	g_object_class_install_property (object_class,
-					 PROP_UI_FILE,
-					 g_param_spec_string ("ui-file",
-							      "UI file",
-							      "Bonobo UI file",
-							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_UI_NAME,
-					 g_param_spec_string ("ui-name",
+					 PROP_NAME,
+					 g_param_spec_string ("name",
 							      "UI name",
-							      "Bonobo UI name",
+							      "Interface name",
 							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_CONFIG_NAME,
-					 g_param_spec_string ("config-name",
-							      "Config name",
-							      "Name for configuration dialog",
-							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_CONTAINER,
 					 g_param_spec_object ("container",
@@ -209,9 +191,7 @@ rb_source_finalize (GObject *object)
 
 	rb_debug ("Finalizing view %p", source);
 
-	g_free (source->priv->ui_file);
-	g_free (source->priv->ui_name);
-	g_free (source->priv->config_name);
+	g_free (source->priv->name);
 
 	g_free (source->priv);
 
@@ -228,14 +208,8 @@ rb_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_UI_FILE:
-		source->priv->ui_file = g_strdup (g_value_get_string (value));
-		break;
-	case PROP_UI_NAME:
-		source->priv->ui_name = g_strdup (g_value_get_string (value));
-		break;
-	case PROP_CONFIG_NAME:
-		source->priv->config_name = g_strdup (g_value_get_string (value));
+	case PROP_NAME:
+		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
 	case PROP_CONTAINER:
 		source->priv->container = g_value_get_object (value);
@@ -256,17 +230,8 @@ rb_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_UI_FILE:
-		g_value_set_string (value, source->priv->ui_file);
-		break;
-	case PROP_UI_NAME:
-		g_value_set_string (value, source->priv->ui_name);
-		break;
-	case PROP_CONFIG_NAME:
-		if (source->priv->config_name)
-			g_value_set_string (value, source->priv->config_name);
-		else
-			g_value_set_string (value, source->priv->ui_name);
+	case PROP_NAME:
+		g_value_set_string (value, source->priv->name);
 		break;
 	case PROP_CONTAINER:
 		g_value_set_object (value, source->priv->container);
@@ -332,14 +297,6 @@ rb_source_get_extra_views (RBSource *source)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_get_extra_views (source);
-}
-
-const char *
-rb_source_get_description (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_description (source);
 }
 
 GdkPixbuf *

@@ -63,7 +63,6 @@ static void songs_view_changed_cb (RBNodeView *view, RBGroupSource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
-static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -89,6 +88,7 @@ static void rb_group_source_add_list_uri (RBGroupSource *source,
 					  GList *list);
 static char * filename_from_name (const char *name);
 static gboolean rb_group_source_periodic_save (RBGroupSource *source);
+static void name_notify_cb (GObject *obj, const char *property, gpointer unused);
 
 
 #define GROUP_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
@@ -114,7 +114,6 @@ struct RBGroupSourcePrivate
 
 	char *file;
 	char *name;
-	char *description;
 
 	guint idle_save_id;
 
@@ -186,7 +185,6 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
-	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_get_node_view = impl_get_node_view;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
@@ -228,13 +226,6 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 							      "Group file",
 							      NULL,
 							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_NAME,
-					 g_param_spec_string ("name",
-							      "Group name",
-							      "Group name",
-							      NULL,
-							      G_PARAM_READWRITE));
 }
 
 
@@ -252,6 +243,8 @@ rb_group_source_init (RBGroupSource *source)
 
 	source->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_group_source_periodic_save,
 						 source);
+
+	g_signal_connect (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), NULL);
 }
 
 static void
@@ -277,9 +270,7 @@ rb_group_source_finalize (GObject *object)
 	g_free (source->priv->title);
 	g_free (source->priv->status);
 
-	g_free (source->priv->name);
 	g_free (source->priv->file);
-	g_free (source->priv->description);
 
 	g_free (source->priv);
 
@@ -348,23 +339,6 @@ rb_group_source_set_property (GObject *object,
 		source->priv->file = g_strdup (g_value_get_string (value));
 
 		break;
-	case PROP_NAME:
-		{
-			char *file;
-			
-			g_free (source->priv->name);
-			g_free (source->priv->description);
-		
-			source->priv->name = g_strdup (g_value_get_string (value));
-			source->priv->description = g_strdup (source->priv->name);
-
-			if (source->priv->file == NULL) {
-				file = filename_from_name (source->priv->name);
-				g_object_set (object, "file", file, NULL);
-				g_free (file);
-			}
-		}
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -387,9 +361,6 @@ rb_group_source_get_property (GObject *object,
 	case PROP_FILE:
 		g_value_set_string (value, source->priv->file);
 		break;
-	case PROP_NAME:
-		g_value_set_string (value, source->priv->name);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -404,8 +375,7 @@ rb_group_source_new (BonoboUIContainer *container,
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_GROUP_SOURCE,
-					  "ui-file", "net-rhythmbox-group-view.xml",
-					  "ui-name", "GroupView",
+					  "name", _("Unknown"),
 					  "container", container,
 					  "library", library,
 					  "libsource", libsource,
@@ -423,8 +393,7 @@ rb_group_source_new_from_file (BonoboUIContainer *container,
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_GROUP_SOURCE,
-					  "ui-file", "net-rhythmbox-group-view.xml",
-					  "ui-name", "GroupView",
+					  "name", _("Unknown"),
 					  "container", container,
 					  "library", library,
 					  "libsource", libsource,
@@ -436,26 +405,38 @@ rb_group_source_new_from_file (BonoboUIContainer *container,
 	return source;
 }
 
+static void
+name_notify_cb (GObject *obj, const char *property, gpointer unused)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (obj);
+
+	rb_debug ("caught name notify");
+
+	if (!strcmp (property, "name")) {
+		char *file;
+		char *name;
+		
+		g_object_get (obj, "name", &name, NULL);
+		
+		if (source->priv->file == NULL) {
+			file = filename_from_name (name);
+			g_object_set (obj, "file", file, NULL);
+			g_free (file);
+		}
+	}
+}
+
 void
 rb_group_source_set_name (RBGroupSource *group,
 		        const char *name)
 {
-	g_object_set (G_OBJECT (group),
-		      "name", name,
-		      NULL);
+	g_object_set (G_OBJECT (group), "name", name, NULL);
 }
 
 const char *
 rb_group_source_get_file (RBGroupSource *group)
 {
 	return group->priv->file;
-}
-
-static const char *
-impl_get_description (RBSource *asource)
-{
-	RBGroupSource *source = RB_GROUP_SOURCE (asource);
-	return source->priv->description;
 }
 
 static const char *

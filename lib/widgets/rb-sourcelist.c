@@ -60,6 +60,7 @@ static void drop_received_cb (RBSourceListModel *model, RBSource *target,
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
 				 RBSourceList *sourcelist);
+static void name_notify_cb (GObject *obj, const char *prop, gpointer data);
 
 
 static GtkVBoxClass *parent_class = NULL;
@@ -224,18 +225,23 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 {
 	GtkTreeIter iter;
 	PangoAttrList *attrs = pango_attr_list_new ();
+	const char *name;
 
 	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
 	g_return_if_fail (RB_IS_SOURCE (source));
+
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
 
 	gtk_list_store_append (GTK_LIST_STORE (sourcelist->priv->model), &iter);
 
 	gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->model), &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, rb_source_get_pixbuf (source),
-			    RB_SOURCELIST_MODEL_COLUMN_NAME, rb_source_get_description (source),
+			    RB_SOURCELIST_MODEL_COLUMN_NAME, name,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, source,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
 			    -1);
+
+	g_signal_connect (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), sourcelist);
 }
 
 void
@@ -250,6 +256,7 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
 				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 		if (source == target) {
 			gtk_list_store_remove (GTK_LIST_STORE (sourcelist->priv->model), &iter);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (source), G_CALLBACK (name_notify_cb), sourcelist);
 			return;
 		}
 	} while (gtk_tree_model_iter_next (sourcelist->priv->model, &iter));
@@ -338,4 +345,31 @@ button_press_cb (GtkTreeView *treeview,
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
 
 	return ret;
+}
+
+static void
+name_notify_cb (GObject *obj, const char *prop, gpointer data)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (data);
+	RBSource *source = RB_SOURCE (obj);
+	GtkTreeIter iter;
+
+	if (strcmp (prop, "name"))
+		return;
+
+	gtk_tree_model_get_iter_first (sourcelist->priv->model, &iter);
+	do {
+		gpointer target = NULL;
+		gtk_tree_model_get (sourcelist->priv->model, &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+		if (source == target) {
+			const char *name;
+
+			g_object_get (obj, "name", &name, NULL);
+			gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->model), &iter,
+					    RB_SOURCELIST_MODEL_COLUMN_NAME, name, -1);
+			return;
+		}
+	} while (gtk_tree_model_iter_next (sourcelist->priv->model, &iter));
+	g_assert_not_reached ();
 }

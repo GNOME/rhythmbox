@@ -1,5 +1,28 @@
 2003-08-17  Colin Walters  <walters@verbum.org>
 
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_append),
+	(rb_sourcelist_remove), (button_press_cb), (name_notify_cb):
+	* sources/rb-group-source.c: (rb_group_source_class_init),
+	(rb_group_source_init), (rb_group_source_finalize),
+	(rb_group_source_set_property), (rb_group_source_get_property),
+	(rb_group_source_new), (rb_group_source_new_from_file),
+	(name_notify_cb), (rb_group_source_set_name),
+	(rb_group_source_get_file):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(rb_iradio_source_new):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(rb_library_source_new), (album_node_selected_cb):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_finalize), (rb_source_set_property),
+	(rb_source_get_property), (rb_source_get_extra_views):
+	* sources/rb-source.h:
+
+	Refactor code related to source names.  This kills off some
+	old unused view stuff, and also adds infrastructure for
+	renaming sources (to be used for the playlists).
+
+2003-08-17  Colin Walters  <walters@verbum.org>
+
 	* configure.ac: Bump to 0.5.0.99.
 	* NEWS: Update.
 
