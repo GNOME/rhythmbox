@@ -79,6 +79,8 @@ static void artist_selected_cb (RBPropertyView *propview, const char *name,
 			       RBLibrarySource *libsource);
 static void album_selected_cb (RBPropertyView *propview, const char *name,
 			       RBLibrarySource *libsource);
+static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
+			    RBPropertyView *propview);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -401,34 +403,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
-	/* set up genres treeview */
-	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE);
-	g_signal_connect (G_OBJECT (source->priv->genres),
-			  "property-selected",
-			  G_CALLBACK (genre_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
-
-	/* set up artist treeview */
-	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
-	g_signal_connect (G_OBJECT (source->priv->artists),
-			  "property-selected",
-			  G_CALLBACK (artist_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
-
-	/* set up albums treeview */
-	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
-	g_signal_connect (G_OBJECT (source->priv->albums),
-			  "property-selected",
-			  G_CALLBACK (album_selected_cb),
-			  source);
-
-	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
-	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
-
 	/* set up songs tree view */
 	source->priv->songs = rb_entry_view_new (source->priv->db, rb_file ("rb-entry-view-library.xml"));
 
@@ -438,6 +412,44 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "changed",
 			  G_CALLBACK (songs_view_changed_cb),
 			  source);
+
+	/* set up genres treeview */
+	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE);
+	g_signal_connect (G_OBJECT (source->priv->genres),
+			  "property-selected",
+			  G_CALLBACK (genre_selected_cb),
+			  source);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-added", G_CALLBACK (entry_added_cb),
+			  source->priv->genres);
+
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
+
+	/* set up artist treeview */
+	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
+	g_signal_connect (G_OBJECT (source->priv->artists),
+			  "property-selected",
+			  G_CALLBACK (artist_selected_cb),
+			  source);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-added", G_CALLBACK (entry_added_cb),
+			  source->priv->artists);
+
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
+
+	/* set up albums treeview */
+	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
+	g_signal_connect (G_OBJECT (source->priv->albums),
+			  "property-selected",
+			  G_CALLBACK (album_selected_cb),
+			  source);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-added", G_CALLBACK (entry_added_cb),
+			  source->priv->albums);
+
+	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
+	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
+
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL, FALSE);
 
 	/* Drag'n'Drop for songs view */
@@ -1017,39 +1029,20 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 				       RHYTHMDB_QUERY_END);
 	}
 
-	g_signal_handlers_disconnect_matched (G_OBJECT (source->priv->songs),
-					      G_SIGNAL_MATCH_FUNC,
-					      g_signal_lookup ("entry-added",
-							       RB_TYPE_ENTRY_VIEW),
-					      0,
-					      NULL,
-					      G_CALLBACK (entry_added_cb),
-					      NULL);
-
-
 	if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
 		rb_property_view_reset (source->priv->genres);
 		g_free (source->priv->selected_genre);
 		source->priv->selected_genre = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->genres);
 	}
 	if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
 		rb_property_view_reset (source->priv->artists);
 		g_free (source->priv->selected_artist);
 		source->priv->selected_artist = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->artists);
 	}
 	if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
 		rb_property_view_reset (source->priv->albums);
 		g_free (source->priv->selected_album);
 		source->priv->selected_album = NULL;
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->albums);
 	}
 
 	genre_query = rhythmdb_query_copy (query);
