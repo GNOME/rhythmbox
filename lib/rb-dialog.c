@@ -95,8 +95,7 @@ rb_ask_file_internal (const char *title,
 		      const char *default_file,
 		      GtkWindow *parent,
 		      gboolean multiple,
-		      gboolean want_dir,
-		      gboolean want_file_also)
+		      gboolean want_dir)
 {
 	GtkWidget *filesel;
 
@@ -111,8 +110,6 @@ rb_ask_file_internal (const char *title,
 		GtkFileChooserAction mode;
 		if (want_dir) {
 			mode = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
-			if (want_file_also)
-				mode &= GTK_FILE_CHOOSER_ACTION_OPEN;
 		} else {
 			mode = GTK_FILE_CHOOSER_ACTION_OPEN;
 		}
@@ -153,7 +150,7 @@ rb_ask_file (const char *title,
 	     const char *default_file,
 	     GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, FALSE, FALSE, FALSE);
+	return rb_ask_file_internal (title, default_file, parent, FALSE, FALSE);
 }
 
 GtkWidget *
@@ -161,7 +158,7 @@ rb_ask_file_multiple (const char *title,
 		      const char *default_file,
 		      GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, TRUE, FALSE, FALSE);
+	return rb_ask_file_internal (title, default_file, parent, TRUE, FALSE);
 }
 
 GtkWidget *
@@ -169,16 +166,15 @@ rb_ask_dir (const char *title,
 	    const char *default_file,
 	    GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, FALSE, TRUE, FALSE);
+	return rb_ask_file_internal (title, default_file, parent, FALSE, TRUE);
 }
 
 GtkWidget *
 rb_ask_dir_multiple (const char *title,
 		     const char *default_file,
-		     GtkWindow *parent,
-		     gboolean file_also)
+		     GtkWindow *parent)
 {
-	return rb_ask_file_internal (title, default_file, parent, TRUE, TRUE, TRUE);
+	return rb_ask_file_internal (title, default_file, parent, TRUE, TRUE);
 }
 
 GtkWidget *

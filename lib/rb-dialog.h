@@ -45,8 +45,7 @@ GtkWidget *rb_ask_dir           (const char *title,
 
 GtkWidget *rb_ask_dir_multiple	(const char *title,
 				 const char *default_file,
-				 GtkWindow *parent,
-				 gboolean file_also);
+				 GtkWindow *parent);
 
 GtkWidget *rb_ask_string        (const char *question,
 			         const char *accept_button_text,

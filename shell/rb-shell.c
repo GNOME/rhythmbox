@@ -2195,8 +2195,7 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	dialog = rb_ask_dir_multiple (_("Choose Files or Directory"),
 				      stored,
-			              GTK_WINDOW (shell->priv->window),
-				      TRUE);
+			              GTK_WINDOW (shell->priv->window));
 	g_free (stored);
 
 	g_signal_connect_object (G_OBJECT (dialog),
