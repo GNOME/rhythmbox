@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-	MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW,  /* 64 kbps Ogg Vorbis */
+	MONKEY_MEDIA_AUDIO_QUALITY_VERY_LOW = 1,  /* 64 kbps Ogg Vorbis */
 	MONKEY_MEDIA_AUDIO_QUALITY_LOW,       /* 96 kbps Ogg Vorbis */
 	MONKEY_MEDIA_AUDIO_QUALITY_REGULAR,   /* 128 kbps Ogg Vorbis */
 	MONKEY_MEDIA_AUDIO_QUALITY_HIGH,      /* 192 kbps Ogg Vorbis */
