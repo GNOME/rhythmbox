@@ -310,7 +310,7 @@ if test x"$with_metadata" = xmonkeymedia; then
 if test x"$enable_flac" = xyes && test x"$enable_mp3" != xyes; then
   AC_MSG_ERROR([libid3tag is required for FLAC support])  
 fi
-if test "$xenable_flac" != "xno" && test x"$enable_mp3" = xyes; then
+if test x"$enable_flac" != "xno" && test x"$enable_mp3" = xyes; then
   AC_CHECK_HEADER(FLAC/all.h,[enable_flac=yes],)
 fi
 if test "x$enable_flac" = "xyes"; then
