@@ -82,6 +82,9 @@ void        rb_node_view_select_node       (RBNodeView *view,
 
 char       *rb_node_view_get_status        (RBNodeView *view);
 
+gboolean    rb_node_view_get_node_visible  (RBNodeView *view,
+					    RBNode *node);
+
 void        rb_node_view_scroll_to_node    (RBNodeView *view,
 					    RBNode *node);
 

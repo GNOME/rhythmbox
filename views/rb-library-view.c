@@ -942,11 +942,19 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 				  RBLibraryView *view,
 				  const char *verbname)
 {
-	rb_node_view_scroll_to_node (view->priv->songs,
-				     rb_node_view_get_playing_node (view->priv->songs));
-	rb_node_view_select_none (view->priv->songs);
-	rb_node_view_select_node (view->priv->songs,
-				  rb_node_view_get_playing_node (view->priv->songs));
+	RBNode *node = rb_node_view_get_playing_node (view->priv->songs);
+	
+	if (rb_node_view_get_node_visible (view->priv->songs, node) == FALSE)
+	{
+		/* adjust filtering to show it */
+		rb_node_view_select_node (view->priv->artists,
+					  rb_node_song_get_artist_raw (node));
+		rb_node_view_select_node (view->priv->albums,
+					  rb_node_song_get_album_raw (node));
+	}
+
+	rb_node_view_scroll_to_node (view->priv->songs, node);
+	rb_node_view_select_node (view->priv->songs, node);
 }
 
 static void

@@ -1474,3 +1474,21 @@ rb_node_view_scroll_to_string (RBNodeView *view,
 
 	return FALSE;
 }
+
+gboolean
+rb_node_view_get_node_visible (RBNodeView *view,
+			       RBNode *node)
+{
+	gboolean visible;
+	GtkTreeIter iter;
+	GValue val = { 0, };
+
+	rb_tree_model_node_iter_from_node (RB_TREE_MODEL_NODE (view->priv->nodemodel),
+					   node, &iter);
+	gtk_tree_model_get_value (GTK_TREE_MODEL (view->priv->nodemodel), &iter,
+				  RB_TREE_MODEL_NODE_COL_VISIBLE, &val);
+	visible = g_value_get_boolean (&val);
+	g_value_unset (&val);
+
+	return visible;
+}

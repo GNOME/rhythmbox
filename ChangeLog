@@ -1,5 +1,15 @@
 2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_node_visible):
+	* lib/widgets/rb-node-view.h:
+	* views/rb-group-view.c: (rb_group_view_cmd_current_song):
+	* views/rb-library-view.c: (rb_library_view_cmd_current_song):
+
+	If node is not visible when jumping to it, adjust filtering
+	to show it.
+
+2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/node-views/rb-node-view-songs.xml:
 	* lib/Makefile.am:
 	* lib/rb-string-helpers.c: (rb_prefix_to_suffix):
