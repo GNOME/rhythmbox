@@ -6,8 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.4.99\n"
-"POT-Creation-Date: 2003-06-04 15:23+0200\n"
-"PO-Revision-Date: 2003-05-21 15:23+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-07-23 21:47+0200\n"
+"PO-Revision-Date: 2003-07-23 21:47+0200\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -16,11 +17,11 @@ msgstr ""
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "<b>Loading...</b>"
-msgstr "<b>Wird geladen...</b>"
+msgstr "<b>Ladevorgang...</b>"
 
 #: data/glade/buffering-dialog.glade.h:2
 msgid "Loading..."
-msgstr "Wird geladen..."
+msgstr "Ladevorgang..."
 
 #: data/glade/general-prefs.glade.h:1 data/glade/library-prefs.glade.h:1
 msgid "    "
@@ -295,7 +296,7 @@ msgstr "_Letzte Wiedergabe"
 msgid "_Play Count"
 msgstr "_Wiedergegeben"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:947
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:588 shell/rb-shell.c:999
 msgid "Music Player"
 msgstr "Musik-Player"
 
@@ -563,7 +564,7 @@ msgstr "_Organisieren"
 msgid "_Paste"
 msgstr "E_infügen"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1065
+#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1075
 msgid "_Play"
 msgstr "_Wiedergabe"
 
@@ -787,7 +788,7 @@ msgstr "Informationen zu diesem Interpreten aus dem Netz abrufen"
 msgid "Get more information on this station from the web"
 msgstr "Weitere Informationen zu diesem Sender aus dem Netz abrufen"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:951 shell/rb-shell.c:1757
+#: lib/widgets/rb-player.c:526 shell/rb-shell.c:1003 shell/rb-shell.c:1900
 msgid "Not playing"
 msgstr "Keine Wiedergabe"
 
@@ -850,27 +851,35 @@ msgstr "Stummschalten"
 msgid "Click to unmute"
 msgstr "Stummschalten aufheben"
 
-#: shell/main.c:63
+#: shell/main.c:65
+msgid "Print the playing song and exit"
+msgstr "Den momentan wiedergegebenen Titel ausgeben und beenden"
+
+#: shell/main.c:66
+msgid "Print the playing song URI and exit"
+msgstr "Den URI des momentan wiedergegebenen Titels ausgeben und beenden"
+
+#: shell/main.c:67
 msgid "Enable debugging code"
 msgstr "Fehlerbeseitigungs-Code aktivieren"
 
-#: shell/main.c:64
+#: shell/main.c:68
 msgid "Do not register the shell"
 msgstr "Die Bedienoberfläche nicht registrieren"
 
-#: shell/main.c:65
+#: shell/main.c:69
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox beenden"
 
-#: shell/main.c:66
+#: shell/main.c:70
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-Optionen:"
 
-#: shell/main.c:76
+#: shell/main.c:80
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:195
+#: shell/main.c:199
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -907,17 +916,17 @@ msgstr ""
 "Fehler beim Lesen der Playlistendatei »%s«:\n"
 " Playliste hat keine Kopfzeile"
 
-#: shell/rb-shell.c:440
+#: shell/rb-shell.c:459
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Die URI »%s« konnte nicht verarbeitet werden\n"
 
-#: shell/rb-shell.c:474
+#: shell/rb-shell.c:493
 #, c-format
 msgid "Unable to handle URI \"%s\"\n"
 msgstr "Die URI »%s« konnte nicht gehandhabt werden\n"
 
-#: shell/rb-shell.c:522
+#: shell/rb-shell.c:575
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -931,12 +940,12 @@ msgstr ""
 "haben; diese Warnung ist harmlos, IPC funktioniert\n"
 "jedoch nicht.\n"
 
-#: shell/rb-shell.c:967
+#: shell/rb-shell.c:1019
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Unterbrochen)"
 
-#: shell/rb-shell.c:970
+#: shell/rb-shell.c:1022
 #, c-format
 msgid ""
 "%s\n"
@@ -945,72 +954,88 @@ msgstr ""
 "%s\n"
 "Unterbrochen"
 
-#: shell/rb-shell.c:1053
+#: shell/rb-shell.c:1105
 msgid "translator_credits"
 msgstr ""
 "Benjamin Greiner <benjamin.greiner@gmx.net>\n"
 "Christian Meyer <chrisime@gnome.org>\n"
 "Christian Neumair <chris@gnome-de.org>"
 
-#: shell/rb-shell.c:1063
+#: shell/rb-shell.c:1115
 msgid "Lead developers:"
 msgstr "Hauptentwickler:"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1116
 msgid "Contributors:"
 msgstr "Mitwirkende:"
 
-#: shell/rb-shell.c:1068
+#: shell/rb-shell.c:1120
 msgid "Music management and playback software for GNOME."
 msgstr "GNOME-Software zur Verwaltung und Wiedergabe Ihrer Musiksammlung"
 
-#: shell/rb-shell.c:1211
+#: shell/rb-shell.c:1263
 msgid "Choose Files or Directory"
 msgstr "Wählen Sie Dateien oder ein Verzeichnis"
 
-#: shell/rb-shell.c:1240
+#: shell/rb-shell.c:1292
 msgid "Load playlist"
 msgstr "Playliste laden"
+
+#: shell/rb-shell.c:1748
+msgid "Create"
+msgstr "Anlegen"
+
+#: shell/rb-shell.c:1772
+msgid "Please enter a name for the new music group."
+msgstr "Bitte geben Sie einen Namen für die anzulegende Musikgruppe an."
+
+#: shell/rb-shell.c:1782
+msgid "Untitled"
+msgstr "Namenlos"
+
+#: shell/rb-shell.c:1786
+msgid "Add the _selected songs to the new group"
+msgstr "Die _gewählten Titel zur neuen Gruppe hinzufügen"
 
 #: shell/rb-shell-player.c:315
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Der Player konnte nicht angelegt werden: %s"
 
-#: shell/rb-shell-player.c:645
+#: shell/rb-shell-player.c:650
 #, c-format
 msgid "Opening %s..."
 msgstr "%s wird geöffnet..."
 
 # CHECK
-#: shell/rb-shell-player.c:716
+#: shell/rb-shell-player.c:721
 #, c-format
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr ""
 "Alle greifbaren Speicherorte sind fehlgeschlagen, »%s« konnte nicht "
 "wiedergegeben werden\n"
 
-#: shell/rb-shell-player.c:1056
+#: shell/rb-shell-player.c:1066
 msgid "Pause"
 msgstr "Unterbrechen"
 
-#: shell/rb-shell-player.c:1057
+#: shell/rb-shell-player.c:1067
 msgid "_Pause"
 msgstr "_Unterbrechen"
 
-#: shell/rb-shell-player.c:1064
+#: shell/rb-shell-player.c:1074
 msgid "Play"
 msgstr "Wiedergabe"
 
-#: shell/rb-shell-player.c:1072
+#: shell/rb-shell-player.c:1082
 msgid "Stop"
 msgstr "Unterbrechen"
 
-#: shell/rb-shell-player.c:1073
+#: shell/rb-shell-player.c:1083
 msgid "_Stop"
 msgstr "_Unterbrechen"
 
-#: shell/rb-shell-player.c:1291
+#: shell/rb-shell-player.c:1301
 msgid "Unexpected end of stream!"
 msgstr "Unerwartetes Datenstromende!"
 
@@ -1060,31 +1085,7 @@ msgstr "CD-Informationen werden geladen"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d Titel, Spielzeit %d:%02d:%02d"
 
-#: sources/rb-group-source.c:344
-msgid "music group"
-msgstr "Musikgruppe"
-
-#: sources/rb-group-source.c:347
-msgid "Unnamed"
-msgstr "Namenlos"
-
-#: sources/rb-group-source.c:565
-msgid "Create"
-msgstr "Anlegen"
-
-#: sources/rb-group-source.c:589
-msgid "Please enter a name for the new music group."
-msgstr "Bitte geben Sie einen Namen für die anzulegende Musikgruppe an."
-
-#: sources/rb-group-source.c:599
-msgid "Untitled"
-msgstr "Namenlos"
-
-#: sources/rb-group-source.c:603
-msgid "Add the _selected songs to the new group"
-msgstr "Die _gewählten Titel zur neuen Gruppe hinzufügen"
-
-#: sources/rb-group-source.c:1224
+#: sources/rb-group-source.c:638
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "»%s« konnte nicht als Gruppendatei verarbeitet werden"
@@ -1098,37 +1099,43 @@ msgstr "Radio"
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "Insgesamt <b>%d</b> Radiosender mit <b>%d</b> verschiedenen Generes"
 
-#: sources/rb-library-source.c:618
+#: sources/rb-library-source.c:608
 msgid "Library"
 msgstr "Bibliothek"
 
-#: sources/rb-library-source.c:799
+#: sources/rb-library-source.c:789
 #, c-format
 msgid "%ld songs"
 msgstr "%ld Titel"
 
-#: sources/rb-library-source.c:843
+#: sources/rb-library-source.c:833
 #, c-format
 msgid "<b>%.1f</b> days"
 msgstr "<b>%.1f</b> Tage"
 
-#: sources/rb-library-source.c:846
+#: sources/rb-library-source.c:836
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes"
 msgstr "<b>%ld</b> Stunden und <b>%ld</b> Minuten"
 
-#: sources/rb-library-source.c:849
+#: sources/rb-library-source.c:839
 #, c-format
 msgid "<b>%ld</b> minutes"
 msgstr "<b>%ld</b> Minuten"
 
-#: sources/rb-library-source.c:945
+#: sources/rb-library-source.c:935
 msgid "Add Location"
 msgstr "Speicherort hinzufügen"
 
 #: sources/rb-source.c:366
 msgid "No properties available."
 msgstr "Keine Eigenschaften verfügbar"
+
+#~ msgid "music group"
+#~ msgstr "Musikgruppe"
+
+#~ msgid "Unnamed"
+#~ msgstr "Namenlos"
 
 #~ msgid "_New Group..."
 #~ msgstr "Gruppe a_nlegen..."
