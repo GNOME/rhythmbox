@@ -29,8 +29,6 @@
 |  iTunes and iPod are trademarks of Apple
 | 
 |  This product is not supported/written/published by Apple!
-|
-|  $Id$
 */
 
 #ifndef __ITUNESDB_H__
