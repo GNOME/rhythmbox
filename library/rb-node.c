@@ -565,7 +565,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_SONG:
-		if (strcmp (property, "name") == 0)
+		if (strcmp (property, "location") == 0)
 		{
 			g_mutex_lock (uri_to_song_lock);
 			g_hash_table_replace (uri_to_song,
