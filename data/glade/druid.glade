@@ -12,6 +12,11 @@
   <property name="modal">False</property>
   <property name="resizable">True</property>
   <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
 
   <child>
     <widget class="GnomeDruid" id="druid_toplevel">
@@ -85,9 +90,10 @@ Please choose one of the options below:</property>
 			    <widget class="GtkRadioButton" id="radiobutton1">
 			      <property name="visible">True</property>
 			      <property name="can_focus">True</property>
-			      <property name="label" translatable="yes">_Enter location manually:</property>
+			      <property name="label" translatable="yes">_Enter location:</property>
 			      <property name="use_underline">True</property>
 			      <property name="relief">GTK_RELIEF_NORMAL</property>
+			      <property name="focus_on_click">True</property>
 			      <property name="active">False</property>
 			      <property name="inconsistent">False</property>
 			      <property name="draw_indicator">True</property>
@@ -202,6 +208,7 @@ Please choose one of the options below:</property>
 				      <property name="label" translatable="yes">_Browse...</property>
 				      <property name="use_underline">True</property>
 				      <property name="relief">GTK_RELIEF_NORMAL</property>
+				      <property name="focus_on_click">True</property>
 				    </widget>
 				    <packing>
 				      <property name="padding">0</property>
@@ -238,6 +245,7 @@ Please choose one of the options below:</property>
 			  <property name="label" translatable="yes">_Skip this step</property>
 			  <property name="use_underline">True</property>
 			  <property name="relief">GTK_RELIEF_NORMAL</property>
+			  <property name="focus_on_click">True</property>
 			  <property name="active">False</property>
 			  <property name="inconsistent">False</property>
 			  <property name="draw_indicator">True</property>
