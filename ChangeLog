@@ -2,6 +2,42 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8
 #
 
+2004-04-20 15:43:06 GMT	Colin Walters <walters@verbum.org>	patch-11
+
+    Summary:
+      use gtk_object_destroy, not g_object_unref on floating tooltip objects
+    Revision:
+      rhythmbox--main--0.8--patch-11
+
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c shell/rb-tray-icon.c
+
+
+2004-04-20 15:39:27 GMT	Colin Walters <walters@verbum.org>	patch-10
+
+    Summary:
+      actually search shared dir, add new --enable-uninstalled-build argument
+    Revision:
+      rhythmbox--main--0.8--patch-10
+
+
+    modified files:
+     ChangeLog autogen.sh configure.ac lib/rb-file-helpers.c
+
+
+2004-04-20 15:36:07 GMT	Colin Walters <walters@verbum.org>	patch-9
+
+    Summary:
+      fix a prototype consistency (Ben Liblit)
+    Revision:
+      rhythmbox--main--0.8--patch-9
+
+
+    modified files:
+     ChangeLog widgets/rb-cell-renderer-rating.c
+
+
 2004-04-19 21:23:13 GMT	Christophe Fergeau <teuf@gnome.org>	patch-8
 
     Summary:
