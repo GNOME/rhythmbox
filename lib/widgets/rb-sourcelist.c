@@ -60,7 +60,7 @@ static void drop_received_cb (RBSourceListModel *model, RBSource *target,
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
 				 RBSourceList *sourcelist);
-static void name_notify_cb (GObject *obj, const char *prop, gpointer data);
+static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 
 
 static GtkVBoxClass *parent_class = NULL;
@@ -348,13 +348,13 @@ button_press_cb (GtkTreeView *treeview,
 }
 
 static void
-name_notify_cb (GObject *obj, const char *prop, gpointer data)
+name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (data);
 	RBSource *source = RB_SOURCE (obj);
 	GtkTreeIter iter;
 
-	if (strcmp (prop, "name"))
+	if (strcmp (g_param_spec_get_name (pspec), "name"))
 		return;
 
 	gtk_tree_model_get_iter_first (sourcelist->priv->model, &iter);

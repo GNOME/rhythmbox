@@ -169,6 +169,7 @@
       <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
       <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
       <menuitem name="SavePlaylist" verb="SavePlaylist" _label="_Save Playlist..."/>
+      <menuitem name="FileRenamePlaylist" verb="FileRenamePlaylist" _label="_Rename Playlist"/>
 
       <separator/>
 
@@ -329,6 +330,10 @@
 		_label="_Delete"
 		_tip="Delete selection"
 		pixtype="stock" pixname="gtk-delete"
+		verb=""/>
+      <menuitem name="RenamePlaylist"
+		_label="_Rename"
+		_tip="Delete selection"
 		verb=""/>
       <separator/>
     </popup>

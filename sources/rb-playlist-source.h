@@ -57,8 +57,6 @@ RBSource *	rb_playlist_source_new		(BonoboUIContainer *container,
 						 RBLibrary *library,
 						 RBLibrarySource *libsource);
 
-GtkWidget *	rb_playlist_source_create_dialog(RBPlaylistSource *groupsrc);
-
 RBSource *	rb_playlist_source_new_from_file(BonoboUIContainer *container,
 						 RBLibrary *library,
 						 RBLibrarySource *libsource,

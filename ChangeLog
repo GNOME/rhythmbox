@@ -1,3 +1,17 @@
+2003-08-21  Colin Walters  <walters@verbum.org>
+	    Sriram Ramkrishna  <sri@aracnet.com> 
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/widgets/rb-sourcelist.c: (name_notify_cb):
+	* shell/rb-shell.c: (ask_rename_response_cb),
+	(rb_shell_cmd_rename_playlist), (rb_shell_new_playlist_dialog),
+	(rb_shell_rename_playlist_dialog):
+	* sources/rb-playlist-source.c: (name_notify_cb),
+	(rb_playlist_source_load):
+	* sources/rb-playlist-source.h:
+
+	Playlist renaming support.  Also fix up playlist saving.
+
 2003-08-20  William Jon McCann  <mccann@jhu.edu>
 
 	* shell/rb-shell.c (rb_shell_construct, struct RBShellPrivate):

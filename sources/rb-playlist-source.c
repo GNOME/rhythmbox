@@ -88,7 +88,7 @@ static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 					  GList *list);
 static char * filename_from_name (const char *name);
 static gboolean rb_playlist_source_periodic_save (RBPlaylistSource *source);
-static void name_notify_cb (GObject *obj, const char *property, gpointer unused);
+static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer unused);
 
 
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/popups/PlaylistSongsList"
@@ -399,23 +399,25 @@ rb_playlist_source_new_from_file (BonoboUIContainer *container,
 }
 
 static void
-name_notify_cb (GObject *obj, const char *property, gpointer unused)
+name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer unused)
 {
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (obj);
 
-	rb_debug ("caught notify");
-
-	if (!strcmp (property, "name")) {
+	if (!strcmp (g_param_spec_get_name (pspec), "name")) {
+		const char *name;
 		char *file;
-		char *name;
 		
+		rb_debug ("caught notify");
+
 		g_object_get (obj, "name", &name, NULL);
-		
-		if (source->priv->file == NULL) {
-			file = filename_from_name (name);
-			g_object_set (obj, "file", file, NULL);
-			g_free (file);
+
+		if (source->priv->file) {
+			unlink (source->priv->file);
 		}
+			
+		file = filename_from_name (name);
+		g_object_set (obj, "file", file, NULL);
+		g_free (file);
 	}
 }
 
@@ -662,7 +664,6 @@ rb_playlist_source_load (RBPlaylistSource *source)
 	g_object_set (G_OBJECT (source), "name", name, NULL);
 	g_free (name);
 }
-
 
 void
 rb_playlist_source_delete (RBPlaylistSource *source)

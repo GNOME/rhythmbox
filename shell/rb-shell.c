@@ -176,6 +176,7 @@ static void rb_shell_cmd_current_song (BonoboUIComponent *component,
 				       const char *verbname);
 static void rb_shell_jump_to_current (RBShell *shell);
 GtkWidget * rb_shell_new_playlist_dialog (RBShell *shell);
+GtkWidget * rb_shell_rename_playlist_dialog (RBShell *shell);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 const char *path,
@@ -308,8 +309,9 @@ static BonoboUIVerb rb_shell_verbs[] =
  	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_shell_cmd_new_playlist),
 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
 	BONOBO_UI_VERB ("FileDeletePlaylist",(BonoboUIVerbFn) rb_shell_cmd_delete_playlist),
-	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_playlist),
 	BONOBO_UI_VERB ("DeletePlaylist",  (BonoboUIVerbFn) rb_shell_cmd_delete_playlist),
+	BONOBO_UI_VERB ("FileRenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_playlist),
+	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_playlist),
 	BONOBO_UI_VERB ("ExtractCD",  (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
 	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_cmd_current_song),
 	BONOBO_UI_VERB_END
@@ -1408,6 +1410,47 @@ save_playlist_response_cb (GtkDialog *dialog,
 }
 
 static void
+ask_rename_response_cb (GtkDialog *dialog,
+			int response_id,
+			RBShell *shell)
+{
+	GtkWidget *entry;
+	char *name;
+
+	rb_debug ("rename response");
+
+	if (response_id != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	entry = g_object_get_data (G_OBJECT (dialog), "entry");
+	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (name == NULL) {  /* user didn't put anything */
+		return;
+	} else {
+		RBPlaylistSource *ret;
+		GList *tem;
+		char *temname;
+		
+		for (tem = shell->priv->playlists; tem; tem = g_list_next (tem)) {
+			g_object_get (G_OBJECT (tem->data), "name", &temname, NULL);
+			if (!strcmp (temname, name)) {
+				rb_error_dialog (_("There is already a playlist with that name."));
+				return;
+			}
+		}
+		ret = RB_PLAYLIST_SOURCE (shell->priv->selected_source);
+		g_object_set (G_OBJECT (ret), "name", name, NULL);
+	}
+
+	g_free(name);
+}
+
+static void
 rb_shell_cmd_save_playlist (BonoboUIComponent *component,
 			    RBShell *shell,
 			    const char *verbname)
@@ -1599,7 +1642,14 @@ rb_shell_cmd_rename_playlist (BonoboUIComponent *component,
 			      RBShell *shell,
 			      const char *verbname)
 {
-	rb_debug ("FIXME");
+	GtkWidget *dialog;
+	
+	dialog = rb_shell_rename_playlist_dialog (shell);
+	
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_rename_response_cb),
+			  shell);
 }
 
 static void
@@ -1935,6 +1985,64 @@ rb_shell_new_playlist_dialog (RBShell *shell)
 	gtk_widget_show_all (dialog);
 
 	return dialog;
+}
+
+GtkWidget *
+rb_shell_rename_playlist_dialog (RBShell *shell)
+{
+      GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *align;
+
+      dialog = gtk_dialog_new_with_buttons ("",
+                                           NULL,
+                                           0,
+                                           GTK_STOCK_CANCEL,
+                                           GTK_RESPONSE_CANCEL,
+                                           _("R_ename"),
+                                           GTK_RESPONSE_OK,
+                                           NULL);
+      gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+                                       GTK_RESPONSE_OK);
+      gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+      gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+      gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
+
+      gtk_window_set_transient_for (GTK_WINDOW (dialog),
+                                    GTK_WINDOW (shell->priv->window));
+      gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
+      gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+      gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+
+      gtk_window_set_title (GTK_WINDOW (dialog), _("Rename Playlist"));
+
+      hbox = gtk_hbox_new (FALSE, 12);
+      gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+      image = gtk_image_new_from_stock (RB_STOCK_PLAYLIST,
+                                        GTK_ICON_SIZE_DIALOG);
+      align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+      gtk_container_add (GTK_CONTAINER (align), image);
+      gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
+      vbox = gtk_vbox_new (FALSE, 6);
+
+      label = gtk_label_new (_("Please enter a new name for the playlist:"));
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+      gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
+
+      entry = gtk_entry_new ();
+      gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
+      gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
+      gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+      gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+      gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
+
+      gtk_widget_show_all (hbox);
+      gtk_widget_show_all (vbox);
+      gtk_widget_grab_focus (entry);
+
+      g_object_set_data (G_OBJECT (dialog), "entry", entry);
+
+      gtk_widget_show_all (dialog);
+
+      return dialog;
 }
 
 static gboolean
