@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: rhythmbox VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2003-01-28 10:58+0100\n"
-"PO-Revision-Date: 2004-10-04 08:23+0700\n"
+"PO-Revision-Date: 2004-10-06 11:40+0700\n"
 "Last-Translator: pclouds <pclouds@vnlinux.org>\n"
 "Language-Team: GnomeVI <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -550,7 +550,7 @@ msgstr "_Nhảy tới trạm đang chơi"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:7
 msgid "_New Internet Radio Station"
-msgstr "_Trạm Radio Internet mới"
+msgstr "Trạm Radio Internet mới"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:1
 msgid "Change the visibility of the artist and album browser"
@@ -878,7 +878,7 @@ msgstr "Chơi bài trước đó"
 
 #: shell/rb-player.c:369
 msgid "Start playback"
-msgstr "Nghe nhạc"
+msgstr "Dừng chơi"
 
 #: shell/rb-player.c:376
 msgid "Pause playback"
@@ -939,7 +939,7 @@ msgstr ""
 #: shell/rb-player.c:855
 #, c-format
 msgid "Failed to parse %s as playlist"
-msgstr "Lỗi phân tích %s như playlist"
+msgstr "Lỗi phân tích %s kiểu playlist"
 
 #: shell/rb-player.c:1090
 #, c-format
@@ -949,20 +949,20 @@ msgstr "%ld:%.2ld"
 #: shell/rb-player.c:1094
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
-msgstr "Tổng cộng %ld:%2ld (còn lại %ld:%2ld)"
+msgstr "Tổng cộng %ld:%.2ld (còn lại %ld:%.2ld)"
 
 #. this is not critical, but worth a warning nevertheless
 #: shell/rb.c:285
-#, fuzzy
 msgid ""
 "Failed to register Rhythmbox with bonobo activation:\n"
 "This probably means that you installed RB in a\n"
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
-"Lỗi đăng ký shell: %s\n"
-"Có lẽ do bạn cài đặt Rhythmbox với prefix khác prefix của bonobo-activation; "
-"cảnh báo này không gây hại gì, nhưng IPC sẽ không hoạt động."
+"Lỗi đăng ký Rhythmbox với Bonobo Activation:\n"
+"Có lẽ do bạn cài đặt Rhythmbox với prefix khác\n"
+"prefix của bonobo-activation; cảnh báo này không\n"
+"gây hại gì, nhưng IPC sẽ không hoạt động.\n"
 
 #: shell/rb.c:491
 msgid "translator_credits"
@@ -1005,7 +1005,7 @@ msgstr "%d bài, %d:%02d:%02d tổng thời gian"
 
 #: views/rb-iradio-view.c:305
 msgid "iradio"
-msgstr "iRadio"
+msgstr "iradio"
 
 #: views/rb-iradio-view.c:308 views/rb-iradio-view.c:1147
 msgid ""
@@ -1029,16 +1029,18 @@ msgid "Start playing this album"
 msgstr "Bắt đầu chơi album này"
 
 #: views/rb-library-view.c:366
+#, fuzzy
 msgid "Play Album _Later"
-msgstr ""
+msgstr "_Chơi Album"
 
 #: views/rb-library-view.c:369
 msgid "Enqueue this album for later playback"
 msgstr ""
 
 #: views/rb-library-view.c:375
+#, fuzzy
 msgid "Play Song Later"
-msgstr ""
+msgstr "Chơi _bài hát"
 
 #: views/rb-library-view.c:378
 msgid "Enqueue the selected song(s) for later playback"
@@ -1050,7 +1052,7 @@ msgstr "Chơi _bài hát"
 
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
-msgstr "Bắt đầu chơi bài được chọn"
+msgstr "Chơi bài kế tiếp"
 
 msgid "Failed to create %s element"
 msgstr "Không tạo được phần tử %s"
@@ -1182,7 +1184,7 @@ msgid "_Toolbar"
 msgstr "Thanh _công cụ"
 
 msgid "From "
-msgstr "Từ"
+msgstr "Từ "
 
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
@@ -1276,7 +1278,7 @@ msgid "_Stop"
 msgstr "_Dừng"
 
 msgid "Failed to register the shell: %s\n"
-msgstr "Lỗi đăng ký shell:  %s\n"
+msgstr "Lỗi đăng ký shell: %s\n"
 
 msgid "%s (Paused)"
 msgstr "%s (tạm ngừng)"
@@ -1373,500 +1375,499 @@ msgid "Choose a folder"
 msgstr "Chọn thư mục"
 
 msgid "Choose a file to add"
-msgstr "Chọn tập tin cần thêm"
+msgstr "Chọn thư mục cần thêm"
 
 msgid "Enter a name"
 msgstr "Nhập tên"
 
-#~ msgid "Add to Music Library"
-#~ msgstr "Thêm vào Thư viện Âm nhạc"
+msgid "Add to Music Library"
+msgstr "Thêm vào Thư viện Âm nhạc"
 
-#~ msgid "Nautilus context menu extension for Rhythmbox"
-#~ msgstr "Phần mở rộng menu ngữ cảnh Nautilus cho Rhythmbox"
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr "Phần mở rộng menu ngữ cảnh Nautilus cho Rhythmbox"
 
-#~ msgid "I could not initialize Bonobo"
-#~ msgstr "Không thể khởi động Bonobo"
+msgid "I could not initialize Bonobo"
+msgstr "Không thể khởi động Bonobo"
 
-#~ msgid "An exception occured '%s'"
-#~ msgstr "Xảy ra lỗi ngoại lệ '%s'"
+msgid "An exception occured '%s'"
+msgstr "Xảy ra lỗi ngoại lệ '%s'"
 
-#~ msgid "Loading..."
-#~ msgstr "Đang nạp..."
+msgid "Loading..."
+msgstr "Đang nạp..."
 
-#~ msgid "Add if any criteria are matched"
-#~ msgstr "Thêm nếu thoả bất kỳ tiêu chuẩn nào"
+msgid "Add if any criteria are matched"
+msgstr "Thêm nếu thoả bất kỳ tiêu chuẩn nào"
 
-#~ msgid "Create automatically updating playlist where:"
-#~ msgstr "Tạo playlist tự động cập nhật nơi:"
+msgid "Create automatically updating playlist where:"
+msgstr "Tạo playlist tự động cập nhật nơi:"
 
-#~ msgid "GB"
-#~ msgstr "GB"
+msgid "GB"
+msgstr "GB"
 
-#~ msgid "MB"
-#~ msgstr "MB"
+msgid "MB"
+msgstr "MB"
 
-#~ msgid "_Limit to: "
-#~ msgstr "_Giới hạn: "
+msgid "_Limit to: "
+msgstr "_Giới hạn: "
 
-#~ msgid "songs"
-#~ msgstr "bài hát"
+msgid "songs"
+msgstr "bài hát"
 
-#~ msgid ""
-#~ "Rhythmbox manages all of your music in a central music \"library\", so "
-#~ "you can easily view, search, and organize it.\n"
-#~ "In order to use this feature, you need to tell Rhythmbox where to find "
-#~ "your music.  You may choose to skip this step; instead, you can add music "
-#~ "to your library at any point later.\n"
-#~ "Please choose one of the options below:"
-#~ msgstr ""
-#~ "Rhythmbox quản lý mọi bài nhạc của bạn trong một thư viện âm nhạc trung "
-#~ "tâm \"Thư viện\", để bạn có thể dễ dàng xem, tìm, tổ chức nó.\n"
-#~ "Để dùng tính năng này, bạn cần cho Rhythmbox biết nơi lưu các bài nhạc "
-#~ "của bạn. Bạn có thể chọn bỏ qua bước này; bạn có thể thêm nhạc vào thư "
-#~ "viện sau đó.\n"
-#~ "Vui lòng chọn một trong những tuỳ chọn sau:"
+msgid ""
+"Rhythmbox manages all of your music in a central music \"library\", so you "
+"can easily view, search, and organize it.\n"
+"In order to use this feature, you need to tell Rhythmbox where to find your "
+"music.  You may choose to skip this step; instead, you can add music to your "
+"library at any point later.\n"
+"Please choose one of the options below:"
+msgstr ""
+"Rhythmbox quản lý mọi bài nhạc của bạn trong một thư viện âm nhạc trung tâm "
+"\"Thư viện\", để bạn có thể dễ dàng xem, tìm, tổ chức nó.\n"
+"Để dùng tính năng này, bạn cần cho Rhythmbox biết nơi lưu các bài nhạc của "
+"bạn. Bạn có thể chọn bỏ qua bước này; bạn có thể thêm nhạc vào thư viện sau "
+"đó.\n"
+"Vui lòng chọn một trong những tuỳ chọn sau:"
 
-#~ msgid "_Browse..."
-#~ msgstr "_Duyệt..."
+msgid "_Browse..."
+msgstr "_Duyệt..."
 
-#~ msgid "_Enter location manually:"
-#~ msgstr "_Nhập địa chỉ bằng tay:"
+msgid "_Enter location manually:"
+msgstr "_Nhập địa chỉ bằng tay:"
 
-#~ msgid "_Path:"
-#~ msgstr "Đường _dẫn:"
+msgid "_Path:"
+msgstr "Đường _dẫn:"
 
-#~ msgid "_Skip this step"
-#~ msgstr "_Bỏ qua bước này:"
+msgid "_Skip this step"
+msgstr "_Bỏ qua bước này:"
 
-#~ msgid "Visible Columns"
-#~ msgstr "Cột hiển thị"
+msgid "Visible Columns"
+msgstr "Cột hiển thị"
 
-#~ msgid "The following files couldn't be loaded:"
-#~ msgstr "Những tập tin sau không thể được nạp:"
+msgid "The following files couldn't be loaded:"
+msgstr "Những tập tin sau không thể được nạp:"
 
-#~ msgid "Duration:"
-#~ msgstr "Thời lượng:"
+msgid "Duration:"
+msgstr "Thời lượng:"
 
-#~ msgid "Encoding:"
-#~ msgstr "Mã hoá:"
+msgid "Encoding:"
+msgstr "Mã hoá:"
 
-#~ msgid "File name:"
-#~ msgstr "Tên tập tin:"
+msgid "File name:"
+msgstr "Tên tập tin:"
 
-#~ msgid "Last played:"
-#~ msgstr "Chơi lần cuối:"
+msgid "Last played:"
+msgstr "Chơi lần cuối:"
 
-#~ msgid "Play count:"
-#~ msgstr "Số lần chơi:"
+msgid "Play count:"
+msgstr "Số lần chơi:"
 
-#~ msgid "Quality:"
-#~ msgstr "Chất lượng:"
+msgid "Quality:"
+msgstr "Chất lượng:"
 
-#~ msgid "_Album:"
-#~ msgstr "_Album:"
+msgid "_Album:"
+msgstr "_Album:"
 
-#~ msgid "_Artist:"
-#~ msgstr "Nghệ _sĩ:"
+msgid "_Artist:"
+msgstr "Nghệ _sĩ:"
 
-#~ msgid "_Comments:"
-#~ msgstr "_Ghi chú:"
+msgid "_Comments:"
+msgstr "_Ghi chú:"
 
-#~ msgid "_Date:"
-#~ msgstr "_Ngày:"
+msgid "_Date:"
+msgstr "_Ngày:"
 
-#~ msgid "_Track number:"
-#~ msgstr "Số _track:"
+msgid "_Track number:"
+msgstr "Số _track:"
 
-#~ msgid "_Location:"
-#~ msgstr "Đị_a chỉ:"
+msgid "_Location:"
+msgstr "Đị_a chỉ:"
 
-#~ msgid "L_ocation:"
-#~ msgstr "Đị_a chỉ:"
+msgid "L_ocation:"
+msgstr "Đị_a chỉ:"
 
-#~ msgid "Enter the _location (URI) of the file you would like to add:"
-#~ msgstr "Nhập địa chỉ (_URI) của tập tin cần thêm:"
+msgid "Enter the _location (URI) of the file you would like to add:"
+msgstr "Nhập địa chỉ (_URI) của tập tin cần thêm:"
 
-#~ msgid "Open from URI"
-#~ msgstr "Mở từ URI"
+msgid "Open from URI"
+msgstr "Mở từ URI"
 
-#~ msgid "Add Lo_cation..."
-#~ msgstr "Thêm Đị_a chỉ..."
+msgid "Add Lo_cation..."
+msgstr "Thêm Đị_a chỉ..."
 
-#~ msgid "Change the visibility of the source list"
-#~ msgstr "Hiện/Ẩn danh sách nguồn"
+msgid "Change the visibility of the source list"
+msgstr "Hiện/Ẩn danh sách nguồn"
 
-#~ msgid "Choose a location (URI) to be added to the library"
-#~ msgstr "Chọn địa chỉ (URI) cần thêm vào thư viện"
+msgid "Choose a location (URI) to be added to the library"
+msgstr "Chọn địa chỉ (URI) cần thêm vào thư viện"
 
-#~ msgid "Choose a playlist to be loaded"
-#~ msgstr "Chọn playlist được nạp"
+msgid "Choose a playlist to be loaded"
+msgstr "Chọn playlist được nạp"
 
-#~ msgid "Create a new Internet Radio station"
-#~ msgstr "Tạo Trạm Radio Internet mới"
+msgid "Create a new Internet Radio station"
+msgstr "Tạo Trạm Radio Internet mới"
 
-#~ msgid "Create a new automatically updating playlist"
-#~ msgstr "Tạo Playlist cập nhật tự động mới"
+msgid "Create a new automatically updating playlist"
+msgstr "Tạo Playlist cập nhật tự động mới"
 
-#~ msgid "Create a new playlist"
-#~ msgstr "Lập lại playlist mới"
+msgid "Create a new playlist"
+msgstr "Lập lại playlist mới"
 
-#~ msgid "D_eselect All"
-#~ msgstr "_Bỏ chọn tất cả"
+msgid "D_eselect All"
+msgstr "_Bỏ chọn tất cả"
 
-#~ msgid "Edit music player preferences"
-#~ msgstr "Chỉnh Thông số bộ chơi nhạc"
+msgid "Edit music player preferences"
+msgstr "Chỉnh Thông số bộ chơi nhạc"
 
-#~ msgid "Extract and import songs from a CD"
-#~ msgstr "Xuất và nhập nhạc từ CD"
+msgid "Extract and import songs from a CD"
+msgstr "Xuất và nhập nhạc từ CD"
 
-#~ msgid "Import Lo_cation..."
-#~ msgstr "_Nhập địa chỉ..."
+msgid "Import Lo_cation..."
+msgstr "_Nhập địa chỉ..."
 
-#~ msgid "Import _Audio CD..."
-#~ msgstr "Nhập _Audio CD..."
+msgid "Import _Audio CD..."
+msgstr "Nhập _CD nhạc..."
 
-#~ msgid "Make the main window smaller"
-#~ msgstr "Thu nhỏ cửa sổ"
+msgid "Make the main window smaller"
+msgstr "Thu nhỏ cửa sổ"
 
-#~ msgid "New _Automatic Playlist..."
-#~ msgstr "Playlist _tự động mới..."
+msgid "New _Automatic Playlist..."
+msgstr "Playlist _tự động mới..."
 
-#~ msgid "New _Internet Radio Station"
-#~ msgstr "Trạm Radio _Internet mới"
+msgid "New _Internet Radio Station"
+msgstr "Trạm Radio _Internet mới"
 
-#~ msgid "Pause playing"
-#~ msgstr "Tạm dừng chơi"
+msgid "Pause playing"
+msgstr "Tạm dừng chơi"
 
-#~ msgid "Save a playlist to a file"
-#~ msgstr "Lưu playlist vào tập tin"
+msgid "Save a playlist to a file"
+msgstr "Lưu playlist vào tập tin"
 
-#~ msgid "Source _List"
-#~ msgstr "_Danh sách nguồn"
+msgid "Source _List"
+msgstr "_Danh sách nguồn"
 
-#~ msgid "Start playing"
-#~ msgstr "Bắt đầu chơi"
+msgid "Start playing"
+msgstr "Bắt đầu chơi"
 
 msgid "_Control"
 msgstr "Điều _khiển"
 
-#~ msgid "_Cut"
-#~ msgstr "_Cắt"
+msgid "_Cut"
+msgstr "_Cắt"
 
-#~ msgid "_Import folder..."
-#~ msgstr "_Nhập thư mục..."
+msgid "_Import folder..."
+msgstr "_Nhập thư mục..."
 
-#~ msgid "_Load from file..."
-#~ msgstr "_Nạp từ tập tin..."
+msgid "_Load from file..."
+msgstr "_Nạp từ tập tin..."
 
-#~ msgid "_New Playlist..."
-#~ msgstr "_Playlist mới..."
+msgid "_New Playlist..."
+msgstr "_Playlist mới..."
 
-#~ msgid "_Quit"
-#~ msgstr "T_hoát"
+msgid "_Quit"
+msgstr "T_hoát"
 
-#~ msgid "_Remove"
-#~ msgstr "_Loại bỏ"
+msgid "_Remove"
+msgstr "_Loại bỏ"
 
-#~ msgid "_Save to file..."
-#~ msgstr "_Lưu vào tập tin..."
+msgid "_Save to file..."
+msgstr "_Lưu vào tập tin..."
 
-#~ msgid "_Small Display"
-#~ msgstr "_Hiển thị nhỏ"
+msgid "_Small Display"
+msgstr "_Hiển thị nhỏ"
 
-#~ msgid "Orientation"
-#~ msgstr "Hướng"
+msgid "Orientation"
+msgstr "Hướng"
 
-#~ msgid "The orientation of the tray."
-#~ msgstr "Hướng của khay."
+msgid "The orientation of the tray."
+msgstr "Hướng của khay."
 
-#~ msgid "Couldn't write playlist: %s"
-#~ msgstr "Không thể ghi playlist: %s"
+msgid "Couldn't write playlist: %s"
+msgstr "Không thể ghi playlist: %s"
 
-#~ msgid "Very low"
-#~ msgstr "Rất thấp"
+msgid "Very low"
+msgstr "Rất thấp"
 
-#~ msgid "Low"
-#~ msgstr "Thấp"
+msgid "Low"
+msgstr "Thấp"
 
-#~ msgid "Regular"
-#~ msgstr "Thường"
+msgid "Regular"
+msgstr "Thường"
 
-#~ msgid "High"
-#~ msgstr "Cao"
+msgid "High"
+msgstr "Cao"
 
-#~ msgid "Very high"
-#~ msgstr "Rất cao"
+msgid "Very high"
+msgstr "Rất cao"
 
-#~ msgid "Lossless"
-#~ msgstr "Bảo toàn"
+msgid "Lossless"
+msgstr "Bảo toàn"
 
-#~ msgid "Failed to create cdparanoia input element; check your installation"
-#~ msgstr "Lỗi tạo phần tử đầu vào cdparanoia; hãy kiểm tra lại bản cài đặt"
+msgid "Failed to create cdparanoia input element; check your installation"
+msgstr "Lỗi tạo phần tử đầu vào cdparanoia; hãy kiểm tra lại bản cài đặt"
 
-#~ msgid "No AudioCD support; check your settings"
-#~ msgstr "Không hỗ trợ AudioCD; hãy kiểm tra lại bản cài đặt"
+msgid "No AudioCD support; check your settings"
+msgstr "Không hỗ trợ AudioCD; hãy kiểm tra lại bản cài đặt"
 
-#~ msgid "Failed to create %s input element; check your installation"
-#~ msgstr "Lỗi tạo phần tử đầu vào %s; hãy kiểm tra lại bản cài đặt"
+msgid "Failed to create %s input element; check your installation"
+msgstr "Lỗi tạo phần tử đầu vào %s; hãy kiểm tra lại bản cài đặt"
 
-#~ msgid "Failed to create queue element; check your installation"
-#~ msgstr "Lỗi tạo phần tử hàng đợi; hãy kiểm tra lại bản cài đặt"
+msgid "Failed to create queue element; check your installation"
+msgstr "Lỗi tạo phần tử hàng đợi; hãy kiểm tra lại bản cài đặt"
 
-#~ msgid "Failed to create %s element; check your installation"
-#~ msgstr "Lỗi tạo phần tử %s; hãy kiểm tra lại bản cài đặt"
+msgid "Failed to create %s element; check your installation"
+msgstr "Lỗi tạo phần tử %s; hãy kiểm tra lại bản cài đặt"
 
-#~ msgid "Unknown file type"
-#~ msgstr "Loại tập tin lạ"
+msgid "Unknown file type"
+msgstr "Loại tập tin lạ"
 
-#~ msgid "Error decoding FLAC file"
-#~ msgstr "Lỗi giải mã tập tin FLAC"
+msgid "Error decoding FLAC file"
+msgstr "Lỗi giải mã tập tin FLAC"
 
-#~ msgid "Failed to gather information about the file"
-#~ msgstr "Lỗi thu thập thông tin về tập tin"
+msgid "Failed to gather information about the file"
+msgstr "Lỗi thu thập thông tin về tập tin"
 
-#~ msgid "MPEG 2.5 Layer III"
-#~ msgstr "MPEG 2.5 Layer III"
+msgid "MPEG 2.5 Layer III"
+msgstr "MPEG 2.5 Layer III"
 
-#~ msgid "Failed to recognise filetype"
-#~ msgstr "Lỗi xác định loại tập tin"
+msgid "Failed to recognise filetype"
+msgstr "Lỗi xác định loại tập tin"
 
-#~ msgid "Failed to find an audio track"
-#~ msgstr "Lỗi tìm audio track"
+msgid "Failed to find an audio track"
+msgstr "Lỗi tìm audio track"
 
-#~ msgid "MPEG-4 audio (MPEG-4 AAC)"
-#~ msgstr "Nhạc MPEG-4 (MPEG-4 AAC)"
+msgid "MPEG-4 audio (MPEG-4 AAC)"
+msgstr "Nhạc MPEG-4 (MPEG-4 AAC)"
 
-#~ msgid "Loading songs..."
-#~ msgstr "Đang nạp nhạc..."
+msgid "Loading songs..."
+msgstr "Đang nạp nhạc..."
 
-#~ msgid "Refreshing songs..."
-#~ msgstr "Đang cập nhật nhạc..."
+msgid "Refreshing songs..."
+msgstr "Đang cập nhật nhạc..."
 
-#~ msgid "%d song"
-#~ msgid_plural "%d songs"
-#~ msgstr[0] "%d bài nhạc"
-#~ msgstr[1] "%d bài nhạc"
+msgid "%d song"
+msgid_plural "%d songs"
+msgstr[0] "%d bài nhạc"
+msgstr[1] "%d bài nhạc"
 
-#~ msgid "%.1f day"
-#~ msgid_plural "%.1f days"
-#~ msgstr[0] "%.1f ngày"
-#~ msgstr[1] "%.1f ngày"
+msgid "%.1f day"
+msgid_plural "%.1f days"
+msgstr[0] "%.1f ngày"
+msgstr[1] "%.1f ngày"
 
-#~ msgid "%ld minute"
-#~ msgid_plural "%ld minutes"
-#~ msgstr[0] "%ld phút"
-#~ msgstr[1] "%ld phút"
+msgid "%ld minute"
+msgid_plural "%ld minutes"
+msgstr[0] "%ld phút"
+msgstr[1] "%ld phút"
 
-#~ msgid "%ld hour"
-#~ msgid_plural "%ld hours"
-#~ msgstr[0] "%ld giờ"
-#~ msgstr[1] "%ld giờ"
+msgid "%ld hour"
+msgid_plural "%ld hours"
+msgstr[0] "%ld giờ"
+msgstr[1] "%ld giờ"
 
-#~ msgid "Print the playing song and exit"
-#~ msgstr "Hiện bài nhạc đang chơi rồi thoát"
+msgid "Print the playing song and exit"
+msgstr "Hiện bài nhạc đang chơi rồi thoát"
 
-#~ msgid "Print the playing song URI and exit"
-#~ msgstr "Hiện URI bài nhạc đang chơi rồi thoát"
+msgid "Print the playing song URI and exit"
+msgstr "Hiện URI bài nhạc đang chơi rồi thoát"
 
-#~ msgid "Print the playing song length in seconds and exit"
-#~ msgstr "Hiện thời lượng bài nhạc đang chơi tính theo giây rồi thoát"
+msgid "Print the playing song length in seconds and exit"
+msgstr "Hiện thời lượng bài nhạc đang chơi tính theo giây rồi thoát"
 
-#~ msgid "Print the current elapsed time of playing song and exit"
-#~ msgstr "Hiện khoảng thời gian bài nhạc đã chơi rồi thoát"
+msgid "Print the current elapsed time of playing song and exit"
+msgstr "Hiện khoảng thời gian bài nhạc đã chơi rồi thoát"
 
-#~ msgid "Seek to the specified time in playing song if possible and exit"
-#~ msgstr ""
-#~ "Nhảy tới thời điểm xác định trong bài nhạc đang chơi nếu có thể rồi thoát"
+msgid "Seek to the specified time in playing song if possible and exit"
+msgstr ""
+"Nhảy tới thời điểm xác định trong bài nhạc đang chơi nếu có thể rồi thoát"
 
-#~ msgid "Toggle play/pause mode"
-#~ msgstr "Bật tắt chế độ chơi/tạm dừng"
+msgid "Toggle play/pause mode"
+msgstr "Bật tắt chế độ chơi/tạm dừng"
 
-#~ msgid "Jump to previous song"
-#~ msgstr "Về bài trước đó"
+msgid "Jump to previous song"
+msgstr "Về bài trước đó"
 
-#~ msgid "Jump to next song"
-#~ msgstr "Tới bài kế tiếp"
+msgid "Jump to next song"
+msgstr "Tới bài kế tiếp"
 
-#~ msgid "Do not register the shell"
-#~ msgstr "Không đăng ký shell"
+msgid "Do not register the shell"
+msgstr "Không đăng ký shell"
 
-#~ msgid "Don't save any data permanently (implies --no-registration)"
-#~ msgstr "Không lưu bất kỳ dữ liệu nào bền vững (ngầm định --no-registration)"
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr "Không lưu bất kỳ dữ liệu nào bền vững (ngầm định --no-registration)"
 
-#~ msgid ""
-#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
-#~ "and esdsink is in use."
-#~ msgstr ""
-#~ "Rhythmbox không hoạt động nếu bật sự kiện âm thanh GNOME và đang dùng "
-#~ "esdsink."
+msgid ""
+"Rhythmbox does not currently work if GNOME sound events are are enabled and "
+"esdsink is in use."
+msgstr ""
+"Rhythmbox không hoạt động nếu bật sự kiện âm thanh GNOME và đang dùng "
+"esdsink."
 
-#~ msgid "Couldn't parse playlist"
-#~ msgstr "Lỗi phân tích playlist"
+msgid "Couldn't parse playlist"
+msgstr "Lỗi phân tích playlist"
 
-#~ msgid "Load playlist"
-#~ msgstr "Nạp playlist"
+msgid "Load playlist"
+msgstr "Nạp playlist"
 
-#~ msgid "Save playlist"
-#~ msgstr "Lưu playlist"
+msgid "Save playlist"
+msgstr "Lưu playlist"
 
-#~ msgid "Failed to create the player: %s"
-#~ msgstr "Lỗi tạo bộ chơi nhạc: %s"
+msgid "Failed to create the player: %s"
+msgstr "Lỗi tạo bộ chơi nhạc: %s"
 
-#~ msgid "Go to previous song"
-#~ msgstr "Về bài trước đó"
+msgid "Go to previous song"
+msgstr "Về bài trước đó"
 
-#~ msgid "Go to next song"
-#~ msgstr "Tới bài kế tiếp"
+msgid "Go to next song"
+msgstr "Tới bài kế tiếp"
 
-#~ msgid "Change the music volume"
-#~ msgstr "Thay đổi âm lượng"
+msgid "Change the music volume"
+msgstr "Thay đổi âm lượng"
 
-#~ msgid "Opening %s..."
-#~ msgstr "Đang mở %s..."
+msgid "Opening %s..."
+msgstr "Đang mở %s..."
 
-#~ msgid "Unexpected end of stream!"
-#~ msgstr "Hết bất ngờ!"
+msgid "Unexpected end of stream!"
+msgstr "Hết bất ngờ!"
 
-#~ msgid "General"
-#~ msgstr "Chung"
+msgid "General"
+msgstr "Chung"
 
-#~ msgid "Unable to parse URI \"%s\"\n"
-#~ msgstr "Không thể phân tích URI \"%s\"\n"
+msgid "Unable to parse URI \"%s\"\n"
+msgstr "Không thể phân tích URI \"%s\"\n"
 
-#~ msgid "Whether the main window is visible"
-#~ msgstr "Hiển thị cửa sổ chính hay không"
+msgid "Whether the main window is visible"
+msgstr "Hiển thị cửa sổ chính hay không"
 
-#~ msgid "Whether shuffle is enabled"
-#~ msgstr "Cho phép trộn bài hay không"
+msgid "Whether shuffle is enabled"
+msgstr "Cho phép trộn bài hay không"
 
-#~ msgid "Properties for the current song"
-#~ msgstr "Thuộc tính cho bài nhạc hiện thời"
+msgid "Properties for the current song"
+msgstr "Thuộc tính cho bài nhạc hiện thời"
 
-#~ msgid "Maintainers:"
-#~ msgstr "Người quản lý:"
+msgid "Maintainers:"
+msgstr "Người quản lý:"
 
-#~ msgid "Former Maintainers:"
-#~ msgstr "Người quản lý trước đây:"
+msgid "Former Maintainers:"
+msgstr "Người quản lý trước đây:"
 
-#~ msgid "Contributors:"
-#~ msgstr "Người đóng góp:"
+msgid "Contributors:"
+msgstr "Người đóng góp:"
 
-#~ msgid "To extract CDs you must install the Sound Juicer package."
-#~ msgstr "Để trích CD bạn phải cài đặt gói Sound Juicer."
+msgid "To extract CDs you must install the Sound Juicer package."
+msgstr "Để trích CD bạn phải cài đặt gói Sound Juicer."
 
-#~ msgid "Couldn't run sound-juicer: %s"
-#~ msgstr "Không thể chạy sound-juicer: %s"
+msgid "Couldn't run sound-juicer: %s"
+msgstr "Không thể chạy sound-juicer: %s"
 
-#~ msgid "Filter music display by genre, artist, album, or title"
-#~ msgstr "Lọc hiển thị nhạc theo loại, nghệ sĩ, album, hoặc tựa đề"
+msgid "Filter music display by genre, artist, album, or title"
+msgstr "Lọc hiển thị nhạc theo loại, nghệ sĩ, album, hoặc tựa đề"
 
-#~ msgid "Show _Browser"
-#~ msgstr "_Hiện Bộ duyệt"
+msgid "Show _Browser"
+msgstr "_Hiện Bộ duyệt"
 
-#~ msgid "Hide _Browser"
-#~ msgstr "Ẩ_n Bộ duyệt"
+msgid "Hide _Browser"
+msgstr "Ẩ_n Bộ duyệt"
 
-#~ msgid "Play songs in a random order"
-#~ msgstr "Chơi nhạc theo thứ tự ngẫu nhiên"
+msgid "Play songs in a random order"
+msgstr "Chơi nhạc theo thứ tự ngẫu nhiên"
 
-#~ msgid "_Repeat"
-#~ msgstr "_Lặp"
+msgid "_Repeat"
+msgstr "_Lặp"
 
-#~ msgid "Play first song again after all songs are played"
-#~ msgstr "Chơi bài đầu tiên lần nữa sau khi chơi mọi bài"
+msgid "Play first song again after all songs are played"
+msgstr "Chơi bài đầu tiên lần nữa sau khi chơi mọi bài"
 
-#~ msgid "Genre"
-#~ msgstr "Loại"
+msgid "Genre"
+msgstr "Loại"
 
-#~ msgid "Artist"
-#~ msgstr "Nghệ sĩ"
+msgid "Artist"
+msgstr "Nghệ sĩ"
 
-#~ msgid "Album"
-#~ msgstr "Album"
+msgid "Album"
+msgstr "Album"
 
-#~ msgid "Add Location"
-#~ msgstr "Thêm Địa chỉ"
+msgid "Add Location"
+msgstr "Thêm Địa chỉ"
 
-#~ msgid "No properties available."
-#~ msgstr "Không có thuộc tính."
+msgid "No properties available."
+msgstr "Không có thuộc tính."
 
-#~ msgid "This source does not support drag and drop."
-#~ msgstr "Nguồn không hỗ trợ kéo thả."
+msgid "This source does not support drag and drop."
+msgstr "Nguồn không hỗ trợ kéo thả."
 
-#~ msgid "_Source"
-#~ msgstr "_Nguồn"
+msgid "_Source"
+msgstr "_Nguồn"
 
-#~ msgid "Welcome to Rhythmbox"
-#~ msgstr "Chào mừng Sử dụng RhythmBox"
+msgid "Welcome to Rhythmbox"
+msgstr "Chào mừng Sử dụng RhythmBox"
 
-#~ msgid ""
-#~ "Rhythmbox is the GNOME music player that lets you do everything: play "
-#~ "your music files, listen to Internet Radio, import music from CDs, and "
-#~ "much more.\n"
-#~ "\n"
-#~ "This assistant will help you get started by asking you some simple "
-#~ "questions."
-#~ msgstr ""
-#~ "Rhythmbox là Bộ chơi nhạc GNOME, cho phép bạn làm mọi thứ: chơi nhạc, "
-#~ "nghe Radio Internet, nhập nhạc từ CD, và còn nhiều nữa.\n"
-#~ "\n"
-#~ "Phần này sẽ giúp bạn bắt đầu bằng cách hỏi bạn vài câu hỏi đơn giản."
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+"Rhythmbox là Bộ chơi nhạc GNOME, cho phép bạn làm mọi thứ: chơi nhạc, nghe "
+"Radio Internet, nhập nhạc từ CD, và còn nhiều nữa.\n"
+"\n"
+"Phần này sẽ giúp bạn bắt đầu bằng cách hỏi bạn vài câu hỏi đơn giản."
 
-#~ msgid "Music library setup"
-#~ msgstr "Thiết lập Thư viện Âm nhạc"
+msgid "Music library setup"
+msgstr "Thiết lập Thư viện Âm nhạc"
 
-#~ msgid "Finish"
-#~ msgstr "Hoàn tất"
+msgid "Finish"
+msgstr "Hoàn tất"
 
-#~ msgid ""
-#~ "You are now ready to start Rhythmbox.\n"
-#~ "\n"
-#~ "Remember that you may add music to the library using \"Organize\" then "
-#~ "\"Add to Library\", or by importing it from CDs."
-#~ msgstr ""
-#~ "Bạn đã sẵn sàng khởi động Rhythmbox.\n"
-#~ "\n"
-#~ "Hãy nhớ rằng bạn có thể thêm nhạc vào thư viện dùng \"Tổ chức\" và sau đó "
-#~ "\"Thêm vào thư viện\", hoặc nhập từ CD."
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Organize\" then \"Add "
+"to Library\", or by importing it from CDs."
+msgstr ""
+"Bạn đã sẵn sàng khởi động Rhythmbox.\n"
+"\n"
+"Hãy nhớ rằng bạn có thể thêm nhạc vào thư viện dùng \"Tổ chức\" và sau đó "
+"\"Thêm vào thư viện\", hoặc nhập từ CD."
 
-#~ msgid "Error reading filename: %s"
-#~ msgstr "Lỗi đọc tên tập tin: %s"
+msgid "Error reading filename: %s"
+msgstr "Lỗi đọc tên tập tin: %s"
 
-#~ msgid "Choose a directory"
-#~ msgstr "Chọn thư mục"
+msgid "Choose a directory"
+msgstr "Chọn thư mục"
 
-#~ msgid "Now Playing"
-#~ msgstr "Đang chơi"
+msgid "Now Playing"
+msgstr "Đang chơi"
 
-#~ msgid "Error loading files into library"
-#~ msgstr "Lỗi nạp tập tin vào thư viện"
+msgid "Error loading files into library"
+msgstr "Lỗi nạp tập tin vào thư viện"
 
-#~ msgid "_Error"
-#~ msgstr "_Lỗi"
+msgid "_Error"
+msgstr "_Lỗi"
 
-#~ msgid "Listening to "
-#~ msgstr "Đang lắng nghe "
+msgid "Listening to "
+msgstr "Đang lắng nghe "
 
-#~ msgid "Get information on this station from the web"
-#~ msgstr "Lấy thông tin về trạm này từ web"
+msgid "Get information on this station from the web"
+msgstr "Lấy thông tin về trạm này từ web"
 
-#~ msgid "%d:%02d of %d:%02d"
-#~ msgstr "%d:%02d trên %d:%02d"
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d trên %d:%02d"
 
-#~ msgid "Title"
-#~ msgstr "Tựa đề"
+msgid "Title"
+msgstr "Tựa đề"
 
-#~ msgid "contains"
-#~ msgstr "chứa"
+msgid "contains"
+msgstr "chứa"
 
-#~ msgid "does not contain"
-#~ msgstr "không chứa"
+msgid "does not contain"
+msgstr "không chứa"
 
-#~ msgid "Create Automatic Playlist"
-#~ msgstr "Tạo Playlist Tự động"
+msgid "Create Automatic Playlist"
+msgstr "Tạo Playlist Tự động"
 
-#~ msgid "+"
-#~ msgstr "+"
+msgid "+"
+msgstr "+"
 
-#~ msgid "-"
-#~ msgstr "-"
+msgid "-"
+msgstr "-"
