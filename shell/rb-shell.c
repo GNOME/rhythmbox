@@ -1468,9 +1468,11 @@ rb_shell_set_duration (RBShell *shell, const char *duration)
 	if (shell->priv->cached_title == NULL) 
 		tooltip = g_strdup (_("Not playing"));
 	else if (!playing) {
+		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
 		tooltip = g_strdup_printf (_("%s\nPaused, %s"),
 					 shell->priv->cached_title, duration);
 	} else {
+		/* Translators: the first %s is substituted by the song name, the second one is the elapsed and total time */
 		tooltip = g_strdup_printf (_("%s\n%s"),
 					   shell->priv->cached_title, duration);
 	}
@@ -1505,6 +1507,7 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 
 		rb_debug ("setting title to \"%s\"", window_title);
 		if (!playing) {
+			/* Translators: %s is the song name */
 			title = g_strdup_printf (_("%s (Paused)"), window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      title);

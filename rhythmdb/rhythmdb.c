@@ -1917,8 +1917,10 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize s
 			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
 			char *fmt;
 			if (minutes > 0) {
+				/* Translators: the format is "X hours and X minutes" */
 				fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
 			} else {
+				/* Translators: the format is "X hours" */
 				fmt = g_strdup_printf ("%s", hourfmt);
 			}
 			time = g_strdup_printf (fmt, hours, minutes);
