@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-09 04:27+0100\n"
-"PO-Revision-Date: 2004-02-29 21:56+0100\n"
-"Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
+"POT-Creation-Date: 2004-03-14 20:25+0100\n"
+"PO-Revision-Date: 2004-03-15 00:27+0100\n"
+"Last-Translator: Reinout van Schouwen <reinout@cs.vu.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -163,60 +163,64 @@ msgid "The following files couldn't be loaded:"
 msgstr "De volgende bestanden konden niet worden geladen:"
 
 #: data/glade/song-info.glade.h:2
+msgid "Automatically rate:"
+msgstr "Automatisch waarderen:"
+
+#: data/glade/song-info.glade.h:3
 msgid "Basic"
 msgstr "Eenvoudig"
 
-#: data/glade/song-info.glade.h:3 data/glade/station-properties.glade.h:2
+#: data/glade/song-info.glade.h:4 data/glade/station-properties.glade.h:2
 msgid "Bitrate:"
 msgstr "Bitsnelheid: "
 
-#: data/glade/song-info.glade.h:4
+#: data/glade/song-info.glade.h:5
 msgid "Details"
 msgstr "Details"
 
-#: data/glade/song-info.glade.h:5
+#: data/glade/song-info.glade.h:6
 msgid "Duration:"
 msgstr "Duur:"
 
-#: data/glade/song-info.glade.h:6
+#: data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Bestandsnaam:"
 
-#: data/glade/song-info.glade.h:7
+#: data/glade/song-info.glade.h:8
 msgid "Last played:"
 msgstr "Laatst gespeeld:"
 
-#: data/glade/song-info.glade.h:8
+#: data/glade/song-info.glade.h:9
 msgid "Location:"
 msgstr "Lokatie:"
 
-#: data/glade/song-info.glade.h:9
+#: data/glade/song-info.glade.h:10
 msgid "Play count:"
 msgstr "Aantal maal afgespeeld:"
 
-#: data/glade/song-info.glade.h:10
+#: data/glade/song-info.glade.h:11
 msgid "_Album:"
 msgstr "_Album:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:12
 msgid "_Artist:"
 msgstr "_Artiest:"
 
-#: data/glade/song-info.glade.h:12 data/glade/station-new.glade.h:2
+#: data/glade/song-info.glade.h:13 data/glade/station-new.glade.h:2
 #: data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "_Genre:"
 
-#: data/glade/song-info.glade.h:13 data/glade/station-properties.glade.h:8
+#: data/glade/song-info.glade.h:14 data/glade/station-properties.glade.h:8
 msgid "_Rating:"
 msgstr "_Waardering:"
 
-#: data/glade/song-info.glade.h:14 data/glade/station-new.glade.h:4
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
 msgid "_Title:"
 msgstr "_Titel:"
 
-#: data/glade/song-info.glade.h:15
+#: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "Spoor_nummer:"
 
@@ -480,7 +484,7 @@ msgstr "Informatie weergeven over het geselecteerde liedje"
 msgid "Source _List"
 msgstr "_Bronnenlijst"
 
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1490
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1497
 msgid "Start playing"
 msgstr "Afspelen starten"
 
@@ -556,7 +560,7 @@ msgstr "_Volgende"
 msgid "_Paste"
 msgstr "_Plakken"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1491
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1498
 msgid "_Play"
 msgstr "_Afspelen"
 
@@ -601,7 +605,7 @@ msgstr "Nieuw internet radiostation"
 #: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
 #: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
 #: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
-#: widgets/rb-song-info.c:597
+#: widgets/rb-song-info.c:800
 msgid "Unknown"
 msgstr "Onbekend"
 
@@ -609,7 +613,7 @@ msgstr "Onbekend"
 msgid "All"
 msgstr "Alle"
 
-#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:548
+#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:750
 #, c-format
 msgid "%s Properties"
 msgstr "%s Eigenschappen"
@@ -758,7 +762,7 @@ msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
 #: metadata/rb-metadata-gst.c:490 metadata/rb-metadata-gst.c:619
-#: player/rb-player-gst.c:565
+#: player/rb-player-gst.c:555
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Aanmaken van element %s mislukt; controleer uw installatie"
@@ -767,19 +771,15 @@ msgstr "Aanmaken van element %s mislukt; controleer uw installatie"
 msgid "Operation not supported"
 msgstr "Actie wordt niet ondersteund"
 
-#: player/rb-player-gst.c:325 player/rb-player-gst.c:758
-msgid "Failed to close audio output sink"
-msgstr "Kon de audio-afvoer niet sluiten"
-
 # misschien weglaten? 'via pijpleiding'
 # misschien andere formulering:
 # via ander programma?
-#: player/rb-player-gst.c:412 player/rb-player-gst.c:622
-#: player/rb-player-gst.c:632
+#: player/rb-player-gst.c:399 player/rb-player-gst.c:612
+#: player/rb-player-gst.c:622
 msgid "Could not start pipeline playing"
 msgstr "Kon afspelen via pijpleiding niet starten"
 
-#: player/rb-player-gst.c:528
+#: player/rb-player-gst.c:518
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "Er is een fout opgetreden tijdens het creëren van een audio "
@@ -787,22 +787,26 @@ msgstr ""
 "controleer uw instellingen"
 
 # vertaling scheduler?
-#: player/rb-player-gst.c:589
+#: player/rb-player-gst.c:579
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr ""
 "Kon de scheduler niet initialiseren.   Heeft u gst-register uitgevoerd?"
 
-#: player/rb-player-gst.c:644
+#: player/rb-player-gst.c:634
 msgid "Could not pause playback"
 msgstr "Kon het afspelen niet pauzeren"
 
-#: player/rb-player-gst.c:653
+#: player/rb-player-gst.c:644
 msgid "Could not close output sink"
 msgstr "Kon de uitvoer niet afsluiten"
 
-#: player/rb-player-gst.c:699
+#: player/rb-player-gst.c:691
 msgid "No AudioCD support; check your settings"
 msgstr "Geen audio-CD ondersteuning; controleer uw instellingen"
+
+#: player/rb-player-gst.c:750
+msgid "Failed to close audio output sink"
+msgstr "Kon de audio-afvoer niet sluiten"
 
 #: player/rb-player-xine.c:339
 msgid "Failed to set up an audio driver; check your installation"
@@ -840,31 +844,31 @@ msgstr "Audio van %s onhandelbaar; controleer uw installatie."
 msgid "<invalid filename>"
 msgstr "<ongeldige bestandsnaam>"
 
-#: rhythmdb/rhythmdb.c:1346 widgets/rb-entry-view.c:1005
-#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:805
+#: rhythmdb/rhythmdb.c:1352 widgets/rb-entry-view.c:1005
+#: widgets/rb-song-info.c:773 widgets/rb-song-info.c:953
 msgid "Never"
 msgstr "Nooit"
 
-#: rhythmdb/rhythmdb.c:1348
+#: rhythmdb/rhythmdb.c:1354
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d-%m-%Y %H:%M"
 
-#: rhythmdb/rhythmdb.c:2071
+#: rhythmdb/rhythmdb.c:2078
 msgid "Loading songs..."
 msgstr "Bezig met laden van liedjes..."
 
-#: rhythmdb/rhythmdb.c:2073
+#: rhythmdb/rhythmdb.c:2080
 msgid "Refreshing songs..."
 msgstr "Bezig met verversen van liedjes..."
 
-#: rhythmdb/rhythmdb.c:2090
+#: rhythmdb/rhythmdb.c:2097
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d liedje"
 msgstr[1] "%d liedjes"
 
-#: rhythmdb/rhythmdb.c:2097
+#: rhythmdb/rhythmdb.c:2104
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -874,14 +878,14 @@ msgstr[1] "%ld minuten"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: rhythmdb/rhythmdb.c:2098 rhythmdb/rhythmdb.c:2108
+#: rhythmdb/rhythmdb.c:2105 rhythmdb/rhythmdb.c:2115
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld uur"
 msgstr[1] "%ld uur"
 
-#: rhythmdb/rhythmdb.c:2099
+#: rhythmdb/rhythmdb.c:2106
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -889,13 +893,13 @@ msgstr[0] "%.ld dag"
 msgstr[1] "%.ld dagen"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2103
+#: rhythmdb/rhythmdb.c:2110
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s en %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2111
+#: rhythmdb/rhythmdb.c:2118
 #, c-format
 msgid "%s and %s"
 msgstr "%s en %s"
@@ -1045,23 +1049,23 @@ msgstr "Geluidssterkte aanpassen"
 msgid "Opening %s..."
 msgstr "Openen van %s..."
 
-#: shell/rb-shell-player.c:1482
+#: shell/rb-shell-player.c:1489
 msgid "Pause playback"
 msgstr "Afspelen pauzeren"
 
-#: shell/rb-shell-player.c:1483
+#: shell/rb-shell-player.c:1490
 msgid "_Pause"
 msgstr "_Pauzeren"
 
-#: shell/rb-shell-player.c:1498
+#: shell/rb-shell-player.c:1505
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
-#: shell/rb-shell-player.c:1499
+#: shell/rb-shell-player.c:1506
 msgid "_Stop"
 msgstr "_Stoppen"
 
-#: shell/rb-shell-player.c:1832
+#: shell/rb-shell-player.c:1837
 msgid "Unexpected end of stream!"
 msgstr "Onverwachte eind aan gegevensstroom!"
 
@@ -1500,16 +1504,20 @@ msgstr "van"
 msgid "by"
 msgstr "door"
 
-#: widgets/rb-song-info.c:245
+#: widgets/rb-song-info.c:267
 msgid "Song Properties"
 msgstr "Eigenschappen van het liedje"
 
-#: widgets/rb-song-info.c:595
+#: widgets/rb-song-info.c:359
+msgid "Multiple Song Properties"
+msgstr "Meerdere liedjeseigenschappen"
+
+#: widgets/rb-song-info.c:798
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps "
 
-#: widgets/rb-song-info.c:658
+#: widgets/rb-song-info.c:861
 msgid "on the desktop"
 msgstr "op het werkblad"
 
