@@ -2,6 +2,117 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-01-30 07:27:59 GMT	Colin Walters <walters@verbum.org>	patch-51
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-51
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/ca.po po/cs.po
+
+
+2004-01-27 19:49:54 GMT	Christophe Fergeau <teuf@gnome.org>	patch-50
+
+    Summary:
+      Fix GCONF_SCHEMA_FILE_DIR use
+    Revision:
+      rhythmbox--main--0.7--patch-50
+
+
+    modified files:
+     ChangeLog data/Makefile.am
+
+
+2004-01-27 18:45:01 GMT	Christophe Fergeau <teuf@gnome.org>	patch-49
+
+    Summary:
+      Fix startup notification when Rhythmbox is already running
+    Revision:
+      rhythmbox--main--0.7--patch-49
+
+
+    modified files:
+     ChangeLog shell/main.c
+
+
+2004-01-27 07:17:33 GMT	Colin Walters <walters@verbum.org>	patch-48
+
+    Summary:
+      merge with mterry (auto rating fixes)
+    Revision:
+      rhythmbox--main--0.7--patch-48
+
+    Patches applied:
+    
+     * mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-2
+       always note what happened to the last song
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c
+
+    new patches:
+     mterry@fastmail.fm--2004/rhythmbox--main--0.7--patch-2
+
+
+2004-01-26 21:48:25 GMT	Christophe Fergeau <teuf@gnome.org>	patch-47
+
+    Summary:
+      Disabled ctrl+f shortcut in treeviews, fixed button order in the gtk 2.3 file selector, reworded a few strings
+    Revision:
+      rhythmbox--main--0.7--patch-47
+
+    Patches applied:
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-131
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-1
+       Updated POTFILES.in
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-2
+       Updated French translation and POTFILES.in
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-3
+       Translated Pause button tooltip
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-4
+       Small update for the French translation
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-5
+       Disable searching in tree views, updated french translation
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-6
+       Added missing \n to fr.po
+    
+     * teuf@gnome.org--2003/rhythmbox--fixlets--0.7--base-0
+       tag of cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-3
+    
+     * teuf@gnome.org--2003/rhythmbox--fixlets--0.7--patch-1
+       Merge with work branch
+    
+
+    modified files:
+     ChangeLog corba/test-corba.c lib/rb-dialog.c
+     player/rb-player-xine.c po/POTFILES.in shell/rb-shell-player.c
+     widgets/rb-druid.c widgets/rb-property-view.c
+     widgets/rb-tree-view.c
+
+    new patches:
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--base-0
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-1
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-2
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-3
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-4
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-5
+     cfergeau@mipsys.com--2003/rhythmbox--mainline--0.7--patch-6
+     teuf@gnome.org--2003/rhythmbox--fixlets--0.7--base-0
+     teuf@gnome.org--2003/rhythmbox--fixlets--0.7--patch-1
+
+
 2004-01-26 21:37:05 GMT	Colin Walters <walters@verbum.org>	patch-46
 
     Summary:
