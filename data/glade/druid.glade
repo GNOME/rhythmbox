@@ -24,9 +24,7 @@
 	  <property name="visible">True</property>
 	  <property name="position">GNOME_EDGE_START</property>
 	  <property name="title" translatable="yes">Welcome to Rhythmbox</property>
-	  <property name="text" translatable="yes">In order to get started using
-Rhythmbox, this assistant will ask
-you some simple questions.</property>
+	  <property name="text" translatable="yes">In order to get started using Rhythmbox, this assistant will ask you some simple questions.</property>
 	</widget>
       </child>
 
@@ -51,15 +49,11 @@ you some simple questions.</property>
 		  <child>
 		    <widget class="GtkLabel" id="label1">
 		      <property name="visible">True</property>
-		      <property name="label" translatable="yes">Rhythmbox needs to know where to find your music.
-You may choose to skip this step; instead, you 
-can add music to your library at any point later.
-
-Please choose one of the options below:</property>
+		      <property name="label" translatable="yes">Rhythmbox needs to know where to find your music. You may choose to skip this step; instead, you can add music to your library at any point later. Please choose one of the options below:</property>
 		      <property name="use_underline">False</property>
 		      <property name="use_markup">False</property>
 		      <property name="justify">GTK_JUSTIFY_LEFT</property>
-		      <property name="wrap">False</property>
+		      <property name="wrap">True</property>
 		      <property name="selectable">False</property>
 		      <property name="xalign">0.5</property>
 		      <property name="yalign">0.5</property>
@@ -277,8 +271,7 @@ Please choose one of the options below:</property>
 	  <property name="visible">True</property>
 	  <property name="position">GNOME_EDGE_FINISH</property>
 	  <property name="title" translatable="yes">Finish</property>
-	  <property name="text" translatable="yes">You are now ready to start
-Rhythmbox.</property>
+	  <property name="text" translatable="yes">You are now ready to start Rhythmbox.</property>
 	</widget>
       </child>
     </widget>
