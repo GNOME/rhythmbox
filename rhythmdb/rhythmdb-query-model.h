@@ -69,6 +69,10 @@ void			rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEnt
 
 void			rhythmdb_query_model_complete	(RhythmDBQueryModel *model);
 
+GnomeVFSFileSize	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
+
+long			rhythmdb_query_model_get_duration(RhythmDBQueryModel *model);
+
 G_END_DECLS
 
 #endif /* __RHYTHMBDB_QUERY_MODEL_H */

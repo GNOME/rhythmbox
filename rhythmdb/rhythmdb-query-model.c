@@ -128,6 +128,9 @@ struct RhythmDBQueryModelPrivate
 
 	guint max_size;
 
+	glong total_duration;
+	GnomeVFSFileSize total_size;
+
 	GSequence *entries;
 	GHashTable *reverse_map;
 	
@@ -599,7 +602,17 @@ rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, RhythmDBEntry *ent
 	}
 }
 
+GnomeVFSFileSize
+rhythmdb_query_model_get_size (RhythmDBQueryModel *model)
+{
+	return model->priv->total_size;
+}
 
+long
+rhythmdb_query_model_get_duration (RhythmDBQueryModel *model)
+{
+	return model->priv->total_duration;
+}
 
 static int
 compare_times (GTimeVal *a, GTimeVal *b)
@@ -664,6 +677,13 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 					     update->entry,
 					     ptr);
 
+			rhythmdb_read_lock (model->priv->db);
+			model->priv->total_duration += rhythmdb_entry_get_long (model->priv->db, update->entry,
+										RHYTHMDB_PROP_DURATION);
+			model->priv->total_size += rhythmdb_entry_get_long (model->priv->db, update->entry,
+									    RHYTHMDB_PROP_FILE_SIZE);
+			rhythmdb_read_unlock (model->priv->db);
+
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 							      &iter);
 
@@ -707,6 +727,13 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 
 			gtk_tree_path_append_index (path, index);
 				
+			rhythmdb_read_lock (model->priv->db);
+			model->priv->total_duration -= rhythmdb_entry_get_long (model->priv->db, update->entry,
+										RHYTHMDB_PROP_DURATION);
+			model->priv->total_size -= rhythmdb_entry_get_long (model->priv->db, update->entry,
+									    RHYTHMDB_PROP_FILE_SIZE);
+			rhythmdb_read_unlock (model->priv->db);
+
 			rb_debug ("emitting row deleted");
 			gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
 						    path);

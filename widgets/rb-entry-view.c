@@ -155,9 +155,6 @@ struct RBEntryViewPrivate
 
 	RhythmDBEntry *selected_entry;
 
-	glong total_duration;
-	GnomeVFSFileSize total_size;
-
 	gboolean change_sig_queued;
 	guint change_sig_id;
 
@@ -589,9 +586,6 @@ rb_entry_view_set_property (GObject *object,
 					 GTK_TREE_MODEL (new_model));
 		view->priv->model = new_model;
 
-		view->priv->total_duration = 0;
-		view->priv->total_size = 0;
-
 		break;
 	}
 	case PROP_PLAYING_ENTRY:
@@ -716,13 +710,13 @@ rb_entry_view_busy (RBEntryView *view)
 glong
 rb_entry_view_get_duration (RBEntryView *view)
 {
-	return view->priv->total_duration;
+	return rhythmdb_query_model_get_duration (RHYTHMDB_QUERY_MODEL (view->priv->model));
 }
 
 GnomeVFSFileSize
 rb_entry_view_get_total_size (RBEntryView *view)
 {
-	return view->priv->total_size;
+	return rhythmdb_query_model_get_size (RHYTHMDB_QUERY_MODEL (view->priv->model));
 }
 
 static RhythmDBEntry *
@@ -1724,21 +1718,6 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       RBEntryView *view)
 {
 	RhythmDBEntry *entry = entry_from_tree_iter (view, iter);
-	glong duration;
-	glong size;
-	
-	rhythmdb_read_lock (view->priv->db);
-	
-	duration = rhythmdb_entry_get_long (view->priv->db, entry,
-					    RHYTHMDB_PROP_DURATION);
-	size = rhythmdb_entry_get_long (view->priv->db, entry,
-					RHYTHMDB_PROP_FILE_SIZE);
-
-	rhythmdb_read_unlock (view->priv->db);
-
-	view->priv->total_duration += duration;
-	view->priv->total_size += size;
-	
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }
@@ -1749,8 +1728,6 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 			      RBEntryView *view)
 {
 	RhythmDBEntry *entry = entry_from_tree_path (view, path);
-	glong duration;
-	glong size;
 
 	if (entry == view->priv->playing_entry) {
 		view->priv->playing_entry = NULL;
@@ -1760,18 +1737,6 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED],
 			       0, view->priv->playing_entry);
 	}
-	
-	rhythmdb_read_lock (view->priv->db);
-	
-	duration = rhythmdb_entry_get_long (view->priv->db, entry,
-					    RHYTHMDB_PROP_DURATION);
-	size = rhythmdb_entry_get_long (view->priv->db, entry,
-					RHYTHMDB_PROP_FILE_SIZE);
-
-	rhythmdb_read_unlock (view->priv->db);
-
-	view->priv->total_duration -= duration;
-	view->priv->total_size -= size;
 	
 	rb_debug ("row deleted");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_DELETED], 0, entry);
