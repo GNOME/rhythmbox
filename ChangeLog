@@ -1,5 +1,21 @@
 2002-07-04  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/art/rhythmbox-playing.png:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-cell-renderer-pixbuf.c:
+	(rb_cell_renderer_pixbuf_get_type), (rb_cell_renderer_pixbuf_init),
+	(rb_cell_renderer_pixbuf_class_init),
+	(rb_cell_renderer_pixbuf_get_property),
+	(rb_cell_renderer_pixbuf_set_property),
+	(rb_cell_renderer_pixbuf_new), (rb_cell_renderer_pixbuf_get_size),
+	(eel_create_colorized_pixbuf), (rb_cell_renderer_pixbuf_render):
+	* lib/widgets/rb-cell-renderer-pixbuf.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct):
+
+	New playing state icon that recolors itself nicely.
+
+2002-07-04  Jorn Baayen  <jorn@nl.linux.org>
+
 	* NEWS:
 
 	Updated, we're about ready for a release for the new gstreamer.

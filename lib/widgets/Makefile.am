@@ -25,7 +25,9 @@ librbwidgets_la_SOURCES =				\
 	eel-ellipsizing-label.h				\
 	eel-gtk-macros.h				\
 	eel-pango-extensions.c				\
-	eel-pango-extensions.h
+	eel-pango-extensions.h				\
+	rb-cell-renderer-pixbuf.c			\
+	rb-cell-renderer-pixbuf.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

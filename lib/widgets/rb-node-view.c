@@ -24,7 +24,6 @@
 #include <gtk/gtktreemodelsort.h>
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkcellrendererpixbuf.h>
 #include <gtk/gtkiconfactory.h>
 #include <gdk/gdkkeysyms.h>
 #include <config.h>
@@ -38,6 +37,7 @@
 #include "rb-tree-model-node.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
+#include "rb-cell-renderer-pixbuf.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -579,7 +579,7 @@ rb_node_view_construct (RBNodeView *view)
 		{
 			int width;
 			
-			renderer = gtk_cell_renderer_pixbuf_new ();
+			renderer = rb_cell_renderer_pixbuf_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
 							     "pixbuf", column,
