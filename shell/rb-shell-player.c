@@ -118,6 +118,7 @@ static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
+static void rb_shell_player_sync_volume (RBShellPlayer *player);
 void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
 void eos_cb (MonkeyMediaPlayer *player, gpointer data);
 void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
@@ -166,6 +167,7 @@ struct RBShellPlayerPrivate
 	char *url;
 	GList *alt_locations;
 
+	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
 	guint buffering_progress_idle_id;
 
@@ -343,8 +345,7 @@ rb_shell_player_init (RBShellPlayer *player)
 			  G_CALLBACK (buffering_end_cb),
 			  player);
 
-	monkey_media_player_set_volume (player->priv->mmplayer,
-					eel_gconf_get_float (CONF_STATE_VOLUME));
+	rb_shell_player_sync_volume (player);
 
 	hbox = gtk_hbox_new (FALSE, 5);
 
@@ -626,11 +627,27 @@ rb_shell_player_open_location (RBShellPlayer *player,
 {
 	char *unescaped = gnome_vfs_unescape_string_for_display (location);
 	char *msg = g_strdup_printf (_("Opening %s..."), unescaped);
+	gboolean show_buffering_dialog = !strncmp ("http://", location, 7);
 
 	rb_debug ("%s", msg);
 
 	g_free (unescaped);
 	g_free (msg);
+
+	if (show_buffering_dialog && player->priv->buffering_blocked) {
+		g_signal_handlers_unblock_by_func (G_OBJECT (player->priv->mmplayer),
+						 G_CALLBACK (buffering_begin_cb), player);
+		g_signal_handlers_unblock_by_func (G_OBJECT (player->priv->mmplayer),
+						 G_CALLBACK (buffering_end_cb), player);
+		player->priv->buffering_blocked = FALSE;
+	} else if (!show_buffering_dialog && !player->priv->buffering_blocked) {
+		g_signal_handlers_block_by_func (G_OBJECT (player->priv->mmplayer),
+						 G_CALLBACK (buffering_begin_cb), player);
+		g_signal_handlers_block_by_func (G_OBJECT (player->priv->mmplayer),
+						 G_CALLBACK (buffering_end_cb), player);
+		player->priv->buffering_blocked = TRUE;
+	}
+
 	monkey_media_player_close (player->priv->mmplayer);
 	monkey_media_player_open (player->priv->mmplayer, location, error);
 	
@@ -873,6 +890,13 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 }
 
 static void
+rb_shell_player_sync_volume (RBShellPlayer *player)
+{
+	monkey_media_player_set_volume (player->priv->mmplayer,
+					eel_gconf_get_float (CONF_STATE_VOLUME));
+}
+
+static void
 rb_shell_player_state_changed_cb (GConfClient *client,
 				  guint cnxn_id,
 				  GConfEntry *entry,
@@ -881,6 +905,7 @@ rb_shell_player_state_changed_cb (GConfClient *client,
 	rb_debug ("state changed");
 	rb_shell_player_sync_control_state (playa);
 	rb_shell_player_sync_buttons (playa);
+	rb_shell_player_sync_volume (playa);
 }
 
 static void
