@@ -1271,6 +1271,12 @@ rb_library_view_search_cb (RBSearchEntry *search,
 									      RB_NODE_SONG_PROP_ALBUM,
 									      search_text),
 					       0);
+		rb_node_filter_add_expression (view->priv->songs_filter,
+					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_SONG_PROP_GENRE,
+									      search_text),
+					       0);
+
 		rb_node_filter_done_changing (view->priv->songs_filter);
 	}
 
