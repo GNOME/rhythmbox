@@ -695,7 +695,7 @@ static void
 rb_shell_player_try_alt_location (RBShellPlayer *player, GError **error)
 {
 	int len = g_list_length (player->priv->alt_locations);
-	int i = rand () % len;
+	int i = g_random_int_range (0, len);
 	char *location = (char*) g_list_nth (player->priv->alt_locations, i)->data;
 
 	rb_shell_player_open_location (player, location, error);

@@ -1,3 +1,9 @@
+2003-08-11  Christophe Fergeau  <teuf@gnome.org>
+
+	* shell/main.c: (main):
+	* shell/rb-shell-player.c: (rb_shell_player_try_alt_location): remove 
+	use of rand/srand, use glib function instead (bug #119473)
+
 2003-08-10  Christian Neumair  <chris@gnome-de.org>
 
 	* data/glade/druid.glade:

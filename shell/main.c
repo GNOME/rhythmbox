@@ -75,8 +75,6 @@ main (int argc, char **argv)
 		POPT_TABLEEND
 	};
 
-	srand(time(0));
-
 	gtk_set_locale ();
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE, argc, argv,
@@ -84,6 +82,8 @@ main (int argc, char **argv)
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
+
+	g_random_set_seed (time(0));
 
 #ifdef ENABLE_NLS
 	/* initialize i18n */
