@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-09 12:45+0200\n"
-"PO-Revision-Date: 2003-08-09 18:52+0200\n"
+"POT-Creation-Date: 2003-08-14 21:07+0200\n"
+"PO-Revision-Date: 2003-08-14 22:30+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -40,7 +40,7 @@ msgstr "Generátor shellu Rhythmbox"
 msgid "Loading..."
 msgstr "Načítám..."
 
-#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:2
+#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:1
 #: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
 #: data/glade/uri.glade.h:1
 msgid "*"
@@ -50,9 +50,9 @@ msgstr "*"
 msgid "Finish"
 msgstr "Dokončit"
 
-#: data/glade/druid.glade.h:3
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:243
 msgid ""
-"In order to get started using \n"
+"In order to get started using\n"
 "Rhythmbox, this assistant will ask\n"
 "you some simple questions."
 msgstr ""
@@ -65,10 +65,6 @@ msgid "Library setup"
 msgstr "Nastavení knihovny"
 
 #: data/glade/druid.glade.h:7
-msgid "Path: "
-msgstr "Cesta: "
-
-#: data/glade/druid.glade.h:8
 msgid ""
 "Rhythmbox needs to know where to find your music.\n"
 "You may choose to skip this step; instead, you \n"
@@ -82,25 +78,29 @@ msgstr ""
 "\n"
 "Vyberte prosím jednu z možností níže:"
 
-#: data/glade/druid.glade.h:13 lib/widgets/rb-druid.c:239
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
 msgstr "Vítejte v Rhythmbox"
 
-#: data/glade/druid.glade.h:14
+#: data/glade/druid.glade.h:13
 msgid ""
 "You are now ready to start\n"
-"Rhythmbox.  "
+"Rhythmbox."
 msgstr ""
 "Nyní jste připraveni spustit\n"
-"Rhythmbox.  "
+"Rhythmbox."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:15
 msgid "_Browse..."
 msgstr "_Probírat..."
 
+#: data/glade/druid.glade.h:16
+msgid "_Enter location manually:"
+msgstr "Zadat _umístění ručně:"
+
 #: data/glade/druid.glade.h:17
-msgid "_Enter location manually"
-msgstr "Zadat _umístění ručně"
+msgid "_Path:"
+msgstr "_Cesta:"
 
 #: data/glade/druid.glade.h:18
 msgid "_Skip this step"
@@ -174,125 +174,99 @@ msgstr "Žánry, umělci a alba"
 msgid "The following files couldn't be loaded:"
 msgstr "Následující soubory nemohly být načteny:"
 
-#: data/glade/song-info.glade.h:1
-msgid "   "
-msgstr "   "
-
-#: data/glade/song-info.glade.h:3
-msgid "<b>Duration:</b>"
-msgstr "<b>Trvání:</b>"
-
-#: data/glade/song-info.glade.h:4
-msgid "<b>Encoding:</b>"
-msgstr "<b>Kódování:</b>"
-
-#: data/glade/song-info.glade.h:5
-msgid "<b>Last played:</b>"
-msgstr "<b>Naposledy hrané:</b>"
-
-#: data/glade/song-info.glade.h:6
-msgid "<b>Location:</b>"
-msgstr "<b>Umístění:</b>"
-
-#: data/glade/song-info.glade.h:7
-msgid "<b>Name:</b>"
-msgstr "<b>Název:</b>"
-
-#: data/glade/song-info.glade.h:8
-msgid "<b>Play count:</b>"
-msgstr "<b>Počet hraní:</b>"
-
-#: data/glade/song-info.glade.h:9
-msgid "<b>Quality:</b>"
-msgstr "<b>Kvalita:</b>"
-
-#: data/glade/song-info.glade.h:10
-msgid "<b>_Album:</b>"
-msgstr "<b>_Album:</b>"
-
-#: data/glade/song-info.glade.h:11
-msgid "<b>_Artist:</b>"
-msgstr "<b>_Umělec:</b>"
-
-#: data/glade/song-info.glade.h:12
-msgid "<b>_Comments:</b>"
-msgstr "<b>_Komentáře:</b>"
-
-#: data/glade/song-info.glade.h:13
-msgid "<b>_Date:</b>"
-msgstr "<b>_Datum:</b>"
-
-#: data/glade/song-info.glade.h:14
-msgid "<b>_Genre:</b>"
-msgstr "<b>Žán_r:</b>"
-
-#: data/glade/song-info.glade.h:15
-msgid "<b>_Rating:</b>"
-msgstr "<b>_Ohodnocení:</b>"
-
-#: data/glade/song-info.glade.h:16
-msgid "<b>_Title:</b>"
-msgstr "<b>_Titul:</b>"
-
-#: data/glade/song-info.glade.h:17
-msgid "<b>_Track number:</b>"
-msgstr "<b>Číslo _stopy:</b>"
-
-#: data/glade/song-info.glade.h:18
+#: data/glade/song-info.glade.h:2
 msgid "Basic"
 msgstr "Základní"
 
-#: data/glade/song-info.glade.h:19
+#: data/glade/song-info.glade.h:3
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: data/glade/song-info.glade.h:20
-msgid "_of"
-msgstr " "
+#: data/glade/song-info.glade.h:4
+msgid "Duration:"
+msgstr "Trvání:"
 
-#: data/glade/station-new.glade.h:2 data/glade/station-properties.glade.h:5
-msgid "_Genre: "
-msgstr "Žán_r: "
+#: data/glade/song-info.glade.h:5
+msgid "Encoding:"
+msgstr "Kódování:"
 
-#: data/glade/station-new.glade.h:3
-msgid "_Location: "
-msgstr "_Umístění: "
+#: data/glade/song-info.glade.h:6
+msgid "Last played:"
+msgstr "Naposledy hrané:"
 
-#: data/glade/station-new.glade.h:4 data/glade/station-properties.glade.h:10
-msgid "_Title: "
-msgstr "_Titul: "
+#: data/glade/song-info.glade.h:7
+msgid "Location:"
+msgstr "Umístění:"
 
-#: data/glade/station-properties.glade.h:2
-msgid "Play Count: "
+#: data/glade/song-info.glade.h:8
+msgid "Name:"
+msgstr "Název:"
+
+#: data/glade/song-info.glade.h:9
+msgid "Play count:"
 msgstr "Počet hraní:"
 
+#: data/glade/song-info.glade.h:10
+msgid "Quality:"
+msgstr "Kvalita:"
+
+#: data/glade/song-info.glade.h:11
+msgid "_Album:"
+msgstr "_Album:"
+
+#: data/glade/song-info.glade.h:12
+msgid "_Artist:"
+msgstr "_Umělec:"
+
+#: data/glade/song-info.glade.h:13
+msgid "_Comments:"
+msgstr "_Komentáře:"
+
+#: data/glade/song-info.glade.h:14
+msgid "_Date:"
+msgstr "_Datum:"
+
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:2
+#: data/glade/station-properties.glade.h:5
+msgid "_Genre:"
+msgstr "Žán_r:"
+
+#: data/glade/song-info.glade.h:16 data/glade/station-properties.glade.h:7
+msgid "_Rating:"
+msgstr "O_hodnocení:"
+
+#: data/glade/song-info.glade.h:17 data/glade/station-new.glade.h:4
+#: data/glade/station-properties.glade.h:8
+msgid "_Title:"
+msgstr "_Titul:"
+
+#: data/glade/song-info.glade.h:18
+msgid "_Track number:"
+msgstr "Číslo _stopy:"
+
+#: data/glade/song-info.glade.h:19
+msgid "_of:"
+msgstr "_z:"
+
+#: data/glade/station-new.glade.h:3
+msgid "_Location:"
+msgstr "_Umístění:"
+
+#: data/glade/station-properties.glade.h:2
+msgid "L_ocation:"
+msgstr "_Umístění:"
+
 #: data/glade/station-properties.glade.h:3
-msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr "St 1. leden 1970 00:00:00 +0100"
+msgid "Play Count:"
+msgstr "Počet hraní:"
 
 #: data/glade/station-properties.glade.h:4
-msgid "_Add: "
-msgstr "_Přidat: "
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr "St 1. leden 1970 00:00:00 +0100"
 
 #: data/glade/station-properties.glade.h:6
 msgid "_Last Played:"
 msgstr "Napos_ledy hráno:"
-
-#: data/glade/station-properties.glade.h:7
-msgid "_Locations"
-msgstr "_Umístění"
-
-#: data/glade/station-properties.glade.h:8 data/ui/rhythmbox-ui.xml.in.h:60
-msgid "_Properties"
-msgstr "_Vlastnosti"
-
-#: data/glade/station-properties.glade.h:9
-msgid "_Rating: "
-msgstr "O_hodnocení: "
-
-#: data/glade/station-properties.glade.h:11
-msgid "blah Properties"
-msgstr "Vlastnosti blah"
 
 #: data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
@@ -346,7 +320,7 @@ msgstr "N_aposledy hrané"
 msgid "_Play Count"
 msgstr "_Počet hraní"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:586 shell/rb-shell.c:1037
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:602 shell/rb-shell.c:1056
 msgid "Music Player"
 msgstr "Přehrávač hudby"
 
@@ -590,7 +564,7 @@ msgstr "_Hudba"
 msgid "_New Playlist..."
 msgstr "_Nový seznam skladeb..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:57 lib/widgets/rb-song-info.c:226
+#: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Next"
 msgstr "_Následující"
 
@@ -598,9 +572,13 @@ msgstr "_Následující"
 msgid "_Paste"
 msgstr "V_ložit"
 
-#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1125
+#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1088
 msgid "_Play"
 msgstr "_Hrát"
+
+#: data/ui/rhythmbox-ui.xml.in.h:60
+msgid "_Properties"
+msgstr "_Vlastnosti"
 
 #: data/ui/rhythmbox-ui.xml.in.h:61
 msgid "_Save Playlist..."
@@ -618,42 +596,27 @@ msgstr "_Zamíchat"
 msgid "_Source List"
 msgstr "_Seznam zdrojů"
 
-#: iradio/rb-iradio-backend.c:180 library/rb-library.c:570
+#: iradio/rb-iradio-backend.c:183 library/rb-library.c:649
 msgid "All"
 msgstr "Vše"
 
-#: iradio/rb-iradio-backend.c:319
+#: iradio/rb-iradio-backend.c:345
 msgid "Unable to find file \"iradio-initial.xml\""
 msgstr "Nemohu najít soubor \"iradio-initial.xml\""
 
-#: iradio/rb-iradio-backend.c:365
+#: iradio/rb-iradio-backend.c:375
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "Nelze zpracovat %s\n"
 
-#: iradio/rb-iradio-backend.c:526 iradio/rb-iradio-backend.c:545
-#: iradio/rb-iradio-backend.c:546 lib/widgets/rb-tree-model-node.c:587
+#: iradio/rb-iradio-backend.c:529 iradio/rb-iradio-backend.c:548
+#: iradio/rb-iradio-backend.c:549 lib/widgets/rb-tree-model-node.c:588
 msgid "(Unknown)"
 msgstr "(Neznámý)"
 
-#: iradio/rb-iradio-backend.c:740
+#: iradio/rb-iradio-backend.c:735
 msgid "Never"
 msgstr "Nikdy"
-
-#: iradio/rb-iradio-yp-xmlfile.c:223
-#, c-format
-msgid "Failed to open %s: %s"
-msgstr "Nelze otevřít %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:454
-#, c-format
-msgid "Failed to read %s: %s"
-msgstr "Nelze číst %s: %s"
-
-#: iradio/rb-iradio-yp-xmlfile.c:461
-#, c-format
-msgid "Failed to parse %s: %s"
-msgstr "Nelze zpracovat %s: %s"
 
 #: iradio/rb-new-station-dialog.c:143
 msgid "New Internet Radio Station"
@@ -668,32 +631,16 @@ msgstr "Nové internetové rádio"
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:503
-#: lib/widgets/rb-song-info.c:517
+#: iradio/rb-station-properties-dialog.c:177 lib/widgets/rb-song-info.c:568
+#: lib/widgets/rb-song-info.c:582
 #, c-format
 msgid "%s Properties"
 msgstr "Vlastnosti %s"
 
-#: iradio/rb-station-properties-dialog.c:389
+#: iradio/rb-station-properties-dialog.c:348
 #, c-format
 msgid "Properties for %s"
 msgstr "Vlastnosti %s"
-
-#: iradio/rb-station-properties-dialog.c:539
-msgid "No locations specified!"
-msgstr "Nezadáno žádné umístění!"
-
-#: iradio/rb-station-properties-dialog.c:583
-msgid "No location is selected."
-msgstr "Nevybráno žádné umístění."
-
-#: iradio/rb-station-properties-dialog.c:599
-msgid "No location specified."
-msgstr "Neurčeno žádné umístění."
-
-#: iradio/rb-station-properties-dialog.c:605
-msgid "Location is not a valid URL."
-msgstr "Umístění není platné URL."
 
 #: lib/disclosure-widget.c:292
 msgid "Expander Size"
@@ -735,12 +682,12 @@ msgstr "%s existuje, je třeba jej odstranit."
 msgid "Failed to create directory %s."
 msgstr "Nelze vytvořit adresář %s."
 
-#: lib/rb-playlist.c:203
+#: lib/rb-playlist.c:207
 #, c-format
 msgid "Couldn't write playlist: %s"
 msgstr "Nemohu zapsat seznam skladeb: %s"
 
-#: lib/rb-playlist.c:236
+#: lib/rb-playlist.c:240
 #, c-format
 msgid "Couldn't open playlist: %s"
 msgstr "Nemohu otebřít seznam skladeb: %s"
@@ -772,19 +719,9 @@ msgstr "Objekt Pixbuf"
 msgid "The pixbuf to render."
 msgstr "Vykreslený obrázek."
 
-#: lib/widgets/rb-druid.c:218 shell/main.c:84
+#: lib/widgets/rb-druid.c:218 shell/main.c:82
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
-
-#: lib/widgets/rb-druid.c:243
-msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assisstant will ask\n"
-"you some simple questions. "
-msgstr ""
-"Abyste mohli začít používat\n"
-"Rhythmbox, položí vám tento asistent\n"
-"několik jednoduchých otázek. "
 
 #: lib/widgets/rb-druid.c:260
 msgid "You are now ready to start Rhythmbox."
@@ -816,7 +753,7 @@ msgstr "Chyba při načítání souborů do knihovny"
 msgid "_Error"
 msgstr "_Chyba"
 
-#: lib/widgets/rb-node-view.c:716
+#: lib/widgets/rb-node-view.c:715
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Selhalo zpracování %s jako souboru s rozvržením NodeView"
@@ -833,28 +770,28 @@ msgstr " od "
 msgid "Listening to "
 msgstr "Poslouchám "
 
-#: lib/widgets/rb-player.c:486
+#: lib/widgets/rb-player.c:487
 msgid "Get information on this album from the web"
 msgstr "Získat informace o tomto albu ze sítě"
 
-#: lib/widgets/rb-player.c:497
+#: lib/widgets/rb-player.c:498
 msgid "Get information on this artist from the web"
 msgstr "Získat informace o tomto umělci z WWW"
 
-#: lib/widgets/rb-player.c:507
+#: lib/widgets/rb-player.c:508
 msgid "Get more information on this station from the web"
 msgstr "Získat více informací o této stanici z WWW"
 
-#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2005
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1060 shell/rb-shell.c:2020
 msgid "Not playing"
 msgstr "Nepřehrává se"
 
-#: lib/widgets/rb-player.c:784
+#: lib/widgets/rb-player.c:785
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d z %d:%02d"
 
-#: lib/widgets/rb-player.c:786
+#: lib/widgets/rb-player.c:787
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -864,32 +801,28 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Hledat:"
 
-#: lib/widgets/rb-song-info.c:200
-msgid "_Previous"
-msgstr "_Předchozí"
-
-#: lib/widgets/rb-song-info.c:259 lib/widgets/rb-song-info.c:522
+#: lib/widgets/rb-song-info.c:227 lib/widgets/rb-song-info.c:587
 msgid "Song Properties"
 msgstr "Vlastnosti skladby"
 
-#: lib/widgets/rb-song-info.c:804
+#: lib/widgets/rb-song-info.c:869
 msgid "on the desktop"
 msgstr "na ploše"
 
-#: lib/widgets/rb-song-info.c:1016
+#: lib/widgets/rb-song-info.c:1081
 #, c-format
-msgid "%d kbps "
-msgstr "%d kbps "
+msgid "%d kbps"
+msgstr "%d kbps"
 
-#: lib/widgets/rb-song-info.c:1029
+#: lib/widgets/rb-song-info.c:1094
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:1032
+#: lib/widgets/rb-song-info.c:1097
 msgid " (Stereo)"
 msgstr " (Stereo)"
 
-#: lib/widgets/rb-song-info.c:1035
+#: lib/widgets/rb-song-info.c:1100
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d kanálů)"
@@ -908,16 +841,36 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:820
+#: library/rb-library.c:888
 msgid "Failed to load library!"
 msgstr "Selhalo načtení knihovny!"
 
-#: library/rb-library.c:1087
+#: library/rb-library.c:1153
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1339
+#: library/rb-library.c:1486
+#, c-format
+msgid "%ld songs"
+msgstr "%ld skladeb"
+
+#: library/rb-library.c:1541
+#, c-format
+msgid "<b>%.1f</b> days (%ld songs)"
+msgstr "<b>%.1f</b> dnů (%ld skladeb)"
+
+#: library/rb-library.c:1544
+#, c-format
+msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> hodin a <b>%ld</b> minut (%ld skladeb)"
+
+#: library/rb-library.c:1547
+#, c-format
+msgid "<b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> minut (%ld skladeb)"
+
+#: library/rb-node.c:1351
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d. %m %Y %H:%M"
 
@@ -1080,13 +1033,18 @@ msgstr "Neplatné číslo stopy"
 msgid "Audio CD track"
 msgstr "Audio CD stopa"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:154
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:195
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:264
 #: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
 #: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:165
 msgid "Failed to open file for reading"
 msgstr "Selhalo otevření souboru pro čtení"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:470
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:247
+msgid "Error decoding FLAC file"
+msgstr "Chyba při dekódování souboru FLAC"
+
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:751
 msgid "FLAC"
 msgstr "FLAC"
 
@@ -1145,42 +1103,37 @@ msgstr ""
 "Nelze aktivovat shell:\n"
 "%s"
 
-#: shell/rb-shell-player.c:319
+#: shell/rb-shell-player.c:317
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Nelze vytvořit přehrávač: %s"
 
-#: shell/rb-shell-player.c:665
+#: shell/rb-shell-player.c:663
 #, c-format
 msgid "Opening %s..."
 msgstr "Otevírám %s..."
 
-#: shell/rb-shell-player.c:736
-#, c-format
-msgid "All fallback locations failed, unable to play: %s\n"
-msgstr "Všechna náhradní umístění selhala, nemohu přehrávat: %s\n"
-
-#: shell/rb-shell-player.c:1116
+#: shell/rb-shell-player.c:1079
 msgid "Pause"
 msgstr "Pozastavit"
 
-#: shell/rb-shell-player.c:1117
+#: shell/rb-shell-player.c:1080
 msgid "_Pause"
 msgstr "_Pozastavit"
 
-#: shell/rb-shell-player.c:1124
+#: shell/rb-shell-player.c:1087
 msgid "Play"
 msgstr "Hrát"
 
-#: shell/rb-shell-player.c:1132
+#: shell/rb-shell-player.c:1095
 msgid "Stop"
 msgstr "Zastavit"
 
-#: shell/rb-shell-player.c:1133
+#: shell/rb-shell-player.c:1096
 msgid "_Stop"
 msgstr "Za_stavit"
 
-#: shell/rb-shell-player.c:1356
+#: shell/rb-shell-player.c:1319
 msgid "Unexpected end of stream!"
 msgstr "Neočekávaný konec proudu!"
 
@@ -1192,12 +1145,12 @@ msgstr "Nastavení Přehrávače hudby"
 msgid "General"
 msgstr "Obecné"
 
-#: shell/rb-shell.c:499
+#: shell/rb-shell.c:501
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Nelze zpracovat URI \"%s\"\n"
 
-#: shell/rb-shell.c:787
+#: shell/rb-shell.c:804
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1210,12 +1163,12 @@ msgstr ""
 "s jiným prefixem než bonobo-activation; toto varování\n"
 "je neškodné, ale nebude fungovat IPC.\n"
 
-#: shell/rb-shell.c:1055
+#: shell/rb-shell.c:1074
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pozastaveno)"
 
-#: shell/rb-shell.c:1058
+#: shell/rb-shell.c:1077
 #, c-format
 msgid ""
 "%s\n"
@@ -1224,19 +1177,19 @@ msgstr ""
 "%s\n"
 "Pozastaveno"
 
-#: shell/rb-shell.c:1127
+#: shell/rb-shell.c:1146
 msgid "translator_credits"
 msgstr "Michal Bukovjan <bukm@centrum.cz>"
 
-#: shell/rb-shell.c:1136
+#: shell/rb-shell.c:1155
 msgid "Maintainers:"
 msgstr "Správci:"
 
-#: shell/rb-shell.c:1140
+#: shell/rb-shell.c:1159
 msgid "Contributors:"
 msgstr "Přispěli:"
 
-#: shell/rb-shell.c:1164
+#: shell/rb-shell.c:1183
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1247,51 +1200,51 @@ msgstr ""
 "Backend zvuku: %s\n"
 "Formáty zvuku: %s\n"
 
-#: shell/rb-shell.c:1308
+#: shell/rb-shell.c:1326
 msgid "Choose Files or Directory"
 msgstr "Vyberte soubory nebo adresář"
 
-#: shell/rb-shell.c:1337
+#: shell/rb-shell.c:1355
 msgid "Load playlist"
 msgstr "Načíst seznam skladeb"
 
-#: shell/rb-shell.c:1377
+#: shell/rb-shell.c:1395
 msgid "Save playlist"
 msgstr "Uložit seznam skladeb"
 
-#: shell/rb-shell.c:1397
+#: shell/rb-shell.c:1415
 msgid "There is already a playlist with that name."
 msgstr "Již existuje seznam skladeb s tímto názvem."
 
-#: shell/rb-shell.c:1504
+#: shell/rb-shell.c:1522
 msgid "Couldn't parse playlist"
 msgstr "Nemohu zpracovat seznam skladeb"
 
-#: shell/rb-shell.c:1833
-msgid "Create"
-msgstr "Vytvořit"
+#: shell/rb-shell.c:1853
+msgid "C_reate"
+msgstr "_Vytvořit"
 
-#: shell/rb-shell.c:1848
-msgid "Add Playlist"
-msgstr "Přidat seznam skladeb"
+#: shell/rb-shell.c:1868
+msgid "New Playlist"
+msgstr "Nový seznam skladeb"
 
-#: shell/rb-shell.c:1859
+#: shell/rb-shell.c:1879
 msgid "Please enter a name for the new playlist:"
 msgstr "Zadejte prosím název nového seznamu skladeb:"
 
-#: shell/rb-shell.c:1869
+#: shell/rb-shell.c:1884
 msgid "Untitled"
 msgstr "Nepojmenovaný"
 
-#: shell/rb-shell.c:1873
+#: shell/rb-shell.c:1888
 msgid "Add the _selected songs to the new playlist"
 msgstr "Přidat _vybrané skladby do nového seznamu skladeb"
 
-#: shell/rb-source-header.c:173
+#: shell/rb-source-header.c:172
 msgid "Show _Browser"
 msgstr "Zobrazit _prohlížeč"
 
-#: shell/rb-source-header.c:174
+#: shell/rb-source-header.c:173
 msgid "Hide _Browser"
 msgstr "Skrýt _prohlížeč"
 
@@ -1325,27 +1278,7 @@ msgstr "Načítám informace o CD"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d skladeb, %d:%02d:%02d celkový čas"
 
-#: sources/rb-group-source.c:506 sources/rb-library-source.c:778
-#, c-format
-msgid "%ld songs"
-msgstr "%ld skladeb"
-
-#: sources/rb-group-source.c:547 sources/rb-library-source.c:825
-#, c-format
-msgid "<b>%.1f</b> days (%ld songs)"
-msgstr "<b>%.1f</b> dnů (%ld skladeb)"
-
-#: sources/rb-group-source.c:550 sources/rb-library-source.c:828
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> hodin a <b>%ld</b> minut (%ld skladeb)"
-
-#: sources/rb-group-source.c:553 sources/rb-library-source.c:831
-#, c-format
-msgid "<b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> minut (%ld skladeb)"
-
-#: sources/rb-group-source.c:691
+#: sources/rb-group-source.c:653
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Nelze zpracovat %s jako soubor skupin"
@@ -1354,16 +1287,16 @@ msgstr "Nelze zpracovat %s jako soubor skupin"
 msgid "Radio"
 msgstr "Rádio"
 
-#: sources/rb-iradio-source.c:487
+#: sources/rb-iradio-source.c:497
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "Celkem <b>%d</b> stanic s <b>%d</b> různými žánry"
 
-#: sources/rb-library-source.c:611
+#: sources/rb-library-source.c:617
 msgid "Library"
 msgstr "Knihovna"
 
-#: sources/rb-library-source.c:937
+#: sources/rb-library-source.c:884
 msgid "Add Location"
 msgstr "Přidat umístění"
 
@@ -1374,6 +1307,42 @@ msgstr "Ždádné vlastnosti nejsou k dispozici."
 #: sources/rb-source.c:544
 msgid "This source does not support drag and drop."
 msgstr "Tento zdroj nepodporuje přetažení a puštění."
+
+#~ msgid "_Add: "
+#~ msgstr "_Přidat: "
+
+#~ msgid "_Locations"
+#~ msgstr "_Umístění"
+
+#~ msgid "Failed to open %s: %s"
+#~ msgstr "Nelze otevřít %s: %s"
+
+#~ msgid "Failed to read %s: %s"
+#~ msgstr "Nelze číst %s: %s"
+
+#~ msgid "Failed to parse %s: %s"
+#~ msgstr "Nelze zpracovat %s: %s"
+
+#~ msgid "No locations specified!"
+#~ msgstr "Nezadáno žádné umístění!"
+
+#~ msgid "No location is selected."
+#~ msgstr "Nevybráno žádné umístění."
+
+#~ msgid "No location specified."
+#~ msgstr "Neurčeno žádné umístění."
+
+#~ msgid "Location is not a valid URL."
+#~ msgstr "Umístění není platné URL."
+
+#~ msgid "_Previous"
+#~ msgstr "_Předchozí"
+
+#~ msgid "All fallback locations failed, unable to play: %s\n"
+#~ msgstr "Všechna náhradní umístění selhala, nemohu přehrávat: %s\n"
+
+#~ msgid "Add Playlist"
+#~ msgstr "Přidat seznam skladeb"
 
 #~ msgid "<span weight=\"bold\">Visible Columns</span>"
 #~ msgstr "<span weight=\"bold\">Viditelné sloupce</span>"
