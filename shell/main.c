@@ -153,9 +153,8 @@ main (int argc, char **argv)
 			g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
 			g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
 
-			if (no_registration)
-				g_object_set_data (G_OBJECT (rb_shell), "rb-shell-no-registration",
-						   GINT_TO_POINTER (TRUE));
+			g_object_set_data (G_OBJECT (rb_shell), "rb-shell-no-registration",
+					   GINT_TO_POINTER (no_registration));
 			
 			g_idle_add ((GSourceFunc) rb_init, rb_shell);
 		}
@@ -209,7 +208,8 @@ rb_init (RBShell *shell)
 	argv = (char **) g_object_get_data (G_OBJECT (shell), "argv");
 	argc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (shell), "argc"));
 
-	rb_handle_cmdline (argv, argc, FALSE);
+	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration"))
+		rb_handle_cmdline (argv, argc, FALSE);
 	
 	GDK_THREADS_LEAVE ();
 
@@ -223,6 +223,7 @@ rb_handle_cmdline (char **argv, int argc,
 	GNOME_Rhythmbox shell;
 	int i;
 	gboolean grab_focus = TRUE;
+	
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)
 	{

@@ -900,11 +900,12 @@ rb_shell_construct (RBShell *shell)
 		rb_debug ("No AudioCD device is available!");
 #endif
 	
-	/* register with CORBA */
-	CORBA_exception_init (&ev);
-	
 	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")) {
+		/* register with CORBA */
+		CORBA_exception_init (&ev);
+		
 		corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
+
 		if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
 			registration_failed = TRUE;
 		
