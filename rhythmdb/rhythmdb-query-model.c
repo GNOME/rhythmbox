@@ -468,7 +468,7 @@ void
 rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 {
 	struct RhythmDBQueryModelUpdate *update;
-	
+
 	rb_debug ("queuing completion signal");
 	update = g_new0 (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE;
@@ -526,11 +526,14 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		update = g_new (struct RhythmDBQueryModelUpdate, 1);
 		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED;
 		update->entry = entry;
-		
+
 		/* Called with a locked database */
 		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
-		
+
 		g_async_queue_push (model->priv->pending_updates, update);
+	} else {
+		/* the changed entrie may now satisfy the query so we test it */
+		rhythmdb_query_model_entry_added_cb (db, entry, model);
 	}
 }
 
@@ -620,6 +623,10 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
 		{
+			/* we check again if the entry already exists in the hash table */
+			if (g_hash_table_lookup (model->priv->reverse_map, update->entry) != NULL)
+				break;
+
 			if (model->priv->sort_func)
 				ptr = g_sequence_insert_sorted (model->priv->entries, update->entry,
 								model->priv->sort_func,
@@ -637,7 +644,7 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 							      &iter);
-				
+
 			gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 						     path, &iter);
 			gtk_tree_path_free (path);
@@ -655,7 +662,7 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 
 			path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 							      &iter);
-				
+
 			rb_debug ("emitting row changed");
 			gtk_tree_model_row_changed (GTK_TREE_MODEL (model),
 						    path, &iter);
@@ -678,7 +685,6 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 
 			gtk_tree_path_append_index (path, index);
 				
-			model->priv->stamp++;
 			rb_debug ("emitting row deleted");
 			gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
 						    path);
@@ -783,7 +789,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 		GString *data;
 
 		data = g_string_new ("");
-      
+
 		for (tem = paths; tem; tem = tem->next) {
 			GtkTreeIter iter;
 			GtkTreePath *path;
@@ -808,7 +814,6 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 				ptr = g_hash_table_lookup (model->priv->reverse_map,
 							   entry);
 
-				model->priv->stamp++;
 				rb_debug ("emitting row deleted");
 				gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
 							    path);
@@ -846,7 +851,7 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 
 	if (model->priv->sort_func != NULL)
 		return FALSE;
-	
+
 	if (selection_data->format == 8 && selection_data->length >= 0) {
 		GtkTreeIter iter;
 		GSequencePtr ptr;

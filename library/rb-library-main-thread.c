@@ -342,6 +342,10 @@ main_thread_main (RBLibraryMainThread *thread)
 	{
 		GError *error = NULL;
 		RhythmDBEntry *entry;
+		RhythmDB *db;
+
+		g_object_get (G_OBJECT (thread->priv->library), "db", &db, NULL);
+		g_assert (db != NULL);
 
 		entry = read_action (thread, thread->priv->queue);
 
@@ -349,11 +353,12 @@ main_thread_main (RBLibraryMainThread *thread)
 			break;
 
 		rb_library_update_entry (thread->priv->library, entry, &error);
+		rhythmdb_entry_unref (db, entry);
 
 		if (error != NULL) {
 			push_err (thread, NULL, error);
 		}
-			
+
 		g_usleep (10);
 	}
 

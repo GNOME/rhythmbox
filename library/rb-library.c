@@ -444,6 +444,7 @@ rb_library_add_uri (RBLibrary *library, const char *uri, GError **error)
 	RhythmDBEntry *entry;
 	char *realuri;
 	RBLibraryEntryUpdateData *metadata;
+	GValue last_time = {0, };
 
 	realuri = rb_uri_resolve_symlink (uri);
 
@@ -476,6 +477,13 @@ rb_library_add_uri (RBLibrary *library, const char *uri, GError **error)
 
 	entry = rhythmdb_entry_new (library->priv->db, RHYTHMDB_ENTRY_TYPE_SONG, realuri);
 	synchronize_entry_with_data (library, entry, metadata);
+
+	/* initialize the last played date to 0=never */
+	g_value_init (&last_time, G_TYPE_LONG);
+	g_value_set_long (&last_time, 0);
+	rhythmdb_entry_set (library->priv->db, entry, RHYTHMDB_PROP_LAST_PLAYED, &last_time);
+	g_value_unset (&last_time);
+
 	g_free (metadata);
 
 	rhythmdb_write_unlock (library->priv->db);
