@@ -2,6 +2,44 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9
 #
 
+2004-08-16 04:15:03 GMT	Colin Walters <walters@verbum.org>	patch-104
+
+    Summary:
+      initial re-implementation of remote bonobo support 
+    Revision:
+      rhythmbox--main--0.9--patch-104
+
+    This changeset tries to reimplement support for remote
+    control in a more modular way.  Bonobo is isolated
+    in the RBRemoteBonobo object.  D-BUS support will
+    come soon.
+
+    new files:
+     remote/bonobo/rb-remote-bonobo.c
+     remote/bonobo/rb-remote-bonobo.h
+     remote/rb-remote-client-proxy.c
+     remote/rb-remote-client-proxy.h remote/rb-remote-common.c
+     remote/rb-remote-common.h remote/rb-remote-proxy.c
+     remote/rb-remote-proxy.h
+
+    modified files:
+     ChangeLog Makefile.am configure.ac remote/Makefile.am
+     remote/bonobo/Makefile.am shell/Makefile.am shell/main.c
+     shell/rb-shell.c
+
+
+2004-08-15 08:34:05 GMT	Christophe Fergeau <teuf@gnome.org>	patch-103
+
+    Summary:
+      Fix display of play/pause in the tray icon context menu
+    Revision:
+      rhythmbox--main--0.9--patch-103
+
+
+    modified files:
+     ChangeLog data/ui/rhythmbox-ui.xml
+
+
 2004-08-15 06:32:57 GMT	Colin Walters <walters@verbum.org>	patch-102
 
     Summary:
