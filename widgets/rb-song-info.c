@@ -572,16 +572,6 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	gtk_entry_set_text (GTK_ENTRY (song_info->priv->track_cur),
 			    tmp);
 	g_free (tmp);
-	num = rhythmdb_entry_get_int (song_info->priv->db,
-				      song_info->priv->current_entry,
-				      RHYTHMDB_PROP_BITRATE);
-	if (num > 0)
-		tmp = g_strdup_printf ("%d", num);
-	else
-		tmp = g_strdup (_("Unknown"));
-	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate),
-			    tmp);
-	g_free (tmp);
 
 	rb_song_info_update_duration (song_info);
 	rb_song_info_update_location (song_info);
@@ -595,14 +585,19 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 static void
 rb_song_info_update_bitrate (RBSongInfo *song_info)
 {
-	char *text = NULL;
+	char *tmp = NULL;
 	int bitrate = 0;
 	bitrate = rhythmdb_entry_get_int (song_info->priv->db,
-					     song_info->priv->current_entry,
-					     RHYTHMDB_PROP_BITRATE);
-	text = g_strdup_printf ("%d", bitrate);
-	gtk_label_set_text (GTK_LABEL (song_info->priv->duration), text);
-	g_free (text);
+					  song_info->priv->current_entry,
+					  RHYTHMDB_PROP_BITRATE);
+
+	if (bitrate > 0)
+		tmp = g_strdup_printf (_("%d kbps"), bitrate);
+	else
+		tmp = g_strdup (_("Unknown"));
+	gtk_label_set_text (GTK_LABEL (song_info->priv->bitrate),
+			    tmp);
+	g_free (tmp);
 }
 
 static void
