@@ -50,3 +50,10 @@ RhythmboxShell-common.c RhythmboxShell-stubs.c RhythmboxShell-skels.c RhythmboxS
 	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) RhythmboxShell.idl
 
 EXTRA_DIST = RhythmboxShell.idl
+
+CLEANFILES =			\
+	RhythmboxShell-common.c	\
+	RhythmboxShell-stubs.c	\
+	RhythmboxShell-skels.c	\
+	RhythmboxShell.h
+

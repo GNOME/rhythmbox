@@ -7,4 +7,6 @@ uixml_DATA = $(uixml_in_files:.xml.in=.xml)
 
 @INTLTOOL_XML_RULE@
 
-EXTRA_DIST = $(uixml_in_files) $(uixml_DATA)
+EXTRA_DIST = $(uixml_in_files)
+
+CLEANFILES = $(uixml_in_files)
