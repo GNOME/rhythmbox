@@ -883,6 +883,7 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 					 GtkSelectionData  *selection_data)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (drag_dest);
+	GtkTreePath *path;
 
 	rb_debug ("drag received");
 
@@ -926,7 +927,7 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 					if (old_ptr == ptr)
 						continue;
 
-					GtkTreePath *path = gtk_tree_path_new ();
+					path = gtk_tree_path_new ();
 					gtk_tree_path_append_index (path,
 								    g_sequence_ptr_get_position (old_ptr));
 

@@ -955,13 +955,15 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
+	RhythmDBEntry* entry;
+
 	if (player->priv->source != NULL) {
 		/* If we're in the first 2 seconds go to the previous song,
 		 * else restart the current one.
 		 */
 		if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
 			rb_debug ("doing previous");
-			RhythmDBEntry* entry = rb_shell_player_get_previous (player);
+			entry = rb_shell_player_get_previous (player);
 			if (entry) {
 				rb_shell_player_set_playing_entry (player, entry);
 			} else {

@@ -142,13 +142,14 @@ static void
 rb_history_finalize (GObject *object)
 {
 	RBHistory *hist;
+	GList *cur;
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_HISTORY (object));
 
 	hist = RB_HISTORY (object);
 
 	/* unref all of the stored entries */
-	for (GList *cur = hist->priv->head; cur; cur = g_list_next (cur)) {
+	for (cur = hist->priv->head; cur; cur = g_list_next (cur)) {
 		rhythmdb_entry_unref (hist->priv->db, cur->data);
 	}
 
