@@ -64,7 +64,7 @@
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
-#include "rb-audiocd-source.h"
+//#include "rb-audiocd-source.h"
 #include "rb-shell-preferences.h"
 // #include "rb-group-source.h"
 #include "rb-file-monitor.h"
