@@ -41,6 +41,7 @@
 #include "rb-property-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
+#include "rb-playlist.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-new-station-dialog.h"
@@ -76,6 +77,10 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBIRadioSource *source);
 static void rb_iradio_source_state_pref_changed (GConfClient *client,
+						 guint cnxn_id,
+						 GConfEntry *entry,
+						 RBIRadioSource *source);
+static void rb_iradio_source_first_time_changed (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
 						 RBIRadioSource *source);
@@ -327,6 +332,9 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	rb_iradio_source_state_prefs_sync (source);
 	eel_gconf_notification_add (CONF_STATE_IRADIO_DIR,
 				    (GConfClientNotifyFunc) rb_iradio_source_state_pref_changed,
+				    source);
+	eel_gconf_notification_add (CONF_FIRST_TIME,
+				    (GConfClientNotifyFunc) rb_iradio_source_first_time_changed,
 				    source);
 	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_ALL);
 			
@@ -690,3 +698,33 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 }
+
+static void
+handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title,
+			  const char *genre, RBIRadioSource *source)
+{
+	if (rb_uri_is_iradio (uri)) {
+		rhythmdb_read_lock (source->priv->db);
+		if (!rhythmdb_entry_lookup_by_location (source->priv->db, uri)) {
+			rhythmdb_read_unlock (source->priv->db);
+			rb_iradio_source_add_station (source, uri, title, genre);
+		} else
+			rhythmdb_read_unlock (source->priv->db);
+	}
+}
+
+static void
+rb_iradio_source_first_time_changed (GConfClient *client,
+				     guint cnxn_id,
+				     GConfEntry *entry,
+				     RBIRadioSource *source)
+{
+	RBPlaylist *parser = rb_playlist_new ();
+
+	g_signal_connect_object (G_OBJECT (parser), "entry",
+				 G_CALLBACK (handle_playlist_entry_cb),
+				 source, 0);
+	rb_playlist_parse (parser, rb_file ("iradio-initial.pls"));	
+	g_object_unref (G_OBJECT (parser));
+}
+
