@@ -126,7 +126,7 @@ struct _RBVolumePrivate {
 
 	gboolean mute;
 	
-	GtkTooltips *tooltips;
+	GtkTooltips *tooltip;
 
 #ifdef IRIX_API
 	/* Note: we are using the obsolete API to increase portability.
@@ -222,7 +222,7 @@ rb_volume_instance_init (RBVolume *volume)
 							     NULL);
 	priv->mute = FALSE;
 
-	/* Speaker button */
+	/* Speaker event box */
 	priv->indicator = gtk_event_box_new ();
 	priv->indicator_image = gtk_image_new_from_pixbuf (priv->volume_medium_pixbuf);
 	gtk_container_add (GTK_CONTAINER (priv->indicator), priv->indicator_image);
@@ -232,8 +232,8 @@ rb_volume_instance_init (RBVolume *volume)
 			  G_CALLBACK (volume_mute_cb),
 			  volume);
 
-	priv->tooltips = gtk_tooltips_new ();
-	gtk_tooltips_set_tip (priv->tooltips, priv->indicator, _("Click to mute"), NULL);
+	priv->tooltip = gtk_tooltips_new ();
+	gtk_tooltips_set_tip (priv->tooltip, priv->indicator, _("Click to mute"), NULL);
 	gtk_box_pack_start (GTK_BOX (volume), priv->indicator, FALSE, FALSE, 0);
 	gtk_widget_show (priv->indicator);
 
@@ -369,9 +369,13 @@ volume_mute_cb (GtkWidget *button,
 		volume->priv->mute = FALSE;
 	
 	if (volume->priv->mute == TRUE)
-		gtk_tooltips_set_tip (volume->priv->tooltips, volume->priv->indicator, _("Click to unmute"), NULL);
+		gtk_tooltips_set_tip (volume->priv->tooltip,
+				volume->priv->indicator,
+				_("Click to unmute"), NULL);
 	else
-		gtk_tooltips_set_tip (volume->priv->tooltips, volume->priv->indicator, _("Click to mute"), NULL);
+		gtk_tooltips_set_tip (volume->priv->tooltip,
+				volume->priv->indicator,
+				_("Click to mute"), NULL);
 
 	rb_volume_update_image (volume);
 	update_mixer (volume);
@@ -380,10 +384,12 @@ volume_mute_cb (GtkWidget *button,
 static gboolean
 timeout_cb (RBVolume *volume)
 {
-	int vol = read_mixer (volume);
+	int vol;
 
 	if (volume->priv->mute)
 		return TRUE;
+
+	vol = read_mixer (volume);
 
 	if (vol != volume->priv->vol) {
 		volume->priv->vol = vol;
