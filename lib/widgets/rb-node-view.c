@@ -40,6 +40,7 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
 #include "rb-node-song.h"
+#include "rb-node-station.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
@@ -617,6 +618,11 @@ rb_node_view_construct (RBNodeView *view)
 		if (tmp == NULL)
 			continue;
 		ev = g_enum_get_value_by_name (class, tmp);
+		if (!ev)
+		{
+			fprintf (stderr, "Unknown column %s!\n", tmp);
+			continue;
+		}
 		column = ev->value;
 		g_free (tmp);
 
@@ -801,7 +807,7 @@ rb_node_view_rated_cb (RBCellRendererRating *cellrating,
 	g_value_init (&value, G_TYPE_INT);
 	g_value_set_int (&value, rating);
 	rb_node_set_property (node,
-			      RB_NODE_SONG_PROP_RATING,
+			      RB_NODE_PROP_RATING,
 			      &value);
 	g_value_unset (&value);
 }
@@ -1344,10 +1350,10 @@ rb_node_view_get_status (RBNodeView *view)
 		n_songs++;
 
 		n_seconds += rb_node_get_property_long (node,
-							RB_NODE_SONG_PROP_REAL_DURATION);
+							RB_NODE_PROP_REAL_DURATION);
 
 		n_bytes += rb_node_get_property_long (node,
-						      RB_NODE_SONG_PROP_FILE_SIZE);
+						      RB_NODE_PROP_FILE_SIZE);
 	}
 
 	rb_node_thaw (view->priv->root);
