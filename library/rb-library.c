@@ -233,29 +233,6 @@ rb_library_get_add_queue (RBLibrary *library)
 	return library->priv->add_queue;
 }
 
-/* We don't particularly care about race conditions here.  This function
- * is just supposed to give some feedback about whether the library
- * is busy or not, it doesn't have to be precise.
- */
-gboolean
-rb_library_is_adding (RBLibrary *library)
-{
-	return !queue_is_empty (library->priv->add_queue);
-}
-
-gboolean
-rb_library_is_refreshing (RBLibrary *library)
-{
-	return !queue_is_empty (library->priv->main_queue);
-}
-
-gboolean
-rb_library_is_idle (RBLibrary *library)
-{
-	return !rb_library_is_adding (library)
-		&& !rb_library_is_refreshing (library);
-}
-
 void
 rb_library_shutdown (RBLibrary *library)
 {
@@ -599,9 +576,9 @@ rb_library_get_status (RBLibrary *library)
 {
 	char *ret = NULL;
 
-	if (rb_library_is_adding (library))
+	if (!queue_is_empty (library->priv->add_queue))
 		ret = g_strdup_printf ("<b>%s</b>", _("Loading songs..."));
-	else if (rb_library_is_refreshing (library))
+	else if (!queue_is_empty (library->priv->main_queue))
 		ret = g_strdup_printf ("<b>%s</b>", _("Refreshing songs..."));
 
 	return ret;

@@ -49,8 +49,6 @@ static void rb_statusbar_get_property (GObject *object,
 					  GValue *value,
 					  GParamSpec *pspec);
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
-static void rb_statusbar_status_changed_cb (RBSource *source,
-					    RBStatusbar *statusbar);
 static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   guint cnxn_id,
 					   GConfEntry *entry,
@@ -93,7 +91,6 @@ struct RBStatusbarPrivate
 
 	GtkWidget *progress;
 
-	gboolean source_status_dirty;
 	guint status_poll_id;
 
 	gboolean entry_view_busy;
@@ -200,8 +197,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	gtk_label_set_use_markup (GTK_LABEL (statusbar->priv->status), TRUE);
 	gtk_misc_set_alignment (GTK_MISC (statusbar->priv->status), 1.0, 0.5);
 
-	statusbar->priv->source_status_dirty = TRUE;
-
 	gtk_box_set_spacing (GTK_BOX (statusbar), 5);
 
 	statusbar->priv->progress = gtk_progress_bar_new ();
@@ -275,9 +270,6 @@ rb_statusbar_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 							      G_CALLBACK (rb_statusbar_entry_view_changed_cb),
 							      statusbar);
-			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_source),
-							      G_CALLBACK (rb_statusbar_status_changed_cb),
-							      statusbar);
 		}
 		
 		statusbar->priv->selected_source = g_value_get_object (value);
@@ -291,10 +283,6 @@ rb_statusbar_set_property (GObject *object,
 					  G_CALLBACK (rb_statusbar_entry_view_changed_cb),
 					  statusbar);
 
-			g_signal_connect (G_OBJECT (statusbar->priv->selected_source),
-					  "status_changed",
-					  G_CALLBACK (rb_statusbar_status_changed_cb),
-					  statusbar);
 		}
 		rb_statusbar_sync_with_source (statusbar);
 
@@ -369,50 +357,37 @@ poll_status (RBStatusbar *status)
 {
 	char *str;
 	gboolean library_busy_changed;
-	gboolean library_is_adding;
-	gboolean library_is_refreshing;
 	gboolean library_is_busy;
+	gboolean entry_view_busy = FALSE;
 	gboolean changed = FALSE;
 
 	GDK_THREADS_ENTER ();
 
-	if (status->priv->selected_source) {
+	str = rb_library_get_status (status->priv->library);
+
+	if (!str && status->priv->selected_source) {
 		RBEntryView *view;
 		view = rb_source_get_entry_view (status->priv->selected_source);
-		status->priv->entry_view_busy = rb_entry_view_busy (view);
+		entry_view_busy = rb_entry_view_busy (view);
 	}
 
-	library_is_adding = rb_library_is_adding (status->priv->library);
-	library_is_refreshing = rb_library_is_refreshing (status->priv->library);
-	library_is_busy = library_is_adding || library_is_refreshing;
+	library_is_busy = str != NULL;
 	library_busy_changed = status->priv->library_busy && !library_is_busy;
 	status->priv->library_busy = library_is_busy;	
 
+	/* Set up the status display */
 	if (status->priv->library_busy) {
 		str = rb_library_get_status (status->priv->library);
 		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
 		g_free (str);
 		changed = TRUE;
-	} else {
-		if (library_busy_changed || status->priv->source_status_dirty) {
-			const char *status_str
-				= rb_source_get_status (status->priv->selected_source);
-			gtk_label_set_markup (GTK_LABEL (status->priv->status), status_str);
-			status->priv->source_status_dirty = FALSE;
-			changed = TRUE;
-		}
+	} else if (library_busy_changed) {
+		rb_statusbar_sync_with_source (status);
+		changed = TRUE;
 	}
 
-	if (!library_is_adding && library_is_refreshing) {
-		double progress = rb_library_get_progress (status->priv->library);
-		
-		if (progress > 0) {
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
-						       progress);
-			
-		}
-		changed = TRUE;
-	} else if (library_is_adding || status->priv->entry_view_busy) {
+	/* Sync the progress bar */
+	if (library_is_busy || entry_view_busy) {
 		if (status->priv->idle_tick_id == 0) {
 			status->priv->idle_tick_id
 				= g_timeout_add (250, (GSourceFunc) status_tick_cb,
@@ -451,14 +426,9 @@ rb_statusbar_new (RBLibrary *library, BonoboUIComponent *component)
 static void
 rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 {
-}
-
-static void
-rb_statusbar_status_changed_cb (RBSource *source,
-				RBStatusbar *statusbar)
-{
-	rb_debug  ("status changed for %p", source);
-	statusbar->priv->source_status_dirty = TRUE;
+	const char *status_str
+		= rb_source_get_status (statusbar->priv->selected_source);
+	gtk_label_set_markup (GTK_LABEL (statusbar->priv->status), status_str);
 }
 
 void
@@ -520,5 +490,6 @@ rb_statusbar_entry_view_changed_cb (RBEntryView *view,
 				    RBStatusbar *statusbar)
 {
 	rb_debug ("entry view changed");
-	statusbar->priv->source_status_dirty = TRUE;
+	if (!(statusbar->priv->library_busy || statusbar->priv->entry_view_busy))
+		rb_statusbar_sync_with_source (statusbar);
 }
