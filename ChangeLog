@@ -1,6 +1,11 @@
 2003-08-13  Colin Walters  <walters@verbum.org>
 
-	* lib/widgets/rb-node-view.c: (queue_changed_sig):
+	* lib/widgets/rb-node-view.c: (queue_changed_sig): Switch the
+	node view changed thing back to being an idle handler instead of
+	a 1-sec timeout.
+	
+2003-08-13  Colin Walters  <walters@verbum.org>
+
 	* library/rb-library.c: (rb_library_get_modification_time),
 	(song_added_cb), (song_removed_cb):
 	* library/rb-library.h:

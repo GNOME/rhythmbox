@@ -1390,7 +1390,7 @@ queue_changed_sig (RBNodeView *view)
 {
 	if (!view->priv->change_sig_queued) {
 		rb_debug ("queueing changed signal");
-		view->priv->change_sig_id = g_timeout_add (1000, (GSourceFunc) emit_node_changed, view);
+		view->priv->change_sig_id = g_idle_add ((GSourceFunc) emit_node_changed, view);
 	}
 	view->priv->change_sig_queued = TRUE;
 }
