@@ -307,46 +307,28 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 		for (; priv->child != NULL && i <= 10; priv->child = priv->child->next, i++)
 		{
 			RBNode *node;
-			RBNodeType type;
 
 			node = rb_node_new_from_xml (priv->child);
 			if (node == NULL)
 				continue;
 
-			type = rb_node_get_node_type (node);
-			switch (type)
-			{
-			case RB_NODE_TYPE_GENRE:
-				rb_node_add_child (node, rb_library_get_all_albums (priv->library));
-				break;
-			case RB_NODE_TYPE_ARTIST:
-				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
-				break;
-			case RB_NODE_TYPE_SONG:
-				rb_node_song_restore (node);
-				{
-					GValue value = { 0, };
-					
-					rb_node_get_property (node,
-							      RB_SONG_PROP_LOCATION,
-							      &value);
-					
-					rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
-								     FALSE,
-								     RB_LIBRARY_ACTION_UPDATE_FILE,
-								     g_value_get_string (&value));
+			if (rb_node_has_child (rb_library_get_all_songs (priv->library), node)) {
+				const char *location;
 
-					g_value_unset (&value);
-				}
-				/* Don't check for finished_preloading here,
-				 * just doing inc is faster than cmp,
-				 * branching and inc (at least on ia32)
-				 */
+				location = rb_node_get_property_string (node,
+							                RB_NODE_SONG_PROP_LOCATION);
+					
+				rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
+							     FALSE,
+							     RB_LIBRARY_ACTION_UPDATE_FILE,
+							     location);
+
 				media_files++;
-				break;
-			default:
-				break;
 			}
+			else if (rb_node_has_child (rb_library_get_all_artists (priv->library), node))
+				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
+			else if (rb_node_has_child (rb_library_get_all_genres (priv->library), node))
+				rb_node_add_child (node, rb_library_get_all_albums (priv->library));
 		}
 
 		/* this value is tunable */

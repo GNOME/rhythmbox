@@ -25,6 +25,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <libgnome/gnome-i18n.h>
+#include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <unistd.h>
@@ -135,7 +136,6 @@ static void rb_group_view_drop_cb (GtkWidget        *widget,
 static const char *impl_get_description (RBView *view);
 static GList *impl_get_selection (RBView *view);
 static void rb_group_view_add_list_uri (RBGroupView *view, GList *list);
-static void rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node);
 static void rb_group_view_node_removed_cb (RBNode *node,
 					   RBGroupView *view);
 static GtkWidget *rb_group_view_get_extra_widget (RBView *base_view);
@@ -161,10 +161,6 @@ struct RBGroupViewPrivate
 	gboolean repeat;
 
 	char *status;
-
-	char *artist;
-	char *album;
-	char *song;
 
 	char *file;
 	char *name;
@@ -336,10 +332,11 @@ rb_group_view_init (RBGroupView *view)
 #endif
 	gtk_container_add (GTK_CONTAINER (view), view->priv->vbox);
 
-	view->priv->group = rb_node_new (RB_NODE_TYPE_GENERIC);
+	view->priv->group = rb_node_new ();
 
 	view->priv->songs = rb_node_view_new (view->priv->group,
-				              rb_file ("rb-node-view-songs.xml"));
+				              rb_file ("rb-node-view-songs.xml"),
+					      view->priv->library);
 	g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 			  G_CALLBACK (rb_group_view_node_removed_cb), view);
 
@@ -374,7 +371,8 @@ static void
 rb_group_view_finalize (GObject *object)
 {
 	RBGroupView *view;
-	GList *l, *kids;
+	GPtrArray *kids;
+	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_GROUP_VIEW (object));
@@ -384,18 +382,15 @@ rb_group_view_finalize (GObject *object)
 	g_return_if_fail (view->priv != NULL);
 
 	kids = rb_node_get_children (view->priv->group);
-	for (l = kids; l != NULL; l = g_list_next (l))
+	for (i = kids->len - 1; i >= 0; i--)
 	{
-		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
+		rb_node_remove_child (view->priv->group,
+				      g_ptr_array_index (kids, i));
 	}
-	g_list_free (kids);
+	rb_node_thaw (view->priv->group);
 
 	g_free (view->priv->title);
 	g_free (view->priv->status);
-
-	g_free (view->priv->album);
-	g_free (view->priv->artist);
-	g_free (view->priv->song);
 
 	g_free (view->priv->name);
 	g_free (view->priv->file);
@@ -664,21 +659,7 @@ rb_group_view_get_artist (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		g_free (view->priv->artist);
-		
-		rb_node_get_property (node,
-				      RB_SONG_PROP_ARTIST,
-				      &value);
-		
-		view->priv->artist = g_strdup (g_value_get_string (&value));
-
-		g_value_unset (&value);
-		
-		return (const char *) view->priv->artist;
-	}
+		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST);
 	else
 		return NULL;
 }
@@ -692,21 +673,7 @@ rb_group_view_get_album (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		g_free (view->priv->album);
-		
-		rb_node_get_property (node,
-				      RB_SONG_PROP_ALBUM,
-				      &value);
-		
-		view->priv->album = g_strdup (g_value_get_string (&value));
-
-		g_value_unset (&value);
-		
-		return (const char *) view->priv->album;
-	}
+		return rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM);
 	else
 		return NULL;
 }
@@ -720,21 +687,7 @@ rb_group_view_get_song (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		
-		rb_node_get_property (node,
-				      RB_NODE_PROP_NAME,
-				      &value);
-		
-		g_free (view->priv->song);
-		
-		view->priv->song = g_strdup (g_value_get_string (&value));
-		
-		g_value_unset (&value);
-
-		return (const char *) view->priv->song;
-	}
+		return rb_node_get_property_string (node, RB_NODE_PROP_NAME);
 	else
 		return NULL;
 }
@@ -748,20 +701,7 @@ rb_group_view_get_duration (RBViewPlayer *player)
 	node = rb_node_view_get_playing_node (view->priv->songs);
 
 	if (node != NULL)
-	{
-		GValue value = { 0, };
-		long ret;
-		
-		rb_node_get_property (node,
-			              RB_SONG_PROP_REAL_DURATION,
-				      &value);
-
-		ret = g_value_get_long (&value);
-		
-		g_value_unset (&value);
-		
-		return ret;
-	}
+		return rb_node_get_property_long (node, RB_NODE_SONG_PROP_REAL_DURATION);
 	else
 		return -1;
 }
@@ -827,12 +767,9 @@ rb_group_view_set_playing_node (RBGroupView *view,
 		const char *artist = rb_group_view_get_artist (RB_VIEW_PLAYER (view));
 		const char *song = rb_group_view_get_song (RB_VIEW_PLAYER (view));
 		const char *uri;
-		GValue value = { 0, };
 
-		rb_node_get_property (node,
-				      RB_SONG_PROP_LOCATION,
-				      &value);
-		uri = g_value_get_string (&value);
+		uri = rb_node_get_property_string (node,
+				                    RB_NODE_SONG_PROP_LOCATION);
 
 		g_assert (uri != NULL);
 		
@@ -842,7 +779,6 @@ rb_group_view_set_playing_node (RBGroupView *view,
 			rb_error_dialog (_("Failed to create stream for %s, error was:\n%s"),
 					 uri, error->message);
 			g_error_free (error);
-			g_value_unset (&value);
 			return;
 		}
 		
@@ -854,8 +790,6 @@ rb_group_view_set_playing_node (RBGroupView *view,
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
 		
 		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, TRUE);
-
-		g_value_unset (&value);
 	}
 }
 
@@ -1078,7 +1012,8 @@ rb_group_view_save (RBGroupView *view)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root;
-	GList *l, *kids;
+	GPtrArray *kids;
+	int i;
 	char *dir;
 
 	g_return_if_fail (RB_IS_GROUP_VIEW (view));
@@ -1096,9 +1031,9 @@ rb_group_view_save (RBGroupView *view)
 	xmlDocSetRootElement (doc, root);
 
 	kids = rb_node_get_children (view->priv->group);
-	for (l = kids; l != NULL; l = g_list_next (l))
+	for (i = 0; i < kids->len; i++)
 	{
-		RBNode *node = RB_NODE (l->data);
+		RBNode *node = g_ptr_array_index (kids, i);
 		xmlNodePtr xmlnode;
 		char *tmp;
 
@@ -1108,7 +1043,7 @@ rb_group_view_save (RBGroupView *view)
 		xmlSetProp (xmlnode, "id", tmp);
 		g_free (tmp);
 	}
-	g_list_free (kids);
+	rb_node_thaw (view->priv->group);
 
 	xmlSaveFormatFile (view->priv->file, doc, 1);
 	xmlFreeDoc (doc);
@@ -1160,7 +1095,7 @@ rb_group_view_load (RBGroupView *view)
 		id = atol (tmp);
 		g_free (tmp);
 
-		node = rb_node_from_id (id);
+		node = rb_node_get_from_id (id);
 
 		if (node == NULL)
 			continue;
@@ -1248,7 +1183,7 @@ add_uri (const char *uri,
 {
 	RBNode *node;
 
-	node = rb_node_get_song_by_uri (uri);
+	node = rb_library_get_song_by_location (view->priv->library, uri);
 
 	if (node != NULL)
 	{
@@ -1273,7 +1208,7 @@ dnd_add_handled_cb (RBLibraryAction *action,
 		{
 			RBNode *node;
 
-			node = rb_node_get_song_by_uri (uri);
+			node = rb_library_get_song_by_location (view->priv->library, uri);
 
 			if (node != NULL)
 			{
@@ -1291,6 +1226,13 @@ dnd_add_handled_cb (RBLibraryAction *action,
 	default:
 		break;
 	}
+}
+
+static void
+handle_songs_func (RBNode *node,
+		   RBGroupView *view)
+{
+	rb_group_view_add_node (view, node);
 }
 
 /* rb_group_view_drop_cb: received data from a dnd operation
@@ -1325,10 +1267,13 @@ rb_group_view_drop_cb (GtkWidget *widget,
 		RBNode *node = NULL;
 
 		id = atol (data->data);
-		node = rb_node_from_id (id);
+		node = rb_node_get_from_id (id);
 
 		if (node != NULL)
-			rb_group_view_add_all_nodes (view, node);
+			rb_library_handle_songs (view->priv->library,
+						 node,
+						 (GFunc) handle_songs_func,
+						 view);
 	}
 	else if (info == RB_LIBRARY_DND_URI_LIST)
 	{
@@ -1340,34 +1285,6 @@ rb_group_view_drop_cb (GtkWidget *widget,
 	}
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
-}
-
-/* rb_group_view_add_all_nodes: Add a node and all its children 
- * into the group.
- */
-static void 
-rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node)
-{
-
-	g_return_if_fail (node != NULL);
-
-	if (rb_node_get_node_type (node) == RB_NODE_TYPE_SONG)
-	{
-		rb_group_view_add_node (view, node);
-	}
-	else
-	{
-		GList *kids, *i;
-
-		kids = rb_node_get_children (node);
-		for (i = kids; i != NULL; i = g_list_next (i))
-		{
-			if (rb_node_get_node_type (node) != RB_NODE_TYPE_ALL_SONGS)
-				rb_group_view_add_all_nodes (view, i->data);
-		}
-
-		g_list_free (kids);
-	}
 }
 
 /* rb_group_view_add_list_uri: Insert nodes from a list
@@ -1396,7 +1313,7 @@ rb_group_view_add_list_uri (RBGroupView *view,
 
 		if (uri != NULL)
 		{
-			RBNode *node = rb_node_get_song_by_uri (uri);
+			RBNode *node = rb_library_get_song_by_location (view->priv->library, uri);
 
 			/* add the node, if already present in the library */
 			if (node != NULL)

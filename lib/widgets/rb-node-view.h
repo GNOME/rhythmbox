@@ -26,6 +26,7 @@
 
 #include "rb-tree-model-node.h"
 #include "rb-enums.h"
+#include "rb-library.h"
 
 G_BEGIN_DECLS
 
@@ -58,7 +59,8 @@ typedef struct
 GType       rb_node_view_get_type          (void);
 
 RBNodeView *rb_node_view_new                (RBNode *root,
-					     const char *view_desc_file);
+					     const char *view_desc_file,
+					     RBLibrary *library);
 
 void        rb_node_view_set_filter         (RBNodeView *view,
 				             RBNode *filter_parent,

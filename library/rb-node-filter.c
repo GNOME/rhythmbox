@@ -133,7 +133,7 @@ rb_node_filter_init (RBNodeFilter *filter)
 
 	g_assert (filter->priv != NULL);
 
-	filter->priv->root = rb_node_new (RB_NODE_TYPE_GENERIC);
+	filter->priv->root = rb_node_new ();
 
 	filter->priv->lock = g_mutex_new ();
 	filter->priv->expr_lock = g_mutex_new ();
@@ -170,14 +170,14 @@ rb_node_filter_set_object_property (GObject *object,
 	{
 	case PROP_EXPRESSION:
 		{
-			GList *kids, *l;
+			GPtrArray *kids;
+			int i;
 
-			kids = g_list_copy (rb_node_get_children (filter->priv->root));
-			
-			rb_node_unlock (filter->priv->root);
-			for (l = kids; l != NULL; l = g_list_next (l))
-				rb_node_remove_child (filter->priv->root, l->data);
-			g_list_free (kids);
+			kids = rb_node_get_children (filter->priv->root);
+			for (i = kids->len - 1; i >= 0; i--)
+				rb_node_remove_child (filter->priv->root,
+						      g_ptr_array_index (kids, i));
+			rb_node_thaw (filter->priv->root);
 			filter->priv->done = FALSE;
 
 			/* set the new expression to search */
@@ -284,9 +284,9 @@ thread_main (RBNodeFilterPrivate *priv)
 	while (TRUE)
 	{
 		RBNode *node;
-		GList *kids, *l;
+		GPtrArray *kids;
 		char *expression = NULL;
-		int results = 0;
+		int results = 0, i;
 		RBProfiler *p;
 
 		g_mutex_lock (priv->lock);
@@ -319,16 +319,14 @@ thread_main (RBNodeFilterPrivate *priv)
 
 		/* start finding nodes */
 		node = rb_library_get_all_songs (priv->library);
-		kids = g_list_copy (rb_node_get_children (node));
-		rb_node_unlock (node);
+		kids = rb_node_get_children (node);
 
 		p = rb_profiler_new ("Searching ...");
-		for (l = kids; l != NULL; l = g_list_next (l))
+		for (i = 0; i < kids->len; i++)
 		{
 			char *title, *artist, *album;
 			gboolean found = FALSE;
 			gboolean aborted = FALSE;
-			GValue value = { 0, };
 
 			/* verify if search has been aborted */
 			g_mutex_lock (priv->expr_lock);
@@ -339,41 +337,26 @@ thread_main (RBNodeFilterPrivate *priv)
 				break;
 
 			/* check the title - artist - album */
-			node = RB_NODE (l->data);
+			node = g_ptr_array_index (kids, i);
 			
-			rb_node_get_property (node,
-					      RB_NODE_PROP_NAME,
-					      &value);
-
-			title = g_utf8_casefold (g_value_get_string (&value), -1);
+			title = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_PROP_NAME), -1);
 			if (strstr (title, expression) != NULL)
 				found = TRUE;
-			g_value_unset (&value);
 			g_free (title);
 
 			if (found == FALSE)
 			{
-				rb_node_get_property (node,
-						      RB_SONG_PROP_ARTIST,
-						      &value);
-				
-				artist = g_utf8_casefold (g_value_get_string (&value), -1);
+				artist = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_SONG_PROP_ARTIST), -1);
 				if (strstr (artist, expression) != NULL)
 					found = TRUE;
-				g_value_unset (&value);
 				g_free (artist);
 			}
 
 			if (found == FALSE)
 			{
-				rb_node_get_property (node,
-						      RB_SONG_PROP_ALBUM,
-						      &value);
-
-				album = g_utf8_casefold (g_value_get_string (&value), -1);
+				album = g_utf8_casefold (rb_node_get_property_string (node, RB_NODE_SONG_PROP_ALBUM), -1);
 				if (strstr (album, expression) != NULL)
 					found = TRUE;
-				g_value_unset (&value);
 				g_free (album);
 			}
 
@@ -383,7 +366,8 @@ thread_main (RBNodeFilterPrivate *priv)
 				results++;
 			}
 		}
-		g_list_free (kids);
+
+		rb_node_thaw (node);
 
 		g_free (expression);
 

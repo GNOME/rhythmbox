@@ -83,9 +83,9 @@ static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
 static int rb_node_view_get_n_rows (RBNodeView *view);
-static void root_child_destroyed_cb (RBNode *root,
-			             RBNode *child,
-			             RBNodeView *view);
+static void root_child_removed_cb (RBNode *root,
+			           RBNode *child,
+			           RBNodeView *view);
 static void tree_view_size_allocate_cb (GtkWidget *widget,
 			                GtkAllocation *allocation);
 static void child_deleted_cb (RBNode *node,
@@ -120,6 +120,8 @@ struct RBNodeViewPrivate
 
 	GList *current_random;
 	GList *random_nodes;
+
+	RBLibrary *library;
 };
 
 enum
@@ -138,7 +140,8 @@ enum
 	PROP_FILTER_PARENT,
 	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
-	PROP_VIEW_DESC_FILE
+	PROP_VIEW_DESC_FILE,
+	PROP_LIBRARY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -219,6 +222,13 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							      "View description",
 							      "View description",
 							      NULL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY,
+					 g_param_spec_object ("library",
+							      "Library object",
+							      "Library object",
+							      RB_TYPE_LIBRARY,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_node_view_signals[NODE_ACTIVATED] =
@@ -319,7 +329,7 @@ rb_node_view_set_property (GObject *object,
 			rb_node_view_construct (view);
 
 			g_signal_connect_object (G_OBJECT (view->priv->root),
-						 "child_destroyed",
+						 "child_removed",
 						 G_CALLBACK (child_deleted_cb),
 						 G_OBJECT (view),
 						 0);
@@ -352,6 +362,9 @@ rb_node_view_set_property (GObject *object,
 	case PROP_VIEW_DESC_FILE:
 		g_free (view->priv->view_desc_file);
 		view->priv->view_desc_file = g_strdup (g_value_get_string (value));
+		break;
+	case PROP_LIBRARY:
+		view->priv->library = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -399,6 +412,9 @@ rb_node_view_get_property (GObject *object,
 	case PROP_VIEW_DESC_FILE:
 		g_value_set_string (value, view->priv->view_desc_file);
 		break;
+	case PROP_LIBRARY:
+		g_value_set_object (value, view->priv->library);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -407,7 +423,8 @@ rb_node_view_get_property (GObject *object,
 
 RBNodeView *
 rb_node_view_new (RBNode *root,
-		  const char *view_desc_file)
+		  const char *view_desc_file,
+		  RBLibrary *library)
 {
 	RBNodeView *view;
 
@@ -415,6 +432,7 @@ rb_node_view_new (RBNode *root,
 	g_assert (g_file_test (view_desc_file, G_FILE_TEST_EXISTS) == TRUE);
 
 	view = RB_NODE_VIEW (g_object_new (RB_TYPE_NODE_VIEW,
+					   "library", library,
 					   "hadjustment", NULL,
 					   "vadjustment", NULL,
 					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
@@ -459,12 +477,13 @@ rb_node_view_construct (RBNodeView *view)
 	char *tmp;
 
 	g_signal_connect_object (G_OBJECT (view->priv->root),
-			         "child_destroyed",
-			         G_CALLBACK (root_child_destroyed_cb),
+			         "child_removed",
+			         G_CALLBACK (root_child_removed_cb),
 				 view,
 				 0);
 
-	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
+	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root,
+							view->priv->library);
 	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
 							     NULL);
 	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
@@ -1129,39 +1148,31 @@ rb_node_view_get_status (RBNodeView *view)
 
 	if (parent != NULL)
 	{
-		GList *l, *kids;
+		GPtrArray *kids;
+		int i;
 
 		kids = rb_node_get_children (parent);
 
-		for (l = kids; l != NULL; l = g_list_next (l))
+		for (i = 0; i < kids->len; i++)
 		{
 			RBNode *node;
-			GValue value = { 0, };
-			
-			if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
-				continue;
-			if (artist != NULL &&
-			    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
-				continue;
 
-			node = RB_NODE (l->data);
+			node = g_ptr_array_index (kids, i);
+			
+			if (artist != NULL &&
+			    rb_node_song_has_artist (RB_NODE_SONG (node), artist, view->priv->library) == FALSE)
+				continue;
 
 			n_songs++;
 
-			rb_node_get_property (node,
-					      RB_SONG_PROP_REAL_DURATION,
-					      &value);
-			n_seconds += g_value_get_long (&value);
-			g_value_unset (&value);
+			n_seconds += rb_node_get_property_long (node,
+								RB_NODE_SONG_PROP_REAL_DURATION);
 
-			rb_node_get_property (node,
-					      RB_SONG_PROP_FILE_SIZE,
-					      &value);
-			n_bytes += g_value_get_long (&value);
-			g_value_unset (&value);
+			n_bytes += rb_node_get_property_long (node,
+							      RB_NODE_SONG_PROP_FILE_SIZE);
 		}
 		
-		rb_node_unlock (parent);
+		rb_node_thaw (parent);
 	}
 
 	size = gnome_vfs_format_file_size_for_display (n_bytes);
@@ -1297,8 +1308,8 @@ static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
 	RBNode *parent = NULL, *artist = NULL;
-	GList *l, *kids;
-	int n_rows = 0;
+	GPtrArray *kids;
+	int n_rows = 0, i;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
 				       &parent, &artist);
@@ -1308,26 +1319,24 @@ rb_node_view_get_n_rows (RBNodeView *view)
 
 	kids = rb_node_get_children (parent);
 	
-	for (l = kids; l != NULL; l = g_list_next (l))
+	for (i = 0; i < kids->len; i++)
 	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == FALSE)
-			continue;
 		if (artist != NULL &&
-		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
+		    rb_node_song_has_artist (g_ptr_array_index (kids, i), artist, view->priv->library) == FALSE)
 			continue;
 
 		n_rows++;
 	}
 
-	rb_node_unlock (parent);
+	rb_node_thaw (parent);
 
 	return n_rows;
 }
 
 static void
-root_child_destroyed_cb (RBNode *root,
-			 RBNode *child,
-			 RBNodeView *view)
+root_child_removed_cb (RBNode *root,
+		       RBNode *child,
+		       RBNodeView *view)
 {
 	RBNode *node;
 

@@ -24,6 +24,7 @@
 #include <gtk/gtktreemodel.h>
 
 #include "rb-node.h"
+#include "rb-library.h"
 
 G_BEGIN_DECLS
 
@@ -70,7 +71,8 @@ typedef struct
 
 GType            rb_tree_model_node_get_type         (void);
 
-RBTreeModelNode *rb_tree_model_node_new              (RBNode *root);
+RBTreeModelNode *rb_tree_model_node_new              (RBNode *root,
+						      RBLibrary *library);
 
 RBNode          *rb_tree_model_node_node_from_iter   (RBTreeModelNode *model,
 						      GtkTreeIter *iter);

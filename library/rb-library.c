@@ -56,6 +56,11 @@ struct RBLibraryPrivate
 	RBNode *all_albums;
 	RBNode *all_songs;
 
+	GHashTable *genre_hash;
+	GHashTable *artist_hash;
+	GHashTable *album_hash;
+	GHashTable *song_hash;
+
 	char *xml_file;
 };
 
@@ -111,13 +116,26 @@ rb_library_class_init (RBLibraryClass *klass)
 static void
 rb_library_init (RBLibrary *library)
 {
+	rb_node_system_init ();
+
+	/* ensure these types have been registered: */
+	rb_node_get_type ();
+	rb_node_song_get_type ();
+	
 	library->priv = g_new0 (RBLibraryPrivate, 1);
 
-	rb_node_system_init ();
-	
 	library->priv->xml_file = g_build_filename (rb_dot_dir (),
 						    "library.xml",
 						    NULL);
+
+	library->priv->genre_hash = g_hash_table_new (g_str_hash,
+						      g_str_equal);
+	library->priv->artist_hash = g_hash_table_new (g_str_hash,
+						       g_str_equal);
+	library->priv->album_hash = g_hash_table_new (g_str_hash,
+						      g_str_equal);
+	library->priv->song_hash = g_hash_table_new (g_str_hash,
+						     g_str_equal);
 
 	rb_library_create_skels (library);
 
@@ -131,7 +149,8 @@ static void
 rb_library_finalize (GObject *object)
 {
 	RBLibrary *library;
-	GList *children, *l;
+	GPtrArray *children;
+	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_LIBRARY (object));
@@ -149,21 +168,28 @@ rb_library_finalize (GObject *object)
 
 	rb_library_save (library);
 
-	rb_node_system_shutdown ();
-
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
-	children = g_list_copy (rb_node_get_children (library->priv->all_songs));
-	rb_node_unlock (library->priv->all_songs);
-	rb_node_unref (library->priv->all_songs);
-	for (l = children; l != NULL; l = g_list_next (l))
-	{
-		rb_node_unref (RB_NODE (l->data));
+	children = rb_node_get_children (library->priv->all_songs);
+	rb_node_thaw (library->priv->all_songs);
+	for (i = children->len - 1; i >= 0; i--) {
+		rb_node_unref (g_ptr_array_index (children, i));
 	}
-	g_list_free (children);
+	
+	rb_node_unref (library->priv->all_genres);
+	rb_node_unref (library->priv->all_artists);
+	rb_node_unref (library->priv->all_albums);
+	rb_node_unref (library->priv->all_songs);
+
+	g_hash_table_destroy (library->priv->genre_hash);
+	g_hash_table_destroy (library->priv->artist_hash);
+	g_hash_table_destroy (library->priv->album_hash);
+	g_hash_table_destroy (library->priv->song_hash);
 
 	g_free (library->priv->xml_file);
 
 	g_free (library->priv);
+
+	rb_node_system_shutdown ();
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -232,21 +258,139 @@ rb_library_get_all_songs (RBLibrary *library)
 }
 
 static void
+genre_added_cb (RBNode *node,
+		RBNode *child,
+		RBLibrary *library)
+{
+	g_hash_table_insert (library->priv->genre_hash,
+			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
+			     child);
+}
+
+static void
+artist_added_cb (RBNode *node,
+	 	 RBNode *child,
+		 RBLibrary *library)
+{
+	g_hash_table_insert (library->priv->artist_hash,
+			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
+			     child);
+}
+
+static void
+album_added_cb (RBNode *node,
+		RBNode *child,
+		RBLibrary *library)
+{
+	g_hash_table_insert (library->priv->album_hash,
+			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
+			     child);
+}
+
+static void
+song_added_cb (RBNode *node,
+	       RBNode *child,
+	       RBLibrary *library)
+{
+	g_hash_table_insert (library->priv->song_hash,
+			     (char *) rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION),
+			     child);
+}
+
+static void
+genre_removed_cb (RBNode *node,
+		  RBNode *child,
+		  RBLibrary *library)
+{
+	g_hash_table_remove (library->priv->genre_hash,
+			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+}
+
+static void
+artist_removed_cb (RBNode *node,
+		   RBNode *child,
+		   RBLibrary *library)
+{
+	g_hash_table_remove (library->priv->artist_hash,
+			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+}
+
+static void
+album_removed_cb (RBNode *node,
+		  RBNode *child,
+		  RBLibrary *library)
+{
+	g_hash_table_remove (library->priv->album_hash,
+			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
+}
+
+static void
+song_removed_cb (RBNode *node,
+		 RBNode *child,
+		 RBLibrary *library)
+{
+	g_hash_table_remove (library->priv->song_hash,
+			     rb_node_get_property_string (child, RB_NODE_SONG_PROP_LOCATION));
+}
+
+static void
 rb_library_create_skels (RBLibrary *library)
 {
 	/* create a boostrap setup */
 	GValue value = { 0, };
 
-	library->priv->all_genres  = rb_node_new (RB_NODE_TYPE_ALL_GENRES);
-	library->priv->all_artists = rb_node_new (RB_NODE_TYPE_ALL_ARTISTS);
-	library->priv->all_albums  = rb_node_new (RB_NODE_TYPE_ALL_ALBUMS);
-	library->priv->all_songs   = rb_node_new (RB_NODE_TYPE_ALL_SONGS);
+	library->priv->all_genres  = rb_node_new ();
+	library->priv->all_artists = rb_node_new ();
+	library->priv->all_albums  = rb_node_new ();
+	library->priv->all_songs   = rb_node_new ();
 
-	rb_node_set_handled (library->priv->all_genres);
-	rb_node_set_handled (library->priv->all_artists);
-	rb_node_set_handled (library->priv->all_albums);
-	rb_node_set_handled (library->priv->all_songs);
-	
+	g_signal_connect_object (G_OBJECT (library->priv->all_genres),
+				 "child_added",
+				 G_CALLBACK (genre_added_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_artists),
+				 "child_added",
+				 G_CALLBACK (artist_added_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_albums),
+				 "child_added",
+				 G_CALLBACK (album_added_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_songs),
+				 "child_added",
+				 G_CALLBACK (song_added_cb),
+				 G_OBJECT (library),
+				 0);
+
+	g_signal_connect_object (G_OBJECT (library->priv->all_genres),
+				 "child_removed",
+				 G_CALLBACK (genre_removed_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_artists),
+				 "child_removed",
+				 G_CALLBACK (artist_removed_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_albums),
+				 "child_removed",
+				 G_CALLBACK (album_removed_cb),
+				 G_OBJECT (library),
+				 0);
+	g_signal_connect_object (G_OBJECT (library->priv->all_songs),
+				 "child_removed",
+				 G_CALLBACK (song_removed_cb),
+				 G_OBJECT (library),
+				 0);
+
+	rb_node_ref (library->priv->all_genres);
+	rb_node_ref (library->priv->all_artists);
+	rb_node_ref (library->priv->all_albums);
+	rb_node_ref (library->priv->all_songs);
+
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, _("All"));
 	rb_node_set_property (library->priv->all_genres,
@@ -270,10 +414,6 @@ rb_library_create_skels (RBLibrary *library)
 	rb_node_add_child (library->priv->all_albums,
 			   library->priv->all_songs);
 	
-	rb_debug ("Gonna flush");
-
-	rb_node_system_flush ();
-
 	rb_debug ("Done creating skels");
 }
 
@@ -282,10 +422,9 @@ rb_library_save (RBLibrary *library)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root;
-	GList *children, *l;
+	GPtrArray *children;
+	int i;
 
-	rb_node_system_flush ();
-	
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
@@ -295,35 +434,51 @@ rb_library_save (RBLibrary *library)
 	xmlDocSetRootElement (doc, root);
 
 	children = rb_node_get_children (library->priv->all_genres);
-	for (l = children; l != NULL; l = g_list_next (l))
+	for (i = 0; i < children->len; i++)
 	{
-		if (l->data != library->priv->all_artists)
-			rb_node_save_to_xml (RB_NODE (l->data), root);
+		RBNode *kid;
+
+		kid = g_ptr_array_index (children, i);
+		
+		if (kid != library->priv->all_artists)
+			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_unlock (library->priv->all_genres);
+	rb_node_thaw (library->priv->all_genres);
 
 	children = rb_node_get_children (library->priv->all_artists);
-	for (l = children; l != NULL; l = g_list_next (l))
+	for (i = 0; i < children->len; i++)
 	{
-		if (l->data != library->priv->all_albums)
-			rb_node_save_to_xml (RB_NODE (l->data), root);
+		RBNode *kid;
+
+		kid = g_ptr_array_index (children, i);
+		
+		if (kid != library->priv->all_albums)
+			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_unlock (library->priv->all_artists);
+	rb_node_thaw (library->priv->all_artists);
 
 	children = rb_node_get_children (library->priv->all_albums);
-	for (l = children; l != NULL; l = g_list_next (l))
+	for (i = 0; i < children->len; i++)
 	{
-		if (l->data != library->priv->all_songs)
-			rb_node_save_to_xml (RB_NODE (l->data), root);
+		RBNode *kid;
+
+		kid = g_ptr_array_index (children, i);
+
+		if (kid != library->priv->all_songs)
+			rb_node_save_to_xml (kid, root);
 	}
-	rb_node_unlock (library->priv->all_albums);
+	rb_node_thaw (library->priv->all_albums);
 
 	children = rb_node_get_children (library->priv->all_songs);
-	for (l = children; l != NULL; l = g_list_next (l))
+	for (i = 0; i < children->len; i++)
 	{
-		rb_node_save_to_xml (RB_NODE (l->data), root);
+		RBNode *kid;
+
+		kid = g_ptr_array_index (children, i);
+
+		rb_node_save_to_xml (kid, root);
 	}
-	rb_node_unlock (library->priv->all_songs);
+	rb_node_thaw (library->priv->all_songs);
 
 	xmlSaveFormatFileEnc (library->priv->xml_file, doc, "UTF-8", 1);
 }
@@ -374,4 +529,68 @@ rb_library_finished_preloading (RBLibrary *library)
 			 (GSourceFunc) rb_library_finished_preloading_handler,
 			 library,
 			 NULL);
+}
+
+RBNode *
+rb_library_get_genre_by_name (RBLibrary *library,
+			      const char *genre)
+{
+	return g_hash_table_lookup (library->priv->genre_hash,
+				    genre);
+}
+
+RBNode *
+rb_library_get_artist_by_name (RBLibrary *library,
+			       const char *artist)
+{
+	return g_hash_table_lookup (library->priv->artist_hash,
+				    artist);
+}
+
+RBNode *
+rb_library_get_album_by_name (RBLibrary *library,
+			      const char *album)
+{
+	return g_hash_table_lookup (library->priv->album_hash,
+				    album);
+}
+
+RBNode *
+rb_library_get_song_by_location (RBLibrary *library,
+			         const char *location)
+{
+	return g_hash_table_lookup (library->priv->song_hash,
+				    location);
+}
+
+void
+rb_library_handle_songs (RBLibrary *library,
+			 RBNode *node,
+			 GFunc func,
+			 gpointer user_data)
+{
+	if (G_OBJECT_TYPE (node) == RB_TYPE_NODE_SONG)
+	{
+		(*func) (node, user_data);
+	}
+	else
+	{
+		GPtrArray *kids;
+		int i;
+
+		kids = rb_node_get_children (node);
+		for (i = 0; i < kids->len; i++)
+		{
+			RBNode *n;
+
+			n = g_ptr_array_index (kids, i);
+			
+			if ((rb_library_get_all_artists (library) != n) &&
+			    (rb_library_get_all_albums (library) != n) &&
+			    (rb_library_get_all_songs (library) != n))
+				rb_library_handle_songs (library, node, func, user_data);
+		}
+
+		rb_node_thaw (node);
+	}
 }
