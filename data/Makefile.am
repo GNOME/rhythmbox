@@ -20,6 +20,11 @@ schema_DATA = rhythmbox.schemas
 applicationsdir = $(datadir)/application-registry
 applications_DATA = rhythmbox.applications
 
+iradio-initial.xml:
+
+iradio_DATA = iradio-initial.xml
+iradiodir = $(datadir)/rhythmbox
+
 install-schemas: $(schema_DATA)
 	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA)
 
@@ -33,4 +38,5 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
 	     $(applications_DATA)   \
-	     $(schema_DATA)
+	     $(schema_DATA)	    \
+	     $(iradio_DATA)
