@@ -344,6 +344,8 @@ rb_sidebar_remove (RBSidebar *sidebar,
 	g_return_if_fail (RB_IS_SIDEBAR (sidebar));
 	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
 
+	gtk_widget_destroy (GTK_WIDGET (button));
+
 	l = g_list_find (sidebar->priv->buttons, button);		
 	next = g_list_next (l);
 	if (next == NULL)
@@ -352,15 +354,13 @@ rb_sidebar_remove (RBSidebar *sidebar,
 	{
 		if (GTK_TOGGLE_BUTTON (button)->active == TRUE)
 			gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (next->data), TRUE);
+		sidebar->priv->radiogroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON (next->data));
 	}
-
-	sidebar->priv->radiogroup = g_slist_remove (sidebar->priv->radiogroup,
-						    button);
+	else
+		sidebar->priv->radiogroup = NULL;
 
 	sidebar->priv->buttons = g_list_remove (sidebar->priv->buttons,
 						button);
-
-	gtk_widget_destroy (GTK_WIDGET (button));
 }
 
 void
