@@ -1,3 +1,162 @@
+2002-12-10  Colin Walters  <walters@debian.org>
+
+	* Makefile.am (SUBDIRS): Add iradio.
+	
+	* configure.in: Ditto.
+	
+	* data/Makefile.am: Add iradio-inital.xml.
+
+	* data/iradio-initial.xml: New file.
+	
+	* data/rhythmbox.schemas: Add ui/iradio_columns_setup and
+	state/iradio/show_browser.
+	
+	* data/art/Makefile.am (art_DATA): Add rhythmbox-iradio.png.
+	
+	* data/art/rhythmbox-iradio.png: New file.
+	
+	* data/glade/station-new.glade:
+	* data/glade/station-properties.glade: New files.
+
+	* data/node-views/Makefile.am (nodeviews_DATA): Add
+	rb-node-view-iradio-genres.xml, rb-node-view-iradio-stations.xml.
+	
+	* data/node-views/rb-node-view-iradio-genres.xml:
+	* data/node-views/rb-node-view-iradio-stations.xml: New files.
+
+	* data/ui/Makefile.am (uixml_in_files): Add
+	rhythmbox-iradio-view.xml.in.
+
+	* data/ui/rhythmbox-iradio-view.xml.in: New file.
+
+	* lib/Makefile.am (librb_la_SOURCES): Add rb-glist-wrapper.c and
+	rb-glist-wrapper.h.
+
+	* lib/rb-glist-wrapper.c, lib/rb-glist-wrapper.h: New files.
+
+	* lib/rb-stock-icons.c (rb_stock_icons_init): Use it. 
+
+	* lib/rb-stock-icons.h (RB_STOCK_IRADIO): New.
+	
+	* lib/rb-string-helpers.c (rb_unicodify): New function.
+
+	* lib/rb-string-helpers.h (rb_unicodify): Prototype it.
+	
+	* lib/rb-windows-ini-file.c (rb_windows_ini_file_unicodify): Deleted.
+	(rb_windows_ini_file_parse_from_stream): Use rb_unicodify.
+
+	* lib/view/rb-view-player.c (rb_view_player_can_pause): New
+	method.  THE STOP FACTION WINS AGAIN!!!!
+	(rb_view_player_have_artist_album, rb_view_player_have_url,
+	rb_view_player_get_url): New methods.
+
+	* lib/view/rb-view-player.h: (rb_view_player_can_pause,
+	rb_view_player_have_artist_album, rb_view_player_have_url,
+	rb_view_player_get_url): Prototype.
+
+	* lib/widgets/Makefile.am (INCLUDES): Include iradio.
+
+	* lib/widgets/rb-player.c (rb_player_set_show_url): New function.
+	(struct RBPlayerPrivate): Add urlframe, urlline, urlline_shown and
+	url.
+	(rb_player_init): Initialize them.
+	(rb_player_sync): Display URL if the view has one; also display
+	artist/album only if the view has them.
+
+	* lib/widgets/rb-node-view.c: Include rb-node-station.h.
+	(rb_node_view_construct): Print a warning on unknown columns.
+	
+	* lib/widgets/rb-tree-model-node.c
+	(rb_tree_model_node_column_get_type): New column
+	RB_TREE_MODEL_NODE_COL_QUALITY.
+
+	* lib/widgets/rb-tree-model-node.h (enum): Declare it.
+	
+	* library/rb-library.c (rb_library_init): Ensure the
+	RBGListWrapper type is registered.
+
+	* library/rb-node.c (rb_node_get_property_pointer,
+	rb_node_get_property_object): New functions.
+	(rb_node_save_to_xml): Handle serializing GObject/RBGListWrapper
+	objects.
+	(rb_node_new_from_xml): Handle deserializing them.
+
+	* shell/Makefile.am (rhythmbox_LDADD): Build iradio/libiradio.la.
+	(INCLUDES): Add iradio.
+
+	* shell/RhythmboxShell.idl (RhythmboxShell): New method
+	handleFile.
+
+	* shell/main.c (rb_handle_cmdline): Use it instead of
+	addToLibrary.
+
+	* shell/rb-shell-player.c (rb_shell_player_update_play_button):
+	Only display pause button if the view can pause.
+
+	* shell/rb-shell.c (rb_shell_corba_handle_file,
+	rb_shell_grok_playlist_file, rb_shell_handle_playlist_entry): New
+	functions.
+	(struct RBShellPrivate): Add iradio_backend member.
+	(rb_shell_finalize): Unref it.
+	(rb_shell_class_init): Set up the handleFile method.
+	(rb_shell_construct): Set up the iradio backend and the iradio
+	view.
+
+	* views/Makefile.am (libviews_la_SOURCES): Add rb-iradio-view.c
+	and rb-iradio-view.h.
+	(INCLUDES): Add iradio dir.
+
+	* views/rb-library-view.c (rb_library_view_can_pause,
+	rb_library_view_have_artist_album, rb_library_view_have_url,
+	rb_library_view_get_url): New functions.
+
+	* views/rb-iradio-view.c:
+	* views/rb-iradio-view.h: New files. 
+
+	* iradio/Makefile.am:
+	* iradio/rb-iradio-backend.c:
+	* iradio/rb-iradio-backend.h:
+	* iradio/rb-iradio-station.c:
+	* iradio/rb-iradio-station.h:
+	* iradio/rb-iradio-yp-iterator.c:
+	* iradio/rb-iradio-yp-iterator.h:
+	* iradio/rb-iradio-yp-xmlfile.c:
+	* iradio/rb-iradio-yp-xmlfile.h:
+	* iradio/rb-new-station-dialog.c:
+	* iradio/rb-new-station-dialog.h:
+	* iradio/rb-node-station.c:
+	* iradio/rb-node-station.h:
+	* iradio/rb-station-properties-dialog.c:
+	* iradio/rb-station-properties-dialog.h: New files.
+
+	The following changes are part of the general move from NODE_SONG
+	properties to just NODE properties.
+
+	* library/rb-node-song.c (rb_node_song_update_play_statistics):
+	Moved to rb-node.c.
+	* library/rb-node-song.h (rb_node_song_update_play_statistics, enum):
+	Moved to rb-node.h.
+	* library/rb-node.c (rb_node_song_update_play_statistics):
+	Moved from rb-node-song.c.
+	* library/rb-node.h (rb_node_song_update_play_statistics, enum):
+	Moved from rb-node-song.h.
+
+	* lib/widgets/rb-node-view.c:
+	* lib/widgets/rb-song-info.c:
+	* lib/widgets/rb-tree-model-node.c:
+	* lib/widgets/rb-tree-model-node.h:
+	* lib/widgets/rb-tree-model-sort.c:
+	* library/rb-library.c:
+	* library/rb-node-song.c:
+	* library/rb-node-song.h:
+	* library/rb-node.c:
+	* library/rb-node.h:
+	* views/rb-audiocd-view.c:
+	* views/rb-group-view.c:
+	* views/rb-library-view.c:
+	* views/rb-song-info-helpers.c:
+	Basically s/RB_NODE_SONG_PROP/RB_NODE_PROP/.
+	
 2002-12-03  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-link.c (rb_link_set_text): Format with a width of
