@@ -71,6 +71,7 @@ static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
+static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 
 static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
 static void rb_group_source_drop_cb (GtkWidget *widget,
@@ -187,6 +188,7 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 	source_class->impl_get_artist = impl_get_artist;
 	source_class->impl_get_album = impl_get_album;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_receive_drag = impl_receive_drag;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -781,6 +783,37 @@ handle_songs_func (RBNode *node,
 	rb_group_source_add_node (source, node);
 }
 
+static gboolean
+impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+{
+	GList *list;
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) {
+		long id;
+		RBNode *node = NULL;
+		
+		id = atol (data->data);
+		node = rb_node_db_get_node_from_id (rb_library_get_node_db (source->priv->library),
+						    id);
+
+		if (node != NULL)
+			rb_library_handle_songs (source->priv->library,
+						 node,
+						 (GFunc) handle_songs_func,
+						 source);
+		else
+			return FALSE;
+	} else {
+		list = gnome_vfs_uri_list_parse (data->data);
+
+		if (list != NULL)
+			rb_group_source_add_list_uri (source, list);
+		else
+			return FALSE;
+	}
+	return TRUE;
+}
+
 /* rb_group_source_drop_cb: received data from a dnd operation
  * This can be either a list of uris (from nautilus) or 
  * a list of node ids (from the node-view).
@@ -796,7 +829,6 @@ rb_group_source_drop_cb (GtkWidget *widget,
 		       gpointer user_data)
 {
 	RBGroupSource *source = RB_GROUP_SOURCE (user_data);
-	GList *list;
 	GtkTargetList *tlist;
 	GdkAtom target;
 
@@ -807,29 +839,7 @@ rb_group_source_drop_cb (GtkWidget *widget,
 	if (target == GDK_NONE)
 		return;
 
-	if (info == RB_LIBRARY_DND_NODE_ID)
-	{
-		long id;
-		RBNode *node = NULL;
-
-		id = atol (data->data);
-		node = rb_node_db_get_node_from_id (rb_library_get_node_db (source->priv->library),
-						    id);
-
-		if (node != NULL)
-			rb_library_handle_songs (source->priv->library,
-						 node,
-						 (GFunc) handle_songs_func,
-						 source);
-	}
-	else if (info == RB_LIBRARY_DND_URI_LIST)
-	{
-		list = gnome_vfs_uri_list_parse (data->data);
-		if (list != NULL)
-		{
-			rb_group_source_add_list_uri (source, list);
-		}
-	}
+	impl_receive_drag (RB_SOURCE (source), data);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }

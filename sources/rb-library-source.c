@@ -106,6 +106,7 @@ static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
+static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 
 /* Misc */
 static const char *impl_get_status_fast (RBLibrarySource *source);
@@ -238,6 +239,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_get_artist = impl_get_artist;
 	source_class->impl_get_album = impl_get_album;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
+	source_class->impl_receive_drag = impl_receive_drag;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -968,6 +970,40 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 
 }
 
+static gboolean
+impl_receive_drag (RBSource *asource, GtkSelectionData *data)
+{
+	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
+	GList *list, *uri_list, *i;
+
+	list = gnome_vfs_uri_list_parse (data->data);
+
+	if (list == NULL)
+		return FALSE;
+
+	uri_list = NULL;
+
+	for (i = list; i != NULL; i = g_list_next (i))
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+
+	gnome_vfs_uri_list_free (list);
+
+	if (uri_list == NULL)
+		return FALSE;
+	
+	for (i = uri_list; i != NULL; i = i->next) {
+		char *uri = i->data;
+
+		if (uri != NULL)
+			rb_library_add_uri (source->priv->library, uri);
+
+		g_free (uri);
+	}
+
+	g_list_free (uri_list);
+	return TRUE;
+}
+
 static void
 rb_library_source_drop_cb (GtkWidget *widget,
 			 GdkDragContext *context,
@@ -979,7 +1015,6 @@ rb_library_source_drop_cb (GtkWidget *widget,
 			 gpointer user_data)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (user_data);
-	GList *list, *uri_list, *i;
 	GtkTargetList *tlist;
 	gboolean ret;
 
@@ -990,41 +1025,10 @@ rb_library_source_drop_cb (GtkWidget *widget,
 	if (ret == FALSE)
 		return;
 
-	list = gnome_vfs_uri_list_parse (data->data);
-
-	if (list == NULL)
-	{
+	if (!impl_receive_drag (RB_SOURCE (source), data)) {
 		gtk_drag_finish (context, FALSE, FALSE, time);
 		return;
 	}
-
-	uri_list = NULL;
-
-	for (i = list; i != NULL; i = g_list_next (i))
-	{
-		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-	}
-	gnome_vfs_uri_list_free (list);
-
-	if (uri_list == NULL)
-	{
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
-	}
-
-	for (i = uri_list; i != NULL; i = i->next)
-	{
-		char *uri = i->data;
-
-		if (uri != NULL)
-		{
-			rb_library_add_uri (source->priv->library, uri);
-		}
-
-		g_free (uri);
-	}
-
-	g_list_free (uri_list);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }

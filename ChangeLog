@@ -1,3 +1,31 @@
+2003-07-29  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-sourcelist-model.c:
+	(rb_sourcelist_model_get_type), (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_drag_dest_init), (rb_sourcelist_model_init),
+	(rb_sourcelist_model_finalize), (rb_sourcelist_model_new),
+	(rb_sourcelist_model_drag_data_received),
+	(rb_sourcelist_model_row_drop_possible):
+	* lib/widgets/rb-sourcelist-model.h:
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_init), (rb_sourcelist_append),
+	(rb_sourcelist_select), (rb_sourcelist_selection_changed_cb),
+	(drop_received_cb):
+	* lib/widgets/rb-sourcelist.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(sourcelist_drag_received_cb), (setup_tray_icon):
+	* sources/rb-group-source.c: (rb_group_source_class_init),
+	(impl_receive_drag), (rb_group_source_drop_cb):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(impl_receive_drag), (rb_library_source_drop_cb):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_buffering_done), (default_receive_drag),
+	(rb_source_receive_drag):
+	* sources/rb-source.h:
+
+	Drag and drop is here.
+
 2003-07-28  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell-clipboard.c: (rb_shell_clipboard_sync):

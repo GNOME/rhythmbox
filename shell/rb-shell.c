@@ -194,12 +194,9 @@ static void paned_changed_cb (GConfClient *client,
 /* 				gboolean available, */
 /* 				gpointer data); */
 #endif
-static void sourcelist_drag_finished_cb (RBSourceList *sourcelist,
-					 GdkDragContext *context,
-					 int x, int y,
+static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
+					 RBSource *source,
 					 GtkSelectionData *data,
-					 guint info,
-					 guint time,
 					 RBShell *shell);
 static void dnd_add_handled_cb (RBLibraryAction *action,
 		                RBGroupSource *source);
@@ -649,6 +646,9 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->paned = gtk_hpaned_new ();
 
 	shell->priv->sourcelist = rb_sourcelist_new ();
+	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "drop_received",
+			  G_CALLBACK (sourcelist_drag_received_cb), shell);
+	
 	shell->priv->statusbar = rb_statusbar_new ();
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
@@ -1672,58 +1672,51 @@ handle_songs_func (RBNode *node,
 }
 
 static void
-sourcelist_drag_finished_cb (RBSourceList *sourcelist,
-			     GdkDragContext *context,
-			     int x, int y,
+sourcelist_drag_received_cb (RBSourceList *sourcelist,
+			     RBSource *source,
 			     GtkSelectionData *data,
-			     guint info,
-			     guint time,
 			     RBShell *shell)
 {
-	switch (info)
-	{
-	case RB_LIBRARY_DND_NODE_ID:
-		{
-			long id;
-			RBNode *node;
-			RBGroupSource *group;
-
-			id = atol (data->data);
-			/* FIXME */
-                        /* node = rb_node_db_get_node_from_id (library->priv->db, id); */
-			node = NULL;
-
-			if (node == NULL)
-				break;
-			
-			group = RB_GROUP_SOURCE (rb_group_source_new (shell->priv->container,
-								      shell->priv->library));
-					
-			rb_group_source_set_name (RB_GROUP_SOURCE (group),
-						  rb_node_get_property_string (node,
-									       RB_NODE_PROP_NAME));
-
-
-			rb_library_handle_songs (shell->priv->library,
-						 node,
-						 (GFunc) handle_songs_func,
-						 group);
-
-			shell->priv->groups = g_list_append (shell->priv->groups, group);
-			rb_shell_append_source (shell, RB_SOURCE (group));
-		}
-		break;
-	case RB_LIBRARY_DND_URI_LIST:
-		{
-			GList *list;
-
-			list = gnome_vfs_uri_list_parse (data->data);
- 			create_group (shell, CREATE_GROUP_WITH_URI_LIST, list);
-		}
-		break;
+	if (source != NULL) {
+		rb_source_receive_drag (source, data);
+		return;
 	}
 
-	gtk_drag_finish (context, TRUE, FALSE, time);
+	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) {
+		long id;
+		RBNode *node;
+		RBGroupSource *group;
+
+
+		id = atol (data->data);
+		rb_debug ("got node id %d", id);
+		node = rb_node_db_get_node_from_id (rb_library_get_node_db (shell->priv->library), id);
+
+		if (node == NULL)
+			return;
+			
+		group = RB_GROUP_SOURCE (rb_group_source_new (shell->priv->container,
+							      shell->priv->library));
+					
+		rb_group_source_set_name (RB_GROUP_SOURCE (group),
+					  rb_node_get_property_string (node,
+								       RB_NODE_PROP_NAME));
+
+
+		rb_library_handle_songs (shell->priv->library,
+					 node,
+					 (GFunc) handle_songs_func,
+					 group);
+
+		shell->priv->groups = g_list_append (shell->priv->groups, group);
+		rb_shell_append_source (shell, RB_SOURCE (group));
+	} else {
+		GList *list;
+
+		rb_debug ("got vfs data, len: %d", data->length);
+		list = gnome_vfs_uri_list_parse (data->data);
+		create_group (shell, CREATE_GROUP_WITH_URI_LIST, list);
+	}
 }
 
 /* rb_shell_new_group_dialog: create a dialog for creating a new
@@ -1904,7 +1897,7 @@ setup_tray_icon (RBShell *shell)
 			  "button_press_event",
 			  G_CALLBACK (tray_button_press_event_cb),
 			  shell);
-	gtk_drag_dest_set (ebox, GTK_DEST_DEFAULT_ALL,			                                   target_uri, 1, GDK_ACTION_COPY);
+	gtk_drag_dest_set (ebox, GTK_DEST_DEFAULT_ALL, target_uri, 1, GDK_ACTION_COPY);
 	g_signal_connect (G_OBJECT (ebox), "drag_data_received",
 			  G_CALLBACK (tray_drop_cb), shell);
 

@@ -15,6 +15,8 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	rb-sourcelist.c					\
 	rb-sourcelist.h					\
+	rb-sourcelist-model.c				\
+	rb-sourcelist-model.h				\
 	eggtreemodelfilter.c				\
 	eggtreemodelfilter.h				\
 	eggtreemultidnd.c				\

@@ -25,6 +25,7 @@
 #include <gtk/gtkscrolledwindow.h>
 
 #include "rb-source.h"
+#include "rb-sourcelist-model.h"
 
 G_BEGIN_DECLS
 
@@ -50,12 +51,7 @@ typedef struct RBSourceListClass
 
 	void (*selected) (RBSourceList *list, RBSource *source);
 
-	void (*drag_finished) (RBSourceList *sourcelist,
-			       GdkDragContext *context,
-			       int x, int y,
-			       GtkSelectionData *data,
-			       guint info, guint time,
-			       RBSource *target);
+	void (*drop_received) (RBSourceList *list, RBSource *target, GtkSelectionData *data);
 } RBSourceListClass;
 
 GType		rb_sourcelist_get_type		(void);
