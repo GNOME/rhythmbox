@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version:  Rhythmbox for Gnome 2\n"
-"POT-Creation-Date: 2002-08-31 04:42+0200\n"
-"PO-Revision-Date: 2002-09-01 11:47+0700\n"
+"POT-Creation-Date: 2002-09-18 04:43+0200\n"
+"PO-Revision-Date: 2002-09-18 22:31+0700\n"
 "Last-Translator: Trinh Minh Thanh <tmthanh@linuxmail.org>\n"
 "Language-Team: Gnome-Vi Team <Gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -126,40 +126,46 @@ msgid "<span weight=\"bold\">_Track Number:</span>"
 msgstr "<span weight=\"bold\">_Số hiệu Track:</span>"
 
 #: data/glade/song-info.glade.h:15
-msgid "_Additional"
-msgstr "_Phụ thêm"
+msgid "Additional"
+msgstr "Phụ thêm"
 
 #: data/glade/song-info.glade.h:16
-msgid "_Basic"
-msgstr "_Cơ sở"
+msgid "Basic"
+msgstr "Cơ sở"
 
 #: data/glade/song-info.glade.h:17
 msgid "_of"
 msgstr "củ_a"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
-msgid "Album"
-msgstr "Album"
+msgid "_Album"
+msgstr "_Album"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
+msgid "A_rtist"
+msgstr "Nghệ _sĩ"
+
+#: data/node-views/rb-node-view-songs.xml.h:1
+msgid "A_lbum"
+msgstr "A_lbum"
+
 #: data/node-views/rb-node-view-songs.xml.h:2
-msgid "Artist"
-msgstr "Nghệ sĩ"
+msgid "Art_ist"
+msgstr "Nghệ _sĩ"
 
 #: data/node-views/rb-node-view-songs.xml.h:3
-msgid "Time"
-msgstr "Thời gian"
+msgid "Ti_me"
+msgstr "Thờ_i gian"
 
 #: data/node-views/rb-node-view-songs.xml.h:4
-msgid "Title"
-msgstr "Tiêu đề"
+msgid "Tra_ck"
+msgstr "Tra_ck"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
-msgid "Track"
-msgstr "Track"
+msgid "_Title"
+msgstr "Tiê_u đề"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:441 shell/rb-shell.c:805
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:516 shell/rb-shell.c:906
 msgid "Music Player"
 msgstr "Người chơi nhạc"
 
@@ -205,7 +211,7 @@ msgid "_Delete Group"
 msgstr "_Xoá Nhóm"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "_Edit"
 msgstr "_Biên soạn"
 
@@ -224,7 +230,7 @@ msgid "_Rename Group..."
 msgstr "Đổi tê_n Nhóm..."
 
 #: data/ui/rhythmbox-group-view.xml.in.h:13
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_View"
 msgstr "X_em"
 
@@ -245,174 +251,190 @@ msgid "_Actions"
 msgstr "_Hành động"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
+msgid "Change the visibility of the main window"
+msgstr "Thay đổi hiển thị của cửa sổ chính"
+
+#: data/ui/rhythmbox-ui.xml.in.h:2
 msgid "Change the visibility of the sidebar"
 msgstr "Thay đổi hiển thị của thanh bên"
 
-#: data/ui/rhythmbox-ui.xml.in.h:2
+#: data/ui/rhythmbox-ui.xml.in.h:3
 msgid "Change the visibility of the statusbar"
 msgstr "Thay đổi hiển thị của thanh trạng thái"
 
-#: data/ui/rhythmbox-ui.xml.in.h:3
+#: data/ui/rhythmbox-ui.xml.in.h:4
 msgid "Change the visibility of the toolbar"
 msgstr "Thay đổi hiển thị của thanh công cụ"
 
-#: data/ui/rhythmbox-ui.xml.in.h:4
+#: data/ui/rhythmbox-ui.xml.in.h:5
 msgid "Choose files or a directory to be added to the library"
 msgstr "Chọn tập tin hay thư mục được thêm vào thư viện"
 
-#: data/ui/rhythmbox-ui.xml.in.h:5
+#: data/ui/rhythmbox-ui.xml.in.h:6
 msgid "Copy selection"
 msgstr "Sao chép bộ sưu tập"
 
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "Create a new music group"
 msgstr "Tạo nhóm nhạc mới"
 
-#: data/ui/rhythmbox-ui.xml.in.h:7
+#: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Cu_t"
 msgstr "Cắt"
 
-#: data/ui/rhythmbox-ui.xml.in.h:8
+#: data/ui/rhythmbox-ui.xml.in.h:9
 msgid "Cut selection"
 msgstr "Cắt bộ sưu tập"
 
-#: data/ui/rhythmbox-ui.xml.in.h:9
+#: data/ui/rhythmbox-ui.xml.in.h:10
 msgid "Delete selection"
 msgstr "Xoá bộ sưu tập"
 
-#: data/ui/rhythmbox-ui.xml.in.h:10
-msgid "Edit Rhythmbox preferences"
-msgstr "Biên soạn các tùy thích cho Rhythmbox"
-
 #: data/ui/rhythmbox-ui.xml.in.h:11
+msgid "Edit music player preferences"
+msgstr "Biên soạn tùy thích của trình chơi nhạc"
+
+#: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Next"
 msgstr "Tiếp theo"
 
-#: data/ui/rhythmbox-ui.xml.in.h:12
-msgid "P_revious Song"
-msgstr "Bài đứng t_rước"
-
 #: data/ui/rhythmbox-ui.xml.in.h:13
+msgid "P_revious"
+msgstr "Trước"
+
+#: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Paste selection"
 msgstr "Dán bộ sưu tập"
 
-#: data/ui/rhythmbox-ui.xml.in.h:14
+#: data/ui/rhythmbox-ui.xml.in.h:15
 msgid "Pause playing"
 msgstr "Tạm dừng chơi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:15 shell/rb-shell-player.c:418
+#: data/ui/rhythmbox-ui.xml.in.h:16 shell/rb-shell-player.c:522
 msgid "Play"
 msgstr "Chơi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Prefere_nces"
 msgstr "Tù_y Thích"
 
-#: data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Previous"
 msgstr "Đứng trước"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18 shell/main.c:59
-msgid "Quit Rhythmbox"
-msgstr "Thoát khỏi Rhythmbox"
-
 #: data/ui/rhythmbox-ui.xml.in.h:19
+msgid "Quit music player"
+msgstr "Thoát khỏi trình chơi nhạc"
+
+#: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "R_epeat"
+msgstr "Chơi _Lại"
+
+#: data/ui/rhythmbox-ui.xml.in.h:21
+msgid "R_estart"
+msgstr "Chạ_y lại"
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "Restart song from the beginning"
+msgstr "Chơi lại bài từ đầu"
+
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "S_idebar"
 msgstr "Thanh Nác_h"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Show information about Rhythmbox"
 msgstr "Hiển thị thông tin về Rhythmbox"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Shuffle"
 msgstr "Xáo trộn"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "Start playing"
 msgstr "Bắt đầu chơi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Start playing the next song"
 msgstr "Bắt đầu chơi bài tiếp theo"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Start playing the previous song"
 msgstr "Bắt đầu chơi bài đứng trước"
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.in.h:29
 msgid "Stop playing"
 msgstr "Dừng chơi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Toggle random playing order"
 msgstr "Chốt yêu cầu chơi ngẫu nhiên"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:31
 msgid "Toggle repeat mode"
 msgstr "Chốt chế độ chơi lại"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "_About"
 msgstr "_Giới thiệu"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "_Add to Library..."
 msgstr "_Bổ sung vào Thư viện..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "_Copy"
 msgstr "_Sao Chép"
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "_Delete"
 msgstr "_Xoá"
 
-#: data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "_Help"
 msgstr "_Giúp"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "_Music"
 msgstr "_Nhạc"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "_New Group..."
 msgstr "Nhóm Mớ_i..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:36 lib/widgets/rb-song-info.c:186
-msgid "_Next Song"
-msgstr "Bài Tiế_p theo"
+#: data/ui/rhythmbox-ui.xml.in.h:40
+msgid "_Next"
+msgstr "Tiế_p"
 
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Organize"
 msgstr "Tổ Chứ_c"
 
-#: data/ui/rhythmbox-ui.xml.in.h:38
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Paste"
 msgstr "_Dán"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39 shell/rb-shell-player.c:419
+#: data/ui/rhythmbox-ui.xml.in.h:43 shell/rb-shell-player.c:523
 msgid "_Play"
 msgstr "_Chơi"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "_Quit"
 msgstr "_Th_oát"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41
-msgid "_Repeat"
-msgstr "Chơi _Lại"
+#: data/ui/rhythmbox-ui.xml.in.h:45
+msgid "_Show Window"
+msgstr "_Hiển Thị Cửa Sổ"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "_Shuffle"
 msgstr "Xáo T_rộn"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_Statusbar"
 msgstr "Thanh T_rạng Thái"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Toolbar"
 msgstr "Thanh _Công Cụ"
 
@@ -441,7 +463,7 @@ msgid "Failed to create directory %s."
 msgstr "Không tạo được thư mục %s."
 
 #. comma separated list of prefixes that are to
-#. * be appended as suffix
+#. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
 msgid "THE ,DJ "
 msgstr "THE ,DJ "
@@ -450,22 +472,6 @@ msgstr "THE ,DJ "
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
-
-#: lib/widgets/eggtreemodelfilter.c:271
-msgid "The child model"
-msgstr "child model"
-
-#: lib/widgets/eggtreemodelfilter.c:272
-msgid "The model for the TreeModelFilter to filter"
-msgstr "Model cho TreeModelFilter tới trình lọc"
-
-#: lib/widgets/eggtreemodelfilter.c:279
-msgid "The virtual root"
-msgstr "Root ảo"
-
-#: lib/widgets/eggtreemodelfilter.c:280
-msgid "The virtual root (relative to the child model) for this filtermodel"
-msgstr "Root ảo (liên quan tới child model) cho filtermodel này"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:104
 msgid "Pixbuf Object"
@@ -484,12 +490,12 @@ msgstr ""
 "Đã có lỗi khi đi tới %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:507
+#: lib/widgets/rb-node-view.c:524
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Không phân tích được %s là tập tin layout của NodeView"
 
-#: lib/widgets/rb-node-view.c:1051
+#: lib/widgets/rb-node-view.c:1173
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d bài, %d:%02d:%02d thời gian chơi, %s"
@@ -502,84 +508,79 @@ msgstr "Từ "
 msgid " by "
 msgstr " bởi "
 
-#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:550
+#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:543
 msgid "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr "Thời gian đã chơi của bài. Nhấn lên nó để xem thời gian toàn bộ và còn lại"
 
-#: lib/widgets/rb-player.c:367
+#: lib/widgets/rb-player.c:373
 msgid "Get information on this album from the web"
 msgstr "Lấy thông tin về album này từ web"
 
-#: lib/widgets/rb-player.c:378
+#: lib/widgets/rb-player.c:384
 msgid "Get information on this artist from the web"
 msgstr "Lấy thông tin về nghệ sĩ này từ web"
 
-#: lib/widgets/rb-player.c:396
-#, c-format
-msgid "Playing from the %s"
-msgstr "Đang chơi từ %s"
-
-#: lib/widgets/rb-player.c:401
+#: lib/widgets/rb-player.c:394
 msgid "Not Playing"
 msgstr "Không Chơi"
 
-#: lib/widgets/rb-player.c:536
+#: lib/widgets/rb-player.c:529
 msgid "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr "Thời gian còn lại của bài. Nhấn lên nó để xem tổng thời gian và đã chơi"
 
-#: lib/widgets/rb-player.c:543
+#: lib/widgets/rb-player.c:536
 msgid "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr "Toàn bộ thời gian của bài. Nhấn lên nó để xem thời gian đã chơi và còn lại"
 
-#: lib/widgets/rb-player.c:576
+#: lib/widgets/rb-player.c:569
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:585
+#: lib/widgets/rb-player.c:578
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:593
+#: lib/widgets/rb-player.c:586
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Tổng cộng: %d:%02d"
 
-#: lib/widgets/rb-player.c:596
+#: lib/widgets/rb-player.c:589
 msgid "Invalid mode"
 msgstr "Chế độ không hợp lệ"
 
 #: lib/widgets/rb-search-entry.c:115
-msgid "Search:"
-msgstr "Tìm kiếm:"
+msgid "_Search:"
+msgstr "Tìm _kiếm:"
 
-#: lib/widgets/rb-sidebar-button.c:246
+#: lib/widgets/rb-sidebar-button.c:249
 msgid "/_Open"
 msgstr "/_Mở"
 
-#: lib/widgets/rb-sidebar-button.c:248
+#: lib/widgets/rb-sidebar-button.c:251
 msgid "/_Rename..."
 msgstr "/Đổi Tên..."
 
-#: lib/widgets/rb-sidebar-button.c:249
+#: lib/widgets/rb-sidebar-button.c:252
 msgid "/_Delete"
 msgstr "/_Xoá"
 
-#: lib/widgets/rb-sidebar-button.c:493
+#: lib/widgets/rb-sidebar-button.c:495
 msgid "/Rename..."
 msgstr "/Đổi Tên..."
 
-#: lib/widgets/rb-sidebar-button.c:496
+#: lib/widgets/rb-sidebar-button.c:498
 msgid "/Delete"
 msgstr "/_Xoá"
 
-#: lib/widgets/rb-sidebar-button.c:618
+#: lib/widgets/rb-sidebar-button.c:661
 #, c-format
 msgid "Please enter a new name for this %s."
 msgstr "Hãy nhập tên mới cho %s này."
 
-#: lib/widgets/rb-sidebar-button.c:619
+#: lib/widgets/rb-sidebar-button.c:662
 msgid "Rename"
 msgstr "Đổi Tên"
 
@@ -588,29 +589,29 @@ msgstr "Đổi Tên"
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Không phân tích được %s là tập tin layout của thanh bên (sidebar)"
 
-#: lib/widgets/rb-song-info.c:220 lib/widgets/rb-song-info.c:422
+#: lib/widgets/rb-song-info.c:187
+msgid "_Next Song"
+msgstr "Bài Tiế_p theo"
+
+#: lib/widgets/rb-song-info.c:221 lib/widgets/rb-song-info.c:429
 msgid "Song Properties"
 msgstr "Thuộc tính của bài"
 
-#: lib/widgets/rb-song-info.c:402 lib/widgets/rb-song-info.c:415
+#: lib/widgets/rb-song-info.c:407 lib/widgets/rb-song-info.c:422
 #, c-format
 msgid "%s Properties"
 msgstr "Thuộc tính của %s"
 
-#: lib/widgets/rb-song-info.c:475
-msgid "of"
-msgstr "của"
-
-#: lib/widgets/rb-song-info.c:542
+#: lib/widgets/rb-song-info.c:563
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: lib/widgets/rb-song-info.c:562
+#: lib/widgets/rb-song-info.c:584
 msgid "Mono"
 msgstr "Mono"
 
-#: lib/widgets/rb-song-info.c:565
+#: lib/widgets/rb-song-info.c:587
 msgid "Stereo"
 msgstr "Stereo"
 
@@ -622,7 +623,7 @@ msgstr "Kênh của bộ trộn"
 msgid "The mixer channel of which the volume is controlled."
 msgstr "Kênh của bộ trộn là nơi điều khiển âm lượng"
 
-#: lib/widgets/rb-volume.c:236 lib/widgets/rb-volume.c:378
+#: lib/widgets/rb-volume.c:236 lib/widgets/rb-volume.c:633
 msgid "Click to mute"
 msgstr "Nhấn để tắt tiếng"
 
@@ -631,11 +632,7 @@ msgstr "Nhấn để tắt tiếng"
 msgid "Couldn't open mixer device %s\n"
 msgstr "Không thể mở thiết bị bộ trộn %s\n"
 
-#: lib/widgets/rb-volume.c:374
-msgid "Click to unmute"
-msgstr "Nhấn để bật tiếng"
-
-#: lib/widgets/rb-volume.c:465
+#: lib/widgets/rb-volume.c:454
 msgid ""
 "warning: this version of gmix was compiled with a different version of\n"
 "soundcard.h.\n"
@@ -643,21 +640,25 @@ msgstr ""
 "Cảnh báo: phiên bản này của Gmix đã được biên dịch với một phiên\n"
 "bản khác của soundcard.h.\n"
 
-#: lib/widgets/rb-volume.c:477
+#: lib/widgets/rb-volume.c:466
 #, c-format
 msgid "Querying available channels of mixer device %s failed\n"
 msgstr "Không tra vấn được các kênh sẵn có của thiết bị bộ trộn %s\n"
 
-#: lib/widgets/rb-volume.c:489
+#: lib/widgets/rb-volume.c:478
 #, c-format
 msgid "Mixer device %s has neither volume nor PCM channels.\n"
 msgstr "Thiết bị bộ trộn %s không phải âm lượng cũng không phải kênh PCM.\n"
 
-#: lib/widgets/rb-volume.c:619
+#: lib/widgets/rb-volume.c:616
 msgid "Invalid channel number"
 msgstr "Số hiệu kênh không hợp lệ"
 
-#: library/rb-library.c:249
+#: lib/widgets/rb-volume.c:629
+msgid "Click to unmute"
+msgstr "Nhấn để bật tiếng"
+
+#: library/rb-library.c:250
 msgid "All"
 msgstr "Toàn bộ"
 
@@ -668,6 +669,10 @@ msgstr "Bật chạy mã gỡ rối"
 #: shell/main.c:58
 msgid "Do not register the shell"
 msgstr "Không đăng ký shell"
+
+#: shell/main.c:59
+msgid "Quit Rhythmbox"
+msgstr "Thoát khỏi Rhythmbox"
 
 #: shell/main.c:60
 msgid "MonkeyMedia options:"
@@ -686,7 +691,7 @@ msgstr ""
 "Không kích hoạt được shell:\n"
 "%s"
 
-#: shell/rb-shell-player.c:214
+#: shell/rb-shell-player.c:235
 #, c-format
 msgid ""
 "Failed to create the mixer, error was:\n"
@@ -695,68 +700,86 @@ msgstr ""
 "Không tạo được bộ trộn, lỗi là:\n"
 "%s"
 
-#: shell/rb-shell-player.c:413
+#: shell/rb-shell-player.c:517
 msgid "Pause"
 msgstr "Tạm dừng"
 
-#: shell/rb-shell-player.c:414
+#: shell/rb-shell-player.c:518
 msgid "_Pause"
 msgstr "Tạ_m dừng"
 
-#: shell/rb-shell-player.c:423
+#: shell/rb-shell-player.c:527
 msgid "Stop"
 msgstr "Dừng"
 
-#: shell/rb-shell-player.c:424
+#: shell/rb-shell-player.c:528
 msgid "_Stop"
 msgstr "_Dừng"
 
-#: shell/rb-shell.c:431
+#: shell/rb-shell.c:506
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Không đăng ký được shell: %s\n"
 
-#: shell/rb-shell.c:912
+#: shell/rb-shell.c:910 shell/rb-shell.c:1778
+msgid "Not playing"
+msgstr "Đang không chơi"
+
+#: shell/rb-shell.c:923
+#, c-format
+msgid "%s (Paused)"
+msgstr "%s (Tạm dừng)"
+
+#: shell/rb-shell.c:928
+#, c-format
+msgid ""
+"%s\n"
+"Paused"
+msgstr ""
+"%s\n"
+"Tạm dừng"
+
+#: shell/rb-shell.c:1057
 msgid "translator_credits"
 msgstr "Thông tin dịch giả"
 
-#: shell/rb-shell.c:923
+#: shell/rb-shell.c:1068
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Bản quyền 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:924
+#: shell/rb-shell.c:1069
 msgid "Music management and playback software for GNOME."
 msgstr "Phần mềm quản lý và phát lại âm nhạc cho GNOME."
 
-#: shell/rb-shell.c:1012
+#: shell/rb-shell.c:1157
 msgid "Choose Files or Directory"
 msgstr "Chọn Tập Tin hay Thư Mục"
 
-#: shell/rb-shell.c:1508
+#: shell/rb-shell.c:1687
 msgid "Create"
 msgstr "Tạo"
 
-#: shell/rb-shell.c:1532
+#: shell/rb-shell.c:1711
 msgid "Please enter a name for the new music group."
 msgstr "Hãy nhập tên cho nhóm nhạc mới."
 
-#: shell/rb-shell.c:1542
+#: shell/rb-shell.c:1721
 msgid "Untitled"
 msgstr "Vô đề"
 
-#: shell/rb-shell.c:1546
+#: shell/rb-shell.c:1725
 msgid "Add the _selected songs to the new group"
 msgstr "Thêm các bài được _chọn vào nhóm mới"
 
-#: views/rb-group-view.c:319
+#: views/rb-group-view.c:315
 msgid "music group"
 msgstr "Nhóm nhạc"
 
-#: views/rb-group-view.c:322
+#: views/rb-group-view.c:318
 msgid "Unnamed"
 msgstr "Vô danh"
 
-#: views/rb-group-view.c:820 views/rb-library-view.c:794
+#: views/rb-group-view.c:842 views/rb-library-view.c:896
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -765,18 +788,39 @@ msgstr ""
 "Không tạo được stream cho %s, lỗi là:\n"
 "%s"
 
-#: views/rb-group-view.c:1086
+#: views/rb-group-view.c:1133
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Không phân tích được %s là tập tin về nhóm"
 
-#: views/rb-library-view.c:308
+#: views/rb-library-view.c:316
 msgid "library"
 msgstr "thư viện"
 
-#: views/rb-library-view.c:311 views/rb-library-view.c:1107
+#: views/rb-library-view.c:319 views/rb-library-view.c:1233
 msgid "Library"
 msgstr "Thư Viện"
+
+#~ msgid "P_revious Song"
+#~ msgstr "Bài đứng t_rước"
+
+#~ msgid "The child model"
+#~ msgstr "child model"
+
+#~ msgid "The model for the TreeModelFilter to filter"
+#~ msgstr "Model cho TreeModelFilter tới trình lọc"
+
+#~ msgid "The virtual root"
+#~ msgstr "Root ảo"
+
+#~ msgid "The virtual root (relative to the child model) for this filtermodel"
+#~ msgstr "Root ảo (liên quan tới child model) cho filtermodel này"
+
+#~ msgid "Playing from the %s"
+#~ msgstr "Đang chơi từ %s"
+
+#~ msgid "of"
+#~ msgstr "của"
 
 #~ msgid "<b>Also Look for Music in These Folders</b>"
 #~ msgstr "<b>Cũng Tìm Kiếm Âm Nhạc Trong Các Thư Mục Này</b>"
