@@ -481,6 +481,7 @@ rb_library_watcher_thread_main (RBLibraryWatcherPrivate *priv)
 		{
 			GList *l;
 
+			g_mutex_unlock (priv->thread_lock);
 			g_mutex_free (priv->thread_lock);
 
 			g_hash_table_destroy (priv->handles);
