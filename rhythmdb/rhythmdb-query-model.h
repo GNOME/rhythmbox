@@ -75,7 +75,6 @@ void			rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEnt
 void			rhythmdb_query_model_set_connected	(RhythmDBQueryModel *model, gboolean connected);
 
 void			rhythmdb_query_model_signal_complete	(RhythmDBQueryModel *model);
-void			rhythmdb_query_model_finish_complete	(RhythmDBQueryModel *model);
 
 GnomeVFSFileSize	rhythmdb_query_model_get_size	(RhythmDBQueryModel *model);
 

@@ -34,6 +34,9 @@ gboolean rb_false_function (gpointer dummy);
 
 gboolean rb_gvalue_compare (GValue *a, GValue *b);
 
+int rb_compare_gtimeval (GTimeVal *a, GTimeVal *b);
+
+
 GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 
 G_END_DECLS

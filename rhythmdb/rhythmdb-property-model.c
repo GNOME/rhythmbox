@@ -476,12 +476,8 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	char *propstr;
 	char *sort_key;
 
-	rhythmdb_read_lock (model->priv->db);
-	propstr = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry,
-						       model->priv->propid));
-	sort_key = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry,
-							model->priv->sort_propid));
-	rhythmdb_read_unlock (model->priv->db);
+	propstr = g_strdup (rhythmdb_entry_get_string (entry, model->priv->propid));
+	sort_key = g_strdup (rhythmdb_entry_get_string (entry, model->priv->sort_propid));
 
 	rhythmdb_property_model_insert_prop (model, propstr, sort_key);
 	g_free (propstr);
@@ -527,9 +523,7 @@ rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 {
 	char *propstr;
 
-	rhythmdb_read_lock (model->priv->db);
-	propstr = g_strdup (rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid));
-	rhythmdb_read_unlock (model->priv->db);
+	propstr = g_strdup (rhythmdb_entry_get_string (entry, model->priv->propid));
 	
 	rhythmdb_property_model_delete_prop (model, propstr);
 	g_free (propstr);

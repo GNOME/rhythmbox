@@ -196,7 +196,6 @@ get_entry_view_contents (RBRandomPlayOrder *rorder, RBEntryView *entry_view)
 		      "db", &db,
 		      NULL);
 
-	rhythmdb_read_lock (db);
 	g_array_index (result, EntryWeight, 0).entry = rb_entry_view_get_first_entry (entry_view);
 	g_array_index (result, EntryWeight, 0).weight
 		= rb_random_play_order_get_entry_weight (rorder, db, g_array_index (result, EntryWeight, 0).entry);
@@ -207,7 +206,6 @@ get_entry_view_contents (RBRandomPlayOrder *rorder, RBEntryView *entry_view)
 			= rb_random_play_order_get_entry_weight (rorder, db, g_array_index (result, EntryWeight, i).entry);
 
 	}
-	rhythmdb_read_unlock (db);
 
 	total_weight = 0.0;
 	for (i=0; i < num_entries; ++i) {

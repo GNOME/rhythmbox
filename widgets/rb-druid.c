@@ -287,40 +287,26 @@ path_dialog_response_cb (GtkDialog *dialog,
 			 RBDruid *druid)
 {
 	char *file;
-	char *utf8_file;
-	GError *error = NULL;
 
 	rb_debug ("got response");
 
-	if (response_id != GTK_RESPONSE_OK) {
+	if (response_id != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
-#ifndef HAVE_GTK_2_3
-	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
-
-#else
 	file = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
 	if (file == NULL) {
 		file = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
 	}
-#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	if (file == NULL)
 		return;
 
-	utf8_file = g_filename_to_utf8 (file, -1, NULL, NULL, &error);
+	gtk_entry_set_text (GTK_ENTRY (druid->priv->path_entry), file);
 	g_free (file);
-	if (error != NULL) {
-		rb_error_dialog (_("Error reading filename: %s"), error->message);
-		return;
-	}
-
-	gtk_entry_set_text (GTK_ENTRY (druid->priv->path_entry), utf8_file);
-	g_free (utf8_file);
 }
 
 
@@ -330,8 +316,9 @@ rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
 	GtkWidget *dialog;
 	rb_debug ("browse");
 
-	dialog = rb_ask_dir (_("Choose a directory"), NULL,
-			      GTK_WINDOW (druid->priv->window));
+	dialog = rb_file_chooser_new (_("Load folder into Library"),
+				      GTK_WINDOW (druid->priv->window),
+				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
@@ -417,12 +404,10 @@ rb_druid_page3_finish_cb (GnomeDruidPage *druid_page, GtkWidget *druid_widget,
 {
 	rb_debug ("druid finished!");
 	if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (druid->priv->page2_skip_radiobutton))) {
-		char * uri = g_strdup (gtk_entry_get_text (GTK_ENTRY (druid->priv->path_entry)));
+		const char *uri = gtk_entry_get_text (GTK_ENTRY (druid->priv->path_entry));
 		
 		rb_debug ("page2 next; adding %s to library", uri);
-		    
-		rhythmdb_add_uri_async (druid->priv->db, uri);
-		g_free (uri);
+		rhythmdb_add_uri (druid->priv->db, uri);
 	}
 	eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);
 	gnome_druid_set_buttons_sensitive (GNOME_DRUID (druid_widget),

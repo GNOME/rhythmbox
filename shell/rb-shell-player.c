@@ -22,7 +22,6 @@
 
 #include <gtk/gtk.h>
 #include <glade/glade.h>
-#include <bonobo/bonobo-ui-util.h>
 #include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -42,8 +41,6 @@
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
 #include "rb-glade-helpers.h"
-#include "rb-bonobo-helpers.h"
-#include "rb-thread-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"
@@ -51,7 +48,7 @@
 #include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-header.h"
-#include "rb-playlist.h"
+#include "totem-pl-parser.h"
 #include "rb-metadata.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
@@ -89,37 +86,22 @@ static void rb_shell_player_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
-static void rb_shell_player_cmd_previous (BonoboUIComponent *component,
-			                  RBShellPlayer *player,
-			                  const char *verbname);
-static void rb_shell_player_cmd_play (BonoboUIComponent *component,
-			              RBShellPlayer *player,
-			              const char *verbname);
-static void rb_shell_player_cmd_pause (BonoboUIComponent *component,
-			               RBShellPlayer *player,
-			               const char *verbname);
-static void rb_shell_player_cmd_stop (BonoboUIComponent *component,
-			              RBShellPlayer *player,
-			              const char *verbname);
-static void rb_shell_player_cmd_next (BonoboUIComponent *component,
-			              RBShellPlayer *player,
-			              const char *verbname);
-static void rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
-						const char *path,
-						Bonobo_UIComponent_EventType type,
-						const char *state,
+static void rb_shell_player_cmd_previous (GtkAction *action,
+			                  RBShellPlayer *player);
+static void rb_shell_player_cmd_play (GtkAction *action,
+			              RBShellPlayer *player);
+static void rb_shell_player_cmd_pause (GtkAction *action,
+			               RBShellPlayer *player);
+static void rb_shell_player_cmd_stop (GtkAction *action,
+			              RBShellPlayer *player);
+static void rb_shell_player_cmd_next (GtkAction *action,
+			              RBShellPlayer *player);
+static void rb_shell_player_shuffle_changed_cb (GtkAction *action,
 						RBShellPlayer *player);
-static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
-						const char *path,
-						Bonobo_UIComponent_EventType type,
-						const char *state,
-						RBShellPlayer *player);
-static void rb_shell_player_cmd_song_info (BonoboUIComponent *component,
-					   RBShellPlayer *player,
-					   const char *verbname);
-static void rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
-					       RBShellPlayer *player,
-					       const char *verbname);
+static void rb_shell_player_repeat_changed_cb (GtkAction *action,
+					       RBShellPlayer *player);
+static void rb_shell_player_cmd_song_info (GtkAction *action,
+					   RBShellPlayer *player);
 static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 							 RBSource *source,
 							 gboolean sync_entry_view);
@@ -177,17 +159,6 @@ static GdkFilterReturn filter_mmkeys (GdkXEvent *xevent,
 static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
 #endif /* HAVE_MMKEYS */
 
-#define MENU_PATH_PLAY     "/menu/Controls/Play"
-#define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
-
-#define CMD_PATH_PLAY		"/commands/Play"
-#define CMD_PATH_PREVIOUS	"/commands/Previous"
-#define CMD_PATH_NEXT		"/commands/Next"
-#define CMD_PATH_SHUFFLE	"/commands/Shuffle"
-#define CMD_PATH_REPEAT		"/commands/Repeat"
-#define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
-#define CMD_PATH_SONG_INFO	"/commands/SongInfo"
-
 #define CONF_STATE		CONF_PREFIX "/state"
 
 #define AUTO_RATE_FIRST_SKIP_RATE        -0.40
@@ -203,12 +174,17 @@ static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
 struct RBShellPlayerPrivate
 {
 	RhythmDB *db;
+
+	gboolean syncing_state;
 	
 	RBSource *selected_source;
 	RBSource *source;
 
-	BonoboUIComponent *component;
-	BonoboUIComponent *tray_component;
+	GtkUIManager *ui_manager;
+	GtkActionGroup *actiongroup;
+	GtkActionGroup *play_action_group;
+	GtkActionGroup *pause_action_group;
+	GtkActionGroup *stop_action_group;
 
 	gboolean handling_error;
 
@@ -227,10 +203,10 @@ struct RBShellPlayerPrivate
 
 	gboolean buffering;
 
+	GError *playlist_parse_error;
+
 	gboolean last_jumped;
 	gboolean last_skipped;
-
-	GError *playlist_parse_error;
 
 	GtkTooltips *tooltips;
 	GtkWidget *prev_button;
@@ -257,8 +233,8 @@ enum
 {
 	PROP_0,
 	PROP_SOURCE,
-	PROP_COMPONENT,
-	PROP_TRAY_COMPONENT,
+	PROP_UI_MANAGER,
+	PROP_ACTION_GROUP,
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
 	PROP_BUFFERING,
@@ -268,27 +244,55 @@ enum
 {
 	WINDOW_TITLE_CHANGED,
 	DURATION_CHANGED,
+	PLAYING_SOURCE_CHANGED,
 	LAST_SIGNAL
 };
 
-static BonoboUIVerb rb_shell_player_verbs[] =
+static GtkActionEntry rb_shell_player_actions [] =
 {
-	BONOBO_UI_VERB ("Previous",	(BonoboUIVerbFn) rb_shell_player_cmd_previous),
-	BONOBO_UI_VERB ("Play",		(BonoboUIVerbFn) rb_shell_player_cmd_play),
-	BONOBO_UI_VERB ("Pause",	(BonoboUIVerbFn) rb_shell_player_cmd_pause),
-	BONOBO_UI_VERB ("Stop",		(BonoboUIVerbFn) rb_shell_player_cmd_stop),
-	BONOBO_UI_VERB ("Next",		(BonoboUIVerbFn) rb_shell_player_cmd_next),
-	BONOBO_UI_VERB ("SongInfo",	(BonoboUIVerbFn) rb_shell_player_cmd_song_info),
-	BONOBO_UI_VERB ("SLProperties",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_properties),
-	BONOBO_UI_VERB_END
+	{ "ControlPrevious", RB_STOCK_PREVIOUS, N_("P_revious"), "<control>Left",
+	  N_("Start playing the previous song"),
+	  G_CALLBACK (rb_shell_player_cmd_previous) },
+	{ "ControlNext", RB_STOCK_NEXT, N_("_Next"), "<control>Right",
+	  N_("Start playing the next song"),
+	  G_CALLBACK (rb_shell_player_cmd_next) },
+	{ "MusicProperties", GTK_STOCK_PROPERTIES, N_("_Properties"), "<control>P",
+	  N_("Show information on the selected song"),
+	  G_CALLBACK (rb_shell_player_cmd_song_info) },
+};
+static guint rb_shell_player_n_actions = G_N_ELEMENTS (rb_shell_player_actions);
+
+static GtkActionEntry rb_shell_player_play_action [] =
+{
+	{ "ControlPlay", RB_STOCK_PLAY, N_("_Play"), "<control>space",
+	  N_("Start playback"),
+	  G_CALLBACK (rb_shell_player_cmd_play) },
 };
 
-static RBBonoboUIListener rb_shell_player_listeners[] =
+static GtkActionEntry rb_shell_player_pause_action [] =
 {
-	RB_BONOBO_UI_LISTENER ("Shuffle",     (BonoboUIListenerFn) rb_shell_player_shuffle_changed_cb),
-	RB_BONOBO_UI_LISTENER ("Repeat",      (BonoboUIListenerFn) rb_shell_player_repeat_changed_cb),
-	RB_BONOBO_UI_LISTENER_END
+	{ "ControlPause", RB_STOCK_PAUSE, N_("_Pause"), "<control>space",
+	  N_("Pause playback"),
+	  G_CALLBACK (rb_shell_player_cmd_pause) },
 };
+
+static GtkActionEntry rb_shell_player_stop_action [] =
+{
+	{ "ControlStop", RB_STOCK_STOP, N_("_Stop"), "<control>space",
+	  N_("Stop playback"),
+	  G_CALLBACK (rb_shell_player_cmd_stop) },
+};
+
+static GtkToggleActionEntry rb_shell_player_toggle_entries [] =
+{
+	{ "ControlShuffle", RB_STOCK_SHUFFLE, N_("Sh_uffle"), "<control>U",
+	  N_("Play songs in a random order"),
+	  G_CALLBACK (rb_shell_player_shuffle_changed_cb) },
+	{ "ControlRepeat", RB_STOCK_REPEAT, N_("_Repeat"), "<control>R",
+	  N_("Play first song again after all songs are played"),
+	  G_CALLBACK (rb_shell_player_repeat_changed_cb) }
+};
+static guint rb_shell_player_n_toggle_entries = G_N_ELEMENTS (rb_shell_player_toggle_entries);
 
 static GObjectClass *parent_class = NULL;
 
@@ -344,20 +348,19 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+							      "GtkUIManager",
+							      "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_TRAY_COMPONENT,
-					 g_param_spec_object ("tray-component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_ACTION_GROUP,
+					 g_param_spec_object ("action-group",
+							      "GtkActionGroup",
+							      "GtkActionGroup object",
+							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-shell.c! */
 	g_object_class_install_property (object_class,
@@ -404,6 +407,17 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+
+	rb_shell_player_signals[PLAYING_SOURCE_CHANGED] =
+		g_signal_new ("playing-source-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_source_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1,
+			      RB_TYPE_SOURCE);
 }
 
 static GObject *
@@ -420,6 +434,33 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 	player = RB_SHELL_PLAYER (parent_class->constructor (type, n_construct_properties,
 							     construct_properties));
 
+	gtk_action_group_add_actions (player->priv->actiongroup,
+				      rb_shell_player_actions,
+				      rb_shell_player_n_actions,
+				      player);
+	player->priv->play_action_group = gtk_action_group_new ("PlayActions");
+	gtk_action_group_add_actions (player->priv->play_action_group,
+				      rb_shell_player_play_action,
+				      1, player);
+	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
+					    player->priv->play_action_group, 0);
+	player->priv->pause_action_group = gtk_action_group_new ("PauseActions");
+	gtk_action_group_add_actions (player->priv->pause_action_group,
+				      rb_shell_player_pause_action,
+				      1, player);
+	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
+					    player->priv->pause_action_group, 0);
+	player->priv->stop_action_group = gtk_action_group_new ("StopActions");
+	gtk_action_group_add_actions (player->priv->stop_action_group,
+				      rb_shell_player_stop_action,
+				      1, player);
+	gtk_ui_manager_insert_action_group (player->priv->ui_manager,
+					    player->priv->stop_action_group, 0);
+	gtk_action_group_add_toggle_actions (player->priv->actiongroup,
+					     rb_shell_player_toggle_entries,
+					     rb_shell_player_n_toggle_entries,
+					     player);
+	rb_shell_player_set_playing_source (player, NULL);
 	rb_shell_player_sync_play_order (player);
 
 	return G_OBJECT (player);
@@ -616,8 +657,7 @@ rb_shell_player_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_SOURCE:
-		if (player->priv->selected_source != NULL)
-		{
+		if (player->priv->selected_source != NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
@@ -642,8 +682,7 @@ rb_shell_player_set_property (GObject *object,
 		rb_shell_player_sync_with_selected_source (player);
 		rb_shell_player_sync_buttons (player);
 
-		if (player->priv->selected_source != NULL)
-		{
+		if (player->priv->selected_source != NULL) {
 			RBEntryView *songs = rb_source_get_entry_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
@@ -671,23 +710,12 @@ rb_shell_player_set_property (GObject *object,
 		}
 		
 		break;
-	case PROP_COMPONENT:
-		player->priv->component = g_value_get_object (value);
-		bonobo_ui_component_add_verb_list_with_data (player->priv->component,
-							     rb_shell_player_verbs,
-							     player);
-		rb_bonobo_add_listener_list_with_data (player->priv->component,
-						       rb_shell_player_listeners,
-						       player);
-		rb_shell_player_set_playing_source (player, NULL);
+	case PROP_UI_MANAGER:
+		player->priv->ui_manager = g_value_get_object (value);
 		break;
-	case PROP_TRAY_COMPONENT:
-		player->priv->tray_component = g_value_get_object (value);
-		bonobo_ui_component_add_verb_list_with_data (player->priv->tray_component,
-							     rb_shell_player_verbs,
-							     player);
+	case PROP_ACTION_GROUP:
+		player->priv->actiongroup = g_value_get_object (value);
 		break;
-
 	case PROP_PLAY_ORDER:
 		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, 
 				      g_value_get_string (value));
@@ -712,11 +740,11 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, player->priv->selected_source);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, player->priv->component);
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, player->priv->ui_manager);
 		break;
-	case PROP_TRAY_COMPONENT:
-		g_value_set_object (value, player->priv->tray_component);
+	case PROP_ACTION_GROUP:
+		g_value_set_object (value, player->priv->actiongroup);
 		break;
 	case PROP_PLAY_ORDER:
 	{
@@ -768,19 +796,12 @@ rb_shell_player_get_playing_source (RBShellPlayer *player)
 
 
 RBShellPlayer *
-rb_shell_player_new (BonoboUIComponent *component,
-		     BonoboUIComponent *tray_component)
+rb_shell_player_new (GtkUIManager *mgr, GtkActionGroup *actiongroup)
 {
-	RBShellPlayer *player;
-
-	player = g_object_new (RB_TYPE_SHELL_PLAYER,			       
-			       "component", component,
-			       "tray-component", tray_component,
-			       NULL);
-
-	g_return_val_if_fail (player->priv != NULL, NULL);
-
-	return player;
+	return g_object_new (RB_TYPE_SHELL_PLAYER,			       
+			     "ui-manager", mgr,
+			     "action-group", actiongroup,
+			     NULL);
 }
 
 static RhythmDBEntry *
@@ -806,7 +827,7 @@ rb_shell_player_have_first (RBShellPlayer *player, RBSource *source)
 }
 
 static void
-rb_shell_player_open_playlist_location (RBPlaylist *playlist, const char *uri,
+rb_shell_player_open_playlist_location (TotemPlParser *playlist, const char *uri,
 					const char *title, const char *genre,
 					RBShellPlayer *player)
 {
@@ -839,7 +860,10 @@ rb_shell_player_open_location (RBShellPlayer *player,
 {
 	char *unescaped = gnome_vfs_unescape_string_for_display (location);
 	char *msg = g_strdup_printf (_("Opening %s..."), unescaped);
+	TotemPlParser *playlist;
 	gboolean was_playing;
+	gboolean playlist_parsed;
+	TotemPlParserResult playlist_result = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 /* 	gboolean use_buffering = rb_uri_is_iradio (location); */
 
 	rb_debug ("%s", msg);
@@ -853,31 +877,31 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	if (error && *error)
 		return;
 
-	if (rb_uri_is_iradio (location) != FALSE
-	    && rb_playlist_can_handle (location) != FALSE) {
-		RBPlaylist *playlist;
+	playlist = totem_pl_parser_new ();
+	g_signal_connect_object (G_OBJECT (playlist), "entry",
+				 G_CALLBACK (rb_shell_player_open_playlist_location),
+				 player, 0);
+	totem_pl_parser_add_ignored_scheme (playlist, "x-directory/normal");
 
-		playlist = rb_playlist_new ();
-		g_signal_connect_object (G_OBJECT (playlist), "entry",
-					 G_CALLBACK (rb_shell_player_open_playlist_location),
-					 player, 0);
-		if (rb_playlist_parse (playlist, location) == FALSE) {
-			g_set_error (error,
-				     RB_SHELL_PLAYER_ERROR,
-				     RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR,
-				     _("Couldn't parse playlist"));
-		}
-		g_object_unref (playlist);
-		if (!rb_player_playing (player->priv->mmplayer)) {
-			if (error) {
-				*error = g_error_copy (player->priv->playlist_parse_error);
-				g_error_free (player->priv->playlist_parse_error);
-				player->priv->playlist_parse_error = NULL;
-			}
-		}
-		return;
+	playlist_parsed = FALSE;
+	if (rb_uri_is_iradio (location)) {
+		playlist_result = totem_pl_parser_parse (playlist, location, FALSE);
+		playlist_parsed = (playlist_result != TOTEM_PL_PARSER_RESULT_UNHANDLED);
 	}
-	rb_player_open (player->priv->mmplayer, location, error);
+	g_object_unref (playlist);
+	if (!playlist_parsed) {
+		/* We get here if we failed to parse as a playlist */
+		rb_player_open (player->priv->mmplayer, location, error);
+	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_ERROR
+		   && error
+		   && player->priv->playlist_parse_error) {
+		g_propagate_error (error, player->priv->playlist_parse_error);
+	} else if (playlist_result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+		/* We already started playback in the open_playlist_location
+		 * callback
+		 */
+		;
+	}
 	if (error && *error)
 		return;
 
@@ -893,20 +917,12 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static void
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	const char *location;
-
-	rhythmdb_read_lock (player->priv->db);
-
-	location = rhythmdb_entry_get_string (player->priv->db, entry,
-					      RHYTHMDB_PROP_LOCATION);
-
-	rhythmdb_read_unlock (player->priv->db);
-
-	rb_shell_player_open_location (player, location, error);
+	rb_shell_player_open_location (player, entry->location, error);
 	if (*error == NULL)
 		return;
 
-	fprintf (stderr, "Got error opening \"%s\": %s\n", location, (*error)->message);
+	fprintf (stderr, "Got error opening \"%s\": %s\n",
+		 entry->location, (*error)->message);
 }
 
 
@@ -943,7 +959,8 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	}
 
 	if (error != NULL) {
-		rb_error_dialog (error->message);
+		rb_error_dialog (NULL, _("Couldn't start playback"),
+				 "%s", error->message);
 		return;
 	}
 
@@ -1114,9 +1131,8 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	}
 	
 	/* only auto-rate songs because our algorithm only works for discrete tunes */
-	if (rhythmdb_entry_get_int (player->priv->db, current_entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_SONG) {
+	if (current_entry->type != RHYTHMDB_ENTRY_TYPE_SONG)
 		return;
-	}
 	
 	entry_play_time = rb_shell_player_get_playing_time (player);
 	entry_duration = rb_shell_player_get_playing_song_duration (player);
@@ -1168,14 +1184,12 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	
 	/* don't auto-rate songs 30 seconds or less */
 	if (eel_gconf_get_boolean (CONF_AUTO_RATE) && 
-	    rhythmdb_entry_get_boolean (player->priv->db, current_entry, RHYTHMDB_PROP_AUTO_RATE) &&
+	    current_entry->auto_rate &&
 	    entry_duration > 30) {
 		double old_rating, new_rating;
 		
 		/* get song's old rating */
-		old_rating = rhythmdb_entry_get_double (player->priv->db,
-							current_entry,
-							RHYTHMDB_PROP_RATING);
+		old_rating = current_entry->rating;
 		
 		/* create and clamp new rating */
 		new_rating = old_rating + mod;
@@ -1187,13 +1201,12 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 		/* set the new value for the song */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, new_rating);
-		rhythmdb_write_lock (player->priv->db);
 		rhythmdb_entry_set (player->priv->db,
 				    current_entry,
 				    RHYTHMDB_PROP_RATING,
 				    &value);
 		g_value_unset (&value);
-		rhythmdb_write_unlock (player->priv->db);
+		rhythmdb_commit (player->priv->db);
 		
 		rb_debug ("set rating from %f to %f\n", old_rating, new_rating);
 	}
@@ -1220,18 +1233,16 @@ rb_shell_player_do_next (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_cmd_previous (BonoboUIComponent *component,
-			      RBShellPlayer *player,
-			      const char *verbname)
+rb_shell_player_cmd_previous (GtkAction *action,
+			      RBShellPlayer *player)
 {
 	rb_debug ("previous");
 	rb_shell_player_do_previous (player);
 }
 
 static void
-rb_shell_player_cmd_next (BonoboUIComponent *component,
-			  RBShellPlayer *player,
-			  const char *verbname)
+rb_shell_player_cmd_next (GtkAction *action,
+			  RBShellPlayer *player)
 {
 	rb_debug ("next");
 	rb_shell_player_do_next (player);
@@ -1246,9 +1257,8 @@ rb_shell_player_play_entry (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_cmd_play (BonoboUIComponent *component,
-			  RBShellPlayer *player,
-			  const char *verbname)
+rb_shell_player_cmd_play (GtkAction *action,
+			  RBShellPlayer *player)
 {
 	rb_debug ("play!");
 	rb_shell_player_playpause (player);
@@ -1311,9 +1321,8 @@ rb_shell_player_playpause (RBShellPlayer *player)
 }
 
 static void
-rb_shell_player_cmd_pause (BonoboUIComponent *component,
-			   RBShellPlayer *player,
-			   const char *verbname)
+rb_shell_player_cmd_pause (GtkAction *action,
+			   RBShellPlayer *player)
 {
 	rb_debug ("This appears to be a mild setback for the stop faction");
 	rb_shell_player_playpause (player);
@@ -1321,9 +1330,8 @@ rb_shell_player_cmd_pause (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_player_cmd_stop (BonoboUIComponent *component,
-			  RBShellPlayer *player,
-			  const char *verbname)
+rb_shell_player_cmd_stop (GtkAction *action,
+			  RBShellPlayer *player)
 {
 	rb_debug ("STOP FACTION WINS AGAIN!!");
 	rb_shell_player_set_playing_source (player, NULL);
@@ -1333,16 +1341,19 @@ static void
 rb_shell_player_sync_control_state (RBShellPlayer *player)
 {
 	gboolean shuffle, repeat;
+	GtkAction *action;
 	rb_debug ("syncing control state");
 
 	if (!rb_shell_player_get_playback_state (player, &shuffle,
 						 &repeat))
 		return;
 	
-	rb_bonobo_set_active (player->priv->component,
-			      CMD_PATH_SHUFFLE, shuffle);
-	rb_bonobo_set_active (player->priv->component,
-			      CMD_PATH_REPEAT, repeat);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlShuffle");
+        gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), shuffle);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlRepeat");
+        gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), repeat);
 }
 
 static void
@@ -1369,16 +1380,10 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player, RhythmDBEntry *entry)
 	double entry_album_peak = 0;
 	
 	if (entry != NULL) {
-		rhythmdb_read_lock (player->priv->db);
-             	entry_track_gain = rhythmdb_entry_get_double (player->priv->db,
-							      entry, RHYTHMDB_PROP_TRACK_GAIN);
-             	entry_track_peak = rhythmdb_entry_get_double (player->priv->db,
-							      entry, RHYTHMDB_PROP_TRACK_PEAK);
-             	entry_album_gain = rhythmdb_entry_get_double (player->priv->db,
-							      entry, RHYTHMDB_PROP_ALBUM_GAIN);
-             	entry_album_peak = rhythmdb_entry_get_double (player->priv->db,
-							      entry, RHYTHMDB_PROP_ALBUM_PEAK);
-		rhythmdb_read_unlock (player->priv->db);
+             	entry_track_gain = entry->track_gain;
+             	entry_track_peak = entry->track_peak;
+             	entry_album_gain = entry->album_gain;
+             	entry_album_peak = entry->album_peak;
 	}
 
 	rb_player_set_replaygain (player->priv->mmplayer, entry_track_gain, 
@@ -1391,17 +1396,19 @@ rb_shell_player_state_changed_cb (GConfClient *client,
 				  GConfEntry *entry,
 				  RBShellPlayer *playa)
 {
+	if (playa->priv->syncing_state)
+		return;
+
+	playa->priv->syncing_state = TRUE;
 	rb_debug ("state changed");
 	rb_shell_player_sync_control_state (playa);
 	rb_shell_player_sync_buttons (playa);
 	rb_shell_player_sync_volume (playa);
+	playa->priv->syncing_state = FALSE;
 }
 
 static void
-rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
-				    const char *path,
-				    Bonobo_UIComponent_EventType type,
-				    const char *state,
+rb_shell_player_shuffle_changed_cb (GtkAction *action,
 				    RBShellPlayer *player)
 {
 	const char *neworder;
@@ -1416,10 +1423,7 @@ rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
 }
 	
 static void
-rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
-				   const char *path,
-				   Bonobo_UIComponent_EventType type,
-				   const char *state,
+rb_shell_player_repeat_changed_cb (GtkAction *action,
 				   RBShellPlayer *player)
 {
 	const char *neworder;
@@ -1434,22 +1438,11 @@ rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_player_cmd_song_info (BonoboUIComponent *component,
-			       RBShellPlayer *player,
-			       const char *verbname)
+rb_shell_player_cmd_song_info (GtkAction *action,
+			       RBShellPlayer *player)
 {
 	rb_debug ("song info");
 
-	rb_source_song_properties (player->priv->selected_source);
-}
-
-static void
-rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
-				   RBShellPlayer *player,
-				   const char *verbname)
-{
-	rb_debug ("sl properties");
-	
 	rb_source_song_properties (player->priv->selected_source);
 }
 
@@ -1517,34 +1510,30 @@ static void
 rb_shell_player_set_play_button (RBShellPlayer *player,
 			         PlayButtonState state)
 {
-	const char *tlabel = NULL, *mlabel = NULL, *verb = NULL;
-
 	gtk_container_remove (GTK_CONTAINER (player->priv->play_pause_stop_button),
 			      gtk_bin_get_child (GTK_BIN (player->priv->play_pause_stop_button)));
 
+	gtk_action_group_set_visible (player->priv->play_action_group, FALSE);
+	gtk_action_group_set_visible (player->priv->pause_action_group, FALSE);
+	gtk_action_group_set_visible (player->priv->stop_action_group, FALSE);
+
 	switch (state)
 	{
-	case PLAY_BUTTON_PAUSE:
-		rb_debug ("setting pause button");
-		tlabel = _("Pause playback");
-		mlabel = _("_Pause");
-		verb = "Pause";
-		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
-				   player->priv->pause_image);
-		break;
 	case PLAY_BUTTON_PLAY:
 		rb_debug ("setting play button");
-		tlabel = _("Start playing");
-		mlabel = _("_Play");
-		verb = "Play";
+		gtk_action_group_set_visible (player->priv->play_action_group, TRUE);
 		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
 				   player->priv->play_image);
 		break;
+	case PLAY_BUTTON_PAUSE:
+		rb_debug ("setting pause button");
+		gtk_action_group_set_visible (player->priv->pause_action_group, TRUE);
+		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
+				   player->priv->pause_image);
+		break;
 	case PLAY_BUTTON_STOP:
 		rb_debug ("setting STOP button");
-		tlabel = _("Stop playback");
-		mlabel = _("_Stop");
-		verb = "Stop";
+		gtk_action_group_set_visible (player->priv->stop_action_group, TRUE);
 		gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button),
 				   player->priv->stop_image);
 		break;
@@ -1553,16 +1542,7 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 		break;
 	}
 	
-	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
-			      GTK_WIDGET (player->priv->play_pause_stop_button), 
-			      tlabel, NULL);
-
 	gtk_widget_show_all (GTK_WIDGET (player->priv->play_pause_stop_button));
-
-	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
-	rb_bonobo_set_label (player->priv->component, TRAY_PATH_PLAY, mlabel);
-	rb_bonobo_set_verb (player->priv->component, MENU_PATH_PLAY, verb);
-	rb_bonobo_set_verb (player->priv->component, TRAY_PATH_PLAY, verb);
 
 	player->priv->playbutton_state = state;
 }
@@ -1580,14 +1560,8 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	rb_debug ("playing source: %p, active entry: %p", player->priv->source, entry);
 
 	if (entry != NULL) {
-		rhythmdb_read_lock (player->priv->db);
-
-		entry_title = rhythmdb_entry_get_string (player->priv->db,
-							 entry, RHYTHMDB_PROP_TITLE);
-		artist = rhythmdb_entry_get_string (player->priv->db, entry,
-						    RHYTHMDB_PROP_ARTIST);
-
-		rhythmdb_read_unlock (player->priv->db);
+		entry_title = rb_refstring_get (entry->title);
+		artist = rb_refstring_get (entry->artist);
 	}
 
 	if (player->priv->have_url)
@@ -1630,12 +1604,14 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 void
 rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
+	GtkAction *action;
 	RBSource *source;
 	gboolean not_empty = FALSE;
 	gboolean have_previous = FALSE;
 	gboolean have_next = FALSE;
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
         gboolean not_small;
+	RBEntryView *view;
 
 	source = rb_shell_player_get_playing_entry (player) == NULL ?
 		 player->priv->selected_source : player->priv->source;
@@ -1661,21 +1637,27 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	}
 
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button), not_empty);
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS, have_previous);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlPrevious");
+	g_object_set (G_OBJECT (action), "sensitive", have_previous, NULL);
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->prev_button), have_previous);
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT, have_next);
-	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->next_button), have_next);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ControlNext");
+	g_object_set (G_OBJECT (action), "sensitive", have_next, NULL);
 
         not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
-				 rb_shell_player_get_playing_entry (player) != NULL
-				 && not_small );
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "ViewJumpToPlaying");
+	g_object_set (G_OBJECT (action),
+		      "sensitive",
+		      rb_shell_player_get_playing_entry (player) != NULL
+		      && not_small, NULL);
 
-	{
-		RBEntryView *view = rb_source_get_entry_view (player->priv->selected_source);
-		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
-					 rb_entry_view_have_selection (view));
-	}
+	view = rb_source_get_entry_view (player->priv->selected_source);
+	action = gtk_action_group_get_action (player->priv->actiongroup,
+					      "MusicProperties");
+	g_object_set (G_OBJECT (action), "sensitive", rb_entry_view_have_selection (view),
+		      NULL);
 
 	if (rb_player_playing (player->priv->mmplayer)) {
 		if (player->priv->source == player->priv->selected_source
@@ -1684,7 +1666,9 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		else
 			pstate = PLAY_BUTTON_STOP;
 
-		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY, TRUE);
+		action = gtk_action_group_get_action (player->priv->play_action_group,
+						      "ControlPlay");
+		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
 
 	} else  {
 		if (rb_player_opened (player->priv->mmplayer)
@@ -1694,8 +1678,11 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		else
 			pstate = PLAY_BUTTON_STOP;
 
-		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY,
-					 rb_shell_player_have_first (player, source));
+		action = gtk_action_group_get_action (player->priv->play_action_group,
+						      "ControlPlay");
+		g_object_set (G_OBJECT (action),
+			      "sensitive",
+			      rb_shell_player_have_first (player, source), NULL);
 
 	}
 
@@ -1759,6 +1746,8 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	rb_shell_player_sync_with_source (player);
 	if (player->priv->selected_source)
 		rb_shell_player_sync_buttons (player);
+	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[PLAYING_SOURCE_CHANGED],
+		       0, source);
 }
 
 void
@@ -1773,7 +1762,9 @@ rb_shell_player_stop (RBShellPlayer *player)
 		rb_player_pause (player->priv->mmplayer);
 	rb_player_close (player->priv->mmplayer, &error);
 	if (error) {
-		rb_error_dialog (error->message);
+		rb_error_dialog (NULL,
+				 _("Couldn't stop playback"),
+				 "%s", error->message);
 		g_error_free (error);
 	}
 }
@@ -1815,7 +1806,6 @@ long
 rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
 {
 	RhythmDBEntry *current_entry;
-	long ret;
 	
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), -1);
 	
@@ -1826,13 +1816,7 @@ rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
 		return -1;
 	}
 	
-	rhythmdb_read_lock (player->priv->db);
-	
-	ret = rhythmdb_entry_get_long (player->priv->db, current_entry,
-				       RHYTHMDB_PROP_DURATION);
-	
-	rhythmdb_read_unlock (player->priv->db);
-	return ret;
+	return current_entry->duration;
 }
 
 static void
@@ -1871,7 +1855,8 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 		switch (rb_source_handle_eos (player->priv->source))
 		{
 		case RB_SOURCE_EOF_ERROR:
-			rb_error_dialog (_("Unexpected end of stream!"));
+			rb_error_dialog (NULL, _("Stream error"),
+					 _("Unexpected end of stream!"));
 			rb_shell_player_set_playing_source (player, NULL);
 			break;
 		case RB_SOURCE_EOF_NEXT:
@@ -1898,9 +1883,9 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 	rb_shell_player_disable_buffering (player);
 
 	rb_debug ("error: %s", err->message);
-	player->priv->handling_error = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
-	rb_error_dialog ("%s", err->message);
+	rb_error_dialog (NULL, _("Playback error"),
+			 "%s", err->message);
 	player->priv->handling_error = FALSE;
 	rb_debug ("exiting error hander");
 
@@ -1911,7 +1896,11 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 static void
 error_cb (RBPlayer *mmplayer, GError *err, gpointer data)
 {
-	rb_shell_player_error ((RBShellPlayer *)data, err, TRUE);
+	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+	if (player->priv->handling_error)
+		return;
+	player->priv->handling_error = TRUE;
+	rb_shell_player_error (player, err, TRUE);
 }
 
 static void

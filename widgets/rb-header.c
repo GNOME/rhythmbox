@@ -444,14 +444,8 @@ rb_header_set_title (RBHeader *player, const char *title)
 static long
 rb_header_get_duration (RBHeader *player)
 {
-	long ret;
 	if (player->priv->entry) {
-		rhythmdb_read_lock (player->priv->db);
-		ret = rhythmdb_entry_get_long (player->priv->db,
-					       player->priv->entry,
-					       RHYTHMDB_PROP_DURATION);
-		rhythmdb_read_unlock (player->priv->db);
-		return ret;
+		return player->priv->entry->duration;
 	}
 	return -1;
 }
@@ -495,17 +489,9 @@ rb_header_sync (RBHeader *player)
 		const char *artist; 
 		GtkTooltips *artist_href_tips, *album_href_tips;
 
-		rhythmdb_read_lock (player->priv->db);
 
-		album = rhythmdb_entry_get_string (player->priv->db,
-						   player->priv->entry,
-						   RHYTHMDB_PROP_ALBUM);
-
-		artist = rhythmdb_entry_get_string (player->priv->db,
-						    player->priv->entry,
-						    RHYTHMDB_PROP_ARTIST);
-
-		rhythmdb_read_unlock (player->priv->db);
+		album = rb_refstring_get (player->priv->entry->album);
+		artist = rb_refstring_get (player->priv->entry->artist);
 
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);

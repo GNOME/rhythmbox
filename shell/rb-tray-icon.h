@@ -19,9 +19,9 @@
  *
  */
 
+#include <gtk/gtkactiongroup.h>
+#include <gtk/gtkuimanager.h>
 #include "eggtrayicon.h"
-#include <bonobo/bonobo-ui-component.h>
-
 #include "rhythmdb.h"
 
 #ifndef __RB_TRAY_ICON_H
@@ -52,8 +52,8 @@ typedef struct
 
 GType			rb_tray_icon_get_type	(void);
 
-RBTrayIcon *		rb_tray_icon_new	(BonoboUIContainer *container,
-						 BonoboUIComponent *component,
+RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr,
+						 GtkActionGroup *actiongroup,
 						 RhythmDB *db,
 						 GtkWindow *window);
 

@@ -20,19 +20,11 @@
  *
  */
 
-#include <bonobo/bonobo-arg.h>
-#include <bonobo/bonobo-main.h>
-#include <bonobo/bonobo-context.h>
-#include <bonobo/bonobo-exception.h>
-#include <bonobo/bonobo-ui-util.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-window.h>
-#include <bonobo/bonobo-control-frame.h>
-#include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <config.h>
 #include <libgnome/libgnome.h>
+#include <libgnomeui/gnome-stock-icons.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
@@ -46,11 +38,16 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
-#include <Rhythmbox.h>
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#ifdef WITH_RHYTHMDB_TREE
 #include "rhythmdb-tree.h"
+#elif defined(WITH_RHYTHMDB_GDA)
+#include "rhythmdb-gda.h"
+#else
+#error "no database specified. configure broken?"
+#endif
 #include "rb-stock-icons.h"
 #include "rb-sourcelist.h"
 #include "rb-string-helpers.h"
@@ -65,8 +62,6 @@
 #include "rb-tray-icon.h"
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
-#include "rb-playlist.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-library-source.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
@@ -79,8 +74,6 @@
 #endif
 #include "rb-shell-preferences.h"
 #include "rb-playlist-source.h"
-#include "rb-file-monitor.h"
-#include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
 
 #ifdef WITH_DASHBOARD
@@ -100,38 +93,11 @@ static void rb_shell_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *pspec);
-static void rb_shell_corba_quit (PortableServer_Servant _servant,
-                                 CORBA_Environment *ev);
-static void rb_shell_corba_handle_file (PortableServer_Servant _servant,
-					const CORBA_char *uri,
-					CORBA_Environment *ev);
-static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
-					   const CORBA_char *uri,
-					   CORBA_Environment *ev);
-static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
-				       CORBA_Environment *ev);
-static void rb_shell_corba_playpause (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static void rb_shell_corba_select (PortableServer_Servant _servant,
-				   const CORBA_char *uri,
-				   CORBA_Environment *ev);
-static void rb_shell_corba_play (PortableServer_Servant _servant,
-				 const CORBA_char *uri,
-				 CORBA_Environment *ev);
-static void rb_shell_corba_next (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static void rb_shell_corba_previous (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static CORBA_long rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
-						   CORBA_Environment *ev);
-static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
-						   CORBA_long time, CORBA_Environment *ev);
-
-static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
-
+#ifdef FIXME
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
+#endif
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
@@ -148,6 +114,9 @@ static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell,
 static void source_selected_cb (RBSourceList *sourcelist,
 				RBSource *source,
 				RBShell *shell);
+static void rb_shell_playing_source_changed_cb (RBShellPlayer *player,
+						RBSource *source,
+						RBShell *shell);
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
@@ -170,48 +139,33 @@ static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 static void rb_shell_player_duration_changed_cb (RBShellPlayer *player,
 						 const char *duration,
 						 RBShell *shell);
-static void rb_shell_cmd_about (BonoboUIComponent *component,
-		                RBShell *shell,
-		                const char *verbname);
-static void rb_shell_cmd_contents (BonoboUIComponent *component,
-		                RBShell *shell,
-		                const char *verbname);
-static void rb_shell_cmd_quit (BonoboUIComponent *component,
-			       RBShell *shell,
-			       const char *verbname);
-static void rb_shell_cmd_preferences (BonoboUIComponent *component,
-		                      RBShell *shell,
-		                      const char *verbname);
-static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
-			                 RBShell *shell,
-			                 const char *verbname);
-static void rb_shell_cmd_add_location (BonoboUIComponent *component,
-				       RBShell *shell,
-				       const char *verbname);
-static void rb_shell_cmd_new_station (BonoboUIComponent *component,
-				      RBShell *shell,
-				      const char *verbname);
-static void rb_shell_cmd_extract_cd (BonoboUIComponent *component,
-				       RBShell *shell,
-				       const char *verbname);
-static void rb_shell_cmd_current_song (BonoboUIComponent *component,
-				       RBShell *shell,
-				       const char *verbname);
+static void rb_shell_cmd_about (GtkAction *action,
+		                RBShell *shell);
+static void rb_shell_cmd_contents (GtkAction *action,
+				   RBShell *shell);
+static void rb_shell_cmd_quit (GtkAction *action,
+			       RBShell *shell);
+static void rb_shell_cmd_preferences (GtkAction *action,
+		                      RBShell *shell);
+static void rb_shell_cmd_add_folder_to_library (GtkAction *action,
+						RBShell *shell);
+static void rb_shell_cmd_add_file_to_library (GtkAction *action,
+					      RBShell *shell);
+static void rb_shell_cmd_new_station (GtkAction *action,
+				      RBShell *shell);
+static void rb_shell_cmd_extract_cd (GtkAction *action,
+				     RBShell *shell);
+static void rb_shell_cmd_current_song (GtkAction *action,
+				       RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
 static void rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 						RhythmDBEntry *entry);
 static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_quit (RBShell *shell);
-static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
-						 const char *path,
-						 Bonobo_UIComponent_EventType type,
-						 const char *state,
+static void rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 						 RBShell *shell);
-static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
-						 const char *path,
-						 Bonobo_UIComponent_EventType type,
-						 const char *state,
+static void rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
 						 RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
@@ -249,8 +203,8 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 static gboolean tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
 
 typedef RBSource *(*SourceCreateFunc)(RBShell *, RhythmDB *db, 
-				      BonoboUIComponent *component);
-static SourceCreateFunc known_sources[] = { 
+				      GtkActionGroup *actiongroup);
+static SourceCreateFunc known_sources[] = {
 	rb_library_source_new,
 	rb_iradio_source_new,
 #ifdef WITH_IPOD_SUPPORT
@@ -291,11 +245,6 @@ enum
 	PROP_SELECTED_SOURCE
 };
 
-#define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
-#define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
-#define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
-#define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
-
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
@@ -309,8 +258,8 @@ struct RBShellPrivate
 {
 	GtkWidget *window;
 
-	BonoboUIComponent *ui_component;
-	BonoboUIContainer *container;
+	GtkUIManager *ui_manager;
+	GtkActionGroup *actiongroup;
 
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
@@ -356,32 +305,60 @@ struct RBShellPrivate
 
 	RBTrayIcon *tray_icon;
 
-	BonoboPropertyBag *pb;
-
 	char *cached_title;
 	char *cached_duration;
 };
 
-static BonoboUIVerb rb_shell_verbs[] =
+static GtkActionEntry rb_shell_actions [] =
 {
-	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
-	BONOBO_UI_VERB ("Contents",	(BonoboUIVerbFn) rb_shell_cmd_contents),
-	BONOBO_UI_VERB ("Quit",		(BonoboUIVerbFn) rb_shell_cmd_quit),
-	BONOBO_UI_VERB ("Preferences",  (BonoboUIVerbFn) rb_shell_cmd_preferences),
-	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
-	BONOBO_UI_VERB ("AddLocation",  (BonoboUIVerbFn) rb_shell_cmd_add_location),
-	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
-	BONOBO_UI_VERB ("ExtractCD",    (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
-	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_cmd_current_song),
-	BONOBO_UI_VERB_END
-};
+	{ "Music", NULL, N_("_Music") },
+	{ "Edit", NULL, N_("_Edit") },
+	{ "View", NULL, N_("_View") },
+	{ "Control", NULL, N_("_Control") },
+	{ "Help", NULL, N_("_Help") },
 
-static RBBonoboUIListener rb_shell_listeners[] =
-{
-	RB_BONOBO_UI_LISTENER ("ShowSourceList",(BonoboUIListenerFn) rb_shell_view_sourcelist_changed_cb),
-	RB_BONOBO_UI_LISTENER ("ToggleSmallDisplay",(BonoboUIListenerFn) rb_shell_view_smalldisplay_changed_cb),
-	RB_BONOBO_UI_LISTENER_END
+	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New _Internet Radio Station"), NULL,
+	  N_("Create a new Internet Radio station"),
+	  G_CALLBACK (rb_shell_cmd_new_station) },
+
+	{ "MusicImportFolder", GTK_STOCK_OPEN, N_("_Import Folder..."), "<control>O",
+	  N_("Choose folder to be added to the Library"),
+	  G_CALLBACK (rb_shell_cmd_add_folder_to_library) },
+	{ "MusicImportFile", NULL, N_("Import _File..."), NULL,
+	  N_("Choose file to be added to the Library"),
+	  G_CALLBACK (rb_shell_cmd_add_file_to_library) },
+	{ "MusicImportCD", GTK_STOCK_CDROM, N_("Import _Audio CD..."), "<control>E",
+	  N_("Extract and import songs from a CD"),
+	  G_CALLBACK (rb_shell_cmd_extract_cd) },
+	{ "HelpAbout", GNOME_STOCK_ABOUT, N_("_About"), NULL,
+	  N_("Show information about the music player"),
+	  G_CALLBACK (rb_shell_cmd_about) },
+	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
+	  N_("Display music player help"),
+	  G_CALLBACK (rb_shell_cmd_contents) },
+	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
+	  N_("Quit the music player"),
+	  G_CALLBACK (rb_shell_cmd_quit) },
+	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
+	  N_("Edit music player preferences"),
+	  G_CALLBACK (rb_shell_cmd_preferences) },
+	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
+	  N_("Scroll the view to the currently playing song"),
+	  G_CALLBACK (rb_shell_cmd_current_song) },
 };
+static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
+
+static GtkToggleActionEntry rb_shell_toggle_entries [] =
+{
+	{ "ViewSourceList", NULL, N_("Source _List"), "<control>L",
+	  N_("Change the visibility of the source list"),
+	  G_CALLBACK (rb_shell_view_sourcelist_changed_cb), TRUE },
+	{ "ViewSmallDisplay", NULL, N_("_Small Display"), "<control>D",
+	  N_("Make the main window smaller"),
+	  G_CALLBACK (rb_shell_view_smalldisplay_changed_cb),
+	}
+};
+static guint rb_shell_n_toggle_entries = G_N_ELEMENTS (rb_shell_toggle_entries);
 
 static GObjectClass *parent_class;
 
@@ -405,12 +382,9 @@ rb_shell_get_type (void)
 			(GInstanceInitFunc) rb_shell_init
 		};
 		
-		type = bonobo_type_unique (BONOBO_TYPE_OBJECT,
-					   POA_GNOME_Rhythmbox__init,
-					   POA_GNOME_Rhythmbox__fini,
-					   G_STRUCT_OFFSET (RBShellClass, epv),
-					   &info,
-					   "RBShell");
+		type = g_type_register_static (G_TYPE_OBJECT,
+					       "RBShell",
+					       &info, 0);
 	}
 
 	return type;
@@ -420,26 +394,12 @@ static void
 rb_shell_class_init (RBShellClass *klass)
 {
         GObjectClass *object_class = (GObjectClass *) klass;
-        POA_GNOME_Rhythmbox__epv *epv = &klass->epv;
 
         parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rb_shell_set_property;
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
-
-	epv->quit         = rb_shell_corba_quit;
-	epv->handleFile   = rb_shell_corba_handle_file;
-	epv->addToLibrary = rb_shell_corba_add_to_library;
-	epv->grabFocus    = rb_shell_corba_grab_focus;
-	epv->playPause = rb_shell_corba_playpause;
-	epv->select = rb_shell_corba_select;
-	epv->play = rb_shell_corba_play;
-	epv->previous = rb_shell_corba_previous;
-	epv->next = rb_shell_corba_next;
-	epv->getPlayingTime = rb_shell_corba_get_playing_time;
-	epv->setPlayingTime = rb_shell_corba_set_playing_time;
-	epv->getPlayerProperties = rb_shell_corba_get_player_properties;
 
 	g_object_class_install_property (object_class,
 					 PROP_ARGC,
@@ -485,7 +445,11 @@ rb_shell_class_init (RBShellClass *klass)
 					 g_param_spec_string ("rhythmdb-file", 
 							      "rhythmdb-file", 
 							      "The RhythmDB file to use", 
+#ifdef WITH_RHYTHMDB_TREE
 							      "rhythmdb.xml",
+#elif defined(WITH_RHYTHMDB_GDA)
+							      "rhythmdb.sqlite", /* FIXME: correct extension? */
+#endif
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
@@ -501,12 +465,10 @@ static void
 rb_shell_init (RBShell *shell) 
 {
 	char *file;
-
-	rb_thread_helpers_init ();
 	
 	shell->priv = g_new0 (RBShellPrivate, 1);
 
-	rb_ensure_dir_exists (rb_dot_dir ());
+	rb_dot_dir ();
 
 	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_APP_PIXMAP, "rhythmbox.png", TRUE, NULL);
 	if (file) {
@@ -610,9 +572,7 @@ rb_shell_sync_state (RBShell *shell)
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager, TRUE);
 
 	rb_debug ("saving db");
-	rhythmdb_read_lock (shell->priv->db);
-	rhythmdb_save_blocking (shell->priv->db);
-	rhythmdb_read_unlock (shell->priv->db);
+	rhythmdb_save (shell->priv->db);
 	return FALSE;
 }
 
@@ -630,9 +590,7 @@ idle_save_state (RBShell *shell)
 static gboolean
 idle_save_rhythmdb (RhythmDB *db)
 {
-	rhythmdb_read_lock (db);
 	rhythmdb_save (db);
-	rhythmdb_read_unlock (db);
 	
 	return FALSE;
 }
@@ -651,13 +609,6 @@ rb_shell_shutdown (RBShell *shell)
 	if (shell->priv->shutting_down)
 		return;
 	shell->priv->shutting_down = TRUE;
-
-	rb_debug ("Unregistering with bonobo");
-	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
-	
-	bonobo_activation_active_server_unregister (RB_FACTORY_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
-	rb_debug ("Unregistered with Bonobo Activation");
-	
 }
 
 static void
@@ -697,12 +648,10 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv->rhythmdb_file);
 	g_free (shell->priv);
 
-	g_object_unref (G_OBJECT (rb_file_monitor_get ()));
-
         parent_class->finalize (G_OBJECT (shell));
 
 	rb_debug ("THE END");
-	bonobo_main_quit ();
+	gtk_main_quit ();
 }
 
 RBShell *
@@ -742,9 +691,7 @@ idle_do_action (struct RBShellAction *data)
 
 	data->tries++;
 
-	rhythmdb_read_lock (data->shell->priv->db);
 	entry = rhythmdb_entry_lookup_by_location (data->shell->priv->db, data->uri);
-	rhythmdb_read_unlock (data->shell->priv->db);
 
 	if (entry) {
 		switch (data->type) {
@@ -775,480 +722,50 @@ idle_do_action (struct RBShellAction *data)
 	return FALSE;
 }
 
-static void
-rb_shell_queue_jump (RBShell *shell, const char *uri)
-{
-	struct RBShellAction *data;
-
-	rb_debug ("queueing jump");
-
-	data = g_new0 (struct RBShellAction, 1);
-	data->shell = shell;
-	data->uri = g_strdup (uri);
-	data->type = RB_SHELL_ACTION_JUMP;
-	g_idle_add ((GSourceFunc) idle_do_action, data);
-}
-
-static void
-rb_shell_queue_play (RBShell *shell, const char *uri)
-{
-	struct RBShellAction *data;
-
-	if (shell->priv->play_queued) {
-		rb_debug ("file already queued for playback");
-		return;
-	}
-	rb_debug ("queueing play");
-
-	data = g_new0 (struct RBShellAction, 1);
-	data->shell = shell;
-	data->uri = g_strdup (uri);
-	data->type = RB_SHELL_ACTION_PLAY;
-	g_idle_add ((GSourceFunc) idle_do_action, data);
-}
-
-static void
-rb_shell_corba_quit (PortableServer_Servant _servant,
-                     CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-
-	rb_debug ("corba quit");
-
-	GDK_THREADS_ENTER ();
-
-	rb_shell_quit (shell);
-
-	GDK_THREADS_LEAVE ();
-}
-
-static void
-rb_shell_corba_handle_file (PortableServer_Servant _servant,
-			    const CORBA_char *uri,
-			    CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	RBPlaylist *parser;
-	GnomeVFSURI *vfsuri;
-
-	rb_debug ("handling uri: %s", uri);
-
-	vfsuri = gnome_vfs_uri_new (uri);
-	if (!vfsuri) {
-		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
-		return;
-	}
-
-	parser = rb_playlist_new ();
-	if (rb_playlist_can_handle (uri)) {
-		rb_debug ("parsing uri as playlist: %s", uri);
-		uri = rb_playlist_manager_parse_file (shell->priv->playlist_manager, uri);
-		if (!uri)
-			goto out;
-	} else {
-		rb_debug ("async adding uri: %s", uri);
-		rhythmdb_add_uri_async (shell->priv->db, uri);
-	}
-
-	rb_shell_queue_play (shell, uri);
-out:
-	g_object_unref (G_OBJECT (parser));
-}
-
-static void
-rb_shell_corba_add_to_library (PortableServer_Servant _servant,
-			       const CORBA_char *uri,
-			       CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-
-	rb_debug ("async adding uri: %s", uri);
-	rhythmdb_add_uri_async (shell->priv->db, uri);
-}
-
-static void
-rb_shell_corba_grab_focus (PortableServer_Servant _servant,
-			   CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-
-	rb_debug ("grabbing focus");
-	gtk_window_present (GTK_WINDOW (shell->priv->window));
-	gtk_widget_grab_focus (shell->priv->window);
-}
-
-enum PlayerProperties {
-	PROP_VISIBILITY,
-	PROP_SONG,
-	PROP_SHUFFLE,
-};
-
-
-static void 
-shell_notify_pb_changes (RBShell *shell, const gchar *property_name, 
-			 BonoboArg *arg) 
-{
-	if (shell->priv->pb != NULL) {
-		bonobo_event_source_notify_listeners_full (shell->priv->pb->es,
-							   "Bonobo/Property",
-							   "change",
-							   property_name,
-							   arg, NULL);
-	}
-}
-
-static GNOME_Rhythmbox_SongInfo *
-get_song_info_from_player (RBShell *shell)
-{
-	RhythmDBEntry *entry;
-	RhythmDB *db = shell->priv->db;
-	GNOME_Rhythmbox_SongInfo *song_info;
-	RBEntryView *view;
-	RBSource *playing_source;
-
-	playing_source = rb_shell_player_get_playing_source (shell->priv->player_shell);
-
-	if (playing_source == NULL)
-		goto lose;
-
-	view = rb_source_get_entry_view (playing_source);
-	g_object_get (G_OBJECT (view), "playing_entry", &entry, NULL);
-	if (entry == NULL)
-		goto lose;
-
-	song_info = GNOME_Rhythmbox_SongInfo__alloc ();
-	rhythmdb_read_lock (db);
-	song_info->title = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
-	song_info->artist = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ARTIST));
-	song_info->album = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ALBUM));
-	song_info->genre = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_GENRE));
-	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
-	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
-	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
-	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_BITRATE);
-	song_info->filesize = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_FILE_SIZE);
-	song_info->rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
-	song_info->play_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
-	song_info->last_played = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
-	rhythmdb_read_unlock (db);
-
-	return song_info;
- lose:
-	return NULL;
-}
-
-static void
-shell_pb_get_prop (BonoboPropertyBag *bag,
-		   BonoboArg         *arg,
-		   guint              arg_id,
-		   CORBA_Environment *ev,
-		   gpointer           user_data)
-{
-	RBShell *shell = RB_SHELL (user_data);
-	RBShellPlayer *player;
-
-	player = RB_SHELL_PLAYER (shell->priv->player_shell);
-
-	switch (arg_id) {
-
-	case PROP_VISIBILITY:
-		BONOBO_ARG_SET_BOOLEAN (arg, FALSE);
-		break;
-
-	case PROP_SHUFFLE:
-	{
-		gboolean shuffle, repeat;
-		rb_shell_player_get_playback_state (player,
-						    &shuffle, &repeat);
-		BONOBO_ARG_SET_BOOLEAN (arg, shuffle);
-		break;
-	}
-
-	case PROP_SONG: {
-		GNOME_Rhythmbox_SongInfo *ret_val;
-		
-		ret_val = get_song_info_from_player (shell);
-		arg->_value = (gpointer)ret_val;
-		if (ret_val == NULL) {
-			arg->_type = TC_null;
-		} else {
-			arg->_type = TC_GNOME_Rhythmbox_SongInfo;
-		}
-		break;		
-	}
-
-	default:
-		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
-		break;
-	}
-}
-
-static void
-shell_pb_set_prop (BonoboPropertyBag *bag,
-		   const BonoboArg   *arg,
-		   guint              arg_id,
-		   CORBA_Environment *ev,
-		   gpointer           user_data)
-{
-	RBShell *shell = RB_SHELL (user_data);
-	RBShellPlayer *player;
-
-	player = RB_SHELL_PLAYER (shell->priv->player_shell);
-	
-	switch (arg_id) {
-
-	case PROP_VISIBILITY:
-		break;
-
-	case PROP_SONG:
-		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_ReadOnly);
-		break;
-
-	case PROP_SHUFFLE:
-	{
-		gboolean repeat;
-		gboolean shuffle;
-
-
-		rb_shell_player_get_playback_state (player, &shuffle,
-						    &repeat);
-		shuffle = BONOBO_ARG_GET_BOOLEAN (arg);
-
-		rb_shell_player_set_playback_state (player,
-						    shuffle,
-						    repeat);
-		break;
-	}
-
-	default:
-		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
-		break;
-	}
-}
-
-
-static Bonobo_PropertyBag
-rb_shell_corba_get_player_properties (PortableServer_Servant _servant, 
-				      CORBA_Environment *ev)
-{	
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-
-	rb_debug ("getting player properties");
-	if (shell->priv->pb == NULL) {
-		gchar *params_to_map[] = {"repeat", "play-order", "playing"}; 
-		GParamSpec **params;
-		int i = 0;
-		int total = 0;
-
-		shell->priv->pb = bonobo_property_bag_new (shell_pb_get_prop, 
-							   shell_pb_set_prop, 
-							   shell);
-		
-		
-		params = malloc (G_N_ELEMENTS (params_to_map) * sizeof (GParamSpec *));
-		for (i = 0; i < G_N_ELEMENTS (params_to_map); i++) {
-			params[total] = g_object_class_find_property (G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell)), params_to_map[i]);
-			if (params[total])
-				total++;
-		}
-		bonobo_property_bag_map_params (shell->priv->pb,
-						G_OBJECT (shell->priv->player_shell),
-						(const GParamSpec **)params, total);
-
-
-		/* Manually install the other properties */
-		bonobo_property_bag_add (shell->priv->pb, "visibility", 
-					 PROP_VISIBILITY, BONOBO_ARG_BOOLEAN, NULL, 
-					 _("Whether the main window is visible"), 0);
-
-		/* Manually install the other properties */
-		bonobo_property_bag_add (shell->priv->pb, "shuffle", 
-					 PROP_SHUFFLE, BONOBO_ARG_BOOLEAN, NULL, 
-					 _("Whether shuffle is enabled"), 0);
-
-		bonobo_property_bag_add (shell->priv->pb, "song", 
-					 PROP_SONG, TC_GNOME_Rhythmbox_SongInfo, NULL, 
-					 _("Properties for the current song"), 0);
-	}
-	/* If the creation of the property bag failed, 
-	 * return a corba exception
-	 */
-	
-	return bonobo_object_dup_ref (BONOBO_OBJREF (shell->priv->pb), NULL);
-}
-
-static void
-rb_shell_corba_playpause (PortableServer_Servant _servant,
-			  CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got playpause");
-	rb_shell_player_playpause (shell->priv->player_shell);
-}
-
-static void
-rb_shell_corba_select (PortableServer_Servant _servant,
-		       const CORBA_char *uri,
-		       CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got select");
-	rb_shell_queue_jump (shell, uri);
-}
-
-static void
-rb_shell_corba_play (PortableServer_Servant _servant,
-		     const CORBA_char *uri,
-		     CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got play");
-	rb_shell_queue_play (shell, uri);
-}
-
-static void
-rb_shell_corba_next (PortableServer_Servant _servant,
-		     CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got next");
-	rb_shell_player_do_next (shell->priv->player_shell);
-}
-
-static void
-rb_shell_corba_previous (PortableServer_Servant _servant,
-			 CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got previous");
-	rb_shell_player_do_previous (shell->priv->player_shell);
-}
-
-static CORBA_long
-rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got playing time");
-	return rb_shell_player_get_playing_time (shell->priv->player_shell);
-}
-
-static void
-rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
-				 CORBA_long time, CORBA_Environment *ev)
-{
-	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	rb_debug ("got set playing time");
-	rb_debug ("got milk?");
-	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
-}
-
-
-static void
-rb_shell_property_changed_generic_cb (GObject *object,
-				      GParamSpec *pspec, 
-				      RBShell *shell)
-{
-	BonoboArg *arg = bonobo_arg_new (TC_CORBA_boolean);
-	gboolean value;
-
-	g_object_get (object, pspec->name, &value, NULL);
-	BONOBO_ARG_SET_BOOLEAN (arg, value);
-	shell_notify_pb_changes (shell, pspec->name, arg);
-	bonobo_arg_release (arg);
-}
-
-static void
-rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
-{
-	GNOME_Rhythmbox_SongInfo *song_info;
-	BonoboArg *arg;
-	
-	g_assert (strcmp (pspec->name, "playing-entry") == 0);
-	song_info = get_song_info_from_player (shell);
-	if (!song_info) {
-		rb_debug ("no song info returned!");
-		return;
-	}
-	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
-	arg->_value = (gpointer)song_info;
-	shell_notify_pb_changes (shell, "song", arg);
-	bonobo_arg_release (arg);
-
-#ifdef WITH_DASHBOARD
-	if (song_info) {
-        	char *cluepacket;
-        	/* Send cluepacket to dashboard */
-        	cluepacket =
-			dashboard_build_cluepacket_then_free_clues ("Music Player",
-							    	TRUE, 
-							    	"", 
-							    	dashboard_build_clue (song_info->title, "song_title", 10),
-							    	dashboard_build_clue (song_info->artist, "artist", 10),
-							    	dashboard_build_clue (song_info->album, "album", 10),
-							    	NULL);
-       		dashboard_send_raw_cluepacket (cluepacket);
-       		g_free (cluepacket);
-	}
-#endif /* WITH_DASHBOARD */
-}
-
 void
 rb_shell_construct (RBShell *shell)
 {
-	gboolean registration_failed = FALSE;
-	CORBA_Object corba_object;
-	CORBA_Environment ev;
-	BonoboWindow *win;
-	Bonobo_UIContainer corba_container;
+	GtkWindow *win;
+	GtkWidget *menubar;
 	GtkWidget *vbox;
 	gboolean rhythmdb_exists;
 	RBSource *iradio_source;
 	RBSource *library_source;
 	int i = 0;
+	GError *error = NULL;
 
 	g_return_if_fail (RB_IS_SHELL (shell));
 
 	rb_debug ("Constructing shell");
 
 	/* initialize UI */
-	win = BONOBO_WINDOW (bonobo_window_new ("Rhythmbox shell",
-						_("Music Player")));
+	win = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+	gtk_window_set_title (win, _("Music Player"));
 
 	shell->priv->window = GTK_WIDGET (win);
 
+#ifdef FIXME
 	g_signal_connect_object (G_OBJECT (win), "window-state-event",
 				 G_CALLBACK (rb_shell_window_state_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (win), "configure-event",
 				 G_CALLBACK (rb_shell_window_state_cb),
 				 shell, 0);
+#endif
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
 				 shell, 0);
   
-	rb_debug ("shell: creating container area");
-	shell->priv->container = bonobo_window_get_ui_container (win);
+	shell->priv->ui_manager = gtk_ui_manager_new ();
 
-	bonobo_ui_engine_config_set_path (bonobo_window_get_ui_engine (win),
-					  "/apps/rhythmbox/UIConfig/kvps");
-
-	corba_container = BONOBO_OBJREF (shell->priv->container);
-
-	shell->priv->ui_component = bonobo_ui_component_new_default ();
-
-	bonobo_ui_component_set_container (shell->priv->ui_component,
-					   corba_container,
-					   NULL);
-
-	bonobo_ui_component_freeze (shell->priv->ui_component, NULL);
-
-	rb_debug ("shell: loading bonobo ui");
-	bonobo_ui_util_set_ui (shell->priv->ui_component,
-			       DATADIR,
-			       "rhythmbox-ui.xml",
-			       "rhythmbox", NULL);
-
+	shell->priv->actiongroup = gtk_action_group_new ("MainActions");
+	gtk_action_group_add_actions (shell->priv->actiongroup,
+				      rb_shell_actions,
+				      rb_shell_n_actions, shell);
+	gtk_action_group_add_toggle_actions (shell->priv->actiongroup,
+					     rb_shell_toggle_entries,
+					     rb_shell_n_toggle_entries,
+					     shell);
 	/* Initialize the database */
 	rb_debug ("creating database object");
 	{
@@ -1261,7 +778,11 @@ rb_shell_construct (RBShell *shell)
 
 		rhythmdb_exists = g_file_test (pathname, G_FILE_TEST_EXISTS);
 		
+#ifdef WITH_RHYTHMDB_TREE
 		shell->priv->db = rhythmdb_tree_new (pathname);
+#elif defined(WITH_RHYTHMDB_GDA)
+		shell->priv->db = rhythmdb_gda_new (pathname);
+#endif
 		g_free (pathname);
 
 		if (shell->priv->dry_run)
@@ -1281,35 +802,14 @@ rb_shell_construct (RBShell *shell)
 	rb_debug ("shell: setting up tray icon");
 	tray_destroy_cb (NULL, NULL, shell);
 
-	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
-						     rb_shell_verbs,
-						     shell);
-	rb_bonobo_add_listener_list_with_data (shell->priv->ui_component,
-					       rb_shell_listeners,
-					       shell);
-
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
 
-	{
-		BonoboUIComponent *tray_component;
-		g_object_get (G_OBJECT (shell->priv->tray_icon), "tray_component",
-			      &tray_component, NULL);
-
-		shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
-								 tray_component);
-	}
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell), 
-				 "notify::repeat", 
-				 G_CALLBACK (rb_shell_property_changed_generic_cb), 
-				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell), 
-				 "notify::shuffle", 
-				 G_CALLBACK (rb_shell_property_changed_generic_cb), 
-				 shell, 0);
-	g_signal_connect_object (G_OBJECT (shell->priv->player_shell), 
-				 "notify::playing", 
-				 G_CALLBACK (rb_shell_property_changed_generic_cb), 
+	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_manager,
+							 shell->priv->actiongroup);
+	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+				 "playing-source-changed",
+				 G_CALLBACK (rb_shell_playing_source_changed_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "window_title_changed",
@@ -1319,9 +819,9 @@ rb_shell_construct (RBShell *shell)
 				 "duration_changed",
 				 G_CALLBACK (rb_shell_player_duration_changed_cb),
 				 shell, 0);
-	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component,
+	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->actiongroup,
 							       shell->priv->db);
-	shell->priv->source_header = rb_source_header_new (shell->priv->ui_component);
+	shell->priv->source_header = rb_source_header_new (shell->priv->actiongroup);
 
 	shell->priv->paned = gtk_hpaned_new ();
 
@@ -1334,7 +834,7 @@ rb_shell_construct (RBShell *shell)
 				 G_CALLBACK (rb_shell_show_popup_cb), shell, 0);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->ui_component,
+						   shell->priv->actiongroup,
 						   shell->priv->player_shell);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
@@ -1367,8 +867,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 
-	bonobo_window_set_contents (win, vbox);
-
+	gtk_container_add (GTK_CONTAINER (win), vbox);
 	gtk_widget_show_all (vbox);
 
 	rb_debug ("shell: adding gconf notification");
@@ -1405,7 +904,7 @@ rb_shell_construct (RBShell *shell)
 
 		source = known_sources[i] (shell, 
 					   shell->priv->db, 
-					   shell->priv->ui_component);
+					   shell->priv->actiongroup);
 
 		rb_shell_append_source (shell, RB_SOURCE (source));
 		i++;
@@ -1413,8 +912,7 @@ rb_shell_construct (RBShell *shell)
 
 	library_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG);
 
-	rb_library_source_class_add_verbs (shell, shell->priv->ui_component);
-
+	rb_library_source_class_add_actions (shell, shell->priv->actiongroup);
 
 	g_assert (library_source != NULL);
 	iradio_source  = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
@@ -1422,7 +920,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
-	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->ui_component,
+	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->actiongroup,
 								 GTK_WINDOW (shell->priv->window),
 								 shell->priv->db,
 								 RB_SOURCELIST (shell->priv->sourcelist),
@@ -1436,11 +934,27 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_finish",
 				 G_CALLBACK (rb_shell_playlist_load_finish_cb), shell, 0);
 
+	rb_debug ("shell: loading ui");
+	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
+					    shell->priv->actiongroup, 0);
+	gtk_ui_manager_add_ui_from_file (shell->priv->ui_manager,
+					 rb_file ("rhythmbox-ui.xml"), &error);
+	gtk_ui_manager_ensure_update (shell->priv->ui_manager);
+	gtk_window_add_accel_group (GTK_WINDOW (shell->priv->window),
+				    gtk_ui_manager_get_accel_group (shell->priv->ui_manager));
+	menubar = gtk_ui_manager_get_widget (shell->priv->ui_manager, "/MenuBar");
+	gtk_box_pack_start (GTK_BOX (vbox), menubar, FALSE, FALSE, 0);
+	gtk_box_reorder_child (GTK_BOX (vbox), menubar, 0);
+
+	if (error != NULL) {
+		g_warning ("Couldn't merge %s: %s",
+			   rb_file ("rhythmbox-ui.xml"), error->message);
+		g_clear_error (&error);
+	}
+
 	g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
 		
 	rb_shell_sync_window_state (shell);
-
-	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
 	rb_shell_select_source_internal (shell, library_source);
 
@@ -1465,34 +979,6 @@ rb_shell_construct (RBShell *shell)
 		rb_debug ("No AudioCD device is available!");
 #endif
 	
-	if (!shell->priv->no_registration) {
-		rb_debug ("Registering with Bonobo Activation...");
-		/* register with CORBA */
-		CORBA_exception_init (&ev);
-		
-		corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (shell));
-
-		if (bonobo_activation_active_server_register (RB_SHELL_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
-			registration_failed = TRUE;
-		
-		if (bonobo_activation_active_server_register (RB_FACTORY_OAFIID, corba_object) != Bonobo_ACTIVATION_REG_SUCCESS)
-			registration_failed = TRUE;
-		
-		if (registration_failed) {
-			/* this is not critical, but worth a warning nevertheless */
-			char *msg = rb_shell_corba_exception_to_string (&ev);
-			g_message (_("Failed to register the shell: %s\n"
-				     "This probably means that you installed Rhythmbox in a "
-				     "different prefix than bonobo-activation; this "
-				     "warning is harmless, but IPC will not work."), msg);
-			g_free (msg);
-		
-		}
-		CORBA_exception_free (&ev);
-		
-		rb_debug ("Registered with Bonobo Activation");
-	}
-
 	/* GO GO GO! */
 	if (rhythmdb_exists) {
 		rb_debug ("loading database");
@@ -1525,25 +1011,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 }
 
-char *
-rb_shell_corba_exception_to_string (CORBA_Environment *ev)
-{
-	g_return_val_if_fail (ev != NULL, NULL);
-
-	if ((CORBA_exception_id (ev) != NULL) &&
-	    (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError) != 0))
-		return bonobo_exception_get_text (ev); 
-	else {
-		const Bonobo_GeneralError *bonobo_general_error;
-
-		bonobo_general_error = CORBA_exception_value (ev);
-		if (bonobo_general_error != NULL) 
-			return g_strdup (bonobo_general_error->description);
-	}
-
-	return NULL;
-}
-
+#ifdef FIXME
 static gboolean
 rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEvent *event,
@@ -1579,6 +1047,18 @@ rb_shell_window_state_cb (GtkWidget *widget,
 
 	return FALSE;
 }
+#endif
+
+static gboolean
+rb_shell_window_delete_cb (GtkWidget *win,
+			   GdkEventAny *event,
+			   RBShell *shell)
+{
+	rb_debug ("window deleted");
+	rb_shell_quit (shell);
+
+	return TRUE;
+};
 
 static void
 rb_shell_sync_window_state (RBShell *shell)
@@ -1618,17 +1098,6 @@ rb_shell_sync_window_state (RBShell *shell)
 			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 	}
 }
-
-static gboolean
-rb_shell_window_delete_cb (GtkWidget *win,
-			   GdkEventAny *event,
-			   RBShell *shell)
-{
-	rb_debug ("window deleted");
-	rb_shell_quit (shell);
-
-	return TRUE;
-};
 
 static void
 source_selected_cb (RBSourceList *sourcelist,
@@ -1683,7 +1152,7 @@ rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 static RBSource *
 rb_shell_get_source_by_entry_type (RBShell *shell, RhythmDBEntryType type)
 {
-	return g_hash_table_lookup (shell->priv->sources_hash, (gpointer)type);
+	return g_hash_table_lookup (shell->priv->sources_hash, GINT_TO_POINTER (type));
 }
 
 void
@@ -1775,6 +1244,16 @@ rb_shell_source_deleted_cb (RBSource *source,
 }
 
 static void
+rb_shell_playing_source_changed_cb (RBShellPlayer *player,
+				    RBSource *source,
+				    RBShell *shell)
+{
+	rb_debug ("playing source changed");
+	rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
+					  source);
+}
+
+static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
 {
@@ -1795,17 +1274,9 @@ rb_shell_select_source_internal (RBShell *shell,
 
 	rb_debug ("selecting source %p", source);
 	
-	if (shell->priv->selected_source) {
-		view = rb_source_get_entry_view (shell->priv->selected_source);
-		g_signal_handlers_disconnect_by_func (view, 
-		                                      G_CALLBACK (rb_shell_entry_changed_cb),
-						      shell);
-	}
 	shell->priv->selected_source = source;
 	
 	view = rb_source_get_entry_view (shell->priv->selected_source);
-	g_signal_connect_object (view, "notify::playing-entry", 
-				 G_CALLBACK(rb_shell_entry_changed_cb), shell, 0);
 
 	/* show source */
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
@@ -1917,31 +1388,24 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 }
 
 static void
-rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
-				     const char *path,
-				     Bonobo_UIComponent_EventType type,
-				     const char *state,
+rb_shell_view_sourcelist_changed_cb (GtkAction *action,
 				     RBShell *shell)
 {
 	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN,
-			       !rb_bonobo_get_active (component, CMD_PATH_VIEW_SOURCELIST));
+			       !gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 static void
-rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
-				     const char *path,
-				     Bonobo_UIComponent_EventType type,
-				     const char *state,
-				     RBShell *shell)
+rb_shell_view_smalldisplay_changed_cb (GtkAction *action,
+				       RBShell *shell)
 {
 	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY,
-			       rb_bonobo_get_active (component, CMD_PATH_VIEW_SMALLDISPLAY));
+			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 static void
-rb_shell_cmd_about (BonoboUIComponent *component,
-		    RBShell *shell,
-		    const char *verbname)
+rb_shell_cmd_about (GtkAction *action,
+		    RBShell *shell)
 {
 	const char **tem;
 	GString *comment;
@@ -2028,32 +1492,30 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_quit (BonoboUIComponent *component,
-		   RBShell *shell,
-		   const char *verbname)
+rb_shell_cmd_quit (GtkAction *action,
+		   RBShell *shell)
 {
 	rb_shell_quit (shell);
 }
 
 static void
-rb_shell_cmd_contents (BonoboUIComponent *component,
-		       RBShell *shell,
-		       const char *verbname)
+rb_shell_cmd_contents (GtkAction *action,
+		       RBShell *shell)
 {
 	GError *error = NULL;
 
 	gnome_help_display ("rhythmbox.xml", NULL, &error);
 
 	if (error != NULL) {
-		rb_error_dialog ("%s", error->message);
+		rb_error_dialog (NULL, _("Couldn't display help"),
+				 "%s", error->message);
 		g_error_free (error);
 	}
 }
 
 static void
-rb_shell_cmd_preferences (BonoboUIComponent *component,
-		          RBShell *shell,
-		          const char *verbname)
+rb_shell_cmd_preferences (GtkAction *action,
+		          RBShell *shell)
 {
 	if (shell->priv->prefs == NULL) {
 		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
@@ -2066,74 +1528,20 @@ rb_shell_cmd_preferences (BonoboUIComponent *component,
 }
 
 static void
-ask_file_response_cb (GtkDialog *dialog,
-		      int response_id,
-		      RBShell *shell)
+add_to_library_response_cb (GtkDialog *dialog,
+			    int response_id,
+			    RBShell *shell)
 {
-#ifndef HAVE_GTK_2_3
-	char **files, **filecur;
-
-	if (response_id != GTK_RESPONSE_OK) {
-		gtk_widget_destroy (GTK_WIDGET (dialog));
-		return;
-	}
-
-	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));
-
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
-	if (files == NULL)
-		return;
-
-	filecur = files;
-
-	if (*filecur != NULL) {
-		char *tmp, *tmp2;
-		GnomeVFSResult result;
-		GnomeVFSFileInfo *info = gnome_vfs_file_info_new ();
-
-		if ((result = gnome_vfs_get_file_info (*filecur, info, GNOME_VFS_FILE_INFO_DEFAULT| GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE)) == GNOME_VFS_OK) {
-			if (info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) 
-				tmp = g_strconcat (*filecur, "/", NULL);
-			else {
-				tmp2 = g_path_get_dirname (*filecur);
-				tmp = g_strconcat (tmp2, "/", NULL);
-				g_free (tmp2);
-			}
-			eel_gconf_set_string (CONF_STATE_ADD_DIR, tmp);
-			g_free (tmp);
-		}
-		gnome_vfs_file_info_unref (info);
-	}
-
-	shell->priv->show_db_errors = TRUE;
-    
-	while (*filecur != NULL) {
-		char *utf8ized = g_filename_to_utf8 (*filecur, -1,
-						     NULL, NULL, NULL);
-		if (utf8ized) {
-			char *uri = gnome_vfs_get_uri_from_local_path (*filecur);
-			rhythmdb_add_uri_async (shell->priv->db, uri);
-			g_free (uri);
-		}
-		g_free (utf8ized);
-		filecur++;
-	}
-
-	g_strfreev (files);
-
-#else
 	char *current_dir = NULL;
 	GSList *uri_list = NULL, *uris = NULL;
 
-	if (response_id != GTK_RESPONSE_OK) {
+	if (response_id != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
 	current_dir = gtk_file_chooser_get_current_folder_uri (GTK_FILE_CHOOSER (dialog));
 	eel_gconf_set_string (CONF_STATE_ADD_DIR, current_dir);
-
 
 	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
 	if (uri_list == NULL) {
@@ -2143,56 +1551,60 @@ ask_file_response_cb (GtkDialog *dialog,
 	shell->priv->show_db_errors = TRUE;
 
 	for (uris = uri_list; uris; uris = uris->next) {
-		if (g_utf8_validate ((char *)uris->data, -1, NULL)) 
-			rhythmdb_add_uri_async (shell->priv->db, (char *)uris->data);
+		rhythmdb_add_uri (shell->priv->db, (char *)uris->data);
 	}
 	g_slist_foreach (uri_list, (GFunc)g_free, NULL);
 	g_slist_free (uri_list);
 	g_free (current_dir);
 	gtk_widget_destroy (GTK_WIDGET (dialog));
-#endif
 	g_timeout_add (10000, (GSourceFunc) idle_save_rhythmdb, shell->priv->db);
 }
 
 static void
-rb_shell_cmd_add_to_library (BonoboUIComponent *component,
-			     RBShell *shell,
-			     const char *verbname)
+rb_shell_cmd_add_folder_to_library (GtkAction *action,
+				    RBShell *shell)
 {
-	char *stored;
+	char * dir = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	GtkWidget *dialog;
     
-	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
-	dialog = rb_ask_dir_multiple (_("Choose Files or Directory"),
-				      stored,
-			              GTK_WINDOW (shell->priv->window));
-	g_free (stored);
+	dialog = rb_file_chooser_new (_("Load folder into Library"),
+			              GTK_WINDOW (shell->priv->window),
+				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+	if (dir)
+		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
+							 dir);
+	
 
 	g_signal_connect_object (G_OBJECT (dialog),
 				 "response",
-				 G_CALLBACK (ask_file_response_cb),
+				 G_CALLBACK (add_to_library_response_cb),
 				 shell, 0);
 }
 
 static void
-rb_shell_cmd_add_location (BonoboUIComponent *component,
-			   RBShell *shell,
-			   const char *verbname)
+rb_shell_cmd_add_file_to_library (GtkAction *action,
+				  RBShell *shell)
 {
-	RBSource *library_source;
+	char * dir = eel_gconf_get_string (CONF_STATE_ADD_DIR);
+	GtkWidget *dialog;
+    
+	dialog = rb_file_chooser_new (_("Load file into Library"),
+			              GTK_WINDOW (shell->priv->window),
+				      GTK_FILE_CHOOSER_ACTION_OPEN);
+	if (dir)
+		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (dialog),
+							 dir);
+	
 
-	shell->priv->show_db_errors = TRUE;
-
-	library_source = rb_shell_get_source_by_entry_type (shell, 
-							    RHYTHMDB_ENTRY_TYPE_SONG);
-	rb_library_source_add_location (RB_LIBRARY_SOURCE (library_source),
-					GTK_WINDOW (shell->priv->window));
+	g_signal_connect_object (G_OBJECT (dialog),
+				 "response",
+				 G_CALLBACK (add_to_library_response_cb),
+				 shell, 0);
 }
 
 static void
-rb_shell_cmd_new_station (BonoboUIComponent *component,
-			  RBShell *shell,
-			  const char *verbname)
+rb_shell_cmd_new_station (GtkAction *action,
+			  RBShell *shell)
 {
 	GtkWidget *dialog;
 	rb_debug ("Got new station command");
@@ -2202,21 +1614,25 @@ rb_shell_cmd_new_station (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_extract_cd (BonoboUIComponent *component,
-			 RBShell *shell,
-			 const char *verbname)
+rb_shell_cmd_extract_cd (GtkAction *action,
+			 RBShell *shell)
 {
 	GError *error = NULL;
 
 	if (g_find_program_in_path ("sound-juicer") == NULL) {
-		rb_error_dialog (_("To extract CDs you must install the Sound Juicer package."));
+		rb_error_dialog (GTK_WINDOW (shell->priv->window),
+				 _("CD Ripper not found"),
+				 _("To extract CDs you must install the Sound Juicer CD Ripper package."));
 		return;
 	}
 
 	g_spawn_command_line_async ("sound-juicer", &error);
 
 	if (error != NULL)
-		rb_error_dialog (_("Couldn't run sound-juicer: %s"), error->message);
+		rb_error_dialog (GTK_WINDOW (shell->priv->window),
+				 _("Couldn't run CD Ripper"),
+				 _("An error occurred while running sound-juicer: %s"),
+				 error->message);
 
 	g_clear_error (&error);
 }
@@ -2228,7 +1644,7 @@ rb_shell_quit (RBShell *shell)
 
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
-	bonobo_object_unref (BONOBO_OBJECT (shell));
+	g_object_unref (G_OBJECT (shell));
 }
 
 static gboolean
@@ -2257,6 +1673,7 @@ static void
 rb_shell_sync_sourcelist_visibility (RBShell *shell)
 {
 	gboolean visible;
+	GtkAction *action;
 
 	visible = !eel_gconf_get_boolean (CONF_UI_SOURCELIST_HIDDEN);
 
@@ -2265,29 +1682,31 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 	else
 		gtk_widget_hide (GTK_WIDGET (shell->priv->sourcelist));
 
-	rb_bonobo_set_active (shell->priv->ui_component,
-			      CMD_PATH_VIEW_SOURCELIST,
-			      visible);
+	action = gtk_action_group_get_action (shell->priv->actiongroup,
+					      "ViewSourceList");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+				      visible);
 }
 
 static void
 rb_shell_sync_smalldisplay (RBShell *shell)
 {
 	gboolean smalldisplay;
+	GtkAction *action;
 
 	smalldisplay = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 
-	if (smalldisplay)
-	{
-		rb_bonobo_set_sensitive (shell->priv->ui_component,
-					CMD_PATH_VIEW_SOURCELIST, FALSE);
+	action = gtk_action_group_get_action (shell->priv->actiongroup,
+					      "ViewSourceList");
+
+	if (smalldisplay) {
+		g_object_set (G_OBJECT (action), "sensitive", FALSE, NULL);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
  		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
  		gtk_widget_hide (GTK_WIDGET (shell->priv->hsep));		
 	} else {
-		rb_bonobo_set_sensitive (shell->priv->ui_component,
-					CMD_PATH_VIEW_SOURCELIST, TRUE);
+		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
  		rb_statusbar_sync_state (shell->priv->statusbar);
@@ -2297,9 +1716,10 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 	rb_source_header_sync_control_state (shell->priv->source_header);
 	rb_shell_player_sync_buttons (shell->priv->player_shell);
 
-	rb_bonobo_set_active (shell->priv->ui_component,
-			      CMD_PATH_VIEW_SMALLDISPLAY,
-			      smalldisplay);
+	action = gtk_action_group_get_action (shell->priv->actiongroup,
+					      "ViewSmallDisplay");
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+				      smalldisplay);
 
 	rb_shell_sync_window_state (shell);
 }
@@ -2434,9 +1854,8 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 }
 
 static void
-rb_shell_cmd_current_song (BonoboUIComponent *component,
-			   RBShell *shell,
-			   const char *verbname)
+rb_shell_cmd_current_song (GtkAction *action,
+			   RBShell *shell)
 {
 	rb_debug ("current song");
 
@@ -2452,13 +1871,7 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 	g_return_if_fail (entry != NULL);
 
 	if (source == NULL) {
-		const char *location;
-		rhythmdb_read_lock (shell->priv->db);
-		location = rhythmdb_entry_get_string (shell->priv->db, entry,
-						      RHYTHMDB_PROP_LOCATION);
-		rhythmdb_read_unlock (shell->priv->db);
-		if (rb_uri_is_iradio (location)) {
-
+		if (rb_uri_is_iradio (entry->location)) {
 			RBSource *iradio_source;
 			iradio_source = rb_shell_get_source_by_entry_type (shell, 
 									    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
@@ -2536,8 +1949,8 @@ tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 	}
 
 	rb_debug ("creating new tray icon");
-	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->container,
-						   shell->priv->ui_component,
+	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager,
+						   shell->priv->actiongroup,
 						   shell->priv->db,
 						   GTK_WINDOW (shell->priv->window));
  	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy-event",

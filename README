@@ -41,12 +41,24 @@ In the bug report please include:
    
   And anything else you think is relevant.
 
+* If rhythmbox crashes when you try to import a folder full of music files
+  to your library, you can pinpoint the exact file causing the crash
+  by running rhythmbox -d from a console. It will output lots of debugging
+  information, the last file mentioned in the console output will quite likely
+  correspond to the file causing the crash.
+
 * Before you report a bug, it will be useful to know if GStreamer works.
-  Try running this command:
+  If you have playback issues, try running this command:
 
   $ gst-launch-0.8 gnomevfssrc location=/path/to/my/musicfile.ogg ! spider ! volume ! audioscale ! audioconvert ! $(gconftool-2 -g /system/gstreamer/0.8/default/audiosink)  
 
-  Just replace /path/to/my/musicfile.ogg with some sound file.
+  If you have troubles importing a specific file to your library, try running:
+
+  $ gst-launch-0.8 filesrc location=/path/to/my/musicfile.ogg ! typefind ! spider ! audio/x-raw-int ! fakesink
+ 
+  Just replace /path/to/my/musicfile.ogg with some sound file in the 2 commands
+  above.
+
   You might also want to try the monkey-media tests/test-cmdline program.
 
 * How to reproduce the bug.

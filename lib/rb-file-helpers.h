@@ -31,9 +31,8 @@ const char *	rb_file			(const char *filename);
 
 const char *	rb_dot_dir		(void);
 
-void		rb_ensure_dir_exists	(const char *dir);
-
-GnomeVFSResult	rb_uri_mkstemp		(const char *prefix, char **uri, GnomeVFSHandle **handle);
+GnomeVFSResult	rb_uri_mkstemp		(const char *prefix, char **uri,
+					 GnomeVFSHandle **handle);
 
 char *		rb_uri_resolve_symlink	(const char *uri);
 gboolean	rb_uri_is_directory	(const char *uri);

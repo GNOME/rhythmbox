@@ -24,7 +24,7 @@
 #define __RB_SOURCE_H
 
 #include <gtk/gtkhbox.h>
-#include <bonobo/bonobo-ui-component.h>
+#include <gtk/gtkactiongroup.h>
 
 #include "rb-entry-view.h"
 

@@ -23,7 +23,7 @@
 #ifndef __RB_SOURCELIST_MODEL_H
 #define __RB_SOURCELIST_MODEL_H
 
-#include <gtk/gtkliststore.h>
+#include <gtk/gtktreemodelfilter.h>
 
 #include "rb-source.h"
 
@@ -53,10 +53,15 @@ typedef struct RBSourceListModelClass
 
 } RBSourceListModelClass;
 
-#define RB_SOURCELIST_MODEL_COLUMN_PIXBUF 0
-#define RB_SOURCELIST_MODEL_COLUMN_NAME 1
-#define RB_SOURCELIST_MODEL_COLUMN_SOURCE 2
-#define RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES 3
+enum
+{
+	RB_SOURCELIST_MODEL_COLUMN_PLAYING = 0,
+	RB_SOURCELIST_MODEL_COLUMN_PIXBUF,
+	RB_SOURCELIST_MODEL_COLUMN_NAME,
+	RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+	RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES,
+	RB_SOURCELIST_MODEL_N_COLUMNS
+};
 
 GType		rb_sourcelist_model_get_type	(void);
 

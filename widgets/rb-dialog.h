@@ -1,7 +1,8 @@
 /*
- *  arch-tag: Header for thread-related utility functions
+ *  arch-tag: Header file for Rhythmbox dialog wrapper functions
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2004 Colin Walters <walters@redhat.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,21 +20,31 @@
  *
  */
 
-#include <glib/gthread.h>
+#ifndef __RB_DIALOG_H
+#define __RB_DIALOG_H
 
-#ifndef __RB_THREAD_HELPERS_H
-#define __RB_THREAD_HELPERS_H
+#include <gtk/gtkwindow.h>
+#include <gtk/gtkfilechooserdialog.h>
+#include <stdarg.h>
 
 G_BEGIN_DECLS
 
-void     rb_thread_helpers_init           (void);
+void		rb_error_dialog_full	(GtkWindow *parent,
+					 gboolean modal,
+					 const char *primary,
+					 const char *secondary,
+					 const char *first_button,
+					 ...);
 
-gboolean rb_thread_helpers_in_main_thread (void);
-
-void	 rb_thread_helpers_lock_gdk (void);
-
-void	 rb_thread_helpers_unlock_gdk (void);
+void		rb_error_dialog		(GtkWindow *parent,
+					 const char *primary,
+					 const char *secondary,
+					 ...);
+					 
+GtkWidget *	rb_file_chooser_new	(const char *title,
+					 GtkWindow *parent,
+					 GtkFileChooserAction action);
 
 G_END_DECLS
 
-#endif /* __RB_THREAD_HELPERS_H */
+#endif /* __RB_DIALOG_H */

@@ -52,7 +52,7 @@ typedef struct
 } RBiPodSourceClass;
 
 RBSource *	rb_ipod_source_new		(RBShell *shell, RhythmDB *db, 
-						 BonoboUIComponent *component);
+						 GtkActionGroup *actiongroup);
 
 GType		rb_ipod_source_get_type	        (void);
 

@@ -25,8 +25,6 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <glade/glade.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-window.h>
 #include <string.h>
 
 #include "rb-source.h"
@@ -43,7 +41,6 @@
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
 #include "rb-volume.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
@@ -72,15 +69,12 @@ static void rb_library_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
-static void rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
-						RBShell *shell,
-						const char *verbname);
-static void rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
-						 RBShell *shell,
-						 const char *verbname);
-static void rb_library_source_cmd_choose_album (BonoboUIComponent *component,
-						RBShell *shell,
-						const char *verbname);
+static void rb_library_source_cmd_choose_genre (GtkAction *action,
+						RBShell *shell);
+static void rb_library_source_cmd_choose_artist (GtkAction *action,
+						 RBShell *shell);
+static void rb_library_source_cmd_choose_album (GtkAction *action,
+						RBShell *shell);
 static void rb_library_source_handle_genre_selection (RBLibrarySource *libsource, GList *genres);
 static void rb_library_source_handle_artist_selection (RBLibrarySource *libsource, GList *artists);
 static void rb_library_source_handle_album_selection (RBLibrarySource *libsource, GList *albums);
@@ -137,9 +131,6 @@ void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 
 
-#define LIBRARY_SOURCE_SONGS_POPUP_PATH "/popups/LibrarySongsList"
-#define LIBRARY_SOURCE_POPUP_PATH "/popups/LibrarySourceList"
-
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
 #define CONF_UI_LIBRARY_BROWSER_VIEWS CONF_PREFIX "/ui/library/browser_views"
 #define CONF_STATE_LIBRARY_DIR CONF_PREFIX "/state/library"
@@ -192,12 +183,17 @@ struct RBLibrarySourcePrivate
 	RhythmDBEntryType entry_type;
 };
 
-static BonoboUIVerb rb_library_source_verbs[] =
+static GtkActionEntry rb_library_source_actions [] =
 {
-	BONOBO_UI_VERB ("SLChooseGenre",(BonoboUIVerbFn) rb_library_source_cmd_choose_genre),
-	BONOBO_UI_VERB ("SLChooseArtist",(BonoboUIVerbFn) rb_library_source_cmd_choose_artist),
-	BONOBO_UI_VERB ("SLChooseAlbum", (BonoboUIVerbFn) rb_library_source_cmd_choose_album),
-	BONOBO_UI_VERB_END
+	{ "LibrarySrcChooseGenre", NULL, N_(""), NULL,
+	  N_(""),
+	  G_CALLBACK (rb_library_source_cmd_choose_genre) },
+	{ "LibrarySrcChooseArtist", NULL , N_(""), NULL,
+	  N_(""),
+	  G_CALLBACK (rb_library_source_cmd_choose_artist) },
+	{ "LibrarySrcChooseAlbum", NULL, N_(""), NULL,
+	  N_(""),
+	  G_CALLBACK (rb_library_source_cmd_choose_album) }
 };
 
 enum
@@ -309,58 +305,64 @@ update_browser_views_visibility (RBLibrarySource *source)
 	GtkWidget *genres = GTK_WIDGET (source->priv->genres);
 	GtkWidget *artists = GTK_WIDGET (source->priv->artists);
 	GtkWidget *albums = GTK_WIDGET (source->priv->albums);
-	BonoboUIComponent *component;
+	GtkActionGroup *actiongroup;
+	GtkAction *action;
 
 	views = eel_gconf_get_integer (CONF_UI_LIBRARY_BROWSER_VIEWS);
 
-	g_object_get (G_OBJECT (source), "component", &component, NULL);
+	g_object_get (G_OBJECT (source), "action-group", &actiongroup, NULL);
+	
+	gtk_widget_show (genres);
+	action = gtk_action_group_get_action (actiongroup,
+					      "LibrarySrcChooseGenre");
+	if (action) {
+		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
+	}
+
+
+	gtk_widget_show (artists);	
+	action = gtk_action_group_get_action (actiongroup,
+					      "LibrarySrcChooseArtist"); 
+	if (action) {
+		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
+	}
+
+	gtk_widget_show (albums);
+	action = gtk_action_group_get_action (actiongroup,
+					      "LibrarySrcChooseAlbum"); 
+	if (action) {
+		g_object_set (G_OBJECT (action), "sensitive", TRUE, NULL);
+	}
 	
 	switch (views)
 	{
-		case 0:
-			gtk_widget_hide (genres);
-			rb_library_source_handle_genre_selection (source, NULL);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseGenre",
-						 FALSE);
-			gtk_widget_show (artists);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseArtist",
-						 TRUE);
-			gtk_widget_show (albums);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseAlbum",
-						 TRUE);
-			/* Since this is hidden now, reset the query */
+	case 0:
+		action = gtk_action_group_get_action (actiongroup,
+						      "LibrarySrcChooseGenre");
+		if (action) {
+			g_object_set (G_OBJECT (action), 
+				      "sensitive", FALSE, 
+				      NULL);
+		}
+		gtk_widget_hide (genres);
+		rb_library_source_handle_genre_selection (source, NULL);
+		/* Since this is hidden now, reset the query */
 		break;
-		case 1:
-			gtk_widget_show (genres);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseGenre",
-						 TRUE);
-			gtk_widget_show (artists);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseArtist",
-						 TRUE);
-			gtk_widget_hide (albums);
-			rb_library_source_handle_artist_selection (source, NULL);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseAlbum",
-						 FALSE);
+	case 1:
+		action = gtk_action_group_get_action (actiongroup,
+						      "LibrarySrcChooseAlbum");
+		if (action) {
+			g_object_set (G_OBJECT (action), 
+				      "sensitive", FALSE, 
+				      NULL);
+		}
+		gtk_widget_hide (albums);
+		rb_library_source_handle_album_selection (source, NULL);
 		break;
-		case 2:
-			gtk_widget_show (genres);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseGenre",
-						 TRUE);
-			gtk_widget_show (artists);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseArtist",
-						 TRUE);
-			gtk_widget_show (albums);
-			rb_bonobo_set_sensitive (component,
-						 "/commands" "/SLChooseAlbum",
-						 TRUE);
+	case 2:
+		/* All are shown */
+		break;
+	default:
 		break;
 	}
 }
@@ -434,6 +436,7 @@ static void
 rb_library_source_songs_show_popup_cb (RBEntryView *view,
 				       RBLibrarySource *library_source)
 {
+#ifdef FIXME
 	GtkWidget *menu;
 	GtkWidget *window;
 
@@ -449,6 +452,7 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 			3, gtk_get_current_event_time ());
 
 	gtk_object_sink (GTK_OBJECT (menu));
+#endif
 }
 
 /* This function may seem a bit weird. Since we have 2 instances of objects 
@@ -457,12 +461,13 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
  * shell would also be weird imo since this would add more code 
  * dependant on the source type to the shell */
 void
-rb_library_source_class_add_verbs (RBShell *shell, 
-				   BonoboUIComponent *component)
+rb_library_source_class_add_actions (RBShell *shell, 
+				     GtkActionGroup *actiongroup)
 {
-	bonobo_ui_component_add_verb_list_with_data (component, 
-						     rb_library_source_verbs,
-						     shell);
+	gtk_action_group_add_actions (actiongroup, 
+				      rb_library_source_actions,
+				      G_N_ELEMENTS (rb_library_source_actions),
+				      shell);
 }
 
 
@@ -473,15 +478,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
 	GObjectClass *parent_class;  
-	BonoboUIComponent *component;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (RB_TYPE_LIBRARY_SOURCE));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
 							       construct_properties));
-
-	g_object_get (G_OBJECT (source), "component", &component, NULL);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -634,7 +636,7 @@ rb_library_source_get_property (GObject *object,
 
 RBSource *
 rb_library_source_new (RBShell *shell, RhythmDB *db, 
-		       BonoboUIComponent *component)
+		       GtkActionGroup *actiongroup)
 {
 	RBSource *source;
 	GtkWidget *dummy = gtk_tree_view_new ();
@@ -650,7 +652,7 @@ rb_library_source_new (RBShell *shell, RhythmDB *db,
 					  "internal-name", "<library>",
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "db", db,
-					  "component", component,
+					  "action-group", actiongroup,
 					  "icon", icon,
 					  NULL));
 	rb_shell_register_entry_type_for_source (shell, source, 
@@ -711,16 +713,14 @@ rb_library_source_gather_properties (RBLibrarySource *source,
 	GList *selected, *tem;
 	GHashTable *selected_set;
 
-	rhythmdb_read_lock (source->priv->db);
 	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
 	selected = rb_entry_view_get_selected_entries (source->priv->songs);
 	for (tem = selected; tem; tem = tem->next) {
-		char *val = g_strdup (rhythmdb_entry_get_string (source->priv->db,
-								 tem->data, prop));
+		RhythmDBEntry *entry = tem->data;
+		char *val = g_strdup (rhythmdb_entry_get_string (entry, prop));
 		g_hash_table_insert (selected_set, val, NULL);
 	}
 
-	rhythmdb_read_unlock (source->priv->db);
 
 	g_list_free (selected);
 	
@@ -732,11 +732,10 @@ rb_library_source_gather_properties (RBLibrarySource *source,
 }
 
 static void
-rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
-				    RBShell *shell,
-				    const char *verbname)
+rb_library_source_cmd_choose_genre (GtkAction *action,
+				    RBShell *shell)
 {
-	GList *props;	
+	GList *props;
 	RBLibrarySource *source;
 
 	rb_debug ("choosing genre");
@@ -748,9 +747,8 @@ rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
 }
 
 static void
-rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
-				     RBShell *shell,
-				     const char *verbname)
+rb_library_source_cmd_choose_artist (GtkAction *action,
+				     RBShell *shell)
 {
 	GList *props;	
 	RBLibrarySource *source;
@@ -764,9 +762,8 @@ rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
 }
 
 static void
-rb_library_source_cmd_choose_album (BonoboUIComponent *component,
-				    RBShell *shell,
-				    const char *verbname)
+rb_library_source_cmd_choose_album (GtkAction *action,
+				    RBShell *shell)
 {
 	GList *props;	
 	RBLibrarySource *source;
@@ -1047,12 +1044,7 @@ impl_get_artist (RBSource *asource)
 	entry = rb_entry_view_get_playing_entry (source->priv->songs);
 
 	if (entry != NULL) {
-		rhythmdb_read_lock (source->priv->db);
-		
-		source->priv->artist =
-			g_strdup (rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST));
-
-		rhythmdb_read_unlock (source->priv->db);
+		source->priv->artist = g_strdup (rb_refstring_get (entry->artist));
 	} else {
 		source->priv->artist = NULL;
 	}
@@ -1071,12 +1063,7 @@ impl_get_album (RBSource *asource)
 	entry = rb_entry_view_get_playing_entry (source->priv->songs);
 
 	if (entry != NULL) {
-		rhythmdb_read_lock (source->priv->db);
-
-		source->priv->album =
-			g_strdup (rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM));
-		
-		rhythmdb_read_unlock (source->priv->db);
+		source->priv->album = g_strdup (rb_refstring_get (entry->album));
 	} else {
 		source->priv->album = NULL;
 	}
@@ -1117,9 +1104,8 @@ impl_delete (RBSource *asource)
 	GList *l;
 
 	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l)) {
-		rhythmdb_write_lock (source->priv->db);
 		rhythmdb_entry_delete (source->priv->db, l->data);
-		rhythmdb_write_unlock (source->priv->db);
+		rhythmdb_commit (source->priv->db);
 	}
 }
 
@@ -1234,7 +1220,7 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 		if (uri != NULL) {
 			GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 			if (vfsuri != NULL) {
-				rhythmdb_add_uri_async (source->priv->db, uri);
+				rhythmdb_add_uri (source->priv->db, uri);
 				gnome_vfs_uri_unref (vfsuri);
 			} else
 				rb_debug ("invalid uri: \"%s\"", uri);
@@ -1277,7 +1263,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rhythmdb_add_uri_async (source->priv->db, uri);
+			rhythmdb_add_uri (source->priv->db, uri);
 
 		g_free (uri);
 	}
@@ -1289,7 +1275,9 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 static gboolean
 impl_show_popup (RBSource *source)
 {
+#ifdef FIXME
 	rb_bonobo_show_popup (GTK_WIDGET (source), LIBRARY_SOURCE_POPUP_PATH);
+#endif
 	return TRUE;
 }
 
@@ -1429,7 +1417,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 
 	/* Unlocked */
 	rb_debug ("preparing to read lock for query");
-	rhythmdb_read_lock (source->priv->db);
 
 	if (source->priv->active_query) {
 		rb_debug ("killing active query");
@@ -1465,7 +1452,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 			rb_property_view_set_model (source->priv->albums,
 						    source->priv->cached_albums_model);
 			rb_entry_view_poll_model (source->priv->songs);
-			rhythmdb_read_unlock (source->priv->db);
 			return;
 		} else if (source->priv->cached_all_query) {
 			rb_debug ("sorting mismatch, freeing cached query");

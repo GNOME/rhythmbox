@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Implementation of Rhythmbox playlist management object
  *
- *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #include <config.h>
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
-#include <bonobo/bonobo-ui-util.h>
 #include <libxml/tree.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
@@ -32,9 +31,8 @@
 #include "rb-playlist-source.h"
 #include "rb-sourcelist.h"
 #include "rb-query-creator.h"
-#include "rb-playlist.h"
+#include "totem-pl-parser.h"
 
-#include "rb-bonobo-helpers.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -53,25 +51,19 @@ static void rb_playlist_manager_get_property (GObject *object,
 					      guint prop_id,
 					      GValue *value,
 					      GParamSpec *pspec);
-static void rb_playlist_manager_cmd_load_playlist (BonoboUIComponent *component,
-						   RBPlaylistManager *mgr,
-						   const char *verbname);
-static void rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
-						   RBPlaylistManager *mgr,
-						   const char *verbname);
-static void rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
-						  RBPlaylistManager *mgr,
-						  const char *verbname);
-static void rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
-							    RBPlaylistManager *mgr,
-							    const char *verbname);
-static void rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
-						     RBPlaylistManager *mgr,
-						     const char *verbname);
-static void rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *component,
-							     RBPlaylistManager *mgr,
-							     const char *verbname);
-static void handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
+static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
+						   RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
+						   RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
+						  RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
+							    RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
+						     RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
+							     RBPlaylistManager *mgr);
+static void handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri, const char *title,
 						    const char *genre, RBPlaylistManager *mgr);
 static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
 
@@ -82,7 +74,7 @@ struct RBPlaylistManagerPrivate
 
 	RBSourceList *sourcelist;
 
-	BonoboUIComponent *component;
+	GtkActionGroup *actiongroup;
 	RBLibrarySource *libsource;
 	RBIRadioSource *iradio_source;
 	GtkWindow *window;
@@ -111,7 +103,7 @@ enum
 {
 	PROP_0,
 	PROP_WINDOW,
-	PROP_COMPONENT,
+	PROP_ACTION_GROUP,
 	PROP_SOURCE,
 	PROP_DB,
 	PROP_SOURCELIST,
@@ -129,20 +121,31 @@ enum
 
 static guint rb_playlist_manager_signals[LAST_SIGNAL] = { 0 };
 
-#define CMD_PATH_PLAYLIST_DELETE   "/commands/FileDeletePlaylist"
-#define CMD_PATH_PLAYLIST_SAVE   "/commands/SavePlaylist"
-
-static BonoboUIVerb rb_playlist_manager_verbs[] =
+static GtkActionEntry rb_playlist_manager_actions [] =
 {
- 	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_new_playlist),
- 	BONOBO_UI_VERB ("NewAutomaticPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_new_automatic_playlist),
-	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_playlist_manager_cmd_load_playlist),
-	BONOBO_UI_VERB ("SavePlaylist", (BonoboUIVerbFn) rb_playlist_manager_cmd_save_playlist),
-	BONOBO_UI_VERB ("FileDeletePlaylist",(BonoboUIVerbFn) rb_playlist_manager_cmd_delete_playlist),
-	BONOBO_UI_VERB ("DeletePlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_delete_playlist),
- 	BONOBO_UI_VERB ("EditAutomaticPlaylist",  (BonoboUIVerbFn) rb_playlist_manager_cmd_edit_automatic_playlist),
-	BONOBO_UI_VERB_END
+	/* Submenu of Music */
+	{ "Playlist", NULL, N_("_Playlist") },
+
+	{ "MusicPlaylistNewPlaylist", GTK_STOCK_NEW, N_("_New Playlist..."), "<control>N",
+	  N_("Create a new playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_new_playlist) },
+	{ "MusicPlaylistNewAutomaticPlaylist", RB_STOCK_AUTOMATIC_PLAYLIST, N_("New _Automatic Playlist..."), NULL,
+	  N_("Create a new automatically updating playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_new_automatic_playlist) },
+	{ "MusicPlaylistLoadPlaylist", NULL, N_("_Load from file..."), NULL,
+	  N_("Choose a playlist to be loaded"),
+	  G_CALLBACK (rb_playlist_manager_cmd_load_playlist) },
+	{ "MusicPlaylistSavePlaylist", GTK_STOCK_SAVE_AS, N_("_Save to file..."), NULL,
+	  N_("Save a playlist to a file"),
+	  G_CALLBACK (rb_playlist_manager_cmd_save_playlist) },
+	{ "MusicPlaylistDeletePlaylist", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
+	  N_("Delete playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_delete_playlist) },
+	{ "EditAutomaticPlaylist", GTK_STOCK_PROPERTIES, N_("_Edit"), NULL,
+	  N_("Change this automatic playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_edit_automatic_playlist) },
 };
+static guint rb_playlist_manager_n_actions = G_N_ELEMENTS (rb_playlist_manager_actions);
 
 static GObjectClass *parent_class = NULL;
 
@@ -202,11 +205,11 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_ACTION_GROUP,
+					 g_param_spec_object ("action-group",
+							      "GtkActionGroup",
+							      "GtkActionGroup object",
+							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
@@ -349,22 +352,26 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_SOURCE:
 	{
 		gboolean playlist_active;
+		GtkAction *action;
 
 		mgr->priv->selected_source = g_value_get_object (value);
 
 		playlist_active = g_list_find (mgr->priv->playlists,
 					       mgr->priv->selected_source) != NULL;
-		rb_bonobo_set_sensitive (mgr->priv->component, CMD_PATH_PLAYLIST_SAVE,
-					 playlist_active);
-		rb_bonobo_set_sensitive (mgr->priv->component, CMD_PATH_PLAYLIST_DELETE,
-					 playlist_active);
+		action = gtk_action_group_get_action (mgr->priv->actiongroup,
+						      "MusicPlaylistSavePlaylist");
+		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
+		action = gtk_action_group_get_action (mgr->priv->actiongroup,
+						      "MusicPlaylistDeletePlaylist");
+		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
 		break;
 	}
-	case PROP_COMPONENT:
-		mgr->priv->component = g_value_get_object (value);
-		bonobo_ui_component_add_verb_list_with_data (mgr->priv->component,
-							     rb_playlist_manager_verbs,
-							     mgr);
+	case PROP_ACTION_GROUP:
+		mgr->priv->actiongroup = g_value_get_object (value);
+		gtk_action_group_add_actions (mgr->priv->actiongroup,
+					      rb_playlist_manager_actions,
+					      rb_playlist_manager_n_actions,
+					      mgr);
 		break;
 	case PROP_DB:
 		mgr->priv->db = g_value_get_object (value);
@@ -400,8 +407,8 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, mgr->priv->selected_source);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, mgr->priv->component);
+	case PROP_ACTION_GROUP:
+		g_value_set_object (value, mgr->priv->actiongroup);
 		break;
 	case PROP_DB:
 		g_value_set_object (value, mgr->priv->db);
@@ -436,23 +443,19 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr, RBSource *source)
 }
 
 RBPlaylistManager *
-rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
+rb_playlist_manager_new (GtkActionGroup *actiongroup, GtkWindow *window,
 			 RhythmDB *db, RBSourceList *sourcelist,
 			 RBLibrarySource *libsource,
 			 RBIRadioSource *iradio_source)
 {
-	RBPlaylistManager *mgr = g_object_new (RB_TYPE_PLAYLIST_MANAGER,
-					       "component", component,
-					       "window", window,
-					       "db", db,
-					       "sourcelist", sourcelist,
-					       "library_source", libsource,
-					       "iradio_source", iradio_source,
-					       NULL);
-
-	g_return_val_if_fail (mgr->priv != NULL, NULL);
-
-	return mgr;
+	return g_object_new (RB_TYPE_PLAYLIST_MANAGER,
+			     "action-group", actiongroup,
+			     "window", window,
+			     "db", db,
+			     "sourcelist", sourcelist,
+			     "library_source", libsource,
+			     "iradio_source", iradio_source,
+			     NULL);
 }
 
 const char *
@@ -466,14 +469,15 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
 
 	{
-		RBPlaylist *parser = rb_playlist_new ();
+		TotemPlParser *parser = totem_pl_parser_new ();
 
 		g_signal_connect_object (G_OBJECT (parser), "entry",
 					 G_CALLBACK (handle_playlist_entry_into_playlist_cb),
 					 mgr, 0);
 
-		if (!rb_playlist_parse (parser, uri))
-			rb_error_dialog (_("Couldn't parse playlist"));
+		if (totem_pl_parser_parse (parser, uri, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS)
+			rb_error_dialog (NULL, _("Couldn't read playlist"),
+					 _("The playlist file may be in an unknown format or corrupted."));
 		mgr->priv->loading_playlist = NULL;
 
 		g_object_unref (G_OBJECT (parser));
@@ -644,9 +648,8 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 }
 
 static void
-rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
-				      RBPlaylistManager *mgr,
-				      const char *verbname)
+rb_playlist_manager_cmd_new_playlist (GtkAction *action,
+				      RBPlaylistManager *mgr)
 {
 	rb_playlist_manager_new_playlist (mgr, NULL, FALSE);
 }
@@ -670,9 +673,8 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 }
 
 static void
-rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
-						RBPlaylistManager *mgr,
-						const char *verbname)
+rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
+						RBPlaylistManager *mgr)
 {
 	RBQueryCreator *creator = RB_QUERY_CREATOR (rb_query_creator_new (mgr->priv->db));
 	RBSource *playlist;
@@ -695,9 +697,8 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 }
 
 static void
-rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *component,
-						 RBPlaylistManager *mgr,
-						 const char *verbname)
+rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
+						 RBPlaylistManager *mgr)
 {
 	RBQueryCreator *creator;
 	RBPlaylistSource *playlist;
@@ -720,9 +721,8 @@ rb_playlist_manager_cmd_edit_automatic_playlist (BonoboUIComponent *component,
 }
 
 static void
-rb_playlist_manager_cmd_delete_playlist (BonoboUIComponent *component,
-					 RBPlaylistManager *mgr,
-					 const char *verbname)
+rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
+					 RBPlaylistManager *mgr)
 {
 	rb_debug ("Deleting playlist %p", mgr->priv->selected_source);
 	
@@ -737,21 +737,12 @@ load_playlist_response_cb (GtkDialog *dialog,
 {
 	char *escaped_file = NULL;
 
-	if (response_id != GTK_RESPONSE_OK) {
+	if (response_id != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
-#ifndef HAVE_GTK_2_3
-	{
-	char *file = NULL;
-	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
-	escaped_file = gnome_vfs_get_uri_from_local_path (file);
-	g_free (file);
-	}
-#else
 	escaped_file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
-#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
@@ -764,14 +755,14 @@ load_playlist_response_cb (GtkDialog *dialog,
 }
 
 static void
-rb_playlist_manager_cmd_load_playlist (BonoboUIComponent *component,
-				       RBPlaylistManager *mgr,
-				       const char *verbname)
+rb_playlist_manager_cmd_load_playlist (GtkAction *action,
+				       RBPlaylistManager *mgr)
 {
 	GtkWidget *dialog;
 
-	dialog = rb_ask_file (_("Load playlist"), NULL,
-			      GTK_WINDOW (mgr->priv->window));
+	dialog = rb_file_chooser_new (_("Load playlist"),
+				      GTK_WINDOW (mgr->priv->window),
+				      GTK_FILE_CHOOSER_ACTION_OPEN);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (load_playlist_response_cb), mgr, 0);
@@ -782,18 +773,14 @@ save_playlist_response_cb (GtkDialog *dialog,
 			   int response_id,
 			   RBPlaylistManager *mgr)
 {
-	char *file;
+	char *file = NULL;
 
-	if (response_id != GTK_RESPONSE_OK) {
+	if (response_id != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
 
-#ifndef HAVE_GTK_2_3
-	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
-#else
 	file = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
-#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
@@ -805,14 +792,14 @@ save_playlist_response_cb (GtkDialog *dialog,
 }
 
 static void
-rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
-				       RBPlaylistManager *mgr,
-				       const char *verbname)
+rb_playlist_manager_cmd_save_playlist (GtkAction *action,
+				       RBPlaylistManager *mgr)
 {
 	GtkWidget *dialog;
     
-	dialog = rb_ask_file_save (_("Save playlist"), NULL,
-				   GTK_WINDOW (mgr->priv->window));
+	dialog = rb_file_chooser_new (_("Save playlist"),
+				      GTK_WINDOW (mgr->priv->window),
+				      GTK_FILE_CHOOSER_ACTION_SAVE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (save_playlist_response_cb),
@@ -822,7 +809,6 @@ rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
 static void
 add_uri_to_playlist (RBPlaylistManager *mgr, RBPlaylistSource *playlist, const char *uri, const char *title)
 {
-	GError *error = NULL;
 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 
@@ -831,19 +817,18 @@ add_uri_to_playlist (RBPlaylistManager *mgr, RBPlaylistSource *playlist, const c
 		goto out;
 	}
 
-	rhythmdb_add_song (mgr->priv->db, uri, &error);
-	if (error) {
-		rb_debug ("error loading URI %s", uri);
-		goto out; /* FIXME */
-	}
+	rhythmdb_add_uri (mgr->priv->db, uri);
 
+	/* REWRITEFIXME */
+#if 0
 	rb_playlist_source_add_location (playlist, uri);
+#endif
 out:
 	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void
-handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri_maybe,
+handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri_maybe,
 					const char *title,
 					const char *genre, RBPlaylistManager *mgr)
 {

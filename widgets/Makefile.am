@@ -17,7 +17,16 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	rb-druid.c					\
 	rb-druid.h					\
-	$(EGGFILES)					\
+	disclosure-widget.c				\
+	disclosure-widget.h				\
+	gst-hig-dialog.c				\
+	gst-hig-dialog.h				\
+	eel-gconf-extensions.c				\
+	eel-gconf-extensions.h				\
+	eggtrayicon.c					\
+	eggtrayicon.h					\
+	rb-dialog.c					\
+	rb-dialog.h					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\

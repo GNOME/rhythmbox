@@ -62,8 +62,10 @@ fi
     ACLOCAL=aclocal-1.7
    else
 	echo
-	echo "You must have automake >= 1.7 installed to compile $PROJECT."
-	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.8.3.tar.gz"
+	echo "You must have automake 1.7 installed to compile $PROJECT."
+	echo "automake 1.8 isn't supported, patches are welcome though."
+	echo "automake 1.7 is parallel installable with automake 1.8."
+	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.7.9.tar.gz"
 	echo "(or a newer version if it is available)"
 	DIE=1
    fi

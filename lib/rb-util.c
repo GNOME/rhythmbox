@@ -166,6 +166,21 @@ rb_gvalue_compare (GValue *a, GValue *b)
 	return retval;
 }
 
+int
+rb_compare_gtimeval (GTimeVal *a, GTimeVal *b)
+{
+	if (a->tv_sec == b->tv_sec)
+		/* It's quite unlikely that microseconds are equal,
+		 * so just ignore that case, we don't need a lot
+		 * of precision.
+		 */
+		return a->tv_usec > b->tv_usec ? 1 : -1;
+	else if (a->tv_sec > b->tv_sec)
+		return 1;
+	else
+		return -1;
+}
+
 /* Taken from totem/video-utils.c CVS HEAD 2004-04-22 */
 static void
 totem_pixbuf_mirror (GdkPixbuf *pixbuf)

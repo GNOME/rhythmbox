@@ -70,7 +70,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/iradio/librbiradio.la	        \
-	$(top_builddir)/corba/librbcorba.la	        \
+	$(GDA_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -85,13 +85,12 @@ INCLUDES = 						\
 	-I$(top_srcdir)/rhythmdb                       	\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
-	-I$(top_srcdir)/corba                    	\
-	-I$(top_builddir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(WARN_CFLAGS)					\
+	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 

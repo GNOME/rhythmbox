@@ -2,7 +2,7 @@
  *  arch-tag: Header for object implementing main playback logic
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
  */
 
 #include <gtk/gtkhbox.h>
-#include <bonobo/bonobo-arg.h>
-#include <bonobo/bonobo-ui-component.h>
+#include <gtk/gtkuimanager.h>
+#include <gtk/gtkactiongroup.h>
 
 #include "rb-source.h"
 #include "rb-player.h"
@@ -64,12 +64,13 @@ typedef struct
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 	void (*duration_changed) (RBShellPlayer *player, const char *duration);
+	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 } RBShellPlayerClass;
 
 GType			rb_shell_player_get_type   (void);
 
-RBShellPlayer *		rb_shell_player_new		(BonoboUIComponent *component,
-							 BonoboUIComponent *tray_component);
+RBShellPlayer *		rb_shell_player_new		(GtkUIManager *mgr,
+							 GtkActionGroup *actiongroup);
 
 void			rb_shell_player_set_selected_source	(RBShellPlayer *shell_player,
 								 RBSource *player);

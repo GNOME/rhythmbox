@@ -45,13 +45,13 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_COMMENT),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_INT));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_TRACK_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_INT));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DISC_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_INT));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_DISC_NUMBER),
-				     GINT_TO_POINTER (G_TYPE_INT));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DESCRIPTION),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_VERSION),
@@ -69,11 +69,11 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_PERFORMER),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
-				     GINT_TO_POINTER (G_TYPE_LONG));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_CODEC),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_BITRATE),
-				     GINT_TO_POINTER (G_TYPE_INT));
+				     GINT_TO_POINTER (G_TYPE_ULONG));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_GAIN),
 				     GINT_TO_POINTER (G_TYPE_DOUBLE));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_TRACK_PEAK),

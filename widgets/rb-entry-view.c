@@ -710,51 +710,35 @@ static gint
 rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
-	gint a_int, b_int;
-	const char *a_str = NULL;
-	const char *b_str = NULL;
 	gint ret;
 
 	/* Sort by album name */
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
+	ret = strcmp (rb_refstring_get_sort_key (a->album),
+		      rb_refstring_get_sort_key (b->album));
 	if (ret != 0)
 		return ret;
 
 	/* Then by disc number, */
-	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_DISC_NUMBER);
-	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_DISC_NUMBER);
-	if (a_int != b_int)
-		return (a_int < b_int ? -1 : 1);
+	if (a->discnum != b->discnum)
+		return (a->discnum < b->discnum ? -1 : 1);
 
 	/* by track number */
-	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
-	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
-
-	if (a_int != b_int)
-		return (a_int < b_int ? -1 : 1);
+	if (a->tracknum != b->tracknum)
+		return (a->tracknum < b->tracknum ? -1 : 1);
 
 	/* And finally by title */
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
-
-	return strcmp (a_str, b_str);
+	return strcmp (rb_refstring_get_sort_key (a->title),
+		       rb_refstring_get_sort_key (b->title));
 }
 
 static gint
 rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				RBEntryView *view)
 {
-	const char *a_str = NULL;
-	const char *b_str = NULL;
 	gint ret;
 
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
+	ret = strcmp (rb_refstring_get_sort_key (a->artist),
+		      rb_refstring_get_sort_key (b->artist));
 	if (ret != 0)
 		return ret;
 
@@ -765,14 +749,10 @@ static gint
 rb_entry_view_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
-	const char *a_str = NULL;
-	const char *b_str = NULL;
 	gint ret;
 
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_GENRE_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_GENRE_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
+	ret = strcmp (rb_refstring_get_sort_key (a->genre),
+		      rb_refstring_get_sort_key (b->genre));
 	if (ret != 0)
 		return ret;
 
@@ -786,22 +766,6 @@ rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	return rb_entry_view_album_sort_func (a, b, view);
 }
 
-
-static gint
-rb_entry_view_int_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			     struct RBEntryViewCellDataFuncData *data)
-{
-	gint a_val, b_val;
-	gint ret;
-
-	a_val = rhythmdb_entry_get_int (data->view->priv->db, a, data->propid);
-	b_val = rhythmdb_entry_get_int (data->view->priv->db, b, data->propid);
-
-	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
-
-	return ret;
-}
-
 static gint
 rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				       struct RBEntryViewCellDataFuncData *data)
@@ -809,8 +773,8 @@ rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	gdouble a_val, b_val;
 	gint ret;
 
-	a_val = ceil (rhythmdb_entry_get_double (data->view->priv->db, a, data->propid));
-	b_val = ceil (rhythmdb_entry_get_double (data->view->priv->db, b, data->propid));
+	a_val = ceil (rhythmdb_entry_get_double (a, data->propid));
+	b_val = ceil (rhythmdb_entry_get_double (b, data->propid));
 
 	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
 
@@ -818,14 +782,14 @@ rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 }
 
 static gint
-rb_entry_view_long_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-			      struct RBEntryViewCellDataFuncData *data)
+rb_entry_view_ulong_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			       struct RBEntryViewCellDataFuncData *data)
 {
-	glong a_val, b_val;
+	gulong a_val, b_val;
 	gint ret;
 
-	a_val = rhythmdb_entry_get_long (data->view->priv->db, a, data->propid);
-	b_val = rhythmdb_entry_get_long (data->view->priv->db, b, data->propid);
+	a_val = rhythmdb_entry_get_ulong (a, data->propid);
+	b_val = rhythmdb_entry_get_ulong (b, data->propid);
 
 	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
 
@@ -840,8 +804,8 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	const char *b_val;	
 	gint ret;
 
-	a_val = rhythmdb_entry_get_string (data->view->priv->db, a, data->propid);
-	b_val = rhythmdb_entry_get_string (data->view->priv->db, b, data->propid);
+	a_val = rhythmdb_entry_get_string (a, data->propid);
+	b_val = rhythmdb_entry_get_string (b, data->propid);
 
 	ret = strcmp (a_val, b_val);
 
@@ -874,37 +838,27 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 				     RBEntryView *view)
 {
 	RhythmDBEntry *entry;
-	gdouble rating;
 
 	entry = entry_from_tree_iter (view, iter);
 
-	rhythmdb_read_lock (view->priv->db);
-
-	rating = rhythmdb_entry_get_double (view->priv->db, entry, RHYTHMDB_PROP_RATING);
-
-	rhythmdb_read_unlock (view->priv->db);
-
-	g_object_set (G_OBJECT (renderer), "rating", rating, NULL);
+	g_object_set (G_OBJECT (renderer), "rating", entry->rating, NULL);
 }
 
 static void
-rb_entry_view_intstr_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				  GtkTreeModel *tree_model, GtkTreeIter *iter,
-				  struct RBEntryViewCellDataFuncData *data)
+rb_entry_view_long_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+				   GtkTreeModel *tree_model, GtkTreeIter *iter,
+				   struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
 	char *str;
-	int val;
+	gulong val;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	rhythmdb_read_lock (data->view->priv->db);
+	val = rhythmdb_entry_get_ulong (entry, data->propid);
 
-	val = rhythmdb_entry_get_int (data->view->priv->db, entry, data->propid);
-	rhythmdb_read_unlock (data->view->priv->db);
-
-	if (val >= 0)
-		str = g_strdup_printf ("%d", val);
+	if (val > 0)
+		str = g_strdup_printf ("%lu", val);
 	else
 		str = g_strdup ("");
 
@@ -918,20 +872,17 @@ rb_entry_view_play_count_cell_data_func (GtkTreeViewColumn *column, GtkCellRende
 					 struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
-	int i;
+	gulong i;
 	char *str;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	rhythmdb_read_lock (data->view->priv->db);
-
-	i = rhythmdb_entry_get_int (data->view->priv->db, entry, data->propid);
+	i = rhythmdb_entry_get_ulong (entry, data->propid);
 	if (i == 0)
 		str = _("Never");
 	else
-		str = g_strdup_printf ("%d", i);
+		str = g_strdup_printf ("%ld", i);
 
-	rhythmdb_read_unlock (data->view->priv->db);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 	if (i != 0)
@@ -945,20 +896,12 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 {
 	RhythmDBEntry *entry;
 	char *str;
-	long duration;
 	int minutes, seconds;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	rhythmdb_read_lock (data->view->priv->db);
-
-	duration  = rhythmdb_entry_get_long (data->view->priv->db, entry,
-					     data->propid);
-
-	rhythmdb_read_unlock (data->view->priv->db);
-
-	minutes = duration / 60;
-	seconds = duration % 60;
+	minutes = entry->duration / 60;
+	seconds = entry->duration % 60;
 
 	if (minutes == 0 && seconds == 0)
 		str = g_strdup (_("Unknown"));
@@ -970,6 +913,7 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	g_free (str);
 }
 
+#if 0
 static void
 rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 				      GtkTreeModel *tree_model, GtkTreeIter *iter,
@@ -980,12 +924,8 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	rhythmdb_read_lock (data->view->priv->db);
-
 	bitrate = rhythmdb_entry_get_int (data->view->priv->db, entry,
 					  data->propid);
-
-	rhythmdb_read_unlock (data->view->priv->db);
 
 	if (bitrate <= 0) {
 		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
@@ -1003,7 +943,7 @@ rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 		g_object_set (G_OBJECT (renderer), "text", _("Perfect"), NULL);
 	}
 }
-
+#endif
 
 static void
 rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1015,13 +955,10 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	rhythmdb_read_lock (data->view->priv->db);
-
-	str = rhythmdb_entry_get_string (data->view->priv->db, entry, data->propid);
+	str = rhythmdb_entry_get_string (entry, data->propid);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 
-	rhythmdb_read_unlock (data->view->priv->db);
 }
 
 static void
@@ -1194,7 +1131,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	case RB_ENTRY_VIEW_COL_TRACK_NUMBER:
 		propid = RHYTHMDB_PROP_TRACK_NUMBER;
 		cell_data->propid = propid;
-		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_intstr_cell_data_func;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_long_cell_data_func;
 		sort_func = (GCompareDataFunc) rb_entry_view_track_sort_func;
 		real_sort_data = view;
 		title = _("Tra_ck");
@@ -1248,26 +1185,28 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
 		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("Ti_me");
 		key = "Time";
 		break;
+#if 0
 	case RB_ENTRY_VIEW_COL_QUALITY:
 		propid = RHYTHMDB_PROP_BITRATE;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
 		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Quality");
 		key = "Quality";
 		break;
+#endif
 	/* RB_ENTRY_VIEW_COL_RATING at bottom */
 	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
 		propid = RHYTHMDB_PROP_PLAY_COUNT;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
 		sort_data->propid = cell_data->propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("_Play Count");
 		key = "PlayCount";
 		break;
@@ -1276,7 +1215,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data->propid = RHYTHMDB_PROP_LAST_PLAYED_STR;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_LAST_PLAYED;
-		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_ulong_sort_func;
 		title = _("L_ast Played");
 		key = "LastPlayed";
 		break;
@@ -1974,13 +1913,10 @@ static gint
 propid_from_name (const char *name)
 {
 	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
-	GEnumClass *unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
 	GEnumValue *ev;
 	int ret;
 
 	ev = g_enum_get_value_by_name (prop_class, name);
-	if (!ev)
-		ev = g_enum_get_value_by_name (unsaved_prop_class, name);
 	if (ev)
 		ret = ev->value;
 	else

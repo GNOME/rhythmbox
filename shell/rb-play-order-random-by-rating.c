@@ -86,6 +86,5 @@ rb_random_play_order_by_rating_new (RBShellPlayer *player)
 static double
 rb_random_by_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry)
 {
-	gdouble rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
-	return rating;
+	return entry->rating;
 }

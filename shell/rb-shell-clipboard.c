@@ -2,7 +2,7 @@
  *  arch-tag: Implementation of song cut/paste handler object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,8 @@
 #include "rb-shell-clipboard.h"
 #include "rhythmdb.h"
 #include "rb-debug.h"
-#include "rb-bonobo-helpers.h"
+#include <libgnome/gnome-i18n.h>
+#include <gtk/gtkstock.h>
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -39,30 +40,18 @@ static void rb_shell_clipboard_get_property (GObject *object,
 					     GValue *value,
 					     GParamSpec *pspec);
 static void rb_shell_clipboard_sync (RBShellClipboard *clipboard);
-static void rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
-					       RBShellClipboard *clipboard,
-					       const char *verbname);
-static void rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
-						RBShellClipboard *clipboard,
-						const char *verbname);
-static void rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
-			                RBShellClipboard *clipboard,
-			                const char *verbname);
-static void rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
-			                 RBShellClipboard *clipboard,
-			                 const char *verbname);
-static void rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
-			                  RBShellClipboard *clipboard,
-			                  const char *verbname);
-static void rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
-					   RBShellClipboard *clipboard,
-					   const char *verbname);
-static void rb_shell_clipboard_cmd_sl_delete (BonoboUIComponent *component,
-					      RBShellClipboard *clipboard,
-					      const char *verbname);
-static void rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
-					    RBShellClipboard *clipboard,
-					    const char *verbname);
+static void rb_shell_clipboard_cmd_select_all (GtkAction *action,
+					       RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_select_none (GtkAction *action,
+						RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_cut (GtkAction *action,
+			                RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_copy (GtkAction *action,
+			                 RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_paste (GtkAction *action,
+			                  RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_delete (GtkAction *action,
+					   RBShellClipboard *clipboard);
 static void rb_shell_clipboard_set (RBShellClipboard *clipboard,
 			            GList *nodes);
 static gboolean rb_shell_clipboard_idle_poll_deletions (RBShellClipboard *clipboard);
@@ -72,18 +61,12 @@ static void rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 static void rb_shell_clipboard_entryview_changed_cb (RBEntryView *view,
 						     RBShellClipboard *clipboard);
 
-#define CMD_PATH_CUT    "/commands/Cut"
-#define CMD_PATH_COPY   "/commands/Copy"
-#define CMD_PATH_PASTE  "/commands/Paste"
-#define CMD_PATH_DELETE "/commands/Delete"
-#define CMD_PATH_SONGLIST_POPUP_PASTE "/commands/SLPaste"
-
 struct RBShellClipboardPrivate
 {
 	RhythmDB *db;
 	RBSource *source;
 
-	BonoboUIComponent *component;
+	GtkActionGroup *actiongroup;
 
 	GHashTable *signal_hash;
 
@@ -98,22 +81,32 @@ enum
 {
 	PROP_0,
 	PROP_SOURCE,
-	PROP_COMPONENT,
+	PROP_ACTION_GROUP,
 	PROP_DB,
 };
 
-static BonoboUIVerb rb_shell_clipboard_verbs[] =
+static GtkActionEntry rb_shell_clipboard_actions [] =
 {
-	BONOBO_UI_VERB ("SelectAll",(BonoboUIVerbFn) rb_shell_clipboard_cmd_select_all),
-	BONOBO_UI_VERB ("SelectNone",(BonoboUIVerbFn) rb_shell_clipboard_cmd_select_none),
-	BONOBO_UI_VERB ("Cut",      (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
-	BONOBO_UI_VERB ("Copy",     (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
-	BONOBO_UI_VERB ("Paste",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
-	BONOBO_UI_VERB ("Delete",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_delete),
-	BONOBO_UI_VERB ("SLDelete", (BonoboUIVerbFn) rb_shell_clipboard_cmd_sl_delete),
-	BONOBO_UI_VERB ("SLCopy",   (BonoboUIVerbFn) rb_shell_clipboard_cmd_sl_copy),
-	BONOBO_UI_VERB_END
+	{ "EditSelectAll", NULL, N_("Select _All"), "<control>A",
+	  N_("Select all songs"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_select_all) },
+	{ "EditSelectNone", NULL, N_("D_eselect All"), "<shift><control>A",
+	  N_("Deselect all songs"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_select_none) },
+	{ "EditCut", GTK_STOCK_CUT, N_("Cu_t"), "<control>X",
+	  N_("Cut selection"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_cut) },
+	{ "EditCopy", GTK_STOCK_COPY, N_("_Copy"), "<control>C",
+	  N_("Copy selection"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_copy) },
+	{ "EditPaste", GTK_STOCK_PASTE, N_("_Paste"), "<control>V",
+	  N_("Paste selection"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_paste) },
+	{ "EditDelete", NULL, N_("_Delete"), NULL,
+	  N_("Delete selection"),
+	  G_CALLBACK (rb_shell_clipboard_cmd_delete) },
 };
+static guint rb_shell_clipboard_n_actions = G_N_ELEMENTS (rb_shell_clipboard_actions);
 
 static GObjectClass *parent_class = NULL;
 
@@ -166,11 +159,11 @@ rb_shell_clipboard_class_init (RBShellClipboardClass *klass)
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_ACTION_GROUP,
+					 g_param_spec_object ("action-group",
+							      "GtkActionGroup",
+							      "GtkActionGroup object",
+							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -278,11 +271,12 @@ rb_shell_clipboard_set_property (GObject *object,
 						 clipboard, 0);
 		}
 		break;
-	case PROP_COMPONENT:
-		clipboard->priv->component = g_value_get_object (value);
-		bonobo_ui_component_add_verb_list_with_data (clipboard->priv->component,
-							     rb_shell_clipboard_verbs,
-							     clipboard);
+	case PROP_ACTION_GROUP:
+		clipboard->priv->actiongroup = g_value_get_object (value);
+		gtk_action_group_add_actions (clipboard->priv->actiongroup,
+					      rb_shell_clipboard_actions,
+					      rb_shell_clipboard_n_actions,
+					      clipboard);
 		break;
 	case PROP_DB:
 		clipboard->priv->db = g_value_get_object (value);
@@ -306,8 +300,8 @@ rb_shell_clipboard_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, clipboard->priv->source);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, clipboard->priv->component);
+	case PROP_ACTION_GROUP:
+		g_value_set_object (value, clipboard->priv->actiongroup);
 		break;
 	case PROP_DB:
 		g_value_set_object (value, clipboard->priv->db);
@@ -329,18 +323,12 @@ rb_shell_clipboard_set_source (RBShellClipboard *clipboard,
 }
 
 RBShellClipboard *
-rb_shell_clipboard_new (BonoboUIComponent *component, RhythmDB *db)
+rb_shell_clipboard_new (GtkActionGroup *actiongroup, RhythmDB *db)
 {
-	RBShellClipboard *shell_clipboard;
-
-	shell_clipboard = g_object_new (RB_TYPE_SHELL_CLIPBOARD,
-					"component", component,
-					"db", db,
-					NULL);
-
-	g_return_val_if_fail (shell_clipboard->priv != NULL, NULL);
-
-	return shell_clipboard;
+	return g_object_new (RB_TYPE_SHELL_CLIPBOARD,
+			     "action-group", actiongroup,
+			     "db", db,
+			     NULL);
 }
 
 static void
@@ -351,6 +339,7 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	gboolean can_paste;
 	gboolean can_delete;	
 	gboolean can_copy;	
+	GtkAction *action;
 
 	if (!clipboard->priv->source)
 		return;
@@ -373,31 +362,26 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	if (have_selection)
 		can_copy = rb_source_can_copy (clipboard->priv->source);
 
-	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_CUT,
-				 can_cut);
-	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_DELETE,
-				 can_delete);
-	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_COPY,
-				 can_copy);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "EditCut");
+	g_object_set (G_OBJECT (action), "sensitive", can_cut, NULL);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "EditDelete");
+	g_object_set (G_OBJECT (action), "sensitive", can_delete, NULL);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "EditCopy");
+	g_object_set (G_OBJECT (action), "sensitive", can_copy, NULL);
 
 	can_paste = can_paste && g_list_length (clipboard->priv->entries) > 0;
 
-	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_PASTE,
-				 can_paste);
-	/* We do it here because the song list view doesnt know about
-	 * the global paste status */
-	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_SONGLIST_POPUP_PASTE, can_paste);
+	action = gtk_action_group_get_action (clipboard->priv->actiongroup,
+					      "EditPaste");
+	g_object_set (G_OBJECT (action), "sensitive", can_paste, NULL);
 }
 
 static void
-rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
-				   RBShellClipboard *clipboard,
-				   const char *verbname)
+rb_shell_clipboard_cmd_select_all (GtkAction *action,
+				   RBShellClipboard *clipboard)
 {
 	RBEntryView *entryview;
 	rb_debug ("select all");
@@ -407,9 +391,8 @@ rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
-				    RBShellClipboard *clipboard,
-				    const char *verbname)
+rb_shell_clipboard_cmd_select_none (GtkAction *action,
+				    RBShellClipboard *clipboard)
 {
 	RBEntryView *entryview;
 	rb_debug ("select none");
@@ -419,9 +402,8 @@ rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
-			    RBShellClipboard *clipboard,
-			    const char *verbname)
+rb_shell_clipboard_cmd_cut (GtkAction *action,
+			    RBShellClipboard *clipboard)
 {
 	rb_debug ("cut");
 	rb_shell_clipboard_set (clipboard,
@@ -429,9 +411,8 @@ rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
-			     RBShellClipboard *clipboard,
-			     const char *verbname)
+rb_shell_clipboard_cmd_copy (GtkAction *action,
+			     RBShellClipboard *clipboard)
 {
 	rb_debug ("copy");
 	rb_shell_clipboard_set (clipboard,
@@ -439,39 +420,19 @@ rb_shell_clipboard_cmd_copy (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_clipboard_cmd_paste (BonoboUIComponent *component,
-			      RBShellClipboard *clipboard,
-			      const char *verbname)
+rb_shell_clipboard_cmd_paste (GtkAction *action,
+			      RBShellClipboard *clipboard)
 {
 	rb_debug ("paste");
 	rb_source_paste (clipboard->priv->source, clipboard->priv->entries);
 }
 
 static void
-rb_shell_clipboard_cmd_delete (BonoboUIComponent *component,
-	                       RBShellClipboard *clipboard,
-			       const char *verbname)
+rb_shell_clipboard_cmd_delete (GtkAction *action,
+	                       RBShellClipboard *clipboard)
 {
 	rb_debug ("delete");
 	rb_source_delete (clipboard->priv->source);
-}
-
-static void
-rb_shell_clipboard_cmd_sl_delete (BonoboUIComponent *component,
-				  RBShellClipboard *clipboard,
-				  const char *verbname)
-{
-	rb_debug ("sl delete");
-	rb_source_delete (clipboard->priv->source);
-}
-
-static void
-rb_shell_clipboard_cmd_sl_copy (BonoboUIComponent *component,
-				RBShellClipboard *clipboard,
-				const char *verbname)
-{
-	rb_debug ("sl copy");
-	rb_source_copy (clipboard->priv->source);
 }
 
 static void
@@ -545,7 +506,7 @@ rb_shell_clipboard_entry_deleted_cb (RhythmDB *db,
 				     RhythmDBEntry *entry,
 				     RBShellClipboard *clipboard)
 {
-	rhythmdb_entry_ref_unlocked (db, entry);
+	rhythmdb_entry_ref (db, entry);
 	g_async_queue_push (clipboard->priv->deleted_queue, entry);
 }
 

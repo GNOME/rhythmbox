@@ -137,7 +137,9 @@ help_cb (GtkWidget *widget,
 	gnome_help_display ("rhythmbox.xml", "prefs", &error);
 
 	if (error != NULL) {
-		rb_error_dialog (error->message);
+		rb_error_dialog (NULL,
+				 _("Couldn't display help"),
+				 "%s", error->message);
 
 		g_error_free (error);
 	}

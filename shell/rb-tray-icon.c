@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Implementation of Rhythmbox tray icon object
  *
- *  Copyright (C) 2003 Colin Walters <walters@debian.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,27 +25,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-ui-util.h>
-#include <bonobo/bonobo-main.h>
-#include <bonobo/bonobo-context.h>
-#include <bonobo/bonobo-exception.h>
-#include <bonobo/bonobo-window.h>
-#include <bonobo/bonobo-control-frame.h>
-#include <bonobo/bonobo-control.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 
 #include "disclosure-widget.h"
 #include "rb-tray-icon.h"
 #include "rb-stock-icons.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
+static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
+					  GObjectConstructParam *construct_properties);
 static void rb_tray_icon_finalize (GObject *object);
 static void rb_tray_icon_set_property (GObject *object,
 					  guint prop_id,
@@ -60,12 +53,8 @@ static void rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton 
 						RBTrayIcon *icon);
 static void rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 						RBTrayIcon *icon);
-static void sync_menu (RBTrayIcon *tray);
-static void rb_tray_icon_show_window_changed_cb (BonoboUIComponent *component,
-					const char *path,
-					Bonobo_UIComponent_EventType type,
-					const char *state,
-					RBTrayIcon *icon);
+static void rb_tray_icon_show_window_changed_cb (GtkAction *action,
+						 RBTrayIcon *icon);
 static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  GdkDragContext *context,
 				  gint x,
@@ -75,17 +64,12 @@ static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  guint time,
 				  RBTrayIcon *icon);
 
-#define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
-
 struct RBTrayIconPrivate
 {
 	GtkTooltips *tooltips;
 
-	BonoboUIComponent *main_component;
-	BonoboUIComponent *tray_component;
-
-	BonoboUIContainer *container;
-	BonoboControl *control;
+	GtkUIManager *ui_manager;
+	GtkActionGroup *actiongroup;
 
 	GtkWindow *main_window;
 	GtkWidget *ebox;
@@ -102,10 +86,9 @@ struct RBTrayIconPrivate
 enum
 {
 	PROP_0,
-	PROP_CONTAINER,
-	PROP_COMPONENT,
+	PROP_UI_MANAGER,
+	PROP_ACTION_GROUP,
 	PROP_DB,
-	PROP_TRAY_COMPONENT,
 	PROP_WINDOW,
 };
 
@@ -122,11 +105,13 @@ enum
 	LAST_SIGNAL,
 };
 
-static RBBonoboUIListener rb_tray_icon_listeners[] =
+static GtkToggleActionEntry rb_tray_icon_toggle_entries [] =
 {
-	RB_BONOBO_UI_LISTENER ("ShowWindow", (BonoboUIListenerFn) rb_tray_icon_show_window_changed_cb),
-	RB_BONOBO_UI_LISTENER_END
+	{ "TrayShowWindow", NULL, N_("_Show Window"), NULL,
+	  N_("Change the visibility of the main window"),
+	  G_CALLBACK (rb_tray_icon_show_window_changed_cb) }
 };
+static guint rb_tray_icon_n_toggle_entries = G_N_ELEMENTS (rb_tray_icon_toggle_entries);
 
 static const GtkTargetEntry target_uri [] = {{ "text/uri-list", 0, 0 }};
 
@@ -168,6 +153,7 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_tray_icon_finalize;
+	object_class->constructor = rb_tray_icon_constructor;
 
 	object_class->set_property = rb_tray_icon_set_property;
 	object_class->get_property = rb_tray_icon_get_property;
@@ -180,21 +166,19 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      GTK_TYPE_WINDOW,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_CONTAINER,
-					 g_param_spec_object ("container",
-							      "BonoboUIContainer",
-							      "BonoboUIContainer object",
-							      BONOBO_TYPE_UI_CONTAINER,
+					 PROP_UI_MANAGER,
+					 g_param_spec_object ("ui-manager",
+							      "GtkUIManager",
+							      "GtkUIManager object",
+							      GTK_TYPE_UI_MANAGER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_ACTION_GROUP,
+					 g_param_spec_object ("action-group",
+							      "GtkActionGroup",
+							      "GtkActionGroup object",
+							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_object_class_install_property (object_class,
 					 PROP_DB,
 					 g_param_spec_object ("db",
@@ -202,14 +186,6 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "RhythmDB object",
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
-					 PROP_TRAY_COMPONENT,
-					 g_param_spec_object ("tray_component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
-							      G_PARAM_READABLE));
 }
 
 static void
@@ -243,18 +219,32 @@ rb_tray_icon_init (RBTrayIcon *icon)
 					  GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), image);
 	
-	icon->priv->control = bonobo_control_new (icon->priv->ebox);
-	icon->priv->tray_component = bonobo_control_get_popup_ui_component (icon->priv->control);
-
 	icon->priv->window_x = -1;
 	icon->priv->window_y = -1;
 	icon->priv->window_w = -1;
 	icon->priv->window_h = -1;
 	icon->priv->visible = TRUE;
 
-	rb_bonobo_add_listener_list_with_data (icon->priv->tray_component,
-						rb_tray_icon_listeners,
-						icon);
+	gtk_container_add (GTK_CONTAINER (icon), icon->priv->ebox);
+	gtk_widget_show_all (GTK_WIDGET (icon->priv->ebox));
+}
+
+static GObject *
+rb_tray_icon_constructor (GType type, guint n_construct_properties,
+			  GObjectConstructParam *construct_properties)
+{
+	RBTrayIcon *tray;
+	RBTrayIconClass *klass;
+	GObjectClass *parent_class;  
+
+	klass = RB_TRAY_ICON_CLASS (g_type_class_peek (RB_TYPE_TRAY_ICON));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	tray = RB_TRAY_ICON (parent_class->constructor (type, n_construct_properties,
+							construct_properties));
+
+	rb_tray_set_visibility (tray, VISIBILITY_SYNC);
+	return G_OBJECT (tray);
 }
 
 static void
@@ -289,19 +279,15 @@ rb_tray_icon_set_property (GObject *object,
 	case PROP_WINDOW:
 		tray->priv->main_window = g_value_get_object (value);
 		break;
-	case PROP_CONTAINER:
-	{
-		BonoboControlFrame *frame;
-		tray->priv->container = g_value_get_object (value);
-
-		frame = bonobo_control_frame_new (BONOBO_OBJREF (tray->priv->container));
-		bonobo_control_frame_bind_to_control (frame, BONOBO_OBJREF (tray->priv->control), NULL);
-		gtk_container_add (GTK_CONTAINER (tray), bonobo_control_frame_get_widget (frame));
-		gtk_widget_show_all (GTK_WIDGET (tray->priv->ebox));
+	case PROP_UI_MANAGER:
+		tray->priv->ui_manager = g_value_get_object (value);
 		break;
-	}
-	case PROP_COMPONENT:
-		tray->priv->main_component = g_value_get_object (value);
+	case PROP_ACTION_GROUP:
+		tray->priv->actiongroup = g_value_get_object (value);
+		gtk_action_group_add_toggle_actions (tray->priv->actiongroup,
+						     rb_tray_icon_toggle_entries,
+						     rb_tray_icon_n_toggle_entries,
+						     tray);
 		break;
 	case PROP_DB:
 		tray->priv->db = g_value_get_object (value);
@@ -325,14 +311,11 @@ rb_tray_icon_get_property (GObject *object,
 	case PROP_WINDOW:
 		g_value_set_object (value, tray->priv->main_window);
 		break;
-	case PROP_CONTAINER:
-		g_value_set_object (value, tray->priv->container);
+	case PROP_UI_MANAGER:
+		g_value_set_object (value, tray->priv->ui_manager);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, tray->priv->main_component);
-		break;
-	case PROP_TRAY_COMPONENT:
-		g_value_set_object (value, tray->priv->tray_component);
+	case PROP_ACTION_GROUP:
+		g_value_set_object (value, tray->priv->actiongroup);
 		break;
 	case PROP_DB:
 		g_value_set_object (value, tray->priv->db);
@@ -344,24 +327,18 @@ rb_tray_icon_get_property (GObject *object,
 }
 
 RBTrayIcon *
-rb_tray_icon_new (BonoboUIContainer *container,
-		  BonoboUIComponent *component,
+rb_tray_icon_new (GtkUIManager *mgr,
+		  GtkActionGroup *group,
 		  RhythmDB *db,
 		  GtkWindow *window)
 {
-	RBTrayIcon *tray = g_object_new (RB_TYPE_TRAY_ICON,
-					 "title", "Rhythmbox tray icon",
-					 "container", container,
-					 "component", component,
-					 "db", db,
-					 "window", window,
-					 NULL);
-	
-	g_return_val_if_fail (tray->priv != NULL, NULL);
-
-	rb_tray_set_visibility (tray, VISIBILITY_SYNC);
-
-	return tray;
+	return g_object_new (RB_TYPE_TRAY_ICON,
+			     "title", "Rhythmbox tray icon",
+			     "ui-manager", mgr,
+			     "action-group", group,
+			     "db", db,
+			     "window", window,
+			     NULL);
 }
 
 static void
@@ -380,12 +357,15 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 		break;
 
 	case 3:
-		/* contextmenu */
-		sync_menu (icon);
-		bonobo_control_do_popup (icon->priv->control, event->button,
-								event->time);
-		break;
-
+	{
+		GtkWidget *popup;
+		popup = gtk_ui_manager_get_widget (GTK_UI_MANAGER (icon->priv->ui_manager),
+						   "/RhythmboxTrayPopup");
+		gtk_menu_popup (GTK_MENU (popup), NULL, NULL,
+				NULL, NULL, 2,
+				gtk_get_current_event_time ());
+	}
+	break;
 	default:
 		break;
 	}
@@ -462,7 +442,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rhythmdb_add_uri_async (icon->priv->db, uri);
+			rhythmdb_add_uri (icon->priv->db, uri);
 
 		g_free (uri);
 	}
@@ -472,38 +452,13 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
-
 static void
-sync_menu (RBTrayIcon *tray)
-{
-	BonoboUIComponent *pcomp;
-	BonoboUINode *node;
-
-	pcomp = bonobo_control_get_popup_ui_component (tray->priv->control);
-	
-	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
-
-	node = bonobo_ui_component_get_tree (tray->priv->main_component, "/popups/TrayPopup", TRUE, NULL);
-
-	bonobo_ui_node_set_attr (node, "name", "button3");
-
-	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
-	bonobo_ui_node_free (node);
-
-	node = bonobo_ui_component_get_tree (tray->priv->main_component, "/commands", TRUE, NULL);
-	bonobo_ui_component_set_tree (pcomp, "/", node, NULL);
-	bonobo_ui_node_free (node);
-}
-
-static void
-rb_tray_icon_show_window_changed_cb (BonoboUIComponent *component,
-				const char *path,
-				Bonobo_UIComponent_EventType type,
-				const char *state,
-				RBTrayIcon *icon)
+rb_tray_icon_show_window_changed_cb (GtkAction *action,
+				     RBTrayIcon *icon)
 {
 	rb_debug ("show window clicked");
-	rb_tray_set_visibility (icon, atoi (state));
+	rb_tray_set_visibility (icon,
+				gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 void
@@ -539,6 +494,10 @@ rb_tray_restore_main_window (RBTrayIcon *icon)
 static void
 rb_tray_set_visibility (RBTrayIcon *icon, int state)
 {
+	GtkAction *action;
+
+	action = gtk_action_group_get_action (icon->priv->actiongroup,
+					      "TrayShowWindow");
 	switch (state)
 	{
 	case VISIBILITY_HIDDEN:
@@ -564,8 +523,7 @@ rb_tray_set_visibility (RBTrayIcon *icon, int state)
 		}
 
 	case VISIBILITY_SYNC:
-		rb_bonobo_set_active (icon->priv->main_component,
-				      CMD_PATH_SHOW_WINDOW,
-				      icon->priv->visible);
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+					      icon->priv->visible);
 	}
 }

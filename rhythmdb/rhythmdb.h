@@ -31,6 +31,7 @@
 #include <libxml/tree.h>
 
 #include "config.h"
+#include "rb-refstring.h"
 
 G_BEGIN_DECLS
 
@@ -83,17 +84,7 @@ typedef enum
 	RHYTHMDB_PROP_ALBUM_GAIN,
 	RHYTHMDB_PROP_ALBUM_PEAK,
 	RHYTHMDB_PROP_MIMETYPE,
-	/* This should always be the last element of this enum */
-	RHYTHMDB_NUM_SAVED_PROPERTIES
-} RhythmDBPropType;
-
-
-/* If you modify this enum, don't forget to modify 
- * rhythmdb_unsaved_prop_get_type 
- */
-typedef enum
-{
-	RHYTHMDB_PROP_TITLE_SORT_KEY = RHYTHMDB_NUM_SAVED_PROPERTIES,
+	RHYTHMDB_PROP_TITLE_SORT_KEY,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
 	RHYTHMDB_PROP_ARTIST_SORT_KEY,
 	RHYTHMDB_PROP_ALBUM_SORT_KEY,
@@ -102,17 +93,15 @@ typedef enum
 	RHYTHMDB_PROP_ARTIST_FOLDED,
 	RHYTHMDB_PROP_ALBUM_FOLDED,
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
-	/* This should always be the last element of this enum */
 	RHYTHMDB_NUM_PROPERTIES
-} RhythmDBUnsavedPropType;
+} RhythmDBPropType;
+
 
 GType rhythmdb_query_get_type (void);
 GType rhythmdb_prop_get_type (void);
-GType rhythmdb_unsaved_prop_get_type (void);
 
 #define RHYTHMDB_TYPE_QUERY (rhythmdb_query_get_type ())
 #define RHYTHMDB_TYPE_PROP (rhythmdb_prop_get_type ())
-#define RHYTHMDB_TYPE_UNSAVED_PROP (rhythmdb_unsaved_prop_get_type ())
 
 typedef struct {
 	guint type;
@@ -121,7 +110,165 @@ typedef struct {
 	GPtrArray *subquery;
 } RhythmDBQueryData;
 
-typedef void RhythmDBEntry;
+typedef struct {
+	/* internal bits */
+#ifndef G_DISABLE_ASSERT
+	guint magic;
+#endif	
+	gint refcount;
+	void *data;
+	gulong type;
+	
+	/* metadata */
+	RBRefString *title;
+	RBRefString *artist;
+	RBRefString *album;
+	RBRefString *genre;
+	gulong tracknum;
+	gulong discnum;
+	gulong duration;
+	gulong bitrate;
+	double track_gain;
+	double track_peak;
+	double album_gain;
+	double album_peak;
+
+	/* filesystem */
+	char *location;
+	guint64 file_size;
+	RBRefString *mimetype;
+#if 0
+	dev_t device;
+	GnomeVFSInodeNumber inode;
+#endif
+	glong mtime;
+
+	/* user data */
+	gdouble rating;
+	gboolean auto_rate;
+	glong play_count;
+	glong last_played;
+
+	/* cached data */
+	RBRefString *last_played_str;
+} RhythmDBEntry;
+
+
+G_INLINE_FUNC const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
+G_INLINE_FUNC gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
+G_INLINE_FUNC guint64 rhythmdb_entry_get_uint64		(RhythmDBEntry *entry, RhythmDBPropType propid);
+G_INLINE_FUNC gulong rhythmdb_entry_get_ulong		(RhythmDBEntry *entry, RhythmDBPropType propid);
+G_INLINE_FUNC double rhythmdb_entry_get_double		(RhythmDBEntry *entry, RhythmDBPropType propid);
+
+#if defined (G_CAN_INLINE) || defined (__RHYTHMDB_C__)
+
+G_INLINE_FUNC const char *
+rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid)
+	{
+	case RHYTHMDB_PROP_TITLE:
+		return rb_refstring_get (entry->title);
+	case RHYTHMDB_PROP_ALBUM:
+		return rb_refstring_get (entry->album);
+	case RHYTHMDB_PROP_ARTIST:
+		return rb_refstring_get (entry->artist);
+	case RHYTHMDB_PROP_GENRE:
+		return rb_refstring_get (entry->genre);
+	case RHYTHMDB_PROP_TITLE_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->title);
+	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->album);
+	case RHYTHMDB_PROP_ARTIST_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->artist);
+	case RHYTHMDB_PROP_GENRE_SORT_KEY:
+		return rb_refstring_get_sort_key (entry->genre);
+	case RHYTHMDB_PROP_TITLE_FOLDED:
+		return rb_refstring_get_folded (entry->title);
+	case RHYTHMDB_PROP_ALBUM_FOLDED:
+		return rb_refstring_get_folded (entry->album);
+	case RHYTHMDB_PROP_ARTIST_FOLDED:
+		return rb_refstring_get_folded (entry->artist);
+	case RHYTHMDB_PROP_GENRE_FOLDED:
+		return rb_refstring_get_folded (entry->genre);
+	case RHYTHMDB_PROP_LOCATION:
+		return entry->location;
+	case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		return rb_refstring_get (entry->last_played_str);
+	default:
+		g_assert_not_reached ();
+		return NULL;
+	}
+}
+
+G_INLINE_FUNC gboolean
+rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid) {
+	case RHYTHMDB_PROP_AUTO_RATE:
+		return entry->auto_rate;
+	default:
+		g_assert_not_reached ();
+		return FALSE;
+	}
+}
+
+G_INLINE_FUNC guint64
+rhythmdb_entry_get_uint64 (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid) {
+	case RHYTHMDB_PROP_FILE_SIZE:
+		return entry->file_size;
+	default:
+		g_assert_not_reached ();
+		return 0;
+	}
+}
+
+G_INLINE_FUNC gulong
+rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid) {
+	case RHYTHMDB_PROP_TYPE:
+		return entry->type;
+	case RHYTHMDB_PROP_TRACK_NUMBER:
+		return entry->tracknum;
+	case RHYTHMDB_PROP_DISC_NUMBER:
+		return entry->discnum;
+	case RHYTHMDB_PROP_DURATION:
+		return entry->duration;
+	case RHYTHMDB_PROP_MTIME:
+		return entry->mtime;
+	case RHYTHMDB_PROP_LAST_PLAYED:
+		return entry->last_played;
+	case RHYTHMDB_PROP_PLAY_COUNT:
+		return entry->play_count;
+	default:
+		g_assert_not_reached ();
+		return 0;
+	}
+}
+
+G_INLINE_FUNC double
+rhythmdb_entry_get_double (RhythmDBEntry *entry, RhythmDBPropType propid)
+{
+	switch (propid) {
+	case RHYTHMDB_PROP_TRACK_GAIN:
+		return entry->track_gain;
+	case RHYTHMDB_PROP_TRACK_PEAK:
+		return entry->track_peak;
+	case RHYTHMDB_PROP_ALBUM_GAIN:
+		return entry->album_gain;
+	case RHYTHMDB_PROP_ALBUM_PEAK:
+		return entry->album_peak;
+	case RHYTHMDB_PROP_RATING:
+		return entry->rating;
+	default:
+		g_assert_not_reached ();
+		return 0.0;
+	}
+}
+#endif
 
 typedef enum
 {
@@ -154,14 +301,14 @@ typedef struct
 	void	(*load_complete)	(RhythmDBEntry *entry);
 	void	(*save_complete)	(RhythmDBEntry *entry);
 	void	(*error)		(const char *uri, const char *msg);
+	void	(*read_only)		(RhythmDBEntry *entry, gboolean readonly);
 
 	/* virtual methods */
 
 	void		(*impl_load)		(RhythmDB *db, gboolean *dead);
 	void		(*impl_save)		(RhythmDB *db);
 	
-	RhythmDBEntry *	(*impl_entry_new)	(RhythmDB *db, RhythmDBEntryType type,
-						 const char *uri);
+	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);
 
 	void		(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, const GValue *value);
@@ -177,6 +324,8 @@ typedef struct
 
 	gboolean 	(*impl_evaluate_query)	(RhythmDB *db, GPtrArray *query, RhythmDBEntry *entry);
 
+	void		(*impl_entry_foreach)	(RhythmDB *db, GFunc func, gpointer data);
+
 	void		(*impl_do_full_query)	(RhythmDB *db, GPtrArray *query,
 						 GtkTreeModel *main_model,
 						 gboolean *cancel);
@@ -188,25 +337,18 @@ RhythmDB *	rhythmdb_new		(const char *name);
 
 void		rhythmdb_shutdown	(RhythmDB *db);
 
-/**
- * This function must be called WITHOUT the RhythmDB lock held!
- */
 void		rhythmdb_load		(RhythmDB *db);
 
 void		rhythmdb_save		(RhythmDB *db);
-void		rhythmdb_save_blocking	(RhythmDB *db);
+void		rhythmdb_save_async	(RhythmDB *db);
 
-void		rhythmdb_read_lock	(RhythmDB *db);
-void		rhythmdb_write_lock	(RhythmDB *db);
-void		rhythmdb_read_unlock	(RhythmDB *db);
-void		rhythmdb_write_unlock	(RhythmDB *db);
+void		rhythmdb_commit		(RhythmDB *db);
 
 gboolean	rhythmdb_entry_is_editable (RhythmDB *db, RhythmDBEntry *entry);
 
 RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
 
-void		rhythmdb_add_uri_async	(RhythmDB *db, const char *uri);
-RhythmDBEntry *	rhythmdb_add_song	(RhythmDB *db, const char *uri, GError **error);
+void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
@@ -217,49 +359,21 @@ void		rhythmdb_entry_queue_set(RhythmDB *db, RhythmDBEntry *entry,
 void		rhythmdb_entry_get	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
-#ifndef WITH_RHYTHMDB_TREE
-#define rhythmdb_entry_ref(DB, ENTRY) 
-#define rhythmdb_entry_ref_unlocked(DB, ENTRY) 
-#define rhythmdb_entry_unref(DB, ENTRY) 
-#define rhythmdb_entry_unref_unlocked(DB, ENTRY) 
-#else
-#include "rhythmdb-tree.h"
-#endif
-
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 
 					       RhythmDBEntryType type);
 
+void		rhythmdb_entry_destroy	(RhythmDB *db, RhythmDBEntry *entry);
 
-const char *	rhythmdb_entry_get_string	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-gboolean	rhythmdb_entry_get_boolean	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-long		rhythmdb_entry_get_long		(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-guint64		rhythmdb_entry_get_uint64	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-int		rhythmdb_entry_get_int		(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-double		rhythmdb_entry_get_double	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-float		rhythmdb_entry_get_float	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
-gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
-						 RhythmDBEntry *entry,
-						 guint property_id);
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 
 gboolean	rhythmdb_evaluate_query		(RhythmDB *db, GPtrArray *query,
 						 RhythmDBEntry *entry);
+
+void		rhythmdb_entry_foreach		(RhythmDB *db,
+						 GFunc func,
+						 gpointer data);
 
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.
@@ -285,10 +399,7 @@ void		rhythmdb_do_full_query_async_parsed	(RhythmDB *db, GtkTreeModel *main_mode
 
 void		rhythmdb_query_cancel			(RhythmDB *db, GtkTreeModel *query_model);
 
-GType		rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
-
-void		rhythmdb_entry_sync_mirrored		(RhythmDB *db, RhythmDBEntry *entry,
-							 guint propid, GValue *value);
+void		rhythmdb_entry_sync_mirrored		(RhythmDB *db, RhythmDBEntry *entry, guint propid);
 
 GPtrArray *	rhythmdb_query_parse			(RhythmDB *db, ...);
 void		rhythmdb_query_append			(RhythmDB *db, GPtrArray *query, ...);
@@ -304,7 +415,6 @@ inline const char *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, gint propi
 inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const char *name);
 
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
-void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
 char *		rhythmdb_get_status			(RhythmDB *db);
@@ -316,6 +426,23 @@ RhythmDBEntryType rhythmdb_entry_song_get_type          (void);
 RhythmDBEntryType rhythmdb_entry_iradio_get_type        (void);
 RhythmDBEntryType rhythmdb_entry_icecast_get_type        (void);
 
+extern GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
+G_INLINE_FUNC GType rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
+
+#if defined (G_CAN_INLINE) || defined (__RHYTHMDB_C__)
+
+G_INLINE_FUNC GType
+rhythmdb_get_property_type (RhythmDB *db, guint property_id)
+{
+	g_assert (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES);
+	return rhythmdb_property_type_map[property_id];
+}
+
+#endif
+
+void rhythmdb_entry_ref (RhythmDB *db, RhythmDBEntry *entry);
+
+void rhythmdb_entry_unref (RhythmDB *db, RhythmDBEntry *entry);
 
 G_END_DECLS
 

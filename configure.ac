@@ -3,7 +3,7 @@ define(arch-tag)
 AC_PREREQ(2.53)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.8.5)
+AM_INIT_AUTOMAKE(rhythmbox, 0.8.99)
 
 AM_MAINTAINER_MODE
 
@@ -32,44 +32,60 @@ else
 	AC_MSG_RESULT([no])
 fi	
 
-PKG_CHECK_MODULES(RHYTHMBOX,                    \
-                  gtk+-2.0 >= 2.2.2             \
-                  libgnomeui-2.0                \
-		  libglade-2.0                  \
-		  gnome-vfs-2.0                 \
-		  gnome-vfs-module-2.0		\
-		  libbonobo-2.0			\
-		  bonobo-activation-2.0)
-
-RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
-PKG_CHECK_MODULES(UNUSED, gtk+-2.0 >= 2.4.0, [have_gtk_23=yes], [have_gtk_23=no])
-if test x"$have_gtk_23" = xyes; then
-   AC_DEFINE(HAVE_GTK_2_3, 1, [Define if you have GTK+ 2.4.0 or better])
-fi
-AM_CONDITIONAL(WITH_GTK22, test x"$have_gtk_23" != xyes)
-
 dnl iPod support
 dnl enable_ipod = "no"
+
+HAL_REQUIRED=0.2.92
+
 AC_ARG_ENABLE(ipod,
-              AC_HELP_STRING([--enable-ipod],
-	                     [Enable iPod support in Rhythmbox]))
+	      AC_HELP_STRING([--enable-ipod],
+			     [Enable iPod support in Rhythmbox]))
 AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
 if test x"$enable_ipod" = xyes; then
 	AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
+	USE_HAL=""
+	PKG_CHECK_MODULES(HAL, hal,
+		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
+		[ USE_HAL="hal >= $HAL_REQUIRED" ], :)
 fi
+
+
+PKG_CHECK_MODULES(RHYTHMBOX,                    \
+                  gtk+-2.0 >= 2.4               \
+                  libgnomeui-2.0                \
+		  libglade-2.0                  \
+		  gnome-vfs-2.0 >= 2.6          \
+		  gnome-vfs-module-2.0          \
+		  $USE_HAL)
+
+RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
+
 
 dnl Database
 AC_ARG_WITH(database,
-              AC_HELP_STRING([--with-database=tree],
-			     [Select the database to use]),,
+              AC_HELP_STRING([--with-database=tree|libgda],
+			     [Select the database to use (default tree)]),,
 	      with_database=tree)
 AM_CONDITIONAL(USE_TREEDB, test x"$with_database" = xtree)
+AM_CONDITIONAL(USE_GDADB, test x"$with_database" = xlibgda)
 
-if test x"$with_database" = xtree; then
-        AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
-else
-        AC_MSG_ERROR([Unknown database selected])
-fi
+GDA_CFLAGS=""
+GDA_LIBS=""
+case "x$with_database" in
+  "xtree")
+    AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
+    ;;
+  "xlibgda")
+    AC_DEFINE(WITH_RHYTHMDB_GDA, 1, [Define if you are using the RhythmDB sqlite/libgda database])
+    dnl FIXME: check for sqlite, too?
+    PKG_CHECK_MODULES(GDA, libgda > 1.0.3)
+    ;;
+  *)
+    AC_MSG_ERROR([Unknown database selected])
+    ;;
+esac
+AC_SUBST(GDA_CFLAGS)
+AC_SUBST(GDA_LIBS)
 
 
 dnl Database debugging
@@ -193,33 +209,6 @@ fi
 
 AM_CONDITIONAL(WITH_XINE_METADATA, test x"$with_metadata" = "xxine")
 AM_CONDITIONAL(WITH_GST_METADATA, test x"$with_metadata" = "xgstreamer")
-
-dnl Stolen from D-BUS configury
-dnl Atomic integers (checks by Sebastian Wilhelmi for GLib)
-AC_MSG_CHECKING([whether to use inline assembler routines for atomic integers])
-have_atomic_inc=no
-if test x"$GCC" = xyes; then
-  if test "x$enable_ansi" = "xyes"; then
-    AC_MSG_RESULT([no])
-  else
-    case $host_cpu in
-      i386)
-        AC_MSG_RESULT([no])
-        ;;
-      i?86)
-        AC_MSG_RESULT([i486])
-        AC_DEFINE_UNQUOTED(RB_USE_ATOMIC_INT_486, 1, [Use atomic integer implementation for 486])
-        have_atomic_inc=yes
-        ;;
-      *)
-        AC_MSG_RESULT([no])
-        ;;
-    esac
-  fi
-fi
-if test x$have_atomic_inc = xyes ; then
-  AC_DEFINE_UNQUOTED(RB_HAVE_ATOMIC_INT, 1, [Some atomic integer implementation present])
-fi
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
@@ -519,7 +508,8 @@ player/Makefile
 rhythmdb/Makefile
 widgets/Makefile
 iradio/Makefile
-corba/Makefile
+remote/Makefile
+remote/bonobo/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile
@@ -530,7 +520,6 @@ sources/Makefile
 help/Makefile
 help/C/Makefile
 po/Makefile.in
-component/Makefile
 tests/Makefile
 rhythmbox.spec
 ])
@@ -538,6 +527,8 @@ rhythmbox.spec
 AC_MSG_NOTICE([Rhythmbox was configured with the following options:])
 if test x"$with_database" = xtree; then
 	AC_MSG_NOTICE([** Tree database is enabled])
+elif test x"$with_database" = xlibgda; then
+	AC_MSG_NOTICE([** libgda/sqlite database is enabled])
 else
 	AC_MSG_ERROR([Unknown database!])
 fi

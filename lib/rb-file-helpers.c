@@ -33,7 +33,6 @@
 #include <unistd.h>
 
 #include "rb-file-helpers.h"
-#include "rb-dialog.h"
 
 static GHashTable *files = NULL;
 
@@ -48,15 +47,13 @@ rb_file (const char *filename)
 	static char *paths[] = {
 #ifdef SHARE_UNINSTALLED_DIR
 		SHARE_UNINSTALLED_DIR "/",
+		SHARE_UNINSTALLED_DIR "/ui/",
 		SHARE_UNINSTALLED_DIR "/glade/",
 		SHARE_UNINSTALLED_DIR "/art/",
-		SHARE_UNINSTALLED_DIR "/node-views/",
 #endif
 		SHARE_DIR "/",
 		SHARE_DIR "/glade/",
 		SHARE_DIR "/art/",
-		SHARE_DIR "/views/",
-		SHARE_DIR "/node-views/",
 	};
 	
 	g_assert (files != NULL);
@@ -74,36 +71,22 @@ rb_file (const char *filename)
 		g_free (ret);
 	}
 
-	rb_error_dialog (_("Failed to find %s"), filename);
-
 	return NULL;
 }
 
 const char *
 rb_dot_dir (void)
 {
-	if (dot_dir == NULL)
-	{
+	if (dot_dir == NULL) {
 		dot_dir = g_build_filename (g_get_home_dir (),
 					    GNOME_DOT_GNOME,
 					    "rhythmbox",
 					    NULL);
+		if (!g_file_test (dot_dir, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+			mkdir (dot_dir, 0750);
 	}
 	
 	return dot_dir;
-}
-
-void
-rb_ensure_dir_exists (const char *dir)
-{
-	if (g_file_test (dir, G_FILE_TEST_IS_DIR) == FALSE)
-	{
-		if (g_file_test (dir, G_FILE_TEST_EXISTS) == TRUE)
-			rb_error_dialog (_("%s exists, please move it out of the way."), dir);
-		
-		if (mkdir (dir, 488) != 0)
-			rb_error_dialog (_("Failed to create directory %s."), dir);
-	}
 }
 
 void

@@ -2,6 +2,7 @@
  *  arch-tag: Header for main Rhythmbox shell
  *
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2004 Colin Walters <walters@redhat.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,17 +23,10 @@
 #ifndef __RB_SHELL_H
 #define __RB_SHELL_H
 
-#include "Rhythmbox.h"
 #include "rb-source.h"
 #include "rhythmdb.h"
 
-#include <bonobo/bonobo-control.h>
-#include <bonobo/bonobo-object.h>
-
 G_BEGIN_DECLS
-
-#define RB_SHELL_OAFIID "OAFIID:GNOME_Rhythmbox"
-#define RB_FACTORY_OAFIID "OAFIID:GNOME_Rhythmbox_Factory"
 
 #define RB_TYPE_SHELL         (rb_shell_get_type ())
 #define RB_SHELL(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL, RBShell))
@@ -45,16 +39,14 @@ typedef struct RBShellPrivate RBShellPrivate;
 
 typedef struct
 {
-        BonoboObject parent;
+        GObject parent;
 
 	RBShellPrivate *priv;
 } RBShell;
 
 typedef struct
 {
-        BonoboObjectClass parent_class;
-
-        POA_GNOME_Rhythmbox__epv epv;
+        GObjectClass parent_class;
 } RBShellClass;
 
 GType		rb_shell_get_type	(void);
@@ -70,11 +62,6 @@ void		rb_shell_construct	(RBShell *shell);
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
 							 RhythmDBEntryType type);
-
-/* utilities */
-
-char *		rb_shell_corba_exception_to_string (CORBA_Environment *ev);
-
 G_END_DECLS
 
 #endif /* __RB_SHELL_H */

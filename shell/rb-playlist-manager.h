@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Header for Rhythmbox playlist management object
  *
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@
 #ifndef __RB_PLAYLIST_MANAGER_H
 #define __RB_PLAYLIST_MANAGER_H
 
-#include <bonobo/bonobo-ui-util.h>
 #include "rb-source.h"
 #include "rhythmdb.h"
 #include "rb-sourcelist.h"
@@ -59,7 +58,8 @@ typedef struct
 
 GType			rb_playlist_manager_get_type	(void);
 
-RBPlaylistManager *	rb_playlist_manager_new		(BonoboUIComponent *component, GtkWindow *window,
+RBPlaylistManager *	rb_playlist_manager_new		(GtkActionGroup *actiongroup,
+							 GtkWindow *window,
 							 RhythmDB *db, RBSourceList *sourcelist,
 							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);

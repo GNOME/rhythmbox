@@ -23,6 +23,7 @@
 #define __RB_LIBRARY_SOURCE_H
 
 #include <gtk/gtkwindow.h>
+#include <gtk/gtkactiongroup.h>
 
 #include "rb-shell.h"
 #include "rb-source.h"
@@ -54,15 +55,15 @@ typedef struct
 GType		rb_library_source_get_type	(void);
 
 RBSource *      rb_library_source_new           (RBShell *shell, RhythmDB *db, 
-					 	 BonoboUIComponent *component);
-
+					 	 GtkActionGroup *actiongroup);
 
 void		rb_library_source_show_browser	(RBLibrarySource *source,
 						 gboolean show);
 
 void		rb_library_source_add_location	(RBLibrarySource *source, GtkWindow *win);
-void            rb_library_source_class_add_verbs (RBShell *shell, 
-						   BonoboUIComponent *component);
+
+void            rb_library_source_class_add_actions (RBShell *shell, 
+						     GtkActionGroup *uimgr);
 
 G_END_DECLS
 

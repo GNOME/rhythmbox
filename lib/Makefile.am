@@ -3,23 +3,10 @@
 noinst_LTLIBRARIES = librb.la
 
 librb_la_SOURCES =					\
-	rb-atomic.h					\
 	rb-debug.c					\
 	rb-debug.h					\
-	rb-dialog.c					\
-	rb-dialog.h					\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
-	rb-file-monitor.c				\
-	rb-file-monitor.h				\
-	rb-marshal.c					\
-	rb-marshal.h					\
-	disclosure-widget.c				\
-	disclosure-widget.h				\
-	gsequence.c					\
-	gsequence.h					\
-	rb-bonobo-helpers.c				\
-	rb-bonobo-helpers.h				\
 	rb-glade-helpers.c				\
 	rb-glade-helpers.h				\
 	rb-string-helpers.c				\
@@ -28,42 +15,24 @@ librb_la_SOURCES =					\
 	rb-stock-icons.h				\
 	rb-cut-and-paste-code.c				\
 	rb-cut-and-paste-code.h				\
-	rb-thread-helpers.c				\
-	rb-thread-helpers.h				\
 	rb-util.c					\
 	rb-util.h					\
-	rb-playlist.c					\
-	rb-playlist.h					\
+	totem-pl-parser.c				\
+	totem-pl-parser.h				\
 	rb-enums.h					\
-	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h				\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
-	$(EGGFILES)					\
 	rb-preferences.h	
-
-if WITH_GTK22
-librb_la_SOURCES += 	rb-atomic.c
-endif
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-I$(top_srcdir) 				\
-	-I$(top_srcdir)/library				\
-	-I$(top_srcdir)/rhythmdb			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-EGGFILES=						\
-	eggtrayicon.h					\
-	eggtrayicon.c
-EGGDIR=$(srcdir)/../../libegg/libegg/tray/
-regenerate-built-sources:
-	EGGFILES="$(EGGFILES)" EGGDIR="$(EGGDIR)" $(srcdir)/update-from-egg.sh || true
-
-BUILT_SOURCES=rb-marshal.c rb-marshal.h
+BUILT_SOURCES=
 
 CLEAN_FILES = $(BUILT_SOURCES)
 
@@ -72,6 +41,16 @@ rb-marshal.c: rb-marshal.list
 
 rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
+BUILT_SOURCES += rb-marshal.c rb-marshal.h
+
+totemplparser-marshal.c: totemplparser-marshal.h
+	@GLIB_GENMARSHAL@ --prefix=totemplparser_marshal $(srcdir)/totemplparser-marshal.list --header --body > totemplparser-marshal.c
+totemplparser-marshal.h: totemplparser-marshal.list
+	@GLIB_GENMARSHAL@ --prefix=totemplparser_marshal $(srcdir)/totemplparser-marshal.list --header > totemplparser-marshal.h
+
+BUILT_SOURCES += totemplparser-marshal.c totemplparser-marshal.h
+
+librb_la_SOURCES += $(BUILT_SOURCES)
 
 librb_la_LDFLAGS = -export-dynamic
 

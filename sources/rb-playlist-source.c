@@ -25,8 +25,6 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-window.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -34,14 +32,12 @@
 #include "rb-entry-view.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
-#include "rb-playlist.h"
-#include "rb-thread-helpers.h"
+#include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-playlist-source.h"
 #include "rb-volume.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
@@ -310,7 +306,9 @@ static void
 rb_playlist_source_songs_show_popup_cb (RBEntryView *view,
 					RBPlaylistSource *playlist_view)
 {
+#ifdef FIXME
 	rb_bonobo_show_popup (GTK_WIDGET (view), PLAYLIST_SOURCE_SONGS_POPUP_PATH);
+#endif
 }
 
 static void
@@ -408,8 +406,7 @@ rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 	if (source->priv->automatic)
 		return;
 	
-	location = rhythmdb_entry_get_string (db, entry,
-					      RHYTHMDB_PROP_LOCATION);
+	location = entry->location;
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 	}
@@ -443,7 +440,6 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
 
-	rhythmdb_read_lock (source->priv->db);
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 
 	g_object_unref (G_OBJECT (query_model));
@@ -608,11 +604,13 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 static gboolean
 impl_show_popup (RBSource *asource)
 {
+#ifdef FIXME
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	if (source->priv->automatic)
 		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_AUTOMATIC_POPUP_PATH);
 	else
 		rb_bonobo_show_popup (GTK_WIDGET (source), PLAYLIST_SOURCE_POPUP_PATH);
+#endif
 	return TRUE;
 }
 
@@ -648,9 +646,7 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 {
 	RhythmDBEntry *entry;
 
-	rhythmdb_read_lock (source->priv->db);
 	if (g_hash_table_lookup (source->priv->entries, location)) {
-		rhythmdb_read_unlock (source->priv->db);
 		return;
 	}
 
@@ -659,8 +655,7 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
 	if (entry)
-		rhythmdb_entry_ref_unlocked (source->priv->db, entry);
-	rhythmdb_read_unlock (source->priv->db);
+		rhythmdb_entry_ref (source->priv->db, entry);
 
 	if (entry != NULL) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
@@ -677,9 +672,7 @@ rb_playlist_source_remove_location (RBPlaylistSource *source,
 	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) != NULL);
 	g_hash_table_remove (source->priv->entries,
 			     location);
-	rhythmdb_read_lock (source->priv->db);
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	rhythmdb_read_unlock (source->priv->db);
 	if (entry != NULL)
 		rhythmdb_query_model_remove_entry (source->priv->model, entry);
 }
@@ -688,28 +681,14 @@ void
 rb_playlist_source_add_entry (RBPlaylistSource *source,
 			      RhythmDBEntry *entry)
 {
-	const char *location;
-
-	rhythmdb_read_lock (source->priv->db);
-	location = rhythmdb_entry_get_string (source->priv->db, entry,
-					      RHYTHMDB_PROP_LOCATION);
-	rhythmdb_read_unlock (source->priv->db);
-
-	rb_playlist_source_add_location (source, location);
+	rb_playlist_source_add_location (source, entry->location);
 }
 
 void
 rb_playlist_source_remove_entry (RBPlaylistSource *source,
 			         RhythmDBEntry *entry)
 {
-	const char *location;
-
-	rhythmdb_read_lock (source->priv->db);
-	location = rhythmdb_entry_get_string (source->priv->db, entry,
-					      RHYTHMDB_PROP_LOCATION);
-	rhythmdb_read_unlock (source->priv->db);
-
-	rb_playlist_source_remove_location (source, location);
+	rb_playlist_source_remove_location (source, entry->location);
 }
 
 static void
@@ -731,9 +710,7 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 		if (uri != NULL) {
-			rhythmdb_read_lock (source->priv->db);
 			rb_playlist_source_add_location (source, uri);
-			rhythmdb_read_unlock (source->priv->db);
 		}
 
 		g_free (uri);
@@ -752,27 +729,24 @@ playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **t
 	
 	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
-	rhythmdb_read_lock (db);
-
-	*uri = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
-	*title = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
-
-	rhythmdb_read_unlock (db);
+	*uri = g_strdup (entry->location);
+	*title = g_strdup (rb_refstring_get (entry->title));
 }
 
 void
 rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 {
-	RBPlaylist *playlist;
+	TotemPlParser *playlist;
 	GError *error = NULL;
 	rb_debug ("saving playlist");
 
-	playlist = rb_playlist_new ();
+	playlist = totem_pl_parser_new ();
 
-	rb_playlist_write (playlist, GTK_TREE_MODEL (source->priv->model),
-			   playlist_iter_func, uri, &error);
+	totem_pl_parser_write (playlist, GTK_TREE_MODEL (source->priv->model),
+			       playlist_iter_func, uri, &error);
 	if (error != NULL)
-		rb_error_dialog ("%s", error->message);
+		rb_error_dialog (NULL, _("Couldn't save playlist"),
+				 "%s", error->message);
 }
 
 RBSource *
@@ -871,17 +845,11 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 		do { 
 			xmlNodePtr child_node = xmlNewChild (node, NULL, "location", NULL);
 			RhythmDBEntry *entry;
-			const char *location;
 			char *encoded;
 
 			gtk_tree_model_get (GTK_TREE_MODEL (source->priv->model), &iter, 0, &entry, -1);
 
-			rhythmdb_read_lock (source->priv->db);
-			location = rhythmdb_entry_get_string (source->priv->db, entry,
-							      RHYTHMDB_PROP_LOCATION);
-			rhythmdb_read_unlock (source->priv->db);
-			
-			encoded = xmlEncodeEntitiesReentrant (NULL, location);			
+			encoded = xmlEncodeEntitiesReentrant (NULL, entry->location);
 			
 			xmlNodeSetContent (child_node, encoded);
 			g_free (encoded);

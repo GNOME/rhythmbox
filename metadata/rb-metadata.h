@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Interface to metadata reading/writing
  *
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ G_BEGIN_DECLS
 
 #define RB_METADATA_NUM_FIELDS 23
 
-/* This should correspond to the stuff in gsttag.h */
 typedef enum
 {
 	RB_METADATA_FIELD_TITLE,                   /* string */
@@ -37,10 +36,10 @@ typedef enum
 	RB_METADATA_FIELD_DATE,                    /* string */
 	RB_METADATA_FIELD_GENRE,                   /* string */
 	RB_METADATA_FIELD_COMMENT,                 /* string */
-	RB_METADATA_FIELD_TRACK_NUMBER,            /* int */
-	RB_METADATA_FIELD_MAX_TRACK_NUMBER,        /* int */
-	RB_METADATA_FIELD_DISC_NUMBER,             /* int */
-	RB_METADATA_FIELD_MAX_DISC_NUMBER,         /* int */
+	RB_METADATA_FIELD_TRACK_NUMBER,            /* ulong */
+	RB_METADATA_FIELD_MAX_TRACK_NUMBER,        /* ulong */
+	RB_METADATA_FIELD_DISC_NUMBER,             /* ulong */
+	RB_METADATA_FIELD_MAX_DISC_NUMBER,         /* ulong */
 	RB_METADATA_FIELD_DESCRIPTION,             /* string */
 	RB_METADATA_FIELD_VERSION,                 /* string */
 	RB_METADATA_FIELD_ISRC,                    /* string */
@@ -49,9 +48,9 @@ typedef enum
 	RB_METADATA_FIELD_CONTACT,                 /* string */
 	RB_METADATA_FIELD_LICENSE,                 /* string */
 	RB_METADATA_FIELD_PERFORMER,               /* string */
-	RB_METADATA_FIELD_DURATION,                /* long */
+	RB_METADATA_FIELD_DURATION,                /* ulong */
 	RB_METADATA_FIELD_CODEC,		   /* string */
-	RB_METADATA_FIELD_BITRATE,                 /* int */
+	RB_METADATA_FIELD_BITRATE,                 /* ulong */
 	RB_METADATA_FIELD_TRACK_GAIN,		   /* double */
 	RB_METADATA_FIELD_TRACK_PEAK,		   /* double */
 	RB_METADATA_FIELD_ALBUM_GAIN,		   /* double */

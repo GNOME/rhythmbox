@@ -27,7 +27,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libbonobo.h>
 #include "rb-nautilus-context-menu.h"
-#include "../corba/Rhythmbox.h"
+#include "Rhythmbox.h"
 
 #include <stdlib.h>
 

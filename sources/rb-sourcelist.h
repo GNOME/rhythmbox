@@ -26,7 +26,6 @@
 #include <gtk/gtkscrolledwindow.h>
 
 #include "rb-source.h"
-#include "rb-sourcelist-model.h"
 
 G_BEGIN_DECLS
 
@@ -65,6 +64,9 @@ GType		rb_sourcelist_get_type		(void);
 GtkWidget *	rb_sourcelist_new		(void);
 
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
+						 RBSource *source);
+
+void		rb_sourcelist_set_playing_source(RBSourceList *sourcelist,
 						 RBSource *source);
 
 void		rb_sourcelist_edit_source_name	(RBSourceList *sourcelist,

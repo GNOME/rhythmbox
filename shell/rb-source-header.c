@@ -1,8 +1,8 @@
 /* 
  *  arch-tag: Implementation of search entry/browse toggle container
  *
- *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,13 +26,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
-#include <bonobo/bonobo-ui-util.h>
 
 #include "disclosure-widget.h"
 #include "rb-source-header.h"
 #include "rb-stock-icons.h"
-#include "rb-thread-helpers.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
 #include "rb-search-entry.h"
 #include "rb-debug.h"
@@ -65,17 +62,14 @@ static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 							  guint cnxn_id,
 							  GConfEntry *entry,
 							  RBSourceHeader *header);
-static void rb_source_header_view_browser_changed_cb (BonoboUIComponent *component,
-						      const char *path,
-						      Bonobo_UIComponent_EventType type,
-						      const char *state,
+static void rb_source_header_view_browser_changed_cb (GtkAction *action,
 						      RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
 	RBSource *selected_source;
 
-	BonoboUIComponent *component;
+	GtkActionGroup *actiongroup;
 
 	GtkTooltips *tooltips;
 
@@ -91,18 +85,18 @@ struct RBSourceHeaderPrivate
 enum
 {
 	PROP_0,
-	PROP_COMPONENT,
+	PROP_ACTION_GROUP,
 	PROP_SOURCE,
 };
 
-#define CMD_PATH_VIEW_BROWSER	"/commands/ViewBrowser"
-#define CMD_PATH_VIEW_STATUSBAR  "/commands/ViewStatusbar"
-
-static RBBonoboUIListener rb_source_header_listeners[] =
+static GtkToggleActionEntry rb_source_header_toggle_entries [] =
 {
-	RB_BONOBO_UI_LISTENER ("ViewBrowser", (BonoboUIListenerFn) rb_source_header_view_browser_changed_cb),
-	RB_BONOBO_UI_LISTENER_END
+	{ "ViewBrowser", NULL, N_("_Browser"), "<control>B",
+	  N_("Change the visibility of the browser"),
+	  G_CALLBACK (rb_source_header_view_browser_changed_cb) }
 };
+static guint rb_source_header_n_toggle_entries = G_N_ELEMENTS (rb_source_header_toggle_entries);
+
 
 static GObjectClass *parent_class = NULL;
 
@@ -154,11 +148,11 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_ACTION_GROUP,
+					 g_param_spec_object ("action-group",
+							      "GtkActionGroup",
+							      "GtkActionGroup object",
+							      GTK_TYPE_ACTION_GROUP,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
@@ -281,11 +275,12 @@ rb_source_header_set_property (GObject *object,
 		rb_source_header_sync_control_state (header);
 		
 		break;
-	case PROP_COMPONENT:
-		header->priv->component = g_value_get_object (value);
-		rb_bonobo_add_listener_list_with_data (header->priv->component,
-						       rb_source_header_listeners,
-						       header);
+	case PROP_ACTION_GROUP:
+		header->priv->actiongroup = g_value_get_object (value);
+		gtk_action_group_add_toggle_actions (header->priv->actiongroup,
+						     rb_source_header_toggle_entries,
+						     rb_source_header_n_toggle_entries,
+						     header);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -306,8 +301,8 @@ rb_source_header_get_property (GObject *object,
 	case PROP_SOURCE:
 		g_value_set_object (value, header->priv->selected_source);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, header->priv->component);
+	case PROP_ACTION_GROUP:
+		g_value_set_object (value, header->priv->actiongroup);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -328,10 +323,10 @@ rb_source_header_set_source (RBSourceHeader *header,
 }
 
 RBSourceHeader *
-rb_source_header_new (BonoboUIComponent *component)
+rb_source_header_new (GtkActionGroup *actiongroup)
 {
 	RBSourceHeader *header = g_object_new (RB_TYPE_SOURCE_HEADER,
-					       "component", component,
+					       "action-group", actiongroup,
 					       NULL);
 
 	g_return_val_if_fail (header->priv != NULL, NULL);
@@ -424,36 +419,37 @@ rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 }
 
 static void
-rb_source_header_view_browser_changed_cb (BonoboUIComponent *component,
-					  const char *path,
-					  Bonobo_UIComponent_EventType type,
-					  const char *state,
+rb_source_header_view_browser_changed_cb (GtkAction *action,
 					  RBSourceHeader *header)
 {
 	rb_debug ("got view browser toggle");
 	eel_gconf_set_boolean (header->priv->browser_key,
-			       rb_bonobo_get_active (component, CMD_PATH_VIEW_BROWSER));
+			       gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 void
 rb_source_header_sync_control_state (RBSourceHeader *header)
 {
+	GtkAction *viewbrowser_action;
+	GtkAction *viewstatusbar_action;
 	gboolean have_browser = header->priv->selected_source != NULL
 		&& header->priv->browser_key != NULL;
 	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
 
 	gtk_widget_set_sensitive (header->priv->disclosure,
 				  have_browser);
-	rb_bonobo_set_sensitive (header->priv->component, CMD_PATH_VIEW_BROWSER,
-				have_browser && not_small);
- 	rb_bonobo_set_sensitive (header->priv->component, 
- 				CMD_PATH_VIEW_STATUSBAR, not_small);
+	viewbrowser_action = gtk_action_group_get_action (header->priv->actiongroup,
+							  "ViewBrowser");
+	g_object_set (G_OBJECT (viewbrowser_action), "sensitive",
+		      have_browser && not_small, NULL);
+	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
+							    "ViewStatusbar");
+	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive", not_small, NULL);
 	if (have_browser) {
 		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
 					      shown);
-		rb_bonobo_set_active (header->priv->component,
-				      CMD_PATH_VIEW_BROWSER,
-				      shown);
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
+					      shown);
 	}
 }

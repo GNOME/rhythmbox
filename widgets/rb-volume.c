@@ -83,6 +83,8 @@ struct RBVolumePrivate
 	GtkWidget *medium_image;
 	GtkWidget *min_image;
 	GtkWidget *zero_image;
+
+	guint notify_id;
 };
 
 enum
@@ -241,9 +243,10 @@ rb_volume_init (RBVolume *volume)
 	gtk_container_add (GTK_CONTAINER (event), box);
 	gtk_container_add (GTK_CONTAINER (inner_frame), event);
 
-	eel_gconf_notification_add (CONF_STATE_VOLUME,
-				    (GConfClientNotifyFunc) volume_changed_cb,
-				    volume);
+	volume->priv->notify_id = 
+		eel_gconf_notification_add (CONF_STATE_VOLUME,
+					    (GConfClientNotifyFunc) volume_changed_cb,
+					    volume);
 	rb_volume_sync_volume (volume);
 }
 
@@ -256,6 +259,8 @@ rb_volume_finalize (GObject *object)
 	g_return_if_fail (RB_IS_VOLUME (object));
 
 	volume = RB_VOLUME (object);
+
+	eel_gconf_notification_remove (volume->priv->notify_id);
 
 	g_return_if_fail (volume->priv != NULL);
 

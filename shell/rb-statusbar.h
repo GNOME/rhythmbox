@@ -20,6 +20,7 @@
  */
 
 #include <gtk/gtkhbox.h>
+#include <gtk/gtkactiongroup.h>
 
 #include "rb-shell-player.h"
 #include "rb-source.h"
@@ -54,7 +55,7 @@ typedef struct
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 BonoboUIComponent *component,
+						 GtkActionGroup *actiongroup,
 						 RBShellPlayer *player);
 
 void			rb_statusbar_set_source	(RBStatusbar *bar,

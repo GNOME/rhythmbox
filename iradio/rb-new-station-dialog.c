@@ -286,7 +286,6 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 	g_value_init (&genre_val, G_TYPE_STRING);
 	g_value_set_string (&genre_val,
 			    gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)));
-	rhythmdb_write_lock (dialog->priv->db);
 	entry = rhythmdb_entry_lookup_by_location (dialog->priv->db, location);
 	if (!entry)
 		entry = rhythmdb_entry_new (dialog->priv->db,
@@ -294,7 +293,7 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 					    location);
 	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
-	rhythmdb_write_unlock (dialog->priv->db);
+	rhythmdb_commit (dialog->priv->db);
 	g_value_unset (&title_val);
 	g_value_unset (&genre_val);
 }

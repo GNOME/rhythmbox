@@ -227,24 +227,6 @@ struct playcount {
 
 static struct playcount *get_next_playcount (iPodParser *parser);
 
-#if 0
-#define DEFAULT_MOUNT_PATH "/mnt/ipod"
-#define GCONF_MOUNT_PATH "/apps/qahog/mount_path"
-
-
-static char *
-ipod_get_mount_path (char *mount_point)
-{
-	gchar *path;
-
-	path = eel_gconf_get_string (GCONF_MOUNT_PATH);
-	if (path == NULL || strcmp (path, "") == 0)
-		return g_strdup (DEFAULT_MOUNT_PATH);
-	else
-		return path;
-}
-#endif
-
 static char *
 ipod_get_itunesdb_path (const char *mount_path)
 {
@@ -491,7 +473,7 @@ static iPodPlaylist * get_pl(iPodParser *parser)
       if (cmp_n_bytes (data, "mhip", 4) == TRUE)
 	{
 	  ref = get4int(parser->itunes, parser->seek+24);
-	  plitem->song_ids = g_list_append (plitem->song_ids, (gpointer)ref);
+	  plitem->song_ids = g_list_append (plitem->song_ids, GUINT_TO_POINTER (ref));
 	  ++n;
 	}
       parser->seek += get4int (parser->itunes, parser->seek+8);
@@ -1058,6 +1040,11 @@ ipod_parser_new (const gchar *mount_point)
 	return parser;
 }
 
+gchar *
+ipod_parser_get_mount_path (iPodParser *parser)
+{
+	return g_strdup (parser->mount_path);
+}
 
 void
 ipod_parser_destroy (iPodParser *parser)

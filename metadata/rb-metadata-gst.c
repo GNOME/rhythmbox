@@ -382,9 +382,9 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 	switch (field) {
 	case RB_METADATA_FIELD_BITRATE: {
 		/* GStreamer sends us bitrate in bps, but we need it in kbps*/
-		gint bitrate;
-		bitrate = g_value_get_int (newval);
-		g_value_set_int (newval, bitrate/1000);		
+		gulong bitrate;
+		bitrate = g_value_get_ulong (newval);
+		g_value_set_ulong (newval, bitrate/1000);		
 		break;
 	}
 
@@ -394,7 +394,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		 */
 		guint64 duration;
 		duration = g_value_get_uint64 (val);
-		g_value_set_long (newval, duration/(1000*1000*1000));
+		g_value_set_ulong (newval, duration/(1000*1000*1000));
 		break;
 	}
 
@@ -531,9 +531,9 @@ rb_metadata_load (RBMetaData *md,
 				
 				rb_debug ("duration query succeeded");
 				
-				g_value_init (newval, G_TYPE_LONG);
+				g_value_init (newval, G_TYPE_ULONG);
 				/* FIXME - use guint64 for duration? */
-				g_value_set_long (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
+				g_value_set_ulong (newval, (long) (length / (1 * 1000 * 1000 * 1000)));
 				g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (RB_METADATA_FIELD_DURATION),
 						     newval);
 			} else {

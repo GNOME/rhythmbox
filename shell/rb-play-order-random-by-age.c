@@ -95,7 +95,7 @@ rb_random_by_age_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, Rhyt
 	 * argument to log(). */
 	
 	time (&now);
-	last_play = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
+	last_play = entry->last_played;
 	seconds_since_last_play = now - last_play;
 	/* The lowest weight should be 0. */
 	if (seconds_since_last_play < 1)

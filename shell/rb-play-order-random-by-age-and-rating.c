@@ -95,13 +95,13 @@ rb_random_by_age_and_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmD
 	 * It handles never played automatically, since now-0 is a valid
 	 * argument to log(). */
 	time (&now);
-	last_play = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
+	last_play = entry->last_played;
 	seconds_since_last_play = now - last_play;
 	/* The lowest weight should be 0. */
 	if (seconds_since_last_play < 1)
 		seconds_since_last_play = 1;
 
-	rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
+	rating = entry->rating;
 
 	return log (seconds_since_last_play) * (rating + 1.0);
 }

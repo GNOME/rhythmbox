@@ -15,9 +15,14 @@ rhythmbox_interface_idl_sources =      	\
 	Rhythmbox-skels.c	     			\
 	Rhythmbox.h
 
-INCLUDES = 							\
+INCLUDES = 						\
 	$(WARN_CFLAGS)					\
+	-DDATADIR=\"$(datadir)\"			\
 	$(RHYTHMBOX_CFLAGS)				\
+	-I$(top_srcdir)					\
+	-I$(top_builddir)				\
+	-I$(top_srcdir)/remote/bonobo			\
+	-I$(top_builddir)/remote/bonobo			\
 	-D_XOPEN_SOURCE
 
 nodist_noinst_HEADERS = Rhythmbox.h
@@ -25,12 +30,35 @@ nodist_noinst_HEADERS = Rhythmbox.h
 idldir = $(prefix)/share/idl
 idl_DATA = Rhythmbox.idl
 
-CLEANFILES = $(rhythmbox_interface_idl_sources)
-
 $(rhythmbox_interface_idl_sources): $(srcdir)/Rhythmbox.idl
 	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/Rhythmbox.idl
 
 BUILT_SOURCES = $(rhythmbox_interface_idl_sources)
+
+bonobodir = $(libdir)/bonobo
+bonobo_LTLIBRARIES = librb-nautilus-context-menu.la
+
+librb_nautilus_context_menu_la_SOURCES =			\
+	rb-nautilus-context-menu.c			\
+	rb-nautilus-context-menu.h			\
+	libmain.c
+
+rb-nautilus-context-menu: Rhythmbox.h
+
+librb_nautilus_context_menu_la_LIBADD = librbcorba.la $(RHYTHMBOX_LIBS)
+librb_nautilus_context_menu_la_LDFLAGS = -module -avoid-version
+
+server_in_files = Rhythmbox_Nautilus_Context_Menu.server.in.in
+
+serverdir = $(libdir)/bonobo/servers
+server_DATA = $(server_in_files:.server.in.in=.server)
+$(server_in_files:.server.in.in=.server.in): $(server_in_files)
+	sed -e "s|\@BONOBODIR\@|$(bonobodir)|" $< > $@
+
+@INTLTOOL_SERVER_RULE@
+
+CLEANFILES = $(rhythmbox_interface_idl_sources) $(server_DATA) $(server_in_files:.server.in.in=.server.in)
+
 
 EXTRA_DIST = Rhythmbox.idl
 

@@ -19,8 +19,9 @@
  *
  */
 
-#include <bonobo/bonobo-ui-component.h>
 #include "rb-source.h"
+
+#include <gtk/gtkactiongroup.h>
 
 #ifndef __RB_SHELL_CLIPBOARD_H
 #define __RB_SHELL_CLIPBOARD_H
@@ -50,7 +51,8 @@ typedef struct
 
 GType             rb_shell_clipboard_get_type		(void);
 
-RBShellClipboard *rb_shell_clipboard_new		(BonoboUIComponent *component, RhythmDB *db);
+RBShellClipboard *rb_shell_clipboard_new		(GtkActionGroup *actiongroup,
+							 RhythmDB *db);
 
 void              rb_shell_clipboard_set_source		(RBShellClipboard *shell_clipboard,
 							 RBSource *source);

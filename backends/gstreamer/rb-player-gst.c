@@ -660,7 +660,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			/* this makes sure someone removes this later on */
 			g_assert (major == 0);
 			g_assert (minor == 8);
-			if (micro > 1)
+			if (micro >= 1)
 				may_pause = 1;
 			else
 				may_pause = 0;

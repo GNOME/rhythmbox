@@ -130,6 +130,7 @@ iPodItem *ipod_get_next_item (iPodParser *parser);
 iPodParser *ipod_parser_new (const gchar *mount_point);
 void ipod_parser_destroy (iPodParser *parser);
 void ipod_item_destroy (iPodItem *item);
+gchar *ipod_parser_get_mount_path (iPodParser *parser);
 
 gchar *itunesdb_get_track_name_on_ipod (const gchar *path, iPodSong *s);
 

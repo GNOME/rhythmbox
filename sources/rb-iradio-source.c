@@ -25,21 +25,18 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-window.h>
 #include <string.h>
 
 #include "rb-iradio-source.h"
 
 #include "rhythmdb-query-model.h"
-#include "rb-bonobo-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-entry-view.h"
 #include "rb-property-view.h"
 #include "rb-util.h"
 #include "rb-file-helpers.h"
-#include "rb-playlist.h"
+#include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-new-station-dialog.h"
@@ -161,7 +158,7 @@ struct RBIRadioSourcePrivate
 	guint async_idlenum;
 	gboolean async_entry_destroyed;
 	guint async_signum;
-	RhythmDB *async_update_entry;
+	RhythmDBEntry *async_update_entry;
 
 	RhythmDBEntryType entry_type;
 };
@@ -413,7 +410,7 @@ rb_iradio_source_get_property (GObject *object,
 
 RBSource *
 rb_iradio_source_new (RBShell *shell, RhythmDB *db, 
-		      BonoboUIComponent *component)
+		      GtkActionGroup *actiongroup)
 {
 	RBSource *source;
 
@@ -421,7 +418,7 @@ rb_iradio_source_new (RBShell *shell, RhythmDB *db,
 					  "name", _("Radio"),
 					  "internal-name", "<radio>",
 					  "db", db,
-					  "component", component,
+					  "action-group", actiongroup,
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, 
@@ -450,8 +447,6 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 		genre = "";
 	}
 
-	rhythmdb_write_lock (source->priv->db);
-
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 	if (!entry)
 		entry = rhythmdb_entry_new (source->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, uri);
@@ -475,7 +470,7 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 	
-	rhythmdb_write_unlock (source->priv->db);
+	rhythmdb_commit (source->priv->db);
 }
 
 static GdkPixbuf *
@@ -612,9 +607,8 @@ impl_delete (RBSource *asource)
 
 	for (l = rb_entry_view_get_selected_entries (source->priv->stations); l != NULL;
 	     l = g_list_next (l)) {
-		rhythmdb_write_lock (source->priv->db);
 		rhythmdb_entry_delete (source->priv->db, l->data);
-		rhythmdb_write_unlock (source->priv->db);
+		rhythmdb_commit (source->priv->db);
 	}
 }
 
@@ -675,6 +669,7 @@ rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 				      RhythmDBEntry *entry,
 				      RBIRadioSource *source)
 {
+#ifdef FIXME
 	GtkWidget *menu;
 	GtkWidget *window;
 
@@ -690,6 +685,7 @@ rb_iradio_source_songs_show_popup_cb (RBEntryView *view,
 			3, gtk_get_current_event_time ());
 
 	gtk_object_sink (GTK_OBJECT (menu));
+#endif
 }
 
 static void
@@ -731,7 +727,6 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	GPtrArray *query;
 
 	g_object_get (G_OBJECT (source), "entry-type", &entry_type, NULL);
-	rhythmdb_read_lock (source->priv->db);
 	source->priv->query_type = qtype;
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -790,20 +785,16 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 
 	rhythmdb_query_free (query);
 
-	rhythmdb_read_unlock (source->priv->db);
 }
 
 static void
-handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title,
+handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *title,
 			  const char *genre, RBIRadioSource *source)
 {
 	if (rb_uri_is_iradio (uri)) {
-		rhythmdb_read_lock (source->priv->db);
 		if (!rhythmdb_entry_lookup_by_location (source->priv->db, uri)) {
-			rhythmdb_read_unlock (source->priv->db);
 			rb_iradio_source_add_station (source, uri, title, genre);
-		} else
-			rhythmdb_read_unlock (source->priv->db);
+		}
 	}
 }
 
@@ -813,12 +804,12 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 				     GConfEntry *entry,
 				     RBIRadioSource *source)
 {
-	RBPlaylist *parser = rb_playlist_new ();
+	TotemPlParser *parser = totem_pl_parser_new ();
 
 	g_signal_connect_object (G_OBJECT (parser), "entry",
 				 G_CALLBACK (handle_playlist_entry_cb),
 				 source, 0);
-	rb_playlist_parse (parser, rb_file ("iradio-initial.pls"));	
+	totem_pl_parser_parse (parser, rb_file ("iradio-initial.pls"), FALSE);	
 	g_object_unref (G_OBJECT (parser));
 }
 

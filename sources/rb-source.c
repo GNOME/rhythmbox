@@ -21,8 +21,6 @@
  */
 
 #include <config.h>
-#include <bonobo/bonobo-ui-component.h>
-#include <bonobo/bonobo-ui-util.h>
 #include <libgnome/gnome-i18n.h>
 #include <time.h>
 
@@ -30,7 +28,6 @@
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-cut-and-paste-code.h"
-#include "rb-bonobo-helpers.h"
 
 static void rb_source_class_init (RBSourceClass *klass);
 static void rb_source_init (RBSource *source);
@@ -65,7 +62,8 @@ struct RBSourcePrivate
 	char *name;
 	char *internal_name;
 	
-	BonoboUIComponent *component;
+	GtkActionGroup *actiongroup;
+	gboolean visible;
 };
 
 enum
@@ -73,7 +71,8 @@ enum
 	PROP_0,
 	PROP_NAME,
 	PROP_INTERNAL_NAME,
-	PROP_COMPONENT
+	PROP_ACTION_GROUP,
+	PROP_VISIBLE
 };
 
 enum
@@ -162,11 +161,25 @@ rb_source_class_init (RBSourceClass *klass)
 							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_pointer ("component",
-							       "BonoboUIComponent",
-							       "BonoboUIComponent",
+					 PROP_ACTION_GROUP,
+					 g_param_spec_pointer ("action-group",
+							       "GtkActionGroup",
+							       "GtkActionGroup object",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class, 
+					 PROP_VISIBLE,
+					 /* FIXME: This property could probably
+					  * be named better, there's already
+					  * a GtkWidget 'visible' property,
+					  * since RBSource derives from
+					  * GtkWidget, this can be confusing
+					  */
+					 g_param_spec_boolean ("visibility", 
+							       "visibility",
+							       "Whether the source should be displayed in the source list",
+							       TRUE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
@@ -208,7 +221,7 @@ static void
 rb_source_init (RBSource *source)
 {
 	source->priv = g_new0 (RBSourcePrivate, 1);
-
+	source->priv->visible = TRUE;
 }
 
 static void
@@ -250,8 +263,14 @@ rb_source_set_property (GObject *object,
 		g_free (source->priv->internal_name);
 		source->priv->internal_name = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_COMPONENT:
-		source->priv->component = g_value_get_pointer (value);
+	case PROP_ACTION_GROUP:
+		source->priv->actiongroup = g_value_get_pointer (value);
+		break;
+	case PROP_VISIBLE:
+		source->priv->visible = g_value_get_boolean (value);
+		rb_debug ("Setting %s visibility to %u\n", 
+			  source->priv->name, 
+			  source->priv->visible);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -275,8 +294,11 @@ rb_source_get_property (GObject *object,
 	case PROP_INTERNAL_NAME:
 		g_value_set_string (value, source->priv->internal_name);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_pointer (value, source->priv->component);
+	case PROP_ACTION_GROUP:
+		g_value_set_pointer (value, source->priv->actiongroup);
+		break;
+	case PROP_VISIBLE:
+		g_value_set_boolean (value, source->priv->visible);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -336,14 +358,12 @@ void
 rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry *entry)
 {
 	time_t now;
-	guint current_count;
+	gulong current_count;
 	GValue value = { 0, };
 
 	g_value_init (&value, G_TYPE_INT);
 
-	rhythmdb_read_lock (db);
-	current_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
-	rhythmdb_read_unlock (db);
+	current_count = entry->play_count;
 
 	g_value_set_int (&value, current_count + 1);
 
@@ -525,7 +545,7 @@ rb_source_reset_filters (RBSource *source)
 static void
 default_song_properties (RBSource *source)
 {
-	rb_error_dialog (_("No properties available."));
+	g_assert_not_reached ();
 }
 
 void
@@ -608,7 +628,9 @@ rb_source_buffering_done (RBSource *source)
 gboolean
 default_receive_drag (RBSource *source, GtkSelectionData *data)
 {
-	rb_error_dialog (_("This source does not support drag and drop."));
+	rb_error_dialog (NULL,
+			 _("Not supported"),
+			 _("This source does not support drag and drop."));
 	return FALSE;
 }
 

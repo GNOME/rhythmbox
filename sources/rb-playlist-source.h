@@ -2,7 +2,7 @@
  *  arch-tag: Header for playlist source object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@debian.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@redhat.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 #ifndef __RB_PLAYLIST_SOURCE_H
 #define __RB_PLAYLIST_SOURCE_H
 
-#include <bonobo/bonobo-ui-container.h>
 #include <libxml/tree.h>
 
 #include "rb-source.h"
