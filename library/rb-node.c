@@ -47,6 +47,33 @@ static void rb_node_save_property (char *property,
 		                   GValue *value,
 		                   xmlNodePtr node);
 
+typedef enum
+{
+	RB_NODE_ACTION_UNREF,
+	RB_NODE_ACTION_SIGNAL
+} RBNodeActionType;
+
+typedef enum
+{
+	DESTROYED,
+	CHANGED,
+	CHILD_CREATED,
+	CHILD_CHANGED,
+	CHILD_DESTROYED,
+	LAST_SIGNAL
+} RBNodeSignal;
+
+typedef struct
+{
+	RBNodeActionType type;
+	RBNode *node;
+	RBNodeSignal signal;
+	gpointer user_data;
+} RBNodeAction;
+
+static void rb_node_add_action (RBNode *node,
+				RBNodeAction *action);
+
 struct RBNodePrivate
 {
 	RBNodeType type;
@@ -66,16 +93,6 @@ enum
 	PROP_TYPE,
 	PROP_ID
 };
-
-typedef enum
-{
-	DESTROYED,
-	CHANGED,
-	CHILD_CREATED,
-	CHILD_CHANGED,
-	CHILD_DESTROYED,
-	LAST_SIGNAL
-} RBNodeSignal;
 
 static GObjectClass *parent_class = NULL;
 
@@ -98,23 +115,9 @@ static GMutex *name_to_album_lock  = NULL;
 static GMutex *uri_to_song_lock    = NULL; 
 
 /* action queue */
-typedef enum
-{
-	RB_NODE_ACTION_UNREF,
-	RB_NODE_ACTION_SIGNAL
-} RBNodeActionType;
-
-typedef struct
-{
-	RBNodeActionType type;
-	RBNode *node;
-	RBNodeSignal signal;
-	gpointer user_data;
-} RBNodeAction;
-
 static GQueue *actions = NULL;
 static GMutex *actions_lock = NULL;
-static guint actions_timeout = 0;
+static guint actions_idle_func = 0;
 
 GType
 rb_node_get_type (void)
@@ -341,6 +344,48 @@ rb_node_get_object_property (GObject *object,
 	}
 }
 
+static gboolean
+rb_node_action_queue_cb (gpointer node_reference)
+{
+	RBNodeAction *action;
+
+	if (g_queue_is_empty (actions) == TRUE)
+	{
+		actions_idle_func = 0;
+		return FALSE;
+	}
+
+	{
+		g_mutex_lock (actions_lock);
+		action = g_queue_pop_head (actions);
+		g_mutex_unlock (actions_lock);
+
+		switch (action->type)
+		{
+		case RB_NODE_ACTION_UNREF:
+			g_object_unref (G_OBJECT (action->node));
+			break;
+		case RB_NODE_ACTION_SIGNAL:
+			if (action->user_data != NULL)
+			{
+				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
+					       action->user_data);
+			}
+			else
+			{
+				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
+			}
+			break;
+		default:
+			break;
+		}
+
+		g_free (action);
+	}
+
+	return TRUE;
+}
+
 GList *
 rb_node_get_children (RBNode *node)
 {
@@ -383,9 +428,6 @@ rb_node_add_child (RBNode *node,
 	action->node = node;
 	action->signal = CHILD_CREATED;
 	action->user_data = child;
-	g_mutex_lock (actions_lock);
-	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
@@ -412,9 +454,8 @@ rb_node_remove_child (RBNode *node,
 	action->node = node;
 	action->signal = CHILD_DESTROYED;
 	action->user_data = child;
-	g_mutex_lock (actions_lock);
-	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
+
+	rb_node_add_action (node, action);
 	
 	node->priv->children = g_list_remove (node->priv->children, child);
 	child->priv->parents = g_list_remove (child->priv->parents, node);
@@ -483,9 +524,8 @@ rb_node_child_changed_cb (RBNode *child,
 	action->node = node;
 	action->signal = CHILD_CHANGED;
 	action->user_data = child;
-	g_mutex_lock (actions_lock);
-	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
+
+	rb_node_add_action (node, action);
 }
 
 static void
@@ -499,9 +539,8 @@ rb_node_child_destroyed_cb (RBNode *child,
 	action->node = node;
 	action->signal = CHILD_DESTROYED;
 	action->user_data = child;
-	g_mutex_lock (actions_lock);
-	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
+
+	rb_node_add_action (node, action);
 }
 
 long
@@ -899,9 +938,8 @@ rb_node_changed (RBNode *node)
 	action->type = RB_NODE_ACTION_SIGNAL;
 	action->node = node;
 	action->signal = CHANGED;
-	g_mutex_lock (actions_lock);
-	g_queue_push_tail (actions, action);
-	g_mutex_unlock (actions_lock);
+
+	rb_node_add_action (node, action);
 }
 
 RBNode *
@@ -1053,55 +1091,11 @@ rb_node_unref (RBNode *node)
 		action = g_new0 (RBNodeAction, 1);
 		action->type = RB_NODE_ACTION_UNREF;
 		action->node = node;
-		g_mutex_lock (actions_lock);
-		g_queue_push_tail (actions, action);
-		g_mutex_unlock (actions_lock);
+
+		rb_node_add_action (node, action);
 	}
 	else
 		g_object_unref (G_OBJECT (node));
-}
-
-static gboolean
-rb_node_action_queue_timeout_cb (gpointer unused)
-{
-	RBNodeAction *action;
-	int i = 0;
-
-	if (g_queue_is_empty (actions) == TRUE)
-		return TRUE;
-
-	while (g_queue_is_empty (actions) == FALSE && i <= 2)
-	{
-		g_mutex_lock (actions_lock);
-		action = g_queue_pop_head (actions);
-		g_mutex_unlock (actions_lock);
-
-		switch (action->type)
-		{
-		case RB_NODE_ACTION_UNREF:
-			g_object_unref (G_OBJECT (action->node));
-			break;
-		case RB_NODE_ACTION_SIGNAL:
-			if (action->user_data != NULL)
-			{
-				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
-					       action->user_data);
-			}
-			else
-			{
-				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
-			}
-			break;
-		default:
-			break;
-		}
-
-		g_free (action);
-
-		i++;
-	}
-
-	return TRUE;
 }
 
 void
@@ -1137,8 +1131,6 @@ rb_node_system_init (void)
 	name_to_artist_lock = g_mutex_new ();
 	name_to_album_lock  = g_mutex_new ();
 	uri_to_song_lock    = g_mutex_new ();
-
-	actions_timeout = g_timeout_add (10, (GSourceFunc) rb_node_action_queue_timeout_cb, NULL);
 }
 
 void
@@ -1146,7 +1138,7 @@ rb_node_system_shutdown (void)
 {
 	g_return_if_fail (actions_lock != NULL);
 
-	g_source_remove (actions_timeout);
+	g_source_remove (actions_idle_func);
 
 	g_mutex_free (actions_lock);
 
@@ -1235,4 +1227,22 @@ rb_node_get_song_by_uri (const char *uri)
 	g_mutex_unlock (uri_to_song_lock);
 
 	return ret;
+}
+
+static void 
+rb_node_add_action (RBNode *node,
+		    RBNodeAction *action)
+{
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
+
+	/* add the idle function that will emit signals */
+	if (actions_idle_func == 0)
+	{
+		actions_idle_func = g_idle_add_full (100,
+						     (GSourceFunc) rb_node_action_queue_cb, 
+						     NULL, 
+						     NULL);
+	}
 }
