@@ -178,6 +178,7 @@ struct RBEntryViewPrivate
 enum
 {
 	ENTRY_ADDED,
+	ENTRY_DELETED,
 	ENTRY_SELECTED,
 	ENTRY_ACTIVATED,
 	CHANGED,
@@ -275,6 +276,16 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBEntryViewClass, entry_added),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
+	rb_entry_view_signals[ENTRY_DELETED] =
+		g_signal_new ("entry-deleted",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEntryViewClass, entry_deleted),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
@@ -1729,6 +1740,7 @@ rb_entry_view_row_deleted_cb (GtkTreeModel *model,
 	view->priv->total_size -= size;
 	
 	rb_debug ("row deleted");
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_DELETED], 0, entry);
 	queue_changed_sig (view);
 }
 

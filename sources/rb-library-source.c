@@ -88,6 +88,8 @@ static void albums_selected_cb (RBPropertyView *propview, GList *albums,
 			       RBLibrarySource *libsource);
 static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 			    struct RBLibrarySourceEntryAddData *data);
+static void entry_deleted_cb (RBEntryView *view, RhythmDBEntry *entry,
+			      struct RBLibrarySourceEntryAddData *data);
 static void
 songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
 
@@ -432,6 +434,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
 			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
+			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
 
@@ -449,6 +454,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
 			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
+			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
 
@@ -465,6 +473,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	add_data->propview = source->priv->albums;
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
+			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->songs),
+			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
 			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
@@ -1045,6 +1056,13 @@ entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 		struct RBLibrarySourceEntryAddData *data)
 {
 	rb_property_view_handle_entry_addition (data->propview, entry);
+}
+
+static void
+entry_deleted_cb (RBEntryView *view, RhythmDBEntry *entry,
+		  struct RBLibrarySourceEntryAddData *data)
+{
+	rb_property_view_handle_entry_deletion (data->propview, entry);
 }
 
 static void
