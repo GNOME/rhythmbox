@@ -26,6 +26,7 @@
 #include "rb-playlist.h"
 
 #include "rb-marshal.h"
+#include "rb-file-helpers.h"
 
 #include <glib.h>
 #include <gtk/gtk.h>
@@ -41,10 +42,15 @@
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
 
+static gboolean
+rb_playlist_parse_recurse (RBPlaylist *playlist, const char *uri,
+			   gint recurse_level);
+
 #define READ_CHUNK_SIZE 8192
 #define MIME_READ_CHUNK_SIZE 1024
 
-typedef gboolean (*PlaylistCallback) (RBPlaylist *playlist, const char *url, gpointer data);
+typedef gboolean (*PlaylistCallback) (RBPlaylist *playlist, const char *url,
+				      guint recurse_level, gpointer data);
 
 typedef struct {
 	char *mimetype;
@@ -460,7 +466,8 @@ rb_playlist_add_one_url_ext (RBPlaylist *playlist, const char *url, const char *
 }
 
 static gboolean
-rb_playlist_add_m3u (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
+		     guint recurse_level, gpointer data)
 {
 	gboolean retval = FALSE;
 	char *contents, **lines;
@@ -490,7 +497,8 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url, gpointer data)
 				|| lines[i][0] == G_DIR_SEPARATOR) {
 			/* We use the same code for .ram and m3u playlists,
 			 * and .ram files can contain .smil entries */
-			rb_playlist_parse (playlist, lines[i]);
+			rb_playlist_parse_recurse (playlist, lines[i],
+						   recurse_level);
 			rb_playlist_add_one_url (playlist, lines[i], NULL);
 			retval = TRUE;
 		} else if (lines[i][0] == '\\' && lines[i][1] == '\\') {
@@ -516,7 +524,8 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url, gpointer data)
 			if (sep == '\\')
 				lines[i] = g_strdelimit (lines[i], "\\", '/');
 			fullpath = g_strdup_printf ("%s/%s", base, lines[i]);
-			if (rb_playlist_parse (playlist, fullpath) == TRUE)
+			if (rb_playlist_parse_recurse (playlist, fullpath,
+						       recurse_level) == TRUE)
 				retval = TRUE;
 			g_free (fullpath);
 			g_free (base);
@@ -530,7 +539,7 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url, gpointer data)
 
 static gboolean
 rb_playlist_add_asf_playlist (RBPlaylist *playlist, const char *url,
-		gpointer data)
+			      guint recurse_level, gpointer data)
 {
 	gboolean retval = FALSE;
 	char *contents, **lines, *ref;
@@ -565,7 +574,8 @@ bail:
 }
 
 static gboolean
-rb_playlist_add_pls (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_pls (RBPlaylist *playlist, const char *url,
+		     guint recurse_level, gpointer data)
 {
 	gboolean retval = FALSE;
 	char *contents, **lines;
@@ -633,8 +643,8 @@ bail:
 }
 
 static gboolean
-parse_asx_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
-		xmlNodePtr parent)
+parse_asx_entry (RBPlaylist *playlist, guint recurse_level,
+		 char *base, xmlDocPtr doc, xmlNodePtr parent)
 {
 	xmlNodePtr node;
 	char *title, *url;
@@ -654,7 +664,7 @@ parse_asx_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 		}
 
 		if (g_ascii_strcasecmp (node->name, "title") == 0)
-			title = xmlNodeListGetString(doc, node->children, 1);
+			title = xmlNodeListGetString (doc, node->children, 1);
 	}
 
 	if (url == NULL) {
@@ -670,7 +680,7 @@ parse_asx_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 
 		fullpath = g_strdup_printf ("%s/%s", base, url);
 		/* .asx files can contain references to other .asx files */
-		rb_playlist_parse (playlist, fullpath);
+		rb_playlist_parse_recurse (playlist, fullpath, recurse_level);
 
 		g_free (fullpath);
 	}
@@ -682,8 +692,8 @@ parse_asx_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 }
 
 static gboolean
-parse_asx_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
-		xmlNodePtr parent)
+parse_asx_entries (RBPlaylist *playlist, guint recurse_level,
+		   char *base, xmlDocPtr doc, xmlNodePtr parent)
 {
 	xmlNodePtr node;
 	gboolean retval = FALSE;
@@ -694,7 +704,7 @@ parse_asx_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 
 		if (g_ascii_strcasecmp (node->name, "entry") == 0) {
 			/* Whee found an entry here, find the REF and TITLE */
-			if (parse_asx_entry (playlist, base, doc, node) == TRUE)
+			if (parse_asx_entry (playlist, recurse_level, base, doc, node) == TRUE)
 				retval = TRUE;
 		}
 	}
@@ -703,7 +713,8 @@ parse_asx_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 }
 
 static gboolean
-rb_playlist_add_asx (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_asx (RBPlaylist *playlist, const char *url,
+		     guint recurse_level, gpointer data)
 {
 	xmlDocPtr doc;
 	xmlNodePtr node;
@@ -732,7 +743,7 @@ rb_playlist_add_asx (RBPlaylist *playlist, const char *url, gpointer data)
 	base = rb_playlist_base_url (url);
 
 	for (node = doc->children; node != NULL; node = node->next)
-		if (parse_asx_entries (playlist, base, doc, node) == TRUE)
+		if (parse_asx_entries (playlist, recurse_level, base, doc, node) == TRUE)
 			retval = TRUE;
 
 	g_free (base);
@@ -741,7 +752,8 @@ rb_playlist_add_asx (RBPlaylist *playlist, const char *url, gpointer data)
 }
 
 static gboolean
-rb_playlist_add_ra (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_ra (RBPlaylist *playlist, const char *url,
+		    guint recurse_level, gpointer data)
 {
 	if (data == NULL
 			|| (strncmp (data, "http://", strlen ("http://")) != 0
@@ -752,12 +764,12 @@ rb_playlist_add_ra (RBPlaylist *playlist, const char *url, gpointer data)
 	}
 
 	/* How nice, same format as m3u it seems */
-	return rb_playlist_add_m3u (playlist, url, NULL);
+	return rb_playlist_add_m3u (playlist, url, recurse_level, NULL);
 }
 
 static gboolean
 parse_smil_video_entry (RBPlaylist *playlist, char *base,
-		char *url, char *title)
+			char *url, char *title)
 {
 	if (strstr (url, "://") != NULL || url[0] == '/') {
 		rb_playlist_add_one_url (playlist, url, title);
@@ -774,8 +786,8 @@ parse_smil_video_entry (RBPlaylist *playlist, char *base,
 }
 
 static gboolean
-parse_smil_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
-		xmlNodePtr parent)
+parse_smil_entry (RBPlaylist *playlist, guint recurse_level, char *base,
+		  xmlDocPtr doc, xmlNodePtr parent)
 {
 	xmlNodePtr node;
 	char *title, *url;
@@ -784,8 +796,10 @@ parse_smil_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 	title = NULL;
 	url = NULL;
 
-	for (node = parent->children; node != NULL; node = node->next)
-	{
+	if (recurse_level > 5)
+		return FALSE;
+
+	for (node = parent->children; node != NULL; node = node->next) {
 		if (node->name == NULL)
 			continue;
 
@@ -796,15 +810,15 @@ parse_smil_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 
 			if (url != NULL) {
 				if (parse_smil_video_entry (playlist,
-						base, url, title) == TRUE)
+							    base, url, title) == TRUE)
 					retval = TRUE;
 			}
 
 			g_free (title);
 			g_free (url);
 		} else {
-			if (parse_smil_entry (playlist,
-						base, doc, node) == TRUE)
+			if (parse_smil_entry (playlist, recurse_level+1,
+					      base, doc, node) == TRUE)
 				retval = TRUE;
 		}
 	}
@@ -813,8 +827,8 @@ parse_smil_entry (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 }
 
 static gboolean
-parse_smil_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
-		xmlNodePtr parent)
+parse_smil_entries (RBPlaylist *playlist, guint recurse_level,
+		    char *base, xmlDocPtr doc, xmlNodePtr parent)
 {
 	xmlNodePtr node;
 	gboolean retval = FALSE;
@@ -824,8 +838,8 @@ parse_smil_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 			continue;
 
 		if (g_ascii_strcasecmp (node->name, "body") == 0) {
-			if (parse_smil_entry (playlist, base,
-						doc, node) == TRUE)
+			if (parse_smil_entry (playlist, recurse_level,
+					      base, doc, node) == TRUE)
 				retval = TRUE;
 		}
 
@@ -835,7 +849,8 @@ parse_smil_entries (RBPlaylist *playlist, char *base, xmlDocPtr doc,
 }
 
 static gboolean
-rb_playlist_add_smil (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_smil (RBPlaylist *playlist, const char *url,
+		      guint recurse_level, gpointer data)
 {
 	xmlDocPtr doc;
 	xmlNodePtr node;
@@ -867,14 +882,15 @@ rb_playlist_add_smil (RBPlaylist *playlist, const char *url, gpointer data)
 	base = rb_playlist_base_url (url);
 
 	for (node = doc->children; node != NULL; node = node->next)
-		if (parse_smil_entries (playlist, base, doc, node) == TRUE)
+		if (parse_smil_entries (playlist, recurse_level, base, doc, node) == TRUE)
 			retval = TRUE;
 
 	return FALSE;
 }
 
 static gboolean
-rb_playlist_add_asf (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_asf (RBPlaylist *playlist, const char *url,
+		     guint recurse_level, gpointer data)
 {
 	if (data == NULL) {
 		rb_playlist_add_one_url (playlist, url, NULL);
@@ -886,12 +902,13 @@ rb_playlist_add_asf (RBPlaylist *playlist, const char *url, gpointer data)
 		return TRUE;
 	}
 
-	return rb_playlist_add_asf_playlist (playlist, url, data);
+	return rb_playlist_add_asf_playlist (playlist, url, recurse_level, data);
 }
 
 #if HAVE_LIBGNOME_DESKTOP
 static gboolean
-rb_playlist_add_desktop (RBPlaylist *playlist, const char *url, gpointer data)
+rb_playlist_add_desktop (RBPlaylist *playlist, const char *url,
+			 guint recurse_level, gpointer data)
 {
 	GnomeDesktopItem *ditem;
 	int type;
@@ -923,7 +940,7 @@ rb_playlist_add_desktop (RBPlaylist *playlist, const char *url, gpointer data)
 
 static gboolean
 rb_playlist_add_directory (RBPlaylist *playlist, const char *url,
-			   gpointer data)
+			   guint recurse_level, gpointer data)
 {
 	GnomeVFSDirectoryHandle *handle;
 	GnomeVFSFileInfo *info;
@@ -952,7 +969,7 @@ rb_playlist_add_directory (RBPlaylist *playlist, const char *url,
 		else
 			fullpath = str;
 
-		if (rb_playlist_parse (playlist, fullpath) == FALSE)
+		if (rb_playlist_parse_recurse (playlist, fullpath, recurse_level) == FALSE)
 			rb_playlist_add_one_url (playlist, fullpath, NULL);
 
 		retval = TRUE;
@@ -990,7 +1007,8 @@ static PlaylistTypes dual_types[] = {
 };
 
 static gboolean
-rb_playlist_add_url_from_data (RBPlaylist *playlist, const char *url)
+rb_playlist_add_url_from_data (RBPlaylist *playlist, const char *url,
+			       guint recurse_level)
 {
 	const char *mimetype;
 	gboolean retval;
@@ -1005,7 +1023,8 @@ rb_playlist_add_url_from_data (RBPlaylist *playlist, const char *url)
 		if (mimetype == NULL)
 			break;
 		if (strcmp (special_types[i].mimetype, mimetype) == 0) {
-			retval = (* special_types[i].func) (playlist, url, data);
+			retval = (* special_types[i].func) (playlist, url,
+							    recurse_level, data);
 			g_free (data);
 			return retval;
 		}
@@ -1013,7 +1032,8 @@ rb_playlist_add_url_from_data (RBPlaylist *playlist, const char *url)
 
 	for (i = 0; i < G_N_ELEMENTS(dual_types); i++) {
 		if (strcmp (dual_types[i].mimetype, mimetype) == 0) {
-			retval = (* dual_types[i].func) (playlist, url, data);
+			retval = (* dual_types[i].func) (playlist, url,
+							 recurse_level, data);
 			g_free (data);
 			return retval;
 		}
@@ -1024,28 +1044,46 @@ rb_playlist_add_url_from_data (RBPlaylist *playlist, const char *url)
 	return FALSE;
 }
 
-gboolean
-rb_playlist_parse (RBPlaylist *playlist, const char *url)
+static gboolean
+rb_playlist_parse_recurse (RBPlaylist *playlist, const char *uri,
+			   gint recurse_level)
 {
 	const char *mimetype;
 	int i;
 
-	g_return_val_if_fail (url != NULL, FALSE);
+	g_return_val_if_fail (uri != NULL, FALSE);
 
-	mimetype = gnome_vfs_get_mime_type (url);
+	if (recurse_level > 3)
+		return FALSE;
+
+	if (recurse_level > 1 && rb_uri_is_iradio (uri)) {
+		rb_playlist_add_one_url (playlist, uri, NULL);
+		return TRUE;
+	}
+
+	recurse_level++;
+
+	mimetype = gnome_vfs_get_mime_type (uri);
 
 	if (mimetype == NULL)
-		return rb_playlist_add_url_from_data (playlist, url);
+		return rb_playlist_add_url_from_data (playlist, uri, recurse_level);
 
 	for (i = 0; i < G_N_ELEMENTS(special_types); i++)
 		if (strcmp (special_types[i].mimetype, mimetype) == 0)
-			return (* special_types[i].func) (playlist, url, NULL);
+			return (* special_types[i].func) (playlist, uri, recurse_level, NULL);
 
 	for (i = 0; i < G_N_ELEMENTS(dual_types); i++)
 		if (strcmp (dual_types[i].mimetype, mimetype) == 0)
-			return rb_playlist_add_url_from_data (playlist, url);
+			return rb_playlist_add_url_from_data (playlist, uri, recurse_level);
 
 	return FALSE;
+}
+		
+
+gboolean
+rb_playlist_parse (RBPlaylist *playlist, const char *url)
+{
+	return rb_playlist_parse_recurse (playlist, url, 1);
 }
 
 gboolean
