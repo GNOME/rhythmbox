@@ -21,6 +21,7 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-set-star.png      \
 	   rhythmbox-unset-star.png    \
 	   rhythmbox-no-star.png       \
+	   rhythmbox-dnd.png           \
 	   about-logo.png
 
 artdir = $(pkgdatadir)/art

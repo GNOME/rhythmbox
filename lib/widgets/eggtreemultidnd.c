@@ -23,6 +23,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkmain.h>
 #include "eggtreemultidnd.h"
+#include "rb-stock-icons.h"
 
 #define EGG_TREE_MULTI_DND_STRING "EggTreeMultiDndString"
 
@@ -323,7 +324,7 @@ egg_tree_multi_drag_motion_event (GtkWidget      *widget,
 				    priv_data->pressed_button,
 				    (GdkEvent*)event);
 	  set_context_data (context, path_list);
-	  gtk_drag_set_icon_default (context);
+	  gtk_drag_set_icon_stock (context, RB_STOCK_DND_ICON, -2, -2);
 
 	}
       else

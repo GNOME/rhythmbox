@@ -170,6 +170,24 @@ rb_tree_model_sort_multi_drag_source_init (EggTreeMultiDragSourceIface *iface)
 static gboolean
 rb_tree_model_sort_multi_row_draggable (EggTreeMultiDragSource *drag_source, GList *path_list)
 {
+	GList *l;
+
+	for (l = path_list; l != NULL; l = g_list_next (l))
+	{
+		GtkTreeIter iter;
+		GtkTreePath *path;
+		RBNode *node = NULL;
+
+		path = gtk_tree_row_reference_get_path (l->data);
+		gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_source), &iter, path);
+		g_signal_emit (G_OBJECT (drag_source), 
+			       rb_tree_model_sort_signals[NODE_FROM_ITER], 
+			       0, &iter, &node);
+
+		if (node == NULL)
+			return FALSE;
+	}
+	
 	return TRUE;
 }
 

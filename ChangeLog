@@ -1,3 +1,27 @@
+2002-11-02  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/art/Makefile.am:
+	* data/art/rhythmbox-dnd.png:
+	* data/glade/preferences.glade:
+	* data/node-views/rb-node-view-albums.xml:
+	* data/node-views/rb-node-view-artists.xml:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* lib/widgets/eggtreemultidnd.c:
+	(egg_tree_multi_drag_motion_event):
+	* lib/widgets/rb-node-view.c: (node_from_sort_iter_cb),
+	(gtk_tree_view_size_allocate_columns),
+	(gtk_tree_view_size_allocate):
+	* lib/widgets/rb-tree-model-sort.c:
+	(rb_tree_model_sort_multi_row_draggable):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init),
+	(rb_shell_preferences_sync), (style_changed_cb):
+
+	Many things:
+	- Prefs cleanup
+	- Nice DnD icon
+	- Better treeview sizing behaviour (we never get a horiz scrollbar now.. w00t!)
+
 2002-11-01  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/node-views/rb-node-view-songs.xml:
