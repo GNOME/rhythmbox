@@ -51,7 +51,7 @@ typedef struct
 
 GType			rb_shuffle_play_order_get_type	(void);
 
-RBShufflePlayOrder *	rb_shuffle_play_order_new	(RBShellPlayer *player);
+RBPlayOrder *		rb_shuffle_play_order_new	(RBShellPlayer *player);
 
 G_END_DECLS
 

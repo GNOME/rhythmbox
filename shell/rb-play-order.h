@@ -65,6 +65,16 @@ typedef struct
 {
 	GObjectClass parent_class;
 
+	/* EVENTS */
+	void (*playing_source_changed) (RBPlayOrder *porder);
+	void (*db_changed) (RBPlayOrder *porder, RhythmDB *new_db);
+	void (*playing_entry_changed) (RBPlayOrder *porder, RhythmDBEntry *new_entry);
+	void (*entry_added) (RBPlayOrder *porder, RhythmDBEntry *entry);
+	void (*entry_removed) (RBPlayOrder *porder, RhythmDBEntry *entry);
+	void (*entries_replaced) (RBPlayOrder *porder);
+	void (*db_entry_deleted) (RBPlayOrder *porder, RhythmDBEntry *entry);
+
+	/* QUERIES */
 	/**
 	 * Returns whether there is a next song. This controls the next
 	 * button's sensitivity. If not implemented, defaults to
@@ -120,6 +130,23 @@ GType			rb_play_order_get_type		(void);
 
 RBPlayOrder *		rb_play_order_new		(const char* play_order_name, RBShellPlayer *player);
 
+typedef struct {
+	/** Value of the state/play-order gconf key */
+	char *name;
+	/** Contents of the play order dropdown; should be gettext()ed before use. */
+	char *description;
+	/** the play order's _new function */
+	RBPlayOrder *(*constructor)(RBShellPlayer *player);
+	/** TRUE if the play order should appear in the dropdown */
+	gboolean is_in_dropdown;
+	/** If the value of the state/play-order gconf key isn't found, the one
+	 * with is_default==TRUE will be used. */
+	gboolean is_default;
+} RBPlayOrderDescription;
+const RBPlayOrderDescription *	rb_play_order_get_orders	();
+
+void			rb_play_order_playing_source_changed	(RBPlayOrder *porder);
+
 gboolean		rb_play_order_has_next		(RBPlayOrder* porder);
 RhythmDBEntry *		rb_play_order_get_next		(RBPlayOrder *porder);
 void 			rb_play_order_go_next		(RBPlayOrder *porder);
@@ -130,12 +157,21 @@ void 			rb_play_order_go_previous	(RBPlayOrder *porder);
 /* Private utility functions used by play order implementations */
 
 RBShellPlayer *		rb_play_order_get_player	(RBPlayOrder *porder);
-gboolean		rb_play_order_player_is_playing	(RBPlayOrder *porder);
-
+RBSource *		rb_play_order_get_source	(RBPlayOrder *porder);
+RhythmDB *		rb_play_order_get_db		(RBPlayOrder *porder);
 /**
- * Gets the entry-view in the player. Returns NULL if there is no entry-view.
+ * Gets the entry-view through the source. Returns NULL if there is no entry-view.
  */
 RBEntryView*		rb_play_order_get_entry_view	(RBPlayOrder *porder);
+/**
+ * Returns NULL if nothing is playing
+ */
+RhythmDBEntry *		rb_play_order_get_playing_entry	(RBPlayOrder *porder);
+
+gboolean		rb_play_order_player_is_playing	(RBPlayOrder *porder);
+
+void			rb_play_order_ref_entry_swapped		(RhythmDBEntry *entry, RhythmDB *db);
+void			rb_play_order_unref_entry_swapped	(RhythmDBEntry *entry, RhythmDB *db);
 
 G_END_DECLS
 

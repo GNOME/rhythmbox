@@ -608,6 +608,7 @@ rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view,
 						   RBIRadioSource *source)
 {
 	rb_debug ("sort order changed");
+	rb_entry_view_set_resorting (view);
 	rb_iradio_source_do_query (source, RB_IRADIO_QUERY_TYPE_SEARCH);
 }
 

@@ -35,6 +35,7 @@
 #include "rb-search-entry.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "rb-play-order.h"
 
 static GObject* rb_statusbar_construct (GType type,
 					guint n_construct_properties,
@@ -207,7 +208,7 @@ rb_statusbar_construct (GType                  type,
 	statusbar = RB_STATUSBAR (object);
 
 	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
-				  "notify::shuffle", 
+				  "notify::play-order", 
 				  G_CALLBACK (rb_statusbar_sync_state), 
 				  statusbar);
 	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
@@ -513,19 +514,30 @@ void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
 	gboolean hidden;
-	gboolean shuffle;
+	const gchar *play_order;
 	gboolean repeat;
+	gboolean is_linear, is_shuffle;
 
 	rb_debug ("syncing state");
 
 	g_object_get (G_OBJECT (statusbar->priv->player), 
-		      "shuffle", &shuffle,
+		      "play-order", &play_order,
 		      "repeat", &repeat,
 		      NULL);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-				      shuffle);
+
+	is_linear = (strcmp (play_order, "linear") == 0);
+	is_shuffle = (strcmp (play_order, "shuffle") == 0);
+	if (is_linear || is_shuffle) {
+		/* setting active sets the play order to one of shuffle or random */
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
+					      !is_linear);
+	}
+	gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
+					    !is_linear && !is_shuffle);
+	
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
 				      repeat);
+
 	
 	hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 	if (hidden)
@@ -557,7 +569,7 @@ rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 	rb_debug ("toggle changed");
 
 	if (toggle == GTK_TOGGLE_BUTTON (statusbar->priv->shuffle)) {
-		rb_shell_player_set_shuffle (player, gtk_toggle_button_get_active (toggle));
+		rb_shell_player_set_play_order (player, gtk_toggle_button_get_active (toggle) ? "shuffle" : "linear");
 	} else if (toggle == GTK_TOGGLE_BUTTON (statusbar->priv->repeat)) {
 		rb_shell_player_set_repeat (player, gtk_toggle_button_get_active (toggle));
 	} else {

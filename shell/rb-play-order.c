@@ -24,16 +24,21 @@
 #include "rb-shell-player.h"
 #include <string.h>
 #include "rb-preferences.h"
+#include <libgnome/gnome-i18n.h>
 
 /* Play Orders */
 #include "rb-play-order-linear.h"
 #include "rb-play-order-shuffle.h"
 #include "rb-play-order-random-equal-weights.h"
 #include "rb-play-order-random-by-age.h"
+#include "rb-play-order-random-by-rating.h"
+#include "rb-play-order-random-by-age-and-rating.h"
 
 static void rb_play_order_class_init (RBPlayOrderClass *klass);
 static void rb_play_order_init (RBPlayOrder *porder);
-
+static GObject *rb_play_order_constructor (GType type, guint n_construct_properties,
+					   GObjectConstructParam *construct_properties);
+static void rb_play_order_finalize (GObject *object);
 static void rb_play_order_set_property (GObject *object,
 					guint prop_id,
 					const GValue *value,
@@ -43,9 +48,22 @@ static void rb_play_order_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
+static gboolean default_has_next (RBPlayOrder *porder);
+static gboolean default_has_previous (RBPlayOrder *porder);
+
+static void rb_play_order_playing_entry_changed_cb (GObject *entry_view,
+						    GParamSpec *pspec,
+						    RBPlayOrder *porder);
+static void rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
+static void rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
+static void rb_play_order_entries_replaced_cb (RBPlayOrder *porder);
+static void rb_play_order_db_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry);
+
 struct RBPlayOrderPrivate
 {
 	RBShellPlayer *player;
+	RBSource *source;
+	RhythmDB *db;
 };
 
 enum
@@ -92,9 +110,13 @@ rb_play_order_class_init (RBPlayOrderClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
+	object_class->constructor = rb_play_order_constructor;
+	object_class->finalize = rb_play_order_finalize;
 	object_class->set_property = rb_play_order_set_property;
 	object_class->get_property = rb_play_order_get_property;
 
+	klass->has_next = default_has_next;
+	klass->has_previous = default_has_previous;
 
 	g_object_class_install_property (object_class,
 					 PROP_PLAYER,
@@ -109,6 +131,55 @@ static void
 rb_play_order_init (RBPlayOrder *porder)
 {
 	porder->priv = g_new0 (RBPlayOrderPrivate, 1);
+}
+
+static GObject *
+rb_play_order_constructor (GType type, guint n_construct_properties,
+			   GObjectConstructParam *construct_properties)
+{
+	RBPlayOrder *porder;
+
+	porder = RB_PLAY_ORDER (G_OBJECT_CLASS (parent_class)
+			->constructor (type, n_construct_properties, construct_properties));
+
+	rb_play_order_playing_source_changed (porder);
+
+	return G_OBJECT (porder);
+}
+
+static void
+rb_play_order_finalize (GObject *object)
+{
+	RBPlayOrder *porder;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_PLAY_ORDER (object));
+
+	porder = RB_PLAY_ORDER (object);
+
+	if (porder->priv->source != NULL) {
+		RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+						      G_CALLBACK (rb_play_order_playing_entry_changed_cb),
+						      porder);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+						      G_CALLBACK (rb_play_order_entry_added_cb),
+						      porder);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+						      G_CALLBACK (rb_play_order_entry_deleted_cb),
+						      porder);
+		g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+						      G_CALLBACK (rb_play_order_entries_replaced_cb),
+						      porder);
+	}
+	if (porder->priv->db) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->db),
+						      G_CALLBACK (rb_play_order_db_entry_deleted_cb),
+						      porder);
+	}
+
+	g_free (porder->priv);
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -148,35 +219,70 @@ rb_play_order_get_property (GObject *object,
 	}
 }
 
+RBPlayOrder *
+rb_play_order_new (const char* porder_name, RBShellPlayer *player)
+{
+	int default_index = -1;
+	const RBPlayOrderDescription *orders = rb_play_order_get_orders ();
+	int i;
+
+	g_return_val_if_fail (porder_name != NULL, NULL);
+	g_return_val_if_fail (player != NULL, NULL);
+
+	for (i=0; orders[i].name != NULL; ++i) {
+		if (strcmp (orders[i].name, porder_name) == 0)
+			return orders[i].constructor (player);
+		if (orders[i].is_default) {
+			/* There must not be two default play orders */
+			g_assert (default_index == -1);
+			default_index = i;
+		}
+	}
+	/* There must be a default play order */
+	g_assert (default_index != -1);
+
+	g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
+			"\". Using %s play order.", porder_name, orders[default_index].name);
+	return orders[default_index].constructor (player);
+}
+
 /**
  * This should be the only function with full knowledge of what play orders are
  * available.
  */
-RBPlayOrder *
-rb_play_order_new (const char* porder_name, RBShellPlayer *player)
+const RBPlayOrderDescription *
+rb_play_order_get_orders ()
 {
-	g_return_val_if_fail (porder_name != NULL, NULL);
-	g_return_val_if_fail (player != NULL, NULL);
-
-	if (strcmp (porder_name, "random-equal-weights") == 0) {
-		return RB_PLAY_ORDER (rb_random_play_order_equal_weights_new (player));
-	} else if (strcmp (porder_name, "random-by-age") == 0) {
-		return RB_PLAY_ORDER (rb_random_play_order_by_age_new (player));
-	} else if (strcmp (porder_name, "shuffle") == 0) {
-		return RB_PLAY_ORDER (rb_shuffle_play_order_new (player));
-	} else {
-		if (strcmp (porder_name, "linear") != 0) {
-			g_warning ("Unknown value \"%s\" in GConf key \"" CONF_STATE_PLAY_ORDER
-					"\". Using linear play order.", porder_name);
-		}
-		return RB_PLAY_ORDER (rb_linear_play_order_new (player));
-	}
+	/* Exactly one entry must have is_default==TRUE. Otherwise you will
+	 * cause a g_assert(). */
+	static const RBPlayOrderDescription orders[] = {
+		{ "linear", N_("Linear"), rb_linear_play_order_new, TRUE, TRUE },
+		{ "shuffle", N_("Shuffle"), rb_shuffle_play_order_new, TRUE, FALSE },
+		{ "random-equal-weights", N_("Random with equal weights"), rb_random_play_order_equal_weights_new, TRUE, FALSE },
+		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },
+		{ "random-by-rating", N_("Random by rating"), rb_random_play_order_by_rating_new, TRUE, FALSE },
+		{ "random-by-age-and-rating", N_("Random by time since last play and rating"), rb_random_play_order_by_age_and_rating_new, TRUE, FALSE },
+		{ NULL, NULL, NULL },
+	};
+	return orders;
 }
 
 RBShellPlayer *
 rb_play_order_get_player (RBPlayOrder *porder)
 {
 	return porder->priv->player;
+}
+
+RBSource *
+rb_play_order_get_source (RBPlayOrder *porder)
+{
+	return porder->priv->source;
+}
+
+RhythmDB *
+rb_play_order_get_db (RBPlayOrder *porder)
+{
+	return porder->priv->db;
 }
 
 /* mostly copied from rb_shell_player_get_playing_entry in rb-shell-player.c */
@@ -195,87 +301,224 @@ RBEntryView*
 rb_play_order_get_entry_view (RBPlayOrder *porder)
 {
 	RBSource *source;
-	RBShellPlayer *player = porder->priv->player;
-	if (player == NULL)
-		return NULL;
-	source = rb_shell_player_get_playing_source (player);
+
+	g_return_val_if_fail (porder != NULL, NULL);
+	
+	source = porder->priv->source;
 	if (source == NULL)
 		return NULL;
 	return rb_source_get_entry_view (source);
 }
 
+RhythmDBEntry *
+rb_play_order_get_playing_entry (RBPlayOrder *porder)
+{
+	RhythmDBEntry *entry = NULL;
+
+	RBEntryView *entry_view = rb_play_order_get_entry_view (porder);
+	if (entry_view) {
+		g_object_get (entry_view,
+			      "playing-entry", &entry,
+			      NULL);
+	}
+
+	return entry;
+}
+
+void
+rb_play_order_playing_source_changed (RBPlayOrder *porder)
+{
+	RBSource *source;
+	RhythmDB *db = NULL;
+
+	g_return_if_fail (porder != NULL);
+
+	source = rb_shell_player_get_playing_source (porder->priv->player);
+	if (source) {
+		g_object_get (G_OBJECT (source),
+			      "db", &db,
+			      NULL);
+	}
+	if (db != porder->priv->db) {
+		if (porder->priv->db) {
+			g_signal_handlers_disconnect_by_func (G_OBJECT (porder->priv->db),
+							      G_CALLBACK (rb_play_order_db_entry_deleted_cb),
+							      porder);
+		}
+		porder->priv->db = db;
+		if (porder->priv->db) {
+			g_signal_connect_swapped (G_OBJECT (porder->priv->db),
+						  "entry_deleted",
+						  G_CALLBACK (rb_play_order_db_entry_deleted_cb),
+						  porder);
+		}
+
+		if (RB_PLAY_ORDER_GET_CLASS (porder)->db_changed)
+			RB_PLAY_ORDER_GET_CLASS (porder)->db_changed (porder, porder->priv->db);
+	}
+
+	if (source != porder->priv->source) {
+		if (porder->priv->source != NULL) {
+			RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+							      G_CALLBACK (rb_play_order_playing_entry_changed_cb),
+							      porder);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+							      G_CALLBACK (rb_play_order_entry_added_cb),
+							      porder);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+							      G_CALLBACK (rb_play_order_entry_deleted_cb),
+							      porder);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (entry_view),
+							      G_CALLBACK (rb_play_order_entries_replaced_cb),
+							      porder);
+		}
+		porder->priv->source = source;
+		if (porder->priv->source != NULL) {
+			/* Optimization possibilty: Only connect handlers
+			 * subclass actually listens to. */
+			RBEntryView *entry_view = rb_source_get_entry_view (porder->priv->source);
+			g_signal_connect (G_OBJECT (entry_view),
+					  "notify::playing-entry",
+					  G_CALLBACK (rb_play_order_playing_entry_changed_cb),
+					  porder);
+			g_signal_connect_swapped (G_OBJECT (entry_view),
+						  "entry-added",
+						  G_CALLBACK (rb_play_order_entry_added_cb),
+						  porder);
+			g_signal_connect_swapped (G_OBJECT (entry_view),
+						  "entry-deleted",
+						  G_CALLBACK (rb_play_order_entry_deleted_cb),
+						  porder);
+			g_signal_connect_swapped (G_OBJECT (entry_view),
+						  "entries-replaced",
+						  G_CALLBACK (rb_play_order_entries_replaced_cb),
+						  porder);
+		}
+	}
+
+	/* Notify subclass if it cares */
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->playing_source_changed (porder);
+	/* These are an inevitable side effect of replacing the source. */
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced)
+		RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced (porder);
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, rb_play_order_get_playing_entry (porder));
+}
+
+static void
+rb_play_order_playing_entry_changed_cb (GObject *entry_view,
+					GParamSpec *pspec,
+					RBPlayOrder *porder)
+{
+	g_return_if_fail (strcmp (pspec->name, "playing-entry") == 0);
+
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed) {
+		RhythmDBEntry *entry;
+		g_object_get (entry_view,
+				"playing-entry", &entry,
+				NULL);
+		RB_PLAY_ORDER_GET_CLASS (porder)->playing_entry_changed (porder, entry);
+	}
+}
+
+static void
+rb_play_order_entry_added_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
+{
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_added)
+		RB_PLAY_ORDER_GET_CLASS (porder)->entry_added (porder, entry);
+}
+
+static void
+rb_play_order_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
+{
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed)
+		RB_PLAY_ORDER_GET_CLASS (porder)->entry_removed (porder, entry);
+}
+
+static void
+rb_play_order_entries_replaced_cb (RBPlayOrder *porder)
+{
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced)
+		RB_PLAY_ORDER_GET_CLASS (porder)->entries_replaced (porder);
+}
+
+static void
+rb_play_order_db_entry_deleted_cb (RBPlayOrder *porder, RhythmDBEntry *entry)
+{
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->db_entry_deleted)
+		RB_PLAY_ORDER_GET_CLASS (porder)->db_entry_deleted (porder, entry);
+}
+
+static gboolean
+default_has_next (RBPlayOrder *porder)
+{
+	return rb_play_order_get_next (porder) != NULL;
+}
+
+static gboolean
+default_has_previous (RBPlayOrder *porder)
+{
+	return rb_play_order_get_previous (porder) != NULL;
+}
+
 gboolean
 rb_play_order_has_next (RBPlayOrder* porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_val_if_fail (porder != NULL, FALSE);
-
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	if (po_class->has_next)
-		return po_class->has_next (porder);
-	else
-		return rb_play_order_get_next (porder) != NULL;
+	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->has_next != NULL, FALSE);
+	return RB_PLAY_ORDER_GET_CLASS (porder)->has_next (porder);
 }
 
 RhythmDBEntry *
 rb_play_order_get_next (RBPlayOrder *porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_val_if_fail (porder != NULL, NULL);
-
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	g_return_val_if_fail (po_class->get_next != NULL, NULL);
-	return po_class->get_next (porder);
+	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->get_next != NULL, NULL);
+	return RB_PLAY_ORDER_GET_CLASS (porder)->get_next (porder);
 }
 
 void
 rb_play_order_go_next (RBPlayOrder *porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_if_fail (porder != NULL);
-
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	if (po_class->go_next)
-		po_class->go_next (porder);
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_next)
+		RB_PLAY_ORDER_GET_CLASS (porder)->go_next (porder);
 }
 
 gboolean
 rb_play_order_has_previous (RBPlayOrder* porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_val_if_fail (porder != NULL, FALSE);
-
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	if (po_class->has_previous)
-		return po_class->has_previous (porder);
-	else
-		return rb_play_order_get_previous (porder) != NULL;
+	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->has_previous != NULL, FALSE);
+	return RB_PLAY_ORDER_GET_CLASS (porder)->has_previous (porder);
 }
 
 RhythmDBEntry *
 rb_play_order_get_previous (RBPlayOrder *porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_val_if_fail (porder != NULL, NULL);
-
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	g_return_val_if_fail (po_class->get_previous != NULL, NULL);
-	return po_class->get_previous (porder);
+	g_return_val_if_fail (RB_PLAY_ORDER_GET_CLASS (porder)->get_previous != NULL, NULL);
+	return RB_PLAY_ORDER_GET_CLASS (porder)->get_previous (porder);
 }
 
 void
 rb_play_order_go_previous (RBPlayOrder *porder)
 {
-	RBPlayOrderClass *po_class;
-
 	g_return_if_fail (porder != NULL);
+	if (RB_PLAY_ORDER_GET_CLASS (porder)->go_previous)
+		RB_PLAY_ORDER_GET_CLASS (porder)->go_previous (porder);
+}
 
-	po_class = RB_PLAY_ORDER_GET_CLASS (porder);
-	if (po_class->go_previous)
-		po_class->go_previous (porder);
+void
+rb_play_order_ref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
+{
+	rhythmdb_entry_ref (db, entry);
+}
+
+void
+rb_play_order_unref_entry_swapped (RhythmDBEntry *entry, RhythmDB *db)
+{
+	rhythmdb_entry_unref (db, entry);
 }

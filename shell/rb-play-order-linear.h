@@ -47,7 +47,7 @@ typedef struct
 
 GType			rb_linear_play_order_get_type	(void);
 
-RBLinearPlayOrder *	rb_linear_play_order_new	(RBShellPlayer *player);
+RBPlayOrder *		rb_linear_play_order_new	(RBShellPlayer *player);
 
 G_END_DECLS
 

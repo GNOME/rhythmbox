@@ -58,7 +58,7 @@ rb_linear_play_order_get_type (void)
 	return rb_linear_play_order_type;
 }
 
-RBLinearPlayOrder *
+RBPlayOrder *
 rb_linear_play_order_new (RBShellPlayer *player)
 {
 	RBLinearPlayOrder *lorder;
@@ -67,7 +67,7 @@ rb_linear_play_order_new (RBShellPlayer *player)
 			       "player", player,
 			       NULL);
 
-	return lorder;
+	return RB_PLAY_ORDER (lorder);
 }
 
 static void

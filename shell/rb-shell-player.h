@@ -101,8 +101,8 @@ void			rb_shell_player_sync_buttons	(RBShellPlayer *player);
 
 void                    rb_shell_player_set_repeat      (RBShellPlayer *player,
 							 gboolean new_val);
-void                    rb_shell_player_set_shuffle     (RBShellPlayer *player,
-							 gboolean new_val);
+void                    rb_shell_player_set_play_order	(RBShellPlayer *player,
+							 const gchar *new_val);
 
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);

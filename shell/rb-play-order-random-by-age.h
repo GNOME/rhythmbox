@@ -22,7 +22,7 @@
 #ifndef __RB_PLAY_ORDER_RANDOM_BY_AGE_H
 #define __RB_PLAY_ORDER_RANDOM_BY_AGE_H
 
-#include "rb-play-order.h"
+#include "rb-play-order-random.h"
 
 #include "rb-shell-player.h"
 
@@ -35,23 +35,19 @@ G_BEGIN_DECLS
 #define RB_IS_RANDOM_PLAY_ORDER_BY_AGE_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE))
 #define RB_RANDOM_PLAY_ORDER_BY_AGE_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_RANDOM_PLAY_ORDER_BY_AGE, RBRandomPlayOrderByAgeClass))
 
-typedef struct RBRandomPlayOrderByAgePrivate RBRandomPlayOrderByAgePrivate;
-
 typedef struct
 {
-	RBPlayOrder parent;
-
-	RBRandomPlayOrderByAgePrivate *priv;
+	RBRandomPlayOrder parent;
 } RBRandomPlayOrderByAge;
 
 typedef struct
 {
-	RBPlayOrderClass parent_class;
+	RBRandomPlayOrderClass parent_class;
 } RBRandomPlayOrderByAgeClass;
 
 GType					rb_random_play_order_by_age_get_type	(void);
 
-RBRandomPlayOrderByAge *		rb_random_play_order_by_age_new		(RBShellPlayer *player);
+RBPlayOrder *				rb_random_play_order_by_age_new		(RBShellPlayer *player);
 
 G_END_DECLS
 

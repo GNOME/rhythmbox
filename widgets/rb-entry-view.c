@@ -148,6 +148,7 @@ struct RBEntryViewPrivate
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
 	struct RBEntryViewReverseSortingData *reverse_sorting_data;
+	gboolean resorting;
 
 	gboolean have_selection;
 
@@ -179,6 +180,7 @@ enum
 {
 	ENTRY_ADDED,
 	ENTRY_DELETED,
+	ENTRIES_REPLACED,
 	ENTRY_SELECTED,
 	ENTRY_ACTIVATED,
 	CHANGED,
@@ -307,6 +309,15 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
+	rb_entry_view_signals[ENTRIES_REPLACED] =
+		g_signal_new ("entries-replaced",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEntryViewClass, entries_replaced),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 	rb_entry_view_signals[ENTRY_ACTIVATED] =
 		g_signal_new ("entry-activated",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -583,6 +594,15 @@ rb_entry_view_set_property (GObject *object,
 					 GTK_TREE_MODEL (new_model));
 		view->priv->model = new_model;
 		view->priv->have_selection = FALSE;
+
+		if (view->priv->resorting) {
+			/* When the sort order changes, the model is replaced
+			 * but the set of entries doesn't change. */
+			view->priv->resorting = FALSE;
+		} else {
+			g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRIES_REPLACED], 0);
+		}
+
 		queue_changed_sig (view);
 
 		break;
@@ -1148,6 +1168,14 @@ const char *
 rb_entry_view_get_sorting_type (RBEntryView *view)
 {
 	return eel_gconf_get_string (view->priv->sorting_key);
+}
+
+void
+rb_entry_view_set_resorting (RBEntryView *view)
+{
+	if (view->priv->resorting)
+		g_warning ("Sort order changed while resorting");
+	view->priv->resorting = TRUE;
 }
 
 static void
@@ -1781,6 +1809,10 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       GtkTreeIter *iter,
 			       RBEntryView *view)
 {
+	RhythmDBEntry *entry = entry_from_tree_path (view, path);
+
+	rb_debug ("row added");
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }
 

@@ -22,7 +22,7 @@
 #ifndef __RB_PLAY_ORDER_RANDOM_EQUAL_WEIGHTS_H
 #define __RB_PLAY_ORDER_RANDOM_EQUAL_WEIGHTS_H
 
-#include "rb-play-order.h"
+#include "rb-play-order-random.h"
 
 #include "rb-shell-player.h"
 
@@ -35,23 +35,19 @@ G_BEGIN_DECLS
 #define RB_IS_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS))
 #define RB_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_RANDOM_PLAY_ORDER_EQUAL_WEIGHTS, RBRandomPlayOrderEqualWeightsClass))
 
-typedef struct RBRandomPlayOrderEqualWeightsPrivate RBRandomPlayOrderEqualWeightsPrivate;
-
 typedef struct
 {
-	RBPlayOrder parent;
-
-	RBRandomPlayOrderEqualWeightsPrivate *priv;
+	RBRandomPlayOrder parent;
 } RBRandomPlayOrderEqualWeights;
 
 typedef struct
 {
-	RBPlayOrderClass parent_class;
+	RBRandomPlayOrderClass parent_class;
 } RBRandomPlayOrderEqualWeightsClass;
 
 GType					rb_random_play_order_equal_weights_get_type	(void);
 
-RBRandomPlayOrderEqualWeights *		rb_random_play_order_equal_weights_new		(RBShellPlayer *player);
+RBPlayOrder *				rb_random_play_order_equal_weights_new		(RBShellPlayer *player);
 
 G_END_DECLS
 

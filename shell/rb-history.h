@@ -20,17 +20,16 @@
  */
 
 /**
- * RBHistory is a linked list that maintains a "current" pointer and can delete
- * an arbitrary element in O(1) time. It is also responsible for ref-ing and
- * unref-ing the entries it holds. However, I'm considering moving that
- * responsibility to whoever owns the RBHistory using a deletion callback. If
- * that happens, RBHistory will be a pure data structure and can probable lose
- * the GObject-ness.
+ * RBHistory is a GSequence that maintains a "current" pointer and can delete
+ * an arbitrary element in amortized O(log(N)) time. It can call a deletion
+ * callback when it removes one of its entries. RBHistory is a pure data
+ * structure and can probably lose its GObject-ness.
  *
  * I may also add another "enqueued" pointer to help manage a queue of next
  * songs under shuffle.
  *
- * All operations take O(1) time unless noted otherwise.
+ * All operations take amortized O(log(N)) (worst-case O(N)) time unless noted
+ * otherwise.
  */
 
 #include <glib/glist.h>
@@ -66,7 +65,19 @@ typedef struct
 
 GType                   rb_history_get_type	(void);
 
-RBHistory *		rb_history_new		(gboolean truncate_on_play);
+RBHistory *		rb_history_new		(gboolean truncate_on_play,
+						 GFunc destroyer,
+						 gpointer destroy_userdata);
+
+RBHistory *		rb_history_clone	(RBHistory *orig,
+						 GFunc callback,
+						 gpointer userdata);
+
+void			rb_history_set_destroy_notify	(RBHistory *hist,
+							 GFunc destroyer,
+							 gpointer destroy_userdata);
+void			rb_history_set_truncate_on_play	(RBHistory *hist, gboolean truncate_on_play);
+void			rb_history_set_maximum_size	(RBHistory *hist, guint maximum_size);
 
 guint			rb_history_length	(RBHistory *hist);
 
@@ -94,14 +105,13 @@ void			rb_history_set_playing	(RBHistory *hist, RhythmDBEntry *entry);
 void			rb_history_append	(RBHistory *hist, RhythmDBEntry *entry);
 
 /**
- * Gets the index of the current entry.
- * Takes O(index) time.
+ * Gets the index of the current entry. This is guaranteed to be < the
+ * history's size, so if the history is empty, it returns -1. 
  */
-guint			rb_history_get_current_index	(RBHistory *hist);
+gint			rb_history_get_current_index	(RBHistory *hist);
 
 /**
  * Inserts @entry at @index within the history list. 0<=@index<=size
- * Takes O(@index) time.
  */
 void			rb_history_insert_at_index	(RBHistory *hist, RhythmDBEntry *entry, guint index);
 
@@ -115,8 +125,10 @@ void			rb_history_remove_entry	(RBHistory *hist, RhythmDBEntry *entry);
 void			rb_history_clear	(RBHistory *hist);
 
 /** Returns a copy of the whole history in order. Caller must free the result.
- * Takes O(size) time. */
+ * Takes O(Nlog(N)) time. */
 GPtrArray *		rb_history_dump		(RBHistory *hist);
+
+gboolean		rb_history_contains_entry	(RBHistory *hist, RhythmDBEntry *entry);
 
 G_END_DECLS
 

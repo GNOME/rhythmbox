@@ -195,9 +195,6 @@ enum
 
 static GObjectClass *parent_class = NULL;
 
-/* dnd */
-static const GtkTargetEntry target_uri [] = { { "text/uri-list", 0, 0 } };
-
 GType
 rb_library_source_get_type (void)
 {
@@ -730,6 +727,7 @@ static void
 songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source)
 {
 	rb_debug ("sort order changed");
+	rb_entry_view_set_resorting (view);
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
 }
 

@@ -68,6 +68,7 @@ typedef struct
 
 	void (*entry_added)		(RBEntryView *view, RhythmDBEntry *entry);
 	void (*entry_deleted)		(RBEntryView *view, RhythmDBEntry *entry);
+	void (*entries_replaced)	(RBEntryView *view);
 
 	void (*entry_selected)          (RBEntryView *view, RhythmDBEntry *entry);
 	void (*entry_activated)         (RBEntryView *view, RhythmDBEntry *entry);
@@ -143,6 +144,9 @@ void		rb_entry_view_enable_drag_source	(RBEntryView *view,
 RhythmDBEntry *	rb_entry_view_get_random_entry		(RBEntryView *view);
 
 const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
+
+/** Should be called by sources before resorting the query model. */
+void		rb_entry_view_set_resorting		(RBEntryView *view);
 
 gboolean	rb_entry_view_poll_model		(RBEntryView *view);
 

@@ -44,10 +44,16 @@ rhythmbox_SOURCES =              			\
 	rb-play-order-linear.h				\
 	rb-play-order-shuffle.c				\
 	rb-play-order-shuffle.h				\
+	rb-play-order-random.c				\
+	rb-play-order-random.h				\
 	rb-play-order-random-equal-weights.c		\
 	rb-play-order-random-equal-weights.h		\
 	rb-play-order-random-by-age.c			\
 	rb-play-order-random-by-age.h			\
+	rb-play-order-random-by-age-and-rating.c	\
+	rb-play-order-random-by-age-and-rating.h	\
+	rb-play-order-random-by-rating.c		\
+	rb-play-order-random-by-rating.h		\
 	rb-remote.c					\
 	rb-remote.h					\
 	rb-tray-icon.c					\
