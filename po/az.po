@@ -1,24 +1,25 @@
-# translation of rhythmbox.HEAD.po to Azerbaijani Turkish
+# translation of rhythmbox.HEAD.az.po to Azerbaijani
 # This file is distributed under the same license as the rhythmbox package.
-# Copyright (C) 2004 Mətin Əmirov
-# Mətin Əmirov <metin@karegen.com>, 2003, 2004.
+# Copyright (C) 2004 Metin Amiroff
+# Metin Amiroff <metin@karegen.com>, 2003, 2004.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: rhythmbox.HEAD\n"
+"Project-Id-Version: rhythmbox.HEAD.az\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-31 04:32+0100\n"
-"PO-Revision-Date: 2004-01-31 20:24+0200\n"
-"Last-Translator: Mətin Əmirov <metin@karegen.com>\n"
-"Language-Team: Azerbaijani Turkish <gnome@azitt.com>\n"
+"POT-Creation-Date: 2004-06-18 04:29+0200\n"
+"PO-Revision-Date: 2004-06-19 12:40+0300\n"
+"Last-Translator: Metin Amiroff <metin@karegen.com>\n"
+"Language-Team: Azerbaijani <translation-team-az@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.0.2\n"
+"X-Generator: KBabel 1.3\n"
+"Plural-Forms: Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
-msgstr "Musiqi Kitabxanasına Əlavə Et"
+msgstr "Musiqi Kitabxanasına ƏLavə Et"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
@@ -34,11 +35,12 @@ msgstr "Rhythmbox qabığı"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
-msgstr "Rhythmbox qabıq e'malatxanası"
+msgstr "Rhythmbox qabıq emalatxanası"
 
 #: data/glade/create-playlist.glade.h:1 data/glade/druid.glade.h:1
-#: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
-#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
+#: data/glade/song-info.glade.h:1 data/glade/song-info-multiple.glade.h:1
+#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
+#: data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -60,7 +62,7 @@ msgstr "MB"
 
 #: data/glade/create-playlist.glade.h:6
 msgid "_Limit to: "
-msgstr "_Hüdud: "
+msgstr "_Məhdudiyyət: "
 
 #: data/glade/create-playlist.glade.h:7
 msgid "songs"
@@ -75,6 +77,10 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
+"Rhythmbox bütün mahnılarınızı mərkəzi bir \"kitabxanada\" idarə edir və sizə musiqinizi rahatlıqla görmə, axtarma və idarə etmə imkanı verir.\n"
+"Bu xüsusiyyəti işlətmək üçün proqrama musiqinizin harada olduğunu bildirməlisiniz. "
+"Bu addımı keçib daha sonra kitabxananıza mahnıları əlavə edə bilərsiniz.\n"
+"Xahiş edirik altdakı seçimlərdən birini seçin:"
 
 #: data/glade/druid.glade.h:5
 msgid "_Browse..."
@@ -82,7 +88,7 @@ msgstr "_Gəz..."
 
 #: data/glade/druid.glade.h:6
 msgid "_Enter location manually:"
-msgstr "Mövqeyi əllə _daxil et:"
+msgstr "Mövqeni əllə _bildir:"
 
 #: data/glade/druid.glade.h:7
 msgid "_Path:"
@@ -92,7 +98,7 @@ msgstr "_Cığır:"
 msgid "_Skip this step"
 msgstr "_Bu addımı keç"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1314
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1231
 msgid "A_lbum"
 msgstr "A_lbom"
 
@@ -106,7 +112,7 @@ msgstr "Görünən Sütunlar"
 
 #: data/glade/general-prefs.glade.h:4
 msgid "_Artist"
-msgstr "_İfaçı"
+msgstr "_Müğənni"
 
 #: data/glade/general-prefs.glade.h:5
 msgid "_Duration"
@@ -114,7 +120,7 @@ msgstr "_Sürəklik"
 
 #: data/glade/general-prefs.glade.h:6
 msgid "_Genre"
-msgstr "_Növ"
+msgstr "_Tərz"
 
 #: data/glade/general-prefs.glade.h:7
 msgid "_Last played"
@@ -122,19 +128,15 @@ msgstr "_Son çalınan"
 
 #: data/glade/general-prefs.glade.h:8
 msgid "_Play count"
-msgstr "Çalınma _sayı"
+msgstr "Çalınma _miqdarı"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1344
-msgid "_Quality"
-msgstr "_Keyfiyyət"
-
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1265
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1182
 msgid "_Rating"
-msgstr "_Reytinq"
+msgstr "_Xal"
 
 #: data/glade/library-prefs.glade.h:1
 msgid "Artists and albums"
-msgstr "İfaçılar və albomlar"
+msgstr "Müğənnilər və albomlar"
 
 #: data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
@@ -142,71 +144,76 @@ msgstr "Səyyah Görünüşləri"
 
 #: data/glade/library-prefs.glade.h:3
 msgid "Genres and artists"
-msgstr "Tərzlər və ifaçılar"
+msgstr "Tərzlər və müğənnilər"
 
 #: data/glade/library-prefs.glade.h:4
 msgid "Genres, artists and albums"
-msgstr "Tərzlər, ifaçılar və albomlar"
+msgstr "Tərzlər, müğənnilər və albomlar"
 
 #: data/glade/load-failure.glade.h:1
 msgid "The following files couldn't be loaded:"
 msgstr "Aşağıdakı fayllar yüklənə bilmədi:"
 
-#: data/glade/song-info.glade.h:2
+#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
+msgid "Automatically rate:"
+msgstr "Avtomatik xal ver:"
+
+#: data/glade/song-info.glade.h:3
 msgid "Basic"
 msgstr "Əsas"
 
-#: data/glade/song-info.glade.h:3 data/glade/station-properties.glade.h:2
+#: data/glade/song-info.glade.h:4 data/glade/station-properties.glade.h:2
 msgid "Bitrate:"
-msgstr "Vuruş Sıxlığı:"
+msgstr "Vuruş sıxlığı:"
 
-#: data/glade/song-info.glade.h:4
+#: data/glade/song-info.glade.h:5
 msgid "Details"
 msgstr "Təfərruatlar"
 
-#: data/glade/song-info.glade.h:5
+#: data/glade/song-info.glade.h:6
 msgid "Duration:"
 msgstr "Sürəklik:"
 
-#: data/glade/song-info.glade.h:6
+#: data/glade/song-info.glade.h:7
 msgid "File name:"
 msgstr "Fayl adı:"
 
-#: data/glade/song-info.glade.h:7
+#: data/glade/song-info.glade.h:8
 msgid "Last played:"
 msgstr "Son çalınma:"
 
-#: data/glade/song-info.glade.h:8
+#: data/glade/song-info.glade.h:9
 msgid "Location:"
 msgstr "Mövqe:"
 
-#: data/glade/song-info.glade.h:9
-msgid "Play count:"
-msgstr "Çalınma sayı:"
-
 #: data/glade/song-info.glade.h:10
+msgid "Play count:"
+msgstr "Çalınma miqdarı:"
+
+#: data/glade/song-info.glade.h:11 data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "_Albom:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:12 data/glade/song-info-multiple.glade.h:4
 msgid "_Artist:"
-msgstr "_İfaçı:"
+msgstr "_Müğənni: "
 
-#: data/glade/song-info.glade.h:12 data/glade/station-new.glade.h:2
-#: data/glade/station-properties.glade.h:6
+#: data/glade/song-info.glade.h:13 data/glade/song-info-multiple.glade.h:5
+#: data/glade/station-new.glade.h:2 data/glade/station-properties.glade.h:6
 msgid "_Genre:"
 msgstr "_Tərz:"
 
-#: data/glade/song-info.glade.h:13 data/glade/station-properties.glade.h:8
+#: data/glade/song-info.glade.h:14 data/glade/song-info-multiple.glade.h:6
+#: data/glade/station-properties.glade.h:8
 msgid "_Rating:"
-msgstr "_Reytinq:"
+msgstr "_Xal:"
 
-#: data/glade/song-info.glade.h:14 data/glade/station-new.glade.h:4
+#: data/glade/song-info.glade.h:15 data/glade/station-new.glade.h:4
 #: data/glade/station-properties.glade.h:9
 msgid "_Title:"
-msgstr "_Adı:"
+msgstr "_Mahnı Adı:"
 
-#: data/glade/song-info.glade.h:15
+#: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "Mahnı _nömrəsi:"
 
@@ -216,11 +223,11 @@ msgstr "_Mövqe:"
 
 #: data/glade/station-properties.glade.h:3
 msgid "L_ocation:"
-msgstr "_Mövqe:"
+msgstr "Mö_vqe:"
 
 #: data/glade/station-properties.glade.h:4
 msgid "Play Count:"
-msgstr "Çalınma Sayı:"
+msgstr "Çalınma Miqdarı:"
 
 #: data/glade/station-properties.glade.h:5
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
@@ -232,25 +239,21 @@ msgstr "_Son Çalınma:"
 
 #: data/glade/uri.glade.h:2
 msgid "Enter the _location (URI) of the file you would like to add:"
-msgstr ""
+msgstr "Əlavə etmək istədiyiniz faylın _mövqeyini (URI) bildirin:"
 
 #: data/glade/uri.glade.h:3
 msgid "Open from URI"
 msgstr "URI-dən aç"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1112 shell/rb-shell.c:1719
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1884
 msgid "Music Player"
 msgstr "Musiqi Çalğıcısı"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Musiqi kolleksiyanızı dinləyin və tərtib edin"
+msgstr "Musiqi kolleksiyanızı tərtib edin və dinləyin"
 
-#: data/rhythmbox.desktop.in.h:3 shell/main.c:113 widgets/rb-druid.c:218
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:18
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:21
 msgid "Deselect all songs"
 msgstr "Seçkini ləğv et"
 
@@ -258,19 +261,19 @@ msgstr "Seçkini ləğv et"
 msgid "Eject Audio-CD"
 msgstr "Audio CD-ni Çıxart"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:36
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 data/ui/rhythmbox-ui.xml.h:41
 msgid "Scroll the view to the currently playing song"
-msgstr "Görünüşü hazırda ifa edilən mahnıya sürüşdür"
+msgstr "Görünüşü hazırda çalınan mahnıya sürüşdür"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:37
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 data/ui/rhythmbox-ui.xml.h:42
 msgid "Select _All"
 msgstr "_Hamısını Seç"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:38
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:43
 msgid "Select all songs"
 msgstr "Bütün mahnıları seç"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:56
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:62
 msgid "_Edit"
 msgstr "_Düzəlt"
 
@@ -278,11 +281,11 @@ msgstr "_Düzəlt"
 msgid "_Eject Audio-CD..."
 msgstr "Audio CD-ni Çı_xart..."
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:59
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.h:65
 msgid "_Jump to Playing Song"
 msgstr "Çalınan Mahnıya _Keç"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:73
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.h:79
 msgid "_View"
 msgstr "_Görünüş"
 
@@ -291,322 +294,325 @@ msgid "Add Lo_cation..."
 msgstr "Mövqe Ə_lavə Et..."
 
 #: data/ui/rhythmbox-ui.xml.h:2
+msgid "Browse this album"
+msgstr "Bu albomu gəz"
+
+#: data/ui/rhythmbox-ui.xml.h:3
+msgid "Browse this artist"
+msgstr "Bu müğənnini gəz"
+
+#: data/ui/rhythmbox-ui.xml.h:4
+msgid "Browse this genre"
+msgstr "Bu tərzi gəz"
+
+#: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the browser"
 msgstr "Səyyahın görünüşünü dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:3
+#: data/ui/rhythmbox-ui.xml.h:6
 msgid "Change the visibility of the main window"
-msgstr "Ana pəncərənin görünüşünü dəyişdir"
+msgstr "Əsas pəncərənin görünüşünü dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:4
+#: data/ui/rhythmbox-ui.xml.h:7
 msgid "Change the visibility of the source list"
 msgstr "Mənbə siyahısının görünüşünü dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:5
+#: data/ui/rhythmbox-ui.xml.h:8
 msgid "Change the visibility of the statusbar"
 msgstr "Vəziyyət çubuğunun görünüşünü dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:6
+#: data/ui/rhythmbox-ui.xml.h:9
 msgid "Change this automatic playlist"
-msgstr "Avtomatik çalğı siyahısını dəyişdir"
+msgstr "Bu avtomatik çalğı siyahısını dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:7
+#: data/ui/rhythmbox-ui.xml.h:10
 msgid "Choose a location (URI) to be added to the library"
 msgstr "Kitabxanaya əlavə ediləcək mövqeni (URI) seç"
 
-#: data/ui/rhythmbox-ui.xml.h:8
+#: data/ui/rhythmbox-ui.xml.h:11
 msgid "Choose a playlist to be loaded"
 msgstr "Yüklənəcək çalğı siyahısını seç"
 
-#: data/ui/rhythmbox-ui.xml.h:9
+#: data/ui/rhythmbox-ui.xml.h:12
 msgid "Choose files or a directory to be added to the library"
 msgstr "Kitabxanaya əlavə ediləcək fayl ya da qovluqları seç"
 
-#: data/ui/rhythmbox-ui.xml.h:10
+#: data/ui/rhythmbox-ui.xml.h:13
 msgid "Copy selection"
-msgstr "Seçimi köçür"
+msgstr "Seçkini köçür"
 
-#: data/ui/rhythmbox-ui.xml.h:11
+#: data/ui/rhythmbox-ui.xml.h:14
 msgid "Create a new Internet Radio station"
 msgstr "Yeni İnternet Radio stansiyası yarat"
 
-#: data/ui/rhythmbox-ui.xml.h:12
+#: data/ui/rhythmbox-ui.xml.h:15
 msgid "Create a new automatically updating playlist"
 msgstr "Yeni avtomatik yenilənən çalğı siyahısı yarat"
 
-#: data/ui/rhythmbox-ui.xml.h:13
+#: data/ui/rhythmbox-ui.xml.h:16
 msgid "Create a new playlist"
 msgstr "Yeni çalğı siyahısı yarat"
 
-#: data/ui/rhythmbox-ui.xml.h:14
+#: data/ui/rhythmbox-ui.xml.h:17
 msgid "Cu_t"
 msgstr "_Kəs"
 
-#: data/ui/rhythmbox-ui.xml.h:15
+#: data/ui/rhythmbox-ui.xml.h:18
 msgid "Cut selection"
 msgstr "Seçkini kəs"
 
-#: data/ui/rhythmbox-ui.xml.h:16
+#: data/ui/rhythmbox-ui.xml.h:19
 msgid "D_eselect All"
 msgstr "_Seçimi Ləğv Et"
 
-#: data/ui/rhythmbox-ui.xml.h:17
+#: data/ui/rhythmbox-ui.xml.h:20
 msgid "Delete selection"
 msgstr "Seçkini sil"
 
-#: data/ui/rhythmbox-ui.xml.h:19
+#: data/ui/rhythmbox-ui.xml.h:22
 msgid "Display music player help"
 msgstr "Musiqi çalğıcısı yardımını göstər"
 
-#: data/ui/rhythmbox-ui.xml.h:20
+#: data/ui/rhythmbox-ui.xml.h:23
 msgid "Edit music player preferences"
 msgstr "Musiqi çalğıcısı seçimlərini dəyişdir"
 
-#: data/ui/rhythmbox-ui.xml.h:21
-#, fuzzy
-msgid "Extract and import songs from a CD"
-msgstr "CD-dən mahnıları köçür"
-
-#: data/ui/rhythmbox-ui.xml.h:22
-#, fuzzy
-msgid "Import Lo_cation..."
-msgstr "Mövqe Ə_lavə Et..."
-
-#: data/ui/rhythmbox-ui.xml.h:23
-#, fuzzy
-msgid "Import _Audio CD..."
-msgstr "Audio CD-ni Çı_xart..."
-
 #: data/ui/rhythmbox-ui.xml.h:24
-msgid "Make the main window smaller"
-msgstr ""
+msgid "Extract and import songs from a CD"
+msgstr "Mahnıları CD-dən Köçür"
 
 #: data/ui/rhythmbox-ui.xml.h:25
-#, fuzzy
-msgid "New _Automatic Playlist..."
-msgstr "Yeni Ağıllı Çalğı _Siyahısı..."
+msgid "Import Lo_cation..."
+msgstr "_Mövqe İdxal Et..."
 
 #: data/ui/rhythmbox-ui.xml.h:26
+msgid "Import _Audio CD..."
+msgstr "_Audio CD İdxal Et..."
+
+#: data/ui/rhythmbox-ui.xml.h:27
+msgid "Make the main window smaller"
+msgstr "Əsas pəncərəni kiçilt"
+
+#: data/ui/rhythmbox-ui.xml.h:28
+msgid "New _Automatic Playlist..."
+msgstr "Yeni _Avtomatik Çalğı Siyahısı..."
+
+#: data/ui/rhythmbox-ui.xml.h:29
 msgid "New _Internet Radio Station"
 msgstr "Yeni İnternet Radio _Stansiyası"
 
-#: data/ui/rhythmbox-ui.xml.h:27
+#: data/ui/rhythmbox-ui.xml.h:30
+msgid "P_laylist"
+msgstr "Ç_alğı Siyahısı"
+
+#: data/ui/rhythmbox-ui.xml.h:31
 msgid "P_revious"
 msgstr "Ə_vvəlki"
 
-#: data/ui/rhythmbox-ui.xml.h:28
+#: data/ui/rhythmbox-ui.xml.h:32
 msgid "Paste selection"
-msgstr "Seçimi yapışdır"
+msgstr "Seçkini yapışdır"
 
-#: data/ui/rhythmbox-ui.xml.h:29
+#: data/ui/rhythmbox-ui.xml.h:33
 msgid "Pause playing"
 msgstr "Fasilə ver"
 
-#: data/ui/rhythmbox-ui.xml.h:30
-#, fuzzy
-msgid "Playlist"
-msgstr "Yeni"
+#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:238
+msgid "Play first song again after all songs are played"
+msgstr "Bütün mahnılar çalındıqdan sonra yenə birinci mahnını çal"
 
-#: data/ui/rhythmbox-ui.xml.h:31
+#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:233
+msgid "Play songs in a random order"
+msgstr "Mahnıları təsadüfi ardıcıllıqda çal"
+
+#: data/ui/rhythmbox-ui.xml.h:36
 msgid "Prefere_nces"
 msgstr "Seçi_mlər"
 
-#: data/ui/rhythmbox-ui.xml.h:32
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:37
 msgid "Quit the music player"
-msgstr "Musiqi çalğıcısını bağla"
+msgstr "Musiqi çalğıcısından çıx"
 
-#: data/ui/rhythmbox-ui.xml.h:33
+#: data/ui/rhythmbox-ui.xml.h:38
 msgid "Repea_t"
 msgstr "_Təkrarla"
 
-#: data/ui/rhythmbox-ui.xml.h:34
+#: data/ui/rhythmbox-ui.xml.h:39
 msgid "S_tatusbar"
-msgstr "_Vəziyyət çubuğu."
+msgstr "_Vəziyyət çubuğu"
 
-#: data/ui/rhythmbox-ui.xml.h:35
+#: data/ui/rhythmbox-ui.xml.h:40
 msgid "Save a playlist to a file"
 msgstr "Çalğı siyahısını fayla qeyd et"
 
-#: data/ui/rhythmbox-ui.xml.h:39
-#, fuzzy
-msgid "Show information about the music player"
-msgstr "Göstər"
-
-#: data/ui/rhythmbox-ui.xml.h:40
-#, fuzzy
-msgid "Show information on the selected song"
-msgstr "Göstər ..da"
-
-#: data/ui/rhythmbox-ui.xml.h:41
-#, fuzzy
-msgid "Source _List"
-msgstr "_Mənbə Siyahısı"
-
-#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1484
-#, fuzzy
-msgid "Start playing"
-msgstr "Başla"
-
-#: data/ui/rhythmbox-ui.xml.h:43
-#, fuzzy
-msgid "Start playing the next song"
-msgstr "Başla"
-
 #: data/ui/rhythmbox-ui.xml.h:44
-#, fuzzy
-msgid "Start playing the previous song"
-msgstr "Başla"
+msgid "Set the browser to view only this album"
+msgstr "Səyyahı təkcə bu albomu göstərməsi üçün quraşdır"
 
 #: data/ui/rhythmbox-ui.xml.h:45
-#, fuzzy
-msgid "Stop playing"
-msgstr "Dayan"
+msgid "Set the browser to view only this artist"
+msgstr "Səyyahı təkcə bu müğənnini göstərməsi üçün quraşdır"
 
 #: data/ui/rhythmbox-ui.xml.h:46
-#, fuzzy
-msgid "Toggle random playing order"
-msgstr "Gizlə/Göstər"
+msgid "Set the browser to view only this genre"
+msgstr "Səyyahı təkcə bu tərzi göstərməsi üçün quraşdır"
 
 #: data/ui/rhythmbox-ui.xml.h:47
-#, fuzzy
-msgid "Toggle repeat mode"
-msgstr "Gizlə/Göstər"
+msgid "Show information about the music player"
+msgstr "Musiqi çalğıcısı haqqında məlumat göstər"
 
 #: data/ui/rhythmbox-ui.xml.h:48
+msgid "Show information on the selected song"
+msgstr "Seçili mahnı haqqında məlumat göstər"
+
+#: data/ui/rhythmbox-ui.xml.h:49
+msgid "Source _List"
+msgstr "Mənbə _Siyahısı"
+
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1537
+msgid "Start playing"
+msgstr "Çalmağa başla"
+
+#: data/ui/rhythmbox-ui.xml.h:51
+msgid "Start playing the next song"
+msgstr "Sonrakı mahnını çalmağa başla"
+
+#: data/ui/rhythmbox-ui.xml.h:52
+msgid "Start playing the previous song"
+msgstr "Əvvəlki mahnını çalmağa başla"
+
+#: data/ui/rhythmbox-ui.xml.h:53
+msgid "Stop playing"
+msgstr "Çalmağı dayandır"
+
+#: data/ui/rhythmbox-ui.xml.h:54
 msgid "_About"
 msgstr "_Haqqında"
 
-#: data/ui/rhythmbox-ui.xml.h:49
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:55
 msgid "_Add to Library..."
-msgstr "Əlavə Et Kitabxana."
+msgstr "Kitabxanaya Ə_lavə Et..."
 
-#: data/ui/rhythmbox-ui.xml.h:50
+#: data/ui/rhythmbox-ui.xml.h:56
 msgid "_Browser"
 msgstr "_Səyyah"
 
-#: data/ui/rhythmbox-ui.xml.h:51
+#: data/ui/rhythmbox-ui.xml.h:57
 msgid "_Contents"
 msgstr "_Məzmun"
 
-#: data/ui/rhythmbox-ui.xml.h:52
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:58
 msgid "_Control"
-msgstr "Səs Səviyyəsi"
+msgstr "_İdarə"
 
-#: data/ui/rhythmbox-ui.xml.h:53
+#: data/ui/rhythmbox-ui.xml.h:59
 msgid "_Copy"
 msgstr "_Köçür"
 
-#: data/ui/rhythmbox-ui.xml.h:54
+#: data/ui/rhythmbox-ui.xml.h:60
 msgid "_Cut"
 msgstr "_Kəs"
 
-#: data/ui/rhythmbox-ui.xml.h:55
+#: data/ui/rhythmbox-ui.xml.h:61
 msgid "_Delete"
 msgstr "_Sil"
 
-#: data/ui/rhythmbox-ui.xml.h:57
+#: data/ui/rhythmbox-ui.xml.h:63
 msgid "_Help"
 msgstr "_Yardım"
 
-#: data/ui/rhythmbox-ui.xml.h:58
+#: data/ui/rhythmbox-ui.xml.h:64
 msgid "_Import Folder..."
-msgstr ""
+msgstr "Qovlud _İdxal Et..."
 
-#: data/ui/rhythmbox-ui.xml.h:60
+#: data/ui/rhythmbox-ui.xml.h:66
 msgid "_Load from file..."
-msgstr ""
+msgstr "Fayldan _yüklə..."
 
-#: data/ui/rhythmbox-ui.xml.h:61
+#: data/ui/rhythmbox-ui.xml.h:67
 msgid "_Music"
 msgstr "_Musiqi"
 
-#: data/ui/rhythmbox-ui.xml.h:62
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:68
 msgid "_New Playlist..."
-msgstr "Yeni."
+msgstr "_Yeni Çalğı Siyahısı..."
 
-#: data/ui/rhythmbox-ui.xml.h:63
+#: data/ui/rhythmbox-ui.xml.h:69
 msgid "_Next"
 msgstr "_Sonrakı"
 
-#: data/ui/rhythmbox-ui.xml.h:64
+#: data/ui/rhythmbox-ui.xml.h:70
 msgid "_Paste"
 msgstr "_Yapışdır"
 
-#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1485
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1538
 msgid "_Play"
-msgstr "_Çal"
+msgstr "Ç_al"
 
-#: data/ui/rhythmbox-ui.xml.h:66
+#: data/ui/rhythmbox-ui.xml.h:72
 msgid "_Properties"
 msgstr "_Xassələr"
 
-#: data/ui/rhythmbox-ui.xml.h:67
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:73
 msgid "_Quit"
-msgstr "_Qeyfiyyət"
+msgstr "Çı_x"
 
-#: data/ui/rhythmbox-ui.xml.h:68
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:74
 msgid "_Remove"
-msgstr "Yeni_dən Adlandır"
+msgstr "_Sil"
 
-#: data/ui/rhythmbox-ui.xml.h:69
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:75
 msgid "_Save to file..."
-msgstr "Qeyd Et."
+msgstr "Fayla _qeyd et..."
 
-#: data/ui/rhythmbox-ui.xml.h:70
-#, fuzzy
+#: data/ui/rhythmbox-ui.xml.h:76
 msgid "_Show Window"
-msgstr "Göstər"
+msgstr "Pəncərəni _Göstər"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-statusbar.c:235
+#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:230
 msgid "_Shuffle"
 msgstr "_Qarışdır"
 
-#: data/ui/rhythmbox-ui.xml.h:72
+#: data/ui/rhythmbox-ui.xml.h:78
 msgid "_Small Display"
-msgstr ""
+msgstr "_Kiçik Displey"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
 msgstr "Yeni İnternet Radio Stansiyası"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:440
+#: iradio/rb-station-properties-dialog.c:460
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:708 sources/rb-iradio-source.c:250
-#: sources/rb-iradio-source.c:251 sources/rb-iradio-source.c:252
-#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1047
-#: widgets/rb-entry-view.c:1074 widgets/rb-song-info.c:581
+#: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
+#: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
+#: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
+#: widgets/rb-entry-view.c:964 widgets/rb-entry-view.c:991
+#: widgets/rb-song-info.c:801
 msgid "Unknown"
-msgstr "Namə'lum"
+msgstr "Naməlum"
 
 #: iradio/rb-new-station-dialog.c:309 rhythmdb/rhythmdb-property-model.c:372
 msgid "All"
 msgstr "Hamısı"
 
-#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:548
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:751
 #, c-format
 msgid "%s Properties"
-msgstr "%s Xüsusiyyətləri"
+msgstr "%s Xassələri"
 
-#: iradio/rb-station-properties-dialog.c:338
+#: iradio/rb-station-properties-dialog.c:358
 #, c-format
 msgid "Properties for %s"
 msgstr "%s xassələri"
 
-#: lib/disclosure-widget.c:294
+#: lib/disclosure-widget.c:300
 msgid "Expander Size"
 msgstr "Genişlədici Böyüklüyü"
 
-#: lib/disclosure-widget.c:295
+#: lib/disclosure-widget.c:301
 msgid "Size of the expander arrow"
 msgstr "Genişlədici oxun böyüklüyü"
 
@@ -625,19 +631,19 @@ msgstr "İstiqamət"
 
 #: lib/eggtrayicon.c:121
 msgid "The orientation of the tray."
-msgstr "Çubuğun istiqaməti."
+msgstr "Bildiriş sahəsinin istiqaməti."
 
-#: lib/rb-file-helpers.c:75
+#: lib/rb-file-helpers.c:77
 #, c-format
 msgid "Failed to find %s"
 msgstr "%s tapıla bilmədi"
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s mövcuddur, xahiş edirik onu yoldan çıxardın."
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:105
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "%s cərgəsi yaradıla bilmədi."
@@ -658,324 +664,283 @@ msgid "Unsupported MIME type %s"
 msgstr "Dəstəklənməyən MIME növü %s"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:315
-#, fuzzy
 msgid "Unknown file type"
-msgstr "Namə'lum fayl"
+msgstr "Naməlum fayl növü"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:386
-#, fuzzy, c-format
+#, c-format
 msgid "Track %.2d"
-msgstr "Mahnı"
+msgstr "Mahnı %.2d"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:751
 #: metadata/monkey-media/monkey-media-stream-info.c:816
-#, fuzzy
 msgid "No TRM ID for this song"
-msgstr "Xeyr ID üçün"
+msgstr "Bu mahnının TRM ID-si yoxdur"
 
 #: metadata/monkey-media/monkey-media-stream-info.c:767
 #: metadata/monkey-media/monkey-media-stream-info.c:831
-#, fuzzy
 msgid "No information for this song found"
-msgstr "Xeyr üçün"
+msgstr "Bu mahnı haqqında məlumat tapıla bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
-#, fuzzy
 msgid "Invalid track number"
-msgstr "Hökmsüz"
+msgstr "Səhv mahnı nömrəsi"
 
 #: metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
-#, fuzzy
 msgid "Audio CD track"
-msgstr "Audio CD"
+msgstr "Audio CD mahnısı"
 
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
-#, fuzzy
 msgid "Failed to open file for reading"
-msgstr "fayl üçün"
+msgstr "Fayl oxunmaq üçün açıla bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:249
-#, fuzzy
 msgid "Error decoding FLAC file"
-msgstr "Xəta FLAC"
+msgstr "FLAC faylı oxuna bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:759
 msgid "FLAC"
 msgstr "FLAC"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
-#, fuzzy
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
 msgid "Failed to gather information about the file"
-msgstr "Göstər"
+msgstr "Fayl haqqında məlumat alına bilmədi"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:562
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d Layer III"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:564
-#, fuzzy
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
 msgid "MPEG 2.5 Layer III"
-msgstr "MPEG %d Layer III"
+msgstr "MPEG 2.5 Layer III"
 
 #: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:163
-#, fuzzy
 msgid "Failed to recognise filetype"
-msgstr "Fayl axtarıla bilmədi"
+msgstr "Fayl növü tanəna bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:201
-#, fuzzy
 msgid "Failed to find an audio track"
-msgstr "%s tapıla bilmədi"
+msgstr "Audio mahnı tapıla bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c:438
 msgid "MPEG-4 audio (MPEG-4 AAC)"
-msgstr ""
+msgstr "MPEG-4 audio (MPEG-4 AAC)"
 
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 msgid "Failed to seek file"
 msgstr "Fayl axtarıla bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
-#, fuzzy
 msgid "Failed to open file as Ogg Vorbis"
-msgstr "fayl"
+msgstr "Fayl Ogg Vorbis olaraq açıla bilmədi"
 
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:546
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:393 metadata/rb-metadata-gst.c:518
-#: player/rb-player-gst.c:532
-#, fuzzy, c-format
-msgid "Failed to create %s element; check your installation"
-msgstr "üçün."
-
-#: metadata/rb-metadata-mm.c:202
-msgid "Operation not supported"
-msgstr ""
-
-#: player/rb-player-gst.c:324 player/rb-player-gst.c:776
-msgid "Failed to close audio output sink"
-msgstr ""
-
-#: player/rb-player-gst.c:411 player/rb-player-gst.c:640
-#: player/rb-player-gst.c:650
-#, fuzzy
-msgid "Could not start pipeline playing"
-msgstr "Çalğı siyahısı oxuna bilmədi"
-
-#: player/rb-player-gst.c:440
-#, fuzzy
-msgid "Failed to create thread element; check your GStreamer installation"
-msgstr "yox"
-
-#: player/rb-player-gst.c:474
+#: metadata/rb-metadata-gst.c:340
 #, c-format
-msgid "Failed to create %s input element; check your installation"
-msgstr ""
+msgid "There is no plugin installed to handle a %s file."
+msgstr "%s faylını oxudmaq üçün lazımi əlavə qurulu deyil."
 
-#: player/rb-player-gst.c:503
-msgid "Failed to create queue element; check your installation"
-msgstr ""
+#: metadata/rb-metadata-gst.c:575 metadata/rb-metadata-gst.c:696
+#: player/rb-player-gst.c:580
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "%s elementi yaradıla bilmədi, qurğularınızı yoxlayın"
 
-#: player/rb-player-gst.c:520
-#, fuzzy
-msgid "Failed to create typefind element; check your installation"
-msgstr "yox"
+#: metadata/rb-metadata-mm.c:219
+msgid "Operation not supported"
+msgstr "Əməliyyat dəstəklənmir"
 
-#: player/rb-player-gst.c:551
-msgid "Failed to create volume element; check your installation"
-msgstr ""
+#: player/rb-player-gst.c:426 player/rb-player-gst.c:638
+#: player/rb-player-gst.c:648
+msgid "Could not start pipeline playing"
+msgstr "Boru xətdi oxunuşu başlaya bilmədi"
 
-#: player/rb-player-gst.c:570
-#, fuzzy
+#: player/rb-player-gst.c:546
 msgid "Could not create audio output element; check your settings"
-msgstr "yox"
+msgstr "Audio çıxış elementi yaradıla bilmədi, qurğularınızı yoxlayın"
 
-#: player/rb-player-gst.c:662
-#, fuzzy
+#: player/rb-player-gst.c:603
+msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+msgstr "Vaxtlaşdırıcı hazırlana bilmədi. gst-register əmrini verdiniz?"
+
+#: player/rb-player-gst.c:675
 msgid "Could not pause playback"
-msgstr "Çalğı siyahısı oxuna bilmədi"
+msgstr "Fasilə verilə bilmədi"
 
-#: player/rb-player-gst.c:671
+#: player/rb-player-gst.c:685
 msgid "Could not close output sink"
-msgstr ""
+msgstr "Çıxış bağlana bilmədi"
 
-#: player/rb-player-gst.c:717
-#, fuzzy
+#: player/rb-player-gst.c:731
 msgid "No AudioCD support; check your settings"
-msgstr "Xeyr"
+msgstr "Audio CD dəstəyi yoxdur, qurğularınızı yoxlayın"
 
-#: player/rb-player-xine.c:338
+#: player/rb-player-gst.c:790
+msgid "Failed to close audio output sink"
+msgstr "Audio çıxış yaradıla bilmədi"
+
+#: player/rb-player-xine.c:354
 msgid "Failed to set up an audio driver; check your installation"
-msgstr ""
+msgstr "Audio sürücü quraşdırıla bilmədi, qurğularınızı yoxlayın"
 
-#: player/rb-player-xine.c:438
-#, fuzzy, c-format
+#: player/rb-player-xine.c:454
+#, c-format
 msgid "No input plugin available for %s; check your installation."
-msgstr "Xeyr üçün."
+msgstr "%s üçün giriş əlavəsi yoxdur, qurğularınızı yoxlayın"
 
-#: player/rb-player-xine.c:447
-#, fuzzy, c-format
+#: player/rb-player-xine.c:463
+#, c-format
 msgid "No demux plugin available for %s; check your installation."
-msgstr "Xeyr üçün."
-
-#: player/rb-player-xine.c:456
-#, fuzzy, c-format
-msgid "Demuxing for %s failed; check your installation."
-msgstr "üçün."
-
-#: player/rb-player-xine.c:464
-#, fuzzy
-msgid "Internal error; check your installation."
-msgstr "GIMP-in xüsusi yardım səyyahı."
+msgstr "%s üçün demux əlavəsi yoxdur, qurğularınızı yoxlayın"
 
 #: player/rb-player-xine.c:472
-#, fuzzy, c-format
+#, c-format
+msgid "Demuxing for %s failed; check your installation."
+msgstr "%s demux-lanması bacarılmadı, qurğularınızı yoxlayın"
+
+#: player/rb-player-xine.c:480
+msgid "Internal error; check your installation."
+msgstr "Daxili xəta, qurğularınızı yoxlayın"
+
+#: player/rb-player-xine.c:488
+#, c-format
 msgid "Audio of %s not handled; check your installation."
-msgstr "Audio yox."
+msgstr "%s audiosu oxuna bilmədi, qurğularınızı yoxlayın"
 
-#: rhythmdb/rhythmdb.c:775
+#: rhythmdb/rhythmdb.c:845
 msgid "<invalid filename>"
-msgstr ""
+msgstr "<səhv fayl adı>"
 
-#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1013
-#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:810
+#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:930
+#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Qətiyyən"
 
-#: rhythmdb/rhythmdb.c:1308
+#: rhythmdb/rhythmdb.c:1464
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2162
-#, fuzzy
+#: rhythmdb/rhythmdb.c:2191
 msgid "Loading songs..."
-msgstr "<b>Mahnılar yüklənir...</b>"
+msgstr "Mahnılar yüklənir..."
 
-#: rhythmdb/rhythmdb.c:2164
-#, fuzzy
+#: rhythmdb/rhythmdb.c:2193
 msgid "Refreshing songs..."
-msgstr "<b>Mahnılar yenilənir...</b>"
+msgstr "Mahnılar yenilənir..."
 
-#: rhythmdb/rhythmdb.c:2179
+#: rhythmdb/rhythmdb.c:2210
 #, c-format
 msgid "%d song"
-msgid_plural "%d songs"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "%d mahnı"
 
-#: rhythmdb/rhythmdb.c:2187
-#, c-format
-msgid "%.1f day"
-msgid_plural "%.1f days"
-msgstr[0] ""
-msgstr[1] ""
-
-#: rhythmdb/rhythmdb.c:2190
+#: rhythmdb/rhythmdb.c:2217
 #, c-format
 msgid "%ld minute"
-msgid_plural "%ld minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "%ld dəqiqə"
 
-#: rhythmdb/rhythmdb.c:2192
+#: rhythmdb/rhythmdb.c:2218 rhythmdb/rhythmdb.c:2228
 #, c-format
 msgid "%ld hour"
-msgid_plural "%ld hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr "%ld saat"
+
+#: rhythmdb/rhythmdb.c:2219
+#, c-format
+msgid "%ld day"
+msgstr "%ld gün"
+
+#. Translators: the format is "X days, X hours and X minutes"
+#: rhythmdb/rhythmdb.c:2223
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s, %s və %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2196
-#, fuzzy, c-format
+#: rhythmdb/rhythmdb.c:2231
+#, c-format
 msgid "%s and %s"
-msgstr "%s, %s"
+msgstr "%s və %s"
 
-#: shell/main.c:89
-#, fuzzy
+#: shell/main.c:91
 msgid "Print the playing song and exit"
-msgstr "Çap Et və"
-
-#: shell/main.c:90
-#, fuzzy
-msgid "Print the playing song URI and exit"
-msgstr "Çap Et və"
+msgstr "Çalınan mahnını çap et və çıx"
 
 #: shell/main.c:92
-#, fuzzy
-msgid "Print the playing song length in seconds and exit"
-msgstr "Çap Et və"
-
-#: shell/main.c:93
-#, fuzzy
-msgid "Print the current elapsed time of playing song and exit"
-msgstr "Çap Et və"
+msgid "Print the playing song URI and exit"
+msgstr "Çalınan mahnı URI ünvanını çap et və çıx"
 
 #: shell/main.c:94
-msgid "Seek to the specified time in playing song if possible and exit"
-msgstr ""
+msgid "Print the playing song length in seconds and exit"
+msgstr "Çalınan mahnının saniyə olaraq uzunluğunu çap et və çıx"
+
+#: shell/main.c:95
+msgid "Print the current elapsed time of playing song and exit"
+msgstr "Çalınan mahnının saniyə olaraq qalan uzunluğunu çap et və çıx"
 
 #: shell/main.c:96
-#, fuzzy
-msgid "Toggle play/pause mode"
-msgstr "Gizlə/Göstər"
-
-#: shell/main.c:97
-#, fuzzy
-msgid "Focus the running player"
-msgstr "Musiqi çalğıcısını bağla"
+msgid "Seek to the specified time in playing song if possible and exit"
+msgstr "Mümkündürsə çalınan mahnının müəyyən bir yerinə get və çıx"
 
 #: shell/main.c:98
-#, fuzzy
-msgid "Jump to previous song"
-msgstr "Başla"
+msgid "Toggle play/pause mode"
+msgstr "Çalma/Fasilə modu düyməsi"
 
 #: shell/main.c:99
-#, fuzzy
-msgid "Jump to next song"
-msgstr "Çalınan Mahnıya _Keç"
+msgid "Focus the running player"
+msgstr "İşləyən çalğıcını fokusa al"
+
+#: shell/main.c:100
+msgid "Jump to previous song"
+msgstr "Əvvəlki mahnıya keç"
 
 #: shell/main.c:101
-#, fuzzy
-msgid "Enable debugging code"
-msgstr "Fəallaşdır"
-
-#: shell/main.c:102
-#, fuzzy
-msgid "Do not register the shell"
-msgstr "yox"
+msgid "Jump to next song"
+msgstr "Sonrakı mahnıya keç"
 
 #: shell/main.c:103
-msgid "Don't save any data permanently (implies --no-registration)"
-msgstr ""
-
-#: shell/main.c:104
-msgid "Path for database file to use"
-msgstr ""
+msgid "Toggle shuffling"
+msgstr "Təkrarlamanı aç/bağla"
 
 #: shell/main.c:105
-#, fuzzy
+msgid "Enable debugging code"
+msgstr "Xəta ayırma kodunu fəallaşdır"
+
+#: shell/main.c:106
+msgid "Do not update the library"
+msgstr "Kitabxananı yeniləmə"
+
+#: shell/main.c:107
+msgid "Do not register the shell"
+msgstr "Qabığı qeyd etmə"
+
+#: shell/main.c:108
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr "Heç bir məlumatı həmişəlik qeyd etmə (--no-registration işlədilməlidir)"
+
+#: shell/main.c:109
+msgid "Path for database file to use"
+msgstr "İşlədiləcək məlumat bazasının cığırı"
+
+#: shell/main.c:110
 msgid "Quit Rhythmbox"
-msgstr "Çıx"
+msgstr "Rhythmbox-dan Çıx"
 
-#: shell/main.c:203
-#, fuzzy
-msgid ""
-"Rhythmbox does not currently work if GNOME sound events are are enabled and "
-"esdsink is in use."
-msgstr "yox GNOME."
+#: shell/main.c:125 widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
 
-#: shell/main.c:242 shell/main.c:251
+#: shell/main.c:238 shell/main.c:247
 #, c-format
 msgid "An exception occured '%s'"
-msgstr ""
+msgstr "Estisna yarandı '%s'"
 
-#: shell/main.c:289
+#: shell/main.c:311
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -984,269 +949,299 @@ msgstr ""
 "Qabıq fəallaşdırıla bilmədi:\n"
 "%s"
 
-#: shell/rb-play-order.c:232
-#, fuzzy
+#: shell/rb-play-order.c:228
 msgid "Linear"
-msgstr "Kitabxana"
+msgstr "Linear"
+
+#: shell/rb-play-order.c:229
+msgid "Linear looping"
+msgstr "Linear təkrarlama"
+
+#: shell/rb-play-order.c:230
+msgid "Shuffle"
+msgstr "Təkrarla"
+
+#: shell/rb-play-order.c:231
+msgid "Random with equal weights"
+msgstr "Bərabər ağırlıqlara görə təsadüfi olaraq"
+
+#: shell/rb-play-order.c:232
+msgid "Random by time since last play"
+msgstr "Son çalınmadan keçən vaxta görə təsadüfi olaraq"
 
 #: shell/rb-play-order.c:233
-#, fuzzy
-msgid "Shuffle"
-msgstr "_Qarışdır"
+msgid "Random by rating"
+msgstr "Xala görə təsadüfi olaraq"
 
 #: shell/rb-play-order.c:234
-msgid "Random with equal weights"
-msgstr ""
-
-#: shell/rb-play-order.c:235
-msgid "Random by time since last play"
-msgstr ""
-
-#: shell/rb-play-order.c:236
-msgid "Random by rating"
-msgstr ""
-
-#: shell/rb-play-order.c:237
 msgid "Random by time since last play and rating"
-msgstr ""
+msgstr "Son çalınmadan keçən vaxta və xala görə təsadüfi olaraq"
 
-#: shell/rb-playlist-manager.c:420 shell/rb-shell-player.c:892
+#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
 msgid "Couldn't parse playlist"
 msgstr "Çalğı siyahısı oxuna bilmədi"
 
-#: shell/rb-playlist-manager.c:745
-#, fuzzy
+#: shell/rb-playlist-manager.c:773
 msgid "Load playlist"
-msgstr "Yüklə"
+msgstr "Çalğı siyahısını yüklə"
 
-#: shell/rb-playlist-manager.c:799
+#: shell/rb-playlist-manager.c:814
 msgid "Save playlist"
 msgstr "Çalğı siyahısını qeyd et"
 
-#: shell/rb-shell-player.c:475
+#: shell/rb-shell-player.c:443
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Çalğıcı yaradıla bilmədi: %s"
 
-#: shell/rb-shell-player.c:539
-#, fuzzy
+#: shell/rb-shell-player.c:511
 msgid "Play previous song"
-msgstr "Başla"
+msgstr "Əvvəlki mahnını çal"
 
-#: shell/rb-shell-player.c:568
-#, fuzzy
+#: shell/rb-shell-player.c:540
 msgid "Play next song"
-msgstr "Başla"
+msgstr "Sonrakı mahnını çal"
 
-#: shell/rb-shell-player.c:587
-#, fuzzy
+#: shell/rb-shell-player.c:559
 msgid "Change the music volume"
-msgstr "Musiqi çalğıcısını bağla"
+msgstr "Musiqinin səsini azalt/artır"
 
-#: shell/rb-shell-player.c:865
+#: shell/rb-shell-player.c:841
 #, c-format
 msgid "Opening %s..."
 msgstr "%s açılır..."
 
-#: shell/rb-shell-player.c:1476
-#, fuzzy
+#: shell/rb-shell-player.c:1529
 msgid "Pause playback"
-msgstr "Fasilə ver"
+msgstr "Çalmağa fasilə ver"
 
-#: shell/rb-shell-player.c:1477
+#: shell/rb-shell-player.c:1530
 msgid "_Pause"
 msgstr "_Fasilə ver"
 
-#: shell/rb-shell-player.c:1492
-#, fuzzy
+#: shell/rb-shell-player.c:1545
 msgid "Stop playback"
-msgstr "Dayan"
+msgstr "Çalmağı dayandır"
 
-#: shell/rb-shell-player.c:1493
+#: shell/rb-shell-player.c:1546
 msgid "_Stop"
 msgstr "_Dayan"
 
-#: shell/rb-shell-player.c:1826
+#: shell/rb-shell-player.c:1874
 msgid "Unexpected end of stream!"
 msgstr "Gözlənilməyən axım sonu!"
 
 #: shell/rb-shell-preferences.c:177
-#, fuzzy
 msgid "Music Player Preferences"
-msgstr "Musiqi"
+msgstr "Musiqi Çalğıcısı Seçimləri"
 
 #: shell/rb-shell-preferences.c:225
 msgid "General"
 msgstr "Ümumi"
 
-#: shell/rb-shell.c:767
+#: shell/rb-shell.c:838
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
-msgstr "\"%s\"URI-si oxuna bilmədi\n"
+msgstr "\"%s\" URI ünvanı oxuna bilmədi\n"
 
-#: shell/rb-shell.c:965
+#: shell/rb-shell.c:1062
 msgid "Whether the main window is visible"
-msgstr ""
+msgstr "Əsas pəncərənin görünməsi"
 
-#: shell/rb-shell.c:970
+#: shell/rb-shell.c:1067
 msgid "Whether shuffle is enabled"
-msgstr ""
+msgstr "Qarışıq mahnıların fəallaşdırılması"
 
-#: shell/rb-shell.c:974
-#, fuzzy
+#: shell/rb-shell.c:1071
 msgid "Properties for the current song"
-msgstr "%s xassələri"
+msgstr "Hazırkı mahnının xassələri"
 
-#: shell/rb-shell.c:1383
-#, fuzzy, c-format
+#: shell/rb-shell.c:1484
+#, c-format
 msgid ""
 "Failed to register the shell: %s\n"
 "This probably means that you installed Rhythmbox in a different prefix than "
 "bonobo-activation; this warning is harmless, but IPC will not work."
-msgstr "siz quruldu in a dir(dır) yox"
+msgstr "Qabıq qeyd edilə bilmədi: %s, IPC işləməyəcəkdir."
 
-#: shell/rb-shell.c:1693 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
 msgid "Not playing"
 msgstr "İfa edilmir"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1696
-#, fuzzy, c-format
+#: shell/rb-shell.c:1862
+#, c-format
 msgid ""
 "%s\n"
 "Paused, %s"
 msgstr ""
 "%s\n"
-"Fasilədə"
+"Fasilədə, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1700
-#, fuzzy, c-format
+#: shell/rb-shell.c:1866
+#, c-format
 msgid ""
 "%s\n"
 "%s"
-msgstr "%s, %s"
+msgstr ""
+"%s\n"
+"%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1735
-#, fuzzy, c-format
+#: shell/rb-shell.c:1900
+#, c-format
 msgid "%s (Paused)"
-msgstr "Fasilə Verildi"
+msgstr "%s (Fasilədə)"
 
-#: shell/rb-shell.c:1803
+#: shell/rb-shell.c:1968
 msgid "translator_credits"
 msgstr ""
 "Vasif İsmailoğlu <linuxaz@azerimail.net>\n"
-"Mətin Əmirov <metin@karegen.com>"
+"Mətin Əmirov <metin@karegen.com>\n"
+"\n"
+"Tərcümə işləri üzrə yazışma siyahısı ünvanımız:\n"
+"<translation-team-az@lists.sourceforge.net> "
 
-#: shell/rb-shell.c:1812
+#: shell/rb-shell.c:1977
 msgid "Maintainers:"
 msgstr "Tərtib Edənlər:"
 
-#: shell/rb-shell.c:1815
-#, fuzzy
+#: shell/rb-shell.c:1980
 msgid "Former Maintainers:"
-msgstr "Tərtib Edənlər:"
+msgstr "Köhnə Tərtibçilər:"
 
-#: shell/rb-shell.c:1818
+#: shell/rb-shell.c:1983
 msgid "Contributors:"
 msgstr "Dəstəkçilər:"
 
-#: shell/rb-shell.c:1820
-#, fuzzy
+#: shell/rb-shell.c:1985
 msgid "Music management and playback software for GNOME."
-msgstr "Musiqi və üçün GNOME"
+msgstr "GNOME üçün musiqi idarə və çalğı proqramı."
 
-#: shell/rb-shell.c:1990
-#, fuzzy
+#: shell/rb-shell.c:2166
 msgid "Choose Files or Directory"
-msgstr "Fayllar və ya"
+msgstr "Faylları ya da Cərgəni Seç"
 
-#: shell/rb-shell.c:2032
+#: shell/rb-shell.c:2212
 msgid "To extract CDs you must install the Sound Juicer package."
-msgstr ""
+msgstr "CD-lərdən mahnıları köçürmək üçün Sound Juicer paketini qurmalısınız."
 
-#: shell/rb-shell.c:2039
+#: shell/rb-shell.c:2219
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
-msgstr ""
+msgstr "sound-juicer işə salına bilmədi: %s"
 
-#: shell/rb-source-header.c:177
+#: shell/rb-source-header.c:183
 msgid "Filter music display by genre, artist, album, or title"
-msgstr ""
+msgstr "Musiqini tərz, müğənni, albom ya da mahnı adına görə süz"
 
-#: shell/rb-source-header.c:184
-#, fuzzy
+#: shell/rb-source-header.c:190
 msgid "Show _Browser"
-msgstr "Göstər"
+msgstr "_Səyyahı Göstər"
 
-#: shell/rb-source-header.c:185
-#, fuzzy
+#: shell/rb-source-header.c:191
 msgid "Hide _Browser"
-msgstr "Gizlə"
+msgstr "_Səyyahı Gizlət"
 
-#: shell/rb-statusbar.c:238
-msgid "Play songs in a random order"
-msgstr ""
-
-#: shell/rb-statusbar.c:240
+#: shell/rb-statusbar.c:235
 msgid "_Repeat"
 msgstr "_Təkrarla"
 
-#: shell/rb-statusbar.c:243
-msgid "Play first song again after all songs are played"
-msgstr ""
-
-#: shell/rb-statusbar.c:446
+#: shell/rb-statusbar.c:442
 msgid "Buffering..."
-msgstr ""
+msgstr "Ara yaddaşa alınır..."
 
-#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:445
-#: widgets/rb-query-creator.c:55
+#: sources/itunesdb.c:447
+msgid "Master-PL"
+msgstr "Master-PL"
+
+#: sources/itunesdb.c:449
+msgid "Playlist"
+msgstr "Çalğı siyahısı"
+
+#: sources/itunesdb.c:801
+#, c-format
+msgid "Error reading \"%s\".\n"
+msgstr "\"%s\" oxuna bilmədi.\n"
+
+#: sources/itunesdb.c:809
+#, c-format
+msgid "\"%s\" is not a valid iPod database.\n"
+msgstr "\"%s\" düzgün iPod məlumat bazası deyil.\n"
+
+#: sources/itunesdb.c:1049 sources/itunesdb.c:1704
+#, c-format
+msgid "Could not open \"%s\" file for reading.\n"
+msgstr "\"%s\" faylı oxunmaq üçün açıla bilmədi.\n"
+
+#: sources/itunesdb.c:1556 sources/itunesdb.c:1711
+#, c-format
+msgid "Could not open \"%s\" file for writing.\n"
+msgstr "\"%s\" faylı yazılmaq üçün açıla bilmədi.\n"
+
+#. an error occured
+#: sources/itunesdb.c:1568
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s).\n"
+msgstr "'%s' faylının adı '%s' ilə dəyişdirilə bilmədi (%s).\n"
+
+#. error -- not end of file!
+#: sources/itunesdb.c:1724
+#, c-format
+msgid "Error reading file \"%s\".\n"
+msgstr "\"%s\" faylı oxuna bilmədi.\n"
+
+#: sources/itunesdb.c:1736
+#, c-format
+msgid "Error writing PC file \"%s\".\n"
+msgstr "\"%s\" PC faylına yazıla bilmədi.\n"
+
+#: sources/rb-ipod-source.c:117
+msgid "iPod"
+msgstr "iPod"
+
+#: sources/rb-iradio-source.c:340 sources/rb-library-source.c:513
+#: widgets/rb-query-creator.c:56
 msgid "Genre"
-msgstr "Növ"
+msgstr "Tərz"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:421
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:543
-#, fuzzy, c-format
+#: sources/rb-iradio-source.c:590
+#, c-format
 msgid "%d station"
-msgid_plural "%d stations"
-msgstr[0] "Əlavə Et"
-msgstr[1] "Əlavə Et"
+msgstr "%d stansiyası"
 
-#: sources/rb-library-source.c:459 widgets/rb-query-creator.c:53
+#: sources/rb-library-source.c:527 widgets/rb-query-creator.c:54
 msgid "Artist"
-msgstr "İfa Edən: "
+msgstr "Müğənni"
 
-#: sources/rb-library-source.c:473 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:541 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Albom"
 
-#: sources/rb-library-source.c:579
+#: sources/rb-library-source.c:649
 msgid "Library"
 msgstr "Kitabxana"
 
-#: sources/rb-library-source.c:1040
-#, fuzzy
+#: sources/rb-library-source.c:1192
 msgid "Add Location"
-msgstr "Əlavə Et"
+msgstr "Mövqe Əlavə Et"
 
-#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1283
+#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1200
 msgid "Tra_ck"
 msgstr "_Mahnı"
 
-#: sources/rb-source.c:481
-#, fuzzy
+#: sources/rb-source.c:528
 msgid "No properties available."
-msgstr "Xeyr."
+msgstr "Xassələr mövcud deyil"
 
-#: sources/rb-source.c:564
-#, fuzzy
+#: sources/rb-source.c:611
 msgid "This source does not support drag and drop."
-msgstr "yox və."
+msgstr "Bu mənbə daşı və burax əməliyyatını dəstəkləmir."
 
 #: sources/rb-sourcelist.c:194
 msgid "_Source"
@@ -1254,7 +1249,7 @@ msgstr "_Mənbə"
 
 #: widgets/rb-cell-renderer-pixbuf.c:109
 msgid "Pixbuf Object"
-msgstr "Pixbuf Obyekti"
+msgstr "Pixbuf Cismi"
 
 #: widgets/rb-cell-renderer-pixbuf.c:110
 msgid "The pixbuf to render."
@@ -1262,7 +1257,7 @@ msgstr "Render ediləcək piksbuf."
 
 #: widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
-msgstr "Rhythmbox-a Xoş Gəldiniz!"
+msgstr "Rhythmbox Proqramına Xoş Gəldiniz!"
 
 #: widgets/rb-druid.c:243
 msgid ""
@@ -1272,11 +1267,12 @@ msgid ""
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
+"Rhythmbox, sizə musiqi fayllarınızı çalma, internet radiolarına qulaq asma, CD-lərdən mahnı köçürmə və daha bir çox imkanı verən GNOME üçün yaradılmış musiqi çalğıcısıdır.\n"
+"İndi, bələdçi sizə bir neçə bəsit sual soruşaraq yardım edəcəkdir."
 
 #: widgets/rb-druid.c:249
-#, fuzzy
 msgid "Music library setup"
-msgstr "Kitabxana qurğusu"
+msgstr "Musiqi kitabxanası qurğuları"
 
 #: widgets/rb-druid.c:258
 msgid "Finish"
@@ -1289,108 +1285,109 @@ msgid ""
 "Remember that you may add music to the library using \"Music\" then \"Import "
 "Folder\", or by importing it from CDs."
 msgstr ""
+"İndi Rhythmbox proqramını başlada bilərsiniz.\n"
+"\n"
+"Unutmayın ki kitabxananıza \"Musiqi\" daha sonra \"Qovluq İdxal Et\" menyusundan, ya da CD-ləri idxal edərək musiqi əlavə edə bilərsiniz."
 
-#: widgets/rb-druid.c:309
-#, fuzzy, c-format
+#: widgets/rb-druid.c:318
+#, c-format
 msgid "Error reading filename: %s"
-msgstr "Xəta"
+msgstr "Fayl adı oxuna bilmədi: %s"
 
-#: widgets/rb-druid.c:324
-#, fuzzy
+#: widgets/rb-druid.c:333
 msgid "Choose a directory"
-msgstr "a"
+msgstr "Cərgə seç"
 
-#: widgets/rb-entry-view.c:1049 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:966 widgets/rb-header.c:873
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:993
 msgid "Very Low"
-msgstr ""
+msgstr "Çox Alçaq"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:995
 msgid "Low"
-msgstr ""
+msgstr "Alçaq"
 
-#: widgets/rb-entry-view.c:1080
+#: widgets/rb-entry-view.c:997
 msgid "Regular"
-msgstr ""
+msgstr "Normal"
 
-#: widgets/rb-entry-view.c:1082
+#: widgets/rb-entry-view.c:999
 msgid "High"
-msgstr ""
+msgstr "Yüksək"
 
-#: widgets/rb-entry-view.c:1084
+#: widgets/rb-entry-view.c:1001
 msgid "Very High"
-msgstr ""
+msgstr "Çox Yüksək"
 
-#: widgets/rb-entry-view.c:1086
+#: widgets/rb-entry-view.c:1003
 msgid "Perfect"
-msgstr ""
+msgstr "Əla"
 
-#: widgets/rb-entry-view.c:1292
+#: widgets/rb-entry-view.c:1209
 msgid "_Title"
-msgstr "_Adı"
+msgstr "_Mahnı Adı"
 
-#: widgets/rb-entry-view.c:1303
+#: widgets/rb-entry-view.c:1220
 msgid "Art_ist"
-msgstr "_Sənətkar"
+msgstr "_Müğənni"
 
-#: widgets/rb-entry-view.c:1325
+#: widgets/rb-entry-view.c:1242
 msgid "Ge_nre"
-msgstr "_Növ"
+msgstr "_Tərz"
 
-#: widgets/rb-entry-view.c:1335
+#: widgets/rb-entry-view.c:1252
 msgid "Ti_me"
 msgstr "_Vaxt"
 
-#: widgets/rb-entry-view.c:1354
-msgid "_Play Count"
-msgstr "Çalma _Sayı"
+#: widgets/rb-entry-view.c:1261
+msgid "_Quality"
+msgstr "_Keyfiyyət"
 
-#: widgets/rb-entry-view.c:1363
+#: widgets/rb-entry-view.c:1271
+msgid "_Play Count"
+msgstr "Çalınma _Miqdarı"
+
+#: widgets/rb-entry-view.c:1280
 msgid "L_ast Played"
 msgstr "Son Ç_alınan"
 
-#: widgets/rb-entry-view.c:1507
-#, fuzzy
+#: widgets/rb-entry-view.c:1425
 msgid "Now Playing"
-msgstr "İfa edilmir"
+msgstr "İndi Çalınan"
 
-#: widgets/rb-header.c:280
+#: widgets/rb-header.c:278
 msgid "Listening to "
 msgstr "Dinlənən"
 
-#: widgets/rb-header.c:517
-#, fuzzy
+#: widgets/rb-header.c:541
 msgid "Get information on this album from the web"
-msgstr "..da"
+msgstr "Bu albom haqqında internetdən məlumat al"
 
-#: widgets/rb-header.c:536
-#, fuzzy
+#: widgets/rb-header.c:560
 msgid "Get information on this artist from the web"
-msgstr "..da"
+msgstr "Bu müğənni haqqında internetdən məlumat al"
 
-#: widgets/rb-header.c:564
-#, fuzzy
+#: widgets/rb-header.c:588
 msgid "Get information on this station from the web"
-msgstr "..da"
+msgstr "Bu stansiya haqqında internetdən məlumat al"
 
-#: widgets/rb-header.c:827
+#: widgets/rb-header.c:862
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d / %d:%02d"
 
-#: widgets/rb-header.c:835
-#, fuzzy, c-format
+#: widgets/rb-header.c:870
+#, c-format
 msgid "%d:%02d of %d:%02d remaining"
-msgstr "%d:%02d / %d:%02d"
+msgstr "%d:%02d / %d:%02d qalıb"
 
 #: widgets/rb-load-failure-dialog.c:119
-#, fuzzy
 msgid "Error loading files into library"
-msgstr "Xəta"
+msgstr "Fayllar kitabxanaya yüklənə bilmədi"
 
 #: widgets/rb-load-failure-dialog.c:136
 msgid "_Error"
@@ -1400,29 +1397,37 @@ msgstr "_Xəta"
 msgid "_File"
 msgstr "_Fayl"
 
-#: widgets/rb-query-creator.c:52
-#, fuzzy
+#: widgets/rb-query-creator.c:53
 msgid "Title"
-msgstr "_Adı"
+msgstr "Mahnı adı"
 
-#: widgets/rb-query-creator.c:60
-msgid "contains"
-msgstr "bunları daxil edir"
-
-#: widgets/rb-query-creator.c:61
-#, fuzzy
-msgid "does not contain"
-msgstr "daxil etmir"
+#: widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "Xal"
 
 #: widgets/rb-query-creator.c:62
-#, fuzzy
-msgid "equals"
-msgstr "Təfərruatlar"
+msgid "contains"
+msgstr "bunu daxil edirsə"
 
-#: widgets/rb-query-creator.c:230
-#, fuzzy
+#: widgets/rb-query-creator.c:63
+msgid "does not contain"
+msgstr "bunu daxil etmirsə"
+
+#: widgets/rb-query-creator.c:64 widgets/rb-query-creator.c:69
+msgid "equals"
+msgstr "bərabərdir"
+
+#: widgets/rb-query-creator.c:70
+msgid "greater than"
+msgstr "böyükdür"
+
+#: widgets/rb-query-creator.c:71
+msgid "less than"
+msgstr "kiçikdir"
+
+#: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
-msgstr "Yeni çalğı siyahısı yarat"
+msgstr "Avtomatik Çalğı Siyahısı Yarat"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: widgets/rb-search-entry.c:118
@@ -1430,30 +1435,37 @@ msgid "_Search:"
 msgstr "_Axtar:"
 
 #: widgets/rb-song-display-box.c:113
-#, fuzzy
 msgid "from"
-msgstr "buradan "
+msgstr "mənbə: "
 
 #: widgets/rb-song-display-box.c:115
-#, fuzzy
 msgid "by"
-msgstr " bununla "
+msgstr "müğənni: "
 
-#: widgets/rb-song-info.c:245
+#: widgets/rb-song-info.c:267
 msgid "Song Properties"
 msgstr "Mahnı Xassələri"
 
-#: widgets/rb-song-info.c:663
+#: widgets/rb-song-info.c:359
+msgid "Multiple Song Properties"
+msgstr "Çoxlu Mahnı Xassələri"
+
+#: widgets/rb-song-info.c:799
+#, c-format
+msgid "%d kbps"
+msgstr "%d kbps"
+
+#: widgets/rb-song-info.c:862
 msgid "on the desktop"
 msgstr "masa üstündə"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
+#: widgets/rb-volume.c:234
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "-"
 msgstr "-"
 
