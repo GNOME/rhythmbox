@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-29 16:04+0100\n"
+"POT-Creation-Date: 2004-03-09 04:27+0100\n"
 "PO-Revision-Date: 2004-02-29 21:56+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
@@ -248,13 +248,13 @@ msgstr "Voer de _locatie (URI) in van het bestand dat u toe wilt voegen:"
 msgid "Open from URI"
 msgstr "Via URI openen"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1860
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1862
 msgid "Music Player"
 msgstr "Muziekspeler"
 
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
-msgstr "Luister en beheer uw muziek collectie"
+msgstr "Uw muziekcollectie beluisteren en beheren"
 
 #: data/rhythmbox.desktop.in.h:3 shell/main.c:115 widgets/rb-druid.c:218
 msgid "Rhythmbox"
@@ -262,7 +262,7 @@ msgstr "Rhythmbox"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.h:21
 msgid "Deselect all songs"
-msgstr "Deselecteer alle liedjes"
+msgstr "Alle liedjes deselecteren"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:2
 msgid "Eject Audio-CD"
@@ -278,7 +278,7 @@ msgstr "_Alles selecteren"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:5 data/ui/rhythmbox-ui.xml.h:43
 msgid "Select all songs"
-msgstr "Alle liedjes worden geselecteerd"
+msgstr "Alle liedjes selecteren"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6 data/ui/rhythmbox-ui.xml.h:62
 msgid "_Edit"
@@ -306,15 +306,15 @@ msgstr "Lo_catie toevoegen..."
 # album overzicht
 #: data/ui/rhythmbox-ui.xml.h:2
 msgid "Browse this album"
-msgstr "Album overzicht"
+msgstr "Albumoverzicht"
 
 #: data/ui/rhythmbox-ui.xml.h:3
 msgid "Browse this artist"
-msgstr "Artiest overzicht"
+msgstr "Artiestoverzicht"
 
 #: data/ui/rhythmbox-ui.xml.h:4
 msgid "Browse this genre"
-msgstr "Genre overzicht"
+msgstr "Genre-overzicht"
 
 #: data/ui/rhythmbox-ui.xml.h:5
 msgid "Change the visibility of the browser"
@@ -394,7 +394,7 @@ msgstr "Liedjes van een CD overnemen en importeren"
 
 #: data/ui/rhythmbox-ui.xml.h:25
 msgid "Import Lo_cation..."
-msgstr "Importlocatie..."
+msgstr "Lo_catie importeren..."
 
 #: data/ui/rhythmbox-ui.xml.h:26
 msgid "Import _Audio CD..."
@@ -597,7 +597,7 @@ msgstr "Nieuw internet radiostation"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:714 sources/rb-ipod-source.c:173
+#: rhythmdb/rhythmdb.c:737 sources/rb-ipod-source.c:173
 #: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
 #: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
 #: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
@@ -757,7 +757,7 @@ msgstr "Mislukt om het bestand te openen als Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:459 metadata/rb-metadata-gst.c:588
+#: metadata/rb-metadata-gst.c:490 metadata/rb-metadata-gst.c:619
 #: player/rb-player-gst.c:565
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -789,7 +789,8 @@ msgstr ""
 # vertaling scheduler?
 #: player/rb-player-gst.c:589
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr "Kon de scheduler niet initialiseren.   Heeft u gst-register uitgevoerd?"
+msgstr ""
+"Kon de scheduler niet initialiseren.   Heeft u gst-register uitgevoerd?"
 
 #: player/rb-player-gst.c:644
 msgid "Could not pause playback"
@@ -835,35 +836,35 @@ msgstr "Interne fout; controleer uw installatie."
 msgid "Audio of %s not handled; check your installation."
 msgstr "Audio van %s onhandelbaar; controleer uw installatie."
 
-#: rhythmdb/rhythmdb.c:792
+#: rhythmdb/rhythmdb.c:815
 msgid "<invalid filename>"
 msgstr "<ongeldige bestandsnaam>"
 
-#: rhythmdb/rhythmdb.c:1323 widgets/rb-entry-view.c:1005
+#: rhythmdb/rhythmdb.c:1346 widgets/rb-entry-view.c:1005
 #: widgets/rb-song-info.c:571 widgets/rb-song-info.c:805
 msgid "Never"
 msgstr "Nooit"
 
-#: rhythmdb/rhythmdb.c:1325
+#: rhythmdb/rhythmdb.c:1348
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d-%m-%Y %H:%M"
 
-#: rhythmdb/rhythmdb.c:2102
+#: rhythmdb/rhythmdb.c:2071
 msgid "Loading songs..."
 msgstr "Bezig met laden van liedjes..."
 
-#: rhythmdb/rhythmdb.c:2104
+#: rhythmdb/rhythmdb.c:2073
 msgid "Refreshing songs..."
 msgstr "Bezig met verversen van liedjes..."
 
-#: rhythmdb/rhythmdb.c:2121
+#: rhythmdb/rhythmdb.c:2090
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d liedje"
 msgstr[1] "%d liedjes"
 
-#: rhythmdb/rhythmdb.c:2128
+#: rhythmdb/rhythmdb.c:2097
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -873,14 +874,14 @@ msgstr[1] "%ld minuten"
 # meervoud van uur is uren, maar je zegt:
 # 1 dag 5 uur en 10 minuten    en niet:
 # 1 dag 5 uren en 10 minuten
-#: rhythmdb/rhythmdb.c:2129 rhythmdb/rhythmdb.c:2139
+#: rhythmdb/rhythmdb.c:2098 rhythmdb/rhythmdb.c:2108
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld uur"
 msgstr[1] "%ld uur"
 
-#: rhythmdb/rhythmdb.c:2130
+#: rhythmdb/rhythmdb.c:2099
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -888,13 +889,13 @@ msgstr[0] "%.ld dag"
 msgstr[1] "%.ld dagen"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2134
+#: rhythmdb/rhythmdb.c:2103
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s en %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2142
+#: rhythmdb/rhythmdb.c:2111
 #, c-format
 msgid "%s and %s"
 msgstr "%s en %s"
@@ -1089,7 +1090,7 @@ msgstr "Of schudden aanstaat"
 msgid "Properties for the current song"
 msgstr "Eigenschappen van het huidige liedje"
 
-#: shell/rb-shell.c:1471
+#: shell/rb-shell.c:1473
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1101,12 +1102,12 @@ msgstr ""
 "heeft geïnstalleerd dan bonobo-activation; deze waarschuwing is onschuldig, "
 "maar IPC zal niet werken."
 
-#: shell/rb-shell.c:1834 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1836 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "Afspelen gestopt"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1837
+#: shell/rb-shell.c:1839
 #, c-format
 msgid ""
 "%s\n"
@@ -1116,7 +1117,7 @@ msgstr ""
 "Gepauzeerd, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1841
+#: shell/rb-shell.c:1843
 #, c-format
 msgid ""
 "%s\n"
@@ -1126,43 +1127,43 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1876
+#: shell/rb-shell.c:1878
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: shell/rb-shell.c:1944
+#: shell/rb-shell.c:1946
 msgid "translator_credits"
 msgstr ""
 "Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
 "Reinout van Schouwen <reinout@cs.vu.nl><\n"
 "Tino Meinen <a.t.meinen@chello.nl>"
 
-#: shell/rb-shell.c:1953
+#: shell/rb-shell.c:1955
 msgid "Maintainers:"
 msgstr "reinout@cs.vu.nl"
 
-#: shell/rb-shell.c:1956
+#: shell/rb-shell.c:1958
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: shell/rb-shell.c:1959
+#: shell/rb-shell.c:1961
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: shell/rb-shell.c:1961
+#: shell/rb-shell.c:1963
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheer en -afspeelprogramma voor GNOME."
 
-#: shell/rb-shell.c:2134
+#: shell/rb-shell.c:2136
 msgid "Choose Files or Directory"
 msgstr "Kies bestanden of een map"
 
-#: shell/rb-shell.c:2180
+#: shell/rb-shell.c:2182
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Om CD's over te nemen dient u het Sound Juicer pakket te installeren"
 
-#: shell/rb-shell.c:2187
+#: shell/rb-shell.c:2189
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kan sound-juicer niet opstarten: %s"
@@ -1343,7 +1344,8 @@ msgid ""
 msgstr ""
 "Nu kunt u Rhythmbox opstarten.\n"
 "\n"
-"Onthoud dat u muziek aan de bibliotheek kunt toevoegen via \"Muziek\" en dan \"Map importeren\", of door het te importeren vanaf CD's."
+"Onthoud dat u muziek aan de bibliotheek kunt toevoegen via \"Muziek\" en dan "
+"\"Map importeren\", of door het te importeren vanaf CD's."
 
 #: widgets/rb-druid.c:318
 #, c-format
