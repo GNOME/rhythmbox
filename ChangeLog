@@ -1,3 +1,16 @@
+2003-08-12  Colin Walters  <cwalters@gnome.org>
+
+	* data/iradio-initial.pls:
+	* library/rb-node.c: (rb_node_signal_disconnect):
+	* sources/rb-iradio-source.c:
+	(rb_iradio_source_async_update_play_statistics),
+	(impl_buffering_done):
+
+	Add more iradio stations to initial list.  Fix nasty race in iradio
+	play statistics updating, which occurred when playing another station
+	before the 6 seconds had elapsed for updating the statistics on the
+	first.
+
 2003-08-12  Christian Neumair  <chris@gnome-de.org>
 
 	* glade/station-properties.glade:

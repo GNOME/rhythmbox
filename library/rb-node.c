@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1304,6 +1305,8 @@ rb_node_signal_disconnect (RBNode *node,
 
 	signal_data = g_hash_table_lookup (node->signals,
 					   GINT_TO_POINTER (signal_id));
+	
+	g_return_if_fail (signal_data != NULL);
 	
 	if (signal_data->data)
 		g_object_weak_unref (G_OBJECT (signal_data->data),

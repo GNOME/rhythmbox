@@ -140,6 +140,7 @@ struct RBIRadioSourcePrivate
 	GtkWidget *last_played_check;
 	GtkWidget *quality_check;
 
+	guint async_idlenum;
 	gboolean async_node_destroyed;
 	guint async_signum;
 	RBNode *async_update_node;
@@ -439,6 +440,8 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
 	RBNode *playing_node;
 
+	rb_debug ("entering async handler");
+
 	gdk_threads_enter ();
 
 
@@ -454,6 +457,7 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 	} else {
 		rb_debug ("async node destroyed");
 	}
+	source->priv->async_update_node = NULL;
 		
 	gdk_threads_leave ();
 	return FALSE;
@@ -467,15 +471,22 @@ impl_buffering_done (RBSource *asource)
 
 	rb_debug ("queueing async play statistics update, node: %p", node);
 
+	if (source->priv->async_update_node != NULL) {
+		rb_debug ("async handler already queued, removing");
+		rb_node_signal_disconnect (source->priv->async_update_node,
+					   source->priv->async_signum);
+		g_source_remove (source->priv->async_idlenum);
+	}
+
 	source->priv->async_node_destroyed = FALSE;
 	source->priv->async_update_node = node;
  	source->priv->async_signum =
 		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
 					       (RBNodeCallback) async_node_update_destroyed_cb,
 					       G_OBJECT (source));
-
-	g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
-		       source);
+	source->priv->async_idlenum =
+		g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
+			       source);
 }
 
 static const char *
