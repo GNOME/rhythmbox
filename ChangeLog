@@ -1,3 +1,25 @@
+2002-10-18  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property):
+	* library/rb-library-xml-thread.c: (rb_library_xml_thread_init),
+	(rb_library_xml_thread_new), (rb_library_xml_thread_set_property),
+	(thread_main):
+	* library/rb-library.c: (rb_library_finalize):
+	* library/rb-node.c: (rb_node_dispose), (child_changed),
+	(rb_node_set_property), (rb_node_save_to_xml),
+	(rb_node_new_from_xml), (real_add_child), (rb_node_add_child),
+	(real_remove_child), (rb_node_remove_child):
+	* shell/main.c: (main), (rb_handle_cmdline):
+	* shell/rb-shell-player.c: (rb_shell_player_finalize):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_corba_quit),
+	(rb_shell_construct), (rb_shell_show):
+	* views/rb-group-view.c: (remove_nodes), (rb_group_view_delete):
+	* views/rb-library-view.c: (delete_nodes),
+	(rb_library_view_delete):
+
+	Nodes seem to be working relatively well now.
+
 2002-10-15  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),

@@ -993,10 +993,9 @@ rb_library_view_paste (RBViewClipboard *clipboard,
 {
 }
 
-static void
-rb_library_view_delete (RBViewClipboard *clipboard)
+static gboolean
+delete_nodes (RBLibraryView *view)
 {
-	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
 	GList *sel, *l;
 
 	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
@@ -1005,6 +1004,16 @@ rb_library_view_delete (RBViewClipboard *clipboard)
 		rb_library_remove_node (view->priv->library, RB_NODE (l->data));
 	}
 	g_list_free (sel);
+
+	return FALSE;
+}
+
+static void
+rb_library_view_delete (RBViewClipboard *clipboard)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (clipboard);
+
+	g_idle_add ((GSourceFunc) delete_nodes, view);
 }
 
 static void

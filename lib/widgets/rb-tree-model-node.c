@@ -298,7 +298,6 @@ rb_tree_model_node_set_property (GObject *object,
 	case PROP_FILTER_PARENT:
 		{
 			RBNode *old = model->priv->filter_parent;
-			RBNode *to_hide = NULL;
 			int i = -1;
 
 			model->priv->filter_parent = g_value_get_object (value);
@@ -319,13 +318,6 @@ rb_tree_model_node_set_property (GObject *object,
 					
 					if (is_root)
 						i++;
-					
-					if (l == kids->len - 1) /* HACK: do not hide all nodes, so we don't
-								   trigger build_level in the filtermodel */
-					{
-						to_hide = node;
-						continue;
-					}
 					
 					if (model->priv->old_filter_artist != NULL)
 					{
@@ -399,9 +391,6 @@ rb_tree_model_node_set_property (GObject *object,
 							 G_CALLBACK (filter_parent_child_removed_cb),
 							 G_OBJECT (model), 0);
 			}
-
-			if (to_hide != NULL)
-				rb_tree_model_node_update_node (model, to_hide, -1);
 		}
 		break;
 	case PROP_FILTER_ARTIST:

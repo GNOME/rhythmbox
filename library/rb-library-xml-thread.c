@@ -147,8 +147,6 @@ rb_library_xml_thread_init (RBLibraryXMLThread *thread)
 {
 	thread->priv = g_new0 (RBLibraryXMLThreadPrivate, 1);
 
-	thread->priv->lock = g_mutex_new ();
-
 	thread->priv->object = thread;
 }
 
@@ -186,8 +184,6 @@ rb_library_xml_thread_new (RBLibrary *library,
 								  "filename", filename,
 								  NULL));
 
-	g_return_val_if_fail (library_xml_thread->priv != NULL, NULL);
-
 	return library_xml_thread;
 }
 
@@ -205,18 +201,23 @@ rb_library_xml_thread_set_property (GObject *object,
 		thread->priv->library = g_value_get_object (value);                    
 		break;
 	case PROP_FILE_NAME:
-		if (thread->priv->filename != NULL)
-			g_free (thread->priv->filename);
 		thread->priv->filename = g_strdup (g_value_get_string (value));
-	
+
 		if (g_file_test (thread->priv->filename, G_FILE_TEST_EXISTS) == TRUE)
 		{
+			thread->priv->lock = g_mutex_new ();
+
 			thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
 								thread->priv, TRUE, NULL);
 		}
 		else
 		{
 			done_loading (thread->priv);
+
+			g_free (thread->priv->filename);
+
+			g_free (thread->priv);
+			thread->priv = NULL;
 		}
 		break;
 	default:
@@ -252,8 +253,6 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 {
 	int media_files = 0;
 
-	static RBProfiler *p = NULL;
-
 	priv->finished_preloading = FALSE;
 
 	while (TRUE)
@@ -268,17 +267,16 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			g_mutex_free (priv->lock);
 			if (priv->doc != NULL)
 				xmlFreeDoc (priv->doc);
+			g_free (priv->filename);
 			g_free (priv);
 			priv->object->priv = NULL;
-			rb_profiler_dump (p);
-			rb_profiler_free (p);
 			g_thread_exit (NULL);
 		}
 
 		if (priv->initialized_file == FALSE)
 		{
 			char *tmp;
-			
+
 			priv->doc = xmlParseFile (priv->filename);
 
 			if (priv->doc == NULL)
@@ -297,8 +295,6 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			g_free (tmp);
 
 			priv->initialized_file = TRUE;
-
-			p = rb_profiler_new ("XML loader thread");
 		}
 
 		if (priv->child == NULL && priv->dead == FALSE)
@@ -312,7 +308,8 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			if (node == NULL)
 				continue;
 
-			if (rb_node_has_child (rb_library_get_all_songs (priv->library), node)) {
+			if (rb_node_has_child (rb_library_get_all_songs (priv->library), node))
+			{
 				const char *location;
 
 				location = rb_node_get_property_string (node,

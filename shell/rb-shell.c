@@ -419,8 +419,6 @@ rb_shell_finalize (GObject *object)
 	gtk_widget_hide (shell->priv->window);
 	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 	
 	eel_gconf_monitor_remove ("/apps/rhythmbox");
 
@@ -447,7 +445,11 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv->sidebar_layout_file);
 
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
+	/* hack to make the gdk thread lock available for freeing
+	 * the library.. evil */
+	GDK_THREADS_LEAVE ();
 	g_object_unref (G_OBJECT (shell->priv->library));
+	GDK_THREADS_ENTER ();
 
 	if (shell->priv->remote != NULL)
 		g_object_unref (G_OBJECT (shell->priv->remote));
@@ -482,7 +484,11 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	GDK_THREADS_ENTER ();
+	
 	rb_shell_quit (shell);
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -616,8 +622,8 @@ rb_shell_construct (RBShell *shell)
 	if (gul_toolbar_listen_to_gconf (toolbar, CONF_TOOLBAR_SETUP) == FALSE)
         {
                 /* FIXME: make this a dialog? */
-                g_warning ("An incorrect toolbar configuration has been found, \
-			   resetting to the default");
+                g_warning ("An incorrect toolbar configuration has been found,"
+			    "resetting to the default");
 
                 /* this is to make sure we get a toolbar, even if the
                    setup is wrong or there is no schema */
@@ -752,8 +758,6 @@ rb_shell_show (RBLibrary *library,
 	/* GO GO GO */
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 }
 
 char *
@@ -1610,15 +1614,18 @@ static void
 rb_shell_sync_window_visibility (RBShell *shell)
 {
 	gboolean visible;
-	static int window_x = 0;
-	static int window_y = 0;
+	static int window_x = -1;
+	static int window_y = -1;
 
 	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
 	
 	if (visible == TRUE)
 	{
-		gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
-				 window_y);
+		if (window_x >= 0 && window_y >= 0)
+		{
+			gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
+					 window_y);
+		}
 		gtk_widget_show_now (shell->priv->window);
 	}
 	else

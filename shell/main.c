@@ -68,6 +68,8 @@ main (int argc, char **argv)
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
 
+	gdk_threads_init ();
+
 #ifdef ENABLE_NLS
 	/* initialize i18n */
 	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
@@ -155,7 +157,7 @@ rb_handle_cmdline (char **argv, int argc)
 		return;
 	}
 
-	for (i = 0; i < argc; i++)
+	for (i = 1; i < argc; i++)
 	{
 		char *tmp;
 

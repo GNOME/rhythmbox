@@ -955,10 +955,9 @@ rb_group_view_paste (RBViewClipboard *clipboard,
 	}
 }
 
-static void
-rb_group_view_delete (RBViewClipboard *clipboard)
+static gboolean
+remove_nodes (RBGroupView *view)
 {
-	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 	GList *sel, *l;
 
 	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
@@ -967,6 +966,16 @@ rb_group_view_delete (RBViewClipboard *clipboard)
 		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
 	}
 	g_list_free (sel);
+
+	return FALSE;
+}
+
+static void
+rb_group_view_delete (RBViewClipboard *clipboard)
+{
+	RBGroupView *view = RB_GROUP_VIEW (clipboard);
+
+	g_idle_add ((GSourceFunc) remove_nodes, view);
 }
 
 static void

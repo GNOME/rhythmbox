@@ -308,6 +308,8 @@ rb_node_dispose (GObject *object)
 
 	g_static_rw_lock_writer_unlock (id_to_node_lock);
 
+	GDK_THREADS_ENTER ();
+
 	/* remove from DAG */
 	g_hash_table_foreach (node->priv->parents,
 			      (GHFunc) remove_child,
@@ -325,15 +327,13 @@ rb_node_dispose (GObject *object)
 		g_static_rw_lock_writer_unlock (child->priv->lock);
 	}
 
-	GDK_THREADS_ENTER ();
 	write_lock_to_read_lock (node);
 
 	g_signal_emit (G_OBJECT (node), rb_node_signals[DESTROYED], 0);
 
-	read_lock_to_write_lock (node);
-	GDK_THREADS_LEAVE ();
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
-	g_static_rw_lock_writer_unlock (node->priv->lock);
+	GDK_THREADS_LEAVE ();
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -482,19 +482,15 @@ child_changed (long id,
 	       RBNodeParent *node_info,
 	       RBNode *node)
 {
-	g_static_rw_lock_writer_lock (node_info->node->priv->lock);
+	g_static_rw_lock_reader_lock (node_info->node->priv->lock);
 
-	GDK_THREADS_ENTER ();
-	write_lock_to_read_lock (node_info->node);
 	write_lock_to_read_lock (node);
 	
 	g_signal_emit (G_OBJECT (node_info->node), rb_node_signals[CHILD_CHANGED], 0, node);
 
-	read_lock_to_write_lock (node_info->node);
 	read_lock_to_write_lock (node);
-	GDK_THREADS_LEAVE ();
 
-	g_static_rw_lock_writer_unlock (node_info->node->priv->lock);
+	g_static_rw_lock_reader_unlock (node_info->node->priv->lock);
 }
 
 static void
@@ -532,6 +528,8 @@ rb_node_set_property (RBNode *node,
 	g_return_if_fail (property_id >= 0);
 	g_return_if_fail (value != NULL);
 
+	GDK_THREADS_ENTER ();
+
 	g_static_rw_lock_writer_lock (node->priv->lock);
 
 	new = g_new0 (GValue, 1);
@@ -541,6 +539,8 @@ rb_node_set_property (RBNode *node,
 	real_set_property (node, property_id, new);
 	
 	g_static_rw_lock_writer_unlock (node->priv->lock);
+
+	GDK_THREADS_LEAVE ();
 }
 
 gboolean
@@ -842,31 +842,31 @@ rb_node_save_to_xml (RBNode *node,
 		switch (G_VALUE_TYPE (value))
 		{
 		case G_TYPE_STRING:
-			xmlSetProp (value_xml_node, "value", g_value_get_string (value));
+			xmlNodeSetContent (value_xml_node, g_value_get_string (value));
 			break;
 		case G_TYPE_BOOLEAN:
 			xml = g_strdup_printf ("%d", g_value_get_boolean (value));
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			break;
 		case G_TYPE_INT:
 			xml = g_strdup_printf ("%d", g_value_get_int (value));
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			break;
 		case G_TYPE_LONG:
 			xml = g_strdup_printf ("%ld", g_value_get_long (value));
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			break;
 		case G_TYPE_FLOAT:
 			xml = g_strdup_printf ("%f", g_value_get_float (value));
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			break;
 		case G_TYPE_DOUBLE:
 			xml = g_strdup_printf ("%f", g_value_get_double (value));
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			break;
 		case G_TYPE_POINTER:
@@ -880,7 +880,7 @@ rb_node_save_to_xml (RBNode *node,
 			g_static_rw_lock_reader_lock (prop_node->priv->lock);
 			
 			xml = g_strdup_printf ("%ld", prop_node->priv->id);
-			xmlSetProp (value_xml_node, "value", xml);
+			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
 			
 			g_static_rw_lock_reader_unlock (prop_node->priv->lock);
@@ -890,8 +890,6 @@ rb_node_save_to_xml (RBNode *node,
 			g_assert_not_reached ();
 			break;
 		}
-
-		xmlSetProp (value_xml_node, "value", xml);
 	}
 
 	g_hash_table_foreach (node->priv->parents,
@@ -924,6 +922,8 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	type = g_type_from_name (xml);
 	g_free (xml);
 
+	GDK_THREADS_ENTER ();
+
 	node = RB_NODE (g_object_new (type,
 				      "id", id,
 				      NULL));
@@ -945,7 +945,13 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			parent = rb_node_get_from_id (parent_id);
 
 			if (parent != NULL)
+			{
+				g_static_rw_lock_writer_lock (parent->priv->lock);
+
 				real_add_child (parent, node);
+				
+				g_static_rw_lock_writer_unlock (parent->priv->lock);
+			}
 		} else if (strcmp (xml_child->name, "property") == 0) {
 			GType value_type;
 			GValue *value;
@@ -959,7 +965,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			value_type = g_type_from_name (xml);
 			g_free (xml);
 
-			xml = xmlGetProp (xml_child, "value");
+			xml = xmlNodeGetContent (xml_child);
 			value = g_new0 (GValue, 1);
 			g_value_init (value, value_type);
 			
@@ -1003,15 +1009,13 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 		}
 	}
 
-	GDK_THREADS_ENTER ();
 	write_lock_to_read_lock (node);
 
 	g_signal_emit (G_OBJECT (node), rb_node_signals[RESTORED], 0);
 
-	read_lock_to_write_lock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
 	GDK_THREADS_LEAVE ();
-	
-	g_static_rw_lock_writer_unlock (node->priv->lock);
 	
 	return node;
 }
@@ -1037,8 +1041,6 @@ real_add_child (RBNode *node,
 			     GINT_TO_POINTER (node->priv->id),
 			     node_info);
 
-	GDK_THREADS_ENTER ();
-
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
 
@@ -1046,8 +1048,6 @@ real_add_child (RBNode *node,
 
 	read_lock_to_write_lock (node);
 	read_lock_to_write_lock (child);
-
-	GDK_THREADS_LEAVE ();
 }
 
 void
@@ -1057,6 +1057,8 @@ rb_node_add_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
+	GDK_THREADS_ENTER ();
+
 	g_static_rw_lock_writer_lock (node->priv->lock);
 	g_static_rw_lock_writer_lock (child->priv->lock);
 
@@ -1064,6 +1066,8 @@ rb_node_add_child (RBNode *node,
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
+	
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -1073,8 +1077,6 @@ real_remove_child (RBNode *node,
 		   gboolean remove_from_child)
 {
 	RBNodeParent *node_info;
-
-	GDK_THREADS_ENTER ();
 
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
@@ -1125,8 +1127,6 @@ real_remove_child (RBNode *node,
 		g_hash_table_remove (child->priv->parents,
 				     GINT_TO_POINTER (node->priv->id));
 	}
-
-	GDK_THREADS_LEAVE ();
 }
 
 void
@@ -1136,6 +1136,8 @@ rb_node_remove_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
+	GDK_THREADS_ENTER ();
+
 	g_static_rw_lock_writer_lock (node->priv->lock);
 	g_static_rw_lock_writer_lock (child->priv->lock);
 
@@ -1143,6 +1145,8 @@ rb_node_remove_child (RBNode *node,
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
+
+	GDK_THREADS_LEAVE ();
 }
 
 gboolean

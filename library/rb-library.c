@@ -182,7 +182,7 @@ rb_library_finalize (GObject *object)
 	g_object_unref (G_OBJECT (library->priv->walker_thread));
 	g_object_unref (G_OBJECT (library->priv->main_queue));
 	g_object_unref (G_OBJECT (library->priv->walker_queue));
-
+	
 	rb_library_save (library);
 
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
