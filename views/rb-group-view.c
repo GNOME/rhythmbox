@@ -132,6 +132,7 @@ static void rb_group_view_drop_cb (GtkWidget        *widget,
 				   guint             time,
 				   gpointer          user_data);
 static const char *impl_get_description (RBView *view);
+static GList *impl_get_selection (RBView *view);
 static void rb_group_view_set_playing_view (RBViewPlayer *player,
                                             RBView *view);
 static RBView *rb_group_view_get_playing_view (RBViewPlayer *player);
@@ -281,6 +282,7 @@ rb_group_view_class_init (RBGroupViewClass *klass)
 	object_class->get_property = rb_group_view_get_property;
 
 	view_class->impl_get_description = impl_get_description;
+	view_class->impl_get_selection   = impl_get_selection;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -964,7 +966,7 @@ rb_group_view_paste (RBViewClipboard *clipboard,
 
 	for (l = nodes; l != NULL; l = g_list_next (l))
 	{
-		rb_node_add_child (view->priv->group, RB_NODE (l->data));
+		rb_group_view_add_node (view, RB_NODE (l->data));
 	}
 }
 
@@ -1116,7 +1118,7 @@ rb_group_view_load (RBGroupView *view)
 		if (node == NULL)
 			continue;
 
-		rb_node_add_child (view->priv->group, node);
+		rb_group_view_add_node (view, node);
 	}
 
 	xmlFreeDoc (doc);
@@ -1209,7 +1211,7 @@ dnd_add_handled_cb (RBLibraryAction *action,
 
 	if (node != NULL)
 	{
-		rb_node_add_child (view->priv->group, node);
+		rb_group_view_add_node (view, node);
 	}
 }
 
@@ -1273,7 +1275,7 @@ rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node)
 
 	if (rb_node_get_node_type (node) == RB_NODE_TYPE_SONG)
 	{
-		rb_node_add_child (view->priv->group, node);
+		rb_group_view_add_node (view, node);
 	}
 	else
 	{
@@ -1321,7 +1323,7 @@ rb_group_view_add_list_uri (RBGroupView *view,
 			/* add the node, if already present in the library */
 			if (node != NULL)
 			{
-				rb_node_add_child (view->priv->group, node);
+				rb_group_view_add_node (view, node);
 			}
 			else
 			{
@@ -1348,6 +1350,14 @@ impl_get_description (RBView *view)
 	return (const char *) gv->priv->description;
 }
 
+static GList *
+impl_get_selection (RBView *view)
+{
+	RBGroupView *gv = RB_GROUP_VIEW (view);
+
+	return rb_node_view_get_selection (gv->priv->songs);
+}
+
 static void
 rb_group_view_set_playing_view (RBViewPlayer *player,
                                 RBView *view)
@@ -1363,4 +1373,16 @@ rb_group_view_get_playing_view (RBViewPlayer *player)
         RBGroupView *gv = RB_GROUP_VIEW (player);
 
         return gv->priv->playing_view;
+}
+
+/* rb_group_view_add_node: append a node to this group
+ */
+void
+rb_group_view_add_node (RBGroupView *view,
+			RBNode *node)
+{
+	g_return_if_fail (view != NULL);
+	g_return_if_fail (node != NULL);
+
+	rb_node_add_child (view->priv->group, node);
 }

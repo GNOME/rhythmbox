@@ -133,6 +133,7 @@ static void rb_library_view_drop_cb (GtkWidget        *widget,
 				     guint             time,
 				     gpointer          user_data);
 static const char *impl_get_description (RBView *view);
+static GList *impl_get_selection (RBView *view);
 static void rb_library_view_set_playing_view (RBViewPlayer *player,
 				              RBView *view);
 static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
@@ -284,6 +285,7 @@ rb_library_view_class_init (RBLibraryViewClass *klass)
 	object_class->get_property = rb_library_view_get_property;
 
 	view_class->impl_get_description = impl_get_description;
+	view_class->impl_get_selection   = impl_get_selection;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -1103,6 +1105,14 @@ static const char *
 impl_get_description (RBView *view)
 {
 	return _("Library");
+}
+
+static GList *
+impl_get_selection (RBView *view)
+{
+	RBLibraryView *library_view = RB_LIBRARY_VIEW (view);
+
+	return rb_node_view_get_selection (library_view->priv->songs);
 }
 
 static void

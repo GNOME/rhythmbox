@@ -98,6 +98,9 @@ static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 static void rb_shell_cmd_new_group (BonoboUIComponent *component,
 			            RBShell *shell,
 			            const char *verbname);
+static void rb_shell_cmd_new_group_selection (BonoboUIComponent *component,
+					      RBShell *shell,
+					      const char *verbname);
 static void rb_shell_cmd_dummy (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
@@ -218,6 +221,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("Preferences",  (BonoboUIVerbFn) rb_shell_cmd_preferences),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
+	BONOBO_UI_VERB ("NewGroupSel",  (BonoboUIVerbFn) rb_shell_cmd_new_group_selection),
 	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
 	BONOBO_UI_VERB_END
 };
@@ -1013,10 +1017,21 @@ ask_string_response_cb (GtkDialog *dialog,
 				   shell->priv->library);
 	rb_group_view_set_name (RB_GROUP_VIEW (group), name);
 	shell->priv->groups = g_list_append (shell->priv->groups, group);
-
 	rb_shell_append_view (shell, group);
-
 	g_free (name);
+
+	/* check if we need to add some songs to the new group */
+	if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "from_selection")))
+	{
+		GList *i;
+		GList *songs = rb_view_get_selection (shell->priv->selected_view);
+
+		for (i = songs; i != NULL; i = g_list_next (i))
+		{
+			rb_group_view_add_node (RB_GROUP_VIEW (group),
+						RB_NODE (i->data));
+		}
+	}
 
 	rb_shell_save_music_groups (shell);
 }
@@ -1033,6 +1048,26 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 			       _("Untitled"),
 			       GTK_WINDOW (shell->priv->window));
 
+	g_object_set_data (G_OBJECT (dialog), "from_selection", GINT_TO_POINTER (FALSE));
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_string_response_cb),
+			  shell);
+}
+
+static void
+rb_shell_cmd_new_group_selection (BonoboUIComponent *component,
+				  RBShell *shell,
+				  const char *verbname)
+{
+	GtkWidget *dialog;
+	
+	dialog = rb_ask_string (_("Please enter a name for the new music group."),
+			       _("Create"),
+			       _("Untitled"),
+			       GTK_WINDOW (shell->priv->window));
+
+	g_object_set_data (G_OBJECT (dialog), "from_selection", GINT_TO_POINTER (TRUE));
 	g_signal_connect (G_OBJECT (dialog),
 			  "response",
 			  G_CALLBACK (ask_string_response_cb),

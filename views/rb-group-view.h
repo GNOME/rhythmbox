@@ -68,6 +68,9 @@ void        rb_group_view_remove_file   (RBGroupView *group);
 void        rb_group_view_save          (RBGroupView *view);
 void        rb_group_view_load          (RBGroupView *view);
 
+void 	    rb_group_view_add_node      (RBGroupView *view, 
+					 RBNode *node);
+
 G_END_DECLS
 
 #endif /* __RB_GROUP_VIEW_H */
