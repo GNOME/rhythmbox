@@ -1,3 +1,17 @@
+2002-11-01  Mark Humphreys  <mmarquee@btinternet.com>
+            Jorn Baayen  <jorn@nl.linux.org>
+
+	* TODO:
+	* data/glade/song-info.glade:
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_populate_dialog), (rb_song_info_update_quality),
+	(rb_song_info_update_location), (rb_song_info_update_last_played),
+	(rb_song_info_update_mime_type):
+
+	Add "Kind" field, split Location up into "Name" and "Location"
+	like nautilus does, and replaces the bitrate field with a quality
+	field.
+
 2002-11-01  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-node-view.c: (node_from_sort_iter_cb):
