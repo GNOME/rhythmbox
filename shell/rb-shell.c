@@ -27,6 +27,7 @@
 #include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
 #include <config.h>
+#include <gconf/gconf-client.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
@@ -58,9 +59,14 @@ static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_corba_quit (PortableServer_Servant _servant,
                                  CORBA_Environment *ev);
+static gboolean rb_shell_window_state_cb (GtkWidget *widget,
+					  GdkEvent *event,
+					  gpointer user_data);
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
+static void rb_shell_window_load_state (GtkWidget *window);
+static void rb_shell_window_save_state (GtkWidget *window);
 static void rb_shell_views_foreach_cb (RBView *view, RBShell *shell);
 static void rb_shell_select_view (RBShell *shell, RBView *view);
 static void rb_shell_append_view (RBShell *shell, RBView *view);
@@ -90,6 +96,19 @@ static void rb_shell_quit (RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
+
+/* prefs */
+#define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/State/window_width"
+#define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/State/window_height"
+#define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/State/window_maximized"
+
+typedef struct _RBWindowState RBWindowState;
+
+struct _RBWindowState {
+	int		width;
+	int		height;
+	gboolean	maximized;
+};
 
 struct RBShellPrivate
 {
@@ -291,6 +310,12 @@ rb_shell_construct (RBShell *shell)
 
 	shell->priv->window = GTK_WIDGET (win);
 
+	g_signal_connect (G_OBJECT (win), "window-state-event",
+			  G_CALLBACK (rb_shell_window_state_cb),
+			  NULL);
+	g_signal_connect (G_OBJECT (win), "configure-event",
+			  G_CALLBACK (rb_shell_window_state_cb),
+			  NULL);
 	g_signal_connect (G_OBJECT (win), "delete_event",
 			  G_CALLBACK (rb_shell_window_delete_cb),
 			  shell);
@@ -370,6 +395,8 @@ rb_shell_construct (RBShell *shell)
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
+	rb_shell_window_load_state (shell->priv->window);
+
 	gtk_widget_show (shell->priv->window);
 }
 
@@ -395,6 +422,96 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 	}
 
 	return NULL;
+}
+
+static gboolean
+rb_shell_window_state_cb (GtkWidget *widget,
+			  GdkEvent *event,
+			  gpointer user_data)
+{
+	RBWindowState *state;
+
+	g_return_val_if_fail (widget != NULL, FALSE);
+
+	state = g_object_get_data (G_OBJECT (widget), "window_state");
+	if (!state) {
+		state = g_new0 (RBWindowState, 1);
+		g_object_set_data (G_OBJECT (widget), "window_state", state);
+	}
+
+	switch (event->type) {
+	case GDK_WINDOW_STATE:
+		state->maximized = event->window_state.new_window_state &
+			GDK_WINDOW_STATE_MAXIMIZED;
+		break;
+	case GDK_CONFIGURE:
+		if (!state->maximized) {
+			state->width = event->configure.width;
+			state->height = event->configure.height;
+		}
+		break;
+	default:
+		break;
+	}
+
+	return FALSE;
+}
+
+static void
+rb_shell_window_load_state (GtkWidget *window)
+{
+	GConfClient *gconf_client;
+	RBWindowState *state;
+
+	state = g_object_get_data (G_OBJECT (window), "window_state");
+	if (!state) {
+		state = g_new0 (RBWindowState, 1);
+		g_object_set_data (G_OBJECT (window), "window_state", state);
+	}
+
+	/* Restore window state. */
+	gconf_client = gconf_client_get_default ();
+	state->width = gconf_client_get_int (gconf_client,
+					     CONF_STATE_WINDOW_WIDTH,
+					     NULL);
+	state->height = gconf_client_get_int (gconf_client,
+					      CONF_STATE_WINDOW_HEIGHT,
+					      NULL);
+	state->maximized = gconf_client_get_bool (gconf_client,
+						  CONF_STATE_WINDOW_MAXIMIZED,
+						  NULL);
+	gtk_window_set_default_size (GTK_WINDOW (window), state->width, state->height);
+	if (state->maximized)
+		gtk_window_maximize (GTK_WINDOW (window));
+
+	g_object_unref (gconf_client);
+}
+
+static void
+rb_shell_window_save_state (GtkWidget *window)
+{
+	GConfClient *gconf_client;
+	RBWindowState *state;
+
+	state = g_object_get_data (G_OBJECT (window), "window_state");
+	if (!state)
+		return;
+
+	/* Save the window state. */
+	gconf_client = gconf_client_get_default ();
+	gconf_client_set_int (gconf_client,
+			      CONF_STATE_WINDOW_WIDTH,
+			      state->width,
+			      NULL);
+	gconf_client_set_int (gconf_client,
+			      CONF_STATE_WINDOW_HEIGHT,
+			      state->height,
+			      NULL);
+	gconf_client_set_bool (gconf_client,
+			       CONF_STATE_WINDOW_MAXIMIZED,
+			       state->maximized,
+			       NULL);
+	g_object_unref (gconf_client);
 }
 
 static gboolean
@@ -620,6 +737,8 @@ static void
 rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
+
+	rb_shell_window_save_state (shell->priv->window);
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
