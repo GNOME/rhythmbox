@@ -28,7 +28,7 @@
 #include "rb-string-helpers.h"
 
 static gboolean
-is_different (RBNode *node, const char *property, GValue *value)
+is_different (RBNode *node, int property, GValue *value)
 {
 	GValue val = { 0, };
 	gboolean equal;
@@ -43,7 +43,7 @@ is_different (RBNode *node, const char *property, GValue *value)
 }
 
 static void
-set_value (RBNode *node, const char *property,
+set_value (RBNode *node, int property,
 	   MonkeyMediaStreamInfo *info,
 	   MonkeyMediaStreamInfoField field)
 {

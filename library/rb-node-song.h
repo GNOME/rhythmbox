@@ -29,19 +29,22 @@
 G_BEGIN_DECLS
 
 /* properties */
-#define RB_SONG_PROP_GENRE             "genre"
-#define RB_SONG_PROP_ARTIST            "artist"
-#define RB_SONG_PROP_ALBUM             "album"
-#define RB_SONG_PROP_REAL_GENRE        "real_genre"
-#define RB_SONG_PROP_REAL_ARTIST       "real_artist"
-#define RB_SONG_PROP_REAL_ALBUM        "real_album"
-#define RB_SONG_PROP_TRACK_NUMBER      "track_number"
-#define RB_SONG_PROP_REAL_TRACK_NUMBER "real_track_number"
-#define RB_SONG_PROP_DURATION          "duration"
-#define RB_SONG_PROP_REAL_DURATION     "real_duration"
-#define RB_SONG_PROP_FILE_SIZE         "file_size"
-#define RB_SONG_PROP_LOCATION          "location"
-#define RB_SONG_PROP_MTIME             "mtime"
+enum
+{
+	RB_SONG_PROP_GENRE             = 1,
+	RB_SONG_PROP_ARTIST            = 2,
+	RB_SONG_PROP_ALBUM             = 3,
+	RB_SONG_PROP_REAL_GENRE        = 4,
+	RB_SONG_PROP_REAL_ARTIST       = 5,
+	RB_SONG_PROP_REAL_ALBUM        = 6,
+	RB_SONG_PROP_TRACK_NUMBER      = 7,
+	RB_SONG_PROP_REAL_TRACK_NUMBER = 8,
+	RB_SONG_PROP_DURATION          = 9,
+	RB_SONG_PROP_REAL_DURATION     = 10,
+	RB_SONG_PROP_FILE_SIZE         = 11,
+	RB_SONG_PROP_LOCATION          = 12,
+	RB_SONG_PROP_MTIME             = 13
+};
 
 /* management */
 void             rb_node_song_init                 (RBNode *node,

@@ -85,13 +85,16 @@ RBNode     *rb_node_from_id               (int id);
 RBNodeType  rb_node_get_node_type         (RBNode *node);
 
 /* property interface */
-#define RB_NODE_PROP_NAME "name"
+enum
+{
+	RB_NODE_PROP_NAME = 0
+};
 
 void        rb_node_set_property          (RBNode *node,
-				           const char *property,
+				           int property,
 				           const GValue *value);
 void        rb_node_get_property          (RBNode *node,
-				           const char *property,
+				           int property,
 				           GValue *value);
 
 /* parents */

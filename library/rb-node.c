@@ -44,8 +44,7 @@ static void rb_node_get_object_property (GObject *object,
 static void rb_node_changed (RBNode *node);
 static long rb_node_id_factory_new_id (void);
 static void rb_node_id_factory_set_to (long new_factory_position);
-static void rb_node_property_free (GValue *value);
-static void rb_node_save_property (char *property,
+static void rb_node_save_property (int property,
 		                   GValue *value,
 		                   xmlNodePtr node);
 static RBNode *rb_node_get_prevnext (RBNode *parent,
@@ -95,7 +94,7 @@ struct RBNodePrivate
 	GList *parent_entries;
 	GList *children;
 
-	GHashTable *properties;
+	GPtrArray *properties;
 
 	gboolean handled;
 
@@ -246,15 +245,14 @@ rb_node_init (RBNode *node)
 	node->priv->type = RB_NODE_TYPE_GENERIC;
 	node->priv->id = -1;
 
-	node->priv->properties = g_hash_table_new_full (g_str_hash, g_str_equal,
-							(GDestroyNotify) g_free,
-							(GDestroyNotify) rb_node_property_free);
+	node->priv->properties = g_ptr_array_new ();
 }
 
 static void
 rb_node_finalize (GObject *object)
 {
 	RBNode *node;
+	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_NODE (object));
@@ -266,7 +264,19 @@ rb_node_finalize (GObject *object)
 	g_list_free (node->priv->children);
 	g_list_free (node->priv->parents);
 
-	g_hash_table_destroy (node->priv->properties);
+	for (i = 0; i < node->priv->properties->len; i++)
+	{
+		GValue *val;
+		
+		val = g_ptr_array_index (node->priv->properties, i);
+
+		if (val != NULL)
+		{
+			g_value_unset (val);
+			g_free (val);
+		}
+	}
+	g_ptr_array_free (node->priv->properties, FALSE);
 
 	g_static_rw_lock_free (node->priv->lock);
 
@@ -632,20 +642,23 @@ rb_node_get_node_type (RBNode *node)
 
 void
 rb_node_set_property (RBNode *node,
-		      const char *property,
+		      int property,
 		      const GValue *value)
 {
-	GValue *val;
+	GValue *val, *pos;
 	RBNodeType type;
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
 
+	while (property >= node->priv->properties->len)
+		g_ptr_array_add (node->priv->properties, NULL);
+
 	type = rb_node_get_node_type (node);
 	switch (type)
 	{
 	case RB_NODE_TYPE_GENRE:
-		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
+		if (property == RB_NODE_PROP_NAME)
 		{
 			g_static_rw_lock_writer_lock (name_to_genre_lock);
 			g_hash_table_replace (name_to_genre,
@@ -655,7 +668,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_ARTIST:
-		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
+		if (property == RB_NODE_PROP_NAME)
 		{
 			g_static_rw_lock_writer_lock (name_to_artist_lock);
 			g_hash_table_replace (name_to_artist,
@@ -665,7 +678,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_ALBUM:
-		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
+		if (property == RB_NODE_PROP_NAME)
 		{
 			g_static_rw_lock_writer_lock (name_to_album_lock);
 			g_hash_table_replace (name_to_album,
@@ -675,7 +688,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_SONG:
-		if (strcmp (property, RB_SONG_PROP_LOCATION) == 0)
+		if (property == RB_SONG_PROP_LOCATION)
 		{
 			g_static_rw_lock_writer_lock (uri_to_song_lock);
 			g_hash_table_replace (uri_to_song,
@@ -694,9 +707,14 @@ rb_node_set_property (RBNode *node,
 	
 	g_static_rw_lock_writer_lock (node->priv->lock);
 
-	g_hash_table_replace (node->priv->properties,
-			      g_strdup (property),
-			      val);
+	pos = g_ptr_array_index (node->priv->properties,
+				 property);
+	if (pos != NULL)
+	{
+		g_value_unset (pos);
+		g_free (pos);
+	}
+	g_ptr_array_index (node->priv->properties, property) = val;
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 
@@ -705,18 +723,19 @@ rb_node_set_property (RBNode *node,
 
 void
 rb_node_get_property (RBNode *node,
-		      const char *property,
+		      int property,
 		      GValue *value)
 {
 	GValue *val;
 	
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
+	g_return_if_fail (property < node->priv->properties->len);
 
 	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	val = g_hash_table_lookup (node->priv->properties,
-				   property);
+	val = g_ptr_array_index (node->priv->properties,
+				 property);
 	g_return_if_fail (val != NULL);
 
 	g_value_init (value, G_VALUE_TYPE (val));
@@ -869,6 +888,7 @@ rb_node_save_to_xml (RBNode *node,
 	GList *l;
 	char *tmp;
 	long id;
+	int i;
 	
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (parent_xml_node != NULL);
@@ -889,7 +909,14 @@ rb_node_save_to_xml (RBNode *node,
 
 	g_type_class_unref (class);
 
-	g_hash_table_foreach (node->priv->properties, (GHFunc) rb_node_save_property, xml_node);
+	for (i = 0; i < node->priv->properties->len; i++)
+	{
+		GValue *val;
+		
+		val = g_ptr_array_index (node->priv->properties, i);
+
+		rb_node_save_property (i, val, xml_node);
+	}
 
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
@@ -994,7 +1021,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			g_free (tmp);
 			
 			rb_node_set_property (node,
-					      prop_type,
+					      atoi (prop_type),
 					      &value);
 			g_value_unset (&value);
 			g_free (prop_type);
@@ -1104,23 +1131,18 @@ rb_node_id_factory_set_to (long new_factory_position)
 }
 
 static void
-rb_node_property_free (GValue *value)
-{
-	g_value_unset (value);
-	g_free (value);
-}
-
-static void
-rb_node_save_property (char *property,
+rb_node_save_property (int property,
 		       GValue *value,
 		       xmlNodePtr node)
 {
-	char *value_string;
+	char *value_string, *tmp;
 	xmlNodePtr child_node;
 
 	child_node = xmlNewChild (node, NULL, "property", NULL);
 
-	xmlSetProp (child_node, "key", property);
+	tmp = g_strdup_printf ("%d", property);
+	xmlSetProp (child_node, "key", tmp);
+	g_free (tmp);
 
 	switch (G_VALUE_TYPE (value))
 	{
