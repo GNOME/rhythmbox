@@ -56,6 +56,7 @@ static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   GConfEntry *entry,
 					   RBStatusbar *statusbar);
 
+static void rb_statusbar_sync_status (RBStatusbar *status);
 static gboolean poll_status (RBStatusbar *status);
 static void rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 					    RBStatusbar *statusbar);
@@ -211,6 +212,10 @@ rb_statusbar_construct (GType                  type,
 	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
 				  "notify::repeat", 
 				  G_CALLBACK (rb_statusbar_sync_state), 
+				  statusbar);
+	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
+				  "notify::buffering", 
+				  G_CALLBACK (rb_statusbar_sync_status), 
 				  statusbar);
 
 	return object;
@@ -399,16 +404,15 @@ status_tick_cb (GtkProgressBar *progress)
 	return TRUE;
 }
 
-static gboolean
-poll_status (RBStatusbar *status)
+static void
+rb_statusbar_sync_status (RBStatusbar *status)
 {
 	char *str;
 	gboolean library_busy_changed;
 	gboolean library_is_busy;
+	gboolean buffering;
 	gboolean entry_view_busy = FALSE;
 	gboolean changed = FALSE;
-
-	GDK_THREADS_ENTER ();
 
 	str = rhythmdb_get_status (status->priv->db);
 
@@ -422,18 +426,30 @@ poll_status (RBStatusbar *status)
 	library_busy_changed = status->priv->library_busy && !library_is_busy;
 	status->priv->library_busy = library_is_busy;	
 
+	g_object_get (G_OBJECT (status->priv->player), "buffering",
+		      &buffering, NULL);
+
 	/* Set up the status display */
 	if (status->priv->library_busy) {
 		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
 		g_free (str);
+		str = NULL;
 		changed = TRUE;
+	} else if (buffering) {
+		g_free (str);
+		str = g_strdup_printf ("<b>%s</b>",
+				       _("Buffering..."));
+		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
+		g_free (str);
+		str = NULL;
 	} else if (library_busy_changed) {
 		rb_statusbar_sync_with_source (status);
 		changed = TRUE;
 	}
+	g_free (str);
 
 	/* Sync the progress bar */
-	if (library_is_busy || entry_view_busy) {
+	if (library_is_busy || entry_view_busy || buffering) {
 		if (status->priv->idle_tick_id == 0) {
 			status->priv->idle_tick_id
 				= g_timeout_add (250, (GSourceFunc) status_tick_cb,
@@ -452,7 +468,17 @@ poll_status (RBStatusbar *status)
 
 	status->priv->status_poll_id = 
 		g_timeout_add (changed ? 350 : 750, (GSourceFunc) poll_status, status);
+}
+
+static gboolean
+poll_status (RBStatusbar *status)
+{
+	GDK_THREADS_ENTER ();
+
+	rb_statusbar_sync_status (status);
+
 	GDK_THREADS_LEAVE ();
+
 	return FALSE;
 }
 

@@ -28,11 +28,7 @@ libmonkey_media_la_SOURCES =				\
 if USE_XINE
 libmonkey_media_la_SOURCES += monkey-media-player-xine.c
 else
-if USE_GSTREAMER_WORKAROUNDS
-libmonkey_media_la_SOURCES += monkey-media-player-gst-tmp.c 
-else
 libmonkey_media_la_SOURCES += monkey-media-player-gst.c
-endif
 endif
 
 if HAVE_MUSICBRAINZ

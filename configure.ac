@@ -3,7 +3,7 @@ define(arch-tag)
 AC_PREREQ(2.53)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.5.99)
+AM_INIT_AUTOMAKE(rhythmbox, 0.6.99)
 
 AM_MAINTAINER_MODE
 
@@ -95,21 +95,12 @@ else
 	dnl And we can also ask for the right version of gstreamer
 	HAVE_SOUNDSYSTEM=no
 
-	dnl start with 0.7
+	dnl try 0.7, in the future also 0.8
 	GST_MAJORMINOR=0.7
 	PKG_CHECK_MODULES(SOUNDSYSTEM, \
 		gstreamer-$GST_MAJORMINOR gstreamer-libs-$GST_MAJORMINOR
 		gstreamer-control-$GST_MAJORMINOR gstreamer-gconf-$GST_MAJORMINOR,
 		HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
-
-	dnl try 0.6
-	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
-		GST_MAJORMINOR=0.6
-		PKG_CHECK_MODULES(SOUNDSYSTEM, \
-			gstreamer-$GST_MAJORMINOR >= 0.6.2 gstreamer-libs-$GST_MAJORMINOR
-			gstreamer-control-$GST_MAJORMINOR gstreamer-gconf-$GST_MAJORMINOR,
-			HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
-	fi
 
 	dnl Give error and exit if we don't have gstreamer
 	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
@@ -132,13 +123,7 @@ else
 
 fi
 
-AC_ARG_ENABLE(gstreamer_workarounds,
-              AC_HELP_STRING([--disable-gstreamer-workarounds],
-			     [Enable use of the GStreamer backend without workarounds]),,
-	      disable_gstreamer_workarounds=no)
-
 AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
-AM_CONDITIONAL(USE_GSTREAMER_WORKAROUNDS, test x"$disable_gstreamer_workarounds" != xyes)
 
 dnl Workaround for the gtktreeview bug
 disable_gtktreeview_workaround=yes
@@ -439,11 +424,7 @@ dnl else
 dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 dnl fi
 if test x"$WANT_XINE" != "x1"; then
-	if test x"$disable_gstreamer_workarounds" != xyes; then	
-		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled (with workarounds)])
-	else
-		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
-	fi
+	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
 else
 	AC_MSG_NOTICE([** xine backend is enabled])
 fi

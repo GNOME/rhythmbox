@@ -134,14 +134,10 @@ static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
 static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
 static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
 
-static void cancel_buffering_dialog (RBShellPlayer *player);
-
 static void info_available_cb (MonkeyMediaPlayer *player,
 			       MonkeyMediaStreamInfoField field,
 			       GValue *value,
 			       gpointer data);
-static void cancel_buffering_clicked_cb (GtkWidget *button,
-					 gpointer data);
 static void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 static void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
 
@@ -191,10 +187,7 @@ struct RBShellPlayerPrivate
 
 	RBHistory *history;	/* holds the last <arbitrary #> songs and any enqueued songs. */
 
-	gboolean buffering_blocked;
-	GtkWidget *buffering_dialog;
-	GtkWidget *buffering_progress;
-	guint buffering_progress_idle_id;
+	gboolean buffering;
 
 	GtkTooltips *tooltips;
 	GtkWidget *prev_button;
@@ -223,6 +216,7 @@ enum
 	PROP_REPEAT,
 	PROP_SHUFFLE,
 	PROP_PLAYING,
+	PROP_BUFFERING,
 };
 
 enum
@@ -382,6 +376,14 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 					 g_param_spec_boolean ("playing", 
 							       "playing", 
 							      "Whether Rhythmbox is currently playing", 
+							       FALSE,
+							       G_PARAM_READABLE));
+
+	g_object_class_install_property (object_class,
+					 PROP_BUFFERING,
+					 g_param_spec_boolean ("buffering", 
+							       "buffering", 
+							      "Whether Rhythmbox is currently buffering", 
 							       FALSE,
 							       G_PARAM_READABLE));
 
@@ -717,6 +719,9 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_PLAYING:
 		g_value_set_boolean (value, monkey_media_player_playing (player->priv->mmplayer));
 		break;
+	case PROP_BUFFERING:
+		g_value_set_boolean (value, player->priv->buffering);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -788,26 +793,12 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	char *unescaped = gnome_vfs_unescape_string_for_display (location);
 	char *msg = g_strdup_printf (_("Opening %s..."), unescaped);
 	gboolean was_playing;
-	gboolean show_buffering_dialog = !strncmp ("http://", location, 7);
+/* 	gboolean use_buffering = rb_uri_is_iradio (location); */
 
 	rb_debug ("%s", msg);
 
 	g_free (unescaped);
 	g_free (msg);
-
-	if (show_buffering_dialog && player->priv->buffering_blocked) {
-		g_signal_handlers_unblock_by_func (G_OBJECT (player->priv->mmplayer),
-						 G_CALLBACK (buffering_begin_cb), player);
-		g_signal_handlers_unblock_by_func (G_OBJECT (player->priv->mmplayer),
-						 G_CALLBACK (buffering_end_cb), player);
-		player->priv->buffering_blocked = FALSE;
-	} else if (!show_buffering_dialog && !player->priv->buffering_blocked) {
-		g_signal_handlers_block_by_func (G_OBJECT (player->priv->mmplayer),
-						 G_CALLBACK (buffering_begin_cb), player);
-		g_signal_handlers_block_by_func (G_OBJECT (player->priv->mmplayer),
-						 G_CALLBACK (buffering_end_cb), player);
-		player->priv->buffering_blocked = TRUE;
-	}
 
 	was_playing = monkey_media_player_playing (player->priv->mmplayer);
 
@@ -1451,6 +1442,11 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (player->priv->source == source && source != NULL)
 		return;
 
+	if (player->priv->buffering) {
+		player->priv->buffering = FALSE;
+		g_object_notify (G_OBJECT (player), "buffering");
+	}
+	
 	rb_debug ("setting playing source to %p", source);
 
 	/* Stop the already playing source. */
@@ -1627,7 +1623,6 @@ error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 		goto out_unlock;
 	}
 
-	cancel_buffering_dialog (player);
 	rb_debug ("error: %s", err->message);
 	player->priv->handling_error = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
@@ -1770,85 +1765,13 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 	gdk_threads_leave ();
 }
 
-static gboolean
-buffering_tick_cb (GtkProgressBar *progress)
-{
-	g_return_val_if_fail (GTK_IS_PROGRESS_BAR (progress), FALSE);
-
-	gdk_threads_enter ();
-
-	gtk_progress_bar_pulse (progress);
-
-	gdk_threads_leave ();
-
-	return TRUE;
-}
-
-static void
-cancel_buffering_dialog (RBShellPlayer *player)
-{
-	if (player->priv->buffering_dialog) {
-		rb_debug ("removing idle source, hiding buffering dialog");
-		g_source_remove (player->priv->buffering_progress_idle_id);
-		gtk_widget_hide (player->priv->buffering_dialog);
-	}
-}
-
 static void
 buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 		    gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	rb_debug ("got buffering_begin_cb");
-
-	if (!monkey_media_player_playing (mmplayer)) {
-		rb_debug ("not playing, ignoring");
-		return;
-	}
-
-	gdk_threads_enter ();
-
-	if (!player->priv->buffering_dialog) {
-		GladeXML *xml = rb_glade_xml_new ("buffering-dialog.glade", "dialog", player);
- 		GtkWidget *label = glade_xml_get_widget (xml, "status_label");
-		PangoAttrList *pattrlist = pango_attr_list_new ();
-		PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
-
-		attr->start_index = 0;
-		attr->end_index = G_MAXINT;
-		pango_attr_list_insert (pattrlist, attr);
-		gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
-		pango_attr_list_unref (pattrlist);
-		
-		player->priv->buffering_progress = glade_xml_get_widget (xml, "progressbar");
-
-		gtk_progress_bar_pulse (GTK_PROGRESS_BAR (player->priv->buffering_progress));
-
-		player->priv->buffering_dialog = glade_xml_get_widget (xml, "dialog");
-		g_signal_connect (G_OBJECT (glade_xml_get_widget (xml, "cancel_button")),
-				  "clicked", G_CALLBACK (cancel_buffering_clicked_cb),
-				  player);
-	}
-	player->priv->buffering_progress_idle_id =
-		g_timeout_add (100, (GSourceFunc) buffering_tick_cb, player->priv->buffering_progress);
-
-	gtk_widget_show (player->priv->buffering_dialog);
-	rb_debug ("leaving buffering_begin");
-
-	gdk_threads_leave ();
-}
-
-static void
-cancel_buffering_clicked_cb (GtkWidget *button,
-			     gpointer data)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	rb_debug ("Cancelling");
-
-	cancel_buffering_dialog (player);
-	rb_shell_player_set_playing_source (player, NULL);
-
-	rb_debug ("Done cancelling");
+	player->priv->buffering = TRUE;
+	g_object_notify (G_OBJECT (player), "buffering");
 }
 
 static void
@@ -1857,13 +1780,8 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("got buffering_end_cb");
-
-	gdk_threads_enter ();
-
-	cancel_buffering_dialog (player);
-	rb_source_buffering_done (player->priv->source);
-
-	gdk_threads_leave ();
+	player->priv->buffering = FALSE;
+	g_object_notify (G_OBJECT (player), "buffering");
 }
 
 const char *
