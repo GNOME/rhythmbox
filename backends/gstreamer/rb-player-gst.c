@@ -651,8 +651,8 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 
 void
 rb_player_open (RBPlayer *mp,
-			  const char *uri,
-			  GError **error)
+		const char *uri,
+		GError **error)
 {
 	gboolean audiocd_mode = uri && g_str_has_prefix (uri, "audiocd://");
 	gboolean iradio_mode = uri && g_str_has_prefix (uri, "http://");
@@ -754,12 +754,12 @@ rb_player_close (RBPlayer *mp, GError **error)
 	mp->priv->pipeline = NULL;
 }
 
-const char *
-rb_player_get_uri (RBPlayer *mp)
+gboolean
+rb_player_opened (RBPlayer *mp)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), NULL);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 
-	return mp->priv->uri;
+	return mp->priv->uri != NULL;
 }
 
 void

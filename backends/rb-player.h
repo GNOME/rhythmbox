@@ -83,7 +83,7 @@ void		rb_player_open       (RBPlayer *mp,
 				      const char *uri,
 				      GError **error);
 
-const char *	rb_player_get_uri    (RBPlayer *mp);
+gboolean	rb_player_opened     (RBPlayer *mp);
 
 void		rb_player_close      (RBPlayer *mp, GError **error);
 

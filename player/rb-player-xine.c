@@ -496,8 +496,8 @@ rb_player_close (RBPlayer *mp, GError **error)
 	mp->priv->uri = NULL;
 }
 
-const char *
-rb_player_get_uri (RBPlayer *mp)
+gboolean
+rb_player_opened (RBPlayer *mp)
 {
 	g_return_val_if_fail (RB_IS_PLAYER (mp), NULL);
 

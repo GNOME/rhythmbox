@@ -1613,7 +1613,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		not_empty = TRUE;
 
 		/* Should these be up to the play order? */
-		have_previous = rb_player_get_uri (player->priv->mmplayer) != NULL;
+		have_previous = rb_player_opened (player->priv->mmplayer);
 		player->priv->have_previous_entry = (rb_entry_view_get_previous_entry (songs) != NULL);
 
 		have_next = rb_play_order_has_next (player->priv->play_order);
@@ -1646,14 +1646,12 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY, TRUE);
 
 	} else  {
-		if (rb_player_get_uri (player->priv->mmplayer) == NULL) {
+		if (rb_player_opened (player->priv->mmplayer)
+		    || player->priv->source == NULL
+		    || player->priv->source == player->priv->selected_source)
 			pstate = PLAY_BUTTON_PLAY;
-		} else {
-			if (player->priv->source == player->priv->selected_source)
-				pstate = PLAY_BUTTON_PLAY;
-			else
-				pstate = PLAY_BUTTON_STOP;
-		}
+		else
+			pstate = PLAY_BUTTON_STOP;
 
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY,
 					 rb_shell_player_have_first (player, source));
@@ -1921,7 +1919,7 @@ info_available_cb (RBPlayer *mmplayer,
 	/* Sanity check, this signal may come in after we stopped the
 	 * player */
 	if (player->priv->source == NULL
-	    || !rb_player_get_uri (player->priv->mmplayer)) {
+	    || !rb_player_opened (player->priv->mmplayer)) {
 		rb_debug ("Got info_available but no playing source!");
 		return;
 	}
