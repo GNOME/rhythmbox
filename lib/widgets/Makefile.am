@@ -42,8 +42,3 @@ librbwidgets_la_LDFLAGS = -export-dynamic
 librbwidgets_la_LIDADD = $(top_srcdir)/lib/view/librbview.la
 
 EXTRA_DIST =			\
-	volume-max.xpm		\
-	volume-medium.xpm	\
-	volume-min.xpm		\
-	volume-mute.xpm		\
-	volume-zero.xpm
