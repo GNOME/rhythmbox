@@ -673,11 +673,11 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start_defaults (GTK_BOX (vbox), shell->priv->notebook);
 
 	if (gtk_widget_get_default_direction () != GTK_TEXT_DIR_RTL) {
-		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
-		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
+		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, TRUE, TRUE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
 	} else {
-		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
-		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
+		gtk_paned_pack1 (GTK_PANED (shell->priv->paned), vbox, TRUE, TRUE);
+		gtk_paned_pack2 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, TRUE, TRUE);
 	}
 
 	vbox = gtk_vbox_new (FALSE, 5);
@@ -1710,6 +1710,7 @@ static void
 rb_shell_sync_paned (RBShell *shell)
 {
 	int position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
+	rb_debug ("syncing paned to %d", position);
 	if (position > 0)
 		gtk_paned_set_position (GTK_PANED (shell->priv->paned),
 					position);
