@@ -41,6 +41,12 @@ void rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path);
 
 GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size);
 
+gchar *rb_uri_get_mount_point (const char *uri);
+gboolean rb_uri_is_mounted (const char *uri);
+
+
+
+
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */

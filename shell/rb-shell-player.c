@@ -149,6 +149,8 @@ static void rb_shell_player_set_play_order (RBShellPlayer *player,
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
 static void rb_shell_player_sync_control_state (RBShellPlayer *player);
+static RhythmDBEntry *rb_shell_player_get_playing_entry (RBShellPlayer *player);
+
 static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 				      GConfEntry *entry, RBShellPlayer *player);
 
@@ -486,6 +488,37 @@ rb_shell_player_constructor (GType type, guint n_construct_properties,
 }
 
 static void
+volume_pre_unmount_cb (GnomeVFSVolumeMonitor *monitor, 
+		       GnomeVFSVolume *volume, 
+		       RBShellPlayer *player)
+{
+	gchar *uri_mount_point;
+	gchar *volume_mount_point;
+	RhythmDBEntry *entry;
+	const char *uri;
+
+	if (rb_shell_player_get_playing (player)) {
+		return;
+	}
+
+	entry = rb_shell_player_get_playing_entry (player);
+	if (entry == NULL) {
+		/* At startup for example, playing path can be NULL */
+		return;
+	}
+
+	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+	uri_mount_point = rb_uri_get_mount_point (uri);
+	volume_mount_point = gnome_vfs_volume_get_activation_uri (volume);
+
+	if (!strcmp (uri_mount_point, volume_mount_point)) {
+		rb_shell_player_stop (player);
+	}
+	g_free (uri_mount_point);
+	g_free (volume_mount_point);
+}
+
+static void
 rb_shell_player_init (RBShellPlayer *player)
 {
 	GError *error = NULL;
@@ -545,6 +578,11 @@ rb_shell_player_init (RBShellPlayer *player)
 				 "buffering_progress",
 				 G_CALLBACK (buffering_progress_cb),
 				 player, 0);
+
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
+			  "volume-pre-unmount",
+			  G_CALLBACK (volume_pre_unmount_cb),
+			  player);
 
 	player->priv->gconf_play_order_id =
 		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
@@ -1757,6 +1795,9 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (player->priv->play_order)
 		rb_play_order_playing_source_changed (player->priv->play_order);
 
+
+	g_free (player->priv->url);
+	g_free (player->priv->song);
 	player->priv->song = NULL;
 	player->priv->url = NULL;
 	player->priv->have_url = FALSE;

@@ -367,6 +367,10 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			ctx->entry->location = ctx->buf->str;
 			g_string_free (ctx->buf, FALSE);
 			break;
+		case RHYTHMDB_PROP_MOUNTPOINT:
+			ctx->entry->mountpoint = ctx->buf->str;
+			g_string_free (ctx->buf, FALSE);
+			break;
 		case RHYTHMDB_PROP_MTIME:
 			ctx->entry->mtime = g_ascii_strtoull (ctx->buf->str, NULL, 10);
 			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
@@ -440,6 +444,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_NUM_PROPERTIES:
 			g_assert_not_reached ();
 			break;
@@ -678,6 +683,9 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_LOCATION:
 			save_entry_string(ctx, elt_name, entry->location);
 			break;
+		case RHYTHMDB_PROP_MOUNTPOINT:
+			save_entry_string(ctx, elt_name, entry->mountpoint);
+			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			save_entry_uint64(ctx, elt_name, entry->file_size);
 			break;
@@ -708,6 +716,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		case RHYTHMDB_PROP_ARTIST_FOLDED:
 		case RHYTHMDB_PROP_ALBUM_FOLDED:
 		case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		case RHYTHMDB_PROP_HIDDEN:
 		case RHYTHMDB_NUM_PROPERTIES:
 			break;
 		}

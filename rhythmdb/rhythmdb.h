@@ -73,6 +73,7 @@ typedef enum
 	RHYTHMDB_PROP_DURATION,
 	RHYTHMDB_PROP_FILE_SIZE,
 	RHYTHMDB_PROP_LOCATION,
+	RHYTHMDB_PROP_MOUNTPOINT,
 	RHYTHMDB_PROP_MTIME,
 	RHYTHMDB_PROP_RATING,
 	RHYTHMDB_PROP_AUTO_RATE,
@@ -93,6 +94,8 @@ typedef enum
 	RHYTHMDB_PROP_ARTIST_FOLDED,
 	RHYTHMDB_PROP_ALBUM_FOLDED,
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
+	RHYTHMDB_PROP_HIDDEN,
+
 	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBPropType;
 
@@ -135,6 +138,7 @@ typedef struct {
 
 	/* filesystem */
 	char *location;
+	char *mountpoint;
 	guint64 file_size;
 	RBRefString *mimetype;
 #if 0
@@ -151,6 +155,9 @@ typedef struct {
 
 	/* cached data */
 	RBRefString *last_played_str;
+
+	/* visibility (to hide entries on unmounted volumes) */
+	gboolean hidden;
 } RhythmDBEntry;
 
 
@@ -195,6 +202,8 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return rb_refstring_get_folded (entry->genre);
 	case RHYTHMDB_PROP_LOCATION:
 		return entry->location;
+	case RHYTHMDB_PROP_MOUNTPOINT:
+		return entry->mountpoint;
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		return rb_refstring_get (entry->last_played_str);
 	default:
@@ -209,6 +218,8 @@ rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
 	switch (propid) {
 	case RHYTHMDB_PROP_AUTO_RATE:
 		return entry->auto_rate;
+	case RHYTHMDB_PROP_HIDDEN:
+		return entry->hidden;
 	default:
 		g_assert_not_reached ();
 		return FALSE;

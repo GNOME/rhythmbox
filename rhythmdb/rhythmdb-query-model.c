@@ -571,14 +571,23 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBPropType prop, const GValue *old,
 				       const GValue *new, RhythmDBQueryModel *model)
 {
+	gboolean hidden = FALSE;
+
 	if (!model->priv->connected) {
 		return;
 	}
+
+	hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
 		GSequencePtr ptr;
 		GtkTreeIter iter;
 		GtkTreePath *path;
+
+		if (hidden != FALSE) {
+			rhythmdb_query_model_remove_entry (model, entry);
+			return;
+		}
 
 		if (model->priv->query &&
 		    !rhythmdb_evaluate_query (db, model->priv->query, entry)) {
@@ -602,8 +611,11 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 		gtk_tree_path_free (path);
 	} else {
-		/* the changed entry may now satisfy the query so we test it */
-		rhythmdb_query_model_entry_added_cb (db, entry, model);
+		if (hidden == FALSE) {
+			/* the changed entry may now satisfy the query 
+			 * so we test it */
+			rhythmdb_query_model_entry_added_cb (db, entry, model);
+		}
 	}
 }
 

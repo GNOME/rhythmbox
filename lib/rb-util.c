@@ -22,6 +22,7 @@
 #include "rb-util.h"
 #include <gtk/gtk.h>
 #include <string.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 gboolean
 rb_true_function (gpointer dummy)
@@ -269,3 +270,83 @@ rb_gtk_action_popup_menu (GtkUIManager *uimanager, const char *path)
 	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL, 3, 
 			gtk_get_current_event_time ());
 }
+
+static GList *
+get_mount_points (void)
+{
+	GnomeVFSVolumeMonitor *monitor;
+	GList *volumes;
+	GList *it;
+	GList *mount_points = NULL;
+
+	monitor = gnome_vfs_get_volume_monitor ();
+	/* FIXME: should also get the list of connected drivers (network
+	 * shares I assume)
+	 */
+	volumes = gnome_vfs_volume_monitor_get_mounted_volumes (monitor);
+
+	for (it = volumes; it != NULL; it = it->next) {
+		gchar *uri;
+		GnomeVFSVolume *volume;
+
+		volume = GNOME_VFS_VOLUME (it->data);
+		uri = gnome_vfs_volume_get_activation_uri (volume);
+		g_assert (uri != NULL);
+		mount_points = g_list_prepend (mount_points, uri);
+	}
+
+	g_list_foreach (volumes, (GFunc)gnome_vfs_volume_ref, NULL);
+	g_list_free (volumes);
+
+	return mount_points;
+}
+
+
+gchar *
+rb_uri_get_mount_point (const char *uri)
+{
+	GList *mount_points = get_mount_points ();
+	GList *it;
+	gchar *mount_point = NULL;
+
+	for (it = mount_points; it != NULL; it = it->next) {
+		if (g_str_has_prefix (uri, it->data)) {
+			if ((mount_point == NULL) || (strlen (mount_point) < strlen (it->data))) {
+				g_free (mount_point);
+				mount_point = g_strdup (it->data);
+			}
+		}
+	}
+	g_list_foreach (mount_points, (GFunc)g_free, NULL);
+	g_list_free (mount_points);
+
+	return mount_point;
+}
+
+gboolean
+rb_uri_is_mounted (const char *uri)
+{
+	GList *mount_points = get_mount_points ();
+	GList *it;
+	gboolean found = FALSE;
+
+	if ((uri == NULL) || (*uri == '\0')) {
+		return TRUE;
+	}
+
+	for (it = mount_points; it != NULL; it = it->next) {
+		if (strcmp (it->data, uri) == 0) {
+			found = TRUE;
+			break;
+		}
+	}
+	g_list_foreach (mount_points, (GFunc)g_free, NULL);
+	g_list_free (mount_points);
+
+/*	if (found == FALSE) {
+		g_print ("%s not mounted\n", uri);
+		}*/
+
+	return found;
+}
+

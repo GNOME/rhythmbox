@@ -171,6 +171,18 @@ static gpointer add_thread_main (struct RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (struct RhythmDBQueryThreadData *data);
 static void queue_stat_uri (const char *uri, RhythmDB *db);
+static void rhythmdb_entry_set_mount_point (RhythmDB *db, 
+ 					    RhythmDBEntry *entry, 
+ 					    const gchar *realuri);
+static void rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry, 
+ 					   gboolean visibility);
+ 
+static void rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
+ 					GnomeVFSVolume *volume, 
+ 					gpointer data);
+static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
+ 					  GnomeVFSVolume *volume, 
+ 					  gpointer data);
 
 
 
@@ -444,7 +456,7 @@ rhythmdb_init (RhythmDB *db)
 {
 	guint i;
 	GEnumClass *prop_class;
-	
+
 	db->priv = g_new0 (RhythmDBPrivate, 1);
 
 	db->priv->action_queue = g_async_queue_new ();
@@ -496,7 +508,17 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->dirty = FALSE;
 
 	db->priv->empty_string = rb_refstring_new ("");
-	db->priv->octet_stream_str = rb_refstring_new ("application/octet-stream");
+	db->priv->octet_stream_str = rb_refstring_new ("application/octet-stream");      
+
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
+			  "volume-mounted", 
+			  G_CALLBACK (rhythmdb_volume_mounted_cb), 
+			  db);
+
+	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
+			  "volume-unmounted", 
+			  G_CALLBACK (rhythmdb_volume_unmounted_cb), 
+			  db);
 }
 
 static void
@@ -1087,21 +1109,39 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 	if (entry) {
 		time_t mtime = (time_t) entry->mtime;
 		if (event->error) {
-			rb_debug ("error accessing %s: %s", event->real_uri,
-				  event->error->message);
-			rhythmdb_entry_delete (db, entry);
-			return;
-		} else if (mtime == event->vfsinfo->mtime) {
-			rb_debug ("not modified: %s", event->real_uri);
-			return;
-		}
-	}
+			const char *mount_point;
 
-	action = g_new0 (struct RhythmDBAction, 1);
-	action->type = RHYTHMDB_ACTION_LOAD;
-	action->uri = g_strdup (event->real_uri);
-	rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", action->uri);
-	g_async_queue_push (db->priv->action_queue, action);
+			/* First check if the mount point the song was on 
+			 * still exists */
+			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+			if (rb_uri_is_mounted (mount_point) == FALSE) {
+				rhythmdb_entry_set_visibility (db, entry, FALSE);
+				
+			} else {
+				rb_debug ("error accessing %s: %s", event->real_uri,
+					  event->error->message);
+				rhythmdb_entry_delete (db, entry);
+			}
+		} else if (mtime == event->vfsinfo->mtime) {
+			const char *mount_point;
+			rb_debug ("not modified: %s", event->real_uri);
+			/* Update mount point if necessary (main reason is 
+			 * that we want to set the mount point in legacy
+			 * rhythmdb that doesn't have it already
+			 */
+			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
+			if (mount_point == NULL) {
+				rhythmdb_entry_set_mount_point (db, entry,
+								event->real_uri);
+			}
+		}
+	} else {
+		action = g_new0 (struct RhythmDBAction, 1);
+		action->type = RHYTHMDB_ACTION_LOAD;
+		action->uri = g_strdup (event->real_uri);
+		rb_debug ("queuing a RHYTHMDB_ACTION_LOAD: %s", action->uri);
+		g_async_queue_push (db->priv->action_queue, action);
+	}
 }
 
 static gboolean
@@ -1156,6 +1196,9 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	g_value_set_boolean (&value, TRUE);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_AUTO_RATE, &value);
 	g_value_unset (&value);
+
+	/* Remember the mount point of the volume the song is on */
+	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
 
 	if (event->vfsinfo->flags & GNOME_VFS_FILE_FLAGS_LOCAL)
 		rhythmdb_monitor_uri_path (db, entry->location, NULL /* FIXME */);
@@ -1739,6 +1782,10 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		g_free (entry->location);
 		entry->location = g_value_dup_string (value);
 		break;
+	case RHYTHMDB_PROP_MOUNTPOINT:
+		g_free (entry->mountpoint);
+		entry->mountpoint = g_value_dup_string (value);
+		break;
 	case RHYTHMDB_PROP_FILE_SIZE:
 		entry->file_size = g_value_get_uint64 (value);
 		break;
@@ -1761,6 +1808,9 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		break;
 	case RHYTHMDB_PROP_LAST_PLAYED:
 		entry->last_played = g_value_get_ulong (value);
+		break;
+	case RHYTHMDB_PROP_HIDDEN:
+		entry->hidden = g_value_get_boolean (value);
 		break;
 	case RHYTHMDB_NUM_PROPERTIES:
 		g_assert_not_reached ();
@@ -2389,6 +2439,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (gulong) [duration]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray) [location]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_MOUNTPOINT, "Mount point it's located in (gchararray) [mountpoint]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong) [mtime]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble) [rating]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_AUTO_RATE, "Whether to auto-rate song (gboolean) [auto-rate]"),
@@ -2410,6 +2461,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST_FOLDED, "Artist folded (gchararray) [artist-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM_FOLDED, "Album folded (gchararray) [album-folded]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray) [last-played-str]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_HIDDEN, "Visibility (gboolean) [visibility]"),
 			{ 0, 0, 0 }
 		};
 		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES);
@@ -2506,7 +2558,8 @@ rhythmdb_entry_register_type (void)
 	return last_entry_type++;		
 }
 
-RhythmDBEntryType rhythmdb_entry_song_get_type (void) 
+RhythmDBEntryType 
+rhythmdb_entry_song_get_type (void) 
 {
 	static RhythmDBEntryType song_type = -1;
        
@@ -2526,4 +2579,112 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 	}
 
 	return iradio_type;
+}
+
+struct MountCtxt {
+	RhythmDB *db;
+	char *mount_point;
+	gboolean mounted;
+};
+
+static void 
+entry_volume_mounted_or_unmounted (RhythmDBEntry *entry, 
+				   struct MountCtxt *ctxt)
+{
+	const char *mount_point;
+	
+	if (entry->type != RHYTHMDB_ENTRY_TYPE_SONG) {
+		return;
+	}
+	
+	mount_point = rhythmdb_entry_get_string (entry, 
+						 RHYTHMDB_PROP_MOUNTPOINT);
+	if (mount_point == NULL) {
+		return;
+	}
+	if (!strcmp (mount_point, ctxt->mount_point)) {
+		rhythmdb_entry_set_visibility (ctxt->db, entry, ctxt->mounted);
+	}
+}
+
+
+static void 
+rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
+			    GnomeVFSVolume *volume, 
+			    gpointer data)
+{
+	struct MountCtxt ctxt;
+
+	ctxt.db = RHYTHMDB (data);
+	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
+	ctxt.mounted = TRUE;
+	rhythmdb_entry_foreach (RHYTHMDB (data), 
+				(GFunc)entry_volume_mounted_or_unmounted, 
+				&ctxt);
+	g_free (ctxt.mount_point);
+}
+
+
+static void 
+rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
+			      GnomeVFSVolume *volume, 
+			      gpointer data)
+{
+	struct MountCtxt ctxt;
+
+	ctxt.db = RHYTHMDB (data);
+	ctxt.mount_point = gnome_vfs_volume_get_activation_uri (volume);
+	ctxt.mounted = FALSE;
+	rhythmdb_entry_foreach (RHYTHMDB (data), 
+				(GFunc)entry_volume_mounted_or_unmounted, 
+				&ctxt);
+	g_free (ctxt.mount_point);
+}
+
+
+static void
+rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry, 
+				const gchar *realuri)
+{
+	gchar *mount_point;
+	GValue value = {0, };
+
+	mount_point = rb_uri_get_mount_point (realuri);
+	if (mount_point != NULL) {
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string_take_ownership (&value, mount_point);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MOUNTPOINT, 
+				    &value);
+		g_value_unset (&value);
+	}
+}
+
+static void
+rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry, 
+			       gboolean visible)
+{
+	GValue old_val = {0, };
+	gboolean old_visible;
+
+	g_assert (entry->type == RHYTHMDB_ENTRY_TYPE_SONG);
+
+	g_value_init (&old_val, G_TYPE_BOOLEAN);
+	
+	rhythmdb_entry_get (entry, RHYTHMDB_PROP_HIDDEN, &old_val);
+	old_visible = !g_value_get_boolean (&old_val);
+	
+	if ((old_visible && !visible) || (!old_visible && visible)) {
+		GValue new_val = {0, };
+		
+		g_value_init (&new_val, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&new_val, !visible);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_HIDDEN, &new_val);
+		
+		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 
+			       0, entry, RHYTHMDB_PROP_HIDDEN, 
+			       &old_val, &new_val);
+		
+		g_value_unset (&new_val);
+	}
+	g_value_unset (&old_val);
 }
