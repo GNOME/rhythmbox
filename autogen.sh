@@ -32,7 +32,7 @@ have_intltoolize=false
 if intltoolize --version < /dev/null > /dev/null 2>&1 ; then
 	intltool_version=`intltoolize --version | sed 's/^[^0-9]*\([0-9.][0-9.]*\).*/\1/'`
 	case $intltool_version in
-	    0.25*|0.26*)
+	    0.2[5-9]*)
 		have_intltoolize=true
 		;;
 	esac
