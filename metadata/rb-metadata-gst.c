@@ -152,6 +152,8 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_TRACK_NUMBER))
 		return RB_METADATA_FIELD_TRACK_NUMBER;
+	else if (!strcmp (tag, GST_TAG_ALBUM_VOLUME_NUMBER))
+		return RB_METADATA_FIELD_DISC_NUMBER;
 	else if (!strcmp (tag, GST_TAG_DESCRIPTION))
 		return RB_METADATA_FIELD_DESCRIPTION;
 	else if (!strcmp (tag, GST_TAG_VERSION))
@@ -205,6 +207,8 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 		return GST_TAG_COMMENT;
 	case RB_METADATA_FIELD_TRACK_NUMBER:
 		return GST_TAG_TRACK_NUMBER;
+	case RB_METADATA_FIELD_DISC_NUMBER:
+		return GST_TAG_ALBUM_VOLUME_NUMBER;
 	case RB_METADATA_FIELD_DESCRIPTION:
 		return GST_TAG_DESCRIPTION;
 	case RB_METADATA_FIELD_VERSION:

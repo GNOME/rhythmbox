@@ -48,6 +48,10 @@ rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field)
 				     GINT_TO_POINTER (G_TYPE_INT));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_TRACK_NUMBER),
 				     GINT_TO_POINTER (G_TYPE_INT));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DISC_NUMBER),
+				     GINT_TO_POINTER (G_TYPE_INT));
+		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_MAX_DISC_NUMBER),
+				     GINT_TO_POINTER (G_TYPE_INT));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_DESCRIPTION),
 				     GINT_TO_POINTER (G_TYPE_STRING));
 		g_hash_table_insert (map, GINT_TO_POINTER (RB_METADATA_FIELD_VERSION),

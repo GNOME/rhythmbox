@@ -120,7 +120,7 @@ load_val (RBMetaData *md,
 
 	if (monkey_media_stream_info_get_value (info,
 				                mmfield,
-					        0, val))
+					        0, val))	  
 		g_hash_table_insert (md->priv->metadata,
 				     GINT_TO_POINTER (mdfield),
 				     val);
@@ -153,6 +153,9 @@ rb_metadata_load (RBMetaData *md,
 	load_val (md, info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
 		  RB_METADATA_FIELD_TRACK_NUMBER);
 	
+	load_val (md, info, MONKEY_MEDIA_STREAM_INFO_FIELD_DISC_NUMBER,
+		  RB_METADATA_FIELD_DISC_NUMBER);
+
 	/* duration */
 	load_val (md, info,
 		  MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,

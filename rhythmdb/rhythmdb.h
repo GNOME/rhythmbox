@@ -60,17 +60,16 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_LESS,
 } RhythmDBQueryType;
 
-#define RHYTHMDB_NUM_PROPERTIES 28
-#define RHYTHMDB_NUM_SAVED_PROPERTIES 19
-
+/* If you modify this enum, don't forget to modify rhythmdb_prop_get_type */
 typedef enum
 {
-	RHYTHMDB_PROP_TYPE,
+	RHYTHMDB_PROP_TYPE = 0,
 	RHYTHMDB_PROP_TITLE,
 	RHYTHMDB_PROP_GENRE,
 	RHYTHMDB_PROP_ARTIST,
 	RHYTHMDB_PROP_ALBUM,
 	RHYTHMDB_PROP_TRACK_NUMBER,
+	RHYTHMDB_PROP_DISC_NUMBER,
 	RHYTHMDB_PROP_DURATION,
 	RHYTHMDB_PROP_FILE_SIZE,
 	RHYTHMDB_PROP_LOCATION,
@@ -84,11 +83,17 @@ typedef enum
 	RHYTHMDB_PROP_ALBUM_GAIN,
 	RHYTHMDB_PROP_ALBUM_PEAK,
 	RHYTHMDB_PROP_MIMETYPE,
+	/* This should always be the last element of this enum */
+	RHYTHMDB_NUM_SAVED_PROPERTIES
 } RhythmDBPropType;
 
+
+/* If you modify this enum, don't forget to modify 
+ * rhythmdb_unsaved_prop_get_type 
+ */
 typedef enum
 {
-	RHYTHMDB_PROP_TITLE_SORT_KEY = 19,
+	RHYTHMDB_PROP_TITLE_SORT_KEY = RHYTHMDB_NUM_SAVED_PROPERTIES,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
 	RHYTHMDB_PROP_ARTIST_SORT_KEY,
 	RHYTHMDB_PROP_ALBUM_SORT_KEY,
@@ -97,6 +102,8 @@ typedef enum
 	RHYTHMDB_PROP_ARTIST_FOLDED,
 	RHYTHMDB_PROP_ALBUM_FOLDED,
 	RHYTHMDB_PROP_LAST_PLAYED_STR,
+	/* This should always be the last element of this enum */
+	RHYTHMDB_NUM_PROPERTIES
 } RhythmDBUnsavedPropType;
 
 GType rhythmdb_query_get_type (void);

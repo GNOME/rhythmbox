@@ -39,6 +39,8 @@ typedef enum
 	RB_METADATA_FIELD_COMMENT,                 /* string */
 	RB_METADATA_FIELD_TRACK_NUMBER,            /* int */
 	RB_METADATA_FIELD_MAX_TRACK_NUMBER,        /* int */
+	RB_METADATA_FIELD_DISC_NUMBER,             /* int */
+	RB_METADATA_FIELD_MAX_DISC_NUMBER,         /* int */
 	RB_METADATA_FIELD_DESCRIPTION,             /* string */
 	RB_METADATA_FIELD_VERSION,                 /* string */
 	RB_METADATA_FIELD_ISRC,                    /* string */

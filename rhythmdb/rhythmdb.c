@@ -295,6 +295,9 @@ prop_from_metadata_field (RBMetaDataField field, RhythmDBPropType *prop)
 	case RB_METADATA_FIELD_TRACK_NUMBER:
 		*prop = RHYTHMDB_PROP_TRACK_NUMBER; 
 		return TRUE;		
+	case RB_METADATA_FIELD_DISC_NUMBER:
+		*prop = RHYTHMDB_PROP_DISC_NUMBER; 
+		return TRUE;		
 	case RB_METADATA_FIELD_DURATION:
 		*prop = RHYTHMDB_PROP_DURATION; 
 		return TRUE;		
@@ -313,25 +316,28 @@ metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
 	switch (prop) {
 	case RHYTHMDB_PROP_TITLE:
 		*field = RB_METADATA_FIELD_TITLE;
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_ARTIST:
 		*field = RB_METADATA_FIELD_ARTIST; 
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_ALBUM:
 		*field = RB_METADATA_FIELD_ALBUM; 
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_GENRE:
 		*field = RB_METADATA_FIELD_GENRE; 
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		*field = RB_METADATA_FIELD_TRACK_NUMBER; 
-		return TRUE;		
+		return TRUE;
+	case RHYTHMDB_PROP_DISC_NUMBER:
+		*field = RB_METADATA_FIELD_DISC_NUMBER; 
+		return TRUE;
 	case RHYTHMDB_PROP_DURATION:
 		*field = RB_METADATA_FIELD_DURATION; 
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_BITRATE:
 		*field = RB_METADATA_FIELD_BITRATE; 
-		return TRUE;		
+		return TRUE;
 	case RHYTHMDB_PROP_TRACK_GAIN:
 		*field = RB_METADATA_FIELD_TRACK_GAIN;
 		return TRUE;
@@ -741,6 +747,17 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 		g_value_set_int (&val, -1);
 	}
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+	g_value_unset (&val);
+
+	/* disc number */
+	if (!rb_metadata_get (db->priv->metadata,
+			      RB_METADATA_FIELD_DISC_NUMBER,
+			      &val)) {
+		g_value_init (&val, G_TYPE_INT);
+		g_value_set_int (&val, -1);
+	}
+
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DISC_NUMBER, &val);
 	g_value_unset (&val);
 
 	/* duration */
@@ -1521,6 +1538,8 @@ rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
 		return "album-sort-key";
 	case RHYTHMDB_PROP_TRACK_NUMBER:
 		return "track-number";
+	case RHYTHMDB_PROP_DISC_NUMBER:
+		return "disc-number";
 	case RHYTHMDB_PROP_DURATION:
 		return "duration";
 	case RHYTHMDB_PROP_FILE_SIZE:
@@ -1943,6 +1962,8 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist"),
 			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number"),
+			ENUM_ENTRY (RHYTHMDB_PROP_DISC_NUMBER, "Disc Number"),
+
 			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray)"),
@@ -1958,7 +1979,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_MIMETYPE, "Mime Type (gchararray)"),
 			{ 0, 0, 0 }
 		};
-
+		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_SAVED_PROPERTIES);
 		etype = g_enum_register_static ("RhythmDBPropType", values);
 	}
 
@@ -1988,7 +2009,7 @@ rhythmdb_unsaved_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED_STR, "Last Played (gchararray)"),
 			{ 0, 0, 0 }
 		};
-
+		g_assert ((sizeof (values) / sizeof (values[0]) - 1) == RHYTHMDB_NUM_PROPERTIES - RHYTHMDB_NUM_SAVED_PROPERTIES);
 		etype = g_enum_register_static ("RhythmDBUnsavedPropType", values);
 	}
 

@@ -73,6 +73,11 @@ struct MP3StreamInfoImplPrivate
 	struct MP3BitrateInfo *info_num;
 };
 
+
+/* libid3tag doesn't define those, and we need them */
+#define MM_ID3_FRAME_DISC "TPOS"
+#define MM_ID3_FRAME_LEN  "TLEN"
+
 static GObjectClass *parent_class = NULL;
 
 GType
@@ -189,7 +194,7 @@ MP3_stream_info_impl_get_length_from_tag (MP3StreamInfoImpl *impl)
 	/* The following is based on information from the
 	 * ID3 tag version 2.4.0 Native Frames informal standard.
 	 */
-	frame = id3_tag_findframe(impl->priv->tag, "TLEN", 0);
+	frame = id3_tag_findframe(impl->priv->tag, MM_ID3_FRAME_LEN, 0);
 
 	if (frame == NULL)
 		return;
@@ -249,6 +254,62 @@ MP3_stream_info_impl_get_bitrate_info (MP3StreamInfoImpl *impl)
 	return TRUE;
 }
 
+/* This tries to read and parse a tag whose value is "xx/yy" and returns
+ * the xx part as an int
+ */
+static int
+get_current_number_from_tag (MP3StreamInfoImpl *impl, const gchar *tag) 
+{       
+	char **parts;
+	int num = -1;
+	gchar *tmp;
+
+	tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, tag);
+	if (tmp == NULL)
+	{
+		g_free (tmp);
+		return -1;
+	}
+	
+	parts = g_strsplit (tmp, "/", -1);
+	
+	if (parts[0] != NULL)
+		num = atoi (parts[0]);
+	
+	g_strfreev (parts);
+	g_free (tmp);
+
+	return num;
+}
+
+/* This tries to read and parse a tag whose value is "xx/yy" and returns
+ * the yy part as an int
+ */
+static int
+get_total_number_from_tag (MP3StreamInfoImpl *impl, const gchar *tag) 
+{       
+	char **parts;
+	int num = -1;
+	gchar *tmp;
+	
+	tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, tag);
+	if (tmp == NULL)
+	{
+		g_free (tmp);
+		return -1;
+	}
+	
+	parts = g_strsplit (tmp, "/", -1);
+
+	if (parts[0] != NULL && parts[1] != NULL)
+		num = atoi (parts[1]);
+	
+	g_strfreev (parts);
+	g_free (tmp);
+
+	return num;
+}
+
 static int
 MP3_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 				   MonkeyMediaStreamInfoField field)
@@ -295,47 +356,31 @@ MP3_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 		g_free (tmp);
 		return ret;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER:
-		{
-			char **parts;
-			
-			tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TRACK);
-			if (tmp == NULL)
-			{
-				g_free (tmp);
-				return 0;
-			}
-			
-			parts = g_strsplit (tmp, "/", -1);
-
-			if (parts[0] != NULL)
-				ret = TRUE;
-
-			g_strfreev (parts);
-			g_free (tmp);
-
-			return ret;
+	        {	
+			int num;
+			num = get_current_number_from_tag (impl, ID3_FRAME_TRACK);
+			return (num == -1?0:1);
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER:
 		{
-			char **parts;
-			
-			tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TRACK);
-			if (tmp == NULL)
-			{
-				g_free (tmp);
-				return 0;
-			}
-
-			parts = g_strsplit (tmp, "/", -1);
-
-			if (parts[0] != NULL && parts[1] != NULL)
-				ret = TRUE;
-
-			g_strfreev (parts);
-			g_free (tmp);
-
-			return ret;
+			int num;
+			num = get_total_number_from_tag (impl, ID3_FRAME_TRACK);
+			return (num == -1?0:1);
+		}
+		break;
+	case MONKEY_MEDIA_STREAM_INFO_FIELD_DISC_NUMBER:
+	        {	
+			int num;
+			num = get_current_number_from_tag (impl, MM_ID3_FRAME_DISC);
+			return (num == -1?0:1);
+		}
+		break;
+	case MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_DISC_NUMBER:
+		{
+			int num;
+			num = get_total_number_from_tag (impl, MM_ID3_FRAME_DISC);
+			return (num == -1?0:1);
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
@@ -440,57 +485,38 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER:
-		{
-			char **parts;
-			int num = -1;
-			
+	        {	
+			int num;
+			num = get_current_number_from_tag (impl, ID3_FRAME_TRACK);
 			g_value_init (value, G_TYPE_INT);
-
-			tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TRACK);
-			if (tmp == NULL)
-			{
-				g_free (tmp);
-				g_value_set_int (value, -1);
-				break;
-			}
-
-			parts = g_strsplit (tmp, "/", -1);
-
-			if (parts[0] != NULL)
-				num = atoi (parts[0]);
-
-			g_value_set_int (value, num);
-
-			g_strfreev (parts);
-			g_free (tmp);
+			g_value_set_int (value, num);			
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER:
 		{
-			char **parts;
-			int num = -1;
-			
+			int num;
+			num = get_total_number_from_tag (impl, ID3_FRAME_TRACK);
 			g_value_init (value, G_TYPE_INT);
-
-			tmp = MP3_stream_info_impl_id3_tag_get_utf8 (impl->priv->tag, ID3_FRAME_TRACK);
-			if (tmp == NULL)
-			{
-				g_free (tmp);
-				g_value_set_int (value, -1);
-				break;
-			}
-
-			parts = g_strsplit (tmp, "/", -1);
-
-			if (parts[0] != NULL && parts[1] != NULL)
-				num = atoi (parts[1]);
-
-			g_value_set_int (value, num);
-
-			g_strfreev (parts);
-			g_free (tmp);
+			g_value_set_int (value, num);			
 		}
 		break;
+	case MONKEY_MEDIA_STREAM_INFO_FIELD_DISC_NUMBER:
+	        {	
+			int num;
+			num = get_current_number_from_tag (impl, MM_ID3_FRAME_DISC);
+			g_value_init (value, G_TYPE_INT);
+			g_value_set_int (value, num);
+		}
+		break;
+	case MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_DISC_NUMBER:
+		{
+			int num;
+			num = get_total_number_from_tag (impl, MM_ID3_FRAME_DISC);
+			g_value_init (value, G_TYPE_INT);
+			g_value_set_int (value, num);
+		}
+		break;
+
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DESCRIPTION:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_VERSION:

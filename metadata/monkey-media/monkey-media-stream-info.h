@@ -50,6 +50,8 @@ typedef enum
 	MONKEY_MEDIA_STREAM_INFO_FIELD_CONTACT,                 /* string */
 	MONKEY_MEDIA_STREAM_INFO_FIELD_LICENSE,                 /* string */
 	MONKEY_MEDIA_STREAM_INFO_FIELD_PERFORMER,               /* string */
+	MONKEY_MEDIA_STREAM_INFO_FIELD_DISC_NUMBER,             /* int */
+	MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_DISC_NUMBER,         /* int */
 
 	/* generic stream information */
 	MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,               /* long */
