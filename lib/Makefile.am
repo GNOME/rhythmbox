@@ -38,8 +38,8 @@ librb_la_SOURCES =					\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
-	eggtreemultidnd.c				\
-	eggtreemultidnd.h				\
+	rb-tree-dnd.c					\
+	rb-tree-dnd.h					\
 	$(EGGFILES)					\
 	rb-preferences.h	
 
@@ -54,8 +54,6 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 EGGFILES=						\
-	eggtreemultidnd.h				\
-	eggtreemultidnd.c				\
 	eggtrayicon.h					\
 	eggtrayicon.c
 EGGDIR=$(srcdir)/../../libegg/libegg/tray/

@@ -31,13 +31,13 @@
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
-#include "eggtreemultidnd.h"
+#include "rb-tree-dnd.h"
 
 static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface);
-static void rhythmdb_query_model_multi_drag_source_init (EggTreeMultiDragSourceIface *iface);
-static void rhythmdb_query_model_drag_dest_init (GtkTreeDragDestIface *iface);
+static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
+static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
@@ -61,17 +61,17 @@ static gboolean rhythmdb_query_model_sortable (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_has_pending_changes (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
-static gboolean rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource, 
-							  GList *paths, 
+static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
+							  GList *paths,
 							  GtkSelectionData *selection_data);
-static gboolean rhythmdb_query_model_multi_drag_data_delete (EggTreeMultiDragSource *dragsource,
+static gboolean rhythmdb_query_model_drag_data_delete (RbTreeDragSource *dragsource,
 							     GList *paths);
-static gboolean rhythmdb_query_model_multi_row_draggable (EggTreeMultiDragSource *dragsource,
+static gboolean rhythmdb_query_model_row_draggable (RbTreeDragSource *dragsource,
 							  GList *paths);
-static gboolean rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
+static gboolean rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 							 GtkTreePath *dest,
 							 GtkSelectionData  *selection_data);
-static gboolean rhythmdb_query_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+static gboolean rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 							GtkTreePath *dest,
 							GtkSelectionData  *selection_data);
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
@@ -135,9 +135,11 @@ struct RhythmDBQueryModelPrivate
 
 	GSequence *entries;
 	GHashTable *reverse_map;
-	
+
 	/* row_inserted/row_changed/row_deleted */
 	GAsyncQueue *pending_updates;
+
+	gboolean reorder_drag_and_drop;
 };
 
 enum
@@ -194,8 +196,8 @@ rhythmdb_query_model_get_type (void)
 			NULL
 		};
 
-		static const GInterfaceInfo multi_drag_source_info = {
-			(GInterfaceInitFunc) rhythmdb_query_model_multi_drag_source_init,
+		static const GInterfaceInfo drag_source_info = {
+			(GInterfaceInitFunc) rhythmdb_query_model_drag_source_init,
 			NULL,
 			NULL
 		};
@@ -219,11 +221,11 @@ rhythmdb_query_model_get_type (void)
 					     &rhythmdb_model_info);
 
 		g_type_add_interface_static (rhythmdb_query_model_type,
-					     EGG_TYPE_TREE_MULTI_DRAG_SOURCE,
-					     &multi_drag_source_info);
+					     RB_TYPE_TREE_DRAG_SOURCE,
+					     &drag_source_info);
 
 		g_type_add_interface_static (rhythmdb_query_model_type,
-					     GTK_TYPE_TREE_DRAG_DEST,
+					     RB_TYPE_TREE_DRAG_DEST,
 					     &drag_dest_info);
 	}
 
@@ -322,18 +324,19 @@ rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 }
 
 static void
-rhythmdb_query_model_multi_drag_source_init (EggTreeMultiDragSourceIface *iface)
+rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface)
 {
-	iface->row_draggable = rhythmdb_query_model_multi_row_draggable;
-	iface->drag_data_delete = rhythmdb_query_model_multi_drag_data_delete;
-	iface->drag_data_get = rhythmdb_query_model_multi_drag_data_get;
+	iface->row_draggable = rhythmdb_query_model_row_draggable;
+	iface->drag_data_delete = rhythmdb_query_model_drag_data_delete;
+	iface->drag_data_get = rhythmdb_query_model_drag_data_get;
 }
 
 static void
-rhythmdb_query_model_drag_dest_init (GtkTreeDragDestIface *iface)
+rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
 	iface->drag_data_received = rhythmdb_query_model_drag_data_received;
 	iface->row_drop_possible = rhythmdb_query_model_row_drop_possible;
+	iface->row_drop_position = NULL;
 }
 
 static void
@@ -385,7 +388,7 @@ rhythmdb_query_model_set_property (GObject *object,
 	}
 }
 
-static void 
+static void
 rhythmdb_query_model_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
@@ -427,6 +430,8 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->reverse_map = g_hash_table_new (g_direct_hash, g_direct_equal);
 
 	model->priv->pending_updates = g_async_queue_new ();
+
+	model->priv->reorder_drag_and_drop = FALSE;
 }
 
 static void
@@ -576,7 +581,7 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 	if (model->priv->max_size > 0
 	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
 		return;
-	
+
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED;
 	update->entry = entry;
@@ -811,22 +816,48 @@ rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 }
 
 static gboolean
-rhythmdb_query_model_multi_row_draggable (EggTreeMultiDragSource *dragsource,
+rhythmdb_query_model_row_draggable (RbTreeDragSource *dragsource,
 					  GList *paths)
 {
 	return TRUE;
 }
 
 static gboolean
-rhythmdb_query_model_multi_drag_data_delete (EggTreeMultiDragSource *dragsource, GList *paths)
+rhythmdb_query_model_drag_data_delete (RbTreeDragSource *dragsource, GList *paths)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
-	return model->priv->sort_func == NULL;
+	GtkTreeModel *treemodel = GTK_TREE_MODEL (model);
+
+	/* we don't delete if it is a reorder drag and drop because the deletion already
+	   occured in rhythmdb_query_model_drag_data_received */
+	if (model->priv->sort_func == NULL && !model->priv->reorder_drag_and_drop) {
+
+		RhythmDBEntry *entry;
+		GtkTreeIter iter;
+		GtkTreePath *path;
+
+		for (; paths; paths = paths->next) {
+
+			path = gtk_tree_row_reference_get_path (paths->data);
+
+			if (path) {
+				if (rhythmdb_query_model_get_iter (treemodel, &iter, path)) {
+					entry = g_sequence_ptr_get_data (iter.user_data);
+					rhythmdb_query_model_remove_entry (model, entry);
+				}
+				gtk_tree_path_free (path);
+			}
+		}
+	}
+
+	model->priv->reorder_drag_and_drop = FALSE;
+	return TRUE;
+
 }
 
 static gboolean
-rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource, 
-					  GList *paths, 
+rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
+					  GList *paths,
 					  GtkSelectionData *selection_data)
 {
 	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (dragsource);
@@ -848,7 +879,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 			const char *location;
 
 			path = gtk_tree_row_reference_get_path (tem->data);
-	  
+
 			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
 
 			entry = g_sequence_ptr_get_data (iter.user_data);
@@ -878,7 +909,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 }
 
 static gboolean
-rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
+rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 					 GtkTreePath *dest,
 					 GtkSelectionData  *selection_data)
 {
@@ -899,8 +930,11 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 
 		strv = g_strsplit (selection_data->data, "\r\n", -1);
 
-		g_assert (rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest));
-		ptr = iter.user_data;
+		if (rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
+			ptr = iter.user_data;
+		else
+			ptr = g_sequence_get_end_ptr (model->priv->entries);
+
 
 		for (; strv[i]; i++) {
 			GSequencePtr tem_ptr;
@@ -920,8 +954,11 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 									    entry);
 
 				/* the entry already exists it is either a reorder drag and drop
-				   or a drag and drop from another application */
+				   (or a drag and drop from another application), so we delete
+				   the existing one before adding it again. */
 				if (old_ptr) {
+
+					model->priv->reorder_drag_and_drop = TRUE;
 
 					/* trying to drag drop an entry on itself ! */
 					if (old_ptr == ptr)
@@ -937,6 +974,10 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 					gtk_tree_path_free (path);
 					g_sequence_remove (old_ptr);
 					g_hash_table_remove (model->priv->reverse_map, entry);
+
+				} else {
+
+					model->priv->reorder_drag_and_drop = FALSE;
 				}
 
 				g_sequence_insert (ptr, entry);
@@ -965,7 +1006,7 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 }
 
 static gboolean
-rhythmdb_query_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+rhythmdb_query_model_row_drop_possible (RbTreeDragDest *drag_dest,
 					GtkTreePath *dest,
 					GtkSelectionData  *selection_data)
 {

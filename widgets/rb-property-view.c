@@ -32,7 +32,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "eggtreemultidnd.h"
 #include "rb-property-view.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"

@@ -32,7 +32,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "eggtreemultidnd.h"
+#include "rb-tree-dnd.h"
 #include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
@@ -1351,7 +1351,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 {
 	RBEntryView *view;
 	RBEntryViewClass *klass;
-	GObjectClass *parent_class;  
+	GObjectClass *parent_class;
 	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (type));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
@@ -1381,20 +1381,20 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
-	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
-
-	if (view->priv->is_drag_source)
-		gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
-							GDK_BUTTON1_MASK,
-							rb_entry_view_drag_types,
-							G_N_ELEMENTS (rb_entry_view_drag_types),
-							GDK_ACTION_COPY);
-	if (view->priv->is_drag_dest)
-		gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (view->priv->treeview),
-						      rb_entry_view_drag_types,
-						      G_N_ELEMENTS (rb_entry_view_drag_types),
-						      GDK_ACTION_COPY);
 	
+	if (view->priv->is_drag_source)
+		rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (view->priv->treeview),
+						     GDK_BUTTON1_MASK,
+						     rb_entry_view_drag_types,
+						     G_N_ELEMENTS (rb_entry_view_drag_types),
+						     GDK_ACTION_COPY | GDK_ACTION_MOVE);
+	if (view->priv->is_drag_dest)
+		rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (view->priv->treeview),
+						   RB_TREE_DEST_CAN_DROP_BETWEEN,
+						   rb_entry_view_drag_types,
+						   G_N_ELEMENTS (rb_entry_view_drag_types),
+						   GDK_ACTION_COPY | GDK_ACTION_MOVE);
+
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	{
@@ -1908,11 +1908,9 @@ rb_entry_view_enable_drag_source (RBEntryView *view,
 {
 	g_return_if_fail (view != NULL);
 
-	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
-
-	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
-						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
-						targets, n_targets, GDK_ACTION_COPY);
+	rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (view->priv->treeview),
+					 GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
+					 targets, n_targets, GDK_ACTION_COPY);
 }
 
 static void
