@@ -1,5 +1,14 @@
 2002-08-21  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_init),
+	(rb_sidebar_button_button_press_event_cb),
+	(rb_sidebar_button_item_factory_translate_func),
+	(rb_sidebar_button_popup_open_cb):
+
+	Include an "Open" item on the top of the button context menu.
+
+2002-08-21  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/song-info.glade:
 	* lib/rb-dialog.c: (rb_ask_file_multiple), (rb_ask_file),
 	(rb_ask_string):

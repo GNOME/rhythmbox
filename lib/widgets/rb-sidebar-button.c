@@ -81,6 +81,9 @@ static void default_drag_data_received (GtkWidget *widget,
 			                GtkSelectionData *selection_data,
 			                guint info,
 		                        guint time);
+static void rb_sidebar_button_popup_open_cb (RBSidebarButton *button,
+				             guint action,
+				             GtkWidget *widget);
 
 struct RBSidebarButtonPrivate
 {
@@ -240,6 +243,8 @@ rb_sidebar_button_init (RBSidebarButton *button)
 
 	static GtkItemFactoryEntry popup_menu_items[] =
 	{
+		{ N_("/_Open"),      "",   rb_sidebar_button_popup_open_cb,   0, "<StockItem>", GTK_STOCK_OPEN   },
+		{ "/sep",            NULL, NULL,                              0, "<Separator>", NULL             },
 		{ N_("/_Rename..."), NULL, rb_sidebar_button_popup_rename_cb, 0, "<Item>",      NULL             },
 		{ N_("/_Delete"),    NULL, rb_sidebar_button_popup_delete_cb, 0, "<StockItem>", GTK_STOCK_DELETE }
 	};
@@ -479,12 +484,18 @@ rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
 					 GdkEventButton *event,
 					 RBSidebarButton *button)
 {
+	GtkWidget *w;
+	
 	if (event->button != 3)
 		return FALSE;
 
-	if (button->priv->is_static == TRUE)
-		return FALSE;
-
+	w = gtk_item_factory_get_widget (button->priv->popup_factory,
+				         N_("/Rename..."));
+	gtk_widget_set_sensitive (w, !button->priv->is_static);
+	w = gtk_item_factory_get_widget (button->priv->popup_factory,
+				         N_("/Delete"));
+	gtk_widget_set_sensitive (w, !button->priv->is_static);
+	
 	gtk_item_factory_popup (button->priv->popup_factory,
 				event->x_root,
 				event->y_root,
@@ -499,6 +510,14 @@ rb_sidebar_button_item_factory_translate_func (const char *path,
 					       gpointer unused)
 {
 	return (char *) _(path);
+}
+
+static void
+rb_sidebar_button_popup_open_cb (RBSidebarButton *button,
+				 guint action,
+				 GtkWidget *widget)
+{
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
 }
 
 static void
