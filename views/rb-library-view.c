@@ -64,9 +64,12 @@ static void rb_library_view_get_property (GObject *object,
 static void album_node_selected_cb (RBNodeView *view,
 			            RBNode *node,
 			            RBLibraryView *libview);
-static void artist_or_album_activated_cb (RBNodeView *view,
-					  RBNode *node,
-					  RBLibraryView *library_view);
+static void browser_view_node_activated_cb (RBNodeView *view,
+					    RBNode *node,
+					    RBLibraryView *library_view);
+static void genre_node_selected_cb (RBNodeView *view,
+			             RBNode *node,
+			             RBLibraryView *libview);
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
 			             RBLibraryView *libview);
@@ -151,11 +154,15 @@ static GtkWidget *rb_library_view_get_extra_widget (RBView *base_view);
 static void rb_library_view_search_cb (RBSearchEntry *search,
 			               const char *search_text,
 			               RBLibraryView *view);
+static void artists_filter (RBLibraryView *view,
+	                    RBNode *genre);
 static void albums_filter (RBLibraryView *view,
-	                   RBNode *parent);
+			   RBNode *genre,
+	                   RBNode *artist);
 static void songs_filter (RBLibraryView *view,
-	                  RBNode *album,
-	                  RBNode *artist);
+	                  RBNode *genre,
+	                  RBNode *artist,
+			  RBNode *album);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -172,6 +179,7 @@ struct RBLibraryViewPrivate
 	GtkWidget *browser;
 	GtkWidget *vbox;
 
+	RBNodeView *genres;
 	RBNodeView *albums;
 	RBNodeView *artists;
 	RBNodeView *songs;
@@ -193,10 +201,12 @@ struct RBLibraryViewPrivate
 	gboolean show_browser;
 	gboolean lock;
 
+	RBNodeFilter *artists_filter;
 	RBNodeFilter *songs_filter;
 	RBNodeFilter *albums_filter;
 
 	gboolean changing_artist;
+	gboolean changing_genre;
 };
 
 enum
@@ -373,9 +383,10 @@ rb_library_view_finalize (GObject *object)
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
+	g_object_unref (G_OBJECT (view->priv->artists_filter));
 	g_object_unref (G_OBJECT (view->priv->songs_filter));
 	g_object_unref (G_OBJECT (view->priv->albums_filter));
-
+	
 	g_object_unref (G_OBJECT (view->priv->search));
 
 	g_free (view->priv);
@@ -424,20 +435,39 @@ rb_library_view_set_property (GObject *object,
 			view->priv->browser = gtk_hbox_new (TRUE, 5);
 
 			/* Initialize the filters */
+			view->priv->artists_filter = rb_node_filter_new ();
 			view->priv->songs_filter = rb_node_filter_new ();
 			view->priv->albums_filter = rb_node_filter_new ();
+
+			/* set up genres treeview */
+			view->priv->genres = rb_node_view_new 
+				(rb_library_get_all_genres (view->priv->library),
+				 rb_file ("rb-node-view-genres.xml"),
+				 NULL);
+			g_signal_connect (G_OBJECT (view->priv->genres),
+					  "node_selected",
+					  G_CALLBACK (genre_node_selected_cb),
+					  view);
+			g_signal_connect (G_OBJECT (view->priv->genres),
+					  "node_activated",
+					  G_CALLBACK (browser_view_node_activated_cb),
+					  view);
+
+
+			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->genres));
+
 
 			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"),
-								NULL);
+								view->priv->artists_filter);
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_activated",
-					  G_CALLBACK (artist_or_album_activated_cb),
+					  G_CALLBACK (browser_view_node_activated_cb),
 					  view);
 
 
@@ -453,7 +483,7 @@ rb_library_view_set_property (GObject *object,
 					  view);
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_activated",
-					  G_CALLBACK (artist_or_album_activated_cb),
+					  G_CALLBACK (browser_view_node_activated_cb),
 					  view);
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
@@ -568,15 +598,55 @@ rb_library_view_new (BonoboUIContainer *container,
 	return view;
 }
 
+static RBNode *
+ensure_node_selection (RBNodeView *view,
+		       RBNode *all_node,
+		       gboolean *changing_flag)
+{
+	GList *selection = rb_node_view_get_selection (view);
+
+	if (selection == NULL)
+	{
+		*changing_flag = TRUE;
+		rb_node_view_select_node (view, all_node);
+		*changing_flag = FALSE;
+		selection = rb_node_view_get_selection (view);
+	}
+
+	return RB_NODE (selection->data);
+}
+
+
+static void
+genre_node_selected_cb (RBNodeView *view,
+			RBNode *node,
+			RBLibraryView *libview)
+{
+	if (libview->priv->changing_genre == TRUE)
+		return;
+
+	artists_filter (libview, node);
+	rb_node_view_select_node (libview->priv->artists,
+				  rb_library_get_all_albums (libview->priv->library));
+
+	rb_search_entry_clear (libview->priv->search);
+}
+
 static void
 artist_node_selected_cb (RBNodeView *view,
 			 RBNode *node,
 			 RBLibraryView *libview)
 {
+	RBNode *genre;
+
 	if (libview->priv->changing_artist == TRUE)
 		return;
 
-	albums_filter (libview, node);
+	genre = ensure_node_selection (libview->priv->genres,
+			               rb_library_get_all_artists (libview->priv->library),
+				       &libview->priv->changing_genre);
+
+	albums_filter (libview, genre, node);
 	rb_node_view_select_node (libview->priv->albums,
 				  rb_library_get_all_songs (libview->priv->library));
 
@@ -588,28 +658,28 @@ album_node_selected_cb (RBNodeView *view,
 			RBNode *node,
 			RBLibraryView *libview)
 {
-	GList *selection = rb_node_view_get_selection (libview->priv->artists);
+	RBNode *artist;
+	RBNode *genre;
 
-	if (selection == NULL)
-	{
-		libview->priv->changing_artist = TRUE;
-		rb_node_view_select_node (libview->priv->artists,
-					  rb_library_get_all_albums (libview->priv->library));
-		libview->priv->changing_artist = FALSE;
-		selection = rb_node_view_get_selection (libview->priv->artists);
-	}
+	genre = ensure_node_selection (libview->priv->genres,
+			               rb_library_get_all_artists (libview->priv->library),
+				       &libview->priv->changing_genre);
+	artist = ensure_node_selection (libview->priv->artists,
+			                rb_library_get_all_albums (libview->priv->library),
+				        &libview->priv->changing_artist);
 
 	rb_search_entry_clear (libview->priv->search);
 
 	songs_filter (libview,
-		      node,
-		      RB_NODE (selection->data));
+		      genre,
+		      artist,
+		      node);
 }
 
 static void 
-artist_or_album_activated_cb (RBNodeView *view,
-			      RBNode *node,
-			      RBLibraryView *library_view)
+browser_view_node_activated_cb (RBNodeView *view,
+			   	RBNode *node,
+			   	RBLibraryView *library_view)
 {
 	RBNode *first_node;
 
@@ -1269,15 +1339,16 @@ rb_library_view_search_cb (RBSearchEntry *search,
 	/* resets the filter */
 	if (search_text == NULL || strcmp (search_text, "") == 0)
 	{
-		rb_node_view_select_node (view->priv->artists,
-		 		          rb_library_get_all_albums (view->priv->library));
+		rb_node_view_select_node (view->priv->genres,
+		 		          rb_library_get_all_artists (view->priv->library));
 	}
 	else
 	{
+		rb_node_view_select_none (view->priv->genres);
 		rb_node_view_select_none (view->priv->artists);
 		rb_node_view_select_none (view->priv->albums);
 
-		albums_filter (view, rb_library_get_all_albums (view->priv->library));
+		artists_filter (view, rb_library_get_all_artists (view->priv->library));
 		
 		rb_node_filter_empty (view->priv->songs_filter);
 		rb_node_filter_add_expression (view->priv->songs_filter,
@@ -1308,42 +1379,76 @@ rb_library_view_search_cb (RBSearchEntry *search,
 }
 
 static void
+artists_filter (RBLibraryView *view,
+	        RBNode *genre)
+{
+	rb_node_filter_empty (view->priv->artists_filter);
+	rb_node_filter_add_expression (view->priv->artists_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_albums (view->priv->library)),
+				       0);
+	rb_node_filter_add_expression (view->priv->artists_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+								      genre),
+				       0);
+	rb_node_filter_done_changing (view->priv->artists_filter);
+}
+
+static void
 albums_filter (RBLibraryView *view,
-	       RBNode *parent)
+	       RBNode *genre,
+	       RBNode *artist)
 {
 	rb_node_filter_empty (view->priv->albums_filter);
 	rb_node_filter_add_expression (view->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
-								      rb_library_get_all_songs (view->priv->library)),
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      genre, rb_library_get_all_artists (view->priv->library)),
 				       0);
 	rb_node_filter_add_expression (view->priv->albums_filter,
-				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
-								      parent),
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,
+								      RB_NODE_SONG_PROP_REAL_GENRE, genre),
 				       0);
+	rb_node_filter_add_expression (view->priv->albums_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_EQUALS,
+								      rb_library_get_all_albums (view->priv->library)),
+				       1);
+	rb_node_filter_add_expression (view->priv->albums_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_HAS_PARENT,
+								      artist),
+				       1);
 	rb_node_filter_done_changing (view->priv->albums_filter);
 }
 
 static void
 songs_filter (RBLibraryView *view,
-	      RBNode *album,
-	      RBNode *artist)
+	      RBNode *genre,
+	      RBNode *artist,
+	      RBNode *album)
 {
 	rb_node_filter_empty (view->priv->songs_filter);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
-								      artist, rb_library_get_all_albums (view->priv->library)),
+								      genre, rb_library_get_all_artists (view->priv->library)),
 				       0);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_ARTIST, artist),
+								      RB_NODE_SONG_PROP_REAL_GENRE, genre),
 				       0);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
-								      album, rb_library_get_all_songs (view->priv->library)),
+								      artist, rb_library_get_all_albums (view->priv->library)),
 				       1);
 	rb_node_filter_add_expression (view->priv->songs_filter,
 				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
-								      RB_NODE_SONG_PROP_REAL_ALBUM, album),
+								      RB_NODE_SONG_PROP_REAL_ARTIST, artist),
 				       1);
+	rb_node_filter_add_expression (view->priv->songs_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_EQUALS,
+								      album, rb_library_get_all_songs (view->priv->library)),
+				       2);
+	rb_node_filter_add_expression (view->priv->songs_filter,
+				       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,
+								      RB_NODE_SONG_PROP_REAL_ALBUM, album),
+				       2);
 	rb_node_filter_done_changing (view->priv->songs_filter);
 }

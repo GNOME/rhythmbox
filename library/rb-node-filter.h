@@ -59,6 +59,7 @@ typedef enum
 	RB_NODE_FILTER_EXPRESSION_HAS_PARENT,            /* args: RBNode *parent */
 	RB_NODE_FILTER_EXPRESSION_HAS_CHILD,             /* args: RBNode *child */     
 	RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS,      /* args: int prop_id, RBNode *node */
+	RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS,     /* args: int prop_id, RBNode *node */
 	RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,  /* args: int prop_id, const char *string */
 	RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS,    /* args: int prop_id, const char *string */
 	RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,     /* args: int prop_id, const char *string */

@@ -263,6 +263,7 @@ rb_node_filter_expression_new (RBNodeFilterExpressionType type,
 		exp->args.node_args.a = va_arg (valist, RBNode *);
 		break;
 	case RB_NODE_FILTER_EXPRESSION_NODE_PROP_EQUALS:
+	case RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS:
 		exp->args.prop_args.prop_id = va_arg (valist, int);
 		exp->args.prop_args.second_arg.node = va_arg (valist, RBNode *);
 		break;
@@ -340,6 +341,31 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 						  exp->args.prop_args.prop_id);
 		
 		return (prop == exp->args.prop_args.second_arg.node);
+	}
+	case RB_NODE_FILTER_EXPRESSION_CHILD_PROP_EQUALS:
+	{
+		RBNode *prop;
+		GPtrArray *children;
+		int i;
+		
+		children = rb_node_get_children (node);
+		for (i = 0; i < children->len; i++)
+		{
+			RBNode *child;
+			
+			child = g_ptr_array_index (children, i);
+			prop = rb_node_get_property_node 
+				(child, exp->args.prop_args.prop_id);
+		
+			if (prop == exp->args.prop_args.second_arg.node)
+			{
+				rb_node_thaw (node);
+				return TRUE;
+			}
+		}
+		
+		rb_node_thaw (node);
+		return FALSE;
 	}
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
 	{
