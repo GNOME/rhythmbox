@@ -103,16 +103,6 @@ rb_metadata_new (void)
 	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL));
 }
 
-GQuark
-rb_metadata_error_quark (void)
-{
-	static GQuark quark = 0;
-	if (!quark)
-		quark = g_quark_from_static_string ("rb_metadata_error");
-
-	return quark;
-}
-
 static void
 free_gvalue (GValue *val)
 {

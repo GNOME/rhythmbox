@@ -39,6 +39,10 @@ struct RBMetaDataPrivate
 	GHashTable *metadata;
 
 	GstElement *pipeline;
+	GstElement *fakesink;
+
+	gboolean eos;
+	GError *error;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -111,16 +115,6 @@ rb_metadata_new (void)
 	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL));
 }
 
-GQuark
-rb_metadata_error_quark (void)
-{
-	static GQuark quark = 0;
-	if (!quark)
-		quark = g_quark_from_static_string ("rb_metadata_error");
-
-	return quark;
-}
-
 static void
 free_gvalue (GValue *val)
 {
@@ -145,8 +139,6 @@ rb_metadata_gst_tag_to_field (const char *tag)
 		return RB_METADATA_FIELD_COMMENT;
 	else if (!strcmp (tag, GST_TAG_TRACK_NUMBER))
 		return RB_METADATA_FIELD_TRACK_NUMBER;
-	else if (!strcmp (tag, GST_TAG_LOCATION))
-		return RB_METADATA_FIELD_LOCATION;
 	else if (!strcmp (tag, GST_TAG_DESCRIPTION))
 		return RB_METADATA_FIELD_DESCRIPTION;
 	else if (!strcmp (tag, GST_TAG_VERSION))
@@ -174,35 +166,57 @@ rb_metadata_gst_tag_to_field (const char *tag)
 }
 
 static void
+rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
+{
+	rb_debug ("caught eos");
+	if (md->priv->eos) {
+		rb_debug ("RENTERED EOS!");
+		return;
+	}
+	gst_element_set_state (md->priv->fakesink, GST_STATE_NULL);
+	md->priv->eos = TRUE;
+}
+
+static void
+rb_metadata_gst_error_cb (GstElement *element,
+			  GObject *arg1,
+			  char *errmsg,
+			  RBMetaData *md)
+{
+	rb_debug ("caught error: %s ", errmsg);
+	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
+					       RB_METADATA_ERROR_GENERAL,
+					       errmsg);
+}
+
+static void
 rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *md)
 {
-  int count, tem;
-  RBMetaDataField field;
-  GValue *newval;
-  const GValue *val;
+	int count, tem;
+	RBMetaDataField field;
+	GValue *newval;
+	const GValue *val;
 
-  count = gst_tag_list_get_tag_size (list, tag);
-  if (count < 1)
-	  return;
+	rb_debug ("uri: %s tag: %s ", md->priv->uri, tag);
 
-  tem = rb_metadata_gst_tag_to_field (tag);
-  if (tem < 0)
-	  return;
-  field = (RBMetaDataField) tem;
+	count = gst_tag_list_get_tag_size (list, tag);
+	if (count < 1)
+		return;
 
-  val = gst_tag_list_get_value_index (list, tag, 0);
-  newval = g_new0 (GValue, 1);
-  if (field == RB_METADATA_FIELD_TRACK_NUMBER) {
-	  g_value_init (newval, G_TYPE_INT);
-  } else {
-	  g_value_init (newval, G_VALUE_TYPE (val));
-  }
-  if (g_value_transform (val, newval))
-	  g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (field),
-			       newval);
-  else
-	  rb_debug ("Could not transform tag value type %s into %s",
-		    g_type_name (G_VALUE_TYPE (val)), g_type_name (G_VALUE_TYPE (newval)));
+	tem = rb_metadata_gst_tag_to_field (tag);
+	if (tem < 0)
+		return;
+	field = (RBMetaDataField) tem;
+
+	val = gst_tag_list_get_value_index (list, tag, 0);
+	newval = g_new0 (GValue, 1);
+	g_value_init (newval, rb_metadata_get_field_type (md, field));
+	if (g_value_transform (val, newval))
+		g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (field),
+				     newval);
+	else
+		rb_debug ("Could not transform tag value type %s into %s",
+			  g_type_name (G_VALUE_TYPE (val)), g_type_name (G_VALUE_TYPE (newval)));
 }
 
 static void
@@ -220,9 +234,11 @@ rb_metadata_load (RBMetaData *md,
 	GstElement *gnomevfssrc = NULL;
 	GstElement *typefind = NULL;
 	GstElement *spider = NULL;
-	GstElement *fakesink = NULL;
+
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
+	md->priv->error = NULL;
+	md->priv->eos = FALSE;
 
 	if (md->priv->pipeline)
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
@@ -231,6 +247,9 @@ rb_metadata_load (RBMetaData *md,
 		md->priv->pipeline = NULL;
 		return;
 	}
+
+	rb_debug ("loading metadata for uri: %s", uri);
+	md->priv->uri = g_strdup (uri);
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -242,6 +261,7 @@ rb_metadata_load (RBMetaData *md,
 	 */
 	pipeline = gst_pipeline_new ("pipeline");
 
+	g_signal_connect (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md);
 	g_signal_connect (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md);
 
 #define MAKE_ADD_PLUGIN_OR_ERROR(VAR, NAME) \
@@ -263,18 +283,24 @@ rb_metadata_load (RBMetaData *md,
 			       "location", uri, NULL);
 	MAKE_ADD_PLUGIN_OR_ERROR(typefind, "typefind")
 	MAKE_ADD_PLUGIN_OR_ERROR(spider, "spider")
-	MAKE_ADD_PLUGIN_OR_ERROR(fakesink, "fakesink")
+	MAKE_ADD_PLUGIN_OR_ERROR(md->priv->fakesink, "fakesink")
+	g_signal_connect (md->priv->fakesink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md);
 #undef MAKE_ADD_PLUGIN_OR_ERROR
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
-	gst_element_link_filtered (spider, fakesink,
+	gst_element_link_filtered (spider, md->priv->fakesink,
 				   gst_caps_new ("app filter", "application/x-gst-tags",
 						 gst_props_empty_new ()));
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
-	while (gst_bin_iterate (GST_BIN (pipeline)))
+	while (gst_bin_iterate (GST_BIN (pipeline))
+	       && md->priv->error == NULL
+	       && !md->priv->eos)
 		;
+	if (md->priv->error) {
+		g_propagate_error (error, md->priv->error);
+	}
 }
 
 gboolean

@@ -4,7 +4,7 @@ SUBDIRS =
 
 noinst_LTLIBRARIES = librbmetadata.la
 
-librbmetadata_la_SOURCES = rb-metadata.h
+librbmetadata_la_SOURCES = rb-metadata.h rb-metadata-common.c
 
 librbmetadata_la_LIBADD =			\
 	$(top_builddir)/lib/librb.la		\

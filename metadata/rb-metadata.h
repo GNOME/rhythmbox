@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+#define RB_METADATA_NUM_FIELDS 20
+
 /* This should correspond to the stuff in gsttag.h */
 typedef enum
 {
@@ -37,7 +39,6 @@ typedef enum
 	RB_METADATA_FIELD_COMMENT,                 /* string */
 	RB_METADATA_FIELD_TRACK_NUMBER,            /* int */
 	RB_METADATA_FIELD_MAX_TRACK_NUMBER,        /* int */
-	RB_METADATA_FIELD_LOCATION,                /* string */
 	RB_METADATA_FIELD_DESCRIPTION,             /* string */
 	RB_METADATA_FIELD_VERSION,                 /* string */
 	RB_METADATA_FIELD_ISRC,                    /* string */
@@ -57,6 +58,7 @@ typedef enum
 	RB_METADATA_ERROR_MISSING_PLUGIN,
 	RB_METADATA_ERROR_UNRECOGNIZED,
 	RB_METADATA_ERROR_UNSUPPORTED,
+	RB_METADATA_ERROR_GENERAL,
 	RB_METADATA_ERROR_INTERNAL,
 } RBMetaDataError;
 
@@ -88,6 +90,8 @@ typedef struct
 GType		rb_metadata_get_type	(void);
 
 RBMetaData *	rb_metadata_new		(void);
+
+GType		rb_metadata_get_field_type (RBMetaData *md, RBMetaDataField field);
 
 gboolean	rb_metadata_can_save	(RBMetaData *md);
 

@@ -258,15 +258,86 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      0);
 }
 
+#if 0
+static gboolean
+prop_from_metadata_field (RBMetaDataField field, RhythmDBPropType *prop)
+{
+	switch (field) {
+	case RB_METADATA_FIELD_TITLE:
+		*prop = RHYTHMDB_PROP_TITLE;
+		return TRUE;		
+	case RB_METADATA_FIELD_ARTIST:
+		*prop = RHYTHMDB_PROP_ARTIST; 
+		return TRUE;		
+	case RB_METADATA_FIELD_ALBUM:
+		*prop = RHYTHMDB_PROP_ALBUM; 
+		return TRUE;		
+	case RB_METADATA_FIELD_GENRE:
+		*prop = RHYTHMDB_PROP_GENRE; 
+		return TRUE;		
+	case RB_METADATA_FIELD_TRACK_NUMBER:
+		*prop = RHYTHMDB_PROP_TRACK_NUMBER; 
+		return TRUE;		
+	case RB_METADATA_FIELD_DURATION:
+		*prop = RHYTHMDB_PROP_DURATION; 
+		return TRUE;		
+	case RB_METADATA_FIELD_BITRATE:
+		*prop = RHYTHMDB_PROP_BITRATE; 
+		return TRUE;		
+	default:
+		return FALSE;
+	}
+}
+#endif
+
+static gboolean
+metadata_field_from_prop (RhythmDBPropType prop, RBMetaDataField *field)
+{
+	switch (prop) {
+	case RHYTHMDB_PROP_TITLE:
+		*field = RB_METADATA_FIELD_TITLE;
+		return TRUE;		
+	case RHYTHMDB_PROP_ARTIST:
+		*field = RB_METADATA_FIELD_ARTIST; 
+		return TRUE;		
+	case RHYTHMDB_PROP_ALBUM:
+		*field = RB_METADATA_FIELD_ALBUM; 
+		return TRUE;		
+	case RHYTHMDB_PROP_GENRE:
+		*field = RB_METADATA_FIELD_GENRE; 
+		return TRUE;		
+	case RHYTHMDB_PROP_TRACK_NUMBER:
+		*field = RB_METADATA_FIELD_TRACK_NUMBER; 
+		return TRUE;		
+	case RHYTHMDB_PROP_DURATION:
+		*field = RB_METADATA_FIELD_DURATION; 
+		return TRUE;		
+	case RHYTHMDB_PROP_BITRATE:
+		*field = RB_METADATA_FIELD_BITRATE; 
+		return TRUE;		
+	default:
+		return FALSE;
+	}
+}
+
 static GType
-extract_gtype_from_enum_entry (GEnumClass *klass, guint i)
+extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 {
 	GType ret;
 	GEnumValue *value;
+	RBMetaDataField field;
 	char *typename;
 	char *typename_end;
 	
 	value = g_enum_get_value (klass, i);
+
+	/* First check to see whether this is a property that maps to
+	   a RBMetaData property. */
+	if (metadata_field_from_prop (value->value, &field))
+		return rb_metadata_get_field_type (db->priv->metadata, field); 
+
+	/* This is a "synthetic" property. */
+
 	typename = strstr (value->value_nick, "(");
 	g_return_val_if_fail (typename != NULL, G_TYPE_INVALID);
 
@@ -307,13 +378,13 @@ rhythmdb_init (RhythmDB *db)
 	/* Now, extract the GType of each column from the enum descriptions,
 	 * and cache that for later use. */
 	for (i = 0; i < prop_class->n_values; i++) {
-		db->priv->column_types[i] = extract_gtype_from_enum_entry (prop_class, i);
+		db->priv->column_types[i] = extract_gtype_from_enum_entry (db, prop_class, i);
 		g_assert (db->priv->column_types[i] != G_TYPE_INVALID);
 	}
 			
 	
 	for (j = 0; j < unsaved_prop_class->n_values; i++, j++) {
-		db->priv->column_types[i] = extract_gtype_from_enum_entry (unsaved_prop_class, i);
+		db->priv->column_types[i] = extract_gtype_from_enum_entry (db, unsaved_prop_class, i);
 		g_assert (db->priv->column_types[i] != G_TYPE_INVALID);
 	}
 
@@ -1658,19 +1729,19 @@ rhythmdb_prop_get_type (void)
 		{
 
 			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gint)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title (gchararray)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre (gchararray)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist (gchararray)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album (gchararray)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number (gint)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration (glong)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title"),
+			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ARTIST, "Artist"),
+			ENUM_ENTRY (RHYTHMDB_PROP_ALBUM, "Album"),
+			ENUM_ENTRY (RHYTHMDB_PROP_TRACK_NUMBER, "Track Number"),
+			ENUM_ENTRY (RHYTHMDB_PROP_DURATION, "Duration"),
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate (gint)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate"),
 			{ 0, 0, 0 }
 		};
 
