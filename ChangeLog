@@ -1,3 +1,45 @@
+2002-07-28  Olivier Martin  <omartin@ifrance.com>
+
+	* data/glade/Makefile.am:
+	* data/glade/song-info.glade:
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-song-info.c: (rb_song_info_get_type),
+	(rb_song_info_class_init), (rb_song_info_init),
+	(rb_song_info_finalize), (rb_song_info_set_property),
+	(rb_song_info_get_property), (rb_song_info_new),
+	(rb_song_info_window_delete_cb), (rb_song_info_response_cb),
+	(rb_song_info_populate_dialog), (rb_song_info_update_title),
+	(rb_song_info_update_artist), (rb_song_info_update_album),
+	(rb_song_info_update_year), (rb_song_info_update_track),
+	(rb_song_info_update_comments), (rb_song_info_update_bitrate),
+	(rb_song_info_update_channels), (rb_song_info_update_size),
+	(rb_song_info_update_duration), (rb_song_info_update_location):
+	* lib/widgets/rb-song-info.h:
+	* views/rb-group-view.c: (filename_from_name),
+	(rb_group_view_cmd_song_info):
+	* views/rb-library-view.c: (rb_library_view_show_browser),
+	(rb_library_view_cmd_song_info):
+
+	Add song info dialog.
+
+2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/Makefile.am:
+	* lib/widgets/eggtreemodelfilter.c:
+	* lib/widgets/eggtreemodelfilter.h:
+	* lib/widgets/gtktreemodelfilter.c:
+	* lib/widgets/gtktreemodelfilter.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_get_node), (rb_node_view_get_first_node),
+	(rb_node_view_get_random_node), (get_selection),
+	(rb_node_view_row_activated_cb), (rb_node_view_select_node),
+	(rb_node_view_scroll_to_node):
+	
+	Use EggTreeModelFilter.
+
 2002-07-25  Christophe Merlet  <christophe@merlet.net>
 
 	* configure.in: added "fr" to ALL_LINGUAS 

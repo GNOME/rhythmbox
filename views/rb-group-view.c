@@ -44,6 +44,7 @@
 #include "rb-debug.h"
 #include "rb-node-song.h"
 #include "eel-gconf-extensions.h"
+#include "rb-song-info.h"
 
 static void rb_group_view_class_init (RBGroupViewClass *klass);
 static void rb_group_view_init (RBGroupView *view);
@@ -110,6 +111,9 @@ static void song_deleted_cb (RBNodeView *view,
 static void sidebar_button_edited_cb (RBSidebarButton *button,
 			              RBGroupView *view);
 static char *filename_from_name (const char *name);
+static void rb_group_view_cmd_song_info (BonoboUIComponent *component,
+					 RBGroupView *view,
+					 const char *verbname);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 
@@ -156,6 +160,7 @@ static BonoboUIVerb rb_group_view_verbs[] =
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_group_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_group_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_group_view_cmd_current_song),
+	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_group_view_cmd_song_info),
 	BONOBO_UI_VERB_END
 };
 
@@ -1058,4 +1063,29 @@ filename_from_name (const char *name)
 	g_free (asciiname);
 
 	return ret;
+}
+
+static void
+rb_group_view_cmd_song_info (BonoboUIComponent *component,
+			     RBGroupView *view,
+			     const char *verbname)
+{
+	GList *selected_nodes = NULL;
+	GtkWidget *song_info = NULL;
+
+	g_return_if_fail (view->priv->songs != NULL);
+
+	if (rb_node_view_have_selection (view->priv->songs) == FALSE)
+	{       
+		return;
+	}
+
+	/* get the first node and show the song information dialog 
+	 * TODO show a different dialog for multiple songs */
+	selected_nodes = rb_node_view_get_selection (view->priv->songs);
+	if ((selected_nodes->data != NULL) && (RB_IS_NODE (selected_nodes->data)))
+	{       
+		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
+		gtk_widget_show_all (song_info);
+	}
 }

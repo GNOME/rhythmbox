@@ -33,7 +33,7 @@
 #include <libxml/tree.h>
 #include <stdlib.h>
 
-#include "gtktreemodelfilter.h"
+#include "eggtreemodelfilter.h"
 #include "rb-tree-model-node.h"
 #include "rb-node-view.h"
 #include "rb-dialog.h"
@@ -424,9 +424,10 @@ rb_node_view_construct (RBNodeView *view)
 				 0);
 
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
-	view->priv->filtermodel = gtk_tree_model_filter_new_with_model (GTK_TREE_MODEL (view->priv->nodemodel),
-							                RB_TREE_MODEL_NODE_COL_VISIBLE,
-							                NULL);
+	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
+							     NULL);
+	egg_tree_model_filter_set_visible_column (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+						  RB_TREE_MODEL_NODE_COL_VISIBLE);
 	view->priv->sortmodel = gtk_tree_model_sort_new_with_model (view->priv->filtermodel);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
 			         "row_inserted",
@@ -673,7 +674,7 @@ rb_node_view_get_node (RBNodeView *view,
 	if (visible == FALSE)
 		return NULL;
 
-	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_child_iter_to_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter2, &iter);
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter, &iter2);
@@ -704,7 +705,7 @@ rb_node_view_get_node (RBNodeView *view,
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter2, &iter);
-	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter, &iter2);
 
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
@@ -735,7 +736,7 @@ rb_node_view_get_first_node (RBNodeView *view)
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter2, &iter);
-	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter, &iter2);
 
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
@@ -769,7 +770,7 @@ rb_node_view_get_random_node (RBNodeView *view)
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter2, &iter);
-	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter, &iter2);
 
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
@@ -782,7 +783,7 @@ get_selection (GtkTreeModel *model,
 	       void **data)
 {
 	GtkTreeModelSort *sortmodel = GTK_TREE_MODEL_SORT (model);
-	GtkTreeModelFilter *filtermodel = GTK_TREE_MODEL_FILTER (sortmodel->child_model);
+	EggTreeModelFilter *filtermodel = EGG_TREE_MODEL_FILTER (sortmodel->child_model);
 	RBTreeModelNode *nodemodel = RB_TREE_MODEL_NODE (filtermodel->child_model);
 	GList **list = (GList **) data;
 	GtkTreeIter *iter2 = gtk_tree_iter_copy (iter);
@@ -790,7 +791,7 @@ get_selection (GtkTreeModel *model,
 	RBNode *node;
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (sortmodel, &iter3, iter2);
-	gtk_tree_model_filter_convert_iter_to_child_iter (filtermodel, iter2, &iter3);
+	egg_tree_model_filter_convert_iter_to_child_iter (filtermodel, iter2, &iter3);
 	
 	node = rb_tree_model_node_node_from_iter (nodemodel, iter2);
 
@@ -924,8 +925,8 @@ rb_node_view_row_activated_cb (GtkTreeView *treeview,
 	gtk_tree_model_get_iter (view->priv->sortmodel, &iter, path);
 	gtk_tree_model_sort_convert_iter_to_child_iter
 		(GTK_TREE_MODEL_SORT (view->priv->sortmodel), &iter2, &iter);
-	gtk_tree_model_filter_convert_iter_to_child_iter
-		(GTK_TREE_MODEL_FILTER (view->priv->filtermodel), &iter, &iter2);
+	egg_tree_model_filter_convert_iter_to_child_iter
+		(EGG_TREE_MODEL_FILTER (view->priv->filtermodel), &iter, &iter2);
 
 	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &iter);
 
@@ -1043,7 +1044,7 @@ rb_node_view_select_node (RBNodeView *view,
 	if (visible == FALSE)
 		return;
 
-	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_child_iter_to_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter2, &iter);
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter, &iter2);
@@ -1073,7 +1074,7 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 	if (visible == FALSE)
 		return;
 
-	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
+	egg_tree_model_filter_convert_child_iter_to_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter2, &iter);
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&iter, &iter2);

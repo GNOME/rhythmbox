@@ -42,6 +42,7 @@
 #include "rb-node-song.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
+#include "rb-song-info.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
 static void rb_library_view_init (RBLibraryView *view);
@@ -120,6 +121,9 @@ static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
 static void song_deleted_cb (RBNodeView *view,
 		             RBNode *node,
 		             RBLibraryView *library_view);
+static void rb_library_view_cmd_song_info (BonoboUIComponent *component,
+				           RBLibraryView *view,
+				           const char *verbname);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -172,6 +176,7 @@ static BonoboUIVerb rb_library_view_verbs[] =
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_library_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_library_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_library_view_cmd_current_song),
+	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_library_view_cmd_song_info),
 	BONOBO_UI_VERB_END
 };
 
@@ -951,5 +956,30 @@ rb_library_view_show_browser (RBLibraryView *view,
 	{
 		gtk_widget_hide (view->priv->browser);
 		gtk_container_remove (GTK_CONTAINER (view->priv->paned), view->priv->browser);
+	}
+}
+
+static void
+rb_library_view_cmd_song_info (BonoboUIComponent *component,
+			       RBLibraryView *view,
+			       const char *verbname)
+{
+	GList *selected_nodes = NULL;
+	GtkWidget *song_info = NULL;
+
+	g_return_if_fail (view->priv->songs != NULL);
+
+	if (rb_node_view_have_selection (view->priv->songs) == FALSE)
+	{
+		return;
+	}
+
+	/* get the first node and show the song information dialog 
+	 * TODO show a different dialog for multiple songs */
+	selected_nodes = rb_node_view_get_selection (view->priv->songs);
+	if ((selected_nodes->data != NULL) && (RB_IS_NODE (selected_nodes->data)))
+	{
+		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
+		gtk_widget_show_all (song_info);
 	}
 }

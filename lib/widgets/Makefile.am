@@ -17,14 +17,16 @@ librbwidgets_la_SOURCES =				\
 	rb-player.h					\
 	rb-volume.c					\
 	rb-volume.h					\
-	gtktreemodelfilter.c				\
-	gtktreemodelfilter.h				\
+	eggtreemodelfilter.c				\
+	eggtreemodelfilter.h				\
 	e-splash.c					\
 	e-splash.h					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
-	rb-cell-renderer-pixbuf.h
+	rb-cell-renderer-pixbuf.h			\
+	rb-song-info.c					\
+	rb-song-info.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

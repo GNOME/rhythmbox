@@ -17,9 +17,24 @@
        _tip="Toggle the artist and album browser visibility"
        type="toggle"/>
 
+  <cmd name="SongInfo"
+       _tip="Show information on selected song"
+       pixtype="stock"
+       pixname="gtk-dialog-info"/>
+
 </commands>
 
 <menu>
+
+<submenu name="File" _label="_File">
+
+  <placeholder name="FileMenu">
+
+    <menuitem name="SongInfo" verb="SongInfo" _label="Song _Information" accel="*Control*i"/>
+
+  </placeholder>
+
+</submenu>
 
 <submenu name="Edit" _label="_Edit">
 
