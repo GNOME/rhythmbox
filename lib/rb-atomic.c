@@ -23,8 +23,6 @@
 
 #include "rb-atomic.h"
 
-GStaticMutex rb_atomic_mutex = G_STATIC_MUTEX_INIT;
-
 #ifdef RB_USE_ATOMIC_INT_486
 /* Taken from CVS version 1.7 of glibc's sysdeps/i386/i486/atomicity.h */
 /* Since the asm stuff here is gcc-specific we go ahead and use "inline" also */
@@ -39,6 +37,8 @@ atomic_exchange_and_add (RBAtomic *atomic,
 			: "0" (val), "m" (atomic->value));
   return result;
 }
+#else
+GStaticMutex rb_atomic_mutex = G_STATIC_MUTEX_INIT;
 #endif
 
 /**
