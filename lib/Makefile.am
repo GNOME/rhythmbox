@@ -13,8 +13,6 @@ librb_la_SOURCES =					\
 	rb-bonobo-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
-	rb-stream.c					\
-	rb-stream.h					\
 	e-splash.c					\
 	e-splash.h					\
 	eel-gconf-extensions.c				\
