@@ -16,8 +16,6 @@ AM_PROG_LIBTOOL
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
-ACLOCAL="$ACLOCAL -I macros"
-
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
 [AC_LANG_PROGRAM([[
@@ -344,8 +342,6 @@ AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
   MKINSTALLDIRS="mkinstalldirs"
 fi
 AC_SUBST(MKINSTALLDIRS)
-
-
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
