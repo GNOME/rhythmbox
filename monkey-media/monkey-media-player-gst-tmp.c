@@ -555,7 +555,11 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 
 	/* The decoding element */
 	if (iradio_mode)
+#ifdef HAVE_MP3
 		decoder_name = "mad";
+#else
+		decoder_name = "vorbisfile";
+#endif
 #if GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 6
 	else if (g_str_has_suffix (uri, ".mp3"))
 		decoder_name = "mad";
