@@ -212,7 +212,7 @@ rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 							      "RhythmDBQueryModel",
 							      "RhythmDBQueryModel object ",
 							      RHYTHMDB_TYPE_QUERY_MODEL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 
 }
 

@@ -277,21 +277,21 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 					 g_param_spec_pointer ("query",
 							      "Query",
 							      "RhythmDBQuery",
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_SORT_FUNC,
 					 g_param_spec_pointer ("sort-func",
 							      "SortFunc",
 							      "Sort function",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							       G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_SORT_DATA,
 					 g_param_spec_pointer ("sort-data",
 							      "SortData",
 							      "Sort user data",
-							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							       G_PARAM_READWRITE));
 
 	g_object_class_install_property (object_class,
 					 PROP_MAX_SIZE,

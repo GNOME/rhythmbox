@@ -179,7 +179,7 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							      "property model",
 							      "RhythmDBPropertyModel",
 							      RHYTHMDB_TYPE_PROPERTY_MODEL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READWRITE));
 
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
 		g_signal_new ("property-activated",
