@@ -72,7 +72,7 @@ void		rb_player_sync			(RBPlayer *player);
 
 gboolean	rb_player_sync_time		(RBPlayer *player);
 
-char *		rb_player_get_duration_string	(RBPlayer *player);
+char *		rb_player_get_elapsed_string	(RBPlayer *player);
 
 G_END_DECLS
 

@@ -22,6 +22,7 @@
 #include <gtk/gtkhbox.h>
 #include <monkey-media.h>
 
+#include "rb-shell-player.h"
 #include "rb-source.h"
 #include "rhythmdb.h"
 
@@ -54,7 +55,8 @@ typedef struct
 GType			rb_statusbar_get_type	(void);
 
 RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
-						 BonoboUIComponent *component);
+						 BonoboUIComponent *component,
+						 RBShellPlayer *player);
 
 void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);

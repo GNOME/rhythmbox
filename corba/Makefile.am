@@ -3,7 +3,11 @@
 #lib_LTLIBRARIES = librbcorba.la
 noinst_LTLIBRARIES = librbcorba.la
 
-nodist_librbcorba_la_SOURCES = $(rhythmbox_interface_idl_sources)
+noinst_PROGRAMS = test-corba
+test_corba_SOURCES = test-corba.c 
+test_corba_LDADD = librbcorba.la $(RHYTHMBOX_LIBS) 
+
+librbcorba_la_SOURCES = $(rhythmbox_interface_idl_sources)
 
 rhythmbox_interface_idl_sources =      	\
 	Rhythmbox-common.c	     			\
@@ -15,6 +19,8 @@ INCLUDES = 							\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE
+
+noinst_HEADERS = Rhythmbox.h
 
 idldir = $(prefix)/share/idl
 idl_DATA = Rhythmbox.idl

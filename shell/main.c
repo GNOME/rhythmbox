@@ -27,7 +27,10 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
 #include <gtk/gtk.h>
+#include <bonobo/Bonobo.h>
 #include <bonobo/bonobo-main.h>
+#include <libbonobo.h>
+#include <bonobo/bonobo-property-bag-client.h>
 #include <glade/glade-init.h>
 #include <monkey-media.h>
 #include <stdlib.h>
@@ -216,6 +219,44 @@ rb_init (RBShell *shell)
 	return FALSE;
 }
 
+static GNOME_Rhythmbox_SongInfo*
+get_song_info (GNOME_Rhythmbox shell)
+{
+	Bonobo_PropertyBag pb;
+	CORBA_any *any;
+	GNOME_Rhythmbox_SongInfo *song_info;
+
+	pb = GNOME_Rhythmbox_getPlayerProperties (shell, &ev);
+	if (BONOBO_EX (&ev)) {
+		char *err = bonobo_exception_get_text (&ev);
+		g_warning (_("An exception occured '%s'"), err);
+		CORBA_free (pb);
+		return NULL;
+	}
+
+	any = bonobo_pbclient_get_value (pb, "song", 
+					 TC_GNOME_Rhythmbox_SongInfo, 
+					 &ev);
+	if (BONOBO_EX (&ev)) {
+		char *err = bonobo_exception_get_text (&ev);
+		g_warning (_("An exception occured '%s'"), err);
+		g_free (err);
+		CORBA_free (pb);
+		return NULL;
+	}
+	
+	if ((any == NULL) || (!CORBA_TypeCode_equivalent (any->_type, TC_GNOME_Rhythmbox_SongInfo, NULL))) {
+		song_info = NULL;
+	} else {
+		song_info = (GNOME_Rhythmbox_SongInfo*)any->_value;
+		any->_release = FALSE;
+		CORBA_free (any);
+	}
+
+	CORBA_free (pb);
+	return song_info;
+}
+
 static void
 rb_handle_cmdline (char **argv, int argc,
 		   gboolean already_running)
@@ -236,20 +277,43 @@ rb_handle_cmdline (char **argv, int argc,
 
 	if (print_playing)
 	{
-		printf ("%s\n", GNOME_Rhythmbox_getPlayingTitle (shell, &ev));
+		GNOME_Rhythmbox_SongInfo *song_info;
+
+		song_info = get_song_info (shell);
+		if (song_info == NULL) {
+			g_print ("\n");
+		} else {
+			g_print ("%s\n", song_info->title);
+			CORBA_free (song_info);
+		}
 		grab_focus = FALSE;
+
 	}
 	
 	if (print_playing_path)
 	{
-		printf ("%s\n", GNOME_Rhythmbox_getPlayingPath (shell, &ev));
+		GNOME_Rhythmbox_SongInfo *song_info;
+
+		song_info = get_song_info (shell);
+		if (song_info == NULL) {
+			g_print ("\n");
+		} else {
+			g_print ("%s\n", song_info->path);
+			CORBA_free (song_info);
+		}
 		grab_focus = FALSE;
 	}
 	
 	if (print_song_length)
 	{
-		long song_length = GNOME_Rhythmbox_getPlayingSongDuration (shell, &ev);
-		printf ("%ld\n", song_length);
+		GNOME_Rhythmbox_SongInfo *song_info;
+		song_info = get_song_info (shell);
+		if (song_info == NULL) {
+			g_print ("-1\n");
+		} else {
+			g_print ("%ld\n", song_info->duration);
+			CORBA_free (song_info);
+		}
 		grab_focus = FALSE;
 	}
 	

@@ -208,13 +208,15 @@ tick_timeout (MonkeyMediaPlayer *mp)
 static void
 monkey_media_player_init (MonkeyMediaPlayer *mp)
 {
+	gint ms_period = 1000 / MONKEY_MEDIA_PLAYER_TICK_HZ;
+
 	mp->priv = g_new0 (MonkeyMediaPlayerPrivate, 1);
 
 #ifdef HAVE_AUDIOCD
 	mp->priv->cd = monkey_media_audio_cd_new (NULL);
 #endif	
 
-	mp->priv->tick_timeout_id = g_timeout_add (200, (GSourceFunc) tick_timeout, mp);
+	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
 }
 
 static void

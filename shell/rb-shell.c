@@ -20,6 +20,7 @@
  *
  */
 
+#include <bonobo/bonobo-arg.h>
 #include <bonobo/bonobo-main.h>
 #include <bonobo/bonobo-context.h>
 #include <bonobo/bonobo-exception.h>
@@ -91,32 +92,19 @@ static void rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 					   CORBA_Environment *ev);
 static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 				       CORBA_Environment *ev);
-static char * rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
-						CORBA_Environment *ev);
-static char * rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static CORBA_boolean rb_shell_corba_get_repeat (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static void rb_shell_corba_set_repeat (PortableServer_Servant _servant,
-					       CORBA_boolean repeat,
-					       CORBA_Environment *ev);
-static CORBA_boolean rb_shell_corba_get_shuffle (PortableServer_Servant _servant,
-					       CORBA_Environment *ev);
-static void rb_shell_corba_set_shuffle (PortableServer_Servant _servant,
-					       CORBA_boolean shuffle,
-					       CORBA_Environment *ev);
 static void rb_shell_corba_playpause (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
 static void rb_shell_corba_next (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
 static void rb_shell_corba_previous (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
-static CORBA_long rb_shell_corba_get_playing_song_duration (PortableServer_Servant _servant,
-						   CORBA_Environment *ev);
 static CORBA_long rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
 						   CORBA_Environment *ev);
 static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 						   CORBA_long time, CORBA_Environment *ev);
+
+static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
+
 void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title,
 				     const char *genre);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
@@ -279,8 +267,12 @@ struct RBShellPrivate
 
 	RBTrayIcon *tray_icon;
 
+	BonoboPropertyBag *pb;
+
 	char *cached_title;
 	char *cached_duration;
+
+	gulong song_changed_cb_id;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -351,18 +343,12 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->handleFile   = rb_shell_corba_handle_file;
 	epv->addToLibrary = rb_shell_corba_add_to_library;
 	epv->grabFocus    = rb_shell_corba_grab_focus;
-	epv->getPlayingTitle = rb_shell_corba_get_playing_title;
-	epv->getPlayingPath = rb_shell_corba_get_playing_path;
 	epv->playPause = rb_shell_corba_playpause;
 	epv->previous = rb_shell_corba_previous;
 	epv->next = rb_shell_corba_next;
-	epv->getShuffle = rb_shell_corba_get_shuffle;
-	epv->setShuffle = rb_shell_corba_set_shuffle;
-	epv->getRepeat = rb_shell_corba_get_repeat;
-	epv->setRepeat = rb_shell_corba_set_repeat;
-	epv->getPlayingSongDuration = rb_shell_corba_get_playing_song_duration;
 	epv->getPlayingTime = rb_shell_corba_get_playing_time;
 	epv->setPlayingTime = rb_shell_corba_set_playing_time;
+	epv->getPlayerProperties = rb_shell_corba_get_player_properties;
 }
 
 static void
@@ -533,8 +519,7 @@ rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
 
 	GDK_THREADS_ENTER ();
 	str = gtk_window_get_title (GTK_WINDOW (shell->priv->window));
-	ret = CORBA_string_alloc (strlen (str));
-	strcpy (ret, str);
+	ret = CORBA_string_dup (str);
 	GDK_THREADS_LEAVE ();
 	return ret;
 }
@@ -551,23 +536,185 @@ rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 	str = rb_shell_player_get_playing_path (shell->priv->player_shell);
 	if (str == NULL)
 		str = "";
-	ret = CORBA_string_alloc (strlen (str));
-	strcpy (ret, str);
+	ret = CORBA_string_dup (str);
 	GDK_THREADS_LEAVE ();
 	return ret;
 }
 
+enum PlayerProperties {
+	PROP_VISIBILITY,
+	PROP_SONG
+};
+
+
+static void 
+shell_notify_pb_changes (RBShell *shell, const gchar *property_name, 
+			 BonoboArg *arg) 
+{
+	if (shell->priv->pb != NULL) {
+		bonobo_event_source_notify_listeners_full (shell->priv->pb->es,
+							   "Bonobo/Property",
+							   "change",
+							   property_name,
+							   arg, NULL);
+	}
+}
+
+static GNOME_Rhythmbox_SongInfo *
+get_song_info_from_player (RBShell *shell)
+{
+	RhythmDBEntry *entry;
+	RhythmDB *db = shell->priv->db;
+	GNOME_Rhythmbox_SongInfo *song_info;
+	RBEntryView *view;
+
+	view = rb_source_get_entry_view (shell->priv->selected_source);
+	g_object_get (G_OBJECT (view), "playing_entry", &entry, NULL);
+	if (entry == NULL) {
+		/* FIXME: ORBit probably won't like it */
+		return NULL;
+	}
+
+	song_info = GNOME_Rhythmbox_SongInfo__alloc ();
+	rhythmdb_read_lock (db);
+	song_info->title = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
+	song_info->artist = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ARTIST));
+	song_info->genre = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_GENRE));
+	song_info->album = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ALBUM));
+	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
+	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
+	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
+	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_QUALITY);
+	song_info->filesize = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_FILE_SIZE);
+	song_info->rating = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_RATING);
+	song_info->play_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
+	song_info->last_played = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
+	rhythmdb_read_unlock (db);
+
+	return song_info;
+}
+
+static void
+shell_pb_get_prop (BonoboPropertyBag *bag,
+		   BonoboArg         *arg,
+		   guint              arg_id,
+		   CORBA_Environment *ev,
+		   gpointer           user_data)
+{
+	RBShell *shell = RB_SHELL (user_data);
+	RBShellPlayer *player;
+
+	player = RB_SHELL_PLAYER (shell->priv->player_shell);
+
+	switch (arg_id) {
+
+	case PROP_VISIBILITY:
+		BONOBO_ARG_SET_BOOLEAN (arg, FALSE);
+		break;
+
+	case PROP_SONG: {
+		GNOME_Rhythmbox_SongInfo *ret_val;
+		ret_val = get_song_info_from_player (shell);
+		(GNOME_Rhythmbox_SongInfo*)arg->_value = ret_val;
+		if (ret_val == NULL) {
+			arg->_type = TC_null;
+		} else {
+			arg->_type = TC_GNOME_Rhythmbox_SongInfo;
+		}
+		break;		
+	}
+
+	default:
+		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
+		break;
+	}
+}
+
+static void
+shell_pb_set_prop (BonoboPropertyBag *bag,
+		   const BonoboArg   *arg,
+		   guint              arg_id,
+		   CORBA_Environment *ev,
+		   gpointer           user_data)
+{
+
+	RBShell *shell = RB_SHELL (user_data);
+	RBShellPlayer *player;
+
+	switch (arg_id) {
+
+	case PROP_VISIBILITY:
+		break;
+
+	case PROP_SONG:
+		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_ReadOnly);
+		break;
+
+	default:
+		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
+		break;
+	}
+}
+
+
+static Bonobo_PropertyBag
+rb_shell_corba_get_player_properties (PortableServer_Servant _servant, 
+				      CORBA_Environment *ev)
+{	
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+
+	if (shell->priv->pb == NULL) {
+		gchar *params_to_map[] = {"repeat", "shuffle", "playing", 
+					  NULL};
+		GParamSpec **params;
+		int length = 0;
+		int i = 0;
+
+		shell->priv->pb = bonobo_property_bag_new (shell_pb_get_prop, 
+							   shell_pb_set_prop, 
+							   shell);
+		
+		
+		/* Map RBShellPlayer properties to bonobo properties */
+		while (params_to_map[length] != NULL) {
+			length++;
+		}
+		params = malloc (length * sizeof (GParamSpec *));
+		for (i = 0; i < length; i++) {
+			params[i] = g_object_class_find_property (G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell)), params_to_map[i]);
+		}
+		bonobo_property_bag_map_params (shell->priv->pb,
+						G_OBJECT (shell->priv->player_shell),
+						(const GParamSpec **)params, length);
+
+
+		/* Manually install the other properties */
+		bonobo_property_bag_add (shell->priv->pb, "visibility", 
+					 PROP_VISIBILITY, BONOBO_ARG_BOOLEAN, NULL, 
+					 _("Whether the main window is visible"), 0);
+
+		bonobo_property_bag_add (shell->priv->pb, "song", 
+					 PROP_SONG, TC_GNOME_Rhythmbox_SongInfo, NULL, 
+					 _("Properties for the current song"), 0);
+	}
+	/* If the creation of the property bag failed, 
+	 * return a corba exception
+	 */
+	
+	return CORBA_Object_duplicate (BONOBO_OBJREF (shell->priv->pb), NULL);
+}
+
 static void
 rb_shell_corba_set_shuffle (PortableServer_Servant _servant,
-				 CORBA_boolean shuffle,
-				 CORBA_Environment *ev)
+			    CORBA_boolean shuffle,
+			    CORBA_Environment *ev)
 {
 	eel_gconf_set_boolean(CONF_STATE_SHUFFLE, shuffle);
 }
 
 static CORBA_boolean
 rb_shell_corba_get_shuffle (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
+			    CORBA_Environment *ev)
 {
 	
 	return eel_gconf_get_boolean(CONF_STATE_SHUFFLE);
@@ -575,22 +722,22 @@ rb_shell_corba_get_shuffle (PortableServer_Servant _servant,
 
 static void
 rb_shell_corba_set_repeat (PortableServer_Servant _servant,
-				 CORBA_boolean repeat,
-				 CORBA_Environment *ev)
+			   CORBA_boolean repeat,
+			   CORBA_Environment *ev)
 {
 	eel_gconf_set_boolean(CONF_STATE_REPEAT, repeat);
 }
 
 static CORBA_boolean
 rb_shell_corba_get_repeat (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
+			   CORBA_Environment *ev)
 {
 	return eel_gconf_get_boolean(CONF_STATE_REPEAT);
 }
 
 static void
 rb_shell_corba_playpause (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
+			  CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	rb_shell_player_playpause (shell->priv->player_shell);
@@ -598,7 +745,7 @@ rb_shell_corba_playpause (PortableServer_Servant _servant,
 
 static void
 rb_shell_corba_next (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
+		     CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	rb_shell_player_do_next (shell->priv->player_shell);
@@ -606,7 +753,7 @@ rb_shell_corba_next (PortableServer_Servant _servant,
 
 static void
 rb_shell_corba_previous (PortableServer_Servant _servant,
-				 CORBA_Environment *ev)
+			 CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	rb_shell_player_do_previous (shell->priv->player_shell);
@@ -614,7 +761,7 @@ rb_shell_corba_previous (PortableServer_Servant _servant,
 
 static CORBA_long
 rb_shell_corba_get_playing_song_duration (PortableServer_Servant _servant,
-                     CORBA_Environment *ev)
+					  CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	return rb_shell_player_get_playing_song_duration (shell->priv->player_shell);
@@ -622,7 +769,7 @@ rb_shell_corba_get_playing_song_duration (PortableServer_Servant _servant,
 
 static CORBA_long
 rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
-                     CORBA_Environment *ev)
+				 CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	return rb_shell_player_get_playing_time (shell->priv->player_shell);
@@ -630,10 +777,40 @@ rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
 
 static void
 rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
-                     CORBA_long time, CORBA_Environment *ev)
+				 CORBA_long time, CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
+}
+
+
+static void
+rb_shell_property_changed_generic_cb (GObject *object,
+				      GParamSpec *pspec, 
+				      RBShell *shell)
+{
+	BonoboArg *arg = bonobo_arg_new (TC_CORBA_boolean);
+	gboolean value;
+
+	g_object_get (object, pspec->name, &value, NULL);
+	BONOBO_ARG_SET_BOOLEAN (arg, value);
+	shell_notify_pb_changes (shell, pspec->name, arg);
+	/* FIXME: arg should be released somehow */
+}
+
+static void
+rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
+{
+	RhythmDBEntry *entry;
+	GNOME_Rhythmbox_SongInfo *song_info;
+	BonoboArg *arg;
+	
+	g_assert (strcmp (pspec->name, "playing-entry") == 0);
+	song_info = get_song_info_from_player (shell);
+	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
+	(GNOME_Rhythmbox_SongInfo*)arg->_value = song_info;
+	shell_notify_pb_changes (shell, "song", arg);
+	/* FIXME: arg should be released somehow */
 }
 
 void
@@ -736,6 +913,18 @@ rb_shell_construct (RBShell *shell)
 		shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
 								 tray_component);
 	}
+	g_signal_connect (G_OBJECT (shell->priv->player_shell), 
+			  "notify::repeat", 
+			  G_CALLBACK (rb_shell_property_changed_generic_cb), 
+			  shell);
+	g_signal_connect (G_OBJECT (shell->priv->player_shell), 
+			  "notify::shuffle", 
+			  G_CALLBACK (rb_shell_property_changed_generic_cb), 
+			  shell);
+	g_signal_connect (G_OBJECT (shell->priv->player_shell), 
+			  "notify::playing", 
+			  G_CALLBACK (rb_shell_property_changed_generic_cb), 
+			  shell);
 	g_signal_connect (G_OBJECT (shell->priv->player_shell),
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
@@ -759,7 +948,8 @@ rb_shell_construct (RBShell *shell)
 			  G_CALLBACK (rb_shell_show_popup_cb), shell);
 
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
-						   shell->priv->ui_component);
+						   shell->priv->ui_component,
+						   shell->priv->player_shell);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
 				       G_N_ELEMENTS (target_table));
@@ -1159,12 +1349,24 @@ static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
 {
+	RBEntryView *view;
+
 	if (shell->priv->selected_source == source)
 		return;
 
 	rb_debug ("selecting source %p", source);
-
+	
+	if (shell->priv->song_changed_cb_id != 0) {
+		view = rb_source_get_entry_view (shell->priv->selected_source);
+		g_signal_handler_disconnect (view, 
+					     shell->priv->song_changed_cb_id);
+	}
 	shell->priv->selected_source = source;
+	
+	view = rb_source_get_entry_view (shell->priv->selected_source);
+	shell->priv->song_changed_cb_id = 
+		g_signal_connect (view, "notify::playing-entry", 
+				  (GCallback)rb_shell_entry_changed_cb, shell);
 
 	/* show source */
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),

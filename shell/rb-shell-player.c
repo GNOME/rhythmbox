@@ -211,8 +211,6 @@ struct RBShellPlayerPrivate
 	GtkWidget *volume_button;
 	GtkWidget *magic_button;
 
-	guint duration_signal_idle_id;
-
 	RBRemote *remote;
 };
 
@@ -221,7 +219,10 @@ enum
 	PROP_0,
 	PROP_SOURCE,
 	PROP_COMPONENT,
-	PROP_TRAY_COMPONENT
+	PROP_TRAY_COMPONENT,
+	PROP_REPEAT,
+	PROP_SHUFFLE,
+	PROP_PLAYING,
 };
 
 enum
@@ -254,6 +255,18 @@ static GObjectClass *parent_class = NULL;
 
 static guint rb_shell_player_signals[LAST_SIGNAL] = { 0 };
 
+static void
+gconf_key_changed (GConfClient *client,guint cnxn_id,
+		   GConfEntry *entry, RBShellPlayer *player)
+{
+	if (strcmp (CONF_STATE_REPEAT, entry->key) == 0) {
+		g_object_notify (G_OBJECT (player), "repeat");
+	} else 	if (strcmp (CONF_STATE_SHUFFLE, entry->key) == 0) {
+		g_object_notify (G_OBJECT (player), "shuffle");
+	}
+}
+
+
 GType
 rb_shell_player_get_type (void)
 {
@@ -280,6 +293,37 @@ rb_shell_player_get_type (void)
 	}
 
 	return rb_shell_player_type;
+}
+
+void 
+rb_shell_player_set_repeat (RBShellPlayer *player, gboolean new_val)
+{
+	gboolean old_val;
+	/* Warning: there's probably a small race if the value stored in 
+	 * gconf is modified after the old_val != new_val test, but that
+	 * doesn't matter that much
+	 */
+	g_object_get (G_OBJECT (player), "repeat", &old_val, NULL);
+	if (old_val != new_val) {
+		/* The notify signal will be emitted by the gconf notifier */
+		eel_gconf_set_boolean (CONF_STATE_REPEAT, new_val);
+	}
+}
+
+
+void 
+rb_shell_player_set_shuffle (RBShellPlayer *player, gboolean new_val)
+{
+	gboolean old_val;
+	/* Warning: there's probably a small race if the value stored in 
+	 * gconf is modified after the old_val != new_val test, but that
+	 * doesn't matter that much
+	 */
+	g_object_get (G_OBJECT (player), "shuffle", &old_val, NULL);
+	if (old_val != new_val) {
+		/* The notify signal will be emitted by the gconf notifier */
+		eel_gconf_set_boolean (CONF_STATE_SHUFFLE, new_val);
+	}
 }
 
 static void
@@ -317,6 +361,28 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_REPEAT,
+					 g_param_spec_boolean ("repeat", 
+							       "repeat", 
+							       "Whether repeat is enabled or not", 
+							       FALSE,
+							       G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_SHUFFLE,
+					 g_param_spec_boolean ("shuffle", 
+							       "shuffle", 
+							       "Whether shuffle is enabled or not", 
+							       FALSE,
+							       G_PARAM_READABLE));
+	g_object_class_install_property (object_class,
+					 PROP_PLAYING,
+					 g_param_spec_boolean ("playing", 
+							       "playing", 
+							      "Whether Rhythmbox is currently playing", 
+							       FALSE,
+							       G_PARAM_READABLE));
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
@@ -407,6 +473,13 @@ rb_shell_player_init (RBShellPlayer *player)
 			  "buffering_end",
 			  G_CALLBACK (buffering_end_cb),
 			  player);
+
+	eel_gconf_notification_add (CONF_STATE_SHUFFLE,
+				    (GConfClientNotifyFunc)gconf_key_changed,
+				    player);
+	eel_gconf_notification_add (CONF_STATE_REPEAT,
+				    (GConfClientNotifyFunc)gconf_key_changed,
+				    player);
 
 	rb_shell_player_sync_volume (player);
 
@@ -500,9 +573,6 @@ rb_shell_player_finalize (GObject *object)
 	player = RB_SHELL_PLAYER (object);
 
 	g_return_if_fail (player->priv != NULL);
-
-	if (player->priv->duration_signal_idle_id)
-		g_source_remove (player->priv->duration_signal_idle_id);
 
 	eel_gconf_set_float (CONF_STATE_VOLUME,
 			     monkey_media_player_get_volume (player->priv->mmplayer));
@@ -601,6 +671,16 @@ rb_shell_player_set_property (GObject *object,
 							     rb_shell_player_verbs,
 							     player);
 		break;
+	case PROP_REPEAT:
+		eel_gconf_set_boolean (CONF_STATE_REPEAT, 
+				       g_value_get_boolean (value));
+		break;
+
+	case PROP_SHUFFLE:
+		eel_gconf_set_boolean (CONF_STATE_SHUFFLE, 
+				       g_value_get_boolean (value));
+		break;
+
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -625,6 +705,16 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_TRAY_COMPONENT:
 		g_value_set_object (value, player->priv->tray_component);
+		break;
+	case PROP_REPEAT:
+		g_value_set_boolean (value, eel_gconf_get_boolean (CONF_STATE_REPEAT));
+		break;
+
+	case PROP_SHUFFLE:
+		g_value_set_boolean (value, eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+		break;
+	case PROP_PLAYING:
+		g_value_set_boolean (value, monkey_media_player_playing (player->priv->mmplayer));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -657,7 +747,7 @@ rb_shell_player_new (BonoboUIComponent *component,
 {
 	RBShellPlayer *player;
 
-	player = g_object_new (RB_TYPE_SHELL_PLAYER,
+	player = g_object_new (RB_TYPE_SHELL_PLAYER,			       
 			       "component", component,
 			       "tray-component", tray_component,
 			       NULL);
@@ -696,6 +786,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 {
 	char *unescaped = gnome_vfs_unescape_string_for_display (location);
 	char *msg = g_strdup_printf (_("Opening %s..."), unescaped);
+	gboolean was_playing;
 	gboolean show_buffering_dialog = !strncmp ("http://", location, 7);
 
 	rb_debug ("%s", msg);
@@ -717,11 +808,15 @@ rb_shell_player_open_location (RBShellPlayer *player,
 		player->priv->buffering_blocked = TRUE;
 	}
 
+	was_playing = monkey_media_player_playing (player->priv->mmplayer);
+
 	monkey_media_player_close (player->priv->mmplayer);
 	monkey_media_player_open (player->priv->mmplayer, location, error);
-	
-	if (!monkey_media_player_playing (player->priv->mmplayer))
-		monkey_media_player_play (player->priv->mmplayer);
+	monkey_media_player_play (player->priv->mmplayer);
+
+	if (!was_playing) {
+		g_object_notify (G_OBJECT (player), "playing");
+	}
 }
 
 static void
@@ -743,28 +838,6 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 	fprintf (stderr, "Got error opening \"%s\": %s\n", location, (*error)->message);
 }
 
-static gboolean
-duration_signal_idle (RBShellPlayer *player)
-{
-	char *duration;
-	
-	GDK_THREADS_ENTER ();
-
-	if (monkey_media_player_playing (player->priv->mmplayer)) {
-		duration = rb_player_get_duration_string (player->priv->player_widget);
-		g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED],
-			       0, duration);
-		g_free (duration);
-	}
-
-	player->priv->duration_signal_idle_id =
-		g_timeout_add (1000, (GSourceFunc) duration_signal_idle, player);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-	
 
 static void
 rb_shell_player_play (RBShellPlayer *player)
@@ -774,10 +847,6 @@ rb_shell_player_play (RBShellPlayer *player)
 	rb_entry_view_set_playing (songs, TRUE);
 
 	monkey_media_player_play (player->priv->mmplayer);
-
-	if (!player->priv->duration_signal_idle_id)
-		player->priv->duration_signal_idle_id =
-			g_idle_add ((GSourceFunc) duration_signal_idle, player);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -864,6 +933,7 @@ rb_shell_player_next (RBShellPlayer *player)
 			} else {
 				rb_debug ("No next entry, stopping playback");
 				rb_shell_player_set_playing_source (player, NULL);
+				g_object_notify (G_OBJECT (player), "playing");
 				return;
 			}
 		}
@@ -993,6 +1063,7 @@ rb_shell_player_playpause (RBShellPlayer *player)
 	}
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
+	g_object_notify (G_OBJECT (player), "playing");
 }
 
 static void
@@ -1057,22 +1128,22 @@ rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
 				    const char *state,
 				    RBShellPlayer *player)
 {
+	gboolean newval = rb_bonobo_get_active (component, CMD_PATH_SHUFFLE);
 	rb_debug ("shuffle changed");
-	eel_gconf_set_boolean (CONF_STATE_SHUFFLE,
-			       rb_bonobo_get_active (component,
-						     CMD_PATH_SHUFFLE));
+
+	rb_shell_player_set_shuffle (player, newval);
 }
 	
 static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
-						const char *path,
-						Bonobo_UIComponent_EventType type,
-						const char *state,
-						RBShellPlayer *player)
+					       const char *path,
+					       Bonobo_UIComponent_EventType type,
+					       const char *state,
+					       RBShellPlayer *player)
 {
+	gboolean newval = rb_bonobo_get_active (component, CMD_PATH_REPEAT);
 	rb_debug ("repeat changed");
-	eel_gconf_set_boolean (CONF_STATE_REPEAT,
-			       rb_bonobo_get_active (component,
-						     CMD_PATH_REPEAT));
+
+	rb_shell_player_set_repeat (player, newval);
 }
 
 static void
@@ -1248,7 +1319,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		title = NULL;
 
-	duration = rb_player_get_duration_string (player->priv->player_widget);
+	duration = rb_player_get_elapsed_string (player->priv->player_widget);
 
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
@@ -1422,12 +1493,6 @@ rb_shell_player_get_playing (RBShellPlayer *player)
 	return monkey_media_player_playing (player->priv->mmplayer);
 }
 
-char *
-rb_shell_player_get_duration_string (RBShellPlayer *player)
-{
-	return rb_player_get_duration_string (player->priv->player_widget);
-}
-
 MonkeyMediaPlayer *
 rb_shell_player_get_mm_player (RBShellPlayer *player)
 {
@@ -1562,11 +1627,27 @@ static void
 tick_cb (MonkeyMediaPlayer *mmplayer, long elapsed, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	gdk_threads_enter ();
+
+	GDK_THREADS_ENTER ();
 
 	rb_player_sync_time (player->priv->player_widget);
 
-	gdk_threads_leave ();
+	if (monkey_media_player_playing (mmplayer)) {
+		static int callback_runs = 0;
+		callback_runs++;
+		if (callback_runs >= MONKEY_MEDIA_PLAYER_TICK_HZ) {
+			gchar *duration;
+
+			duration = rb_player_get_elapsed_string (player->priv->player_widget);
+			g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED],
+				       0, duration);
+			g_free (duration);
+			callback_runs = 0;
+		}
+	}
+
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void

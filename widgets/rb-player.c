@@ -783,12 +783,12 @@ slider_changed_callback (GtkWidget *widget,
 }
 
 char *
-rb_player_get_duration_string (RBPlayer *player)
+rb_player_get_elapsed_string (RBPlayer *player)
 {
 	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
 	guint elapsed = monkey_media_player_get_time (player->priv->mmplayer);
 
-	if (player->priv->state->elapsed > 0) {
+	if (elapsed > 0) {
 		minutes = elapsed / 60;
 		seconds = elapsed % 60;
 	}
@@ -796,11 +796,10 @@ rb_player_get_duration_string (RBPlayer *player)
 	if (player->priv->state->duration > 0) {
 		minutes2 = player->priv->state->duration / 60;
 		seconds2 = player->priv->state->duration % 60;
-	}
-	if (seconds2 >= 0)
 		return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
-	else
+	} else {
 		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	}
 }
 
 static void
@@ -812,7 +811,7 @@ rb_player_update_elapsed (RBPlayer *player)
 	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
 		return;
 
-	elapsed_text = rb_player_get_duration_string (player);
+	elapsed_text = rb_player_get_elapsed_string (player);
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);

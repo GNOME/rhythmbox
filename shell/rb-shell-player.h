@@ -21,6 +21,7 @@
  */
 
 #include <gtk/gtkhbox.h>
+#include <bonobo/bonobo-arg.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <monkey-media.h>
 
@@ -78,9 +79,6 @@ long			rb_shell_player_get_playing_time(RBShellPlayer *player);
 void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
-void			rb_shell_player_set_shuffle	(RBShellPlayer *shell_player,
-							 gboolean shuffle);
-
 MonkeyMediaPlayer *	rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
 
 gboolean		rb_shell_player_get_playing	(RBShellPlayer *shell_player);
@@ -89,6 +87,10 @@ const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
 
 void			rb_shell_player_sync_buttons	(RBShellPlayer *player);
 
+void                    rb_shell_player_set_repeat      (RBShellPlayer *player,
+							 gboolean new_val);
+void                    rb_shell_player_set_shuffle     (RBShellPlayer *player,
+							 gboolean new_val);
 
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);

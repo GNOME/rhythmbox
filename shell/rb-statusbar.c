@@ -36,17 +36,20 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
+static GObject* rb_statusbar_construct (GType type,
+					guint n_construct_properties,
+					GObjectConstructParam *construct_properties);
 static void rb_statusbar_class_init (RBStatusbarClass *klass);
-static void rb_statusbar_init (RBStatusbar *shell_player);
+static void rb_statusbar_init (RBStatusbar *statusbar);
 static void rb_statusbar_finalize (GObject *object);
 static void rb_statusbar_set_property (GObject *object,
-					  guint prop_id,
-					  const GValue *value,
-					  GParamSpec *pspec);
+				       guint prop_id,
+				       const GValue *value,
+				       GParamSpec *pspec);
 static void rb_statusbar_get_property (GObject *object,
-					  guint prop_id,
-					  GValue *value,
-					  GParamSpec *pspec);
+				       guint prop_id,
+				       GValue *value,
+				       GParamSpec *pspec);
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
 static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   guint cnxn_id,
@@ -81,6 +84,7 @@ struct RBStatusbarPrivate
 	RhythmDB *db;
 
 	BonoboUIComponent *component;
+	RBShellPlayer *player;
 
 	GtkTooltips *tooltips;
 
@@ -103,6 +107,7 @@ enum
 	PROP_DB,
 	PROP_COMPONENT,
 	PROP_SOURCE,
+	PROP_PLAYER
 };
 
 static GObjectClass *parent_class = NULL;
@@ -142,6 +147,7 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
+	object_class->constructor = rb_statusbar_construct;
 	object_class->finalize = rb_statusbar_finalize;
 
 	object_class->set_property = rb_statusbar_set_property;
@@ -168,7 +174,48 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_PLAYER,
+					 g_param_spec_object ("player",
+							      "RbShellPlayer",
+							      "RbShellPlayer object",
+							      RB_TYPE_SHELL_PLAYER,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+
 }
+
+static GObject*
+rb_statusbar_construct (GType                  type,
+			guint                  n_construct_properties,
+			GObjectConstructParam *construct_properties)
+{
+	RBStatusbarClass *klass;
+	GObjectClass *parent_class;  
+	GObject *object;
+	RBStatusbar *statusbar;
+
+	klass = RB_STATUSBAR_CLASS (g_type_class_peek (type));
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	object = parent_class->constructor (type,
+					    n_construct_properties,
+					    construct_properties);
+	
+	statusbar = RB_STATUSBAR (object);
+
+	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
+				  "notify::shuffle", 
+				  G_CALLBACK (rb_statusbar_sync_state), 
+				  statusbar);
+	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
+				  "notify::repeat", 
+				  G_CALLBACK (rb_statusbar_sync_state), 
+				  statusbar);
+
+	return object;
+}
+
 
 static void
 rb_statusbar_init (RBStatusbar *statusbar)
@@ -216,12 +263,6 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
 				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
 				    statusbar);
-	eel_gconf_notification_add (CONF_STATE_SHUFFLE,
-				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
-				    statusbar);
-	eel_gconf_notification_add (CONF_STATE_REPEAT,
-				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
-				    statusbar);
 }
 
 static void
@@ -238,6 +279,7 @@ rb_statusbar_finalize (GObject *object)
 
 	if (statusbar->priv->idle_tick_id) {
 		g_source_remove (statusbar->priv->idle_tick_id);
+		statusbar->priv->idle_tick_id = 0;
 	}
 	if (statusbar->priv->status_poll_id)
 		g_source_remove (statusbar->priv->status_poll_id);
@@ -294,6 +336,9 @@ rb_statusbar_set_property (GObject *object,
 
 		rb_statusbar_sync_state (statusbar);
 		break;
+	case PROP_PLAYER:
+		statusbar->priv->player = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -319,6 +364,9 @@ rb_statusbar_get_property (GObject *object,
 	case PROP_COMPONENT:
 		g_value_set_object (value, statusbar->priv->component);
 		break;
+	case PROP_PLAYER:
+		g_value_set_object (value, statusbar->priv->player);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -342,11 +390,11 @@ status_tick_cb (GtkProgressBar *progress)
 {
 	g_return_val_if_fail (GTK_IS_PROGRESS_BAR (progress), FALSE);
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
 	gtk_progress_bar_pulse (progress);
 
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 
 	return TRUE;
 }
@@ -409,10 +457,12 @@ poll_status (RBStatusbar *status)
 }
 
 RBStatusbar *
-rb_statusbar_new (RhythmDB *db, BonoboUIComponent *component)
+rb_statusbar_new (RhythmDB *db, BonoboUIComponent *component, 
+		  RBShellPlayer *player)
 {
 	RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
 					       "db", db,
+					       "player", player,
 					       "component", component,
 					       NULL);
 
@@ -433,11 +483,19 @@ void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
 	gboolean hidden;
+	gboolean shuffle;
+	gboolean repeat;
+
 	rb_debug ("syncing state");
+
+	g_object_get (G_OBJECT (statusbar->priv->player), 
+		      "shuffle", &shuffle,
+		      "repeat", &repeat,
+		      NULL);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-				      eel_gconf_get_boolean (CONF_STATE_SHUFFLE));
+				      shuffle);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
-				      eel_gconf_get_boolean (CONF_STATE_REPEAT));
+				      repeat);
 	
 	hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 	if (hidden)
@@ -464,11 +522,17 @@ static void
 rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 				RBStatusbar *statusbar)
 {
+	GObject *player = G_OBJECT (statusbar->priv->player);
+
 	rb_debug ("toggle changed");
-	eel_gconf_set_boolean (CONF_STATE_SHUFFLE,
-			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle)));
-	eel_gconf_set_boolean (CONF_STATE_REPEAT,
-			       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat)));
+
+	if (toggle == GTK_TOGGLE_BUTTON (statusbar->priv->shuffle)) {
+		rb_shell_player_set_shuffle (player, gtk_toggle_button_get_active (toggle));
+	} else if (toggle == GTK_TOGGLE_BUTTON (statusbar->priv->repeat)) {
+		rb_shell_player_set_repeat (player, gtk_toggle_button_get_active (toggle));
+	} else {
+		g_warning ("Unexpected widget");
+	}
 }
 
 static void

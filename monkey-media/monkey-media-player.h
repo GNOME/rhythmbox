@@ -41,6 +41,8 @@ typedef enum
 	MONKEY_MEDIA_PLAYER_ERROR_INTERNAL
 } MonkeyMediaPlayerError;
 
+#define MONKEY_MEDIA_PLAYER_TICK_HZ 5
+
 #define MONKEY_MEDIA_PLAYER_ERROR monkey_media_player_error_quark ()
 
 GQuark monkey_media_player_error_quark (void);
