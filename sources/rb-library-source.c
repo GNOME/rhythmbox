@@ -781,12 +781,14 @@ impl_get_status_full (RBLibrarySource *source)
 	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
 	char *ret;
 	float days;
-	long hours, minutes, seconds;
+	long len, hours, minutes, seconds;
 	long n_seconds = 0;
 	GPtrArray *kids;
 	int i;
 
 	kids = rb_node_get_children (songsroot);
+
+	len = 0;
 
 	for (i = 0; i < kids->len; i++)
 	{
@@ -805,6 +807,8 @@ impl_get_status_full (RBLibrarySource *source)
 			g_warning ("Invalid duration value for node %p", node);
 		else
 			n_seconds += secs;
+
+		len++;
 	}
 
 	rb_node_thaw (songsroot);
@@ -816,14 +820,14 @@ impl_get_status_full (RBLibrarySource *source)
 
 	/* FIXME impl remaining time */
 	if (days >= 1.0) {
-		ret = g_strdup_printf (_("<b>%.1f</b> days"),
-				       days);
+		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"),
+				       days, len);
 	} else if (hours >= 1) {
-		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes"),
-				       hours, minutes);
+		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"),
+				       hours, minutes, len);
 	} else {
-		ret = g_strdup_printf (_("<b>%ld</b> minutes"),
-				       minutes);
+		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"),
+				       minutes, len);
 	}
 
 	return ret;
