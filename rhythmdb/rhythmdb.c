@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "rhythmdb.h"
-#include "rhythmdb-legacy.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
 #include "rb-metadata.h"
@@ -50,8 +49,6 @@ struct RhythmDBPrivate
 	GType *column_types;
 
 	GThreadPool *query_thread_pool;
-
-	GHashTable *legacy_id_map;
 
 	/* Used for metadata reading */
 	RBMetaData *metadata;
@@ -144,7 +141,6 @@ enum
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
 	ERROR,
-	LEGACY_LOAD_COMPLETE,
 	LAST_SIGNAL
 };
 
@@ -268,15 +264,6 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
-	rhythmdb_signals[LEGACY_LOAD_COMPLETE] =
-		g_signal_new ("legacy-load-complete",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RhythmDBClass, legacy_load_complete),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 }
 
 #if 0
@@ -430,8 +417,6 @@ rhythmdb_init (RhythmDB *db)
 		const char *name = rhythmdb_nice_elt_name_from_propid (db, i);
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
-
-	db->priv->legacy_id_map = g_hash_table_new (NULL, NULL);
 
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc) query_thread_main,
 							 db, 1, TRUE, NULL);
@@ -2036,115 +2021,6 @@ void
 rhythmdb_emit_entry_deleted (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
-}
-
-typedef struct
-{
-	RhythmDB *db;
-	char *libname;
-} RhythmDBLegacyLoadData;
-
-RhythmDBEntry *
-rhythmdb_legacy_id_to_entry (RhythmDB *db, guint id)
-{
-	return g_hash_table_lookup (db->priv->legacy_id_map, GINT_TO_POINTER (id));
-}
-
-static gboolean
-emit_legacy_load_complete (RhythmDB *db)
-{
-	GDK_THREADS_ENTER ();
-
-	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LEGACY_LOAD_COMPLETE], 0);
-	g_hash_table_destroy (db->priv->legacy_id_map);
-	g_object_unref (G_OBJECT (db));
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
-static gpointer
-legacy_load_thread_main (RhythmDBLegacyLoadData *data)
-{
-	xmlDocPtr doc;
-	xmlNodePtr root, child;
-	guint id;
-
-	doc = xmlParseFile (data->libname);
-
-	if (doc == NULL) {
-		g_object_unref (G_OBJECT (data->db));
-		goto free_exit;
-	}
-
-	rb_debug ("parsing entries");
-	root = xmlDocGetRootElement (doc);
-	for (child = root->children; child != NULL; child = child->next) {
-		RhythmDBEntry *entry = 
-			rhythmdb_legacy_parse_rbnode (data->db, RHYTHMDB_ENTRY_TYPE_SONG, child,
-						      &id);
-
-		if (id > 0)
-			g_hash_table_insert (data->db->priv->legacy_id_map, GINT_TO_POINTER (id),
-					     entry);
-		if (entry) {
-			rhythmdb_entry_ref (data->db, entry);
-			g_async_queue_push (data->db->priv->update_queue, entry);
-		}
-	}
-	xmlFreeDoc (doc);
-
-	/* steals the library ref */
-	g_idle_add ((GSourceFunc) emit_legacy_load_complete, data->db);
-	rb_debug ("legacy load thread exiting");
-free_exit:
-	g_free (data->libname);
-	g_free (data);
-	g_thread_exit (NULL);
-	return NULL;
-}
-
-void
-rhythmdb_load_legacy (RhythmDB *db)
-{
-	RhythmDBLegacyLoadData *data;
-	char *libname = g_build_filename (rb_dot_dir (), "library-2.1.xml", NULL);
-	xmlDocPtr doc;
-	xmlNodePtr root, child;
-
-	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
-		g_free (libname);
-		goto load_iradio;
-	}
-
-	data = g_new0 (RhythmDBLegacyLoadData, 1);
-	data->db = db;
-	g_object_ref (G_OBJECT (data->db));
-	data->libname = libname;
-	
-	rb_debug ("kicking off library legacy loading thread");
-	g_thread_create ((GThreadFunc) legacy_load_thread_main, data, FALSE, NULL);
-
-load_iradio:
-	libname = g_build_filename (rb_dot_dir (), "iradio-2.2.xml", NULL);
-	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
-		g_free (libname);
-		return;
-	}
-
-	doc = xmlParseFile (libname);
-	g_free (libname);
-
-	if (doc == NULL)
-		return;
-
-	root = xmlDocGetRootElement (doc);
-	for (child = root->children; child != NULL; child = child->next) {
-		rhythmdb_legacy_parse_rbnode (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-					      child, NULL);
-	}
-	xmlFreeDoc (doc);
 }
 
 static gboolean

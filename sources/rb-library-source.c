@@ -73,6 +73,15 @@ static void rb_library_source_get_property (GObject *object,
 			                  guint prop_id,
 			                  GValue *value,
 			                  GParamSpec *pspec);
+static void rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
+						 RBLibrarySource *source,
+						 const char *verbname);
+static void rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
+						 RBLibrarySource *source,
+						 const char *verbname);
+static void rb_library_source_cmd_choose_album (BonoboUIComponent *component,
+						RBLibrarySource *source,
+						const char *verbname);
 static void rb_library_source_handle_genre_selection (RBLibrarySource *libsource, GList *genres);
 static void rb_library_source_handle_artist_selection (RBLibrarySource *libsource, GList *artists);
 static void rb_library_source_handle_album_selection (RBLibrarySource *libsource, GList *albums);
@@ -91,15 +100,6 @@ static void songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibrarySource *source);
-/* static void rb_library_source_drop_cb (GtkWidget        *widget, */
-/* 				       GdkDragContext   *context, */
-/* 				       gint              x, */
-/* 				       gint              y, */
-/* 				       GtkSelectionData *data, */
-/* 				       guint             info, */
-/* 				       guint             time, */
-/* 				       gpointer          user_data); */
-
 static void rb_library_source_state_pref_changed (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
@@ -187,6 +187,14 @@ struct RBLibrarySourcePrivate
 
 	GtkWidget *config_widget;
 	GSList *browser_views_group;
+};
+
+static BonoboUIVerb rb_library_source_verbs[] =
+{
+	BONOBO_UI_VERB ("SLChooseGenre",(BonoboUIVerbFn) rb_library_source_cmd_choose_genre),
+	BONOBO_UI_VERB ("SLChooseArtist",(BonoboUIVerbFn) rb_library_source_cmd_choose_artist),
+	BONOBO_UI_VERB ("SLChooseAlbum", (BonoboUIVerbFn) rb_library_source_cmd_choose_album),
+	BONOBO_UI_VERB_END
 };
 
 enum
@@ -407,12 +415,17 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
 	GObjectClass *parent_class;  
+	BonoboUIComponent *component;
 
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (type));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
 							       construct_properties));
+
+	g_object_get (G_OBJECT (source), "component", &component, NULL);
+	bonobo_ui_component_add_verb_list_with_data (component, rb_library_source_verbs,
+						     source);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -484,27 +497,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 
-	/* Drag'n'Drop for songs view */
-/* 	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->songs, target_uri, 1); */
-
-/* 	/\* Drag'n'Drop for albums view *\/ */
-/* 	g_signal_connect (G_OBJECT (source->priv->albums), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->albums), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->albums, target_id, 1); */
-
-/* 	/\* Drag'n'Drop for artists view *\/ */
-/* 	g_signal_connect (G_OBJECT (source->priv->artists), "drag_data_received", */
-/* 			  G_CALLBACK (rb_library_source_drop_cb), source); */
-/* 	gtk_drag_dest_set (GTK_WIDGET (source->priv->artists), GTK_DEST_DEFAULT_ALL, */
-/* 			   target_uri, 1, GDK_ACTION_COPY); */
-/* 	rb_node_view_enable_drag_source (source->priv->artists, target_id, 1); */
-
 	/* this gets emitted when the paned thingie is moved */
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "size_allocate",
@@ -570,34 +562,18 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (RhythmDB *db)
+rb_library_source_new (RhythmDB *db, BonoboUIComponent *component)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
+					  "component", component,
 					  "db", db,
 					  NULL));
 
 	return source;
 }
-
-/* static RBNode * */
-/* ensure_node_selection (RBEntryView *source, */
-/* 		       RBNode *all_node, */
-/* 		       gboolean *changing_flag) */
-/* { */
-/* 	GList *selection = rb_node_view_get_selection (source); */
-
-/* 	if (selection == NULL) { */
-/* 		*changing_flag = TRUE; */
-/* 		rb_node_view_select_node (source, all_node); */
-/* 		*changing_flag = FALSE; */
-/* 		selection = rb_node_view_get_selection (source); */
-/* 	} */
-
-/* 	return selection->data; */
-/* } */
 
 static gboolean
 string_list_equal (GList *a, GList *b)
@@ -633,6 +609,85 @@ string_list_equal (GList *a, GList *b)
 	g_list_free (sorted_a_keys);
 	g_list_free (sorted_b_keys);
 	return ret;
+}
+
+
+
+static void
+rb_library_source_gather_hash_keys (char *key, gpointer unused,
+				    GList **data)
+{
+	*data = g_list_prepend (*data, key);
+}
+
+static GList *
+rb_library_source_gather_properties (RBLibrarySource *source,
+				     RhythmDBPropType prop)
+{
+	GList *selected, *tem;
+	GHashTable *selected_set;
+
+	rhythmdb_read_lock (source->priv->db);
+
+	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
+	selected = rb_entry_view_get_selected_entries (source->priv->songs);
+	for (tem = selected; tem; tem = tem->next) {
+		char *val = g_strdup (rhythmdb_entry_get_string (source->priv->db,
+								 tem->data, prop));
+		g_hash_table_insert (selected_set, val, NULL);
+	}
+
+	rhythmdb_read_unlock (source->priv->db);
+
+	g_list_free (selected);
+	
+	tem = NULL;
+	g_hash_table_foreach (selected_set, (GHFunc) rb_library_source_gather_hash_keys,
+			      &tem);
+	g_hash_table_destroy (selected_set);
+	return tem;
+}
+
+static void
+rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
+				    RBLibrarySource *source,
+				    const char *verbname)
+{
+	GList *props;	
+
+	rb_debug ("choosing genre");
+
+	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_GENRE);
+	rb_property_view_set_selection (source->priv->genres, props);
+	g_list_free (props);
+}
+
+static void
+rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
+				     RBLibrarySource *source,
+				     const char *verbname)
+{
+	GList *props;	
+
+	rb_debug ("choosing artist");
+
+	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ARTIST);
+	rb_property_view_set_selection (source->priv->artists, props);
+	g_list_free (props);
+}
+
+static void
+rb_library_source_cmd_choose_album (BonoboUIComponent *component,
+				    RBLibrarySource *source,
+				    const char *verbname)
+{
+	GList *props;	
+
+	rb_debug ("choosing album");
+
+	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ALBUM);
+	rb_property_view_set_selection (source->priv->albums, props);
+	g_list_free (props);
 }
 
 static void
@@ -1421,34 +1476,3 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	rb_entry_view_poll_model (source->priv->songs);
 	rb_debug ("done polling");
 }
-
-/* static void */
-/* rb_library_source_drop_cb (GtkWidget *widget, */
-/* 			 GdkDragContext *context, */
-/* 			 gint x, */
-/* 			 gint y, */
-/* 			 GtkSelectionData *data, */
-/* 			 guint info, */
-/* 			 guint time, */
-/* 			 gpointer user_data) */
-/* { */
-/* 	RBLibrarySource *source = RB_LIBRARY_SOURCE (user_data); */
-/* 	GtkTargetList *tlist; */
-/* 	gboolean ret; */
-
-/* 	rb_debug ("checking target"); */
-
-/* 	tlist = gtk_target_list_new (target_uri, 1); */
-/* 	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE); */
-/* 	gtk_target_list_unref (tlist); */
-
-/* 	if (ret == FALSE) */
-/* 		return; */
-
-/* 	if (!impl_receive_drag (RB_SOURCE (source), data)) { */
-/* 		gtk_drag_finish (context, FALSE, FALSE, time); */
-/* 		return; */
-/* 	} */
-
-/* 	gtk_drag_finish (context, TRUE, FALSE, time); */
-/* } */

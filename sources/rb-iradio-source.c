@@ -31,7 +31,6 @@
 
 #include "rb-iradio-source.h"
 
-#include "rhythmdb-legacy.h"
 #include "rhythmdb-query-model.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-glade-helpers.h"

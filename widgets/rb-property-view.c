@@ -584,6 +584,25 @@ rb_property_view_row_activated_cb (GtkTreeView *treeview,
 		       is_all ? NULL : val);
 }
 
+void
+rb_property_view_set_selection (RBPropertyView *view, const GList *vals)
+{
+	view->priv->handling_row_deletion = TRUE;
+	
+	gtk_tree_selection_unselect_all (view->priv->selection);
+	
+	for (; vals ; vals = vals->next) {
+		GtkTreeIter iter;
+		
+		if (rhythmdb_property_model_iter_from_string (view->priv->prop_model, vals->data, &iter)) {
+			gtk_tree_selection_select_iter (view->priv->selection, &iter);
+		}
+	}
+		
+	view->priv->handling_row_deletion = FALSE;
+	rb_property_view_selection_changed_cb (view->priv->selection, view);
+}
+
 static void
 rb_property_view_selection_changed_cb (GtkTreeSelection *selection,
 				       RBPropertyView *view)

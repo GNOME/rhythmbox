@@ -70,6 +70,7 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
+	PROP_COMPONENT,
 };
 
 enum
@@ -148,6 +149,13 @@ rb_source_class_init (RBSourceClass *klass)
 							      "Interface name",
 							      NULL,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_COMPONENT,
+					 g_param_spec_pointer ("component",
+							       "BonoboUIComponent",
+							       "BonoboUIComponent",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	rb_source_signals[DELETED] =
 		g_signal_new ("deleted",
 			      RB_TYPE_SOURCE,
@@ -226,6 +234,9 @@ rb_source_set_property (GObject *object,
 		g_free (source->priv->name);
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
+	case PROP_COMPONENT:
+		source->priv->component = g_value_get_pointer (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -244,6 +255,9 @@ rb_source_get_property (GObject *object,
 	{
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
+		break;
+	case PROP_COMPONENT:
+		g_value_set_pointer (value, source->priv->component);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

@@ -25,11 +25,16 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <libgnome/gnome-i18n.h>
+#include <string.h>
 
 #include "rb-sourcelist-model.h"
 #include "rb-tree-dnd.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
+
+static const GtkTargetEntry rb_sourcelist_model_drag_types[] = { { "application/x-rhythmbox-source", 0, 0 },};
+
+static GtkTargetList *rb_sourcelist_model_drag_target_list = NULL;
 
 struct RBSourceListModelPriv
 {
@@ -139,6 +144,11 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 			      G_TYPE_NONE,
 			      3,
 			      G_TYPE_POINTER, G_TYPE_INT, G_TYPE_POINTER);
+
+	if (!rb_sourcelist_model_drag_target_list)
+		rb_sourcelist_model_drag_target_list
+			= gtk_target_list_new (rb_sourcelist_model_drag_types,
+					       G_N_ELEMENTS (rb_sourcelist_model_drag_types));
 }
 
 static void
@@ -229,6 +239,34 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
                 return TRUE;
         }
 
+	if (selection_data->type == gdk_atom_intern ("application/x-rhythmbox-source", TRUE)) {
+		GtkTreePath *path;
+		char *path_str;
+		GtkTreeIter iter;
+		GtkTreeIter dest_iter;
+
+		if (!dest)
+			return FALSE;
+		
+		path_str = g_strndup (selection_data->data, selection_data->length);
+	
+		path = gtk_tree_path_new_from_string (path_str);
+		gtk_tree_model_get_iter (GTK_TREE_MODEL (model),
+					 &iter, path);
+		if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model),
+					     &dest_iter, dest)) {
+			if (pos == GTK_TREE_VIEW_DROP_AFTER)
+				gtk_list_store_move_after (GTK_LIST_STORE (model),
+							   &iter, &dest_iter);
+			else
+				gtk_list_store_move_before (GTK_LIST_STORE (model),
+							    &iter, &dest_iter);
+		} else
+			gtk_list_store_move_before (GTK_LIST_STORE (model),
+						    &iter, NULL);
+		g_free (path_str);
+	}
+
 	return FALSE;
 }
 
@@ -249,6 +287,23 @@ rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 						     dest, selection_data);
 }
 
+static gboolean
+path_is_droppable (RBSourceListModel *model,
+		   GtkTreePath *dest)
+{
+	GtkTreeIter iter;
+	
+	if (gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest)) {
+		RBSource *source;
+		
+		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+		
+		return rb_source_can_rename (source);
+
+	}
+	return FALSE;
+}
 
 static gboolean
 rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
@@ -256,32 +311,36 @@ rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
 				       GList *targets,
 				       GtkTreeViewDropPosition *pos)
 {
-	GtkTreeIter iter;
 	GtkTreeModel *model = GTK_TREE_MODEL (drag_dest);
 	
-	if (gtk_tree_model_get_iter (model, &iter, dest_path)) {
-		RBSource *source;
+	if (!(g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE))
+	      || g_list_find (targets, gdk_atom_intern ("application/x-rhythmbox-source", TRUE)))) {
+		rb_debug ("unsupported type");
+		return FALSE;
+	}
 
-		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
-
-		if (!rb_source_can_rename (source)) {
-
-			if (*pos == GTK_TREE_VIEW_DROP_BEFORE)
-				*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
-			else if (*pos == GTK_TREE_VIEW_DROP_AFTER)
-				*pos = GTK_TREE_VIEW_DROP_INTO_OR_AFTER;
-
-			return TRUE;
-
+	if (!path_is_droppable (RB_SOURCELIST_MODEL (model), dest_path))
+		return FALSE;
+	
+	if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
+		*pos = GTK_TREE_VIEW_DROP_BEFORE;
+	else if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
+		*pos = GTK_TREE_VIEW_DROP_AFTER;
+	
+	if (pos == GTK_TREE_VIEW_DROP_BEFORE) {
+		GtkTreePath *prev_path = gtk_tree_path_copy (dest_path);
+		if (!gtk_tree_path_prev (prev_path)) {
+			gtk_tree_path_free (prev_path);
+			*pos = GTK_TREE_VIEW_DROP_AFTER;
+			return FALSE;
 		} else {
-
-			if (g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE)))
-				return TRUE;
+			gboolean ret =  path_is_droppable (RB_SOURCELIST_MODEL (model), prev_path);
+			gtk_tree_path_free (prev_path);
+			*pos = GTK_TREE_VIEW_DROP_AFTER;
+			return ret;
 		}
 	}
-		
-	return FALSE;
+	return TRUE;
 }
 
 
@@ -297,7 +356,7 @@ rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
 	/* we don't support multi selection */
 	g_return_val_if_fail (g_list_length (path_list) == 1, FALSE);
 
-	path = g_list_first (path_list)->data;
+	path = gtk_tree_row_reference_get_path (path_list->data);
 
 	if (gtk_tree_model_get_iter (model, &iter, path)) {
 		RBSource *source;
@@ -316,12 +375,24 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 				   GList *path_list,
 				   GtkSelectionData *selection_data)
 {
-	return FALSE;
+	char *path_str;
+	GtkTreePath *path;
+
+	path = gtk_tree_row_reference_get_path (path_list->data);
+
+	path_str = gtk_tree_path_to_string (path);
+	gtk_selection_data_set (selection_data,
+				gdk_atom_intern ("application/x-rhythmbox-source", TRUE),
+				8, path_str,
+				strlen (path_str));
+	g_free (path_str);
+	gtk_tree_path_free (path);
+	return TRUE;
 }
 
 static gboolean
 rb_sourcelist_model_drag_data_delete (RbTreeDragSource *drag_source,
-				      GList *path_list)
+				      GList *paths)
 {
-	return FALSE;
+	return TRUE;
 }

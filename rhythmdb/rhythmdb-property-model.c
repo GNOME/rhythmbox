@@ -567,6 +567,23 @@ rhythmdb_property_model_delete_prop (RhythmDBPropertyModel *model,
 	return;
 }
 
+gboolean
+rhythmdb_property_model_iter_from_string (RhythmDBPropertyModel *model,
+					  const char *name, GtkTreeIter *iter)
+{
+	GSequencePtr ptr;
+
+	ptr = g_hash_table_lookup (model->priv->reverse_map, name);
+
+	if (!ptr)
+		return FALSE;
+
+	iter->stamp = model->priv->stamp;
+	iter->user_data = ptr;
+
+	return TRUE;
+}
+
 static GtkTreeModelFlags
 rhythmdb_property_model_get_flags (GtkTreeModel *model)
 {

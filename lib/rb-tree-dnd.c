@@ -62,7 +62,7 @@ typedef struct
 
 RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
 GList * get_context_data (GdkDragContext *context);
-static void filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
+static gboolean filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
 static gint scroll_row_timeout (gpointer data);
 static void remove_scroll_timeout (GtkTreeView *tree_view);
 
@@ -349,35 +349,33 @@ get_context_data (GdkDragContext *context)
 	return g_object_get_data (G_OBJECT (context), "rb-tree-view-multi-source-row");
 }
 
-void
+gboolean
 filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos)
 {
-  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
-  GtkTreeModel *model = gtk_tree_view_get_model (tree_view);
-  RbTreeDndData *priv_data = g_object_get_data (G_OBJECT (widget), RB_TREE_DND_STRING);
+	GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+	GtkTreeModel *model = gtk_tree_view_get_model (tree_view);
+	RbTreeDndData *priv_data = g_object_get_data (G_OBJECT (widget), RB_TREE_DND_STRING);
+	gboolean ret;
 
-  if (!(priv_data->dest_flags &
-	(RB_TREE_DEST_CAN_DROP_INTO | RB_TREE_DEST_CAN_DROP_BETWEEN))) {
+	if (!(priv_data->dest_flags & RB_TREE_DEST_CAN_DROP_INTO)) {
+		if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
+			*pos = GTK_TREE_VIEW_DROP_BEFORE;
+		else if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
+			*pos = GTK_TREE_VIEW_DROP_AFTER;
+	} else if (!(priv_data->dest_flags & RB_TREE_DEST_CAN_DROP_BETWEEN)) {
+		if (*pos == GTK_TREE_VIEW_DROP_BEFORE)
+			*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+		else if (*pos == GTK_TREE_VIEW_DROP_AFTER)
+			*pos = GTK_TREE_VIEW_DROP_INTO_OR_AFTER;
+	}
 
-    rb_tree_drag_dest_row_drop_position (RB_TREE_DRAG_DEST (model),
-					 path,
-					 context->targets,
-					 pos);
-
-  } else {
-    if (!(priv_data->dest_flags & RB_TREE_DEST_CAN_DROP_INTO)) {
-      if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_BEFORE)
-	*pos = GTK_TREE_VIEW_DROP_BEFORE;
-      else if (*pos == GTK_TREE_VIEW_DROP_INTO_OR_AFTER)
-	*pos = GTK_TREE_VIEW_DROP_AFTER;
-
-    } else if (!(priv_data->dest_flags & RB_TREE_DEST_CAN_DROP_BETWEEN)) {
-      if (*pos == GTK_TREE_VIEW_DROP_BEFORE)
-	*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
-      else if (*pos == GTK_TREE_VIEW_DROP_AFTER)
-	*pos = GTK_TREE_VIEW_DROP_INTO_OR_AFTER;
-    }
-  }
+	ret = rb_tree_drag_dest_row_drop_position (RB_TREE_DRAG_DEST (model),
+						   path,
+						   context->targets,
+						   pos);
+  
+	rb_debug ("filtered drop position: %s", ret ? "TRUE" : "FALSE");	
+	return ret;
 }
 
 
@@ -584,7 +582,10 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	}
 	else
 	{
-	  filter_drop_position (widget, context, path, &pos);
+		if (!filter_drop_position (widget, context, path, &pos)) {
+			gdk_drag_status (context, 0, time);
+			return TRUE;
+		}
 
 	  if (priv_data->scroll_timeout == 0)
 	  {
@@ -663,6 +664,7 @@ rb_tree_dnd_drag_data_received_cb (GtkWidget        *widget,
 	GtkTreeModel *model;
 	GtkTreePath *dest_row;
 	GtkTreeViewDropPosition pos;
+	gboolean filtered = TRUE;
 	gboolean accepted = FALSE;
 
 	tree_view = GTK_TREE_VIEW (widget);
@@ -671,9 +673,10 @@ rb_tree_dnd_drag_data_received_cb (GtkWidget        *widget,
 	gtk_tree_view_get_dest_row_at_pos (tree_view, x, y, &dest_row, &pos);
 
 	if (dest_row)
-		filter_drop_position (widget, context, dest_row, &pos);
+		if (!filter_drop_position (widget, context, dest_row, &pos))
+			filtered = FALSE;
 
-	if (selection_data->length >= 0)
+	if (filtered && selection_data->length >= 0)
 	{
 		if (rb_tree_drag_dest_drag_data_received (RB_TREE_DRAG_DEST (model),
                 					  dest_row,

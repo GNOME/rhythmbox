@@ -367,6 +367,11 @@ rb_sourcelist_set_dnd_targets (RBSourceList *sourcelist,
 					   RB_TREE_DEST_EMPTY_VIEW_DROP,
 					   targets, n_targets,
 					   GDK_ACTION_LINK);
+	rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (sourcelist->priv->treeview),
+					     GDK_BUTTON1_MASK,
+					     targets,
+					     n_targets,
+					     GDK_ACTION_MOVE);
 }
 
 static void

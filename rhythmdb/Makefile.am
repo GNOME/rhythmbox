@@ -5,8 +5,6 @@ noinst_LTLIBRARIES = librhythmdb.la
 librhythmdb_la_SOURCES =				\
 	rhythmdb.h					\
 	rhythmdb.c					\
-	rhythmdb-legacy.h				\
-	rhythmdb-legacy.c				\
 	rhythmdb-property-model.h			\
 	rhythmdb-property-model.c			\
 	rhythmdb-query-model.h				\

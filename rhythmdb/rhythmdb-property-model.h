@@ -65,6 +65,8 @@ GType			rhythmdb_property_model_get_type	(void);
 
 RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBPropType propid);
 
+gboolean		rhythmdb_property_model_iter_from_string(RhythmDBPropertyModel *model, const char *name, GtkTreeIter *iter);
+
 G_END_DECLS
 
 #endif /* __RHYTHMBDB_PROPERTY_MODEL_H */

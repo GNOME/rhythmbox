@@ -214,7 +214,6 @@ static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
 						 const char *state,
 						 RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
-static void rb_shell_legacy_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
@@ -258,7 +257,8 @@ static void rb_shell_session_init (RBShell *shell);
 static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 },
                                                { "text/x-rhythmbox-album", 0, 0 },
                                                { "text/x-rhythmbox-artist", 0, 0 },
-                                               { "text/x-rhythmbox-genre", 0, 0 } };
+                                               { "text/x-rhythmbox-genre", 0, 0 },
+					       { "application/x-rhythmbox-source", 0, 0 }};
 
 enum
 {
@@ -1183,14 +1183,6 @@ rb_shell_construct (RBShell *shell)
 				 G_CALLBACK (rb_shell_db_changed_cb),
 				 shell, 0);
 
-	if (!rhythmdb_exists && eel_gconf_get_boolean (CONF_FIRST_TIME)) {
-		rb_debug ("loading legacy library db");
-		g_signal_connect_object (G_OBJECT (shell->priv->db), "legacy-load-complete",
-					 G_CALLBACK (rb_shell_legacy_load_complete_cb), shell,
-					 0);
-		rhythmdb_load_legacy (shell->priv->db);
-	}
-
 	rb_debug ("shell: setting up tray icon");
 	tray_deleted_cb (NULL, NULL, shell);
 
@@ -1315,7 +1307,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize sources */
 	rb_debug ("shell: creating library source");
-	shell->priv->library_source = rb_library_source_new (shell->priv->db);
+	shell->priv->library_source = rb_library_source_new (shell->priv->db, shell->priv->ui_component);
 	rb_shell_append_source (shell, shell->priv->library_source);
 
 	rb_debug ("shell: creating iradio source");
@@ -2057,13 +2049,6 @@ rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
 	GDK_THREADS_ENTER ();
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
 	GDK_THREADS_LEAVE ();
-}
-
-static void
-rb_shell_legacy_load_complete_cb (RhythmDB *db, RBShell *shell)
-{
-	rb_debug ("legacy load complete");
-	rb_playlist_manager_load_legacy_playlists (shell->priv->playlist_manager);
 }
 
 static void
