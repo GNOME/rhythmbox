@@ -810,7 +810,7 @@ set_playing (RBPlayer *player, RBNode *song)
 		}
 
 		g_signal_connect (G_OBJECT (player->priv->stream), "end_of_stream",
-				  G_CALLBACK (mm_eos_cb), player);
+				  G_CALLBACK (eos_cb), player);
 
 		monkey_media_mixer_append_audio_stream (player->priv->mixer, player->priv->stream);
 		monkey_media_mixer_set_playing_audio_stream (player->priv->mixer, player->priv->stream);
