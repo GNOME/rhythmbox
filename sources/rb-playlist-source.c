@@ -584,7 +584,9 @@ rb_playlist_source_remove_location (RBPlaylistSource *source,
 	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) != NULL);
 	g_hash_table_remove (source->priv->entries,
 			     location);
+	rhythmdb_read_lock (source->priv->db);
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
+	rhythmdb_read_unlock (source->priv->db);
 	if (entry != NULL)
 		rhythmdb_query_model_remove_entry (source->priv->model, entry);
 }
