@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+#define RB_LIBRARY_XML_VERSION "1.0"
+
 #define RB_TYPE_LIBRARY         (rb_library_get_type ())
 #define RB_LIBRARY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY, RBLibrary))
 #define RB_LIBRARY_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIBRARY, RBLibraryClass))

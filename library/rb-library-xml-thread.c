@@ -18,6 +18,9 @@
  *  $Id$
  */
 
+#include <string.h>
+#include <unistd.h>
+
 #include "rb-library-xml-thread.h"
 #include "rb-node-song.h"
 
@@ -49,6 +52,7 @@ struct RBLibraryXMLThreadPrivate
 
 	gboolean initialized_file;
 	xmlDocPtr doc;
+	xmlNodePtr root;
 	xmlNodePtr child;
 };
 
@@ -262,16 +266,30 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 
 		if (priv->initialized_file == FALSE)
 		{
+			char *tmp;
+			
 			priv->doc = xmlParseFile (priv->filename);
 
 			if (priv->doc == NULL)
+			{
 				done_loading (priv);
+			}
+
+			priv->root = xmlDocGetRootElement (priv->doc);
+
+			tmp = xmlGetProp (priv->root, "version");
+			if (tmp == NULL || strcmp (tmp, RB_LIBRARY_XML_VERSION) != 0)
+			{
+				unlink (priv->filename);
+				done_loading (priv);
+			}
+			g_free (tmp);
 
 			priv->initialized_file = TRUE;
 		}
 
-		if (priv->child == NULL)
-			priv->child = priv->doc->children->children;
+		if (priv->child == NULL && priv->dead == FALSE)
+			priv->child = priv->root->children;
 
 		for (; priv->child != NULL && i <= 10; priv->child = priv->child->next, i++)
 		{
@@ -308,7 +326,7 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 			}
 		}
 
-		if (priv->child == NULL)
+		if (priv->child == NULL && priv->dead == FALSE)
 		{
 			xmlFreeDoc (priv->doc);
 			priv->doc = NULL;

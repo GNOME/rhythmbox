@@ -28,11 +28,14 @@
 #include <libgnome/gnome-i18n.h>
 #include <libxml/tree.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "rb-dialog.h"
 #include "rb-sidebar.h"
 
 #define DARKEN 1.4
+
+#define RB_SIDEBAR_XML_VERSION "1.0"
 
 struct _RBSidebarPriv
 {
@@ -345,6 +348,7 @@ rb_sidebar_save_layout (RBSidebar *sidebar,
 			const char *filename)
 {
 	xmlDocPtr doc;
+	xmlNodePtr root;
 	GList *l;
 	
 	g_return_if_fail (RB_IS_SIDEBAR (sidebar));
@@ -352,7 +356,10 @@ rb_sidebar_save_layout (RBSidebar *sidebar,
 	
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
-	doc->children = xmlNewDocNode (doc, NULL, "RBSidebarLayout", NULL);
+	
+	root = xmlNewDocNode (doc, NULL, "rhythmbox_sidebar_layout", NULL);
+	xmlSetProp (root, "version", RB_SIDEBAR_XML_VERSION);
+	xmlDocSetRootElement (doc, root);
 
 	for (l = sidebar->priv->buttons; l != NULL; l = g_list_next (l))
 	{
@@ -360,9 +367,9 @@ rb_sidebar_save_layout (RBSidebar *sidebar,
 		xmlNodePtr node;
 		char *active;
 
-		node = xmlNewChild (doc->children, NULL, "RBSidebarButton", NULL);
+		node = xmlNewChild (root, NULL, "button", NULL);
 
-		xmlSetProp (node, "unique_id", button->unique_id);
+		xmlSetProp (node, "id", button->unique_id);
 		active = g_strdup_printf ("%d", GTK_TOGGLE_BUTTON (button)->active);
 		xmlSetProp (node, "active", active);
 		g_free (active);
@@ -377,8 +384,9 @@ rb_sidebar_load_layout (RBSidebar *sidebar,
 			const char *filename)
 {
 	xmlDocPtr doc;
-	xmlNodePtr child;
+	xmlNodePtr child, root;
 	int position = 0;
+	char *tmp;
 	
 	g_return_if_fail (RB_IS_SIDEBAR (sidebar));
 	g_return_if_fail (filename != NULL);
@@ -394,12 +402,23 @@ rb_sidebar_load_layout (RBSidebar *sidebar,
 		return;
 	}
 
-	for (child = doc->children->children; child != NULL; child = child->next)
+	root = xmlDocGetRootElement (doc);
+	tmp = xmlGetProp (root, "version");
+	if (tmp == NULL || strcmp (tmp, RB_SIDEBAR_XML_VERSION) != 0)
+	{
+		g_free (tmp);
+		xmlFreeDoc (doc);
+		unlink (filename);
+		return;
+	}
+	g_free (tmp);
+
+	for (child = root->children; child != NULL; child = child->next)
 	{
 		char *unique_id, *active;
 		RBSidebarButton *button;
 
-		unique_id = xmlGetProp (child, "unique_id");
+		unique_id = xmlGetProp (child, "id");
 		if (unique_id == NULL)
 			continue;
 		button = rb_sidebar_button_from_id (sidebar, unique_id);

@@ -47,6 +47,8 @@
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 
+#define RB_GROUP_XML_VERSION "1.0"
+
 static void rb_group_view_class_init (RBGroupViewClass *klass);
 static void rb_group_view_init (RBGroupView *view);
 static void rb_group_view_finalize (GObject *object);
@@ -1003,6 +1005,7 @@ void
 rb_group_view_save (RBGroupView *view)
 {
 	xmlDocPtr doc;
+	xmlNodePtr root;
 	GList *l, *kids;
 	char *dir;
 
@@ -1014,9 +1017,11 @@ rb_group_view_save (RBGroupView *view)
 
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
-	doc->children = xmlNewDocNode (doc, NULL, "RBGroup", NULL);
 
-	xmlSetProp (doc->children, "name", view->priv->name);
+	root = xmlNewDocNode (doc, NULL, "rhythmbox_music_group", NULL);
+	xmlSetProp (root, "version", RB_GROUP_XML_VERSION);
+	xmlSetProp (root, "name", view->priv->name);
+	xmlDocSetRootElement (doc, root);
 
 	kids = rb_node_get_children (view->priv->group);
 	for (l = kids; l != NULL; l = g_list_next (l))
@@ -1025,7 +1030,7 @@ rb_group_view_save (RBGroupView *view)
 		xmlNodePtr xmlnode;
 		char *tmp;
 
-		xmlnode = xmlNewChild (doc->children, NULL, "RBNodePointer", NULL);
+		xmlnode = xmlNewChild (root, NULL, "node_pointer", NULL);
 
 		tmp = g_strdup_printf ("%ld", rb_node_get_id (node));
 		xmlSetProp (xmlnode, "id", tmp);
@@ -1041,8 +1046,8 @@ void
 rb_group_view_load (RBGroupView *view)
 {
 	xmlDocPtr doc;
-	xmlNodePtr child;
-	char *name;
+	xmlNodePtr child, root;
+	char *name, *tmp;
 	
 	g_return_if_fail (RB_IS_GROUP_VIEW (view));
 
@@ -1057,9 +1062,21 @@ rb_group_view_load (RBGroupView *view)
 		return;
 	}
 
-	name = xmlGetProp (doc->children, "name");
+	root = xmlDocGetRootElement (doc);
 
-	for (child = doc->children->children; child != NULL; child = child->next)
+	tmp = xmlGetProp (root, "version");
+	if (tmp == NULL || strcmp (tmp, RB_GROUP_XML_VERSION) != 0)
+	{
+		g_free (tmp);
+		xmlFreeDoc (doc);
+		unlink (view->priv->file);
+		return;
+	}
+	g_free (tmp);
+
+	name = xmlGetProp (root, "name");
+
+	for (child = root->children; child != NULL; child = child->next)
 	{
 		long id;
 		char *tmp;

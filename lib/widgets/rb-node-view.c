@@ -438,6 +438,12 @@ uri_from_sort_iter_cb (RBTreeModelSort *model,
 	*uri = rb_node_song_get_location (node);
 }
 
+static gboolean
+bool_to_int (const char *boolean)
+{
+	return (strcmp (boolean, "true") == 0);
+}
+
 static void
 rb_node_view_construct (RBNodeView *view)
 {
@@ -528,12 +534,12 @@ rb_node_view_construct (RBNodeView *view)
 
 	tmp = xmlGetProp (doc->children, "rules-hint");
 	if (tmp != NULL)
-		gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), atoi (tmp));
+		gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
 	g_free (tmp);
 
 	tmp = xmlGetProp (doc->children, "headers-visible");
 	if (tmp != NULL)
-		gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), atoi (tmp));
+		gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
 	g_free (tmp);
 
 	tmp = xmlGetProp (doc->children, "selection-mode");
@@ -548,7 +554,7 @@ rb_node_view_construct (RBNodeView *view)
 
 	tmp = xmlGetProp (doc->children, "keep-selection");
 	if (tmp != NULL)
-		view->priv->keep_selection = atoi (tmp);
+		view->priv->keep_selection = bool_to_int (tmp);
 	g_free (tmp);
 
 	for (child = doc->children->children; child != NULL; child = child->next)
@@ -575,38 +581,38 @@ rb_node_view_construct (RBNodeView *view)
 		
 		tmp = xmlGetProp (child, "visible");
 		if (tmp != NULL)
-			visible = atoi (tmp);
+			visible = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "reorderable");
 		if (tmp != NULL)
-			reorderable = atoi (tmp);
+			reorderable = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "resizable");
 		if (tmp != NULL)
-			resizable = atoi (tmp);
+			resizable = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "clickable");
 		if (tmp != NULL)
-			clickable = atoi (tmp);
+			clickable = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "default-sort-column");
 		if (tmp != NULL)
-			default_sort_column = atoi (tmp);
+			default_sort_column = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "expand");
 		if (tmp != NULL)
-			expand = atoi (tmp);
+			expand = bool_to_int (tmp);
 		g_free (tmp);
 
 		tmp = xmlGetProp (child, "sort-order");
 		if (tmp != NULL)
 		{
-			char **parts = g_strsplit (tmp, ",", 0);
+			char **parts = g_strsplit (tmp, " ", 0);
 			int i;
 			
 			for (i = 0; parts != NULL && parts[i] != NULL; i++)

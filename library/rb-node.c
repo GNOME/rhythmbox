@@ -845,7 +845,7 @@ rb_node_save_to_xml (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (parent_xml_node != NULL);
 
-	xml_node = xmlNewChild (parent_xml_node, NULL, "RBNode", NULL);
+	xml_node = xmlNewChild (parent_xml_node, NULL, "node", NULL);
 
 	id = rb_node_get_id (node);
 

@@ -270,6 +270,7 @@ static void
 rb_library_save (RBLibrary *library)
 {
 	xmlDocPtr doc;
+	xmlNodePtr root;
 	GList *children, *l;
 
 	rb_node_system_flush ();
@@ -277,13 +278,16 @@ rb_library_save (RBLibrary *library)
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
-	doc->children = xmlNewDocNode (doc, NULL, "RBLibrary", NULL);
+
+	root = xmlNewDocNode (doc, NULL, "rhythmbox_library", NULL);
+	xmlSetProp (root, "version", RB_LIBRARY_XML_VERSION);
+	xmlDocSetRootElement (doc, root);
 
 	children = rb_node_get_children (library->priv->all_genres);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
 		if (l->data != library->priv->all_artists)
-			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+			rb_node_save_to_xml (RB_NODE (l->data), root);
 	}
 	g_list_free (children);
 
@@ -291,7 +295,7 @@ rb_library_save (RBLibrary *library)
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
 		if (l->data != library->priv->all_albums)
-			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+			rb_node_save_to_xml (RB_NODE (l->data), root);
 	}
 	g_list_free (children);
 
@@ -299,18 +303,18 @@ rb_library_save (RBLibrary *library)
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
 		if (l->data != library->priv->all_songs)
-			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+			rb_node_save_to_xml (RB_NODE (l->data), root);
 	}
 	g_list_free (children);
 
 	children = rb_node_get_children (library->priv->all_songs);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
-		rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+		rb_node_save_to_xml (RB_NODE (l->data), root);
 	}
 	g_list_free (children);
 
-	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
+	xmlSaveFormatFileEnc (library->priv->xml_file, doc, "UTF-8", 1);
 }
 
 static void
