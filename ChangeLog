@@ -1,3 +1,153 @@
+2003-10-13 18:44:25 GMT	Colin Walters <walters@verbum.org>	patch-118
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-118
+
+
+    modified files:
+     po/ChangeLog po/cs.po po/no.po po/ro.po po/sv.po
+
+
+2003-10-12 22:16:35 GMT	Colin Walters <walters@verbum.org>	patch-117
+
+    Summary:
+      do an immediate model poll after starting a query
+    Revision:
+      rhythmbox--mainline--0.6--patch-117
+
+
+    modified files:
+     sources/rb-library-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-10-12 15:31:29 GMT	Colin Walters <walters@verbum.org>	patch-116
+
+    Summary:
+      wheeler@kde.org: more pre-C99 compat fixes
+    Revision:
+      rhythmbox--mainline--0.6--patch-116
+
+
+    modified files:
+     rhythmdb/rhythmdb-playlist-model.c rhythmdb/rhythmdb-tree.c
+
+
+2003-10-11 21:10:30 GMT	Colin Walters <walters@verbum.org>	patch-115
+
+    Summary:
+      ensure last played column syncs with visible prefs on startup
+    Revision:
+      rhythmbox--mainline--0.6--patch-115
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-10-11 20:41:08 GMT	Colin Walters <walters@verbum.org>	patch-114
+
+    Summary:
+      implement entry deletion for iradio
+    Revision:
+      rhythmbox--mainline--0.6--patch-114
+
+
+    modified files:
+     sources/rb-iradio-source.c
+
+
+2003-10-11 20:36:45 GMT	Colin Walters <walters@verbum.org>	patch-113
+
+    Summary:
+      update status totals on entry deletion
+    Revision:
+      rhythmbox--mainline--0.6--patch-113
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-10-11 20:32:32 GMT	Colin Walters <walters@verbum.org>	patch-112
+
+    Summary:
+      various tweaks to query model DND, still not perfect yet
+    Revision:
+      rhythmbox--mainline--0.6--patch-112
+
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c
+
+
+2003-10-11 20:06:47 GMT	Colin Walters <walters@verbum.org>	patch-111
+
+    Summary:
+      yann@cvs.gnome.org: various deletion/update fixes
+    Revision:
+      rhythmbox--mainline--0.6--patch-111
+
+    Patches applied:
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+       merge with mainline
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+       fix a bug which prevents added entries to be added in the query model
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-6
+       fix missing entry unref
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-7
+       initialize last played time to never when adding files
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-8
+       really makes query model iter persistent
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-9
+       fix crash when deleting the playing entry
+    
+
+    modified files:
+     library/rb-library-main-thread.c library/rb-library.c
+     rhythmdb/rhythmdb-query-model.c widgets/rb-entry-view.c
+
+    new patches:
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-6
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-7
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-8
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-9
+
+
+2003-10-11 19:54:56 GMT	Colin Walters <walters@verbum.org>	patch-110
+
+    Summary:
+      queue entry addition signals and emit them all at once
+    Revision:
+      rhythmbox--mainline--0.6--patch-110
+
+
+    modified files:
+     rhythmdb/rhythmdb.c
+
+
+2003-10-11 18:25:41 GMT	Colin Walters <walters@verbum.org>	patch-109
+
+    Summary:
+      upd ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-109
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-11 18:24:50 GMT	Colin Walters <walters@verbum.org>	patch-108
 
     Summary:
