@@ -27,7 +27,6 @@
 #include "rb-tree-model-node.h"
 #include "rb-stock-icons.h"
 #include "rb-node-song.h"
-#include "rb-node-iterator.h"
 #include "rb-string-helpers.h"
 #include "rb-node.h"
 
@@ -104,8 +103,6 @@ struct RBTreeModelNodePrivate
 	RBNode *filter_artist;
 	RBNode *old_filter_artist;
 	RBNode *playing_node;
-
-	RBNodeIterator *iterator;
 
 	GdkPixbuf *playing_pixbuf;
 };
@@ -215,8 +212,6 @@ rb_tree_model_node_init (RBTreeModelNode *model)
 
 	model->priv = g_new0 (RBTreeModelNodePrivate, 1);
 
-	model->priv->iterator = rb_node_iterator_new ();
-
 	dummy = gtk_tree_view_new ();
 	model->priv->playing_pixbuf = gtk_widget_render_icon (dummy,
 							      RB_STOCK_PLAYING,
@@ -239,8 +234,6 @@ rb_tree_model_node_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (model->priv->playing_pixbuf));
 
-	g_object_unref (G_OBJECT (model->priv->iterator));
-	
 	g_free (model->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -259,9 +252,6 @@ rb_tree_model_node_set_property (GObject *object,
 	case PROP_ROOT:
 		model->priv->root = g_value_get_object (value);
 
-		rb_node_iterator_set_parent (model->priv->iterator,
-					     model->priv->root);
-		
 		g_signal_connect_object (G_OBJECT (model->priv->root),
 				         "child_created",
 				         G_CALLBACK (root_child_created_cb),
@@ -310,7 +300,7 @@ rb_tree_model_node_set_property (GObject *object,
 						rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
-				g_list_free (kids);
+				rb_node_unlock (old);
 
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
 						                      G_CALLBACK (filter_parent_destroyed_cb),
@@ -345,7 +335,7 @@ rb_tree_model_node_set_property (GObject *object,
 						rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
-				g_list_free (kids);
+				rb_node_unlock (model->priv->filter_parent);
 
 				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
 						         "destroyed",
@@ -462,78 +452,6 @@ rb_tree_model_node_tree_model_init (GtkTreeModelIface *iface)
 	iface->iter_n_children = rb_tree_model_node_iter_n_children;
 	iface->iter_nth_child  = rb_tree_model_node_iter_nth_child;
 	iface->iter_parent     = rb_tree_model_node_iter_parent;
-}
-
-static int
-rb_node_n_handled_children (RBNode *node)
-{
-	GList *kids, *l;
-	int i = 0;
-	
-	g_return_val_if_fail (RB_IS_NODE (node), -1);
-
-	kids = rb_node_get_children (node);
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
-			i++;
-	}
-	g_list_free (kids);
-
-	return i;
-}
-
-static RBNode *
-rb_node_get_nth_handled_child (RBNode *node,
-			       int n)
-{
-	GList *kids, *l;
-	RBNode *ret = NULL;
-	int i = 0;
-
-	g_return_val_if_fail (RB_IS_NODE (node), NULL);
-
-	kids = rb_node_get_children (node);
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
-		{
-			if (i == n)
-			{
-				ret = RB_NODE (l->data);
-				break;
-			}
-			i++;
-		}
-	}
-	g_list_free (kids);
-
-	return ret;
-}
-
-static int
-rb_node_handled_child_index (RBNode *node,
-			     RBNode *child)
-{
-	GList *kids, *l;
-	int i = 0;
-
-	g_return_val_if_fail (RB_IS_NODE (node), -1);
-	g_return_val_if_fail (RB_IS_NODE (child), -1);
-
-	kids = rb_node_get_children (node);
-	for (l = kids; l != NULL; l = g_list_next (l))
-	{
-		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
-		{
-			if (RB_NODE (l->data) == child)
-				break;
-			i++;
-		}
-	}
-	g_list_free (kids);
-
-	return i;
 }
 
 static guint
@@ -786,8 +704,7 @@ rb_tree_model_node_iter_next (GtkTreeModel *tree_model,
 	if (node == model->priv->root)
 		return FALSE;
 	
-	rb_node_iterator_set_position (model->priv->iterator, node);
-	iter->user_data = rb_node_iterator_next (model->priv->iterator);
+	iter->user_data = rb_node_get_next (model->priv->root, node);
 
 	return (iter->user_data != NULL);
 }

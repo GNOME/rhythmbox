@@ -1,3 +1,21 @@
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_n_rows),
+	(rb_node_view_get_visible_nodes):
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_init),
+	(rb_tree_model_node_finalize), (rb_tree_model_node_set_property),
+	(rb_tree_model_node_iter_next):
+	* library/rb-library.c: (rb_library_finalize), (rb_library_save):
+	* library/rb-node-filter.c: (rb_node_filter_set_object_property),
+	(thread_main):
+	* library/rb-node.c: (rb_node_get_children), (rb_node_get_parents),
+	(rb_node_set_handled), (rb_node_lock), (rb_node_unlock),
+	(rb_node_get_next), (rb_node_n_handled_children),
+	(rb_node_get_nth_handled_child), (rb_node_handled_child_index):
+	* library/rb-node.h:
+
+	Misc optimizations, mostly remove need to g_list_copy everything.
+
 2002-09-08  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_iter),

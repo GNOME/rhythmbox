@@ -1258,7 +1258,7 @@ rb_node_view_get_n_rows (RBNodeView *view)
 		n_rows++;
 	}
 
-	g_list_free (kids);
+	rb_node_unlock (parent);
 
 	return n_rows;
 }
@@ -1288,7 +1288,7 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 		ret = g_list_append (ret, l->data);
 	}
 
-	g_list_free (kids);
+	rb_node_unlock (parent);
 
 	return ret;
 }

@@ -171,9 +171,11 @@ rb_node_filter_set_object_property (GObject *object,
 		{
 			GList *kids, *l;
 
-			kids = rb_node_get_children (filter->priv->root);
+			kids = g_list_copy (rb_node_get_children (filter->priv->root));
+			rb_node_unlock (filter->priv->root);
 			for (l = kids; l != NULL; l = g_list_next (l))
 				rb_node_remove_child (filter->priv->root, l->data);
+			g_list_free (kids);
 			filter->priv->done = FALSE;
 
 			/* set the new expression to search */
@@ -348,7 +350,7 @@ thread_main (RBNodeFilterPrivate *priv)
 				results++;
 			}
 		}
-		g_list_free (kids);
+		rb_node_unlock (node);
 
 		g_free (expression);
 

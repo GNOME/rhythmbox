@@ -446,15 +446,11 @@ rb_node_action_queue_cb (gpointer node_reference)
 GList *
 rb_node_get_children (RBNode *node)
 {
-	GList *ret;
-
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 
 	g_static_rw_lock_reader_lock (node->priv->lock);
-	ret = g_list_copy (node->priv->children);
-	g_static_rw_lock_reader_unlock (node->priv->lock);
 
-	return ret;
+	return node->priv->children;
 }
 
 void
@@ -527,15 +523,11 @@ rb_node_remove_child (RBNode *node,
 GList *
 rb_node_get_parents (RBNode *node)
 {
-	GList *ret;
-	
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 
 	g_static_rw_lock_reader_lock (node->priv->lock);
-	ret = g_list_copy (node->priv->parents);
-	g_static_rw_lock_reader_unlock (node->priv->lock);
 
-	return ret;
+	return node->priv->parents;
 }
 
 void
@@ -1349,4 +1341,134 @@ rb_node_set_handled (RBNode *node)
 	g_static_rw_lock_writer_lock (node->priv->lock);
 	node->priv->handled = TRUE;
 	g_static_rw_lock_writer_unlock (node->priv->lock);
+}
+
+void
+rb_node_lock (RBNode *node)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+}
+
+void
+rb_node_unlock (RBNode *node)
+{
+	g_return_if_fail (RB_IS_NODE (node));
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+}
+
+RBNode *
+rb_node_get_next (RBNode *parent,
+		  RBNode *node)
+{
+	GList *pos;
+	
+	g_return_val_if_fail (RB_IS_NODE (parent), NULL);
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+
+	g_static_rw_lock_reader_lock (parent->priv->lock);
+
+	pos = g_list_find (parent->priv->children, node);
+	if (pos == NULL)
+	{
+		g_static_rw_lock_reader_unlock (parent->priv->lock);
+		return NULL;
+	}
+
+	for (pos = g_list_next (pos); pos != NULL; pos = g_list_next (pos))
+	{
+		if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
+			break;
+	}
+
+	if (pos != NULL)
+	{
+		g_static_rw_lock_reader_unlock (parent->priv->lock);
+		return RB_NODE (pos->data);
+	}
+	else
+	{
+		g_static_rw_lock_reader_unlock (parent->priv->lock);
+		return NULL;
+	}
+}
+
+int
+rb_node_n_handled_children (RBNode *node)
+{
+	GList *l;
+	int i = 0;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	for (l = node->priv->children; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+			i++;
+	}
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return i;
+}
+
+RBNode *
+rb_node_get_nth_handled_child (RBNode *node,
+			       int n)
+{
+	GList *l;
+	RBNode *ret = NULL;
+	int i = 0;
+
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	for (l = node->priv->children; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+		{
+			if (i == n)
+			{
+				ret = RB_NODE (l->data);
+				break;
+			}
+			i++;
+		}
+	}
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return ret;
+}
+
+int
+rb_node_handled_child_index (RBNode *node,
+			     RBNode *child)
+{
+	GList *l;
+	int i = 0;
+
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+	g_return_val_if_fail (RB_IS_NODE (child), -1);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	for (l = node->priv->children; l != NULL; l = g_list_next (l))
+	{
+		if (rb_node_is_handled (RB_NODE (l->data)) == TRUE)
+		{
+			if (RB_NODE (l->data) == child)
+				break;
+			i++;
+		}
+	}
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return i;
 }
