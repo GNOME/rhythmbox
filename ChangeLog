@@ -1,3 +1,15 @@
+2003-08-17  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_append):
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_new):
+
+	Use the correct source property to get the name in the
+	preferences dialog (Closes: #120068).
+	
+	Use g_signal_connect_object instead of plain g_signal_connect
+	to ensure the signal isn't called after the sourcelist is
+	finalized (Closes: #120069).
+
 2003-08-17  Colin Walters  <cwalters@gnome.org>
 
 	* data/art/Makefile.am:

@@ -241,7 +241,7 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 			    RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES, attrs,
 			    -1);
 
-	g_signal_connect (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), sourcelist);
+	g_signal_connect_object (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), sourcelist, 0);
 }
 
 void

@@ -282,7 +282,7 @@ rb_shell_preferences_new (GList *views)
 	for (; views; views = views->next)
 	{
 		const char *name = NULL;
-		g_object_get (G_OBJECT (views->data), "config-name", &name, NULL);
+		g_object_get (G_OBJECT (views->data), "name", &name, NULL);
 		g_assert (name != NULL);
 		rb_shell_preferences_append_view_page (shell_preferences,
 						       name,
