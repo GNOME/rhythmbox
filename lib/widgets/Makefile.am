@@ -27,6 +27,8 @@ librbwidgets_la_SOURCES =				\
 	rb-cell-renderer-rating.h			\
 	rb-song-info.c					\
 	rb-song-info.h					\
+	rb-load-failure-dialog.c			\
+	rb-load-failure-dialog.h			\
 	rb-tree-model-sort.c				\
 	rb-tree-model-sort.h				\
 	gtktreeprivate.h				\

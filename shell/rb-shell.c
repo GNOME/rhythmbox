@@ -61,6 +61,7 @@
 #include "rb-library.h"
 #include "rb-library-source.h"
 #include "rb-iradio-backend.h"
+#include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
 #include "rb-audiocd-source.h"
@@ -104,6 +105,12 @@ static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static void source_selected_cb (RBSourceList *sourcelist,
 				RBSource *source,
 				RBShell *shell);
+static void rb_shell_library_error_cb (RBLibrary *library,
+				       const char *uri, const char *msg,
+				       RBShell *shell); 
+static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
+						      int response_id,
+						      RBShell *shell);
 
 /* static void rb_shell_remove_source (RBShell *shell, RBSource *source); */
 /* static void rb_shell_source_deleted_cb (RBSource *source, */
@@ -235,6 +242,8 @@ struct RBShellPrivate
 
 	RBLibrary *library;
 	RBSource *library_source;
+	GtkWidget *load_error_dialog;
+	gboolean show_library_errors;
 
 	RBIRadioBackend *iradio_backend;
  	RBIRadioSource *iradio_source;
@@ -640,6 +649,15 @@ rb_shell_construct (RBShell *shell)
 	rb_debug ("shell: creating library");
 	shell->priv->library = rb_library_new ();
 
+	shell->priv->load_error_dialog = rb_load_failure_dialog_new ();
+	shell->priv->show_library_errors = FALSE;
+	gtk_widget_hide (shell->priv->load_error_dialog);
+
+	g_signal_connect (G_OBJECT (shell->priv->library), "error",
+			  G_CALLBACK (rb_shell_library_error_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
+			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
+
 	/* initialize sources */
 	rb_debug ("shell: creating library source");
 	shell->priv->library_source = rb_library_source_new (shell->priv->container,
@@ -780,6 +798,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
+	rb_debug ("window deleted");
 	rb_shell_quit (shell);
 
 	return TRUE;
@@ -790,9 +809,34 @@ source_selected_cb (RBSourceList *sourcelist,
 		    RBSource *source,
 		    RBShell *shell)
 {
+	rb_debug ("source selected");
 	rb_shell_select_source (shell, source);
 }
 
+static void
+rb_shell_library_error_cb (RBLibrary *library,
+			   const char *uri, const char *msg,
+			   RBShell *shell)
+{
+	rb_debug ("got library error, showing: %s",
+		  shell->priv->show_library_errors ? "TRUE" : "FALSE");
+	
+	if (!shell->priv->show_library_errors)
+		return;
+
+	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
+				    uri, msg);
+	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
+}
+
+static void
+rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
+					  int response_id,
+					  RBShell *shell)
+{
+	rb_debug ("got response");
+	shell->priv->show_library_errors = FALSE;
+}
 
 static void
 rb_shell_append_source (RBShell *shell,
@@ -1082,6 +1126,8 @@ ask_file_response_cb (GtkDialog *dialog,
 		g_free (tmp);
 		g_free (stored);
 	}
+
+	shell->priv->show_library_errors = TRUE;
     
 	while (*filecur != NULL)
 	{
@@ -1114,6 +1160,8 @@ load_playlist_response_cb (GtkDialog *dialog,
 		return;
 
 	filecur = files;
+
+	shell->priv->show_library_errors = TRUE;
 
 	while (*filecur != NULL)
 	{
@@ -1151,6 +1199,8 @@ rb_shell_cmd_add_location (BonoboUIComponent *component,
 			   RBShell *shell,
 			   const char *verbname)
 {
+	shell->priv->show_library_errors = TRUE;
+
 	rb_library_source_add_location (RB_LIBRARY_SOURCE (shell->priv->library_source),
 					GTK_WINDOW (shell->priv->window));
 }

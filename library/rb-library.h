@@ -48,8 +48,7 @@ typedef struct
 {
 	GObjectClass parent;
 
-	void (*beginning_loading) (RBLibrary *library);
-	void (*done_loading) (RBLibrary *library);
+	void	(*error)	(const char *uri, const char *msg);
 } RBLibraryClass;
 
 enum

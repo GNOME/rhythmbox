@@ -38,7 +38,8 @@ static void rb_node_song_finalize (GObject *object);
 static void rb_node_song_restored (RBNode *node);
 static void rb_node_song_sync (RBNodeSong *node,
 		               RBLibrary *library,
-		               gboolean check_reparent);
+		               gboolean check_reparent,
+			       GError **error);
 
 static GObjectClass *parent_class = NULL;
 
@@ -109,7 +110,8 @@ rb_node_song_finalize (GObject *object)
 
 RBNodeSong *
 rb_node_song_new (const char *location,
-		  RBLibrary *library)
+		  RBLibrary *library,
+		  GError **error)
 {
 	RBNodeSong *node;
 	GValue value = { 0, };
@@ -155,7 +157,9 @@ rb_node_song_new (const char *location,
 
 	g_value_unset (&value);
 
-	rb_node_song_sync (node, library, FALSE);
+	rb_node_song_sync (node, library, FALSE, error);
+	if (error && *error)
+		return NULL;
 
 	return node;
 }
@@ -561,7 +565,8 @@ set_album (RBNodeSong *node,
 static void
 rb_node_song_sync (RBNodeSong *node,
 		   RBLibrary *library,
-		   gboolean check_reparent)
+		   gboolean check_reparent,
+		   GError **error)
 {
 	MonkeyMediaStreamInfo *info;
 	const char *location;
@@ -569,7 +574,7 @@ rb_node_song_sync (RBNodeSong *node,
 	location = rb_node_get_property_string (RB_NODE (node),
 				                RB_NODE_PROP_LOCATION);
 	
-	info = monkey_media_stream_info_new (location, NULL);
+	info = monkey_media_stream_info_new (location, error);
 	if (info == NULL) {
 		rb_node_unref (RB_NODE (node));
 		return;
@@ -611,7 +616,8 @@ rb_node_song_sync (RBNodeSong *node,
 
 void
 rb_node_song_update_if_changed (RBNodeSong *node,
-			        RBLibrary *library)
+			        RBLibrary *library,
+				GError **error)
 {
 	GnomeVFSFileInfo *info;
 	const char *location;
@@ -631,7 +637,7 @@ rb_node_song_update_if_changed (RBNodeSong *node,
 				           RB_NODE_PROP_MTIME);
 
 	if (info->mtime != mtime)
-		rb_node_song_sync (node, library, TRUE);
+		rb_node_song_sync (node, library, TRUE, error);
 	
 	gnome_vfs_file_info_unref (info);
 }

@@ -33,6 +33,7 @@
 #include "rb-node-song.h"
 #include "rb-glist-wrapper.h"
 #include "rb-debug.h"
+#include "rb-marshal.h"
 #include "rb-file-helpers.h"
 
 static void rb_library_class_init (RBLibraryClass *klass);
@@ -73,7 +74,15 @@ enum
 	PROP_0,
 };
 
+enum
+{
+	ERROR,
+	LAST_SIGNAL,
+};
+
 static GObjectClass *parent_class = NULL;
+
+static guint rb_library_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_library_get_type (void)
@@ -111,6 +120,18 @@ rb_library_class_init (RBLibraryClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_library_finalize;
+
+	rb_library_signals[ERROR] =
+		g_signal_new ("error",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryClass, error),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING,
+			      G_TYPE_STRING);
 }
 
 static void
@@ -159,6 +180,16 @@ rb_library_init (RBLibrary *library)
 	library->priv->walker_queue = rb_library_action_queue_new ();
 }
 
+static void
+rb_library_pass_on_error (RBLibraryMainThread *thread,
+			  const char *uri, const char *error,
+			  RBLibrary *library)
+{
+	rb_debug ("passing on signal");
+	g_signal_emit (G_OBJECT (library), rb_library_signals[ERROR], 0,
+		       uri, error);
+}
+
 void
 rb_library_release_brakes (RBLibrary *library)
 {
@@ -169,6 +200,9 @@ rb_library_release_brakes (RBLibrary *library)
 	rb_debug ("library: kicking off main thread");
 	/* create these after having loaded the xml to avoid extra loading time */
 	library->priv->main_thread = rb_library_main_thread_new (library);
+
+	g_signal_connect (G_OBJECT (library->priv->main_thread), "error",
+			  G_CALLBACK (rb_library_pass_on_error), library);
 
 	rb_debug ("library: creating walker thread");
 	library->priv->walker_thread = rb_library_walker_thread_new (library);

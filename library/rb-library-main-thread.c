@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +26,7 @@
 #include "rb-file-helpers.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
+#include "rb-marshal.h"
 
 static void rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass);
 static void rb_library_main_thread_init (RBLibraryMainThread *thread);
@@ -37,7 +39,13 @@ static void rb_library_main_thread_get_property (GObject *object,
                                                  guint prop_id,
                                                  GValue *value,
                                                  GParamSpec *pspec);
-static gpointer thread_main (RBLibraryMainThreadPrivate *priv);
+static gpointer thread_main (RBLibraryMainThread *thread);
+
+struct RBLibraryLoadErrorData {
+	RBLibraryMainThread *thread;
+	char *uri;
+	char *msg;
+};
 
 struct RBLibraryMainThreadPrivate
 {
@@ -46,6 +54,8 @@ struct RBLibraryMainThreadPrivate
 	GThread *thread;
 	GMutex *lock;
 	gboolean dead;
+
+	GList *failed_loads;
 };
 
 enum
@@ -54,7 +64,15 @@ enum
 	PROP_LIBRARY
 };
 
+enum
+{
+	ERROR,
+	LAST_SIGNAL,
+};
+
 static GObjectClass *parent_class = NULL;
+
+static guint rb_library_main_thread_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_library_main_thread_get_type (void)
@@ -103,6 +121,18 @@ rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass)
                                                               "Library object",
                                                               RB_TYPE_LIBRARY,
                                                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	rb_library_main_thread_signals[ERROR] =
+		g_signal_new ("error",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryMainThreadClass, error),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING,
+			      G_TYPE_STRING);
 }
 
 static void
@@ -199,7 +229,7 @@ rb_library_main_thread_set_property (GObject *object,
 		thread->priv->library = g_value_get_object (value);                    
 	
 		thread->priv->thread = g_thread_create ((GThreadFunc) thread_main,
-							thread->priv, TRUE, NULL);
+							thread, TRUE, NULL);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -226,26 +256,54 @@ rb_library_main_thread_get_property (GObject *object,
 	}
 }
 
+static gboolean
+signal_err_idle (struct RBLibraryLoadErrorData *data)
+{
+	g_signal_emit (G_OBJECT (data->thread), rb_library_main_thread_signals[ERROR], 0,
+		       data->uri, data->msg);
+	g_free (data->uri);
+	g_free (data->msg);
+	g_free (data);
+
+	return FALSE;
+}
+
+static void
+push_err (RBLibraryMainThread *thread, const char *uri, GError *error)
+{
+	struct RBLibraryLoadErrorData *loaderr = g_new0 (struct RBLibraryLoadErrorData, 1);
+
+	loaderr->thread = thread;
+	loaderr->uri = g_strdup (uri);
+	loaderr->msg = g_strdup (error->message);
+
+	g_error_free (error);
+
+	rb_debug ("queueing error for \"%s\": %s", loaderr->uri, loaderr->msg);
+	g_idle_add ((GSourceFunc) signal_err_idle, loaderr);
+}
+
 static gpointer
-thread_main (RBLibraryMainThreadPrivate *priv)
+thread_main (RBLibraryMainThread *thread)
 {
 	while (TRUE)
 	{
 		RBLibraryActionQueue *queue;
 
-		g_mutex_lock (priv->lock);
+		g_mutex_lock (thread->priv->lock);
 		
-		if (priv->dead == TRUE)
+		if (thread->priv->dead == TRUE)
 		{
-			g_mutex_unlock (priv->lock);
+			g_mutex_unlock (thread->priv->lock);
 			g_thread_exit (NULL);
 		}
 
-		queue = rb_library_get_main_queue (priv->library);
+		queue = rb_library_get_main_queue (thread->priv->library);
 		while (rb_library_action_queue_is_empty (queue) == FALSE)
 		{
 			RBLibraryActionType type;
 			char *uri, *realuri;
+			GError *error = NULL;
 
 			rb_library_action_queue_peek_head (queue,
 							   &type,
@@ -256,10 +314,15 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_library_get_song_by_location (priv->library, realuri) == NULL)
+				if (rb_library_get_song_by_location (thread->priv->library, realuri) == NULL)
 				{
 					rb_node_song_new (realuri,
-							  priv->library);
+							  thread->priv->library,
+							  &error);
+					if (error != NULL) {
+						push_err (thread, uri, error);
+						break;
+					}
 				}
 
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
@@ -268,7 +331,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				{
 					RBNode *song;
 
-					song = rb_library_get_song_by_location (priv->library, realuri);
+					song = rb_library_get_song_by_location (thread->priv->library, realuri);
 					if (song == NULL)
 						break;
 
@@ -278,7 +341,11 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 						break;
 					}
 
-					rb_node_song_update_if_changed (RB_NODE_SONG (song), priv->library);
+					rb_node_song_update_if_changed (RB_NODE_SONG (song), thread->priv->library, &error);
+					if (error != NULL) {
+						push_err (thread, uri, error);
+						break;
+					}
 				}
 
 				/* just to be sure */
@@ -288,7 +355,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				{
 					RBNode *song;
 
-					song = rb_library_get_song_by_location (priv->library, realuri);
+					song = rb_library_get_song_by_location (thread->priv->library, realuri);
 					if (song == NULL)
 						break;
 
@@ -306,7 +373,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 			rb_library_action_queue_pop_head (queue);
 		}
 
-		g_mutex_unlock (priv->lock);
+		g_mutex_unlock (thread->priv->lock);
 
 		g_usleep (10);
 	}

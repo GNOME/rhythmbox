@@ -46,6 +46,8 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
+
+	void	(*error)	(const char *uri, const char *msg);
 } RBLibraryMainThreadClass;
 
 GType                rb_library_main_thread_get_type (void);

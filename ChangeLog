@@ -1,3 +1,38 @@
+2003-05-30  Colin Walters  <walters@verbum.org>
+
+	* data/glade/Makefile.am:
+	* data/glade/load-failure.glade:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/rb-marshal.list:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_get_type),
+	(rb_load_failure_dialog_class_init), (rb_load_failure_dialog_init),
+	(rb_load_failure_dialog_finalize), (rb_load_failure_dialog_new),
+	(rb_load_failure_dialog_add), (rb_load_failure_dialog_clear),
+	(rb_load_failure_dialog_response_cb):
+	* lib/widgets/rb-load-failure-dialog.h:
+	* library/rb-library-main-thread.c:
+	(rb_library_main_thread_class_init),
+	(rb_library_main_thread_set_property), (signal_err_idle),
+	(push_err), (thread_main):
+	* library/rb-library-main-thread.h:
+	* library/rb-library.c: (rb_library_class_init),
+	(rb_library_pass_on_error), (rb_library_release_brakes):
+	* library/rb-library.h:
+	* library/rb-node-song.c: (rb_node_song_new), (rb_node_song_sync),
+	(rb_node_song_update_if_changed):
+	* library/rb-node-song.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_window_delete_cb), (source_selected_cb),
+	(rb_shell_library_error_cb),
+	(rb_shell_load_failure_dialog_response_cb), (ask_file_response_cb),
+	(load_playlist_response_cb), (rb_shell_cmd_add_location):
+
+	New load failure dialog, shown when the library fails to load some files.  This
+	should help people debug problems.  Also s/Group/Playlist/ in the UI.
+	Probably some other little things I forget.
+
 2003-05-28  Luca Ferretti <elle.uca@libero.it>
 	   (added to CVS by Colin Walters <cwalters@gnome.org>)
 

@@ -45,31 +45,33 @@ typedef struct
 	RBNodeClass parent;
 } RBNodeSongClass;
 
-GType       rb_node_song_get_type              (void);
+GType		rb_node_song_get_type		(void);
 
-RBNodeSong *rb_node_song_new                   (const char *location,
-					        RBLibrary *library);
+RBNodeSong *	rb_node_song_new		(const char *location,
+						 RBLibrary *library,
+						 GError **error);
 
 /* if the stored mtime on the node differs from the file's actual mtime,
  * resync the node */
-void        rb_node_song_update_if_changed     (RBNodeSong *song,
-					        RBLibrary *library);
+void		rb_node_song_update_if_changed	(RBNodeSong *song,
+						 RBLibrary *library,
+						 GError **error);
 
 /* convenience property wrappers: */
-RBNode     *rb_node_song_get_genre             (RBNodeSong *song);
-gboolean    rb_node_song_has_genre             (RBNodeSong *song,
-				                RBNode *genre,
-					        RBLibrary *library);
+RBNode *	rb_node_song_get_genre		(RBNodeSong *song);
+gboolean	rb_node_song_has_genre		(RBNodeSong *song,
+						 RBNode *genre,
+						 RBLibrary *library);
 
-RBNode     *rb_node_song_get_artist            (RBNodeSong *song);
-gboolean    rb_node_song_has_artist            (RBNodeSong *song,
-				                RBNode *artist,
-					        RBLibrary *library);
+RBNode *	rb_node_song_get_artist		(RBNodeSong *song);
+gboolean	rb_node_song_has_artist		(RBNodeSong *song,
+						 RBNode *artist,
+						 RBLibrary *library);
 
-RBNode     *rb_node_song_get_album             (RBNodeSong *song);
-gboolean    rb_node_song_has_album             (RBNodeSong *song,
-				                RBNode *album,
-					        RBLibrary *library);
+RBNode *	rb_node_song_get_album		(RBNodeSong *song);
+gboolean	rb_node_song_has_album		(RBNodeSong *song,
+						 RBNode *album,
+						 RBLibrary *library);
 
 G_END_DECLS
 
