@@ -41,7 +41,7 @@ In the bug report please include:
 * Before you report a bug, it will be useful to know if GStreamer works.
   Try running this command:
 
-  $ gst-launch gnomevfssrc location=/path/to/my/musicfile.ogg ! spider ! volume ! $(gconftool -2 -g /system/gstreamer/defaults/audiosink)  
+  $ gst-launch gnomevfssrc location=/path/to/my/musicfile.ogg ! spider ! volume ! $(gconftool-2 -g /system/gstreamer/default/audiosink)  
 
   Just replace /path/to/my/musicfile.ogg with some sound file.
   You might also want to try the monkey-media tests/test-cmdline program.
