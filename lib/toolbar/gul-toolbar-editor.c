@@ -24,6 +24,7 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrendererpixbuf.h>
 #include <gtk/gtkcellrenderertext.h>
+#include <gtk/gtkwindow.h>
 #include <libgnome/gnome-i18n.h>
 #include "rb-glade-helpers.h"
 #include "gul-gobject-misc.h"
@@ -128,8 +129,8 @@ gul_tb_editor_init_widgets (GulTbEditor *tbe)
 	GulTbEditorPrivate *p = tbe->priv;
 	GladeXML *gxml;
 	
-	gxml = rb_glade_xml_new ("toolbar-editor.glade", "toolbar-editor-window", tbe);
-	p->window = glade_xml_get_widget (gxml, "toolbar-editor-window");
+	gxml = rb_glade_xml_new ("toolbar-editor.glade", "toolbar-editor-dialog", tbe);
+	p->window = glade_xml_get_widget (gxml, "toolbar-editor-dialog");
 	p->available_view = glade_xml_get_widget (gxml, "toolbar-editor-available-view");
 	p->current_view = glade_xml_get_widget (gxml, "toolbar-editor-current-view");
 	p->close_button = glade_xml_get_widget (gxml, "toolbar-editor-close-button");
@@ -426,10 +427,17 @@ gul_tb_editor_set_available (GulTbEditor *tbe, GulToolbar *tb)
 					      GDK_ACTION_MOVE);
 }
 
+void 
+gul_tb_editor_set_parent (GulTbEditor *tbe, GtkWidget *parent)
+{
+	gtk_window_set_transient_for (GTK_WINDOW (tbe->priv->window), 
+				      GTK_WINDOW (parent));
+}
+
 void
 gul_tb_editor_show (GulTbEditor *tbe)
 {
-	gtk_widget_show (GTK_WIDGET (tbe->priv->window));
+	gtk_window_present (GTK_WINDOW (tbe->priv->window));
 }
 
 static void

@@ -67,6 +67,7 @@ void			gul_tb_editor_set_toolbar	(GulTbEditor *tbe, GulToolbar *tb);
 GulToolbar *		gul_tb_editor_get_toolbar	(GulTbEditor *tbe);
 void			gul_tb_editor_set_available	(GulTbEditor *tbe, GulToolbar *tb);
 GulToolbar *		gul_tb_editor_get_available	(GulTbEditor *tbe);
+void			gul_tb_editor_set_parent	(GulTbEditor *tbe, GtkWidget *parent);
 void			gul_tb_editor_show		(GulTbEditor *tbe);
 /* the revert button is hidden initially */
 GtkButton *		gul_tb_editor_get_revert_button	(GulTbEditor *tbe);
