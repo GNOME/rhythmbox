@@ -286,7 +286,7 @@ path_dialog_response_cb (GtkDialog *dialog,
 			 int response_id,
 			 RBDruid *druid)
 {
-	const char *file;
+	char *file;
 	char *utf8_file;
 	GError *error = NULL;
 
@@ -297,7 +297,15 @@ path_dialog_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	file = gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog));
+#ifndef HAVE_GTK_2_3
+	file = g_strdup (gtk_file_selection_get_filename (GTK_FILE_SELECTION (dialog)));
+
+#else
+	file = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER (dialog));
+	if (file == NULL) {
+		file = gtk_file_chooser_get_current_folder (GTK_FILE_CHOOSER (dialog));
+	}
+#endif
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 
@@ -305,6 +313,7 @@ path_dialog_response_cb (GtkDialog *dialog,
 		return;
 
 	utf8_file = g_filename_to_utf8 (file, -1, NULL, NULL, &error);
+	g_free (file);
 	if (error != NULL) {
 		rb_error_dialog (_("Error reading filename: %s"), error->message);
 		return;
