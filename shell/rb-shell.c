@@ -395,7 +395,8 @@ rb_shell_construct (RBShell *shell)
 					       shell);
 
 	/* initialize shell services */
-	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component);
+	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
+							 shell);
 	g_signal_connect (G_OBJECT (shell->priv->player_shell),
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
@@ -934,4 +935,10 @@ rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 {
 	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
 			       gtk_paned_get_position (GTK_PANED (shell->priv->paned)));
+}
+
+GList *
+rb_shell_list_views (RBShell *shell)
+{
+	return shell->priv->views;
 }

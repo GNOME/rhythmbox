@@ -385,7 +385,20 @@ rb_player_sync (RBPlayer *player)
 	}
 	else
 	{
-		tmp = SONG_MARKUP (_("Not Playing"));
+		RBView *playing;
+		const char *desc;
+		
+		playing = rb_view_player_get_playing_view (player->priv->view_player);
+		if (playing != NULL)
+		{
+			char *s;
+			desc = rb_view_get_description (playing);
+			s = g_strdup_printf (_("Playing from the %s"), desc);
+			tmp = SONG_MARKUP (s);
+			g_free (s);
+		}
+		else
+			tmp = SONG_MARKUP (_("Not Playing"));
 		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 

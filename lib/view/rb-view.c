@@ -440,3 +440,13 @@ sidebar_button_deleted_cb (RBSidebarButton *button,
 {
 	rb_view_deleted (view);
 }
+
+const char *
+rb_view_get_description (RBView *view)
+{
+	RBViewClass *klass;
+
+	klass = RB_VIEW_GET_CLASS (view);
+
+	return klass->impl_get_description (view);
+}

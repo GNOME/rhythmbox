@@ -24,6 +24,8 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <monkey-media.h>
 
+#include "rb-view.h"
+
 G_BEGIN_DECLS
 
 #define RB_TYPE_VIEW_PLAYER         (rb_view_player_get_type ())
@@ -49,62 +51,70 @@ typedef struct
 	void (*start_playing) (RBViewPlayer *player);
 
 	/* methods */
-	void                    (*impl_set_shuffle)   (RBViewPlayer *player,
-					               gboolean shuffle);
-	void                    (*impl_set_repeat)    (RBViewPlayer *player,
-					               gboolean repeat);
+	void                    (*impl_set_shuffle)      (RBViewPlayer *player,
+					                  gboolean shuffle);
+	void                    (*impl_set_repeat)       (RBViewPlayer *player,
+					                  gboolean repeat);
 
-	RBViewPlayerResult      (*impl_have_next)     (RBViewPlayer *player);
-	RBViewPlayerResult      (*impl_have_previous) (RBViewPlayer *player);
+	RBViewPlayerResult      (*impl_have_next)        (RBViewPlayer *player);
+	RBViewPlayerResult      (*impl_have_previous)    (RBViewPlayer *player);
 	
-	void                    (*impl_next)          (RBViewPlayer *player);
-	void                    (*impl_previous)      (RBViewPlayer *player);
+	void                    (*impl_next)             (RBViewPlayer *player);
+	void                    (*impl_previous)         (RBViewPlayer *player);
 
-	const char             *(*impl_get_title)     (RBViewPlayer *player);
+	const char             *(*impl_get_title)        (RBViewPlayer *player);
 
-	const char             *(*impl_get_artist)    (RBViewPlayer *player);
-	const char             *(*impl_get_album)     (RBViewPlayer *player);
-	const char             *(*impl_get_song)      (RBViewPlayer *player);
-	long                    (*impl_get_duration)  (RBViewPlayer *player);
+	const char             *(*impl_get_artist)       (RBViewPlayer *player);
+	const char             *(*impl_get_album)        (RBViewPlayer *player);
+	const char             *(*impl_get_song)         (RBViewPlayer *player);
+	long                    (*impl_get_duration)     (RBViewPlayer *player);
 
-	GdkPixbuf              *(*impl_get_pixbuf)    (RBViewPlayer *player);
+	GdkPixbuf              *(*impl_get_pixbuf)       (RBViewPlayer *player);
 
-	MonkeyMediaAudioStream *(*impl_get_stream)    (RBViewPlayer *player);
+	MonkeyMediaAudioStream *(*impl_get_stream)       (RBViewPlayer *player);
 
-	void                    (*impl_start_playing) (RBViewPlayer *player);
-	void                    (*impl_stop_playing)  (RBViewPlayer *player);
+	void                    (*impl_start_playing)    (RBViewPlayer *player);
+	void                    (*impl_stop_playing)     (RBViewPlayer *player);
+
+	void                    (*impl_set_playing_view) (RBViewPlayer *player,
+							  RBView *view);
+	RBView                 *(*impl_get_playing_view) (RBViewPlayer *player);
 } RBViewPlayerIface;
 
-GType                   rb_view_player_get_type       (void);
+GType                   rb_view_player_get_type         (void);
 
-void                    rb_view_player_set_shuffle    (RBViewPlayer *player,
-						       gboolean shuffle);
-void                    rb_view_player_set_repeat     (RBViewPlayer *player,
-						       gboolean repeat);
+void                    rb_view_player_set_shuffle      (RBViewPlayer *player,
+						         gboolean shuffle);
+void                    rb_view_player_set_repeat       (RBViewPlayer *player,
+						         gboolean repeat);
 
-RBViewPlayerResult      rb_view_player_have_next      (RBViewPlayer *player);
-RBViewPlayerResult      rb_view_player_have_previous  (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_have_next        (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_have_previous    (RBViewPlayer *player);
 
-void                    rb_view_player_next           (RBViewPlayer *player);
-void                    rb_view_player_previous       (RBViewPlayer *player);
+void                    rb_view_player_next             (RBViewPlayer *player);
+void                    rb_view_player_previous         (RBViewPlayer *player);
 
-const char             *rb_view_player_get_title      (RBViewPlayer *player);
+const char             *rb_view_player_get_title        (RBViewPlayer *player);
 
-const char             *rb_view_player_get_artist     (RBViewPlayer *player);
-const char             *rb_view_player_get_album      (RBViewPlayer *player);
-const char             *rb_view_player_get_song       (RBViewPlayer *player);
-long                    rb_view_player_get_duration   (RBViewPlayer *player);
+const char             *rb_view_player_get_artist       (RBViewPlayer *player);
+const char             *rb_view_player_get_album        (RBViewPlayer *player);
+const char             *rb_view_player_get_song         (RBViewPlayer *player);
+long                    rb_view_player_get_duration     (RBViewPlayer *player);
 
-GdkPixbuf              *rb_view_player_get_pixbuf     (RBViewPlayer *player);
+GdkPixbuf              *rb_view_player_get_pixbuf       (RBViewPlayer *player);
 
-MonkeyMediaAudioStream *rb_view_player_get_stream     (RBViewPlayer *player);
+MonkeyMediaAudioStream *rb_view_player_get_stream       (RBViewPlayer *player);
 
-void                    rb_view_player_start_playing  (RBViewPlayer *player);
-void                    rb_view_player_stop_playing   (RBViewPlayer *player);
+void                    rb_view_player_start_playing    (RBViewPlayer *player);
+void                    rb_view_player_stop_playing     (RBViewPlayer *player);
 
-void                    rb_view_player_notify_changed (RBViewPlayer *player);
+void                    rb_view_player_set_playing_view (RBViewPlayer *player,
+							 RBView *view);
+RBView                 *rb_view_player_get_playing_view (RBViewPlayer *player);
 
-void                    rb_view_player_notify_playing (RBViewPlayer *player);
+void                    rb_view_player_notify_changed   (RBViewPlayer *player);
+
+void                    rb_view_player_notify_playing   (RBViewPlayer *player);
 
 G_END_DECLS
 

@@ -129,6 +129,10 @@ static void rb_group_view_drop_cb (GtkWidget        *widget,
 				   guint             info,
 				   guint             time,
 				   gpointer          user_data);
+static const char *impl_get_description (RBView *view);
+static void rb_group_view_set_playing_view (RBViewPlayer *player,
+                                            RBView *view);
+static RBView *rb_group_view_get_playing_view (RBViewPlayer *player);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -161,6 +165,9 @@ struct RBGroupViewPrivate
 
 	char *file;
 	char *name;
+	char *description;
+
+	RBView *playing_view;
 };
 
 enum
@@ -252,6 +259,7 @@ static void
 rb_group_view_class_init (RBGroupViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBViewClass *view_class = RB_VIEW_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
@@ -259,6 +267,8 @@ rb_group_view_class_init (RBGroupViewClass *klass)
 
 	object_class->set_property = rb_group_view_set_property;
 	object_class->get_property = rb_group_view_get_property;
+
+	view_class->impl_get_description = impl_get_description;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -392,6 +402,7 @@ rb_group_view_finalize (GObject *object)
 
 	g_free (view->priv->name);
 	g_free (view->priv->file);
+	g_free (view->priv->description);
 
 	g_free (view->priv);
 
@@ -425,8 +436,10 @@ rb_group_view_set_property (GObject *object,
 			char *file;
 			
 			g_free (view->priv->name);
+			g_free (view->priv->description);
 		
 			view->priv->name = g_strdup (g_value_get_string (value));
+			view->priv->description = g_strdup_printf ("\"%s\" Group", view->priv->name);
 
 			g_object_set (G_OBJECT (rb_view_get_sidebar_button (RB_VIEW (view))),
 				      "text", view->priv->name,
@@ -527,21 +540,23 @@ rb_group_view_get_file (RBGroupView *group)
 static void
 rb_group_view_player_init (RBViewPlayerIface *iface)
 {
-	iface->impl_set_shuffle   = rb_group_view_set_shuffle;
-	iface->impl_set_repeat    = rb_group_view_set_repeat;
-	iface->impl_have_next     = rb_group_view_have_next;
-	iface->impl_have_previous = rb_group_view_have_previous;
-	iface->impl_next          = rb_group_view_next;
-	iface->impl_previous      = rb_group_view_previous;
-	iface->impl_get_title     = rb_group_view_get_title;
-	iface->impl_get_artist    = rb_group_view_get_artist;
-	iface->impl_get_album     = rb_group_view_get_album;
-	iface->impl_get_song      = rb_group_view_get_song;
-	iface->impl_get_duration  = rb_group_view_get_duration;
-	iface->impl_get_pixbuf    = rb_group_view_get_pixbuf;
-	iface->impl_get_stream    = rb_group_view_get_stream;
-	iface->impl_start_playing = rb_group_view_start_playing;
-	iface->impl_stop_playing  = rb_group_view_stop_playing;
+	iface->impl_set_shuffle      = rb_group_view_set_shuffle;
+	iface->impl_set_repeat       = rb_group_view_set_repeat;
+	iface->impl_have_next        = rb_group_view_have_next;
+	iface->impl_have_previous    = rb_group_view_have_previous;
+	iface->impl_next             = rb_group_view_next;
+	iface->impl_previous         = rb_group_view_previous;
+	iface->impl_get_title        = rb_group_view_get_title;
+	iface->impl_get_artist       = rb_group_view_get_artist;
+	iface->impl_get_album        = rb_group_view_get_album;
+	iface->impl_get_song         = rb_group_view_get_song;
+	iface->impl_get_duration     = rb_group_view_get_duration;
+	iface->impl_get_pixbuf       = rb_group_view_get_pixbuf;
+	iface->impl_get_stream       = rb_group_view_get_stream;
+	iface->impl_start_playing    = rb_group_view_start_playing;
+	iface->impl_stop_playing     = rb_group_view_stop_playing;
+	iface->impl_set_playing_view = rb_group_view_set_playing_view;
+	iface->impl_get_playing_view = rb_group_view_get_playing_view;
 }
 
 static void
@@ -1227,4 +1242,29 @@ rb_group_view_drop_cb (GtkWidget *widget,
 	g_list_free (uri_list);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
+}
+
+static const char *
+impl_get_description (RBView *view)
+{
+	RBGroupView *gv = RB_GROUP_VIEW (view);
+
+	return (const char *) gv->priv->description;
+}
+
+static void
+rb_group_view_set_playing_view (RBViewPlayer *player,
+                                RBView *view)
+{
+        RBGroupView *gv = RB_GROUP_VIEW (player);
+
+        gv->priv->playing_view = view;
+}
+
+static RBView *
+rb_group_view_get_playing_view (RBViewPlayer *player)
+{
+        RBGroupView *gv = RB_GROUP_VIEW (player);
+
+        return gv->priv->playing_view;
 }

@@ -20,6 +20,7 @@
 
 #include <bonobo/bonobo-ui-component.h>
 
+#include "rb-shell.h"
 #include "rb-view-player.h"
 
 #ifndef __RB_SHELL_PLAYER_H
@@ -52,7 +53,8 @@ typedef struct
 
 GType          rb_shell_player_get_type   (void);
 
-RBShellPlayer *rb_shell_player_new        (BonoboUIComponent *component);
+RBShellPlayer *rb_shell_player_new        (BonoboUIComponent *component,
+					   RBShell *shell);
 
 void           rb_shell_player_set_player (RBShellPlayer *shell_player,
 					   RBViewPlayer *player);

@@ -132,6 +132,10 @@ static void rb_library_view_drop_cb (GtkWidget        *widget,
 				     guint             info,
 				     guint             time,
 				     gpointer          user_data);
+static const char *impl_get_description (RBView *view);
+static void rb_library_view_set_playing_view (RBViewPlayer *player,
+				              RBView *view);
+static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -172,6 +176,8 @@ struct RBLibraryViewPrivate
 	char *artist;
 	char *album;
 	char *song;
+
+	RBView *playing_view;
 };
 
 enum
@@ -265,6 +271,7 @@ static void
 rb_library_view_class_init (RBLibraryViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBViewClass *view_class = RB_VIEW_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
@@ -272,6 +279,8 @@ rb_library_view_class_init (RBLibraryViewClass *klass)
 
 	object_class->set_property = rb_library_view_set_property;
 	object_class->get_property = rb_library_view_get_property;
+
+	view_class->impl_get_description = impl_get_description;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -502,21 +511,23 @@ album_node_selected_cb (RBNodeView *view,
 static void
 rb_library_view_player_init (RBViewPlayerIface *iface)
 {
-	iface->impl_set_shuffle   = rb_library_view_set_shuffle;
-	iface->impl_set_repeat    = rb_library_view_set_repeat;
-	iface->impl_have_next     = rb_library_view_have_next;
-	iface->impl_have_previous = rb_library_view_have_previous;
-	iface->impl_next          = rb_library_view_next;
-	iface->impl_previous      = rb_library_view_previous;
-	iface->impl_get_title     = rb_library_view_get_title;
-	iface->impl_get_artist    = rb_library_view_get_artist;
-	iface->impl_get_album     = rb_library_view_get_album;
-	iface->impl_get_song      = rb_library_view_get_song;
-	iface->impl_get_duration  = rb_library_view_get_duration;
-	iface->impl_get_pixbuf    = rb_library_view_get_pixbuf;
-	iface->impl_get_stream    = rb_library_view_get_stream;
-	iface->impl_start_playing = rb_library_view_start_playing;
-	iface->impl_stop_playing  = rb_library_view_stop_playing;
+	iface->impl_set_shuffle      = rb_library_view_set_shuffle;
+	iface->impl_set_repeat       = rb_library_view_set_repeat;
+	iface->impl_have_next        = rb_library_view_have_next;
+	iface->impl_have_previous    = rb_library_view_have_previous;
+	iface->impl_next             = rb_library_view_next;
+	iface->impl_previous         = rb_library_view_previous;
+	iface->impl_get_title        = rb_library_view_get_title;
+	iface->impl_get_artist       = rb_library_view_get_artist;
+	iface->impl_get_album        = rb_library_view_get_album;
+	iface->impl_get_song         = rb_library_view_get_song;
+	iface->impl_get_duration     = rb_library_view_get_duration;
+	iface->impl_get_pixbuf       = rb_library_view_get_pixbuf;
+	iface->impl_get_stream       = rb_library_view_get_stream;
+	iface->impl_start_playing    = rb_library_view_start_playing;
+	iface->impl_stop_playing     = rb_library_view_stop_playing;
+	iface->impl_set_playing_view = rb_library_view_set_playing_view;
+	iface->impl_get_playing_view = rb_library_view_get_playing_view;
 }
 
 static void
@@ -1059,4 +1070,27 @@ rb_library_view_drop_cb (GtkWidget *widget,
 	g_list_free (uri_list);
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
+}
+
+static const char *
+impl_get_description (RBView *view)
+{
+	return _("Library");
+}
+
+static void
+rb_library_view_set_playing_view (RBViewPlayer *player,
+				  RBView *view)
+{
+	RBLibraryView *lv = RB_LIBRARY_VIEW (player);
+
+	lv->priv->playing_view = view;
+}
+
+static RBView *
+rb_library_view_get_playing_view (RBViewPlayer *player)
+{
+	RBLibraryView *lv = RB_LIBRARY_VIEW (player);
+
+	return lv->priv->playing_view;
 }

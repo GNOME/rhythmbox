@@ -95,13 +95,16 @@ struct RBShellPlayerPrivate
 	MonkeyMediaMixer *mixer;
 
 	MonkeyMediaAudioStream *current_stream;
+
+	RBShell *shell;
 };
 
 enum
 {
 	PROP_0,
 	PROP_PLAYER,
-	PROP_COMPONENT
+	PROP_COMPONENT,
+	PROP_SHELL
 };
 
 enum
@@ -177,6 +180,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      "BonoboUIComponent",
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							      "Shell",
+							      "Shell",
+							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
@@ -262,6 +272,9 @@ rb_shell_player_set_property (GObject *object,
 							     shell_player);
 		rb_shell_player_set_playing_player (shell_player, NULL);
 		break;
+	case PROP_SHELL:
+		shell_player->priv->shell = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -283,6 +296,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_COMPONENT:
 		g_value_set_object (value, shell_player->priv->component);
+		break;
+	case PROP_SHELL:
+		g_value_set_object (value, shell_player->priv->shell);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -311,11 +327,13 @@ rb_shell_player_get_player (RBShellPlayer *shell_player)
 }
 
 RBShellPlayer *
-rb_shell_player_new (BonoboUIComponent *component)
+rb_shell_player_new (BonoboUIComponent *component,
+		     RBShell *shell)
 {
 	RBShellPlayer *shell_player;
 
 	shell_player = g_object_new (RB_TYPE_SHELL_PLAYER,
+				     "shell", shell,
 				     "component", component,
 				     NULL);
 
@@ -528,6 +546,8 @@ static void
 rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 				    RBViewPlayer *player)
 {
+	GList *l;
+
 	if (shell_player->priv->player == player && player != NULL)
 		return;
 
@@ -555,6 +575,14 @@ rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 	rb_shell_player_sync_with_player (shell_player);
 
 	rb_shell_player_update_play_button (shell_player);
+
+	for (l = rb_shell_list_views (shell_player->priv->shell); l != NULL; l = g_list_next (l))
+	{
+		rb_view_player_set_playing_view (RB_VIEW_PLAYER (l->data),
+						 shell_player->priv->player != NULL ?
+						 RB_VIEW (shell_player->priv->player) :
+						 NULL);
+	}
 }
 
 static void
