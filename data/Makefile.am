@@ -20,6 +20,9 @@ appicondir = $(datadir)/pixmaps
 schemadir = $(sysconfdir)/gconf/schemas
 schema_DATA = rhythmbox.schemas
 
+keys_DATA = rhythmbox.keys
+keysdir = $(datadir)/mime-info/
+
 applicationsdir = $(datadir)/application-registry
 applications_DATA = rhythmbox.applications
 
@@ -27,6 +30,10 @@ iradio-initial.xml:
 
 iradio_DATA = iradio-initial.pls
 iradiodir = $(datadir)/rhythmbox
+
+rhythmbox.keys: generate-keys.sh rhythmbox.applications
+	$(srcdir)/generate-keys.sh $(srcdir)/rhythmbox.applications \
+	> rhythmbox.keys
 
 install-schemas: $(schema_DATA)
 	if test -z "$(DESTDIR)"; then \
