@@ -2,6 +2,80 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-01-18 05:19:14 GMT	Colin Walters <walters@verbum.org>	patch-13
+
+    Summary:
+      shell bugfixes, dashboard work, HACKING updates
+    Revision:
+      rhythmbox--main--0.7--patch-13
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-155
+       various shell bugfixes, jump to song added via cmdline, and more debug bits
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-156
+       work with session management (Matt Hughes)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-157
+       HACKING update
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-158
+       better dashboard support (Lee Willis)
+    
+
+    modified files:
+     ChangeLog HACKING shell/rb-shell-player.c shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-155
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-156
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-157
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-158
+
+
+2004-01-17 03:44:07 GMT	Jeffrey Yasskin <jyasskin@mail.utexas.edu>	patch-12
+
+    Summary:
+      Add iRadio stations to iradio-initial.pls
+    Revision:
+      rhythmbox--main--0.7--patch-12
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7--patch-6
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-1
+       Add a script to help copy ratings from a broken rhythmdb to a new one
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-2
+       Scripts wound up in rhythmbox-devel@gnome.org--2004/scripts--main--0 instead
+    
+    --- Important patches start here ---
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-3
+       Allow rb_file() to find iradio-initial.pls
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-4
+       Add Magnatune iRadio channels to iradio-initial.pls
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-5
+       Make Magnatune URIs permanent
+    
+
+    modified files:
+     ChangeLog data/iradio-initial.pls lib/rb-file-helpers.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--trivial--0.7--patch-5
+
+
 2004-01-16 22:20:04 GMT	Colin Walters <walters@verbum.org>	patch-11
 
     Summary:
