@@ -309,7 +309,12 @@ clicked_cb (GtkButton *button, RBVolume *volume)
 	gint x, y;
 	gint button_width, button_height;
 	gint window_width, window_height;
-	gint spacing = 1;
+	gint spacing = 5;
+	gint max_y;
+
+	gint volume_slider_x;
+	gint volume_slider_y;
+	
 	rb_debug ("volume clicked");
 
 /* 	if (GTK_WIDGET_VISIBLE (GTK_WIDGET (volume->priv->window))) */
@@ -318,15 +323,33 @@ clicked_cb (GtkButton *button, RBVolume *volume)
 	/*
 	 * Position the popup right next to the button.
 	 */
+	
+	max_y = gdk_screen_height ();
+	
 	gtk_widget_size_request (GTK_WIDGET (volume->priv->window), &req);
 
 	gdk_window_get_origin (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &x, &y);
 	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &button_width, &button_height);
 	rb_debug ("window origin: %d %d; size: %d %d", x, y, button_width, button_height);
 
+
+	
 	gtk_widget_show_all (volume->priv->window);
 	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->window)->child), &window_width, &window_height);
-	gtk_window_move (GTK_WINDOW (volume->priv->window), x+((button_width-window_width)/2), y+button_width+spacing);
+	
+	volume_slider_x = x + (button_width - window_width) / 2;
+	
+	if (y + button_width + window_height + spacing < max_y) {
+		/* if volume slider will fit on the screen, display it under
+		 * the volume button
+		 */
+		volume_slider_y = y + button_width + spacing;
+	} else {
+		/* otherwise display it above the volume button */
+		volume_slider_y = y - window_height - spacing;
+	}
+	
+	gtk_window_move (GTK_WINDOW (volume->priv->window), volume_slider_x, volume_slider_y);
 
 	/*
 	 * Grab focus and pointer.
