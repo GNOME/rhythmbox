@@ -286,6 +286,7 @@ enum
 	PROP_NO_REGISTRATION,
 	PROP_DRY_RUN,
 	PROP_RHYTHMDB_FILE,
+	PROP_SELECTED_SOURCE
 };
 
 #define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
@@ -472,6 +473,14 @@ rb_shell_class_init (RBShellClass *klass)
 							      "The RhythmDB file to use", 
 							      "rhythmdb.xml",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_SELECTED_SOURCE,
+					 g_param_spec_pointer ("selected-source", 
+							       "selected-source", 
+							       "Source which is currently selected", 
+							       G_PARAM_READABLE));
+
 }
 
 static void
@@ -552,6 +561,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_RHYTHMDB_FILE:
 		g_value_set_string (value, shell->priv->rhythmdb_file);
+		break;
+	case PROP_SELECTED_SOURCE:
+		g_value_set_pointer (value, shell->priv->selected_source);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1338,6 +1350,10 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	library_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG);
+
+	rb_library_source_class_add_verbs (shell, shell->priv->ui_component);
+
+
 	g_assert (library_source != NULL);
 	iradio_source  = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
 	g_assert (iradio_source != NULL);

@@ -73,13 +73,13 @@ static void rb_library_source_get_property (GObject *object,
 			                  GValue *value,
 			                  GParamSpec *pspec);
 static void rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
-						 RBLibrarySource *source,
-						 const char *verbname);
+						RBShell *shell,
+						const char *verbname);
 static void rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
-						 RBLibrarySource *source,
+						 RBShell *shell,
 						 const char *verbname);
 static void rb_library_source_cmd_choose_album (BonoboUIComponent *component,
-						RBLibrarySource *source,
+						RBShell *shell,
 						const char *verbname);
 static void rb_library_source_handle_genre_selection (RBLibrarySource *libsource, GList *genres);
 static void rb_library_source_handle_artist_selection (RBLibrarySource *libsource, GList *artists);
@@ -419,6 +419,21 @@ rb_library_source_songs_show_popup_cb (RBEntryView *view,
 	gtk_object_sink (GTK_OBJECT (menu));
 }
 
+/* This function may seem a bit weird. Since we have 2 instances of objects 
+ * inheriting from RBLibrarySource, we can't install those ui verbs when
+ * creating a new instance of such an object. Attaching those verbs in the 
+ * shell would also be weird imo since this would add more code 
+ * dependant on the source type to the shell */
+void
+rb_library_source_class_add_verbs (RBShell *shell, 
+				   BonoboUIComponent *component)
+{
+	bonobo_ui_component_add_verb_list_with_data (component, 
+						     rb_library_source_verbs,
+						     shell);
+}
+
+
 static GObject *
 rb_library_source_constructor (GType type, guint n_construct_properties,
 			       GObjectConstructParam *construct_properties)
@@ -435,8 +450,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 							       construct_properties));
 
 	g_object_get (G_OBJECT (source), "component", &component, NULL);
-	bonobo_ui_component_add_verb_list_with_data (component, rb_library_source_verbs,
-						     source);
 
 	source->priv->paned = gtk_vpaned_new ();
 
@@ -667,7 +680,6 @@ rb_library_source_gather_properties (RBLibrarySource *source,
 	GHashTable *selected_set;
 
 	rhythmdb_read_lock (source->priv->db);
-
 	selected_set = g_hash_table_new (g_str_hash, g_str_equal);
 	selected = rb_entry_view_get_selected_entries (source->priv->songs);
 	for (tem = selected; tem; tem = tem->next) {
@@ -689,13 +701,15 @@ rb_library_source_gather_properties (RBLibrarySource *source,
 
 static void
 rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
-				    RBLibrarySource *source,
+				    RBShell *shell,
 				    const char *verbname)
 {
 	GList *props;	
+	RBLibrarySource *source;
 
 	rb_debug ("choosing genre");
 
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_GENRE);
 	rb_property_view_set_selection (source->priv->genres, props);
 	g_list_free (props);
@@ -703,13 +717,15 @@ rb_library_source_cmd_choose_genre (BonoboUIComponent *component,
 
 static void
 rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
-				     RBLibrarySource *source,
+				     RBShell *shell,
 				     const char *verbname)
 {
 	GList *props;	
+	RBLibrarySource *source;
 
 	rb_debug ("choosing artist");
 
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ARTIST);
 	rb_property_view_set_selection (source->priv->artists, props);
 	g_list_free (props);
@@ -717,13 +733,15 @@ rb_library_source_cmd_choose_artist (BonoboUIComponent *component,
 
 static void
 rb_library_source_cmd_choose_album (BonoboUIComponent *component,
-				    RBLibrarySource *source,
+				    RBShell *shell,
 				    const char *verbname)
 {
 	GList *props;	
+	RBLibrarySource *source;
 
 	rb_debug ("choosing album");
 
+	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ALBUM);
 	rb_property_view_set_selection (source->priv->albums, props);
 	g_list_free (props);

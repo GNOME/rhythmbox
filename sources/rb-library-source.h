@@ -61,6 +61,8 @@ void		rb_library_source_show_browser	(RBLibrarySource *source,
 						 gboolean show);
 
 void		rb_library_source_add_location	(RBLibrarySource *source, GtkWindow *win);
+void            rb_library_source_class_add_verbs (RBShell *shell, 
+						   BonoboUIComponent *component);
 
 G_END_DECLS
 
