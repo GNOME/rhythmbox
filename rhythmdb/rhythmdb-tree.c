@@ -660,6 +660,22 @@ g_free (encoded);							\
 
 		value = RHYTHMDB_TREE_ENTRY_VALUE (entry, i);
 
+		/* Optimization - don't save default values */
+		switch (G_VALUE_TYPE (value)) {
+		case G_TYPE_INT:
+			if (g_value_get_int (value) == 0)
+				continue;
+			break;
+		case G_TYPE_LONG:
+			if (g_value_get_long (value) == 0)
+				continue;
+			break;
+		case G_TYPE_BOOLEAN:
+			if (g_value_get_boolean (value) == FALSE)
+				continue;
+			break;
+		}
+
 		elt_name = rhythmdb_nice_elt_name_from_propid ((RhythmDB *) ctx->db, i);
 
 		RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle);
