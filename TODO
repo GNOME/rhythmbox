@@ -12,6 +12,8 @@ Bugs:
 * Sometimes crash on exit? (gnome_vfs_shutdown prob)
 * We don't unref the mixer atm (see above)
 
+* Incredible startup slowness!
+
 * Do mtime checking when adding watched dir and file is already in lib
 * Changing files while rb is running is still horked, esp when changing
   artist/album/genre.
@@ -55,3 +57,5 @@ need confirmation dialogs
 * File mass tagging
 * Clicking on volume icon to mute/unmute
 * iTunes-like checkbuttons so you can mark songs to be skipped?
+* Save treeview state
+* Group views need to be reorderable, so no sorting
