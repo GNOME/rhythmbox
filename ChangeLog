@@ -2,6 +2,349 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-07 21:33:21 GMT	Colin Walters <walters@verbum.org>	patch-73
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-73
+
+
+    new files:
+     po/.arch-ids/hr.po.id po/.arch-ids/hu.po.id po/hr.po po/hu.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/ca.po
+     sources/itunesdb.c sources/itunesdb.h
+
+
+2004-02-07 19:08:22 GMT	Christophe Fergeau <teuf@gnome.org>	patch-72
+
+    Summary:
+      Merge basic iPod support in, yayvi README.iPod 
+    Revision:
+      rhythmbox--main--0.7--patch-72
+
+    Patches applied:
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--base-0
+       tag of teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-14
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-1
+       
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-2
+       Starting to add support for gtkpod itunesdb parsing code
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-3
+       Changes to gtkpod iTunesDB parsing code to use an iPodParser structure for the parsing now mostly compile, it's totally untested though
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-4
+       Fixed 2 compilation warnings
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-5
+       Fixed bugs here and there, added a test program, it's now able to parse my iTunesDB file
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-6
+       Readded playlist reading in itunesdb.c, use itunesdb.c function to get the path to an iPod song instead of grabbing code from libipod
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-7
+       Fix and use the new function to iterate over the entries contained in the genres hash
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-8
+       Fixed compilation, merge with walters
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-9
+       Fixed typo in hash_tree_artists_foreach
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-10
+       Removed two useless files which should never had appeared in the archive
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-11
+       Started to debug rhythmdb_hash_tree_foreach, but a different foreach_remove function will probably be needed :-/
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-12
+       Merge with teuf@gnome.org--2003/rhythmbox--mainline--0.7
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-13
+       Sync with home
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-14
+       Readded old remove_entry_by_type code, moved entry-type property from RBSource to RBLibrarySource
+    
+     * cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-15
+       Minor tweaks
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-88
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-1
+       
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-2
+       Started to clean up iPod support to try to end up with something non-hackish. For now, I added a new entry type, which makes it possible to differentiate between iPod songs and local songs
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-3
+       Cleanly integrated iPod support with the build system
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-4
+       iPod support is no longer a hack but a work in progress, it can be cleanly enabled/disabled at compile time, and coexist peacefully with a local Rhythmbox library
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-5
+       Disable iPod support by default, properly read size from iTunesDB
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-6
+       Add/remove songs to/from the library when an iPod is detected (detection is still done through a GConf key though)
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-7
+       Sync with walters
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-8
+       Moved the loading code to rb-library-source.c, the removal code is still in rhythmdb
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-9
+       Moved most of the iPod support code in rb-library-source.c in preparation for the writing of an iPod source. The remaining #ifdef IPOD in rhythmdb/ should be trivial to remove
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-10
+       Various clean up, and now poll for iTunesDB presence to autodetect iPod ;)
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-11
+       Fixed constructor functions, implemented the iPodSource, added an icon for it
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-12
+       Added iPod icon, it's actually jimmac's md icon
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-13
+       Updated README.iPod
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-14
+       Fixed compilation with iPod support disabled
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-15
+       Entry types are now dynamically assigned
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-16
+       Each RBSource is now associated with a RhythmDBEntryType, reworked rb-shell.c to make it easier to add new sources
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-17
+       More work on iPod parser, this should be testable now
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-18
+       Merge with work branch
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-19
+       Merge with work tree, removed a few FIXME
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-20
+       Get rid of libipod, use modified code from gtkpod instead
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-21
+       Updated compilation instructions and TODO
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-22
+       Properly release the iPod after loading songs from it
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-23
+       Added a few TODO items, renamed ipod_parser_close to ipod_parser_destroy
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-24
+       Sync with work branch
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-25
+       Try to not leak memory
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-26
+       Fixed small bugs in the itunesdb parser
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-27
+       Pass around a user-defined gpointer when writing the iTunesDB to disk
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-28
+       Implemented a function to iterate over a genres hash, now I need to use it ;)
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-29
+       Merge with work
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-30
+       Added IRC log about what needs to be fixed
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-31
+       Started to change source type registration per walters comments
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-32
+       Merge from work
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-33
+       Merge with walters
+    
+
+    new files:
+     README.iPod data/art/.arch-ids/rhythmbox-ipod.png.id
+     data/art/rhythmbox-ipod.png sources/itunesdb.c
+     sources/itunesdb.h sources/rb-ipod-source.c
+     sources/rb-ipod-source.h
+
+    modified files:
+     ChangeLog configure.ac data/art/Makefile.am
+     lib/rb-stock-icons.c lib/rb-stock-icons.h player/Makefile.am
+     player/rb-player-xine.c rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-shell-player.c shell/rb-shell.c
+     shell/rb-shell.h shell/rb-statusbar.c sources/Makefile.am
+     sources/rb-iradio-source.c sources/rb-iradio-source.h
+     sources/rb-library-source.c sources/rb-library-source.h
+     sources/rb-playlist-source.c sources/rb-source.c
+     widgets/rb-entry-view.c widgets/rb-property-view.c
+
+    new patches:
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--base-0
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-1
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-2
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-3
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-4
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-5
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-6
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-7
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-8
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-9
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-10
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-11
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-12
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-13
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-14
+     cfergeau@mipsys.com--2003/rhythmbox--ipod--0.7--patch-15
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-5
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-6
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-7
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-8
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-9
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-10
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-11
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-12
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-13
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-14
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-15
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-16
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-17
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-18
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-19
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-20
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-21
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-22
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-23
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-24
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-25
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-26
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-27
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-28
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-29
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-30
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-31
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-32
+     teuf@gnome.org--2003/rhythmbox--mainline--0.7--patch-33
+
+
+2004-02-07 17:49:26 GMT	Christophe Fergeau <teuf@gnome.org>	patch-71
+
+    Summary:
+      Require GStreamer 0.7.4 or better
+    Revision:
+      rhythmbox--main--0.7--patch-71
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-02-07 16:57:27 GMT	Christophe Fergeau <teuf@gnome.org>	patch-70
+
+    Summary:
+      French translation update
+    Revision:
+      rhythmbox--main--0.7--patch-70
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/fr.po
+
+
+2004-02-07 05:27:45 GMT	Colin Walters <walters@verbum.org>	patch-69
+
+    Summary:
+      misc little bugfixes
+    Revision:
+      rhythmbox--main--0.7--patch-69
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-199
+       change assert to simple if statement
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-200
+       make version tests in autogen looser
+    
+
+    modified files:
+     ChangeLog autogen.sh shell/rb-shell-player.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-199
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-200
+
+
+2004-02-07 01:28:57 GMT	Colin Walters <walters@verbum.org>	patch-68
+
+    Summary:
+      add missing item from NEWS
+    Revision:
+      rhythmbox--main--0.7--patch-68
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2004-02-05 17:50:10 GMT	Colin Walters <walters@verbum.org>	patch-67
+
+    Summary:
+      note ReplayGain in NEWS
+    Revision:
+      rhythmbox--main--0.7--patch-67
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2004-02-05 16:06:37 GMT	Colin Walters <walters@verbum.org>	patch-66
+
+    Summary:
+      release 0.7.0
+    Revision:
+      rhythmbox--main--0.7--patch-66
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-02-05 15:59:16 GMT	Colin Walters <walters@verbum.org>	patch-65
+
+    Summary:
+      update NEWS
+    Revision:
+      rhythmbox--main--0.7--patch-65
+
+
+    modified files:
+     ChangeLog NEWS
+
+
 2004-02-05 15:43:09 GMT	Colin Walters <walters@verbum.org>	patch-64
 
     Summary:
