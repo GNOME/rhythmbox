@@ -478,9 +478,12 @@ entry_deleted_cb (RhythmDB *db,
 		  RhythmDBEntry *entry,
 		  RBShellClipboard *clipboard)
 {
+	GList *old_entries = clipboard->priv->entries;
+	
 	clipboard->priv->entries = g_list_remove (clipboard->priv->entries, entry);
 
-	rb_shell_clipboard_sync (clipboard);
+	if (old_entries)
+		rb_shell_clipboard_sync (clipboard);
 }
 
 static void
