@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox 0.3.0.99\n"
-"POT-Creation-Date: 2002-08-27 19:17+0200\n"
-"PO-Revision-Date: 2002-08-27 19:03+0200\n"
+"POT-Creation-Date: 2002-09-12 11:47+0200\n"
+"PO-Revision-Date: 2002-09-11 22:22+0200\n"
 "Last-Translator: Baaptiste Mille-Mathias <bmm80@ifrance.com>\n"
 "Language-Team: GNOME French Team <gnomefr@traduc.org>\n"
 "MIME-Version: 1.0\n"
@@ -127,40 +127,46 @@ msgid "<span weight=\"bold\">_Track Number:</span>"
 msgstr "<span weight=\"bold\">_Numéro de piste :</span>"
 
 #: data/glade/song-info.glade.h:15
-msgid "_Additional"
-msgstr "_Supplémentaire"
+msgid "Additional"
+msgstr "Supplémentaire"
 
 #: data/glade/song-info.glade.h:16
-msgid "_Basic"
-msgstr "de _Base"
+msgid "Basic"
+msgstr ""
 
 #: data/glade/song-info.glade.h:17
 msgid "_of"
 msgstr "_de"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1
-msgid "Album"
-msgstr "Album"
+msgid "_Album"
+msgstr "_Album"
 
 #: data/node-views/rb-node-view-artists.xml.h:1
+msgid "A_rtist"
+msgstr "A_rtiste"
+
+#: data/node-views/rb-node-view-songs.xml.h:1
+msgid "A_lbum"
+msgstr "A_lbum"
+
 #: data/node-views/rb-node-view-songs.xml.h:2
-msgid "Artist"
-msgstr "Artiste"
+msgid "Art_ist"
+msgstr "Art_iste"
 
 #: data/node-views/rb-node-view-songs.xml.h:3
-msgid "Time"
-msgstr "Durée"
+msgid "Ti_me"
+msgstr "_Durée"
 
 #: data/node-views/rb-node-view-songs.xml.h:4
-msgid "Title"
-msgstr "Titre"
+msgid "Tra_ck"
+msgstr "_Piste"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
-msgid "Track"
-msgstr "Piste"
+msgid "_Title"
+msgstr "_Titre"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:444 shell/rb-shell.c:808
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:496 shell/rb-shell.c:886
 msgid "Music Player"
 msgstr "Lecteur de musique"
 
@@ -206,7 +212,7 @@ msgid "_Delete Group"
 msgstr "_Supprimer le Groupe"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:9
-#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:33
+#: data/ui/rhythmbox-library-view.xml.in.h:8 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "_Edit"
 msgstr "_Édition"
 
@@ -225,7 +231,7 @@ msgid "_Rename Group..."
 msgstr "_Renommer le groupe..."
 
 #: data/ui/rhythmbox-group-view.xml.in.h:13
-#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:47
+#: data/ui/rhythmbox-library-view.xml.in.h:11 data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_View"
 msgstr "Afficha_ge"
 
@@ -246,32 +252,32 @@ msgid "_Actions"
 msgstr "_Actions"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
+msgid "Change the visibility of the main window"
+msgstr "Change la visibilité de la fenêtre principale"
+
+#: data/ui/rhythmbox-ui.xml.in.h:2
 msgid "Change the visibility of the sidebar"
 msgstr "Change la visibilité de la barre latérale"
 
-#: data/ui/rhythmbox-ui.xml.in.h:2
+#: data/ui/rhythmbox-ui.xml.in.h:3
 msgid "Change the visibility of the statusbar"
 msgstr "Change la visibilité de la barre d'état"
 
-#: data/ui/rhythmbox-ui.xml.in.h:3
+#: data/ui/rhythmbox-ui.xml.in.h:4
 msgid "Change the visibility of the toolbar"
 msgstr "Change la visibilité de la barre d'outils"
 
-#: data/ui/rhythmbox-ui.xml.in.h:4
+#: data/ui/rhythmbox-ui.xml.in.h:5
 msgid "Choose files or a directory to be added to the library"
 msgstr "Choisissez un fichier ou un répertoire à ajouter à la bibliothèque"
 
-#: data/ui/rhythmbox-ui.xml.in.h:5
+#: data/ui/rhythmbox-ui.xml.in.h:6
 msgid "Copy selection"
 msgstr "Copier la sélection"
 
-#: data/ui/rhythmbox-ui.xml.in.h:6
+#: data/ui/rhythmbox-ui.xml.in.h:7
 msgid "Create a new music group"
 msgstr "Créer un nouveau groupe audio"
-
-#: data/ui/rhythmbox-ui.xml.in.h:7
-msgid "Create a new music group from the selected songs"
-msgstr "Créer un nouveau groupe audio depuis les chansons sélectionnées"
 
 #: data/ui/rhythmbox-ui.xml.in.h:8
 msgid "Cu_t"
@@ -286,16 +292,16 @@ msgid "Delete selection"
 msgstr "Supprimer la sélection"
 
 #: data/ui/rhythmbox-ui.xml.in.h:11
-msgid "Edit Rhythmbox preferences"
-msgstr "Éditer les préférences Rhythmbox"
+msgid "Edit music player preferences"
+msgstr "Éditer les préférences du lecteur de musique"
 
 #: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Next"
 msgstr "Suivant"
 
 #: data/ui/rhythmbox-ui.xml.in.h:13
-msgid "P_revious Song"
-msgstr "Chanson p_récédente"
+msgid "P_revious"
+msgstr "_Précédent"
 
 #: data/ui/rhythmbox-ui.xml.in.h:14
 msgid "Paste selection"
@@ -305,7 +311,7 @@ msgstr "Coller la sélection"
 msgid "Pause playing"
 msgstr "Pause lecture"
 
-#: data/ui/rhythmbox-ui.xml.in.h:16 shell/rb-shell-player.c:418
+#: data/ui/rhythmbox-ui.xml.in.h:16 shell/rb-shell-player.c:522
 msgid "Play"
 msgstr "Lire"
 
@@ -317,111 +323,119 @@ msgstr "Préfére_nces"
 msgid "Previous"
 msgstr "Précédent"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19 shell/main.c:59
-msgid "Quit Rhythmbox"
-msgstr "Quitte Rhythmbox"
+#: data/ui/rhythmbox-ui.xml.in.h:19
+msgid "Quit music player"
+msgstr "Quitter le lecteur de musique"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "R_epeat"
+msgstr "_Répéter"
+
+#: data/ui/rhythmbox-ui.xml.in.h:21
+msgid "R_estart"
+msgstr "_Recommencer"
+
+#: data/ui/rhythmbox-ui.xml.in.h:22
+msgid "Restart song from the beginning"
+msgstr "Rejouer la chanson à partir du début"
+
+#: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "S_idebar"
 msgstr "Barre _latérale"
 
-#: data/ui/rhythmbox-ui.xml.in.h:21
+#: data/ui/rhythmbox-ui.xml.in.h:24
 msgid "Show information about Rhythmbox"
 msgstr "Affiche les informations à propos de Rhythmbox"
 
-#: data/ui/rhythmbox-ui.xml.in.h:22
+#: data/ui/rhythmbox-ui.xml.in.h:25
 msgid "Shuffle"
 msgstr "Aléatoire"
 
-#: data/ui/rhythmbox-ui.xml.in.h:23
+#: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "Start playing"
 msgstr "Commencer la lecture"
 
-#: data/ui/rhythmbox-ui.xml.in.h:24
+#: data/ui/rhythmbox-ui.xml.in.h:27
 msgid "Start playing the next song"
 msgstr "Commencer la lecture de la chanson suivante"
 
-#: data/ui/rhythmbox-ui.xml.in.h:25
+#: data/ui/rhythmbox-ui.xml.in.h:28
 msgid "Start playing the previous song"
 msgstr "Commencer la lecture de la chanson précédente"
 
-#: data/ui/rhythmbox-ui.xml.in.h:26
+#: data/ui/rhythmbox-ui.xml.in.h:29
 msgid "Stop playing"
 msgstr "Arrêter la lecture"
 
-#: data/ui/rhythmbox-ui.xml.in.h:27
+#: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Toggle random playing order"
 msgstr "Basculer l'ordre de lecture aléatoire"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
+#: data/ui/rhythmbox-ui.xml.in.h:31
 msgid "Toggle repeat mode"
 msgstr "Activer la lecture en boucle"
 
-#: data/ui/rhythmbox-ui.xml.in.h:29
+#: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "_About"
 msgstr "À _propos"
 
-#: data/ui/rhythmbox-ui.xml.in.h:30
+#: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "_Add to Library..."
 msgstr "_Ajouter à la bibliothèque..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:31
+#: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "_Copy"
 msgstr "_Copier"
 
-#: data/ui/rhythmbox-ui.xml.in.h:32
+#: data/ui/rhythmbox-ui.xml.in.h:35
 msgid "_Delete"
 msgstr "_Supprimer"
 
-#: data/ui/rhythmbox-ui.xml.in.h:34
+#: data/ui/rhythmbox-ui.xml.in.h:37
 msgid "_Help"
 msgstr "_Aide"
 
-#: data/ui/rhythmbox-ui.xml.in.h:35
+#: data/ui/rhythmbox-ui.xml.in.h:38
 msgid "_Music"
 msgstr "_Musique"
 
-#: data/ui/rhythmbox-ui.xml.in.h:36
-msgid "_New Group from Selection..."
-msgstr "_Nouveau groupe depuis la sélection..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:37
+#: data/ui/rhythmbox-ui.xml.in.h:39
 msgid "_New Group..."
 msgstr "_Nouveau groupe..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:38 lib/widgets/rb-song-info.c:186
-msgid "_Next Song"
-msgstr "Chanson _suivante"
+#: data/ui/rhythmbox-ui.xml.in.h:40
+msgid "_Next"
+msgstr "_Suivant"
 
-#: data/ui/rhythmbox-ui.xml.in.h:39
+#: data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Organize"
 msgstr "_Organiser"
 
-#: data/ui/rhythmbox-ui.xml.in.h:40
+#: data/ui/rhythmbox-ui.xml.in.h:42
 msgid "_Paste"
 msgstr "C_oller"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:419
+#: data/ui/rhythmbox-ui.xml.in.h:43 shell/rb-shell-player.c:523
 msgid "_Play"
 msgstr "_Lire"
 
-#: data/ui/rhythmbox-ui.xml.in.h:42
+#: data/ui/rhythmbox-ui.xml.in.h:44
 msgid "_Quit"
 msgstr "_Quitter"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43
-msgid "_Repeat"
-msgstr "_Répéter"
+#: data/ui/rhythmbox-ui.xml.in.h:45
+msgid "_Show Window"
+msgstr "_Afficher la fenêtre"
 
-#: data/ui/rhythmbox-ui.xml.in.h:44
+#: data/ui/rhythmbox-ui.xml.in.h:46
 msgid "_Shuffle"
 msgstr "_Aléatoire"
 
-#: data/ui/rhythmbox-ui.xml.in.h:45
+#: data/ui/rhythmbox-ui.xml.in.h:47
 msgid "_Statusbar"
 msgstr "Barre d'é_tat"
 
-#: data/ui/rhythmbox-ui.xml.in.h:46
+#: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Toolbar"
 msgstr "Barre d'_outils"
 
@@ -450,7 +464,7 @@ msgid "Failed to create directory %s."
 msgstr "Impossible de créer le répertoire %s."
 
 #. comma separated list of prefixes that are to
-#. * be appended as suffix
+#. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
 msgid "THE ,DJ "
 msgstr "LE ,DJ "
@@ -459,23 +473,6 @@ msgstr "LE ,DJ "
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
-
-#: lib/widgets/eggtreemodelfilter.c:271
-msgid "The child model"
-msgstr "Le modèle enfant"
-
-#: lib/widgets/eggtreemodelfilter.c:272
-msgid "The model for the TreeModelFilter to filter"
-msgstr "Le modèle pour le TreeModelFilter à filtrer"
-
-#: lib/widgets/eggtreemodelfilter.c:279
-msgid "The virtual root"
-msgstr "La racine virtuelle"
-
-#: lib/widgets/eggtreemodelfilter.c:280
-msgid "The virtual root (relative to the child model) for this filtermodel"
-msgstr ""
-"La racine virtuelle (relative au modèle enfant) pour ce modèle de filtre"
 
 #: lib/widgets/rb-cell-renderer-pixbuf.c:104
 msgid "Pixbuf Object"
@@ -494,12 +491,12 @@ msgstr ""
 "Une erreur est survenue en allant dans %s :\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:507
+#: lib/widgets/rb-node-view.c:524
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Impossible d'interprétrer %s comme ficher de disposition NodeView"
 
-#: lib/widgets/rb-node-view.c:1051
+#: lib/widgets/rb-node-view.c:1173
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d chansons, %d:%02d:%02d de temps de lecture, %s"
@@ -512,93 +509,88 @@ msgstr "Depuis "
 msgid " by "
 msgstr " par "
 
-#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:550
+#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:543
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
 "Durée écoulée de la chanson. Cliquez dessus pour afficher la durée restante "
 "et totale"
 
-#: lib/widgets/rb-player.c:367
+#: lib/widgets/rb-player.c:373
 msgid "Get information on this album from the web"
 msgstr "Obtenir des informations sur cet album depuis le Web"
 
-#: lib/widgets/rb-player.c:378
+#: lib/widgets/rb-player.c:384
 msgid "Get information on this artist from the web"
 msgstr "Obtenir des informations sur cet artiste depuis le Web"
 
-#: lib/widgets/rb-player.c:396
-#, c-format
-msgid "Playing from the %s"
-msgstr "Jouer à partir de %s"
-
-#: lib/widgets/rb-player.c:401
+#: lib/widgets/rb-player.c:394
 msgid "Not Playing"
 msgstr "Pas en train de Lire"
 
-#: lib/widgets/rb-player.c:536
+#: lib/widgets/rb-player.c:529
 msgid ""
 "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr ""
 "Durée restante de la chanson. Cliquez dessus pour afficher la durée totale "
 "et écoulée"
 
-#: lib/widgets/rb-player.c:543
+#: lib/widgets/rb-player.c:536
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
 "Durée totale de la chanson. Cliquez dessus pour afficher la durée écoulée et "
 "restante"
 
-#: lib/widgets/rb-player.c:576
+#: lib/widgets/rb-player.c:569
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:585
+#: lib/widgets/rb-player.c:578
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:593
+#: lib/widgets/rb-player.c:586
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Total : %d:%02d"
 
-#: lib/widgets/rb-player.c:596
+#: lib/widgets/rb-player.c:589
 msgid "Invalid mode"
 msgstr "Mode non valide"
 
 #: lib/widgets/rb-search-entry.c:115
-msgid "Search:"
-msgstr "Rechercher :"
+msgid "_Search:"
+msgstr "_Rechercher "
 
-#: lib/widgets/rb-sidebar-button.c:246
+#: lib/widgets/rb-sidebar-button.c:249
 msgid "/_Open"
 msgstr "/_Ouvrir"
 
-#: lib/widgets/rb-sidebar-button.c:248
+#: lib/widgets/rb-sidebar-button.c:251
 msgid "/_Rename..."
 msgstr "/_Renommer..."
 
-#: lib/widgets/rb-sidebar-button.c:249
+#: lib/widgets/rb-sidebar-button.c:252
 msgid "/_Delete"
 msgstr "/_Supprimer"
 
-#: lib/widgets/rb-sidebar-button.c:493
+#: lib/widgets/rb-sidebar-button.c:495
 msgid "/Rename..."
 msgstr "/Renommer..."
 
-#: lib/widgets/rb-sidebar-button.c:496
+#: lib/widgets/rb-sidebar-button.c:498
 msgid "/Delete"
 msgstr "/Supprimer"
 
-#: lib/widgets/rb-sidebar-button.c:618
+#: lib/widgets/rb-sidebar-button.c:661
 #, c-format
 msgid "Please enter a new name for this %s."
 msgstr "Saississez un nouveau nom pour ce %s."
 
-#: lib/widgets/rb-sidebar-button.c:619
+#: lib/widgets/rb-sidebar-button.c:662
 msgid "Rename"
 msgstr "Renomme"
 
@@ -607,29 +599,29 @@ msgstr "Renomme"
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Impossible d'interprétrer %s comme un fichier de disposition Sidebar"
 
-#: lib/widgets/rb-song-info.c:220 lib/widgets/rb-song-info.c:422
+#: lib/widgets/rb-song-info.c:187
+msgid "_Next Song"
+msgstr "Chanson _suivante"
+
+#: lib/widgets/rb-song-info.c:221 lib/widgets/rb-song-info.c:426
 msgid "Song Properties"
 msgstr "Propriétés de la Chanson"
 
-#: lib/widgets/rb-song-info.c:402 lib/widgets/rb-song-info.c:415
+#: lib/widgets/rb-song-info.c:404 lib/widgets/rb-song-info.c:419
 #, c-format
 msgid "%s Properties"
 msgstr "%s Propriétés"
 
-#: lib/widgets/rb-song-info.c:475
-msgid "of"
-msgstr "de"
-
-#: lib/widgets/rb-song-info.c:542
+#: lib/widgets/rb-song-info.c:560
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: lib/widgets/rb-song-info.c:562
+#: lib/widgets/rb-song-info.c:581
 msgid "Mono"
 msgstr "Mono"
 
-#: lib/widgets/rb-song-info.c:565
+#: lib/widgets/rb-song-info.c:584
 msgid "Stereo"
 msgstr "Stereo"
 
@@ -641,7 +633,7 @@ msgstr "Canal de mixage"
 msgid "The mixer channel of which the volume is controlled."
 msgstr "Le canal de mixage par lequel le volume est contrôlé."
 
-#: lib/widgets/rb-volume.c:236 lib/widgets/rb-volume.c:378
+#: lib/widgets/rb-volume.c:236 lib/widgets/rb-volume.c:633
 msgid "Click to mute"
 msgstr "Cliquer pour la mettre la sourdine"
 
@@ -650,11 +642,7 @@ msgstr "Cliquer pour la mettre la sourdine"
 msgid "Couldn't open mixer device %s\n"
 msgstr "Impossible d'ouvrir le périphérique de mixage %s\n"
 
-#: lib/widgets/rb-volume.c:374
-msgid "Click to unmute"
-msgstr "Cliquer pour supprimer la sourdine"
-
-#: lib/widgets/rb-volume.c:465
+#: lib/widgets/rb-volume.c:454
 msgid ""
 "warning: this version of gmix was compiled with a different version of\n"
 "soundcard.h.\n"
@@ -662,24 +650,33 @@ msgstr ""
 "Attention: cette version de gmix a été compilée avec une version différente "
 "de soundcard.h.\n"
 
-#: lib/widgets/rb-volume.c:477
+#: lib/widgets/rb-volume.c:466
 #, c-format
 msgid "Querying available channels of mixer device %s failed\n"
 msgstr ""
 "La recherche des canaux disponibles du périphérique de mixage %s a échoué\n"
 
-#: lib/widgets/rb-volume.c:489
+#: lib/widgets/rb-volume.c:478
 #, c-format
 msgid "Mixer device %s has neither volume nor PCM channels.\n"
 msgstr "Le Périphérique de Mixage %s n'a ni volume ni canal PCM.\n"
 
-#: lib/widgets/rb-volume.c:619
+#: lib/widgets/rb-volume.c:616
 msgid "Invalid channel number"
 msgstr "Numéro de canal invalide"
 
-#: library/rb-library.c:249
+#: lib/widgets/rb-volume.c:629
+msgid "Click to unmute"
+msgstr "Cliquer pour supprimer la sourdine"
+
+#: library/rb-library.c:250
 msgid "All"
 msgstr "Tout"
+
+#: library/rb-node-song.c:154
+#, c-format
+msgid "%.2d of %.2d"
+msgstr "%2d sur %2d"
 
 #: shell/main.c:57
 msgid "Enable debugging code"
@@ -689,11 +686,15 @@ msgstr "Activer le code de débogage"
 msgid "Do not register the shell"
 msgstr "Ne pas enregistrer le shell"
 
+#: shell/main.c:59
+msgid "Quit Rhythmbox"
+msgstr "Quitte Rhythmbox"
+
 #: shell/main.c:60
 msgid "MonkeyMedia options:"
 msgstr "Options MonkeyMedia :"
 
-#: shell/main.c:74
+#: shell/main.c:67
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -706,7 +707,7 @@ msgstr ""
 "Impossible d'activer le shell :\n"
 "%s"
 
-#: shell/rb-shell-player.c:214
+#: shell/rb-shell-player.c:235
 #, c-format
 msgid ""
 "Failed to create the mixer, error was:\n"
@@ -715,66 +716,89 @@ msgstr ""
 "Impossible de créer le mixeur, l'erreur était :\n"
 "%s"
 
-#: shell/rb-shell-player.c:413
+#: shell/rb-shell-player.c:517
 msgid "Pause"
 msgstr "Pause"
 
-#: shell/rb-shell-player.c:414
+#: shell/rb-shell-player.c:518
 msgid "_Pause"
 msgstr "_Pause"
 
-#: shell/rb-shell-player.c:423
+#: shell/rb-shell-player.c:527
 msgid "Stop"
 msgstr "Arrêter"
 
-#: shell/rb-shell-player.c:424
+#: shell/rb-shell-player.c:528
 msgid "_Stop"
 msgstr "_Arrêter"
 
-#: shell/rb-shell.c:434
+#: shell/rb-shell.c:486
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Impossible d'enregistrer le shell : %s\n"
 
-#: shell/rb-shell.c:915
+#: shell/rb-shell.c:890 shell/rb-shell.c:1748
+msgid "Not playing"
+msgstr "Aucune chanson en cours de lecture"
+
+#: shell/rb-shell.c:903
+#, c-format
+msgid "%s (Paused)"
+msgstr "%s (En pause)"
+
+#: shell/rb-shell.c:908
+#, c-format
+msgid ""
+"%s\n"
+"Paused"
+msgstr ""
+"%s\n"
+"Pause"
+
+#: shell/rb-shell.c:1037
 msgid "translator_credits"
 msgstr ""
 "Baptiste MILLE-MATHIAS <bmm80@ifrance.com>\n"
-"Christophe Merlet (RedFox) <christophe@merlet.net>"
+"Christophe Merlet (RedFox) <christophe@merlet.net>\n"
+"Christophe Fergeau <teuf@users.sourceforge.net>"
 
-#: shell/rb-shell.c:926
+#: shell/rb-shell.c:1048
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:927
+#: shell/rb-shell.c:1049
 msgid "Music management and playback software for GNOME."
 msgstr "Gestionnaire et lecteur audio pour GNOME."
 
-#: shell/rb-shell.c:1015
+#: shell/rb-shell.c:1137
 msgid "Choose Files or Directory"
-msgstr "Choisissez des Fichiers ou des Répertoires"
+msgstr "Choisissez des fichiers ou des répertoires"
 
-#: shell/rb-shell.c:1118
-msgid "Please enter a name for the new music group."
-msgstr "Saississez un nom pour le nouveau groupe audio :"
-
-#: shell/rb-shell.c:1119
+#: shell/rb-shell.c:1657
 msgid "Create"
 msgstr "Créer"
 
-#: shell/rb-shell.c:1120
+#: shell/rb-shell.c:1681
+msgid "Please enter a name for the new music group."
+msgstr "Saississez un nom pour le nouveau groupe audio :"
+
+#: shell/rb-shell.c:1691
 msgid "Untitled"
 msgstr "Sans titre"
 
-#: views/rb-group-view.c:319
+#: shell/rb-shell.c:1695
+msgid "Add the _selected songs to the new group"
+msgstr "Ajouter les _chansons sélectionnées au nouveau groupe"
+
+#: views/rb-group-view.c:315
 msgid "music group"
 msgstr "groupe audio"
 
-#: views/rb-group-view.c:322
+#: views/rb-group-view.c:318
 msgid "Unnamed"
 msgstr "Sans nom"
 
-#: views/rb-group-view.c:820 views/rb-library-view.c:794
+#: views/rb-group-view.c:842 views/rb-library-view.c:894
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -783,18 +807,46 @@ msgstr ""
 "Impossible de créer le flux pour %s, l'erreur était:\n"
 "%s"
 
-#: views/rb-group-view.c:1086
+#: views/rb-group-view.c:1131
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Impossible d'ouvrir %s comme un fichier groupe"
 
-#: views/rb-library-view.c:308
+#: views/rb-library-view.c:316
 msgid "library"
 msgstr "bibliothèque"
 
-#: views/rb-library-view.c:311 views/rb-library-view.c:1107
+#: views/rb-library-view.c:319 views/rb-library-view.c:1230
 msgid "Library"
 msgstr "Bibliothèque"
+
+#~ msgid "Create a new music group from the selected songs"
+#~ msgstr "Créer un nouveau groupe audio depuis les chansons sélectionnées"
+
+#~ msgid "P_revious Song"
+#~ msgstr "Chanson p_récédente"
+
+#~ msgid "_New Group from Selection..."
+#~ msgstr "_Nouveau groupe depuis la sélection..."
+
+#~ msgid "The child model"
+#~ msgstr "Le modèle enfant"
+
+#~ msgid "The model for the TreeModelFilter to filter"
+#~ msgstr "Le modèle pour le TreeModelFilter à filtrer"
+
+#~ msgid "The virtual root"
+#~ msgstr "La racine virtuelle"
+
+#~ msgid "The virtual root (relative to the child model) for this filtermodel"
+#~ msgstr ""
+#~ "La racine virtuelle (relative au modèle enfant) pour ce modèle de filtre"
+
+#~ msgid "Playing from the %s"
+#~ msgstr "Jouer à partir de %s"
+
+#~ msgid "of"
+#~ msgstr "de"
 
 #~ msgid "<b>Imported Music Folder</b>"
 #~ msgstr "<b>Répertoire Audio Importé</b>"
