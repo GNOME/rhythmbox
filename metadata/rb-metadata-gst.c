@@ -55,6 +55,7 @@ static struct
 	const char *human_name;
 } rb_metadata_type_map[] = {
 	{"application/x-id3", "id3tag", "MP3"},
+	{"audio/mpeg", NULL, "MP3"},
 	{"application/ogg", NULL, "Ogg"},
 	{"audio/x-flac", "flactag", "FLAC"},
 	{"application/x-ape", NULL, "MonkeysAudio"},
