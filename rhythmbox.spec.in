@@ -49,8 +49,9 @@ unset GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL
 %clean
 rm -rf %{buildroot}
 
-%post -p /sbin/ldconfig
-export GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --makefile-install-rule %{_sysconfdir}/gconf/schemas/rhythmbox.schemas > /dev/null;
+%post
+/sbin/ldconfig
+GCONF_CONFIG_SOURCE=`gconftool-2 --get-default-source` gconftool-2 --makefile-install-rule %{_sysconfdir}/gconf/schemas/rhythmbox.schemas > /dev/null;
 
 %postun -p /sbin/ldconfig
 
