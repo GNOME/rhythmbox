@@ -179,7 +179,6 @@ rb_query_creator_init (RBQueryCreator *dlg)
 					     G_N_ELEMENTS (criteria_options),
 					     FALSE);
 	first_entry = gtk_entry_new ();
-	gtk_entry_set_text (GTK_ENTRY (first_entry), "moo");
 
 	gtk_table_attach_defaults (dlg->priv->table, first_option, 0, 1, 0, 1);
 	gtk_table_attach_defaults (dlg->priv->table, first_criteria, 1, 2, 0, 1);
@@ -187,6 +186,7 @@ rb_query_creator_init (RBQueryCreator *dlg)
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dlg)->vbox),
 			   glade_xml_get_widget (xml, "main_vbox"));
+	gtk_widget_show_all (GTK_WIDGET (dlg));
 }
 
 static void
