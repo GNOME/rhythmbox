@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RhythmBox 0.6.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-14 10:49+0200\n"
-"PO-Revision-Date: 2004-04-14 10:51+0200\n"
+"POT-Creation-Date: 2004-05-09 16:59+0200\n"
+"PO-Revision-Date: 2004-05-09 17:05+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -99,7 +99,7 @@ msgstr "_Sti:"
 msgid "_Skip this step"
 msgstr "_Hopp over dette steget"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1228
 msgid "A_lbum"
 msgstr "P_late"
 
@@ -131,7 +131,7 @@ msgstr "S_ist spilt"
 msgid "_Play count"
 msgstr "_Ganger spilt"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1257
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1179
 msgid "_Rating"
 msgstr "_Poeng"
 
@@ -156,7 +156,6 @@ msgid "The following files couldn't be loaded:"
 msgstr "Følgende filer kunne ikke lastes:"
 
 #: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
-#, fuzzy
 msgid "Automatically rate:"
 msgstr "Gi poeng automatisk:"
 
@@ -247,7 +246,7 @@ msgstr "Oppgi _lokasjon (URI) for filen du vil legge til:"
 msgid "Open from URI"
 msgstr "Åpne fra URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1213 shell/rb-shell.c:1884
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1885
 msgid "Music Player"
 msgstr "Musikkavspiller"
 
@@ -471,7 +470,7 @@ msgstr "Vis informasjon om valgt sang"
 msgid "Source _List"
 msgstr "Kilde_liste"
 
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1539
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1536
 msgid "Start playing"
 msgstr "Start avspilling"
 
@@ -547,7 +546,7 @@ msgstr "_Neste"
 msgid "_Paste"
 msgstr "_Lim inn"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1540
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1537
 msgid "_Play"
 msgstr "S_pill"
 
@@ -591,8 +590,8 @@ msgstr "Ny radiostasjon på internett"
 #: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
 #: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
 #: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
-#: widgets/rb-song-info.c:800
+#: widgets/rb-entry-view.c:961 widgets/rb-entry-view.c:988
+#: widgets/rb-song-info.c:801
 msgid "Unknown"
 msgstr "Ukjent"
 
@@ -600,7 +599,7 @@ msgstr "Ukjent"
 msgid "All"
 msgstr "Alle"
 
-#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:750
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:751
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper for %s"
@@ -635,17 +634,17 @@ msgstr "Orientering"
 msgid "The orientation of the tray."
 msgstr "Orientering for skuffen."
 
-#: lib/rb-file-helpers.c:75
+#: lib/rb-file-helpers.c:77
 #, c-format
 msgid "Failed to find %s"
 msgstr "Klarte ikke å finne %s"
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s eksisterer, vennligst flytt den bort."
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:105
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Klarte ikke å opprette katalog %s."
@@ -744,12 +743,12 @@ msgstr "Feil under åpning av fil som Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:288
+#: metadata/rb-metadata-gst.c:290
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "Det finnes ingen tillegg som håndterer en %s-fil."
 
-#: metadata/rb-metadata-gst.c:529 metadata/rb-metadata-gst.c:658
+#: metadata/rb-metadata-gst.c:531 metadata/rb-metadata-gst.c:660
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -759,8 +758,8 @@ msgstr "Feil under oppretting av %s-element; sjekk installasjonen"
 msgid "Operation not supported"
 msgstr "Operasjonen er ikke støttet"
 
-#: player/rb-player-gst.c:409 player/rb-player-gst.c:619
-#: player/rb-player-gst.c:629
+#: player/rb-player-gst.c:409 player/rb-player-gst.c:621
+#: player/rb-player-gst.c:631
 msgid "Could not start pipeline playing"
 msgstr "Kunne ikke starte avspilling gjennom rør"
 
@@ -772,19 +771,19 @@ msgstr "Kunne ikke opprette utdataelement for lyd; sjekk innstillingene"
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Kunne ikke initiere scheduler. Husket du å kjøre gst-register?"
 
-#: player/rb-player-gst.c:641
+#: player/rb-player-gst.c:658
 msgid "Could not pause playback"
 msgstr "Kunne ikke pause avspilling"
 
-#: player/rb-player-gst.c:651
+#: player/rb-player-gst.c:668
 msgid "Could not close output sink"
 msgstr "Kunne ikke lukke sluk for utdata"
 
-#: player/rb-player-gst.c:698
+#: player/rb-player-gst.c:715
 msgid "No AudioCD support; check your settings"
 msgstr "Ingen støtte for lyd-CD; sjekk innstillingene"
 
-#: player/rb-player-gst.c:757
+#: player/rb-player-gst.c:774
 msgid "Failed to close audio output sink"
 msgstr "Feil ved forsøk på å lukke sluk for lyd ut"
 
@@ -820,8 +819,8 @@ msgstr "Lyd er ikke håndtert for %s; sjekk installasjonen."
 msgid "<invalid filename>"
 msgstr "<ugyldig filnavn>"
 
-#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:1005
-#: widgets/rb-song-info.c:773 widgets/rb-song-info.c:953
+#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:927
+#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Aldri"
 
@@ -877,80 +876,80 @@ msgstr "%s, %s og %s"
 msgid "%s and %s"
 msgstr "%s og %s"
 
-#: shell/main.c:90
+#: shell/main.c:91
 msgid "Print the playing song and exit"
 msgstr "Vis sang som avspilles og avslutt"
 
-#: shell/main.c:91
+#: shell/main.c:92
 msgid "Print the playing song URI and exit"
 msgstr "Vis URI for sang som spilles av og avslutt"
 
-#: shell/main.c:93
+#: shell/main.c:94
 msgid "Print the playing song length in seconds and exit"
 msgstr "Skriv ut lengde på avspilt sang i sekunder og avslutt"
 
-#: shell/main.c:94
+#: shell/main.c:95
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Vis medgått tid for sang som avspilles og avslutt"
 
-#: shell/main.c:95
+#: shell/main.c:96
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Søk til oppgitt tid i avspilt sang og avslutt hvis mulig"
 
-#: shell/main.c:97
+#: shell/main.c:98
 msgid "Toggle play/pause mode"
 msgstr "Slå av/på spill av/pause modus"
 
-#: shell/main.c:98
+#: shell/main.c:99
 msgid "Focus the running player"
 msgstr "Fokuser kjørende spiller"
 
-#: shell/main.c:99
+#: shell/main.c:100
 msgid "Jump to previous song"
 msgstr "Hopp til forrige sang"
 
-#: shell/main.c:100
+#: shell/main.c:101
 msgid "Jump to next song"
 msgstr "Hopp til neste sang"
 
-#: shell/main.c:102
+#: shell/main.c:103
 msgid "Toggle shuffling"
 msgstr "Slå av/på tilfeldig avspilling"
 
-#: shell/main.c:104
+#: shell/main.c:105
 msgid "Enable debugging code"
 msgstr "Aktiver kode for feilsøking"
 
-#: shell/main.c:105
+#: shell/main.c:106
 msgid "Do not update the library"
 msgstr "Ikke oppdater biblioteket"
 
-#: shell/main.c:106
+#: shell/main.c:107
 msgid "Do not register the shell"
 msgstr "Ikke registrer skallet"
 
-#: shell/main.c:107
+#: shell/main.c:108
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Ikke lagre data permanent (betinger --no-registration)"
 
-#: shell/main.c:108
+#: shell/main.c:109
 msgid "Path for database file to use"
 msgstr "Sti til databasefil som skal brukes"
 
-#: shell/main.c:109
+#: shell/main.c:110
 msgid "Quit Rhythmbox"
 msgstr "Avslutt RhythmBox"
 
-#: shell/main.c:124 widgets/rb-druid.c:218
+#: shell/main.c:125 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:227 shell/main.c:236
+#: shell/main.c:238 shell/main.c:247
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Unntak «%s» oppsto"
 
-#: shell/main.c:300
+#: shell/main.c:311
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -987,7 +986,7 @@ msgstr "Tilfeldig med poenggivning"
 msgid "Random by time since last play and rating"
 msgstr "Tilfeldig etter tid siden siste avspilling med poenggivning"
 
-#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:860
+#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
 msgid "Couldn't parse playlist"
 msgstr "Kunne ikke lese spilleliste"
 
@@ -995,49 +994,49 @@ msgstr "Kunne ikke lese spilleliste"
 msgid "Load playlist"
 msgstr "Last spilleliste"
 
-#: shell/rb-playlist-manager.c:811
+#: shell/rb-playlist-manager.c:815
 msgid "Save playlist"
 msgstr "Lagre spilleliste"
 
-#: shell/rb-shell-player.c:442
+#: shell/rb-shell-player.c:443
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Klarte ikke å opprette spiller: %s"
 
-#: shell/rb-shell-player.c:510
+#: shell/rb-shell-player.c:511
 msgid "Play previous song"
 msgstr "Spill forrige sang"
 
-#: shell/rb-shell-player.c:539
+#: shell/rb-shell-player.c:540
 msgid "Play next song"
 msgstr "Spill neste sang"
 
-#: shell/rb-shell-player.c:558
+#: shell/rb-shell-player.c:559
 msgid "Change the music volume"
 msgstr "Endre volum"
 
-#: shell/rb-shell-player.c:833
+#: shell/rb-shell-player.c:841
 #, c-format
 msgid "Opening %s..."
 msgstr "Åpner %s..."
 
-#: shell/rb-shell-player.c:1531
+#: shell/rb-shell-player.c:1528
 msgid "Pause playback"
 msgstr "Pause avspilling"
 
-#: shell/rb-shell-player.c:1532
+#: shell/rb-shell-player.c:1529
 msgid "_Pause"
 msgstr "_Pause"
 
-#: shell/rb-shell-player.c:1547
+#: shell/rb-shell-player.c:1544
 msgid "Stop playback"
 msgstr "Stopp avspilling"
 
-#: shell/rb-shell-player.c:1548
+#: shell/rb-shell-player.c:1545
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell-player.c:1880
+#: shell/rb-shell-player.c:1873
 msgid "Unexpected end of stream!"
 msgstr "Uventet slutt på data!"
 
@@ -1054,19 +1053,19 @@ msgstr "Generelt"
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan ikke lese URI «%s»\n"
 
-#: shell/rb-shell.c:1059
+#: shell/rb-shell.c:1062
 msgid "Whether the main window is visible"
 msgstr "Om hovedvinduet er synlig"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1067
 msgid "Whether shuffle is enabled"
 msgstr "Om tilfeldig avspilling er aktivert"
 
-#: shell/rb-shell.c:1068
+#: shell/rb-shell.c:1071
 msgid "Properties for the current song"
 msgstr "Egenskaper for denne sangen"
 
-#: shell/rb-shell.c:1485
+#: shell/rb-shell.c:1484
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1077,12 +1076,12 @@ msgstr ""
 "Dette betyr sannsynligvis at du installerte RB i et forskjellig prefiks fra "
 "bonobo-activation; denne advarselen er harmløs, men IPC vil ikke fungere."
 
-#: shell/rb-shell.c:1858 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
+#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
 msgid "Not playing"
 msgstr "Spiller ikke"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1861
+#: shell/rb-shell.c:1862
 #, c-format
 msgid ""
 "%s\n"
@@ -1092,7 +1091,7 @@ msgstr ""
 "Pause, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1865
+#: shell/rb-shell.c:1866
 #, c-format
 msgid ""
 "%s\n"
@@ -1102,40 +1101,40 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1901
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pause)"
 
-#: shell/rb-shell.c:1968
+#: shell/rb-shell.c:1969
 msgid "translator_credits"
 msgstr "Kjartan Maraas <kmaraas@gnome.org>"
 
-#: shell/rb-shell.c:1977
+#: shell/rb-shell.c:1978
 msgid "Maintainers:"
 msgstr "Vedlikeholdt av:"
 
-#: shell/rb-shell.c:1980
+#: shell/rb-shell.c:1981
 msgid "Former Maintainers:"
 msgstr "Tidligere vedlikeholdt av:"
 
-#: shell/rb-shell.c:1983
+#: shell/rb-shell.c:1984
 msgid "Contributors:"
 msgstr "Bidragsytere:"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:1986
 msgid "Music management and playback software for GNOME."
 msgstr "Programvare for musikkhåndtering og avspilling for GNOME."
 
-#: shell/rb-shell.c:2166
+#: shell/rb-shell.c:2167
 msgid "Choose Files or Directory"
 msgstr "Velg filer eller en katalog"
 
-#: shell/rb-shell.c:2212
+#: shell/rb-shell.c:2213
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Du må installere Sound Juicer for å kunne hente ut sanger fra CDer."
 
-#: shell/rb-shell.c:2219
+#: shell/rb-shell.c:2220
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kunne ikke kjøre sound-juicer: %s"
@@ -1160,47 +1159,47 @@ msgstr "_Gjenta"
 msgid "Buffering..."
 msgstr "Laster buffer..."
 
-#: sources/itunesdb.c:459
+#: sources/itunesdb.c:447
 msgid "Master-PL"
 msgstr "Hovedspilleliste"
 
-#: sources/itunesdb.c:461
+#: sources/itunesdb.c:449
 msgid "Playlist"
 msgstr "Spilleliste"
 
-#: sources/itunesdb.c:813
+#: sources/itunesdb.c:801
 #, c-format
 msgid "Error reading \"%s\".\n"
 msgstr "Feil under lesing av «%s».\n"
 
-#: sources/itunesdb.c:821
+#: sources/itunesdb.c:809
 #, c-format
 msgid "\"%s\" is not a valid iPod database.\n"
 msgstr "«%s» er ikke en gyldig iPod-database.\n"
 
-#: sources/itunesdb.c:1061 sources/itunesdb.c:1716
+#: sources/itunesdb.c:1049 sources/itunesdb.c:1704
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Kunne ikke åpne fil «%s» for lesing.\n"
 
-#: sources/itunesdb.c:1568 sources/itunesdb.c:1723
+#: sources/itunesdb.c:1556 sources/itunesdb.c:1711
 #, c-format
 msgid "Could not open \"%s\" file for writing.\n"
 msgstr "Kunne ikke åpne fil «%s» for skriving.\n"
 
 #. an error occured
-#: sources/itunesdb.c:1580
+#: sources/itunesdb.c:1568
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Feil under endring av navn på «%s» til «%s» (%s).\n"
 
 #. error -- not end of file!
-#: sources/itunesdb.c:1736
+#: sources/itunesdb.c:1724
 #, c-format
 msgid "Error reading file \"%s\".\n"
 msgstr "Feil under lesing av fil «%s».\n"
 
-#: sources/itunesdb.c:1748
+#: sources/itunesdb.c:1736
 #, c-format
 msgid "Error writing PC file \"%s\".\n"
 msgstr "Feil under skrivoing av PC-fil «%s».\n"
@@ -1241,7 +1240,7 @@ msgstr "Bibliotek"
 msgid "Add Location"
 msgstr "Legg til lokasjon"
 
-#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1275
+#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1197
 msgid "Tra_ck"
 msgstr "S_por"
 
@@ -1313,64 +1312,64 @@ msgstr "Feil under lesing av filnavn: %s"
 msgid "Choose a directory"
 msgstr "Velg en katalog"
 
-#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:872
+#: widgets/rb-entry-view.c:963 widgets/rb-header.c:872
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1068
+#: widgets/rb-entry-view.c:990
 msgid "Very Low"
 msgstr "Meget lav"
 
-#: widgets/rb-entry-view.c:1070
+#: widgets/rb-entry-view.c:992
 msgid "Low"
 msgstr "Lav"
 
-#: widgets/rb-entry-view.c:1072
+#: widgets/rb-entry-view.c:994
 msgid "Regular"
 msgstr "Vanlig"
 
-#: widgets/rb-entry-view.c:1074
+#: widgets/rb-entry-view.c:996
 msgid "High"
 msgstr "Høy"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:998
 msgid "Very High"
 msgstr "Meget høy"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:1000
 msgid "Perfect"
 msgstr "Perfekt"
 
-#: widgets/rb-entry-view.c:1284
+#: widgets/rb-entry-view.c:1206
 msgid "_Title"
 msgstr "_Tittel"
 
-#: widgets/rb-entry-view.c:1295
+#: widgets/rb-entry-view.c:1217
 msgid "Art_ist"
 msgstr "Art_ist"
 
-#: widgets/rb-entry-view.c:1317
+#: widgets/rb-entry-view.c:1239
 msgid "Ge_nre"
 msgstr "Sja_nger"
 
-#: widgets/rb-entry-view.c:1327
+#: widgets/rb-entry-view.c:1249
 msgid "Ti_me"
 msgstr "Ti_d"
 
-#: widgets/rb-entry-view.c:1336
+#: widgets/rb-entry-view.c:1258
 msgid "_Quality"
 msgstr "_Kvalitet"
 
-#: widgets/rb-entry-view.c:1346
+#: widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "_Ganger spilt"
 
-#: widgets/rb-entry-view.c:1355
+#: widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "S_ist spilt"
 
-#: widgets/rb-entry-view.c:1499
+#: widgets/rb-entry-view.c:1422
 msgid "Now Playing"
 msgstr "Spiller"
 
@@ -1465,22 +1464,22 @@ msgstr "Egenskaper for sang"
 msgid "Multiple Song Properties"
 msgstr "Flere egenskaper for sang"
 
-#: widgets/rb-song-info.c:798
+#: widgets/rb-song-info.c:799
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps"
 
-#: widgets/rb-song-info.c:861
+#: widgets/rb-song-info.c:862
 msgid "on the desktop"
 msgstr "på skrivebordet"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
+#: widgets/rb-volume.c:234
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "-"
 msgstr "-"
 
