@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include <gtk/gtkmain.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvpaned.h>
@@ -28,6 +29,7 @@
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
+#include <bonobo/bonobo-window.h>
 #include <unistd.h>
 #include <string.h>
 
@@ -47,6 +49,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
 #include "rb-library-dnd-types.h"
+#include "rb-view-cmd.h"
 
 #define RB_GROUP_XML_VERSION "1.0"
 
@@ -143,6 +146,7 @@ static GtkWidget *rb_group_view_get_extra_widget (RBView *base_view);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
+#define GROUP_VIEW_SONGS_POPUP_PATH "/popups/GroupSongsList"
 
 struct RBGroupViewPrivate
 {
@@ -183,6 +187,11 @@ static BonoboUIVerb rb_group_view_verbs[] =
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_group_view_cmd_current_song),
 	BONOBO_UI_VERB ("RenameGroup", (BonoboUIVerbFn) rb_group_view_cmd_rename_group),
 	BONOBO_UI_VERB ("DeleteGroup", (BonoboUIVerbFn) rb_group_view_cmd_delete_group),
+	BONOBO_UI_VERB ("SLCopy", (BonoboUIVerbFn) rb_view_cmd_song_copy),
+	BONOBO_UI_VERB ("SLCut", (BonoboUIVerbFn) rb_view_cmd_song_cut),
+	BONOBO_UI_VERB ("SLPaste", (BonoboUIVerbFn) rb_view_cmd_song_paste),
+	BONOBO_UI_VERB ("SLDelete", (BonoboUIVerbFn) rb_view_cmd_song_delete),
+	BONOBO_UI_VERB ("SLProperties", (BonoboUIVerbFn) rb_view_cmd_song_properties),
 	BONOBO_UI_VERB_END
 };
 
@@ -301,6 +310,28 @@ rb_group_view_class_init (RBGroupViewClass *klass)
 }
 
 static void
+rb_library_view_songs_show_popup_cb (RBNodeView *view,
+		   		     RBGroupView *group_view)
+{
+	GtkWidget *menu;
+	GtkWidget *window;
+	
+	window = gtk_widget_get_ancestor (GTK_WIDGET (view), 
+					  BONOBO_TYPE_WINDOW);
+	
+	menu = gtk_menu_new ();
+	gtk_widget_show (menu);
+	
+	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu), 
+			         GROUP_VIEW_SONGS_POPUP_PATH);
+		
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
+			3, gtk_get_current_event_time ());
+
+	gtk_object_sink (GTK_OBJECT (menu));
+}
+
+static void
 rb_group_view_init (RBGroupView *view)
 {
 	RBSidebarButton *button;
@@ -339,6 +370,9 @@ rb_group_view_init (RBGroupView *view)
 					      NULL);
 	g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 			  G_CALLBACK (rb_group_view_node_removed_cb), view);
+	g_signal_connect (G_OBJECT (view->priv->songs), "show_popup",
+			  G_CALLBACK (rb_library_view_songs_show_popup_cb), view);
+
 
 	/* Drag'n'Drop */
 	rb_sidebar_button_add_dnd_targets (button,

@@ -21,6 +21,11 @@
        pixtype="stock"
        pixname="gtk-delete"/>
 
+  <cmd name="SLPaste"
+   _label="_Paste"
+   _tip="Paste selection"
+   pixtype="stock" pixname="gtk-paste"/>
+ 
 </commands>
 
 <menu>
@@ -62,5 +67,33 @@
 </submenu>
 
 </menu>
+
+<popups>
+  <popup name="GroupSongsList">
+    <menuitem name="SLCut"
+     _label="Cu_t"
+     _tip="Cut selection"
+     pixtype="stock" pixname="gtk-cut"
+     verb=""/>
+    <menuitem name="SLCopy"
+     _label="_Copy"
+     _tip="Copy selection"
+     pixtype="stock" pixname="gtk-copy"
+     verb=""/>
+     <menuitem name="SLPaste"
+     verb="SLPaste"/>
+    <menuitem name="SLDelete"
+     _label="_Delete"
+     _tip="Delete selection"
+     pixtype="stock" pixname="gtk-delete"
+     verb=""/>
+    <separator/>
+    <menuitem name="SLProperties"
+     _label="P_roperties"
+     _tip="Show information on the selected song"
+     pixtype="stock" pixname="gtk-properties"
+     verb=""/>  
+  </popup>
+</popups>
 
 </Root>

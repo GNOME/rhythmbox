@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include <gtk/gtkmain.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvpaned.h>
@@ -27,6 +28,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <bonobo/bonobo-ui-component.h>
+#include <bonobo/bonobo-window.h>
 #include <string.h>
 
 #include "rb-stock-icons.h"
@@ -46,6 +48,7 @@
 #include "rb-library-dnd-types.h"
 #include "rb-node-filter.h"
 #include "rb-search-entry.h"
+#include "rb-view-cmd.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
 static void rb_library_view_init (RBLibraryView *view);
@@ -157,6 +160,7 @@ static void songs_filter (RBLibraryView *view,
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
+#define LIBRARY_VIEW_SONGS_POPUP_PATH "/popups/LibrarySongsList"
 
 #define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   "/apps/rhythmbox/state/library/show_browser"
@@ -206,6 +210,9 @@ static BonoboUIVerb rb_library_view_verbs[] =
 	BONOBO_UI_VERB ("SelectAll",   (BonoboUIVerbFn) rb_library_view_cmd_select_all),
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_library_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_library_view_cmd_current_song),
+	BONOBO_UI_VERB ("SLCopy", (BonoboUIVerbFn) rb_view_cmd_song_copy),
+	BONOBO_UI_VERB ("SLDelete", (BonoboUIVerbFn) rb_view_cmd_song_delete),
+	BONOBO_UI_VERB ("SLProperties", (BonoboUIVerbFn) rb_view_cmd_song_properties),
 	BONOBO_UI_VERB_END
 };
 
@@ -377,6 +384,28 @@ rb_library_view_finalize (GObject *object)
 }
 
 static void
+rb_library_view_songs_show_popup_cb (RBNodeView *view,
+				     RBNode *node,
+		   		     RBLibraryView *library_view)
+{
+	GtkWidget *menu;
+	GtkWidget *window;
+	
+	window = gtk_widget_get_ancestor (GTK_WIDGET (view), 
+					  BONOBO_TYPE_WINDOW);
+	
+	menu = gtk_menu_new ();
+	
+	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu), 
+			         LIBRARY_VIEW_SONGS_POPUP_PATH);
+
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
+			3, gtk_get_current_event_time ());
+
+	gtk_object_sink (GTK_OBJECT (menu));
+}
+
+static void
 rb_library_view_set_property (GObject *object,
 			      guint prop_id,
 			      const GValue *value,
@@ -437,7 +466,9 @@ rb_library_view_set_property (GObject *object,
 
 			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 					  G_CALLBACK (rb_library_view_node_removed_cb), view);
-
+			g_signal_connect (G_OBJECT (view->priv->songs), "show_popup",
+					  G_CALLBACK (rb_library_view_songs_show_popup_cb), view);
+			
 			/* Drag'n'Drop for songs view */
 			g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
 					  G_CALLBACK (rb_library_view_drop_cb), view);

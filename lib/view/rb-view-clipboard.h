@@ -39,6 +39,10 @@ typedef struct
 	/* signals */
 	void (*clipboard_changed) (RBViewClipboard *clipboard);
 
+	void (*set_clipboard)	  (RBViewClipboard *clipboard,
+				   GList *nodes);
+	void (*paste_request)	  (RBViewClipboard *clipboard);
+
 	/* methods */
 	gboolean (*impl_can_cut)    (RBViewClipboard *clipboard);
 	gboolean (*impl_can_copy)   (RBViewClipboard *clipboard);
@@ -67,6 +71,9 @@ void     rb_view_clipboard_paste          (RBViewClipboard *clipboard,
 void     rb_view_clipboard_delete         (RBViewClipboard *clipboard);
 void     rb_view_clipboard_song_info      (RBViewClipboard *clipboard);
 
+void	 rb_view_clipboard_set		  (RBViewClipboard *clipboard,
+					   GList *list);
+void	 rb_view_clipboard_request_paste  (RBViewClipboard *clipboard);
 void     rb_view_clipboard_notify_changed (RBViewClipboard *clipboard);
 
 G_END_DECLS

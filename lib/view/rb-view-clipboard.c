@@ -25,6 +25,8 @@ static void rb_view_clipboard_base_init (gpointer g_iface);
 enum
 {
 	CLIPBOARD_CHANGED,
+	SET_CLIPBOARD,
+	PASTE_REQUEST,
 	LAST_SIGNAL
 };
 
@@ -72,6 +74,25 @@ rb_view_clipboard_base_init (gpointer g_iface)
 			      RB_TYPE_VIEW_CLIPBOARD,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBViewClipboardIface, clipboard_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+	rb_view_clipboard_signals[SET_CLIPBOARD] =
+		g_signal_new ("set_clipboard",
+			      RB_TYPE_VIEW_CLIPBOARD,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewClipboardIface, set_clipboard),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_POINTER);
+	rb_view_clipboard_signals[PASTE_REQUEST] =
+		g_signal_new ("paste_request",
+			      RB_TYPE_VIEW_CLIPBOARD,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewClipboardIface, paste_request),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -161,6 +182,18 @@ rb_view_clipboard_song_info (RBViewClipboard *clipboard)
 	RBViewClipboardIface *iface = RB_VIEW_CLIPBOARD_GET_IFACE (clipboard);
 
 	iface->impl_song_info (clipboard);
+}
+
+void
+rb_view_clipboard_set (RBViewClipboard *clipboard, GList *nodes)
+{
+	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[SET_CLIPBOARD], 0, nodes);
+}
+
+void
+rb_view_clipboard_request_paste (RBViewClipboard *clipboard)
+{
+	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[PASTE_REQUEST], 0);
 }
 
 void

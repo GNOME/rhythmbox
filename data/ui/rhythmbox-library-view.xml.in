@@ -33,7 +33,6 @@
 
 </submenu>
 
-
 <submenu name="View" _label="_View">
 
   <placeholder name="ViewMenu">
@@ -49,5 +48,26 @@
 </submenu>
 
 </menu>
+
+<popups>
+  <popup name="LibrarySongsList">
+    <menuitem name="SLCopy"
+     _label="_Copy"
+     _tip="Copy selection"
+     pixtype="stock" pixname="gtk-copy"
+     verb=""/>
+    <menuitem name="SLDelete"
+     _label="_Delete"
+     _tip="Delete selection"
+     pixtype="stock" pixname="gtk-delete"
+     verb=""/>
+    <separator/>
+    <menuitem name="SLProperties"
+     _label="_Properties"
+     _tip="Show information on the selected song"
+     pixtype="stock" pixname="gtk-properties"
+     verb=""/>  
+  </popup>
+</popups>
 
 </Root>

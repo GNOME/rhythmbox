@@ -54,6 +54,7 @@ typedef struct
 	void (*node_activated) (RBNodeView *view, RBNode *node);
 
 	void (*changed)        (RBNodeView *view);
+	void (*show_popup)     (RBNodeView *view);
 } RBNodeViewClass;
 
 GType       rb_node_view_get_type                 (void);

@@ -60,6 +60,7 @@ static void rb_node_destroyed_cb (RBNode *node,
 #define CMD_PATH_COPY   "/commands/Copy"
 #define CMD_PATH_PASTE  "/commands/Paste"
 #define CMD_PATH_DELETE "/commands/Delete"
+#define CMD_PATH_SONGLIST_POPUP_PASTE "/commands/SLPaste"
 
 struct RBShellClipboardPrivate
 {
@@ -171,6 +172,22 @@ rb_shell_clipboard_finalize (GObject *object)
 }
 
 static void
+rb_view_paste_request_cb (RBViewClipboard *clipboard,
+			  RBShellClipboard *shell_clipboard)
+{
+	rb_view_clipboard_paste (shell_clipboard->priv->clipboard, 
+			         shell_clipboard->priv->nodes);
+}
+
+static void
+rb_view_clipboard_set_cb (RBViewClipboard *clipboard,
+			  GList *selection,
+			  RBShellClipboard *shell_clipboard)
+{
+	rb_shell_clipboard_set (shell_clipboard, g_list_copy (selection));
+}
+
+static void
 rb_shell_clipboard_set_property (GObject *object,
 			         guint prop_id,
 			         const GValue *value,
@@ -195,6 +212,14 @@ rb_shell_clipboard_set_property (GObject *object,
 			g_signal_connect (G_OBJECT (shell_clipboard->priv->clipboard),
 					  "clipboard_changed",
 					  G_CALLBACK (rb_view_clipboard_changed_cb),
+					  shell_clipboard);
+			g_signal_connect (G_OBJECT (shell_clipboard->priv->clipboard),
+					  "set_clipboard",
+					  G_CALLBACK (rb_view_clipboard_set_cb),
+					  shell_clipboard);
+			g_signal_connect (G_OBJECT (shell_clipboard->priv->clipboard),
+					  "paste_request",
+					  G_CALLBACK (rb_view_paste_request_cb),
 					  shell_clipboard);
 		}
 
@@ -278,6 +303,8 @@ rb_view_clipboard_changed_cb (RBViewClipboard *clipboard,
 static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
+	gboolean can_paste;
+	
 	rb_bonobo_set_sensitive (clipboard->priv->component,
 				 CMD_PATH_CUT,
 				 rb_view_clipboard_can_cut (clipboard->priv->clipboard));
@@ -285,12 +312,18 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 				 CMD_PATH_COPY,
 				 rb_view_clipboard_can_copy (clipboard->priv->clipboard));
 	rb_bonobo_set_sensitive (clipboard->priv->component,
-				 CMD_PATH_PASTE,
-				 rb_view_clipboard_can_paste (clipboard->priv->clipboard) &&
-				 g_list_length (clipboard->priv->nodes) > 0);
-	rb_bonobo_set_sensitive (clipboard->priv->component,
 				 CMD_PATH_DELETE,
 				 rb_view_clipboard_can_delete (clipboard->priv->clipboard));
+
+	can_paste = rb_view_clipboard_can_paste (clipboard->priv->clipboard) &&
+		g_list_length (clipboard->priv->nodes) > 0;
+	
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_PASTE, can_paste);
+	/* We do it here because the song list view doesnt know about
+	 * the global paste status */
+	rb_bonobo_set_sensitive (clipboard->priv->component,
+				 CMD_PATH_SONGLIST_POPUP_PASTE, can_paste);
 }
 
 static void

@@ -348,6 +348,9 @@ egg_tree_multi_drag_button_press_event (GtkWidget      *widget,
   GtkTreeSelection *selection;
   EggTreeMultiDndData *priv_data;
 
+  if (event->button == 3)
+    return FALSE;
+  
   tree_view = GTK_TREE_VIEW (widget);
   priv_data = g_object_get_data (G_OBJECT (tree_view), EGG_TREE_MULTI_DND_STRING);
   if (priv_data == NULL)

@@ -110,6 +110,9 @@ static int dumb_sort_func (GtkTreeModel *model,
 		           gpointer user_data);
 static void after_filter_changed_cb (RBNodeFilter *filter,
 			             RBNodeView *view);
+static gboolean rb_node_view_button_press_cb (GtkTreeView *treeview,
+			      		      GdkEventButton *event,
+			      		      RBNodeView *view);
 static gboolean scroll_to_cell (GtkTreeView *treeview);
 
 struct RBNodeViewPrivate
@@ -157,6 +160,7 @@ enum
 	NODE_SELECTED,
 	NODE_ACTIVATED,
 	CHANGED,
+	SHOW_POPUP,
 	PLAYING_NODE_REMOVED,
 	LAST_SIGNAL
 };
@@ -268,6 +272,15 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeViewClass, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+	rb_node_view_signals[SHOW_POPUP] =
+		g_signal_new ("show_popup",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeViewClass, show_popup),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -526,6 +539,11 @@ rb_node_view_construct (RBNodeView *view)
 				 0);
 	
 	view->priv->treeview = GTK_WIDGET (rb_tree_view_new_with_model (view->priv->sortmodel));
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+			         "button_press_event",
+			         G_CALLBACK (rb_node_view_button_press_cb),
+			         view,
+				 0);
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",
 			         G_CALLBACK (rb_node_view_row_activated_cb),
@@ -1195,6 +1213,20 @@ dumb_sort_func (GtkTreeModel *model,
 		gpointer user_data)
 {
 	return 1;
+}
+
+static gboolean
+rb_node_view_button_press_cb (GtkTreeView *treeview,
+			      GdkEventButton *event,
+			      RBNodeView *view)
+{
+	if (event->button == 3)
+	{
+		g_signal_emit (G_OBJECT (view), rb_node_view_signals[SHOW_POPUP], 0);
+		return view->priv->have_selection;
+	}
+
+	return FALSE;
 }
 
 static void
