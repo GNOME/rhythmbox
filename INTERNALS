@@ -55,7 +55,7 @@ The RBShell maintains a list of available RBSources.
 ** Backends
 
 All RBSource instances use some sort of"backend" too.  The RBLibrarySource
-has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  The RBGroupSource
+has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  The RBPlaylistSource
 uses the RBLibrary.  As you might expect, while the RBSource components act as
 a "frontend", the various backends maintain all the data and don't deal much
 with user interfaces.
@@ -206,11 +206,7 @@ Genre->Song.  This hierarchy is maintained by the RBIRadioBackend.
 The RBIRadioSource handles most of the user-interface bits such
 as popping up dialog boxes and filtering and such.
 
-** The Playlist (Group) Source
-
-Currently the term "group" is used in a number of places in the Rhythmbox
-source code.  This term is deprecated in favor of "playlist", and we
-are slowly working to convert.
+** The Playlist Source
 
 Once we have the library and RBNode, the playlist source is actually pretty
 easy to implement.  It maintains a single RBNode similar to the "All" node
