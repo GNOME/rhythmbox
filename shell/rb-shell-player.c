@@ -81,6 +81,7 @@ static void rb_shell_player_do_next (RBShellPlayer *player);
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
+static void rb_shell_player_jump_to_current (RBShellPlayer *player);
 static void rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
 						const char *path,
 						Bonobo_UIComponent_EventType type,
@@ -827,6 +828,14 @@ rb_shell_player_next (RBShellPlayer *player)
 }
 
 static void
+rb_shell_player_jump_to_current (RBShellPlayer *player)
+{
+	RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+	rb_node_view_select_node (songs,
+				  rb_node_view_get_playing_node (songs));
+}
+
+static void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
 	if (monkey_media_player_get_time (player->priv->mmplayer) < 3 &&
@@ -841,8 +850,7 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 		monkey_media_player_set_time (player->priv->mmplayer, 0);
 	}
 
-	/* FIXME: uncomment - disabled for 0.4 release */
-	//rb_source_jump_to_current (player->priv->source);
+	rb_shell_player_jump_to_current (player);
 }
 
 static void
@@ -1030,8 +1038,7 @@ rb_shell_player_do_next (RBShellPlayer *player)
 	{
 		rb_shell_player_next (player);
 
-		/* FIXME: uncomment - disabled for 0.4 release */
-		//rb_source_jump_to_current (player->priv->source);
+		rb_shell_player_jump_to_current (player);
 	}
 }
 
