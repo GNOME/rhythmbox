@@ -69,7 +69,7 @@ else
 	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
 		GST_MAJORMINOR=0.6
 		PKG_CHECK_MODULES(SOUNDSYSTEM, \
-			gstreamer-$GST_MAJORMINOR gstreamer-libs-$GST_MAJORMINOR
+			gstreamer-$GST_MAJORMINOR >= 0.6.2 gstreamer-libs-$GST_MAJORMINOR
 			gstreamer-control-$GST_MAJORMINOR gstreamer-gconf-$GST_MAJORMINOR,
 			HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
 	fi
@@ -357,6 +357,9 @@ if test x"$WANT_XINE" != "x1"; then
 		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled (with workarounds)])
 	else
 		AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
+	fi
+	if test x"$GST_MAJORMINOR" = x0.7; then	
+		AC_MSG_WARN([Rhythmbox is currently known to have problems with GStreamer 0.7])
 	fi
 else
 	AC_MSG_NOTICE([** xine backend is enabled])
