@@ -1672,9 +1672,9 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
 		shell->priv->sources_hash = g_hash_table_new (g_direct_hash, 
 							      g_direct_equal);
 	}
-	g_assert (g_hash_table_lookup (shell->priv->sources_hash, (gpointer)type) == NULL);
+	g_assert (g_hash_table_lookup (shell->priv->sources_hash, GINT_TO_POINTER (type)) == NULL);
 	g_hash_table_insert (shell->priv->sources_hash, 
-			     (gpointer)type, source);
+			     GINT_TO_POINTER (type), source);
 }
 
 

@@ -957,7 +957,7 @@ get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
 {
 	GHashTable *table;
 
-	table = g_hash_table_lookup (db->priv->genres, (gpointer)type);
+	table = g_hash_table_lookup (db->priv->genres, GINT_TO_POINTER (type));
 	if (table == NULL) {
 		table = g_hash_table_new_full (g_str_hash, g_str_equal,
 					       (GDestroyNotify) g_free,
@@ -966,7 +966,9 @@ get_genres_hash_for_type (RhythmDBTree *db, RhythmDBEntryType type)
 			g_warning ("Out of memory\n");
 			return NULL;
 		}
-		g_hash_table_insert (db->priv->genres, (gpointer)type, table);
+		g_hash_table_insert (db->priv->genres, 
+				     GINT_TO_POINTER (type), 
+				     table);
 	} 
 	return table;
 }
