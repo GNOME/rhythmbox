@@ -1,5 +1,25 @@
 2002-10-26  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/node-views/rb-node-view-albums.xml:
+	* data/node-views/rb-node-view-artists.xml:
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/rb-node-view.c: (rb_node_view_sort_func):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-library.h:
+	* library/rb-node-song.c: (set_title), (set_genre), (set_artist),
+	(set_album):
+	* library/rb-node-song.h:
+	* library/rb-node.h:
+	* views/rb-library-view.c: (rb_library_view_search_cb):
+
+	Also do fast sorting for the album and artist views.
+
+2002-10-26  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/Makefile.am:
 	* library/rb-library-main-thread.c: (thread_main):
 	* library/rb-library-xml-thread.c:

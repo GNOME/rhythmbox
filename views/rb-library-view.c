@@ -1241,7 +1241,7 @@ rb_library_view_search_cb (RBSearchEntry *search,
 		rb_node_filter_empty (view->priv->songs_filter);
 		rb_node_filter_add_expression (view->priv->songs_filter,
 					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_KEY_PROP_CONTAINS,
-									      RB_NODE_SONG_PROP_TITLE_SORT_KEY,
+									      RB_NODE_PROP_NAME_SORT_KEY,
 									      search_text),
 					       0);
 		rb_node_filter_add_expression (view->priv->songs_filter,

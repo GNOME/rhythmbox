@@ -78,7 +78,8 @@ void        rb_node_thaw                  (RBNode *node);
 /* property interface */
 enum
 {
-	RB_NODE_PROP_NAME = 0
+	RB_NODE_PROP_NAME          = 0,
+	RB_NODE_PROP_NAME_SORT_KEY = 1
 };
 
 void        rb_node_set_property          (RBNode *node,

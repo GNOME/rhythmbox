@@ -389,6 +389,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_PLAYING:
 		return GDK_TYPE_PIXBUF;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
+	case RB_TREE_MODEL_NODE_COL_TITLE_KEY:
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
 	case RB_TREE_MODEL_NODE_COL_ARTIST_KEY:
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
@@ -508,6 +509,11 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 		rb_node_get_property (node,
 				      RB_NODE_PROP_NAME,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_TITLE_KEY:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME_SORT_KEY,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
@@ -818,10 +824,11 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER,     "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER",     "track number" },
 			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT", "track number (int format)" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE,            "RB_TREE_MODEL_NODE_COL_TITLE",            "title" },
+			{ RB_TREE_MODEL_NODE_COL_TITLE_KEY,        "RB_TREE_MODEL_NODE_COL_TITLE_KEY",        "title (g_utf8_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_ARTIST,           "RB_TREE_MODEL_NODE_COL_ARTIST",           "artist" },
-			{ RB_TREE_MODEL_NODE_COL_ARTIST_KEY,       "RB_TREE_MODEL_NODE_COL_ARTIST_KEY",       "artist (g_utf8_colalte key)" },
+			{ RB_TREE_MODEL_NODE_COL_ARTIST_KEY,       "RB_TREE_MODEL_NODE_COL_ARTIST_KEY",       "artist (g_utf8_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_ALBUM,            "RB_TREE_MODEL_NODE_COL_ALBUM",            "album" },
-			{ RB_TREE_MODEL_NODE_COL_ALBUM_KEY,        "RB_TREE_MODEL_NODE_COL_ALBUM_KEY",        "album (g_utf_collate key)" },
+			{ RB_TREE_MODEL_NODE_COL_ALBUM_KEY,        "RB_TREE_MODEL_NODE_COL_ALBUM_KEY",        "album (g_utf_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_GENRE,            "RB_TREE_MODEL_NODE_COL_GENRE",            "genre" },
 			{ RB_TREE_MODEL_NODE_COL_DURATION,         "RB_TREE_MODEL_NODE_COL_DURATION",         "duration" },
 			{ RB_TREE_MODEL_NODE_COL_RATING,           "RB_TREE_MODEL_NODE_COL_RATING",           "rating" },

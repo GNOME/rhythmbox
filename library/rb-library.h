@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define RB_LIBRARY_XML_VERSION "1.1"
+#define RB_LIBRARY_XML_VERSION "1.2"
 
 #define RB_TYPE_LIBRARY         (rb_library_get_type ())
 #define RB_LIBRARY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY, RBLibrary))
@@ -51,7 +51,7 @@ typedef struct
 
 enum
 {
-	RB_ALL_NODE_PROP_PRIORITY = 14
+	RB_ALL_NODE_PROP_PRIORITY = 15
 };
 
 GType                 rb_library_get_type             (void);

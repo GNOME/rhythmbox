@@ -1077,7 +1077,8 @@ rb_node_view_sort_func (GtkTreeModel *model,
 			if (strb == NULL) strb = "";
 
 			if (column == RB_TREE_MODEL_NODE_COL_ARTIST_KEY ||
-			    column == RB_TREE_MODEL_NODE_COL_ALBUM_KEY)
+			    column == RB_TREE_MODEL_NODE_COL_ALBUM_KEY ||
+			    column == RB_TREE_MODEL_NODE_COL_TITLE_KEY)
 			{
 				retval = strcmp (stra, strb);
 			}
