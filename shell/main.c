@@ -41,8 +41,9 @@ static void rb_handle_cmdline ();
 
 static CORBA_Environment ev;
 
-static gboolean debug = FALSE;
-static gboolean quit  = FALSE;
+static gboolean debug           = FALSE;
+static gboolean quit            = FALSE;
+static gboolean no_registration = FALSE;
 
 int
 main (int argc, char **argv)
@@ -53,9 +54,10 @@ main (int argc, char **argv)
 
 	const struct poptOption popt_options[] =
 	{
-		{ "debug", 'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"), NULL },
-		{ "quit",  'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),        NULL },
-		{ NULL,    '\0', POPT_ARG_INCLUDE_TABLE, (poptOption *) monkey_media_get_popt_table (), 0, N_("MonkeyMedia options:"),  NULL },
+		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
+		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
+		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
+		{ NULL,              '\0', POPT_ARG_INCLUDE_TABLE, (poptOption *) monkey_media_get_popt_table (), 0, N_("MonkeyMedia options:"),      NULL },
 		POPT_TABLEEND
 	};
 
@@ -77,9 +79,14 @@ main (int argc, char **argv)
 	rb_debug_init (debug);
 	rb_file_helpers_init ();
 
-	object = bonobo_activation_activate_from_id (RB_SHELL_OAFIID,
-		 				     Bonobo_ACTIVATION_FLAG_EXISTING_ONLY,
-						     NULL, NULL);
+	if (no_registration == FALSE)
+	{
+		object = bonobo_activation_activate_from_id (RB_SHELL_OAFIID,
+			 				     Bonobo_ACTIVATION_FLAG_EXISTING_ONLY,
+							     NULL, NULL);
+	}
+	else
+		object = NULL;
 
 	if (object == NULL)
 	{

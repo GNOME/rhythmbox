@@ -23,19 +23,24 @@
 
 G_BEGIN_DECLS
 
-#define RB_STOCK_PLAY     "rhythmbox-play"
-#define RB_STOCK_PAUSE    "rhythmbox-pause"
-#define RB_STOCK_STOP     "rhythmbox-stop"
-#define RB_STOCK_PREVIOUS "rhythmbox-previous"
-#define RB_STOCK_NEXT     "rhythmbox-next"
-#define RB_STOCK_SHUFFLE  "rhythmbox-shuffle"
-#define RB_STOCK_REPEAT   "rhythmbox-repeat"
-#define RB_STOCK_VISUALS  "rhythmbox-visuals"
-#define RB_STOCK_PLAYLIST "rhythmbox-playlist"
-#define RB_STOCK_LIBRARY  "rhythmbox-library"
-#define RB_STOCK_GROUP    "rhythmbox-group"
-#define RB_STOCK_PLAYING  "rhythmbox-playing"
-#define RB_STOCK_ALBUM    "rhythmbox-album"
+#define RB_STOCK_PLAY          "rhythmbox-play"
+#define RB_STOCK_PAUSE         "rhythmbox-pause"
+#define RB_STOCK_STOP          "rhythmbox-stop"
+#define RB_STOCK_PREVIOUS      "rhythmbox-previous"
+#define RB_STOCK_NEXT          "rhythmbox-next"
+#define RB_STOCK_SHUFFLE       "rhythmbox-shuffle"
+#define RB_STOCK_REPEAT        "rhythmbox-repeat"
+#define RB_STOCK_VISUALS       "rhythmbox-visuals"
+#define RB_STOCK_PLAYLIST      "rhythmbox-playlist"
+#define RB_STOCK_LIBRARY       "rhythmbox-library"
+#define RB_STOCK_GROUP         "rhythmbox-group"
+#define RB_STOCK_PLAYING       "rhythmbox-playing"
+#define RB_STOCK_ALBUM         "rhythmbox-album"
+#define RB_STOCK_VOLUME_ZERO   "rhythmbox-volume-zero"
+#define RB_STOCK_VOLUME_MIN    "rhythmbox-volume-min"
+#define RB_STOCK_VOLUME_MEDIUM "rhythmbox-volume-medium"
+#define RB_STOCK_VOLUME_MAX    "rhythmbox-volume-max"
+#define RB_STOCK_VOLUME_MUTE   "rhythmbox-volume-mute"
 
 void rb_stock_icons_init (void);
 

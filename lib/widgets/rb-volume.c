@@ -57,12 +57,7 @@
 #include <libgnome/gnome-macros.h>
 #include <libgnomeui/gnome-dialog-util.h>
 #include "rb-volume.h"
-
-#include "volume-zero.xpm"
-#include "volume-min.xpm"
-#include "volume-medium.xpm"
-#include "volume-max.xpm"
-#include "volume-mute.xpm"
+#include "rb-stock-icons.h"
 
 #ifdef HAVE_LINUX_SOUNDCARD_H
 #include <linux/soundcard.h>
@@ -190,11 +185,28 @@ rb_volume_instance_init (RBVolume *volume)
 	priv = g_new0 (RBVolumePrivate, 1);
 	volume->priv = priv;
 
-	priv->volume_max_pixbuf = gdk_pixbuf_new_from_xpm_data (volume_max_xpm);
-	priv->volume_medium_pixbuf = gdk_pixbuf_new_from_xpm_data (volume_medium_xpm);
-	priv->volume_min_pixbuf = gdk_pixbuf_new_from_xpm_data (volume_min_xpm);
-	priv->volume_zero_pixbuf = gdk_pixbuf_new_from_xpm_data (volume_zero_xpm);
-	priv->volume_mute_pixbuf = gdk_pixbuf_new_from_xpm_data (volume_mute_xpm);
+	gtk_box_set_spacing (GTK_BOX (volume), 1);
+
+	priv->volume_max_pixbuf    = gtk_widget_render_icon (GTK_WIDGET (volume),
+							     RB_STOCK_VOLUME_MAX,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
+	priv->volume_medium_pixbuf = gtk_widget_render_icon (GTK_WIDGET (volume),
+							     RB_STOCK_VOLUME_MEDIUM,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
+	priv->volume_min_pixbuf    = gtk_widget_render_icon (GTK_WIDGET (volume),
+							     RB_STOCK_VOLUME_MIN,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
+	priv->volume_zero_pixbuf   = gtk_widget_render_icon (GTK_WIDGET (volume),
+							     RB_STOCK_VOLUME_ZERO,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
+	priv->volume_mute_pixbuf   = gtk_widget_render_icon (GTK_WIDGET (volume),
+							     RB_STOCK_VOLUME_MUTE,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
 
 	priv->indicator_image = gtk_image_new_from_pixbuf (priv->volume_medium_pixbuf);
 	gtk_box_pack_start (GTK_BOX (volume), priv->indicator_image, FALSE, FALSE, 0);

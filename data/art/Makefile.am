@@ -1,20 +1,25 @@
-art_DATA = rhythmbox-next.png      \
-	   rhythmbox-play.png      \
-	   rhythmbox-pause.png     \
-	   rhythmbox-stop.png      \
-	   rhythmbox-previous.png  \
-	   rhythmbox-shuffle.png   \
-	   rhythmbox-visuals.png   \
-	   rhythmbox-repeat.png    \
-	   rhythmbox-playlist.png  \
-           rhythmbox-library.png   \
-	   rhythmbox-group.png     \
-	   rhythmbox-playing.png   \
-	   rhythmbox-album.png     \
-	   about-logo.png          \
-	   splash.png	           \
-	   splash-groups.png       \
-	   splash-ui.png           \
+art_DATA = rhythmbox-next.png          \
+	   rhythmbox-play.png          \
+	   rhythmbox-pause.png         \
+	   rhythmbox-stop.png          \
+	   rhythmbox-previous.png      \
+	   rhythmbox-shuffle.png       \
+	   rhythmbox-visuals.png       \
+	   rhythmbox-repeat.png        \
+	   rhythmbox-playlist.png      \
+           rhythmbox-library.png       \
+	   rhythmbox-group.png         \
+	   rhythmbox-playing.png       \
+	   rhythmbox-album.png         \
+	   rhythmbox-volume-min.png    \
+	   rhythmbox-volume-max.png    \
+	   rhythmbox-volume-medium.png \
+	   rhythmbox-volume-mute.png   \
+	   rhythmbox-volume-zero.png   \
+	   about-logo.png              \
+	   splash.png	               \
+	   splash-groups.png           \
+	   splash-ui.png               \
 	   splash-library.png
 
 artdir = $(pkgdatadir)/art

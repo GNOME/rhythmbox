@@ -1,3 +1,27 @@
+2002-07-05  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/art/Makefile.am:
+	* data/art/rhythmbox-volume-max.png:
+	* data/art/rhythmbox-volume-medium.png:
+	* data/art/rhythmbox-volume-min.png:
+	* data/art/rhythmbox-volume-mute.png:
+	* data/art/rhythmbox-volume-zero.png:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* lib/widgets/rb-volume.c: (rb_volume_instance_init):
+	* lib/widgets/volume-max.xpm:
+	* lib/widgets/volume-medium.xpm:
+	* lib/widgets/volume-min.xpm:
+	* lib/widgets/volume-mute.xpm:
+	* lib/widgets/volume-zero.xpm:
+
+	Make volume icons themable, have nicer default icons.
+
+	* shell/main.c: (main):
+
+	--no-registartion option, so you can run multiple rbs at the same time
+	for debugging and stuff.
+
 2002-07-05  Olivier Martin  <omartin@ifrance.com>
             Jorn Baayen  <jorn@nl.linux.org>
 
