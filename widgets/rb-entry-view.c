@@ -695,7 +695,7 @@ struct RBEntryViewCellDataFuncData {
 };
 
 static gint
-rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				RBEntryView *view)
 {
 	gint a_int, b_int;
@@ -740,6 +740,39 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		goto out;
 
 	ret = 0;
+
+out:
+	rhythmdb_read_unlock (view->priv->db);
+
+	return ret;
+}
+
+static gint
+rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			       RBEntryView *view)
+{
+	gint a_int, b_int;
+	char *a_str = NULL, *b_str = NULL;
+	gint ret;
+
+	rhythmdb_read_lock (view->priv->db);
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	g_free (a_str);
+	g_free (b_str);
+	if (ret != 0)
+		goto out;
+
+	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
+	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
+
+	if (a_int != b_int) {
+		ret = (a_int < b_int ? -1 : 1);
+		goto out;
+	}
 
 out:
 	rhythmdb_read_unlock (view->priv->db);
@@ -1037,7 +1070,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		propid = RHYTHMDB_PROP_TRACK_NUMBER;
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_intstr_cell_data_func;
-		sort_func = (GCompareDataFunc) rb_entry_view_normal_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_track_sort_func;
 		real_sort_data = view;
 		title = _("Tra_ck");
 		break;
@@ -1055,7 +1088,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_artist_sort_func;
 		title = _("Art_ist");
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
 		break;
