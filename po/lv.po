@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-01-20 03:48+0100\n"
-"PO-Revision-Date: 2003-01-20 14:38+0200\n"
+"POT-Creation-Date: 2003-02-02 11:01+0100\n"
+"PO-Revision-Date: 2003-02-02 22:28--300\n"
 "Last-Translator: Artis Trops <hornet@navigator.lv>\n"
 "Language-Team: Latvian <ll10nt@os.lv>\n"
 "MIME-Version: 1.0\n"
@@ -308,7 +308,7 @@ msgstr "Ce_liņš"
 
 #: data/rhythmbox.desktop.in.h:1
 #: shell/rb.c:297
-#: shell/rb.c:570
+#: shell/rb.c:578
 msgid "Music Player"
 msgstr "Mūzikas Atskaņotājs"
 
@@ -493,7 +493,7 @@ msgstr "Neizdevās parsēt %s\n"
 #: iradio/rb-iradio-backend.c:455
 #: iradio/rb-iradio-backend.c:472
 #: iradio/rb-iradio-backend.c:473
-#: lib/widgets/rb-tree-model-node.c:583
+#: lib/widgets/rb-tree-model-node.c:582
 msgid "(Unknown)"
 msgstr "(Nezināms)"
 
@@ -593,7 +593,7 @@ msgid "There was an error going to %s:\n"
 msgstr "Bija kļūda, ejot uz %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:654
+#: lib/widgets/rb-node-view.c:653
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Neizdevās parsēt %s as NodeView izkārtojuma fails"
@@ -635,11 +635,11 @@ msgid " (%d channels)"
 msgstr " (%d kanāli)"
 
 #: lib/widgets/rb-volume.c:178
-#: lib/widgets/rb-volume.c:388
+#: lib/widgets/rb-volume.c:385
 msgid "Click to mute"
 msgstr "Klikšķis, lai klusinātu"
 
-#: lib/widgets/rb-volume.c:384
+#: lib/widgets/rb-volume.c:381
 msgid "Click to unmute"
 msgstr "Klikšķis, lai atklusinātu"
 
@@ -748,54 +748,54 @@ msgid "Failed to create player, exiting. Error was:\n"
 msgstr "Nezidevās izveidot atskaņotāju, izeju. Kļūda bija:\n"
 "%s"
 
-#: shell/rb-player.c:547
+#: shell/rb-player.c:548
 msgid "Start playback"
 msgstr "Sākt atskaņošanu"
 
-#: shell/rb-player.c:553
+#: shell/rb-player.c:554
 msgid "Pause playback"
 msgstr "Pauzēt atskaņošanu"
 
-#: shell/rb-player.c:691
+#: shell/rb-player.c:692
 msgid "Disable repeating the play list"
 msgstr "Deaktivizēt repertuāra atkārtošanos"
 
-#: shell/rb-player.c:695
+#: shell/rb-player.c:696
 msgid "Enable repeating the play list"
 msgstr "Aktivizēt repertuāra atkārtošanos"
 
-#: shell/rb-player.c:790
+#: shell/rb-player.c:791
 msgid "Get information about this artist from the web"
 msgstr "Dabūt informāciju par šo izpildītāju no tīmekļa"
 
-#: shell/rb-player.c:796
+#: shell/rb-player.c:797
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:798
+#: shell/rb-player.c:799
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Nezināms"
 
-#: shell/rb-player.c:830
+#: shell/rb-player.c:831
 #, c-format
 msgid "Failed to create stream, error was:\n"
 "%s"
 msgstr "Neizdevās izveidot straumi, kļūda bija:\n"
 "%s"
 
-#: shell/rb-player.c:925
+#: shell/rb-player.c:926
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Neizdevās parsēt %s kā repertuāru"
 
-#: shell/rb-player.c:1161
+#: shell/rb-player.c:1173
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld:%.2ld"
 
-#: shell/rb-player.c:1165
+#: shell/rb-player.c:1177
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
 msgstr "Kopā %ld:%.2ld (%ld:%.2ld atlicis)"
@@ -813,15 +813,25 @@ msgstr ""
 "citā priedēklī, nekā bonobo-activation; šis\n"
 "brīdinājums ir nekaitīgs, bet IPC nedarbosies.\n"
 
-#: shell/rb.c:491
+#: shell/rb.c:492
 msgid "translator_credits"
 msgstr "Artis Trops <hornet@navigator.lv>"
 
-#: shell/rb.c:502
-msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
-msgstr "Autortiesības © 2002, 2003 Jorn Baayen. Visas tiesības aizsargātas."
+#: shell/rb.c:500
+msgid "Lead developers:"
+msgstr "Vadošie izstrādātāji:"
 
-#: shell/rb.c:503
+#: shell/rb.c:501
+msgid "Contributors:"
+msgstr "Līdzstrādnieki"
+
+#. the %s will be substituted with the UTF-8 copyright symbol
+#: shell/rb.c:506
+#, c-format
+msgid "Copyright %s 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Autortiesības %s 2002, 2003 Jorn Baayen. Visas tiesības aizsargātas."
+
+#: shell/rb.c:509
 msgid "Music management and playback software for GNOME."
 msgstr "Mūzikas pārvaldīšanas un atskaņošanas programma priekš GNOME."
 
