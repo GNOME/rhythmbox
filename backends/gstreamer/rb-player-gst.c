@@ -792,8 +792,6 @@ rb_player_pause (RBPlayer *mp)
 
 	gst_element_set_state (mp->priv->pipeline,
 			       GST_STATE_PAUSED);
-	gst_element_set_state (mp->priv->sink,
-			       GST_STATE_NULL);
 }
 
 gboolean
