@@ -165,8 +165,16 @@ rb_library_action_queue_peek_head (RBLibraryActionQueue *queue,
 	action = g_queue_peek_head (queue->priv->queue);
 	g_static_rw_lock_reader_unlock (queue->priv->lock);
 
-	*type = action->type;
-	*uri = action->uri;
+	if (action != NULL)
+	{
+		*type = action->type;
+		*uri = action->uri;
+	}
+	else
+	{
+		*type = -1;
+		*uri = NULL;
+	}
 }
 
 void
