@@ -2,7 +2,7 @@
  *  arch-tag: Implementation of local file source object
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -131,7 +131,6 @@ static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
-static void query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
@@ -1278,9 +1277,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 
 	if (source->priv->active_query) {
 		rb_debug ("killing active query");
-		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
-						      G_CALLBACK (query_complete_cb),
-						      source);
 		rhythmdb_query_model_cancel (RHYTHMDB_QUERY_MODEL (source->priv->active_query));
 	}
 
@@ -1354,55 +1350,62 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 		g_object_ref (G_OBJECT (source->priv->cached_albums_model));
 	} else {
 		rb_debug ("query is not special");
-		if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
-			rb_debug ("resetting genres view");
-			rb_property_view_reset (source->priv->genres);
-			g_list_foreach (source->priv->selected_genres, (GFunc) g_free, NULL);
-			g_list_free (source->priv->selected_genres);
-			source->priv->selected_genres = NULL;
-		}
-		genre_model = rb_property_view_get_model (source->priv->genres);
-		if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
-			rb_debug ("resetting artist view");
-			rb_property_view_reset (source->priv->artists);
-			g_list_foreach (source->priv->selected_artists, (GFunc) g_free, NULL);
-			g_list_free (source->priv->selected_artists);
-			source->priv->selected_artists = NULL;
-		}
-		artist_model = rb_property_view_get_model (source->priv->artists);
-		if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
-			rb_debug ("resetting album view");
-			rb_property_view_reset (source->priv->albums);
-			g_list_foreach (source->priv->selected_albums, (GFunc) g_free, NULL);
-			g_list_free (source->priv->selected_albums);
-			source->priv->selected_albums = NULL;
-		}
-		album_model = rb_property_view_get_model (source->priv->albums);
-
 		source->priv->active_query = source->priv->model = 
 			query_model = rhythmdb_query_model_new_empty (source->priv->db);
-		if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE)
-			g_object_set (G_OBJECT (genre_model), "query-model", query_model, NULL);
-		else
-			g_object_set (G_OBJECT (genre_model), "query-model", NULL, NULL);
-	
-		if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST)
-			g_object_set (G_OBJECT (artist_model), "query-model", query_model, NULL);
-		else
-			g_object_set (G_OBJECT (artist_model), "query-model", NULL, NULL);
 
-		if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM)
-			g_object_set (G_OBJECT (album_model), "query-model", query_model, NULL);
-		else
-			g_object_set (G_OBJECT (album_model), "query-model", NULL, NULL);
+		if (source->priv->selected_genres == NULL) {
+			rb_property_view_set_model (source->priv->genres,
+						    source->priv->cached_genres_model);
+			if (source->priv->selected_artists == NULL) {
+				rb_property_view_set_model (source->priv->artists,
+							    source->priv->cached_artists_model);
+				if (source->priv->selected_albums == NULL)
+					rb_property_view_set_model (source->priv->albums,
+								    source->priv->cached_albums_model);
+			}
+		}
+		switch (qtype) {
+		case RB_LIBRARY_QUERY_TYPE_ALL:
+			rb_debug ("resetting genres view");
+			g_list_foreach (source->priv->selected_genres,
+					(GFunc) g_free, NULL);
+			g_list_free (source->priv->selected_genres);
+			source->priv->selected_genres = NULL;
+
+			rb_property_view_reset (source->priv->genres);
+			genre_model = rb_property_view_get_model (source->priv->genres);
+			g_object_set (G_OBJECT (genre_model), "query-model",
+				      query_model, NULL);
+		case RB_LIBRARY_QUERY_TYPE_GENRE:
+			rb_debug ("resetting artist view");
+			g_list_foreach (source->priv->selected_artists,
+					(GFunc) g_free, NULL);
+			g_list_free (source->priv->selected_artists);
+			source->priv->selected_artists = NULL;
+
+			rb_property_view_reset (source->priv->artists);
+			artist_model = rb_property_view_get_model (source->priv->artists);
+			g_object_set (G_OBJECT (artist_model), "query-model",
+				      query_model, NULL);
+		case RB_LIBRARY_QUERY_TYPE_ARTIST:
+			rb_debug ("resetting album view");
+			g_list_foreach (source->priv->selected_albums,
+					(GFunc) g_free, NULL);
+			g_list_free (source->priv->selected_albums);
+			source->priv->selected_albums = NULL;
+
+			rb_property_view_reset (source->priv->albums);
+			album_model = rb_property_view_get_model (source->priv->albums);
+			g_object_set (G_OBJECT (album_model), "query-model",
+				      query_model, NULL);
+		case RB_LIBRARY_QUERY_TYPE_ALBUM:
+		case RB_LIBRARY_QUERY_TYPE_SEARCH:
+			break;
+		}
 	}
 
 	model = GTK_TREE_MODEL (query_model);
 
-	g_signal_connect_object (G_OBJECT (query_model),
-				 "complete", G_CALLBACK (query_complete_cb),
-				 source, 0);
-	
 	rb_debug ("setting empty model");
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (query_model));
 
@@ -1417,33 +1420,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	rb_debug ("polling");
 	rb_entry_view_poll_model (source->priv->songs);
 	rb_debug ("done polling");
-}
-
-static void
-query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *source)
-{
-	RhythmDBPropertyModel *genre_model = rb_property_view_get_model (source->priv->genres);
-	RhythmDBPropertyModel *artist_model = rb_property_view_get_model (source->priv->artists);
-	RhythmDBPropertyModel *album_model = rb_property_view_get_model (source->priv->albums);
-
-	rb_debug ("query complete; resetting data models");
-
-	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_GENRE)
-		g_object_set (G_OBJECT (genre_model), "query-model", model, NULL);
-	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ARTIST)
-		g_object_set (G_OBJECT (artist_model), "query-model", model, NULL);
-	if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ALBUM)
-		g_object_set (G_OBJECT (album_model), "query-model", model, NULL);
-	if (genre_model != source->priv->cached_genres_model)
-		g_object_set (G_OBJECT (source->priv->cached_genres_model),
-			      "query-model", model, NULL);
-	if (artist_model != source->priv->cached_artists_model)
-		g_object_set (G_OBJECT (source->priv->cached_artists_model),
-			      "query-model", model, NULL);
-	if (album_model != source->priv->cached_albums_model)
-		g_object_set (G_OBJECT (source->priv->cached_albums_model),
-			      "query-model", model, NULL);
-	source->priv->active_query = NULL;
 }
 
 /* static void */
