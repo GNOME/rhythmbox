@@ -63,6 +63,8 @@ void        rb_group_view_set_name      (RBGroupView *group,
 
 const char *rb_group_view_get_file      (RBGroupView *group);
 
+void        rb_group_view_remove_file   (RBGroupView *group);
+
 void        rb_group_view_save          (RBGroupView *view);
 void        rb_group_view_load          (RBGroupView *view);
 

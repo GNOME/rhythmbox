@@ -617,9 +617,6 @@ rb_shell_remove_view (RBShell *shell,
 {
 	shell->priv->views = g_list_remove (shell->priv->views, view);
 
-	if (g_list_find (shell->priv->groups, view) != NULL)
-		shell->priv->groups = g_list_remove (shell->priv->groups, view);
-
 	rb_sidebar_remove (RB_SIDEBAR (shell->priv->sidebar),
 			   rb_view_get_sidebar_button (view));
 
@@ -682,6 +679,19 @@ static void
 rb_shell_sidebar_button_deleted_cb (GtkWidget *widget,
 				    RBShell *shell)
 {
+	RBView *view;
+
+	view = g_object_get_data (G_OBJECT (widget), "view");
+
+	if (g_list_find (shell->priv->groups, view) != NULL)
+	{
+		/* so, this is a group */
+		rb_group_view_remove_file (RB_GROUP_VIEW (view));
+		shell->priv->groups = g_list_remove (shell->priv->groups, view);
+
+		rb_shell_save_music_groups (shell);
+	}
+	
 	rb_shell_remove_view (shell,
 			      g_object_get_data (G_OBJECT (widget), "view"));
 }
@@ -865,6 +875,8 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 	rb_shell_append_view (shell, group);
 
 	g_free (name);
+
+	rb_shell_save_music_groups (shell);
 }
 
 static void

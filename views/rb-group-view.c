@@ -28,6 +28,7 @@
 #include <libxml/tree.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
@@ -401,9 +402,12 @@ rb_group_view_set_property (GObject *object,
 				      "text", view->priv->name,
 				      NULL);
 
-			file = filename_from_name (view->priv->name);
-			g_object_set (object, "file", file, NULL);
-			g_free (file);
+			if (view->priv->file == NULL)
+			{
+				file = filename_from_name (view->priv->name);
+				g_object_set (object, "file", file, NULL);
+				g_free (file);
+			}
 		}
 		break;
 	default:
@@ -448,7 +452,6 @@ rb_group_view_new (BonoboUIContainer *container,
 				      "ui-name", "GroupView",
 				      "container", container,
 				      "library", library,
-				      "file", "Untitled",
 				      "verbs", rb_group_view_verbs,
 				      NULL));
 
@@ -1029,8 +1032,6 @@ rb_group_view_load (RBGroupView *view)
 
 	xmlFreeDoc (doc);
 
-	unlink (view->priv->file);
-
 	rb_group_view_set_name (view, name);
 	g_free (name);
 }
@@ -1088,4 +1089,10 @@ rb_group_view_cmd_song_info (BonoboUIComponent *component,
 		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
 		gtk_widget_show_all (song_info);
 	}
+}
+
+void
+rb_group_view_remove_file (RBGroupView *view)
+{
+	unlink (view->priv->file);
 }

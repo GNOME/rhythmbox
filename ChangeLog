@@ -1,3 +1,14 @@
+2002-07-30  Jorn Baayen  <jorn@nl.linux.org>
+
+	* shell/rb-shell.c: (rb_shell_remove_view),
+	(rb_shell_sidebar_button_deleted_cb), (rb_shell_cmd_new_group):
+	* views/rb-group-view.c: (rb_group_view_set_property),
+	(rb_group_view_new), (rb_group_view_load),
+	(rb_group_view_cmd_song_info), (rb_group_view_remove_file):
+	* views/rb-group-view.h:
+
+	Crash-proofify groups.
+
 2002-07-30  Kjartan Maraas  <kmaraas@gnome.org>
 
 	* configure.in: Added "no" to ALL_LINGUAS.
