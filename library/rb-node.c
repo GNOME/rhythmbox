@@ -93,7 +93,6 @@ enum
 	CHILD_ADDED,
 	CHILD_CHANGED,
 	CHILD_REMOVED,
-	PRE_CHILD_REMOVED,
 	LAST_SIGNAL
 };
 
@@ -198,16 +197,6 @@ rb_node_class_init (RBNodeClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, child_removed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      RB_TYPE_NODE);
-	rb_node_signals[PRE_CHILD_REMOVED] =
-		g_signal_new ("pre_child_removed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeClass, pre_child_removed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
@@ -1155,7 +1144,7 @@ real_remove_child (RBNode *node,
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
 
-	g_signal_emit (G_OBJECT (node), rb_node_signals[PRE_CHILD_REMOVED], 0, child);
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REMOVED], 0, child);
 
 	read_lock_to_write_lock (node);
 	read_lock_to_write_lock (child);
@@ -1190,14 +1179,6 @@ real_remove_child (RBNode *node,
 		g_hash_table_remove (child->priv->parents,
 				     GINT_TO_POINTER (node->priv->id));
 	}
-
-	write_lock_to_read_lock (node);
-	write_lock_to_read_lock (child);
-
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REMOVED], 0, child);
-
-	read_lock_to_write_lock (node);
-	read_lock_to_write_lock (child);
 }
 
 void

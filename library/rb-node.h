@@ -48,16 +48,14 @@ typedef struct
 	GObjectClass parent;
 
 	/* signals */
-	void (*destroyed)         (RBNode *node);
-	void (*restored)          (RBNode *node);
+	void (*destroyed)       (RBNode *node);
+	void (*restored)        (RBNode *node);
 
-	void (*child_added)       (RBNode *node, RBNode *child);
-	void (*child_changed)     (RBNode *node, RBNode *child);
-	void (*child_reordered)   (RBNode *node, RBNode *child,
-				   int old_index, int new_index);
-	void (*child_removed)     (RBNode *node, RBNode *child);
-	
-	void (*pre_child_removed) (RBNode *node, RBNode *child);
+	void (*child_added)     (RBNode *node, RBNode *child);
+	void (*child_changed)   (RBNode *node, RBNode *child);
+	void (*child_reordered) (RBNode *node, RBNode *child,
+			         int old_index, int new_index);
+	void (*child_removed)   (RBNode *node, RBNode *child);
 } RBNodeClass;
 
 GType       rb_node_get_type              (void);
