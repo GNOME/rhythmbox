@@ -73,6 +73,7 @@ static gboolean playpause       = FALSE;
 static gboolean focus           = FALSE;
 static gboolean previous        = FALSE;
 static gboolean next            = FALSE;
+static gboolean shuffle         = FALSE;
 static gboolean print_play_time = FALSE;
 static gboolean print_song_length = FALSE;
 static long seek_time           = 0;
@@ -99,6 +100,8 @@ main (int argc, char **argv)
 		{ "previous",		    0,  POPT_ARG_NONE,			&previous,	        	0, N_("Jump to previous song"),     NULL },
 		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
 		
+		{ "shuffle",		        0,  POPT_ARG_NONE,			&shuffle,		        	0, N_("Toggle shuffling"),     NULL },
+
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
 		{ "no-update", 0,  POPT_ARG_NONE,          &no_update,                              0, N_("Do not update the library"), NULL },
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
@@ -274,6 +277,32 @@ get_song_info (GNOME_Rhythmbox shell)
 }
 
 static void
+rb_toggle_shuffle (GNOME_Rhythmbox shell)
+{
+	Bonobo_PropertyBag pb;
+	gboolean shuffle;
+		
+	pb = GNOME_Rhythmbox_getPlayerProperties (shell, &ev);
+
+	g_return_if_fail (!BONOBO_EX (&ev));
+
+	shuffle = bonobo_pbclient_get_boolean (pb,
+					       "shuffle",
+					       &ev);
+	g_return_if_fail (!BONOBO_EX (&ev));
+
+		
+	bonobo_pbclient_set_boolean (pb,
+				     "shuffle",
+				     shuffle ? FALSE : TRUE,
+				     &ev);
+	g_return_if_fail (!BONOBO_EX (&ev));
+
+	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
+}
+
+
+static void
 rb_handle_cmdline (char **argv, int argc,
 		   gboolean already_running)
 {
@@ -369,6 +398,11 @@ rb_handle_cmdline (char **argv, int argc,
 	{
 		GNOME_Rhythmbox_next (shell, &ev);
 		grab_focus = FALSE;
+	}
+
+	if (shuffle)
+	{
+		rb_toggle_shuffle (shell);
 	}
 
 	for (i = 1; i < argc; i++)

@@ -1008,6 +1008,11 @@ shell_pb_set_prop (BonoboPropertyBag *bag,
 		   CORBA_Environment *ev,
 		   gpointer           user_data)
 {
+	RBShell *shell = RB_SHELL (user_data);
+	RBShellPlayer *player;
+
+	player = RB_SHELL_PLAYER (shell->priv->player_shell);
+	
 	switch (arg_id) {
 
 	case PROP_VISIBILITY:
@@ -1016,6 +1021,22 @@ shell_pb_set_prop (BonoboPropertyBag *bag,
 	case PROP_SONG:
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_ReadOnly);
 		break;
+
+	case PROP_SHUFFLE:
+	{
+		gboolean repeat;
+		gboolean shuffle;
+
+
+		rb_shell_player_get_playback_state (player, &shuffle,
+						    &repeat);
+		shuffle = BONOBO_ARG_GET_BOOLEAN (arg);
+
+		rb_shell_player_set_playback_state (player,
+						    shuffle,
+						    repeat);
+		break;
+	}
 
 	default:
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
