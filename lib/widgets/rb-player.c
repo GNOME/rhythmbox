@@ -357,11 +357,13 @@ rb_player_sync (RBPlayer *player)
 		g_free (tmp);
 
 		tmp = ALBUM_INFO_URL (album);
-		rb_link_set (player->priv->album, album, tmp);
+		rb_link_set (player->priv->album, album,
+			     _("Get information on this album from the web"), tmp);
 		g_free (tmp);
 
 		tmp = ARTIST_INFO_URL (artist);
-		rb_link_set (player->priv->artist, artist, tmp);
+		rb_link_set (player->priv->artist, artist,
+			     _("Get information on this artist from the web"), tmp);
 		g_free (tmp);
 
 		rb_player_set_show_textline (player, TRUE);

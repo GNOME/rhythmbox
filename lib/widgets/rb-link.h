@@ -52,6 +52,7 @@ RBLink *rb_link_new      (void);
 
 void    rb_link_set      (RBLink *link,
 		          const char *text,
+			  const char *tooltip,
 		          const char *url);
 
 G_END_DECLS

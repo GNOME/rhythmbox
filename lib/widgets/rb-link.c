@@ -58,6 +58,7 @@ struct RBLinkPrivate
 	GtkWidget *label;
 
 	char *text;
+	char *tooltip;
 	char *url;
 
 	GtkTooltips *tooltips;
@@ -70,6 +71,7 @@ enum
 {
 	PROP_0,
 	PROP_TEXT,
+	PROP_TOOLTIP,
 	PROP_URL
 };
 
@@ -120,6 +122,13 @@ rb_link_class_init (RBLinkClass *klass)
 					 g_param_spec_string ("text",
 							      "Link text",
 							      "Link text",
+							      NULL,
+							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_TOOLTIP,
+					 g_param_spec_string ("tooltip",
+							      "Link tooltip",
+							      "Link tooltip",
 							      NULL,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -212,19 +221,18 @@ rb_link_set_property (GObject *object,
 		link->priv->text = g_strdup (g_value_get_string (value));
 		rb_link_set_text (link, link->priv->normal_color);
 		break;
+	case PROP_TOOLTIP:
+		g_free (link->priv->tooltip);
+		link->priv->tooltip = g_strdup (g_value_get_string (value));
+		gtk_tooltips_set_tip (link->priv->tooltips,
+				      GTK_WIDGET (link),
+				      link->priv->tooltip,
+				      NULL);
+		break;
 	case PROP_URL:
 		{
-			char *tooltip;
-			
 			g_free (link->priv->url);
 			link->priv->url = g_strdup (g_value_get_string (value));
-			
-			tooltip = g_strdup_printf (_("Go to %s"), link->priv->url);
-			gtk_tooltips_set_tip (link->priv->tooltips,
-					      GTK_WIDGET (link),
-					      tooltip,
-					      NULL);
-			g_free (tooltip);
 		}
 		break;
 	default:
@@ -245,6 +253,9 @@ rb_link_get_property (GObject *object,
 	{
 	case PROP_TEXT:
 		g_value_set_string (value, link->priv->text);
+		break;
+	case PROP_TOOLTIP:
+		g_value_set_string (value, link->priv->tooltip);
 		break;
 	case PROP_URL:
 		g_value_set_string (value, link->priv->url);
@@ -270,14 +281,17 @@ rb_link_new (void)
 void
 rb_link_set (RBLink *link,
 	     const char *text,
+	     const char *tooltip,
 	     const char *url)
 {
 	g_return_if_fail (RB_IS_LINK (link));
 	g_return_if_fail (text != NULL);
+	g_return_if_fail (tooltip != NULL);
 	g_return_if_fail (url != NULL);
 
 	g_object_set (G_OBJECT (link),
 		      "text", text,
+		      "tooltip", tooltip,
 		      "url", url,
 		      NULL);
 }
