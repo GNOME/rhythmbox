@@ -3,7 +3,7 @@ define(arch-tag)
 AC_PREREQ(2.53)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.8.6)
+AM_INIT_AUTOMAKE(rhythmbox, 0.8.7)
 
 AM_MAINTAINER_MODE
 
