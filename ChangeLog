@@ -1,5 +1,16 @@
 2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/rhythmbox.schemas:
+	* lib/rb-dialog.c: (rb_ask_file_multiple), (rb_ask_file):
+	* lib/rb-dialog.h:
+	* shell/rb-shell-preferences.c:
+	(music_base_folder_browse_clicked_cb):
+	* shell/rb-shell.c: (rb_shell_cmd_add_to_library):
+
+	Store fileselector state.
+
+2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/node-views/rb-node-view-songs.xml:
 
 	Put default sort order back.

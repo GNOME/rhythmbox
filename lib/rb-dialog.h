@@ -31,9 +31,11 @@ void   rb_warning_dialog    (const char *format, ...);
 void   rb_message_dialog    (const char *format, ...);
 
 char **rb_ask_file_multiple (const char *title,
+			     const char *default_file,
 			     GtkWindow *parent);
 
 char  *rb_ask_file          (const char *title,
+			     const char *default_file,
 			     GtkWindow *parent);
 
 char  *rb_ask_string        (const char *title,

@@ -221,7 +221,9 @@ void
 music_base_folder_browse_clicked_cb (GtkWidget *button,
 				     RBShellPreferences *shell_preferences)
 {
-	char *ret = rb_ask_file (_("Choose a folder"), GTK_WINDOW (shell_preferences));
+	char *ret = rb_ask_file (_("Choose a folder"),
+				 gtk_entry_get_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry)),
+				 GTK_WINDOW (shell_preferences));
 	if (ret != NULL)
 		gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry), ret);
 	g_free (ret);

@@ -85,13 +85,18 @@ rb_dialog (const char *format, va_list args, GtkMessageType type)
 }
 
 char **
-rb_ask_file_multiple (const char *title, GtkWindow *parent)
+rb_ask_file_multiple (const char *title,
+		      const char *default_file,
+		      GtkWindow *parent)
 {
 	GtkWidget *filesel;
 	char **ret = NULL;
 
 	filesel = gtk_file_selection_new (title);
+	if (default_file != NULL)
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION (filesel), default_file);
 
+	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (filesel));
 	gtk_file_selection_set_select_multiple (GTK_FILE_SELECTION (filesel), TRUE);
 
 	gtk_window_set_transient_for (GTK_WINDOW (filesel),
@@ -105,12 +110,19 @@ rb_ask_file_multiple (const char *title, GtkWindow *parent)
 }
 
 char *
-rb_ask_file (const char *title, GtkWindow *parent)
+rb_ask_file (const char *title,
+	     const char *default_file,
+	     GtkWindow *parent)
 {
 	GtkWidget *filesel;
 	char *ret = NULL;
 
 	filesel = gtk_file_selection_new (title);
+	if (default_file != NULL)
+		gtk_file_selection_set_filename (GTK_FILE_SELECTION (filesel), default_file);
+
+	gtk_file_selection_hide_fileop_buttons (GTK_FILE_SELECTION (filesel));
+
 	gtk_window_set_transient_for (GTK_WINDOW (filesel),
 				      parent);
 	if (gtk_dialog_run (GTK_DIALOG (filesel)) == GTK_RESPONSE_OK)

@@ -124,6 +124,7 @@ static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 #define CONF_STATE_SHUFFLE          "/apps/rhythmbox/state/shuffle"
 #define CONF_STATE_REPEAT           "/apps/rhythmbox/state/repeat"
 #define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
+#define CONF_STATE_ADD_DIR          "/apps/rhythmbox/state/add_dir"
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
 
 typedef struct
@@ -804,14 +805,29 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 			     RBShell *shell,
 			     const char *verbname)
 {
-	char **files, **filecur;
+	char **files, **filecur, *stored;
     
+	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	files = rb_ask_file_multiple (_("Choose files to add"),
+				      stored,
 			              GTK_WINDOW (shell->priv->window));
+	g_free (stored);
+	
 	if (files == NULL)
 		return;
 
 	filecur = files;
+
+	if (*filecur != NULL)
+	{
+		char *tmp;
+
+		stored = g_path_get_dirname (*filecur);
+		tmp = g_strconcat (stored, "/", NULL);
+		eel_gconf_set_string (CONF_STATE_ADD_DIR, tmp);
+		g_free (tmp);
+		g_free (stored);
+	}
     
 	while (*filecur != NULL)
 	{
