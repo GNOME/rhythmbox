@@ -1,5 +1,14 @@
 2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/rb-file-helpers.c: (rb_file_helpers_shutdown),
+	(rb_resolve_symlink):
+	* lib/rb-file-helpers.h:
+	* library/rb-library-main-thread.c: (thread_main):
+
+	Resolve symlinks.
+
+2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/music-folders.glade:
 	* data/ui/rhythmbox-group-view.xml.in:
 	* data/ui/rhythmbox-library-view.xml.in:

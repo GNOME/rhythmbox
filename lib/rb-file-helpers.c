@@ -26,6 +26,9 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <sys/stat.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
+#include <libgnomevfs/gnome-vfs-file-info.h>
+#include <libgnomevfs/gnome-vfs-ops.h>
 
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
@@ -116,4 +119,25 @@ rb_file_helpers_shutdown (void)
 	g_hash_table_destroy (files);
 
 	g_free (dot_dir);
+}
+
+char *
+rb_resolve_symlink (const char *uri)
+{
+	GnomeVFSFileInfo *info;
+	char *real;
+
+	info = gnome_vfs_file_info_new ();
+
+	gnome_vfs_get_file_info (uri, info,
+				 GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE);
+
+	if (info->type == GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK)
+		real = g_strdup (info->symlink_name);
+	else
+		real = g_strdup (uri);
+
+	gnome_vfs_file_info_unref (info);
+
+	return real;
 }

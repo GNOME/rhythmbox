@@ -29,6 +29,8 @@ const char *rb_dot_dir               (void);
 
 void        rb_ensure_dir_exists     (const char *dir);
 
+char       *rb_resolve_symlink       (const char *uri);
+
 void        rb_file_helpers_init     (void);
 void        rb_file_helpers_shutdown (void);
 

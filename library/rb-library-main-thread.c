@@ -20,6 +20,7 @@
 
 #include "rb-library-main-thread.h"
 #include "rb-node-song.h"
+#include "rb-file-helpers.h"
 #include "rb-file-monitor.h"
 
 static void rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass);
@@ -239,30 +240,31 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 		while (rb_library_action_queue_is_empty (queue) == FALSE && i <= 10)
 		{
 			RBLibraryActionType type;
-			char *uri;
+			char *uri, *realuri;
 
 			rb_library_action_queue_peek_head (queue,
 							   &type,
 							   &uri);
+			realuri = rb_resolve_symlink (uri);
 
 			switch (type)
 			{
 			case RB_LIBRARY_ACTION_ADD_FILE:
-				if (rb_node_get_song_by_uri (uri) == NULL)
+				if (rb_node_get_song_by_uri (realuri) == NULL)
 				{
 					RBNode *song;
 					
 					song = rb_node_new (RB_NODE_TYPE_SONG);
-					rb_node_song_set_location (song, uri, priv->library);
+					rb_node_song_set_location (song, realuri, priv->library);
 				}
 
-				rb_file_monitor_add (rb_file_monitor_get (), uri);
+				rb_file_monitor_add (rb_file_monitor_get (), realuri);
 				break;
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
 				{
 					RBNode *song;
 
-					song = rb_node_get_song_by_uri (uri);
+					song = rb_node_get_song_by_uri (realuri);
 					if (song == NULL)
 						break;
 
@@ -270,24 +272,26 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 				}
 
 				/* just to be sure */
-				rb_file_monitor_add (rb_file_monitor_get (), uri);
+				rb_file_monitor_add (rb_file_monitor_get (), realuri);
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				{
 					RBNode *song;
 
-					song = rb_node_get_song_by_uri (uri);
+					song = rb_node_get_song_by_uri (realuri);
 					if (song == NULL)
 						break;
 
 					rb_node_unref (song);
 				}
 
-				rb_file_monitor_remove (rb_file_monitor_get (), uri);
+				rb_file_monitor_remove (rb_file_monitor_get (), realuri);
 				break;
 			default:
 				break;
 			}
+
+			g_free (realuri);
 
 			rb_library_action_queue_pop_head (queue);
 
