@@ -3,6 +3,7 @@ art_DATA = rhythmbox-next.png          \
 	   rhythmbox-pause.png         \
 	   rhythmbox-stop.png          \
 	   rhythmbox-previous.png      \
+	   rhythmbox-rewind.png	       \
 	   rhythmbox-shuffle.png       \
 	   rhythmbox-visuals.png       \
 	   rhythmbox-repeat.png        \
