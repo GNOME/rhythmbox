@@ -418,7 +418,8 @@ rb_player_new (MonkeyMediaPlayer *mmplayer)
 	RBPlayer *player;
 
 	player = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, "player", mmplayer,
-					  "title", NULL, NULL));
+					  "title", NULL,
+					  "spacing", 6, NULL));
 
 	g_return_val_if_fail (player->priv != NULL, NULL);
 
