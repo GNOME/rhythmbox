@@ -294,10 +294,11 @@ rb_tree_model_node_set_property (GObject *object,
 
 		if (model->priv->filter != NULL)
 		{
-			g_signal_connect (G_OBJECT (model->priv->filter),
-					  "changed",
-					  G_CALLBACK (filter_changed_cb),
-					  model);
+			g_signal_connect_object (G_OBJECT (model->priv->filter),
+					         "changed",
+					         G_CALLBACK (filter_changed_cb),
+					         G_OBJECT (model),
+						 0);
 		}
 		break;	
 	default:
