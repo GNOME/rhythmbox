@@ -644,59 +644,31 @@ poll_status_update (gpointer data)
 	return FALSE;
 }
 
-/* static char * */
-/* get_status_normal (RBLibrary *library, RBNode *root, RBNodeFilter *filter) */
-/* { */
-/* 	char *ret; */
-/* 	float days; */
-/* 	long len, hours, minutes, seconds; */
-/* 	long n_seconds = 0; */
-/* 	GPtrArray *kids; */
-/* 	int i; */
+char *
+rb_library_compute_status_normal (gint n_songs, glong duration)
+{
+	char *ret;
+	float days;
+	long hours, minutes, seconds;
 
-/* 	kids = rb_node_get_children (root); */
+	days    = (float) duration / (float) (60 * 60 * 24); 
+	hours   = duration / (60 * 60);
+	minutes = duration / 60 - hours * 60;
+	seconds = duration % 60;
 
-/* 	len = 0; */
+	if (days >= 1.0) {
+		ret = g_strdup_printf (_("<b>%.1f</b> days (%d songs)"),
+				       days, n_songs);
+	} else if (hours >= 1) {
+		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%d songs)"),
+				       hours, minutes, n_songs);
+	} else {
+		ret = g_strdup_printf (_("<b>%ld</b> minutes (%d songs)"),
+				       minutes, n_songs);
+	}
 
-/* 	for (i = 0; i < kids->len; i++) { */
-/* 		long secs; */
-/* 		RBNode *node; */
-
-/* 		node = g_ptr_array_index (kids, i); */
-
-/* 		if (filter != NULL && rb_node_filter_evaluate (filter, node) == FALSE) */
-/* 			continue; */
-
-/* 		secs = rb_node_get_property_long (node, RB_NODE_PROP_DURATION); */
-/* 		if (secs < 0) */
-/* 			g_warning ("Invalid duration value for node %p", node); */
-/* 		else */
-/* 			n_seconds += secs; */
-
-/* 		len++; */
-/* 	} */
-
-/* 	rb_node_thaw (root); */
-
-/* 	days    = (float) n_seconds / (float) (60 * 60 * 24);  */
-/* 	hours   = n_seconds / (60 * 60); */
-/* 	minutes = n_seconds / 60 - hours * 60; */
-/* 	seconds = n_seconds % 60; */
-
-/* 	/\* FIXME impl remaining time *\/ */
-/* 	if (days >= 1.0) { */
-/* 		ret = g_strdup_printf (_("<b>%.1f</b> days (%ld songs)"), */
-/* 				       days, len); */
-/* 	} else if (hours >= 1) { */
-/* 		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"), */
-/* 				       hours, minutes, len); */
-/* 	} else { */
-/* 		ret = g_strdup_printf (_("<b>%ld</b> minutes (%ld songs)"), */
-/* 				       minutes, len); */
-/* 	} */
-
-/* 	return ret; */
-/* } */
+	return ret;
+}
 
 typedef struct
 {

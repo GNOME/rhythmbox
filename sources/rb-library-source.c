@@ -60,6 +60,12 @@ typedef enum
 	RB_LIBRARY_QUERY_TYPE_SEARCH,
 } RBLibraryQueryType;
 
+struct RBLibrarySourceEntryAddData
+{
+	RBLibrarySource *source;
+	RBPropertyView *propview;
+};
+
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
 static void rb_library_source_init (RBLibrarySource *source);
 static GObject *rb_library_source_constructor (GType type, guint n_construct_properties,
@@ -80,7 +86,7 @@ static void artist_selected_cb (RBPropertyView *propview, const char *name,
 static void album_selected_cb (RBPropertyView *propview, const char *name,
 			       RBLibrarySource *libsource);
 static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
-			    RBPropertyView *propview);
+			    struct RBLibrarySourceEntryAddData *data);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -160,6 +166,8 @@ struct RBLibrarySourcePrivate
 	GtkWidget *paned;
 
 	gboolean lock;
+
+	glong total_duration;
 
 	char *status;
 
@@ -388,6 +396,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	RBLibrarySource *source;
 	RBLibrarySourceClass *klass;
 	GObjectClass *parent_class;  
+	struct RBLibrarySourceEntryAddData *add_data;
+
 	klass = RB_LIBRARY_SOURCE_CLASS (g_type_class_peek (type));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
@@ -428,9 +438,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "property-selected",
 			  G_CALLBACK (genre_selected_cb),
 			  source);
+	add_data = g_new0 (struct RBLibrarySourceEntryAddData, 1);
+	add_data->source = source;
+	add_data->propview = source->priv->genres;
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
-			  source->priv->genres);
+			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
 
@@ -440,9 +453,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "property-selected",
 			  G_CALLBACK (artist_selected_cb),
 			  source);
+	add_data = g_new0 (struct RBLibrarySourceEntryAddData, 1);
+	add_data->source = source;
+	add_data->propview = source->priv->artists;
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
-			  source->priv->artists);
+			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
 
@@ -452,9 +468,12 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "property-selected",
 			  G_CALLBACK (album_selected_cb),
 			  source);
+	add_data = g_new0 (struct RBLibrarySourceEntryAddData, 1);
+	add_data->source = source;
+	add_data->propview = source->priv->albums;
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-added", G_CALLBACK (entry_added_cb),
-			  source->priv->albums);
+			  add_data);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
@@ -615,12 +634,9 @@ impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	g_free (source->priv->status);
-	/* RHYTHMDB FIXME */
-/* 	source->priv->status = rb_library_compute_status (source->priv->library, */
-/* 							  rb_library_get_all_songs (source->priv->library), */
-/* 							  source->priv->songs_filter); */
-/* 	return source->priv->status; */
-	return "Not implemented yet";
+	source->priv->status = rb_library_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+								 source->priv->total_duration);
+	return source->priv->status;
 }
 
 static const char *
@@ -993,9 +1009,20 @@ impl_show_popup (RBSource *source)
 
 static void
 entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
-		RBPropertyView *propview)
+		struct RBLibrarySourceEntryAddData *data)
 {
-	rb_property_view_handle_entry_addition (propview, entry);
+	glong duration;
+	
+	rhythmdb_read_lock (data->source->priv->db);
+	
+	duration = rhythmdb_entry_get_long (data->source->priv->db, entry,
+					    RHYTHMDB_PROP_DURATION);
+
+	rhythmdb_read_unlock (data->source->priv->db);
+
+	data->source->priv->total_duration += duration;
+	
+	rb_property_view_handle_entry_addition (data->propview, entry);
 }
 
 static void
@@ -1084,6 +1111,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 				       source->priv->selected_album,
 				       RHYTHMDB_QUERY_END);
 
+	source->priv->total_duration = 0;
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	model = GTK_TREE_MODEL (query_model);
 

@@ -62,6 +62,9 @@ static void rb_statusbar_view_statusbar_changed_cb (BonoboUIComponent *component
 						    Bonobo_UIComponent_EventType type,
 						    const char *state,
 						    RBStatusbar *statusbar);
+static void rb_statusbar_entry_view_changed_cb (RBEntryView *view,
+						RBStatusbar *statusbar);
+
 
 #define CMD_PATH_VIEW_STATUSBAR	"/commands/ViewStatusbar"
 
@@ -229,8 +232,12 @@ rb_statusbar_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_SOURCE:
-		if (statusbar->priv->selected_source != NULL)
-		{
+		if (statusbar->priv->selected_source != NULL) {
+			RBEntryView *songs = rb_source_get_entry_view (statusbar->priv->selected_source);
+
+			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+							      G_CALLBACK (rb_statusbar_entry_view_changed_cb),
+							      statusbar);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (statusbar->priv->selected_source),
 							      G_CALLBACK (rb_statusbar_status_changed_cb),
 							      statusbar);
@@ -239,8 +246,14 @@ rb_statusbar_set_property (GObject *object,
 		statusbar->priv->selected_source = g_value_get_object (value);
 		rb_debug ("selected source %p", g_value_get_object (value));
 
-		if (statusbar->priv->selected_source != NULL)
-		{
+		if (statusbar->priv->selected_source != NULL) {
+			RBEntryView *songs = rb_source_get_entry_view (statusbar->priv->selected_source);
+
+			g_signal_connect (G_OBJECT (songs),
+					  "changed",
+					  G_CALLBACK (rb_statusbar_entry_view_changed_cb),
+					  statusbar);
+
 			g_signal_connect (G_OBJECT (statusbar->priv->selected_source),
 					  "status_changed",
 					  G_CALLBACK (rb_statusbar_status_changed_cb),
@@ -417,3 +430,10 @@ rb_statusbar_view_statusbar_changed_cb (BonoboUIComponent *component,
 			       !rb_bonobo_get_active (component, CMD_PATH_VIEW_STATUSBAR));
 }
 
+static void
+rb_statusbar_entry_view_changed_cb (RBEntryView *view,
+				    RBStatusbar *statusbar)
+{
+	rb_debug ("entry view changed");
+	rb_statusbar_sync_with_source (statusbar);
+}

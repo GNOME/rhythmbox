@@ -75,7 +75,9 @@ void			rb_library_shutdown		(RBLibrary *library);
 
 GAsyncQueue *		rb_library_get_main_queue       (RBLibrary *library);
 
-GAsyncQueue *		rb_library_get_add_queue       (RBLibrary *library);
+GAsyncQueue *		rb_library_get_add_queue	(RBLibrary *library);
+
+char *			rb_library_compute_status_normal(gint count, glong duration);
 
 G_END_DECLS
 
