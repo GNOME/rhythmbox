@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -63,9 +63,7 @@ static inline void unlock_gdk (void);
 static inline RBNode *node_from_id_real (long id);
 static inline int get_child_index_real (RBNode *node,
 		                        RBNode *child);
-static gpointer
-rb_node_get_property_pointer (RBNode *node,
-			      int property_id);
+
 typedef struct
 {
 	RBNode *node;
@@ -177,7 +175,7 @@ rb_node_class_init (RBNodeClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-	
+
 	rb_node_signals[CHILD_ADDED] =
 		g_signal_new ("child_added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -323,7 +321,7 @@ rb_node_dispose (GObject *object)
 		g_static_rw_lock_writer_lock (child->priv->lock);
 
 		real_remove_child (node, child, FALSE, TRUE);
-		
+
 		g_static_rw_lock_writer_unlock (child->priv->lock);
 	}
 
@@ -402,7 +400,7 @@ long
 rb_node_get_id (RBNode *node)
 {
 	long ret;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
 	g_static_rw_lock_reader_lock (node->priv->lock);
@@ -418,7 +416,7 @@ static inline RBNode *
 node_from_id_real (long id)
 {
 	RBNode *ret = NULL;
-	
+
 	if (id < id_to_node->len)
 		ret = g_ptr_array_index (id_to_node, id);;
 
@@ -435,7 +433,7 @@ rb_node_get_from_id (long id)
 	g_static_rw_lock_reader_lock (id_to_node_lock);
 
 	ret = node_from_id_real (id);
-	
+
 	g_static_rw_lock_reader_unlock (id_to_node_lock);
 
 	return ret;
@@ -469,7 +467,7 @@ rb_node_unref (RBNode *node)
 	}
 }
 
-void 
+void
 rb_node_freeze (RBNode *node)
 {
 	g_return_if_fail (RB_IS_NODE (node));
@@ -481,7 +479,7 @@ void
 rb_node_thaw (RBNode *node)
 {
 	g_return_if_fail (RB_IS_NODE (node));
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
@@ -513,7 +511,7 @@ real_set_property (RBNode *node,
 		g_value_unset (old);
 		g_free (old);
 	}
-	
+
 	g_ptr_array_index (node->priv->properties, property_id) = value;
 }
 
@@ -523,7 +521,7 @@ rb_node_set_property (RBNode *node,
 		      const GValue *value)
 {
 	GValue *new;
-	
+
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (property_id >= 0);
 	g_return_if_fail (value != NULL);
@@ -545,7 +543,7 @@ rb_node_set_property (RBNode *node,
 			      node);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
-	
+
 	unlock_gdk ();
 }
 
@@ -555,11 +553,11 @@ rb_node_get_property (RBNode *node,
 		      GValue *value)
 {
 	GValue *ret;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (property_id >= 0, FALSE);
 	g_return_val_if_fail (value != NULL, FALSE);
-	
+
 	g_static_rw_lock_reader_lock (node->priv->lock);
 
 	if (property_id >= node->priv->properties->len) {
@@ -572,7 +570,7 @@ rb_node_get_property (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return FALSE;
 	}
-	
+
 	g_value_init (value, G_VALUE_TYPE (ret));
 	g_value_copy (ret, value);
 
@@ -587,7 +585,7 @@ rb_node_get_property_string (RBNode *node,
 {
 	GValue *ret;
 	const char *retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (property_id >= 0, NULL);
 
@@ -603,11 +601,11 @@ rb_node_get_property_string (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return NULL;
 	}
-	
+
 	retval = g_value_get_string (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
-	
+
 	return retval;
 }
 
@@ -617,7 +615,7 @@ rb_node_get_property_boolean (RBNode *node,
 {
 	GValue *ret;
 	gboolean retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (property_id >= 0, FALSE);
 
@@ -633,7 +631,7 @@ rb_node_get_property_boolean (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return FALSE;
 	}
-	
+
 	retval = g_value_get_boolean (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
@@ -647,7 +645,7 @@ rb_node_get_property_long (RBNode *node,
 {
 	GValue *ret;
 	long retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (property_id >= 0, -1);
 
@@ -663,7 +661,7 @@ rb_node_get_property_long (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return -1;
 	}
-	
+
 	retval = g_value_get_long (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
@@ -677,7 +675,7 @@ rb_node_get_property_int (RBNode *node,
 {
 	GValue *ret;
 	int retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (property_id >= 0, -1);
 
@@ -693,7 +691,7 @@ rb_node_get_property_int (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return -1;
 	}
-	
+
 	retval = g_value_get_int (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
@@ -707,7 +705,7 @@ rb_node_get_property_double (RBNode *node,
 {
 	GValue *ret;
 	double retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (property_id >= 0, -1);
 
@@ -723,7 +721,7 @@ rb_node_get_property_double (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return -1;
 	}
-	
+
 	retval = g_value_get_double (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
@@ -737,7 +735,7 @@ rb_node_get_property_float (RBNode *node,
 {
 	GValue *ret;
 	float retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (property_id >= 0, -1);
 
@@ -753,38 +751,8 @@ rb_node_get_property_float (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return -1;
 	}
-	
+
 	retval = g_value_get_float (ret);
-
-	g_static_rw_lock_reader_unlock (node->priv->lock);
-
-	return retval;
-}
-
-static gpointer
-rb_node_get_property_pointer (RBNode *node,
-			      int property_id)
-{
-	GValue *ret;
-	RBNode *retval;
-	
-	g_return_val_if_fail (RB_IS_NODE (node), NULL);
-	g_return_val_if_fail (property_id >= 0, NULL);
-
-	g_static_rw_lock_reader_lock (node->priv->lock);
-
-	if (property_id >= node->priv->properties->len) {
-		g_static_rw_lock_reader_unlock (node->priv->lock);
-		return NULL;
-	}
-
-	ret = g_ptr_array_index (node->priv->properties, property_id);
-	if (ret == NULL) {
-		g_static_rw_lock_reader_unlock (node->priv->lock);
-		return NULL;
-	}
-	
-	retval = g_value_get_pointer (ret);
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
@@ -795,16 +763,9 @@ RBNode *
 rb_node_get_property_node (RBNode *node,
 			   int property_id)
 {
-	return (RBNode *) rb_node_get_property_pointer (node, property_id);
-}
-
-GObject *
-rb_node_get_property_object (RBNode *node,
-			     int property_id)
-{
 	GValue *ret;
-	GObject *retval;
-	
+	RBNode *retval;
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (property_id >= 0, NULL);
 
@@ -820,8 +781,38 @@ rb_node_get_property_object (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return NULL;
 	}
-	
-	retval = G_OBJECT (g_value_get_object (ret));
+
+	retval = g_value_get_pointer (ret);
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return retval;
+}
+
+GObject *
+rb_node_get_property_object (RBNode *node,
+			     int property_id)
+{
+	GValue *ret;
+	GObject *retval;
+
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+	g_return_val_if_fail (property_id >= 0, NULL);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	if (property_id >= node->priv->properties->len) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return NULL;
+	}
+
+	ret = g_ptr_array_index (node->priv->properties, property_id);
+	if (ret == NULL) {
+		g_static_rw_lock_reader_unlock (node->priv->lock);
+		return NULL;
+	}
+
+	retval = G_OBJECT (g_value_get_pointer (ret));
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
@@ -835,7 +826,7 @@ rb_node_get_property_time (RBNode *node,
 	GValue *ret;
 	long mtime;
 	char *retval;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (property_id >= 0, NULL);
 
@@ -851,7 +842,7 @@ rb_node_get_property_time (RBNode *node,
 		g_static_rw_lock_reader_unlock (node->priv->lock);
 		return g_strdup (_("Never"));
 	}
-	
+
 	mtime = g_value_get_long (ret);
 
 	if (retval >= 0) {
@@ -903,7 +894,7 @@ save_parent (long id,
 	xml = g_strdup_printf ("%ld", node_info->node->priv->id);
 	xmlSetProp (parent_xml_node, "id", xml);
 	g_free (xml);
-	
+
 	g_static_rw_lock_reader_unlock (node_info->node->priv->lock);
 }
 
@@ -917,7 +908,7 @@ rb_node_save_to_xml (RBNode *node,
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (parent_xml_node != NULL);
-	
+
 	g_static_rw_lock_reader_lock (node->priv->lock);
 
 	xml_node = xmlNewChild (parent_xml_node, NULL, "node", NULL);
@@ -979,45 +970,41 @@ rb_node_save_to_xml (RBNode *node,
 			break;
 		case G_TYPE_POINTER:
 		{
-			RBNode *prop_node;
+			GObject *obj = g_value_get_pointer (value);
+			GType obj_type = G_OBJECT_TYPE (obj);
 
-			prop_node = RB_NODE (g_value_get_pointer (value));
+			xmlSetProp (value_xml_node, "object_type", g_type_name (obj_type));
 
-			g_assert (prop_node != NULL);
-
-			g_static_rw_lock_reader_lock (prop_node->priv->lock);
-			
-			xml = g_strdup_printf ("%ld", prop_node->priv->id);
-			xmlNodeSetContent (value_xml_node, xml);
-			g_free (xml);
-			
-			g_static_rw_lock_reader_unlock (prop_node->priv->lock);
-			break;
-		}
-		case G_TYPE_OBJECT:
-		{
-			GObject *obj = G_OBJECT (g_value_get_object (value));
-			GType objtype = G_OBJECT_TYPE (obj);
-			xmlSetProp (value_xml_node, "object_type", g_type_name (objtype));
-			/* FIXME: if we wanted to do this right, each
-			 * object would implement a Serializable
-			 * interface or something */
-			if (objtype == RB_TYPE_GLIST_WRAPPER)
-			{
+			if (obj_type == RB_TYPE_GLIST_WRAPPER) {
 				RBGListWrapper *listwrap = RB_GLIST_WRAPPER (obj);
-				GList *cur = rb_glist_wrapper_get_list (listwrap);
-				for (; cur; cur = cur->next)
-				{
+				GList *cur;
+
+				for (cur = rb_glist_wrapper_get_list (listwrap); cur; cur = g_list_next (cur)) {
 					xmlNodePtr subnode = xmlNewChild (value_xml_node, NULL, "entry", NULL);
 					/* Assume the entries in a list are strings for now */
 					xml = xmlEncodeEntitiesReentrant (NULL, (char *) cur->data);
 					xmlNodeSetContent (subnode, xml);
 					g_free (xml);
 				}
+
 				break;
-			}
-			else
-			{
+			} else if (obj_type == RB_TYPE_NODE) {
+				RBNode *prop_node;
+
+				prop_node = RB_NODE (obj);
+
+				g_assert (prop_node != NULL);
+
+				g_static_rw_lock_reader_lock (prop_node->priv->lock);
+
+				xml = g_strdup_printf ("%ld", prop_node->priv->id);
+				xmlNodeSetContent (value_xml_node, xml);
+				g_free (xml);
+
+				g_static_rw_lock_reader_unlock (prop_node->priv->lock);
+
+				break;
+			} else {
 				g_assert_not_reached ();
 				break;
 			}
@@ -1031,7 +1018,7 @@ rb_node_save_to_xml (RBNode *node,
 	g_hash_table_foreach (node->priv->parents,
 			      (GHFunc) save_parent,
 			      xml_node);
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
@@ -1046,7 +1033,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	char *xml;
 	long id;
 	GType type;
-	
+
 	g_return_val_if_fail (xml_node != NULL, NULL);
 
 	xml = xmlGetProp (xml_node, "id");
@@ -1060,8 +1047,6 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	xml = xmlGetProp (xml_node, "type");
 	type = g_type_from_name (xml);
 	g_free (xml);
-
-	fprintf(stderr, "Creating a new object of type %p from XML\n", (gpointer) type);
 
 	node = RB_NODE (g_object_new (type,
 				      "id", id,
@@ -1084,7 +1069,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			if (parent != NULL)
 			{
 				real_add_child (parent, node);
-				
+
 				g_signal_emit (G_OBJECT (parent), rb_node_signals[CHILD_ADDED],
 					       0, node);
 			}
@@ -1096,7 +1081,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			xml = xmlGetProp (xml_child, "id");
 			property_id = atoi (xml);
 			g_free (xml);
-			
+
 			xml = xmlGetProp (xml_child, "value_type");
 			value_type = g_type_from_name (xml);
 			g_free (xml);
@@ -1104,7 +1089,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			xml = xmlNodeGetContent (xml_child);
 			value = g_new0 (GValue, 1);
 			g_value_init (value, value_type);
-			
+
 			switch (value_type)
 			{
 			case G_TYPE_STRING:
@@ -1127,19 +1112,13 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 				break;
 			case G_TYPE_POINTER:
 			{
-				RBNode *property_node;
-
-				property_node = node_from_id_real (atol (xml));
-				
-				g_value_set_pointer (value, property_node);
-				break;
-			}
-			case G_TYPE_OBJECT:
-			{
+				char *typestring;
 				GType obj_type;
-				xml = xmlGetProp (xml_child, "object_type");
-				obj_type = g_type_from_name (xml);
-				g_free (xml);
+
+				typestring = xmlGetProp (xml_child, "object_type");
+				obj_type = g_type_from_name (typestring);
+				g_free (typestring);
+
 				/* Since we don't have method
 				 * reflection in GObject, there's no
 				 * way to find a general deserialize
@@ -1147,32 +1126,44 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 				 * we could do something truly evil
 				 * using dlopen(), but let's not think
 				 * about that. */
-				if (obj_type == RB_TYPE_GLIST_WRAPPER)
-				{
+				if (obj_type == RB_TYPE_GLIST_WRAPPER) {
 					GList *newlist = NULL;
-					xmlNodePtr list_child = xml_child;
-					RBGListWrapper *listwrapper = g_object_new (RB_TYPE_GLIST_WRAPPER, NULL);
+					xmlNodePtr list_child;
+					RBGListWrapper *listwrapper = rb_glist_wrapper_new (NULL);
+
 					/* Free the unneeded string allocated above */
 					g_free (xml);
-					for (; list_child; list_child = list_child->next) 
+
+					for (list_child = xml_child; list_child; list_child = list_child->next)
 						newlist = g_list_prepend (newlist, xmlNodeGetContent (xml_child));
+
 					rb_glist_wrapper_set_list (listwrapper, newlist);
-					g_value_set_object (value, listwrapper);
-				}
-				else
-				{
+
+					g_value_set_pointer (value, listwrapper);
+
+					break;
+				} else if (obj_type == RB_TYPE_NODE) {
+					RBNode *property_node;
+
+					property_node = node_from_id_real (atol (xml));
+
+					g_value_set_pointer (value, property_node);
+
+					break;
+				} else {
 					g_assert_not_reached ();
 					break;
 				}
+
 				break;
 			}
 			default:
 				g_assert_not_reached ();
 				break;
 			}
-			
+
 			real_set_property (node, property_id, value);
-	
+
 			g_free (xml);
 		}
 	}
@@ -1225,7 +1216,7 @@ rb_node_add_child (RBNode *node,
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 	g_static_rw_lock_reader_unlock (child->priv->lock);
-	
+
 	unlock_gdk ();
 }
 
@@ -1236,7 +1227,7 @@ real_remove_child (RBNode *node,
 		   gboolean remove_from_child)
 {
 	RBNodeParent *node_info;
-	
+
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
 
@@ -1258,7 +1249,7 @@ real_remove_child (RBNode *node,
 		for (i = node_info->index; i < node->priv->children->len; i++) {
 			RBNode *borked_node;
 			RBNodeParent *borked_node_info;
-		
+
 			borked_node = g_ptr_array_index (node->priv->children, i);
 
 			g_static_rw_lock_writer_lock (borked_node->priv->lock);
@@ -1311,7 +1302,7 @@ rb_node_has_child (RBNode *node,
 
 	ret = (g_hash_table_lookup (child->priv->parents,
 				    GINT_TO_POINTER (node->priv->id)) != NULL);
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 	g_static_rw_lock_reader_unlock (child->priv->lock);
 
@@ -1336,9 +1327,9 @@ rb_node_get_n_children (RBNode *node)
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
 	g_static_rw_lock_reader_lock (node->priv->lock);
-	
+
 	ret = node->priv->children->len;
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
@@ -1349,7 +1340,7 @@ rb_node_get_nth_child (RBNode *node,
 		       int n)
 {
 	RBNode *ret;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
@@ -1360,9 +1351,9 @@ rb_node_get_nth_child (RBNode *node,
 	} else {
 		ret = NULL;
 	}
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
-	
+
 	return ret;
 }
 
@@ -1387,7 +1378,7 @@ rb_node_get_child_index (RBNode *node,
 {
 	RBNodeParent *node_info;
 	int ret;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (RB_IS_NODE (child), -1);
 
@@ -1401,7 +1392,7 @@ rb_node_get_child_index (RBNode *node,
 		return -1;
 
 	ret = node_info->index;
-	
+
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 	g_static_rw_lock_reader_unlock (child->priv->lock);
 
@@ -1414,7 +1405,7 @@ rb_node_get_next_child (RBNode *node,
 {
 	RBNode *ret;
 	int idx;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (RB_IS_NODE (child), NULL);
 
@@ -1441,7 +1432,7 @@ rb_node_get_previous_child (RBNode *node,
 {
 	RBNode *ret;
 	int idx;
-	
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (RB_IS_NODE (child), NULL);
 
@@ -1543,7 +1534,7 @@ unlock_gdk (void)
 		GDK_THREADS_LEAVE ();
 }
 
-void        
+void
 rb_node_update_play_statistics (RBNode *node)
 {
 	char *play_count, *time_string;
@@ -1560,7 +1551,7 @@ rb_node_update_play_statistics (RBNode *node)
 		play_count = g_strdup_printf ("%ld", atol (play_count) + 1);
 	else
 		play_count = g_strdup ("1");
-		
+
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, play_count);
 	g_free (play_count);

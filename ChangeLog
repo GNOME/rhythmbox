@@ -1,3 +1,117 @@
+2002-12-11  Jorn Baayen  <jorn@nl.linux.org>
+
+	* Makefile.am:
+	* data/GNOME_Rhythmbox.server.in:
+	* data/GNOME_Rhythmbox_Shell.server.in:
+	* data/Makefile.am:
+	* data/glade/Makefile.am:
+	* data/glade/toolbar-editor.glade:
+	* data/node-views/Makefile.am:
+	* data/node-views/rb-node-view-playlist.xml:
+	* data/node-views/rb-node-view-songs.xml:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/rb-glist-wrapper.c: (rb_glist_wrapper_set_list),
+	(rb_glist_wrapper_new):
+	* lib/rb-glist-wrapper.h:
+	* lib/rb-string-helpers.c: (rb_unicodify):
+	* lib/rb-string-helpers.h:
+	* lib/toolbar/.cvsignore:
+	* lib/toolbar/Makefile.am:
+	* lib/toolbar/gul-gobject-misc.h:
+	* lib/toolbar/gul-tbi-separator.c:
+	* lib/toolbar/gul-tbi-separator.h:
+	* lib/toolbar/gul-tbi-std-toolitem.c:
+	* lib/toolbar/gul-tbi-std-toolitem.h:
+	* lib/toolbar/gul-tbi-volume.c:
+	* lib/toolbar/gul-tbi-volume.h:
+	* lib/toolbar/gul-toolbar-bonobo-view.c:
+	* lib/toolbar/gul-toolbar-bonobo-view.h:
+	* lib/toolbar/gul-toolbar-editor.c:
+	* lib/toolbar/gul-toolbar-editor.h:
+	* lib/toolbar/gul-toolbar-item-factory.c:
+	* lib/toolbar/gul-toolbar-item-factory.h:
+	* lib/toolbar/gul-toolbar-item.c:
+	* lib/toolbar/gul-toolbar-item.h:
+	* lib/toolbar/gul-toolbar-tree-model.c:
+	* lib/toolbar/gul-toolbar-tree-model.h:
+	* lib/toolbar/gul-toolbar.c:
+	* lib/toolbar/gul-toolbar.h:
+	* lib/view/.cvsignore:
+	* lib/view/Makefile.am:
+	* lib/view/rb-view-clipboard.c:
+	* lib/view/rb-view-clipboard.h:
+	* lib/view/rb-view-player.c:
+	* lib/view/rb-view-player.h:
+	* lib/view/rb-view-status.c:
+	* lib/view/rb-view-status.h:
+	* lib/view/rb-view.c:
+	* lib/view/rb-view.h:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct):
+	* lib/widgets/rb-player.c:
+	* lib/widgets/rb-player.h:
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
+	* lib/widgets/rb-sidebar-button.c:
+	* lib/widgets/rb-sidebar-button.h:
+	* lib/widgets/rb-sidebar-private.h:
+	* lib/widgets/rb-sidebar.c:
+	* lib/widgets/rb-sidebar.h:
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_value):
+	* library/rb-library.h:
+	* library/rb-node-song.c: (set_track_number):
+	* library/rb-node.c: (rb_node_class_init), (rb_node_dispose),
+	(rb_node_get_id), (node_from_id_real), (rb_node_get_from_id),
+	(rb_node_thaw), (real_set_property), (rb_node_set_property),
+	(rb_node_get_property), (rb_node_get_property_string),
+	(rb_node_get_property_boolean), (rb_node_get_property_long),
+	(rb_node_get_property_int), (rb_node_get_property_double),
+	(rb_node_get_property_float), (rb_node_get_property_node),
+	(rb_node_get_property_object), (rb_node_get_property_time),
+	(save_parent), (rb_node_save_to_xml), (rb_node_new_from_xml),
+	(rb_node_add_child), (real_remove_child), (rb_node_has_child),
+	(rb_node_get_n_children), (rb_node_get_nth_child),
+	(rb_node_get_child_index), (rb_node_get_next_child),
+	(rb_node_get_previous_child), (rb_node_update_play_statistics):
+	* library/rb-node.h:
+	* shell/Makefile.am:
+	* shell/main.c: (main), (rb_init), (rb_handle_cmdline):
+	* shell/rb-commander.c: (rb_commander_get_type),
+	(rb_commander_class_init), (rb_commander_init),
+	(rb_commander_finalize), (rb_commander_set_property),
+	(rb_commander_get_property), (rb_commander_new):
+	* shell/rb-commander.h:
+	* shell/rb-player.c: (rb_player_get_type), (rb_player_class_init),
+	(create_button_with_icon), (pack_button), (sync_play_button),
+	(rb_player_init), (rb_player_finalize), (rb_player_set_property),
+	(rb_player_get_property), (rb_player_new):
+	* shell/rb-player.h:
+	* shell/rb-shell-clipboard.c:
+	* shell/rb-shell-clipboard.h:
+	* shell/rb-shell-player.c:
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-status.c:
+	* shell/rb-shell-status.h:
+	* shell/rb-shell.c:
+	* shell/rb-shell.h:
+	* shell/rb.c: (rb_get_type), (rb_class_init), (rb_init),
+	(rb_finalize), (rb_new), (rb_corba_quit),
+	(rb_corba_add_to_library), (rb_corba_grab_focus), (rb_construct),
+	(rb_window_state_cb), (rb_window_load_state),
+	(rb_window_save_state), (rb_window_delete_cb), (rb_cmd_about),
+	(rb_cmd_close), (rb_cmd_contents), (rb_quit), (rb_get_library):
+	* shell/rb.h:
+	* views/Makefile.am:
+	* views/rb-library-view.c: (rb_library_view_get_type),
+	(rb_library_view_class_init), (update_browser_views_visibility),
+	(rb_library_view_init), (rb_library_view_finalize),
+	(rb_library_view_set_property), (rb_library_view_get_property),
+	(rb_library_view_construct), (rb_library_view_new),
+	(rb_library_view_drop_cb):
+	* views/rb-library-view.h:
+
+	Beginnings of new UI, still rather non-functional.
+
 2002-12-10  Colin Walters  <walters@debian.org>
 
 	* iradio/rb-iradio-backend.c (rb_iradio_backend_finalize): Disable

@@ -550,7 +550,6 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		g_value_init (value, G_TYPE_BOOLEAN);
 		g_value_set_boolean (value, FALSE);
 		break;
-
 	case RB_TREE_MODEL_NODE_COL_QUALITY:
 		if (rb_node_get_property (node,
 					  RB_NODE_PROP_QUALITY,

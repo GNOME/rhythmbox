@@ -21,10 +21,10 @@
 #ifndef __RB_LIBRARY_VIEW_H
 #define __RB_LIBRARY_VIEW_H
 
-#include <bonobo/bonobo-ui-container.h>
+#include <gtk/gtkhbox.h>
 
-#include "rb-view.h"
 #include "rb-library.h"
+#include "rb.h"
 
 G_BEGIN_DECLS
 
@@ -39,20 +39,19 @@ typedef struct RBLibraryViewPrivate RBLibraryViewPrivate;
 
 typedef struct
 {
-	RBView parent;
+	GtkHBox parent;
 
 	RBLibraryViewPrivate *priv;
 } RBLibraryView;
 
 typedef struct
 {
-	RBViewClass parent;
+	GtkHBoxClass parent;
 } RBLibraryViewClass;
 
-GType   rb_library_view_get_type (void);
+GType          rb_library_view_get_type (void);
 
-RBView *rb_library_view_new      (BonoboUIContainer *container,
-			          RBLibrary *library);
+RBLibraryView *rb_library_view_new      (RB *rb);
 
 G_END_DECLS
 

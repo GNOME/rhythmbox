@@ -34,7 +34,7 @@ static void rb_glist_wrapper_get_property (GObject *object,
 					   GValue *value,
 					   GParamSpec *pspec);
 
-struct _RBGListWrapperPrivate
+struct RBGListWrapperPrivate
 {
 	GList *value;
 };
@@ -170,6 +170,19 @@ rb_glist_wrapper_get_list (RBGListWrapper *listwrapper)
 void
 rb_glist_wrapper_set_list (RBGListWrapper *listwrapper, GList *val)
 {
+	if (listwrapper->priv->value != NULL)
+		g_list_free (listwrapper->priv->value);
 	listwrapper->priv->value = val;
 }
 
+RBGListWrapper *
+rb_glist_wrapper_new (GList *list)
+{
+	RBGListWrapper *ret;
+
+	ret = RB_GLIST_WRAPPER (g_object_new (RB_TYPE_GLIST_WRAPPER,
+					      "list", list,
+					      NULL));
+
+	return ret;
+}

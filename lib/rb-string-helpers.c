@@ -78,8 +78,10 @@ rb_unicodify (const char *str, gboolean try_iso1_first)
 {
 	char *ret;
 	int bytes_read, bytes_written;
+
 	if (g_utf8_validate (str, -1, NULL))
 		return g_strdup (str);
+
 	/* A lot of stuff we get over the network is ISO-8859-1. */
 	if (try_iso1_first)
 		ret = g_convert (str, strlen (str), "UTF-8", "ISO-8859-1",
@@ -93,6 +95,7 @@ rb_unicodify (const char *str, gboolean try_iso1_first)
 	if (!ret)
 		ret = g_convert (str, strlen (str), "UTF-8", "ISO-8859-1",
 				 &bytes_read, &bytes_written, NULL);
+
 	return ret;
 }
 

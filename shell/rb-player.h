@@ -18,12 +18,14 @@
  *  $Id$
  */
 
+#include <gtk/gtkhbox.h>
+#include <monkey-media.h>
+
+#include "rb.h"
+#include "rb-node.h"
+
 #ifndef __RB_PLAYER_H
 #define __RB_PLAYER_H
-
-#include <gtk/gtkhbox.h>
-
-#include "rb-view-player.h"
 
 G_BEGIN_DECLS
 
@@ -45,15 +47,31 @@ typedef struct
 
 typedef struct
 {
-	GtkHBoxClass parent;
+	GtkHBoxClass parent_class;
 } RBPlayerClass;
 
-GType     rb_player_get_type (void);
+GType                 rb_player_get_type      (void);
 
-RBPlayer *rb_player_new      (void);
+RBPlayer             *rb_player_new           (RB *rb);
 
-void      rb_player_set_view (RBPlayer *player,
-			      RBViewPlayer *view);
+void                  rb_player_queue_song    (RBPlayer *player,
+			                       RBNode *song,
+			                       gboolean start_playing);
+
+RBNode               *rb_player_get_song      (RBPlayer *player);
+
+void                  rb_player_set_state     (RBPlayer *player,
+			                       MonkeyMediaMixerState state);
+
+MonkeyMediaMixerState rb_player_get_state     (RBPlayer *playeR);
+
+void                  rb_player_load_playlist (RBPlayer *player,
+			                       const char *uri,
+			                       GError **error);
+
+void                  rb_player_save_playlist (RBPlayer *player,
+			                       const char *uri,
+			                       GError **error);
 
 G_END_DECLS
 

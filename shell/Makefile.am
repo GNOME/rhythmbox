@@ -1,32 +1,25 @@
 bin_PROGRAMS = rhythmbox 
 
-rhythmbox_shell_interface_idl_sources =      		\
-	RhythmboxShell-common.c	     			\
-	RhythmboxShell-stubs.c	     			\
-	RhythmboxShell-skels.c	     			\
-	RhythmboxShell.h
+rhythmbox_interface_idl_sources =      		\
+	Rhythmbox-common.c	     			\
+	Rhythmbox-stubs.c	     			\
+	Rhythmbox-skels.c	     			\
+	Rhythmbox.h
 
 rhythmbox_SOURCES =              			\
-	$(rhythmbox_shell_interface_idl_sources) 	\
+	$(rhythmbox_interface_idl_sources) 		\
 	main.c						\
-	rb-shell.c					\
-	rb-shell.h					\
-	rb-shell-player.c				\
-	rb-shell-player.h				\
-	rb-shell-status.c				\
-	rb-shell-status.h				\
-	rb-shell-clipboard.c				\
-	rb-shell-clipboard.h				\
-	rb-shell-preferences.c				\
-	rb-shell-preferences.h				\
-	rb-remote.c					\
-	rb-remote.h
+	rb.c						\
+	rb.h						\
+	rb-player.c					\
+	rb-player.h					\
+	rb-commander.c					\
+	rb-commander.h	
 
 rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/views/libviews.la	        \
 	$(top_builddir)/library/librblibrary.la	        \
-	$(top_builddir)/iradio/librbiradio.la	        \
 	$(RHYTHMBOX_LIBS)
 
 rhythmbox_LDFLAGS = -export-dynamic
@@ -48,16 +41,16 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
-CLEAN_FILES = $(rhythmbox_shell_interface_idl_sources)
+CLEAN_FILES = $(rhythmbox_interface_idl_sources)
 
-RhythmboxShell-common.c RhythmboxShell-stubs.c RhythmboxShell-skels.c RhythmboxShell.h: RhythmboxShell.idl
-	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/RhythmboxShell.idl
+Rhythmbox-common.c Rhythmbox-stubs.c Rhythmbox-skels.c Rhythmbox.h: Rhythmbox.idl
+	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) $(srcdir)/Rhythmbox.idl
 
-EXTRA_DIST = RhythmboxShell.idl
+EXTRA_DIST = Rhythmbox.idl
 
 CLEANFILES =			\
-	RhythmboxShell-common.c	\
-	RhythmboxShell-stubs.c	\
-	RhythmboxShell-skels.c	\
-	RhythmboxShell.h
+	Rhythmbox-common.c	\
+	Rhythmbox-stubs.c	\
+	Rhythmbox-skels.c	\
+	Rhythmbox.h
 

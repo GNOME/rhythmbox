@@ -24,9 +24,10 @@
 G_BEGIN_DECLS
 
 char *rb_prefix_to_suffix (const char *string);
-int   rb_utf8_strncasecmp (gconstpointer a, gconstpointer b);
-char *rb_unicodify	  (const char *str, gboolean try_iso1_first);
 
+int   rb_utf8_strncasecmp (gconstpointer a, gconstpointer b);
+
+char *rb_unicodify	  (const char *str, gboolean try_iso1_first);
 
 G_END_DECLS
 

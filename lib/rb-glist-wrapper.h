@@ -32,7 +32,7 @@ G_BEGIN_DECLS
 #define RB_IS_GLIST_WRAPPER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_GLIST_WRAPPER))
 #define RB_GLIST_WRAPPER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_GLIST_WRAPPER, RBGListWrapperClass))
 
-typedef struct _RBGListWrapperPrivate RBGListWrapperPrivate;
+typedef struct RBGListWrapperPrivate RBGListWrapperPrivate;
 
 typedef struct
 {
@@ -46,11 +46,13 @@ typedef struct
 	GObjectClass parent;
 } RBGListWrapperClass;
 
-GType rb_glist_wrapper_get_type (void);
+GType           rb_glist_wrapper_get_type (void);
 
-GList *rb_glist_wrapper_get_list (RBGListWrapper *listwrapper);
+RBGListWrapper *rb_glist_wrapper_new      (GList *list);
 
-void rb_glist_wrapper_set_list (RBGListWrapper *listwrapper, GList *val);
+GList          *rb_glist_wrapper_get_list (RBGListWrapper *listwrapper);
+
+void            rb_glist_wrapper_set_list (RBGListWrapper *listwrapper, GList *list);
 
 G_END_DECLS
 

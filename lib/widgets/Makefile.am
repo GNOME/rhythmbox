@@ -1,11 +1,6 @@
 noinst_LTLIBRARIES = librbwidgets.la
 
 librbwidgets_la_SOURCES =				\
-	rb-sidebar.c					\
-	rb-sidebar.h					\
-	rb-sidebar-private.h				\
-	rb-sidebar-button.c				\
-	rb-sidebar-button.h				\
 	rb-tree-model-node.c				\
 	rb-tree-model-node.h				\
 	rb-node-view.c					\
@@ -14,8 +9,6 @@ librbwidgets_la_SOURCES =				\
 	rb-search-entry.h				\
 	rb-link.c					\
 	rb-link.h					\
-	rb-player.c					\
-	rb-player.h					\
 	rb-volume.c					\
 	rb-volume.h					\
 	eggtreemodelfilter.c				\

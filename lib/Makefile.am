@@ -1,4 +1,4 @@
-SUBDIRS = view widgets toolbar
+SUBDIRS = widgets
 
 noinst_LTLIBRARIES = librb.la
 
@@ -60,8 +60,6 @@ rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 
 librb_la_LDFLAGS = -export-dynamic
-librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la 	\
-		  $(top_builddir)/lib/view/librbview.la		\
-		  $(top_builddir)/lib/toolbar/libgultoolbar.la	
+librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la
 
 EXTRA_DIST = rb-marshal.list

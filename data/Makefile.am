@@ -3,8 +3,8 @@ SUBDIRS = ui art glade node-views
 @INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@
 
-server_in_files = GNOME_Rhythmbox_Shell.server.in
-server_DATA = GNOME_Rhythmbox_Shell.server
+server_in_files = GNOME_Rhythmbox.server.in
+server_DATA = GNOME_Rhythmbox.server
 serverdir = $(libdir)/bonobo/servers
 
 Multimediadir = $(datadir)/applications
@@ -32,7 +32,7 @@ if INSTALL_SCHEMAS
 install-data-local: install-schemas
 endif
 
-CLEANFILES = GNOME_Rhythmbox_Shell.server rhythmbox.desktop
+CLEANFILES = GNOME_Rhythmbox.server rhythmbox.desktop
 
 EXTRA_DIST = $(server_in_files)     \
 	     $(appicon_DATA)        \

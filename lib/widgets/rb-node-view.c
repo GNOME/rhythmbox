@@ -627,7 +627,7 @@ rb_node_view_construct (RBNodeView *view)
 		g_free (tmp);
 
 		title = xmlGetProp (child, "_title");
-		
+
 		tmp = xmlGetProp (child, "reorderable");
 		if (tmp != NULL)
 			reorderable = bool_to_int (tmp);

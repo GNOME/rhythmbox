@@ -20,12 +20,6 @@
 	     _tip="Pause playing"
 	     priority="1"/>
 
-	<cmd name="Stop"
-	     pixtype="stock"
-	     pixname="rhythmbox-stop"
-	     _tip="Stop playing"
-	     priority="1"/>
-
 	<cmd name="Next"
 	     pixtype="stock"
 	     pixname="rhythmbox-next"
@@ -80,40 +74,6 @@
 	     pixname="gtk-close"
 	     _tip="Close the music player"/>
 
-	<cmd name="Preferences"
-	     pixtype="stock"
-	     pixname="gtk-preferences"
-	     _tip="Edit music player preferences"/>
-
-	<cmd name="NewGroup"
-	     pixtype="stock"
-	     pixname="gtk-new"
-	     _tip="Create a new music group"/>
-
-	<cmd name="AddToLibrary"
-	     pixtype="stock"
-	     pixname="gtk-open"
-	     _tip="Choose files or a directory to be added to the library"/>
-
-	<cmd name="ShowToolbar"
-	     _tip="Change the visibility of the toolbar"
-	     type="toggle"/>
-
-	<cmd name="ShowStatusbar"
-	     _tip="Change the visibility of the statusbar"
-	     type="toggle"/>
-
-	<cmd name="ShowSidebar"
-	     _tip="Change the visibility of the side pane"
-	     type="toggle"/>
-	     
-	<cmd name="ShowWindow"
-	     _tip="Change the visibility of the main window"
-	     type="toggle"/>
-	
-	<cmd name="EditToolbar"
-	     _tip="Edit the toolbar"/>
-
 	<cmd name="SongInfo"
 	     pixtype="stock"
 	     pixname="gtk-properties"
@@ -126,18 +86,6 @@
 
 <submenu name="File" _label="_Organize">
         
-        <menuitem name="NewGroup" verb="NewGroup" _label="_New Group..." accel="*Control*n"/>
-
-	<placeholder name="SourceMenu"/>
-
-	<separator/>
-
-        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
-
-	<placeholder name="FileMenu"/>
-
-	<separator/>
-
         <menuitem name="Close" verb="Close" _label="_Close" accel="*Control*w"/>
 
 </submenu>
@@ -157,24 +105,6 @@
         <separator/>
 
         <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
-
-	<separator/>
-
-	<menuitem name="EditToolbar" verb="EditToolbar" _label="T_oolbar"/>
-
-	<menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
-
-</submenu>
-
-<submenu name="View" _label="_View">
-
-	<menuitem name="Toolbar" verb="ShowToolbar" _label="_Toolbar"/>
-	
-	<menuitem name="Sidebar" verb="ShowSidebar" _label="_Side Pane" accel="F9"/>
-
-	<menuitem name="Statusbar" verb="ShowStatusbar" _label="St_atusbar"/>
-
-	<placeholder name="ViewMenu"/>
 
 </submenu>
 
@@ -225,8 +155,5 @@
 	</popup>
 
 </popups>
-
-<dockitem name="Toolbar" behavior="exclusive,never vertical" config="0">
-</dockitem>
 
 </Root>

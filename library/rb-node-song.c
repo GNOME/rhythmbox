@@ -277,7 +277,7 @@ set_track_number (RBNodeSong *node,
 		  MonkeyMediaStreamInfo *info)
 {
 	GValue val = { 0, };
-	int cur, max;
+	int cur;
 	char *tmp;
 	
 	if (monkey_media_stream_info_get_value (info,
@@ -296,22 +296,8 @@ set_track_number (RBNodeSong *node,
 			      &val);
 	g_value_unset (&val);
 	
-	if (monkey_media_stream_info_get_value (info,
-				                MONKEY_MEDIA_STREAM_INFO_FIELD_MAX_TRACK_NUMBER,
-					        0,
-				                &val) == FALSE)
-	{
-		g_value_init (&val, G_TYPE_INT);
-		g_value_set_int (&val, -1);
-	}
-	
-	max = g_value_get_int (&val);
-	g_value_unset (&val);
-	
-	if (cur > 0 && max == -1)
-		tmp = g_strdup_printf ("%.2d", cur);
-	else if (cur > 0 && max > 0)
-		tmp = g_strdup_printf (_("%.2d of %.2d"), cur, max);
+	if (cur > 0)
+		tmp = g_strdup_printf ("%d", cur);
 	else
 		tmp = g_strdup ("");
 
