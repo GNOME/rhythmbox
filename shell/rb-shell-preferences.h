@@ -30,6 +30,7 @@ G_BEGIN_DECLS
 #define CONF_UI_STATUSBAR_VISIBLE "/apps/rhythmbox/ui/statusbar_visible"
 #define CONF_UI_SIDEBAR_VISIBLE   "/apps/rhythmbox/ui/sidebar_visible"
 #define CONF_UI_TOOLBAR_STYLE     "/apps/rhythmbox/ui/toolbar_style"
+#define CONF_UI_COLUMNS_SETUP	  "/apps/rhythmbox/ui/columns_setup"
 
 #define RB_TYPE_SHELL_PREFERENCES         (rb_shell_preferences_get_type ())
 #define RB_SHELL_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferences))

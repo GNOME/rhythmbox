@@ -41,6 +41,7 @@
 #include "rb-node-song.h"
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -92,6 +93,12 @@ static void child_deleted_cb (RBNode *node,
 			      RBNode *child,
 			      RBNodeView *view);
 static gboolean rb_node_view_is_empty (RBNodeView *view);
+static void rb_node_view_columns_parse (RBNodeView *view,
+					const char *config);
+static void rb_node_view_columns_config_changed_cb (GConfClient* client,
+						    guint cnxn_id,
+						    GConfEntry *entry,
+						    gpointer user_data);
 
 struct RBNodeViewPrivate
 {
@@ -120,6 +127,10 @@ struct RBNodeViewPrivate
 
 	GList *current_random;
 	GList *random_nodes;
+	
+	char *columns_key;
+	guint gconf_notification_id;
+	GHashTable *columns;
 };
 
 enum
@@ -138,7 +149,8 @@ enum
 	PROP_FILTER_PARENT,
 	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
-	PROP_VIEW_DESC_FILE
+	PROP_VIEW_DESC_FILE,
+	PROP_VIEW_COLUMNS_KEY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -220,6 +232,13 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							      "View description",
 							      NULL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_VIEW_COLUMNS_KEY,
+					 g_param_spec_string ("columns-key",
+							       "Columns key",
+							       "Columns key",
+							       NULL,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_node_view_signals[NODE_ACTIVATED] =
 		g_signal_new ("node_activated",
@@ -292,6 +311,13 @@ rb_node_view_finalize (GObject *object)
 
 	g_free (view->priv->view_desc_file);
 
+	g_free (view->priv->columns_key);
+
+	if (view->priv->gconf_notification_id > 0)
+		eel_gconf_notification_remove (view->priv->gconf_notification_id);
+
+	g_hash_table_destroy (view->priv->columns);
+
 	g_object_unref (G_OBJECT (view->priv->sortmodel));
 	g_object_unref (G_OBJECT (view->priv->filtermodel));
 	g_object_unref (G_OBJECT (view->priv->nodemodel));
@@ -353,6 +379,10 @@ rb_node_view_set_property (GObject *object,
 		g_free (view->priv->view_desc_file);
 		view->priv->view_desc_file = g_strdup (g_value_get_string (value));
 		break;
+	case PROP_VIEW_COLUMNS_KEY:
+		g_free (view->priv->columns_key);
+		view->priv->columns_key = g_strdup (g_value_get_string (value));
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -399,6 +429,9 @@ rb_node_view_get_property (GObject *object,
 	case PROP_VIEW_DESC_FILE:
 		g_value_set_string (value, view->priv->view_desc_file);
 		break;
+	case PROP_VIEW_COLUMNS_KEY:
+		g_value_set_string (value, view->priv->columns_key);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -407,7 +440,8 @@ rb_node_view_get_property (GObject *object,
 
 RBNodeView *
 rb_node_view_new (RBNode *root,
-		  const char *view_desc_file)
+		  const char *view_desc_file,
+		  const char *columns_conf_key)
 {
 	RBNodeView *view;
 
@@ -421,6 +455,7 @@ rb_node_view_new (RBNode *root,
 					   "vscrollbar_policy", GTK_POLICY_ALWAYS,
 					   "shadow_type", GTK_SHADOW_IN,
 					   "view-desc-file", view_desc_file,
+					   "columns-key", columns_conf_key,
 					   "root", root,
 					   "filter-parent", root,
 					   NULL));
@@ -464,6 +499,7 @@ rb_node_view_construct (RBNodeView *view)
 				 view,
 				 0);
 
+	view->priv->columns = g_hash_table_new (NULL, NULL);
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
 	view->priv->filtermodel = egg_tree_model_filter_new (GTK_TREE_MODEL (view->priv->nodemodel),
 							     NULL);
@@ -625,7 +661,6 @@ rb_node_view_construct (RBNodeView *view)
 
 		/* so we got all info, now we can actually build the column */
 		gcolumn = gtk_tree_view_column_new ();
-
 		if (column != RB_TREE_MODEL_NODE_COL_PLAYING)
 		{
 			renderer = gtk_cell_renderer_text_new ();
@@ -685,7 +720,29 @@ rb_node_view_construct (RBNodeView *view)
 
 		gtk_tree_view_column_set_visible (gcolumn, visible);
 
-		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), gcolumn);
+		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), 
+					     gcolumn);
+		
+		g_hash_table_insert (view->priv->columns, 
+				     GINT_TO_POINTER (column), 
+				     gcolumn);
+	}
+		
+	if (view->priv->columns_key != NULL)
+	{
+		char *config = eel_gconf_get_string (view->priv->columns_key);
+
+		if (config != NULL)
+		{
+			rb_node_view_columns_parse (view, config);
+
+			view->priv->gconf_notification_id = 
+				eel_gconf_notification_add (view->priv->columns_key,
+							    rb_node_view_columns_config_changed_cb,
+							    view);
+
+			g_free (config);
+		}
 	}
 
 	xmlFreeDoc (doc);
@@ -1498,4 +1555,88 @@ child_deleted_cb (RBNode *node,
 				       playing_node);
 		}
 	}
+}
+
+static void
+rb_node_view_columns_config_changed_cb (GConfClient* client,
+					guint cnxn_id,
+					GConfEntry *entry,
+					gpointer user_data)
+{
+	RBNodeView *view = user_data;
+	GConfValue *value;
+	const char *str;
+
+	g_return_if_fail (RB_IS_NODE_VIEW (view));
+
+	value = gconf_entry_get_value (entry);
+	str = gconf_value_get_string (value);
+
+	rb_node_view_columns_parse (view, str);
+}
+
+static void
+rb_node_view_columns_parse (RBNodeView *view,
+			    const char *config)
+{
+	int i;
+	char **items;
+	GEnumValue *ev;
+	GList *visible_columns = NULL;
+	GtkTreeViewColumn *column = NULL;
+	GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
+	
+	g_return_if_fail (view != NULL);
+	g_return_if_fail (config != NULL);
+
+	/* the list of visible columns */
+	items = g_strsplit (config, ",", 0);
+	if (items != NULL) 
+	{
+		for (i = 0; items[i] != NULL; i++)
+		{
+			ev = g_enum_get_value_by_name (class, items[i]);
+
+			if ((ev != NULL) 
+			    && (ev->value >= 0) 
+			    && (ev->value < RB_TREE_MODEL_NODE_NUM_COLUMNS))
+			{
+				visible_columns = g_list_append (visible_columns, 
+								 GINT_TO_POINTER (ev->value));
+			}
+		}
+
+		g_strfreev (items);
+	}
+
+	g_type_class_unref (class);
+
+	/* set the visibility for all columns */
+	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS; i++)
+	{
+		switch (i)
+		{
+		case RB_TREE_MODEL_NODE_COL_PLAYING:
+		case RB_TREE_MODEL_NODE_COL_TITLE:
+		case RB_TREE_MODEL_NODE_COL_VISIBLE:
+		case RB_TREE_MODEL_NODE_COL_PRIORITY:
+		case RB_TREE_MODEL_NODE_NUM_COLUMNS:
+			/* nothing to do for these */
+			break;
+			
+		default:
+			column = g_hash_table_lookup (view->priv->columns, 
+						      GINT_TO_POINTER (i));
+			if (column != NULL) 
+			{
+				gboolean visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL;
+				gtk_tree_view_column_set_visible (column, visible);
+			}
+			break;
+
+		}
+	}
+
+	if (visible_columns != NULL)
+		g_list_free (visible_columns);
 }

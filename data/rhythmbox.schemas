@@ -184,10 +184,23 @@
         <type>string</type>
         <default>previous=std_toolitem(item=previous);play=std_toolitem(item=play);next=std_toolitem(item=next);shuffle_separator=separator;shuffle=std_toolitem(item=shuffle);volume=volume;</default>
         <locale name="C">
-	<short>The list of controls that will be present in the toolbar. You should edit 
-        this setting with the toolbar editor unless you know what you are doing.</short>
-	<long>"Add to library" filesel state.</long>
+	<short>List of controls in the toolbar.</short>
+	<long>The list of controls that will be present in the toolbar. You should edit 
+        this setting with the toolbar editor, unless you know what you are doing.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/ui/columns_setup</key>
+        <applyto>/apps/rhythmbox/ui/columns_setup</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>RB_TREE_MODEL_NODE_COL_ARTIST,RB_TREE_MODEL_NODE_COL_ALBUM,RB_TREE_MODEL_NODE_COL_DURATION</default>
+        <locale name="C">
+	<short>List of columns in the songs view.</short>
+	<long>The list of columns that will be shown in the list of songs. You should edit 
+        this in the settings menu, unless you know what you are doing.</long>
+        </locale>
+      </schema>
+
     </schemalist>
 </gconfschemafile>

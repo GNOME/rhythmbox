@@ -397,7 +397,8 @@ rb_library_view_set_property (GObject *object,
 
 			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
-						                rb_file ("rb-node-view-artists.xml"));
+						                rb_file ("rb-node-view-artists.xml"),
+								NULL);
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
@@ -412,7 +413,8 @@ rb_library_view_set_property (GObject *object,
 
 			/* set up albums treeview */
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
-						               rb_file ("rb-node-view-albums.xml"));
+						               rb_file ("rb-node-view-albums.xml"),
+							       NULL);
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
@@ -425,10 +427,11 @@ rb_library_view_set_property (GObject *object,
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
 			
-			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
-						              rb_file ("rb-node-view-songs.xml"));
-
 			/* set up songs tree view */
+			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
+						              rb_file ("rb-node-view-songs.xml"),
+							      "/apps/rhythmbox/ui/columns_setup");
+
 			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 					  G_CALLBACK (rb_library_view_node_removed_cb), view);
 

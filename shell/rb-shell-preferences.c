@@ -59,6 +59,10 @@ struct RBShellPreferencesPrivate
 	GtkWidget *statusbar_check;
 	GtkWidget *sidebar_check;
 	GtkWidget *style_optionmenu;
+	GtkWidget *artist_check;
+	GtkWidget *album_check;
+	GtkWidget *genre_check;
+	GtkWidget *duration_check;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -149,6 +153,14 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "sidebar_check");
 	shell_preferences->priv->style_optionmenu =
 		glade_xml_get_widget (xml, "style_optionmenu");
+	shell_preferences->priv->artist_check =
+		glade_xml_get_widget (xml, "artist_check");
+	shell_preferences->priv->album_check =
+		glade_xml_get_widget (xml, "album_check");
+	shell_preferences->priv->genre_check =
+		glade_xml_get_widget (xml, "genre_check");
+	shell_preferences->priv->duration_check =
+		glade_xml_get_widget (xml, "duration_check");
 
 	g_object_unref (G_OBJECT (xml));
 
@@ -208,6 +220,7 @@ static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
 	char *style;
+	char *columns;
 	int index = 0, i;
 
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->toolbar_check),
@@ -217,6 +230,16 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->sidebar_check),
 				      eel_gconf_get_boolean (CONF_UI_SIDEBAR_VISIBLE));
 
+	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->artist_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_ARTIST") != NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->album_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_ALBUM") != NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->genre_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_GENRE") != NULL);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->duration_check),
+				      strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
+
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	for (i = 0; i < G_N_ELEMENTS (styles); i++)
 	{
@@ -225,6 +248,8 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	}
 	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
 				     index);
+
+	g_free (columns);
 	g_free (style);
 }
 
@@ -267,4 +292,24 @@ show_statusbar_toggled_cb (GtkToggleButton *button,
 {
 	eel_gconf_set_boolean (CONF_UI_STATUSBAR_VISIBLE,
 			       gtk_toggle_button_get_active (button));
+}
+
+void
+show_columns_changed_cb (GtkToggleButton *button,
+			 RBShellPreferences *prefs)
+{
+	char *conf = "";
+
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->artist_check)) == TRUE)
+		conf = "RB_TREE_MODEL_NODE_COL_ARTIST";
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->album_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_ALBUM", conf);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->genre_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_GENRE", conf);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->duration_check)) == TRUE)
+		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_DURATION", conf);
+
+	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, conf);
+
+	g_free (conf);
 }

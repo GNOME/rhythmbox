@@ -118,7 +118,7 @@ set_duration (RBNode *node,
 			      &string_val);
 
 	g_value_unset (&string_val);
-	
+
 	g_value_unset (&val);
 }
 
@@ -390,7 +390,7 @@ rb_node_song_sync (RBNode *node,
 	/* filesize */
 	set_value (node, RB_SONG_PROP_FILE_SIZE,
 		   info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE);
-	
+
 	/* title */
 	set_value (node, RB_NODE_PROP_NAME,
 		   info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE);

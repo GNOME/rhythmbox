@@ -141,7 +141,7 @@ gul_toolbar_parse (GulToolbar *tb, const gchar *cfg)
 	g_return_val_if_fail (GUL_IS_TOOLBAR (tb), FALSE);
 	g_return_val_if_fail (cfg != NULL, FALSE);
 
-	items = g_strsplit (cfg, ";", 9999);
+	items = g_strsplit (cfg, ";", 0);
 	if (!items) return FALSE;
 
 	for (i = 0; items[i]; ++i)

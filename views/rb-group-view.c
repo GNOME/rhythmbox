@@ -339,7 +339,8 @@ rb_group_view_init (RBGroupView *view)
 	view->priv->group = rb_node_new (RB_NODE_TYPE_GENERIC);
 
 	view->priv->songs = rb_node_view_new (view->priv->group,
-				              rb_file ("rb-node-view-songs.xml"));
+				              rb_file ("rb-node-view-songs.xml"),
+					      "/apps/rhythmbox/ui/columns_setup");
 	g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 			  G_CALLBACK (rb_group_view_node_removed_cb), view);
 

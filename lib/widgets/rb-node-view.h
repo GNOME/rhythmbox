@@ -58,7 +58,8 @@ typedef struct
 GType       rb_node_view_get_type          (void);
 
 RBNodeView *rb_node_view_new                (RBNode *root,
-					     const char *view_desc_file);
+					     const char *view_desc_file,
+					     const char *columns_conf_key);
 
 void        rb_node_view_set_filter         (RBNodeView *view,
 				             RBNode *filter_parent,
