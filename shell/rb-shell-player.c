@@ -126,11 +126,6 @@ static void cancel_buffering_clicked_cb (GtkWidget *button,
 void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
 
-#ifdef HAVE_REMOTE
-static void rb_shell_player_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
-				       RBShellPlayer *player);
-#endif
-
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
 
@@ -394,14 +389,6 @@ rb_shell_player_init (RBShellPlayer *player)
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
 				    player);
-#ifdef HAVE_REMOTE
-	player->priv->remote = rb_remote_new ();
-	g_signal_connect (player->priv->remote, "button_pressed",
-			  G_CALLBACK (rb_player_remote_cb),
-			  player);
-#else
-	player->priv->remote = NULL;
-#endif
 }
 
 static void

@@ -69,7 +69,6 @@
 #include "rb-windows-ini-file.h"
 #include "rb-library-dnd-types.h"
 #include "rb-volume.h"
-#include "rb-remote.h"
 #include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
 #include "eggtrayicon.h"
@@ -179,11 +178,6 @@ static void window_visibility_changed_cb (GConfClient *client,
 static void setup_tray_icon (RBShell *shell);
 static void sync_tray_menu (RBShell *shell);
 
-#ifdef HAVE_REMOTE
-static void rb_shell_remote_cb (RBRemote *remote, RBRemoteCommand cmd,
-				RBShell *shell);
-#endif
-
 static const GtkTargetEntry target_table[] =
 	{
 		{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST },
@@ -213,8 +207,6 @@ typedef enum
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
 #define CONF_MUSIC_GROUPS           CONF_PREFIX "/music_groups"
-
-#define RB_SHELL_REMOTE_VOLUME_INTERVAL 0.1
 
 typedef struct
 {
@@ -262,7 +254,6 @@ struct RBShellPrivate
 	BonoboControl *tray_icon_control;
 	BonoboUIComponent *tray_icon_component;
 
-	RBRemote *remote;
 	RBVolume *volume;
 };
 
@@ -360,14 +351,6 @@ rb_shell_init (RBShell *shell)
 
 	eel_gconf_monitor_add (CONF_PREFIX);
 
-#ifdef HAVE_REMOTE
-	shell->priv->remote = rb_remote_new ();
-	g_signal_connect (shell->priv->remote, "button_pressed",
-			  G_CALLBACK (rb_shell_remote_cb), shell);
-#else
-	shell->priv->remote = NULL;
-#endif
-
 }
 
 static void
@@ -403,9 +386,6 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->library));
 
 	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
-
-	if (shell->priv->remote != NULL)
-		g_object_unref (G_OBJECT (shell->priv->remote));
 
 	g_free (shell->priv->state);
 
