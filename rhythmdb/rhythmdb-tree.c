@@ -35,6 +35,7 @@
 #include <gtk/gtkliststore.h>
 #include <libxml/entities.h>
 #include <libxml/SAX.h>
+#include <libxml/parserInternals.h>
 
 #include "rhythmdb-tree.h"
 #include "rhythmdb-query-model.h"
@@ -49,7 +50,7 @@ static void rhythmdb_tree_class_init (RhythmDBTreeClass *klass);
 static void rhythmdb_tree_init (RhythmDBTree *shell_player);
 static void rhythmdb_tree_finalize (GObject *object);
 
-static void rhythmdb_tree_load (RhythmDB *rdb, GMutex *mutex, gboolean *die);
+static void rhythmdb_tree_load (RhythmDB *rdb, gboolean *die);
 static void rhythmdb_tree_save (RhythmDB *rdb);
 static RhythmDBEntry * rhythmdb_tree_entry_new (RhythmDB *db, RhythmDBEntryType type,
 						const char *uri);
@@ -403,7 +404,7 @@ rhythmdb_tree_finalize (GObject *object)
 struct RhythmDBTreeLoadContext
 {
 	RhythmDBTree *db;
-	GMutex *mutex;
+	xmlParserCtxtPtr xmlctx;
 	gboolean *die;
 	enum {
 		RHYTHMDB_TREE_PARSER_STATE_START,
@@ -424,10 +425,10 @@ static void
 rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 				    const char *name, const char **attrs)
 {
-	g_mutex_lock (ctx->mutex);
-	if (*ctx->die == TRUE)
-		ctx->state = RHYTHMDB_TREE_PARSER_STATE_END;
-	g_mutex_unlock (ctx->mutex);
+	if (*ctx->die == TRUE) {
+		xmlStopParser (ctx->xmlctx);
+		return;
+	}
 
 	switch (ctx->state)
 	{
@@ -482,10 +483,10 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 static void
 rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const char *name)
 {
-	g_mutex_lock (ctx->mutex);
-	if (*ctx->die == TRUE)
-		ctx->state = RHYTHMDB_TREE_PARSER_STATE_END;
-	g_mutex_unlock (ctx->mutex);
+	if (*ctx->die == TRUE) {
+		xmlStopParser (ctx->xmlctx);
+		return;
+	}
 	
 	switch (ctx->state)
 	{
@@ -593,10 +594,10 @@ static void
 rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx, const char *data,
 				 guint len)
 {
-	g_mutex_lock (ctx->mutex);
-	if (*ctx->die == TRUE)
-		ctx->state = RHYTHMDB_TREE_PARSER_STATE_END;
-	g_mutex_unlock (ctx->mutex);
+	if (*ctx->die == TRUE) {
+		xmlStopParser (ctx->xmlctx);
+		return;
+	}
 
 	switch (ctx->state)
 	{
@@ -612,9 +613,10 @@ rhythmdb_tree_parser_characters (struct RhythmDBTreeLoadContext *ctx, const char
 }
 
 static void
-rhythmdb_tree_load (RhythmDB *rdb, GMutex *mutex, gboolean *die)
+rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (rdb);
+	xmlParserCtxtPtr ctxt;
 	xmlSAXHandlerPtr sax_handler = g_new0 (xmlSAXHandler, 1);
 	struct RhythmDBTreeLoadContext *ctx = g_new0 (struct RhythmDBTreeLoadContext, 1);
 	char *name;
@@ -625,13 +627,21 @@ rhythmdb_tree_load (RhythmDB *rdb, GMutex *mutex, gboolean *die)
 
 	ctx->state = RHYTHMDB_TREE_PARSER_STATE_START;
 	ctx->db = db;
-	ctx->mutex = mutex;
 	ctx->die = die;
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
-	if (rb_uri_exists (name))
-		xmlSAXUserParseFile (sax_handler, ctx, name);
+	if (rb_uri_exists (name)) {
+		ctxt = xmlCreateFileParserCtxt (name);
+		ctx->xmlctx = ctxt;
+		xmlFree (ctxt->sax);
+		ctxt->userData = ctx;
+		ctxt->sax = sax_handler;
+		xmlParseDocument (ctxt);
+		ctxt->sax = NULL;
+		xmlFreeParserCtxt (ctxt);
+			
+	}
 	g_free (name);
 	g_free (sax_handler);
 	g_free (ctx);

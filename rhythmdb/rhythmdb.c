@@ -261,9 +261,7 @@ rhythmdb_shutdown (RhythmDB *db)
 {
 	g_return_if_fail (RHYTHMDB_IS (db));
 
-	g_mutex_lock (db->priv->exit_mutex);
 	db->priv->exiting = TRUE;
-	g_mutex_unlock (db->priv->exit_mutex);
 
 	if (db->priv->load_thread)
 		g_thread_join (db->priv->load_thread);
@@ -282,8 +280,6 @@ rhythmdb_finalize (GObject *object)
 	g_return_if_fail (db->priv != NULL);
 
 	g_static_rw_lock_free (&db->priv->lock);
-
-	g_mutex_free (db->priv->exit_mutex);
 
 	g_thread_pool_free (db->priv->query_thread_pool, TRUE, FALSE);
 	g_thread_pool_free (db->priv->property_query_thread_pool, TRUE, FALSE);
@@ -401,7 +397,7 @@ rhythmdb_load_thread_main (RhythmDB *db)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
-	klass->impl_load (db, db->priv->exit_mutex, &db->priv->exiting);
+	klass->impl_load (db, &db->priv->exiting);
 
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LOAD_COMPLETE], 0);
 	g_object_unref (G_OBJECT (db));

@@ -326,7 +326,7 @@ main_thread_main (RBLibraryMainThread *thread)
 		GError *error = NULL;
 		RhythmDBEntry *entry;
 
-		entry = g_async_queue_pop (thread->priv->queue);
+		entry = read_action (thread->priv->queue);
 
 		if (entry == NULL)
 			break;
