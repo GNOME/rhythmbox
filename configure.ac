@@ -90,6 +90,20 @@ if test "x$WANT_XINE" = "x1"; then
 		],(AC_DEFINE(HAVE_XINE_CLOSE,1,[Define if you have the audio device close feature in xine-lib])))
 	CFLAGS="$SAVE_CFLAGS"
 	LIBS="$SAVE_LIBS"
+
+	dnl Remove when xine-lib is newer than rc2
+	SAVE_CFLAGS="$CFLAGS"
+	CFLAGS="$RHYTHMBOX_CFLAGS"
+	SAVE_LIBS="$LIBS"
+	LIBS="$RHYTHMBOX_LIBS"
+	AC_TRY_COMPILE([
+		#include <xine.h>
+		],[
+		int arg = 0;
+		xine_osd_show_unscaled (NULL, 0);
+		],(AC_DEFINE(HAVE_NULL_VIDEO,1,[Define if you have the NULL video feature in xine-lib])))
+	CFLAGS="$SAVE_CFLAGS"
+	LIBS="$SAVE_LIBS"
 else
 	dnl Now we're ready to ask for gstreamer libs and cflags
 	dnl And we can also ask for the right version of gstreamer
