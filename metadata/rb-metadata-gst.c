@@ -21,9 +21,12 @@
 
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
+#include <gst/gst.h>
 #include <gst/gsttag.h>
+#include <string.h>
 
 #include "rb-metadata.h"
+#include "rb-debug.h"
 
 static void rb_metadata_class_init (RBMetaDataClass *klass);
 static void rb_metadata_init (RBMetaData *md);
@@ -92,6 +95,9 @@ rb_metadata_finalize (GObject *object)
 
 	g_hash_table_destroy (md->priv->metadata);
 
+	if (md->priv->pipeline)
+		gst_object_unref (GST_OBJECT (md->priv->pipeline));
+
 	g_free (md->priv->uri);
 
 	g_free (md->priv);
@@ -122,52 +128,94 @@ free_gvalue (GValue *val)
 	g_free (val);
 }
 
-static gboolean
-rb_metadata_gst_eos_idle_handler (RBMetaData *md)
-{
-
-
-}
-
 static void
 rb_metadata_gst_eos_cb (GstElement *element,
-			RBMetaData *md)
+			gboolean *eos)
 {
-	g_idle_add ((GSourceFunc) rb_metadata_gst_eos_idle_handler, md);
+	*eos = TRUE;
+}
+
+static int
+rb_metadata_gst_tag_to_field (const char *tag)
+{
+	if (!strcmp (tag, GST_TAG_TITLE))
+		return RB_METADATA_FIELD_TITLE;
+	else if (!strcmp (tag, GST_TAG_ARTIST))
+		return RB_METADATA_FIELD_ARTIST;
+	else if (!strcmp (tag, GST_TAG_ALBUM))
+		return RB_METADATA_FIELD_ALBUM;
+	else if (!strcmp (tag, GST_TAG_DATE))
+		return RB_METADATA_FIELD_DATE;
+	else if (!strcmp (tag, GST_TAG_GENRE))
+		return RB_METADATA_FIELD_GENRE;
+	else if (!strcmp (tag, GST_TAG_COMMENT))
+		return RB_METADATA_FIELD_COMMENT;
+	else if (!strcmp (tag, GST_TAG_TRACK_NUMBER))
+		return RB_METADATA_FIELD_TRACK_NUMBER;
+	else if (!strcmp (tag, GST_TAG_LOCATION))
+		return RB_METADATA_FIELD_LOCATION;
+	else if (!strcmp (tag, GST_TAG_DESCRIPTION))
+		return RB_METADATA_FIELD_DESCRIPTION;
+	else if (!strcmp (tag, GST_TAG_VERSION))
+		return RB_METADATA_FIELD_VERSION;
+	else if (!strcmp (tag, GST_TAG_ISRC))
+		return RB_METADATA_FIELD_ISRC;
+	else if (!strcmp (tag, GST_TAG_ORGANIZATION))
+		return RB_METADATA_FIELD_ORGANIZATION;
+	else if (!strcmp (tag, GST_TAG_COPYRIGHT))
+		return RB_METADATA_FIELD_COPYRIGHT;
+	else if (!strcmp (tag, GST_TAG_CONTACT))
+		return RB_METADATA_FIELD_CONTACT;
+	else if (!strcmp (tag, GST_TAG_LICENSE))
+		return RB_METADATA_FIELD_LICENSE;
+	else if (!strcmp (tag, GST_TAG_PERFORMER))
+		return RB_METADATA_FIELD_PERFORMER;
+	else if (!strcmp (tag, GST_TAG_DURATION))
+		return RB_METADATA_FIELD_DURATION;
+	else if (!strcmp (tag, GST_TAG_CODEC))
+		return RB_METADATA_FIELD_CODEC;
+	else if (!strcmp (tag, GST_TAG_BITRATE))
+		return RB_METADATA_FIELD_BITRATE;
+	else
+		return -1;
 }
 
 static void
-print_tag (const GstTagList *list, const gchar *tag, gpointer unused)
+rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *md)
 {
-  gint i, count;
+  int count, tem;
+  RBMetaDataField field;
+  GValue *newval;
+  const GValue *val;
 
   count = gst_tag_list_get_tag_size (list, tag);
+  if (count < 1)
+	  return;
 
-  for (i = 0; i < count; i++) {
-    gchar *str;
-    
-    if (gst_tag_get_type (tag) == G_TYPE_STRING) {
-      g_assert (gst_tag_list_get_string_index (list, tag, i, &str));
-    } else {
-      str = g_strdup_value_contents (
-	      gst_tag_list_get_value_index (list, tag, i));
-    }
-  
-    if (i == 0) {
-      g_print ("%15s: %s\n", gst_tag_get_nick (tag), str);
-    } else {
-      g_print ("               : %s\n", str);
-    }
+  tem = rb_metadata_gst_tag_to_field (tag);
+  if (tem < 0)
+	  return;
+  field = (RBMetaDataField) tem;
 
-    g_free (str);
+  val = gst_tag_list_get_value_index (list, tag, 0);
+  newval = g_new0 (GValue, 1);
+  if (field == RB_METADATA_FIELD_TRACK_NUMBER) {
+	  g_value_init (newval, G_TYPE_INT);
+  } else {
+	  g_value_init (newval, G_VALUE_TYPE (val));
   }
+  if (g_value_transform (val, newval))
+	  g_hash_table_insert (md->priv->metadata, GINT_TO_POINTER (field),
+			       newval);
+  else
+	  rb_debug ("Could not transform tag value type %s into %s",
+		    g_type_name (G_VALUE_TYPE (val)), g_type_name (G_VALUE_TYPE (newval)));
 }
 
 static void
-found_tag (GObject *pipeline, GstElement *source, GstTagList *tags, RBMetaData *md)
+rb_metadata_gst_found_tag (GObject *pipeline, GstElement *source, GstTagList *tags, RBMetaData *md)
 {
-  g_print ("FOUND TAG      : element \"%s\"\n", GST_STR_NULL (GST_ELEMENT_NAME (source)));
-  gst_tag_list_foreach (tags, print_tag, NULL);
+	gst_tag_list_foreach (tags, (GstTagForeachFunc) rb_metadata_gst_load_tag, md);
 }
 
 void
@@ -199,37 +247,43 @@ rb_metadata_load (RBMetaData *md,
 	/* The main tagfinding pipeline looks like this:
 	 * gnomevfssrc ! typefind ! spider ! application/x-gst-tags ! fakesink
 	 */
-	pipeline = gst_element_factory_make ("bin", "pipeline");
+	pipeline = gst_pipeline_new ("pipeline");
 
-	g_signal_connect (pipeline, "found-tag", G_CALLBACK (found_tag), md);
-	g_signal_connect (pipeline, "error", G_CALLBACK (error_cb), md);
+	g_signal_connect (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md);
 
 #define MAKE_ADD_PLUGIN_OR_ERROR(VAR, NAME) \
 	VAR = gst_element_factory_make (NAME, NAME); \
 	if (VAR == NULL) { \
 		g_set_error (error, \
 			     RB_METADATA_ERROR, \
-			     RB_PLAYER_ERROR_MISSING_PLUGIN, \
+			     RB_METADATA_ERROR_MISSING_PLUGIN, \
 			     _("Failed to create %s element; check your installation"), \
-			     NAME); \ 
+			     NAME); \
 		gst_object_unref (GST_OBJECT (pipeline)); \
-		md->priv->pipeline = NULL;
+		md->priv->pipeline = NULL; \
 		return; \
 	} \
 	gst_bin_add (GST_BIN (pipeline), VAR);		  
 
 	MAKE_ADD_PLUGIN_OR_ERROR(gnomevfssrc, "gnomevfssrc")
+	g_object_set (G_OBJECT (gnomevfssrc),
+			       "location", uri, NULL);
 	MAKE_ADD_PLUGIN_OR_ERROR(typefind, "typefind")
 	MAKE_ADD_PLUGIN_OR_ERROR(spider, "spider")
 	MAKE_ADD_PLUGIN_OR_ERROR(fakesink, "fakesink")
+#undef MAKE_ADD_PLUGIN_OR_ERROR
 
 	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
-	gst_element_link_filtered (spider, fakesink, gst_caps_new ("application/x-gst-tags"),
-				   NULL);
+	gst_element_link_filtered (spider, fakesink,
+				   gst_caps_new ("app filter", "application/x-gst-tags",
+						 gst_props_empty_new ()));
 
 	g_signal_connect (G_OBJECT (fakesink), "eos",
-			  G_CALLBACK (eos_cb), mp);
+			  G_CALLBACK (rb_metadata_gst_eos_cb), md);
 	md->priv->pipeline = pipeline;
+	gst_element_set_state (pipeline, GST_STATE_PLAYING);
+	while (gst_bin_iterate (GST_BIN (pipeline)))
+		;
 }
 
 gboolean

@@ -60,18 +60,6 @@ else
 	AC_DEFINE(WITH_RHYTHMDB_TREE, 1, [Define if you are using the RhythmDB tree database])
 fi	
 
-dnl Tagging
-AC_ARG_WITH(metadata,
-              AC_HELP_STRING([--with-metadata=monkeymedia],
-			     [Select the metadata reader to use]),,
-	      with_metadata=monkeymedia)
-AM_CONDITIONAL(USE_MONKEYMEDIA, test x"$with_metadata" = xmonkeymedia)
-if test x"$with_metadata" != xmonkeymedia; then
-	AC_MSG_ERROR([Unknown metadata reader selected])
-else
-	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
-fi	
-
 dnl Sound system
 AC_ARG_WITH(player,
             AC_HELP_STRING([--with-player=gstreamer|xine],[Select the player to use]),,
@@ -150,7 +138,28 @@ else
 fi
 fi
 
-AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
+AM_CONDITIONAL(USE_XINE, test x"$with_player" = "xxine")
+
+dnl Tagging
+AC_ARG_WITH(metadata,
+              AC_HELP_STRING([--with-metadata=gstreamer|monkeymedia|auto],
+			     [Select the metadata reader to use]),,
+	      with_metadata=auto)
+if test x"$with_player" = xxine && test x"$with_metadata" = xgstreamer; then
+  AC_MSG_ERROR([cannot use xine as player with gstreamer for metadata])
+fi  
+if test x"$with_metadata" = xauto; then
+   if test x"$with_player" = xgstreamer; then
+      with_metadata=gstreamer
+   else
+      with_metadata=monkeymedia
+   fi
+fi   
+AM_CONDITIONAL(USE_MONKEYMEDIA, test x"$with_metadata" = xmonkeymedia)
+if test x"$with_metadata" = xmonkeymedia; then
+	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
+fi	
+
 
 dnl Workaround for the gtktreeview bug
 disable_gtktreeview_workaround=yes
@@ -457,7 +466,7 @@ fi
 if test x"$with_metadata" = xmonkeymedia; then
 	AC_MSG_NOTICE([** Monkey-Media metadata is enabled])
 else
-	AC_MSG_ERROR([Unknown metadata reader!])
+	AC_MSG_NOTICE([** GStreamer metadata is enabled])
 fi
 if test x"$with_metadata" = xmonkeymedia; then
 if test x"$enable_mp3" != "xyes"; then
@@ -486,10 +495,10 @@ dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
 dnl else
 dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 dnl fi
-if test x"$WANT_XINE" != "x1"; then
-	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR backend is enabled])
+if test x"$with_player" = xgstreamer; then
+	AC_MSG_NOTICE([** gstreamer $GST_MAJORMINOR player is enabled])
 else
-	AC_MSG_NOTICE([** xine backend is enabled])
+	AC_MSG_NOTICE([** xine player is enabled])
 fi
 dnl if test "x$enable_audiocd" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   Audio CD support is disabled])
