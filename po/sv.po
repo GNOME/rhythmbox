@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-08-13 19:09+0200\n"
-"PO-Revision-Date: 2003-08-13 19:10+0200\n"
+"POT-Creation-Date: 2003-08-17 01:08+0200\n"
+"PO-Revision-Date: 2003-08-17 01:09+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -39,11 +39,79 @@ msgstr "Rhythmbox-skalfabrik"
 msgid "Loading..."
 msgstr "Läser in..."
 
-#: data/glade/druid.glade.h:1 data/glade/song-info.glade.h:1
-#: data/glade/station-new.glade.h:1 data/glade/station-properties.glade.h:1
-#: data/glade/uri.glade.h:1
+#: data/glade/create-playlist.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: data/glade/create-playlist.glade.h:2 data/glade/druid.glade.h:1
+#: data/glade/song-info.glade.h:1 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1 data/glade/uri.glade.h:1
 msgid "*"
 msgstr "*"
+
+#: data/glade/create-playlist.glade.h:3
+msgid "<b>Search songs in Music Library:</b>"
+msgstr "<b>Sök låtar i musikbiblioteket:</b>"
+
+#: data/glade/create-playlist.glade.h:4
+msgid "Album"
+msgstr "Album"
+
+#: data/glade/create-playlist.glade.h:5
+msgid "And"
+msgstr "Och"
+
+#: data/glade/create-playlist.glade.h:6
+msgid "Artist"
+msgstr "Artist"
+
+#: data/glade/create-playlist.glade.h:7
+msgid "Genre"
+msgstr "Genre"
+
+#: data/glade/create-playlist.glade.h:8
+msgid "Last played"
+msgstr "Senast spelad"
+
+#: data/glade/create-playlist.glade.h:9
+msgid "Or"
+msgstr "Eller"
+
+#: data/glade/create-playlist.glade.h:10
+msgid "Played"
+msgstr "Spelad"
+
+#: data/glade/create-playlist.glade.h:11
+msgid "Rating"
+msgstr "Betyg"
+
+#: data/glade/create-playlist.glade.h:12
+msgid "Search Songs"
+msgstr "Sök låtar"
+
+#: data/glade/create-playlist.glade.h:13
+msgid "Where"
+msgstr "Där"
+
+#: data/glade/create-playlist.glade.h:14
+msgid "Year"
+msgstr "År"
+
+#: data/glade/create-playlist.glade.h:15
+msgid "contains"
+msgstr "innehåller"
+
+#: data/glade/create-playlist.glade.h:16
+msgid "does not contains"
+msgstr "innehåller inte"
+
+#: data/glade/create-playlist.glade.h:17
+msgid "is after"
+msgstr "är efter"
+
+#: data/glade/create-playlist.glade.h:18
+msgid "is before"
+msgstr "är innan"
 
 #: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:258
 msgid "Finish"
@@ -321,7 +389,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:606 shell/rb-shell.c:1088
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:605 shell/rb-shell.c:1060
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -573,7 +641,7 @@ msgstr "_Nästa"
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1088
+#: data/ui/rhythmbox-ui.xml.in.h:59 shell/rb-shell-player.c:1107
 msgid "_Play"
 msgstr "_Spela"
 
@@ -597,7 +665,8 @@ msgstr "_Blanda"
 msgid "_Source List"
 msgstr "_Källista"
 
-#: iradio/rb-iradio-backend.c:183 library/rb-library.c:589
+#: iradio/rb-iradio-backend.c:183 iradio/rb-iradio-backend.c:572
+#: iradio/rb-new-station-dialog.c:291 library/rb-library.c:663
 msgid "All"
 msgstr "Alla"
 
@@ -611,7 +680,7 @@ msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
 #: iradio/rb-iradio-backend.c:529 iradio/rb-iradio-backend.c:548
-#: iradio/rb-iradio-backend.c:549 lib/widgets/rb-tree-model-node.c:589
+#: iradio/rb-iradio-backend.c:549 lib/widgets/rb-tree-model-node.c:588
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
@@ -704,6 +773,22 @@ msgstr " "
 msgid "%s, %s"
 msgstr "%s, %s"
 
+#: lib/widgets/eggtreemodelfilter.c:267
+msgid "The child model"
+msgstr "Barnmodellen"
+
+#: lib/widgets/eggtreemodelfilter.c:268
+msgid "The model for the filtermodel to filter"
+msgstr "Modellen som filtermodellen ska använda för filtrering"
+
+#: lib/widgets/eggtreemodelfilter.c:275
+msgid "The virtual root"
+msgstr "Den virtuella roten"
+
+#: lib/widgets/eggtreemodelfilter.c:276
+msgid "The virtual root (relative to the child model) for this filtermodel"
+msgstr "Den virtuella roten (relativ till barnmodellen) för denna filtermodell"
+
 #: lib/widgets/gtktreemodelsort.c:306
 msgid "TreeModelSort Model"
 msgstr "TreeModelSort-modell"
@@ -754,7 +839,7 @@ msgstr "Fel vid inläsning av filer till biblioteket"
 msgid "_Error"
 msgstr "_Fel"
 
-#: lib/widgets/rb-node-view.c:717
+#: lib/widgets/rb-node-view.c:782
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
@@ -783,7 +868,7 @@ msgstr "Hämta information om denna artist från webben"
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1092 shell/rb-shell.c:2052
+#: lib/widgets/rb-player.c:517 shell/rb-shell.c:1064 shell/rb-shell.c:2048
 msgid "Not playing"
 msgstr "Spelar inte"
 
@@ -842,16 +927,36 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:834
+#: library/rb-library.c:902
 msgid "Failed to load library!"
 msgstr "Misslyckades med att läsa in biblioteket!"
 
-#: library/rb-library.c:1104
+#: library/rb-library.c:1167
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1345
+#: library/rb-library.c:1499
+#, c-format
+msgid "%ld songs"
+msgstr "%ld låtar"
+
+#: library/rb-library.c:1550
+#, c-format
+msgid "<b>%.1f</b> days (%ld songs)"
+msgstr "<b>%.1f</b> dagar (%ld låtar)"
+
+#: library/rb-library.c:1553
+#, c-format
+msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
+
+#: library/rb-library.c:1556
+#, c-format
+msgid "<b>%ld</b> minutes (%ld songs)"
+msgstr "<b>%ld</b> minuter (%ld låtar)"
+
+#: library/rb-node.c:1351
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
@@ -1093,37 +1198,37 @@ msgstr ""
 "Misslyckades med att aktivera skalet:\n"
 "%s"
 
-#: shell/rb-shell-player.c:317
+#: shell/rb-shell-player.c:331
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:663
+#: shell/rb-shell-player.c:682
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
-#: shell/rb-shell-player.c:1079
+#: shell/rb-shell-player.c:1098
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1080
+#: shell/rb-shell-player.c:1099
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1087
+#: shell/rb-shell-player.c:1106
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1095
+#: shell/rb-shell-player.c:1114
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1096
+#: shell/rb-shell-player.c:1115
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1319
+#: shell/rb-shell-player.c:1338
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
@@ -1140,7 +1245,7 @@ msgstr "Allmänt"
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:810
+#: shell/rb-shell.c:807
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1153,12 +1258,12 @@ msgstr ""
 "ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1106
+#: shell/rb-shell.c:1078
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1109
+#: shell/rb-shell.c:1081
 #, c-format
 msgid ""
 "%s\n"
@@ -1167,21 +1272,21 @@ msgstr ""
 "%s\n"
 "Gör paus"
 
-#: shell/rb-shell.c:1178
+#: shell/rb-shell.c:1150
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1187
+#: shell/rb-shell.c:1159
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1191
+#: shell/rb-shell.c:1163
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1215
+#: shell/rb-shell.c:1187
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1192,43 +1297,43 @@ msgstr ""
 "Ljudbakände: %s\n"
 "Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1358
+#: shell/rb-shell.c:1330
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1387
+#: shell/rb-shell.c:1359
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-shell.c:1427
+#: shell/rb-shell.c:1399
 msgid "Save playlist"
 msgstr "Spara spellista"
 
-#: shell/rb-shell.c:1447
+#: shell/rb-shell.c:1419
 msgid "There is already a playlist with that name."
 msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-shell.c:1554
+#: shell/rb-shell.c:1526
 msgid "Couldn't parse playlist"
 msgstr "Kunde inte tolka spellista"
 
-#: shell/rb-shell.c:1885
+#: shell/rb-shell.c:1881
 msgid "C_reate"
 msgstr "S_kapa"
 
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1896
 msgid "New Playlist"
 msgstr "Ny spellista"
 
-#: shell/rb-shell.c:1911
+#: shell/rb-shell.c:1907
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-shell.c:1916
+#: shell/rb-shell.c:1912
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-shell.c:1920
+#: shell/rb-shell.c:1916
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
 
@@ -1270,27 +1375,7 @@ msgstr "Läser in cd-information"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d låtar, %d.%02d.%02d total tid"
 
-#: sources/rb-group-source.c:525 sources/rb-library-source.c:778
-#, c-format
-msgid "%ld songs"
-msgstr "%ld låtar"
-
-#: sources/rb-group-source.c:567 sources/rb-library-source.c:825
-#, c-format
-msgid "<b>%.1f</b> days (%ld songs)"
-msgstr "<b>%.1f</b> dagar (%ld låtar)"
-
-#: sources/rb-group-source.c:570 sources/rb-library-source.c:828
-#, c-format
-msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
-
-#: sources/rb-group-source.c:573 sources/rb-library-source.c:831
-#, c-format
-msgid "<b>%ld</b> minutes (%ld songs)"
-msgstr "<b>%ld</b> minuter (%ld låtar)"
-
-#: sources/rb-group-source.c:711
+#: sources/rb-group-source.c:653
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
@@ -1304,11 +1389,11 @@ msgstr "Radio"
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
 
-#: sources/rb-library-source.c:611
+#: sources/rb-library-source.c:617
 msgid "Library"
 msgstr "Bibliotek"
 
-#: sources/rb-library-source.c:937
+#: sources/rb-library-source.c:884
 msgid "Add Location"
 msgstr "Lägg till plats"
 
@@ -1319,6 +1404,12 @@ msgstr "Inga egenskaper tillgängliga."
 #: sources/rb-source.c:544
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "Search songs in Music Library:"
+#~ msgstr "Sök låtar i musikbiblioteket:"
+
+#~ msgid "does not contain"
+#~ msgstr "innehåller inte"
 
 #~ msgid "Locations"
 #~ msgstr "Platser"
@@ -1387,9 +1478,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "Add Playlist"
 #~ msgstr "Lägg till spellista"
-
-#~ msgid "    "
-#~ msgstr "    "
 
 #~ msgid "<span weight=\"bold\">Visible Columns</span>"
 #~ msgstr "<span weight=\"bold\">Synliga kolumner</span>"
@@ -1575,13 +1663,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Show Arrow"
 #~ msgstr "Visa pil"
 
-#~ msgid "The virtual root"
-#~ msgstr "Den virtuella roten"
-
-#~ msgid "The virtual root (relative to the child model) for this filtermodel"
-#~ msgstr ""
-#~ "Den virtuella roten (relativ till barnmodellen) för denna filtermodell"
-
 #~ msgid "Change the visibility of the genre browser"
 #~ msgstr "Ändra synligheten på genrebläddraren"
 
@@ -1736,17 +1817,11 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Genre:"
 #~ msgstr "Genre:"
 
-#~ msgid "Genre"
-#~ msgstr "Genre"
-
 #~ msgid "<b>Rating:</b>"
 #~ msgstr "<b>Betyg:</b>"
 
 #~ msgid "Rating:"
 #~ msgstr "Betyg:"
-
-#~ msgid "Rating"
-#~ msgstr "Betyg"
 
 #~ msgid "<b>Title:</b>"
 #~ msgstr "<b>Titel:</b>"
@@ -2013,9 +2088,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Oh neej!!"
 #~ msgstr "Åh nej!!"
 
-#~ msgid "_Actions"
-#~ msgstr "_Åtgärder"
-
 #~ msgid "by"
 #~ msgstr "av"
 
@@ -2158,12 +2230,6 @@ msgstr "Denna källa stöder inte dra och släpp."
 
 #~ msgid "%d-%m-%Y %H:%M:%S"
 #~ msgstr "%Y-%m-%d %H.%M.%S"
-
-#~ msgid "Album"
-#~ msgstr "Album"
-
-#~ msgid "Artist"
-#~ msgstr "Artist"
 
 #~ msgid "Time"
 #~ msgstr "Tid"
