@@ -806,13 +806,13 @@ add_thread_main (RhythmDB *db)
 static void
 update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 {
-	const char *location;
+	char *location;
 	time_t stored_mtime;
 	GnomeVFSFileInfo *vfsinfo = NULL;
 	GnomeVFSResult result;
 
 	rhythmdb_read_lock (db);
-	location = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
+	location = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
 	stored_mtime = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_MTIME);
 	rhythmdb_read_unlock (db);
 	
@@ -837,13 +837,15 @@ update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 
 	rhythmdb_write_lock (db);
 	
+	rb_debug ("song \"%s\" changed, deleting and re-adding", location);
 	rhythmdb_entry_delete (db, entry);
-	rhythmdb_add_uri_async (db, location); 
-	rhythmdb_entry_unref_unlocked (db, entry);
 
 	rhythmdb_write_unlock (db);
 
+	rhythmdb_add_uri_async (db, location); 
+
 out:
+	g_free (location);
 	gnome_vfs_file_info_unref (vfsinfo);
 }
 

@@ -385,6 +385,8 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							      BONOBO_TYPE_UI_COMPONENT,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	/* If you change these, be sure to update the CORBA interface
+	 * in rb-shell.c! */
 	g_object_class_install_property (object_class,
 					 PROP_REPEAT,
 					 g_param_spec_boolean ("repeat", 
