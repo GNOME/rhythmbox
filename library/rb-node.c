@@ -828,6 +828,8 @@ rb_node_save_to_xml (RBNode *node,
 		xmlNodePtr value_xml_node;
 
 		value = g_ptr_array_index (node->priv->properties, i);
+		if (value == NULL)
+			continue;
 
 		value_xml_node = xmlNewChild (xml_node, NULL, "property", NULL);
 
