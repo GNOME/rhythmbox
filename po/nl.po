@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-07-07 13:27+0200\n"
+"POT-Creation-Date: 2003-07-16 15:58+0200\n"
 "PO-Revision-Date: 2003-03-01 15:00+0100\n"
 "Last-Translator: Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -309,7 +309,7 @@ msgstr "_Laatst afgespeeld"
 msgid "_Play Count"
 msgstr "_Aantal maal afgespeeld"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:535 shell/rb-shell.c:947
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:577 shell/rb-shell.c:989
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -584,7 +584,7 @@ msgstr "_Beheer"
 msgid "_Paste"
 msgstr "_Plakken"
 
-#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1070
+#: data/ui/rhythmbox-ui.xml.in.h:50 shell/rb-shell-player.c:1075
 msgid "_Play"
 msgstr "_Afspelen"
 
@@ -813,7 +813,7 @@ msgstr "Haal informatie op over deze artiest via het internet"
 msgid "Get more information on this station from the web"
 msgstr "Haal informatie op over deze artiest via het internet"
 
-#: lib/widgets/rb-player.c:526 shell/rb-shell.c:951 shell/rb-shell.c:1757
+#: lib/widgets/rb-player.c:526 shell/rb-shell.c:993 shell/rb-shell.c:1799
 msgid "Not playing"
 msgstr "Niet bezig met afspelen"
 
@@ -875,28 +875,36 @@ msgstr "Klik voor stilte"
 msgid "Click to unmute"
 msgstr "Klik om stilte op te heffen"
 
-#: shell/main.c:63
+#: shell/main.c:65
+msgid "Print the playing song and exit"
+msgstr ""
+
+#: shell/main.c:66
+msgid "Print the playing song URI and exit"
+msgstr ""
+
+#: shell/main.c:67
 msgid "Enable debugging code"
 msgstr "Activeer debugging code"
 
-#: shell/main.c:64
+#: shell/main.c:68
 #, fuzzy
 msgid "Do not register the shell"
 msgstr "Registreer niet met bonobo activatie"
 
-#: shell/main.c:65
+#: shell/main.c:69
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox afsluiten"
 
-#: shell/main.c:66
+#: shell/main.c:70
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia instellingen:"
 
-#: shell/main.c:76
+#: shell/main.c:80
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:195
+#: shell/main.c:200
 #, fuzzy, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -927,17 +935,17 @@ msgid ""
 " no playlist header"
 msgstr ""
 
-#: shell/rb-shell.c:440
+#: shell/rb-shell.c:448
 #, fuzzy, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan niet begrijpen %s: %s\n"
 
-#: shell/rb-shell.c:474
+#: shell/rb-shell.c:482
 #, fuzzy, c-format
 msgid "Unable to handle URI \"%s\"\n"
 msgstr "Kan niet begrijpen %s: %s\n"
 
-#: shell/rb-shell.c:522
+#: shell/rb-shell.c:564
 #, fuzzy, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -950,39 +958,39 @@ msgstr ""
 "andere prefix heeft geinstalleerd dat bonobo-activation;\n"
 "Deze waarschuwing is onschuldig, maar IPC zal niet werken.\n"
 
-#: shell/rb-shell.c:967
+#: shell/rb-shell.c:1009
 #, c-format
 msgid "%s (Paused)"
 msgstr ""
 
-#: shell/rb-shell.c:970
+#: shell/rb-shell.c:1012
 #, c-format
 msgid ""
 "%s\n"
 "Paused"
 msgstr ""
 
-#: shell/rb-shell.c:1053
+#: shell/rb-shell.c:1095
 msgid "translator_credits"
 msgstr "Kees van den Broek <kvdb@NOSPAMkvdb.net>"
 
-#: shell/rb-shell.c:1063
+#: shell/rb-shell.c:1105
 msgid "Lead developers:"
 msgstr "Kern ontwikkelaars:"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1106
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: shell/rb-shell.c:1068
+#: shell/rb-shell.c:1110
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziek beheer en afspeel programma voor GNOME."
 
-#: shell/rb-shell.c:1211
+#: shell/rb-shell.c:1253
 msgid "Choose Files or Directory"
 msgstr ""
 
-#: shell/rb-shell.c:1240
+#: shell/rb-shell.c:1282
 msgid "Load playlist"
 msgstr ""
 
@@ -1001,17 +1009,17 @@ msgstr ""
 msgid "All fallback locations failed, unable to play: %s\n"
 msgstr ""
 
-#: shell/rb-shell-player.c:1061
+#: shell/rb-shell-player.c:1066
 #, fuzzy
 msgid "Pause"
 msgstr "_Plakken"
 
-#: shell/rb-shell-player.c:1062
+#: shell/rb-shell-player.c:1067
 #, fuzzy
 msgid "_Pause"
 msgstr "_Plakken"
 
-#: shell/rb-shell-player.c:1069
+#: shell/rb-shell-player.c:1074
 #, fuzzy
 msgid "Play"
 msgstr "_Afspelen"
@@ -1020,11 +1028,11 @@ msgstr "_Afspelen"
 msgid "Stop"
 msgstr "Stoppen"
 
-#: shell/rb-shell-player.c:1078
+#: shell/rb-shell-player.c:1083
 msgid "_Stop"
 msgstr "_Stoppen"
 
-#: shell/rb-shell-player.c:1296
+#: shell/rb-shell-player.c:1301
 msgid "Unexpected end of stream!"
 msgstr ""
 
@@ -1107,9 +1115,8 @@ msgid "Failed to parse %s as group file"
 msgstr "Kan %s niet begrijpen als CD informatie bestand"
 
 #: sources/rb-iradio-source.c:380
-#, fuzzy
 msgid "Radio"
-msgstr "iradio"
+msgstr "Radio"
 
 #: sources/rb-iradio-source.c:498
 #, fuzzy, c-format
