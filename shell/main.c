@@ -386,6 +386,10 @@ rb_handle_cmdline (char **argv, int argc,
 	if (focus)
 		grab_focus = TRUE;
 
+	if (already_running) {
+		gdk_notify_startup_complete ();
+	}
+
 	/* at the very least, we focus the window */
 	if (already_running == TRUE && grab_focus == TRUE)
 		GNOME_Rhythmbox_grabFocus (shell, &ev);

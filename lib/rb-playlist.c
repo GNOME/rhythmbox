@@ -612,14 +612,17 @@ rb_playlist_add_m3u (RBPlaylist *playlist, const char *url,
 			/* Try with a base */
 			char *fullpath, *base, sep;
 
+			retval = TRUE;			
+			
 			base = rb_playlist_base_url (url);
 			sep = (split_char[0] == '\n' ? '/' : '\\');
 			if (sep == '\\')
 				lines[i] = g_strdelimit (lines[i], "\\", '/');
 			fullpath = g_strdup_printf ("%s/%s", base, lines[i]);
-			if (rb_playlist_parse_recurse (playlist, fullpath,
-						       recurse_level) == TRUE)
-				retval = TRUE;
+			if (!rb_playlist_parse_recurse (playlist, fullpath,
+							recurse_level))
+				rb_playlist_add_one_url (playlist, fullpath, NULL);
+				
 			g_free (fullpath);
 			g_free (base);
 		}

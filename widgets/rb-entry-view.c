@@ -766,50 +766,6 @@ struct RBEntryViewCellDataFuncData {
 };
 
 static gint
-rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
-				RBEntryView *view)
-{
-	gint a_int, b_int;
-	const char *a_str = NULL;
-	const char *b_str = NULL;
-	gint ret;
-
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
-	if (ret != 0)
-		goto out;
-
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
-	if (ret != 0)
-		goto out;
-
-	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
-	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
-
-	if (a_int != b_int) {
-		ret = (a_int < b_int ? -1 : 1);
-		goto out;
-	}
-
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_TITLE_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
-	if (ret != 0)
-		goto out;
-
-	ret = 0;
-
-out:
-	return ret;
-}
-
-static gint
 rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
@@ -823,18 +779,54 @@ rb_entry_view_album_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
-		goto out;
+		return ret;
 
 	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
 	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
 
-	if (a_int != b_int) {
-		ret = (a_int < b_int ? -1 : 1);
-		goto out;
-	}
+	if (a_int != b_int)
+		return (a_int < b_int ? -1 : 1);
 
-out:
-	return ret;
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+
+	return strcmp (a_str, b_str);
+}
+
+static gint
+rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				RBEntryView *view)
+{
+	const char *a_str = NULL;
+	const char *b_str = NULL;
+	gint ret;
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		return ret;
+
+	return rb_entry_view_album_sort_func (a, b, view);
+}
+
+static gint
+rb_entry_view_genre_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			       RBEntryView *view)
+{
+	const char *a_str = NULL;
+	const char *b_str = NULL;
+	gint ret;
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_GENRE_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_GENRE_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		return ret;
+
+	return rb_entry_view_artist_sort_func (a, b, view);
 }
 
 static gint
@@ -1283,7 +1275,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		cell_data->propid = propid;
 		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 		sort_data->propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
-		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_genre_sort_func;
+		real_sort_data = view;
 		title = _("Ge_nre");
 		key = "Genre";
 		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
@@ -1691,11 +1684,16 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 
 		gtk_tree_view_get_path_at_pos (treeview, event->x, event->y, &path, NULL, NULL, NULL);
 		if (path != NULL) {
+			GList *selected;
 			entry = entry_from_tree_path (view, path);
+
+			selected = rb_entry_view_get_selected_entries (view);
 			
-			/* FIXME - don't require a popup to select an entry */
-			rb_entry_view_select_entry (view, entry);
-		
+			if (!g_list_find (selected, entry))
+				rb_entry_view_select_entry (view, entry);
+
+			g_list_free (selected);
+			
 			g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SHOW_POPUP], 0);
 		}
 		return view->priv->have_selection;

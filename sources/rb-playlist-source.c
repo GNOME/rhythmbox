@@ -431,10 +431,11 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 	g_assert (source->priv->automatic);
 
 	source->priv->model = query_model
-		= rhythmdb_query_model_new_empty (source->priv->db);
-	g_object_set (G_OBJECT (source->priv->model),
-		      "max-count", limit_count,
-		      "max-size", limit_mb, NULL);
+		= g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
+				"db", source->priv->db,
+				"max-count", limit_count,
+				"max-size", limit_mb, 
+				NULL);
 
 	model = GTK_TREE_MODEL (query_model);
 

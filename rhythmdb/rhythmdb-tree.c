@@ -756,7 +756,7 @@ rhythmdb_tree_save (RhythmDB *rdb)
 		goto out;
 	}
 
-	fprintf (f, "%s\n%s\n", "<?xml version=\"1.0\"?>",
+	fprintf (f, "%s\n%s\n", "<?xml version=\"1.0\" standalone=\"yes\"?>",
 		 "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">");
 
 	ctx->db = db;

@@ -70,7 +70,9 @@ rb_tree_view_class_init (RBTreeViewClass *klass)
 RBTreeView *
 rb_tree_view_new (void)
 {
-	return RB_TREE_VIEW (g_object_new (RB_TYPE_TREE_VIEW, NULL));
+	return RB_TREE_VIEW (g_object_new (RB_TYPE_TREE_VIEW, 
+					   "enable-search", FALSE, 
+					   NULL));
 }
 
 RBTreeView *

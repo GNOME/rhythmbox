@@ -215,7 +215,8 @@ MP3_stream_info_impl_get_length_from_tag (MP3StreamInfoImpl *impl)
 		 * numeric string."
 		 */
 		if (atol(latin1) > 0)
-			impl->priv->info_num->time = atol(latin1);
+			/* monkey-media needs a duration in seconds */
+			impl->priv->info_num->time = atol(latin1)/1000;
 		g_free (latin1);
 	}
 }

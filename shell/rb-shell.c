@@ -277,6 +277,8 @@ struct RBShellPrivate
 	gboolean db_dirty;
 	guint async_state_save_id;
 
+	gboolean load_complete;
+
 	RhythmDB *db;
 
 	RBShellPlayer *player_shell;
@@ -412,6 +414,11 @@ rb_shell_sync_state (RBShell *shell)
 {
 	if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
 		return FALSE;
+
+	if (!shell->priv->load_complete) {
+		rb_debug ("load incomplete, not syncing state");
+		return FALSE;
+	}
 	
 	rb_debug ("saving playlists");
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
@@ -1887,6 +1894,7 @@ rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
 	rb_debug ("load complete");
 	GDK_THREADS_ENTER ();
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
+	shell->priv->load_complete = TRUE;
 	GDK_THREADS_LEAVE ();
 }
 
@@ -2196,7 +2204,7 @@ save_yourself_cb (GnomeClient *client,
                   RBShell *shell)
 {
         rb_debug ("session save yourself");
-        rb_shell_sync_state (shell);
+	rb_shell_sync_state (shell);
         return TRUE;
 }
 
