@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-07-29 14:49+0200\n"
-"PO-Revision-Date: 2002-07-29 14:49+0200\n"
+"POT-Creation-Date: 2002-08-02 01:12+0200\n"
+"PO-Revision-Date: 2002-08-02 01:12+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -286,28 +286,28 @@ msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
 #: data/ui/rhythmbox-ui.xml.in.h:15
-msgid "Random playing order"
-msgstr "Slumpvis spelordning"
-
-#: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Show information about Rhythmbox"
 msgstr "Visa information om Rhythmbox"
 
-#: data/ui/rhythmbox-ui.xml.in.h:17
+#: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Shuffle"
 msgstr "Blanda"
 
-#: data/ui/rhythmbox-ui.xml.in.h:18
+#: data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Specify where Rhythmbox should look for music"
 msgstr "Ange var Rhythmbox ska leta efter musik"
 
-#: data/ui/rhythmbox-ui.xml.in.h:19
+#: data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Start playing"
 msgstr "Starta uppspelning"
 
-#: data/ui/rhythmbox-ui.xml.in.h:20
+#: data/ui/rhythmbox-ui.xml.in.h:19
 msgid "Stop playing"
 msgstr "Stoppa uppspelning"
+
+#: data/ui/rhythmbox-ui.xml.in.h:20
+msgid "Toggle random playing order"
+msgstr "Slå på/av slumpvis spelordning"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Toggle repeat mode"
@@ -437,34 +437,55 @@ msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d låtar, %d.%02d.%02d speltid, %s"
 
-#: lib/widgets/rb-player.c:199
+#: lib/widgets/rb-player.c:201
 msgid "From "
 msgstr "Från "
 
-#: lib/widgets/rb-player.c:205
+#: lib/widgets/rb-player.c:207
 msgid " by "
 msgstr " av "
 
-#: lib/widgets/rb-player.c:367
+#: lib/widgets/rb-player.c:234 lib/widgets/rb-player.c:523
+msgid ""
+"Elapsed time of the song. Click on it to display remaining and total time"
+msgstr ""
+"Förlupen speltid för låten. Klicka på den för att visa återstående och total "
+"tid"
+
+#: lib/widgets/rb-player.c:374
 msgid "Not Playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:530
+#: lib/widgets/rb-player.c:509
+msgid ""
+"Remaining time of the song. Click on it to display total and elapsed time"
+msgstr ""
+"Återstående speltid för låten. Klicka på den för att visa total och förlupen "
+"tid"
+
+#: lib/widgets/rb-player.c:516
+msgid ""
+"Total time of the song. Click on it to display elapsed and remaining time"
+msgstr ""
+"Total speltid för låten. Klicka på den för att visa förlupen och återstående "
+"tid"
+
+#: lib/widgets/rb-player.c:549
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:539
+#: lib/widgets/rb-player.c:558
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:547
+#: lib/widgets/rb-player.c:566
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Totalt: %d:%02d"
 
-#: lib/widgets/rb-player.c:550
+#: lib/widgets/rb-player.c:569
 msgid "Invalid mode"
 msgstr "Ogiltigt läge"
 
@@ -574,7 +595,7 @@ msgstr "MonkeyMedia-alternativ:"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:141
+#: shell/main.c:142
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -629,41 +650,41 @@ msgstr ""
 "Misslyckades med att registrera skalet:\n"
 "%s"
 
-#: shell/rb-shell.c:778
+#: shell/rb-shell.c:788
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:789
+#: shell/rb-shell.c:799
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:790
+#: shell/rb-shell.c:800
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:834
+#: shell/rb-shell.c:844
 msgid "Choose a file to add"
 msgstr "Välj en fil att lägga till"
 
-#: shell/rb-shell.c:852
+#: shell/rb-shell.c:862
 msgid "Enter a name"
 msgstr "Ange ett namn"
 
-#: shell/rb-shell.c:853
+#: shell/rb-shell.c:863
 msgid "Enter a name for the new music group:"
 msgstr "Ange ett namn för den nya musikgruppen:"
 
-#: shell/rb-shell.c:854
+#: shell/rb-shell.c:864
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:277
+#: views/rb-group-view.c:278
 msgid "Unnamed"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:757 views/rb-library-view.c:742
+#: views/rb-group-view.c:760 views/rb-library-view.c:742
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -672,7 +693,7 @@ msgstr ""
 "Misslyckades med att skapa ström för %s, felet var:\n"
 "%s"
 
-#: views/rb-group-view.c:1004
+#: views/rb-group-view.c:1007
 #, c-format
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
