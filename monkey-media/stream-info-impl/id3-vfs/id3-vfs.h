@@ -37,11 +37,8 @@ void id3_vfs_close(struct id3_vfs_file *);
 struct id3_tag *id3_vfs_tag(struct id3_vfs_file const *);
 int id3_vfs_update(struct id3_vfs_file *);
 
-int id3_vfs_bitrate(struct id3_vfs_file *);
-long id3_vfs_samplerate(struct id3_vfs_file *);
-int id3_vfs_channels(struct id3_vfs_file *);
-gboolean id3_vfs_vbr(struct id3_vfs_file *);
-int id3_vfs_version(struct id3_vfs_file *);
+int id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
+		int *time, int *version, int *vbr, int *channels);
 
 #endif /* _ID3_VFS_H_ */
 

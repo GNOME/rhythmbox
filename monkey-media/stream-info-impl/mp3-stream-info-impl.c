@@ -53,10 +53,21 @@ static char *MP3_stream_info_impl_id3_tag_get_utf8 (struct id3_tag *tag,
 static int MP3_stream_info_impl_get_n_values (MonkeyMediaStreamInfo *info,
 				              MonkeyMediaStreamInfoField field);
 
+struct MP3BitrateInfo
+{
+	int bitrate;
+	int samplerate;
+	int time;
+	int channels;
+	int version;
+	int vbr;
+};
+
 struct MP3StreamInfoImplPrivate
 {
 	struct id3_tag *tag;
 	struct id3_vfs_file *file;
+	struct MP3BitrateInfo *info_num;
 };
 
 static GObjectClass *parent_class = NULL;
@@ -125,7 +136,8 @@ MP3_stream_info_impl_finalize (GObject *object)
 
 	if (impl->priv->file != NULL)
 		id3_vfs_close (impl->priv->file);
-	
+
+	g_free (impl->priv->info_num);
 	g_free (impl->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -155,6 +167,25 @@ MP3_stream_info_impl_open_stream (MonkeyMediaStreamInfo *info)
 	}
 
 	impl->priv->tag = id3_vfs_tag (impl->priv->file);
+}
+
+static void
+MP3_stream_info_impl_get_bitrate_info (MP3StreamInfoImpl *info)
+{
+	if (info->priv->info_num == NULL)
+	{
+		struct MP3BitrateInfo *info_num;
+
+		info_num = g_new0 (struct MP3BitrateInfo, 1);
+		id3_vfs_bitrate (info->priv->file,
+				&info_num->bitrate,
+				&info_num->samplerate,
+				&info_num->time,
+				&info_num->version,
+				&info_num->vbr,
+				&info_num->channels);
+		info->priv->info_num = info_num;
+	}
 }
 
 static int
@@ -435,12 +466,13 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		}
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION:
+		g_value_init (value, G_TYPE_LONG);
+		MP3_stream_info_impl_get_bitrate_info (impl);
+
+		if (impl->priv->info_num->vbr == 0)
 		{
-			int bitrate;
 			GnomeVFSFileSize size;
 			GValue val = { 0, };
-
-			g_value_init (value, G_TYPE_LONG);
 
 			MP3_stream_info_impl_get_value (info,
 							MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
@@ -449,12 +481,12 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 			size = g_value_get_long (&val);
 			g_value_unset (&val);
 
-			bitrate = id3_vfs_bitrate (impl->priv->file);
-
-			if (bitrate > 0)
-				g_value_set_long (value, ((double) size / 1024.0f) / ((double) bitrate / 8.0f));
+			if (impl->priv->info_num->bitrate > 0)
+				g_value_set_long (value, ((double) size / 1000.0f) / ((double) impl->priv->info_num->bitrate / 8.0f / 1000.0f));
 			else
 				g_value_set_long (value, 0);
+		} else {
+			g_value_set_long (value, impl->priv->info_num->time);
 		}
 		break;
 
@@ -464,22 +496,27 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_set_boolean (value, TRUE);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CODEC_INFO:
+		MP3_stream_info_impl_get_bitrate_info (impl);
+		g_value_init (value, G_TYPE_STRING);
+		if (impl->priv->info_num->version != 3)
 		{
-			int version = id3_vfs_version (impl->priv->file);
-			tmp = g_strdup_printf (_("MPEG %d Layer III"), version);
-			g_value_init (value, G_TYPE_STRING);
-			g_value_set_string (value, tmp);
-			g_free (tmp);
+			tmp = g_strdup_printf (_("MPEG %d Layer III"), impl->priv->info_num->version);
+		} else {
+			tmp = g_strdup (_("MPEG 2.5 Layer III"));
 		}
+		g_value_set_string (value, tmp);
+		g_free (tmp);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
+		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_INT);
-		g_value_set_int (value, id3_vfs_bitrate (impl->priv->file));
+		g_value_set_int (value, impl->priv->info_num->bitrate / 1000);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY:
+		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, MONKEY_MEDIA_TYPE_AUDIO_QUALITY);
-		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate (id3_vfs_bitrate (impl->priv->file)));
+		g_value_set_enum (value, monkey_media_audio_quality_from_bit_rate (impl->priv->info_num->bitrate / 1000));
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_TRM_ID:
 		/* FIXME */
@@ -487,16 +524,19 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 		g_value_set_string (value, NULL);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_VARIABLE_BIT_RATE:
+		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_BOOLEAN);
-		g_value_set_boolean (value, id3_vfs_vbr (impl->priv->file));
+		g_value_set_boolean (value, impl->priv->info_num->vbr);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SAMPLE_RATE:
+		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_LONG);
-		g_value_set_long (value, id3_vfs_samplerate (impl->priv->file));
+		g_value_set_long (value, impl->priv->info_num->samplerate);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_CHANNELS:
+		MP3_stream_info_impl_get_bitrate_info (impl);
 		g_value_init (value, G_TYPE_INT);
-		g_value_set_int (value, id3_vfs_channels (impl->priv->file));
+		g_value_set_int (value, impl->priv->info_num->channels);
 		break;
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_SERIAL_NUMBER:
 		g_value_init (value, G_TYPE_LONG);
