@@ -67,6 +67,8 @@ void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry 
 
 void			rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
 
+void			rhythmdb_query_model_set_connected	(RhythmDBQueryModel *model, gboolean connected);
+
 void			rhythmdb_query_model_signal_complete	(RhythmDBQueryModel *model);
 void			rhythmdb_query_model_finish_complete	(RhythmDBQueryModel *model);
 

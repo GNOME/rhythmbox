@@ -534,9 +534,14 @@ rb_entry_view_set_property (GObject *object,
 		RhythmDBModel *new_model;
 		struct RBEntryViewColumnSortData *sort_data;
 		
-		if (view->priv->model)
+		if (view->priv->model) {
 			rhythmdb_model_cancel (view->priv->model);
+			rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (view->priv->model), FALSE);
+		}
 		new_model = g_value_get_object (value);
+
+		rhythmdb_query_model_set_connected (RHYTHMDB_QUERY_MODEL (new_model),
+						    TRUE);
 
 		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_inserted",

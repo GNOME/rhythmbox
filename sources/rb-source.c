@@ -283,12 +283,16 @@ void
 rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry *entry)
 {
 	time_t now;
+	guint current_count;
 	GValue value = { 0, };
 
 	g_value_init (&value, G_TYPE_INT);
 
-	g_value_set_int (&value, rhythmdb_entry_get_int (db, entry,
-							 RHYTHMDB_PROP_PLAY_COUNT) + 1);
+	rhythmdb_read_lock (db);
+	current_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
+	rhythmdb_read_unlock (db);
+
+	g_value_set_int (&value, current_count + 1);
 
 	/* Increment current play count */
 	rhythmdb_entry_queue_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);

@@ -1750,9 +1750,7 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		rb_debug ("Got stream quality: \"%s\"", qualitystr);
 		g_value_init (&newval, G_TYPE_STRING);
 		g_value_set_string_take_ownership (&newval, qualitystr);
-		rhythmdb_write_lock (player->priv->db);
-		rhythmdb_entry_set (player->priv->db, entry, RHYTHMDB_PROP_QUALITY, &newval);
-		rhythmdb_write_unlock (player->priv->db);
+		rhythmdb_entry_queue_set (player->priv->db, entry, RHYTHMDB_PROP_QUALITY, &newval);
 		g_value_unset (&newval);
 		break;
 	}
