@@ -2,7 +2,7 @@
  *  arch-tag: Implementation of GStreamer backends, with workarounds for bugs
  *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
- *  Copyright (C) 2003 Colin Walters <walters@debian.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
+#include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
@@ -50,6 +51,7 @@ struct RBPlayerPrivate
 
 	GstElement *srcthread;
 	GstElement *queue;
+	GstElement *typefind;
 	GstElement *waiting_bin;
 	GstElement *src;
 
@@ -377,6 +379,8 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 	if (strcmp (pspec->name, "iradio-title") == 0) {
 		RBPlayerSignal *signal;
 
+		rb_debug ("caught deep notify for iradio-title");
+
 		signal = g_new0 (RBPlayerSignal, 1);
 
 		signal->info_field = RB_METADATA_FIELD_TITLE;
@@ -399,6 +403,7 @@ queue_full_cb (GstQueue *queue,
 {
 	RBPlayer *mp = RB_PLAYER (data);
 
+	rb_debug ("caught queue full");
 	g_signal_handlers_block_by_func (G_OBJECT (mp->priv->queue),
 					 G_CALLBACK (queue_full_cb),
 					 mp);
@@ -487,6 +492,7 @@ rb_player_construct (RBPlayer *mp,
 	}
 #endif
 
+	rb_debug ("constructing queue");
 	/* The queue */
 	if (iradio_mode) {
 		mp->priv->queue = gst_element_factory_make ("queue", "queue");
@@ -499,24 +505,27 @@ rb_player_construct (RBPlayer *mp,
 			mp->priv->pipeline = NULL;
 			return;
 		}
+		g_object_set (G_OBJECT (mp->priv->queue), "max-size-bytes", 64 * 1024, NULL);
 		g_signal_connect (G_OBJECT (mp->priv->queue), "overrun",
 				  G_CALLBACK (queue_full_cb), mp);
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
 	}
 
-	/* The decoding element */
-	if (iradio_mode)
-#ifdef WITH_MONKEYMEDIA
-#ifdef HAVE_MP3
-		decoder_name = "mad";
-#else
-		decoder_name = "vorbisfile";
-#endif
-#else
-		decoder_name = "mad";
-#endif
-	else
-		decoder_name = "spider";
+	rb_debug ("constructing typefind");
+	mp->priv->typefind = gst_element_factory_make ("typefind", "typefind");
+	if (mp->priv->typefind == NULL) {
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_NO_TYPEFIND_PLUGIN,
+			     _("Failed to create typefind element; check your installation"));
+		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
+		mp->priv->pipeline = NULL;
+		return;
+	}
+	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->typefind);
+
+	rb_debug ("constructing autoplugger");
+	decoder_name = "spider";
 
 	mp->priv->decoder = gst_element_factory_make (decoder_name, "autoplugger");
 	if (mp->priv->decoder == NULL) {
@@ -567,9 +576,9 @@ rb_player_construct (RBPlayer *mp,
 
 	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->sink, NULL);
 	if (iradio_mode)
-		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->decoder, NULL);
+		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->typefind, mp->priv->decoder, NULL);
 	else
-		gst_element_link_many (mp->priv->src, mp->priv->decoder, NULL);
+		gst_element_link_many (mp->priv->src, mp->priv->typefind, mp->priv->decoder, NULL);
 
 	g_signal_connect (G_OBJECT (mp->priv->sink), "eos",
 			  G_CALLBACK (eos_cb), mp);
@@ -591,6 +600,7 @@ rb_player_construct (RBPlayer *mp,
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = 0;
+	rb_debug ("pipeline construction complete");
 }
 
 RBPlayer *
@@ -616,8 +626,10 @@ rb_player_error_quark (void)
 static gboolean
 rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 {
+	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
 		if (iradio_mode) {
+			rb_debug ("beginning buffering");
 			g_object_ref (G_OBJECT (mp));
 			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
 			if (gst_element_set_state (mp->priv->srcthread,
@@ -629,6 +641,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 				return FALSE;
 			}
 		} else {
+			rb_debug ("PLAYING pipeline");
 			if (gst_element_set_state (mp->priv->pipeline,
 						   GST_STATE_PLAYING) != GST_STATE_SUCCESS) {
 				g_set_error (error,
@@ -640,6 +653,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 		}
 		g_timer_start (mp->priv->timer);
 	} else {
+		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->pipeline,
 					   GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
 			g_set_error (error,
@@ -649,6 +663,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			return FALSE;
 		}
 			
+		rb_debug ("setting sink to NULL");
 		if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
