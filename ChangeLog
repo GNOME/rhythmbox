@@ -1,6 +1,14 @@
 2003-08-06  Colin Walters  <walters@verbum.org>
 
 	* configure.ac:
+	* monkey-media/monkey-media-stream-info.c:
+	(monkey_media_stream_info_sync_from_net):
+
+	Fix compilation with Musicbrainz disabled.
+
+2003-08-06  Colin Walters  <walters@verbum.org>
+
+	* configure.ac:
 	* monkey-media/Makefile.am:
 	* monkey-media/monkey-media-player-gst-tmp.c:
 	(monkey_media_player_finalize), (monkey_media_player_construct),

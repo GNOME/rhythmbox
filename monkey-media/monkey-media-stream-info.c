@@ -32,7 +32,9 @@
 
 #include "monkey-media-stream-info.h"
 #include "monkey-media-private.h"
+#ifdef HAVE_MUSICBRAINZ
 #include "monkey-media-musicbrainz.h"
+#endif
 
 #include "vorbis-stream-info-impl.h"
 #include "mp3-stream-info-impl.h"
@@ -690,6 +692,7 @@ monkey_media_stream_info_index_to_genre (int index)
 	return _(genres[index]);
 }
 
+#ifdef HAVE_MUSICBRAINZ
 static void
 clear_values (MonkeyMediaStreamInfo *info,
 	      MonkeyMediaStreamInfoField field)
@@ -703,6 +706,7 @@ clear_values (MonkeyMediaStreamInfo *info,
 		monkey_media_stream_info_set_value (info, field, i, &value);
 	}
 }
+#endif
 
 gboolean
 monkey_media_stream_info_get_value_net (MonkeyMediaStreamInfo *info,
@@ -768,6 +772,7 @@ void
 monkey_media_stream_info_sync_from_net (MonkeyMediaStreamInfo *info,
 					GError **error)
 {
+#ifdef HAVE_MUSICBRAINZ
 	MonkeyMediaMusicbrainz *mb;
 	GValue value = { 0, };
 	int i;
@@ -832,4 +837,5 @@ monkey_media_stream_info_sync_from_net (MonkeyMediaStreamInfo *info,
 	}
 
 	g_object_unref (G_OBJECT (mb));
+#endif
 }
