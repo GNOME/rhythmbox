@@ -133,6 +133,8 @@ rb_source_header_init (RBSourceHeader *header)
 {
 	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
 
+	gtk_box_set_spacing (GTK_BOX (header), 5);
+
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
 
 	g_signal_connect (G_OBJECT (header->priv->search), "search",
@@ -147,7 +149,7 @@ rb_source_header_init (RBSourceHeader *header)
 	gtk_box_pack_start (GTK_BOX (header),
 			    GTK_WIDGET (header->priv->disclosure), TRUE, TRUE, 0);
 	gtk_box_pack_end (GTK_BOX (header),
-			  GTK_WIDGET (header->priv->search), TRUE, TRUE, 0);
+			  GTK_WIDGET (header->priv->search), FALSE, FALSE, 0);
 }
 
 static void

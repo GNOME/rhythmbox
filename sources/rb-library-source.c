@@ -811,12 +811,10 @@ static const char *
 impl_get_status_full (RBLibrarySource *source)
 {
 	RBNode *songsroot = rb_library_get_all_songs (source->priv->library);
-	char *ret, *size;
+	char *ret;
 	float days;
 	long hours, minutes, seconds;
-	GnomeVFSFileSize n_bytes = 0;
 	long n_seconds = 0;
-	long n_songs = 0;
 	GPtrArray *kids;
 	int i;
 
@@ -825,7 +823,6 @@ impl_get_status_full (RBLibrarySource *source)
 	for (i = 0; i < kids->len; i++)
 	{
 		long secs;
-		long bytes;
 		RBNode *node;
 
 		node = g_ptr_array_index (kids, i);
@@ -834,45 +831,32 @@ impl_get_status_full (RBLibrarySource *source)
 		    rb_node_filter_evaluate (source->priv->songs_filter, node) == FALSE)
 			continue;
 
-		n_songs++;
-
 		secs = rb_node_get_property_long (node,
 						  RB_NODE_PROP_REAL_DURATION);
 		if (secs < 0)
 			g_warning ("Invalid duration value for node %p", node);
 		else
 			n_seconds += secs;
-
-		bytes = rb_node_get_property_long (node,
-						   RB_NODE_PROP_FILE_SIZE);
-
-		if (bytes < 0)
-			g_warning ("Invalid size value for node %p", node);
-		else
-			n_bytes += bytes;
 	}
 
 	rb_node_thaw (songsroot);
-
-	size = gnome_vfs_format_file_size_for_display (n_bytes);
 
 	days    = (float) n_seconds / (float) (60 * 60 * 24); 
 	hours   = n_seconds / (60 * 60);
 	minutes = n_seconds / 60 - hours * 60;
 	seconds = n_seconds % 60;
 
-	if ( days >= 1.0 ) {
-		ret = g_strdup_printf (_("%ld songs, %.1f days total time, %s"),
-				       n_songs, days, size);
-	} else if ( hours >= 1 ) {	
-	  ret = g_strdup_printf (_("%ld songs, %ld:%02ld:%02ld total time, %s"),
-				 n_songs, hours, minutes, seconds, size);
+	/* FIXME impl remaining time */
+	if (days >= 1.0) {
+		ret = g_strdup_printf (_("<b>%.1f</b> days"),
+				       days);
+	} else if (hours >= 1) {
+		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes"),
+				       hours, minutes);
 	} else {
-		ret = g_strdup_printf (_("%ld songs, %02ld:%02ld total time, %s"),
-				       n_songs, minutes, seconds, size);
+		ret = g_strdup_printf (_("<b>%ld</b> minutes"),
+				       minutes);
 	}
-
-	g_free (size);
 
 	return ret;
 }

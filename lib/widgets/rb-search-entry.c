@@ -114,10 +114,10 @@ rb_search_entry_init (RBSearchEntry *entry)
 
 	/* this string can only be so long, or there wont be a search entry :) */
 	label = gtk_label_new_with_mnemonic (_("_Search:"));
-	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (entry), label, TRUE, TRUE, 0);
 
 	entry->priv->entry = gtk_entry_new ();
-	gtk_widget_set_size_request (GTK_WIDGET (entry->priv->entry), 50, -1);
+	gtk_widget_set_size_request (GTK_WIDGET (entry->priv->entry), 120, -1);
 
 	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
 				       entry->priv->entry);

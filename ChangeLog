@@ -1,5 +1,21 @@
 2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_init):
+	* shell/rb-source-header.c: (rb_source_header_init):
+	* shell/rb-statusbar.c: (rb_statusbar_init),
+	(rb_statusbar_sync_with_source):
+	* sources/rb-library-source.c: (impl_get_status_full):
+
+	Status fixage.
+
+	TODO:
+	- fix status for iradio, groups, audiocd
+	- display remaining time (not a trivial one)
+	- fix bug where when loading the total number of songs in the status
+	overrides the number of actually shown songs
+
+2003-05-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_get_type),
 	(rb_sourcelist_init), (rb_sourcelist_new), (rb_sourcelist_append):
 	* lib/widgets/rb-sourcelist.h:

@@ -60,7 +60,7 @@ struct RBStatusbarPrivate
 	RBSource *selected_source;
 
 	GtkWidget *shuffle;
-	GtkWidget *repeat;	
+	GtkWidget *repeat;
 	GtkWidget *status;
 };
 
@@ -132,9 +132,10 @@ rb_statusbar_init (RBStatusbar *statusbar)
 			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
 	g_signal_connect (G_OBJECT (statusbar->priv->repeat), "toggled",
 			  G_CALLBACK (rb_statusbar_toggle_changed_cb), statusbar);
-	
+
 	statusbar->priv->status = gtk_label_new ("Status goes here");
-	gtk_label_set_justify (GTK_LABEL (statusbar->priv->status), GTK_JUSTIFY_RIGHT);
+	gtk_label_set_use_markup (GTK_LABEL (statusbar->priv->status), TRUE);
+	gtk_misc_set_alignment (GTK_MISC (statusbar->priv->status), 1.0, 0.5);
 
 	gtk_box_set_spacing (GTK_BOX (statusbar), 5);
 
@@ -143,8 +144,8 @@ rb_statusbar_init (RBStatusbar *statusbar)
 	gtk_box_pack_start (GTK_BOX (statusbar),
 			    GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
 
-	gtk_box_pack_start (GTK_BOX (statusbar),
-			    GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (statusbar),
+			  GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
 
 	rb_statusbar_sync_toggles (statusbar);
 
@@ -258,8 +259,8 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 	if (statusbar->priv->selected_source != NULL) {
 		const char *status = rb_source_get_status (statusbar->priv->selected_source);
 		rb_debug  ("got status: %s", status);
-		
-		gtk_label_set_text (GTK_LABEL (statusbar->priv->status), status);
+
+		gtk_label_set_markup (GTK_LABEL (statusbar->priv->status), status);
 	}
 }
 
