@@ -1122,6 +1122,9 @@ rb_node_view_get_first_node (RBNodeView *view)
 {
 	GtkTreeIter iter, iter2;
 
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->filtermodel),
+				           &iter) == FALSE)
+		return NULL;
 	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
 				           &iter) == FALSE)
 		return NULL;

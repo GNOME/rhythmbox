@@ -1,3 +1,10 @@
+2003-05-24  Colin Walters  <walters@debian.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_first_node):
+
+	Return NULL if the filter model is empty.  This should fix a
+	number of outstanding bugs.
+
 2003-05-24  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell.c: (rb_shell_construct):
