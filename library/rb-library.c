@@ -153,6 +153,7 @@ rb_library_finalize (GObject *object)
 
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
 	children = g_list_copy (rb_node_get_children (library->priv->all_songs));
+	rb_node_unlock (library->priv->all_songs);
 	rb_node_unref (library->priv->all_songs);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
