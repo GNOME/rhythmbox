@@ -241,13 +241,13 @@ rb_druid_init_widgets (RBDruid *druid)
 	gnome_druid_append_page (druid->priv->druid, page);
 	gnome_druid_set_page (druid->priv->druid, page);
 	gnome_druid_page_edge_set_text (GNOME_DRUID_PAGE_EDGE (page),
-					_("In order to get started using\nRhythmbox, this assistant will ask\nyou some simple questions."));
+					_("Rhythmbox is the GNOME music player that lets you do\neverything: play your music files, listen to Internet Radio,\nimport music from CDs, and much more.\n\nThis assistant will help you get started by\nasking you some simple questions."));
 
 	/* page 2 */
 	page = GNOME_DRUID_PAGE (gnome_druid_page_standard_new ());
 	gtk_widget_show (GTK_WIDGET (page));
 	gnome_druid_page_standard_set_title (GNOME_DRUID_PAGE_STANDARD (page), 
-					     _("Library setup"));
+					     _("Music library setup"));
 	gtk_container_add (GTK_CONTAINER (GNOME_DRUID_PAGE_STANDARD (page)->vbox),
 			   druid->priv->page2_vbox);
 	gnome_druid_append_page (druid->priv->druid, page);
@@ -258,7 +258,7 @@ rb_druid_init_widgets (RBDruid *druid)
 	gtk_widget_show (GTK_WIDGET (page));
 	gnome_druid_page_edge_set_title (GNOME_DRUID_PAGE_EDGE (page), _("Finish"));
 	gnome_druid_page_edge_set_text (GNOME_DRUID_PAGE_EDGE (page),
-					_("You are now ready to start Rhythmbox."));
+					_("You are now ready to start Rhythmbox.\n\nRemember that you may add music\nto the library using \"Organize\"\nthen \"Add to Library\", or by importing\nit from CDs."));
 	g_signal_connect (G_OBJECT (page), "finish", G_CALLBACK (rb_druid_page3_finish_cb), druid);
 	gnome_druid_append_page (druid->priv->druid, page);
 
