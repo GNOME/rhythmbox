@@ -43,6 +43,7 @@
 # include "file.h"
 # include "tag.h"
 # include "field.h"
+# include "mp3bitrate.h"
 
 struct vfstag {
   struct id3_tag *tag;
@@ -457,260 +458,64 @@ int id3_vfs_update(struct id3_vfs_file *file)
   return 0;
 }
 
-int bitrates[2][16] = {
-{0,8,16,24,32,40,48,56,64,80,96,112,128,144,160,},          /* MPEG2 */
-{0,32,40,48, 56, 64, 80, 96,112,128,160,192,224,256,320,}}; /* MPEG1 */
-
-long samprates[2][3] = {
-{ 22050, 24000, 16000 },  /* MPEG2 */
-{ 44100, 48000, 32000 }}; /* MPEG1 */
-
-static int extractI4(unsigned char *buf)
+int
+id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
+		int *time, int *version, int *vbr, int *channels)
 {
-	int x;
-	/* big endian extract */
-
-	x = buf[0];
-	x <<= 8;
-	x |= buf[1];
-	x <<= 8;
-	x |= buf[2];
-	x <<= 8;
-	x |= buf[3];
-
-	return(x);
-}
-
-/* check for valid MPEG header */
-static int is_mphead(unsigned char *buf)
-{
-	if (buf[0] != 0xff) return(0);		
-	if ((buf[1] & 0xf0) != 0xf0) return(0);	 /* 12 bits framesync */
-	
-	return(1); 
-}
-
-/* check for valid "Xing" VBR header */
-static int is_xhead(unsigned char *buf)
-{
-	if (buf[0] != 'X') return(0);
-	if (buf[1] != 'i') return(0);
-	if (buf[2] != 'n') return(0);
-	if (buf[3] != 'g') return(0);
-	
-	return(1);
-}
-
-int id3_vfs_bitrate (struct id3_vfs_file *file)
-{
-  GnomeVFSFileSize save_position;
+  GnomeVFSFileSize save_position, length_read;
   GnomeVFSHandle *iofile = file->iofile;
   GnomeVFSResult res;
-	int bitrate = 0;
-	GnomeVFSFileSize length_read;
-	guchar buffer[8192];
+  guchar buffer[8192];
+  int found, i;
+
+  *bitrate = 0;
+  *samplerate = 0;
+  *time = 0;
+  *channels = 0;
+  *version = 0;
+  *vbr = 0;
+  found = 0;
 
   if (gnome_vfs_tell(iofile, &save_position) != GNOME_VFS_OK)
     return 0;
 
-	gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
+  gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
 
   res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
-  if ((res == GNOME_VFS_OK) && (length_read > 512))
+  if( res != GNOME_VFS_OK || length_read < 512 )
+    goto bitdone;
+
+  for (i = 0; i + 4 < length_read; i++)
   {
-	  int i = 0;
-		int ver,srindex,brindex,xbytes,xframes;
-		long long total_bytes, magic1, magic2;
-	
-	  while(!is_mphead(buffer+i)) {
-		  i++;
-		  if (i>length_read-4) goto bitdone;  /* no valid header, give up */
-	  }	
+    if (mp3_bitrate_parse_header (buffer+i, length_read - i, bitrate, samplerate, time, version, vbr, channels))
+    {
+      found = 1;
+      break;
+    }
+  }
 
-	  ver = (buffer[i+1] & 0x08) >> 3;
-	  brindex = (buffer[i+2] & 0xf0) >> 4;
-	  srindex = (buffer[i+2] & 0x0c) >> 2;
+  /* If we haven't found anything, try again with 8 more kB */
+  if (found == 0)
+  {
+    res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
 
-	  /* but if there is a Xing header we'll use that instead... */	
-	  i=0;
-	  while(!is_xhead(buffer+i)) {
-		  i++;
-		  if (i>length_read-16)
-			{
-			  bitrate = (bitrates[ver][brindex]);
-		    goto bitdone;
-			}
-	  }
+    if( res != GNOME_VFS_OK || length_read < 512 )
+      goto bitdone;
 
-	  xframes = extractI4(buffer+i+8);
-	  xbytes = extractI4(buffer+i+12);
-
-	  if (xframes <= 0) {
-		  bitrate = 0;
-		  goto bitdone;
-	  }
-
-	  total_bytes = (long long) samprates[ver][srindex] * (long long) xbytes;
-	  magic1 = total_bytes / (long long) (576 + ver * 576);
-	  magic2 = magic1 / (long long) xframes;
-	  bitrate = (int) ((long long) magic2 / (long long) 125);
+    for (i = 0; i + 4 < length_read; i++)
+    {
+      if (mp3_bitrate_parse_header (buffer+i, length_read - i, bitrate, samplerate, time, version, vbr, channels))
+      {
+	      found = 1;
+	      break;
+      }
+    }
   }
 
 bitdone:
-  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position)
-      != GNOME_VFS_OK)
+  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position) != GNOME_VFS_OK)
     return 0;
 
-	return bitrate;
+  return 1;
 }
 
-long id3_vfs_samplerate (struct id3_vfs_file *file)
-{
-  GnomeVFSFileSize save_position;
-  GnomeVFSHandle *iofile = file->iofile;
-  GnomeVFSResult res;
-	long samprate = 0;
-	GnomeVFSFileSize length_read;
-	guchar buffer[8192];
-
-  if (gnome_vfs_tell(iofile, &save_position) != GNOME_VFS_OK)
-    return 0;
-
-	gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
-
-  res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
-  if ((res == GNOME_VFS_OK) && (length_read > 512))
-  {
-	  int i = 0;
-		int ver,srindex;
-	
-	  while(!is_mphead(buffer+i)) {
-		  i++;
-		  if (i>length_read-4) goto sampdone;  /* no valid header, give up */
-	  }	
-
-	  ver = (buffer[i+1] & 0x08) >> 3;
-	  srindex = (buffer[i+2] & 0x0c) >> 2;
-
-		samprate = (long) (samprates[ver][srindex]);
-  }
-
-sampdone:
-  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position)
-      != GNOME_VFS_OK)
-    return 0;
-
-	return samprate;
-}
-
-int id3_vfs_channels (struct id3_vfs_file *file)
-{
-  GnomeVFSFileSize save_position;
-  GnomeVFSHandle *iofile = file->iofile;
-  GnomeVFSResult res;
-	int channels = 0;
-	GnomeVFSFileSize length_read;
-	guchar buffer[8192];
-
-  if (gnome_vfs_tell(iofile, &save_position) != GNOME_VFS_OK)
-    return 0;
-
-	gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
-
-  res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
-  if ((res == GNOME_VFS_OK) && (length_read > 512))
-  {
-	  int i = 0;
-	
-	  while(!is_mphead(buffer+i)) {
-		  i++;
-		  if (i>length_read-4) goto chandone;  /* no valid header, give up */
-	  }	
-
-		channels = (((buffer[i+3] & 0xc0) >> 6) == 2) ? 1 : 2;
-  }
-
-chandone:
-  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position)
-      != GNOME_VFS_OK)
-    return 0;
-
-	return channels;
-}
-
-gboolean id3_vfs_vbr (struct id3_vfs_file *file)
-{
-  GnomeVFSFileSize save_position;
-  GnomeVFSHandle *iofile = file->iofile;
-  GnomeVFSResult res;
-	gboolean vbr = FALSE;
-	GnomeVFSFileSize length_read;
-	guchar buffer[8192];
-
-  if (gnome_vfs_tell(iofile, &save_position) != GNOME_VFS_OK)
-    return 0;
-
-	gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
-
-  res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
-  if ((res == GNOME_VFS_OK) && (length_read > 512))
-  {
-	  int i = 0;
-	
-	  while(!is_mphead(buffer+i)) {
-		  i++;
-		  if (i>length_read-4) goto vbrdone;  /* no valid header, give up */
-	  }	
-
-	  /* but if there is a Xing header we'll use that instead... */	
-	  i=0;
-	  while(!is_xhead(buffer+i)) {
-		  i++;
-		  if (i>length_read-16) goto vbrdone;
-	  }
-
-		vbr = TRUE;
-  }
-
-vbrdone:
-  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position)
-      != GNOME_VFS_OK)
-    return 0;
-
-	return vbr;
-}
-
-int id3_vfs_version (struct id3_vfs_file *file)
-{
-  GnomeVFSFileSize save_position;
-  GnomeVFSHandle *iofile = file->iofile;
-  GnomeVFSResult res;
-	int version = 0;
-	GnomeVFSFileSize length_read;
-	guchar buffer[8192];
-
-  if (gnome_vfs_tell(iofile, &save_position) != GNOME_VFS_OK)
-    return 0;
-
-	gnome_vfs_seek (iofile, GNOME_VFS_SEEK_START, 0);
-
-  res = gnome_vfs_read (iofile, buffer, sizeof (buffer), &length_read);
-  if ((res == GNOME_VFS_OK) && (length_read > 512))
-  {
-	  int i = 0;
-	
-	  while(!is_mphead(buffer+i)) {
-		  i++;
-		  if (i>length_read-4) goto verdone;  /* no valid header, give up */
-	  }	
-
-		version = (buffer[i+1] & 0x08) >> 3;
-  }
-
-verdone:
-  if (gnome_vfs_seek(iofile, GNOME_VFS_SEEK_START, save_position)
-      != GNOME_VFS_OK)
-    return 0;
-
-	return version;
-}
