@@ -187,18 +187,6 @@ if test x"$with_metadata" = xmonkeymedia; then
 	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
 fi	
 
-
-dnl Workaround for the gtktreeview bug
-disable_gtktreeview_workaround=yes
-AC_ARG_ENABLE(gtktreeview_workaround,
-              AC_HELP_STRING([--disable-gtktreeview-workaround],
-	                     [Disable use of a workaround for the GtkTreeView bug which causes temporary display corruption]),,
-	      disable_gtktreeview_workaround=no)
-
-if test "x$disable_gtktreeview_workaround" != "xyes"; then
-  AC_DEFINE(USE_GTK_TREE_VIEW_WORKAROUND,,[Define to enable the GtkTreeView workaround])
-fi
-
 dnl Stolen from D-BUS configury
 dnl Atomic integers (checks by Sebastian Wilhelmi for GLib)
 AC_MSG_CHECKING([whether to use inline assembler routines for atomic integers])
@@ -608,11 +596,6 @@ dnl else
 dnl 	AC_MSG_NOTICE([** Audio CD support is enabled])
 dnl 	AC_MSG_WARN([Audio CD support is experimental!])
 dnl fi
-if test x"$disable_gtktreeview_workaround" = xyes; then
-	AC_MSG_NOTICE([   GtkTreeView workaround disabled])
-else
-	AC_MSG_NOTICE([** GtkTreeView workaround enabled])
-fi
 if test x"$missing_gst_output_element" != x; then
 	AC_MSG_WARN([Neither osssink nor alsasink could be found on your system])
 fi	

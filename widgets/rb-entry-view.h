@@ -150,8 +150,6 @@ void		rb_entry_view_set_resorting		(RBEntryView *view);
 
 gboolean	rb_entry_view_poll_model		(RBEntryView *view);
 
-void		rb_entry_view_freeze			(RBEntryView *view);
-void		rb_entry_view_thaw			(RBEntryView *view);
 G_END_DECLS
 
 #endif /* __RB_ENTRY_VIEW_H */

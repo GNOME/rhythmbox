@@ -168,10 +168,6 @@ struct RBEntryViewPrivate
 	GHashTable *column_sort_data_map;
 
 	gboolean idle;
-
-#ifdef USE_GTK_TREE_VIEW_WORKAROUND	
-	guint freeze_count;
-#endif
 };
 
 enum
@@ -443,82 +439,6 @@ rb_entry_view_finalize (GObject *object)
 }
 
 
-/* FIXME!
- * This is a gross hack to work around a GTK+ bug.  See
- * http://bugzilla.gnome.org/show_bug.cgi?id=119797 for more
- * information.
- */
-void
-rb_entry_view_thaw (RBEntryView *view)
-{
-/* RHYTHMDB FIXME */
-#if 0
-#ifdef USE_GTK_TREE_VIEW_WORKAROUND
-	GList *columns;
-	int i;
-
-	g_return_if_fail (view->priv->freeze_count > 0);
-
-	view->priv->freeze_count--;
-	if (view->priv->freeze_count > 0)
-		return;
-
-	rb_debug ("thawing entry view");
-
-	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
-
-	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS && columns != NULL; i++, columns = g_list_next (columns))
-		switch (i)
-		{
-		case RB_TREE_MODEL_NODE_COL_PLAYING:
-			break;
-		case RB_TREE_MODEL_NODE_COL_RATING:
-			break;
-		default:
-			gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (columns->data),
-							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-
-			break;
-		}
-	g_list_free (columns);
-#endif
-#endif
-}
-
-void
-rb_entry_view_freeze (RBEntryView *view)
-{
-/* RHYTHMDB FIXME */
-#if 0
-#ifdef USE_GTK_TREE_VIEW_WORKAROUND
-	GList *columns;
-	int i;
-
-	view->priv->freeze_count++;
-
-	rb_debug ("freezing entry view");
-	
-	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
-	
-	for (i = 0; i < RB_TREE_MODEL_NODE_NUM_COLUMNS && columns != NULL; i++, columns = g_list_next (columns))
-		switch (i)
-		{
-		case RB_TREE_MODEL_NODE_COL_PLAYING:
-			break;
-		case RB_TREE_MODEL_NODE_COL_RATING:
-			break;
-		default:
-			gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (columns->data),
-							 GTK_TREE_VIEW_COLUMN_FIXED);
-
-			break;
-		}
-
-	g_list_free (columns);
-#endif
-#endif
-}
-
 static void
 rb_entry_view_set_property (GObject *object,
 			   guint prop_id,
@@ -617,7 +537,6 @@ rb_entry_view_set_property (GObject *object,
 		GtkTreeIter iter;
 		GtkTreePath *path;
 		RhythmDBEntry *entry;
-		rb_entry_view_freeze (view);
 
 		entry = g_value_get_pointer (value);
 		
@@ -648,8 +567,6 @@ rb_entry_view_set_property (GObject *object,
 				gtk_tree_path_free (path);
 			}
 		}
-
-		rb_entry_view_thaw (view);
 
 		if (view->priv->playing_entry
 		    && view->priv->playing_entry_in_view
@@ -1549,16 +1466,12 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 	entry = entry_from_tree_path (view, path);
 	gtk_tree_path_free (path);
 
-	rb_entry_view_freeze (view);
-
 	g_value_init (&value, G_TYPE_DOUBLE);
 	g_value_set_double (&value, rating);
 	rhythmdb_entry_queue_set (view->priv->db, entry, RHYTHMDB_PROP_RATING,
 				  &value);
 	g_value_unset (&value);
 
-	rb_entry_view_thaw (view);
-	
 	/* since the user changed the rating, stop auto-rating */
 	g_value_init (&value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&value, FALSE);
@@ -2104,11 +2017,7 @@ rb_entry_view_set_playing (RBEntryView *view,
 {
 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
 
-	rb_entry_view_freeze (view);
-
 	view->priv->playing = TRUE;
-
-	rb_entry_view_thaw (view);
 }
 
 gboolean
