@@ -930,7 +930,7 @@ rb_shell_player_get_next (RBShellPlayer *player)
 
 	return entry;
 }
-	
+
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
@@ -1012,6 +1012,14 @@ rb_shell_player_cmd_next (BonoboUIComponent *component,
 {
 	rb_debug ("next");
 	rb_shell_player_do_next (player);
+}
+
+void
+rb_shell_player_play_entry (RBShellPlayer *player,
+			    RhythmDBEntry *entry)
+{
+	rb_shell_player_set_playing_source (player, player->priv->selected_source);
+	rb_shell_player_set_playing_entry (player, entry);
 }
 
 static void

@@ -26,6 +26,7 @@
 #include <monkey-media.h>
 
 #include "rb-source.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_SHELL_PLAYER_H
 #define __RB_SHELL_PLAYER_H
@@ -70,6 +71,8 @@ RBSource *		rb_shell_player_get_source	(RBShellPlayer *shell_player);
 
 void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
+void			rb_shell_player_play_entry	(RBShellPlayer *player,
+							 RhythmDBEntry *entry);
 void			rb_shell_player_playpause	(RBShellPlayer *player);
 void			rb_shell_player_stop		(RBShellPlayer *player);
 void			rb_shell_player_do_previous	(RBShellPlayer *player);

@@ -94,6 +94,12 @@ static void rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 				       CORBA_Environment *ev);
 static void rb_shell_corba_playpause (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
+static void rb_shell_corba_select (PortableServer_Servant _servant,
+				   const CORBA_char *uri,
+				   CORBA_Environment *ev);
+static void rb_shell_corba_play (PortableServer_Servant _servant,
+				 const CORBA_char *uri,
+				 CORBA_Environment *ev);
 static void rb_shell_corba_next (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
 static void rb_shell_corba_previous (PortableServer_Servant _servant,
@@ -105,8 +111,6 @@ static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 
 static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
 
-void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title,
-				     const char *genre);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -173,6 +177,10 @@ static void rb_shell_cmd_current_song (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
 static void rb_shell_jump_to_current (RBShell *shell);
+static void rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry);
+static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
+						RhythmDBEntry *entry);
+static void rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 const char *path,
@@ -344,6 +352,8 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->addToLibrary = rb_shell_corba_add_to_library;
 	epv->grabFocus    = rb_shell_corba_grab_focus;
 	epv->playPause = rb_shell_corba_playpause;
+	epv->select = rb_shell_corba_select;
+	epv->play = rb_shell_corba_play;
 	epv->previous = rb_shell_corba_previous;
 	epv->next = rb_shell_corba_next;
 	epv->getPlayingTime = rb_shell_corba_get_playing_time;
@@ -445,6 +455,73 @@ rb_shell_new (void)
 	return s;
 }
 
+struct RBShellAction
+{
+	RBShell *shell;
+	char *uri;
+	guint tries;
+	enum {
+		RB_SHELL_ACTION_JUMP,
+		RB_SHELL_ACTION_PLAY,
+	} type;
+};
+
+static gboolean
+idle_do_action (struct RBShellAction *data)
+{
+	RhythmDBEntry *entry;
+	char *unquoted = NULL;
+	
+	GDK_THREADS_ENTER ();
+
+	data->tries++;
+
+	rhythmdb_read_lock (data->shell->priv->db);
+	entry = rhythmdb_entry_lookup_by_location (data->shell->priv->db, data->uri);
+	rhythmdb_read_unlock (data->shell->priv->db);
+
+	if (entry) {
+		switch (data->type) {
+		case RB_SHELL_ACTION_JUMP:
+			rb_shell_jump_to_entry (data->shell, entry);
+			break;
+		case RB_SHELL_ACTION_PLAY:
+			rb_shell_play_entry (data->shell, entry);
+			break;
+		}
+	} else if (data->tries < 4)
+		g_timeout_add (500 + data->tries*200, (GSourceFunc) idle_do_action, data);
+	else
+		g_warning ("No entry %s in db", data->uri);
+
+	GDK_THREADS_LEAVE ();
+
+	g_free (unquoted);
+	g_free (data->uri);
+	g_free (data);
+	return FALSE;
+}
+
+static void
+rb_shell_queue_jump (RBShell *shell, const char *uri)
+{
+	struct RBShellAction *data = g_new0 (struct RBShellAction, 1);
+	data->shell = shell;
+	data->uri = g_strdup (uri);
+	data->type = RB_SHELL_ACTION_JUMP;
+	g_idle_add ((GSourceFunc) idle_do_action, data);
+}
+
+static void
+rb_shell_queue_play (RBShell *shell, const char *uri)
+{
+	struct RBShellAction *data = g_new0 (struct RBShellAction, 1);
+	data->shell = shell;
+	data->uri = g_strdup (uri);
+	data->type = RB_SHELL_ACTION_PLAY;
+	g_idle_add ((GSourceFunc) idle_do_action, data);
+}
+
 static void
 rb_shell_corba_quit (PortableServer_Servant _servant,
                      CORBA_Environment *ev)
@@ -456,20 +533,6 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 	rb_shell_quit (shell);
 
 	GDK_THREADS_LEAVE ();
-}
-
-static void
-handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title,
-			  const char *genre, RBShell *shell)
-{
-	/* We assume all HTTP is iradio.  This is probably a broken assumption,
-	 * but it's very difficult to really fix...
-	 */
-	if (rb_uri_is_iradio (uri) != FALSE) {
-		rb_iradio_source_add_station (shell->priv->iradio_source, uri, title, genre);
-	} else {
-		rhythmdb_add_uri_async (shell->priv->db, (char *) uri);
-	}
 }
 
 static void
@@ -487,14 +550,12 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	}
 
 	parser = rb_playlist_new ();	
-	g_signal_connect (G_OBJECT (parser), "entry",
-			  G_CALLBACK (handle_playlist_entry_cb), shell);
-
-	/* Try parsing it as a playlist; otherwise just try adding it to
-	 * the library.
-	 */
-	if (!rb_playlist_parse (parser, uri))
+	if (rb_playlist_can_handle (parser, uri)) {
+		uri = rb_playlist_manager_parse_file (shell->priv->playlist_manager, uri);
+	} else 
 		rhythmdb_add_uri_async (shell->priv->db, uri);
+
+	rb_shell_queue_play (shell, uri);
 	g_object_unref (G_OBJECT (parser));
 }
 
@@ -685,6 +746,24 @@ rb_shell_corba_playpause (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 	rb_shell_player_playpause (shell->priv->player_shell);
+}
+
+static void
+rb_shell_corba_select (PortableServer_Servant _servant,
+		       const CORBA_char *uri,
+		       CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_queue_jump (shell, uri);
+}
+
+static void
+rb_shell_corba_play (PortableServer_Servant _servant,
+		     const CORBA_char *uri,
+		     CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_queue_play (shell, uri);
 }
 
 static void
@@ -1860,6 +1939,59 @@ rb_shell_cmd_current_song (BonoboUIComponent *component,
 }
 
 static void
+rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
+				    RhythmDBEntry *entry)
+{
+	RBEntryView *songs;
+
+	g_return_if_fail (entry != NULL);
+
+	if (source == NULL) {
+		const char *location;
+		rhythmdb_read_lock (shell->priv->db);
+		location = rhythmdb_entry_get_string (shell->priv->db, entry,
+						      RHYTHMDB_PROP_LOCATION);
+		rhythmdb_read_unlock (shell->priv->db);
+		if (rb_uri_is_iradio (location))
+			source = RB_SOURCE (shell->priv->iradio_source);
+		else
+			source = RB_SOURCE (shell->priv->library_source);
+	}
+
+	songs = rb_source_get_entry_view (source);
+	if (!rb_entry_view_get_entry_visible (songs, entry)) {
+		rb_source_reset_filters (source);
+		rb_source_header_clear_search (shell->priv->source_header);
+	}
+
+	rb_shell_select_source (shell, source);
+
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
+
+	if (!rb_entry_view_get_entry_visible (songs, entry)) {
+		rb_source_search (shell->priv->selected_source, NULL);
+	}
+
+	rb_entry_view_scroll_to_entry (songs, entry);
+	rb_entry_view_select_entry (songs, entry);
+}
+
+static void
+rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry)
+{
+	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
+}
+
+static void
+rb_shell_play_entry (RBShell *shell, RhythmDBEntry *entry)
+{
+	rb_shell_player_stop (shell->priv->player_shell);
+	rb_shell_jump_to_entry_with_source (shell, NULL, entry);
+	rb_shell_player_play_entry (shell->priv->player_shell, entry);
+}
+
+static void
 rb_shell_jump_to_current (RBShell *shell)
 {
 	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
@@ -1869,20 +2001,9 @@ rb_shell_jump_to_current (RBShell *shell)
 	g_return_if_fail (source != NULL);
 
 	songs = rb_source_get_entry_view (source);
-
 	playing = rb_entry_view_get_playing_entry (songs);
 
-	g_return_if_fail (playing != NULL);
-
-	if (!rb_entry_view_get_entry_visible (songs, playing)) {
-		rb_source_reset_filters (source);
-		rb_source_header_clear_search (shell->priv->source_header);
-	}
-	rb_shell_select_source (shell, source);
-	if (!rb_entry_view_get_entry_visible (songs, playing)) {
-		rb_source_search (shell->priv->selected_source, NULL);
-	}
-	rb_shell_player_jump_to_current (shell->priv->player_shell);
+	rb_shell_jump_to_entry (shell, playing);
 }
 
 static gboolean

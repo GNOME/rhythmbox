@@ -22,12 +22,13 @@ module GNOME
 			long play_count;
 			long last_played;			
 		};
-		
-		
 
 		void addToLibrary (in string uri);
 		
 		void handleFile (in string uri);
+
+		void select (in string uri);
+		void play (in string uri);
 		
 		void grabFocus ();
 		

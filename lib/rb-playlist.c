@@ -1042,3 +1042,27 @@ rb_playlist_parse (RBPlaylist *playlist, const char *url)
 
 	return FALSE;
 }
+
+gboolean
+rb_playlist_can_handle (RBPlaylist *playlist, const char *url)
+{
+	const char *mimetype;
+	int i;
+
+	g_return_val_if_fail (url != NULL, FALSE);
+
+	mimetype = gnome_vfs_get_mime_type (url);
+
+	if (mimetype == NULL)
+		return FALSE;
+
+	for (i = 0; i < G_N_ELEMENTS(special_types); i++)
+		if (strcmp (special_types[i].mimetype, mimetype) == 0)
+			return TRUE;
+
+	for (i = 0; i < G_N_ELEMENTS(dual_types); i++)
+		if (strcmp (dual_types[i].mimetype, mimetype) == 0)
+			return TRUE;
+
+	return FALSE;
+}

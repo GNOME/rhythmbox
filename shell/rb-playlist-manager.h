@@ -64,6 +64,9 @@ RBPlaylistManager *	rb_playlist_manager_new		(BonoboUIComponent *component, GtkW
 							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);
 
+const char *		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
+							 const char *uri);
+
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
 							 RBSource *player);
 

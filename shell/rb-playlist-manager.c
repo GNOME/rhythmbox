@@ -86,6 +86,8 @@ struct RBPlaylistManagerPrivate
 	GList *playlists;
 
 	RBPlaylistSource *loading_playlist;
+
+	char *firsturi;
 };
 
 enum
@@ -393,6 +395,34 @@ rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 	return mgr;
 }
 
+const char *
+rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
+{
+	rb_debug ("loading playlist from %s", uri);
+
+	g_free (mgr->priv->firsturi);
+	mgr->priv->firsturi = NULL;
+
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
+
+	{
+		RBPlaylist *parser = rb_playlist_new ();
+
+		g_signal_connect (G_OBJECT (parser), "entry",
+				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
+				  mgr);
+
+		if (!rb_playlist_parse (parser, uri))
+			rb_error_dialog (_("Couldn't parse playlist"));
+		mgr->priv->loading_playlist = NULL;
+
+		g_object_unref (G_OBJECT (parser));
+	}
+
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
+	return mgr->priv->firsturi;
+}
+
 static void
 rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr)
 {
@@ -654,25 +684,8 @@ load_playlist_response_cb (GtkDialog *dialog,
 	escaped_file = gnome_vfs_get_uri_from_local_path (file);
 	g_free (file);
 
-	rb_debug ("loading playlist from %s", escaped_file);
-
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_START], 0);
-
-	{
-		RBPlaylist *parser = rb_playlist_new ();
-
-		g_signal_connect (G_OBJECT (parser), "entry",
-				  G_CALLBACK (handle_playlist_entry_into_playlist_cb),
-				  mgr);
-
-		if (!rb_playlist_parse (parser, escaped_file))
-			rb_error_dialog (_("Couldn't parse playlist"));
-		mgr->priv->loading_playlist = NULL;
-
-		g_object_unref (G_OBJECT (parser));
-	}
-
-	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
+	rb_playlist_manager_parse_file (mgr, escaped_file);
+	g_free (escaped_file);
 }
 
 static void
@@ -771,6 +784,8 @@ static void
 handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, const char *title,
 					const char *genre, RBPlaylistManager *mgr)
 {
+	if (!mgr->priv->firsturi)
+		mgr->priv->firsturi = g_strdup (uri);
 	if (rb_uri_is_iradio (uri)) {
 		rb_iradio_source_add_station (mgr->priv->iradio_source,
 					      uri, title, genre);
