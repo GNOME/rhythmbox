@@ -206,7 +206,6 @@ rb_ipod_get_icon (void)
 
 	theme = gtk_icon_theme_get_default ();
 	icon = gtk_icon_theme_load_icon (theme, "gnome-dev-ipod", 24, 0, NULL);
-	g_object_unref (G_OBJECT (theme));
 
 	if (icon == NULL) {
 		/* gnome-dev-ipod is only available in gnome 2.8, so fallback
