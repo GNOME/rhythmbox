@@ -296,9 +296,11 @@ rb_group_view_init (RBGroupView *view)
 			    hbox,
 			    FALSE, TRUE, 0);
 
+#if 0
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
 			    GTK_WIDGET (rb_search_entry_new ()),
 			    FALSE, TRUE, 0);
+#endif
 	gtk_container_add (GTK_CONTAINER (view), view->priv->vbox);
 
 	view->priv->group = rb_node_new (RB_NODE_TYPE_GENERIC);

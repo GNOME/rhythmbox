@@ -300,9 +300,11 @@ rb_library_view_init (RBLibraryView *view)
 			    hbox,
 			    FALSE, TRUE, 0);
 
+#if 0
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
 			    GTK_WIDGET (rb_search_entry_new ()),
 			    FALSE, TRUE, 0);
+#endif
 	gtk_container_add (GTK_CONTAINER (view), view->priv->vbox);
 }
 
