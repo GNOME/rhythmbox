@@ -115,6 +115,7 @@ AM_CONDITIONAL(USE_XINE, test x"$WANT_XINE" = "x1")
 AM_CONDITIONAL(USE_GSTREAMER_WORKAROUNDS, test x"$disable_gstreamer_workarounds" != xyes)
 
 dnl Workaround for the gtktreemodelsort bug
+disable_gtktreemodelsort_workaround=yes
 AC_ARG_ENABLE(gtktreemodelsort_workaround,
               AC_HELP_STRING([--disable-gtktreemodelsort-workaround],
 	                     [Disable use of a workaround for the gtk tree model sort bug which causes song jumping]),,
