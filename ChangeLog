@@ -1,3 +1,8 @@
+2003-08-13  David Holmes  <dholmes@myrealbox.com>
+
+	* lib/widgets/rb-volume.c: (scroll_cb): Don't allow the volume
+	to go over 1.0 or below 0.
+
 2003-08-14  Colin Walters  <walters@verbum.org>
 
 	* library/rb-library-action-queue.h:

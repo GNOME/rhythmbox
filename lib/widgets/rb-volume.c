@@ -361,10 +361,13 @@ scroll_cb (GtkWidget *widget, GdkEvent *event, gpointer unused)
 	switch(event->scroll.direction) {
 	case GDK_SCROLL_UP:
 		volume += 0.1;
+		if (volume > 1.0)
+			volume = 1.0;
 		break;
 	case GDK_SCROLL_DOWN:
 		volume -= 0.1;
-
+		if (volume < 0)
+			volume = 0;
 		break;
 	case GDK_SCROLL_LEFT:
 	case GDK_SCROLL_RIGHT:
@@ -376,6 +379,7 @@ scroll_cb (GtkWidget *widget, GdkEvent *event, gpointer unused)
 	
 	return FALSE;
 }
+
 
 static void
 rb_volume_popup_hide (RBVolume *volume)
