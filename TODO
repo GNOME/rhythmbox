@@ -13,7 +13,6 @@ Features:
 Open tasks:
 ===========
 
-* Support for custom volume on songs
 * Column editor/more columns (rating, last played, play count)
 * More select number of genres, with None and Custom like in iTunes.
   If one of the many id3 ones have been used, we can use custom.
@@ -41,9 +40,15 @@ need confirmation dialogs
 * Group views need to be reorderable, so no sorting
 * Save filtering state
 
+
 Olive's TODO
 ============
+
 * Finish the song information dialog
 	- use RBFileMonitor
 	- fix leak
 * Use a cool icon for DnD
+* Use an idle func in node view autosizing (better perfs?)
+* Add a version number in the lib and don't load the xml if no match
+* Check errors in mm
+* Support for custom volume on songs + edition in the song info
