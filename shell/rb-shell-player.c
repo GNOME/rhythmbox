@@ -489,10 +489,6 @@ rb_shell_player_set_property (GObject *object,
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
 
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
-							      G_CALLBACK (rb_shell_player_playing_node_removed_cb),
-							      player);
-
-			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
 							      G_CALLBACK (rb_shell_player_nodeview_changed_cb),
 							      player);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
@@ -516,11 +512,6 @@ rb_shell_player_set_property (GObject *object,
 		{
 			RBNodeView *songs = rb_source_get_node_view (player->priv->selected_source);
 			GList *extra_views = rb_source_get_extra_views (player->priv->selected_source);
-
-			g_signal_connect (G_OBJECT (songs),
-					  "playing_node_removed",
-					  G_CALLBACK (rb_shell_player_playing_node_removed_cb),
-					  player);
 
 			g_signal_connect (G_OBJECT (songs),
 					  "changed",
@@ -1272,17 +1263,30 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (player->priv->source == source && source != NULL)
 		return;
 
-	/* Stop the already playing source. */
-	if (player->priv->source != NULL && sync_node_view) {
-		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-		rb_debug ("source is already playing, stopping it");
-		rb_node_view_set_playing_node (songs, NULL);
-		rb_node_view_set_playing (songs, FALSE);
-	}
-
 	rb_debug ("setting playing source to %p", source);
 
+	/* Stop the already playing source. */
+	if (player->priv->source != NULL) {
+		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		if (sync_node_view) {
+			rb_debug ("source is already playing, stopping it");
+			rb_node_view_set_playing_node (songs, NULL);
+			rb_node_view_set_playing (songs, FALSE);
+		}
+		g_signal_handlers_disconnect_by_func (G_OBJECT (songs),
+						      G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+						      player);
+	}
+	
 	player->priv->source = source;
+
+	if (source != NULL) {
+		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+		g_signal_connect (G_OBJECT (songs),
+				  "playing_node_removed",
+				  G_CALLBACK (rb_shell_player_playing_node_removed_cb),
+				  player);
+	}
 
 	player->priv->song = NULL;
 	player->priv->url = NULL;

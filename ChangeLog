@@ -1,3 +1,15 @@
+2003-08-26  Colin Walters  <walters@verbum.org>
+
+	* NEWS:
+
+	Update.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_set_playing_source_internal):
+
+	Be sure to stop playing when deleting a node from an
+	unselected source too.
+
 2003-08-27  Bastien Nocera  <hadess@hadess.net>
 
 	* monkey-media/monkey-media-player-xine.c:
