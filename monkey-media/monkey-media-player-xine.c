@@ -46,8 +46,6 @@ struct MonkeyMediaPlayerPrivate
 	xine_stream_t *stream;
 	xine_event_queue_t *event_queue;
 
-	gboolean playing;
-
 	char *configfile;
 
 	float volume;
@@ -178,7 +176,7 @@ monkey_media_player_class_init (MonkeyMediaPlayerClass *klass)
 static gboolean
 tick_timeout (MonkeyMediaPlayer *mp)
 {
-	if (mp->priv->playing == FALSE)
+	if (monkey_media_player_playing (mp) == FALSE)
 		return TRUE;
 
 	g_signal_emit (G_OBJECT (mp), monkey_media_player_signals[TICK], 0,
@@ -412,17 +410,10 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 
 	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
 
-	xine_stop (mp->priv->stream);
-	xine_close (mp->priv->stream);
+	monkey_media_player_close (mp);
 
-	g_free (mp->priv->uri);
-	mp->priv->uri = NULL;
-
-	if (uri == NULL) {
-		mp->priv->playing = FALSE;
-
+	if (uri == NULL)
 		return;
-	}
 
 	if (!xine_open (mp->priv->stream, uri))
 		xine_error = xine_get_error (mp->priv->stream);
@@ -475,17 +466,9 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 			     unesc);
 		g_free (unesc);
 	} else {
-		xine_play (mp->priv->stream, 0, 0);
-
 		g_timer_stop (mp->priv->timer);
 		g_timer_reset (mp->priv->timer);
 		mp->priv->timer_add = 0;
-
-		if (mp->priv->playing == TRUE) {
-			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_NORMAL);
-			g_timer_start (mp->priv->timer);
-		} else
-			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_PAUSE);
 	}
 
 	mp->priv->uri = g_strdup (uri);
@@ -503,8 +486,6 @@ monkey_media_player_close (MonkeyMediaPlayer *mp)
 
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
-
-	mp->priv->playing = FALSE;
 }
 
 const char *
@@ -518,16 +499,22 @@ monkey_media_player_get_uri (MonkeyMediaPlayer *mp)
 void
 monkey_media_player_play (MonkeyMediaPlayer *mp)
 {
+	int speed, status;
+
 	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
 
-	if (mp->priv->stream != NULL) {
-		if (xine_get_param (mp->priv->stream, XINE_PARAM_SPEED) == XINE_SPEED_PAUSE)
-			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_NORMAL);
-	}
+	if (mp->priv->stream == NULL)
+		return;
+
+	speed = xine_get_param (mp->priv->stream, XINE_PARAM_SPEED);
+	status = xine_get_status (mp->priv->stream);
+
+	if (speed != XINE_SPEED_NORMAL && status == XINE_STATUS_PLAY)
+		xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_NORMAL);
+	else
+		xine_play (mp->priv->stream, 0, 0);
 
 	g_timer_start (mp->priv->timer);
-
-	mp->priv->playing = TRUE;
 }
 
 void
@@ -536,8 +523,7 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 	g_return_if_fail (MONKEY_MEDIA_IS_PLAYER (mp));
 
 	if (mp->priv->stream != NULL) {
-		if (xine_get_param (mp->priv->stream, XINE_PARAM_SPEED) == XINE_SPEED_NORMAL)
-			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_PAUSE);
+		xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_PAUSE);
 
 #ifdef HAVE_XINE_CLOSE
 		/* Close the audio device when on pause */
@@ -548,8 +534,6 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 	mp->priv->timer_add += floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5);
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);
-
-	mp->priv->playing = FALSE;
 }
 
 gboolean
@@ -557,7 +541,10 @@ monkey_media_player_playing (MonkeyMediaPlayer *mp)
 {
 	g_return_val_if_fail (MONKEY_MEDIA_IS_PLAYER (mp), FALSE);
 
-	return mp->priv->playing;
+	if (mp->priv->stream == NULL)
+		return FALSE;
+
+	return (xine_get_status (mp->priv->stream) == XINE_STATUS_PLAY && xine_get_param (mp->priv->stream, XINE_PARAM_SPEED) == XINE_SPEED_NORMAL);
 }
 
 static gboolean
@@ -649,7 +636,7 @@ monkey_media_player_set_time (MonkeyMediaPlayer *mp,
 	if (mp->priv->stream != NULL) {
 		xine_play (mp->priv->stream, 0, time * 1000);
 
-		if (mp->priv->playing == TRUE)
+		if (monkey_media_player_playing (mp))
 			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_NORMAL);
 		else
 			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_PAUSE);
