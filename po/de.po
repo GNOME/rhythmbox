@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox HEAD\n"
-"POT-Creation-Date: 2002-11-27 09:02+0100\n"
-"PO-Revision-Date: 2002-11-20 16:18+0100\n"
+"POT-Creation-Date: 2002-12-11 18:24+0100\n"
+"PO-Revision-Date: 2002-12-11 18:23+0100\n"
 "Last-Translator: Christian Neumair <chris@gnome-de.org>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -88,6 +88,7 @@ msgstr "_Dauer"
 
 #: data/glade/preferences.glade.h:17
 #: data/node-views/rb-node-view-genres.xml.h:1
+#: data/node-views/rb-node-view-iradio-genres.xml.h:1
 msgid "_Genre"
 msgstr "_Genre"
 
@@ -104,6 +105,7 @@ msgid "_Play count"
 msgstr "Ges_pielt"
 
 #: data/glade/preferences.glade.h:21
+#: data/node-views/rb-node-view-iradio-stations.xml.h:5
 #: data/node-views/rb-node-view-songs.xml.h:8
 msgid "_Rating"
 msgstr "_Bewertung"
@@ -116,7 +118,8 @@ msgstr "Nur _Text"
 msgid "   "
 msgstr "   "
 
-#: data/glade/song-info.glade.h:2
+#: data/glade/song-info.glade.h:2 data/glade/station-new.glade.h:1
+#: data/glade/station-properties.glade.h:1
 msgid "*"
 msgstr "*"
 
@@ -192,6 +195,67 @@ msgstr "Details"
 msgid "_of"
 msgstr "_von"
 
+#: data/glade/station-new.glade.h:2
+msgid "Genre: "
+msgstr "Genre:"
+
+#: data/glade/station-new.glade.h:3
+msgid "Location: "
+msgstr "Sendeort:"
+
+#: data/glade/station-new.glade.h:4 iradio/rb-new-station-dialog.c:151
+msgid "New Internet Radio Station"
+msgstr "Neuer Internet-Radio-Sender"
+
+#: data/glade/station-new.glade.h:5
+msgid "Title: "
+msgstr "Titel:"
+
+#: data/glade/station-properties.glade.h:2
+msgid "42"
+msgstr "42"
+
+#: data/glade/station-properties.glade.h:3
+msgid "Play Count: "
+msgstr "Gespielt:"
+
+#: data/glade/station-properties.glade.h:4
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr "Di, 01.Jan, 1970 00:00:00 -0500"
+
+#: data/glade/station-properties.glade.h:5
+msgid "_Add: "
+msgstr "_Hinzufügen: "
+
+#: data/glade/station-properties.glade.h:6
+msgid "_Genre: "
+msgstr "_Genre:"
+
+#: data/glade/station-properties.glade.h:7
+msgid "_Last Played:"
+msgstr "Zu_letzt gespielt:"
+
+#: data/glade/station-properties.glade.h:8
+msgid "_Locations"
+msgstr "_Sendeorte"
+
+#: data/glade/station-properties.glade.h:9
+#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:44
+msgid "_Properties"
+msgstr "_Eigenschaften"
+
+#: data/glade/station-properties.glade.h:10
+msgid "_Rating: "
+msgstr "_Bewertung:"
+
+#: data/glade/station-properties.glade.h:11
+msgid "_Title: "
+msgstr "_Titel:"
+
+#: data/glade/station-properties.glade.h:12
+msgid "blah Properties"
+msgstr "Eigenschaften von blah"
+
 #: data/glade/toolbar-editor.glade.h:1
 msgid "<b>Cu_rrent Controls</b>"
 msgstr "<b>A_ktuelle Steuerungselemente</b>"
@@ -216,17 +280,33 @@ msgstr "_Album"
 msgid "A_rtist"
 msgstr "_Interpret"
 
-#: data/node-views/rb-node-view-songs.xml.h:2
-msgid "Art_ist"
-msgstr "Inter_pret"
-
+#: data/node-views/rb-node-view-iradio-stations.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:3
 msgid "Ge_nre"
 msgstr "Ge_nre"
 
+#: data/node-views/rb-node-view-iradio-stations.xml.h:2
 #: data/node-views/rb-node-view-songs.xml.h:4
 msgid "L_ast Played"
 msgstr "_Zuletzt gespielt"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.h:7
+msgid "_Play Count"
+msgstr "Ges_pielt"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:4
+msgid "_Quality"
+msgstr "_Qualität"
+
+#: data/node-views/rb-node-view-iradio-stations.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.h:9
+msgid "_Title"
+msgstr "_Titel"
+
+#: data/node-views/rb-node-view-songs.xml.h:2
+msgid "Art_ist"
+msgstr "Inter_pret"
 
 #: data/node-views/rb-node-view-songs.xml.h:5
 msgid "Ti_me"
@@ -236,15 +316,7 @@ msgstr "_Dauer"
 msgid "Tra_ck"
 msgstr "Titel_nummer"
 
-#: data/node-views/rb-node-view-songs.xml.h:7
-msgid "_Play Count"
-msgstr "Ges_pielt"
-
-#: data/node-views/rb-node-view-songs.xml.h:9
-msgid "_Title"
-msgstr "_Titel"
-
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:602 shell/rb-shell.c:999
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:813 shell/rb-shell.c:1221
 msgid "Music Player"
 msgstr "Musik-Player"
 
@@ -283,6 +355,7 @@ msgstr "Alle Titel markieren"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:6
 #: data/ui/rhythmbox-group-view.xml.in.h:17
+#: data/ui/rhythmbox-iradio-view.xml.in.h:5
 #: data/ui/rhythmbox-library-view.xml.in.h:12 data/ui/rhythmbox-ui.xml.in.h:36
 msgid "_Edit"
 msgstr "_Bearbeiten"
@@ -299,6 +372,7 @@ msgstr "Zum momentan _gespielten Titel springen"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:9
 #: data/ui/rhythmbox-group-view.xml.in.h:21
+#: data/ui/rhythmbox-iradio-view.xml.in.h:8
 #: data/ui/rhythmbox-library-view.xml.in.h:15 data/ui/rhythmbox-ui.xml.in.h:49
 msgid "_View"
 msgstr "_Ansicht"
@@ -364,17 +438,35 @@ msgstr "E_infügen"
 msgid "_Rename Group..."
 msgstr "Grupe _umbenennen...."
 
-#: data/ui/rhythmbox-library-view.xml.in.h:1
-msgid "Change the visibility of the artist and album browser"
-msgstr "Den Interpreten- und Albenbrowser zeigen/verbergen"
+#: data/ui/rhythmbox-iradio-view.xml.in.h:1
+msgid "Change the visibility of the genre browser"
+msgstr "Den Genre-Browser zeigen/verbergen"
 
+#: data/ui/rhythmbox-iradio-view.xml.in.h:2
+msgid "Scroll the view to the currently playing station"
+msgstr ""
+"Die Ansicht rollen, sodass der momentan gehörte Radio-Sender sichtbar ist"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:3
+msgid "Show information on the selected station"
+msgstr "Informationen zum markierten Radio-Sender anzeigen"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:4
 #: data/ui/rhythmbox-library-view.xml.in.h:9
 msgid "_Browser"
 msgstr "_Browser"
 
-#: data/ui/rhythmbox-library-view.xml.in.h:14 data/ui/rhythmbox-ui.xml.in.h:44
-msgid "_Properties"
-msgstr "_Eigenschaften"
+#: data/ui/rhythmbox-iradio-view.xml.in.h:6
+msgid "_Jump to Playing Station"
+msgstr "Zum momentan _gehörten Sender springen"
+
+#: data/ui/rhythmbox-iradio-view.xml.in.h:7
+msgid "_New Internet Radio Station"
+msgstr "_Neuer Internet-Radio-Sender"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:1
+msgid "Change the visibility of the artist and album browser"
+msgstr "Den Interpreten- und Albenbrowser zeigen/verbergen"
 
 #: data/ui/rhythmbox-test-view-2.xml.in.h:1
 msgid "Oh neej!!"
@@ -513,7 +605,7 @@ msgstr "_Nächster"
 msgid "_Organize"
 msgstr "_Organisieren"
 
-#: data/ui/rhythmbox-ui.xml.in.h:43 shell/rb-shell-player.c:520
+#: data/ui/rhythmbox-ui.xml.in.h:43 shell/rb-shell-player.c:529
 msgid "_Play"
 msgstr "_Abspielen"
 
@@ -532,6 +624,62 @@ msgstr "_Seitenleiste"
 #: data/ui/rhythmbox-ui.xml.in.h:48
 msgid "_Toolbar"
 msgstr "_Werkzeugleiste"
+
+#: iradio/rb-iradio-backend.c:146 library/rb-library.c:450
+msgid "All"
+msgstr "Alle"
+
+#: iradio/rb-iradio-backend.c:329
+#, c-format
+msgid "Failed to parse %s\n"
+msgstr "URI »%s« konnte nicht verarbeitet werden\n"
+
+#: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:560
+msgid "(Unknown)"
+msgstr "(Unbekannt)"
+
+#: iradio/rb-iradio-yp-xmlfile.c:224
+#, c-format
+msgid "Failed to open %s: %s"
+msgstr "»%s« konnte nicht geöffnet werden: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:454
+#, c-format
+msgid "Failed to read %s: %s"
+msgstr "»%s« konnte nicht gelesen werden: %s"
+
+#: iradio/rb-iradio-yp-xmlfile.c:460
+#, c-format
+msgid "Failed to parse %s: %s"
+msgstr "»%s« konnte nicht verarbeitet werden: %s"
+
+#: iradio/rb-station-properties-dialog.c:187 lib/widgets/rb-song-info.c:475
+#: lib/widgets/rb-song-info.c:489
+#, c-format
+msgid "%s Properties"
+msgstr "Eigenschaften von %s"
+
+#: iradio/rb-station-properties-dialog.c:382
+#, c-format
+msgid "Properties for %s"
+msgstr "Eigenschaften von %s"
+
+#: iradio/rb-station-properties-dialog.c:545
+msgid "No locations specified!"
+msgstr "Keine Sendeorte angegeben!"
+
+#: iradio/rb-station-properties-dialog.c:589
+msgid "No location is selected."
+msgstr "Sie haben keinen Sendeort gewählt."
+
+#: iradio/rb-station-properties-dialog.c:606
+msgid "No location specified."
+msgstr "Kein Sendeort angegeben."
+
+#: iradio/rb-station-properties-dialog.c:613
+msgid "Location is not a valid URL."
+msgstr "Sendeort ist keine gültige URL."
 
 #: lib/eel-gconf-extensions.c:66
 #, c-format
@@ -570,6 +718,11 @@ msgstr "THE ,DJ ,DER ,DIE ,DAS "
 msgid "%s, %s"
 msgstr "%s, %s"
 
+#: lib/rb-windows-ini-file.c:374
+#, c-format
+msgid "Unable to parse %s: %s\n"
+msgstr "»%s« konnte nicht verarbeitet werden: %s\n"
+
 #: lib/toolbar/gul-tbi-separator.c:131
 msgid "Separator"
 msgstr "Trennlinie"
@@ -580,7 +733,7 @@ msgid "Previous"
 msgstr "Vorheriger"
 
 #: lib/toolbar/gul-tbi-std-toolitem.c:260
-#: lib/toolbar/gul-tbi-std-toolitem.c:389 shell/rb-shell-player.c:519
+#: lib/toolbar/gul-tbi-std-toolitem.c:389 shell/rb-shell-player.c:528
 msgid "Play"
 msgstr "Abspielen"
 
@@ -641,7 +794,7 @@ msgstr "Pixbuf-Objekt"
 msgid "The pixbuf to render."
 msgstr "Der darzustellende Pixbuf."
 
-#: lib/widgets/rb-link.c:341
+#: lib/widgets/rb-link.c:342
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -650,73 +803,82 @@ msgstr ""
 "Beim Wechsel nach »%s« ist ein Fehler aufgetreten:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:566
+#: lib/widgets/rb-node-view.c:567
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
-msgstr "»%s« konnte nicht als NodeView-layout-Datei interpretiert werden"
+msgstr "»%s« konnte nicht als NodeView-Layout-Datei verarbeitet werden"
 
-#: lib/widgets/rb-node-view.c:1361
+#: lib/widgets/rb-node-view.c:1367
 #, c-format
 msgid "%ld songs, %ld:%02ld:%02ld total time, %s"
-msgstr "%d Titel, Spielzeit %d:%02d:%02d, %s"
+msgstr "%ld Titel, Gesamtspieldauer %ld:%02ld:%02ld, %s"
 
-#: lib/widgets/rb-player.c:207
+#: lib/widgets/rb-player.c:214
 msgid "From "
 msgstr "Aus "
 
-#: lib/widgets/rb-player.c:213
+#: lib/widgets/rb-player.c:220
 msgid " by "
 msgstr " von "
 
-#: lib/widgets/rb-player.c:252 lib/widgets/rb-player.c:645
+# CHECK
+#: lib/widgets/rb-player.c:233
+msgid "Listening to "
+msgstr "Anhören von "
+
+#: lib/widgets/rb-player.c:271 lib/widgets/rb-player.c:704
 msgid ""
 "Elapsed time of the song. Click on it to display remaining and total time"
 msgstr ""
 "Verstrichene Zeit des Titels. Klicken Sie hierauf, um die verbleibende Zeit "
 "anzuzeigen."
 
-#: lib/widgets/rb-player.c:383
+#: lib/widgets/rb-player.c:412
 msgid "Get information on this album from the web"
-msgstr "Informationen zu diesem Album aus dem Internet erhalten"
+msgstr "Informationen zu diesem Album aus dem Internet abrufen"
 
-#: lib/widgets/rb-player.c:393
+#: lib/widgets/rb-player.c:423
 msgid "Get information on this artist from the web"
-msgstr "Informationen zu diesem Interpreten aus dem Internet erhalten"
+msgstr "Informationen zu diesem Interpreten aus dem Internet abrufen"
 
-#: lib/widgets/rb-player.c:401
+#: lib/widgets/rb-player.c:433
+msgid "Get more information on this station from the web"
+msgstr "Weitere Informationen zu diesem Sender aus dem Internet abrufen"
+
+#: lib/widgets/rb-player.c:441
 msgid "Not Playing"
 msgstr "Nichts zu tun"
 
-#: lib/widgets/rb-player.c:631
+#: lib/widgets/rb-player.c:690
 msgid ""
 "Remaining time of the song. Click on it to display total and elapsed time"
 msgstr ""
 "Verbleibende Zeit des Titels. Klicken Sie hierauf, um die Gesamtzeit "
 "anzuzeigen."
 
-#: lib/widgets/rb-player.c:638
+#: lib/widgets/rb-player.c:697
 msgid ""
 "Total time of the song. Click on it to display elapsed and remaining time"
 msgstr ""
 "Gesamtzeit des Titels. Klicken Sie darauf, um die verbleibende Zeit "
 "anzuzeigen."
 
-#: lib/widgets/rb-player.c:669
+#: lib/widgets/rb-player.c:728
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: lib/widgets/rb-player.c:677
+#: lib/widgets/rb-player.c:736
 #, c-format
 msgid "- %d:%02d"
 msgstr "- %d:%02d"
 
-#: lib/widgets/rb-player.c:684
+#: lib/widgets/rb-player.c:743
 #, c-format
 msgid "Total: %d:%02d"
 msgstr "Insgesamt: %d:%02d"
 
-#: lib/widgets/rb-player.c:687
+#: lib/widgets/rb-player.c:746
 msgid "Invalid mode"
 msgstr "Ungültiger Modus"
 
@@ -736,27 +898,27 @@ msgstr "/_Umbennen..."
 msgid "/_Delete"
 msgstr "/_Löschen"
 
-#: lib/widgets/rb-sidebar-button.c:495
+#: lib/widgets/rb-sidebar-button.c:496
 msgid "/Rename..."
 msgstr "/Umbennen..."
 
-#: lib/widgets/rb-sidebar-button.c:498
+#: lib/widgets/rb-sidebar-button.c:499
 msgid "/Delete"
 msgstr "/Löschen"
 
-#: lib/widgets/rb-sidebar-button.c:661
+#: lib/widgets/rb-sidebar-button.c:662
 #, c-format
 msgid "Please enter a new name for this %s."
 msgstr "Geben Sie einen neuen Namen für diese %s ein."
 
-#: lib/widgets/rb-sidebar-button.c:662
+#: lib/widgets/rb-sidebar-button.c:663
 msgid "Rename"
 msgstr "Umbennen"
 
 #: lib/widgets/rb-sidebar.c:421
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
-msgstr "»%s« konnte nicht als Seitenleisten-Layout-Datei interpretiert werden"
+msgstr "»%s« konnte nicht als Seitenleisten-Layout-Datei verarbeitet werden"
 
 #: lib/widgets/rb-song-info.c:197
 msgid "_Next Song"
@@ -765,11 +927,6 @@ msgstr "_Nächster Titel"
 #: lib/widgets/rb-song-info.c:230 lib/widgets/rb-song-info.c:494
 msgid "Song Properties"
 msgstr "Titel-Eigenschaften"
-
-#: lib/widgets/rb-song-info.c:475 lib/widgets/rb-song-info.c:489
-#, c-format
-msgid "%s Properties"
-msgstr "Eigenschaften von %s"
 
 #: lib/widgets/rb-song-info.c:776
 msgid "on the desktop"
@@ -803,34 +960,30 @@ msgstr "Stummschalten"
 msgid "Click to unmute"
 msgstr "Stummschalten aufheben"
 
-#: library/rb-library.c:448
-msgid "All"
-msgstr "Alle"
-
 #: library/rb-node-song.c:314
 #, c-format
 msgid "%.2d of %.2d"
 msgstr "%.2d von %.2d"
 
-#: library/rb-node-song.c:766
-msgid "%Y-%m-%d %H:%M"
-msgstr "%d.%m.%Y %H:%M"
-
-#: library/rb-node.c:806 library/rb-node.c:812 library/rb-node.c:843
+#: library/rb-node.c:846 library/rb-node.c:852 library/rb-node.c:883
 msgid "Never"
 msgstr "Nie"
 
-#: library/rb-node.c:834
+#: library/rb-node.c:874
 msgid "Today at %-H:%M"
 msgstr "Heute um %H:%M"
 
-#: library/rb-node.c:836
+#: library/rb-node.c:876
 msgid "Yesterday at %-H:%M"
 msgstr "Gestern um %H:%M"
 
-#: library/rb-node.c:838
+#: library/rb-node.c:878
 msgid "%A, %B %-d %Y at %-H:%M"
 msgstr "%A, %d.%B. um %H:%M"
+
+#: library/rb-node.c:1582
+msgid "%Y-%m-%d %H:%M"
+msgstr "%d.%m.%Y %H:%M"
 
 #: shell/main.c:62
 msgid ""
@@ -876,7 +1029,7 @@ msgstr ""
 "Die Befehlszeile konnte nicht aktiviert werden:\n"
 "%s"
 
-#: shell/rb-shell-player.c:233
+#: shell/rb-shell-player.c:237
 #, c-format
 msgid ""
 "Failed to create the mixer, error was:\n"
@@ -885,27 +1038,65 @@ msgstr ""
 "Der Mixer konnte nicht erstellt werden. Fehler:\n"
 "%s"
 
-#: shell/rb-shell-player.c:514
+#: shell/rb-shell-player.c:523
 msgid "Pause"
 msgstr "Pause"
 
-#: shell/rb-shell-player.c:515
+#: shell/rb-shell-player.c:524
 msgid "_Pause"
 msgstr "_Pause"
 
-#: shell/rb-shell-player.c:524
+#: shell/rb-shell-player.c:533
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:525
+#: shell/rb-shell-player.c:534
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-preferences.c:164
+#: shell/rb-shell-preferences.c:173
 msgid "Music Player Preferences"
 msgstr "Einstellungen des Musik-Players"
 
-#: shell/rb-shell.c:589
+#: shell/rb-shell.c:532
+#, c-format
+msgid "Unable to parse URI \"%s\"\n"
+msgstr "URI »%s« konnte nicht verarbeitet werden\n"
+
+#: shell/rb-shell.c:561
+#, c-format
+msgid "Unable to handle URI \"%s\"\n"
+msgstr "URI »%s« konnte nicht gehandhabt werden\n"
+
+#: shell/rb-shell.c:575
+#, c-format
+msgid "Unable to parse playlist file \"%s\""
+msgstr "Playlisten-Datei »%s« konnte nicht verarbeitet werden"
+
+#: shell/rb-shell.c:595
+#, c-format
+msgid ""
+"Error reading playlist file \"%s\":\n"
+" no numberofentries header found"
+msgstr ""
+"Fehler beim Lesen der Playlisten-Datei »%s«:\n"
+" Keine Kopfzeile mit Namen »numberofentries« gefunden"
+
+#: shell/rb-shell.c:685
+#, c-format
+msgid ""
+"Error reading playlist file \"%s\":\n"
+" no playlist header"
+msgstr ""
+"Fehler beim Lesen der Playlisten-Datei »%s«:\n"
+" Keine Playlisten-Kopfzeilen"
+
+#: shell/rb-shell.c:699
+#, c-format
+msgid "Unable to parse playlist entry \"%s\""
+msgstr "Playlisten-Eintrag \"%s\" konnte nicht verarbeitet werden"
+
+#: shell/rb-shell.c:800
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -919,16 +1110,16 @@ msgstr ""
 "diese Warnung ist harmlos, die Kommunikation mit anderen\n"
 "Prozessen (»IPC«) funktioniert daher jedoch nicht.\n"
 
-#: shell/rb-shell.c:1003 shell/rb-shell.c:2019
+#: shell/rb-shell.c:1225 shell/rb-shell.c:2241
 msgid "Not playing"
 msgstr "Nichts zu tun"
 
-#: shell/rb-shell.c:1016
+#: shell/rb-shell.c:1238
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Unterbrochen)"
 
-#: shell/rb-shell.c:1021
+#: shell/rb-shell.c:1243
 #, c-format
 msgid ""
 "%s\n"
@@ -937,38 +1128,38 @@ msgstr ""
 "%s\n"
 "Unterbrochen"
 
-#: shell/rb-shell.c:1167
+#: shell/rb-shell.c:1389
 msgid "translator_credits"
 msgstr ""
 "Christian Neumair <chris@gnome-de.org>\n"
 "Christian Meyer <chrisime@gnome.org>\n"
 "Benjamin Greiner <benjamin.greiner@gmx.net>"
 
-#: shell/rb-shell.c:1178
+#: shell/rb-shell.c:1400
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "© 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:1179
+#: shell/rb-shell.c:1401
 msgid "Music management and playback software for GNOME."
 msgstr "Musikverwaltungs- und -abspiel-Software für GNOME"
 
-#: shell/rb-shell.c:1381
+#: shell/rb-shell.c:1603
 msgid "Choose Files or Directory"
 msgstr "Wählen Sie Dateien oder ein Verzeichnis"
 
-#: shell/rb-shell.c:1868
+#: shell/rb-shell.c:2090
 msgid "Create"
 msgstr "Erstellen"
 
-#: shell/rb-shell.c:1892
+#: shell/rb-shell.c:2114
 msgid "Please enter a name for the new music group."
 msgstr "Geben Sie einen Namen für die neue Musikgruppe an."
 
-#: shell/rb-shell.c:1902
+#: shell/rb-shell.c:2124
 msgid "Untitled"
 msgstr "Unbenannt"
 
-#: shell/rb-shell.c:1906
+#: shell/rb-shell.c:2128
 msgid "Add the _selected songs to the new group"
 msgstr "Die _markierten Titel zur neuen Gruppe hinzufügen"
 
@@ -980,8 +1171,8 @@ msgstr "Musik-Audio-CD"
 msgid "Audio-CD"
 msgstr "Audio-CD"
 
-#: views/rb-audiocd-view.c:671 views/rb-group-view.c:822
-#: views/rb-library-view.c:1019
+#: views/rb-audiocd-view.c:671 views/rb-group-view.c:830
+#: views/rb-iradio-view.c:764 views/rb-library-view.c:1052
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -990,37 +1181,55 @@ msgstr ""
 "Datenstrom für »%s« konnte nicht erstellt werden. Fehler:\n"
 "%s"
 
-#: views/rb-audiocd-view.c:962 views/rb-audiocd-view.c:969
+#: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
+#: views/rb-iradio-view.c:782
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: views/rb-audiocd-view.c:1076
+#: views/rb-audiocd-view.c:1075
 #, c-format
 msgid "Failed to parse %s as disc info file"
-msgstr "»%s« konnte nicht als CD-Infodatei interpretiert werden"
+msgstr "»%s« konnte nicht als CD-Infodatei verarbeitet werden"
 
-#: views/rb-audiocd-view.c:1198
+#: views/rb-audiocd-view.c:1197
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d Titel, Spielzeit %d:%02d:%02d"
 
-#: views/rb-group-view.c:342
+#: views/rb-group-view.c:343
 msgid "music group"
 msgstr "Musikgruppe"
 
-#: views/rb-group-view.c:345
+#: views/rb-group-view.c:346
 msgid "Unnamed"
 msgstr "Namenlos"
 
-#: views/rb-group-view.c:1148
+#: views/rb-group-view.c:1156
 #, c-format
 msgid "Failed to parse %s as group file"
-msgstr "»%s« konnte nicht als Gruppendatei interpretiert werden"
+msgstr "»%s« konnte nicht als Gruppendatei verarbeitet werden"
 
-#: views/rb-library-view.c:388
+#: views/rb-iradio-view.c:305
+msgid "iradio"
+msgstr "I-Radio"
+
+#: views/rb-iradio-view.c:308 views/rb-iradio-view.c:1147
+msgid ""
+"Internet\n"
+"Radio"
+msgstr ""
+"Internet\n"
+"Radio"
+
+#: views/rb-iradio-view.c:980
+#, c-format
+msgid "%d total stations in %d distinct genres"
+msgstr "Insgesamt %d Radio-Sender mit %d verschiedenen Generes"
+
+#: views/rb-library-view.c:392
 msgid "library"
 msgstr "Bibliothek"
 
-#: views/rb-library-view.c:391 views/rb-library-view.c:1371
+#: views/rb-library-view.c:395 views/rb-library-view.c:1404
 msgid "Library"
 msgstr "Bibliothek"
