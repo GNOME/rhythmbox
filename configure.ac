@@ -82,26 +82,25 @@ if test "x$WANT_XINE" = "x1"; then
 	CFLAGS="$RHYTHMBOX_CFLAGS"
 	SAVE_LIBS="$LIBS"
 	LIBS="$RHYTHMBOX_LIBS"
+	AC_MSG_CHECKING(if XINE_PARAM_AUDIO_CLOSE_DEVICE is supported)
 	AC_TRY_COMPILE([
 		#include <xine.h>
 		],[
 		int arg = 0, foo;
 		foo = XINE_PARAM_AUDIO_CLOSE_DEVICE;
-		],(AC_DEFINE(HAVE_XINE_CLOSE,1,[Define if you have the audio device close feature in xine-lib])))
+		],[AC_MSG_RESULT(yes)
+		(AC_DEFINE(HAVE_XINE_CLOSE,1,[Define if you have the audio device close feature in xine-lib]))], AC_MSG_RESULT(no))
 	CFLAGS="$SAVE_CFLAGS"
 	LIBS="$SAVE_LIBS"
 
 	dnl Remove when xine-lib is newer than rc2
 	SAVE_CFLAGS="$CFLAGS"
-	CFLAGS="$RHYTHMBOX_CFLAGS"
+	CFLAGS="$RHYTHMBOX_CFLAGS -Werror"
 	SAVE_LIBS="$LIBS"
 	LIBS="$RHYTHMBOX_LIBS"
-	AC_TRY_COMPILE([
-		#include <xine.h>
-		],[
-		int arg = 0;
-		xine_osd_show_unscaled (NULL, 0);
-		],(AC_DEFINE(HAVE_NULL_VIDEO,1,[Define if you have the NULL video feature in xine-lib])))
+	AC_CHECK_LIB(xine, xine_osd_show_unscaled,
+			[AC_CHECK_HEADER(xine.h,
+			  [AC_DEFINE(HAVE_NULL_VIDEO,1,[Define if you have the NULL video feature in xine-lib])])])
 	CFLAGS="$SAVE_CFLAGS"
 	LIBS="$SAVE_LIBS"
 else
