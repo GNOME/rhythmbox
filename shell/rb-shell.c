@@ -880,7 +880,7 @@ rb_shell_append_view (RBShell *shell,
 	gtk_notebook_append_page (GTK_NOTEBOOK (shell->priv->notebook),
 				  GTK_WIDGET (view),
 				  gtk_label_new (""));
-	gtk_widget_show_all (GTK_WIDGET (view));
+	gtk_widget_show (GTK_WIDGET (view));
 
 	button = rb_view_get_sidebar_button (view);
 	rb_sidebar_append (RB_SIDEBAR (shell->priv->sidebar),
