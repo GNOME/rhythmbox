@@ -100,9 +100,6 @@ static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 static void rb_shell_cmd_new_group (BonoboUIComponent *component,
 			            RBShell *shell,
 			            const char *verbname);
-static void rb_shell_cmd_new_group_selection (BonoboUIComponent *component,
-					      RBShell *shell,
-					      const char *verbname);
 static void rb_shell_cmd_dummy (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
@@ -168,6 +165,7 @@ static void rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 			                 RBShell *shell);
 static void dnd_add_handled_cb (RBLibraryAction *action,
 		                RBGroupView *view);
+GtkWidget *rb_shell_new_group_dialog (RBShell *shell);
 
 static const GtkTargetEntry target_table[] =
 	{
@@ -179,7 +177,7 @@ typedef enum
 {
 	CREATE_GROUP_WITH_URI_LIST,
 	CREATE_GROUP_WITH_NODE_LIST,
-	CREATE_GROUP_WITH_NOTHING
+	CREATE_GROUP_WITH_SELECTION
 } CreateGroupType;
 
 #define CMD_PATH_SHUFFLE        "/commands/Shuffle"
@@ -245,7 +243,6 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("Preferences",  (BonoboUIVerbFn) rb_shell_cmd_preferences),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
-	BONOBO_UI_VERB ("NewGroupSel",  (BonoboUIVerbFn) rb_shell_cmd_new_group_selection),
 	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
 	BONOBO_UI_VERB_END
 };
@@ -1028,9 +1025,10 @@ ask_string_response_cb (GtkDialog *dialog,
 			int response_id,
 			RBShell *shell)
 {
-	GtkWidget *entry;
+	GtkWidget *entry, *checkbox;
 	RBView *group;
 	char *name;
+	gboolean add_selection;
 	CreateGroupType type;
 	GList *data, *l;
 
@@ -1047,6 +1045,9 @@ ask_string_response_cb (GtkDialog *dialog,
 
 	entry = g_object_get_data (G_OBJECT (dialog), "entry");
 	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+
+	checkbox = g_object_get_data (G_OBJECT (dialog), "checkbox");
+	add_selection = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbox));
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 	
@@ -1102,7 +1103,17 @@ ask_string_response_cb (GtkDialog *dialog,
 		}
 		gnome_vfs_uri_list_free (data);
 		break;
-	case CREATE_GROUP_WITH_NOTHING:
+	case CREATE_GROUP_WITH_SELECTION:
+		{	
+			/* add the current selection if the user checked */
+			if (add_selection)
+			{
+				GList *i = NULL;
+				GList *selection = rb_view_get_selection (shell->priv->selected_view);
+				for (i  = selection; i != NULL; i = g_list_next (i))
+					rb_group_view_add_node (RB_GROUP_VIEW (group), i->data);
+			}
+		}
 		break;
 	}
 
@@ -1115,10 +1126,7 @@ create_group (RBShell *shell, CreateGroupType type,
 {
 	GtkWidget *dialog;
 	
-	dialog = rb_ask_string (_("Please enter a name for the new music group."),
-			        _("Create"),
-			        _("Untitled"),
-			       GTK_WINDOW (shell->priv->window));
+	dialog = rb_shell_new_group_dialog (shell);
 
 	g_object_set_data (G_OBJECT (dialog), "type", GINT_TO_POINTER (type));
 	g_object_set_data (G_OBJECT (dialog), "data", data);
@@ -1134,17 +1142,7 @@ rb_shell_cmd_new_group (BonoboUIComponent *component,
 			RBShell *shell,
 			const char *verbname)
 {
-	create_group (shell, CREATE_GROUP_WITH_NOTHING,
-		      NULL);
-}
-
-static void
-rb_shell_cmd_new_group_selection (BonoboUIComponent *component,
-				  RBShell *shell,
-				  const char *verbname)
-{
-	create_group (shell, CREATE_GROUP_WITH_NODE_LIST,
-		      rb_view_get_selection (shell->priv->selected_view));
+	create_group (shell, CREATE_GROUP_WITH_SELECTION, NULL);
 }
 
 static void
@@ -1487,4 +1485,75 @@ rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 	}
 
 	gtk_drag_finish (context, TRUE, FALSE, time);
+}
+
+/* rb_shell_new_group_dialog: create a dialog for creating a new
+ * group.
+ *
+ * TODO Make this a gobject that could hold more functionality
+ * like multi criteria search.
+ */
+GtkWidget *
+rb_shell_new_group_dialog (RBShell *shell)
+{
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox;
+	GList *selection;
+	char *tmp;
+	
+	dialog = gtk_dialog_new_with_buttons ("",
+					      NULL,
+					      0,
+					      GTK_STOCK_CANCEL,
+					      GTK_RESPONSE_CANCEL,
+					      _("Create"),
+					      GTK_RESPONSE_OK,
+					      NULL);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+					 GTK_RESPONSE_OK);
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 12);
+
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), 
+				      GTK_WINDOW (shell->priv->window));
+	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE); 
+
+	hbox = gtk_hbox_new (FALSE, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
+	image = gtk_image_new_from_stock (GTK_STOCK_DIALOG_QUESTION,
+					  GTK_ICON_SIZE_DIALOG);
+	gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, TRUE, 0);
+	vbox = gtk_vbox_new (FALSE, 6);
+
+	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new music group."));
+	label = gtk_label_new (tmp);
+	g_free (tmp);
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
+
+	entry = gtk_entry_new ();
+	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
+	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
+	gtk_box_pack_start (GTK_BOX (vbox), entry, FALSE, TRUE, 0);
+
+	cbox = gtk_check_button_new_with_label (_("Add the selected songs to the new group."));
+	selection = rb_view_get_selection (shell->priv->selected_view);
+	if (selection == NULL)
+		gtk_widget_set_sensitive (cbox, FALSE);
+	gtk_box_pack_start (GTK_BOX (vbox), cbox, FALSE, TRUE, 0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
+	gtk_widget_show_all (hbox);
+	gtk_widget_grab_focus (entry);
+
+	/* we need this fields to be retrieved later */
+	g_object_set_data (G_OBJECT (dialog), "entry", entry);
+	g_object_set_data (G_OBJECT (dialog), "checkbox", cbox);
+
+	gtk_widget_show_all (dialog);
+
+	return dialog;
 }

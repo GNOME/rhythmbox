@@ -84,11 +84,6 @@
 	     pixname="gtk-new"
 	     _tip="Create a new music group"/>
 
-	<cmd name="NewGroupSel"
-	     pixtype="stock"
-	     pixname="gtk-new"
-	     _tip="Create a new music group from the selected songs"/>
-
 	<cmd name="AddToLibrary"
 	     pixtype="stock"
 	     pixname="gtk-open"
@@ -113,8 +108,6 @@
 <submenu name="File" _label="_Organize">
         
         <menuitem name="NewGroup" verb="NewGroup" _label="_New Group..." accel="*Control*n"/>
-
-        <menuitem name="NewGroupSel" verb="NewGroupSel" _label="_New Group from Selection..."/>
 
 	<placeholder name="SourceMenu"/>
 
