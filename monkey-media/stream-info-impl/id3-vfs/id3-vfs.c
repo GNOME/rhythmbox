@@ -465,7 +465,7 @@ id3_vfs_bitrate (struct id3_vfs_file *file, int *bitrate, int *samplerate,
   GnomeVFSFileSize save_position, length_read;
   GnomeVFSHandle *iofile = file->iofile;
   GnomeVFSResult res;
-  guchar buffer[8192];
+  guchar buffer[16384];
   int found, i;
 
   *bitrate = 0;
