@@ -2,7 +2,7 @@
 # arch-tag: Finnish messages for rhythmbox.
 # Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 # Suomennos: http://gnome-fi.sourceforge.net/
-# Hile Tuohela <hile@iki.fi>, 2002, 2003.
+# Hile Tuohela <hile@iki.fi>, 2002 - 2004.
 # Tommi Vainikainen <Tommi.Vainikainen@iki.fi>, 2004.
 #
 # $Id$
@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-23 21:35+0300\n"
-"PO-Revision-Date: 2004-09-23 21:36+0300\n"
+"POT-Creation-Date: 2004-11-10 18:27+0200\n"
+"PO-Revision-Date: 2004-11-10 18:28+0200\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Gnome Finnish Translation Team <laatu@gnome-fi.org>\n"
 "MIME-Version: 1.0\n"
@@ -250,7 +250,7 @@ msgstr "_Syötä tiedoston, jonka haluat ladata, sijainti (URI):"
 msgid "Open from URI"
 msgstr "Avaa URIsta"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1385 shell/rb-shell.c:2054
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1385 shell/rb-shell.c:2056
 msgid "Music Player"
 msgstr "Musiikkisoitin"
 
@@ -823,45 +823,45 @@ msgstr "Äänilähdettä %s ei pystytty käsittelemään: tarkista asennuksesi."
 msgid "<invalid filename>"
 msgstr "<virheellinen tiedostonimi>"
 
-#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:930
+#: rhythmdb/rhythmdb.c:1468 widgets/rb-entry-view.c:930
 #: widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Ei koskaan"
 
-#: rhythmdb/rhythmdb.c:1464
+#: rhythmdb/rhythmdb.c:1470
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d, %H:%M"
 
-#: rhythmdb/rhythmdb.c:2191
+#: rhythmdb/rhythmdb.c:2197
 msgid "Loading songs..."
 msgstr "Ladataan kappaleita..."
 
-#: rhythmdb/rhythmdb.c:2193
+#: rhythmdb/rhythmdb.c:2199
 msgid "Refreshing songs..."
 msgstr "Virkistetään kappaleita..."
 
-#: rhythmdb/rhythmdb.c:2210
+#: rhythmdb/rhythmdb.c:2216
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d kappale"
 msgstr[1] "%d kappaletta"
 
-#: rhythmdb/rhythmdb.c:2217
+#: rhythmdb/rhythmdb.c:2223
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minuutti"
 msgstr[1] "%ld minuuttia"
 
-#: rhythmdb/rhythmdb.c:2218 rhythmdb/rhythmdb.c:2228
+#: rhythmdb/rhythmdb.c:2224 rhythmdb/rhythmdb.c:2234
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld tunti"
 msgstr[1] "%ld tuntia"
 
-#: rhythmdb/rhythmdb.c:2219
+#: rhythmdb/rhythmdb.c:2225
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -869,13 +869,13 @@ msgstr[0] "%ld päivä"
 msgstr[1] "%ld päivää"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2223
+#: rhythmdb/rhythmdb.c:2229
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s ja %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2231
+#: rhythmdb/rhythmdb.c:2237
 #, c-format
 msgid "%s and %s"
 msgstr "%s ja %s"
@@ -1016,11 +1016,11 @@ msgstr "Satunnaisuus viimeisen soiton ja arvostelun perusteella"
 msgid "Couldn't parse playlist"
 msgstr "Soittlistan tulkitseminen epäonnistui"
 
-#: shell/rb-playlist-manager.c:773
+#: shell/rb-playlist-manager.c:795
 msgid "Load playlist"
 msgstr "Lataa soittolista"
 
-#: shell/rb-playlist-manager.c:814
+#: shell/rb-playlist-manager.c:836
 msgid "Save playlist"
 msgstr "Tallenna soittolista"
 
@@ -1095,7 +1095,7 @@ msgstr "Onko toisto päällä"
 msgid "Properties for the current song"
 msgstr "Valitun kappaleen ominaisuudet"
 
-#: shell/rb-shell.c:1654
+#: shell/rb-shell.c:1656
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1107,12 +1107,12 @@ msgstr ""
 "kuin bonobo-aktivoinnin. Tämä varoitus on harmiton,mutta prosessien välinen "
 "tiedonvälitys (IPC) ei toimi."
 
-#: shell/rb-shell.c:2029 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
+#: shell/rb-shell.c:2031 shell/rb-tray-icon.c:227 widgets/rb-header.c:581
 msgid "Not playing"
 msgstr "Soitto pysäytetty"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:2032
+#: shell/rb-shell.c:2034
 #, c-format
 msgid ""
 "%s\n"
@@ -1122,7 +1122,7 @@ msgstr ""
 "Pysäytetty, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:2036
+#: shell/rb-shell.c:2038
 #, c-format
 msgid ""
 "%s\n"
@@ -1132,12 +1132,12 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:2070
+#: shell/rb-shell.c:2072
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pysäytetty)"
 
-#: shell/rb-shell.c:2138
+#: shell/rb-shell.c:2140
 msgid "translator_credits"
 msgstr ""
 "Tommi Vainikainen, 2004\n"
@@ -1145,31 +1145,31 @@ msgstr ""
 "\n"
 "http://gnome-fi.org/"
 
-#: shell/rb-shell.c:2147
+#: shell/rb-shell.c:2149
 msgid "Maintainers:"
 msgstr "Ylläpitäjät:"
 
-#: shell/rb-shell.c:2150
+#: shell/rb-shell.c:2152
 msgid "Former Maintainers:"
 msgstr "Aikaisemmat ylläpitäjät:"
 
-#: shell/rb-shell.c:2153
+#: shell/rb-shell.c:2155
 msgid "Contributors:"
 msgstr "Avustajat:"
 
-#: shell/rb-shell.c:2155
+#: shell/rb-shell.c:2157
 msgid "Music management and playback software for GNOME."
 msgstr "Musiikin hallinta- ja soitto-ohjelma Gnomeen"
 
-#: shell/rb-shell.c:2336
+#: shell/rb-shell.c:2338
 msgid "Choose Files or Directory"
 msgstr "Valitse tiedostoja tai hakemisto"
 
-#: shell/rb-shell.c:2382
+#: shell/rb-shell.c:2384
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "CD-levyjen tuonti vaatii, etää Sound Juicer on asennettu."
 
-#: shell/rb-shell.c:2389
+#: shell/rb-shell.c:2391
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "sound-juiceria ei voitu suorittaa: %s"
@@ -1313,11 +1313,11 @@ msgid ""
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
 "Rhythmbox on Gnomen musiikkisoitin, jolla voit tehdä kaiken: "
-"soittaamusiikkitiedostojasi, kuunnella Internet-radioasemia, tuoda "
-"musiikkiaCD-levyiltä ja paljon muuta\n"
+"soittaa musiikkitiedostojasi, kuunnella Internet-radioasemia, tuoda "
+"musiikkia CD-levyiltä ja paljon muuta\n"
 "\n"
 "Tämä apulainen auttaa sinua pääsemään alkuun kysymällä "
-"muutamiayksinkertaisia kysymyksiä.\t"
+"muutamia yksinkertaisia kysymyksiä.\t"
 
 #: widgets/rb-druid.c:249
 msgid "Music library setup"
@@ -1518,4 +1518,3 @@ msgstr "+"
 #: widgets/rb-volume.c:236
 msgid "-"
 msgstr "-"
-
