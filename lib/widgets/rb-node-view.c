@@ -434,7 +434,7 @@ rb_node_view_construct (RBNodeView *view)
 		column = ev->value;
 		g_free (tmp);
 
-		title = xmlGetProp (child, "title");
+		title = xmlGetProp (child, "_title");
 		
 		tmp = xmlGetProp (child, "visible");
 		if (tmp != NULL)
