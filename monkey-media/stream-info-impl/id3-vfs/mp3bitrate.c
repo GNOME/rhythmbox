@@ -81,15 +81,13 @@ static int mpg123_parse_xing_header(MP3Frame *frame,
   xframes = xbytes = 0;
 
   /* offset of the Xing header */
-  if( frame->mpeg25_bit )
+  if ( frame->lsf_bit )
   {
-    /* mpeg1 */
     if( frame->channel_mode != 3 )
       ptr += (32 + 4);
     else
       ptr += (17 + 4);
   } else {
-    /* mpeg2 */
     if( frame->channel_mode != 3 )
       ptr += (17 + 4);
     else
