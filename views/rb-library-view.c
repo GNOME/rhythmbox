@@ -787,7 +787,7 @@ songs_node_activated_cb (RBNodeView *nodeview,
 			 RBNode *node,
 			 RBLibraryView *view)
 {
-	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, TRUE);
+	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
 }
 
 static void
@@ -804,7 +804,7 @@ play_song_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, once);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, once);
 
 		once = FALSE;
 	}
@@ -825,7 +825,7 @@ play_song_later_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
 	}
 
 	g_list_free (sel);
@@ -845,7 +845,7 @@ play_album_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, once);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, once);
 
 		once = FALSE;
 	}
@@ -866,7 +866,7 @@ play_album_later_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
 	}
 
 	g_list_free (sel);

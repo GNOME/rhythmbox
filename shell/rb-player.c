@@ -857,18 +857,14 @@ nullify_info (RBPlayer *player)
 void
 rb_player_queue_song (RBPlayer *player,
 		      RBNode *song,
-		      gboolean insert_first,
 		      gboolean start_playing)
 {
-	if (insert_first) {
-		prepend_song (player, song);
-	} else {
-		append_song (player, song);
-	}
-
 	if (start_playing) {
+		prepend_song (player, song);
 		set_playing (player, song);
 		rb_player_set_state (player, RB_PLAYER_PLAYING);
+	} else {
+		append_song (player, song);
 	}
 }
 
