@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2002-08-19 02:14+0200\n"
-"PO-Revision-Date: 2002-08-19 02:15+0200\n"
+"POT-Creation-Date: 2002-08-23 12:33+0200\n"
+"PO-Revision-Date: 2002-08-23 12:36+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -48,64 +48,64 @@ msgid "   "
 msgstr "   "
 
 #: data/glade/song-info.glade.h:3
-msgid "<b>Album  </b>"
-msgstr "<b>Album  </b>"
+msgid "<span weight=\"bold\">Bit Rate:</span>"
+msgstr "<span weight=\"bold\">Bithastighet:</span>"
 
 #: data/glade/song-info.glade.h:4
-msgid "<b>Artist  </b>"
-msgstr "<b>Artist  </b>"
+msgid "<span weight=\"bold\">Channels:</span>"
+msgstr "<span weight=\"bold\">Kanaler:</span>"
 
 #: data/glade/song-info.glade.h:5
-msgid "<b>Comments  </b>"
-msgstr "<b>Kommentarer</b>"
+msgid "<span weight=\"bold\">Duration: </span>"
+msgstr "<span weight=\"bold\">Varaktighet: </span>"
 
 #: data/glade/song-info.glade.h:6
-msgid "<b>Date  </b>"
-msgstr "<b>Datum </b>"
+msgid "<span weight=\"bold\">Location: </span>"
+msgstr "<span weight=\"bold\">Plats: </span>"
 
 #: data/glade/song-info.glade.h:7
-msgid "<b>Genre  </b>"
-msgstr "<b>Genre  </b>"
+msgid "<span weight=\"bold\">Size: </span>"
+msgstr "<span weight=\"bold\">Storlek: </span>"
 
 #: data/glade/song-info.glade.h:8
-msgid "<b>Title  </b>"
-msgstr "<b>Titel  </b>"
+msgid "<span weight=\"bold\">_Album:</span>"
+msgstr "<span weight=\"bold\">_Album:</span>"
 
 #: data/glade/song-info.glade.h:9
-msgid "<b>Track Number  </b>"
-msgstr "<b>Spårnummer    </b>"
+msgid "<span weight=\"bold\">_Artist:</span>"
+msgstr "<span weight=\"bold\">_Artist:</span>"
 
 #: data/glade/song-info.glade.h:10
-msgid "Additional"
-msgstr "Ytterligare"
+msgid "<span weight=\"bold\">_Comments:</span>"
+msgstr "<span weight=\"bold\">_Kommentarer:</span>"
 
 #: data/glade/song-info.glade.h:11
-msgid "Basic"
-msgstr "Grundläggande"
+msgid "<span weight=\"bold\">_Date:</span>"
+msgstr "<span weight=\"bold\">_Datum:</span>"
 
 #: data/glade/song-info.glade.h:12
-msgid "Bit Rate: "
-msgstr "Bithastighet: "
+msgid "<span weight=\"bold\">_Genre:</span>"
+msgstr "<span weight=\"bold\">_Genre:</span>"
 
 #: data/glade/song-info.glade.h:13
-msgid "Channels: "
-msgstr "Kanaler: "
+msgid "<span weight=\"bold\">_Title:</span>"
+msgstr "<span weight=\"bold\">_Titel:</span>"
 
 #: data/glade/song-info.glade.h:14
-msgid "Duration: "
-msgstr "Varaktighet: "
+msgid "<span weight=\"bold\">_Track Number:</span>"
+msgstr "<span weight=\"bold\">_Spårnummer:</span>"
 
 #: data/glade/song-info.glade.h:15
-msgid "File Size: "
-msgstr "Filstorlek: "
+msgid "_Additional"
+msgstr "_Ytterligare"
 
 #: data/glade/song-info.glade.h:16
-msgid "Location: "
-msgstr "Plats: "
+msgid "_Basic"
+msgstr "_Grundläggande"
 
-#: data/glade/song-info.glade.h:17 lib/widgets/rb-song-info.c:406
-msgid "of"
-msgstr "av"
+#: data/glade/song-info.glade.h:17
+msgid "_of"
+msgstr "_av"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
 #: data/node-views/rb-node-view-songs.xml.h:1
@@ -129,13 +129,13 @@ msgstr "Titel"
 msgid "Track"
 msgstr "Spår"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:359 shell/rb-shell.c:684
-msgid "Music Player"
-msgstr "Musikspelare"
-
-#: data/rhythmbox.desktop.in.h:2
+#: data/rhythmbox.desktop.in.h:1
 msgid "Play and organize your music collection"
 msgstr "Spela och organisera din musiksamling"
+
+#: data/rhythmbox.desktop.in.h:2 shell/rb-shell.c:375 shell/rb-shell.c:711
+msgid "Rhythmbox Music Player"
+msgstr "Musikspelaren Rhythmbox"
 
 #: data/ui/rhythmbox-group-view.xml.in.h:1
 msgid "Delete the currently selected music group"
@@ -503,51 +503,65 @@ msgstr "Ogiltigt läge"
 msgid "Search:"
 msgstr "Sök:"
 
-#: lib/widgets/rb-sidebar-button.c:223
+#: lib/widgets/rb-sidebar-button.c:246
+msgid "/_Open"
+msgstr "/_Öppna"
+
+#: lib/widgets/rb-sidebar-button.c:248
 msgid "/_Rename..."
 msgstr "/_Byt namn..."
 
-#: lib/widgets/rb-sidebar-button.c:224
+#: lib/widgets/rb-sidebar-button.c:249
 msgid "/_Delete"
 msgstr "/_Ta bort"
 
-#: lib/widgets/rb-sidebar-button.c:556
-#, c-format
-msgid "Rename %s"
-msgstr "Byt namn på %s"
+#: lib/widgets/rb-sidebar-button.c:493
+msgid "/Rename..."
+msgstr "/Byt namn..."
 
-#: lib/widgets/rb-sidebar-button.c:557
-#, c-format
-msgid "Enter a new name for this %s:"
-msgstr "Ange ett nytt namn för denna %s:"
+#: lib/widgets/rb-sidebar-button.c:496
+msgid "/Delete"
+msgstr "/Ta bort"
 
-#: lib/widgets/rb-sidebar.c:401
+#: lib/widgets/rb-sidebar-button.c:618
+#, c-format
+msgid "Please enter a new name for this %s."
+msgstr "Ange ett nytt namn för denna %s."
+
+#: lib/widgets/rb-sidebar-button.c:619
+msgid "Rename"
+msgstr "Byt namn"
+
+#: lib/widgets/rb-sidebar.c:392
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Misslyckades med att tolka %s som sidopanellayoutfil"
 
-#: lib/widgets/rb-song-info.c:202
-msgid "Song Information"
-msgstr "Låtinformation"
+#: lib/widgets/rb-song-info.c:212 lib/widgets/rb-song-info.c:419
+msgid "Song Properties"
+msgstr "Låtegenskaper"
 
-#: lib/widgets/rb-song-info.c:440
-msgid "Unknown"
-msgstr "Okänd"
+#: lib/widgets/rb-song-info.c:399 lib/widgets/rb-song-info.c:412
+#, c-format
+msgid "%s Properties"
+msgstr "Egenskaper för %s"
 
-#: lib/widgets/rb-song-info.c:464
+#: lib/widgets/rb-song-info.c:472
+msgid "of"
+msgstr "av"
+
+#: lib/widgets/rb-song-info.c:539
 #, c-format
 msgid "%d kbps"
 msgstr "%d kb/s"
 
-#: lib/widgets/rb-song-info.c:484
-#, c-format
-msgid "%d Mono"
-msgstr "%d mono"
+#: lib/widgets/rb-song-info.c:559
+msgid "Mono"
+msgstr "Mono"
 
-#: lib/widgets/rb-song-info.c:487
-#, c-format
-msgid "%d Stereo"
-msgstr "%d stereo"
+#: lib/widgets/rb-song-info.c:562
+msgid "Stereo"
+msgstr "Stereo"
 
 #: lib/widgets/rb-volume.c:177
 msgid "Mixer channel"
@@ -584,7 +598,7 @@ msgstr "Mixerenheten %s har varken volym- eller PCM-kanaler.\n"
 msgid "Invalid channel number"
 msgstr "Ogiltigt kanalnummer"
 
-#: library/rb-library.c:240
+#: library/rb-library.c:249
 msgid "All"
 msgstr "Alla"
 
@@ -604,7 +618,7 @@ msgstr "MonkeyMedia-alternativ:"
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:142
+#: shell/main.c:152
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -642,42 +656,42 @@ msgstr "_Stopp"
 msgid "Preferences"
 msgstr "Inställningar"
 
-#: shell/rb-shell-preferences.c:224
+#: shell/rb-shell-preferences.c:225
 msgid "Choose a folder"
 msgstr "Välj en mapp"
 
-#: shell/rb-shell.c:349
+#: shell/rb-shell.c:365
 #, c-format
 msgid "Failed to register the shell: %s\n"
 msgstr "Misslyckades med att registrera skalet: %s\n"
 
-#: shell/rb-shell.c:758
+#: shell/rb-shell.c:785
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:769
+#: shell/rb-shell.c:796
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Copyright 2002 Jorn Baayen"
 
-#: shell/rb-shell.c:770
+#: shell/rb-shell.c:797
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhanterings- och uppspelningsprogramvara för GNOME."
 
-#: shell/rb-shell.c:815
-msgid "Choose files or a directory to add"
-msgstr "Välj filer eller en katalog att lägga till"
+#: shell/rb-shell.c:885
+msgid "Choose Files or Directory"
+msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:853
-msgid "Enter a name"
-msgstr "Ange ett namn"
+#: shell/rb-shell.c:938
+msgid "Please enter a name for the new music group."
+msgstr "Ange ett namn för den nya musikgruppen."
 
-#: shell/rb-shell.c:854
-msgid "Enter a name for the new music group:"
-msgstr "Ange ett namn för den nya musikgruppen:"
+#: shell/rb-shell.c:939
+msgid "Create"
+msgstr "Skapa"
 
-#: shell/rb-shell.c:855
+#: shell/rb-shell.c:940
 msgid "Untitled"
 msgstr "Namnlös"
 
@@ -689,7 +703,7 @@ msgstr "musikgrupp"
 msgid "Unnamed"
 msgstr "Namnlös"
 
-#: views/rb-group-view.c:807 views/rb-library-view.c:776
+#: views/rb-group-view.c:807 views/rb-library-view.c:790
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
@@ -703,13 +717,88 @@ msgstr ""
 msgid "Failed to parse %s as group file"
 msgstr "Misslyckades med att tolka %s som gruppfil"
 
-#: views/rb-library-view.c:303
+#: views/rb-library-view.c:309
 msgid "library"
 msgstr "bibliotek"
 
-#: views/rb-library-view.c:306 views/rb-library-view.c:1078
+#: views/rb-library-view.c:312 views/rb-library-view.c:1148
 msgid "Library"
 msgstr "Bibliotek"
+
+#~ msgid "Bit Rate:"
+#~ msgstr "Bithastighet:"
+
+#~ msgid "Channels:"
+#~ msgstr "Kanaler:"
+
+#~ msgid "_Album:"
+#~ msgstr "_Album:"
+
+#~ msgid "_Artist:"
+#~ msgstr "_Artist:"
+
+#~ msgid "_Comments:"
+#~ msgstr "_Kommentarer:"
+
+#~ msgid "_Date:"
+#~ msgstr "_Datum:"
+
+#~ msgid "_Genre:"
+#~ msgstr "_Genre:"
+
+#~ msgid "_Title:"
+#~ msgstr "_Titel:"
+
+#~ msgid "_Track Number:"
+#~ msgstr "_Spårnummer:"
+
+#~ msgid "<b>Album  </b>"
+#~ msgstr "<b>Album  </b>"
+
+#~ msgid "<b>Artist  </b>"
+#~ msgstr "<b>Artist  </b>"
+
+#~ msgid "<b>Comments  </b>"
+#~ msgstr "<b>Kommentarer</b>"
+
+#~ msgid "<b>Date  </b>"
+#~ msgstr "<b>Datum </b>"
+
+#~ msgid "<b>Genre  </b>"
+#~ msgstr "<b>Genre  </b>"
+
+#~ msgid "<b>Title  </b>"
+#~ msgstr "<b>Titel  </b>"
+
+#~ msgid "<b>Track Number  </b>"
+#~ msgstr "<b>Spårnummer    </b>"
+
+#~ msgid "Bit Rate: "
+#~ msgstr "Bithastighet: "
+
+#~ msgid "Channels: "
+#~ msgstr "Kanaler: "
+
+#~ msgid "Duration: "
+#~ msgstr "Varaktighet: "
+
+#~ msgid "File Size: "
+#~ msgstr "Filstorlek: "
+
+#~ msgid "Location: "
+#~ msgstr "Plats: "
+
+#~ msgid "Music Player"
+#~ msgstr "Musikspelare"
+
+#~ msgid "Song Information"
+#~ msgstr "Låtinformation"
+
+#~ msgid "Unknown"
+#~ msgstr "Okänd"
+
+#~ msgid "Enter a name"
+#~ msgstr "Ange ett namn"
 
 #~ msgid "Drop songs here to add them in this group"
 #~ msgstr "Släpp låtar här för att lägga till dem i denna grupp"
@@ -760,9 +849,6 @@ msgstr "Bibliotek"
 #~ msgstr ""
 #~ "Inkludera innehåll på ljud-cd i bibliotek så länge skivan är närvarande"
 
-#~ msgid "Rhythmbox Music Player"
-#~ msgstr "Musikspelaren Rhythmbox"
-
 #~ msgid "_About Rhythmbox..."
 #~ msgstr "_Om Rhythmbox..."
 
@@ -771,9 +857,6 @@ msgstr "Bibliotek"
 
 #~ msgid "Comments"
 #~ msgstr "Kommentarer"
-
-#~ msgid "Date"
-#~ msgstr "Datum"
 
 #~ msgid "Track Number"
 #~ msgstr "Spårnummer"
