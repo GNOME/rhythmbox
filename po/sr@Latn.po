@@ -8,8 +8,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-09-06 16:10+0200\n"
-"PO-Revision-Date: 2003-09-06 16:11+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2003-09-21 00:39+0200\n"
+"PO-Revision-Date: 2003-09-21 00:42+0200\n"
 "Last-Translator: Predrag Krtolica <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -52,59 +53,44 @@ msgstr "*"
 msgid "Finish"
 msgstr "Završi"
 
-#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:244
+#: data/glade/druid.glade.h:3
 msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assistant will ask\n"
-"you some simple questions."
-msgstr ""
-"Da biste počeli sa korišćenjem\n"
-"Rhythmbox-a, ovaj pomoćnik će vam\n"
-"postaviti par jednostavnih pitanja."
+"In order to get started using Rhythmbox, this assistant will ask you some "
+"simple questions."
+msgstr "Da biste počeli sa korišćenjem Rhythmbox-a, ovaj pomoćnik će vam postaviti par jednostavnih pitanja."
 
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:250
+#: data/glade/druid.glade.h:4 lib/widgets/rb-druid.c:250
 msgid "Library setup"
 msgstr "Postavljanje biblioteke"
 
-#: data/glade/druid.glade.h:7
+#: data/glade/druid.glade.h:5
 msgid ""
-"Rhythmbox needs to know where to find your music.\n"
-"You may choose to skip this step; instead, you \n"
-"can add music to your library at any point later.\n"
-"\n"
+"Rhythmbox needs to know where to find your music. You may choose to skip "
+"this step; instead, you can add music to your library at any point later. "
 "Please choose one of the options below:"
-msgstr ""
-"Rhythmbox mora da zna gde može da pronađe vašu muziku.\n"
-"Možete i preskočiti ovaj korak; umesto toga, možete\n"
-"dodati muziku u vašu biblioteku bilo kada.\n"
-"\n"
-"Molim izaberite neku od mogućnosti ispod:"
+msgstr "Rhythmbox mora da zna gde može da pronađe vašu muziku. Možete i preskočiti ovaj korak; umesto toga, možete dodati muziku u vašu biblioteku bilo kada. Molim izaberite neku od mogućnosti ispod:"
 
-#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:240
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:240
 msgid "Welcome to Rhythmbox"
 msgstr "Dobrodošli u Rhythmbox"
 
-#: data/glade/druid.glade.h:13
-msgid ""
-"You are now ready to start\n"
-"Rhythmbox."
-msgstr ""
-"Sada ste spremni da pokrenete\n"
-"Rhythmbox."
+#: data/glade/druid.glade.h:7 lib/widgets/rb-druid.c:261
+msgid "You are now ready to start Rhythmbox."
+msgstr "Sada ste spremni da pokrenete Rhythmbox."
 
-#: data/glade/druid.glade.h:15
+#: data/glade/druid.glade.h:8
 msgid "_Browse..."
 msgstr "_Pronađi..."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:9
 msgid "_Enter location manually:"
 msgstr "_Unesite adresu ručno:"
 
-#: data/glade/druid.glade.h:17
+#: data/glade/druid.glade.h:10
 msgid "_Path:"
 msgstr "_Putanja:"
 
-#: data/glade/druid.glade.h:18
+#: data/glade/druid.glade.h:11
 msgid "_Skip this step"
 msgstr "Pre_skoči ovaj korak"
 
@@ -641,8 +627,7 @@ msgstr "Neuspela obrada %s\n"
 msgid "(Unknown)"
 msgstr "(Nepoznato)"
 
-#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb-tree.c:244
-#: rhythmdb/rhythmdb.c:321
+#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb.c:498
 msgid "Never"
 msgstr "Nikada"
 
@@ -650,16 +635,13 @@ msgstr "Nikada"
 msgid "New Internet Radio Station"
 msgstr "Nova internet radio stanica"
 
-#. Initialize the tree structure.
 #: iradio/rb-new-station-dialog.c:182
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
-#: monkey-media/monkey-media-stream-info.c:667 rhythmdb/rhythmdb-tree.c:250
-#: rhythmdb/rhythmdb-tree.c:251 rhythmdb/rhythmdb-tree.c:252
-#: sources/rb-audiocd-source.c:979 sources/rb-audiocd-source.c:986
-#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
-#: sources/rb-iradio-source.c:236 sources/rb-playlist-source.c:365
-#: sources/rb-playlist-source.c:381
+#: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:234
+#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
+#: sources/rb-playlist-source.c:365 sources/rb-playlist-source.c:381
 msgid "Unknown"
 msgstr "Nepoznat"
 
@@ -772,9 +754,15 @@ msgstr "Pixbuf za iscrtavanje."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: lib/widgets/rb-druid.c:261
-msgid "You are now ready to start Rhythmbox."
-msgstr "Sada ste spremni da pokrenete Rhythmbox."
+#: lib/widgets/rb-druid.c:244
+msgid ""
+"In order to get started using\n"
+"Rhythmbox, this assistant will ask\n"
+"you some simple questions."
+msgstr ""
+"Da biste počeli sa korišćenjem\n"
+"Rhythmbox-a, ovaj pomoćnik će vam\n"
+"postaviti par jednostavnih pitanja."
 
 #: lib/widgets/rb-druid.c:310
 #, c-format
@@ -842,11 +830,11 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Traži:"
 
-#: lib/widgets/rb-song-display-box.c:116
+#: lib/widgets/rb-song-display-box.c:113
 msgid "from "
 msgstr "od "
 
-#: lib/widgets/rb-song-display-box.c:119
+#: lib/widgets/rb-song-display-box.c:116
 msgid "by "
 msgstr "od "
 
@@ -925,7 +913,7 @@ msgstr "<b>%ld</b> časova i <b>%ld</b> minuta (pesama: %ld)"
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuta (pesama: %ld)"
 
-#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:323
+#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:500
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d/%m/%Y %H:%M"
 
@@ -983,35 +971,35 @@ msgstr ""
 "Neuspeh pri kreiranju cdparanoia ulaznog elementa; proveriti instalaciju"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:562
+#: monkey-media/monkey-media-player-gst-tmp.c:571
 #: monkey-media/monkey-media-player-gst.c:518
 msgid "Failed to create spider element; check your installation"
 msgstr "Neuspeh pri kreiranju spider elementa; proveriti instalaciju"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:574
+#: monkey-media/monkey-media-player-gst-tmp.c:583
 #: monkey-media/monkey-media-player-gst.c:533
 msgid "Failed to create volume element; check your installation"
 msgstr "Neuspeh pri kreiranju elementa ozvučenja; proveriti instalaciju"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:592
+#: monkey-media/monkey-media-player-gst-tmp.c:601
 #: monkey-media/monkey-media-player-gst.c:554
 msgid "Could not create audio output element; check your settings"
 msgstr "Nisam mogao da kreiram izlazni zvučni element; proveriti podešavanja"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:708
+#: monkey-media/monkey-media-player-gst-tmp.c:717
 #: monkey-media/monkey-media-player-gst.c:641
 msgid "No AudioCD support; check your settings"
 msgstr "Ne postoji podrška za Audio CD; proveriti podešavanja"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:513
+#: monkey-media/monkey-media-player-gst-tmp.c:514
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr "Neuspeh pri obrazovanju ulaznog elementa %s; proverite vašu instalaciju"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:538
+#: monkey-media/monkey-media-player-gst-tmp.c:539
 #: monkey-media/monkey-media-player-gst.c:491
 msgid "Failed to create queue element; check your installation"
 msgstr "Neuspeh pri obrazovanju rednog elementa; proverite vašu instalaciju"
@@ -1299,14 +1287,11 @@ msgstr "Ne može da obradi adresu „%s“\n"
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
-"This probably means that you installed Rhythmbox in a\n"
-"different prefix than bonobo-activation; this\n"
-"warning is harmless, but IPC will not work.\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "Nije uspeo da prijavi ljusku: %s\n"
-"Ovo verovatno znači da ste instalirali Rhythmbox na  \n"
-"različitom mestu od bonobo aktivacije; ovo\n"
-"upozorenje je bezopasno, ali IPC neće raditi.\n"
+"Ovo verovatno znači da ste instalirali Rhythmbox na različitom mestu od bonobo aktivacije; ovo upozorenje je bezopasno, ali IPC neće raditi."
 
 #: shell/rb-shell.c:1222
 #, c-format
@@ -1440,6 +1425,13 @@ msgstr "Nisu dostupne osobine."
 #: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Ovaj izvor ne podržava prevlačenje i puštanje."
+
+#~ msgid ""
+#~ "You are now ready to start\n"
+#~ "Rhythmbox."
+#~ msgstr ""
+#~ "Sada ste spremni da pokrenete\n"
+#~ "Rhythmbox."
 
 #~ msgid ""
 #~ "%s\n"
