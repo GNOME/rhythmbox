@@ -9,4 +9,4 @@ uixml_DATA = $(uixml_in_files:.xml.in=.xml)
 
 EXTRA_DIST = $(uixml_in_files)
 
-CLEANFILES = $(uixml_in_files)
+CLEANFILES = $(uixml_DATA)

@@ -1,3 +1,17 @@
+2002-08-18  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/ui/Makefile.am:
+
+	Proper CLEANFILES.
+	
+	* lib/Makefile.am:
+
+	Add rb-enums.h
+
+	* shell/rb-shell.c: (rb_shell_finalize):
+
+	unref file monitor
+
 2002-08-16  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/widgets/rb-tree-model-sort.c:

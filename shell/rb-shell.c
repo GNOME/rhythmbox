@@ -51,6 +51,7 @@
 #include "rb-library-view.h"
 #include "rb-shell-preferences.h"
 #include "rb-group-view.h"
+#include "rb-file-monitor.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
@@ -296,6 +297,8 @@ rb_shell_finalize (GObject *object)
 		gtk_widget_destroy (shell->priv->prefs);
 
 	g_free (shell->priv);
+
+	g_object_unref (G_OBJECT (rb_file_monitor_get ()));
 
         parent_class->finalize (G_OBJECT (shell));
 

@@ -19,6 +19,7 @@ librb_la_SOURCES =					\
 	rb-string-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
+	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h
 
