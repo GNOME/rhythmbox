@@ -52,9 +52,10 @@ typedef struct
 {
 	GtkScrolledWindowClass parent;
 
-	void (*property_selected)          (RBPropertyView *view, const char *name);
-	void (*properties_selected)        (RBPropertyView *view, GList *properties);
-	void (*property_activated)         (RBPropertyView *view, const char *name);
+	void (*property_selected)	(RBPropertyView *view, const char *name);
+	void (*properties_selected)	(RBPropertyView *view, GList *properties);
+	void (*property_activated)	(RBPropertyView *view, const char *name);
+	void (*selection_reset)		(RBPropertyView *view);
 } RBPropertyViewClass;
 
 GType		rb_property_view_get_type		(void);

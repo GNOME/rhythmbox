@@ -85,6 +85,7 @@ enum
 	PROPERTY_SELECTED,
 	PROPERTIES_SELECTED,
 	PROPERTY_ACTIVATED,
+	SELECTION_RESET,
 	LAST_SIGNAL
 };
 
@@ -198,6 +199,16 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
+
+	rb_property_view_signals[SELECTION_RESET] =
+		g_signal_new ("property-selection-reset",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPropertyViewClass, selection_reset),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0); 
 }
 
 static void
@@ -344,17 +355,18 @@ rb_property_view_handle_entry_deletion (RBPropertyView *view,
 					 view);
 	rhythmdb_property_model_entry_to_iter (view->priv->prop_model, entry, &iter);
 	rhythmdb_property_model_delete_iter (view->priv->prop_model, &iter);
-	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
-					   G_CALLBACK (rb_property_view_selection_changed_cb),
-					   view);
 
 	if (gtk_tree_selection_count_selected_rows (view->priv->selection) == 0) {
 		GtkTreeIter first_iter;
 		gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->prop_model),
 					       &first_iter);
 		gtk_tree_selection_select_iter (view->priv->selection, &first_iter);
-		
+		g_signal_emit (G_OBJECT (view), rb_property_view_signals[SELECTION_RESET], 0);
 	}
+	g_signal_handlers_unblock_by_func (G_OBJECT (view->priv->selection),
+					   G_CALLBACK (rb_property_view_selection_changed_cb),
+					   view);
+
 }
 
 guint

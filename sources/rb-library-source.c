@@ -82,16 +82,18 @@ static void rb_library_source_get_property (GObject *object,
 			                  GParamSpec *pspec);
 static void genres_selected_cb (RBPropertyView *propview, GList *genres,
 			       RBLibrarySource *libsource);
+static void genres_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource);
 static void artists_selected_cb (RBPropertyView *propview, GList *artists,
 			       RBLibrarySource *libsource);
+static void artists_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource);
 static void albums_selected_cb (RBPropertyView *propview, GList *albums,
 			       RBLibrarySource *libsource);
+static void albums_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource);
 static void entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 			    struct RBLibrarySourceEntryAddData *data);
 static void entry_deleted_cb (RBEntryView *view, RhythmDBEntry *entry,
 			      struct RBLibrarySourceEntryAddData *data);
-static void
-songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
+static void songs_view_sort_order_changed_cb (RBEntryView *view, RBLibrarySource *source);
 
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
@@ -137,6 +139,7 @@ static void query_complete_cb (RhythmDBQueryModel *model, RBLibrarySource *sourc
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
+static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
 
 
 #define LIBRARY_SOURCE_SONGS_POPUP_PATH "/popups/LibrarySongsList"
@@ -175,6 +178,7 @@ struct RBLibrarySourcePrivate
 	char *artist;
 	char *album;
 
+	RhythmDBQueryModel *model;
 	RhythmDBQueryModel *active_query;
 	RBLibraryQueryType query_type;
 	char *search_text;
@@ -444,6 +448,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
 			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->genres),
+			  "property-selection-reset", G_CALLBACK (genres_selection_reset_cb),
+			  source);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
 
@@ -465,6 +472,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
 			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->artists),
+			  "property-selection-reset", G_CALLBACK (artists_selection_reset_cb),
+			  source);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
 
@@ -486,6 +496,9 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "entry-deleted", G_CALLBACK (entry_deleted_cb),
 			  add_data);
+	g_signal_connect (G_OBJECT (source->priv->albums),
+			  "property-selection-reset", G_CALLBACK (albums_selection_reset_cb),
+			  source);
 
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->albums));
 	gtk_paned_pack1 (GTK_PANED (source->priv->paned), source->priv->browser, FALSE, FALSE);
@@ -639,7 +652,14 @@ string_list_equal (GList *a, GList *b)
 	g_list_free (sorted_b_keys);
 	return ret;
 }
-	
+
+static void
+rb_library_source_sync_query (RBLibrarySource *source)
+{
+	GPtrArray *query = construct_query_from_selection (source);
+	g_object_set (G_OBJECT (source->priv->model), "query", query, NULL);
+	rhythmdb_query_free (query);
+}
 
 static void
 genres_selected_cb (RBPropertyView *propview, GList *genres,
@@ -652,6 +672,16 @@ genres_selected_cb (RBPropertyView *propview, GList *genres,
 	g_list_free (libsource->priv->selected_genres);
 	libsource->priv->selected_genres = genres;
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_GENRE, FALSE);
+}
+
+static void
+genres_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource)
+{
+	rb_debug ("genre selection reset"); 
+	g_list_foreach (libsource->priv->selected_genres, (GFunc) g_free, NULL);
+	g_list_free (libsource->priv->selected_genres);
+	libsource->priv->selected_genres = NULL;
+	rb_library_source_sync_query (libsource);
 }
 
 static void
@@ -668,6 +698,16 @@ artists_selected_cb (RBPropertyView *propview, GList *artists,
 }
 
 static void
+artists_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource)
+{
+	rb_debug ("artist selection reset"); 
+	g_list_foreach (libsource->priv->selected_artists, (GFunc) g_free, NULL);
+	g_list_free (libsource->priv->selected_artists);
+	libsource->priv->selected_artists = NULL;
+	rb_library_source_sync_query (libsource);
+}
+
+static void
 albums_selected_cb (RBPropertyView *propview, GList *albums, 
 		    RBLibrarySource *libsource)
 {
@@ -678,6 +718,16 @@ albums_selected_cb (RBPropertyView *propview, GList *albums,
 	g_list_free (libsource->priv->selected_albums);
 	libsource->priv->selected_albums = albums;
 	rb_library_source_do_query (libsource, RB_LIBRARY_QUERY_TYPE_ALBUM, FALSE);
+}
+
+static void
+albums_selection_reset_cb (RBPropertyView *propview, RBLibrarySource *libsource)
+{
+	rb_debug ("album selection reset"); 
+	g_list_foreach (libsource->priv->selected_albums, (GFunc) g_free, NULL);
+	g_list_free (libsource->priv->selected_albums);
+	libsource->priv->selected_albums = NULL;
+	rb_library_source_sync_query (libsource);
 }
 
 static void
@@ -1078,8 +1128,12 @@ static void
 push_multi_equals_query (RhythmDB *db, GPtrArray *query, guint propid, GList *items)
 {
 	GPtrArray *subquery = g_ptr_array_new ();
-	if (!items)
+
+	if (!items) {
+		g_ptr_array_free (subquery, TRUE);
 		return;
+	}
+
 	rhythmdb_query_append (db,
 			       subquery,
 			       RHYTHMDB_QUERY_PROP_EQUALS,
@@ -1101,33 +1155,11 @@ push_multi_equals_query (RhythmDB *db, GPtrArray *query, guint propid, GList *it
 			       RHYTHMDB_QUERY_END);
 }
 
-static void
-rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
-			    gboolean sync)
+static GPtrArray *
+construct_query_from_selection (RBLibrarySource *source)
 {
-	RhythmDBQueryModel *query_model;
-	GtkTreeModel *model;
 	GPtrArray *query;
-	GPtrArray *genre_query;
-	GPtrArray *artist_query;
-	GPtrArray *album_query;
 
-
-	if (source->priv->active_query) {
-		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
-						      G_CALLBACK (query_complete_cb), source);
-		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_GENRE)
-			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
-						  source->priv->genre_add_handler_id);
-		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ARTIST)
-			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
-						  source->priv->artist_add_handler_id);
-		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ALBUM)
-			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
-						  source->priv->album_add_handler_id);
-	}
-		
-	source->priv->query_type = qtype;
 	query = rhythmdb_query_parse (source->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
 				      RHYTHMDB_PROP_TYPE,
@@ -1164,6 +1196,77 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 		 */
 	}
 
+	if (source->priv->selected_genres) {
+		if (source->priv->selected_genres->next == NULL)
+			rhythmdb_query_append (source->priv->db,
+					       query,
+					       RHYTHMDB_QUERY_PROP_EQUALS,
+					       RHYTHMDB_PROP_GENRE,
+					       source->priv->selected_genres->data,
+					       RHYTHMDB_QUERY_END);
+		else 
+			push_multi_equals_query (source->priv->db,
+						 query,
+						 RHYTHMDB_PROP_GENRE,
+						 source->priv->selected_genres);
+	}
+
+	if (source->priv->selected_artists) {
+		if (source->priv->selected_artists->next == NULL)
+			rhythmdb_query_append (source->priv->db,
+					       query,
+					       RHYTHMDB_QUERY_PROP_EQUALS,
+					       RHYTHMDB_PROP_ARTIST,
+					       source->priv->selected_artists->data,
+					       RHYTHMDB_QUERY_END);
+		else 
+			push_multi_equals_query (source->priv->db,
+						 query,
+						 RHYTHMDB_PROP_ARTIST,
+						 source->priv->selected_artists);
+	}
+
+	if (source->priv->selected_albums) {
+		if (source->priv->selected_albums->next == NULL)
+			rhythmdb_query_append (source->priv->db,
+					       query,
+					       RHYTHMDB_QUERY_PROP_EQUALS,
+					       RHYTHMDB_PROP_ALBUM,
+					       source->priv->selected_albums->data,
+					       RHYTHMDB_QUERY_END);
+		else 
+			push_multi_equals_query (source->priv->db,
+						 query,
+						 RHYTHMDB_PROP_ALBUM,
+						 source->priv->selected_albums);
+	}
+	return query;
+}
+
+static void
+rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
+			    gboolean sync)
+{
+	RhythmDBQueryModel *query_model;
+	GtkTreeModel *model;
+	GPtrArray *query;
+
+	if (source->priv->active_query) {
+		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
+						      G_CALLBACK (query_complete_cb), source);
+		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_GENRE)
+			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
+						  source->priv->genre_add_handler_id);
+		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ARTIST)
+			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
+						  source->priv->artist_add_handler_id);
+		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ALBUM)
+			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
+						  source->priv->album_add_handler_id);
+	}
+		
+	source->priv->query_type = qtype;
+
 	g_signal_handler_block (G_OBJECT (source->priv->songs),
 				source->priv->genre_add_handler_id);
 	g_signal_handler_block (G_OBJECT (source->priv->songs),
@@ -1196,56 +1299,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 					  source->priv->album_add_handler_id);
 	}
 
-	genre_query = rhythmdb_query_copy (query);
-
-	if (source->priv->selected_genres) {
-		if (source->priv->selected_genres->next == NULL)
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_PROP_EQUALS,
-					       RHYTHMDB_PROP_GENRE,
-					       source->priv->selected_genres->data,
-					       RHYTHMDB_QUERY_END);
-		else 
-			push_multi_equals_query (source->priv->db,
-						 query,
-						 RHYTHMDB_PROP_GENRE,
-						 source->priv->selected_genres);
-	}
-	artist_query = rhythmdb_query_copy (query);
-
-	if (source->priv->selected_artists) {
-		if (source->priv->selected_artists->next == NULL)
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_PROP_EQUALS,
-					       RHYTHMDB_PROP_ARTIST,
-					       source->priv->selected_artists->data,
-					       RHYTHMDB_QUERY_END);
-		else 
-			push_multi_equals_query (source->priv->db,
-						 query,
-						 RHYTHMDB_PROP_ARTIST,
-						 source->priv->selected_artists);
-	}
-	album_query = rhythmdb_query_copy (query);	
-
-	if (source->priv->selected_albums) {
-		if (source->priv->selected_albums->next == NULL)
-			rhythmdb_query_append (source->priv->db,
-					       query,
-					       RHYTHMDB_QUERY_PROP_EQUALS,
-					       RHYTHMDB_PROP_ALBUM,
-					       source->priv->selected_albums->data,
-					       RHYTHMDB_QUERY_END);
-		else 
-			push_multi_equals_query (source->priv->db,
-						 query,
-						 RHYTHMDB_PROP_ALBUM,
-						 source->priv->selected_albums);
-	}
-
-	source->priv->active_query = 
+	source->priv->active_query = source->priv->model = 
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
 
 	model = GTK_TREE_MODEL (query_model);
@@ -1255,15 +1309,15 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 			  source);
 	
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
+
+	query = construct_query_from_selection (source);
+	
 	if (!sync)
 		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 	else {
 		rhythmdb_do_full_query_parsed (source->priv->db, model, query);
 	}
 
-	rhythmdb_query_free (genre_query);
-	rhythmdb_query_free (artist_query);
-	rhythmdb_query_free (album_query);
 	rhythmdb_query_free (query);
 	g_object_unref (G_OBJECT (query_model));
 
