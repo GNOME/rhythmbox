@@ -38,6 +38,7 @@
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
+#include "rb-util.h"
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
@@ -160,8 +161,6 @@ struct RBEntryViewPrivate
 	gboolean change_sig_queued;
 	guint change_sig_id;
 
-	gboolean selection_lock;
-
 	GHashTable *column_key_map;
 
 	guint gconf_notification_id;
@@ -176,12 +175,10 @@ enum
 	ENTRY_ADDED,
 	ENTRY_DELETED,
 	ENTRIES_REPLACED,
-	ENTRY_SELECTED,
 	ENTRY_ACTIVATED,
 	CHANGED,
 	SHOW_POPUP,
 	PLAYING_ENTRY_DELETED,
-	HAVE_SEL_CHANGED,
 	SORT_ORDER_CHANGED,
 	LAST_SIGNAL
 };
@@ -323,16 +320,6 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
-	rb_entry_view_signals[ENTRY_SELECTED] =
-		g_signal_new ("entry-selected",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, entry_selected),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__POINTER,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_POINTER);
 	rb_entry_view_signals[CHANGED] =
 		g_signal_new ("changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -360,16 +347,6 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      g_cclosure_marshal_VOID__POINTER,
 			      G_TYPE_NONE,
 			      1, G_TYPE_POINTER);
-	rb_entry_view_signals[HAVE_SEL_CHANGED] =
-		g_signal_new ("have_selection_changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBEntryViewClass, have_selection_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__BOOLEAN,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_BOOLEAN);
 	rb_entry_view_signals[SORT_ORDER_CHANGED] =
 		g_signal_new ("sort-order-changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -384,21 +361,13 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 static void
 rb_entry_view_init (RBEntryView *view)
 {
-	GtkWidget *dummy;
-	
 	view->priv = g_new0 (RBEntryViewPrivate, 1);
 
-	dummy = gtk_tree_view_new ();
-	view->priv->playing_pixbuf = gtk_widget_render_icon (dummy,
-							     RB_STOCK_PLAYING,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
+	view->priv->playing_pixbuf = rb_pixbuf_new_from_stock (RB_STOCK_PLAYING,
+							       GTK_ICON_SIZE_MENU);
 
-	view->priv->paused_pixbuf = gtk_widget_render_icon (dummy,
-							    RB_STOCK_PAUSED,
-							    GTK_ICON_SIZE_MENU,
-							    NULL);
-	gtk_widget_destroy (dummy);
+	view->priv->paused_pixbuf = rb_pixbuf_new_from_stock (RB_STOCK_PAUSED,
+							      GTK_ICON_SIZE_MENU);
 
 	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
 	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
@@ -1687,9 +1656,6 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 	RhythmDBEntry *selected_entry = NULL;
 	GList *sel;
 
-	if (view->priv->selection_lock == TRUE)
-		return;
-
 	sel = rb_entry_view_get_selected_entries (view);
 	available = (sel != NULL);
 	if (sel != NULL)
@@ -1698,12 +1664,7 @@ rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 	if (available != view->priv->have_selection) {
 		queue_changed_sig (view);
 		view->priv->have_selection = available;
-
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[HAVE_SEL_CHANGED], 0, available);
 	}
-
-	if (selected_entry != NULL && selected_entry != view->priv->selected_entry)
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_SELECTED], 0, selected_entry);
 
 	view->priv->selected_entry = selected_entry;
 
@@ -1792,13 +1753,9 @@ rb_entry_view_select_all (RBEntryView *view)
 void
 rb_entry_view_select_none (RBEntryView *view)
 {
-	view->priv->selection_lock = TRUE;
-
 	gtk_tree_selection_unselect_all (view->priv->selection);
 
 	view->priv->selected_entry = NULL;
-
-	view->priv->selection_lock = FALSE;
 }
 
 void
@@ -1810,16 +1767,12 @@ rb_entry_view_select_entry (RBEntryView *view,
 	if (entry == NULL)
 		return;
 
-	view->priv->selection_lock = TRUE;
-
 	rb_entry_view_select_none (view);
 
 	if (rhythmdb_query_model_entry_to_iter (view->priv->model,
 						entry, &iter)) {
 		gtk_tree_selection_select_iter (view->priv->selection, &iter);
 	}
-
-	view->priv->selection_lock = FALSE;
 }
 
 void
@@ -1923,14 +1876,6 @@ emit_entry_changed (RBEntryView *view)
 
 	return FALSE;
 }
-
-/* static void */
-/* playing_entry_deleted_cb (RhythmDB *db, RBEntryView *view) */
-/* { */
-/* 	rb_debug ("emitting playing entry destroyed"); */
-/* 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[PLAYING_ENTRY_DELETED], */
-/* 		       0, view->priv->playing_entry); */
-/* } */
 
 void
 rb_entry_view_enable_drag_source (RBEntryView *view,

@@ -4,7 +4,11 @@ AUTOMAKE_OPTIONS = 1.7
 
 DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
 
-SUBDIRS = lib corba metadata player rhythmdb widgets sources iradio shell data po component help tests
+SUBDIRS = lib corba metadata player rhythmdb widgets sources iradio shell data po help tests
+
+if WITH_NAUTILUS_MENU
+SUBDIRS += component
+endif
 
 EXTRA_DIST = 			\
 	autogen.sh		\

@@ -236,11 +236,11 @@ load_ipod_db_idle_cb (RBiPodSongAdderCtxt *ctxt)
 		/* Set disc number */
 		if (song->cd_nr != 0) {
 			GValue value = {0, };
-			g_value_init (&value, G_TYPE_ULONG);
-			g_value_set_ulong (&value, song->cd_nr);
-			rhythmdb_entry_set (RHYTHMDB (ctxt->db), entry, 
-					    RHYTHMDB_PROP_DISC_NUMBER, 
-					    &value);
+			g_value_init (&value, G_TYPE_INT);
+			g_value_set_int (&value, song->cd_nr);
+			entry_set_locked (RHYTHMDB (ctxt->db), entry, 
+					  RHYTHMDB_PROP_DISC_NUMBER, 
+					  &value);
 			g_value_unset (&value);
 		}
 		

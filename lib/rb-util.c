@@ -215,30 +215,40 @@ GtkWidget *rb_image_new_from_stock (const gchar *stock_id, GtkIconSize size)
 
 		GtkWidget *image;
 		GdkPixbuf *pixbuf;
-		GdkPixbuf *mirror;
 		
 		image = gtk_image_new ();
 		
-		if (image == NULL) {
-			return NULL;
-		}
-		
-		pixbuf = gtk_widget_render_icon (image, stock_id, size, NULL);
-		g_assert (pixbuf != NULL);
-		
-		
-		mirror = gdk_pixbuf_copy (pixbuf);
-		gdk_pixbuf_unref (pixbuf);
+		pixbuf = rb_pixbuf_new_from_stock (stock_id, size);
 
-		if (!mirror)
-			return NULL;
-
-		totem_pixbuf_mirror (mirror);
-		gtk_image_set_from_pixbuf (GTK_IMAGE (image), mirror);
-		gdk_pixbuf_unref (mirror);
+		gtk_image_set_from_pixbuf (GTK_IMAGE (image), pixbuf);
 
 		return image;
 	}
 
 	return NULL;
+}
+
+GdkPixbuf *
+rb_pixbuf_new_from_stock (const char *stock_id, GtkIconSize size)
+{
+	GtkWidget *dummy;
+	GdkPixbuf *pixbuf;
+	GdkPixbuf *mirror;
+		
+	dummy = gtk_image_new ();
+		
+	pixbuf = gtk_widget_render_icon (dummy, stock_id, size, NULL);
+		
+	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_LTR)
+		return pixbuf;
+
+	mirror = gdk_pixbuf_copy (pixbuf);
+	gdk_pixbuf_unref (pixbuf);
+
+	if (!mirror)
+		return NULL;
+
+	totem_pixbuf_mirror (mirror);
+
+	return mirror;
 }

@@ -426,6 +426,11 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 		if (rating > MAX_SCORE)
 			rating = MAX_SCORE;
 		
+		if (rating == cellrating->priv->rating) {
+			/* Make it possible to give a 0 rating to a song */
+			rating--;
+		}
+
 		g_signal_emit (G_OBJECT (cellrating), rb_cell_renderer_rating_signals[RATED],
 			       0, path, rating);
 	}

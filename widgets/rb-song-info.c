@@ -824,7 +824,6 @@ static void
 rb_song_info_update_location (RBSongInfo *song_info)
 {
 	const char *text;
-	char *basename, *dir, *desktopdir;
 
 	g_return_if_fail (song_info != NULL);
 
@@ -835,17 +834,24 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	rhythmdb_read_unlock (song_info->priv->db);
 
 	if (text != NULL) {
-		char *tmp;
+ 		char *tmp, *tmp_utf8;
+ 		char *basename, *dir, *desktopdir;
 		
 		basename = g_path_get_basename (text);
 		tmp = gnome_vfs_unescape_string_for_display (basename);
 		g_free (basename);
 
-		if (tmp != NULL) {
-			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), tmp);
-		}
-
-		g_free (tmp);
+ 		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
+ 		g_free (tmp);
+ 		if (tmp_utf8 != NULL) {
+ 			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), 
+ 					    tmp_utf8);
+ 		} else {
+ 			gtk_entry_set_text (GTK_ENTRY (song_info->priv->name), 
+ 					    _("Unknown file name"));
+  		}
+  
+ 		g_free (tmp_utf8);
 	
 		tmp = gnome_vfs_get_local_path_from_uri (text);
 		if (tmp == NULL)
@@ -854,17 +860,25 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		g_free (tmp);
 		tmp = gnome_vfs_unescape_string_for_display (dir);
 		g_free (dir);
+		tmp_utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, NULL);
+		g_free (tmp);
 
-		desktopdir = g_build_filename (g_get_home_dir (), ".gnome-desktop", NULL);
-		if (strcmp (tmp, desktopdir) == 0)
+		desktopdir = g_build_filename (g_get_home_dir (), "Desktop", NULL);
+		if ((tmp_utf8 != NULL) && (strcmp (tmp_utf8, desktopdir) == 0))
 		{
-			g_free (tmp);
-			tmp = g_strdup (_("on the desktop"));
+			g_free (tmp_utf8);
+			tmp_utf8 = g_strdup (_("On the desktop"));
 		}
 		g_free (desktopdir);
-		
-		gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), tmp);
-		g_free (tmp);
+
+		if (tmp_utf8 != NULL) {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), 
+					    tmp_utf8);
+		} else {
+			gtk_entry_set_text (GTK_ENTRY (song_info->priv->location), 
+					    _("Unknown location"));
+		}
+		g_free (tmp_utf8);
 	}
 }
 

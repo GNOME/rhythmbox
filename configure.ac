@@ -3,7 +3,7 @@ define(arch-tag)
 AC_PREREQ(2.53)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(rhythmbox, 0.8.7)
+AM_INIT_AUTOMAKE(rhythmbox, 0.8.8)
 
 AM_MAINTAINER_MODE
 
@@ -381,6 +381,10 @@ else
 		AC_MSG_ERROR([Multimedia keys explicitly requested but no support found])
 	fi
 fi
+
+AC_ARG_ENABLE(nautilus-menu, AC_HELP_STRING([--enable-nautilus-menu],
+					    [include Nautilus menu support]))
+AM_CONDITIONAL(WITH_NAUTILUS_MENU, test "x$enable_nautilus_menu" = "xyes")
 
 dnl CD Audio support		  
 dnl AC_ARG_ENABLE(audiocd, AC_HELP_STRING([--enable-audiocd],
