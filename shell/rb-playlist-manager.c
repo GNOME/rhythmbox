@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of Rhythmbox playlist management object
  *
@@ -29,6 +30,7 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
+#include "rb-recorder.h"
 #include "rb-sourcelist.h"
 #include "rb-query-creator.h"
 #include "totem-pl-parser.h"
@@ -54,6 +56,8 @@ static void rb_playlist_manager_get_property (GObject *object,
 static void rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_save_playlist (GtkAction *action,
+						   RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
 						   RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 						  RBPlaylistManager *mgr);
@@ -139,6 +143,9 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "MusicPlaylistSavePlaylist", GTK_STOCK_SAVE_AS, N_("_Save to file..."), NULL,
 	  N_("Save a playlist to a file"),
 	  G_CALLBACK (rb_playlist_manager_cmd_save_playlist) },
+	{ "MusicPlaylistBurnPlaylist", GTK_STOCK_CDROM, N_("_Create Audio CD..."), NULL,
+	  N_("Create an audio CD from playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_burn_playlist) },
 	{ "MusicPlaylistDeletePlaylist", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
 	  N_("Delete playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_delete_playlist) },
@@ -369,15 +376,21 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_SOURCE:
 	{
 		gboolean playlist_active;
+		gboolean recorder_active;
 		GtkAction *action;
 
 		mgr->priv->selected_source = g_value_get_object (value);
 
 		playlist_active = g_list_find (mgr->priv->playlists,
 					       mgr->priv->selected_source) != NULL;
+		recorder_active = playlist_active && rb_recorder_enabled ();
+
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistSavePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
+		action = gtk_action_group_get_action (mgr->priv->actiongroup,
+						      "MusicPlaylistBurnPlaylist");
+		g_object_set (G_OBJECT (action), "sensitive", recorder_active, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistDeletePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
@@ -815,6 +828,13 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (save_playlist_response_cb),
 				 mgr, 0);
+}
+
+static void
+rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
+				       RBPlaylistManager *mgr)
+{
+	rb_playlist_source_burn_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source));
 }
 
 static void

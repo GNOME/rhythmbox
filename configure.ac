@@ -30,6 +30,12 @@ else
 	AC_MSG_RESULT([no])
 fi	
 
+mkdtemp_missing=false
+AC_CHECK_FUNC(mkdtemp,
+    [AC_DEFINE([HAVE_MKDTEMP], 1, [Have GlibC function to make temp dirs])],
+    mkdtemp_missing=true)
+AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
+
 dnl iPod support
 dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
 dnl function was added in that release.
@@ -55,6 +61,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  libglade-2.0                  \
 		  gnome-vfs-2.0 >= 2.6          \
 		  gnome-vfs-module-2.0          \
+		  libnautilus-burn >= 2.7	\
 		  $USE_HAL)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"

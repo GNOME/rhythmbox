@@ -14,7 +14,9 @@ libsourcesimpl_la_SOURCES =		\
 	rb-iradio-source.c		\
 	rb-iradio-source.h		\
 	rb-playlist-source.c            \
-	rb-playlist-source.h		
+	rb-playlist-source.h		\
+	rb-playlist-source-recorder.c   \
+	rb-playlist-source-recorder.h		
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -27,6 +29,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/widgets 			\
 	-I$(top_srcdir)/library 			\
+	-I$(top_srcdir)/player	 			\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
@@ -37,7 +40,10 @@ INCLUDES =						\
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
-libsourcesimpl_la_LIBADD = $(top_builddir)/rhythmdb/librhythmdb.la $(top_builddir)/widgets/librbwidgets.la
+libsourcesimpl_la_LIBADD = 			\
+	$(top_builddir)/rhythmdb/librhythmdb.la \
+	$(top_builddir)/widgets/librbwidgets.la \
+	$(top_builddir)/player/librbplayer.la
 
 if USE_IPOD
 libsourcesimpl_la_SOURCES +=         \

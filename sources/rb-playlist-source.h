@@ -81,6 +81,8 @@ void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 						 xmlNodePtr node);
 
+void		rb_playlist_source_burn_playlist(RBPlaylistSource *source);
+
 void		rb_playlist_source_add_entry	(RBPlaylistSource *source,
 						 RhythmDBEntry *entry);
 

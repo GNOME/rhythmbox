@@ -1,3 +1,4 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
  *  arch-tag: Implementation of playlist source object
  *
@@ -37,6 +38,7 @@
 #include "rb-dialog.h"
 #include "rb-util.h"
 #include "rb-playlist-source.h"
+#include "rb-playlist-source-recorder.h"
 #include "rb-volume.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
@@ -736,6 +738,46 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 	if (error != NULL)
 		rb_error_dialog (NULL, _("Couldn't save playlist"),
 				 "%s", error->message);
+}
+
+static void
+burn_playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **artist, char **title, gulong *duration)
+{
+	RhythmDBEntry *entry;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+
+	*uri = g_strdup (entry->location);
+	*artist = g_strdup (rb_refstring_get (entry->artist));
+	*title = g_strdup (rb_refstring_get (entry->title));
+	*duration = entry->duration;
+}
+
+void
+rb_playlist_source_burn_playlist (RBPlaylistSource *source)
+{
+	GtkWidget *recorder;
+	char *name;
+
+	rb_debug ("burning playlist");
+
+	g_object_get (source, "name", &name, NULL);
+
+	recorder = rb_playlist_source_recorder_new (gtk_widget_get_toplevel (GTK_WIDGET (source)),
+						    name);
+	g_free (name);
+
+	rb_playlist_source_recorder_add_from_model (RB_PLAYLIST_SOURCE_RECORDER (recorder),
+						    GTK_TREE_MODEL (source->priv->model),
+						    burn_playlist_iter_func,
+						    NULL);
+
+        g_signal_connect (recorder,
+			  "response",
+			  G_CALLBACK (gtk_widget_destroy),
+			  NULL);
+
+	gtk_widget_show (recorder);
 }
 
 RBSource *

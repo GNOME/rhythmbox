@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 #define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/browser_views"
 #define CONF_STATE_PLAY_ORDER	CONF_PREFIX "/state/play_order"
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
+#define CONF_STATE_BURN_DEVICE	CONF_PREFIX "/state/burn_device"
 
 G_END_DECLS
 
