@@ -29,7 +29,6 @@
 #include "rb-tree-model-node.h"
 #include "rb-stock-icons.h"
 #include "rb-string-helpers.h"
-#include "rb-thread-helpers.h"
 #include "rb-node.h"
 #include "rb-library.h"
 #include "rb-debug.h"
@@ -796,9 +795,7 @@ static void
 playing_node_destroyed_cb (RBNode *node, RBTreeModelNode *model)
 {
 	rb_debug ("playing node removed!");
-	rb_thread_helpers_lock_gdk ();
 	model->priv->playing_node = NULL;
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
@@ -809,13 +806,9 @@ root_child_removed_cb (RBNode *node,
 {
 	GtkTreePath *path;
 
-	rb_thread_helpers_lock_gdk ();
-
 	path = get_path_real (model, child);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);
 	gtk_tree_path_free (path);
-
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
@@ -826,15 +819,11 @@ root_child_added_cb (RBNode *node,
 	GtkTreePath *path;
 	GtkTreeIter iter;
 
-	rb_thread_helpers_lock_gdk ();
-
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 
 	path = get_path_real (model, child);
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
-
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static inline void
@@ -864,9 +853,7 @@ root_child_changed_cb (RBNode *node,
 		       guint propid,
 		       RBTreeModelNode *model)
 {
-	rb_thread_helpers_lock_gdk ();
 	rb_tree_model_node_update_node (model, child, -1);
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
@@ -876,13 +863,9 @@ root_children_reordered_cb (RBNode *node,
 {
 	GtkTreePath *path;
 
-	rb_thread_helpers_lock_gdk ();
-
 	path = gtk_tree_path_new ();
 	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model), path, NULL, new_order);
 	gtk_tree_path_free (path);
-
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
@@ -891,13 +874,10 @@ root_destroyed_cb (RBNode *node,
 {
 	rb_debug ("root (%p) destroyed", node);
 
-	rb_thread_helpers_lock_gdk ();
-
 	model->priv->root = NULL;
 
 	/* no need to do other stuff since we should have had a bunch of child_removed
 	 * signals already */
-	rb_thread_helpers_unlock_gdk ();
 }
 
 void

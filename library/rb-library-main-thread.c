@@ -334,7 +334,8 @@ thread_main (RBLibraryMainThread *thread)
 			 */
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
 				if (rb_library_update_uri (thread->priv->library, realuri, &error))
-					g_usleep (G_USEC_PER_SEC*2);
+/* 					g_usleep (G_USEC_PER_SEC*2); */
+					;
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				rb_library_remove_uri (thread->priv->library, realuri);

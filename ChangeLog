@@ -1,3 +1,22 @@
+2003-08-13  Colin Walters  <walters@debian.org>
+
+	* lib/widgets/rb-node-view.c: (playing_node_destroyed_cb),
+	(root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c: (playing_node_destroyed_cb),
+	(root_child_removed_cb), (root_child_added_cb),
+	(root_child_changed_cb), (root_children_reordered_cb),
+	(root_destroyed_cb):
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-node.c: (rb_node_dispose),
+	(rb_node_set_property_internal), (rb_node_add_child),
+	(rb_node_remove_child_unlocked), (rb_node_remove_child),
+	(rb_node_sort_children), (rb_node_reorder_children):
+	* shell/rb-shell-clipboard.c: (node_destroyed_cb):
+
+	Back out previous node locking rewrite in favor of James Kahn's
+	solution to just swap the order in which we acquire the GDK
+	lock in the node system.
+
 2003-08-13  Colin Walters  <walters@verbum.org>
 
 	* configure.ac: Disable optimization by default if we're using

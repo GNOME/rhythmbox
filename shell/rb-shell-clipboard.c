@@ -23,7 +23,6 @@
 #include "rb-node.h"
 #include "rb-debug.h"
 #include "rb-bonobo-helpers.h"
-#include "rb-thread-helpers.h"
 
 static void rb_shell_clipboard_class_init (RBShellClipboardClass *klass);
 static void rb_shell_clipboard_init (RBShellClipboard *shell_clipboard);
@@ -440,11 +439,9 @@ static void
 node_destroyed_cb (RBNode *node,
 		   RBShellClipboard *clipboard)
 {
-	rb_thread_helpers_lock_gdk ();
 	clipboard->priv->nodes = g_list_remove (clipboard->priv->nodes, node);
 
 	rb_shell_clipboard_sync (clipboard);
-	rb_thread_helpers_unlock_gdk ();
 }
 
 static void
