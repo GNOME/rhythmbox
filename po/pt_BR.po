@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-17 12:25+0200\n"
-"PO-Revision-Date: 2004-09-18 14:17-0300\n"
+"POT-Creation-Date: 2004-09-18 20:24+0200\n"
+"PO-Revision-Date: 2004-09-19 07:49-0300\n"
 "Last-Translator: Raphael Higino <raphaelh@uai.com.br>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -370,7 +370,8 @@ msgstr "Não há nenhum plugin para lidar com essa música"
 
 #: metadata/rb-metadata-xine.c:107
 msgid "This song is broken and can not be played further"
-msgstr "Essa música está corrompida e não pode ser reproduzida além desse ponto"
+msgstr ""
+"Essa música está corrompida e não pode ser reproduzida além desse ponto"
 
 #: metadata/rb-metadata-xine.c:110
 msgid "This location is not a valid one"
@@ -390,7 +391,7 @@ msgstr "Esse não é um arquivo áudio"
 
 #: metadata/rb-metadata-xine.c:158
 msgid "Song is not handled"
-msgstr ""
+msgstr "A música não é tratada"
 
 #: player/rb-player-gst.c:395 player/rb-player-gst.c:605
 #: player/rb-player-gst.c:615 player/rb-recorder-gst.c:565
@@ -469,12 +470,12 @@ msgstr "Não foi possível obter a posição atual da faixa"
 #: player/rb-recorder-gst.c:777 player/rb-recorder-xine.c:442
 #, c-format
 msgid "Cannot find drive %s"
-msgstr "Não foi possível encontrar a unidade %s"
+msgstr "Não foi possível encontrar o drive %s"
 
 #: player/rb-recorder-gst.c:791 player/rb-recorder-xine.c:456
 #, c-format
 msgid "Drive %s is not a recorder"
-msgstr "A unidade %s não é um gravador"
+msgstr "O drive %s não é um gravador"
 
 #: player/rb-recorder-gst.c:1039 player/rb-recorder-xine.c:704
 #, c-format
@@ -494,7 +495,7 @@ msgstr "Não foi possível determinar a duração das faixas de áudio."
 msgid ""
 "This playlist is %lld minutes long.  This exceeds the %lld minute length of "
 "the media in the drive."
-msgstr "Essa lista de reprodução tem %lld minutos de duração. Isso excede o tamanho de %lld minutes da mídia na unidade."
+msgstr "Essa lista de reprodução tem %lld minutos de duração. Isso excede o tamanho de %lld minutes da mídia no drive."
 
 #: player/rb-recorder-gst.c:1134 player/rb-recorder-xine.c:799
 #, c-format
@@ -507,7 +508,7 @@ msgstr ""
 
 #: player/rb-recorder-gst.c:1136 player/rb-recorder-xine.c:801
 msgid "There was an error writing to the CD"
-msgstr ""
+msgstr "Houve um erro ao gravar no CD"
 
 #: player/rb-recorder-xine.c:214
 msgid "Xine backend not yet implemented"
@@ -518,7 +519,7 @@ msgstr ""
 msgid ""
 "This playlist is %d minutes long.  This exceeds the %d minute length of the "
 "media in the drive."
-msgstr ""
+msgstr "Essa lista de reprodução tem %d minutos. Isso excede o tamanho de %d minutos da mídia no drive."
 
 #: remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add to Music Library"
@@ -1305,37 +1306,39 @@ msgstr "Gravando o áudio no CD"
 
 #: sources/rb-playlist-source-recorder.c:327
 msgid "Finished creating audio CD."
-msgstr ""
+msgstr "Criação do CD de áudio terminada."
 
 #: sources/rb-playlist-source-recorder.c:332
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
+"Criação do CD de áudio terminada.\n"
+"Deseja criar uma outra cópia?"
 
 #: sources/rb-playlist-source-recorder.c:334
 msgid "Writing cancelled.  Try again?"
-msgstr ""
+msgstr "Gravação cancelada. Deseja tentar novamente?"
 
 #: sources/rb-playlist-source-recorder.c:380
 msgid "Audio recording error"
-msgstr ""
+msgstr "Erro na gravação do áudio"
 
 #: sources/rb-playlist-source-recorder.c:416
 msgid "Audio Conversion Error"
-msgstr ""
+msgstr "Erro de Conversão de Áudio"
 
 #: sources/rb-playlist-source-recorder.c:441
 msgid "Recording error"
-msgstr ""
+msgstr "Erro de gravação"
 
 #: sources/rb-playlist-source-recorder.c:525
 msgid "Do you wish to interrupt writing this disc?"
-msgstr ""
+msgstr "Você deseja interromper a gravação desse disco?"
 
 #: sources/rb-playlist-source-recorder.c:526
 msgid "This may result in an unusable disc."
-msgstr ""
+msgstr "Isso pode inutilizar o disco."
 
 #: sources/rb-playlist-source-recorder.c:527
 msgid "_Cancel"
@@ -1343,51 +1346,51 @@ msgstr "_Cancelar"
 
 #: sources/rb-playlist-source-recorder.c:528
 msgid "_Interrupt"
-msgstr ""
+msgstr "_Interromper"
 
 #: sources/rb-playlist-source-recorder.c:550
 msgid "Could not create audio CD"
-msgstr ""
+msgstr "Não foi possível criar o CD de áudio"
 
 #: sources/rb-playlist-source-recorder.c:571
 msgid "Please make sure another application is not using the disc."
-msgstr ""
+msgstr "Por favor, certifique-se de que não há outra aplicação usando o disco."
 
 #: sources/rb-playlist-source-recorder.c:572
 msgid "Disc is busy"
-msgstr ""
+msgstr "O disco está ocupado"
 
 #: sources/rb-playlist-source-recorder.c:574
 msgid "Please insert a rewritable or blank media in the drive tray."
-msgstr ""
+msgstr "Por favor, insira uma mídia regravável ou virgem na bandeja do drive."
 
 #: sources/rb-playlist-source-recorder.c:575
 msgid "Insert rewritable or blank media"
-msgstr ""
+msgstr "Insira uma mídia regravável ou virgem"
 
 #: sources/rb-playlist-source-recorder.c:577
 msgid "Please insert a blank media in the drive tray."
-msgstr ""
+msgstr "Por favor, insira uma mídia virgem na bandeja do drive."
 
 #: sources/rb-playlist-source-recorder.c:578
 msgid "Insert blank media"
-msgstr ""
+msgstr "Insira uma mídia virgem"
 
 #: sources/rb-playlist-source-recorder.c:580
 msgid "Please replace the in-drive media by a rewritable or blank media."
-msgstr ""
+msgstr "Por favor, substitua a mídia no drive por uma regravável ou virgem."
 
 #: sources/rb-playlist-source-recorder.c:581
 msgid "Reload rewritable or blank media"
-msgstr ""
+msgstr "Recarregar a mídia regravável ou virgem"
 
 #: sources/rb-playlist-source-recorder.c:583
 msgid "Please replace the in-drive media by a blank media."
-msgstr ""
+msgstr "Por favor, substitua a mídia no drive por uma mídia virgem."
 
 #: sources/rb-playlist-source-recorder.c:584
 msgid "Reload blank media"
-msgstr ""
+msgstr "Recarregar a mídia virgem"
 
 #: sources/rb-playlist-source-recorder.c:629
 msgid "Converting audio track"
@@ -1395,23 +1398,23 @@ msgstr "Convertendo a faixa de áudio"
 
 #: sources/rb-playlist-source-recorder.c:632
 msgid "Preparing to write disc"
-msgstr ""
+msgstr "Preparando para gravar o disco"
 
 #: sources/rb-playlist-source-recorder.c:635
 msgid "Writing disc"
-msgstr ""
+msgstr "Gravando o disco"
 
 #: sources/rb-playlist-source-recorder.c:638
 msgid "Fixating disc"
-msgstr ""
+msgstr "Fixando o disco"
 
 #: sources/rb-playlist-source-recorder.c:641
 msgid "Erasing disc"
-msgstr ""
+msgstr "Apagando o disco"
 
 #: sources/rb-playlist-source-recorder.c:644
 msgid "Unhandled action in burn_action_changed_cb"
-msgstr ""
+msgstr "Ação não tratada em burn_action_changed_cb"
 
 #: sources/rb-playlist-source-recorder.c:681
 msgid "C_reate"
@@ -1447,14 +1450,14 @@ msgid ""
 "This playlist is %lld minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
-msgstr ""
+msgstr "Essa lista de reprodução tem %lld minutos. Isso excede o tamanho de um CD de áudio padrão. Se a mídia de destino for maior que um CD de áudio padrão, por favor insira-o no drive e tente novamente."
 
 #: sources/rb-playlist-source-recorder.c:1073
 #, c-format
 msgid ""
 "This playlist is %lld minutes long.  This exceeds the %lld  minute length of "
 "the media in the drive."
-msgstr ""
+msgstr "Essa lista de reprodução tem %lld minutos. Isso excede o tamanho de %lld minutos da mídia no drive."
 
 #: sources/rb-playlist-source-recorder.c:1081
 msgid "Playlist too long"
@@ -1468,7 +1471,9 @@ msgstr "Não foi possível encontrar espaço temporário!"
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  Need %d MiB."
-msgstr "Não foi possível encontrar espaço temporário suficiente para converter as faixas de áudio. É necessário %d MB."
+msgstr ""
+"Não foi possível encontrar espaço temporário suficiente para converter as "
+"faixas de áudio. É necessário %d MB."
 
 #: sources/rb-source.c:657
 msgid "Not supported"
