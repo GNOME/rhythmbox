@@ -223,6 +223,15 @@ AC_ARG_ENABLE(mp3, AC_HELP_STRING([--disable-mp3],
 if test x"$with_metadata" = xmonkeymedia; then
 if test "x$enable_mp3" != "xno"; then
   PKG_CHECK_MODULES(ID3TAG, id3tag >= 0.15.0b, enable_mp3=yes, enable_mp3=no)
+  if test x"$enable_mp3" = xno; then
+    AC_CHECK_HEADER(id3tag.h,[enable_mp3=yes],)
+    if test x"$enable_mp3" = xyes; then
+	AC_CHECK_LIB(id3tag,id3_frame_field,[enable_mp3=yes],[enable_mp3=no])
+        if test x"$enable_mp3" = xno; then
+          AC_MSG_ERROR([For MP3 support, you need libid3tag 15.0b or later (or --disable-mp3)])
+	fi
+    fi
+  fi
 fi
 if test "x$enable_mp3" = "xyes"; then
   if test x"$have_gstreamer" = xyes; then
