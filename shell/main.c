@@ -18,6 +18,9 @@
  *  $Id$
  */
 
+#include <config.h>
+#include <libintl.h>
+#include <locale.h>
 #include <libgnome/gnome-program.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
@@ -27,7 +30,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "config.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
@@ -57,6 +59,13 @@ main (int argc, char **argv)
 		{ NULL,    '\0', POPT_ARG_INCLUDE_TABLE, (poptOption *) monkey_media_get_popt_table (), 0, N_("MonkeyMedia options:"),  NULL },
 		POPT_TABLEEND
 	};
+
+#ifdef ENABLE_NLS
+	/* initialize i18n */
+	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
+#endif
 
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE, argc, argv,
