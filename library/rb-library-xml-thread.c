@@ -323,14 +323,19 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
 				break;
 			case RB_NODE_TYPE_SONG:
-				rb_node_song_init (node);
+				rb_node_song_restore (node);
 				{
 					GValue value = { 0, };
-					rb_node_get_property (node, "location", &value);
+					
+					rb_node_get_property (node,
+							      RB_SONG_PROP_LOCATION,
+							      &value);
+					
 					rb_library_action_queue_add (rb_library_get_main_queue (priv->library),
 								     FALSE,
 								     RB_LIBRARY_ACTION_UPDATE_FILE,
 								     g_value_get_string (&value));
+
 					g_value_unset (&value);
 				}
 				/* Don't check for finished_preloading here,

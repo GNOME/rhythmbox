@@ -29,7 +29,7 @@ char *
 rb_prefix_to_suffix (const char *string)
 {
 	/* comma separated list of prefixes that are to
-	 * be appended as suffix */
+	 * be appended as suffix, NOTE: notice the spaces placement */
 	static const char *prefix_to_suffix = N_("THE ,DJ ");
 	char **items;
 	char *foldedname = g_utf8_casefold (string, -1);

@@ -1,3 +1,45 @@
+2002-09-10  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/rb-string-helpers.c: (rb_prefix_to_suffix):
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_get_status), (tree_view_size_allocate_cb):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_title),
+	(rb_song_info_update_location), (song_info_forward_clicked_cb),
+	(rb_song_info_update_current_values):
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_value),
+	(rb_tree_model_node_get_filter):
+	* lib/widgets/rb-tree-model-sort.c:
+	(rb_tree_model_sort_multi_drag_data_get):
+	* library/rb-library-main-thread.c: (thread_main):
+	* library/rb-library-xml-thread.c: (thread_main):
+	* library/rb-library.c: (rb_library_create_skels):
+	* library/rb-node-filter.c: (thread_main):
+	* library/rb-node-song.c: (is_different), (set_value), (set_mtime),
+	(set_duration), (set_track_number), (set_genre), (set_artist),
+	(set_album), (rb_node_song_destroyed_cb), (rb_node_song_sync),
+	(rb_node_song_init), (rb_node_song_update_if_changed),
+	(rb_node_song_get_genre), (rb_node_song_get_artist),
+	(rb_node_song_get_album), (rb_node_song_has_genre),
+	(rb_node_song_has_artist), (rb_node_song_has_album),
+	(rb_node_song_restore):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_dispose), (rb_node_add_child),
+	(rb_node_remove_child), (rb_node_get_next),
+	(rb_node_handled_child_index), (find_parent):
+	* library/rb-node.h:
+	* shell/rb-shell.c: (rb_shell_finalize),
+	(rb_sidebar_drag_finished_cb):
+	* views/rb-group-view.c: (rb_group_view_get_artist),
+	(rb_group_view_get_album), (rb_group_view_get_song),
+	(rb_group_view_get_duration), (rb_group_view_set_playing_node):
+	* views/rb-library-view.c: (rb_library_view_get_artist),
+	(rb_library_view_get_album), (rb_library_view_get_song),
+	(rb_library_view_get_duration), (rb_library_view_set_playing_node),
+	(rb_library_view_cmd_current_song):
+
+	RBNodeSong cleanup, don't always prefix-to-suffix when getting
+	artist in treemodel, remove unnecessary strdups.
+
 2002-09-10  Olivier Martin  <oleevye@wanadoo.fr>
 
 	* shell/rb-shell.c: (rb_shell_finalize):

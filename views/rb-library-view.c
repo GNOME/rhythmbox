@@ -710,8 +710,18 @@ rb_library_view_get_artist (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
+		GValue value = { 0, };
+		
 		g_free (view->priv->artist);
-		view->priv->artist = rb_node_song_get_artist (node);
+		
+		rb_node_get_property (node,
+				      RB_SONG_PROP_ARTIST,
+				      &value);
+		
+		view->priv->artist = g_strdup (g_value_get_string (&value));
+
+		g_value_unset (&value);
+		
 		return (const char *) view->priv->artist;
 	}
 	else
@@ -728,8 +738,18 @@ rb_library_view_get_album (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
+		GValue value = { 0, };
+		
 		g_free (view->priv->album);
-		view->priv->album = rb_node_song_get_album (node);
+		
+		rb_node_get_property (node,
+				      RB_SONG_PROP_ALBUM,
+				      &value);
+		
+		view->priv->album = g_strdup (g_value_get_string (&value));
+
+		g_value_unset (&value);
+		
 		return (const char *) view->priv->album;
 	}
 	else
@@ -747,10 +767,17 @@ rb_library_view_get_song (RBViewPlayer *player)
 	if (node != NULL)
 	{
 		GValue value = { 0, };
-		rb_node_get_property (node, "name", &value);
+		
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME,
+				      &value);
+		
 		g_free (view->priv->song);
+		
 		view->priv->song = g_strdup (g_value_get_string (&value));
+		
 		g_value_unset (&value);
+
 		return (const char *) view->priv->song;
 	}
 	else
@@ -769,9 +796,15 @@ rb_library_view_get_duration (RBViewPlayer *player)
 	{
 		GValue value = { 0, };
 		long ret;
-		rb_node_get_property (node, "duration_raw", &value);
+
+		rb_node_get_property (node, 
+				      RB_SONG_PROP_REAL_DURATION,
+				      &value);
+		
 		ret = g_value_get_long (&value);
+		
 		g_value_unset (&value);
+		
 		return ret;
 	}
 	else
@@ -843,7 +876,9 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		const char *uri;
 		GValue value = { 0, };
 
-		rb_node_get_property (node, "location", &value);
+		rb_node_get_property (node, 
+				      RB_SONG_PROP_LOCATION,
+				      &value);
 		uri = g_value_get_string (&value);
 
 		g_assert (uri != NULL);
@@ -1062,9 +1097,9 @@ rb_library_view_cmd_current_song (BonoboUIComponent *component,
 	{
 		/* adjust filtering to show it */
 		rb_node_view_select_node (view->priv->artists,
-					  rb_node_song_get_artist_raw (node));
+					  rb_node_song_get_artist (node));
 		rb_node_view_select_node (view->priv->albums,
-					  rb_node_song_get_album_raw (node));
+					  rb_node_song_get_album (node));
 	}
 
 	rb_node_view_scroll_to_node (view->priv->songs, node);

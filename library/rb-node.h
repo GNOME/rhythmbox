@@ -85,6 +85,8 @@ RBNode     *rb_node_from_id               (int id);
 RBNodeType  rb_node_get_node_type         (RBNode *node);
 
 /* property interface */
+#define RB_NODE_PROP_NAME "name"
+
 void        rb_node_set_property          (RBNode *node,
 				           const char *property,
 				           const GValue *value);

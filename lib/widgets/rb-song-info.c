@@ -42,6 +42,7 @@
 #include "rb-song-info.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
+#include "rb-node-song.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -411,7 +412,9 @@ rb_song_info_update_title (RBSongInfo *song_info)
 			GValue val = { 0, };
 			char *tmp;
 
-			rb_node_get_property (song_info->priv->current_node, "location", &val);
+			rb_node_get_property (song_info->priv->current_node,
+					      RB_SONG_PROP_LOCATION,
+					      &val);
 
 			tmp = g_strdup_printf (_("%s Properties"), g_value_get_string (&val));
 			gtk_window_set_title (GTK_WINDOW (song_info), tmp);
@@ -640,8 +643,9 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	g_return_if_fail (song_info != NULL);
 
 	rb_node_get_property (song_info->priv->current_node,
-			      "location",
+			      RB_SONG_PROP_LOCATION,
 			      &value);
+
 	text = g_value_get_string (&value);
 	if (text != NULL)
 	{
@@ -676,7 +680,11 @@ song_info_forward_clicked_cb (GtkWidget *button,
 
 	/* update our node and info, then refresh the dlg */
 	song_info->priv->current_node = node;
-	rb_node_get_property (node, "location", &location);
+
+	rb_node_get_property (node,
+			      RB_SONG_PROP_LOCATION,
+			      &location);
+	
 	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
 	song_info->priv->current_info = info;
 	g_value_unset (&location);
@@ -752,7 +760,10 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 	song_info ->priv->current_node = node = selected_nodes->data;
 
 	/* get the stream info */
-	rb_node_get_property (node, "location", &location);
+	rb_node_get_property (node,
+			      RB_SONG_PROP_LOCATION,
+			      &location);
+
 	info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
 	song_info->priv->current_info = info;
 	g_value_unset (&location);

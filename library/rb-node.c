@@ -23,6 +23,7 @@
 
 #include "rb-node.h"
 #include "rb-debug.h"
+#include "rb-node-song.h"
 
 #define ACTION_ADDITION_PRIORITY 118
 #define NUMBER_OF_ACTIONS_TO_HANDLE 10 /* fun tunable parameter */
@@ -73,12 +74,21 @@ typedef struct
 static void rb_node_add_action (RBNode *node,
 				RBNodeAction *action);
 
+typedef struct
+{
+	RBNode *parent;
+	GList *list_item;
+} RBNodeParent;
+
+static int find_parent (RBNodeParent *parent, RBNode *node);
+
 struct RBNodePrivate
 {
 	RBNodeType type;
 	long id;
 
 	GList *parents;
+	GList *parent_entries;
 	GList *children;
 
 	GHashTable *properties;
@@ -276,7 +286,10 @@ rb_node_dispose (GObject *object)
 	switch (rb_node_get_node_type (node))
 	{
 	case RB_NODE_TYPE_GENRE:
-		rb_node_get_property (node, "name", &value);
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME,
+				      &value);
+		
 		g_static_rw_lock_writer_lock (name_to_genre_lock);
 		g_hash_table_remove (name_to_genre,
 				     g_value_get_string (&value)),
@@ -284,7 +297,10 @@ rb_node_dispose (GObject *object)
 		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_ARTIST:
-		rb_node_get_property (node, "name", &value);
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME,
+				      &value);
+
 		g_static_rw_lock_writer_lock (name_to_artist_lock);
 		g_hash_table_remove (name_to_artist,
 				     g_value_get_string (&value)),
@@ -292,7 +308,10 @@ rb_node_dispose (GObject *object)
 		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_ALBUM:
-		rb_node_get_property (node, "name", &value);
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME,
+				      &value);
+		
 		g_static_rw_lock_writer_lock (name_to_album_lock);
 		g_hash_table_remove (name_to_album,
 				     g_value_get_string (&value)),
@@ -300,7 +319,10 @@ rb_node_dispose (GObject *object)
 		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_SONG:
-		rb_node_get_property (node, "location", &value);
+		rb_node_get_property (node,
+				      RB_SONG_PROP_LOCATION,
+				      &value);
+
 		g_static_rw_lock_writer_lock (uri_to_song_lock);
 		g_hash_table_remove (uri_to_song,
 				     g_value_get_string (&value)),
@@ -325,9 +347,18 @@ rb_node_dispose (GObject *object)
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
+		GList *tmp;
 
 		g_static_rw_lock_writer_lock (node2->priv->lock);
+
 		node2->priv->parents = g_list_remove (node2->priv->parents, node);
+
+		tmp = g_list_find_custom (node2->priv->parent_entries,
+				          node,
+				          (GCompareFunc) find_parent);
+		node2->priv->parent_entries = g_list_remove_link (node2->priv->parent_entries, tmp);
+		g_free ((RBNodeParent *) tmp->data);
+								  
 		g_static_rw_lock_writer_unlock (node2->priv->lock);
 	}
 
@@ -458,6 +489,7 @@ rb_node_add_child (RBNode *node,
 		   RBNode *child)
 {
 	RBNodeAction *action;
+	RBNodeParent *parent;
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
@@ -475,7 +507,14 @@ rb_node_add_child (RBNode *node,
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	g_static_rw_lock_writer_lock (child->priv->lock);
+
 	child->priv->parents = g_list_prepend (child->priv->parents, node);
+	
+	parent = g_new0 (RBNodeParent, 1);
+	parent->parent = node;
+	parent->list_item = child->priv->parents;
+	child->priv->parent_entries = g_list_prepend (child->priv->parent_entries, parent);
+
 	g_static_rw_lock_writer_unlock (child->priv->lock);
 
 	action = g_new0 (RBNodeAction, 1);
@@ -492,6 +531,7 @@ rb_node_remove_child (RBNode *node,
 		      RBNode *child)
 {
 	RBNodeAction *action;
+	GList *tmp;
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
@@ -516,7 +556,15 @@ rb_node_remove_child (RBNode *node,
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 
 	g_static_rw_lock_writer_lock (child->priv->lock);
+	
 	child->priv->parents = g_list_remove (child->priv->parents, node);
+
+	tmp = g_list_find_custom (child->priv->parent_entries,
+			          node,
+			          (GCompareFunc) find_parent);
+	child->priv->parent_entries = g_list_remove_link (child->priv->parent_entries, tmp);
+	g_free ((RBNodeParent *) tmp->data);
+
 	g_static_rw_lock_writer_unlock (child->priv->lock);
 }
 
@@ -1362,20 +1410,25 @@ rb_node_get_next (RBNode *parent,
 		  RBNode *node)
 {
 	GList *pos;
+	RBNodeParent *pe;
 	
 	g_return_val_if_fail (RB_IS_NODE (parent), NULL);
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 
 	g_static_rw_lock_reader_lock (parent->priv->lock);
 
-	pos = g_list_find (parent->priv->children, node);
+	pos = g_list_find_custom (node->priv->parent_entries, node,
+				  (GCompareFunc) find_parent);
+
 	if (pos == NULL)
 	{
 		g_static_rw_lock_reader_unlock (parent->priv->lock);
 		return NULL;
 	}
-
-	for (pos = g_list_next (pos); pos != NULL; pos = g_list_next (pos))
+	
+	pe = (RBNodeParent *) pos->data;
+	
+	for (pos = g_list_next (pe->list_item); pos != NULL; pos = g_list_next (pos))
 	{
 		if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
 			break;
@@ -1469,4 +1522,13 @@ rb_node_handled_child_index (RBNode *node,
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return i;
+}
+
+static int
+find_parent (RBNodeParent *parent, RBNode *node)
+{
+	if (parent->parent == node)
+		return 0;
+	
+	return 1;
 }

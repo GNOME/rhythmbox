@@ -1559,7 +1559,9 @@ rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
 								                  shell->priv->library));
 					
-					rb_node_get_property (node, "name", &value);
+					rb_node_get_property (node,
+							      RB_NODE_PROP_NAME,
+							      &value);
 					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
 					g_value_unset (&value);
 
@@ -1586,7 +1588,9 @@ rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 					group = RB_GROUP_VIEW (rb_group_view_new (shell->priv->container,
 								                  shell->priv->library));
 					
-					rb_node_get_property (node, "name", &value);
+					rb_node_get_property (node,
+							      RB_NODE_PROP_NAME,
+							      &value);
 					rb_group_view_set_name (RB_GROUP_VIEW (group), g_value_get_string (&value));
 					g_value_unset (&value);
 

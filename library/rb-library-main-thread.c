@@ -257,7 +257,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 					RBNode *song;
 					
 					song = rb_node_new (RB_NODE_TYPE_SONG);
-					rb_node_song_set_location (song, realuri, priv->library);
+					rb_node_song_init (song, realuri, priv->library);
 				}
 
 				rb_file_monitor_add (rb_file_monitor_get (), realuri);
@@ -276,7 +276,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 						break;
 					}
 
-					rb_node_song_update_if_newer (song, priv->library);
+					rb_node_song_update_if_changed (song, priv->library);
 				}
 
 				/* just to be sure */

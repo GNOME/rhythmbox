@@ -609,81 +609,49 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	
 	node = RB_NODE (iter->user_data);
 
-	g_value_init (value, rb_tree_model_node_get_column_type (tree_model, column));
-	
 	switch (column)
 	{
 	case RB_TREE_MODEL_NODE_COL_PLAYING:
+		g_value_init (value, GDK_TYPE_PIXBUF);
+
 		if (node == model->priv->playing_node)
 			g_value_set_object (value, model->priv->playing_pixbuf);
 		else
 			g_value_set_object (value, NULL);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
-		{
-			char *str = NULL, *name;
-
-			name = rb_node_song_get_title (node);
-
-			if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST)
-			{
-				str = rb_prefix_to_suffix (name);
-			}
-
-			if (str == NULL)
-				str = g_strdup (name);
-
-			g_value_set_string (value, str);
-			g_free (str);
-			g_free (name);
-		}
+		rb_node_get_property (node,
+				      RB_NODE_PROP_NAME,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
-		{
-			char *artist;
-			
-			artist = rb_node_song_get_artist (node);
-			g_value_set_string (value, artist);
-			g_free (artist);
-		}
+		rb_node_get_property (node,
+				      RB_SONG_PROP_ARTIST,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_ALBUM:
-		{
-			char *album;
-			
-			album = rb_node_song_get_album (node);
-			g_value_set_string (value, album);
-			g_free (album);
-		}
+		rb_node_get_property (node,
+				      RB_SONG_PROP_ALBUM,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_GENRE:
-		{
-			char *genre;
-
-			genre = rb_node_song_get_genre (node);
-			g_value_set_string (value, genre);
-			g_free (genre);
-		}
+		rb_node_get_property (node,
+				      RB_SONG_PROP_GENRE,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
-		{
-			char *tracknum;
-
-			tracknum = rb_node_song_get_track_number (node);
-			g_value_set_string (value, tracknum);
-			g_free (tracknum);
-		}
+		rb_node_get_property (node,
+				      RB_SONG_PROP_TRACK_NUMBER,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
-		{
-			char *duration;
-			
-			duration = rb_node_song_get_duration (node);
-			g_value_set_string (value, duration);
-			g_free (duration);
-		}
+		rb_node_get_property (node,
+				      RB_SONG_PROP_DURATION,
+				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
+		g_value_init (value, G_TYPE_BOOLEAN);
+
 		if (model->priv->filter_parent != NULL)
 		{
 			if (model->priv->filter_artist != NULL)
@@ -706,6 +674,8 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
 		{
 			RBNodeType type;
+			
+			g_value_init (value, G_TYPE_BOOLEAN);
 
 			type = rb_node_get_node_type (node);
 			
@@ -959,7 +929,7 @@ rb_tree_model_node_get_filter (RBTreeModelNode *model,
 {
 	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
 
-	*filter_parent      = model->priv->filter_parent;
+	*filter_parent = model->priv->filter_parent;
 	*filter_artist = model->priv->filter_artist;
 }
 

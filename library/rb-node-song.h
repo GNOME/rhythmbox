@@ -28,36 +28,39 @@
 
 G_BEGIN_DECLS
 
+/* properties */
+#define RB_SONG_PROP_GENRE             "genre"
+#define RB_SONG_PROP_ARTIST            "artist"
+#define RB_SONG_PROP_ALBUM             "album"
+#define RB_SONG_PROP_REAL_GENRE        "real_genre"
+#define RB_SONG_PROP_REAL_ARTIST       "real_artist"
+#define RB_SONG_PROP_REAL_ALBUM        "real_album"
+#define RB_SONG_PROP_TRACK_NUMBER      "track_number"
+#define RB_SONG_PROP_REAL_TRACK_NUMBER "real_track_number"
+#define RB_SONG_PROP_DURATION          "duration"
+#define RB_SONG_PROP_REAL_DURATION     "real_duration"
+#define RB_SONG_PROP_FILE_SIZE         "file_size"
+#define RB_SONG_PROP_LOCATION          "location"
+#define RB_SONG_PROP_MTIME             "mtime"
+
 /* management */
-void             rb_node_song_set_location         (RBNode *node,
+void             rb_node_song_init                 (RBNode *node,
 				                    const char *uri,
 						    RBLibrary *library);
-char            *rb_node_song_get_location         (RBNode *node);
 
-void             rb_node_song_update_if_newer      (RBNode *node,
+void             rb_node_song_update_if_changed    (RBNode *node,
 						    RBLibrary *library);
 
-void             rb_node_song_init                 (RBNode *node);
-
-/* properties */
-char            *rb_node_song_get_title            (RBNode *node);
-char            *rb_node_song_get_track_number     (RBNode *node);
-char            *rb_node_song_get_duration         (RBNode *node);
-long             rb_node_song_get_duration_raw     (RBNode *node);
-char            *rb_node_song_get_file_size        (RBNode *node);
-GnomeVFSFileSize rb_node_song_get_file_size_raw    (RBNode *node);
+void             rb_node_song_restore              (RBNode *node);
 
 /* inheritance path */
-char            *rb_node_song_get_genre            (RBNode *node);
-RBNode          *rb_node_song_get_genre_raw        (RBNode *node);
+RBNode          *rb_node_song_get_genre            (RBNode *node);
 gboolean         rb_node_song_has_genre            (RBNode *node,
 						    RBNode *genre);
-char            *rb_node_song_get_artist           (RBNode *node);
-RBNode          *rb_node_song_get_artist_raw       (RBNode *node);
+RBNode          *rb_node_song_get_artist           (RBNode *node);
 gboolean         rb_node_song_has_artist           (RBNode *node,
 						    RBNode *artist);
-char            *rb_node_song_get_album            (RBNode *node);
-RBNode          *rb_node_song_get_album_raw        (RBNode *node);
+RBNode          *rb_node_song_get_album            (RBNode *node);
 gboolean         rb_node_song_has_album            (RBNode *node,
 						    RBNode *album);
 

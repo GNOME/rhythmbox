@@ -249,16 +249,16 @@ rb_library_create_skels (RBLibrary *library)
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, _("All"));
 	rb_node_set_property (library->priv->all_genres,
-			      "name",
+			      RB_NODE_PROP_NAME,
 			      &value);
 	rb_node_set_property (library->priv->all_artists,
-			      "name",
+			      RB_NODE_PROP_NAME,
 			      &value);
 	rb_node_set_property (library->priv->all_albums,
-			      "name",
+			      RB_NODE_PROP_NAME,
 			      &value);
 	rb_node_set_property (library->priv->all_songs,
-			      "name",
+			      RB_NODE_PROP_NAME,
 			      &value);
 	g_value_unset (&value);
 

@@ -312,6 +312,7 @@ thread_main (RBNodeFilterPrivate *priv)
 			char *title, *artist, *album;
 			gboolean found = FALSE;
 			gboolean aborted = FALSE;
+			GValue value = { 0, };
 
 			/* verify if search has been aborted */
 			g_mutex_lock (priv->expr_lock);
@@ -325,24 +326,40 @@ thread_main (RBNodeFilterPrivate *priv)
 
 			/* check the title - artist - album */
 			node = RB_NODE (l->data);
-			title = g_utf8_casefold (rb_node_song_get_title (node), -1);
+			
+			rb_node_get_property (node,
+					      RB_NODE_PROP_NAME,
+					      &value);
+
+			title = g_utf8_casefold (g_value_get_string (&value), -1);
 			if (strstr (title, expression) != NULL)
 				found = TRUE;
+			g_value_unset (&value);
 			g_free (title);
 
 			if (found == FALSE)
 			{
-				artist = g_utf8_casefold (rb_node_song_get_artist (node), -1);
+				rb_node_get_property (node,
+						      RB_SONG_PROP_ARTIST,
+						      &value);
+				
+				artist = g_utf8_casefold (g_value_get_string (&value), -1);
 				if (strstr (artist, expression) != NULL)
 					found = TRUE;
+				g_value_unset (&value);
 				g_free (artist);
 			}
 
 			if (found == FALSE)
 			{
-				album = g_utf8_casefold (rb_node_song_get_album (node), -1);
+				rb_node_get_property (node,
+						      RB_SONG_PROP_ALBUM,
+						      &value);
+
+				album = g_utf8_casefold (g_value_get_string (&value), -1);
 				if (strstr (album, expression) != NULL)
 					found = TRUE;
+				g_value_unset (&value);
 				g_free (album);
 			}
 
