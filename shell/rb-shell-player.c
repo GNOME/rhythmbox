@@ -55,6 +55,8 @@
 #include "rb-metadata.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
+#include "rb-iradio-source.h"
+#include "rb-library-source.h"
 #include "eel-gconf-extensions.h"
 
 #include "rb-play-order.h"
@@ -1051,25 +1053,43 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 	RhythmDBEntry* entry;
 
 	if (player->priv->source != NULL) {
-		/* If we're in the first 2 seconds go to the previous song,
-		 * else restart the current one.
-		 */
-		if (rb_player_get_time (player->priv->mmplayer) < 3) {
-			rb_debug ("doing previous");
-			entry = rb_play_order_get_previous (player->priv->play_order);
-			if (entry) {
-				rb_play_order_go_previous (player->priv->play_order);
-				rb_shell_player_set_playing_entry (player, entry);
+
+		if (RB_IS_LIBRARY_SOURCE (player->priv->source)) {
+
+			rb_debug("previous algorithm for a library source");
+			
+			/* If we're in the first 2 seconds go to the previous song,
+			 * else restart the current one.
+			 */
+			if (rb_player_get_time (player->priv->mmplayer) < 3) {
+				rb_debug ("doing previous");
+				entry = rb_play_order_get_previous (player->priv->play_order);
+				if (entry) {
+					rb_play_order_go_previous (player->priv->play_order);
+					rb_shell_player_set_playing_entry (player, entry);
+				} else {
+					/* Is this the right thing to do when there's no previous song? */
+					rb_debug ("No previous entry, restarting song");
+					rb_player_set_time (player->priv->mmplayer, 0);
+					rb_header_sync_time (player->priv->header_widget);
+				}
 			} else {
-				/* Is this the right thing to do when there's no previous song? */
-				rb_debug ("No previous entry, restarting song");
+				rb_debug ("restarting song");
 				rb_player_set_time (player->priv->mmplayer, 0);
 				rb_header_sync_time (player->priv->header_widget);
 			}
-		} else {
-			rb_debug ("restarting song");
-			rb_player_set_time (player->priv->mmplayer, 0);
-			rb_header_sync_time (player->priv->header_widget);
+		}
+		else if (RB_IS_IRADIO_SOURCE (player->priv->source)) {
+		
+			rb_debug("previous algorithm for an iradio source");
+			
+			entry = rb_play_order_get_previous (player->priv->play_order);
+			
+			if (entry) {
+				rb_debug ("previous station found, doing previous");
+				rb_play_order_go_previous (player->priv->play_order);
+				rb_shell_player_set_playing_entry (player, entry);
+			}
 		}
 
 		rb_shell_player_jump_to_current (player);

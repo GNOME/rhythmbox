@@ -20,9 +20,11 @@
  */
 
 #include <config.h>
+#include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <libgnome/gnome-i18n.h>
 
 #include "rb-metadata.h"
+#include "rb-debug.h"
 #include "monkey-media-stream-info.h"
 
 static void rb_metadata_class_init (RBMetaDataClass *klass);
@@ -79,6 +81,8 @@ static void
 rb_metadata_init (RBMetaData *md)
 {
 	md->priv = g_new0 (RBMetaDataPrivate, 1);
+	
+	md->priv->uri = NULL;
 }
 
 static void
@@ -139,6 +143,8 @@ rb_metadata_load (RBMetaData *md,
 
 	if (uri == NULL)
 		return;
+		
+	md->priv->uri = g_strdup (uri);
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -229,6 +235,25 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 const char *
 rb_metadata_get_mime (RBMetaData *md)
 {
-	/* FIXME: implement me */
-	return NULL;
+	const char *metatype;
+	char *mimetype;
+	
+	mimetype = gnome_vfs_get_mime_type (md->priv->uri);
+	metatype = NULL;
+	
+	rb_debug ("mimetype is: %s", mimetype);
+	
+	if (!g_ascii_strcasecmp (mimetype, "audio/mpeg")) {
+		metatype = "id3tag";
+	}
+	else if (!g_ascii_strcasecmp (mimetype, "application/ogg")) {
+		metatype = NULL;
+	}
+	else if (!g_ascii_strcasecmp (mimetype, "audio/x-flac")) {
+		metatype = "flactag";
+	}		
+	
+	g_free (mimetype);
+	
+	return (metatype);
 }
