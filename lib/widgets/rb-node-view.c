@@ -596,6 +596,19 @@ rb_node_view_new (RBNode *root,
 	return view;
 }
 
+static RBNode *
+node_from_tree_path (RBNodeView *view, GtkTreePath *path)
+{
+	GtkTreeIter sort_iter, filter_iter, node_iter;
+
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter, path);
+	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+							&filter_iter, &sort_iter);
+	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
+							  &node_iter, &filter_iter);
+	return rb_tree_model_node_node_from_iter (view->priv->nodemodel, &node_iter);
+}
+
 RBTreeModelNode *
 rb_node_view_get_model (RBNodeView *view)
 {
@@ -1075,7 +1088,6 @@ rb_node_view_rated_cb (RBCellRendererRating *cellrating,
 		       int rating,
 		       RBNodeView *view)
 {
-	GtkTreeIter sort_iter, filter_iter, node_iter;
 	GtkTreePath *path;
 	RBNode *node;
 	GValue value = { 0, };
@@ -1084,12 +1096,7 @@ rb_node_view_rated_cb (RBCellRendererRating *cellrating,
 	g_return_if_fail (path_string != NULL);
 
 	path = gtk_tree_path_new_from_string (path_string);
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter, path);
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&filter_iter, &sort_iter);
-	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
-							  &node_iter, &filter_iter);
-	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &node_iter);
+	node = node_from_tree_path (view, path);
 	gtk_tree_path_free (path);
 
 	rb_node_view_freeze (view);
@@ -1480,6 +1487,15 @@ rb_node_view_button_press_cb (GtkTreeView *treeview,
 			      RBNodeView *view)
 {
 	if (event->button == 3) {
+		GtkTreePath *path;
+		RBNode *node;
+
+		gtk_tree_view_get_path_at_pos (treeview, event->x, event->y, &path, NULL, NULL, NULL);
+		node = node_from_tree_path (view, path);
+
+		/* FIXME - don't require a popup to select a node */
+		rb_node_view_select_node (view, node);
+
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[SHOW_POPUP], 0);
 		return view->priv->have_selection;
 	}

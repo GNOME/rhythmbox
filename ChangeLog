@@ -1,5 +1,15 @@
 2003-08-17  Colin Walters  <walters@verbum.org>
 
+	* lib/widgets/rb-node-view.c: (node_from_tree_path),
+	(rb_node_view_rated_cb), (rb_node_view_button_press_cb):
+	* sources/rb-library-source.c:
+	(rb_library_source_songs_show_popup_cb):
+
+	Popup menus now select the node they were clicked on.  This
+	fixes #119846.
+
+2003-08-17  Colin Walters  <walters@verbum.org>
+
 	* lib/widgets/rb-sourcelist.c: (rb_sourcelist_append):
 	* shell/rb-shell-preferences.c: (rb_shell_preferences_new):
 

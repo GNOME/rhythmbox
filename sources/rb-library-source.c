@@ -351,7 +351,6 @@ rb_library_source_finalize (GObject *object)
 
 static void
 rb_library_source_songs_show_popup_cb (RBNodeView *view,
-				       RBNode *node,
 				       RBLibrarySource *library_source)
 {
 	GtkWidget *menu;
