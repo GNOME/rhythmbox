@@ -311,28 +311,24 @@ rhythmdb_get_property (GObject *object,
 void
 rhythmdb_read_lock (RhythmDB *db)
 {
-	rb_debug ("==> READ LOCK");
 	g_static_rw_lock_reader_lock (&db->priv->lock);
 }
 
 void
 rhythmdb_read_unlock (RhythmDB *db)
 {
-	rb_debug ("==> READ UNLOCK");
 	g_static_rw_lock_reader_unlock (&db->priv->lock);
 }
 
 void
 rhythmdb_write_lock (RhythmDB *db)
 {
-	rb_debug ("==> WRITE LOCK");
 	g_static_rw_lock_writer_lock (&db->priv->lock);
 }
 
 void
 rhythmdb_write_unlock (RhythmDB *db)
 {
-	rb_debug ("==> WRITE UNLOCK");
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
 }
 

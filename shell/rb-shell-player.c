@@ -1092,9 +1092,10 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	rb_shell_player_set_playing_entry (playa, entry);
 }
 
-static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
-						       const char *name,
-						       RBShellPlayer *playa)
+static void
+rb_shell_player_property_row_activated_cb (RBPropertyView *view,
+					   const char *name,
+					   RBShellPlayer *playa)
 {
 	RhythmDBEntry *entry;
 	RBEntryView *songs;
@@ -1107,9 +1108,9 @@ static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	 */
 	songs = rb_source_get_entry_view (playa->priv->source);
 	entry = rb_entry_view_get_first_entry (songs);
-	g_return_if_fail (entry != NULL);
 
-	rb_shell_player_set_playing_entry (playa, entry);
+	if (entry != NULL)
+		rb_shell_player_set_playing_entry (playa, entry);
 }
 
 static void
