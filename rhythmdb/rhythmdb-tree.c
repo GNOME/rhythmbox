@@ -1324,6 +1324,7 @@ evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
 		}
 		break;
 		case RHYTHMDB_QUERY_PROP_LIKE:
+		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 			if (G_VALUE_TYPE (data->val) == G_TYPE_STRING) {
 				gboolean islike;
 				const char *stra, *strb;
@@ -1345,7 +1346,11 @@ evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
 
 				strb = g_value_get_string (data->val);
 				islike = (strstr (stra, strb) != NULL);
-				if (!islike)
+				if (data->type == RHYTHMDB_QUERY_PROP_LIKE
+				    && !islike)
+					return FALSE;
+				else if (data->type == RHYTHMDB_QUERY_PROP_NOT_LIKE
+				    && islike)
 					return FALSE;
 			} else {
 				if (rb_gvalue_compare (RHYTHMDB_TREE_ENTRY_VALUE (entry, data->propid),

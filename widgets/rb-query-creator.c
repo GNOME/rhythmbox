@@ -50,7 +50,7 @@ const RBQueryCreatorOption property_options[] =
 const RBQueryCreatorOption criteria_options[] =
 {
 	{ N_("contains"),		RHYTHMDB_QUERY_PROP_LIKE },
-	{ N_("does not contain"),	RHYTHMDB_QUERY_PROP_LIKE },
+	{ N_("does not contain"),	RHYTHMDB_QUERY_PROP_NOT_LIKE },
 };
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);

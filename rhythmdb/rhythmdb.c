@@ -1079,6 +1079,7 @@ rhythmdb_query_parse_valist (RhythmDB *db, va_list args)
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
+		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		case RHYTHMDB_QUERY_PROP_GREATER:
 		case RHYTHMDB_QUERY_PROP_LESS:
 			data->propid = va_arg (args, guint);
@@ -1148,6 +1149,7 @@ rhythmdb_query_free (GPtrArray *query)
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 		case RHYTHMDB_QUERY_PROP_LIKE:
+		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		case RHYTHMDB_QUERY_PROP_GREATER:
 		case RHYTHMDB_QUERY_PROP_LESS:
 			g_value_unset (data->val);
@@ -1329,6 +1331,11 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
+		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
+			subnode = xmlNewChild (node, NULL, "not-like", NULL);
+			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
 			subnode = xmlNewChild (node, NULL, "equals", NULL);
 			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
@@ -1375,12 +1382,16 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			data->type = RHYTHMDB_QUERY_DISJUNCTION;
 		} else if (!strcmp (child->name, "like")) {
 			data->type = RHYTHMDB_QUERY_PROP_LIKE;
+		} else if (!strcmp (child->name, "not-like")) {
+			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
 		} else if (!strcmp (child->name, "equals")) {
 			data->type = RHYTHMDB_QUERY_PROP_EQUALS;
 		} else
  			g_assert_not_reached ();
 
-		if (!strcmp (child->name, "like") || !strcmp (child->name, "equals")) {
+		if (!strcmp (child->name, "like")
+		    || !strcmp (child->name, "not-like")
+		    || !strcmp (child->name, "equals")) {
 			char *propstr = xmlGetProp (child, "prop");
 			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
 			g_free (propstr);
@@ -1559,6 +1570,7 @@ rhythmdb_query_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_QUERY_SUBQUERY, "Subquery"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_EQUALS, "Property equivalence"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LIKE, "Fuzzy property matching"),
+			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_NOT_LIKE, "Inverted fuzzy property matching"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_GREATER, "True iff property1 > property2"),
 			ENUM_ENTRY (RHYTHMDB_QUERY_PROP_LESS, "True iff property1 < property2"),
 			{ 0, 0, 0 }
