@@ -121,10 +121,10 @@ static void rb_shell_player_entry_activated_cb (RBEntryView *view,
 static void rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 						       const char *name,
 						       RBShellPlayer *playa);
-static void rb_shell_player_state_changed_cb (GConfClient *client,
-					      guint cnxn_id,
-					      GConfEntry *entry,
-					      RBShellPlayer *playa);
+static void rb_shell_player_volume_changed_cb (GConfClient *client,
+					       guint cnxn_id,
+					       GConfEntry *entry,
+					       RBShellPlayer *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player); 
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
@@ -148,6 +148,7 @@ static void rb_shell_player_set_play_order (RBShellPlayer *player,
 					    const gchar *new_val);
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
+static void rb_shell_player_sync_control_state (RBShellPlayer *player);
 static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 				      GConfEntry *entry, RBShellPlayer *player);
 
@@ -604,8 +605,8 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_end (GTK_BOX (player), alignment, FALSE, TRUE, 0);
 
 	player->priv->gconf_state_id = 
-		eel_gconf_notification_add (CONF_STATE,
-					    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
+		eel_gconf_notification_add (CONF_STATE_VOLUME,
+					    (GConfClientNotifyFunc) rb_shell_player_volume_changed_cb,
 					    player);
 
 #ifdef HAVE_MMKEYS
@@ -974,9 +975,13 @@ static void
 gconf_play_order_changed (GConfClient *client,guint cnxn_id,
 			  GConfEntry *entry, RBShellPlayer *player)
 {
+	rb_debug ("gconf play order changed");
+	player->priv->syncing_state = TRUE;
 	rb_shell_player_sync_play_order (player);
 	rb_shell_player_sync_buttons (player);
+	rb_shell_player_sync_control_state (player);
 	g_object_notify (G_OBJECT (player), "play-order");
+	player->priv->syncing_state = FALSE;
 }
 
 gboolean
@@ -1030,7 +1035,6 @@ rb_shell_player_set_playback_state (RBShellPlayer *player, gboolean shuffle, gbo
 static void
 rb_shell_player_sync_play_order (RBShellPlayer *player)
 {
-	static char *current_play_order = NULL;
 	char *new_play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
 
 	if (!new_play_order) {
@@ -1038,17 +1042,10 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 		new_play_order = g_strdup ("linear");
 	}
 
-	if (current_play_order == NULL
-			|| strcmp (current_play_order, new_play_order) != 0) {
-		g_free (current_play_order);
-
-		if (player->priv->play_order != NULL)
-			g_object_unref (player->priv->play_order);
-
-		player->priv->play_order = rb_play_order_new (new_play_order, player);
-
-		current_play_order = new_play_order;
-	}
+	if (player->priv->play_order != NULL)
+		g_object_unref (player->priv->play_order);
+	
+	player->priv->play_order = rb_play_order_new (new_play_order, player);
 }
 
 void
@@ -1347,13 +1344,13 @@ rb_shell_player_sync_control_state (RBShellPlayer *player)
 	if (!rb_shell_player_get_playback_state (player, &shuffle,
 						 &repeat))
 		return;
-	
+
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlShuffle");
-        gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), shuffle);
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), shuffle);
 	action = gtk_action_group_get_action (player->priv->actiongroup,
 					      "ControlRepeat");
-        gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), repeat);
+	gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action), repeat);
 }
 
 static void
@@ -1391,20 +1388,13 @@ rb_shell_player_sync_replaygain (RBShellPlayer *player, RhythmDBEntry *entry)
 }
 
 static void
-rb_shell_player_state_changed_cb (GConfClient *client,
-				  guint cnxn_id,
-				  GConfEntry *entry,
-				  RBShellPlayer *playa)
+rb_shell_player_volume_changed_cb (GConfClient *client,
+				   guint cnxn_id,
+				   GConfEntry *entry,
+				   RBShellPlayer *playa)
 {
-	if (playa->priv->syncing_state)
-		return;
-
-	playa->priv->syncing_state = TRUE;
-	rb_debug ("state changed");
-	rb_shell_player_sync_control_state (playa);
-	rb_shell_player_sync_buttons (playa);
+	rb_debug ("volume changed");
 	rb_shell_player_sync_volume (playa);
-	playa->priv->syncing_state = FALSE;
 }
 
 static void
@@ -1413,6 +1403,10 @@ rb_shell_player_shuffle_changed_cb (GtkAction *action,
 {
 	const char *neworder;
 	gboolean shuffle, repeat;
+
+	if (player->priv->syncing_state)
+		return;
+
 	rb_debug ("shuffle changed");
 
 	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
@@ -1429,6 +1423,9 @@ rb_shell_player_repeat_changed_cb (GtkAction *action,
 	const char *neworder;
 	gboolean shuffle, repeat;
 	rb_debug ("repeat changed");
+
+	if (player->priv->syncing_state)
+		return;
 
 	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
 		return;

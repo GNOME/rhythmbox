@@ -582,6 +582,7 @@ rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
         repeat = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat));
 
         rb_shell_player_set_playback_state (player, shuffle, repeat);
+	statusbar->priv->syncing_state = FALSE;
 }
 
 static void
