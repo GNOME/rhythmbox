@@ -201,6 +201,30 @@ rb_player_class_init (RBPlayerClass *klass)
 static void
 rb_player_init (RBPlayer *player)
 {
+	/**
+	 * The children in this widget look like this:
+	 * RBPlayer
+	 *   GtkHBox
+	 *     GtkVBox
+	 *       GtkAlignment
+	 *         GtkVBox
+	 *           RBEllipsizingLabel	(priv->song)
+	 *           GtkHBox		(priv->textframe)
+	 *	       GtkHBox		(priv->textline)
+	 *               GtkLabel	("from")
+	 *               RBLink		(priv->album)
+	 *               GtkLabel	("by")
+	 *               RBLink		(priv->artist)
+	 *           GtkHBox		(priv->urlframe)
+	 *	       GtkHBox		(priv->urlline)
+	 *               GtkLabel	("Listening to")
+	 *               RBLink		(priv->url)
+	 *   GtkAlignment		(priv->timeframe)
+	 *     GtkVBox			(priv->timeline)
+	 *       GtkHScale		(priv->scale)
+	 *       GtkAlignment
+	 *         GtkLabel		(priv->elapsed)
+	 */
 	GtkWidget *hbox, *vbox, *textline, *urlline, *label, *align, *scalebox, *textvbox;
 	PangoAttrList *attrlist;
 	PangoAttribute *attr;
@@ -218,8 +242,10 @@ rb_player_init (RBPlayer *player)
 
 	vbox = gtk_vbox_new (FALSE, 5);
 
+	align = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
+	gtk_box_pack_start (GTK_BOX (vbox), align, TRUE, TRUE, 0);
 	textvbox = gtk_vbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), textvbox, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (align), textvbox);
 	
 	player->priv->song = rb_ellipsizing_label_new ("");
 	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (player->priv->song), RB_ELLIPSIZE_END);
@@ -262,9 +288,7 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (urlline), GTK_WIDGET (player->priv->url), FALSE, TRUE, 0);
 	player->priv->urlline_shown = FALSE;
 
-	/* The slider */
-	player->priv->timeframe = gtk_hbox_new (FALSE, 0);
-
+	/* construct the time slider and display */
 	scalebox = player->priv->timeline = gtk_vbox_new (FALSE, 0);
 	g_object_ref (G_OBJECT (scalebox));
 
@@ -302,8 +326,7 @@ rb_player_init (RBPlayer *player)
 	player->priv->tips = gtk_tooltips_new ();
 	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
-	align = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
-	gtk_container_add (GTK_CONTAINER (align), scalebox);
+	align = player->priv->timeframe = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
