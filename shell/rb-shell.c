@@ -256,7 +256,6 @@ typedef enum
 	"shuffle_separator=separator;" \
         "shuffle=std_toolitem(item=shuffle);"\
 	"volume=volume;"\
-	"restart=std_toolitem(item=restart);"\
 	"repeat=std_toolitem(item=repeat);"
 
 	

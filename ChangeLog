@@ -1,5 +1,24 @@
 2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/toolbar/gul-tbi-std-toolitem.c:
+	(gul_tbi_std_toolitem_get_icon_impl),
+	(gul_tbi_std_toolitem_get_name_human_impl),
+	(gul_tbi_std_toolitem_to_string_impl),
+	(gul_tbi_std_toolitem_add_to_bonobo_tb_impl),
+	(gul_tbi_std_toolitem_parse_properties_impl),
+	(gul_tbi_std_toolitem_set_item):
+	* shell/rb-shell-player.c: (rb_shell_player_sync_with_player):
+	* shell/rb-shell.c:
+	* views/rb-group-view.c: (rb_group_view_previous):
+	* views/rb-library-view.c: (rb_library_view_previous):
+
+	Remove restart button:
+	The previous button now goes to the previous song if the song is in 
+	it's first two seconds, otherwise it restarts it.
+
+2002-10-25  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-sidebar.c: (rb_sidebar_remove):
 
 	Fix radiobuttongroup corruption.
