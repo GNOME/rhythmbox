@@ -21,6 +21,7 @@
 #ifndef __RB_LIBRARY_H
 #define __RB_LIBRARY_H
 
+#include "rb-library-action-queue.h"
 #include "rb-node.h"
 
 G_BEGIN_DECLS
@@ -46,19 +47,30 @@ typedef struct
 	GObjectClass parent;
 } RBLibraryClass;
 
-GType       rb_library_get_type        (void);
+GType                 rb_library_get_type           (void);
 
-RBLibrary  *rb_library_new             (void);
+RBLibrary            *rb_library_new                (void);
 
-void        rb_library_add_file        (RBLibrary *library,
-					const char *file);
-void        rb_library_remove_node     (RBLibrary *library,
-					RBNode *node);
+void                  rb_library_add_file           (RBLibrary *library,
+					             const char *uri);
+void                  rb_library_remove_node        (RBLibrary *library,
+					             RBNode *node);
 
-RBNode     *rb_library_get_all_genres  (RBLibrary *library);
-RBNode     *rb_library_get_all_artists (RBLibrary *library);
-RBNode     *rb_library_get_all_albums  (RBLibrary *library);
-RBNode     *rb_library_get_all_songs   (RBLibrary *library);
+RBNode               *rb_library_get_all_genres     (RBLibrary *library);
+RBNode               *rb_library_get_all_artists    (RBLibrary *library);
+RBNode               *rb_library_get_all_albums     (RBLibrary *library);
+RBNode               *rb_library_get_all_songs      (RBLibrary *library);
+
+RBNode               *rb_library_get_genre_by_name  (RBLibrary *library,
+					             const char *name);
+RBNode               *rb_library_get_artist_by_name (RBLibrary *library,
+					             const char *name);
+RBNode               *rb_library_get_album_by_name  (RBLibrary *library,
+					             const char *name);
+RBNode               *rb_library_get_song_by_uri    (RBLibrary *library,
+					             const char *uri);
+
+RBLibraryActionQueue *rb_library_get_action_queue   (RBLibrary *library);
 
 G_END_DECLS
 

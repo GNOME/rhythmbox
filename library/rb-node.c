@@ -43,7 +43,7 @@ static void rb_node_child_changed_cb (RBNode *child,
 			              RBNode *node);
 static void rb_node_child_destroyed_cb (RBNode *child,
 			                RBNode *node);
-static void rb_node_save_property (gpointer property,
+static void rb_node_save_property (char *property,
 		                   GValue *value,
 		                   xmlNodePtr node);
 
@@ -52,12 +52,12 @@ struct RBNodePrivate
 	RBNodeType type;
 	long id;
 
-	GList *grandparents;
-	GList *grandchildren;
 	GList *parents;
 	GList *children;
 
 	GHashTable *properties;
+
+	GMutex *lock;
 };
 
 enum
@@ -67,7 +67,7 @@ enum
 	PROP_ID
 };
 
-enum
+typedef enum
 {
 	DESTROYED,
 	CHANGED,
@@ -75,7 +75,7 @@ enum
 	CHILD_CHANGED,
 	CHILD_DESTROYED,
 	LAST_SIGNAL
-};
+} RBNodeSignal;
 
 static GObjectClass *parent_class = NULL;
 
@@ -84,6 +84,25 @@ static guint rb_node_signals[LAST_SIGNAL] = { 0 };
 static long id_factory = 0;
 
 static GHashTable *id_to_node_hash = NULL;
+
+/* action queue */
+typedef enum
+{
+	RB_NODE_ACTION_UNREF,
+	RB_NODE_ACTION_SIGNAL
+} RBNodeActionType;
+
+typedef struct
+{
+	RBNodeActionType type;
+	RBNode *node;
+	RBNodeSignal signal;
+	gpointer user_data;
+} RBNodeAction;
+
+static GQueue *actions = NULL;
+static GMutex *actions_lock = NULL;
+static guint actions_timeout = 0;
 
 GType
 rb_node_get_type (void)
@@ -197,10 +216,13 @@ rb_node_init (RBNode *node)
 {
 	node->priv = g_new0 (RBNodePrivate, 1);
 
+	node->priv->lock = g_mutex_new ();
+
 	node->priv->type = RB_NODE_TYPE_GENERIC;
 	node->priv->id = -1;
 
-	node->priv->properties = g_hash_table_new_full (NULL, NULL, NULL,
+	node->priv->properties = g_hash_table_new_full (g_str_hash, g_str_equal,
+							(GDestroyNotify) g_free,
 							(GDestroyNotify) rb_node_property_free);
 }
 
@@ -216,12 +238,12 @@ rb_node_finalize (GObject *object)
 
 	g_return_if_fail (node->priv != NULL);
 
-	g_list_free (node->priv->grandchildren);
-	g_list_free (node->priv->grandparents);
 	g_list_free (node->priv->children);
 	g_list_free (node->priv->parents);
 
 	g_hash_table_destroy (node->priv->properties);
+
+	g_mutex_free (node->priv->lock);
 
 	g_free (node->priv);
 
@@ -233,12 +255,9 @@ rb_node_dispose (GObject *object)
 {
 	RBNode *node = RB_NODE (object);
 	GList *l;
-	RBNodeType type;
 
 	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 	
-	type = rb_node_get_node_type (node);
-
 	if (id_to_node_hash != NULL)
 		g_hash_table_remove (id_to_node_hash, node);
 
@@ -248,40 +267,6 @@ rb_node_dispose (GObject *object)
 		RBNode *node2 = RB_NODE (l->data);
 
 		node2->priv->children = g_list_remove (node2->priv->children, node);
-
-		if ((type != RB_NODE_TYPE_ALL_GENRES) &&
-		    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
-		    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
-		    (type != RB_NODE_TYPE_ALL_SONGS))
-		{
-			g_object_unref (G_OBJECT (node2));
-			
-			/* initial refcount .. */
-			if (G_OBJECT (node2)->ref_count == 1)
-			{
-				RBNodeType type2 = rb_node_get_node_type (node2);
-
-				if ((type2 != RB_NODE_TYPE_ALL_GENRES) &&
-				    (type2 != RB_NODE_TYPE_ALL_ARTISTS) &&
-				    (type2 != RB_NODE_TYPE_ALL_ALBUMS) &&
-				    (type2 != RB_NODE_TYPE_ALL_SONGS))
-				{
-					g_object_unref (G_OBJECT (node2));
-				}
-			}
-		}
-	}
-	for (l = node->priv->grandparents; l != NULL; l = g_list_next (l))
-	{
-		RBNode *node2 = RB_NODE (l->data);
-
-		node2->priv->grandchildren = g_list_remove (node2->priv->grandchildren, node);
-	}
-	for (l = node->priv->grandchildren; l != NULL; l = g_list_next (l))
-	{
-		RBNode *node2 = RB_NODE (l->data);
-
-		node2->priv->grandparents = g_list_remove (node2->priv->grandparents, node);
 	}
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
@@ -353,27 +338,22 @@ void
 rb_node_add_child (RBNode *node,
 		   RBNode *child)
 {
-	RBNodeType type;
-	
+	RBNodeAction *action;
+
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
+	g_mutex_lock (node->priv->lock);
+
 	if (g_list_find (node->priv->children, child) != NULL)
+	{
+		g_mutex_unlock (node->priv->lock);
 		return;
-	
+	}
+
 	node->priv->children = g_list_append (node->priv->children, child);
 	child->priv->parents = g_list_append (child->priv->parents, node);
 	
-	/* dont increase the refcount when we add the child to an all node */
-	type = rb_node_get_node_type (child);
-	if ((type != RB_NODE_TYPE_ALL_GENRES) &&
-	    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
-	    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
-	    (type != RB_NODE_TYPE_ALL_SONGS))
-	{
-		g_object_ref (G_OBJECT (node));
-	}
-
 	g_signal_connect (G_OBJECT (child),
 			  "destroyed",
 			  G_CALLBACK (rb_node_child_destroyed_cb),
@@ -383,42 +363,55 @@ rb_node_add_child (RBNode *node,
 			  G_CALLBACK (rb_node_child_changed_cb),
 			  node);
 
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_CREATED], 0, child);
+	action = g_new0 (RBNodeAction, 1);
+	action->type = RB_NODE_ACTION_SIGNAL;
+	action->node = node;
+	action->signal = CHILD_CREATED;
+	action->user_data = child;
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
+
+	g_mutex_unlock (node->priv->lock);
 }
 
 void
 rb_node_remove_child (RBNode *node,
 		      RBNode *child)
 {
-	RBNodeType type;
-	
+	RBNodeAction *action;
+
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	if (g_list_find (node->priv->children, child) == NULL)
-		return;
+	g_mutex_lock (node->priv->lock);
 
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_DESTROYED], 0, child);
+	if (g_list_find (node->priv->children, child) == NULL)
+	{
+		g_mutex_unlock (node->priv->lock);
+		return;
+	}
+
+	action = g_new0 (RBNodeAction, 1);
+	action->type = RB_NODE_ACTION_SIGNAL;
+	action->node = node;
+	action->signal = CHILD_DESTROYED;
+	action->user_data = child;
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
 	
 	node->priv->children = g_list_remove (node->priv->children, child);
 	child->priv->parents = g_list_remove (child->priv->parents, node);
 	
-	/* dont increase the refcount when we add the child to an all node */
-	type = rb_node_get_node_type (child);
-	if ((type != RB_NODE_TYPE_ALL_GENRES) &&
-	    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
-	    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
-	    (type != RB_NODE_TYPE_ALL_SONGS))
-	{
-		g_object_unref (G_OBJECT (node));
-	}
-
 	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
 					      G_CALLBACK (rb_node_child_destroyed_cb),
 		 			      node);
 	g_signal_handlers_disconnect_by_func (G_OBJECT (child),
 			  		      G_CALLBACK (rb_node_child_changed_cb),
 			  		      node);
+
+	g_mutex_unlock (node->priv->lock);
 }
 
 GList *
@@ -436,6 +429,13 @@ rb_node_add_parent (RBNode *node,
 	rb_node_add_child (parent, node);
 }
 
+void
+rb_node_remove_parent (RBNode *node,
+		       RBNode *parent)
+{
+	rb_node_remove_child (parent, node);
+}
+
 gboolean
 rb_node_has_parent (RBNode *node,
 		    RBNode *parent)
@@ -445,7 +445,7 @@ rb_node_has_parent (RBNode *node,
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (RB_IS_NODE (parent), FALSE);
 
-	parents = rb_node_get_grandparents (node);
+	parents = rb_node_get_parents (node);
 	
 	return (g_list_find (parents, parent) != NULL);
 }
@@ -454,14 +454,32 @@ static void
 rb_node_child_changed_cb (RBNode *child,
 			  RBNode *node)
 {
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_CHANGED], 0, child);
+	RBNodeAction *action;
+	
+	action = g_new0 (RBNodeAction, 1);
+	action->type = RB_NODE_ACTION_SIGNAL;
+	action->node = node;
+	action->signal = CHILD_CHANGED;
+	action->user_data = child;
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
 }
 
 static void
 rb_node_child_destroyed_cb (RBNode *child,
 			    RBNode *node)
 {
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_DESTROYED], 0, child);
+	RBNodeAction *action;
+
+	action = g_new0 (RBNodeAction, 1);
+	action->type = RB_NODE_ACTION_SIGNAL;
+	action->node = node;
+	action->signal = CHILD_DESTROYED;
+	action->user_data = child;
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
 }
 
 long
@@ -482,7 +500,7 @@ rb_node_get_node_type (RBNode *node)
 
 void
 rb_node_set_property (RBNode *node,
-		      RBNodeProperty property,
+		      const char *property,
 		      const GValue *value)
 {
 	GValue *val;
@@ -495,7 +513,7 @@ rb_node_set_property (RBNode *node,
 	g_value_copy (value, val);
 
 	g_hash_table_replace (node->priv->properties,
-			      GINT_TO_POINTER (property),
+			      g_strdup (property),
 			      val);
 
 	rb_node_changed (node);
@@ -503,7 +521,7 @@ rb_node_set_property (RBNode *node,
 
 void
 rb_node_get_property (RBNode *node,
-		      RBNodeProperty property,
+		      const char *property,
 		      GValue *value)
 {
 	GValue *val;
@@ -511,53 +529,16 @@ rb_node_get_property (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
 
+	g_mutex_lock (node->priv->lock);
+
 	val = g_hash_table_lookup (node->priv->properties,
-				   GINT_TO_POINTER (property));
+				   property);
 	g_return_if_fail (val != NULL);
 
 	g_value_init (value, G_VALUE_TYPE (val));
 	g_value_copy (val, value);
-}
 
-GList *
-rb_node_get_grandparents (RBNode *node)
-{
-	g_return_val_if_fail (RB_IS_NODE (node), NULL);
-
-	return node->priv->grandparents;
-}
-
-void
-rb_node_add_grandparent (RBNode *node,
-			 RBNode *grandparent)
-{
-	g_return_if_fail (RB_IS_NODE (node));
-	g_return_if_fail (RB_IS_NODE (grandparent));
-
-	if (g_list_find (node->priv->grandparents, grandparent) != NULL)
-		return;
-	
-	node->priv->grandparents = g_list_append (node->priv->grandparents,
-						  grandparent);
-	grandparent->priv->grandchildren = g_list_append (grandparent->priv->grandchildren,
-							  node);
-}
-
-gboolean
-rb_node_has_grandparent (RBNode *node,
-			 RBNode *grandparent)
-{
-	GList *grandparents;
-	
-	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
-	g_return_val_if_fail (RB_IS_NODE (grandparent), FALSE);
-
-	grandparents = rb_node_get_grandparents (node);
-
-	if (grandparents == NULL)
-		return TRUE;
-	
-	return (g_list_find (grandparents, grandparent) != NULL);
+	g_mutex_unlock (node->priv->lock);
 }
 
 RBNode *
@@ -565,14 +546,21 @@ rb_node_get_nth_child (RBNode *node,
 		       int n)
 {
 	GList *children, *nth;
+	RBNode *ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
+	g_mutex_lock (node->priv->lock);
+
 	children = rb_node_get_children (node);
 	nth = g_list_nth (children, n);
 
-	return RB_NODE (nth->data);
+	ret = RB_NODE (nth->data);
+
+	g_mutex_unlock (node->priv->lock);
+
+	return ret;
 }
 
 int
@@ -613,6 +601,47 @@ rb_node_has_child (RBNode *node,
 	children = rb_node_get_children (node);
 
 	return (g_list_find (children, child) != NULL);
+}
+
+int
+rb_node_parent_index (RBNode *node,
+		      RBNode *parent)
+{
+	return rb_node_child_index (parent, node);
+}
+
+int
+rb_node_n_parents (RBNode *node)
+{
+	GList *parents;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), -1);
+
+	parents = rb_node_get_parents (node);
+
+	return g_list_length (parents);
+}
+
+RBNode *
+rb_node_get_nth_parent (RBNode *node,
+		        int n)
+{
+	GList *parents, *nth;
+	RBNode *ret;
+	
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+	g_return_val_if_fail (n >= 0, NULL);
+
+	g_mutex_lock (node->priv->lock);
+
+	parents = rb_node_get_parents (node);
+	nth = g_list_nth (parents, n);
+
+	ret = RB_NODE (nth->data);
+
+	g_mutex_unlock (node->priv->lock);
+
+	return ret;
 }
 
 void
@@ -661,22 +690,6 @@ rb_node_save_to_xml (RBNode *node,
 		g_free (tmp);
 	}
 
-	for (l = node->priv->grandparents; l != NULL; l = g_list_next (l))
-	{
-		RBNode *grandparent = RB_NODE (l->data);
-		xmlNodePtr grandparent_xml_node;
-
-		g_assert (RB_IS_NODE (grandparent));
-
-		id = rb_node_get_id (grandparent);
-
-		grandparent_xml_node = xmlNewChild (xml_node, NULL, "grandparent", NULL);
-
-		tmp = g_strdup_printf ("%ld", id);
-		xmlSetProp (grandparent_xml_node, "id", tmp);
-		g_free (tmp);
-	}
-
 	g_hash_table_foreach (node->priv->properties, (GHFunc) rb_node_save_property, xml_node);
 }
 
@@ -717,21 +730,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 
 	for (child = xml_node->children; child != NULL; child = child->next)
 	{
-		if (strcmp (child->name, "grandparent") == 0)
-		{
-			RBNode *grandparent;
-			
-			tmp = xmlGetProp (child, "id");
-			g_assert (tmp != NULL);
-			id = atol (tmp);
-			g_free (tmp);
-
-			grandparent = rb_node_from_id (id);
-			g_assert (grandparent != NULL);
-
-			rb_node_add_grandparent (node, grandparent);
-		}
-		else if (strcmp (child->name, "parent") == 0)
+		if (strcmp (child->name, "parent") == 0)
 		{
 			RBNode *parent;
 
@@ -747,16 +746,11 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 		}
 		else if (strcmp (child->name, "property") == 0)
 		{
-			RBNodeProperty prop_type;
+			char *prop_type;
 			GType value_type;
 			GValue *value;
 			
-			tmp = xmlGetProp (child, "type");
-			class = g_type_class_ref (RB_TYPE_NODE_PROPERTY);
-			ev = g_enum_get_value_by_name (class, tmp);
-			prop_type = ev->value;
-			g_type_class_unref (class);
-			g_free (tmp);
+			prop_type = xmlGetProp (child, "key");
 
 			tmp = xmlGetProp (child, "value_type");
 			value_type = g_type_from_name (tmp);
@@ -783,8 +777,9 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			g_free (tmp);
 			
 			g_hash_table_replace (node->priv->properties,
-					      GINT_TO_POINTER (prop_type),
+					      prop_type,
 					      value);
+			g_free (prop_type);
 		}
 	}
 
@@ -794,9 +789,17 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 static void
 rb_node_changed (RBNode *node)
 {
+	RBNodeAction *action;
+
 	g_return_if_fail (RB_IS_NODE (node));
 
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHANGED], 0);
+	action = g_new0 (RBNodeAction, 1);
+	action->type = RB_NODE_ACTION_SIGNAL;
+	action->node = node;
+	action->signal = CHANGED;
+	g_mutex_lock (actions_lock);
+	g_queue_push_tail (actions, action);
+	g_mutex_unlock (actions_lock);
 }
 
 RBNode *
@@ -853,30 +856,6 @@ rb_node_type_get_type (void)
 	return etype;
 }
 
-GType
-rb_node_property_get_type (void)
-{
-	static GType etype = 0;
-
-	if (etype == 0)
-	{
-		static const GEnumValue values[] =
-		{
-			{ RB_NODE_PROPERTY_NAME,              "RB_NODE_PROPERTY_NAME",              "name" },
-			{ RB_NODE_PROPERTY_SONG_TRACK_NUMBER, "RB_NODE_PROPERTY_SONG_TRACK_NUMBER", "song_track_number" },
-			{ RB_NODE_PROPERTY_SONG_DURATION,     "RB_NODE_PROPERTY_SONG_DURATION",     "song_duration" },
-			{ RB_NODE_PROPERTY_SONG_LOCATION,     "RB_NODE_PROPERTY_SONG_LOCATION",     "song_location" },
-			{ RB_NODE_PROPERTY_SONG_FILE_SIZE,    "RB_NODE_PROPERTY_SONG_FILE_SIZE",    "file_size" },
-			{ RB_NODE_PROPERTY_SONG_MTIME,        "RB_NODE_PROPERTY_SONG_MTIME",        "mtime" },
-			{ 0, 0, 0 }
-		};
-
-		etype = g_enum_register_static ("RBNodeProperty", values);
-	}
-
-	return etype;
-}
-
 static long 
 rb_node_id_factory_new_id (void)
 {
@@ -899,24 +878,16 @@ rb_node_property_free (GValue *value)
 }
 
 static void
-rb_node_save_property (gpointer property,
+rb_node_save_property (char *property,
 		       GValue *value,
 		       xmlNodePtr node)
 {
 	char *value_string;
-	GEnumClass *class;
-	GEnumValue *ev;
 	xmlNodePtr child_node;
 
 	child_node = xmlNewChild (node, NULL, "property", NULL);
 
-	class = g_type_class_ref (RB_TYPE_NODE_PROPERTY);
-
-	ev = g_enum_get_value (class, GPOINTER_TO_INT (property));
-
-	xmlSetProp (child_node, "type", ev->value_name);
-
-	g_type_class_unref (class);
+	xmlSetProp (child_node, "key", property);
 
 	switch (G_VALUE_TYPE (value))
 	{
@@ -938,4 +909,111 @@ rb_node_save_property (gpointer property,
 	xmlSetProp (child_node, "value_type", g_type_name (G_VALUE_TYPE (value)));
 	xmlSetProp (child_node, "value", value_string);
 	g_free (value_string);
+}
+
+RBNode *
+rb_node_ref (RBNode *node)
+{
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+
+	return RB_NODE (g_object_ref (G_OBJECT (node)));
+}
+
+void
+rb_node_unref (RBNode *node)
+{
+	RBNodeType type;
+	
+	g_return_if_fail (RB_IS_NODE (node));
+
+	type = rb_node_get_node_type (node);
+
+	if (G_OBJECT (node)->ref_count == 2 &&
+	    (type == RB_NODE_TYPE_GENRE ||
+	     type == RB_NODE_TYPE_ARTIST ||
+	     type == RB_NODE_TYPE_ALBUM))
+	{
+		g_object_unref (G_OBJECT (node));
+	}
+
+	if (G_OBJECT (node)->ref_count == 1)
+	{
+		/* object will be killed, since we dont want zombies
+		 * in the UI we'll dispose it from the main thread */
+		RBNodeAction *action;
+
+		action = g_new0 (RBNodeAction, 1);
+		action->type = RB_NODE_ACTION_UNREF;
+		action->node = node;
+		g_mutex_lock (actions_lock);
+		g_queue_push_tail (actions, action);
+		g_mutex_unlock (actions_lock);
+	}
+	else
+		g_object_unref (G_OBJECT (node));
+}
+
+static gboolean
+rb_node_action_queue_timeout_cb (gpointer unused)
+{
+	RBNodeAction *action;
+
+	if (g_queue_is_empty (actions) == TRUE)
+		return TRUE;
+
+	g_mutex_lock (actions_lock);
+	action = g_queue_pop_head (actions);
+	g_mutex_unlock (actions_lock);
+
+	switch (action->type)
+	{
+	case RB_NODE_ACTION_UNREF:
+		g_object_unref (G_OBJECT (action->node));
+		break;
+	case RB_NODE_ACTION_SIGNAL:
+		if (action->user_data != NULL)
+		{
+			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
+				       action->user_data);
+		}
+		else
+		{
+			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
+		}
+		break;
+	default:
+		break;
+	}
+
+	g_free (action);
+
+	return TRUE;
+}
+
+void
+rb_node_init_action_queue (void)
+{
+	g_return_if_fail (actions_lock == NULL);
+	
+	actions = g_queue_new ();
+	actions_lock = g_mutex_new ();
+
+	actions_timeout = g_timeout_add (10, (GSourceFunc) rb_node_action_queue_timeout_cb, NULL);
+}
+
+void
+rb_node_shutdown_action_queue (void)
+{
+	g_return_if_fail (actions_lock != NULL);
+
+	g_source_remove (actions_timeout);
+
+	g_mutex_free (actions_lock);
+
+	while (g_queue_is_empty (actions) == FALSE)
+	{
+		g_free (g_queue_pop_head (actions));
+	}
+
+	g_queue_free (actions);
 }

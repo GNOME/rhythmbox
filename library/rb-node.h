@@ -22,6 +22,7 @@
 #define __RB_NODE_H
 
 #include <glib-object.h>
+
 #include <libxml/tree.h>
 
 G_BEGIN_DECLS
@@ -42,20 +43,6 @@ typedef enum
 #define RB_TYPE_NODE_TYPE (rb_node_type_get_type ())
 
 GType rb_node_type_get_type (void);
-
-typedef enum
-{
-	RB_NODE_PROPERTY_NAME,
-	RB_NODE_PROPERTY_SONG_TRACK_NUMBER,
-	RB_NODE_PROPERTY_SONG_DURATION,
-	RB_NODE_PROPERTY_SONG_LOCATION,
-	RB_NODE_PROPERTY_SONG_FILE_SIZE,
-	RB_NODE_PROPERTY_SONG_MTIME
-} RBNodeProperty;
-
-#define RB_TYPE_NODE_PROPERTY (rb_node_property_get_type ())
-
-GType rb_node_property_get_type (void);
 
 #define RB_TYPE_NODE         (rb_node_get_type ())
 #define RB_NODE(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_NODE, RBNode))
@@ -100,25 +87,26 @@ RBNodeType  rb_node_get_node_type    (RBNode *node);
 
 /* property interface */
 void        rb_node_set_property     (RBNode *node,
-				      RBNodeProperty property,
+				      const char *property,
 				      const GValue *value);
 void        rb_node_get_property     (RBNode *node,
-				      RBNodeProperty property,
+				      const char *property,
 				      GValue *value);
-
-/* grandparent */
-GList      *rb_node_get_grandparents (RBNode *node);
-void        rb_node_add_grandparent  (RBNode *node,
-				      RBNode *grandparent);
-gboolean    rb_node_has_grandparent  (RBNode *node,
-				      RBNode *grandparent);
 
 /* parents */
 GList      *rb_node_get_parents      (RBNode *node);
 void        rb_node_add_parent       (RBNode *node,
 				      RBNode *parent);
+void        rb_node_remove_parent    (RBNode *node,
+				      RBNode *parent);
 gboolean    rb_node_has_parent       (RBNode *node,
 				      RBNode *parent);
+
+RBNode     *rb_node_get_nth_parent   (RBNode *node,
+				      int n);
+int         rb_node_parent_index     (RBNode *node,
+				      RBNode *parent);
+int         rb_node_n_parents        (RBNode *node);
 
 /* children */
 GList      *rb_node_get_children     (RBNode *node);
@@ -139,6 +127,14 @@ int         rb_node_n_children       (RBNode *node);
 void        rb_node_save_to_xml      (RBNode *node,
 			              xmlNodePtr parent_xml_node);
 RBNode     *rb_node_new_from_xml     (xmlNodePtr xml_node);
+
+/* refcounting */
+RBNode     *rb_node_ref              (RBNode *node);
+void        rb_node_unref            (RBNode *node);
+
+/* action queue */
+void rb_node_init_action_queue     (void);
+void rb_node_shutdown_action_queue (void);
 
 G_END_DECLS
 

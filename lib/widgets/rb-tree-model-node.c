@@ -86,7 +86,7 @@ static void root_destroyed_cb (RBNode *node,
 		               RBTreeModelNode *model);
 static void filter_parent_destroyed_cb (RBNode *node,
 				        RBTreeModelNode *model);
-static void filter_grandparent_destroyed_cb (RBNode *node,
+static void filter_artist_destroyed_cb (RBNode *node,
 				             RBTreeModelNode *model);
 
 struct RBTreeModelNodePrivate
@@ -94,8 +94,8 @@ struct RBTreeModelNodePrivate
 	RBNode *root;
 
 	RBNode *filter_parent;
-	RBNode *filter_grandparent;
-	RBNode *old_filter_grandparent;
+	RBNode *filter_artist;
+	RBNode *old_filter_artist;
 	RBNode *playing_node;
 
 	RBNodeIterator *iterator;
@@ -108,7 +108,7 @@ enum
 	PROP_0,
 	PROP_ROOT,
 	PROP_FILTER_PARENT,
-	PROP_FILTER_GRANDPARENT,
+	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE
 };
 
@@ -180,10 +180,10 @@ rb_tree_model_node_class_init (RBTreeModelNodeClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_GRANDPARENT,
-					 g_param_spec_object ("filter-grandparent",
-							      "Filter grandparent node",
-							      "Filter grandparent node",
+					 PROP_FILTER_ARTIST,
+					 g_param_spec_object ("filter-artist",
+							      "Filter artist node",
+							      "Filter artist node",
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -289,10 +289,10 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					if (model->priv->old_filter_grandparent != NULL)
+					if (model->priv->old_filter_artist != NULL)
 					{
-						if (rb_node_has_grandparent (RB_NODE (l->data),
-									     model->priv->old_filter_grandparent))
+						if (rb_node_song_has_artist (RB_NODE (l->data),
+									     model->priv->old_filter_artist))
 							rb_tree_model_node_update_node (model, RB_NODE (l->data));
 					}
 					else
@@ -311,10 +311,10 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					if (model->priv->filter_grandparent != NULL)
+					if (model->priv->filter_artist != NULL)
 					{
-						if (rb_node_has_grandparent (RB_NODE (l->data),
-									     model->priv->filter_grandparent))
+						if (rb_node_song_has_artist (RB_NODE (l->data),
+									     model->priv->filter_artist))
 							rb_tree_model_node_update_node (model, RB_NODE (l->data));
 					}
 					else
@@ -329,23 +329,23 @@ rb_tree_model_node_set_property (GObject *object,
 			}
 		}
 		break;
-	case PROP_FILTER_GRANDPARENT:
+	case PROP_FILTER_ARTIST:
 		{
-			if (model->priv->old_filter_grandparent != NULL)
+			if (model->priv->old_filter_artist != NULL)
 			{
-				g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->old_filter_grandparent),
-						                      G_CALLBACK (filter_grandparent_destroyed_cb),
+				g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->old_filter_artist),
+						                      G_CALLBACK (filter_artist_destroyed_cb),
 						                      model);
 			}
 
-			model->priv->old_filter_grandparent = model->priv->filter_grandparent;
-			model->priv->filter_grandparent = g_value_get_object (value);
+			model->priv->old_filter_artist = model->priv->filter_artist;
+			model->priv->filter_artist = g_value_get_object (value);
 
-			if (model->priv->filter_grandparent != NULL)
+			if (model->priv->filter_artist != NULL)
 			{
-				g_signal_connect_object (G_OBJECT (model->priv->filter_grandparent),
+				g_signal_connect_object (G_OBJECT (model->priv->filter_artist),
 						         "destroyed",
-						         G_CALLBACK (filter_grandparent_destroyed_cb),
+						         G_CALLBACK (filter_artist_destroyed_cb),
 						         G_OBJECT (model),
 							 0);
 			}
@@ -385,8 +385,8 @@ rb_tree_model_node_get_property (GObject *object,
 	case PROP_FILTER_PARENT:
 		g_value_set_object (value, model->priv->filter_parent);
 		break;
-	case PROP_FILTER_GRANDPARENT:
-		g_value_set_object (value, model->priv->filter_grandparent);
+	case PROP_FILTER_ARTIST:
+		g_value_set_object (value, model->priv->filter_artist);
 		break;
 	case PROP_PLAYING_NODE:
 		g_value_set_object (value, model->priv->playing_node);
@@ -555,12 +555,9 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE:
 		{
-			GValue val = { 0, };
-			char *str = NULL;
-			const char *name;
+			char *str = NULL, *name;
 
-			rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &val);
-			name = g_value_get_string (&val);
+			name = rb_node_song_get_title (node);
 
 			if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST)
 			{
@@ -598,7 +595,7 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 
 			g_value_set_string (value, str);
 			g_free (str);
-			g_value_unset (&val);
+			g_free (name);
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_ARTIST:
@@ -630,31 +627,18 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		break;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 		{
-			GValue val = { 0, };
+			char *tracknum;
 
-			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_TRACK_NUMBER, &val);
-			g_value_set_string (value, g_value_get_string (&val));
-			g_value_unset (&val);
+			tracknum = rb_node_song_get_track_number (node);
+			g_value_set_string (value, tracknum);
+			g_free (tracknum);
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 		{
 			char *duration;
-			int seconds;
-			int minutes = 0;
-			GValue val = { 0, };
-
-			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &val);
-			seconds = (int) g_value_get_long (&val);
-			g_value_unset (&val);
-
-			if (seconds > 0)
-			{
-				minutes = seconds / 60;
-				seconds = seconds % 60;
-			}
-
-			duration = g_strdup_printf ("%d:%02d", minutes, seconds);
+			
+			duration = rb_node_song_get_duration (node);
 			g_value_set_string (value, duration);
 			g_free (duration);
 		}
@@ -662,11 +646,11 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		if (model->priv->filter_parent != NULL)
 		{
-			if (model->priv->filter_grandparent != NULL)
+			if (model->priv->filter_artist != NULL)
 			{
 				g_value_set_boolean (value,
 						     rb_node_has_child (model->priv->filter_parent, node) &&
-						     rb_node_has_grandparent (node, model->priv->filter_grandparent));
+						     rb_node_song_has_artist (node, model->priv->filter_artist));
 			}
 			else
 			{
@@ -882,12 +866,12 @@ root_destroyed_cb (RBNode *node,
 void
 rb_tree_model_node_set_filter (RBTreeModelNode *model,
 			       RBNode *filter_parent,
-			       RBNode *filter_grandparent)
+			       RBNode *filter_artist)
 {
 	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
 
 	g_object_set (G_OBJECT (model),
-		      "filter-grandparent", filter_grandparent,
+		      "filter-artist", filter_artist,
 		      "filter-parent", filter_parent,
 		      NULL);
 }
@@ -895,12 +879,12 @@ rb_tree_model_node_set_filter (RBTreeModelNode *model,
 void
 rb_tree_model_node_get_filter (RBTreeModelNode *model,
 			       RBNode **filter_parent,
-			       RBNode **filter_grandparent)
+			       RBNode **filter_artist)
 {
 	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
 
 	*filter_parent      = model->priv->filter_parent;
-	*filter_grandparent = model->priv->filter_grandparent;
+	*filter_artist = model->priv->filter_artist;
 }
 
 void
@@ -933,14 +917,14 @@ filter_parent_destroyed_cb (RBNode *node,
 }
 
 static void
-filter_grandparent_destroyed_cb (RBNode *node,
+filter_artist_destroyed_cb (RBNode *node,
 				 RBTreeModelNode *model)
 {
-	if (node == model->priv->filter_grandparent)
-		model->priv->filter_grandparent = NULL;
+	if (node == model->priv->filter_artist)
+		model->priv->filter_artist = NULL;
 
-	if (node == model->priv->old_filter_grandparent)
-		model->priv->old_filter_grandparent = NULL;
+	if (node == model->priv->old_filter_artist)
+		model->priv->old_filter_artist = NULL;
 	
 	/* no need to do other stuff since we should have had a bunch of child_destroyed
 	 * signals already */

@@ -1,3 +1,95 @@
+2002-08-04  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_set_property), (rb_node_view_get_property),
+	(rb_node_view_set_filter), (rb_node_view_get_status),
+	(rb_node_view_get_n_rows), (rb_node_view_get_visible_nodes):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-song-info.c: (rb_song_info_set_property),
+	(rb_song_info_update_location):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_class_init), (rb_tree_model_node_set_property),
+	(rb_tree_model_node_get_property), (rb_tree_model_node_get_value),
+	(rb_tree_model_node_set_filter), (rb_tree_model_node_get_filter),
+	(filter_artist_destroyed_cb):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/Makefile.am:
+	* library/rb-library-action-queue.c:
+	(rb_library_action_queue_get_type),
+	(rb_library_action_queue_class_init),
+	(rb_library_action_queue_init), (rb_library_action_queue_finalize),
+	(rb_library_action_queue_new), (rb_library_action_queue_add),
+	(rb_library_action_queue_is_empty),
+	(rb_library_action_queue_peek_head),
+	(rb_library_action_queue_pop_head):
+	* library/rb-library-action-queue.h:
+	* library/rb-library-main-thread.c:
+	(rb_library_main_thread_get_type),
+	(rb_library_main_thread_class_init), (rb_library_main_thread_init),
+	(rb_library_main_thread_finalize), (rb_library_main_thread_new),
+	(rb_library_main_thread_set_property),
+	(rb_library_main_thread_get_property), (thread_main):
+	* library/rb-library-main-thread.h:
+	* library/rb-library-preferences.h:
+	* library/rb-library-watcher-thread.c:
+	(rb_library_watcher_thread_get_type),
+	(rb_library_watcher_thread_class_init),
+	(rb_library_watcher_thread_init),
+	(rb_library_watcher_thread_finalize),
+	(rb_library_watcher_thread_new),
+	(rb_library_watcher_thread_set_property),
+	(rb_library_watcher_thread_get_property), (thread_main):
+	* library/rb-library-watcher-thread.h:
+	* library/rb-library-watcher.c:
+	* library/rb-library-watcher.h:
+	* library/rb-library-xml-thread.c:
+	(rb_library_xml_thread_get_type),
+	(rb_library_xml_thread_class_init), (rb_library_xml_thread_init),
+	(rb_library_xml_thread_finalize), (rb_library_xml_thread_new),
+	(rb_library_xml_thread_set_property),
+	(rb_library_xml_thread_get_property), (thread_main),
+	(done_loading), (done_loading_timeout_cb):
+	* library/rb-library-xml-thread.h:
+	* library/rb-library.c: (rb_library_get_type), (rb_library_init),
+	(rb_library_finalize), (rb_library_add_file),
+	(rb_library_remove_node), (rb_library_create_skels),
+	(child_created_cb), (child_destroyed_cb),
+	(xml_thread_done_loading_cb), (rb_library_get_genre_by_name),
+	(rb_library_get_artist_by_name), (rb_library_get_album_by_name),
+	(rb_library_get_song_by_uri), (rb_library_get_action_queue):
+	* library/rb-library.h:
+	* library/rb-node-song.c: (rb_node_song_sync),
+	(rb_node_song_set_location), (rb_node_song_get_location),
+	(rb_node_song_update_if_newer), (rb_node_song_get_title),
+	(rb_node_song_get_track_number), (rb_node_song_get_duration),
+	(rb_node_song_get_duration_raw), (rb_node_song_get_file_size),
+	(rb_node_song_get_file_size_raw), (rb_node_song_get_genre),
+	(rb_node_song_get_genre_raw), (rb_node_song_get_artist),
+	(rb_node_song_get_artist_raw), (rb_node_song_get_album),
+	(rb_node_song_get_album_raw), (rb_node_song_has_genre),
+	(rb_node_song_has_artist), (rb_node_song_has_album):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_init), (rb_node_finalize),
+	(rb_node_dispose), (rb_node_add_child), (rb_node_remove_child),
+	(rb_node_remove_parent), (rb_node_has_parent),
+	(rb_node_child_changed_cb), (rb_node_child_destroyed_cb),
+	(rb_node_set_property), (rb_node_get_property),
+	(rb_node_get_nth_child), (rb_node_parent_index),
+	(rb_node_n_parents), (rb_node_get_nth_parent),
+	(rb_node_save_to_xml), (rb_node_new_from_xml), (rb_node_changed),
+	(rb_node_save_property), (rb_node_ref), (rb_node_unref),
+	(rb_node_action_queue_timeout_cb), (rb_node_init_action_queue),
+	(rb_node_shutdown_action_queue):
+	* library/rb-node.h:
+	* views/rb-group-view.c: (rb_group_view_get_song),
+	(rb_group_view_get_duration), (rb_group_view_set_playing_node):
+	* views/rb-library-view.c: (artist_node_selected_cb),
+	(rb_library_view_get_song), (rb_library_view_get_duration),
+	(rb_library_view_set_playing_node):
+
+	Commiting what i have so far of the new library, only manual add is
+	implemented - will do xml and dir watching today.
+
 2002-08-03  Jorn Baayen  <jorn@nl.linux.org>
 
 	* shell/rb-shell-player.c: (rb_shell_player_stop):

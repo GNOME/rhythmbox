@@ -61,7 +61,7 @@ RBNodeView *rb_node_view_new               (RBNode *root,
 
 void        rb_node_view_set_filter        (RBNodeView *view,
 				            RBNode *filter_parent,
-					    RBNode *filter_grandparent);
+					    RBNode *filter_artist);
 
 void        rb_node_view_set_playing_node  (RBNodeView *view,
 					    RBNode *node);

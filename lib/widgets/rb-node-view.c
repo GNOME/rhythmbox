@@ -38,6 +38,7 @@
 #include "rb-node-view.h"
 #include "rb-dialog.h"
 #include "rb-cell-renderer-pixbuf.h"
+#include "rb-node-song.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -132,7 +133,7 @@ enum
 	PROP_0,
 	PROP_ROOT,
 	PROP_FILTER_PARENT,
-	PROP_FILTER_GRANDPARENT,
+	PROP_FILTER_ARTIST,
 	PROP_PLAYING_NODE,
 	PROP_VIEW_DESC_FILE
 };
@@ -196,10 +197,10 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_FILTER_GRANDPARENT,
-					 g_param_spec_object ("filter-grandparent",
-							      "Filter grandparent node",
-							      "Filter grandparent node",
+					 PROP_FILTER_ARTIST,
+					 g_param_spec_object ("filter-artist",
+							      "Filter artist node",
+							      "Filter artist node",
 							      RB_TYPE_NODE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -315,12 +316,12 @@ rb_node_view_set_property (GObject *object,
 				               "filter-parent", value);
 		}
 		break;
-	case PROP_FILTER_GRANDPARENT:
+	case PROP_FILTER_ARTIST:
 		{
 			g_assert (view->priv->nodemodel != NULL);
 			
 			g_object_set_property (G_OBJECT (view->priv->nodemodel),
-					       "filter-grandparent", value);
+					       "filter-artist", value);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -362,12 +363,12 @@ rb_node_view_get_property (GObject *object,
 				               "filter-parent", value);
 		}
 		break;
-	case PROP_FILTER_GRANDPARENT:
+	case PROP_FILTER_ARTIST:
 		{
 			g_assert (view->priv->nodemodel != NULL);
 
 			g_object_get_property (G_OBJECT (view->priv->nodemodel),
-					       "filter-grandparent", value);
+					       "filter-artist", value);
 		}
 		break;
 	case PROP_PLAYING_NODE:
@@ -654,12 +655,12 @@ rb_node_view_construct (RBNodeView *view)
 void
 rb_node_view_set_filter (RBNodeView *view,
 			 RBNode *filter_parent,
-			 RBNode *filter_grandparent)
+			 RBNode *filter_artist)
 {
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
 	g_object_set (G_OBJECT (view),
-		      "filter-grandparent", filter_grandparent,
+		      "filter-artist", filter_artist,
 		      "filter-parent", filter_parent,
 		      NULL);
 }
@@ -1011,16 +1012,10 @@ rb_node_view_get_status (RBNodeView *view)
 	for (l = visible; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node = RB_NODE (l->data);
-		GValue value = { 0, };
 		
 		n_songs++;
-		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
-		n_seconds += g_value_get_long (&value);
-		g_value_unset (&value);
-
-		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
-		n_bytes += (GnomeVFSFileSize) g_value_get_long (&value);
-		g_value_unset (&value);
+		n_seconds += rb_node_song_get_duration_raw (node);
+		n_bytes += rb_node_song_get_file_size_raw (node);
 	}
 
 	g_list_free (visible);
@@ -1156,20 +1151,20 @@ rb_node_view_timeout_cb (RBNodeView *view)
 static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
-	RBNode *parent = NULL, *grandparent = NULL;
+	RBNode *parent = NULL, *artist = NULL;
 	GList *l;
 	int n_rows = 0;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
-				       &parent, &grandparent);
+				       &parent, &artist);
 
 	if (parent == NULL)
 		return n_rows;
 
 	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
 	{
-		if (grandparent != NULL &&
-		    rb_node_has_grandparent (RB_NODE (l->data), grandparent) == FALSE)
+		if (artist != NULL &&
+		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
 			continue;
 
 		n_rows++;
@@ -1181,19 +1176,19 @@ rb_node_view_get_n_rows (RBNodeView *view)
 static GList *
 rb_node_view_get_visible_nodes (RBNodeView *view)
 {
-	RBNode *parent = NULL, *grandparent = NULL;
+	RBNode *parent = NULL, *artist = NULL;
 	GList *ret = NULL, *l;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
-				       &parent, &grandparent);
+				       &parent, &artist);
 
 	if (parent == NULL)
 		return ret;
 
 	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
 	{
-		if (grandparent != NULL &&
-		    rb_node_has_grandparent (RB_NODE (l->data), grandparent) == FALSE)
+		if (artist != NULL &&
+		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
 			continue;
 
 		ret = g_list_append (ret, l->data);

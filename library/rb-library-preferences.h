@@ -26,7 +26,6 @@ G_BEGIN_DECLS
 #define CONF_LIBRARY_DIR              "/apps/rhythmbox/library"
 
 #define CONF_LIBRARY_BASE_FOLDER      "/apps/rhythmbox/library/base_folder"
-#define CONF_LIBRARY_INCLUDE_AUDIO_CD "/apps/rhythmbox/library/include_audio_cd"
 #define CONF_LIBRARY_MUSIC_FOLDERS    "/apps/rhythmbox/library/music_folders"
 
 G_END_DECLS

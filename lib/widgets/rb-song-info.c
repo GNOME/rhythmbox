@@ -231,7 +231,7 @@ rb_song_info_set_property (GObject *object,
 			song_info->priv->node = node;
 
 			/* get the stream info */
-			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &location);
+			rb_node_get_property (node, "location", &location);
 			info = monkey_media_stream_info_new (g_value_get_string (&location), NULL);
 			song_info->priv->info = info;
 			g_value_unset (&location);
@@ -497,7 +497,7 @@ rb_song_info_update_location (RBSongInfo *song_info)
 	g_return_if_fail (song_info != NULL);
 
 	rb_node_get_property (song_info->priv->node,
-			      RB_NODE_PROPERTY_SONG_LOCATION,
+			      "location",
 			      &value);
 	text = g_value_get_string (&value);
 	if (text != NULL)

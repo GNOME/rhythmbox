@@ -657,7 +657,7 @@ rb_group_view_get_song (RBViewPlayer *player)
 	if (node != NULL)
 	{
 		GValue value = { 0, };
-		rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &value);
+		rb_node_get_property (node, "name", &value);
 		g_free (view->priv->song);
 		view->priv->song = g_strdup (g_value_get_string (&value));
 		g_value_unset (&value);
@@ -679,7 +679,7 @@ rb_group_view_get_duration (RBViewPlayer *player)
 	{
 		GValue value = { 0, };
 		long ret;
-		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+		rb_node_get_property (node, "duration_raw", &value);
 		ret = g_value_get_long (&value);
 		g_value_unset (&value);
 		return ret;
@@ -758,7 +758,7 @@ rb_group_view_set_playing_node (RBGroupView *view,
 		const char *uri;
 		GValue value = { 0, };
 
-		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+		rb_node_get_property (node, "location", &value);
 		uri = g_value_get_string (&value);
 
 		g_assert (uri != NULL);
