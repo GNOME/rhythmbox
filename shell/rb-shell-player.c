@@ -69,6 +69,8 @@ static void rb_shell_player_sync_mixer (RBShellPlayer *player);
 static void rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 				                RBViewPlayer *player);
 static void rb_shell_player_update_play_button (RBShellPlayer *player);
+static void rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
+				                     RBShellPlayer *shell_player);
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define MENU_PATH_PREVIOUS "/menu/Controls/Previous"
@@ -233,7 +235,22 @@ rb_shell_player_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_PLAYER:
+		if (shell_player->priv->selected_player != NULL)
+		{
+			g_signal_handlers_disconnect_by_func (G_OBJECT (shell_player->priv->selected_player),
+							      G_CALLBACK (rb_shell_player_player_start_playing_cb),
+							      shell_player);
+		}
+		
 		shell_player->priv->selected_player = g_value_get_object (value);
+
+		if (shell_player->priv->selected_player != NULL)
+		{
+			g_signal_connect (G_OBJECT (shell_player->priv->selected_player),
+				          "start_playing",
+					  G_CALLBACK (rb_shell_player_player_start_playing_cb),
+				          shell_player);
+		}
 
 		rb_shell_player_update_play_button (shell_player);
 		break;
@@ -397,7 +414,8 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 
 	rb_bonobo_set_label (player->priv->component, TOOLBAR_PATH_PLAY, tlabel);
 	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
-	rb_bonobo_set_verb (player->priv->component, CMD_PATH_PLAY, verb);
+	rb_bonobo_set_verb (player->priv->component, TOOLBAR_PATH_PLAY, verb);
+	rb_bonobo_set_verb (player->priv->component, MENU_PATH_PLAY, verb);
 }
 
 static void
@@ -511,6 +529,9 @@ static void
 rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 				    RBViewPlayer *player)
 {
+	if (shell_player->priv->player == player && player != NULL)
+		return;
+
 	if (shell_player->priv->player != NULL)
 	{
 		g_signal_handlers_disconnect_by_func (G_OBJECT (shell_player->priv->player),
@@ -528,10 +549,18 @@ rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 					 G_CALLBACK (rb_view_player_changed_cb),
 					 G_OBJECT (shell_player),
 					 0);
-		rb_view_player_start_playing (shell_player->priv->player);
+		if (rb_view_player_get_stream (shell_player->priv->player) == NULL)
+			rb_view_player_start_playing (shell_player->priv->player);
 	}
 
 	rb_shell_player_sync_with_player (shell_player);
 
 	rb_shell_player_update_play_button (shell_player);
+}
+
+static void
+rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
+				         RBShellPlayer *shell_player)
+{
+	rb_shell_player_set_playing_player (shell_player, player);
 }

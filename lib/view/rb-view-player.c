@@ -25,6 +25,7 @@ static void rb_view_player_base_init (gpointer g_class);
 enum
 {
 	CHANGED,
+	START_PLAYING,
 	LAST_SIGNAL
 };
 
@@ -76,6 +77,15 @@ rb_view_player_base_init (gpointer g_iface)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	rb_view_player_signals[START_PLAYING] =
+		g_signal_new ("start_playing",
+			      RB_TYPE_VIEW_PLAYER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewPlayerIface, start_playing),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 
 	initialized = TRUE;
 }
@@ -104,7 +114,7 @@ rb_view_player_set_shuffle (RBViewPlayer *player,
 
 	iface->impl_set_shuffle (player, shuffle);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 void
@@ -115,7 +125,7 @@ rb_view_player_set_repeat (RBViewPlayer *player,
 
 	iface->impl_set_repeat (player, repeat);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 RBViewPlayerResult
@@ -141,7 +151,7 @@ rb_view_player_next (RBViewPlayer *player)
 
 	iface->impl_next (player);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 void
@@ -151,7 +161,7 @@ rb_view_player_previous (RBViewPlayer *player)
 
 	iface->impl_previous (player);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 const char *
@@ -209,7 +219,7 @@ rb_view_player_start_playing (RBViewPlayer *player)
 
 	iface->impl_start_playing (player);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 void
@@ -219,11 +229,17 @@ rb_view_player_stop_playing (RBViewPlayer *player)
 
 	iface->impl_stop_playing (player);
 
-	rb_view_player_changed (player);
+	rb_view_player_notify_changed (player);
 }
 
 void
-rb_view_player_changed (RBViewPlayer *player)
+rb_view_player_notify_changed (RBViewPlayer *player)
 {
 	g_signal_emit (G_OBJECT (player), rb_view_player_signals[CHANGED], 0);
+}
+
+void
+rb_view_player_notify_playing (RBViewPlayer *player)
+{
+	g_signal_emit (G_OBJECT (player), rb_view_player_signals[START_PLAYING], 0);
 }

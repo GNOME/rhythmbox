@@ -564,6 +564,7 @@ rb_test_view_set_playing_node (RBTestView *view,
 				  G_CALLBACK (song_eos_cb),
 				  view);
 		
+		/* FIXME shorten when necessary */
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
 	}
 }
@@ -575,7 +576,8 @@ song_activated_cb (RBNodeView *view,
 {
 	rb_test_view_set_playing_node (test_view, node);
 
-	rb_view_player_changed (RB_VIEW_PLAYER (test_view));
+	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
+	rb_view_player_notify_playing (RB_VIEW_PLAYER (test_view));
 }
 
 static void
@@ -583,7 +585,7 @@ node_view_changed_cb (RBNodeView *view,
 		      RBTestView *test_view)
 {
 
-	rb_view_player_changed (RB_VIEW_PLAYER (test_view));
+	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
 }
 
 static void

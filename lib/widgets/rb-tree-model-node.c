@@ -317,8 +317,10 @@ rb_tree_model_node_set_property (GObject *object,
 	
 			model->priv->playing_node = g_value_get_object (value);
 	
-			rb_tree_model_node_update_node (model, old);
-			rb_tree_model_node_update_node (model, model->priv->playing_node);
+			if (old != NULL)
+				rb_tree_model_node_update_node (model, old);
+			if (model->priv->playing_node != NULL)
+				rb_tree_model_node_update_node (model, model->priv->playing_node);
 		}
 		break;
 	default:

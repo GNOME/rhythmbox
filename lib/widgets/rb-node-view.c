@@ -548,7 +548,7 @@ rb_node_view_get_node (RBNodeView *view,
 		       gboolean down)
 {
 	RBNode *playing_node = rb_node_view_get_playing_node (view);
-	GtkTreeIter iter;
+	GtkTreeIter iter, iter2;
 	GValue val = {0, };
 	gboolean visible, found;
 	GtkTreePath *path;
@@ -566,17 +566,17 @@ rb_node_view_get_node (RBNodeView *view,
 		return NULL;
 
 	gtk_tree_model_filter_convert_child_iter_to_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
-							  &iter, &iter);
+							  &iter2, &iter);
 	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&iter, &iter);
+							&iter, &iter2);
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->sortmodel), &iter);
 
 	if (down == TRUE)
-		gtk_tree_path_down (path);
+		gtk_tree_path_next (path);
 	else
 	{
-		if (gtk_tree_path_up (path) == FALSE)
+		if (gtk_tree_path_prev (path) == FALSE)
 		{
 			gtk_tree_path_free (path);
 			return NULL;
@@ -614,7 +614,7 @@ RBNode *
 rb_node_view_get_first_node (RBNodeView *view)
 {
 	GtkTreeIter iter;
-	
+
 	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel),
 				       &iter);
 
@@ -622,7 +622,7 @@ rb_node_view_get_first_node (RBNodeView *view)
 							&iter, &iter);
 	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &iter, &iter);
-	
+
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
 }
 

@@ -45,7 +45,8 @@ typedef struct
 	GTypeInterface g_iface;
 	
 	/* signals */
-	void (*changed) (RBViewPlayer *player);
+	void (*changed)       (RBViewPlayer *player);
+	void (*start_playing) (RBViewPlayer *player);
 
 	/* methods */
 	RBViewPlayerResult      (*impl_get_shuffle)   (RBViewPlayer *player);
@@ -76,36 +77,38 @@ typedef struct
 	void                    (*impl_stop_playing)  (RBViewPlayer *player);
 } RBViewPlayerIface;
 
-GType                   rb_view_player_get_type      (void);
+GType                   rb_view_player_get_type       (void);
 
-RBViewPlayerResult      rb_view_player_get_shuffle   (RBViewPlayer *player);
-RBViewPlayerResult      rb_view_player_get_repeat    (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_get_shuffle    (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_get_repeat     (RBViewPlayer *player);
 
-void                    rb_view_player_set_shuffle   (RBViewPlayer *player,
-						      gboolean shuffle);
-void                    rb_view_player_set_repeat    (RBViewPlayer *player,
-						      gboolean repeat);
+void                    rb_view_player_set_shuffle    (RBViewPlayer *player,
+						       gboolean shuffle);
+void                    rb_view_player_set_repeat     (RBViewPlayer *player,
+						       gboolean repeat);
 
-RBViewPlayerResult      rb_view_player_have_next     (RBViewPlayer *player);
-RBViewPlayerResult      rb_view_player_have_previous (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_have_next      (RBViewPlayer *player);
+RBViewPlayerResult      rb_view_player_have_previous  (RBViewPlayer *player);
 
-void                    rb_view_player_next          (RBViewPlayer *player);
-void                    rb_view_player_previous      (RBViewPlayer *player);
+void                    rb_view_player_next           (RBViewPlayer *player);
+void                    rb_view_player_previous       (RBViewPlayer *player);
 
-const char             *rb_view_player_get_title     (RBViewPlayer *player);
+const char             *rb_view_player_get_title      (RBViewPlayer *player);
 
-const char             *rb_view_player_get_artist    (RBViewPlayer *player);
-const char             *rb_view_player_get_album     (RBViewPlayer *player);
-const char             *rb_view_player_get_song      (RBViewPlayer *player);
+const char             *rb_view_player_get_artist     (RBViewPlayer *player);
+const char             *rb_view_player_get_album      (RBViewPlayer *player);
+const char             *rb_view_player_get_song       (RBViewPlayer *player);
 
-GdkPixbuf              *rb_view_player_get_pixbuf    (RBViewPlayer *player);
+GdkPixbuf              *rb_view_player_get_pixbuf     (RBViewPlayer *player);
 
-MonkeyMediaAudioStream *rb_view_player_get_stream    (RBViewPlayer *player);
+MonkeyMediaAudioStream *rb_view_player_get_stream     (RBViewPlayer *player);
 
-void                    rb_view_player_start_playing (RBViewPlayer *player);
-void                    rb_view_player_stop_playing  (RBViewPlayer *player);
+void                    rb_view_player_start_playing  (RBViewPlayer *player);
+void                    rb_view_player_stop_playing   (RBViewPlayer *player);
 
-void                    rb_view_player_changed       (RBViewPlayer *player);
+void                    rb_view_player_notify_changed (RBViewPlayer *player);
+
+void                    rb_view_player_notify_playing (RBViewPlayer *player);
 
 G_END_DECLS
 
