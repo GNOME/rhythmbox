@@ -1,4 +1,4 @@
-SUBDIRS = lib tests library shell data
+SUBDIRS = lib tests library shell data po
 
 EXTRA_DIST = 			\
 	autogen.sh		\
