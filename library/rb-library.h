@@ -51,6 +51,7 @@ typedef struct
 
 	/* signals */
 	void	(*error)	(const char *uri, const char *msg);
+	void	(*progress)(float val);
 	void	(*status_changed)();
 } RBLibraryClass;
 
@@ -103,6 +104,8 @@ RBNode *		rb_library_get_song_by_location (RBLibrary *library,
 							 const char *location);
 
 GAsyncQueue *		rb_library_get_main_queue       (RBLibrary *library);
+
+GAsyncQueue *		rb_library_get_add_queue       (RBLibrary *library);
 
 void			rb_library_handle_songs         (RBLibrary *library,
 							 RBNode *node,

@@ -1,3 +1,32 @@
+2003-08-18  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-marshal.list:
+	* library/rb-library-main-thread.c: (file_changed_cb),
+	(file_removed_cb), (rb_library_main_thread_finalize),
+	(rb_library_main_thread_set_property), (am_dead), (read_action),
+	(main_thread_main), (add_thread_main):
+	* library/rb-library-walker-thread.c: (add_file), (thread_main):
+	* library/rb-library.c: (rb_library_class_init), (rb_library_init),
+	(queue_is_empty), (rb_library_is_idle), (rb_library_finalize),
+	(signal_status_changed), (signal_progress_changed),
+	(rb_library_add_uri), (rb_library_add_uri_sync),
+	(rb_library_update_uri), (rb_library_get_add_queue),
+	(rb_library_compute_status), (poll_status_update):
+	* library/rb-library.h:
+	* shell/rb-shell.c: (rb_shell_construct), (source_selected_cb),
+	(rb_shell_library_progress_cb):
+	* shell/rb-statusbar.c: (rb_statusbar_init),
+	(rb_statusbar_finalize), (status_tick_cb),
+	(rb_statusbar_set_progress):
+	* shell/rb-statusbar.h:
+
+	Major status display rework.  We now display a progress bar on
+	library refresh/loading.
+
+	This required a number of changes, including breaking the main
+	library thread into two separate threads, one just to handle
+	adds and one which processes other requests.
+
 2003-08-15  George Karabin  <gkarabin@pobox.com>
 
 	* rhythmbox.spec.in: Fix gconf installation.

@@ -59,7 +59,6 @@ static void restore_node (RBNode *node);
 static gboolean rb_library_periodic_save (RBLibrary *library);
 static void sync_sort_keys (RBNode *node);
 static void walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library);
-static char *get_status_fast (RBLibrary *library);
 static char *get_status_normal (RBLibrary *library, RBNode *root, RBNodeFilter *filter);
 static gboolean poll_status_update (gpointer data);
 
@@ -82,6 +81,7 @@ struct RBLibraryPrivate
 	GList *walker_threads;
 
 	GAsyncQueue *main_queue;
+	GAsyncQueue *add_queue;
 
 	RBNodeDb *db;
 
@@ -126,6 +126,7 @@ enum
 {
 	ERROR,
 	STATUS_CHANGED,
+	PROGRESS,
 	LAST_SIGNAL,
 };
 
@@ -190,6 +191,15 @@ rb_library_class_init (RBLibraryClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	rb_library_signals[PROGRESS] =
+		g_signal_new ("progress",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBLibraryClass, progress),
+			      NULL, NULL,
+			      rb_marshal_VOID__FLOAT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_FLOAT);
 }
 
 static void
@@ -235,6 +245,7 @@ rb_library_init (RBLibrary *library)
 	library->priv->walker_mutex = g_mutex_new ();
 
 	library->priv->main_queue = g_async_queue_new ();
+	library->priv->add_queue = g_async_queue_new ();
 }
 
 static void
@@ -263,6 +274,17 @@ rb_library_release_brakes (RBLibrary *library)
 						  library);
 }
 
+static gboolean
+queue_is_empty (GAsyncQueue *queue)
+{
+	gpointer data = g_async_queue_try_pop (queue);
+	if (data == NULL)
+		return TRUE;
+
+	g_async_queue_push (queue, data);
+	return FALSE;
+}
+
 /* We don't particularly care about race conditions here.  This function
  * is just supposed to give some feedback about whether the library
  * is busy or not, it doesn't have to be precise.
@@ -270,12 +292,8 @@ rb_library_release_brakes (RBLibrary *library)
 gboolean
 rb_library_is_idle (RBLibrary *library)
 {
-	gpointer data = g_async_queue_try_pop (library->priv->main_queue);
-	if (data == NULL)
-		return TRUE;
-
-	g_async_queue_push (library->priv->main_queue, data);
-	return FALSE;
+	return queue_is_empty (library->priv->main_queue)
+		&& queue_is_empty (library->priv->add_queue);
 }
 
 void
@@ -317,6 +335,7 @@ rb_library_finalize (GObject *object)
 	g_mutex_free (library->priv->walker_mutex);
 
 	g_async_queue_unref (library->priv->main_queue);
+	g_async_queue_unref (library->priv->add_queue);
 
 	rb_library_save (library);
 
@@ -370,12 +389,41 @@ signal_status_changed (RBLibrary *library)
 {
 	rb_thread_helpers_lock_gdk ();
 
+	if (!library->priv->in_shutdown) {
+		g_get_current_time (&library->priv->mod_time);
+		
+		g_signal_emit (G_OBJECT (library), rb_library_signals[STATUS_CHANGED], 0);
+	}
+	
+	rb_thread_helpers_unlock_gdk ();
+}
+
+static void
+signal_progress_changed (RBLibrary *library)
+{
+	rb_thread_helpers_lock_gdk ();
+
 	if (library->priv->in_shutdown)
 		goto out_unlock;
-	
-	g_get_current_time (&library->priv->mod_time);
-	
-	g_signal_emit (G_OBJECT (library), rb_library_signals[STATUS_CHANGED], 0);
+
+	if (!queue_is_empty (library->priv->add_queue)) {
+		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0, -1.0);
+	} else if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
+		float total;
+		float refresh_count;
+
+		g_mutex_lock (library->priv->lock);
+		refresh_count = (float) library->priv->refresh_count;
+		g_mutex_unlock (library->priv->lock);
+
+		total = (float) rb_node_get_n_children (library->priv->all_songs);
+		
+		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0,
+			       refresh_count / total);
+	} else {
+		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0, 1.0);
+	}
+
 out_unlock:
 	rb_thread_helpers_unlock_gdk ();
 }
@@ -401,7 +449,7 @@ rb_library_add_uri (RBLibrary *library, const char *uri)
 	if (rb_uri_is_directory (uri) == FALSE) {
 		RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, uri);
 		rb_debug ("queueing ADD_FILE for %s", uri);
-		g_async_queue_push (library->priv->main_queue, action);
+		g_async_queue_push (library->priv->add_queue, action);
 	} else {
 		RBLibraryWalkerThread *thread = rb_library_walker_thread_new (library, uri);
 
@@ -427,15 +475,18 @@ rb_library_add_uri_sync (RBLibrary *library, const char *uri, GError **error)
 		rb_debug ("uri \"%s\" does not exist, adding new node", uri);
 		rb_library_new_node (library, uri, error);
 		if (error && *error)
-			return;
+			goto signal;
 	} else {
 		rb_debug ("uri \"%s\" already exists", uri);
 	}
 	
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
 
-	if (!library->priv->in_shutdown)
+signal:
+	if (!library->priv->in_shutdown) {
 		signal_status_changed (library);
+		signal_progress_changed (library);
+	}
 }
 
 
@@ -473,6 +524,7 @@ rb_library_update_uri (RBLibrary *library, const char *uri, GError **error)
 	ret = TRUE;
 out:
 	signal_status_changed (library);
+	signal_progress_changed (library);
 	return ret;
 }
 
@@ -828,6 +880,12 @@ GAsyncQueue *
 rb_library_get_main_queue (RBLibrary *library)
 {
 	return library->priv->main_queue;
+}
+
+GAsyncQueue *
+rb_library_get_add_queue (RBLibrary *library)
+{
+	return library->priv->add_queue;
 }
 
 RBNode *
@@ -1499,7 +1557,12 @@ rb_library_update_node (RBLibrary *library, RBNode *node, GError **error)
 char *
 rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filter)
 {
-	if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
+	char *ret = NULL;
+	gboolean adding_songs = !queue_is_empty (library->priv->add_queue);
+
+	if (adding_songs)
+		ret = g_strdup_printf (_("<b>Loading songs...</b>"));
+	else if (library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
 		guint refresh_count;
 		
 		g_mutex_lock (library->priv->lock);
@@ -1511,15 +1574,18 @@ rb_library_compute_status (RBLibrary *library, RBNode *root, RBNodeFilter *filte
 			library->priv->status_poll_queued = TRUE;
 		}
 	
-		return g_strdup_printf (_("<b>Refreshing songs...</b> (%d/%d)"),
-					refresh_count,
-					rb_node_get_n_children (library->priv->all_songs));
+		ret = g_strdup_printf (_("<b>Refreshing songs...</b>"));
 	}
-	
-	if (!rb_library_is_idle (library))
-		return get_status_fast (library);
-	else
-		return get_status_normal (library, root, filter);
+
+	if (adding_songs || library->priv->state == LIBRARY_STATE_INITIAL_REFRESH) {
+		if (!library->priv->status_poll_queued) {
+			g_idle_add ((GSourceFunc) poll_status_update, library);
+			library->priv->status_poll_queued = TRUE;
+		}
+		return ret;
+	}
+		
+	return get_status_normal (library, root, filter);
 }
 
 static gboolean
@@ -1549,32 +1615,6 @@ poll_status_update (gpointer data)
 	GDK_THREADS_LEAVE ();
 
 	return FALSE;
-}
-
-static char *
-get_status_fast (RBLibrary *library)
-{
-	char *ret;
-	gboolean walker_threads_active;
-	guint total;
-
-	g_mutex_lock (library->priv->walker_mutex);
-	walker_threads_active = (library->priv->walker_threads != NULL);
-	g_mutex_unlock (library->priv->walker_mutex);
-
-	total = rb_node_get_n_children (library->priv->all_songs);
-
-	if (walker_threads_active)
-		ret = g_strdup_printf (_("<b>Loading songs...</b> (%d total)"), total);
-	else
-		ret = g_strdup_printf (_("<b>Working...</b> (%d total songs)"), total);
-
-	if (!library->priv->status_poll_queued) {
-		g_idle_add ((GSourceFunc) poll_status_update, library);
-		library->priv->status_poll_queued = TRUE;
-	}
-
-	return ret;
 }
 
 static char *

@@ -83,6 +83,9 @@ struct RBStatusbarPrivate
 	GtkWidget *status;
 
 	GtkWidget *progress;
+
+	gboolean idle_tick_running;
+	guint idle_tick_id;
 };
 
 enum
@@ -168,13 +171,20 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
 	gtk_box_set_spacing (GTK_BOX (statusbar), 5);
 
+	statusbar->priv->progress = gtk_progress_bar_new ();
+
+	gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
+
 	gtk_box_pack_start (GTK_BOX (statusbar),
 			    GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (statusbar),
 			    GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
 
+	gtk_box_pack_start (GTK_BOX (statusbar),
+			    GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+
 	gtk_box_pack_end (GTK_BOX (statusbar),
-			  GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+			  GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
 
 	eel_gconf_notification_add (CONF_UI_STATUSBAR_HIDDEN,
 				    (GConfClientNotifyFunc) rb_statusbar_state_changed_cb,
@@ -198,6 +208,10 @@ rb_statusbar_finalize (GObject *object)
 	statusbar = RB_STATUSBAR (object);
 
 	g_return_if_fail (statusbar->priv != NULL);
+
+	if (statusbar->priv->idle_tick_running) {
+		g_source_remove (statusbar->priv->idle_tick_id);
+	}
 
 	g_free (statusbar->priv);
 
@@ -282,6 +296,41 @@ rb_statusbar_set_source (RBStatusbar *statusbar,
 		      "source", source,
 		      NULL);
 }
+
+static gboolean
+status_tick_cb (GtkProgressBar *progress)
+{
+	g_return_val_if_fail (GTK_IS_PROGRESS_BAR (progress), FALSE);
+
+	gdk_threads_enter ();
+
+	gtk_progress_bar_pulse (progress);
+
+	gdk_threads_leave ();
+
+	return TRUE;
+}
+
+void
+rb_statusbar_set_progress (RBStatusbar *statusbar, float progress)
+{
+	if (progress > 1.0)
+		progress = 1.0;
+
+	if (progress >= 1.0 && statusbar->priv->idle_tick_running) {
+		statusbar->priv->idle_tick_running = FALSE;		
+		g_source_remove (statusbar->priv->idle_tick_id);
+	}
+	
+	if (progress > 0.0)
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), progress);
+	else if (!statusbar->priv->idle_tick_running) {
+		statusbar->priv->idle_tick_running = TRUE;
+		statusbar->priv->idle_tick_id
+			= g_timeout_add (250, (GSourceFunc) status_tick_cb, statusbar->priv->progress);
+	}
+}
+
 
 RBStatusbar *
 rb_statusbar_new (BonoboUIComponent *component)

@@ -119,6 +119,7 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void rb_shell_library_error_cb (RBLibrary *library,
 				       const char *uri, const char *msg,
 				       RBShell *shell); 
+static void rb_shell_library_progress_cb (RBLibrary *library, float progress, RBShell *shell); 
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -741,6 +742,9 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect (G_OBJECT (shell->priv->library), "error",
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->library), "progress",
+			  G_CALLBACK (rb_shell_library_progress_cb), shell);
+	
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
 
@@ -922,6 +926,13 @@ source_selected_cb (RBSourceList *sourcelist,
 {
 	rb_debug ("source selected");
 	rb_shell_select_source (shell, source);
+}
+
+static void
+rb_shell_library_progress_cb (RBLibrary *library, float progress, RBShell *shell)
+{
+	rb_debug ("setting progress to %f", progress);
+	rb_statusbar_set_progress (shell->priv->statusbar, progress);
 }
 
 static void

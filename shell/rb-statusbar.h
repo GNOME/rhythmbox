@@ -56,6 +56,8 @@ RBStatusbar *		rb_statusbar_new	(BonoboUIComponent *component);
 void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);
 
+void			rb_statusbar_set_progress(RBStatusbar *bar, float progress);
+
 G_END_DECLS
 
 #endif /* __RB_STATUSBAR_H */

@@ -251,13 +251,13 @@ add_file (const char *filename,
 	RBLibraryAction *action = rb_library_action_new (RB_LIBRARY_ACTION_ADD_FILE, filename);
 	
 	rb_debug ("queueing ADD_FILE for uri %s", filename);
-	g_async_queue_push (rb_library_get_main_queue (thread->priv->library), action);
+	g_async_queue_push (rb_library_get_add_queue (thread->priv->library), action);
 }
 
 static gpointer
 thread_main (RBLibraryWalkerThread *thread)
 {
-	g_async_queue_ref (rb_library_get_main_queue (thread->priv->library));
+	g_async_queue_ref (rb_library_get_add_queue (thread->priv->library));
 
 	rb_uri_handle_recursively (thread->priv->uri, (GFunc) add_file, thread->priv->lock, &thread->priv->dead, thread);
 	g_mutex_lock (thread->priv->lock);
@@ -267,7 +267,7 @@ thread_main (RBLibraryWalkerThread *thread)
 	}
 	g_mutex_unlock (thread->priv->lock);
 
-	g_async_queue_unref (rb_library_get_main_queue (thread->priv->library));
+	g_async_queue_unref (rb_library_get_add_queue (thread->priv->library));
 
 	rb_debug ("exiting");
 	g_thread_exit (NULL);
