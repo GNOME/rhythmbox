@@ -2,6 +2,87 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2003-12-22 00:00:32 GMT	Colin Walters <walters@verbum.org>	patch-97
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-97
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/POTFILES.in po/no.po po/sr.po
+     po/sr@Latn.po
+
+
+2003-12-21 23:59:02 GMT	Colin Walters <walters@verbum.org>	patch-96
+
+    Summary:
+      merge from rhythmdb
+    Revision:
+      rhythmbox--mainline--0.7--patch-96
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-88
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-1
+       have entry change signal include propid and old/new values
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-2
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-3
+       fix gvalue init, handle new changed sig in shell
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-4
+       add missing break to update switch (!)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-5
+       fix gvalue leak
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-6
+       handle new change signal in property model
+    
+
+    modified files:
+     ChangeLog lib/rb-marshal.list
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-6
+
+
+2003-12-21 19:50:23 GMT	Colin Walters <walters@verbum.org>	patch-95
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-95
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-385
+       make dashboard less verbose
+    
+
+    modified files:
+     ChangeLog shell/dashboard.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-385
+
+
 2003-12-21 16:32:32 GMT	Colin Walters <walters@verbum.org>	patch-94
 
     Summary:
