@@ -600,10 +600,7 @@ album_node_selected_cb (RBNodeView *view,
 
 	rb_source_notify_filter_changed (RB_SOURCE (source));
 
-	songs_filter (source,
-		      genre,
-		      artist,
-		      node);
+	songs_filter (source, genre, artist, node);
 }
 
 static const char *
@@ -704,9 +701,7 @@ impl_get_config_widget (RBSource *asource)
 	if (source->priv->config_widget)
 		return source->priv->config_widget;
 
-	xml = rb_glade_xml_new ("library-prefs.glade",
-				"library_vbox",
-				source);
+	xml = rb_glade_xml_new ("library-prefs.glade", "library_vbox", source);
 	source->priv->config_widget =
 		glade_xml_get_widget (xml, "library_vbox");
 	tmp = glade_xml_get_widget (xml, "library_browser_views_radio");
@@ -762,7 +757,8 @@ static const char *
 impl_get_status_fast (RBLibrarySource *source)
 {
 
-	return g_strdup_printf (_("%ld songs"), rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
+	return g_strdup_printf (_("%ld songs"),
+				rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
 }
 
 static const char *
@@ -780,8 +776,7 @@ impl_get_status_full (RBLibrarySource *source)
 
 	len = 0;
 
-	for (i = 0; i < kids->len; i++)
-	{
+	for (i = 0; i < kids->len; i++) {
 		long secs;
 		RBNode *node;
 

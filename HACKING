@@ -23,7 +23,12 @@ foo (const char *bla, gpointer cow)
 	if (!strcmp (bla, cow)) {
 		g_print ("moo!");
 		return;
-	}
+	} else {
+		do_something (cow);	
+		do_something_else (bla, cow);
+
+	if (foo)
+	    return;
 
 	...
 }	

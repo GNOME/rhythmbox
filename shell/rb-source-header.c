@@ -68,7 +68,6 @@ static void rb_source_header_view_browser_changed_cb (BonoboUIComponent *compone
 						      const char *state,
 						      RBSourceHeader *header);
 static void rb_source_header_sync_control_state (RBSourceHeader *header);
-static void rb_source_header_clear_search (RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
@@ -319,7 +318,7 @@ rb_source_header_search_cb (RBSearchEntry *search,
 	rb_source_search (header->priv->selected_source, text);
 }
 
-static void
+void
 rb_source_header_clear_search (RBSourceHeader *header)
 {
 	rb_debug ("clearing search");

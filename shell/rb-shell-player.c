@@ -81,7 +81,6 @@ static void rb_shell_player_do_next (RBShellPlayer *player);
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
-static void rb_shell_player_jump_to_current (RBShellPlayer *player);
 static void rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
 						const char *path,
 						Bonobo_UIComponent_EventType type,
@@ -92,9 +91,6 @@ static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
 						Bonobo_UIComponent_EventType type,
 						const char *state,
 						RBShellPlayer *player);
-static void rb_shell_player_cmd_current_song (BonoboUIComponent *component,
-					      RBShellPlayer *player,
-					      const char *verbname);
 static void rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 					   RBShellPlayer *player,
 					   const char *verbname);
@@ -218,7 +214,6 @@ static BonoboUIVerb rb_shell_player_verbs[] =
 	BONOBO_UI_VERB ("Pause",	(BonoboUIVerbFn) rb_shell_player_cmd_pause),
 	BONOBO_UI_VERB ("Stop",		(BonoboUIVerbFn) rb_shell_player_cmd_stop),
 	BONOBO_UI_VERB ("Next",		(BonoboUIVerbFn) rb_shell_player_cmd_next),
-	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_player_cmd_current_song),
 	BONOBO_UI_VERB ("SongInfo",	(BonoboUIVerbFn) rb_shell_player_cmd_song_info),
 	BONOBO_UI_VERB ("SLProperties",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_properties),
 	BONOBO_UI_VERB_END
@@ -509,7 +504,8 @@ rb_shell_player_set_property (GObject *object,
 						  "node_activated",
 						  G_CALLBACK (rb_shell_player_extra_node_activated_cb),
 						  player);
-				
+
+			g_list_free (extra_views);
 		}
 		
 		break;
@@ -571,6 +567,13 @@ rb_shell_player_set_source (RBShellPlayer *player,
 		      "source", source,
 		      NULL);
 }
+
+RBSource *
+rb_shell_player_get_source (RBShellPlayer *player)
+{
+	return player->priv->source;
+}
+
 
 RBShellPlayer *
 rb_shell_player_new (BonoboUIComponent *component,
@@ -827,7 +830,7 @@ rb_shell_player_next (RBShellPlayer *player)
 	rb_shell_player_set_playing_node (player, node);
 }
 
-static void
+void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
 	RBNode *node;
@@ -996,18 +999,6 @@ static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
 	eel_gconf_set_boolean (CONF_STATE_REPEAT,
 			       rb_bonobo_get_active (component,
 						     CMD_PATH_REPEAT));
-}
-
-static void
-rb_shell_player_cmd_current_song (BonoboUIComponent *component,
-				  RBShellPlayer *player,
-				  const char *verbname)
-{
-	rb_debug ("current song");
-
-	g_return_if_fail (player->priv->source != NULL);
-
-	rb_shell_player_jump_to_current (player);
 }
 
 static void

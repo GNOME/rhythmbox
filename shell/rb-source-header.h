@@ -59,6 +59,9 @@ void			rb_source_header_set_source	(RBSourceHeader *header,
 
 RBSource *		rb_source_header_get_source	(RBSourceHeader *shell_player);
 
+void			rb_source_header_clear_search	(RBSourceHeader *header);
+
+
 G_END_DECLS
 
 #endif /* __RB_SOURCE_HEADER_H */

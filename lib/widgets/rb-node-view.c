@@ -1452,9 +1452,21 @@ rb_node_view_select_node (RBNodeView *view,
 	GtkTreeIter iter, iter2;
 	GValue val = { 0, };
 	gboolean visible;
+#if 0
+	GList *sel;
+#endif	
 
 	if (node == NULL)
 		return;
+
+#if 0
+	sel = rb_node_view_get_selection (view);
+	if (sel && sel->data == node && g_list_next (sel) == NULL) {
+		g_list_free (sel);
+		return;
+	}
+	g_list_free (sel);
+#endif
 
 	view->priv->selection_lock = TRUE;
 

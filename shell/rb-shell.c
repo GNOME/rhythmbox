@@ -166,6 +166,10 @@ static void rb_shell_cmd_rename_group (BonoboUIComponent *component,
 static void rb_shell_cmd_extract_cd (BonoboUIComponent *component,
 				       RBShell *shell,
 				       const char *verbname);
+static void rb_shell_cmd_current_song (BonoboUIComponent *component,
+				       RBShell *shell,
+				       const char *verbname);
+static void rb_shell_jump_to_current (RBShell *shell);
 GtkWidget * rb_shell_new_group_dialog (RBShell *shell);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
@@ -181,7 +185,6 @@ static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 static void rb_shell_load_music_groups (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_window_visibility (RBShell *shell);
-static gboolean rb_shell_update_source_status (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
 					      guint cnxn_id,
 					      GConfEntry *entry,
@@ -233,6 +236,7 @@ typedef enum
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 #define CMD_PATH_GROUP_DELETE   "/commands/FileGroupDelete"
 #define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
+#define CMD_PATH_CURRENT_SONG	"/commands/CurrentSong"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
@@ -302,6 +306,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
 	BONOBO_UI_VERB ("GroupDelete",  (BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB ("ExtractCD",  (BonoboUIVerbFn) rb_shell_cmd_extract_cd),
+	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_cmd_current_song),
 	BONOBO_UI_VERB_END
 };
 
@@ -467,8 +472,7 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
 	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
-	if (!vfsuri)
-	{
+	if (!vfsuri) {
 		rb_error_dialog (_("Unable to parse URI \"%s\"\n"), uri);
 		return;
 	}
@@ -476,33 +480,24 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	{
 		char *localpath = gnome_vfs_get_local_path_from_uri (uri);
  		char *mimetype = gnome_vfs_get_mime_type (localpath);
-		if (mimetype && strncmp ("audio/x-scpls", mimetype, 13) == 0)
-		{
+		if (mimetype && strncmp ("audio/x-scpls", mimetype, 13) == 0) {
 			char *firsturi;
 			firsturi = rb_playlist_load (shell->priv->library,
 						     shell->priv->iradio_backend,
 						     localpath);
-			if (firsturi != NULL)
-			{
+			if (firsturi != NULL) {
 /* 				rb_shell_player_play_search (shell->priv->player_shell, */
 /* 							     firsturi); */
 				g_free (firsturi);
 			}
 		}
 		else
-		{
 			rb_library_add_uri (shell->priv->library, (char *) uri);
-		}
-	}
-	else
-	{
+	} else {
 		const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 		if (strncmp ("http", scheme, 4) == 0)
-		{
 			rb_iradio_backend_add_station_from_uri (shell->priv->iradio_backend, uri);
-		}
-		else
-		{
+		else {
 			rb_error_dialog (_("Unable to handle URI \"%s\"\n"), uri);
 			return;
 		}
@@ -746,8 +741,6 @@ rb_shell_construct (RBShell *shell)
 
 	rb_debug ("shell: calling iradio_backend_load");
  	rb_iradio_backend_load (shell->priv->iradio_backend);
-	g_idle_add ((GSourceFunc) rb_shell_update_source_status,
-		    shell);
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -760,9 +753,9 @@ rb_shell_construct (RBShell *shell)
 					    TRUE,
 					    shell);
 		}
-		else {
+		else
 			rb_debug("CD is not available");
-		}
+
 		g_signal_connect (G_OBJECT (shell->priv->cd), "cd_changed",
 				  G_CALLBACK (audiocd_changed_cb), shell);
         }
@@ -820,18 +813,13 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 
 	if ((CORBA_exception_id (ev) != NULL) &&
 	    (strcmp (CORBA_exception_id (ev), ex_Bonobo_GeneralError) != 0))
-	{
 		return bonobo_exception_get_text (ev); 
-	}
-	else
-	{
+	else {
 		const Bonobo_GeneralError *bonobo_general_error;
 
 		bonobo_general_error = CORBA_exception_value (ev);
 		if (bonobo_general_error != NULL) 
-		{
 			return g_strdup (bonobo_general_error->description);
-		}
 	}
 
 	return NULL;
@@ -853,8 +841,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 				       GDK_WINDOW_STATE_MAXIMIZED);
 		break;
 	case GDK_CONFIGURE:
-		if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED))
-		{
+		if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED)) {
 			eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
 			eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
 		}
@@ -983,18 +970,6 @@ rb_shell_remove_source (RBShell *shell,
 							 GTK_WIDGET (source)));
 }
 
-static gboolean
-rb_shell_update_source_status (RBShell *shell)
-{
-	const char *text;
-	if (shell->priv->selected_source != NULL)
-	{
-		text = rb_source_get_status (shell->priv->selected_source);
-		/* rb_echo_area_msg_full (shell->priv->echoarea, text, 0); */
-	}
-	return FALSE;
-}
-
 static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
@@ -1036,8 +1011,7 @@ static void
 rb_shell_set_window_title (RBShell *shell,
 			   const char *window_title)
 {
-	if (window_title == NULL)
-	{
+	if (window_title == NULL) {
 		rb_debug ("clearing title");
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 				      _("Music Player"));
@@ -1047,8 +1021,7 @@ rb_shell_set_window_title (RBShell *shell,
 				      _("Not playing"),
 				      NULL);
 	}
-	else
-	{
+	else {
 		gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
 		char *title;
 
@@ -1057,8 +1030,7 @@ rb_shell_set_window_title (RBShell *shell,
 		    return;
 
 		rb_debug ("setting title to \"%s\"", window_title);
-		if (!playing)
-		{
+		if (!playing) {
 			char *tmp;
 			title = g_strdup_printf (_("%s (Paused)"), window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
@@ -1069,9 +1041,7 @@ rb_shell_set_window_title (RBShell *shell,
 					      tmp,
 					      NULL);
 			g_free (tmp);
-		}
-		else
-		{
+		} else {
 			title = g_strdup (window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      window_title);
@@ -1115,8 +1085,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
 
-	const char *authors[] =
-	{
+	const char *authors[] = {
 		"",
 #include "MAINTAINERS.tab"
 		"",
@@ -1125,16 +1094,14 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		NULL
 	};
 
-	const char *documenters[] =
-	{
+	const char *documenters[] = {
 #include "DOCUMENTERS.tab"
 		NULL
 	};
 
 	const char *translator_credits = _("translator_credits");
 
-	if (about != NULL)
-	{
+	if (about != NULL) {
 		gtk_window_present (GTK_WINDOW (about));
 		return;
 	}
@@ -1183,8 +1150,7 @@ rb_shell_cmd_contents (BonoboUIComponent *component,
 
 	gnome_help_display ("rhythmbox.xml", NULL, &error);
 
-	if (error != NULL)
-	{
+	if (error != NULL) {
 		g_warning (error->message);
 
 		g_error_free (error);
@@ -1196,8 +1162,7 @@ rb_shell_cmd_preferences (BonoboUIComponent *component,
 		          RBShell *shell,
 		          const char *verbname)
 {
-	if (shell->priv->prefs == NULL)
-	{
+	if (shell->priv->prefs == NULL) {
 		shell->priv->prefs = rb_shell_preferences_new (shell->priv->sources);
 
 		gtk_window_set_transient_for (GTK_WINDOW (shell->priv->prefs),
@@ -1214,8 +1179,7 @@ ask_file_response_cb (GtkDialog *dialog,
 {
 	char **files, **filecur, *stored;
 
-	if (response_id != GTK_RESPONSE_OK)
-	{
+	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
@@ -1229,8 +1193,7 @@ ask_file_response_cb (GtkDialog *dialog,
 
 	filecur = files;
 
-	if (*filecur != NULL)
-	{
+	if (*filecur != NULL) {
 		char *tmp;
 
 		stored = g_path_get_dirname (*filecur);
@@ -1242,8 +1205,7 @@ ask_file_response_cb (GtkDialog *dialog,
 
 	shell->priv->show_library_errors = TRUE;
     
-	while (*filecur != NULL)
-	{
+	while (*filecur != NULL) {
 		if (g_utf8_validate (*filecur, -1, NULL))
 			rb_library_add_uri (shell->priv->library, *filecur);
 		filecur++;
@@ -1259,8 +1221,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 {
 	char **files, **filecur;
 
-	if (response_id != GTK_RESPONSE_OK)
-	{
+	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
 	}
@@ -1276,8 +1237,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 
 	shell->priv->show_library_errors = TRUE;
 
-	while (*filecur != NULL)
-	{
+	while (*filecur != NULL) {
 		if (g_utf8_validate (*filecur, -1, NULL))
 			rb_playlist_load (shell->priv->library,
 					  shell->priv->iradio_backend, *filecur);
@@ -1350,8 +1310,7 @@ ask_string_response_cb (GtkDialog *dialog,
 	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type"));
 	data = g_object_get_data (G_OBJECT (dialog), "data");
 
-	if (response_id != GTK_RESPONSE_OK)
-	{
+	if (response_id != GTK_RESPONSE_OK) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 		if (type == CREATE_GROUP_WITH_URI_LIST)
 			gnome_vfs_uri_list_free (data);
@@ -1366,8 +1325,7 @@ ask_string_response_cb (GtkDialog *dialog,
 
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 	
-	if (name == NULL)
-	{
+	if (name == NULL) {
 		if (type == CREATE_GROUP_WITH_URI_LIST)
 			gnome_vfs_uri_list_free (data);
 		return;
@@ -1390,21 +1348,18 @@ ask_string_response_cb (GtkDialog *dialog,
 		}
 		break;
 	case CREATE_GROUP_WITH_URI_LIST:
-		for (l = data; l != NULL; l = g_list_next (l))
-		{
+		for (l = data; l != NULL; l = g_list_next (l)) {
 			char *uri;
 			RBNode *node;
 				
 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
 			node = rb_library_get_song_by_location (shell->priv->library, uri);
 
-			if (node != NULL)
-			{
+			if (node != NULL) {
 				/* add this node to the newly created group */
 				rb_group_source_add_node (RB_GROUP_SOURCE (group), node);
 			}
-			else
-			{
+			else {
 				/* will add these nodes to the newly created group */
 				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri);
 				g_object_set_data (G_OBJECT (group), "library", shell->priv->library);
@@ -1422,8 +1377,7 @@ ask_string_response_cb (GtkDialog *dialog,
 	case CREATE_GROUP_WITH_SELECTION:
 		{
 			/* add the current selection if the user checked */
-			if (add_selection)
-			{
+			if (add_selection) {
 				RBNodeView *nodeview = rb_source_get_node_view (shell->priv->selected_source);
 				GList *i = NULL;
 				GList *selection = rb_node_view_get_selection (nodeview);
@@ -1571,16 +1525,6 @@ rb_shell_sync_sourcelist_visibility (RBShell *shell)
 			      visible);
 }
 
-/* REWRITEFIXME */
-/* static void */
-/* rb_shell_source_status_changed_cb (RBViewStatus *status, */
-/* 				   gpointer data) */
-/* { */
-/* 	RBShell *shell = RB_SHELL (data); */
-/* 	const char *text = rb_source_get_status (status); */
-/* 	rb_echo_area_msg_full (shell->priv->echoarea, text, 0, FALSE); */
-/* } */
-
 static void
 rb_shell_sync_window_visibility (RBShell *shell)
 {
@@ -1591,17 +1535,13 @@ rb_shell_sync_window_visibility (RBShell *shell)
 	rb_debug ("syncing visibility");
 	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
 	
-	if (visible == TRUE)
-	{
-		if (window_x >= 0 && window_y >= 0)
-		{
+	if (visible == TRUE) {
+		if (window_x >= 0 && window_y >= 0) {
 			gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
 					 window_y);
 		}
 		gtk_widget_show (shell->priv->window);
-	}
-	else
-	{
+	} else {
 		gtk_window_get_position (GTK_WINDOW (shell->priv->window),
 					 &window_x, &window_y);
 		gtk_widget_hide (shell->priv->window);
@@ -1672,9 +1612,7 @@ add_uri (const char *uri,
 					        uri);
 
 	if (node != NULL)
-	{
 		rb_group_source_add_node (source, node);
-	}
 }
 
 static void
@@ -1691,23 +1629,19 @@ dnd_add_handled_cb (RBLibraryAction *action,
 	switch (type)
 	{
 	case RB_LIBRARY_ACTION_ADD_FILE:
-		{
-			RBNode *node;
-
-			node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
-								uri);
-
-			if (node != NULL)
-			{
-				rb_group_source_add_node (source, node);
-			}
-		}
-		break;
+	{
+		RBNode *node;
+		
+		node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
+							uri);
+		
+		if (node != NULL)
+			rb_group_source_add_node (source, node);
+	}
+	break;
 	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
-		{
-			rb_uri_handle_recursively (uri, (GFunc) add_uri,
-						   NULL, NULL, source);
-		}
+		rb_uri_handle_recursively (uri, (GFunc) add_uri,
+					   NULL, NULL, source);
 		break;
 	default:
 		break;
@@ -1767,6 +1701,29 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 		list = gnome_vfs_uri_list_parse (data->data);
 		create_group (shell, CREATE_GROUP_WITH_URI_LIST, list);
 	}
+}
+
+static void
+rb_shell_cmd_current_song (BonoboUIComponent *component,
+			   RBShell *shell,
+			   const char *verbname)
+{
+	rb_debug ("current song");
+
+	rb_shell_jump_to_current (shell);
+}
+
+static void
+rb_shell_jump_to_current (RBShell *shell)
+{
+	RBSource *source = rb_shell_player_get_source (shell->priv->player_shell);
+
+	g_return_if_fail (source != NULL);
+
+	rb_source_header_clear_search (shell->priv->source_header);
+	rb_shell_select_source (shell, source);
+	rb_source_search (shell->priv->selected_source, NULL);
+	rb_shell_player_jump_to_current (shell->priv->player_shell);
 }
 
 /* rb_shell_new_group_dialog: create a dialog for creating a new
@@ -1902,8 +1859,7 @@ tray_drop_cb (GtkWidget *widget,
 
 	list = gnome_vfs_uri_list_parse (data->data);
 
-	if (list == NULL)
-	{
+	if (list == NULL) {
 		gtk_drag_finish (context, FALSE, FALSE, time);
 		return;
 	}
@@ -1911,25 +1867,20 @@ tray_drop_cb (GtkWidget *widget,
 	uri_list = NULL;
 
 	for (i = list; i != NULL; i = g_list_next (i))
-	{
 		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
-	}
+
 	gnome_vfs_uri_list_free (list);
 
-	if (uri_list == NULL)
-	{
+	if (uri_list == NULL) {
 		gtk_drag_finish (context, FALSE, FALSE, time);
 		return;
 	}
 
-	for (i = uri_list; i != NULL; i = i->next)
-	{
+	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 
 		if (uri != NULL)
-		{
 			rb_library_add_uri (shell->priv->library, uri);
-		}
 
 		g_free (uri);
 	}

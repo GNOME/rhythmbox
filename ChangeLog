@@ -1,5 +1,34 @@
 2003-08-02  Colin Walters  <walters@verbum.org>
 
+	* HACKING:
+	* lib/widgets/rb-node-view.c: (rb_node_view_select_node):
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_get_source), (rb_shell_player_repeat_changed_cb):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_corba_handle_file),
+	(rb_shell_construct), (rb_shell_corba_exception_to_string),
+	(rb_shell_window_state_cb), (rb_shell_set_window_title),
+	(rb_shell_cmd_about), (rb_shell_cmd_contents),
+	(rb_shell_cmd_preferences), (ask_file_response_cb),
+	(load_playlist_response_cb), (ask_string_response_cb),
+	(rb_shell_sync_window_visibility), (add_uri), (dnd_add_handled_cb),
+	(rb_shell_cmd_current_song), (rb_shell_jump_to_current),
+	(tray_drop_cb):
+	* shell/rb-source-header.c:
+	* shell/rb-source-header.h:
+	* sources/rb-library-source.c: (album_node_selected_cb),
+	(impl_get_config_widget), (impl_get_status_fast),
+	(impl_get_status_full):
+
+	Make "Jump to Playing Song" switch to the playing source.  Also
+	clear the search widget when we switch sources.  Minor updates to
+	HACKING.  Indentation fixes in the shell.
+
+	TODO: Make each individual source have its own search text, and
+	save it.
+
+2003-08-02  Colin Walters  <walters@verbum.org>
+
 	* lib/widgets/rb-search-entry.c: (rb_search_entry_clear),
 	(rb_search_entry_changed_cb), (rb_search_entry_focus_out_event_cb),
 	(rb_search_entry_searching):
