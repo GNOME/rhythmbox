@@ -436,7 +436,10 @@ rb_station_properties_dialog_update_bitrate (RBStationPropertiesDialog *dialog)
 				      dialog->priv->current_entry,
 				      RHYTHMDB_PROP_BITRATE);
 	rhythmdb_read_unlock (dialog->priv->db);
-	text = g_strdup_printf ("%d", val);
+	if (val == 0)
+		text = g_strdup (_("Unknown"));
+	else
+		text = g_strdup_printf ("%d", val);
 
 	gtk_label_set_text (GTK_LABEL (dialog->priv->bitrate), text);
 	g_free (text);
