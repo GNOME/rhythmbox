@@ -1,0 +1,181 @@
+
+* Goals for a new Rhythmbox tree database backend
+
+** Not complicated
+
+We want to present a simple API to the rest of Rhythmbox.  A
+full-blown SQL is obviously unnecessary.  The only thing that
+Rhythmbox cares about are songs.  So conceptually, our database
+will only support getting lists of songs.
+
+** Permit optimization
+
+In keeping with a simple API, we should also attempt as much as
+possible to provide opportunities for optimization.  Specifically
+the old RBNode database was highly optimized for genre/artist/album
+filtering, and we want to keep that capability.
+
+** Multiple implementations
+
+The interface should also permit multiple implementations.  For
+example, there are the crazy people out there who have all their
+music metadata in a SQL database already, so having our own
+database doesn't help them much.
+
+It also may turn out that using something like SQLite could
+speed up Rhythmbox for large numbers of files (say > 6k or so).
+This is an area where the current Rhythmbox kind of falls over.
+So permitting multiple implementations will allow us more
+flexibility for experimentation.
+
+*** But what about CD audio?
+
+Should we support saving CD tracks in the database?  Should we
+be able to mix them with regular songs in a playlist?
+
+** What is a song?
+
+Conceptually, it's just a collection of attributes.  The most
+important is the type, which says whether it's a local file,
+an internet radio station, etc.  Other attributes include
+location, track number, rating, last play time, play count,
+quality, etc.
+
+*** What are attributes?
+
+We want the ability to have an arbitrary set of attributes of
+various data types, including UTF-8 strings, integers, and random
+binary data (e.g. for sort keys).
+
+**** Saved/unsaved attributes
+
+The database should support "temporary" keys, which are not actually
+saved to the database on exit.  This is useful for sorting keys,
+for example.
+
+** Multithread-capable
+
+We need to be able to perform operations in multiple threads.
+However, the database should be optimized for common operations,
+and this definitely means reading.  Writing should be lower
+priority, although we don't want to completely starve writers.
+
+Because we need to support multiple backends, we can only really
+support large-grained locking (i.e. one big global RW lock).
+SQLite for example only has one lock.
+
+** RhythmDBEntry  (basically equivalent of RBNode)
+
+This is an opaque handle.  You can't access it directly at all.
+
+** Queries
+
+This is crucial.  Rhythmbox's genre/artist/album
+browser is just one example of querying the database.  It's
+arguably Rhythmbox's most useful feature at the moment.
+
+First of all, we want to support at least the genre/artist/album
+queries.  Equally important though, we need to be flexible enough
+to query on any attribute.  This will be an important basis for
+implementing iTunes-like smart playlists.
+
+The main idea of the new API is that it simply returns something that
+implements the GtkTreeModel interface each time a query is run. This
+has the potential to be a lot more efficient than the previous approach.
+In the previous approach, the whole database was always presented in a
+GtkTreeModel interface, and then EggTreeModelFilter was used to filter it.
+The downside of this approach is that the filtering is happening a lot
+more; for example, finding the next/previous node caused each node to
+be filtered again.  For large databases, this is pretty inefficient; if
+we have 10000 songs, and we're only viewing say one album (10 songs),
+then we have to skip over approximately 5000 songs on average to find
+out whether we're at the end or not.  This gets very expensive, very fast.
+
+So here's how it will work in the new implementation.  When the user clicks
+on an album, this only requires one query.  So, we will just call
+rhythmdb_do_entry_query like this:
+
+GtkTreeModel *model = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "album", "Foo's Greatest Hits", RHYTHMDB_QUERY_END);
+
+Then, we will make the main song view use this model:
+
+gtk_tree_view_set_model (mainview, model);
+
+However, suppose that the user clicks on a genre.  This will require
+several queries, because we need to filter the artist and album browsers
+by artists/albums which are in those genres.  As before, we filter the main
+view by the query:
+
+GtkTreeModel *model = rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Ambient", RHYTHMDB_QUERY_END);
+gtk_tree_view_set_model (mainview, model);
+
+However, we also need to gather the lists of artists/albums.  We use the
+specialized query rhythmdb_do_property_query, which returns just a flat
+GtkTreeModel.  This call looks like this:
+
+model = rhythmdb_do_property_query (db, "artist", RHYTHMDB_QUERY_PROP_EQUALS,
+                                    "genre", "Rock", RHYTHMDB_QUERY_END);
+gtk_tree_view_set_model (artistview, model);
+model = rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS,
+                                    "genre", "Rock", RHYTHMDB_QUERY_END);
+gtk_tree_view_set_model (artistview, model);
+
+Conceptually, the property_query call just gathers all the song entries
+which match the query, and returns the unique list of their values for the
+specified property.  However, it is not actually implemented this way,
+at least not for commonly queried properties such as artist and album.
+
+** The first implementation - transitioning RBNode to this API
+
+The main idea of RBNode is the tree structure.  If you think about it,
+the tree structure is really just a fancy optimization for querying
+the artist/album/genre properties.  We will keep this idea, but hide it
+behind the flat structure API.  We will transparently optimize certain
+queries, such as the artist/album ones.  This will require handling those
+properties specially; for example, when we set the artist of a song,
+this will require restructuring the tree database to match.
+
+** SQLite ideas
+
+As we mentioned before, the nice thing about this API is that it could
+also be fairly easily implemented by a real database such as SQLite.
+For example, this call:
+
+rhythmdb_do_entry_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Ambient", RHYTHMDB_QUERY_END);
+
+could be rewritten in SQL:
+
+select * from songs where genre="Ambient";
+
+And this call:
+
+rhythmdb_do_property_query (db, "album", RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Rock", RHYTHMDB_QUERY_END);
+
+could be rewritten as:
+
+select distinct album from songs where genre="Rock";
+
+** Static playlists
+
+We need to support user-orderable playlists.  Now, they should present
+the same GtkTreeModel-type interface as the queries.  This will
+allow a lot of code reuse for playback, etc.  However - a playlist also
+has to be mutable.  The user needs to be able to drag and drop entries to
+reorder them, delete files, add files, etc.  To implement this, we can
+make playlists simply be GtkListStores.  This should be relatively
+efficient since playlists tend not to be large.
+
+This playlist will need to hook into the entry_destroyed signal to know
+to remove entries from playlists that have been removed from the library.
+
+** Smart playlists (do we want a better name)?
+
+This will be harder.  A "smart" playlist will need to watch for changes
+in the database and refresh if appropriate.  Well, it wouldn't be hard
+to watch for ANY change in the DB and refresh, but this would obviously
+be very expensive.  We'll want to intelligently refresh only if the
+smart playlist query requries it.
+
+Local Variables:
+mode: outline
+End:
