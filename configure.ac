@@ -392,7 +392,7 @@ AM_GLIB_GNU_GETTEXT
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
-AC_PATH_PROG(GCONFTOOL, gconftool-2)
+AM_GCONF_SOURCE_2
 
 ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
 AC_SUBST(ORBIT_IDL)
@@ -402,14 +402,6 @@ AC_SUBST(LIBBONOBO_IDL)
 
 BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
 AC_SUBST(BONOBO_ACTIVATION_IDL)
-
-AC_ARG_ENABLE(install_schemas,
-	[  --disable-install-schemas        Disable installation of the gconf schemas])
-AM_CONDITIONAL(INSTALL_SCHEMAS, test x$enable_install_schemas != xno)
-
-if test x$enable_install_schemas != xno; then
-	AM_GCONF_SOURCE_2
-fi
 
 dnl uninstalled share dir
 AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])

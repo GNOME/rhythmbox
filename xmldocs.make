@@ -51,11 +51,6 @@ include $(top_srcdir)/omf.make
 
 all: omf
 
-$(docname).xml: $(entities)
-	-ourdir=`pwd`;  \
-	cd $(srcdir);   \
-	cp $(entities) $$ourdir
-
 app-dist-hook:
 	if test "$(figdir)"; then \
 	  $(mkinstalldirs) $(distdir)/$(figdir); \
@@ -86,7 +81,7 @@ uninstall-local-doc:
 	-if test "$(figdir)"; then \
 	  for file in $(srcdir)/$(figdir)/*.png; do \
 	    basefile=`echo $$file | sed -e  's,^.*/,,'`; \
-	    rm -f $(docdir)/$(figdir)/$$basefile; \
+	    rm -f $(DESTDIR)$(docdir)/$(figdir)/$$basefile; \
 	  done; \
 	  rmdir $(DESTDIR)$(docdir)/$(figdir); \
 	fi

@@ -4,7 +4,7 @@ figdir = figures
 docname = rhythmbox
 lang = C
 omffile = rhythmbox-C.omf
-entities = fdl-appendix.xml legal.xml authors.xml quick-reference.xml user-guide.xml rhythmbox.xml
+entities = fdl-appendix.xml legal.xml authors.xml quick-reference.xml user-guide.xml
 
 authors.xml: $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_srcdir)/DOCUMENTERS
 	(echo '<?xml version="1.0" ?>'; \

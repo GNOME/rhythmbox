@@ -37,13 +37,9 @@ rhythmbox.keys: generate-keys.sh rhythmbox.applications
 	$(srcdir)/generate-keys.sh $(srcdir)/rhythmbox.applications \
 	> rhythmbox.keys
 
-install-schemas: $(schema_DATA)
-	if test -z "$(DESTDIR)"; then \
-		GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA); \
-	fi
-
-if INSTALL_SCHEMAS
-install-data-local: install-schemas
+if GCONF_SCHEMAS_INSTALL
+install-data-local: $(schema_DATA)
+	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA);
 endif
 
 EXTRA_DIST = $(server_in_files)     \
@@ -53,3 +49,5 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(schema_DATA)	    \
 	     $(iradio_DATA)	    \
 		generate-keys.sh
+
+CLEANFILES = rhythmbox.desktop rhythmbox.keys GNOME_Rhythmbox.server

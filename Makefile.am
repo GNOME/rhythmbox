@@ -2,6 +2,8 @@
 
 AUTOMAKE_OPTIONS = 1.7
 
+DISTCHECK_CONFIGURE_FLAGS = --disable-schemas-install
+
 SUBDIRS = lib monkey-media rhythmdb widgets sources iradio corba shell data po component help
 
 EXTRA_DIST = 			\
@@ -13,9 +15,13 @@ EXTRA_DIST = 			\
 	rhythmbox.spec		\
 	rhythmbox.spec.in	\
 	MAINTAINERS		\
+	MAINTAINERS.old		\
 	DOCUMENTERS		\
 	INTERNALS
 
 CLEANFILES =				\
+	intltool-extract		\
+	intltool-merge			\
+	intltool-update			\
 	./po/.intltool-merge-cache 	\
 	./help/C/rhythmbox-C.omf.out
