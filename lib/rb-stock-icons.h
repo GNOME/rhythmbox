@@ -37,6 +37,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_IRADIO        "rhythmbox-iradio"
 #define RB_STOCK_GROUP         "rhythmbox-group"
 #define RB_STOCK_PLAYING       "rhythmbox-playing"
+#define RB_STOCK_PAUSED        "rhythmbox-paused"
 #define RB_STOCK_ALBUM         "rhythmbox-album"
 #define RB_STOCK_VOLUME_ZERO   "rhythmbox-volume-zero"
 #define RB_STOCK_VOLUME_MIN    "rhythmbox-volume-min"

@@ -1,3 +1,36 @@
+2003-01-05  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/art/Makefile.am:
+	* data/art/rhythmbox-paused.png:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* lib/widgets/rb-ellipsizing-label.c:
+	(gul_pango_layout_set_text_ellipsized), (real_size_allocate),
+	(rb_ellipsizing_label_get_ellipsized):
+	* lib/widgets/rb-ellipsizing-label.h:
+	* lib/widgets/rb-link.c: (rb_link_init), (rb_link_finalize),
+	(rb_link_set_property), (rb_link_button_press_event_cb),
+	(rb_link_enter_notify_event_cb), (rb_link_leave_notify_event_cb),
+	(rb_link_set_color):
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_playing):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_init),
+	(rb_tree_model_node_finalize), (rb_tree_model_node_get_value),
+	(rb_tree_model_node_set_playing):
+	* lib/widgets/rb-tree-model-node.h:
+	* shell/rb-player.c: (rb_player_init), (next), (previous), (play),
+	(pause), (insert_song), (delete_song), (sync_info),
+	(rb_player_queue_song), (rb_player_set_state), (eos_cb),
+	(node_activated_cb), (sync_time_timeout), (check_song_tooltip),
+	(song_label_size_allocate_cb), (check_view_state):
+	* views/rb-library-view.c: (rb_library_view_construct):
+
+	Lots of random player widget stuff.
+	
+	* data/rhythmbox.desktop.in:
+
+	Add startup notification stuff.
+
 2003-01-04  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/node-views/rb-node-view-songs.xml:

@@ -93,6 +93,9 @@ void             rb_tree_model_node_set_playing_node (RBTreeModelNode *model,
 						      RBNode *node);
 RBNode          *rb_tree_model_node_get_playing_node (RBTreeModelNode *model);
 
+void             rb_tree_model_node_set_playing      (RBTreeModelNode *model,
+				                      gboolean playing);
+
 G_END_DECLS
 
 #endif /* __RB_TREE_MODEL_NODE_H */

@@ -99,6 +99,9 @@ struct RBTreeModelNodePrivate
 	RBNode *playing_node;
 
 	GdkPixbuf *playing_pixbuf;
+	GdkPixbuf *paused_pixbuf;
+
+	gboolean playing;
 
 	RBNodeFilter *filter;
 };
@@ -205,6 +208,10 @@ rb_tree_model_node_init (RBTreeModelNode *model)
 							      RB_STOCK_PLAYING,
 							      GTK_ICON_SIZE_MENU,
 							      NULL);
+	model->priv->paused_pixbuf = gtk_widget_render_icon (dummy,
+							     RB_STOCK_PAUSED,
+							     GTK_ICON_SIZE_MENU,
+							     NULL);
 	gtk_widget_destroy (dummy);
 }
 
@@ -221,6 +228,7 @@ rb_tree_model_node_finalize (GObject *object)
 	g_return_if_fail (model->priv != NULL);
 
 	g_object_unref (G_OBJECT (model->priv->playing_pixbuf));
+	g_object_unref (G_OBJECT (model->priv->paused_pixbuf));
 
 	g_free (model->priv);
 
@@ -506,8 +514,10 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_PLAYING:
 		g_value_init (value, GDK_TYPE_PIXBUF);
 
-		if (node == model->priv->playing_node)
+		if (node == model->priv->playing_node && model->priv->playing)
 			g_value_set_object (value, model->priv->playing_pixbuf);
+		else if (node == model->priv->playing_node)
+			g_value_set_object (value, model->priv->paused_pixbuf);
 		else
 			g_value_set_object (value, NULL);
 		break;
@@ -872,3 +882,19 @@ rb_tree_model_node_column_get_type (void)
 	return etype;
 }
 
+void
+rb_tree_model_node_set_playing (RBTreeModelNode *model,
+				gboolean playing)
+{
+	g_return_if_fail (RB_IS_TREE_MODEL_NODE (model));
+
+	if (model->priv->playing == playing)
+		return;
+
+	model->priv->playing = playing;
+
+	if (model->priv->playing_node != NULL)
+		rb_tree_model_node_update_node (model,
+						model->priv->playing_node,
+						-1);
+}

@@ -18,16 +18,12 @@
  *  $Id$
  */
 
-/* FIXME give playing row different bg color */
-/* FIXME different icon for playing and paused */
-/* FIXME tooltips on buttons */
-/* FIXME Whole track foo of bar thing should ellipsize */
-/* FIXME fix rblink markup; change cursor when over it */
-/* FIXME better pause indication */
-/* FIXME figure proper whole album/all shuffle behaviour */
-/* FIXME playlist management button? */
+/* FIXME scroll to playing node */
 /* FIXME volume control */
-/* FIXME tooltip on ellipsized title label to show full name */
+/* FIXME treeview row tooltips if it doesnt fit */
+/* FIXME playlist management button? */
+/* FIXME delete song from playlist button, ordering buttons, play this one button */
+/* FIXME Whole track foo of bar thing should ellipsize */
 
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
@@ -86,6 +82,11 @@ static void nullify_info (RBPlayer *player);
 static gboolean sync_time_timeout (RBPlayer *player);
 static void clear (RBPlayer *player);
 static void sync_time (RBPlayer *player);
+static void check_song_tooltip (RBPlayer *player);
+static void song_label_size_allocate_cb (GtkWidget *widget,
+			                 GtkAllocation *allocation,
+			                 RBPlayer *player);
+static void check_view_state (RBPlayer *player);
 
 struct RBPlayerPrivate
 {
@@ -93,6 +94,7 @@ struct RBPlayerPrivate
 
 	GtkTooltips *tooltips;
 	GtkWidget *info_notebook;
+	GtkWidget *song_label_ebox;
 	GtkWidget *song_label;
 	GtkWidget *from_label;
 	GtkWidget *album_link;
@@ -257,7 +259,13 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (song_box), infobox,
 			    FALSE, FALSE, 0);
 
+	player->priv->song_label_ebox = gtk_event_box_new ();
 	player->priv->song_label = rb_ellipsizing_label_new ("");
+	gtk_container_add (GTK_CONTAINER (player->priv->song_label_ebox), player->priv->song_label);
+	g_signal_connect (G_OBJECT (player->priv->song_label),
+			  "size_allocate",
+			  G_CALLBACK (song_label_size_allocate_cb),
+			  player);
 	gtk_misc_set_alignment (GTK_MISC (player->priv->song_label), 0.0, 0.5);
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
@@ -271,7 +279,7 @@ rb_player_init (RBPlayer *player)
 				  TRUE);
 	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (player->priv->song_label),
 				       RB_ELLIPSIZE_END);
-	gtk_box_pack_start (GTK_BOX (infobox), player->priv->song_label,
+	gtk_box_pack_start (GTK_BOX (infobox), player->priv->song_label_ebox,
 			    FALSE, FALSE, 0);
 
 	artist_album_box = gtk_hbox_new (FALSE, 0);
@@ -297,6 +305,10 @@ rb_player_init (RBPlayer *player)
 
 	player->priv->song_adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
 	player->priv->song_scale = gtk_hscale_new (player->priv->song_adjustment);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->song_scale,
+			      _("Drag to go to a particular moment in the song"),
+			      NULL);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->song_scale), FALSE);
 	g_signal_connect (G_OBJECT (player->priv->song_scale),
 			  "button_press_event",
@@ -338,33 +350,51 @@ rb_player_init (RBPlayer *player)
 			    FALSE, FALSE, 0);
 
 	player->priv->previous = create_button_with_icon (RB_STOCK_PREVIOUS);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->previous,
+			      _("Play the previous song"), NULL);
 	pack_button (player, player->priv->previous, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->previous), "clicked",
 			  G_CALLBACK (previous_cb), player);
 	player->priv->play     = create_button_with_icon (RB_STOCK_PLAY);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->play,
+			      _("Start playback"), NULL);
 	pack_button (player, player->priv->play, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->play), "clicked",
 			  G_CALLBACK (play_cb), player);
 	player->priv->pause    = create_button_with_icon (RB_STOCK_PAUSE);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->pause,
+			      _("Pause playback"), NULL);
 	pack_button (player, player->priv->pause, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->pause), "clicked",
 			  G_CALLBACK (pause_cb), player);
 	player->priv->next     = create_button_with_icon (RB_STOCK_NEXT);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->next,
+			      _("Play the next song"), NULL);
 	pack_button (player, player->priv->next, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->next), "clicked",
 			  G_CALLBACK (next_cb), player);
 
 	player->priv->repeat   = create_button_with_icon (RB_STOCK_REPEAT);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->repeat,
+			      _("Repeat the play list"), NULL);
 	pack_button (player, player->priv->repeat, TRUE);
 	g_signal_connect (G_OBJECT (player->priv->repeat), "clicked",
 			  G_CALLBACK (repeat_cb), player);
 	player->priv->shuffle  = create_button_with_icon (RB_STOCK_SHUFFLE);
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->shuffle,
+			      _("Shuffle the play list"), NULL);
 	pack_button (player, player->priv->shuffle, TRUE);
 	g_signal_connect (G_OBJECT (player->priv->shuffle), "clicked",
 			  G_CALLBACK (shuffle_cb), player);
 
 	/* 'Empty playlist' label */
-	label = gtk_label_new (_("Not playing\n\nTo play, add music to the playlist"));
+	label = gtk_label_new (_("Not playing\n\nTo play, add music to the play list"));
 	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
@@ -525,6 +555,8 @@ next (RBPlayer *player)
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
+	check_view_state (player);
+
 	update_buttons (player);
 
 	sync_time (player);
@@ -538,6 +570,8 @@ previous (RBPlayer *player)
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
+	check_view_state (player);
+
 	update_buttons (player);
 
 	sync_time (player);
@@ -549,6 +583,8 @@ play (RBPlayer *player)
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
 
+	check_view_state (player);
+
 	update_buttons (player);
 
 	sync_time (player);
@@ -559,6 +595,8 @@ pause (RBPlayer *player)
 {
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PAUSED);
+
+	check_view_state (player);
 
 	update_buttons (player);
 
@@ -618,6 +656,8 @@ insert_song (RBPlayer *player, RBNode *song, int index)
 		set_playing (player, node);
 
 		monkey_media_mixer_set_state (player->priv->mixer, MONKEY_MEDIA_MIXER_STATE_PAUSED);
+
+		check_view_state (player);
 	}
 
 	update_buttons (player);
@@ -647,6 +687,7 @@ delete_song (RBPlayer *player, RBNode *song)
 			next = rb_node_view_get_previous_node (player->priv->playlist_view);
 
 		monkey_media_mixer_set_state (player->priv->mixer, MONKEY_MEDIA_MIXER_STATE_PAUSED);
+		check_view_state (player);
 
 		set_playing (player, next);
 	}
@@ -681,6 +722,7 @@ sync_info (RBPlayer *player)
 
 	title = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
 	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (player->priv->song_label), title);
+	check_song_tooltip (player);
 
 	album = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ALBUM);
 	url = ALBUM_INFO_URL (album);
@@ -769,6 +811,7 @@ rb_player_queue_song (RBPlayer *player,
 		set_playing (player, song);
 		monkey_media_mixer_set_state (player->priv->mixer,
 					      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+		check_view_state (player);
 		update_buttons (player);
 		sync_time (player);
 	} else {
@@ -787,6 +830,8 @@ rb_player_set_state (RBPlayer *player,
 		     MonkeyMediaMixerState state)
 {
 	monkey_media_mixer_set_state (player->priv->mixer, state);
+
+	check_view_state (player);
 
 	update_buttons (player);
 }
@@ -908,6 +953,7 @@ eos_cb (MonkeyMediaStream *stream,
 	if (next == NULL) {
 		monkey_media_mixer_set_state (player->priv->mixer,
 					      MONKEY_MEDIA_MIXER_STATE_PAUSED);
+		check_view_state (player);
 		next = rb_node_view_get_first_node (player->priv->playlist_view);
 	}
 
@@ -927,6 +973,8 @@ node_activated_cb (RBNodeView *view,
 
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PLAYING);
+
+	check_view_state (player);
 
 	update_buttons (player);
 }
@@ -1083,4 +1131,34 @@ sync_time_timeout (RBPlayer *player)
 	sync_time (player);
 
 	return TRUE;
+}
+
+static void
+check_song_tooltip (RBPlayer *player)
+{
+	const char *title;
+
+	if (rb_ellipsizing_label_get_ellipsized (RB_ELLIPSIZING_LABEL (player->priv->song_label)))
+		title = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
+	else
+		title = NULL;
+
+	gtk_tooltips_set_tip (player->priv->tooltips,
+			      player->priv->song_label_ebox,
+			      title, NULL);
+}
+
+static void
+song_label_size_allocate_cb (GtkWidget *widget,
+			     GtkAllocation *allocation,
+			     RBPlayer *player)
+{
+	check_song_tooltip (player);
+}
+
+static void
+check_view_state (RBPlayer *player)
+{
+	rb_node_view_set_playing (player->priv->playlist_view,
+				  (monkey_media_mixer_get_state (player->priv->mixer) == MONKEY_MEDIA_MIXER_STATE_PLAYING));
 }

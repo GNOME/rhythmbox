@@ -1496,3 +1496,12 @@ rb_node_view_columns_parse (RBNodeView *view,
 	if (visible_columns != NULL)
 		g_list_free (visible_columns);
 }
+
+void
+rb_node_view_set_playing (RBNodeView *view,
+			  gboolean playing)
+{
+	g_return_if_fail (RB_IS_NODE_VIEW (view));
+
+	rb_tree_model_node_set_playing (view->priv->nodemodel, playing);
+}

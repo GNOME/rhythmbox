@@ -26,8 +26,8 @@
 #include <gtk/gtklabel.h>
 
 #define RB_TYPE_ELLIPSIZING_LABEL            (rb_ellipsizing_label_get_type ())
-#define RB_ELLIPSIZING_LABEL(obj)             (GTK_CHECK_CAST ((obj), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabel))
-#define RB_ELLIPSIZING_LABEL_CLASS(klass)     (GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabelClass))
+#define RB_ELLIPSIZING_LABEL(obj)            (GTK_CHECK_CAST ((obj), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabel))
+#define RB_ELLIPSIZING_LABEL_CLASS(klass)    (GTK_CHECK_CLASS_CAST ((klass), RB_TYPE_ELLIPSIZING_LABEL, RBEllipsizingLabelClass))
 #define RB_IS_ELLIPSIZING_LABEL(obj)         (GTK_CHECK_TYPE ((obj), RB_TYPE_ELLIPSIZING_LABEL))
 #define RB_IS_ELLIPSIZING_LABEL_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), RB_TYPE_ELLIPSIZING_LABEL))
 
@@ -44,6 +44,8 @@ typedef struct
 	GtkLabel parent;
 
 	RBEllipsizingLabelPrivate *priv;
+
+	gboolean ellipsized;
 } RBEllipsizingLabel;
 
 typedef struct
@@ -51,18 +53,20 @@ typedef struct
 	GtkLabelClass parent_class;
 } RBEllipsizingLabelClass;
 
-GtkType    rb_ellipsizing_label_get_type 	(void);
+GtkType    rb_ellipsizing_label_get_type	(void);
 
-GtkWidget *rb_ellipsizing_label_new      	(const char *string);
+GtkWidget *rb_ellipsizing_label_new		(const char *string);
 
 void       rb_ellipsizing_label_set_mode        (RBEllipsizingLabel *label,
 						 RBEllipsizeMode mode);
 
-void       rb_ellipsizing_label_set_text 	(RBEllipsizingLabel *label,
-					  	 const char *string);
+void       rb_ellipsizing_label_set_text	(RBEllipsizingLabel *label,
+						 const char *string);
 
-void       rb_ellipsizing_label_set_markup 	(RBEllipsizingLabel *label,
-					    	 const char *string);
+void       rb_ellipsizing_label_set_markup	(RBEllipsizingLabel *label,
+						 const char *string);
+
+gboolean   rb_ellipsizing_label_get_ellipsized  (RBEllipsizingLabel *label);
 
 G_END_DECLS
 

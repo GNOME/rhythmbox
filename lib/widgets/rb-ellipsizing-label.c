@@ -538,18 +538,19 @@ rb_string_ellipsize_middle (const char *string, PangoLayout *layout, int width, 
  * fuzzy, won't work 100%.
  * 
  */
-static void
+static gboolean
 gul_pango_layout_set_text_ellipsized (PangoLayout  *layout,
 				      const char   *string,
 				      int           width,
 				      RBEllipsizeMode mode,
 				      gboolean markup)
 {
+	gboolean ret;
 	char *s;
 
-	g_return_if_fail (PANGO_IS_LAYOUT (layout));
-	g_return_if_fail (string != NULL);
-	g_return_if_fail (width >= 0);
+	g_return_val_if_fail (PANGO_IS_LAYOUT (layout), FALSE);
+	g_return_val_if_fail (string != NULL, FALSE);
+	g_return_val_if_fail (width >= 0, FALSE);
 	
 	switch (mode) {
 	case RB_ELLIPSIZE_START:
@@ -562,9 +563,11 @@ gul_pango_layout_set_text_ellipsized (PangoLayout  *layout,
 		s = rb_string_ellipsize_end (string, layout, width, markup);
 		break;
 	default:
-		g_return_if_reached ();
+		g_return_val_if_reached (FALSE);
 		s = NULL;
 	}
+
+	ret = (strcmp (s, string) != 0);
 
 	if (markup)
 	{
@@ -576,6 +579,8 @@ gul_pango_layout_set_text_ellipsized (PangoLayout  *layout,
 	}
 
 	g_free (s);
+
+	return ret;
 }
 
 GType 
@@ -721,8 +726,8 @@ real_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 				mode = RB_ELLIPSIZE_END;
 			else
 				mode = RB_ELLIPSIZE_START;
-			
-			gul_pango_layout_set_text_ellipsized (GTK_LABEL (label)->layout,
+
+			label->ellipsized = gul_pango_layout_set_text_ellipsized (GTK_LABEL (label)->layout,
 							      label->priv->full_text,
 							      allocation->width,
 							      mode,
@@ -772,3 +777,10 @@ rb_ellipsizing_label_class_init (RBEllipsizingLabelClass *klass)
 	widget_class->expose_event = real_expose_event;
 }
 
+gboolean
+rb_ellipsizing_label_get_ellipsized (RBEllipsizingLabel *label)
+{
+	g_return_val_if_fail (RB_IS_ELLIPSIZING_LABEL (label), FALSE);
+
+	return label->ellipsized;
+}

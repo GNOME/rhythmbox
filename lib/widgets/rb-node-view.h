@@ -69,6 +69,8 @@ RBNodeView *rb_node_view_new                      (RBNode *root,
 void        rb_node_view_set_playing_node         (RBNodeView *view,
 					           RBNode *node);
 RBNode     *rb_node_view_get_playing_node         (RBNodeView *view);
+void        rb_node_view_set_playing              (RBNodeView *view,
+			                           gboolean playing);
 
 RBNode     *rb_node_view_get_next_node            (RBNodeView *view);
 RBNode     *rb_node_view_get_previous_node        (RBNodeView *view);

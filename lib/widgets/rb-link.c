@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -30,6 +30,12 @@
 #include "rb-dialog.h"
 #include "rb-ellipsizing-label.h"
 
+typedef enum
+{
+	RB_LINK_NORMAL,
+	RB_LINK_PRELIGHT
+} RBLinkColor;
+
 static void rb_link_class_init (RBLinkClass *klass);
 static void rb_link_init (RBLink *link);
 static void rb_link_finalize (GObject *object);
@@ -50,8 +56,8 @@ static gboolean rb_link_enter_notify_event_cb (GtkWidget *widget,
 static gboolean rb_link_leave_notify_event_cb (GtkWidget *widget,
 			                       GdkEventCrossing *event,
 			                       RBLink *link);
-static void rb_link_set_text (RBLink *link,
-			      GdkColor *color);
+static void rb_link_set_color (RBLink *link,
+			       RBLinkColor color);
 
 struct RBLinkPrivate
 {
@@ -63,9 +69,6 @@ struct RBLinkPrivate
 	gboolean active;
 
 	GtkTooltips *tooltips;
-
-	GdkColor *normal_color;
-	GdkColor *prelight_color;
 };
 
 enum
@@ -152,8 +155,6 @@ rb_link_class_init (RBLinkClass *klass)
 static void
 rb_link_init (RBLink *link)
 {
-	GtkStyle *rcstyle;
-
 	link->priv = g_new0 (RBLinkPrivate, 1);
 
 	link->priv->label = gtk_label_new ("");
@@ -178,20 +179,7 @@ rb_link_init (RBLink *link)
 			  G_CALLBACK (rb_link_leave_notify_event_cb),
 			  link);
 
-	rcstyle = gtk_rc_get_style (GTK_WIDGET (link));
-	if (rcstyle == NULL)
-	{
-		rcstyle = gtk_style_new ();
-	}
-	else
-	{
-		g_object_ref (G_OBJECT (rcstyle));
-	}
-	
-	link->priv->normal_color = gdk_color_copy (&(rcstyle->fg[GTK_STATE_NORMAL]));
-	link->priv->prelight_color = gdk_color_copy (&(rcstyle->bg[GTK_STATE_SELECTED]));
-
-	g_object_unref (G_OBJECT (rcstyle));
+	rb_link_set_color (link, RB_LINK_NORMAL);
 }
 
 static void
@@ -208,9 +196,6 @@ rb_link_finalize (GObject *object)
 
 	g_free (link->priv->text);
 	g_free (link->priv->url);
-
-	gdk_color_free (link->priv->normal_color);
-	gdk_color_free (link->priv->prelight_color);
 
 	g_free (link->priv);
 
@@ -230,7 +215,7 @@ rb_link_set_property (GObject *object,
 	case PROP_TEXT:
 		g_free (link->priv->text);
 		link->priv->text = g_strdup (g_value_get_string (value));
-		rb_link_set_text (link, link->priv->normal_color);
+		gtk_label_set_text (GTK_LABEL (link->priv->label), link->priv->text);
 		break;
 	case PROP_TOOLTIP:
 		g_free (link->priv->tooltip);
@@ -248,11 +233,10 @@ rb_link_set_property (GObject *object,
 		break;
 	case PROP_ACTIVE:
 		link->priv->active = g_value_get_boolean (value);
-		rb_link_set_text (link, link->priv->normal_color);
 		if (link->priv->active)
-			gtk_tooltips_enable (link->priv->tooltips); 
+			gtk_tooltips_enable (link->priv->tooltips);
 		else
-			gtk_tooltips_disable (link->priv->tooltips); 
+			gtk_tooltips_disable (link->priv->tooltips);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -332,7 +316,7 @@ rb_link_button_press_event_cb (GtkWidget *widget,
 			       RBLink *link)
 {
 	GError *error = NULL;
-	
+
 	if (event->button != 1 || !link->priv->active)
 		return TRUE;
 
@@ -344,7 +328,7 @@ rb_link_button_press_event_cb (GtkWidget *widget,
 				 error->message);
 		g_error_free (error);
 	}
-	
+
 	return FALSE;
 }
 
@@ -353,9 +337,16 @@ rb_link_enter_notify_event_cb (GtkWidget *widget,
 			       GdkEventCrossing *event,
 			       RBLink *link)
 {
+	GdkCursor *cursor;
+
 	if (!link->priv->active)
 		return TRUE;
-	rb_link_set_text (link, link->priv->prelight_color);
+
+	rb_link_set_color (link, RB_LINK_PRELIGHT);
+
+	cursor = gdk_cursor_new (GDK_HAND2);
+	gdk_window_set_cursor (GTK_WIDGET (link)->window, cursor);
+	gdk_cursor_unref (cursor);
 
 	return TRUE;
 }
@@ -367,23 +358,58 @@ rb_link_leave_notify_event_cb (GtkWidget *widget,
 {
 	if (!link->priv->active)
 		return TRUE;
-	rb_link_set_text (link, link->priv->normal_color);
+
+	rb_link_set_color (link, RB_LINK_NORMAL);
+
+	gdk_window_set_cursor (GTK_WIDGET (link)->window, NULL);
 
 	return TRUE;
 }
 
 static void
-rb_link_set_text (RBLink *link,
-		  GdkColor *color)
+rb_link_set_color (RBLink *link,
+		   RBLinkColor color)
 {
-	char *text, *escaped;
-	
-	escaped = g_markup_escape_text (link->priv->text, -1);
-	text = g_strdup_printf ("<span foreground=\"#%04X%04X%04X\" underline=\"%s\">%s</span>",
-				color->red, color->green, color->blue,
-				link->priv->active ? "single" : "none",
-				escaped);
-	g_free (escaped);
-	gtk_label_set_markup (GTK_LABEL (link->priv->label), text);
-	g_free (text);
+	PangoAttrList *pattrlist;
+	PangoAttribute *attr;
+
+	if (color == RB_LINK_NORMAL) {
+		pattrlist = pango_attr_list_new ();
+		attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+		gtk_label_set_attributes (GTK_LABEL (link->priv->label), pattrlist);
+		pango_attr_list_unref (pattrlist);
+	}
+	else {
+		GtkStyle *rcstyle;
+		GdkColor *gdkcolor;
+
+		rcstyle = gtk_rc_get_style (GTK_WIDGET (link));
+		if (rcstyle == NULL) {
+			rcstyle = gtk_style_new ();
+		} else {
+			g_object_ref (G_OBJECT (rcstyle));
+		}
+
+		gdkcolor = &rcstyle->bg[GTK_STATE_SELECTED];
+
+		pattrlist = pango_attr_list_new ();
+		attr = pango_attr_foreground_new (gdkcolor->red,
+						  gdkcolor->green,
+						  gdkcolor->blue);
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+		attr = pango_attr_underline_new (PANGO_UNDERLINE_SINGLE);
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+		gtk_label_set_attributes (GTK_LABEL (link->priv->label),
+					  pattrlist);
+		pango_attr_list_unref (pattrlist);
+
+		g_object_unref (G_OBJECT (rcstyle));
+	}
 }

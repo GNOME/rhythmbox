@@ -26,6 +26,7 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkbutton.h>
+#include <gtk/gtktooltips.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <string.h>
@@ -109,6 +110,8 @@ struct RBLibraryViewPrivate
 	RB *rb;
 
 	RBLibrary *library;
+
+	GtkTooltips *tooltips;
 
 	GtkWidget *browser;
 
@@ -324,6 +327,8 @@ rb_library_view_construct (RBLibraryView *view)
 
 	vbox = gtk_vbox_new (FALSE, 5);
 
+	view->priv->tooltips = gtk_tooltips_new ();
+
 	view->priv->search = rb_search_entry_new ();
 
 	g_signal_connect (G_OBJECT (view->priv->search),
@@ -342,22 +347,34 @@ rb_library_view_construct (RBLibraryView *view)
 			    FALSE, FALSE, 0);
 
 	view->priv->play_album = gtk_button_new_with_mnemonic (_("_Play Album"));
+	gtk_tooltips_set_tip (view->priv->tooltips,
+			      view->priv->play_album,
+			      _("Start playing this album"), NULL);
 	g_signal_connect (G_OBJECT (view->priv->play_album),
 			  "clicked", G_CALLBACK (play_album_cb), view);
 	gtk_box_pack_start (GTK_BOX (buttonbox), view->priv->play_album,
 			    FALSE, FALSE, 0);
 	view->priv->play_album_later = gtk_button_new_with_mnemonic (_("Play Album _Later"));
+	gtk_tooltips_set_tip (view->priv->tooltips,
+			      view->priv->play_album_later,
+			      _("Enqueue this album for later playback"), NULL);
 	g_signal_connect (G_OBJECT (view->priv->play_album_later),
 			  "clicked", G_CALLBACK (play_album_later_cb), view);
 	gtk_box_pack_start (GTK_BOX (buttonbox), view->priv->play_album_later,
 			    FALSE, FALSE, 0);
 
 	view->priv->play_song_later = gtk_button_new_with_mnemonic (_("Play Song Later"));
+	gtk_tooltips_set_tip (view->priv->tooltips,
+			      view->priv->play_song_later,
+			      _("Enqueue the selected song(s) for later playback"), NULL);
 	g_signal_connect (G_OBJECT (view->priv->play_song_later),
 			  "clicked", G_CALLBACK (play_song_later_cb), view);
 	gtk_box_pack_end (GTK_BOX (buttonbox), view->priv->play_song_later,
 			  FALSE, FALSE, 0);
 	view->priv->play_song = gtk_button_new_with_mnemonic (_("Play _Song"));
+	gtk_tooltips_set_tip (view->priv->tooltips,
+			      view->priv->play_song,
+			      _("Start playing the selected song(s)"), NULL);
 	g_signal_connect (G_OBJECT (view->priv->play_song),
 			  "clicked", G_CALLBACK (play_song_cb), view);
 	gtk_box_pack_end (GTK_BOX (buttonbox), view->priv->play_song,
