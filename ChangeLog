@@ -1,3 +1,24 @@
+2002-06-15  Jeroen Zwartepoorte  <jeroen@xs4all.nl>
+
+	* configure.in:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-volume.c: (rb_volume_class_init),
+	(rb_volume_instance_init), (rb_volume_set_property),
+	(rb_volume_get_property), (rb_volume_finalize),
+	(volume_changed_cb), (timeout_cb), (rb_volume_update_slider),
+	(rb_volume_update_image), (open_mixer), (read_mixer),
+	(update_mixer), (rb_volume_new), (rb_volume_set),
+	(rb_volume_get_channel), (rb_volume_set_channel):
+	* lib/widgets/rb-volume.h:
+	* lib/widgets/volume-max.xpm:
+	* lib/widgets/volume-medium.xpm:
+	* lib/widgets/volume-min.xpm:
+	* lib/widgets/volume-mute.xpm:
+	* lib/widgets/volume-zero.xpm:
+	* views/rb-library-view.c: (rb_library_view_init):
+
+	Implemented volume control based on the volume control applet.
+
 2002-06-14  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/rhythmbox.schemas:

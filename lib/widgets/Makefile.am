@@ -15,6 +15,8 @@ librbwidgets_la_SOURCES =				\
 	rb-link.h					\
 	rb-player.c					\
 	rb-player.h					\
+	rb-volume.c					\
+	rb-volume.h					\
 	gtktreemodelfilter.c				\
 	gtktreemodelfilter.h
 

@@ -61,6 +61,23 @@ if test x$enable_install_schemas != xno; then
 	AM_GCONF_SOURCE_2
 fi
 
+P_SOUNDCARD=
+SOUNDCARD_LIBS=
+AC_CHECK_HEADERS(linux/soundcard.h,[P_SOUNDCARD=soundcard],[
+  AC_CHECK_HEADERS(machine/soundcard.h, [P_SOUNDCARD=soundcard],[
+    AC_CHECK_HEADERS(sys/soundcard.h, [P_SOUNDCARD=soundcard],[
+      AC_CHECK_HEADERS(soundcard.h, [P_SOUNDCARD=soundcard; SOUNDCARD_LIBS="-lossaudio"],[
+        AC_CHECK_HEADERS(sys/audioio.h, [P_SOUNDCARD=soundcard],[
+          AC_CHECK_HEADERS(sys/audio.io.h, [P_SOUNDCARD=soundcard],[
+            AC_CHECK_HEADERS(sun/audioio.h, [P_SOUNDCARD=soundcard],[
+	      AC_CHECK_HEADERS(dmedia/audio.h, [P_SOUNDCARD=soundcard]),]) ]) ]) ]) ]) ]) ])
+AC_SUBST(SOUNDCARD_LIBS)
+
+AM_CONDITIONAL(APPLET_SOUNDCARD, test "$P_SOUNDCARD" = "soundcard")
+if test "$P_SOUNDCARD" != "soundcard"; then
+  AC_MSG_WARN([*** no soundcard detected, cannot build volume control ***])
+fi
+
 AC_OUTPUT([ 
 Makefile
 lib/Makefile

@@ -36,6 +36,7 @@
 #include "rb-player.h"
 #include "rb-dialog.h"
 #include "rb-library-view.h"
+#include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
 #include "eel-gconf-extensions.h"
 
@@ -139,6 +140,7 @@ struct RBLibraryViewPrivate
 	gboolean repeat;
 
 	RBPlayer *player;
+	RBVolume *volume;
 
 	char *status;
 
@@ -257,7 +259,7 @@ static void
 rb_library_view_init (RBLibraryView *view)
 {
 	RBSidebarButton *button;
-	GtkWidget *align;
+	GtkWidget *hbox, *align;
 	
 	view->priv = g_new0 (RBLibraryViewPrivate, 1);
 
@@ -274,11 +276,18 @@ rb_library_view_init (RBLibraryView *view)
 
 	view->priv->vbox = gtk_vbox_new (FALSE, 5);
 
-	align = gtk_alignment_new (0.0, 0.5, 1.0, 1.0);
 	view->priv->player = rb_player_new (RB_VIEW_PLAYER (view));
-	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (view->priv->player));
+	hbox = gtk_hbox_new (FALSE, 5);
+	gtk_box_pack_start (GTK_BOX (hbox), GTK_WIDGET (view->priv->player),
+			    FALSE, TRUE, 0);
+
+	view->priv->volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	align = gtk_alignment_new (0.0, 0.0, 1.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), GTK_WIDGET (view->priv->volume));
+	gtk_box_pack_end (GTK_BOX (hbox), align, FALSE, TRUE, 0);
+
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
-			    align,
+			    hbox,
 			    FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (view->priv->vbox),
