@@ -907,7 +907,7 @@ rb_node_save_to_xml (RBNode *node,
 		switch (G_VALUE_TYPE (value))
 		{
 		case G_TYPE_STRING:
-			xml = xmlEncodeEntitiesReentrant (parent_xml_node->doc,
+			xml = xmlEncodeEntitiesReentrant (NULL,
 							  g_value_get_string (value));
 			xmlNodeSetContent (value_xml_node, xml);
 			g_free (xml);
