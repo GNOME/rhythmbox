@@ -1,3 +1,10 @@
+2003-08-07  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-shell.c: (create_group_with_name),
+	(ask_string_response_cb), (sourcelist_drag_received_cb):
+
+	Don't allow creating two groups with the same name.
+
 2003-08-07  Bastien Nocera  <hadess@hadess.net>
 
 	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_init):

@@ -1360,6 +1360,26 @@ rb_shell_cmd_save_playlist (BonoboUIComponent *component,
 			  shell);
 }
 
+static RBGroupSource *
+create_group_with_name (RBShell *shell, const char *name)
+{
+	RBGroupSource *ret;
+	GList *tem;
+	char *temname;
+
+	for (tem = shell->priv->groups; tem; tem = g_list_next (tem)) {
+		g_object_get (G_OBJECT (tem->data), "name", &temname, NULL);
+		if (!strcmp (temname, name)) {
+			rb_error_dialog (_("There is already a playlist with that name."));
+			return NULL;
+		}
+	}
+	ret = RB_GROUP_SOURCE (rb_group_source_new (shell->priv->container,
+						    shell->priv->library));
+	rb_group_source_set_name (RB_GROUP_SOURCE (ret), name);
+	return ret;
+}
+
 static void
 add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri, const char *title)
 {
@@ -1433,9 +1453,10 @@ ask_string_response_cb (GtkDialog *dialog,
 		return;
 	}
 
-	group = rb_group_source_new (shell->priv->container,
-				     shell->priv->library);
-	rb_group_source_set_name (RB_GROUP_SOURCE (group), name);
+	group = RB_SOURCE (create_group_with_name (shell, name));
+	if (group == NULL)
+		return;
+
 	shell->priv->groups = g_list_append (shell->priv->groups, group);
 	rb_shell_append_source (shell, group);
 	g_free (name);
@@ -1722,13 +1743,10 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 		if (node == NULL)
 			return;
 			
-		group = RB_GROUP_SOURCE (rb_group_source_new (shell->priv->container,
-							      shell->priv->library));
-					
-		rb_group_source_set_name (RB_GROUP_SOURCE (group),
-					  rb_node_get_property_string (node,
-								       RB_NODE_PROP_NAME));
-
+		
+		group = create_group_with_name (shell, rb_node_get_property_string (node, RB_NODE_PROP_NAME));
+		if (group == NULL)
+			return;
 
 		rb_library_handle_songs (shell->priv->library,
 					 node,
