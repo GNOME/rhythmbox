@@ -507,9 +507,11 @@ rb_shell_init (RBShell *shell)
 	rb_ensure_dir_exists (rb_dot_dir ());
 
 	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_APP_PIXMAP, "rhythmbox.png", TRUE, NULL);
-	gnome_window_icon_set_default_from_file (file);
-	g_free (file);
-	
+	if (file) {
+		gnome_window_icon_set_default_from_file (file);
+		g_free (file);
+	}
+
         rb_shell_session_init (shell);
 
 	eel_gconf_monitor_add (CONF_PREFIX);
