@@ -127,6 +127,9 @@ void		rb_entry_view_select_entry		(RBEntryView *view,
 
 guint		rb_entry_view_get_num_entries		(RBEntryView *view);
 
+gboolean	rb_entry_view_get_entry_contained	(RBEntryView *view,
+							 RhythmDBEntry *entry);
+
 gboolean	rb_entry_view_get_entry_visible		(RBEntryView *view,
 							 RhythmDBEntry *entry);
 
