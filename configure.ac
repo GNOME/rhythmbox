@@ -325,7 +325,7 @@ if test x"$have_xsun" = "xyes" ; then
 fi
 
 AC_ARG_ENABLE(mmkeys, AC_HELP_STRING([--disable-mmkeys],
-					[build with Multimedia Keys support]))
+					[don't build with Multimedia Keys support]))
 if test x"$have_xfree" = xyes || test x"$have_xsun" = xyes; then
 	if test x"$enable_mmkeys" != xno; then
 		AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
