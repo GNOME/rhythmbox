@@ -1,5 +1,5 @@
 /* 
- *  arch-tag: Implementation of linear navigation method
+ *  arch-tag: Implementation of linear, looping navigation method
  *
  *  Copyright (C) 2003 Jeffrey Yasskin <jyasskin@mail.utexas.edu>
  *
@@ -19,51 +19,51 @@
  *
  */
 
-#include "rb-play-order-linear.h"
+#include "rb-play-order-linear-loop.h"
 
 #include "rb-debug.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
-static void rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass);
+static void rb_linear_play_order_loop_class_init (RBLinearPlayOrderLoopClass *klass);
 
-static RhythmDBEntry* rb_linear_play_order_get_next (RBPlayOrder* method);
-static RhythmDBEntry* rb_linear_play_order_get_previous (RBPlayOrder* method);
+static RhythmDBEntry* rb_linear_play_order_loop_get_next (RBPlayOrder* method);
+static RhythmDBEntry* rb_linear_play_order_loop_get_previous (RBPlayOrder* method);
 
 GType
-rb_linear_play_order_get_type (void)
+rb_linear_play_order_loop_get_type (void)
 {
-	static GType rb_linear_play_order_type = 0;
+	static GType rb_linear_play_order_loop_type = 0;
 
-	if (rb_linear_play_order_type == 0)
+	if (rb_linear_play_order_loop_type == 0)
 	{
 		static const GTypeInfo our_info =
 		{
-			sizeof (RBLinearPlayOrderClass),
+			sizeof (RBLinearPlayOrderLoopClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) rb_linear_play_order_class_init,
+			(GClassInitFunc) rb_linear_play_order_loop_class_init,
 			NULL,
 			NULL,
-			sizeof (RBLinearPlayOrder),
+			sizeof (RBLinearPlayOrderLoop),
 			0,
 			NULL
 		};
 
-		rb_linear_play_order_type = g_type_register_static (RB_TYPE_PLAY_ORDER,
-				"RBLinearPlayOrder",
+		rb_linear_play_order_loop_type = g_type_register_static (RB_TYPE_PLAY_ORDER,
+				"RBLinearPlayOrderLoop",
 				&our_info, 0);
 	}
 
-	return rb_linear_play_order_type;
+	return rb_linear_play_order_loop_type;
 }
 
 RBPlayOrder *
-rb_linear_play_order_new (RBShellPlayer *player)
+rb_linear_play_order_loop_new (RBShellPlayer *player)
 {
-	RBLinearPlayOrder *lorder;
+	RBLinearPlayOrderLoop *lorder;
 
-	lorder = g_object_new (RB_TYPE_LINEAR_PLAY_ORDER,
+	lorder = g_object_new (RB_TYPE_LINEAR_PLAY_ORDER_LOOP,
 			       "player", player,
 			       NULL);
 
@@ -71,21 +71,21 @@ rb_linear_play_order_new (RBShellPlayer *player)
 }
 
 static void
-rb_linear_play_order_class_init (RBLinearPlayOrderClass *klass)
+rb_linear_play_order_loop_class_init (RBLinearPlayOrderLoopClass *klass)
 {
 	RBPlayOrderClass *porder = RB_PLAY_ORDER_CLASS (klass);
-	porder->get_next = rb_linear_play_order_get_next;
-	porder->get_previous = rb_linear_play_order_get_previous;
+	porder->get_next = rb_linear_play_order_loop_get_next;
+	porder->get_previous = rb_linear_play_order_loop_get_previous;
 }
 
 static RhythmDBEntry* 
-rb_linear_play_order_get_next (RBPlayOrder* porder)
+rb_linear_play_order_loop_get_next (RBPlayOrder* porder)
 {
 	RBEntryView *entry_view;
 	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
-	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER (porder), NULL);
+	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER_LOOP (porder), NULL);
 
 	entry_view = rb_play_order_get_entry_view (porder);
 	/* Does this interfere with starting from not playing? */
@@ -95,9 +95,8 @@ rb_linear_play_order_get_next (RBPlayOrder* porder)
 	rb_debug ("choosing next linked entry");
 	entry = rb_entry_view_get_next_entry (entry_view);
 
-	if (entry == NULL
-			&& rb_entry_view_get_playing_entry (entry_view) == NULL) {
-		rb_debug ("Player is stopped, picking first entry");
+	if (entry == NULL) {
+		rb_debug ("Looping back to the first entry");
 		entry = rb_entry_view_get_first_entry (entry_view);
 	}
 
@@ -105,16 +104,19 @@ rb_linear_play_order_get_next (RBPlayOrder* porder)
 }
 
 static RhythmDBEntry*
-rb_linear_play_order_get_previous (RBPlayOrder* porder)
+rb_linear_play_order_loop_get_previous (RBPlayOrder* porder)
 {
 	RBEntryView *entry_view;
 
 	g_return_val_if_fail (porder != NULL, NULL);
-	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER (porder), NULL);
+	g_return_val_if_fail (RB_IS_LINEAR_PLAY_ORDER_LOOP (porder), NULL);
 
 	entry_view = rb_play_order_get_entry_view (porder);
 	g_return_val_if_fail (entry_view != NULL, NULL);
 
 	rb_debug ("choosing previous linked entry");
 	return rb_entry_view_get_previous_entry (entry_view);
+
+	/* If we're at the beginning of the list, should we go to the last
+	 * entry? */
 }

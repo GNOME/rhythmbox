@@ -29,6 +29,7 @@
 
 /* Play Orders */
 #include "rb-play-order-linear.h"
+#include "rb-play-order-linear-loop.h"
 #include "rb-play-order-shuffle.h"
 #include "rb-play-order-random-equal-weights.h"
 #include "rb-play-order-random-by-age.h"
@@ -225,6 +226,7 @@ rb_play_order_get_orders (void)
 	 * cause a g_assert(). */
 	static const RBPlayOrderDescription orders[] = {
 		{ "linear", N_("Linear"), rb_linear_play_order_new, TRUE, TRUE },
+		{ "linear-loop", N_("Linear looping"), rb_linear_play_order_loop_new, TRUE, FALSE },
 		{ "shuffle", N_("Shuffle"), rb_shuffle_play_order_new, TRUE, FALSE },
 		{ "random-equal-weights", N_("Random with equal weights"), rb_random_play_order_equal_weights_new, TRUE, FALSE },
 		{ "random-by-age", N_("Random by time since last play"), rb_random_play_order_by_age_new, TRUE, FALSE },

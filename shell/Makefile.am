@@ -42,6 +42,8 @@ rhythmbox_SOURCES =              			\
 	rb-play-order.h					\
 	rb-play-order-linear.c				\
 	rb-play-order-linear.h				\
+	rb-play-order-linear-loop.c			\
+	rb-play-order-linear-loop.h			\
 	rb-play-order-shuffle.c				\
 	rb-play-order-shuffle.h				\
 	rb-play-order-random.c				\
