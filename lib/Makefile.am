@@ -27,15 +27,15 @@ librb_la_SOURCES =					\
 	rb-cut-and-paste-code.h				\
 	rb-thread-helpers.c				\
 	rb-thread-helpers.h				\
-	rb-windows-ini-file.c				\
-	rb-windows-ini-file.h				\
+# 	rb-windows-ini-file.c				\
+# 	rb-windows-ini-file.h				\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
-	getline.c					\
-	getline.h					\
-	getstr.c					\
-	getstr.h					\
+# 	getline.c					\
+# 	getline.h					\
+# 	getstr.c					\
+# 	getstr.h					\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-preferences.h	
