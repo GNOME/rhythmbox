@@ -57,7 +57,9 @@ typedef struct
 
 GType			rhythmdb_query_model_get_type	(void);
 
-RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query);
+RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
+							 GCompareDataFunc sort_func,
+							 gpointer user_data);
 
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 

@@ -1,6 +1,6 @@
 ## arch-tag: Automake rules for various data files
 
-SUBDIRS = ui art glade node-views views
+SUBDIRS = ui art glade node-views
 
 @INTLTOOL_SERVER_RULE@
 @INTLTOOL_DESKTOP_RULE@

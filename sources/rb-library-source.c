@@ -404,7 +404,16 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
 	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db, rb_file ("rb-entry-view-library.xml"));
+	source->priv->songs = rb_entry_view_new (source->priv->db);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER, TRUE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ARTIST, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_ALBUM, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_DURATION, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_RATING, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
+	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
 
 	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 			  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
@@ -1081,6 +1090,8 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	g_signal_connect (G_OBJECT (query_model),
 			  "complete", G_CALLBACK (query_complete_cb),
 			  source);
+	
+	rb_entry_view_set_query_model (source->priv->songs, query_model);
 
 	if (!sync)
 		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
@@ -1094,8 +1105,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	rhythmdb_query_free (artist_query);
 	rhythmdb_query_free (album_query);
 	rhythmdb_query_free (query);
-	
-	rb_entry_view_set_query_model (source->priv->songs, query_model);
 }
 
 static void

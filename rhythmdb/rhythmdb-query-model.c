@@ -87,6 +87,9 @@ struct RhythmDBQueryModelPrivate
 {
 	RhythmDB *db;
 
+	GCompareDataFunc sort_func;
+	gpointer sort_user_data;
+
 	GPtrArray *query;
 
 	guint stamp;
@@ -105,6 +108,8 @@ enum
 	PROP_0,
 	PROP_RHYTHMDB,
 	PROP_QUERY,
+	PROP_SORT_FUNC,
+	PROP_SORT_DATA,
 };
 
 enum
@@ -183,6 +188,20 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							      "RhythmDBQuery",
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (object_class,
+					 PROP_SORT_FUNC,
+					 g_param_spec_pointer ("sort-func",
+							      "SortFunc",
+							      "Sort function",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_SORT_DATA,
+					 g_param_spec_pointer ("sort-data",
+							      "SortData",
+							      "Sort user data",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -240,6 +259,12 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_QUERY:
 		model->priv->query = rhythmdb_query_copy (g_value_get_pointer (value));
 		break;
+	case PROP_SORT_FUNC:
+		model->priv->sort_func = g_value_get_pointer (value);
+		break;
+	case PROP_SORT_DATA:
+		model->priv->sort_user_data = g_value_get_pointer (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -261,6 +286,12 @@ rhythmdb_query_model_get_property (GObject *object,
 		break;
 	case PROP_QUERY:
 		g_value_set_pointer (value, model->priv->query);
+		break;
+	case PROP_SORT_FUNC:
+		g_value_set_pointer (value, model->priv->sort_func);
+		break;
+	case PROP_SORT_DATA:
+		g_value_set_pointer (value, model->priv->sort_user_data);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -311,10 +342,14 @@ rhythmdb_query_model_finalize (GObject *object)
 }
 
 RhythmDBQueryModel *
-rhythmdb_query_model_new (RhythmDB *db, GPtrArray *query)
+rhythmdb_query_model_new (RhythmDB *db, GPtrArray *query,
+			  GCompareDataFunc sort_func,
+			  gpointer user_data)
 {
 	RhythmDBQueryModel *model = g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
-						  "db", db, "query", query, NULL);
+						  "db", db, "query", query,
+						  "sort-func", sort_func,
+						  "sort-data", user_data, NULL);
 
 	g_return_val_if_fail (model->priv != NULL, NULL);
 
@@ -324,7 +359,8 @@ rhythmdb_query_model_new (RhythmDB *db, GPtrArray *query)
 RhythmDBQueryModel *
 rhythmdb_query_model_new_empty (RhythmDB *db)
 {
-	return g_object_new (RHYTHMDB_TYPE_QUERY_MODEL, "db", db, NULL);
+	return g_object_new (RHYTHMDB_TYPE_QUERY_MODEL,
+			     "db", db, NULL);
 }
 
 void
@@ -450,9 +486,9 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 		switch (update->type) {
 		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
 		{
-			ptr = g_sequence_get_end_ptr (model->priv->entries);
-			g_sequence_insert (ptr, update->entry);
-			ptr = g_sequence_ptr_prev (ptr);
+			ptr = g_sequence_insert_sorted (model->priv->entries, update->entry,
+							model->priv->sort_func,
+							model->priv->sort_user_data);
 
 			iter.user_data = ptr;
 			g_hash_table_insert (model->priv->reverse_map,
@@ -524,7 +560,7 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 		processed = g_list_prepend (processed, update);
 
 		count++;
-		if (timeout && count % 16 > 0) {
+		if (timeout && count / 4 > 0) {
 			/* Do this here at the bottom, so we do at least one update. */
 			g_get_current_time (&now);
 			if (compare_times (timeout,&now) < 0)

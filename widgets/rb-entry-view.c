@@ -1,7 +1,6 @@
 /*
  *  arch-tag: Implementation of widget to display RhythmDB entries
  *
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -22,12 +21,6 @@
 
 #include <gtk/gtktreeview.h>
 
-#ifdef USE_GTK_TREE_MODEL_SORT_WORKAROUND
-	#include "gtktreemodelsort.h"
-#else
-	#include <gtk/gtktreemodelsort.h>
-#endif
-
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkiconfactory.h>
@@ -37,11 +30,9 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
-#include <libxml/tree.h>
 #include <stdlib.h>
 
 #include "eggtreemultidnd.h"
-#include "rb-tree-model-sort.h"
 #include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
@@ -54,11 +45,20 @@
 #include "rb-string-helpers.h"
 #include "rb-library-dnd-types.h"
 #include "rb-stock-icons.h"
+#include "rb-preferences.h"
 #include "rb-tree-view.h"
 #include "eel-gconf-extensions.h"
 
+struct RBEntryViewColumnSortData
+{
+	GCompareDataFunc func;
+	gpointer data;
+};
+
 static void rb_entry_view_class_init (RBEntryViewClass *klass);
 static void rb_entry_view_init (RBEntryView *view);
+static GObject *rb_entry_view_constructor (GType type, guint n_construct_properties,
+					   GObjectConstructParam *construct_properties);
 static void rb_entry_view_finalize (GObject *object);
 static void rb_entry_view_set_property (GObject *object,
 				       guint prop_id,
@@ -68,33 +68,25 @@ static void rb_entry_view_get_property (GObject *object,
 				       guint prop_id,
 				       GValue *value,
 				       GParamSpec *pspec);
-static void rb_entry_view_construct (RBEntryView *view);
-static int rb_entry_view_sort_func (GtkTreeModel *model,
-			           GtkTreeIter *a,
-			           GtkTreeIter *b,
-			           gpointer user_data);
 static void rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 				               RBEntryView *view);
 static void rb_entry_view_row_activated_cb (GtkTreeView *treeview,
 			                   GtkTreePath *path,
 			                   GtkTreeViewColumn *column,
 			                   RBEntryView *view);
-static void gtk_tree_model_sort_row_inserted_cb (GtkTreeModel *model,
-				                 GtkTreePath *path,
-				                 GtkTreeIter *iter,
-				                 RBEntryView *view);
-static void gtk_tree_model_sort_row_deleted_cb (GtkTreeModel *model,
-				                GtkTreePath *path,
-			                        RBEntryView *view);
-static void gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
-				                GtkTreePath *path,
-				                GtkTreeIter *iter,
-			                        RBEntryView *view);
-static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
-					              RBEntryView *view);
+static void rb_entry_view_row_inserted_cb (GtkTreeModel *model,
+					   GtkTreePath *path,
+					   GtkTreeIter *iter,
+					   RBEntryView *view);
+static void rb_entry_view_row_deleted_cb (GtkTreeModel *model,
+					  GtkTreePath *path,
+					  RBEntryView *view);
+static void rb_entry_view_row_changed_cb (GtkTreeModel *model,
+					  GtkTreePath *path,
+					  GtkTreeIter *iter,
+					  RBEntryView *view);
 static gboolean emit_entry_changed (RBEntryView *view);
-static void rb_entry_view_columns_parse (RBEntryView *view,
-					const char *config);
+static void rb_entry_view_sync_columns_visible (RBEntryView *view);
 static void rb_entry_view_columns_config_changed_cb (GConfClient* client,
 						    guint cnxn_id,
 						    GConfEntry *entry,
@@ -106,7 +98,6 @@ static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBEntryView *view);
-static GList * parse_columns_as_glist (const char *str);
 static gboolean rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry *entry,
 						GtkTreeIter *iter);
 static void rb_entry_view_scroll_to_iter (RBEntryView *view,
@@ -119,7 +110,6 @@ struct RBEntryViewPrivate
 	RhythmDB *db;
 	
 	RhythmDBQueryModel *query_model;
-	GtkTreeModel *sortmodel;
 
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
@@ -132,7 +122,7 @@ struct RBEntryViewPrivate
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
 
-	char *view_desc_file;
+	GtkTreeViewColumn *sorting_column;
 
 	gboolean have_selection;
 	GList *entry_selection;
@@ -146,31 +136,18 @@ struct RBEntryViewPrivate
 
 	gboolean selection_lock;
 
-	char *columns_key;
 	guint gconf_notification_id;
 	GHashTable *propid_column_map;
-	GHashTable *allowed_properties;
-
-	gboolean sorting_enabled;
-	int saved_sort_column_id;
-	GtkSortType saved_sort_type;
-
-	GList *search_columns;
+	GHashTable *column_sort_data_map;
 
 	gboolean idle;
 
 	guint model_poll_id;
 
 #ifdef USE_GTK_TREE_VIEW_WORKAROUND	
-	gboolean use_column_sizing_hack;
 	guint freeze_count;
 #endif
 };
-
-typedef struct {
-	RBEntryView *view;
-	RBTreeViewColumn *column;
-} RBEntryViewSortData;
 
 enum
 {
@@ -181,6 +158,7 @@ enum
 	SHOW_POPUP,
 	PLAYING_ENTRY_DELETED,
 	HAVE_SEL_CHANGED,
+	SORT_ORDER_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -190,7 +168,6 @@ enum
 	PROP_DB,
 	PROP_QUERY_MODEL,
 	PROP_PLAYING_ENTRY,
-	PROP_VIEW_DESC_FILE,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -233,6 +210,7 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_entry_view_finalize;
+	object_class->constructor = rb_entry_view_constructor;
 
 	object_class->set_property = rb_entry_view_set_property;
 	object_class->get_property = rb_entry_view_get_property;
@@ -257,14 +235,6 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							       "Playing entry",
 							       "Playing entry",
 							       G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_VIEW_DESC_FILE,
-					 g_param_spec_string ("view-desc-file",
-							      "View description",
-							      "View description",
-							      NULL,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	rb_entry_view_signals[ENTRY_ADDED] =
 		g_signal_new ("entry-added",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -332,6 +302,15 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_BOOLEAN);
+	rb_entry_view_signals[SORT_ORDER_CHANGED] =
+		g_signal_new ("sort-order-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBEntryViewClass, sort_order_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -352,6 +331,9 @@ rb_entry_view_init (RBEntryView *view)
 							    GTK_ICON_SIZE_MENU,
 							    NULL);
 	gtk_widget_destroy (dummy);
+
+	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
+	view->priv->column_sort_data_map = g_hash_table_new_full (NULL, NULL, NULL, g_free);
 }
 
 static void
@@ -371,20 +353,14 @@ rb_entry_view_finalize (GObject *object)
 
 	g_source_remove (view->priv->model_poll_id);
 
-	g_list_free (view->priv->search_columns);
-
 	g_list_free (view->priv->entry_selection);
-
-	g_free (view->priv->view_desc_file);
-
-	g_free (view->priv->columns_key);
 
 	if (view->priv->gconf_notification_id > 0)
 		eel_gconf_notification_remove (view->priv->gconf_notification_id);
 
 	g_hash_table_destroy (view->priv->propid_column_map);
+	g_hash_table_destroy (view->priv->column_sort_data_map);
 
-	g_object_unref (G_OBJECT (view->priv->sortmodel));
 	g_object_unref (G_OBJECT (view->priv->query_model));
 
 	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
@@ -404,13 +380,11 @@ rb_entry_view_finalize (GObject *object)
 void
 rb_entry_view_thaw (RBEntryView *view)
 {
+/* RHYTHMDB FIXME */
 #if 0
 #ifdef USE_GTK_TREE_VIEW_WORKAROUND
 	GList *columns;
 	int i;
-
-	if (!view->priv->use_column_sizing_hack)
-		return;
 
 	g_return_if_fail (view->priv->freeze_count > 0);
 
@@ -443,13 +417,11 @@ rb_entry_view_thaw (RBEntryView *view)
 void
 rb_entry_view_freeze (RBEntryView *view)
 {
+/* RHYTHMDB FIXME */
 #if 0
 #ifdef USE_GTK_TREE_VIEW_WORKAROUND
 	GList *columns;
 	int i;
-
-	if (!view->priv->use_column_sizing_hack)
-		return;
 
 	view->priv->freeze_count++;
 
@@ -492,68 +464,40 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_QUERY_MODEL:
 	{
 		RhythmDBQueryModel *new_model;
-		GtkTreeModel *new_sort_model;
-		GList *columns;
-		gint colnum;
+		struct RBEntryViewColumnSortData *sort_data;
 		
 		if (view->priv->query_model)
 			rhythmdb_query_model_cancel (view->priv->query_model);
 		new_model = g_value_get_object (value);
-		new_sort_model = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (new_model));
 
-
-		/* RHYTHMDB FIXME */
-/* 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel), */
-/* 				 "node_from_iter", */
-/* 				 G_CALLBACK (node_from_sort_iter_cb), */
-/* 				 view, */
-/* 				 0); */
-		g_signal_connect_object (G_OBJECT (new_sort_model),
+		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_inserted",
-					 G_CALLBACK (gtk_tree_model_sort_row_inserted_cb),
+					 G_CALLBACK (rb_entry_view_row_inserted_cb),
 					 view,
 					 0);
-		g_signal_connect_object (G_OBJECT (new_sort_model),
+		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_deleted",
-					 G_CALLBACK (gtk_tree_model_sort_row_deleted_cb),
+					 G_CALLBACK (rb_entry_view_row_deleted_cb),
 					 view,
 					 0);
-		g_signal_connect_object (G_OBJECT (new_sort_model),
+		g_signal_connect_object (G_OBJECT (new_model),
 					 "row_changed",
-					 G_CALLBACK (gtk_tree_model_sort_row_changed_cb),
+					 G_CALLBACK (rb_entry_view_row_changed_cb),
 					 view,
 					 0);
-		g_signal_connect_object (G_OBJECT (new_sort_model),
-					 "sort_column_changed",
-					 G_CALLBACK (gtk_tree_sortable_sort_column_changed_cb),
-					 view,
-					 0);
+
+		if (view->priv->sorting_column) {
+			sort_data = g_hash_table_lookup (view->priv->column_sort_data_map,
+							 view->priv->sorting_column);
+			g_assert (sort_data);
+			
+			g_object_set (G_OBJECT (new_model), "sort-func",
+				      sort_data->func, "sort-data", sort_data->data, NULL);
+		}
 
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
-					 GTK_TREE_MODEL (new_sort_model));
-		view->priv->sortmodel = new_sort_model;
+					 GTK_TREE_MODEL (new_model));
 		view->priv->query_model = new_model;
-
-		for (colnum = 0, columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
-		     columns; colnum++, columns = columns->next) {
-			RBEntryViewSortData *data = g_new0 (RBEntryViewSortData, 1);
-			data->view = view;
-			data->column = columns->data;
-
-			gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (new_sort_model),
-							 colnum,
-							 rb_entry_view_sort_func,
-							 data,
-							 g_free);
-		}
-		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (new_sort_model),
-						      -1, GTK_SORT_ASCENDING); 
-		view->priv->sorting_enabled = FALSE;
-
-		if (view->priv->model_poll_id == 0) {
-			view->priv->model_poll_id =
-				g_idle_add ((GSourceFunc) poll_model, view);
-		}
 
 		break;
 	}
@@ -597,10 +541,6 @@ rb_entry_view_set_property (GObject *object,
 			rb_entry_view_scroll_to_iter (view, &iter);
 	}
 	break;
-	case PROP_VIEW_DESC_FILE:
-		g_free (view->priv->view_desc_file);
-		view->priv->view_desc_file = g_strdup (g_value_get_string (value));
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -623,9 +563,6 @@ rb_entry_view_get_property (GObject *object,
 	case PROP_PLAYING_ENTRY:
 		g_value_set_pointer (value, view->priv->playing_entry);
 		break;
-	case PROP_VIEW_DESC_FILE:
-		g_value_set_string (value, view->priv->view_desc_file);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -633,13 +570,9 @@ rb_entry_view_get_property (GObject *object,
 }
 
 RBEntryView *
-rb_entry_view_new (RhythmDB *db,
-		   const char *view_desc_file)
+rb_entry_view_new (RhythmDB *db) 
 {
 	RBEntryView *view;
-
-	g_assert (view_desc_file != NULL);
-	g_assert (g_file_test (view_desc_file, G_FILE_TEST_EXISTS) == TRUE);
 
 	view = RB_ENTRY_VIEW (g_object_new (RB_TYPE_ENTRY_VIEW,
 					   "hadjustment", NULL,
@@ -647,11 +580,8 @@ rb_entry_view_new (RhythmDB *db,
 					   "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					   "vscrollbar_policy", GTK_POLICY_ALWAYS,
 					   "shadow_type", GTK_SHADOW_IN,
-					   "view-desc-file", view_desc_file,
 					    "db", db,
 					   NULL));
-
-	rb_entry_view_construct (view);
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
 
@@ -668,13 +598,20 @@ rb_entry_view_set_query_model (RBEntryView *view, RhythmDBQueryModel *model)
 static RhythmDBEntry *
 entry_from_tree_path (RBEntryView *view, GtkTreePath *path)
 {
-	GtkTreeIter sort_iter, entry_iter;
+	GtkTreeIter entry_iter;
 	RhythmDBEntry *entry;
 
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter, path);
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&entry_iter, &sort_iter);
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model), &entry_iter, path);
 	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), &entry_iter, 0,
+			    &entry, -1);
+	return entry;
+}
+
+static inline RhythmDBEntry *
+entry_from_tree_iter (RBEntryView *view, GtkTreeIter *iter)
+{
+	RhythmDBEntry *entry;
+	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), iter, 0,
 			    &entry, -1);
 	return entry;
 }
@@ -686,127 +623,116 @@ rb_entry_view_get_model (RBEntryView *view)
 	return view->priv->query_model;
 }
 
-/* RHYTHMDB FIXME */
-/* static void */
-/* node_from_sort_iter_cb (RBTreeModelSort *model, */
-/* 		        GtkTreeIter *iter, */
-/* 		        void **node, */
-/* 		        RBEntryView *view) */
-/* { */
-/* 	GtkTreeIter filter_iter, node_iter; */
-
-/* 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (model), */
-/* 							&filter_iter, iter); */
-/* 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel), */
-/* 							  &node_iter, &filter_iter); */
-/* 	*node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &node_iter); */
-/* 	if (rb_node_get_property_boolean (*node, RB_NODE_PROP_PRIORITY) == TRUE) */
-/* 		*node = NULL; */
-/* } */
-
-static gboolean
-bool_to_int (const char *boolean)
-{
-	return (strcmp (boolean, "true") == 0);
-}
-
-static gboolean
-rb_entry_view_search_equal (GtkTreeModel *model,
-                           gint column,
-                           const gchar *key,
-                           GtkTreeIter *iter,
-                           RBEntryView *view)
-{
-	gboolean retval = TRUE;
-	GList *l;
-	char *foldkey;
-
-	foldkey = g_utf8_casefold (key, -1);
-
-	for (l = view->priv->search_columns; l != NULL && retval == TRUE; l = g_list_next (l)) {
-		GValue a_value = { 0, };
-		GType type;
-		const char *stra;
-		RhythmDBQueryType col;
-
-		col = GPOINTER_TO_INT (l->data);
-
-		gtk_tree_model_get_value (model, iter, col, &a_value);
-		type = gtk_tree_model_get_column_type (model, col);
-
-		switch (G_TYPE_FUNDAMENTAL (type))
-		{
-		case G_TYPE_STRING:
-			stra = g_value_get_string (&a_value);
-
-			if (stra != NULL) {
-				char *folda = g_utf8_casefold (stra, -1);
-
-				if (strstr (folda, foldkey) != NULL)
-					retval = FALSE;
-
-				g_free (folda);
-			}
-
-			break;
-		case G_TYPE_INT:
-			if (g_value_get_int (&a_value) == atoi (key))
-				retval = FALSE;
-
-			break;
-		case G_TYPE_LONG:
-			if (g_value_get_long (&a_value) == atol (key))
-				retval = FALSE;
-
-			break;
-		}
-
-		g_value_unset (&a_value);
-	}
-
-	g_free (foldkey);
-
-	return retval;
-}
-
-static gint
-propid_from_name (const char *name)
-{
-	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
-	GEnumClass *unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
-	GEnumValue *ev;
-	int ret;
-
-	ev = g_enum_get_value_by_name (prop_class, name);
-	if (!ev)
-		ev = g_enum_get_value_by_name (unsaved_prop_class, name);
-	if (ev)
-		ret = ev->value;
-	else
-		ret = -1;
-	return ret;
-}
-
-static GList *
-parse_columns_as_glist (const char *str)
-{
-	GList *ret = NULL;
-	char **parts = g_strsplit (str, ",", 0);
-	int i;
-
-	for (i = 0; parts != NULL && parts[i] != NULL; i++)
-		ret = g_list_append (ret, GINT_TO_POINTER (propid_from_name (parts[i])));
-
-	g_strfreev (parts);
-
-	return ret;
-}
-
 /* Sweet name, eh? */
 struct RBEntryViewCellDataFuncData {
 	RBEntryView *view;
 	RhythmDBPropType propid;
 };
+
+static gint
+rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				RBEntryView *view)
+{
+	gint a_int, b_int;
+	const char *a_str, *b_str;
+	gint ret;
+
+	rhythmdb_read_lock (view->priv->db);
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		goto out;
+
+	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
+	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
+
+	if (a_int != b_int) {
+		ret = (a_int < b_int ? -1 : 1);
+		goto out;
+	}
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		goto out;
+
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_TITLE_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		goto out;
+
+	ret = 0;
+
+out:
+	rhythmdb_read_unlock (view->priv->db);
+
+	return ret;
+}
+
+
+static gint
+rb_entry_view_int_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			     struct RBEntryViewCellDataFuncData *data)
+{
+	gint a_val, b_val;
+	gint ret;
+
+	rhythmdb_read_lock (data->view->priv->db);
+
+	a_val = rhythmdb_entry_get_int (data->view->priv->db, a, data->propid);
+	b_val = rhythmdb_entry_get_int (data->view->priv->db, b, data->propid);
+
+	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
+
+	rhythmdb_read_unlock (data->view->priv->db);
+
+	return ret;
+}
+
+static gint
+rb_entry_view_long_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+			      struct RBEntryViewCellDataFuncData *data)
+{
+	glong a_val, b_val;
+	gint ret;
+
+	rhythmdb_read_lock (data->view->priv->db);
+
+	a_val = rhythmdb_entry_get_long (data->view->priv->db, a, data->propid);
+	b_val = rhythmdb_entry_get_long (data->view->priv->db, b, data->propid);
+
+	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
+
+	rhythmdb_read_unlock (data->view->priv->db);
+
+	return ret;
+}
+
+static gint
+rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				struct RBEntryViewCellDataFuncData *data)
+{
+	const char *a_val, *b_val;
+	gint ret;
+
+	rhythmdb_read_lock (data->view->priv->db);
+
+	a_val = rhythmdb_entry_get_string (data->view->priv->db, a, data->propid);
+	b_val = rhythmdb_entry_get_string (data->view->priv->db, b, data->propid);
+
+	ret = strcmp (a_val, b_val);
+
+	rhythmdb_read_unlock (data->view->priv->db);
+
+	return ret;
+}
 
 static void
 rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -816,7 +742,7 @@ rb_entry_view_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer
 	RhythmDBEntry *entry;
 	GdkPixbuf *pixbuf;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (view, iter);
 
 	if (entry == view->priv->playing_entry && view->priv->playing)
 		pixbuf = view->priv->playing_pixbuf;
@@ -836,7 +762,7 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	RhythmDBEntry *entry;
 	guint rating;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (view, iter);
 
 	rhythmdb_read_lock (view->priv->db);
 
@@ -856,7 +782,7 @@ rb_entry_view_intstr_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	char *str;
 	int val;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (data->view, iter);
 
 	rhythmdb_read_lock (data->view->priv->db);
 
@@ -881,7 +807,7 @@ rb_entry_view_play_count_cell_data_func (GtkTreeViewColumn *column, GtkCellRende
 	int i;
 	char *str;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (data->view, iter);
 
 	rhythmdb_read_lock (data->view->priv->db);
 
@@ -908,7 +834,7 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	long duration;
 	int minutes, seconds;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (data->view, iter);
 
 	rhythmdb_read_lock (data->view->priv->db);
 
@@ -936,7 +862,7 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	RhythmDBEntry *entry;
 	const char *str;
 
-	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+	entry = entry_from_tree_iter (data->view, iter);
 
 	rhythmdb_read_lock (data->view->priv->db);
 
@@ -948,26 +874,216 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 }
 
 static void
-rb_entry_view_construct (RBEntryView *view)
+rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 {
-	xmlDocPtr doc;
-	xmlNodePtr child;
-	char *tmp;
-	char *tips;
-	GtkTooltips *tool_tips;
-	gboolean tooltip_active = FALSE;
-	RhythmDBQueryModel *query_model;
-	GtkTreeViewColumn *gcolumn;
+	GtkSortType order;
+	gboolean is_sorted;
+	GList *columns, *tem;
+
+	view->priv->sorting_column = column;
+	rb_debug ("sorting on column %p", column);
+
+	is_sorted = gtk_tree_view_column_get_sort_indicator (column);
+
+	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
+	for (tem = columns; tem; tem = tem->next)
+		gtk_tree_view_column_set_sort_indicator (tem->data, FALSE); 
+	g_list_free (columns);
+  
+	if (is_sorted) {
+		order = gtk_tree_view_column_get_sort_order (column);
+		if (order == GTK_SORT_ASCENDING)
+			order = GTK_SORT_DESCENDING;
+		else
+			order = -1;
+	} else
+		order = GTK_SORT_ASCENDING;
+
+	if (order != -1) {
+		gtk_tree_view_column_set_sort_indicator (column, TRUE);
+		gtk_tree_view_column_set_sort_order (column, order);
+
+		rb_debug ("emitting sort order changed");
+		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0); 
+	}
+}
+
+void
+rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gboolean is_default)
+{
+	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
-	int width;
-	guint colnum;
+	struct RBEntryViewCellDataFuncData *cell_data;
+	struct RBEntryViewCellDataFuncData *sort_data;
+	const char *title = NULL;
+	GtkTreeCellDataFunc cell_data_func = NULL;
+	GCompareDataFunc sort_func = NULL;
+	gpointer real_sort_data = NULL;
+	RhythmDBPropType propid;
 
-	tool_tips = gtk_tooltips_new ();
-	gtk_tooltips_enable (tool_tips);
+	column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
 
-	view->priv->propid_column_map = g_hash_table_new (NULL, NULL);
-	view->priv->allowed_properties = g_hash_table_new (NULL, NULL);
+	if (coltype == RB_ENTRY_VIEW_COL_RATING) {
+		guint width;
 
+		sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
+		sort_data->view = view;
+		sort_data->propid = RHYTHMDB_PROP_RATING;
+
+		renderer = rb_cell_renderer_rating_new ();
+		gtk_tree_view_column_pack_start (column, renderer, TRUE);
+		gtk_tree_view_column_set_cell_data_func (column, renderer,
+							 (GtkTreeCellDataFunc)
+							 rb_entry_view_rating_cell_data_func,
+							 view,
+							 NULL);
+		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
+		gtk_tree_view_column_set_fixed_width (column, width * 5 + 5);
+		g_signal_connect_object (renderer,
+					 "rated",
+					 G_CALLBACK (rb_entry_view_rated_cb),
+					 G_OBJECT (view),
+					 0);
+		real_sort_data = sort_data;
+		title = _("_Rating");
+		goto append;
+	}
+
+	cell_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
+	cell_data->view = view;
+	sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
+	sort_data->view = view;
+
+	switch (coltype)
+	{
+	case RB_ENTRY_VIEW_COL_TRACK_NUMBER:
+		propid = RHYTHMDB_PROP_TRACK_NUMBER;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_intstr_cell_data_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_normal_sort_func;
+		real_sort_data = view;
+		title = _("Tra_ck");
+		break;
+	case RB_ENTRY_VIEW_COL_TITLE:
+		propid = RHYTHMDB_PROP_TITLE;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_TITLE_SORT_KEY;
+		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		title = _("_Title");
+		break;
+	case RB_ENTRY_VIEW_COL_ARTIST:
+		propid = RHYTHMDB_PROP_ARTIST;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_ARTIST_SORT_KEY;
+		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		title = _("Art_ist");
+		break;
+	case RB_ENTRY_VIEW_COL_ALBUM:
+		propid = RHYTHMDB_PROP_ALBUM;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_ALBUM_SORT_KEY;
+		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		title = _("A_lbum");
+		break;
+	case RB_ENTRY_VIEW_COL_GENRE:
+		propid = RHYTHMDB_PROP_GENRE;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_GENRE_SORT_KEY;
+		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
+		title = _("Ge_nre");
+		break;
+	case RB_ENTRY_VIEW_COL_DURATION:
+		propid = RHYTHMDB_PROP_DURATION;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
+		sort_data->propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
+		title = _("Ti_me");
+		break;
+	case RB_ENTRY_VIEW_COL_RATING:
+		g_assert_not_reached ();
+		break;
+	case RB_ENTRY_VIEW_COL_PLAY_COUNT:
+		propid = RHYTHMDB_PROP_PLAY_COUNT;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
+		sort_data->propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
+		title = _("_Play Count");
+		break;
+	case RB_ENTRY_VIEW_COL_LAST_PLAYED:
+		propid = RHYTHMDB_PROP_LAST_PLAYED;
+		cell_data->propid = RHYTHMDB_PROP_LAST_PLAYED_STR;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
+		sort_data->propid = RHYTHMDB_PROP_LAST_PLAYED;
+		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
+		title = _("L_ast Played");
+		break;
+	}
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_column_pack_start (column, renderer, TRUE);
+	gtk_tree_view_column_set_cell_data_func (column, renderer,
+						 cell_data_func, cell_data, g_free);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
+append:
+	rb_entry_view_append_column_custom (view, column, is_default, title, sort_func,
+					    real_sort_data ? real_sort_data : sort_data);
+	g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (propid), column);
+}
+
+void
+rb_entry_view_append_column_custom (RBEntryView *view,
+				    GtkTreeViewColumn *column,
+				    gboolean is_default,
+				    const char *title,
+				    GCompareDataFunc sort_func, gpointer user_data)
+{
+	struct RBEntryViewColumnSortData *sortdata;
+
+	gtk_tree_view_column_set_resizable (column, TRUE);
+	gtk_tree_view_column_set_title (column, title);
+	gtk_tree_view_column_set_reorderable (column, FALSE);
+	gtk_tree_view_column_set_clickable (column, TRUE);
+
+	g_signal_connect_object (G_OBJECT (column), "clicked",
+				 G_CALLBACK (rb_entry_view_column_clicked_cb),
+				 view, 0);
+
+	rb_debug ("appending column: %p (%s)", column, title);
+	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
+
+	sortdata = g_new (struct RBEntryViewColumnSortData, 1);
+	sortdata->func = (GCompareDataFunc) sort_func;
+	sortdata->data = user_data;
+	g_hash_table_insert (view->priv->column_sort_data_map, column, sortdata);
+
+	if (is_default) {
+		view->priv->sorting_column = column;
+		gtk_tree_view_column_set_sort_indicator (column, TRUE);
+	}
+
+	rb_entry_view_sync_columns_visible (view);
+}
+
+static GObject *
+rb_entry_view_constructor (GType type, guint n_construct_properties,
+			   GObjectConstructParam *construct_properties)
+{
+	RBEntryView *view;
+	RBEntryViewClass *klass;
+	GObjectClass *parent_class;  
+	klass = RB_ENTRY_VIEW_CLASS (g_type_class_peek (type));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	view = RB_ENTRY_VIEW (parent_class->constructor (type, n_construct_properties,
+							 construct_properties));
 
 	view->priv->treeview = GTK_WIDGET (rb_tree_view_new ());
 
@@ -988,277 +1104,47 @@ rb_entry_view_construct (RBEntryView *view)
 			         view,
 				 0);
 
+	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
+	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
+	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
+
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
-	/* load layout */
-	rb_debug ("loading layout from %s", view->priv->view_desc_file);
-	doc = xmlParseFile (view->priv->view_desc_file);
-
-	if (doc == NULL) {
-		rb_error_dialog (_("Failed to parse %s as EntryView layout file"),
-				 view->priv->view_desc_file);
-		return;
-	}
-
-	child = doc->children; 	
-	while (child && child->type != XML_ELEMENT_NODE) {
-		child = child->next;
-	}
-
-	tmp = xmlGetProp (child, "rules-hint");
-	if (tmp != NULL)
-		gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
-	g_free (tmp);
-
-	tmp = xmlGetProp (child, "headers-visible");
-	if (tmp != NULL)
-		gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), bool_to_int (tmp));
-	g_free (tmp);
-
-#ifdef USE_GTK_TREE_VIEW_WORKAROUND
-	tmp = xmlGetProp (child, "use-column-sizing-hack");
-	if (tmp != NULL)
-		view->priv->use_column_sizing_hack = TRUE;
-	g_free (tmp);
-#endif
-
-	tmp = xmlGetProp (child, "selection-mode");
-	if (tmp != NULL) {
-		GEnumClass *class = g_type_class_ref (GTK_TYPE_SELECTION_MODE);
-		GEnumValue *ev = g_enum_get_value_by_name (class, tmp);
-		gtk_tree_selection_set_mode (view->priv->selection, ev->value);
-		g_type_class_unref (class);
-	}
-	g_free (tmp);
-
-	tmp = xmlGetProp (child, "search-order");
-	if (tmp != NULL)
-		view->priv->search_columns = parse_columns_as_glist (tmp);
-	g_free (tmp);
-
-	tmp = xmlGetProp (child, "allowed-columns");
-	if (tmp != NULL) {
-		GList *l = parse_columns_as_glist (tmp);
-		for (; l != NULL; l = g_list_next (l)) {
-			g_hash_table_insert (view->priv->allowed_properties,
-					     l->data, GINT_TO_POINTER (1));
-		}
-		g_list_free (l);
-	}
-	rb_debug ("allowed properties: %s", tmp);
-	g_free (tmp);
-
-	tmp = xmlGetProp (child, "keep-selection");
-	if (tmp != NULL)
-		view->priv->keep_selection = bool_to_int (tmp);
-	g_free (tmp);
-
-	tmp = xmlGetProp (child, "searchable");
-	if (tmp != NULL && bool_to_int (tmp)) {
-                gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), TRUE);
-                gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
-						     (GtkTreeViewSearchEqualFunc) rb_entry_view_search_equal, view, NULL);
-	}
-	g_free (tmp);
-
-	view->priv->columns_key = xmlGetProp (child, "column-visibility-pref");
-
-        /* Playing icon column */
-	gcolumn = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
-	renderer = rb_cell_renderer_pixbuf_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-	gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
-						 (GtkTreeCellDataFunc)
-						 rb_entry_view_playing_cell_data_func,
-						 view,
-						 NULL);
-	gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-	gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), gcolumn);
-
-
-	colnum = 1;
-	for (child = child->children; child != NULL; child = child->next) {
-		char *propname;
-		gint proptype;
-		char *title = NULL;
-		gboolean reorderable = FALSE, resizable = FALSE;
-		gboolean default_sort_column = FALSE, expand = FALSE;
-		GList *sort_order = NULL;
-		GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
-		GEnumClass *unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
-
-		/* get props from the xml file */
-		propname = xmlGetProp (child, "column");
-		if (propname == NULL)
-			continue;
-		else {
-			proptype = propid_from_name (propname);
-			if (proptype < 0) {
-				fprintf (stderr, "Unknown column %s!\n", propname);
-				continue;
-			}
-		}
-
-		title = xmlGetProp (child, "_title");
-
-		tmp = xmlGetProp (child, "reorderable");
-		if (tmp != NULL)
-			reorderable = bool_to_int (tmp);
-		g_free (tmp);
-
-		tips = xmlGetProp (child, "tooltip");
-		if (tips != NULL)
-		  tooltip_active = TRUE;
-
-		tmp = xmlGetProp (child, "resizable");
-		if (tmp != NULL)
-			resizable = bool_to_int (tmp);
-		g_free (tmp);
-
-		tmp = xmlGetProp (child, "default-sort-column");
-		if (tmp != NULL)
-			default_sort_column = bool_to_int (tmp);
-		g_free (tmp);
-
-		tmp = xmlGetProp (child, "expand");
-		if (tmp != NULL)
-			expand = bool_to_int (tmp);
-		g_free (tmp);
-
-		tmp = xmlGetProp (child, "sort-order");
-		if (tmp != NULL) {
-			char **parts = g_strsplit (tmp, " ", 0);
-			int i;
-
-			for (i = 0; parts != NULL && parts[i] != NULL; i++) {
-				gint prop = propid_from_name (parts[i]);
-				g_assert (prop >= 0 && prop < RHYTHMDB_NUM_PROPERTIES);
-				sort_order = g_list_append (sort_order, GINT_TO_POINTER (prop));
-			}
-
-			g_strfreev (parts);
-		}
-		g_free (tmp);
-
-		g_type_class_unref (prop_class);
-		g_type_class_unref (unsaved_prop_class);
-
-		/* so we got all info, now we can actually build the column */
-		gcolumn = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
-		switch (proptype)
-		{
-		case RHYTHMDB_PROP_RATING:
-			renderer = rb_cell_renderer_rating_new ();
-			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-			gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
-								 (GtkTreeCellDataFunc)
-								 rb_entry_view_rating_cell_data_func,
-								 view,
-								 NULL);
-			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
-			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-			gtk_tree_view_column_set_fixed_width (gcolumn, width * 5 + 5);
-
-			g_signal_connect_object (renderer,
-						 "rated",
-					         G_CALLBACK (rb_entry_view_rated_cb),
-						 G_OBJECT (view),
-						 0);
-
-			break;
-		default:
-		{
-			struct RBEntryViewCellDataFuncData *data =
-				g_new0 (struct RBEntryViewCellDataFuncData, 1);
-			GtkTreeCellDataFunc func;
-			
-			data->view = view;
-			data->propid = proptype;
-
-			if (data->propid == RHYTHMDB_PROP_TRACK_NUMBER)
-				func = (GtkTreeCellDataFunc) rb_entry_view_intstr_cell_data_func;
-			else if (data->propid == RHYTHMDB_PROP_PLAY_COUNT)
-				func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
-			else if (data->propid == RHYTHMDB_PROP_DURATION)
-				func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
-			else
-				func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
-
-			renderer = gtk_cell_renderer_text_new ();
-			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
-			gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
-								 func, data, g_free);
-			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-
-			break;
-		}
-		}
-
-		rb_tree_view_column_set_sort_order (RB_TREE_VIEW_COLUMN (gcolumn),
-						    sort_order);
-							    
-		gtk_tree_view_column_set_resizable (gcolumn, resizable);
-
-		if (title != NULL) {
-			gtk_tree_view_column_set_title (gcolumn, _(title));
-			g_free (title);
-		}
-
-		gtk_tree_view_column_set_reorderable (gcolumn, reorderable);
-
-		gtk_tree_view_column_set_clickable (gcolumn, TRUE);
-
-		if (sort_order != NULL)
-			gtk_tree_view_column_set_sort_column_id (gcolumn, colnum);		
-
-		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (gcolumn), expand);
-
-		if (default_sort_column == TRUE) {
-			view->priv->sorting_enabled = TRUE;
-			view->priv->saved_sort_column_id = colnum;
-			view->priv->saved_sort_type = GTK_SORT_ASCENDING;
-		}
-
-		rb_debug ("appending column; %s", xmlGetProp (child, "column"));
-		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
-					     gcolumn);
-
-
-		if (tooltip_active) {
-		  gtk_tooltips_set_tip (GTK_TOOLTIPS(tool_tips), 
-					GTK_WIDGET (gcolumn->button), 
-					tips, NULL);
-		  tooltip_active = FALSE;
-		  g_free (tips);
-		}
-		g_hash_table_insert (view->priv->propid_column_map, GINT_TO_POINTER (proptype),
-				     gcolumn);
-		colnum++;
-	}
-
-	if (view->priv->columns_key != NULL)
 	{
-		char *config = eel_gconf_get_string (view->priv->columns_key);
-
-		if (config != NULL) {
-			rb_entry_view_columns_parse (view, config);
-
-			view->priv->gconf_notification_id = 
-				eel_gconf_notification_add (view->priv->columns_key,
-							    rb_entry_view_columns_config_changed_cb,
-							    view);
-
-			g_free (config);
-		}
+		GtkTreeViewColumn *column;
+		GtkCellRenderer *renderer;
+		guint width;
+		
+		/* Playing icon column */
+		column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
+		renderer = rb_cell_renderer_pixbuf_new ();
+		gtk_tree_view_column_pack_start (column, renderer, TRUE);
+		gtk_tree_view_column_set_cell_data_func (column, renderer,
+							 (GtkTreeCellDataFunc)
+							 rb_entry_view_playing_cell_data_func,
+							 view,
+							 NULL);
+		gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
+		gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
+		gtk_tree_view_column_set_fixed_width (column, width + 5);
+		gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview), column);
 	}
 
-	xmlFreeDoc (doc);
+	view->priv->gconf_notification_id = 
+		eel_gconf_notification_add (CONF_UI_COLUMNS_SETUP,
+					    rb_entry_view_columns_config_changed_cb,
+					    view);
+	
+	{
+		RhythmDBQueryModel *query_model;
+		query_model = rhythmdb_query_model_new_empty (view->priv->db);
+		rb_entry_view_set_query_model (view, query_model);
+		g_object_unref (G_OBJECT (query_model));
+	}
+		
+	view->priv->model_poll_id = g_idle_add ((GSourceFunc) poll_model, view);
 
-	query_model = rhythmdb_query_model_new_empty (view->priv->db);
-	rb_entry_view_set_query_model (view, query_model);
-	g_object_unref (G_OBJECT (query_model));
+	return G_OBJECT (view);
 }
 
 static void
@@ -1313,79 +1199,57 @@ rb_entry_view_get_playing_entry (RBEntryView *view)
 RhythmDBEntry *
 rb_entry_view_get_first_entry (RBEntryView *view)
 {
-	GtkTreeIter entry_iter, sort_iter;
-	RhythmDBEntry *entry;
+	GtkTreeIter iter;
 
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter)) {
-		gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-								&entry_iter, &sort_iter);
-		gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-				    &entry_iter, 0, &entry, -1);
-		return entry;
-	}
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->query_model), &iter))
+		return entry_from_tree_iter (view, &iter);
+
 	return NULL;
 }
 
 RhythmDBEntry *
 rb_entry_view_get_next_entry (RBEntryView *view)
 {
-	GtkTreeIter entry_iter, sort_iter;
-	RhythmDBEntry *entry;
+	GtkTreeIter iter;
 
 	if (view->priv->playing_entry == NULL)
 		return NULL;
 
 	if (!rhythmdb_query_model_iter_from_entry (view->priv->query_model,
 						   view->priv->playing_entry,
-						   &entry_iter))
+						   &iter))
 		return NULL;
-	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&sort_iter, &entry_iter);
 	
-	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->sortmodel),
-				      &sort_iter)) {
-		gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-								&entry_iter, &sort_iter);
-		gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-				    &entry_iter, 0, &entry, -1);
-		return entry;
-	}
+	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->query_model),
+				      &iter))
+		return entry_from_tree_iter (view, &iter);
+
 	return NULL;
 }
 
 RhythmDBEntry *
 rb_entry_view_get_previous_entry (RBEntryView *view)
 {
-	GtkTreeIter entry_iter, sort_iter;
+	GtkTreeIter iter;
 	GtkTreePath *path;
-	RhythmDBEntry *entry;
-
 
 	if (view->priv->playing_entry == NULL)
 		return NULL;
 	
 	if (!rhythmdb_query_model_iter_from_entry (view->priv->query_model,
 						   view->priv->playing_entry,
-						   &entry_iter))
+						   &iter))
 		return NULL;
-	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&sort_iter, &entry_iter);
 
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), &iter);
 	g_assert (path);
 	if (!gtk_tree_path_prev (path)) {
 		gtk_tree_path_free (path);
 		return NULL;
 	}
 
-	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter,
-					   path));
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&entry_iter, &sort_iter);
-
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-			    &entry_iter, 0, &entry, -1);
-	return entry;
+	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model), &iter, path));
+	return entry_from_tree_iter (view, &iter);
 }
 
 static gboolean
@@ -1394,15 +1258,10 @@ harvest_entries (GtkTreeModel *model,
 		 GtkTreeIter *iter,
 		 void **data)
 {
-	GtkTreeModelSort *sortmodel = GTK_TREE_MODEL_SORT (model);
-	RhythmDBQueryModel *query_model = RHYTHMDB_QUERY_MODEL (sortmodel->child_model);
 	GList **list = (GList **) data;
-	GtkTreeIter iter2;
 	RhythmDBEntry *entry;
 
-	gtk_tree_model_sort_convert_iter_to_child_iter (sortmodel, &iter2, iter);
-
-	gtk_tree_model_get (GTK_TREE_MODEL (query_model), &iter2, 0, &entry, -1);
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
 
 	*list = g_list_append (*list, entry);
 
@@ -1426,9 +1285,8 @@ rb_entry_view_get_selected_entries (RBEntryView *view)
 RhythmDBEntry *
 rb_entry_view_get_random_entry (RBEntryView *view)
 {
-	RhythmDBEntry *entry;
 	GtkTreePath *path;
-	GtkTreeIter iter, iter2;
+	GtkTreeIter iter;
 	char *path_str;
 	int index, n_rows;
 
@@ -1444,129 +1302,12 @@ rb_entry_view_get_random_entry (RBEntryView *view)
 	path = gtk_tree_path_new_from_string (path_str);
 	g_free (path_str);
 
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel),
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model),
 				 &iter, path);
 
 	gtk_tree_path_free (path);
 
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&iter2, &iter);
-
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-			    &iter2, 0, &entry, -1);
-
-	return entry;
-}
-
-static int
-rb_entry_view_sort_func (GtkTreeModel *model,
-			 GtkTreeIter *a,
-			 GtkTreeIter *b,
-			 gpointer user_data)
-{
-	RBEntryViewSortData *data;
-	GList *order;
-	GList *l;
-	int retval = 0;
-	RBTreeViewColumn *gcolumn;
-	RBEntryView *view;
-
-	data = user_data;
-	view = RB_ENTRY_VIEW (data->view);
-	gcolumn = RB_TREE_VIEW_COLUMN (data->column);
-	order = rb_tree_view_column_get_sort_order (gcolumn);
-
-	for (l = order; l != NULL && retval == 0; l = g_list_next (l)) {
-		RhythmDBPropType prop = GPOINTER_TO_INT (l->data);
-		GType type;
-		GValue a_entry = {0, };
-		GValue b_entry = {0, };
-		GValue a_value = {0, };
-		GValue b_value = {0, };
-		const char *stra, *strb;
-		char *folda, *foldb;
-
-		/* +1 offset for playing column */
-		gtk_tree_model_get_value (model, a, prop+1, &a_entry);
-		gtk_tree_model_get_value (model, b, prop+1, &b_entry);
-
-		type = rhythmdb_get_property_type (view->priv->db, prop);
-		g_value_init (&a_value, type);
-		g_value_init (&b_value, type);
-
-		rhythmdb_read_lock (view->priv->db);
-		rhythmdb_entry_get (view->priv->db,
-				    g_value_get_pointer (&a_entry),
-				    prop, &a_value);
-		rhythmdb_entry_get (view->priv->db,
-				    g_value_get_pointer (&b_entry),
-				    prop, &b_value);
-		rhythmdb_read_unlock (view->priv->db);
-
-		switch (G_TYPE_FUNDAMENTAL (type))
-		{
-		case G_TYPE_BOOLEAN:
-			if (g_value_get_boolean (&a_value) < g_value_get_boolean (&b_value))
-				retval = -1;
-			else if (g_value_get_boolean (&a_value) == g_value_get_boolean (&b_value))
-				retval = 0;
-			else
-				retval = 1;
-			break;
-		case G_TYPE_STRING:
-			stra = g_value_get_string (&a_value);
-			strb = g_value_get_string (&b_value);
-			if (stra == NULL) stra = "";
-			if (strb == NULL) strb = "";
-
-			if (prop == RHYTHMDB_PROP_ARTIST_SORT_KEY ||
-			    prop == RHYTHMDB_PROP_ALBUM_SORT_KEY ||
-			    prop == RHYTHMDB_PROP_TITLE_SORT_KEY)
-				retval = strcmp (stra, strb);
-			else {
-				folda = g_utf8_casefold (stra, g_utf8_strlen (stra, -1));
-				foldb = g_utf8_casefold (strb, g_utf8_strlen (strb, -1));
-				retval = g_utf8_collate (folda, foldb);
-				g_free (folda);
-				g_free (foldb);
-			}
-			break;
-		case G_TYPE_INT:
-			if (g_value_get_int (&a_value) < g_value_get_int (&b_value))
-				retval = -1;
-			else if (g_value_get_int (&a_value) == g_value_get_int (&b_value))
-				retval = 0;
-			else
-				retval = 1;
-			break;
-		case G_TYPE_LONG:
-			if (g_value_get_long (&a_value) < g_value_get_long (&b_value))
-				retval = -1;
-			else if (g_value_get_long (&a_value) == g_value_get_long (&b_value))
-				retval = 0;
-			else
-				retval = 1;
-			break;
-		case G_TYPE_OBJECT:
-			if ((g_value_get_object (&a_value) == NULL) && (g_value_get_object (&b_value) != NULL))
-				retval = -1;
-			else if ((g_value_get_object (&a_value) != NULL) && (g_value_get_object (&b_value) == NULL))
-				retval = 1;
-			else
-				retval = 0;
-			break;
-		default:
-			g_warning ("Attempting to sort on invalid type %s\n", g_type_name (type));
-			break;
-		}
-
-		g_value_unset (&a_value);
-		g_value_unset (&b_value);
-		g_value_unset (&a_entry);
-		g_value_unset (&b_entry);
-	}
-
-	return retval;
+	return entry_from_tree_iter (view, &iter);
 }
 
 static gboolean
@@ -1646,54 +1387,44 @@ rb_entry_view_row_activated_cb (GtkTreeView *treeview,
 			       GtkTreeViewColumn *column,
 			       RBEntryView *view)
 {
-	GtkTreeIter iter, iter2;
 	RhythmDBEntry *entry;
 
 	rb_debug ("row activated");
-	gtk_tree_model_get_iter (view->priv->sortmodel, &iter, path);
-	gtk_tree_model_sort_convert_iter_to_child_iter
-		(GTK_TREE_MODEL_SORT (view->priv->sortmodel), &iter2, &iter);
 
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), &iter2, 0,
-			    &entry, -1);
+	entry = entry_from_tree_path (view, path);
 
 	rb_debug ("emitting entry activated");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ACTIVATED], 0, entry);
 }
 
 static void
-gtk_tree_model_sort_row_inserted_cb (GtkTreeModel *model,
-				     GtkTreePath *path,
-				     GtkTreeIter *iter,
-				     RBEntryView *view)
+rb_entry_view_row_inserted_cb (GtkTreeModel *model,
+			       GtkTreePath *path,
+			       GtkTreeIter *iter,
+			       RBEntryView *view)
 {
-	RhythmDBEntry *entry;
-	gtk_tree_model_get (model, iter, 0, &entry, -1);
+	RhythmDBEntry *entry = entry_from_tree_iter (view, iter);
+	rb_debug ("row inserted");
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }
 
 static void
-gtk_tree_model_sort_row_deleted_cb (GtkTreeModel *model,
-				    GtkTreePath *path,
-			            RBEntryView *view)
+rb_entry_view_row_deleted_cb (GtkTreeModel *model,
+			      GtkTreePath *path,
+			      RBEntryView *view)
 {
+	rb_debug ("row deleted");
 	queue_changed_sig (view);
 }
 
 static void
-gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
-				    GtkTreePath *path,
-				    GtkTreeIter *iter,
-			            RBEntryView *view)
+rb_entry_view_row_changed_cb (GtkTreeModel *model,
+			      GtkTreePath *path,
+			      GtkTreeIter *iter,
+			      RBEntryView *view)
 {
-	queue_changed_sig (view);
-}
-
-static void
-gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
-					  RBEntryView *view)
-{
+	rb_debug ("row changed");
 	queue_changed_sig (view);
 }
 
@@ -1726,7 +1457,7 @@ void
 rb_entry_view_select_entry (RBEntryView *view,
 			    RhythmDBEntry *entry)
 {
-	GtkTreeIter entry_iter, sort_iter;
+	GtkTreeIter iter;
 
 	if (entry == NULL)
 		return;
@@ -1736,15 +1467,9 @@ rb_entry_view_select_entry (RBEntryView *view,
 	rb_entry_view_select_none (view);
 
 	rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-					      entry, &entry_iter);
+					      entry, &iter);
 
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), &entry_iter, 0,
-			    &entry, -1);
-
-	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&sort_iter, &entry_iter);
-
-	gtk_tree_selection_select_iter (view->priv->selection, &sort_iter);
+	gtk_tree_selection_select_iter (view->priv->selection, &iter);
 
 	view->priv->selection_lock = FALSE;
 }
@@ -1766,12 +1491,8 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 			      GtkTreeIter *iter)
 {
 	GtkTreePath *path;
-	GtkTreeIter sort_iter;
 
-	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&sort_iter, iter);
-
-	path = gtk_tree_model_get_path (view->priv->sortmodel, &sort_iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), iter);
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
 				      TRUE, 0.5, 0.0);
@@ -1798,7 +1519,6 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 				RhythmDBEntry *entry,
 				GtkTreeIter *iter)
 {
-	GtkTreeIter iter2;
 	GtkTreePath *path;
 	GdkRectangle rect;
 
@@ -1808,12 +1528,9 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 		return FALSE;
 
 	rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-					      entry, &iter2);
+					      entry, iter);
 
-	gtk_tree_model_sort_convert_child_iter_to_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							iter, &iter2);
-
-	path = gtk_tree_model_get_path (view->priv->sortmodel, iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), iter);
 	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (view->priv->treeview),
 				     path,
 				     gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
@@ -1867,66 +1584,73 @@ rb_entry_view_columns_config_changed_cb (GConfClient* client,
 					gpointer user_data)
 {
 	RBEntryView *view = user_data;
-	GConfValue *value;
-	const char *str;
 
 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
 
-	value = gconf_entry_get_value (entry);
-	str = gconf_value_get_string (value);
+	rb_entry_view_sync_columns_visible (view);
+}
 
-	rb_entry_view_columns_parse (view, str);
+static gint
+propid_from_name (const char *name)
+{
+	GEnumClass *prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	GEnumClass *unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
+	GEnumValue *ev;
+	int ret;
+
+	ev = g_enum_get_value_by_name (prop_class, name);
+	if (!ev)
+		ev = g_enum_get_value_by_name (unsaved_prop_class, name);
+	if (ev)
+		ret = ev->value;
+	else
+		ret = -1;
+	return ret;
 }
 
 static void
-rb_entry_view_columns_parse (RBEntryView *view,
-			    const char *config)
+set_column_not_visible (guint propid, GtkTreeViewColumn *column, gpointer unused)
 {
-	int i;
+	/* title is always visible */
+	if (propid == RHYTHMDB_PROP_TITLE)
+		return;
+	
+	gtk_tree_view_column_set_visible (column, FALSE);
+}
+
+static void
+rb_entry_view_sync_columns_visible (RBEntryView *view)
+{
 	char **items;
-	GList *visible_columns = NULL;
-	GtkTreeViewColumn *column = NULL;
+	GList *visible_properties = NULL, *tem;
+	char *config = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (config != NULL);
 
-	/* the list of visible columns */
+	g_hash_table_foreach (view->priv->propid_column_map, (GHFunc) set_column_not_visible, NULL);
+
 	items = g_strsplit (config, ",", 0);
 	if (items != NULL) {
-		for (i = 0; items[i] != NULL; i++) {
+		int i;
+		for (i = 0; items[i] != NULL && *(items[i]); i++) {
 			int value = propid_from_name (items[i]);
 
-			if ((value >= 0)
-			    && (value < RHYTHMDB_NUM_PROPERTIES)) {
-				if (g_hash_table_lookup (view->priv->allowed_properties,
-							 GINT_TO_POINTER (value)) == NULL) {
-					rb_debug ("property column %s is not allowed", items[i]);
-					continue;
-				}
-				visible_columns = g_list_append (visible_columns,
-								 GINT_TO_POINTER (value));
-			}
+			g_assert ((value >= 0) && (value < RHYTHMDB_NUM_PROPERTIES));
+			visible_properties = g_list_append (visible_properties, GINT_TO_POINTER (value));
 		}
-
 		g_strfreev (items);
 	}
 
-	/* set the visibility for all columns */
-	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES+1; i++) {
-		gboolean visible;
-		column = g_hash_table_lookup (view->priv->propid_column_map,
-					      GINT_TO_POINTER (i));
-		if (column) {
-			if (i == RHYTHMDB_PROP_TITLE)
-				visible = TRUE;
-			else
-				visible = g_list_find (visible_columns, GINT_TO_POINTER (i)) != NULL;
-			gtk_tree_view_column_set_visible (column, visible);
-		}
+	for (tem = visible_properties; tem; tem = tem->next) {
+		GtkTreeViewColumn *column
+			= g_hash_table_lookup (view->priv->propid_column_map, GINT_TO_POINTER (tem->data));
+		if (column)
+			gtk_tree_view_column_set_visible (column, TRUE);
 	}
 
-	if (visible_columns != NULL)
-		g_list_free (visible_columns);
+	g_list_free (visible_properties);
+	g_free (config);
 }
 
 void
@@ -1955,26 +1679,10 @@ poll_model (RBEntryView *view)
 
 	did_sync = rhythmdb_query_model_sync (view->priv->query_model, &timeout);
 
-	if (!did_sync && !view->priv->sorting_enabled) {
-		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-						      view->priv->saved_sort_column_id,
-						      view->priv->saved_sort_type);
-		rb_debug ("enabling sorting on column %d", view->priv->saved_sort_column_id);
-		view->priv->sorting_enabled = TRUE;
-	} else if (did_sync && view->priv->sorting_enabled) {
-		gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-						      &view->priv->saved_sort_column_id,
-						      &view->priv->saved_sort_type);
-		rb_debug ("disabling sorting, saved column: %d", view->priv->saved_sort_column_id);
-		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-						      -1, GTK_SORT_ASCENDING); 
-		view->priv->sorting_enabled = FALSE;
-	}
-
 	GDK_THREADS_LEAVE ();
 
 	if (did_sync)
-		g_idle_add ((GSourceFunc) poll_model, view);
+		g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) poll_model, view, NULL);
 	else
 		g_timeout_add (300, (GSourceFunc) poll_model, view);
 

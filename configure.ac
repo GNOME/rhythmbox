@@ -405,7 +405,6 @@ data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
 data/node-views/Makefile
-data/views/Makefile
 data/rhythmbox.pc
 monkey-media/Makefile
 monkey-media/monkey-media-includes.h

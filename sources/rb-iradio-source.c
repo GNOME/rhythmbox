@@ -301,8 +301,13 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	g_object_ref (G_OBJECT (source->priv->genres));
 
 	/* set up stations view */
-	source->priv->stations = rb_entry_view_new (source->priv->db,
-						    rb_file ("rb-entry-view-iradio.xml"));
+	source->priv->stations = rb_entry_view_new (source->priv->db);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_TITLE, TRUE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_GENRE, FALSE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_RATING, FALSE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_PLAY_COUNT, FALSE);
+	rb_entry_view_append_column (source->priv->stations, RB_ENTRY_VIEW_COL_LAST_PLAYED, FALSE);
+
 	g_signal_connect (G_OBJECT (source->priv->stations),
 			  "size_allocate",
 			  G_CALLBACK (paned_size_allocate_cb),

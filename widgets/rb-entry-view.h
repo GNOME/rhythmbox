@@ -24,6 +24,7 @@
 #define __RB_ENTRY_VIEW_H
 
 #include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtktreeviewcolumn.h>
 #include <gtk/gtkdnd.h>
 
 #include "rhythmdb.h"
@@ -37,6 +38,18 @@ G_BEGIN_DECLS
 #define RB_IS_ENTRY_VIEW(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_ENTRY_VIEW))
 #define RB_IS_ENTRY_VIEW_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_ENTRY_VIEW))
 #define RB_ENTRY_VIEW_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_ENTRY_VIEW, RBEntryViewClass))
+
+typedef enum {
+	RB_ENTRY_VIEW_COL_TRACK_NUMBER,
+	RB_ENTRY_VIEW_COL_TITLE,
+	RB_ENTRY_VIEW_COL_ARTIST,
+	RB_ENTRY_VIEW_COL_ALBUM,
+	RB_ENTRY_VIEW_COL_GENRE,
+	RB_ENTRY_VIEW_COL_DURATION,
+	RB_ENTRY_VIEW_COL_RATING,
+	RB_ENTRY_VIEW_COL_PLAY_COUNT,
+	RB_ENTRY_VIEW_COL_LAST_PLAYED,
+} RBEntryViewColumn;
 
 typedef struct RBEntryViewPrivate RBEntryViewPrivate;
 
@@ -59,14 +72,21 @@ typedef struct
 
 	void (*changed)                (RBEntryView *view);
 	void (*have_selection_changed) (RBEntryView *view, gboolean have_selection);
+	void (*sort_order_changed)     (RBEntryView *view);
 
 	void (*show_popup)             (RBEntryView *view);
 } RBEntryViewClass;
 
 GType		rb_entry_view_get_type			(void);
 
-RBEntryView *	rb_entry_view_new			(RhythmDB *db,
-							 const char *view_desc_file);
+RBEntryView *	rb_entry_view_new			(RhythmDB *db);
+
+void		rb_entry_view_append_column		(RBEntryView *view, RBEntryViewColumn coltype,
+							 gboolean is_default);
+
+void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *column,
+							 gboolean is_default, const char *title,
+							 GCompareDataFunc sort_func, gpointer user_data);
 
 void		rb_entry_view_set_query_model		(RBEntryView *view,
 							 RhythmDBQueryModel *model);
