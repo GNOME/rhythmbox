@@ -106,7 +106,7 @@ if test -z "$ACLOCAL_FLAGS"; then
 	done
 fi
 
-$ACLOCAL -I macros $ACLOCAL_FLAGS
+$ACLOCAL $ACLOCAL_FLAGS
 
 glib-gettextize --force
 intltoolize --force --automake
