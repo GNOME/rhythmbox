@@ -36,7 +36,7 @@ int main(int argc, char **argv) { printf("%s\n", __func__); exit(0); }
 fi
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
-AC_COMPILE_IFELSE(
+AC_LINK_IFELSE(
 [AC_LANG_PROGRAM([[
 #define _GNU_SOURCE
 #include <stdio.h>
