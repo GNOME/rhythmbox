@@ -1,3 +1,15 @@
+2002-11-02  Olivier Martin <oleevye@wanadoo.fr>
+
+	* lib/view/rb-view-player.c: (rb_view_player_next),
+	(rb_view_player_previous):
+	* lib/view/rb-view-player.h:
+	* views/rb-group-view.c: (rb_group_view_player_init),
+	(rb_group_view_previous), (rb_group_view_jump_to_current):
+	* views/rb-library-view.c: (rb_library_view_player_init),
+	(rb_library_view_previous), (rb_library_view_jump_to_current):
+
+	Jump to current song when Back/Next is pressed.
+
 2002-11-02  Olivier  <oleevye@wanadoo.fr>
 
 	* lib/widgets/rb-rating.c: (rb_rating_expose):

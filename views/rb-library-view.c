@@ -77,6 +77,7 @@ static RBViewPlayerResult rb_library_view_have_next (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_previous (RBViewPlayer *player);
 static void rb_library_view_next (RBViewPlayer *player);
 static void rb_library_view_previous (RBViewPlayer *player);
+static void rb_library_view_jump_to_current (RBViewPlayer *player);
 static const char *rb_library_view_get_title (RBViewPlayer *player);
 static const char *rb_library_view_get_artist (RBViewPlayer *player);
 static const char *rb_library_view_get_album (RBViewPlayer *player);
@@ -602,6 +603,7 @@ rb_library_view_player_init (RBViewPlayerIface *iface)
 	iface->impl_have_previous    = rb_library_view_have_previous;
 	iface->impl_next             = rb_library_view_next;
 	iface->impl_previous         = rb_library_view_previous;
+	iface->impl_jump_to_current  = rb_library_view_jump_to_current;
 	iface->impl_get_title        = rb_library_view_get_title;
 	iface->impl_get_artist       = rb_library_view_get_artist;
 	iface->impl_get_album        = rb_library_view_get_album;
@@ -704,6 +706,19 @@ rb_library_view_previous (RBViewPlayer *player)
 	node = rb_library_view_get_previous_node (view);
 	
 	rb_library_view_set_playing_node (view, node);
+}
+
+static void 
+rb_library_view_jump_to_current (RBViewPlayer *player)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
+	RBNode *node;
+
+	node  = rb_node_view_get_playing_node (view->priv->songs);
+	if (node != NULL)
+	{
+		rb_node_view_scroll_to_node (view->priv->songs, node);
+	}
 }
 
 static const char *

@@ -64,6 +64,8 @@ typedef struct
 	void                    (*impl_next)             (RBViewPlayer *player);
 	void                    (*impl_previous)         (RBViewPlayer *player);
 
+	void			(*impl_jump_to_current)  (RBViewPlayer *player);
+
 	const char             *(*impl_get_title)        (RBViewPlayer *player);
 
 	const char             *(*impl_get_artist)       (RBViewPlayer *player);
