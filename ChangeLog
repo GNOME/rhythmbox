@@ -1,5 +1,15 @@
 2003-01-11  Jorn Baayen  <jorn@nl.linux.org>
 
+	* shell/rb-player.c: (rb_player_queue_song):
+	* shell/rb-player.h:
+	* views/rb-library-view.c: (songs_node_activated_cb),
+	(play_song_cb), (play_song_later_cb), (play_album_cb),
+	(play_album_later_cb):
+
+	Fix 'play album'.
+
+2003-01-11  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-player.c: (eos_cb):
 
 	Fix a crash.

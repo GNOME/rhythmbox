@@ -787,7 +787,7 @@ songs_node_activated_cb (RBNodeView *nodeview,
 			 RBNode *node,
 			 RBLibraryView *view)
 {
-	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+	rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, TRUE);
 }
 
 static void
@@ -795,6 +795,7 @@ play_song_cb (GtkWidget *button,
 	      RBLibraryView *view)
 {
 	GList *sel, *l;
+	gboolean once = TRUE;
 
 	sel = rb_node_view_get_selection (view->priv->songs);
 
@@ -803,7 +804,9 @@ play_song_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, once);
+
+		once = FALSE;
 	}
 
 	g_list_free (sel);
@@ -822,7 +825,7 @@ play_song_later_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, FALSE);
 	}
 
 	g_list_free (sel);
@@ -833,6 +836,7 @@ play_album_cb (GtkWidget *button,
 	       RBLibraryView *view)
 {
 	GList *sel, *l;
+	gboolean once = TRUE;
 
 	sel = rb_node_view_get_rows (view->priv->songs);
 
@@ -841,7 +845,9 @@ play_album_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, TRUE, once);
+
+		once = FALSE;
 	}
 
 	g_list_free (sel);
@@ -860,7 +866,7 @@ play_album_later_cb (GtkWidget *button,
 
 		node = (RBNode *) l->data;
 
-		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE);
+		rb_player_queue_song (rb_get_player (view->priv->rb), node, FALSE, FALSE);
 	}
 
 	g_list_free (sel);
