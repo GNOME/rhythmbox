@@ -140,6 +140,8 @@ static void info_available_cb (MonkeyMediaPlayer *player,
 			       gpointer data);
 static void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 static void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
+static void rb_shell_player_disable_buffering (RBShellPlayer *player);
+
 
 #ifdef HAVE_MMKEYS
 static void grab_mmkey (int key_code, GdkWindow *root);
@@ -1442,10 +1444,7 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (player->priv->source == source && source != NULL)
 		return;
 
-	if (player->priv->buffering) {
-		player->priv->buffering = FALSE;
-		g_object_notify (G_OBJECT (player), "buffering");
-	}
+	rb_shell_player_disable_buffering (player);
 	
 	rb_debug ("setting playing source to %p", source);
 
@@ -1616,7 +1615,9 @@ error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 		return;
 	}
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
+
+	rb_shell_player_disable_buffering (player);
 
 	if (!monkey_media_player_playing (mmplayer)) {
 		rb_debug ("mmplayer is not playing, ignoring error");
@@ -1631,7 +1632,7 @@ error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 	rb_debug ("exiting error hander");
 
  out_unlock:
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -1775,13 +1776,21 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 }
 
 static void
+rb_shell_player_disable_buffering (RBShellPlayer *player)
+{
+	if (player->priv->buffering) {
+		player->priv->buffering = FALSE;
+		g_object_notify (G_OBJECT (player), "buffering");
+	}
+}
+
+static void
 buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 		  gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("got buffering_end_cb");
-	player->priv->buffering = FALSE;
-	g_object_notify (G_OBJECT (player), "buffering");
+	rb_shell_player_disable_buffering (player);
 }
 
 const char *
