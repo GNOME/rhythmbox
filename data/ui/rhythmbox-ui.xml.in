@@ -74,6 +74,12 @@
 	     pixname="gnome-stock-about"
 	     _tip="Show information about Rhythmbox"/>
 
+	<cmd name="Contents"
+	     pixtype="stock"
+	     pixname="gtk-help"
+	     accel="F1" 
+	     _tip="Display Rhythmbox Help"/>
+
 	<cmd name="Quit"
 	     pixtype="stock"
 	     pixname="gtk-quit"
@@ -188,6 +194,8 @@
 </submenu>
 
 <submenu name="Help" _label="_Help">
+
+	<menuitem name="Contents" verb="Contents" _label="_Contents"/>
 
         <menuitem name="About" verb="About" _label="_About"/>
 

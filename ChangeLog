@@ -1,3 +1,24 @@
+2002-10-13  Mark Finlay <sisob@eircom.net>
+            Mark Humphreys <marquee@users.sourceforge.net>
+
+        * shell/rb-shell.c: Added documentation section to aboutbox.
+	* data/ui/rhythmbox-ui.xml.in: added F1 accel to contents
+
+	Make F1 launch help
+
+	* configure.in: added Makefile references for help and help/C
+	* data/rhythmbox.desktop.in: added docs link
+	* Makefile.am: added help to SUBDIRS
+	* shell/rb-shell.c: added libgnome/libgnome.h include, 
+	added rb_shell_cmd_contents function, added BONOBO_UI_VERB for contents
+	* data/ui/rhythmbox-ui.xml.in: added Help->Contents Menu item
+	* oaf.make(ADDED)
+	* xmldocs.make(ADDED)
+	* help/(ADDED)
+
+	Adds Rhythmbox Help to yelp, Help->Contents and to the rightclick menu for the launcher
+
+
 2002-10-13  Mark Humphreys <marquee@users.sourceforge.net>
 
 	* lib/toolbar/gul-tbi-std-toolitem.c:
@@ -11,11 +32,6 @@
 	* shell/rb-shell.c:
 
 	Add 'Repeat' and 'Restart' toolbar options to toolbar editor
-
-2002-10-10
-           Mark Humphreys <marquee@users.sourceforge.net>
-
-        * shell/rb-shell.c: Added documentation section to aboutbox.
 
 2002-10-08 Alex Duggan <aldug@gnome.org>
 

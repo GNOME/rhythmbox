@@ -28,6 +28,7 @@
 #include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
 #include <config.h>
+#include <libgnome/libgnome.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <libgnome/gnome-program.h>
@@ -95,6 +96,9 @@ static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
 static void rb_shell_cmd_about (BonoboUIComponent *component,
+		                RBShell *shell,
+		                const char *verbname);
+static void rb_shell_cmd_contents (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
 static void rb_shell_cmd_quit (BonoboUIComponent *component,
@@ -309,6 +313,7 @@ struct RBShellPrivate
 static BonoboUIVerb rb_shell_verbs[] =
 {
 	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
+	BONOBO_UI_VERB ("Contents",	(BonoboUIVerbFn) rb_shell_cmd_contents),
 	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
 	BONOBO_UI_VERB ("Preferences",  (BonoboUIVerbFn) rb_shell_cmd_preferences),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
@@ -1137,6 +1142,8 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	const char *documenters[] =
 	{
+		"Mark Finlay (sisob AT eircom.net)",
+		"Mark Humphreys (marquee AT users.sourceforge.net)",
 		NULL
 	};
 
@@ -1171,6 +1178,23 @@ rb_shell_cmd_quit (BonoboUIComponent *component,
 		   const char *verbname)
 {
 	rb_shell_quit (shell);
+}
+
+static void
+rb_shell_cmd_contents (BonoboUIComponent *component,
+		   RBShell *shell,
+		   const char *verbname)
+{
+	GError *error = NULL;
+
+	gnome_help_display ("rhythmbox.xml", NULL, &error);
+
+	if (error != NULL)
+	{
+		g_warning (error->message);
+
+		g_error_free (error);
+	}
 }
 
 static void
