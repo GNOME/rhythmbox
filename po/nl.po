@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-03-15 20:49+0100\n"
-"PO-Revision-Date: 2004-03-16 02:31+0100\n"
+"POT-Creation-Date: 2004-03-22 15:31+0100\n"
+"PO-Revision-Date: 2004-03-22 20:48+0100\n"
 "Last-Translator: Tino Meinen <a.t.meinen@chello.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -253,7 +253,7 @@ msgstr "Voer de _locatie (URI) in van het bestand dat u toe wilt voegen:"
 msgid "Open from URI"
 msgstr "Via URI openen"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1862
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1191 shell/rb-shell.c:1863
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -433,11 +433,11 @@ msgstr "Selectie plakken"
 msgid "Pause playing"
 msgstr "Afspelen pauzeren"
 
-#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:243
+#: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:248
 msgid "Play first song again after all songs are played"
 msgstr "Eerste liedje opnieuw afspelen nadat alle liedjes geweest zijn"
 
-#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:238
+#: data/ui/rhythmbox-ui.xml.h:35 shell/rb-statusbar.c:243
 msgid "Play songs in a random order"
 msgstr "Liedjes in willekeurige vologorde afspelen"
 
@@ -585,7 +585,7 @@ msgstr "_Opslaan naar bestand..."
 msgid "_Show Window"
 msgstr "Ven_ster tonen"
 
-#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:235
+#: data/ui/rhythmbox-ui.xml.h:77 shell/rb-statusbar.c:240
 msgid "_Shuffle"
 msgstr "_Schudden"
 
@@ -602,7 +602,7 @@ msgstr "Nieuw internet radiostation"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:737 sources/rb-ipod-source.c:173
+#: rhythmdb/rhythmdb.c:737 sources/rb-ipod-source.c:175
 #: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
 #: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
 #: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
@@ -624,11 +624,11 @@ msgstr "%s Eigenschappen"
 msgid "Properties for %s"
 msgstr "Eigenschappen voor %s"
 
-#: lib/disclosure-widget.c:294
+#: lib/disclosure-widget.c:300
 msgid "Expander Size"
 msgstr "Uitklapper-grootte"
 
-#: lib/disclosure-widget.c:295
+#: lib/disclosure-widget.c:301
 msgid "Size of the expander arrow"
 msgstr "Grootte van de uitklappijl"
 
@@ -992,27 +992,31 @@ msgstr ""
 "Activeren van omgeving mislukt:\n"
 "%s"
 
-#: shell/rb-play-order.c:227
+#: shell/rb-play-order.c:228
 msgid "Linear"
 msgstr "Lineair"
 
-#: shell/rb-play-order.c:228
+#: shell/rb-play-order.c:229
+msgid "Linear looping"
+msgstr "Lineaire lus"
+
+#: shell/rb-play-order.c:230
 msgid "Shuffle"
 msgstr "Schudden"
 
-#: shell/rb-play-order.c:229
+#: shell/rb-play-order.c:231
 msgid "Random with equal weights"
 msgstr "Willekeurig met gelijke gewichten"
 
-#: shell/rb-play-order.c:230
+#: shell/rb-play-order.c:232
 msgid "Random by time since last play"
 msgstr "Willekeurig op tijd sinds laatst afgespeeld"
 
-#: shell/rb-play-order.c:231
+#: shell/rb-play-order.c:233
 msgid "Random by rating"
 msgstr "Willekeurig op waardering"
 
-#: shell/rb-play-order.c:232
+#: shell/rb-play-order.c:234
 msgid "Random by time since last play and rating"
 msgstr "Willekeurig op tijd sinds laatst afgespeeld en waardering"
 
@@ -1083,19 +1087,19 @@ msgstr "Algemeen"
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan URI \"%s\" niet analyseren\n"
 
-#: shell/rb-shell.c:1040
+#: shell/rb-shell.c:1041
 msgid "Whether the main window is visible"
 msgstr "Of het hoofdvenster zichtbaar is"
 
-#: shell/rb-shell.c:1045
+#: shell/rb-shell.c:1046
 msgid "Whether shuffle is enabled"
 msgstr "Of schudden aanstaat"
 
-#: shell/rb-shell.c:1049
+#: shell/rb-shell.c:1050
 msgid "Properties for the current song"
 msgstr "Eigenschappen van het huidige liedje"
 
-#: shell/rb-shell.c:1473
+#: shell/rb-shell.c:1474
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1107,12 +1111,12 @@ msgstr ""
 "heeft geïnstalleerd dan bonobo-activation; deze waarschuwing is onschuldig, "
 "maar IPC zal niet werken."
 
-#: shell/rb-shell.c:1836 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1837 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "Afspelen gestopt"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1839
+#: shell/rb-shell.c:1840
 #, c-format
 msgid ""
 "%s\n"
@@ -1122,7 +1126,7 @@ msgstr ""
 "Gepauzeerd, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1843
+#: shell/rb-shell.c:1844
 #, c-format
 msgid ""
 "%s\n"
@@ -1132,43 +1136,43 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1878
+#: shell/rb-shell.c:1879
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: shell/rb-shell.c:1946
+#: shell/rb-shell.c:1947
 msgid "translator_credits"
 msgstr ""
 "Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
 "Reinout van Schouwen <reinout@cs.vu.nl><\n"
 "Tino Meinen <a.t.meinen@chello.nl>"
 
-#: shell/rb-shell.c:1955
+#: shell/rb-shell.c:1956
 msgid "Maintainers:"
 msgstr "reinout@cs.vu.nl"
 
-#: shell/rb-shell.c:1958
+#: shell/rb-shell.c:1959
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: shell/rb-shell.c:1961
+#: shell/rb-shell.c:1962
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: shell/rb-shell.c:1963
+#: shell/rb-shell.c:1964
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheer en -afspeelprogramma voor GNOME."
 
-#: shell/rb-shell.c:2136
+#: shell/rb-shell.c:2145
 msgid "Choose Files or Directory"
 msgstr "Kies bestanden of een map"
 
-#: shell/rb-shell.c:2182
+#: shell/rb-shell.c:2191
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Om CD's over te nemen dient u het Sound Juicer pakket te installeren"
 
-#: shell/rb-shell.c:2189
+#: shell/rb-shell.c:2198
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kan sound-juicer niet opstarten: %s"
@@ -1185,11 +1189,11 @@ msgstr "_Bladervenster tonen"
 msgid "Hide _Browser"
 msgstr "Bladervenster verber_gen"
 
-#: shell/rb-statusbar.c:240
+#: shell/rb-statusbar.c:245
 msgid "_Repeat"
 msgstr "He_rhalen"
 
-#: shell/rb-statusbar.c:446
+#: shell/rb-statusbar.c:451
 msgid "Buffering..."
 msgstr "Bufferen..."
 
@@ -1210,38 +1214,26 @@ msgstr "Fout tijdens het lezen van \"%s\".\n"
 
 #: sources/itunesdb.c:821
 #, c-format
-msgid "\"%s\" is not a iTunesDB.\n"
-msgstr "\"%s\" is geen iTunesDB.\n"
+msgid "\"%s\" is not a valid iPod database.\n"
+msgstr "\"%s\" is geen geldige iPod database.\n"
 
 # zie de vergelijkbare zin waarin %s op een andere plek staat
-#: sources/itunesdb.c:1061
+#: sources/itunesdb.c:1061 sources/itunesdb.c:1716
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Fout tijdens het verkrijgen van lees-toegang tot bestand \"%s\".\n"
 
-#: sources/itunesdb.c:1568
+# zie de vergelijkbare zin waarin %s op een andere plek staat
+#: sources/itunesdb.c:1568 sources/itunesdb.c:1723
 #, c-format
-msgid "Could not open iTunesDB \"%s\" for writing.\n"
-msgstr "Kon iTunesDB \"%s\" niet openen voor schrijven.\n"
+msgid "Could not open \"%s\" file for writing.\n"
+msgstr "Fout tijdens het verkrijgen van schrijf-toegang tot bestand \"%s\".\n"
 
 #. an error occured
 #: sources/itunesdb.c:1580
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Fout bij hernoemen van '%s' naar '%s (%s).\n"
-
-# is dit wel goed?
-# misschien beter letterlijke vertaling:
-# kon bestand %s niet openen voor lezen.
-#: sources/itunesdb.c:1716
-#, c-format
-msgid "Could not open file \"%s\" for reading.\n"
-msgstr "Fout tijdens het verkrijgen van lees-toegang tot bestand \"%s\"\n"
-
-#: sources/itunesdb.c:1723
-#, c-format
-msgid "Could not open file \"%s\" for writing.\n"
-msgstr "Fout tijdens het verkrijgen van schrijf-toegang tot bestand \"%s\".\n"
 
 #. error -- not end of file!
 #: sources/itunesdb.c:1736
@@ -1361,7 +1353,7 @@ msgstr "Fout tijdens het lezen van bestandsnaam: %s"
 msgid "Choose a directory"
 msgstr "Kies een map"
 
-#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:839
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -1434,12 +1426,12 @@ msgstr "Informatie over deze artiest van het web halen"
 msgid "Get information on this station from the web"
 msgstr "Informatie over dit station van het web halen"
 
-#: widgets/rb-header.c:827
+#: widgets/rb-header.c:828
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d van %d:%02d"
 
-#: widgets/rb-header.c:835
+#: widgets/rb-header.c:836
 #, c-format
 msgid "%d:%02d of %d:%02d remaining"
 msgstr "%d:%02d van %d:%02d over"
@@ -1531,6 +1523,19 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "Could not open iTunesDB \"%s\" for writing.\n"
+#~ msgstr "Kon iTunesDB \"%s\" niet openen voor schrijven.\n"
+
+# is dit wel goed?
+# misschien beter letterlijke vertaling:
+# kon bestand %s niet openen voor lezen.
+#~ msgid "Could not open file \"%s\" for reading.\n"
+#~ msgstr "Fout tijdens het verkrijgen van lees-toegang tot bestand \"%s\"\n"
+
+#~ msgid "Could not open file \"%s\" for writing.\n"
+#~ msgstr ""
+#~ "Fout tijdens het verkrijgen van schrijf-toegang tot bestand \"%s\".\n"
 
 #~ msgid "I could not initialize Bonobo"
 #~ msgstr "Het is niet mogelijk Bonobo te initialiseren"
