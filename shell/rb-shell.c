@@ -553,7 +553,7 @@ rb_shell_toolbar_changed_cb (GulToolbar *gt, RBShell *shell)
 {
         if (shell->priv->toolbar != NULL)
         {
-                setup_volume_control (shell->priv->toolbar);
+                shell->priv->volume = setup_volume_control (shell->priv->toolbar);
         }
 }
 
