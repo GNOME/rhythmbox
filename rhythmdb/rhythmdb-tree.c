@@ -1331,13 +1331,13 @@ evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
 
 				switch (data->propid)
 				{
-				case RHYTHMDB_PROP_ALBUM:
+				case RHYTHMDB_PROP_ALBUM_FOLDED:
 					stra = get_entry_album_folded (entry);
 					break;
-				case RHYTHMDB_PROP_ARTIST:
+				case RHYTHMDB_PROP_ARTIST_FOLDED:
 					stra = get_entry_artist_folded (entry);
 					break;
-				case RHYTHMDB_PROP_GENRE:
+				case RHYTHMDB_PROP_GENRE_FOLDED:
 					stra = get_entry_genre_folded (entry);
 					break;
 				default:
