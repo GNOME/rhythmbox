@@ -1766,7 +1766,9 @@ rb_shell_new_group_dialog (RBShell *shell)
 				      GTK_WINDOW (shell->priv->window));
 	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
-	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE); 
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+
+	gtk_window_set_title (GTK_WINDOW (dialog), _("Add Playlist"));
 
 	hbox = gtk_hbox_new (FALSE, 12);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
