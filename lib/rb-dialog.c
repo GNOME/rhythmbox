@@ -110,7 +110,6 @@ rb_ask_file_multiple (const char *title,
 			      FALSE);
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
 					    TRUE);
-	gtk_window_set_resizable (GTK_WINDOW (filesel), FALSE);
 
 	gtk_widget_show_all (filesel);
 
@@ -136,7 +135,6 @@ rb_ask_file (const char *title,
 			      FALSE);
 	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
 					    TRUE);
-	gtk_window_set_resizable (GTK_WINDOW (filesel), FALSE);
 	
 	gtk_widget_show_all (filesel);
 
