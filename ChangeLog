@@ -1,3 +1,255 @@
+2003-10-11 18:24:50 GMT	Colin Walters <walters@verbum.org>	patch-108
+
+    Summary:
+      don't show artist/album if they're empty
+    Revision:
+      rhythmbox--mainline--0.6--patch-108
+
+
+    modified files:
+     widgets/rb-player.c
+
+
+2003-10-11 18:19:50 GMT	Colin Walters <walters@verbum.org>	patch-107
+
+    Summary:
+      major property revamp 
+    Revision:
+      rhythmbox--mainline--0.6--patch-107
+
+    Remove property queries.  This means the property model is now dead simple.
+    It's basically just a set of strings; no more async polling, etc.
+    The plan is to have the property views now handle deletion themselves, by
+    actually searching through the entry view.
+    
+
+    modified files:
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-property-model.h rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     widgets/rb-property-view.c widgets/rb-property-view.h
+
+
+2003-10-11 15:58:22 GMT	Colin Walters <walters@verbum.org>	patch-106
+
+    Summary:
+      handle entry deletion a bit more reliably 
+    Revision:
+      rhythmbox--mainline--0.6--patch-106
+
+    
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb-tree.h
+
+
+2003-10-10 16:40:56 GMT	Colin Walters <walters@verbum.org>	patch-105
+
+    Summary:
+      statusbar rework. again. 
+    Revision:
+      rhythmbox--mainline--0.6--patch-105
+
+    Don't attempt to display refresh progress.  It was totally unreliable,
+    and made the code complicated.
+    Be sure to sync up status state when switching sources.
+    
+
+    modified files:
+     library/rb-library.c library/rb-library.h shell/rb-statusbar.c
+
+
+2003-10-10 13:56:19 GMT	Colin Walters <walters@verbum.org>	patch-104
+
+    Summary:
+      status display tweaks 
+    Revision:
+      rhythmbox--mainline--0.6--patch-104
+
+    Ensure we always end up at 100%.  
+    Also don't poll again quickly if nothing changed since the last poll.
+    
+
+    modified files:
+     shell/rb-statusbar.c
+
+
+2003-10-10 13:52:35 GMT	Colin Walters <walters@verbum.org>	patch-103
+
+    Summary:
+      make New Internet Radio Station work 
+    Revision:
+      rhythmbox--mainline--0.6--patch-103
+
+    
+
+    modified files:
+     iradio/rb-new-station-dialog.c
+
+
+2003-10-10 04:24:53 GMT	Colin Walters <walters@verbum.org>	patch-102
+
+    Summary:
+      search directories named ...
+    Revision:
+      rhythmbox--mainline--0.6--patch-102
+
+
+    modified files:
+     lib/rb-file-helpers.c
+
+
+2003-10-09 21:54:52 GMT	Colin Walters <walters@verbum.org>	patch-101
+
+    Summary:
+      many more shutdown fixes 
+    Revision:
+      rhythmbox--mainline--0.6--patch-101
+
+    Keep track of all outstanding threads, and attempt to gracefully shut
+    things down before exiting.
+    
+
+    modified files:
+     library/rb-library-main-thread.c library/rb-library.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h shell/rb-shell.c
+
+
+2003-10-09 21:01:13 GMT	Colin Walters <walters@verbum.org>	patch-100
+
+    Summary:
+      use xmlStopParser to quit loading, other misc. exiting fixes
+    Revision:
+      rhythmbox--mainline--0.6--patch-100
+
+
+    modified files:
+     library/rb-library-main-thread.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+
+
+2003-10-09 13:10:54 GMT	Colin Walters <walters@verbum.org>	patch-99
+
+    Summary:
+      [teuf@gnome.org] statusbar cleanups 
+    Revision:
+      rhythmbox--mainline--0.6--patch-99
+
+    Allow days display to be translated.
+    Prune minutes display if it's equal to zero.
+    
+
+    modified files:
+     library/rb-library.c
+
+
+2003-10-09 13:01:13 GMT	Colin Walters <walters@verbum.org>	patch-98
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-98
+
+
+    modified files:
+     po/ChangeLog po/fr.po
+
+
+2003-10-09 12:58:51 GMT	Colin Walters <walters@verbum.org>	patch-97
+
+    Summary:
+      make Quit menu item work (but why would you ever quit rb???)
+    Revision:
+      rhythmbox--mainline--0.6--patch-97
+
+
+    modified files:
+     shell/rb-shell.c
+
+
+2003-10-09 01:54:53 GMT	Colin Walters <walters@verbum.org>	patch-96
+
+    Summary:
+      various mtime fixes 
+    Revision:
+      rhythmbox--mainline--0.6--patch-96
+
+    Import legacy mtime data.
+    Actually use mtime data in rb_library_update_entry to check whether or not we need
+    to refresh the file.
+    
+
+    modified files:
+     library/rb-library.c library/rb-library.h
+     rhythmdb/rhythmdb-legacy.c
+
+
+2003-10-08 22:17:18 GMT	Colin Walters <walters@verbum.org>	patch-95
+
+    Summary:
+      mark source status as clean after refreshing
+    Revision:
+      rhythmbox--mainline--0.6--patch-95
+
+
+    modified files:
+     shell/rb-statusbar.c
+
+
+2003-10-08 21:40:29 GMT	Colin Walters <walters@verbum.org>	patch-94
+
+    Summary:
+      write lock db when deleting an entry
+    Revision:
+      rhythmbox--mainline--0.6--patch-94
+
+
+    modified files:
+     library/rb-library.c
+
+
+2003-10-08 21:38:49 GMT	Colin Walters <walters@verbum.org>	patch-93
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-93
+
+
+    modified files:
+     po/ChangeLog po/ro.po
+
+
+2003-10-08 21:16:08 GMT	Colin Walters <walters@verbum.org>	patch-92
+
+    Summary:
+      status display rewrite: faster and cleaner
+    Revision:
+      rhythmbox--mainline--0.6--patch-92
+
+
+    modified files:
+     library/rb-library.c library/rb-library.h
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+     shell/rb-shell.c shell/rb-statusbar.c
+     sources/rb-library-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-10-08 04:56:20 GMT	Colin Walters <walters@verbum.org>	patch-91
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-91
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-08 04:51:46 GMT	Colin Walters <walters@verbum.org>	patch-90
 
     Summary:
