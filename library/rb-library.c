@@ -56,7 +56,6 @@ static void sync_node (RBNode *node,
 		       GError **error);
 static void finalize_node (RBNode *node);
 static void restore_node (RBNode *node);
-static gboolean rb_library_periodic_save (RBLibrary *library);
 static void sync_sort_keys (RBNode *node);
 static void walker_thread_done_cb (RBLibraryWalkerThread *thread, RBLibrary *library);
 static char *get_status_normal (RBLibrary *library, RBNode *root, RBNodeFilter *filter);
@@ -270,8 +269,6 @@ rb_library_release_brakes (RBLibrary *library)
 	g_signal_connect (G_OBJECT (library->priv->main_thread), "error",
 			  G_CALLBACK (rb_library_pass_on_error), library);
 
-	library->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_library_periodic_save,
-						  library);
 }
 
 static gboolean
@@ -788,20 +785,6 @@ rb_library_create_skels (RBLibrary *library)
 			   library->priv->all_songs);
 	
 	rb_debug ("Done creating skels");
-}
-
-static gboolean
-rb_library_periodic_save (RBLibrary *library)
-{
-	if (rb_library_is_idle (library)) {
-		rb_debug ("doing periodic save");
-		rb_library_save (library);
-	} else {
-		rb_debug ("library is busy, skipping periodic save");
-	}
-	library->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
-						     (GSourceFunc) rb_library_periodic_save, library);
-	return FALSE;
 }
 
 static void

@@ -1,3 +1,14 @@
+Thu, 28 Aug 2003 22:53:13 -0400  Colin Walters  <walters@verbum.org>
+
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),
+	(rb_iradio_backend_load):
+	* library/rb-library.c: (rb_library_release_brakes),
+	(rb_library_create_skels):
+	* sources/rb-playlist-source.c: (rb_playlist_source_init),
+	(songs_view_changed_cb):
+
+	Remove periodic library/iradio/playlist saving.
+
 2003-08-28  Paolo Borelli  <pborelli@katamail.com>
 	    Colin Walters  <walters@verbum.org>
 

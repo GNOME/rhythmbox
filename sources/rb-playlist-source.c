@@ -87,7 +87,6 @@ static void rb_playlist_source_drop_cb (GtkWidget *widget,
 static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 					  GList *list);
 static char * filename_from_name (const char *name);
-static gboolean rb_playlist_source_periodic_save (RBPlaylistSource *source);
 static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer unused);
 
 
@@ -239,9 +238,6 @@ static void
 rb_playlist_source_init (RBPlaylistSource *source)
 {
 	source->priv = g_new0 (RBPlaylistSourcePrivate, 1);
-
-	source->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_playlist_source_periodic_save,
-						 source);
 
 	g_signal_connect_object (G_OBJECT (source), "notify", G_CALLBACK (name_notify_cb), NULL, 0);
 }
@@ -541,21 +537,6 @@ songs_view_changed_cb (RBNodeView *view, RBPlaylistSource *source)
 	if (source->priv->filter_changed)
 		rb_source_notify_status_changed (RB_SOURCE (source));
 	source->priv->filter_changed = FALSE;
-}
-
-static gboolean
-rb_playlist_source_periodic_save (RBPlaylistSource *source)
-{
-	if (rb_library_is_idle (source->priv->library)) {
-		rb_debug ("doing periodic save");
-		rb_playlist_source_save (source);
-	} else {
-		rb_debug ("library is busy, skipping periodic save");
-	}
-	source->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
-						    (GSourceFunc) rb_playlist_source_periodic_save,
-						    source);
-	return FALSE;
 }
 
 void

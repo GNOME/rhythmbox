@@ -51,7 +51,6 @@ static void station_changed_cb (RBNode *node, RBNode *parent, guint propid, RBIR
 
 static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 							      const char *uri);
-static gboolean rb_iradio_backend_periodic_save (RBIRadioBackend *backend);
 static void finalize_node (RBNode *node);
 static void restore_node (RBNode *node);
 static void sync_sort_keys (RBNode *node);
@@ -208,8 +207,6 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 	rb_node_add_child (backend->priv->all_genres,
 			   backend->priv->all_stations);
 
-	backend->priv->idle_save_id = g_idle_add ((GSourceFunc) rb_iradio_backend_periodic_save,
-						  backend);
 }
 
 static void
@@ -404,17 +401,6 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 	return;
  loadinitial:
 	load_initial (backend);
-}
-
-static gboolean
-rb_iradio_backend_periodic_save (RBIRadioBackend *backend)
-{
-	rb_debug ("doing periodic save");
-	rb_iradio_backend_save (backend);
-	backend->priv->idle_save_id = g_timeout_add (60000 + (g_random_int_range (0, 15) * 1000),
-						     (GSourceFunc) rb_iradio_backend_periodic_save,
-						     backend);
-	return FALSE;
 }
 
 static void
