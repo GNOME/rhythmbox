@@ -302,7 +302,11 @@ rhythmdb_init (RhythmDB *db)
 							 db, 3, TRUE, NULL);
 	db->priv->thread_reaper_id
 		= g_idle_add ((GSourceFunc) reap_dead_threads, db);
+	g_async_queue_ref (db->priv->main_thread_cancel);
+	g_async_queue_ref (db->priv->add_queue);
 	g_thread_create ((GThreadFunc) add_thread_main, db, FALSE, NULL);
+	g_async_queue_ref (db->priv->main_thread_cancel);
+	g_async_queue_ref (db->priv->update_queue);
 	g_thread_create ((GThreadFunc) update_thread_main, db, FALSE, NULL);
 }
 
@@ -339,6 +343,9 @@ rhythmdb_shutdown (RhythmDB *db)
 		g_object_unref (obj);
 		db->priv->outstanding_threads--;
 	}
+
+	g_async_queue_pop (db->priv->main_thread_cancel);
+	g_async_queue_pop (db->priv->main_thread_cancel);
 }
 
 static void
@@ -726,6 +733,8 @@ add_thread_main (RhythmDB *db)
 		GError *error = NULL;
 
 		uri = read_queue (db->priv->add_queue, &db->priv->exiting);
+		if (!uri)
+			break;
 		realuri = rb_uri_resolve_symlink (uri);
 
 		if (rb_uri_is_directory (uri) == FALSE)
