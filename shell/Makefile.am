@@ -8,11 +8,15 @@ MAINTAINERS.tab : $(top_srcdir)/MAINTAINERS
 	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/MAINTAINERS > $@.tmp
 	mv $@.tmp $@
 
+MAINTAINERS.old.tab : $(top_srcdir)/MAINTAINERS.old
+	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/MAINTAINERS.old > $@.tmp
+	mv $@.tmp $@
+
 DOCUMENTERS.tab : $(top_srcdir)/DOCUMENTERS
 	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/DOCUMENTERS > $@.tmp
 	mv $@.tmp $@
 
-tab_files = AUTHORS.tab MAINTAINERS.tab DOCUMENTERS.tab
+tab_files = AUTHORS.tab MAINTAINERS.tab MAINTAINERS.old.tab DOCUMENTERS.tab
 
 bin_PROGRAMS = rhythmbox 
 

@@ -1331,6 +1331,9 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 #include "MAINTAINERS.tab"
 		"",
 		NULL,
+#include "MAINTAINERS.old.tab"
+		"",
+		NULL,
 #include "AUTHORS.tab"
 		NULL
 	};
@@ -1350,14 +1353,12 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
 	authors[0] = _("Maintainers:");
-	tem = authors;
-	while (1) {
-		if (*tem == NULL) {
-			*tem = _("Contributors:");
-			break;
-		}
-		tem++;
-	}
+	for (tem = authors; *tem != NULL; tem++)
+		;
+	*tem = _("Former Maintainers:");
+	for (; *tem != NULL; tem++)
+		;
+	*tem = _("Contributors:");
 
 	{
 		const char *backend;
