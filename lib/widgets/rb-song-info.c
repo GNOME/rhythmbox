@@ -236,6 +236,9 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->location_ebox = glade_xml_get_widget (xml, "song_info_location_ebox");
 	song_info->priv->location      = glade_xml_get_widget (xml, "song_info_location");
 
+	/* default focus */
+	gtk_widget_grab_focus (song_info->priv->title);
+
 	g_object_unref (G_OBJECT (xml));
 }
 
