@@ -364,11 +364,6 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 	g_value_init (value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 	g_object_get_property (G_OBJECT (orig), pspec->name, value);
 
-	{
-		char *contents = g_strdup_value_contents (value);
-		g_free (contents);
-	}
-
 	/* Other properties from the gnomevfssrc go here */
 	if (strcmp (pspec->name, "iradio-title") == 0)
 		ev = g_enum_get_value (class, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE);
@@ -378,8 +373,7 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 		ev = g_enum_get_value_by_nick (class, pspec->name);
 
 	/* FIXME begin hack */
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		char *tmp = g_strconcat ("audio_", pspec->name, NULL);
 		ev = g_enum_get_value_by_nick (class, tmp);
 
@@ -387,8 +381,7 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 	}
 	/* FIXME end hack */
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		MonkeyMediaPlayerSignal *signal;
 
 		signal = g_new0 (MonkeyMediaPlayerSignal, 1);
