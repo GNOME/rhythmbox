@@ -1,3 +1,173 @@
+2003-10-01 04:34:47 GMT	Colin Walters <walters@verbum.org>	patch-26
+
+    Summary:
+      first cut at loading legacy data, also make iradio sorta work
+    Revision:
+      rhythmbox--mainline--0.6--patch-26
+
+
+    new files:
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-legacy.h
+
+    modified files:
+     library/rb-library.c library/rb-library.h rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-tree.c shell/rb-shell.c
+     sources/rb-iradio-source.c sources/rb-iradio-source.h
+
+
+2003-09-30 23:07:39 GMT	Colin Walters <walters@verbum.org>	patch-25
+
+    Summary:
+      fix entry view refcounting
+    Revision:
+      rhythmbox--mainline--0.6--patch-25
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-09-30 21:52:37 GMT	Colin Walters <walters@verbum.org>	patch-24
+
+    Summary:
+      hold a ref to the previous playing model so we don't crash if it goes away
+    Revision:
+      rhythmbox--mainline--0.6--patch-24
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-09-30 21:03:59 GMT	Colin Walters <walters@verbum.org>	patch-23
+
+    Summary:
+      make iradio work again
+    Revision:
+      rhythmbox--mainline--0.6--patch-23
+
+
+    new files:
+     data/views/rb-entry-view-iradio.xml
+
+    modified files:
+     data/views/Makefile.am rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     shell/rb-playlist-manager.c shell/rb-shell.c
+     sources/Makefile.am sources/rb-iradio-source.c
+
+
+2003-09-30 20:18:46 GMT	Colin Walters <walters@verbum.org>	patch-22
+
+    Summary:
+      fix playing icon
+    Revision:
+      rhythmbox--mainline--0.6--patch-22
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-09-30 16:32:31 GMT	Colin Walters <walters@verbum.org>	patch-21
+
+    Summary:
+      some hackery on iradio source, not quite working yet.  other bits.
+    Revision:
+      rhythmbox--mainline--0.6--patch-21
+
+
+    modified files:
+     shell/rb-shell-player.c sources/Makefile.am
+     sources/rb-iradio-source.c sources/rb-source.c
+     sources/rb-source.h widgets/rb-entry-view.c
+     widgets/rb-entry-view.h widgets/rb-property-view.c
+     widgets/rb-property-view.h
+
+
+2003-09-29 23:53:11 GMT	Colin Walters <walters@verbum.org>	patch-20
+
+    Summary:
+      kill off old crufty RBNode stuff, yay!
+    Revision:
+      rhythmbox--mainline--0.6--patch-20
+
+
+    removed files:
+     library/rb-node-common.h library/rb-node-db.c
+     library/rb-node-db.h library/rb-node-filter.c
+     library/rb-node-filter.h library/rb-node.c library/rb-node.h
+     sources/rb-song-info-helpers.c sources/rb-song-info-helpers.h
+     widgets/rb-node-view.c widgets/rb-node-view.h
+     widgets/rb-tree-model-node.c widgets/rb-tree-model-node.h
+
+    modified files:
+     library/Makefile.am library/rb-library.c sources/Makefile.am
+     widgets/Makefile.am widgets/rb-song-info.c
+     widgets/rb-song-info.h widgets/rb-tree-model-sort.c
+
+
+2003-09-29 22:50:34 GMT	Colin Walters <walters@verbum.org>	patch-19
+
+    Summary:
+      chris@gnome-de.org: remove newlines from druid
+    Revision:
+      rhythmbox--mainline--0.6--patch-19
+
+
+    modified files:
+     widgets/rb-druid.c
+
+
+2003-09-29 22:09:02 GMT	Colin Walters <walters@verbum.org>	patch-18
+
+    Summary:
+      fix random mode
+    Revision:
+      rhythmbox--mainline--0.6--patch-18
+
+
+    modified files:
+     shell/rb-shell-player.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+
+2003-09-29 21:20:04 GMT	Colin Walters <walters@verbum.org>	patch-17
+
+    Summary:
+      note INTERNALS is REALLY out of date
+    Revision:
+      rhythmbox--mainline--0.6--patch-17
+
+
+    modified files:
+     INTERNALS
+
+
+2003-09-29 20:58:53 GMT	Colin Walters <walters@verbum.org>	patch-16
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-16
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-09-29 20:52:49 GMT	Colin Walters <walters@verbum.org>	patch-15
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-15
+
+
+    modified files:
+     ChangeLog
+
+
 2003-09-29 20:51:32 GMT	Colin Walters <walters@verbum.org>	patch-14
 
     Summary:
