@@ -140,6 +140,10 @@ struct RBIRadioSourcePrivate
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
 	GtkWidget *quality_check;
+
+	gboolean async_node_destroyed;
+	guint async_signum;
+	RBNode *async_update_node;
 };
 
 enum
@@ -418,22 +422,34 @@ struct RBIRadioAsyncPlayStatisticsData
 	RBNode *node;
 };
 
-static gboolean
-rb_iradio_source_async_update_play_statistics (struct RBIRadioAsyncPlayStatisticsData *data)
+static void
+async_node_update_destroyed_cb (RBNode *node, gpointer data)
 {
+	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
+	rb_debug ("node to be updated was destroyed");
+
+	source->priv->async_node_destroyed = TRUE;
+}
+
+static gboolean
+rb_iradio_source_async_update_play_statistics (gpointer data)
+{
+	RBIRadioSource *source = RB_IRADIO_SOURCE (data);
 	RBNode *playing_node;
 
 	gdk_threads_enter ();
 
-	playing_node = rb_node_view_get_playing_node (data->source->priv->stations);
-	rb_debug ("async updating play statistics, node: %p playing node: %p",
-		  data->node, playing_node);
-	if (data->node == playing_node)
-		rb_node_update_play_statistics (data->node);
+	if (!source->priv->async_node_destroyed) {
+		playing_node = rb_node_view_get_playing_node (source->priv->stations);
+		rb_debug ("async updating play statistics, node: %p playing node: %p",
+			  source->priv->async_update_node, playing_node);
+		if (source->priv->async_update_node == playing_node)
+			rb_node_update_play_statistics (source->priv->async_update_node);
 
-	rb_node_unref (data->node);
-
-	g_free (data);
+		rb_node_signal_disconnect (source->priv->async_update_node,
+					   source->priv->async_signum);
+	}
+		
 	gdk_threads_leave ();
 	return FALSE;
 }
@@ -443,17 +459,18 @@ impl_buffering_done (RBSource *asource)
 {
 	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	RBNode *node = rb_node_view_get_playing_node (source->priv->stations);
-	struct RBIRadioAsyncPlayStatisticsData *data = g_new0 (struct RBIRadioAsyncPlayStatisticsData, 1);
 
 	rb_debug ("queueing async play statistics update, node: %p", node);
 
- 	rb_node_ref (node);
-	
-	data->source = source;
-	data->node = node;
+	source->priv->async_node_destroyed = FALSE;
+	source->priv->async_update_node = node;
+ 	source->priv->async_signum =
+		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
+					       (RBNodeCallback) async_node_update_destroyed_cb,
+					       G_OBJECT (source));
 
 	g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
-		       data);
+		       source);
 }
 
 static const char *

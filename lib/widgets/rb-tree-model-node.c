@@ -74,6 +74,7 @@ static gboolean	rb_tree_model_node_iter_parent (GtkTreeModel *tree_model,
 					        GtkTreeIter *iter,
 					        GtkTreeIter *child);
 static void rb_tree_model_node_tree_model_init (GtkTreeModelIface *iface);
+static void playing_node_destroyed_cb (RBNode *node, RBTreeModelNode *model);
 static void root_child_removed_cb (RBNode *node,
 				   RBNode *child,
 				   guint last_index,
@@ -100,6 +101,7 @@ struct RBTreeModelNodePrivate
 	RBNode *root;
 
 	RBNode *playing_node;
+	guint destroyed_sigid;
 
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
@@ -298,10 +300,18 @@ rb_tree_model_node_set_property (GObject *object,
 
 			model->priv->playing_node = g_value_get_pointer (value);
 
-			if (old != NULL)
+			if (old != NULL) {
+				rb_node_signal_disconnect (old, model->priv->destroyed_sigid);
 				rb_tree_model_node_update_node (model, old, -1);
-			if (model->priv->playing_node != NULL)
+			}
+			if (model->priv->playing_node != NULL) {
+				model->priv->destroyed_sigid = 
+					rb_node_signal_connect_object (model->priv->playing_node,
+								       RB_NODE_DESTROY,
+								       (RBNodeCallback) playing_node_destroyed_cb,
+								       G_OBJECT (model));
 				rb_tree_model_node_update_node (model, model->priv->playing_node, -1);
+			}
 		}
 		break;
 	case PROP_FILTER:
@@ -781,15 +791,20 @@ rb_tree_model_node_iter_from_node (RBTreeModelNode *model,
 }
 
 static void
+playing_node_destroyed_cb (RBNode *node, RBTreeModelNode *model)
+{
+	rb_debug ("playing node removed!");
+	if (node == model->priv->playing_node)
+		model->priv->playing_node = NULL;
+}
+
+static void
 root_child_removed_cb (RBNode *node,
 		       RBNode *child,
 		       guint last_index,
 		       RBTreeModelNode *model)
 {
 	GtkTreePath *path;
-
-	if (node == model->priv->playing_node)
-		model->priv->playing_node = NULL;
 
 	path = get_path_real (model, child);
 	gtk_tree_model_row_deleted (GTK_TREE_MODEL (model), path);

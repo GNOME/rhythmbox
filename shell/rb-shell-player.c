@@ -97,11 +97,12 @@ static void rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 static void rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 					       RBShellPlayer *player,
 					       const char *verbname);
-
+static void rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
+							 RBSource *source,
+							 gboolean sync_node_view);
 static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
-static void rb_shell_player_sync_status (RBShellPlayer *player);
 static void rb_shell_player_sync_buttons (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
 
@@ -1051,7 +1052,12 @@ rb_shell_player_playing_node_removed_cb (RBNodeView *view,
 					 RBShellPlayer *playa)
 {
 	rb_debug ("playing node removed!");
-	rb_shell_player_set_playing_source (playa, NULL);
+	/* Here we are called via a signal from the node view.
+	 * Thus, we ensure we don't call back into the node view
+	 * to change things again.  When the playing node is removed,
+	 * the node view takes care of setting itself to stop playing.
+	 */
+	rb_shell_player_set_playing_source_internal (playa, NULL, FALSE);
 }
 
 static void
@@ -1060,7 +1066,6 @@ rb_shell_player_nodeview_changed_cb (RBNodeView *view,
 {
 	rb_debug ("nodeview changed");
 	rb_shell_player_sync_buttons (playa);
-	rb_shell_player_sync_status (playa);
 }
 
 static void
@@ -1143,14 +1148,6 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 	rb_bonobo_set_verb (player->priv->component, TRAY_PATH_PLAY, verb);
 
 	player->priv->playbutton_state = state;
-}
-
-static void
-rb_shell_player_sync_status (RBShellPlayer *player)
-{
-	const char *text = rb_source_get_status (player->priv->selected_source);
-	rb_debug ("status: %s", text);
-/* 	rb_echo_area_msg_full (player->priv->echo_area, text, 0); */
 }
 
 static void
@@ -1260,11 +1257,20 @@ void
 rb_shell_player_set_playing_source (RBShellPlayer *player,
 				    RBSource *source)
 {
+	rb_shell_player_set_playing_source_internal (player, source, TRUE);
+}
+
+static void
+rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
+					     RBSource *source,
+					     gboolean sync_node_view)
+
+{
 	if (player->priv->source == source && source != NULL)
 		return;
 
 	/* Stop the already playing source. */
-	if (player->priv->source != NULL) {
+	if (player->priv->source != NULL && sync_node_view) {
 		RBNodeView *songs = rb_source_get_node_view (player->priv->source);
 		rb_debug ("source is already playing, stopping it");
 		rb_node_view_set_playing_node (songs, NULL);
@@ -1329,7 +1335,6 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 
 		rb_shell_player_sync_with_source (player);
 	}
-	rb_shell_player_sync_status (player);
 }
 
 void

@@ -63,6 +63,10 @@ struct RBStatusbarPrivate
 	GtkWidget *shuffle;
 	GtkWidget *repeat;
 	GtkWidget *status;
+
+	gboolean async_update_queued;
+	guint async_update_sigid;
+	RBSource *async_target;
 };
 
 enum
@@ -170,6 +174,10 @@ rb_statusbar_finalize (GObject *object)
 
 	g_return_if_fail (statusbar->priv != NULL);
 
+	if (statusbar->priv->async_update_queued) {
+		g_source_remove (statusbar->priv->async_update_sigid);
+	}
+
 	g_free (statusbar->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -265,12 +273,41 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 	}
 }
 
+static gboolean
+async_update_status (gpointer data)
+{
+	RBStatusbar *statusbar = RB_STATUSBAR (data);
+
+	rb_debug  ("doing async status update");
+
+	gdk_threads_enter ();
+
+	if (statusbar->priv->selected_source == statusbar->priv->async_target) {
+		rb_statusbar_sync_with_source (statusbar);
+	}
+
+	statusbar->priv->async_update_queued = FALSE;
+	
+	gdk_threads_leave ();
+
+	return FALSE;
+}
+
 static void
 rb_statusbar_status_changed_cb (RBSource *source,
 				RBStatusbar *statusbar)
 {
-	rb_debug  ("status changed for %p", source);
-	rb_statusbar_sync_with_source (statusbar);
+	rb_debug  ("status changed for %p, queuing update", source);
+
+	if (statusbar->priv->async_update_queued) {
+		rb_debug  ("removing pending queued update", source);
+		g_source_remove (statusbar->priv->async_update_sigid);
+	}
+	statusbar->priv->async_update_queued = TRUE;
+	statusbar->priv->async_target = source;
+
+	statusbar->priv->async_update_sigid =
+		g_timeout_add (1500, (GSourceFunc) async_update_status, statusbar);
 }
 
 static void

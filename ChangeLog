@@ -1,5 +1,36 @@
 2003-08-08  Colin Walters  <walters@verbum.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(playing_node_destroyed_cb), (root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (playing_node_destroyed_cb),
+	(root_child_removed_cb):
+	* shell/rb-shell-player.c:
+	(rb_shell_player_playing_node_removed_cb),
+	(rb_shell_player_nodeview_changed_cb),
+	(rb_shell_player_set_playing_source),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_sync_with_selected_source):
+	* shell/rb-statusbar.c: (rb_statusbar_finalize),
+	(async_update_status), (rb_statusbar_status_changed_cb):
+	* sources/rb-iradio-source.c: (async_node_update_destroyed_cb),
+	(rb_iradio_source_async_update_play_statistics),
+	(impl_buffering_done):
+
+	Booya!  Now removing playing nodes really appears to work.
+	The RBNodeView and RBTreeModelNode now watch individually for
+	the playing node to be destroyed, instead of waiting to check
+	for it in the child removed handler of the parent node.
+
+	Also, rework iradio async updates to not ref/unref the node,
+	but instead add a destroy notifier.
+
+	Oh, and finally, we now update the source status asynchronously,
+	so that many updates in a row don't cause a lot of expensive
+	calculations.  This could still be improved.
+
+2003-08-08  Colin Walters  <walters@verbum.org>
+
 	* lib/widgets/rb-ellipsizing-label.c: (append_ellipsized_text):
 
 	Re-escape user text as we're building the GMarkup to avoid
