@@ -323,13 +323,14 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 		RhythmDBPropType prop = extract_option_menu_val (propmenu);
 		RhythmDBQueryType criteria = extract_option_menu_val (criteria_menu);
 		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
+		char *folded_data = g_utf8_casefold (data, -1);
 
 		if (disjunction && i < n_rows - 1)
 			rhythmdb_query_append (dlg->priv->db,
 					       sub_query,
 					       criteria,
 					       prop,
-					       data,
+					       folded_data,
 					       RHYTHMDB_QUERY_DISJUNCTION,
 					       RHYTHMDB_QUERY_END);
 		else
@@ -337,8 +338,9 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 					       sub_query,
 					       criteria,
 					       prop,
-					       data,
+					       folded_data,
 					       RHYTHMDB_QUERY_END);
+		g_free (folded_data);
 	}
 	rhythmdb_query_append (dlg->priv->db,
 			       query,
