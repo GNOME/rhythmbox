@@ -363,6 +363,7 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 				errmsg = g_strdup ("Missing newline after value");
 				goto lose;
 			}
+			curvalue[strlen(curvalue)-1] = '\0';
 			rb_windows_ini_file_unicodify (&curvalue);
 			if (!curvalue)
 				goto bad_encoding;
