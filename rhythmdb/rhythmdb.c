@@ -637,32 +637,35 @@ rhythmdb_write_lock (RhythmDB *db)
 {
 	g_static_rw_lock_writer_lock (&db->priv->lock);
 
-	db->priv->added_entries = NULL;
-	db->priv->changed_entries = NULL;
+	g_assert (db->priv->added_entries == NULL);
+	g_assert (db->priv->changed_entries == NULL);
 }
 
 static void
-emit_changed_signals (RhythmDB *db)
+emit_changed_signals (RhythmDB *db, gboolean commit)
 {
 	GList *tem;
 	GHashTable *queued_entry_changes = g_hash_table_new (NULL, NULL);
 
 	for (tem = db->priv->changed_entries; tem; tem = tem->next) {
 		struct RhythmDBEntryChangeData *data = tem->data;
-		struct RhythmDBAction *action;
-		RBMetaDataField field;
 
-		if (rhythmdb_entry_get_int (db, data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
-		    && !g_hash_table_lookup (queued_entry_changes, data->entry)
-		    && metadata_field_from_prop (data->prop, &field)) {
-			action = g_new0 (struct RhythmDBAction, 1);
-			action->type = RHYTHMDB_ACTION_SYNC;
-			action->entry = data->entry;
-			g_hash_table_insert (queued_entry_changes, data->entry, action);
-			g_async_queue_push (db->priv->action_queue, action);
+		if (commit) {
+			struct RhythmDBAction *action;
+			RBMetaDataField field;
+
+			if (rhythmdb_entry_get_int (db, data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
+			    && !g_hash_table_lookup (queued_entry_changes, data->entry)
+			    && metadata_field_from_prop (data->prop, &field)) {
+				action = g_new0 (struct RhythmDBAction, 1);
+				action->type = RHYTHMDB_ACTION_SYNC;
+				action->entry = data->entry;
+				g_hash_table_insert (queued_entry_changes, data->entry, action);
+				g_async_queue_push (db->priv->action_queue, action);
+			}
+			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
+				       data->prop, &data->old, &data->new);
 		}
-		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
-			       data->prop, &data->old, &data->new);
 		g_value_unset (&data->old);
 		g_value_unset (&data->new);
 		g_free (data);
@@ -675,14 +678,9 @@ emit_changed_signals (RhythmDB *db)
 static void
 rhythmdb_write_unlock_internal (RhythmDB *db, gboolean commit)
 {
-	GList *tem;
+       GList *tem;
 
-	if (commit)
-		emit_changed_signals (db);
-	else {
-		g_list_free (db->priv->changed_entries);
-		db->priv->changed_entries = NULL;
-	}
+	emit_changed_signals (db, commit);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
@@ -775,7 +773,7 @@ set_metadata_string_default_unknown (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_static_string (&val, unknown);
 	} else if (g_value_get_string (&val)[0] == '\0')
-		g_value_set_string (&val, unknown);
+		g_value_set_static_string (&val, unknown);
 	rhythmdb_entry_set (db, entry, prop, &val);
 	g_value_unset (&val);
 }

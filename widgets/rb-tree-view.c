@@ -303,7 +303,7 @@ gtk_tree_view_size_allocate_columns (GtkWidget *widget)
       width += column->width;
     }
 
-  g_array_free (expand_col_widths, FALSE);
+  g_array_free (expand_col_widths, TRUE);
 }
 
 static void

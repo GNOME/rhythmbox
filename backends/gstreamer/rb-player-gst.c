@@ -797,8 +797,7 @@ rb_player_pause (RBPlayer *mp)
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);
 
-	gst_element_set_state (mp->priv->pipeline,
-			       GST_STATE_PAUSED);
+	rb_player_sync_pipeline (mp, mp->priv->iradio_mode, NULL);
 }
 
 gboolean
