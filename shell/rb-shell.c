@@ -428,7 +428,10 @@ rb_shell_finalize (GObject *object)
 	gtk_widget_hide (shell->priv->window);
 	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
-	
+
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
+
 	eel_gconf_monitor_remove ("/apps/rhythmbox");
 
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
@@ -767,6 +770,11 @@ rb_shell_show (RBLibrary *library,
 	/* GO GO GO */
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
+
+	GDK_THREADS_ENTER ();
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
+	GDK_THREADS_LEAVE ();
 }
 
 char *
