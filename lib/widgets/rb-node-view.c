@@ -103,6 +103,12 @@ static void rb_node_view_rated_cb (RBCellRendererRating *cellrating,
 				   RBNodeView *view);
 static void filter_changed_cb (RBNodeFilter *filter,
 		               RBNodeView *view);
+static int dumb_sort_func (GtkTreeModel *model,
+		           GtkTreeIter *a,
+		           GtkTreeIter *b,
+		           gpointer user_data);
+static void after_filter_changed_cb (RBNodeFilter *filter,
+			             RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -160,6 +166,8 @@ enum
 static GObjectClass *parent_class = NULL;
 
 static guint rb_node_view_signals[LAST_SIGNAL] = { 0 };
+
+/* #define EVIL_COLUMN_SIZING_HACK */
 
 GType
 rb_node_view_get_type (void)
@@ -351,10 +359,16 @@ rb_node_view_set_property (GObject *object,
 
 		if (view->priv->filter != NULL)
 		{
-			g_signal_connect (G_OBJECT (view->priv->filter),
-					  "changed",
-					  G_CALLBACK (filter_changed_cb),
-					  view);
+			g_signal_connect_object (G_OBJECT (view->priv->filter),
+					         "changed",
+					         G_CALLBACK (filter_changed_cb),
+					         G_OBJECT (view),
+						 0);
+			g_signal_connect_object (G_OBJECT (view->priv->filter),
+					         "changed",
+					         G_CALLBACK (after_filter_changed_cb),
+					         G_OBJECT (view),
+						 G_CONNECT_AFTER);
 		}
 		break;
 	default:
@@ -685,6 +699,8 @@ rb_node_view_construct (RBNodeView *view)
 		g_object_set_data_full (G_OBJECT (gcolumn),
 					"sort-order", sort_order,
 					(GDestroyNotify) g_list_free);
+		g_object_set_data (G_OBJECT (gcolumn),
+			           "sort-column", GINT_TO_POINTER (column));
 
 		if (default_sort_column == TRUE)
 		{
@@ -758,6 +774,7 @@ filter_changed_cb (RBNodeFilter *filter,
 		   RBNodeView *view)
 {
 	GtkWidget *window;
+	int sort_column_id;
 	
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
@@ -765,6 +782,7 @@ filter_changed_cb (RBNodeFilter *filter,
 	
 	if (window != NULL && window->window != NULL)
 	{
+		/* nice busy cursor */
 		GdkCursor *cursor;
 
 		cursor = gdk_cursor_new (GDK_WATCH);
@@ -778,6 +796,50 @@ filter_changed_cb (RBNodeFilter *filter,
 		/* no flush: this will cause the cursor to be reset
 		 * only when the UI is free again */
 	}
+
+	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					          &sort_column_id, NULL) == FALSE)
+		return;
+
+	/* set a dumb sort func so that we dont get slow
+	 * row insertion sorting */
+	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					 sort_column_id,
+					 dumb_sort_func,
+					 NULL, NULL);
+}
+
+static void
+after_filter_changed_cb (RBNodeFilter *filter,
+			 RBNodeView *view)
+{
+	GList *sort_order;
+	GtkTreeViewColumn *column = NULL;
+	int sort_column_id;
+	GList *l;
+	GtkSortType order;
+
+	if (gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+					          &sort_column_id, &order) == FALSE)
+		return;
+
+	for (l = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview)); l != NULL; l = g_list_next (l))
+	{
+		if (GPOINTER_TO_INT (g_object_get_data (G_OBJECT (l->data), "sort-column")) == sort_column_id)
+		{
+			column = l->data;
+			break;
+		}
+	}
+	g_assert (column != NULL);
+	sort_order = g_object_get_data (G_OBJECT (column), "sort-order");
+
+	/* put the proper sort function back */
+	gtk_tree_sortable_set_sort_func (GTK_TREE_SORTABLE (view->priv->sortmodel),
+				         sort_column_id,
+					 rb_node_view_sort_func,
+					 sort_order, NULL);
+	gtk_tree_model_sort_clear_cache (GTK_TREE_MODEL_SORT (view->priv->sortmodel));
 }
 
 void
@@ -1127,6 +1189,15 @@ rb_node_view_sort_func (GtkTreeModel *model,
 	return retval;
 }
 
+static int
+dumb_sort_func (GtkTreeModel *model,
+		GtkTreeIter *a,
+		GtkTreeIter *b,
+		gpointer user_data)
+{
+	return -1;
+}
+
 static void
 rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 				   RBNodeView *view)
@@ -1446,6 +1517,7 @@ static void
 tree_view_size_allocate_cb (GtkWidget *widget,
 			    GtkAllocation *allocation)
 {
+#ifdef EVIL_COLUMN_SIZING_HACK
 	GList *columns, *l;
 	int n_expand_columns = 0, total_requested_width = 0, left_over_width, width = 0;
 
@@ -1537,6 +1609,7 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 	}
 
 	g_list_free (columns);
+#endif /* EVIL_COLUMN_SIZING_HACK */
 }
 
 gboolean
