@@ -178,6 +178,9 @@ struct RBLibrarySourcePrivate
 	char *artist;
 	char *album;
 
+	RhythmDBQueryModel *cached_all_query;
+	char *cached_sorting_type;
+	
 	RhythmDBQueryModel *model;
 	RhythmDBQueryModel *active_query;
 	RBLibraryQueryType query_type;
@@ -1251,6 +1254,8 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 	RhythmDBQueryModel *query_model;
 	GtkTreeModel *model;
 	GPtrArray *query;
+	gboolean is_all_query, sorting_matches;
+	const char *current_sorting_type;
 
 	if (source->priv->active_query) {
 		g_signal_handlers_disconnect_by_func (G_OBJECT (source->priv->active_query),
@@ -1264,6 +1269,26 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 		if (source->priv->query_type >= RB_LIBRARY_QUERY_TYPE_ALBUM)
 			g_signal_handler_unblock (G_OBJECT (source->priv->songs),
 						  source->priv->album_add_handler_id);
+	}
+
+	is_all_query = (source->priv->selected_genres == NULL &&
+			source->priv->selected_artists == NULL &&	    
+			source->priv->selected_albums == NULL &&	    
+			source->priv->search_text == NULL);
+	current_sorting_type = rb_entry_view_get_sorting_type (source->priv->songs);
+	sorting_matches = source->priv->cached_sorting_type
+		&& !strcmp (source->priv->cached_sorting_type, current_sorting_type);
+	if (is_all_query) {
+		if (sorting_matches) {
+			rb_debug ("cached query hit");
+			rb_entry_view_set_model (source->priv->songs,
+						 RHYTHMDB_MODEL (source->priv->cached_all_query));
+			return;
+		} else if (source->priv->cached_all_query) {
+			rb_debug ("sorting mismatch, freeing cached query");
+			g_object_unref (source->priv->cached_all_query);
+			g_free (source->priv->cached_sorting_type);
+		}
 	}
 		
 	source->priv->query_type = qtype;
@@ -1302,6 +1327,13 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 
 	source->priv->active_query = source->priv->model = 
 		query_model = rhythmdb_query_model_new_empty (source->priv->db);
+	if (source->priv->cached_all_query == NULL
+	    || (is_all_query && !sorting_matches)) {
+		rb_debug ("caching new query");
+		source->priv->cached_all_query = query_model;
+		source->priv->cached_sorting_type = g_strdup (current_sorting_type);
+		g_object_ref (G_OBJECT (source->priv->cached_all_query));
+	}
 
 	model = GTK_TREE_MODEL (query_model);
 

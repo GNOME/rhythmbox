@@ -1101,6 +1101,12 @@ free_out:
 	g_strfreev (strs);
 }
 
+const char *
+rb_entry_view_get_sorting_type (RBEntryView *view)
+{
+	return eel_gconf_get_string (view->priv->sorting_key);
+}
+
 static void
 rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 {

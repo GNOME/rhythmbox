@@ -138,6 +138,7 @@ void		rb_entry_view_enable_drag_source	(RBEntryView *view,
 							 int n_targets);
 RhythmDBEntry *	rb_entry_view_get_random_entry		(RBEntryView *view);
 
+const char *	rb_entry_view_get_sorting_type		(RBEntryView *view);
 
 gboolean	rb_entry_view_poll_model		(RBEntryView *view);
 
