@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox cvs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-04-13 20:10+0200\n"
-"PO-Revision-Date: 2004-04-13 14:50+0200\n"
+"POT-Creation-Date: 2004-05-01 20:15+0200\n"
+"PO-Revision-Date: 2004-05-02 01:49+0200\n"
 "Last-Translator: Reinout van Schouwen <reinout@cs.vu.nl>\n"
 "Language-Team: Dutch <vertaling@nl.linux.org>\n"
 "MIME-Version: 1.0\n"
@@ -103,7 +103,7 @@ msgstr "_Pad:"
 msgid "_Skip this step"
 msgstr "Deze _stap overslaan"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1228
 msgid "A_lbum"
 msgstr "_Album"
 
@@ -135,7 +135,7 @@ msgstr "_Laatst gespeeld"
 msgid "_Play count"
 msgstr "_Aantal maal afgespeeld"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1257
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1179
 msgid "_Rating"
 msgstr "_Waardering"
 
@@ -160,7 +160,7 @@ msgid "The following files couldn't be loaded:"
 msgstr "De volgende bestanden konden niet worden geladen:"
 
 # is dit te lang?
-#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:3
+#: data/glade/song-info.glade.h:2 data/glade/song-info-multiple.glade.h:2
 msgid "Automatically rate:"
 msgstr "Automatisch waardering geven:"
 
@@ -196,7 +196,7 @@ msgstr "Lokatie:"
 msgid "Play count:"
 msgstr "Aantal maal afgespeeld:"
 
-#: data/glade/song-info.glade.h:11
+#: data/glade/song-info.glade.h:11 data/glade/song-info-multiple.glade.h:3
 msgid "_Album:"
 msgstr "_Album:"
 
@@ -222,10 +222,6 @@ msgstr "T_itel:"
 #: data/glade/song-info.glade.h:16
 msgid "_Track number:"
 msgstr "Spoor_nummer:"
-
-#: data/glade/song-info-multiple.glade.h:2
-msgid "A_lbum:"
-msgstr "_Album:"
 
 #: data/glade/station-new.glade.h:3
 msgid "_Location:"
@@ -255,7 +251,7 @@ msgstr "Voer de _locatie (URI) in van het bestand dat u toe wilt voegen:"
 msgid "Open from URI"
 msgstr "Via URI openen"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1213 shell/rb-shell.c:1884
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1216 shell/rb-shell.c:1885
 msgid "Music Player"
 msgstr "Muziekspeler"
 
@@ -483,7 +479,7 @@ msgstr "Informatie weergeven over het geselecteerde liedje"
 msgid "Source _List"
 msgstr "_Bronnenlijst"
 
-#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1539
+#: data/ui/rhythmbox-ui.xml.h:50 shell/rb-shell-player.c:1536
 msgid "Start playing"
 msgstr "Afspelen starten"
 
@@ -559,7 +555,7 @@ msgstr "_Volgende"
 msgid "_Paste"
 msgstr "_Plakken"
 
-#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1540
+#: data/ui/rhythmbox-ui.xml.h:71 shell/rb-shell-player.c:1537
 msgid "_Play"
 msgstr "_Afspelen"
 
@@ -603,8 +599,8 @@ msgstr "Nieuw internet radiostation"
 #: rhythmdb/rhythmdb.c:767 sources/rb-ipod-source.c:175
 #: sources/rb-iradio-source.c:266 sources/rb-iradio-source.c:267
 #: sources/rb-iradio-source.c:268 sources/rb-playlist-source.c:394
-#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
-#: widgets/rb-song-info.c:800
+#: widgets/rb-entry-view.c:961 widgets/rb-entry-view.c:988
+#: widgets/rb-song-info.c:801
 msgid "Unknown"
 msgstr "Onbekend"
 
@@ -612,7 +608,7 @@ msgstr "Onbekend"
 msgid "All"
 msgstr "Alle"
 
-#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:750
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:751
 #, c-format
 msgid "%s Properties"
 msgstr "%s Eigenschappen"
@@ -647,17 +643,17 @@ msgstr "Oriëntatie"
 msgid "The orientation of the tray."
 msgstr "De oriëntatie van het vak."
 
-#: lib/rb-file-helpers.c:75
+#: lib/rb-file-helpers.c:77
 #, c-format
 msgid "Failed to find %s"
 msgstr "Kan %s niet vinden"
 
-#: lib/rb-file-helpers.c:100
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s bestaat reeds, gelieve het weg te halen."
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:105
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Aanmaken van map %s is mislukt."
@@ -760,7 +756,12 @@ msgstr "Mislukt om het bestand te openen als Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:503 metadata/rb-metadata-gst.c:632
+#: metadata/rb-metadata-gst.c:290
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "Er is geen plugin geïnstalleerd voor een %s bestand."
+
+#: metadata/rb-metadata-gst.c:531 metadata/rb-metadata-gst.c:660
 #: player/rb-player-gst.c:562
 #, c-format
 msgid "Failed to create %s element; check your installation"
@@ -773,8 +774,8 @@ msgstr "Actie wordt niet ondersteund"
 # misschien weglaten? 'via pijpleiding'
 # misschien andere formulering:
 # via ander programma?
-#: player/rb-player-gst.c:409 player/rb-player-gst.c:619
-#: player/rb-player-gst.c:629
+#: player/rb-player-gst.c:409 player/rb-player-gst.c:621
+#: player/rb-player-gst.c:631
 msgid "Could not start pipeline playing"
 msgstr "Kon afspelen via pijpleiding niet starten"
 
@@ -791,19 +792,19 @@ msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr ""
 "Kon de scheduler niet initialiseren.   Heeft u gst-register uitgevoerd?"
 
-#: player/rb-player-gst.c:641
+#: player/rb-player-gst.c:658
 msgid "Could not pause playback"
 msgstr "Kon het afspelen niet pauzeren"
 
-#: player/rb-player-gst.c:651
+#: player/rb-player-gst.c:668
 msgid "Could not close output sink"
 msgstr "Kon de uitvoer niet afsluiten"
 
-#: player/rb-player-gst.c:698
+#: player/rb-player-gst.c:715
 msgid "No AudioCD support; check your settings"
 msgstr "Geen audio-CD ondersteuning; controleer uw instellingen"
 
-#: player/rb-player-gst.c:757
+#: player/rb-player-gst.c:774
 msgid "Failed to close audio output sink"
 msgstr "Kon de audio-afvoer niet sluiten"
 
@@ -843,8 +844,8 @@ msgstr "Audio van %s onhandelbaar; controleer uw installatie."
 msgid "<invalid filename>"
 msgstr "<ongeldige bestandsnaam>"
 
-#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:1005
-#: widgets/rb-song-info.c:773 widgets/rb-song-info.c:953
+#: rhythmdb/rhythmdb.c:1462 widgets/rb-entry-view.c:927
+#: widgets/rb-song-info.c:774 widgets/rb-song-info.c:954
 msgid "Never"
 msgstr "Nooit"
 
@@ -973,24 +974,16 @@ msgstr "Pad naar het database-bestand"
 msgid "Quit Rhythmbox"
 msgstr "Rhythmbox afsluiten"
 
-#: shell/main.c:118 widgets/rb-druid.c:218
+#: shell/main.c:125 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: shell/main.c:213
-msgid ""
-"Rhythmbox does not currently work if GNOME sound events are are enabled and "
-"esdsink is in use."
-msgstr ""
-"Op dit moment werk Rhythmbox niet indien GNOME geluidsgebeurtenissen "
-"ingeschakeld zijn en esdsink actief is."
-
-#: shell/main.c:252 shell/main.c:261
+#: shell/main.c:232 shell/main.c:241
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "Een fout is opgetreden: '%s'"
 
-#: shell/main.c:325
+#: shell/main.c:305
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1027,7 +1020,7 @@ msgstr "Willekeurig op waardering"
 msgid "Random by time since last play and rating"
 msgstr "Willekeurig op tijd sinds laatst afgespeeld en waardering"
 
-#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:860
+#: shell/rb-playlist-manager.c:476 shell/rb-shell-player.c:868
 msgid "Couldn't parse playlist"
 msgstr "Kan afspeellijst niet analyseren"
 
@@ -1035,49 +1028,49 @@ msgstr "Kan afspeellijst niet analyseren"
 msgid "Load playlist"
 msgstr "Afspeellijst laden"
 
-#: shell/rb-playlist-manager.c:811
+#: shell/rb-playlist-manager.c:815
 msgid "Save playlist"
 msgstr "Afspeellijst opslaan"
 
-#: shell/rb-shell-player.c:442
+#: shell/rb-shell-player.c:443
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Kan geen speler aanmaken: %s"
 
-#: shell/rb-shell-player.c:510
+#: shell/rb-shell-player.c:511
 msgid "Play previous song"
 msgstr "Vorig liedje afspelen"
 
-#: shell/rb-shell-player.c:539
+#: shell/rb-shell-player.c:540
 msgid "Play next song"
 msgstr "Volgend liedje afspelen"
 
-#: shell/rb-shell-player.c:558
+#: shell/rb-shell-player.c:559
 msgid "Change the music volume"
 msgstr "Geluidssterkte aanpassen"
 
-#: shell/rb-shell-player.c:833
+#: shell/rb-shell-player.c:841
 #, c-format
 msgid "Opening %s..."
 msgstr "Openen van %s..."
 
-#: shell/rb-shell-player.c:1531
+#: shell/rb-shell-player.c:1528
 msgid "Pause playback"
 msgstr "Afspelen pauzeren"
 
-#: shell/rb-shell-player.c:1532
+#: shell/rb-shell-player.c:1529
 msgid "_Pause"
 msgstr "_Pauzeren"
 
-#: shell/rb-shell-player.c:1547
+#: shell/rb-shell-player.c:1544
 msgid "Stop playback"
 msgstr "Afspelen stoppen"
 
-#: shell/rb-shell-player.c:1548
+#: shell/rb-shell-player.c:1545
 msgid "_Stop"
 msgstr "_Stoppen"
 
-#: shell/rb-shell-player.c:1880
+#: shell/rb-shell-player.c:1873
 msgid "Unexpected end of stream!"
 msgstr "Onverwachte eind aan gegevensstroom!"
 
@@ -1094,19 +1087,19 @@ msgstr "Algemeen"
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan URI \"%s\" niet analyseren\n"
 
-#: shell/rb-shell.c:1059
+#: shell/rb-shell.c:1062
 msgid "Whether the main window is visible"
 msgstr "Of het hoofdvenster zichtbaar is"
 
-#: shell/rb-shell.c:1064
+#: shell/rb-shell.c:1067
 msgid "Whether shuffle is enabled"
 msgstr "Of schudden aanstaat"
 
-#: shell/rb-shell.c:1068
+#: shell/rb-shell.c:1071
 msgid "Properties for the current song"
 msgstr "Eigenschappen van het huidige liedje"
 
-#: shell/rb-shell.c:1485
+#: shell/rb-shell.c:1484
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1118,12 +1111,12 @@ msgstr ""
 "heeft geïnstalleerd dan bonobo-activation; deze waarschuwing is onschuldig, "
 "maar IPC zal niet werken."
 
-#: shell/rb-shell.c:1858 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
+#: shell/rb-shell.c:1859 shell/rb-tray-icon.c:227 widgets/rb-header.c:579
 msgid "Not playing"
 msgstr "Afspelen gestopt"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1861
+#: shell/rb-shell.c:1862
 #, c-format
 msgid ""
 "%s\n"
@@ -1133,7 +1126,7 @@ msgstr ""
 "Gepauzeerd, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1865
+#: shell/rb-shell.c:1866
 #, c-format
 msgid ""
 "%s\n"
@@ -1143,43 +1136,43 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1900
+#: shell/rb-shell.c:1901
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (gepauzeerd)"
 
-#: shell/rb-shell.c:1968
+#: shell/rb-shell.c:1969
 msgid "translator_credits"
 msgstr ""
 "Kees van den Broek <kvdb@NOSPAMkvdb.net>\n"
 "Reinout van Schouwen <reinout@cs.vu.nl><\n"
 "Tino Meinen <a.t.meinen@chello.nl>"
 
-#: shell/rb-shell.c:1977
+#: shell/rb-shell.c:1978
 msgid "Maintainers:"
 msgstr "reinout@cs.vu.nl"
 
-#: shell/rb-shell.c:1980
+#: shell/rb-shell.c:1981
 msgid "Former Maintainers:"
 msgstr "Ex-ontwikkelaars:"
 
-#: shell/rb-shell.c:1983
+#: shell/rb-shell.c:1984
 msgid "Contributors:"
 msgstr "Bijdragen van:"
 
-#: shell/rb-shell.c:1985
+#: shell/rb-shell.c:1986
 msgid "Music management and playback software for GNOME."
 msgstr "Een muziekbeheer en -afspeelprogramma voor GNOME."
 
-#: shell/rb-shell.c:2166
+#: shell/rb-shell.c:2167
 msgid "Choose Files or Directory"
 msgstr "Kies bestanden of een map"
 
-#: shell/rb-shell.c:2212
+#: shell/rb-shell.c:2213
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Om CD's over te nemen dient u het Sound Juicer pakket te installeren"
 
-#: shell/rb-shell.c:2219
+#: shell/rb-shell.c:2220
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kan sound-juicer niet opstarten: %s"
@@ -1206,49 +1199,49 @@ msgstr "Bufferen..."
 
 # Master-playlist
 # hoofdafspeellijst
-#: sources/itunesdb.c:459
+#: sources/itunesdb.c:447
 msgid "Master-PL"
 msgstr "Master-Pl"
 
-#: sources/itunesdb.c:461
+#: sources/itunesdb.c:449
 msgid "Playlist"
 msgstr "Afspeellijst"
 
-#: sources/itunesdb.c:813
+#: sources/itunesdb.c:801
 #, c-format
 msgid "Error reading \"%s\".\n"
 msgstr "Fout tijdens het lezen van \"%s\".\n"
 
-#: sources/itunesdb.c:821
+#: sources/itunesdb.c:809
 #, c-format
 msgid "\"%s\" is not a valid iPod database.\n"
 msgstr "\"%s\" is geen geldige iPod database.\n"
 
 # zie de vergelijkbare zin waarin %s op een andere plek staat
-#: sources/itunesdb.c:1061 sources/itunesdb.c:1716
+#: sources/itunesdb.c:1049 sources/itunesdb.c:1704
 #, c-format
 msgid "Could not open \"%s\" file for reading.\n"
 msgstr "Fout tijdens het verkrijgen van lees-toegang tot bestand \"%s\".\n"
 
 # zie de vergelijkbare zin waarin %s op een andere plek staat
-#: sources/itunesdb.c:1568 sources/itunesdb.c:1723
+#: sources/itunesdb.c:1556 sources/itunesdb.c:1711
 #, c-format
 msgid "Could not open \"%s\" file for writing.\n"
 msgstr "Fout tijdens het verkrijgen van schrijf-toegang tot bestand \"%s\".\n"
 
 #. an error occured
-#: sources/itunesdb.c:1580
+#: sources/itunesdb.c:1568
 #, c-format
 msgid "Error renaming '%s' to '%s' (%s).\n"
 msgstr "Fout bij hernoemen van '%s' naar '%s (%s).\n"
 
 #. error -- not end of file!
-#: sources/itunesdb.c:1736
+#: sources/itunesdb.c:1724
 #, c-format
 msgid "Error reading file \"%s\".\n"
 msgstr "Fout tijdens het lezen van bestand \"%s\".\n"
 
-#: sources/itunesdb.c:1748
+#: sources/itunesdb.c:1736
 #, c-format
 msgid "Error writing PC file \"%s\".\n"
 msgstr "Fout tijdens het schrijven van bestand \"%s\".\n"
@@ -1289,7 +1282,7 @@ msgstr "Bibliotheek"
 msgid "Add Location"
 msgstr "Locatie toevoegen"
 
-#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1275
+#: sources/rb-playlist-source.c:271 widgets/rb-entry-view.c:1197
 msgid "Tra_ck"
 msgstr "Tra_ck"
 
@@ -1360,64 +1353,64 @@ msgstr "Fout tijdens het lezen van bestandsnaam: %s"
 msgid "Choose a directory"
 msgstr "Kies een map"
 
-#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:872
+#: widgets/rb-entry-view.c:963 widgets/rb-header.c:872
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1068
+#: widgets/rb-entry-view.c:990
 msgid "Very Low"
 msgstr "Zeer laag"
 
-#: widgets/rb-entry-view.c:1070
+#: widgets/rb-entry-view.c:992
 msgid "Low"
 msgstr "Laag"
 
-#: widgets/rb-entry-view.c:1072
+#: widgets/rb-entry-view.c:994
 msgid "Regular"
 msgstr "Normaal"
 
-#: widgets/rb-entry-view.c:1074
+#: widgets/rb-entry-view.c:996
 msgid "High"
 msgstr "Hoog"
 
-#: widgets/rb-entry-view.c:1076
+#: widgets/rb-entry-view.c:998
 msgid "Very High"
 msgstr "Zeer hoog"
 
-#: widgets/rb-entry-view.c:1078
+#: widgets/rb-entry-view.c:1000
 msgid "Perfect"
 msgstr "Perfect"
 
-#: widgets/rb-entry-view.c:1284
+#: widgets/rb-entry-view.c:1206
 msgid "_Title"
 msgstr "_Titel"
 
-#: widgets/rb-entry-view.c:1295
+#: widgets/rb-entry-view.c:1217
 msgid "Art_ist"
 msgstr "Art_iest"
 
-#: widgets/rb-entry-view.c:1317
+#: widgets/rb-entry-view.c:1239
 msgid "Ge_nre"
 msgstr "_Genre"
 
-#: widgets/rb-entry-view.c:1327
+#: widgets/rb-entry-view.c:1249
 msgid "Ti_me"
 msgstr "Ti_jd"
 
-#: widgets/rb-entry-view.c:1336
+#: widgets/rb-entry-view.c:1258
 msgid "_Quality"
 msgstr "_Kwaliteit"
 
-#: widgets/rb-entry-view.c:1346
+#: widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "_Aantal maal afgespeeld"
 
-#: widgets/rb-entry-view.c:1355
+#: widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "_Laatst afgespeeld"
 
-#: widgets/rb-entry-view.c:1499
+#: widgets/rb-entry-view.c:1422
 msgid "Now Playing"
 msgstr "Bezig met afspelen"
 
@@ -1516,24 +1509,34 @@ msgstr "Eigenschappen van het liedje"
 msgid "Multiple Song Properties"
 msgstr "Eigenschappen meerdere liedjes"
 
-#: widgets/rb-song-info.c:798
+#: widgets/rb-song-info.c:799
 #, c-format
 msgid "%d kbps"
 msgstr "%d kbps "
 
-#: widgets/rb-song-info.c:861
+#: widgets/rb-song-info.c:862
 msgid "on the desktop"
 msgstr "op het werkblad"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
+#: widgets/rb-volume.c:234
 msgid "+"
 msgstr "+"
 
-#: widgets/rb-volume.c:234
+#: widgets/rb-volume.c:235
 msgid "-"
 msgstr "-"
+
+#~ msgid "A_lbum:"
+#~ msgstr "_Album:"
+
+#~ msgid ""
+#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
+#~ "and esdsink is in use."
+#~ msgstr ""
+#~ "Op dit moment werk Rhythmbox niet indien GNOME geluidsgebeurtenissen "
+#~ "ingeschakeld zijn en esdsink actief is."
 
 #~ msgid "Could not open iTunesDB \"%s\" for writing.\n"
 #~ msgstr "Kon iTunesDB \"%s\" niet openen voor schrijven.\n"
