@@ -80,11 +80,6 @@ static void root_child_added_cb (RBNode *node,
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
 		                   RBTreeModelNode *model);
-static void root_child_reordered_cb (RBNode *node,
-				     RBNode *child,
-				     int old_index,
-				     int new_index,
-				     RBTreeModelNode *model);
 static void filter_parent_child_added_cb (RBNode *node,
 					  RBNode *child,
 					  RBTreeModelNode *model);
@@ -281,11 +276,6 @@ rb_tree_model_node_set_property (GObject *object,
 		g_signal_connect_object (G_OBJECT (model->priv->root),
 				         "child_changed",
 				         G_CALLBACK (root_child_changed_cb),
-				         G_OBJECT (model),
-					 0);
-		g_signal_connect_object (G_OBJECT (model->priv->root),
-				         "child_reordered",
-				         G_CALLBACK (root_child_reordered_cb),
 				         G_OBJECT (model),
 					 0);
 		g_signal_connect_object (G_OBJECT (model->priv->root),
@@ -900,37 +890,6 @@ root_child_changed_cb (RBNode *node,
 		       RBTreeModelNode *model)
 {
 	rb_tree_model_node_update_node (model, child, -1);
-}
-
-static void
-root_child_reordered_cb (RBNode *node,
-			 RBNode *child,
-			 int old_index,
-			 int new_index,
-			 RBTreeModelNode *model)
-{
-	GtkTreePath *path;
-	int *order, i;
-	int n_kids;
-
-	n_kids = rb_node_get_n_children (model->priv->root);
-
-	order = g_new0 (int, n_kids);
-	for (i = 0; i < n_kids; i++) {
-		if (i == old_index)
-			order[i] = new_index;
-		else if (i == new_index)
-			order[i] = old_index;
-		else
-			order[i] = i;
-	}
-
-	path = gtk_tree_path_new ();
-	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
-				       path, NULL, order);
-	gtk_tree_path_free (path);
-
-	g_free (order);
 }
 
 static void

@@ -85,8 +85,8 @@ enum
 	RESTORED,
 	CHILD_ADDED,
 	CHILD_CHANGED,
-	CHILD_REORDERED,
 	CHILD_REMOVED,
+	PRE_CHILD_REMOVED,
 	LAST_SIGNAL
 };
 
@@ -186,23 +186,21 @@ rb_node_class_init (RBNodeClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      RB_TYPE_NODE);
-	rb_node_signals[CHILD_REORDERED] =
-		g_signal_new ("child_reordered",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBNodeClass, child_reordered),
-			      NULL, NULL,
-			      rb_marshal_VOID__OBJECT_INT_INT,
-			      G_TYPE_NONE,
-			      3,
-			      RB_TYPE_NODE,
-			      G_TYPE_INT,
-			      G_TYPE_INT);
 	rb_node_signals[CHILD_REMOVED] =
 		g_signal_new ("child_removed",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBNodeClass, child_removed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1,
+			      RB_TYPE_NODE);
+	rb_node_signals[PRE_CHILD_REMOVED] =
+		g_signal_new ("pre_child_removed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeClass, pre_child_removed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
@@ -1077,11 +1075,11 @@ real_remove_child (RBNode *node,
 		   gboolean remove_from_child)
 {
 	RBNodeParent *node_info;
-
+	
 	write_lock_to_read_lock (node);
 	write_lock_to_read_lock (child);
 
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REMOVED], 0, child);
+	g_signal_emit (G_OBJECT (node), rb_node_signals[PRE_CHILD_REMOVED], 0, child);
 
 	read_lock_to_write_lock (node);
 	read_lock_to_write_lock (child);
@@ -1090,34 +1088,23 @@ real_remove_child (RBNode *node,
 			                 GINT_TO_POINTER (node->priv->id));
 
 	if (remove_from_parent) {
-		g_ptr_array_remove_index_fast (node->priv->children,
-					       node_info->index);
+		int i;
 
-		/* correct indices on moved child */
-		if (node_info->index < node->priv->children->len) {
+		g_ptr_array_remove_index (node->priv->children,
+					  node_info->index);
+
+		/* correct indices on kids */
+		for (i = node_info->index; i < node->priv->children->len; i++) {
 			RBNode *borked_node;
 			RBNodeParent *borked_node_info;
-			int old_index;
 		
-			borked_node = g_ptr_array_index (node->priv->children, node_info->index);
+			borked_node = g_ptr_array_index (node->priv->children, i);
 
 			g_static_rw_lock_writer_lock (borked_node->priv->lock);
 
 			borked_node_info = g_hash_table_lookup (borked_node->priv->parents,
 						                GINT_TO_POINTER (node->priv->id));
-			old_index = borked_node_info->index;
-			borked_node_info->index = node_info->index;
-
-			write_lock_to_read_lock (node);
-			write_lock_to_read_lock (borked_node);
-
-			/* -1 because this was the last node, but since the removed signal is
-			 * emitted already we need to correct for the shortening */
-			g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REORDERED], 0,
-				       borked_node, old_index - 1, borked_node_info->index);
-
-			read_lock_to_write_lock (node);
-			read_lock_to_write_lock (borked_node);
+			borked_node_info->index--;
 
 			g_static_rw_lock_writer_unlock (borked_node->priv->lock);
 		}
@@ -1127,6 +1114,14 @@ real_remove_child (RBNode *node,
 		g_hash_table_remove (child->priv->parents,
 				     GINT_TO_POINTER (node->priv->id));
 	}
+
+	write_lock_to_read_lock (node);
+	write_lock_to_read_lock (child);
+
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_REMOVED], 0, child);
+
+	read_lock_to_write_lock (node);
+	read_lock_to_write_lock (child);
 }
 
 void

@@ -192,10 +192,10 @@ rb_library_finalize (GObject *object)
 		rb_node_unref (g_ptr_array_index (children, i));
 	}
 	
-	rb_node_unref (library->priv->all_genres);
-	rb_node_unref (library->priv->all_artists);
-	rb_node_unref (library->priv->all_albums);
 	rb_node_unref (library->priv->all_songs);
+	rb_node_unref (library->priv->all_albums);
+	rb_node_unref (library->priv->all_artists);
+	rb_node_unref (library->priv->all_genres);
 
 	g_hash_table_destroy (library->priv->genre_hash);
 	g_hash_table_destroy (library->priv->artist_hash);

@@ -503,7 +503,7 @@ rb_node_view_construct (RBNodeView *view)
 	char *tmp;
 
 	g_signal_connect_object (G_OBJECT (view->priv->root),
-			         "child_removed",
+			         "pre_child_removed",
 			         G_CALLBACK (root_child_removed_cb),
 				 view,
 				 0);
