@@ -1393,7 +1393,6 @@ do_conjunction (RhythmDBTreeEntry *entry, gpointer unused,
 	/* Finally, we actually evaluate the query! */
 	if (evaluate_conjunctive_subquery (data->db, data->query, 0, data->query->len,
 					   entry)) {
-		rb_debug ("matched entry %p", entry);
 		data->func (data->db, entry, data->data);
 	}
 }
