@@ -1,5 +1,12 @@
 2003-01-11  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-link.c: (rb_link_init), (rb_link_set_property):
+	* shell/rb-player.c: (rb_player_init), (sync_info):
+
+	Only show artist, use ellipsizing label.
+
+2003-01-11  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-player.c: (rb_player_queue_song):
 	* shell/rb-player.h:
 	* views/rb-library-view.c: (songs_node_activated_cb),

@@ -52,6 +52,7 @@
 #include <monkey-media.h>
 #endif
 
+#include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-stock-icons.h"
 #include "rb-file-helpers.h"
@@ -110,8 +111,6 @@ struct RBPlayerPrivate
 	GtkWidget *info_notebook;
 	GtkWidget *song_label_ebox;
 	GtkWidget *song_label;
-	GtkWidget *from_label;
-	GtkWidget *album_link;
 	GtkWidget *artist_link;
 	GtkAdjustment *song_adjustment;
 	GtkWidget *song_scale;
@@ -261,7 +260,7 @@ static void
 rb_player_init (RBPlayer *player)
 {
 	GtkWidget *hbox, *vbox, *infobox, *vbox_label, *big_label, *label;
-	GtkWidget *artist_album_box, *scale_box, *song_box;
+	GtkWidget *artist_box, *scale_box, *song_box;
 	PangoAttribute *attr;
 	PangoAttrList *pattrlist;
 #ifndef USE_XINE
@@ -319,22 +318,16 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (infobox), player->priv->song_label_ebox,
 			    FALSE, FALSE, 0);
 
-	artist_album_box = gtk_hbox_new (FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (infobox), artist_album_box,
-			    FALSE, FALSE, 0);
+	artist_box = gtk_hbox_new (FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (infobox), artist_box,
+			    TRUE, TRUE, 0);
 
-	player->priv->from_label = gtk_label_new ("");
-	gtk_box_pack_start (GTK_BOX (artist_album_box), player->priv->from_label,
-			    FALSE, FALSE, 0);
-	player->priv->album_link = GTK_WIDGET (rb_link_new ());
-	gtk_box_pack_start (GTK_BOX (artist_album_box), player->priv->album_link,
-			    FALSE, FALSE, 0);
-	label = gtk_label_new (_(" by "));
-	gtk_box_pack_start (GTK_BOX (artist_album_box), label,
+	label = gtk_label_new (_("by "));
+	gtk_box_pack_start (GTK_BOX (artist_box), label,
 			    FALSE, FALSE, 0);
 	player->priv->artist_link = GTK_WIDGET (rb_link_new ());
-	gtk_box_pack_start (GTK_BOX (artist_album_box), player->priv->artist_link,
-			    FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (artist_box), player->priv->artist_link,
+			    TRUE, TRUE, 0);
 
 	scale_box = gtk_hbox_new (FALSE, 2);
 	gtk_box_pack_start (GTK_BOX (song_box), scale_box,
@@ -757,35 +750,18 @@ escape_for_allmusic (char *in)
 static void
 sync_info (RBPlayer *player)
 {
-	const char *title, *artist, *album;
+	const char *title, *artist;
 	char *url, *title_str;
-	int num;
 
 	title = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_NAME);
 	rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (player->priv->song_label), title);
 	check_song_tooltip (player);
-
-	album = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ALBUM);
-	url = ALBUM_INFO_URL (album);
-	rb_link_set (RB_LINK (player->priv->album_link), album,
-		     _("Get information about this album from the web"), url);
-	g_free (url);
 
 	artist = rb_node_get_property_string (player->priv->playing, RB_NODE_PROP_ARTIST);
 	url = ARTIST_INFO_URL (artist);
 	rb_link_set (RB_LINK (player->priv->artist_link), artist,
 		     _("Get information about this artist from the web"), url);
 	g_free (url);
-
-	num = rb_node_get_property_int (player->priv->playing, RB_NODE_PROP_REAL_TRACK_NUMBER);
-	if (num > 0) {
-		char *tmp;
-
-		tmp = g_strdup_printf (_("Track %d from "), num);
-		gtk_label_set_text (GTK_LABEL (player->priv->from_label), tmp);
-		g_free (tmp);
-	} else
-		gtk_label_set_text (GTK_LABEL (player->priv->from_label), _("From "));
 
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (player->priv->info_notebook), 0);
 
