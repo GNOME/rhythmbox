@@ -1248,13 +1248,15 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
 {
 	RhythmDBTree *db = RHYTHMDB_TREE (adb);
 	RhythmDBTreeEntry *entry = RHYTHMDB_TREE_ENTRY (aentry);
+#ifndef G_DISABLE_ASSERT
+	const char *uri;
+#endif
 
 	sanity_check_database (db);
 
 	entry->deleted = TRUE;
 
 #ifndef G_DISABLE_ASSERT
-	const char *uri;
 	uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION));
 	g_assert (g_hash_table_lookup (db->priv->entries, uri) != NULL);
 #endif
