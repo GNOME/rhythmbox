@@ -21,6 +21,10 @@
 #include <stdlib.h>
 
 #include "rb-bonobo-helpers.h"
+#include <bonobo/bonobo-ui-util.h>
+#include <bonobo/bonobo-ui-component.h>
+#include <bonobo/bonobo-window.h>
+#include <gtk/gtk.h>
 
 void
 rb_bonobo_set_label (BonoboUIComponent *component,
@@ -156,4 +160,25 @@ rb_bonobo_add_listener_list_with_data (BonoboUIComponent *component,
 	}
 	
 	bonobo_object_unref (BONOBO_OBJECT (component));
+}
+
+
+void
+rb_bonobo_show_popup (GtkWidget *source, const char *path)
+{
+	GtkWidget *menu;
+	GtkWidget *window;
+	
+	window = gtk_widget_get_ancestor (GTK_WIDGET (source), 
+					  BONOBO_TYPE_WINDOW);
+	menu = gtk_menu_new ();
+	gtk_widget_show (menu);
+	
+	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu), 
+			         path);
+		
+	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
+			3, gtk_get_current_event_time ());
+
+	gtk_object_sink (GTK_OBJECT (menu));
 }

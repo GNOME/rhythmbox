@@ -97,6 +97,15 @@ static void rb_shell_player_cmd_current_song (BonoboUIComponent *component,
 static void rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 					   RBShellPlayer *player,
 					   const char *verbname);
+static void rb_shell_player_cmd_sl_delete (BonoboUIComponent *component,
+					   RBShellPlayer *player,
+					   const char *verbname);
+static void rb_shell_player_cmd_sl_copy (BonoboUIComponent *component,
+					 RBShellPlayer *player,
+					 const char *verbname);
+static void rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
+					       RBShellPlayer *player,
+					       const char *verbname);
 
 static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
@@ -212,6 +221,9 @@ static BonoboUIVerb rb_shell_player_verbs[] =
 	BONOBO_UI_VERB ("Next",		(BonoboUIVerbFn) rb_shell_player_cmd_next),
 	BONOBO_UI_VERB ("CurrentSong",	(BonoboUIVerbFn) rb_shell_player_cmd_current_song),
 	BONOBO_UI_VERB ("SongInfo",	(BonoboUIVerbFn) rb_shell_player_cmd_song_info),
+	BONOBO_UI_VERB ("SLDelete",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_delete),
+	BONOBO_UI_VERB ("SLCopy",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_copy),
+	BONOBO_UI_VERB ("SLProperties",	(BonoboUIVerbFn) rb_shell_player_cmd_sl_properties),
 	BONOBO_UI_VERB_END
 };
 
@@ -978,6 +990,41 @@ rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 {
 	rb_debug ("song info");
 
+	rb_source_song_properties (player->priv->selected_source);
+}
+
+static void
+rb_shell_player_cmd_sl_delete (BonoboUIComponent *component,
+			       RBShellPlayer *player,
+			       const char *verbname)
+{
+	rb_debug ("sl delete");
+	if (rb_source_can_delete (player->priv->selected_source))
+		rb_source_delete (player->priv->selected_source);
+	else
+		rb_debug ("this source can't copy");
+}
+
+static void
+rb_shell_player_cmd_sl_copy (BonoboUIComponent *component,
+			     RBShellPlayer *player,
+			     const char *verbname)
+{
+	rb_debug ("sl copy");
+
+	if (rb_source_can_copy (player->priv->selected_source))
+		rb_source_copy (player->priv->selected_source);
+	else
+		rb_debug ("this source can't copy");
+}
+
+static void
+rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
+				   RBShellPlayer *player,
+				   const char *verbname)
+{
+	rb_debug ("sl properties");
+	
 	rb_source_song_properties (player->priv->selected_source);
 }
 

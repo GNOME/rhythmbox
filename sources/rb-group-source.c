@@ -72,6 +72,7 @@ static void impl_song_properties (RBSource *source);
 static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
+static gboolean impl_show_popup (RBSource *source);
 
 static void rb_group_source_songs_show_popup_cb (RBNodeView *view, RBGroupSource *group_view);
 static void rb_group_source_drop_cb (GtkWidget *widget,
@@ -88,6 +89,7 @@ static char * filename_from_name (const char *name);
 
 
 #define GROUP_SOURCE_SONGS_POPUP_PATH "/popups/GroupSongsList"
+#define GROUP_SOURCE_POPUP_PATH "/popups/GroupSourceList"
 
 struct RBGroupSourcePrivate
 {
@@ -189,6 +191,7 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 	source_class->impl_get_album = impl_get_album;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
+	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -213,25 +216,12 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 							      G_PARAM_READWRITE));
 }
 
+
 static void
 rb_group_source_songs_show_popup_cb (RBNodeView *view,
 		   		     RBGroupSource *group_view)
 {
-	GtkWidget *menu;
-	GtkWidget *window;
-	
-	window = gtk_widget_get_ancestor (GTK_WIDGET (view), 
-					  BONOBO_TYPE_WINDOW);
-	menu = gtk_menu_new ();
-	gtk_widget_show (menu);
-	
-	bonobo_window_add_popup (BONOBO_WINDOW (window), GTK_MENU (menu), 
-			         GROUP_SOURCE_SONGS_POPUP_PATH);
-		
-	gtk_menu_popup (GTK_MENU (menu), NULL, NULL, NULL, NULL,
-			3, gtk_get_current_event_time ());
-
-	gtk_object_sink (GTK_OBJECT (menu));
+	rb_bonobo_show_popup (GTK_WIDGET (view), GROUP_SOURCE_SONGS_POPUP_PATH);
 }
 
 static void
@@ -811,6 +801,13 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		else
 			return FALSE;
 	}
+	return TRUE;
+}
+
+static gboolean
+impl_show_popup (RBSource *source)
+{
+	rb_bonobo_show_popup (GTK_WIDGET (source), GROUP_SOURCE_POPUP_PATH);
 	return TRUE;
 }
 

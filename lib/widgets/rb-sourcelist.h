@@ -49,9 +49,12 @@ typedef struct RBSourceListClass
 {
 	GtkScrolledWindowClass parent_class;
 
+	/* signals */
 	void (*selected) (RBSourceList *list, RBSource *source);
 
 	void (*drop_received) (RBSourceList *list, RBSource *target, GtkSelectionData *data);
+
+	gboolean (*show_popup) (RBSourceList *list, RBSource *target);
 } RBSourceListClass;
 
 GType		rb_sourcelist_get_type		(void);
@@ -59,6 +62,9 @@ GType		rb_sourcelist_get_type		(void);
 GtkWidget *	rb_sourcelist_new		(void);
 
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
+						 RBSource *source);
+
+void		rb_sourcelist_remove		(RBSourceList *sourcelist,
 						 RBSource *source);
 
 void		rb_sourcelist_select		(RBSourceList *sourcelist,

@@ -95,6 +95,7 @@ typedef struct
 	void		(*impl_buffering_done)	(RBSource *source);
 
 	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
+	gboolean	(*impl_show_popup)	(RBSource *source);
 				   
 } RBSourceClass;
 
@@ -145,6 +146,8 @@ gboolean	rb_source_have_url		(RBSource *source);
 void		rb_source_buffering_done	(RBSource *source);
 
 gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
+
+gboolean	rb_source_show_popup		(RBSource *source);
 
 G_END_DECLS
 

@@ -69,6 +69,8 @@ void     rb_bonobo_set_look      (BonoboUIComponent *component,
 				  const char *path,
 				  const char *look);
 
+void	rb_bonobo_show_popup (GtkWidget *source, const char *path);
+
 G_END_DECLS
 
 #endif /* __RB_BONOBO_HELPERS_H */

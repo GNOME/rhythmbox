@@ -46,6 +46,7 @@ enum
 {
 	SELECTED,
 	DROP_RECEIVED,
+	SHOW_POPUP,
 	LAST_SIGNAL
 };
 
@@ -56,6 +57,9 @@ static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
 static void drop_received_cb (RBSourceListModel *model, RBSource *target,
 			      GtkSelectionData *data, RBSourceList *sourcelist);
+static gboolean button_press_cb (GtkTreeView *treeview,
+				 GdkEventButton *event,
+				 RBSourceList *sourcelist);
 
 
 static GtkVBoxClass *parent_class = NULL;
@@ -122,6 +126,16 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_POINTER, G_TYPE_POINTER);
+	rb_sourcelist_signals[SHOW_POPUP] =
+		g_signal_new ("show_popup",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSourceListClass, show_popup),
+			      NULL, NULL,
+			      rb_marshal_BOOLEAN__POINTER,
+			      G_TYPE_BOOLEAN,
+			      1,
+			      G_TYPE_POINTER);
 }
 
 static void
@@ -140,6 +154,11 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 			  sourcelist);
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->model);
+
+	g_signal_connect (G_OBJECT (sourcelist->priv->treeview),
+			  "button_press_event",
+			  G_CALLBACK (button_press_cb),
+			  sourcelist);
 
 	/* Set up the pixbuf column */
 	renderer = gtk_cell_renderer_pixbuf_new ();
@@ -220,6 +239,24 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 }
 
 void
+rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
+{
+	GtkTreeIter iter;
+
+	gtk_tree_model_get_iter_first (sourcelist->priv->model, &iter);
+	do {
+		gpointer target = NULL;
+		gtk_tree_model_get (sourcelist->priv->model, &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+		if (source == target) {
+			gtk_list_store_remove (GTK_LIST_STORE (sourcelist->priv->model), &iter);
+			return;
+		}
+	} while (gtk_tree_model_iter_next (sourcelist->priv->model, &iter));
+	g_assert_not_reached ();
+}
+
+void
 rb_sourcelist_select (RBSourceList *sourcelist, RBSource *source)
 {
 	GtkTreeIter iter;
@@ -246,8 +283,9 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 	gpointer target = NULL;
 	RBSource *source;
 
-	g_assert (gtk_tree_selection_get_selected (sourcelist->priv->selection,
-						   &cindy, &iter));
+	if (!gtk_tree_selection_get_selected (sourcelist->priv->selection,
+					      &cindy, &iter))
+		return;
 
 	gtk_tree_model_get (cindy, &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
@@ -275,4 +313,29 @@ drop_received_cb (RBSourceListModel *model, RBSource *target,
 	rb_debug ("drop recieved");
 	/* Proxy the signal. */
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[DROP_RECEIVED], 0, target, data);	
+}
+
+static gboolean
+button_press_cb (GtkTreeView *treeview,
+		 GdkEventButton *event,
+		 RBSourceList *sourcelist)
+{
+	GtkTreeIter iter;
+	RBSource *target;
+	gboolean ret;
+
+	if (event->button != 3)
+		return FALSE;
+	
+	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
+					      NULL, &iter))
+		return FALSE;
+
+	gtk_tree_model_get (sourcelist->priv->model, &iter,
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	g_return_val_if_fail (RB_IS_SOURCE (target), FALSE);
+
+	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
+
+	return ret;
 }

@@ -154,6 +154,10 @@
         <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
         <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
 
+	<separator/>
+
+        <menuitem name="FileGroupDelete" verb="FileGroupDelete" _label="_Delete Playlist"/>
+
 	<placeholder name="FileMenu"/>
 
 	<separator/>
@@ -241,6 +245,58 @@
 		<menuitem name="ShowWindow" _label="_Show Window" verb="ShowWindow"/>
 	
 	</popup>
+
+  <popup name="LibrarySongsList">
+    <menuitem name="SLCopy"
+     _label="_Copy"
+     _tip="Copy selection"
+     pixtype="stock" pixname="gtk-copy"
+     verb=""/>
+    <menuitem name="SLDelete"
+     _label="_Delete"
+     _tip="Delete selection"
+     pixtype="stock" pixname="gtk-delete"
+     verb=""/>
+    <separator/>
+    <menuitem name="SLProperties"
+     _label="_Properties"
+     _tip="Show information on the selected song"
+     pixtype="stock" pixname="gtk-properties"
+     verb=""/>  
+  </popup>
+
+  <popup name="GroupSongsList">
+    <menuitem name="SLCopy"
+     _label="_Copy"
+     _tip="Copy selection"
+     pixtype="stock" pixname="gtk-copy"
+     verb=""/>
+    <menuitem name="SLCut"
+     _label="_Cut"
+     _tip="Cut selection"
+     pixtype="stock" pixname="gtk-cut"
+     verb=""/>
+    <menuitem name="SLDelete"
+     _label="_Delete"
+     _tip="Delete selection"
+     pixtype="stock" pixname="gtk-delete"
+     verb=""/>
+    <separator/>
+    <menuitem name="SLProperties"
+     _label="_Properties"
+     _tip="Show information on the selected song"
+     pixtype="stock" pixname="gtk-properties"
+     verb=""/>  
+  </popup>
+
+  <popup name="GroupSourceList">
+    <menuitem name="GroupDelete"
+     _label="_Delete"
+     _tip="Delete selection"
+     pixtype="stock" pixname="gtk-delete"
+     verb=""/>
+    <separator/>
+  </popup>
 
 </popups>
 

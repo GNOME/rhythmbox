@@ -119,7 +119,7 @@ static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
 
-/* static void rb_shell_remove_source (RBShell *shell, RBSource *source); */
+static void rb_shell_remove_source (RBShell *shell, RBSource *source);
 /* static void rb_shell_source_deleted_cb (RBSource *source, */
 /* 					RBShell *shell); */
 static void rb_shell_set_window_title (RBShell *shell,
@@ -200,6 +200,9 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBShell *shell);
 static void dnd_add_handled_cb (RBLibraryAction *action,
 		                RBGroupSource *source);
+static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
+					RBSource *target,
+					RBShell *shell);
 static void setup_tray_icon (RBShell *shell);
 static void sync_tray_menu (RBShell *shell);
 
@@ -223,6 +226,7 @@ typedef enum
 
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
 #define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
+#define CMD_PATH_GROUP_DELETE   "/commands/FileGroupDelete"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
@@ -231,7 +235,6 @@ typedef enum
 #define CONF_STATE_WINDOW_VISIBLE   CONF_PREFIX "/state/window_visible"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
-#define CONF_MUSIC_GROUPS           CONF_PREFIX "/music_groups"
 
 struct RBShellPrivate
 {
@@ -287,8 +290,9 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_shell_cmd_load_playlist),
  	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_shell_cmd_new_playlist),
 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station),
+	BONOBO_UI_VERB ("FileGroupDelete",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
-	BONOBO_UI_VERB ("DeletePlaylist",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
+	BONOBO_UI_VERB ("GroupDelete",  (BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB_END
 };
 
@@ -648,6 +652,8 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->sourcelist = rb_sourcelist_new ();
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "drop_received",
 			  G_CALLBACK (sourcelist_drag_received_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "show_popup",
+			  G_CALLBACK (rb_shell_show_popup_cb), shell);
 	
 	shell->priv->statusbar = rb_statusbar_new ();
 
@@ -935,18 +941,23 @@ rb_shell_append_source (RBShell *shell,
 			      source);
 }
 
-/* static void */
-/* rb_shell_remove_source (RBShell *shell, */
-/* 		      RBSource *source) */
-/* { */
-/* 	shell->priv->sources = g_list_remove (shell->priv->sources, source); */
+static void
+rb_shell_remove_source (RBShell *shell,
+			RBSource *source)
+{
+	if (source == shell->priv->selected_source) {
+		rb_shell_player_stop (shell->priv->player_shell);
+		rb_shell_select_source (shell, shell->priv->library_source);
+	}
 
-/* 	rb_sidebar_remove (RB_SIDEBAR (shell->priv->sidebar), */
-/* 			   rb_source_get_sidebar_button (source)); */
+	shell->priv->sources = g_list_remove (shell->priv->sources, source);
 
-/* 	gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook), */
-/* 				  gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook), GTK_WIDGET (source))); */
-/* } */
+	rb_sourcelist_remove (RB_SOURCELIST (shell->priv->sourcelist), source);
+
+	gtk_notebook_remove_page (GTK_NOTEBOOK (shell->priv->notebook),
+				  gtk_notebook_page_num (GTK_NOTEBOOK (shell->priv->notebook),
+							 GTK_WIDGET (source)));
+}
 
 static gboolean
 rb_shell_update_source_status (RBShell *shell)
@@ -984,6 +995,9 @@ rb_shell_select_source (RBShell *shell,
 				     RB_SOURCE (source));
 	rb_statusbar_set_source (shell->priv->statusbar,
 				 RB_SOURCE (source));
+	rb_bonobo_set_sensitive (shell->priv->ui_component, CMD_PATH_GROUP_DELETE,
+				 g_list_find (shell->priv->groups,
+					      shell->priv->selected_source) != NULL);
 }
 
 static void
@@ -1437,7 +1451,17 @@ rb_shell_cmd_delete_group (BonoboUIComponent *component,
 			   RBShell *shell,
 			   const char *verbname)
 {
-	rb_debug ("FIXME");
+	rb_debug ("Deleting source %p", shell->priv->selected_source);
+
+	if (g_list_find (shell->priv->groups, shell->priv->selected_source) != NULL) {
+		/* so, this is a group */
+		rb_group_source_remove_file (RB_GROUP_SOURCE (shell->priv->selected_source));
+		shell->priv->groups = g_list_remove (shell->priv->groups, shell->priv->selected_source);
+		
+		rb_shell_save_music_groups (shell);
+	}
+
+	rb_shell_remove_source (shell, shell->priv->selected_source);
 }
 
 
@@ -1464,24 +1488,41 @@ rb_shell_quit (RBShell *shell)
 static void
 rb_shell_load_music_groups (RBShell *shell)
 {
-	GSList *groups, *l;
+	char *path;
+	GnomeVFSDirectoryHandle *handle;
+	GnomeVFSResult result;
+	GnomeVFSFileInfo *info;
 
-	groups = eel_gconf_get_string_list (CONF_MUSIC_GROUPS);
+	path = g_build_filename (rb_dot_dir (), "groups", NULL);
 
-	for (l = groups; l != NULL; l = g_slist_next (l))
-	{
+	if ((result = gnome_vfs_directory_open (&handle, path, GNOME_VFS_FILE_INFO_FOLLOW_LINKS))
+	    != GNOME_VFS_OK)
+		goto out;
+
+	info = gnome_vfs_file_info_new ();
+	while ((result = gnome_vfs_directory_read_next (handle, info)) == GNOME_VFS_OK) {
 		RBSource *group;
+		char *filepath;
+
+		if (info->name[0] == '.')
+			continue;
+
+		filepath = g_build_filename (path, info->name, NULL);
 
 		group = rb_group_source_new_from_file (shell->priv->container,
 						       shell->priv->library,
-						       (char *) l->data);
-		shell->priv->groups = g_list_append (shell->priv->groups, group);
-
-		rb_shell_append_source (shell, group);
+						       filepath);
+		if (group != NULL) {
+			shell->priv->groups = g_list_append (shell->priv->groups, group);
+			
+			rb_shell_append_source (shell, group);
+		}
+		g_free (filepath);
 	}
 
-	g_slist_foreach (groups, (GFunc) g_free, NULL);
-	g_slist_free (groups);
+	gnome_vfs_file_info_unref (info);
+out:
+	g_free (path);
 }
 
 static void
@@ -1498,8 +1539,6 @@ rb_shell_save_music_groups (RBShell *shell)
 					 (char *) rb_group_source_get_file (group));
 		rb_group_source_save (group);
 	}
-	
-	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups);
 	
 	g_slist_free (groups);
 }
@@ -1796,6 +1835,16 @@ rb_shell_new_group_dialog (RBShell *shell)
 
 	return dialog;
 }
+
+static gboolean
+rb_shell_show_popup_cb (RBSourceList *sourcelist,
+			RBSource *target,
+			RBShell *shell)
+{
+	rb_debug ("popup");
+	return rb_source_show_popup (target);
+}
+
 
 static void
 tray_button_press_event_cb (GtkWidget *ebox,
