@@ -31,7 +31,7 @@
 #include <bonobo/bonobo-ui-component.h>
 #include <unistd.h>
 #include <string.h>
-#include <monkey-media/monkey-media-audio-cd.h>
+#include <monkey-media-audio-cd.h>
 
 #include "rb-stock-icons.h"
 #include "rb-node-view.h"
