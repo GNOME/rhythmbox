@@ -277,6 +277,8 @@ set_track_number (RBNodeSong *node,
 		  MonkeyMediaStreamInfo *info)
 {
 	GValue val = { 0, };
+	int cur;
+	char *tmp;
 
 	if (monkey_media_stream_info_get_value (info,
 				                MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
@@ -289,6 +291,18 @@ set_track_number (RBNodeSong *node,
 
 	rb_node_set_property (RB_NODE (node),
 			      RB_NODE_PROP_TRACK_NUMBER,
+			      &val);
+	cur = g_value_get_int (&val);
+	g_value_unset (&val);
+
+	g_value_init (&val, G_TYPE_STRING);
+	if (cur > 0)
+		tmp = g_strdup_printf ("%d", cur);
+	else
+		tmp = g_strdup ("");
+	g_value_set_string_take_ownership (&val, tmp);
+	rb_node_set_property (RB_NODE (node),
+			      RB_NODE_PROP_TRACK_NUMBER_STR,
 			      &val);
 	g_value_unset (&val);
 }

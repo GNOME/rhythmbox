@@ -328,7 +328,7 @@ rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
 		colname = "RB_TREE_MODEL_NODE_COL_DURATION";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
-		colname = "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER";
+		colname = "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->rating_check))
 		colname = "RB_TREE_MODEL_NODE_COL_RATING";
 	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->play_count_check))
@@ -387,7 +387,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_DURATION") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->track_check),
-			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER") != NULL);
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR") != NULL);
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->rating_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_RATING") != NULL);

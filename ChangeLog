@@ -1,3 +1,21 @@
+2003-05-19  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/node-views/rb-node-view-songs.xml:
+	* data/rhythmbox.schemas:
+	* lib/widgets/rb-node-view.c: (parse_columns_as_glist):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* library/rb-node-song.c: (set_track_number):
+	* library/rb-node.h:
+	* shell/rb-shell-preferences.c:
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync):
+
+	Use string column for track numbers.
+
 2003-05-18  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-node-view.c: (set_sort_column_id):

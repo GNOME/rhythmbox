@@ -418,6 +418,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
 	case RB_TREE_MODEL_NODE_COL_PLAY_COUNT:
 	case RB_TREE_MODEL_NODE_COL_QUALITY:
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR:
 		return G_TYPE_STRING;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
@@ -618,6 +619,11 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER:
 		rb_node_get_property (node,
 				      RB_NODE_PROP_TRACK_NUMBER,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_TRACK_NUMBER_STR,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_DURATION:
@@ -877,6 +883,7 @@ rb_tree_model_node_column_get_type (void)
 		{
 			{ RB_TREE_MODEL_NODE_COL_PLAYING,          "RB_TREE_MODEL_NODE_COL_PLAYING",          "playing" },
 			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER,     "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER",     "track number" },
+			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_STR", "track number (string format)" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE,            "RB_TREE_MODEL_NODE_COL_TITLE",            "title" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE_KEY,        "RB_TREE_MODEL_NODE_COL_TITLE_KEY",        "title (g_utf8_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT,     "RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT",     "title weight" },

@@ -595,7 +595,7 @@ parse_columns_as_glist (const char *str)
 	int i;
 	GEnumClass *class = g_type_class_ref (RB_TYPE_TREE_MODEL_NODE_COLUMN);
 	GEnumValue *ev;
-	
+
 	for (i = 0; parts != NULL && parts[i] != NULL; i++)
 	{
 		RBTreeModelNodeColumn col;
@@ -603,7 +603,7 @@ parse_columns_as_glist (const char *str)
 		col = ev->value;
 		ret = g_list_append (ret, GINT_TO_POINTER (col));
 	}
-	
+
 	g_strfreev (parts);
 	g_type_class_unref (class);
 	return ret;
