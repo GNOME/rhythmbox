@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Rhytmbox HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-23 20:23+0200\n"
-"PO-Revision-Date: 2004-09-24 01:09+0200\n"
+"POT-Creation-Date: 2004-09-27 20:42+0200\n"
+"PO-Revision-Date: 2004-09-28 03:30+0200\n"
 "Last-Translator: Miloslav Trmac <mitr@volny.cz>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -338,15 +338,15 @@ msgstr "Vlastnosti %s"
 msgid "Properties for %s"
 msgstr "Vlastnosti %s"
 
-#: lib/totem-pl-parser.c:188
+#: lib/totem-pl-parser.c:206
 #, c-format
 msgid "Couldn't write parser: %s"
 msgstr "Nemohu zapsat parser: %s"
 
-#: lib/totem-pl-parser.c:252
+#: lib/totem-pl-parser.c:309 lib/totem-pl-parser.c:432
 #, c-format
-msgid "Couldn't open parser: %s"
-msgstr "Nemohu otevřít parser: %s"
+msgid "Couldn't open file '%s': %s"
+msgstr "Nemohu otevřít soubor '%s': %s"
 
 #: metadata/rb-metadata-gst.c:358
 #, c-format
@@ -1295,7 +1295,7 @@ msgstr "Přidat umístění"
 msgid "Tra_ck"
 msgstr "St_opa"
 
-#: sources/rb-playlist-source.c:753
+#: sources/rb-playlist-source.c:754
 msgid "Couldn't save playlist"
 msgstr "Nemohu uložit seznam skladeb"
 
@@ -1744,3 +1744,6 @@ msgstr "+"
 #: widgets/rb-volume.c:237
 msgid "-"
 msgstr "-"
+
+#~ msgid "Couldn't open parser: %s"
+#~ msgstr "Nemohu otevřít parser: %s"
