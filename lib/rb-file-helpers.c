@@ -45,17 +45,15 @@ rb_file (const char *filename)
 	char *ret;
 	int i;
 
-	static char *paths[] =
-	{
+	static char *paths[] = {
+		SHARE_UNINSTALLED_DIR "/glade/",
+		SHARE_UNINSTALLED_DIR "/art/",
+		SHARE_UNINSTALLED_DIR "/node-views/"
 		SHARE_DIR "/",
 		SHARE_DIR "/glade/",
 		SHARE_DIR "/art/",
 		SHARE_DIR "/views/",
 		SHARE_DIR "/node-views/",
-		SHARE_UNINSTALLED_DIR "/",
-		SHARE_UNINSTALLED_DIR "/glade/",
-		SHARE_UNINSTALLED_DIR "/art/",
-		SHARE_UNINSTALLED_DIR "/node-views/"
 	};
 	
 	g_assert (files != NULL);
@@ -64,11 +62,9 @@ rb_file (const char *filename)
 	if (ret != NULL)
 		return ret;
 
-	for (i = 0; i < (int) G_N_ELEMENTS (paths); i++)
-	{
+	for (i = 0; i < (int) G_N_ELEMENTS (paths); i++) {
 		ret = g_strconcat (paths[i], filename, NULL);
-		if (g_file_test (ret, G_FILE_TEST_EXISTS) == TRUE)
-		{
+		if (g_file_test (ret, G_FILE_TEST_EXISTS) == TRUE) {
 			g_hash_table_insert (files, g_strdup (filename), ret);
 			return (const char *) ret;
 		}

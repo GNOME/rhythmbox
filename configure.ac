@@ -424,7 +424,6 @@ AC_SUBST(LIBBONOBO_IDL)
 BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
 AC_SUBST(BONOBO_ACTIVATION_IDL)
 
-dnl uninstalled share dir
 AC_DEFINE_UNQUOTED(SHARE_UNINSTALLED_DIR,"`pwd`/data",[path to source data dir])
 AC_SUBST(DATADIR_UNINST)
 
