@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RhythmBox 0.1\n"
-"POT-Creation-Date: 2003-01-15 00:11+0100\n"
-"PO-Revision-Date: 2003-01-15 00:29+0100\n"
+"POT-Creation-Date: 2003-01-24 22:08+0100\n"
+"PO-Revision-Date: 2003-01-24 22:15+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.or>\n"
 "Language-Team: Norwegian <no@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -28,7 +28,7 @@ msgstr "    "
 
 #: data/glade/preferences.glade.h:2
 msgid "<b>Browser Views</b>"
-msgstr ""
+msgstr "<b>Visninger</b>"
 
 #: data/glade/preferences.glade.h:3
 msgid "<span weight=\"bold\">Appearance</span>"
@@ -221,7 +221,7 @@ msgstr "Ganger spilt: "
 
 #: data/glade/station-properties.glade.h:4
 msgid "Wed, Jan 01, 1970 00:00:00 -0500"
-msgstr ""
+msgstr "On, Jan 01, 1970 00:00:00 +0100"
 
 #: data/glade/station-properties.glade.h:5
 msgid "_Add: "
@@ -253,9 +253,8 @@ msgid "_Title: "
 msgstr "_Tittel: "
 
 #: data/glade/station-properties.glade.h:12
-#, fuzzy
 msgid "blah Properties"
-msgstr "Egenskaper"
+msgstr "Egenskaper for blah"
 
 #: data/node-views/rb-node-view-albums.xml.h:1
 msgid "_Album"
@@ -357,19 +356,16 @@ msgid "_View"
 msgstr "_Vis"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:1
-#, fuzzy
 msgid "Change the visibility of the genre browser"
-msgstr "Endre synlighet for sidelinjen"
+msgstr "Endre synlighet for sjangervisning"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:2
-#, fuzzy
 msgid "Scroll the view to the currently playing station"
 msgstr "Rull visningen til sangen som spilles av nå"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:3
-#, fuzzy
 msgid "Show information on the selected station"
-msgstr "Vis informasjon om valgt sang"
+msgstr "Vis informasjon om valgt stasjon"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:4
 #: data/ui/rhythmbox-library-view.xml.in.h:9
@@ -377,13 +373,12 @@ msgid "_Browser"
 msgstr "_Utforsker..."
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:6
-#, fuzzy
 msgid "_Jump to Playing Station"
-msgstr "_Hopp til denne sangen"
+msgstr "_Hopp til stasjonen som spilles"
 
 #: data/ui/rhythmbox-iradio-view.xml.in.h:7
 msgid "_New Internet Radio Station"
-msgstr ""
+msgstr "_Ny internett-radiostasjon"
 
 #: data/ui/rhythmbox-library-view.xml.in.h:1
 msgid "Change the visibility of the artist and album browser"
@@ -483,7 +478,7 @@ msgid "Failed to parse %s\n"
 msgstr "Kunne ikke lese %s\n"
 
 #: iradio/rb-iradio-backend.c:455 iradio/rb-iradio-backend.c:472
-#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:569
+#: iradio/rb-iradio-backend.c:473 lib/widgets/rb-tree-model-node.c:583
 msgid "(Unknown)"
 msgstr "(Ukjent)"
 
@@ -557,7 +552,7 @@ msgstr "Klarte ikke å opprette katalog %s."
 #. * be appended as suffix, NOTE: notice the spaces placement
 #: lib/rb-string-helpers.c:33
 msgid "THE ,DJ "
-msgstr ""
+msgstr "THE, DJ "
 
 #: lib/rb-string-helpers.c:48
 #, c-format
@@ -583,11 +578,13 @@ msgid ""
 "There was an error going to %s:\n"
 "%s"
 msgstr ""
+"Det oppsto en feil under åpning av %s:\n"
+"%s"
 
-#: lib/widgets/rb-node-view.c:630
+#: lib/widgets/rb-node-view.c:654
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
-msgstr ""
+msgstr "Feil under lesing av %s som en utformingsfil for NodeView"
 
 #. this string can only be so long, or there wont be a search entry :)
 #: lib/widgets/rb-search-entry.c:116
@@ -624,31 +621,36 @@ msgstr " (Stereo)"
 msgid " (%d channels)"
 msgstr " (%d kanaler)"
 
-#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:388
+#: lib/widgets/rb-volume.c:178 lib/widgets/rb-volume.c:385
 msgid "Click to mute"
 msgstr "Klikk for å dempe"
 
-#: lib/widgets/rb-volume.c:384
+#: lib/widgets/rb-volume.c:381
 msgid "Click to unmute"
 msgstr "Klikk for å slå av demping"
 
-#: library/rb-node.c:866 library/rb-node.c:872 library/rb-node.c:903
+#: library/rb-node-song.c:262
+#, c-format
+msgid "%ld:%02ld"
+msgstr "%ld:%02ld"
+
+#: library/rb-node.c:877 library/rb-node.c:883 library/rb-node.c:914
 msgid "Never"
 msgstr "Aldri"
 
-#: library/rb-node.c:894
+#: library/rb-node.c:905
 msgid "Today at %-H:%M"
 msgstr "I dag, %-H:%M"
 
-#: library/rb-node.c:896
+#: library/rb-node.c:907
 msgid "Yesterday at %-H:%M"
 msgstr "I går, %-H:%M"
 
-#: library/rb-node.c:898
+#: library/rb-node.c:909
 msgid "%A, %B %-d %Y at %-H:%M"
 msgstr "%A, %B %-d %Y, %-H:%M"
 
-#: library/rb-node.c:1642
+#: library/rb-node.c:1695
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
@@ -660,15 +662,19 @@ msgid ""
 "\n"
 "Have a nice day."
 msgstr ""
+"Vel, vel, vel...\n"
+"\n"
+"Gentoo hva? Du vil få problemer. Vi vet om det. Ikke plag oss.\n"
+"\n"
+"Ha en fin dag."
 
 #: shell/main.c:78
 msgid "Enable debugging code"
 msgstr "Aktiver kode for feilsøking"
 
 #: shell/main.c:79
-#, fuzzy
 msgid "Do not register with bonobo activation"
-msgstr "Ikke registrer "
+msgstr "Ikke registrer i bonobo-activation"
 
 #: shell/main.c:80
 msgid "Quit Rhythmbox"
@@ -690,88 +696,96 @@ msgstr "Kunne ikke aktivere Rhythmbox"
 msgid "Music Player Preferences"
 msgstr "Brukervalg for musikkavspiller"
 
-#: shell/rb-player.c:302
+#: shell/rb-player.c:311
 msgid "by "
 msgstr "av"
 
-#: shell/rb-player.c:317
+#: shell/rb-player.c:326
 msgid "Drag to go to a particular moment in the song"
-msgstr ""
+msgstr "Dra for å gå til et bestemt sted i sangen"
 
-#: shell/rb-player.c:362
+#: shell/rb-player.c:371
 msgid "Play the previous song"
 msgstr "Spill av forrige sang"
 
-#: shell/rb-player.c:369
-msgid "Start playback"
-msgstr "Start avspilling"
-
-#: shell/rb-player.c:376
-msgid "Pause playback"
-msgstr "Pause i avspilling"
-
-#: shell/rb-player.c:383
+#: shell/rb-player.c:382
 msgid "Play the next song"
 msgstr "Spill av neste sang"
 
-#: shell/rb-player.c:391
-msgid "Repeat the play list"
-msgstr "Repeter spillelisten"
-
-#: shell/rb-player.c:398
+#: shell/rb-player.c:394
 msgid "Shuffle the play list"
-msgstr ""
+msgstr "Bytt om på spillelisten"
 
-#: shell/rb-player.c:407 shell/rb-player.c:415
+#: shell/rb-player.c:403 shell/rb-player.c:411
 msgid "Not playing"
 msgstr "Spiller ikke"
 
-#: shell/rb-player.c:421
+#: shell/rb-player.c:417
 msgid "To play, add music to the play list"
-msgstr ""
+msgstr "Legg til musikk i listen for å spille den av"
 
-#: shell/rb-player.c:448
-#, fuzzy, c-format
+#: shell/rb-player.c:443
+#, c-format
 msgid ""
 "Failed to create player, exiting. Error was:\n"
 "%s"
-msgstr "Klarte ikke å opprette katalog %s."
+msgstr ""
+"Klarte ikke å opprette spiller, avslutter. Feilen var:\n"
+"%s"
 
-#: shell/rb-player.c:725
+#: shell/rb-player.c:548
+msgid "Start playback"
+msgstr "Start avspilling"
+
+#: shell/rb-player.c:554
+msgid "Pause playback"
+msgstr "Pause i avspilling"
+
+#: shell/rb-player.c:692
+msgid "Disable repeating the play list"
+msgstr "Deaktiver repetisjon av spillelisten"
+
+#: shell/rb-player.c:696
+msgid "Enable repeating the play list"
+msgstr "Aktiver repetetisjon av spillelisten"
+
+#: shell/rb-player.c:791
 msgid "Get information about this artist from the web"
 msgstr "Hent informasjon om denne artisten fra nettet"
 
-#: shell/rb-player.c:731
+#: shell/rb-player.c:797
 #, c-format
 msgid "%s - %s"
 msgstr "%s - %s"
 
-#: shell/rb-player.c:733
+#: shell/rb-player.c:799
 #, c-format
 msgid "%s - Unknown"
 msgstr "%s - Ukjent"
 
-#: shell/rb-player.c:765
-#, fuzzy, c-format
+#: shell/rb-player.c:831
+#, c-format
 msgid ""
 "Failed to create stream, error was:\n"
 "%s"
-msgstr "Klarte ikke å opprette katalog %s."
+msgstr ""
+"Klarte ikke å opprette strøm, feilen var:\n"
+"%s"
 
-#: shell/rb-player.c:855
+#: shell/rb-player.c:926
 #, c-format
 msgid "Failed to parse %s as playlist"
 msgstr "Kunne ikke lese %s som en spilleliste"
 
-#: shell/rb-player.c:1090
+#: shell/rb-player.c:1173
 #, c-format
 msgid "%ld:%.2ld"
 msgstr "%ld:%.2ld"
 
-#: shell/rb-player.c:1094
+#: shell/rb-player.c:1177
 #, c-format
 msgid "Total %ld:%.2ld (%ld:%.2ld remaining)"
-msgstr ""
+msgstr "Totalt %ld:%.2ld (%ld:%.2ld gjenstår)"
 
 #. this is not critical, but worth a warning nevertheless
 #: shell/rb.c:285
@@ -781,18 +795,22 @@ msgid ""
 "different prefix than bonobo-activation; this\n"
 "warning is harmless, but IPC will not work.\n"
 msgstr ""
+"Feil under registrering av Rhythmbox i bonobo-activation:\n"
+"Dette betyr sannsynligvis at du installerte RB i et\n"
+"forskjellig prefiks fra bonobo-activation; denne\n"
+"advarselen er harmløs, men IPC vil ikke fungere.\n"
 
 #: shell/rb.c:491
 msgid "translator_credits"
 msgstr "Kjartan Maraas <kmaraas@gnome.org>"
 
 #: shell/rb.c:502
-msgid "Copyright © 2002, 2003 Jorn Baayen. All rights reserved."
-msgstr "Opphavsrett 2002 Jorn Baayen. Alle rettigheter reserveres."
+msgid "Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."
+msgstr "Opphavsrett 2002,2003 Jorn Baayen. Alle rettigheter reserveres."
 
 #: shell/rb.c:503
 msgid "Music management and playback software for GNOME."
-msgstr ""
+msgstr "Programvare for musikkhåndtering og avspilling for GNOME."
 
 #: views/rb-audiocd-view.c:268
 msgid "music audiocd"
@@ -808,6 +826,8 @@ msgid ""
 "Failed to create stream for %s, error was:\n"
 "%s"
 msgstr ""
+"Feil under oppretting av strøm for %s. Feil:\n"
+"%s"
 
 #: views/rb-audiocd-view.c:961 views/rb-audiocd-view.c:968
 #: views/rb-iradio-view.c:782
@@ -815,9 +835,9 @@ msgid "Unknown"
 msgstr "Ukjent"
 
 #: views/rb-audiocd-view.c:1075
-#, c-format, fuzzy
+#, c-format
 msgid "Failed to parse %s as disc info file"
-msgstr "Kunne ikke lese %s som en gruppefil"
+msgstr "Kunne ikke lese %s som en infofil for CD"
 
 #: views/rb-audiocd-view.c:1197
 #, c-format
@@ -855,7 +875,7 @@ msgstr "Spill av a_lbum senere"
 
 #: views/rb-library-view.c:369
 msgid "Enqueue this album for later playback"
-msgstr ""
+msgstr "Legg album i kø for senere avspilling"
 
 #: views/rb-library-view.c:375
 msgid "Play Song Later"
@@ -863,7 +883,7 @@ msgstr "Spill av sang senere"
 
 #: views/rb-library-view.c:378
 msgid "Enqueue the selected song(s) for later playback"
-msgstr ""
+msgstr "Legg valgte sang(er) i kø for senere avspilling"
 
 #: views/rb-library-view.c:383
 msgid "Play _Song"
@@ -872,9 +892,6 @@ msgstr "_Spill av sang"
 #: views/rb-library-view.c:386
 msgid "Start playing the selected song(s)"
 msgstr "Start avspilling av valgt(e) sang(er)"
-
-#~ msgid "Show _statusbar"
-#~ msgstr "Vis _statuslinje"
 
 #~ msgid "Show s_idebar"
 #~ msgstr "Vis s_idelinje"
