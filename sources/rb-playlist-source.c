@@ -551,12 +551,27 @@ impl_song_properties (RBSource *asource)
 		rb_debug ("failed to create dialog, or no selection!");
 }
 
+static RhythmDBPropType
+rb_playlist_source_drag_atom_to_prop (GdkAtom smasher)
+{
+	if (smasher == gdk_atom_intern ("text/x-rhythmbox-album", TRUE))
+		return RHYTHMDB_PROP_ALBUM;
+	else if (smasher == gdk_atom_intern ("text/x-rhythmbox-artist", TRUE))
+		return RHYTHMDB_PROP_ARTIST;
+	else if (smasher == gdk_atom_intern ("text/x-rhythmbox-genre", TRUE))
+		return RHYTHMDB_PROP_GENRE;
+	else {
+		g_assert_not_reached ();
+		return 0;
+	}
+}
+
 static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {
 	GList *list;
-        GPtrArray *query;
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+
 
         if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
                 list = gnome_vfs_uri_list_parse (data->data);
@@ -565,28 +580,25 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
                         rb_playlist_source_add_list_uri (source, list);
                 else
                         return FALSE;
-        } else if (data->type == gdk_atom_intern ("text/x-rhythmbox-album", TRUE)) {
-                query = rhythmdb_query_parse (source->priv->db,
-                                              RHYTHMDB_QUERY_PROP_EQUALS,
-                                              RHYTHMDB_PROP_ALBUM,
-                                              data->data,
-                                              RHYTHMDB_QUERY_END);
+
+	} else {
+		GPtrArray *query;
+		GPtrArray *subquery;
+
+		subquery = rhythmdb_query_parse (source->priv->db,
+						 RHYTHMDB_QUERY_PROP_EQUALS,
+						 rb_playlist_source_drag_atom_to_prop (data->type),
+						 data->data,
+						 RHYTHMDB_QUERY_END);
+		query = rhythmdb_query_parse (source->priv->db,
+					      RHYTHMDB_QUERY_PROP_EQUALS,
+					      RHYTHMDB_PROP_TYPE,
+					      RHYTHMDB_ENTRY_TYPE_SONG,
+					      RHYTHMDB_QUERY_SUBQUERY,
+					      subquery,
+					      RHYTHMDB_QUERY_END);
                 rb_playlist_source_set_query (source, query, 0, 0);
-        } else if (data->type == gdk_atom_intern ("text/x-rhythmbox-artist", TRUE)) {
-                query = rhythmdb_query_parse (source->priv->db,
-                                              RHYTHMDB_QUERY_PROP_EQUALS,
-                                              RHYTHMDB_PROP_ARTIST,
-                                              data->data,
-                                              RHYTHMDB_QUERY_END);
-                rb_playlist_source_set_query (source, query, 0, 0);
-        } else if (data->type == gdk_atom_intern ("text/x-rhythmbox-genre", TRUE)) {
-                query = rhythmdb_query_parse (source->priv->db,
-                                              RHYTHMDB_QUERY_PROP_EQUALS,
-                                              RHYTHMDB_PROP_GENRE,
-                                              data->data,
-                                              RHYTHMDB_QUERY_END);
-                rb_playlist_source_set_query (source, query, 0, 0);
-        }
+	}
 
         return TRUE;
 }
