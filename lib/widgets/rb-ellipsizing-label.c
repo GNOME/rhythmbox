@@ -237,6 +237,7 @@ append_ellipsized_text (const char *text,
 {
 	int position;
 	int new_position;
+	char *escaped;
 	
 	position = data->position;
 	new_position = data->position + text_len;
@@ -259,10 +260,9 @@ append_ellipsized_text (const char *text,
 	{
 		if (position < data->start_offset)
 		{
-			g_string_append_len (data->string, 
-					     text,
-					     data->start_offset -
-				     	     position);
+			escaped = g_markup_escape_text (text, data->start_offset - position);
+			g_string_append (data->string, escaped);
+			g_free (escaped);
 		}
 
 		g_string_append (data->string, 
@@ -270,11 +270,10 @@ append_ellipsized_text (const char *text,
 		
 		if (new_position > data->end_offset)
 		{
-			g_string_append_len (data->string, 
-					     text + data->end_offset -
-					     position,
-					     position + text_len -
-					     data->end_offset);
+			escaped = g_markup_escape_text (text + data->end_offset - position,
+							position + text_len - data->end_offset);
+			g_string_append (data->string, escaped);
+			g_free (escaped);
 		}
 	}
 

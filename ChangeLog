@@ -1,3 +1,10 @@
+2003-08-08  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-ellipsizing-label.c: (append_ellipsized_text):
+
+	Re-escape user text as we're building the GMarkup to avoid
+	pango barfing.
+
 2003-08-08  Bastien Nocera  <hadess@hadess.net>
 
 	* monkey-media/monkey-media-stream-info.c: (sanitize_values),
