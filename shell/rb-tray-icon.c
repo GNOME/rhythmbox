@@ -56,12 +56,15 @@ static void rb_tray_icon_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
+static void rb_tray_set_visibility (RBTrayIcon *tray, int state);
 static void rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 						RBTrayIcon *icon);
-static void sync_menu (RBTrayIcon *tray, guint button);
-static void rb_tray_icon_cmd_show_window (BonoboUIComponent *component,
-					  RBTrayIcon *shell,
-					  const char *verbname);
+static void sync_menu (RBTrayIcon *tray);
+static void rb_tray_icon_show_window_changed_cb (BonoboUIComponent *component,
+					const char *path,
+					Bonobo_UIComponent_EventType type,
+					const char *state,
+					RBTrayIcon *icon);
 static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  GdkDragContext *context,
 				  gint x,
@@ -70,6 +73,8 @@ static void rb_tray_icon_drop_cb (GtkWidget *widget,
 				  guint info,
 				  guint time,
 				  RBTrayIcon *icon);
+
+#define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 
 struct RBTrayIconPrivate
 {
@@ -99,13 +104,21 @@ enum
 
 enum
 {
+	VISIBILITY_HIDDEN,
+	VISIBILITY_VISIBLE,
+	VISIBILITY_SYNC,
+	VISIBILITY_TOGGLE
+};
+
+enum
+{
 	LAST_SIGNAL,
 };
 
-static BonoboUIVerb rb_tray_icon_verbs[] =
+static RBBonoboUIListener rb_tray_icon_listeners[] =
 {
-	BONOBO_UI_VERB ("ShowWindow", (BonoboUIVerbFn) rb_tray_icon_cmd_show_window),
-	BONOBO_UI_VERB_END
+	RB_BONOBO_UI_LISTENER ("ShowWindow", (BonoboUIListenerFn) rb_tray_icon_show_window_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
 };
 
 static const GtkTargetEntry target_uri [] =
@@ -225,9 +238,9 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	icon->priv->control = bonobo_control_new (icon->priv->ebox);
 	icon->priv->tray_component = bonobo_control_get_popup_ui_component (icon->priv->control);
 
-	bonobo_ui_component_add_verb_list_with_data (icon->priv->tray_component,
-						     rb_tray_icon_verbs,
-						     icon);
+	rb_bonobo_add_listener_list_with_data (icon->priv->tray_component,
+						rb_tray_icon_listeners,
+						icon);
 }
 
 static void
@@ -330,6 +343,8 @@ rb_tray_icon_new (BonoboUIContainer *container,
 	
 	g_return_val_if_fail (tray->priv != NULL, NULL);
 
+	rb_tray_set_visibility (tray, VISIBILITY_SYNC);
+
 	return tray;
 }
 
@@ -337,10 +352,27 @@ static void
 rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 				    RBTrayIcon *icon)
 {
-	/* contextmenu */
+	/* filter out double, triple clicks */
+	if (event->type != GDK_BUTTON_PRESS)
+		return;
+
 	rb_debug ("tray button press");
-	sync_menu (icon, event->button);
-	bonobo_control_do_popup (icon->priv->control, event->button, event->time);
+
+	switch (event->button) {
+	case 1:
+		rb_tray_set_visibility (icon, VISIBILITY_TOGGLE);
+		break;
+
+	case 3:
+		/* contextmenu */
+		sync_menu (icon);
+		bonobo_control_do_popup (icon->priv->control, event->button,
+								event->time);
+		break;
+
+	default:
+		break;
+	}
 }
 
 static void
@@ -399,7 +431,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 
 
 static void
-sync_menu (RBTrayIcon *tray, guint button)
+sync_menu (RBTrayIcon *tray)
 {
 	BonoboUIComponent *pcomp;
 	BonoboUINode *node;
@@ -410,19 +442,8 @@ sync_menu (RBTrayIcon *tray, guint button)
 
 	node = bonobo_ui_component_get_tree (tray->priv->main_component, "/popups/TrayPopup", TRUE, NULL);
 
-	switch (button) {
-	case 1:
-		bonobo_ui_node_set_attr (node, "name", "button1");
-		break;
-	case 2:
-		bonobo_ui_node_set_attr (node, "name", "button2");
-		break;
-	case 3:
-		bonobo_ui_node_set_attr (node, "name", "button3");
-		break;
-	default:
-		break;
-	}
+	bonobo_ui_node_set_attr (node, "name", "button3");
+
 	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
 	bonobo_ui_node_free (node);
 
@@ -432,13 +453,14 @@ sync_menu (RBTrayIcon *tray, guint button)
 }
 
 static void
-rb_tray_icon_cmd_show_window (BonoboUIComponent *component,
-			      RBTrayIcon *icon,
-			      const char *verbname)
+rb_tray_icon_show_window_changed_cb (BonoboUIComponent *component,
+				const char *path,
+				Bonobo_UIComponent_EventType type,
+				const char *state,
+				RBTrayIcon *icon)
 {
-	rb_debug ("showing window");
-	gtk_window_present (icon->priv->main_window);
-	gtk_widget_grab_focus (GTK_WIDGET (icon->priv->main_window));
+	rb_debug ("show window clicked");
+	rb_tray_set_visibility (icon, atoi (state));
 }
 
 void
@@ -449,3 +471,36 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 			      tooltip, NULL);
 }
 
+static void
+rb_tray_set_visibility (RBTrayIcon *tray, int state)
+{
+	static int window_x = -1;
+	static int window_y = -1;
+	static gboolean visible = 1;
+
+	switch (state)
+	{
+	case VISIBILITY_HIDDEN:
+       	case VISIBILITY_VISIBLE:
+		visible = !state;
+
+        case VISIBILITY_TOGGLE:
+		visible = !visible;
+	
+		if (visible == TRUE)
+		{
+			if (window_x >= 0 && window_y >= 0)
+				gtk_window_move (tray->priv->main_window,
+						window_x, window_y );
+			gtk_widget_show (GTK_WIDGET (tray->priv->main_window));
+		} else {
+			gtk_window_get_position ( tray->priv->main_window,
+						&window_x, &window_y);
+			gtk_widget_hide (GTK_WIDGET (tray->priv->main_window));
+		}
+
+	case VISIBILITY_SYNC:
+		rb_bonobo_set_active (tray->priv->main_component,
+					CMD_PATH_SHOW_WINDOW, visible);
+	}
+}
