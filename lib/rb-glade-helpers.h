@@ -20,8 +20,8 @@
 
 #include <glade/glade.h>
 
-#ifndef __RB_BONOBO_HELPERS_H
-#define __RB_BONOBO_HELPERS_H
+#ifndef __RB_GLADE_HELPERS_H
+#define __RB_GLADE_HELPERS_H
 
 G_BEGIN_DECLS
 
@@ -31,4 +31,4 @@ GladeXML *rb_glade_xml_new (const char *file,
 
 G_END_DECLS
 
-#endif /* __RB_BONOBO_HELPERS_H */
+#endif /* __RB_GLADE_HELPERS_H */
