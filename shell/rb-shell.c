@@ -475,18 +475,15 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 static void
 handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
 {
-	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
-	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 	/* We assume all HTTP is iradio.  This is probably a broken assumption,
 	 * but it's very difficult to really fix...
 	 */
-	if (strncmp ("http", scheme, 4) == 0) {
+	if (rb_uri_is_iradio (uri) != FALSE) {
 		GList *tmp = g_list_append (NULL, (char*) uri);
 		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, tmp, title, NULL);
 		g_list_free (tmp);
 	} else
 		rb_library_add_uri (shell->priv->library, (char *) uri);
-	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void

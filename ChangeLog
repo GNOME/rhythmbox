@@ -1,3 +1,17 @@
+2003-08-07  Bastien Nocera  <hadess@hadess.net>
+
+	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_init):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_add_location_activated):
+	* lib/rb-file-helpers.c: (rb_uri_is_iradio):
+	* lib/rb-file-helpers.h:
+	* shell/rb-shell.c: (handle_playlist_entry_cb):
+
+	Change the "Don't Add" label in the "Add Internet Radio Station" to
+	"Cancel", Move the checks about whether a URI is a Radio Station
+	to rb_uri_is_iradio(), Add rtsp and pnm as possible schemes for
+	Radio Stations
+
 2003-08-07  Sean Harshbarger  <harshy@dersoldat.org>
 
 	* data/node-views/rb-node-view-iradio-stations.xml:

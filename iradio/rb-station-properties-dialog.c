@@ -41,6 +41,7 @@
 
 #include "rb-glist-wrapper.h"
 #include "rb-station-properties-dialog.h"
+#include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
@@ -587,7 +588,6 @@ rb_station_properties_dialog_add_location_activated (GtkEntry *entry,
 						     gpointer userdata)
 {
 	GtkTreeIter iter;
-	GnomeVFSURI *vfsuri;
 	RBStationPropertiesDialog *dialog = RB_STATION_PROPERTIES_DIALOG (userdata);
 	char *text = g_strdup (gtk_entry_get_text (entry));
 
@@ -600,14 +600,13 @@ rb_station_properties_dialog_add_location_activated (GtkEntry *entry,
 		return;
 	}
 
-	vfsuri = gnome_vfs_uri_new (text);
-	if (!vfsuri)
+	if (!rb_uri_is_iradio (text))
 	{
 		rb_error_dialog (_("Location is not a valid URL."));
+		g_free (text);
 		return;
 	}
-	gnome_vfs_uri_unref (vfsuri);
-	
+
 	gtk_list_store_prepend (dialog->priv->location_treemodel, &iter);
 	gtk_list_store_set (dialog->priv->location_treemodel, &iter, 0, text, -1);
 

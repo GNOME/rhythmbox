@@ -143,7 +143,7 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 	gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));
 
 	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							    _("_Don't Add"),
+							    GTK_STOCK_CANCEL,
 							    GTK_RESPONSE_CANCEL);
 	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
 							GTK_STOCK_ADD,
