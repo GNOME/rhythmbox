@@ -1086,15 +1086,15 @@ eos_cb (MonkeyMediaPlayer *mm_player,
 	next = rb_node_view_get_next_node (player->priv->playlist_view);
 	if (next == NULL) {
 		if (!player->priv->repeat_mode) {
+			next = player->priv->playing;
+
 			monkey_media_player_close (player->priv->player);
 
 			player->priv->playing = NULL;
 			player->priv->state = RB_PLAYER_PAUSED;
-
-			check_view_state (player);
+		} else {
+			next = rb_node_view_get_first_node (player->priv->playlist_view);
 		}
-
-		next = rb_node_view_get_first_node (player->priv->playlist_view);
 	}
 
 	set_playing (player, next);
@@ -1102,6 +1102,8 @@ eos_cb (MonkeyMediaPlayer *mm_player,
 	update_buttons (player);
 
 	sync_time (player);
+
+	check_view_state (player);
 
 	GDK_THREADS_LEAVE ();
 }
