@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rb-debug.h"
 #include "rb-node-filter.h"
 #include "rb-node-song.h"
 
@@ -172,6 +173,7 @@ rb_node_filter_set_object_property (GObject *object,
 			GList *kids, *l;
 
 			kids = g_list_copy (rb_node_get_children (filter->priv->root));
+			
 			rb_node_unlock (filter->priv->root);
 			for (l = kids; l != NULL; l = g_list_next (l))
 				rb_node_remove_child (filter->priv->root, l->data);
@@ -285,6 +287,7 @@ thread_main (RBNodeFilterPrivate *priv)
 		GList *kids, *l;
 		char *expression = NULL;
 		int results = 0;
+		RBProfiler *p;
 
 		g_mutex_lock (priv->lock);
 		if (priv->dead == TRUE)
@@ -319,6 +322,7 @@ thread_main (RBNodeFilterPrivate *priv)
 		kids = g_list_copy (rb_node_get_children (node));
 		rb_node_unlock (node);
 
+		p = rb_profiler_new ("Searching ...");
 		for (l = kids; l != NULL; l = g_list_next (l))
 		{
 			char *title, *artist, *album;
@@ -384,6 +388,9 @@ thread_main (RBNodeFilterPrivate *priv)
 		g_free (expression);
 
 		priv->done = TRUE;
+
+		rb_profiler_dump (p);
+		rb_profiler_free (p);
 	}
 
 	return NULL;
