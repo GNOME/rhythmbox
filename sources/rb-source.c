@@ -243,7 +243,6 @@ rb_source_get_property (GObject *object,
 	}
 }
 
-
 const char *
 rb_source_get_status (RBSource *status)
 {

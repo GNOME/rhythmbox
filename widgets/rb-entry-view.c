@@ -147,6 +147,9 @@ struct RBEntryViewPrivate
 
 	RhythmDBEntry *selected_entry;
 
+	glong total_duration;
+	glong total_size;
+
 	gboolean change_sig_queued;
 	guint change_sig_id;
 
@@ -534,6 +537,9 @@ rb_entry_view_set_property (GObject *object,
 					 GTK_TREE_MODEL (new_model));
 		view->priv->model = new_model;
 
+		view->priv->total_duration = 0;
+		view->priv->total_size = 0;
+
 		break;
 	}
 	case PROP_PLAYING_ENTRY:
@@ -629,6 +635,17 @@ rb_entry_view_set_model (RBEntryView *view, RhythmDBModel *model)
 	g_object_set (G_OBJECT (view), "model", model, NULL);
 }
 
+glong
+rb_entry_view_get_duration (RBEntryView *view)
+{
+	return view->priv->total_duration;
+}
+
+glong
+rb_entry_view_get_total_size (RBEntryView *view)
+{
+	return view->priv->total_size;
+}
 
 static RhythmDBEntry *
 entry_from_tree_path (RBEntryView *view, GtkTreePath *path)
@@ -1488,6 +1505,21 @@ rb_entry_view_row_inserted_cb (GtkTreeModel *model,
 			       RBEntryView *view)
 {
 	RhythmDBEntry *entry = entry_from_tree_iter (view, iter);
+	glong duration;
+	glong size;
+	
+	rhythmdb_read_lock (view->priv->db);
+	
+	duration = rhythmdb_entry_get_long (view->priv->db, entry,
+					    RHYTHMDB_PROP_DURATION);
+	size = rhythmdb_entry_get_long (view->priv->db, entry,
+					RHYTHMDB_PROP_FILE_SIZE);
+
+	rhythmdb_read_unlock (view->priv->db);
+
+	view->priv->total_duration += duration;
+	view->priv->total_size += size;
+	
 	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[ENTRY_ADDED], 0, entry);
 	queue_changed_sig (view);
 }

@@ -91,6 +91,9 @@ void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *
 void		rb_entry_view_set_model			(RBEntryView *view,
 							 RhythmDBModel *model);
 
+glong		rb_entry_view_get_total_size		(RBEntryView *view);
+glong		rb_entry_view_get_duration		(RBEntryView *view);
+
 void		rb_entry_view_set_playing		(RBEntryView *view,
 							 gboolean playing);
 

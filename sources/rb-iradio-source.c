@@ -493,7 +493,7 @@ impl_get_status (RBSource *asource)
 {
  	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	char *ret;
-	ret = g_strdup_printf (_("<b>%d</b> total stations in <b>%d</b> distinct genres"),
+	ret = g_strdup_printf (_("%d total stations in %d distinct genres"),
 			       rb_entry_view_get_num_entries (source->priv->stations),
 			       rb_property_view_get_num_properties (source->priv->genres));
 	return ret;

@@ -659,11 +659,16 @@ poll_status_update (gpointer data)
 }
 
 char *
-rb_library_compute_status_normal (gint n_songs, glong duration)
+rb_library_compute_status_normal (gint n_songs, glong duration, glong size)
 {
-	char *ret;
 	float days;
 	long hours, minutes, seconds;
+	char *songcount;
+	char *time;
+	char *size_str;
+	char *ret;
+
+	songcount = g_strdup_printf (ngettext ("%d song", "%d songs", n_songs), n_songs);
 
 	days    = (float) duration / (float) (60 * 60 * 24); 
 	hours   = duration / (60 * 60);
@@ -671,15 +676,22 @@ rb_library_compute_status_normal (gint n_songs, glong duration)
 	seconds = duration % 60;
 
 	if (days >= 1.0) {
-		ret = g_strdup_printf (_("<b>%.1f</b> days (%d songs)"),
-				       days, n_songs);
-	} else if (hours >= 1) {
-		ret = g_strdup_printf (_("<b>%ld</b> hours and <b>%ld</b> minutes (%d songs)"),
-				       hours, minutes, n_songs);
+		time = g_strdup_printf ("%.1f days", days);
 	} else {
-		ret = g_strdup_printf (_("<b>%ld</b> minutes (%d songs)"),
-				       minutes, n_songs);
+		const char *minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
+		if (hours >= 1) {		
+			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
+			char *fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
+			time = g_strdup_printf (fmt, hours, minutes);
+			g_free (fmt);
+		} else 
+			time = g_strdup_printf (minutefmt, minutes);
 	}
+	size_str = gnome_vfs_format_file_size_for_display (size);
+	ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
+	g_free (songcount);
+	g_free (time);
+	g_free (size_str);
 
 	return ret;
 }

@@ -435,9 +435,12 @@ rb_playlist_source_get_model (RBPlaylistSource *source)
 static const char *
 impl_get_status (RBSource *asource)
 {
+
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
-	g_free (source->priv->status); 
-	source->priv->status = g_strdup ("FIXME");
+	g_free (source->priv->status);
+	source->priv->status = rb_library_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+								 rb_entry_view_get_duration (source->priv->songs),
+								 rb_entry_view_get_total_size (source->priv->songs));
 	return source->priv->status;
 }
 

@@ -170,8 +170,6 @@ struct RBLibrarySourcePrivate
 
 	gboolean lock;
 
-	glong total_duration;
-
 	char *status;
 	char *artist;
 	char *album;
@@ -658,7 +656,8 @@ impl_get_status (RBSource *asource)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	g_free (source->priv->status);
 	source->priv->status = rb_library_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-								 source->priv->total_duration);
+								 rb_entry_view_get_duration (source->priv->songs),
+								 rb_entry_view_get_total_size (source->priv->songs));
 	return source->priv->status;
 }
 
@@ -1040,17 +1039,6 @@ static void
 entry_added_cb (RBEntryView *view, RhythmDBEntry *entry,
 		struct RBLibrarySourceEntryAddData *data)
 {
-	glong duration;
-	
-	rhythmdb_read_lock (data->source->priv->db);
-	
-	duration = rhythmdb_entry_get_long (data->source->priv->db, entry,
-					    RHYTHMDB_PROP_DURATION);
-
-	rhythmdb_read_unlock (data->source->priv->db);
-
-	data->source->priv->total_duration += duration;
-	
 	rb_property_view_handle_entry_addition (data->propview, entry);
 }
 
@@ -1196,7 +1184,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 						 source->priv->selected_albums);
 	}
 
-	source->priv->total_duration = 0;
 	query_model = rhythmdb_query_model_new_empty (source->priv->db);
 	model = GTK_TREE_MODEL (query_model);
 
