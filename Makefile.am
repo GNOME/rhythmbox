@@ -11,7 +11,8 @@ EXTRA_DIST = 			\
 	rhythmbox.spec		\
 	rhythmbox.spec.in	\
 	MAINTAINERS		\
-	DOCUMENTERS
+	DOCUMENTERS		\
+	INTERNALS
 
 CLEANFILES =				\
 	./po/.intltool-merge-cache 	\
