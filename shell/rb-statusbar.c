@@ -372,6 +372,7 @@ poll_status (RBStatusbar *status)
 	gboolean library_is_adding;
 	gboolean library_is_refreshing;
 	gboolean library_is_busy;
+	gboolean changed = FALSE;
 
 	GDK_THREADS_ENTER ();
 
@@ -391,12 +392,14 @@ poll_status (RBStatusbar *status)
 		str = rb_library_get_status (status->priv->library);
 		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
 		g_free (str);
+		changed = TRUE;
 	} else {
 		if (library_busy_changed || status->priv->source_status_dirty) {
 			const char *status_str
 				= rb_source_get_status (status->priv->selected_source);
 			gtk_label_set_markup (GTK_LABEL (status->priv->status), status_str);
 			status->priv->source_status_dirty = FALSE;
+			changed = TRUE;
 		}
 	}
 
@@ -408,23 +411,26 @@ poll_status (RBStatusbar *status)
 						       progress);
 			
 		}
+		changed = TRUE;
 	} else if (library_is_adding || status->priv->entry_view_busy) {
 		if (status->priv->idle_tick_id == 0) {
 			status->priv->idle_tick_id
 				= g_timeout_add (250, (GSourceFunc) status_tick_cb,
 						 status->priv->progress);
+			changed = TRUE;
 		}
 	} else {
 		if (status->priv->idle_tick_id > 0) {
 			g_source_remove (status->priv->idle_tick_id);
 			status->priv->idle_tick_id = 0;
-			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
-						       1.0);
+			changed = TRUE;
 		}
+		gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
+					       1.0);
 	}
 
 	status->priv->status_poll_id = 
-		g_timeout_add (350, (GSourceFunc) poll_status, status);
+		g_timeout_add (changed ? 350 : 750, (GSourceFunc) poll_status, status);
 	GDK_THREADS_LEAVE ();
 	return FALSE;
 }
