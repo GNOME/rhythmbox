@@ -1,3 +1,83 @@
+2003-10-05 05:56:56 GMT	Colin Walters <walters@verbum.org>	patch-59
+
+    Summary:
+      kill off (now unused) GtkTreeModelSort workaround
+    Revision:
+      rhythmbox--mainline--0.6--patch-59
+
+
+    removed files:
+     widgets/.arch-ids/gtkintl.h.id
+     widgets/.arch-ids/gtktreedatalist.c.id
+     widgets/.arch-ids/gtktreedatalist.h.id
+     widgets/.arch-ids/gtktreemodelsort.c.id
+     widgets/.arch-ids/gtktreemodelsort.h.id widgets/gtkintl.h
+     widgets/gtktreedatalist.c widgets/gtktreedatalist.h
+     widgets/gtktreemodelsort.c widgets/gtktreemodelsort.h
+
+    modified files:
+     configure.ac widgets/Makefile.am
+
+
+2003-10-05 05:20:35 GMT	Colin Walters <walters@verbum.org>	patch-58
+
+    Summary:
+      abstract some functionality into new RhythmDBModel iface
+    Revision:
+      rhythmbox--mainline--0.6--patch-58
+
+
+    new files:
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+
+    modified files:
+     rhythmdb/Makefile.am rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+
+2003-10-04 03:12:09 GMT	Colin Walters <walters@verbum.org>	patch-57
+
+    Summary:
+      make hiding/showing rating and last played columns work again 
+    Revision:
+      rhythmbox--mainline--0.6--patch-57
+
+    
+
+    modified files:
+     shell/rb-shell-preferences.c widgets/rb-entry-view.c
+
+
+2003-10-04 02:26:58 GMT	Colin Walters <walters@verbum.org>	patch-56
+
+    Summary:
+      debug cleanups, entryview tweak 
+    Revision:
+      rhythmbox--mainline--0.6--patch-56
+
+    Remove too verbose debug info in rhythmdb.
+    
+    Also don't bomb out if there is no entry to play after a property was
+    activated.
+
+    modified files:
+     rhythmdb/rhythmdb.c shell/rb-shell-player.c
+
+
+2003-10-04 01:18:26 GMT	Colin Walters <walters@verbum.org>	patch-55
+
+    Summary:
+      upd ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-55
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-04 01:17:03 GMT	Colin Walters <walters@verbum.org>	patch-54
 
     Summary:
