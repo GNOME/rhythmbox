@@ -21,6 +21,7 @@
 #ifndef __RB_SIDEBAR_BUTTON_H
 #define __RB_SIDEBAR_BUTTON_H
 
+#include <gtk/gtkselection.h>
 #include <gtk/gtkradiobutton.h>
 
 G_BEGIN_DECLS
@@ -54,22 +55,26 @@ typedef struct
 	void (*deleted) (RBSidebarButton *button);
 } RBSidebarButtonClass;
 
-GType            rb_sidebar_button_get_type (void);
+GType            rb_sidebar_button_get_type        (void);
 
-RBSidebarButton *rb_sidebar_button_new      (const char *unique_id,
-					     const char *button_name);
+RBSidebarButton *rb_sidebar_button_new             (const char *unique_id,
+					            const char *button_name);
 
-void             rb_sidebar_button_set      (RBSidebarButton *button,
-					     const char *stock_id,
-					     const char *text,
-					     gboolean is_static);
+void             rb_sidebar_button_add_dnd_targets (RBSidebarButton *button,
+						    const GtkTargetEntry *targets,
+						    int n_targets);
 
-void             rb_sidebar_button_get      (RBSidebarButton *button,
-				             char **stock_id,
-					     char **text,
-					     gboolean *is_static);
+void             rb_sidebar_button_set             (RBSidebarButton *button,
+					            const char *stock_id,
+					            const char *text,
+					            gboolean is_static);
 
-void             rb_sidebar_button_rename   (RBSidebarButton *button);
+void             rb_sidebar_button_get             (RBSidebarButton *button,
+				                    char **stock_id,
+					            char **text,
+					            gboolean *is_static);
+
+void             rb_sidebar_button_rename          (RBSidebarButton *button);
 
 G_END_DECLS
 

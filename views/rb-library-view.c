@@ -136,6 +136,12 @@ static const char *impl_get_description (RBView *view);
 static void rb_library_view_set_playing_view (RBViewPlayer *player,
 				              RBView *view);
 static RBView *rb_library_view_get_playing_view (RBViewPlayer *player);
+static void album_deleted_cb (RBNodeView *view,
+		              RBNode *node,
+		              RBLibraryView *library_view);
+static void artist_deleted_cb (RBNodeView *view,
+		               RBNode *node,
+		               RBLibraryView *library_view);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
@@ -309,10 +315,10 @@ rb_library_view_init (RBLibraryView *view)
 
 
 	/* Drag'n'Drop */
+	rb_sidebar_button_add_dnd_targets (button,
+					   target_table, 1);
 	g_signal_connect (G_OBJECT (button), "drag_data_received",
 			  G_CALLBACK (rb_library_view_drop_cb), view);
-	gtk_drag_dest_set (GTK_WIDGET (button), GTK_DEST_DEFAULT_ALL,
-			   target_table, 1, GDK_ACTION_COPY);
 
 	g_object_set (G_OBJECT (view),
 		      "sidebar-button", button,
@@ -392,12 +398,20 @@ rb_library_view_set_property (GObject *object,
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
+			g_signal_connect (G_OBJECT (view->priv->artists),
+					  "node_deleted",
+					  G_CALLBACK (artist_deleted_cb),
+					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
+					  view);
+			g_signal_connect (G_OBJECT (view->priv->albums),
+					  "node_deleted",
+					  G_CALLBACK (album_deleted_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
@@ -811,6 +825,49 @@ song_deleted_cb (RBNodeView *view,
 }
 
 static void
+artist_deleted_cb (RBNodeView *view,
+		   RBNode *node,
+		   RBLibraryView *library_view)
+{
+	GList *l, *kids;
+
+	kids = rb_node_get_children (node);
+
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		GList *j, *kids2;
+
+		kids2 = rb_node_get_children (RB_NODE (l->data));
+
+		for (j = kids2; j != NULL; j = g_list_next (j))
+		{
+			rb_node_unref (RB_NODE (j->data));
+		}
+
+		g_list_free (kids2);
+	}
+
+	g_list_free (kids);
+}
+
+static void
+album_deleted_cb (RBNodeView *view,
+		  RBNode *node,
+		  RBLibraryView *library_view)
+{
+	GList *l, *kids;
+
+	kids = rb_node_get_children (node);
+		
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		rb_node_unref (RB_NODE (l->data));
+	}
+
+	g_list_free (kids);
+}
+
+static void
 node_view_changed_cb (RBNodeView *view,
 		      RBLibraryView *library_view)
 {
@@ -1032,6 +1089,15 @@ rb_library_view_drop_cb (GtkWidget *widget,
 {
 	RBLibraryView *view = RB_LIBRARY_VIEW (user_data);
 	GList *list, *uri_list, *i;
+	GtkTargetList *tlist;
+	gboolean ret;
+
+	tlist = gtk_target_list_new (target_table, 1);
+	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
+	gtk_target_list_unref (tlist);
+
+	if (ret == FALSE)
+		return;
 
 	list = gnome_vfs_uri_list_parse (data->data);
 

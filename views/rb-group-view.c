@@ -348,10 +348,10 @@ rb_group_view_init (RBGroupView *view)
 				              rb_file ("rb-node-view-songs.xml"));
 
 	/* Drag'n'Drop */
+	rb_sidebar_button_add_dnd_targets (button,
+					   target_table, 1);
 	g_signal_connect (G_OBJECT (button), "drag_data_received",
 			  G_CALLBACK (rb_group_view_drop_cb), view);
-	gtk_drag_dest_set (GTK_WIDGET (button), GTK_DEST_DEFAULT_ALL,
-			   target_table, 1, GDK_ACTION_COPY);
 	g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
 			  G_CALLBACK (rb_group_view_drop_cb), view);
 	gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
@@ -1202,6 +1202,15 @@ rb_group_view_drop_cb (GtkWidget *widget,
 {
 	RBGroupView *view = RB_GROUP_VIEW (user_data);
 	GList *list, *uri_list, *i;
+	GtkTargetList *tlist;
+	gboolean ret;
+
+	tlist = gtk_target_list_new (target_table, 1);
+	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
+	gtk_target_list_unref (tlist);
+
+	if (ret == FALSE)
+		return;
 
 	list = gnome_vfs_uri_list_parse (data->data);
 

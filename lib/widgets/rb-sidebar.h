@@ -25,6 +25,7 @@
 #ifndef __RB_SIDEBAR_H
 #define __RB_SIDEBAR_H
 
+#include <gtk/gtkselection.h>
 #include <gtk/gtkscrolledwindow.h>
 
 #include "rb-sidebar-button.h"
@@ -38,13 +39,21 @@ G_BEGIN_DECLS
 #define RB_IS_SIDEBAR_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), RB_TYPE_SIDEBAR))
 #define RB_SIDEBAR_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), RB_TYPE_SIDEBAR, RBSidebarClass))
 
-typedef struct _RBSidebar           RBSidebar;
-typedef struct _RBSidebarClass      RBSidebarClass;
-typedef struct _RBSidebarPriv       RBSidebarPriv;
+typedef struct _RBSidebar      RBSidebar;
+typedef struct _RBSidebarClass RBSidebarClass;
+typedef struct _RBSidebarPriv  RBSidebarPriv;
+
+typedef enum
+{
+	RB_SIDEBAR_DND_TYPE_NEW_BUTTON,
+	RB_SIDEBAR_DND_TYPE_BUTTON
+} RBSidebarDNDType;
 
 struct _RBSidebar
 {
 	GtkScrolledWindow parent;
+
+	GtkTargetEntry dnd_targets[2];
 
 	RBSidebarPriv *priv;
 };
@@ -53,12 +62,6 @@ struct _RBSidebarClass
 {
 	GtkScrolledWindowClass parent_class;
 };
-
-typedef enum
-{
-	RB_SIDEBAR_DND_TYPE_NEW_BUTTON,
-	RB_SIDEBAR_DND_TYPE_BUTTON
-} RBSidebarDNDType;
 
 GType      rb_sidebar_get_type        (void);
 

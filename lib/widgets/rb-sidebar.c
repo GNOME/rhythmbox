@@ -32,6 +32,7 @@
 
 #include "rb-dialog.h"
 #include "rb-sidebar.h"
+#include "rb-sidebar-private.h"
 
 #define DARKEN 1.4
 
@@ -48,13 +49,6 @@ struct _RBSidebarPriv
 
 	GtkWidget *dnd_hint;
 };
-
-typedef enum
-{
-	RB_SIDEBAR_DND_POSITION_TOP,
-	RB_SIDEBAR_DND_POSITION_MID,
-	RB_SIDEBAR_DND_POSITION_BOTTOM
-} RBSidebarDNDPosition;
 
 static void rb_sidebar_class_init (RBSidebarClass *klass);
 static void rb_sidebar_init (RBSidebar *bar);
@@ -81,9 +75,6 @@ static gboolean rb_sidebar_event_box_drag_motion_cb (GtkWidget *widget,
 static GtkWidget *rb_sidebar_get_dnd_info (RBSidebar *sidebar,
 			                   int x, int y,
 			                   RBSidebarDNDPosition *pos);
-static void rb_sidebar_show_dnd_hint (RBSidebar *sidebar,
-			              GtkWidget *button,
-			              RBSidebarDNDPosition pos);
 static void rb_sidebar_event_box_drag_leave_cb (GtkWidget *widget,
 				                GdkDragContext *context,
 				                guint time,
@@ -91,8 +82,6 @@ static void rb_sidebar_event_box_drag_leave_cb (GtkWidget *widget,
 static void rb_sidebar_get_button_coords (GtkWidget *w,
 			                  int *x1, int *y1, 
 			                  int *x2, int *y2);
-static RBSidebarButton *rb_sidebar_button_from_id (RBSidebar *sidebar,
-			                           const char *unique_id);
 
 static GtkVBoxClass *parent_class = NULL;
 
@@ -144,13 +133,15 @@ rb_sidebar_init (RBSidebar *bar)
 	GtkWidget *dnd_ebox, *viewport;
 	GdkColor black = { 0, 0x0000, 0x0000, 0x0000 };
 	
-	static GtkTargetEntry target_table[] =
-	{
-		{ "RBSidebarNewButton", 0, RB_SIDEBAR_DND_TYPE_NEW_BUTTON },
-		{ "RBSidebarButton",    0, RB_SIDEBAR_DND_TYPE_BUTTON     }
-	};
-	
 	bar->priv = g_new0 (RBSidebarPriv, 1);
+
+	bar->dnd_targets[0].target = "RBSidebarNewButton";
+	bar->dnd_targets[0].flags = 0;
+	bar->dnd_targets[0].info = RB_SIDEBAR_DND_TYPE_NEW_BUTTON;
+
+	bar->dnd_targets[1].target = "RBSidebarButton";
+	bar->dnd_targets[1].flags = 0;
+	bar->dnd_targets[1].info = RB_SIDEBAR_DND_TYPE_BUTTON;
 
 	gtk_scrolled_window_set_hadjustment (GTK_SCROLLED_WINDOW (bar), NULL);
 	gtk_scrolled_window_set_vadjustment (GTK_SCROLLED_WINDOW (bar), NULL);
@@ -160,8 +151,8 @@ rb_sidebar_init (RBSidebar *bar)
 
 	bar->priv->event_box = gtk_event_box_new ();
 	gtk_drag_dest_set (bar->priv->event_box,
-			   GTK_DEST_DEFAULT_ALL,
-			   target_table, G_N_ELEMENTS (target_table),
+			   GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+			   bar->dnd_targets, G_N_ELEMENTS (bar->dnd_targets),
 			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 	gtk_widget_show (bar->priv->event_box);
 	g_signal_connect (G_OBJECT (bar->priv->event_box),
@@ -479,8 +470,6 @@ rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 		{
 			RBSidebarDNDPosition pos;
 			GtkWidget *over;
-			int idx = 0;
-			gboolean move = TRUE;
 
 			/* DND data is in format: unique_id */
 			button = rb_sidebar_button_from_id (sidebar, dnd_info);
@@ -492,31 +481,11 @@ rb_sidebar_event_box_drag_data_received_cb (GtkWidget *widget,
 			if (over == NULL)
 				break;
 
-			/* Yuk! This makes my head hurt. */
-			switch (pos)
-			{
-			case RB_SIDEBAR_DND_POSITION_TOP:
-				idx = g_list_index (sidebar->priv->buttons, over);
-				if (idx > g_list_index (sidebar->priv->buttons, button))
-					idx--;
-				break;
-			case RB_SIDEBAR_DND_POSITION_MID:
-				move = FALSE;
-				break;
-			case RB_SIDEBAR_DND_POSITION_BOTTOM:
-				idx = g_list_index (sidebar->priv->buttons, over);
-				if (idx < g_list_index (sidebar->priv->buttons, button))
-					idx++;
-				break;
-			}
+			rb_sidebar_button_dropped (sidebar,
+						   RB_SIDEBAR_BUTTON (over),
+						   button,
+						   pos);
 
-			if (move == FALSE)
-				break;
-
-			rb_sidebar_move_item (sidebar,
-					      button,
-					      idx);
-		
 			break;
 		}
 	case RB_SIDEBAR_DND_TYPE_NEW_BUTTON:
@@ -586,18 +555,7 @@ rb_sidebar_get_dnd_info (RBSidebar *sidebar,
 
 		if (y >= btn_begin && y <= btn_end)
 		{
-			if ((y >= (btn_begin + ((btn_end - btn_begin) / 2))) && ((btn_end - y) <= 20))
-			{
-				*pos = RB_SIDEBAR_DND_POSITION_BOTTOM;
-			}
-			else if ((y - btn_begin) <= 15)
-			{
-				*pos = RB_SIDEBAR_DND_POSITION_TOP;
-			}
-			else
-			{
-				*pos = RB_SIDEBAR_DND_POSITION_MID;
-			}
+			*pos = rb_sidebar_get_button_pos (widget, y);
 
 			return widget;
 		}
@@ -607,7 +565,7 @@ rb_sidebar_get_dnd_info (RBSidebar *sidebar,
 	return widget;
 }
 
-static void
+void
 rb_sidebar_show_dnd_hint (RBSidebar *sidebar,
 			  GtkWidget *button,
 			  RBSidebarDNDPosition pos)
@@ -624,7 +582,7 @@ rb_sidebar_show_dnd_hint (RBSidebar *sidebar,
 	}
 	else
 	{
-		gtk_widget_hide (sidebar->priv->dnd_hint);
+		rb_sidebar_hide_dnd_hint (sidebar);
 	}
 }
 
@@ -634,7 +592,7 @@ rb_sidebar_event_box_drag_leave_cb (GtkWidget *widget,
 				    guint time,
 				    RBSidebar *sidebar)
 {
-	gtk_widget_hide (sidebar->priv->dnd_hint);
+	rb_sidebar_hide_dnd_hint (sidebar);
 }
 
 static void
@@ -664,7 +622,7 @@ rb_sidebar_get_button_coords (GtkWidget *w,
 	if (y2) *y2 = oy + height;
 }
 
-static RBSidebarButton *
+RBSidebarButton *
 rb_sidebar_button_from_id (RBSidebar *sidebar,
 			   const char *unique_id)
 {
@@ -679,4 +637,69 @@ rb_sidebar_button_from_id (RBSidebar *sidebar,
 	}
 
 	return NULL;
+}
+
+void
+rb_sidebar_hide_dnd_hint (RBSidebar *sidebar)
+{
+	gtk_widget_hide (sidebar->priv->dnd_hint);
+}
+
+void
+rb_sidebar_button_dropped (RBSidebar *sidebar,
+			   RBSidebarButton *over,
+			   RBSidebarButton *button,
+			   RBSidebarDNDPosition pos)
+{
+	int idx = 0;
+	gboolean move = TRUE;
+
+	/* Yuk! This makes my head hurt. */
+	switch (pos)
+	{
+	case RB_SIDEBAR_DND_POSITION_TOP:
+		idx = g_list_index (sidebar->priv->buttons, over);
+		if (idx > g_list_index (sidebar->priv->buttons, button))
+			idx--;
+		break;
+	case RB_SIDEBAR_DND_POSITION_MID:
+		move = FALSE;
+		break;
+	case RB_SIDEBAR_DND_POSITION_BOTTOM:
+		idx = g_list_index (sidebar->priv->buttons, over);
+		if (idx < g_list_index (sidebar->priv->buttons, button))
+			idx++;
+		break;
+	}
+
+	if (move == FALSE)
+		return;
+
+	rb_sidebar_move_item (sidebar,
+			      button,
+			      idx);
+}
+
+RBSidebarDNDPosition
+rb_sidebar_get_button_pos (GtkWidget *widget,
+			   int y)
+{
+	int btn_begin;
+	int btn_end;
+
+	btn_begin = widget->allocation.y;
+	btn_end = widget->allocation.y + widget->allocation.height;
+
+	if ((y >= (btn_begin + ((btn_end - btn_begin) / 2))) && ((btn_end - y) <= 20))
+	{
+		return RB_SIDEBAR_DND_POSITION_BOTTOM;
+	}
+	else if ((y - btn_begin) <= 15)
+	{
+		return RB_SIDEBAR_DND_POSITION_TOP;
+	}
+	else
+	{
+		return RB_SIDEBAR_DND_POSITION_MID;
+	}
 }

@@ -3,6 +3,7 @@ noinst_LTLIBRARIES = librbwidgets.la
 librbwidgets_la_SOURCES =				\
 	rb-sidebar.c					\
 	rb-sidebar.h					\
+	rb-sidebar-private.h				\
 	rb-sidebar-button.c				\
 	rb-sidebar-button.h				\
 	rb-tree-model-node.c				\
