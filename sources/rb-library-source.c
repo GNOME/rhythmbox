@@ -103,10 +103,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 /* 				       guint             time, */
 /* 				       gpointer          user_data); */
 
-static void songs_view_changed_cb (RBEntryView *view, RBLibrarySource *source);
-
-static void library_status_changed_cb (RBLibrary *library, RBLibrarySource *source);
-
 static void rb_library_source_state_pref_changed (GConfClient *client,
 						 guint cnxn_id,
 						 GConfEntry *entry,
@@ -408,11 +404,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source = RB_LIBRARY_SOURCE (parent_class->constructor (type, n_construct_properties,
 							       construct_properties));
 
-	g_signal_connect (G_OBJECT (source->priv->library),
-			  "status-changed",
-			  G_CALLBACK (library_status_changed_cb),
-			  source);
-
 	source->priv->paned = gtk_vpaned_new ();
 
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
@@ -431,10 +422,6 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 
 	g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 			  G_CALLBACK (rb_library_source_songs_show_popup_cb), source);
-	g_signal_connect (G_OBJECT (source->priv->songs),
-			  "changed",
-			  G_CALLBACK (songs_view_changed_cb),
-			  source);
 	g_signal_connect (G_OBJECT (source->priv->songs),
 			  "sort-order-changed",
 			  G_CALLBACK (songs_view_sort_order_changed_cb),
@@ -964,21 +951,6 @@ rb_library_source_state_pref_changed (GConfClient *client,
 {
 	rb_debug ("state prefs changed");
 	rb_library_source_state_prefs_sync (source);
-}
-
-static void
-library_status_changed_cb (RBLibrary *library, RBLibrarySource *source)
-{
-	rb_source_notify_status_changed (RB_SOURCE (source));
-}
-
-static void
-songs_view_changed_cb (RBEntryView *view, RBLibrarySource *source)
-{
-/* 	rb_debug ("got node view change"); */
-/* 	if (source->priv->filter_changed) */
-/* 		rb_source_notify_status_changed (RB_SOURCE (source)); */
-/* 	source->priv->filter_changed = FALSE; */
 }
 
 void

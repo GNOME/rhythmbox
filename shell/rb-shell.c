@@ -142,7 +142,6 @@ static void source_activated_cb (RBSourceList *sourcelist,
 static void rb_shell_library_error_cb (RBLibrary *library,
 				       const char *uri, const char *msg,
 				       RBShell *shell); 
-static void rb_shell_library_progress_cb (RBLibrary *library, double progress, RBShell *shell); 
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -843,8 +842,6 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect (G_OBJECT (shell->priv->library), "error",
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
-	g_signal_connect (G_OBJECT (shell->priv->library), "progress",
-			  G_CALLBACK (rb_shell_library_progress_cb), shell);
 
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
@@ -1077,13 +1074,6 @@ source_activated_cb (RBSourceList *sourcelist,
 	rb_shell_select_source (shell, source);
 	rb_shell_player_set_playing_source (shell->priv->player_shell, source);
 	rb_shell_player_playpause (shell->priv->player_shell);
-}
-
-static void
-rb_shell_library_progress_cb (RBLibrary *library, double progress, RBShell *shell)
-{
-	rb_debug ("setting progress to %f", progress);
-	rb_statusbar_set_progress (shell->priv->statusbar, progress);
 }
 
 static void

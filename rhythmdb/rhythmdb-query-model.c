@@ -58,6 +58,7 @@ static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, Rhyth
 						    GtkTreeIter *iter);
 static void rhythmdb_query_model_cancel (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_sortable (RhythmDBModel *model);
+static gboolean rhythmdb_query_model_has_pending_changes (RhythmDBModel *model);
 static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
 static gboolean rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource, 
@@ -302,6 +303,7 @@ rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
 	iface->poll = rhythmdb_query_model_poll;
 	iface->cancel = rhythmdb_query_model_cancel;
 	iface->sortable = rhythmdb_query_model_sortable;
+	iface->has_pending_changes = rhythmdb_query_model_has_pending_changes;
 }
 
 static void
@@ -472,6 +474,13 @@ rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 	update->type = RHYTHMDB_QUERY_MODEL_QUERY_COMPLETE;
 
 	g_async_queue_push (model->priv->pending_updates, update);
+}
+
+gboolean
+rhythmdb_query_model_has_pending_changes (RhythmDBModel *rmodel)
+{
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
+	return g_async_queue_length (model->priv->pending_updates) > 0;
 }
 
 static void

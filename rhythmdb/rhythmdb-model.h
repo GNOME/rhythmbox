@@ -43,6 +43,7 @@ typedef struct
 	gboolean	(*poll)			(RhythmDBModel *model, GTimeVal *timeout);
 	void		(*cancel)		(RhythmDBModel *model);
 	gboolean	(*sortable)		(RhythmDBModel *model);
+	gboolean	(*has_pending_changes)	(RhythmDBModel *model);
 } RhythmDBModelIface;
 
 GType		rhythmdb_model_get_type		(void);
@@ -52,8 +53,11 @@ gboolean	rhythmdb_model_entry_to_iter	(RhythmDBModel *model, RhythmDBEntry *entr
 
 gboolean	rhythmdb_model_poll		(RhythmDBModel *model, GTimeVal *timeout);
 
+
 void		rhythmdb_model_cancel		(RhythmDBModel *model);
 gboolean	rhythmdb_model_sortable		(RhythmDBModel *model);
+
+gboolean	rhythmdb_model_has_pending_changes (RhythmDBModel *model);
 
 G_END_DECLS
 

@@ -70,8 +70,6 @@ static void rb_library_get_property (GObject *object,
 static void synchronize_entry_with_data (RBLibrary *library, RhythmDBEntry *entry, RBLibraryEntryUpdateData *data);
 static void rb_library_entry_restored_cb (RhythmDB *db, RhythmDBEntry *entry,
 					  RBLibrary *library);
-static gboolean poll_status_update (gpointer data);
-
 enum RBLibraryState
 {
 	LIBRARY_STATE_NONE,
@@ -93,9 +91,6 @@ struct RBLibraryPrivate
 	RBAtomic refresh_count;
 	RBAtomic total_count;
 
-	gboolean status_poll_queued;
-	guint status_poll_id;
-
 	gboolean in_shutdown;
 
 	GAsyncQueue *main_queue;
@@ -111,8 +106,6 @@ enum
 enum
 {
 	ERROR,
-	STATUS_CHANGED,
-	PROGRESS,
 	LEGACY_LOAD_COMPLETE,
 	LAST_SIGNAL,
 };
@@ -179,24 +172,6 @@ rb_library_class_init (RBLibraryClass *klass)
 			      2,
 			      G_TYPE_STRING,
 			      G_TYPE_STRING);
-	rb_library_signals[STATUS_CHANGED] =
-		g_signal_new ("status-changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryClass, status_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	rb_library_signals[PROGRESS] =
-		g_signal_new ("progress",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryClass, progress),
-			      NULL, NULL,
-			      rb_marshal_VOID__DOUBLE,
-			      G_TYPE_NONE,
-			      1, G_TYPE_DOUBLE);
 	rb_library_signals[LEGACY_LOAD_COMPLETE] =
 		g_signal_new ("legacy-load-complete",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -243,12 +218,7 @@ rb_library_release_brakes (RBLibrary *library)
 static gboolean
 queue_is_empty (GAsyncQueue *queue)
 {
-	gpointer data = g_async_queue_try_pop (queue);
-	if (data == NULL)
-		return TRUE;
-
-	g_async_queue_push (queue, data);
-	return FALSE;
+	return g_async_queue_length (queue) <= 0;
 }
 
 GAsyncQueue *
@@ -268,10 +238,22 @@ rb_library_get_add_queue (RBLibrary *library)
  * is busy or not, it doesn't have to be precise.
  */
 gboolean
+rb_library_is_adding (RBLibrary *library)
+{
+	return !queue_is_empty (library->priv->add_queue);
+}
+
+gboolean
+rb_library_is_refreshing (RBLibrary *library)
+{
+	return !queue_is_empty (library->priv->main_queue);
+}
+
+gboolean
 rb_library_is_idle (RBLibrary *library)
 {
-	return queue_is_empty (library->priv->add_queue)
-		&& queue_is_empty (library->priv->main_queue);
+	return !rb_library_is_adding (library)
+		&& !rb_library_is_refreshing (library);
 }
 
 void
@@ -297,9 +279,6 @@ rb_library_finalize (GObject *object)
 	g_return_if_fail (library->priv != NULL);
 
 	rb_debug ("library: finalizing");
-
-	if (library->priv->status_poll_queued)
-		g_source_remove (library->priv->status_poll_id);
 
 	g_free (library->priv);
 
@@ -362,47 +341,23 @@ rb_library_new (RhythmDB *db)
 	return library;
 }
 
-static void
-signal_status_changed (RBLibrary *library)
+double
+rb_library_get_progress (RBLibrary *library)
 {
-	rb_thread_helpers_lock_gdk ();
+	double total;
+	double refresh_count;
 
-	if (!library->priv->in_shutdown) {
-		g_signal_emit (G_OBJECT (library), rb_library_signals[STATUS_CHANGED], 0);
-	}
+	if (queue_is_empty (library->priv->main_queue))
+		return -1.0;
 	
-	rb_thread_helpers_unlock_gdk ();
-}
-
-static void
-signal_progress_changed (RBLibrary *library)
-{
-	rb_thread_helpers_lock_gdk ();
-
-	if (library->priv->in_shutdown)
-		goto out_unlock;
-
-	if (!queue_is_empty (library->priv->add_queue)) {
-		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0, -1.0);
-	} else if (!queue_is_empty (library->priv->main_queue)) {
-		double total;
-		double refresh_count;
-
-		rb_atomic_inc (&library->priv->refresh_count);
-		refresh_count = (double) rb_atomic_dec (&library->priv->refresh_count);
-
-		/* RHYTHMDB FIXME */
-		rb_atomic_inc (&library->priv->total_count);
-		total = (double) rb_atomic_dec (&library->priv->total_count);
-		
-		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0,
-			       refresh_count / total);
-	} else {
-		g_signal_emit (G_OBJECT (library), rb_library_signals[PROGRESS], 0, 1.0);
-	}
-
-out_unlock:
-	rb_thread_helpers_unlock_gdk ();
+	rb_atomic_inc (&library->priv->refresh_count);
+	refresh_count = (double) rb_atomic_dec (&library->priv->refresh_count);
+	
+	/* RHYTHMDB FIXME */
+	rb_atomic_inc (&library->priv->total_count);
+	total = (double) rb_atomic_dec (&library->priv->total_count);
+	
+	return (refresh_count / total);
 }
 
 static RBLibraryEntryUpdateData *
@@ -537,11 +492,6 @@ rb_library_add_uri (RBLibrary *library, const char *uri, GError **error)
 	rhythmdb_write_unlock (library->priv->db);
 
 	rb_file_monitor_add (rb_file_monitor_get (), uri);
-
-	if (!library->priv->in_shutdown) {
-		signal_progress_changed (library);
-		signal_status_changed (library);
-	}
 }
 
 static void
@@ -597,8 +547,6 @@ rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **erro
 		rb_file_monitor_add (rb_file_monitor_get (), location);
 out:
 	g_free (location);
-	signal_progress_changed (library);
-	signal_status_changed (library);
 }
 
 /*
@@ -623,48 +571,13 @@ char *
 rb_library_get_status (RBLibrary *library)
 {
 	char *ret = NULL;
-	gboolean adding_songs = !queue_is_empty (library->priv->add_queue);
-	gboolean refreshing_songs = !queue_is_empty (library->priv->main_queue);
 
-	if (adding_songs)
+	if (rb_library_is_adding (library))
 		ret = g_strdup_printf ("<b>%s</b>", _("Loading songs..."));
-	else if (refreshing_songs)
+	else if (rb_library_is_refreshing (library))
 		ret = g_strdup_printf ("<b>%s</b>", _("Refreshing songs..."));
 
-	if (adding_songs || refreshing_songs) {
-		if (!library->priv->status_poll_queued) {
-			g_idle_add ((GSourceFunc) poll_status_update, library);
-			library->priv->status_poll_queued = TRUE;
-		}
-		return ret;
-	}
-		
-	return NULL;
-}
-
-static gboolean
-poll_status_update (gpointer data)
-{
-	RBLibrary *library = RB_LIBRARY (data);
-
-	GDK_THREADS_ENTER ();
-
-	/* This marks things as requiring an update.  That way we'll
-	 * get the full status back when the library is idle.
-	 */
-	if (rb_library_is_idle (library)) {
-		library->priv->status_poll_queued = FALSE;
-
-		signal_status_changed (library);
-
-	} else {
-		library->priv->status_poll_id =
-			g_timeout_add (500, (GSourceFunc) poll_status_update, library);
-	}
-	
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
+	return ret;
 }
 
 char *

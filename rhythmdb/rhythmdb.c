@@ -46,6 +46,8 @@ struct RhythmDBPrivate
 
 	GHashTable *changed_entries;
 
+	GAsyncQueue *status_queue;
+
 	GMutex *exit_mutex;
 	gboolean exiting;
 };

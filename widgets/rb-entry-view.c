@@ -635,6 +635,13 @@ rb_entry_view_set_model (RBEntryView *view, RhythmDBModel *model)
 	g_object_set (G_OBJECT (view), "model", model, NULL);
 }
 
+gboolean
+rb_entry_view_busy (RBEntryView *view)
+{
+	return view->priv->model &&
+		rhythmdb_model_has_pending_changes (RHYTHMDB_MODEL (view->priv->model));
+}
+
 glong
 rb_entry_view_get_duration (RBEntryView *view)
 {

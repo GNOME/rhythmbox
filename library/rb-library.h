@@ -71,7 +71,11 @@ void			rb_library_update_entry		(RBLibrary *library,
 							 RhythmDBEntry *entry, GError **error);
 
 gboolean		rb_library_is_idle		(RBLibrary *library);
+gboolean		rb_library_is_refreshing	(RBLibrary *library);
+gboolean		rb_library_is_adding		(RBLibrary *library);
+
 char *			rb_library_get_status		(RBLibrary *library);
+double			rb_library_get_progress		(RBLibrary *library);
 
 void			rb_library_load_legacy		(RBLibrary *library);
 RhythmDBEntry *		rb_library_legacy_id_to_entry	(RBLibrary *library, guint id);
