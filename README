@@ -45,6 +45,7 @@ In the bug report please include:
   $ gst-launch gnomevfssrc location=/path/to/my/musicfile.ogg ! spider ! volume ! $(gconftool -2 -g /system/gstreamer/defaults/audiosink)  
 
   Just replace /path/to/my/musicfile.ogg with some sound file.
+  You might also want to try the monkey-media tests/test-cmdline program.
 
 * How to reproduce the bug.
 
