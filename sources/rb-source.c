@@ -223,6 +223,7 @@ rb_source_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_NAME:
+		g_free (source->priv->name);
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
 	default:

@@ -2213,38 +2213,6 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
                 rb_source_receive_drag (source, data);
         }
 
-/* 	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) { */
-/* 		long id; */
-/* 		RBNode *node; */
-/* 		RBPlaylistSource *playlist; */
-
-
-/* 		id = atol (data->data); */
-/* 		rb_debug ("got node id %d", id); */
-/* 		node = rb_node_db_get_node_from_id (rb_library_get_node_db (shell->priv->library), id); */
-
-/* 		if (node == NULL) */
-/* 			return; */
-			
-		
-/* 		playlist = create_playlist_with_name (shell, rb_node_get_property_string (node, RB_NODE_PROP_NAME)); */
-/* 		if (playlist == NULL) */
-/* 			return; */
-
-/* 		rb_library_handle_songs (shell->priv->library, */
-/* 					 node, */
-/* 					 (GFunc) handle_songs_func, */
-/* 					 playlist); */
-
-/* 		shell->priv->playlists = g_list_append (shell->priv->playlists, playlist); */
-/* 		rb_shell_append_source (shell, RB_SOURCE (playlist)); */
-/* 	} else { */
-/* 		GList *list; */
-
-/* 		rb_debug ("got vfs data, len: %d", data->length); */
-/* 		list = gnome_vfs_uri_list_parse (data->data); */
-/* 		create_playlist (shell, CREATE_PLAYLIST_WITH_URI_LIST, list); */
-/* 	} */
 }
 
 static void
