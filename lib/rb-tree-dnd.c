@@ -28,6 +28,8 @@
 #include "rb-debug.h"
 
 #define RB_TREE_DND_STRING "RbTreeDndString"
+/* must be the same value as in gtk_tree_view.c */
+#define SCROLL_EDGE_SIZE 15
 
 typedef struct
 {
@@ -53,12 +55,16 @@ typedef struct
   GdkDragAction source_actions;
   GdkModifierType start_button_mask;
 
+  /* Scroll timeout (e.g. during dnd) */
+  guint scroll_timeout;
+
 } RbTreeDndData;
 
 RbTreeDndData *init_rb_tree_dnd_data (GtkWidget *widget);
 GList * get_context_data (GdkDragContext *context);
-void filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
-
+static void filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *path, GtkTreeViewDropPosition *pos);
+static gint scroll_row_timeout (gpointer data);
+static void remove_scroll_timeout (GtkTreeView *tree_view);
 
 GType
 rb_tree_drag_source_get_type (void)
@@ -261,6 +267,7 @@ init_rb_tree_dnd_data (GtkWidget *widget)
 		g_object_set_data (G_OBJECT (widget), RB_TREE_DND_STRING, priv_data);
 		priv_data->drag_leave_handler = 0;
 		priv_data->button_press_event_handler = 0;
+		priv_data->scroll_timeout = 0;
 	}
 
 	return priv_data;
@@ -373,6 +380,73 @@ filter_drop_position (GtkWidget *widget, GdkDragContext *context, GtkTreePath *p
   }
 }
 
+
+/* Scroll function taken/adapted from gtktreeview.c */
+static gint
+scroll_row_timeout (gpointer data)
+{
+	GtkTreeView *tree_view = data;
+	GdkRectangle visible_rect;
+	gint y, x;
+	gint offset;
+	gfloat value;
+	GtkAdjustment* vadj;
+	RbTreeDndData *priv_data;
+
+	GDK_THREADS_ENTER ();
+
+	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
+	g_return_val_if_fail(priv_data != NULL, TRUE);
+
+	gdk_window_get_pointer (gtk_tree_view_get_bin_window (tree_view), &x, &y, NULL);
+	gtk_tree_view_widget_to_tree_coords (tree_view, x, y, &x, &y);
+	gtk_tree_view_get_visible_rect (tree_view, &visible_rect);
+
+	/* see if we are near the edge. */
+	if (x < visible_rect.x && x > visible_rect.x + visible_rect.width)
+	{
+		GDK_THREADS_LEAVE ();
+		priv_data->scroll_timeout = 0;
+		return FALSE;
+	}
+
+	offset = y - (visible_rect.y + 2 * SCROLL_EDGE_SIZE);
+	if (offset > 0)
+	{
+		offset = y - (visible_rect.y + visible_rect.height - 2 * SCROLL_EDGE_SIZE);
+		if (offset < 0) 
+		{
+			GDK_THREADS_LEAVE ();
+			priv_data->scroll_timeout = 0;
+			return FALSE;
+		}
+	}
+
+	vadj = gtk_tree_view_get_vadjustment (tree_view);
+	value = CLAMP (vadj->value + offset, vadj->lower, vadj->upper - vadj->page_size);
+	gtk_adjustment_set_value (vadj, value);
+
+	GDK_THREADS_LEAVE ();
+
+	return TRUE;
+}
+
+
+
+static void
+remove_scroll_timeout (GtkTreeView *tree_view)
+ {
+	 RbTreeDndData *priv_data;
+
+	 priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
+	 g_return_if_fail(priv_data != NULL);
+
+	 if (priv_data->scroll_timeout != 0)
+	 {
+		 g_source_remove (priv_data->scroll_timeout);
+		 priv_data->scroll_timeout = 0;
+	 }
+}
 
 
 static void
@@ -511,6 +585,11 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	else
 	{
 	  filter_drop_position (widget, context, path, &pos);
+
+	  if (priv_data->scroll_timeout == 0)
+	  {
+		  priv_data->scroll_timeout = g_timeout_add (150, scroll_row_timeout, tree_view);
+	  }
 	}
 
 	if (GTK_WIDGET (tree_view) == gtk_drag_get_source_widget (context) &&
@@ -545,10 +624,10 @@ rb_tree_dnd_drag_drop_cb (GtkWidget        *widget,
 
 	tree_view = GTK_TREE_VIEW (widget);
 	model = gtk_tree_view_get_model (tree_view);
-
 	priv_data = g_object_get_data (G_OBJECT (widget), RB_TREE_DND_STRING);
-
 	gtk_tree_view_get_dest_row_at_pos (tree_view, x, y, &path, &pos);
+
+	remove_scroll_timeout (tree_view);
 
 	/* Unset this thing */
 	gtk_tree_view_set_drag_dest_row (tree_view,
