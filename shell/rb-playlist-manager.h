@@ -76,6 +76,8 @@ void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
 void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr);
 
+RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr, gboolean automatic);
+
 G_END_DECLS
 
 #endif /* __RB_PLAYLIST_MANAGER_H */

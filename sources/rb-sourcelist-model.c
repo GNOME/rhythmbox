@@ -27,6 +27,7 @@
 #include <libgnome/gnome-i18n.h>
 
 #include "rb-sourcelist-model.h"
+#include "rb-tree-dnd.h"
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
@@ -42,22 +43,28 @@ enum
 
 static void rb_sourcelist_model_class_init (RBSourceListModelClass *klass);
 static void rb_sourcelist_model_init (RBSourceListModel *model);
-static void rb_sourcelist_model_drag_dest_init (GtkTreeDragDestIface *iface);
-static void rb_sourcelist_model_drag_source_init (GtkTreeDragSourceIface *iface);
+static void rb_sourcelist_model_drag_dest_init (RbTreeDragDestIface *iface);
+static void rb_sourcelist_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rb_sourcelist_model_finalize (GObject *object);
-static gboolean rb_sourcelist_model_drag_data_received (GtkTreeDragDest *drag_dest,
+static gboolean rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 							GtkTreePath *dest,
+							GtkTreeViewDropPosition pos,
 							GtkSelectionData *selection_data);
-static gboolean rb_sourcelist_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+static gboolean rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 						       GtkTreePath *dest,
+						       GtkTreeViewDropPosition pos,
 						       GtkSelectionData *selection_data);
-static gboolean rb_sourcelist_model_drag_data_delete (GtkTreeDragSource *drag_source,
-						      GtkTreePath *path);
-static gboolean rb_sourcelist_model_drag_data_get (GtkTreeDragSource *drag_source,
-						   GtkTreePath *path,
+static gboolean rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
+						       GtkTreePath       *dest_path,
+						       GList *targets,
+						       GtkTreeViewDropPosition *pos);
+static gboolean rb_sourcelist_model_drag_data_delete (RbTreeDragSource *drag_source,
+						      GList *path_list);
+static gboolean rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
+						   GList *path_list,
 						   GtkSelectionData *selection_data);
-static gboolean rb_sourcelist_model_row_draggable (GtkTreeDragSource *drag_source,
-						   GtkTreePath *path);
+static gboolean rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
+						   GList *path_list);
 
 
 static GtkListStoreClass *parent_class = NULL;
@@ -99,11 +106,11 @@ rb_sourcelist_model_get_type (void)
 		rb_sourcelist_model_type = g_type_register_static (GTK_TYPE_LIST_STORE, "RBSourceListModel",
 								   &rb_sourcelist_model_info, 0);
 		g_type_add_interface_static (rb_sourcelist_model_type,
-					     GTK_TYPE_TREE_DRAG_DEST,
-					     &drag_dest_info);
-		g_type_add_interface_static (rb_sourcelist_model_type,
-					     GTK_TYPE_TREE_DRAG_SOURCE,
+					     RB_TYPE_TREE_DRAG_SOURCE,
 					     &drag_source_info);
+		g_type_add_interface_static (rb_sourcelist_model_type,
+					     RB_TYPE_TREE_DRAG_DEST,
+					     &drag_dest_info);
 	}
 	
 	return rb_sourcelist_model_type;
@@ -128,25 +135,28 @@ rb_sourcelist_model_class_init (RBSourceListModelClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBSourceListModelClass, drop_received),
 			      NULL, NULL,
-			      gtk_marshal_VOID__POINTER_POINTER,
+			      rb_marshal_VOID__POINTER_INT_POINTER,
 			      G_TYPE_NONE,
-			      2,
-			      G_TYPE_POINTER, G_TYPE_POINTER);
+			      3,
+			      G_TYPE_POINTER, G_TYPE_INT, G_TYPE_POINTER);
 }
 
 static void
-rb_sourcelist_model_drag_dest_init (GtkTreeDragDestIface *iface)
+rb_sourcelist_model_drag_dest_init (RbTreeDragDestIface *iface)
 {
   iface->drag_data_received = rb_sourcelist_model_drag_data_received;
   iface->row_drop_possible = rb_sourcelist_model_row_drop_possible;
+  iface->row_drop_position = rb_sourcelist_model_row_drop_position;
+
 }
 
 static void
-rb_sourcelist_model_drag_source_init (GtkTreeDragSourceIface *iface)
+rb_sourcelist_model_drag_source_init (RbTreeDragSourceIface *iface)
 {
   iface->row_draggable = rb_sourcelist_model_row_draggable;
   iface->drag_data_get = rb_sourcelist_model_drag_data_get;
   iface->drag_data_delete = rb_sourcelist_model_drag_data_delete;
+
 }
 
 static void
@@ -183,8 +193,9 @@ rb_sourcelist_model_new (void)
 }
 
 static gboolean
-rb_sourcelist_model_drag_data_received (GtkTreeDragDest *drag_dest,
+rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 					GtkTreePath *dest,
+					GtkTreeViewDropPosition pos,
 					GtkSelectionData *selection_data)
 {
 	RBSourceListModel *model;
@@ -198,14 +209,14 @@ rb_sourcelist_model_drag_data_received (GtkTreeDragDest *drag_dest,
 		RBSource *target;
 		rb_debug ("matched dnd type");
 		
-		if (!gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
+		if (dest == NULL || !gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
 			target = NULL;
 		else
 			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
 					    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
 		
 		g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
-			       0, target, selection_data);
+			       0, target, pos, selection_data);
 		return TRUE;
 	}
 
@@ -213,8 +224,9 @@ rb_sourcelist_model_drag_data_received (GtkTreeDragDest *drag_dest,
 }
 
 static gboolean
-rb_sourcelist_model_row_drop_possible (GtkTreeDragDest *drag_dest,
+rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 				       GtkTreePath *dest,
+				       GtkTreeViewDropPosition pos,
 				       GtkSelectionData *selection_data)
 {
 	RBSourceListModel *model;
@@ -228,27 +240,79 @@ rb_sourcelist_model_row_drop_possible (GtkTreeDragDest *drag_dest,
 						     dest, selection_data);
 }
 
-static gboolean
-rb_sourcelist_model_row_draggable (GtkTreeDragSource *drag_source,
-				   GtkTreePath *path)
-{
-	return FALSE;
 
+static gboolean
+rb_sourcelist_model_row_drop_position (RbTreeDragDest   *drag_dest,
+				       GtkTreePath       *dest_path,
+				       GList *targets,
+				       GtkTreeViewDropPosition *pos)
+{
+	GtkTreeIter iter;
+	GtkTreeModel *model = GTK_TREE_MODEL (drag_dest);
+	
+	if (gtk_tree_model_get_iter (model, &iter, dest_path)) {
+		RBSource *source;
+
+		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+
+		if (!rb_source_can_rename (source)) {
+
+			if (*pos == GTK_TREE_VIEW_DROP_BEFORE)
+				*pos = GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+			else if (*pos == GTK_TREE_VIEW_DROP_AFTER)
+				*pos = GTK_TREE_VIEW_DROP_INTO_OR_AFTER;
+
+			return TRUE;
+
+		} else {
+
+			if (g_list_find (targets, gdk_atom_intern ("text/uri-list", TRUE)))
+				return TRUE;
+		}
+	}
+		
+	return FALSE;
+}
+
+
+
+static gboolean
+rb_sourcelist_model_row_draggable (RbTreeDragSource *drag_source,
+				   GList *path_list)
+{
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GtkTreeModel *model = GTK_TREE_MODEL (drag_source);
+	
+	/* we don't support multi selection */
+	g_return_val_if_fail (g_list_length (path_list) == 1, FALSE);
+
+	path = g_list_first (path_list)->data;
+
+	if (gtk_tree_model_get_iter (model, &iter, path)) {
+		RBSource *source;
+
+		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+
+		return rb_source_can_rename (source);
+	}
+		
+	return FALSE;
 }
 
 static gboolean
-rb_sourcelist_model_drag_data_get (GtkTreeDragSource *drag_source,
-				   GtkTreePath *path,
+rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
+				   GList *path_list,
 				   GtkSelectionData *selection_data)
 {
-	g_assert_not_reached ();
 	return FALSE;
 }
 
 static gboolean
-rb_sourcelist_model_drag_data_delete (GtkTreeDragSource *drag_source,
-				      GtkTreePath *path)
+rb_sourcelist_model_drag_data_delete (RbTreeDragSource *drag_source,
+				      GList *path_list)
 {
-	g_assert_not_reached ();
 	return FALSE;
 }

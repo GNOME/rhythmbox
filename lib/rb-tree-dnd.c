@@ -196,8 +196,9 @@ rb_tree_drag_dest_get_type (void)
 
 gboolean
 rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
-				       GtkTreePath       *dest,
-				       GtkSelectionData  *selection_data)
+				      GtkTreePath       *dest,
+				      GtkTreeViewDropPosition pos, 
+				      GtkSelectionData  *selection_data)
 {
   RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (drag_dest);
 
@@ -205,7 +206,7 @@ rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
   g_return_val_if_fail (iface->drag_data_received != NULL, FALSE);
   g_return_val_if_fail (selection_data != NULL, FALSE);
 
-  return (* iface->drag_data_received) (drag_dest, dest, selection_data);
+  return (* iface->drag_data_received) (drag_dest, dest, pos, selection_data);
 }
 
 
@@ -213,6 +214,7 @@ rb_tree_drag_dest_drag_data_received (RbTreeDragDest   *drag_dest,
 gboolean
 rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
 				     GtkTreePath       *dest_path,
+				     GtkTreeViewDropPosition pos,
 				     GtkSelectionData  *selection_data)
 {
   RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (drag_dest);
@@ -221,7 +223,7 @@ rb_tree_drag_dest_row_drop_possible (RbTreeDragDest   *drag_dest,
   g_return_val_if_fail (iface->drag_data_received != NULL, FALSE);
   g_return_val_if_fail (selection_data != NULL, FALSE);
 
-  return (* iface->row_drop_possible) (drag_dest, dest_path, selection_data);
+  return (* iface->row_drop_possible) (drag_dest, dest_path, pos, selection_data);
 }
 
 
@@ -520,13 +522,12 @@ rb_tree_dnd_drag_motion_cb (GtkWidget        *widget,
 	else
 		action = context->suggested_action;
 
-	if (path)
+	if (path) {
 	        gtk_tree_view_set_drag_dest_row (tree_view, path, pos);
+		gtk_tree_path_free (path);
+	}
 
 	gdk_drag_status (context, action, time);
-
-	if (path)
-		gtk_tree_path_free (path);
 
 	return TRUE;
 }
@@ -557,10 +558,11 @@ rb_tree_dnd_drag_drop_cb (GtkWidget        *widget,
                				 NULL,
 					 GTK_TREE_VIEW_DROP_BEFORE);
 
-	if (path) {
+	if (path || priv_data->dest_flags & RB_TREE_DEST_EMPTY_VIEW_DROP) {
 		GdkAtom target = gtk_drag_dest_find_target (widget, context, priv_data->dest_target_list);
 
-  		gtk_tree_path_free (path);
+		if (path)
+			gtk_tree_path_free (path);
 
 		if (target != GDK_NONE) {
 			gtk_drag_get_data (widget, context, target, time);
@@ -592,15 +594,14 @@ rb_tree_dnd_drag_data_received_cb (GtkWidget        *widget,
 
 	gtk_tree_view_get_dest_row_at_pos (tree_view, x, y, &dest_row, &pos);
 
-	filter_drop_position (widget, context, dest_row, &pos);
+	if (dest_row)
+		filter_drop_position (widget, context, dest_row, &pos);
 
 	if (selection_data->length >= 0)
 	{
-		if (pos == GTK_TREE_VIEW_DROP_AFTER)
-			gtk_tree_path_next (dest_row);
-
 		if (rb_tree_drag_dest_drag_data_received (RB_TREE_DRAG_DEST (model),
                 					  dest_row,
+							  pos,
                 					  selection_data))
         		accepted = TRUE;
 	}

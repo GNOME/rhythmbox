@@ -1385,7 +1385,6 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view->priv->treeview), TRUE);
-	gtk_tree_view_set_reorderable (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_MULTIPLE);
 	
 	if (view->priv->is_drag_source)
@@ -1396,7 +1395,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 						     GDK_ACTION_COPY | GDK_ACTION_MOVE);
 	if (view->priv->is_drag_dest)
 		rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (view->priv->treeview),
-						   RB_TREE_DEST_CAN_DROP_BETWEEN,
+						   RB_TREE_DEST_CAN_DROP_BETWEEN | RB_TREE_DEST_EMPTY_VIEW_DROP,
 						   rb_entry_view_drag_types,
 						   G_N_ELEMENTS (rb_entry_view_drag_types),
 						   GDK_ACTION_COPY | GDK_ACTION_MOVE);
