@@ -1,3 +1,12 @@
+2003-08-16  James Kahn  <james@liet.net>
+
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_sync_paned), (paned_changed_cb):
+	
+	Store paned state in gconf proportional to unmaximised
+	window.  Fixes #119833.  Also removed a duplicate call
+	to rb_shell_sync_window_visibility.
+
 2003-08-16  Colin Walters  <cwalters@gnome.org>
 
 	* NEWS: Update.
