@@ -712,7 +712,8 @@ rhythmdb_property_model_iter_n_children (GtkTreeModel *tree_model,
 {
 	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (tree_model);
 
-	g_return_val_if_fail (model->priv->stamp == iter->stamp, -1);
+	if (iter)
+		g_return_val_if_fail (model->priv->stamp == iter->stamp, -1);
 
 	if (iter == NULL)
 		return 1 + g_sequence_get_length (model->priv->properties);

@@ -125,7 +125,9 @@ struct RBEntryViewPrivate
 	GtkTreeSelection *selection;
 
 	gboolean playing;
+	RhythmDBQueryModel *playing_query_model;
 	RhythmDBEntry *playing_entry;
+	GtkTreeIter playing_entry_iter;
 
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
@@ -558,9 +560,35 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_PLAYING_ENTRY:
 	{
 		GtkTreeIter iter;
+		GtkTreePath *path;
+		RhythmDBEntry *entry;
 		rb_entry_view_freeze (view);
 
-		view->priv->playing_entry = g_value_get_pointer (value);
+		entry = g_value_get_pointer (value);
+		
+		if (view->priv->playing_entry != NULL) {
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_query_model),
+							&view->priv->playing_entry_iter);
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_query_model),
+						    path, &view->priv->playing_entry_iter);
+			gtk_tree_path_free (path);
+			g_object_unref (G_OBJECT (view->priv->playing_query_model));
+		}
+		
+		view->priv->playing_entry = entry;
+		g_object_ref (G_OBJECT (view->priv->query_model));
+		view->priv->playing_query_model = view->priv->query_model;
+
+		if (view->priv->playing_entry != NULL) {
+			rhythmdb_query_model_iter_from_entry (view->priv->query_model,
+							      view->priv->playing_entry,
+							      &view->priv->playing_entry_iter);
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model),
+							&view->priv->playing_entry_iter);
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->query_model),
+						    path, &view->priv->playing_entry_iter);
+			gtk_tree_path_free (path);
+		}
 
 		rb_entry_view_thaw (view);
 
@@ -1283,12 +1311,14 @@ rb_entry_view_get_playing_entry (RBEntryView *view)
 RhythmDBEntry *
 rb_entry_view_get_first_entry (RBEntryView *view)
 {
-	GtkTreeIter iter;
+	GtkTreeIter entry_iter, sort_iter;
 	RhythmDBEntry *entry;
 
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->query_model), &iter)) {
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter)) {
+		gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
+								&entry_iter, &sort_iter);
 		gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-				    &iter, 0, &entry, -1);
+				    &entry_iter, 0, &entry, -1);
 		return entry;
 	}
 	return NULL;

@@ -2,6 +2,6 @@
 
 viewsdir = $(pkgdatadir)/views
 
-views_DATA = rb-entry-view-library.xml
+views_DATA = rb-entry-view-library.xml rb-entry-view-iradio.xml
 
 EXTRA_DIST = $(views_DATA)

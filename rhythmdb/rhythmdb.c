@@ -827,19 +827,12 @@ rhythmdb_do_full_query_async (RhythmDB *db, GtkTreeModel *main_model, ...)
 	va_end (args);
 }
 
-void
-rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel *main_model, ...)
+static void
+rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
+				 GPtrArray *query)
 {
-	GPtrArray *query;
-	va_list args;
 	gboolean cancel = FALSE;
 	struct RhythmDBQueryThreadData *data;
-
-	db_enter (db, FALSE);
-
-	va_start (args, main_model);
-
-	query = rhythmdb_query_parse_valist (db, args);
 
 	data = g_new0 (struct RhythmDBQueryThreadData, 1);
 	data->db = db;
@@ -851,7 +844,33 @@ rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel *main_model, ...)
 		      "query", query, NULL);
 
 	query_thread_main (data);
+}
 
+void
+rhythmdb_do_full_query_parsed (RhythmDB *db, GtkTreeModel *main_model,
+			       GPtrArray *query)
+{
+	db_enter (db, FALSE);
+
+	rhythmdb_do_full_query_internal (db, main_model, query);
+}
+
+void
+rhythmdb_do_full_query (RhythmDB *db, GtkTreeModel *main_model, ...)
+{
+	GPtrArray *query;
+	va_list args;
+
+	db_enter (db, FALSE);
+
+	va_start (args, main_model);
+
+	query = rhythmdb_query_parse_valist (db, args);
+
+	rhythmdb_do_full_query_internal (db, main_model, query);
+
+	rhythmdb_query_free (query);
+	
 	va_end (args);
 }
 

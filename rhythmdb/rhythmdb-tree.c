@@ -95,7 +95,7 @@ assert_valid_tree_entry (RhythmDBTreeEntry *entry)
 #define RHYTHMDB_TREE_ENTRY(x) ((RhythmDBEntry *) x)
 #endif
 
-static RhythmDBEntry *rhythmdb_tree_entry_allocate (RhythmDBTree *db);
+static RhythmDBEntry *rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type);
 static void rhythmdb_tree_entry_insert (RhythmDBTree *db, RhythmDBTreeEntry *entry,
 					RhythmDBEntryType type, const char *uri,
 					const char *genrename, const char *artistname,
@@ -440,8 +440,22 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
 	{
 		if (!strcmp (name, "entry")) {
+			RhythmDBEntryType type;
+			gboolean type_set = FALSE;
+			for (; *attrs; attrs +=2) {
+				if (!strcmp (*attrs, "type")) {
+					const char *typename = *(attrs+1);
+					if (!strcmp (typename, "song"))
+						type = RHYTHMDB_ENTRY_TYPE_SONG;
+					else 
+						type = RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+					type_set = TRUE;
+					break;
+				}
+			}
+			g_assert (type_set);
 			ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY;
-			ctx->entry = rhythmdb_tree_entry_allocate (ctx->db);
+			ctx->entry = rhythmdb_tree_entry_allocate (ctx->db, type);
 			ctx->genrename = NULL;
 			ctx->albumname = NULL;
 			ctx->artistname = NULL;
@@ -799,7 +813,7 @@ set_entry_album (RhythmDBTree *db, RhythmDBTreeEntry *entry, RhythmDBTreePropert
 }
 
 static RhythmDBEntry *
-rhythmdb_tree_entry_allocate (RhythmDBTree *db)
+rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type)
 {
 	RhythmDBTreeEntry *ret;
 	guint i;
@@ -820,6 +834,8 @@ rhythmdb_tree_entry_allocate (RhythmDBTree *db)
 		if (val_type == G_TYPE_STRING)
 			g_value_set_static_string (RHYTHMDB_TREE_ENTRY_VALUE (ret, i), "");
 	}
+	g_value_set_int (RHYTHMDB_TREE_ENTRY_VALUE (ret, RHYTHMDB_PROP_TYPE), type);
+
 	return ret;
 }
 
@@ -856,11 +872,9 @@ rhythmdb_tree_entry_new (RhythmDB *rdb, RhythmDBEntryType type, const char *uri)
 
 	sanity_check_database (db);
 
-	ret = rhythmdb_tree_entry_allocate (db);
+	ret = rhythmdb_tree_entry_allocate (db, type);
 
 	rhythmdb_tree_entry_insert (db, ret, type, uri, "", "", "");
-
-	g_value_set_int (RHYTHMDB_TREE_ENTRY_VALUE (ret, RHYTHMDB_PROP_TYPE), type);
 
 	sanity_check_database (db);
 

@@ -212,14 +212,13 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	/* RHYTHMDB FIXME */
-/* 	g_object_class_install_property (object_class, */
-/* 					 PROP_IRADIO_SOURCE, */
-/* 					 g_param_spec_object ("iradio-source", */
-/* 							      "IRadioSource", */
-/* 							      "IRadioSource", */
-/* 							      RB_TYPE_IRADIO_SOURCE, */
-/* 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY)); */
+	g_object_class_install_property (object_class,
+					 PROP_IRADIO_SOURCE,
+					 g_param_spec_object ("iradio-source",
+							      "IRadioSource",
+							      "IRadioSource",
+							      RB_TYPE_IRADIO_SOURCE,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	rb_playlist_manager_signals[PLAYLIST_ADDED] =
 		g_signal_new ("playlist_added",
 			      RB_TYPE_PLAYLIST_MANAGER,
@@ -381,7 +380,7 @@ rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 					       "window", window,
 					       "library", library,
 					       "library_source", libsource,
-/* 					       "iradio_source", iradio_source, */
+					       "iradio_source", iradio_source,
 					       NULL);
 
 	g_return_val_if_fail (mgr->priv != NULL, NULL);

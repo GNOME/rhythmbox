@@ -68,6 +68,8 @@ void			rb_library_add_uri		(RBLibrary *library,
 void			rb_library_update_entry		(RBLibrary *library,
 							 RhythmDBEntry *entry, GError **error);
 
+void			rb_library_load_legacy		(RhythmDB *db);
+
 void			rb_library_release_brakes       (RBLibrary *library);
 void			rb_library_shutdown		(RBLibrary *library);
 

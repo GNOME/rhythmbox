@@ -48,12 +48,14 @@ typedef struct
 	RBSourceClass parent;
 } RBIRadioSourceClass;
 
-GType		rb_iradio_source_get_type (void);
+GType		rb_iradio_source_get_type	(void);
 
-RBSource *	rb_iradio_source_new      (RhythmDB *db);
+RBSource *	rb_iradio_source_new		(RhythmDB *db);
 
-void		rb_iradio_source_add_station (RBIRadioSource *source,
-					      const char *uri, const char *title, const char *genre);
+void		rb_iradio_source_add_station	(RBIRadioSource *source,
+						 const char *uri, const char *title, const char *genre);
+
+void		rb_iradio_source_load_legacy	(RhythmDB *db);
 
 G_END_DECLS
 

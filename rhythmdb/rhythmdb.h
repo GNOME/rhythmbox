@@ -233,6 +233,9 @@ gboolean	rhythmdb_evaluate_query			(RhythmDB *db, GPtrArray *query,
 void		rhythmdb_do_full_query			(RhythmDB *db,
 							 GtkTreeModel *main_model,
 							 ...);
+void		rhythmdb_do_full_query_parsed		(RhythmDB *db,
+							 GtkTreeModel *main_model,
+							 GPtrArray *query);
 
 /* This is a specialized query to return a flat list of metadata,
  * e.g. genre/artist/album.  The varargs are the same as for the

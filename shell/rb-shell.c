@@ -482,8 +482,7 @@ handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *tit
 	 * but it's very difficult to really fix...
 	 */
 	if (rb_uri_is_iradio (uri) != FALSE) {
-		/* RHYTHMDB FIXME */
-/* 		rb_iradio_source_add_station (shell->priv->iradio_source, uri, title, genre); */
+		rb_iradio_source_add_station (shell->priv->iradio_source, uri, title, genre);
 	} else {
 		rb_library_add_uri_async (shell->priv->library, (char *) uri);
 	}
@@ -671,6 +670,7 @@ rb_shell_construct (RBShell *shell)
 	BonoboWindow *win;
 	Bonobo_UIContainer corba_container;
 	GtkWidget *vbox;
+	gboolean rhythmdb_exists;
 	
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -718,14 +718,22 @@ rb_shell_construct (RBShell *shell)
 	rb_debug ("creating database object");
 	{
 		char *fname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+
+		rhythmdb_exists = g_file_test (fname, G_FILE_TEST_EXISTS);
+		
 		shell->priv->db = rhythmdb_tree_new (fname);
 		g_free (fname);
 
-		rhythmdb_load (shell->priv->db);
+		if (rhythmdb_exists)
+			rhythmdb_load (shell->priv->db);
 	}
 
 	rb_debug ("shell: creating library");
 	shell->priv->library = rb_library_new (shell->priv->db);
+	if (!rhythmdb_exists) {
+		rb_debug ("loading legacy library db");
+		rb_library_load_legacy (shell->priv->db);
+	}
 
 	rb_debug ("shell: setting up tray icon");
 	tray_deleted_cb (NULL, NULL, shell);
@@ -844,17 +852,19 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_append_source (shell, shell->priv->library_source);
 
 	rb_debug ("shell: creating iradio source");
-	/* RHYTHMDB FIXME */
-/* 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell->priv->db)); */
-/* 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source)); */
+	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell->priv->db));
+	if (!rhythmdb_exists) {
+		rb_debug ("loading legacy iradio station db");
+		rb_iradio_source_load_legacy (shell->priv->db);
+	}
+	
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
 
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->ui_component,
 								 GTK_WINDOW (shell->priv->window),
 								 shell->priv->library,
 								 RB_LIBRARY_SOURCE (shell->priv->library_source),
-								 /* RHYTHMDB FIXME */
-/* 								 RB_IRADIO_SOURCE (shell->priv->iradio_source)); */
-								 NULL);
+								 RB_IRADIO_SOURCE (shell->priv->iradio_source));
 
 	g_signal_connect (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 			  G_CALLBACK (rb_shell_playlist_added_cb), shell);

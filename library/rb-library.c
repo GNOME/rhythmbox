@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "rb-library.h"
+#include "rhythmdb-legacy.h"
 #include "rb-library-main-thread.h"
 #include "rb-string-helpers.h"
 #include "rb-thread-helpers.h"
@@ -696,3 +697,58 @@ poll_status_update (gpointer data)
 
 /* 	return ret; */
 /* } */
+
+typedef struct
+{
+	RhythmDB *db;
+	char *libname;
+} RBLibraryLegacyLoadData;
+
+gpointer
+legacy_load_thread_main (RBLibraryLegacyLoadData *data)
+{
+	xmlDocPtr doc;
+	xmlNodePtr root, child;
+
+	doc = xmlParseFile (data->libname);
+
+	if (doc == NULL)
+		goto free_exit;
+
+	rb_debug ("parsing entries");
+	root = xmlDocGetRootElement (doc);
+	for (child = root->children; child != NULL; child = child->next) {
+		rhythmdb_legacy_parse_rbnode (data->db, RHYTHMDB_ENTRY_TYPE_SONG, child);
+	}
+	xmlFreeDoc (doc);
+
+	rb_debug ("legacy load thread exiting");
+free_exit:
+	g_object_unref (G_OBJECT (data->db));
+	g_free (data->libname);
+	g_free (data);
+	g_thread_exit (NULL);
+	return NULL;
+}
+
+
+void
+rb_library_load_legacy (RhythmDB *db)
+{
+	RBLibraryLegacyLoadData *data;
+	char *libname = g_build_filename (rb_dot_dir (), "library-2.1.xml", NULL);
+
+	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
+		g_free (libname);
+		return;
+	}
+
+	data = g_new0 (RBLibraryLegacyLoadData, 1);
+	data->db = db;
+	g_object_ref (G_OBJECT (data->db));
+	data->libname = libname;
+	
+	rb_debug ("kicking off library legacy loading thread");
+	g_thread_create ((GThreadFunc) legacy_load_thread_main, data, FALSE, NULL);
+}
+
