@@ -91,6 +91,7 @@ enum
 };
 
 #define CMD_PATH_VIEW_BROWSER	"/commands/ViewBrowser"
+#define CMD_PATH_VIEW_STATUSBAR  "/commands/ViewStatusbar"
 
 static RBBonoboUIListener rb_source_header_listeners[] =
 {
@@ -401,6 +402,8 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 				  have_browser);
 	rb_bonobo_set_sensitive (header->priv->component, CMD_PATH_VIEW_BROWSER,
 				have_browser && not_small);
+ 	rb_bonobo_set_sensitive (header->priv->component, 
+ 				CMD_PATH_VIEW_STATUSBAR, not_small);
 	if (have_browser) {
 		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),

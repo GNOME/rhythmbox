@@ -249,6 +249,7 @@ struct RBShellPrivate
 	GtkWidget *paned;
 	GtkWidget *sourcelist;
 	GtkWidget *notebook;
+	GtkWidget *hsep;
 
 	GList *sources;
 
@@ -1029,8 +1030,9 @@ rb_shell_construct (RBShell *shell)
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
-	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, FALSE, 0);
+ 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);	
+ 	shell->priv->hsep = gtk_hseparator_new ();
+ 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->hsep, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->statusbar), FALSE, TRUE, 0);
 
@@ -1828,11 +1830,15 @@ rb_shell_sync_smalldisplay (RBShell *shell)
 					CMD_PATH_VIEW_SOURCELIST, FALSE);
   
 		gtk_widget_hide (GTK_WIDGET (shell->priv->paned));
+ 		gtk_widget_hide (GTK_WIDGET (shell->priv->statusbar));
+ 		gtk_widget_hide (GTK_WIDGET (shell->priv->hsep));		
 	} else {
 		rb_bonobo_set_sensitive (shell->priv->ui_component,
 					CMD_PATH_VIEW_SOURCELIST, TRUE);
   
 		gtk_widget_show (GTK_WIDGET (shell->priv->paned));
+ 		rb_statusbar_sync_state (shell->priv->statusbar);
+ 		gtk_widget_show (GTK_WIDGET (shell->priv->hsep));	
 	}
 
 	rb_source_header_sync_control_state (shell->priv->source_header);
