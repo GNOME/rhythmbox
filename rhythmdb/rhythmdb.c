@@ -1190,8 +1190,8 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 	rhythmdb_query_model_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
 
 	rhythmdb_query_free (data->query);
-	g_free (data);
 	g_async_queue_push (db->priv->status_queue, data->main_model);
+	g_free (data);
 	return NULL;
 }
 

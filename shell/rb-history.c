@@ -148,7 +148,7 @@ rb_history_finalize (GObject *object)
 	hist = RB_HISTORY (object);
 
 	g_list_free (hist->priv->head);
-	g_free (hist);
+	g_free (hist->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
