@@ -689,6 +689,13 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	if (ret != 0)
 		goto out;
 
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+
+	ret = strcmp (a_str, b_str);
+	if (ret != 0)
+		goto out;
+
 	a_int = rhythmdb_entry_get_int (view->priv->db, a, RHYTHMDB_PROP_TRACK_NUMBER);
 	b_int = rhythmdb_entry_get_int (view->priv->db, b, RHYTHMDB_PROP_TRACK_NUMBER);
 
@@ -696,13 +703,6 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		ret = (a_int < b_int ? -1 : 1);
 		goto out;
 	}
-
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-
-	ret = strcmp (a_str, b_str);
-	if (ret != 0)
-		goto out;
 
 	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_TITLE_SORT_KEY);
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
