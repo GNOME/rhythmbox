@@ -182,6 +182,8 @@ struct RBShellPlayerPrivate
 	gboolean have_artist_album;
 	char *url;
 
+	gboolean have_previous_node;
+
 	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
 	GtkWidget *buffering_progress;
@@ -775,8 +777,14 @@ rb_shell_player_next (RBShellPlayer *player)
 void
 rb_shell_player_jump_to_current (RBShellPlayer *player)
 {
+	RBSource *source;
 	RBNode *node;
-	RBNodeView *songs = rb_source_get_node_view (player->priv->source);
+	RBNodeView *songs;
+
+	source = player->priv->source ? player->priv->source :
+		player->priv->selected_source;
+
+	songs = rb_source_get_node_view (source);
 
 	node = rb_shell_player_get_playing_node (player);	
 
@@ -1169,14 +1177,14 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 		not_empty = TRUE;
 
+		have_previous = monkey_media_player_get_uri (player->priv->mmplayer) != NULL;
+		player->priv->have_previous_node = (rb_node_view_get_previous_node (songs) != NULL);
+
 		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-			have_previous = FALSE;
 			have_next = TRUE;
 		} else if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
-			have_previous = (rb_node_view_get_previous_node (songs) != NULL);
 			have_next = TRUE;
 		} else {
-			have_previous = (rb_node_view_get_previous_node (songs) != NULL);
 			have_next = (rb_node_view_get_next_node (songs) != NULL);
 		}
 	}
