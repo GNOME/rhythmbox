@@ -946,18 +946,18 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	const char *authors[] =
 	{
- 		"Lead developers:",
+		"",
 		"Jorn Baayen (jorn@nl.linux.org)",
 		"Colin Walters (walters@verbum.org)",
- 		"",
-		"Contributors:",
-		"Olivier Martin (oleevye@wanadoo.fr)",
+		"",
+		"",
 		"Kenneth Christiansen (kenneth@gnu.org)",
 		"Mark Finlay (sisob@eircom.net)",
 		"Marco Pesenti Gritti (marco@it.gnome.org)",
 		"Mark Humphreys (marquee@users.sourceforge.net)",
 		"Laurens Krol (laurens.krol@planet.nl)",
 		"Xan Lopez (xan@dimensis.com)",
+		"Olivier Martin (oleevye@wanadoo.fr)",
 		"Seth Nickell (snickell@stanford.edu)",
 		"Bastien Nocera (hadess@hadess.net)",
 		"Jan Arne Petersen (jpetersen@gnome-de.org)",
@@ -985,6 +985,9 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 	}
 
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
+
+	authors[0] = _("Lead developers:");
+	authors[4] = _("Contributors:");
 
 	about = gnome_about_new ("Rhythmbox", VERSION,
 				 "Copyright \xc2\xa9 2002, 2003 Jorn Baayen, Colin Walters",
