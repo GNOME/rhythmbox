@@ -679,6 +679,10 @@ rhythmdb_write_unlock_internal (RhythmDB *db, gboolean commit)
 
 	if (commit)
 		emit_changed_signals (db);
+	else {
+		g_list_free (db->priv->changed_entries);
+		db->priv->changed_entries = NULL;
+	}
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
