@@ -60,6 +60,7 @@ static struct
 	{"audio/x-flac", "flactag", "FLAC"},
 	{"application/x-ape", NULL, "MonkeysAudio"},
 	{"audio/x-mod", NULL, "MOD"},
+	{"audio/mpeg", NULL, "MP3"},
 };
 
 static GObjectClass *parent_class = NULL;
