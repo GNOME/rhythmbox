@@ -1106,6 +1106,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		    const char *verbname)
 {
 	const char **tem;
+	char *comment;
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
 
@@ -1142,13 +1143,36 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		tem++;
 	}
 
+	{
+		const char *backend;
+		GString *formats = g_string_new ("");
+#ifdef HAVE_GSTREAMER
+		backend = "GStreamer";
+#else
+		backend = "Xine";
+#endif		
+#ifdef HAVE_MP3
+		g_string_append (formats, "mp3 ");
+#endif
+#ifdef HAVE_VORBIS
+		g_string_append (formats, "vorbis ");
+#endif
+#ifdef HAVE_FLAC
+		g_string_append (formats, "FLAC ");
+#endif
+		
+		comment = g_strdup_printf (_("Music management and playback software for GNOME.\nAudio backend: %s\nAudio formats: %s\n"), backend, formats->str);
+
+		g_string_free (formats, TRUE);
+	}
 	about = gnome_about_new ("Rhythmbox", VERSION,
 				 "Copyright \xc2\xa9 2002, 2003 Jorn Baayen, Colin Walters",
-				 _("Music management and playback software for GNOME."),
+				 comment,
 				 (const char **) authors,
 				 (const char **) documenters,
 				 strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
 				 pixbuf);
+	g_free (comment);
 	gtk_window_set_transient_for (GTK_WINDOW (about), GTK_WINDOW (shell->priv->window));
 
 	g_object_add_weak_pointer (G_OBJECT (about),
