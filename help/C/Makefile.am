@@ -7,7 +7,7 @@ omffile = rhythmbox-C.omf
 entities = fdl-appendix.xml legal.xml authors.xml quick-reference.xml user-guide.xml rhythmbox.xml
 
 authors.xml: $(top_srcdir)/AUTHORS $(top_srcdir)/MAINTAINERS $(top_srcdir)/DOCUMENTERS
-	(echo '<?xml version="1.0"?>'; \
+	(echo '<?xml version="1.0" ?>'; \
 	 echo '<sect2 id="authors">'; \
 	 echo '<title>Authors</title>'; \
 	 echo '<sect3>'; \
