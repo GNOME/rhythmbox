@@ -234,7 +234,8 @@ monkey_media_player_finalize (GObject *object)
 		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
 	}
 
-	g_timer_destroy (mp->priv->timer);
+	if (mp->priv->timer)
+		g_timer_destroy (mp->priv->timer);
 	
 	g_free (mp->priv->uri);
 
@@ -610,6 +611,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 		      "mute", mp->priv->mute,
 		      NULL);
 
+	if (mp->priv->timer)
+		g_timer_destroy (mp->priv->timer);
 	mp->priv->timer = g_timer_new ();
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);

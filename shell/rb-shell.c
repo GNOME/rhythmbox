@@ -795,19 +795,18 @@ rb_shell_construct (RBShell *shell)
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");
 	rb_shell_sync_paned (shell);
-	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
-#if 0
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean(CONF_FIRST_TIME)) {
-		GtkDialog *druid = GTK_DIALOG (rb_druid_new (shell->priv->library));
+		RBDruid *druid = rb_druid_new (shell->priv->library);
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
-		gtk_dialog_run (druid);
+		rb_druid_show (druid);
+		g_object_unref (G_OBJECT (druid));
 		rb_shell_sync_window_visibility (shell);
+		
 	}
-#endif
-
+	rb_shell_sync_window_visibility (shell);
 }
 
 char *

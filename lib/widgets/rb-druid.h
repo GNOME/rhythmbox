@@ -38,19 +38,21 @@ typedef struct RBDruidPrivate RBDruidPrivate;
 
 typedef struct
 {
-	GtkDialog parent;
+	GObject parent;
 
 	RBDruidPrivate *priv;
 } RBDruid;
 
 typedef struct
 {
-	GtkDialogClass parent_class;
+	GObjectClass parent_class;
 } RBDruidClass;
 
 GType			rb_druid_get_type	(void);
 
 RBDruid *		rb_druid_new		(RBLibrary *library);
+
+void			rb_druid_show		(RBDruid *druid);
 
 G_END_DECLS
 

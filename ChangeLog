@@ -1,3 +1,24 @@
+2003-08-06  Colin Walters  <walters@verbum.org>
+
+	* data/glade/druid.glade:
+	* lib/widgets/rb-druid.c: (rb_druid_get_type), (rb_druid_init),
+	(rb_druid_finalize), (rb_druid_set_property),
+	(rb_druid_init_widgets), (rb_druid_new), (path_dialog_response_cb),
+	(rb_druid_browse_clicked_cb), (rb_druid_show),
+	(rb_druid_page2_sync_sensitive), (rb_druid_skip_toggled_cb),
+	(rb_druid_entry_changed_cb), (idle_set_sensitive),
+	(rb_druid_page2_prepare_cb), (do_response),
+	(rb_druid_page3_finish_cb):
+	* lib/widgets/rb-druid.h:
+	* monkey-media/monkey-media-player-gst-tmp.c:
+	(monkey_media_player_finalize), (monkey_media_player_construct):
+	* shell/rb-shell.c: (rb_shell_construct):
+
+	The druid is here!  This closes bug #90502.
+
+	Also fix a bug in the gst player when we exit if a song hasn't
+	been played.
+
 2003-08-06  Colin Walters  <walters@debian.org>
 
 	* data/ui/rhythmbox-ui.xml.in:
