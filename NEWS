@@ -1,7 +1,80 @@
 Overview of Changes in Rhythmbox 0.7.0
 ======================================
 
-* Buffering progress now uses bottom progress bar [Colin Walters]
+(includes all changes made since Rhythmbox 0.6.0)
+
+* Support for GStreamer-based metadata [Colin Walters]
+* Initial tag editing work [Colin Walters]
+* Adaptive ratings [Michael Terry]
+* Create automatic playlists via drag and drop from browsers [Jonatan Magnusson]
+* Editing of automatic playlists [Colin Walters]
+* Song info dialog cleanups [Colin Walters]
+* Automatically scroll view while dragging [Yann Rouillard]
+* Fix sorting by genre [Colin Walters]
+* Lots of playback order fixes and speedups [Jeffrey Yasskin]
+* Some MacOS X work [Jeffrey Yasskin]
+* Use new GtkFileChooser if available [Sriram Ramkrishna]
+* Internet radio buffering progress now uses bottom progress bar [Colin Walters]
+* Correctly remember state for Import Folder dialog [Colin Walters]
+* Lots more error checking for playback [Colin Walters]
+* New "equals" criteria for automatic playlists [Colin Walters]
+* New default iradio station list [Colin Walters, Jeffrey Yasskin, Joseph Wilhelm]
+* Default CFLAGS warning bits stolen from gnome-keyring [Colin Walters]
+* More C89 fixes [Scott Wheeler]
+* General code cleanup [Colin Walters, Christophe Fergeau, Jeffrey Yasskin]
+* Misc bugfixes [Colin Walters, Christophe Fergeau, Jefferey Yasskin]
+
+Overview of Changes in Rhythmbox 0.6.5
+======================================
+
+* Work with session management [Matt Hughes]
+* Improved dashboard support [Lee Willis]
+* Fix length calculation for some VBR MP3s [Christophe Fergeau]
+* Jump to songs added via commandline [Colin Walters]
+* Avoid segfaults with some commandline bits [Colin Walters]
+* Fix volume popup near bottom of screen [Johnathan Taylor]
+* Update Bonobo interface for play order work [Colin Walters]
+* Avoid some unlikely but possible use of freed strings [Colin Walters]
+* Fix compilation with G_DISABLE_ASSERT [Colin Walters]
+* Correctly encode URIs when upgrading from 0.5.x [Colin Walters]
+* Fix changing sorting with active genre/artist filtering [Colin Walters]
+
+Overview of Changes in Rhythmbox 0.6.4
+======================================
+
+* Add audio/x-flac as a known MIME type for FLAC [Colin Walters]
+* Dashboard is disabled by default due to compilation problems on some machines [Colin Walters]
+* Remove applicable filtering when genre/artist/album filter is hidden in the prefs [Colin Walters]
+* Don't crash when using --print-playing with internet radio [Colin Walters]
+* Update GStreamer player to handle changes in GStreamer 0.7 [Colin Walters]
+* Don't send ourselves SIGINT on a g_warning if not in debug mode [Colin Walters]
+* Make file chooser dialog resizable [Colin Walters]
+* Don't try to use multimedia keys if we only have XSun [Colin Walters]
+
+Overview of Changes in Rhythmbox 0.6.3
+======================================
+
+* Dashboard integration [Lee Willis]
+* Fix crash with Xine backend [Bastien Nocera]
+* Don't require pkgconfig file for id3tag [Colin Walters]
+* Don't crash on trying to play directories [Colin Walters]
+* GCC-2.95 compile fixes [Kaj-Michael Lang]
+
+Overview of Changes in Rhythmbox 0.6.2
+======================================
+
+* Use better algorithms for Shuffle and Repeat [Jeffrey Yasskin]
+* Playlist fixes; make .m3u work [Colin Walters, Bastien Nocera]
+* Make Xine backend use less memory [Bastien Nocera]
+* Fix length parsing from variable-bitrate MP3s [Bastien Nocera]
+* Don't crash adding a station with a duplicate location [Colin Walters]
+* Fix race condition in library searching [Colin Walters]
+* Actually implement Quality column [Colin Walters]
+* Fix usage of G_PARAM_CONSTRUCT_ONLY [Jan Arne Petersen]
+* Change default Korean legacy charset to UHC [Cha Young-Ho]
+* Check libid3tag version [Bastien Nocera]
+* Work around scrollkeeper XML parsing bug [Jordi Mallach]
+* Distcheck fixes [Colin Walters]
 
 Overview of Changes in Rhythmbox 0.6.1
 ======================================
