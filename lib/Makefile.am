@@ -9,6 +9,8 @@ librb_la_SOURCES =					\
 	rb-dialog.h					\
 	rb-file-helpers.c				\
 	rb-file-helpers.h				\
+	rb-file-monitor.c				\
+	rb-file-monitor.h				\
 	rb-bonobo-helpers.c				\
 	rb-bonobo-helpers.h				\
 	rb-glade-helpers.c				\

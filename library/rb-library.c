@@ -30,11 +30,9 @@
 #include "rb-library-xml-thread.h"
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
-#include "rb-library-preferences.h"
 #include "rb-node-song.h"
 #include "rb-debug.h"
 #include "rb-file-helpers.h"
-#include "eel-gconf-extensions.h"
 
 static void rb_library_class_init (RBLibraryClass *klass);
 static void rb_library_init (RBLibrary *library);
@@ -316,39 +314,11 @@ rb_library_save (RBLibrary *library)
 }
 
 static void
-push_base_folder (RBLibrary *library)
-{
-	char *base_folder;
-	
-	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
-	rb_library_action_queue_add (library->priv->walker_queue,
-				     FALSE,
-				     RB_LIBRARY_ACTION_ADD_DIRECTORY,
-				     base_folder);
-	g_free (base_folder);
-}
-
-static void
-pref_changed_cb (GConfClient *client,
-		 guint cnxn_id,
-		 GConfEntry *entry,
-		 RBLibrary *library)
-{
-	push_base_folder (library);
-}
-
-static void
 xml_thread_done_loading_cb (RBLibraryXMLThread *thread,
 			    RBLibrary *library)
 {
 	g_object_unref (G_OBJECT (library->priv->xml_thread));
 	library->priv->xml_thread = NULL;
-
-	eel_gconf_notification_add (CONF_LIBRARY_BASE_FOLDER,
-				    (GConfClientNotifyFunc) pref_changed_cb,
-				    library);
-
-	push_base_folder (library);
 }
 
 RBLibraryActionQueue *

@@ -1,5 +1,32 @@
 2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/glade/music-folders.glade:
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-library-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/rb-file-monitor.c: (rb_file_monitor_get_type),
+	(rb_file_monitor_class_init), (handle_free),
+	(rb_file_monitor_init), (rb_file_monitor_finalize),
+	(rb_file_monitor_new), (monitor_callback), (rb_file_monitor_add),
+	(rb_file_monitor_remove), (rb_file_monitor_get):
+	* lib/rb-file-monitor.h:
+	* library/rb-library-main-thread.c: (file_changed_cb),
+	(file_removed_cb), (rb_library_main_thread_init), (thread_main):
+	* library/rb-library.c: (xml_thread_done_loading_cb):
+	* library/rb-node-song.c: (rb_node_song_update_if_newer):
+
+	Hide prefs for now since there's no use for base folder atm
+	(no ripping etc yet), only file to get files into your lib
+	is by "Add to library" (which also supports dirs now).
+	Files will be monitored by the new RBFileMonitor, which tries
+	to make use of GnomeVFSMonitor stuff as efficiently as possible.
+
+	Olivier, please make use of RBFileMonitor also for the songinfo
+	dialog.
+
+2002-08-13  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/rhythmbox-ui.xml.in:
 	* shell/rb-shell.c: (rb_shell_cmd_add_to_library):
 

@@ -287,7 +287,7 @@ rb_node_song_update_if_newer (RBNode *node,
 			      "mtime",
 			      &value);
 
-	if (info->mtime > g_value_get_long (&value))
+	if (info->mtime != g_value_get_long (&value))
 		rb_node_song_sync (node, library);
 	
 	gnome_vfs_file_info_unref (info);

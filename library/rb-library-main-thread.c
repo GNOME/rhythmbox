@@ -20,6 +20,7 @@
 
 #include "rb-library-main-thread.h"
 #include "rb-node-song.h"
+#include "rb-file-monitor.h"
 
 static void rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass);
 static void rb_library_main_thread_init (RBLibraryMainThread *thread);
@@ -101,11 +102,42 @@ rb_library_main_thread_class_init (RBLibraryMainThreadClass *klass)
 }
 
 static void
+file_changed_cb (RBFileMonitor *monitor,
+		 const char *uri,
+		 RBLibraryMainThread *thread)
+{
+	rb_library_action_queue_add (rb_library_get_main_queue (thread->priv->library),
+				     TRUE,
+				     RB_LIBRARY_ACTION_UPDATE_FILE,
+				     uri);
+}
+
+static void
+file_removed_cb (RBFileMonitor *monitor,
+		 const char *uri,
+		 RBLibraryMainThread *thread)
+{
+	rb_library_action_queue_add (rb_library_get_main_queue (thread->priv->library),
+				     TRUE,
+				     RB_LIBRARY_ACTION_REMOVE_FILE,
+				     uri);
+}
+
+static void
 rb_library_main_thread_init (RBLibraryMainThread *thread)
 {
 	thread->priv = g_new0 (RBLibraryMainThreadPrivate, 1);
 
 	thread->priv->lock = g_mutex_new ();
+
+	g_signal_connect (G_OBJECT (rb_file_monitor_get ()),
+			  "file_changed",
+			  G_CALLBACK (file_changed_cb),
+			  thread);
+	g_signal_connect (G_OBJECT (rb_file_monitor_get ()),
+			  "file_removed",
+			  G_CALLBACK (file_removed_cb),
+			  thread);
 }
 
 static void
@@ -223,6 +255,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 					song = rb_node_new (RB_NODE_TYPE_SONG);
 					rb_node_song_set_location (song, uri, priv->library);
 				}
+
+				rb_file_monitor_add (rb_file_monitor_get (), uri);
 				break;
 			case RB_LIBRARY_ACTION_UPDATE_FILE:
 				{
@@ -234,6 +268,9 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 
 					rb_node_song_update_if_newer (song, priv->library);
 				}
+
+				/* just to be sure */
+				rb_file_monitor_add (rb_file_monitor_get (), uri);
 				break;
 			case RB_LIBRARY_ACTION_REMOVE_FILE:
 				{
@@ -245,6 +282,8 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 
 					rb_node_unref (song);
 				}
+
+				rb_file_monitor_remove (rb_file_monitor_get (), uri);
 				break;
 			default:
 				break;
