@@ -73,8 +73,10 @@ cddb_disclosure_destroy (GtkObject *obj)
 {
 	CDDBDisclosure *disclosure = CDDB_DISCLOSURE (obj);
 
-	if (disclosure->priv->expand_id)
+	if (disclosure->priv->expand_id) {
 		g_source_remove (disclosure->priv->expand_id);
+		disclosure->priv->expand_id = 0;
+	}
 }
 
 static void
@@ -194,6 +196,9 @@ expand_collapse_timeout (gpointer data)
 		ret = FALSE;
 	} 
 
+	if (ret == FALSE)
+		disclosure->priv->expand_id = 0;
+
 	GDK_THREADS_LEAVE ();
 	return ret;
 }
@@ -206,6 +211,7 @@ do_animation (CDDBDisclosure *disclosure,
 
 	if (disclosure->priv->expand_id > 0) {
 		g_source_remove (disclosure->priv->expand_id);
+		disclosure->priv->expand_id = 0;
 	}
 
 	disclosure->priv->direction = opening ? 1 : -1;
