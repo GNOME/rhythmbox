@@ -22,6 +22,7 @@
 
 #ifdef HAVE_XINE
 #include <xine.h>
+#include <string.h>
 #include <math.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 
@@ -308,6 +309,8 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	xine_init (mp->priv->xine);
 
 	audio_driver = monkey_media_get_audio_driver ();
+	if (audio_driver == NULL)
+		audio_driver = "auto";
 
 	if (strcmp (audio_driver, "null") == 0) {
 		mp->priv->audio_driver = NULL;
@@ -342,7 +345,11 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	xine_event_create_listener_thread (mp->priv->event_queue,
 					   (xine_event_listener_cb_t) xine_event, mp);
 
-	mp->priv->volume = xine_get_param (mp->priv->stream, XINE_PARAM_AUDIO_VOLUME);
+	xine_config_register_range (mp->priv->xine,
+				    "misc.amp_level",
+				    50, 0, 100, "amp volume level",
+				    NULL, 10, NULL, NULL);
+	mp->priv->volume = -1;
 
 	mp->priv->timer = g_timer_new ();
 	g_timer_stop (mp->priv->timer);
@@ -533,12 +540,12 @@ monkey_media_player_playing (MonkeyMediaPlayer *mp)
 static gboolean
 can_set_volume (MonkeyMediaPlayer *mp)
 {
-	if (xine_get_param (mp->priv->stream, XINE_PARAM_AUDIO_VOLUME) == -1)
+	if (mp->priv->audio_driver == NULL)
 		return FALSE;
 	if (xine_get_param (mp->priv->stream, XINE_PARAM_AUDIO_CHANNEL_LOGICAL) == -2)
 		return FALSE;
 
-	return xine_get_stream_info (mp->priv->stream, XINE_STREAM_INFO_HAS_AUDIO);
+	return TRUE;
 }
 
 void
@@ -553,7 +560,7 @@ monkey_media_player_set_volume (MonkeyMediaPlayer *mp,
 			return;
 
 		if (!mp->priv->mute) {
-			xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_VOLUME,
+			xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_AMP_LEVEL,
 					CLAMP (volume * 100, 0, 100));
 		}
 	}

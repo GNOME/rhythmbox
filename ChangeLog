@@ -1,5 +1,12 @@
 2003-07-31  Bastien Nocera  <hadess@hadess.net>
 
+	* monkey-media/monkey-media-player-xine.c:
+	(monkey_media_player_construct), (can_set_volume),
+	(monkey_media_player_set_volume): fix getting and setting the volume
+	(ie. don't use the system volume, but an internal amp)
+
+2003-07-31  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-shell.c: (rb_shell_finalize): destroy the main shell
 	window on exit, so that the MonkeyMediaPlayer is as well, and
 	the xine config saved
