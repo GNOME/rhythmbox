@@ -239,20 +239,51 @@ rb_windows_ini_file_get_sections (RBWindowsINIFile *inifile)
 GList *
 rb_windows_ini_file_get_keys (RBWindowsINIFile *inifile, const char *section)
 {
-	GHashTable *values = g_hash_table_lookup (inifile->priv->sections, section);
+	GHashTable *values;
+	char *lowerkey;
+	GList *ret;
+	g_return_val_if_fail (g_utf8_validate (section, -1, NULL), NULL);
+	lowerkey = g_utf8_strdown (section, -1);
+	values = g_hash_table_lookup (inifile->priv->sections, section);
+	g_free (lowerkey);
 	g_return_val_if_fail (values != NULL, NULL);
-	return hash_table_keys (values);
+	ret = hash_table_keys (values);
+	return ret;
 }
 
 const char *
 rb_windows_ini_file_lookup (RBWindowsINIFile *inifile, const char *section, const char *key)
 {
-	GHashTable *values = g_hash_table_lookup (inifile->priv->sections, section);
-	char *ret;
+	GHashTable *values;
+	char *lowerkey, *ret;
+	g_return_val_if_fail (g_utf8_validate (section, -1, NULL), NULL);
+	lowerkey = g_utf8_strdown (section, -1);
+	values = g_hash_table_lookup (inifile->priv->sections, section);
+	g_free (lowerkey);
 	g_return_val_if_fail (values != NULL, NULL);
-	ret = g_hash_table_lookup (values, key);
-	g_return_val_if_fail (ret != NULL, NULL);
+	g_return_val_if_fail (g_utf8_validate (key, -1, NULL), NULL);
+	lowerkey = g_utf8_strdown (key, -1);
+	ret = g_hash_table_lookup (values, lowerkey);
+	g_free (lowerkey);
 	return ret;
+}
+
+static void
+rb_windows_ini_file_unicodify (char **str)
+{
+	char *ret;
+	int bytes_read, bytes_written;
+	if (g_utf8_validate (*str, -1, NULL))
+		return;
+	/* The defacto encoding for Windows ini files seem to default
+	 * to iso-8859-1 */
+	ret = g_convert (*str, strlen (*str), "UTF-8", "ISO-8859-1",
+			 &bytes_read, &bytes_written, NULL);
+	/* Failing that, try the locale's encoding. */
+	if (!ret)
+		ret = g_locale_to_utf8 (*str, strlen (*str), &bytes_read, &bytes_written, NULL);
+	g_free (*str);
+	*str = ret;
 }
 
 static void
@@ -280,15 +311,22 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 		if (c == '[')
 		{
 			int size = 0;
+			char *tmp;
 			cursection = NULL;
 			if (getstr (&cursection, &size, stream, ']', 0, 0) < 0)
 			{
 				errmsg = g_strdup ("Missing terminating ]");
 				goto lose;
 			}
-			/* Trim the ']' */
+			/* Trim the ']', and lowercase */
 			cursection = g_strstrip (cursection);
 			cursection[strlen(cursection)-1] = '\0';
+			rb_windows_ini_file_unicodify (&cursection);
+			if (!cursection)
+				goto bad_encoding;
+			tmp = g_utf8_strdown (cursection, -1);
+			g_free (cursection);
+			cursection = tmp;
 
 			cursectionhash = g_hash_table_new_full (g_str_hash, g_str_equal,
 								rb_windows_ini_file_free_hash_string,
@@ -302,21 +340,32 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 			int size = 0;
 			char *curident = NULL;
 			char *curvalue = NULL;
+			char *tmp;
 			ungetc (c, stream);
 			if (getstr (&curident, &size, stream, '=', 0, 0) < 0)
 			{
 				errmsg = g_strdup ("Missing = after identifier");
 				goto lose;
 			}
-			/* Trim the '=' */
+			/* Trim the '=', and lowercase */
 			curident = g_strstrip (curident);
 			curident[strlen(curident)-1] = '\0';
+			rb_windows_ini_file_unicodify (&curident);
+			if (!cursection)
+				goto bad_encoding;
+			tmp = g_utf8_strdown (curident, -1);
+			g_free (curident);
+			curident = tmp;
+
 			size = 0;
 			if (getstr (&curvalue, &size, stream, '\n', 0, 0) < 0)
 			{
 				errmsg = g_strdup ("Missing newline after value");
 				goto lose;
 			}
+			rb_windows_ini_file_unicodify (&curvalue);
+			if (!cursection)
+				goto bad_encoding;
 			g_hash_table_insert (cursectionhash ? cursectionhash : defaulthash, curident, curvalue);
 		}
 		else
@@ -329,6 +378,8 @@ rb_windows_ini_file_parse_from_stream (RBWindowsINIFile *inifile,
 	
 	
 	return;
+bad_encoding:
+	errmsg = g_strdup ("Unable to determine file encoding");
 lose:
 	fprintf (stderr, _("Unable to parse %s: %s\n"), inifile->priv->filename, errmsg);
 /*  	rb_error_dialog (_("Unable to parse %s\n"), inifile->priv->filename);  */
