@@ -953,41 +953,48 @@ update_musicbrainz_info_thread (RBAudiocdView *view)
 
                 g_assert (info != NULL);
        
-                monkey_media_stream_info_get_value (info,
-                                                    MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
-                                                    0,
-                                                    &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_SONG_PROP_ARTIST,
-                                      &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
-                                      &value);
-                g_value_unset (&value);
+                if (monkey_media_stream_info_get_value (info, 
+                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST, 
+                                                        0, 
+                                                        &value))
+                {
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_SONG_PROP_ARTIST,
+                                              &value);
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_SONG_PROP_ARTIST_SORT_KEY,
+                                              &value);
+                        g_value_unset (&value);
+                }
        
-                monkey_media_stream_info_get_value (info,
-                                                    MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
-                                                    0,
-                                                    &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_SONG_PROP_ALBUM,
-                                      &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
-                                      &value); 
-                g_value_unset (&value);
+                if (monkey_media_stream_info_get_value (info, 
+                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM, 
+                                                        0, 
+                                                        &value))
+                {
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_SONG_PROP_ALBUM,
+                                              &value);
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_SONG_PROP_ALBUM_SORT_KEY,
+                                              &value); 
+                        g_value_unset (&value);
+                }
+                
        
-                monkey_media_stream_info_get_value (info,
-                                                    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
-                                                    0,
-                                                    &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_PROP_NAME,
-                                      &value);
-                rb_node_set_property (RB_NODE (track),
-                                      RB_NODE_PROP_NAME_SORT_KEY,
-                                      &value);
-                g_value_unset (&value);
+                if (monkey_media_stream_info_get_value (info,
+                                                        MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+                                                        0,
+                                                        &value))
+                {
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_PROP_NAME,
+                                              &value);
+                        rb_node_set_property (RB_NODE (track),
+                                              RB_NODE_PROP_NAME_SORT_KEY,
+                                              &value);
+                        g_value_unset (&value);
+                }
         }
         printf ("About to exit thread\n");
         g_thread_exit (NULL);
