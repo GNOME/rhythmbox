@@ -252,8 +252,9 @@ append_ellipsized_text (const char *text,
 	         (position > data->end_offset &&
 	          new_position > data->end_offset))
 	{
-		g_string_append (data->string, 
-				text);
+		escaped = g_markup_escape_text (text, strlen (text));
+		g_string_append (data->string, escaped);
+		g_free (escaped);
 	}
 	else if (position <= data->start_offset &&
 		 new_position >= data->end_offset)
@@ -265,8 +266,7 @@ append_ellipsized_text (const char *text,
 			g_free (escaped);
 		}
 
-		g_string_append (data->string, 
-				 ELLIPSIS);
+		g_string_append (data->string, ELLIPSIS);
 		
 		if (new_position > data->end_offset)
 		{
