@@ -94,6 +94,7 @@ rb_debug_init (gboolean debug)
 		"GLib-GObject",
 		"GModule",
 		"GThread",
+		"GStreamer",
 		"Gdk",
 		"Gdk-Pixbuf",
 		"GdkPixbuf",
@@ -121,10 +122,9 @@ rb_debug_init (gboolean debug)
 
 	debugging = debug;
 
-	for (i = 0; i < G_N_ELEMENTS (standard_log_domains); i++)
-	{
-		g_log_set_handler (standard_log_domains[i], G_LOG_LEVEL_MASK, log_handler, NULL);
-	}
+	if (debugging)
+		for (i = 0; i < G_N_ELEMENTS (standard_log_domains); i++)
+			g_log_set_handler (standard_log_domains[i], G_LOG_LEVEL_MASK, log_handler, NULL);
 
 	rb_debug ("Debugging enabled");
 }
