@@ -503,8 +503,11 @@ rb_player_sync (RBPlayer *player)
 				*tmp = '|';
 			tmp = ALBUM_INFO_URL (s);
 			g_free (s);
+
 			gnome_href_set_url (player->priv->displaybox->album, tmp);
-			gnome_href_set_text (player->priv->displaybox->album, album);
+			escaped = g_markup_escape_text (album, -1);
+			gnome_href_set_text (player->priv->displaybox->album, escaped);
+			g_free (escaped);
 			g_free (tmp);
 
 			s = tmp = g_strdup (artist);
@@ -515,7 +518,9 @@ rb_player_sync (RBPlayer *player)
 			tmp = ARTIST_INFO_URL (s);
 			g_free (s);
 			gnome_href_set_url (player->priv->displaybox->artist, tmp);
-			gnome_href_set_text (player->priv->displaybox->artist, artist);
+			escaped = g_markup_escape_text (artist, -1);
+			gnome_href_set_text (player->priv->displaybox->artist, escaped);
+			g_free (escaped);
 			g_free (tmp);
 		}
 
