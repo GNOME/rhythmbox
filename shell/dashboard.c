@@ -67,7 +67,6 @@ dashboard_connect_with_timeout (int  *fd,
 
 			if (errno != EAGAIN &&
 			    errno != EINPROGRESS) {
-				perror ("Dashboard: connect");
 				return 0;
 			}
 				
@@ -155,8 +154,6 @@ dashboard_send_raw_cluepacket (const char *rawcluepacket)
 	int fd;
 	GIOChannel *channel;
 	CluepacketInfo *info;
-
-	fprintf (stderr, "Dashboard: Sending cluepacket...\n");
 
 	/* Connect. */
 	if (! dashboard_connect_with_timeout (&fd, 200000))
