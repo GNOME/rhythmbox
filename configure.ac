@@ -14,6 +14,8 @@ AM_PROG_LIBTOOL
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
+ACLOCAL="$ACLOCAL -I macros"
+
 if test x"$GCC" = "xyes"; then
 AC_MSG_CHECKING([gcc argument to enable C99])
 saved_CFLAGS="$CFLAGS"
