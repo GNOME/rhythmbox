@@ -1,3 +1,21 @@
+2002-07-02  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-sidebar.c: (rb_sidebar_init):
+	* library/rb-library-watcher.c: (rb_library_watcher_monitor_cb),
+	(rb_library_watcher_insert_file), (rb_library_watcher_change_file):
+	* library/rb-library.c: (rb_library_init),
+	(rb_library_update_node), (rb_library_load),
+	(rb_library_node_destroyed_cb), (rb_library_timeout_cb),
+	(rb_library_timeout_process_changed_node),
+	(rb_library_timeout_process_new_node),
+	(rb_library_thread_check_died),
+	(rb_library_thread_process_new_file),
+	(rb_library_thread_process_changed_file), (rb_library_thread_main):
+	* views/rb-group-view.c: (rb_group_view_finalize):
+
+	Fix leak in groups, some sidebar aesthethic improvements,
+	some file change fixing.
+
 2002-07-01  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/ui/rhythmbox-group-view.xml.in:

@@ -10,10 +10,14 @@ Bugs:
 * Check where slowness comes from -- the xml loading and
   tree building only takes like 1 sec.
 * Sometimes crash on exit? (gnome_vfs_shutdown prob)
+* We don't unref the mixer atm (see above)
 
-* Don't update nodes from thread [0.3]
 * Sidebar DND is broken [0.3]
 * Sidebar entry is too big [0.3]
+* Do mtime checking when adding watched dir and file is already in lib [0.3]
+* Changing files while rb is running is still horked, esp when changing
+  artist/album/genre.
+* If an artist has album kid without grandchildren needs to begone
 
 Features:
 ---------
@@ -21,6 +25,9 @@ Features:
 * Smart column sizing
 * View->Show shortcut bar [0.3]
 * Save paned position [0.3]
+* Stop button?????????????? [0.3]
+* Start playing from selection? [0.3]
+
 
 Open tasks:
 ===========

@@ -54,10 +54,14 @@ static void rb_library_node_destroyed_cb (RBNode *node,
 static gboolean rb_library_timeout_cb (RBLibrary *library);
 static gpointer rb_library_thread_main (RBLibraryPrivate *library);
 static void rb_library_thread_check_died (RBLibraryPrivate *priv);
-static void rb_library_thread_process_new_song (RBLibraryPrivate *priv,
+static void rb_library_thread_process_new_file (RBLibraryPrivate *priv,
 				                char *file);
-static void rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
+static void rb_library_thread_process_changed_file (RBLibraryPrivate *priv,
 				                    RBNode *node);
+static void rb_library_timeout_process_new_node (RBLibrary *library,
+				                 RBNode *node);
+static void rb_library_timeout_process_changed_node (RBLibrary *library,
+					             RBNode *node);
 
 struct RBLibraryPrivate
 {
@@ -78,11 +82,17 @@ struct RBLibraryPrivate
 	GMutex *new_files_lock;
 	GList *new_files;
 
-	GMutex *changed_nodes_lock;
-	GList *changed_nodes;
+	GMutex *changed_files_lock;
+	GList *changed_files;
 
 	GMutex *new_nodes_lock;
 	GList *new_nodes;
+
+	GMutex *changed_nodes_lock;
+	GList *changed_nodes;
+
+	GMutex *killed_nodes_lock;
+	GList *killed_nodes;
 
 	GMutex *thread_lock;
 	GThread *thread;
@@ -160,8 +170,10 @@ rb_library_init (RBLibrary *library)
 
 	library->priv->thread_lock = g_mutex_new ();
 	library->priv->new_files_lock = g_mutex_new ();
-	library->priv->changed_nodes_lock = g_mutex_new ();
+	library->priv->changed_files_lock = g_mutex_new ();
 	library->priv->new_nodes_lock = g_mutex_new ();
+	library->priv->changed_nodes_lock = g_mutex_new ();
+	library->priv->killed_nodes_lock = g_mutex_new ();
 
 	library->priv->xml_file = g_build_filename (rb_dot_dir (),
 						    "library.xml",
@@ -298,13 +310,13 @@ rb_library_update_node (RBLibrary *library,
 			RBNode *node)
 {
 	rb_debug ("rb_library_update_node: waiting lock");
-	g_mutex_lock (library->priv->changed_nodes_lock);
+	g_mutex_lock (library->priv->changed_files_lock);
 	rb_debug ("rb_library_update_node: obtained lock");
 	
-	library->priv->changed_nodes = g_list_append (library->priv->changed_nodes, node);
+	library->priv->changed_files = g_list_append (library->priv->changed_files, node);
 
 	rb_debug ("rb_library_update_node: releasing lock");
-	g_mutex_unlock (library->priv->changed_nodes_lock);
+	g_mutex_unlock (library->priv->changed_files_lock);
 	rb_debug ("rb_library_update_node: released lock");
 }
 
@@ -390,7 +402,7 @@ rb_library_load (RBLibrary *library)
 	if (doc == NULL)
 		return;
 
-	g_mutex_lock (library->priv->changed_nodes_lock);
+	g_mutex_lock (library->priv->changed_files_lock);
 
 	for (child = doc->children->children; child != NULL; child = child->next)
 	{
@@ -437,7 +449,7 @@ rb_library_load (RBLibrary *library)
 					     g_strdup (g_value_get_string (&value)), node);
 			g_value_unset (&value);
 
-			library->priv->changed_nodes = g_list_append (library->priv->changed_nodes,
+			library->priv->changed_files = g_list_append (library->priv->changed_files,
 								      node);
 			break;
 		default:
@@ -451,7 +463,7 @@ rb_library_load (RBLibrary *library)
 					 0);
 	}
 
-	g_mutex_unlock (library->priv->changed_nodes_lock);
+	g_mutex_unlock (library->priv->changed_files_lock);
 
 	xmlFreeDoc (doc);
 }
@@ -553,9 +565,52 @@ rb_library_node_destroyed_cb (RBNode *node,
 		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_SONG:
+		if (g_list_find (library->priv->changed_files, node) != NULL)
+		{
+			g_mutex_lock (library->priv->changed_files_lock);
+			library->priv->changed_files = g_list_remove (library->priv->changed_files, node);
+			g_mutex_unlock (library->priv->changed_files_lock);
+		}
+
 		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
 		g_hash_table_remove (library->priv->file_to_node, g_value_get_string (&value));
+		if (g_list_find (library->priv->new_files, g_value_get_string (&value)))
+		{
+			g_mutex_lock (library->priv->new_files_lock);
+			library->priv->new_files = g_list_remove (library->priv->new_files, node);
+			g_mutex_unlock (library->priv->new_files_lock);
+		}
 		g_value_unset (&value);
+
+		if (g_list_find (library->priv->changed_nodes, node) != NULL)
+		{
+			GValue *value;
+
+			g_mutex_lock (library->priv->changed_nodes_lock);
+			library->priv->changed_nodes = g_list_remove (library->priv->changed_nodes, node);
+			g_mutex_unlock (library->priv->changed_nodes_lock);
+			
+			value = g_object_get_data (G_OBJECT (node), "track-number");
+			g_value_unset (value);
+			g_free (value);
+
+			value = g_object_get_data (G_OBJECT (node), "duration");
+			g_value_unset (value);
+			g_free (value);
+
+			value = g_object_get_data (G_OBJECT (node), "file-size");
+			g_value_unset (value);
+			g_free (value);
+
+			value = g_object_get_data (G_OBJECT (node), "title");
+			g_value_unset (value);
+			g_free (value);
+
+			value = g_object_get_data (G_OBJECT (node), "mtime");
+			g_value_unset (value);
+			g_free (value);
+		}
+
 		break;
 	default:
 		break;
@@ -567,19 +622,100 @@ rb_library_timeout_cb (RBLibrary *library)
 {
 	GList *list;
 	RBNode *node;
+
+	if (library->priv->killed_nodes != NULL)
+	{
+		GList *l;
+
+		g_mutex_lock (library->priv->killed_nodes_lock);
+
+		for (l = library->priv->killed_nodes; l != NULL; l = g_list_next (l))
+		{
+			g_object_unref (G_OBJECT (l->data));
+		}
+		g_list_free (library->priv->killed_nodes);
+		library->priv->killed_nodes = NULL;
+
+		g_mutex_unlock (library->priv->killed_nodes_lock);
+	}
+
+	if (library->priv->new_nodes != NULL)
+	{
+		list = g_list_first (library->priv->new_nodes);
+		node = RB_NODE (list->data);
+
+		rb_library_timeout_process_new_node (library, node);
+
+		return TRUE;
+	}
+
+	if (library->priv->changed_nodes != NULL)
+	{
+		list = g_list_first (library->priv->changed_nodes);
+		node = RB_NODE (list->data);
+
+		rb_library_timeout_process_changed_node (library, node);
+
+		return TRUE;
+	}
+
+	return TRUE;
+}
+
+static void
+rb_library_timeout_process_changed_node (RBLibrary *library,
+					 RBNode *node)
+{
+	GValue *value;
+	
+	rb_debug ("rb_library_timeout_cb: waiting lock");
+	g_mutex_lock (library->priv->changed_nodes_lock);
+	rb_debug ("rb_library_timeout_cb: obtained lock");
+
+	library->priv->changed_nodes = g_list_remove (library->priv->changed_nodes, node);
+
+	rb_debug ("rb_library_timeout_cb: releasing lock");
+	g_mutex_unlock (library->priv->changed_nodes_lock);
+	rb_debug ("rb_library_timeout_cb: released lock");
+
+	value = g_object_get_data (G_OBJECT (node), "track-number");
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_TRACK_NUMBER, value);
+	g_value_unset (value);
+	g_free (value);
+
+	value = g_object_get_data (G_OBJECT (node), "duration");
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_DURATION, value);
+	g_value_unset (value);
+	g_free (value);
+
+	value = g_object_get_data (G_OBJECT (node), "file-size");
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, value);
+	g_value_unset (value);
+	g_free (value);
+
+	value = g_object_get_data (G_OBJECT (node), "title");
+	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, value);
+	g_value_unset (value);
+	g_free (value);
+
+	value = g_object_get_data (G_OBJECT (node), "mtime");
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_MTIME, value);
+	g_value_unset (value);
+	g_free (value);
+}
+	
+static void
+rb_library_timeout_process_new_node (RBLibrary *library,
+				     RBNode *node)
+{
 	char *artist, *album, *genre, *file;
 	RBNode *genre_node, *artist_node, *album_node;
 	GValue value = { 0, };
-
-	if (library->priv->new_nodes == NULL)
-		return TRUE;
 
 	rb_debug ("rb_library_timeout_cb: waiting lock");
 	g_mutex_lock (library->priv->new_nodes_lock);
 	rb_debug ("rb_library_timeout_cb: obtained lock");
 
-	list = g_list_first (library->priv->new_nodes);
-	node = RB_NODE (list->data);
 	library->priv->new_nodes = g_list_remove (library->priv->new_nodes, node);
 
 	rb_debug ("rb_library_timeout_cb: releasing lock");
@@ -609,7 +745,7 @@ rb_library_timeout_cb (RBLibrary *library)
 		g_free (artist);
 		g_free (album);
 		g_free (file);
-		return TRUE;
+		return;
 	}
 	
 	g_hash_table_insert (library->priv->file_to_node, file, node);
@@ -634,6 +770,12 @@ rb_library_timeout_cb (RBLibrary *library)
 		rb_node_add_child (library->priv->all_genres, genre_node);
 		
 		g_hash_table_insert (library->priv->genre_to_node, g_strdup (genre), genre_node);
+
+		g_signal_connect_object (G_OBJECT (genre_node),
+					 "destroyed",
+					 G_CALLBACK (rb_library_node_destroyed_cb),
+					 G_OBJECT (library),
+					 0);
 	}
 
 	if (artist_node == NULL)
@@ -650,6 +792,12 @@ rb_library_timeout_cb (RBLibrary *library)
 		rb_node_add_child (library->priv->all_artists, artist_node);
 		
 		g_hash_table_insert (library->priv->artist_to_node, g_strdup (artist), artist_node);
+
+		g_signal_connect_object (G_OBJECT (artist_node),
+					 "destroyed",
+					 G_CALLBACK (rb_library_node_destroyed_cb),
+					 G_OBJECT (library),
+					 0);
 	}
 
 	if (rb_node_has_child (genre_node, artist_node) == FALSE)
@@ -668,6 +816,12 @@ rb_library_timeout_cb (RBLibrary *library)
 		rb_node_add_child (library->priv->all_albums, album_node);
 		
 		g_hash_table_insert (library->priv->album_to_node, g_strdup (album), album_node);
+		
+		g_signal_connect_object (G_OBJECT (album_node),
+					 "destroyed",
+					 G_CALLBACK (rb_library_node_destroyed_cb),
+					 G_OBJECT (library),
+					 0);
 	}
 
 	if (rb_node_has_child (artist_node, album_node) == FALSE)
@@ -688,7 +842,7 @@ rb_library_timeout_cb (RBLibrary *library)
 	g_free (artist);
 	g_free (album);
 
-	return TRUE;
+	return;
 }
 
 static void
@@ -698,14 +852,20 @@ rb_library_thread_check_died (RBLibraryPrivate *priv)
 	{
 		rb_debug ("rb_library_thread_check_died: freeing new_files_lock");
 		g_mutex_free (priv->new_files_lock);
-		rb_debug ("rb_library_thread_check_died: freeing changed_nodes_lock");
-		g_mutex_free (priv->changed_nodes_lock);
+		rb_debug ("rb_library_thread_check_died: freeing changed_files_lock");
+		g_mutex_free (priv->changed_files_lock);
 		rb_debug ("rb_library_thread_check_died: freeing new_nodes_lock");
 		g_mutex_free (priv->new_nodes_lock);
+		rb_debug ("rb_library_thread_check_died: freeing changed_nodes_lock");
+		g_mutex_free (priv->changed_nodes_lock);
+		rb_debug ("rb_library_thread_check_died: freeing killed_nodes_lock");
+		g_mutex_free (priv->killed_nodes_lock);
 
 		g_list_free (priv->new_files);
-		g_list_free (priv->changed_nodes);
+		g_list_free (priv->changed_files);
 		g_list_free (priv->new_nodes);
+		g_list_free (priv->changed_nodes);
+		g_list_free (priv->killed_nodes);
 
 		g_mutex_unlock (priv->thread_lock);
 		g_mutex_free (priv->thread_lock);
@@ -717,7 +877,7 @@ rb_library_thread_check_died (RBLibraryPrivate *priv)
 }
 
 static void
-rb_library_thread_process_new_song (RBLibraryPrivate *priv,
+rb_library_thread_process_new_file (RBLibraryPrivate *priv,
 				    char *file)
 {
 	RBNode *node;
@@ -725,13 +885,13 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	MonkeyMediaStreamInfo *info;
 	GError *err = NULL;
 
-	rb_debug ("rb_library_thread_process_new_song: waiting lock #1");
+	rb_debug ("rb_library_thread_process_new_file: waiting lock #1");
 	g_mutex_lock (priv->new_files_lock);
-	rb_debug ("rb_library_thread_process_new_song: obtained lock #1");
+	rb_debug ("rb_library_thread_process_new_file: obtained lock #1");
 	priv->new_files = g_list_remove (priv->new_files, file);
-	rb_debug ("rb_library_thread_process_new_song: releasing lock #1");
+	rb_debug ("rb_library_thread_process_new_file: releasing lock #1");
 	g_mutex_unlock (priv->new_files_lock);
-	rb_debug ("rb_library_thread_process_new_song: released lock #1");
+	rb_debug ("rb_library_thread_process_new_file: released lock #1");
 
 	info = monkey_media_stream_info_new (file, &err);
 	if (err != NULL)
@@ -745,7 +905,7 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, file);
 	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
-	rb_debug ("rb_library_thread_process_new_song: set uri of song to %s", file);
+	rb_debug ("rb_library_thread_process_new_file: set uri of song to %s", file);
 	g_value_unset (&value);
 
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER, &value);
@@ -781,36 +941,35 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	g_object_set_data (G_OBJECT (node), "album", g_strdup (g_value_get_string (&value)));
 	g_value_unset (&value);
 
-	rb_debug ("rb_library_thread_process_new_song: waiting lock #2");
+	rb_debug ("rb_library_thread_process_new_file: waiting lock #2");
 	g_mutex_lock (priv->new_nodes_lock);
-	rb_debug ("rb_library_thread_process_new_song: obtained lock #2");
+	rb_debug ("rb_library_thread_process_new_file: obtained lock #2");
 	priv->new_nodes = g_list_append (priv->new_nodes, node);
-	rb_debug ("rb_library_thread_process_new_song: releasing lock #2");
+	rb_debug ("rb_library_thread_process_new_file: releasing lock #2");
 	g_mutex_unlock (priv->new_nodes_lock);
-	rb_debug ("rb_library_thread_process_new_song: released lock #2");
+	rb_debug ("rb_library_thread_process_new_file: released lock #2");
 
 	g_object_unref (G_OBJECT (info));
 	g_free (file);
 }
 
-/* FIXME! !!!!!!!!!!!!!!! */
 static void
-rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
+rb_library_thread_process_changed_file (RBLibraryPrivate *priv,
 				        RBNode *node)
 {
 	MonkeyMediaStreamInfo *info;
 	GError *error = NULL;
-	GValue value = { 0, };
+	GValue value = { 0, }, *value2;
 	char *node_prop;
 	gboolean need_reparent;
 
-	rb_debug ("rb_library_thread_process_changed_node: waiting lock #1");
-	g_mutex_lock (priv->changed_nodes_lock);
-	rb_debug ("rb_library_thread_process_changed_node: obtained lock #1");
-	priv->changed_nodes = g_list_remove (priv->changed_nodes, node);
-	rb_debug ("rb_library_thread_process_changed_node: releasing lock #1");
-	g_mutex_unlock (priv->changed_nodes_lock);
-	rb_debug ("rb_library_thread_process_changed_node: released lock #1");
+	rb_debug ("rb_library_thread_process_changed_file: waiting lock #1");
+	g_mutex_lock (priv->changed_files_lock);
+	rb_debug ("rb_library_thread_process_changed_file: obtained lock #1");
+	priv->changed_files = g_list_remove (priv->changed_files, node);
+	rb_debug ("rb_library_thread_process_changed_file: releasing lock #1");
+	g_mutex_unlock (priv->changed_files_lock);
+	rb_debug ("rb_library_thread_process_changed_file: released lock #1");
 
 	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
 	if (g_value_get_long (&value) == rb_node_song_get_real_mtime (node))
@@ -838,13 +997,15 @@ rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST, &value);
 	node_prop = rb_node_song_get_artist (node);
-	need_reparent = (strcmp (node_prop, g_value_get_string (&value)) != 0);
+	need_reparent = need_reparent ? need_reparent :
+		(strcmp (node_prop, g_value_get_string (&value)) != 0);
 	g_value_unset (&value);
 	g_free (node_prop);
 	
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM, &value);
 	node_prop = rb_node_song_get_album (node);
-	need_reparent = (strcmp (node_prop, g_value_get_string (&value)) != 0);
+	need_reparent = need_reparent ? need_reparent :
+		(strcmp (node_prop, g_value_get_string (&value)) != 0);
 	g_value_unset (&value);
 	g_free (node_prop);
 
@@ -856,7 +1017,9 @@ rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 		file = g_strdup (g_value_get_string (&value));
 		g_value_unset (&value);
 
-		g_object_unref (G_OBJECT (node));
+		g_mutex_lock (priv->killed_nodes_lock);
+		priv->killed_nodes = g_list_append (priv->killed_nodes, node);
+		g_mutex_unlock (priv->killed_nodes_lock);
 		
 		g_mutex_lock (priv->new_files_lock);
 		priv->new_files = g_list_append (priv->new_files, file);
@@ -865,27 +1028,30 @@ rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 		return;
 	}
 
-	/* sync "innocent" tags */
-	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER, &value);
-	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_TRACK_NUMBER, &value);
-	g_value_unset (&value);
+	value2 = g_new0 (GValue, 1);
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER, value2);
+	g_object_set_data (G_OBJECT (node), "track-number", value2);
 
-	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION, &value);
-	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
-	g_value_unset (&value);
+	value2 = g_new0 (GValue, 1);
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION, value2);
+	g_object_set_data (G_OBJECT (node), "duration", value2);
 
-	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE, &value);
-	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
-	g_value_unset (&value);
+	value2 = g_new0 (GValue, 1);
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE, value2);
+	g_object_set_data (G_OBJECT (node), "file-size", value2);
 	
-	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE, &value);
-	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, &value);
-	g_value_unset (&value);
+	value2 = g_new0 (GValue, 1);
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE, value2);
+	g_object_set_data (G_OBJECT (node), "title", value2);
 
-	g_value_init (&value, G_TYPE_LONG);
-	g_value_set_long (&value, rb_node_song_get_real_mtime (node));
-	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
-	g_value_unset (&value);
+	value2 = g_new0 (GValue, 1);
+	g_value_init (value2, G_TYPE_LONG);
+	g_value_set_long (value2, rb_node_song_get_real_mtime (node));
+	g_object_set_data (G_OBJECT (node), "mtime", value2);
+
+	g_mutex_lock (priv->changed_nodes_lock);
+	priv->changed_nodes = g_list_append (priv->changed_nodes, node);
+	g_mutex_unlock (priv->changed_nodes_lock);
 }
 
 static gpointer
@@ -904,17 +1070,17 @@ rb_library_thread_main (RBLibraryPrivate *priv)
 			
 			list = g_list_first (priv->new_files);
 			file = (char *) list->data;
-			rb_library_thread_process_new_song (priv, file);
+			rb_library_thread_process_new_file (priv, file);
 		}
 
-		if (priv->changed_nodes != NULL)
+		if (priv->changed_files != NULL)
 		{
 			GList *list;
 			RBNode *node;
 
-			list = g_list_first (priv->changed_nodes);
+			list = g_list_first (priv->changed_files);
 			node = RB_NODE (list->data);
-			rb_library_thread_process_changed_node (priv, node);
+			rb_library_thread_process_changed_file (priv, node);
 		}
 
 		g_mutex_unlock (priv->thread_lock);

@@ -51,6 +51,8 @@ static void rb_library_watcher_insert_file (RBLibraryWatcherPrivate *priv,
 				            const char *file);
 static void rb_library_watcher_remove_file (RBLibraryWatcherPrivate *priv,
 				            const char *file);
+static void rb_library_watcher_change_file (RBLibraryWatcherPrivate *priv,
+				            const char *file);
 static gpointer rb_library_watcher_thread_main (RBLibraryWatcherPrivate *priv);
 static gboolean rb_library_watcher_timeout_cb (RBLibraryWatcher *watcher);
 
@@ -298,16 +300,7 @@ rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 	case GNOME_VFS_MONITOR_EVENT_CHANGED:
 		if (directory == FALSE)
 		{
-			SignalInfo *signal;
-			
-			g_mutex_lock (priv->signals_lock);
-
-			signal = g_new0 (SignalInfo, 1);
-			signal->signal = rb_library_watcher_signals[FILE_CHANGED];
-			signal->file = g_strdup (info_uri);
-			priv->signals = g_list_append (priv->signals, signal);
-			
-			g_mutex_unlock (priv->signals_lock);
+			rb_library_watcher_change_file (priv, info_uri);
 		}
 		break;
 	case GNOME_VFS_MONITOR_EVENT_DELETED:
@@ -319,7 +312,19 @@ rb_library_watcher_monitor_cb (GnomeVFSMonitorHandle *handle,
 	case GNOME_VFS_MONITOR_EVENT_CREATED:
 		if (directory == FALSE)
 		{
-			rb_library_watcher_insert_file (priv, info_uri);
+			GnomeVFSURI *uri;
+
+			uri = gnome_vfs_uri_new (info_uri);
+			g_assert (uri != NULL);
+			if (g_hash_table_lookup (priv->files, uri) == NULL)
+			{
+				rb_library_watcher_insert_file (priv, info_uri);
+			}
+			else
+			{
+				rb_library_watcher_change_file (priv, info_uri);
+			}
+			gnome_vfs_uri_unref (uri);
 		}
 		else
 		{
@@ -423,6 +428,22 @@ rb_library_watcher_insert_file (RBLibraryWatcherPrivate *priv,
 	signal->file = g_strdup (file);
 	priv->signals = g_list_append (priv->signals, signal);
 		
+	g_mutex_unlock (priv->signals_lock);
+}
+
+static void
+rb_library_watcher_change_file (RBLibraryWatcherPrivate *priv,
+				const char *file)
+{
+	SignalInfo *signal;
+			
+	g_mutex_lock (priv->signals_lock);
+
+	signal = g_new0 (SignalInfo, 1);
+	signal->signal = rb_library_watcher_signals[FILE_CHANGED];
+	signal->file = g_strdup (file);
+	priv->signals = g_list_append (priv->signals, signal);
+			
 	g_mutex_unlock (priv->signals_lock);
 }
 

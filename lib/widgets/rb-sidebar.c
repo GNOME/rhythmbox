@@ -182,7 +182,7 @@ rb_sidebar_init (RBSidebar *bar)
 	gtk_widget_show (bar->priv->vbox);
 	
 	viewport = gtk_viewport_new (NULL, NULL);
-	gtk_viewport_set_shadow_type (GTK_VIEWPORT (viewport), GTK_SHADOW_IN);
+	gtk_viewport_set_shadow_type (GTK_VIEWPORT (viewport), GTK_SHADOW_ETCHED_IN);
 	g_signal_connect (G_OBJECT (viewport),
 			  "realize",
 			  G_CALLBACK (rb_sidebar_event_box_realize_cb),
@@ -192,8 +192,6 @@ rb_sidebar_init (RBSidebar *bar)
 
 	gtk_container_add (GTK_CONTAINER (bar->priv->event_box), bar->priv->vbox);
 	
-	gtk_container_set_border_width (GTK_CONTAINER (bar->priv->vbox), 4);
-
 	/* init dnd widgets */
 	bar->priv->dnd_hint = gtk_window_new (GTK_WINDOW_POPUP);
 	dnd_ebox = gtk_event_box_new ();

@@ -328,6 +328,7 @@ static void
 rb_group_view_finalize (GObject *object)
 {
 	RBGroupView *view;
+	GList *l, *kids;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_GROUP_VIEW (object));
@@ -335,6 +336,13 @@ rb_group_view_finalize (GObject *object)
 	view = RB_GROUP_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
+
+	kids = g_list_copy (rb_node_get_children (view->priv->group));
+	for (l = kids; l != NULL; l = g_list_next (l))
+	{
+		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
+	}
+	g_list_free (kids);
 
 	g_free (view->priv->title);
 	g_free (view->priv->status);
