@@ -58,7 +58,8 @@ typedef struct
 
 GType		rb_property_view_get_type		(void);
 
-RBPropertyView *rb_property_view_new			(RhythmDB *db, guint propid);
+RBPropertyView *rb_property_view_new			(RhythmDB *db, guint propid,
+							 const char *title);
 
 void		rb_property_view_set_selection_mode	(RBPropertyView *view,
 							 GtkSelectionMode mode);

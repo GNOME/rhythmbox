@@ -293,7 +293,8 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 
 	/* set up genre entry view */
 	source->priv->genres = rb_property_view_new (source->priv->db,
-						     RHYTHMDB_PROP_GENRE);
+						     RHYTHMDB_PROP_GENRE,
+						     _("Genre"));
 	g_signal_connect (G_OBJECT (source->priv->genres),
 			  "property-selected",
 			  G_CALLBACK (genre_selected_cb),

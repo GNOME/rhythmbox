@@ -429,7 +429,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  source);
 
 	/* set up genres treeview */
-	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE);
+	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE,
+						     _("Genre"));
 	rb_property_view_set_selection_mode (source->priv->genres, GTK_SELECTION_MULTIPLE);
 	g_signal_connect (G_OBJECT (source->priv->genres),
 			  "properties-selected",
@@ -445,7 +446,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->genres));
 
 	/* set up artist treeview */
-	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST);
+	source->priv->artists = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ARTIST,
+						      _("Artist"));
 	rb_property_view_set_selection_mode (source->priv->artists, GTK_SELECTION_MULTIPLE);
 	g_signal_connect (G_OBJECT (source->priv->artists),
 			  "properties-selected",
@@ -461,7 +463,8 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	gtk_box_pack_start_defaults (GTK_BOX (source->priv->browser), GTK_WIDGET (source->priv->artists));
 
 	/* set up albums treeview */
-	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM);
+	source->priv->albums = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_ALBUM,
+						     _("Album"));
 	rb_property_view_set_selection_mode (source->priv->albums, GTK_SELECTION_MULTIPLE);
 	g_signal_connect (G_OBJECT (source->priv->albums),
 			  "properties-selected",

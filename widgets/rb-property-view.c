@@ -72,6 +72,8 @@ struct RBPropertyViewPrivate
 	
 	RhythmDBPropertyModel *prop_model;
 
+	char *title;
+
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
@@ -91,6 +93,7 @@ enum
 	PROP_0,
 	PROP_DB,
 	PROP_PROP,
+	PROP_TITLE,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -155,6 +158,13 @@ rb_property_view_class_init (RBPropertyViewClass *klass)
 							    RHYTHMDB_PROP_TYPE,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (object_class,
+					 PROP_TITLE,
+					 g_param_spec_string ("title",
+							      "title",
+							      "title",
+							      "",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_property_view_signals[PROPERTY_ACTIVATED] =
 		g_signal_new ("property-activated",
@@ -194,7 +204,6 @@ static void
 rb_property_view_init (RBPropertyView *view)
 {
 	view->priv = g_new0 (RBPropertyViewPrivate, 1);
-
 }
 
 static void
@@ -209,6 +218,7 @@ rb_property_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
+	g_free (view->priv->title);
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -230,6 +240,9 @@ rb_property_view_set_property (GObject *object,
 		break;
 	case PROP_PROP:
 		view->priv->propid = g_value_get_enum (value);
+		break;
+	case PROP_TITLE:
+		view->priv->title = g_value_dup_string (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -253,6 +266,9 @@ rb_property_view_get_property (GObject *object,
 	case PROP_PROP:
 		g_value_set_enum (value, view->priv->propid);
 		break;
+	case PROP_TITLE:
+		g_value_set_string (value, view->priv->title);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -260,7 +276,7 @@ rb_property_view_get_property (GObject *object,
 }
 
 RBPropertyView *
-rb_property_view_new (RhythmDB *db, guint propid)
+rb_property_view_new (RhythmDB *db, guint propid, const char *title)
 {
 	RBPropertyView *view;
 
@@ -272,6 +288,7 @@ rb_property_view_new (RhythmDB *db, guint propid)
 					       "shadow_type", GTK_SHADOW_IN,
 					       "db", db,
 					       "prop", propid,
+					       "title", title,
 					       NULL));
 
 	g_return_val_if_fail (view->priv != NULL, NULL);
@@ -382,7 +399,7 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
-	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), FALSE);
+	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view->priv->treeview), TRUE);
 	gtk_tree_selection_set_mode (view->priv->selection, GTK_SELECTION_SINGLE);
 	
 	column = gtk_tree_view_column_new ();
@@ -391,7 +408,8 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 (GtkTreeCellDataFunc) rb_property_view_cell_data_func,
 						 view, NULL);
-	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	gtk_tree_view_column_set_title (column, view->priv->title);
+	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
 
 	gtk_tree_view_append_column (GTK_TREE_VIEW (view->priv->treeview),
 				     column);
