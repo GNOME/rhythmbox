@@ -51,4 +51,5 @@ EXTRA_DIST = $(server_in_files)     \
 	     $(Multimedia_in_files) \
 	     $(applications_DATA)   \
 	     $(schema_DATA)	    \
-	     $(iradio_DATA)
+	     $(iradio_DATA)	    \
+		generate-keys.sh

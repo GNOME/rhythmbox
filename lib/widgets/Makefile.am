@@ -21,6 +21,7 @@ librbwidgets_la_SOURCES =				\
 	rb-sourcelist.h					\
 	rb-sourcelist-model.c				\
 	rb-sourcelist-model.h				\
+	eggintl.h					\
 	$(EGGFILES)					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
