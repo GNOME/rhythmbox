@@ -128,9 +128,9 @@ static void rb_shell_player_state_changed_cb (GConfClient *client,
 					      GConfEntry *entry,
 					      RBShellPlayer *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player);
-void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
-void eos_cb (MonkeyMediaPlayer *player, gpointer data);
-void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
+static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
+static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
+static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
 
 static void cancel_buffering_dialog (RBShellPlayer *player);
 
@@ -140,8 +140,8 @@ static void info_available_cb (MonkeyMediaPlayer *player,
 			       gpointer data);
 static void cancel_buffering_clicked_cb (GtkWidget *button,
 					 gpointer data);
-void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
-void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
+static void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
+static void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
 
 #ifdef HAVE_MMKEYS
 static void grab_mmkey (int key_code, GdkWindow *root);
@@ -636,50 +636,6 @@ rb_shell_player_have_first (RBShellPlayer *player, RBSource *source)
 	return FALSE;
 }
 
-static gboolean
-rb_shell_player_have_previous (RBShellPlayer *player, RBSource *source)
-{
-	RBNodeView *songs;
-
-	/* Since it's totally random which one plays next, there's no
-	 * point in the previous button.  We just have next choose a
-	 * random node.
-	 */
-	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE))
-		return FALSE;
-	
-	if (source) {
-		songs = rb_source_get_node_view (source);
-		return rb_node_view_get_previous_node (songs) != NULL;
-	}
-	return FALSE;
-}
-
-static gboolean
-rb_shell_player_have_next (RBShellPlayer *player, RBSource *source)
-{
-	RBNodeView *songs;
-
-	/* If we're not playing, then we can only go next if there
-	 * is something to play after the current node.  However,
-	 * if we are playing, then the availablity of a "next" node
-	 * depends on the repeat/shuffle state.
-	 */
-	if (monkey_media_player_playing (player->priv->mmplayer)) {
-		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE))
-			return TRUE;
-		
-		if (eel_gconf_get_boolean (CONF_STATE_REPEAT))
-			return rb_shell_player_have_first (player, source);
-	}
-	
-	if (source) {
-		songs = rb_source_get_node_view (source);
-		return rb_node_view_get_next_node (songs) != NULL;
-	}
-	return FALSE;
-}
-
 static void
 rb_shell_player_open_location (RBShellPlayer *player,
 			       const char *location,
@@ -835,13 +791,13 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 static void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
-	if (monkey_media_player_get_time (player->priv->mmplayer) < 3 &&
-	    rb_shell_player_have_previous (player, player->priv->source) == TRUE) {
+	/* If we're in the first 2 seconds go to the previous song,
+	 * else restart the current one.
+	 */
+	if (monkey_media_player_get_time (player->priv->mmplayer) < 3) {
 		rb_debug ("doing previous");
-		/* we're in the first 2 seconds of the song, go to previous */
 		rb_shell_player_previous (player);
 	} else {
-		/* we're further in the song, restart it */
 		rb_debug ("restarting song");
 		monkey_media_player_set_time (player->priv->mmplayer, 0);
 		rb_player_sync_time (player->priv->player_widget);
@@ -851,12 +807,30 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 }
 
 static void
+rb_shell_player_do_next (RBShellPlayer *player)
+{
+	if (player->priv->source != NULL) {
+		rb_shell_player_next (player);
+		rb_shell_player_jump_to_current (player);
+	}
+}
+
+static void
 rb_shell_player_cmd_previous (BonoboUIComponent *component,
 			      RBShellPlayer *player,
 			      const char *verbname)
 {
 	rb_debug ("previous");
 	rb_shell_player_do_previous (player);
+}
+
+static void
+rb_shell_player_cmd_next (BonoboUIComponent *component,
+			  RBShellPlayer *player,
+			  const char *verbname)
+{
+	rb_debug ("next");
+	rb_shell_player_do_next (player);
 }
 
 static void
@@ -871,6 +845,8 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 void
 rb_shell_player_playpause (RBShellPlayer *player)
 {
+	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
+
 	switch (player->priv->playbutton_state) {
 	case PLAY_BUTTON_STOP:
 		rb_debug ("setting playing source to NULL");
@@ -1012,26 +988,6 @@ rb_shell_player_cmd_sl_properties (BonoboUIComponent *component,
 	rb_debug ("sl properties");
 	
 	rb_source_song_properties (player->priv->selected_source);
-}
-
-static void
-rb_shell_player_do_next (RBShellPlayer *player)
-{
-	if (player->priv->source != NULL)
-	{
-		rb_shell_player_next (player);
-
-		rb_shell_player_jump_to_current (player);
-	}
-}
-
-static void
-rb_shell_player_cmd_next (BonoboUIComponent *component,
-			  RBShellPlayer *player,
-			  const char *verbname)
-{
-	rb_debug ("next");
-	rb_shell_player_do_next (player);
 }
 
 static void
@@ -1191,29 +1147,49 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 static void
 rb_shell_player_sync_buttons (RBShellPlayer *player)
 {
+	RBSource *source;
+	gboolean not_empty = FALSE;
+	gboolean have_previous = FALSE;
+	gboolean have_next = FALSE;
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
-	RBSource *source = rb_shell_player_get_playing_node (player) == NULL ?
-		player->priv->selected_source : player->priv->source;
-	gboolean have_previous, have_next;
 
 	rb_debug ("syncing with source %p", source);
 
-	have_previous = rb_shell_player_have_previous (player, source);
-	
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS,
-				 have_previous);
+	source = rb_shell_player_get_playing_node (player) == NULL ?
+		 player->priv->selected_source : player->priv->source;
+
+	/* If we have a source and it's not empty, next and prev depend
+	 * on the availability of the next/prev node. However if we are 
+	 * shuffling only next make sense and if we are repeating next
+	 * is always ok (restart)
+	 */
+	if (source && rb_shell_player_have_first (player, source)) {
+		RBNodeView *songs;
+		songs = rb_source_get_node_view (source);
+
+		not_empty = TRUE;
+
+		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+			have_previous = FALSE;
+			have_next = TRUE;
+		} else if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
+			have_previous = (rb_node_view_get_previous_node (songs) != NULL);
+			have_next = TRUE;
+		} else {
+			have_previous = (rb_node_view_get_previous_node (songs) != NULL);
+			have_next = (rb_node_view_get_next_node (songs) != NULL);
+		}
+	}
+
+	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button), not_empty);
+	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PREVIOUS, have_previous);
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->prev_button), have_previous);
-
-	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->play_pause_stop_button),
-				  rb_shell_player_have_first (player, source));
-
-	have_next = rb_shell_player_have_next (player, source);
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT,
-				 have_next);
+	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_NEXT, have_next);
 	gtk_widget_set_sensitive (GTK_WIDGET (player->priv->next_button), have_next);
 
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
 				 rb_shell_player_get_playing_node (player) != NULL);
+
 	{
 		RBNodeView *view = rb_source_get_node_view (player->priv->selected_source);
 		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
@@ -1346,7 +1322,7 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 	}
 }
 
-void
+static void
 eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
@@ -1379,7 +1355,7 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 	GDK_THREADS_LEAVE ();
 }
 
-void
+static void
 error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
@@ -1408,7 +1384,7 @@ error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
 	gdk_threads_leave ();
 }
 
-void
+static void
 tick_cb (MonkeyMediaPlayer *mmplayer, long elapsed, gpointer data)
 {
  	RBShellPlayer *player = RB_SHELL_PLAYER (data);
@@ -1419,7 +1395,7 @@ tick_cb (MonkeyMediaPlayer *mmplayer, long elapsed, gpointer data)
 	gdk_threads_leave ();
 }
 
-void
+static void
 info_available_cb (MonkeyMediaPlayer *mmplayer,
 		   MonkeyMediaStreamInfoField field,
 		   GValue *value,
@@ -1458,8 +1434,7 @@ info_available_cb (MonkeyMediaPlayer *mmplayer,
 		goto out_unlock;
 	}
 
-	switch (field)
-	{
+	switch (field)	{
 	case MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE:
 	{
 		char *song = g_value_dup_string (value);
@@ -1548,7 +1523,7 @@ cancel_buffering_dialog (RBShellPlayer *player)
 	}
 }
 
-void
+static void
 buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 		    gpointer data)
 {
@@ -1605,7 +1580,7 @@ cancel_buffering_clicked_cb (GtkWidget *button,
 	rb_debug ("Done cancelling");
 }
 
-void
+static void
 buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 		  gpointer data)
 {
@@ -1619,7 +1594,6 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 
 	gdk_threads_leave ();
 }
-
 
 const char *
 rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
@@ -1698,12 +1672,10 @@ filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
 		rb_shell_player_set_playing_source (player, NULL);
 		return GDK_FILTER_REMOVE;		
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
-		if (rb_shell_player_have_previous (player, source))
-			rb_shell_player_do_previous (player);
+		rb_shell_player_do_previous (player);
 		return GDK_FILTER_REMOVE;		
 	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode) {
-		if (rb_shell_player_have_next (player, source))
-			rb_shell_player_do_next (player);
+		rb_shell_player_do_next (player);
 		return GDK_FILTER_REMOVE;
 	} else {
 		return GDK_FILTER_CONTINUE;

@@ -85,8 +85,6 @@ const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);
 #endif
 
-gboolean		rb_shell_volume_scroll 		(GtkWidget *widget, GdkEvent *event, gpointer data);
-
 G_END_DECLS
 
 #endif /* __RB_SHELL_PLAYER_H */
