@@ -1177,13 +1177,15 @@ query_thread_main (struct RhythmDBQueryThreadData *data,
 
 	rb_debug ("doing query");
 
-	rhythmdb_read_lock (db);
+	if (data->lock)
+		rhythmdb_read_lock (db);
 	
 	klass->impl_do_full_query (db, data->query,
 				   data->main_model,
 				   &data->cancel);
 
-	rhythmdb_read_unlock (db);
+	if (data->lock)
+		rhythmdb_read_unlock (db);
 
 	rb_debug ("completed");
 	rhythmdb_query_model_complete (RHYTHMDB_QUERY_MODEL (data->main_model));
@@ -1204,6 +1206,7 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
 	data->query = rhythmdb_query_copy (query);
 	data->main_model = main_model;
 	data->cancel = FALSE;
+	data->lock = TRUE;
 
 	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
 		      "query", query, NULL);
@@ -1240,6 +1243,7 @@ rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 	data->query = rhythmdb_query_copy (query);
 	data->main_model = main_model;
 	data->cancel = FALSE;
+	data->lock = FALSE;
 
 	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),
 		      "query", query, NULL);
