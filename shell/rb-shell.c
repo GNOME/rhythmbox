@@ -255,7 +255,10 @@ static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
 
 
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 } };
+static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 },
+                                               { "text/x-rhythmbox-album", 0, 0 },
+                                               { "text/x-rhythmbox-artist", 0, 0 },
+                                               { "text/x-rhythmbox-genre", 0, 0 } };
 
 enum
 {
@@ -2196,15 +2199,19 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 			     GtkSelectionData *data,
 			     RBShell *shell)
 {
-	if (source == NULL) 
-		source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
-							   FALSE);
-	
-	if (source != NULL) {
-		rb_source_receive_drag (source, data);
-		return;
-	} 
+        gboolean smart;
 
+        if (source == NULL) {
+		char *datastr = g_strndup (data->data, data->length);
+                smart = data->type != gdk_atom_intern ("text/uri-list", TRUE);
+                source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
+							   datastr, smart);
+		g_free (datastr);
+        }
+
+        if (source != NULL) {
+                rb_source_receive_drag (source, data);
+        }
 
 /* 	if (data->type == gdk_atom_intern (RB_LIBRARY_DND_NODE_ID_TYPE, TRUE)) { */
 /* 		long id; */

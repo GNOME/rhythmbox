@@ -108,6 +108,10 @@ static GObjectClass *parent_class = NULL;
 
 static guint rb_property_view_signals[LAST_SIGNAL] = { 0 };
 
+static const GtkTargetEntry target_album  [] = { { "text/x-rhythmbox-album",  0, 0 } };
+static const GtkTargetEntry target_genre  [] = { { "text/x-rhythmbox-genre",  0, 0 } };
+static const GtkTargetEntry target_artist [] = { { "text/x-rhythmbox-artist", 0, 0 } };
+
 GType
 rb_property_view_get_type (void)
 {
@@ -460,6 +464,26 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *ren
 }
 
 
+static void
+rb_property_view_drag_data_get (GtkWidget *widget, GdkDragContext *context,
+				GtkSelectionData *selection_data, guint info,
+				guint time, gpointer data)
+{
+        const char *str;
+        RBPropertyView *view;
+        GtkTreeModel *model;
+        GtkTreeIter iter;
+        GList *selected_rows;
+
+        view = RB_PROPERTY_VIEW (data);
+
+        selected_rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
+        g_assert (gtk_tree_model_get_iter (model, &iter, selected_rows->data));
+        gtk_tree_model_get(model, &iter, 0, &str, -1);
+        gtk_selection_data_set (selection_data, selection_data->target,
+                                8, str, strlen (str));
+}
+
 static GObject *
 rb_property_view_constructor (GType type, guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
@@ -471,6 +495,8 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	RBPropertyViewClass *klass;
 	GObjectClass *parent_class;  
 
+        const GtkTargetEntry *target;
+
 	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (type));
 
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
@@ -479,6 +505,30 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
+
+        switch (view->priv->propid)
+	{
+	case RHYTHMDB_PROP_GENRE:
+		target = target_genre;
+		break;
+        case RHYTHMDB_PROP_ALBUM:
+                target = target_album;
+		break;
+        case RHYTHMDB_PROP_ARTIST:
+                target = target_artist;
+		break;
+	default:
+		target = NULL;
+		g_assert_not_reached ();
+	}
+
+        gtk_drag_source_set (GTK_WIDGET(view->priv->treeview),
+                             GDK_BUTTON1_MASK,
+                             target, 1,
+                             GDK_ACTION_COPY);
+
+        g_signal_connect (G_OBJECT (view->priv->treeview), "drag_data_get",
+                          G_CALLBACK (rb_property_view_drag_data_get), view);
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",

@@ -220,6 +220,15 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 		return TRUE;
 	}
 
+        /* if artist, album or genre, only allow new playlists */
+        if (selection_data->type == gdk_atom_intern ("text/x-rhythmbox-album", TRUE) ||
+            selection_data->type == gdk_atom_intern ("text/x-rhythmbox-artist", TRUE) ||
+            selection_data->type == gdk_atom_intern ("text/x-rhythmbox-genre", TRUE)) {
+                g_signal_emit (G_OBJECT (model), rb_sourcelist_model_signals[DROP_RECEIVED],
+                               0, NULL, pos, selection_data);
+                return TRUE;
+        }
+
 	return FALSE;
 }
 

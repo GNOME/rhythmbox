@@ -616,10 +616,11 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 }
 
 RBSource *
-rb_playlist_manager_new_playlist (RBPlaylistManager *mgr, gboolean automatic)
+rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
+				  const char *suggested_name, gboolean automatic)
 {
 	RBSource *playlist = RB_SOURCE (rb_playlist_source_new (mgr->priv->db, automatic));
-	g_object_set (G_OBJECT (playlist), "name", "", NULL);
+	g_object_set (G_OBJECT (playlist), "name", suggested_name ? suggested_name : "", NULL);
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	return playlist;
@@ -630,7 +631,7 @@ rb_playlist_manager_cmd_new_playlist (BonoboUIComponent *component,
 				      RBPlaylistManager *mgr,
 				      const char *verbname)
 {
-	rb_playlist_manager_new_playlist (mgr, FALSE);
+	rb_playlist_manager_new_playlist (mgr, NULL, FALSE);
 }
 
 static void
@@ -666,7 +667,7 @@ rb_playlist_manager_cmd_new_automatic_playlist (BonoboUIComponent *component,
 		gtk_widget_destroy (GTK_WIDGET (creator));	
 		return;
 	}
-	playlist = rb_playlist_manager_new_playlist (mgr, TRUE);
+	playlist = rb_playlist_manager_new_playlist (mgr, NULL, TRUE);
 
 	rb_playlist_manager_set_automatic_playlist (mgr, RB_PLAYLIST_SOURCE (playlist), creator); 
 
@@ -840,7 +841,7 @@ handle_playlist_entry_into_playlist_cb (RBPlaylist *playlist, const char *uri, c
 
 	if (!mgr->priv->loading_playlist) {
 		mgr->priv->loading_playlist =
-			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, FALSE));
+			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
 	}
 	add_uri_to_playlist (mgr, mgr->priv->loading_playlist, uri, title);
 }
