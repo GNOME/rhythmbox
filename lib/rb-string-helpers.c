@@ -61,3 +61,14 @@ rb_prefix_to_suffix (const char *string)
 
 	return str;
 }
+
+int
+rb_utf8_strncasecmp (gconstpointer a, gconstpointer b)
+{
+	char *al = g_utf8_casefold ((const char *) a, -1);
+	char *bl = g_utf8_casefold ((const char *) b, -1);
+	int ret = g_utf8_collate (al, bl);
+	g_free (al);
+	g_free (bl);
+	return ret;
+}
