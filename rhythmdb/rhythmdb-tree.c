@@ -1,7 +1,7 @@
 /* 
  *  arch-tag: Implementation of RhythmDB tree-structured database
  *
- *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
+ *  Copyright (C) 2003, 2004 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1552,12 +1552,12 @@ evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
 			break;
 		case RHYTHMDB_QUERY_PROP_GREATER:
 			if (rb_gvalue_compare (RHYTHMDB_TREE_ENTRY_VALUE (entry, data->propid),
-					       data->val) > 0)
+					       data->val) <= 0)
 				return FALSE;
 			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
 			if (rb_gvalue_compare (RHYTHMDB_TREE_ENTRY_VALUE (entry, data->propid),
-					       data->val) < 0)
+					       data->val) >= 0)
 				return FALSE;
 			break;
 		case RHYTHMDB_QUERY_END:

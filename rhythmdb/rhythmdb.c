@@ -1707,8 +1707,14 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 		case RHYTHMDB_QUERY_END:
 			break;
 		case RHYTHMDB_QUERY_PROP_GREATER:
+			subnode = xmlNewChild (node, NULL, "greater", NULL);
+			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
+			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
-			g_assert_not_reached ();
+			subnode = xmlNewChild (node, NULL, "less", NULL);
+			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			write_encoded_gvalue (subnode, data->val);
 			break;
 		}		
 	}
@@ -1746,12 +1752,18 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
 		} else if (!strcmp (child->name, "equals")) {
 			data->type = RHYTHMDB_QUERY_PROP_EQUALS;
+		} else if (!strcmp (child->name, "greater")) {
+			data->type = RHYTHMDB_QUERY_PROP_GREATER;
+		} else if (!strcmp (child->name, "less")) {
+			data->type = RHYTHMDB_QUERY_PROP_LESS;
 		} else
  			g_assert_not_reached ();
 
 		if (!strcmp (child->name, "like")
 		    || !strcmp (child->name, "not-like")
-		    || !strcmp (child->name, "equals")) {
+		    || !strcmp (child->name, "equals")
+		    || !strcmp (child->name, "greater")
+		    || !strcmp (child->name, "less")) {
 			char *propstr = xmlGetProp (child, "prop");
 			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
 			g_free (propstr);

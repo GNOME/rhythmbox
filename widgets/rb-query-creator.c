@@ -1,7 +1,7 @@
 /*
  *  arch-tag: Implementation of RhythmDB query creation dialog
  *
- *  Copyright (C) 2003 Colin Walters <walters@gnome.org>
+ *  Copyright (C) 2003, 2004 Colin Walters <walters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@
 #include "rhythmdb.h"
 #include "rb-query-creator.h"
 #include "rb-dialog.h"
+#include "rb-rating.h"
 #include "rb-debug.h"
 #include "rb-preferences.h"
 #include "rb-glade-helpers.h"
@@ -53,13 +54,21 @@ const RBQueryCreatorPropertyOption property_options[] =
 	{ N_("Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED },
 	{ N_("Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED },
 	{ N_("Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED },
+	{ N_("Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING }
 };
 
-const RBQueryCreatorCriteriaOption criteria_options[] =
+const RBQueryCreatorCriteriaOption string_criteria_options[] =
 {
 	{ N_("contains"), 0, RHYTHMDB_QUERY_PROP_LIKE },
 	{ N_("does not contain"), 0, RHYTHMDB_QUERY_PROP_NOT_LIKE },
+	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS }
+};
+
+const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
+{
 	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
+	{ N_("greater than"), 1, RHYTHMDB_QUERY_PROP_GREATER },
+	{ N_("less than"), 1, RHYTHMDB_QUERY_PROP_LESS }
 };
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);
@@ -78,17 +87,20 @@ static void rb_query_creator_get_property (GObject *object,
 static void select_property_from_value (GtkWidget *option_menu,
 					const RBQueryCreatorPropertyOption *options,
 					int length, RhythmDBPropType prop);
-static void select_criteria_from_value (GtkWidget *option_menu,
-					const RBQueryCreatorCriteriaOption *options,
-					int length, RhythmDBQueryType qtype);
+static void select_criteria_from_value (RBQueryCreator *creator,
+					GtkWidget *option_menu,
+					RhythmDBPropType prop,
+					RhythmDBQueryType qtype);
 
-static void setup_property_option_menu (GtkWidget *option_menu,
+static void setup_property_option_menu (RBQueryCreator *creator,
+					GtkWidget *option_menu,
 					const RBQueryCreatorPropertyOption *options,
 					int length, gboolean activate_first);
 static void setup_criteria_option_menu (GtkWidget *option_menu,
 					const RBQueryCreatorCriteriaOption *options,
 					int length, gboolean activate_first);
-static GtkWidget * create_property_option_menu (const RBQueryCreatorPropertyOption *options,
+static GtkWidget * create_property_option_menu (RBQueryCreator *creator,
+						const RBQueryCreatorPropertyOption *options,
 						int length, gboolean activate_first);
 static GtkWidget * create_criteria_option_menu (const RBQueryCreatorCriteriaOption *options,
 						int length, gboolean activate_first);
@@ -252,12 +264,12 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	gtk_size_group_add_widget (dlg->priv->button_size_group, dlg->priv->addbutton);
 	g_signal_connect (G_OBJECT (dlg->priv->addbutton), "clicked", G_CALLBACK (add_button_click_cb),
 			  dlg);
-	first_option = create_property_option_menu (property_options,
+	first_option = create_property_option_menu (dlg, property_options,
 						    G_N_ELEMENTS (property_options),
 						    FALSE);
 	gtk_size_group_add_widget (dlg->priv->property_size_group, first_option);
-	first_criteria = create_criteria_option_menu (criteria_options,
-						      G_N_ELEMENTS (criteria_options),
+	first_criteria = create_criteria_option_menu (string_criteria_options,
+						      G_N_ELEMENTS (string_criteria_options),
 						      FALSE);
 	gtk_size_group_add_widget (dlg->priv->criteria_size_group, first_criteria);
 	first_entry = gtk_entry_new ();
@@ -387,7 +399,6 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 										  0));
 		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (rows->data),
 										       1));
-		GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
 
 		if (data->type == RHYTHMDB_QUERY_DISJUNCTION) {
 			disjunction = TRUE;
@@ -396,9 +407,19 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 		
 		select_property_from_value (GTK_WIDGET (propmenu), property_options,
 					    G_N_ELEMENTS (property_options), data->propid);
-		select_criteria_from_value (GTK_WIDGET (criteria_menu), criteria_options,
-					    G_N_ELEMENTS (criteria_options), data->type);
-		gtk_entry_set_text (text, g_value_get_string (data->val));
+		select_criteria_from_value (creator,
+					    GTK_WIDGET (criteria_menu), data->propid,
+					    data->type);
+
+		if (data->propid != RHYTHMDB_PROP_RATING) {
+			GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
+			
+			gtk_entry_set_text (text, g_value_get_string (data->val));
+		} else {
+			RBRating *rating = RB_RATING (get_box_widget_at_pos (GTK_BOX (rows->data), 2));
+			g_object_set (G_OBJECT (rating), "score",
+				      g_value_get_double (data->val));
+		}
 		rows = rows->next;
 	}
 
@@ -426,16 +447,67 @@ get_box_widget_at_pos (GtkBox *box, guint pos)
 	GList *children = gtk_container_get_children (GTK_CONTAINER (box));
 	GList *tem;
 	for (tem = children; tem; tem = tem->next) {
-		guint thispos;
-		gtk_container_child_get (GTK_CONTAINER (box), GTK_WIDGET (tem->data),
-					 "position", &thispos, NULL);
-		if (thispos == pos)
+		GValue thispos = { 0, };
+		g_value_init (&thispos, G_TYPE_INT);
+		gtk_container_child_get_property (GTK_CONTAINER (box),
+						  GTK_WIDGET (tem->data),
+						  "position", &thispos);
+		if (g_value_get_int (&thispos) == pos) {
+			ret = tem->data;
 			break;
+		}
 	}
-	g_return_val_if_fail (tem != NULL, NULL);
-	ret = tem->data;
 	g_list_free (children);
 	return GTK_WIDGET (ret);
+}
+
+static const RBQueryCreatorCriteriaOption *
+get_criteria_for_property (RBQueryCreator *creator, RhythmDBPropType prop, guint *length)
+{
+	GType proptype;
+	const RBQueryCreatorCriteriaOption *options;
+
+	proptype = rhythmdb_get_property_type (creator->priv->db, prop);
+
+	if (proptype == G_TYPE_STRING) {
+		options = string_criteria_options;
+		if (length)
+			*length = G_N_ELEMENTS (string_criteria_options);
+	} else if (proptype == G_TYPE_DOUBLE) {
+		options = numeric_criteria_options;
+		if (length)
+			*length = G_N_ELEMENTS (numeric_criteria_options);
+	} else
+		g_assert_not_reached ();
+	return options;
+}
+
+static void
+set_rating_score (RBRating *rating, gdouble score)
+{
+	g_object_set (G_OBJECT (rating), "score", score, NULL);
+}	
+
+static GtkWidget *
+get_entry_for_property (RBQueryCreator *creator, RhythmDBPropType prop,
+			gboolean *constrain)
+{
+	GType proptype;
+	proptype = rhythmdb_get_property_type (creator->priv->db, prop);
+	
+	*constrain = TRUE;
+
+	if (proptype == G_TYPE_STRING)
+		return gtk_entry_new ();
+	else if (prop == RHYTHMDB_PROP_RATING) {
+		RBRating *rating = rb_rating_new ();
+		g_signal_connect (G_OBJECT (rating), "rated",
+				  G_CALLBACK (set_rating_score), NULL);
+		*constrain = FALSE;
+		return GTK_WIDGET (rating);
+	} else
+		g_assert_not_reached ();
+	return NULL;
 }
 
 static int
@@ -469,30 +541,55 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 										  0));
 		GtkOptionMenu *criteria_menu = GTK_OPTION_MENU (get_box_widget_at_pos (GTK_BOX (row->data),
 										       1));
-		GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (row->data), 2));
-		const RBQueryCreatorPropertyOption *prop_option = &property_options[extract_option_menu_index (propmenu)];
+		guint prop_position = extract_option_menu_index (propmenu);
+		const RBQueryCreatorPropertyOption *prop_option = &property_options[prop_position];
+		const RBQueryCreatorCriteriaOption *criteria_options = get_criteria_for_property (dlg, prop_option->strict_val, NULL);
 		const RBQueryCreatorCriteriaOption *criteria_option = &criteria_options[extract_option_menu_index (criteria_menu)];
 		RhythmDBQueryType criteria = criteria_option->val;
 		RhythmDBPropType prop = criteria_option->strict ? prop_option->strict_val : prop_option->fuzzy_val;
-		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
-		char *folded_data = criteria_option->strict ? g_strdup (data) : g_utf8_casefold (data, -1);
 
-		if (disjunction && row->next)
-			rhythmdb_query_append (dlg->priv->db,
-					       sub_query,
-					       criteria,
-					       prop,
-					       folded_data,
-					       RHYTHMDB_QUERY_DISJUNCTION,
-					       RHYTHMDB_QUERY_END);
-		else
-			rhythmdb_query_append (dlg->priv->db,
-					       sub_query,
-					       criteria,
-					       prop,
-					       folded_data,
-					       RHYTHMDB_QUERY_END);
-		g_free (folded_data);
+		if (prop != RHYTHMDB_PROP_RATING) {
+			GtkEntry *text = GTK_ENTRY (get_box_widget_at_pos (GTK_BOX (row->data), 2));
+			const char *data = gtk_entry_get_text (GTK_ENTRY (text));
+			char *folded_data = criteria_option->strict ? g_strdup (data) : g_utf8_casefold (data, -1);
+			
+			if (disjunction && row->next)
+				rhythmdb_query_append (dlg->priv->db,
+						       sub_query,
+						       criteria,
+						       prop,
+						       folded_data,
+						       RHYTHMDB_QUERY_DISJUNCTION,
+						       RHYTHMDB_QUERY_END);
+			else
+				rhythmdb_query_append (dlg->priv->db,
+						       sub_query,
+						       criteria,
+						       prop,
+						       folded_data,
+						       RHYTHMDB_QUERY_END);
+			g_free (folded_data);
+		} else {
+			double rating;
+
+			g_object_get (G_OBJECT (get_box_widget_at_pos (GTK_BOX (row->data), 2)),
+				      "score", &rating, NULL);
+			if (disjunction && row->next)
+				rhythmdb_query_append (dlg->priv->db,
+						       sub_query,
+						       criteria,
+						       prop,
+						       rating,
+						       RHYTHMDB_QUERY_DISJUNCTION,
+						       RHYTHMDB_QUERY_END);
+			else
+				rhythmdb_query_append (dlg->priv->db,
+						       sub_query,
+						       criteria,
+						       prop,
+						       rating,
+						       RHYTHMDB_QUERY_END);
+		}
 	}
 	rhythmdb_query_append (dlg->priv->db,
 			       query,
@@ -540,22 +637,36 @@ limit_toggled_cb (GtkWidget *limit, RBQueryCreator *dialog)
 	gtk_widget_set_sensitive (dialog->priv->limit_option, active);
 }
 
-static void
-remove_button_click_cb (GtkWidget *button, RBQueryCreator *dialog)
+static GtkWidget *
+lookup_row_by_widget (RBQueryCreator *dialog, GtkWidget *widget)
 {
 	GList *rows = gtk_container_get_children (GTK_CONTAINER (dialog->priv->vbox));
 	GList *row;
-	for (row = rows; row; row = row->next) {
+	GtkWidget *ret = NULL;
+	guint i;
+
+	for (row = rows, i = 0; row; row = row->next, i++) {
 		GList *columns = gtk_container_get_children (GTK_CONTAINER (row->data));
-		gboolean found = g_list_find (columns, button) != NULL;
+		gboolean found = g_list_find (columns, widget) != NULL;
 		g_list_free (columns);
 		if (found) {
-			gtk_container_remove (GTK_CONTAINER (dialog->priv->vbox),
-					      GTK_WIDGET (row->data));
+			ret = row->data;
 			break;
 		}
 	}
 	g_list_free (rows);
+	return ret;
+}
+
+static void
+remove_button_click_cb (GtkWidget *button, RBQueryCreator *dialog)
+{
+	GtkWidget *row;
+
+	row = lookup_row_by_widget (dialog, button);
+	g_assert (row);
+	gtk_container_remove (GTK_CONTAINER (dialog->priv->vbox),
+			      GTK_WIDGET (row));
 }
 
 static void
@@ -594,14 +705,14 @@ append_row (RBQueryCreator *dialog)
 	gtk_box_reorder_child (dialog->priv->vbox, GTK_WIDGET (hbox), -1);
 
 	/* This is the main (leftmost) GtkOptionMenu, for types. */
-	option = create_property_option_menu (property_options,
+	option = create_property_option_menu (dialog, property_options,
 					      G_N_ELEMENTS (property_options),
 					      FALSE);
 	gtk_size_group_add_widget (dialog->priv->property_size_group, option);
 	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (option));
 	gtk_option_menu_set_history (GTK_OPTION_MENU (option), 0);
-	criteria = create_criteria_option_menu (criteria_options,
-						G_N_ELEMENTS (criteria_options),
+	criteria = create_criteria_option_menu (string_criteria_options,
+						G_N_ELEMENTS (string_criteria_options),
 						FALSE);
 	gtk_size_group_add_widget (dialog->priv->criteria_size_group, criteria);
 	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (criteria));
@@ -633,12 +744,17 @@ select_property_from_value (GtkWidget *option_menu,
 }
 
 static void
-select_criteria_from_value (GtkWidget *option_menu,
-			    const RBQueryCreatorCriteriaOption *options,
-			    int length, RhythmDBQueryType qtype)
+select_criteria_from_value (RBQueryCreator *creator,
+			    GtkWidget *option_menu,
+			    RhythmDBPropType prop,
+			    RhythmDBQueryType qtype)
 {
 	int i;
-	
+	const RBQueryCreatorCriteriaOption *options;
+	gint length;
+
+	options = get_criteria_for_property (creator, prop, &length);
+			
 	for (i = 0; i < length; i++) {
 		if (qtype == options[i].val) {
 			gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), i);
@@ -648,9 +764,49 @@ select_criteria_from_value (GtkWidget *option_menu,
 	g_assert_not_reached ();
 }
 
-/* Stolen from jamboree */
 static void
-setup_property_option_menu (GtkWidget *option_menu,
+property_option_menu_changed (GtkOptionMenu *propmenu,
+			      RBQueryCreator *creator)
+{
+	GtkWidget *row;
+	GtkWidget *criteria;
+	GtkWidget *entry;
+	const RBQueryCreatorPropertyOption *prop_option;
+	const RBQueryCreatorCriteriaOption *criteria_options;
+	int length;
+	gboolean constrain;
+
+	row = lookup_row_by_widget (creator, GTK_WIDGET (propmenu));
+
+	criteria = get_box_widget_at_pos (GTK_BOX (row), 1);
+	gtk_container_remove (GTK_CONTAINER (row), criteria);
+
+	prop_option = &property_options[extract_option_menu_index (propmenu)];
+
+	criteria_options = get_criteria_for_property (creator, prop_option->strict_val, &length);
+
+	criteria = create_criteria_option_menu (criteria_options, length,
+						FALSE);
+	gtk_widget_show (criteria);
+	gtk_size_group_add_widget (creator->priv->criteria_size_group, criteria);
+	gtk_box_pack_start_defaults (GTK_BOX (row), GTK_WIDGET (criteria));
+	gtk_box_reorder_child (GTK_BOX (row), criteria, 1);
+
+	entry = get_box_widget_at_pos (GTK_BOX (row), 2);
+	gtk_container_remove (GTK_CONTAINER (row), entry);
+	entry = get_entry_for_property (creator, prop_option->strict_val,
+					&constrain);
+	gtk_widget_show (entry);
+	if (constrain)
+		gtk_size_group_add_widget (creator->priv->entry_size_group, entry);
+	gtk_box_pack_start_defaults (GTK_BOX (row), GTK_WIDGET (entry));
+	gtk_box_reorder_child (GTK_BOX (row), entry, 2);
+}
+
+/* Stolen from jamboree and hacked up */
+static void
+setup_property_option_menu (RBQueryCreator *creator,
+			    GtkWidget *option_menu,
 			    const RBQueryCreatorPropertyOption *options,
 			    int length, gboolean activate_first)
 {
@@ -673,6 +829,9 @@ setup_property_option_menu (GtkWidget *option_menu,
 		gtk_option_menu_set_history (GTK_OPTION_MENU (option_menu), 0);
 
 	gtk_option_menu_set_menu (GTK_OPTION_MENU (option_menu), menu);
+
+	g_signal_connect (G_OBJECT (option_menu), "changed",
+			  G_CALLBACK (property_option_menu_changed), creator);
 }
 
 static void
@@ -702,7 +861,8 @@ setup_criteria_option_menu (GtkWidget *option_menu,
 }
 
 static GtkWidget*
-create_property_option_menu (const RBQueryCreatorPropertyOption *options,
+create_property_option_menu (RBQueryCreator *creator,
+			     const RBQueryCreatorPropertyOption *options,
 			     int length, gboolean activate_first)
 {
 	GtkWidget *menu;
@@ -713,7 +873,7 @@ create_property_option_menu (const RBQueryCreatorPropertyOption *options,
     
 	option_menu = gtk_option_menu_new ();
 
-	setup_property_option_menu (option_menu, options, length, activate_first);
+	setup_property_option_menu (creator, option_menu, options, length, activate_first);
   
 	return option_menu;
 }
