@@ -401,6 +401,17 @@ rb_shell_sync_state (RBShell *shell)
 	return FALSE;
 }
 
+static gboolean
+idle_save_state (RBShell *shell)
+{
+	GDK_THREADS_ENTER ();
+
+	rb_shell_sync_state (shell);
+
+	GDK_THREADS_LEAVE ();
+	return FALSE;
+}
+
 static void
 rb_shell_db_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 			RBShell *shell)
@@ -1145,7 +1156,7 @@ rb_shell_construct (RBShell *shell)
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
 
-		g_timeout_add (5000, (GSourceFunc) rb_shell_sync_state, shell);
+		g_timeout_add (5000, (GSourceFunc) idle_save_state, shell);
 	}
 	
 	rb_statusbar_sync_state (shell->priv->statusbar);
