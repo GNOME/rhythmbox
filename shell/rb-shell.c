@@ -56,8 +56,8 @@
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
-static void rb_shell_quit (PortableServer_Servant _servant,
-                           CORBA_Environment *ev);
+static void rb_shell_corba_quit (PortableServer_Servant _servant,
+                                 CORBA_Environment *ev);
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
@@ -86,6 +86,7 @@ static void rb_shell_cmd_about (BonoboUIComponent *component,
 static void rb_shell_cmd_quit (BonoboUIComponent *component,
 		               RBShell *shell,
 			       const char *verbname);
+static void rb_shell_quit (RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -162,7 +163,7 @@ rb_shell_class_init (RBShellClass *klass)
 
         object_class->finalize = rb_shell_finalize;
 
-	epv->quit = rb_shell_quit;
+	epv->quit = rb_shell_corba_quit;
 }
 
 static void
@@ -206,11 +207,11 @@ rb_shell_finalize (GObject *object)
 {
         RBShell *shell = RB_SHELL (object);
 
+	gtk_widget_hide (shell->priv->window);
+
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
 
 	rb_debug ("Unregistered with Bonobo Activation");
-
-	gtk_widget_hide (shell->priv->window);
 
 	rb_sidebar_save_layout (RB_SIDEBAR (shell->priv->sidebar),
 				shell->priv->sidebar_layout_file);
@@ -245,16 +246,12 @@ rb_shell_new (void)
 }
 
 static void
-rb_shell_quit (PortableServer_Servant _servant,
-               CORBA_Environment *ev)
+rb_shell_corba_quit (PortableServer_Servant _servant,
+                     CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
-	rb_debug ("Quitting");
-
-	gtk_widget_hide (shell->priv->window);
-
-	bonobo_object_unref (BONOBO_OBJECT (shell));
+	rb_shell_quit (shell);
 }
 
 void
@@ -405,7 +402,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
-	bonobo_object_unref (BONOBO_OBJECT (shell));
+	rb_shell_quit (shell);
 
 	return TRUE;
 };
@@ -616,7 +613,13 @@ rb_shell_cmd_quit (BonoboUIComponent *component,
 		   RBShell *shell,
 		   const char *verbname)
 {
-	gtk_widget_hide (shell->priv->window);
+	rb_shell_quit (shell);
+}
+
+static void
+rb_shell_quit (RBShell *shell)
+{
+	rb_debug ("Quitting");
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
