@@ -458,11 +458,11 @@ rb_cmd_about (BonoboUIComponent *component,
 
 	const char *authors[] =
 	{
-		"Lead developers:",
+		"",
 		"Jorn Baayen (jorn@nl.linux.org)",
 		"Olivier Martin (oleevye@wanadoo.fr)",
 		"",
-		"Contributors:",
+		"",
 		"Kenneth Christiansen (kenneth@gnu.org)",
 		"Mark Finlay (sisob@eircom.net)",
 		"Marco Pesenti Gritti (marco@it.gnome.org)",
@@ -496,10 +496,13 @@ rb_cmd_about (BonoboUIComponent *component,
 		return;
 	}
 
+	authors[0] = _("Lead developers:");
+	authors[4] = _("Contributors:");
+
 	pixbuf = gdk_pixbuf_new_from_file (rb_file ("about-logo.png"), NULL);
 
 	about = gnome_about_new ("Rhythmbox", VERSION,
-				 _("Copyright (C) 2002, 2003 Jorn Baayen. All rights reserved."),
+				 _("Copyright \xc2\xa9 2002, 2003 Jorn Baayen. All rights reserved."),
 				 _("Music management and playback software for GNOME."),
 				 (const char **) authors,
 				 (const char **) documenters,
