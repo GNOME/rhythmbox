@@ -1,5 +1,14 @@
 2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
 
+	* views/rb-group-view.c: (node_view_changed_cb),
+	(rb_group_view_cmd_song_info):
+	* views/rb-library-view.c: (node_view_changed_cb),
+	(rb_library_view_cmd_song_info):
+
+	Render SongInfo insensitive when htere is no selection.
+
+2002-07-28  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/glade/song-info.glade:
 	* data/ui/rhythmbox-group-view.xml.in:
 	* data/ui/rhythmbox-library-view.xml.in:

@@ -127,6 +127,7 @@ static void rb_library_view_cmd_song_info (BonoboUIComponent *component,
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
+#define CMD_PATH_SONG_INFO    "/commands/SongInfo"
 
 #define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   "/apps/rhythmbox/state/library/show_browser"
@@ -783,6 +784,8 @@ node_view_changed_cb (RBNodeView *view,
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
 	rb_view_status_notify_changed (RB_VIEW_STATUS (library_view));
 	rb_view_clipboard_notify_changed (RB_VIEW_CLIPBOARD (library_view));
+	rb_view_set_sensitive (RB_VIEW (library_view), CMD_PATH_SONG_INFO,
+			       rb_node_view_have_selection (view));
 }
 
 static void
@@ -969,15 +972,12 @@ rb_library_view_cmd_song_info (BonoboUIComponent *component,
 
 	g_return_if_fail (view->priv->songs != NULL);
 
-	if (rb_node_view_have_selection (view->priv->songs) == FALSE)
-	{
-		return;
-	}
-
 	/* get the first node and show the song information dialog 
 	 * TODO show a different dialog for multiple songs */
 	selected_nodes = rb_node_view_get_selection (view->priv->songs);
-	if ((selected_nodes->data != NULL) && (RB_IS_NODE (selected_nodes->data)))
+	if ((selected_nodes != NULL) &&
+	    (selected_nodes->data != NULL) &&
+	    (RB_IS_NODE (selected_nodes->data)))
 	{
 		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
 		gtk_widget_show_all (song_info);
