@@ -112,10 +112,14 @@ rb_search_entry_init (RBSearchEntry *entry)
 
 	entry->priv = g_new0 (RBSearchEntryPrivate, 1);
 
-	label = gtk_label_new (_("Search:"));
+	label = gtk_label_new_with_mnemonic (_("_Search:"));
 	gtk_box_pack_start (GTK_BOX (entry), label, FALSE, TRUE, 0);
 
 	entry->priv->entry = gtk_entry_new ();
+	
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label),
+				       entry->priv->entry);
+	
 	gtk_widget_set_size_request (GTK_WIDGET (entry->priv->entry), 100, -1);
 	gtk_box_pack_start (GTK_BOX (entry), entry->priv->entry, FALSE, FALSE, 0);
 
