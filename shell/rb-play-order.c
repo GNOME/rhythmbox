@@ -183,7 +183,7 @@ rb_play_order_get_player (RBPlayOrder *porder)
 gboolean
 rb_play_order_player_is_playing (RBPlayOrder *porder)
 {
-	RBSource *source = rb_shell_player_get_source (porder->priv->player);
+	RBSource *source = rb_shell_player_get_playing_source (porder->priv->player);
 	if (source) {
 		RBEntryView *entry_view = rb_source_get_entry_view (source);
 		return rb_entry_view_get_playing_entry (entry_view) != NULL;
@@ -198,7 +198,7 @@ rb_play_order_get_entry_view (RBPlayOrder *porder)
 	RBShellPlayer *player = porder->priv->player;
 	if (player == NULL)
 		return NULL;
-	source = rb_shell_player_get_source (player);
+	source = rb_shell_player_get_playing_source (player);
 	if (source == NULL)
 		return NULL;
 	return rb_source_get_entry_view (source);
