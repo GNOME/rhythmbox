@@ -51,6 +51,8 @@ GType                 rb_library_get_type           (void);
 
 RBLibrary            *rb_library_new                (void);
 
+void                  rb_library_release_brakes     (RBLibrary *library);
+
 void                  rb_library_add_file           (RBLibrary *library,
 					             const char *uri);
 void                  rb_library_remove_node        (RBLibrary *library,

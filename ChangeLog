@@ -1,5 +1,29 @@
 2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* configure.in:
+
+	Remove panel dependency
+	
+	* data/art/Makefile.am:
+	* data/art/splash-groups.png:
+	* data/art/splash-library.png:
+	* data/art/splash-ui.png:
+	* data/art/splash.png:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/e-splash.c:
+	* lib/widgets/e-splash.h:
+	* lib/widgets/rb-node-view.c: (tree_view_size_allocate_cb):
+	* library/rb-library.c: (rb_library_init),
+	(rb_library_get_action_queue), (rb_library_release_brakes):
+	* library/rb-library.h:
+	* library/rb-node.c: (rb_node_add_action):
+	* shell/rb-shell.c: (rb_shell_construct):
+
+	Remove splashscreen, only start loading lib when the mainwindow
+	is shown.
+
+2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-node.c: (rb_node_system_shutdown):
 
 	Only remove idle if != 0

@@ -1249,6 +1249,7 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 	for (l = columns; l != NULL; l = g_list_next (l))
 	{
 		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (l->data);
+
 		if (column->visible == FALSE)
 			continue;
 

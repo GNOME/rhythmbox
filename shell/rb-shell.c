@@ -52,7 +52,6 @@
 #include "rb-shell-preferences.h"
 #include "rb-group-view.h"
 #include "eel-gconf-extensions.h"
-#include "e-splash.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -330,30 +329,8 @@ rb_shell_construct (RBShell *shell)
 	Bonobo_UIContainer corba_container;
 	GtkWidget *vbox;
 	RBView *library_view;
-	GtkWidget *splash;
-	GdkPixbuf *splash_icon;
 
 	g_return_if_fail (RB_IS_SHELL (shell));
-
-	splash = e_splash_new ();
-	g_signal_connect (G_OBJECT (splash), "delete_event",
-			  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
-	gtk_widget_show (splash);
-
-	splash_icon = gdk_pixbuf_new_from_file (rb_file ("splash-ui.png"), NULL);
-	e_splash_add_icon (E_SPLASH (splash), splash_icon);
-	g_object_unref (G_OBJECT (splash_icon));
-
-	splash_icon = gdk_pixbuf_new_from_file (rb_file ("splash-library.png"), NULL);
-	e_splash_add_icon (E_SPLASH (splash), splash_icon);
-	g_object_unref (G_OBJECT (splash_icon));
-
-	splash_icon = gdk_pixbuf_new_from_file (rb_file ("splash-groups.png"), NULL);
-	e_splash_add_icon (E_SPLASH (splash), splash_icon);
-	g_object_unref (G_OBJECT (splash_icon));
-
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 
 	rb_debug ("Constructing shell");
 
@@ -448,10 +425,6 @@ rb_shell_construct (RBShell *shell)
 
 	gtk_widget_show_all (vbox);
 
-	e_splash_set_icon_highlight (E_SPLASH (splash), 0, TRUE);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-
 	shell->priv->library = rb_library_new ();
 
 	/* initialize views */
@@ -460,16 +433,8 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_append_view (shell, library_view);
 	rb_shell_select_view (shell, library_view); /* select this one by default */
 
-	e_splash_set_icon_highlight (E_SPLASH (splash), 1, TRUE);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-
 	/* music groups */
 	rb_shell_load_music_groups (shell);
-
-	e_splash_set_icon_highlight (E_SPLASH (splash), 2, TRUE);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
 
 	/* now that we restored all views we can restore the layout */
 	rb_sidebar_load_layout (RB_SIDEBAR (shell->priv->sidebar),
@@ -488,7 +453,10 @@ rb_shell_construct (RBShell *shell)
 			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
 
 	gtk_widget_show (shell->priv->window);
-	gtk_widget_hide (splash);
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
+
+	rb_library_release_brakes (shell->priv->library);
 }
 
 char *

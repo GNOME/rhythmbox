@@ -19,8 +19,6 @@ librbwidgets_la_SOURCES =				\
 	rb-volume.h					\
 	eggtreemodelfilter.c				\
 	eggtreemodelfilter.h				\
-	e-splash.c					\
-	e-splash.h					\
 	rb-ellipsizing-label.c				\
 	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\

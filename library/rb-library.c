@@ -114,11 +114,6 @@ rb_library_init (RBLibrary *library)
 	library->priv->queue = rb_library_action_queue_new ();
 
 	library->priv->main_thread = rb_library_main_thread_new (library);
-
-	library->priv->xml_thread = rb_library_xml_thread_new (library,
-							       library->priv->xml_file);
-	g_signal_connect (G_OBJECT (library->priv->xml_thread), "done_loading",
-			  G_CALLBACK (xml_thread_done_loading_cb), library);
 }
 
 static void
@@ -306,4 +301,13 @@ RBLibraryActionQueue *
 rb_library_get_action_queue (RBLibrary *library)
 {
 	return library->priv->queue;
+}
+
+void
+rb_library_release_brakes (RBLibrary *library)
+{
+	library->priv->xml_thread = rb_library_xml_thread_new (library,
+							       library->priv->xml_file);
+	g_signal_connect (G_OBJECT (library->priv->xml_thread), "done_loading",
+			  G_CALLBACK (xml_thread_done_loading_cb), library);
 }

@@ -1242,19 +1242,14 @@ rb_node_add_action (RBNode *node,
 	g_queue_push_tail (actions, action);
 	g_static_rw_lock_writer_unlock (actions_lock);
 
-	fprintf (stderr, "added an action\n");
-
 	/* add the idle function that will emit signals */
 	g_mutex_lock (actions_idle_func_lock);
 	if (actions_idle_func == 0)
 	{
-		fprintf (stderr, "initiated timeout\n");
 		actions_idle_func = g_idle_add_full (100,
 						     (GSourceFunc) rb_node_action_queue_cb, 
 						     NULL, 
 						     NULL);
 	}
 	g_mutex_unlock (actions_idle_func_lock);
-
-	fprintf (stderr, "done adding action\n");
 }
