@@ -1069,6 +1069,7 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 		klass->impl_entry_get (db, entry, propid, &tem);
 		g_value_init (&changedata->old, G_VALUE_TYPE (value));
 		g_value_copy (&tem, &changedata->old);
+		g_value_unset (&tem);
 	}
 	g_value_init (&changedata->new, G_VALUE_TYPE (value));
 	g_value_copy (value, &changedata->new);
