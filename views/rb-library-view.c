@@ -59,9 +59,9 @@ static void rb_library_view_get_property (GObject *object,
 static void album_node_selected_cb (RBNodeView *view,
 			            RBNode *node,
 			            RBLibraryView *testview);
-static void album_node_activated_cb (RBNodeView *view,
-				     RBNode *node,
-				     RBLibraryView *library_view);
+static void artist_or_album_activated_cb (RBNodeView *view,
+					  RBNode *node,
+					  RBLibraryView *library_view);
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
 			             RBLibraryView *testview);
@@ -404,6 +404,12 @@ rb_library_view_set_property (GObject *object,
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
+			g_signal_connect (G_OBJECT (view->priv->artists),
+					  "node_activated",
+					  G_CALLBACK (artist_or_album_activated_cb),
+					  view);
+
+
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
 
 			/* set up albums treeview */
@@ -415,7 +421,7 @@ rb_library_view_set_property (GObject *object,
 					  view);
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_activated",
-					  G_CALLBACK (album_node_activated_cb),
+					  G_CALLBACK (artist_or_album_activated_cb),
 					  view);
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
@@ -423,6 +429,8 @@ rb_library_view_set_property (GObject *object,
 			
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
+
+			/* set up songs tree view */
 			g_signal_connect (G_OBJECT (view->priv->songs), "playing_node_removed",
 					  G_CALLBACK (rb_library_view_node_removed_cb), view);
 
@@ -542,9 +550,9 @@ album_node_selected_cb (RBNodeView *view,
 }
 
 static void 
-album_node_activated_cb (RBNodeView *view,
-			 RBNode *node,
-			 RBLibraryView *library_view)
+artist_or_album_activated_cb(RBNodeView *view,
+			     RBNode *node,
+			     RBLibraryView *library_view)
 {
 	RBNode *first_node;
 
