@@ -501,8 +501,8 @@ rb_node_song_sync (RBNodeSong *node,
 	}
 
 	if (check_reparent == FALSE) {
-		rb_node_add_child (rb_node_song_get_album (node), RB_NODE (node));
 		rb_node_add_child (rb_library_get_all_songs (library), RB_NODE (node));
+		rb_node_add_child (rb_node_song_get_album (node), RB_NODE (node));
 	}
 
 	g_object_unref (G_OBJECT (info));
