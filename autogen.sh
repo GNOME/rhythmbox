@@ -59,7 +59,7 @@ if automake-1.8 --version < /dev/null > /dev/null 2>&1; then
 else
 	echo
 	echo "You must have automake >= 1.8 installed to compile $PROJECT."
-	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.7.2.tar.gz"
+	echo "Get ftp://ftp.gnu.org/pub/gnu/automake/automake-1.8.3.tar.gz"
 	echo "(or a newer version if it is available)"
 	DIE=1
 fi
