@@ -2,6 +2,15 @@
 
 	* lib/widgets/rb-tree-model-node.c:
 	(rb_tree_model_node_set_property),
+	(rb_tree_model_node_iter_n_children), (root_child_destroyed_cb),
+	(root_child_created_cb):
+
+	Cache number of rows.
+
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property),
 	(filter_parent_child_created_cb),
 	(filter_parent_child_destroyed_cb),
 	(rb_tree_model_node_update_node), (root_child_changed_cb):
