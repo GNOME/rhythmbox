@@ -1531,7 +1531,7 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		    const char *verbname)
 {
 	const char **tem;
-	char *comment;
+	GString *comment;
 	static GtkWidget *about = NULL;
 	GdkPixbuf *pixbuf = NULL;
 
@@ -1569,9 +1569,13 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 		;
 	*tem = _("Contributors:");
 
+	comment = g_string_new (_("Music management and playback software for GNOME."));
+#ifdef WITH_MONKEYMEDIA
 	{
+		char *temstr;
 		const char *backend;
 		GString *formats = g_string_new ("");
+
 #ifdef HAVE_GSTREAMER
 		backend = "GStreamer";
 #else
@@ -1589,19 +1593,20 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 #ifdef HAVE_MP4
 		g_string_append (formats, " MPEG-4");
 #endif
-
-		comment = g_strdup_printf (_("Music management and playback software for GNOME.\nAudio backend: %s\nAudio formats:%s\n"), backend, formats->str);
+		g_string_append_printf (comment, "\nAudio playback: %s\nAudio formats:%s\n",
+					backend, formats->str);
 
 		g_string_free (formats, TRUE);
 	}
+#endif
 	about = gnome_about_new ("Rhythmbox", VERSION,
 				 "Copyright \xc2\xa9 2002, 2003 Jorn Baayen, Colin Walters",
-				 comment,
+				 comment->str,
 				 (const char **) authors,
 				 (const char **) documenters,
 				 strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
 				 pixbuf);
-	g_free (comment);
+	g_string_free (comment, TRUE);
 	gtk_window_set_transient_for (GTK_WINDOW (about), GTK_WINDOW (shell->priv->window));
 
 	g_object_add_weak_pointer (G_OBJECT (about),

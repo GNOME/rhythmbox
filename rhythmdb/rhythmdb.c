@@ -597,7 +597,7 @@ synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	/* title */
 	if (!rb_metadata_get (db->priv->metadata,
 			      RB_METADATA_FIELD_TITLE,
-			      &val)) {
+			      &val) || g_value_get_string (&val)[0] == '\0') {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, db->priv->vfsinfo->name);
 	}
@@ -616,7 +616,7 @@ synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	/* genre */
 	if (rb_metadata_get (db->priv->metadata,
 			     RB_METADATA_FIELD_GENRE,
-			     &val)) {
+			     &val) && g_value_get_string (&val)[0] != '\0') {
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
 		g_value_unset (&val);
 	}
@@ -624,7 +624,7 @@ synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	/* artist */
 	if (rb_metadata_get (db->priv->metadata,
 			     RB_METADATA_FIELD_ARTIST,
-			     &val)) {
+			     &val) && g_value_get_string (&val)[0] != '\0') {
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
 		g_value_unset (&val);
 	}
@@ -632,8 +632,8 @@ synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	/* album */
 	if (rb_metadata_get (db->priv->metadata,
 			     RB_METADATA_FIELD_ALBUM,
-			     &val)) {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
+			     &val) && g_value_get_string (&val)[0] != '\0') {
+
 		g_value_unset (&val);
 	}
 }

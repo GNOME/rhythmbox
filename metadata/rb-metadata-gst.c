@@ -128,13 +128,6 @@ free_gvalue (GValue *val)
 	g_free (val);
 }
 
-static void
-rb_metadata_gst_eos_cb (GstElement *element,
-			gboolean *eos)
-{
-	*eos = TRUE;
-}
-
 static int
 rb_metadata_gst_tag_to_field (const char *tag)
 {
@@ -278,8 +271,6 @@ rb_metadata_load (RBMetaData *md,
 				   gst_caps_new ("app filter", "application/x-gst-tags",
 						 gst_props_empty_new ()));
 
-	g_signal_connect (G_OBJECT (fakesink), "eos",
-			  G_CALLBACK (rb_metadata_gst_eos_cb), md);
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
 	while (gst_bin_iterate (GST_BIN (pipeline)))
