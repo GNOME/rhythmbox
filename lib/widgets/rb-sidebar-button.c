@@ -269,6 +269,7 @@ rb_sidebar_button_init (RBSidebarButton *button)
 	
 	/* label */
 	button->label = rb_ellipsizing_label_new ("");
+	gtk_label_set_justify (GTK_LABEL (button->label), GTK_JUSTIFY_CENTER);
 	gtk_box_pack_start (GTK_BOX (button->priv->box),
 			    button->label,
 			    FALSE,
