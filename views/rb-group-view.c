@@ -1371,7 +1371,9 @@ rb_group_view_add_node (RBGroupView *view,
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (node != NULL);
 
+	GDK_THREADS_LEAVE ();
 	rb_node_add_child (view->priv->group, node);
+	GDK_THREADS_ENTER ();
 }
 
 static void

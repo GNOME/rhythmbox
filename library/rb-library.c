@@ -691,7 +691,7 @@ rb_library_handle_songs (RBLibrary *library,
 			if ((rb_library_get_all_artists (library) != n) &&
 			    (rb_library_get_all_albums (library) != n) &&
 			    (rb_library_get_all_songs (library) != n))
-				rb_library_handle_songs (library, node, func, user_data);
+				rb_library_handle_songs (library, n, func, user_data);
 		}
 
 		rb_node_thaw (node);
