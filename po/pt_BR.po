@@ -9,14 +9,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: 2.2\n"
-"POT-Creation-Date: 2003-10-16 12:04-0200\n"
-"PO-Revision-Date: 2003-08-09 22:58-0300\n"
+"POT-Creation-Date: 2003-10-26 00:37-0200\n"
+"PO-Revision-Date: 2003-10-17 18:14-0300\n"
 "Last-Translator: Evandro Fernandes Giovanini <evandrofg@ig.com.br>\n"
 "Language-Team: GNOME-l10n-br <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Report-Msgid-Bugs-To: \n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
 msgid "Add To Music Player Library"
@@ -29,6 +30,20 @@ msgstr "Extensão do menu de contexto do Nautilus para o Rhythmbox"
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Item Rhythmbox do Menu de Contexto do Nautilus"
+
+#: corba/test-corba.c:55
+msgid "I could not initialize Bonobo"
+msgstr ""
+
+#: corba/test-corba.c:62
+msgid "Could not create an instance of the sample echo component"
+msgstr ""
+
+#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:232
+#: shell/main.c:242
+#, c-format
+msgid "An exception occured '%s'"
+msgstr ""
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -49,7 +64,6 @@ msgid "*"
 msgstr "*"
 
 #: data/glade/druid.glade.h:2
-#, fuzzy
 msgid ""
 "Rhythmbox manages all of your music in a central music \"library\", so you "
 "can easily view, search, and organize it.\n"
@@ -58,9 +72,12 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox precisa saber onde encontrar sua coleção de música. Você pode "
-"pular este passo e adicionar músicas à biblioteca mais tarde. Por favor "
-"escolha uma das opções abaixo:"
+"O Rhythmbox gerencia todas suas músicas em uma \"biblioteca\", para que você "
+"possa ver, procurar e organizá-las facilmente.\n"
+"Para usar uma biblioteca, você deve informar o Rhythmbox onde encontrar as "
+"músicas. Você pode pular este passo e adicionar músicas à biblioteca mais "
+"tarde.\n"
+"Escolha uma das opções abaixo:"
 
 #: data/glade/druid.glade.h:5
 msgid "_Browse..."
@@ -80,7 +97,7 @@ msgstr "_Pular este passo"
 
 #: data/glade/general-prefs.glade.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1197
+#: data/node-views/rb-node-view-songs.xml.h:1 widgets/rb-entry-view.c:1236
 msgid "A_lbum"
 msgstr "Á_lbum"
 
@@ -122,7 +139,7 @@ msgstr "_Qualidade"
 #: data/glade/general-prefs.glade.h:10
 #: data/node-views/rb-node-view-cdaudio.xml.h:6
 #: data/node-views/rb-node-view-iradio-stations.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1149
+#: data/node-views/rb-node-view-songs.xml.h:8 widgets/rb-entry-view.c:1188
 msgid "_Rating"
 msgstr "_Pontuação"
 
@@ -255,45 +272,45 @@ msgstr "_Álbum"
 #: data/node-views/rb-node-view-artists.xml.h:1
 #: data/node-views/rb-node-view-cdaudio.xml.h:2
 #: data/node-views/rb-node-view-playlist.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1187
+#: data/node-views/rb-node-view-songs.xml.h:2 widgets/rb-entry-view.c:1226
 msgid "Art_ist"
 msgstr "Ar_tista"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:3
 #: data/node-views/rb-node-view-iradio-stations.xml.h:1
-#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1207
+#: data/node-views/rb-node-view-songs.xml.h:3 widgets/rb-entry-view.c:1246
 msgid "Ge_nre"
 msgstr "Gê_nero"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:4
-#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1217
+#: data/node-views/rb-node-view-songs.xml.h:5 widgets/rb-entry-view.c:1256
 msgid "Ti_me"
 msgstr "_Duração"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:5
-#: data/node-views/rb-node-view-songs.xml.h:6 widgets/rb-entry-view.c:1167
-#: sources/rb-playlist-source.c:269
+#: data/node-views/rb-node-view-songs.xml.h:6 sources/rb-playlist-source.c:268
+#: widgets/rb-entry-view.c:1206
 msgid "Tra_ck"
 msgstr "_Faixa"
 
 #: data/node-views/rb-node-view-cdaudio.xml.h:7
 #: data/node-views/rb-node-view-iradio-stations.xml.h:6
 #: data/node-views/rb-node-view-playlist.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1176
+#: data/node-views/rb-node-view-songs.xml.h:9 widgets/rb-entry-view.c:1215
 msgid "_Title"
 msgstr "_Título"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:2
-#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1238
+#: data/node-views/rb-node-view-songs.xml.h:4 widgets/rb-entry-view.c:1277
 msgid "L_ast Played"
 msgstr "Últim_a Reproduzida"
 
 #: data/node-views/rb-node-view-iradio-stations.xml.h:3
-#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1229
+#: data/node-views/rb-node-view-songs.xml.h:7 widgets/rb-entry-view.c:1268
 msgid "_Play Count"
 msgstr "Contagem de Re_produções"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:656 shell/rb-shell.c:1235
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:763 shell/rb-shell.c:1368
 msgid "Music Player"
 msgstr "Reprodutor de Música"
 
@@ -333,7 +350,7 @@ msgstr "_Ejetar CD de Áudio..."
 msgid "_Jump to Playing Song"
 msgstr "_Ir para Música em Reprodução"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:74
+#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:72
 msgid "_View"
 msgstr "_Ver"
 
@@ -378,9 +395,8 @@ msgid "Create a new Internet Radio station"
 msgstr "Criar uma nova Estação de Rádio na Internet"
 
 #: data/ui/rhythmbox-ui.xml.in.h:11
-#, fuzzy
 msgid "Create a new automatically updating playlist"
-msgstr "Criar uma nova lista de reprodução inteligente"
+msgstr "Criar uma nova lista de reprodução que se atualiza automaticamente"
 
 #: data/ui/rhythmbox-ui.xml.in.h:12
 msgid "Create a new playlist"
@@ -395,9 +411,8 @@ msgid "Cut selection"
 msgstr "Recortar seleção"
 
 #: data/ui/rhythmbox-ui.xml.in.h:15
-#, fuzzy
 msgid "D_eselect All"
-msgstr "Selecionar Tod_as"
+msgstr "D_eselecionar Todas"
 
 #: data/ui/rhythmbox-ui.xml.in.h:16
 msgid "Delete selection"
@@ -412,31 +427,29 @@ msgid "Edit music player preferences"
 msgstr "Editar as preferências do reprodutor de música"
 
 #: data/ui/rhythmbox-ui.xml.in.h:20
-#, fuzzy
 msgid "Extract and import songs from a CD"
-msgstr "Extrair músicas de um CD"
+msgstr "Extrair e importar músicas de um CD"
 
 #: data/ui/rhythmbox-ui.xml.in.h:21
-#, fuzzy
 msgid "Import Lo_cation..."
-msgstr "Adicionar Lo_calização..."
+msgstr "Importar Lo_calização..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:22
-#, fuzzy
 msgid "Import _Audio CD..."
-msgstr "_Ejetar CD de Áudio..."
+msgstr "Import_ar CD de Áudio..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:23
 msgid "Make the main window smaller"
-msgstr ""
+msgstr "Tornar a janela principal menor"
 
 #: data/ui/rhythmbox-ui.xml.in.h:24
-msgid "New _Internet Radio Station"
-msgstr "Nova Estação de Rádio na _Internet"
+#, fuzzy
+msgid "New _Automatic Playlist..."
+msgstr "Nova Li_sta de Reprodução Inteligente..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:25
-msgid "New _Smart Playlist..."
-msgstr "Nova Li_sta de Reprodução Inteligente..."
+msgid "New _Internet Radio Station"
+msgstr "Nova Estação de Rádio na _Internet"
 
 #: data/ui/rhythmbox-ui.xml.in.h:26
 msgid "P_revious"
@@ -451,18 +464,16 @@ msgid "Pause playing"
 msgstr "Pausar reprodução"
 
 #: data/ui/rhythmbox-ui.xml.in.h:29
-#, fuzzy
 msgid "Playlist"
-msgstr "Nova Lista de Reprodução"
+msgstr "Lista de Reprodução"
 
 #: data/ui/rhythmbox-ui.xml.in.h:30
 msgid "Prefere_nces"
 msgstr "Preferê_ncias"
 
 #: data/ui/rhythmbox-ui.xml.in.h:31
-#, fuzzy
 msgid "Quit the music player"
-msgstr "Fechar o reprodutor de música"
+msgstr "Sair do reprodutor de música"
 
 #: data/ui/rhythmbox-ui.xml.in.h:32
 msgid "Repea_t"
@@ -470,7 +481,7 @@ msgstr "Repe_tir"
 
 #: data/ui/rhythmbox-ui.xml.in.h:33
 msgid "S_tatusbar"
-msgstr "_Barra de estado"
+msgstr "_Barra de Estado"
 
 #: data/ui/rhythmbox-ui.xml.in.h:34
 msgid "Save a playlist to a file"
@@ -488,7 +499,7 @@ msgstr "Mostrar informações sobre a música selecionada"
 msgid "Source _List"
 msgstr "_Lista de Fontes"
 
-#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1138
+#: data/ui/rhythmbox-ui.xml.in.h:41 shell/rb-shell-player.c:1248
 msgid "Start playing"
 msgstr "Iniciar a Reprodução"
 
@@ -529,9 +540,8 @@ msgid "_Contents"
 msgstr "_Conteúdo"
 
 #: data/ui/rhythmbox-ui.xml.in.h:51
-#, fuzzy
 msgid "_Control"
-msgstr "Controle de Volume"
+msgstr "_Controle"
 
 #: data/ui/rhythmbox-ui.xml.in.h:52
 msgid "_Copy"
@@ -551,11 +561,11 @@ msgstr "Aj_uda"
 
 #: data/ui/rhythmbox-ui.xml.in.h:57
 msgid "_Import folder..."
-msgstr ""
+msgstr "_Importar pasta..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:59
 msgid "_Load from file..."
-msgstr ""
+msgstr "_Carregar do arquivo..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:60
 msgid "_Music"
@@ -573,7 +583,7 @@ msgstr "_Seguinte"
 msgid "_Paste"
 msgstr "Co_lar"
 
-#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1139
+#: data/ui/rhythmbox-ui.xml.in.h:64 shell/rb-shell-player.c:1249
 msgid "_Play"
 msgstr "Re_produzir"
 
@@ -582,40 +592,28 @@ msgid "_Properties"
 msgstr "_Propriedades"
 
 #: data/ui/rhythmbox-ui.xml.in.h:66
-#, fuzzy
 msgid "_Quit"
-msgstr "_Qualidade"
+msgstr "Sai_r"
 
 #: data/ui/rhythmbox-ui.xml.in.h:67
-#, fuzzy
 msgid "_Remove"
-msgstr "_Renomear"
+msgstr "_Remover"
 
 #: data/ui/rhythmbox-ui.xml.in.h:68
-msgid "_Rename"
-msgstr "_Renomear"
+msgid "_Save to file..."
+msgstr "_Salvar para arquivo..."
 
 #: data/ui/rhythmbox-ui.xml.in.h:69
-#, fuzzy
-msgid "_Rename..."
-msgstr "_Renomear"
-
-#: data/ui/rhythmbox-ui.xml.in.h:70
-#, fuzzy
-msgid "_Save to file..."
-msgstr "_Salvar Lista de Reprodução..."
-
-#: data/ui/rhythmbox-ui.xml.in.h:71
 msgid "_Show Window"
 msgstr "Mostrar _Janela"
 
-#: data/ui/rhythmbox-ui.xml.in.h:72 shell/rb-statusbar.c:181
+#: data/ui/rhythmbox-ui.xml.in.h:70 shell/rb-statusbar.c:228
 msgid "_Shuffle"
 msgstr "Em_baralhar"
 
-#: data/ui/rhythmbox-ui.xml.in.h:73
+#: data/ui/rhythmbox-ui.xml.in.h:71
 msgid "_Small Display"
-msgstr ""
+msgstr "_Janela Reduzida"
 
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
@@ -625,23 +623,23 @@ msgstr "Nova Estação de Rádio Internet"
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
 #: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
-#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:244
-#: sources/rb-iradio-source.c:245 sources/rb-iradio-source.c:246
-#: sources/rb-playlist-source.c:393
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:250
+#: sources/rb-iradio-source.c:251 sources/rb-iradio-source.c:252
+#: sources/rb-playlist-source.c:391
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: iradio/rb-new-station-dialog.c:303 rhythmdb/rhythmdb-property-model.c:283
+#: iradio/rb-new-station-dialog.c:303 rhythmdb/rhythmdb-property-model.c:345
 msgid "All"
 msgstr "Todas"
 
-#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:572
-#: widgets/rb-song-info.c:590
+#: iradio/rb-station-properties-dialog.c:170 widgets/rb-song-info.c:621
+#: widgets/rb-song-info.c:639
 #, c-format
 msgid "%s Properties"
 msgstr "Propriedades de %s"
 
-#: iradio/rb-station-properties-dialog.c:333
+#: iradio/rb-station-properties-dialog.c:334
 #, c-format
 msgid "Properties for %s"
 msgstr "Propriedades para %s"
@@ -707,165 +705,6 @@ msgstr "O ,DJ "
 msgid "%s, %s"
 msgstr "%s, %s"
 
-#: widgets/rb-cell-renderer-pixbuf.c:109
-msgid "Pixbuf Object"
-msgstr "Objeto Pixbuf"
-
-#: widgets/rb-cell-renderer-pixbuf.c:110
-msgid "The pixbuf to render."
-msgstr "O pixbuf a renderizar."
-
-#: widgets/rb-druid.c:218 shell/main.c:101
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
-#: widgets/rb-druid.c:239
-msgid "Welcome to Rhythmbox"
-msgstr "Bem vindo ao Rhythmbox"
-
-#: widgets/rb-druid.c:243
-msgid ""
-"Rhythmbox is the GNOME music player that lets you do everything: play your "
-"music files, listen to Internet Radio, import music from CDs, and much "
-"more.\n"
-"\n"
-"This assistant will help you get started by asking you some simple questions."
-msgstr ""
-
-#: widgets/rb-druid.c:249
-#, fuzzy
-msgid "Music library setup"
-msgstr "Configuração da biblioteca"
-
-#: widgets/rb-druid.c:258
-msgid "Finish"
-msgstr "Terminado"
-
-#: widgets/rb-druid.c:260
-msgid ""
-"You are now ready to start Rhythmbox.\n"
-"\n"
-"Remember that you may add music to the library using \"Organize\" then \"Add "
-"to Library\", or by importing it from CDs."
-msgstr ""
-
-#: widgets/rb-druid.c:309
-#, c-format
-msgid "Error reading filename: %s"
-msgstr "Erro ao ler nome do arquivo: %s"
-
-#: widgets/rb-druid.c:324
-msgid "Choose a directory"
-msgstr "Escolha um diretório"
-
-#: widgets/rb-entry-view.c:949 rhythmdb/rhythmdb.c:984
-msgid "Never"
-msgstr "Nunca"
-
-#: widgets/rb-entry-view.c:982 widgets/rb-player.c:805
-#, c-format
-msgid "%d:%02d"
-msgstr "%d:%02d"
-
-#: widgets/rb-link.c:332
-#, c-format
-msgid ""
-"There was an error going to %s:\n"
-"%s"
-msgstr ""
-"Ocorreu um erro indo para %s:\n"
-"%s"
-
-#: widgets/rb-load-failure-dialog.c:119
-msgid "Error loading files into library"
-msgstr "Erro ao carregar arquivos para biblioteca"
-
-#: widgets/rb-load-failure-dialog.c:136
-msgid "_Error"
-msgstr "_Erro"
-
-#: widgets/rb-load-failure-dialog.c:144
-msgid "_File"
-msgstr "_Arquivo"
-
-#: widgets/rb-player.c:279
-msgid "Listening to "
-msgstr "Ouvindo "
-
-#: widgets/rb-player.c:506
-msgid "Get information on this album from the web"
-msgstr "Obter na web informações sobre este álbum"
-
-#: widgets/rb-player.c:517
-msgid "Get information on this artist from the web"
-msgstr "Obter na web informações sobre este artista"
-
-#: widgets/rb-player.c:527
-msgid "Get more information on this station from the web"
-msgstr "Obter na web mais informações sobre esta estação"
-
-#: widgets/rb-player.c:538 shell/rb-shell.c:1211 shell/rb-tray-icon.c:218
-msgid "Not playing"
-msgstr "Parado"
-
-#: widgets/rb-player.c:803
-#, c-format
-msgid "%d:%02d of %d:%02d"
-msgstr "%d:%02d de %d:%02d"
-
-#. this string can only be so long, or there wont be a search entry :)
-#: widgets/rb-search-entry.c:118
-msgid "_Search:"
-msgstr "_Procurar:"
-
-#: widgets/rb-song-display-box.c:113
-msgid "from "
-msgstr "de "
-
-#: widgets/rb-song-display-box.c:116
-msgid "by "
-msgstr "por "
-
-#: widgets/rb-song-info.c:228 widgets/rb-song-info.c:596
-msgid "Song Properties"
-msgstr "Propriedades da Música"
-
-#: widgets/rb-song-info.c:874
-msgid "on the desktop"
-msgstr "na área de trabalho"
-
-#: widgets/rb-song-info.c:1094
-#, c-format
-msgid "%d kbps"
-msgstr "%d kbps"
-
-#: widgets/rb-song-info.c:1107
-msgid " (Mono)"
-msgstr " (Mono)"
-
-#: widgets/rb-song-info.c:1110
-msgid " (Stereo)"
-msgstr " (Stereo)"
-
-#: widgets/rb-song-info.c:1113
-#, c-format
-msgid " (%d channels)"
-msgstr " (%d canais)"
-
-#: sources/rb-sourcelist.c:188
-msgid "_Source"
-msgstr "_Fonte"
-
-#. Translators - The + and - refer to increasing and decreasing the volume.
-#. ** I don't know if there are sensible alternatives in other languages
-#: widgets/rb-volume.c:233
-msgid "+"
-msgstr "+"
-
-#: widgets/rb-volume.c:234
-msgid "-"
-msgstr "-"
-
 #: monkey-media/monkey-media-audio-cd.c:220
 #, c-format
 msgid ""
@@ -907,79 +746,107 @@ msgstr "Erro lendo o cabeçalho do CD: %s"
 msgid "Error getting leadout: %s"
 msgstr "Erro obtendo o 'leadout': %s"
 
+#: monkey-media/monkey-media-audio-quality.c:35
+msgid "Very low"
+msgstr ""
+
+#: monkey-media/monkey-media-audio-quality.c:36
+msgid "Low"
+msgstr ""
+
+#: monkey-media/monkey-media-audio-quality.c:37
+msgid "Regular"
+msgstr ""
+
+#: monkey-media/monkey-media-audio-quality.c:38
+msgid "High"
+msgstr ""
+
+#: monkey-media/monkey-media-audio-quality.c:39
+msgid "Very high"
+msgstr ""
+
+#: monkey-media/monkey-media-audio-quality.c:40
+msgid "Lossless"
+msgstr ""
+
 #: monkey-media/monkey-media-player-gst-old.c:371
-#: monkey-media/monkey-media-player-gst.c:453
+#: monkey-media/monkey-media-player-gst.c:455
 msgid "Failed to create gnomevfssrc input element; check your installation"
 msgstr ""
 "Falhou ao criar elemento de entrada gnomevfssrc; verifique sua instalação"
 
 #: monkey-media/monkey-media-player-gst-old.c:380
-#: monkey-media/monkey-media-player-gst.c:468
+#: monkey-media/monkey-media-player-gst.c:470
 msgid "Failed to create cdparanoia input element; check your installation"
 msgstr ""
 "Falhou ao criar elemento de entrada cdparanoia; verifique sua instalação"
 
 #: monkey-media/monkey-media-player-gst-old.c:401
-#: monkey-media/monkey-media-player-gst-tmp.c:571
-#: monkey-media/monkey-media-player-gst.c:518
+#: monkey-media/monkey-media-player-gst.c:520
 msgid "Failed to create spider element; check your installation"
 msgstr "Falhou ao criar elemento spider; verifique sua instalação"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:583
-#: monkey-media/monkey-media-player-gst.c:533
+#: monkey-media/monkey-media-player-gst-tmp.c:591
+#: monkey-media/monkey-media-player-gst.c:535
 msgid "Failed to create volume element; check your installation"
 msgstr "Falhou ao criar elemento volume; verifique sua instalação"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:601
-#: monkey-media/monkey-media-player-gst.c:554
+#: monkey-media/monkey-media-player-gst-tmp.c:609
+#: monkey-media/monkey-media-player-gst.c:556
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "Falhou ao criar elemento de saída de áudio; verifique suas configurações"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:717
-#: monkey-media/monkey-media-player-gst.c:641
+#: monkey-media/monkey-media-player-gst-tmp.c:725
+#: monkey-media/monkey-media-player-gst.c:643
 msgid "No AudioCD support; check your settings"
 msgstr "Sem suporte a AudoCD; verifique suas configurações"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:514
+#: monkey-media/monkey-media-player-gst-tmp.c:518
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr "Falhou ao criar elemento de entrada %s; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:539
-#: monkey-media/monkey-media-player-gst.c:491
+#: monkey-media/monkey-media-player-gst-tmp.c:543
+#: monkey-media/monkey-media-player-gst.c:493
 msgid "Failed to create queue element; check your installation"
 msgstr "Falhou ao criar elemento queue; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-xine.c:334
+#: monkey-media/monkey-media-player-gst-tmp.c:573
+#, fuzzy, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "Falhou ao criar elemento de entrada %s; verifique sua instalação"
+
+#: monkey-media/monkey-media-player-xine.c:336
 msgid "Failed to set up an audio driver; check your installation"
 msgstr "Falhou ao configurar um driver de áudio; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-xine.c:422
+#: monkey-media/monkey-media-player-xine.c:424
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr "Nenhum plugin de entrada disponível para %s; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-xine.c:431
+#: monkey-media/monkey-media-player-xine.c:433
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "Nenhum plugin de desmultiplexação disponível para %s; verifique sua "
 "instalação"
 
-#: monkey-media/monkey-media-player-xine.c:440
+#: monkey-media/monkey-media-player-xine.c:442
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Desmultiplexação de %s falhou; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-xine.c:448
+#: monkey-media/monkey-media-player-xine.c:450
 msgid "Internal error; check your installation."
 msgstr "Erro interno; verifique sua instalação"
 
-#: monkey-media/monkey-media-player-xine.c:457
+#: monkey-media/monkey-media-player-xine.c:458
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "Audio de %s não é tratado; verifique sua instalação"
@@ -1062,114 +929,116 @@ msgstr "Falhou ao abrir arquivo como Ogg Vorbis"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: rhythmdb/rhythmdb.c:986 sources/rb-source.c:306
+#: rhythmdb/rhythmdb.c:994 widgets/rb-entry-view.c:982
+msgid "Never"
+msgstr "Nunca"
+
+#: rhythmdb/rhythmdb.c:996 sources/rb-source.c:308
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:1562
+#: rhythmdb/rhythmdb.c:1811
 msgid "Loading songs..."
 msgstr "Carregando músicas..."
 
-#: rhythmdb/rhythmdb.c:1564
+#: rhythmdb/rhythmdb.c:1813
 msgid "Refreshing songs..."
-msgstr ""
+msgstr "Atualizando músicas..."
 
-#: rhythmdb/rhythmdb.c:1579
-#, fuzzy, c-format
+#: rhythmdb/rhythmdb.c:1828
+#, c-format
 msgid "%d song"
 msgid_plural "%d songs"
-msgstr[0] "%ld músicas"
-msgstr[1] "%ld músicas"
+msgstr[0] "%d música"
+msgstr[1] "%d músicas"
 
-#: rhythmdb/rhythmdb.c:1587
+#: rhythmdb/rhythmdb.c:1836
 #, c-format
 msgid "%.1f day"
 msgid_plural "%.1f days"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%.1f dia"
+msgstr[1] "%.1f dias"
 
-#: rhythmdb/rhythmdb.c:1590
+#: rhythmdb/rhythmdb.c:1839
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld minuto"
+msgstr[1] "%ld minutos"
 
-#: rhythmdb/rhythmdb.c:1592
+#: rhythmdb/rhythmdb.c:1841
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld hora"
+msgstr[1] "%ld horas"
 
-#: rhythmdb/rhythmdb.c:1595
-#, fuzzy, c-format
+#: rhythmdb/rhythmdb.c:1844
+#, c-format
 msgid "%s and %s"
-msgstr "%s, %s"
+msgstr "%s e %s"
 
-#: shell/main.c:79
+#: shell/main.c:82
 msgid "Print the playing song and exit"
 msgstr "Mostrar o nome da música em reprodução e sair"
 
-#: shell/main.c:80
+#: shell/main.c:83
 msgid "Print the playing song URI and exit"
 msgstr "Mostrar o URI da música em reprodução e sair"
 
-#: shell/main.c:82
-#, fuzzy
+#: shell/main.c:85
 msgid "Print the playing song length in seconds and exit"
-msgstr "Mostrar o nome da música em reprodução e sair"
+msgstr "Mostrar a duração em segundas da música em reprodução e sair"
 
-#: shell/main.c:83
-#, fuzzy
+#: shell/main.c:86
 msgid "Print the current elapsed time of playing song and exit"
-msgstr "Mostrar o nome da música em reprodução e sair"
+msgstr "Mostrar o tempo decorrido da música em reprodução e sair"
 
-#: shell/main.c:84
+#: shell/main.c:87
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr ""
 
-#: shell/main.c:86
-#, fuzzy
+#: shell/main.c:89
 msgid "Toggle play/pause mode"
-msgstr "Alternar modo de repetição"
-
-#: shell/main.c:87
-#, fuzzy
-msgid "Jump to previous song"
-msgstr "Reproduzir a música anterior"
-
-#: shell/main.c:88
-#, fuzzy
-msgid "Jump to next song"
-msgstr "_Ir para Música em Reprodução"
+msgstr "Alternar modo reproduzir/pausar"
 
 #: shell/main.c:90
+msgid "Jump to previous song"
+msgstr "Ir para a música anterior"
+
+#: shell/main.c:91
+msgid "Jump to next song"
+msgstr "Ir para a música seguinte"
+
+#: shell/main.c:93
 msgid "Enable debugging code"
 msgstr "Habilitar código de depuração"
 
-#: shell/main.c:91
+#: shell/main.c:94
 msgid "Do not register the shell"
 msgstr "Não registrar o shell"
 
-#: shell/main.c:92
+#: shell/main.c:95
 msgid "Quit Rhythmbox"
 msgstr "Sair do Rhythmbox"
 
-#: shell/main.c:93
+#: shell/main.c:96
 msgid "MonkeyMedia options:"
 msgstr "Opções do MonkeyMedia:"
 
-#: shell/main.c:189
-#, fuzzy
+#: shell/main.c:104 widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: shell/main.c:192
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
 msgstr ""
 "Atualmente o Rhythmbox não funciona se os eventos de som do GNOME estiverem "
-"habilitados."
+"habilitados e esdsink estiver em uso."
 
-#: shell/main.c:231
+#: shell/main.c:272
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1178,86 +1047,57 @@ msgstr ""
 "Falha ao ativar o shell:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:661
-msgid "Load playlist"
-msgstr "Carregar lista de reprodução"
-
-#: shell/rb-playlist-manager.c:701
-msgid "There is already a playlist with that name."
-msgstr "Já existe uma lista de reprodução com este nome."
-
-#: shell/rb-playlist-manager.c:752
-msgid "Save playlist"
-msgstr "Salvar lista de reprodução"
-
-#: shell/rb-playlist-manager.c:862
+#: shell/rb-playlist-manager.c:671
 msgid "Couldn't parse playlist"
 msgstr "Não foi possível analisar lista de reprodução"
 
-#: shell/rb-playlist-manager.c:914 shell/rb-playlist-manager.c:954
-msgid "Untitled"
-msgstr "Sem Título"
+#: shell/rb-playlist-manager.c:687
+msgid "Load playlist"
+msgstr "Carregar lista de reprodução"
 
-#: shell/rb-playlist-manager.c:922
-msgid "C_reate"
-msgstr "C_riar"
+#: shell/rb-playlist-manager.c:741
+msgid "Save playlist"
+msgstr "Salvar lista de reprodução"
 
-#: shell/rb-playlist-manager.c:937
-msgid "New Playlist"
-msgstr "Nova Lista de Reprodução"
-
-#: shell/rb-playlist-manager.c:948
-msgid "Please enter a name for the new playlist:"
-msgstr "Digite um nome para a nova lista de reprodução:"
-
-#: shell/rb-playlist-manager.c:965
-msgid "Add the _selected songs to the new playlist"
-msgstr "Adiocionar as músicas _selecionadas para a nova lista de reprodução"
-
-#: shell/rb-shell-player.c:350
+#: shell/rb-shell-player.c:440
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Falha ao criar o reprodutor: %s"
 
-#: shell/rb-shell-player.c:404
-#, fuzzy
+#: shell/rb-shell-player.c:501
 msgid "Go to previous song"
-msgstr "Reproduzir a música anterior"
+msgstr "Ir para a música anterior"
 
-#: shell/rb-shell-player.c:433
-#, fuzzy
+#: shell/rb-shell-player.c:530
 msgid "Go to next song"
-msgstr "_Ir para Música em Reprodução"
+msgstr "Ir para a música seguinte"
 
-#: shell/rb-shell-player.c:452
-#, fuzzy
+#: shell/rb-shell-player.c:549
 msgid "Change the music volume"
-msgstr "Fechar o reprodutor de música"
+msgstr "Mudar o volume da música"
 
-#: shell/rb-shell-player.c:672
+#: shell/rb-shell-player.c:788
 #, c-format
 msgid "Opening %s..."
 msgstr "Abrindo %s..."
 
-#: shell/rb-shell-player.c:1130
-#, fuzzy
+#: shell/rb-shell-player.c:1240
 msgid "Pause playback"
 msgstr "Pausar reprodução"
 
-#: shell/rb-shell-player.c:1131
+#: shell/rb-shell-player.c:1241
 msgid "_Pause"
 msgstr "_Pausar"
 
-#: shell/rb-shell-player.c:1146
-#, fuzzy
+#: shell/rb-shell-player.c:1256
 msgid "Stop playback"
-msgstr "Parar a Reprodução"
+msgstr "Parar a reprodução"
 
-#: shell/rb-shell-player.c:1147
+#: shell/rb-shell-player.c:1257
 msgid "_Stop"
 msgstr "_Parar"
 
-#: shell/rb-shell-player.c:1482
+#: shell/rb-shell-player.c:1585
 msgid "Unexpected end of stream!"
 msgstr "Fim de fluxo inesperado!"
 
@@ -1269,12 +1109,22 @@ msgstr "Preferências do Reprodutor de Música"
 msgid "General"
 msgstr "Geral"
 
-#: shell/rb-shell.c:490
+#: shell/rb-shell.c:482
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Não foi possível analisar URI \"%s\"\n"
 
-#: shell/rb-shell.c:893
+#: shell/rb-shell.c:664
+#, fuzzy
+msgid "Whether the main window is visible"
+msgstr "Tornar a janela principal menor"
+
+#: shell/rb-shell.c:668
+#, fuzzy
+msgid "Properties for the current song"
+msgstr "Propriedades para %s"
+
+#: shell/rb-shell.c:1014
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1285,7 +1135,11 @@ msgstr ""
 "Isto significa que você provavelmente instalou o RB num prefixo diferente do "
 "bonobo-activation; este aviso é inofensivo, mas o IPC não irá funcionar."
 
-#: shell/rb-shell.c:1213
+#: shell/rb-shell.c:1344 shell/rb-tray-icon.c:218 widgets/rb-player.c:536
+msgid "Not playing"
+msgstr "Parado"
+
+#: shell/rb-shell.c:1346
 #, c-format
 msgid ""
 "%s\n"
@@ -1294,19 +1148,21 @@ msgstr ""
 "%s\n"
 "Pausado, %s faltando"
 
-#: shell/rb-shell.c:1216
+#: shell/rb-shell.c:1349
 #, c-format
 msgid ""
 "%s\n"
 "%s remaining"
 msgstr ""
+"%s\n"
+"%s faltando"
 
-#: shell/rb-shell.c:1250
+#: shell/rb-shell.c:1383
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Pausado)"
 
-#: shell/rb-shell.c:1318
+#: shell/rb-shell.c:1451
 msgid "translator_credits"
 msgstr ""
 "Alexandre Folle de Menezes <afmenez@terra.com.br>\n"
@@ -1314,20 +1170,19 @@ msgstr ""
 "baseado na versão em Português Ibérico por\n"
 "Duarte Loreto <happyguy_pt@hotmail.com>"
 
-#: shell/rb-shell.c:1327
+#: shell/rb-shell.c:1460
 msgid "Maintainers:"
 msgstr "Mantenedores:"
 
-#: shell/rb-shell.c:1330
-#, fuzzy
+#: shell/rb-shell.c:1463
 msgid "Former Maintainers:"
-msgstr "Mantenedores:"
+msgstr "Mantenedores Anteriores:"
 
-#: shell/rb-shell.c:1333
+#: shell/rb-shell.c:1466
 msgid "Contributors:"
 msgstr "Contribuidores:"
 
-#: shell/rb-shell.c:1353
+#: shell/rb-shell.c:1486
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1338,22 +1193,22 @@ msgstr ""
 "Sistema de Áudio: %s\n"
 "Formatos de Áudio: %s\n"
 
-#: shell/rb-shell.c:1466
+#: shell/rb-shell.c:1599
 msgid "Choose Files or Directory"
 msgstr "Escolha Arquivos ou Diretório"
 
-#: shell/rb-shell.c:1508
+#: shell/rb-shell.c:1641
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "Para extrair CDs você precisa instalar o pacote Sound Juicer."
 
-#: shell/rb-shell.c:1515
+#: shell/rb-shell.c:1648
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Não foi possível executar sound-juicer: %s"
 
 #: shell/rb-source-header.c:177
 msgid "Filter music display by genre, artist, album, or title"
-msgstr ""
+msgstr "Filtrar exibição de músicas pelo gênero, artista, álbum ou título"
 
 #: shell/rb-source-header.c:184
 msgid "Show _Browser"
@@ -1363,17 +1218,18 @@ msgstr "Mostrar _Navegador"
 msgid "Hide _Browser"
 msgstr "Esconder _Navegador"
 
-#: shell/rb-statusbar.c:184
+#: shell/rb-statusbar.c:231
 msgid "Play songs in a random order"
-msgstr ""
+msgstr "Reproduzir músicas em ordem aleatória"
 
-#: shell/rb-statusbar.c:186
+#: shell/rb-statusbar.c:233
 msgid "_Repeat"
 msgstr "_Repetir"
 
-#: shell/rb-statusbar.c:189
+#: shell/rb-statusbar.c:236
 msgid "Play first song again after all songs are played"
 msgstr ""
+"Reproduzir a primeira música novamente após todas terem sido reproduzidas"
 
 #: sources/rb-audiocd-source.c:298
 msgid "music audiocd"
@@ -1401,45 +1257,232 @@ msgstr "Carregando informações do CD"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d músicas, %d:%02d:%02d duração total"
 
-#: sources/rb-iradio-source.c:297 sources/rb-library-source.c:423
-#, fuzzy
+#: sources/rb-iradio-source.c:319 sources/rb-library-source.c:431
+#: widgets/rb-query-creator.c:47
 msgid "Genre"
-msgstr "Gê_nero"
+msgstr "Gênero"
 
-#: sources/rb-iradio-source.c:381
+#: sources/rb-iradio-source.c:392
 msgid "Radio"
 msgstr "Rádio"
 
-#: sources/rb-iradio-source.c:498
-#, fuzzy, c-format
+#: sources/rb-iradio-source.c:518
+#, c-format
 msgid "%d total stations in %d distinct genres"
-msgstr "<b>%d</b> estações no total em <b>%d</b> gêneros distintos"
+msgstr "%d estações no total em %d gêneros distintos"
 
-#: sources/rb-library-source.c:440
-#, fuzzy
+#: sources/rb-library-source.c:445 widgets/rb-query-creator.c:45
 msgid "Artist"
-msgstr "_Artista"
+msgstr "Artista"
 
-#: sources/rb-library-source.c:457
-#, fuzzy
+#: sources/rb-library-source.c:459 widgets/rb-query-creator.c:46
 msgid "Album"
-msgstr "_Álbum"
+msgstr "Álbum"
 
-#: sources/rb-library-source.c:563
+#: sources/rb-library-source.c:562
 msgid "Library"
 msgstr "Biblioteca"
 
-#: sources/rb-library-source.c:950
+#: sources/rb-library-source.c:993
 msgid "Add Location"
 msgstr "Adiocionar Localização"
 
-#: sources/rb-source.c:469
+#: sources/rb-source.c:484
 msgid "No properties available."
 msgstr "Nenhuma propriedade disponível."
 
-#: sources/rb-source.c:552
+#: sources/rb-source.c:567
 msgid "This source does not support drag and drop."
 msgstr "Esta fonte não suporta 'Arrastar e Soltar'"
+
+#: sources/rb-sourcelist.c:193
+msgid "_Source"
+msgstr "_Fonte"
+
+#: widgets/rb-cell-renderer-pixbuf.c:109
+msgid "Pixbuf Object"
+msgstr "Objeto Pixbuf"
+
+#: widgets/rb-cell-renderer-pixbuf.c:110
+msgid "The pixbuf to render."
+msgstr "O pixbuf a renderizar."
+
+#: widgets/rb-druid.c:239
+msgid "Welcome to Rhythmbox"
+msgstr "Bem vindo ao Rhythmbox"
+
+#: widgets/rb-druid.c:243
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+
+#: widgets/rb-druid.c:249
+msgid "Music library setup"
+msgstr "Configuração da biblioteca de músicas"
+
+#: widgets/rb-druid.c:258
+msgid "Finish"
+msgstr "Terminado"
+
+#: widgets/rb-druid.c:260
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Organize\" then \"Add "
+"to Library\", or by importing it from CDs."
+msgstr ""
+
+#: widgets/rb-druid.c:309
+#, c-format
+msgid "Error reading filename: %s"
+msgstr "Erro ao ler nome do arquivo: %s"
+
+#: widgets/rb-druid.c:324
+msgid "Choose a directory"
+msgstr "Escolha um diretório"
+
+#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:801
+#, c-format
+msgid "%d:%02d"
+msgstr "%d:%02d"
+
+#: widgets/rb-link.c:332
+#, c-format
+msgid ""
+"There was an error going to %s:\n"
+"%s"
+msgstr ""
+"Ocorreu um erro indo para %s:\n"
+"%s"
+
+#: widgets/rb-load-failure-dialog.c:119
+msgid "Error loading files into library"
+msgstr "Erro ao carregar arquivos para biblioteca"
+
+#: widgets/rb-load-failure-dialog.c:136
+msgid "_Error"
+msgstr "_Erro"
+
+#: widgets/rb-load-failure-dialog.c:144
+msgid "_File"
+msgstr "_Arquivo"
+
+#: widgets/rb-player.c:279
+msgid "Listening to "
+msgstr "Ouvindo "
+
+#: widgets/rb-player.c:506
+msgid "Get information on this album from the web"
+msgstr "Obter na web informações sobre este álbum"
+
+#: widgets/rb-player.c:517
+msgid "Get information on this artist from the web"
+msgstr "Obter na web informações sobre este artista"
+
+#: widgets/rb-player.c:527
+msgid "Get more information on this station from the web"
+msgstr "Obter na web mais informações sobre esta estação"
+
+#: widgets/rb-player.c:799
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d de %d:%02d"
+
+#: widgets/rb-query-creator.c:44
+#, fuzzy
+msgid "Title"
+msgstr "_Título"
+
+#: widgets/rb-query-creator.c:52
+#, fuzzy
+msgid "contains"
+msgstr "Mantenedores:"
+
+#: widgets/rb-query-creator.c:53
+msgid "does not contain"
+msgstr ""
+
+#: widgets/rb-query-creator.c:167
+#, fuzzy
+msgid "Create automatic playlist"
+msgstr "Criar uma nova lista de reprodução"
+
+#. this string can only be so long, or there wont be a search entry :)
+#: widgets/rb-search-entry.c:118
+msgid "_Search:"
+msgstr "_Procurar:"
+
+#: widgets/rb-song-display-box.c:113
+msgid "from "
+msgstr "de "
+
+#: widgets/rb-song-display-box.c:116
+msgid "by "
+msgstr "por "
+
+#: widgets/rb-song-info.c:229 widgets/rb-song-info.c:644
+msgid "Song Properties"
+msgstr "Propriedades da Música"
+
+#: widgets/rb-song-info.c:922
+msgid "on the desktop"
+msgstr "na área de trabalho"
+
+#: widgets/rb-song-info.c:1139
+#, c-format
+msgid "%d kbps"
+msgstr "%d kbps"
+
+#: widgets/rb-song-info.c:1152
+msgid " (Mono)"
+msgstr " (Mono)"
+
+#: widgets/rb-song-info.c:1155
+msgid " (Stereo)"
+msgstr " (Stereo)"
+
+#: widgets/rb-song-info.c:1158
+#, c-format
+msgid " (%d channels)"
+msgstr " (%d canais)"
+
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: widgets/rb-volume.c:233
+msgid "+"
+msgstr "+"
+
+#: widgets/rb-volume.c:234
+msgid "-"
+msgstr "-"
+
+#~ msgid "_Rename"
+#~ msgstr "_Renomear"
+
+#~ msgid "_Rename..."
+#~ msgstr "_Renomear..."
+
+#~ msgid "There is already a playlist with that name."
+#~ msgstr "Já existe uma lista de reprodução com este nome."
+
+#~ msgid "Untitled"
+#~ msgstr "Sem Título"
+
+#~ msgid "C_reate"
+#~ msgstr "C_riar"
+
+#~ msgid "New Playlist"
+#~ msgstr "Nova Lista de Reprodução"
+
+#~ msgid "Please enter a name for the new playlist:"
+#~ msgstr "Digite um nome para a nova lista de reprodução:"
+
+#~ msgid "Add the _selected songs to the new playlist"
+#~ msgstr "Adiocionar as músicas _selecionadas para a nova lista de reprodução"
 
 #~ msgid ""
 #~ "In order to get started using Rhythmbox, this assistant will ask you some "
