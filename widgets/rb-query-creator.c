@@ -147,8 +147,6 @@ static void
 rb_query_creator_init (RBQueryCreator *dlg)
 {
 	GladeXML *xml;
-	GtkWidget *label;
-	char *text;	
 	GtkWidget *first_option;
 	GtkWidget *first_criteria;
 	GtkWidget *first_entry;
@@ -176,11 +174,6 @@ rb_query_creator_init (RBQueryCreator *dlg)
 				"main_vbox",
 				dlg);
 	
-		label = GTK_WIDGET (glade_xml_get_widget (xml, "createLabel"));
-	text = g_strdup_printf ("<b>%s</b>", gtk_label_get_text (GTK_LABEL (label)));
-	gtk_label_set_markup (GTK_LABEL (label), text);
-	g_free (text);
-
 	dlg->priv->disjunction_check = GTK_WIDGET (glade_xml_get_widget (xml, "disjunctionCheck"));
 	dlg->priv->limit_check = GTK_WIDGET (glade_xml_get_widget (xml, "limitCheck"));
 	dlg->priv->limit_entry = GTK_WIDGET (glade_xml_get_widget (xml, "limitEntry"));

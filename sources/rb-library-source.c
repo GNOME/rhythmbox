@@ -976,26 +976,38 @@ rb_library_source_state_pref_changed (GConfClient *client,
 	rb_library_source_state_prefs_sync (source);
 }
 
+static void
+rb_library_source_add_location_entry_changed_cb (GtkEntry *entry,
+						 GtkWidget *target)
+{
+	gtk_widget_set_sensitive (target, g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (entry)), -1) > 0);
+}
+
 void
 rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 {
 	GladeXML *xml = rb_glade_xml_new ("uri.glade",
 					  "open_uri_dialog_content",
 					  source);
-	GtkWidget *content, *uri_widget;
+	GtkWidget *content, *uri_widget, *open_button;
 	GtkWidget *dialog = gtk_dialog_new_with_buttons (_("Add Location"),
 							 win,
-							 GTK_DIALOG_MODAL,
+							 GTK_DIALOG_MODAL | GTK_DIALOG_NO_SEPARATOR,
 							 GTK_STOCK_CANCEL,
 							 GTK_RESPONSE_CANCEL,
-							 GTK_STOCK_OPEN,
-							 GTK_RESPONSE_OK,
 							 NULL);
 
 	g_return_if_fail (dialog != NULL);
 
+	open_button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+					     GTK_STOCK_OPEN,
+					     GTK_RESPONSE_OK);
+	gtk_widget_set_sensitive (open_button, FALSE);
+
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
 	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
 
@@ -1005,10 +1017,16 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dialog)->vbox),
 			    content, FALSE, FALSE, 0);
+	gtk_container_set_border_width (GTK_CONTAINER (content), 5);
 
 	uri_widget = glade_xml_get_widget (xml, "uri");
 
 	g_return_if_fail (uri_widget != NULL);
+
+	g_signal_connect (G_OBJECT (uri_widget),
+			  "changed",
+			  G_CALLBACK (rb_library_source_add_location_entry_changed_cb),
+			  open_button);
 
 	switch (gtk_dialog_run (GTK_DIALOG (dialog))) {
 	case GTK_RESPONSE_OK:
