@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"POT-Creation-Date: 2002-06-16 02:17+0200\n"
+"POT-Creation-Date: 2002-06-21 14:18+0200\n"
 "PO-Revision-Date: 2002-05-21 22:07+0200\n"
 "Last-Translator: Kenneth Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -304,12 +304,12 @@ msgstr "Rhythmbox musikafspiller"
 msgid "Failed to find %s"
 msgstr "Mislukkedes at finde %s"
 
-#: lib/widgets/rb-link.c:221
+#: lib/widgets/rb-link.c:222
 #, c-format
 msgid "Go to %s"
 msgstr "Gå til %s"
 
-#: lib/widgets/rb-link.c:297
+#: lib/widgets/rb-link.c:298
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -318,25 +318,25 @@ msgstr ""
 "Det mislykkedes at gå til %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:433
+#: lib/widgets/rb-node-view.c:476
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Det mislykkedes at parse %s son NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:896
+#: lib/widgets/rb-node-view.c:997
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d sange, %d:%02d:%02d spilletid, %s"
 
-#: lib/widgets/rb-player.c:175
+#: lib/widgets/rb-player.c:177
 msgid "from "
 msgstr "fra "
 
-#: lib/widgets/rb-player.c:181
+#: lib/widgets/rb-player.c:183
 msgid " by "
 msgstr " af "
 
-#: lib/widgets/rb-player.c:329
+#: lib/widgets/rb-player.c:336
 msgid "Not Playing"
 msgstr "Afspiller i øjeblikket ingen sang"
 
@@ -352,7 +352,7 @@ msgstr "/Omdøb"
 msgid "/_Delete"
 msgstr "/Slet"
 
-#: lib/widgets/rb-sidebar.c:404
+#: lib/widgets/rb-sidebar.c:387
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Mislykkedes at parse %s som 'sidebar layout'-fil"
@@ -403,34 +403,48 @@ msgstr "Stop"
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell.c:228
+#: shell/rb-shell.c:240
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s findes allerede, fjern den venligst."
 
-#: shell/rb-shell.c:233
+#: shell/rb-shell.c:245
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Mislykkedes at oprette katalogen %s."
 
-#: shell/rb-shell.c:334
+#: shell/rb-shell.c:351
 #, c-format
 msgid ""
 "Failed to register the shell:\n"
 "%s"
 msgstr ""
 
-#: shell/rb-shell.c:731
+#: shell/rb-shell.c:744
 msgid "translator_credits"
 msgstr "Kenneth Christiansen"
 
-#: shell/rb-shell.c:744
+#: shell/rb-shell.c:755
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Rettigheder tilhører Jorn Baayen, 2002"
 
-#: shell/rb-shell.c:745
+#: shell/rb-shell.c:756
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhåndterings og afspilningsprogram til Gnome."
+
+#: shell/rb-shell.c:800
+#, fuzzy
+msgid "Choose a file to add"
+msgstr "<b>Standard-musikkatalog</b>"
+
+#: shell/rb-shell.c:818
+msgid "Enter a name"
+msgstr ""
+
+#: shell/rb-shell.c:819
+#, fuzzy
+msgid "Enter a name for the new music group:"
+msgstr "Opret ny musiksamling"
 
 #~ msgid "Music Folders"
 #~ msgstr "Musikkataloger"

@@ -39,10 +39,10 @@ static void rb_node_changed (RBNode *node);
 static long rb_node_id_factory_new_id (void);
 static void rb_node_id_factory_set_to (long new_factory_position);
 static void rb_node_property_free (GValue *value);
-static void rb_node_child_destroyed_cb (RBNode *child,
-			                RBNode *node);
 static void rb_node_child_changed_cb (RBNode *child,
 			              RBNode *node);
+static void rb_node_child_destroyed_cb (RBNode *child,
+			                RBNode *node);
 static void rb_node_save_property (gpointer property,
 		                   GValue *value,
 		                   xmlNodePtr node);
@@ -53,6 +53,7 @@ struct RBNodePrivate
 	long id;
 
 	GList *grandparents;
+	GList *grandchildren;
 	GList *parents;
 	GList *children;
 
@@ -225,13 +226,15 @@ rb_node_finalize (GObject *object)
 	/* decrement parent refcount */
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
+		RBNode *node2 = RB_NODE (l->data);
+
+		node2->priv->children = g_list_remove (node2->priv->children, node);
+
 		if ((type != RB_NODE_TYPE_ALL_GENRES) &&
 		    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
 		    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
 		    (type != RB_NODE_TYPE_ALL_SONGS))
 		{
-			RBNode *node2 = RB_NODE (l->data);
-			
 			g_object_unref (G_OBJECT (node2));
 			
 			/* initial refcount .. */
@@ -250,7 +253,26 @@ rb_node_finalize (GObject *object)
 		}
 	}
 	g_list_free (node->priv->parents);
+	for (l = node->priv->grandparents; l != NULL; l = g_list_next (l))
+	{
+		RBNode *node2 = RB_NODE (l->data);
+
+		node2->priv->grandchildren = g_list_remove (node2->priv->grandchildren, node);
+	}
 	g_list_free (node->priv->grandparents);
+	for (l = node->priv->grandchildren; l != NULL; l = g_list_next (l))
+	{
+		RBNode *node2 = RB_NODE (l->data);
+
+		node2->priv->grandparents = g_list_remove (node2->priv->grandparents, node);
+	}
+	g_list_free (node->priv->grandchildren);
+	for (l = node->priv->children; l != NULL; l = g_list_next (l))
+	{
+		RBNode *node2 = RB_NODE (l->data);
+
+		node2->priv->parents = g_list_remove (node2->priv->parents, node);
+	}
 	g_list_free (node->priv->children);
 
 	g_hash_table_destroy (node->priv->properties);
@@ -387,21 +409,18 @@ rb_node_has_parent (RBNode *node,
 	return (g_list_find (parents, parent) != NULL);
 }
 
+static void
+rb_node_child_changed_cb (RBNode *child,
+			  RBNode *node)
+{
+	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_CHANGED], 0, child);
+}
 
 static void
 rb_node_child_destroyed_cb (RBNode *child,
 			    RBNode *node)
 {
 	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_DESTROYED], 0, child);
-
-	node->priv->children = g_list_remove (node->priv->children, child);
-}
-
-static void
-rb_node_child_changed_cb (RBNode *child,
-			  RBNode *node)
-{
-	g_signal_emit (G_OBJECT (node), rb_node_signals[CHILD_CHANGED], 0, child);
 }
 
 int
@@ -476,6 +495,8 @@ rb_node_add_grandparent (RBNode *node,
 	
 	node->priv->grandparents = g_list_append (node->priv->grandparents,
 						  grandparent);
+	grandparent->priv->grandchildren = g_list_append (grandparent->priv->grandchildren,
+							  node);
 }
 
 gboolean

@@ -30,7 +30,12 @@ void  rb_error_dialog   (const char *format, ...);
 void  rb_warning_dialog (const char *format, ...);
 void  rb_message_dialog (const char *format, ...);
 
-char *rb_ask_file       (const char *title, GtkWindow *parent);
+char *rb_ask_file       (const char *title,
+			 GtkWindow *parent);
+
+char *rb_ask_string     (const char *title,
+			 const char *question,
+			 GtkWindow *parent);
 
 G_END_DECLS
 

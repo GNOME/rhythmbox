@@ -35,6 +35,18 @@
 	</locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/music_groups</key>
+	<applyto>/apps/rhythmbox/music_groups</applyto>
+	<owner>rhythmbox</owner>
+	<type>list</type>
+	<list_type>string</list_type>
+	<default></default>
+	<locale name="C">
+	<short>List of music groups</short>
+	<long>A list of filenames where the current music groups are stored.</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/window_width</key>
         <applyto>/apps/rhythmbox/state/window_width</applyto>
         <owner>rhythmbox</owner>

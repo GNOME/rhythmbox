@@ -18,6 +18,7 @@
  *  $Id$
  */
 
+#include <config.h>
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkvpaned.h>

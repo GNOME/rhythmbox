@@ -39,15 +39,6 @@
 #include "rb-node-view.h"
 #include "rb-dialog.h"
 
-typedef struct 
-{
-	GnomeVFSFileSize n_bytes;
-	long n_seconds;
-	int n_songs;
-
-	RBNodeView *view;
-} StatusInfo;
-
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
 static void rb_node_view_finalize (GObject *object);
@@ -89,14 +80,12 @@ static RBNode *rb_node_view_get_node (RBNodeView *view,
 		                      gboolean down);
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
-static gboolean rb_node_view_status_foreach_cb (GtkTreeModel *model,
-				                GtkTreePath *path,
-				                GtkTreeIter *iter,
-				                StatusInfo *info);
 static gboolean rb_node_view_key_press_event_cb (GtkWidget *widget,
 				                 GdkEventKey *event,
 				                 RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
+static int rb_node_view_get_n_rows (RBNodeView *view);
+static GList *rb_node_view_get_visible_nodes (RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -437,7 +426,7 @@ rb_node_view_construct (RBNodeView *view)
 			         "row_deleted",
 			         G_CALLBACK (gtk_tree_model_sort_row_deleted_cb),
 			         view,
-				 0);
+				 G_CONNECT_AFTER);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
 				 "row_changed",
 				 G_CALLBACK (gtk_tree_model_sort_row_changed_cb),
@@ -750,13 +739,11 @@ rb_node_view_get_random_node (RBNodeView *view)
 	GtkTreePath *path;
 	GtkTreeIter iter, iter2;
 	char *path_str;
-	int index;
-	int n_children;
+	int index, n_rows;
 
-	n_children = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->sortmodel), NULL);
-
-	if ((n_children - 1) > 0)
-		index = g_random_int_range (0, n_children - 1);
+	n_rows = rb_node_view_get_n_rows (view);
+	if ((n_rows - 1) > 0)
+		index = g_random_int_range (0, n_rows - 1);
 	else
 		index = 0;
 
@@ -806,9 +793,12 @@ rb_node_view_get_selection (RBNodeView *view)
 {
 	GList *list = NULL;
 	
-	gtk_tree_selection_selected_foreach (view->priv->selection,
-					     (GtkTreeSelectionForeachFunc) get_selection,
-					     (void **) &list);
+	if (rb_node_view_get_n_rows (view) > 0)
+	{
+		gtk_tree_selection_selected_foreach (view->priv->selection,
+						     (GtkTreeSelectionForeachFunc) get_selection,
+						     (void **) &list);
+	}
 	g_list_free (view->priv->nodeselection);
 	view->priv->nodeselection = list;
 	
@@ -948,12 +938,10 @@ gtk_tree_model_sort_row_deleted_cb (GtkTreeModel *model,
 	view->priv->changed = TRUE;
 
 	if (view->priv->keep_selection == TRUE &&
-	    view->priv->selected_node == NULL)
+	    view->priv->have_selection == FALSE)
 	{
 		GtkTreePath *path2 = gtk_tree_path_copy (path);
-		GtkTreeIter iter;
-		if (gtk_tree_model_get_iter (model, &iter, path2) == FALSE)
-			gtk_tree_path_prev (path2);
+		gtk_tree_path_prev (path2);
 		gtk_tree_selection_select_path (view->priv->selection, path2);
 		gtk_tree_path_free (path2);
 	}
@@ -980,56 +968,42 @@ rb_node_view_get_status (RBNodeView *view)
 {
 	char *ret, *size;
 	int hours, minutes, seconds;
-	StatusInfo *info = g_new0 (StatusInfo, 1);
+	GList *visible, *l;
+	GnomeVFSFileSize n_bytes = 0;
+	long n_seconds = 0;
+	int n_songs = 0;
 
-	info->view = view;
-	
-	gtk_tree_model_foreach (GTK_TREE_MODEL (view->priv->sortmodel),
-				(GtkTreeModelForeachFunc) rb_node_view_status_foreach_cb,
-				info);
+	visible = rb_node_view_get_visible_nodes (view);
 
-	size = gnome_vfs_format_file_size_for_display (info->n_bytes);
+	for (l = visible; l != NULL; l = g_list_next (l))
+	{
+		RBNode *node = RB_NODE (l->data);
+		GValue value = { 0, };
+		
+		n_songs++;
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+		n_seconds += g_value_get_long (&value);
+		g_value_unset (&value);
 
-	hours   = info->n_seconds / (60 * 60);
-	minutes = info->n_seconds / 60 - hours * 60;
-	seconds = info->n_seconds % 60;
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
+		n_bytes += (GnomeVFSFileSize) g_value_get_long (&value);
+		g_value_unset (&value);
+	}
+
+	g_list_free (visible);
+
+	size = gnome_vfs_format_file_size_for_display (n_bytes);
+
+	hours   = n_seconds / (60 * 60);
+	minutes = n_seconds / 60 - hours * 60;
+	seconds = n_seconds % 60;
 
 	ret = g_strdup_printf (_("%d songs, %d:%02d:%02d playing time, %s"),
-			       info->n_songs, hours, minutes, seconds, size);
+			       n_songs, hours, minutes, seconds, size);
 
 	g_free (size);
-	g_free (info);
 
 	return ret;
-}
-
-static gboolean
-rb_node_view_status_foreach_cb (GtkTreeModel *model,
-				GtkTreePath *path,
-				GtkTreeIter *iter,
-				StatusInfo *info)
-{
-	GtkTreeIter iter2, iter3;
-	RBNode *node;
-	GValue value = { 0, };
-
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (info->view->priv->sortmodel),
-							&iter2, iter);
-	gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (info->view->priv->filtermodel),
-							  &iter3, &iter2);
-
-	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (info->view->priv->nodemodel),
-						  &iter3);
-
-	info->n_songs++;
-	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
-	info->n_seconds += g_value_get_long (&value);
-	g_value_unset (&value);
-	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
-	info->n_bytes += (GnomeVFSFileSize) g_value_get_long (&value);
-	g_value_unset (&value);
-
-	return FALSE;
 }
 
 void
@@ -1144,4 +1118,51 @@ rb_node_view_timeout_cb (RBNodeView *view)
 	view->priv->changed = FALSE;
 
 	return TRUE;
+}
+
+static int
+rb_node_view_get_n_rows (RBNodeView *view)
+{
+	RBNode *parent, *grandparent;
+	GList *l;
+	int n_rows = 0;
+
+	g_object_get (G_OBJECT (view->priv->nodemodel),
+	              "filter-parent", &parent,
+		      "filter-grandparent", &grandparent,
+		      NULL);
+
+	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
+	{
+		if (grandparent != NULL &&
+		    rb_node_has_grandparent (RB_NODE (l->data), grandparent) == FALSE)
+			continue;
+
+		n_rows++;
+	}
+	
+	return n_rows;
+}
+
+static GList *
+rb_node_view_get_visible_nodes (RBNodeView *view)
+{
+	RBNode *parent, *grandparent;
+	GList *ret = NULL, *l;
+
+	g_object_get (G_OBJECT (view->priv->nodemodel),
+	              "filter-parent", &parent,
+		      "filter-grandparent", &grandparent,
+		      NULL);
+
+	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
+	{
+		if (grandparent != NULL &&
+		    rb_node_has_grandparent (RB_NODE (l->data), grandparent) == FALSE)
+			continue;
+
+		ret = g_list_append (ret, l->data);
+	}
+	
+	return ret;
 }

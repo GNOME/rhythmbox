@@ -1,0 +1,46 @@
+<Root>
+
+<commands>
+
+  <cmd name="SelectAll"
+       _tip="Select all songs"/>
+
+  <cmd name="SelectNone"
+       _tip="Deselect all songs"/>
+
+  <cmd name="CurrentSong"
+       _tip="Scroll the view to the currently playing song"
+       pixtype="stock"
+       pixname="gtk-jump-to"/>
+
+</commands>
+
+<menu>
+
+<submenu name="Edit" _label="_Edit">
+
+  <placeholder name="EditMenu">
+
+    <menuitem name="SelectNone" verb="SelectNone" _label="Select _None"/>
+
+    <menuitem name="SelectAll" verb="SelectAll" _label="Select _All"/>
+
+    <separator/>
+  
+  </placeholder>
+
+</submenu>
+
+<placeholder name="ActionsMenu">
+
+  <submenu name="View" _label="_View">
+  
+    <menuitem name="CurrentSong" verb="CurrentSong" _label="Show _Current Song"/>
+
+  </submenu>
+  
+</placeholder>
+
+</menu>
+
+</Root>

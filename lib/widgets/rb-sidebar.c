@@ -59,8 +59,7 @@ static void rb_sidebar_finalize (GObject *object);
 static void rb_sidebar_destroy (GtkObject *object);
 static void rb_sidebar_event_box_realize_cb (GtkWidget *widget,
 				             gpointer user_data);
-static void rb_sidebar_style_set (GtkWidget *widget,
-			          GtkStyle *previous_style);
+static void rb_sidebar_button_style_set (RBSidebarButton *button);
 static void rb_sidebar_move_item (RBSidebar *sidebar,
 		                  RBSidebarButton *button,
 		                  int pos);
@@ -123,19 +122,15 @@ rb_sidebar_class_init (RBSidebarClass *class)
 {
 	GObjectClass   *o_class;
 	GtkObjectClass *object_class;
-	GtkWidgetClass *widget_class;
 
 	parent_class = g_type_class_peek_parent (class);
 
 	o_class = (GObjectClass *) class;
 	object_class = (GtkObjectClass *) class;
-	widget_class = (GtkWidgetClass *) class;
 
 	o_class->finalize = rb_sidebar_finalize;
 
 	object_class->destroy = rb_sidebar_destroy;
-
-	widget_class->style_set = rb_sidebar_style_set;
 }
 
 static void
@@ -255,43 +250,30 @@ rb_sidebar_event_box_realize_cb (GtkWidget *widget, gpointer user_data)
 }
 
 static void
-rb_sidebar_style_set (GtkWidget *widget,
-	              GtkStyle *previous_style)
+rb_sidebar_button_style_set (RBSidebarButton *button)
 {
-	RBSidebar *bar = RB_SIDEBAR (widget);
-	GdkColor   color, white = { 0, 0xffff, 0xffff, 0xffff }, black = { 0, 0x0000, 0x0000, 0x0000 };
-	GList     *l;
-
-	if (GTK_WIDGET_CLASS (parent_class)->style_set)
-	{
-		GTK_WIDGET_CLASS (parent_class)->style_set (widget,
-							    previous_style);
-	}
+	GtkWidget *widget = GTK_WIDGET (button);
+	GdkColor color, white = { 0, 0xffff, 0xffff, 0xffff }, black = { 0, 0x0000, 0x0000, 0x0000 };
 
 	color = widget->style->bg[GTK_STATE_NORMAL];
 
 	rb_sidebar_shift_color (&color, DARKEN);
 	
-	for (l = bar->priv->buttons; l; l = l->next)
-	{
-		RBSidebarButton *entry = l->data;
+	gtk_widget_modify_bg (widget,
+			      GTK_STATE_PRELIGHT,
+			      &color);
 		
-		gtk_widget_modify_bg (GTK_WIDGET (entry),
-				      GTK_STATE_PRELIGHT,
-				      &color);
-		
-		gtk_widget_modify_bg (GTK_WIDGET (entry),
-				      GTK_STATE_ACTIVE,
-				      &color);
+	gtk_widget_modify_bg (widget,
+			      GTK_STATE_ACTIVE,
+			      &color);
 
-		gtk_widget_modify_fg (entry->label,
-				      GTK_STATE_PRELIGHT,
-				      &white);
+	gtk_widget_modify_fg (button->label,
+			      GTK_STATE_PRELIGHT,
+			      &white);
 
-		gtk_widget_modify_fg (entry->label,
-				      GTK_STATE_ACTIVE,
-				      &black);
-	}
+	gtk_widget_modify_fg (button->label,
+			      GTK_STATE_ACTIVE,
+			      &black);
 }
 
 GtkWidget *
@@ -307,6 +289,8 @@ rb_sidebar_append (RBSidebar *sidebar,
 	g_return_if_fail (RB_IS_SIDEBAR (sidebar));
 	g_return_if_fail (RB_IS_SIDEBAR_BUTTON (button));
 
+	rb_sidebar_button_style_set (button);
+
 	g_hash_table_insert (sidebar->priv->id_to_button, button->unique_id, button);
 	sidebar->priv->buttons = g_list_append (sidebar->priv->buttons,
 						button);
@@ -321,7 +305,6 @@ rb_sidebar_append (RBSidebar *sidebar,
 			    FALSE,
 			    TRUE,
 			    0);
-
 
 	g_object_set (G_OBJECT (button), "sidebar", sidebar, NULL);
 }

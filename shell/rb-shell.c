@@ -50,10 +50,8 @@
 #include "rb-library.h"
 #include "rb-library-view.h"
 #include "rb-shell-preferences.h"
+#include "rb-group-view.h"
 #include "eel-gconf-extensions.h"
-/* FIXME */
-#include "testview2.h"
-/* FIXME */
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -93,6 +91,9 @@ static void rb_shell_cmd_music_folders (BonoboUIComponent *component,
 static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 			                 RBShell *shell,
 			                 const char *verbname);
+static void rb_shell_cmd_new_group (BonoboUIComponent *component,
+			            RBShell *shell,
+			            const char *verbname);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_repeat_changed_cb (BonoboUIComponent *component,
 			                const char *path,
@@ -104,6 +105,8 @@ static void rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
 			                 Bonobo_UIComponent_EventType type,
 			                 const char *state,
 			                 RBShell *shell);
+static void rb_shell_load_music_groups (RBShell *shell);
+static void rb_shell_save_music_groups (RBShell *shell);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -114,6 +117,7 @@ static void rb_shell_shuffle_changed_cb (BonoboUIComponent *component,
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
 #define CONF_STATE_SHUFFLE          "/apps/rhythmbox/state/shuffle"
 #define CONF_STATE_REPEAT           "/apps/rhythmbox/state/repeat"
+#define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
 
 typedef struct
 {
@@ -127,6 +131,7 @@ struct RBShellPrivate
 	GtkWidget *window;
 
 	BonoboUIComponent *ui_component;
+	BonoboUIContainer *container;
 
 	GtkWidget *sidebar;
 	GtkWidget *notebook;
@@ -149,6 +154,8 @@ struct RBShellPrivate
 
 	gboolean shuffle;
 	gboolean repeat;
+
+	GList *groups;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -157,6 +164,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
 	BONOBO_UI_VERB ("MusicFolders", (BonoboUIVerbFn) rb_shell_cmd_music_folders),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
+	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
 	BONOBO_UI_VERB_END
 };
 
@@ -267,6 +275,8 @@ rb_shell_finalize (GObject *object)
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
 
 	rb_debug ("Unregistered with Bonobo Activation");
+	
+	rb_shell_save_music_groups (shell);
 
 	rb_sidebar_save_layout (RB_SIDEBAR (shell->priv->sidebar),
 				shell->priv->sidebar_layout_file);
@@ -278,6 +288,8 @@ rb_shell_finalize (GObject *object)
 	gtk_widget_destroy (shell->priv->window);
 	
 	g_list_free (shell->priv->views);
+
+	g_list_free (shell->priv->groups);
 
 	g_free (shell->priv->sidebar_layout_file);
 
@@ -320,10 +332,9 @@ rb_shell_construct (RBShell *shell)
 	CORBA_Object corba_object;
 	CORBA_Environment ev;
 	BonoboWindow *win;
-	BonoboUIContainer *container;
 	Bonobo_UIContainer corba_container;
 	GtkWidget *hbox, *vbox;
-	RBView *testview, *library_view;
+	RBView *library_view;
 
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -361,12 +372,12 @@ rb_shell_construct (RBShell *shell)
 			  G_CALLBACK (rb_shell_window_delete_cb),
 			  shell);
 
-	container = bonobo_window_get_ui_container (win);
+	shell->priv->container = bonobo_window_get_ui_container (win);
 
 	bonobo_ui_engine_config_set_path (bonobo_window_get_ui_engine (win),
 					  "/apps/rhythmbox/UIConfig/kvps");
 
-	corba_container = BONOBO_OBJREF (container);
+	corba_container = BONOBO_OBJREF (shell->priv->container);
 
 	shell->priv->ui_component = bonobo_ui_component_new_default ();
 
@@ -418,19 +429,13 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->library = rb_library_new ();
 
 	/* initialize views */
-	library_view = rb_library_view_new (container,
+	library_view = rb_library_view_new (shell->priv->container,
 				            shell->priv->library);
 	rb_shell_append_view (shell, library_view);
 	rb_shell_select_view (shell, library_view); /* select this one by default */
 
-	/* FIXME */
-	testview = rb_test_view2_new (container);
-	rb_shell_append_view (shell, testview);
-	rb_shell_select_view (shell, testview);
-	testview = rb_test_view2_new (container);
-	rb_shell_append_view (shell, testview);
-	rb_shell_select_view (shell, testview);
-	/* FIXME */
+	/* music groups */
+	rb_shell_load_music_groups (shell);
 
 	/* now that we restored all views we can restore the layout */
 	rb_sidebar_load_layout (RB_SIDEBAR (shell->priv->sidebar),
@@ -577,6 +582,9 @@ rb_shell_remove_view (RBShell *shell,
 		      RBView *view)
 {
 	shell->priv->views = g_list_remove (shell->priv->views, view);
+
+	if (g_list_find (shell->priv->groups, view) != NULL)
+		shell->priv->groups = g_list_remove (shell->priv->groups, view);
 
 	rb_sidebar_remove (RB_SIDEBAR (shell->priv->sidebar),
 			   rb_view_get_sidebar_button (view));
@@ -800,6 +808,31 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 }
 
 static void
+rb_shell_cmd_new_group (BonoboUIComponent *component,
+			RBShell *shell,
+			const char *verbname)
+{
+	RBView *group;
+	char *name;
+
+	name = rb_ask_string (_("Enter a name"),
+			      _("Enter a name for the new music group:"),
+			      GTK_WINDOW (shell->priv->window));
+	
+	if (name == NULL)
+		return;
+
+	group = rb_group_view_new (shell->priv->container,
+				   shell->priv->library);
+	rb_group_view_set_name (RB_GROUP_VIEW (group), name);
+	shell->priv->groups = g_list_append (shell->priv->groups, group);
+
+	rb_shell_append_view (shell, group);
+
+	g_free (name);
+}
+
+static void
 rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
@@ -807,4 +840,46 @@ rb_shell_quit (RBShell *shell)
 	rb_shell_window_save_state (shell);
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
+}
+
+static void
+rb_shell_load_music_groups (RBShell *shell)
+{
+	GSList *groups, *l;
+
+	groups = eel_gconf_get_string_list (CONF_MUSIC_GROUPS);
+
+	for (l = groups; l != NULL; l = g_slist_next (l))
+	{
+		RBView *group;
+
+		group = rb_group_view_new_from_file (shell->priv->container,
+						     shell->priv->library,
+						     (char *) l->data);
+		shell->priv->groups = g_list_append (shell->priv->groups, group);
+
+		rb_shell_append_view (shell, group);
+	}
+
+	g_slist_foreach (groups, (GFunc) g_free, NULL);
+	g_slist_free (groups);
+}
+
+static void
+rb_shell_save_music_groups (RBShell *shell)
+{
+	GSList *groups = NULL;
+	GList *l;
+
+	for (l = shell->priv->groups; l != NULL; l = g_list_next (l))
+	{
+		RBGroupView *group = RB_GROUP_VIEW (l->data);
+
+		groups = g_slist_append (groups,
+					 (char *) rb_group_view_get_file (group));
+	}
+	
+	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups);
+	
+	g_slist_free (groups);
 }

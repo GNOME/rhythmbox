@@ -509,7 +509,7 @@ rb_sidebar_button_button_press_event_cb (GtkWidget *widget,
 				event->button,
 				event->time);
 
-	return TRUE;
+	return FALSE;
 }
 
 static char *
