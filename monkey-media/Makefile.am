@@ -9,14 +9,12 @@ BUILT_SOURCES =						\
 
 libmonkey_mediadir = $(includedir)/monkey-media
 
-libmonkey_media_HEADERS =				\
+libmonkey_media_la_SOURCES =				\
 	monkey-media.h					\
 	monkey-media-stream-info.h			\
 	monkey-media-player.h				\
 	monkey-media-audio-quality.h			\
-	monkey-media-includes.h
-
-libmonkey_media_la_SOURCES =				\
+	monkey-media-includes.h				\
 	monkey-media.c					\
 	monkey-media-stream-info.c			\
 	monkey-media-audio-quality.c			\
@@ -40,8 +38,8 @@ libmonkey_media_la_SOURCES += monkey-media-musicbrainz.c monkey-media-musicbrain
 endif
 
 if HAVE_AUDIOCD
-libmonkey_media_HEADERS += monkey-media-audio-cd.h
-libmonkey_media_la_SOURCES += 	monkey-media-audio-cd.c				\
+libmonkey_media_la_SOURCES += 	monkey-media-audio-cd.h \
+				monkey-media-audio-cd.c	\
 				monkey-media-audio-cd-private.h
 endif
 

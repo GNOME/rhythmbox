@@ -54,10 +54,11 @@ The RBShell maintains a list of available RBSources.
 
 ** Backends
 
-Currently, all RBSource instances have a "backend" too.  The RBLibrarySource
-has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  As you might
-expect, while the RBSource components act as a "frontend", the various
-backends maintain all the data and don't deal much with user interfaces.
+All RBSource instances use some sort of"backend" too.  The RBLibrarySource
+has the RBLibrary.  RBIRadioSource has the RBIRadioBackend.  The RBGroupSource
+uses the RBLibrary.  As you might expect, while the RBSource components act as
+a "frontend", the various backends maintain all the data and don't deal much
+with user interfaces.
 
 ** A first look at the Library
 
@@ -124,7 +125,7 @@ change the artist of an RBNode, it is reparented to the new artist
 Actually, the tree is slightly more complicated than this; besides
 The Genre->Artist->Album->Song chains, there are also special
 "All" nodes.  These represent the bold "All" entries you see
-on the display.  Thee "All" nodes basically point to
+on the display.  These "All" nodes basically point to
 all of one class of node.  For example, there is an "All Songs"
 node, which is the parent of every song.
 This allows us to easily iterate over all songs, and will come
@@ -154,7 +155,7 @@ Simply speaking, an RBNodeView contains both a GtkTreeView and an
 RBTreeModelNode.  The RBTreeModelNode takes care of the details of
 implementing the GtkTreeModel interface (see the GTK+ docs for more
 details).  Then we just use a GtkTreeView to show that to the user.
-RBNodeView hooks in a number of callbacks and sorting things and
+RBNodeView hooks in a number of callbacks for sorting and
 filtering things, but this is the general idea.
 
 *** Usage
@@ -173,7 +174,11 @@ and then gets the currently selected RBNode, and uses it to play the song.
 
 In addition to providing a view of the RBNode tree, the RBNodeView
 also takes care of filtering it, using an RBNodeFilter
-(library/rb-node-filter.[ch]).  
+(library/rb-node-filter.[ch]).  Note that Rhythmbox is quite fast
+at filtering by genre/artist/album.  This is because of the tree
+structure used above.  To check whether a particular song should be
+displayed, we just check whether it has the selected genre or whatever
+as a parent.
 
 ** More on the Library
 
@@ -210,6 +215,11 @@ are slowly working to convert.
 Once we have the library and RBNode, the playlist source is actually pretty
 easy to implement.  It maintains a single RBNode similar to the "All" node
 of the other sources.  This node is the parent of all the songs in the playlist.
+
+Note also that the Playlist source doesn't have its own backend; instead
+it just uses the node database from the library.  In the future, we hope
+to unify the backends so that both local songs and internet radio stations
+can be added to a playlist.
 
 Local Variables:
 mode: outline

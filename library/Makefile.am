@@ -26,6 +26,7 @@ INCLUDES =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_builddir)/lib 				\
+	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)

@@ -63,6 +63,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_builddir)/lib 				\
+	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\
 	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)

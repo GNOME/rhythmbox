@@ -4,6 +4,7 @@ SUBDIRS = monkey-media lib sources library iradio corba shell data po tests comp
 
 EXTRA_DIST = 			\
 	autogen.sh		\
+	config.h.in		\
 	intltool-merge.in	\
 	intltool-update.in	\
 	intltool-extract.in	\

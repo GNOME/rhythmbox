@@ -55,6 +55,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/corba                    	\
 	-I$(top_srcdir)/iradio                    	\
 	-I$(top_srcdir)/library                    	\
+	-I$(top_srcdir)/monkey-media			\
 	-I$(top_builddir)/monkey-media			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
