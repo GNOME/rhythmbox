@@ -18,7 +18,7 @@
   		</imageobject>
   		<textobject>
 		<phrase>Show the &application; window showing Library.
-		Callouts: Menubar, Toolbar, Player area, View pane, Side pane, 
+		Callouts: Menubar, Player area, View pane, Side pane, 
 		Statusbar.
 		</phrase>
   		</textobject>
@@ -44,14 +44,8 @@
 			tasks in &application;.</entry>
 		</row>
 		<row>
-			<entry valign="top">Toolbar</entry>
-			<entry valign="top">Contains buttons that you use to
-			perform quick tasks in &application;.</entry>
-		</row>
-		<row>
 			<entry valign="top">Side pane</entry>
-			<entry valign="top">Enable you to switch between Library 
-			and Groups.</entry>
+			<entry valign="top">Enable you to switch between Library and &playlist;.</entry>
 		</row>
 		<row>
 			<entry valign="top">Player area</entry>
@@ -64,9 +58,9 @@
 			<entry valign="top">Displays a list of available 
 			tracks from:<itemizedlist>
 			<listitem><para>Library</para></listitem>
-			<listitem><para>Music groups</para></listitem><!--
-			<listitem><para>Audio CDs</para></listitem>		
-			<listitem><para>Internet radio</para></listitem> -->
+			<listitem><para>Music groups</para></listitem>
+<!--			<listitem><para>Audio CDs</para></listitem> -->		
+			<listitem><para>Internet radio</para></listitem> 
 			</itemizedlist>	
 			</entry>
 		</row>
@@ -81,33 +75,6 @@
 	</table>
 	</sect2>
 
-<sect2 id="intro-toolbar">
-<title>The Toolbar</title>
-	<screenshot>
-	<mediaobject>
-		<imageobject>
-			<imagedata fileref="figures/rb-toolbar.png"
-			format="PNG"/>
-		</imageobject>
-		<textobject>
-			<phrase>Shows default &application; toolbar.</phrase>
-		</textobject>
-	</mediaobject>
-	</screenshot>
-	<para>The &application; toolbar provides easy access to functions
-	used for playing tracks. From here it is possible to Play the
-	currently selected track, Skip to a previous or next track, Pause
-	a playing track, or select 'shuffle' play.
-	</para>
-	<para>It also shows the volume control, which is described 
-	<link linkend="volume">later</link>.
-	</para>
-	<note>
-		<para>The layout of the toolbar can be customized, see
-		<xref linkend="toolbar-edit"/></para>
-	</note>
-</sect2>
-
 <sect2 id="intro-sidebar">
 <title>The Side Pane</title>
 	<screenshot>
@@ -117,21 +84,21 @@
 			format="PNG"/>
 		</imageobject>
 		<textobject>
-		<phrase>Shows side pane with library and group icons.
+		<phrase>Shows side pane with library and &playlist; icons.
 		</phrase>
 		</textobject>
 	</mediaobject>
 	</screenshot>
-	<para>The side pane is where you can access your music library and
-	your groups <!-- and CDs -->.The side pane can contain	
+	<para>The side pane is where you can access your music library internet radio and
+	your &playlist;  <!-- and CDs -->.The side pane can contain	
 	the following icons:
 	<itemizedlist>
 		<listitem>The &application; library, where all of the
 		imported songs will appear.
 		</listitem>
-		<listitem>Any groups that have been created from imported
-		songs.
+		<listitem>Any &playlist;  that have been created from imported songs.
 		</listitem> 
+ 		<listitem>Listen to Internet Radio stations.</listitem> 
 		<!--
 		<listitem>Audio CD's inserted into the computer's CD
 		drives.
@@ -162,9 +129,6 @@
 	<para>A tracker is also displays, showing the progress of the
 	playing. When tracker has focus, the arrow keys can be used to
 	Fast-Forward or Rewind the playing track.
-	</para>
-	<para>Clicking on the 'played time' will toggle between 'played time, 
-	'time left' and 'total time'.
 	</para>
 	<tip><para>Clicking on the artist or album name (where they are
 	underlined) will load the appropriate 'allmusic.com' page.</para>
@@ -200,17 +164,16 @@
 				format="PNG"/>
 				</imageobject>
 				<textobject>
-				<phrase>Shows shuffle button in toolbar.
+				<phrase>Shows shuffle button in statusbar.
 				</phrase>
 				</textobject>
 			</mediaobject>
 			</screenshot>
-			<para>When this button is pressed, the tracks in the
+			<para>When this option is selected, the tracks in the
 			browser are played in 'random' order.
 			</para>
 		</sect3>
 
-		<!--
 		<sect3 id="repeat">
 		<title>Repeat</title>
 			<screenshot>
@@ -220,19 +183,18 @@
 				format="PNG"/>
 				</imageobject>
 				<textobject>
-				<phrase>Shows repeat button in toolbar.
+				<phrase>Shows repeat button in statusbar.
 				</phrase>
 				</textobject>
 			</mediaobject>
 			</screenshot>
-		<para>When this button is pressed, when the last track in the
+		<para>When this option is selected, when the last track in the
 		browser is played, the list is repeated from the beginning.
 		</para>
 		</sect3>
-		-->
 
 		<sect3 id="next-previous">
-		<title>Next/Previous</title>
+		<title>Next/Play/Previous</title>
 			<screenshot>
 			<mediaobject>
 				<imageobject>
@@ -245,11 +207,9 @@
 				</textobject>
 			</mediaobject>
 			</screenshot>
-			<para>These buttons can be used to skip between tracks
-			whilst playing. The previous button will restart the
-			song if it's been playing for a while, or skip to
-			previous if at the start of a track (within first 2
-			seconds).
+			<para>The Next and Previous buttons can be used to skip between tracks
+ 			whilst playing. If a song is currently playing, the previous button will restart the
+ 			song. Clicking on the Play button will start &application; playing the current track. Whilst playing this 				will change to a Pause icon.
 			</para>
 
 		</sect3>
@@ -259,7 +219,7 @@
 			<screenshot>
 			<mediaobject>
 				<imageobject>
-				<imagedata fileref="figures/rb-volume-mute.png"
+				<imagedata fileref="figures/rb-volume-changer.png"
 				format="PNG"/>
 				</imageobject>
 				<textobject>
@@ -268,18 +228,8 @@
 				</textobject>
 			</mediaobject>
 			</screenshot>
-			<para>The volume of playback can be adjusted using the
-			volume slider in the top right hand of the view.
-			Sliding the to the right will increase the volume,
-			whilst to the left will reduce it. The loudspeaker icon
-			will change to indicate the relative volume. 
+			<para>volume control in the right hand of the player area. Clicking on the loudspeaker icon will show 				the volume slider. Sliding this up and down will increase and decrease the volume. The loudspeaker 				icon will change to reflect the relative volume. 
 			</para>
-			<note>
-				<para>To mute the sound, click on the
-				loudspeaker icon, and to restore the muted
-				sound, do likewise.</para>
-			</note>
-
 		</sect3>
 
 	</sect2>
@@ -291,12 +241,11 @@
 		<para>The &application; Library is an organized view of
 		your music files. You can browse the Library by artist or
 		by album. Once you have added a song to your Library you
-		can play it directly or add it to a group to be played as
+		can play it directly or add it to a &playlist; to be played as
 		part of a playlist.
 		</para>
-		<para>When &application; is first started, there will be
-		no entries Library. Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>Add to Library...</guimenuitem></menuchoice> to add
-		music files to &application; Library. If you select a folder,
+		<para>Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>Add to Library...
+		</guimenuitem></menuchoice> to add music files to &application; Library. If you select a folder,
 		all music file in all subfolders will be added to Library.
 		</para>
 		<warning>
@@ -324,7 +273,18 @@
 				</listitem>
 				<listitem>
 				Opening a song/directory from Nautilus 
-				with &application; 
+				with &application;, using the context menu. 
+	 			<screenshot>
+ 					<mediaobject>
+		 				<imageobject>
+		 				<imagedata fileref="figures/rb-context-menu.png"
+		 				format="PNG"/>
+		 				</imageobject>
+		 				<textobject>
+		 				<phrase>The &application; context menu in Nautilus.</phrase>
+		 				</textobject>
+	 				</mediaobject>
+	 			</screenshot>
 				</listitem>
 			</itemizedlist>
 			</para>
@@ -346,7 +306,7 @@
 		<title>Using the Browser</title>
 			<para>The Browser allows the library to be easily
 			browsed, showing the artist, then album of the current
-			track. It is not shown when viewing a group<!-- or
+			track. It is not shown when viewing a &playlist;<!-- or
 			audio CD-->. Choose <menuchoice><guimenu>View</guimenu><guimenuitem>Browser</guimenuitem></menuchoice> to change browser visibility.
 			</para>
 			<screenshot>
@@ -424,7 +384,7 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 <sect2 id="statistics">
 <title>Statistics</title>
 
-<para>&application; can maintain statistics on the use of the library. &application; automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through <guilabel>Additional</guilabel> tab in <xref linkend="properties"/> dialog for each song or directly in the View Pane for all songs displayed in Library or groups; you can add proper columns via the <xref linkend="prefs"/> dialog.</para>
+<para>&application; can maintain statistics on the use of the library. &application; automatically records the number of plays, the last played date and allows you to rating each track. You can access this information through <guilabel>Additional</guilabel> tab in <xref linkend="properties"/> dialog for each song or directly in the View Pane for all songs displayed in Library or &playlist;; you can add proper columns via the <xref linkend="prefs"/> dialog.</para>
 <figure id="fig-rb-stats">
 <title>application; statistic in View Pane</title>
 <screenshot>
@@ -442,7 +402,7 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 <title>Ratings</title>
 <para>This allows each song in the library to be rated on a scale of 1 to 5 stars. To rate a song:
 	<itemizedlist>
-	<listitem><para>Select the song, choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Properties</guimenuitem></menuchoice>, select <guilabel>Details</guilabel> tab, click in different part of <guilabel>Rating</guilabel> entry [??] to set required rating</para></listitem>
+	<listitem><para>Select the song, choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Properties</guimenuitem></menuchoice>, select <guilabel>Details</guilabel> tab, click in different part of <guilabel>Rating</guilabel> entry to set required rating</para></listitem>
 	<listitem><para>Click in different parts of the <guilabel>Rating</guilabel> column in View Pane to set the required rating.</para></listitem>
 	</itemizedlist>
 </para>
@@ -459,32 +419,32 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 </sect2>
 
 <sect2 id="groups">
-<title>Groups</title>
+<title>Playlists</title>
 
-<para>A group is a 'playlist' that has been created from songs in &application; library, to have a different sorting method from artist/album library default.
+<para>A &playlist; is an ad hoc list that has been created from songs in &application; library, to have a different sorting method from artist/album library default.
 </para>
-<para>It might consist of a groups of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood', or whatever you want.</para>
+<para>It might consist of a list of songs of a particular 'genre', a specific group of artists, or even songs that are of a particular 'mood', or whatever you want.</para>
 
-<para>To display a group, simply click on the required group's icon in side pane, and the view pane will change to show the contents.</para>
+<para>To display the contents of a &playlist;, simply click on the required icon in side pane, and the view pane will change to show the contents.</para>
 
 <sect3 id="groups-add">
 <title>Adding Songs</title>
  
-  <para>To create a group use one of the following methods:</para>
+  <para>To create a &playlist; use one of the following methods:</para>
 
   <itemizedlist>
     <listitem>
-    Drag a 'track', 'album' or 'artist' from library or library browser to the side pane. When the group is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled').	
+    Drag a 'track', 'album' or 'artist' from library or library browser to the side pane. When the &playlist; is created,  it will default to either the name of the artist (when dropping an artist), the name of the album (when an album), or when a track is dropped, a dialog is displayed, prompting for the name of the group (which is by default named 'Untitled').	
     </listitem>
     <listitem>    
     Choose <menuchoice><guimenu>Organize</guimenu><guimenuitem>New Group</guimenuitem></menuchoice>. Again a dialog is displayed prompting for a name, and if any tracks are selected, tick the <guilabel>Add selected track</guilabel> option box to add them to the group.
     </listitem>
   </itemizedlist>
 
-  <para>To add songs, album or artist to an already existing group just drag and drop it from the library to the group's icon in the side pane.</para>
+  <para>To add songs, album or artist to an already existing group just drag and drop it from the library to the &playlist;''s icon in the side pane.</para>
 
 <figure id="fig-groups-create">
-<title>Dialog to create a new group</title>
+<title>Dialog to create a new &playlist;</title>
 <screenshot>
 <graphic format="PNG" fileref="figures/rb-group-create.png">
 </graphic>
@@ -494,23 +454,20 @@ The <guilabel>Details</guilabel> tab of the dialog shows more detailed informati
 </sect3>
 <sect3 id="groups-delete">
 <title>Deleting Songs</title>
-<para>To delete songs from a group, simply select the song then choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice><guimenu>Edit</guimenu> or simply press the  <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key.</para>
+<para>To delete songs from a &playlist;, simply select the song then choose <menuchoice><guimenu>Edit</guimenu><guimenuitem>Delete</guimenuitem></menuchoice><guimenu>Edit</guimenu> or simply press the  <shortcut><keycombo><keycap>Delete</keycap></keycombo></shortcut> key.</para>
 </sect3>
 <sect3 id="groups-modify">
-<title>Modifying a Group</title>
-<para>Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. This will allow the renaming and deletion of the group. Selecting the <guimenuitem>Rename</guimenuitem> will display a prompt for the new name of the group. Selecting the <guimenuitem>Delete</guimenuitem> will delete the group (note that the 'content' of the group is not removed from the library, just the 'playlist'.</para>
+<title>Modifying a &playlist;</title>
+<para>Right click on group icon in Side Pane to display the <guimenu>group menu</guimenu>. This will allow the renaming and deletion of the &playlist;. Selecting the <guimenuitem>Rename</guimenuitem> will display a prompt for the new name of the group. Selecting the <guimenuitem>Delete</guimenuitem> will delete the &playlist; (note that the 'content' of the &playlist; is not removed from the library, just the 'playlist'.</para>
 </sect3>
 </sect2>
 
 <!--
-
-Not yet implemented
-
 <sect2 id="cd">
 <title>Audio CDs</title>
 <sect3 id="cd-playing">
 <title>Playing</title>
-<para>When a CD is inserted to the CD drive, it will appear in the side pane, and the songs on it can be displayed in &application;'s main window.</para>
+<para>When a CD is inserted to the CD drive, it will appear in the side pane, and the songs on it can be displayed in &application;''s main window.</para>
 <para>To play and pause playback, or to skip forward or backwards, use the same controls as used for playing from the library.</para>
 </sect3>
 <sect3 id="cd-ripping">
@@ -523,37 +480,49 @@ Not yet implemented
 </sect3>
 
 </sect2>
-
 -->
-
-<!-- 
-
-not yet implemented 
 
 <sect2 id="internet-radio">
 <title>Internet Radio</title>
 <sect3 id="radio-overview">
 <title>Listening via Internet</title>
-<para>Not sure about including this</para>
 <para>The Internet Radio tuner can be used to listen to streamed audio files.</para>
-<para>&nyi;</para>
+
+<figure id="fig-iradio">
+<title>Internet Radio in &application;</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-iradio.png"/>
+</screenshot>
+</figure>
+
 </sect3>
+
+<sect3 id="iradio-adding">
+<title>Adding a station</title>
+<para>New stations can be added to the Internet Radio tuner, using the <menuchoice><guimenuitem>Add New Internet Radio Station</guimenuitem></menuchoice> menuoption.</para>
+<figure id="fig-add-station">
+<title>Adding a new station to &application;</title>
+<screenshot>
+<graphic format="PNG" fileref="figures/rb-iradio-add.png"/>
+</screenshot>
+</figure>
+</sect3>
+
 </sect2>
 
--->
 
 <sect2 id="notification-area">
 <title>Panel Applet</title>
 
 <para>The Notification Area is a Gnome feature that allows applications to add a small icon to the panel
-while the program is running. &application; adds it's icon to the notification area and this allows you to control &application; from your tray.</para>
+while the program is running. &application; adds it''s icon to the notification area and this allows you to control &application; from your tray.</para>
 
 <para>Using the &application; icon in the notification area, the following commands can be sent to the application: 
 </para>
 <para>
 <itemizedlist>
 <listitem>
-Play / Pause &mdash; Play or Pause the currently selected song. This item changes depending on whether a song is playing or not.
+Play | Pause &mdash; Play or Pause the currently selected song. This item changes depending on whether a song is playing or not.
 </listitem>
 <listitem>
 Previous &mdash; Skip to previous song in playlist.
@@ -601,53 +570,47 @@ Show Window &mdash; choose whether or not the &application; window is visible or
 </guimenuitem></menuchoice>.
 		</para>
 
-		<figure id="fig-preferences">
-		<title>The Preferences Dialog</title>
+ 		<sect3 id="prefs-view">
+ 		<title>Columns</title>
+ 			<para>This section of the dialog allows you to select
+ 			which columns will be displayed.
+ 			</para>
+ 		<figure id="fig-general-preferences">
+ 		<title>General Preferences</title>
 		<screenshot>
 			<mediaobject>
 			<imageobject>
-			<imagedata fileref="figures/rb-prefs.png" 
+			<imagedata fileref="figures/rb-prefs-general.png" 
 			format="PNG"/>
 			</imageobject>
 			<textobject>
-			<phrase>Show the &application; preferences dialog.
-			</phrase>
+			<phrase>Show the general &application; preferences dialog.</phrase>
 			</textobject>
 			</mediaobject>
 		</screenshot>
 		</figure>
-
-		<sect3 id="prefs-view">
-		<title>Appearance</title>
-			<para>This section of the dialog allows you to select
-			how the toolbar will be displayed.
-			</para>
 		</sect3>
 
-		<sect3 id="prefs-columns">
-		<title>Columns</title>
+		<sect3 id="prefs-library">
+		<title>Browser preferences</title>
 			<para>This section of the dialog allows you to select
-			which columns are displayed in the song list.
+			how the browser will be displayed.
 			</para>
-		</sect3>
-	</sect2>
-
-	<sect2 id="toolbar-edit">
-	<title>Toolbar editing</title>
-
-		<para>The <guilabel>Toolbar editor</guilabel> lets you add,
-		remove and re-order buttons on the &application; toolbar.
-		</para>
-
-		<para>You can select an item and move it by clicking on arrows,
-		or simply dran'n'drop items.
-		</para>
-
-		<figure id="fig-toolbar-editor">
-		<title>The Toolbar Editor</title>
+		<figure id="fig-preferences">
+ 		<title>Library Preferences</title>
 		<screenshot>
-		<graphic format="PNG"  fileref="figures/rb-toolbar-editor.png"/>
+ 			<mediaobject>
+ 			<imageobject>
+ 			<imagedata fileref="figures/rb-prefs-library.png" 
+ 			format="PNG"/>
+ 			</imageobject>
+ 			<textobject>
+ 			<phrase>Show the library preferences dialog.
+ 			</phrase>
+ 			</textobject>
+ 			</mediaobject>
 		</screenshot>
 		</figure>
+		</sect3>
 	</sect2>
 </sect1>

@@ -11,6 +11,43 @@
     <colspec colname="COLSPEC0" colwidth="30*"/>
     <colspec colname="COLSPEC1" colwidth="70*"/>
     <tbody>
+
+      <row>
+        <entry>
+<shortcut>
+  <keycombo><keycap>Ctrl</keycap><keycap>A</keycap></keycombo>
+ </shortcut>
+
+        </entry>
+        <entry>
+          <para>Select All</para>
+        </entry>
+      </row>
+
+      <row>
+        <entry>
+<shortcut>
+  <keycombo><keycap>Ctrl</keycap><keycap>E</keycap></keycombo>
+ </shortcut>
+
+        </entry>
+        <entry>
+          <para>Extract CD</para>
+        </entry>
+      </row>
+
+      <row>
+        <entry>
+<shortcut>
+  <keycombo><keycap>Ctrl</keycap><keycap>J</keycap></keycombo>
+ </shortcut>
+
+        </entry>
+        <entry>
+          <para>Jump to playing song</para>
+        </entry>
+      </row>
+
       <row>
         <entry>
 <shortcut>
@@ -32,18 +69,6 @@
           <para>Add to library</para>
         </entry>
       </row>
-      <row>
-        <entry>
-<shortcut>
-  <keycombo><keycap>Ctrl</keycap><keycap>Q</keycap></keycombo>
- </shortcut>
-
-        </entry>
-        <entry>
-          <para>Quit application</para>
-        </entry>
-      </row>
-
 
       <row>
         <entry>
@@ -57,29 +82,43 @@
         </entry>
       </row>
 
+
       <row>
         <entry>
 <shortcut>
-  <keycombo><keycap>Ctrl</keycap><keycap>J</keycap></keycombo>
+  <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>
  </shortcut>
 
         </entry>
         <entry>
-          <para>Jump to playing song</para>
+          <para>Restart</para>
         </entry>
       </row>
 
       <row>
         <entry>
 <shortcut>
-  <keycombo><keycap>Ctrl</keycap><keycap>A</keycap></keycombo>
+  <keycombo><keycap>Ctrl</keycap><keycap>S</keycap></keycombo>
  </shortcut>
 
         </entry>
         <entry>
-          <para>Select All</para>
+          <para>Shuffle play</para>
         </entry>
       </row>
+
+      <row>
+        <entry>
+<shortcut>
+  <keycombo><keycap>Ctrl</keycap><keycap>W</keycap></keycombo>
+ </shortcut>
+
+        </entry>
+        <entry>
+          <para>Exit &application;</para>
+        </entry>
+      </row>
+
 
       <row>
         <entry>
@@ -117,30 +156,6 @@
         </entry>
       </row>
 
-      <row>
-        <entry>
-<shortcut>
-  <keycombo><keycap>Ctrl</keycap><keycap>R</keycap></keycombo>
- </shortcut>
-
-        </entry>
-        <entry>
-          <para>Restart</para>
-        </entry>
-      </row>
-
-      <row>
-        <entry>
-<shortcut>
-  <keycombo><keycap>Ctrl</keycap><keycap>S</keycap></keycombo>
- </shortcut>
-
-        </entry>
-        <entry>
-          <para>Shuffle play</para>
-        </entry>
-      </row>
-
 <row>
         <entry>
 <shortcut>
@@ -163,6 +178,16 @@
         </entry>
       </row>
 
+<row>
+        <entry>
+<shortcut>
+<keycap>F8</keycap>
+ </shortcut>
+        </entry>
+        <entry>
+          <para>Toggle small display mode</para>
+        </entry>
+      </row>
 
 <row>
         <entry>
@@ -174,6 +199,63 @@
           <para>Show/hide side bar</para>
         </entry>
       </row>
+
+    </tbody>
+    </tgroup>
+  </informaltable>
+</sect1>
+<sect1 id="multimedia-keys">
+  <title>Multimedia Keys</title>
+
+  <informaltable frame="none">
+    <tgroup cols="2" colsep="0" rowsep="0">
+    <colspec colname="COLSPEC0" colwidth="30*"/>
+    <colspec colname="COLSPEC1" colwidth="70*"/>
+    <tbody>
+
+	<row>
+        <entry>
+	<shortcut>
+	<keycap>Stop</keycap>
+	 </shortcut>
+        </entry>
+        <entry>
+        <para>Stops the player</para>
+        </entry>
+      	</row>
+
+	<row>
+        <entry>
+	<shortcut>
+	<keycap>Pause / Play</keycap>
+	 </shortcut>
+        </entry>
+        <entry>
+        <para>Pauses / Play the player</para>
+        </entry>
+      	</row>
+
+	<row>
+        <entry>
+	<shortcut>
+	<keycap>Prev</keycap>
+	 </shortcut>
+        </entry>
+        <entry>
+        <para>Plays the previous played track</para>
+        </entry>
+      	</row>
+
+	<row>
+        <entry>
+	<shortcut>
+	<keycap>Next</keycap>
+	 </shortcut>
+        </entry>
+        <entry>
+        <para>Plays the next track</para>
+        </entry>
+      	</row>
 
     </tbody>
     </tgroup>
