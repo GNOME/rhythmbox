@@ -800,7 +800,6 @@ update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 	time_t stored_mtime;
 	GnomeVFSFileInfo *vfsinfo = NULL;
 	GnomeVFSResult result;
-	RhythmDBEntryUpdateData *metadata;
 
 	rhythmdb_read_lock (db);
 	location = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
@@ -826,16 +825,10 @@ update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 	if (stored_mtime == vfsinfo->mtime)
 		goto out;
 
-	metadata = read_metadata (location, error);
-	if (!metadata) {
-		rb_debug ("failed to read data from \"%s\"", location);
-		goto out;
-	}
-
 	rhythmdb_write_lock (db);
 	
-	synchronize_entry_with_data (db, entry, metadata);
-	g_free (metadata);
+	rhythmdb_entry_delete (db, entry);
+	rhythmdb_add_uri_async (db, location); 
 	rhythmdb_entry_unref_unlocked (db, entry);
 
 	rhythmdb_write_unlock (db);
