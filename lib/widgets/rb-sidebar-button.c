@@ -220,8 +220,8 @@ rb_sidebar_button_init (RBSidebarButton *button)
 
 	static GtkItemFactoryEntry popup_menu_items[] =
 	{
-		{ N_("/_Rename"), NULL, rb_sidebar_button_popup_rename_cb, 0, "<Item>",      NULL             },
-		{ N_("/_Delete"), NULL, rb_sidebar_button_popup_delete_cb, 0, "<StockItem>", GTK_STOCK_DELETE }
+		{ N_("/_Rename..."), NULL, rb_sidebar_button_popup_rename_cb, 0, "<Item>",      NULL             },
+		{ N_("/_Delete"),    NULL, rb_sidebar_button_popup_delete_cb, 0, "<StockItem>", GTK_STOCK_DELETE }
 	};
 
 	static GtkTargetEntry drag_types[] =

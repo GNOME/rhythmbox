@@ -27,7 +27,6 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkcellrenderertext.h>
 #include <gtk/gtkentry.h>
-#include <gtk/gtktogglebutton.h>
 #include <gdk/gdkkeysyms.h>
 #include <glade/glade.h>
 #include <string.h>
@@ -85,8 +84,6 @@ struct RBShellPreferencesPrivate
 	GtkTreeSelection *folders_selection;
 	GtkWidget *folders_remove_button;
 
-	GtkWidget *include_cd_check;
-	
 	gboolean lock;
 };
 
@@ -172,8 +169,6 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "music_folders_treeview");
 	shell_preferences->priv->folders_remove_button =
 		glade_xml_get_widget (xml, "remove_folder_button");
-	shell_preferences->priv->include_cd_check =
-		glade_xml_get_widget (xml, "include_audiocd_check");
 
 	/* set up folders treeview */
 	shell_preferences->priv->folders_store = gtk_list_store_new (FOLDERS_NUM_COLUMNS,
@@ -260,7 +255,6 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
 	char *base_folder;
 	GSList *music_folders, *l;
-	gboolean include_cd;
 
 	if (shell_preferences->priv->lock == TRUE)
 		return;
@@ -268,7 +262,6 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 
 	base_folder = eel_gconf_get_string (CONF_LIBRARY_BASE_FOLDER);
 	music_folders = eel_gconf_get_string_list (CONF_LIBRARY_MUSIC_FOLDERS);
-	include_cd = eel_gconf_get_boolean (CONF_LIBRARY_INCLUDE_AUDIO_CD);
 
 	gtk_entry_set_text (GTK_ENTRY (shell_preferences->priv->base_folder_entry),
 			    base_folder);
@@ -284,8 +277,6 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 				    FOLDERS_COL_EDITABLE, TRUE,
 				    -1);
 	}
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (shell_preferences->priv->include_cd_check),
-				      include_cd);
 
 	g_slist_foreach (music_folders, (GFunc) g_free, NULL);
 	g_slist_free (music_folders);
@@ -409,16 +400,6 @@ remove_folder_clicked_cb (GtkWidget *button,
 	g_slist_free (list);
 	
 	folders_sync_to_gconf (shell_preferences);
-}
-
-void
-include_audiocd_check_toggled_cb (GtkToggleButton *button,
-				  RBShellPreferences *shell_preferences)
-{
-	if (shell_preferences->priv->lock == TRUE)
-		return;
-
-	eel_gconf_set_boolean (CONF_LIBRARY_INCLUDE_AUDIO_CD, button->active);
 }
 
 static void
