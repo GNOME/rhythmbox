@@ -65,6 +65,7 @@ static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
+static void impl_search (RBSource *source, const char *text);
 static GList * impl_cut (RBSource *source);
 static void impl_paste (RBSource *asource, GList *nodes);
 static void impl_delete (RBSource *source);
@@ -104,6 +105,7 @@ struct RBGroupSourcePrivate
 	GdkPixbuf *pixbuf;
 
 	RBNodeView *songs;
+	RBNodeFilter *filter;
 
 	char *title;
 
@@ -183,6 +185,8 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_get_node_view = impl_get_node_view;
+	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_search = impl_search;
 	source_class->impl_can_cut = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
@@ -283,6 +287,8 @@ rb_group_source_set_property (GObject *object,
 		GtkWidget *dummy = gtk_tree_view_new ();
 		source->priv->library = g_value_get_object (value);
 		source->priv->vbox = gtk_vbox_new (FALSE, 5);
+
+		source->priv->filter = rb_node_filter_new ();
 		
 		gtk_container_add (GTK_CONTAINER (source), source->priv->vbox);
 		
@@ -290,7 +296,7 @@ rb_group_source_set_property (GObject *object,
 		
 		source->priv->songs = rb_node_view_new (source->priv->group,
 							rb_file ("rb-node-view-songs.xml"),
-							NULL);
+							source->priv->filter);
 		g_signal_connect (G_OBJECT (source->priv->songs), "show_popup",
 				  G_CALLBACK (rb_group_source_songs_show_popup_cb), source);
 		
@@ -931,4 +937,26 @@ filename_from_name (const char *name)
 	g_free (asciiname);
 
 	return ret;
+}
+
+static void
+impl_search (RBSource *asource, const char *search_text)
+{
+	RBGroupSource *source = RB_GROUP_SOURCE (asource);
+
+	/* resets the filter */
+	if (search_text == NULL || strcmp (search_text, "") == 0) {
+		rb_node_filter_empty (source->priv->filter);
+		rb_node_filter_done_changing (source->priv->filter);
+	} else {
+		rb_node_view_select_none (source->priv->songs);
+
+		rb_node_filter_empty (source->priv->filter);
+		rb_node_filter_add_expression (source->priv->filter,
+					       rb_node_filter_expression_new (RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS,
+									      RB_NODE_PROP_NAME,
+									      search_text),
+					       0);
+		rb_node_filter_done_changing (source->priv->filter);
+	}
 }
