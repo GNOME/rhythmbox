@@ -26,7 +26,6 @@
 #include <libgnome/gnome-program.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
-#include <libgnomeui/gnome-authentication-manager.h>
 #include <gtk/gtk.h>
 #include <bonobo/Bonobo.h>
 #include <bonobo/bonobo-main.h>
