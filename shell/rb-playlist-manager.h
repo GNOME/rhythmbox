@@ -74,7 +74,7 @@ void			rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr);
 
 void			rb_playlist_manager_load_playlists (RBPlaylistManager *mgr);
 
-void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr);
+void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force);
 
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  const char *suggested_name,

@@ -572,7 +572,7 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 }
 
 void
-rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
+rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
 	GList *tmp;
 	xmlNodePtr root;
@@ -580,7 +580,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 
 	rb_debug ("saving the playlists");
 
-	if (!mgr->priv->dirty) {
+	if (!force && !mgr->priv->dirty) {
 		rb_debug ("no save needed, ignoring");
 		return;
 	}
