@@ -39,14 +39,7 @@ typedef struct
   int lsf_bit;
 } MP3Frame;
 
-#ifndef WORDS_BIGENDIAN
-#define BE_32(x) ((((guint8*)(x))[0] << 24) | \
-		(((guint8*)(x))[1] << 16) | \
-		(((guint8*)(x))[2] << 8) | \
-		((guint8*)(x))[3])
-#else
-#define BE_32(x) (*(guint32 *) (x))
-#endif
+#define BE_32(x) GINT32_FROM_BE(*(gint*)(x))
 
 #define FOURCC_TAG( ch0, ch1, ch2, ch3 )		\
 	( (long)(unsigned char)(ch3) |			\
@@ -59,6 +52,7 @@ typedef struct
 #define XING_BYTES_FLAG      0x0002
 #define XING_TOC_FLAG        0x0004
 #define XING_VBR_SCALE_FLAG  0x0008
+#define XING_TOC_LENGTH      100
 
 /* check for valid "Xing" VBR header */
 static int is_xhead(unsigned char *buf)
@@ -94,43 +88,48 @@ static int mpg123_parse_xing_header(MP3Frame *frame,
       ptr += (9 + 4);
   }
 
-  if (ptr >= (buf + bufsize))
+  if (ptr >= (buf + bufsize - 4))
     return 0;
 
   if (is_xhead(ptr))
   {
     lprintf("Xing header found\n");
 
-    ptr += 4; if (ptr >= (buf + bufsize)) return 0;
+    ptr += 4; if (ptr >= (buf + bufsize - 4)) return 0;
 
     xflags = BE_32(ptr);
-    ptr += 4; if (ptr >= (buf + bufsize)) return 0;
+    ptr += 4;
 
     if (xflags & XING_FRAMES_FLAG)
     {
+      if (ptr >= (buf + bufsize - 4)) return 0;
       xframes = BE_32(ptr);
       lprintf("xframes: %d\n", xframes);
-      ptr += 4; if (ptr >= (buf + bufsize)) return 0;
+      ptr += 4;
     }
     if (xflags & XING_BYTES_FLAG)
     {
+      if (ptr >= (buf + bufsize - 4)) return 0;
       xbytes = BE_32(ptr);
       lprintf("xbytes: %d\n", xbytes);
-      ptr += 4; if (ptr >= (buf + bufsize)) return 0;
+      ptr += 4;
     }
     if (xflags & XING_TOC_FLAG)
     {
       lprintf("toc found\n");
-      for (i = 0; i < 100; i++)
+      if (ptr >= (buf + bufsize - XING_TOC_LENGTH)) return 0;
+      for (i = 0; i < XING_TOC_LENGTH; i++)
       {
         xtoc[i] = *(ptr + i);
 	lprintf("%d ", xtoc[i]);
       }
       lprintf("\n");
+      ptr += XING_TOC_LENGTH; 
     }
-    ptr += 100; if (ptr >= (buf + bufsize)) return 0;
+
     xvbr_scale = -1;
     if (xflags & XING_VBR_SCALE_FLAG) {
+      if (ptr >= (buf + bufsize - 4)) return 0;
       xvbr_scale = BE_32(ptr);
       lprintf("xvbr_scale: %d\n", xvbr_scale);
     }
