@@ -87,6 +87,7 @@ AC_OUTPUT([
 Makefile
 lib/Makefile
 lib/widgets/Makefile
+lib/egg/Makefile
 library/Makefile
 iradio/Makefile
 shell/Makefile
@@ -101,8 +102,3 @@ help/C/Makefile
 po/Makefile.in
 rhythmbox.spec
 ])
-
-if test "$GST_MAJORMINOR" = "0.6"; then
-   AC_MSG_WARN([spider element known to be broken in this GStreamer release])
-   AC_MSG_WARN([only mp3 iradio support will be enabled])
-fi

@@ -1,4 +1,4 @@
-SUBDIRS = widgets
+SUBDIRS = widgets egg
 
 noinst_LTLIBRARIES = librb.la
 
@@ -13,6 +13,8 @@ librb_la_SOURCES =					\
 	rb-file-monitor.h				\
 	rb-marshal.c					\
 	rb-marshal.h					\
+	disclosure-widget.c				\
+	disclosure-widget.h				\
 	rb-bonobo-helpers.c				\
 	rb-bonobo-helpers.h				\
 	rb-glade-helpers.c				\

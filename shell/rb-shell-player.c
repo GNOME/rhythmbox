@@ -357,34 +357,19 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->prev_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->play_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->next_button, FALSE, TRUE, 0);
-
+	
+	gtk_box_set_spacing (GTK_BOX (hbox), 4);
 	gtk_box_pack_start_defaults (GTK_BOX (player), hbox);
 
 	player->priv->player_widget = rb_player_new (player->priv->mmplayer);
 	gtk_box_pack_start_defaults (GTK_BOX (player), GTK_WIDGET (player->priv->player_widget));
 
-	hbox = gtk_hbox_new (FALSE, 0);
-	/* Play button */
-	image = gtk_image_new_from_stock (RB_STOCK_SHUFFLE,
-					  GTK_ICON_SIZE_BUTTON);
-	player->priv->shuffle_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->shuffle_button), image);
-	
 	image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
 					  GTK_ICON_SIZE_BUTTON);
 	player->priv->volume_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	image = gtk_image_new_from_stock (GTK_STOCK_EXECUTE,
-					  GTK_ICON_SIZE_BUTTON);
-	player->priv->magic_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->magic_button), image);
-
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->shuffle_button, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->volume_button, FALSE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (hbox), player->priv->magic_button, FALSE, TRUE, 0);
-
-	gtk_box_pack_end (GTK_BOX (player), hbox, FALSE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (player), player->priv->volume_button, FALSE, TRUE, 0);
 
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,

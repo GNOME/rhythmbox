@@ -80,6 +80,11 @@ static void rb_library_source_drop_cb (GtkWidget        *widget,
 				       guint             time,
 				       gpointer          user_data);
 
+void rb_library_source_sync_browser (RBLibrarySource *source);
+static void rb_library_source_browser_visibility_changed_cb (GConfClient *client,
+							     guint cnxn_id,
+							     GConfEntry *entry,
+							     RBLibrarySource *source);
 static void rb_library_source_ui_pref_changed (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
@@ -87,6 +92,7 @@ static void rb_library_source_ui_pref_changed (GConfClient *client,
 static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static const char *impl_get_status (RBSource *source);
+static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
@@ -224,6 +230,7 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	object_class->get_property = rb_library_source_get_property;
 
 	source_class->impl_get_status = impl_get_status;
+	source_class->impl_get_browser_key = impl_get_browser_key;
 	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_search = impl_search;
@@ -467,12 +474,16 @@ rb_library_source_set_property (GObject *object,
 			gtk_box_pack_start_defaults (GTK_BOX (source->priv->vbox), source->priv->paned);
 
 			source->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
-			source->priv->show_browser = eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER);
 
 			gtk_widget_show_all (GTK_WIDGET (source));
 
 			gtk_paned_set_position (GTK_PANED (source->priv->paned), source->priv->paned_position);
-			rb_library_source_show_browser (source, source->priv->show_browser);
+
+			eel_gconf_notification_add (CONF_STATE_SHOW_BROWSER,
+						    (GConfClientNotifyFunc) rb_library_source_browser_visibility_changed_cb,
+						    source);
+			
+			rb_library_source_sync_browser (source);
 
 			update_browser_views_visibility (source);
 
@@ -604,6 +615,12 @@ static const char *
 impl_get_description (RBSource *source)
 {
 	return _("Library");
+}
+
+static const char *
+impl_get_browser_key (RBSource *source)
+{
+	return CONF_STATE_SHOW_BROWSER;
 }
 
 static GdkPixbuf *
@@ -766,7 +783,7 @@ impl_get_status (RBSource *asource)
 	else
 		return impl_get_status_full (source);
 }
-	
+
 static const char *
 impl_get_status_fast (RBLibrarySource *source)
 {
@@ -915,16 +932,26 @@ paned_size_allocate_cb (GtkWidget *widget,
 }
 
 void
-rb_library_source_show_browser (RBLibrarySource *source,
-				gboolean show)
+rb_library_source_sync_browser (RBLibrarySource *source)
 {
-	eel_gconf_set_boolean (CONF_STATE_SHOW_BROWSER, show);
+	gboolean show = eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER);
 
 	if (show)
 		gtk_widget_show (source->priv->browser);
 	else
 		gtk_widget_hide (source->priv->browser);
 }
+
+static void
+rb_library_source_browser_visibility_changed_cb (GConfClient *client,
+						 guint cnxn_id,
+						 GConfEntry *entry,
+						 RBLibrarySource *source)
+{
+	rb_debug ("browser visibility changed"); 
+	rb_library_source_sync_browser (source);
+}
+
 
 void
 rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)

@@ -41,6 +41,7 @@ static void rb_source_get_property (GObject *object,
 					GValue *value,
 					GParamSpec *pspec);
 
+const char * default_get_browser_key (RBSource *status);
 GList *default_get_extra_views (RBSource *source);
 void default_song_properties (RBSource *source);
 GtkWidget * default_get_config_widget (RBSource *source);
@@ -117,6 +118,7 @@ rb_source_class_init (RBSourceClass *klass)
 	object_class->set_property = rb_source_set_property;
 	object_class->get_property = rb_source_get_property;
 
+	klass->impl_get_browser_key = default_get_browser_key;
 	klass->impl_get_extra_views = default_get_extra_views;
 	klass->impl_song_properties = default_song_properties;
 	klass->impl_handle_eos = default_handle_eos;
@@ -269,6 +271,20 @@ rb_source_get_status (RBSource *status)
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
 
 	return klass->impl_get_status (status);
+}
+
+const char *
+default_get_browser_key (RBSource *status)
+{
+	return NULL;
+}
+
+const char *
+rb_source_get_browser_key (RBSource *status)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
+
+	return klass->impl_get_browser_key (status);
 }
 
 void

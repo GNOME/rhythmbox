@@ -66,7 +66,6 @@ static void genre_activated_cb (RBNodeView *view,
 static void rb_iradio_source_songs_show_popup_cb (RBNodeView *view,
 						RBNode *node,
 						RBIRadioSource *source);
-static void rb_iradio_source_show_browser (RBIRadioSource *source, gboolean show);
 static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBIRadioSource *source);
@@ -75,10 +74,14 @@ static void rb_iradio_source_state_pref_changed (GConfClient *client,
 						 GConfEntry *entry,
 						 RBIRadioSource *source);
 
+static void rb_iradio_source_show_browser (RBIRadioSource *source,
+					   gboolean show);
+
 static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
 
 /* source methods */
 static const char *impl_get_status (RBSource *source);
+static const char *impl_get_browser_key (RBSource *source);
 static const char *impl_get_description (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBNodeView *impl_get_node_view (RBSource *source);
@@ -195,6 +198,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	object_class->get_property = rb_iradio_source_get_property;
 
 	source_class->impl_get_status  = impl_get_status;
+	source_class->impl_get_browser_key  = impl_get_browser_key;
 	source_class->impl_get_description  = impl_get_description;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_search = impl_search;
@@ -476,6 +480,12 @@ impl_get_status (RBSource *asource)
 			       rb_iradio_backend_get_station_count (source->priv->backend),
 			       rb_iradio_backend_get_genre_count (source->priv->backend));
 	return ret;
+}
+
+static const char *
+impl_get_browser_key (RBSource *asource)
+{
+	return CONF_STATE_SHOW_BROWSER;
 }
 
 static void

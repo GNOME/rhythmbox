@@ -62,6 +62,8 @@ typedef struct
 	/* methods */
 	const char *	(*impl_get_status)	(RBSource *source);
 
+	const char *	(*impl_get_browser_key)	(RBSource *source);
+
 	RBNodeView *	(*impl_get_node_view)	(RBSource *source);
 	GList *		(*impl_get_extra_views)	(RBSource *source);
 
@@ -93,6 +95,8 @@ void		rb_source_notify_status_changed (RBSource *status);
 
 /* general interface */
 const char *	rb_source_get_status		(RBSource *source);
+
+const char *	rb_source_get_browser_key	(RBSource *player);
 
 RBNodeView *	rb_source_get_node_view		(RBSource *player);
 

@@ -19,13 +19,13 @@
  */
 
 #include <gtk/gtk.h>
-#include <gtk/gtk.h>
 #include <config.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
 
+#include "disclosure-widget.h"
 #include "rb-source-header.h"
 #include "rb-stock-icons.h"
 #include "rb-thread-helpers.h"
@@ -53,13 +53,22 @@ static void rb_source_header_filter_changed_cb (RBSource *source,
 static void rb_source_header_search_cb (RBSearchEntry *search,
 					const char *text,
 					RBSourceHeader *header);
+static void rb_source_header_disclosure_toggled_cb (GtkToggleButton *disclosure,
+						    gpointer data);
+static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
+							  guint cnxn_id,
+							  GConfEntry *entry,
+							  RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
 	RBSource *selected_source;
 
 	GtkWidget *search;
-	GtkWidget *status;
+	GtkWidget *disclosure;
+
+	guint brower_notify_id;
+	const char *browser_key;
 };
 
 enum
@@ -124,17 +133,21 @@ rb_source_header_init (RBSourceHeader *header)
 {
 	header->priv = g_new0 (RBSourceHeaderPrivate, 1);
 
-	header->priv->status = gtk_label_new ("Status goes here");
 	header->priv->search = GTK_WIDGET (rb_search_entry_new ());
 
 	g_signal_connect (G_OBJECT (header->priv->search), "search",
 			  G_CALLBACK (rb_source_header_search_cb), header);
 
-	gtk_box_pack_start (GTK_BOX (header),
-			    GTK_WIDGET (header->priv->status), TRUE, TRUE, 0);
+	header->priv->disclosure = cddb_disclosure_new (_("Show Browser"),
+							_("Hide Browser"));
+	gtk_widget_set_sensitive (header->priv->disclosure, FALSE);
+	g_signal_connect (G_OBJECT (header->priv->disclosure), "toggled",
+			  G_CALLBACK (rb_source_header_disclosure_toggled_cb), header);
 
+	gtk_box_pack_start (GTK_BOX (header),
+			    GTK_WIDGET (header->priv->disclosure), TRUE, TRUE, 0);
 	gtk_box_pack_end (GTK_BOX (header),
-			  GTK_WIDGET (header->priv->search), FALSE, TRUE, 0);
+			  GTK_WIDGET (header->priv->search), TRUE, TRUE, 0);
 }
 
 static void
@@ -167,6 +180,9 @@ rb_source_header_set_property (GObject *object,
 	case PROP_SOURCE:
 		if (header->priv->selected_source != NULL)
 		{
+			if (header->priv->browser_key)
+				eel_gconf_notification_remove (header->priv->brower_notify_id);
+
 			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
 							      header);
@@ -177,10 +193,23 @@ rb_source_header_set_property (GObject *object,
 
 		if (header->priv->selected_source != NULL)
 		{
+			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
+			if (header->priv->browser_key)
+				header->priv->brower_notify_id
+					= eel_gconf_notification_add (header->priv->browser_key,
+								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
+								      header);
 			g_signal_connect (G_OBJECT (header->priv->selected_source),
 					  "filter_changed",
 					  G_CALLBACK (rb_source_header_filter_changed_cb),
 					  header);
+			gtk_widget_set_sensitive (header->priv->disclosure,
+						  header->priv->browser_key != NULL);
+			if (header->priv->browser_key != NULL)
+				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
+							      eel_gconf_get_boolean (header->priv->browser_key));
+		} else {
+			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->disclosure), FALSE);
 		}
 		
 		break;
@@ -243,10 +272,44 @@ rb_source_header_filter_changed_cb (RBSource *source,
 
 static void
 rb_source_header_search_cb (RBSearchEntry *search,
-			   const char *text,
-			   RBSourceHeader *header)
+			    const char *text,
+			    RBSourceHeader *header)
 {
 	rb_debug  ("searching for \"%s\"", text);
 	
 	rb_source_search (header->priv->selected_source, text);
 }
+
+static void
+rb_source_header_disclosure_toggled_cb (GtkToggleButton *disclosure,
+					gpointer data)
+{
+	RBSourceHeader *header = RB_SOURCE_HEADER (data);
+	gboolean disclosed = gtk_toggle_button_get_active (disclosure);
+
+	rb_debug ("disclosed: %s", disclosed ? "TRUE" : "FALSE");
+	
+	if (header->priv->selected_source != NULL)
+		eel_gconf_set_boolean (header->priv->browser_key, disclosed);
+}
+
+static void
+rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
+					      guint cnxn_id,
+					      GConfEntry *entry,
+					      RBSourceHeader *header)
+{
+	gboolean active;
+	rb_debug ("gconf disclosure changed");
+
+	g_return_if_fail (header->priv->browser_key != NULL);
+
+	active = eel_gconf_get_boolean (header->priv->browser_key);
+
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (header->priv->disclosure))
+	    != active)
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
+					      active);
+}
+
+	

@@ -54,6 +54,7 @@
 #include "rb-preferences.h"
 #include "rb-shell-player.h"
 #include "rb-source-header.h"
+#include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-playlist.h"
 #include "rb-bonobo-helpers.h"
@@ -608,7 +609,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW (shell->priv->sourcelist_scrollwin),
 					       shell->priv->sourcelist);
 
-	vbox = gtk_vbox_new (FALSE, 0);
+	vbox = gtk_vbox_new (FALSE, 4);
 	shell->priv->notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (shell->priv->notebook), FALSE);
@@ -626,6 +627,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (shell->priv->player_shell), FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (vbox), gtk_hseparator_new (), FALSE, TRUE, 5);
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->paned, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (rb_statusbar_new ()), FALSE, TRUE, 0);
 
 	bonobo_window_set_contents (win, vbox);
 
@@ -873,6 +875,8 @@ rb_shell_select_source (RBShell *shell,
 	/* update services */
 	rb_shell_player_set_source (shell->priv->player_shell,
 				    RB_SOURCE (source));
+	rb_source_header_set_source (shell->priv->source_header,
+				     RB_SOURCE (source));
 }
 
 static void
