@@ -203,6 +203,20 @@ if test "x$enable_mp3" = "xyes"; then
 fi
 AM_CONDITIONAL(HAVE_MP3,test "x$enable_mp3" = "xyes")
 
+dnl Check for libmp4v2
+
+AC_ARG_ENABLE(mp4, AC_HELP_STRING([--disable-mp4],
+			[don't build with MPEG-4 support]))
+if test "x$enable_mp4" != "xno"; then
+  AC_CHECK_HEADER(mp4.h, [AC_CHECK_HEADER(mpeg4ip.h, [enable_mp4=yes],)],)
+fi
+if test "x$enable_mp4" = "xyes"; then
+  LIBS="$LIBS -lmp4v2 -lstdc++"
+  AC_DEFINE(HAVE_MP4,,[Define if we have MPEG-4 support])
+fi
+
+AM_CONDITIONAL(HAVE_MP4, test "x$enable_mp4" = "xyes")
+
 dnl Check for Ogg Vorbis
 
 AC_ARG_ENABLE(vorbis, AC_HELP_STRING([--disable-vorbis],
@@ -432,6 +446,11 @@ if test x"$enable_flac" != "xyes"; then
 	AC_MSG_NOTICE([   FLAC support is disabled])
 else
 	AC_MSG_NOTICE([** FLAC support is enabled])
+fi
+if test x"$enable_mp4" != "xyes"; then
+	AC_MSG_NOTICE([   MPEG-4 support is disabled])
+else
+	AC_MSG_NOTICE([** MPEG-4 support is enabled])
 fi
 dnl if test x"$enable_musicbrainz" != "xyes"; then
 dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
