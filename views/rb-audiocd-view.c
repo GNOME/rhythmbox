@@ -939,7 +939,7 @@ update_musicbrainz_info_thread (RBAudiocdView *view)
         g_thread_exit (NULL);
 }
 
-RBNode *
+static RBNode *
 rb_audiocd_node_fill_basic (char *location)
 {
        RBNode *track;
@@ -1133,7 +1133,7 @@ rb_audiocd_discinfo_load (RBAudiocdView *view)
         return TRUE;
 }
 
-void
+static void
 rb_audiocd_discinfo_read_from_disc (RBAudiocdView *view)
 {
         GList *l, *tracks;

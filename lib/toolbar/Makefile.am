@@ -27,6 +27,7 @@ INCLUDES =						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib				\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 libgultoolbar_la_LDFLAGS = -export-dynamic

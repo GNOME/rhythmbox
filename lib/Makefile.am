@@ -44,6 +44,7 @@ INCLUDES =						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"			\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/library				\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 BUILT_SOURCES=rb-marshal.c rb-marshal.h

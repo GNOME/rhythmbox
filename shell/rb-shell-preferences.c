@@ -54,6 +54,15 @@ static void ui_pref_changed (GConfClient *client,
 		             GConfEntry *entry,
 		             RBShellPreferences *shell_preferences);
 
+/* Glade callbacks */
+void browser_views_activated_cb (GtkWidget *widget,
+			         RBShellPreferences *prefs);
+void style_changed_cb (GtkOptionMenu *menu,
+		       RBShellPreferences *prefs);
+void show_columns_changed_cb (GtkToggleButton *button,
+			      RBShellPreferences *prefs);
+
+
 const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text" };
 
 struct RBShellPreferencesPrivate

@@ -21,6 +21,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/lib/view 			\
 	-I$(top_srcdir)/lib/widgets 			\
 	-I$(top_srcdir)/library 			\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 libviews_la_LDFLAGS = -export-dynamic

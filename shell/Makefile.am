@@ -43,6 +43,7 @@ INCLUDES = 						\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 CLEAN_FILES = $(rhythmbox_shell_interface_idl_sources)

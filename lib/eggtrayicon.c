@@ -195,7 +195,7 @@ egg_tray_icon_update_manager_window (EggTrayIcon *icon)
     }
 }
 
-EggTrayIcon *
+static EggTrayIcon *
 egg_tray_icon_new_for_xscreen (Screen *xscreen, const char *name)
 {
   EggTrayIcon *icon;

@@ -17,6 +17,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/lib/widgets			\
 	-DDATADIR=\""$(datadir)"\"			\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 librbview_la_LDFLAGS = -export-dynamic

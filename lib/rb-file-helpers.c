@@ -300,7 +300,7 @@ is_uri_partial (const char *uri)
  * after the Gnome 1.4 gnome-vfs API freeze
  **/
 
-char *
+static char *
 eel_uri_make_full_from_relative (const char *base_uri, const char *relative_uri)
 {
 	char *result = NULL;

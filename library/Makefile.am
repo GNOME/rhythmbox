@@ -25,6 +25,7 @@ INCLUDES =						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_builddir)/lib 				\
+	$(WARN_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)
 
 librblibrary_la_LDFLAGS = -export-dynamic

@@ -1,3 +1,22 @@
+2002-11-28  Marco Pesenti Gritti  <marco@it.gnome.org>
+
+	* configure.in:
+	* lib/Makefile.am:
+	* lib/eggtrayicon.c:
+	* lib/getstr.c:
+	* lib/rb-file-helpers.c:
+	* lib/toolbar/Makefile.am:
+	* lib/view/Makefile.am:
+	* lib/widgets/Makefile.am:
+	* library/Makefile.am:
+	* shell/Makefile.am:
+	* shell/rb-shell-preferences.c:
+	* views/Makefile.am:
+	* views/rb-audiocd-view.c:
+	* views/rb-audiocd-view.h: correctly use the compiler flags
+	gnome macro. Fix some prototypes problems to make it compile
+	without warnings.
+
 2002-11-28  Colin Walters  <walters@gnu.org>
 
 	* lib/rb-string-helpers.c (rb_utf8_strncasecmp): New function.
