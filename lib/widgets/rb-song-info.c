@@ -224,8 +224,8 @@ rb_song_info_init (RBSongInfo *song_info)
 			               GTK_RESPONSE_CLOSE);
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
-	gtk_container_set_border_width (GTK_CONTAINER (song_info), 7);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 8);
+	gtk_container_set_border_width (GTK_CONTAINER (song_info), 5);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (song_info)->vbox), 2);
 
 	gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
 

@@ -22,6 +22,7 @@
 
 #include "getstr.h"
 
+#include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 #include <gtk/gtk.h>

@@ -18,7 +18,7 @@
  *  $Id$
  */
 
-
+#include "config.h"
 #include "rb-playlist.h"
 
 #include <string.h>

@@ -19,12 +19,13 @@
  * $Id$
  */
 
+#include "config.h"
+
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 #include <unistd.h>
 #include <string.h>
 
-#include "config.h"
 #include "rb-sourcelist.h"
 #include "rb-tree-view-column.h"
 #include "rb-cell-renderer-pixbuf.h"

@@ -2,6 +2,7 @@
 <!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
 
 <glade-interface>
+<requires lib="gnome"/>
 
 <widget class="GtkWindow" id="window3">
   <property name="visible">True</property>
@@ -13,7 +14,7 @@
   <property name="destroy_with_parent">False</property>
 
   <child>
-    <widget class="GtkNotebook" id="song_info_vbox">
+    <widget class="GtkNotebook" id="song_info_vbox2">
       <property name="border_width">5</property>
       <property name="visible">True</property>
       <property name="can_focus">True</property>
@@ -31,7 +32,7 @@
 	  <property name="n_columns">2</property>
 	  <property name="homogeneous">False</property>
 	  <property name="row_spacing">6</property>
-	  <property name="column_spacing">6</property>
+	  <property name="column_spacing">12</property>
 
 	  <child>
 	    <widget class="GtkHBox" id="hbox22">
@@ -272,7 +273,7 @@
 	      <child>
 		<widget class="GtkLabel" id="label97">
 		  <property name="visible">True</property>
-		  <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Comments:&lt;/span&gt;</property>
+		  <property name="label" translatable="yes">&lt;b&gt;_Comments:&lt;/b&gt;</property>
 		  <property name="use_underline">True</property>
 		  <property name="use_markup">True</property>
 		  <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -308,7 +309,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label87">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Date:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Date:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -333,7 +334,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label86">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Album:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Album:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -358,7 +359,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label85">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Artist:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Artist:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -383,7 +384,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label84">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Title:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Title:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -408,7 +409,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label96">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Genre:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Genre:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -433,7 +434,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label88">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Track number:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Track number:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -518,18 +519,18 @@
 
       <child>
 	<widget class="GtkTable" id="song_info_additional">
-	  <property name="border_width">11</property>
+	  <property name="border_width">12</property>
 	  <property name="visible">True</property>
 	  <property name="n_rows">11</property>
 	  <property name="n_columns">2</property>
 	  <property name="homogeneous">False</property>
 	  <property name="row_spacing">6</property>
-	  <property name="column_spacing">6</property>
+	  <property name="column_spacing">12</property>
 
 	  <child>
 	    <widget class="GtkLabel" id="label111">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Name:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Name:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -553,7 +554,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label112">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;_Rating:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;_Rating:&lt;/b&gt;</property>
 	      <property name="use_underline">True</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -626,7 +627,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label70">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Location: &lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Location:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -698,7 +699,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label109">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Last played: &lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Last played:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -747,7 +748,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label108">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Play count: &lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Play count:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -844,7 +845,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label74">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Duration: &lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Duration:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -893,7 +894,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label68">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Quality:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Quality:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -917,7 +918,7 @@
 	  <child>
 	    <widget class="GtkLabel" id="label69">
 	      <property name="visible">True</property>
-	      <property name="label" translatable="yes">&lt;span weight=&quot;bold&quot;&gt;Encoding:&lt;/span&gt;</property>
+	      <property name="label" translatable="yes">&lt;b&gt;Encoding:&lt;/b&gt;</property>
 	      <property name="use_underline">False</property>
 	      <property name="use_markup">True</property>
 	      <property name="justify">GTK_JUSTIFY_LEFT</property>

@@ -1,3 +1,28 @@
+2003-05-21  Christian Neumair  <chris@gnome-de.org>
+
+	* lib/widgets/rb-song-info.c: (rb_song_info_init)
+	* shell/rb-shell-preferences.c: (rb_shell_preferences_init):
+
+	HIGified dialog spacing.
+
+	* data/glade/general-prefs.glade
+	* data/glade/library-prefs.glade
+	* data/glade/song-info.glade:
+
+	Ditto, plus some tiny other tweakes.
+
+	* shell/rb-shell.c: (rb_shell_cmd_about):
+
+	Fix copyright information.
+
+	* lib/widgets/rb-sourcelist.c
+	* lib/eel-gconf-extensions.c
+	* lib/rb-windows-ini-file.c
+	* shell/rb-playlist.c
+	* sources/rb-source.c:
+
+	Include config.h.
+
 2003-05-20  Benjamin Otte <in7y118@public.uni-hamburg.de>
 
 	* lib/widgets/rb-player.c: (rb_player_init):

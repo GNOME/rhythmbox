@@ -19,6 +19,7 @@
  *  $Id$
  */
 
+#include <config.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <bonobo/bonobo-ui-container.h>
 #include <bonobo/bonobo-ui-util.h>
