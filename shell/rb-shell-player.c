@@ -45,11 +45,13 @@
 #include "rb-glade-helpers.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-thread-helpers.h"
+#include "rb-file-helpers.h"
 #include "rb-cut-and-paste-code.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
 #include "rb-debug.h"
 #include "rb-player.h"
+#include "rb-playlist.h"
 #include "rb-volume.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
@@ -133,6 +135,8 @@ static void rb_shell_player_sync_volume (RBShellPlayer *player);
 static void tick_cb (MonkeyMediaPlayer *player, long elapsed, gpointer data);
 static void eos_cb (MonkeyMediaPlayer *player, gpointer data);
 static void error_cb (MonkeyMediaPlayer *player, GError *err, gpointer data);
+static void rb_shell_player_error (RBShellPlayer *player, GError *err,
+				   gboolean lock);
 
 static void info_available_cb (MonkeyMediaPlayer *player,
 			       MonkeyMediaStreamInfoField field,
@@ -190,6 +194,8 @@ struct RBShellPlayerPrivate
 	RBHistory *history;	/* holds the last <arbitrary #> songs and any enqueued songs. */
 
 	gboolean buffering;
+
+	GError *playlist_parse_error;
 
 	GtkTooltips *tooltips;
 	GtkWidget *prev_button;
@@ -730,6 +736,16 @@ rb_shell_player_get_property (GObject *object,
 	}
 }
 
+GQuark
+rb_shell_player_error_quark (void)
+{
+	static GQuark quark = 0;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_shell_player_error");
+
+	return quark;
+}
+
 void
 rb_shell_player_set_source (RBShellPlayer *player,
 			    RBSource *source)
@@ -788,6 +804,31 @@ rb_shell_player_have_first (RBShellPlayer *player, RBSource *source)
 }
 
 static void
+rb_shell_player_open_playlist_location (RBPlaylist *playlist, const char *uri,
+					const char *title, const char *genre,
+					RBShellPlayer *player)
+{
+	GError *error = NULL;
+
+	if (monkey_media_player_playing (player->priv->mmplayer))
+		return;
+
+	monkey_media_player_open (player->priv->mmplayer, uri, &error);
+	if (error != NULL) {
+		if (player->priv->playlist_parse_error != NULL) {
+			g_error_free (player->priv->playlist_parse_error);
+			player->priv->playlist_parse_error = NULL;
+		}
+		player->priv->playlist_parse_error = g_error_copy (error);
+		return;
+	}
+
+	monkey_media_player_play (player->priv->mmplayer);
+
+	g_object_notify (G_OBJECT (player), "playing");
+}
+
+static void
 rb_shell_player_open_location (RBShellPlayer *player,
 			       const char *location,
 			       GError **error)
@@ -805,6 +846,31 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	was_playing = monkey_media_player_playing (player->priv->mmplayer);
 
 	monkey_media_player_close (player->priv->mmplayer);
+
+	if (rb_uri_is_iradio (location) != FALSE
+	    && rb_playlist_can_handle (location) != FALSE) {
+		RBPlaylist *playlist;
+
+		playlist = rb_playlist_new ();
+		g_signal_connect_object (G_OBJECT (playlist), "entry",
+					 G_CALLBACK (rb_shell_player_open_playlist_location),
+					 player, 0);
+		if (rb_playlist_parse (playlist, location) == FALSE) {
+			g_set_error (error,
+				     RB_SHELL_PLAYER_ERROR,
+				     RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR,
+				     _("Couldn't parse playlist"));
+		}
+		g_object_unref (playlist);
+		if (!monkey_media_player_playing (player->priv->mmplayer)) {
+			if (error) {
+				*error = g_error_copy (player->priv->playlist_parse_error);
+				g_error_free (player->priv->playlist_parse_error);
+				player->priv->playlist_parse_error = NULL;
+			}
+		}
+		return;
+	}
 	monkey_media_player_open (player->priv->mmplayer, location, error);
 	if (error && *error)
 		return;
@@ -1612,33 +1678,34 @@ eos_cb (MonkeyMediaPlayer *mmplayer, gpointer data)
 }
 
 static void
-error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
+rb_shell_player_error (RBShellPlayer *player, GError *err,
+		       gboolean lock)
 {
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	if (player->priv->handling_error)
-	{
+	if (player->priv->handling_error) {
 		rb_debug ("ignoring error: %s", err->message);
 		return;
 	}
 
-	GDK_THREADS_ENTER ();
+	if (lock != FALSE)
+		GDK_THREADS_ENTER ();
 
 	rb_shell_player_disable_buffering (player);
-
-	if (!monkey_media_player_playing (mmplayer)) {
-		rb_debug ("mmplayer is not playing, ignoring error");
-		goto out_unlock;
-	}
 
 	rb_debug ("error: %s", err->message);
 	player->priv->handling_error = TRUE;
 	rb_shell_player_set_playing_source (player, NULL);
- 	rb_error_dialog ("%s", err->message);
+	rb_error_dialog ("%s", err->message);
 	player->priv->handling_error = FALSE;
 	rb_debug ("exiting error hander");
 
- out_unlock:
-	GDK_THREADS_LEAVE ();
+	if (lock != FALSE)
+		GDK_THREADS_LEAVE ();
+}
+
+static void
+error_cb (MonkeyMediaPlayer *mmplayer, GError *err, gpointer data)
+{
+	rb_shell_player_error ((RBShellPlayer *)data, err, TRUE);
 }
 
 static void

@@ -71,7 +71,7 @@ gboolean   rb_playlist_write (RBPlaylist *playlist, GtkTreeModel *model,
 			      RBPlaylistIterFunc func,
 			      const char *output, GError **error);
 
-gboolean   rb_playlist_can_handle (RBPlaylist *playlist, const char *url);
+gboolean   rb_playlist_can_handle (const char *url);
 
 gboolean   rb_playlist_parse (RBPlaylist *playlist, const char *url);
 

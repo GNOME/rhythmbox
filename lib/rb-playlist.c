@@ -1049,7 +1049,7 @@ rb_playlist_parse (RBPlaylist *playlist, const char *url)
 }
 
 gboolean
-rb_playlist_can_handle (RBPlaylist *playlist, const char *url)
+rb_playlist_can_handle (const char *url)
 {
 	const char *mimetype;
 	int i;
