@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <config.h>
@@ -533,6 +532,6 @@ rb_source_delete_thyself (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
+	klass->impl_delete_thyself (source);
 	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
-	return klass->impl_delete_thyself (source);
 }

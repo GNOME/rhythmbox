@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <gtk/gtk.h>
@@ -51,7 +50,6 @@ static void rb_statusbar_get_property (GObject *object,
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
 static void rb_statusbar_status_changed_cb (RBSource *source,
 					    RBStatusbar *statusbar);
-static void rb_statusbar_sync_state (RBStatusbar *statusbar);
 static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   guint cnxn_id,
 					   GConfEntry *entry,
@@ -365,7 +363,7 @@ rb_statusbar_status_changed_cb (RBSource *source,
 	rb_statusbar_sync_with_source (statusbar);
 }
 
-static void
+void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
 	gboolean hidden;

@@ -19,7 +19,6 @@
  *
  *  NOTES: log domain hack stolen from nautilus
  *
- *  $Id$
  */
 
 #include <glib.h>

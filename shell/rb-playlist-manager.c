@@ -17,7 +17,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <config.h>
@@ -391,9 +390,18 @@ rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
 }
 
 static void
+rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr)
+{
+	rb_debug ("removing playlist %p", source);
+	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source);
+}
+
+static void
 append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 {
 	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source);
+	g_signal_connect (G_OBJECT (source), "deleted",
+			  G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr);
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
 		       source);
 }
@@ -799,7 +807,6 @@ rb_playlist_manager_new_playlist_dialog (RBPlaylistManager *mgr)
 	GList *selection;
 	char *default_name = g_strdup(_("Untitled"));
 	int count = 1;
-	GList *tem;
 
 	dialog = gtk_dialog_new_with_buttons ("",
 					      NULL,

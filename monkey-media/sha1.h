@@ -3,7 +3,6 @@
 /* from Peter C. Gutmann's implementation as found in */
 /* Applied Cryptography by Bruce Schneier */
 /* This code is in the public domain */
-/* $Id$ */
 
 #ifndef SHA_H
 #define SHA_H

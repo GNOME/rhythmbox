@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <bonobo/bonobo-main.h>
@@ -797,6 +796,7 @@ rb_shell_construct (RBShell *shell)
 		g_object_unref (G_OBJECT (druid));
 	}
 	
+	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);

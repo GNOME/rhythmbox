@@ -1,3 +1,150 @@
+2003-09-03 01:22:56 GMT	Colin Walters <walters@verbum.org>	patch-16
+
+    Summary:
+      merge with mainline
+    Revision:
+      rhythmbox--cvs--1.0--patch-16
+
+    merge with mainline
+    
+    Patches applied:
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-5
+       statusbar state wasn't synced at startup and therefore was always initially visible regardless of the gconf setting.  introduced a sync call in rb-shell.c just before the main window is presented
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-19
+       merge with CVS
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-20
+       merge with desrt
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-21
+       update NEWS
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-22
+       spell Yann's name correctly
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-23
+       -Werror fixes
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-24
+       fix playlist deletion
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-25
+       merge with cvs
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-26
+       merge small-fixes
+    
+     * walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--base-0
+       tag of walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-21
+    
+     * walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--patch-1
+       kill of CVS $Id: lines
+    
+
+    modified files:
+     NEWS iradio/rb-iradio-backend.c iradio/rb-iradio-backend.h
+     iradio/rb-new-station-dialog.c iradio/rb-new-station-dialog.h
+     iradio/rb-station-properties-dialog.c
+     iradio/rb-station-properties-dialog.h lib/rb-bonobo-helpers.c
+     lib/rb-bonobo-helpers.h lib/rb-cut-and-paste-code.c
+     lib/rb-cut-and-paste-code.h lib/rb-debug.c lib/rb-debug.h
+     lib/rb-dialog.c lib/rb-dialog.h lib/rb-enums.h
+     lib/rb-file-helpers.c lib/rb-file-helpers.h
+     lib/rb-file-monitor.c lib/rb-file-monitor.h
+     lib/rb-glade-helpers.c lib/rb-glade-helpers.h
+     lib/rb-preferences.h lib/rb-stock-icons.c lib/rb-stock-icons.h
+     lib/rb-string-helpers.c lib/rb-string-helpers.h
+     lib/rb-thread-helpers.c lib/rb-thread-helpers.h lib/rb-util.c
+     lib/rb-util.h lib/widgets/rb-druid.c lib/widgets/rb-druid.h
+     lib/widgets/rb-link.c lib/widgets/rb-link.h
+     lib/widgets/rb-load-failure-dialog.c
+     lib/widgets/rb-load-failure-dialog.h
+     lib/widgets/rb-node-view.c lib/widgets/rb-node-view.h
+     lib/widgets/rb-player.c lib/widgets/rb-player.h
+     lib/widgets/rb-rating.c lib/widgets/rb-rating.h
+     lib/widgets/rb-search-entry.c lib/widgets/rb-search-entry.h
+     lib/widgets/rb-song-info.c lib/widgets/rb-song-info.h
+     lib/widgets/rb-sourcelist-model.c
+     lib/widgets/rb-sourcelist-model.h lib/widgets/rb-sourcelist.c
+     lib/widgets/rb-sourcelist.h lib/widgets/rb-tree-model-node.c
+     lib/widgets/rb-tree-model-node.h
+     lib/widgets/rb-tree-model-sort.c
+     lib/widgets/rb-tree-model-sort.h
+     lib/widgets/rb-tree-view-column.c
+     lib/widgets/rb-tree-view-column.h lib/widgets/rb-tree-view.c
+     lib/widgets/rb-tree-view.h lib/widgets/rb-volume.c
+     lib/widgets/rb-volume.h library/rb-library-action.c
+     library/rb-library-action.h library/rb-library-dnd-types.h
+     library/rb-library-main-thread.c
+     library/rb-library-main-thread.h
+     library/rb-library-walker-thread.c
+     library/rb-library-walker-thread.h library/rb-library.c
+     library/rb-library.h library/rb-node-common.h
+     library/rb-node-db.c library/rb-node-db.h
+     library/rb-node-filter.c library/rb-node-filter.h
+     library/rb-node.c library/rb-node.h
+     monkey-media/monkey-media-audio-cd-private.h
+     monkey-media/monkey-media-audio-cd.c
+     monkey-media/monkey-media-audio-cd.h
+     monkey-media/monkey-media-audio-quality.c
+     monkey-media/monkey-media-audio-quality.h
+     monkey-media/monkey-media-musicbrainz.c
+     monkey-media/monkey-media-musicbrainz.h
+     monkey-media/monkey-media-player-gst-old.c
+     monkey-media/monkey-media-player-gst-tmp.c
+     monkey-media/monkey-media-player-gst.c
+     monkey-media/monkey-media-player-xine.c
+     monkey-media/monkey-media-player.h
+     monkey-media/monkey-media-private.h
+     monkey-media/monkey-media-stream-info.c
+     monkey-media/monkey-media-stream-info.h
+     monkey-media/monkey-media.c monkey-media/monkey-media.h
+     monkey-media/sha1.c monkey-media/sha1.h
+     monkey-media/stream-info-impl/audiocd-stream-info-impl.c
+     monkey-media/stream-info-impl/audiocd-stream-info-impl.h
+     monkey-media/stream-info-impl/flac-stream-info-impl.c
+     monkey-media/stream-info-impl/flac-stream-info-impl.h
+     monkey-media/stream-info-impl/id3-vfs/field.h
+     monkey-media/stream-info-impl/id3-vfs/file.h
+     monkey-media/stream-info-impl/id3-vfs/global.h
+     monkey-media/stream-info-impl/id3-vfs/tag.h
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.h
+     monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     monkey-media/stream-info-impl/vorbis-stream-info-impl.h
+     rhythmdb/rhythmdb-entry-model.c
+     rhythmdb/rhythmdb-entry-model.h rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb-tree.h rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/main.c shell/rb-commander.c
+     shell/rb-commander.h shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell-clipboard.c
+     shell/rb-shell-clipboard.h shell/rb-shell-player.c
+     shell/rb-shell-player.h shell/rb-shell-preferences.c
+     shell/rb-shell-preferences.h shell/rb-shell.c shell/rb-shell.h
+     shell/rb-source-header.c shell/rb-source-header.h
+     shell/rb-statusbar.c shell/rb-statusbar.h shell/rb-tray-icon.c
+     shell/rb-tray-icon.h sources/rb-audiocd-source.c
+     sources/rb-audiocd-source.h sources/rb-iradio-source.c
+     sources/rb-iradio-source.h sources/rb-library-source.c
+     sources/rb-library-source.h sources/rb-playlist-source.c
+     sources/rb-playlist-source.h sources/rb-song-info-helpers.h
+     sources/rb-source.c sources/rb-source.h
+
+    new patches:
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--patch-1
+
 2003-09-02 16:59:56 GMT Colin Walters <walters@verbum.org>      patch-13
  
     Summary:

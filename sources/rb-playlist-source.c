@@ -18,7 +18,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <config.h>
@@ -76,6 +75,7 @@ static const char * impl_get_artist (RBSource *player);
 static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
+static void impl_delete_thyself (RBSource *source);
 
 static void rb_playlist_source_songs_show_popup_cb (RBNodeView *view, RBPlaylistSource *playlist_view);
 static void rb_playlist_source_drop_cb (GtkWidget *widget,
@@ -114,8 +114,6 @@ struct RBPlaylistSourcePrivate
 	char *status;
 
 	char *file;
-
-	gboolean deleted;
 };
 
 enum
@@ -201,6 +199,7 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_delete_thyself = impl_delete_thyself;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -644,11 +643,12 @@ rb_playlist_source_load (RBPlaylistSource *source)
 	g_free (name);
 }
 
-void
-rb_playlist_source_delete (RBPlaylistSource *source)
+
+static void
+impl_delete_thyself (RBSource *asource)
 {
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	unlink (source->priv->file);
-	source->priv->deleted = TRUE;
 }
 
 /* rb_playlist_view_add_node: append a node to this playlist

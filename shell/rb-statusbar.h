@@ -17,7 +17,6 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- *  $Id$
  */
 
 #include <gtk/gtkhbox.h>
@@ -59,6 +58,7 @@ void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);
 
 void			rb_statusbar_set_progress(RBStatusbar *bar, double progress);
+void			rb_statusbar_sync_state (RBStatusbar *statusbar);
 
 G_END_DECLS
 
