@@ -135,10 +135,11 @@ rb_ask_file_multiple (const char *title,
 	return filesel;
 }
 
-GtkWidget *
-rb_ask_file (const char *title,
-	     const char *default_file,
-	     GtkWindow *parent)
+static GtkWidget *
+rb_ask_file_internal (const char *title,
+		      const char *default_file,
+		      GtkWindow *parent,
+		      gboolean want_dir)
 {
 	GtkWidget *filesel;
 
@@ -151,7 +152,7 @@ rb_ask_file (const char *title,
 #else
 	filesel = gtk_file_chooser_dialog_new (title, 
 					       parent, 
-					       GTK_FILE_CHOOSER_ACTION_OPEN,
+					       want_dir ? GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER : GTK_FILE_CHOOSER_ACTION_OPEN,
 					       GTK_STOCK_CANCEL, 
 					       GTK_RESPONSE_CANCEL,
 					       GTK_STOCK_OPEN, 
@@ -178,6 +179,23 @@ rb_ask_file (const char *title,
 	gtk_widget_show_all (filesel);
 
 	return filesel;
+}
+
+
+GtkWidget *
+rb_ask_file (const char *title,
+	     const char *default_file,
+	     GtkWindow *parent)
+{
+	return rb_ask_file_internal (title, default_file, parent, FALSE);
+}
+
+GtkWidget *
+rb_ask_dir (const char *title,
+	     const char *default_file,
+	     GtkWindow *parent)
+{
+	return rb_ask_file_internal (title, default_file, parent, TRUE);
 }
 
 GtkWidget *
