@@ -303,7 +303,7 @@ void
 show_columns_changed_cb (GtkToggleButton *button,
 			 RBShellPreferences *prefs)
 {
-	char *conf = g_strdup_printf ("");
+	char *conf = g_strdup_printf (" ");
 
 	// FIXME there must be a better way to do that
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->artist_check)) == TRUE)
