@@ -96,15 +96,10 @@ else
 	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
 	
 	dnl Check for gstreamer elements
-	AM_GST_ELEMENT_CHECK(gnomevfssrc,,
-			     AC_MSG_ERROR(gnomevfssrc element needed!))
-	AM_GST_ELEMENT_CHECK(spider,,
-			     AC_MSG_ERROR(spider element needed!))
-	AM_GST_ELEMENT_CHECK(volume,,
-			     AC_MSG_ERROR(volume element needed!))
-	AM_GST_ELEMENT_CHECK(osssink,,
-			     AM_GST_ELEMENT_CHECK(alsasink,,
-		                          AC_MSG_RESULT(neither osssink or alsasink seems to be installed, audio output may not work)))
+	AM_GST_ELEMENT_CHECK(gnomevfssrc,,missing_gst_elements="$missing_gst_elements gnomevfssrc")
+	AM_GST_ELEMENT_CHECK(spider,,missing_gst_elements="$missing_gst_elements spider")
+	AM_GST_ELEMENT_CHECK(volume,,missing_gst_elements="$missing_gst_elements volume")
+	AM_GST_ELEMENT_CHECK(osssink,, AM_GST_ELEMENT_CHECK(alsasink,,missing_gst_output_element=yes))
 
 fi
 
@@ -136,8 +131,7 @@ if test "x$enable_mp3" != "xno"; then
 fi
 if test "x$enable_mp3" = "xyes"; then
   if test x"$have_gstreamer" = xyes; then
-    AM_GST_ELEMENT_CHECK(mad,,
-		         AC_MSG_RESULT(mad element missing, MP3 playback will not work!))
+    AM_GST_ELEMENT_CHECK(mad,,missing_gst_elements="$missing_gst_elements mad")
   fi
   ID3TAG_LIBS="-lid3tag"
   AC_SUBST(ID3TAG_LIBS)
@@ -158,8 +152,7 @@ if test x"$enable_vorbis" != xno; then
   fi
   if test x"$enable_vorbis" = xyes; then
     if test x"$have_gstreamer" = xyes; then
-      AM_GST_ELEMENT_CHECK(vorbisfile,,
-			   AC_MSG_WARN(vorbisfile element missing, Ogg Vorbis playback will not work!))
+      AM_GST_ELEMENT_CHECK(vorbisfile,,missing_gst_elements="$missing_gst_elements vorbis")
     fi
     CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
     LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS"
@@ -242,8 +235,7 @@ else
 fi
 if test "x$enable_audiocd" = "xyes"; then
   if test x"$have_gstreamer" = xyes; then
-    AM_GST_ELEMENT_CHECK(cdparanoia,,
-			  AC_MSG_WARN(cdparanoia element required))
+    AM_GST_ELEMENT_CHECK(cdparanoia,,missing_gst_elements="$missing_gst_elements cdparanoia")
   fi
   AC_DEFINE(HAVE_AUDIOCD,,[Define if we have CD Audio support])
   AC_SUBST(AUDIOCD_INCLUDES, ["#include \"monkey-media-audio-cd.h\""])
@@ -359,4 +351,8 @@ dnl else
 dnl 	AC_MSG_NOTICE([** Audio CD support is enabled])
 dnl 	AC_MSG_WARN([Audio CD support is experimental!])
 dnl fi
+if test x"$missing_gst_elements" != x; then
+	AC_MSG_WARN([The following GStreamer elements could not be found at compile time: $missing_gst_elements])
+	AC_MSG_WARN([Rhythmbox will fail at runtime if these elements cannot be found])
+fi
 AC_MSG_NOTICE([End options])
