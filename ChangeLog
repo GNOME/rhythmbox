@@ -1,3 +1,26 @@
+2002-08-24  Olivier Martin <omartin@ifrance.com>
+
+	* TODO:
+	* lib/widgets/rb-node-view.c: (node_from_sort_iter_cb),
+	(rb_node_view_construct), (rb_node_view_get_node_visible),
+	(rb_node_view_enable_drag_source):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-tree-model-sort.c:
+	(rb_tree_model_sort_class_init), (rb_tree_model_sort_finalize),
+	(rb_tree_model_sort_multi_drag_data_delete),
+	(rb_tree_model_sort_multi_drag_data_get):
+	* lib/widgets/rb-tree-model-sort.h:
+	* library/Makefile.am:
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_drop_cb), (rb_group_view_add_all_nodes),
+	(rb_group_view_add_list_uri):
+	* views/rb-library-view.c: (rb_library_view_init),
+	(rb_library_view_set_property), (rb_library_view_drop_cb):
+
+	Drop on artists/albums.
+	Drag an album/artist.
+	Prevent dragging from same source.
+
 2002-08-23  xan
             Jorn Baayen  <jorn@nl.linux.org>
 

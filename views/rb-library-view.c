@@ -43,6 +43,7 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
+#include "rb-library-dnd-types.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
 static void rb_library_view_init (RBLibraryView *view);
@@ -203,7 +204,10 @@ static RBBonoboUIListener rb_library_view_listeners[] =
 static GObjectClass *parent_class = NULL;
 
 /* dnd */
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
+static const GtkTargetEntry target_uri [] = 
+		{ { RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST } };
+static const GtkTargetEntry target_id [] = 
+		{ { RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID } };
 
 GType
 rb_library_view_get_type (void)
@@ -309,7 +313,7 @@ rb_library_view_init (RBLibraryView *view)
 
 	/* Drag'n'Drop */
 	rb_sidebar_button_add_dnd_targets (button,
-					   target_table, 1);
+					   target_uri, 1);
 	g_signal_connect (G_OBJECT (button), "drag_data_received",
 			  G_CALLBACK (rb_library_view_drop_cb), view);
 
@@ -404,11 +408,26 @@ rb_library_view_set_property (GObject *object,
 			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
 
-			/* Drag'n'Drop */
+			/* Drag'n'Drop for songs view */
 			g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
 					  G_CALLBACK (rb_library_view_drop_cb), view);
 			gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
-					   target_table, 1, GDK_ACTION_COPY);
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (view->priv->songs, target_uri, 1);
+
+			/* Drag'n'Drop for albums view */
+			g_signal_connect (G_OBJECT (view->priv->albums), "drag_data_received",
+					  G_CALLBACK (rb_library_view_drop_cb), view);
+			gtk_drag_dest_set (GTK_WIDGET (view->priv->albums), GTK_DEST_DEFAULT_ALL,
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (view->priv->albums, target_id, 1);
+
+			/* Drag'n'Drop for artists view */
+			g_signal_connect (G_OBJECT (view->priv->artists), "drag_data_received",
+					  G_CALLBACK (rb_library_view_drop_cb), view);
+			gtk_drag_dest_set (GTK_WIDGET (view->priv->artists), GTK_DEST_DEFAULT_ALL,
+					   target_uri, 1, GDK_ACTION_COPY);
+			rb_node_view_enable_drag_source (view->priv->artists, target_id, 1);
 	
 			/* this gets emitted when the paned thingie is moved */
 			g_signal_connect (G_OBJECT (view->priv->songs),
@@ -1034,7 +1053,7 @@ rb_library_view_drop_cb (GtkWidget *widget,
 	GtkTargetList *tlist;
 	gboolean ret;
 
-	tlist = gtk_target_list_new (target_table, 1);
+	tlist = gtk_target_list_new (target_uri, 1);
 	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
 	gtk_target_list_unref (tlist);
 

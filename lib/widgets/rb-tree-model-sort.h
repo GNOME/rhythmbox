@@ -46,7 +46,7 @@ typedef struct
 {
 	GtkTreeModelSortClass parent_class;
 
-	void (*uri_from_iter) (RBTreeModelSort *model, GtkTreeIter *iter, void **uri);
+	void (*node_from_iter) (RBTreeModelSort *model, GtkTreeIter *iter, void **node);
 } RBTreeModelSortClass;
 
 GType		rb_tree_model_sort_get_type	(void);

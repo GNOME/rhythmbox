@@ -22,6 +22,7 @@
 #define __RB_NODE_VIEW_H
 
 #include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkdnd.h>
 
 #include "rb-tree-model-node.h"
 #include "rb-enums.h"
@@ -90,6 +91,9 @@ void        rb_node_view_scroll_to_node    (RBNodeView *view,
 RBNode 	   *rb_node_view_get_node          (RBNodeView *view,
 				            RBNode *start,
 				            RBDirection direction);
+void	    rb_node_view_enable_drag_source (RBNodeView *view,
+					     const GtkTargetEntry *targets,
+					     gint n_targets);
 
 G_END_DECLS
 

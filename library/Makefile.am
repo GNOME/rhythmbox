@@ -19,7 +19,8 @@ librblibrary_la_SOURCES =				\
 	rb-node-song.c					\
 	rb-node-song.h					\
 	rb-node-iterator.c				\
-	rb-node-iterator.h
+	rb-node-iterator.h				\
+	rb-library-dnd-types.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

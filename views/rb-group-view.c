@@ -46,6 +46,7 @@
 #include "rb-node-song.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
+#include "rb-library-dnd-types.h"
 
 #define RB_GROUP_XML_VERSION "1.0"
 
@@ -134,6 +135,8 @@ static const char *impl_get_description (RBView *view);
 static void rb_group_view_set_playing_view (RBViewPlayer *player,
                                             RBView *view);
 static RBView *rb_group_view_get_playing_view (RBViewPlayer *player);
+static void rb_group_view_add_list_uri (RBGroupView *view, GList *list);
+static void rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -193,7 +196,15 @@ static BonoboUIVerb rb_group_view_verbs[] =
 static GObjectClass *parent_class = NULL;
 
 /* dnd */
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
+static const GtkTargetEntry target_table[] = 
+		{ 
+			{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }, 
+			{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
+		};
+static const GtkTargetEntry target_uri[] =
+		{
+			{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST }
+		};
 
 GType
 rb_group_view_get_type (void)
@@ -348,13 +359,16 @@ rb_group_view_init (RBGroupView *view)
 
 	/* Drag'n'Drop */
 	rb_sidebar_button_add_dnd_targets (button,
-					   target_table, 1);
+					   target_table, 
+					   G_N_ELEMENTS (target_table));
 	g_signal_connect (G_OBJECT (button), "drag_data_received",
 			  G_CALLBACK (rb_group_view_drop_cb), view);
 	g_signal_connect (G_OBJECT (view->priv->songs), "drag_data_received",
 			  G_CALLBACK (rb_group_view_drop_cb), view);
 	gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
-			   target_table, 1, GDK_ACTION_COPY);
+			   target_table, G_N_ELEMENTS (target_table), GDK_ACTION_COPY);
+	rb_node_view_enable_drag_source (view->priv->songs, target_uri, 1);
+
 
 	g_signal_connect (G_OBJECT (view->priv->songs),
 			  "node_activated",
@@ -1199,6 +1213,10 @@ dnd_add_handled_cb (RBLibraryAction *action,
 	}
 }
 
+/* rb_group_view_drop_cb: received data from a dnd operation
+ * This can be either a list of uris (from nautilus) or 
+ * a list of node ids (from the node-view).
+ */
 static void
 rb_group_view_drop_cb (GtkWidget *widget,
 		       GdkDragContext *context,
@@ -1210,38 +1228,88 @@ rb_group_view_drop_cb (GtkWidget *widget,
 		       gpointer user_data)
 {
 	RBGroupView *view = RB_GROUP_VIEW (user_data);
-	GList *list, *uri_list, *i;
+	GList *list;
 	GtkTargetList *tlist;
-	gboolean ret;
+	GdkAtom target;
 
-	tlist = gtk_target_list_new (target_table, 1);
-	ret = (gtk_drag_dest_find_target (widget, context, tlist) != GDK_NONE);
+	tlist = gtk_target_list_new (target_table, G_N_ELEMENTS (target_table));
+	target = gtk_drag_dest_find_target (widget, context, tlist);
 	gtk_target_list_unref (tlist);
 
-	if (ret == FALSE)
+	if (target == GDK_NONE)
 		return;
 
-	list = gnome_vfs_uri_list_parse (data->data);
-
-	if (list == NULL)
+	if (info == RB_LIBRARY_DND_NODE_ID)
 	{
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
+		int i;
+		long id;
+		RBNode *node = NULL;
+
+		id = (long) g_strtod (data->data, NULL);
+		node = rb_node_from_id (id);
+
+		if (node != NULL)
+			rb_group_view_add_all_nodes (view, node);
+	}
+	else if (info == RB_LIBRARY_DND_URI_LIST)
+	{
+		list = gnome_vfs_uri_list_parse (data->data);
+		if (list != NULL)
+		{
+			rb_group_view_add_list_uri (view, list);
+		}
 	}
 
-	uri_list = NULL;
+	gtk_drag_finish (context, TRUE, FALSE, time);
+}
+
+/* rb_group_view_add_all_nodes: Add a node and all its children 
+ * into the group.
+ */
+static void 
+rb_group_view_add_all_nodes (RBGroupView *view, RBNode *node)
+{
+
+	g_return_if_fail (node != NULL);
+
+	if (rb_node_get_node_type (node) == RB_NODE_TYPE_SONG)
+	{
+		rb_node_add_child (view->priv->group, node);
+	}
+	else
+	{
+		GList *kids, *i;
+
+		kids = rb_node_get_children (node);
+		for (i = kids; i != NULL; i = g_list_next (i))
+		{
+			if (rb_node_get_node_type (node) != RB_NODE_TYPE_ALL_SONGS)
+				rb_group_view_add_all_nodes (view, i->data);
+		}
+
+		g_list_free (kids);
+	}
+}
+
+/* rb_group_view_add_list_uri: Insert nodes from a list
+ * of GnomeVFSUri.
+ * */
+static void 
+rb_group_view_add_list_uri (RBGroupView *view,
+			    GList *list)
+{
+	GList *i, *uri_list = NULL;
+
+	g_return_if_fail (list != NULL);
 
 	for (i = list; i != NULL; i = g_list_next (i))
 	{
-		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+		uri_list = g_list_append (uri_list, 
+					  gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
 	}
 	gnome_vfs_uri_list_free (list);
 
-	if (uri_list == NULL)
-	{
-		gtk_drag_finish (context, FALSE, FALSE, time);
-		return;
-	}
+	if (uri_list == NULL) return;
 
 	for (i = uri_list; i != NULL; i = i->next)
 	{
@@ -1258,9 +1326,7 @@ rb_group_view_drop_cb (GtkWidget *widget,
 			}
 			else
 			{
-				RBLibraryAction *action;
-				
-				action = rb_library_add_uri (view->priv->library, uri);
+				RBLibraryAction *action= rb_library_add_uri (view->priv->library, uri);
 				g_signal_connect_object (G_OBJECT (action),
 						         "handled",
 						         G_CALLBACK (dnd_add_handled_cb),
@@ -1273,8 +1339,6 @@ rb_group_view_drop_cb (GtkWidget *widget,
 	}
 
 	g_list_free (uri_list);
-
-	gtk_drag_finish (context, TRUE, FALSE, time);
 }
 
 static const char *

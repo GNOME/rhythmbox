@@ -21,8 +21,11 @@
 #include <gtk/gtkmarshal.h>
 #include <string.h>
 
+#include "rb-node.h"
+#include "rb-node-song.h"
 #include "rb-tree-model-sort.h"
 #include "eggtreemultidnd.h"
+#include "rb-library-dnd-types.h"
 
 static void rb_tree_model_sort_class_init (RBTreeModelSortClass *klass);
 static void rb_tree_model_sort_init (RBTreeModelSort *ma);
@@ -38,12 +41,12 @@ static gboolean rb_tree_model_sort_multi_drag_data_delete (EggTreeMultiDragSourc
 
 struct RBTreeModelSortPrivate
 {
-	char *uri_list;
+	char *str_list;
 };
 
 enum
 {
-	URI_FROM_ITER,
+	NODE_FROM_ITER,
 	LAST_SIGNAL
 };
 
@@ -52,7 +55,11 @@ static GObjectClass *parent_class = NULL;
 static guint rb_tree_model_sort_signals[LAST_SIGNAL] = { 0 };
 
 /* dnd */
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
+static const GtkTargetEntry target_table [] = 
+		{
+			{ RB_LIBRARY_DND_URI_LIST_TYPE, 0, RB_LIBRARY_DND_URI_LIST } ,
+			{ RB_LIBRARY_DND_NODE_ID_TYPE,  0, RB_LIBRARY_DND_NODE_ID }
+		};
 
 static GtkTargetList *drag_target_list = NULL;
 
@@ -103,11 +110,11 @@ rb_tree_model_sort_class_init (RBTreeModelSortClass *klass)
 
 	object_class->finalize = rb_tree_model_sort_finalize;
 
-	rb_tree_model_sort_signals[URI_FROM_ITER] =
-		g_signal_new ("uri_from_iter",
+	rb_tree_model_sort_signals[NODE_FROM_ITER] =
+		g_signal_new ("node_from_iter",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBTreeModelSortClass, uri_from_iter),
+			      G_STRUCT_OFFSET (RBTreeModelSortClass, node_from_iter),
 			      NULL, NULL,
 			      gtk_marshal_VOID__POINTER_POINTER,
 			      G_TYPE_NONE,
@@ -132,7 +139,7 @@ rb_tree_model_sort_finalize (GObject *object)
 
 	model = RB_TREE_MODEL_SORT (object);
 
-	g_free (model->priv->uri_list);
+	g_free (model->priv->str_list);
 	g_free (model->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -167,18 +174,26 @@ rb_tree_model_sort_multi_row_draggable (EggTreeMultiDragSource *drag_source, GLi
 }
 
 static gboolean
+rb_tree_model_sort_multi_drag_data_delete (EggTreeMultiDragSource *drag_source, 
+					   GList *path_list)
+{
+	return TRUE;
+}
+
+static gboolean
 rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 					GList *path_list,
 					GtkSelectionData *selection_data)
 {
 	guint target_info;
-	GList *i;
-	char *uri_list = NULL;
+	char *drag_data = NULL;
 	RBTreeModelSort *model = RB_TREE_MODEL_SORT (drag_source);
 	
+	/* Check that the items list is not empty and that
+	 * the receiver can handle our data.  */
 	if (drag_target_list == NULL)
 	{
-		drag_target_list = gtk_target_list_new (target_table, 1);
+		drag_target_list = gtk_target_list_new (target_table, G_N_ELEMENTS (target_table));
 	}
 
 	if (gtk_target_list_find (drag_target_list,
@@ -188,41 +203,68 @@ rb_tree_model_sort_multi_drag_data_get (EggTreeMultiDragSource *drag_source,
 		return FALSE;
 	}
 
-	for (i = path_list; i != NULL; i = i->next)
+	/* Set the appropriate data */
+	switch (target_info)
 	{
-		GtkTreeIter iter;
-		GtkTreePath *path = gtk_tree_row_reference_get_path (i->data);
-		char *tmp, *tmp2;
-
-		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
-
-		g_signal_emit (G_OBJECT (model), rb_tree_model_sort_signals[URI_FROM_ITER], 0, &iter, &tmp);
-		if (uri_list != NULL)
+		case RB_LIBRARY_DND_NODE_ID:
 		{
-			tmp2 = g_strdup (uri_list);
-			g_free (uri_list);
-			uri_list = g_strdup_printf ("%s\r\n%s", tmp2, tmp);
-			g_free (tmp2);
-			g_free (tmp);
+			GtkTreeIter iter;
+			GtkTreePath *path = gtk_tree_row_reference_get_path (path_list->data);
+			RBNode *node = NULL;
+
+			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+			g_signal_emit (G_OBJECT (model), 
+				       rb_tree_model_sort_signals[NODE_FROM_ITER], 
+				       0, &iter, &node);
+
+			if (node == NULL)
+				return FALSE;
+
+				drag_data = g_strdup_printf ("%ld", rb_node_get_id (node));
 		}
-		else
-			uri_list = tmp;
+		break;
+
+		case RB_LIBRARY_DND_URI_LIST:
+		{
+			GList *i = NULL;
+			for (i = path_list; i != NULL; i = i->next)
+			{
+				GtkTreeIter iter;
+				GtkTreePath *path = gtk_tree_row_reference_get_path (i->data);
+				RBNode *node = NULL;
+				char *tmp, *tmp2;
+
+				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+				g_signal_emit (G_OBJECT (model), 
+					       rb_tree_model_sort_signals[NODE_FROM_ITER], 
+					       0, &iter, &node);
+
+				if (node == NULL)
+					return FALSE;
+
+
+				tmp = rb_node_song_get_location (node);	
+				if (drag_data != NULL)
+				{
+					tmp2 = g_strdup (drag_data);
+					g_free (drag_data);
+					drag_data = g_strdup_printf ("%s\r\n%s", tmp2, tmp);
+					g_free (tmp2);
+					g_free (tmp);
+				}
+				else
+					drag_data = tmp;
+			}
+		}
+		break;
 	}
 
-	g_free (model->priv->uri_list);
-	model->priv->uri_list = uri_list;
+	g_free (model->priv->str_list);
+	model->priv->str_list = drag_data;
 	
 	gtk_selection_data_set (selection_data,
 				selection_data->target,
-				8, uri_list, strlen (uri_list));
-	
-	return TRUE;
+				8, drag_data, strlen (drag_data));
 
-}
-
-static gboolean
-rb_tree_model_sort_multi_drag_data_delete (EggTreeMultiDragSource *drag_source, 
-					   GList *path_list)
-{
 	return TRUE;
 }

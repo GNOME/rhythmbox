@@ -42,6 +42,7 @@
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-node-song.h"
 #include "rb-string-helpers.h"
+#include "rb-library-dnd-types.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -145,8 +146,6 @@ enum
 static GObjectClass *parent_class = NULL;
 
 static guint rb_node_view_signals[LAST_SIGNAL] = { 0 };
-
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0, 0 }, };
 
 GType
 rb_node_view_get_type (void)
@@ -410,21 +409,18 @@ rb_node_view_new (RBNode *root,
 }
 
 static void
-uri_from_sort_iter_cb (RBTreeModelSort *model,
-		       GtkTreeIter *iter,
-		       void **uri,
-		       RBNodeView *view)
+node_from_sort_iter_cb (RBTreeModelSort *model,
+		      GtkTreeIter *iter,
+		      void **node,
+		      RBNodeView *view)
 {
 	GtkTreeIter filter_iter, node_iter;
-	RBNode *node;
 	
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (model),
 							&filter_iter, iter);
 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &node_iter, &filter_iter);
-	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &node_iter);
-
-	*uri = rb_node_song_get_location (node);
+	*node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &node_iter);
 }
 
 static gboolean
@@ -453,8 +449,8 @@ rb_node_view_construct (RBNodeView *view)
 						  RB_TREE_MODEL_NODE_COL_VISIBLE);
 	view->priv->sortmodel = rb_tree_model_sort_new (view->priv->filtermodel);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
-				 "uri_from_iter",
-				 G_CALLBACK (uri_from_sort_iter_cb),
+				 "node_from_iter",
+				 G_CALLBACK (node_from_sort_iter_cb),
 				 view,
 				 0);
 	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
@@ -500,14 +496,6 @@ rb_node_view_construct (RBNodeView *view)
 			         G_CALLBACK (rb_node_view_selection_changed_cb),
 			         view,
 				 0);
-
-	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
-
-	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
-						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
-						target_table,
-						1,
-						GDK_ACTION_COPY);
 
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
@@ -1480,4 +1468,18 @@ rb_node_view_get_node_visible (RBNodeView *view,
 	g_value_unset (&val);
 
 	return visible;
+}
+
+void
+rb_node_view_enable_drag_source (RBNodeView *view,
+				 const GtkTargetEntry *targets,
+				 gint n_targets)
+{
+	g_return_if_fail (view != NULL);
+
+	egg_tree_multi_drag_add_drag_support (GTK_TREE_VIEW (view->priv->treeview));
+
+	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
+						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
+						targets, n_targets, GDK_ACTION_COPY);
 }
