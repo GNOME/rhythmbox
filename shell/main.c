@@ -65,6 +65,7 @@ static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 static gboolean dry_run		= FALSE;
+static char *rhythmdb_file = NULL;
 static gboolean print_playing = FALSE;
 static gboolean print_playing_path = FALSE;
 static gboolean playpause       = FALSE;
@@ -100,6 +101,7 @@ main (int argc, char **argv)
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "rhythmdb-file", 0,  POPT_ARG_STRING,          &rhythmdb_file,                             0, N_("Path for database file to use"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
 		POPT_TABLEEND
 	};
@@ -164,15 +166,7 @@ main (int argc, char **argv)
 		if (sound_events_borked) {
 			g_idle_add ((GSourceFunc) sound_error_dialog, NULL);
 		} else {
-			rb_shell = rb_shell_new ();
-			
-			g_object_set_data (G_OBJECT (rb_shell), "argv", argv);
-			g_object_set_data (G_OBJECT (rb_shell), "argc", GINT_TO_POINTER (argc));
-
-			g_object_set_data (G_OBJECT (rb_shell), "rb-shell-no-registration",
-					   GINT_TO_POINTER (no_registration));
-			g_object_set_data (G_OBJECT (rb_shell), "rb-shell-dry-run",
-					   GINT_TO_POINTER (dry_run));
+			rb_shell = rb_shell_new (argc, argv, no_registration, dry_run, rhythmdb_file);
 			
 			g_idle_add ((GSourceFunc) rb_init, rb_shell);
 		}
@@ -225,11 +219,9 @@ rb_init (RBShell *shell)
 	
 	rb_shell_construct (shell);
 
-	argv = (char **) g_object_get_data (G_OBJECT (shell), "argv");
-	argc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (shell), "argc"));
+	g_object_get (G_OBJECT (shell), "argc", &argc, "argv", &argv, NULL);
 
-	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")
-	    && (!g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run")))
+	if (!no_registration && !dry_run)
 		rb_handle_cmdline (argv, argc, FALSE);
 	
 	GDK_THREADS_LEAVE ();

@@ -676,6 +676,25 @@ read_metadata_async (RhythmDB *db, const char *location, GError **real_error)
 }
 
 static void
+set_metadata_string_default_unknown (RhythmDB *db, RhythmDBEntry *entry,
+				     RBMetaDataField field,
+				     RhythmDBPropType prop)
+{
+	const char *unknown = _("Unknown");
+	GValue val = {0, };
+	
+	if (!(rb_metadata_get (db->priv->metadata,
+			       field,
+			       &val))) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_static_string (&val, unknown);
+	} else if (g_value_get_string (&val)[0] == '\0')
+		g_value_set_string (&val, unknown);
+	rhythmdb_entry_set (db, entry, prop, &val);
+	g_value_unset (&val);
+}
+
+static void
 set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 {
 	GValue val = {0,};
@@ -732,28 +751,15 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	db->priv->vfsinfo = NULL;
 
 	/* genre */
-	if (rb_metadata_get (db->priv->metadata,
-			     RB_METADATA_FIELD_GENRE,
-			     &val) && g_value_get_string (&val)[0] != '\0') {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_default_unknown (db, entry, RB_METADATA_FIELD_GENRE,
+					     RHYTHMDB_PROP_GENRE);
 
 	/* artist */
-	if (rb_metadata_get (db->priv->metadata,
-			     RB_METADATA_FIELD_ARTIST,
-			     &val) && g_value_get_string (&val)[0] != '\0') {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &val);
-		g_value_unset (&val);
-	}
-
+	set_metadata_string_default_unknown (db, entry, RB_METADATA_FIELD_ARTIST,
+					     RHYTHMDB_PROP_ARTIST);
 	/* album */
-	if (rb_metadata_get (db->priv->metadata,
-			     RB_METADATA_FIELD_ALBUM,
-			     &val) && g_value_get_string (&val)[0] != '\0') {
-		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
-		g_value_unset (&val);
-	}
+	set_metadata_string_default_unknown (db, entry, RB_METADATA_FIELD_ALBUM,
+					     RHYTHMDB_PROP_ALBUM);
 }
 
 RhythmDBEntry *
@@ -911,13 +917,13 @@ add_thread_main (RhythmDB *db)
 static void
 update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 {
-	const char *location;
+	char *location;
 	time_t stored_mtime;
 	GnomeVFSFileInfo *vfsinfo = NULL;
 	GnomeVFSResult result;
 
 	rhythmdb_read_lock (db);
-	location = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
+	location = g_strdup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
 	stored_mtime = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_MTIME);
 	rhythmdb_read_unlock (db);
 	
@@ -942,13 +948,15 @@ update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 
 	rhythmdb_write_lock (db);
 	
+	rb_debug ("song \"%s\" changed, deleting and re-adding", location);
 	rhythmdb_entry_delete (db, entry);
-	rhythmdb_add_uri_async (db, location); 
-	rhythmdb_entry_unref_unlocked (db, entry);
 
 	rhythmdb_write_unlock (db);
 
+	rhythmdb_add_uri_async (db, location); 
+
 out:
+	g_free (location);
 	gnome_vfs_file_info_unref (vfsinfo);
 }
 

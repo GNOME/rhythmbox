@@ -351,7 +351,6 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
 	while (gst_bin_iterate (GST_BIN (pipeline))
-	       && md->priv->type == NULL
 	       && md->priv->error == NULL
 	       && !md->priv->eos)
 		;

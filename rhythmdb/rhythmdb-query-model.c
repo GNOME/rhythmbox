@@ -454,9 +454,38 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 }
 
 static void
+rhythmdb_query_model_free_update (RhythmDBQueryModel *model,
+				  struct RhythmDBQueryModelUpdate *update)
+{
+	switch (update->type) {
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
+		/* We steal the ref here from the update queue */
+		break;
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
+		rhythmdb_entry_unref (model->priv->db, update->entry);
+		g_value_unset (&update->old);
+		g_value_unset (&update->new);
+		break;
+	case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
+		/* Unref twice; once because we were holding a ref originally
+		   due to storing it, and another time because we had it
+		   in the update queue. */
+		rhythmdb_entry_unref (model->priv->db, update->entry);
+		rhythmdb_entry_unref (model->priv->db, update->entry);
+		break;
+	case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
+		break;
+	}
+
+	g_free (update);
+}
+	
+
+static void
 rhythmdb_query_model_finalize (GObject *object)
 {
 	RhythmDBQueryModel *model;
+	struct RhythmDBQueryModelUpdate *update;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RHYTHMDB_IS_QUERY_MODEL (object));
@@ -473,12 +502,8 @@ rhythmdb_query_model_finalize (GObject *object)
 	if (model->priv->query)
 		rhythmdb_query_free (model->priv->query);
 
-	{
-		struct RhythmDBQueryModelUpdate *update;
-		while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL) {
-			g_free (update);
-		}
-	}
+	while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL)
+		rhythmdb_query_model_free_update (model, update);
 
 	g_async_queue_unref (model->priv->query_complete);
 	g_async_queue_unref (model->priv->pending_updates);
@@ -865,31 +890,8 @@ rhythmdb_query_model_poll (RhythmDBQueryModel *model, GTimeVal *timeout)
 		}
 	}
 	
-	for (tem = processed; tem; tem = tem->next) {
-		struct RhythmDBQueryModelUpdate *update = tem->data;
-			
-		switch (update->type) {
-		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED:
-			/* We steal the ref here from the update queue */
-			break;
-		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_CHANGED:
-			rhythmdb_entry_unref (model->priv->db, update->entry);
-			g_value_unset (&update->old);
-			g_value_unset (&update->new);
-			break;
-		case RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED:
-			/* Unref twice; once because we were holding a ref originally
-			   due to storing it, and another time because we had it
-			   in the update queue. */
-			rhythmdb_entry_unref (model->priv->db, update->entry);
-			rhythmdb_entry_unref (model->priv->db, update->entry);
-			break;
-		case RHYTHMDB_QUERY_MODEL_UPDATE_QUERY_COMPLETE:
-			break;
-		}
-
-		g_free (update);
-	}
+	for (tem = processed; tem; tem = tem->next)
+		rhythmdb_query_model_free_update (model, tem->data);
 		
 	g_list_free (processed);
 	return processed != NULL;

@@ -82,6 +82,14 @@
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
+static void rb_shell_set_property (GObject *object,
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *pspec);
+static void rb_shell_get_property (GObject *object,
+				   guint prop_id,
+				   GValue *value,
+				   GParamSpec *pspec);
 static void rb_shell_corba_quit (PortableServer_Servant _servant,
                                  CORBA_Environment *ev);
 static void rb_shell_corba_handle_file (PortableServer_Servant _servant,
@@ -230,6 +238,16 @@ static void tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 
 static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 } };
 
+enum
+{
+	PROP_NONE,
+	PROP_ARGC,
+	PROP_ARGV,
+	PROP_NO_REGISTRATION,
+	PROP_DRY_RUN,
+	PROP_RHYTHMDB_FILE,
+};
+
 #define CMD_PATH_VIEW_SMALLDISPLAY "/commands/ToggleSmallDisplay"
 #define CMD_PATH_VIEW_SOURCELIST   "/commands/ShowSourceList"
 #define CMD_PATH_EXTRACT_CD     "/commands/ExtractCD"
@@ -259,6 +277,12 @@ struct RBShellPrivate
 
 	gboolean db_dirty;
 	guint async_state_save_id;
+
+	int argc;
+	char **argv;
+	gboolean no_registration;
+	gboolean dry_run;
+	char *rhythmdb_file;
 
 	RhythmDB *db;
 
@@ -355,6 +379,8 @@ rb_shell_class_init (RBShellClass *klass)
 
         parent_class = g_type_class_peek_parent (klass);
 
+	object_class->set_property = rb_shell_set_property;
+	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
 
 	epv->quit         = rb_shell_corba_quit;
@@ -369,6 +395,45 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->getPlayingTime = rb_shell_corba_get_playing_time;
 	epv->setPlayingTime = rb_shell_corba_set_playing_time;
 	epv->getPlayerProperties = rb_shell_corba_get_player_properties;
+
+	g_object_class_install_property (object_class,
+					 PROP_ARGC,
+					 g_param_spec_int ("argc", 
+							   "argc", 
+							   "Argument count", 
+							   0, 128,
+							   0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_ARGV,
+					 g_param_spec_pointer ("argv", 
+							       "argv", 
+							       "Arguments", 
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_NO_REGISTRATION,
+					 g_param_spec_boolean ("no-registration", 
+							       "no-registration", 
+							       "Whether or not to register", 
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_DRY_RUN,
+					 g_param_spec_boolean ("dry-run", 
+							       "dry-run", 
+							       "Whether or not this is a dry run", 
+							       FALSE,
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_RHYTHMDB_FILE,
+					 g_param_spec_string ("rhythmdb-file", 
+							      "rhythmdb-file", 
+							      "The RhythmDB file to use", 
+							      "rhythmdb.xml",
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -390,10 +455,74 @@ rb_shell_init (RBShell *shell)
 
 }
 
+static void
+rb_shell_set_property (GObject *object,
+		       guint prop_id,
+		       const GValue *value,
+		       GParamSpec *pspec)
+{
+	RBShell *shell = RB_SHELL (object);
+
+	switch (prop_id)
+	{
+	case PROP_ARGC:
+		shell->priv->argc = g_value_get_int (value);
+		break;
+	case PROP_ARGV:
+		shell->priv->argv = g_value_get_pointer (value);
+		break;
+	case PROP_NO_REGISTRATION:
+		shell->priv->no_registration = g_value_get_boolean (value);
+		break;
+	case PROP_DRY_RUN:
+		shell->priv->dry_run = g_value_get_boolean (value);
+		if (shell->priv->dry_run)
+			shell->priv->no_registration = TRUE;			
+		break;
+	case PROP_RHYTHMDB_FILE:
+		shell->priv->rhythmdb_file = g_value_dup_string (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_shell_get_property (GObject *object,
+		       guint prop_id,
+		       GValue *value,
+		       GParamSpec *pspec)
+{
+	RBShell *shell = RB_SHELL (object);
+
+	switch (prop_id)
+	{
+	case PROP_ARGC:
+		g_value_set_int (value, shell->priv->argc);
+		break;
+	case PROP_ARGV:
+		g_value_set_pointer (value, shell->priv->argv);
+		break;
+	case PROP_NO_REGISTRATION:
+		g_value_set_boolean (value, shell->priv->no_registration);
+		break;
+	case PROP_DRY_RUN:
+		g_value_set_boolean (value, shell->priv->dry_run);
+		break;
+	case PROP_RHYTHMDB_FILE:
+		g_value_set_string (value, shell->priv->rhythmdb_file);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 static gboolean
 rb_shell_sync_state (RBShell *shell)
 {
-	if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
+	if (shell->priv->dry_run)
 		return FALSE;
 	
 	rb_debug ("saving playlists");
@@ -472,6 +601,7 @@ rb_shell_finalize (GObject *object)
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
 	
+	g_free (shell->priv->rhythmdb_file);
 	g_free (shell->priv);
 
 	g_object_unref (G_OBJECT (rb_file_monitor_get ()));
@@ -483,11 +613,14 @@ rb_shell_finalize (GObject *object)
 }
 
 RBShell *
-rb_shell_new (void)
+rb_shell_new (int argc, char **argv, gboolean no_registration, gboolean dry_run,
+	      char *rhythmdb)
 {
 	RBShell *s;
 
-	s = g_object_new (RB_TYPE_SHELL, NULL);
+	s = g_object_new (RB_TYPE_SHELL, "argc", argc, "argv", argv,
+			  "no-registration", no_registration,
+			  "dry-run", dry_run, "rhythmdb-file", rhythmdb, NULL);
 
 	return s;
 }
@@ -925,14 +1058,19 @@ rb_shell_construct (RBShell *shell)
 	/* Initialize the database */
 	rb_debug ("creating database object");
 	{
-		char *fname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+		char *pathname;
 
-		rhythmdb_exists = g_file_test (fname, G_FILE_TEST_EXISTS);
+		if (shell->priv->rhythmdb_file)
+			pathname = g_strdup (shell->priv->rhythmdb_file);
+		else
+			pathname = g_build_filename (rb_dot_dir (), "rhythmdb.xml", NULL);
+
+		rhythmdb_exists = g_file_test (pathname, G_FILE_TEST_EXISTS);
 		
-		shell->priv->db = rhythmdb_tree_new (fname);
-		g_free (fname);
+		shell->priv->db = rhythmdb_tree_new (pathname);
+		g_free (pathname);
 
-		if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
+		if (shell->priv->dry_run)
 			g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
 
 		if (rhythmdb_exists) {
@@ -1136,8 +1274,8 @@ rb_shell_construct (RBShell *shell)
 		rb_debug ("No AudioCD device is available!");
 #endif
 	
-	if (!g_object_get_data (G_OBJECT (shell), "rb-shell-no-registration")
-	    && !g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run")) {
+	if (!shell->priv->no_registration) {
+		rb_debug ("Registering with Bonobo Activation...");
 		/* register with CORBA */
 		CORBA_exception_init (&ev);
 		

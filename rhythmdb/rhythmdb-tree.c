@@ -1256,8 +1256,10 @@ rhythmdb_tree_entry_delete (RhythmDB *adb, RhythmDBEntry *aentry)
 
 	sanity_check_database (db);
 
-	if (entry->deleted)
+	if (entry->deleted) {
+		rb_debug ("entry %x was already deleted", aentry);
 		return;
+	}
 
 	entry->deleted = TRUE;
 
