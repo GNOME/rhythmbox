@@ -689,8 +689,7 @@ rb_song_info_set_entry_rating (RBSongInfo *info,
 			    RHYTHMDB_PROP_AUTO_RATE,
 			    &value);
 	g_value_unset (&value);
-
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (info->priv->auto_rate), FALSE);
+	
 }
 	
 
@@ -712,6 +711,8 @@ rb_song_info_rated_cb (RBRating *rating,
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
 		      NULL);
+
+	rb_song_info_update_auto_rate (song_info);
 }
 
 static void
@@ -955,7 +956,7 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_update_auto_rate (RBSongInfo *song_info)
+rb_song_info_update_auto_rate_single (RBSongInfo *song_info)
 {
 	gboolean auto_rate;
 	gboolean global_auto_rate;
@@ -979,6 +980,59 @@ rb_song_info_update_auto_rate (RBSongInfo *song_info)
 	global_auto_rate = eel_gconf_get_boolean (CONF_AUTO_RATE);
 	gtk_widget_set_sensitive (song_info->priv->auto_rate_label, global_auto_rate);
 	gtk_widget_set_sensitive (song_info->priv->auto_rate, global_auto_rate);
+}
+
+static void
+rb_song_info_update_auto_rate_multiple (RBSongInfo *song_info)
+{
+	gboolean first_auto_rate;
+	gboolean global_auto_rate;
+	gboolean inconsistent = FALSE;
+	GList *tem;
+	
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+
+	first_auto_rate = rhythmdb_entry_get_boolean (song_info->priv->db,
+						      song_info->priv->selected_entries->data,
+						      RHYTHMDB_PROP_AUTO_RATE);
+	for (tem = song_info->priv->selected_entries; tem; tem = tem->next) {
+		gboolean auto_rate
+			= rhythmdb_entry_get_boolean (song_info->priv->db,
+						      tem->data,
+						      RHYTHMDB_PROP_AUTO_RATE);
+		if (auto_rate != first_auto_rate) {
+			inconsistent = TRUE;
+			break;
+		}
+	}
+
+	gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (song_info->priv->auto_rate),
+					    inconsistent);
+					    
+	if (!inconsistent) {
+		/* We have to block our signal handlers from thinking this
+		   is a user-originated setting */
+		g_signal_handlers_block_by_func (song_info->priv->auto_rate,
+						 rb_song_info_auto_rate_toggled_cb, song_info);
+		g_object_set (G_OBJECT (song_info->priv->auto_rate),
+			      "active", first_auto_rate,
+			      NULL);
+		g_signal_handlers_unblock_by_func (song_info->priv->auto_rate,
+						   rb_song_info_auto_rate_toggled_cb, song_info);
+	}
+	
+	global_auto_rate = eel_gconf_get_boolean (CONF_AUTO_RATE);
+	gtk_widget_set_sensitive (song_info->priv->auto_rate_label, global_auto_rate);
+	gtk_widget_set_sensitive (song_info->priv->auto_rate, global_auto_rate);
+}
+
+static void
+rb_song_info_update_auto_rate (RBSongInfo *song_info)
+{
+	if (song_info->priv->current_entry)
+		rb_song_info_update_auto_rate_single (song_info);
+	else
+		rb_song_info_update_auto_rate_multiple (song_info);
 }
 
 static void
