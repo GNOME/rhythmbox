@@ -49,12 +49,15 @@ static void rb_iradio_backend_finalize (GObject *object);
 static void rb_iradio_backend_save (RBIRadioBackend *backend);
 static void genre_added_cb (RBNode *node, RBNode *child, RBIRadioBackend *backend);
 static void genre_removed_cb (RBNode *node, RBNode *child, guint last_id, RBIRadioBackend *backend);
+static void station_changed_cb (RBNode *node, RBNode *parent, guint propid, RBIRadioBackend *backend);
+
 static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 							      const char *uri);
 static gboolean rb_iradio_backend_periodic_save (RBIRadioBackend *backend);
 static void finalize_node (RBNode *node);
 static void restore_node (RBNode *node);
 static void sync_sort_keys (RBNode *node);
+static void set_genre (RBNode *node, const char *genrename, RBIRadioBackend *backend, gboolean unlocked);
 
 #define RB_IRADIO_BACKEND_XML_VERSION "2.1"
 
@@ -174,6 +177,11 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 	rb_node_signal_connect_object (backend->priv->all_genres,
 				       RB_NODE_CHILD_REMOVED,
 				       (RBNodeCallback) genre_removed_cb,
+				       G_OBJECT (backend));
+
+	rb_node_signal_connect_object (backend->priv->all_stations,
+				       RB_NODE_CHILD_CHANGED,
+				       (RBNodeCallback) station_changed_cb,
 				       G_OBJECT (backend));
 
 	g_value_init (&value, G_TYPE_STRING);
@@ -308,6 +316,20 @@ genre_removed_cb (RBNode *node,
 	
 	g_static_rw_lock_writer_unlock (backend->priv->genre_hash_lock);
 }
+
+static void
+station_changed_cb (RBNode *parent,
+		    RBNode *node,
+		    guint propid,
+		    RBIRadioBackend *backend)
+{
+	rb_debug ("station %p changed propid %d", node, propid);
+	if (propid == RB_NODE_PROP_GENRE) {
+		set_genre (node, rb_node_get_property_string (node, RB_NODE_PROP_GENRE),
+			   backend, TRUE);
+	}
+}
+
 static void
 load_initial (RBIRadioBackend *backend)
 {
@@ -621,18 +643,22 @@ sync_sort_keys (RBNode *node)
 
 
 static void
-set_genre (RBNode *node,
-	   const char *genrename,
-	   RBIRadioBackend *backend)
+set_genre (RBNode *node, const char *genrename, RBIRadioBackend *backend, gboolean unlocked)
 {
 	GValue val = { 0, };
 	RBNode *genre;
+	RBNode *oldparent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, genrename);
 
-	genre = rb_iradio_backend_get_genre_by_name (backend,
-						     g_value_get_string (&val));
+	genre = rb_iradio_backend_get_genre_by_name (backend, g_value_get_string (&val));
+
+	if (oldparent && oldparent != genre) {
+		rb_node_remove_child_unlocked (oldparent, node);
+		rb_node_unref (oldparent);
+	}
+
 	if (genre == NULL) {
 		genre = rb_node_new (backend->priv->db);
 
@@ -650,14 +676,17 @@ set_genre (RBNode *node,
 	
 	g_value_unset (&val);
 
-	rb_node_add_child (genre, node);
+	if (unlocked)
+		rb_node_add_child_unlocked (genre, node);
+	else
+		rb_node_add_child (genre, node);
 	rb_node_ref (genre);
 
 	g_value_init (&val, G_TYPE_POINTER);
 	g_value_set_pointer (&val, genre);
-	rb_node_set_property (node,
-			      RB_NODE_PROP_REAL_GENRE,
-			      &val);
+	rb_node_set_property_unlocked (node,
+				       RB_NODE_PROP_REAL_GENRE,
+				       &val);
 	g_value_unset (&val);
 }
 
@@ -751,7 +780,7 @@ rb_iradio_backend_new_station (GList *locations, const char *name,
 			      &value);
 	g_value_unset (&value);
 
-	set_genre (node, genre, iradio_backend);
+	set_genre (node, genre, iradio_backend, FALSE);
 
 	rb_node_add_child (rb_iradio_backend_get_all_stations (iradio_backend), node);
 	rb_node_ref (rb_iradio_backend_get_all_stations (iradio_backend));

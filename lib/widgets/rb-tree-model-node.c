@@ -84,6 +84,7 @@ static void root_child_added_cb (RBNode *node,
 				 RBTreeModelNode *model);
 static void root_child_changed_cb (RBNode *node,
 				   RBNode *child,
+				   guint propid,
 		                   RBTreeModelNode *model);
 static void root_children_reordered_cb (RBNode *node,
 			                int *new_order,
@@ -849,6 +850,7 @@ rb_tree_model_node_update_node (RBTreeModelNode *model,
 static void
 root_child_changed_cb (RBNode *node,
 		       RBNode *child,
+		       guint propid,
 		       RBTreeModelNode *model)
 {
 	rb_tree_model_node_update_node (model, child, -1);

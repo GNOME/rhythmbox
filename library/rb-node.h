@@ -113,6 +113,9 @@ void        rb_node_signal_disconnect     (RBNode *node,
 void        rb_node_set_property          (RBNode *node,
 				             guint property_id,
 				             const GValue *value);
+void        rb_node_set_property_unlocked (RBNode *node,
+					   guint property_id,
+					   const GValue *value);
 gboolean    rb_node_get_property          (RBNode *node,
 				             guint property_id,
 				             GValue *value);
@@ -144,7 +147,12 @@ RBNode     *rb_node_new_from_xml        (RBNodeDb *db,
 /* DAG structure */
 void        rb_node_add_child             (RBNode *node,
 					   RBNode *child);
+void        rb_node_add_child_unlocked    (RBNode *node,
+					   RBNode *child);
+
 void        rb_node_remove_child          (RBNode *node,
+					   RBNode *child);
+void        rb_node_remove_child_unlocked (RBNode *node,
 					   RBNode *child);
 void	    rb_node_sort_children	    (RBNode *node,
 					     GCompareFunc compare_func);

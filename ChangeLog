@@ -1,3 +1,24 @@
+2003-08-10  Colin Walters  <walters@debian.org>
+
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),
+	(station_changed_cb), (set_genre), (rb_iradio_backend_new_station):
+	* lib/widgets/rb-tree-model-node.c: (root_child_changed_cb):
+	* library/rb-node.c: (callback), (real_remove_child),
+	(remove_child), (rb_node_dispose), (child_changed),
+	(rb_node_set_property_internal), (rb_node_set_property),
+	(rb_node_set_property_unlocked), (rb_node_add_child_unlocked),
+	(rb_node_add_child), (rb_node_remove_child_unlocked),
+	(rb_node_remove_child):
+	* library/rb-node.h:
+
+	More node system surgery.  There are now _unlocked variants of many
+	functions.  This is necessary to perform recursive node operations
+	in node callbacks.  All this crap is going to be rewritten, for real.
+
+	Make the iradio backend use these new functions to watch for
+	PROP_GENRE changes on stations, and update the tree correspondingly.
+	This closes bug #119529.
+
 2003-08-10  Colin Walters  <walters@verbum.org>
 
 	* lib/rb-file-helpers.c:

@@ -73,6 +73,12 @@ struct RBNode
 	RBNodeDb *db;
 };
 
+struct RBNodeChangeData
+{
+	RBNode *node;
+	guint propid;
+};
+
 typedef struct
 {
 	RBNodeSignalType type;
@@ -147,8 +153,18 @@ callback (long id, RBNodeSignalData *data, gpointer *dummy)
 		break;
 
 		case RB_NODE_CHILD_ADDED:
-		case RB_NODE_CHILD_CHANGED:
 			data->callback (data->node, va_arg (valist, RBNode *), data->data);
+		break;
+		case RB_NODE_CHILD_CHANGED:
+		{
+			RBNode *node;
+			guint propid;
+
+			node = va_arg (valist, RBNode *);
+			propid = va_arg (valist, guint);
+
+			data->callback (data->node, node, propid, data->data);
+		}
 		break;
 
 		case RB_NODE_CHILD_REMOVED:
@@ -229,7 +245,8 @@ static inline void
 real_remove_child (RBNode *node,
 		   RBNode *child,
 		   gboolean remove_from_parent,
-		   gboolean remove_from_child)
+		   gboolean remove_from_child,
+		   gboolean child_write_locked)
 {
 	RBNodeParent *node_info;
 
@@ -262,12 +279,14 @@ real_remove_child (RBNode *node,
 		}
 
 		write_lock_to_read_lock (node);
-		write_lock_to_read_lock (child);
+		if (child_write_locked)
+			write_lock_to_read_lock (child);
 
 		rb_node_emit_signal (node, RB_NODE_CHILD_REMOVED, child, old_index);
 
 		read_lock_to_write_lock (node);
-		read_lock_to_write_lock (child);
+		if (child_write_locked)
+			read_lock_to_write_lock (child);
 	}
 
 	if (remove_from_child) {
@@ -283,7 +302,7 @@ remove_child (long id,
 {
 	g_static_rw_lock_writer_lock (node_info->node->lock);
 
-	real_remove_child (node_info->node, node, TRUE, FALSE);
+	real_remove_child (node_info->node, node, TRUE, FALSE, TRUE);
 
 	g_static_rw_lock_writer_unlock (node_info->node->lock);
 }
@@ -332,7 +351,7 @@ rb_node_dispose (RBNode *node, RBNode *locked_child)
 		if (locked_child != child)
 			g_static_rw_lock_writer_lock (child->lock);
 
-		real_remove_child (node, child, FALSE, TRUE);
+		real_remove_child (node, child, FALSE, TRUE, TRUE);
 
 		if (locked_child != child)
 			g_static_rw_lock_writer_unlock (child->lock);
@@ -490,11 +509,11 @@ rb_node_thaw (RBNode *node)
 static void
 child_changed (gulong id,
 	       RBNodeParent *node_info,
-	       RBNode *node)
+	       struct RBNodeChangeData *data)
 {
 	g_static_rw_lock_reader_lock (node_info->node->lock);
 
-	rb_node_emit_signal (node_info->node, RB_NODE_CHILD_CHANGED, node);
+	rb_node_emit_signal (node_info->node, RB_NODE_CHILD_CHANGED, data->node, data->propid);
 
 	g_static_rw_lock_reader_unlock (node_info->node->lock);
 }
@@ -527,10 +546,11 @@ real_set_property (RBNode *node,
 	g_ptr_array_index (srcarray, property_id) = value;
 }
 
-void
-rb_node_set_property (RBNode *node,
-		        guint property_id,
-		        const GValue *value)
+static void
+rb_node_set_property_internal (RBNode *node,
+			       guint property_id,
+			       const GValue *value,
+			       gboolean lock)
 {
 	GValue *new;
 
@@ -540,7 +560,8 @@ rb_node_set_property (RBNode *node,
 
 	lock_gdk ();
 
-	g_static_rw_lock_writer_lock (node->lock);
+	if (lock)
+		g_static_rw_lock_writer_lock (node->lock);
 
 	new = g_new0 (GValue, 1);
 	g_value_init (new, G_VALUE_TYPE (value));
@@ -548,15 +569,38 @@ rb_node_set_property (RBNode *node,
 
 	real_set_property (node, property_id, new);
 
-	write_lock_to_read_lock (node);
+	if (lock)
+		write_lock_to_read_lock (node);
 
-	g_hash_table_foreach (node->parents,
-			      (GHFunc) child_changed,
-			      node);
+	{
+		struct RBNodeChangeData *data = g_new (struct RBNodeChangeData, 1);
 
-	g_static_rw_lock_reader_unlock (node->lock);
+		data->node = node;
+		data->propid = property_id;
+		
+		g_hash_table_foreach (node->parents,
+				      (GHFunc) child_changed,
+				      data);
+
+		g_free (data);
+	}
+
+	if (lock)
+		g_static_rw_lock_reader_unlock (node->lock);
 
 	unlock_gdk ();
+}
+
+void
+rb_node_set_property (RBNode *node, guint property_id, const GValue *value)
+{
+	rb_node_set_property_internal (node, property_id, value, TRUE);
+}
+		      
+void
+rb_node_set_property_unlocked (RBNode *node, guint property_id, const GValue *value)
+{
+	rb_node_set_property_internal (node, property_id, value, FALSE);
 }
 
 gboolean
@@ -935,8 +979,15 @@ rb_node_new_from_xml (RBNodeDb *db, xmlNodePtr xml_node)
 }
 
 void
-rb_node_add_child (RBNode *node,
-		   RBNode *child)
+rb_node_add_child_unlocked (RBNode *node, RBNode *child)
+{
+	real_add_child (node, child);
+
+	rb_node_emit_signal (node, RB_NODE_CHILD_ADDED, child);
+}
+
+void
+rb_node_add_child (RBNode *node, RBNode *child)
 {
 	lock_gdk ();
 
@@ -959,6 +1010,23 @@ rb_node_add_child (RBNode *node,
 }
 
 void
+rb_node_remove_child_unlocked (RBNode *node,
+			       RBNode *child)
+{
+	lock_gdk ();
+
+	g_return_if_fail (RB_IS_NODE (node));
+
+	g_static_rw_lock_writer_lock (node->lock);
+
+	real_remove_child (node, child, TRUE, TRUE, FALSE);
+
+	g_static_rw_lock_writer_unlock (node->lock);
+
+	unlock_gdk ();
+}
+
+void
 rb_node_remove_child (RBNode *node,
 		        RBNode *child)
 {
@@ -969,7 +1037,7 @@ rb_node_remove_child (RBNode *node,
 	g_static_rw_lock_writer_lock (node->lock);
 	g_static_rw_lock_writer_lock (child->lock);
 
-	real_remove_child (node, child, TRUE, TRUE);
+	real_remove_child (node, child, TRUE, TRUE, TRUE);
 
 	g_static_rw_lock_writer_unlock (node->lock);
 	g_static_rw_lock_writer_unlock (child->lock);
