@@ -776,7 +776,7 @@ impl_get_status_fast (RBLibrarySource *source)
 {
 
 	return g_strdup_printf (_("%ld songs"),
-				rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
+				(long) rb_node_get_n_children (rb_library_get_all_songs (source->priv->library)));
 }
 
 static const char *

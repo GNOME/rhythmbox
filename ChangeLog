@@ -1,3 +1,8 @@
+2003-08-13  Colin Walters  <walters@verbum.org>
+
+	* sources/rb-library-source.c (impl_get_status_fast): Cast return
+	value to a long to avoid complier warning.
+
 2003-08-13  Colin Walters  <walters@rhythmbox.org>
 
 	* configure.ac: Prerelease 0.4.99.4.
