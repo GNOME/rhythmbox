@@ -1,5 +1,18 @@
 2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_init),
+	(rb_node_view_finalize), (gtk_tree_model_sort_row_inserted_cb),
+	(gtk_tree_model_sort_row_deleted_cb),
+	(gtk_tree_model_sort_row_changed_cb),
+	(gtk_tree_sortable_sort_column_changed_cb),
+	(rb_node_view_get_status), (rb_node_view_key_press_event_cb),
+	(rb_node_view_timeout_cb):
+
+	Emit the "changed" signal from a timeout, so that we dont
+	have emit the signal 10^10 times.
+
+2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/node-views/rb-node-view-albums.xml:
 	* data/node-views/rb-node-view-artists.xml:
 	* lib/widgets/rb-node-view.c: (rb_node_view_finalize),

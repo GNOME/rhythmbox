@@ -96,6 +96,7 @@ static gboolean rb_node_view_status_foreach_cb (GtkTreeModel *model,
 static gboolean rb_node_view_key_press_event_cb (GtkWidget *widget,
 				                 GdkEventKey *event,
 				                 RBNodeView *view);
+static gboolean rb_node_view_timeout_cb (RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -115,6 +116,9 @@ struct RBNodeViewPrivate
 	gboolean keep_selection;
 
 	RBNode *selected_node;
+
+	gboolean changed;
+	guint timeout;
 };
 
 enum
@@ -272,6 +276,8 @@ static void
 rb_node_view_init (RBNodeView *view)
 {
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
+
+	view->priv->timeout = g_timeout_add (50, (GSourceFunc) rb_node_view_timeout_cb, view);
 }
 
 static void
@@ -285,6 +291,8 @@ rb_node_view_finalize (GObject *object)
 	view = RB_NODE_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
+
+	g_source_remove (view->priv->timeout);
 
 	g_free (view->priv->view_desc_file);
 
@@ -925,7 +933,7 @@ gtk_tree_model_sort_row_inserted_cb (GtkTreeModel *model,
 				     GtkTreeIter *iter,
 				     RBNodeView *view)
 {
-	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+	view->priv->changed = TRUE;
 }
 
 static void
@@ -933,7 +941,7 @@ gtk_tree_model_sort_row_deleted_cb (GtkTreeModel *model,
 				    GtkTreePath *path,
 			            RBNodeView *view)
 {
-	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+	view->priv->changed = TRUE;
 
 	if (view->priv->keep_selection == TRUE &&
 	    view->priv->selected_node == NULL)
@@ -953,14 +961,14 @@ gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 				    GtkTreeIter *iter,
 			            RBNodeView *view)
 {
-	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+	view->priv->changed = TRUE;
 }
 
 static void
 gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					  RBNodeView *view)
 {
-	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+	view->priv->changed = TRUE;
 }
 
 char *
@@ -971,7 +979,7 @@ rb_node_view_get_status (RBNodeView *view)
 	StatusInfo *info = g_new0 (StatusInfo, 1);
 
 	info->view = view;
-
+	
 	gtk_tree_model_foreach (GTK_TREE_MODEL (view->priv->sortmodel),
 				(GtkTreeModelForeachFunc) rb_node_view_status_foreach_cb,
 				info);
@@ -1119,4 +1127,17 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 	g_list_free (sel);
 
 	return FALSE;
+}
+
+static gboolean
+rb_node_view_timeout_cb (RBNodeView *view)
+{
+	if (view->priv->changed == FALSE)
+		return TRUE;
+
+	g_signal_emit (G_OBJECT (view), rb_node_view_signals[CHANGED], 0);
+
+	view->priv->changed = FALSE;
+
+	return TRUE;
 }
