@@ -1,3 +1,13 @@
+2003-08-18  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_button_press_cb):
+
+	Don't segfault if the click is outside the song list.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_sync_buttons):
+
+	Be sure to disable properties dialog if there's no selection.
+
 2003-08-18  Yann Rouillard  <yann@cvs.gnome.org>
 
 	* lib/widgets/rb-volume.c (rb_volume_init), 

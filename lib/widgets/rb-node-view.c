@@ -1491,12 +1491,14 @@ rb_node_view_button_press_cb (GtkTreeView *treeview,
 		RBNode *node;
 
 		gtk_tree_view_get_path_at_pos (treeview, event->x, event->y, &path, NULL, NULL, NULL);
-		node = node_from_tree_path (view, path);
-
-		/* FIXME - don't require a popup to select a node */
-		rb_node_view_select_node (view, node);
-
-		g_signal_emit (G_OBJECT (view), rb_node_view_signals[SHOW_POPUP], 0);
+		if (path != NULL) {
+			node = node_from_tree_path (view, path);
+			
+			/* FIXME - don't require a popup to select a node */
+			rb_node_view_select_node (view, node);
+		
+			g_signal_emit (G_OBJECT (view), rb_node_view_signals[SHOW_POPUP], 0);
+		}
 		return view->priv->have_selection;
 	}
 

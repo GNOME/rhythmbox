@@ -1203,7 +1203,6 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
 	RBSource *source = rb_shell_player_get_playing_node (player) == NULL ?
 		player->priv->selected_source : player->priv->source;
-	RBNodeView *songs = rb_source_get_node_view (source);
 	gboolean have_previous, have_next;
 
 	rb_debug ("syncing with source %p", source);
@@ -1224,8 +1223,11 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
 				 rb_shell_player_get_playing_node (player) != NULL);
-	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
-				 rb_node_view_have_selection (songs));
+	{
+		RBNodeView *view = rb_source_get_node_view (player->priv->selected_source);
+		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
+					 rb_node_view_have_selection (view));
+	}
 
 	if (monkey_media_player_playing (player->priv->mmplayer)) {
 		if (player->priv->source == player->priv->selected_source
