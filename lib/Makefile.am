@@ -4,7 +4,6 @@ noinst_LTLIBRARIES = librb.la
 
 librb_la_SOURCES =					\
 	rb-atomic.h					\
-	rb-atomic.c					\
 	rb-debug.c					\
 	rb-debug.h					\
 	rb-dialog.c					\
@@ -42,6 +41,10 @@ librb_la_SOURCES =					\
 	rb-tree-dnd.h					\
 	$(EGGFILES)					\
 	rb-preferences.h	
+
+if WITH_GTK22
+librb_la_SOURCES += 	rb-atomic.c
+endif
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -23,6 +23,10 @@
 
 #include "rb-atomic.h"
 
+#ifdef HAVE_GTK_2_3
+#error "rb-atomic shouldn't be compiled with GTK+ 2.4, please file a bug on bugzilla.gnome.org"
+#else
+
 #ifdef RB_USE_ATOMIC_INT_486
 /* Taken from CVS version 1.7 of glibc's sysdeps/i386/i486/atomicity.h */
 /* Since the asm stuff here is gcc-specific we go ahead and use "inline" also */
@@ -87,3 +91,5 @@ rb_atomic_dec (RBAtomic *atomic)
   return res;
 #endif
 }
+
+#endif /* HAVE_GTK_2_3 */

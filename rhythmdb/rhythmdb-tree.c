@@ -863,7 +863,8 @@ rhythmdb_tree_entry_allocate (RhythmDBTree *db, RhythmDBEntryType type)
 #ifndef G_DISABLE_ASSERT
 	ret->magic = 0xdeadb33f;
 #endif	
-	ret->refcount.value = 1;
+	/* The refcount is initially 0, we want to set it to 1 */
+	rb_atomic_inc (&ret->refcount);
 
 	/* Initialize all the properties. */
 	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {

@@ -29,6 +29,14 @@
 
 G_BEGIN_DECLS
 
+#ifdef HAVE_GTK_2_3
+
+typedef gint32 RBAtomic;
+#define rb_atomic_inc(atomic) g_atomic_int_exchange_and_add((atomic), 1)
+#define rb_atomic_dec(atomic) g_atomic_int_exchange_and_add((atomic), -1)
+
+#else /* HAVE_GTK_2_3 */
+
 typedef struct RBAtomic RBAtomic;
 struct RBAtomic
 {
@@ -37,6 +45,8 @@ struct RBAtomic
 
 gint32 rb_atomic_inc (RBAtomic *atomic);
 gint32 rb_atomic_dec (RBAtomic *atomic);
+
+#endif /* HAVE_GTK_2_3 */
 
 G_END_DECLS
 
