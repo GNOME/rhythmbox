@@ -459,9 +459,13 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-	g_object_set (G_OBJECT (renderer), "text", str,
-		      "editable", rb_source_can_rename (source),
-		      NULL);
+	if (gtk_tree_selection_iter_is_selected (sourcelist->priv->selection, iter) != FALSE)
+		g_object_set (G_OBJECT (renderer), "text", str,
+			      "editable", rb_source_can_rename (source),
+			      NULL);
+	else
+		g_object_set (G_OBJECT (renderer), "text", str, NULL);
+
 	g_free (str);
 }
 

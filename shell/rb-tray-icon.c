@@ -91,6 +91,12 @@ struct RBTrayIconPrivate
 	GtkWidget *ebox;
 
 	RhythmDB *db;
+
+	int window_x;
+	int window_y;
+	int window_w;
+	int window_h;
+	gboolean visible;
 };
 
 enum
@@ -239,6 +245,12 @@ rb_tray_icon_init (RBTrayIcon *icon)
 	
 	icon->priv->control = bonobo_control_new (icon->priv->ebox);
 	icon->priv->tray_component = bonobo_control_get_popup_ui_component (icon->priv->control);
+
+	icon->priv->window_x = -1;
+	icon->priv->window_y = -1;
+	icon->priv->window_w = -1;
+	icon->priv->window_h = -1;
+	icon->priv->visible = TRUE;
 
 	rb_bonobo_add_listener_list_with_data (icon->priv->tray_component,
 						rb_tray_icon_listeners,
@@ -500,35 +512,57 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 }
 
 static void
-rb_tray_set_visibility (RBTrayIcon *tray, int state)
+rb_tray_restore_main_window (RBTrayIcon *icon)
 {
-	static int window_x = -1;
-	static int window_y = -1;
-	static gboolean visible = 1;
+	if ((icon->priv->window_x >= 0 && icon->priv->window_y >= 0) || (icon->priv->window_h >= 0 && icon->priv->window_w >=0 ))
+	{
+		gtk_widget_realize (GTK_WIDGET (icon->priv->main_window));
+		gdk_flush ();
 
+		if (icon->priv->window_x >= 0 && icon->priv->window_y >= 0)
+		{
+			gtk_window_move (icon->priv->main_window,
+					icon->priv->window_x,
+					icon->priv->window_y);                                }
+		if (icon->priv->window_w >= 0 && icon->priv->window_y >=0)
+		{
+			gtk_window_resize (icon->priv->main_window,
+					icon->priv->window_w,
+					icon->priv->window_h);
+		}
+	}
+}
+
+static void
+rb_tray_set_visibility (RBTrayIcon *icon, int state)
+{
 	switch (state)
 	{
 	case VISIBILITY_HIDDEN:
        	case VISIBILITY_VISIBLE:
-		visible = !state;
-
+		if (icon->priv->visible != state)
+			rb_tray_set_visibility (icon, VISIBILITY_TOGGLE);
+		break;
         case VISIBILITY_TOGGLE:
-		visible = !visible;
-	
-		if (visible == TRUE)
+		icon->priv->visible = !icon->priv->visible;
+
+		if (icon->priv->visible == TRUE)
 		{
-			if (window_x >= 0 && window_y >= 0)
-				gtk_window_move (tray->priv->main_window,
-						window_x, window_y );
-			gtk_widget_show (GTK_WIDGET (tray->priv->main_window));
+			rb_tray_restore_main_window (icon);
+			gtk_widget_show (GTK_WIDGET (icon->priv->main_window));
 		} else {
-			gtk_window_get_position ( tray->priv->main_window,
-						&window_x, &window_y);
-			gtk_widget_hide (GTK_WIDGET (tray->priv->main_window));
+			gtk_window_get_position (icon->priv->main_window,
+						 &icon->priv->window_x,
+						 &icon->priv->window_y);
+			gtk_window_get_size (icon->priv->main_window,
+					     &icon->priv->window_w,
+					     &icon->priv->window_h);
+			gtk_widget_hide (GTK_WIDGET (icon->priv->main_window));
 		}
 
 	case VISIBILITY_SYNC:
-		rb_bonobo_set_active (tray->priv->main_component,
-					CMD_PATH_SHOW_WINDOW, visible);
+		rb_bonobo_set_active (icon->priv->main_component,
+				      CMD_PATH_SHOW_WINDOW,
+				      icon->priv->visible);
 	}
 }
