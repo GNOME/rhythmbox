@@ -47,6 +47,8 @@ GType		rhythmdb_entry_model_get_type	(void);
 
 RhythmDB *	rhythmdb_entry_model_new	(void);
 
+RhythmDB *	rhythmdb_entry_model_new_from_hash	(GHashTable *table);
+
 RhythmDB *	rhythmdb_entry_model_new_from_ptr_array	(GPtrArray *array);
 
 G_END_DECLS

@@ -1,3 +1,45 @@
+Fri, 29 Aug 2003 14:29:09 -0400  Colin Walters  <walters@verbum.org>
+
+	* lib/rb-util.c: (rb_gvalue_compare):
+	* lib/rb-util.h:
+
+	Add GValue comparison function.
+	
+	* sources/rb-source.c: (rb_source_get_type):
+
+	Make source type abstract.
+	
+	* rhythmdb/rhythmdb-entry-model.c:
+	(rhythmdb_entry_model_set_property), (rhythmdb_entry_model_init),
+	(rhythmdb_entry_model_finalize), (insert_hash_entry),
+	(rhythmdb_entry_model_new_from_hash),
+	(rhythmdb_entry_model_get_n_columns),
+	(rhythmdb_entry_model_get_column_type),
+	(rhythmdb_entry_model_get_value):
+	* rhythmdb/rhythmdb-entry-model.h:
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_get_type),
+	(rhythmdb_tree_class_init), (rhythmdb_tree_init),
+	(rhythmdb_tree_finalize), (rhythmdb_tree_set_property),
+	(rhythmdb_tree_get_property), (rhythmdb_tree_new),
+	(rhythmdb_tree_entry_new), (rhythmdb_tree_property_new),
+	(get_or_create_genre), (get_or_create_artist),
+	(get_or_create_album), (indexed_string_property_differs),
+	(remove_child), (set_entry_album), (rhythmdb_tree_entry_set),
+	(rhythmdb_tree_entry_get), (rhythmdb_tree_entry_delete),
+	(destroy_tree_property), (evaluate_conjunctive_subquery),
+	(do_conjunction), (conjunctive_query_songs),
+	(conjunctive_query_albums), (conjunctive_query_artists),
+	(conjunctive_query), (split_query_by_disjunctions),
+	(build_entry_query_set), (rhythmdb_tree_do_entry_query),
+	(rhythmdb_tree_do_property_query):
+	* rhythmdb/rhythmdb-tree.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_get_type), (rhythmdb_class_init),
+	(extract_gtype_from_enum_entry), (rhythmdb_init),
+	(rhythmdb_finalize), (rhythmdb_entry_new), (rhythmdb_entry_set):
+	* rhythmdb/rhythmdb.h:
+
+	Even more RhythmDB work.
+
 2003-08-29  Bastien Nocera  <hadess@hadess.net>
 
 	* iradio/rb-iradio-backend.c: (rb_iradio_backend_finalize):

@@ -40,6 +40,8 @@ struct RhythmDBPrivate
 #ifndef G_DISABLE_ASSERT
 	gint locklevel;
 #endif
+
+	GType *column_types;
 };
 
 enum
@@ -50,6 +52,8 @@ enum
 
 enum
 {
+	ENTRY_DELETED,
+	ENTRY_ADDED,
 	LAST_SIGNAL
 };
 
@@ -79,7 +83,7 @@ rhythmdb_get_type (void)
 
 		rhythmdb_type = g_type_register_static (G_TYPE_OBJECT,
 						       "RhythmDB",
-						       &our_info, 0);
+						       &our_info, G_TYPE_ABSTRACT);
 	}
 
 	return rhythmdb_type;
@@ -105,43 +109,89 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 
-/* 	rhythmdb_signals[FILTER_CHANGED] = */
-/* 		g_signal_new ("filter_changed", */
-/* 			      RB_TYPE_SOURCE, */
-/* 			      G_SIGNAL_RUN_LAST, */
-/* 			      G_STRUCT_OFFSET (RhythmDBClass, filter_changed), */
-/* 			      NULL, NULL, */
-/* 			      g_cclosure_marshal_VOID__VOID, */
-/* 			      G_TYPE_NONE, */
-/* 			      0); */
+	rhythmdb_signals[ENTRY_DELETED] =
+		g_signal_new ("entry_deleted",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_deleted),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1, G_TYPE_POINTER);
+
+	rhythmdb_signals[ENTRY_ADDED] =
+		g_signal_new ("entry_added",
+			      RHYTHMDB_TYPE,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, entry_added),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__POINTER,
+			      G_TYPE_NONE,
+			      1, G_TYPE_POINTER);
+}
+
+static GType
+extract_gtype_from_enum_entry (GEnumClass *klass, guint i)
+{
+	GEnumValue *value;
+	char *typename;
+	char *typename_end;
+	
+	value = g_enum_get_value (klass, i);
+	typename = strstr (value->value_nick, "(");
+	g_return_val_if_fail (typename != NULL, G_TYPE_INVALID);
+
+	typename_end = strstr (typename, ")");
+	typename++;
+	typename = g_strndup (typename, typename_end-typename);
+	return g_type_from_name (typename);
 }
 
 static void
-rhythmdb_init (RhythmDB *source)
+rhythmdb_init (RhythmDB *db)
 {
-	source->priv = g_new0 (RhythmDBPrivate, 1);
+	GEnumClass *prop_class, *unsaved_prop_class;
+	
+	db->priv = g_new0 (RhythmDBPrivate, 1);
 
-	g_static_rec_mutex_init (&source->priv->lock);
+	g_static_rec_mutex_init (&db->priv->lock);
+
+	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
+
+	db->priv->column_types = g_new (GType, RHYTHMDB_NUM_PROPERTIES);
+	
+	/* Now, extract the GType of each column from the enum descriptions,
+	 * and cache that for later use. */
+	for (i = 0; i < prop_class->n_values; i++)
+		db->priv->column_types[i] = extract_gtype_from_enum_entry (prop_class, i);
+	
+	for (; i < unsaved_prop_class->n_values; i++)
+		db->priv->column_types[i] = extract_gtype_from_enum_entry (unsaved_prop_class, i);
+	
+	g_type_class_unref (prop_class);
+	g_type_class_unref (unsaved_prop_class);
 }
 
 static void
 rhythmdb_finalize (GObject *object)
 {
-	RhythmDB *source;
+	RhythmDB *db;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_SOURCE (object));
+	g_return_if_fail (RHYTHMDB_IS (object));
 
-	source = RHYTHMDB (object);
+	db = RHYTHMDB (object);
 
-	g_return_if_fail (source->priv != NULL);
+	g_return_if_fail (db->priv != NULL);
 
-	g_static_rec_mutex_free (&source->priv->lock);
+	g_static_rec_mutex_free (&db->priv->lock);
+	g_free (model->priv->column_types);
 
-	g_free (source->priv->name);
+	g_free (db->priv->name);
 
-	g_free (source->priv);
-
+	g_free (db->priv);
+	
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
@@ -206,13 +256,16 @@ rhythmdb_unlock (RhythmDB *db)
 }
 
 RhythmDBEntry *
-rhythmdb_entry_new (RhythmDB *db)
+rhythmdb_entry_new (RhythmDB *db, enum RhythmDBEntryType type)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
+	RhythmDBEntry *ret;
 
 	g_assert (db->priv->locklevel > 0);
 
-	return klass->impl_entry_new (db);
+	ret = klass->impl_entry_new (db, type);
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, ret);
+	return ret;
 }
 
 static void
@@ -260,14 +313,14 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
 		GValue tem = {0, };
-
+		
 		g_value_init (&tem, G_TYPE_STRING);
 
 		if (g_value_get_int (value) == 0)
 			g_value_set_string (&tem, _("Never"));
 		else
 			g_value_set_string_take_ownership (&tem, eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now)));
-
+		
 		klass->impl_entry_set (db, entry,
 				       RHYTHMDB_PROP_LAST_PLAYED_STR,
 				       &tem);
@@ -291,65 +344,117 @@ void
 rhythmdb_entry_delete (RhythmDB *db, RhythmDBEntry *entry)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-
+	
 	g_assert (db->priv->locklevel > 0);
-
+	
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 	klass->impl_entry_delete (db, entry);
 }
+
+static GPtrArray *
+parse_query (va_list args)
+{
+	enum RhythmDBQueryType query;
+	GPtrArray *ret = g_ptr_array_new ();
 	
-#define DEFINE_GETTER(NAME, TYPE, GTYPE, DEFAULT) \
-TYPE \
-rhythmdb_entry_get_ ## NAME (RhythmDB *db, RhythmDBEntry *entry, guint propid) \
-{ \
-	GValue val = {0, }; \
-	TYPE retval; \
-	g_assert (db->priv->locklevel > 0); \
-	g_value_init (&val, G_TYPE_ ## GTYPE); \
-	klass->impl_entry_get (db, entry, propid, &val); \
-	retval = g_value_get_ ## TYPE (&val); \
-	g_value_unset (&val); \
-	return retval;
+	while ((query = va_arg (args, enum RhythmDBQueryType)) != RHYTHMDB_QUERY_END) {
+		struct RhythmDBQueryData *data = g_new (struct RhythmDBQueryData, 1);
+		data->type = query;
+		data->propid = va_arg (args, guint);
+		switch (query)
+		{
+		case RHYTHMDB_QUERY_HAVE_PROP:
+		case RHYTHMDB_QUERY_DISJUNCTION:
+			break;
+		case RHYTHMDB_QUERY_PROP_EQUALS:
+		case RHYTHMDB_QUERY_PROP_LIKE:
+		case RHYTHMDB_QUERY_PROP_GREATER:
+		case RHYTHMDB_QUERY_PROP_LESS:
+			data->val = g_new0 (GValue, 1);
+			g_value_copy (va_arg (args, GValue *), data->val);
+			break;
+		case RHYTHMDB_QUERY_END:
+			g_assert_not_reached ();
+			break;
+		}
+		g_ptr_array_add (ret, data);
+	}
+	return ret;
 }
 
-DEFINE_GETTER(string, const char *, STRING, NULL);
-DEFINE_GETTER(boolean, gboolean, BOOLEAN, FALSE);
-DEFINE_GETTER(pointer, gpointer, POINTER, NULL);
-DEFINE_GETTER(long, long, LONG, 0);
-DEFINE_GETTER(int, int, INT, 0);
-DEFINE_GETTER(double, double, DOUBLE, 0);
-DEFINE_GETTER(float, float, FLOAT, 0);
-#undef DEFINE_GETTER
+static void
+free_query (GPtrArray *query)
+{
+	guint i;
+	for (i = 0; i < query->len; i++) {
+		switch (query[i]->type)
+		{
+		case RHYTHMDB_QUERY_HAVE_PROP:
+		case RHYTHMDB_QUERY_DISJUNCTION:
+			break;
+		case RHYTHMDB_QUERY_PROP_EQUALS:
+		case RHYTHMDB_QUERY_PROP_LIKE:
+		case RHYTHMDB_QUERY_PROP_GREATER:
+		case RHYTHMDB_QUERY_PROP_LESS:
+			g_value_unset (query->query[i]->val);
+			break;
+		case RHYTHMDB_QUERY_END:
+			g_assert_not_reached ();
+			break;
+		}
+	}
 
-GPtrArray *
+	g_ptr_array_free (query);
+}
+
+GtkTreeModel *
 rhythmdb_do_entry_query (RhythmDB *db, ...)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-	GPtrArray *ret;
+	GtkTreeModel *ret;
+	GPtrArray *query;
 	va_list args;
 
 	g_assert (db->priv->locklevel > 0);
 
 	va_start (args);
 
-	ret = klass->impl_do_entry_query (db, args);
+	query = parse_query (args);
+
+	ret = klass->impl_do_entry_query (db, query);
+
+	free_query (query);
 	va_end (args);
 	return ret;
 }
 
-GPtrArray *
-rhythmdb_do_property_query (RhythmDB *db, const char *property, ...)
+GtkTreeModel *
+rhythmdb_do_property_query (RhythmDB *db, guint property_id, ...)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
-	GPtrArray *ret;
+	GtkTreeModel *ret;
+	GPtrArray *query;
 	va_list args;
 
 	g_assert (db->priv->locklevel > 0);
 
 	va_start (args);
 
-	ret = klass->impl_do_property_query (db, property, args);
+	query = parse_query (args);
+
+	ret = klass->impl_do_property_query (db, property_id, query);
+
+	free_query (query);
 	va_end (args);
 	return ret;
+}
+
+GType rhythmdb_get_property_type (RhythmDB *db, guint property_id)
+{
+	g_return_val_if_fail (property_id >= 0 && property_id < RHYTHMDB_NUM_PROPERTIES,
+			      G_TYPE_INVALID);
+
+	return db->priv->column_types[property_id];
 }
 
 /* This should really be standard. */
@@ -437,3 +542,27 @@ rhythmdb_unsaved_prop_get_type (void)
 
 	return etype;
 }
+
+#define DEFINE_GETTER(NAME, TYPE, GTYPE, DEFAULT)	\
+TYPE \
+rhythmdb_entry_get_ ## NAME (RhythmDB *db, RhythmDBEntry *entry, guint propid) \
+{ \
+	GValue val = {0, }; \
+	TYPE retval; \
+	g_assert (db->priv->locklevel > 0); \
+	g_value_init (&val, G_TYPE_ ## GTYPE); \
+	klass->impl_entry_get (db, entry, propid, &val); \
+	retval = g_value_get_ ## TYPE (&val); \
+	g_value_unset (&val); \
+	return retval;
+}
+
+DEFINE_GETTER(string, const char *, STRING, NULL);
+DEFINE_GETTER(boolean, gboolean, BOOLEAN, FALSE);
+DEFINE_GETTER(pointer, gpointer, POINTER, NULL);
+DEFINE_GETTER(long, long, LONG, 0);
+DEFINE_GETTER(int, int, INT, 0);
+DEFINE_GETTER(double, double, DOUBLE, 0);
+DEFINE_GETTER(float, float, FLOAT, 0);
+#undef DEFINE_GETTER
+

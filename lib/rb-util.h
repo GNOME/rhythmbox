@@ -29,6 +29,8 @@ G_BEGIN_DECLS
 gboolean rb_true_function (gpointer dummy, ...);
 gboolean rb_false_function (gpointer dummy, ...);
 
+gboolean rb_gvalue_compare (GValue *a, GValue *b);
+
 G_END_DECLS
 
 #endif /* __RB_UTIL_H */

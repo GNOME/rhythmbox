@@ -102,7 +102,7 @@ rb_source_get_type (void)
 
 		rb_source_type = g_type_register_static (GTK_TYPE_HBOX,
 						       "RBSource",
-						       &our_info, 0);
+						       &our_info, G_TYPE_ABSTRACT);
 	}
 
 	return rb_source_type;

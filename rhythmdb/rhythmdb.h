@@ -23,6 +23,9 @@
 
 G_BEGIN_DECLS
 
+#include <glib-object.h>
+#include <stdarg.h>
+
 #define RHYTHMDB_TYPE      (rhythmdb_get_type ())
 #define RHYTHMDB(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RHYTHMDB_TYPE, RhythmDB))
 #define RHYTHMDB_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RHYTHMDB_TYPE, RhythmDBClass))
@@ -32,13 +35,21 @@ G_BEGIN_DECLS
 
 enum
 {
+	RHYTHMDB_ENTRY_TYPE_SONG,
+	RHYTHMDB_ENTRY_TYPE_IRADIO_STATION
+} RhythmDBEntryType;
+
+enum
+{
 	RHYTHMDB_QUERY_END,
-	RHYTHMDB_QUERY_HAVE_PROP,
+	RHYTHMDB_QUERY_DISJUNCTION,
 	RHYTHMDB_QUERY_PROP_EQUALS,
 	RHYTHMDB_QUERY_PROP_LIKE,
 	RHYTHMDB_QUERY_PROP_GREATER,
 	RHYTHMDB_QUERY_PROP_LESS,
 } RhythmDBQueryType;
+
+#define RHYTHMDB_NUM_PROPERTIES 19
 
 enum
 {
@@ -60,7 +71,7 @@ enum
 
 enum
 {
-	RHYTHMDB_PROP_NAME_SORT_KEY,
+	RHYTHMDB_PROP_NAME_SORT_KEY = 15,
 	RHYTHMDB_PROP_GENRE_SORT_KEY,
 	RHYTHMDB_PROP_ARTIST_SORT_KEY,
 	RHYTHMDB_PROP_ALBUM_SORT_KEY,
@@ -74,6 +85,12 @@ GType rhythmdb_unsaved_prop_get_type (void);
 #define RHYTHMDB_TYPE_QUERY (rhythmdb_query_get_type ())
 #define RHYTHMDB_TYPE_PROP (rhythmdb_prop_get_type ())
 #define RHYTHMDB_TYPE_UNSAVED_PROP (rhythmdb_unsaved_prop_get_type ())
+
+struct {
+	guint type;
+	guint propid;
+	GValue *val;
+} RhythmDBQueryData;
 
 typedef void RhythmDBEntry;
 
@@ -93,18 +110,18 @@ typedef struct
 	void	(*entry_added)		(RhythmDBEntry *entry);
 
 	/* virtual methods */
-	RhythmDBEntry *	(*rhythmdb_entry_new)	(RhythmDB *db);
+	RhythmDBEntry *	(*impl_entry_new)	(RhythmDB *db, enum RhythmDBEntryType type);
 
-	void		(*rhythmdb_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
+	void		(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, GValue *value);
 
-	void		(*rhythmdb_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,
+	void		(*impl_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, GValue *value);
 
-	void		(*rhythmdb_entry_delete)(RhythmDB *db, RhythmDBEntry *entry);
+	void		(*impl_entry_delete)	(RhythmDB *db, RhythmDBEntry *entry);
 
-	GPtrArray *	(*rhythmdb_do_entry_query)(RhythmDB *db, va_list args);
-	GPtrArray *	(*rhythmdb_do_property_query)(RhythmDB *db, const char *property, va_list args);
+	GPtrArray *	(*impl_do_entry_query)	(RhythmDB *db, GPtrArray *query);
+	GPtrArray *	(*impl_do_property_query)(RhythmDB *db, guint property_id, GPtrArray *query);
 
 } RhythmDBClass;
 
@@ -118,7 +135,7 @@ void		rhythmdb_lock		(RhythmDB *db);
 
 void		rhythmdb_unlock		(RhythmDB *db);
 
-RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db);
+RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, enum RhythmDBEntryType type);
 
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
@@ -150,7 +167,8 @@ gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
 						 RhythmDBEntry *entry,
 						 guint property_id);
 
-/* This returns a freshly allocated GtkTreeModel which represents the query.
+/**
+ * Returns a freshly allocated GtkTreeModel which represents the query.
  * The extended arguments alternate between RhythmDBQueryType args
  * and their values.  Here's an example:
  *
@@ -162,7 +180,7 @@ gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
  * issue below.
  *
  */
-GPtrArray *	rhythmdb_do_entry_query		(RhythmDB *db, ...);
+GtkTreeModel *	rhythmdb_do_entry_query			(RhythmDB *db, ...);
 
 /* This is a specialized query to return a flat list of metadata,
  * e.g. genre/artist/album.  The varargs are the same as for the
@@ -170,7 +188,9 @@ GPtrArray *	rhythmdb_do_entry_query		(RhythmDB *db, ...);
  * as constructing a list of all entries which match the query, and then
  * returning the values of the attribute as a set.
  */
-GPtrArray *	rhythmdb_do_property_query	(RhythmDB *db, const char *property, ...);
+GtkTreeModel *	rhythmdb_do_property_query		(RhythmDB *db, guint property_id, ...);
+
+GType		rhythmdb_get_property_type		(RhythmDB *db, guint property_id);
 
 G_END_DECLS
 

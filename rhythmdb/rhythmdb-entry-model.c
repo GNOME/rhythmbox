@@ -45,9 +45,6 @@ struct RhythmDBEntryModelPrivate
 
 	guint stamp;
 
-	guint n_columns;
-	GType *column_types;
-
 	GPtrArray *entries;
 };
 
@@ -143,8 +140,10 @@ rhythmdb_entry_model_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_RHYTHMDB:
+	{
 		source->priv->db = g_value_get_object (value);
 		break;
+	}
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -170,53 +169,16 @@ rhythmdb_get_property (GObject *object,
 	}
 }
 
-static GType
-extract_gtype_from_enum_entry (GEnumClass *klass, guint i)
-{
-	GEnumValue *value;
-	char *typename;
-	char *typename_end;
-	
-	value = g_enum_get_value (klass, i);
-	typename = strstr (value->value_nick, "(");
-	g_return_val_if_fail (typename != NULL, G_TYPE_INVALID);
-
-	typename_end = strstr (typename, ")");
-	typename++;
-	typename = g_strndup (typename, typename_end-typename);
-	return g_type_from_name (typename);
-}
-
 static void
 rhythmdb_entry_model_init (RhythmDBEntryModel *model)
 {
 	GtkWidget *align;
-	GEnumClass *enum_class;
 	int i;
 
 	model->priv = g_new0 (RhythmDBEntryModelPrivate, 1);
 
 	model->priv->stamp = g_random_int ();
   
-	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
-	unsaved_prop_class = g_type_class_ref (RHYTHMDB_TYPE_UNSAVED_PROP);
-
-	/* First figure out how many columns we should have */
-	model->priv->n_columns = prop_class->n_values + unsaved_prop_class->n_values;
-
-	model->priv->column_types = g_new (GType, model->priv->n_columns);
-
-	/* Now, extract the GType of each column from the enum descriptions,
-	 * and cache that for later use. */
-	for (i = 0; i < prop_class->n_values; i++)
-		model->priv->column_types[i] = extract_gtype_from_enum_entry (prop_class, i);
-	
-	for (; i < unsaved_prop_class->n_values; i++)
-		model->priv->column_types[i] = extract_gtype_from_enum_entry (unsaved_prop_class, i);
-
-	g_type_class_unref (prop_class);
-	g_type_class_unref (unsaved_prop_class);
-
 }
 
 static void
@@ -231,7 +193,6 @@ rhythmdb_entry_model_finalize (GObject *object)
 
 	g_return_if_fail (model->priv != NULL);
 
-	g_free (model->priv->column_types);
 	g_free (model->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -247,6 +208,20 @@ rhythmdb_entry_model_new (void)
 	return model;
 }
 
+static void
+insert_hash_entry (RhythmDBEntry *entry, gpointer unused, RhythmDBEntryModel *model)
+{
+	g_ptr_array_add (model->priv->entries, entry);
+}
+
+RhythmDB *
+rhythmdb_entry_model_new_from_hash (GHashTable *table)
+{
+	RhythmDBEntryModel *model = rhythmdb_entry_model_new ();
+	
+	g_hash_table_foreach (table, insert_hash_entry, model);
+}
+
 static GtkTreeModelFlags
 rhythmdb_entry_model_get_flags (GtkTreeModel *model)
 {
@@ -258,19 +233,15 @@ rhythmdb_entry_model_get_n_columns (GtkTreeModel *tree_model)
 {
 	RhythmDBEntryModel *model = RHYTHMDB_ENTRY_MODEL (tree_model);
 
-	return model->n_columns;
+	return RHYTHMDB_NUM_PROPERTIES;
 }
 
 static GType
-rhythmdb_entry_model_get_column_type (GtkTreeModel *tree_model,
-				      gint          index)
+rhythmdb_entry_model_get_column_type (GtkTreeModel *tree_model, int index)
 {
 	RhythmDBEntryModel *model = RHYTHMDB_ENTRY_MODEL (tree_model);
 
-	g_return_val_if_fail (index >= 0 && index < model->priv->n_columns,
-			      G_TYPE_INVALID);
-
-	return model->priv->column_types[index];
+	return rhythmdb_get_property_type (model->priv->db, index);
 }
 
 static gboolean
@@ -315,7 +286,7 @@ rhythmdb_entry_model_get_value (GtkTreeModel *tree_model, GtkTreeIter *iter,
 {
 	RhythmDBEntryModel *model = RHYTHMDB_ENTRY_MODEL (tree_model);
 
-	g_return_if_fail (column < model->priv->n_columns);
+	g_return_if_fail (column < RHYTHMDB_NUM_PROPERTIES);
 	g_return_if_fail (model->priv->stamp == iter->stamp);
 
 	g_value_init (value, model->priv->column_types[column]);
