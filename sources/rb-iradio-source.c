@@ -657,8 +657,8 @@ static void
 rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 {
 	RhythmDBQueryModel *query_model;
+	RhythmDBPropertyModel *genre_model;
 	GtkTreeModel *model;
-	GPtrArray *genre_query;
 	GPtrArray *query;
 
 	rhythmdb_read_lock (source->priv->db);
@@ -686,13 +686,20 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 				       RHYTHMDB_QUERY_END);
 	}
 
+	query_model = rhythmdb_query_model_new_empty (source->priv->db);
+
 	if (qtype < RB_IRADIO_QUERY_TYPE_GENRE) {
 		rb_property_view_reset (source->priv->genres);
 		g_free (source->priv->selected_genre);
 		source->priv->selected_genre = NULL;
-	}
+	} 
 
-	genre_query = rhythmdb_query_copy (query);
+	genre_model = rb_property_view_get_model (source->priv->genres);
+
+	if (qtype < RB_IRADIO_QUERY_TYPE_GENRE) {
+		g_object_set (G_OBJECT (genre_model), "query-model", query_model, NULL);
+	} else
+		g_object_set (G_OBJECT (genre_model), "query-model", NULL, NULL);
 
 	if (source->priv->selected_genre)
 		rhythmdb_query_append (source->priv->db,
@@ -702,18 +709,15 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 				       source->priv->selected_genre,
 				       RHYTHMDB_QUERY_END);
 
-	query_model = rhythmdb_query_model_new_empty (source->priv->db);
-
 	model = GTK_TREE_MODEL (query_model);
 	
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 
 	rhythmdb_do_full_query_parsed (source->priv->db, model, query);
-/* 	if (qtype >= RB_IRADIO_QUERY_TYPE_GENRE) */
-/* 		g_signal_handler_unblock (G_OBJECT (source->priv->stations), */
-/* 					  source->priv->genre_add_handler_id); */
 
-	rhythmdb_query_free (genre_query);
+	if (qtype >= RB_IRADIO_QUERY_TYPE_GENRE)
+		g_object_set (G_OBJECT (genre_model), "query-model", query_model, NULL);
+
 	rhythmdb_query_free (query);
 
 	rhythmdb_read_unlock (source->priv->db);
