@@ -19,6 +19,8 @@
  *
  */
 
+#include <config.h>
+
 #include <gtk/gtktreeview.h>
 #include <string.h>
 #include "itunesdb.h"
@@ -56,20 +58,11 @@ static gchar *rb_ipod_get_mount_path (GnomeVFSVolume *volume);
 
 static void rb_ipod_monitor (RBiPodSource *source, gboolean enable);
 #ifdef HAVE_HAL
-static gboolean ipod_itunesdb_monitor_hal (RBiPodSource *source,
-					   gboolean enable);
+static gboolean hal_udi_is_ipod (const char *udi);
 #endif
 
 struct RBiPodSourcePrivate
 {
-#ifdef HAVE_HAL
-	LibHalContext *hal_ctxt;
-#else
-	/* This is a bit ugly, but this avoids bloating rb_ipod_plugged and 
-	 * rb_ipod_unplugged with #ifdef
-	 */
-	gpointer hal_ctxt;
-#endif
 	GnomeVFSVolume *ipod_volume;
 	iPodParser *parser;
 	gchar *ipod_mount_path;
@@ -143,12 +136,6 @@ static void
 rb_ipod_monitor (RBiPodSource *source, gboolean enable)
 {
 	GnomeVFSVolumeMonitor *monitor;
-
-#ifdef HAVE_HAL
-	if (ipod_itunesdb_monitor_hal (source, enable) != FALSE) {
-		return;
-	}
-#endif
 	
 	monitor = gnome_vfs_get_volume_monitor ();
 
@@ -403,13 +390,9 @@ rb_ipod_plugged (RBiPodSource *source,
 		return;
 	}
 
-	if (source->priv->hal_ctxt == NULL) {
-		source->priv->ipod_volume = volume;
-		source->priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
-		gnome_vfs_volume_ref (volume);
-	}  else {
-		source->priv->ipod_mount_path = g_strdup (mount_path);
-	}
+	source->priv->ipod_volume = volume;
+	source->priv->ipod_mount_path = rb_ipod_get_mount_path (volume);
+	gnome_vfs_volume_ref (volume);
 	g_object_set (G_OBJECT (source), "visibility", TRUE, NULL);	
 	rb_ipod_load_songs (source);
 	/* FIXME: should we suspend this monitor until the iPod 
@@ -424,10 +407,8 @@ rb_ipod_unplugged (RBiPodSource *source)
 	
 	g_assert (source->priv->ipod_mount_path != NULL);
 
-	if (source->priv->hal_ctxt == NULL) {
-		source->priv->ipod_volume = NULL;
-		gnome_vfs_volume_unref (source->priv->ipod_volume);
-	}
+	source->priv->ipod_volume = NULL;
+	gnome_vfs_volume_unref (source->priv->ipod_volume);
 	g_free (source->priv->ipod_mount_path);
 	source->priv->ipod_mount_path = NULL;
 	g_object_set (G_OBJECT (source), "visibility", FALSE, NULL);
@@ -483,10 +464,23 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 {
 	gchar *itunesdb_path;
 	gboolean result = FALSE;
-
+#ifdef HAVE_HAL
+	gchar *udi;
+#endif
 	if (gnome_vfs_volume_get_volume_type (volume) != GNOME_VFS_VOLUME_TYPE_MOUNTPOINT) {
 		return FALSE;
 	}
+
+#ifdef HAVE_HAL
+	udi = gnome_vfs_volume_get_hal_udi (volume);
+	if (udi != NULL) {
+		gboolean result;
+
+		result = hal_udi_is_ipod (udi);
+		g_free (udi);
+		return result;
+	}
+#endif
 	
 	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
 	result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
@@ -528,51 +522,21 @@ rb_ipod_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 
 
 #ifdef HAVE_HAL
-static void
-hal_mainloop_integration (LibHalContext *ctx,
-		DBusConnection * dbus_connection)
+
+static gboolean
+hal_udi_is_ipod (const char *udi)
 {
-	dbus_connection_setup_with_g_main (dbus_connection, NULL);
-}
-
-static void
-hal_check_udi (LibHalContext *ctx, const char *udi)
-{
-	dbus_bool_t val;
-	RBiPodSource *source;
-	gchar *mount_path = NULL;
-
-	source = hal_ctx_get_user_data (ctx);
-
-	val = hal_device_get_property_bool (ctx, udi,
-			"volume.is_mounted");
-
-	if (val != FALSE) {
-		g_message ("Mounted: %s\n", udi);
-		mount_path = hal_device_get_property_string (ctx,
-				       udi, "volume.mount_point");
-	}
-
-	source = hal_ctx_get_user_data (ctx);
-
-	if (val) {
-		rb_ipod_plugged (source, mount_path, NULL);
-	} else {
-		rb_ipod_unplugged (source);
-	}
-}
-
-static void
-hal_property_modified (LibHalContext *ctx,
-		const char *udi,
-		const char *key,
-		dbus_bool_t is_removed,
-		dbus_bool_t is_added)
-{
+	LibHalContext *ctx;
 	char *parent_udi, *parent_name;
+	gboolean result;
 
-	if (g_strcasecmp (key, "volume.is_mounted") != 0) {
-		return;
+	result = FALSE;
+	ctx = hal_initialize (NULL, FALSE);
+	if (ctx == NULL) {
+		/* FIXME: should we return an error somehow so that we can 
+		 * fall back to a check for iTunesDB presence instead ?
+		 */
+		return FALSE;
 	}
 
 	parent_udi = hal_device_get_property_string (ctx, udi,
@@ -582,104 +546,13 @@ hal_property_modified (LibHalContext *ctx,
 	g_free (parent_udi);
 
 	if (parent_name != NULL && strcmp (parent_name, "iPod") == 0) {
-		hal_check_udi (ctx, udi);
+		result = TRUE;
 	}
 
 	g_free (parent_name);
+	hal_shutdown (ctx);
+
+	return result;
 }
 
-static void
-hal_find_existing (LibHalContext *ctx)
-{
-	int i;
-	int num_devices;
-	char **devices_names;
-	char *parent_udi;
-
-	parent_udi = NULL;
-	devices_names = hal_manager_find_device_string_match (ctx,
-			"info.product", "iPod", &num_devices);
-
-	for (i = 0; i < num_devices; i++)
-	{
-		char *string;
-
-		string = hal_device_get_property_string (ctx,
-				devices_names[i], "storage.drive_type");
-		if (string == NULL || strcmp (string, "disk") != 0) {
-			g_free (string);
-			continue;
-		}
-		g_free (string);
-
-		parent_udi = hal_device_get_property_string (ctx,
-				devices_names[i], "info.udi");
-		break;
-	}
-
-	g_message ("found iPod");
-
-	g_strfreev (devices_names);
-
-	if (parent_udi == NULL) {
-		return;
-	}
-
-	devices_names = hal_manager_find_device_string_match (ctx,
-			"info.parent", parent_udi, &num_devices);
-
-	g_free (parent_udi);
-
-	for (i = 0; i < num_devices; i++)
-	{
-		gboolean mounted;
-
-		mounted = hal_device_get_property_bool (ctx,
-				devices_names[i], "volume.is_mounted");
-		if (mounted != FALSE) {
-			g_message ("found udi %s", devices_names[i]);
-			hal_check_udi (ctx, devices_names[i]);
-			break;
-		}
-	}
-
-	g_strfreev (devices_names);
-}
-
-static gboolean
-ipod_itunesdb_monitor_hal (RBiPodSource *source, gboolean enable)
-{
-	if (enable) {
-		LibHalFunctions hal_functions = {
-			hal_mainloop_integration,
-			NULL, /* hal_device_added */
-			NULL, /* hal_device_removed */
-			NULL, /* hal_device_new_capability */
-			NULL, /* hal_device_lost_capability */
-			hal_property_modified,
-			NULL  /* hal_device_condition */
-		};
-
-		source->priv->hal_ctxt = hal_initialize (&hal_functions, FALSE);
-		if (source->priv->hal_ctxt == NULL) {
-			return FALSE;
-		}
-
-		if (hal_device_property_watch_all (source->priv->hal_ctxt)) {
-			return FALSE;
-		}
-
-		hal_ctx_set_user_data (source->priv->hal_ctxt, source);
-
-		hal_find_existing (source->priv->hal_ctxt);
-	} else {
-		if (source->priv->hal_ctxt == NULL) {
-			return FALSE;
-		}
-		hal_shutdown (source->priv->hal_ctxt);
-		source->priv->hal_ctxt = NULL;
-	}
-
-	return TRUE;
-}
 #endif /* HAVE_HAL */

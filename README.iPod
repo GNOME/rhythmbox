@@ -1,14 +1,16 @@
 How to build and use Rhythmbox with iPod support:
 
 * configure Rhythmbox with --enable-ipod
-* mount your ipod to /mnt/ipod (or create a /apps/qahog/mount_path gconf key
-  containing the path where your iPod is mounted)
+* plug and mount your ipod (unless it's done automatically)
 * your iPod songs should appear in the iPod source from the sidebar
+
+The iPod support can optionally use HAL to detect your iPod. A version of 
+gnome-vfs compiled against HAL is needed for that to work (ie gnome-vfs 2.7.4 
+or later is needed, and it must be compiled with --enable-hal).
 
 
 FIXME/TODO:
 
-* Show/Hide the iPod source icon according to iPod presence
 * Add some UI to "Eject iPod" (this will perform a "stop" to close the current
   file)
 * Detect song type to avoid adding songs we can't play to the library
@@ -16,6 +18,7 @@ FIXME/TODO:
 
 Long term:
 * Monitor changes in the iTunesDB and properly update song display
-* Copy songs from and to the iPod
+* Copy songs from and to the iPod => copying song from the iPod seems to work
+  actually, dragging from the iPod to Nautilus works.
 
 arch-tag: explains the non obvious steps to get the iPod working together with Rhythmbox

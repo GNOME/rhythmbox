@@ -33,6 +33,8 @@ else
 fi	
 
 dnl iPod support
+dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
+dnl function was added in that release.
 dnl enable_ipod = "no"
 
 HAL_REQUIRED=0.2.92
@@ -46,7 +48,7 @@ if test x"$enable_ipod" = xyes; then
 	USE_HAL=""
 	PKG_CHECK_MODULES(HAL, hal,
 		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
-		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
+		[ USE_HAL="gnome-vfs-2.0 >= 2.7.4 dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
 fi
 
 
