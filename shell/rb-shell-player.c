@@ -31,6 +31,12 @@
 #include <libgnome/gnome-i18n.h>
 #include <monkey-media.h>
 
+#ifdef HAVE_MMKEYS
+#include <X11/Xlib.h>
+#include <X11/XF86keysym.h>
+#include <gdk/gdkx.h>
+#endif /* HAVE_MMKEYS */
+
 #include "rb-shell-player.h"
 #include "rb-stock-icons.h"
 #include "rb-glade-helpers.h"
@@ -135,6 +141,14 @@ static void cancel_buffering_clicked_cb (GtkWidget *button,
 					 gpointer data);
 void buffering_end_cb (MonkeyMediaPlayer *player, gpointer data);
 void buffering_begin_cb (MonkeyMediaPlayer *player, gpointer data);
+
+#ifdef HAVE_MMKEYS
+static void grab_mmkey (int key_code, GdkWindow *root);
+static GdkFilterReturn filter_mmkeys (GdkXEvent *xevent,
+				      GdkEvent *event,
+				      gpointer data);
+static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
+#endif /* HAVE_MMKEYS */
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
@@ -411,6 +425,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	eel_gconf_notification_add (CONF_STATE,
 				    (GConfClientNotifyFunc) rb_shell_player_state_changed_cb,
 				    player);
+
+#ifdef HAVE_MMKEYS
+	/* Enable Multimedia Keys */
+	rb_shell_player_init_mmkeys (player);
+#endif /* HAVE_MMKEYS */
 }
 
 static void
@@ -1576,3 +1595,113 @@ rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
 	return shell_player->priv->url;
 }
 
+#ifdef HAVE_MMKEYS
+static void
+grab_mmkey (int key_code, GdkWindow *root)
+{
+	gdk_error_trap_push ();
+
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  0,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod2Mask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod5Mask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  LockMask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod2Mask | Mod5Mask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod2Mask | LockMask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod5Mask | LockMask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	XGrabKey (GDK_DISPLAY (), key_code,
+		  Mod2Mask | Mod5Mask | LockMask,
+		  GDK_WINDOW_XID (root), True,
+		  GrabModeAsync, GrabModeAsync);
+	
+	gdk_flush ();
+        if (gdk_error_trap_pop ()) {
+		rb_debug ("Error grabbing key");
+	}
+}
+
+static GdkFilterReturn
+filter_mmkeys (GdkXEvent *xevent, GdkEvent *event, gpointer data)
+{
+	XEvent *xev;
+	XKeyEvent *key;
+	RBShellPlayer *player;
+
+	xev = (XEvent *) xevent;
+	if (xev->type != KeyPress) {
+		return GDK_FILTER_CONTINUE;
+	}
+
+	key = (XKeyEvent *) xevent;
+
+	player = (RBShellPlayer *)data;
+
+	if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay) == key->keycode) {	
+		rb_shell_player_playpause (player);
+		return GDK_FILTER_REMOVE;
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop) == key->keycode) {
+		rb_shell_player_set_playing_source (player, NULL);
+		return GDK_FILTER_REMOVE;		
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev) == key->keycode) {
+		rb_shell_player_do_previous (player);
+		return GDK_FILTER_REMOVE;		
+	} else if (XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext) == key->keycode) {
+		rb_shell_player_do_next (player);
+		return GDK_FILTER_REMOVE;
+	} else {
+		return GDK_FILTER_CONTINUE;
+	}
+}
+
+static void
+rb_shell_player_init_mmkeys (RBShellPlayer *shell_player)
+{
+	gint keycodes[] = {0, 0, 0, 0};
+	GdkDisplay *display;
+	GdkScreen *screen;
+	GdkWindow *root;
+	guint i, j;
+
+	keycodes[0] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPlay);
+	keycodes[1] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioStop);
+	keycodes[2] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioPrev);
+	keycodes[3] = XKeysymToKeycode (GDK_DISPLAY (), XF86XK_AudioNext);
+
+	display = gdk_display_get_default ();
+
+	for (i = 0; i < gdk_display_get_n_screens (display); i++) {
+		screen = gdk_display_get_screen (display, i);
+
+		if (screen != NULL) {
+			root = gdk_screen_get_root_window (screen);
+
+			for (j = 0; j < 4 ; j++) {
+				grab_mmkey (keycodes[j], root);
+			}
+
+			gdk_window_add_filter (root, filter_mmkeys,
+					       (gpointer) shell_player);
+		}
+	}
+}
+#endif /* HAVE_MMKEYS */

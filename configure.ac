@@ -222,6 +222,13 @@ if test x"$enable_musicbrainz" = xyes; then
 fi
 AM_CONDITIONAL(HAVE_MUSICBRAINZ,test "x$enable_musicbrainz" = "xyes")
 
+dnl Multimedia Keys support 
+AC_ARG_ENABLE(mmkeys, AC_HELP_STRING([--disable-mmkeys],
+					[build with Multimedia Keys support]))
+if test x"$enable_mmkeys" != xno; then
+	AC_DEFINE(HAVE_MMKEYS, 1, [define if Multimedia Keys are enabled])
+fi
+
 dnl CD Audio support		  
 dnl AC_ARG_ENABLE(audiocd, AC_HELP_STRING([--enable-audiocd],
 dnl				[build with Audio CD support]),enable_audiocd=yes)
