@@ -308,6 +308,7 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (infobox), artist_box,
 			    TRUE, TRUE, 0);
 
+	/* TRANSLATOR: [song_label] by [artist] */
 	label = gtk_label_new (_("by "));
 	gtk_box_pack_start (GTK_BOX (artist_box), label,
 			    FALSE, FALSE, 0);
