@@ -1,6 +1,20 @@
 2003-08-08  Colin Walters  <walters@verbum.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
+	(root_child_removed_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (root_child_removed_cb):
+	* shell/rb-statusbar.c: (rb_statusbar_finalize),
+	(rb_statusbar_status_changed_cb):
+
+	Back out previous patch :/  It introduced some instability
+	on saving.  I'll think the patch was a step in the right
+	direction though, so hopefully once we figure out the
+	issue we can re-apply.
+
+2003-08-08  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),
 	(playing_node_destroyed_cb), (root_child_removed_cb):
 	* lib/widgets/rb-tree-model-node.c:
 	(rb_tree_model_node_set_property), (playing_node_destroyed_cb),

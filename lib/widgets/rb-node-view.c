@@ -95,7 +95,6 @@ static void gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
-static void playing_node_destroyed_cb (RBNode *node, RBNodeView *view);
 static void root_child_removed_cb (RBNode *root,
 			           RBNode *child,
 				   guint last_index,
@@ -164,8 +163,6 @@ struct RBNodeViewPrivate
 	GList *search_columns;
 
 	gboolean idle;
-
-	guint playing_node_destroyed_sigid;
 };
 
 enum
@@ -403,27 +400,14 @@ rb_node_view_set_property (GObject *object,
 		view->priv->root = g_value_get_pointer (value);
 		break;
 	case PROP_PLAYING_NODE:
-	{
-		RBNode *old = rb_node_view_get_playing_node (view);
-		RBNode *new = g_value_get_pointer (value);
-
-		if (old)
-			rb_node_signal_disconnect (old, view->priv->playing_node_destroyed_sigid);
-
-		if (new)
-			view->priv->playing_node_destroyed_sigid = 
-				rb_node_signal_connect_object (new,
-							       RB_NODE_DESTROY,
-							       (RBNodeCallback) playing_node_destroyed_cb,
-							       G_OBJECT (view));
+		g_assert (view->priv->nodemodel != NULL);
 
 		g_object_set_property (G_OBJECT (view->priv->nodemodel),
 			               "playing-node", value);
 
 		if (view->priv->idle)
 			rb_node_view_scroll_to_node (view, g_value_get_pointer (value));
-	}
-	break;
+		break;
 	case PROP_VIEW_DESC_FILE:
 		g_free (view->priv->view_desc_file);
 		view->priv->view_desc_file = g_strdup (g_value_get_string (value));
@@ -1597,21 +1581,20 @@ rb_node_view_timeout_cb (RBNodeView *view)
 	return TRUE;
 }
 
-
-static void
-playing_node_destroyed_cb (RBNode *node, RBNodeView *view)
-{
-	rb_debug ("emitting playing node removed");
-	g_signal_emit (G_OBJECT (view), rb_node_view_signals[PLAYING_NODE_REMOVED],
-		       0, node);
-}
-
 static void
 root_child_removed_cb (RBNode *root,
 		       RBNode *child,
 		       guint last_index,
 		       RBNodeView *view)
 {
+	/* playing node bit */
+	if (child == rb_node_view_get_playing_node (view)) {
+		g_signal_emit (G_OBJECT (view),
+			       rb_node_view_signals[PLAYING_NODE_REMOVED],
+			       0,
+			       child);
+	}
+
 	/* selection bit */
 	if (view->priv->keep_selection == FALSE)
 		return;
