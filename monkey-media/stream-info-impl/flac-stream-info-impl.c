@@ -327,6 +327,7 @@ FLAC_metadata_callback (const FLAC__StreamDecoder *decoder, const FLAC__StreamMe
 		{
 			FLAC__StreamMetadata_VorbisComment_Entry entry = vc_block->comments[c];
 			char *null_terminated_comment = malloc (entry.length + 1);
+                        gchar* upcase_fieldname;
 			gchar** parts;
 
 			memcpy (null_terminated_comment, entry.entry, entry.length);
@@ -334,16 +335,22 @@ FLAC_metadata_callback (const FLAC__StreamDecoder *decoder, const FLAC__StreamMe
 			parts = g_strsplit (null_terminated_comment, "=", 2);
 
 			if (parts[0] == NULL || parts[1] == NULL)
-			{
-				g_strfreev (parts);
-				continue;
-			}
+				goto free_continue;
+
+			/* Make sure the fieldname is uppercase */
+			upcase_fieldname = g_utf8_strup (parts[0], -1);
+			if (upcase_fieldname == NULL)
+				goto free_continue;
+
+			g_free (parts[0]);
+			parts[0] = upcase_fieldname;
 
 			/* if an earlier comment had this same key name, it will be replaced.
 			 * a possible improvement is to make the values of the hash table
 			 * lists of strings instead of single strings. */
 			g_hash_table_insert (vorbis_comments, g_strdup (parts[0]), g_strdup (parts[1]));
 
+		free_continue:
 			g_strfreev (parts);
 			free (null_terminated_comment);
 		}
