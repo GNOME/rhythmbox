@@ -594,7 +594,7 @@ rb_shell_player_finalize (GObject *object)
 
 	g_object_unref (G_OBJECT (player->priv->play_order));
 
-	g_object_unref (player->priv->tooltips);
+	gtk_object_destroy (GTK_OBJECT (player->priv->tooltips));
 
 	if (player->priv->remote != NULL)
 		g_object_unref (G_OBJECT (player->priv->remote));
