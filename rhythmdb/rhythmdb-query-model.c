@@ -426,6 +426,13 @@ rhythmdb_query_model_finalize (GObject *object)
 	if (model->priv->query)
 		rhythmdb_query_free (model->priv->query);
 
+	{
+		struct RhythmDBQueryModelUpdate *update;
+		while ((update = g_async_queue_try_pop (model->priv->pending_updates)) != NULL) {
+			g_free (update);
+		}
+	}
+
 	g_async_queue_unref (model->priv->pending_updates);
 
 	g_free (model->priv);

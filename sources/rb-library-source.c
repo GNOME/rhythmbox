@@ -365,6 +365,10 @@ rb_library_source_finalize (GObject *object)
 
 	rb_debug ("finalizing library source");
 
+	g_free (source->priv->status);
+	g_free (source->priv->artist);
+	g_free (source->priv->album);
+
 	g_free (source->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);

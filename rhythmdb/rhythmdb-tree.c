@@ -507,6 +507,9 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		rhythmdb_tree_entry_insert (ctx->db, ctx->entry, type,
 					    uri, ctx->genrename, ctx->artistname,
 					    ctx->albumname);
+		g_free (ctx->genrename);
+		g_free (ctx->artistname);
+		g_free (ctx->albumname);
 
 		rhythmdb_emit_entry_restored (RHYTHMDB (ctx->db), ctx->entry);
 
@@ -1322,7 +1325,7 @@ evaluate_conjunctive_subquery (RhythmDBTree *db, GPtrArray *query,
 									       entry)) {
 					matched = TRUE;
 				}
-				g_ptr_array_free (tem->data, FALSE);
+				g_ptr_array_free (tem->data, TRUE);
 			}
 			g_list_free (conjunctions);
 			if (!matched)
@@ -1470,7 +1473,7 @@ conjunctive_query_albums (const char *name, RhythmDBTreeProperty *artist,
 		if (album != NULL) {
 				conjunctive_query_songs (album->name, album, data);
 		}
-		g_ptr_array_free (data->query, FALSE);
+		g_ptr_array_free (data->query, TRUE);
 		data->query = oldquery;
 		return;
 	} 
@@ -1510,7 +1513,7 @@ conjunctive_query_artists (const char *name, RhythmDBTreeProperty *genre,
 		if (artist != NULL) {
 			conjunctive_query_albums (artist->name, artist, data);
 		}
-		g_ptr_array_free (data->query, FALSE);
+		g_ptr_array_free (data->query, TRUE);
 		data->query = oldquery;
 		return;
 	} 
@@ -1553,7 +1556,7 @@ conjunctive_query_genre (RhythmDBTree *db, GHashTable *genres,
 		if (genre != NULL) {
 			conjunctive_query_artists (genre->name, genre, data);
 		} 
-		g_ptr_array_free (data->query, FALSE);
+		g_ptr_array_free (data->query, TRUE);
 		data->query = oldquery;
 		return;
 	} 
