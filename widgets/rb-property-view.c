@@ -454,7 +454,7 @@ rb_property_view_poll_model (RBPropertyView *view)
 	GTimeVal timeout;
 
 	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC/2);
+	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
 
 	GDK_THREADS_ENTER ();
 

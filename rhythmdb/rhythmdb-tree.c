@@ -41,6 +41,7 @@
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
 #include "rb-util.h"
+#include "rb-file-helpers.h"
 #include "rb-atomic.h"
 #include "rb-string-helpers.h"
 
@@ -610,7 +611,8 @@ rhythmdb_tree_load (RhythmDB *rdb, GMutex *mutex, gboolean *die)
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
-	xmlSAXUserParseFile (sax_handler, ctx, name);
+	if (rb_uri_exists (name))
+		xmlSAXUserParseFile (sax_handler, ctx, name);
 	g_free (name);
 	g_free (sax_handler);
 	g_free (ctx);

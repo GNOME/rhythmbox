@@ -982,6 +982,41 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 				       RHYTHMDB_QUERY_END);
 	}
 
+	g_signal_handlers_disconnect_matched (G_OBJECT (source->priv->songs),
+					      G_SIGNAL_MATCH_FUNC,
+					      g_signal_lookup ("entry-added",
+							       RB_TYPE_ENTRY_VIEW),
+					      0,
+					      NULL,
+					      G_CALLBACK (entry_added_cb),
+					      NULL);
+
+
+	if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
+		rb_property_view_reset (source->priv->genres);
+		g_free (source->priv->selected_genre);
+		source->priv->selected_genre = NULL;
+		g_signal_connect (G_OBJECT (source->priv->songs),
+				  "entry-added", G_CALLBACK (entry_added_cb),
+				  source->priv->genres);
+	}
+	if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
+		rb_property_view_reset (source->priv->artists);
+		g_free (source->priv->selected_artist);
+		source->priv->selected_artist = NULL;
+		g_signal_connect (G_OBJECT (source->priv->songs),
+				  "entry-added", G_CALLBACK (entry_added_cb),
+				  source->priv->artists);
+	}
+	if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
+		rb_property_view_reset (source->priv->albums);
+		g_free (source->priv->selected_album);
+		source->priv->selected_album = NULL;
+		g_signal_connect (G_OBJECT (source->priv->songs),
+				  "entry-added", G_CALLBACK (entry_added_cb),
+				  source->priv->albums);
+	}
+
 	genre_query = rhythmdb_query_copy (query);
 
 	if (source->priv->selected_genre)
@@ -1016,34 +1051,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	g_signal_connect (G_OBJECT (query_model),
 			  "complete", G_CALLBACK (query_complete_cb),
 			  source);
-
-	g_signal_handlers_disconnect_matched (G_OBJECT (source->priv->songs),
-					      G_SIGNAL_MATCH_FUNC,
-					      g_signal_lookup ("entry-added",
-							       RB_TYPE_ENTRY_VIEW),
-					      0,
-					      NULL,
-					      G_CALLBACK (entry_added_cb),
-					      NULL);
-
-	if (qtype < RB_LIBRARY_QUERY_TYPE_GENRE) {
-		rb_property_view_reset (source->priv->genres);
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->genres);
-	}
-	if (qtype < RB_LIBRARY_QUERY_TYPE_ARTIST) {
-		rb_property_view_reset (source->priv->artists);
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->artists);
-	}
-	if (qtype < RB_LIBRARY_QUERY_TYPE_ALBUM) {
-		rb_property_view_reset (source->priv->albums);
-		g_signal_connect (G_OBJECT (source->priv->songs),
-				  "entry-added", G_CALLBACK (entry_added_cb),
-				  source->priv->albums);
-	}
 
 	rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);
 

@@ -111,7 +111,6 @@ static gboolean rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry
 						GtkTreeIter *iter);
 static void rb_entry_view_scroll_to_iter (RBEntryView *view,
 					  GtkTreeIter *iter);
-static gboolean set_sort_column_id (RBEntryView *view);
 static gboolean poll_model (RBEntryView *view);
 
 
@@ -150,6 +149,7 @@ struct RBEntryViewPrivate
 	GHashTable *columns;
 	GHashTable *allowed_columns;
 
+	gboolean sorting_enabled;
 	int saved_sort_column_id;
 	GtkSortType saved_sort_type;
 
@@ -551,10 +551,6 @@ rb_entry_view_set_property (GObject *object,
 				g_idle_add ((GSourceFunc) poll_model, view);
 		}
 
-		/* do this in an idle, so that it gets set when done with initializing the rest --
-		 * will speed up xml loading a lot */
-		g_idle_add ((GSourceFunc) set_sort_column_id, view);
-
 		break;
 	}
 	case PROP_PLAYING_ENTRY:
@@ -682,20 +678,6 @@ static gboolean
 bool_to_int (const char *boolean)
 {
 	return (strcmp (boolean, "true") == 0);
-}
-
-static gboolean
-set_sort_column_id (RBEntryView *view)
-{
-	gdk_threads_enter ();
-	
-	if (view->priv->sortmodel)
-		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
-						      view->priv->default_sort_column_id, GTK_SORT_ASCENDING);
-
-	gdk_threads_leave ();
-
-	return FALSE;
 }
 
 static gboolean
@@ -888,6 +870,36 @@ rb_entry_view_play_count_cell_data_func (GtkTreeViewColumn *column, GtkCellRende
 	if (i != 0)
 		g_free (str);
 }
+
+static void
+rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+				       GtkTreeModel *tree_model, GtkTreeIter *iter,
+				       struct RBEntryViewCellDataFuncData *data)
+{
+	RhythmDBEntry *entry;
+	char *str;
+	long duration;
+	int minutes, seconds;
+
+	gtk_tree_model_get (GTK_TREE_MODEL (tree_model), iter, 0, &entry, -1);
+
+	rhythmdb_read_lock (data->view->priv->db);
+
+	duration  = rhythmdb_entry_get_long (data->view->priv->db, entry,
+					     data->propid);
+
+	rhythmdb_read_unlock (data->view->priv->db);
+
+	minutes = duration / 60;
+	seconds = duration % 60;
+
+	str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+
+	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+
+	g_free (str);
+}
+
 
 static void
 rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1109,7 +1121,7 @@ rb_entry_view_construct (RBEntryView *view)
 
 			for (i = 0; parts != NULL && parts[i] != NULL; i++) {
 				RhythmDBPropType prop = column_number_from_name (parts[i])-1;
-				g_assert (prop >= 0);
+				g_assert (prop >= 0 && prop < RHYTHMDB_NUM_PROPERTIES);
 				sort_order = g_list_append (sort_order, GINT_TO_POINTER (prop));
 			}
 
@@ -1159,6 +1171,8 @@ rb_entry_view_construct (RBEntryView *view)
 				func = (GtkTreeCellDataFunc) rb_entry_view_intstr_cell_data_func;
 			else if (data->propid == RHYTHMDB_PROP_PLAY_COUNT)
 				func = (GtkTreeCellDataFunc) rb_entry_view_play_count_cell_data_func;
+			else if (data->propid == RHYTHMDB_PROP_DURATION)
+				func = (GtkTreeCellDataFunc) rb_entry_view_duration_cell_data_func;
 			else
 				func = (GtkTreeCellDataFunc) rb_entry_view_string_cell_data_func;				
 
@@ -1192,7 +1206,10 @@ rb_entry_view_construct (RBEntryView *view)
 		gtk_tree_view_column_set_clickable (gcolumn, clickable);
 
 		if (default_sort_column == TRUE) {
+			view->priv->sorting_enabled = TRUE;
 			view->priv->default_sort_column_id = column;
+			view->priv->saved_sort_column_id = view->priv->default_sort_column_id;
+			view->priv->saved_sort_type = GTK_SORT_ASCENDING;
 		}
 
 		rb_debug ("appending column; %s", xmlGetProp (child, "column"));
@@ -1909,9 +1926,25 @@ poll_model (RBEntryView *view)
 	GDK_THREADS_ENTER ();
 
 	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, 500);
+	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
 
 	did_sync = rhythmdb_query_model_sync (view->priv->query_model, &timeout);
+
+	if (!did_sync && !view->priv->sorting_enabled) {
+		rb_debug ("enabling sorting");
+		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+						      view->priv->saved_sort_column_id,
+						      view->priv->saved_sort_type);
+		view->priv->sorting_enabled = TRUE;
+	} else if (did_sync && view->priv->sorting_enabled) {
+		rb_debug ("disabling sorting");
+		gtk_tree_sortable_get_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+						      &view->priv->saved_sort_column_id,
+						      &view->priv->saved_sort_type);
+		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (view->priv->sortmodel),
+						      -1, GTK_SORT_ASCENDING); 
+		view->priv->sorting_enabled = FALSE;
+	}
 
 	GDK_THREADS_LEAVE ();
 
