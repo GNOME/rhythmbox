@@ -53,10 +53,11 @@
 
 typedef enum
 {
-	RB_LIBRARY_QUERY_TYPE_SEARCH,
+	RB_LIBRARY_QUERY_TYPE_ALL,
 	RB_LIBRARY_QUERY_TYPE_GENRE,
 	RB_LIBRARY_QUERY_TYPE_ARTIST,
 	RB_LIBRARY_QUERY_TYPE_ALBUM,
+	RB_LIBRARY_QUERY_TYPE_SEARCH,
 } RBLibraryQueryType;
 
 static void rb_library_source_class_init (RBLibrarySourceClass *klass);
@@ -434,7 +435,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 			  "changed",
 			  G_CALLBACK (songs_view_changed_cb),
 			  source);
-	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_SEARCH);
+	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 
 	/* Drag'n'Drop for songs view */
 /* 	g_signal_connect (G_OBJECT (source->priv->songs), "drag_data_received", */
