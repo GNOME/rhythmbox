@@ -224,9 +224,9 @@ rhythmdb_init (RhythmDB *db)
 	g_type_class_unref (unsaved_prop_class);
 
 	db->priv->query_thread_pool = g_thread_pool_new ((GFunc) query_thread_main,
-							 db, 3, FALSE, NULL);
+							 db, 3, TRUE, NULL);
 	db->priv->property_query_thread_pool = g_thread_pool_new ((GFunc) property_query_thread_main,
-								  db, 3, FALSE, NULL);
+								  db, 3, TRUE, NULL);
 }
 
 void
