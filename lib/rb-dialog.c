@@ -97,6 +97,7 @@ rb_ask_file_multiple (const char *title,
 {
 	GtkWidget *filesel;
 
+#ifndef USE_GTK_FILE_CHOOSER
 	filesel = gtk_file_selection_new (title);
 	if (default_file != NULL)
 		gtk_file_selection_set_filename (GTK_FILE_SELECTION (filesel), default_file);
@@ -114,6 +115,37 @@ rb_ask_file_multiple (const char *title,
 	gtk_widget_show_all (filesel);
 
 	return filesel;
+#else
+	filesel = gtk_file_chooser_dialog_new (title, 
+					       parent, 
+					       GTK_FILE_CHOOSER_ACTION_OPEN,
+					       GTK_STOCK_OPEN, 
+					       GTK_RESPONSE_OK,
+					       GTK_STOCK_CANCEL, 
+					       GTK_RESPONSE_CANCEL,
+					       NULL);
+
+	if (default_file != NULL)
+		gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (filesel),
+					   	   default_file);
+
+	gtk_file_chooser_set_select_multiple (GTK_FILE_CHOOSER (filesel),
+					      TRUE);
+
+	gtk_dialog_set_default_response (GTK_DIALOG (filesel),
+					 GTK_RESPONSE_OK);
+	gtk_window_set_transient_for (GTK_WINDOW (filesel),
+				      parent);
+	gtk_window_set_modal (GTK_WINDOW (filesel),
+			      FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel),
+					    TRUE);
+	gtk_widget_show_all (filesel);
+
+	return filesel;
+
+
+#endif
 }
 
 GtkWidget *

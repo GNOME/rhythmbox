@@ -1678,12 +1678,8 @@ ask_file_response_cb (GtkDialog *dialog,
 		      int response_id,
 		      RBShell *shell)
 {
+#ifndef USE_GTK_FILE_CHOOSER
 	char **files, **filecur, *stored;
-
-	if (response_id != GTK_RESPONSE_OK) {
-		gtk_widget_destroy (GTK_WIDGET (dialog));
-		return;
-	}
 
 	files = gtk_file_selection_get_selections (GTK_FILE_SELECTION (dialog));
 
@@ -1716,6 +1712,48 @@ ask_file_response_cb (GtkDialog *dialog,
 	}
 
 	g_strfreev (files);
+
+#else
+	char *current_dir, *stored;
+	GSList *uri_list = NULL, *uris = NULL, *tmp_uris = NULL;
+
+	if (response_id != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		return;
+	}
+
+	uri_list = gtk_file_chooser_get_uris (GTK_FILE_CHOOSER (dialog));
+
+	if (uri_list == NULL) {
+		current_dir = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER (dialog));
+		printf("current_dir = %s\n",current_dir);
+		uri_list =  g_slist_append (uri_list, current_dir);
+	}
+	
+	tmp_uris = uri_list;
+
+	if (tmp_uris != NULL) {
+		char *tmp;
+
+		stored = g_path_get_dirname ((char *)tmp_uris->data);
+		tmp = g_strconcat (stored, "/", NULL);
+		g_free (tmp);
+		g_free (stored);
+	}
+
+	shell->priv->show_db_errors = TRUE;
+
+	for (uris = uri_list; uris; uris = uris->next) {
+		char *uri;
+
+		if (g_utf8_validate ((char *)uris->data, -1, NULL)) 
+			rhythmdb_add_uri_async (shell->priv->db, (char *)uris->data);
+		
+	}
+	g_slist_free (uri_list);
+	g_free (current_dir);
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+#endif
 }
 
 static void
@@ -1726,7 +1764,7 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 	char *stored;
 	GtkWidget *dialog;
     
-	stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
+		stored = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	dialog = rb_ask_file_multiple (_("Choose Files or Directory"),
 				      stored,
 			              GTK_WINDOW (shell->priv->window));
@@ -1735,7 +1773,7 @@ rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 	g_signal_connect (G_OBJECT (dialog),
 			  "response",
 			  G_CALLBACK (ask_file_response_cb),
-			  shell);
+				shell);
 }
 
 static void
