@@ -45,7 +45,7 @@ typedef struct
 {
 	GtkEventBoxClass parent;
 
-	void (*rated) (int score);
+	void (*rated) (double score);
 } RBRatingClass;
 
 

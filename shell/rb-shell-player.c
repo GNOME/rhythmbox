@@ -59,6 +59,10 @@
 
 #include "rb-play-order.h"
 
+#ifdef HAVE_XIDLE_EXTENSION
+#include <X11/extensions/xidle.h>
+#endif /* HAVE_XIDLE_EXTENSION */
+
 typedef enum
 {
 	PLAY_BUTTON_PLAY,
@@ -172,6 +176,16 @@ static void rb_shell_player_init_mmkeys (RBShellPlayer *shell_player);
 
 #define CONF_STATE		CONF_PREFIX "/state"
 
+#define AUTO_RATE_FIRST_SKIP_RATE        -0.40
+#define AUTO_RATE_CONS_SKIP_RATE         -0.27
+#define AUTO_RATE_FIRST_NON_SKIP_RATE     0.33
+#define AUTO_RATE_CONS_NON_SKIP_RATE      0.07
+#define AUTO_RATE_NO_XIDLE_BONUS          0.07
+#define AUTO_RATE_INTERACTIVE_BONUS       0.13
+#define AUTO_RATE_JUMPED_FROM            -0.07
+#define AUTO_RATE_JUMPED_TO_SKIPPED       0.07
+#define AUTO_RATE_JUMPED_TO_FINISHED      0.47
+
 struct RBShellPlayerPrivate
 {
 	RhythmDB *db;
@@ -198,6 +212,9 @@ struct RBShellPlayerPrivate
 	RBPlayOrder *play_order;
 
 	gboolean buffering;
+
+	gboolean last_jumped;
+	gboolean last_skipped;
 
 	GError *playlist_parse_error;
 
@@ -458,6 +475,9 @@ rb_shell_player_init (RBShellPlayer *player)
 		g_error_free (error);
 		exit (1);
 	}
+
+	player->priv->last_jumped = FALSE;
+	player->priv->last_skipped = FALSE;
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 
@@ -1030,11 +1050,108 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 	}
 }
 
+static void
+rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
+{
+	RhythmDBEntry *current_entry;
+	long entry_duration, entry_play_time, entry_time_left;
+	gboolean check_idle_time;
+	double mod, old_rating, new_rating;
+	GValue value = { 0, };
+	
+	current_entry = rb_shell_player_get_playing_entry (player);
+	if (current_entry == NULL)
+		return;
+	
+	entry_play_time = rb_shell_player_get_playing_time (player);
+	entry_duration = rb_shell_player_get_playing_song_duration (player);
+	entry_time_left = entry_duration - entry_play_time;
+	g_return_if_fail (entry_time_left >= 0);
+	
+	/* don't auto-rate songs 30 seconds or less */
+	if (entry_duration <= 30)
+		return;
+	
+	/* sloppy end of song */
+	if (entry_time_left < 16)
+		entry_time_left = 0;
+	
+	if (entry_time_left == 0) {
+		if (player->priv->last_jumped)
+		        mod = AUTO_RATE_JUMPED_TO_FINISHED;
+		else if (player->priv->last_skipped)
+		        mod = AUTO_RATE_FIRST_NON_SKIP_RATE;
+		else
+		        mod = AUTO_RATE_CONS_NON_SKIP_RATE;
+		
+		check_idle_time = TRUE;
+		
+		player->priv->last_skipped = FALSE;
+		player->priv->last_jumped = FALSE;
+	} else {
+		if (player->priv->last_jumped && !jumped)
+		        mod = AUTO_RATE_JUMPED_TO_SKIPPED;
+		else if (jumped)
+		        mod = AUTO_RATE_JUMPED_FROM;
+		else if (player->priv->last_skipped)
+		        mod = AUTO_RATE_CONS_SKIP_RATE;
+		else
+		        mod = AUTO_RATE_FIRST_SKIP_RATE;
+		
+		check_idle_time = mod < AUTO_RATE_JUMPED_FROM;
+		
+		player->priv->last_skipped = TRUE;
+		player->priv->last_jumped = jumped;
+	}
+	
+	if (check_idle_time) {
+#ifdef HAVE_XIDLE_EXTENSION
+		Display *display = gdk_x11_get_default_xdisplay ();
+		Time idle_time;
+		
+		/* get x11 idle time in milliseconds */
+		if (XGetIdleTime (display, &idle_time))
+			if ((idle_time / 1000) < entry_play_time)
+			        mod += AUTO_RATE_INTERACTIVE_BONUS;
+#else
+		mod += AUTO_RATE_NO_XIDLE_BONUS;
+#endif /* HAVE_XIDLE_EXTENSION */
+	}
+	
+	/* get song's old rating */
+	old_rating = rhythmdb_entry_get_double (player->priv->db,
+						current_entry,
+						RHYTHMDB_PROP_RATING);
+	
+	/* create and clamp new rating */
+	new_rating = old_rating + mod;
+	if (new_rating > 5)
+		new_rating = 5;
+	else if (new_rating < 0)
+		new_rating = 0;
+	
+	/* set the new value for the song */
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, new_rating);
+	rhythmdb_write_lock (player->priv->db);
+	rhythmdb_entry_set (player->priv->db,
+			    current_entry,
+			    RHYTHMDB_PROP_RATING,
+			    &value);
+	g_value_unset (&value);
+	rhythmdb_write_unlock (player->priv->db);
+
+	rb_debug ("set rating from %f to %f\n", old_rating, new_rating);
+}
+
 void
 rb_shell_player_do_next (RBShellPlayer *player)
 {
 	if (player->priv->source != NULL) {
 		RhythmDBEntry *entry = rb_play_order_get_next (player->priv->play_order);
+		
+		rb_shell_player_auto_adjust_rating (player, FALSE);
+		
 		if (entry) {
 			rb_play_order_go_next (player->priv->play_order);
 			rb_shell_player_set_playing_entry (player, entry);
@@ -1276,6 +1393,8 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 	g_return_if_fail (entry != NULL);
 
 	rb_debug  ("got entry %p activated", entry);
+	
+	rb_shell_player_auto_adjust_rating (playa, TRUE);
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 

@@ -86,10 +86,6 @@ rb_random_play_order_by_rating_new (RBShellPlayer *player)
 static double
 rb_random_by_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmDB *db, RhythmDBEntry *entry)
 {
-	gint rating = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_RATING);
-	if (rating == 0) {
-		/* Set unrated things' rating to 3 */
-		rating = 3;
-	}
+	gdouble rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
 	return rating;
 }

@@ -796,7 +796,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	RhythmDBEntry *entry;
 	char *realuri;
 	GError *error = NULL;
-	GValue last_time = {0, };
+	GValue last_time = {0, }, rating = {0, };
 
 	realuri = rb_uri_resolve_symlink (uri);
 
@@ -837,6 +837,12 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	g_value_set_long (&last_time, 0);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &last_time);
 	g_value_unset (&last_time);
+
+	/* initialize the rating to 3 */
+	g_value_init (&rating, G_TYPE_DOUBLE);
+	g_value_set_double (&rating, 3.0);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &rating);
+	g_value_unset (&rating);
 
  out_dupentry:
 	g_free (realuri);
@@ -1568,7 +1574,7 @@ read_encoded_property (RhythmDB *db,
 		g_value_set_float (val, g_ascii_strtod (content, NULL));
 		break;
 	case G_TYPE_DOUBLE:
-		g_value_set_float (val, g_ascii_strtod (content, NULL));
+		g_value_set_double (val, g_ascii_strtod (content, NULL));
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1874,7 +1880,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong)"),
-			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gint)"),
+			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong)"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate"),

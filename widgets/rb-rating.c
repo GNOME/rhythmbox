@@ -60,7 +60,7 @@ static gboolean rb_rating_button_press_cb (GtkWidget *widget,
 
 struct RBRatingPrivate
 {
-	int score;
+	double score;
 
 	GdkPixbuf *pix_star;
 	GdkPixbuf *pix_dot;
@@ -127,11 +127,11 @@ rb_rating_class_init (RBRatingClass *klass)
 
 	g_object_class_install_property (object_class,
 					 PROP_SCORE,
-					 g_param_spec_int ("score",
-							   "Rating score",
-							   "Rating score",
-							   0, 5, 0,
-							   G_PARAM_READWRITE));
+					 g_param_spec_double ("score",
+							      "Rating score",
+							      "Rating score",
+							      0.0, 5.0, 3.0,
+							      G_PARAM_READWRITE));
 
 	rb_rating_signals[RATED] = 
 		g_signal_new ("rated",
@@ -139,10 +139,10 @@ rb_rating_class_init (RBRatingClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBRatingClass, rated),
 			      NULL, NULL,
-			      g_cclosure_marshal_VOID__INT,
+			      g_cclosure_marshal_VOID__DOUBLE,
 			      G_TYPE_NONE,
 			      1,
-			      G_TYPE_INT);
+			      G_TYPE_DOUBLE);
 }
 
 static void
@@ -221,7 +221,7 @@ rb_rating_get_property (GObject *object,
   
 	switch (param_id) {
 	case PROP_SCORE:
-		g_value_set_int (value, rating->priv->score);
+		g_value_set_double (value, rating->priv->score);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -240,7 +240,7 @@ rb_rating_set_property (GObject *object,
   
 	switch (param_id) {
 	case PROP_SCORE:
-		rating->priv->score = g_value_get_int (value);
+		rating->priv->score = g_value_get_double (value);
 		gtk_widget_queue_draw (GTK_WIDGET (rating));
 		break;
 	default:
@@ -346,7 +346,8 @@ rb_rating_button_press_cb (GtkWidget *widget,
 			   GdkEventButton *event,
 			   RBRating *rating)
 {
-	int mouse_x, mouse_y, icon_size, score = 0;
+	int mouse_x, mouse_y, icon_size;
+	double score = 0;
 
 	g_return_val_if_fail (widget != NULL, FALSE);
 	g_return_val_if_fail (RB_IS_RATING (rating), FALSE);

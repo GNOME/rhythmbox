@@ -1005,6 +1005,13 @@ rb_audiocd_node_fill_basic (char *location)
                              &value);
        g_value_unset (&value);
        
+       g_value_init (&value, G_TYPE_DOUBLE);
+       g_value_set_double (&value, 3.0);
+       rb_node_set_property (RB_NODE (track),
+                             RB_NODE_PROP_RATING,
+                             &value);
+       g_value_unset (&value);
+       
        rb_song_set_duration (RB_NODE (track), info);
 
 	/* Dummy up number of playes */
@@ -1058,10 +1065,10 @@ rb_audiocd_discinfo_save (RBAudiocdView *view)
 
                 if (rb_node_get_property (RB_NODE (node),
 					  RB_NODE_PROP_RATING,
-					  &value)) { 
-			tmp = g_strdup_printf ("%d", g_value_get_int (&value));
-			xmlSetProp (xmlnode, "rating", tmp);
-			g_free (tmp);
+					  &value)) {
+			gchar buf[G_ASCII_DTOSTR_BUF_SIZE];
+			g_ascii_dtostr (buf, sizeof (buf), g_value_get_double (&value));
+			xmlSetProp (xmlnode, "rating", buf);
 			g_value_unset (&value);
 		}
 	}
@@ -1114,7 +1121,7 @@ rb_audiocd_discinfo_load (RBAudiocdView *view)
 	{
 		char *tmp;
 		RBNode *track;
-                int rating;
+                double rating;
                 GValue value = { 0, };
                 
                 track = rb_node_new ();
@@ -1129,16 +1136,18 @@ rb_audiocd_discinfo_load (RBAudiocdView *view)
 		tmp = xmlGetProp (child, "rating");
 		if (tmp != NULL)
                 {
-                        rating = atol (tmp);
+                        rating = g_ascii_strtod (tmp, NULL);
                         g_free (tmp);
-
-                        g_value_init (&value, G_TYPE_INT);
-                        g_value_set_int (&value, rating);
-                        rb_node_set_property (RB_NODE (track),
-                                              RB_NODE_PROP_RATING,
-                                              &value);
-                        g_value_unset (&value);
 		}
+		else
+			rating = 3.0;
+		
+                g_value_init (&value, G_TYPE_DOUBLE);
+                g_value_set_double (&value, rating);
+                rb_node_set_property (RB_NODE (track),
+                                        RB_NODE_PROP_RATING,
+                                        &value);
+                g_value_unset (&value);
 
                 rb_audiocd_view_add_node (view, track);
 	}

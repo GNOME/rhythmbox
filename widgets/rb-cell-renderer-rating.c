@@ -70,7 +70,7 @@ static void rb_cell_renderer_rating_finalize (GObject *object);
 
 struct RBCellRendererRatingPrivate
 {
-	int rating;
+	double rating;
 
 	GdkPixbuf *pix_star;
 	GdkPixbuf *pix_unset_star;
@@ -172,11 +172,11 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 
 	g_object_class_install_property (object_class,
 					 PROP_RATING,
-					 g_param_spec_int ("rating",
-							   ("Rating Value"),
-							   ("Rating Value"),
-							   0, 5, 0,
-							   G_PARAM_READWRITE));
+					 g_param_spec_double ("rating",
+							     ("Rating Value"),
+							     ("Rating Value"),
+							     0.0, 5.0, 3.0,
+							     G_PARAM_READWRITE));
 
 	rb_cell_renderer_rating_signals[RATED] =
 		g_signal_new ("rated",
@@ -184,11 +184,11 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBCellRendererRatingClass, rated),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_INT,
+			      rb_marshal_VOID__STRING_DOUBLE,
 			      G_TYPE_NONE,
 			      2,
 			      G_TYPE_STRING,
-			      G_TYPE_INT);
+			      G_TYPE_DOUBLE);
 }
 
 static void
@@ -217,7 +217,7 @@ rb_cell_renderer_rating_get_property (GObject *object,
   
 	switch (param_id) {
 	case PROP_RATING:
-		g_value_set_int (value, cellrating->priv->rating);
+		g_value_set_double (value, cellrating->priv->rating);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -236,7 +236,7 @@ rb_cell_renderer_rating_set_property (GObject *object,
   
 	switch (param_id) {
 	case PROP_RATING:
-		cellrating->priv->rating = g_value_get_int (value);
+		cellrating->priv->rating = g_value_get_double (value);
 		if (cellrating->priv->rating < 0)
 			cellrating->priv->rating = 0;
 		break;
@@ -334,7 +334,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 
 	selected = flags;
 	
-	for (i = 1; i <= 5; i++) {
+	for (i = 0; i < 5; i++) {
 		GdkPixbuf *buf;
 		GtkStateType state;
 
@@ -350,9 +350,9 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				state = GTK_STATE_NORMAL;
 		}
 
-		if (i <= cellrating->priv->rating)
+		if (i < cellrating->priv->rating)
 			buf = cellrating->priv->pix_star;
-		else if (i > cellrating->priv->rating && i <= 5)
+		else if (i >= cellrating->priv->rating && i < 5)
 			buf = cellrating->priv->pix_unset_star;
 		else
 			buf = cellrating->priv->pix_blank;
@@ -371,7 +371,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 						     window,
 						     draw_rect.x - pix_rect.x,
 						     draw_rect.y - draw_rect.y,
-						     draw_rect.x +  (i - 1) * icon_width,
+						     draw_rect.x +  i * icon_width,
 						     draw_rect.y,
 						     icon_width,
 						     icon_width,
@@ -408,7 +408,7 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 	/* ensure the user clicks within the good cell */
 	if (mouse_x - cell_area->x >= 0
 	    && mouse_x - cell_area->x <= cell_area->width) {
-		int rating;
+		double rating;
 
 		rating = (int) ((mouse_x - cell_area->x) / icon_width) + 1;
 

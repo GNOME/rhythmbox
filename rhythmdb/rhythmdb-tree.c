@@ -526,7 +526,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case G_TYPE_DOUBLE:
-			g_value_set_float (value, g_ascii_strtod (ctx->buf->str, NULL));
+			g_value_set_double (value, g_ascii_strtod (ctx->buf->str, NULL));
 			g_string_free (ctx->buf, TRUE);
 			break;
 		default:

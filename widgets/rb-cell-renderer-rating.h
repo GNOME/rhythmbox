@@ -48,7 +48,7 @@ typedef struct
 {
 	GtkCellRendererClass parent_class;
 
-	void (*rated) (GtkTreePath *path, int rating);
+	void (*rated) (GtkTreePath *path, double rating);
 } RBCellRendererRatingClass;
 
 GtkType          rb_cell_renderer_rating_get_type (void);

@@ -37,13 +37,14 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	char *genre = NULL;
 	char *artist = NULL;
 	char *album = NULL;
-	guint rating = 0, play_count = 0;
+	guint play_count = 0;
 	gint track_number = -1;
 	gint quality = -1;
 	glong duration = 0;
 	glong last_played = 0;
 	glong file_size = 0;
 	glong mtime = 0;
+	gdouble rating = 0;
 	GValue val = {0, };
 	char *xml;
 
@@ -107,7 +108,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				break;
 			case 15: /* RB_NODE_PROP_RATING */
 				xml = xmlNodeGetContent (node_child);
-				rating = g_ascii_strtoull (xml, NULL, 10);
+				rating = g_ascii_strtod (xml, NULL);
 				g_free (xml);
 				break;
 			case 16: /* RB_NODE_PROP_PLAY_COUNT */
@@ -196,8 +197,8 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &val);
 	g_value_unset (&val);
 
-	g_value_init (&val, G_TYPE_INT);
-	g_value_set_int (&val, rating);
+	g_value_init (&val, G_TYPE_DOUBLE);
+	g_value_set_double (&val, rating);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 

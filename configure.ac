@@ -334,6 +334,19 @@ AC_PATH_X
 CFLAGS="-I$x_includes $CFLAGS"
 LIBS="-L$x_libraries $LIBS"
 
+have_xidle=no
+AC_COMPILE_IFELSE([
+	#include <X11/extensions/xidle.h>
+int main(int argc,char **argv) {
+  return 0;
+}
+], have_xidle=yes)
+AC_MSG_CHECKING(for XIDLE extension)
+AC_MSG_RESULT($have_xidle)
+if test x"$have_xidle" = "xyes" ; then
+	AC_DEFINE(HAVE_XIDLE_EXTENSION, 1, [defined if you have X11/extensions/xidle.h])
+fi
+
 dnl Multimedia keys
 have_xfree=no
 AC_COMPILE_IFELSE([

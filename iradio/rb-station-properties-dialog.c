@@ -72,7 +72,7 @@ static void rb_station_properties_dialog_update_bitrate (RBStationPropertiesDial
 static void rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_rated_cb (RBRating *rating,
-						   int score,
+						   double score,
 						   RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
 
@@ -384,7 +384,7 @@ rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 
 static void
 rb_station_properties_dialog_rated_cb (RBRating *rating,
-				       int score,
+				       double score,
 				       RBStationPropertiesDialog *dialog)
 {
 	GValue value = { 0, };
@@ -394,8 +394,8 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 	g_return_if_fail (score >= 0 && score <= 5 );
 
 	/* set the new value for the song */
-	g_value_init (&value, G_TYPE_INT);
-	g_value_set_int (&value, score);
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, score);
 	rhythmdb_write_lock (dialog->priv->db);
 	rhythmdb_entry_set (dialog->priv->db,
 			    dialog->priv->current_entry,
@@ -462,14 +462,14 @@ rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dial
 static void
 rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 {
-	guint rating;
+	double rating;
 
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
 	rhythmdb_read_lock (dialog->priv->db);
-	rating = rhythmdb_entry_get_int (dialog->priv->db,
-					 dialog->priv->current_entry,
-					 RHYTHMDB_PROP_RATING);
+	rating = rhythmdb_entry_get_double (dialog->priv->db,
+					    dialog->priv->current_entry,
+					    RHYTHMDB_PROP_RATING);
 	rhythmdb_read_unlock (dialog->priv->db);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),

@@ -206,8 +206,8 @@ main (int argc, char **argv)
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, "file:///bar.mp3");
 	g_assert (entry);
 
-	g_value_init (&val, G_TYPE_INT);
-	g_value_set_int (&val, 5);
+	g_value_init (&val, G_TYPE_DOUBLE);
+	g_value_set_double (&val, 5.0);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &val);
 	g_value_unset (&val);
 

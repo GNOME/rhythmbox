@@ -68,7 +68,7 @@ static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 static void rb_song_info_view_changed_cb (RBEntryView *entry_view,
 					  RBSongInfo *song_info);
 static void rb_song_info_rated_cb (RBRating *rating,
-				   int score,
+				   double score,
 				   RBSongInfo *song_info);
 static void rb_song_info_mnemonic_cb (GtkWidget *target);
 static void rb_song_info_sync_entries (RBSongInfo *dialog);
@@ -497,7 +497,7 @@ rb_song_info_response_cb (GtkDialog *dialog,
 
 static void
 rb_song_info_rated_cb (RBRating *rating,
-		       int score,
+		       double score,
 		       RBSongInfo *song_info)
 {
 	GValue value = { 0, };
@@ -507,8 +507,8 @@ rb_song_info_rated_cb (RBRating *rating,
 	g_return_if_fail (score >= 0 && score <= 5 );
 
 	/* set the new value for the song */
-	g_value_init (&value, G_TYPE_INT);
-	g_value_set_int (&value, score);
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, score);
 	rhythmdb_write_lock (song_info->priv->db);
 	rhythmdb_entry_set (song_info->priv->db,
 			    song_info->priv->current_entry,
@@ -824,13 +824,13 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 static void
 rb_song_info_update_rating (RBSongInfo *song_info)
 {
-	guint rating;
+	gdouble rating;
 	
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 
-	rating = rhythmdb_entry_get_int (song_info->priv->db,
-					 song_info->priv->current_entry,
-					 RHYTHMDB_PROP_RATING);
+	rating = rhythmdb_entry_get_double (song_info->priv->db,
+					    song_info->priv->current_entry,
+					    RHYTHMDB_PROP_RATING);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", rating,

@@ -89,7 +89,7 @@ rb_random_by_age_and_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmD
 	time_t now;
 	glong last_play;
 	glong seconds_since_last_play;
-	gint rating;
+	gdouble rating;
 
 	/* This finds the log of the number of seconds since the last play.
 	 * It handles never played automatically, since now-0 is a valid
@@ -101,11 +101,7 @@ rb_random_by_age_and_rating_get_entry_weight (RBRandomPlayOrder *rorder, RhythmD
 	if (seconds_since_last_play < 1)
 		seconds_since_last_play = 1;
 
-	rating = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_RATING);
-	if (rating == 0) {
-		/* Set unrated things' rating to 3 */
-		rating = 3;
-	}
+	rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
 
 	return log (seconds_since_last_play) * rating;
 }

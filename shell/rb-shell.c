@@ -853,7 +853,7 @@ get_song_info_from_player (RBShell *shell)
 	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
 	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_BITRATE);
 	song_info->filesize = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_FILE_SIZE);
-	song_info->rating = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_RATING);
+	song_info->rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
 	song_info->play_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
 	song_info->last_played = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
 	rhythmdb_read_unlock (db);

@@ -31,6 +31,7 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "rb-tree-dnd.h"
 #include "rb-tree-view-column.h"
@@ -102,7 +103,7 @@ static void rb_entry_view_sort_key_changed_cb (GConfClient* client,
 /* 						  gpointer user_data); */
 static void rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 				   const char *path,
-				   int rating,
+				   double rating,
 				   RBEntryView *view);
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
@@ -893,6 +894,21 @@ rb_entry_view_int_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 }
 
 static gint
+rb_entry_view_double_ceiling_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
+				       struct RBEntryViewCellDataFuncData *data)
+{
+	gdouble a_val, b_val;
+	gint ret;
+
+	a_val = ceil (rhythmdb_entry_get_double (data->view->priv->db, a, data->propid));
+	b_val = ceil (rhythmdb_entry_get_double (data->view->priv->db, b, data->propid));
+
+	ret = (a_val == b_val ? 0 : (a_val > b_val ? 1 : -1));
+
+	return ret;
+}
+
+static gint
 rb_entry_view_long_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			      struct RBEntryViewCellDataFuncData *data)
 {
@@ -949,13 +965,13 @@ rb_entry_view_rating_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 				     RBEntryView *view)
 {
 	RhythmDBEntry *entry;
-	guint rating;
+	gdouble rating;
 
 	entry = entry_from_tree_iter (view, iter);
 
 	rhythmdb_read_lock (view->priv->db);
 
-	rating = rhythmdb_entry_get_int (view->priv->db, entry, RHYTHMDB_PROP_RATING);
+	rating = rhythmdb_entry_get_double (view->priv->db, entry, RHYTHMDB_PROP_RATING);
 
 	rhythmdb_read_unlock (view->priv->db);
 
@@ -1235,7 +1251,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_data = g_new0 (struct RBEntryViewCellDataFuncData, 1);
 		sort_data->view = view;
 		sort_data->propid = propid;
-		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
+		sort_func = (GCompareDataFunc) rb_entry_view_double_ceiling_sort_func;
 
 		renderer = rb_cell_renderer_rating_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
@@ -1536,14 +1552,14 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 static void
 rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 		       const char *path_string,
-		       int rating,
+		       double rating,
 		       RBEntryView *view)
 {
 	GtkTreePath *path;
 	RhythmDBEntry *entry;
 	GValue value = { 0, };
 
-	g_return_if_fail (rating >= 1 && rating <= 5 );
+	g_return_if_fail (rating >= 0 && rating <= 5 );
 	g_return_if_fail (path_string != NULL);
 
 	path = gtk_tree_path_new_from_string (path_string);
@@ -1552,8 +1568,8 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 
 	rb_entry_view_freeze (view);
 
-	g_value_init (&value, G_TYPE_INT);
-	g_value_set_int (&value, rating);
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, rating);
 	rhythmdb_entry_queue_set (view->priv->db, entry, RHYTHMDB_PROP_RATING,
 				  &value);
 	g_value_unset (&value);

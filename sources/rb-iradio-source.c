@@ -427,7 +427,12 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 		rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_GENRE, &val);
 	}
 	g_value_unset (&val);
-		
+	
+	g_value_init (&val, G_TYPE_DOUBLE);
+	g_value_set_double (&val, 3.0);
+	rhythmdb_entry_set (source->priv->db, entry, RHYTHMDB_PROP_RATING, &val);
+	g_value_unset (&val);
+	
 	rhythmdb_write_unlock (source->priv->db);
 }
 
