@@ -1,23 +1,9 @@
-2003-08-04  Colin Walters  <walters@rhythmbox.org>
+2003-08-05  Sean Harshbarger  <harshy@dersoldat.org>
+	    Colin Walters  <walters@verbum.org>
 
-	* lib/eggtrayicon.c: (egg_tray_icon_init),
-	(egg_tray_icon_class_init), (egg_tray_icon_get_property),
-	(egg_tray_icon_get_orientation_property),
-	(egg_tray_icon_manager_filter), (egg_tray_icon_unrealize),
-	(egg_tray_icon_send_manager_message),
-	(egg_tray_icon_update_manager_window), (egg_tray_icon_realize),
-	(egg_tray_icon_new_for_xscreen), (egg_tray_icon_new_for_screen),
-	(egg_tray_icon_new), (egg_tray_icon_send_message),
-	(egg_tray_icon_cancel_message), (egg_tray_icon_get_orientation):
-	* lib/eggtrayicon.h:
-	* shell/rb-shell.c: (rb_shell_set_window_title), (tray_deleted_cb),
-	(setup_tray_icon):
+	* shell/rb-shell.c: (rb_shell_new_group_dialog):
 
-	Update eggtrayicon.c to the latest CVS, although it still doesn't
-	make the notification area work.
-
-	Also handle a delete_event on the icon, and recreate it.  This
-	fixes bug #98544.
+	More s/group/playlist.
 
 2003-08-04  Colin Walters  <walters@verbum.org>
 

@@ -1785,7 +1785,7 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
 	vbox = gtk_vbox_new (FALSE, 0);
 
-	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new music group."));
+	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new playlist:"));
 	label = gtk_label_new (tmp);
 	g_free (tmp);
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
@@ -1799,7 +1799,7 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
 	gtk_box_pack_start (GTK_BOX (vbox2), entry, FALSE, TRUE, 0);
 
-	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new group"));
+	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new playlist"));
 	nodeview = rb_source_get_node_view (shell->priv->selected_source);
 	selection = rb_node_view_get_selection (nodeview);
 	if (selection == NULL)
