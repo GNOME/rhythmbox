@@ -61,13 +61,6 @@ main (int argc, char **argv)
 		POPT_TABLEEND
 	};
 
-#ifdef ENABLE_NLS
-	/* initialize i18n */
-	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-#endif
-
 	program = gnome_program_init (PACKAGE, VERSION,
 				      LIBGNOMEUI_MODULE, argc, argv,
 				      GNOME_PARAM_POPT_TABLE, popt_options,
@@ -75,6 +68,13 @@ main (int argc, char **argv)
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
 
+#ifdef ENABLE_NLS
+	/* initialize i18n */
+	bindtextdomain (GETTEXT_PACKAGE, GNOMELOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
+#endif
+	
 	CORBA_exception_init (&ev);
 
 	rb_debug_init (debug);
