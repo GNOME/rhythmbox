@@ -55,6 +55,24 @@ static void rb_player_set_show_textline (RBPlayer *player,
 static gboolean rb_player_sync_time (RBPlayer *player);
 static void rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
 				                   RBPlayer *player);
+static void rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_bix,
+						     GdkEventButton *event,
+					             RBPlayer *player);
+static void rb_player_update_elapsed (RBPlayer *player);
+
+typedef enum 
+{
+	RB_PLAYER_STATE_MODE_ELAPSED,
+	RB_PLAYER_STATE_MODE_REMAINING,
+	RB_PLAYER_STATE_MODE_TOTAL
+} RBPlayerStateMode;
+
+typedef struct 
+{
+	RBPlayerStateMode mode;
+	long elapsed;
+	long duration;
+} RBPlayerState;
 
 struct RBPlayerPrivate
 {
@@ -69,6 +87,7 @@ struct RBPlayerPrivate
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
 	gboolean lock_adjustment;
+	GtkWidget *elapsed_box;
 	GtkWidget *elapsed;
 
 	GtkWidget *textframe;
@@ -78,6 +97,8 @@ struct RBPlayerPrivate
 	RBLink *album;
 
 	guint timeout;
+	
+	RBPlayerState *state;
 };
 
 enum
@@ -149,6 +170,8 @@ rb_player_init (RBPlayer *player)
 	
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
+	player->priv->state = g_new0 (RBPlayerState, 1);
+
 	hbox = gtk_hbox_new (FALSE, 10);
 
 #if 0
@@ -202,7 +225,15 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
 	align = gtk_alignment_new (0.0, 0.5, 0.0, 0.0);
 	player->priv->elapsed = gtk_label_new ("0:00");
-	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
+	player->priv->elapsed_box = gtk_event_box_new ();
+	g_signal_connect (G_OBJECT (player->priv->elapsed_box),
+			  "button_press_event",
+			  G_CALLBACK (rb_player_elapsed_button_press_event_cb),
+			  player);
+	gtk_container_add (GTK_CONTAINER (player->priv->elapsed_box), 
+			   player->priv->elapsed);
+	gtk_container_add (GTK_CONTAINER (align), 
+			   player->priv->elapsed_box);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
@@ -229,6 +260,7 @@ rb_player_finalize (GObject *object)
 	g_object_unref (G_OBJECT (player->priv->textline));
 	g_object_unref (G_OBJECT (player->priv->timeline));
 
+	g_free (player->priv->state);
 	g_free (player->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -395,8 +427,7 @@ static gboolean
 rb_player_sync_time (RBPlayer *player)
 {
 	MonkeyMediaAudioStream *stream;
-	char *elapsed;
-	int seconds = 0, minutes = 0;
+	int seconds;
 	long duration;
 
 	if (player->priv->view_player == NULL)
@@ -406,8 +437,10 @@ rb_player_sync_time (RBPlayer *player)
 	if (stream == NULL)
 		return TRUE;
 
-	duration = rb_view_player_get_duration (player->priv->view_player);
-	seconds = monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
+	player->priv->state->duration = duration =
+		rb_view_player_get_duration (player->priv->view_player);
+	player->priv->state->elapsed = seconds =
+		monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (stream));
 
 	if (duration > -1)
 	{
@@ -429,15 +462,7 @@ rb_player_sync_time (RBPlayer *player)
 		gtk_widget_set_sensitive (player->priv->scale, FALSE);
 	}
 
-	if (seconds > 0)
-	{
-		minutes = seconds / 60;
-		seconds = seconds % 60;
-	}
-	
-	elapsed = g_strdup_printf ("%d:%02d", minutes, seconds);
-	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed);
-	g_free (elapsed);
+	rb_player_update_elapsed (player);
 
 	return TRUE;
 }
@@ -461,4 +486,71 @@ rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
 	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
 
 	rb_player_sync_time (player);
+}
+
+static void
+rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_box,
+					 GdkEventButton *event,
+			                 RBPlayer *player)
+{
+	switch (player->priv->state->mode)
+	{
+	case RB_PLAYER_STATE_MODE_ELAPSED:
+		player->priv->state->mode = RB_PLAYER_STATE_MODE_REMAINING;
+		break;
+	case RB_PLAYER_STATE_MODE_REMAINING:
+		player->priv->state->mode = RB_PLAYER_STATE_MODE_TOTAL;
+		break;
+	case RB_PLAYER_STATE_MODE_TOTAL:
+		player->priv->state->mode = RB_PLAYER_STATE_MODE_ELAPSED;
+		break;
+	}
+
+	rb_player_update_elapsed (player);
+}
+
+static void
+rb_player_update_elapsed (RBPlayer *player)
+{
+	char *elapsed_text;
+	int seconds = 0, minutes = 0;
+
+	/* sanity check */
+	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
+		return;
+		
+	switch (player->priv->state->mode)
+ 	{
+	case RB_PLAYER_STATE_MODE_ELAPSED:
+		if (player->priv->state->elapsed > 0)
+		{
+			minutes = player->priv->state->elapsed / 60;
+			seconds = player->priv->state->elapsed % 60;
+		}
+		elapsed_text = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+		break;
+	case RB_PLAYER_STATE_MODE_REMAINING:
+		if (player->priv->state->duration > 0)
+		{
+			seconds = player->priv->state->duration - player->priv->state->elapsed;
+			minutes = seconds / 60;
+			seconds = seconds % 60;
+		}
+		elapsed_text = g_strdup_printf (_("- %d:%02d"), minutes, seconds);
+		break;
+	case RB_PLAYER_STATE_MODE_TOTAL:
+		if (player->priv->state->duration > 0)
+		{
+			minutes = player->priv->state->duration / 60;
+			seconds = player->priv->state->duration % 60;
+		}
+		elapsed_text = g_strdup_printf (_("Total: %d:%02d"), minutes, seconds);
+		break;
+	default:
+		elapsed_text = g_strdup_printf (_("Invalid mode"));
+		break;
+	}
+
+	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
+	g_free (elapsed_text);
 }
