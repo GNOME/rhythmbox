@@ -223,6 +223,24 @@ rb_node_finalize (GObject *object)
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
 		g_object_unref (G_OBJECT (l->data));
+		if (G_OBJECT (l->data)->ref_count == 1)
+		{
+			/* since we start with a refcount of one,
+			 * all the child references are gone now,
+			 * so we take the last reference too unless
+			 * it was one of the "All" nodes */
+			RBNodeType type;
+
+			type = rb_node_get_node_type (RB_NODE (l->data));
+
+			if ((type != RB_NODE_TYPE_ALL_GENRES) &&
+			    (type != RB_NODE_TYPE_ALL_ARTISTS) &&
+			    (type != RB_NODE_TYPE_ALL_ALBUMS) &&
+			    (type != RB_NODE_TYPE_ALL_SONGS))
+			{
+				g_object_unref (G_OBJECT (l->data));
+			}
+		}
 	}
 	g_list_free (node->priv->parents);
 	g_list_free (node->priv->grandparents);

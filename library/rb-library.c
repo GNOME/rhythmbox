@@ -22,7 +22,9 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
 #include <monkey-media.h>
+#include <gtk/gtkmain.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "rb-library.h"
 #include "rb-library-watcher.h"
@@ -53,6 +55,8 @@ static gpointer rb_library_thread_main (RBLibraryPrivate *library);
 static void rb_library_thread_check_died (RBLibraryPrivate *priv);
 static void rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 				                char *file);
+static void rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
+				                    RBNode *node);
 
 struct RBLibraryPrivate
 {
@@ -294,7 +298,6 @@ static void
 rb_library_update_node (RBLibrary *library,
 			RBNode *node)
 {
-	/* FIXME implement */
 	rb_debug ("rb_library_update_node: waiting lock");
 	g_mutex_lock (library->priv->changed_nodes_lock);
 	rb_debug ("rb_library_update_node: obtained lock");
@@ -304,7 +307,6 @@ rb_library_update_node (RBLibrary *library,
 	rb_debug ("rb_library_update_node: releasing lock");
 	g_mutex_unlock (library->priv->changed_nodes_lock);
 	rb_debug ("rb_library_update_node: released lock");
-	/* FIXME sync with fileinfo, check whether genre/artist/album differ */
 }
 
 void
@@ -563,8 +565,6 @@ rb_library_node_destroyed_cb (RBNode *node,
 	}
 }
 
-/* FIXME fix refcounting, dont unref all nodes */
-
 static gboolean
 rb_library_timeout_cb (RBLibrary *library)
 {
@@ -733,6 +733,7 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	info = monkey_media_stream_info_new (file, &err);
 	if (err != NULL)
 	{
+		g_error_free (err);
 		g_free (file);
 		return;
 	}
@@ -784,6 +785,90 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	g_free (file);
 }
 
+static void
+rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
+				        RBNode *node)
+{
+	MonkeyMediaStreamInfo *info;
+	GError *error = NULL;
+	GValue value = { 0, };
+	char *node_prop;
+	gboolean need_reparent;
+
+	rb_debug ("rb_library_thread_process_changed_node: waiting lock #1");
+	g_mutex_lock (priv->changed_nodes_lock);
+	rb_debug ("rb_library_thread_process_changed_node: obtained lock #1");
+	priv->changed_nodes = g_list_remove (priv->changed_nodes, node);
+	rb_debug ("rb_library_thread_process_changed_node: releasing lock #1");
+	g_mutex_unlock (priv->changed_nodes_lock);
+	rb_debug ("rb_library_thread_process_changed_node: released lock #1");
+
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+	info = monkey_media_stream_info_new (g_value_get_string (&value), &error);
+	if (error != NULL)
+	{
+		g_value_unset (&value);
+		g_error_free (error);
+		return;
+	}
+	g_value_unset (&value);
+
+	/* check whether album/artist/genre differ, if any of them do we delete the node
+	 * and put it into the add queue */
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE, &value);
+	node_prop = rb_node_song_get_genre (node);
+	need_reparent = (strcmp (node_prop, g_value_get_string (&value)) != 0);
+	g_value_unset (&value);
+	g_free (node_prop);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST, &value);
+	node_prop = rb_node_song_get_artist (node);
+	need_reparent = (strcmp (node_prop, g_value_get_string (&value)) != 0);
+	g_value_unset (&value);
+	g_free (node_prop);
+	
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM, &value);
+	node_prop = rb_node_song_get_album (node);
+	need_reparent = (strcmp (node_prop, g_value_get_string (&value)) != 0);
+	g_value_unset (&value);
+	g_free (node_prop);
+
+	if (need_reparent == TRUE)
+	{
+		char *file;
+
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+		file = g_strdup (g_value_get_string (&value));
+		g_value_unset (&value);
+
+		g_object_unref (G_OBJECT (node));
+		
+		g_mutex_lock (priv->new_files_lock);
+		priv->new_files = g_list_append (priv->new_files, file);
+		g_mutex_unlock (priv->new_files_lock);
+
+		return;
+	}
+
+	/* sync "innocent" tags */
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_TRACK_NUMBER, &value);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
+	g_value_unset (&value);
+	
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, &value);
+	g_value_unset (&value);
+}
+
 static gpointer
 rb_library_thread_main (RBLibraryPrivate *priv)
 {
@@ -801,6 +886,16 @@ rb_library_thread_main (RBLibraryPrivate *priv)
 			list = g_list_first (priv->new_files);
 			file = (char *) list->data;
 			rb_library_thread_process_new_song (priv, file);
+		}
+
+		if (priv->changed_nodes != NULL)
+		{
+			GList *list;
+			RBNode *node;
+
+			list = g_list_first (priv->changed_nodes);
+			node = RB_NODE (list->data);
+			rb_library_thread_process_changed_node (priv, node);
 		}
 
 		g_mutex_unlock (priv->thread_lock);
