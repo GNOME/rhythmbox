@@ -850,7 +850,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 		{
 			char *prop_type;
 			GType value_type;
-			GValue *value;
+			GValue value = { 0, };
 			
 			prop_type = xmlGetProp (child, "key");
 
@@ -859,18 +859,17 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			g_free (tmp);
 
 			tmp = xmlGetProp (child, "value");
-			value = g_new0 (GValue, 1);
-			g_value_init (value, value_type);
+			g_value_init (&value, value_type);
 			switch (value_type)
 			{
 			case G_TYPE_STRING:
-				g_value_set_string (value, tmp);
+				g_value_set_string (&value, tmp);
 				break;
 			case G_TYPE_INT:
-				g_value_set_int (value, atoi (tmp));
+				g_value_set_int (&value, atoi (tmp));
 				break;
 			case G_TYPE_LONG:
-				g_value_set_long (value, atol (tmp));
+				g_value_set_long (&value, atol (tmp));
 				break;
 			default:
 				g_warning ("Unhandled value type: %s", g_type_name (value_type));
@@ -878,9 +877,11 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 			}
 			g_free (tmp);
 			
-			g_hash_table_replace (node->priv->properties,
+			rb_node_set_property (node,
 					      prop_type,
-					      value);
+					      &value);
+			g_value_unset (&value);
+			g_free (prop_type);
 		}
 	}
 
@@ -1064,35 +1065,41 @@ static gboolean
 rb_node_action_queue_timeout_cb (gpointer unused)
 {
 	RBNodeAction *action;
+	int i = 0;
 
 	if (g_queue_is_empty (actions) == TRUE)
 		return TRUE;
 
-	g_mutex_lock (actions_lock);
-	action = g_queue_pop_head (actions);
-	g_mutex_unlock (actions_lock);
-
-	switch (action->type)
+	while (g_queue_is_empty (actions) == FALSE && i <= 2)
 	{
-	case RB_NODE_ACTION_UNREF:
-		g_object_unref (G_OBJECT (action->node));
-		break;
-	case RB_NODE_ACTION_SIGNAL:
-		if (action->user_data != NULL)
-		{
-			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
-				       action->user_data);
-		}
-		else
-		{
-			g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
-		}
-		break;
-	default:
-		break;
-	}
+		g_mutex_lock (actions_lock);
+		action = g_queue_pop_head (actions);
+		g_mutex_unlock (actions_lock);
 
-	g_free (action);
+		switch (action->type)
+		{
+		case RB_NODE_ACTION_UNREF:
+			g_object_unref (G_OBJECT (action->node));
+			break;
+		case RB_NODE_ACTION_SIGNAL:
+			if (action->user_data != NULL)
+			{
+				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0,
+					       action->user_data);
+			}
+			else
+			{
+				g_signal_emit (G_OBJECT (action->node), rb_node_signals[action->signal], 0);
+			}
+			break;
+		default:
+			break;
+		}
+
+		g_free (action);
+
+		i++;
+	}
 
 	return TRUE;
 }
