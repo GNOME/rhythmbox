@@ -1,6 +1,5 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically.
-component/Rhythmbox_Nautilus_Context_Menu.server.in.in
 data/GNOME_Rhythmbox.server.in
 data/glade/create-playlist.glade
 data/glade/druid.glade
@@ -17,23 +16,14 @@ data/ui/rhythmbox-audiocd-view.xml.in
 data/ui/rhythmbox-ui.xml
 iradio/rb-new-station-dialog.c
 iradio/rb-station-properties-dialog.c
-lib/disclosure-widget.c
-lib/eel-gconf-extensions.c
-lib/eggtrayicon.c
 lib/rb-file-helpers.c
-lib/rb-playlist.c
 lib/rb-string-helpers.c
-metadata/monkey-media/monkey-media-stream-info.c
-metadata/monkey-media/monkey-media.c
-metadata/monkey-media/stream-info-impl/audiocd-stream-info-impl.c
-metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c
-metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
-metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c
-metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+lib/totem-pl-parser.c
 metadata/rb-metadata-gst.c
 metadata/rb-metadata-mm.c
 player/rb-player-gst.c
 player/rb-player-xine.c
+remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in
 rhythmdb/rhythmdb-property-model.c
 rhythmdb/rhythmdb-tree.c
 rhythmdb/rhythmdb.c
@@ -54,6 +44,9 @@ sources/rb-library-source.c
 sources/rb-playlist-source.c
 sources/rb-source.c
 sources/rb-sourcelist.c
+widgets/disclosure-widget.c
+widgets/eel-gconf-extensions.c
+widgets/eggtrayicon.c
 widgets/rb-cell-renderer-pixbuf.c
 widgets/rb-druid.c
 widgets/rb-entry-view.c
