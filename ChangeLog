@@ -2,6 +2,58 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-09 15:39:32 GMT	Colin Walters <walters@verbum.org>	patch-269
+
+    Summary:
+      kill off RBLink, use GnomeHREF (Mark Humphreys)
+    Revision:
+      rhythmbox--mainline--0.6--patch-269
+
+
+    removed files:
+     widgets/rb-link.c widgets/rb-link.h
+
+    modified files:
+     ChangeLog widgets/Makefile.am widgets/rb-player.c
+     widgets/rb-song-display-box.c widgets/rb-song-display-box.h
+
+
+2003-11-09 15:01:24 GMT	Colin Walters <walters@verbum.org>	patch-268
+
+    Summary:
+      use explicit idle handler for saving state
+    Revision:
+      rhythmbox--mainline--0.6--patch-268
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2003-11-09 06:35:12 GMT	Colin Walters <walters@verbum.org>	patch-267
+
+    Summary:
+      save the DB after the first startup
+    Revision:
+      rhythmbox--mainline--0.6--patch-267
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2003-11-09 06:03:23 GMT	Colin Walters <walters@verbum.org>	patch-266
+
+    Summary:
+      ensure jump to playing will switch source if necessary
+    Revision:
+      rhythmbox--mainline--0.6--patch-266
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
 2003-11-09 05:53:41 GMT	Colin Walters <walters@verbum.org>	patch-265
 
     Summary:
