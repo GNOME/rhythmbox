@@ -80,6 +80,12 @@
 #include "rb-thread-helpers.h"
 #include "eel-gconf-extensions.h"
 
+#ifdef WITH_DASHBOARD
+#include <glib.h>
+#include <sys/time.h>
+#include "dashboard.c"
+#endif /* WITH_DASHBOARD */
+
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
@@ -300,8 +306,6 @@ struct RBShellPrivate
 
 	char *cached_title;
 	char *cached_duration;
-
-	gulong song_changed_cb_id;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -902,13 +906,30 @@ rb_shell_entry_changed_cb (GObject *object, GParamSpec *pspec, RBShell *shell)
 {
 	GNOME_Rhythmbox_SongInfo *song_info;
 	BonoboArg *arg;
-	
+
 	g_assert (strcmp (pspec->name, "playing-entry") == 0);
 	song_info = get_song_info_from_player (shell);
 	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
 	(GNOME_Rhythmbox_SongInfo*)arg->_value = song_info;
 	shell_notify_pb_changes (shell, "song", arg);
 	/* FIXME: arg should be released somehow */
+
+#ifdef WITH_DASHBOARD
+	if (song_info) {
+        	char *cluepacket;
+        	/* Send cluepacket to dashboard */
+        	cluepacket =
+			dashboard_build_cluepacket_then_free_clues ("Music Player",
+							    	TRUE, 
+							    	"", 
+							    	dashboard_build_clue (song_info->title, "song_title", 10),
+							    	dashboard_build_clue (song_info->artist, "artist", 10),
+							    	dashboard_build_clue (song_info->album, "album", 10),
+							    	NULL);
+       		dashboard_send_raw_cluepacket (cluepacket);
+       		g_free (cluepacket);
+	}
+#endif //WITH_DASHBOARD
 }
 
 void
@@ -1470,17 +1491,17 @@ rb_shell_select_source (RBShell *shell,
 
 	rb_debug ("selecting source %p", source);
 	
-	if (shell->priv->song_changed_cb_id != 0) {
+	if (shell->priv->selected_source) {
 		view = rb_source_get_entry_view (shell->priv->selected_source);
-		g_signal_handler_disconnect (view, 
-					     shell->priv->song_changed_cb_id);
+		g_signal_handlers_disconnect_by_func (view, 
+		                                      G_CALLBACK (rb_shell_entry_changed_cb),
+						      shell);
 	}
 	shell->priv->selected_source = source;
 	
 	view = rb_source_get_entry_view (shell->priv->selected_source);
-	shell->priv->song_changed_cb_id = 
-		g_signal_connect (view, "notify::playing-entry", 
-				  (GCallback)rb_shell_entry_changed_cb, shell);
+	g_signal_connect (view, "notify::playing-entry", 
+			  G_CALLBACK(rb_shell_entry_changed_cb), shell);
 
 	/* show source */
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
