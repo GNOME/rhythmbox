@@ -306,7 +306,7 @@ show_columns_changed_cb (GtkToggleButton *button,
 	char *conf = "";
 
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->artist_check)) == TRUE)
-		conf = "RB_TREE_MODEL_NODE_COL_ARTIST";
+		conf = g_strdup_printf ("RB_TREE_MODEL_NODE_COL_ARTIST");
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->album_check)) == TRUE)
 		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_ALBUM", conf);
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->genre_check)) == TRUE)
