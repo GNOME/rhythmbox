@@ -26,7 +26,7 @@
 
 G_BEGIN_DECLS
 
-#define RB_LIBRARY_XML_VERSION "1.3"
+#define RB_LIBRARY_XML_VERSION "1.2"
 
 #define RB_TYPE_LIBRARY         (rb_library_get_type ())
 #define RB_LIBRARY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY, RBLibrary))
@@ -47,6 +47,9 @@ typedef struct
 typedef struct
 {
 	GObjectClass parent;
+
+	void (*beginning_loading) (RBLibrary *library);
+	void (*done_loading) (RBLibrary *library);
 } RBLibraryClass;
 
 enum
@@ -54,38 +57,40 @@ enum
 	RB_ALL_NODE_PROP_PRIORITY = 15
 };
 
-GType                 rb_library_get_type             (void);
+GType			rb_library_get_type		(void);
 
-RBLibrary            *rb_library_new                  (void);
+RBLibrary *		rb_library_new                  (void);
 
-RBLibraryAction      *rb_library_add_uri              (RBLibrary *library,
-					               const char *uri);
-void                  rb_library_remove_node          (RBLibrary *library,
-					               RBNode *node);
+RBLibraryAction *	rb_library_add_uri              (RBLibrary *library,
+							 const char *uri);
+void			rb_library_remove_node          (RBLibrary *library,
+							 RBNode *node);
 
-void                  rb_library_release_brakes       (RBLibrary *library);
+void			rb_library_release_brakes       (RBLibrary *library);
 
-RBNode               *rb_library_get_all_genres       (RBLibrary *library);
-RBNode               *rb_library_get_all_artists      (RBLibrary *library);
-RBNode               *rb_library_get_all_albums       (RBLibrary *library);
-RBNode               *rb_library_get_all_songs        (RBLibrary *library);
+gboolean		rb_library_is_idle		(RBLibrary *library);
 
-RBNode               *rb_library_get_genre_by_name    (RBLibrary *library,
-						       const char *genre);
-RBNode               *rb_library_get_artist_by_name   (RBLibrary *library,
-						       const char *artist);
-RBNode               *rb_library_get_album_by_name    (RBLibrary *library,
-						       const char *album);
-RBNode               *rb_library_get_song_by_location (RBLibrary *library,
-						       const char *location);
+RBNode *		rb_library_get_all_genres       (RBLibrary *library);
+RBNode *		rb_library_get_all_artists      (RBLibrary *library);
+RBNode *		rb_library_get_all_albums       (RBLibrary *library);
+RBNode *		rb_library_get_all_songs        (RBLibrary *library);
 
-RBLibraryActionQueue *rb_library_get_main_queue       (RBLibrary *library);
-RBLibraryActionQueue *rb_library_get_walker_queue     (RBLibrary *library);
+RBNode *		rb_library_get_genre_by_name    (RBLibrary *library,
+							 const char *genre);
+RBNode *		rb_library_get_artist_by_name   (RBLibrary *library,
+							 const char *artist);
+RBNode *		rb_library_get_album_by_name    (RBLibrary *library,
+							 const char *album);
+RBNode *		rb_library_get_song_by_location (RBLibrary *library,
+							 const char *location);
 
-void                  rb_library_handle_songs         (RBLibrary *library,
-						       RBNode *node,
-						       GFunc func,
-						       gpointer user_data);
+RBLibraryActionQueue *	rb_library_get_main_queue       (RBLibrary *library);
+RBLibraryActionQueue *	rb_library_get_walker_queue     (RBLibrary *library);
+
+void			rb_library_handle_songs         (RBLibrary *library,
+							 RBNode *node,
+							 GFunc func,
+							 gpointer user_data);
 
 G_END_DECLS
 

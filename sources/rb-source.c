@@ -68,7 +68,6 @@ enum
 
 enum
 {
-	DELETED,
 	STATUS_CHANGED,
 	FILTER_CHANGED,
 	LAST_SIGNAL
@@ -152,16 +151,6 @@ rb_source_class_init (RBSourceClass *klass)
 							      "BonoboUIContainer object",
 							      BONOBO_TYPE_UI_CONTAINER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	rb_source_signals[DELETED] =
-		g_signal_new ("deleted",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBSourceClass, deleted),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 
 	rb_source_signals[STATUS_CHANGED] =
 		g_signal_new ("status_changed",
@@ -292,12 +281,6 @@ void
 rb_source_notify_filter_changed (RBSource *status)
 {
 	g_signal_emit (G_OBJECT (status), rb_source_signals[FILTER_CHANGED], 0);
-}
-
-void
-rb_source_deleted (RBSource *source)
-{
-	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
 }
 
 RBNodeView *

@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,7 +24,9 @@
 
 G_BEGIN_DECLS
 
-#define CONF_UI_BROWSER_VIEWS "/apps/rhythmbox/ui/browser_views"
+#define CONF_PREFIX "/apps/rhythmbox"
+
+#define CONF_UI_BROWSER_VIEWS CONF_PREFIX "ui/browser_views"
 
 G_END_DECLS
 

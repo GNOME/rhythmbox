@@ -28,7 +28,6 @@
 #include "rb-library.h"
 #include "monkey-media.h"
 #include "monkey-media-audio-cd.h"
-#include "rb-echo-area.h"
 
 G_BEGIN_DECLS
 
@@ -56,8 +55,7 @@ typedef struct
 GType		rb_audiocd_view_get_type           (void);
 
 RBSource *	rb_audiocd_view_new                (BonoboUIContainer *container,
-						    MonkeyMediaAudioCD *cd,
-						    RBEchoArea *echoarea);
+						    MonkeyMediaAudioCD *cd);
 
 void		rb_audiocd_view_set_name           (RBAudiocdSource *audiocd,
 						    const char *name);

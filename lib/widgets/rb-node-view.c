@@ -113,6 +113,8 @@ static void after_filter_changed_cb (RBNodeFilter *filter,
 static gboolean rb_node_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBNodeView *view);
+static GList * parse_columns_as_glist (const char *str);
+
 
 struct RBNodeViewPrivate
 {
@@ -581,7 +583,7 @@ rb_node_view_search_equal (GtkTreeModel *model,
 	return retval;
 }
 
-GList *
+static GList *
 parse_columns_as_glist (const char *str)
 {
 	GList *ret = NULL;

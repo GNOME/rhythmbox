@@ -39,6 +39,8 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  bonobo-activation-2.0		\
 		  monkey-media >= $MONKEYMEDIA_REQUIRED)
 
+RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
+
 AC_CHECK_LIB(lirc_client, lirc_init,
 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
 			[ RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS -llirc_client"
@@ -86,13 +88,14 @@ Makefile
 lib/Makefile
 lib/widgets/Makefile
 library/Makefile
+iradio/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile
 data/art/Makefile
 data/glade/Makefile
 data/node-views/Makefile
-views/Makefile
+sources/Makefile
 help/Makefile
 help/C/Makefile
 po/Makefile.in

@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2002 Jorn Baayen.  All rights reserved.
+ *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
  *  $Id$
  */
 
-#include <gtk/gtkhbox.h>
-
-#include "rb.h"
-#include "rb-node.h"
-
 #ifndef __RB_PLAYER_H
 #define __RB_PLAYER_H
+
+#include <gtk/gtkhbox.h>
+
+#include "rb-node.h"
+#include "monkey-media-player.h"
 
 G_BEGIN_DECLS
 
@@ -46,44 +46,29 @@ typedef struct
 
 typedef struct
 {
-	GtkHBoxClass parent_class;
+	GtkHBoxClass parent;
 } RBPlayerClass;
 
-typedef enum
-{
-	RB_PLAYER_PLAYING,
-	RB_PLAYER_PAUSED,
-	RB_PLAYER_STOPPED
-} RBPlayerState;
+GType		rb_player_get_type		(void);
 
-GType         rb_player_get_type       (void);
+RBPlayer *	rb_player_new			(MonkeyMediaPlayer *player);
 
-RBPlayer     *rb_player_new            (RB *rb);
+void		rb_player_set_playing_node	(RBPlayer *player,
+						 RBNode *node);
 
-void          rb_player_queue_song     (RBPlayer *player,
-			                RBNode *song,
-			                gboolean start_playing,
-					gboolean scroll_to);
+void		rb_player_set_title		(RBPlayer *player,
+						 const char *title);
 
-RBNode       *rb_player_get_song       (RBPlayer *player);
+void		rb_player_set_show_artist_album	(RBPlayer *player,
+						 gboolean show);
 
-void          rb_player_set_state      (RBPlayer *player,
-			                RBPlayerState state);
+void		rb_player_set_urldata		(RBPlayer *player,
+						 const char *urltext,
+						 const char *urllink);
 
-RBPlayerState rb_player_get_state      (RBPlayer *player);
+void		rb_player_sync			(RBPlayer *player);
 
-void          rb_player_load_playlist  (RBPlayer *player,
-			                const char *uri,
-			                GError **error);
-
-void          rb_player_save_playlist  (RBPlayer *player,
-			                const char *uri,
-				        const char *name,
-			                GError **error);
-
-GtkWidget    *rb_player_get_left_part  (RBPlayer *player);
-
-GtkWidget    *rb_player_get_right_part (RBPlayer *player);
+gboolean	rb_player_sync_time		(RBPlayer *player);
 
 G_END_DECLS
 

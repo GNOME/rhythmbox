@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 Jorn Baayen
+ *  Copyright (C) 2002,2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,21 +18,17 @@
  *  $Id$
  */
 
-#include <glib/gthread.h>
+#ifndef __RB_SHELL_PLAYLIST_H
+#define __RB_SHELL_PLAYLIST_H
 
-#ifndef __RB_THREAD_HELPERS_H
-#define __RB_THREAD_HELPERS_H
+#include "rb-library.h"
+#include "rb-iradio-backend.h"
 
 G_BEGIN_DECLS
 
-void     rb_thread_helpers_init           (void);
-
-gboolean rb_thread_helpers_in_main_thread (void);
-
-void	 rb_thread_helpers_lock_gdk (void);
-
-void	 rb_thread_helpers_unlock_gdk (void);
+char *		rb_playlist_load (RBLibrary *library, RBIRadioBackend *iardio_backend,
+				  const char *fname);
 
 G_END_DECLS
 
-#endif /* __RB_THREAD_HELPERS_H */
+#endif

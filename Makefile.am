@@ -1,4 +1,6 @@
-SUBDIRS = lib views library shell data po help
+# AUTOMAKE_OPTIONS = 1.7
+
+SUBDIRS = lib sources library iradio shell data po help
 
 EXTRA_DIST = 			\
 	autogen.sh		\

@@ -2,6 +2,50 @@
 
 <commands>
 
+	<cmd name="Previous"
+	     pixtype="stock"
+	     pixname="rhythmbox-previous"
+	     _tip="Start playing the previous song"
+	     priority="1"/>
+	     
+	<cmd name="Play"
+	     pixtype="stock"
+	     pixname="rhythmbox-play"
+	     _tip="Start playing"
+	     priority="1"/>
+
+	<cmd name="Pause"
+	     pixtype="stock"
+	     pixname="rhythmbox-pause"
+	     _tip="Pause playing"
+	     priority="1"/>
+
+	<cmd name="Stop"
+	     pixtype="stock"
+	     pixname="rhythmbox-stop"
+	     _tip="Stop playing"
+	     priority="1"/>
+
+	<cmd name="Next"
+	     pixtype="stock"
+	     pixname="rhythmbox-next"
+	     _tip="Start playing the next song"
+	     priority="1"/>
+
+	<cmd name="Shuffle"
+	     pixtype="stock"
+	     pixname="rhythmbox-shuffle"
+	     _tip="Toggle random playing order"
+	     priority="1"
+	     type="toggle"/>
+
+	<cmd name="Repeat"
+	     pixtype="stock"
+	     pixname="rhythmbox-repeat"
+	     _tip="Toggle repeat mode"
+	     priority="1"
+	     type="toggle"/>
+
 	<cmd name="Cut"
 	     pixtype="stock"
 	     pixname="gtk-cut"
@@ -36,18 +80,78 @@
 	     pixname="gtk-close"
 	     _tip="Close the music player"/>
 
+	<cmd name="Preferences"
+	     pixtype="stock"
+	     pixname="gtk-preferences"
+	     _tip="Edit music player preferences"/>
+
+	<cmd name="NewGroup"
+	     pixtype="stock"
+	     pixname="gtk-new"
+	     _tip="Create a new music group"/>
+
+	<cmd name="NewStation"
+	     pixtype="stock"
+	     pixname="gtk-new"
+	     _tip="Create a new Internet Radio station"/>
+
+	<cmd name="AddToLibrary"
+	     pixtype="stock"
+	     pixname="gtk-open"
+	     _tip="Choose files or a directory to be added to the library"/>
+
+	<cmd name="AddLocation"
+	     pixtype="stock"
+	     pixname="gtk-open"
+	     _tip="Choose a location (URI) to be added to the library"/>
+
+	<cmd name="LoadPlaylist"
+	     _tip="Choose a playlist to be loaded"/>
+
+	<cmd name="ShowStatusbar"
+	     _tip="Change the visibility of the statusbar"
+	     type="toggle"/>
+
+	<cmd name="ShowSourceList"
+	     _tip="Change the visibility of the source list"
+	     type="toggle"/>
+	     
+	<cmd name="ShowWindow"
+	     _tip="Change the visibility of the main window"
+	     type="toggle"/>
+	
 	<cmd name="SongInfo"
 	     pixtype="stock"
 	     pixname="gtk-properties"
 	     priority="1"
 	     _tip="Show information on the selected song"/>
 	     
+	<cmd name="CurrentSong"
+	     _tip="Scroll the view to the currently playing song"
+	     pixtype="stock"
+             pixname="gtk-jump-to"/>
+
 </commands>
 
 <menu>
 
 <submenu name="File" _label="_Organize">
         
+        <menuitem name="NewGroup" verb="NewGroup" _label="_New Group..." accel="*Control*n"/>
+	<menuitem name="NewStation" verb="NewStation" _label="_New Internet Radio Station" accel="*Control*i"/>
+
+	<placeholder name="SourceMenu"/>
+
+	<separator/>
+
+        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
+        <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
+        <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
+
+	<placeholder name="FileMenu"/>
+
+	<separator/>
+
         <menuitem name="Close" verb="Close" _label="_Close" accel="*Control*w"/>
 
 </submenu>
@@ -67,6 +171,42 @@
         <separator/>
 
         <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
+
+	<separator/>
+
+	<menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
+
+</submenu>
+
+<submenu name="View" _label="_View">
+
+	<menuitem name="SourceList" verb="ShowSourceList" _label="_Source List" accel="F9"/>
+
+	<menuitem name="Statusbar" verb="ShowStatusbar" _label="St_atusbar"/>
+
+	<menuitem name="ShowBrowser" verb="ShowBrowser" _label="_Browser" accel="F7"/>
+        
+	<separator/>
+
+        <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
+
+</submenu>
+
+<submenu name="Controls" _label="_Music">
+
+	<menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
+
+	<separator/>
+
+	<menuitem name="Previous" _label="P_revious" verb="Previous" accel="*Control*Left"/>
+
+	<menuitem name="Next" _label="_Next" verb="Next" accel="*Control*Right"/>
+
+	<separator/>
+	
+	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
+	
+	<menuitem name="Repeat" _label="Repea_t" verb="Repeat" accel="*Control*t"/>
 
 </submenu>
 

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<rhythmbox_node_view editable="true" rules-hint="true" headers-visible="true" selection-mode="GTK_SELECTION_MULTIPLE" column-visibility-pref="/apps/rhythmbox/ui/iradio_columns_setup">
+<rhythmbox_node_view editable="true" rules-hint="true" headers-visible="true" selection-mode="GTK_SELECTION_MULTIPLE" column-visibility-pref="/apps/rhythmbox/ui/columns_setup" allowed-columns="RB_TREE_MODEL_NODE_COL_PLAYING,RB_TREE_MODEL_NODE_COL_TITLE,RB_TREE_MODEL_NODE_COL_GENRE,RB_TREE_MODEL_NODE_COL_RATING,RB_TREE_MODEL_NODE_COL_PLAY_COUNT,RB_TREE_MODEL_NODE_COL_LAST_PLAYED,RB_TREE_MODEL_NODE_COL_QUALITY">
   <column column="RB_TREE_MODEL_NODE_COL_PLAYING"
 	  clickable="false"
 	  resizable="false"
@@ -9,6 +9,7 @@
 	  column="RB_TREE_MODEL_NODE_COL_TITLE"
 	  resizable="true"
 	  reorderable="false"
+	  default-sort-column="true"
 	  sort-order="RB_TREE_MODEL_NODE_COL_TITLE_KEY"
 	  expand="true"/>
   <column _title="Ge_nre"

@@ -20,6 +20,8 @@
 
 #include "rb-thread-helpers.h"
 
+#include <gdk/gdk.h>
+
 static GThread *main_thread = NULL;
 
 void    
@@ -32,4 +34,18 @@ gboolean
 rb_thread_helpers_in_main_thread (void)
 {
 	return (main_thread == g_thread_self ());
+}
+
+void
+rb_thread_helpers_lock_gdk (void)
+{
+	if (!rb_thread_helpers_in_main_thread ())
+		gdk_threads_enter ();
+}
+
+void
+rb_thread_helpers_unlock_gdk (void)
+{
+	if (!rb_thread_helpers_in_main_thread ())
+		gdk_threads_leave ();
 }

@@ -89,6 +89,8 @@ GType		rb_source_get_type		(void);
 
 void		rb_source_notify_filter_changed	(RBSource *source);
 
+void		rb_source_notify_status_changed (RBSource *status);
+
 /* general interface */
 const char *	rb_source_get_status		(RBSource *source);
 
@@ -99,8 +101,6 @@ GList *		rb_source_get_extra_views	(RBSource *player);
 const char *	rb_source_get_description	(RBSource *source);
 
 GdkPixbuf *	rb_source_get_pixbuf		(RBSource *source);
-
-void		rb_source_deleted		(RBSource *source);
 
 void		rb_source_search		(RBSource *source,
 						 const char *text);

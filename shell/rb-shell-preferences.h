@@ -19,18 +19,17 @@
  */
 
 #include <gtk/gtkdialog.h>
+#include "rb-preferences.h"
 
 #ifndef __RB_SHELL_PREFERENCES_H
 #define __RB_SHELL_PREFERENCES_H
 
 G_BEGIN_DECLS
 
-#define CONF_UI_DIR               "/apps/rhythmbox/ui"
-#define CONF_UI_TOOLBAR_VISIBLE   "/apps/rhythmbox/ui/toolbar_visible"
-#define CONF_UI_STATUSBAR_VISIBLE "/apps/rhythmbox/ui/statusbar_visible"
-#define CONF_UI_SIDEBAR_VISIBLE   "/apps/rhythmbox/ui/sidebar_visible"
-#define CONF_UI_TOOLBAR_STYLE     "/apps/rhythmbox/ui/toolbar_style"
-#define CONF_UI_COLUMNS_SETUP	  "/apps/rhythmbox/ui/columns_setup"
+#define CONF_UI_DIR               CONF_PREFIX "/ui"
+#define CONF_UI_STATUSBAR_HIDDEN  CONF_PREFIX "/ui/statusbar_hidden"
+#define CONF_UI_SOURCELIST_HIDDEN CONF_PREFIX "/ui/sourcelist_hidden"
+#define CONF_UI_COLUMNS_SETUP CONF_PREFIX "/ui/columns_setup"
 
 #define RB_TYPE_SHELL_PREFERENCES         (rb_shell_preferences_get_type ())
 #define RB_SHELL_PREFERENCES(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_SHELL_PREFERENCES, RBShellPreferences))
@@ -55,7 +54,7 @@ typedef struct
 
 GType      rb_shell_preferences_get_type (void);
 
-GtkWidget *rb_shell_preferences_new      (void);
+GtkWidget *rb_shell_preferences_new      (GList *views);
 
 G_END_DECLS
 

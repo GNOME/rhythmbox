@@ -9,8 +9,12 @@ librbwidgets_la_SOURCES =				\
 	rb-search-entry.h				\
 	rb-link.c					\
 	rb-link.h					\
+	rb-player.c					\
+	rb-player.h					\
 	rb-volume.c					\
 	rb-volume.h					\
+	rb-sourcelist.c					\
+	rb-sourcelist.h					\
 	eggtreemodelfilter.c				\
 	eggtreemodelfilter.h				\
 	eggtreemultidnd.c				\
@@ -39,7 +43,7 @@ INCLUDES =						\
 	-DG_LOG_DOMAIN=\"Rhythmbox\"		 	\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
-	-I$(top_srcdir)/lib/view			\
+	-I$(top_srcdir)/sources				\
 	-I$(top_srcdir)/library				\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_builddir)/lib 				\
@@ -47,4 +51,4 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIDADD = $(top_builddir)/lib/view/librbview.la
+librbwidgets_la_LIDADD = $(top_builddir)/sources/libsources.la

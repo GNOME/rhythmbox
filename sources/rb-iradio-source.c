@@ -360,7 +360,7 @@ rb_iradio_source_new (BonoboUIContainer *container,
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
-					  "ui-file", "net-rhythmbox-iradio-view.xml",
+					  "ui-file", "rhythmbox-iradio-view.xml",
 					  "ui-name", "IRadioSource",
 					  "config-name", "Internet Radio",
 					  "container", container,

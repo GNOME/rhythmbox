@@ -6,6 +6,8 @@ module GNOME
 	{
 		void addToLibrary (in string uri);
 
+		void handleFile (in string uri);
+
 		void grabFocus ();
 	
 		void quit ();

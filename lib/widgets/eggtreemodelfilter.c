@@ -379,8 +379,6 @@ egg_tree_model_filter_build_level (EggTreeModelFilter *filter,
   gint length = 0;
   gint i;
 
-  g_print ("building level\n");
-
   g_assert (filter->child_model != NULL);
 
   if (!parent_level)

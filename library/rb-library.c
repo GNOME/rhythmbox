@@ -68,6 +68,11 @@ struct RBLibraryPrivate
 	char *xml_file;
 };
 
+enum
+{
+	PROP_0,
+};
+
 static GObjectClass *parent_class = NULL;
 
 GType
@@ -111,6 +116,7 @@ rb_library_class_init (RBLibraryClass *klass)
 static void
 rb_library_init (RBLibrary *library)
 {
+	char *libname = g_strdup_printf ("library-%s.xml", RB_LIBRARY_XML_VERSION);
 	rb_node_system_init ();
 
 	/* ensure these types have been registered: */
@@ -121,8 +127,10 @@ rb_library_init (RBLibrary *library)
 	library->priv = g_new0 (RBLibraryPrivate, 1);
 
 	library->priv->xml_file = g_build_filename (rb_dot_dir (),
-						    "library.xml",
+						    libname,
 						    NULL);
+
+	g_free (libname); 
 
 	library->priv->genre_hash = g_hash_table_new (g_str_hash,
 						      g_str_equal);
@@ -154,13 +162,22 @@ rb_library_init (RBLibrary *library)
 void
 rb_library_release_brakes (RBLibrary *library)
 {
+	rb_debug ("doing it");
 	/* and off we go */
 	rb_library_load (library);
 
+	rb_debug ("library: kicking off main thread");
 	/* create these after having loaded the xml to avoid extra loading time */
 	library->priv->main_thread = rb_library_main_thread_new (library);
 
+	rb_debug ("library: creating walker thread");
 	library->priv->walker_thread = rb_library_walker_thread_new (library);
+}
+
+gboolean
+rb_library_is_idle (RBLibrary *library)
+{
+	return rb_library_action_queue_is_empty (library->priv->main_queue);
 }
 
 static void
@@ -177,13 +194,14 @@ rb_library_finalize (GObject *object)
 
 	g_return_if_fail (library->priv != NULL);
 
+	rb_debug ("library: finalizing");
 	GDK_THREADS_LEAVE (); /* be sure the main thread is able to finish */
 	g_object_unref (G_OBJECT (library->priv->main_thread));
 	GDK_THREADS_ENTER ();
 	g_object_unref (G_OBJECT (library->priv->walker_thread));
 	g_object_unref (G_OBJECT (library->priv->main_queue));
 	g_object_unref (G_OBJECT (library->priv->walker_queue));
-	
+
 	rb_library_save (library);
 
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
@@ -497,6 +515,7 @@ rb_library_save (RBLibrary *library)
 	GPtrArray *children;
 	int i;
 
+	rb_debug ("library: saving");
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
 	doc = xmlNewDoc ("1.0");
@@ -553,6 +572,7 @@ rb_library_save (RBLibrary *library)
 	rb_node_thaw (library->priv->all_songs);
 
 	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
+	rb_debug ("library: done saving");
 }
 
 RBLibraryActionQueue *
@@ -652,7 +672,7 @@ rb_library_handle_songs (RBLibrary *library,
 			RBNode *n;
 
 			n = g_ptr_array_index (kids, i);
-
+			
 			rb_library_handle_songs (library, n, func, user_data);
 		}
 
@@ -670,6 +690,8 @@ rb_library_load (RBLibrary *library)
 
 	if (g_file_test (library->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
 		return;
+
+	rb_debug ("library: loading");
 
 	doc = xmlParseFile (library->priv->xml_file);
 
@@ -706,6 +728,7 @@ rb_library_load (RBLibrary *library)
 			location = rb_node_get_property_string (node,
 						                RB_NODE_PROP_LOCATION);
 					
+			rb_debug ("library: queueing %s for updating", location);
 			rb_library_action_queue_add (library->priv->main_queue,
 						     FALSE,
 						     RB_LIBRARY_ACTION_UPDATE_FILE,
@@ -717,4 +740,5 @@ rb_library_load (RBLibrary *library)
 	rb_profiler_free (p);
 
 	xmlFreeDoc (doc);
+	rb_debug ("library: done loading");
 }

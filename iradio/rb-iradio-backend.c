@@ -34,7 +34,6 @@
 #include "rb-iradio-yp-xmlfile.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
-#include "rb-echo-area.h"
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-node-station.h"
@@ -44,14 +43,6 @@
 static void rb_iradio_backend_class_init (RBIRadioBackendClass *klass);
 static void rb_iradio_backend_init (RBIRadioBackend *view);
 static void rb_iradio_backend_finalize (GObject *object);
-static void rb_iradio_backend_set_property (GObject *object,
-					    guint prop_id,
-					    const GValue *value,
-					    GParamSpec *pspec);
-static void rb_iradio_backend_get_property (GObject *object,
-					    guint prop_id,
-					    GValue *value,
-					    GParamSpec *pspec);
 
 static void rb_iradio_backend_save (RBIRadioBackend *backend);
 static void genre_added_cb (RBNode *node, RBNode *child, RBIRadioBackend *backend);
@@ -69,15 +60,12 @@ struct RBIRadioBackendPrivate
 	GHashTable *genre_hash;
 	GStaticRWLock *genre_hash_lock;
 
-	RBEchoArea *echoarea;
-
 	char *xml_file;
 };
 
 enum
 {
 	PROP_0,
-	PROP_ECHO_AREA,
 };
 
 enum
@@ -126,17 +114,6 @@ rb_iradio_backend_class_init (RBIRadioBackendClass *klass)
 	
 	parent_class = g_type_class_peek_parent (klass);
 	
-	object_class->set_property = rb_iradio_backend_set_property;
-	object_class->get_property = rb_iradio_backend_get_property;
-
-	g_object_class_install_property (object_class,
-					 PROP_ECHO_AREA,
-					 g_param_spec_object ("echoarea",
-							      "Echo area",
-							      "Echo area",
-							      RB_TYPE_ECHO_AREA,
-							      G_PARAM_READWRITE));
-
 	rb_iradio_backend_signals[CHANGED] =
 		g_signal_new ("changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -219,45 +196,6 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 
 	rb_node_add_child (backend->priv->all_genres,
 			   backend->priv->all_stations);
-}
-
-static void
-rb_iradio_backend_set_property (GObject *object,
-				guint prop_id,
-				const GValue *value,
-				GParamSpec *pspec)
-{
-	RBIRadioBackend *backend = RB_IRADIO_BACKEND (object);
-
-	switch (prop_id)
-	{
-	case PROP_ECHO_AREA:
-		backend->priv->echoarea = g_value_get_object (value);
-		g_object_ref (backend->priv->echoarea);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
-}
-
-static void
-rb_iradio_backend_get_property (GObject *object,
-				guint prop_id,
-				GValue *value,
-				GParamSpec *pspec)
-{
-	RBIRadioBackend *backend = RB_IRADIO_BACKEND (object);
-
-	switch (prop_id)
-	{
-	case PROP_ECHO_AREA:
-		g_value_set_object (value, backend->priv->echoarea);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-		break;
-	}
 }
 
 static void
@@ -364,7 +302,6 @@ genre_removed_cb (RBNode *node,
 static void
 load_initial (RBIRadioBackend *backend)
 {
-	guint taskid;
 	const char *initial_file = rb_file ("iradio-initial.xml");
 	RBIRadioYPIterator *it;
 	RBIRadioStation *station;
@@ -378,9 +315,6 @@ load_initial (RBIRadioBackend *backend)
 	it = RB_IRADIO_YP_ITERATOR (g_object_new (RB_TYPE_IRADIO_YP_XMLFILE,
 						  "filename", initial_file,
 						  NULL));
-
-	taskid = rb_echo_area_begin_task (backend->priv->echoarea,
-					  _("Loading Internet Radio stations..."));
 
 	rb_debug ("iradio-backend: loading initial stations");
 	while ((station = rb_iradio_yp_iterator_get_next_station (it)) != NULL) {
@@ -401,7 +335,6 @@ load_initial (RBIRadioBackend *backend)
 		g_assert (RB_IS_IRADIO_BACKEND (backend));
 		nodestation = rb_node_station_new (locations, name, genre, "initial", backend);
 	}
-	rb_echo_area_end_task (backend->priv->echoarea, taskid);
 	rb_debug ("iradio-backend: done loading initial stations");
 	g_free ((char *) initial_file);
 	g_object_unref (G_OBJECT (it));
@@ -413,12 +346,8 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 	xmlDocPtr doc;
 	xmlNodePtr root, child;
 	char *tmp;
-	guint taskid;
 
 	rb_debug ("iradio-backend: loading");
-
-	taskid = rb_echo_area_begin_task (backend->priv->echoarea,
-					  _("Loading Internet Radio stations..."));
 
 	if (g_file_test (backend->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
 		goto loadinitial;
@@ -459,12 +388,11 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 			}
 		}
 	}
-	rb_echo_area_end_task (backend->priv->echoarea, taskid);
+
 	xmlFreeDoc (doc);
 	g_signal_emit (G_OBJECT (backend), rb_iradio_backend_signals[CHANGED], 0);
 	return;
  loadinitial:
-	rb_echo_area_end_task (backend->priv->echoarea, taskid);
 	load_initial (backend);
 }
 

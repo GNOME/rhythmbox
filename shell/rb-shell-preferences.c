@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,14 +29,17 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkradiobutton.h>
+#include <gtk/gtknotebook.h>
 #include <glade/glade.h>
 #include <libgnome/gnome-help.h>
 #include <string.h>
 
 #include "rb-file-helpers.h"
 #include "rb-shell-preferences.h"
+#include "rb-source.h"
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
+#include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
 
@@ -48,26 +52,28 @@ static gboolean rb_shell_preferences_window_delete_cb (GtkWidget *window,
 static void rb_shell_preferences_response_cb (GtkDialog *dialog,
 				              int response_id,
 				              RBShellPreferences *shell_preferences);
+static void rb_shell_preferences_ui_pref_changed (GConfClient *client,
+						  guint cnxn_id,
+						  GConfEntry *entry,
+						  RBShellPreferences *shell_preferences);
 static void rb_shell_preferences_sync (RBShellPreferences *shell_preferences);
-static void ui_pref_changed (GConfClient *client,
-		             guint cnxn_id,
-		             GConfEntry *entry,
-		             RBShellPreferences *shell_preferences);
 
-/* Glade callbacks */
-void browser_views_activated_cb (GtkWidget *widget,
-			         RBShellPreferences *prefs);
-void style_changed_cb (GtkOptionMenu *menu,
-		       RBShellPreferences *prefs);
-void show_columns_changed_cb (GtkToggleButton *button,
-			      RBShellPreferences *prefs);
+void rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
+						   RBShellPreferences *shell_preferences);
 
+
+enum
+{
+	PROP_0,
+};
 
 const char *styles[] = { "desktop_default", "both", "both_horiz", "icon", "text" };
 
 struct RBShellPreferencesPrivate
 {
-	GtkWidget *style_optionmenu;
+	GtkWidget *notebook;
+
+	GtkWidget *config_widget;
 	GtkWidget *artist_check;
 	GtkWidget *album_check;
 	GtkWidget *genre_check;
@@ -76,7 +82,7 @@ struct RBShellPreferencesPrivate
 	GtkWidget *rating_check;
 	GtkWidget *play_count_check;
 	GtkWidget *last_played_check;
-	GSList *browser_views_group;
+	GtkWidget *quality_check;
 
 	gboolean loading;
 };
@@ -127,11 +133,11 @@ help_cb (GtkWidget *widget,
 {
 	GError *error = NULL;
 
-	gnome_help_display ("rhythmbox.xml", "prefs", &error);
+	gnome_help_display ("net-rhythmbox.xml", "prefs", &error);
 
 	if (error != NULL)
 	{
-		g_warning (error->message);
+		rb_error_dialog (error->message);
 
 		g_error_free (error);
 	}
@@ -140,15 +146,10 @@ help_cb (GtkWidget *widget,
 static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
-	GladeXML *xml;
 	GtkWidget *help;
-	GtkWidget *tmp;
+	GladeXML *xml;
 
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
-
-	eel_gconf_notification_add (CONF_UI_DIR,
-				    (GConfClientNotifyFunc) ui_pref_changed,
-				    shell_preferences);
 
 	g_signal_connect (G_OBJECT (shell_preferences),
 			  "delete_event",
@@ -173,19 +174,20 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	gtk_window_set_title (GTK_WINDOW (shell_preferences), _("Music Player Preferences"));
 	gtk_window_set_resizable (GTK_WINDOW (shell_preferences), FALSE);
 
-	xml = rb_glade_xml_new ("preferences.glade",
-				"preferences_hbox",
-				shell_preferences);
+	shell_preferences->priv->notebook = GTK_WIDGET (gtk_notebook_new ());
+	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences->priv->notebook), 5);
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (shell_preferences)->vbox),
-			   glade_xml_get_widget (xml, "preferences_hbox"));
+			   shell_preferences->priv->notebook);
 
 	gtk_container_set_border_width (GTK_CONTAINER (shell_preferences), 7);
 	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (shell_preferences)->vbox), 8);
 	gtk_dialog_set_has_separator (GTK_DIALOG (shell_preferences), FALSE);
 
-	shell_preferences->priv->style_optionmenu =
-		glade_xml_get_widget (xml, "style_optionmenu");
+	xml = rb_glade_xml_new ("general-prefs.glade",
+				"general_vbox",
+				shell_preferences);
+	/* Columns */
 	shell_preferences->priv->artist_check =
 		glade_xml_get_widget (xml, "artist_check");
 	shell_preferences->priv->album_check =
@@ -202,13 +204,18 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 		glade_xml_get_widget (xml, "play_count_check");
 	shell_preferences->priv->last_played_check =
 		glade_xml_get_widget (xml, "last_played_check");
-	tmp = glade_xml_get_widget (xml, "browser_views_radio");
-	shell_preferences->priv->browser_views_group =
-		g_slist_reverse (g_slist_copy (gtk_radio_button_get_group 
-					(GTK_RADIO_BUTTON (tmp))));
+	shell_preferences->priv->quality_check =
+		glade_xml_get_widget (xml, "quality_check");
 
+	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook),
+				  glade_xml_get_widget (xml, "general_vbox"),
+				  gtk_label_new (_("General")));
 
 	g_object_unref (G_OBJECT (xml));
+	
+	eel_gconf_notification_add (CONF_UI_DIR,
+				    (GConfClientNotifyFunc) rb_shell_preferences_ui_pref_changed,
+				    shell_preferences);
 
 	rb_shell_preferences_sync (shell_preferences);
 }
@@ -223,8 +230,6 @@ rb_shell_preferences_finalize (GObject *object)
 
 	shell_preferences = RB_SHELL_PREFERENCES (object);
 
-	g_slist_free (shell_preferences->priv->browser_views_group);
-		
 	g_return_if_fail (shell_preferences->priv != NULL);
 
 	g_free (shell_preferences->priv);
@@ -232,8 +237,27 @@ rb_shell_preferences_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static void
+rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
+				       const char *name,
+				       RBSource *source)
+{
+	GtkWidget *widget;
+
+	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
+	g_return_if_fail (RB_IS_SOURCE (source));
+
+	widget = rb_source_get_config_widget (source);
+	if (widget)
+		gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
+					  widget,
+					  gtk_label_new (name));
+	else
+		rb_debug ("No config widget for source %s", name);
+}
+
 GtkWidget *
-rb_shell_preferences_new (void)
+rb_shell_preferences_new (GList *views)
 {
 	RBShellPreferences *shell_preferences;
 
@@ -242,6 +266,15 @@ rb_shell_preferences_new (void)
 
 	g_return_val_if_fail (shell_preferences->priv != NULL, NULL);
 
+	for (; views; views = views->next)
+	{
+		const char *name = NULL;
+		g_object_get (G_OBJECT (views->data), "config-name", &name, NULL);
+		g_assert (name != NULL);
+		rb_shell_preferences_append_view_page (shell_preferences,
+						       name,
+						       RB_SOURCE (views->data));
+	}
 	return GTK_WIDGET (shell_preferences);
 }
 
@@ -265,18 +298,78 @@ rb_shell_preferences_response_cb (GtkDialog *dialog,
 }
 
 static void
+rb_shell_preferences_ui_pref_changed (GConfClient *client,
+				      guint cnxn_id,
+				      GConfEntry *entry,
+				      RBShellPreferences *shell_preferences)
+{
+	if (shell_preferences->priv->loading == TRUE)
+		return;
+
+	rb_shell_preferences_sync (shell_preferences);
+}
+
+void
+rb_shell_preferences_column_check_changed_cb (GtkCheckButton *butt,
+					      RBShellPreferences *shell_preferences)
+{
+	GString *newcolumns = g_string_new ("");
+	char *currentcols = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
+	char **colnames = currentcols ? g_strsplit (currentcols, ",", 0) : NULL;
+	char *colname;
+	int i;
+
+	if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->artist_check))
+		colname = "RB_TREE_MODEL_NODE_COL_ARTIST";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->album_check))
+		colname = "RB_TREE_MODEL_NODE_COL_ALBUM";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->genre_check))
+		colname = "RB_TREE_MODEL_NODE_COL_GENRE";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->duration_check))
+		colname = "RB_TREE_MODEL_NODE_COL_DURATION";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->track_check))
+		colname = "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->rating_check))
+		colname = "RB_TREE_MODEL_NODE_COL_RATING";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->play_count_check))
+		colname = "RB_TREE_MODEL_NODE_COL_PLAY_COUNT";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->last_played_check))
+		colname = "RB_TREE_MODEL_NODE_COL_LAST_PLAYED";
+	else if (butt == GTK_CHECK_BUTTON (shell_preferences->priv->quality_check))
+		colname = "RB_TREE_MODEL_NODE_COL_QUALITY";
+	else
+		g_assert_not_reached ();
+
+	rb_debug ("\"%s\" changed, current cols are \"%s\"", colname, currentcols);
+	
+	/* Append this if we want it */
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (butt))) {
+		g_string_append (newcolumns, colname);
+		g_string_append (newcolumns, ",");
+	}
+
+	/* Append everything else */
+	for (i = 0; colnames != NULL && colnames[i] != NULL; i++) {
+		if (strcmp (colnames[i], colname)) {
+			g_string_append (newcolumns, colnames[i]);
+			if (colnames[i+1] != NULL)
+				g_string_append (newcolumns, ",");				
+		}
+	}
+
+	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, newcolumns->str);
+	g_string_free (newcolumns, TRUE);
+}
+
+static void
 rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 {
-	char *style;
 	char *columns;
-	int index = 0, i;
-	GSList *list;
 
 	shell_preferences->priv->loading = TRUE;
 
-	gtk_widget_set_sensitive (shell_preferences->priv->style_optionmenu,
-				  eel_gconf_get_boolean (CONF_UI_TOOLBAR_VISIBLE));
-
+	rb_debug ("syncing prefs");
+	
 	columns = eel_gconf_get_string (CONF_UI_COLUMNS_SETUP);
 	if (columns != NULL)
 	{
@@ -304,87 +397,12 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 		gtk_toggle_button_set_active
 			(GTK_TOGGLE_BUTTON (shell_preferences->priv->last_played_check),
 			 strstr (columns, "RB_TREE_MODEL_NODE_COL_LAST_PLAYED") != NULL);
+		gtk_toggle_button_set_active
+			(GTK_TOGGLE_BUTTON (shell_preferences->priv->quality_check),
+			 strstr (columns, "RB_TREE_MODEL_NODE_COL_QUALITY") != NULL);
 	}
-
-	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
-	for (i = 0; i < G_N_ELEMENTS (styles); i++)
-	{
-		if (style != NULL && strcmp (styles[i], style) == 0)
-			index = i;
-	}
-	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
-				     index);
-
-	list = g_slist_nth (shell_preferences->priv->browser_views_group,
-			    eel_gconf_get_integer (CONF_UI_BROWSER_VIEWS));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (list->data), TRUE);
 
 	g_free (columns);
-	g_free (style);
 
 	shell_preferences->priv->loading = FALSE;
-}
-
-static void
-ui_pref_changed (GConfClient *client,
-		 guint cnxn_id,
-		 GConfEntry *entry,
-		 RBShellPreferences *shell_preferences)
-{
-	if (shell_preferences->priv->loading == TRUE)
-		return;
-
-	rb_shell_preferences_sync (shell_preferences);
-}
-
-void
-browser_views_activated_cb (GtkWidget *widget,
-			    RBShellPreferences *prefs)
-{
-	int index;
-
-	if (prefs->priv->loading == TRUE)
-		return;
-
-	index = g_slist_index (prefs->priv->browser_views_group, widget);
-
-	eel_gconf_set_integer (CONF_UI_BROWSER_VIEWS, index);
-}
-
-void
-style_changed_cb (GtkOptionMenu *menu,
-		  RBShellPreferences *prefs)
-{
-	eel_gconf_set_string (CONF_UI_TOOLBAR_STYLE,
-			      styles[gtk_option_menu_get_history (menu)]);
-}
-
-void
-show_columns_changed_cb (GtkToggleButton *button,
-			 RBShellPreferences *prefs)
-{
-	char *conf = g_strdup_printf (" ");
-
-	// FIXME there must be a better way to do that
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->artist_check)) == TRUE)
-		conf = g_strdup_printf ("RB_TREE_MODEL_NODE_COL_ARTIST");
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->album_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_ALBUM", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->genre_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_GENRE", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->duration_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_DURATION", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->track_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_TRACK_NUMBER", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->rating_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_RATING", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->play_count_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_PLAY_COUNT", conf);
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->last_played_check)) == TRUE)
-		conf = g_strdup_printf ("%s,RB_TREE_MODEL_NODE_COL_LAST_PLAYED", conf);
-
-
-	eel_gconf_set_string (CONF_UI_COLUMNS_SETUP, conf);
-
-	g_free (conf);
 }

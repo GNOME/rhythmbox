@@ -1,5 +1,129 @@
 2003-05-10  Colin Walters  <walters@verbum.org>
 
+	* Makefile.am:
+	* configure.in:
+	* data/node-views/Makefile.am:
+	* data/node-views/rb-node-view-albums.xml:
+	* data/node-views/rb-node-view-artists.xml:
+	* data/node-views/rb-node-view-cdaudio.xml:
+	* data/node-views/rb-node-view-genres.xml:
+	* data/node-views/rb-node-view-iradio-genres.xml:
+	* data/node-views/rb-node-view-iradio-stations.xml:
+	* data/node-views/rb-node-view-songs.xml:
+	* data/ui/rhythmbox-ui.xml.in:
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_class_init),
+	(load_initial), (rb_iradio_backend_load):
+	* lib/Makefile.am:
+	* lib/rb-preferences.h:
+	* lib/rb-thread-helpers.c: (rb_thread_helpers_in_main_thread),
+	(rb_thread_helpers_lock_gdk), (rb_thread_helpers_unlock_gdk):
+	* lib/rb-thread-helpers.h:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-node-view.c:
+	* lib/widgets/rb-player.c: (rb_player_get_type),
+	(rb_player_class_init), (rb_player_init), (rb_player_finalize),
+	(rb_player_set_property), (rb_player_get_property),
+	(rb_player_new), (rb_player_set_playing_node),
+	(rb_player_set_title), (rb_player_get_duration), (rb_player_sync),
+	(rb_player_set_urldata), (rb_player_set_show_artist_album),
+	(rb_player_set_show_timeline), (rb_player_sync_time_locked),
+	(rb_player_sync_time), (slider_press_callback),
+	(slider_moved_timeout), (slider_moved_callback),
+	(slider_release_callback), (changed_idle_callback),
+	(slider_changed_callback),
+	(rb_player_elapsed_button_press_event_cb),
+	(rb_player_update_elapsed):
+	* lib/widgets/rb-player.h:
+	* library/rb-library.c: (rb_library_init),
+	(rb_library_release_brakes), (rb_library_is_idle),
+	(rb_library_finalize), (rb_library_save),
+	(rb_library_handle_songs), (rb_library_load):
+	* library/rb-library.h:
+	* shell/Makefile.am:
+	* shell/Rhythmbox.idl:
+	* shell/main.c: (main), (rb_init), (rb_handle_cmdline):
+	* shell/rb-player.c:
+	* shell/rb-player.h:
+	* shell/rb-playlist.c: (rb_playlist_handle_entry),
+	(rb_playlist_load):
+	* shell/rb-playlist.h:
+	* shell/rb-shell-player.c: (rb_shell_player_get_type),
+	(rb_shell_player_class_init), (rb_shell_player_init),
+	(rb_shell_player_finalize), (rb_shell_player_set_property),
+	(rb_shell_player_get_property), (rb_shell_player_set_source),
+	(rb_shell_player_new), (rb_shell_player_get_playing_node),
+	(rb_shell_player_have_first), (rb_shell_player_have_previous),
+	(rb_shell_player_have_next), (rb_shell_player_open_location),
+	(rb_shell_player_try_alt_location), (rb_shell_player_open_node),
+	(rb_shell_player_play), (rb_shell_player_set_playing_node),
+	(rb_shell_player_previous), (rb_shell_player_next),
+	(rb_shell_player_cmd_previous), (rb_shell_player_cmd_play),
+	(rb_shell_player_cmd_pause), (rb_shell_player_cmd_stop),
+	(rb_shell_player_sync_control_state),
+	(rb_shell_player_state_changed_cb), (rb_shell_player_cmd_shuffle),
+	(rb_shell_player_cmd_repeat), (rb_shell_player_cmd_current_song),
+	(rb_shell_player_cmd_song_info), (rb_shell_player_cmd_next),
+	(rb_shell_player_nodeview_changed_cb),
+	(rb_shell_player_node_activated_cb),
+	(rb_shell_player_extra_node_activated_cb),
+	(rb_shell_player_filter_changed_cb), (rb_shell_player_search_cb),
+	(rb_shell_player_set_play_button), (rb_shell_player_sync_status),
+	(rb_shell_player_sync_with_source), (rb_shell_player_sync_buttons),
+	(rb_shell_player_set_playing_source),
+	(rb_shell_player_play_search), (rb_shell_player_stop),
+	(rb_shell_player_get_playing), (rb_shell_player_get_mm_player),
+	(rb_shell_player_sync_with_selected_source), (eos_cb), (error_cb),
+	(tick_cb), (info_available_cb), (buffering_tick_cb),
+	(cancel_buffering_dialog), (buffering_begin_cb),
+	(cancel_buffering_clicked_cb), (buffering_end_cb),
+	(rb_shell_player_remote_cb), (rb_shell_player_handle_key):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-preferences.c: (help_cb),
+	(rb_shell_preferences_init), (rb_shell_preferences_finalize),
+	(rb_shell_preferences_append_view_page),
+	(rb_shell_preferences_new), (rb_shell_preferences_ui_pref_changed),
+	(rb_shell_preferences_column_check_changed_cb),
+	(rb_shell_preferences_sync):
+	* shell/rb-shell-preferences.h:
+	* shell/rb-shell.c: (rb_shell_get_type), (rb_shell_class_init),
+	(rb_shell_init), (rb_shell_finalize), (rb_shell_new),
+	(rb_shell_corba_quit), (rb_shell_corba_handle_file),
+	(rb_shell_corba_add_to_library), (rb_shell_corba_grab_focus),
+	(rb_shell_construct), (rb_shell_corba_exception_to_string),
+	(rb_shell_window_state_cb), (rb_shell_window_load_state),
+	(rb_shell_window_save_state), (rb_shell_window_delete_cb),
+	(source_selected_cb), (rb_shell_append_source),
+	(rb_shell_update_source_status), (rb_shell_select_source),
+	(rb_shell_player_window_title_changed_cb),
+	(rb_shell_set_window_title), (rb_shell_view_sourcelist_changed_cb),
+	(rb_shell_show_window_changed_cb), (rb_shell_cmd_about),
+	(rb_shell_cmd_close), (rb_shell_cmd_contents),
+	(rb_shell_cmd_preferences), (ask_file_response_cb),
+	(load_playlist_response_cb), (rb_shell_cmd_add_to_library),
+	(rb_shell_cmd_add_location), (rb_shell_cmd_load_playlist),
+	(rb_shell_quit), (rb_shell_sync_sourcelist_visibility),
+	(rb_shell_sync_window_visibility),
+	(sourcelist_visibility_changed_cb), (window_visibility_changed_cb),
+	(tray_button_press_event_cb), (tray_drop_cb), (setup_tray_icon),
+	(sync_tray_menu), (rb_shell_remote_cb):
+	* shell/rb-shell.h:
+	* shell/rb.c:
+	* shell/rb.h:
+	* sources/Makefile.am:
+	* sources/rb-audiocd-source.h:
+	* sources/rb-iradio-source.c: (rb_iradio_source_new):
+	* sources/rb-library-source.c: (rb_library_source_new):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_notify_filter_changed):
+	* sources/rb-source.h:
+
+	The first iteration of net-rhythmbox/rhythmbox merge.  We have a
+	new Sources widget, a new sources/ directory, restored RBPlayer
+	[probably to be renamed RBSongDisplay], added back the idea of
+	RBShell and RBShellPlayer, and more.
+
+2003-05-10  Colin Walters  <walters@verbum.org>
+
 	* lib/widgets/rb-sourcelist.c, lib/widgets/rb-sourcelist.h: New
 	files.
 

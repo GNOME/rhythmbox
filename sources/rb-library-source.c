@@ -512,7 +512,7 @@ rb_library_source_new (BonoboUIContainer *container,
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
-					  "ui-file", "net-rhythmbox-library-view.xml",
+					  "ui-file", "rhythmbox-library-view.xml",
 					  "ui-name", "LibraryView",
 					  "config-name", "Library",
 					  "container", container,
