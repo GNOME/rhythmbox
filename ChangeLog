@@ -1,3 +1,10 @@
+2003-08-09  Mason Kidd  <mason.kidd@mrkidd.com>
+
+	* shell/rb-shell-player.c: (rb_shell_player_do_previous):
+
+	Use the playing source, and not the selected source, when computing
+	whether or not previous should really go back to the previous song.
+
 2003-08-09  Colin Walters  <cwalters@gnome.org>
 
 	* lib/widgets/eggtreemodelfilter.c:

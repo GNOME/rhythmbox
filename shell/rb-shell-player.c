@@ -848,7 +848,7 @@ static void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
 	if (monkey_media_player_get_time (player->priv->mmplayer) < 3 &&
-	    rb_shell_player_have_previous (player, player->priv->selected_source) == TRUE) {
+	    rb_shell_player_have_previous (player, player->priv->source) == TRUE) {
 		rb_debug ("doing previous");
 		/* we're in the first 2 seconds of the song, go to previous */
 		rb_shell_player_previous (player);
