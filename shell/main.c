@@ -392,7 +392,14 @@ rb_handle_cmdline (char **argv, int argc,
 		tmp = rb_uri_resolve_relative (argv[i]);
 			
 		if (rb_uri_exists (tmp) == TRUE) {
-			GNOME_Rhythmbox_handleFile (shell, tmp, &ev);
+			GError *error = NULL;
+			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
+			if (!utf8 && error) {
+				g_error (error->message);
+				continue;
+			}
+ 			GNOME_Rhythmbox_handleFile (shell, utf8, &ev);
+			g_free (utf8);
 		}
 		
 		g_free (tmp);

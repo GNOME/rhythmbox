@@ -60,8 +60,12 @@ impl_Bonobo_Listener_event (PortableServer_Servant servant,
 
 	g_return_if_fail (obj != CORBA_OBJECT_NIL);
 
-	for (i = 0; i < list->_length; i++)
-		GNOME_Rhythmbox_addToLibrary(obj, list->_buffer[i], ev);
+	for (i = 0; i < list->_length; i++) {
+		GError *error = NULL;
+		char *utf8 = g_filename_to_utf8 (list->_buffer[i], -1, NULL, NULL, &error);
+		if (utf8 && error == NULL)
+			GNOME_Rhythmbox_addToLibrary(obj, utf8, ev);
+	}
 
 	CORBA_Object_release (obj, ev);
 }
