@@ -783,7 +783,8 @@ rb_node_property_get_type (void)
 			{ RB_NODE_PROPERTY_SONG_TRACK_NUMBER, "RB_NODE_PROPERTY_SONG_TRACK_NUMBER", "song_track_number" },
 			{ RB_NODE_PROPERTY_SONG_DURATION,     "RB_NODE_PROPERTY_SONG_DURATION",     "song_duration" },
 			{ RB_NODE_PROPERTY_SONG_LOCATION,     "RB_NODE_PROPERTY_SONG_LOCATION",     "song_location" },
-			{ RB_NODE_PROPERTY_SONG_FILE_SIZE,    "RB_NODE_PROPERTY_SONG_FILE_SIZE",    "file_size" }
+			{ RB_NODE_PROPERTY_SONG_FILE_SIZE,    "RB_NODE_PROPERTY_SONG_FILE_SIZE",    "file_size" },
+			{ RB_NODE_PROPERTY_SONG_MTIME,        "RB_NODE_PROPERTY_SONG_MTIME",        "mtime" }
 		};
 
 		etype = g_enum_register_static ("RBNodeProperty", values);

@@ -447,6 +447,17 @@ rb_library_load (RBLibrary *library)
 			g_hash_table_insert (library->priv->file_to_node,
 					     g_strdup (g_value_get_string (&value)), node);
 			g_value_unset (&value);
+
+			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
+			if (g_value_get_long (&value) != rb_node_song_get_real_mtime (node))
+			{
+				g_mutex_lock (library->priv->changed_nodes_lock);
+				library->priv->changed_nodes = g_list_append (library->priv->changed_nodes,
+									      node);
+				g_mutex_unlock (library->priv->changed_nodes_lock);
+			}
+			g_value_unset (&value);
+			
 			break;
 		default:
 			break;
@@ -767,6 +778,11 @@ rb_library_thread_process_new_song (RBLibraryPrivate *priv,
 	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, &value);
 	g_value_unset (&value);
 
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, rb_node_song_get_real_mtime (node));
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
+	g_value_unset (&value);
+
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE, &value);
 	g_object_set_data (G_OBJECT (node), "genre", g_strdup (g_value_get_string (&value)));
 	g_value_unset (&value);
@@ -872,6 +888,11 @@ rb_library_thread_process_changed_node (RBLibraryPrivate *priv,
 	
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE, &value);
 	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, &value);
+	g_value_unset (&value);
+
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, rb_node_song_get_real_mtime (node));
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_MTIME, &value);
 	g_value_unset (&value);
 }
 

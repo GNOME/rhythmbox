@@ -124,3 +124,23 @@ rb_node_song_get_album (RBNode *node)
 
 	return NULL;
 }
+
+time_t
+rb_node_song_get_real_mtime (RBNode *node)
+{
+	GnomeVFSFileInfo *info;
+	time_t ret;
+	GValue value = { 0, };
+
+	info = gnome_vfs_file_info_new ();
+	
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+	gnome_vfs_get_file_info (g_value_get_string (&value), info,
+				 GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+	g_value_unset (&value);
+	
+	ret = info->mtime;
+	gnome_vfs_file_info_unref (info);
+	
+	return ret;
+}

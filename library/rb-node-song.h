@@ -18,6 +18,8 @@
  *  $Id$
  */
 
+#include <libgnomevfs/gnome-vfs-ops.h>
+
 #include "rb-node.h"
 
 #ifndef __RB_NODE_SONG_H
@@ -25,9 +27,10 @@
 
 G_BEGIN_DECLS
 
-char *rb_node_song_get_genre  (RBNode *node);
-char *rb_node_song_get_artist (RBNode *node);
-char *rb_node_song_get_album  (RBNode *node);
+char  *rb_node_song_get_genre      (RBNode *node);
+char  *rb_node_song_get_artist     (RBNode *node);
+char  *rb_node_song_get_album      (RBNode *node);
+time_t rb_node_song_get_real_mtime (RBNode *node);
 
 G_END_DECLS
 

@@ -1,3 +1,15 @@
+2002-06-17  Jorn Baayen  <jorn@nl.linux.org>
+
+	* library/rb-library.c: (rb_library_load),
+	(rb_library_thread_process_new_song),
+	(rb_library_thread_process_changed_node):
+	* library/rb-node-song.c: (rb_node_song_get_real_mtime):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_property_get_type):
+	* library/rb-node.h:
+
+	Do mtime matching. Once again you need to delete your library.xml.
+
 2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
 
 	* lib/Makefile.am:
