@@ -328,6 +328,16 @@ rb_library_get_property (GObject *object,
 	}
 }
 
+GQuark
+rb_library_error_quark (void)
+{
+	static GQuark quark;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_library_error");
+
+	return quark;
+}
+
 
 RBLibrary *
 rb_library_new (RhythmDB *db)
@@ -514,21 +524,36 @@ void
 rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **error)
 {
 	char *location;
+	time_t stored_mtime;
+	GnomeVFSFileInfo *vfsinfo = NULL;
+	GnomeVFSResult result;
 	RBLibraryEntryUpdateData *metadata;
 
 	rb_atomic_inc (&library->priv->refresh_count);
 
 	rhythmdb_read_lock (library->priv->db);
 	location = rhythmdb_entry_get_string (library->priv->db, entry, RHYTHMDB_PROP_LOCATION);
+	stored_mtime = rhythmdb_entry_get_long (library->priv->db, entry, RHYTHMDB_PROP_MTIME);
 	rhythmdb_read_unlock (library->priv->db);
 	
-	if (rb_uri_exists (location) == FALSE) {
+	vfsinfo = gnome_vfs_file_info_new ();
+	result = gnome_vfs_get_file_info (location, vfsinfo, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	if (result != GNOME_VFS_OK) {
+		if (result != GNOME_VFS_ERROR_NOT_FOUND)
+			g_set_error (error,
+				     RB_LIBRARY_ERROR,
+				     RB_LIBRARY_ERROR_ACCESS_FAILED,
+				     "%s", gnome_vfs_result_to_string (result));
 		rb_debug ("song \"%s\" was deleted", location);
 		rhythmdb_write_lock (library->priv->db);
 		rhythmdb_entry_delete (library->priv->db, entry);
 		rhythmdb_write_unlock (library->priv->db);
 		goto out;
 	}
+
+	if (stored_mtime == vfsinfo->mtime)
+		goto out;
 
 	metadata = rb_library_read_metadata (location, error);
 	if (!metadata) {
@@ -548,6 +573,7 @@ rb_library_update_entry (RBLibrary *library, RhythmDBEntry *entry, GError **erro
 	if (!(error && *error))
 		rb_file_monitor_add (rb_file_monitor_get (), location);
 out:
+	gnome_vfs_file_info_unref (vfsinfo);
 	g_free (location);
 }
 
@@ -666,6 +692,11 @@ legacy_load_thread_main (RBLibraryLegacyLoadData *data)
 		if (id > 0)
 			g_hash_table_insert (data->library->priv->legacy_id_map, GINT_TO_POINTER (id),
 					     entry);
+		if (entry) {
+			rhythmdb_write_lock (data->db);
+			rb_library_entry_restored_cb (data->db, entry, data->library);
+			rhythmdb_write_unlock (data->db);
+		}
 	}
 	xmlFreeDoc (doc);
 

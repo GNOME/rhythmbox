@@ -37,6 +37,15 @@ G_BEGIN_DECLS
 #define RB_IS_LIBRARY_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY))
 #define RB_LIBRARY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY, RBLibraryClass))
 
+typedef enum
+{
+	RB_LIBRARY_ERROR_ACCESS_FAILED,
+} RBLibraryError;
+
+#define RB_LIBRARY_ERROR (rb_library_error_quark ())
+
+GQuark rb_library_error_quark (void);
+
 typedef struct RBLibraryPrivate RBLibraryPrivate;
 
 typedef struct
