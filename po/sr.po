@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-10-26 18:44+0100\n"
-"PO-Revision-Date: 2003-10-26 18:46+0100\n"
+"POT-Creation-Date: 2003-11-01 13:12+0100\n"
+"PO-Revision-Date: 2003-11-01 13:16+0100\n"
 "Last-Translator: Предраг Кртолица <predrag_k@optusnet.com.au>\n"
 "Language-Team: Serbian (sr) <serbiangnome-lista@nongnu.org>\n"
 "MIME-Version: 1.0\n"
@@ -25,11 +25,11 @@ msgstr "Додај у музичку библиотеку"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
-msgstr "Проширење за приручни мени Наутилуса за Rhythmbox"
+msgstr "Проширење приручног менија Наутилуса за Ритам машину"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr "Ставка приручног менија Наутилуса за Rhythmbox"
+msgstr "Ставка приручног менија Наутилуса за Ритам машину"
 
 #: corba/test-corba.c:55
 msgid "I could not initialize Bonobo"
@@ -47,11 +47,11 @@ msgstr "Догодио се изузетак „%s“"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
-msgstr "Љуска Rhythmbox-а "
+msgstr "Љуска Ритам машине"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
-msgstr "Творница Rhythmbox-а"
+msgstr "Творница Ритам машине"
 
 #: data/glade/buffering-dialog.glade.h:1
 msgid "Loading..."
@@ -72,12 +72,9 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
-"Rhythmbox барата свом вашом музиком помоћу централне музичке „библиотеке“, "
-"тако да је можете лако прегледати, претраживати и сређивати.\n"
+"Ритам машина барата свом вашом музиком помоћу централне музичке „библиотеке“, тако да је можете лако прегледати, претраживати и сређивати.\n"
 "\n"
-"Да бисте ово користили, Rhythmbox мора да зна где може да пронађе вашу "
-"музику. Можете и прескочити овај корак; уместо тога, можете додати музику у "
-"вашу библиотеку било када.\n"
+"Да бисте ово користили, Ритам машина мора да зна где може да пронађе вашу музику. Можете и прескочити овај корак; уместо тога, можете додати музику у вашу библиотеку било када.\n"
 "Молим изаберите неку од могућности испод:"
 
 #: data/glade/druid.glade.h:5
@@ -318,6 +315,10 @@ msgstr "Музички програм"
 #: data/rhythmbox.desktop.in.h:2
 msgid "Play and organize your music collection"
 msgstr "Организуј и изводи своју музичку збирку"
+
+#: data/rhythmbox.desktop.in.h:3 shell/main.c:104 widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Ритам машина"
 
 #: data/ui/rhythmbox-audiocd-view.xml.in.h:1 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Deselect all songs"
@@ -623,8 +624,8 @@ msgstr "Нова интернет радио станица"
 #: monkey-media/monkey-media-stream-info.c:404
 #: monkey-media/monkey-media-stream-info.c:420
 #: monkey-media/monkey-media-stream-info.c:667 sources/rb-audiocd-source.c:979
-#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:250
-#: sources/rb-iradio-source.c:251 sources/rb-iradio-source.c:252
+#: sources/rb-audiocd-source.c:986 sources/rb-iradio-source.c:251
+#: sources/rb-iradio-source.c:252 sources/rb-iradio-source.c:253
 #: sources/rb-playlist-source.c:391
 msgid "Unknown"
 msgstr "Непознат"
@@ -788,34 +789,34 @@ msgid "Failed to create spider element; check your installation"
 msgstr "Неуспех при креирању spider елемента; проверити инсталацију"
 
 #: monkey-media/monkey-media-player-gst-old.c:414
-#: monkey-media/monkey-media-player-gst-tmp.c:591
+#: monkey-media/monkey-media-player-gst-tmp.c:594
 #: monkey-media/monkey-media-player-gst.c:535
 msgid "Failed to create volume element; check your installation"
 msgstr "Неуспех при креирању елемента озвучења; проверити инсталацију"
 
 #: monkey-media/monkey-media-player-gst-old.c:434
-#: monkey-media/monkey-media-player-gst-tmp.c:609
+#: monkey-media/monkey-media-player-gst-tmp.c:612
 #: monkey-media/monkey-media-player-gst.c:556
 msgid "Could not create audio output element; check your settings"
 msgstr "Нисам могао да креирам излазни звучни елемент; проверити подешавања"
 
 #: monkey-media/monkey-media-player-gst-old.c:524
-#: monkey-media/monkey-media-player-gst-tmp.c:725
+#: monkey-media/monkey-media-player-gst-tmp.c:728
 #: monkey-media/monkey-media-player-gst.c:643
 msgid "No AudioCD support; check your settings"
 msgstr "Не постоји подршка за Аудио ЦД; проверити подешавања"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:518
+#: monkey-media/monkey-media-player-gst-tmp.c:517
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr "Неуспех при образовању улазног елемента %s; проверите вашу инсталацију"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:543
+#: monkey-media/monkey-media-player-gst-tmp.c:542
 #: monkey-media/monkey-media-player-gst.c:493
 msgid "Failed to create queue element; check your installation"
 msgstr "Неуспех при образовању редног елемента; проверите вашу инсталацију"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:573
+#: monkey-media/monkey-media-player-gst-tmp.c:576
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Неуспех при образовању елемента %s; проверите вашу инсталацију"
@@ -930,19 +931,19 @@ msgstr "Ogg Vorbis"
 msgid "Never"
 msgstr "Никада"
 
-#: rhythmdb/rhythmdb.c:999 sources/rb-source.c:308
+#: rhythmdb/rhythmdb.c:999
 msgid "%Y-%m-%d %H:%M"
 msgstr "%d/%m/%Y %H:%M"
 
-#: rhythmdb/rhythmdb.c:1814
+#: rhythmdb/rhythmdb.c:1826
 msgid "Loading songs..."
 msgstr "Учитава песме..."
 
-#: rhythmdb/rhythmdb.c:1816
+#: rhythmdb/rhythmdb.c:1828
 msgid "Refreshing songs..."
 msgstr "Освежава песме..."
 
-#: rhythmdb/rhythmdb.c:1831
+#: rhythmdb/rhythmdb.c:1843
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
@@ -950,7 +951,7 @@ msgstr[0] "%d песма"
 msgstr[1] "%d песме"
 msgstr[2] "%d песама"
 
-#: rhythmdb/rhythmdb.c:1839
+#: rhythmdb/rhythmdb.c:1851
 #, c-format
 msgid "%.1f day"
 msgid_plural "%.1f days"
@@ -958,7 +959,7 @@ msgstr[0] "%.1f дан"
 msgstr[1] "%.1f дана"
 msgstr[2] "%.1f дана"
 
-#: rhythmdb/rhythmdb.c:1842
+#: rhythmdb/rhythmdb.c:1854
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
@@ -966,7 +967,7 @@ msgstr[0] "%ld минут"
 msgstr[1] "%ld минута"
 msgstr[2] "%ld минута"
 
-#: rhythmdb/rhythmdb.c:1844
+#: rhythmdb/rhythmdb.c:1856
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
@@ -974,7 +975,7 @@ msgstr[0] "%ld час"
 msgstr[1] "%ld часа"
 msgstr[2] "%ld часова"
 
-#: rhythmdb/rhythmdb.c:1847
+#: rhythmdb/rhythmdb.c:1859
 #, c-format
 msgid "%s and %s"
 msgstr "%s и %s"
@@ -1021,23 +1022,17 @@ msgstr "Немој пријавити љуску"
 
 #: shell/main.c:95
 msgid "Quit Rhythmbox"
-msgstr "Прекини Rhythmbox"
+msgstr "Изађи из Ритам машине"
 
 #: shell/main.c:96
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia опције:"
 
-#: shell/main.c:104 widgets/rb-druid.c:218
-msgid "Rhythmbox"
-msgstr "Rhythmbox"
-
 #: shell/main.c:192
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
-msgstr ""
-"Rhythmbox тренутно не ради уколико су укључени Гномови звучи догађаји и "
-"користи се esdsink."
+msgstr "Ритам машина тренутно не ради уколико су укључени Гномови звучи догађаји и користи се esdsink."
 
 #: shell/main.c:272
 #, c-format
@@ -1131,10 +1126,9 @@ msgid ""
 "bonobo-activation; this warning is harmless, but IPC will not work."
 msgstr ""
 "Није успео да пријави љуску: %s\n"
-"Ово вероватно значи да сте инсталирали Rhythmbox на различитом месту од "
-"бонобо активације; ово упозорење је безопасно, али IPC неће радити."
+"Ово вероватно значи да сте инсталирали Ритам машинуна различитом месту од бонобо активације; ово упозорење је безопасно, али IPC неће радити."
 
-#: shell/rb-shell.c:1346 shell/rb-tray-icon.c:218 widgets/rb-player.c:536
+#: shell/rb-shell.c:1346 shell/rb-tray-icon.c:218 widgets/rb-player.c:538
 msgid "Not playing"
 msgstr "Не изводи се"
 
@@ -1142,19 +1136,19 @@ msgstr "Не изводи се"
 #, c-format
 msgid ""
 "%s\n"
-"Paused, %s remaining"
+"Paused, %s"
 msgstr ""
 "%s\n"
-"Паузирано, преостало: %s"
+"Паузирана, %s"
 
 #: shell/rb-shell.c:1351
 #, c-format
 msgid ""
 "%s\n"
-"%s remaining"
+"%s"
 msgstr ""
 "%s\n"
-"преостало: %s"
+"%s"
 
 #: shell/rb-shell.c:1385
 #, c-format
@@ -1256,17 +1250,17 @@ msgstr "Учитава податке о ЦД-у"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d песама, %d:%02d:%02d укупно време"
 
-#: sources/rb-iradio-source.c:319 sources/rb-library-source.c:431
+#: sources/rb-iradio-source.c:324 sources/rb-library-source.c:431
 #: widgets/rb-query-creator.c:47
 msgid "Genre"
 msgstr "Жанр"
 
-#: sources/rb-iradio-source.c:392
+#: sources/rb-iradio-source.c:397
 msgid "Radio"
 msgstr "Радио"
 
 # bug: plural-forms
-#: sources/rb-iradio-source.c:522
+#: sources/rb-iradio-source.c:527
 #, c-format
 msgid "%d total stations in %d distinct genres"
 msgstr "укупно %d станица у %d различитих жанрова"
@@ -1287,11 +1281,11 @@ msgstr "Библиотека"
 msgid "Add Location"
 msgstr "Додај адресу"
 
-#: sources/rb-source.c:484
+#: sources/rb-source.c:475
 msgid "No properties available."
 msgstr "Нису доступне особине."
 
-#: sources/rb-source.c:567
+#: sources/rb-source.c:558
 msgid "This source does not support drag and drop."
 msgstr "Овај извор не подржава превлачење и пуштање."
 
@@ -1309,7 +1303,7 @@ msgstr "Pixbuf за исцртавање."
 
 #: widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
-msgstr "Добродошли у Rhythmbox"
+msgstr "Добродошли у Ритам машину"
 
 #: widgets/rb-druid.c:243
 msgid ""
@@ -1319,9 +1313,7 @@ msgid ""
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
-"Rhythmbox је Гном програм за пуштање музике који вам омогућава да радите "
-"све: пуштате музику, слушате Интернет радио, увозите музику са ЦД-ова и "
-"много тога другог.\n"
+"Ритам машина је Гном програм за пуштање музике који вам омогућава да радите све: пуштате музику, слушате Интернет радио, увозите музику са ЦД-ова и много тога другог.\n"
 "\n"
 "Овај помоћник ће вам помоћи да почнете постављањем пар једноставних питања."
 
@@ -1340,10 +1332,9 @@ msgid ""
 "Remember that you may add music to the library using \"Organize\" then \"Add "
 "to Library\", or by importing it from CDs."
 msgstr ""
-"Сада сте спремни да покренете Rhythmbox.\n"
+"Сада сте спремни да покренете Ритам машина.\n"
 "\n"
-"Не заборавите да можете додати музику у библиотеку помоћу „Организуј“ и "
-"затим „Додај у библиотеку“, или увозом исте са ЦД-ова."
+"Не заборавите да можете додати музику у библиотеку помоћу „Организуј“ и затим „Додај у библиотеку“, или увозом исте са ЦД-ова."
 
 #: widgets/rb-druid.c:309
 #, c-format
@@ -1354,7 +1345,7 @@ msgstr "Грешка при читању датотеке: %s"
 msgid "Choose a directory"
 msgstr "Изаберите директоријум"
 
-#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:801
+#: widgets/rb-entry-view.c:1015 widgets/rb-player.c:812
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
@@ -1380,26 +1371,31 @@ msgstr "_Грешка"
 msgid "_File"
 msgstr "_Датотека"
 
-#: widgets/rb-player.c:279
+#: widgets/rb-player.c:281
 msgid "Listening to "
 msgstr "Слушате "
 
-#: widgets/rb-player.c:506
+#: widgets/rb-player.c:508
 msgid "Get information on this album from the web"
 msgstr "Погледајте податке о овом албуму са веба"
 
-#: widgets/rb-player.c:517
+#: widgets/rb-player.c:519
 msgid "Get information on this artist from the web"
 msgstr "Погледајте податке о овом уметнику са веба"
 
-#: widgets/rb-player.c:527
+#: widgets/rb-player.c:529
 msgid "Get more information on this station from the web"
 msgstr "Погледајте податке о овој станици са веба"
 
-#: widgets/rb-player.c:799
+#: widgets/rb-player.c:802
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d од %d:%02d"
+
+#: widgets/rb-player.c:809
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "преостало %d:%02d од %d:%02d"
 
 #: widgets/rb-query-creator.c:44
 msgid "Title"
@@ -1414,7 +1410,7 @@ msgid "does not contain"
 msgstr "не садржи"
 
 #: widgets/rb-query-creator.c:167
-msgid "Create automatic playlist"
+msgid "Create Automatic Playlist"
 msgstr "Направи аутоматски списак песама"
 
 #. this string can only be so long, or there wont be a search entry :)
@@ -1466,6 +1462,20 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused, %s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Паузирано, преостало: %s"
+
+#~ msgid ""
+#~ "%s\n"
+#~ "%s remaining"
+#~ msgstr ""
+#~ "%s\n"
+#~ "преостало: %s"
 
 #~ msgid "Name:"
 #~ msgstr "Име:"
@@ -1590,12 +1600,10 @@ msgstr "-"
 #~ msgid ""
 #~ "In order to get started using Rhythmbox, this assistant will ask you some "
 #~ "simple questions."
-#~ msgstr ""
-#~ "Да бисте почели са коришћењем Rhythmbox-а, овај помоћник ће вам поставити "
-#~ "пар једноставних питања."
+#~ msgstr "Да бисте почели са коришћењем Ритам машине, овај помоћник ће вам поставити пар једноставних питања."
 
 #~ msgid "You are now ready to start Rhythmbox."
-#~ msgstr "Сада сте спремни да покренете Rhythmbox."
+#~ msgstr "Сада сте спремни да покренете Ритам машину."
 
 #~ msgid ""
 #~ "In order to get started using\n"
@@ -1603,7 +1611,7 @@ msgstr "-"
 #~ "you some simple questions."
 #~ msgstr ""
 #~ "Да бисте почели са коришћењем\n"
-#~ "Rhythmbox-а, овај помоћник ће вам\n"
+#~ "Ритам машине, овај помоћник ће вам\n"
 #~ "поставити пар једноставних питања."
 
 #~ msgid ""
@@ -1611,14 +1619,7 @@ msgstr "-"
 #~ "Rhythmbox."
 #~ msgstr ""
 #~ "Сада сте спремни да покренете\n"
-#~ "Rhythmbox."
-
-#~ msgid ""
-#~ "%s\n"
-#~ "Paused"
-#~ msgstr ""
-#~ "%s\n"
-#~ "Паузирана"
+#~ "Ритам машину."
 
 #~ msgid "    "
 #~ msgstr "    "
