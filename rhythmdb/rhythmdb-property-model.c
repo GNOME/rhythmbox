@@ -29,9 +29,12 @@
 #include "rb-debug.h"
 #include "gsequence.h"
 
-static void rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass);
 static void rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface);
-static void rhythmdb_property_model_init (RhythmDBPropertyModel *shell_player);
+
+G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_OBJECT,
+			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
+					      rhythmdb_property_model_tree_model_init))
+
 static void rhythmdb_property_model_finalize (GObject *object);
 static void rhythmdb_property_model_set_property (GObject *object,
 					       guint prop_id,
@@ -128,54 +131,12 @@ enum
 	PROP_QUERY_MODEL,
 };
 
-static GObjectClass *parent_class = NULL;
-
 static guint rhythmdb_property_model_signals[LAST_SIGNAL] = { 0 };
-
-GType
-rhythmdb_property_model_get_type (void)
-{
-	static GType rhythmdb_property_model_type = 0;
-	static const GInterfaceInfo tree_model_info =
-	{
-		(GInterfaceInitFunc) rhythmdb_property_model_tree_model_init,
-		NULL,
-		NULL
-	};
-
-	if (rhythmdb_property_model_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RhythmDBPropertyModelClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rhythmdb_property_model_class_init,
-			NULL,
-			NULL,
-			sizeof (RhythmDBPropertyModel),
-			0,
-			(GInstanceInitFunc) rhythmdb_property_model_init
-		};
-
-		rhythmdb_property_model_type = g_type_register_static (G_TYPE_OBJECT,
-								       "RhythmDBPropertyModel",
-								       &our_info, 0);
-
-		g_type_add_interface_static (rhythmdb_property_model_type,
-					     GTK_TYPE_TREE_MODEL,
-					     &tree_model_info);
-	}
-
-	return rhythmdb_property_model_type;
-}
 
 static void
 rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->set_property = rhythmdb_property_model_set_property;
 	object_class->get_property = rhythmdb_property_model_get_property;
@@ -403,7 +364,7 @@ rhythmdb_property_model_finalize (GObject *object)
 
 	g_free (model->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rhythmdb_property_model_parent_class)->finalize (object);
 }
 
 RhythmDBPropertyModel *

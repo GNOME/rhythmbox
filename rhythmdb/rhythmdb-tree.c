@@ -57,8 +57,8 @@ typedef struct RhythmDBTreeProperty
 
 #define RHYTHMDB_TREE_PROPERTY_FROM_ENTRY(entry) ((RhythmDBTreeProperty *) entry->data)
 
-static void rhythmdb_tree_class_init (RhythmDBTreeClass *klass);
-static void rhythmdb_tree_init (RhythmDBTree *shell_player);
+G_DEFINE_TYPE(RhythmDBTree, rhythmdb_tree, RHYTHMDB_TYPE)
+
 static void rhythmdb_tree_finalize (GObject *object);
 
 static void rhythmdb_tree_load (RhythmDB *rdb, gboolean *die);
@@ -126,43 +126,11 @@ enum
 	PROP_0,
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rhythmdb_tree_get_type (void)
-{
-	static GType rhythmdb_tree_type = 0;
-
-	if (rhythmdb_tree_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RhythmDBTreeClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rhythmdb_tree_class_init,
-			NULL,
-			NULL,
-			sizeof (RhythmDBTree),
-			0,
-			(GInstanceInitFunc) rhythmdb_tree_init
-		};
-
-		rhythmdb_tree_type = g_type_register_static (RHYTHMDB_TYPE,
-							     "RhythmDBTree",
-							     &our_info, 0);
-	}
-
-	return rhythmdb_tree_type;
-}
-
 static void
 rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	RhythmDBClass *rhythmdb_class = RHYTHMDB_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rhythmdb_tree_finalize;
 
@@ -222,7 +190,7 @@ rhythmdb_tree_finalize (GObject *object)
 
 	g_free (db->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rhythmdb_tree_parent_class)->finalize (object);
 }
 
 struct RhythmDBTreeLoadContext

@@ -33,8 +33,8 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
-static void rb_player_class_init (RBPlayerClass *klass);
-static void rb_player_init (RBPlayer *mp);
+G_DEFINE_TYPE(RBPlayer, rb_player, G_TYPE_OBJECT)
+
 static void rb_player_finalize (GObject *object);
 
 struct RBPlayerPrivate
@@ -77,41 +77,10 @@ enum
 
 static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_player_get_type (void)
-{
-	static GType type = 0;
-
-	if (type == 0) {
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBPlayerClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_player_class_init,
-			NULL,
-			NULL,
-			sizeof (RBPlayer),
-			0,
-			(GInstanceInitFunc) rb_player_init,
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT,
-					       "RBPlayer",
-					       &our_info, 0);
-	}
-
-	return type;
-}
-
 static void
 rb_player_class_init (RBPlayerClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_player_finalize;
 
@@ -244,7 +213,7 @@ rb_player_finalize (GObject *object)
 
 	g_free (mp->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_player_parent_class)->finalize (object);
 }
 
 static gboolean

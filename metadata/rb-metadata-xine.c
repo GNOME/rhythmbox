@@ -30,8 +30,8 @@
 
 #include "rb-metadata.h"
 
-static void rb_metadata_class_init (RBMetaDataClass *klass);
-static void rb_metadata_init (RBMetaData *md);
+G_DEFINE_TYPE(RBMetaData, rb_metadata, G_TYPE_OBJECT)
+
 static void rb_metadata_finalize (GObject *object);
 
 struct RBMetaDataPrivate
@@ -40,42 +40,10 @@ struct RBMetaDataPrivate
 	xine_stream_t *stream;
 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rb_metadata_get_type (void)
-{
-	static GType type = 0;
-
-	if (type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RBMetaDataClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rb_metadata_class_init,
-			NULL,
-			NULL,
-			sizeof (RBMetaData),
-			0,
-			(GInstanceInitFunc) rb_metadata_init
-		};
-
-		type = g_type_register_static (G_TYPE_OBJECT,
-					       "RBMetaData",
-					       &our_info, 0);
-	}
-
-	return type;
-}
-
 static void
 rb_metadata_class_init (RBMetaDataClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_metadata_finalize;
 }
@@ -114,7 +82,7 @@ rb_metadata_finalize (GObject *object)
 
 	g_free (md->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rb_metadata_parent_class)->finalize (object);
 }
 
 /* FIXME implement error collapsing like in Totem */

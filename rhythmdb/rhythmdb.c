@@ -152,8 +152,8 @@ struct RhythmDBAddThreadData
 	char *uri;
 };
 
-static void rhythmdb_class_init (RhythmDBClass *klass);
-static void rhythmdb_init (RhythmDB *source);
+G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
+
 static void rhythmdb_finalize (GObject *object);
 static void rhythmdb_set_property (GObject *object,
 					guint prop_id,
@@ -194,43 +194,10 @@ enum
 
 static guint rhythmdb_signals[LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class = NULL;
-
-
-GType
-rhythmdb_get_type (void)
-{
-	static GType rhythmdb_type = 0;
-
-	if (rhythmdb_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RhythmDBClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rhythmdb_class_init,
-			NULL,
-			NULL,
-			sizeof (RhythmDB),
-			0,
-			(GInstanceInitFunc) rhythmdb_init
-		};
-
-		rhythmdb_type = g_type_register_static (G_TYPE_OBJECT,
-						       "RhythmDB",
-						       &our_info, G_TYPE_FLAG_ABSTRACT);
-	}
-
-	return rhythmdb_type;
-}
-
 static void
 rhythmdb_class_init (RhythmDBClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rhythmdb_finalize;
 
@@ -647,7 +614,7 @@ rhythmdb_finalize (GObject *object)
 
 	g_free (db->priv);
 	
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rhythmdb_parent_class)->finalize (object);
 }
 
 static void

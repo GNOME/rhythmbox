@@ -33,10 +33,18 @@
 #include "rb-tree-dnd.h"
 #include "rhythmdb-marshal.h"
 
-static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
+
+G_DEFINE_TYPE_WITH_CODE(RhythmDBQueryModel, rhythmdb_query_model, G_TYPE_OBJECT,
+			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
+					      rhythmdb_query_model_tree_model_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
+					      rhythmdb_query_model_drag_source_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_DEST,
+					      rhythmdb_query_model_drag_dest_init))
+
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static GObject *rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
 						  GObjectConstructParam *construct_properties);
@@ -177,73 +185,10 @@ enum
 
 static guint rhythmdb_query_model_signals[LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class = NULL;
-
-GType
-rhythmdb_query_model_get_type (void)
-{
-	static GType rhythmdb_query_model_type = 0;
-
-	if (rhythmdb_query_model_type == 0)
-	{
-		static const GTypeInfo our_info =
-		{
-			sizeof (RhythmDBQueryModelClass),
-			NULL,
-			NULL,
-			(GClassInitFunc) rhythmdb_query_model_class_init,
-			NULL,
-			NULL,
-			sizeof (RhythmDBQueryModel),
-			0,
-			(GInstanceInitFunc) rhythmdb_query_model_init
-		};
-
-		static const GInterfaceInfo tree_model_info =
-		{
-			(GInterfaceInitFunc) rhythmdb_query_model_tree_model_init,
-			NULL,
-			NULL
-		};
-
-		static const GInterfaceInfo drag_source_info = {
-			(GInterfaceInitFunc) rhythmdb_query_model_drag_source_init,
-			NULL,
-			NULL
-		};
-
-		static const GInterfaceInfo drag_dest_info = {
-			(GInterfaceInitFunc) rhythmdb_query_model_drag_dest_init,
-			NULL,
-			NULL
-		};
-
-		rhythmdb_query_model_type = g_type_register_static (G_TYPE_OBJECT,
-								    "RhythmDBQueryModel",
-								    &our_info, 0);
-
-		g_type_add_interface_static (rhythmdb_query_model_type,
-					     GTK_TYPE_TREE_MODEL,
-					     &tree_model_info);
-
-		g_type_add_interface_static (rhythmdb_query_model_type,
-					     RB_TYPE_TREE_DRAG_SOURCE,
-					     &drag_source_info);
-
-		g_type_add_interface_static (rhythmdb_query_model_type,
-					     RB_TYPE_TREE_DRAG_DEST,
-					     &drag_dest_info);
-	}
-
-	return rhythmdb_query_model_type;
-}
-
 static void
 rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-	parent_class = g_type_class_peek_parent (klass);
 
 	if (!rhythmdb_query_model_drag_target_list)
 		rhythmdb_query_model_drag_target_list
@@ -544,7 +489,7 @@ rhythmdb_query_model_finalize (GObject *object)
 
 	g_free (model->priv);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (rhythmdb_query_model_parent_class)->finalize (object);
 }
 
 RhythmDBQueryModel *
