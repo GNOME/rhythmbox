@@ -2,6 +2,74 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7
 #
 
+2004-01-09 15:14:00 GMT	Colin Walters <walters@verbum.org>	patch-123
+
+    Summary:
+      merge fix to g_sequence_ptr_is_begin from nautilus
+    Revision:
+      rhythmbox--mainline--0.7--patch-123
+
+
+    modified files:
+     ChangeLog lib/gsequence.c
+
+
+2004-01-09 00:44:59 GMT	Colin Walters <walters@verbum.org>	patch-122
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-122
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-399
+       disable dashboard by default
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-400
+       remove checks for XSun, therefore no mmkeys with XSun
+    
+
+    modified files:
+     ChangeLog configure.ac
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-399
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-400
+
+
+2004-01-09 00:36:48 GMT	Colin Walters <walters@verbum.org>	patch-121
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-121
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-396
+       rename some functions in rb-shell-player.h, attempt to fix corba bugs 
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-397
+       always initialize artist/album in songinfo to avoid ORBit crash
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-398
+       when a propview is hidden, remove any query it implies
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c sources/rb-library-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-396
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-397
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-398
+
+
 2004-01-08 22:54:36 GMT	Colin Walters <walters@verbum.org>	patch-120
 
     Summary:
