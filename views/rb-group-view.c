@@ -368,8 +368,6 @@ static void
 rb_group_view_finalize (GObject *object)
 {
 	RBGroupView *view;
-	GPtrArray *kids;
-	int i;
 
 	g_return_if_fail (object != NULL);
 	g_return_if_fail (RB_IS_GROUP_VIEW (object));
@@ -378,13 +376,7 @@ rb_group_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	kids = rb_node_get_children (view->priv->group);
-	rb_node_thaw (view->priv->group);
-	for (i = kids->len - 1; i >= 0; i--)
-	{
-		rb_node_remove_child (view->priv->group,
-				      g_ptr_array_index (kids, i));
-	}
+	rb_node_unref (view->priv->group);
 
 	g_free (view->priv->title);
 	g_free (view->priv->status);
@@ -1374,9 +1366,7 @@ rb_group_view_add_node (RBGroupView *view,
 	g_return_if_fail (view != NULL);
 	g_return_if_fail (node != NULL);
 
-	GDK_THREADS_LEAVE ();
 	rb_node_add_child (view->priv->group, node);
-	GDK_THREADS_ENTER ();
 }
 
 static void

@@ -83,7 +83,6 @@ static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   RBShell *shell);
 static void rb_shell_window_load_state (RBShell *shell);
 static void rb_shell_window_save_state (RBShell *shell);
-static void rb_shell_views_foreach_cb (RBView *view, RBShell *shell);
 static void rb_shell_select_view (RBShell *shell, RBView *view);
 static void rb_shell_append_view (RBShell *shell, RBView *view);
 static void rb_shell_remove_view (RBShell *shell, RBView *view);
@@ -448,10 +447,6 @@ rb_shell_finalize (GObject *object)
 	rb_sidebar_save_layout (RB_SIDEBAR (shell->priv->sidebar),
 				shell->priv->sidebar_layout_file);
 
-	g_list_foreach (shell->priv->views,
-			(GFunc) rb_shell_views_foreach_cb,
-			shell);
-
 	gtk_widget_destroy (shell->priv->window);
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 	
@@ -742,9 +737,6 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_append_view (shell, library_view);
 	rb_shell_select_view (shell, library_view); /* select this one by default */
 
-	/* music groups */
-	rb_shell_load_music_groups (shell);
-
 	/* now that we restored all views we can restore the layout */
 	rb_sidebar_load_layout (RB_SIDEBAR (shell->priv->sidebar),
 				shell->priv->sidebar_layout_file);
@@ -761,9 +753,13 @@ rb_shell_construct (RBShell *shell)
 			      CMD_PATH_REPEAT,
 			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
 
-	/* GO GO GO! */
+	/* load library */
 	rb_library_release_brakes (shell->priv->library);
 	
+	/* now that the lib is loaded, we can load the music groups */
+	rb_shell_load_music_groups (shell);
+
+	/* GO GO GO! */
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
@@ -942,12 +938,6 @@ rb_shell_select_view (RBShell *shell,
 				    RB_VIEW_STATUS (view));
 	rb_shell_clipboard_set_clipboard (shell->priv->clipboard_shell,
 				          RB_VIEW_CLIPBOARD (view));
-}
-
-static void
-rb_shell_views_foreach_cb (RBView *view, RBShell *shell)
-{
-	rb_shell_remove_view (shell, view);
 }
 
 static void

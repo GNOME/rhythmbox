@@ -1,3 +1,16 @@
+2002-10-29  Jorn Baayen  <jorn@nl.linux.org>
+
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(rb_shell_select_view):
+	* views/rb-group-view.c: (rb_group_view_finalize),
+	(rb_group_view_add_node):
+
+	Improve group stability, still not working well.
+	
+	* views/rb-library-view.c: (rb_library_view_search_cb):
+
+	Hopefully fix the occasional search freeze while loading.
+
 2002-10-28  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/ui/rhythmbox-group-view.xml.in:

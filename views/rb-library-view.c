@@ -1211,6 +1211,8 @@ rb_library_view_search_cb (RBSearchEntry *search,
 			   const char *search_text,
 			   RBLibraryView *view)
 {
+	GDK_THREADS_ENTER ();
+
 	/* resets the filter */
 	if (search_text == NULL || strcmp (search_text, "") == 0)
 	{
@@ -1242,6 +1244,8 @@ rb_library_view_search_cb (RBSearchEntry *search,
 					       0);
 		rb_node_filter_done_changing (view->priv->songs_filter);
 	}
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void
