@@ -933,7 +933,7 @@ filter_artist_destroyed_cb (RBNode *node,
 
 	if (node == model->priv->old_filter_artist)
 		model->priv->old_filter_artist = NULL;
-	
+
 	/* no need to do other stuff since we should have had a bunch of child_destroyed
 	 * signals already */
 }

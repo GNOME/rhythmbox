@@ -1219,7 +1219,7 @@ root_child_destroyed_cb (RBNode *root,
 			 RBNodeView *view)
 {
 	RBNode *node;
-	
+
 	if (view->priv->keep_selection == FALSE)
 		return;
 	if (g_list_find (view->priv->nodeselection, child) == NULL)

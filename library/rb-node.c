@@ -447,6 +447,8 @@ rb_node_add_child (RBNode *node,
 	action->signal = CHILD_CREATED;
 	action->user_data = child;
 
+	rb_node_add_action (node, action);
+
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
