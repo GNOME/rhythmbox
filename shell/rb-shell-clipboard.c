@@ -310,11 +310,20 @@ rb_shell_clipboard_new (BonoboUIComponent *component, RhythmDB *db)
 static void
 rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 {
-	gboolean have_selection = rb_entry_view_have_selection (rb_source_get_entry_view (clipboard->priv->source));
-	gboolean can_cut = have_selection;	
-	gboolean can_paste = have_selection;
-	gboolean can_delete = have_selection;	
-	gboolean can_copy = have_selection;	
+	gboolean have_selection;
+	gboolean can_cut;	
+	gboolean can_paste;
+	gboolean can_delete;	
+	gboolean can_copy;	
+
+	if (!clipboard->priv->source)
+		return;
+
+	have_selection = rb_entry_view_have_selection (rb_source_get_entry_view (clipboard->priv->source));
+	can_cut = have_selection;	
+	can_paste = have_selection;
+	can_delete = have_selection;	
+	can_copy = have_selection;	
 
 	rb_debug ("syncing clipboard");
 	

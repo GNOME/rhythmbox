@@ -779,7 +779,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 			GtkTreeIter iter;
 			GtkTreePath *path;
 			GSequencePtr ptr;
-			char *location;
+			const char *location;
 
 			path = gtk_tree_row_reference_get_path (tem->data);
 	  
@@ -791,7 +791,6 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 
 			location = rhythmdb_entry_get_string (model->priv->db, entry, RHYTHMDB_PROP_LOCATION);
 			g_string_append (data, location);
-			g_free (location);
 
 			rhythmdb_read_unlock (model->priv->db);
 

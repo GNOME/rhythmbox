@@ -415,7 +415,7 @@ rb_playlist_manager_load_legacy_playlist (RBPlaylistManager *mgr,
 		long id;
 		char *tmp;
 		RhythmDBEntry *entry;
-		char *location;
+		const char *location;
 
 		tmp = xmlGetProp (child, "id");
 		if (tmp == NULL)
@@ -433,7 +433,6 @@ rb_playlist_manager_load_legacy_playlist (RBPlaylistManager *mgr,
 						      RHYTHMDB_PROP_LOCATION);
 
 		rb_playlist_source_add_location (source, location);
-		g_free (location);
 	}
 }
 

@@ -337,7 +337,8 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	GtkTreeIter iter;
 	GtkTreePath *path;
 	GSequencePtr ptr;
-	char *propstr, *sort_key;
+	const char *propstr;
+	const char *sort_key;	
 
 	rhythmdb_read_lock (model->priv->db);
 	propstr = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
@@ -346,7 +347,6 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	if ((ptr = g_hash_table_lookup (model->priv->reverse_map, propstr))) {
 		prop = g_sequence_ptr_get_data (ptr);
 		prop->refcount++;
-		g_free (propstr);
 		return;
 	}
 
@@ -355,8 +355,8 @@ rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *ent
 	rhythmdb_read_unlock (model->priv->db);
 
 	prop = g_mem_chunk_alloc (model->priv->property_memchunk);
-	prop->name = propstr;
-	prop->sort_key = sort_key;
+	prop->name = g_strdup (propstr);
+	prop->sort_key = g_strdup (sort_key);
 	prop->refcount = 1;
 
 	iter.stamp = model->priv->stamp;
@@ -400,7 +400,7 @@ rhythmdb_property_model_entry_to_iter (RhythmDBPropertyModel *model,
 				       GtkTreeIter *iter)
 {
 	GSequencePtr ptr;
-	char *propstr;
+	const char *propstr;
 
 	rhythmdb_read_lock (model->priv->db);
 	propstr = rhythmdb_entry_get_string (model->priv->db, entry, model->priv->propid);
@@ -410,7 +410,6 @@ rhythmdb_property_model_entry_to_iter (RhythmDBPropertyModel *model,
 
 	iter->user_data = ptr;
 	iter->stamp = model->priv->stamp;
-	g_free (propstr);
 }
 
 static GtkTreeModelFlags

@@ -886,7 +886,7 @@ impl_get_artist (RBSource *asource)
 		rhythmdb_read_lock (source->priv->db);
 		
 		source->priv->artist =
-			rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST);
+			g_strdup (rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ARTIST));
 
 		rhythmdb_read_unlock (source->priv->db);
 	} else {
@@ -910,7 +910,7 @@ impl_get_album (RBSource *asource)
 		rhythmdb_read_lock (source->priv->db);
 
 		source->priv->album =
-			rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM);
+			g_strdup (rhythmdb_entry_get_string (source->priv->db, entry, RHYTHMDB_PROP_ALBUM));
 		
 		rhythmdb_read_unlock (source->priv->db);
 	} else {

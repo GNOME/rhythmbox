@@ -1193,35 +1193,48 @@ rhythmdb_tree_entry_get (RhythmDB *adb, RhythmDBEntry *aentry,
 		return;
 	}
 
-	/* Handle special properties */
 	switch (propid)
 	{
+	/* Handle special properties */
 	case RHYTHMDB_PROP_ALBUM:
-		g_value_set_string (value, get_entry_album_name (entry));
+		g_value_set_static_string (value, get_entry_album_name (entry));
 		break;
 	case RHYTHMDB_PROP_ARTIST:
-		g_value_set_string (value, get_entry_artist_name (entry));
+		g_value_set_static_string (value, get_entry_artist_name (entry));
 		break;
 	case RHYTHMDB_PROP_GENRE:
-		g_value_set_string (value, get_entry_genre_name (entry));
+		g_value_set_static_string (value, get_entry_genre_name (entry));
 		break;
 	case RHYTHMDB_PROP_ALBUM_SORT_KEY:
-		g_value_set_string (value, get_entry_album_sort_key (entry));
+		g_value_set_static_string (value, get_entry_album_sort_key (entry));
 		break;
 	case RHYTHMDB_PROP_ARTIST_SORT_KEY:
-		g_value_set_string (value, get_entry_artist_sort_key (entry));
+		g_value_set_static_string (value, get_entry_artist_sort_key (entry));
 		break;
 	case RHYTHMDB_PROP_GENRE_SORT_KEY:
-		g_value_set_string (value, get_entry_genre_sort_key (entry));
+		g_value_set_static_string (value, get_entry_genre_sort_key (entry));
 		break;
 	case RHYTHMDB_PROP_ALBUM_FOLDED:
-		g_value_set_string (value, get_entry_album_folded (entry));
+		g_value_set_static_string (value, get_entry_album_folded (entry));
 		break;
 	case RHYTHMDB_PROP_ARTIST_FOLDED:
-		g_value_set_string (value, get_entry_artist_folded (entry));
+		g_value_set_static_string (value, get_entry_artist_folded (entry));
 		break;
 	case RHYTHMDB_PROP_GENRE_FOLDED:
-		g_value_set_string (value, get_entry_genre_folded (entry));
+		g_value_set_static_string (value, get_entry_genre_folded (entry));
+		break;
+	/* Handle other string properties */
+	case RHYTHMDB_PROP_TITLE:
+		g_value_set_static_string (value, g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_TITLE)));
+		break;
+	case RHYTHMDB_PROP_TITLE_SORT_KEY:
+		g_value_set_static_string (value, g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_TITLE_SORT_KEY)));
+		break;
+	case RHYTHMDB_PROP_LOCATION:
+		g_value_set_static_string (value, g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LOCATION)));
+		break;
+	case RHYTHMDB_PROP_LAST_PLAYED_STR:
+		g_value_set_static_string (value, g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (entry, RHYTHMDB_PROP_LAST_PLAYED_STR)));
 		break;
 	default:
 		g_value_copy (RHYTHMDB_TREE_ENTRY_VALUE (entry, propid), value);

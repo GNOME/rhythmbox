@@ -727,7 +727,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 static void
 rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError **error)
 {
-	char *location;
+	const char *location;
 
 	rhythmdb_read_lock (player->priv->db);
 
@@ -738,11 +738,9 @@ rb_shell_player_open_entry (RBShellPlayer *player, RhythmDBEntry *entry, GError 
 
 	rb_shell_player_open_location (player, location, error);
 	if (*error == NULL)
-		goto out;
+		return;
 
 	fprintf (stderr, "Got error opening \"%s\": %s\n", location, (*error)->message);
-out:
-	g_free (location);
 }
 
 static gboolean
@@ -1212,7 +1210,8 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 static void
 rb_shell_player_sync_with_source (RBShellPlayer *player)
 {
-	char *entry_title = NULL, *artist = NULL;
+	const char *entry_title = NULL;
+	const char *artist = NULL;	
 	char *title;
 	RhythmDBEntry *entry;
 	char *duration;
@@ -1262,8 +1261,6 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 		rb_player_set_title (player->priv->player_widget, title);
 	else
 		rb_player_set_title (player->priv->player_widget, entry_title);
-	g_free (entry_title);
-	g_free (artist);
 	g_free (title);
 	rb_player_set_playing_entry (player->priv->player_widget, entry);
 	rb_player_sync (player->priv->player_widget);

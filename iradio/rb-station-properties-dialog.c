@@ -324,7 +324,8 @@ rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 {
-	char *name, *tmp;
+	const char *name;
+	char *tmp;	
 	rhythmdb_read_lock (dialog->priv->db);
 	name = rhythmdb_entry_get_string (dialog->priv->db,
 					  dialog->priv->current_entry,
@@ -333,13 +334,12 @@ rb_station_properties_dialog_update_title (RBStationPropertiesDialog *dialog)
 	tmp = g_strdup_printf (_("Properties for %s"), name);
 	gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 	g_free (tmp);
-	g_free (name);
 }
 
 static void
 rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dialog)
 {
-	char *tmp;
+	const char *tmp;
 
 	rhythmdb_read_lock (dialog->priv->db);
 	tmp = rhythmdb_entry_get_string (dialog->priv->db,
@@ -348,13 +348,12 @@ rb_station_properties_dialog_update_title_entry (RBStationPropertiesDialog *dial
 	rhythmdb_read_unlock (dialog->priv->db);
 	
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->title), tmp);
-	g_free (tmp);
 }
 
 static void
 rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 {
-	char *tmp;
+	const char *tmp;
 
 	rhythmdb_read_lock (dialog->priv->db);
 	tmp = rhythmdb_entry_get_string (dialog->priv->db,
@@ -363,13 +362,12 @@ rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 	rhythmdb_read_unlock (dialog->priv->db);
 	
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->genre), tmp);
-	g_free (tmp);
 }
 
 static void
 rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 {
-	char *tmp;
+	const char *tmp;
 
 	rhythmdb_read_lock (dialog->priv->db);
 	tmp = rhythmdb_entry_get_string (dialog->priv->db,
@@ -378,7 +376,6 @@ rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 	rhythmdb_read_unlock (dialog->priv->db);
 	
 	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location), tmp);
-	g_free (tmp);
 }
 
 static void
@@ -427,7 +424,7 @@ rb_station_properties_dialog_update_play_count (RBStationPropertiesDialog *dialo
 static void
 rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dialog)
 {
-	char *tmp;
+	const char *tmp;
 
 	rhythmdb_read_lock (dialog->priv->db);
 	tmp = rhythmdb_entry_get_string (dialog->priv->db,
@@ -436,7 +433,6 @@ rb_station_properties_dialog_update_last_played (RBStationPropertiesDialog *dial
 	rhythmdb_read_unlock (dialog->priv->db);
 	
 	gtk_label_set (GTK_LABEL (dialog->priv->lastplayed), tmp);
-	g_free (tmp);
 }
 
 static void

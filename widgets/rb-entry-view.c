@@ -770,7 +770,8 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				RBEntryView *view)
 {
 	gint a_int, b_int;
-	char *a_str = NULL, *b_str = NULL;
+	const char *a_str = NULL;
+	const char *b_str = NULL;
 	gint ret;
 
 	rhythmdb_read_lock (view->priv->db);
@@ -779,8 +780,6 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
-	g_free (a_str);
-	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -788,8 +787,6 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
-	g_free (a_str);
-	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -805,8 +802,6 @@ rb_entry_view_artist_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_TITLE_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
-	g_free (a_str);
-	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -823,7 +818,8 @@ rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 			       RBEntryView *view)
 {
 	gint a_int, b_int;
-	char *a_str = NULL, *b_str = NULL;
+	const char *a_str = NULL;
+	const char *b_str = NULL;	
 	gint ret;
 
 	rhythmdb_read_lock (view->priv->db);
@@ -832,8 +828,6 @@ rb_entry_view_track_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
-	g_free (a_str);
-	g_free (b_str);
 	if (ret != 0)
 		goto out;
 
@@ -894,7 +888,8 @@ static gint
 rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 				struct RBEntryViewCellDataFuncData *data)
 {
-	char *a_val, *b_val;
+	const char *a_val;
+	const char *b_val;	
 	gint ret;
 
 	rhythmdb_read_lock (data->view->priv->db);
@@ -905,9 +900,6 @@ rb_entry_view_string_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 	ret = strcmp (a_val, b_val);
 
 	rhythmdb_read_unlock (data->view->priv->db);
-
-	g_free (a_val);
-	g_free (b_val);
 
 	return ret;
 }
@@ -1038,7 +1030,7 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 				     struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
-	char *str;
+	const char *str;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
@@ -1049,7 +1041,6 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 	rhythmdb_read_unlock (data->view->priv->db);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
-	g_free (str);
 }
 
 static void

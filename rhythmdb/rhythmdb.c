@@ -761,7 +761,7 @@ add_thread_main (RhythmDB *db)
 static void
 update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 {
-	char *location;
+	const char *location;
 	time_t stored_mtime;
 	GnomeVFSFileInfo *vfsinfo = NULL;
 	GnomeVFSResult result;
@@ -807,7 +807,6 @@ update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
 
 out:
 	gnome_vfs_file_info_unref (vfsinfo);
-	g_free (location);
 }
 
 static gpointer
@@ -1380,17 +1379,16 @@ rhythmdb_unsaved_prop_get_type (void)
 	return etype;
 }
 
-char *
+const char *
 rhythmdb_entry_get_string (RhythmDB *db, RhythmDBEntry *entry, guint propid)
 { 
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 	GValue gval = {0, };
-	char *ret;
+	const char *ret;
 	db_enter (db, FALSE);
 	g_value_init (&gval, G_TYPE_STRING);
 	klass->impl_entry_get (db, entry, propid, &gval);
-	ret = g_value_dup_string (&gval);
-	g_value_unset (&gval);
+	ret = g_value_get_string (&gval);
 	return ret;
 }
 

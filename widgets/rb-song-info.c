@@ -577,7 +577,7 @@ rb_song_info_update_title (RBSongInfo *song_info)
 	{
 		if (song_info->priv->current_entry != NULL)
 		{
-			char *url;
+			const char *url;
 			char *tmp;
 
 			rhythmdb_read_lock (song_info->priv->db);
@@ -590,7 +590,6 @@ rb_song_info_update_title (RBSongInfo *song_info)
 			tmp = g_strdup_printf (_("%s Properties"), url);
 			gtk_window_set_title (GTK_WINDOW (song_info), tmp);
 			g_free (tmp);
-			g_free (url);
 		}
 		else
 			gtk_window_set_title (GTK_WINDOW (song_info), _("Song Properties"));
@@ -832,7 +831,7 @@ rb_song_info_update_duration (RBSongInfo *song_info)
 static void
 rb_song_info_update_location (RBSongInfo *song_info)
 {
-	char *text;
+	const char *text;
 	char *basename, *dir, *desktopdir;
 
 	g_return_if_fail (song_info != NULL);
@@ -878,7 +877,6 @@ rb_song_info_update_location (RBSongInfo *song_info)
 		rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (song_info->priv->location), RB_ELLIPSIZE_END);
 		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (song_info->priv->location), tmp);
 		g_free (tmp);
-		g_free (text);
 	}
 }
 
@@ -957,7 +955,7 @@ rb_song_info_view_changed_cb (RBEntryView *entry_view,
 static gboolean
 rb_song_info_update_current_values (RBSongInfo *song_info)
 {
-	char *url;
+	const char *url;
 	RhythmDBEntry *entry = NULL;
 	MonkeyMediaStreamInfo *info;
 	GList *selected_entries;
@@ -984,7 +982,6 @@ rb_song_info_update_current_values (RBSongInfo *song_info)
 	rhythmdb_read_unlock (song_info->priv->db);
 
 	info = monkey_media_stream_info_new (url, NULL);
-	g_free (url);
 	song_info->priv->current_info = info;
 
 	return TRUE;
@@ -1008,14 +1005,13 @@ rb_song_info_update_play_count (RBSongInfo *song_info)
 static void
 rb_song_info_update_last_played (RBSongInfo *song_info)
 {
-	char *str;
+	const char *str;
 	rhythmdb_read_lock (song_info->priv->db);
 	str = rhythmdb_entry_get_string (song_info->priv->db,
 					 song_info->priv->current_entry,
 					 RHYTHMDB_PROP_LAST_PLAYED_STR);
 	rhythmdb_read_unlock (song_info->priv->db);
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), str);
-	g_free (str);
 }
 
 static void
