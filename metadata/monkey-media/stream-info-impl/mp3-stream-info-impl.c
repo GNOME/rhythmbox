@@ -546,7 +546,7 @@ MP3_stream_info_impl_get_value (MonkeyMediaStreamInfo *info,
 			else
 				g_value_set_long (value, 0);
 		} else {
-			g_value_set_long (value, impl->priv->info_num->time/1000);
+			g_value_set_long (value, impl->priv->info_num->time);
 		}
 		break;
 
