@@ -718,7 +718,11 @@ rb_shell_player_get_property (GObject *object,
 		g_value_set_object (value, player->priv->tray_component);
 		break;
 	case PROP_PLAY_ORDER:
-		g_value_set_string_take_ownership (value, eel_gconf_get_string (CONF_STATE_PLAY_ORDER));
+	{
+		char *play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+		if (!play_order)
+			play_order = g_strdup ("linear");
+		g_value_set_string_take_ownership (value, play_order);
 		break;
 	case PROP_PLAYING:
 		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
@@ -965,7 +969,7 @@ rb_shell_player_get_playback_state (RBShellPlayer *player,
 
 	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
 	if (!play_order) {
-		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
+		g_warning (CONF_STATE_PLAY_ORDER " gconf key not found!");
 		return FALSE;
 	}
 
@@ -1011,7 +1015,7 @@ rb_shell_player_sync_play_order (RBShellPlayer *player)
 
 	if (!new_play_order) {
 		g_critical (CONF_STATE_PLAY_ORDER " gconf key not found!");
-		new_play_order = g_strdup ("");
+		new_play_order = g_strdup ("linear");
 	}
 
 	if (current_play_order == NULL
