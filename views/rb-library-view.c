@@ -34,66 +34,66 @@
 #include "rb-file-helpers.h"
 #include "rb-player.h"
 #include "rb-dialog.h"
-#include "testview.h"
+#include "rb-library-view.h"
 
-static void rb_test_view_class_init (RBTestViewClass *klass);
-static void rb_test_view_init (RBTestView *view);
-static void rb_test_view_finalize (GObject *object);
-static void rb_test_view_set_property (GObject *object,
-			               guint prop_id,
-			               const GValue *value,
-			               GParamSpec *pspec);
-static void rb_test_view_get_property (GObject *object,
-			               guint prop_id,
-			               GValue *value,
-			               GParamSpec *pspec);
+static void rb_library_view_class_init (RBLibraryViewClass *klass);
+static void rb_library_view_init (RBLibraryView *view);
+static void rb_library_view_finalize (GObject *object);
+static void rb_library_view_set_property (GObject *object,
+			                  guint prop_id,
+			                  const GValue *value,
+			                  GParamSpec *pspec);
+static void rb_library_view_get_property (GObject *object,
+			                  guint prop_id,
+			                  GValue *value,
+			                  GParamSpec *pspec);
 static void album_node_selected_cb (RBNodeView *view,
 			            RBNode *node,
-			            RBTestView *testview);
+			            RBLibraryView *testview);
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
-			             RBTestView *testview);
-static void rb_test_view_player_init (RBViewPlayerIface *iface);
-static void rb_test_view_set_shuffle (RBViewPlayer *player,
-			              gboolean shuffle);
-static void rb_test_view_set_repeat (RBViewPlayer *player,
-			             gboolean repeat);
-static RBViewPlayerResult rb_test_view_have_next (RBViewPlayer *player);
-static RBViewPlayerResult rb_test_view_have_previous (RBViewPlayer *player);
-static void rb_test_view_next (RBViewPlayer *player);
-static void rb_test_view_previous (RBViewPlayer *player);
-static const char *rb_test_view_get_title (RBViewPlayer *player);
-static const char *rb_test_view_get_artist (RBViewPlayer *player);
-static const char *rb_test_view_get_album (RBViewPlayer *player);
-static const char *rb_test_view_get_song (RBViewPlayer *player);
-static long rb_test_view_get_duration (RBViewPlayer *player);
-static GdkPixbuf *rb_test_view_get_pixbuf (RBViewPlayer *player);
-static MonkeyMediaAudioStream *rb_test_view_get_stream (RBViewPlayer *player);
-static void rb_test_view_start_playing (RBViewPlayer *player);
-static void rb_test_view_stop_playing (RBViewPlayer *player);
-static void rb_test_view_set_playing_node (RBTestView *view,
-			                   RBNode *node);
+			             RBLibraryView *testview);
+static void rb_library_view_player_init (RBViewPlayerIface *iface);
+static void rb_library_view_set_shuffle (RBViewPlayer *player,
+			                 gboolean shuffle);
+static void rb_library_view_set_repeat (RBViewPlayer *player,
+			                gboolean repeat);
+static RBViewPlayerResult rb_library_view_have_next (RBViewPlayer *player);
+static RBViewPlayerResult rb_library_view_have_previous (RBViewPlayer *player);
+static void rb_library_view_next (RBViewPlayer *player);
+static void rb_library_view_previous (RBViewPlayer *player);
+static const char *rb_library_view_get_title (RBViewPlayer *player);
+static const char *rb_library_view_get_artist (RBViewPlayer *player);
+static const char *rb_library_view_get_album (RBViewPlayer *player);
+static const char *rb_library_view_get_song (RBViewPlayer *player);
+static long rb_library_view_get_duration (RBViewPlayer *player);
+static GdkPixbuf *rb_library_view_get_pixbuf (RBViewPlayer *player);
+static MonkeyMediaAudioStream *rb_library_view_get_stream (RBViewPlayer *player);
+static void rb_library_view_start_playing (RBViewPlayer *player);
+static void rb_library_view_stop_playing (RBViewPlayer *player);
+static void rb_library_view_set_playing_node (RBLibraryView *view,
+			                      RBNode *node);
 static void song_activated_cb (RBNodeView *view,
 		               RBNode *node,
-		               RBTestView *test_view);
+		               RBLibraryView *library_view);
 static void node_view_changed_cb (RBNodeView *view,
-		                  RBTestView *test_view);
+		                  RBLibraryView *library_view);
 static void song_eos_cb (MonkeyMediaStream *stream,
-	                 RBTestView *view);
-static RBNode *rb_test_view_get_previous_node (RBTestView *view);
-static RBNode *rb_test_view_get_next_node (RBTestView *view);
-static void rb_test_view_status_init (RBViewStatusIface *iface);
-static const char *rb_test_view_status_get (RBViewStatus *status);
-static void rb_test_view_clipboard_init (RBViewClipboardIface *iface);
-static gboolean rb_test_view_can_cut (RBViewClipboard *clipboard);
-static gboolean rb_test_view_can_copy (RBViewClipboard *clipboard);
-static gboolean rb_test_view_can_paste (RBViewClipboard *clipboard);
-static GList *rb_test_view_cut (RBViewClipboard *clipboard);
-static GList *rb_test_view_copy (RBViewClipboard *clipboard);
-static void rb_test_view_paste (RBViewClipboard *clipboard,
-		                GList *nodes);
+	                 RBLibraryView *view);
+static RBNode *rb_library_view_get_previous_node (RBLibraryView *view);
+static RBNode *rb_library_view_get_next_node (RBLibraryView *view);
+static void rb_library_view_status_init (RBViewStatusIface *iface);
+static const char *rb_library_view_status_get (RBViewStatus *status);
+static void rb_library_view_clipboard_init (RBViewClipboardIface *iface);
+static gboolean rb_library_view_can_cut (RBViewClipboard *clipboard);
+static gboolean rb_library_view_can_copy (RBViewClipboard *clipboard);
+static gboolean rb_library_view_can_paste (RBViewClipboard *clipboard);
+static GList *rb_library_view_cut (RBViewClipboard *clipboard);
+static GList *rb_library_view_copy (RBViewClipboard *clipboard);
+static void rb_library_view_paste (RBViewClipboard *clipboard,
+		                   GList *nodes);
 
-struct RBTestViewPrivate
+struct RBLibraryViewPrivate
 {
 	Library *library;
 
@@ -124,77 +124,77 @@ enum
 static GObjectClass *parent_class = NULL;
 
 GType
-rb_test_view_get_type (void)
+rb_library_view_get_type (void)
 {
-	static GType rb_test_view_type = 0;
+	static GType rb_library_view_type = 0;
 
-	if (rb_test_view_type == 0)
+	if (rb_library_view_type == 0)
 	{
 		static const GTypeInfo our_info =
 		{
-			sizeof (RBTestViewClass),
+			sizeof (RBLibraryViewClass),
 			NULL,
 			NULL,
-			(GClassInitFunc) rb_test_view_class_init,
+			(GClassInitFunc) rb_library_view_class_init,
 			NULL,
 			NULL,
-			sizeof (RBTestView),
+			sizeof (RBLibraryView),
 			0,
-			(GInstanceInitFunc) rb_test_view_init
+			(GInstanceInitFunc) rb_library_view_init
 		};
 
 		static const GInterfaceInfo player_info =
 		{
-			(GInterfaceInitFunc) rb_test_view_player_init,
+			(GInterfaceInitFunc) rb_library_view_player_init,
 			NULL,
 			NULL
 		};
 		
 		static const GInterfaceInfo clipboard_info =
 		{
-			(GInterfaceInitFunc) rb_test_view_clipboard_init,
+			(GInterfaceInitFunc) rb_library_view_clipboard_init,
 			NULL,
 			NULL
 		};
 		
 		static const GInterfaceInfo status_info =
 		{
-			(GInterfaceInitFunc) rb_test_view_status_init,
+			(GInterfaceInitFunc) rb_library_view_status_init,
 			NULL,
 			NULL
 		};
 
-		rb_test_view_type = g_type_register_static (RB_TYPE_VIEW,
-							    "RBTestView",
+		rb_library_view_type = g_type_register_static (RB_TYPE_VIEW,
+							    "RBLibraryView",
 							    &our_info, 0);
 		
-		g_type_add_interface_static (rb_test_view_type,
+		g_type_add_interface_static (rb_library_view_type,
 					     RB_TYPE_VIEW_PLAYER,
 					     &player_info);
 
-		g_type_add_interface_static (rb_test_view_type,
+		g_type_add_interface_static (rb_library_view_type,
 					     RB_TYPE_VIEW_CLIPBOARD,
 					     &clipboard_info);
 
-		g_type_add_interface_static (rb_test_view_type,
+		g_type_add_interface_static (rb_library_view_type,
 					     RB_TYPE_VIEW_STATUS,
 					     &status_info);
 	}
 
-	return rb_test_view_type;
+	return rb_library_view_type;
 }
 
 static void
-rb_test_view_class_init (RBTestViewClass *klass)
+rb_library_view_class_init (RBLibraryViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->finalize = rb_test_view_finalize;
+	object_class->finalize = rb_library_view_finalize;
 
-	object_class->set_property = rb_test_view_set_property;
-	object_class->get_property = rb_test_view_get_property;
+	object_class->set_property = rb_library_view_set_property;
+	object_class->get_property = rb_library_view_get_property;
 
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY,
@@ -206,12 +206,12 @@ rb_test_view_class_init (RBTestViewClass *klass)
 }
 
 static void
-rb_test_view_init (RBTestView *view)
+rb_library_view_init (RBLibraryView *view)
 {
 	RBSidebarButton *button;
 	GtkWidget *align;
 	
-	view->priv = g_new0 (RBTestViewPrivate, 1);
+	view->priv = g_new0 (RBLibraryViewPrivate, 1);
 
 	button = rb_sidebar_button_new ("RbLibraryView");
 	rb_sidebar_button_set (button,
@@ -240,14 +240,14 @@ rb_test_view_init (RBTestView *view)
 }
 
 static void
-rb_test_view_finalize (GObject *object)
+rb_library_view_finalize (GObject *object)
 {
-	RBTestView *view;
+	RBLibraryView *view;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (RB_IS_TEST_VIEW (object));
+	g_return_if_fail (RB_IS_LIBRARY_VIEW (object));
 
-	view = RB_TEST_VIEW (object);
+	view = RB_LIBRARY_VIEW (object);
 
 	g_return_if_fail (view->priv != NULL);
 
@@ -260,12 +260,12 @@ rb_test_view_finalize (GObject *object)
 }
 
 static void
-rb_test_view_set_property (GObject *object,
-			   guint prop_id,
-			   const GValue *value,
-			   GParamSpec *pspec)
+rb_library_view_set_property (GObject *object,
+			      guint prop_id,
+			      const GValue *value,
+			      GParamSpec *pspec)
 {
-	RBTestView *view = RB_TEST_VIEW (object);
+	RBLibraryView *view = RB_LIBRARY_VIEW (object);
 
 	switch (prop_id)
 	{
@@ -317,12 +317,12 @@ rb_test_view_set_property (GObject *object,
 }
 
 static void
-rb_test_view_get_property (GObject *object,
-			   guint prop_id,
-			   GValue *value,
-			   GParamSpec *pspec)
+rb_library_view_get_property (GObject *object,
+			      guint prop_id,
+			      GValue *value,
+			      GParamSpec *pspec)
 {
-	RBTestView *view = RB_TEST_VIEW (object);
+	RBLibraryView *view = RB_LIBRARY_VIEW (object);
 
 	switch (prop_id)
 	{
@@ -336,14 +336,15 @@ rb_test_view_get_property (GObject *object,
 }
 
 RBView *
-rb_test_view_new (BonoboUIComponent *component, Library *library)
+rb_library_view_new (BonoboUIContainer *container,
+		     Library *library)
 {
 	RBView *view;
 
-	view = RB_VIEW (g_object_new (RB_TYPE_TEST_VIEW,
+	view = RB_VIEW (g_object_new (RB_TYPE_LIBRARY_VIEW,
 				      "ui-file", "rhythmbox-test-view.xml",
-				      "ui-name", "TestView",
-				      "component", component,
+				      "ui-name", "LibraryView",
+				      "container", container,
 				      "library", library,
 				      NULL));
 
@@ -353,7 +354,7 @@ rb_test_view_new (BonoboUIComponent *component, Library *library)
 static void
 artist_node_selected_cb (RBNodeView *view,
 			 RBNode *node,
-			 RBTestView *testview)
+			 RBLibraryView *testview)
 {
 	rb_node_view_set_filter_root (testview->priv->albums, node);
 }
@@ -361,122 +362,122 @@ artist_node_selected_cb (RBNodeView *view,
 static void
 album_node_selected_cb (RBNodeView *view,
 			RBNode *node,
-			RBTestView *testview)
+			RBLibraryView *testview)
 {
 	rb_node_view_set_filter_root (testview->priv->songs, node);
 }
 
 static void
-rb_test_view_player_init (RBViewPlayerIface *iface)
+rb_library_view_player_init (RBViewPlayerIface *iface)
 {
-	iface->impl_set_shuffle   = rb_test_view_set_shuffle;
-	iface->impl_set_repeat    = rb_test_view_set_repeat;
-	iface->impl_have_next     = rb_test_view_have_next;
-	iface->impl_have_previous = rb_test_view_have_previous;
-	iface->impl_next          = rb_test_view_next;
-	iface->impl_previous      = rb_test_view_previous;
-	iface->impl_get_title     = rb_test_view_get_title;
-	iface->impl_get_artist    = rb_test_view_get_artist;
-	iface->impl_get_album     = rb_test_view_get_album;
-	iface->impl_get_song      = rb_test_view_get_song;
-	iface->impl_get_duration  = rb_test_view_get_duration;
-	iface->impl_get_pixbuf    = rb_test_view_get_pixbuf;
-	iface->impl_get_stream    = rb_test_view_get_stream;
-	iface->impl_start_playing = rb_test_view_start_playing;
-	iface->impl_stop_playing  = rb_test_view_stop_playing;
+	iface->impl_set_shuffle   = rb_library_view_set_shuffle;
+	iface->impl_set_repeat    = rb_library_view_set_repeat;
+	iface->impl_have_next     = rb_library_view_have_next;
+	iface->impl_have_previous = rb_library_view_have_previous;
+	iface->impl_next          = rb_library_view_next;
+	iface->impl_previous      = rb_library_view_previous;
+	iface->impl_get_title     = rb_library_view_get_title;
+	iface->impl_get_artist    = rb_library_view_get_artist;
+	iface->impl_get_album     = rb_library_view_get_album;
+	iface->impl_get_song      = rb_library_view_get_song;
+	iface->impl_get_duration  = rb_library_view_get_duration;
+	iface->impl_get_pixbuf    = rb_library_view_get_pixbuf;
+	iface->impl_get_stream    = rb_library_view_get_stream;
+	iface->impl_start_playing = rb_library_view_start_playing;
+	iface->impl_stop_playing  = rb_library_view_stop_playing;
 }
 
 static void
-rb_test_view_status_init (RBViewStatusIface *iface)
+rb_library_view_status_init (RBViewStatusIface *iface)
 {
-	iface->impl_get = rb_test_view_status_get;
+	iface->impl_get = rb_library_view_status_get;
 }
 
 static void
-rb_test_view_clipboard_init (RBViewClipboardIface *iface)
+rb_library_view_clipboard_init (RBViewClipboardIface *iface)
 {
-	iface->impl_can_cut   = rb_test_view_can_cut;
-	iface->impl_can_copy  = rb_test_view_can_copy;
-	iface->impl_can_paste = rb_test_view_can_paste;
-	iface->impl_cut       = rb_test_view_cut;
-	iface->impl_copy      = rb_test_view_copy;
-	iface->impl_paste     = rb_test_view_paste;
+	iface->impl_can_cut   = rb_library_view_can_cut;
+	iface->impl_can_copy  = rb_library_view_can_copy;
+	iface->impl_can_paste = rb_library_view_can_paste;
+	iface->impl_cut       = rb_library_view_cut;
+	iface->impl_copy      = rb_library_view_copy;
+	iface->impl_paste     = rb_library_view_paste;
 }
 
 static void
-rb_test_view_set_shuffle (RBViewPlayer *player,
-			  gboolean shuffle)
+rb_library_view_set_shuffle (RBViewPlayer *player,
+			     gboolean shuffle)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	view->priv->shuffle = shuffle;
 }
 
 static void
-rb_test_view_set_repeat (RBViewPlayer *player,
-			 gboolean repeat)
+rb_library_view_set_repeat (RBViewPlayer *player,
+			    gboolean repeat)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	view->priv->repeat = repeat;
 }
 
 static RBViewPlayerResult
-rb_test_view_have_next (RBViewPlayer *player)
+rb_library_view_have_next (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *next;
 
-	next = rb_test_view_get_next_node (view);
+	next = rb_library_view_get_next_node (view);
 	
 	return (next != NULL);
 }
 
 static RBViewPlayerResult
-rb_test_view_have_previous (RBViewPlayer *player)
+rb_library_view_have_previous (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *previous;
 
-	previous = rb_test_view_get_previous_node (view);
+	previous = rb_library_view_get_previous_node (view);
 
 	return (previous != NULL);
 }
 
 static void
-rb_test_view_next (RBViewPlayer *player)
+rb_library_view_next (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
-	node = rb_test_view_get_next_node (view);
+	node = rb_library_view_get_next_node (view);
 	
-	rb_test_view_set_playing_node (view, node);
+	rb_library_view_set_playing_node (view, node);
 }
 
 static void
-rb_test_view_previous (RBViewPlayer *player)
+rb_library_view_previous (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
-	node = rb_test_view_get_previous_node (view);
+	node = rb_library_view_get_previous_node (view);
 	
-	rb_test_view_set_playing_node (view, node);
+	rb_library_view_set_playing_node (view, node);
 }
 
 static const char *
-rb_test_view_get_title (RBViewPlayer *player)
+rb_library_view_get_title (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	return (const char *) view->priv->title;
 }
 
 static const char *
-rb_test_view_get_artist (RBViewPlayer *player)
+rb_library_view_get_artist (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
@@ -491,9 +492,9 @@ rb_test_view_get_artist (RBViewPlayer *player)
 }
 
 static const char *
-rb_test_view_get_album (RBViewPlayer *player)
+rb_library_view_get_album (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
@@ -508,9 +509,9 @@ rb_test_view_get_album (RBViewPlayer *player)
 }
 
 static const char *
-rb_test_view_get_song (RBViewPlayer *player)
+rb_library_view_get_song (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
@@ -524,9 +525,9 @@ rb_test_view_get_song (RBViewPlayer *player)
 }
 
 static long
-rb_test_view_get_duration (RBViewPlayer *player)
+rb_library_view_get_duration (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
 	node = rb_node_view_get_playing_node (view->priv->songs);
@@ -540,23 +541,23 @@ rb_test_view_get_duration (RBViewPlayer *player)
 }
 
 static GdkPixbuf *
-rb_test_view_get_pixbuf (RBViewPlayer *player)
+rb_library_view_get_pixbuf (RBViewPlayer *player)
 {
 	return NULL;
 }
 
 static MonkeyMediaAudioStream *
-rb_test_view_get_stream (RBViewPlayer *player)
+rb_library_view_get_stream (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	return view->priv->playing_stream;
 }
 
 static void
-rb_test_view_start_playing (RBViewPlayer *player)
+rb_library_view_start_playing (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
 	if (view->priv->shuffle == FALSE)
@@ -564,20 +565,20 @@ rb_test_view_start_playing (RBViewPlayer *player)
 	else
 		node = rb_node_view_get_random_node (view->priv->songs);
 
-	rb_test_view_set_playing_node (view, node);
+	rb_library_view_set_playing_node (view, node);
 }
 
 static void
-rb_test_view_stop_playing (RBViewPlayer *player)
+rb_library_view_stop_playing (RBViewPlayer *player)
 {
-	RBTestView *view = RB_TEST_VIEW (player);
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
-	rb_test_view_set_playing_node (view, NULL);
+	rb_library_view_set_playing_node (view, NULL);
 }
 
 static void
-rb_test_view_set_playing_node (RBTestView *view,
-			       RBNode *node)
+rb_library_view_set_playing_node (RBLibraryView *view,
+			          RBNode *node)
 {
 	rb_node_view_set_playing_node (view->priv->songs, node);
 
@@ -619,34 +620,34 @@ rb_test_view_set_playing_node (RBTestView *view,
 static void
 song_activated_cb (RBNodeView *view,
 		   RBNode *node,
-		   RBTestView *test_view)
+		   RBLibraryView *library_view)
 {
-	rb_test_view_set_playing_node (test_view, node);
+	rb_library_view_set_playing_node (library_view, node);
 
-	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
-	rb_view_player_notify_playing (RB_VIEW_PLAYER (test_view));
+	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
+	rb_view_player_notify_playing (RB_VIEW_PLAYER (library_view));
 }
 
 static void
 node_view_changed_cb (RBNodeView *view,
-		      RBTestView *test_view)
+		      RBLibraryView *library_view)
 {
 
-	rb_view_player_notify_changed (RB_VIEW_PLAYER (test_view));
-	rb_view_status_notify_changed (RB_VIEW_STATUS (test_view));
+	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
+	rb_view_status_notify_changed (RB_VIEW_STATUS (library_view));
 }
 
 static void
 song_eos_cb (MonkeyMediaStream *stream,
-	     RBTestView *view)
+	     RBLibraryView *view)
 {
-	rb_test_view_next (RB_VIEW_PLAYER (view));
+	rb_library_view_next (RB_VIEW_PLAYER (view));
 
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (view));
 }
 
 static RBNode *
-rb_test_view_get_previous_node (RBTestView *view)
+rb_library_view_get_previous_node (RBLibraryView *view)
 {
 	RBNode *node;
 	
@@ -659,7 +660,7 @@ rb_test_view_get_previous_node (RBTestView *view)
 }
 
 static RBNode *
-rb_test_view_get_next_node (RBTestView *view)
+rb_library_view_get_next_node (RBLibraryView *view)
 {
 	RBNode *node;
 	
@@ -678,9 +679,9 @@ rb_test_view_get_next_node (RBTestView *view)
 }
 
 static const char *
-rb_test_view_status_get (RBViewStatus *status)
+rb_library_view_status_get (RBViewStatus *status)
 {
-	RBTestView *view = RB_TEST_VIEW (status);
+	RBLibraryView *view = RB_LIBRARY_VIEW (status);
 
 	g_free (view->priv->status);
 	view->priv->status = rb_node_view_get_status (view->priv->songs);
@@ -689,37 +690,37 @@ rb_test_view_status_get (RBViewStatus *status)
 }
 
 static gboolean
-rb_test_view_can_cut (RBViewClipboard *clipboard)
+rb_library_view_can_cut (RBViewClipboard *clipboard)
 {
 	return FALSE;
 }
 
 static gboolean
-rb_test_view_can_copy (RBViewClipboard *clipboard)
+rb_library_view_can_copy (RBViewClipboard *clipboard)
 {
 	return FALSE;
 }
 
 static gboolean
-rb_test_view_can_paste (RBViewClipboard *clipboard)
+rb_library_view_can_paste (RBViewClipboard *clipboard)
 {
 	return FALSE;
 }
 
 static GList *
-rb_test_view_cut (RBViewClipboard *clipboard)
+rb_library_view_cut (RBViewClipboard *clipboard)
 {
 	return NULL;
 }
 
 static GList *
-rb_test_view_copy (RBViewClipboard *clipboard)
+rb_library_view_copy (RBViewClipboard *clipboard)
 {
 	return NULL;
 }
 
 static void
-rb_test_view_paste (RBViewClipboard *clipboard,
-		    GList *nodes)
+rb_library_view_paste (RBViewClipboard *clipboard,
+		       GList *nodes)
 {
 }

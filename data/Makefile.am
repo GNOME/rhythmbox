@@ -14,8 +14,19 @@ Multimedia_DATA = $(Multimedia_in_files:.desktop.in=.desktop)
 appicon_DATA = rhythmbox.png
 appicondir = $(datadir)/pixmaps
 
+schemadir = $(sysconfdir)/gconf/schemas
+schema_DATA = rhythmbox.schemas
+
+install-schemas: $(schema_DATA)
+	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMAS_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(schema_DATA)
+
+if INSTALL_SCHEMAS
+install-data-local: install-schemas
+endif
+
 EXTRA_DIST = $(server_in_files)     \
              $(server_DATA)         \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
-	     $(Multimedia_DATA)
+	     $(Multimedia_DATA)	    \
+	     $(schema_DATA)

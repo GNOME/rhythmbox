@@ -61,25 +61,52 @@
 	     pixname="gtk-paste"
 	     _tip="Paste selection"/>
 
+	<cmd name="About"
+	     pixtype="stock"
+	     pixname="gnome-stock-about"
+	     _tip="Show information about Rhythmbox"/>
+
+	<cmd name="Quit"
+	     pixtype="stock"
+	     pixname="gtk-quit"
+	     _tip="Quit Rhythmbox"/>
+
+	<cmd name="MusicFolders"
+	     pixtype="stock"
+	     pixname="gtk-preferences"
+	     _tip="Specify where Rhythmbox should look for music"/>
+
+	<cmd name="NewGroup"
+	     pixtype="stock"
+	     pixname="gtk-new"
+	     _tip="Create a new music group"/>
+
+	<cmd name="AddToLibrary"
+	     pixtype="stock"
+	     pixname="gtk-open"
+	     _tip="Choose a file to be added to the library"/>
+
+	<cmd name="GetInfo"
+	     pixtype="stock"
+	     pixname="gtk-properties"
+	     _tip="Get information on the current file"/>
+
 </commands>
 
 <menu>
 
 <submenu name="File" _label="_File">
         
-        <menuitem name="FileNewWindow" verb="" _label="_New Group"
-	pixtype="stock" pixname="gtk-new"/>
-        <menuitem name="FileNewWindo" verb="" _label="_Add to Library..."
-	pixtype="stock" pixname="gtk-open"/>
+        <menuitem name="NewGroup" verb="NewGroup" _label="_New Group"/>
+        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..."/>
 
 	<separator/>
 
-        <menuitem name="FileNewWind" verb="" _label="Get _Info..."
-	pixtype="stock" pixname="gtk-properties"/>
+        <menuitem name="GetInfo" verb="GetInfo" _label="Get _Info..."/>
 	
 	<separator/>
 	
-        <menuitem name="Quit" verb="Quit" _label="_Quit" pixtype="stock" pixname="gtk-quit" accel="*Control*q"/>
+        <menuitem name="Quit" verb="Quit" _label="_Quit" accel="*Control*q"/>
 
 </submenu>
 
@@ -95,11 +122,7 @@
 
 	<placeholder name="EditMenu"/>
 
-	<menuitem name="EditPrefs" 
-         _label="P_references..." 
-         _tip="Edit Nautilus preferences"
-         pixtype="stock" pixname="gtk-preferences" 
-         verb="EditPrefs"/>
+	<menuitem name="MusicFolders" _label="_Music Folders..." verb="MusicFolders"/>
 
 </submenu>
 
@@ -119,47 +142,26 @@
 
 </submenu>
 
-<submenu name="Visuals" _label="_Visuals">
-
-	<menuitem name="TurnOn" _label="Turn Visual _On" verb="" pixtype="stock" pixname="gtk-execute"/>
-	
-	<separator/>
-
-	<menuitem name="TurnOn" _label="_Small" verb=""/>
-	<menuitem name="TurnOn" _label="_Medium" verb=""/>
-	<menuitem name="TurnOn" _label="_Large" verb=""/>
-
-	<separator/>
-
-	<menuitem name="Fullscreen" _label="_Fullscreen" verb=""/>
-
-</submenu>
-
 <placeholder name="ActionsMenu"/>
 
 <submenu name="Help" _label="_Help">
 
-	<menuitem name="HelpContents" verb="" _label="_Contents" pixtype="stock" pixname="gtk-help"/>
-	
-        <menuitem name="About" verb="About" _label="_About Rhythmbox" pixtype="stock" pixname="gnome-stock-about"/>
+        <menuitem name="About" verb="About" _label="_About Rhythmbox"/>
 
 </submenu>
 
 </menu>
 
 <dockitem name="Toolbar" behavior="exclusive" config="0">
+
 	<toolitem name="Prevous" _label="Previous" verb="Previous"/>
 	<toolitem name="Play" _label="Play" verb="Play"/>
 	<toolitem name="Next" _label="Next" verb="Next"/>
+
 	<separator/>
+
         <toolitem name="Shuffle" _label="Shuffle" verb="Shuffle"/> 
-	<separator/>
-        <toolitem name="Visuals" 
-		  _label="Visuals"
-		  priority="1"
-		  _tip="Show visualization effects"
-                  pixtype="stock" pixname="gtk-execute"
-                  verb="Visuals"/> 
+
 </dockitem>
 
 </Root>

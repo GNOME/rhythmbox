@@ -1,4 +1,4 @@
-glade_DATA =
+glade_DATA = music-folders.glade
 
 gladedir = $(pkgdatadir)/glade
 

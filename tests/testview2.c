@@ -179,14 +179,14 @@ rb_test_view2_finalize (GObject *object)
 }
 
 RBView *
-rb_test_view2_new (BonoboUIComponent *component)
+rb_test_view2_new (BonoboUIContainer *container)
 {
 	RBView *view;
 
 	view = RB_VIEW (g_object_new (RB_TYPE_TEST_VIEW2,
 				      "ui-file", "rhythmbox-test-view-2.xml",
 				      "ui-name", "TestView2",
-				      "component", component,
+				      "container", container,
 				      NULL));
 
 	return view;

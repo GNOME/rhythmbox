@@ -21,6 +21,7 @@ rhythmbox_SOURCES =              			\
 rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
 	$(top_builddir)/tests/libtests.la	        \
+	$(top_builddir)/views/libviews.la	        \
 	$(top_builddir)/library/librblibrary.la	        \
 	$(RHYTHMBOX_LIBS)
 
@@ -34,6 +35,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib/widgets                    	\
 	-I$(top_srcdir)/lib/view                    	\
 	-I$(top_srcdir)/tests                    	\
+	-I$(top_srcdir)/views                    	\
 	-I$(top_srcdir)/library                    	\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \

@@ -1,8 +1,8 @@
-noinst_LTLIBRARIES = libtests.la
+noinst_LTLIBRARIES = libviews.la
 
-libtests_la_SOURCES =					\
-	testview2.c					\
-	testview2.h
+libviews_la_SOURCES =					\
+	rb-library-view.c				\
+	rb-library-view.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -15,4 +15,4 @@ INCLUDES =						\
 	-I$(top_srcdir)/library 			\
 	$(RHYTHMBOX_CFLAGS)
 
-libtests_la_LDFLAGS = -export-dynamic
+libviews_la_LDFLAGS = -export-dynamic

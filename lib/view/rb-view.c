@@ -18,6 +18,8 @@
  *  $Id$
  */
 
+#include <bonobo/bonobo-ui-component.h>
+#include <bonobo/bonobo-ui-container.h>
 #include <bonobo/bonobo-ui-util.h>
 
 #include "rb-view.h"
@@ -41,7 +43,10 @@ struct RBViewPrivate
 
 	RBSidebarButton *button;
 
+	BonoboUIContainer *container;
 	BonoboUIComponent *component;
+
+	BonoboUIVerb *verbs;
 };
 
 enum
@@ -50,7 +55,8 @@ enum
 	PROP_UI_FILE,
 	PROP_UI_NAME,
 	PROP_SIDEBAR_BUTTON,
-	PROP_COMPONENT
+	PROP_CONTAINER,
+	PROP_VERBS
 };
 
 static GObjectClass *parent_class = NULL;
@@ -117,12 +123,18 @@ rb_view_class_init (RBViewClass *klass)
 							      RB_TYPE_SIDEBAR_BUTTON,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_COMPONENT,
-					 g_param_spec_object ("component",
-							      "BonoboUIComponent",
-							      "BonoboUIComponent object",
-							      BONOBO_TYPE_UI_COMPONENT,
+					 PROP_CONTAINER,
+					 g_param_spec_object ("container",
+							      "BonoboUIContainer",
+							      "BonoboUIContainer object",
+							      BONOBO_TYPE_UI_CONTAINER,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_VERBS,
+					 g_param_spec_pointer ("verbs",
+							       "BonoboUI verb list",
+							       "BonoboUI verb list",
+							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -172,8 +184,11 @@ rb_view_set_property (GObject *object,
 	case PROP_SIDEBAR_BUTTON:
 		view->priv->button = g_value_get_object (value);
 		break;
-	case PROP_COMPONENT:
-		view->priv->component = g_value_get_object (value);
+	case PROP_CONTAINER:
+		view->priv->container = g_value_get_object (value);
+		break;
+	case PROP_VERBS:
+		view->priv->verbs = g_value_get_pointer (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -200,8 +215,11 @@ rb_view_get_property (GObject *object,
 	case PROP_SIDEBAR_BUTTON:
 		g_value_set_object (value, view->priv->button);
 		break;
-	case PROP_COMPONENT:
-		g_value_set_object (value, view->priv->component);
+	case PROP_CONTAINER:
+		g_value_set_object (value, view->priv->container);
+		break;
+	case PROP_VERBS:
+		g_value_set_pointer (value, view->priv->verbs);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -210,13 +228,39 @@ rb_view_get_property (GObject *object,
 }
 
 void
-rb_view_merge_menus (RBView *view)
+rb_view_merge_ui (RBView *view)
 {
+	if (view->priv->ui_file == NULL)
+		return;
+
+	view->priv->component = bonobo_ui_component_new (view->priv->ui_name);
+
+	bonobo_ui_component_set_container (view->priv->component,
+					   BONOBO_OBJREF (view->priv->container),
+					   NULL);
+
 	bonobo_ui_util_set_ui (view->priv->component,
 			       DATADIR,
 			       view->priv->ui_file,
 			       view->priv->ui_name,
 			       NULL);
+
+	if (view->priv->verbs != NULL)
+	{
+		bonobo_ui_component_add_verb_list_with_data (view->priv->component,
+							     view->priv->verbs,
+							     view);
+	}
+}
+
+void
+rb_view_unmerge_ui (RBView *view)
+{
+	if (view->priv->ui_file == NULL)
+		return;
+
+	bonobo_ui_component_unset_container (view->priv->component, NULL);
+	bonobo_object_unref (view->priv->component);
 }
 
 RBSidebarButton *

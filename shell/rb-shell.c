@@ -48,10 +48,10 @@
 #include "rb-shell-status.h"
 #include "rb-shell-clipboard.h"
 #include "rb-bonobo-helpers.h"
-/* FIXME */
-#include "testview.h"
-#include "testview2.h"
 #include "rb-library.h"
+#include "rb-library-view.h"
+/* FIXME */
+#include "testview2.h"
 /* FIXME */
 
 static void rb_shell_class_init (RBShellClass *klass);
@@ -61,12 +61,12 @@ static void rb_shell_corba_quit (PortableServer_Servant _servant,
                                  CORBA_Environment *ev);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
-					  gpointer user_data);
+					  RBShell *shell);
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
-static void rb_shell_window_load_state (GtkWidget *window);
-static void rb_shell_window_save_state (GtkWidget *window);
+static void rb_shell_window_load_state (RBShell *shell);
+static void rb_shell_window_save_state (RBShell *shell);
 static void rb_shell_views_foreach_cb (RBView *view, RBShell *shell);
 static void rb_shell_select_view (RBShell *shell, RBView *view);
 static void rb_shell_append_view (RBShell *shell, RBView *view);
@@ -102,13 +102,12 @@ static void rb_shell_quit (RBShell *shell);
 #define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/State/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/State/window_maximized"
 
-typedef struct _RBWindowState RBWindowState;
-
-struct _RBWindowState {
-	int		width;
-	int		height;
-	gboolean	maximized;
-};
+typedef struct
+{
+	int width;
+	int height;
+	gboolean maximized;
+} RBShellWindowState;
 
 struct RBShellPrivate
 {
@@ -128,6 +127,10 @@ struct RBShellPrivate
 	RBShellClipboard *clipboard_shell;
 
 	Library *library;
+
+	RBView *selected_view;
+
+	RBShellWindowState *state;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -219,6 +222,8 @@ rb_shell_init (RBShell *shell)
 	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
 	gnome_window_icon_set_default_from_file (file);
 	g_free (file);
+	
+	shell->priv->state = g_new0 (RBShellWindowState, 1);
 }
 
 static void
@@ -248,6 +253,8 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->player_shell));
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 	g_object_unref (G_OBJECT (shell->priv->library));
+
+	g_free (shell->priv->state);
 
 	g_free (shell->priv);
 
@@ -282,7 +289,7 @@ rb_shell_construct (RBShell *shell)
 	BonoboUIContainer *container;
 	Bonobo_UIContainer corba_container;
 	GtkWidget *hbox, *vbox;
-	RBView *testview;
+	RBView *testview, *library_view;
 
 	g_return_if_fail (RB_IS_SHELL (shell));
 
@@ -312,10 +319,10 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect (G_OBJECT (win), "window-state-event",
 			  G_CALLBACK (rb_shell_window_state_cb),
-			  NULL);
+			  shell);
 	g_signal_connect (G_OBJECT (win), "configure-event",
 			  G_CALLBACK (rb_shell_window_state_cb),
-			  NULL);
+			  shell);
 	g_signal_connect (G_OBJECT (win), "delete_event",
 			  G_CALLBACK (rb_shell_window_delete_cb),
 			  shell);
@@ -377,14 +384,14 @@ rb_shell_construct (RBShell *shell)
 	library_release_brakes (shell->priv->library);
 
 	/* FIXME */
-	testview = rb_test_view_new (shell->priv->ui_component,
-				     shell->priv->library);
+	library_view = rb_library_view_new (container,
+				            shell->priv->library);
+	rb_shell_append_view (shell, library_view);
+	rb_shell_select_view (shell, library_view);
+	testview = rb_test_view2_new (container);
 	rb_shell_append_view (shell, testview);
 	rb_shell_select_view (shell, testview);
-	testview = rb_test_view2_new (shell->priv->ui_component);
-	rb_shell_append_view (shell, testview);
-	rb_shell_select_view (shell, testview);
-	testview = rb_test_view2_new (shell->priv->ui_component);
+	testview = rb_test_view2_new (container);
 	rb_shell_append_view (shell, testview);
 	rb_shell_select_view (shell, testview);
 	/* FIXME */
@@ -395,7 +402,7 @@ rb_shell_construct (RBShell *shell)
 
 	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
-	rb_shell_window_load_state (shell->priv->window);
+	rb_shell_window_load_state (shell);
 
 	gtk_widget_show (shell->priv->window);
 }
@@ -427,27 +434,21 @@ rb_shell_corba_exception_to_string (CORBA_Environment *ev)
 static gboolean
 rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEvent *event,
-			  gpointer user_data)
+			  RBShell *shell)
 {
-	RBWindowState *state;
-
 	g_return_val_if_fail (widget != NULL, FALSE);
 
-	state = g_object_get_data (G_OBJECT (widget), "window_state");
-	if (!state) {
-		state = g_new0 (RBWindowState, 1);
-		g_object_set_data (G_OBJECT (widget), "window_state", state);
-	}
-
-	switch (event->type) {
+	switch (event->type)
+	{
 	case GDK_WINDOW_STATE:
-		state->maximized = event->window_state.new_window_state &
+		shell->priv->state->maximized = event->window_state.new_window_state &
 			GDK_WINDOW_STATE_MAXIMIZED;
 		break;
 	case GDK_CONFIGURE:
-		if (!state->maximized) {
-			state->width = event->configure.width;
-			state->height = event->configure.height;
+		if (shell->priv->state->maximized == FALSE)
+		{
+			shell->priv->state->width = event->configure.width;
+			shell->priv->state->height = event->configure.height;
 		}
 		break;
 	default:
@@ -458,60 +459,50 @@ rb_shell_window_state_cb (GtkWidget *widget,
 }
 
 static void
-rb_shell_window_load_state (GtkWidget *window)
+rb_shell_window_load_state (RBShell *shell)
 {
 	GConfClient *gconf_client;
-	RBWindowState *state;
-
-	state = g_object_get_data (G_OBJECT (window), "window_state");
-	if (!state) {
-		state = g_new0 (RBWindowState, 1);
-		g_object_set_data (G_OBJECT (window), "window_state", state);
-	}
 
 	/* Restore window state. */
 	gconf_client = gconf_client_get_default ();
-	state->width = gconf_client_get_int (gconf_client,
-					     CONF_STATE_WINDOW_WIDTH,
-					     NULL);
-	state->height = gconf_client_get_int (gconf_client,
-					      CONF_STATE_WINDOW_HEIGHT,
-					      NULL);
-	state->maximized = gconf_client_get_bool (gconf_client,
-						  CONF_STATE_WINDOW_MAXIMIZED,
-						  NULL);
-	gtk_window_set_default_size (GTK_WINDOW (window), state->width, state->height);
-	if (state->maximized)
-		gtk_window_maximize (GTK_WINDOW (window));
+	shell->priv->state->width = gconf_client_get_int (gconf_client,
+					                  CONF_STATE_WINDOW_WIDTH,
+					                  NULL);
+	shell->priv->state->height = gconf_client_get_int (gconf_client,
+					                   CONF_STATE_WINDOW_HEIGHT,
+					                   NULL);
+	shell->priv->state->maximized = gconf_client_get_bool (gconf_client,
+						               CONF_STATE_WINDOW_MAXIMIZED,
+						               NULL);
+	gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
+				     shell->priv->state->width,
+				     shell->priv->state->height);
+	if (shell->priv->state->maximized == TRUE)
+		gtk_window_maximize (GTK_WINDOW (shell->priv->window));
 
-	g_object_unref (gconf_client);
+	g_object_unref (G_OBJECT (gconf_client));
 }
 
 static void
-rb_shell_window_save_state (GtkWidget *window)
+rb_shell_window_save_state (RBShell *shell)
 {
 	GConfClient *gconf_client;
-	RBWindowState *state;
-
-	state = g_object_get_data (G_OBJECT (window), "window_state");
-	if (!state)
-		return;
 
 	/* Save the window state. */
 	gconf_client = gconf_client_get_default ();
 	gconf_client_set_int (gconf_client,
 			      CONF_STATE_WINDOW_WIDTH,
-			      state->width,
+			      shell->priv->state->width,
 			      NULL);
 	gconf_client_set_int (gconf_client,
 			      CONF_STATE_WINDOW_HEIGHT,
-			      state->height,
+			      shell->priv->state->height,
 			      NULL);
 	gconf_client_set_bool (gconf_client,
 			       CONF_STATE_WINDOW_MAXIMIZED,
-			       state->maximized,
+			       shell->priv->state->maximized,
 			       NULL);
-	g_object_unref (gconf_client);
+	g_object_unref (G_OBJECT (gconf_client));
 }
 
 static gboolean
@@ -570,8 +561,13 @@ rb_shell_select_view (RBShell *shell,
 {
 	RBSidebarButton *button;
 
+	/* remove old menus */
+	if (shell->priv->selected_view != NULL)
+		rb_view_unmerge_ui (shell->priv->selected_view);
+	shell->priv->selected_view = view;
+
 	/* merge menus */
-	rb_view_merge_menus (view);
+	rb_view_merge_ui (view);
 
 	/* show view */
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (shell->priv->notebook),
@@ -738,7 +734,7 @@ rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
 
-	rb_shell_window_save_state (shell->priv->window);
+	rb_shell_window_save_state (shell);
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }

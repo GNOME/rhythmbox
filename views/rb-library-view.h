@@ -18,40 +18,42 @@
  *  $Id$
  */
 
-#ifndef __RB_TEST_VIEW2_H
-#define __RB_TEST_VIEW2_H
+#ifndef __RB_LIBRARY_VIEW_H
+#define __RB_LIBRARY_VIEW_H
 
 #include <bonobo/bonobo-ui-container.h>
 
 #include "rb-view.h"
+#include "rb-library.h"
 
 G_BEGIN_DECLS
 
-#define RB_TYPE_TEST_VIEW2         (rb_test_view2_get_type ())
-#define RB_TEST_VIEW2(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_TEST_VIEW2, RBTestView2))
-#define RB_TEST_VIEW2_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_TEST_VIEW2, RBTestView2Class))
-#define RB_IS_TEST_VIEW2(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_TEST_VIEW2))
-#define RB_IS_TEST_VIEW2_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_TEST_VIEW2))
-#define RB_TEST_VIEW2_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_TEST_VIEW2, RBTestView2Class))
+#define RB_TYPE_LIBRARY_VIEW         (rb_library_view_get_type ())
+#define RB_LIBRARY_VIEW(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY_VIEW, RBLibraryView))
+#define RB_LIBRARY_VIEW_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIBRARY_VIEW, RBLibraryViewClass))
+#define RB_IS_LIBRARY_VIEW(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LIBRARY_VIEW))
+#define RB_IS_LIBRARY_VIEW_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY_VIEW))
+#define RB_LIBRARY_VIEW_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY_VIEW, RBLibraryViewClass))
 
-typedef struct RBTestView2Private RBTestView2Private;
+typedef struct RBLibraryViewPrivate RBLibraryViewPrivate;
 
 typedef struct
 {
 	RBView parent;
 
-	RBTestView2Private *priv;
-} RBTestView2;
+	RBLibraryViewPrivate *priv;
+} RBLibraryView;
 
 typedef struct
 {
 	RBViewClass parent;
-} RBTestView2Class;
+} RBLibraryViewClass;
 
-GType   rb_test_view2_get_type (void);
+GType   rb_library_view_get_type (void);
 
-RBView *rb_test_view2_new      (BonoboUIContainer *container);
+RBView *rb_library_view_new      (BonoboUIContainer *container,
+			          Library *library);
 
 G_END_DECLS
 
-#endif /* __RB_TEST_VIEW2_H */
+#endif /* __RB_LIBRARY_VIEW_H */
