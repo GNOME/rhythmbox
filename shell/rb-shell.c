@@ -103,9 +103,9 @@ static void rb_shell_cmd_about (BonoboUIComponent *component,
 static void rb_shell_cmd_contents (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
-static void rb_shell_cmd_quit (BonoboUIComponent *component,
-		               RBShell *shell,
-			       const char *verbname);
+static void rb_shell_cmd_close (BonoboUIComponent *component,
+		                RBShell *shell,
+			        const char *verbname);
 static void rb_shell_cmd_preferences (BonoboUIComponent *component,
 		                      RBShell *shell,
 		                      const char *verbname);
@@ -319,7 +319,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 {
 	BONOBO_UI_VERB ("About",        (BonoboUIVerbFn) rb_shell_cmd_about),
 	BONOBO_UI_VERB ("Contents",	(BonoboUIVerbFn) rb_shell_cmd_contents),
-	BONOBO_UI_VERB ("Quit",         (BonoboUIVerbFn) rb_shell_cmd_quit),
+	BONOBO_UI_VERB ("Close",        (BonoboUIVerbFn) rb_shell_cmd_close),
 	BONOBO_UI_VERB ("Preferences",  (BonoboUIVerbFn) rb_shell_cmd_preferences),
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
@@ -1187,9 +1187,9 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 }
 
 static void
-rb_shell_cmd_quit (BonoboUIComponent *component,
-		   RBShell *shell,
-		   const char *verbname)
+rb_shell_cmd_close (BonoboUIComponent *component,
+		    RBShell *shell,
+		    const char *verbname)
 {
 	rb_shell_quit (shell);
 }
