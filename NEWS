@@ -1,3 +1,52 @@
+Overview of Changes in Rhythmbox 0.8.0
+======================================
+
+* Fix playlist saving [Colin Walters]
+* Memory leak fixes [Benjamin Otte]
+* Ignore .Trash directories [Jonathan Blandford]
+* Add audio/x-mod to known music types [Colin Walters]
+* Several drag and drop fixes [Colin Walters]
+* Fix usage of GtkFileSelection [Colin Walters]
+* Revert back to using "Music Player" as Name [Colin Walters]
+* Add code to guard against some GConf errors [Colin Walters]
+* Display error on missing help files [Colin Walters]
+* Some station properties dialog UI tweaks [Colin Walters]
+* Remove quality column for now, it doesn't work [Colin Walters]
+* Require GStreamer 0.8 [Colin Walters]
+* Handle invalid UTF-8 when parsing playlists [Colin Walters]
+* Fixes to bonobo interface [Colin Walters]
+* Quote names with spaces for allmusic.com URIs [Colin Walters]
+* Disable GTK+ sounds just for Rhythmbox [Miguel Coca]
+* Better error message on missing plugin [Colin Walters]
+* Fix GConf schema default for selected source [Colin Walters]
+* A really major crasher bug fixed [Colin Walters]
+* Allow player to release audio sink when GStreamer supports it [Benjamin Otte]
+* Fix several crashers in multiple selection dialog [Colin Walters]
+
+New translations:
+
+en_CA (Adam Weinberger)
+en_GB (David Lodge)
+pa (Punjab Linux Technology)
+
+Updated translations:
+
+id (Mohammad DAMT)
+lt (Žygimantas Beručka)
+cs (Miloslav Trmac)
+ca (Jordi Mallach)
+pt_BR (Raphael Higino)
+es (Francisco Javier F. Serrador)
+nl (Vincent van Adrighem)
+sv (Christian Rose)
+pl (Artur Flinta)
+da (Ole Laursen)
+pt (Duarte Loreto)
+no (Kjartan Maraas)
+sr (Danilo Šegan)
+hr (Andras Timar)
+
+
 Overview of Changes in Rhythmbox 0.7.2
 ======================================
 
