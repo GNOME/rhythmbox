@@ -2,6 +2,56 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-01-21 22:04:18 GMT	Colin Walters <walters@verbum.org>	patch-26
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-26
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po
+
+
+2004-01-21 20:24:25 GMT	Colin Walters <walters@verbum.org>	patch-25
+
+    Summary:
+      various bugfixes, plus a new iradio station
+    Revision:
+      rhythmbox--main--0.7--patch-25
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-164
+       merge from main
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-165
+       update error callbacks for new gstreamer prototype
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-166
+       add AfterHoursDJs.org to default iradio list (Joseph Wilhelm)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-167
+       adapt Bonobo interface to play-order changes
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-168
+       disable tag writing again (oops)
+    
+
+    modified files:
+     ChangeLog corba/Rhythmbox.idl data/iradio-initial.pls
+     metadata/rb-metadata-gst.c player/rb-player-gst.c
+     shell/rb-shell-player.c shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-164
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-165
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-166
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-167
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-168
+
+
 2004-01-21 17:40:00 GMT	Colin Walters <walters@verbum.org>	patch-24
 
     Summary:
