@@ -364,6 +364,7 @@ rb_header_set_property (GObject *object,
 		player->priv->mmplayer = g_value_get_object (value);
 		break;
 	case PROP_TITLE:
+		g_free (player->priv->title);
 		player->priv->title = g_value_dup_string (value);
 		break;
 	case PROP_URLTEXT:
