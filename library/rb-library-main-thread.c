@@ -283,20 +283,25 @@ push_err (RBLibraryMainThread *thread, const char *uri, GError *error)
 	g_idle_add ((GSourceFunc) signal_err_idle, loaderr);
 }
 
+static void
+exit_if_dead (RBLibraryMainThread *thread)
+{
+	g_mutex_lock (thread->priv->lock);
+	if (thread->priv->dead == TRUE) {
+		rb_debug ("caught dead flag");
+		g_mutex_unlock (thread->priv->lock);
+		g_thread_exit (NULL);
+	}
+	g_mutex_unlock (thread->priv->lock);
+}
+
 static gpointer
 thread_main (RBLibraryMainThread *thread)
-{
-	while (TRUE)
+{	while (TRUE)
 	{
 		RBLibraryActionQueue *queue;
 
-		g_mutex_lock (thread->priv->lock);
-		
-		if (thread->priv->dead == TRUE)
-		{
-			g_mutex_unlock (thread->priv->lock);
-			g_thread_exit (NULL);
-		}
+		exit_if_dead (thread);
 
 		queue = rb_library_get_main_queue (thread->priv->library);
 		while (rb_library_action_queue_is_empty (queue) == FALSE)
@@ -304,6 +309,8 @@ thread_main (RBLibraryMainThread *thread)
 			RBLibraryActionType type;
 			char *uri, *realuri;
 			GError *error = NULL;
+
+			exit_if_dead (thread);
 
 			rb_library_action_queue_peek_head (queue,
 							   &type,
@@ -372,8 +379,6 @@ thread_main (RBLibraryMainThread *thread)
 
 			rb_library_action_queue_pop_head (queue);
 		}
-
-		g_mutex_unlock (thread->priv->lock);
 
 		g_usleep (10);
 	}

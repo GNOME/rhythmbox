@@ -159,5 +159,27 @@
         </long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/load_failure_dialog/window_width</key>
+        <applyto>/apps/rhythmbox/state/load_failure_dialog/window_width</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>-1</default>
+        <locale name="C">
+	<short>Window width of the load failure dialog</short>
+	<long>Window width of the load failure dialog</long>
+        </locale>
+      </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/state/load_failure_dialog/window_height</key>
+        <applyto>/apps/rhythmbox/state/load_failure_dialog/window_height</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>-1</default>
+        <locale name="C">
+	<short>Window height of the load failure dialog</short>
+	<long>Window height of the load failure dialog</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

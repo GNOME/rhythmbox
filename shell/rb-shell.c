@@ -243,6 +243,7 @@ struct RBShellPrivate
 	RBLibrary *library;
 	RBSource *library_source;
 	GtkWidget *load_error_dialog;
+	GList *supported_media_extensions;
 	gboolean show_library_errors;
 
 	RBIRadioBackend *iradio_backend;
@@ -367,10 +368,6 @@ rb_shell_finalize (GObject *object)
 	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
 
-	/* FIXME? */
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-
 	eel_gconf_monitor_remove (CONF_PREFIX);
 
 	bonobo_activation_active_server_unregister (RB_SHELL_OAFIID, bonobo_object_corba_objref (BONOBO_OBJECT (shell)));
@@ -379,6 +376,9 @@ rb_shell_finalize (GObject *object)
 	
 	/* REWRITEFIXME */
 /* 	rb_shell_save_music_groups (shell); */
+
+	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
+	g_list_free (shell->priv->supported_media_extensions);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 	
@@ -653,6 +653,8 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->show_library_errors = FALSE;
 	gtk_widget_hide (shell->priv->load_error_dialog);
 
+	shell->priv->supported_media_extensions = monkey_media_get_supported_filename_extensions ();
+
 	g_signal_connect (G_OBJECT (shell->priv->library), "error",
 			  G_CALLBACK (rb_shell_library_error_cb), shell);
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
@@ -755,6 +757,7 @@ rb_shell_window_state_cb (GtkWidget *widget,
 			  RBShell *shell)
 {
 	g_return_val_if_fail (widget != NULL, FALSE);
+	rb_debug ("caught window state change");
 
 	switch (event->type)
 	{
@@ -818,15 +821,37 @@ rb_shell_library_error_cb (RBLibrary *library,
 			   const char *uri, const char *msg,
 			   RBShell *shell)
 {
+	GList *tem;
+	GnomeVFSURI *vfsuri;
+	gchar *basename;
+	gssize baselen;
+
 	rb_debug ("got library error, showing: %s",
 		  shell->priv->show_library_errors ? "TRUE" : "FALSE");
 	
 	if (!shell->priv->show_library_errors)
 		return;
 
-	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
-				    uri, msg);
-	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
+	vfsuri = gnome_vfs_uri_new (uri);
+	basename = gnome_vfs_uri_extract_short_name (vfsuri);
+	baselen = strlen (basename);
+	
+	for (tem = shell->priv->supported_media_extensions; tem != NULL; tem = g_list_next (tem)) {
+		gssize extlen = strlen (tem->data);
+		if (extlen >= baselen)
+			continue;
+		if (!strncmp (basename + (baselen - extlen), tem->data, extlen)) {
+			rb_debug ("\"%s\" matches \"%s\"", basename, tem->data);
+			rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
+						    uri, msg);
+			gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
+			goto out;
+		}
+	}
+	rb_debug ("\"%s\" has unknown extension, ignoring", basename);
+out:
+	g_free (basename);
+	gnome_vfs_uri_unref (vfsuri);
 }
 
 static void

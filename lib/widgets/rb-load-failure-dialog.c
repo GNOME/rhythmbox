@@ -26,7 +26,10 @@
 
 #include "rb-load-failure-dialog.h"
 #include "rb-dialog.h"
+#include "rb-debug.h"
+#include "rb-preferences.h"
 #include "rb-glade-helpers.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_load_failure_dialog_class_init (RBLoadFailureDialogClass *klass);
 static void rb_load_failure_dialog_init (RBLoadFailureDialog *dlg);
@@ -34,9 +37,16 @@ static void rb_load_failure_dialog_finalize (GObject *object);
 static void rb_load_failure_dialog_response_cb (GtkDialog *dialog,
 						int response_id,
 						RBLoadFailureDialog *dlg);
+static gboolean rb_load_failure_dialog_window_state_cb (GtkWidget *widget,
+							GdkEvent *event,
+							RBLoadFailureDialog *dlg);
+static void rb_load_failure_dialog_sync_window_state (RBLoadFailureDialog *dlg);
 
 #define RB_LOAD_FAILURE_DIALOG_COLUMN_URI 0
 #define RB_LOAD_FAILURE_DIALOG_COLUMN_MESSAGE 1
+
+#define CONF_STATE_WINDOW_WIDTH CONF_PREFIX "/state/load_failure_dialog/window_width"
+#define CONF_STATE_WINDOW_HEIGHT CONF_PREFIX "/state/load_failure_dialog/window_height"
 
 struct RBLoadFailureDialogPrivate
 {
@@ -141,10 +151,16 @@ rb_load_failure_dialog_init (RBLoadFailureDialog *dlg)
 	gtk_tree_view_set_model (GTK_TREE_VIEW (dlg->priv->treeview),
 				 GTK_TREE_MODEL (dlg->priv->liststore));
 
-	gtk_window_set_default_size (GTK_WINDOW (dlg),
-				     250, 250);
-
 	gtk_window_set_modal (GTK_WINDOW (dlg), FALSE);
+
+	g_signal_connect (G_OBJECT (dlg), "window-state-event",
+			  G_CALLBACK (rb_load_failure_dialog_window_state_cb),
+			  dlg);
+	g_signal_connect (G_OBJECT (dlg), "configure-event",
+			  G_CALLBACK (rb_load_failure_dialog_window_state_cb),
+			  dlg);
+
+	rb_load_failure_dialog_sync_window_state (dlg);
 }
 
 static void
@@ -201,4 +217,43 @@ rb_load_failure_dialog_response_cb (GtkDialog *dialog,
 		rb_load_failure_dialog_clear (dlg);
 		gtk_widget_hide (GTK_WIDGET (dialog));
 	}
+}
+
+static void
+rb_load_failure_dialog_sync_window_state (RBLoadFailureDialog *dlg)
+{
+	int width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
+	int height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
+
+	rb_debug ("syncing window state");
+
+	if (width < 0)
+		width = 300;
+	if (height < 0)
+		height = 300;
+
+	gtk_window_set_default_size (GTK_WINDOW (dlg),
+				     width, height);
+}
+
+
+static gboolean
+rb_load_failure_dialog_window_state_cb (GtkWidget *widget,
+					GdkEvent *event,
+					RBLoadFailureDialog *dlg)
+{
+	g_return_val_if_fail (widget != NULL, FALSE);
+	rb_debug ("caught window state change");
+
+	switch (event->type)
+	{
+	case GDK_CONFIGURE:
+		eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
+		eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
+		break;
+	default:
+		break;
+	}
+
+	return FALSE;
 }

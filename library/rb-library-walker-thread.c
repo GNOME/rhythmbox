@@ -24,6 +24,7 @@
 
 #include "rb-library-walker-thread.h"
 #include "rb-file-helpers.h"
+#include "rb-debug.h"
 
 static void rb_library_walker_thread_class_init (RBLibraryWalkerThreadClass *klass);
 static void rb_library_walker_thread_init (RBLibraryWalkerThread *thread);
@@ -231,9 +232,11 @@ thread_main (RBLibraryWalkerThreadPrivate *priv)
 		
 		if (priv->dead == TRUE)
 		{
+			rb_debug ("caught dead flag");
 			g_mutex_unlock (priv->lock);
 			g_thread_exit (NULL);
 		}
+		g_mutex_unlock (priv->lock);
 
 		queue = rb_library_get_walker_queue (priv->library);
 		while (rb_library_action_queue_is_empty (queue) == FALSE)
@@ -252,6 +255,8 @@ thread_main (RBLibraryWalkerThreadPrivate *priv)
 				priv->action = action;
 				rb_uri_handle_recursively (uri,
 							   (GFunc) add_file,
+							   priv->lock,
+							   &priv->dead,
 							   priv);
 				break;
 			default:
@@ -260,8 +265,6 @@ thread_main (RBLibraryWalkerThreadPrivate *priv)
 
 			rb_library_action_queue_pop_head (queue);
 		}
-
-		g_mutex_unlock (priv->lock);
 
 		g_usleep (10);
 	}

@@ -588,6 +588,8 @@ rb_uri_is_writable (const char *text_uri)
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,
+			   GMutex *cancel_lock,
+			   gboolean *cancelflag,
 		           gpointer user_data)
 {
 	GList *list, *l;
@@ -607,6 +609,13 @@ rb_uri_handle_recursively (const char *text_uri,
 		GnomeVFSURI *file_uri;
 		char *file_uri_text;
 
+		g_mutex_lock (cancel_lock);
+		if (*cancelflag) {
+			g_mutex_unlock (cancel_lock);
+			break;
+		}
+		g_mutex_unlock (cancel_lock);
+
 		info = (GnomeVFSFileInfo *) l->data;
 		
 		file_uri = gnome_vfs_uri_append_path (uri, info->name);
@@ -623,6 +632,8 @@ rb_uri_handle_recursively (const char *text_uri,
 			{
 				rb_uri_handle_recursively (file_uri_text,
 							   func,
+							   cancel_lock,
+							   cancelflag,
 							   user_data);
 
 			}

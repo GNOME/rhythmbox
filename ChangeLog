@@ -1,3 +1,25 @@
+2003-06-01  Colin Walters  <walters@debian.org>
+
+	* data/rhythmbox.schemas:
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively):
+	* lib/rb-file-helpers.h:
+	* lib/widgets/rb-load-failure-dialog.c:
+	(rb_load_failure_dialog_init),
+	(rb_load_failure_dialog_response_cb),
+	(rb_load_failure_dialog_sync_window_state),
+	(rb_load_failure_dialog_window_state_cb):
+	* library/rb-library-main-thread.c: (exit_if_dead), (thread_main):
+	* library/rb-library-walker-thread.c: (thread_main):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(rb_shell_window_state_cb), (rb_shell_library_error_cb):
+
+	Only show load errors for monkey-media supported filename extensions.
+	Remember the window state of the load error dialog.
+
+	Fix the the main and walker threads so that we can cleanly cancel
+	them, and also make rb_uri_handle_recursively cancellable.   Now
+	closing the window when loading the library should cleanly exit.
+
 2003-05-30  Colin Walters  <walters@verbum.org>
 
 	* data/glade/Makefile.am:
