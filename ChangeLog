@@ -2,6 +2,52 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-02-28 09:17:48 GMT	Colin Walters <walters@verbum.org>	patch-104
+
+    Summary:
+      merge from me: more various fixes
+    Revision:
+      rhythmbox--main--0.7--patch-104
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-234
+       don't clear search on switching sources
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-235
+       make drag and drop work again (htf did it break?)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-236
+       initialize library with ALL query
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-237
+       NULL-terminate object property retrieval
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-238
+       when deleting a source, switch to library immediately
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-239
+       explicity store active query rows in query creator
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-240
+       fix possible use of uninit value
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c shell/rb-shell.c
+     shell/rb-source-header.c sources/rb-library-source.c
+     widgets/rb-query-creator.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-234
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-235
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-236
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-237
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-238
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-239
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-240
+
+
 2004-02-28 06:34:25 GMT	Colin Walters <walters@verbum.org>	patch-103
 
     Summary:
