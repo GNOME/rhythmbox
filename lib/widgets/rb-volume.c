@@ -110,6 +110,7 @@ enum {
 struct _RBVolumePrivate {
 	GtkObject *adjustment;
 	GtkWidget *slider;
+	GtkWidget *indicator;
 	GtkWidget *indicator_image;
 
 	GdkPixbuf *volume_max_pixbuf;
@@ -122,6 +123,10 @@ struct _RBVolumePrivate {
 	int vol;
 	int timeout;
 	int channel;
+
+	gboolean mute;
+	
+	GtkTooltips *tooltips;
 
 #ifdef IRIX_API
 	/* Note: we are using the obsolete API to increase portability.
@@ -147,6 +152,9 @@ static void rb_volume_get_property (GObject *object,
 				    GParamSpec *pspec);
 static void volume_changed_cb (GtkAdjustment *adjustment,
 			       RBVolume *volume);
+static void volume_mute_cb (GtkWidget* button,
+			    GdkEventButton *event,
+			    RBVolume* volume);
 static gboolean timeout_cb (RBVolume *volume);
 static void rb_volume_update_slider (RBVolume *volume);
 static void rb_volume_update_image (RBVolume *volume);
@@ -212,11 +220,24 @@ rb_volume_instance_init (RBVolume *volume)
 							     RB_STOCK_VOLUME_MUTE,
 							     GTK_ICON_SIZE_MENU,
 							     NULL);
+	priv->mute = FALSE;
 
+	/* Speaker button */
+	priv->indicator = gtk_event_box_new ();
 	priv->indicator_image = gtk_image_new_from_pixbuf (priv->volume_medium_pixbuf);
-	gtk_box_pack_start (GTK_BOX (volume), priv->indicator_image, FALSE, FALSE, 0);
-	gtk_widget_show (priv->indicator_image);
+	gtk_container_add (GTK_CONTAINER (priv->indicator), priv->indicator_image);
 
+	g_signal_connect (G_OBJECT (priv->indicator),
+			  "button_press_event",
+			  G_CALLBACK (volume_mute_cb),
+			  volume);
+
+	priv->tooltips = gtk_tooltips_new ();
+	gtk_tooltips_set_tip (priv->tooltips, priv->indicator, _("Click to mute"), NULL);
+	gtk_box_pack_start (GTK_BOX (volume), priv->indicator, FALSE, FALSE, 0);
+	gtk_widget_show (priv->indicator);
+
+	/* Volume slider */
 	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 1, 5, 0);
 	priv->slider = gtk_hscale_new (GTK_ADJUSTMENT (priv->adjustment));
 	gtk_range_set_inverted (GTK_RANGE (priv->slider), TRUE);
@@ -334,10 +355,35 @@ volume_changed_cb (GtkAdjustment *adjustment,
 	update_mixer (volume);
 }
 
+static void
+volume_mute_cb (GtkWidget *button,
+		GdkEventButton *event,
+		RBVolume *volume)
+{
+	if (event->button != 1)
+		return;
+
+	if (volume->priv->mute == FALSE)
+		volume->priv->mute = TRUE;
+	else
+		volume->priv->mute = FALSE;
+	
+	if (volume->priv->mute == TRUE)
+		gtk_tooltips_set_tip (volume->priv->tooltips, volume->priv->indicator, _("Click to unmute"), NULL);
+	else
+		gtk_tooltips_set_tip (volume->priv->tooltips, volume->priv->indicator, _("Click to mute"), NULL);
+
+	rb_volume_update_image (volume);
+	update_mixer (volume);
+}
+
 static gboolean
 timeout_cb (RBVolume *volume)
 {
 	int vol = read_mixer (volume);
+
+	if (volume->priv->mute)
+		return TRUE;
 
 	if (vol != volume->priv->vol) {
 		volume->priv->vol = vol;
@@ -362,7 +408,9 @@ rb_volume_update_image (RBVolume *volume)
 
 	vol = volume->priv->vol;
 
-	if (vol <= 0)
+	if (volume->priv->mute)
+		pixbuf = volume->priv->volume_mute_pixbuf;
+	else if (vol <= 0)
 		pixbuf = volume->priv->volume_zero_pixbuf;
 	else if (vol <= VOLUME_MAX / 3)
 		pixbuf = volume->priv->volume_min_pixbuf;
@@ -480,29 +528,41 @@ update_mixer (RBVolume *volume)
 	RBVolumePrivate *priv = volume->priv;
 	int vol = priv->vol;
 	int tvol;
+	
 #ifdef OSS_API
 	/* If we couldn't open the mixer. */
 	if (priv->mixerfd < 0)
 		return;
-
-	tvol = (vol << 8) + vol;
+	
+	if (priv->mute)
+		tvol = 0;
+	else
+		tvol = (vol << 8) + vol;
+	
 	ioctl (priv->mixerfd, MIXER_WRITE (priv->channel), &tvol);
 	ioctl (priv->mixerfd, MIXER_WRITE (SOUND_MIXER_SPEAKER), &tvol);
 #endif
 #ifdef SUN_API
 	audio_info_t ainfo;
 	AUDIO_INITINFO (&ainfo);
-	ainfo.play.gain = vol;
+	
+	if (priv->mute)
+		ainfo.play.gain = 0;
+	else
+		ainfo.play.gain = priv->vol;
 	ioctl (priv->mixerfd, AUDIO_SETINFO, &ainfo);
 #endif
 #ifdef IRIX_API
-	if (vol < 0) 
+	if (priv->mute)
 		tvol = 0;
-	else if (vol > VOLUME_MAX)
-		tvol = VOLUME_MAX;
-	else
-		tvol = vol;
-
+	else {
+		if (vol < 0) 
+			tvol = 0;
+		else if (vol > VOLUME_MAX)
+			tvol = VOLUME_MAX;
+		else
+			tvol = vol;
+	}
 	priv->pv_buf[1] = priv->pv_buf[3] = tvol;
 	(void) ALsetparams (AL_DEFAULT_DEVICE, priv->pv_buf, MAX_PV_BUF);
 #endif
