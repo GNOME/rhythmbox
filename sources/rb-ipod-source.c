@@ -22,6 +22,7 @@
 #include <config.h>
 
 #include <gtk/gtktreeview.h>
+#include <gtk/gtkicontheme.h>
 #include <string.h>
 #include "itunesdb.h"
 #include "rhythmdb.h"
@@ -197,25 +198,42 @@ rb_ipod_source_finalize (GObject *object)
 	g_free (source->priv);
 }
 
+static GdkPixbuf *
+rb_ipod_get_icon (void)
+{
+	GdkPixbuf *icon;
+	GtkIconTheme *theme;
+
+	theme = gtk_icon_theme_get_default ();
+	icon = gtk_icon_theme_load_icon (theme, "gnome-dev-ipod", 24, 0, NULL);
+	g_object_unref (G_OBJECT (theme));
+
+	if (icon == NULL) {
+		/* gnome-dev-ipod is only available in gnome 2.8, so fallback
+		 * to an icon provided by rhythmbox for older gnome 
+		 */
+		GtkWidget *dummy;
+
+		dummy = gtk_tree_view_new ();
+		icon = gtk_widget_render_icon (dummy, RB_STOCK_IPOD,
+					       GTK_ICON_SIZE_LARGE_TOOLBAR,
+					       NULL);
+		gtk_widget_destroy (dummy);
+	}
+
+	return icon;
+}
 
 RBSource *
 rb_ipod_source_new (RBShell *shell)
 {
 	RBSource *source;
-	GtkWidget *dummy = gtk_tree_view_new ();
-	GdkPixbuf *icon;
 
-	icon = gtk_widget_render_icon (dummy, RB_STOCK_IPOD,
-				       GTK_ICON_SIZE_LARGE_TOOLBAR,
-				       NULL);
-	gtk_widget_destroy (dummy);
-
-	/* FIXME: need to set icon */
 	source = RB_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "name", _("iPod"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_IPOD,
 					  "internal-name", "<ipod>",
-					  "icon", icon,
+					  "icon", rb_ipod_get_icon (),
 					  "shell", shell,
 					  "visibility", FALSE,
 					  NULL));
