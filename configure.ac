@@ -46,9 +46,9 @@ AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
 if test x"$enable_ipod" = xyes; then
 	AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	USE_HAL=""
-	PKG_CHECK_MODULES(HAL, hal,
+	PKG_CHECK_MODULES(HAL, hal gnome-vfs-2.0 >= 2.7.4,
 		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
-		[ USE_HAL="gnome-vfs-2.0 >= 2.7.4 dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
+		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
 fi
 
 
