@@ -265,7 +265,7 @@ rb_node_filter_expression_new (RBNodeFilterExpressionType type,
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
 		exp->args.prop_args.prop_id = va_arg (valist, int);
-		exp->args.prop_args.second_arg.string = g_strdup (va_arg (valist, char *));
+		exp->args.prop_args.second_arg.string = g_utf8_casefold (va_arg (valist, char *), -1);
 		break;
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_BIGGER_THAN:
@@ -324,6 +324,8 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_CONTAINS:
 	{
 		const char *prop;
+		char *folded_case;
+		gboolean ret;
 
 		prop = rb_node_get_property_string (node,
 						    exp->args.prop_args.prop_id);
@@ -331,12 +333,17 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 		if (prop == NULL)
 			return FALSE;
 
-		/* FIXME should be case insensitive */
-		return (strstr (prop, exp->args.prop_args.second_arg.string) != NULL);
+		folded_case = g_utf8_casefold (prop, -1);
+		ret = (strstr (folded_case, exp->args.prop_args.second_arg.string) != NULL);
+		g_free (folded_case);
+
+		return ret;
 	}
 	case RB_NODE_FILTER_EXPRESSION_STRING_PROP_EQUALS:
 	{
 		const char *prop;
+		char *folded_case;
+		gboolean ret;
 
 		prop = rb_node_get_property_string (node,
 						    exp->args.prop_args.prop_id);
@@ -344,8 +351,11 @@ rb_node_filter_expression_evaluate (RBNodeFilterExpression *exp,
 		if (prop == NULL)
 			return FALSE;
 
-		/* FIXME */
-		return (strcmp (prop, exp->args.prop_args.second_arg.string) == 0);
+		folded_case = g_utf8_casefold (prop, -1);
+		ret = (strcmp (folded_case, exp->args.prop_args.second_arg.string) == 0);
+		g_free (folded_case);
+
+		return ret;
 	}
 	case RB_NODE_FILTER_EXPRESSION_INT_PROP_EQUALS:
 	{
