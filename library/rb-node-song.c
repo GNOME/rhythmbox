@@ -27,6 +27,15 @@
 #include "rb-node-song.h"
 
 static void
+rb_node_song_destroyed_cb (RBNode *node,
+			   gpointer unused)
+{
+	rb_node_unref (rb_node_song_get_album_raw (node));
+	rb_node_unref (rb_node_song_get_artist_raw (node));
+	rb_node_unref (rb_node_song_get_genre_raw (node));
+}
+
+static void
 rb_node_song_sync (RBNode *node,
 		   RBLibrary *library)
 {
@@ -111,6 +120,14 @@ rb_node_song_sync (RBNode *node,
 
 	virgin = !GPOINTER_TO_INT (g_object_get_data (G_OBJECT (node), "no_virgin"));
 
+	if (virgin == TRUE)
+	{
+		g_signal_connect (G_OBJECT (node),
+				  "destroyed",
+				  G_CALLBACK (rb_node_song_destroyed_cb),
+				  NULL);
+	}
+
 	/* need to check whether we need to reparent */
 	{
 		RBNode *genre_node, *artist_node, *album_node;
@@ -192,15 +209,21 @@ rb_node_song_sync (RBNode *node,
 		rb_node_set_property (node, "genre", &newvalue);
 		g_value_unset (&newvalue);
 
+		rb_node_ref (node);
+
 		g_value_init (&newvalue, G_TYPE_LONG);
 		g_value_set_long (&newvalue, rb_node_get_id (artist_node));
 		rb_node_set_property (node, "artist", &newvalue);
 		g_value_unset (&newvalue);
 
+		rb_node_ref (node);
+
 		g_value_init (&newvalue, G_TYPE_LONG);
 		g_value_set_long (&newvalue, rb_node_get_id (album_node));
 		rb_node_set_property (node, "album", &newvalue);
 		g_value_unset (&newvalue);
+
+		rb_node_ref (node);
 		
 		rb_node_add_child (genre_node, rb_library_get_all_albums (library));
 		rb_node_add_child (rb_library_get_all_genres (library), genre_node);
