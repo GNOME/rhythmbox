@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_VISUALS       "rhythmbox-visuals"
 #define RB_STOCK_PLAYLIST      "rhythmbox-playlist"
 #define RB_STOCK_LIBRARY       "rhythmbox-library"
+#define RB_STOCK_IRADIO        "rhythmbox-iradio"
 #define RB_STOCK_GROUP         "rhythmbox-group"
 #define RB_STOCK_PLAYING       "rhythmbox-playing"
 #define RB_STOCK_ALBUM         "rhythmbox-album"
