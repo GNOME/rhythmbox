@@ -1,5 +1,13 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property),
+	(filter_grandparent_destroyed_cb):
+
+	Optimize filtering a bit.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library-watcher.c: (rb_library_watcher_add_directory):
 
 	Don't break if FAM is not running.

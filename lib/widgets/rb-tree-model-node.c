@@ -95,6 +95,7 @@ struct RBTreeModelNodePrivate
 
 	RBNode *filter_parent;
 	RBNode *filter_grandparent;
+	RBNode *old_filter_grandparent;
 	RBNode *playing_node;
 
 	RBNodeIterator *iterator;
@@ -288,7 +289,14 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					rb_tree_model_node_update_node (model, RB_NODE (l->data));
+					if (model->priv->old_filter_grandparent != NULL)
+					{
+						if (rb_node_has_grandparent (RB_NODE (l->data),
+									     model->priv->old_filter_grandparent))
+							rb_tree_model_node_update_node (model, RB_NODE (l->data));
+					}
+					else
+						rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
 				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
@@ -303,7 +311,14 @@ rb_tree_model_node_set_property (GObject *object,
 
 				for (l = kids; l != NULL; l = g_list_next (l))
 				{
-					rb_tree_model_node_update_node (model, RB_NODE (l->data));
+					if (model->priv->filter_grandparent != NULL)
+					{
+						if (rb_node_has_grandparent (RB_NODE (l->data),
+									     model->priv->filter_grandparent))
+							rb_tree_model_node_update_node (model, RB_NODE (l->data));
+					}
+					else
+						rb_tree_model_node_update_node (model, RB_NODE (l->data));
 				}
 
 				g_signal_connect_object (G_OBJECT (model->priv->filter_parent),
@@ -316,16 +331,15 @@ rb_tree_model_node_set_property (GObject *object,
 		break;
 	case PROP_FILTER_GRANDPARENT:
 		{
-			RBNode *old = model->priv->filter_grandparent;
-			
-			model->priv->filter_grandparent = g_value_get_object (value);
-
-			if (old != NULL)
+			if (model->priv->old_filter_grandparent != NULL)
 			{
-				g_signal_handlers_disconnect_by_func (G_OBJECT (old),
+				g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->old_filter_grandparent),
 						                      G_CALLBACK (filter_grandparent_destroyed_cb),
 						                      model);
 			}
+
+			model->priv->old_filter_grandparent = model->priv->filter_grandparent;
+			model->priv->filter_grandparent = g_value_get_object (value);
 
 			if (model->priv->filter_grandparent != NULL)
 			{
@@ -883,8 +897,12 @@ static void
 filter_grandparent_destroyed_cb (RBNode *node,
 				 RBTreeModelNode *model)
 {
-	model->priv->filter_grandparent = NULL;
+	if (node == model->priv->filter_grandparent)
+		model->priv->filter_grandparent = NULL;
 
+	if (node == model->priv->old_filter_grandparent)
+		model->priv->old_filter_grandparent = NULL;
+	
 	/* no need to do other stuff since we should have had a bunch of child_destroyed
 	 * signals already */
 }
