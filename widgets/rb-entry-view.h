@@ -99,6 +99,8 @@ void		rb_entry_view_scroll_to_entry		(RBEntryView *view,
 void		rb_entry_view_enable_drag_source	(RBEntryView *view,
 							 const GtkTargetEntry *targets,
 							 int n_targets);
+RhythmDBEntry *	rb_entry_view_get_random_entry		(RBEntryView *view);
+
 
 void		rb_entry_view_freeze			(RBEntryView *view);
 void		rb_entry_view_thaw			(RBEntryView *view);

@@ -790,8 +790,7 @@ rb_shell_player_previous (RBShellPlayer *player)
 
 	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 		rb_debug ("choosing random entry");
-		/* RHYTHMDB FIXME */
-/* 		entry =  rb_entry_view_get_random_entry (songs); */
+		entry =  rb_entry_view_get_random_entry (songs);
 	} else {
 		rb_debug ("choosing previous linked entry");
 		entry = rb_entry_view_get_previous_entry (songs);
@@ -813,8 +812,7 @@ rb_shell_player_next (RBShellPlayer *player)
 
 	if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 		rb_debug ("choosing random entry");
-		/* RHYTHMDB FIXME */
-		/* entry =  rb_entry_view_get_random_entry (songs); */
+		entry =  rb_entry_view_get_random_entry (songs);
 	} else {
 		rb_debug ("choosing next linked entry");
 		entry = rb_entry_view_get_next_entry (songs);
@@ -941,8 +939,7 @@ rb_shell_player_playpause (RBShellPlayer *player)
 			
 			if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 				rb_debug ("choosing random entry");
-				/* RHYTHMDB FIXME */
-				/* entry =  rb_entry_view_get_random_entry (songs); */
+				entry =  rb_entry_view_get_random_entry (songs);
 			} else {
 				entry = rb_entry_view_get_first_entry (songs);
 			}

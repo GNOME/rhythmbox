@@ -1421,7 +1421,7 @@ rb_entry_view_get_random_entry (RBEntryView *view)
 							&iter2, &iter);
 
 	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model),
-			    &iter, 0, &iter2, -1);
+			    &iter2, 0, &entry, -1);
 
 	return entry;
 }
