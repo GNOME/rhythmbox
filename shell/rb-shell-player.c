@@ -1062,6 +1062,9 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	double mod, old_rating, new_rating;
 	GValue value = { 0, };
 	
+	if (!eel_gconf_get_boolean (CONF_AUTO_RATE))
+		return;
+	
 	current_entry = rb_shell_player_get_playing_entry (player);
 	if (current_entry == NULL)
 		return;
