@@ -1558,6 +1558,13 @@ rb_entry_view_rated_cb (RBCellRendererRating *cellrating,
 	g_value_unset (&value);
 
 	rb_entry_view_thaw (view);
+	
+	/* since the user changed the rating, stop auto-rating */
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, FALSE);
+	rhythmdb_entry_queue_set (view->priv->db, entry, RHYTHMDB_PROP_AUTO_RATE,
+				  &value);
+	g_value_unset (&value);
 }
 
 void

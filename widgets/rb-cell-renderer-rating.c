@@ -175,7 +175,7 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 					 g_param_spec_double ("rating",
 							     ("Rating Value"),
 							     ("Rating Value"),
-							     0.0, 5.0, 3.0,
+							     0.0, 5.0, 2.5,
 							     G_PARAM_READWRITE));
 
 	rb_cell_renderer_rating_signals[RATED] =

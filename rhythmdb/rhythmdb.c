@@ -880,7 +880,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	RhythmDBEntry *entry;
 	char *realuri;
 	GError *error = NULL;
-	GValue last_time = {0, }, rating = {0, };
+	GValue value = {0, };
 
 	realuri = rb_uri_resolve_symlink (uri);
 
@@ -917,16 +917,22 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **real_error)
 	set_props_from_metadata (db, entry);
 
 	/* initialize the last played date to 0=never */
-	g_value_init (&last_time, G_TYPE_LONG);
-	g_value_set_long (&last_time, 0);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &last_time);
-	g_value_unset (&last_time);
+	g_value_init (&value, G_TYPE_LONG);
+	g_value_set_long (&value, 0);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
+	g_value_unset (&value);
 
-	/* initialize the rating to 3 */
-	g_value_init (&rating, G_TYPE_DOUBLE);
-	g_value_set_double (&rating, 3.0);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &rating);
-	g_value_unset (&rating);
+	/* initialize the rating */
+	g_value_init (&value, G_TYPE_DOUBLE);
+	g_value_set_double (&value, 2.5);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_RATING, &value);
+	g_value_unset (&value);
+
+	/* initialize auto rating */
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, TRUE);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_AUTO_RATE, &value);
+	g_value_unset (&value);
 
  out_dupentry:
 	g_free (realuri);
@@ -1929,14 +1935,14 @@ rhythmdb_prop_get_type (void)
 		static const GEnumValue values[] =
 		{
 			/* We reuse the description to store extra data about
-			 * a property.  The first part is just a generic
-			 * human-readable description.  Next, there is optionally
-			 * a string describing the GType of the property, in
-			 * parenthesis.  If this doesn't exist, we assume
-			 * the property is mirrored from RBMetaData, and
-			 * get the type of the property from there.
-			 * Finally, there is the XML element name in brackets.
-			 */
+			* a property.  The first part is just a generic
+			* human-readable description.  Next, there is optionally
+			* a string describing the GType of the property, in
+			* parenthesis.  If this doesn't exist, we assume
+			* the property is mirrored from RBMetaData, and
+			* get the type of the property from there.
+			* Finally, there is the XML element name in brackets.
+			*/
 			ENUM_ENTRY (RHYTHMDB_PROP_TYPE, "Type of entry (gint) [type]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_TITLE, "Title [title]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_GENRE, "Genre [genre]"),
@@ -1950,6 +1956,7 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray) [location]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong) [mtime]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble) [rating]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_AUTO_RATE, "Whether to auto-rate song (gboolean) [auto-rate]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint) [play-count]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (glong) [last-played]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate [bitrate]"),

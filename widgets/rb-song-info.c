@@ -36,6 +36,8 @@
 #include "rb-dialog.h"
 #include "rb-rating.h"
 #include "rb-ellipsizing-label.h"
+#include "rb-preferences.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -58,6 +60,7 @@ static void rb_song_info_update_play_count (RBSongInfo *song_info);
 static void rb_song_info_update_last_played (RBSongInfo *song_info);
 static void rb_song_info_update_bitrate (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
+static void rb_song_info_update_auto_rate (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
 static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
@@ -67,11 +70,17 @@ static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 					     RBSongInfo *song_info);
 static void rb_song_info_view_changed_cb (RBEntryView *entry_view,
 					  RBSongInfo *song_info);
+static void rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
+					     RBSongInfo *song_info);
 static void rb_song_info_rated_cb (RBRating *rating,
 				   double score,
 				   RBSongInfo *song_info);
 static void rb_song_info_mnemonic_cb (GtkWidget *target);
 static void rb_song_info_sync_entries (RBSongInfo *dialog);
+static void rb_song_info_auto_rate_conf_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBSongInfo *song_info);
 
 struct RBSongInfoPrivate
 {
@@ -107,6 +116,9 @@ struct RBSongInfoPrivate
 	GtkWidget   *location;
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
+	guint        auto_rate_notify_id;
+	GtkWidget   *auto_rate_label;
+	GtkWidget   *auto_rate;
 	GtkWidget   *rating;
 };
 
@@ -267,6 +279,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
 	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
 	song_info->priv->name = glade_xml_get_widget (xml, "song_info_name");
+	song_info->priv->auto_rate     = glade_xml_get_widget (xml, "song_info_auto_rate");
 
 	/* We add now the Pango attributes (look at bug #99867 and #97061) */
 	{
@@ -307,6 +320,13 @@ rb_song_info_init (RBSongInfo *song_info)
 		g_free (str_final);
 
 		label = glade_xml_get_widget (xml, "name_label");
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
+
+		label = glade_xml_get_widget (xml, "auto_rate_label");
+		song_info->priv->auto_rate_label = label;
 		str_final = g_strdup_printf ("<b>%s</b>",
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
@@ -372,6 +392,15 @@ rb_song_info_init (RBSongInfo *song_info)
 			  G_CALLBACK (rb_song_info_mnemonic_cb),
 			  NULL);
 
+	song_info->priv->auto_rate_notify_id = eel_gconf_notification_add (
+				    CONF_AUTO_RATE,
+				    (GConfClientNotifyFunc) rb_song_info_auto_rate_conf_changed_cb,
+				    song_info);
+	g_signal_connect (song_info->priv->auto_rate, 
+				 "toggled",
+				 G_CALLBACK (rb_song_info_auto_rate_toggled_cb),
+				 song_info);
+
 	/* this widget has to be customly created */
 	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (song_info->priv->rating, 
@@ -399,6 +428,7 @@ rb_song_info_finalize (GObject *object)
 
 	g_return_if_fail (song_info->priv != NULL);
 
+	eel_gconf_notification_remove (song_info->priv->auto_rate_notify_id);
 	g_free (song_info->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -486,6 +516,36 @@ rb_song_info_response_cb (GtkDialog *dialog,
 }
 
 static void
+rb_song_info_auto_rate_conf_changed_cb (GConfClient *client,
+			       guint cnxn_id,
+			       GConfEntry *entry,
+			       RBSongInfo *song_info)
+{
+	rb_song_info_update_auto_rate (song_info);
+}
+
+static void
+rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
+		       RBSongInfo *song_info)
+{
+	GValue value = { 0, };
+
+	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (togglebutton));
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+
+	/* set the new value for auto-rate */
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, gtk_toggle_button_get_active (togglebutton));
+	rhythmdb_write_lock (song_info->priv->db);
+	rhythmdb_entry_set (song_info->priv->db,
+			    song_info->priv->current_entry,
+			    RHYTHMDB_PROP_AUTO_RATE,
+			    &value);
+	g_value_unset (&value);
+	rhythmdb_write_unlock (song_info->priv->db);
+}
+
+static void
 rb_song_info_rated_cb (RBRating *rating,
 		       double score,
 		       RBSongInfo *song_info)
@@ -506,6 +566,18 @@ rb_song_info_rated_cb (RBRating *rating,
 			    &value);
 	g_value_unset (&value);
 	rhythmdb_write_unlock (song_info->priv->db);
+
+	/* since the user changed the rating, stop auto-rating */
+	g_value_init (&value, G_TYPE_BOOLEAN);
+	g_value_set_boolean (&value, FALSE);
+	rhythmdb_write_lock (song_info->priv->db);
+	rhythmdb_entry_set (song_info->priv->db,
+			    song_info->priv->current_entry,
+			    RHYTHMDB_PROP_AUTO_RATE,
+			    &value);
+	g_value_unset (&value);
+	rhythmdb_write_unlock (song_info->priv->db);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (song_info->priv->auto_rate), FALSE);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
@@ -578,6 +650,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_play_count (song_info);
 	rb_song_info_update_last_played (song_info);
 	rb_song_info_update_bitrate (song_info);
+	rb_song_info_update_auto_rate (song_info);
 	rb_song_info_update_rating (song_info);
 	rhythmdb_read_unlock (song_info->priv->db);
 }
@@ -804,6 +877,33 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 	if (!strcmp ("", str))
 		str = _("Never");
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), str);
+}
+
+static void
+rb_song_info_update_auto_rate (RBSongInfo *song_info)
+{
+	gboolean auto_rate;
+	gboolean global_auto_rate;
+	
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+
+	auto_rate = rhythmdb_entry_get_boolean (song_info->priv->db,
+					    song_info->priv->current_entry,
+					    RHYTHMDB_PROP_AUTO_RATE);
+
+	/* We have to block our signal handlers from thinking this
+	   is a user-originated setting */
+	g_signal_handlers_block_by_func (song_info->priv->auto_rate,
+		      rb_song_info_auto_rate_toggled_cb, song_info);
+	g_object_set (G_OBJECT (song_info->priv->auto_rate),
+		      "active", auto_rate,
+		      NULL);
+	g_signal_handlers_unblock_by_func (song_info->priv->auto_rate,
+		      rb_song_info_auto_rate_toggled_cb, song_info);
+	
+	global_auto_rate = eel_gconf_get_boolean (CONF_AUTO_RATE);
+	gtk_widget_set_sensitive (song_info->priv->auto_rate_label, global_auto_rate);
+	gtk_widget_set_sensitive (song_info->priv->auto_rate, global_auto_rate);
 }
 
 static void

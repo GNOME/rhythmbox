@@ -1074,6 +1074,11 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 		return;
 	}
 	
+	/* only auto-rate songs because our algorithm only works for discrete tunes */
+	if (rhythmdb_entry_get_int (player->priv->db, current_entry, RHYTHMDB_PROP_TYPE) != RHYTHMDB_ENTRY_TYPE_SONG) {
+		return;
+	}
+	
 	entry_play_time = rb_shell_player_get_playing_time (player);
 	entry_duration = rb_shell_player_get_playing_song_duration (player);
 	entry_time_left = entry_duration - entry_play_time;
@@ -1127,7 +1132,9 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 	}
 	
 	/* don't auto-rate songs 30 seconds or less */
-	if (eel_gconf_get_boolean (CONF_AUTO_RATE) && entry_duration > 30) {
+	if (eel_gconf_get_boolean (CONF_AUTO_RATE) && 
+	    rhythmdb_entry_get_boolean (player->priv->db, current_entry, RHYTHMDB_PROP_AUTO_RATE) &&
+	    entry_duration > 30) {
 		double old_rating, new_rating;
 		
 		/* get song's old rating */

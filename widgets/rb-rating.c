@@ -130,7 +130,7 @@ rb_rating_class_init (RBRatingClass *klass)
 					 g_param_spec_double ("score",
 							      "Rating score",
 							      "Rating score",
-							      0.0, 5.0, 3.0,
+							      0.0, 5.0, 2.5,
 							      G_PARAM_READWRITE));
 
 	rb_rating_signals[RATED] = 
