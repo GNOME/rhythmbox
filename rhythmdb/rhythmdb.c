@@ -1428,10 +1428,10 @@ void
 rhythmdb_emit_entry_restored (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_RESTORED], 0, entry);
-/* 	if (rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) { */
-/* 		rhythmdb_entry_ref_unlocked (db, entry); */
-/* 		g_async_queue_push (db->priv->update_queue, entry); */
-/* 	} */
+	if (rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
+		rhythmdb_entry_ref_unlocked (db, entry);
+		g_async_queue_push (db->priv->update_queue, entry);
+	}
 }
 
 void
