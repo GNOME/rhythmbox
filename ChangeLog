@@ -2,6 +2,104 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-16 17:01:35 GMT	Colin Walters <walters@verbum.org>	patch-306
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-306
+
+
+    new files:
+     po/ca.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog
+
+
+2003-11-16 16:50:28 GMT	Colin Walters <walters@verbum.org>	patch-305
+
+    Summary:
+      merge unicodify fixes from 0.7
+    Revision:
+      rhythmbox--mainline--0.6--patch-305
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-23
+       reimplement unicodify to look for legacy charsets
+    
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c lib/rb-string-helpers.h
+     monkey-media/stream-info-impl/Makefile.am
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     shell/main.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-23
+
+
+2003-11-15 16:22:02 GMT	Colin Walters <walters@verbum.org>	patch-304
+
+    Summary:
+      upd NEWS
+    Revision:
+      rhythmbox--mainline--0.6--patch-304
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2003-11-15 06:34:04 GMT	Colin Walters <walters@verbum.org>	patch-303
+
+    Summary:
+      play button fixes (jyasskin)
+    Revision:
+      rhythmbox--mainline--0.6--patch-303
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+       When the current song isn't in the entryview, make the next button start the first song.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+       Potential solution to bug #123374 and related complaints.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-19
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-20
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-21
+       merge fixes from 0.7
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+       Fix use of uninitialized variable
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+       Merge bugfixes
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c widgets/rb-entry-view.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+
+
 2003-11-15 06:09:57 GMT	Colin Walters <walters@verbum.org>	patch-302
 
     Summary:
