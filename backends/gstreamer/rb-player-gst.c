@@ -422,7 +422,7 @@ queue_full_cb (GstQueue *queue,
 	g_signal_handlers_block_by_func (G_OBJECT (mp->priv->queue),
 					 G_CALLBACK (queue_full_cb),
 					 mp);
-	if (gst_element_set_state (mp->priv->waiting_bin, GST_STATE_PLAYING) != GST_STATE_SUCCESS) {
+	if (gst_element_set_state (mp->priv->waiting_bin, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
 		rb_player_gst_signal_error (mp, _("Could not start pipeline playing"));
 	} else {
 		g_object_ref (G_OBJECT (mp));
@@ -631,7 +631,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			g_object_ref (G_OBJECT (mp));
 			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
 			if (gst_element_set_state (mp->priv->srcthread,
-						   GST_STATE_PLAYING) != GST_STATE_SUCCESS) {
+						   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
 				g_set_error (error,
 					     RB_PLAYER_ERROR,
 					     RB_PLAYER_ERROR_GENERAL,
@@ -641,7 +641,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 		} else {
 			rb_debug ("PLAYING pipeline");
 			if (gst_element_set_state (mp->priv->pipeline,
-						   GST_STATE_PLAYING) != GST_STATE_SUCCESS) {
+						   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
 				g_set_error (error,
 					     RB_PLAYER_ERROR,
 					     RB_PLAYER_ERROR_GENERAL,
@@ -668,7 +668,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 		
 		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->pipeline,
-					   GST_STATE_PAUSED) != GST_STATE_SUCCESS) {
+					   GST_STATE_PAUSED) == GST_STATE_FAILURE) {
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
 				     RB_PLAYER_ERROR_GENERAL,
@@ -676,6 +676,8 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 			return FALSE;
 		}
 			
+/* Disabled for now since it breaks */
+#if 0
 		if (may_pause == 1) {
 			rb_debug ("setting sink to NULL");
 			if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
@@ -686,6 +688,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 				return FALSE;
 			}
 		}
+#endif
 	}
 	return TRUE;
 }
