@@ -2083,11 +2083,14 @@ ask_file_response_cb (GtkDialog *dialog,
 	shell->priv->show_db_errors = TRUE;
     
 	while (*filecur != NULL) {
-		if (g_utf8_validate (*filecur, -1, NULL)) {
+		char *utf8ized = g_filename_to_utf8 (*filecur, -1,
+						     NULL, NULL, NULL);
+		if (utf8ized) {
 			char *uri = gnome_vfs_get_uri_from_local_path (*filecur);
 			rhythmdb_add_uri_async (shell->priv->db, uri);
 			g_free (uri);
 		}
+		g_free (utf8ized);
 		filecur++;
 	}
 
