@@ -2,6 +2,61 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-22 22:18:53 GMT	Colin Walters <walters@verbum.org>	patch-163
+
+    Summary:
+      merge from David Dollar: buffering progress work 
+    Revision:
+      rhythmbox--main--0.7--patch-163
+
+    Also fix a typo in this merge.
+    
+    Patches applied:
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--base-0
+       tag of rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7--patch-160
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-1
+       xine fixes: made xine work properly with title streaming, minor modifications to shell player to allow updates of song title always to work around a xine design flaw
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-2
+       modified rb-shell-player to accept a BUFFERING_PROGRESS element to its INFO callback, refreshes the UI when progress hits 100 to workaround a xine api deficiency
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-3
+       fixed minor syntax error
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-4
+       changed the buffering progress to a seperate callback
+    
+     * david@grepninja.com--2004/rhythmbox--main--0.7--patch-5
+       added buffering_progress stub code to rb-player-gst.c
+    
+
+    modified files:
+     ChangeLog player/rb-player-gst.c player/rb-player-xine.c
+     player/rb-player.h shell/rb-shell-player.c
+
+    new patches:
+     david@grepninja.com--2004/rhythmbox--main--0.7--base-0
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-1
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-2
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-3
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-4
+     david@grepninja.com--2004/rhythmbox--main--0.7--patch-5
+
+
+2004-03-22 20:58:52 GMT	Christophe Fergeau <teuf@gnome.org>	patch-162
+
+    Summary:
+      Only enable gtk 2.3 code if gtk+ 2.4.0 is found, replaced the iPod icon with the really nice one made by Jimmac
+    Revision:
+      rhythmbox--main--0.7--patch-162
+
+
+    modified files:
+     ChangeLog configure.ac data/art/rhythmbox-ipod.png
+
+
 2004-03-22 20:11:15 GMT	Colin Walters <walters@verbum.org>	patch-161
 
     Summary:
