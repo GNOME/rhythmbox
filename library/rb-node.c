@@ -362,7 +362,7 @@ rb_node_add_child (RBNode *node,
 
 	if (g_list_find (node->priv->children, child) != NULL)
 	{
-		rb_node_unlock (node);
+		g_static_rw_lock_writer_unlock (node->priv->lock);
 		return;
 	}
 
@@ -403,7 +403,7 @@ rb_node_remove_child (RBNode *node,
 
 	if (g_list_find (node->priv->children, child) == NULL)
 	{
-		rb_node_unlock (node);
+		g_static_rw_lock_writer_unlock (node->priv->lock);
 		return;
 	}
 

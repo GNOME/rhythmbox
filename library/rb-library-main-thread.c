@@ -191,7 +191,7 @@ thread_main (RBLibraryMainThreadPrivate *priv)
 	{
 		RBLibraryActionQueue *queue;
 		int i = 0;
-		
+
 		g_mutex_lock (priv->lock);
 		
 		if (priv->dead == TRUE)
