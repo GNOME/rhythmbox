@@ -580,7 +580,8 @@ emit_changed_signals (RhythmDB *db)
 		struct RhythmDBAction *action;
 		RBMetaDataField field;
 
-		if (!g_hash_table_lookup (queued_entry_changes, data->entry)
+		if (rhythmdb_entry_get_int (db, data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
+		    && !g_hash_table_lookup (queued_entry_changes, data->entry)
 		    && metadata_field_from_prop (data->prop, &field)) {
 			action = g_new0 (struct RhythmDBAction, 1);
 			action->type = RHYTHMDB_ACTION_SYNC;
