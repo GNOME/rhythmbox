@@ -491,17 +491,18 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 
 		uri = g_value_get_string (RHYTHMDB_TREE_ENTRY_VALUE (ctx->entry,
 								     RHYTHMDB_PROP_LOCATION));
+		rhythmdb_write_lock ((RhythmDB *) ctx->db);
+		/* Ignore duplicate entries */
+		if (rhythmdb_tree_entry_lookup_by_location ((RhythmDB *) ctx->db, uri) == NULL) {
+			rhythmdb_tree_entry_insert (ctx->db, ctx->entry, type,
+						    uri, ctx->genrename, ctx->artistname,
+						    ctx->albumname);
+			rhythmdb_emit_entry_restored ((RhythmDB *) ctx->db, ctx->entry);
+		}
 		
-		rhythmdb_write_lock (RHYTHMDB (ctx->db));
-
-		rhythmdb_tree_entry_insert (ctx->db, ctx->entry, type,
-					    uri, ctx->genrename, ctx->artistname,
-					    ctx->albumname);
 		g_free (ctx->genrename);
 		g_free (ctx->artistname);
 		g_free (ctx->albumname);
-
-		rhythmdb_emit_entry_restored (RHYTHMDB (ctx->db), ctx->entry);
 
 		rhythmdb_write_unlock (RHYTHMDB (ctx->db));
 
