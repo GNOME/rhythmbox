@@ -1,3 +1,21 @@
+2003-05-24  Geert-Jan Van den Bogaerde <gvdbogaerde@pandora.be>
+
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+
+	Make duration sorting work.
+
+2003-05-24  Colin Walters  <cwalters@gnome.org>
+	
+	* lib/widgets/rb-node-view.c: (rb_node_view_get_selection),
+	(rb_node_view_get_rows):
+
+	Fix up gcc-3.3 type-punned pointer warnings.
+	
 2003-05-24  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell-player.c (rb_shell_player_next): Make it

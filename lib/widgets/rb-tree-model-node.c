@@ -428,6 +428,8 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
 	case RB_TREE_MODEL_NODE_COL_RATING:
 		return G_TYPE_INT;
+	case RB_TREE_MODEL_NODE_COL_REAL_DURATION:
+		return G_TYPE_LONG;
 	default:
 		g_assert_not_reached ();
 		return G_TYPE_INVALID;
@@ -629,6 +631,11 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_DURATION:
 		rb_node_get_property (node,
 				      RB_NODE_PROP_DURATION,
+				      value);
+		break;
+	case RB_TREE_MODEL_NODE_COL_REAL_DURATION:
+		rb_node_get_property (node,
+				      RB_NODE_PROP_REAL_DURATION,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_LAST_PLAYED:
@@ -893,6 +900,7 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_ALBUM_KEY,        "RB_TREE_MODEL_NODE_COL_ALBUM_KEY",        "album (g_utf_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_GENRE,            "RB_TREE_MODEL_NODE_COL_GENRE",            "genre" },
 			{ RB_TREE_MODEL_NODE_COL_DURATION,         "RB_TREE_MODEL_NODE_COL_DURATION",         "duration" },
+			{ RB_TREE_MODEL_NODE_COL_REAL_DURATION,    "RB_TREE_MODEL_NODE_COL_REAL_DURATION",    "duration (long format)" },
 			{ RB_TREE_MODEL_NODE_COL_RATING,           "RB_TREE_MODEL_NODE_COL_RATING",           "rating" },
 			{ RB_TREE_MODEL_NODE_COL_PRIORITY,         "RB_TREE_MODEL_NODE_COL_PRIORITY",         "priority" },
 			{ RB_TREE_MODEL_NODE_COL_VISIBLE,          "RB_TREE_MODEL_NODE_COL_VISIBLE",          "visible" },
