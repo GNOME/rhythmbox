@@ -188,7 +188,7 @@ rb_metadata_load (RBMetaData *md,
 }
 
 gboolean
-rb_metadata_can_save (RBMetaData *md)
+rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 {
 	return FALSE;
 }
@@ -223,3 +223,9 @@ rb_metadata_set (RBMetaData *md, RBMetaDataField field,
 	return FALSE;
 }
 
+const char *
+rb_metadata_get_mime (RBMetaData *md)
+{
+	/* FIXME: implement me */
+	return NULL;
+}

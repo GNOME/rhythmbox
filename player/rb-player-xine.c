@@ -301,7 +301,9 @@ rb_player_construct (RBPlayer *mp,
 			       GError **error)
 {
 	const char *audio_driver;
+#ifndef HAVE_NULL_VIDEO
 	xine_cfg_entry_t entry;
+#endif
 
 	mp->priv->xine = xine_new ();
 
@@ -406,15 +408,15 @@ rb_player_error_quark (void)
 
 void
 rb_player_open (RBPlayer *mp,
-			  const char *uri,
-			  GError **error)
+		const char *uri,
+		GError **error)
 {
 	int xine_error;
 	char *unesc;
 
 	g_return_if_fail (RB_IS_PLAYER (mp));
 
-	rb_player_close (mp);
+	rb_player_close (mp, NULL);
 
 	if (uri == NULL)
 		return;
@@ -479,7 +481,7 @@ rb_player_open (RBPlayer *mp,
 }
 
 void
-rb_player_close (RBPlayer *mp)
+rb_player_close (RBPlayer *mp, GError **error)
 {
 	g_return_if_fail (RB_IS_PLAYER (mp));
 
@@ -501,7 +503,7 @@ rb_player_get_uri (RBPlayer *mp)
 }
 
 void
-rb_player_play (RBPlayer *mp)
+rb_player_play (RBPlayer *mp, GError **error)
 {
 	int speed, status;
 

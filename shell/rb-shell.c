@@ -1937,7 +1937,7 @@ ask_file_response_cb (GtkDialog *dialog,
 	g_strfreev (files);
 
 #else
-	char *current_dir, *stored;
+	char *current_dir = NULL;
 	GSList *uri_list = NULL, *uris = NULL;
 
 	if (response_id != GTK_RESPONSE_OK) {
@@ -1955,11 +1955,8 @@ ask_file_response_cb (GtkDialog *dialog,
 	shell->priv->show_db_errors = TRUE;
 
 	for (uris = uri_list; uris; uris = uris->next) {
-		char *uri;
-
 		if (g_utf8_validate ((char *)uris->data, -1, NULL)) 
 			rhythmdb_add_uri_async (shell->priv->db, (char *)uris->data);
-		
 	}
 	g_slist_free (uri_list);
 	g_free (current_dir);
