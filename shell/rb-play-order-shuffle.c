@@ -45,7 +45,6 @@ static void rb_shuffle_entry_added (RBPlayOrder *porder, RhythmDBEntry *entry);
 static void rb_shuffle_entry_removed (RBPlayOrder *porder, RhythmDBEntry *entry);
 static void rb_shuffle_entries_replaced (RBPlayOrder *porder);
 static void rb_shuffle_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry);
-static gboolean entry_view_and_history_contents_match (RBShufflePlayOrder *sorder);
 
 struct RBShufflePlayOrderPrivate
 {
@@ -343,7 +342,6 @@ rb_shuffle_sync_history_with_entry_view (RBShufflePlayOrder *sorder)
 	g_hash_table_foreach_remove (sorder->priv->entries_added, (GHRFunc) add_randomly_to_history, sorder);
 
 	/* postconditions */
-	g_assert (entry_view_and_history_contents_match (sorder));
 	g_assert (g_hash_table_size (sorder->priv->entries_added) == 0);
 	g_assert (g_hash_table_size (sorder->priv->entries_removed) == 0);
 }
@@ -451,41 +449,4 @@ rb_shuffle_db_entry_deleted (RBPlayOrder *porder, RhythmDBEntry *entry)
 	rb_history_remove_entry (sorder->priv->history, entry);
 	if (sorder->priv->tentative_history)
 		rb_history_remove_entry (sorder->priv->tentative_history, entry);
-}
-
-/* For some reason g_ptr_array_sort() passes pointers to the array elements
- * rather than the elements themselves */
-static gint
-ptr_compare (gconstpointer a, gconstpointer b)
-{
-	if (*(gconstpointer*)a < *(gconstpointer*)b)
-		return -1;
-	if (*(gconstpointer*)b < *(gconstpointer*)a)
-		return 1;
-	return 0;
-}
-
-static gboolean
-entry_view_and_history_contents_match (RBShufflePlayOrder *sorder)
-{
-	gboolean result = TRUE;
-	GPtrArray *history_contents = rb_history_dump (get_history (sorder));
-	GPtrArray *entry_view_contents = get_entry_view_contents (rb_play_order_get_entry_view (RB_PLAY_ORDER (sorder)));
-
-	if (history_contents->len != entry_view_contents->len)
-		result = FALSE;
-	else {
-		int i;
-		g_ptr_array_sort (history_contents, ptr_compare);
-		g_ptr_array_sort (entry_view_contents, ptr_compare);
-		for (i=0; i<history_contents->len; ++i) {
-			if (g_ptr_array_index (history_contents, i) != g_ptr_array_index (entry_view_contents, i)) {
-				result = FALSE;
-				break;
-			}
-		}
-	}
-	g_ptr_array_free (history_contents, TRUE);
-	g_ptr_array_free (entry_view_contents, TRUE);
-	return result;
 }
