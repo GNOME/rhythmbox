@@ -80,9 +80,6 @@ struct RBPlayerPrivate
 	long timer_add;
 
 	guint tick_timeout_id;
-
-	gint ticks_since_pause;
-	long seek_to;
 };
 
 typedef enum
@@ -109,8 +106,6 @@ static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 static GObjectClass *parent_class = NULL;
 
 static gboolean rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error);
-
-static gboolean rb_player_set_time_internal (RBPlayer *mp, long time);
 
 GType
 rb_player_get_type (void)
@@ -209,23 +204,9 @@ rb_player_class_init (RBPlayerClass *klass)
 static gboolean
 tick_timeout (RBPlayer *mp)
 {
-	/* 5 seconds */
-	if (mp->priv->ticks_since_pause > 5 * RB_PLAYER_TICK_HZ) {
-		mp->priv->ticks_since_pause = 0;
-		mp->priv->seek_to = rb_player_get_time (mp);
-		rb_debug ("releasing device at time %ld", mp->priv->seek_to);
-		gst_element_set_state (mp->priv->pipeline,
-				       GST_STATE_NULL);
-	} else if (mp->priv->ticks_since_pause > 0) {
-		mp->priv->ticks_since_pause++;
-	}
-	
 	if (mp->priv->playing == FALSE)
 		return TRUE;
 
-	if (mp->priv->seek_to && rb_player_set_time_internal (mp, mp->priv->seek_to))
-		mp->priv->seek_to = 0;
-	
 	g_signal_emit (G_OBJECT (mp), rb_player_signals[TICK], 0,
 		       rb_player_get_time (mp));
 
@@ -640,12 +621,7 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 					     RB_PLAYER_ERROR_GENERAL,
 					     _("Could not start pipeline playing"));
 				return FALSE;
-			}
-			if (mp->priv->seek_to) {
-				rb_debug ("seeking back to %ld", mp->priv->seek_to);
-				if (rb_player_set_time_internal (mp, mp->priv->seek_to))
-					mp->priv->seek_to = 0;
-			}
+			}				
 		}
 		g_timer_start (mp->priv->timer);
 	} else {
@@ -670,7 +646,6 @@ rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
 		}
 #endif
 	}
-	mp->priv->ticks_since_pause = 0;
 	return TRUE;
 }
 
@@ -817,7 +792,8 @@ rb_player_pause (RBPlayer *mp)
 
 	gst_element_set_state (mp->priv->pipeline,
 			       GST_STATE_PAUSED);
-	mp->priv->ticks_since_pause = 1;
+	gst_element_set_state (mp->priv->sink,
+			       GST_STATE_NULL);
 }
 
 gboolean
@@ -935,35 +911,25 @@ void
 rb_player_set_time (RBPlayer *mp,
 			      long time)
 {
+	GstEvent *event;
+
 	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (time >= 0);
 
 	g_return_if_fail (mp->priv->pipeline != NULL);
-
-	rb_player_set_time_internal (mp, time);
-}
-
-static gboolean
-rb_player_set_time_internal (RBPlayer *mp,
-			      long time)
-{
-	GstEvent *event;
-	gboolean result;
 
 	gst_element_set_state (mp->priv->pipeline, GST_STATE_PAUSED);
 
 	event = gst_event_new_seek (GST_FORMAT_TIME |
 				    GST_SEEK_METHOD_SET |
 				    GST_SEEK_FLAG_FLUSH, time * GST_SECOND);
-	result = gst_element_send_event (mp->priv->sink, event);
+	gst_element_send_event (mp->priv->sink, event);
 
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->pipeline, GST_STATE_PLAYING);
 
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = time;
-
-	return result;
 }
 
 long
