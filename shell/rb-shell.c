@@ -110,6 +110,8 @@ static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 						   CORBA_long time, CORBA_Environment *ev);
 
 static Bonobo_PropertyBag rb_shell_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
+static void rb_shell_db_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+				    RBShell *shell);
 
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
@@ -250,6 +252,9 @@ struct RBShellPrivate
 
 	GList *sources;
 
+	gboolean db_dirty;
+	guint async_state_save_id;
+
 	RhythmDB *db;
 
 	RBShellPlayer *player_shell;
@@ -380,11 +385,11 @@ rb_shell_init (RBShell *shell)
 
 }
 
-static void
+static gboolean
 rb_shell_sync_state (RBShell *shell)
 {
 	if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
-		return;
+		return FALSE;
 	
 	rb_debug ("saving playlists");
 	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
@@ -393,6 +398,14 @@ rb_shell_sync_state (RBShell *shell)
 	rhythmdb_read_lock (shell->priv->db);
 	rhythmdb_save (shell->priv->db);
 	rhythmdb_read_unlock (shell->priv->db);
+	return FALSE;
+}
+
+static void
+rb_shell_db_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+			RBShell *shell)
+{
+	shell->priv->db_dirty = TRUE;
 }
 
 static void
@@ -897,6 +910,18 @@ rb_shell_construct (RBShell *shell)
 			rhythmdb_load (shell->priv->db);
 		}
 	}
+	g_signal_connect_object (G_OBJECT (shell->priv->db),
+				 "entry_added",
+				 G_CALLBACK (rb_shell_db_changed_cb),
+				 shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db),
+				 "entry_changed",
+				 G_CALLBACK (rb_shell_db_changed_cb),
+				 shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db),
+				 "entry_deleted",
+				 G_CALLBACK (rb_shell_db_changed_cb),
+				 shell, 0);
 
 	if (!rhythmdb_exists && eel_gconf_get_boolean (CONF_FIRST_TIME)) {
 		rb_debug ("loading legacy library db");
@@ -1119,6 +1144,8 @@ rb_shell_construct (RBShell *shell)
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
+
+		g_timeout_add (5000, (GSourceFunc) rb_shell_sync_state, shell);
 	}
 	
 	rb_statusbar_sync_state (shell->priv->statusbar);
