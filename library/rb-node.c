@@ -60,6 +60,7 @@ struct RBNode
 	gulong id;
 
 	GPtrArray *properties;
+	GPtrArray *unsaved_properties;
 
 	GHashTable *parents;
 	GPtrArray *children;
@@ -185,24 +186,32 @@ rb_node_emit_signal (RBNode *node, RBNodeSignalType type, ...)
 }
 
 static void
-rb_node_finalize (RBNode *node)
+destroy_gvalue_array (GPtrArray *ptrarray)
 {
 	guint i;
-
-	g_hash_table_destroy (node->signals);
-	node->signals = NULL;
-
-	for (i = 0; i < node->properties->len; i++) {
+	for (i = 0; i < ptrarray->len; i++) {
 		GValue *val;
 
-		val = g_ptr_array_index (node->properties, i);
+		val = g_ptr_array_index (ptrarray, i);
 
 		if (val != NULL) {
 			g_value_unset (val);
 			g_free (val);
 		}
 	}
+}
+
+static void
+rb_node_finalize (RBNode *node)
+{
+	g_hash_table_destroy (node->signals);
+	node->signals = NULL;
+
+	destroy_gvalue_array (node->properties);
+	destroy_gvalue_array (node->unsaved_properties);
+
 	g_ptr_array_free (node->properties, TRUE);
+	g_ptr_array_free (node->unsaved_properties, TRUE);
 
 	g_hash_table_destroy (node->parents);
 
@@ -369,6 +378,7 @@ rb_node_new_with_id (RBNodeDb *db, gulong reserved_id)
 	node->db = db;
 
 	node->properties = g_ptr_array_new ();
+	node->unsaved_properties = g_ptr_array_new ();
 
 	node->children = g_ptr_array_new ();
 
@@ -492,19 +502,27 @@ real_set_property (RBNode *node,
 		   guint property_id,
 		   GValue *value)
 {
+	GPtrArray *srcarray;
 	GValue *old;
 
-	if (property_id >= node->properties->len) {
-		g_ptr_array_set_size (node->properties, property_id + 1);
+	if (property_id >= RB_NODE_MAX_SAVED_PROP) {
+		property_id -= RB_NODE_MAX_SAVED_PROP;
+		srcarray = node->unsaved_properties;
+	} else {
+		srcarray = node->properties;
 	}
 
-	old = g_ptr_array_index (node->properties, property_id);
+	if (property_id >= srcarray->len) {
+		g_ptr_array_set_size (srcarray, property_id + 1);
+	}
+
+	old = g_ptr_array_index (srcarray, property_id);
 	if (old != NULL) {
 		g_value_unset (old);
 		g_free (old);
 	}
 
-	g_ptr_array_index (node->properties, property_id) = value;
+	g_ptr_array_index (srcarray, property_id) = value;
 }
 
 void
@@ -545,6 +563,7 @@ rb_node_get_property (RBNode *node,
 		        GValue *value)
 {
 	GValue *ret;
+	GPtrArray *srcarray;
 
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (property_id >= 0, FALSE);
@@ -552,12 +571,19 @@ rb_node_get_property (RBNode *node,
 
 	g_static_rw_lock_reader_lock (node->lock);
 
-	if (property_id >= node->properties->len) {
+	if (property_id >= RB_NODE_MAX_SAVED_PROP) {
+		property_id -= RB_NODE_MAX_SAVED_PROP;
+		srcarray = node->unsaved_properties;
+	} else {
+		srcarray = node->properties;
+	}
+
+	if (property_id >= srcarray->len) {
 		g_static_rw_lock_reader_unlock (node->lock);
 		return FALSE;
 	}
 
-	ret = g_ptr_array_index (node->properties, property_id);
+	ret = g_ptr_array_index (srcarray, property_id);
 	if (ret == NULL) {
 		g_static_rw_lock_reader_unlock (node->lock);
 		return FALSE;
@@ -575,15 +601,22 @@ rb_node_get_property (RBNode *node,
 TYPE rb_node_get_property_ ## NAME (RBNode *node, guint property_id) \
 { \
 	GValue *ret; \
+	GPtrArray *srcarray; \
 	TYPE retval; \
 	g_return_val_if_fail (RB_IS_NODE (node), DEFAULT); \
 	g_return_val_if_fail (property_id >= 0, DEFAULT); \
 	g_static_rw_lock_reader_lock (node->lock); \
-	if (property_id >= node->properties->len) { \
+	if (property_id >= RB_NODE_MAX_SAVED_PROP) { \
+		property_id -= RB_NODE_MAX_SAVED_PROP; \
+		srcarray = node->unsaved_properties; \
+	} else { \
+		srcarray = node->properties; \
+	} \
+	if (property_id >= srcarray->len) { \
 		g_static_rw_lock_reader_unlock (node->lock); \
 		return DEFAULT; \
 	} \
-	ret = g_ptr_array_index (node->properties, property_id); \
+	ret = g_ptr_array_index (srcarray, property_id); \
 	if (ret == NULL) { \
 		g_static_rw_lock_reader_unlock (node->lock); \
 		return DEFAULT; \

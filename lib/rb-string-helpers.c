@@ -99,3 +99,13 @@ rb_unicodify (const char *str, gboolean try_iso1_first)
 	return ret;
 }
 
+char *
+rb_get_sort_key (const char *string)
+{
+	char *collated, *folded;
+	folded = g_utf8_casefold (string, -1);
+	collated = g_utf8_collate_key (folded, -1);
+	g_free (folded);
+	return collated;
+}
+

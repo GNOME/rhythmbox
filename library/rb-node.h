@@ -44,11 +44,12 @@ typedef enum
 
 #include "rb-node-db.h"
 
+#define RB_NODE_MAX_SAVED_PROP 512
+
 /* properties */
 enum
 {
 	RB_NODE_PROP_NAME               = 0,
-	RB_NODE_PROP_NAME_SORT_KEY      = 1,
 	RB_NODE_PROP_GENRE              = 2,
 	RB_NODE_PROP_ARTIST             = 3,
 	RB_NODE_PROP_ALBUM              = 4,
@@ -66,12 +67,16 @@ enum
 	RB_NODE_PROP_PLAY_COUNT         = 16,
 	RB_NODE_PROP_LAST_PLAYED        = 17,
 	RB_NODE_PROP_LAST_PLAYED_STR	= 18,
-	RB_NODE_PROP_ARTIST_SORT_KEY    = 19,
-	RB_NODE_PROP_ALBUM_SORT_KEY     = 20,
 	RB_NODE_PROP_QUALITY            = 21,
 	RB_NODE_PROP_ALT_LOCATIONS      = 22,
 	RB_NODE_PROP_PRIORITY		= 23,
 	RB_NODE_PROP_IRADIO_SOURCE	= 24,
+	/* ... */
+	RB_NODE_PROP_UNUSED		= RB_NODE_MAX_SAVED_PROP,
+	/* These properties will not be saved. */
+	RB_NODE_PROP_NAME_SORT_KEY,
+	RB_NODE_PROP_ARTIST_SORT_KEY,
+	RB_NODE_PROP_ALBUM_SORT_KEY,
 };
 
 typedef void (*RBNodeCallback) (RBNode *node, ...);

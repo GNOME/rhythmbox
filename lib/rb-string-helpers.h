@@ -23,11 +23,13 @@
 
 G_BEGIN_DECLS
 
-char *rb_prefix_to_suffix (const char *string);
+char *rb_prefix_to_suffix	(const char *string);
 
-int   rb_utf8_strncasecmp (gconstpointer a, gconstpointer b);
+int   rb_utf8_strncasecmp	(gconstpointer a, gconstpointer b);
 
-char *rb_unicodify	  (const char *str, gboolean try_iso1_first);
+char *rb_unicodify		(const char *str, gboolean try_iso1_first);
+
+char *rb_get_sort_key		(const char *string);
 
 G_END_DECLS
 

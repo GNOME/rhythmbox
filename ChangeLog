@@ -1,3 +1,26 @@
+2003-08-03  Colin Walters  <walters@gnu.org>
+
+	* iradio/rb-iradio-backend.c: (restore_node), (set_sort_key_prop),
+	(sync_sort_keys), (set_genre), (rb_iradio_backend_new_station):
+	* lib/rb-string-helpers.c: (rb_get_sort_key):
+	* lib/rb-string-helpers.h:
+	* library/rb-library.c: (rb_library_load), (restore_node),
+	(rb_library_new_node), (set_node_title), (set_sort_key_prop),
+	(sync_sort_keys), (set_node_mtime), (set_node_genre),
+	(set_node_artist), (set_node_album), (sync_node):
+	* library/rb-library.h:
+	* library/rb-node.c: (destroy_gvalue_array), (rb_node_finalize),
+	(rb_node_new_with_id), (real_set_property), (rb_node_get_property):
+	* library/rb-node.h:
+	* sources/rb-iradio-source.c: (impl_search):
+
+	Add the concept of "unsaved properties" to RBNode.  We use this
+	for the collation keys, which should not be saved to the XML.
+	This closes bug #114437.
+
+	This breaks the library format.  Sorry!  After 0.5.0 we'll
+	try to make some backwards compatibility guarantees.
+
 2003-08-03  Colin Walters  <walters@rhythmbox.org>
 
 	* configure.ac: Make missing gst elements into warnings.

@@ -35,6 +35,7 @@
 #include "rb-iradio-yp-iterator.h"
 #include "rb-iradio-yp-xmlfile.h"
 #include "rb-debug.h"
+#include "rb-string-helpers.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
@@ -53,8 +54,9 @@ static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *b
 static gboolean rb_iradio_backend_periodic_save (RBIRadioBackend *backend);
 static void finalize_node (RBNode *node);
 static void restore_node (RBNode *node);
+static void sync_sort_keys (RBNode *node);
 
-#define RB_IRADIO_BACKEND_XML_VERSION "2.0"
+#define RB_IRADIO_BACKEND_XML_VERSION "2.1"
 
 struct RBIRadioBackendPrivate
 {
@@ -585,6 +587,9 @@ static void
 restore_node (RBNode *node)
 {
 	RBNode *parent;
+
+	sync_sort_keys (node);
+
 	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION)) {
 		rb_node_ref (node);
 		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
@@ -597,29 +602,23 @@ restore_node (RBNode *node)
 }
 
 static void
-set_title_sort_key (RBNode *node)
+set_sort_key_prop (RBNode *node, guint source, guint dest)
 {
-	char *folded, *key;
-	GValue titleval = {0,};
-	GValue keyvalue = {0,};
+	GValue val = { 0, };
 
-	g_assert (rb_node_get_property (node,
-					RB_NODE_PROP_NAME,
-					&titleval));
-
-	folded = g_utf8_casefold (g_value_get_string (&titleval), -1);
-	key = g_utf8_collate_key (folded, -1);
-	g_free (folded);
-	g_value_init (&keyvalue, G_TYPE_STRING);
-	g_value_set_string (&keyvalue, key);
-	g_free (key);
-
-	rb_node_set_property (node,
-			      RB_NODE_PROP_NAME_SORT_KEY,
-			      &keyvalue);
-
-	g_value_unset (&keyvalue);
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string_take_ownership (&val, rb_get_sort_key (rb_node_get_property_string (node, source)));
+	rb_node_set_property (node, dest, &val);
+	g_value_unset (&val);
 }
+
+static void
+sync_sort_keys (RBNode *node)
+{
+		
+	set_sort_key_prop (node, RB_NODE_PROP_NAME, RB_NODE_PROP_NAME_SORT_KEY);
+}
+
 
 static void
 set_genre (RBNode *node,
@@ -644,7 +643,7 @@ set_genre (RBNode *node,
 				      RB_NODE_PROP_GENRE,
 				      &val);
 
-		set_title_sort_key (genre);
+		sync_sort_keys (genre);
 		rb_node_add_child (rb_iradio_backend_get_all_genres (backend), genre);
 		rb_node_ref (rb_iradio_backend_get_all_genres (backend));
 	}
@@ -690,7 +689,7 @@ rb_iradio_backend_new_station (GList *locations, const char *name,
 			      &value);
 	g_value_unset (&value);
 
-	set_title_sort_key (node);
+	sync_sort_keys (node);
 
 	/* Source */
 	g_value_init (&value , G_TYPE_STRING);
