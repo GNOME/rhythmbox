@@ -112,6 +112,14 @@ rb_view_player_set_repeat (RBViewPlayer *player,
 	rb_view_player_notify_changed (player);
 }
 
+gboolean
+rb_view_player_can_pause (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	return iface->impl_can_pause (player);
+}
+
 RBViewPlayerResult
 rb_view_player_have_first (RBViewPlayer *player)
 {
@@ -164,6 +172,14 @@ rb_view_player_get_title (RBViewPlayer *player)
 	return iface->impl_get_title (player);
 }
 
+RBViewPlayerResult
+rb_view_player_have_artist_album (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	return iface->impl_have_artist_album (player);
+}
+
 const char *
 rb_view_player_get_artist (RBViewPlayer *player)
 {
@@ -178,6 +194,22 @@ rb_view_player_get_album (RBViewPlayer *player)
 	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
 
 	return iface->impl_get_album (player);
+}
+
+RBViewPlayerResult
+rb_view_player_have_url (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	return iface->impl_have_url (player);
+}
+
+void
+rb_view_player_get_url (RBViewPlayer *player, char **text, char **url)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	iface->impl_get_url (player, text, url);
 }
 
 const char *
