@@ -180,6 +180,7 @@ struct RBShellPlayerPrivate
 	guint buffering_progress_idle_id;
 
 	GtkWidget *prev_button;
+	PlayButtonState playbutton_state;
 	GtkWidget *play_pause_stop_button;
 	GtkWidget *play_image;
 	GtkWidget *pause_image;
@@ -382,6 +383,8 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	player->priv->play_pause_stop_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->play_pause_stop_button), player->priv->play_image);
+	player->priv->playbutton_state = PLAY_BUTTON_PLAY;
+
 	g_signal_connect_swapped (G_OBJECT (player->priv->play_pause_stop_button),
 				  "clicked", G_CALLBACK (rb_shell_player_playpause), player);
 
@@ -863,7 +866,9 @@ rb_shell_player_cmd_play (BonoboUIComponent *component,
 static void
 rb_shell_player_playpause (RBShellPlayer *player)
 {
-	if (monkey_media_player_playing (player->priv->mmplayer)) {
+	if (player->priv->playbutton_state == PLAY_BUTTON_STOP)
+		rb_shell_player_set_playing_source (player, NULL);
+	else if (monkey_media_player_playing (player->priv->mmplayer)) {
 		monkey_media_player_pause (player->priv->mmplayer);
 	} else {
 		RBNode *node;
@@ -1117,12 +1122,15 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 		g_error ("Should not get here!");
 		break;
 	}
+
 	gtk_widget_show_all (GTK_WIDGET (player->priv->play_pause_stop_button));
 
 	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
 	rb_bonobo_set_label (player->priv->component, TRAY_PATH_PLAY, mlabel);
 	rb_bonobo_set_verb (player->priv->component, MENU_PATH_PLAY, verb);
 	rb_bonobo_set_verb (player->priv->component, TRAY_PATH_PLAY, verb);
+
+	player->priv->playbutton_state = state;
 }
 
 static void
