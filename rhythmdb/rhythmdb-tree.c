@@ -277,6 +277,18 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	}
 }
 
+static gulong
+parse_ulong (const char *buffer)
+{
+	guint64 val;
+
+	val = g_ascii_strtoull (buffer, NULL, 10);
+	if (val == G_MAXUINT64)
+		return 0;
+	else
+		return MIN (val, G_MAXUINT32);
+}
+
 static void
 rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const char *name)
 {
@@ -305,7 +317,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
 	{
-		guint64 val;
 		/* Handle indexed properties. */
 		switch (ctx->propid)
 		{
@@ -329,38 +340,19 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->tracknum = 0;
-			else
-				ctx->entry->tracknum = val;
+			ctx->entry->tracknum = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
-			ctx->entry->discnum = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->discnum = 0;
-			else
-				ctx->entry->discnum = val;
+			ctx->entry->discnum = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_DURATION:
-			ctx->entry->duration = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->duration = 0;
-			else
-				ctx->entry->duration = val;
+			ctx->entry->duration = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
-			ctx->entry->file_size = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->file_size = 0;
-			else
-				ctx->entry->file_size = val;
+			ctx->entry->file_size = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_LOCATION:
@@ -372,12 +364,15 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_string_free (ctx->buf, FALSE);
 			break;
 		case RHYTHMDB_PROP_MTIME:
-			ctx->entry->mtime = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->mtime = 0;
-			else
-				ctx->entry->mtime = val;
+			ctx->entry->mtime = parse_ulong (ctx->buf->str);
+			g_string_free (ctx->buf, TRUE);
+			break;
+		case RHYTHMDB_PROP_FIRST_SEEN:
+			ctx->entry->first_seen = parse_ulong (ctx->buf->str);
+			g_string_free (ctx->buf, TRUE);
+			break;
+		case RHYTHMDB_PROP_LAST_SEEN:
+			ctx->entry->last_seen = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_RATING:
@@ -389,30 +384,15 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_PLAY_COUNT:
-			ctx->entry->play_count = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->play_count = 0;
-			else
-				ctx->entry->play_count = val;
+			ctx->entry->play_count = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_LAST_PLAYED:
-			ctx->entry->last_played = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->last_played = 0;
-			else
-				ctx->entry->last_played = val;
+			ctx->entry->last_played = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_BITRATE:
-			ctx->entry->bitrate = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			val = g_ascii_strtoull (ctx->buf->str, NULL, 10);
-			if (val == G_MAXUINT64)
-				ctx->entry->bitrate = 0;
-			else
-				ctx->entry->bitrate = val;
+			ctx->entry->bitrate = parse_ulong (ctx->buf->str);
 			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TRACK_GAIN:
@@ -694,6 +674,12 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			save_entry_ulong(ctx, elt_name, entry->mtime);
+			break;
+		case RHYTHMDB_PROP_FIRST_SEEN:
+			save_entry_ulong(ctx, elt_name, entry->first_seen);
+			break;
+		case RHYTHMDB_PROP_LAST_SEEN:
+			save_entry_ulong(ctx, elt_name, entry->last_seen);
 			break;
 		case RHYTHMDB_PROP_RATING:
 			save_entry_double(ctx, elt_name, entry->rating);

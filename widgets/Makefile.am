@@ -3,6 +3,8 @@
 noinst_LTLIBRARIES = librbwidgets.la
 
 librbwidgets_la_SOURCES =				\
+	eel-gconf-extensions.c				\
+	eel-gconf-extensions.h				\
 	rb-song-display-box.c				\
 	rb-song-display-box.h				\
 	rb-entry-view.c					\
@@ -21,8 +23,6 @@ librbwidgets_la_SOURCES =				\
 	disclosure-widget.h				\
 	gst-hig-dialog.c				\
 	gst-hig-dialog.h				\
-	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h				\
 	eggtrayicon.c					\
 	eggtrayicon.h					\
 	rb-dialog.c					\

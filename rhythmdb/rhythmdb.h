@@ -75,6 +75,8 @@ typedef enum
 	RHYTHMDB_PROP_LOCATION,
 	RHYTHMDB_PROP_MOUNTPOINT,
 	RHYTHMDB_PROP_MTIME,
+	RHYTHMDB_PROP_FIRST_SEEN,
+	RHYTHMDB_PROP_LAST_SEEN,
 	RHYTHMDB_PROP_RATING,
 	RHYTHMDB_PROP_AUTO_RATE,
 	RHYTHMDB_PROP_PLAY_COUNT,
@@ -145,13 +147,15 @@ typedef struct {
 	dev_t device;
 	GnomeVFSInodeNumber inode;
 #endif
-	glong mtime;
+	gulong mtime;
+	gulong first_seen;
+	gulong last_seen;
 
 	/* user data */
 	gdouble rating;
 	gboolean auto_rate;
 	glong play_count;
-	glong last_played;
+	gulong last_played;
 
 	/* cached data */
 	RBRefString *last_played_str;
@@ -252,6 +256,10 @@ rhythmdb_entry_get_ulong (RhythmDBEntry *entry, RhythmDBPropType propid)
 		return entry->duration;
 	case RHYTHMDB_PROP_MTIME:
 		return entry->mtime;
+	case RHYTHMDB_PROP_FIRST_SEEN:
+		return entry->first_seen;
+	case RHYTHMDB_PROP_LAST_SEEN:
+		return entry->last_seen;
 	case RHYTHMDB_PROP_LAST_PLAYED:
 		return entry->last_played;
 	case RHYTHMDB_PROP_PLAY_COUNT:

@@ -33,6 +33,7 @@
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 #include <glib/gatomic.h>
+#include <gconf/gconf-client.h>
 #include <gdk/gdk.h>
 #include <libxml/tree.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
@@ -45,6 +46,7 @@
 #include "rb-debug.h"
 #include "rb-util.h"
 #include "rb-cut-and-paste-code.h"
+#include "rb-preferences.h"
 
 GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 
@@ -979,6 +981,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 {
 	const char *mime;
 	GValue val = {0,};
+	GTimeVal time;
 
 	g_value_init (&val, G_TYPE_STRING);
 	mime = rb_metadata_get_mime (metadata);
@@ -1052,6 +1055,14 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &val);
 	g_value_unset (&val);
 
+        /* first seen and last seen */
+	g_get_current_time (&time);
+	g_value_init (&val, G_TYPE_ULONG);
+	g_value_set_ulong (&val, time.tv_sec);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN, &val);
+	g_value_unset (&val);
+
 	/* genre */
 	set_metadata_string_default_unknown (db, metadata, entry,
 					     RB_METADATA_FIELD_GENRE,
@@ -1099,6 +1110,45 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	}
 }
 
+
+static gboolean
+is_ghost_entry (RhythmDBEntry *entry)
+{
+	GTimeVal time;
+	gulong last_seen;
+	gulong grace_period;
+	GError *error;
+	GConfClient *client;
+
+	client = gconf_client_get_default ();
+	if (client == NULL) {
+		return FALSE;
+	}
+	error = NULL;
+	grace_period = gconf_client_get_int (client, CONF_GRACE_PERIOD, 
+					     &error);
+	g_object_unref (G_OBJECT (client));
+	if (error != NULL) {
+		g_error_free (error);
+		return FALSE;
+	}
+	
+	/* This is a bit silly, but I prefer to make sure we won't
+	 * overflow in the following calculations 
+	 */
+	if ((grace_period < 0) || (grace_period > 20000)) {
+		return FALSE;
+	}
+
+	/* Convert from days to seconds */
+	grace_period = grace_period * 60 * 60 * 24;
+	g_get_current_time (&time);
+	last_seen = rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_LAST_SEEN);
+
+	return (last_seen + grace_period < time.tv_sec);
+}
+
+
 static void
 rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 {
@@ -1114,7 +1164,7 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 			/* First check if the mount point the song was on 
 			 * still exists */
 			mount_point = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_MOUNTPOINT);
-			if (rb_uri_is_mounted (mount_point) == FALSE) {
+			if ((rb_uri_is_mounted (mount_point) == FALSE) && !is_ghost_entry (entry)) {
 				rhythmdb_entry_set_visibility (db, entry, FALSE);
 				
 			} else {
@@ -1122,9 +1172,11 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 					  event->error->message);
 				rhythmdb_entry_delete (db, entry);
 			}
-		} else if (mtime == event->vfsinfo->mtime) {
+		} else {
+			GValue val = {0, };
+			GTimeVal time;
 			const char *mount_point;
-			rb_debug ("not modified: %s", event->real_uri);
+			
 			/* Update mount point if necessary (main reason is 
 			 * that we want to set the mount point in legacy
 			 * rhythmdb that doesn't have it already
@@ -1133,6 +1185,37 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 			if (mount_point == NULL) {
 				rhythmdb_entry_set_mount_point (db, entry,
 								event->real_uri);
+			}
+
+			/* Update last seen time. It will also be updated
+			 * upon saving and when a volume is unmounted 
+			 */
+			g_get_current_time (&time);
+			g_value_init (&val, G_TYPE_ULONG);
+			g_value_set_ulong (&val, time.tv_sec);
+			rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_SEEN,
+					    &val);
+			/* Old rhythmdb.xml files won't have a value for
+			 * FIRST_SEEN, so set it here
+			 */
+			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_FIRST_SEEN) == 0) {
+				rhythmdb_entry_set (db, entry, 
+						    RHYTHMDB_PROP_FIRST_SEEN,
+						    &val);
+			}
+			g_value_unset (&val);
+					    
+			if (mtime == event->vfsinfo->mtime) {
+				rb_debug ("not modified: %s", event->real_uri);
+			} else {
+				struct RhythmDBEvent *new_event;
+
+				rb_debug ("changed: %s", event->real_uri);
+				new_event = g_new0 (struct RhythmDBEvent, 1);
+				new_event->uri = g_strdup (event->real_uri);
+				new_event->type = RHYTHMDB_EVENT_FILE_MODIFIED;
+				g_async_queue_push (db->priv->event_queue, 
+						    new_event);
 			}
 		}
 	} else {
@@ -1797,6 +1880,12 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_MTIME:
 		entry->mtime = g_value_get_ulong (value);
 		break;
+	case RHYTHMDB_PROP_FIRST_SEEN:
+		entry->first_seen = g_value_get_ulong (value);
+		break;
+	case RHYTHMDB_PROP_LAST_SEEN:
+		entry->last_seen = g_value_get_ulong (value);
+		break;
 	case RHYTHMDB_PROP_RATING:
 		entry->rating = g_value_get_double (value);
 		break;
@@ -2440,7 +2529,9 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_FILE_SIZE, "File Size (guint64) [file-size]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LOCATION, "Location (gchararray) [location]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_MOUNTPOINT, "Mount point it's located in (gchararray) [mountpoint]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (glong) [mtime]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_MTIME, "Modification time (gulong) [mtime]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN, "Time the song was added to the library (gulong) [first-seen]"),
+			ENUM_ENTRY (RHYTHMDB_PROP_LAST_SEEN, "Last time the song was available (gulong) [last-seen]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble) [rating]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_AUTO_RATE, "Whether to auto-rate song (gboolean) [auto-rate]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gint) [play-count]"),
@@ -2603,6 +2694,19 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 		return;
 	}
 	if (!strcmp (mount_point, ctxt->mount_point)) {
+		GTimeVal time;
+		GValue val = {0, };
+
+		/* We don't care if the song appears or disappears, this
+		 * is really the latest time we have seen it 
+		*/
+		g_get_current_time (&time);
+		g_value_init (&val, G_TYPE_ULONG);
+		g_value_set_ulong (&val, time.tv_sec);
+		rhythmdb_entry_set (ctxt->db, entry, 
+				    RHYTHMDB_PROP_LAST_SEEN, &val);
+		g_value_unset (&val);
+
 		rhythmdb_entry_set_visibility (ctxt->db, entry, ctxt->mounted);
 	}
 }

@@ -68,7 +68,7 @@ static GtkToggleActionEntry rb_statusbar_toggle_entries [] =
 {
         { "ViewStatusbar", NULL, N_("S_tatusbar"), NULL,
 	  N_("Change the visibility of the statusbar"),
-	  G_CALLBACK (rb_statusbar_view_statusbar_changed_cb) }
+	  G_CALLBACK (rb_statusbar_view_statusbar_changed_cb), TRUE }
 };
 static guint rb_statusbar_n_toggle_entries = G_N_ELEMENTS (rb_statusbar_toggle_entries);
 

@@ -26,6 +26,18 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/grace_period</key>
+        <applyto>/apps/rhythmbox/grace_period</applyto>
+        <owner>rhythmbox</owner>
+        <type>int</type>
+        <default>45</default>
+        <locale name="C">
+	<short>Number of days before removing a stale entry from the database</short>
+	<long>When Rhythmbox's database contains a song stored on a mount point that is no longer available, Rhythmbox won't remove it from its XML file immedialty, but will keep it for a number of days defined by this key. Setting it to a negative number makes Rhythmbox keep the songs forever.</long>
+        </locale>
+      </schema>
+
+      <schema>
         <key>/schemas/apps/rhythmbox/state/selected_source</key>
         <applyto>/apps/rhythmbox/state/selected_source</applyto>
         <owner>rhythmbox</owner>
