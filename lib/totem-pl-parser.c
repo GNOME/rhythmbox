@@ -241,6 +241,44 @@ totem_pl_parser_num_entries (TotemPlParser *parser, GtkTreeModel *model,
 	return num_entries - ignored;
 }
 
+static char *
+totem_pl_parser_relative (const char *url, const char *output)
+{
+	char *url_base, *output_base;
+	char *base, *needle;
+
+	base = NULL;
+	url_base = totem_pl_parser_base_url (url);
+	output_base = totem_pl_parser_base_url (output);
+
+	needle = strstr (url_base, output_base);
+	if (needle != NULL)
+	{
+		GnomeVFSURI *uri;
+		char *newurl;
+
+		uri = gnome_vfs_uri_new (url);
+		newurl = gnome_vfs_uri_to_string (uri, 0);
+		if (newurl[strlen (output_base)] == '/') {
+			base = g_strdup (newurl + strlen (output_base) + 1);
+		} else {
+			base = g_strdup (newurl + strlen (output_base));
+		}
+		gnome_vfs_uri_unref (uri);
+		g_free (newurl);
+
+		/* And finally unescape the string */
+		newurl = gnome_vfs_unescape_string (base, NULL);
+		g_free (base);
+		base = newurl;
+	}
+
+	g_free (url_base);
+	g_free (output_base);
+
+	return base;
+}
+
 static gboolean
 totem_pl_parser_write_pls (TotemPlParser *parser, GtkTreeModel *model,
 		TotemPlParserIterFunc func, const char *output,
@@ -290,7 +328,7 @@ totem_pl_parser_write_pls (TotemPlParser *parser, GtkTreeModel *model,
 
 	for (i = 1; i <= num_entries_total; i++) {
 		GtkTreeIter iter;
-		char *path, *url, *title;
+		char *path, *url, *title, *relative;
 
 		path = g_strdup_printf ("%d", i - 1);
 		gtk_tree_model_get_iter_from_string (model, &iter, path);
@@ -305,10 +343,13 @@ totem_pl_parser_write_pls (TotemPlParser *parser, GtkTreeModel *model,
 			continue;
 		}
 
-		buf = g_strdup_printf ("File%d=%s\n", i, url);
+		relative = totem_pl_parser_relative (url, output);
+		buf = g_strdup_printf ("File%d=%s\n", i,
+				relative ? relative : url);
+		g_free (relative);
+		g_free (url);
 		success = write_string (handle, buf, error);
 		g_free (buf);
-		g_free (url);
 		if (success == FALSE)
 		{
 			gnome_vfs_close (handle);
@@ -329,44 +370,6 @@ totem_pl_parser_write_pls (TotemPlParser *parser, GtkTreeModel *model,
 
 	gnome_vfs_close (handle);
 	return TRUE;
-}
-
-static char *
-totem_pl_parser_relative (const char *url, const char *output)
-{
-	char *url_base, *output_base;
-	char *base, *needle;
-
-	base = NULL;
-	url_base = totem_pl_parser_base_url (url);
-	output_base = totem_pl_parser_base_url (output);
-
-	needle = strstr (url_base, output_base);
-	if (needle != NULL)
-	{
-		GnomeVFSURI *uri;
-		char *newurl;
-
-		uri = gnome_vfs_uri_new (url);
-		newurl = gnome_vfs_uri_to_string (uri, 0);
-		if (newurl[strlen (output_base)] == '/') {
-			base = g_strdup (newurl + strlen (output_base) + 1);
-		} else {
-			base = g_strdup (newurl + strlen (output_base));
-		}
-		gnome_vfs_uri_unref (uri);
-		g_free (newurl);
-
-		/* And finally unescape the string */
-		newurl = gnome_vfs_unescape_string (base, NULL);
-		g_free (base);
-		base = newurl;
-	}
-
-	g_free (url_base);
-	g_free (output_base);
-
-	return base;
 }
 
 static char *
