@@ -394,9 +394,15 @@ rb_node_action_queue_cb (gpointer node_reference)
 GList *
 rb_node_get_children (RBNode *node)
 {
+	GList *ret;
+
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 
-	return node->priv->children;
+	g_static_rw_lock_reader_lock (node->priv->lock);
+	ret = g_list_copy (node->priv->children);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return ret;
 }
 
 void
@@ -478,9 +484,15 @@ rb_node_remove_child (RBNode *node,
 GList *
 rb_node_get_parents (RBNode *node)
 {
+	GList *ret;
+	
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 
-	return node->priv->parents;
+	g_static_rw_lock_reader_lock (node->priv->lock);
+	ret = g_list_copy (node->priv->parents);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
+
+	return ret;
 }
 
 void
@@ -501,19 +513,16 @@ gboolean
 rb_node_has_parent (RBNode *node,
 		    RBNode *parent)
 {
-	GList *parents;
 	gboolean ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (RB_IS_NODE (parent), FALSE);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 	
-	parents = rb_node_get_parents (node);
-	
-	ret = (g_list_find (parents, parent) != NULL);
+	ret = (g_list_find (node->priv->parents, parent) != NULL);
 
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -647,7 +656,7 @@ rb_node_get_property (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (value != NULL);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
 	val = g_hash_table_lookup (node->priv->properties,
 				   property);
@@ -656,27 +665,29 @@ rb_node_get_property (RBNode *node,
 	g_value_init (value, G_VALUE_TYPE (val));
 	g_value_copy (val, value);
 
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
 RBNode *
 rb_node_get_nth_child (RBNode *node,
 		       int n)
 {
-	GList *children, *nth;
+	GList *nth;
 	RBNode *ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	children = rb_node_get_children (node);
-	nth = g_list_nth (children, n);
+	nth = g_list_nth (node->priv->children, n);
 
-	ret = RB_NODE (nth->data);
+	if (nth != NULL)
+		ret = RB_NODE (nth->data);
+	else
+		ret = NULL;
 
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -685,19 +696,16 @@ int
 rb_node_child_index (RBNode *node,
 		     RBNode *child)
 {
-	GList *children;
 	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 	g_return_val_if_fail (RB_IS_NODE (child), -1);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	children = rb_node_get_children (node);
+	ret = g_list_index (node->priv->children, child);
 
-	ret = g_list_index (children, child);
-
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -705,18 +713,15 @@ rb_node_child_index (RBNode *node,
 int
 rb_node_n_children (RBNode *node)
 {
-	GList *children;
 	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	children = rb_node_get_children (node);
+	ret = g_list_length (node->priv->children);
 
-	ret = g_list_length (children);
-
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -725,19 +730,16 @@ gboolean
 rb_node_has_child (RBNode *node,
 		   RBNode *child)
 {
-	GList *children;
 	gboolean ret;
 
 	g_return_val_if_fail (RB_IS_NODE (node), FALSE);
 	g_return_val_if_fail (RB_IS_NODE (child), FALSE);
 	
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 	
-	children = rb_node_get_children (node);
+	ret = (g_list_find (node->priv->children, child) != NULL);
 
-	ret = (g_list_find (children, child) != NULL);
-
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -752,18 +754,15 @@ rb_node_parent_index (RBNode *node,
 int
 rb_node_n_parents (RBNode *node)
 {
-	GList *parents;
 	int ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), -1);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	parents = rb_node_get_parents (node);
+	ret = g_list_length (node->priv->parents);
 
-	ret = g_list_length (parents);
-
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -772,20 +771,22 @@ RBNode *
 rb_node_get_nth_parent (RBNode *node,
 		        int n)
 {
-	GList *parents, *nth;
+	GList *nth;
 	RBNode *ret;
 	
 	g_return_val_if_fail (RB_IS_NODE (node), NULL);
 	g_return_val_if_fail (n >= 0, NULL);
 
-	rb_node_lock (node);
+	g_static_rw_lock_reader_lock (node->priv->lock);
 
-	parents = rb_node_get_parents (node);
-	nth = g_list_nth (parents, n);
+	nth = g_list_nth (node->priv->parents, n);
 
-	ret = RB_NODE (nth->data);
+	if (nth != NULL)
+		ret = RB_NODE (nth->data);
+	else
+		ret = NULL;
 
-	rb_node_unlock (node);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
@@ -1171,22 +1172,6 @@ rb_node_system_shutdown (void)
 	g_static_rw_lock_free (name_to_artist_lock);
 	g_static_rw_lock_free (name_to_album_lock);
 	g_static_rw_lock_free (uri_to_song_lock);
-}
-
-void
-rb_node_lock (RBNode *node)
-{
-	g_return_if_fail (RB_IS_NODE (node));
-
-	g_static_rw_lock_reader_lock (node->priv->lock);
-}
-
-void
-rb_node_unlock (RBNode *node)
-{
-	g_return_if_fail (RB_IS_NODE (node));
-
-	g_static_rw_lock_reader_unlock (node->priv->lock);
 }
 
 RBNode *

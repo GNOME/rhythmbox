@@ -1152,7 +1152,7 @@ static int
 rb_node_view_get_n_rows (RBNodeView *view)
 {
 	RBNode *parent = NULL, *artist = NULL;
-	GList *l;
+	GList *l, *kids;
 	int n_rows = 0;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
@@ -1161,7 +1161,9 @@ rb_node_view_get_n_rows (RBNodeView *view)
 	if (parent == NULL)
 		return n_rows;
 
-	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
+	kids = rb_node_get_children (parent);
+	
+	for (l = kids; l != NULL; l = g_list_next (l))
 	{
 		if (artist != NULL &&
 		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
@@ -1170,6 +1172,8 @@ rb_node_view_get_n_rows (RBNodeView *view)
 		n_rows++;
 	}
 
+	g_list_free (kids);
+
 	return n_rows;
 }
 
@@ -1177,7 +1181,7 @@ static GList *
 rb_node_view_get_visible_nodes (RBNodeView *view)
 {
 	RBNode *parent = NULL, *artist = NULL;
-	GList *ret = NULL, *l;
+	GList *ret = NULL, *l, *kids;
 
 	rb_tree_model_node_get_filter (view->priv->nodemodel,
 				       &parent, &artist);
@@ -1185,7 +1189,9 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 	if (parent == NULL)
 		return ret;
 
-	for (l = rb_node_get_children (parent); l != NULL; l = g_list_next (l))
+	kids = rb_node_get_children (parent);
+
+	for (l = kids; l != NULL; l = g_list_next (l))
 	{
 		if (artist != NULL &&
 		    rb_node_song_has_artist (RB_NODE (l->data), artist) == FALSE)
@@ -1193,6 +1199,8 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 
 		ret = g_list_append (ret, l->data);
 	}
+
+	g_list_free (kids);
 
 	return ret;
 }

@@ -122,17 +122,14 @@ rb_node_iterator_set_position (RBNodeIterator *iterator,
 RBNode *
 rb_node_iterator_next (RBNodeIterator *iterator)
 {
-	GList *children, *pos, *next;
+	RBNode *next;
 
-	rb_node_lock (iterator->priv->parent);
-	children = rb_node_get_children (iterator->priv->parent);
-	pos = g_list_find (children, iterator->priv->position);
-	next = g_list_next (pos);
-	rb_node_unlock (iterator->priv->parent);
+	next = rb_node_get_nth_child (iterator->priv->parent,
+			              rb_node_child_index (iterator->priv->parent, iterator->priv->position) + 1);
 
 	if (next != NULL)
 	{
-		iterator->priv->position = RB_NODE (next->data);
+		iterator->priv->position = next;
 		return iterator->priv->position;
 	}
 	else

@@ -146,7 +146,7 @@ rb_library_finalize (GObject *object)
 	rb_library_save (library);
 
 	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
-	children = g_list_copy (rb_node_get_children (library->priv->all_songs));
+	children = rb_node_get_children (library->priv->all_songs);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
 		rb_node_unref (RB_NODE (l->data));
@@ -264,6 +264,7 @@ rb_library_save (RBLibrary *library)
 		if (l->data != library->priv->all_artists)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
+	g_list_free (children);
 
 	children = rb_node_get_children (library->priv->all_artists);
 	for (l = children; l != NULL; l = g_list_next (l))
@@ -271,6 +272,7 @@ rb_library_save (RBLibrary *library)
 		if (l->data != library->priv->all_albums)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
+	g_list_free (children);
 
 	children = rb_node_get_children (library->priv->all_albums);
 	for (l = children; l != NULL; l = g_list_next (l))
@@ -278,12 +280,14 @@ rb_library_save (RBLibrary *library)
 		if (l->data != library->priv->all_songs)
 			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
+	g_list_free (children);
 
 	children = rb_node_get_children (library->priv->all_songs);
 	for (l = children; l != NULL; l = g_list_next (l))
 	{
 		rb_node_save_to_xml (RB_NODE (l->data), doc->children);
 	}
+	g_list_free (children);
 
 	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
 }

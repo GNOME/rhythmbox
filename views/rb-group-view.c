@@ -355,7 +355,7 @@ rb_group_view_finalize (GObject *object)
 
 	g_return_if_fail (view->priv != NULL);
 
-	kids = g_list_copy (rb_node_get_children (view->priv->group));
+	kids = rb_node_get_children (view->priv->group);
 	for (l = kids; l != NULL; l = g_list_next (l))
 	{
 		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
@@ -968,7 +968,7 @@ void
 rb_group_view_save (RBGroupView *view)
 {
 	xmlDocPtr doc;
-	GList *l;
+	GList *l, *kids;
 	char *dir;
 
 	g_return_if_fail (RB_IS_GROUP_VIEW (view));
@@ -983,7 +983,8 @@ rb_group_view_save (RBGroupView *view)
 
 	xmlSetProp (doc->children, "name", view->priv->name);
 
-	for (l = rb_node_get_children (view->priv->group); l != NULL; l = g_list_next (l))
+	kids = rb_node_get_children (view->priv->group);
+	for (l = kids; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node = RB_NODE (l->data);
 		xmlNodePtr xmlnode;
@@ -995,6 +996,7 @@ rb_group_view_save (RBGroupView *view)
 		xmlSetProp (xmlnode, "id", tmp);
 		g_free (tmp);
 	}
+	g_list_free (kids);
 
 	xmlSaveFormatFile (view->priv->file, doc, 1);
 	xmlFreeDoc (doc);

@@ -132,10 +132,6 @@ RBNode     *rb_node_new_from_xml       (xmlNodePtr xml_node);
 RBNode     *rb_node_ref                (RBNode *node);
 void        rb_node_unref              (RBNode *node);
 
-/* locking */
-void        rb_node_lock               (RBNode *node);
-void        rb_node_unlock             (RBNode *node);
-
 /* genre/artist/album hashes */
 RBNode     *rb_node_get_genre_by_name  (const char *name);
 RBNode     *rb_node_get_artist_by_name (const char *name);
