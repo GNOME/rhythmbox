@@ -2,14 +2,12 @@
 
 module GNOME
 {
-	interface RhythmboxShell : Bonobo::Unknown
+	interface Rhythmbox : Bonobo::Unknown
 	{
-		void handleFile (in string uri);
-
 		void addToLibrary (in string uri);
 
 		void grabFocus ();
-
+	
 		void quit ();
 	};
 };
