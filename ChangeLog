@@ -1,5 +1,16 @@
 2002-09-08  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_iter),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_iter_n_children):
+	* library/rb-node.c: (rb_node_add_child):
+
+	rb_node_has_parent instead of rb_node_has_child,
+	so we have to traverse a list of 1-10 items instead of
+	1-100k ;)
+
+2002-09-08  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-node-iterator.c: (rb_node_iterator_next):
 
 	Fix an evillll leak

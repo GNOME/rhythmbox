@@ -586,7 +586,7 @@ rb_tree_model_node_get_iter (GtkTreeModel *tree_model,
 {
 	RBTreeModelNode *model = RB_TREE_MODEL_NODE (tree_model);
 	int i;
-	
+
 	g_return_val_if_fail (RB_IS_TREE_MODEL_NODE (model), FALSE);
 	g_return_val_if_fail (gtk_tree_path_get_depth (path) > 0, FALSE);
 
@@ -734,13 +734,13 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 			if (model->priv->filter_artist != NULL)
 			{
 				g_value_set_boolean (value,
-						     rb_node_has_child (model->priv->filter_parent, node) &&
+						     rb_node_has_parent (node, model->priv->filter_parent) &&
 						     rb_node_song_has_artist (node, model->priv->filter_artist));
 			}
 			else
 			{
 				g_value_set_boolean (value,
-						     rb_node_has_child (model->priv->filter_parent, node));
+						     rb_node_has_parent (node, model->priv->filter_parent));
 			}
 		}
 		else
@@ -823,7 +823,7 @@ rb_tree_model_node_iter_n_children (GtkTreeModel *tree_model,
 			            GtkTreeIter *iter)
 {
 	RBTreeModelNode *model = RB_TREE_MODEL_NODE (tree_model);
-	
+
 	g_return_val_if_fail (RB_IS_TREE_MODEL_NODE (tree_model), -1);
 
 	if (model->priv->root == NULL)
