@@ -1,5 +1,16 @@
 2003-01-14  Jorn Baayen  <jorn@nl.linux.org>
 
+	* shell/rb-player.c: (rb_player_init), (check_view_state),
+	(rb_player_get_left_part), (rb_player_get_right_part):
+	* shell/rb-player.h:
+	* views/rb-library-view.c: (rb_library_view_construct),
+	(browser_size_allocate_cb), (songs_size_allocate_cb),
+	(check_button_sensitivity), (browser_size_request_cb):
+
+	Couple sizes of browser and player widgets.
+
+2003-01-14  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/Makefile.am:
 
 	Remove some old files.

@@ -248,7 +248,7 @@ rb_player_init (RBPlayer *player)
 
 	player->priv->state = RB_PLAYER_STOPPED;
 
-	gtk_box_set_spacing (GTK_BOX (player), 6);
+	gtk_box_set_spacing (GTK_BOX (player), 0);
 
 	player->priv->info_notebook = gtk_notebook_new ();
 	gtk_notebook_set_show_border (GTK_NOTEBOOK (player->priv->info_notebook), FALSE);
@@ -438,9 +438,9 @@ rb_player_init (RBPlayer *player)
 			  G_CALLBACK (node_activated_cb), player);
 	gtk_drag_dest_set (GTK_WIDGET (player->priv->playlist_view), GTK_DEST_DEFAULT_ALL,
 			   target_table, 1, GDK_ACTION_COPY);
-	gtk_box_pack_start (GTK_BOX (player),
-			    GTK_WIDGET (player->priv->playlist_view),
-			    TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX (player),
+			  GTK_WIDGET (player->priv->playlist_view),
+			  FALSE, FALSE, 0);
 
 	player->priv->player = monkey_media_player_new (&error);
 
@@ -1230,4 +1230,16 @@ check_view_state (RBPlayer *player)
 {
 	rb_node_view_set_playing (player->priv->playlist_view,
 				  (rb_player_get_state (player) == RB_PLAYER_PLAYING));
+}
+
+GtkWidget *
+rb_player_get_left_part (RBPlayer *player)
+{
+	return player->priv->info_notebook;
+}
+
+GtkWidget *
+rb_player_get_right_part (RBPlayer *player)
+{
+	return GTK_WIDGET (player->priv->playlist_view);
 }

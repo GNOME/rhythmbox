@@ -56,29 +56,33 @@ typedef enum
 	RB_PLAYER_STOPPED
 } RBPlayerState;
 
-GType         rb_player_get_type      (void);
+GType         rb_player_get_type       (void);
 
-RBPlayer     *rb_player_new           (RB *rb);
+RBPlayer     *rb_player_new            (RB *rb);
 
-void          rb_player_queue_song    (RBPlayer *player,
-			               RBNode *song,
-			               gboolean start_playing);
+void          rb_player_queue_song     (RBPlayer *player,
+			                RBNode *song,
+			                gboolean start_playing);
 
-RBNode       *rb_player_get_song      (RBPlayer *player);
+RBNode       *rb_player_get_song       (RBPlayer *player);
 
-void          rb_player_set_state     (RBPlayer *player,
-			               RBPlayerState state);
+void          rb_player_set_state      (RBPlayer *player,
+			                RBPlayerState state);
 
-RBPlayerState rb_player_get_state     (RBPlayer *player);
+RBPlayerState rb_player_get_state      (RBPlayer *player);
 
-void          rb_player_load_playlist (RBPlayer *player,
-			               const char *uri,
-			               GError **error);
+void          rb_player_load_playlist  (RBPlayer *player,
+			                const char *uri,
+			                GError **error);
 
-void          rb_player_save_playlist (RBPlayer *player,
-			               const char *uri,
-				       const char *name,
-			               GError **error);
+void          rb_player_save_playlist  (RBPlayer *player,
+			                const char *uri,
+				        const char *name,
+			                GError **error);
+
+GtkWidget    *rb_player_get_left_part  (RBPlayer *player);
+
+GtkWidget    *rb_player_get_right_part (RBPlayer *player);
 
 G_END_DECLS
 

@@ -65,9 +65,12 @@ static void genre_node_selected_cb (RBNodeView *view,
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
 			             RBLibraryView *libview);
-static void paned_size_allocate_cb (GtkWidget *widget,
+static void songs_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 		                    RBLibraryView *view);
+static void browser_size_allocate_cb (GtkWidget *widget,
+			              GtkAllocation *allocation,
+			              RBLibraryView *view);
 static void rb_library_view_drop_cb (GtkWidget        *widget,
 				     GdkDragContext   *context,
 				     gint              x,
@@ -102,6 +105,9 @@ static void play_song_later_cb (GtkWidget *button,
 static void songs_changed_cb (RBNodeView *nodeview,
 		              RBLibraryView *view);
 static void check_button_sensitivity (RBLibraryView *view);
+static void browser_size_request_cb (GtkWidget *widget,
+			             GtkRequisition *req,
+			             RBLibraryView *view);
 
 #define CONF_STATE_PANED_POSITION "/apps/rhythmbox/state/library/paned_position"
 
@@ -138,6 +144,9 @@ struct RBLibraryViewPrivate
 	gboolean changing_genre;
 
 	guint views_notif;
+
+	gboolean lock_size_requests;
+	gboolean set_browser_size;
 };
 
 enum
@@ -383,6 +392,14 @@ rb_library_view_construct (RBLibraryView *view)
 	view->priv->paned = gtk_hpaned_new ();
 
 	view->priv->browser = gtk_vbox_new (FALSE, 5);
+	g_signal_connect (G_OBJECT (rb_player_get_left_part (rb_get_player (view->priv->rb))),
+			  "size_request",
+			  G_CALLBACK (browser_size_request_cb),
+			  view);
+	g_signal_connect (G_OBJECT (view->priv->browser),
+			  "size_allocate",
+			  G_CALLBACK (browser_size_allocate_cb),
+			  view);
 
 	/* Initialize the filters */
 	view->priv->artists_filter = rb_node_filter_new ();
@@ -467,7 +484,7 @@ rb_library_view_construct (RBLibraryView *view)
 	/* this gets emitted when the paned thingie is moved */
 	g_signal_connect (G_OBJECT (view->priv->songs),
 			  "size_allocate",
-			  G_CALLBACK (paned_size_allocate_cb),
+			  G_CALLBACK (songs_size_allocate_cb),
 			  view);
 
 	gtk_container_add (GTK_CONTAINER (view), view->priv->paned);
@@ -584,11 +601,37 @@ album_node_selected_cb (RBNodeView *view,
 }
 
 static void
-paned_size_allocate_cb (GtkWidget *widget,
+browser_size_allocate_cb (GtkWidget *widget,
+			  GtkAllocation *allocation,
+			  RBLibraryView *view)
+{
+	if (view->priv->lock_size_requests == TRUE)
+		return;
+
+	view->priv->lock_size_requests = TRUE;
+
+	gtk_widget_set_size_request (rb_player_get_left_part (rb_get_player (view->priv->rb)),
+				     allocation->width, -1);
+
+	view->priv->lock_size_requests = FALSE;
+}
+
+static void
+songs_size_allocate_cb (GtkWidget *widget,
 			GtkAllocation *allocation,
 		        RBLibraryView *view)
 {
+	if (view->priv->lock_size_requests == TRUE)
+		return;
+
+	view->priv->lock_size_requests = TRUE;
+
 	view->priv->paned_position = gtk_paned_get_position (GTK_PANED (view->priv->paned));
+
+	gtk_widget_set_size_request (rb_player_get_right_part (rb_get_player (view->priv->rb)),
+				     allocation->width, -1);
+
+	view->priv->lock_size_requests = FALSE;
 }
 
 static void
@@ -891,4 +934,18 @@ check_button_sensitivity (RBLibraryView *view)
 	gtk_widget_set_sensitive (view->priv->play_song_later, have_sel);
 	gtk_widget_set_sensitive (view->priv->play_album, have_any);
 	gtk_widget_set_sensitive (view->priv->play_album_later, have_any);
+}
+
+static void
+browser_size_request_cb (GtkWidget *widget,
+			 GtkRequisition *req,
+			 RBLibraryView *view)
+{
+	if (view->priv->set_browser_size == TRUE)
+		return;
+
+	view->priv->set_browser_size = TRUE;
+
+	gtk_widget_set_size_request (view->priv->browser,
+				     req->width, -1);
 }
