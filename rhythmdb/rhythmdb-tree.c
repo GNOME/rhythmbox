@@ -687,7 +687,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_ulong(ctx, elt_name, entry->tracknum);
 			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
-			save_entry_ulong(ctx, elt_name, entry->tracknum);
+			save_entry_ulong(ctx, elt_name, entry->discnum);
 			break;
 		case RHYTHMDB_PROP_DURATION:
 			save_entry_ulong(ctx, elt_name, entry->duration);
