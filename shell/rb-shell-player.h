@@ -40,6 +40,15 @@ G_BEGIN_DECLS
 #define RB_IS_SHELL_PLAYER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SHELL_PLAYER))
 #define RB_SHELL_PLAYER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SHELL_PLAYER, RBShellPlayerClass))
 
+typedef enum
+{
+	RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR,
+} RBShellPlayerError;
+
+#define RB_SHELL_PLAYER_ERROR rb_shell_player_error_quark ()
+
+GQuark rb_shell_player_error_quark (void);
+
 typedef struct RBShellPlayerPrivate RBShellPlayerPrivate;
 
 typedef struct

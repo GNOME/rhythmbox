@@ -574,8 +574,8 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 		return;
 	}
 
-	parser = rb_playlist_new ();	
-	if (rb_playlist_can_handle (parser, uri)) {
+	parser = rb_playlist_new ();
+	if (rb_playlist_can_handle (uri)) {
 		uri = rb_playlist_manager_parse_file (shell->priv->playlist_manager, uri);
 	} else 
 		rhythmdb_add_uri_async (shell->priv->db, uri);
