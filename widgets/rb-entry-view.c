@@ -1466,16 +1466,14 @@ rb_entry_view_get_first_entry (RBEntryView *view)
 }
 
 RhythmDBEntry *
-rb_entry_view_get_next_entry (RBEntryView *view)
+rb_entry_view_get_next_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 {
 	GtkTreeIter iter;
 
-	if (view->priv->playing_entry == NULL)
-		return NULL;
+	g_return_val_if_fail (entry != NULL, NULL);
 
 	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					     view->priv->playing_entry,
-					     &iter))
+					   entry, &iter))
 		return NULL;
 	
 	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->model),
@@ -1486,17 +1484,15 @@ rb_entry_view_get_next_entry (RBEntryView *view)
 }
 
 RhythmDBEntry *
-rb_entry_view_get_previous_entry (RBEntryView *view)
+rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
 
-	if (view->priv->playing_entry == NULL)
-		return NULL;
-	
+	g_return_val_if_fail (entry != NULL, NULL);
+
 	if (!rhythmdb_model_entry_to_iter (view->priv->model,
-					     view->priv->playing_entry,
-					     &iter))
+					   entry, &iter))
 		return NULL;
 
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), &iter);
@@ -1508,6 +1504,27 @@ rb_entry_view_get_previous_entry (RBEntryView *view)
 
 	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &iter, path));
 	return entry_from_tree_iter (view, &iter);
+}
+
+
+RhythmDBEntry *
+rb_entry_view_get_next_entry (RBEntryView *view)
+{
+	if (view->priv->playing_entry == NULL)
+		return NULL;
+
+	return rb_entry_view_get_next_from_entry (view,
+						  view->priv->playing_entry);
+}
+
+RhythmDBEntry *
+rb_entry_view_get_previous_entry (RBEntryView *view)
+{
+	if (view->priv->playing_entry == NULL)
+		return NULL;
+	
+	return rb_entry_view_get_previous_from_entry (view,
+						      view->priv->playing_entry);
 }
 
 static gboolean

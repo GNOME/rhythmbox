@@ -110,6 +110,11 @@ RhythmDBEntry *	rb_entry_view_get_first_entry		(RBEntryView *view);
 RhythmDBEntry *	rb_entry_view_get_next_entry		(RBEntryView *view);
 RhythmDBEntry *	rb_entry_view_get_previous_entry	(RBEntryView *view);
 
+RhythmDBEntry *	rb_entry_view_get_next_from_entry	(RBEntryView *view,
+							 RhythmDBEntry *entry);
+RhythmDBEntry *	rb_entry_view_get_previous_from_entry	(RBEntryView *view,
+							 RhythmDBEntry *entry);
+
 gboolean	rb_entry_view_have_selection		(RBEntryView *view);
 GList *		rb_entry_view_get_selected_entries	(RBEntryView *view);
 

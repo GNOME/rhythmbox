@@ -81,8 +81,6 @@ static void rb_song_info_update_buttons (RBSongInfo *song_info);
 static void rb_song_info_update_rating (RBSongInfo *song_info);
 static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
-static void rb_song_info_navigation_move (RBSongInfo *song_info, RBDirection direction);
-
 static void rb_song_info_backward_clicked_cb (GtkWidget *button,
 					      RBSongInfo *song_info);
 static void rb_song_info_forward_clicked_cb (GtkWidget *button,
@@ -892,37 +890,39 @@ rb_song_info_update_location (RBSongInfo *song_info)
 }
 
 static void
-rb_song_info_navigation_move (RBSongInfo *song_info, RBDirection direction)
-{
-/* 	RhythmDBEntry *entry; */
-
-	/* RHYTHMDB FIXME */
-
-/* 	g_return_if_fail (entry != NULL); */
-
-/* 	/\* update the node view *\/ */
-/* 	rb_entry_view_select_node (song_info->priv->entry_view, node); */
-/* 	rb_entry_view_scroll_to_node (song_info->priv->entry_view, node); */
-
-/* 	cleanup (song_info); */
-
-/* 	if (rb_song_info_update_current_values (song_info) == TRUE) */
-/* 		rb_song_info_populate_dialog (song_info); */
-
-}
-
-static void
 rb_song_info_backward_clicked_cb (GtkWidget *button,
 				  RBSongInfo *song_info)
 {
-	rb_song_info_navigation_move (song_info, RB_DIRECTION_UP);
+	song_info->priv->current_entry
+		= rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
+						     song_info->priv->current_entry);
+	rb_entry_view_select_entry (song_info->priv->entry_view,
+				    song_info->priv->current_entry);
+	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
+				       song_info->priv->current_entry);
+
+	cleanup (song_info);
+
+	if (rb_song_info_update_current_values (song_info) == TRUE)
+		rb_song_info_populate_dialog (song_info);
 }
 
 static void
 rb_song_info_forward_clicked_cb (GtkWidget *button,
 				 RBSongInfo *song_info)
 {
-	rb_song_info_navigation_move (song_info, RB_DIRECTION_DOWN);
+	song_info->priv->current_entry
+		= rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
+						     song_info->priv->current_entry);
+	rb_entry_view_select_entry (song_info->priv->entry_view,
+				    song_info->priv->current_entry);
+	rb_entry_view_scroll_to_entry (song_info->priv->entry_view,
+				       song_info->priv->current_entry);
+
+	cleanup (song_info);
+
+	if (rb_song_info_update_current_values (song_info) == TRUE)
+		rb_song_info_populate_dialog (song_info);
 }
 
 /*
@@ -931,27 +931,22 @@ rb_song_info_forward_clicked_cb (GtkWidget *button,
 static void
 rb_song_info_update_buttons (RBSongInfo *song_info)
 {
-	/* RHYTHMDB FIXME */
-/* 	RhythmDBEntry *entry = NULL; */
+	RhythmDBEntry *entry = NULL;
 
-/* 	g_return_if_fail (song_info != NULL); */
-/* 	g_return_if_fail (song_info->priv->entry_view != NULL); */
-/* 	g_return_if_fail (song_info->priv->current_entry != NULL); */
+	g_return_if_fail (song_info != NULL);
+	g_return_if_fail (song_info->priv->entry_view != NULL);
+	g_return_if_fail (song_info->priv->current_entry != NULL);
 
-/* 	/\* backward *\/ */
-/* 	node = rb_entry_view_get_node (song_info->priv->entry_view, */
-/* 				      song_info->priv->current_entry, */
-/* 				      RB_DIRECTION_UP); */
+	/* backward */
+	entry = rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
+						      song_info->priv->current_entry);
 	
-/* 	gtk_widget_set_sensitive (song_info->priv->backward, */
-/* 				  node != NULL); */
-/* 	/\* forward *\/ */
-/* 	node = rb_entry_view_get_node (song_info->priv->entry_view, */
-/* 				      song_info->priv->current_entry, */
-/* 				      RB_DIRECTION_DOWN); */
+	gtk_widget_set_sensitive (song_info->priv->backward, entry != NULL);
+	/* forward */
+	entry = rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
+						   song_info->priv->current_entry);
 
-/* 	gtk_widget_set_sensitive (song_info->priv->forward, */
-/* 				  node != NULL); */
+	gtk_widget_set_sensitive (song_info->priv->forward, entry != NULL);
 }
 
 static void
