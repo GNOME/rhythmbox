@@ -41,7 +41,6 @@
 #include "rb-new-station-dialog.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-volume.h"
-#include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-node-filter.h"

@@ -37,7 +37,6 @@
 #include "rb-library-walker-thread.h"
 #include "rb-library-main-thread.h"
 #include "rb-library-action-queue.h"
-#include "rb-glist-wrapper.h"
 #include "rb-string-helpers.h"
 #include "rb-file-monitor.h"
 #include "rb-debug.h"
@@ -159,9 +158,6 @@ static void
 rb_library_init (RBLibrary *library)
 {
 	char *libname = g_strdup_printf ("library-%s.xml", RB_LIBRARY_XML_VERSION);
-
-	/* ensure these types have been registered: */
-	rb_glist_wrapper_get_type ();
 	
 	library->priv = g_new0 (RBLibraryPrivate, 1);
 

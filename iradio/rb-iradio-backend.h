@@ -66,7 +66,7 @@ GType   rb_iradio_backend_get_type			(void);
 
 void    rb_iradio_backend_load				(RBIRadioBackend *backend);
 
-RBNode *rb_iradio_backend_new_station			(GList *locations, const char *name,
+RBNode *rb_iradio_backend_new_station			(const char *uri, const char *name,
 							 const char *genre, const char *source,
 							 RBIRadioBackend *iradio_backend);
 
@@ -90,7 +90,7 @@ int     rb_iradio_backend_get_station_count		(RBIRadioBackend *backend);
 void    rb_iradio_backend_add_station_from_uri		(RBIRadioBackend *backend,
 							 const char *uri);
 void	rb_iradio_backend_add_station_full		(RBIRadioBackend *backend,
-							 GList *locations,
+							 const char *uri,
 							 const char *name,
 							 const char *genre);
 GList  *rb_iradio_backend_get_genre_names		(RBIRadioBackend *backend);

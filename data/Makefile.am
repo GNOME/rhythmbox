@@ -25,7 +25,7 @@ applications_DATA = rhythmbox.applications
 
 iradio-initial.xml:
 
-iradio_DATA = iradio-initial.xml
+iradio_DATA = iradio-initial.pls
 iradiodir = $(datadir)/rhythmbox
 
 install-schemas: $(schema_DATA)

@@ -270,13 +270,11 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 				   int response_id,
 				   RBNewStationDialog *dialog)
 {
-	GList *locations = NULL;
 	if (response_id != GTK_RESPONSE_OK)
 		goto cleanup;
-	locations = g_list_prepend (locations, g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location))));
-	rb_iradio_backend_new_station (locations,
-				       g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title))),
-				       g_strdup (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry))),
+	rb_iradio_backend_new_station (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)),
+				       gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)),
+				       gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)),
 				       "user",
 				       dialog->priv->backend);
  cleanup:

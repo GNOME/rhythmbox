@@ -39,7 +39,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "rb-glist-wrapper.h"
 #include "rb-station-properties-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
@@ -73,12 +72,7 @@ static void rb_station_properties_dialog_update_rating (RBStationPropertiesDialo
 static void rb_station_properties_dialog_rated_cb (RBRating *rating,
 						   int score,
 						   RBStationPropertiesDialog *dialog);
-static void rb_station_properties_dialog_sync_locations (RBStationPropertiesDialog *dialog);
 static void rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog);
-static void rb_station_properties_dialog_remove_location_clicked (GtkButton *butt,
-								  gpointer userdata);
-static void rb_station_properties_dialog_add_location_activated (GtkEntry *entry,
-								 gpointer userdata);
 
 struct RBStationPropertiesDialogPrivate
 {
@@ -88,16 +82,12 @@ struct RBStationPropertiesDialogPrivate
 
 	GtkWidget   *title;
 	GtkWidget   *genre;
+	GtkWidget   *location;
 	GtkWidget   *lastplayed;
 	GtkWidget   *playcount;
 	GtkWidget   *rating;
 	GtkWidget   *okbutton;
 	GtkWidget   *cancelbutton;
-
-	GtkWidget   *addentry;
-	GtkWidget   *removebutton;
-	GtkWidget   *location_treeview;
-	GtkListStore   *location_treemodel;
 };
 
 enum 
@@ -170,8 +160,6 @@ static void
 rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 {
 	GladeXML *xml;
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;
 	
 	dialog->priv = g_new0 (RBStationPropertiesDialogPrivate, 1);
 	
@@ -206,38 +194,10 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 	/* get the widgets from the XML */
 	dialog->priv->title = glade_xml_get_widget (xml, "titleEntry");
 	dialog->priv->genre = glade_xml_get_widget (xml, "genreEntry");
+	dialog->priv->location = glade_xml_get_widget (xml, "locationEntry");
 
-	dialog->priv->rating = glade_xml_get_widget (xml, "ratingPlaceholder");
 	dialog->priv->lastplayed = glade_xml_get_widget (xml, "lastplayedLabel");
 	dialog->priv->playcount = glade_xml_get_widget (xml, "playcountLabel");
-
-	dialog->priv->addentry = glade_xml_get_widget (xml, "addlocationEntry");
-	dialog->priv->removebutton = glade_xml_get_widget (xml, "removelocationButton");
-
-	g_signal_connect (G_OBJECT (dialog->priv->removebutton),
-			  "clicked",
-			  G_CALLBACK (rb_station_properties_dialog_remove_location_clicked),
-			  dialog);
-
-	g_signal_connect (G_OBJECT (dialog->priv->addentry),
-			  "activate",
-			  G_CALLBACK (rb_station_properties_dialog_add_location_activated),
-			  dialog);
-
-	dialog->priv->location_treeview = glade_xml_get_widget (xml, "locationTreeView");
-	column = gtk_tree_view_column_new ();
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (column, renderer, TRUE);
-	gtk_tree_view_column_set_attributes (column, renderer,
-                                             "text", 0, 
-					     NULL);
-	gtk_tree_view_column_set_title (column,  "URL");
-	gtk_tree_view_column_set_resizable (column, TRUE);
-	gtk_tree_view_append_column (GTK_TREE_VIEW (dialog->priv->location_treeview), column);
-
-	dialog->priv->location_treemodel = gtk_list_store_new (1, G_TYPE_STRING);
-	gtk_tree_view_set_model (GTK_TREE_VIEW (dialog->priv->location_treeview),
-				 GTK_TREE_MODEL (dialog->priv->location_treemodel));
 
 	dialog->priv->rating = GTK_WIDGET (rb_rating_new ());
 	g_signal_connect_object (dialog->priv->rating, 
@@ -340,7 +300,6 @@ rb_station_properties_dialog_response_cb (GtkDialog *gtkdialog,
 {
 	if (response_id != GTK_RESPONSE_OK)
 		goto cleanup;
-	rb_station_properties_dialog_sync_locations (dialog);
 	rb_station_properties_dialog_sync_entries (dialog);
 cleanup:
 	gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -410,33 +369,9 @@ rb_station_properties_dialog_update_genre (RBStationPropertiesDialog *dialog)
 static void
 rb_station_properties_dialog_update_location (RBStationPropertiesDialog *dialog)
 {
-	const char *text;
-	GtkTreeIter iter;
-	RBGListWrapper *listwrapper;
-	GList *altlocations = NULL;
-
-	g_return_if_fail (dialog != NULL);
-
-	text = rb_node_get_property_string (dialog->priv->current_node,
-			                    RB_NODE_PROP_LOCATION);
-
-	if (text != NULL)
-	{
-		gtk_list_store_append (dialog->priv->location_treemodel, &iter);
-		gtk_list_store_set (dialog->priv->location_treemodel, &iter,
-				    0, text, -1);
-	}
-
-	listwrapper = RB_GLIST_WRAPPER (rb_node_get_property_pointer (dialog->priv->current_node,
-								      RB_NODE_PROP_ALT_LOCATIONS));
-	altlocations = rb_glist_wrapper_get_list (listwrapper);
-	while (altlocations != NULL)
-	{
-		gtk_list_store_append (dialog->priv->location_treemodel, &iter);
-		gtk_list_store_set (dialog->priv->location_treemodel, &iter,
-				    0, altlocations->data, -1);
-		altlocations = altlocations->next;
-	}
+	gtk_entry_set_text (GTK_ENTRY (dialog->priv->location),
+			    rb_node_get_property_string (dialog->priv->current_node,
+							 RB_NODE_PROP_LOCATION));
 }
 
 static void
@@ -490,8 +425,7 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 
 	if (rb_node_get_property (dialog->priv->current_node,
 				  RB_NODE_PROP_RATING,
-				  &value) == FALSE)
-	{
+				  &value) == FALSE) {
 		g_value_init (&value, G_TYPE_INT);
 		g_value_set_int (&value, 0);
 	}
@@ -508,6 +442,7 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 {
 	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
 	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
+	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
 	GValue val = {0,};
 
 	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
@@ -521,94 +456,9 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	g_value_set_string (&val, genre);
 	rb_node_set_property (dialog->priv->current_node, RB_NODE_PROP_GENRE, &val);
 	g_value_unset (&val);
-}
 
-static void
-rb_station_properties_dialog_sync_locations (RBStationPropertiesDialog *dialog)
-{
-	RBGListWrapper *wlocations = RB_GLIST_WRAPPER (rb_node_get_property_pointer (dialog->priv->current_node,
-										    RB_NODE_PROP_ALT_LOCATIONS));
-	GtkTreeIter iter;
-	GList *locations = rb_glist_wrapper_get_list (wlocations);
-	char *loc;
-	GValue locval = {0,};
-	
-	if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (dialog->priv->location_treemodel), &iter))
-	{
-		
-		rb_error_dialog (_("No locations specified!"));
-		return;
-	}
-
-	rb_glist_wrapper_set_list (wlocations, NULL);
-	g_list_free (locations);
-	locations = NULL;
-
-	gtk_tree_model_get (GTK_TREE_MODEL (dialog->priv->location_treemodel), &iter, 0, &loc, -1);
-	g_value_init (&locval, G_TYPE_STRING);
-	g_value_set_string (&locval, loc);
-	rb_node_set_property (dialog->priv->current_node,
-			      RB_NODE_PROP_LOCATION,
-			      &locval);
-
-	while (gtk_tree_model_iter_next (GTK_TREE_MODEL (dialog->priv->location_treemodel),
-					 &iter))
-	{
-		gtk_tree_model_get (GTK_TREE_MODEL (dialog->priv->location_treemodel), &iter, 0, &loc, -1);
-		locations = g_list_prepend (locations, loc);
-	}
-
-	rb_glist_wrapper_set_list (wlocations, locations);
-}
-	
-
-static void
-rb_station_properties_dialog_remove_location_clicked (GtkButton *butt,
-						      gpointer userdata)
-{
-	GtkTreeIter iter;
-	RBStationPropertiesDialog *dialog = RB_STATION_PROPERTIES_DIALOG (userdata);
-	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (dialog->priv->location_treeview));
-
-	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
-
-	if (gtk_tree_selection_get_selected (selection, NULL, &iter))
-	{
-		char *loc;
-		gtk_tree_model_get (GTK_TREE_MODEL (dialog->priv->location_treemodel), &iter, 0, &loc, -1);
-		gtk_list_store_remove (dialog->priv->location_treemodel, &iter);
-	}
-	else
-		rb_error_dialog (_("No location is selected."));
-}
-
-static void
-rb_station_properties_dialog_add_location_activated (GtkEntry *entry,
-						     gpointer userdata)
-{
-	GtkTreeIter iter;
-	RBStationPropertiesDialog *dialog = RB_STATION_PROPERTIES_DIALOG (userdata);
-	char *text = g_strdup (gtk_entry_get_text (entry));
-
-	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
-	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
-
-	if (!*text)
-	{
-		rb_error_dialog (_("No location specified."));
-		return;
-	}
-
-	if (!rb_uri_is_iradio (text))
-	{
-		rb_error_dialog (_("Location is not a valid URL."));
-		g_free (text);
-		return;
-	}
-
-	gtk_list_store_prepend (dialog->priv->location_treemodel, &iter);
-	gtk_list_store_set (dialog->priv->location_treemodel, &iter, 0, text, -1);
-
-	gtk_entry_set_text (entry, "");
+	g_value_init (&val, G_TYPE_STRING);
+	g_value_set_string (&val, location);
+	rb_node_set_property (dialog->priv->current_node, RB_NODE_PROP_LOCATION, &val);
+	g_value_unset (&val);
 }

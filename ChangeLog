@@ -1,3 +1,58 @@
+2003-08-11  Colin Walters  <cwalters@gnome.org>
+
+	* data/Makefile.am:
+	* data/glade/station-properties.glade:
+	* data/iradio-initial.pls:
+	* data/iradio-initial.xml:
+	* iradio/Makefile.am:
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_init),
+	(handle_playlist_entry_cb), (load_initial),
+	(rb_iradio_backend_lookup_station_by_location),
+	(rb_iradio_backend_add_station_from_uri),
+	(rb_iradio_backend_add_station_full),
+	(rb_iradio_backend_new_station):
+	* iradio/rb-iradio-backend.h:
+	* iradio/rb-iradio-station.c:
+	* iradio/rb-iradio-station.h:
+	* iradio/rb-iradio-yp-iterator.c:
+	* iradio/rb-iradio-yp-iterator.h:
+	* iradio/rb-iradio-yp-xmlfile.c:
+	* iradio/rb-iradio-yp-xmlfile.h:
+	* iradio/rb-new-station-dialog.c:
+	(rb_new_station_dialog_response_cb):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_init),
+	(rb_station_properties_dialog_response_cb),
+	(rb_station_properties_dialog_update_location),
+	(rb_station_properties_dialog_update_rating),
+	(rb_station_properties_dialog_sync_entries):
+	* lib/Makefile.am:
+	* lib/rb-glist-wrapper.c:
+	* lib/rb-glist-wrapper.h:
+	* lib/rb-playlist.c: (rb_playlist_class_init),
+	(rb_playlist_add_one_url), (rb_playlist_add_one_url_ext),
+	(rb_playlist_add_pls):
+	* lib/rb-playlist.h:
+	* library/rb-library.c: (rb_library_init):
+	* library/rb-node.c: (rb_node_save_to_xml), (rb_node_new_from_xml):
+	* shell/rb-shell-player.c: (rb_shell_player_open_node):
+	* shell/rb-shell.c: (handle_playlist_entry_cb), (add_uri_to_group),
+	(handle_playlist_entry_into_group_cb), (ask_string_response_cb):
+	* shell/rb-source-header.c:
+	* sources/rb-iradio-source.c:
+
+	Remove the ability for iradio stations to have multiple locations.
+	This touches a lot of code, but it really had to be done.  The
+	old way of saving things was unreliable.
+
+	Also, convert the initial stations list into .pls format, and
+	kill off all the old YPIterator stuff.
+	
+	Someone could help out here by updating iradio-initial.pls!  It
+	is kind of tedious work; you will need to verify that each
+	location works, and add it to the .pls file.  Be sure to update
+	the numberofentries.
+
 2003-08-11  Colin Walters  <walters@verbum.org>
 
 	* lib/rb-debug.c: (rb_debug_real):

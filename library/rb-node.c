@@ -32,7 +32,6 @@
 
 #include "rb-node.h"
 // #include "rb-string.h"
-#include "rb-glist-wrapper.h"
 #include "rb-thread-helpers.h"
 #include "rb-cut-and-paste-code.h"
 
@@ -762,36 +761,20 @@ rb_node_save_to_xml (RBNode *node,
 		{
 			gpointer obj = g_value_get_pointer (value);
 
-			if (RB_IS_GLIST_WRAPPER (obj)) {
-				RBGListWrapper *listwrap = RB_GLIST_WRAPPER (obj);
-				GType obj_type = G_OBJECT_TYPE (obj);
-				GList *cur;
-				
-				xmlSetProp (value_xml_node, "object_type", g_type_name (obj_type));
-
-				for (cur = rb_glist_wrapper_get_list (listwrap); cur; cur = g_list_next (cur)) {
-					xmlNodePtr subnode = xmlNewChild (value_xml_node, NULL, "entry", NULL);
-					/* Assume the entries in a list are strings for now */
-					xml = xmlEncodeEntitiesReentrant (NULL, (char *) cur->data);
-					xmlNodeSetContent (subnode, xml);
-					g_free (xml);
-				}
-			} else {
-				/* Assume it's a node.  */
-				RBNode *prop_node;
-
-				prop_node = obj;
-
-				g_assert (prop_node != NULL);
-
-				g_static_rw_lock_reader_lock (prop_node->lock);
-
-				xml = g_strdup_printf ("%ld", prop_node->id);
-				xmlNodeSetContent (value_xml_node, xml);
-				g_free (xml);
-
-				g_static_rw_lock_reader_unlock (prop_node->lock);
-			}
+			/* Assume it's a node.  */
+			RBNode *prop_node;
+			
+			prop_node = obj;
+			
+			g_assert (prop_node != NULL);
+			
+			g_static_rw_lock_reader_lock (prop_node->lock);
+			
+			xml = g_strdup_printf ("%ld", prop_node->id);
+			xmlNodeSetContent (value_xml_node, xml);
+			g_free (xml);
+			
+			g_static_rw_lock_reader_unlock (prop_node->lock);
 		}
 		break;
 		default:
@@ -907,45 +890,12 @@ rb_node_new_from_xml (RBNodeDb *db, xmlNodePtr xml_node)
 				break;
 			case G_TYPE_POINTER:
 			{
-				char *typestring;
-				GType obj_type;
-
-				typestring = xmlGetProp (xml_child, "object_type");
-				if (typestring)
-					obj_type = g_type_from_name (typestring);
-
-				/* Since we don't have method
-				 * reflection in GObject, there's no
-				 * way to find a general deserialize
-				 * method, even if we know the class;
-				 * we could do something truly evil
-				 * using dlopen(), but let's not think
-				 * about that. */
-				if (typestring && g_type_is_a (obj_type, RB_TYPE_GLIST_WRAPPER)) {
-					GList *newlist = NULL;
-					xmlNodePtr list_child;
-					RBGListWrapper *listwrapper = rb_glist_wrapper_new (NULL);
-
-					for (list_child = xml_child->children; list_child; list_child = list_child->next) {
-						if (xmlNodeIsText(list_child))
-							continue;
-						newlist = g_list_prepend (newlist, xmlNodeGetContent (list_child));
-					}
-
-					rb_glist_wrapper_set_list (listwrapper, newlist);
-
-					g_value_set_pointer (value, listwrapper);
-
-				} else {
-					/* Assume it's a node. */
-					RBNode *property_node;
-
-					property_node = rb_node_db_get_node_from_id (db, atol (xml));
-
-					g_value_set_pointer (value, property_node);
-
-				}
-				g_free (typestring);
+				/* Assume it's a node. */
+				RBNode *property_node;
+				
+				property_node = rb_node_db_get_node_from_id (db, atol (xml));
+				
+				g_value_set_pointer (value, property_node);
 			}
 			break;
 			default:

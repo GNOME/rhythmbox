@@ -48,7 +48,8 @@ struct RBPlaylistClass {
 	GObjectClass parent_class;
 
 	/* signals */
-	void (*entry) (RBPlaylist *playlist, const char *uri, const char *title);
+	void (*entry) (RBPlaylist *playlist, const char *uri, const char *title,
+		       const char *genre);
 };
 
 typedef enum

@@ -100,7 +100,11 @@ rb_playlist_get_type (void)
 static void
 rb_playlist_class_init (RBPlaylistClass *klass)
 {
-	G_OBJECT_CLASS (klass)->finalize = rb_playlist_finalize;
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	parent_class = g_type_class_peek_parent (klass);
+
+	object_class->finalize = rb_playlist_finalize;
 
 	/* Signals */
 	rb_playlist_table_signals[ENTRY] =
@@ -109,8 +113,8 @@ rb_playlist_class_init (RBPlaylistClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistClass, entry),
 			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING,
-			      G_TYPE_NONE, 2, G_TYPE_STRING, G_TYPE_STRING);
+			      rb_marshal_VOID__STRING_STRING_STRING,
+			      G_TYPE_NONE, 3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 }
 
 GQuark
@@ -441,8 +445,17 @@ rb_playlist_finalize (GObject *object)
 static void
 rb_playlist_add_one_url (RBPlaylist *playlist, const char *url, const char *title)
 {
+	
 	g_signal_emit (G_OBJECT (playlist), rb_playlist_table_signals[ENTRY],
-		       0, url, title);
+		       0, url, title, NULL);
+}
+
+static void
+rb_playlist_add_one_url_ext (RBPlaylist *playlist, const char *url, const char *title,
+			     const char *genre)
+{
+	g_signal_emit (G_OBJECT (playlist), rb_playlist_table_signals[ENTRY],
+		       0, url, title, genre);
 }
 
 static gboolean
@@ -583,26 +596,30 @@ rb_playlist_add_pls (RBPlaylist *playlist, const char *url, gpointer data)
 		goto bail;
 
 	for (i = 1; i <= num_entries; i++) {
-		char *file, *title;
-		char *file_key, *title_key;
+		char *file, *title, *genre;
+		char *file_key, *title_key, *genre_key;
 
 		file_key = g_strdup_printf ("file%d", i);
 		title_key = g_strdup_printf ("title%d", i);
+		/* Genre is our own little extension */
+		genre_key = g_strdup_printf ("genre%d", i);
 
 		file = read_ini_line_string (lines, (const char*)file_key, dos_mode);
 		title = read_ini_line_string (lines, (const char*)title_key, dos_mode);
+		genre = read_ini_line_string (lines, (const char*)genre_key, dos_mode);
 
 		g_free (file_key);
 		g_free (title_key);
+		g_free (genre_key);
 
 		if (file != NULL) {
-			rb_playlist_add_one_url (playlist, file, title);
+			rb_playlist_add_one_url_ext (playlist, file, title, genre);
 			retval = TRUE;
-			g_free (file);
-			g_free (title);
-		} else {
-			g_free (title);
-		}
+		} 
+
+		g_free (file);
+		g_free (title);
+		g_free (genre);
 	}
 
 bail:

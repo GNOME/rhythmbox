@@ -34,7 +34,6 @@
 #include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
 #include "rb-search-entry.h"
-#include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-remote.h"

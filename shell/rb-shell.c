@@ -98,7 +98,8 @@ static char * rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
 static char * rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
 
-void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title);
+void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title,
+				     const char *genre);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
@@ -473,16 +474,15 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 }
 
 static void
-handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
+handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title,
+			  const char *genre, RBShell *shell)
 {
 	/* We assume all HTTP is iradio.  This is probably a broken assumption,
 	 * but it's very difficult to really fix...
 	 */
-	if (rb_uri_is_iradio (uri) != FALSE) {
-		GList *tmp = g_list_append (NULL, (char*) uri);
-		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, tmp, title, NULL);
-		g_list_free (tmp);
-	} else
+	if (rb_uri_is_iradio (uri) != FALSE)
+		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, uri, title, genre);
+	else
 		rb_library_add_uri (shell->priv->library, (char *) uri);
 }
 
@@ -1413,9 +1413,7 @@ add_uri_to_group (RBShell *shell, RBGroupSource *group, const char *uri, const c
 	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
 
 	if (strncmp ("http", scheme, 4) == 0) {
-		GList *locations = g_list_append (NULL, g_strdup (uri));
-		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, locations,
-						    title, NULL);
+		rb_iradio_backend_add_station_full (shell->priv->iradio_backend, uri, title, NULL);
 		goto out;
 	}
 
@@ -1436,7 +1434,8 @@ out:
 }
 
 static void
-handle_playlist_entry_into_group_cb (RBPlaylist *playlist, const char *uri, const char *title, RBShell *shell)
+handle_playlist_entry_into_group_cb (RBPlaylist *playlist, const char *uri, const char *title,
+				     const char *genre, RBShell *shell)
 {
 	add_uri_to_group (shell, RB_GROUP_SOURCE (shell->priv->loading_group), uri, title);
 }
@@ -1505,6 +1504,7 @@ ask_string_response_cb (GtkDialog *dialog,
 		shell->priv->loading_group = NULL;
 		g_free (g_list_first (data)->data);
 		g_list_free (data);
+		g_object_unref (G_OBJECT (parser));
 	}
 	break;
 	case CREATE_GROUP_WITH_URI_LIST:

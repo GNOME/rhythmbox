@@ -6,13 +6,7 @@ librbiradio_la_SOURCES =				\
 	rb-station-properties-dialog.c			\
 	rb-station-properties-dialog.h			\
 	rb-iradio-backend.c				\
-	rb-iradio-backend.h				\
-	rb-iradio-station.c				\
-	rb-iradio-station.h				\
-	rb-iradio-yp-iterator.c				\
-	rb-iradio-yp-iterator.h				\
-	rb-iradio-yp-xmlfile.c				\
-	rb-iradio-yp-xmlfile.h
+	rb-iradio-backend.h
 
 
 INCLUDES =						\

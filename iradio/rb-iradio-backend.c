@@ -32,14 +32,12 @@
 #include "rb-node-db.h"
 #include "rb-node-common.h"
 #include "rb-iradio-backend.h"
-#include "rb-iradio-yp-iterator.h"
-#include "rb-iradio-yp-xmlfile.h"
+#include "rb-playlist.h"
 #include "rb-debug.h"
 #include "rb-string-helpers.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
-#include "rb-glist-wrapper.h"
 #include "rb-library.h"
 
 static void rb_iradio_backend_class_init (RBIRadioBackendClass *klass);
@@ -59,7 +57,7 @@ static void restore_node (RBNode *node);
 static void sync_sort_keys (RBNode *node);
 static void set_genre (RBNode *node, const char *genrename, RBIRadioBackend *backend, gboolean unlocked);
 
-#define RB_IRADIO_BACKEND_XML_VERSION "2.1"
+#define RB_IRADIO_BACKEND_XML_VERSION "2.2"
 
 struct RBIRadioBackendPrivate
 {
@@ -146,9 +144,6 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 {
 	char *libname = g_strdup_printf ("iradio-%s.xml", RB_IRADIO_BACKEND_XML_VERSION);
 	GValue value = { 0, };
-
-	/* ensure these types have been registered: */
-	rb_glist_wrapper_get_type ();
 
 	backend->priv = g_new0(RBIRadioBackendPrivate, 1);
 	backend->priv->xml_file = g_build_filename (rb_dot_dir (),
@@ -331,42 +326,35 @@ station_changed_cb (RBNode *parent,
 }
 
 static void
+handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *title,
+			  const char *genre, RBIRadioBackend *backend)
+{
+	if (rb_uri_is_iradio (uri) != FALSE)
+		rb_iradio_backend_add_station_full (backend, uri, title, genre);
+	else
+		g_warning ("invalid iradio URI in iradio-initial.pls!");
+}
+
+static void
 load_initial (RBIRadioBackend *backend)
 {
-	const char *initial_file = rb_file ("iradio-initial.xml");
-	RBIRadioYPIterator *it;
-	RBIRadioStation *station;
+	const char *initial_file = rb_file ("iradio-initial.pls");
+	RBPlaylist *playlist;
 
 	if (!initial_file) {
 		rb_error_dialog (_("Unable to find file \"iradio-initial.xml\""));
 		return;
 	}
 	
-	it = RB_IRADIO_YP_ITERATOR (g_object_new (RB_TYPE_IRADIO_YP_XMLFILE,
-						  "filename", initial_file,
-						  NULL));
-
 	rb_debug ("iradio-backend: loading initial stations");
-	while ((station = rb_iradio_yp_iterator_get_next_station (it)) != NULL) {
-		const char *genre = NULL;
-		const char *name = NULL;
-		GList *locations;
-		RBNode *nodestation;
 
-		g_assert (RB_IS_IRADIO_STATION (station));
+	playlist = rb_playlist_new ();
+	g_signal_connect (G_OBJECT (playlist), "entry",
+			  G_CALLBACK (handle_playlist_entry_cb), backend);
+	rb_playlist_parse (playlist, initial_file);
 
-		g_object_get (G_OBJECT(station), "genre", &genre, NULL);
-		g_assert (genre != NULL);
-		g_object_get (G_OBJECT(station), "name", &name, NULL);
-		g_assert (name != NULL);
-		g_object_get (G_OBJECT(station), "locations", &locations, NULL);
-
-		g_assert (G_IS_OBJECT (backend));
-		g_assert (RB_IS_IRADIO_BACKEND (backend));
-		nodestation = rb_iradio_backend_new_station (locations, name, genre, "initial", backend);
-	}
-	rb_debug ("iradio-backend: done loading initial stations");
-	g_object_unref (G_OBJECT (it));
+	g_object_unref (G_OBJECT (playlist));
+	
 	g_signal_emit (G_OBJECT (backend), rb_iradio_backend_signals[CHANGED], 0);
 }
 	
@@ -521,14 +509,10 @@ rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 	for (i = 0; retval == NULL && i < children->len; i++)
 	{
 		RBNode *kid = g_ptr_array_index (children, i);
-		RBGListWrapper *listwrapper
-		  = RB_GLIST_WRAPPER (rb_node_get_property_pointer (kid, RB_NODE_PROP_ALT_LOCATIONS));
-		GList *cur, *locations = rb_glist_wrapper_get_list (listwrapper);
-		for (cur = locations; cur != NULL; cur = cur->next) {
-			if (!strcmp (uri, (char *) cur->data)) {
-				retval = kid;
-				break;
-			}
+		const char *loc = rb_node_get_property_string (kid, RB_NODE_PROP_LOCATION);
+		if (loc && !strcmp (loc, uri)) {
+			retval = kid;
+			break;
 		}
 	}
 	if (retval)
@@ -538,14 +522,11 @@ rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 }
 
 void
-rb_iradio_backend_add_station_from_uri (RBIRadioBackend *backend,
-					const char *uri)
+rb_iradio_backend_add_station_from_uri (RBIRadioBackend *backend, const char *uri)
 {
 	RBNode *station = rb_iradio_backend_lookup_station_by_location (backend, uri);
 	if (station == NULL) {
-		GList *locations = g_list_append (NULL, g_strdup (uri));
-		rb_iradio_backend_add_station_full (backend, locations,
-						    _("(Unknown)"), _("(Unknown)"));
+		rb_iradio_backend_add_station_full (backend, uri, _("(Unknown)"), _("(Unknown)"));
 	}
 	else
 		rb_node_thaw (station);
@@ -554,7 +535,7 @@ rb_iradio_backend_add_station_from_uri (RBIRadioBackend *backend,
 
 void
 rb_iradio_backend_add_station_full (RBIRadioBackend *backend,
-				    GList *locations,
+				    const char *uri,
 				    const char *name,
 				    const char *genre)
 {
@@ -563,7 +544,7 @@ rb_iradio_backend_add_station_full (RBIRadioBackend *backend,
 	if (node == NULL) {
 		rb_debug ("iradio-backend: adding station; name: %s genre: %s",
 			  name, genre);
-		node = rb_iradio_backend_new_station (locations,
+		node = rb_iradio_backend_new_station (uri,
 						      name ? name : _("(Unknown)"),
 						      genre ? genre : _("(Unknown)"),
 						      "user", backend);
@@ -692,15 +673,14 @@ set_genre (RBNode *node, const char *genrename, RBIRadioBackend *backend, gboole
 
 
 RBNode *
-rb_iradio_backend_new_station (GList *locations, const char *name,
+rb_iradio_backend_new_station (const char *uri, const char *name,
 			       const char *genre, const char *source,
 			       RBIRadioBackend *iradio_backend)
 {
 	RBNode *node;
 	GValue value = { 0, };
-	RBGListWrapper *listwrapper;
 
-	g_return_val_if_fail (locations != NULL, NULL);
+	g_return_val_if_fail (uri != NULL, NULL);
 	g_return_val_if_fail (RB_IS_IRADIO_BACKEND (iradio_backend), NULL);
 
 	node = rb_node_new (iradio_backend->priv->db);
@@ -729,24 +709,10 @@ rb_iradio_backend_new_station (GList *locations, const char *name,
 			      &value);
 	g_value_unset (&value);
 
-	/* Location */
-	{
-		GList *first = g_list_first (locations);
-		locations = g_list_remove_link (locations, first);
-		g_value_init (&value , G_TYPE_STRING);
-		g_value_set_string (&value, (char *) first->data);
-		rb_node_set_property (node,
-				      RB_NODE_PROP_LOCATION,
-				      &value);
-		g_value_unset (&value);
-	}
-
-	/* Alternate locations */
-	listwrapper = rb_glist_wrapper_new (locations);
-	g_value_init (&value , G_TYPE_POINTER);
-	g_value_set_pointer (&value, listwrapper);
+	g_value_init (&value , G_TYPE_STRING);
+	g_value_set_string (&value, uri);
 	rb_node_set_property (node,
-			      RB_NODE_PROP_ALT_LOCATIONS,
+			      RB_NODE_PROP_LOCATION,
 			      &value);
 	g_value_unset (&value);
 

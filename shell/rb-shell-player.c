@@ -38,7 +38,6 @@
 #include "rb-thread-helpers.h"
 #include "rb-dialog.h"
 #include "rb-preferences.h"
-#include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "rb-player.h"
 #include "rb-volume.h"
@@ -168,7 +167,6 @@ struct RBShellPlayerPrivate
 	gboolean have_url;
 	gboolean have_artist_album;
 	char *url;
-	GList *alt_locations;
 
 	gboolean buffering_blocked;
 	GtkWidget *buffering_dialog;
@@ -692,52 +690,17 @@ rb_shell_player_open_location (RBShellPlayer *player,
 }
 
 static void
-rb_shell_player_try_alt_location (RBShellPlayer *player, GError **error)
-{
-	int len = g_list_length (player->priv->alt_locations);
-	int i = g_random_int_range (0, len);
-	char *location = (char*) g_list_nth (player->priv->alt_locations, i)->data;
-
-	rb_shell_player_open_location (player, location, error);
-		
-	if (*error == NULL)
-		return;
-
-	rb_debug ("Error is set!");
-	fprintf (stderr, "Got error opening \"%s\": %s\n", location, (*error)->message);
-	player->priv->alt_locations = g_list_remove (player->priv->alt_locations, location);
-}
-
-static void
 rb_shell_player_open_node (RBShellPlayer *player, RBNode *node, GError **error)
 {
 	const char *location = rb_node_get_property_string (node,
 							    RB_NODE_PROP_LOCATION);
-	RBGListWrapper *glistwrap =
-		RB_GLIST_WRAPPER (rb_node_get_property_pointer (node, RB_NODE_PROP_ALT_LOCATIONS));
 
 	rb_shell_player_open_location (player, location, error);
 	if (*error == NULL)
 		return;
 
 	fprintf (stderr, "Got error opening \"%s\": %s\n", location, (*error)->message);
-	if (glistwrap == NULL)
-		return;
-
-	player->priv->alt_locations = rb_glist_wrapper_get_list (glistwrap);
-
-	while (*error != NULL && player->priv->alt_locations != NULL) {
-		g_error_free (*error);
-		*error = NULL;
-		rb_shell_player_try_alt_location (player, error);
-	}
-
-	if (error != NULL) {
-		rb_error_dialog (_("All fallback locations failed, unable to play: %s\n"),
-				 (*error)->message);
-		return;
-	}
-
+	return;
 }
 
 static void
