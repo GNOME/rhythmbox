@@ -147,7 +147,10 @@ static void
 rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 {
 	GtkWidget *help;
+	GtkWidget *visible_columns_label;
 	GladeXML *xml;
+	PangoAttrList *pattrlist;
+	PangoAttribute *attr;
 
 	shell_preferences->priv = g_new0 (RBShellPreferencesPrivate, 1);
 
@@ -187,6 +190,16 @@ rb_shell_preferences_init (RBShellPreferences *shell_preferences)
 	xml = rb_glade_xml_new ("general-prefs.glade",
 				"general_vbox",
 				shell_preferences);
+
+	pattrlist = pango_attr_list_new ();
+	attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+	attr->start_index = 0;
+	attr->end_index = G_MAXINT;
+	pango_attr_list_insert (pattrlist, attr);
+	visible_columns_label = glade_xml_get_widget (xml, "visible_columns_label");
+	gtk_label_set_attributes (GTK_LABEL (visible_columns_label), pattrlist);
+	pango_attr_list_unref (pattrlist);
+	
 	/* Columns */
 	shell_preferences->priv->artist_check =
 		glade_xml_get_widget (xml, "artist_check");
