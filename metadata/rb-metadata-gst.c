@@ -51,7 +51,11 @@ static struct
 {
 	const char *mimetype;
 	const char *plugin;
-} rb_metadata_type_map[] = {{"application/x-id3", "id3tag"}, };
+} rb_metadata_type_map[] = {
+#if 0
+	{"application/x-id3", "id3tag"},
+#endif
+};
 
 static GObjectClass *parent_class = NULL;
 
@@ -450,6 +454,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 
 	if (!(tagger = gst_element_factory_make (plugin_name, plugin_name)))
 		goto missing_plugin;
+	gst_tag_setter_set_merge_mode (GST_TAG_SETTER (tagger), GST_TAG_MERGE_KEEP);
 
 	g_hash_table_foreach (md->priv->metadata, (GHFunc) rb_metadata_gst_add_tag_data,
 			      GST_TAG_SETTER (tagger));
