@@ -92,7 +92,9 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 #endif
 
-	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds"))
+	/* rb currently does not work with esd + gnome event sounds enabled */
+	if (eel_gconf_get_boolean ("/desktop/gnome/sound/event_sounds")
+			&& eel_gconf_get_boolean ("/desktop/gnome/sound/enable_esd"))
 		sound_events_borked = TRUE;
 	
 
