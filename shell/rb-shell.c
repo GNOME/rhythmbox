@@ -293,6 +293,7 @@ struct RBShellPrivate
 	GList *groups;
 
 	GulToolbar *toolbar;
+	GulTbEditor *tb_editor;
 	EggTrayIcon *tray_icon;
 	GtkTooltips *tray_icon_tooltip;
 	BonoboControl *tray_icon_control;
@@ -406,6 +407,8 @@ rb_shell_init (RBShell *shell)
 #else
 	shell->priv->remote = NULL;
 #endif
+
+	shell->priv->tb_editor = NULL;
 }
 
 static void
@@ -453,7 +456,7 @@ rb_shell_finalize (GObject *object)
 
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
-
+	
 	g_free (shell->priv);
 
 	g_object_unref (G_OBJECT (rb_file_monitor_get ()));
@@ -1225,7 +1228,7 @@ rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
 		           RBShell *shell,
 		           const char *verbname)
 {
-        GulTbEditor *tbe;
+	RBShellPrivate *p = shell->priv;
         GulToolbar *avail;
         GulToolbar *current;
         gchar *current_str;
@@ -1242,23 +1245,36 @@ rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
                 g_free (current_str);
         }
 
-        tbe = gul_tb_editor_new ();
-        gul_tb_editor_set_toolbar (tbe, current);
-        gul_tb_editor_set_available (tbe, avail);
+	if (!p->tb_editor) 
+	{
+		p->tb_editor = gul_tb_editor_new ();
+		g_object_add_weak_pointer (G_OBJECT (p->tb_editor),
+					   (void **)&p->tb_editor);
+	}
+	else
+	{
+		gul_tb_editor_show (p->tb_editor);
+		return;
+	}
+	
+	gul_tb_editor_set_parent (p->tb_editor, 
+				  shell->priv->window); 
+        gul_tb_editor_set_toolbar (p->tb_editor, current);
+        gul_tb_editor_set_available (p->tb_editor, avail);
         g_object_unref (avail);
         g_object_unref (current);
-
 
         g_signal_connect (current, "changed", 
                           G_CALLBACK (rb_shell_toolbar_editor_current_changed_cb), NULL);
 
-        revert_button = gul_tb_editor_get_revert_button (tbe);
+        revert_button = gul_tb_editor_get_revert_button (p->tb_editor);
         gtk_widget_show (GTK_WIDGET (revert_button));
 
         g_signal_connect (revert_button, "clicked", 
-                          G_CALLBACK (rb_shell_toolbar_editor_revert_clicked_cb), tbe);
+                          G_CALLBACK (rb_shell_toolbar_editor_revert_clicked_cb),
+			  p->tb_editor);
         
-        gul_tb_editor_show (tbe);
+        gul_tb_editor_show (p->tb_editor);
 }
 
 static void
