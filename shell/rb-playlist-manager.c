@@ -534,70 +534,39 @@ out:
 	g_free (file);
 }
 
-static void
-rb_playlist_manager_save_playlists_worker (RBPlaylistManager *mgr)
+struct RBPlaylistManagerSaveThreadData
+{
+	RBPlaylistManager *mgr;
+	xmlDocPtr doc;
+};
+
+static gpointer
+rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *data)
 {
 	char *file;
 	char *tmpname;
-	GList *tmp;
-	xmlDocPtr doc;
-	xmlNodePtr root;
 
-	g_mutex_lock (mgr->priv->saving_mutex);
+	rb_debug ("entering save thread");
 
-	if (mgr->priv->saving) {
-		rb_debug ("already saving, ignoring");	
-		g_mutex_unlock (mgr->priv->saving_mutex);
-		return;
-	}
-
-	if (!mgr->priv->dirty) {
-		rb_debug ("no save needed, ignoring");
-		g_mutex_unlock (mgr->priv->saving_mutex);
-		return;
-	}
-
-	mgr->priv->saving = TRUE;
-
-	g_mutex_unlock (mgr->priv->saving_mutex);
-
-	rb_debug ("saving playlists");
-			
 	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
 	tmpname = g_strconcat (file, ".tmp", NULL);
-
-	doc = xmlNewDoc ("1.0");
-
-	root = xmlNewDocNode (doc, NULL, "rhythmdb-playlists", NULL);
-	xmlDocSetRootElement (doc, root);
 	
-	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
-		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (tmp->data), root);
-
-	xmlSaveFormatFile (tmpname, doc, 1);
+	xmlSaveFormatFile (tmpname, data->doc, 1);
 	rename (tmpname, file);
-	xmlFreeDoc (doc);
+	xmlFreeDoc (data->doc);
 	g_free (tmpname);
 	g_free (file);
 
-	g_mutex_lock (mgr->priv->saving_mutex);
+	g_mutex_lock (data->mgr->priv->saving_mutex);
 
-	mgr->priv->saving = FALSE;
-	mgr->priv->dirty = FALSE;
+	data->mgr->priv->saving = FALSE;
 
-	g_mutex_unlock (mgr->priv->saving_mutex);
+	g_cond_signal (data->mgr->priv->saving_condition);
+	g_mutex_unlock (data->mgr->priv->saving_mutex);
 
-	g_cond_broadcast (mgr->priv->saving_condition);
-}
+	g_async_queue_push (data->mgr->priv->status_queue, data->mgr);
 
-static gpointer
-rb_playlist_manager_save_thread_main (RBPlaylistManager *mgr)
-{
-	rb_debug ("entering save thread");
-	
-	rb_playlist_manager_save_playlists_worker (mgr);
-
-	g_async_queue_push (mgr->priv->status_queue, mgr);
+	g_free (data);
 	
 	return NULL;
 }
@@ -605,27 +574,40 @@ rb_playlist_manager_save_thread_main (RBPlaylistManager *mgr)
 void
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr)
 {
-	rb_debug ("saving the playlists in the background");
+	GList *tmp;
+	xmlNodePtr root;
+	struct RBPlaylistManagerSaveThreadData *data;
 
-	g_object_ref (G_OBJECT (mgr));
-	mgr->priv->outstanding_threads++;
-	
-	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, mgr, FALSE, NULL);
-}
+	rb_debug ("saving the playlists");
 
-void
-rb_playlist_manager_save_playlists_blocking (RBPlaylistManager *mgr)
-{
-	rb_debug("saving the playlists and blocking");
-	
-	rb_playlist_manager_save_playlists_worker (mgr);
-	
+	if (!mgr->priv->dirty) {
+		rb_debug ("no save needed, ignoring");
+		return;
+	}
+
 	g_mutex_lock (mgr->priv->saving_mutex);
 
 	while (mgr->priv->saving)
 		g_cond_wait (mgr->priv->saving_condition, mgr->priv->saving_mutex);
 
+	mgr->priv->saving = TRUE;
+
 	g_mutex_unlock (mgr->priv->saving_mutex);
+
+	data = g_new0 (struct RBPlaylistManagerSaveThreadData, 1);
+	data->mgr = mgr;
+	data->doc = xmlNewDoc ("1.0");
+
+	root = xmlNewDocNode (data->doc, NULL, "rhythmdb-playlists", NULL);
+	xmlDocSetRootElement (data->doc, root);
+	
+	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
+		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (tmp->data), root);
+
+	g_object_ref (G_OBJECT (mgr));
+	mgr->priv->outstanding_threads++;
+	
+	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, data, FALSE, NULL);
 }
 
 static void

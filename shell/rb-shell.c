@@ -614,7 +614,7 @@ rb_shell_sync_state (RBShell *shell)
 	}
 	
 	rb_debug ("saving playlists");
-	rb_playlist_manager_save_playlists_blocking (shell->priv->playlist_manager);
+	rb_playlist_manager_save_playlists (shell->priv->playlist_manager);
 
 	rb_debug ("saving db");
 	rhythmdb_read_lock (shell->priv->db);
