@@ -99,6 +99,7 @@ static gboolean rb_group_source_periodic_save (RBGroupSource *source);
 struct RBGroupSourcePrivate
 {
 	RBLibrary *library;
+	RBLibrarySource *library_source;
 
 	RBNode *group;
 
@@ -125,6 +126,7 @@ enum
 {
 	PROP_0,
 	PROP_LIBRARY,
+	PROP_LIBRARY_SOURCE,
 	PROP_FILE,
 	PROP_NAME
 };
@@ -211,6 +213,14 @@ rb_group_source_class_init (RBGroupSourceClass *klass)
 							      "Library",
 							      "Library",
 							      RB_TYPE_LIBRARY,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_LIBRARY_SOURCE,
+					 g_param_spec_object ("libsource",
+							      "Library Source",
+							      "Library Source",
+							      RB_TYPE_LIBRARY_SOURCE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_FILE,
@@ -328,6 +338,11 @@ rb_group_source_set_property (GObject *object,
 			
 	}
 	break;
+	case PROP_LIBRARY_SOURCE:
+	{
+		source->priv->library_source = g_value_get_object (value);
+	}
+	break;
 	case PROP_FILE:
 		g_free (source->priv->file);
 
@@ -384,7 +399,8 @@ rb_group_source_get_property (GObject *object,
 
 RBSource *
 rb_group_source_new (BonoboUIContainer *container,
-		     RBLibrary *library)
+		     RBLibrary *library,
+		     RBLibrarySource *libsource)
 {
 	RBSource *source;
 
@@ -393,6 +409,7 @@ rb_group_source_new (BonoboUIContainer *container,
 					  "ui-name", "GroupView",
 					  "container", container,
 					  "library", library,
+					  "libsource", libsource,
 					  NULL));
 
 	return source;
@@ -401,6 +418,7 @@ rb_group_source_new (BonoboUIContainer *container,
 RBSource *
 rb_group_source_new_from_file (BonoboUIContainer *container,
 			       RBLibrary *library,
+			       RBLibrarySource *libsource,
 			       const char *file)
 {
 	RBSource *source;
@@ -410,6 +428,7 @@ rb_group_source_new_from_file (BonoboUIContainer *container,
 					  "ui-name", "GroupView",
 					  "container", container,
 					  "library", library,
+					  "libsource", libsource,
 					  "file", file,
 					  NULL));
 
@@ -800,7 +819,10 @@ static void
 handle_songs_func (RBNode *node,
 		   RBGroupSource *source)
 {
-	rb_group_source_add_node (source, node);
+	if (rb_library_source_eval_filter (source->priv->library_source, node))
+		rb_group_source_add_node (source, node);
+	else
+		rb_debug ("node %p failed filter", node);
 }
 
 static gboolean

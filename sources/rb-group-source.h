@@ -26,6 +26,7 @@
 
 #include "rb-source.h"
 #include "rb-library.h"
+#include "rb-library-source.h"
 
 G_BEGIN_DECLS
 
@@ -53,12 +54,14 @@ typedef struct
 GType		rb_group_source_get_type      (void);
 
 RBSource *	rb_group_source_new           (BonoboUIContainer *container,
-					       RBLibrary *library);
+					       RBLibrary *library,
+					       RBLibrarySource *libsource);
 
 GtkWidget *	rb_group_source_create_dialog (RBGroupSource *groupsrc);
 
 RBSource *	rb_group_source_new_from_file (BonoboUIContainer *container,
 					       RBLibrary *library,
+					       RBLibrarySource *libsource,
 					       const char *file);
 
 void		rb_group_source_set_name      (RBGroupSource *group,

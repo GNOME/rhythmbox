@@ -976,6 +976,15 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 
 }
 
+gboolean
+rb_library_source_eval_filter (RBLibrarySource *source, RBNode *node)
+{
+	if (rb_node_filter_evaluate (source->priv->songs_filter, node) == FALSE)
+		return FALSE;
+
+	return TRUE;
+}
+
 static gboolean
 impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 {

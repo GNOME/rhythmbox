@@ -1399,7 +1399,8 @@ create_group_with_name (RBShell *shell, const char *name)
 		}
 	}
 	ret = RB_GROUP_SOURCE (rb_group_source_new (shell->priv->container,
-						    shell->priv->library));
+						    shell->priv->library,
+						    RB_LIBRARY_SOURCE (shell->priv->library_source)));
 	rb_group_source_set_name (RB_GROUP_SOURCE (ret), name);
 	return ret;
 }
@@ -1628,6 +1629,7 @@ rb_shell_load_playlists (RBShell *shell)
 
 		group = rb_group_source_new_from_file (shell->priv->container,
 						       shell->priv->library,
+						       RB_LIBRARY_SOURCE (shell->priv->library_source),
 						       filepath);
 		if (group != NULL) {
 			shell->priv->groups = g_list_append (shell->priv->groups, group);

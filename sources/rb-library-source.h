@@ -58,6 +58,8 @@ void		rb_library_source_show_browser (RBLibrarySource *source,
 
 void		rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win);
 
+gboolean	rb_library_source_eval_filter (RBLibrarySource *source, RBNode *node);
+
 G_END_DECLS
 
 #endif /* __RB_LIBRARY_SOURCE_H */
