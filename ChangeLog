@@ -2,6 +2,31 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-11-09 03:15:14 GMT	Colin Walters <walters@verbum.org>	patch-259
+
+    Summary:
+      pre-C99 fixes and cvsignore update (wheeler@kde.org)
+    Revision:
+      rhythmbox--mainline--0.6--patch-259
+
+
+    modified files:
+     ChangeLog corba/.cvsignore rhythmdb/rhythmdb-query-model.c
+     shell/rb-history.c shell/rb-shell-player.c
+
+
+2003-11-09 03:06:21 GMT	Colin Walters <walters@verbum.org>	patch-258
+
+    Summary:
+      don't use -std=c99; too many people have ancient gcc versions...
+    Revision:
+      rhythmbox--mainline--0.6--patch-258
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
 2003-11-09 01:11:02 GMT	Colin Walters <walters@verbum.org>	patch-257
 
     Summary:
