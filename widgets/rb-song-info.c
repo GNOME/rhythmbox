@@ -782,7 +782,7 @@ rb_song_info_update_quality (RBSongInfo *song_info)
 
 	if (text != NULL)
 	{
-		gtk_label_set_text (GTK_LABEL (song_info->priv->quality), text);
+		gtk_label_set_text (GTK_LABEL (song_info->priv->quality), _(text));
 		g_free (text);
 	}
 
