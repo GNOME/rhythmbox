@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 Jeroen Zwartepoorte <jeroen@xs4all.nl>
+ *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 #ifndef __RB_VOLUME_H
 #define __RB_VOLUME_H
 
-#include <gtk/gtkhbox.h>
-#include <monkey-media.h>
+#include <gtk/gtkbutton.h>
 
 G_BEGIN_DECLS
 
@@ -33,28 +32,23 @@ G_BEGIN_DECLS
 #define RB_IS_VOLUME_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_VOLUME))
 #define RB_VOLUME_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_VOLUME, RBVolumeClass))
 
-typedef struct _RBVolumePrivate RBVolumePrivate;
+typedef struct RBVolumePrivate RBVolumePrivate;
 
-typedef struct {
-	GtkHBox parent;
+typedef struct
+{
+	GtkEventBox parent;
 
 	RBVolumePrivate *priv;
 } RBVolume;
 
-typedef struct {
-	GtkHBoxClass parent;
+typedef struct
+{
+	GtkEventBoxClass parent;
 } RBVolumeClass;
 
-GType     rb_volume_get_type    (void);
+GType		rb_volume_get_type	(void);
 
-RBVolume *rb_volume_new         (MonkeyMediaPlayer *player);
-
-int	  rb_volume_get		(RBVolume *volume);
-void      rb_volume_set         (RBVolume *volume,
-				 int value);
-
-gboolean  rb_volume_get_mute	(RBVolume *volume);
-void      rb_volume_set_mute	(RBVolume *volume, gboolean mute);
+RBVolume *	rb_volume_new		(void);
 
 G_END_DECLS
 

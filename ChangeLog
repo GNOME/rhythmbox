@@ -1,3 +1,17 @@
+2003-07-30  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-volume.c: (rb_volume_get_type),
+	(rb_volume_class_init), (rb_volume_init), (rb_volume_finalize),
+	(rb_volume_new), (rb_volume_sync_volume), (clicked_cb),
+	(scroll_cb), (rb_volume_popup_hide),
+	(scale_button_release_event_cb), (scale_button_event_cb),
+	(scale_key_press_event_cb), (mixer_value_changed_cb),
+	(volume_changed_cb):
+	* lib/widgets/rb-volume.h:
+	* shell/rb-shell-player.c: (rb_shell_player_init):
+
+	Volume control works now.
+
 2003-07-30  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.in: autoconf 2.53 is actually enough

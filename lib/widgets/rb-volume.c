@@ -1,28 +1,25 @@
 /*
- *  Copyright (C) 2002 Jeroen Zwartepoorte <jeroen@xs4all.nl>
+ *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
- *  Based on:
+ * Some portions are:
+ *   (C) Copyright 2001, Richard Hult
  *
- *  Mixer (volume control) applet.
+ *   Author: Richard Hult <rhult@codefactory.se>
  *
- *  (C) Copyright 2001, Richard Hult
+ *   Loosely based on the mixer applet:
  *
- *  Author: Richard Hult <rhult@codefactory.se>
+ *   GNOME audio mixer module
+ *   (C) 1998 The Free Software Foundation
  *
- *  Loosely based on the mixer applet:
+ *   Author: Michael Fulbright <msf@redhat.com>:
  *
- *  GNOME audio mixer module
- *  (C) 1998 The Free Software Foundation
+ *   Based on:
  *
- *  Author: Michael Fulbright <msf@redhat.com>:
+ *   GNOME time/date display module.
+ *   (C) 1997 The Free Software Foundation
  *
- *  Based on:
- *
- *  GNOME time/date display module.
- *  (C) 1997 The Free Software Foundation
- *
- *  Authors: Miguel de Icaza
- *           Federico Mena
+ *   Authors: Miguel de Icaza
+ *            Federico Mena
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,72 +38,85 @@
  *  $Id$
  */
 
-#include <math.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
-#include <libgnome/gnome-macros.h>
-#include <libgnomeui/gnome-dialog-util.h>
+#include <libgnome/gnome-url.h>
+
 #include "rb-volume.h"
+#include "rb-debug.h"
 #include "rb-stock-icons.h"
+#include "eel-gconf-extensions.h"
+#include "rb-preferences.h"
 
-enum {
-	PROP_0,
-	PROP_PLAYER
-};
-
-struct _RBVolumePrivate {
-	GtkObject *adjustment;
-	GtkWidget *slider;
-	GtkWidget *indicator;
-	GtkWidget *indicator_image;
-
-	GdkPixbuf *volume_max_pixbuf;
-	GdkPixbuf *volume_medium_pixbuf;
-	GdkPixbuf *volume_min_pixbuf;
-	GdkPixbuf *volume_zero_pixbuf;
-	GdkPixbuf *volume_mute_pixbuf;
-
-	float vol;
-
-	gboolean mute;
-	
-	GtkTooltips *tooltip;
-
-	MonkeyMediaPlayer *player;
-};
+static void rb_volume_class_init (RBVolumeClass *klass);
+static void rb_volume_init (RBVolume *link);
+static void rb_volume_finalize (GObject *object);
+static void rb_volume_sync_volume (RBVolume *volume);
+static void clicked_cb (GtkButton *button, RBVolume *volume);
+static gboolean scroll_cb (GtkWidget *widget, GdkEvent *event, gpointer unused);
+static gboolean scale_button_release_event_cb (GtkWidget *widget,
+					       GdkEventButton *event, RBVolume *volume);
+static gboolean scale_button_event_cb (GtkWidget *widget, GdkEventButton *event,
+				       RBVolume *volume);
+static gboolean scale_key_press_event_cb (GtkWidget *widget, GdkEventKey *event,
+					  RBVolume *volume);
+static void mixer_value_changed_cb (GtkAdjustment *adj, RBVolume *volume);
+static void volume_changed_cb (GConfClient *client, guint cnxn_id,
+			       GConfEntry *entry, RBVolume *volume);
 
 #define VOLUME_MAX 1.0
 
-static void rb_volume_class_init (RBVolumeClass *klass);
-static void rb_volume_instance_init (RBVolume *volume);
-static void rb_volume_finalize (GObject *object);
-static void rb_volume_set_property (GObject *object,
-				    guint prop_id,
-				    const GValue *value,
-				    GParamSpec *pspec);
-static void rb_volume_get_property (GObject *object,
-				    guint prop_id,
-				    GValue *value,
-				    GParamSpec *pspec);
-static void volume_changed_cb (GtkAdjustment *adjustment,
-			       RBVolume *volume);
-static void volume_mute_cb (GtkWidget* button,
-			    GdkEventButton *event,
-			    RBVolume* volume);
-static gboolean volume_scroll_cb (GtkWidget *button,
-				  GdkEvent *event,
-				  RBVolume *volume);
-static void rb_volume_update_slider (RBVolume *volume);
-static void rb_volume_update_image (RBVolume *volume);
+struct RBVolumePrivate
+{
+	GtkWidget *button;
 
-/* Boilerplate. */
-GNOME_CLASS_BOILERPLATE (RBVolume, rb_volume, GtkHBox, GTK_TYPE_HBOX);
+	GtkWidget *window;
+
+	GtkWidget *scale;
+	GtkAdjustment *adj;
+
+	GtkWidget *max_image;
+	GtkWidget *medium_image;
+	GtkWidget *min_image;
+	GtkWidget *zero_image;
+};
+
+enum
+{
+	PROP_0,
+};
+
+static GtkEventBoxClass *parent_class = NULL;
+
+GType
+rb_volume_get_type (void)
+{
+	static GType rb_volume_type = 0;
+
+	if (rb_volume_type == 0)
+	{
+		static const GTypeInfo our_info =
+		{
+			sizeof (RBVolumeClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) rb_volume_class_init,
+			NULL,
+			NULL,
+			sizeof (RBVolume),
+			0,
+			(GInstanceInitFunc) rb_volume_init
+		};
+
+		rb_volume_type = g_type_register_static (GTK_TYPE_EVENT_BOX,
+						       "RBVolume",
+						       &our_info, 0);
+	}
+
+	return rb_volume_type;
+}
 
 static void
 rb_volume_class_init (RBVolumeClass *klass)
@@ -115,281 +125,318 @@ rb_volume_class_init (RBVolumeClass *klass)
 
 	parent_class = g_type_class_peek_parent (klass);
 
-	object_class->get_property = rb_volume_get_property;
-	object_class->set_property = rb_volume_set_property;
 	object_class->finalize = rb_volume_finalize;
-
-	g_object_class_install_property (object_class,
-					 PROP_PLAYER,
-					 g_param_spec_object ("player",
-							      "Player object",
-							      "MonkeyMediaPlayer object",
-							      MONKEY_MEDIA_TYPE_PLAYER,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
-rb_volume_instance_init (RBVolume *volume)
+rb_volume_init (RBVolume *volume)
 {
-	RBVolumePrivate *priv;
+	GtkWidget *frame;
+	GtkWidget *inner_frame;
+	GtkWidget *pluslabel, *minuslabel;
+	GtkWidget *event;
+	GtkWidget *box;
 
-	priv = g_new0 (RBVolumePrivate, 1);
-	volume->priv = priv;
+	volume->priv = g_new0 (RBVolumePrivate, 1);
 
-	gtk_box_set_spacing (GTK_BOX (volume), 1);
+	volume->priv->button = gtk_button_new ();
 
-	priv->volume_max_pixbuf    = gtk_widget_render_icon (GTK_WIDGET (volume),
-							     RB_STOCK_VOLUME_MAX,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	priv->volume_medium_pixbuf = gtk_widget_render_icon (GTK_WIDGET (volume),
-							     RB_STOCK_VOLUME_MEDIUM,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	priv->volume_min_pixbuf    = gtk_widget_render_icon (GTK_WIDGET (volume),
-							     RB_STOCK_VOLUME_MIN,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	priv->volume_zero_pixbuf   = gtk_widget_render_icon (GTK_WIDGET (volume),
-							     RB_STOCK_VOLUME_ZERO,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	priv->volume_mute_pixbuf   = gtk_widget_render_icon (GTK_WIDGET (volume),
-							     RB_STOCK_VOLUME_MUTE,
-							     GTK_ICON_SIZE_MENU,
-							     NULL);
-	priv->mute = FALSE;
+	gtk_container_add (GTK_CONTAINER (volume), volume->priv->button);
 
-	/* Speaker event box */
-	priv->indicator = gtk_event_box_new ();
-	priv->indicator_image = gtk_image_new_from_pixbuf (priv->volume_medium_pixbuf);
-	gtk_container_add (GTK_CONTAINER (priv->indicator), priv->indicator_image);
+	volume->priv->max_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
+							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (G_OBJECT (volume->priv->max_image));
+	volume->priv->medium_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MEDIUM,
+							     GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (G_OBJECT (volume->priv->medium_image));
+	volume->priv->min_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MIN,
+							   GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (G_OBJECT (volume->priv->min_image));
+	volume->priv->zero_image = gtk_image_new_from_stock (RB_STOCK_VOLUME_ZERO,
+							    GTK_ICON_SIZE_LARGE_TOOLBAR);
+	g_object_ref (G_OBJECT (volume->priv->zero_image));
 
-	g_signal_connect (G_OBJECT (priv->indicator),
-			  "button_press_event",
-			  G_CALLBACK (volume_mute_cb),
+	gtk_container_add (GTK_CONTAINER (volume->priv->button), volume->priv->max_image);
+
+	g_signal_connect (G_OBJECT (volume->priv->button), "clicked",
+			  G_CALLBACK (clicked_cb), volume);
+	g_signal_connect (G_OBJECT (volume->priv->button), "scroll_event",
+			  G_CALLBACK (scroll_cb),
 			  volume);
-	g_signal_connect (G_OBJECT (priv->indicator),
-			  "scroll_event",
-			  G_CALLBACK (volume_scroll_cb),
-			  volume);
+	gtk_widget_show_all (GTK_WIDGET (volume));
 
-	priv->tooltip = gtk_tooltips_new ();
-	gtk_tooltips_set_tip (priv->tooltip, priv->indicator, _("Click to mute"), NULL);
-	gtk_box_pack_start (GTK_BOX (volume), priv->indicator, FALSE, FALSE, 0);
-	gtk_widget_show (priv->indicator);
+	volume->priv->window = gtk_window_new (GTK_WINDOW_POPUP);
 
-	/* Volume slider */
-	priv->adjustment = gtk_adjustment_new (0, 0, VOLUME_MAX, 0.1, 0.2, 0);
-	priv->slider = gtk_hscale_new (GTK_ADJUSTMENT (priv->adjustment));
-	gtk_range_set_inverted (GTK_RANGE (priv->slider), TRUE);
-	gtk_scale_set_draw_value (GTK_SCALE (priv->slider), FALSE);
-	gtk_widget_set_size_request (priv->slider, 75, -1);
-	gtk_box_pack_start (GTK_BOX (volume), priv->slider, TRUE, TRUE, 0);
-	gtk_widget_show (priv->slider);
-
-	g_signal_connect (G_OBJECT (priv->slider),
-			  "scroll_event",
-			  G_CALLBACK (volume_scroll_cb),
-			  volume);
-
-	g_signal_connect (G_OBJECT (priv->adjustment),
+	volume->priv->adj = GTK_ADJUSTMENT (gtk_adjustment_new (-50,
+							       -VOLUME_MAX,
+							       0.0, 
+							       VOLUME_MAX/20,
+							       VOLUME_MAX/10,
+							       0.0));
+	g_signal_connect (volume->priv->adj,
 			  "value-changed",
-			  G_CALLBACK (volume_changed_cb),
+			  (GCallback) mixer_value_changed_cb,
 			  volume);
-}
 
-static void
-rb_volume_set_property (GObject *object,
-			guint prop_id,
-			const GValue *value,
-			GParamSpec *pspec)
-{
-	RBVolume *volume = RB_VOLUME (object);
+	frame = gtk_frame_new (NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (frame), 0);
+	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_OUT);
+	
+	inner_frame = gtk_frame_new (NULL);
+	gtk_container_set_border_width (GTK_CONTAINER (inner_frame), 0);
+	gtk_frame_set_shadow_type (GTK_FRAME (inner_frame), GTK_SHADOW_NONE);
+	
+	event = gtk_event_box_new ();
+	/* This signal is to not let button press close the popup when the press is
+	** in the scale */
+	g_signal_connect_after (event, "button_press_event",
+				G_CALLBACK (scale_button_event_cb), volume);
+	
+	box = gtk_vbox_new (FALSE, 0);
+	volume->priv->scale = gtk_vscale_new (volume->priv->adj);
+	gtk_widget_set_size_request (volume->priv->scale, -1, 100);			
+	
+	g_signal_connect_after (G_OBJECT (volume->priv->window),
+				"button-press-event",
+				(GCallback) scale_button_release_event_cb,
+				volume);
+	
+	g_signal_connect (G_OBJECT (volume->priv->scale),
+			  "key-press-event",
+			  (GCallback) scale_key_press_event_cb,
+			  volume);
+	
+	gtk_scale_set_draw_value (GTK_SCALE (volume->priv->scale), FALSE);
+	
+	gtk_range_set_update_policy (GTK_RANGE (volume->priv->scale),
+				     GTK_UPDATE_CONTINUOUS);
+	
+	gtk_container_add (GTK_CONTAINER (volume->priv->window), frame);
+	
+	gtk_container_add (GTK_CONTAINER (frame), inner_frame);
+	
+	/* Translators - The + and - refer to increasing and decreasing the volume. 
+	** I don't know if there are sensible alternatives in other languages */
+	pluslabel = gtk_label_new (_("+"));	
+	minuslabel = gtk_label_new (_("-"));
+	
+	gtk_box_pack_start (GTK_BOX (box), pluslabel, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (box), minuslabel, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (box), volume->priv->scale, TRUE, TRUE, 0);
+	
+	gtk_container_add (GTK_CONTAINER (event), box);
+	gtk_container_add (GTK_CONTAINER (inner_frame), event);
 
-	switch (prop_id) {
-	case PROP_PLAYER:
-		volume->priv->player = g_value_get_object (value);
-		
-		volume->priv->vol = monkey_media_player_get_volume (volume->priv->player);
-
-		rb_volume_update_slider (volume);
-		rb_volume_update_image (volume);
-		break;
-	default:
-		break;
-	}
-}
-
-static void
-rb_volume_get_property (GObject *object,
-			guint prop_id,
-			GValue *value,
-			GParamSpec *pspec)
-{
-	RBVolume *volume = RB_VOLUME (object);
-
-	switch (prop_id) {
-	case PROP_PLAYER:
-		g_value_set_object (value, volume->priv->player);
-		break;
-	default:
-		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-	}
+	eel_gconf_notification_add (CONF_STATE_VOLUME,
+				    (GConfClientNotifyFunc) volume_changed_cb,
+				    volume);
+	rb_volume_sync_volume (volume);
 }
 
 static void
 rb_volume_finalize (GObject *object)
 {
-	RBVolume *volume = RB_VOLUME (object);
-	
-	g_object_unref (G_OBJECT (volume->priv->volume_max_pixbuf));
-	g_object_unref (G_OBJECT (volume->priv->volume_medium_pixbuf));
-	g_object_unref (G_OBJECT (volume->priv->volume_min_pixbuf));
-	g_object_unref (G_OBJECT (volume->priv->volume_zero_pixbuf));
-	g_object_unref (G_OBJECT (volume->priv->volume_mute_pixbuf));
+	RBVolume *volume;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (RB_IS_VOLUME (object));
+
+	volume = RB_VOLUME (object);
+
+	g_return_if_fail (volume->priv != NULL);
+
+	g_free (volume->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-static void
-update_mixer (RBVolume *volume)
-{
-	monkey_media_player_set_volume (volume->priv->player,
-				        volume->priv->vol);
-	monkey_media_player_set_mute (volume->priv->player,
-				      volume->priv->mute);
-}
-
-static void
-volume_changed_cb (GtkAdjustment *adjustment,
-		   RBVolume *volume)
-{
-	volume->priv->vol = VOLUME_MAX - adjustment->value;
-	rb_volume_update_image (volume);
-	update_mixer (volume);
-}
-
-static void
-volume_mute_cb (GtkWidget *button,
-		GdkEventButton *event,
-		RBVolume *volume)
-{
-	gboolean mute;
-
-	if (event->button != 1)
-		return;
-
-	mute = !volume->priv->mute;
-	
-	rb_volume_set_mute (volume, mute);
-}
-
-static gboolean
-volume_scroll_cb (GtkWidget *button,
-		  GdkEvent *event,
-		  RBVolume *volume)
-{
-	GdkEventScroll *event_scroll;
-	gdouble value, inc;
-
-	if (event->type != GDK_SCROLL)
-		return FALSE;
-
-	event_scroll = (GdkEventScroll *)event;
-
-	if (event_scroll->direction == GDK_SCROLL_UP ||
-	    event_scroll->direction == GDK_SCROLL_RIGHT)
-		inc = -GTK_ADJUSTMENT (volume->priv->adjustment)->page_increment / 2;
-	else
-		inc = GTK_ADJUSTMENT (volume->priv->adjustment)->page_increment / 2;
-	
-	value = GTK_ADJUSTMENT (volume->priv->adjustment)->value;
-	gtk_adjustment_set_value (GTK_ADJUSTMENT (volume->priv->adjustment),
-			          value + inc);
-	
-	return TRUE;
-}
-
-static void
-rb_volume_update_slider (RBVolume *volume)
-{
-	gtk_adjustment_set_value (GTK_ADJUSTMENT (volume->priv->adjustment),
-				  VOLUME_MAX - volume->priv->vol);
-}
-
-static void
-rb_volume_update_image (RBVolume *volume)
-{
-	float vol;
-	GdkPixbuf *pixbuf;
-
-	vol = volume->priv->vol;
-
-	if (volume->priv->mute)
-		pixbuf = volume->priv->volume_mute_pixbuf;
-	else if (vol <= 0)
-		pixbuf = volume->priv->volume_zero_pixbuf;
-	else if (vol <= (VOLUME_MAX / 3.0))
-		pixbuf = volume->priv->volume_min_pixbuf;
-	else if (vol <= 2.0 * (VOLUME_MAX / 3.0))
-		pixbuf = volume->priv->volume_medium_pixbuf;
-	else
-		pixbuf = volume->priv->volume_max_pixbuf;
-
-	gtk_image_set_from_pixbuf (GTK_IMAGE (volume->priv->indicator_image), pixbuf);
-}
-
 RBVolume *
-rb_volume_new (MonkeyMediaPlayer *player)
+rb_volume_new (void)
 {
 	RBVolume *volume;
 
-	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME,
-					  "player", player,
-					  NULL));
+	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME, NULL));
+
+	g_return_val_if_fail (volume->priv != NULL, NULL);
 
 	return volume;
 }
 
-int
-rb_volume_get (RBVolume *volume)
+static void
+rb_volume_sync_volume (RBVolume *volume)
 {
-	g_return_val_if_fail (RB_IS_VOLUME (volume), -1);
+	float vol;
+	GtkWidget *image;
 
-	return volume->priv->vol;
-}
+	vol = eel_gconf_get_float (CONF_STATE_VOLUME);
+	gtk_container_remove (GTK_CONTAINER (volume->priv->button),
+			      gtk_bin_get_child (GTK_BIN (volume->priv->button))); 
 
-void
-rb_volume_set (RBVolume *volume,
-	       int value)
-{
-	g_return_if_fail (RB_IS_VOLUME (volume));
-
-	volume->priv->vol = value;
-	rb_volume_update_slider (volume);
-}
-
-void
-rb_volume_set_mute (RBVolume *volume, gboolean mute)
-{
-	volume->priv->mute = mute;
-
-	if (volume->priv->mute == TRUE)
-		gtk_tooltips_set_tip (volume->priv->tooltip,
-				volume->priv->indicator,
-				_("Click to unmute"), NULL);
+	if (vol <= 0)
+		image = volume->priv->zero_image;
+	else if (vol <= (VOLUME_MAX / 3.0))
+		image = volume->priv->min_image;
+	else if (vol <= 2.0 * (VOLUME_MAX / 3.0))
+		image = volume->priv->medium_image;
 	else
-		gtk_tooltips_set_tip (volume->priv->tooltip,
-				volume->priv->indicator,
-				_("Click to mute"), NULL);
+		image = volume->priv->max_image;
 
-	rb_volume_update_image (volume);
-	update_mixer (volume);
+	gtk_widget_show (image);
+	gtk_container_add (GTK_CONTAINER (volume->priv->button), image);
+
+	gtk_adjustment_set_value (volume->priv->adj, - vol);
 }
 
-gboolean
-rb_volume_get_mute (RBVolume *volume)
+static void
+clicked_cb (GtkButton *button, RBVolume *volume)
 {
-	return volume->priv->mute;
+	GtkRequisition  req;
+	GdkGrabStatus pointer, keyboard;
+	gint x, y;
+	gint width, height;
+	rb_debug ("volume clicked");
+
+/* 	if (GTK_WIDGET_VISIBLE (GTK_WIDGET (volume->priv->window))) */
+/* 		return; */
+
+	/*
+	 * Position the popup right next to the button.
+	 */
+	gtk_widget_size_request (GTK_WIDGET (volume->priv->window), &req);
+	
+	gdk_window_get_origin (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &x, &y);
+	gdk_drawable_get_size (gtk_widget_get_parent_window (GTK_BIN (volume->priv->button)->child), &width, &height);
+	rb_debug ("window origin: %d %d; size: %d %d", x, y, width, height);
+		
+	rb_debug ("moving window to %d %d", x, y);
+	gtk_window_move (GTK_WINDOW (volume->priv->window), x, y);
+		
+	gtk_widget_show_all (volume->priv->window);
+		
+	/*
+	 * Grab focus and pointer.
+	 */
+	rb_debug ("grabbing focus");
+	gtk_widget_grab_focus (volume->priv->window);
+	gtk_grab_add (volume->priv->window);
+		
+	pointer = gdk_pointer_grab (volume->priv->window->window,
+				    TRUE,
+				    (GDK_BUTTON_PRESS_MASK |
+				     GDK_BUTTON_RELEASE_MASK
+				     | GDK_POINTER_MOTION_MASK),
+				    NULL, NULL, GDK_CURRENT_TIME);
+	
+	keyboard = gdk_keyboard_grab (volume->priv->window->window,
+				      TRUE,
+				      GDK_CURRENT_TIME);
+	
+	if (pointer != GDK_GRAB_SUCCESS || keyboard != GDK_GRAB_SUCCESS) {
+		/* We could not grab. */
+		rb_debug ("grab failed");
+		gtk_grab_remove (volume->priv->window);
+		gtk_widget_hide (volume->priv->window);
+		
+		if (pointer == GDK_GRAB_SUCCESS) {
+			gdk_keyboard_ungrab (GDK_CURRENT_TIME);
+		}
+		if (keyboard == GDK_GRAB_SUCCESS) {
+			gdk_pointer_ungrab (GDK_CURRENT_TIME);
+		}
+		
+		g_warning ("Could not grab X server!");
+		return;
+	}
+
+	/* gtk_frame_set_shadow_type (GTK_FRAME (volume->priv->frame), GTK_SHADOW_IN); */
+}
+
+static gboolean
+scroll_cb (GtkWidget *widget, GdkEvent *event, gpointer unused)
+{
+	float volume = eel_gconf_get_float (CONF_STATE_VOLUME);
+
+	switch(event->scroll.direction) {
+	case GDK_SCROLL_UP:
+		volume += 0.1;
+		break;
+	case GDK_SCROLL_DOWN:
+		volume -= 0.1;
+
+		break;
+	case GDK_SCROLL_LEFT:
+	case GDK_SCROLL_RIGHT:
+		break;
+	}
+
+	rb_debug ("got scroll, setting volume to %f", volume);
+	eel_gconf_set_float (CONF_STATE_VOLUME, volume);
+	
+	return FALSE;
+}
+
+static void
+rb_volume_popup_hide (RBVolume *volume)
+{
+	rb_debug ("hiding popup");
+	gtk_grab_remove (volume->priv->window);
+	gdk_pointer_ungrab (GDK_CURRENT_TIME);		
+	gdk_keyboard_ungrab (GDK_CURRENT_TIME);
+	
+	gtk_widget_hide (GTK_WIDGET (volume->priv->window));
+	
+/* 	gtk_frame_set_shadow_type (GTK_FRAME (data->frame), GTK_SHADOW_NONE); */
+}
+
+static gboolean
+scale_button_release_event_cb (GtkWidget *widget, GdkEventButton *event, RBVolume *volume)
+{
+	rb_debug ("scale release");
+	rb_volume_popup_hide (volume);
+	return TRUE;
+}
+
+static gboolean
+scale_button_event_cb (GtkWidget *widget, GdkEventButton *event, RBVolume *volume)
+{
+	rb_debug ("event");
+	return TRUE;
+}
+
+static gboolean
+scale_key_press_event_cb (GtkWidget *widget, GdkEventKey *event, RBVolume *volume)
+{
+	rb_debug ("got key press");
+	switch (event->keyval) {
+	case GDK_KP_Enter:
+	case GDK_ISO_Enter:
+	case GDK_3270_Enter:
+	case GDK_Return:
+	case GDK_space:
+	case GDK_KP_Space:
+		rb_volume_popup_hide (volume);
+		return TRUE;
+	default:
+		break;
+	}
+
+	return FALSE;
+}
+
+static void
+mixer_value_changed_cb (GtkAdjustment *adj, RBVolume *volume)
+{
+	float vol = - gtk_adjustment_get_value (volume->priv->adj);
+
+	rb_debug ("setting volume to %f", vol);
+
+	eel_gconf_set_float (CONF_STATE_VOLUME, vol);
+}
+
+static void volume_changed_cb (GConfClient *client, guint cnxn_id,
+			       GConfEntry *entry, RBVolume *volume)
+{
+	rb_debug ("volume changed");
+
+	rb_volume_sync_volume (volume);
 }

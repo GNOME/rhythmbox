@@ -41,6 +41,7 @@
 #include "rb-glist-wrapper.h"
 #include "rb-debug.h"
 #include "rb-player.h"
+#include "rb-volume.h"
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
 
@@ -398,15 +399,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->player_widget));
 	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
 
-	image = gtk_image_new_from_stock (RB_STOCK_VOLUME_MAX,
-					  GTK_ICON_SIZE_LARGE_TOOLBAR);
-	player->priv->volume_button = gtk_button_new ();
-	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
-	g_signal_connect ((gpointer) player->priv->volume_button, "scroll_event",
-                    G_CALLBACK (rb_shell_volume_scroll),
-                    player);
-
-	
+	player->priv->volume_button = GTK_WIDGET (rb_volume_new ());
 
 	alignment = gtk_alignment_new (0.0, 0.5, 1.0, 0.0);
 	gtk_container_add (GTK_CONTAINER (alignment), player->priv->volume_button);
@@ -1544,27 +1537,6 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 	gdk_threads_leave ();
 }
 
-gboolean rb_shell_volume_scroll (GtkWidget *widget, GdkEvent *event, gpointer data) {
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	float cur_volume;
-
-	cur_volume = monkey_media_player_get_volume(player->priv->mmplayer);
-	switch(event->scroll.direction) {
-	    case GDK_SCROLL_UP:
-		cur_volume += 0.1;
-	      break;
-	    case GDK_SCROLL_DOWN:
-		cur_volume -= 0.1;
-	      break;
-	    case GDK_SCROLL_LEFT:
-	    case GDK_SCROLL_RIGHT:
-		break;
-	}
-	cur_volume = cur_volume > 1 ? 1 : cur_volume;
-	cur_volume = cur_volume < 0 ? 0 : cur_volume;
-	monkey_media_player_set_volume(player->priv->mmplayer, cur_volume);                                                                              
-  return FALSE;
-}
 
 const char *
 rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
