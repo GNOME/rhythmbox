@@ -56,6 +56,7 @@ typedef struct
 	void                    (*impl_set_repeat)       (RBViewPlayer *player,
 					                  gboolean repeat);
 
+	RBViewPlayerResult      (*impl_have_first)       (RBViewPlayer *player);
 	RBViewPlayerResult      (*impl_have_next)        (RBViewPlayer *player);
 	RBViewPlayerResult      (*impl_have_previous)    (RBViewPlayer *player);
 	
@@ -88,6 +89,7 @@ void                    rb_view_player_set_shuffle      (RBViewPlayer *player,
 void                    rb_view_player_set_repeat       (RBViewPlayer *player,
 						         gboolean repeat);
 
+RBViewPlayerResult      rb_view_player_have_first       (RBViewPlayer *player);
 RBViewPlayerResult      rb_view_player_have_next        (RBViewPlayer *player);
 RBViewPlayerResult      rb_view_player_have_previous    (RBViewPlayer *player);
 

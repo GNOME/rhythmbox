@@ -1,4 +1,4 @@
-SUBDIRS = lib tests views library shell data po
+SUBDIRS = lib views library shell data po
 
 EXTRA_DIST = 			\
 	autogen.sh		\

@@ -70,6 +70,7 @@ static void rb_library_view_set_shuffle (RBViewPlayer *player,
 			                 gboolean shuffle);
 static void rb_library_view_set_repeat (RBViewPlayer *player,
 			                gboolean repeat);
+static RBViewPlayerResult rb_library_view_have_first (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_next (RBViewPlayer *player);
 static RBViewPlayerResult rb_library_view_have_previous (RBViewPlayer *player);
 static void rb_library_view_next (RBViewPlayer *player);
@@ -92,6 +93,7 @@ static void node_view_changed_cb (RBNodeView *view,
 		                  RBLibraryView *library_view);
 static void song_eos_cb (MonkeyMediaStream *stream,
 	                 RBLibraryView *view);
+static RBNode *rb_library_view_get_first_node (RBLibraryView *view);
 static RBNode *rb_library_view_get_previous_node (RBLibraryView *view);
 static RBNode *rb_library_view_get_next_node (RBLibraryView *view);
 static void rb_library_view_status_init (RBViewStatusIface *iface);
@@ -550,9 +552,9 @@ album_node_selected_cb (RBNodeView *view,
 }
 
 static void 
-artist_or_album_activated_cb(RBNodeView *view,
-			     RBNode *node,
-			     RBLibraryView *library_view)
+artist_or_album_activated_cb (RBNodeView *view,
+			      RBNode *node,
+			      RBLibraryView *library_view)
 {
 	RBNode *first_node;
 
@@ -573,6 +575,7 @@ rb_library_view_player_init (RBViewPlayerIface *iface)
 {
 	iface->impl_set_shuffle      = rb_library_view_set_shuffle;
 	iface->impl_set_repeat       = rb_library_view_set_repeat;
+	iface->impl_have_first       = rb_library_view_have_first;
 	iface->impl_have_next        = rb_library_view_have_next;
 	iface->impl_have_previous    = rb_library_view_have_previous;
 	iface->impl_next             = rb_library_view_next;
@@ -625,6 +628,17 @@ rb_library_view_set_repeat (RBViewPlayer *player,
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 
 	view->priv->repeat = repeat;
+}
+
+static RBViewPlayerResult
+rb_library_view_have_first (RBViewPlayer *player)
+{
+	RBLibraryView *view = RB_LIBRARY_VIEW (player);
+	RBNode *first;
+
+	first = rb_library_view_get_first_node (view);
+
+	return (first != NULL);
 }
 
 static RBViewPlayerResult
@@ -777,20 +791,7 @@ rb_library_view_start_playing (RBViewPlayer *player)
 	RBLibraryView *view = RB_LIBRARY_VIEW (player);
 	RBNode *node;
 
-	if (view->priv->shuffle == FALSE)
-	{
-		GList *sel = rb_node_view_get_selection (view->priv->songs);
-
-		if (sel == NULL)
-			node = rb_node_view_get_first_node (view->priv->songs);
-		else
-		{
-			GList *first = g_list_first (sel);
-			node = RB_NODE (first->data);
-		}
-	}
-	else
-		node = rb_node_view_get_random_node (view->priv->songs);
+	node = rb_library_view_get_first_node (view);
 
 	rb_library_view_set_playing_node (view, node);
 }
@@ -892,6 +893,29 @@ rb_library_view_get_previous_node (RBLibraryView *view)
 	
 	if (view->priv->shuffle == FALSE)
 		node = rb_node_view_get_previous_node (view->priv->songs);
+	else
+		node = rb_node_view_get_random_node (view->priv->songs);
+
+	return node;
+}
+
+static RBNode *
+rb_library_view_get_first_node (RBLibraryView *view)
+{
+	RBNode *node;
+
+	if (view->priv->shuffle == FALSE)
+	{
+		GList *sel = rb_node_view_get_selection (view->priv->songs);
+
+		if (sel == NULL)
+			node = rb_node_view_get_first_node (view->priv->songs);
+		else
+		{
+			GList *first = g_list_first (sel);
+			node = RB_NODE (first->data);
+		}
+	}
 	else
 		node = rb_node_view_get_random_node (view->priv->songs);
 

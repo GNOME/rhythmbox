@@ -75,6 +75,9 @@ static void rb_shell_player_set_playing_player (RBShellPlayer *shell_player,
 static void rb_shell_player_update_play_button (RBShellPlayer *player);
 static void rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
 				                     RBShellPlayer *shell_player);
+static void rb_shell_player_sync_with_selected_player (RBShellPlayer *player);
+static void rb_shell_player_player_changed_cb (RBViewPlayer *view_player,
+				               RBShellPlayer *player);
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
 #define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
@@ -261,6 +264,9 @@ rb_shell_player_set_property (GObject *object,
 			g_signal_handlers_disconnect_by_func (G_OBJECT (shell_player->priv->selected_player),
 							      G_CALLBACK (rb_shell_player_player_start_playing_cb),
 							      shell_player);
+			g_signal_handlers_disconnect_by_func (G_OBJECT (shell_player->priv->selected_player),
+							      G_CALLBACK (rb_shell_player_player_changed_cb),
+							      shell_player);
 		}
 		
 		shell_player->priv->selected_player = g_value_get_object (value);
@@ -271,9 +277,14 @@ rb_shell_player_set_property (GObject *object,
 				          "start_playing",
 					  G_CALLBACK (rb_shell_player_player_start_playing_cb),
 				          shell_player);
+			g_signal_connect (G_OBJECT (shell_player->priv->selected_player),
+				          "changed",
+					  G_CALLBACK (rb_shell_player_player_changed_cb),
+				          shell_player);
 		}
 
 		rb_shell_player_update_play_button (shell_player);
+		rb_shell_player_sync_with_selected_player (shell_player);
 		break;
 	case PROP_COMPONENT:
 		shell_player->priv->component = g_value_get_object (value);
@@ -656,4 +667,32 @@ rb_shell_player_get_state (RBShellPlayer *shell_player)
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (shell_player), -1);
 
 	return monkey_media_mixer_get_state (shell_player->priv->mixer);
+}
+
+static void
+rb_shell_player_player_changed_cb (RBViewPlayer *view_player,
+				   RBShellPlayer *player)
+{
+	rb_shell_player_sync_with_selected_player (player);
+}
+
+static void
+rb_shell_player_sync_with_selected_player (RBShellPlayer *player)
+{
+	if (player->priv->player == NULL)
+	{
+		gboolean sensitive;
+		
+		if (player->priv->selected_player == NULL)
+			sensitive = FALSE;
+		else
+		{
+			if (rb_view_player_have_first (player->priv->selected_player) == TRUE)
+				sensitive = TRUE;
+			else
+				sensitive = FALSE;
+		}
+
+		rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_PLAY, sensitive);
+	}
 }

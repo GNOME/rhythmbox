@@ -113,6 +113,14 @@ rb_view_player_set_repeat (RBViewPlayer *player,
 }
 
 RBViewPlayerResult
+rb_view_player_have_first (RBViewPlayer *player)
+{
+	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
+
+	return iface->impl_have_first (player);
+}
+
+RBViewPlayerResult
 rb_view_player_have_next (RBViewPlayer *player)
 {
 	RBViewPlayerIface *iface = RB_VIEW_PLAYER_GET_IFACE (player);
