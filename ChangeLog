@@ -1,5 +1,17 @@
 2002-08-16  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_key_press_event_cb),
+	(root_child_destroyed_cb), (rb_node_view_scroll_to_string):
+	* lib/widgets/rb-node-view.h:
+	* library/rb-library-xml-thread.c: (thread_main):
+	* library/rb-node-song.c: (rb_node_song_sync),
+	(rb_node_song_has_album), (rb_node_song_init):
+	* library/rb-node-song.h:
+	
+	Make deleting nodes work.
+
+2002-08-16  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-tree-model-sort.c:
 	(rb_tree_model_sort_multi_drag_data_get):
 	* library/rb-node.c: (rb_node_dispose),

@@ -198,36 +198,39 @@ rb_node_song_sync (RBNode *node,
 		}
 		g_value_unset (&value);
 
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (genre_node));
-		rb_node_set_property (node, "genre", &newvalue);
-		g_value_unset (&newvalue);
+		if (virgin == TRUE)
+		{
+			g_value_init (&newvalue, G_TYPE_LONG);
+			g_value_set_long (&newvalue, rb_node_get_id (genre_node));
+			rb_node_set_property (node, "genre", &newvalue);
+			g_value_unset (&newvalue);
 
-		rb_node_ref (node);
+			rb_node_ref (node);
 
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (artist_node));
-		rb_node_set_property (node, "artist", &newvalue);
-		g_value_unset (&newvalue);
+			g_value_init (&newvalue, G_TYPE_LONG);
+			g_value_set_long (&newvalue, rb_node_get_id (artist_node));
+			rb_node_set_property (node, "artist", &newvalue);
+			g_value_unset (&newvalue);
 
-		rb_node_ref (node);
+			rb_node_ref (node);
 
-		g_value_init (&newvalue, G_TYPE_LONG);
-		g_value_set_long (&newvalue, rb_node_get_id (album_node));
-		rb_node_set_property (node, "album", &newvalue);
-		g_value_unset (&newvalue);
+			g_value_init (&newvalue, G_TYPE_LONG);
+			g_value_set_long (&newvalue, rb_node_get_id (album_node));
+			rb_node_set_property (node, "album", &newvalue);
+			g_value_unset (&newvalue);
 
-		rb_node_ref (node);
+			rb_node_ref (node);
 		
-		rb_node_add_child (genre_node, rb_library_get_all_albums (library));
-		rb_node_add_child (rb_library_get_all_genres (library), genre_node);
-		rb_node_add_child (genre_node, artist_node);
-		rb_node_add_child (artist_node, rb_library_get_all_songs (library));
-		rb_node_add_child (rb_library_get_all_artists (library), artist_node);
-		rb_node_add_child (artist_node, album_node);
-		rb_node_add_child (rb_library_get_all_albums (library), album_node);
-		rb_node_add_child (album_node, node);
-		rb_node_add_child (rb_library_get_all_songs (library), node);
+			rb_node_add_child (genre_node, rb_library_get_all_albums (library));
+			rb_node_add_child (rb_library_get_all_genres (library), genre_node);
+			rb_node_add_child (genre_node, artist_node);
+			rb_node_add_child (artist_node, rb_library_get_all_songs (library));
+			rb_node_add_child (rb_library_get_all_artists (library), artist_node);
+			rb_node_add_child (artist_node, album_node);
+			rb_node_add_child (rb_library_get_all_albums (library), album_node);
+			rb_node_add_child (album_node, node);
+			rb_node_add_child (rb_library_get_all_songs (library), node);
+		}
 	}
 
 	g_object_set_data (G_OBJECT (node), "no_virgin", GINT_TO_POINTER (TRUE));
@@ -508,4 +511,19 @@ rb_node_song_has_album (RBNode *node,
 		return TRUE;
 
 	return (rb_node_song_get_album_raw (node) == album);
+}
+
+void
+rb_node_song_init (RBNode *node)
+{
+	g_object_set_data (G_OBJECT (node), "no_virgin", GINT_TO_POINTER (TRUE));
+
+	g_signal_connect (G_OBJECT (node),
+			  "destroyed",
+			  G_CALLBACK (rb_node_song_destroyed_cb),
+			  NULL);
+
+	rb_node_ref (rb_node_song_get_genre_raw (node));
+	rb_node_ref (rb_node_song_get_artist_raw (node));
+	rb_node_ref (rb_node_song_get_album_raw (node));
 }

@@ -292,6 +292,7 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 				rb_node_add_child (node, rb_library_get_all_songs (priv->library));
 				break;
 			case RB_NODE_TYPE_SONG:
+				rb_node_song_init (node);
 				{
 					GValue value = { 0, };
 					rb_node_get_property (node, "location", &value);

@@ -93,6 +93,12 @@ static void root_child_destroyed_cb (RBNode *root,
 			             RBNodeView *view);
 static void tree_view_size_allocate_cb (GtkWidget *widget,
 			                GtkAllocation *allocation);
+static gboolean rb_node_view_scroll_to_string (RBNodeView *view,
+			                       GList *properties,
+			                       gboolean match_start,
+			                       const char *string,
+			                       RBNode *start,
+			                       RBDirection direction);
 
 struct RBNodeViewPrivate
 {
@@ -113,7 +119,6 @@ struct RBNodeViewPrivate
 	gboolean keep_selection;
 
 	RBNode *selected_node;
-	RBNode *to_be_selected_node;
 
 	gboolean changed;
 	guint timeout;
@@ -1182,6 +1187,8 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 	*(utf8 + 1) = '\0';
 
 	properties = g_list_append (properties, g_strdup ("name"));
+	if (rb_node_get_node_type (view->priv->root) == RB_NODE_TYPE_ALL_SONGS)
+		properties = g_list_append (properties, g_strdup ("track_number"));
 	selection = rb_node_view_get_selection (view);
 	
 	if (rb_node_view_scroll_to_string (view,
@@ -1279,14 +1286,6 @@ rb_node_view_get_visible_nodes (RBNodeView *view)
 	return ret;
 }
 
-/* FIXME .. */
-static gboolean
-select_node (RBNodeView *view)
-{
-	rb_node_view_select_node (view, view->priv->to_be_selected_node);
-	return FALSE;
-}
-
 static void
 root_child_destroyed_cb (RBNode *root,
 			 RBNode *child,
@@ -1305,8 +1304,7 @@ root_child_destroyed_cb (RBNode *root,
 	if (node == NULL)
 		return;
 
-	view->priv->to_be_selected_node = node;
-	g_idle_add ((GSourceFunc) select_node, view);
+	rb_node_view_select_node (view, node);
 }
 
 #define TREE_VIEW_DRAG_WIDTH 6
@@ -1409,7 +1407,7 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 	g_list_free (columns);
 }
 
-gboolean
+static gboolean
 rb_node_view_scroll_to_string (RBNodeView *view,
 			       GList *properties,
 			       gboolean match_start,
@@ -1431,35 +1429,47 @@ rb_node_view_scroll_to_string (RBNodeView *view,
 		{
 			GValue value = { 0, };
 			gboolean match = FALSE;
-			char *a, *b;
 
 			rb_node_get_property (node, (char *) l->data, &value);
 
-			a = g_utf8_casefold (string, -1);
-			if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST &&
-			    match_start == TRUE)
+			if (strcmp (l->data, "track_number") != 0)
 			{
-				char *tmp;
-				tmp = rb_prefix_to_suffix (g_value_get_string (&value));
-				b = g_utf8_casefold (tmp, -1);
-				g_free (tmp);
-			}
-			else
-				b = g_utf8_casefold (g_value_get_string (&value), -1);
+				char *a, *b;
 
-			if (match_start == FALSE)
+				a = g_utf8_casefold (string, -1);
+				if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST &&
+				    match_start == TRUE)
+				{
+					char *tmp;
+					tmp = rb_prefix_to_suffix (g_value_get_string (&value));
+					b = g_utf8_casefold (tmp, -1);
+					g_free (tmp);
+				}
+				else
+					b = g_utf8_casefold (g_value_get_string (&value), -1);
+
+				if (match_start == FALSE)
+				{
+					if (strstr (b, a) != NULL)
+						match = TRUE;
+				}
+				else
+				{
+					if (strncmp (b, a, strlen (a)) == 0)
+						match = TRUE;
+				}
+				g_value_unset (&value);
+				g_free (a);
+				g_free (b);
+			}
+			else if (g_value_get_string (&value) != NULL)
 			{
-				if (strstr (b, a) != NULL)
+				int a = atoi (g_value_get_string (&value));
+				int b = atoi (string);
+
+				if (a > 0 && a == b)
 					match = TRUE;
 			}
-			else
-			{
-				if (strncmp (b, a, strlen (a)) == 0)
-					match = TRUE;
-			}
-			g_value_unset (&value);
-			g_free (a);
-			g_free (b);
 
 			if (match == TRUE)
 			{

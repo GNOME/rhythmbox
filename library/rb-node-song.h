@@ -37,6 +37,8 @@ char            *rb_node_song_get_location         (RBNode *node);
 void             rb_node_song_update_if_newer      (RBNode *node,
 						    RBLibrary *library);
 
+void             rb_node_song_init                 (RBNode *node);
+
 /* properties */
 char            *rb_node_song_get_title            (RBNode *node);
 char            *rb_node_song_get_track_number     (RBNode *node);
