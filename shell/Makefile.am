@@ -65,8 +65,6 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE
 
-CLEAN_FILES = $(rhythmbox_interface_idl_sources)
-
 BUILT_SOURCES = $(tab_files)
 
-CLEANFILES = AUTHORS.tab MAINTAINERS.tab
+CLEANFILES = $(BUILT_SOURCES)
