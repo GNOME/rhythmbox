@@ -154,6 +154,33 @@ rb_ask_file (const char *title,
 }
 
 GtkWidget *
+rb_ask_file_save (const char *title,
+		  const char *default_file,
+		  GtkWindow *parent)
+{
+#ifndef HAVE_GTK_2_3
+	return rb_ask_file_internal (title, default_file, parent, FALSE, FALSE);
+#else
+	GtkWidget *filesel;
+	filesel = gtk_file_chooser_dialog_new (title, 
+					       parent, 
+					       GTK_FILE_CHOOSER_ACTION_SAVE,
+					       GTK_STOCK_CANCEL, 
+					       GTK_RESPONSE_CANCEL,
+					       GTK_STOCK_OPEN, 
+					       GTK_RESPONSE_OK,
+					       NULL);
+	if (default_file != NULL)
+		gtk_file_chooser_set_current_folder_uri (GTK_FILE_CHOOSER (filesel),
+							 default_file);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (filesel), TRUE);
+	
+	gtk_widget_show_all (filesel);
+	return filesel;
+#endif
+}
+
+GtkWidget *
 rb_ask_file_multiple (const char *title,
 		      const char *default_file,
 		      GtkWindow *parent)

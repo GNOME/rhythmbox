@@ -39,6 +39,10 @@ GtkWidget *rb_ask_file          (const char *title,
 			         const char *default_file,
 			         GtkWindow *parent);
 
+GtkWidget *rb_ask_file_save    (const char *title,
+				const char *default_file,
+				GtkWindow *parent);
+
 GtkWidget *rb_ask_dir           (const char *title,
 			         const char *default_file,
 			         GtkWindow *parent);

@@ -808,8 +808,8 @@ rb_playlist_manager_cmd_save_playlist (BonoboUIComponent *component,
 {
 	GtkWidget *dialog;
     
-	dialog = rb_ask_file_multiple (_("Save playlist"), NULL,
-			              GTK_WINDOW (mgr->priv->window));
+	dialog = rb_ask_file_save (_("Save playlist"), NULL,
+				   GTK_WINDOW (mgr->priv->window));
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",
 				 G_CALLBACK (save_playlist_response_cb),
