@@ -24,7 +24,7 @@ static void rb_view_clipboard_base_init (gpointer g_iface);
 
 enum
 {
-	CHANGED,
+	CLIPBOARD_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -67,11 +67,11 @@ rb_view_clipboard_base_init (gpointer g_iface)
 	if (initialized == TRUE)
 		return;
 
-	rb_view_clipboard_signals[CHANGED] =
-		g_signal_new ("changed",
+	rb_view_clipboard_signals[CLIPBOARD_CHANGED] =
+		g_signal_new ("clipboard_changed",
 			      RB_TYPE_VIEW_CLIPBOARD,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBViewClipboardIface, changed),
+			      G_STRUCT_OFFSET (RBViewClipboardIface, clipboard_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -142,5 +142,5 @@ rb_view_clipboard_paste (RBViewClipboard *clipboard,
 void
 rb_view_clipboard_notify_changed (RBViewClipboard *clipboard)
 {
-	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[CHANGED], 0);
+	g_signal_emit (G_OBJECT (clipboard), rb_view_clipboard_signals[CLIPBOARD_CHANGED], 0);
 }

@@ -37,7 +37,7 @@ typedef struct
 	GTypeInterface g_iface;
 
 	/* signals */
-	void (*changed) (RBViewClipboard *clipboard);
+	void (*clipboard_changed) (RBViewClipboard *clipboard);
 
 	/* methods */
 	gboolean (*impl_can_cut)   (RBViewClipboard *clipboard);
