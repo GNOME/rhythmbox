@@ -3,13 +3,15 @@ noinst_LTLIBRARIES = librblibrary.la
 librblibrary_la_SOURCES =				\
 	rb-library.c					\
 	rb-library.h					\
-	rb-library-private.c				\
-	rb-library-private.h				\
-	rb-library-thread.c				\
-	rb-library-thread.h				\
 	rb-library-watcher.c				\
 	rb-library-watcher.h				\
-	rb-library-preferences.h
+	rb-library-preferences.h			\
+	rb-node.c					\
+	rb-node.h					\
+	rb-node-song.c					\
+	rb-node-song.h					\
+	rb-node-iterator.c				\
+	rb-node-iterator.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -1,3 +1,88 @@
+2002-06-16  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/Makefile.am:
+	* lib/rb-node-search.c:
+	* lib/rb-node-search.h:
+	* lib/rb-node.c:
+	* lib/rb-node.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_status_foreach_cb),
+	(rb_node_view_key_press_event_cb):
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_init),
+	(rb_tree_model_node_finalize), (rb_tree_model_node_set_property),
+	(rb_tree_model_node_get_path), (rb_tree_model_node_get_value),
+	(rb_tree_model_node_iter_next), (root_child_destroyed_cb),
+	(root_child_created_cb), (root_destroyed_cb),
+	(filter_root_child_created_cb), (filter_root_child_destroyed_cb),
+	(filter_root_destroyed_cb):
+	* library/Makefile.am:
+	* library/rb-library-private.c:
+	* library/rb-library-private.h:
+	* library/rb-library-thread.c:
+	* library/rb-library-thread.h:
+	* library/rb-library-watcher.c: (rb_library_watcher_get_type),
+	(rb_library_watcher_class_init), (rb_library_watcher_init),
+	(rb_library_watcher_finalize), (rb_library_watcher_new),
+	(rb_library_watcher_get_files_foreach_cb),
+	(rb_library_watcher_get_files), (rb_library_watcher_load_files),
+	(rb_library_watcher_pref_changed_cb),
+	(rb_library_watcher_monitor_cb),
+	(rb_library_watcher_add_directory),
+	(rb_library_watcher_insert_file), (rb_library_watcher_remove_file):
+	* library/rb-library-watcher.h:
+	* library/rb-library.c: (rb_library_get_type),
+	(rb_library_class_init), (rb_library_init), (rb_library_finalize),
+	(rb_library_new), (rb_library_add_file), (rb_library_update_node),
+	(rb_library_remove_node), (rb_library_get_all_genres),
+	(rb_library_get_all_artists), (rb_library_get_all_albums),
+	(rb_library_get_all_songs), (rb_library_create_skels),
+	(rb_library_load), (rb_library_save), (rb_library_file_created_cb),
+	(rb_library_file_changed_cb), (rb_library_file_deleted_cb),
+	(rb_library_node_destroyed_cb), (rb_library_timeout_cb),
+	(rb_library_thread_check_died),
+	(rb_library_thread_process_new_song), (rb_library_thread_main):
+	* library/rb-library.h:
+	* library/rb-node-iterator.c: (rb_node_iterator_get_type),
+	(rb_node_iterator_class_init), (rb_node_iterator_init),
+	(rb_node_iterator_finalize), (rb_node_iterator_new),
+	(rb_node_iterator_set_parent), (rb_node_iterator_set_position),
+	(rb_node_iterator_next):
+	* library/rb-node-iterator.h:
+	* library/rb-node-song.c: (rb_node_song_get_artist_node),
+	(rb_node_song_get_genre), (rb_node_song_get_artist),
+	(rb_node_song_get_album):
+	* library/rb-node-song.h:
+	* library/rb-node.c: (rb_node_get_type), (rb_node_class_init),
+	(rb_node_init), (rb_node_finalize), (rb_node_dispose),
+	(rb_node_set_object_property), (rb_node_get_object_property),
+	(rb_node_get_children), (rb_node_add_child), (rb_node_get_parents),
+	(rb_node_add_parent), (rb_node_has_parent),
+	(rb_node_child_destroyed_cb), (rb_node_child_changed_cb),
+	(rb_node_get_id), (rb_node_get_node_type), (rb_node_set_property),
+	(rb_node_get_property), (rb_node_get_grandparents),
+	(rb_node_add_grandparent), (rb_node_has_grandparent),
+	(rb_node_get_nth_child), (rb_node_child_index),
+	(rb_node_n_children), (rb_node_has_child), (rb_node_save_to_xml),
+	(rb_node_new_from_xml), (rb_node_changed), (rb_node_new),
+	(rb_node_from_id), (rb_node_type_get_type),
+	(rb_node_property_get_type), (rb_node_id_factory_new_id),
+	(rb_node_id_factory_set_to), (rb_node_property_free),
+	(rb_node_save_property):
+	* library/rb-node.h:
+	* po/POTFILES.in:
+	* po/da.po:
+	* shell/rb-shell.c: (rb_shell_construct):
+	* views/rb-library-view.c: (rb_library_view_get_type),
+	(rb_library_view_class_init), (rb_library_view_finalize),
+	(rb_library_view_set_property), (rb_library_view_new),
+	(rb_library_view_get_artist), (rb_library_view_get_album),
+	(rb_library_view_get_song), (rb_library_view_get_duration),
+	(rb_library_view_set_playing_node):
+	* views/rb-library-view.h:
+
+	Land new library, please test. All nodes and dir watching
+	still buggy.
+
 2002-06-15  Jeroen Zwartepoorte  <jeroen@xs4all.nl>
 
 	* lib/widgets/Makefile.am: Add xpms to EXTRA_DIST.

@@ -52,7 +52,7 @@ typedef struct
 GType   rb_library_view_get_type (void);
 
 RBView *rb_library_view_new      (BonoboUIContainer *container,
-			          Library *library);
+			          RBLibrary *library);
 
 G_END_DECLS
 

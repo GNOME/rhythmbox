@@ -38,6 +38,7 @@
 #include "rb-library-view.h"
 #include "rb-volume.h"
 #include "rb-bonobo-helpers.h"
+#include "rb-node-song.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_library_view_class_init (RBLibraryViewClass *klass);
@@ -123,7 +124,7 @@ static void rb_library_view_show_browser (RBLibraryView *view, gboolean show);
 
 struct RBLibraryViewPrivate
 {
-	Library *library;
+	RBLibrary *library;
 
 	GtkWidget *browser;
 	GtkWidget *vbox;
@@ -149,6 +150,10 @@ struct RBLibraryViewPrivate
 
 	gboolean show_browser;
 	gboolean lock;
+
+	char *artist;
+	char *album;
+	char *song;
 };
 
 enum
@@ -215,8 +220,8 @@ rb_library_view_get_type (void)
 		};
 
 		rb_library_view_type = g_type_register_static (RB_TYPE_VIEW,
-							    "RBLibraryView",
-							    &our_info, 0);
+							       "RBLibraryView",
+							       &our_info, 0);
 		
 		g_type_add_interface_static (rb_library_view_type,
 					     RB_TYPE_VIEW_PLAYER,
@@ -251,7 +256,7 @@ rb_library_view_class_init (RBLibraryViewClass *klass)
 					 g_param_spec_object ("library",
 							      "Library",
 							      "Library",
-							      TYPE_LIBRARY,
+							      RB_TYPE_LIBRARY,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
@@ -311,6 +316,10 @@ rb_library_view_finalize (GObject *object)
 	g_free (view->priv->title);
 	g_free (view->priv->status);
 
+	g_free (view->priv->album);
+	g_free (view->priv->artist);
+	g_free (view->priv->song);
+
 	g_object_unref (G_OBJECT (view->priv->browser));
 
 	g_free (view->priv);
@@ -336,14 +345,14 @@ rb_library_view_set_property (GObject *object,
 
 			view->priv->browser = gtk_hbox_new (TRUE, 5);
 			g_object_ref (G_OBJECT (view->priv->browser));
-			view->priv->artists = rb_node_view_new (library_get_root (view->priv->library),
+			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"));
 			g_signal_connect (G_OBJECT (view->priv->artists),
 					  "node_selected",
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
-			view->priv->albums = rb_node_view_new (library_get_all_albums (view->priv->library),
+			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
@@ -352,7 +361,7 @@ rb_library_view_set_property (GObject *object,
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_add1 (GTK_PANED (view->priv->paned), view->priv->browser);
 			
-			view->priv->songs = rb_node_view_new (library_get_all_songs (view->priv->library),
+			view->priv->songs = rb_node_view_new (rb_library_get_all_songs (view->priv->library),
 						              rb_file ("rb-node-view-songs.xml"));
 
 			/* this gets emitted when the paned thingie is moved */
@@ -409,7 +418,7 @@ rb_library_view_get_property (GObject *object,
 
 RBView *
 rb_library_view_new (BonoboUIContainer *container,
-		     Library *library)
+		     RBLibrary *library)
 {
 	RBView *view;
 
@@ -558,8 +567,9 @@ rb_library_view_get_artist (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
-		node = rb_node_get_grandparent (node);
-		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+		g_free (view->priv->artist);
+		view->priv->artist = rb_node_song_get_artist (node);
+		return (const char *) view->priv->artist;
 	}
 	else
 		return NULL;
@@ -575,8 +585,9 @@ rb_library_view_get_album (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
-		node = rb_node_get_parent (node);
-		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+		g_free (view->priv->album);
+		view->priv->album = rb_node_song_get_album (node);
+		return (const char *) view->priv->album;
 	}
 	else
 		return NULL;
@@ -592,7 +603,12 @@ rb_library_view_get_song (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
-		return rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+		GValue value = { 0, };
+		rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &value);
+		g_free (view->priv->song);
+		view->priv->song = g_strdup (g_value_get_string (&value));
+		g_value_unset (&value);
+		return (const char *) view->priv->song;
 	}
 	else
 		return NULL;
@@ -608,7 +624,12 @@ rb_library_view_get_duration (RBViewPlayer *player)
 
 	if (node != NULL)
 	{
-		return rb_node_get_int_property (node, SONG_PROPERTY_DURATION);
+		GValue value = { 0, };
+		long ret;
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+		ret = g_value_get_long (&value);
+		g_value_unset (&value);
+		return ret;
 	}
 	else
 		return -1;
@@ -669,9 +690,13 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 	else
 	{
 		GError *error = NULL;
-		const char *uri = rb_node_get_string_property (node, SONG_PROPERTY_URI);
-		const char *artist = rb_node_get_string_property (rb_node_get_grandparent (node), NODE_PROPERTY_NAME);
-		const char *song = rb_node_get_string_property (node, NODE_PROPERTY_NAME);
+		const char *artist = rb_library_view_get_artist (RB_VIEW_PLAYER (view));
+		const char *song = rb_library_view_get_song (RB_VIEW_PLAYER (view));
+		const char *uri;
+		GValue value = { 0, };
+
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+		uri = g_value_get_string (&value);
 
 		g_assert (uri != NULL);
 		
@@ -691,6 +716,8 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
 		
 		rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, TRUE);
+
+		g_value_unset (&value);
 	}
 }
 

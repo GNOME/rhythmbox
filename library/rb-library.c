@@ -1,10 +1,5 @@
-/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
-
-/*  RhythmBox
+/* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *                     Marco Pesenti Gritti <marco@it.gnome.org>
- *                     Bastien Nocera <hadess@hadess.net>
- *                     Seth Nickell <snickell@stanford.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,638 +21,792 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
-#include <string.h>
-#include <libxml/tree.h>
-#include <libgnomevfs/gnome-vfs-uri.h>
-#include <libgnomevfs/gnome-vfs-directory.h>
-#include <libgnomevfs/gnome-vfs-utils.h>
-#include <libgnomevfs/gnome-vfs-ops.h>
+#include <monkey-media.h>
+#include <unistd.h>
 
 #include "rb-library.h"
 #include "rb-library-watcher.h"
-#include "rb-node.h"
+#include "rb-node-song.h"
+#include "rb-debug.h"
 
-#include "rb-library-private.h"
-#include "rb-library-thread.h"
+static void rb_library_class_init (RBLibraryClass *klass);
+static void rb_library_init (RBLibrary *library);
+static void rb_library_finalize (GObject *object);
+static void rb_library_load (RBLibrary *library);
+static void rb_library_save (RBLibrary *library);
+static void rb_library_create_skels (RBLibrary *library);
+static void rb_library_update_node (RBLibrary *library,
+			            RBNode *node);
+static void rb_library_file_created_cb (RBLibraryWatcher *watcher,
+			                const char *file,
+			                RBLibrary *library);
+static void rb_library_file_changed_cb (RBLibraryWatcher *watcher,
+			                const char *file,
+			                RBLibrary *library);
+static void rb_library_file_deleted_cb (RBLibraryWatcher *watcher,
+			                const char *file,
+			                RBLibrary *library);
+static void rb_library_node_destroyed_cb (RBNode *node,
+			                  RBLibrary *library);
+static gboolean rb_library_timeout_cb (RBLibrary *library);
+static gpointer rb_library_thread_main (RBLibraryPrivate *library);
+static void rb_library_thread_check_died (RBLibraryPrivate *priv);
+static void rb_library_thread_process_new_song (RBLibraryPrivate *priv,
+				                char *file);
 
-/* globals */
+struct RBLibraryPrivate
+{
+	RBLibraryWatcher *watcher;
+
+	RBNode *all_genres;
+	RBNode *all_artists;
+	RBNode *all_albums;
+	RBNode *all_songs;
+
+	char *xml_file;
+
+	GHashTable *genre_to_node;
+	GHashTable *artist_to_node;
+	GHashTable *album_to_node;
+	GHashTable *file_to_node;
+
+	GMutex *new_files_lock;
+	GList *new_files;
+
+	GMutex *changed_nodes_lock;
+	GList *changed_nodes;
+
+	GMutex *new_nodes_lock;
+	GList *new_nodes;
+
+	GMutex *thread_lock;
+	GThread *thread;
+
+	guint timeout;
+
+	gboolean dead;
+};
+
 static GObjectClass *parent_class = NULL;
 
-guint library_signals[LAST_SIGNAL] = { 0 };
-
-const char *string_properties[] = {"name", "date", "genre", "comment", "codecinfo", "tracknum", NULL};
-const char *int_properties[]    = {"bitrate", "filesize", "duration", "mtime", NULL};
-
-/* object funtion prototypes */
-static void library_class_init (LibraryClass *klass);
-static void library_init (Library *p);
-static void library_finalize (GObject *object);
-
-/* local function prototypes */
-static gboolean file_created_cb (FileWatcher *watcher, const gchar *uri, Library *l);
-static void file_changed_cb (FileWatcher *watcher, const gchar *uri, Library *l);
-static void file_deleted_cb (FileWatcher *watcher, const gchar *uri, Library *l);
-static void library_save_artist_node (RBNode *artist, xmlNodePtr parent_node);
-static void library_save_to_file (Library *l, const char *target_file);
-static void library_load_song_from_xml (Library *l, xmlNodePtr node, RBNode *parent_album,
-					RBNode *parent_artist);
-static void library_load_album_from_xml (Library *l, xmlNodePtr node, RBNode *parent_artist);
-static void library_load_artist_from_xml (Library *l, xmlNodePtr node, RBNode *root);
-static void library_load_from_file (Library *l, const char *saved_library_file);
-static time_t get_mtime (RBNode *node);
-static void update_song (Library *l, RBNode *song);
-static gboolean process_node_signals (gpointer data);
-
-/**
- * library_get_type: get the GObject type of the playbar 
- */
 GType
-library_get_type (void)
+rb_library_get_type (void)
 {
-	static GType library_type = 0;
+	static GType rb_library_type = 0;
 
-  	if (library_type == 0)
-    	{
-      		static const GTypeInfo our_info =
-      		{
-        		sizeof (LibraryClass),
-        		NULL, /* base_init */
-        		NULL, /* base_finalize */
-        		(GClassInitFunc) library_class_init,
-        		NULL, /* class_finalize */
-        		NULL, /* class_data */
-        		sizeof (Library),
-        		0,    /* n_preallocs */
-        		(GInstanceInitFunc) library_init
-      		};
+	if (rb_library_type == 0)
+	{
+		static const GTypeInfo our_info =
+		{
+			sizeof (RBLibraryClass),
+			NULL,
+			NULL,
+			(GClassInitFunc) rb_library_class_init,
+			NULL,
+			NULL,
+			sizeof (RBLibrary),
+			0,
+			(GInstanceInitFunc) rb_library_init
+		};
 
-      		library_type = g_type_register_static (G_TYPE_OBJECT,
-                				       "Library",
-                                           	       &our_info, 0);
-    	}
+		rb_library_type = g_type_register_static (G_TYPE_OBJECT,
+						          "RBLibrary",
+						           &our_info, 0);
+	}
 
-	return library_type;
+	return rb_library_type;
 }
 
-/**
- * library_class_init: initialize the Library class
- */
 static void
-library_class_init (LibraryClass *klass)
+rb_library_class_init (RBLibraryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  	parent_class = g_type_class_peek_parent (klass);
+	parent_class = g_type_class_peek_parent (klass);
 
-  	object_class->finalize = library_finalize;
-
-	/* init signals */
-	library_signals[NODE_CREATED] =
-   		g_signal_new ("node_created",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (LibraryClass, node_created),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      rb_node_get_type ());
-	library_signals[NODE_CHANGED] =
-   		g_signal_new ("node_changed",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (LibraryClass, node_changed),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      rb_node_get_type ());
-	library_signals[NODE_DELETED] =
-   		g_signal_new ("node_deleted",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_FIRST,
-			      G_STRUCT_OFFSET (LibraryClass, node_deleted),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__OBJECT,
-			      G_TYPE_NONE,
-			      1,
-			      rb_node_get_type ());
+	object_class->finalize = rb_library_finalize;
 }
 
-/**
- * library_init: intialize the library object
- */
 static void
-library_init (Library *p)
+rb_library_init (RBLibrary *library)
 {
-	p->priv = g_new0 (LibraryPrivate, 1);
+	GList *files, *l;
 
-	/* set library xml filename */
-	p->priv->file = g_build_filename (g_get_home_dir (), GNOME_DOT_GNOME,
-					  "rhythmbox", "library.rhythmbox", NULL);
+	rb_debug ("rb_library_init: starting");
+	
+	library->priv = g_new0 (RBLibraryPrivate, 1);
+	
+	library->priv->genre_to_node  = g_hash_table_new_full (g_str_hash,
+							       g_str_equal,
+							       (GDestroyNotify) g_free,
+							       NULL);
+	library->priv->artist_to_node = g_hash_table_new_full (g_str_hash,
+							       g_str_equal,
+							       (GDestroyNotify) g_free,
+							       NULL);
+	library->priv->album_to_node  = g_hash_table_new_full (g_str_hash,
+							       g_str_equal,
+							       (GDestroyNotify) g_free,
+							       NULL);
+	library->priv->file_to_node   = g_hash_table_new_full (g_str_hash,
+							       g_str_equal,
+							       (GDestroyNotify) g_free,
+							       NULL);
 
-	/* create root node */
-	p->priv->root = rb_node_new ("Library");
-	rb_node_set_int_property (p->priv->root, "type", LIBRARY_NODE_ROOT);
+	library->priv->thread_lock = g_mutex_new ();
+	library->priv->new_files_lock = g_mutex_new ();
+	library->priv->changed_nodes_lock = g_mutex_new ();
+	library->priv->new_nodes_lock = g_mutex_new ();
 
-	/* init hashtables */
-	p->priv->artist_to_node = g_hash_table_new (g_str_hash, g_str_equal);
-	p->priv->album_to_node  = g_hash_table_new (g_str_hash, g_str_equal);
-	p->priv->uri_to_node    = g_hash_table_new (g_str_hash, g_str_equal);
-	p->priv->id_to_node     = g_hash_table_new (NULL, NULL);
+	library->priv->xml_file = g_build_filename (g_get_home_dir (),
+						    GNOME_DOT_GNOME,
+						    "rhythmbox",
+						    "library.xml",
+						    NULL);
 
-	p->priv->search = rb_node_search_new ();
+	rb_debug ("rb_library_init: stage 1 completed");
+	rb_library_load (library);
+	rb_debug ("rb_library_init: stage 2 completed");
 
-	p->priv->all_albums = rb_node_new (NULL);
-	rb_node_set_int_property (p->priv->all_albums, "priority", TRUE);
-	p->priv->all_songs = rb_node_new (NULL);
-	rb_node_set_int_property (p->priv->all_songs, "priority", TRUE);
+	library->priv->watcher = rb_library_watcher_new ();
 
-	/* make nodes to update an empty list */
-	p->priv->songs_to_update = NULL;
+	rb_debug ("rb_library_init: .. just verifying .. ");
 
-	p->priv->lastid = 0;
+	g_signal_connect (G_OBJECT (library->priv->watcher),
+			  "file_created",
+			  G_CALLBACK (rb_library_file_created_cb),
+			  library);
+	g_signal_connect (G_OBJECT (library->priv->watcher),
+			  "file_changed",
+			  G_CALLBACK (rb_library_file_changed_cb),
+			  library);
+	g_signal_connect (G_OBJECT (library->priv->watcher),
+			  "file_deleted",
+			  G_CALLBACK (rb_library_file_deleted_cb),
+			  library);
 
-	/* create mutices */
-	p->priv->mutex = g_new0 (LibraryPrivateMutices, 1);
-	p->priv->mutex->run_thread      = g_mutex_new ();
-	p->priv->mutex->songs_to_update = g_mutex_new ();
-	p->priv->mutex->nodes_to_signal = g_mutex_new ();
-	p->priv->mutex->library_data    = g_new0 (GStaticRWLock, 1);
-	g_static_rw_lock_init (p->priv->mutex->library_data);
+	rb_debug ("rb_library_init: stage 2.5 ;-)");
 
-	/* initialize the updater thread */
-	p->priv->thread = g_thread_create (library_thread_main, p, TRUE, NULL);
+	files = rb_library_watcher_get_files (library->priv->watcher);
+	for (l = files; l != NULL; l = g_list_next (l))
+	{
+		rb_library_add_file (library, (char *) l->data);
+	}
+	g_list_foreach (files, (GFunc) g_free, NULL);
+	g_list_free (files);
+
+	rb_debug ("rb_library_init: stage 3 completed");
+
+	library->priv->timeout = g_timeout_add (100, (GSourceFunc) rb_library_timeout_cb, library);
+
+	library->priv->thread = g_thread_create ((GThreadFunc) rb_library_thread_main,
+						 library->priv, TRUE, NULL);
+
+	rb_debug ("rb_library_init: finished");
 }
 
-/**
- * library_release_brakes: to be called when all objects are hooked up,
- * it will start emitting signals now
- */
-void
-library_release_brakes (Library *p)
-{
-	FileWatcher *watcher;
-
-	/* load xml */
-	library_load_from_file (p, p->priv->file);
-
-	/* load watcher */
-	watcher = file_watcher_new ();
-	g_signal_connect (G_OBJECT (watcher), "file_created",
-			  G_CALLBACK (file_created_cb), p);
-	g_signal_connect (G_OBJECT (watcher), "file_changed",
-			  G_CALLBACK (file_changed_cb), p);
-	g_signal_connect (G_OBJECT (watcher), "file_deleted",
-			  G_CALLBACK (file_deleted_cb), p);
-
-	/* we are ready to start receiving file creation/deletion signals */
-	file_watcher_release_brakes (watcher);
-
-	g_timeout_add (100, process_node_signals, p);
-}
-
-/**
- * library_finalize: finalize the playbar object
- */
 static void
-library_finalize (GObject *object)
+rb_library_finalize (GObject *object)
 {
-	Library *p;
+	RBLibrary *library;
+	GList *children, *l;
 
 	g_return_if_fail (object != NULL);
-	g_return_if_fail (IS_LIBRARY (object));
-	
-   	p = LIBRARY (object);
+	g_return_if_fail (RB_IS_LIBRARY (object));
 
-	g_return_if_fail (p->priv != NULL);
+	library = RB_LIBRARY (object);
 
-	/* save the library */
-	library_save_to_file (p, p->priv->file);
-	g_free (p->priv->file);
+	g_return_if_fail (library->priv != NULL);
 
-	/* cleanup */
-	g_hash_table_destroy (p->priv->artist_to_node);
-	g_hash_table_destroy (p->priv->album_to_node);
-	g_hash_table_destroy (p->priv->uri_to_node);
-	g_hash_table_destroy (p->priv->id_to_node);
+	rb_debug ("rb_library_finalize: waiting for locks");
+	g_mutex_lock (library->priv->thread_lock);
+	rb_debug ("rb_library_finalize: obtained locks, attempting to kill thread");
 
-	g_object_unref (G_OBJECT (p->priv->search));
+	g_source_remove (library->priv->timeout);
 
-	g_object_unref (G_OBJECT (p->priv->all_songs));
-	g_object_unref (G_OBJECT (p->priv->all_albums));
+	rb_library_save (library);
 
-	/* free the nodes to update list */
-	g_list_free (p->priv->songs_to_update);
+	/* unref all songs. this will set a nice chain of recursive unrefs in motion */
+	children = g_list_copy (rb_node_get_children (library->priv->all_songs));
+	for (l = children; l != NULL; l = g_list_next (l))
+	{
+		rb_debug ("rb_library_finalize: going to unref a song");
+		g_object_unref (G_OBJECT (l->data));
+		rb_debug ("rb_library_finalize: unrefed a song");
+	}
+	g_list_free (children);
+	rb_debug ("rb_library_finalize: done unreffing songs");
 
-	g_free (p->priv);
+	g_object_unref (G_OBJECT (library->priv->watcher));
+
+	g_free (library->priv->xml_file);
+
+	g_hash_table_destroy (library->priv->genre_to_node);
+	g_hash_table_destroy (library->priv->artist_to_node);
+	g_hash_table_destroy (library->priv->album_to_node);
+	g_hash_table_destroy (library->priv->file_to_node);
+
+	library->priv->dead = TRUE;
+
+	rb_debug ("rb_library_finalize: releasing locks");
+	g_mutex_unlock (library->priv->thread_lock);
+	rb_debug ("rb_library_finalize: released locks, continueing finalize");
+
+	/* RBLibraryPrivate gets freed by the thread */
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
-/**
- * library_new: create a new playbar object
- */
-Library *
-library_new (void)
+RBLibrary *
+rb_library_new (void)
 {
- 	Library *p;
+	RBLibrary *library;
 
-	p = LIBRARY (g_object_new (TYPE_LIBRARY, NULL));
+	library = RB_LIBRARY (g_object_new (RB_TYPE_LIBRARY, NULL));
 
-	g_return_val_if_fail (p->priv != NULL, NULL);
+	g_return_val_if_fail (library->priv != NULL, NULL);
 
-	return p;
+	return library;
 }
 
-/**
- * library_add_uri: add an uri to the library
- */
-RBNode *
-library_add_uri (Library *l, const gchar *uri)
-{
-	RBNode *song;
-	gchar *s;
-
-	g_static_rw_lock_writer_lock (l->priv->mutex->library_data);
-	{
-		song = g_hash_table_lookup (l->priv->uri_to_node, uri);
-		if (song != NULL)
-		{
-			g_static_rw_lock_writer_unlock (l->priv->mutex->library_data);
-			return song;
-		}
-		
-		/* create the song node */
-		s = g_strdup (uri);
-		
-		song = rb_node_new (XML_NODE_SONG);
-		
-		rb_node_set_int_property (song, NODE_PROPERTY_TYPE, LIBRARY_NODE_SONG);
-		rb_node_set_string_property (song, SONG_PROPERTY_URI, s);
-	} g_static_rw_lock_writer_unlock (l->priv->mutex->library_data);
-	
-	library_private_add_song (l, song, NULL, NULL);
-
-	update_song (l, song);
-
-	return song;
-}
-
-/**
- * library_search: return a node with searched for nodes as children
- */
-RBNode *
-library_search (Library *l, const char *search_text)
-{
-	RBNode *search_node;
-
-	search_node = rb_node_new (NULL);
-
-	rb_node_set_int_property (search_node, "is_search", TRUE);
-
-	if (strlen (search_text) > 0)
-	{
-		const GSList *nodes;
-		const GSList *node;
-
-		nodes = rb_node_search_run_search (l->priv->search, search_text);
-		
-		for (node = nodes; node != NULL; node = g_slist_next (node))
-		{
-			rb_node_append (search_node, RB_NODE (node->data));
-		}
-	}
-	else
-	{
-		GList *nodes;
-		GList *node;
-		
-		nodes = rb_node_get_children (l->priv->all_songs);
-
-		for (node = nodes; node != NULL; node = g_list_next (node))
-		{
-			rb_node_append (search_node, RB_NODE (node->data));
-		}
-	}
-
-	return search_node;
-}
-
-
-/**
- * library_remove_uri: remove an uri from the library
- */
 void
-library_remove_uri (Library *l, const gchar *uri)
+rb_library_add_file (RBLibrary *library,
+		     const char *file)
 {
-	RBNode *node;
+	if (file == NULL)
+		return;
 
-	g_static_rw_lock_reader_lock (l->priv->mutex->library_data);
-	{
-		node = g_hash_table_lookup (l->priv->uri_to_node, uri);
+	if (g_hash_table_lookup (library->priv->file_to_node, file) != NULL)
+		return;
 
-		if (node == NULL) {
-			g_static_rw_lock_writer_unlock (l->priv->mutex->library_data);
-			return;
-		}
-	} g_static_rw_lock_reader_unlock (l->priv->mutex->library_data);		
+	rb_debug ("rb_library_add_file: waiting lock");
+	g_mutex_lock (library->priv->new_files_lock);
+	rb_debug ("rb_library_add_file: obtained lock");
 
-	library_private_remove_song (l, node);
-	g_signal_emit (G_OBJECT (l), library_signals[NODE_DELETED], 0, node);
+	library->priv->new_files = g_list_append (library->priv->new_files, g_strdup (file));
+
+	rb_debug ("rb_library_add_file: releasing lock");
+	g_mutex_unlock (library->priv->new_files_lock);
+	rb_debug ("rb_library_add_file: released lock");
 }
 
-/**
- * file_created_cb: a file was created, add to the library
- */
-static gboolean 
-file_created_cb (FileWatcher *watcher, const gchar *uri, Library *l)
-{
-	library_add_uri (l, uri);
-	return FALSE;
-}
-
-/**
- * file_changed_cb: a file was changed, update the node and emit signal
- */
 static void
-file_changed_cb (FileWatcher *watcher, const gchar *uri, Library *l)
+rb_library_update_node (RBLibrary *library,
+			RBNode *node)
 {
-	RBNode *song;
+	/* FIXME implement */
+	rb_debug ("rb_library_update_node: waiting lock");
+	g_mutex_lock (library->priv->changed_nodes_lock);
+	rb_debug ("rb_library_update_node: obtained lock");
+	
+	library->priv->changed_nodes = g_list_append (library->priv->changed_nodes, node);
 
-	song = g_hash_table_lookup (l->priv->uri_to_node, uri);
-
-	if (song == NULL) return;
-
-	update_song (l, song);
+	rb_debug ("rb_library_update_node: releasing lock");
+	g_mutex_unlock (library->priv->changed_nodes_lock);
+	rb_debug ("rb_library_update_node: released lock");
+	/* FIXME sync with fileinfo, check whether genre/artist/album differ */
 }
 
-/**
- * update_song: node props changed, update and reparent node if
- * necessary
- */
-static void
-update_song (Library *l, RBNode *song)
+void
+rb_library_remove_node (RBLibrary *library,
+			RBNode *node)
 {
-	g_mutex_lock (l->priv->mutex->songs_to_update);
-	{
-		l->priv->songs_to_update = g_list_append (l->priv->songs_to_update, song);
-	} g_mutex_unlock (l->priv->mutex->songs_to_update);
-
-	g_mutex_unlock (l->priv->mutex->run_thread);
+	g_object_unref (G_OBJECT (node));
 }
 
-/**
- * file_deleted_cb: a file deleted, remove from library
- */
-static void
-file_deleted_cb (FileWatcher *watcher, const gchar *uri, Library *l)
-{
-	library_remove_uri (l, uri);
-}
-
-/**
- * library_get_root: get the root node
- */
 RBNode *
-library_get_root (Library *l)
+rb_library_get_all_genres (RBLibrary *library)
 {
-	return l->priv->root;
+	return library->priv->all_genres;
 }
 
-/**
- * library_node_from_id: lookup a node in the id hash
- */
 RBNode *
-library_node_from_id (Library *l, int id)
+rb_library_get_all_artists (RBLibrary *library)
 {
-	return g_hash_table_lookup (l->priv->id_to_node, GINT_TO_POINTER (id));
+	return library->priv->all_artists;
+}
+
+RBNode *
+rb_library_get_all_albums (RBLibrary *library)
+{
+	return library->priv->all_albums;
+}
+
+RBNode *
+rb_library_get_all_songs (RBLibrary *library)
+{
+	return library->priv->all_songs;
 }
 
 static void
-library_save_artist_node (RBNode *artist,
-			  xmlNodePtr parent_node)
+rb_library_create_skels (RBLibrary *library)
 {
-	rb_node_save_to_xml (artist, artist, parent_node, TRUE);
+	/* create a boostrap setup, used if no xml stuff could be loaded */
+	GValue value = { 0, };
+
+	library->priv->all_genres  = rb_node_new (RB_NODE_TYPE_ALL_GENRES);
+	library->priv->all_artists = rb_node_new (RB_NODE_TYPE_ALL_ARTISTS);
+	library->priv->all_albums  = rb_node_new (RB_NODE_TYPE_ALL_ALBUMS);
+	library->priv->all_songs   = rb_node_new (RB_NODE_TYPE_ALL_SONGS);
+	
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, _("All"));
+	rb_node_set_property (library->priv->all_genres,
+			      RB_NODE_PROPERTY_NAME,
+			      &value);
+	rb_node_set_property (library->priv->all_artists,
+			      RB_NODE_PROPERTY_NAME,
+			      &value);
+	rb_node_set_property (library->priv->all_albums,
+			      RB_NODE_PROPERTY_NAME,
+			      &value);
+	rb_node_set_property (library->priv->all_songs,
+			      RB_NODE_PROPERTY_NAME,
+			      &value);
+	g_value_unset (&value);
+
+	rb_node_add_child (library->priv->all_genres,
+			   library->priv->all_artists);
+	rb_node_add_child (library->priv->all_artists,
+			   library->priv->all_albums);
+	rb_node_add_child (library->priv->all_albums,
+			   library->priv->all_songs);
 }
 
-/**
- * Save this library to target_file
- */
 static void
-library_save_to_file (Library *l, const char *target_file)
+rb_library_load (RBLibrary *library)
 {
 	xmlDocPtr doc;
-	GList *list;
+	xmlNodePtr child;
 
-	xmlIndentTreeOutput = TRUE;
-	doc = xmlNewDoc ("1.0");
-	doc->children = xmlNewDocNode (doc, NULL, "RhythmBoxLibrary", NULL);
-
-	list = rb_node_get_children (l->priv->root);
-	g_list_foreach (list, (GFunc) library_save_artist_node, doc->children);
-
-	xmlSaveFormatFile (target_file, doc, 1);
-}
-
-/**
- * Load a song out of the current XML stream and add it to the library
- */
-static void
-library_load_song_from_xml (Library *l, xmlNodePtr node, RBNode *parent_album,
-			    RBNode *parent_artist)
-{
-	RBNode *song;
-	char *string_property;
-	char *uri;
-	char *id;
-	int int_property;
-	int i;
-	GnomeVFSURI *vuri;
-  
-	uri = xmlGetProp (node, "uri");
-
-	if (uri == NULL) return;
-
-	/* check whether this uri exists */
-	vuri = gnome_vfs_uri_new (uri);
-	if (vuri == NULL || !gnome_vfs_uri_exists (vuri))
+	if (g_file_test (library->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
 	{
-		gnome_vfs_uri_unref (vuri);
-		g_free (uri);
+		rb_library_create_skels (library);
 		return;
 	}
-	gnome_vfs_uri_unref (vuri);
-
-	/* create a new song */
-	song = rb_node_new (XML_NODE_SONG);
-	rb_node_set_string_property (song, "uri", uri);
-
-	id = xmlGetProp (node, "id");
-
-	/* if this id is equal or greather than the ID counter, we need to
-	 * update the counter */
-	if (atoi (id) >= l->priv->lastid) l->priv->lastid = atoi (id) + 1;
-	rb_node_set_int_property (song, "id", atoi (id));
-  
-	rb_node_set_int_property (song, "type", LIBRARY_NODE_SONG);
-
-	/* load properties */
-	for (i = 0; string_properties[i] != NULL; i++) 
-	{
-		string_property = xmlGetProp (node, string_properties[i]);
-		if (string_property)
-			rb_node_set_string_property (song, string_properties[i], string_property);
-	}
-  
-	for (i = 0; int_properties[i] != NULL; i++) 
-	{
-		string_property = xmlGetProp (node, int_properties[i]);
-		if (string_property) 
-		{
-			int_property = strtol (string_property, NULL, 10);
-			xmlFree (string_property);
-			rb_node_set_int_property (song, int_properties[i], int_property);
-		}
-	}
-
-	library_private_add_song (l, song, parent_artist, parent_album);
-
-	g_signal_emit (G_OBJECT (l), library_signals[NODE_CREATED], 0, song);
-
-	/* check mtime */
-	if (get_mtime (song) != rb_node_get_int_property (song, "mtime"))
-	{
-		/* file was modified */
-		update_song (l, song);
-	}
-}
-
-/**
- * Load an album (and all its child songs) from the current XML stream and
- * add them to the library
- */
-static void
-library_load_album_from_xml (Library *l, xmlNodePtr node, RBNode *parent_artist)
-{
-	RBNode *album = NULL;
-	xmlNodePtr child;
-	char *s;
-
-	s = xmlGetProp (node, "name");
-
-	if (s == NULL) return;
-
-	album = library_private_add_album_if_needed (l, s, parent_artist);
 	
-	/* add songs */
-	for (child = node->children; child != NULL; child = child->next)
-		library_load_song_from_xml (l, child, album, parent_artist);
+	doc = xmlParseFile (library->priv->xml_file);
 
-	/* if no songs were added, destroy the album FIXME */
-	/*if (g_list_length (rb_node_get_children (album)) == 0)
-		rb_node_remove (album, 2, 2, NULL, NULL);*/
-}
-
-/**
- * Load an artist (and all its child albums) from the current XML stream and
- * add them to the library
- */
-static void
-library_load_artist_from_xml (Library *l, xmlNodePtr node, RBNode *root)
-{
-	RBNode *artist = NULL;
-	xmlNodePtr child;
-	char *s;
-
-	s = xmlGetProp (node, "name");
-
-	if (s == NULL) return;
-
-	artist = library_private_add_artist_if_needed (l, s);
-
-	/* load child albums */
-	for (child = node->children; child != NULL; child = child->next) 
-		library_load_album_from_xml (l, child, artist);
-	
-	/* if none were found, remove ourself again FIXME */
-	/*if (g_list_length (rb_node_get_children (artist)) == 0)
-		rb_node_remove (artist, 3, 3, NULL, NULL);*/
-}
-
-/**
- * Load songs/albums/artists from saved_library_file into the library
- */
-static void
-library_load_from_file (Library *l, const char *saved_library_file)
-{
-	xmlDocPtr doc;
-	xmlNodePtr child;
-
-	doc = xmlParseFile (saved_library_file);
-
-	if (doc == NULL) return;
+	if (doc == NULL)
+	{
+		rb_library_create_skels (library);
+		return;
+	}
 
 	for (child = doc->children->children; child != NULL; child = child->next)
-		library_load_artist_from_xml (l, child, l->priv->root);
+	{
+		RBNode *node;
+		RBNodeType type;
+		GValue value = { 0, };
+		
+		node = rb_node_new_from_xml (child);
+		if (node == NULL)
+			continue;
+		
+		type = rb_node_get_node_type (node);
+		switch (type)
+		{
+		case RB_NODE_TYPE_ALL_GENRES:
+			library->priv->all_genres = node;
+			break;
+		case RB_NODE_TYPE_ALL_ARTISTS:
+			library->priv->all_artists = node;
+			break;
+		case RB_NODE_TYPE_ALL_ALBUMS:
+			library->priv->all_albums = node;
+			break;
+		case RB_NODE_TYPE_ALL_SONGS:
+			library->priv->all_songs = node;
+			break;
+		case RB_NODE_TYPE_GENRE:
+			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
+					      &value);
+			g_hash_table_insert (library->priv->genre_to_node,
+					     g_strdup (g_value_get_string (&value)), node);
+			g_value_unset (&value);
+			break;
+		case RB_NODE_TYPE_ARTIST:
+			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
+					      &value);
+			g_hash_table_insert (library->priv->artist_to_node,
+					     g_strdup (g_value_get_string (&value)), node);
+			g_value_unset (&value);
+			break;
+		case RB_NODE_TYPE_ALBUM:
+			rb_node_get_property (node, RB_NODE_PROPERTY_NAME,
+					      &value);
+			g_hash_table_insert (library->priv->album_to_node,
+					     g_strdup (g_value_get_string (&value)), node);
+			g_value_unset (&value);
+			break;
+		case RB_NODE_TYPE_SONG:
+			rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION,
+					      &value);
+			g_hash_table_insert (library->priv->file_to_node,
+					     g_strdup (g_value_get_string (&value)), node);
+			g_value_unset (&value);
+			break;
+		default:
+			break;
+		}
 
-	xmlFreeDoc (doc);
-}
-
-/**
- * get_mtime: return mtime for @node
- */
-static time_t
-get_mtime (RBNode *node)
-{
-	GnomeVFSFileInfo *info = gnome_vfs_file_info_new ();
-	time_t ret;
-	gnome_vfs_get_file_info (rb_node_get_string_property (node, "uri"),
-				 info, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-	ret = info->mtime;
-	gnome_vfs_file_info_unref (info);
-	return ret;
-}
-
-static gboolean
-process_node_signals (gpointer data)
-{
-	Library *l = LIBRARY (data);
-	GList *node;
-	LibraryPrivateSignal *signal;
-
-	if (l->priv->nodes_to_signal == NULL) {
-		return TRUE;
+		g_signal_connect_object (G_OBJECT (node),
+					 "destroyed",
+					 G_CALLBACK (rb_library_node_destroyed_cb),
+					 G_OBJECT (library),
+					 0);
 	}
 
-	g_mutex_lock (l->priv->mutex->nodes_to_signal);
-	{
-		for (node = l->priv->nodes_to_signal; node != NULL; node = node->next) {
-			signal = node->data;
-			g_signal_emit (G_OBJECT (l), library_signals[signal->signal_index], 0, signal->node, NULL);
-			g_free (signal);
-		}
-		g_list_free (l->priv->nodes_to_signal);
-		l->priv->nodes_to_signal = NULL;
-	} g_mutex_unlock (l->priv->mutex->nodes_to_signal);
+	xmlFreeDoc (doc);
 
+	if (library->priv->all_genres == NULL)
+		rb_library_create_skels (library);
+}
+
+static void
+rb_library_save (RBLibrary *library)
+{
+	xmlDocPtr doc;
+	GList *children, *l;
+	
+	/* save nodes to xml */
+	xmlIndentTreeOutput = TRUE;
+	doc = xmlNewDoc ("1.0");
+	doc->children = xmlNewDocNode (doc, NULL, "RBLibrary", NULL);
+
+	rb_node_save_to_xml (library->priv->all_genres, doc->children);
+	children = rb_node_get_children (library->priv->all_genres);
+	for (l = children; l != NULL; l = g_list_next (l))
+	{
+		if (l->data != library->priv->all_artists)
+			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+	}
+
+	rb_node_save_to_xml (library->priv->all_artists, doc->children);
+	children = rb_node_get_children (library->priv->all_artists);
+	for (l = children; l != NULL; l = g_list_next (l))
+	{
+		if (l->data != library->priv->all_albums)
+			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+	}
+
+	rb_node_save_to_xml (library->priv->all_albums, doc->children);
+	children = rb_node_get_children (library->priv->all_albums);
+	for (l = children; l != NULL; l = g_list_next (l))
+	{
+		if (l->data != library->priv->all_songs)
+			rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+	}
+
+	rb_node_save_to_xml (library->priv->all_songs, doc->children);
+	children = rb_node_get_children (library->priv->all_songs);
+	for (l = children; l != NULL; l = g_list_next (l))
+	{
+		rb_node_save_to_xml (RB_NODE (l->data), doc->children);
+	}
+
+	xmlSaveFormatFile (library->priv->xml_file, doc, 1);
+}
+
+static void
+rb_library_file_created_cb (RBLibraryWatcher *watcher,
+			    const char *file,
+			    RBLibrary *library)
+{
+	rb_library_add_file (library, file);
+}
+
+static void
+rb_library_file_changed_cb (RBLibraryWatcher *watcher,
+			    const char *file,
+			    RBLibrary *library)
+{
+	RBNode *node = g_hash_table_lookup (library->priv->file_to_node,
+					    file);
+
+	if (node != NULL)
+		rb_library_update_node (library, node);
+}
+
+static void
+rb_library_file_deleted_cb (RBLibraryWatcher *watcher,
+			    const char *file,
+			    RBLibrary *library)
+{
+	RBNode *node = g_hash_table_lookup (library->priv->file_to_node,
+					    file);
+
+	if (node != NULL)
+		rb_library_remove_node (library, node);
+}
+
+static void
+rb_library_node_destroyed_cb (RBNode *node,
+			      RBLibrary *library)
+{
+	switch (rb_node_get_node_type (node))
+	{
+	case RB_NODE_TYPE_GENRE:
+		g_hash_table_remove (library->priv->genre_to_node, node);
+		break;
+	case RB_NODE_TYPE_ARTIST:
+		g_hash_table_remove (library->priv->artist_to_node, node);
+		break;
+	case RB_NODE_TYPE_ALBUM:
+		g_hash_table_remove (library->priv->album_to_node, node);
+		break;
+	case RB_NODE_TYPE_SONG:
+		g_hash_table_remove (library->priv->file_to_node, node);
+		break;
+	default:
+		break;
+	}
+}
+
+/* FIXME fix refcounting, dont unref all nodes */
+
+static gboolean
+rb_library_timeout_cb (RBLibrary *library)
+{
+	GList *list;
+	RBNode *node;
+	char *artist, *album, *genre, *file;
+	RBNode *genre_node, *artist_node, *album_node;
+	GValue value = { 0, };
+
+	if (library->priv->new_nodes == NULL)
+		return TRUE;
+
+	rb_debug ("rb_library_timeout_cb: waiting lock");
+	g_mutex_lock (library->priv->new_nodes_lock);
+	rb_debug ("rb_library_timeout_cb: obtained lock");
+		
+	list = g_list_first (library->priv->new_nodes);
+	node = RB_NODE (list->data);
+	library->priv->new_nodes = g_list_remove (library->priv->new_nodes, node);
+
+	rb_debug ("rb_library_timeout_cb: releasing lock");
+	g_mutex_unlock (library->priv->new_nodes_lock);
+	rb_debug ("rb_library_timeout_cb: released lock");
+
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+	file = g_strdup (g_value_get_string (&value));
+	g_value_unset (&value);
+
+	rb_debug ("rb_library_timeout_cb: going to insert %s into the library", file);
+
+	genre  = g_object_get_data (G_OBJECT (node), "genre");
+	if (genre == NULL)
+		genre = g_strdup ("");
+	artist = g_object_get_data (G_OBJECT (node), "artist");
+	if (artist == NULL)
+		artist = g_strdup ("");
+	album  = g_object_get_data (G_OBJECT (node), "album");
+	if (album == NULL)
+		album = g_strdup ("");
+
+	if (g_hash_table_lookup (library->priv->file_to_node, file) != NULL)
+	{
+		g_object_unref (G_OBJECT (node));
+		g_free (genre);
+		g_free (artist);
+		g_free (album);
+		g_free (file);
+		return TRUE;
+	}
+	
+	g_hash_table_insert (library->priv->file_to_node, file, node);
+
+	genre_node  = g_hash_table_lookup (library->priv->genre_to_node,
+					   genre);
+	artist_node = g_hash_table_lookup (library->priv->artist_to_node,
+					   artist);
+	album_node  = g_hash_table_lookup (library->priv->album_to_node,
+					   album);
+
+	if (genre_node == NULL)
+	{
+		genre_node = rb_node_new (RB_NODE_TYPE_GENRE);
+		
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, genre);
+		rb_node_set_property (genre_node, RB_NODE_PROPERTY_NAME, &value);
+		g_value_unset (&value);
+
+		rb_node_add_child (genre_node, library->priv->all_artists);
+		rb_node_add_child (library->priv->all_genres, genre_node);
+		
+		g_hash_table_insert (library->priv->genre_to_node, g_strdup (genre), genre_node);
+	}
+
+	if (artist_node == NULL)
+	{
+		artist_node = rb_node_new (RB_NODE_TYPE_ARTIST);
+		
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, artist);
+		rb_node_set_property (artist_node, RB_NODE_PROPERTY_NAME, &value);
+		g_value_unset (&value);
+
+		rb_node_add_child (genre_node, artist_node);
+		rb_node_add_child (artist_node, library->priv->all_songs);
+		rb_node_add_child (library->priv->all_artists, artist_node);
+		
+		g_hash_table_insert (library->priv->artist_to_node, g_strdup (artist), artist_node);
+	}
+
+	if (album_node == NULL)
+	{
+		album_node = rb_node_new (RB_NODE_TYPE_ALBUM);
+		
+		g_value_init (&value, G_TYPE_STRING);
+		g_value_set_string (&value, album);
+		rb_node_set_property (album_node, RB_NODE_PROPERTY_NAME, &value);
+		g_value_unset (&value);
+
+		rb_node_add_child (artist_node, album_node);
+		rb_node_add_child (library->priv->all_albums, album_node);
+		
+		g_hash_table_insert (library->priv->album_to_node, g_strdup (album), album_node);
+	}
+
+	rb_node_add_child (album_node, node);
+	rb_node_add_child (library->priv->all_songs, node);
+	rb_node_add_grandparent (node, artist_node);
+	rb_node_add_grandparent (node, library->priv->all_artists);
+
+	g_signal_connect_object (G_OBJECT (node),
+				 "destroyed",
+				 G_CALLBACK (rb_library_node_destroyed_cb),
+				 G_OBJECT (library),
+				 0);
+
+	g_free (genre);
+	g_free (artist);
+	g_free (album);
+	
 	return TRUE;
 }
 
-/**
- * library_get_all_songs: return all song nodes
- */
-RBNode *
-library_get_all_songs (Library *l)
+static void
+rb_library_thread_check_died (RBLibraryPrivate *priv)
 {
-	return l->priv->all_songs;
+	if (priv->dead == TRUE)
+	{
+		rb_debug ("rb_library_thread_check_died: freeing new_files_lock");
+		g_mutex_free (priv->new_files_lock);
+		rb_debug ("rb_library_thread_check_died: freeing changed_nodes_lock");
+		g_mutex_free (priv->changed_nodes_lock);
+		rb_debug ("rb_library_thread_check_died: freeing new_nodes_lock");
+		g_mutex_free (priv->new_nodes_lock);
+
+		g_list_free (priv->new_files);
+		g_list_free (priv->changed_nodes);
+		g_list_free (priv->new_nodes);
+
+		g_mutex_unlock (priv->thread_lock);
+		g_mutex_free (priv->thread_lock);
+
+		rb_debug ("rb_library_thread_check_died: freeing RBLibraryPrivate");
+		g_free (priv);
+		g_thread_exit (NULL);
+	}
 }
 
-/**
- * library_get_all_albums return all album nodes
- */
-RBNode *
-library_get_all_albums (Library *l)
+static void
+rb_library_thread_process_new_song (RBLibraryPrivate *priv,
+				    char *file)
 {
-	return l->priv->all_albums;
+	RBNode *node;
+	GValue value = { 0, };
+	MonkeyMediaStreamInfo *info;
+	GError *err = NULL;
+
+	rb_debug ("rb_library_thread_process_new_song: waiting lock #1");
+	g_mutex_lock (priv->new_files_lock);
+	rb_debug ("rb_library_thread_process_new_song: obtained lock #1");
+	priv->new_files = g_list_remove (priv->new_files, file);
+	rb_debug ("rb_library_thread_process_new_song: releasing lock #1");
+	g_mutex_unlock (priv->new_files_lock);
+	rb_debug ("rb_library_thread_process_new_song: released lock #1");
+
+	info = monkey_media_stream_info_new (file, &err);
+	if (err != NULL)
+	{
+		g_free (file);
+		return;
+	}
+
+	node = rb_node_new (RB_NODE_TYPE_SONG);
+	g_value_init (&value, G_TYPE_STRING);
+	g_value_set_string (&value, file);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+	rb_debug ("rb_library_thread_process_new_song: set uri of song to %s", file);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_TRACK_NUMBER, &value);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
+	g_value_unset (&value);
+	
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE, &value);
+	rb_node_set_property (node, RB_NODE_PROPERTY_NAME, &value);
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE, &value);
+	g_object_set_data (G_OBJECT (node), "genre", g_strdup (g_value_get_string (&value)));
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST, &value);
+	g_object_set_data (G_OBJECT (node), "artist", g_strdup (g_value_get_string (&value)));
+	g_value_unset (&value);
+
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM, &value);
+	g_object_set_data (G_OBJECT (node), "album", g_strdup (g_value_get_string (&value)));
+	g_value_unset (&value);
+
+	rb_debug ("rb_library_thread_process_new_song: waiting lock #2");
+	g_mutex_lock (priv->new_nodes_lock);
+	rb_debug ("rb_library_thread_process_new_song: obtained lock #2");
+	priv->new_nodes = g_list_append (priv->new_nodes, node);
+	rb_debug ("rb_library_thread_process_new_song: releasing lock #2");
+	g_mutex_unlock (priv->new_nodes_lock);
+	rb_debug ("rb_library_thread_process_new_song: released lock #2");
+
+	g_object_unref (G_OBJECT (info));
+	g_free (file);
+}
+
+static gpointer
+rb_library_thread_main (RBLibraryPrivate *priv)
+{
+
+	while (TRUE)
+	{
+		g_mutex_lock (priv->thread_lock);
+		rb_library_thread_check_died (priv);
+
+		if (priv->new_files != NULL)
+		{
+			GList *list;
+			char *file;
+			
+			list = g_list_first (priv->new_files);
+			file = (char *) list->data;
+			rb_library_thread_process_new_song (priv, file);
+		}
+
+		g_mutex_unlock (priv->thread_lock);
+
+		usleep (10);
+	}
+
+	return NULL;
 }

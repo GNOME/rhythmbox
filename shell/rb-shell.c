@@ -136,7 +136,7 @@ struct RBShellPrivate
 	RBShellStatus *status_shell;
 	RBShellClipboard *clipboard_shell;
 
-	Library *library;
+	RBLibrary *library;
 
 	RBView *selected_view;
 
@@ -411,8 +411,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* initialize views */
 
-	shell->priv->library = library_new ();
-	library_release_brakes (shell->priv->library);
+	shell->priv->library = rb_library_new ();
 
 	/* FIXME */
 	library_view = rb_library_view_new (container,

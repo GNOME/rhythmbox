@@ -15,10 +15,6 @@ librb_la_SOURCES =					\
 	rb-glade-helpers.h				\
 	rb-stock-icons.c				\
 	rb-stock-icons.h				\
-	rb-node.c					\
-	rb-node.h					\
-	rb-node-search.c				\
-	rb-node-search.h				\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h
 

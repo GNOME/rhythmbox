@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"POT-Creation-Date: 2002-06-14 01:01+0200\n"
+"POT-Creation-Date: 2002-06-16 02:17+0200\n"
 "PO-Revision-Date: 2002-05-21 22:07+0200\n"
 "Last-Translator: Kenneth Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -30,42 +30,33 @@ msgid "<b>Also Look for Music in These Folders</b>"
 msgstr "<b>Kik også for musik i disse kataloger</b>"
 
 #: data/glade/music-folders.glade.h:3
-msgid ""
-"<b>Choose a folder to add</b>\n"
-"<span size=\"smaller\"><i>Hint: Remote locations are supported</i></span>"
-msgstr ""
+#, fuzzy
+msgid "<b>Choose a folder to add</b>"
+msgstr "<b>Standard-musikkatalog</b>"
 
-#: data/glade/music-folders.glade.h:5
+#: data/glade/music-folders.glade.h:4
 msgid "<b>Music Base Folder</b>"
 msgstr "<b>Standard-musikkatalog</b>"
 
-#: data/glade/music-folders.glade.h:6
+#: data/glade/music-folders.glade.h:5
 msgid "<b>Searching /data/music...</b>"
 msgstr "<b>Søger /data/music...</b>"
 
-#: data/glade/music-folders.glade.h:7
+#: data/glade/music-folders.glade.h:6
 msgid "Choose Folder"
 msgstr "Vælg katalog"
 
-#: data/glade/music-folders.glade.h:8
+#: data/glade/music-folders.glade.h:7
 msgid "Include Audio CD contents in library as long as disc is present"
 msgstr "Inkludér indholdet af lyd-cd'er så længe de er i drevet"
 
-#: data/glade/music-folders.glade.h:9
-msgid "Music Folders"
-msgstr "Musikkataloger"
-
-#: data/glade/music-folders.glade.h:10
+#: data/glade/music-folders.glade.h:8
 msgid "Searching for Music Folders"
 msgstr "Sørger efter musikkataloger"
 
-#: data/glade/music-folders.glade.h:11
+#: data/glade/music-folders.glade.h:9
 msgid "_Browse..."
 msgstr "_Gennemse..."
-
-#: data/glade/music-folders.glade.h:12
-msgid "_Find Folders"
-msgstr "_Find kataloger"
 
 #: data/ui/rhythmbox-test-view-2.xml.in.h:1
 msgid "Oh neej!!"
@@ -74,6 +65,48 @@ msgstr "Åh neej!!"
 #: data/ui/rhythmbox-test-view-2.xml.in.h:2
 msgid "_Actions"
 msgstr "H_andlinger"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:1
+msgid "Deselect all songs"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:2
+msgid "Scroll the view to the currently playing song"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:3
+msgid "Select _All"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:4
+msgid "Select _None"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:5
+msgid "Select all songs"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:6
+#, fuzzy
+msgid "Show _Browser"
+msgstr "_Gennemse..."
+
+#: data/ui/rhythmbox-library-view.xml.in.h:7
+msgid "Show _Current Song"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:8
+msgid "Toggle the artist and album browser visibility"
+msgstr ""
+
+#: data/ui/rhythmbox-library-view.xml.in.h:9 data/ui/rhythmbox-ui.xml.in.h:28
+msgid "_Edit"
+msgstr "Rediger"
+
+#: data/ui/rhythmbox-library-view.xml.in.h:10
+#, fuzzy
+msgid "_View"
+msgstr "_Filer"
 
 #: data/ui/rhythmbox-ui.xml.in.h:1
 msgid "Choose a file to be added to the library"
@@ -183,10 +216,6 @@ msgstr "Betjening"
 msgid "_Copy"
 msgstr "Kopier"
 
-#: data/ui/rhythmbox-ui.xml.in.h:28
-msgid "_Edit"
-msgstr "Rediger"
-
 #: data/ui/rhythmbox-ui.xml.in.h:29
 msgid "_File"
 msgstr "_Filer"
@@ -289,12 +318,12 @@ msgstr ""
 "Det mislykkedes at gå til %s:\n"
 "%s"
 
-#: lib/widgets/rb-node-view.c:411
+#: lib/widgets/rb-node-view.c:433
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Det mislykkedes at parse %s son NodeView-layoutfil"
 
-#: lib/widgets/rb-node-view.c:870
+#: lib/widgets/rb-node-view.c:896
 #, c-format
 msgid "%d songs, %d:%02d:%02d playing time, %s"
 msgstr "%d sange, %d:%02d:%02d spilletid, %s"
@@ -327,11 +356,6 @@ msgstr "/Slet"
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
 msgstr "Mislykkedes at parse %s som 'sidebar layout'-fil"
-
-#: library/rb-library-thread.c:206
-#, c-format
-msgid "%s of %.2d"
-msgstr "%s af %.2d"
 
 #: shell/main.c:57
 msgid "Enable debugging code"
@@ -379,34 +403,43 @@ msgstr "Stop"
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell.c:207
+#: shell/rb-shell.c:228
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s findes allerede, fjern den venligst."
 
-#: shell/rb-shell.c:212
+#: shell/rb-shell.c:233
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Mislykkedes at oprette katalogen %s."
 
-#: shell/rb-shell.c:306
+#: shell/rb-shell.c:334
 #, c-format
 msgid ""
 "Failed to register the shell:\n"
 "%s"
 msgstr ""
 
-#: shell/rb-shell.c:699
+#: shell/rb-shell.c:731
 msgid "translator_credits"
 msgstr "Kenneth Christiansen"
 
-#: shell/rb-shell.c:712
+#: shell/rb-shell.c:744
 msgid "Copyright 2002 Jorn Baayen"
 msgstr "Rettigheder tilhører Jorn Baayen, 2002"
 
-#: shell/rb-shell.c:713
+#: shell/rb-shell.c:745
 msgid "Music management and playback software for GNOME."
 msgstr "Musikhåndterings og afspilningsprogram til Gnome."
+
+#~ msgid "Music Folders"
+#~ msgstr "Musikkataloger"
+
+#~ msgid "_Find Folders"
+#~ msgstr "_Find kataloger"
+
+#~ msgid "%s of %.2d"
+#~ msgstr "%s af %.2d"
 
 #~ msgid "Oh jawel"
 #~ msgstr "Åh ja, vel"

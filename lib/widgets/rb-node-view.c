@@ -22,6 +22,10 @@
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreemodelsort.h>
+#include <gtk/gtktreeselection.h>
+#include <gtk/gtkcellrenderertext.h>
+#include <gtk/gtkcellrendererpixbuf.h>
+#include <gtk/gtkiconfactory.h>
 #include <gdk/gdkkeysyms.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
@@ -388,37 +392,43 @@ rb_node_view_construct (RBNodeView *view)
 	char *tmp;
 
 	view->priv->nodemodel = rb_tree_model_node_new (view->priv->root);
-	g_signal_connect (G_OBJECT (view->priv->nodemodel),
-			  "row_inserted",
-			  G_CALLBACK (rb_tree_model_node_row_inserted_cb),
-			  view);
-	g_signal_connect (G_OBJECT (view->priv->nodemodel),
-			  "row_deleted",
-			  G_CALLBACK (rb_tree_model_node_row_deleted_cb),
-			  view);
+	g_signal_connect_object (G_OBJECT (view->priv->nodemodel),
+			         "row_inserted",
+			         G_CALLBACK (rb_tree_model_node_row_inserted_cb),
+			         view,
+				 0);
+	g_signal_connect_object (G_OBJECT (view->priv->nodemodel),
+			         "row_deleted",
+			         G_CALLBACK (rb_tree_model_node_row_deleted_cb),
+			         view,
+				 0);
 	view->priv->filtermodel = gtk_tree_model_filter_new_with_model (GTK_TREE_MODEL (view->priv->nodemodel),
 							                RB_TREE_MODEL_NODE_COL_VISIBLE,
 							                NULL);
 	view->priv->sortmodel = gtk_tree_model_sort_new_with_model (view->priv->filtermodel);
-	g_signal_connect (G_OBJECT (view->priv->sortmodel),
-			  "sort_column_changed",
-			  G_CALLBACK (gtk_tree_sortable_sort_column_changed_cb),
-			  view);
+	g_signal_connect_object (G_OBJECT (view->priv->sortmodel),
+			         "sort_column_changed",
+			         G_CALLBACK (gtk_tree_sortable_sort_column_changed_cb),
+			         view,
+				 0);
 	
 	view->priv->treeview = gtk_tree_view_new_with_model (view->priv->sortmodel);
-	g_signal_connect (G_OBJECT (view->priv->treeview),
-			  "row_activated",
-			  G_CALLBACK (rb_node_view_row_activated_cb),
-			  view);
-	g_signal_connect (G_OBJECT (view->priv->treeview),
-			  "key_press_event",
-			  G_CALLBACK (rb_node_view_key_press_event_cb),
-			  view);
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+			         "row_activated",
+			         G_CALLBACK (rb_node_view_row_activated_cb),
+			         view,
+				 0);
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+			         "key_press_event",
+			         G_CALLBACK (rb_node_view_key_press_event_cb),
+			         view,
+				 0);
 	view->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
-	g_signal_connect (G_OBJECT (view->priv->selection),
-			  "changed",
-			  G_CALLBACK (rb_node_view_selection_changed_cb),
-			  view);
+	g_signal_connect_object (G_OBJECT (view->priv->selection),
+			         "changed",
+			         G_CALLBACK (rb_node_view_selection_changed_cb),
+			         view,
+				 0);
 	gtk_container_add (GTK_CONTAINER (view), view->priv->treeview);
 
 	/* load layout */
@@ -906,6 +916,7 @@ rb_node_view_status_foreach_cb (GtkTreeModel *model,
 {
 	GtkTreeIter iter2, iter3;
 	RBNode *node;
+	GValue value = { 0, };
 
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (info->view->priv->sortmodel),
 							&iter2, iter);
@@ -916,8 +927,12 @@ rb_node_view_status_foreach_cb (GtkTreeModel *model,
 						  &iter3);
 
 	info->n_songs++;
-	info->n_seconds += (long) rb_node_get_int_property (node, "duration");
-	info->n_bytes += (GnomeVFSFileSize) rb_node_get_int_property (node, "filesize");
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_DURATION, &value);
+	info->n_seconds += g_value_get_long (&value);
+	g_value_unset (&value);
+	rb_node_get_property (node, RB_NODE_PROPERTY_SONG_FILE_SIZE, &value);
+	info->n_bytes += (GnomeVFSFileSize) g_value_get_long (&value);
+	g_value_unset (&value);
 
 	return FALSE;
 }
@@ -978,7 +993,7 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 	GList *sel, *l;
 	
 	if (event->keyval != GDK_Delete)
-		return TRUE;
+		return FALSE;
 
 	sel = rb_node_view_get_selection (view);
 	for (l = sel; l != NULL; l = g_list_next (l))

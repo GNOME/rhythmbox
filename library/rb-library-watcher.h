@@ -1,8 +1,5 @@
-/*  RhythmBox
+/*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *                     Marco Pesenti Gritti <marco@it.gnome.org>
- *                     Bastien Nocera <hadess@hadess.net>
- *                     Seth Nickell <snickell@stanford.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,51 +18,44 @@
  *  $Id$
  */
 
-#ifndef __FILE_WATCHER_H
-#define __FILE_WATCHER_H
+#ifndef __RB_LIBRARY_WATCHER_H
+#define __RB_LIBRARY_WATCHER_H
 
 #include <glib-object.h>
 
 G_BEGIN_DECLS
 
-#define TYPE_FILE_WATCHER            (file_watcher_get_type ())
-#define FILE_WATCHER(obj)	     (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_FILE_WATCHER, FileWatcher))
-#define FILE_WATCHER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_FILE_WATCHER, FileWatcherClass))
-#define IS_FILE_WATCHER(obj)	     (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_FILE_WATCHER))
-#define IS_FILE_WATCHER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_FILE_WATCHER))
-#define FILE_WATCHER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_FILE_WATCHER, FileWatcherClass))
+#define RB_TYPE_LIBRARY_WATCHER         (rb_library_watcher_get_type ())
+#define RB_LIBRARY_WATCHER(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY_WATCHER, RBLibraryWatcher))
+#define RB_LIBRARY_WATCHER_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIBRARY_WATCHER, RBLibraryWatcherClass))
+#define RB_IS_LIBRARY_WATCHER(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LIBRARY_WATCHER))
+#define RB_IS_LIBRARY_WATCHER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY_WATCHER))
+#define RB_LIBRARY_WATCHER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY_WATCHER, RBLibraryWatcherClass))
 
-typedef struct _FileWatcher        	FileWatcher;
-typedef struct _FileWatcherClass 	FileWatcherClass;
+typedef struct RBLibraryWatcherPrivate RBLibraryWatcherPrivate;
 
-typedef struct _FileWatcherPrivate 	FileWatcherPrivate;
-
-struct _FileWatcher
+typedef struct
 {
-	GObject base;
-	
-	FileWatcherPrivate *priv;
-};
+	GObject parent;
 
-struct _FileWatcherClass
+	RBLibraryWatcherPrivate *priv;
+} RBLibraryWatcher;
+
+typedef struct
 {
-	GObjectClass parent_class;
+	GObjectClass parent;
 
-	/* Signals */
-	void (*file_created) (FileWatcher *w, const gchar *fn);
-	void (*file_deleted) (FileWatcher *w, const gchar *fn);
-	void (*file_changed) (FileWatcher *w, const gchar *fn);
-};
+	void (*file_created) (RBLibraryWatcher *library, const char *file);
+	void (*file_deleted) (RBLibraryWatcher *library, const char *file);
+	void (*file_changed) (RBLibraryWatcher *library, const char *file);
+} RBLibraryWatcherClass;
 
-GType        file_watcher_get_type       (void) G_GNUC_CONST;
+GType             rb_library_watcher_get_type  (void);
 
-FileWatcher *file_watcher_new            (void);
+RBLibraryWatcher *rb_library_watcher_new       (void);
 
-void         file_watcher_release_brakes (FileWatcher *w);
-
-/* prefs */
-#define CONF_FILE_WATCHER_URIS   "/apps/rhythmbox/FileWatcher/uris"
+GList            *rb_library_watcher_get_files (RBLibraryWatcher *watcher);
 
 G_END_DECLS
 
-#endif /* __FILE_WATCHER_H */
+#endif /* __RB_LIBRARY_WATCHER_H */

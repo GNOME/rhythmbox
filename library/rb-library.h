@@ -1,8 +1,5 @@
-/*  RhythmBox
+/*
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *                     Marco Pesenti Gritti <marco@it.gnome.org>
- *                     Bastien Nocera <hadess@hadess.net>
- *                     Seth Nickell <snickell@stanford.edu>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,81 +18,48 @@
  *  $Id$
  */
 
-#ifndef __LIBRARY_H
-#define __LIBRARY_H
+#ifndef __RB_LIBRARY_H
+#define __RB_LIBRARY_H
 
 #include "rb-node.h"
 
 G_BEGIN_DECLS
 
-#define TYPE_LIBRARY            (library_get_type ())
-#define LIBRARY(obj)	        (G_TYPE_CHECK_INSTANCE_CAST ((obj), TYPE_LIBRARY, Library))
-#define LIBRARY_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), TYPE_LIBRARY, LibraryClass))
-#define IS_LIBRARY(obj)	        (G_TYPE_CHECK_INSTANCE_TYPE ((obj), TYPE_LIBRARY))
-#define IS_LIBRARY_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), TYPE_LIBRARY))
-#define LIBRARY_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), TYPE_LIBRARY, LibraryClass))
+#define RB_TYPE_LIBRARY         (rb_library_get_type ())
+#define RB_LIBRARY(o)           (G_TYPE_CHECK_INSTANCE_CAST ((o), RB_TYPE_LIBRARY, RBLibrary))
+#define RB_LIBRARY_CLASS(k)     (G_TYPE_CHECK_CLASS_CAST((k), RB_TYPE_LIBRARY, RBLibraryClass))
+#define RB_IS_LIBRARY(o)        (G_TYPE_CHECK_INSTANCE_TYPE ((o), RB_TYPE_LIBRARY))
+#define RB_IS_LIBRARY_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_LIBRARY))
+#define RB_LIBRARY_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_LIBRARY, RBLibraryClass))
 
-typedef struct _Library        		Library;
-typedef struct _LibraryClass 		LibraryClass;
+typedef struct RBLibraryPrivate RBLibraryPrivate;
 
-typedef struct _LibraryPrivate 		LibraryPrivate;
-
-struct _Library
+typedef struct
 {
-	GObject base;
-	
-	LibraryPrivate *priv;
-};
+	GObject parent;
 
-struct _LibraryClass
+	RBLibraryPrivate *priv;
+} RBLibrary;
+
+typedef struct
 {
-	GObjectClass parent_class;
+	GObjectClass parent;
+} RBLibraryClass;
 
-	/* signals */
-	void (*node_created) (Library *l, RBNode *node);
-	void (*node_changed) (Library *l, RBNode *node);
-	void (*node_deleted) (Library *l, RBNode *node);
-};
+GType       rb_library_get_type        (void);
 
-typedef enum
-{
-	LIBRARY_NODE_ROOT,
-	LIBRARY_NODE_ARTIST,
-	LIBRARY_NODE_ALBUM,
-	LIBRARY_NODE_SONG
-} LibraryNodeType;
+RBLibrary  *rb_library_new             (void);
 
-GType            library_get_type       (void) G_GNUC_CONST;
+void        rb_library_add_file        (RBLibrary *library,
+					const char *file);
+void        rb_library_remove_node     (RBLibrary *library,
+					RBNode *node);
 
-Library         *library_new            (void);
-
-void             library_release_brakes (Library *l);
-
-RBNode          *library_add_uri        (Library *l, const gchar *uri);
-void             library_remove_uri     (Library *l, const gchar *uri);
-
-RBNode          *library_get_root       (Library *l);
-
-RBNode		*library_node_from_id   (Library *l, int id);
-RBNode          *library_search         (Library *l, const char *search_text);
-
-RBNode		*library_get_all_albums (Library *l);
-RBNode		*library_get_all_songs  (Library *l);
-
-#define NODE_PROPERTY_NAME         "name"
-#define NODE_PROPERTY_TYPE         "type"
-
-#define SONG_PROPERTY_DATE         "date"
-#define SONG_PROPERTY_GENRE        "genre"
-#define SONG_PROPERTY_COMMENT      "comment"
-#define SONG_PROPERTY_CODEC_INFO   "codecinfo"
-#define SONG_PROPERTY_TRACK_NUMBER "tracknum"
-#define SONG_PROPERTY_BIT_RATE     "bitrate"
-#define SONG_PROPERTY_FILE_SIZE    "filesize"
-#define SONG_PROPERTY_DURATION     "duration"
-#define SONG_PROPERTY_MTIME        "mtime"
-#define SONG_PROPERTY_URI          "uri"
+RBNode     *rb_library_get_all_genres  (RBLibrary *library);
+RBNode     *rb_library_get_all_artists (RBLibrary *library);
+RBNode     *rb_library_get_all_albums  (RBLibrary *library);
+RBNode     *rb_library_get_all_songs   (RBLibrary *library);
 
 G_END_DECLS
 
-#endif /* __LIBRARY_H */
+#endif /* __RB_LIBRARY_H */

@@ -1,13 +1,10 @@
-/*  RhythmBox
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
- *                     Marco Pesenti Gritti <marco@it.gnome.org>
- *                     Bastien Nocera <hadess@hadess.net>
- *                     Seth Nickell <snickell@stanford.edu>
+/*
+ *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
  *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,15 +18,17 @@
  *  $Id$
  */
 
-#ifndef __LIBRARY_THREAD_H
-#define __LIBRARY_THREAD_H
+#include "rb-node.h"
 
-#include <glib.h>
+#ifndef __RB_NODE_SONG_H
+#define __RB_NODE_SONG_H
 
 G_BEGIN_DECLS
 
-gpointer library_thread_main (gpointer data);
+char *rb_node_song_get_genre  (RBNode *node);
+char *rb_node_song_get_artist (RBNode *node);
+char *rb_node_song_get_album  (RBNode *node);
 
 G_END_DECLS
 
-#endif /* __LIBRARY_THREAD_H */
+#endif /* __RB_NODE_SONG_H */
