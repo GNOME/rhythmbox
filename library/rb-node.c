@@ -24,6 +24,7 @@
 #include "rb-node.h"
 #include "rb-debug.h"
 #include "rb-node-song.h"
+#include "rb-enums.h"
 
 #define ACTION_ADDITION_PRIORITY 118
 #define NUMBER_OF_ACTIONS_TO_HANDLE 10 /* fun tunable parameter */
@@ -47,6 +48,9 @@ static void rb_node_property_free (GValue *value);
 static void rb_node_save_property (char *property,
 		                   GValue *value,
 		                   xmlNodePtr node);
+static RBNode *rb_node_get_prevnext (RBNode *parent,
+		                     RBNode *node,
+		                     RBDirection direction);
 
 typedef enum
 {
@@ -641,7 +645,7 @@ rb_node_set_property (RBNode *node,
 	switch (type)
 	{
 	case RB_NODE_TYPE_GENRE:
-		if (strcmp (property, "name") == 0)
+		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
 		{
 			g_static_rw_lock_writer_lock (name_to_genre_lock);
 			g_hash_table_replace (name_to_genre,
@@ -651,7 +655,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_ARTIST:
-		if (strcmp (property, "name") == 0)
+		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
 		{
 			g_static_rw_lock_writer_lock (name_to_artist_lock);
 			g_hash_table_replace (name_to_artist,
@@ -661,7 +665,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_ALBUM:
-		if (strcmp (property, "name") == 0)
+		if (strcmp (property, RB_NODE_PROP_NAME) == 0)
 		{
 			g_static_rw_lock_writer_lock (name_to_album_lock);
 			g_hash_table_replace (name_to_album,
@@ -671,7 +675,7 @@ rb_node_set_property (RBNode *node,
 		}
 		break;
 	case RB_NODE_TYPE_SONG:
-		if (strcmp (property, "location") == 0)
+		if (strcmp (property, RB_SONG_PROP_LOCATION) == 0)
 		{
 			g_static_rw_lock_writer_lock (uri_to_song_lock);
 			g_hash_table_replace (uri_to_song,
@@ -1406,8 +1410,23 @@ rb_node_unlock (RBNode *node)
 }
 
 RBNode *
+rb_node_get_previous (RBNode *parent,
+		      RBNode *node)
+{
+	return rb_node_get_prevnext (parent, node, RB_DIRECTION_UP);
+}
+
+RBNode *
 rb_node_get_next (RBNode *parent,
 		  RBNode *node)
+{
+	return rb_node_get_prevnext (parent, node, RB_DIRECTION_DOWN);
+}
+
+static RBNode *
+rb_node_get_prevnext (RBNode *parent,
+		      RBNode *node,
+		      RBDirection direction)
 {
 	GList *pos;
 	RBNodeParent *pe;
@@ -1428,10 +1447,21 @@ rb_node_get_next (RBNode *parent,
 	
 	pe = (RBNodeParent *) pos->data;
 	
-	for (pos = g_list_next (pe->list_item); pos != NULL; pos = g_list_next (pos))
+	if (direction == RB_DIRECTION_DOWN)
 	{
-		if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
-			break;
+		for (pos = g_list_next (pe->list_item); pos != NULL; pos = g_list_next (pos))
+		{
+			if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
+				break;
+		}
+	}
+	else
+	{
+		for (pos = g_list_previous (pe->list_item); pos != NULL; pos = g_list_previous (pos))
+		{
+			if (rb_node_is_handled (RB_NODE (pos->data)) == TRUE)
+				break;
+		}
 	}
 
 	if (pos != NULL)

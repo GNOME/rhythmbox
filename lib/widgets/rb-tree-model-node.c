@@ -108,6 +108,7 @@ struct RBTreeModelNodePrivate
 	GdkPixbuf *playing_pixbuf;
 
 	int n_children;
+	RBNode *last_kid;
 };
 
 enum
@@ -249,6 +250,7 @@ rb_tree_model_node_set_property (GObject *object,
 			         GParamSpec *pspec)
 {
 	RBTreeModelNode *model = RB_TREE_MODEL_NODE (object);
+	GList *tmp;
 
 	switch (prop_id)
 	{
@@ -277,6 +279,10 @@ rb_tree_model_node_set_property (GObject *object,
 					 0);
 
 		model->priv->n_children = rb_node_n_handled_children (model->priv->root);
+		tmp = g_list_last (rb_node_get_children (model->priv->root));
+		if (tmp != NULL)
+			model->priv->last_kid = tmp->data;
+		rb_node_unlock (model->priv->root);
 		break;
 	case PROP_FILTER_PARENT:
 		{
@@ -584,7 +590,14 @@ rb_tree_model_node_get_path (GtkTreeModel *tree_model,
 		return gtk_tree_path_new ();
 	
 	retval = gtk_tree_path_new ();
-	gtk_tree_path_append_index (retval, rb_node_handled_child_index (model->priv->root, node));
+	if (node == model->priv->last_kid)
+	{
+		gtk_tree_path_append_index (retval, model->priv->n_children - 1);
+	}
+	else
+	{
+		gtk_tree_path_append_index (retval, rb_node_handled_child_index (model->priv->root, node));
+	}
 
 	return retval;
 }
@@ -824,6 +837,9 @@ root_child_destroyed_cb (RBNode *node,
 
 	if (node == model->priv->playing_node)
 		model->priv->playing_node = NULL;
+
+	if (node == model->priv->last_kid)
+		model->priv->last_kid = rb_node_get_previous (node, child);
 	
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 
@@ -843,6 +859,9 @@ root_child_created_cb (RBNode *node,
 	GtkTreeIter iter;
 
 	model->priv->n_children++;
+
+	if (model->priv->last_kid == NULL)
+		model->priv->last_kid = child;
 
 	rb_tree_model_node_iter_from_node (model, child, &iter);
 

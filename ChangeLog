@@ -1,5 +1,16 @@
 2002-09-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_set_property), (rb_tree_model_node_get_path),
+	(root_child_destroyed_cb), (root_child_created_cb):
+	* library/rb-node.c: (rb_node_set_property),
+	(rb_node_get_previous), (rb_node_get_next), (rb_node_get_prevnext):
+	* library/rb-node.h:
+
+	Specialcase last node in _get_path.
+
+2002-09-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/rb-string-helpers.c: (rb_prefix_to_suffix):
 	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
 	(rb_node_view_get_status), (tree_view_size_allocate_cb):

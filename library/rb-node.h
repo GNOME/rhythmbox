@@ -150,6 +150,8 @@ void        rb_node_unlock                (RBNode *node);
 /* navigation */
 RBNode     *rb_node_get_next              (RBNode *parent,
 					   RBNode *node);
+RBNode     *rb_node_get_previous          (RBNode *parent,
+					   RBNode *node);
 
 /* genre/artist/album hashes */
 RBNode     *rb_node_get_genre_by_name  (const char *name);
