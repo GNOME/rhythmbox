@@ -50,7 +50,7 @@ static void genre_removed_cb (RBNode *node, RBNode *child, RBIRadioBackend *back
 static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 							      const char *uri);
 
-#define RB_IRADIO_BACKEND_XML_VERSION "1.0"
+#define RB_IRADIO_BACKEND_XML_VERSION "1.1"
 
 struct RBIRadioBackendPrivate
 {

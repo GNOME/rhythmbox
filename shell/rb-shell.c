@@ -94,8 +94,8 @@ static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
-static void rb_shell_window_load_state (RBShell *shell);
-static void rb_shell_window_save_state (RBShell *shell);
+static void rb_shell_sync_window_state (RBShell *shell);
+static void rb_shell_sync_paned (RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
 static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static void source_selected_cb (RBSourceList *sourcelist,
@@ -161,6 +161,10 @@ static void window_visibility_changed_cb (GConfClient *client,
 			                  guint cnxn_id,
 			                  GConfEntry *entry,
 			                  RBShell *shell);
+static void paned_changed_cb (GConfClient *client,
+			      guint cnxn_id,
+			      GConfEntry *entry,
+			      RBShell *shell);
 #ifdef HAVE_AUDIOCD
 /* static void audiocd_changed_cb (MonkeyMediaAudioCD *cd, */
 /* 				gboolean available, */
@@ -204,18 +208,10 @@ typedef enum
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
-#define CONF_STATE_WINDOW_HIDDEN    CONF_PREFIX "/state/window_hidden"
+#define CONF_STATE_WINDOW_VISIBLE   CONF_PREFIX "/state/window_visible"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
 #define CONF_MUSIC_GROUPS           CONF_PREFIX "/music_groups"
-
-typedef struct
-{
-	int width;
-	int height;
-	gboolean maximized;
-	int paned_position;
-} RBShellWindowState;
 
 struct RBShellPrivate
 {
@@ -243,8 +239,6 @@ struct RBShellPrivate
 	MonkeyMediaAudioCD *cd;
 
 	RBSource *selected_source;
-
-	RBShellWindowState *state;
 
 	GtkWidget *prefs;
 
@@ -348,8 +342,6 @@ rb_shell_init (RBShell *shell)
 	gnome_window_icon_set_default_from_file (file);
 	g_free (file);
 	
-	shell->priv->state = g_new0 (RBShellWindowState, 1);
-
 	eel_gconf_monitor_add (CONF_PREFIX);
 
 }
@@ -387,8 +379,6 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->library));
 
 	g_object_unref (G_OBJECT (shell->priv->iradio_backend));
-
-	g_free (shell->priv->state);
 
 	if (shell->priv->prefs != NULL)
 		gtk_widget_destroy (shell->priv->prefs);
@@ -490,16 +480,10 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 			   CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	gboolean hidden;
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 
-	hidden = eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN);
-	if (!hidden)
-	{
-		gtk_window_present (GTK_WINDOW (shell->priv->window));
-		gtk_widget_grab_focus (shell->priv->window);
-	}
-	else
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN, TRUE);
+	gtk_window_present (GTK_WINDOW (shell->priv->window));
+	gtk_widget_grab_focus (shell->priv->window);
 }
 
 void
@@ -594,7 +578,7 @@ rb_shell_construct (RBShell *shell)
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
 			  shell);
-	shell->priv->source_header = rb_source_header_new ();
+	shell->priv->source_header = rb_source_header_new (shell->priv->ui_component);
 
 	shell->priv->paned = gtk_hpaned_new ();
 
@@ -614,8 +598,6 @@ rb_shell_construct (RBShell *shell)
 
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sourcelist, FALSE, FALSE);
 	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
-	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
-				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
 
 	vbox = gtk_vbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
@@ -633,8 +615,11 @@ rb_shell_construct (RBShell *shell)
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
-	eel_gconf_notification_add (CONF_STATE_WINDOW_HIDDEN,
+	eel_gconf_notification_add (CONF_STATE_WINDOW_VISIBLE,
 				    (GConfClientNotifyFunc) window_visibility_changed_cb,
+				    shell);
+	eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
+				    (GConfClientNotifyFunc) paned_changed_cb,
 				    shell);
 
 	rb_debug ("shell: syncing with gconf");
@@ -657,9 +642,9 @@ rb_shell_construct (RBShell *shell)
 									     shell->priv->iradio_backend));
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
 
-	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
+	rb_shell_sync_window_state (shell);
 
-	rb_shell_window_load_state (shell);
+	bonobo_ui_component_thaw (shell->priv->ui_component, NULL);
 
 	/* load library */
 	rb_debug ("shell: releasing library brakes");
@@ -696,7 +681,8 @@ rb_shell_construct (RBShell *shell)
 /* 	rb_shell_load_music_groups (shell); */
 
 	/* GO GO GO! */
-	rb_debug ("shell: syncing window visibility");
+	rb_debug ("shell: syncing window state");
+	rb_shell_sync_paned (shell);
 	rb_shell_sync_window_visibility (shell);
 	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
@@ -743,53 +729,38 @@ rb_shell_window_state_cb (GtkWidget *widget,
 	switch (event->type)
 	{
 	case GDK_WINDOW_STATE:
-		shell->priv->state->maximized = event->window_state.new_window_state &
-			GDK_WINDOW_STATE_MAXIMIZED;
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
+				       event->window_state.new_window_state &
+				       GDK_WINDOW_STATE_MAXIMIZED);
 		break;
 	case GDK_CONFIGURE:
-		if (shell->priv->state->maximized == FALSE)
+		if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED))
 		{
-			shell->priv->state->width = event->configure.width;
-			shell->priv->state->height = event->configure.height;
+			eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
+			eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
 		}
 		break;
 	default:
 		break;
 	}
 
-	rb_shell_window_save_state (shell);
-
 	return FALSE;
 }
 
 static void
-rb_shell_window_load_state (RBShell *shell)
+rb_shell_sync_window_state (RBShell *shell)
 {
-	/* Restore window state. */
-	shell->priv->state->width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
-	shell->priv->state->height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
-	shell->priv->state->maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
+	int width = eel_gconf_get_integer (CONF_STATE_WINDOW_WIDTH); 
+	int height = eel_gconf_get_integer (CONF_STATE_WINDOW_HEIGHT);
+	gboolean maximized = eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED);
 
 	gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
-				     shell->priv->state->width,
-				     shell->priv->state->height);
+				     width, height);
 
-	if (shell->priv->state->maximized == TRUE)
+	if (maximized)
 		gtk_window_maximize (GTK_WINDOW (shell->priv->window));
-}
-
-static void
-rb_shell_window_save_state (RBShell *shell)
-{
-	/* Save the window state. */
-	eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH,
-			       shell->priv->state->width);
-	eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT,
-			       shell->priv->state->height);
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
-			       shell->priv->state->maximized);
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
-			       shell->priv->state->paned_position);
+	else
+		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 }
 
 static gboolean
@@ -954,8 +925,8 @@ rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 				 const char *state,
 				 RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
-			       !rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
+			       rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
 }
 
 static void
@@ -1331,8 +1302,6 @@ rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
 
-	rb_shell_window_save_state (shell);
-
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
 
@@ -1414,7 +1383,8 @@ rb_shell_sync_window_visibility (RBShell *shell)
 	static int window_x = -1;
 	static int window_y = -1;
 
-	visible = !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN);
+	rb_debug ("syncing visibility");
+	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
 	
 	if (visible == TRUE)
 	{
@@ -1453,13 +1423,27 @@ window_visibility_changed_cb (GConfClient *client,
 			      GConfEntry *entry,
 			      RBShell *shell)
 {
+	rb_debug ("window visiblity changed");
 	rb_shell_sync_window_visibility (shell);
-
-	GDK_THREADS_ENTER ();
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-	GDK_THREADS_LEAVE ();
 }
+
+static void
+rb_shell_sync_paned (RBShell *shell)
+{
+	gtk_paned_set_position (GTK_PANED (shell->priv->paned),
+				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
+}
+
+static void
+paned_changed_cb (GConfClient *client,
+		  guint cnxn_id,
+		  GConfEntry *entry,
+		  RBShell *shell)
+{
+	rb_debug ("paned changed");
+	rb_shell_sync_paned (shell);
+}
+
 
 /* REWRITEFIXME */
 /* static void */
@@ -1584,8 +1568,8 @@ tray_button_press_event_cb (GtkWidget *ebox,
 	{
 	case 1:
 		/* toggle mainwindow visibility */
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
-				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN));
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
+				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE));
 		break;
 	case 3:
 		/* contextmenu */

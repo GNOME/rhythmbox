@@ -375,7 +375,6 @@ rb_song_info_new (RBNodeView *node_view)
 	g_return_val_if_fail (song_info->priv != NULL, NULL);
 
 	rb_song_info_populate_dialog (song_info);
-
 	return GTK_WIDGET (song_info);
 }
 

@@ -77,12 +77,16 @@ static void rb_shell_player_cmd_stop (BonoboUIComponent *component,
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
-static void rb_shell_player_cmd_shuffle (BonoboUIComponent *component,
-					 RBShellPlayer *player,
-					 const char *verbname);
-static void rb_shell_player_cmd_repeat (BonoboUIComponent *component,
-					RBShellPlayer *player,
-					const char *verbname);
+static void rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
+						const char *path,
+						Bonobo_UIComponent_EventType type,
+						const char *state,
+						RBShellPlayer *player);
+static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
+						const char *path,
+						Bonobo_UIComponent_EventType type,
+						const char *state,
+						RBShellPlayer *player);
 static void rb_shell_player_cmd_current_song (BonoboUIComponent *component,
 					      RBShellPlayer *player,
 					      const char *verbname);
@@ -196,11 +200,16 @@ static BonoboUIVerb rb_shell_player_verbs[] =
 	BONOBO_UI_VERB ("Pause",       (BonoboUIVerbFn) rb_shell_player_cmd_pause),
 	BONOBO_UI_VERB ("Stop",        (BonoboUIVerbFn) rb_shell_player_cmd_stop),
 	BONOBO_UI_VERB ("Next",        (BonoboUIVerbFn) rb_shell_player_cmd_next),
-	BONOBO_UI_VERB ("Shuffle",     (BonoboUIVerbFn) rb_shell_player_cmd_shuffle),
-	BONOBO_UI_VERB ("Repeat",      (BonoboUIVerbFn) rb_shell_player_cmd_repeat),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_shell_player_cmd_current_song),
 	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_shell_player_cmd_song_info),
 	BONOBO_UI_VERB_END
+};
+
+static RBBonoboUIListener rb_shell_player_listeners[] =
+{
+	RB_BONOBO_UI_LISTENER ("Shuffle",     (BonoboUIListenerFn) rb_shell_player_shuffle_changed_cb),
+	RB_BONOBO_UI_LISTENER ("Repeat",      (BonoboUIListenerFn) rb_shell_player_repeat_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
 };
 
 static GObjectClass *parent_class = NULL;
@@ -465,6 +474,9 @@ rb_shell_player_set_property (GObject *object,
 		bonobo_ui_component_add_verb_list_with_data (player->priv->component,
 							     rb_shell_player_verbs,
 							     player);
+		rb_bonobo_add_listener_list_with_data (player->priv->component,
+						       rb_shell_player_listeners,
+						       player);
 		rb_shell_player_set_playing_source (player, NULL);
 		break;
 	case PROP_TRAY_COMPONENT:
@@ -847,22 +859,25 @@ rb_shell_player_state_changed_cb (GConfClient *client,
 }
 
 static void
-rb_shell_player_cmd_shuffle (BonoboUIComponent *component,
-			     RBShellPlayer *player,
-			     const char *verbname)
+rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
+				    const char *path,
+				    Bonobo_UIComponent_EventType type,
+				    const char *state,
+				    RBShellPlayer *player)
 {
-	rb_debug ("shuffle");
+	rb_debug ("shuffle changed");
 	eel_gconf_set_boolean (CONF_STATE_SHUFFLE,
 			       rb_bonobo_get_active (component,
 						     CMD_PATH_SHUFFLE));
 }
-
-static void
-rb_shell_player_cmd_repeat (BonoboUIComponent *component,
-			    RBShellPlayer *player,
-			    const char *verbname)
+	
+static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
+						const char *path,
+						Bonobo_UIComponent_EventType type,
+						const char *state,
+						RBShellPlayer *player)
 {
-	rb_debug ("repeat");
+	rb_debug ("repeat changed");
 	eel_gconf_set_boolean (CONF_STATE_REPEAT,
 			       rb_bonobo_get_active (component,
 						     CMD_PATH_REPEAT));
@@ -893,19 +908,9 @@ rb_shell_player_cmd_song_info (BonoboUIComponent *component,
 			       RBShellPlayer *player,
 			       const char *verbname)
 {
-	RBNodeView *songs;
-	RBNode *node;
-
 	rb_debug ("song info");
 
-	g_return_if_fail (player->priv->source != NULL);
-
-	songs = rb_source_get_node_view (player->priv->source);
-	node = rb_shell_player_get_playing_node (player);	
-
-	g_return_if_fail (node != NULL);
-	
-	
+	rb_source_song_properties (player->priv->selected_source);
 }
 
 static void
@@ -1058,6 +1063,7 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 	PlayButtonState pstate = PLAY_BUTTON_PLAY;
 	RBSource *source = rb_shell_player_get_playing_node (player) == NULL ?
 		player->priv->selected_source : player->priv->source;
+	RBNodeView *songs = rb_source_get_node_view (source);
 
 	rb_debug ("syncing with source %p", source);
 
@@ -1069,6 +1075,8 @@ rb_shell_player_sync_buttons (RBShellPlayer *player)
 							    source));
 	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_CURRENT_SONG,
 				 rb_shell_player_get_playing_node (player) != NULL);
+	rb_bonobo_set_sensitive (player->priv->component, CMD_PATH_SONG_INFO,
+				 rb_node_view_have_selection (songs));
 
 	if (monkey_media_player_playing (player->priv->mmplayer)) {
 		if (player->priv->source == player->priv->selected_source

@@ -25,11 +25,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libgnome/gnome-i18n.h>
+#include <bonobo/bonobo-ui-util.h>
 
 #include "disclosure-widget.h"
 #include "rb-source-header.h"
 #include "rb-stock-icons.h"
 #include "rb-thread-helpers.h"
+#include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
 #include "rb-search-entry.h"
 #include "rb-glist-wrapper.h"
@@ -60,10 +62,18 @@ static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 							  guint cnxn_id,
 							  GConfEntry *entry,
 							  RBSourceHeader *header);
+static void rb_source_header_view_browser_changed_cb (BonoboUIComponent *component,
+						      const char *path,
+						      Bonobo_UIComponent_EventType type,
+						      const char *state,
+						      RBSourceHeader *header);
+static void rb_source_header_sync_control_state (RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
 	RBSource *selected_source;
+
+	BonoboUIComponent *component;
 
 	GtkWidget *search;
 	GtkWidget *disclosure;
@@ -75,7 +85,16 @@ struct RBSourceHeaderPrivate
 enum
 {
 	PROP_0,
+	PROP_COMPONENT,
 	PROP_SOURCE,
+};
+
+#define CMD_PATH_VIEW_BROWSER	"/commands/ViewBrowser"
+
+static RBBonoboUIListener rb_source_header_listeners[] =
+{
+	RB_BONOBO_UI_LISTENER ("ViewBrowser", (BonoboUIListenerFn) rb_source_header_view_browser_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
 };
 
 static GObjectClass *parent_class = NULL;
@@ -127,6 +146,13 @@ rb_source_header_class_init (RBSourceHeaderClass *klass)
 							      "RBSource object",
 							      RB_TYPE_SOURCE,
 							      G_PARAM_READWRITE));
+	g_object_class_install_property (object_class,
+					 PROP_COMPONENT,
+					 g_param_spec_object ("component",
+							      "BonoboUIComponent",
+							      "BonoboUIComponent object",
+							      BONOBO_TYPE_UI_COMPONENT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void
@@ -206,15 +232,15 @@ rb_source_header_set_property (GObject *object,
 					  "filter_changed",
 					  G_CALLBACK (rb_source_header_filter_changed_cb),
 					  header);
-			gtk_widget_set_sensitive (header->priv->disclosure,
-						  header->priv->browser_key != NULL);
-			if (header->priv->browser_key != NULL)
-				gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
-							      eel_gconf_get_boolean (header->priv->browser_key));
-		} else {
-			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->disclosure), FALSE);
 		}
+		rb_source_header_sync_control_state (header);
 		
+		break;
+	case PROP_COMPONENT:
+		header->priv->component = g_value_get_object (value);
+		rb_bonobo_add_listener_list_with_data (header->priv->component,
+						       rb_source_header_listeners,
+						       header);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -254,9 +280,10 @@ rb_source_header_set_source (RBSourceHeader *header,
 }
 
 RBSourceHeader *
-rb_source_header_new (void)
+rb_source_header_new (BonoboUIComponent *component)
 {
 	RBSourceHeader *header = g_object_new (RB_TYPE_SOURCE_HEADER,
+					       "component", component,
 					       NULL);
 
 	g_return_val_if_fail (header->priv != NULL, NULL);
@@ -302,17 +329,40 @@ rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 					      GConfEntry *entry,
 					      RBSourceHeader *header)
 {
-	gboolean active;
 	rb_debug ("gconf disclosure changed");
 
 	g_return_if_fail (header->priv->browser_key != NULL);
 
-	active = eel_gconf_get_boolean (header->priv->browser_key);
-
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (header->priv->disclosure))
-	    != active)
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
-					      active);
+	rb_source_header_sync_control_state (header);
 }
 
-	
+static void
+rb_source_header_view_browser_changed_cb (BonoboUIComponent *component,
+					  const char *path,
+					  Bonobo_UIComponent_EventType type,
+					  const char *state,
+					  RBSourceHeader *header)
+{
+	rb_debug ("got view browser toggle");
+	eel_gconf_set_boolean (header->priv->browser_key,
+			       rb_bonobo_get_active (component, CMD_PATH_VIEW_BROWSER));
+}
+
+static void
+rb_source_header_sync_control_state (RBSourceHeader *header)
+{
+	gboolean have_browser = header->priv->selected_source != NULL
+		&& header->priv->browser_key != NULL;
+	gtk_widget_set_sensitive (header->priv->disclosure,
+				  have_browser);
+	rb_bonobo_set_sensitive (header->priv->component, CMD_PATH_VIEW_BROWSER,
+				have_browser);
+	if (have_browser) {
+		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
+					      shown);
+		rb_bonobo_set_active (header->priv->component,
+				      CMD_PATH_VIEW_BROWSER,
+				      shown);
+	}
+}

@@ -19,6 +19,7 @@
  */
 
 #include <gtk/gtkhbox.h>
+#include <bonobo/bonobo-ui-component.h>
 #include <monkey-media.h>
 
 #include "rb-source.h"
@@ -51,7 +52,7 @@ typedef struct
 
 GType			rb_source_header_get_type	(void);
 
-RBSourceHeader *	rb_source_header_new		(void);
+RBSourceHeader *	rb_source_header_new		(BonoboUIComponent *component);
 
 void			rb_source_header_set_source	(RBSourceHeader *header,
 							 RBSource *player);

@@ -476,7 +476,7 @@ impl_get_status (RBSource *asource)
 {
  	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
 	char *ret;
-	ret = g_strdup_printf (_("%d total stations in %d distinct genres"),
+	ret = g_strdup_printf (_("<b>%d</b> total stations in <b>%d</b> distinct genres"),
 			       rb_iradio_backend_get_station_count (source->priv->backend),
 			       rb_iradio_backend_get_genre_count (source->priv->backend));
 	return ret;
@@ -497,6 +497,8 @@ impl_song_properties (RBSource *asource)
 	rb_debug ("in song properties");
 	if (dialog)
 		gtk_widget_show_all (dialog);
+	else
+		rb_debug ("no selection!");
 }
 
 static void

@@ -1,3 +1,37 @@
+2003-05-18  Colin Walters  <walters@verbum.org>
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* iradio/rb-iradio-backend.c:
+	* lib/widgets/rb-song-info.c: (rb_song_info_new):
+	* library/rb-library.h:
+	* shell/rb-shell-player.c: (rb_shell_player_set_property),
+	(rb_shell_player_shuffle_changed_cb),
+	(rb_shell_player_repeat_changed_cb),
+	(rb_shell_player_cmd_song_info), (rb_shell_player_sync_buttons):
+	* shell/rb-shell.c: (rb_shell_init), (rb_shell_finalize),
+	(rb_shell_corba_grab_focus), (rb_shell_construct),
+	(rb_shell_window_state_cb), (rb_shell_sync_window_state),
+	(rb_shell_show_window_changed_cb), (rb_shell_quit),
+	(rb_shell_sync_window_visibility), (window_visibility_changed_cb),
+	(rb_shell_sync_paned), (paned_changed_cb),
+	(tray_button_press_event_cb):
+	* shell/rb-source-header.c: (rb_source_header_class_init),
+	(rb_source_header_set_property), (rb_source_header_new),
+	(rb_source_header_gconf_disclosure_changed_cb),
+	(rb_source_header_view_browser_changed_cb),
+	(rb_source_header_sync_control_state):
+	* shell/rb-source-header.h:
+	* sources/rb-iradio-source.c: (impl_get_status),
+	(impl_song_properties):
+	* sources/rb-library-source.c: (impl_song_properties):
+
+	I give up on EggMenu for now.  Use GConf to keep track of state in
+	shell.  Hook up menu items like View Browser, Shuffle, and Repeat
+	to GConf.  Make song properties work.  Use bold in iradio status.
+
+	TODO:
+	- figure out WTF it doesn't play any sound :)
+
 2003-05-18  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/art/rhythmbox-volume-max.png:

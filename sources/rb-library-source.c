@@ -910,7 +910,10 @@ impl_song_properties (RBSource *asource)
 	g_return_if_fail (source->priv->songs != NULL);
 
 	song_info = rb_song_info_new (source->priv->songs);
-	gtk_widget_show_all (song_info);
+	if (song_info)
+		gtk_widget_show_all (song_info);
+	else
+		rb_debug ("failed to create dialog, or no selection!");
 }
 
 static void
