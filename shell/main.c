@@ -141,6 +141,8 @@ main (int argc, char **argv)
 #ifdef WITH_MONKEYMEDIA
 	monkey_media_init (&argc, &argv);
 #endif
+
+	rb_debug_init (debug);
 	
 	gdk_threads_init ();
 
