@@ -1,3 +1,10 @@
+2003-08-11  Yann Rouillard <y.rouillard@laposte.net>
+
+	* lib/widgets/rb-node-view.c (dumb_sort_func): 
+
+	Return 0 instead of 1; this appears to work around a GtkTreeSortable bug?
+	In any case it closes #119517.
+
 2003-08-11  Christophe Fergeau  <teuf@gnome.org>
 
 	* shell/main.c: (main):
