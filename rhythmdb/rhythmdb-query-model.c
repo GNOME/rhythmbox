@@ -24,12 +24,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
 
 static void rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass);
 static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
+static void rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface);
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
@@ -44,6 +46,10 @@ static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *en
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
+static gboolean rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
+						    GtkTreeIter *iter);
+static void rhythmdb_query_model_cancel (RhythmDBModel *model);
+static gboolean rhythmdb_query_model_poll (RhythmDBModel *model, GTimeVal *timeout);
 
 static GtkTreeModelFlags rhythmdb_query_model_get_flags (GtkTreeModel *model);
 static gint rhythmdb_query_model_get_n_columns (GtkTreeModel *tree_model);
@@ -153,9 +159,20 @@ rhythmdb_query_model_get_type (void)
 			NULL
 		};
 
+		static const GInterfaceInfo rhythmdb_model_info =
+		{
+			(GInterfaceInitFunc) rhythmdb_query_model_rhythmdb_model_init,
+			NULL,
+			NULL
+		};
+
 		g_type_add_interface_static (rhythmdb_query_model_type,
 					     GTK_TYPE_TREE_MODEL,
 					     &tree_model_info);
+
+		g_type_add_interface_static (rhythmdb_query_model_type,
+					     RHYTHMDB_TYPE_MODEL,
+					     &rhythmdb_model_info);
 	}
 
 	return rhythmdb_query_model_type;
@@ -227,6 +244,14 @@ rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface)
 	iface->iter_n_children = rhythmdb_query_model_iter_n_children;
 	iface->iter_nth_child = rhythmdb_query_model_iter_nth_child;
 	iface->iter_parent = rhythmdb_query_model_iter_parent;
+}
+
+static void
+rhythmdb_query_model_rhythmdb_model_init (RhythmDBModelIface *iface)
+{
+	iface->entry_to_iter = rhythmdb_query_model_entry_to_iter;
+	iface->poll = rhythmdb_query_model_poll;
+	iface->cancel = rhythmdb_query_model_cancel;
 }
 
 static void
@@ -375,8 +400,8 @@ rhythmdb_query_model_complete (RhythmDBQueryModel *model)
 	g_async_queue_push (model->priv->pending_updates, update);
 }
 
-void
-rhythmdb_query_model_cancel (RhythmDBQueryModel *model)
+static void
+rhythmdb_query_model_cancel (RhythmDBModel *model)
 {
 	rb_debug ("cancelling query");
 }
@@ -462,9 +487,10 @@ compare_times (GTimeVal *a, GTimeVal *b)
 
 /* Threading: main thread only, should hold GDK lock
  */
-gboolean
-rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
+static gboolean
+rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 {
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	GList *processed = NULL, *tem;
 	GTimeVal now;
 	struct RhythmDBQueryModelUpdate *update;
@@ -588,10 +614,11 @@ rhythmdb_query_model_sync (RhythmDBQueryModel *model, GTimeVal *timeout)
 	return processed != NULL;
 }
 
-gboolean
-rhythmdb_query_model_iter_from_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry,
-				      GtkTreeIter *iter)
+static gboolean
+rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
+				    GtkTreeIter *iter)
 {
+	RhythmDBQueryModel *model = RHYTHMDB_QUERY_MODEL (rmodel);
 	GSequencePtr ptr;
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);

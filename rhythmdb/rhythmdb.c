@@ -20,6 +20,7 @@
  */
 
 #include "rhythmdb.h"
+#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
 #include <string.h>
@@ -842,7 +843,7 @@ rhythmdb_do_full_query_internal (RhythmDB *db, GtkTreeModel *main_model,
 		      "query", query, NULL);
 
 	query_thread_main (data, db);
-	while (rhythmdb_query_model_sync (RHYTHMDB_QUERY_MODEL (main_model), NULL))
+	while (rhythmdb_model_poll (RHYTHMDB_MODEL (main_model), NULL))
 		;
 }
 

@@ -39,6 +39,7 @@
 #include "rb-library.h"
 #include "rb-debug.h"
 #include "rhythmdb.h"
+#include "rhythmdb-model.h"
 #include "rhythmdb-query-model.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-cell-renderer-rating.h"
@@ -116,13 +117,13 @@ struct RBEntryViewPrivate
 {
 	RhythmDB *db;
 	
-	RhythmDBQueryModel *query_model;
+	RhythmDBModel *model;
 
 	GtkWidget *treeview;
 	GtkTreeSelection *selection;
 
 	gboolean playing;
-	RhythmDBQueryModel *playing_query_model;
+	RhythmDBModel *playing_model;
 	RhythmDBEntry *playing_entry;
 	GtkTreeIter playing_entry_iter;
 
@@ -175,7 +176,7 @@ enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_QUERY_MODEL,
+	PROP_MODEL,
 	PROP_PLAYING_ENTRY,
 };
 
@@ -232,12 +233,13 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
-					 PROP_QUERY_MODEL,
-					 g_param_spec_object ("entry-model",
-							      "GtkTreeModel",
-							      "GtkTreeModel with RhythmDBEntrys",
-							      RHYTHMDB_TYPE_QUERY_MODEL,
+					 PROP_MODEL,
+					 g_param_spec_object ("model",
+							      "RhythmDBModel",
+							      "RhythmDBModel",
+							      RHYTHMDB_TYPE_MODEL,
 							      G_PARAM_READWRITE));
+
 	g_object_class_install_property (object_class,
 					 PROP_PLAYING_ENTRY,
 					 g_param_spec_pointer ("playing-entry",
@@ -370,7 +372,7 @@ rb_entry_view_finalize (GObject *object)
 	g_hash_table_destroy (view->priv->propid_column_map);
 	g_hash_table_destroy (view->priv->column_sort_data_map);
 
-	g_object_unref (G_OBJECT (view->priv->query_model));
+	g_object_unref (G_OBJECT (view->priv->model));
 
 	g_object_unref (G_OBJECT (view->priv->playing_pixbuf));
 	g_object_unref (G_OBJECT (view->priv->paused_pixbuf));
@@ -470,13 +472,13 @@ rb_entry_view_set_property (GObject *object,
 	case PROP_DB:
 		view->priv->db = g_value_get_object (value);
 		break;
-	case PROP_QUERY_MODEL:
+	case PROP_MODEL:
 	{
-		RhythmDBQueryModel *new_model;
+		RhythmDBModel *new_model;
 		struct RBEntryViewColumnSortData *sort_data;
 		
-		if (view->priv->query_model)
-			rhythmdb_query_model_cancel (view->priv->query_model);
+		if (view->priv->model)
+			rhythmdb_model_cancel (view->priv->model);
 		new_model = g_value_get_object (value);
 
 		g_signal_connect_object (G_OBJECT (new_model),
@@ -518,7 +520,7 @@ rb_entry_view_set_property (GObject *object,
 
 		gtk_tree_view_set_model (GTK_TREE_VIEW (view->priv->treeview),
 					 GTK_TREE_MODEL (new_model));
-		view->priv->query_model = new_model;
+		view->priv->model = new_model;
 
 		break;
 	}
@@ -532,25 +534,25 @@ rb_entry_view_set_property (GObject *object,
 		entry = g_value_get_pointer (value);
 		
 		if (view->priv->playing_entry != NULL) {
-			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_query_model),
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->playing_model),
 							&view->priv->playing_entry_iter);
-			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_query_model),
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->playing_model),
 						    path, &view->priv->playing_entry_iter);
 			gtk_tree_path_free (path);
-			g_object_unref (G_OBJECT (view->priv->playing_query_model));
+			g_object_unref (G_OBJECT (view->priv->playing_model));
 		}
 		
 		view->priv->playing_entry = entry;
-		g_object_ref (G_OBJECT (view->priv->query_model));
-		view->priv->playing_query_model = view->priv->query_model;
+		g_object_ref (G_OBJECT (view->priv->model));
+		view->priv->playing_model = view->priv->model;
 
 		if (view->priv->playing_entry != NULL) {
-			rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-							      view->priv->playing_entry,
-							      &view->priv->playing_entry_iter);
-			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model),
+			rhythmdb_model_entry_to_iter (view->priv->model,
+							view->priv->playing_entry,
 							&view->priv->playing_entry_iter);
-			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->query_model),
+			path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model),
+							&view->priv->playing_entry_iter);
+			gtk_tree_model_row_changed (GTK_TREE_MODEL (view->priv->model),
 						    path, &view->priv->playing_entry_iter);
 			gtk_tree_path_free (path);
 		}
@@ -610,9 +612,9 @@ rb_entry_view_new (RhythmDB *db)
 }
 
 void
-rb_entry_view_set_query_model (RBEntryView *view, RhythmDBQueryModel *model)
+rb_entry_view_set_model (RBEntryView *view, RhythmDBModel *model)
 {
-	g_object_set (G_OBJECT (view), "entry-model", model, NULL);
+	g_object_set (G_OBJECT (view), "model", model, NULL);
 }
 
 
@@ -622,8 +624,8 @@ entry_from_tree_path (RBEntryView *view, GtkTreePath *path)
 	GtkTreeIter entry_iter;
 	RhythmDBEntry *entry;
 
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model), &entry_iter, path);
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), &entry_iter, 0,
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &entry_iter, path);
+	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->model), &entry_iter, 0,
 			    &entry, -1);
 	return entry;
 }
@@ -632,16 +634,16 @@ static inline RhythmDBEntry *
 entry_from_tree_iter (RBEntryView *view, GtkTreeIter *iter)
 {
 	RhythmDBEntry *entry;
-	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->query_model), iter, 0,
+	gtk_tree_model_get (GTK_TREE_MODEL (view->priv->model), iter, 0,
 			    &entry, -1);
 	return entry;
 }
 
-RhythmDBQueryModel *
+RhythmDBModel *
 rb_entry_view_get_model (RBEntryView *view)
 {
 	g_return_val_if_fail (RB_IS_ENTRY_VIEW (view), NULL);
-	return view->priv->query_model;
+	return view->priv->model;
 }
 
 static gint
@@ -1063,6 +1065,8 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype, gbool
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 cell_data_func, cell_data, g_free);
 	gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+	gtk_tree_view_column_set_clickable (column, TRUE);
+	gtk_tree_view_column_set_resizable (column, TRUE);
 
 append:
 	rb_entry_view_append_column_custom (view, column, is_default, title, sort_func,
@@ -1079,10 +1083,8 @@ rb_entry_view_append_column_custom (RBEntryView *view,
 {
 	struct RBEntryViewColumnSortData *sortdata;
 
-	gtk_tree_view_column_set_resizable (column, TRUE);
 	gtk_tree_view_column_set_title (column, title);
 	gtk_tree_view_column_set_reorderable (column, FALSE);
-	gtk_tree_view_column_set_clickable (column, TRUE);
 
 	g_signal_connect_object (G_OBJECT (column), "clicked",
 				 G_CALLBACK (rb_entry_view_column_clicked_cb),
@@ -1170,7 +1172,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	{
 		RhythmDBQueryModel *query_model;
 		query_model = rhythmdb_query_model_new_empty (view->priv->db);
-		rb_entry_view_set_query_model (view, query_model);
+		rb_entry_view_set_model (view, RHYTHMDB_MODEL (query_model));
 		g_object_unref (G_OBJECT (query_model));
 	}
 		
@@ -1233,7 +1235,7 @@ rb_entry_view_get_first_entry (RBEntryView *view)
 {
 	GtkTreeIter iter;
 
-	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->query_model), &iter))
+	if (gtk_tree_model_get_iter_first (GTK_TREE_MODEL (view->priv->model), &iter))
 		return entry_from_tree_iter (view, &iter);
 
 	return NULL;
@@ -1247,12 +1249,12 @@ rb_entry_view_get_next_entry (RBEntryView *view)
 	if (view->priv->playing_entry == NULL)
 		return NULL;
 
-	if (!rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-						   view->priv->playing_entry,
-						   &iter))
+	if (!rhythmdb_model_entry_to_iter (view->priv->model,
+					     view->priv->playing_entry,
+					     &iter))
 		return NULL;
 	
-	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->query_model),
+	if (gtk_tree_model_iter_next (GTK_TREE_MODEL (view->priv->model),
 				      &iter))
 		return entry_from_tree_iter (view, &iter);
 
@@ -1268,19 +1270,19 @@ rb_entry_view_get_previous_entry (RBEntryView *view)
 	if (view->priv->playing_entry == NULL)
 		return NULL;
 	
-	if (!rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-						   view->priv->playing_entry,
-						   &iter))
+	if (!rhythmdb_model_entry_to_iter (view->priv->model,
+					     view->priv->playing_entry,
+					     &iter))
 		return NULL;
 
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), &iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), &iter);
 	g_assert (path);
 	if (!gtk_tree_path_prev (path)) {
 		gtk_tree_path_free (path);
 		return NULL;
 	}
 
-	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model), &iter, path));
+	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &iter, path));
 	return entry_from_tree_iter (view, &iter);
 }
 
@@ -1322,7 +1324,7 @@ rb_entry_view_get_random_entry (RBEntryView *view)
 	char *path_str;
 	int index, n_rows;
 
-	n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->query_model), NULL);
+	n_rows = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model), NULL);
 	if (n_rows == 0)
 		return NULL;
 	else if ((n_rows - 1) > 0)
@@ -1334,7 +1336,7 @@ rb_entry_view_get_random_entry (RBEntryView *view)
 	path = gtk_tree_path_new_from_string (path_str);
 	g_free (path_str);
 
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->query_model),
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model),
 				 &iter, path);
 
 	gtk_tree_path_free (path);
@@ -1463,7 +1465,7 @@ rb_entry_view_row_changed_cb (GtkTreeModel *model,
 guint
 rb_entry_view_get_num_entries (RBEntryView *view)
 {
-	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->query_model),
+	return gtk_tree_model_iter_n_children (GTK_TREE_MODEL (view->priv->model),
 					       NULL);
 }
 
@@ -1498,8 +1500,8 @@ rb_entry_view_select_entry (RBEntryView *view,
 
 	rb_entry_view_select_none (view);
 
-	rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-					      entry, &iter);
+	rhythmdb_model_entry_to_iter (view->priv->model,
+					entry, &iter);
 
 	gtk_tree_selection_select_iter (view->priv->selection, &iter);
 
@@ -1512,8 +1514,8 @@ rb_entry_view_scroll_to_entry (RBEntryView *view,
 {
 	GtkTreeIter iter;
 	
-	rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-					      entry, &iter);
+	rhythmdb_model_entry_to_iter (view->priv->model,
+					entry, &iter);
 	
 	rb_entry_view_scroll_to_iter (view, &iter);
 }
@@ -1524,7 +1526,7 @@ rb_entry_view_scroll_to_iter (RBEntryView *view,
 {
 	GtkTreePath *path;
 
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
 				      TRUE, 0.5, 0.0);
@@ -1540,7 +1542,7 @@ rb_entry_view_get_entry_visible (RBEntryView *view,
 {
 	GtkTreeIter unused;
 
-	if (view->priv->playing_query_model != view->priv->query_model)
+	if (view->priv->playing_model != view->priv->model)
 		return FALSE;
 
 	return rb_entry_view_entry_is_visible (view, entry, &unused);
@@ -1559,10 +1561,10 @@ rb_entry_view_entry_is_visible (RBEntryView *view,
 	if (!GTK_WIDGET_REALIZED (view))
 		return FALSE;
 
-	rhythmdb_query_model_iter_from_entry (view->priv->query_model,
-					      entry, iter);
+	rhythmdb_model_entry_to_iter (view->priv->model,
+					entry, iter);
 
-	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->query_model), iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (view->priv->model), iter);
 	gtk_tree_view_get_cell_area (GTK_TREE_VIEW (view->priv->treeview),
 				     path,
 				     gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
@@ -1709,7 +1711,7 @@ poll_model (RBEntryView *view)
 
 	GDK_THREADS_ENTER ();
 
-	did_sync = rhythmdb_query_model_sync (view->priv->query_model, &timeout);
+	did_sync = rhythmdb_model_poll (view->priv->model, &timeout);
 
 	GDK_THREADS_LEAVE ();
 

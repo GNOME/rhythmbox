@@ -65,14 +65,7 @@ RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
 
-gboolean		rhythmdb_query_model_sync	(RhythmDBQueryModel *model, GTimeVal *timeout);
-
 void			rhythmdb_query_model_complete	(RhythmDBQueryModel *model);
-
-void			rhythmdb_query_model_cancel	(RhythmDBQueryModel *model);
-
-gboolean		rhythmdb_query_model_iter_from_entry (RhythmDBQueryModel *model,
-							      RhythmDBEntry *entry, GtkTreeIter *iter);
 
 G_END_DECLS
 

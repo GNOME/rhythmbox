@@ -32,6 +32,8 @@
 #include "rb-iradio-source.h"
 
 #include "rhythmdb-legacy.h"
+#include "rhythmdb-model.h"
+#include "rhythmdb-query-model.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-stock-icons.h"
@@ -681,7 +683,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	rhythmdb_query_free (genre_query);
 	rhythmdb_query_free (query);
 	
-	rb_entry_view_set_query_model (source->priv->stations, query_model);
+	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 }
 
 void

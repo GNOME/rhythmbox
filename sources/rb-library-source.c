@@ -32,6 +32,8 @@
 #include "rb-source.h"
 #include "rb-library-source.h"
 
+#include "rhythmdb-model.h"
+#include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
 #include "rb-property-view.h"
 #include "rb-glade-helpers.h"
@@ -1197,7 +1199,7 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype,
 			  "complete", G_CALLBACK (query_complete_cb),
 			  source);
 	
-	rb_entry_view_set_query_model (source->priv->songs, query_model);
+	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_MODEL (query_model));
 
 	if (!sync)
 		rhythmdb_do_full_query_async_parsed (source->priv->db, model, query);

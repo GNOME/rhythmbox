@@ -28,7 +28,7 @@
 #include <gtk/gtkdnd.h>
 
 #include "rhythmdb.h"
-#include "rhythmdb-query-model.h"
+#include "rhythmdb-model.h"
 
 G_BEGIN_DECLS
 
@@ -88,8 +88,8 @@ void		rb_entry_view_append_column_custom	(RBEntryView *view, GtkTreeViewColumn *
 							 gboolean is_default, const char *title,
 							 GCompareDataFunc sort_func, gpointer user_data);
 
-void		rb_entry_view_set_query_model		(RBEntryView *view,
-							 RhythmDBQueryModel *model);
+void		rb_entry_view_set_model			(RBEntryView *view,
+							 RhythmDBModel *model);
 
 void		rb_entry_view_set_playing		(RBEntryView *view,
 							 gboolean playing);
