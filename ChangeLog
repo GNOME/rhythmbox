@@ -1,5 +1,23 @@
 2002-12-17  Jorn Baayen  <jorn@nl.linux.org>
 
+	* Makefile.am:
+
+	Remove iradio for now.
+	
+	* library/rb-node.c: (rb_node_init), (rb_node_dispose),
+	(rb_node_get_previous_child), (rb_node_new_clone),
+	(rb_node_clone_of):
+	* library/rb-node.h:
+
+	Node cloning.
+	
+	* shell/rb-player.c: (rb_player_init), (clear), (insert_song),
+	(delete_song), (eos_cb):
+
+	Use node cloning.
+
+2002-12-17  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/rhythmbox-ui.xml.in:
 
 	Remove obsolete music menu.

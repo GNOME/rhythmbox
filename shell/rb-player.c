@@ -18,7 +18,6 @@
  *  $Id$
  */
 
-/* FIXME support duplicates..... rb_node_new_clone? */
 /* FIXME give playing row different bg color */
 /* FIXME different icon for playing and paused */
 /* FIXME tooltips on buttons */
@@ -362,12 +361,13 @@ rb_player_init (RBPlayer *player)
 	g_signal_connect (G_OBJECT (player->priv->shuffle), "clicked",
 			  G_CALLBACK (shuffle_cb), player);
 
-	/* 'Empty playlist' label FIXME */
-	label = gtk_label_new (_("Empty playlist"));
+	/* 'Empty playlist' label */
+	label = gtk_label_new (_("Not playing\n\nTo play, add music to the playlist"));
+	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
 	pattrlist = pango_attr_list_new ();
 	attr = pango_attr_scale_new (PANGO_SCALE_XX_LARGE);
 	attr->start_index = 0;
-	attr->end_index = G_MAXINT;
+	attr->end_index = strlen (_("Not playing"));
 	pango_attr_list_insert (pattrlist, attr);
 	gtk_label_set_attributes (GTK_LABEL (label),
 				  pattrlist);
@@ -572,7 +572,14 @@ clear (RBPlayer *player)
 	kids = rb_node_get_children (player->priv->playlist);
 	rb_node_thaw (player->priv->playlist);
 	for (i = 0; i < kids->len; i++) {
-		rb_node_remove_child (player->priv->playlist, g_ptr_array_index (kids, i));
+		RBNode *kid;
+
+		kid = g_ptr_array_index (kids, i);
+
+		rb_node_remove_child (player->priv->playlist, kid);
+
+		if (rb_node_clone_of (kid) != NULL)
+			rb_node_unref (kid);
 	}
 }
 
@@ -593,11 +600,20 @@ append_repeat_node (RBPlayer *player)
 static void
 insert_song (RBPlayer *player, RBNode *song, int index)
 {
-	/* FIXME */
-	rb_node_add_child (player->priv->playlist, song);
+	RBNode *node;
+
+	/* FIXME order */
+
+	if (rb_node_has_child (player->priv->playlist, song)) {
+		/* insert a clone instead */
+		node = rb_node_new_clone (song);
+	} else
+		node = song;
+
+	rb_node_add_child (player->priv->playlist, node);
 
 	if (player->priv->playing == NULL) {
-		set_playing (player, song);
+		set_playing (player, node);
 
 		monkey_media_mixer_set_state (player->priv->mixer, MONKEY_MEDIA_MIXER_STATE_PAUSED);
 	}
@@ -634,6 +650,9 @@ delete_song (RBPlayer *player, RBNode *song)
 	}
 
 	rb_node_remove_child (player->priv->playlist, song);
+
+	if (rb_node_clone_of (song) != NULL)
+		rb_node_unref (song);
 }
 #endif
 
@@ -878,7 +897,16 @@ static void
 eos_cb (MonkeyMediaStream *stream,
 	RBPlayer *player)
 {
-	set_playing (player, rb_node_view_get_next_node (player->priv->playlist_view));
+	RBNode *next;
+
+	next = rb_node_view_get_next_node (player->priv->playlist_view);
+	if (next == NULL) {
+		monkey_media_mixer_set_state (player->priv->mixer,
+					      MONKEY_MEDIA_MIXER_STATE_PAUSED);
+		next = rb_node_view_get_first_node (player->priv->playlist_view);
+	}
+
+	set_playing (player, next);
 
 	update_buttons (player);
 

@@ -82,6 +82,9 @@ struct RBNodePrivate
 
 	GHashTable *parents;
 	GPtrArray *children;
+
+	RBNode *clone_of;
+	GList *clones;
 };
 
 enum
@@ -233,14 +236,14 @@ rb_node_init (RBNode *node)
 
 	node->priv->id = -1;
 
-	node->priv->properties = g_ptr_array_new ();
-
 	node->priv->parents = g_hash_table_new_full (int_hash,
 						     int_equal,
 						     NULL,
 						     g_free);
 
 	node->priv->children = g_ptr_array_new ();
+
+	node->priv->properties = g_ptr_array_new ();
 }
 
 static void
@@ -295,6 +298,7 @@ static void
 rb_node_dispose (GObject *object)
 {
 	RBNode *node;
+	GList *l;
 	int i;
 
 	node = RB_NODE (object);
@@ -323,6 +327,29 @@ rb_node_dispose (GObject *object)
 		real_remove_child (node, child, FALSE, TRUE);
 
 		g_static_rw_lock_writer_unlock (child->priv->lock);
+	}
+
+	if (node->priv->clone_of != NULL) {
+		RBNode *peer;
+
+		peer = node->priv->clone_of;
+
+		g_static_rw_lock_writer_lock (peer->priv->lock);
+		peer->priv->clones = g_list_remove (peer->priv->clones, node);
+		g_static_rw_lock_writer_unlock (peer->priv->lock);
+	}
+
+	for (l = node->priv->clones; l != NULL; l = g_list_next (l)) {
+		RBNode *peer;
+
+		/* kill of the clones */
+		peer = l->data;
+
+		g_static_rw_lock_writer_lock (peer->priv->lock);
+
+		peer->priv->ref_count = 0;
+
+		g_object_unref (G_OBJECT (peer));
 	}
 
 	g_static_rw_lock_writer_unlock (node->priv->lock);
@@ -1449,6 +1476,46 @@ rb_node_get_previous_child (RBNode *node,
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 	g_static_rw_lock_reader_unlock (child->priv->lock);
+
+	return ret;
+}
+
+/* mwuahahah the attack of the clones! */
+RBNode *
+rb_node_new_clone (RBNode *peer)
+{
+	RBNode *node;
+
+	node = RB_NODE (g_object_new (RB_TYPE_NODE,
+				      "id", rb_node_new_id (),
+				      NULL));
+
+	g_return_val_if_fail (node->priv != NULL, NULL);
+
+	g_ptr_array_free (node->priv->properties, FALSE);
+	node->priv->properties = peer->priv->properties;
+
+	node->priv->clone_of = peer;
+
+	g_static_rw_lock_writer_lock (peer->priv->lock);
+	peer->priv->clones = g_list_append (peer->priv->clones, node);
+	g_static_rw_lock_writer_unlock (peer->priv->lock);
+
+	return node;
+}
+
+RBNode *
+rb_node_clone_of (RBNode *node)
+{
+	RBNode *ret;
+
+	g_return_val_if_fail (RB_IS_NODE (node), NULL);
+
+	g_static_rw_lock_reader_lock (node->priv->lock);
+
+	ret = node->priv->clone_of;
+
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }

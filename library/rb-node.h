@@ -159,6 +159,12 @@ RBNode     *rb_node_get_next_child        (RBNode *node,
 RBNode     *rb_node_get_previous_child    (RBNode *node,
 					   RBNode *child);
 
+/* node cloning (all clones have the same properties, but a different
+ * family) */
+RBNode     *rb_node_new_clone             (RBNode *node);
+
+RBNode     *rb_node_clone_of              (RBNode *node);
+
 /* node id services */
 void        rb_node_system_init           (void);
 void        rb_node_system_shutdown       (void);
