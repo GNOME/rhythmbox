@@ -68,6 +68,7 @@ static void rb_source_header_view_browser_changed_cb (BonoboUIComponent *compone
 						      const char *state,
 						      RBSourceHeader *header);
 static void rb_source_header_sync_control_state (RBSourceHeader *header);
+static void rb_source_header_clear_search (RBSourceHeader *header);
 
 struct RBSourceHeaderPrivate
 {
@@ -222,6 +223,8 @@ rb_source_header_set_property (GObject *object,
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
 							      header);
 		}
+
+		rb_source_header_clear_search (header);
 		
 		header->priv->selected_source = g_value_get_object (value);
 		rb_debug ("selected source %p", g_value_get_object (value));
@@ -314,6 +317,19 @@ rb_source_header_search_cb (RBSearchEntry *search,
 	rb_debug  ("searching for \"%s\"", text);
 	
 	rb_source_search (header->priv->selected_source, text);
+}
+
+static void
+rb_source_header_clear_search (RBSourceHeader *header)
+{
+	rb_debug ("clearing search");
+
+	if (!rb_search_entry_searching (RB_SEARCH_ENTRY (header->priv->search)))
+	    return;
+	
+	if (header->priv->selected_source)
+		rb_source_search (header->priv->selected_source, NULL);
+	rb_search_entry_clear (RB_SEARCH_ENTRY (header->priv->search));
 }
 
 static void

@@ -1,3 +1,15 @@
+2003-08-02  Colin Walters  <walters@verbum.org>
+
+	* lib/widgets/rb-search-entry.c: (rb_search_entry_clear),
+	(rb_search_entry_changed_cb), (rb_search_entry_focus_out_event_cb),
+	(rb_search_entry_searching):
+	* lib/widgets/rb-search-entry.h:
+	* shell/rb-source-header.c: (rb_source_header_set_property),
+	(rb_source_header_search_cb), (rb_source_header_clear_search):
+
+	Clear the search entry when we switch sources.  And more indentation
+	fixes.
+
 2003-08-02  Colin Walters  <walters@gnu.org>
 
 	* lib/widgets/rb-node-view.c: (rb_node_view_set_property),

@@ -48,11 +48,13 @@ typedef struct
 	void (*search) (RBSearchEntry *view, const char *text);
 } RBSearchEntryClass;
 
-GType          rb_search_entry_get_type (void);
+GType		rb_search_entry_get_type (void);
 
-RBSearchEntry *rb_search_entry_new      (void);
+RBSearchEntry *	rb_search_entry_new      (void);
 
-void           rb_search_entry_clear    (RBSearchEntry *entry);
+void		rb_search_entry_clear    (RBSearchEntry *entry);
+
+gboolean	rb_search_entry_searching(RBSearchEntry *entry);
 
 G_END_DECLS
 

@@ -168,8 +168,7 @@ rb_search_entry_new (void)
 void
 rb_search_entry_clear (RBSearchEntry *entry)
 {
-	if (entry->priv->timeout != 0)
-	{
+	if (entry->priv->timeout != 0) {
 		g_source_remove (entry->priv->timeout);
 		entry->priv->timeout = 0;
 	}
@@ -188,8 +187,7 @@ rb_search_entry_changed_cb (GtkEditable *editable,
 	if (entry->priv->clearing == TRUE)
 		return;
 
-	if (entry->priv->timeout != 0)
-	{
+	if (entry->priv->timeout != 0) {
 		g_source_remove (entry->priv->timeout);
 		entry->priv->timeout = 0;
 	}
@@ -226,4 +224,10 @@ rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 		       gtk_entry_get_text (GTK_ENTRY (entry->priv->entry)));
 
 	return FALSE;
+}
+
+gboolean
+rb_search_entry_searching(RBSearchEntry *entry)
+{
+	return strcmp ("", gtk_entry_get_text (GTK_ENTRY (entry->priv->entry))) != 0;
 }
