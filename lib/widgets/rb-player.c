@@ -91,6 +91,8 @@ struct RBPlayerPrivate
 	GtkAdjustment *adjustment;
 	gboolean slider_dragging;
 	gboolean slider_locked;
+	guint slider_moved_timeout;
+	long latest_set_time;
 	guint value_changed_update_handler;
 	GtkWidget *elapsed_box;
 	GtkWidget *elapsed;
@@ -521,6 +523,27 @@ slider_press_callback (GtkWidget *widget,
 		       RBPlayer *player)
 {
 	player->priv->slider_dragging = TRUE;
+	player->priv->latest_set_time = -1;
+	return FALSE;
+}
+
+static gboolean
+slider_moved_timeout (RBPlayer *player)
+{
+	double progress;
+	long duration, new;
+	MonkeyMediaAudioStream *stream;
+	
+	stream = rb_view_player_get_stream (player->priv->view_player);
+
+	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (player->priv->scale)));
+	duration = rb_view_player_get_duration (player->priv->view_player);
+	new = (long) (progress * duration);
+	
+	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
+
+	player->priv->latest_set_time = new;
+	
 	return FALSE;
 }
 
@@ -544,6 +567,14 @@ slider_moved_callback (GtkWidget *widget,
 	player->priv->state->elapsed = (long) (progress * duration);
 
 	rb_player_update_elapsed (player);
+
+	if (player->priv->slider_moved_timeout != 0)
+	{
+		g_source_remove (player->priv->slider_moved_timeout);
+		player->priv->slider_moved_timeout = 0;
+	}
+	player->priv->slider_moved_timeout =
+		g_timeout_add (100, (GSourceFunc) slider_moved_timeout, player);
 	
 	return FALSE;
 }
@@ -567,12 +598,19 @@ slider_release_callback (GtkWidget *widget,
 	progress = gtk_adjustment_get_value (adjustment);
 	duration = rb_view_player_get_duration (player->priv->view_player);
 	new = (long) (progress * duration);
-	
-	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
+
+	if (new != player->priv->latest_set_time)
+		monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
 
 	player->priv->slider_dragging = FALSE;
 
 	rb_player_sync_time (player);
+
+	if (player->priv->slider_moved_timeout != 0)
+	{
+		g_source_remove (player->priv->slider_moved_timeout);
+		player->priv->slider_moved_timeout = 0;
+	}
 
 	return FALSE;
 }

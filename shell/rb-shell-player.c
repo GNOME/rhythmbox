@@ -417,8 +417,17 @@ rb_shell_player_cmd_previous (BonoboUIComponent *component,
 			      RBShellPlayer *player,
 			      const char *verbname)
 {
-	if (player->priv->player)
+	if (monkey_media_stream_get_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->current_stream)) < 3 &&
+	    rb_view_player_have_previous (player->priv->player) == TRUE)
+	{
+		/* we're in the first 2 seconds of the song, go to previous */
 		rb_view_player_previous (player->priv->player);
+	}
+	else
+	{
+		/* we're further in the song, restart it */
+		monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (player->priv->current_stream), 0);
+	}
 }
 
 static void

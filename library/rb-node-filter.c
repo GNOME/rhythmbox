@@ -212,17 +212,24 @@ rb_node_filter_evaluate (RBNodeFilter *filter,
 
 	for (i = 0; i < filter->priv->levels->len; i++) {
 		GList *l, *list;
+		gboolean handled;
+
+		handled = FALSE;
 
 		list = g_ptr_array_index (filter->priv->levels, i);
 
 		for (l = list; l != NULL; l = g_list_next (l)) {
-			if (rb_node_filter_expression_evaluate (l->data, node) == TRUE)
-				return TRUE;
+			if (rb_node_filter_expression_evaluate (l->data, node) == TRUE) {
+				handled = TRUE;
+				break;
+			}
 		}
 
+		if (handled == FALSE)
+			return FALSE;
 	}
 	
-	return FALSE;
+	return TRUE;
 }
 
 RBNodeFilterExpression *

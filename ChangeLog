@@ -1,3 +1,15 @@
+2002-10-28  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-player.c: (slider_press_callback),
+	(slider_moved_timeout), (slider_moved_callback),
+	(slider_release_callback):
+	* library/rb-node-filter.c: (rb_node_filter_evaluate):
+	* shell/rb-shell-player.c: (rb_shell_player_cmd_previous):
+	* views/rb-group-view.c: (rb_group_view_previous):
+	* views/rb-library-view.c: (rb_library_view_previous):
+
+	Seeking behaviour enhancements, also fix xan's cleanup ;)
+
 2002-10-28  Xan Lopez  <xan@dimensis.com>
 
 	* library/rb-node-filter.c: (rb_node_filter_evaluate):
