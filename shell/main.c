@@ -72,6 +72,7 @@ main (int argc, char **argv)
 				      LIBGNOMEUI_MODULE, argc, argv,
 				      GNOME_PARAM_POPT_TABLE, popt_options,
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
+				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
 
 	CORBA_exception_init (&ev);

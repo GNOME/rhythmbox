@@ -244,7 +244,7 @@ rb_shell_init (RBShell *shell)
 							     "sidebar_layout.xml",
 							     NULL);
 
-	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
+	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_APP_PIXMAP, "rhythmbox.png", TRUE, NULL);
 	gnome_window_icon_set_default_from_file (file);
 	g_free (file);
 	
