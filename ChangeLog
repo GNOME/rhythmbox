@@ -1,3 +1,19 @@
+2003-08-02  Colin Walters  <cwalters@gnome.org>
+
+	* TODO:
+	* iradio/rb-iradio-backend.c: (rb_iradio_backend_load),
+	(finalize_node), (restore_node):
+	* library/rb-library.c: (rb_library_load), (finalize_node),
+	(restore_node), (rb_library_new_node):
+	* library/rb-node.c: (rb_node_save_to_xml), (rb_node_new_from_xml):
+
+	Correctly restore refcounts on node parents after deserializing
+	(this makes deletion in the library/iradio come much closer to
+	working reliably).  Save node reference counts to XML for debugging
+	purposes.  
+
+	Knock Nautilus context menu off TODO list, and other misc. updates.
+
 2003-08-02  Colin Walters  <walters@gnu.org>
 
 	* tests/test-info.c: (print_result), (do_file), (main):

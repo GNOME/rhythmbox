@@ -51,6 +51,8 @@ static void genre_removed_cb (RBNode *node, RBNode *child, guint last_id, RBIRad
 static RBNode * rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 							      const char *uri);
 static gboolean rb_iradio_backend_periodic_save (RBIRadioBackend *backend);
+static void finalize_node (RBNode *node);
+static void restore_node (RBNode *node);
 
 #define RB_IRADIO_BACKEND_XML_VERSION "2.0"
 
@@ -383,6 +385,9 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 	{
 		/* This automagically sets up the tree structure */
 		RBNode *node = rb_node_new_from_xml (backend->priv->db, child);
+		if (node != NULL) {
+			restore_node (node);
+		}
 		rb_debug ("iradio-backend: loaded node %p", node);
 	}
 
@@ -592,7 +597,20 @@ finalize_node (RBNode *node)
 
 	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
 	if (G_LIKELY (parent != NULL))
-		rb_node_unref (parent);
+		rb_node_unref_with_locked_child (parent, node);
+}
+
+static void
+restore_node (RBNode *node)
+{
+	RBNode *parent;
+	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
+		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
+					       (RBNodeCallback) finalize_node, NULL);
+
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
+	if (G_LIKELY (parent != NULL))
+		rb_node_ref (parent);
 }
 
 static void

@@ -628,6 +628,7 @@ rb_node_save_to_xml (RBNode *node,
 	char *xml;
 	char xml_buf [G_ASCII_DTOSTR_BUF_SIZE];
 	guint i;
+	xmlNodePtr value_xml_node;
 
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (parent_xml_node != NULL);
@@ -639,10 +640,13 @@ rb_node_save_to_xml (RBNode *node,
 	xml = g_strdup_printf ("%ld", node->id);
 	xmlSetProp (xml_node, "id", xml);
 	g_free (xml);
+	
+	value_xml_node = xmlNewChild (xml_node, NULL, "refcount", NULL);
+	xml = g_strdup_printf ("%d", node->ref_count);
+	xmlNodeSetContent (value_xml_node, xml);
 
 	for (i = 0; i < node->properties->len; i++) {
 		GValue *value;
-		xmlNodePtr value_xml_node;
 
 		value = g_ptr_array_index (node->properties, i);
 		if (value == NULL)
@@ -794,8 +798,7 @@ rb_node_new_from_xml (RBNodeDb *db, xmlNodePtr xml_node)
 
 			parent = rb_node_db_get_node_from_id (db, parent_id);
 
-			if (parent != NULL)
-			{
+			if (parent != NULL) {
 				real_add_child (parent, node);
 
 				rb_node_emit_signal (parent, RB_NODE_CHILD_ADDED, node);

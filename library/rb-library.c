@@ -1,5 +1,6 @@
 /* 
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,6 +54,8 @@ static void sync_node (RBNode *node,
 		       RBLibrary *library,
 		       gboolean check_reparent,
 		       GError **error);
+static void finalize_node (RBNode *node);
+static void restore_node (RBNode *node);
 static gboolean rb_library_periodic_save (RBLibrary *library);
 
 struct RBLibraryPrivate
@@ -792,9 +795,10 @@ rb_library_load (RBLibrary *library)
 			g_free (tmp);
 			return;
 		}
+
+		restore_node (node);
 			
-		location = rb_node_get_property_string (node,
-							RB_NODE_PROP_LOCATION);
+		location = rb_node_get_property_string (node, RB_NODE_PROP_LOCATION);
 		if (location != NULL) {
 			rb_library_action_queue_add (library->priv->main_queue,
 						     FALSE,
@@ -815,18 +819,37 @@ finalize_node (RBNode *node)
 {
 	RBNode *parent;
 	
-	parent = rb_node_get_property_pointer (node,
-					    RB_NODE_PROP_REAL_ALBUM);
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ALBUM);
 	if (G_LIKELY (parent != NULL))
 		rb_node_unref_with_locked_child (parent, node);
-	parent = rb_node_get_property_pointer (node,
-					    RB_NODE_PROP_REAL_ARTIST);
+
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ARTIST);
 	if (G_LIKELY (parent != NULL))
 		rb_node_unref_with_locked_child (parent, node);
-	parent = rb_node_get_property_pointer (node,
-					    RB_NODE_PROP_REAL_GENRE);
+
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
 	if (G_LIKELY (parent != NULL))
 		rb_node_unref_with_locked_child (parent, node);
+}
+
+static void
+restore_node (RBNode *node)
+{
+	RBNode *parent;
+	if (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION))
+		rb_node_signal_connect_object (node, RB_NODE_DESTROY,
+					       (RBNodeCallback) finalize_node, NULL);
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ALBUM);
+	if (G_LIKELY (parent != NULL))
+		rb_node_ref (parent);
+
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_ARTIST);
+	if (G_LIKELY (parent != NULL))
+		rb_node_ref (parent);
+
+	parent = rb_node_get_property_pointer (node, RB_NODE_PROP_REAL_GENRE);
+	if (G_LIKELY (parent != NULL))
+		rb_node_ref (parent);
 }
 
 RBNode *
@@ -845,7 +868,8 @@ rb_library_new_node (RBLibrary *library,
 	if (G_UNLIKELY (node == NULL))
 		return NULL;
 
-	rb_node_signal_connect_object (node, RB_NODE_DESTROY, (RBNodeCallback) finalize_node, NULL);
+	rb_node_signal_connect_object (node, RB_NODE_DESTROY,
+				       (RBNodeCallback) finalize_node, NULL);
 
 	/* Location */
 	g_value_init (&value, G_TYPE_STRING);
