@@ -665,7 +665,7 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 			/* we check again if the entry already exists in the hash table */
 			if (g_hash_table_lookup (model->priv->reverse_map, update->entry) != NULL)
 				break;
-			
+
 			if (model->priv->max_size > 0
 			    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
 				break;
@@ -842,7 +842,6 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 		for (tem = paths; tem; tem = tem->next) {
 			GtkTreeIter iter;
 			GtkTreePath *path;
-			GSequencePtr ptr;
 			const char *location;
 
 			path = gtk_tree_row_reference_get_path (tem->data);
@@ -858,19 +857,6 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 
 			rhythmdb_read_unlock (model->priv->db);
 
-			if (!model->priv->sort_func) {
-				ptr = g_hash_table_lookup (model->priv->reverse_map,
-							   entry);
-
-				rb_debug ("emitting row deleted");
-				gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
-							    path);
-
-				gtk_tree_path_free (path);
-				g_sequence_remove (ptr);
-				g_hash_table_remove (model->priv->reverse_map, entry);
-			}
-
 			if (tem->next)
 				g_string_append (data, "\r\n");
 		}
@@ -881,7 +867,7 @@ rhythmdb_query_model_multi_drag_data_get (EggTreeMultiDragSource *dragsource,
 					strlen (data->str));
 
 		g_string_free (data, TRUE);
-      
+
 		return TRUE;
 	}
 
@@ -912,7 +898,7 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 		g_assert (rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest));
 		ptr = iter.user_data;
 
-		while (strv[i]) {
+		for (; strv[i]; i++) {
 			GSequencePtr tem_ptr;
 			GtkTreeIter tem_iter;
 			GtkTreePath *tem_path;
@@ -926,6 +912,29 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 			if (entry == NULL)
 				rhythmdb_add_uri_async (model->priv->db, strv[i]);
 			else {
+				GSequencePtr old_ptr = g_hash_table_lookup (model->priv->reverse_map,
+									    entry);
+
+				/* the entry already exists it is either a reorder drag and drop
+				   or a drag and drop from another application */
+				if (old_ptr) {
+
+					/* trying to drag drop an entry on itself ! */
+					if (old_ptr == ptr)
+						continue;
+
+					GtkTreePath *path = gtk_tree_path_new ();
+					gtk_tree_path_append_index (path,
+								    g_sequence_ptr_get_position (old_ptr));
+
+					rb_debug ("emitting row deleted");
+					gtk_tree_model_row_deleted (GTK_TREE_MODEL (model),
+								    path);
+					gtk_tree_path_free (path);
+					g_sequence_remove (old_ptr);
+					g_hash_table_remove (model->priv->reverse_map, entry);
+				}
+
 				g_sequence_insert (ptr, entry);
 
 				tem_ptr = g_sequence_ptr_prev (ptr);
@@ -937,13 +946,12 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 
 				tem_path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
 									  &tem_iter);
-				
+
 				rb_debug ("emitting row inserted from dnd");
 				gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 							     tem_path, &tem_iter);
 				gtk_tree_path_free (tem_path);
 			}
-			i++;
 		}
 
 		g_strfreev (strv);

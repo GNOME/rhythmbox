@@ -282,7 +282,6 @@ rb_source_notify_filter_changed (RBSource *status)
 void
 rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry *entry)
 {
-	char *time_string;
 	time_t now;
 	GValue value = { 0, };
 
@@ -303,14 +302,6 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 	g_value_init (&value, G_TYPE_LONG);
 	g_value_set_long (&value, now);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
-	g_value_unset (&value);
-
-	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
-
-	g_value_init (&value, G_TYPE_STRING);
-	g_value_set_string (&value, time_string);
-	g_free (time_string);
-	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED_STR, &value);
 	g_value_unset (&value);
 
 	rhythmdb_write_unlock (db);
