@@ -339,7 +339,6 @@ void
 rhythmdb_query_model_cancel (RhythmDBQueryModel *model)
 {
 	rb_debug ("cancelling query");
-	rhythmdb_query_cancel (model->priv->db, GTK_TREE_MODEL (model));
 }
 
 static inline GSequencePtr
