@@ -123,15 +123,6 @@ else
 			HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
 	fi
 
-        dnl fail back to 0.5
-	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
-		GST_MAJORMINOR=0.5
-		PKG_CHECK_MODULES(SOUNDSYSTEM, \
-			gstreamer-$GST_MAJORMINOR >= 0.5.2 gstreamer-libs-$GST_MAJORMINOR >= 0.5.2
-			gstreamer-control-$GST_MAJORMINOR gstreamer-gconf-$GST_MAJORMINOR,
-			HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
-	fi
-
 	dnl Give error and exit if we don't have gstreamer
 	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
 		AC_MSG_ERROR([GStreamer not found, or too old version found])
