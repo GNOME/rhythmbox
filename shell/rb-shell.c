@@ -342,6 +342,8 @@ static RBBonoboUIListener rb_tray_listeners[] =
 
 static GObjectClass *parent_class;
 
+GThread *main_thread = NULL;
+
 GType
 rb_shell_get_type (void)
 {
@@ -392,6 +394,8 @@ static void
 rb_shell_init (RBShell *shell) 
 {
 	char *file;
+
+	main_thread = g_thread_self ();
 	
 	shell->priv = g_new0 (RBShellPrivate, 1);
 
@@ -459,9 +463,7 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 	/* hack to make the gdk thread lock available for freeing
 	 * the library.. evil */
-	GDK_THREADS_LEAVE ();
 	g_object_unref (G_OBJECT (shell->priv->library));
-	GDK_THREADS_ENTER ();
 
 	if (shell->priv->remote != NULL)
 		g_object_unref (G_OBJECT (shell->priv->remote));
@@ -496,11 +498,7 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
-	GDK_THREADS_ENTER ();
-	
 	rb_shell_quit (shell);
-
-	GDK_THREADS_LEAVE ();
 }
 
 static void

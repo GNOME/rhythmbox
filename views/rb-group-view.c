@@ -962,16 +962,12 @@ rb_group_view_delete (RBViewClipboard *clipboard)
 	RBGroupView *view = RB_GROUP_VIEW (clipboard);
 	GList *sel, *l;
 
-	GDK_THREADS_LEAVE ();
-
 	sel = g_list_copy (rb_node_view_get_selection (view->priv->songs));
 	for (l = sel; l != NULL; l = g_list_next (l))
 	{
 		rb_node_remove_child (view->priv->group, RB_NODE (l->data));
 	}
 	g_list_free (sel);
-
-	GDK_THREADS_ENTER ();
 }
 
 static void

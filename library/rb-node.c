@@ -27,6 +27,7 @@
 #include "rb-debug.h"
 #include "rb-enums.h"
 #include "rb-marshal.h"
+#include "rb-shell.h"
 
 static void rb_node_class_init (RBNodeClass *klass);
 static void rb_node_init (RBNode *node);
@@ -52,6 +53,8 @@ static void real_add_child (RBNode *node,
 		            RBNode *child);
 static void read_lock_to_write_lock (RBNode *node);
 static void write_lock_to_read_lock (RBNode *node);
+static void lock_gdk (void);
+static void unlock_gdk (void);
 
 typedef struct
 {
@@ -306,7 +309,7 @@ rb_node_dispose (GObject *object)
 
 	g_static_rw_lock_writer_unlock (id_to_node_lock);
 
-	GDK_THREADS_ENTER ();
+	lock_gdk ();
 
 	/* remove from DAG */
 	g_hash_table_foreach (node->priv->parents,
@@ -331,7 +334,7 @@ rb_node_dispose (GObject *object)
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
-	GDK_THREADS_LEAVE ();
+	unlock_gdk ();
 
 	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
@@ -526,7 +529,7 @@ rb_node_set_property (RBNode *node,
 	g_return_if_fail (property_id >= 0);
 	g_return_if_fail (value != NULL);
 
-	GDK_THREADS_ENTER ();
+	lock_gdk ();
 
 	g_static_rw_lock_writer_lock (node->priv->lock);
 
@@ -538,7 +541,7 @@ rb_node_set_property (RBNode *node,
 	
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 
-	GDK_THREADS_LEAVE ();
+	unlock_gdk ();
 }
 
 gboolean
@@ -925,7 +928,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 	type = g_type_from_name (xml);
 	g_free (xml);
 
-	GDK_THREADS_ENTER ();
+	lock_gdk ();
 
 	node = RB_NODE (g_object_new (type,
 				      "id", id,
@@ -1018,7 +1021,7 @@ rb_node_new_from_xml (xmlNodePtr xml_node)
 
 	g_static_rw_lock_reader_unlock (node->priv->lock);
 
-	GDK_THREADS_LEAVE ();
+	unlock_gdk ();
 	
 	return node;
 }
@@ -1060,7 +1063,7 @@ rb_node_add_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	GDK_THREADS_ENTER ();
+	lock_gdk ();
 
 	g_static_rw_lock_writer_lock (node->priv->lock);
 	g_static_rw_lock_writer_lock (child->priv->lock);
@@ -1070,7 +1073,7 @@ rb_node_add_child (RBNode *node,
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
 	
-	GDK_THREADS_LEAVE ();
+	unlock_gdk ();
 }
 
 static void
@@ -1136,7 +1139,7 @@ rb_node_remove_child (RBNode *node,
 	g_return_if_fail (RB_IS_NODE (node));
 	g_return_if_fail (RB_IS_NODE (child));
 
-	GDK_THREADS_ENTER ();
+	lock_gdk ();
 
 	g_static_rw_lock_writer_lock (node->priv->lock);
 	g_static_rw_lock_writer_lock (child->priv->lock);
@@ -1146,7 +1149,7 @@ rb_node_remove_child (RBNode *node,
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 	g_static_rw_lock_writer_unlock (child->priv->lock);
 
-	GDK_THREADS_LEAVE ();
+	unlock_gdk ();
 }
 
 gboolean
@@ -1368,4 +1371,18 @@ read_lock_to_write_lock (RBNode *node)
 	g_static_mutex_unlock (&node->priv->lock->mutex);
 
 	g_static_rw_lock_writer_lock (node->priv->lock);
+}
+
+static void
+lock_gdk (void)
+{
+	if (g_thread_self () != main_thread)
+		GDK_THREADS_ENTER ();
+}
+
+static void
+unlock_gdk (void)
+{
+	if (g_thread_self () != main_thread)
+		GDK_THREADS_LEAVE ();
 }

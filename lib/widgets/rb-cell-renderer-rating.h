@@ -18,14 +18,12 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __RB_CELL_RENDERER_RATING_H__
-#define __RB_CELL_RENDERER_RATING_H__
+#ifndef __RB_CELL_RENDERER_RATING_H
+#define __RB_CELL_RENDERER_RATING_H
 
 #include <gtk/gtkcellrenderer.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 #define RB_TYPE_CELL_RENDERER_RATING		(rb_cell_renderer_rating_get_type ())
 #define RB_CELL_RENDERER_RATING(obj)		(GTK_CHECK_CAST ((obj), RB_TYPE_CELL_RENDERER_RATING, RBCellRendererRating))
@@ -43,26 +41,17 @@ typedef struct
 	RBCellRendererRatingPrivate *priv;
 } RBCellRendererRating;
 
-
 typedef struct
 {
-	int rating;
-	char *path;
-} RBRatingResult;
+	GtkCellRendererClass parent_class;
 
-typedef struct
-{
-  GtkCellRendererClass parent_class;
-
-  void (*rated) (RBCellRendererRating *cellrating);
+	void (*rated) (GtkTreePath *path, int rating);
 } RBCellRendererRatingClass;
 
 GtkType          rb_cell_renderer_rating_get_type (void);
 
-GtkCellRenderer *rb_cell_renderer_rating_new (void);
+GtkCellRenderer *rb_cell_renderer_rating_new      (void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
-#endif /* __RB_CELL_RENDERER_RATING_H__ */
+#endif /* __RB_CELL_RENDERER_RATING_H */

@@ -1,3 +1,43 @@
+2002-10-24  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/art/Makefile.am:
+	* data/art/rhythmbox-blank.png:
+	* data/art/rhythmbox-dot.png:
+	* data/art/rhythmbox-no-star.png:
+	* data/art/rhythmbox-set-star.png:
+	* data/art/rhythmbox-star.png:
+	* data/art/rhythmbox-unset-star.png:
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/rb-marshal.list:
+	* lib/rb-stock-icons.c: (rb_stock_icons_init):
+	* lib/rb-stock-icons.h:
+	* lib/widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_init),
+	(rb_cell_renderer_rating_class_init),
+	(rb_cell_renderer_rating_finalize),
+	(rb_cell_renderer_rating_set_property),
+	(rb_cell_renderer_rating_render),
+	(rb_cell_renderer_rating_activate):
+	* lib/widgets/rb-cell-renderer-rating.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_rated_cb):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value):
+	* library/Makefile.am:
+	* library/rb-node.c: (rb_node_dispose), (rb_node_set_property),
+	(rb_node_new_from_xml), (rb_node_add_child),
+	(rb_node_remove_child), (read_lock_to_write_lock), (lock_gdk),
+	(unlock_gdk):
+	* shell/rb-shell.c: (rb_shell_init), (rb_shell_finalize),
+	(rb_shell_corba_quit):
+	* shell/rb-shell.h:
+	* views/rb-group-view.c: (rb_group_view_delete):
+	* views/rb-library-view.c: (rb_library_view_delete):
+
+	Rating cleanups, and remove the need for weird
+	GDK_THREADS hacks!
+
 2002-10-24  Olivier Martin <oleevye@wanadoo.fr>
 
 	* library/rb-node.c: (rb_node_save_to_xml):

@@ -98,8 +98,9 @@ static void rb_node_view_columns_config_changed_cb (GConfClient* client,
 						    GConfEntry *entry,
 						    gpointer user_data);
 static void rb_node_view_rated_cb (RBCellRendererRating *cellrating,
-				   RBRatingResult *result,
-				   gpointer user_data);
+				   const char *path,
+				   int rating,
+				   RBNodeView *view);
 static void filter_changed_cb (RBNodeFilter *filter,
 		               RBNodeView *view);
 
@@ -663,9 +664,11 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 			gtk_tree_view_column_set_fixed_width (gcolumn, width * 5 + 5);
 
-			g_signal_connect (renderer, "rated",
-					  G_CALLBACK (rb_node_view_rated_cb), view);
-
+			g_signal_connect_object (renderer, 
+						 "rated",
+					         G_CALLBACK (rb_node_view_rated_cb),
+						 G_OBJECT (view),
+						 0);
 		}
 		else
 		{
@@ -743,32 +746,33 @@ rb_node_view_construct (RBNodeView *view)
 
 static void
 rb_node_view_rated_cb (RBCellRendererRating *cellrating,
-		       RBRatingResult *result,
-		       gpointer user_data)
+		       const char *path_string,
+		       int rating,
+		       RBNodeView *view)
 {
-	RBNodeView *view = (RBNodeView *) user_data;
 	GtkTreeIter sort_iter, filter_iter, node_iter;
 	GtkTreePath *path;
 	RBNode *node;
 	GValue value = { 0, };
 
-	g_return_if_fail (result != NULL);
-	g_return_if_fail (result->rating >= 1 && result->rating <= 5 );
-	g_return_if_fail (result->path != NULL);
+	g_return_if_fail (rating >= 1 && rating <= 5 );
+	g_return_if_fail (path_string != NULL);
 
-	path = gtk_tree_path_new_from_string (result->path);
+	path = gtk_tree_path_new_from_string (path_string);
 	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel), &sort_iter, path);
 	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
 							&filter_iter, &sort_iter);
 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &node_iter, &filter_iter);
 	node = rb_tree_model_node_node_from_iter (view->priv->nodemodel, &node_iter);
+	gtk_tree_path_free (path);
 
 	g_value_init (&value, G_TYPE_INT);
-	g_value_set_int (&value, result->rating);
+	g_value_set_int (&value, rating);
 	rb_node_set_property (node,
 			      RB_NODE_SONG_PROP_RATING,
 			      &value);
+	g_value_unset (&value);
 }
 
 static void

@@ -28,6 +28,7 @@
 
 #include "rb-stock-icons.h"
 #include "rb-cell-renderer-rating.h"
+#include "rb-marshal.h"
 
 static void rb_cell_renderer_rating_get_property (GObject *object,
 						  guint param_id,
@@ -53,34 +54,43 @@ static void rb_cell_renderer_rating_render (GtkCellRenderer *cell,
 					    GdkRectangle *cell_area,
 					    GdkRectangle *expose_area,
 					    guint flags);
-gboolean gtk_cell_renderer_rating_activate (GtkCellRenderer *cell,
-					    GdkEvent *event, 
-					    GtkWidget *widget,
-					    const gchar *path,
-					    GdkRectangle *background_area,
-					    GdkRectangle *cell_area,
-					    GtkCellRendererState flags);
+static gboolean rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
+					          GdkEvent *event, 
+					          GtkWidget *widget,
+					          const gchar *path,
+					          GdkRectangle *background_area,
+					          GdkRectangle *cell_area,
+					          GtkCellRendererState flags);
 static GdkPixbuf *eel_create_colorized_pixbuf (GdkPixbuf *src,
 					       int red_value,
 					       int green_value,
 					       int blue_value);
-
+static void rb_cell_renderer_rating_finalize (GObject *object);
 
 struct RBCellRendererRatingPrivate
 {
 	int rating;
 
 	GdkPixbuf *pix_star;
-	GdkPixbuf *pix_dot;
+	GdkPixbuf *pix_unset_star;
 	GdkPixbuf *pix_blank;
-
-	gboolean editable;
 };
 
-enum {
-	PROP_ZERO,
+enum 
+{
+	PROP_0,
 	PROP_RATING
 };
+
+enum
+{
+	RATED,
+	LAST_SIGNAL
+};
+
+static GObjectClass *parent_class = NULL;
+
+static guint rb_cell_renderer_rating_signals[LAST_SIGNAL] = { 0 };
 
 GtkType
 rb_cell_renderer_rating_get_type (void)
@@ -125,15 +135,15 @@ rb_cell_renderer_rating_init (RBCellRendererRating *cellrating)
 	/* create the needed icons */
 	dummy = gtk_label_new (NULL);
 	cellrating->priv->pix_star = gtk_widget_render_icon (dummy,
-							     RB_STOCK_STAR,
+							     RB_STOCK_SET_STAR,
 							     GTK_ICON_SIZE_MENU,
 							     NULL);
-	cellrating->priv->pix_dot = gtk_widget_render_icon (dummy,
-							    RB_STOCK_DOT,
-							    GTK_ICON_SIZE_MENU,
-							    NULL);
+	cellrating->priv->pix_unset_star = gtk_widget_render_icon (dummy,
+							           RB_STOCK_UNSET_STAR,
+							           GTK_ICON_SIZE_MENU,
+							           NULL);
 	cellrating->priv->pix_blank = gtk_widget_render_icon (dummy,
-							      RB_STOCK_BLANK,
+							      RB_STOCK_NO_STAR,
 							      GTK_ICON_SIZE_MENU,
 							      NULL);
 
@@ -146,33 +156,52 @@ rb_cell_renderer_rating_class_init (RBCellRendererRatingClass *class)
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 	GtkCellRendererClass *cell_class = GTK_CELL_RENDERER_CLASS (class);
 
+	parent_class = g_type_class_peek_parent (class);
+
+	object_class->finalize = rb_cell_renderer_rating_finalize;
+
 	object_class->get_property = rb_cell_renderer_rating_get_property;
 	object_class->set_property = rb_cell_renderer_rating_set_property;
 
 	cell_class->get_size = rb_cell_renderer_rating_get_size;
-	cell_class->render = rb_cell_renderer_rating_render;
-	cell_class->activate = gtk_cell_renderer_rating_activate;
-
+	cell_class->render   = rb_cell_renderer_rating_render;
+	cell_class->activate = rb_cell_renderer_rating_activate;
 
 	g_object_class_install_property (object_class,
 					 PROP_RATING,
 					 g_param_spec_int ("rating",
 							   ("Rating Value"),
 							   ("Rating Value"),
-							   0,
-							   5,
-							   0,
+							   0, 5, 0,
 							   G_PARAM_READWRITE));
 
-	g_signal_new ("rated",
-		      G_OBJECT_CLASS_TYPE (object_class),
-		      G_SIGNAL_RUN_LAST,
-		      G_STRUCT_OFFSET (RBCellRendererRatingClass, rated),
-		      NULL, NULL,
-		      g_cclosure_marshal_VOID__POINTER,
-		      G_TYPE_NONE,
-		      1,
-		      G_TYPE_POINTER);
+	rb_cell_renderer_rating_signals[RATED] =
+		g_signal_new ("rated",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBCellRendererRatingClass, rated),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_INT,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING,
+			      G_TYPE_INT);
+}
+
+static void
+rb_cell_renderer_rating_finalize (GObject *object)
+{
+	RBCellRendererRating *cellrating;
+
+	cellrating = RB_CELL_RENDERER_RATING (object);
+	
+	g_object_unref (G_OBJECT (cellrating->priv->pix_star));
+	g_object_unref (G_OBJECT (cellrating->priv->pix_unset_star));
+	g_object_unref (G_OBJECT (cellrating->priv->pix_blank));
+
+	g_free (cellrating->priv);
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
@@ -206,7 +235,9 @@ rb_cell_renderer_rating_set_property (GObject *object,
 	switch (param_id)
 	{
 	case PROP_RATING:
-		cellrating->priv->rating= g_value_get_int (value);
+		cellrating->priv->rating = g_value_get_int (value);
+		if (cellrating->priv->rating < 0)
+			cellrating->priv->rating = 0;
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -261,7 +292,7 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 	int i, icon_size;
 	int offset = 0;
 	GdkRectangle pix_rect, draw_rect;
-	RBCellRendererRating *cellrating= (RBCellRendererRating *) cell;
+	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	rb_cell_renderer_rating_get_size (cell, widget, cell_area,
 					  &pix_rect.x,
@@ -293,12 +324,14 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				else
 					state = GTK_STATE_ACTIVE;
 		
-				if (i > 0 && i  <= cellrating->priv->rating)
+				if (i > 0 && i <= cellrating->priv->rating)
+				{
 					buf = cellrating->priv->pix_star;
+				}
 				else
-					buf = cellrating->priv->pix_dot;
-
-				cellrating->priv->editable = TRUE;
+				{
+					buf = cellrating->priv->pix_blank;
+				}
 			}
 			else
 			{
@@ -307,15 +340,15 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				else
 					state = GTK_STATE_NORMAL;
 				
-				if (i > 0 && i  <= cellrating->priv->rating)
+				if (i > 0 && i <= cellrating->priv->rating)
+				{
 					buf = cellrating->priv->pix_star;
+					offset = 120;
+				}
 				else
+				{
 					buf = cellrating->priv->pix_blank;
-
-				cellrating->priv->editable = FALSE;
-
-				/* prelight a bit to avoid a depressing black :) */
-				offset = 70;
+				}
 			}
 
 			buf = eel_create_colorized_pixbuf (buf,
@@ -339,30 +372,24 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 							     GDK_RGB_DITHER_NORMAL,
 							     0, 0);
 
-			  g_object_unref (buf);
+			g_object_unref (G_OBJECT (buf));
 		}
 	}
 }
 
-gboolean
-gtk_cell_renderer_rating_activate (GtkCellRenderer *cell,
-				   GdkEvent *event, 
-				   GtkWidget  *widget,
-				   const gchar  *path,
-				   GdkRectangle *background_area,
-				   GdkRectangle *cell_area,
-				   GtkCellRendererState flags)
+static gboolean
+rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
+				  GdkEvent *event, 
+				  GtkWidget *widget,
+				  const gchar *path,
+				  GdkRectangle *background_area,
+				  GdkRectangle *cell_area,
+				  GtkCellRendererState flags)
 {
 	int mouse_x, mouse_y, icon_size;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	g_return_val_if_fail (RB_IS_CELL_RENDERER_RATING (cellrating), FALSE);
-
-	if (cellrating->priv->editable == FALSE)
-	{
-		cellrating->priv->editable = TRUE;
-		return TRUE;
-	}
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
@@ -376,14 +403,15 @@ gtk_cell_renderer_rating_activate (GtkCellRenderer *cell,
 	if (mouse_x - cell_area->x >= 0
 	    && mouse_x - cell_area->x <= cell_area->width)
 	{
-		RBRatingResult res;
-		res.rating = (int) ((mouse_x - cell_area->x)  / icon_size) + 1;
-		res.path = g_strdup_printf (path);
+		int rating;
 
-		/* evil workaround */
-		GDK_THREADS_LEAVE ();
-		g_signal_emit_by_name (cellrating, "rated", &res);
-		GDK_THREADS_ENTER ();
+		rating = (int) ((mouse_x - cell_area->x) / icon_size) + 1;
+
+		if (rating > 5)
+			rating = 5;
+		
+		g_signal_emit (G_OBJECT (cellrating), rb_cell_renderer_rating_signals[RATED],
+			       0, path, rating);
 	}
 
 	return TRUE;
