@@ -1,5 +1,12 @@
 2002-06-20  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-library.c: (rb_library_node_destroyed_cb),
+	(rb_library_timeout_cb):
+
+	Fix node from hashes removal.
+
+2002-06-20  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-player.c: (rb_player_adjustment_value_changed_cb):
 
 	Feed correct value to _set_elapsed_time.

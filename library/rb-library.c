@@ -557,19 +557,29 @@ static void
 rb_library_node_destroyed_cb (RBNode *node,
 			      RBLibrary *library)
 {
+	GValue value = { 0, };
+	
 	switch (rb_node_get_node_type (node))
 	{
 	case RB_NODE_TYPE_GENRE:
-		g_hash_table_remove (library->priv->genre_to_node, node);
+		rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &value);
+		g_hash_table_remove (library->priv->genre_to_node, g_value_get_string (&value));
+		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_ARTIST:
-		g_hash_table_remove (library->priv->artist_to_node, node);
+		rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &value);
+		g_hash_table_remove (library->priv->artist_to_node, g_value_get_string (&value));
+		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_ALBUM:
-		g_hash_table_remove (library->priv->album_to_node, node);
+		rb_node_get_property (node, RB_NODE_PROPERTY_NAME, &value);
+		g_hash_table_remove (library->priv->album_to_node, g_value_get_string (&value));
+		g_value_unset (&value);
 		break;
 	case RB_NODE_TYPE_SONG:
-		g_hash_table_remove (library->priv->file_to_node, node);
+		rb_node_get_property (node, RB_NODE_PROPERTY_SONG_LOCATION, &value);
+		g_hash_table_remove (library->priv->file_to_node, g_value_get_string (&value));
+		g_value_unset (&value);
 		break;
 	default:
 		break;
@@ -591,7 +601,7 @@ rb_library_timeout_cb (RBLibrary *library)
 	rb_debug ("rb_library_timeout_cb: waiting lock");
 	g_mutex_lock (library->priv->new_nodes_lock);
 	rb_debug ("rb_library_timeout_cb: obtained lock");
-		
+
 	list = g_list_first (library->priv->new_nodes);
 	node = RB_NODE (list->data);
 	library->priv->new_nodes = g_list_remove (library->priv->new_nodes, node);
