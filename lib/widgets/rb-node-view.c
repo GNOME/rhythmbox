@@ -112,7 +112,6 @@ static void after_filter_changed_cb (RBNodeFilter *filter,
 static gboolean rb_node_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBNodeView *view);
-static gboolean scroll_to_cell (GtkTreeView *treeview);
 
 struct RBNodeViewPrivate
 {
@@ -151,6 +150,8 @@ struct RBNodeViewPrivate
 	RBTreeModelNodeColumn default_sort_column_id;
 
 	GList *search_columns;
+
+	gboolean idle;
 };
 
 enum
@@ -305,12 +306,39 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      G_TYPE_BOOLEAN);
 }
 
+static gboolean
+make_view_idle (RBNodeView *view)
+{
+	view->priv->idle = TRUE;
+
+	return FALSE;
+}
+
+static void
+scroll_child_cb (GtkScrolledWindow *window,
+		 GtkScrollType scroll,
+		 gboolean horizontal,
+		 RBNodeView *view)
+{
+	view->priv->idle = FALSE;
+
+	/* do not autoscroll for 10s when having scrolled */
+	g_timeout_add (10000, (GSourceFunc) make_view_idle, view);
+}
+
 static void
 rb_node_view_init (RBNodeView *view)
 {
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
 
 	view->priv->timeout = g_timeout_add (50, (GSourceFunc) rb_node_view_timeout_cb, view);
+
+	view->priv->idle = TRUE;
+
+	g_signal_connect (G_OBJECT (view),
+			  "scroll_child",
+			  G_CALLBACK (scroll_child_cb),
+			  view);
 }
 
 static void
@@ -363,17 +391,16 @@ rb_node_view_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ROOT:
-		{
-			view->priv->root = g_value_get_object (value);
-		}
+		view->priv->root = g_value_get_object (value);
 		break;
 	case PROP_PLAYING_NODE:
-		{
-			g_assert (view->priv->nodemodel != NULL);
+		g_assert (view->priv->nodemodel != NULL);
 
-			g_object_set_property (G_OBJECT (view->priv->nodemodel),
-				               "playing-node", value);
-		}
+		g_object_set_property (G_OBJECT (view->priv->nodemodel),
+			               "playing-node", value);
+
+		if (view->priv->idle)
+			rb_node_view_scroll_to_node (view, g_value_get_object (value));
 		break;
 	case PROP_VIEW_DESC_FILE:
 		g_free (view->priv->view_desc_file);
@@ -704,6 +731,7 @@ rb_node_view_construct (RBNodeView *view)
 		GtkTreeViewColumn *gcolumn;
 		GtkCellRenderer *renderer;
 		GEnumValue *ev;
+		int width;
 
 		/* get props from the xml file */
 		tmp = xmlGetProp (child, "column");
@@ -772,10 +800,9 @@ rb_node_view_construct (RBNodeView *view)
 
 		/* so we got all info, now we can actually build the column */
 		gcolumn = (GtkTreeViewColumn *) rb_tree_view_column_new ();
-		if (column == RB_TREE_MODEL_NODE_COL_PLAYING)
+		switch (column)
 		{
-			int width;
-
+		case RB_TREE_MODEL_NODE_COL_PLAYING:
 			renderer = rb_cell_renderer_pixbuf_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
@@ -784,11 +811,9 @@ rb_node_view_construct (RBNodeView *view)
 			gtk_tree_view_column_set_sizing (gcolumn, GTK_TREE_VIEW_COLUMN_FIXED);
 			gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
 			gtk_tree_view_column_set_fixed_width (gcolumn, width + 5);
-		}
-		else if (column == RB_TREE_MODEL_NODE_COL_RATING)
-		{
-			int width;
 
+			break;
+		case RB_TREE_MODEL_NODE_COL_RATING:
 			renderer = rb_cell_renderer_rating_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
@@ -803,9 +828,20 @@ rb_node_view_construct (RBNodeView *view)
 					         G_CALLBACK (rb_node_view_rated_cb),
 						 G_OBJECT (view),
 						 0);
-		}
-		else
-		{
+
+			break;
+		case RB_TREE_MODEL_NODE_COL_TITLE:
+			renderer = gtk_cell_renderer_text_new ();
+			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
+			gtk_tree_view_column_set_attributes (gcolumn, renderer,
+							     "text", column,
+							     "weight", RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT,
+							     NULL);
+			gtk_tree_view_column_set_sizing (gcolumn,
+							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
+			break;
+		default:
 			renderer = gtk_cell_renderer_text_new ();
 			gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 			gtk_tree_view_column_set_attributes (gcolumn, renderer,
@@ -813,6 +849,8 @@ rb_node_view_construct (RBNodeView *view)
 							     NULL);
 			gtk_tree_view_column_set_sizing (gcolumn,
 							 GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+
+			break;
 		}
 
 		gtk_tree_view_column_set_resizable (gcolumn, resizable);
@@ -1410,25 +1448,13 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 							&iter, &iter2);
 
 	path = gtk_tree_model_get_path (view->priv->sortmodel, &iter);
-
-	/* remove this hack when rb requires GTK+ HEAD */
-	g_object_set_data (G_OBJECT (view->priv->treeview), "cell_path", path);
-	g_idle_add ((GSourceFunc) scroll_to_cell, view->priv->treeview);
-
-	gtk_tree_view_set_cursor (GTK_TREE_VIEW (view->priv->treeview), path,
-				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
-}
-
-static gboolean
-scroll_to_cell (GtkTreeView *treeview)
-{
-	GtkTreePath *path = g_object_get_data (G_OBJECT (treeview), "cell_path");
-	gtk_tree_view_scroll_to_cell (treeview, path,
-				      gtk_tree_view_get_column (treeview, 0),
+	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
+				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
 				      TRUE, 0.5, 0.0);
 	gtk_tree_path_free (path);
 
-	return FALSE;
+	gtk_tree_view_set_cursor (GTK_TREE_VIEW (view->priv->treeview), path,
+				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
 }
 
 static gboolean

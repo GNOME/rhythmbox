@@ -1,5 +1,5 @@
 /*
- *  Copyright © 2002 Jorn Baayen.  All rights reserved.
+ *  Copyright (C) 2002, 2003 Jorn Baayen.  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,15 +20,12 @@
 
 /* FIXME fix up button crack and summary bits? */
 /* FIXME reorderable */
-/* FIXME shuffle/repeat */
-/* FIXME make all nodes bold */
 
 /* FIXME scroll to playing node */
 /* FIXME volume control */
 /* FIXME treeview row tooltips if it doesnt fit */
 /* FIXME playlist management button? */
 /* FIXME delete song from playlist button, ordering buttons, play this one button */
-/* FIXME Whole track foo of bar thing should ellipsize */
 
 #include <gtk/gtkvbox.h>
 #include <gtk/gtkalignment.h>
@@ -39,6 +36,7 @@
 #include <gtk/gtknotebook.h>
 #include <gtk/gtktooltips.h>
 #include <gtk/gtkeventbox.h>
+#include <gtk/gtktogglebutton.h>
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
@@ -56,6 +54,7 @@
 #include "rb-ellipsizing-label.h"
 #include "rb-library-dnd-types.h"
 #include "rb-dialog.h"
+#include "eel-gconf-extensions.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *player);
@@ -76,8 +75,7 @@ static void drag_data_received_cb (GtkWidget *widget,
 			           RBPlayer *player);
 static void update_buttons (RBPlayer *player);
 static void set_playing (RBPlayer *player, RBNode *song);
-static void play_cb (GtkWidget *widget, RBPlayer *player);
-static void pause_cb (GtkWidget *widget, RBPlayer *player);
+static void play_pause_cb (GtkWidget *widget, RBPlayer *player);
 static void previous_cb (GtkWidget *widget, RBPlayer *player);
 static void next_cb (GtkWidget *widget, RBPlayer *player);
 static void shuffle_cb (GtkWidget *widget, RBPlayer *player);
@@ -97,6 +95,11 @@ static void song_label_size_allocate_cb (GtkWidget *widget,
 			                 GtkAllocation *allocation,
 			                 RBPlayer *player);
 static void check_view_state (RBPlayer *player);
+static void sync_repeat_mode (RBPlayer *player);
+static void repeat_pref_changed_cb (GConfClient *client,
+			            guint cnxn_id,
+			            GConfEntry *entry,
+			            RBPlayer *player);
 
 struct RBPlayerPrivate
 {
@@ -116,7 +119,6 @@ struct RBPlayerPrivate
 
 	GtkWidget *previous;
 	GtkWidget *play;
-	GtkWidget *pause;
 	GtkWidget *next;
 
 	GtkWidget *second_button_box;
@@ -132,6 +134,8 @@ struct RBPlayerPrivate
 	RBPlayerState state;
 
 	MonkeyMediaPlayer *player;
+
+	gboolean repeat_mode;
 
 	guint timeout;
 
@@ -153,6 +157,8 @@ enum
 };
 
 #define PLAYLIST_XML_VERSION "1.0"
+
+#define CONF_STATE_REPEAT "/apps/rhythmbox/state/repeat"
 
 static GObjectClass *parent_class = NULL;
 
@@ -209,11 +215,15 @@ rb_player_class_init (RBPlayerClass *klass)
 }
 
 static GtkWidget *
-create_button_with_icon (const char *stock_id)
+create_button_with_icon (const char *stock_id,
+			 gboolean toggle)
 {
 	GtkWidget *ret, *image;
 
-	ret = gtk_button_new ();
+	if (toggle)
+		ret = gtk_toggle_button_new ();
+	else
+		ret = gtk_button_new ();
 	image = gtk_image_new_from_stock (stock_id,
 					  GTK_ICON_SIZE_LARGE_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (ret), image);
@@ -356,28 +366,18 @@ rb_player_init (RBPlayer *player)
 	gtk_box_pack_end (GTK_BOX (hbox), player->priv->second_button_box,
 			    FALSE, FALSE, 0);
 
-	player->priv->previous = create_button_with_icon (RB_STOCK_PREVIOUS);
+	player->priv->previous = create_button_with_icon (RB_STOCK_PREVIOUS, FALSE);
 	gtk_tooltips_set_tip (player->priv->tooltips,
 			      player->priv->previous,
 			      _("Play the previous song"), NULL);
 	pack_button (player, player->priv->previous, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->previous), "clicked",
 			  G_CALLBACK (previous_cb), player);
-	player->priv->play     = create_button_with_icon (RB_STOCK_PLAY);
-	gtk_tooltips_set_tip (player->priv->tooltips,
-			      player->priv->play,
-			      _("Start playback"), NULL);
+	player->priv->play     = create_button_with_icon (RB_STOCK_PLAY, FALSE);
 	pack_button (player, player->priv->play, FALSE);
 	g_signal_connect (G_OBJECT (player->priv->play), "clicked",
-			  G_CALLBACK (play_cb), player);
-	player->priv->pause    = create_button_with_icon (RB_STOCK_PAUSE);
-	gtk_tooltips_set_tip (player->priv->tooltips,
-			      player->priv->pause,
-			      _("Pause playback"), NULL);
-	pack_button (player, player->priv->pause, FALSE);
-	g_signal_connect (G_OBJECT (player->priv->pause), "clicked",
-			  G_CALLBACK (pause_cb), player);
-	player->priv->next     = create_button_with_icon (RB_STOCK_NEXT);
+			  G_CALLBACK (play_pause_cb), player);
+	player->priv->next     = create_button_with_icon (RB_STOCK_NEXT, FALSE);
 	gtk_tooltips_set_tip (player->priv->tooltips,
 			      player->priv->next,
 			      _("Play the next song"), NULL);
@@ -385,14 +385,14 @@ rb_player_init (RBPlayer *player)
 	g_signal_connect (G_OBJECT (player->priv->next), "clicked",
 			  G_CALLBACK (next_cb), player);
 
-	player->priv->repeat   = create_button_with_icon (RB_STOCK_REPEAT);
+	player->priv->repeat   = create_button_with_icon (RB_STOCK_REPEAT, TRUE);
 	gtk_tooltips_set_tip (player->priv->tooltips,
 			      player->priv->repeat,
 			      _("Repeat the play list"), NULL);
 	pack_button (player, player->priv->repeat, TRUE);
 	g_signal_connect (G_OBJECT (player->priv->repeat), "clicked",
 			  G_CALLBACK (repeat_cb), player);
-	player->priv->shuffle  = create_button_with_icon (RB_STOCK_SHUFFLE);
+	player->priv->shuffle  = create_button_with_icon (RB_STOCK_SHUFFLE, FALSE);
 	gtk_tooltips_set_tip (player->priv->tooltips,
 			      player->priv->shuffle,
 			      _("Shuffle the play list"), NULL);
@@ -427,7 +427,6 @@ rb_player_init (RBPlayer *player)
 				  vbox_label, NULL);
 
 	/* playlist */
-	/* FIXME should be reorderable */
 	player->priv->playlist = rb_node_new ();
 	player->priv->playlist_view = rb_node_view_new (player->priv->playlist,
 							rb_file ("rb-node-view-playlist.xml"),
@@ -460,6 +459,11 @@ rb_player_init (RBPlayer *player)
 
 	update_buttons (player);
 	nullify_info (player);
+
+	eel_gconf_notification_add (CONF_STATE_REPEAT,
+				    (GConfClientNotifyFunc) repeat_pref_changed_cb,
+				    player);
+	sync_repeat_mode (player);
 }
 
 static void
@@ -536,11 +540,29 @@ rb_player_new (RB *rb)
 }
 
 static void
+transform_play_button (RBPlayer *player,
+		       gboolean play)
+{
+	if (play) {
+		gtk_image_set_from_stock (GTK_IMAGE (GTK_BIN (player->priv->play)->child),
+					  RB_STOCK_PLAY, GTK_ICON_SIZE_LARGE_TOOLBAR);
+		gtk_tooltips_set_tip (player->priv->tooltips,
+				      player->priv->play,
+				      _("Start playback"), NULL);
+	} else {
+		gtk_image_set_from_stock (GTK_IMAGE (GTK_BIN (player->priv->play)->child),
+					  RB_STOCK_PAUSE, GTK_ICON_SIZE_LARGE_TOOLBAR);
+		gtk_tooltips_set_tip (player->priv->tooltips,
+				      player->priv->play,
+				      _("Pause playback"), NULL);
+	}
+}
+
+static void
 update_buttons (RBPlayer *player)
 {
 	if (rb_node_view_get_first_node (player->priv->playlist_view) == NULL) {
-		gtk_widget_hide (player->priv->pause);
-		gtk_widget_show (player->priv->play);
+		transform_play_button (player, TRUE);
 
 		gtk_widget_set_sensitive (player->priv->play, FALSE);
 		gtk_widget_set_sensitive (player->priv->previous, FALSE);
@@ -551,20 +573,21 @@ update_buttons (RBPlayer *player)
 
 	gtk_widget_set_sensitive (player->priv->play, TRUE);
 
-	gtk_widget_set_sensitive (player->priv->next,
-				  (rb_node_view_get_next_node (player->priv->playlist_view) != NULL));
+	if (player->priv->repeat_mode)
+		gtk_widget_set_sensitive (player->priv->next, TRUE);
+	else
+		gtk_widget_set_sensitive (player->priv->next,
+					  (rb_node_view_get_next_node (player->priv->playlist_view) != NULL));
 	gtk_widget_set_sensitive (player->priv->previous,
 				  (rb_node_view_get_previous_node (player->priv->playlist_view) != NULL));
 
 	switch (rb_player_get_state (player)) {
 	case RB_PLAYER_PLAYING:
-		gtk_widget_hide (player->priv->play);
-		gtk_widget_show (player->priv->pause);
+		transform_play_button (player, FALSE);
 		break;
 	case RB_PLAYER_STOPPED:
 	case RB_PLAYER_PAUSED:
-		gtk_widget_hide (player->priv->pause);
-		gtk_widget_show (player->priv->play);
+		transform_play_button (player, TRUE);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -575,7 +598,13 @@ update_buttons (RBPlayer *player)
 static void
 rb_next (RBPlayer *player)
 {
-	set_playing (player, rb_node_view_get_next_node (player->priv->playlist_view));
+	RBNode *next;
+
+	next = rb_node_view_get_next_node (player->priv->playlist_view);
+	if (next == NULL)
+		next = rb_node_view_get_first_node (player->priv->playlist_view);
+
+	set_playing (player, next);
 
 	rb_player_set_state (player, RB_PLAYER_PLAYING);
 }
@@ -628,18 +657,36 @@ rb_shuffle (RBPlayer *player)
 }
 
 static void
-append_repeat_node (RBPlayer *player)
+sync_repeat_mode (RBPlayer *player)
 {
-	/* FIXME */
+	player->priv->repeat_mode = eel_gconf_get_boolean (CONF_STATE_REPEAT);
+
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (player->priv->repeat),
+				      player->priv->repeat_mode);
+
 	update_buttons (player);
 }
 
+static void
+repeat_pref_changed_cb (GConfClient *client,
+			guint cnxn_id,
+			GConfEntry *entry,
+			RBPlayer *player)
+{
+	sync_repeat_mode (player);
+}
+
+static void
+rb_repeat (RBPlayer *player,
+	   gboolean repeat)
+{
+	eel_gconf_set_boolean (CONF_STATE_REPEAT, repeat);
+}
+
 static RBNode *
-insert_song (RBPlayer *player, RBNode *song, int index)
+append_song (RBPlayer *player, RBNode *song)
 {
 	RBNode *node;
-
-	/* FIXME order */
 
 	if (rb_node_has_child (player->priv->playlist, song)) {
 		/* insert a clone instead */
@@ -657,19 +704,9 @@ insert_song (RBPlayer *player, RBNode *song, int index)
 
 	update_buttons (player);
 
+	rb_node_view_scroll_to_node (player->priv->playlist_view, node);
+
 	return node;
-}
-
-static RBNode *
-prepend_song (RBPlayer *player, RBNode *song)
-{
-	return insert_song (player, song, 0);
-}
-
-static RBNode *
-append_song (RBPlayer *player, RBNode *song)
-{
-	return insert_song (player, song, -1);
 }
 
 #if 0
@@ -788,7 +825,7 @@ rb_player_queue_song (RBPlayer *player,
 	if (start_playing) {
 		RBNode *real;
 
-		real = prepend_song (player, song);
+		real = append_song (player, song);
 		set_playing (player, real);
 
 		rb_player_set_state (player, RB_PLAYER_PLAYING);
@@ -944,7 +981,6 @@ drag_data_received_cb (GtkWidget *widget,
 		       guint info, guint time,
 		       RBPlayer *player)
 {
-	/* FIXME insert at a particular position */
 	GtkTargetList *tlist;
 	GdkAtom target;
 	RBNode *node;
@@ -969,17 +1005,13 @@ drag_data_received_cb (GtkWidget *widget,
 }
 
 static void
-play_cb (GtkWidget *widget,
-	 RBPlayer *player)
+play_pause_cb (GtkWidget *widget,
+	       RBPlayer *player)
 {
-	rb_play (player);
-}
-
-static void
-pause_cb (GtkWidget *widget,
-	  RBPlayer *player)
-{
-	rb_pause (player);
+	if (player->priv->state != RB_PLAYER_PAUSED)
+		rb_pause (player);
+	else
+		rb_play (player);
 }
 
 static void
@@ -1007,7 +1039,7 @@ static void
 repeat_cb (GtkWidget *widget,
 	   RBPlayer *player)
 {
-	append_repeat_node (player);
+	rb_repeat (player, GTK_TOGGLE_BUTTON (widget)->active);
 }
 
 static void
@@ -1020,10 +1052,14 @@ eos_cb (MonkeyMediaPlayer *mm_player,
 
 	next = rb_node_view_get_next_node (player->priv->playlist_view);
 	if (next == NULL) {
-		monkey_media_player_close (player->priv->player);
+		if (!player->priv->repeat_mode) {
+			monkey_media_player_close (player->priv->player);
 
-		player->priv->playing = NULL;
-		player->priv->state = RB_PLAYER_PAUSED;
+			player->priv->playing = NULL;
+			player->priv->state = RB_PLAYER_PAUSED;
+
+			check_view_state (player);
+		}
 
 		next = rb_node_view_get_first_node (player->priv->playlist_view);
 	}

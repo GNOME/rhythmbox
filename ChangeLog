@@ -1,5 +1,26 @@
 2003-01-19  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/rhythmbox.schemas:
+	* lib/widgets/rb-node-view.c: (make_view_idle), (scroll_child_cb),
+	(rb_node_view_init), (rb_node_view_set_property),
+	(rb_node_view_construct), (rb_node_view_scroll_to_node):
+	* lib/widgets/rb-tree-model-node.c:
+	(rb_tree_model_node_get_column_type),
+	(rb_tree_model_node_get_value),
+	(rb_tree_model_node_column_get_type):
+	* lib/widgets/rb-tree-model-node.h:
+	* shell/rb-player.c: (create_button_with_icon), (rb_player_init),
+	(transform_play_button), (update_buttons), (rb_next),
+	(sync_repeat_mode), (repeat_pref_changed_cb), (rb_repeat),
+	(append_song), (rb_player_queue_song), (drag_data_received_cb),
+	(play_pause_cb), (repeat_cb), (eos_cb):
+
+	Implement repeat mode, better play button behaviour,
+	make 'all' nodes bold, scroll to playing song on eos after
+	10s of idleness in that part of the ui.
+
+2003-01-19  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-tree-view.c:
 	(gtk_tree_view_size_allocate_columns):
 	* library/rb-node.h:

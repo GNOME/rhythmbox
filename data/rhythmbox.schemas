@@ -1,62 +1,6 @@
 <gconfschemafile>
    <schemalist>
       <schema>
-        <key>/schemas/apps/rhythmbox/music_groups</key>
-	<applyto>/apps/rhythmbox/music_groups</applyto>
-	<owner>rhythmbox</owner>
-	<type>list</type>
-	<list_type>string</list_type>
-	<default>[]</default>
-	<locale name="C">
-	<short>List of music groups</short>
-	<long>A list of filenames where the current music groups are stored.</long>
-	</locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/toolbar_visible</key>
-	<applyto>/apps/rhythmbox/ui/toolbar_visible</applyto>
-	<owner>rhythmbox</owner>
-	<type>bool</type>
-	<default>1</default>
-	<locale name="C">
-	<short>Toolbar visibility</short>
-	<long>Boolean controlling whether the toolbar is visible or not.</long>
-	</locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/statusbar_visible</key>
-	<applyto>/apps/rhythmbox/ui/statusbar_visible</applyto>
-	<owner>rhythmbox</owner>
-	<type>bool</type>
-	<default>1</default>
-	<locale name="C">
-	<short>Statusbar visibility</short>
-	<long>Boolean controlling whether the statusbar is visible or not.</long>
-	</locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/sidebar_visible</key>
-	<applyto>/apps/rhythmbox/ui/sidebar_visible</applyto>
-	<owner>rhythmbox</owner>
-	<type>bool</type>
-	<default>1</default>
-	<locale name="C">
-	<short>Sidebar visibility</short>
-	<long>Boolean controlling whether the sidebar is visible or not.</long>
-	</locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/toolbar_style</key>
-	<applyto>/apps/rhythmbox/ui/toolbar_style</applyto>
-	<owner>rhythmbox</owner>
-	<type>string</type>
-	<default>desktop_default</default>
-	<locale name="C">
-	<short>Toolbar style</short>
-	<long>Toolbar style description.</long>
-	</locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/state/paned_position</key>
         <applyto>/apps/rhythmbox/state/paned_position</applyto>
         <owner>rhythmbox</owner>
@@ -112,17 +56,6 @@
 	</locale>
       </schema>
       <schema>
-        <key>/schemas/apps/rhythmbox/state/shuffle</key>
-        <applyto>/apps/rhythmbox/state/shuffle</applyto>
-        <owner>rhythmbox</owner>
-        <type>bool</type>
-        <default>0</default>
-        <locale name="C">
-	<short>Shuffle mode</short>
-	<long>If true, rhythmbox will use a random playing order.</long>
-        </locale>
-      </schema>
-      <schema>
         <key>/schemas/apps/rhythmbox/state/repeat</key>
         <applyto>/apps/rhythmbox/state/repeat</applyto>
         <owner>rhythmbox</owner>
@@ -175,18 +108,6 @@
         <locale name="C">
 	<short>Show browser in library</short>
 	<long>Show the artist and album browser in the library.</long>
-        </locale>
-      </schema>
-      <schema>
-        <key>/schemas/apps/rhythmbox/ui/toolbar_setup</key>
-        <applyto>/apps/rhythmbox/ui/toolbar_setup</applyto>
-        <owner>rhythmbox</owner>
-        <type>string</type>
-        <default>previous=std_toolitem(item=previous);play=std_toolitem(item=play);next=std_toolitem(item=next);shuffle_separator=separator;shuffle=std_toolitem(item=shuffle);volume=volume;</default>
-        <locale name="C">
-	<short>List of controls in the toolbar.</short>
-	<long>The list of controls that will be present in the toolbar. You should edit 
-        this setting with the toolbar editor, unless you know what you are doing.</long>
         </locale>
       </schema>
       <schema>

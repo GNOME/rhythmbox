@@ -418,6 +418,7 @@ rb_tree_model_node_get_column_type (GtkTreeModel *tree_model,
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		return G_TYPE_BOOLEAN;
 	case RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT:
+	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
 	case RB_TREE_MODEL_NODE_COL_RATING:
 		return G_TYPE_INT;
 	default:
@@ -532,7 +533,14 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				      RB_NODE_PROP_NAME_SORT_KEY,
 				      value);
 		break;
+	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
+		g_value_init (value, G_TYPE_INT);
 
+		if (!rb_node_get_property_boolean (node, RB_ALL_NODE_PROP_PRIORITY))
+			g_value_set_int (value, PANGO_WEIGHT_NORMAL);
+		else
+			g_value_set_int (value, PANGO_WEIGHT_BOLD);
+		break;
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		g_value_init (value, G_TYPE_BOOLEAN);
 
@@ -547,14 +555,12 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		}
 		break;
 	case RB_TREE_MODEL_NODE_COL_PRIORITY:
-		{
-			g_value_init (value, G_TYPE_BOOLEAN);
+		g_value_init (value, G_TYPE_BOOLEAN);
 
-			/* ! because of sorting; 1 goes after 0 .. */
-			g_value_set_boolean (value,
-					     !rb_node_get_property_boolean (node,
-						                            RB_ALL_NODE_PROP_PRIORITY));
-		}
+		/* ! because of sorting; 1 goes after 0 .. */
+		g_value_set_boolean (value,
+				     !rb_node_get_property_boolean (node,
+					                            RB_ALL_NODE_PROP_PRIORITY));
 		break;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 		g_value_init (value, G_TYPE_BOOLEAN);
@@ -861,6 +867,7 @@ rb_tree_model_node_column_get_type (void)
 			{ RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT, "RB_TREE_MODEL_NODE_COL_TRACK_NUMBER_INT", "track number (int format)" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE,            "RB_TREE_MODEL_NODE_COL_TITLE",            "title" },
 			{ RB_TREE_MODEL_NODE_COL_TITLE_KEY,        "RB_TREE_MODEL_NODE_COL_TITLE_KEY",        "title (g_utf8_collate_key)" },
+			{ RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT,     "RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT",     "title weight" },
 			{ RB_TREE_MODEL_NODE_COL_ARTIST,           "RB_TREE_MODEL_NODE_COL_ARTIST",           "artist" },
 			{ RB_TREE_MODEL_NODE_COL_ARTIST_KEY,       "RB_TREE_MODEL_NODE_COL_ARTIST_KEY",       "artist (g_utf8_collate_key)" },
 			{ RB_TREE_MODEL_NODE_COL_ALBUM,            "RB_TREE_MODEL_NODE_COL_ALBUM",            "album" },
