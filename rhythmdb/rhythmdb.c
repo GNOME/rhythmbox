@@ -169,7 +169,10 @@ static void rhythmdb_read_leave (RhythmDB *db);
 static gboolean rhythmdb_idle_poll_events (RhythmDB *db);
 static gpointer add_thread_main (struct RhythmDBAddThreadData *data);
 static gpointer action_thread_main (RhythmDB *db);
-gpointer query_thread_main (struct RhythmDBQueryThreadData *data);
+static gpointer query_thread_main (struct RhythmDBQueryThreadData *data);
+static void queue_stat_uri (const char *uri, RhythmDB *db);
+
+
 
 enum
 {
@@ -746,8 +749,16 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean signal_changed)
 
 	emit_changed_signals (db, signal_changed);
 
-	for (tem = db->priv->added_entries; tem; tem = tem->next)
-		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
+	for (tem = db->priv->added_entries; tem; tem = tem->next) {
+		const gchar *uri;
+
+		rhythmdb_emit_entry_added (db, tem->data);
+		uri = rhythmdb_entry_get_string (tem->data, 
+						 RHYTHMDB_PROP_LOCATION);
+		queue_stat_uri (uri, db);
+
+	}
+
 	g_list_free (db->priv->added_entries);
 	db->priv->added_entries = NULL;
 }
@@ -794,7 +805,7 @@ rhythmdb_entry_allocate (RhythmDB *db, RhythmDBEntryType type)
 void
 rhythmdb_entry_insert (RhythmDB *db, RhythmDBEntry *entry)
 {
-	db->priv->added_entries = g_list_append (db->priv->added_entries, entry);
+	db->priv->added_entries = g_list_append (db->priv->added_entries, entry);	
 }
 
 RhythmDBEntry *
@@ -1316,7 +1327,7 @@ add_thread_main (struct RhythmDBAddThreadData *data)
 	struct RhythmDBEvent *result;
 
 	realuri = rb_uri_resolve_symlink (data->uri);
-	
+
 	if (rb_uri_is_directory (realuri))
 		rb_uri_handle_recursively (data->uri, (GFunc) queue_stat_uri,
 					   &data->db->priv->exiting, data->db);
@@ -1766,7 +1777,7 @@ rhythmdb_entry_queue_set (RhythmDB *db, RhythmDBEntry *entry,
 			  guint propid, GValue *value)
 {
 	/* FIXME */
-	g_print ("WARNING: rhythmdb_entry_queue_set not implemented\n");
+	g_warning ("rhythmdb_entry_queue_set not implemented\n");
 #if 0
 	struct RhythmDBAction *action = g_new0 (struct RhythmDBAction, 1);
 	action->entry = entry;
@@ -2219,7 +2230,7 @@ rhythmdb_query_internal (struct RhythmDBQueryThreadData *data)
 	rhythmdb_query_free (data->query);
 }
 
-gpointer
+static gpointer
 query_thread_main (struct RhythmDBQueryThreadData *data)
 {
 	struct RhythmDBEvent *result;
