@@ -8,3 +8,11 @@ EXTRA_DIST = 			\
 	INSTALL.GNU		\
 	rhythmbox.spec		\
 	rhythmbox.spec.in
+
+CLEANFILES =				\
+	./po/.intltool-merge-cache 	\
+	./help/C/rhythmbox-C.omf.out 	\
+	./intltool-extract 		\
+	./intltool-merge 		\
+	./intltool-update
+
