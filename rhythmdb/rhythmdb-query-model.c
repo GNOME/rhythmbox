@@ -519,10 +519,11 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 {
 	if (G_LIKELY (model->priv->query)) {
 		if (model->priv->max_size > 0
-		    && g_hash_table_size (model->priv->reverse_map) < model->priv->max_size) {
-			if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-				rhythmdb_query_model_add_entry (model, entry);
-			}
+		    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
+			return;
+		
+		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
+			rhythmdb_query_model_add_entry (model, entry);
 		}
 	}
 }
