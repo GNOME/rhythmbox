@@ -88,11 +88,9 @@ static void gtk_tree_model_sort_row_changed_cb (GtkTreeModel *model,
 static void gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 					              RBNodeView *view);
 static gboolean rb_node_view_timeout_cb (RBNodeView *view);
-static int rb_node_view_get_n_rows (RBNodeView *view);
 static void root_child_removed_cb (RBNode *root,
 			           RBNode *child,
 			           RBNodeView *view);
-static gboolean rb_node_view_is_empty (RBNodeView *view);
 static void rb_node_view_columns_parse (RBNodeView *view,
 					const char *config);
 static void rb_node_view_columns_config_changed_cb (GConfClient* client,
@@ -141,9 +139,6 @@ struct RBNodeViewPrivate
 
 	gboolean selection_lock;
 
-	GList *current_random;
-	GList *random_nodes;
-	
 	char *columns_key;
 	guint gconf_notification_id;
 	GHashTable *columns;
@@ -305,9 +300,6 @@ rb_node_view_init (RBNodeView *view)
 	view->priv = g_new0 (RBNodeViewPrivate, 1);
 
 	view->priv->timeout = g_timeout_add (50, (GSourceFunc) rb_node_view_timeout_cb, view);
-
-	view->priv->current_random = NULL;
-	view->priv->random_nodes = NULL;
 }
 
 static void
@@ -342,8 +334,6 @@ rb_node_view_finalize (GObject *object)
 		g_object_unref (G_OBJECT (view->priv->nodemodel));
 	g_object_unref (G_OBJECT (view->priv->nodemodel));
 
-	g_list_free (view->priv->random_nodes);
-	
 	g_free (view->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -972,119 +962,6 @@ rb_node_view_get_first_node (RBNodeView *view)
 	return rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
 }
 
-static gboolean
-rb_node_view_node_is_repeat (RBNodeView *view, RBNode *node)
-{
-	GList *tmp;
-
-	tmp = view->priv->random_nodes;
-
-	while (tmp) {
-		RBNode *tmp_node = tmp->data;
-
-		if (tmp_node == node)
-			return TRUE;
-
-		tmp = tmp->next;
-	}
-
-	return FALSE;
-}
-
-static RBNode *
-rb_node_view_get_random_node (RBNodeView *view)
-{
-	static int recur_count = 0;
-	RBNode *node;
-	GtkTreePath *path;
-	GtkTreeIter iter, iter2;
-	char *path_str;
-	int index, n_rows;
-
-	if (rb_node_view_is_empty (view) == TRUE)
-		return NULL;
-
-	n_rows = rb_node_view_get_n_rows (view);
-	if ((n_rows - 1) > 0)
-		index = g_random_int_range (0, n_rows - 1);
-	else
-		index = 0;
-
-	path_str = g_strdup_printf ("%d", index);
-	path = gtk_tree_path_new_from_string (path_str);
-	g_free (path_str);
-
-	gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->sortmodel),
-				 &iter, path);
-
-	gtk_tree_path_free (path);
-
-	gtk_tree_model_sort_convert_iter_to_child_iter (GTK_TREE_MODEL_SORT (view->priv->sortmodel),
-							&iter2, &iter);
-	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
-							  &iter, &iter2);
-
-	node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &iter);
-
-	if (rb_node_view_node_is_repeat (view, node)) {
-		if (recur_count > 5) {
-			recur_count = 0;
-
-			/* we give up, we are returning a repeat */
-			return node;
-		} else {
-			recur_count++;
-			return rb_node_view_get_random_node (view);
-		}
-	}
-	
-	recur_count = 0;
-
-	return node;
-}
-
-RBNode *
-rb_node_view_get_next_random_node (RBNodeView *view)
-{
-	RBNode *node;
-
-	if (rb_node_view_is_empty (view) == TRUE)
-		return NULL;
-
-	if (view->priv->current_random != NULL &&
-	    view->priv->current_random->next != NULL) {
-		view->priv->current_random = view->priv->current_random->next;
-		node = (RBNode *) view->priv->current_random->data;
-	} else {
-		node = rb_node_view_get_random_node (view);
-		view->priv->random_nodes = g_list_append (view->priv->random_nodes, node);
-		view->priv->current_random = g_list_last (view->priv->random_nodes);
-	}
-
-	return node;
-}
-
-RBNode *
-rb_node_view_get_previous_random_node (RBNodeView *view)
-{
-	RBNode *node;
-
-	if (rb_node_view_is_empty (view) == TRUE)
-		return NULL;
-
-	if (view->priv->current_random != NULL &&
-	    view->priv->current_random->prev != NULL) {
-		view->priv->current_random = view->priv->current_random->prev;
-		node = (RBNode *) view->priv->current_random->data;
-	} else {
-		node = rb_node_view_get_random_node (view);
-		view->priv->random_nodes = g_list_prepend (view->priv->random_nodes, node);
-		view->priv->current_random = view->priv->random_nodes;
-	}
-
-	return node;
-}
-
 static void
 get_selection (GtkTreeModel *model,
 	       GtkTreePath *path,
@@ -1324,54 +1201,6 @@ gtk_tree_sortable_sort_column_changed_cb (GtkTreeSortable *sortable,
 	view->priv->changed = TRUE;
 }
 
-char *
-rb_node_view_get_status (RBNodeView *view)
-{
-	char *ret, *size;
-	long hours, minutes, seconds;
-	GnomeVFSFileSize n_bytes = 0;
-	long n_seconds = 0;
-	long n_songs = 0;
-	GPtrArray *kids;
-	int i;
-
-	kids = rb_node_get_children (view->priv->root);
-
-	for (i = 0; i < kids->len; i++)
-	{
-		RBNode *node;
-
-		node = g_ptr_array_index (kids, i);
-
-		if (view->priv->filter != NULL &&
-		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
-			continue;
-
-		n_songs++;
-
-		n_seconds += rb_node_get_property_long (node,
-							RB_NODE_PROP_REAL_DURATION);
-
-		n_bytes += rb_node_get_property_long (node,
-						      RB_NODE_PROP_FILE_SIZE);
-	}
-
-	rb_node_thaw (view->priv->root);
-
-	size = gnome_vfs_format_file_size_for_display (n_bytes);
-
-	hours   = n_seconds / (60 * 60);
-	minutes = n_seconds / 60 - hours * 60;
-	seconds = n_seconds % 60;
-
-	ret = g_strdup_printf (_("%ld songs, %ld:%02ld:%02ld total time, %s"),
-			       n_songs, hours, minutes, seconds, size);
-
-	g_free (size);
-
-	return ret;
-}
-
 void
 rb_node_view_select_all (RBNodeView *view)
 {
@@ -1492,40 +1321,6 @@ rb_node_view_timeout_cb (RBNodeView *view)
 	GDK_THREADS_LEAVE ();
 
 	return TRUE;
-}
-
-static gboolean
-rb_node_view_is_empty (RBNodeView *view)
-{
-	GtkTreeIter iter;
-
-	return (gtk_tree_model_get_iter_first (view->priv->sortmodel, &iter) == FALSE);
-}
-
-static int
-rb_node_view_get_n_rows (RBNodeView *view)
-{
-	GPtrArray *kids;
-	int n_rows = 0, i;
-
-	kids = rb_node_get_children (view->priv->root);
-	
-	for (i = 0; i < kids->len; i++)
-	{
-		RBNode *node;
-
-		node = g_ptr_array_index (kids, i);
-
-		if (view->priv->filter != NULL &&
-		    rb_node_filter_evaluate (view->priv->filter, node) == FALSE)
-			continue;
-
-		n_rows++;
-	}
-
-	rb_node_thaw (view->priv->root);
-
-	return n_rows;
 }
 
 static void

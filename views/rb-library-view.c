@@ -373,7 +373,7 @@ rb_library_view_construct (RBLibraryView *view)
 			  G_CALLBACK (rb_library_view_drop_cb), view);
 	gtk_drag_dest_set (GTK_WIDGET (view->priv->songs), GTK_DEST_DEFAULT_ALL,
 			   target_uri, 1, GDK_ACTION_COPY);
-	rb_node_view_enable_drag_source (view->priv->songs, target_uri, 1);
+	rb_node_view_enable_drag_source (view->priv->songs, target_id, 1);
 
 	/* Drag'n'Drop for albums view */
 	g_signal_connect (G_OBJECT (view->priv->albums), "drag_data_received",

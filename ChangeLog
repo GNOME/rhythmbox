@@ -1,3 +1,28 @@
+2002-12-16  Jorn Baayen  <jorn@nl.linux.org>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_init),
+	(rb_node_view_finalize), (rb_node_view_timeout_cb):
+	* lib/widgets/rb-node-view.h:
+	* library/rb-library.c: (rb_library_handle_songs):
+	* shell/rb-commander.c:
+	* shell/rb-commander.h:
+	* shell/rb-player.c: (rb_player_init), (rb_player_finalize),
+	(rb_player_new), (update_buttons), (next), (previous), (play),
+	(pause), (clear), (insert_song), (prepend_song), (append_song),
+	(delete_song), (sync_info), (set_playing), (nullify_info),
+	(rb_player_queue_song), (rb_player_get_song),
+	(rb_player_set_state), (rb_player_get_state),
+	(rb_player_load_playlist), (rb_player_save_playlist),
+	(handle_songs_func), (drag_data_received_cb), (play_cb),
+	(pause_cb), (previous_cb), (next_cb), (sync_time):
+	* shell/rb-player.h:
+	* shell/rb.c: (rb_cmd_about):
+	* shell/rb.h:
+	* views/rb-library-view.c: (rb_library_view_construct):
+
+	Random fuckery. At least you can now dnd stuff to the playlist,
+	and play that.
+
 2002-12-13  Olivier Martin <oleevye@wanadoo.fr>
 
 	* Makefile.am:

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
+ *  Copyright © 2002 Jorn Baayen.  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -63,7 +63,7 @@ RBNode               *rb_player_get_song      (RBPlayer *player);
 void                  rb_player_set_state     (RBPlayer *player,
 			                       MonkeyMediaMixerState state);
 
-MonkeyMediaMixerState rb_player_get_state     (RBPlayer *playeR);
+MonkeyMediaMixerState rb_player_get_state     (RBPlayer *player);
 
 void                  rb_player_load_playlist (RBPlayer *player,
 			                       const char *uri,

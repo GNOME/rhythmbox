@@ -652,7 +652,7 @@ rb_library_handle_songs (RBLibrary *library,
 			RBNode *n;
 
 			n = g_ptr_array_index (kids, i);
-			
+
 			rb_library_handle_songs (library, n, func, user_data);
 		}
 
