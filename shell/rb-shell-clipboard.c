@@ -36,6 +36,12 @@ static void rb_shell_clipboard_get_property (GObject *object,
 					     GValue *value,
 					     GParamSpec *pspec);
 static void rb_shell_clipboard_sync (RBShellClipboard *clipboard);
+static void rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
+					       RBShellClipboard *clipboard,
+					       const char *verbname);
+static void rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
+						RBShellClipboard *clipboard,
+						const char *verbname);
 static void rb_shell_clipboard_cmd_cut (BonoboUIComponent *component,
 			                RBShellClipboard *clipboard,
 			                const char *verbname);
@@ -87,6 +93,8 @@ enum
 
 static BonoboUIVerb rb_shell_clipboard_verbs[] =
 {
+	BONOBO_UI_VERB ("SelectAll",(BonoboUIVerbFn) rb_shell_clipboard_cmd_select_all),
+	BONOBO_UI_VERB ("SelectNone",(BonoboUIVerbFn) rb_shell_clipboard_cmd_select_none),
 	BONOBO_UI_VERB ("Cut",      (BonoboUIVerbFn) rb_shell_clipboard_cmd_cut),
 	BONOBO_UI_VERB ("Copy",     (BonoboUIVerbFn) rb_shell_clipboard_cmd_copy),
 	BONOBO_UI_VERB ("Paste",    (BonoboUIVerbFn) rb_shell_clipboard_cmd_paste),
@@ -316,6 +324,30 @@ rb_shell_clipboard_sync (RBShellClipboard *clipboard)
 	 * the global paste status */
 	rb_bonobo_set_sensitive (clipboard->priv->component,
 				 CMD_PATH_SONGLIST_POPUP_PASTE, can_paste);
+}
+
+static void
+rb_shell_clipboard_cmd_select_all (BonoboUIComponent *component,
+				   RBShellClipboard *clipboard,
+				   const char *verbname)
+{
+	RBNodeView *nodeview;
+	rb_debug ("select all");
+
+	nodeview = rb_source_get_node_view (clipboard->priv->source);
+	rb_node_view_select_all (nodeview);
+}
+
+static void
+rb_shell_clipboard_cmd_select_none (BonoboUIComponent *component,
+				    RBShellClipboard *clipboard,
+				    const char *verbname)
+{
+	RBNodeView *nodeview;
+	rb_debug ("select none");
+
+	nodeview = rb_source_get_node_view (clipboard->priv->source);
+	rb_node_view_select_none (nodeview);
 }
 
 static void

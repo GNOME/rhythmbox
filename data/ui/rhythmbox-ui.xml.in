@@ -1,303 +1,308 @@
 <Root>
+  <commands>
+    <cmd name="Previous"
+	 pixtype="stock"
+	 pixname="rhythmbox-previous"
+	 _tip="Start playing the previous song"
+	 priority="1"/>
+    
+    <cmd name="Play"
+	 pixtype="stock"
+	 pixname="rhythmbox-play"
+	 _tip="Start playing"
+	 priority="1"/>
+
+    <cmd name="Pause"
+	 pixtype="stock"
+	 pixname="rhythmbox-pause"
+	 _tip="Pause playing"
+	 priority="1"/>
+
+    <cmd name="Stop"
+	 pixtype="stock"
+	 pixname="rhythmbox-stop"
+	 _tip="Stop playing"
+	 priority="1"/>
+
+    <cmd name="Next"
+	 pixtype="stock"
+	 pixname="rhythmbox-next"
+	 _tip="Start playing the next song"
+	 priority="1"/>
+
+    <cmd name="Shuffle"
+	 pixtype="stock"
+	 pixname="rhythmbox-shuffle"
+	 _tip="Toggle random playing order"
+	 priority="1"
+	 type="toggle"/>
+
+    <cmd name="Repeat"
+	 pixtype="stock"
+	 pixname="rhythmbox-repeat"
+	 _tip="Toggle repeat mode"
+	 priority="1"
+	 type="toggle"/>
+
+    <cmd name="Cut"
+	 pixtype="stock"
+	 pixname="gtk-cut"
+	 _tip="Cut selection"/>
+
+    <cmd name="Copy"
+	 pixtype="stock"
+	 pixname="gtk-copy"
+	 _tip="Copy selection"/>
+
+    <cmd name="Paste"
+	 pixtype="stock"
+	 pixname="gtk-paste"
+	 _tip="Paste selection"/>
+
+    <cmd name="Delete"
+	 _tip="Delete selection"/>
+
+    <cmd name="SelectAll"
+	 _tip="Select all songs"/>
+    
+    <cmd name="SelectNone"
+	 _tip="Deselect all songs"/>
+
+    <cmd name="About"
+	 pixtype="stock"
+	 pixname="gnome-stock-about"
+	 _tip="Show information about the music player"/>
+
+    <cmd name="Contents"
+	 pixtype="stock"
+	 pixname="gtk-help"
+	 accel="F1" 
+	 _tip="Display music player help"/>
+
+    <cmd name="Close"
+	 pixtype="stock"
+	 pixname="gtk-close"
+	 _tip="Close the music player"/>
+
+    <cmd name="Preferences"
+	 pixtype="stock"
+	 pixname="gtk-preferences"
+	 _tip="Edit music player preferences"/>
+
+    <cmd name="NewPlaylist"
+	 pixtype="stock"
+	 pixname="gtk-new"
+	 _tip="Create a new playlist"/>
+
+    <!-- 	<cmd name="NewSmartPlaylist" -->
+    <!-- 	     pixtype="stock" -->
+    <!-- 	     pixname="gtk-new" -->
+    <!-- 	     _tip="Create a new smart playlist"/> -->
+
+    <cmd name="NewStation"
+	 pixtype="stock"
+	 pixname="gtk-new"
+	 _tip="Create a new Internet Radio station"/>
 
-<commands>
-
-	<cmd name="Previous"
-	     pixtype="stock"
-	     pixname="rhythmbox-previous"
-	     _tip="Start playing the previous song"
-	     priority="1"/>
-	     
-	<cmd name="Play"
-	     pixtype="stock"
-	     pixname="rhythmbox-play"
-	     _tip="Start playing"
-	     priority="1"/>
-
-	<cmd name="Pause"
-	     pixtype="stock"
-	     pixname="rhythmbox-pause"
-	     _tip="Pause playing"
-	     priority="1"/>
-
-	<cmd name="Stop"
-	     pixtype="stock"
-	     pixname="rhythmbox-stop"
-	     _tip="Stop playing"
-	     priority="1"/>
-
-	<cmd name="Next"
-	     pixtype="stock"
-	     pixname="rhythmbox-next"
-	     _tip="Start playing the next song"
-	     priority="1"/>
-
-	<cmd name="Shuffle"
-	     pixtype="stock"
-	     pixname="rhythmbox-shuffle"
-	     _tip="Toggle random playing order"
-	     priority="1"
-	     type="toggle"/>
-
-	<cmd name="Repeat"
-	     pixtype="stock"
-	     pixname="rhythmbox-repeat"
-	     _tip="Toggle repeat mode"
-	     priority="1"
-	     type="toggle"/>
-
-	<cmd name="Cut"
-	     pixtype="stock"
-	     pixname="gtk-cut"
-	     _tip="Cut selection"/>
-
-	<cmd name="Copy"
-	     pixtype="stock"
-	     pixname="gtk-copy"
-	     _tip="Copy selection"/>
-
-	<cmd name="Paste"
-	     pixtype="stock"
-	     pixname="gtk-paste"
-	     _tip="Paste selection"/>
-
-	<cmd name="Delete"
-	     _tip="Delete selection"/>
-
-	<cmd name="About"
-	     pixtype="stock"
-	     pixname="gnome-stock-about"
-	     _tip="Show information about the music player"/>
-
-	<cmd name="Contents"
-	     pixtype="stock"
-	     pixname="gtk-help"
-	     accel="F1" 
-	     _tip="Display music player help"/>
-
-	<cmd name="Close"
-	     pixtype="stock"
-	     pixname="gtk-close"
-	     _tip="Close the music player"/>
-
-	<cmd name="Preferences"
-	     pixtype="stock"
-	     pixname="gtk-preferences"
-	     _tip="Edit music player preferences"/>
-
-	<cmd name="NewPlaylist"
-	     pixtype="stock"
-	     pixname="gtk-new"
-	     _tip="Create a new playlist"/>
-
-<!-- 	<cmd name="NewSmartPlaylist" -->
-<!-- 	     pixtype="stock" -->
-<!-- 	     pixname="gtk-new" -->
-<!-- 	     _tip="Create a new smart playlist"/> -->
-
-	<cmd name="NewStation"
-	     pixtype="stock"
-	     pixname="gtk-new"
-	     _tip="Create a new Internet Radio station"/>
-
-	<cmd name="AddToLibrary"
-	     pixtype="stock"
-	     pixname="gtk-open"
-	     _tip="Choose files or a directory to be added to the library"/>
+    <cmd name="AddToLibrary"
+	 pixtype="stock"
+	 pixname="gtk-open"
+	 _tip="Choose files or a directory to be added to the library"/>
 
-	<cmd name="AddLocation"
-	     pixtype="stock"
-	     pixname="gtk-open"
-	     _tip="Choose a location (URI) to be added to the library"/>
+    <cmd name="AddLocation"
+	 pixtype="stock"
+	 pixname="gtk-open"
+	 _tip="Choose a location (URI) to be added to the library"/>
 
-	<cmd name="LoadPlaylist"
-	     _tip="Choose a playlist to be loaded"/>
+    <cmd name="LoadPlaylist"
+	 _tip="Choose a playlist to be loaded"/>
 
-	<cmd name="ShowSourceList"
-	     _tip="Change the visibility of the source list"
-	     type="toggle"/>
+    <cmd name="ShowSourceList"
+	 _tip="Change the visibility of the source list"
+	 type="toggle"/>
 
-	<cmd name="ViewBrowser"
-	     _tip="Change the visibility of the browser"
-	     type="toggle"/>
-	     
-	<cmd name="ShowWindow"
-	     _tip="Change the visibility of the main window"
-	     type="toggle"/>
-	
-	<cmd name="SongInfo"
-	     pixtype="stock"
-	     pixname="gtk-properties"
-	     priority="1"
-	     _tip="Show information on the selected song"/>
-	     
-	<cmd name="CurrentSong"
-	     _tip="Scroll the view to the currently playing song"
-	     pixtype="stock"
-             pixname="gtk-jump-to"/>
+    <cmd name="ViewBrowser"
+	 _tip="Change the visibility of the browser"
+	 type="toggle"/>
+    
+    <cmd name="ShowWindow"
+	 _tip="Change the visibility of the main window"
+	 type="toggle"/>
+    
+    <cmd name="SongInfo"
+	 pixtype="stock"
+	 pixname="gtk-properties"
+	 priority="1"
+	 _tip="Show information on the selected song"/>
+    
+    <cmd name="CurrentSong"
+	 _tip="Scroll the view to the currently playing song"
+	 pixtype="stock"
+         pixname="gtk-jump-to"/>
 
-</commands>
+  </commands>
 
-<menu>
+  <menu>
 
-<submenu name="File" _label="_File">
-        
-        <menuitem name="NewPlaylist" verb="NewPlaylist" _label="_New Playlist..." accel="*Control*n"/>
-<!--         <menuitem name="NewSmartPlaylist" verb="NewSmartPlaylist" _label="New _Smart Playlist..."/> -->
-	<menuitem name="NewStation" verb="NewStation" _label="New _Internet Radio Station"/>
+    <submenu name="File" _label="_File">
+      
+      <menuitem name="NewPlaylist" verb="NewPlaylist" _label="_New Playlist..." accel="*Control*n"/>
+      <!--         <menuitem name="NewSmartPlaylist" verb="NewSmartPlaylist" _label="New _Smart Playlist..."/> -->
+      <menuitem name="NewStation" verb="NewStation" _label="New _Internet Radio Station"/>
 
-	<placeholder name="SourceMenu"/>
+      <placeholder name="SourceMenu"/>
 
-	<separator/>
+      <separator/>
 
-        <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
-        <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
-        <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
+      <menuitem name="AddToLibrary" verb="AddToLibrary" _label="_Add to Library..." accel="*Control*o"/>
+      <menuitem name="AddLocation" verb="AddLocation" _label="Add Lo_cation..."/>
+      <menuitem name="LoadPlaylist" verb="LoadPlaylist" _label="_Load Playlist..."/>
 
-	<separator/>
+      <separator/>
 
-        <menuitem name="FileGroupDelete" verb="FileGroupDelete" _label="_Delete Playlist"/>
+      <menuitem name="FileGroupDelete" verb="FileGroupDelete" _label="_Delete Playlist"/>
 
-	<placeholder name="FileMenu"/>
+      <placeholder name="FileMenu"/>
 
-	<separator/>
+      <separator/>
 
-        <menuitem name="Close" verb="Close" _label="_Close" accel="*Control*w"/>
+      <menuitem name="Close" verb="Close" _label="_Close" accel="*Control*w"/>
 
-</submenu>
+    </submenu>
 
-<submenu name="Edit" _label="_Edit">
+    <submenu name="Edit" _label="_Edit">
 
-        <menuitem name="Cut" verb="Cut" _label="Cu_t" accel="*Control*x"/>
-	
-        <menuitem name="Copy" verb="Copy" _label="_Copy" accel="*Control*c"/>
-	
-        <menuitem name="Paste" verb="Paste" _label="_Paste" accel="*Control*v"/>
+      <menuitem name="Cut" verb="Cut" _label="Cu_t" accel="*Control*x"/>
+      
+      <menuitem name="Copy" verb="Copy" _label="_Copy" accel="*Control*c"/>
+      
+      <menuitem name="Paste" verb="Paste" _label="_Paste" accel="*Control*v"/>
 
-	<menuitem name="Delete" verb="Delete" _label="_Delete"/>
+      <menuitem name="Delete" verb="Delete" _label="_Delete"/>
 
-	<placeholder name="EditMenu"/>
+      <menuitem name="SelectAll" verb="SelectAll" _label="Select _All" accel="*Control*a"/>
+      <menuitem name="SelectNone" verb="SelectNone" _label="Select N_one"/>
 
-        <separator/>
+      <separator/>
 
-        <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
+      <menuitem name="SongInfo" verb="SongInfo" _label="_Properties" accel="*Control*p"/>
 
-	<separator/>
+      <separator/>
 
-	<menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
+      <menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
 
-</submenu>
+    </submenu>
 
-<submenu name="View" _label="_View">
+    <submenu name="View" _label="_View">
 
-	<menuitem name="SourceList" verb="ShowSourceList" _label="_Source List" accel="F9"/>
+      <menuitem name="SourceList" verb="ShowSourceList" _label="_Source List" accel="F9"/>
 
-	<menuitem name="ViewBrowser" verb="ViewBrowser" _label="_Browser" accel="F7"/>
-        
-	<separator/>
+      <menuitem name="ViewBrowser" verb="ViewBrowser" _label="_Browser" accel="F7"/>
+      
+      <separator/>
 
-        <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
+      <menuitem name="CurrentSong" verb="CurrentSong" _label="_Jump to Playing Song" accel="*Control*j"/>
 
-</submenu>
+    </submenu>
 
-<submenu name="Controls" _label="_Music">
+    <submenu name="Controls" _label="_Music">
 
-	<menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
+      <menuitem name="Play" _label="_Play" verb="Play" accel="*Control*space"/>
 
-	<separator/>
+      <separator/>
 
-	<menuitem name="Previous" _label="P_revious" verb="Previous" accel="*Control*Left"/>
+      <menuitem name="Previous" _label="P_revious" verb="Previous" accel="*Control*Left"/>
 
-	<menuitem name="Next" _label="_Next" verb="Next" accel="*Control*Right"/>
+      <menuitem name="Next" _label="_Next" verb="Next" accel="*Control*Right"/>
 
-	<separator/>
-	
-	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
-	
-	<menuitem name="Repeat" _label="Repea_t" verb="Repeat" accel="*Control*t"/>
+      <separator/>
+      
+      <menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
+      
+      <menuitem name="Repeat" _label="Repea_t" verb="Repeat" accel="*Control*t"/>
 
-</submenu>
+    </submenu>
 
-<submenu name="Help" _label="_Help">
+    <submenu name="Help" _label="_Help">
 
-	<menuitem name="Contents" verb="Contents" _label="_Contents"/>
+      <menuitem name="Contents" verb="Contents" _label="_Contents"/>
 
-        <menuitem name="About" verb="About" _label="_About"/>
+      <menuitem name="About" verb="About" _label="_About"/>
 
-</submenu>
+    </submenu>
 
-</menu>
+  </menu>
 
-<popups>
+  <popups>
 
-	<popup name="TrayPopup">
+    <popup name="TrayPopup">
 
-		<menuitem name="Play" _label="_Play" verb="Play"/>
-		
-		<separator/>
+      <menuitem name="Play" _label="_Play" verb="Play"/>
+      
+      <separator/>
 
-		<menuitem name="Previous" _label="P_revious" verb="Previous"/>
+      <menuitem name="Previous" _label="P_revious" verb="Previous"/>
 
-		<menuitem name="Next" _label="_Next" verb="Next"/>
+      <menuitem name="Next" _label="_Next" verb="Next"/>
 
-		<separator/>
+      <separator/>
 
-		<menuitem name="ShowWindow" _label="_Show Window" verb="ShowWindow"/>
-	
-	</popup>
+      <menuitem name="ShowWindow" _label="_Show Window" verb="ShowWindow"/>
+      
+    </popup>
 
-  <popup name="LibrarySongsList">
-    <menuitem name="SLCopy"
-     _label="_Copy"
-     _tip="Copy selection"
-     pixtype="stock" pixname="gtk-copy"
-     verb=""/>
-    <menuitem name="SLDelete"
-     _label="_Delete"
-     _tip="Delete selection"
-     pixtype="stock" pixname="gtk-delete"
-     verb=""/>
-    <separator/>
-    <menuitem name="SLProperties"
-     _label="_Properties"
-     _tip="Show information on the selected song"
-     pixtype="stock" pixname="gtk-properties"
-     verb=""/>  
-  </popup>
+    <popup name="LibrarySongsList">
+      <menuitem name="SLCopy"
+		_label="_Copy"
+		_tip="Copy selection"
+		pixtype="stock" pixname="gtk-copy"
+		verb=""/>
+      <menuitem name="SLDelete"
+		_label="_Delete"
+		_tip="Delete selection"
+		pixtype="stock" pixname="gtk-delete"
+		verb=""/>
+      <separator/>
+      <menuitem name="SLProperties"
+		_label="_Properties"
+		_tip="Show information on the selected song"
+		pixtype="stock" pixname="gtk-properties"
+		verb=""/>  
+    </popup>
 
-  <popup name="GroupSongsList">
-    <menuitem name="SLCopy"
-     _label="_Copy"
-     _tip="Copy selection"
-     pixtype="stock" pixname="gtk-copy"
-     verb=""/>
-    <menuitem name="SLCut"
-     _label="_Cut"
-     _tip="Cut selection"
-     pixtype="stock" pixname="gtk-cut"
-     verb=""/>
-    <menuitem name="SLDelete"
-     _label="_Delete"
-     _tip="Delete selection"
-     pixtype="stock" pixname="gtk-delete"
-     verb=""/>
-    <separator/>
-    <menuitem name="SLProperties"
-     _label="_Properties"
-     _tip="Show information on the selected song"
-     pixtype="stock" pixname="gtk-properties"
-     verb=""/>  
-  </popup>
+    <popup name="GroupSongsList">
+      <menuitem name="SLCopy"
+		_label="_Copy"
+		_tip="Copy selection"
+		pixtype="stock" pixname="gtk-copy"
+		verb=""/>
+      <menuitem name="SLCut"
+		_label="_Cut"
+		_tip="Cut selection"
+		pixtype="stock" pixname="gtk-cut"
+		verb=""/>
+      <menuitem name="SLDelete"
+		_label="_Delete"
+		_tip="Delete selection"
+		pixtype="stock" pixname="gtk-delete"
+		verb=""/>
+      <separator/>
+      <menuitem name="SLProperties"
+		_label="_Properties"
+		_tip="Show information on the selected song"
+		pixtype="stock" pixname="gtk-properties"
+		verb=""/>  
+    </popup>
 
-  <popup name="GroupSourceList">
-    <menuitem name="GroupDelete"
-     _label="_Delete"
-     _tip="Delete selection"
-     pixtype="stock" pixname="gtk-delete"
-     verb=""/>
-    <separator/>
-  </popup>
+    <popup name="GroupSourceList">
+      <menuitem name="GroupDelete"
+		_label="_Delete"
+		_tip="Delete selection"
+		pixtype="stock" pixname="gtk-delete"
+		verb=""/>
+      <separator/>
+    </popup>
 
-</popups>
+  </popups>
 
 </Root>
