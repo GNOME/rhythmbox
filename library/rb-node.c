@@ -324,12 +324,12 @@ rb_node_dispose (GObject *object)
 	for (l = node->priv->parents; l != NULL; l = g_list_next (l))
 	{
 		RBNode *node2 = RB_NODE (l->data);
+		
+		g_signal_emit (G_OBJECT (node2), rb_node_signals[CHILD_DESTROYED], 0, node);
 
 		g_static_rw_lock_writer_lock (node2->priv->lock);
 		node2->priv->children = g_list_remove (node2->priv->children, node);
 		g_static_rw_lock_writer_unlock (node2->priv->lock);
-		
-		g_signal_emit (G_OBJECT (node2), rb_node_signals[CHILD_DESTROYED], 0, node);
 	}
 	for (l = node->priv->children; l != NULL; l = g_list_next (l))
 	{
