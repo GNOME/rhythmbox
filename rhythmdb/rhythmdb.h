@@ -196,6 +196,12 @@ void		rhythmdb_load		(RhythmDB *db);
 void		rhythmdb_save		(RhythmDB *db);
 void		rhythmdb_save_blocking	(RhythmDB *db);
 
+
+/* Used to mark DB as dirty after first start so that we
+ *  always save a rhythmdb.xml.
+ */
+void		rhythmdb_set_dirty	(RhythmDB *db);
+
 void		rhythmdb_read_lock	(RhythmDB *db);
 void		rhythmdb_write_lock	(RhythmDB *db);
 void		rhythmdb_read_unlock	(RhythmDB *db);

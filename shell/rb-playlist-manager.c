@@ -578,9 +578,14 @@ save_source_iter_to_xml (GtkTreeModel *model, GtkTreeIter *iter,
 	RBSource *source;
 	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE,
 			    &source, -1);
-	if (RB_IS_PLAYLIST_SOURCE (source))
+	if (RB_IS_PLAYLIST_SOURCE (source)) {
+		char *name;
+		g_object_get (source, "name", &name, NULL);
+		rb_debug ("saving playlist %s", name);
+		g_free (name);
 		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source),
 						root);
+	}
 }
 
 void

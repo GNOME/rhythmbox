@@ -1245,6 +1245,12 @@ rhythmdb_load (RhythmDB *db)
 	g_thread_create ((GThreadFunc) rhythmdb_load_thread_main, db, FALSE, NULL);
 }
 
+void
+rhythmdb_set_dirty (RhythmDB *db)
+{
+	db->priv->dirty = TRUE;
+}
+
 static void
 rhythmdb_save_worker (RhythmDB *db)
 {

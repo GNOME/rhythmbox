@@ -1445,6 +1445,8 @@ rb_shell_construct (RBShell *shell)
 						 0);
 		} else {
 			shell->priv->load_complete = TRUE;
+                        /* So we always save state */
+                        rhythmdb_set_dirty (shell->priv->db);
 		}
 	}
 
