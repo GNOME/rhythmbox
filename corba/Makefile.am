@@ -19,7 +19,7 @@ INCLUDES = 							\
 idldir = $(prefix)/share/idl
 idl_DATA = Rhythmbox.idl
 
-CLEAN_FILES = $(rhythmbox_interface_idl_sources)
+CLEANFILES = $(rhythmbox_interface_idl_sources)
 
 $(rhythmbox_interface_idl_sources): Rhythmbox.idl
 	$(ORBIT_IDL) -I $(LIBBONOBO_IDL) -I $(BONOBO_ACTIVATION_IDL) Rhythmbox.idl

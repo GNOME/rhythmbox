@@ -21,6 +21,7 @@ librhythmdb_la_SOURCES += rhythmdb-tree.h rhythmdb-tree.c
 endif
 
 librhythmdb_la_LDFLAGS = -export-dynamic
+librhythmdb_la_LIBADD = $(top_builddir)/monkey-media/libmonkey-media.la $(top_builddir)/lib/librb.la
 
 INCLUDES = 						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
