@@ -818,7 +818,7 @@ itunesdb_parse(iPodParser *parser)
       if (cmp_n_bytes (data, "mhbd", 4) == FALSE) 
       {  
 	  gchar *db_path = ipod_get_itunesdb_path (parser->mount_path);
-	  itunesdb_warning (_("\"%s\" is not a iTunesDB.\n"), db_path);
+	  itunesdb_warning (_("\"%s\" is not a valid iPod database.\n"), db_path);
 	  g_free (db_path);
 	  break;
       }
@@ -1565,7 +1565,7 @@ gboolean itunesdb_write_to_file (const gchar *filename, gpointer data)
     }
   else
     {
-      itunesdb_warning (_("Could not open iTunesDB \"%s\" for writing.\n"),
+      itunesdb_warning (_("Could not open \"%s\" file for writing.\n"),
 		      filename);
     }
   if (result == TRUE)
@@ -1713,14 +1713,14 @@ gboolean itunesdb_cp (const gchar *from_file, const gchar *to_file)
     file_in = fopen (from_file, "r");
     if (file_in == NULL)
       {
-	itunesdb_warning (_("Could not open file \"%s\" for reading.\n"), from_file);
+	itunesdb_warning (_("Could not open \"%s\" file for reading.\n"), from_file);
 	success = FALSE;
 	break;
       }
     file_out = fopen (to_file, "w");
     if (file_out == NULL)
       {
-	itunesdb_warning (_("Could not open file \"%s\" for writing.\n"), to_file);
+	itunesdb_warning (_("Could not open \"%s\" file for writing.\n"), to_file);
 	success = FALSE;
 	break;
       }
