@@ -1,3 +1,16 @@
+2002-11-02  Olivier Martin <oleevye@wanadoo.fr>
+
+	* data/glade/song-info.glade:
+	* lib/widgets/Makefile.am:
+	* lib/widgets/rb-song-info.c: (rb_song_info_init),
+	(rb_song_info_rated_cb), (rb_song_info_populate_dialog),
+	(rb_song_info_update_buttons), (rb_song_info_update_last_played),
+	(rb_song_info_update_rating):
+
+	New widget for editing the rating in the song info.
+	Make the widgets insensitive for now.
+
+
 2002-11-02  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/art/Makefile.am:
@@ -35,6 +48,7 @@
 
 	Uber-dirty hack to put smart column sizing back.. don't try this at home!
 
+>>>>>>> 1.300
 2002-11-01  Mark Humphreys  <mmarquee@btinternet.com>
             Jorn Baayen  <jorn@nl.linux.org>
 

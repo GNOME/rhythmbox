@@ -34,6 +34,7 @@
 #include <gtk/gtkimage.h>
 #include <gtk/gtkalignment.h>
 #include <gtk/gtkstock.h>
+#include <gtk/gtktable.h>
 #include <glade/glade.h>
 #include <string.h>
 #include <time.h>
@@ -45,6 +46,7 @@
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-node-song.h"
+#include "rb-rating.h"
 
 static void rb_song_info_class_init (RBSongInfoClass *klass);
 static void rb_song_info_init (RBSongInfo *song_info);
@@ -78,12 +80,16 @@ static void rb_song_info_update_entry (RBSongInfo *song_info,
 		                       GtkWidget *widget);
 static void rb_song_info_update_comments (RBSongInfo *song_info);
 static void rb_song_info_update_buttons (RBSongInfo *song_info);
+static void rb_song_info_update_rating (RBSongInfo *song_info);
 static gboolean rb_song_info_update_current_values (RBSongInfo *song_info);
 
 static void rb_song_info_forward_clicked_cb (GtkWidget *button,
 					     RBSongInfo *song_info);
 static void rb_song_info_view_changed_cb (RBNodeView *node_view,
 					  RBSongInfo *song_info);
+static void rb_song_info_rated_cb (RBRating *rating,
+				   int score,
+				   RBSongInfo *song_info);
 
 struct RBSongInfoPrivate
 {
@@ -115,6 +121,7 @@ struct RBSongInfoPrivate
 	GtkWidget   *play_count;
 	GtkWidget   *last_played;
 	GtkWidget   *mime_type;
+	GtkWidget   *rating;
 };
 
 enum 
@@ -180,7 +187,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	GladeXML *xml;
 	GtkWidget *close, *label, *image, *hbox, *align;
 	
-	/* create the dialog and some buttons back - forward - close */
+	/* create the dialog and some buttons forward - close */
 	song_info->priv = g_new0 (RBSongInfoPrivate, 1);
 
 	g_signal_connect (G_OBJECT (song_info),
@@ -223,7 +230,9 @@ rb_song_info_init (RBSongInfo *song_info)
 	close = gtk_dialog_add_button (GTK_DIALOG (song_info),
 			               GTK_STOCK_CLOSE,
 			               GTK_RESPONSE_CLOSE);
-	gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area), close, TRUE);
+	gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (GTK_DIALOG (song_info)->action_area), 
+					    close, 
+					    TRUE);
 	gtk_dialog_set_default_response (GTK_DIALOG (song_info),
 					 GTK_RESPONSE_CLOSE);
 	gtk_container_set_border_width (GTK_CONTAINER (song_info), 7);
@@ -239,7 +248,7 @@ rb_song_info_init (RBSongInfo *song_info)
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
 			   glade_xml_get_widget (xml, "song_info_vbox"));
 
-	/* get the widgets */
+	/* get the widgets from the XML */
 	song_info->priv->tooltips      = gtk_tooltips_new ();
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
 	song_info->priv->artist        = glade_xml_get_widget (xml, "song_info_artist");
@@ -255,12 +264,34 @@ rb_song_info_init (RBSongInfo *song_info)
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
 	song_info->priv->location_ebox = glade_xml_get_widget (xml, "song_info_location_ebox");
 	song_info->priv->location      = glade_xml_get_widget (xml, "song_info_location");
-	song_info->priv->mtime      = glade_xml_get_widget (xml, "song_info_mtime");
-	song_info->priv->play_count      = glade_xml_get_widget (xml, "song_info_playcount");
-	song_info->priv->last_played     = glade_xml_get_widget (xml, "song_info_lastplayed");
-	song_info->priv->mime_type    = glade_xml_get_widget (xml, "song_info_kind");
-	song_info->priv->name    = glade_xml_get_widget (xml, "song_info_name");
+	song_info->priv->mtime         = glade_xml_get_widget (xml, "song_info_mtime");
+	song_info->priv->play_count    = glade_xml_get_widget (xml, "song_info_playcount");
+	song_info->priv->last_played   = glade_xml_get_widget (xml, "song_info_lastplayed");
+	song_info->priv->mime_type     = glade_xml_get_widget (xml, "song_info_kind");
+	song_info->priv->name          = glade_xml_get_widget (xml, "song_info_name");
 
+
+	/* make those fields insensitive for now */
+	/*
+	gtk_widget_set_sensitive (song_info->priv->title, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->artist, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->album, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->date, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->track_cur, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->track_max, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->genre, FALSE);
+	gtk_widget_set_sensitive (song_info->priv->comments, FALSE);
+	*/
+
+	/* this widget has to be customly created */
+	song_info->priv->rating = GTK_WIDGET (rb_rating_new ());
+	g_signal_connect_object (song_info->priv->rating, 
+				 "rated",
+				 G_CALLBACK (rb_song_info_rated_cb),
+				 G_OBJECT (song_info), 0);
+	gtk_table_attach_defaults (GTK_TABLE (glade_xml_get_widget (xml, "song_info_basic")),
+				   GTK_WIDGET (song_info->priv->rating),
+				   1, 2, 6, 7);
 	/* default focus */
 	gtk_widget_grab_focus (song_info->priv->title);
 
@@ -367,6 +398,28 @@ rb_song_info_response_cb (GtkDialog *dialog,
 		gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
+static void
+rb_song_info_rated_cb (RBRating *rating,
+		       int score,
+		       RBSongInfo *song_info)
+{
+	GValue value = { 0, };
+
+	g_return_if_fail (RB_IS_RATING (rating));
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+	g_return_if_fail (RB_IS_NODE (song_info->priv->current_node));
+	g_return_if_fail (score >= 0 && score <= 5 );
+
+	/* set the new value for the song */
+	g_value_init (&value, G_TYPE_INT);
+	g_value_set_int (&value, score);
+	rb_node_set_property (song_info->priv->current_node,
+			      RB_NODE_SONG_PROP_RATING,
+			      &value);
+	g_value_unset (&value);
+}
+
+
 static void 
 rb_song_info_populate_dialog (RBSongInfo *song_info)
 {
@@ -396,6 +449,7 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	rb_song_info_update_play_count (song_info);
 	rb_song_info_update_last_played (song_info);
 	rb_song_info_update_mime_type (song_info);
+	rb_song_info_update_rating (song_info);
 }
 
 static void
@@ -834,6 +888,10 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 {
 	RBNode *node = NULL;
 
+	g_return_if_fail (song_info != NULL);
+	g_return_if_fail (song_info->priv->node_view != NULL);
+	g_return_if_fail (song_info->priv->current_node != NULL);
+
 	/* forward */
 	node = rb_node_view_get_node (song_info->priv->node_view,
 				      song_info->priv->current_node,
@@ -937,6 +995,29 @@ rb_song_info_update_last_played (RBSongInfo *song_info)
 	gtk_label_set_text (GTK_LABEL (song_info->priv->last_played), text);
 
 	g_free (text);
+}
+
+static void
+rb_song_info_update_rating (RBSongInfo *song_info)
+{
+	GValue value = { 0, };
+
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+	g_return_if_fail (RB_IS_NODE (song_info->priv->current_node));
+
+	if (rb_node_get_property (song_info->priv->current_node,
+				  RB_NODE_SONG_PROP_RATING,
+				  &value) == FALSE)
+	{
+		g_value_init (&value, G_TYPE_INT);
+		g_value_set_int (&value, 0);
+	}
+
+	g_object_set (G_OBJECT (song_info->priv->rating),
+		      "score", g_value_get_int (&value),
+		      NULL);
+
+	g_value_unset (&value);
 }
 
 static void
