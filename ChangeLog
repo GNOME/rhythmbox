@@ -2,6 +2,120 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.8
 #
 
+2004-04-20 19:11:18 GMT	Colin Walters <walters@verbum.org>	patch-19
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.8--patch-19
+
+
+    modified files:
+     ChangeLog sources/itunesdb.c
+
+
+2004-04-20 18:57:07 GMT	Christophe Fergeau <teuf@gnome.org>	patch-18
+
+    Summary:
+      Removed GtkTreeView workaround, it was already mostly #ifdef'ed out anyway
+    Revision:
+      rhythmbox--main--0.8--patch-18
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9--patch-23
+       Removed tree view work around, removed unused atomic tests in configure.ac
+    
+
+    modified files:
+     ChangeLog configure.ac shell/rb-shell-player.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9--patch-23
+
+
+2004-04-20 18:43:42 GMT	Colin Walters <walters@verbum.org>	patch-17
+
+    Summary:
+      upd NEWS 
+    Revision:
+      rhythmbox--main--0.8--patch-17
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2004-04-20 18:41:28 GMT	Colin Walters <walters@verbum.org>	patch-16
+
+    Summary:
+      upd NEWS 
+    Revision:
+      rhythmbox--main--0.8--patch-16
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2004-04-20 18:39:49 GMT	Christophe Fergeau <teuf@gnome.org>	patch-15
+
+    Summary:
+      Removed duplicate utf16_strlen definition on big endian machines
+    Revision:
+      rhythmbox--main--0.8--patch-15
+
+    Patches applied:
+    
+     * rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9--patch-24
+       Removed duplicate utf16_strlen definition on big endian machines
+    
+
+    modified files:
+     ChangeLog sources/itunesdb.c
+
+    new patches:
+     rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.9--patch-24
+
+
+2004-04-20 18:37:14 GMT	Colin Walters <walters@verbum.org>	patch-14
+
+    Summary:
+      force playlists to be saved on shutdown
+    Revision:
+      rhythmbox--main--0.8--patch-14
+
+
+    modified files:
+     ChangeLog shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell.c
+
+
+2004-04-20 16:07:11 GMT	Colin Walters <walters@verbum.org>	patch-13
+
+    Summary:
+      fix case when SHARE_UNINSTALLED_DIR is undefined
+    Revision:
+      rhythmbox--main--0.8--patch-13
+
+
+    modified files:
+     ChangeLog lib/rb-file-helpers.c
+
+
+2004-04-20 15:51:02 GMT	Colin Walters <walters@verbum.org>	patch-12
+
+    Summary:
+      upd NEWS
+    Revision:
+      rhythmbox--main--0.8--patch-12
+
+
+    modified files:
+     ChangeLog NEWS
+
+
 2004-04-20 15:43:06 GMT	Colin Walters <walters@verbum.org>	patch-11
 
     Summary:
