@@ -303,6 +303,8 @@ rb_audiocd_view_init (RBAudiocdView *view)
 
 	gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), GTK_WIDGET (view->priv->songs));
 			
+        gtk_widget_show_all (GTK_WIDGET (view));
+
 	rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);        
 }
 
