@@ -1,5 +1,12 @@
 2003-08-07  Colin Walters  <walters@verbum.org>
 
+	* library/rb-library.c: (set_node_value), (set_node_title),
+	(sync_node):
+
+	If the title is unset, use the filename instead.
+
+2003-08-07  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell.c: (create_group_with_name),
 	(ask_string_response_cb), (sourcelist_drag_received_cb):
 

@@ -989,14 +989,9 @@ set_node_value (RBNode *node, int property,
 {
 	GValue val = { 0, };
 
-	monkey_media_stream_info_get_value (info,
-					    field,
-					    0,
-					    &val);
+	monkey_media_stream_info_get_value (info, field, 0, &val);
 
-	rb_node_set_property (node,
-			      property,
-			      &val);
+	rb_node_set_property (node, property, &val);
 
 	g_value_unset (&val);
 }
@@ -1010,6 +1005,13 @@ set_node_title (RBNode *node, MonkeyMediaStreamInfo *info)
 					    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
 					    0,
 					    &val);
+
+	if (*(g_value_get_string (&val)) == '\0') {
+		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (rb_node_get_property_string (node, RB_NODE_PROP_LOCATION));
+		char *fname = gnome_vfs_uri_extract_short_name (vfsuri);
+		g_value_set_string_take_ownership (&val, fname);
+		gnome_vfs_uri_unref (vfsuri);
+	}
 
 	rb_node_set_property (node, RB_NODE_PROP_NAME, &val);
 }
@@ -1296,8 +1298,7 @@ sync_node (RBNode *node,
 	MonkeyMediaStreamInfo *info;
 	const char *location;
 
-	location = rb_node_get_property_string (node,
-				                RB_NODE_PROP_LOCATION);
+	location = rb_node_get_property_string (node, RB_NODE_PROP_LOCATION);
 	
 	info = monkey_media_stream_info_new (location, error);
 	if (G_UNLIKELY (info == NULL)) {
