@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS = 1.7
 
-SUBDIRS = lib rhythmdb monkey-media widgets sources library iradio corba shell data po component help
+SUBDIRS = lib monkey-media rhythmdb widgets sources iradio corba shell data po component help
 
 EXTRA_DIST = 			\
 	autogen.sh		\

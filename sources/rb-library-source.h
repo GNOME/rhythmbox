@@ -26,7 +26,7 @@
 #include <bonobo/bonobo-ui-container.h>
 
 #include "rb-source.h"
-#include "rb-library.h"
+#include "rhythmdb.h"
 
 G_BEGIN_DECLS
 
@@ -53,7 +53,7 @@ typedef struct
 
 GType		rb_library_source_get_type	(void);
 
-RBSource *	rb_library_source_new		(RhythmDB *db, RBLibrary *library);
+RBSource *	rb_library_source_new		(RhythmDB *db);
 void		rb_library_source_show_browser	(RBLibrarySource *source,
 						 gboolean show);
 

@@ -29,7 +29,6 @@
 #include <bonobo/bonobo-ui-util.h>
 
 #include "rb-statusbar.h"
-#include "rb-library.h"
 #include "rb-thread-helpers.h"
 #include "rb-bonobo-helpers.h"
 #include "rb-preferences.h"
@@ -79,7 +78,7 @@ struct RBStatusbarPrivate
 {
 	RBSource *selected_source;
 
-	RBLibrary *library;
+	RhythmDB *db;
 
 	BonoboUIComponent *component;
 
@@ -101,7 +100,7 @@ struct RBStatusbarPrivate
 enum
 {
 	PROP_0,
-	PROP_LIBRARY,
+	PROP_DB,
 	PROP_COMPONENT,
 	PROP_SOURCE,
 };
@@ -149,11 +148,11 @@ rb_statusbar_class_init (RBStatusbarClass *klass)
 	object_class->get_property = rb_statusbar_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "RBLibrary",
-							      "RBLibrary object",
-							      RB_TYPE_LIBRARY,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
 					 PROP_SOURCE,
@@ -258,8 +257,8 @@ rb_statusbar_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		statusbar->priv->library = g_value_get_object (value);
+	case PROP_DB:
+		statusbar->priv->db = g_value_get_object (value);
 		statusbar->priv->status_poll_id
 			= g_idle_add ((GSourceFunc) poll_status, statusbar);
 		break;
@@ -311,8 +310,8 @@ rb_statusbar_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		g_value_set_object (value, statusbar->priv->library);
+	case PROP_DB:
+		g_value_set_object (value, statusbar->priv->db);
 		break;
 	case PROP_SOURCE:
 		g_value_set_object (value, statusbar->priv->selected_source);
@@ -363,7 +362,7 @@ poll_status (RBStatusbar *status)
 
 	GDK_THREADS_ENTER ();
 
-	str = rb_library_get_status (status->priv->library);
+	str = rhythmdb_get_status (status->priv->db);
 
 	if (!str && status->priv->selected_source) {
 		RBEntryView *view;
@@ -377,7 +376,6 @@ poll_status (RBStatusbar *status)
 
 	/* Set up the status display */
 	if (status->priv->library_busy) {
-		str = rb_library_get_status (status->priv->library);
 		gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
 		g_free (str);
 		changed = TRUE;
@@ -411,10 +409,10 @@ poll_status (RBStatusbar *status)
 }
 
 RBStatusbar *
-rb_statusbar_new (RBLibrary *library, BonoboUIComponent *component)
+rb_statusbar_new (RhythmDB *db, BonoboUIComponent *component)
 {
 	RBStatusbar *statusbar = g_object_new (RB_TYPE_STATUSBAR,
-					       "library", library,
+					       "db", db,
 					       "component", component,
 					       NULL);
 

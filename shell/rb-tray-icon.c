@@ -87,7 +87,7 @@ struct RBTrayIconPrivate
 	GtkWindow *main_window;
 	GtkWidget *ebox;
 
-	RBLibrary *library;
+	RhythmDB *db;
 };
 
 enum
@@ -95,7 +95,7 @@ enum
 	PROP_0,
 	PROP_CONTAINER,
 	PROP_COMPONENT,
-	PROP_LIBRARY,
+	PROP_DB,
 	PROP_TRAY_COMPONENT,
 	PROP_WINDOW,
 };
@@ -187,11 +187,11 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "RBLibrary",
-							      "RBLibrary object",
-							      RB_TYPE_LIBRARY,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
@@ -282,8 +282,8 @@ rb_tray_icon_set_property (GObject *object,
 	case PROP_COMPONENT:
 		tray->priv->main_component = g_value_get_object (value);
 		break;
-	case PROP_LIBRARY:
-		tray->priv->library = g_value_get_object (value);
+	case PROP_DB:
+		tray->priv->db = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -313,8 +313,8 @@ rb_tray_icon_get_property (GObject *object,
 	case PROP_TRAY_COMPONENT:
 		g_value_set_object (value, tray->priv->tray_component);
 		break;
-	case PROP_LIBRARY:
-		g_value_set_object (value, tray->priv->library);
+	case PROP_DB:
+		g_value_set_object (value, tray->priv->db);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -325,14 +325,14 @@ rb_tray_icon_get_property (GObject *object,
 RBTrayIcon *
 rb_tray_icon_new (BonoboUIContainer *container,
 		  BonoboUIComponent *component,
-		  RBLibrary *library,
+		  RhythmDB *db,
 		  GtkWindow *window)
 {
 	RBTrayIcon *tray = g_object_new (RB_TYPE_TRAY_ICON,
 					 "title", "Rhythmbox tray icon",
 					 "container", container,
 					 "component", component,
-					 "library", library,
+					 "db", db,
 					 "window", window,
 					 NULL);
 	
@@ -414,7 +414,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rb_library_add_uri_async (icon->priv->library, uri);
+			rhythmdb_add_uri_async (icon->priv->db, uri);
 
 		g_free (uri);
 	}

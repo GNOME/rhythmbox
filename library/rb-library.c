@@ -86,8 +86,6 @@ struct RBLibraryPrivate
 
 	RhythmDB *db;
 
-	GHashTable *legacy_id_map;
-
 	RBAtomic refresh_count;
 	RBAtomic total_count;
 
@@ -101,13 +99,6 @@ enum
 {
 	PROP_0,
 	PROP_DB,
-};
-
-enum
-{
-	ERROR,
-	LEGACY_LOAD_COMPLETE,
-	LAST_SIGNAL,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -161,26 +152,6 @@ rb_library_class_init (RBLibraryClass *klass)
 							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
-	rb_library_signals[ERROR] =
-		g_signal_new ("error",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryClass, error),
-			      NULL, NULL,
-			      rb_marshal_VOID__STRING_STRING,
-			      G_TYPE_NONE,
-			      2,
-			      G_TYPE_STRING,
-			      G_TYPE_STRING);
-	rb_library_signals[LEGACY_LOAD_COMPLETE] =
-		g_signal_new ("legacy-load-complete",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBLibraryClass, legacy_load_complete),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
 }
 
 static void
@@ -189,7 +160,6 @@ rb_library_init (RBLibrary *library)
 	library->priv = g_new0 (RBLibraryPrivate, 1);
 	library->priv->main_queue = g_async_queue_new ();
 	library->priv->add_queue = g_async_queue_new ();
-	library->priv->legacy_id_map = g_hash_table_new (NULL, NULL);
 }
 
 static void

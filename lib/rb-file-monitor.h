@@ -24,7 +24,7 @@
 
 #include <glib-object.h>
 
-#include "rb-library.h"
+#include "rhythmdb.h"
 
 G_BEGIN_DECLS
 

@@ -40,7 +40,6 @@ gboolean	rb_uri_is_iradio	(const char *uri);
 
 void		rb_uri_handle_recursively(const char *uri,
 					  GFunc func,
-					  GMutex *cancel_mutex,
 					  gboolean *cancelflag,
 					  gpointer user_data);
 

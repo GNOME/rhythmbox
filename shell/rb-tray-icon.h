@@ -22,7 +22,7 @@
 #include "eggtrayicon.h"
 #include <bonobo/bonobo-ui-component.h>
 
-#include "rb-library.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_TRAY_ICON_H
 #define __RB_TRAY_ICON_H
@@ -54,7 +54,7 @@ GType			rb_tray_icon_get_type	(void);
 
 RBTrayIcon *		rb_tray_icon_new	(BonoboUIContainer *container,
 						 BonoboUIComponent *component,
-						 RBLibrary *library,
+						 RhythmDB *db,
 						 GtkWindow *window);
 
 void			rb_tray_icon_set_tooltip(RBTrayIcon *icon, const char *tooltip);

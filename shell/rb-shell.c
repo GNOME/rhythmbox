@@ -65,7 +65,6 @@
 #include "rb-shell-preferences.h"
 #include "rb-playlist.h"
 #include "rb-bonobo-helpers.h"
-#include "rb-library.h"
 #include "rb-library-source.h"
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
@@ -139,9 +138,9 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
-static void rb_shell_library_error_cb (RBLibrary *library,
-				       const char *uri, const char *msg,
-				       RBShell *shell); 
+static void rb_shell_db_error_cb (RhythmDB *db,
+				  const char *uri, const char *msg,
+				  RBShell *shell); 
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -198,7 +197,7 @@ static void rb_shell_view_smalldisplay_changed_cb (BonoboUIComponent *component,
 						 const char *state,
 						 RBShell *shell);
 static void rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell);
-static void rb_shell_legacy_load_complete_cb (RBLibrary *library, RBShell *shell);
+static void rb_shell_legacy_load_complete_cb (RhythmDB *db, RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_smalldisplay (RBShell *shell);
 static void sourcelist_visibility_changed_cb (GConfClient *client,
@@ -263,11 +262,10 @@ struct RBShellPrivate
 	RBStatusbar *statusbar;
 	RBPlaylistManager *playlist_manager;
 
-	RBLibrary *library;
 	RBSource *library_source;
 	GtkWidget *load_error_dialog;
 	GList *supported_media_extensions;
-	gboolean show_library_errors;
+	gboolean show_db_errors;
 
  	RBIRadioSource *iradio_source;
 
@@ -418,13 +416,8 @@ rb_shell_finalize (GObject *object)
 
 	gtk_widget_destroy (shell->priv->window);
 
-	rb_library_shutdown (shell->priv->library);
-
 	rb_debug ("shutting down DB");
 	rhythmdb_shutdown (shell->priv->db);
-
-	rb_debug ("unreffing library");
-	g_object_unref (G_OBJECT (shell->priv->library));
 
 	rb_debug ("saving db");
 	rhythmdb_read_lock (shell->priv->db);
@@ -480,7 +473,7 @@ handle_playlist_entry_cb (RBPlaylist *playlist, const char *uri, const char *tit
 	if (rb_uri_is_iradio (uri) != FALSE) {
 		rb_iradio_source_add_station (shell->priv->iradio_source, uri, title, genre);
 	} else {
-		rb_library_add_uri_async (shell->priv->library, (char *) uri);
+		rhythmdb_add_uri_async (shell->priv->db, (char *) uri);
 	}
 }
 
@@ -506,7 +499,7 @@ rb_shell_corba_handle_file (PortableServer_Servant _servant,
 	 * the library.
 	 */
 	if (!rb_playlist_parse (parser, uri))
-		rb_library_add_uri_async (shell->priv->library, uri);
+		rhythmdb_add_uri_async (shell->priv->db, uri);
 	g_object_unref (G_OBJECT (parser));
 }
 
@@ -517,7 +510,7 @@ rb_shell_corba_add_to_library (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
-	rb_library_add_uri_async (shell->priv->library, uri);
+	rhythmdb_add_uri_async (shell->priv->db, uri);
 }
 
 static void
@@ -643,20 +636,6 @@ rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
 	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
 }
 
-static gboolean
-async_library_release_brakes (RBShell *shell)
-{
-	rb_debug ("async releasing library brakes");
-
-	GDK_THREADS_ENTER ();
-
-	rb_library_release_brakes (shell->priv->library);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
 void
 rb_shell_construct (RBShell *shell)
 {
@@ -728,14 +707,11 @@ rb_shell_construct (RBShell *shell)
 		}
 	}
 
-	rb_debug ("shell: creating library");
-	shell->priv->library = rb_library_new (shell->priv->db);
 	if (!rhythmdb_exists) {
 		rb_debug ("loading legacy library db");
-		g_signal_connect_object (G_OBJECT (shell->priv->library), "legacy-load-complete",
+		g_signal_connect_object (G_OBJECT (shell->priv->db), "legacy-load-complete",
 					 G_CALLBACK (rb_shell_legacy_load_complete_cb), shell,
 					 0);
-		rb_library_load_legacy (shell->priv->library);
 	}
 
 	rb_debug ("shell: setting up tray icon");
@@ -781,7 +757,7 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect (G_OBJECT (shell->priv->sourcelist), "show_popup",
 			  G_CALLBACK (rb_shell_show_popup_cb), shell);
 
-	shell->priv->statusbar = rb_statusbar_new (shell->priv->library,
+	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
 						   shell->priv->ui_component);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
@@ -837,34 +813,30 @@ rb_shell_construct (RBShell *shell)
 	rb_shell_sync_sourcelist_visibility (shell);
 
 	shell->priv->load_error_dialog = rb_load_failure_dialog_new ();
-	shell->priv->show_library_errors = FALSE;
+	shell->priv->show_db_errors = FALSE;
 	gtk_widget_hide (shell->priv->load_error_dialog);
 
 	shell->priv->supported_media_extensions = monkey_media_get_supported_filename_extensions ();
 
-	g_signal_connect (G_OBJECT (shell->priv->library), "error",
-			  G_CALLBACK (rb_shell_library_error_cb), shell);
+	g_signal_connect (G_OBJECT (shell->priv->db), "error",
+			  G_CALLBACK (rb_shell_db_error_cb), shell);
 
 	g_signal_connect (G_OBJECT (shell->priv->load_error_dialog), "response",
 			  G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell);
 
 	/* initialize sources */
 	rb_debug ("shell: creating library source");
-	shell->priv->library_source = rb_library_source_new (shell->priv->db, shell->priv->library);
+	shell->priv->library_source = rb_library_source_new (shell->priv->db);
 	rb_shell_append_source (shell, shell->priv->library_source);
 
 	rb_debug ("shell: creating iradio source");
 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell->priv->db));
-	if (!rhythmdb_exists) {
-		rb_debug ("loading legacy iradio station db");
-		rb_iradio_source_load_legacy (shell->priv->db);
-	}
 	
 	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
 
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell->priv->ui_component,
 								 GTK_WINDOW (shell->priv->window),
-								 shell->priv->library,
+								 shell->priv->db,
 								 RB_LIBRARY_SOURCE (shell->priv->library_source),
 								 RB_IRADIO_SOURCE (shell->priv->iradio_source));
 
@@ -936,7 +908,7 @@ rb_shell_construct (RBShell *shell)
 
 	/* Stop here if this is the first time. */
 	if (!eel_gconf_get_boolean(CONF_FIRST_TIME)) {
-		RBDruid *druid = rb_druid_new (shell->priv->library);
+		RBDruid *druid = rb_druid_new (shell->priv->db);
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
@@ -945,7 +917,6 @@ rb_shell_construct (RBShell *shell)
 	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
-	g_idle_add ((GSourceFunc) async_library_release_brakes, shell);
 }
 
 char *
@@ -1079,19 +1050,19 @@ source_activated_cb (RBSourceList *sourcelist,
 }
 
 static void
-rb_shell_library_error_cb (RBLibrary *library,
-			   const char *uri, const char *msg,
-			   RBShell *shell)
+rb_shell_db_error_cb (RhythmDB *db,
+		      const char *uri, const char *msg,
+		      RBShell *shell)
 {
 	GList *tem;
 	GnomeVFSURI *vfsuri;
 	gchar *basename;
 	gssize baselen;
 
-	rb_debug ("got library error, showing: %s",
-		  shell->priv->show_library_errors ? "TRUE" : "FALSE");
+	rb_debug ("got db error, showing: %s",
+		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
 	
-	if (!shell->priv->show_library_errors)
+	if (!shell->priv->show_db_errors)
 		return;
 
 	vfsuri = gnome_vfs_uri_new (uri);
@@ -1122,7 +1093,7 @@ rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 					  RBShell *shell)
 {
 	rb_debug ("got response");
-	shell->priv->show_library_errors = FALSE;
+	shell->priv->show_db_errors = FALSE;
 }
 
 static void
@@ -1153,13 +1124,13 @@ rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *s
 static void
 rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell)
 {
-	shell->priv->show_library_errors = TRUE;
+	shell->priv->show_db_errors = TRUE;
 }
 
 static void
 rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell)
 {
-	shell->priv->show_library_errors = FALSE;
+	shell->priv->show_db_errors = FALSE;
 }
 
 static void
@@ -1468,12 +1439,12 @@ ask_file_response_cb (GtkDialog *dialog,
 		g_free (stored);
 	}
 
-	shell->priv->show_library_errors = TRUE;
+	shell->priv->show_db_errors = TRUE;
     
 	while (*filecur != NULL) {
 		if (g_utf8_validate (*filecur, -1, NULL)) {
 			char *uri = gnome_vfs_get_uri_from_local_path (*filecur);
-			rb_library_add_uri_async (shell->priv->library, uri);
+			rhythmdb_add_uri_async (shell->priv->db, uri);
 			g_free (uri);
 		}
 		filecur++;
@@ -1507,7 +1478,7 @@ rb_shell_cmd_add_location (BonoboUIComponent *component,
 			   RBShell *shell,
 			   const char *verbname)
 {
-	shell->priv->show_library_errors = TRUE;
+	shell->priv->show_db_errors = TRUE;
 
 	rb_library_source_add_location (RB_LIBRARY_SOURCE (shell->priv->library_source),
 					GTK_WINDOW (shell->priv->window));
@@ -1563,7 +1534,7 @@ rb_shell_load_complete_cb (RhythmDB *db, RBShell *shell)
 }
 
 static void
-rb_shell_legacy_load_complete_cb (RBLibrary *library, RBShell *shell)
+rb_shell_legacy_load_complete_cb (RhythmDB *db, RBShell *shell)
 {
 	rb_debug ("legacy load complete");
 	rb_playlist_manager_load_legacy_playlists (shell->priv->playlist_manager);
@@ -1793,7 +1764,7 @@ tray_deleted_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 	rb_debug ("creating new tray icon");
 	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->container,
 						   shell->priv->ui_component,
-						   shell->priv->library,
+						   shell->priv->db,
 						   GTK_WINDOW (shell->priv->window));
 	g_signal_connect (G_OBJECT (shell->priv->tray_icon), "delete_event",
 			  G_CALLBACK (tray_deleted_cb), shell);

@@ -95,7 +95,6 @@ static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 struct RBPlaylistSourcePrivate
 {
 	RhythmDB *db;
-	RBLibrary *library;
 
 	gboolean smart;
 	GHashTable *entries;
@@ -184,14 +183,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_delete_thyself = impl_delete_thyself;
-
-	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "Library",
-							      "Library",
-							      RB_TYPE_LIBRARY,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -356,9 +347,6 @@ rb_playlist_source_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		source->priv->library = g_value_get_object (value);
-		break;
 	case PROP_DB:
 		source->priv->db = g_value_get_object (value);
 		break;
@@ -384,9 +372,6 @@ rb_playlist_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		g_value_set_object (value, source->priv->library);
-		break;
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
 		break;
@@ -400,16 +385,12 @@ rb_playlist_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_playlist_source_new (RBLibrary *library)
+rb_playlist_source_new (RhythmDB *db)
 {
 	RBSource *source;
-	RhythmDB *db;
 	
-	g_object_get (G_OBJECT (library), "db", &db, NULL);
-
 	source = RB_SOURCE (g_object_new (RB_TYPE_PLAYLIST_SOURCE,
 					  "name", _("Unknown"),
-					  "library", library,
 					  "db", db,
 					  NULL));
 
@@ -440,9 +421,9 @@ impl_get_status (RBSource *asource)
 
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	g_free (source->priv->status);
-	source->priv->status = rb_library_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-								 rb_entry_view_get_duration (source->priv->songs),
-								 rb_entry_view_get_total_size (source->priv->songs));
+	source->priv->status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+							       rb_entry_view_get_duration (source->priv->songs),
+							       rb_entry_view_get_total_size (source->priv->songs));
 	return source->priv->status;
 }
 
@@ -697,19 +678,16 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 }
 
 RBSource *
-rb_playlist_source_new_from_xml	(RBLibrary *library,
+rb_playlist_source_new_from_xml	(RhythmDB *db,
 				 xmlNodePtr node)
 {
 	RBPlaylistSource *source;
 	xmlNodePtr child;
 	char *tmp;
-	RhythmDB *db;
-
-	g_object_get (G_OBJECT (library), "db", &db, NULL);
 
 	rhythmdb_read_lock (db);
 
-	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (library));
+	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (db));
 
 	tmp = xmlGetProp (node, "type");
 	if (!strcmp (tmp, "smart"))

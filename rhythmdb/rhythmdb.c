@@ -21,13 +21,22 @@
 
 #include "rhythmdb.h"
 #include "rhythmdb-model.h"
+#include "rhythmdb-legacy.h"
 #include "rhythmdb-query-model.h"
 #include "rhythmdb-property-model.h"
+#include "monkey-media.h"
+#include "monkey-media-stream-info.h"
 #include <string.h>
 #include <gobject/gvaluecollector.h>
 #include <gdk/gdk.h>
+#include <libxml/tree.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
+#include <libgnomevfs/gnome-vfs-file-info.h>
+#include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnome/gnome-i18n.h>
 #include "rb-string-helpers.h"
+#include "rb-marshal.h"
+#include "rb-file-helpers.h"
 #include "rb-thread-helpers.h"
 #include "rb-debug.h"
 #include "rb-cut-and-paste-code.h"
@@ -41,6 +50,12 @@ struct RhythmDBPrivate
 	GType *column_types;
 
 	GThreadPool *query_thread_pool;
+
+	GHashTable *legacy_id_map;
+
+	GAsyncQueue *main_thread_cancel;
+	GAsyncQueue *update_queue;
+	GAsyncQueue *add_queue;
 
 	GHashTable *added_entries;
 	GHashTable *changed_entries;
@@ -74,6 +89,9 @@ static void rhythmdb_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
+static gpointer add_thread_main (RhythmDB *db);
+static gpointer update_thread_main (RhythmDB *db);
+static void update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error);
 gboolean reap_dead_threads (RhythmDB *db);
 gpointer query_thread_main (struct RhythmDBQueryThreadData *data, RhythmDB *db);
 
@@ -90,6 +108,8 @@ enum
 	ENTRY_CHANGED,
 	ENTRY_DELETED,
 	LOAD_COMPLETE,
+	ERROR,
+	LEGACY_LOAD_COMPLETE,
 	LAST_SIGNAL
 };
 
@@ -195,6 +215,26 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	rhythmdb_signals[ERROR] =
+		g_signal_new ("error",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, error),
+			      NULL, NULL,
+			      rb_marshal_VOID__STRING_STRING,
+			      G_TYPE_NONE,
+			      2,
+			      G_TYPE_STRING,
+			      G_TYPE_STRING);
+	rhythmdb_signals[LEGACY_LOAD_COMPLETE] =
+		g_signal_new ("legacy-load-complete",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBClass, legacy_load_complete),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static GType
@@ -227,6 +267,10 @@ rhythmdb_init (RhythmDB *db)
 
 	g_static_rw_lock_init (&db->priv->lock);
 
+	db->priv->main_thread_cancel = g_async_queue_new ();
+	db->priv->update_queue = g_async_queue_new ();
+	db->priv->add_queue = g_async_queue_new ();
+
 	db->priv->status_queue = g_async_queue_new ();
 	
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
@@ -256,6 +300,8 @@ rhythmdb_init (RhythmDB *db)
 							 db, 3, TRUE, NULL);
 	db->priv->thread_reaper_id
 		= g_idle_add ((GSourceFunc) reap_dead_threads, db);
+	g_thread_create ((GThreadFunc) add_thread_main, db, FALSE, NULL);
+	g_thread_create ((GThreadFunc) update_thread_main, db, FALSE, NULL);
 }
 
 gboolean
@@ -407,6 +453,16 @@ rhythmdb_write_unlock (RhythmDB *db)
 	g_static_rw_lock_writer_unlock (&db->priv->lock);
 }
 
+GQuark
+rhythmdb_error_quark (void)
+{
+	static GQuark quark;
+	if (!quark)
+		quark = g_quark_from_static_string ("rhythmdb_error");
+
+	return quark;
+}
+
 static inline void
 db_enter (RhythmDB *db, gboolean write)
 {
@@ -432,6 +488,350 @@ rhythmdb_entry_new (RhythmDB *db, RhythmDBEntryType type, const char *uri)
 
 	g_hash_table_insert (db->priv->added_entries, ret, NULL);
 	return ret;
+}
+
+typedef struct 
+{
+	GValue track_number_val;
+	GValue file_size_val;
+	GValue title_val;
+	GValue duration_val;
+	GValue mtime_val;
+	GValue genre_val;
+	GValue artist_val;
+	GValue album_val;
+} RhythmDBEntryUpdateData;
+
+/* Threading: any thread
+ */
+static RhythmDBEntryUpdateData *
+read_metadata (const char *location, GError **error)
+{
+	RhythmDBEntryUpdateData *data = g_new0 (RhythmDBEntryUpdateData, 1);
+	MonkeyMediaStreamInfo *info;
+	GnomeVFSFileInfo *vfsinfo;
+
+	info = monkey_media_stream_info_new (location, error);
+	if (G_UNLIKELY (info == NULL)) {
+		g_free (data);
+		return NULL;
+	}
+
+	/* track number */
+	if (monkey_media_stream_info_get_value (info,
+				                MONKEY_MEDIA_STREAM_INFO_FIELD_TRACK_NUMBER,
+					        0, &data->track_number_val) == FALSE) {
+		g_value_init (&data->track_number_val, G_TYPE_INT);
+		g_value_set_int (&data->track_number_val, -1);
+	}
+
+	/* duration */
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
+					    0, &data->duration_val);
+
+	/* filesize */
+	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
+					    0, &data->file_size_val);
+
+	/* title */
+	monkey_media_stream_info_get_value (info,
+					    MONKEY_MEDIA_STREAM_INFO_FIELD_TITLE,
+					    0, &data->title_val);
+	if (*(g_value_get_string (&data->title_val)) == '\0') {
+		GnomeVFSURI *vfsuri;
+		char *fname;
+
+		vfsuri = gnome_vfs_uri_new (location);
+		fname = gnome_vfs_uri_extract_short_name (vfsuri);
+		g_value_set_string_take_ownership (&data->title_val, fname);
+		gnome_vfs_uri_unref (vfsuri);
+	}
+
+	vfsinfo = gnome_vfs_file_info_new ();
+
+	gnome_vfs_get_file_info (location, vfsinfo, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	/* mtime */
+	g_value_init (&data->mtime_val, G_TYPE_LONG);
+	g_value_set_long (&data->mtime_val, vfsinfo->mtime);
+
+	gnome_vfs_file_info_unref (vfsinfo);
+
+	/* genre */
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_GENRE,
+					    0,
+				            &data->genre_val);
+
+	/* artist */
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_ARTIST,
+					    0,
+				            &data->artist_val);
+
+	/* album */
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_ALBUM,
+					    0,
+				            &data->album_val);
+	g_object_unref (G_OBJECT (info));
+	return data;
+}
+
+static void
+synchronize_entry_with_data (RhythmDB *db, RhythmDBEntry *entry, RhythmDBEntryUpdateData *data)
+{
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &data->track_number_val);
+	g_value_unset (&data->track_number_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &data->duration_val);
+	g_value_unset (&data->duration_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &data->file_size_val);
+	g_value_unset (&data->file_size_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &data->title_val);
+	g_value_unset (&data->title_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_MTIME, &data->mtime_val);
+	g_value_unset (&data->mtime_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_GENRE, &data->genre_val);
+	g_value_unset (&data->genre_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ARTIST, &data->artist_val);
+	g_value_unset (&data->artist_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &data->album_val);
+	g_value_unset (&data->album_val);
+}
+
+RhythmDBEntry *
+rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
+{
+	RhythmDBEntry *entry;
+	char *realuri;
+	RhythmDBEntryUpdateData *metadata;
+	GValue last_time = {0, };
+
+	realuri = rb_uri_resolve_symlink (uri);
+
+	rhythmdb_write_lock (db);
+
+	entry = rhythmdb_entry_lookup_by_location (db, realuri);
+
+	if (entry) {
+		rhythmdb_entry_ref_unlocked (db, entry);
+		rhythmdb_write_unlock (db);
+		update_song (db, entry, error);
+		rhythmdb_entry_unref (db, entry);
+		return entry;
+	}
+
+	rhythmdb_write_unlock (db);
+
+	/* Don't do file access with the db write lock held */
+	metadata = read_metadata (uri, error);
+	if (!metadata) {
+		rb_debug ("failed to read data from \"%s\"", uri);
+		g_free (realuri);
+		return NULL;
+	}
+
+	rhythmdb_write_lock (db);
+
+	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, realuri);
+	synchronize_entry_with_data (db, entry, metadata);
+
+	/* initialize the last played date to 0=never */
+	g_value_init (&last_time, G_TYPE_LONG);
+	g_value_set_long (&last_time, 0);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &last_time);
+	g_value_unset (&last_time);
+
+	g_free (metadata);
+	g_free (realuri);
+
+	rhythmdb_write_unlock (db);
+	return entry;
+}
+
+struct RhythmDBLoadErrorData {
+	RhythmDB *db;
+	char *uri;
+	char *msg;
+};
+
+static gboolean
+signal_err_idle (struct RhythmDBLoadErrorData *data)
+{
+	GDK_THREADS_ENTER ();
+
+	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ERROR], 0,
+		       data->uri, data->msg);
+	g_free (data->uri);
+	g_free (data->msg);
+	g_free (data);
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
+static void
+push_err (RhythmDB *db, const char *uri, GError *error)
+{
+	struct RhythmDBLoadErrorData *loaderr = g_new0 (struct RhythmDBLoadErrorData, 1);
+
+	loaderr->db = db;
+	loaderr->uri = g_strdup (uri);
+	loaderr->msg = g_strdup (error->message);
+
+	g_error_free (error);
+
+	rb_debug ("queueing error for \"%s\": %s", loaderr->uri, loaderr->msg);
+	g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) signal_err_idle, loaderr, NULL);
+}
+
+
+static gpointer
+read_queue (GAsyncQueue *queue, gboolean *cancel)
+{
+	GTimeVal timeout;
+	gpointer ret;
+
+	g_get_current_time (&timeout);
+	g_time_val_add (&timeout, G_USEC_PER_SEC);
+	
+	if (G_UNLIKELY (*cancel))
+		return NULL;
+	while ((ret = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
+		if (G_UNLIKELY (*cancel))
+			return NULL;
+		g_get_current_time (&timeout);
+		g_time_val_add (&timeout, G_USEC_PER_SEC);
+	}
+
+	return ret;
+}
+
+static void
+add_file (const char *filename,
+	  RhythmDB *db)
+{
+	g_async_queue_push (db->priv->add_queue, g_strdup (filename));
+}
+
+static gpointer
+add_thread_main (RhythmDB *db)
+{
+	while (TRUE) {
+		char *uri, *realuri;
+		GError *error = NULL;
+
+		uri = read_queue (db->priv->add_queue, &db->priv->exiting);
+		realuri = rb_uri_resolve_symlink (uri);
+
+		if (rb_uri_is_directory (uri) == FALSE)
+			rhythmdb_add_song (db, realuri, &error);
+		else
+			rb_uri_handle_recursively (uri, (GFunc) add_file,
+						   &db->priv->exiting, db);
+
+		if (error != NULL)
+			push_err (db, realuri, error);
+
+		g_free (realuri);
+		g_free (uri);
+			
+		g_usleep (10);
+	}
+
+	rb_debug ("exiting");
+	g_async_queue_unref (db->priv->add_queue);
+	g_async_queue_push (db->priv->main_thread_cancel, GINT_TO_POINTER (1));
+	return NULL;
+}
+
+static void
+update_song (RhythmDB *db, RhythmDBEntry *entry, GError **error)
+{
+	char *location;
+	time_t stored_mtime;
+	GnomeVFSFileInfo *vfsinfo = NULL;
+	GnomeVFSResult result;
+	RhythmDBEntryUpdateData *metadata;
+
+	rhythmdb_read_lock (db);
+	location = rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION);
+	stored_mtime = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_MTIME);
+	rhythmdb_read_unlock (db);
+	
+	vfsinfo = gnome_vfs_file_info_new ();
+	result = gnome_vfs_get_file_info (location, vfsinfo, GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
+
+	if (result != GNOME_VFS_OK) {
+		if (result != GNOME_VFS_ERROR_NOT_FOUND)
+			g_set_error (error,
+				     RHYTHMDB_ERROR,
+				     RHYTHMDB_ERROR_ACCESS_FAILED,
+				     "%s", gnome_vfs_result_to_string (result));
+		rb_debug ("song \"%s\" was deleted", location);
+		rhythmdb_write_lock (db);
+		rhythmdb_entry_delete (db, entry);
+		rhythmdb_write_unlock (db);
+		goto out;
+	}
+
+	if (stored_mtime == vfsinfo->mtime)
+		goto out;
+
+	metadata = read_metadata (location, error);
+	if (!metadata) {
+		rb_debug ("failed to read data from \"%s\"", location);
+		goto out;
+	}
+
+	rhythmdb_write_lock (db);
+	
+	synchronize_entry_with_data (db, entry, metadata);
+	g_free (metadata);
+	rhythmdb_entry_unref_unlocked (db, entry);
+
+	rhythmdb_write_unlock (db);
+
+out:
+	gnome_vfs_file_info_unref (vfsinfo);
+	g_free (location);
+}
+
+static gpointer
+update_thread_main (RhythmDB *db)
+{
+	while (TRUE) {
+		GError *error = NULL;
+		RhythmDBEntry *entry;
+
+		entry = read_queue (db->priv->update_queue, &db->priv->exiting);
+
+		if (entry == NULL)
+			break;
+
+		update_song (db, entry, &error);
+		rhythmdb_entry_unref (db, entry);
+
+		if (error != NULL)
+			push_err (db, NULL, error);
+
+		g_usleep (10);
+	}
+
+	rb_debug ("exiting");
+	g_async_queue_unref (db->priv->update_queue);
+	g_async_queue_push (db->priv->main_thread_cancel, GINT_TO_POINTER (1));
+	g_async_queue_unref (db->priv->main_thread_cancel);
+	g_thread_exit (NULL);
+	return NULL;
+}
+
+void
+rhythmdb_add_uri_async (RhythmDB *db, const char *uri)
+{
+	g_async_queue_push (db->priv->add_queue, g_strdup (uri));
 }
 
 static gpointer
@@ -1015,6 +1415,10 @@ void
 rhythmdb_emit_entry_restored (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_RESTORED], 0, entry);
+	if (rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
+		rhythmdb_entry_ref_unlocked (db, entry);
+		g_async_queue_push (db->priv->update_queue, entry);
+	}
 }
 
 void
@@ -1022,3 +1426,176 @@ rhythmdb_emit_entry_deleted (RhythmDB *db, RhythmDBEntry *entry)
 {
 	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_DELETED], 0, entry);
 }
+
+typedef struct
+{
+	RhythmDB *db;
+	char *libname;
+} RhythmDBLegacyLoadData;
+
+RhythmDBEntry *
+rhythmdb_legacy_id_to_entry (RhythmDB *db, guint id)
+{
+	return g_hash_table_lookup (db->priv->legacy_id_map, GINT_TO_POINTER (id));
+}
+
+static gboolean
+emit_legacy_load_complete (RhythmDB *db)
+{
+	GDK_THREADS_ENTER ();
+
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[LEGACY_LOAD_COMPLETE], 0);
+	g_hash_table_destroy (db->priv->legacy_id_map);
+	g_object_unref (G_OBJECT (db));
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
+gpointer
+legacy_load_thread_main (RhythmDBLegacyLoadData *data)
+{
+	xmlDocPtr doc;
+	xmlNodePtr root, child;
+	guint id;
+
+	doc = xmlParseFile (data->libname);
+
+	if (doc == NULL) {
+		g_object_unref (G_OBJECT (data->db));
+		goto free_exit;
+	}
+
+	rb_debug ("parsing entries");
+	root = xmlDocGetRootElement (doc);
+	for (child = root->children; child != NULL; child = child->next) {
+		RhythmDBEntry *entry = 
+			rhythmdb_legacy_parse_rbnode (data->db, RHYTHMDB_ENTRY_TYPE_SONG, child,
+						      &id);
+
+		if (id > 0)
+			g_hash_table_insert (data->db->priv->legacy_id_map, GINT_TO_POINTER (id),
+					     entry);
+		if (entry) {
+			rhythmdb_entry_ref (data->db, entry);
+			g_async_queue_push (data->db->priv->update_queue, entry);
+		}
+	}
+	xmlFreeDoc (doc);
+
+	/* steals the library ref */
+	g_idle_add ((GSourceFunc) emit_legacy_load_complete, data->db);
+	rb_debug ("legacy load thread exiting");
+free_exit:
+	g_free (data->libname);
+	g_free (data);
+	g_thread_exit (NULL);
+	return NULL;
+}
+
+void
+rhythmdb_load_legacy (RhythmDB *db)
+{
+	RhythmDBLegacyLoadData *data;
+	char *libname = g_build_filename (rb_dot_dir (), "library-2.1.xml", NULL);
+	xmlDocPtr doc;
+	xmlNodePtr root, child;
+
+	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
+		g_free (libname);
+		goto load_iradio;
+	}
+
+	data = g_new0 (RhythmDBLegacyLoadData, 1);
+	data->db = db;
+	g_object_ref (G_OBJECT (data->db));
+	data->libname = libname;
+	
+	rb_debug ("kicking off library legacy loading thread");
+	g_thread_create ((GThreadFunc) legacy_load_thread_main, data, FALSE, NULL);
+
+load_iradio:
+	libname = g_build_filename (rb_dot_dir (), "iradio-2.2.xml", NULL);
+	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
+		g_free (libname);
+		return;
+	}
+
+	doc = xmlParseFile (libname);
+	g_free (libname);
+
+	if (doc == NULL)
+		return;
+
+	root = xmlDocGetRootElement (doc);
+	for (child = root->children; child != NULL; child = child->next) {
+		rhythmdb_legacy_parse_rbnode (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+					      child, NULL);
+	}
+	xmlFreeDoc (doc);
+}
+
+static gboolean
+queue_is_empty (GAsyncQueue *queue)
+{
+	return g_async_queue_length (queue) <= 0;
+}
+
+char *
+rhythmdb_get_status (RhythmDB *db)
+{
+	char *ret = NULL;
+
+	if (!queue_is_empty (db->priv->add_queue))
+		ret = g_strdup_printf ("<b>%s</b>", _("Loading songs..."));
+	else if (!queue_is_empty (db->priv->update_queue))
+		ret = g_strdup_printf ("<b>%s</b>", _("Refreshing songs..."));
+
+	return ret;
+}
+
+char *
+rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize size)
+{
+	float days;
+	long hours, minutes, seconds;
+	char *songcount;
+	char *time;
+	char *size_str;
+	char *ret;
+
+	songcount = g_strdup_printf (ngettext ("%d song", "%d songs", n_songs), n_songs);
+
+	days    = (float) duration / (float) (60 * 60 * 24); 
+	hours   = duration / (60 * 60);
+	minutes = duration / 60 - hours * 60;
+	seconds = duration % 60;
+
+	if (days >= 1.0) {
+		time = ngettext ("%.1f day", "%.1f days", days);
+		time = g_strdup_printf (time, days);			
+	} else {
+		const char *minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
+		if (hours >= 1) {		
+			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
+			char *fmt;
+			if (minutes > 0) {
+				fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
+			} else {
+				fmt = g_strdup_printf ("%s", hourfmt);
+			}
+			time = g_strdup_printf (fmt, hours, minutes);
+			g_free (fmt);
+		} else 
+			time = g_strdup_printf (minutefmt, minutes);
+	}
+	size_str = gnome_vfs_format_file_size_for_display (size);
+	ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
+	g_free (songcount);
+	g_free (time);
+	g_free (size_str);
+
+	return ret;
+}
+

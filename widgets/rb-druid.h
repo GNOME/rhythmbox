@@ -21,7 +21,7 @@
 
 #include <gtk/gtk.h>
 
-#include "rb-library.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_DRUID_H
 #define __RB_DRUID_H
@@ -51,7 +51,7 @@ typedef struct
 
 GType			rb_druid_get_type	(void);
 
-RBDruid *		rb_druid_new		(RBLibrary *library);
+RBDruid *		rb_druid_new		(RhythmDB *db);
 
 void			rb_druid_show		(RBDruid *druid);
 

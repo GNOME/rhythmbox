@@ -690,30 +690,3 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 	
 	rb_entry_view_set_model (source->priv->stations, RHYTHMDB_MODEL (query_model));
 }
-
-void
-rb_iradio_source_load_legacy (RhythmDB *db)
-{
-	xmlDocPtr doc;
-	xmlNodePtr root, child;
-	char *libname = g_build_filename (rb_dot_dir (), "iradio-2.2.xml", NULL);
-
-	if (!g_file_test (libname, G_FILE_TEST_EXISTS)) {
-		g_free (libname);
-		return;
-	}
-	
-	doc = xmlParseFile (libname);
-	g_free (libname);
-
-	if (doc == NULL)
-		return;
-
-	root = xmlDocGetRootElement (doc);
-	for (child = root->children; child != NULL; child = child->next) {
-		rhythmdb_legacy_parse_rbnode (db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-					      child, NULL);
-	}
-	xmlFreeDoc (doc);
-}
-

@@ -875,7 +875,9 @@ rhythmdb_query_model_drag_data_received (GtkTreeDragDest *drag_dest,
 								   strv[i]);
 			rhythmdb_read_unlock (model->priv->db);
 
-			if (entry != NULL) {
+			if (entry == NULL)
+				rhythmdb_add_uri_async (model->priv->db, strv[i]);
+			else {
 				g_sequence_insert (ptr, entry);
 
 				tem_ptr = g_sequence_ptr_prev (ptr);

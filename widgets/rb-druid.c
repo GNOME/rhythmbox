@@ -55,7 +55,7 @@ static void do_response (RBDruid *druid);
 
 struct RBDruidPrivate
 {
-	RBLibrary *library;
+	RhythmDB *db;
 	GnomeDruid *druid;
 
 	GtkWidget *window;
@@ -68,7 +68,7 @@ struct RBDruidPrivate
 enum
 {
 	PROP_0,
-	PROP_LIBRARY,
+	PROP_DB,
 };
 
 static GObjectClass *parent_class = NULL;
@@ -114,11 +114,11 @@ rb_druid_class_init (RBDruidClass *klass)
 	object_class->get_property = rb_druid_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "RBLibrary",
-							      "RBLibrary object",
-							      RB_TYPE_LIBRARY,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB object",
+							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE));
 }
 
@@ -178,9 +178,8 @@ rb_druid_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		druid->priv->library = g_value_get_object (value);
-
+	case PROP_DB:
+		druid->priv->db = g_value_get_object (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -198,8 +197,8 @@ rb_druid_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		g_value_set_object (value, druid->priv->library);
+	case PROP_DB:
+		g_value_set_object (value, druid->priv->db);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -270,9 +269,9 @@ rb_druid_init_widgets (RBDruid *druid)
 }
 
 RBDruid *
-rb_druid_new (RBLibrary *library) 
+rb_druid_new (RhythmDB *db) 
 {
-	RBDruid *druid = g_object_new (RB_TYPE_DRUID, "library", library, NULL);
+	RBDruid *druid = g_object_new (RB_TYPE_DRUID, "db", db, NULL);
 
 	g_return_val_if_fail (druid->priv != NULL, NULL);
 
@@ -413,7 +412,7 @@ rb_druid_page3_finish_cb (GnomeDruidPage *druid_page, GtkWidget *druid_widget,
 		
 		rb_debug ("page2 next; adding %s to library", uri);
 		    
-		rb_library_add_uri_async (druid->priv->library, uri);
+		rhythmdb_add_uri_async (druid->priv->db, uri);
 		g_free (uri);
 	}
 	eel_gconf_set_boolean (CONF_FIRST_TIME, TRUE);

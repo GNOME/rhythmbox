@@ -383,7 +383,6 @@ Makefile
 lib/Makefile
 rhythmdb/Makefile
 widgets/Makefile
-library/Makefile
 iradio/Makefile
 corba/Makefile
 shell/Makefile

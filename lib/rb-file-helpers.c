@@ -617,7 +617,6 @@ rb_uri_is_iradio (const char *uri)
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,
-			   GMutex *cancel_lock,
 			   gboolean *cancelflag,
 		           gpointer user_data)
 {
@@ -638,14 +637,8 @@ rb_uri_handle_recursively (const char *text_uri,
 		GnomeVFSURI *file_uri;
 		char *file_uri_text;
 
-		if (cancel_lock) {
-			g_mutex_lock (cancel_lock);
-			if (*cancelflag) {
-				g_mutex_unlock (cancel_lock);
-				break;
-			}
-			g_mutex_unlock (cancel_lock);
-		}
+		if (cancelflag && *cancelflag)
+			break;
 
 		info = (GnomeVFSFileInfo *) l->data;
 		
@@ -664,7 +657,6 @@ rb_uri_handle_recursively (const char *text_uri,
 			{
 				rb_uri_handle_recursively (file_uri_text,
 							   func,
-							   cancel_lock,
 							   cancelflag,
 							   user_data);
 

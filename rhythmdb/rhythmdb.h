@@ -26,6 +26,8 @@
 #include <glib-object.h>
 #include <gtk/gtktreemodel.h>
 #include <stdarg.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
+#include <libgnomevfs/gnome-vfs-file-info.h>
 
 #include "config.h"
 
@@ -106,6 +108,15 @@ typedef struct {
 
 typedef void RhythmDBEntry;
 
+typedef enum
+{
+	RHYTHMDB_ERROR_ACCESS_FAILED,
+} RhythmDBError;
+
+#define RHYTHMDB_ERROR (rhythmdb_error_quark ())
+
+GQuark rhythmdb_error_quark (void);
+
 typedef struct RhythmDBPrivate RhythmDBPrivate;
 
 typedef struct
@@ -125,6 +136,8 @@ typedef struct
 	void	(*entry_changed)	(RhythmDBEntry *entry);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(RhythmDBEntry *entry);
+	void	(*legacy_load_complete)	(RhythmDBEntry *entry);
+	void	(*error)		(const char *uri, const char *msg);
 
 	/* virtual methods */
 
@@ -170,6 +183,9 @@ void		rhythmdb_write_unlock	(RhythmDB *db);
 
 RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const char *uri);
 
+void		rhythmdb_add_uri_async	(RhythmDB *db, const char *uri);
+RhythmDBEntry *	rhythmdb_add_song	(RhythmDB *db, const char *uri, GError **error);
+
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
@@ -211,10 +227,8 @@ gpointer	rhythmdb_entry_get_pointer	(RhythmDB *db,
 
 RhythmDBEntry *	rhythmdb_entry_lookup_by_location (RhythmDB *db, const char *uri);
 
-/* GtkTreeModel *	rhythmdb_do_entry_query			(RhythmDB *db, ...); */
-
-gboolean	rhythmdb_evaluate_query			(RhythmDB *db, GPtrArray *query,
-							 RhythmDBEntry *entry);
+gboolean	rhythmdb_evaluate_query		(RhythmDB *db, GPtrArray *query,
+						 RhythmDBEntry *entry);
 
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.
@@ -253,6 +267,12 @@ GPtrArray *	rhythmdb_query_copy			(GPtrArray *array);
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_restored		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
+
+RhythmDBEntry * rhythmdb_legacy_id_to_entry		(RhythmDB *db, guint id);
+
+char *		rhythmdb_get_status			(RhythmDB *db);
+char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
+							 GnomeVFSFileSize size);
 
 G_END_DECLS
 

@@ -36,8 +36,8 @@
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rhythmdb.h"
 #include "rb-stock-icons.h"
-#include "rb-library.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
@@ -86,7 +86,6 @@ struct RBPlaylistManagerPrivate
 	RBSource *selected_source;
 
 	BonoboUIComponent *component;
-	RBLibrary *library;
 	RBLibrarySource *libsource;
 	RBIRadioSource *iradio_source;
 	GtkWindow *window;
@@ -102,7 +101,7 @@ enum
 	PROP_WINDOW,
 	PROP_COMPONENT,
 	PROP_SOURCE,
-	PROP_LIBRARY,
+	PROP_DB,
 	PROP_LIBRARY_SOURCE,
 	PROP_IRADIO_SOURCE,
 };
@@ -199,13 +198,12 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "Library",
-							      "Library",
-							      RB_TYPE_LIBRARY,
+					 PROP_DB,
+					 g_param_spec_object ("db",
+							      "RhythmDB",
+							      "RhythmDB database",
+							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
 	g_object_class_install_property (object_class,
 					 PROP_LIBRARY_SOURCE,
 					 g_param_spec_object ("library_source",
@@ -309,10 +307,8 @@ rb_playlist_manager_set_property (GObject *object,
 							     rb_playlist_manager_verbs,
 							     mgr);
 		break;
-	case PROP_LIBRARY:
-		mgr->priv->library = g_value_get_object (value);
-		g_object_get (G_OBJECT (mgr->priv->library), "db",
-			      &mgr->priv->db, NULL);
+	case PROP_DB:
+		mgr->priv->db = g_value_get_object (value);
 		break;
 	case PROP_LIBRARY_SOURCE:
 		mgr->priv->libsource = g_value_get_object (value);
@@ -345,8 +341,8 @@ rb_playlist_manager_get_property (GObject *object,
 	case PROP_COMPONENT:
 		g_value_set_object (value, mgr->priv->component);
 		break;
-	case PROP_LIBRARY:
-		g_value_set_object (value, mgr->priv->library);
+	case PROP_DB:
+		g_value_set_object (value, mgr->priv->db);
 		break;
 	case PROP_LIBRARY_SOURCE:
 		g_value_set_object (value, mgr->priv->libsource);
@@ -376,13 +372,13 @@ rb_playlist_manager_set_source (RBPlaylistManager *mgr, RBSource *source)
 
 RBPlaylistManager *
 rb_playlist_manager_new (BonoboUIComponent *component, GtkWindow *window,
-			 RBLibrary *library, RBLibrarySource *libsource,
+			 RhythmDB *db, RBLibrarySource *libsource,
 			 RBIRadioSource *iradio_source)
 {
 	RBPlaylistManager *mgr = g_object_new (RB_TYPE_PLAYLIST_MANAGER,
 					       "component", component,
 					       "window", window,
-					       "library", library,
+					       "db", db,
 					       "library_source", libsource,
 					       "iradio_source", iradio_source,
 					       NULL);
@@ -427,7 +423,7 @@ rb_playlist_manager_load_legacy_playlist (RBPlaylistManager *mgr,
 		id = atol (tmp);
 		g_free (tmp);
 
-		entry = rb_library_legacy_id_to_entry (mgr->priv->library, id);
+		entry = rhythmdb_legacy_id_to_entry (mgr->priv->db, id);
 		if (!entry) {
 			rb_debug ("invalid legacy id %d", id);
 			continue;
@@ -500,7 +496,7 @@ rb_playlist_manager_load_legacy_playlists (RBPlaylistManager *mgr)
 
 		rhythmdb_read_lock (mgr->priv->db);
 
-		playlist = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library));
+		playlist = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->db));
 		g_object_set (G_OBJECT (playlist), "name", name, NULL);
 		g_free (name);
 
@@ -545,7 +541,7 @@ rb_playlist_manager_load_playlists (RBPlaylistManager *mgr)
 		if (xmlNodeIsText (child))
 			continue;
 
-		playlist = rb_playlist_source_new_from_xml (mgr->priv->library,
+		playlist = rb_playlist_source_new_from_xml (mgr->priv->db,
 							    child);
 		append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	}
@@ -769,7 +765,7 @@ create_playlist_with_name (RBPlaylistManager *mgr, const char *name)
 	if (!rb_playlist_manager_validate_name (mgr, name, TRUE))
 		return NULL;
 
-	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->library));
+	ret = RB_PLAYLIST_SOURCE (rb_playlist_source_new (mgr->priv->db));
 	g_object_set (G_OBJECT (ret), "name", name, NULL);
 	return ret;
 }

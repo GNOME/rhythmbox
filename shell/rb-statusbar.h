@@ -23,7 +23,7 @@
 #include <monkey-media.h>
 
 #include "rb-source.h"
-#include "rb-library.h"
+#include "rhythmdb.h"
 
 #ifndef __RB_STATUSBAR_H
 #define __RB_STATUSBAR_H
@@ -53,7 +53,7 @@ typedef struct
 
 GType			rb_statusbar_get_type	(void);
 
-RBStatusbar *		rb_statusbar_new	(RBLibrary *library,
+RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
 						 BonoboUIComponent *component);
 
 void			rb_statusbar_set_source	(RBStatusbar *bar,

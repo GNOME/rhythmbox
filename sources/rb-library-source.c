@@ -151,8 +151,6 @@ struct RBLibrarySourcePrivate
 {
 	RhythmDB *db;
 	
-	RBLibrary *library;
-
 	GtkWidget *browser;
 	GtkWidget *vbox;
 
@@ -258,14 +256,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
-
-	g_object_class_install_property (object_class,
-					 PROP_LIBRARY,
-					 g_param_spec_object ("library",
-							      "Library",
-							      "Library",
-							      RB_TYPE_LIBRARY,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -539,9 +529,6 @@ rb_library_source_set_property (GObject *object,
 	case PROP_DB:
 		source->priv->db = g_value_get_object (value);
 		break;
-	case PROP_LIBRARY:
-		source->priv->library = g_value_get_object (value);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -558,9 +545,6 @@ rb_library_source_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_LIBRARY:
-		g_value_set_object (value, source->priv->library);
-		break;
 	case PROP_DB:
 		g_value_set_object (value, source->priv->db);
 		break;
@@ -571,14 +555,13 @@ rb_library_source_get_property (GObject *object,
 }
 
 RBSource *
-rb_library_source_new (RhythmDB *db, RBLibrary *library)
+rb_library_source_new (RhythmDB *db)
 {
 	RBSource *source;
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
 					  "db", db,
-					  "library", library,
 					  NULL));
 
 	return source;
@@ -689,9 +672,9 @@ impl_get_status (RBSource *asource)
 {
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	g_free (source->priv->status);
-	source->priv->status = rb_library_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
-								 rb_entry_view_get_duration (source->priv->songs),
-								 rb_entry_view_get_total_size (source->priv->songs));
+	source->priv->status = rhythmdb_compute_status_normal (rb_entry_view_get_num_entries (source->priv->songs),
+							       rb_entry_view_get_duration (source->priv->songs),
+							       rb_entry_view_get_total_size (source->priv->songs));
 	return source->priv->status;
 }
 
@@ -998,7 +981,7 @@ rb_library_source_add_location (RBLibrarySource *source, GtkWindow *win)
 		if (uri != NULL) {
 			GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
 			if (vfsuri != NULL) {
-				rb_library_add_uri_async (source->priv->library, uri);
+				rhythmdb_add_uri_async (source->priv->db, uri);
 				gnome_vfs_uri_unref (vfsuri);
 			} else
 				rb_debug ("invalid uri: \"%s\"", uri);
@@ -1041,7 +1024,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 		char *uri = i->data;
 
 		if (uri != NULL)
-			rb_library_add_uri_async (source->priv->library, uri);
+			rhythmdb_add_uri_async (source->priv->db, uri);
 
 		g_free (uri);
 	}

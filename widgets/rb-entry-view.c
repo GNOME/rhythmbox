@@ -36,7 +36,6 @@
 #include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
-#include "rb-library.h"
 #include "rb-debug.h"
 #include "rhythmdb.h"
 #include "rhythmdb-model.h"
