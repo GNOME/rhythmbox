@@ -644,7 +644,7 @@ rb_ellipsizing_label_init (RBEllipsizingLabel *label)
 }
 
 static void
-real_finalize (GObject *object)
+rb_ellipsizing_label_finalize (GObject *object)
 {
 	RBEllipsizingLabel *label;
 
@@ -808,7 +808,7 @@ rb_ellipsizing_label_class_init (RBEllipsizingLabelClass *klass)
 	
 	widget_class = GTK_WIDGET_CLASS (klass);
 
-	G_OBJECT_CLASS (klass)->finalize = real_finalize;
+	G_OBJECT_CLASS (klass)->finalize = rb_ellipsizing_label_finalize;
 
 	widget_class->size_request = real_size_request;
 	widget_class->size_allocate = real_size_allocate;

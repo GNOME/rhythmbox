@@ -45,6 +45,7 @@ struct RBSongDisplayBoxPrivate
 
 static void rb_song_display_box_class_init    (RBSongDisplayBoxClass *klass);
 static void rb_song_display_box_init          (RBSongDisplayBox *box);
+static void rb_song_display_box_finalize      (GObject *object);
 static void rb_song_display_box_size_request  (GtkWidget  *widget,
 					       GtkRequisition *requisition);
 static void rb_song_display_box_size_allocate (GtkWidget *widget,
@@ -55,6 +56,8 @@ static int  displaybox_get_childwidth         (GtkWidget *widget);
 static void do_allocation                     (GtkWidget *widget,
 					       int size,
 					       GtkAllocation *allocation);
+
+static GObjectClass *parent_class = NULL;
 
 GType
 rb_song_display_box_get_type (void)
@@ -89,26 +92,20 @@ rb_song_display_box_class_init (RBSongDisplayBoxClass *class)
 	GtkWidgetClass *widget_class;
 
 	widget_class = (GtkWidgetClass*) class;
+	parent_class = g_type_class_peek_parent (class);
+
+	G_OBJECT_CLASS (class)->finalize = rb_song_display_box_finalize;
 
 	widget_class->size_request = rb_song_display_box_size_request;
 	widget_class->size_allocate = rb_song_display_box_size_allocate;
 }
 
 static void
-rb_song_display_box_init (RBSongDisplayBox *songbox)
+rb_song_display_box_init (RBSongDisplayBox *displaybox)
 {
-}
-
-GtkWidget*
-rb_song_display_box_new (void)
-{
-	RBSongDisplayBox *displaybox;
 	GtkBox *box;
 
-	displaybox = g_object_new (RB_TYPE_SONG_DISPLAY_BOX, NULL);
-        displaybox->priv = g_new0 (RBSongDisplayBoxPrivate, 1);
-
-
+	displaybox->priv = g_new0 (RBSongDisplayBoxPrivate, 1);
 	box = GTK_BOX (displaybox);
 	box->spacing = 0;
 	box->homogeneous = FALSE;
@@ -124,10 +121,29 @@ rb_song_display_box_new (void)
 	gtk_box_pack_start (box, displaybox->priv->byspace, FALSE, FALSE, 0);
 	gtk_box_pack_start (box, displaybox->priv->by, FALSE, FALSE, 0);
 	gtk_box_pack_start (box, GTK_WIDGET (displaybox->artist), FALSE, FALSE, 0);
-	
+}
+
+GtkWidget*
+rb_song_display_box_new (void)
+{
+	RBSongDisplayBox *displaybox;
+
+	displaybox = g_object_new (RB_TYPE_SONG_DISPLAY_BOX, NULL);
+
 	return GTK_WIDGET (displaybox);
 }
 
+static void
+rb_song_display_box_finalize (GObject *object)
+{
+	RBSongDisplayBox *box;
+
+	box = RB_SONG_DISPLAY_BOX (object);
+
+	g_free (box->priv);
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
+}
 
 static void
 rb_song_display_box_size_request (GtkWidget *widget, GtkRequisition *requisition)
