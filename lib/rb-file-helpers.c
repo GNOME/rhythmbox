@@ -659,7 +659,8 @@ rb_uri_handle_recursively (const char *text_uri,
 		if (info->type != GNOME_VFS_FILE_TYPE_REGULAR)
 		{
 			if ((info->type == GNOME_VFS_FILE_TYPE_DIRECTORY) &&
-			    (info->name) && (info->name[0] != '.'))
+			    (info->name) && (strcmp (info->name, "."))
+			    && (strcmp (info->name, "..")))
 			{
 				rb_uri_handle_recursively (file_uri_text,
 							   func,
