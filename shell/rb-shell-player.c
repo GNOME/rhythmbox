@@ -1867,7 +1867,8 @@ buffering_end_cb (MonkeyMediaPlayer *mmplayer,
 	gdk_threads_enter ();
 
 	cancel_buffering_dialog (player);
-	rb_source_buffering_done (player->priv->source);
+	if (player->priv->source)
+		rb_source_buffering_done (player->priv->source);
 
 	gdk_threads_leave ();
 }
