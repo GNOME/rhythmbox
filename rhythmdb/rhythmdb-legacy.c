@@ -39,6 +39,7 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 	char *album = NULL;
 	guint rating = 0, play_count = 0;
 	gint track_number = -1;
+	gint quality = -1;
 	glong duration = 0;
 	glong last_played = 0;
 	glong file_size = 0;
@@ -114,6 +115,11 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 				last_played = g_ascii_strtoull (xml, NULL, 10);
 				g_free (xml);
 				break;
+			case 22: /* RB_NODE_PROP_QUALITY */
+				xml = xmlNodeGetContent (node_child);
+				quality = g_ascii_strtoull (xml, NULL, 10);
+				g_free (xml);
+				break;
 			}
 		}
 	}
@@ -165,6 +171,13 @@ rhythmdb_legacy_parse_rbnode (RhythmDB *db, RhythmDBEntryType type,
 		g_value_init (&val, G_TYPE_INT);
 		g_value_set_int (&val, track_number);
 		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
+		g_value_unset (&val);
+	}
+
+	if (quality >= 0) {
+		g_value_init (&val, G_TYPE_INT);
+		g_value_set_int (&val, quality);
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_QUALITY, &val);
 		g_value_unset (&val);
 	}
 

@@ -539,6 +539,7 @@ typedef struct
 	GValue file_size_val;
 	GValue title_val;
 	GValue duration_val;
+	GValue quality_val;
 	GValue mtime_val;
 	GValue genre_val;
 	GValue artist_val;
@@ -553,6 +554,7 @@ read_metadata (const char *location, GError **error)
 	RhythmDBEntryUpdateData *data = g_new0 (RhythmDBEntryUpdateData, 1);
 	MonkeyMediaStreamInfo *info;
 	GnomeVFSFileInfo *vfsinfo;
+	GValue tem = {0,};
 
 	info = monkey_media_stream_info_new (location, error);
 	if (G_UNLIKELY (info == NULL)) {
@@ -572,6 +574,13 @@ read_metadata (const char *location, GError **error)
 	monkey_media_stream_info_get_value (info,
 				            MONKEY_MEDIA_STREAM_INFO_FIELD_DURATION,
 					    0, &data->duration_val);
+
+	/* quality */
+	monkey_media_stream_info_get_value (info,
+				            MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_QUALITY,
+					    0, &tem);
+	g_value_init (&data->quality_val, G_TYPE_INT);
+	g_value_set_int (&data->quality_val, g_value_get_enum (&tem));
 
 	/* filesize */
 	monkey_media_stream_info_get_value (info, MONKEY_MEDIA_STREAM_INFO_FIELD_FILE_SIZE,
@@ -629,6 +638,8 @@ synchronize_entry_with_data (RhythmDB *db, RhythmDBEntry *entry, RhythmDBEntryUp
 	g_value_unset (&data->track_number_val);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_DURATION, &data->duration_val);
 	g_value_unset (&data->duration_val);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_QUALITY, &data->quality_val);
+	g_value_unset (&data->quality_val);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_FILE_SIZE, &data->file_size_val);
 	g_value_unset (&data->file_size_val);
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_TITLE, &data->title_val);

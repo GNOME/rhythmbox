@@ -32,6 +32,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "monkey-media-audio-quality.h"
+
 #include "rb-tree-dnd.h"
 #include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
@@ -1030,6 +1032,33 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 	g_free (str);
 }
 
+static void
+rb_entry_view_quality_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
+				      GtkTreeModel *tree_model, GtkTreeIter *iter,
+				      struct RBEntryViewCellDataFuncData *data)
+{
+	RhythmDBEntry *entry;
+	char *str;
+	MonkeyMediaAudioQuality quality;
+
+	entry = entry_from_tree_iter (data->view, iter);
+
+	rhythmdb_read_lock (data->view->priv->db);
+
+	quality = rhythmdb_entry_get_int (data->view->priv->db, entry,
+					  data->propid);
+
+	rhythmdb_read_unlock (data->view->priv->db);
+
+	if (quality > 0) {
+		str = monkey_media_audio_quality_to_string (quality);
+		g_object_set (G_OBJECT (renderer), "text", str, NULL);
+		g_free (str);
+	} else {
+		g_object_set (G_OBJECT (renderer), "text", _("Unknown"), NULL);
+	}
+}
+
 
 static void
 rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
@@ -1268,6 +1297,15 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_long_sort_func;
 		title = _("Ti_me");
 		key = "Time";
+		break;
+	case RB_ENTRY_VIEW_COL_QUALITY:
+		propid = RHYTHMDB_PROP_QUALITY;
+		cell_data->propid = propid;
+		cell_data_func = (GtkTreeCellDataFunc) rb_entry_view_quality_cell_data_func;
+		sort_data->propid = cell_data->propid;
+		sort_func = (GCompareDataFunc) rb_entry_view_int_sort_func;
+		title = _("_Quality");
+		key = "Quality";
 		break;
 	case RB_ENTRY_VIEW_COL_RATING:
 		g_assert_not_reached ();
