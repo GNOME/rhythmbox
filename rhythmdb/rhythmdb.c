@@ -64,6 +64,8 @@ struct RhythmDBPrivate
 	GAsyncQueue *add_queue;
 	GAsyncQueue *action_queue;
 
+	gboolean dry_run;
+
 	GList *added_entries;
 	GList *changed_entries;
 
@@ -82,6 +84,7 @@ struct RhythmDBAction
 {
 	enum {
 		RHYTHMDB_ACTION_SET,
+		RHYTHMDB_ACTION_SYNC,
 	} type;
 	RhythmDBEntry *entry;
 	guint propid;
@@ -127,6 +130,7 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
+	PROP_DRY_RUN,
 };
 
 enum
@@ -194,6 +198,13 @@ rhythmdb_class_init (RhythmDBClass *klass)
 							      NULL,
 							      G_PARAM_READWRITE));
 
+	g_object_class_install_property (object_class,
+					 PROP_DRY_RUN,
+					 g_param_spec_boolean ("dry-run",
+							       "dry run",
+							       "Whether or not changes should be saved",
+							       FALSE,
+							       G_PARAM_READWRITE));
 	rhythmdb_signals[ENTRY_ADDED] =
 		g_signal_new ("entry_added",
 			      RHYTHMDB_TYPE,
@@ -506,6 +517,9 @@ rhythmdb_set_property (GObject *object,
 	case PROP_NAME:
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
+	case PROP_DRY_RUN:
+		source->priv->dry_run = g_value_get_boolean (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -524,6 +538,9 @@ rhythmdb_get_property (GObject *object,
 	{
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
+		break;
+	case PROP_DRY_RUN:
+		g_value_set_boolean (value, source->priv->dry_run);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -556,9 +573,21 @@ void
 rhythmdb_write_unlock (RhythmDB *db)
 {
 	GList *tem;
+	GHashTable *queued_entry_changes = g_hash_table_new (NULL, NULL);
 
 	for (tem = db->priv->changed_entries; tem; tem = tem->next) {
 		struct RhythmDBEntryChangeData *data = tem->data;
+		struct RhythmDBAction *action;
+		RBMetaDataField field;
+
+		if (!g_hash_table_lookup (queued_entry_changes, data->entry)
+		    && metadata_field_from_prop (data->prop, &field)) {
+			action = g_new0 (struct RhythmDBAction, 1);
+			action->type = RHYTHMDB_ACTION_SYNC;
+			action->entry = data->entry;
+			g_hash_table_insert (queued_entry_changes, data->entry, action);
+			g_async_queue_push (db->priv->action_queue, action);
+		}
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
 			       data->prop, &data->old, &data->new);
 		g_value_unset (&data->old);
@@ -567,6 +596,7 @@ rhythmdb_write_unlock (RhythmDB *db)
 	}
 	g_list_free (db->priv->changed_entries);
 	db->priv->changed_entries = NULL;
+	g_hash_table_destroy (queued_entry_changes);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_ADDED], 0, tem->data);
@@ -951,9 +981,46 @@ action_thread_main (RhythmDB *db)
 			rhythmdb_entry_set (db, action->entry, action->propid,
 					    &action->value);
 			rhythmdb_write_unlock (db);
+			g_value_unset (&action->value);
+			break;
+		case RHYTHMDB_ACTION_SYNC:
+		{
+			char *location;
+			GError *error = NULL;
+
+			if (db->priv->dry_run) {
+				rb_debug ("dry run is enabled, not syncing metadata");
+				break;
+			}
+			
+			rhythmdb_read_lock (db);
+			location = g_strdup (rhythmdb_entry_get_string (db, action->entry,
+									RHYTHMDB_PROP_LOCATION));
+			rhythmdb_read_unlock (db);
+			
+			rb_metadata_load (db->priv->metadata,
+					  location, &error);
+			if (error != NULL) {
+				g_warning ("error loading metadata from %s: %s", location,
+					   error->message);
+				/* FIXME */
+				g_free (location);
+				break;
+			}
+
+			rb_metadata_save (db->priv->metadata, &error);
+			if (error != NULL) {
+				g_warning ("error saving metadata to %s: %s", location,
+					   error->message);
+				/* FIXME */
+				g_free (location);
+				break;
+			}
+				
+			g_free (location);
 			break;
 		}
-		g_value_unset (&action->value);
+		}
 		g_free (action);
 	}
 

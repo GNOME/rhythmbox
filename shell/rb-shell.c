@@ -928,6 +928,9 @@ rb_shell_construct (RBShell *shell)
 		shell->priv->db = rhythmdb_tree_new (fname);
 		g_free (fname);
 
+		if (g_object_get_data (G_OBJECT (shell), "rb-shell-dry-run"))
+			g_object_set (G_OBJECT (shell->priv->db), "dry-run", TRUE, NULL);
+
 		if (rhythmdb_exists) {
 			g_signal_connect_object (G_OBJECT (shell->priv->db), "load-complete",
 						 G_CALLBACK (rb_shell_load_complete_cb), shell,

@@ -23,19 +23,7 @@
 #include <config.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnome/gnome-i18n.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkentry.h>
-#include <gtk/gtkmenu.h>
-#include <gtk/gtkoptionmenu.h>
-#include <gtk/gtkmenuitem.h>
-#include <gtk/gtkbbox.h>
-#include <gtk/gtkcombo.h>
-#include <gtk/gtktextview.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkalignment.h>
-#include <gtk/gtkstock.h>
-#include <gtk/gtktable.h>
+#include <gtk/gtk.h>
 #include <glade/glade.h>
 #include <string.h>
 #include <time.h>
@@ -92,15 +80,20 @@ struct RBSongInfoPrivate
 
 	/* information on the displayed song */
 	RhythmDBEntry *current_entry;
+	GList *selected_entries;
 
 	/* the dialog widgets */
 	GtkWidget   *backward;
 	GtkWidget   *forward;
 
+	GtkWidget   *notebook;
+
 	GtkWidget   *title;
+	GtkWidget   *title_label;
 	GtkWidget   *artist;
 	GtkWidget   *album;
 	GtkWidget   *track_cur;
+	GtkWidget   *track_cur_label;
 	GtkWidget   *genre;
 
 	GtkWidget   *bitrate;
@@ -251,14 +244,17 @@ rb_song_info_init (RBSongInfo *song_info)
 				song_info);
 	glade_xml_signal_autoconnect (xml);
 
+	song_info->priv->notebook = glade_xml_get_widget (xml, "song_info_vbox");
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (song_info)->vbox),
-			   glade_xml_get_widget (xml, "song_info_vbox"));
+			   song_info->priv->notebook);
 
 	/* get the widgets from the XML */
 	song_info->priv->title         = glade_xml_get_widget (xml, "song_info_title");
+	song_info->priv->title_label   = glade_xml_get_widget (xml, "title_label");
 	song_info->priv->artist        = glade_xml_get_widget (xml, "song_info_artist");
 	song_info->priv->album         = glade_xml_get_widget (xml, "song_info_album");
 	song_info->priv->track_cur     = glade_xml_get_widget (xml, "song_info_track_cur");
+	song_info->priv->track_cur_label = glade_xml_get_widget (xml, "trackn_label");
 	song_info->priv->genre         = glade_xml_get_widget (xml, "song_info_genre");
 	song_info->priv->bitrate       = glade_xml_get_widget (xml, "song_info_bitrate");
 	song_info->priv->duration      = glade_xml_get_widget (xml, "song_info_duration");
@@ -539,6 +535,9 @@ rb_song_info_populate_dialog (RBSongInfo *song_info)
 	char *tmp;
 	/* update the buttons sensitivity */
 	rb_song_info_update_buttons (song_info);
+
+	if (!song_info->priv->current_entry)
+		return;
 	
 	rhythmdb_read_lock (song_info->priv->db);
 
@@ -713,16 +712,17 @@ rb_song_info_update_buttons (RBSongInfo *song_info)
 
 	g_return_if_fail (song_info != NULL);
 	g_return_if_fail (song_info->priv->entry_view != NULL);
-	g_return_if_fail (song_info->priv->current_entry != NULL);
 
 	/* backward */
-	entry = rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
-						      song_info->priv->current_entry);
+	if (song_info->priv->current_entry)
+		entry = rb_entry_view_get_previous_from_entry (song_info->priv->entry_view,
+							       song_info->priv->current_entry);
 	
 	gtk_widget_set_sensitive (song_info->priv->backward, entry != NULL);
 	/* forward */
-	entry = rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
-						   song_info->priv->current_entry);
+	if (song_info->priv->current_entry)
+		entry = rb_entry_view_get_next_from_entry (song_info->priv->entry_view,
+							   song_info->priv->current_entry);
 
 	gtk_widget_set_sensitive (song_info->priv->forward, entry != NULL);
 }
@@ -739,16 +739,35 @@ static gboolean
 rb_song_info_update_current_values (RBSongInfo *song_info)
 {
 	GList *selected_entries;
+	gboolean multiselect = FALSE;
+
+	g_list_free (song_info->priv->selected_entries);
 
 	selected_entries = rb_entry_view_get_selected_entries (song_info->priv->entry_view);
 
 	if ((selected_entries == NULL) || (selected_entries->data == NULL)) {
 		song_info->priv->current_entry = NULL;
+		song_info->priv->selected_entries = NULL;
 		gtk_widget_destroy (GTK_WIDGET (song_info));
 		return FALSE;
 	}
 
-	song_info->priv->current_entry = selected_entries->data;
+	if (selected_entries->next == NULL) {
+		song_info->priv->current_entry = selected_entries->data;
+		song_info->priv->selected_entries = NULL;
+		g_list_free (selected_entries);
+	} else {
+		song_info->priv->current_entry = NULL;
+		song_info->priv->selected_entries = selected_entries;
+		multiselect = TRUE;
+	}
+
+	if (multiselect) 
+		gtk_notebook_remove_page (GTK_NOTEBOOK (song_info->priv->notebook), 1);
+	gtk_widget_set_sensitive (song_info->priv->title, !multiselect);
+	gtk_widget_set_sensitive (song_info->priv->title_label, !multiselect);
+	gtk_widget_set_sensitive (song_info->priv->track_cur, !multiselect);
+	gtk_widget_set_sensitive (song_info->priv->track_cur_label, !multiselect);
 	return TRUE;
 }
 
@@ -787,10 +806,52 @@ rb_song_info_update_rating (RBSongInfo *song_info)
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", rating,
 		      NULL);
+
 }
 
 static void
-rb_song_info_sync_entries (RBSongInfo *dialog)
+rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
+{
+	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
+	const char *artist = gtk_entry_get_text (GTK_ENTRY (dialog->priv->artist));
+	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
+	GValue val = {0,};
+	GList *tem;
+
+	rhythmdb_write_lock (dialog->priv->db);
+
+	if (strlen (album) > 0) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, album);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
+			rhythmdb_entry_set (dialog->priv->db,
+					    tem->data, RHYTHMDB_PROP_ALBUM, &val);
+		g_value_unset (&val);
+	}
+	
+	if (strlen (artist) > 0) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, artist);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
+			rhythmdb_entry_set (dialog->priv->db,
+					    tem->data, RHYTHMDB_PROP_ARTIST, &val);
+		g_value_unset (&val);
+	}
+
+	if (strlen (genre) > 0) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, genre);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
+			rhythmdb_entry_set (dialog->priv->db,
+					    tem->data, RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+	}
+	
+	rhythmdb_write_unlock (dialog->priv->db);
+}
+
+static void
+rb_song_info_sync_entry_single (RBSongInfo *dialog)
 {
 	const char *title = gtk_entry_get_text (GTK_ENTRY (dialog->priv->title));
 	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
@@ -843,4 +904,13 @@ rb_song_info_sync_entries (RBSongInfo *dialog)
 		       dialog->priv->current_entry);
 
 	rhythmdb_write_unlock (dialog->priv->db);
+}	
+
+static void
+rb_song_info_sync_entries (RBSongInfo *dialog)
+{
+	if (dialog->priv->current_entry)
+		rb_song_info_sync_entry_single (dialog);
+	else
+		rb_song_info_sync_entries_multiple (dialog);
 }
