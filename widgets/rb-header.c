@@ -448,9 +448,9 @@ rb_header_get_duration (RBHeader *player)
 	long ret;
 	if (player->priv->entry) {
 		rhythmdb_read_lock (player->priv->db);
-		ret = rhythmdb_entry_get_long (player->priv->db,
-					       player->priv->entry,
-					       RHYTHMDB_PROP_DURATION);
+		ret = rhythmdb_entry_get_uint64 (player->priv->db,
+						 player->priv->entry,
+						 RHYTHMDB_PROP_DURATION);
 		rhythmdb_read_unlock (player->priv->db);
 		return ret;
 	}
