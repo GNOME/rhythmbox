@@ -380,8 +380,10 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv->volume_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
 
-	player->priv->magic_button = gtk_button_new_from_stock (GTK_STOCK_EXECUTE);
-	gtk_container_add (GTK_CONTAINER (player->priv->volume_button), image);
+	image = gtk_image_new_from_stock (GTK_STOCK_EXECUTE,
+					  GTK_ICON_SIZE_BUTTON);
+	player->priv->magic_button = gtk_button_new ();
+	gtk_container_add (GTK_CONTAINER (player->priv->magic_button), image);
 
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->shuffle_button, FALSE, TRUE, 0);
 	gtk_box_pack_start (GTK_BOX (hbox), player->priv->volume_button, FALSE, TRUE, 0);
@@ -1423,8 +1425,10 @@ cancel_buffering_clicked_cb (GtkWidget *button,
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 	rb_debug ("Cancelling");
+
 	cancel_buffering_dialog (player);
 	rb_shell_player_set_playing_source (player, NULL);
+
 	rb_debug ("Done cancelling");
 }
 
