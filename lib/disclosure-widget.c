@@ -146,18 +146,23 @@ expand_collapse_timeout (gpointer data)
 	gboolean ret = TRUE;
 
 	GDK_THREADS_ENTER ();
+
+	g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+	g_return_val_if_fail (IS_CDDB_DISCLOSURE (disclosure), FALSE);
 	
-	gdk_window_invalidate_rect (widget->window, &widget->allocation, TRUE);
-	get_x_y (disclosure, &x, &y, &state_type);
-	
-	gtk_paint_expander (widget->style,
-			    widget->window,
-			    state_type,
-			    &widget->allocation,
-			    widget,
-			    "disclosure",
-			    x, y,
-			    disclosure->priv->style);
+	if (widget->window) {
+		gdk_window_invalidate_rect (widget->window, &widget->allocation, TRUE);
+		get_x_y (disclosure, &x, &y, &state_type);
+		
+		gtk_paint_expander (widget->style,
+				    widget->window,
+				    state_type,
+				    &widget->allocation,
+				    widget,
+				    "disclosure",
+				    x, y,
+				    disclosure->priv->style);
+	}
 
 	disclosure->priv->style += disclosure->priv->direction;
 	if ((int) disclosure->priv->style > (int) GTK_EXPANDER_EXPANDED) {
@@ -195,6 +200,8 @@ static void
 do_animation (CDDBDisclosure *disclosure,
 	      gboolean opening)
 {
+	g_return_if_fail (IS_CDDB_DISCLOSURE (disclosure));
+
 	if (disclosure->priv->expand_id > 0) {
 		g_source_remove (disclosure->priv->expand_id);
 	}

@@ -1,3 +1,31 @@
+2003-08-05  Colin Walters  <walters@debian.org>
+
+	* Makefile.am:
+	* configure.ac:
+	
+	Disable help again until someone fixes it.
+	
+	* data/glade/buffering-dialog.glade:
+	* shell/rb-shell-player.c: (buffering_begin_cb):
+
+	Remove pango markup bits from glade file, and add them
+	at runtime; this fixes bug #99867.
+	
+	* lib/disclosure-widget.c: (expand_collapse_timeout),
+	(do_animation):
+
+	Don't crash if we're toggled but the widget isn't realized;
+	this fixes bug #119184.
+	
+	* data/rhythmbox.schemas:
+	* shell/rb-shell.c: (rb_shell_corba_grab_focus),
+	(rb_shell_construct), (rb_shell_show_window_changed_cb),
+	(rb_shell_sync_window_visibility), (tray_button_press_event_cb):
+
+	Change the gconf key "sourcelist_visible" to "sourcelist_hidden".
+	This way if people have a broken GConf setup, they'll see the
+	main window on startup.
+
 2003-08-05 Christian Schaller <Uraeus@gnome.org>
 
 	* Some disting/build fixes to Makefile.am

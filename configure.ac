@@ -328,8 +328,6 @@ monkey-media/stream-info-impl/Makefile
 monkey-media/stream-info-impl/id3-vfs/Makefile
 tests/Makefile
 sources/Makefile
-help/Makefile
-help/C/Makefile
 po/Makefile.in
 component/Makefile
 rhythmbox.spec

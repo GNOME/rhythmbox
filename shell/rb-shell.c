@@ -243,7 +243,7 @@ typedef enum
 #define CONF_STATE_WINDOW_WIDTH     CONF_PREFIX "/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    CONF_PREFIX "/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
-#define CONF_STATE_WINDOW_VISIBLE   CONF_PREFIX "/state/window_visible"
+#define CONF_STATE_WINDOW_HIDDEN    CONF_PREFIX "/state/window_hidden"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
 
@@ -520,7 +520,7 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 			   CORBA_Environment *ev)
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN, FALSE);
 
 	gtk_window_present (GTK_WINDOW (shell->priv->window));
 	gtk_widget_grab_focus (shell->priv->window);
@@ -692,7 +692,7 @@ rb_shell_construct (RBShell *shell)
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
-	eel_gconf_notification_add (CONF_STATE_WINDOW_VISIBLE,
+	eel_gconf_notification_add (CONF_STATE_WINDOW_HIDDEN,
 				    (GConfClientNotifyFunc) window_visibility_changed_cb,
 				    shell);
 	eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
@@ -807,14 +807,6 @@ rb_shell_construct (RBShell *shell)
 		rb_shell_sync_window_visibility (shell);
 	}
 #endif
-
-	GDK_THREADS_ENTER ();
-
-	rb_debug ("shell: dropping into mainloop");
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
-
-	GDK_THREADS_LEAVE ();
 
 }
 
@@ -1093,8 +1085,8 @@ rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 				 const char *state,
 				 RBShell *shell)
 {
-	eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
-			       rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
+			       !rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
 }
 
 static void
@@ -1549,7 +1541,7 @@ rb_shell_sync_window_visibility (RBShell *shell)
 	static int window_y = -1;
 
 	rb_debug ("syncing visibility");
-	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
+	visible = !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN);
 	
 	if (visible == TRUE) {
 		if (window_x >= 0 && window_y >= 0) {
@@ -1839,8 +1831,8 @@ tray_button_press_event_cb (GtkWidget *ebox,
 	{
 	case 1:
 		/* toggle mainwindow visibility */
-		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
-				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE));
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_HIDDEN,
+				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_HIDDEN));
 		break;
 	case 3:
 		/* contextmenu */

@@ -1540,9 +1540,16 @@ buffering_begin_cb (MonkeyMediaPlayer *mmplayer,
 	gdk_threads_enter ();
 
 	if (!player->priv->buffering_dialog) {
-		GladeXML *xml = rb_glade_xml_new ("buffering-dialog.glade",
-						  "dialog",
-						  player);
+		GladeXML *xml = rb_glade_xml_new ("buffering-dialog.glade", "dialog", player);
+ 		GtkWidget *label = glade_xml_get_widget (xml, "status_label");
+		PangoAttrList *pattrlist = pango_attr_list_new ();
+		PangoAttribute *attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
+
+		attr->start_index = 0;
+		attr->end_index = G_MAXINT;
+		pango_attr_list_insert (pattrlist, attr);
+		gtk_label_set_attributes (GTK_LABEL (label), pattrlist);
+		pango_attr_list_unref (pattrlist);
 		
 		player->priv->buffering_progress = glade_xml_get_widget (xml, "progressbar");
 
