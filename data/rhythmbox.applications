@@ -2,7 +2,8 @@ rhythmbox
         command=rhythmbox
         name=Music Player
         can_open_multiple_files=true
-        expects_uris=false
+        expects_uris=true
+	uses_gnomevfs=true
 	startup_notify=true
         requires_terminal=false
         mime_types=x-directory/normal,application/x-ogg,application/ogg,audio/x-mp3,audio/x-scpls,audio/x-mp3,audio/x-mpeg,audio/mpeg,audio/x-mpegurl,application/x-flac
