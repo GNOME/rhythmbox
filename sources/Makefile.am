@@ -8,10 +8,10 @@ libsourcesimpl_la_SOURCES =		\
 	rb-song-info-helpers.c		\
 	rb-song-info-helpers.h		\
 	rb-iradio-source.c		\
-	rb-iradio-source.h		
-#       rb-group-source.c               \
-#       rb-group-source.h		\
-#	rb-audiocd-source.c		\
+	rb-iradio-source.h		\
+	rb-group-source.c               \
+	rb-group-source.h		
+#	rb-audiocd-source.c		
 #	rb-audiocd-source.h
 #endif
 

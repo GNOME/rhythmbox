@@ -1,3 +1,37 @@
+2003-07-19  Colin Walters  <walters@verbum.org>
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/rb-file-helpers.c: (rb_uri_handle_recursively):
+	* shell/main.c: (rb_handle_cmdline):
+	* shell/rb-shell.c: (rb_shell_finalize), (rb_shell_construct),
+	(ask_string_response_cb), (create_group),
+	(rb_shell_cmd_new_playlist), (rb_shell_cmd_rename_group),
+	(rb_shell_cmd_delete_group), (rb_shell_load_music_groups),
+	(rb_shell_save_music_groups), (add_uri), (dnd_add_handled_cb),
+	(rb_shell_new_group_dialog):
+	* sources/Makefile.am:
+	* sources/rb-group-source.c: (rb_group_source_get_type),
+	(rb_group_source_class_init),
+	(rb_group_source_songs_show_popup_cb), (rb_group_source_init),
+	(rb_group_source_finalize), (rb_group_source_set_property),
+	(rb_group_source_get_property), (rb_group_source_new),
+	(rb_group_source_new_from_file), (rb_group_source_set_name),
+	(rb_group_source_get_file), (impl_get_description),
+	(impl_get_browser_key), (impl_get_pixbuf), (impl_get_node_view),
+	(impl_can_pause), (impl_have_artist_album), (impl_get_artist),
+	(impl_get_album), (impl_have_url), (impl_get_status),
+	(impl_song_properties), (songs_view_changed_cb),
+	(rb_group_source_save), (rb_group_source_load),
+	(rb_group_source_remove_file), (rb_group_source_add_node),
+	(add_uri), (dnd_add_handled_cb), (handle_songs_func),
+	(rb_group_source_drop_cb), (rb_group_source_add_list_uri),
+	(filename_from_name):
+	* sources/rb-group-source.h:
+
+	Groups compile and can be added and stuff, but they do not work
+	quite yet.
+
 2003-07-18  Colin Walters  <walters@verbum.org>
 
 	* sources/rb-library-source.c (struct RBLibrarySourcePrivate): Remove

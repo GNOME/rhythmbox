@@ -191,7 +191,6 @@ rb_handle_cmdline (char **argv, int argc,
 {
 	GNOME_Rhythmbox shell;
 	int i;
-	char *ret;
 
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)

@@ -609,12 +609,14 @@ rb_uri_handle_recursively (const char *text_uri,
 		GnomeVFSURI *file_uri;
 		char *file_uri_text;
 
-		g_mutex_lock (cancel_lock);
-		if (*cancelflag) {
+		if (cancel_lock) {
+			g_mutex_lock (cancel_lock);
+			if (*cancelflag) {
+				g_mutex_unlock (cancel_lock);
+				break;
+			}
 			g_mutex_unlock (cancel_lock);
-			break;
 		}
-		g_mutex_unlock (cancel_lock);
 
 		info = (GnomeVFSFileInfo *) l->data;
 		

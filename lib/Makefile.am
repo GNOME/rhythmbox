@@ -1,4 +1,4 @@
-SUBDIRS = widgets egg
+SUBDIRS = widgets
 
 noinst_LTLIBRARIES = librb.la
 

@@ -67,7 +67,7 @@
 #include "rb-iradio-source.h"
 //#include "rb-audiocd-source.h"
 #include "rb-shell-preferences.h"
-// #include "rb-group-source.h"
+#include "rb-group-source.h"
 #include "rb-file-monitor.h"
 #include "rb-windows-ini-file.h"
 #include "rb-library-dnd-types.h"
@@ -147,12 +147,21 @@ static void rb_shell_cmd_add_location (BonoboUIComponent *component,
 static void rb_shell_cmd_load_playlist (BonoboUIComponent *component,
 					RBShell *shell,
 					const char *verbname);
-/* static void rb_shell_cmd_new_group (BonoboUIComponent *component, */
-/* 			            RBShell *shell, */
-/* 			            const char *verbname); */
+static void rb_shell_cmd_new_playlist (BonoboUIComponent *component,
+				       RBShell *shell,
+				       const char *verbname);
 /* static void rb_shell_cmd_new_station (BonoboUIComponent *component, */
 /* 				      RBShell *shell, */
 /* 				      const char *verbname); */
+static void
+rb_shell_cmd_delete_group (BonoboUIComponent *component,
+			   RBShell *shell,
+			   const char *verbname);
+static void
+rb_shell_cmd_rename_group (BonoboUIComponent *component,
+			   RBShell *shell,
+			   const char *verbname);
+GtkWidget * rb_shell_new_group_dialog (RBShell *shell);
 static void rb_shell_quit (RBShell *shell);
 static void rb_shell_view_sourcelist_changed_cb (BonoboUIComponent *component,
 						 const char *path,
@@ -164,8 +173,8 @@ static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
 				             Bonobo_UIComponent_EventType type,
 				             const char *state,
 				             RBShell *shell);
-/* static void rb_shell_load_music_groups (RBShell *shell); */
-/* static void rb_shell_save_music_groups (RBShell *shell); */
+static void rb_shell_load_music_groups (RBShell *shell);
+static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sync_sourcelist_visibility (RBShell *shell);
 static void rb_shell_sync_window_visibility (RBShell *shell);
 static gboolean rb_shell_update_source_status (RBShell *shell);
@@ -194,8 +203,8 @@ static void paned_changed_cb (GConfClient *client,
 /* 			                 guint info, */
 /* 			                 guint time, */
 /* 			                 RBShell *shell); */
-/* static void dnd_add_handled_cb (RBLibraryAction *action, */
-/* 		                RBSource *source); */
+static void dnd_add_handled_cb (RBLibraryAction *action,
+		                RBGroupSource *source);
 static void setup_tray_icon (RBShell *shell);
 static void sync_tray_menu (RBShell *shell);
 
@@ -280,8 +289,10 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("AddLocation",  (BonoboUIVerbFn) rb_shell_cmd_add_location),
 	BONOBO_UI_VERB ("LoadPlaylist", (BonoboUIVerbFn) rb_shell_cmd_load_playlist),
-/* 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group), */
+ 	BONOBO_UI_VERB ("NewPlaylist",  (BonoboUIVerbFn) rb_shell_cmd_new_playlist),
 /* 	BONOBO_UI_VERB ("NewStation",   (BonoboUIVerbFn) rb_shell_cmd_new_station), */
+	BONOBO_UI_VERB ("RenamePlaylist",(BonoboUIVerbFn) rb_shell_cmd_rename_group),
+	BONOBO_UI_VERB ("DeletePlaylist",(BonoboUIVerbFn) rb_shell_cmd_delete_group),
 	BONOBO_UI_VERB_END
 };
 
@@ -383,7 +394,7 @@ rb_shell_finalize (GObject *object)
 	rb_debug ("Unregistered with Bonobo Activation");
 	
 	/* REWRITEFIXME */
-/* 	rb_shell_save_music_groups (shell); */
+	rb_shell_save_music_groups (shell);
 
 	gtk_widget_destroy (GTK_WIDGET (shell->priv->load_error_dialog));
 	g_list_free (shell->priv->supported_media_extensions);
@@ -750,9 +761,8 @@ rb_shell_construct (RBShell *shell)
 /* 		rb_debug ("No AudioCD device is available!"); */
 
 	/* now that the lib is loaded, we can load the music groups */
-	/* REWRITEFIXME */
-/* 	rb_debug ("shell: loading music groups"); */
-/* 	rb_shell_load_music_groups (shell); */
+	rb_debug ("shell: loading music groups");
+	rb_shell_load_music_groups (shell);
 
 	/* GO GO GO! */
 	rb_debug ("shell: syncing window state");
@@ -1289,132 +1299,148 @@ rb_shell_cmd_load_playlist (BonoboUIComponent *component,
 			  shell);
 }
 
-/* REWRITEFIXME */
-/* static void */
-/* ask_string_response_cb (GtkDialog *dialog, */
-/* 			int response_id, */
-/* 			RBShell *shell) */
-/* { */
-/* 	GtkWidget *entry, *checkbox; */
-/* 	RBSource *group; */
-/* 	char *name; */
-/* 	gboolean add_selection; */
-/* 	CreateGroupType type; */
-/* 	GList *data, *l; */
+static void
+ask_string_response_cb (GtkDialog *dialog,
+			int response_id,
+			RBShell *shell)
+{
+	GtkWidget *entry, *checkbox;
+	RBSource *group;
+	char *name;
+	gboolean add_selection;
+	CreateGroupType type;
+	GList *data, *l;
 
-/* 	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type")); */
-/* 	data = g_object_get_data (G_OBJECT (dialog), "data"); */
+	type = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (dialog), "type"));
+	data = g_object_get_data (G_OBJECT (dialog), "data");
 
-/* 	if (response_id != GTK_RESPONSE_OK) */
-/* 	{ */
-/* 		gtk_widget_destroy (GTK_WIDGET (dialog)); */
-/* 		if (type == CREATE_GROUP_WITH_URI_LIST) */
-/* 			gnome_vfs_uri_list_free (data); */
-/* 		return; */
-/* 	} */
+	if (response_id != GTK_RESPONSE_OK)
+	{
+		gtk_widget_destroy (GTK_WIDGET (dialog));
+		if (type == CREATE_GROUP_WITH_URI_LIST)
+			gnome_vfs_uri_list_free (data);
+		return;
+	}
 
-/* 	entry = g_object_get_data (G_OBJECT (dialog), "entry"); */
-/* 	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry))); */
+	entry = g_object_get_data (G_OBJECT (dialog), "entry");
+	name = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 
-/* 	checkbox = g_object_get_data (G_OBJECT (dialog), "checkbox"); */
-/* 	add_selection = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbox)); */
+	checkbox = g_object_get_data (G_OBJECT (dialog), "checkbox");
+	add_selection = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (checkbox));
 
-/* 	gtk_widget_destroy (GTK_WIDGET (dialog)); */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 	
-/* 	if (name == NULL) */
-/* 	{ */
-/* 		if (type == CREATE_GROUP_WITH_URI_LIST) */
-/* 			gnome_vfs_uri_list_free (data); */
-/* 		return; */
-/* 	} */
+	if (name == NULL)
+	{
+		if (type == CREATE_GROUP_WITH_URI_LIST)
+			gnome_vfs_uri_list_free (data);
+		return;
+	}
 
-/* 	group = rb_group_source_new (shell->priv->container, */
-/* 				     shell->priv->library); */
-/* 	rb_group_source_set_name (RB_GROUP_SOURCE (group), name); */
-/* 	shell->priv->groups = g_list_append (shell->priv->groups, group); */
-/* 	rb_shell_append_source (shell, group); */
-/* 	g_free (name); */
+	group = rb_group_source_new (shell->priv->container,
+				     shell->priv->library);
+	rb_group_source_set_name (RB_GROUP_SOURCE (group), name);
+	shell->priv->groups = g_list_append (shell->priv->groups, group);
+	rb_shell_append_source (shell, group);
+	g_free (name);
 
-/* 	switch (type) */
-/* 	{ */
-/* 	case CREATE_GROUP_WITH_NODE_LIST: */
-/* 		for (l = data; l != NULL; l = g_list_next (l)) */
-/* 		{ */
-/* 			rb_group_view_add_node (RB_GROUP_VIEW (group), */
-/* 						RB_NODE (l->data)); */
-/* 		} */
-/* 		break; */
-/* 	case CREATE_GROUP_WITH_URI_LIST: */
-/* 		for (l = data; l != NULL; l = g_list_next (l)) */
-/* 		{ */
-/* 			char *uri; */
-/* 			RBNode *node; */
+	switch (type)
+	{
+	case CREATE_GROUP_WITH_NODE_LIST:
+		for (l = data; l != NULL; l = g_list_next (l))
+		{
+			rb_group_source_add_node (RB_GROUP_SOURCE (group),
+						  RB_NODE (l->data));
+		}
+		break;
+	case CREATE_GROUP_WITH_URI_LIST:
+		for (l = data; l != NULL; l = g_list_next (l))
+		{
+			char *uri;
+			RBNode *node;
 				
-/* 			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE); */
-/* 			node = rb_library_get_song_by_location (shell->priv->library, uri); */
+			uri = gnome_vfs_uri_to_string ((GnomeVFSURI *) l->data, GNOME_VFS_URI_HIDE_NONE);
+			node = rb_library_get_song_by_location (shell->priv->library, uri);
 
-/* 			if (node != NULL) */
-/* 			{ */
-/* 				/\* add this node to the newly created group *\/ */
-/* 				rb_group_view_add_node (RB_GROUP_VIEW (group), node); */
-/* 			} */
-/* 			else */
-/* 			{ */
-/* 				/\* will add these nodes to the newly created group *\/ */
-/* 				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri); */
-/* 				g_object_set_data (G_OBJECT (group), "library", shell->priv->library); */
-/*                                 g_signal_connect_object (G_OBJECT (action), */
-/*                                                          "handled",  */
-/*                                                          G_CALLBACK (dnd_add_handled_cb), */
-/*                                                          G_OBJECT (group), */
-/*                                                          0); */
-/* 			} */
+			if (node != NULL)
+			{
+				/* add this node to the newly created group */
+				rb_group_source_add_node (RB_GROUP_SOURCE (group), node);
+			}
+			else
+			{
+				/* will add these nodes to the newly created group */
+				RBLibraryAction *action = rb_library_add_uri (shell->priv->library, uri);
+				g_object_set_data (G_OBJECT (group), "library", shell->priv->library);
+                                g_signal_connect_object (G_OBJECT (action),
+                                                         "handled",
+                                                         G_CALLBACK (dnd_add_handled_cb),
+                                                         G_OBJECT (group),
+                                                         0);
+			}
 
-/* 			g_free (uri); */
-/* 		} */
-/* 		gnome_vfs_uri_list_free (data); */
-/* 		break; */
-/* 	case CREATE_GROUP_WITH_SELECTION: */
-/* 		{	 */
-/* 			/\* add the current selection if the user checked *\/ */
-/* 			if (add_selection) */
-/* 			{ */
-/* 				GList *i = NULL; */
-/* 				GList *selection = rb_view_get_selection (shell->priv->selected_view); */
-/* 				for (i  = selection; i != NULL; i = g_list_next (i)) */
-/* 					rb_group_view_add_node (RB_GROUP_VIEW (group), i->data); */
-/* 			} */
-/* 		} */
-/* 		break; */
-/* 	} */
+			g_free (uri);
+		}
+		gnome_vfs_uri_list_free (data);
+		break;
+	case CREATE_GROUP_WITH_SELECTION:
+		{
+			/* add the current selection if the user checked */
+			if (add_selection)
+			{
+				RBNodeView *nodeview = rb_source_get_node_view (shell->priv->selected_source);
+				GList *i = NULL;
+				GList *selection = rb_node_view_get_selection (nodeview);
+				for (i  = selection; i != NULL; i = g_list_next (i))
+					rb_group_source_add_node (RB_GROUP_SOURCE (group), i->data);
+			}
+		}
+		break;
+	}
 
-/* 	rb_shell_save_music_groups (shell); */
-/* } */
+	rb_shell_save_music_groups (shell);
+}
 
-/* static void */
-/* create_group (RBShell *shell, CreateGroupType type, */
-/* 	      GList *data) */
-/* { */
-/* 	GtkWidget *dialog; */
+static void
+create_group (RBShell *shell, CreateGroupType type,
+	      GList *data)
+{
+	GtkWidget *dialog;
 	
-/* 	dialog = rb_group_source_create_dialog (shell); */
+	dialog = rb_shell_new_group_dialog (shell);
 
-/* 	g_object_set_data (G_OBJECT (dialog), "type", GINT_TO_POINTER (type)); */
-/* 	g_object_set_data (G_OBJECT (dialog), "data", data); */
+	g_object_set_data (G_OBJECT (dialog), "type", GINT_TO_POINTER (type));
+	g_object_set_data (G_OBJECT (dialog), "data", data);
 
-/* 	g_signal_connect (G_OBJECT (dialog), */
-/* 			  "response", */
-/* 			  G_CALLBACK (ask_string_response_cb), */
-/* 			  shell); */
-/* } */
+	g_signal_connect (G_OBJECT (dialog),
+			  "response",
+			  G_CALLBACK (ask_string_response_cb),
+			  shell);
+}
 
-/* static void */
-/* rb_shell_cmd_new_group (BonoboUIComponent *component, */
-/* 			RBShell *shell, */
-/* 			const char *verbname) */
-/* { */
-/* 	create_group (shell, CREATE_GROUP_WITH_SELECTION, NULL); */
-/* } */
+static void
+rb_shell_cmd_new_playlist (BonoboUIComponent *component,
+			RBShell *shell,
+			const char *verbname)
+{
+	create_group (shell, CREATE_GROUP_WITH_SELECTION, NULL);
+}
+
+static void
+rb_shell_cmd_rename_group (BonoboUIComponent *component,
+			   RBShell *shell,
+			   const char *verbname)
+{
+	rb_debug ("FIXME");
+}
+
+static void
+rb_shell_cmd_delete_group (BonoboUIComponent *component,
+			   RBShell *shell,
+			   const char *verbname)
+{
+	rb_debug ("FIXME");
+}
 
 /* static void */
 /* rb_shell_cmd_new_station (BonoboUIComponent *component, */
@@ -1437,49 +1463,48 @@ rb_shell_quit (RBShell *shell)
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
 
-/* REWRITEFIXME */
-/* static void */
-/* rb_shell_load_music_groups (RBShell *shell) */
-/* { */
-/* 	GSList *groups, *l; */
+static void
+rb_shell_load_music_groups (RBShell *shell)
+{
+	GSList *groups, *l;
 
-/* 	groups = eel_gconf_get_string_list (CONF_MUSIC_GROUPS); */
+	groups = eel_gconf_get_string_list (CONF_MUSIC_GROUPS);
 
-/* 	for (l = groups; l != NULL; l = g_slist_next (l)) */
-/* 	{ */
-/* 		RBView *group; */
+	for (l = groups; l != NULL; l = g_slist_next (l))
+	{
+		RBSource *group;
 
-/* 		group = rb_group_view_new_from_file (shell->priv->container, */
-/* 						     shell->priv->library, */
-/* 						     (char *) l->data); */
-/* 		shell->priv->groups = g_list_append (shell->priv->groups, group); */
+		group = rb_group_source_new_from_file (shell->priv->container,
+						       shell->priv->library,
+						       (char *) l->data);
+		shell->priv->groups = g_list_append (shell->priv->groups, group);
 
-/* 		rb_shell_append_view (shell, group); */
-/* 	} */
+		rb_shell_append_source (shell, group);
+	}
 
-/* 	g_slist_foreach (groups, (GFunc) g_free, NULL); */
-/* 	g_slist_free (groups); */
-/* } */
+	g_slist_foreach (groups, (GFunc) g_free, NULL);
+	g_slist_free (groups);
+}
 
-/* static void */
-/* rb_shell_save_music_groups (RBShell *shell) */
-/* { */
-/* 	GSList *groups = NULL; */
-/* 	GList *l; */
+static void
+rb_shell_save_music_groups (RBShell *shell)
+{
+	GSList *groups = NULL;
+	GList *l;
 
-/* 	for (l = shell->priv->groups; l != NULL; l = g_list_next (l)) */
-/* 	{ */
-/* 		RBGroupView *group = RB_GROUP_VIEW (l->data); */
+	for (l = shell->priv->groups; l != NULL; l = g_list_next (l))
+	{
+		RBGroupSource *group = RB_GROUP_SOURCE (l->data);
 
-/* 		groups = g_slist_append (groups, */
-/* 					 (char *) rb_group_view_get_file (group)); */
-/* 		rb_group_view_save (group); */
-/* 	} */
+		groups = g_slist_append (groups,
+					 (char *) rb_group_source_get_file (group));
+		rb_group_source_save (group);
+	}
 	
-/* 	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups); */
+	eel_gconf_set_string_list (CONF_MUSIC_GROUPS, groups);
 	
-/* 	g_slist_free (groups); */
-/* } */
+	g_slist_free (groups);
+}
 
 static void
 rb_shell_sync_sourcelist_visibility (RBShell *shell)
@@ -1589,59 +1614,57 @@ paned_changed_cb (GConfClient *client,
 }
 
 
-/* REWRITEFIXME */
-/* static void */
-/* add_uri (const char *uri, */
-/* 	 RBGroupSource *source) */
-/* { */
-/* 	RBNode *node; */
+static void
+add_uri (const char *uri,
+	 RBGroupSource *source)
+{
+	RBNode *node;
 
-/* 	node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"), */
-/* 					        uri); */
+	node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
+					        uri);
 
-/* 	if (node != NULL) */
-/* 	{ */
-/* 		rb_group_source_add_node (source, node); */
-/* 	} */
-/* } */
+	if (node != NULL)
+	{
+		rb_group_source_add_node (source, node);
+	}
+}
 
-/* static void */
-/* dnd_add_handled_cb (RBLibraryAction *action, */
-/* 		    RBGroupSource *source) */
-/* { */
-/* 	char *uri; */
-/* 	RBLibraryActionType type; */
+static void
+dnd_add_handled_cb (RBLibraryAction *action,
+		    RBGroupSource *source)
+{
+	char *uri;
+	RBLibraryActionType type;
 
-/* 	rb_library_action_get (action, */
-/* 			       &type, */
-/* 			       &uri); */
+	rb_library_action_get (action,
+			       &type,
+			       &uri);
 
-/* 	switch (type) */
-/* 	{ */
-/* 	case RB_LIBRARY_ACTION_ADD_FILE: */
-/* 		{ */
-/* 			RBNode *node; */
+	switch (type)
+	{
+	case RB_LIBRARY_ACTION_ADD_FILE:
+		{
+			RBNode *node;
 
-/* 			node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"), */
-/* 								uri); */
+			node = rb_library_get_song_by_location (g_object_get_data (G_OBJECT (source), "library"),
+								uri);
 
-/* 			if (node != NULL) */
-/* 			{ */
-/* 				rb_group_view_add_node (source, node); */
-/* 			} */
-/* 		} */
-/* 		break; */
-/* 	case RB_LIBRARY_ACTION_ADD_DIRECTORY: */
-/* 		{ */
-/* 			rb_uri_handle_recursively (uri, */
-/* 						   (GFunc) add_uri, */
-/* 						   view); */
-/* 		} */
-/* 		break; */
-/* 	default: */
-/* 		break; */
-/* 	} */
-/* } */
+			if (node != NULL)
+			{
+				rb_group_source_add_node (source, node);
+			}
+		}
+		break;
+	case RB_LIBRARY_ACTION_ADD_DIRECTORY:
+		{
+			rb_uri_handle_recursively (uri, (GFunc) add_uri,
+						   NULL, NULL, source);
+		}
+		break;
+	default:
+		break;
+	}
+}
 
 /* static void */
 /* handle_songs_func (RBNode *node, */
@@ -1702,6 +1725,84 @@ paned_changed_cb (GConfClient *client,
 
 /* 	gtk_drag_finish (context, TRUE, FALSE, time); */
 /* } */
+
+/* rb_shell_new_group_dialog: create a dialog for creating a new
+ * group.
+ *
+ * TODO Make this a gobject that could hold more functionality
+ * like multi criteria search.
+ */
+GtkWidget *
+rb_shell_new_group_dialog (RBShell *shell)
+{
+	RBNodeView *nodeview;
+	GtkWidget *dialog, *hbox, *image, *entry, *label, *vbox, *cbox, *align, *vbox2;
+	GList *selection;
+	char *tmp;
+	
+	dialog = gtk_dialog_new_with_buttons ("",
+					      NULL,
+					      0,
+					      GTK_STOCK_CANCEL,
+					      GTK_RESPONSE_CANCEL,
+					      _("Create"),
+					      GTK_RESPONSE_OK,
+					      NULL);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+					 GTK_RESPONSE_OK);
+	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 12);
+
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), 
+				      GTK_WINDOW (shell->priv->window));
+	gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
+	gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE); 
+
+	hbox = gtk_hbox_new (FALSE, 12);
+	gtk_container_set_border_width (GTK_CONTAINER (hbox), 6);
+	image = gtk_image_new_from_stock (RB_STOCK_GROUP,
+					  GTK_ICON_SIZE_DIALOG);
+	align = gtk_alignment_new (0.5, 0.0, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (align), image);
+	gtk_box_pack_start (GTK_BOX (hbox), align, TRUE, TRUE, 0);
+	vbox = gtk_vbox_new (FALSE, 0);
+
+	tmp = g_strdup_printf ("%s\n", _("Please enter a name for the new music group."));
+	label = gtk_label_new (tmp);
+	g_free (tmp);
+	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+	gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, TRUE, 0);
+
+	vbox2 = gtk_vbox_new (FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (vbox), vbox2, FALSE, TRUE, 0);
+	
+	entry = gtk_entry_new ();
+	gtk_entry_set_text (GTK_ENTRY (entry), _("Untitled"));
+	gtk_entry_set_activates_default (GTK_ENTRY (entry), TRUE);
+	gtk_box_pack_start (GTK_BOX (vbox2), entry, FALSE, TRUE, 0);
+
+	cbox = gtk_check_button_new_with_mnemonic (_("Add the _selected songs to the new group"));
+	nodeview = rb_source_get_node_view (shell->priv->selected_source);
+	selection = rb_node_view_get_selection (nodeview);
+	if (selection == NULL)
+		gtk_widget_set_sensitive (cbox, FALSE);
+	gtk_box_pack_start (GTK_BOX (vbox2), cbox, FALSE, TRUE, 0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox);
+	gtk_widget_show_all (hbox);
+	gtk_widget_grab_focus (entry);
+
+	/* we need this fields to be retrieved later */
+	g_object_set_data (G_OBJECT (dialog), "entry", entry);
+	g_object_set_data (G_OBJECT (dialog), "checkbox", cbox);
+
+	gtk_widget_show_all (dialog);
+
+	return dialog;
+}
 
 static void
 tray_button_press_event_cb (GtkWidget *ebox,
