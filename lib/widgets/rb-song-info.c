@@ -161,6 +161,7 @@ rb_song_info_init (RBSongInfo *song_info)
 					 GTK_RESPONSE_CLOSE);
 
 	gtk_window_set_title (GTK_WINDOW (song_info), _("Song Information"));
+	gtk_window_set_resizable (GTK_WINDOW (song_info), FALSE);
 
 	xml = rb_glade_xml_new ("song-info.glade",
 				"song_info_vbox",
