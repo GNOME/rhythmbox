@@ -479,7 +479,9 @@ rb_library_view_set_property (GObject *object,
 			rb_library_view_show_browser (view, view->priv->show_browser);
 			
 			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_CURRENT_SONG, FALSE);
-			
+			rb_view_set_sensitive (RB_VIEW (view), CMD_PATH_SONG_INFO,
+					       rb_node_view_have_selection (view->priv->songs));
+
 			rb_node_view_select_node (view->priv->artists,
 			 		          rb_library_get_all_albums (view->priv->library));
 		}
@@ -926,7 +928,6 @@ static void
 node_view_changed_cb (RBNodeView *view,
 		      RBLibraryView *library_view)
 {
-
 	rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
 	rb_view_status_notify_changed (RB_VIEW_STATUS (library_view));
 	rb_view_clipboard_notify_changed (RB_VIEW_CLIPBOARD (library_view));

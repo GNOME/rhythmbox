@@ -329,6 +329,9 @@ rb_song_info_new (RBNodeView *node_view)
 
 	g_return_val_if_fail (RB_IS_NODE_VIEW (node_view), NULL);
 
+	if (rb_node_view_have_selection (node_view) == FALSE) 
+		return NULL;
+
 	/* create the dialog */
 	song_info = g_object_new (RB_TYPE_SONG_INFO, "node_view", node_view, NULL);
 
