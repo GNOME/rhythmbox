@@ -499,9 +499,9 @@ rb_player_close (RBPlayer *mp, GError **error)
 gboolean
 rb_player_opened (RBPlayer *mp)
 {
-	g_return_val_if_fail (RB_IS_PLAYER (mp), NULL);
+	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
 
-	return mp->priv->uri;
+	return mp->priv->uri != NULL;
 }
 
 void
