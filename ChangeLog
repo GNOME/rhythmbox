@@ -1,5 +1,16 @@
 2002-10-27  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-tree-model-node.c:
+	* library/rb-node.c:
+
+	Some more inlines.
+	
+	* shell/rb-shell.c: (rb_shell_corba_quit):
+
+	Lock gdk threads on corba quit.
+
+2002-10-27  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-tree-model-node.c: (get_path_real),
 	(rb_tree_model_node_get_path), (root_child_removed_cb),
 	(root_child_added_cb), (rb_tree_model_node_update_node):

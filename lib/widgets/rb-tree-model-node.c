@@ -31,6 +31,7 @@
 #include "rb-string-helpers.h"
 #include "rb-node.h"
 #include "rb-node-song.h"
+#include "rb-debug.h"
 
 static void rb_tree_model_node_class_init (RBTreeModelNodeClass *klass);
 static void rb_tree_model_node_init (RBTreeModelNode *model);

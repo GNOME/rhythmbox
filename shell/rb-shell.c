@@ -494,7 +494,11 @@ rb_shell_corba_quit (PortableServer_Servant _servant,
 {
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
+	GDK_THREADS_ENTER ();
+
 	rb_shell_quit (shell);
+
+	GDK_THREADS_LEAVE ();
 }
 
 static void

@@ -45,7 +45,7 @@ static void rb_node_get_object_property (GObject *object,
 			                 guint prop_id,
 			                 GValue *value,
 			                 GParamSpec *pspec);
-static void id_factory_set_to (long new_factory_pos);
+static inline void id_factory_set_to (long new_factory_pos);
 static inline void real_set_property (RBNode *node,
 		                      int property_id,
 		                      GValue *value);
@@ -55,10 +55,10 @@ static inline void real_remove_child (RBNode *node,
 			              gboolean remove_from_child);
 static inline void real_add_child (RBNode *node,
 		                   RBNode *child);
-static void read_lock_to_write_lock (RBNode *node);
-static void write_lock_to_read_lock (RBNode *node);
-static void lock_gdk (void);
-static void unlock_gdk (void);
+static inline void read_lock_to_write_lock (RBNode *node);
+static inline void write_lock_to_read_lock (RBNode *node);
+static inline void lock_gdk (void);
+static inline void unlock_gdk (void);
 static inline RBNode *node_from_id_real (long id);
 static inline int get_child_index_real (RBNode *node,
 		                        RBNode *child);
@@ -1407,7 +1407,7 @@ id_factory_set_to (long new_factory_pos)
 }
 
 /* evillish hacks to temporarily readlock->writelock and v.v. */
-static void
+static inline void
 write_lock_to_read_lock (RBNode *node)
 {
 	g_static_mutex_lock (&node->priv->lock->mutex);
@@ -1417,7 +1417,7 @@ write_lock_to_read_lock (RBNode *node)
 	g_static_rw_lock_writer_unlock (node->priv->lock);
 }
 
-static void
+static inline void
 read_lock_to_write_lock (RBNode *node)
 {
 	g_static_mutex_lock (&node->priv->lock->mutex);
@@ -1427,14 +1427,14 @@ read_lock_to_write_lock (RBNode *node)
 	g_static_rw_lock_writer_lock (node->priv->lock);
 }
 
-static void
+static inline void
 lock_gdk (void)
 {
 	if (rb_thread_helpers_in_main_thread () == FALSE)
 		GDK_THREADS_ENTER ();
 }
 
-static void
+static inline void
 unlock_gdk (void)
 {
 	if (rb_thread_helpers_in_main_thread () == FALSE)
