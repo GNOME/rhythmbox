@@ -303,8 +303,9 @@ void
 show_columns_changed_cb (GtkToggleButton *button,
 			 RBShellPreferences *prefs)
 {
-	char *conf = "";
+	char *conf = g_strdup_printf ("");
 
+	// FIXME there must be a better way to do that
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->artist_check)) == TRUE)
 		conf = g_strdup_printf ("RB_TREE_MODEL_NODE_COL_ARTIST");
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (prefs->priv->album_check)) == TRUE)
