@@ -831,11 +831,11 @@ rb_node_get_property_time (RBNode *node,
 		g_date_free (now);
 
 		if (file_date_age == 0) {
-			format = _("Today at %-H:%M:%S");
+			format = _("Today at %-H:%M");
 		} else if (file_date_age == 1) {
-			format = _("Yesterday at %-H:%M:%S");
+			format = _("Yesterday at %-H:%M");
 		} else {
-			format = _("%A, %B %-d %Y at %-H:%M:%S");
+			format = _("%A, %B %-d %Y at %-H:%M");
 		}
 
 		retval = eel_strdup_strftime (format, localtime (&mtime));

@@ -763,7 +763,7 @@ rb_node_song_update_play_statistics (RBNode *node)
 			      &value);
 	g_value_unset (&value);
 
-	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M:%S"), localtime (&now));
+	time_string = eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now));
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, time_string);
