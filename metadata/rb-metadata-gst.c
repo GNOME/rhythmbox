@@ -33,6 +33,13 @@ static void rb_metadata_class_init (RBMetaDataClass *klass);
 static void rb_metadata_init (RBMetaData *md);
 static void rb_metadata_finalize (GObject *object);
 
+struct RBMetadataGstType
+{
+	char *mimetype;
+	char *plugin;
+	char *human_name;
+};
+
 struct RBMetaDataPrivate
 {
 	char *uri;
@@ -42,26 +49,15 @@ struct RBMetaDataPrivate
 	GstElement *pipeline;
 	GstElement *sink;
 
+	/* Array of RBMetadataGstType */
+	GPtrArray *supported_types;
+
 	char *type;
 	gboolean handoff;
 	gboolean eos;
 	GError *error;
 };
 
-static struct
-{
-	const char *mimetype;
-	const char *plugin;
-	const char *human_name;
-} rb_metadata_type_map[] = {
-	{"application/x-id3", "id3tag", "MP3"},
-	{"audio/mpeg", NULL, "MP3"},
-	{"application/ogg", NULL, "Ogg"},
-	{"audio/x-flac", "flactag", "FLAC"},
-	{"application/x-ape", NULL, "MonkeysAudio"},
-	{"audio/x-mod", NULL, "MOD"},
-	{"audio/mpeg", NULL, "MP3"},
-};
 
 static GObjectClass *parent_class = NULL;
 
@@ -103,17 +99,57 @@ rb_metadata_class_init (RBMetaDataClass *klass)
 }
 
 static void
+add_supported_type (RBMetaData *md,
+		    const char *mime,
+		    const char *decoder,
+		    const char *human_name)
+{
+	struct RBMetadataGstType *type = g_new0 (struct RBMetadataGstType, 1);
+	type->mimetype = g_strdup (mime);
+	type->plugin = g_strdup (decoder);
+	type->human_name = g_strdup (human_name);
+	g_ptr_array_add (md->priv->supported_types, type);
+}
+
+static void
 rb_metadata_init (RBMetaData *md)
 {
+	GstElement *elt;
+	
 	md->priv = g_new0 (RBMetaDataPrivate, 1);
+
+	md->priv->supported_types = g_ptr_array_new ();
+	
+	add_supported_type (md, "application/x-id3", "id3tag", "MP3");
+	add_supported_type (md, "audio/mpeg", NULL, "MP3");
+	add_supported_type (md, "application/ogg", NULL, "Ogg");
+	add_supported_type (md, "audio/x-flac", "flactag", "FLAC");
+	add_supported_type (md, "application/x-ape", NULL, "MonkeysAudio");
+	add_supported_type (md, "audio/x-mod", NULL, "MOD");
+	add_supported_type (md, "audio/mpeg", NULL, "MP3");
+	
+	if ((elt = gst_element_factory_make ("faad", "faad")) != NULL) {
+		add_supported_type (md, "audio/x-m4a", NULL, "MPEG-4");
+		gst_object_unref (GST_OBJECT (elt));
+	}
 }
 
 static void
 rb_metadata_finalize (GObject *object)
 {
+	int i;
 	RBMetaData *md;
 
 	md = RB_METADATA (object);
+
+	for (i = 0; i < md->priv->supported_types->len; i++) {
+		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
+		g_free (type->mimetype);
+		g_free (type->plugin);
+		g_free (type->human_name);
+		g_free (type);
+	}
+	g_ptr_array_free (md->priv->supported_types, TRUE);
 
 	if (md->priv->metadata)
 		g_hash_table_destroy (md->priv->metadata);
@@ -251,12 +287,26 @@ rb_metadata_gst_field_to_gst_tag (RBMetaDataField field)
 }
 
 static const char *
-rb_metadata_gst_type_to_name (RBMetaData *md)
+rb_metadata_gst_type_to_name (RBMetaData *md, const char *mimetype)
 {
 	int i;
-	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
-		if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type))
-			return rb_metadata_type_map[i].human_name;
+	for (i = 0; i < md->priv->supported_types->len; i++) {
+		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
+		if (!strcmp (type->mimetype, mimetype))
+			return type->human_name;
+	}
+	return NULL;
+}
+
+static const char *
+rb_metadata_gst_type_to_plugin (RBMetaData *md, const char *mimetype)
+{
+	int i;
+	for (i = 0; i < md->priv->supported_types->len; i++) {
+		struct RBMetadataGstType *type = g_ptr_array_index (md->priv->supported_types, i);
+		if (!strcmp (type->mimetype, mimetype))
+			return type->plugin;
+	}
 	return NULL;
 }
 
@@ -283,7 +333,7 @@ rb_metadata_gst_error_cb (GstElement *element,
 
 	if (error->domain == GST_STREAM_ERROR
 	    && error->code == GST_STREAM_ERROR_CODEC_NOT_FOUND) {
-		const char *human_element_hame = rb_metadata_gst_type_to_name (md);
+		const char *human_element_hame = rb_metadata_gst_type_to_name (md, md->priv->type);
 		if (human_element_hame) {
 			md->priv->error = g_error_new (RB_METADATA_ERROR,
 						       RB_METADATA_ERROR_MISSING_PLUGIN,
@@ -505,13 +555,7 @@ rb_metadata_load (RBMetaData *md,
 		 * For now, we simply ignore files with an unknown MIME
 		 * type. This will be fixed once GStreamer gives us
 		 * a good way to detect audio. */
-		gboolean supported_type = FALSE;
-		guint i;
-
-		for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
-			if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type))
-				supported_type = TRUE;
-		if (!supported_type) {
+		if (!rb_metadata_gst_type_to_name (md, md->priv->type)) {
 			rb_debug ("ignoring file %s with detected type %s",
 				  uri, md->priv->type);
 			g_free (md->priv->type);
@@ -542,10 +586,7 @@ rb_metadata_can_save (RBMetaData *md, const char *mimetype)
 	/* Disabled until we can save reliably.
 	 */
 #if 0
-	int i;
-	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
-		if (!strcmp (rb_metadata_type_map[i].mimetype, mimetype))
-			return TRUE;
+	return rb_metadata_gst_type_to_plugin (md, mimetype) != NULL;
 #endif
 	return FALSE;
 }
@@ -577,7 +618,6 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	char *tmpname = NULL;
 	GnomeVFSHandle *handle = NULL;
 	GnomeVFSResult result;
-	int i;
 
 	g_return_if_fail (md->priv->uri != NULL);
 	g_return_if_fail (md->priv->type != NULL);
@@ -597,11 +637,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
 	g_object_set (G_OBJECT (gnomevfssrc), "location", md->priv->uri, NULL);
 
-	for (i = 0; i < G_N_ELEMENTS (rb_metadata_type_map); i++)
-		if (!strcmp (rb_metadata_type_map[i].mimetype, md->priv->type)) {
-			plugin_name = rb_metadata_type_map[i].plugin;
-			break;
-		}
+	plugin_name = rb_metadata_gst_type_to_plugin (md, md->priv->type);
 	
 	if (!plugin_name) {
 		g_set_error (error,
