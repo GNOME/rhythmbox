@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RhythmBox 0.6.6\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-24 11:49+0100\n"
-"PO-Revision-Date: 2004-01-24 11:53+0100\n"
+"POT-Creation-Date: 2004-01-31 15:04+0100\n"
+"PO-Revision-Date: 2004-01-31 15:05+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -27,20 +27,6 @@ msgstr "Nautilus kontekstmenyutvidelse for Rhythmbox"
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Nautilus kontekstmeny oppføring for Rhythmbox"
-
-#: corba/test-corba.c:55
-msgid "I could not initialize Bonobo"
-msgstr "Kunne ikke initiere Bonobo"
-
-#: corba/test-corba.c:62
-msgid "Could not create an instance of the sample echo component"
-msgstr "Kunne ikke opprette en instans av eksempelkomponenten for ekko"
-
-#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:242
-#: shell/main.c:251
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "Unntak «%s» oppsto"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -454,7 +440,7 @@ msgstr "Vis informasjon om valgt sang"
 msgid "Source _List"
 msgstr "Kilde_liste"
 
-#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1483
+#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1484
 msgid "Start playing"
 msgstr "Start avspilling"
 
@@ -538,7 +524,7 @@ msgstr "_Neste"
 msgid "_Paste"
 msgstr "_Lim inn"
 
-#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1484
+#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1485
 msgid "_Play"
 msgstr "S_pill"
 
@@ -735,7 +721,7 @@ msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
 #: metadata/rb-metadata-gst.c:393 metadata/rb-metadata-gst.c:518
-#: player/rb-player-gst.c:523
+#: player/rb-player-gst.c:532
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Feil under oppretting av %s-element; sjekk installasjonen"
@@ -744,73 +730,77 @@ msgstr "Feil under oppretting av %s-element; sjekk installasjonen"
 msgid "Operation not supported"
 msgstr "Operasjonen er ikke støttet"
 
-#: player/rb-player-gst.c:322 player/rb-player-gst.c:761
+#: player/rb-player-gst.c:324 player/rb-player-gst.c:776
 msgid "Failed to close audio output sink"
 msgstr "Feil ved forsøk på å lukke sluk for lyd ut"
 
-#: player/rb-player-gst.c:406 player/rb-player-gst.c:628
-#: player/rb-player-gst.c:637
+#: player/rb-player-gst.c:411 player/rb-player-gst.c:640
+#: player/rb-player-gst.c:650
 msgid "Could not start pipeline playing"
 msgstr "Kunne ikke starte avspilling gjennom rør"
 
-#: player/rb-player-gst.c:435
+#: player/rb-player-gst.c:440
 msgid "Failed to create thread element; check your GStreamer installation"
 msgstr ""
 "Feil under oppretting av trådelement; sjekk installasjonen av GStreamer"
 
-#: player/rb-player-gst.c:469
+#: player/rb-player-gst.c:474
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr "Feil under oppretting av inndata-element %s; sjekk installasjonen"
 
-#: player/rb-player-gst.c:497
+#: player/rb-player-gst.c:503
 msgid "Failed to create queue element; check your installation"
 msgstr "Feil under oppretting av kø-element; sjekk installasjonen"
 
-#: player/rb-player-gst.c:542
+#: player/rb-player-gst.c:520
+msgid "Failed to create typefind element; check your installation"
+msgstr "Kunne ikke opprette typefind-element; sjekk installasjonen"
+
+#: player/rb-player-gst.c:551
 msgid "Failed to create volume element; check your installation"
 msgstr "Feil under oppretting av volumelement; sjekk installasjonen"
 
-#: player/rb-player-gst.c:561
+#: player/rb-player-gst.c:570
 msgid "Could not create audio output element; check your settings"
 msgstr "Kunne ikke opprette utdataelement for lyd; sjekk innstillingene"
 
-#: player/rb-player-gst.c:648
+#: player/rb-player-gst.c:662
 msgid "Could not pause playback"
 msgstr "Kunne ikke pause avspilling"
 
-#: player/rb-player-gst.c:656
+#: player/rb-player-gst.c:671
 msgid "Could not close output sink"
 msgstr "Kunne ikke lukke sluk for utdata"
 
-#: player/rb-player-gst.c:702
+#: player/rb-player-gst.c:717
 msgid "No AudioCD support; check your settings"
 msgstr "Ingen støtte for lyd-CD; sjekk innstillingene"
 
-#: player/rb-player-xine.c:337
+#: player/rb-player-xine.c:338
 msgid "Failed to set up an audio driver; check your installation"
 msgstr "Kunne ikke sette opp en lyddriver; sjekk installasjonen."
 
-#: player/rb-player-xine.c:437
+#: player/rb-player-xine.c:438
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr "Ingen inndata-tillegg tilgjengelig for %s; sjekk installasjonen."
 
-#: player/rb-player-xine.c:446
+#: player/rb-player-xine.c:447
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr "Ingen demux-tillegg tilgjengelig for %s; sjekk installasjonen."
 
-#: player/rb-player-xine.c:455
+#: player/rb-player-xine.c:456
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Demuxing for %s feilet; sjekk installasjonen."
 
-#: player/rb-player-xine.c:463
+#: player/rb-player-xine.c:464
 msgid "Internal error; check your installation."
 msgstr "Intern feil; sjekk installasjonen."
 
-#: player/rb-player-xine.c:471
+#: player/rb-player-xine.c:472
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "Lyd er ikke håndtert for %s; sjekk installasjonen."
@@ -934,6 +924,11 @@ msgstr ""
 "Rhythmbox virker ikke hvis lyder for hendelser i GNOME er aktivert og "
 "esdsink er i bruk."
 
+#: shell/main.c:242 shell/main.c:251
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "Unntak «%s» oppsto"
+
 #: shell/main.c:289
 #, c-format
 msgid ""
@@ -985,12 +980,12 @@ msgid "Failed to create the player: %s"
 msgstr "Klarte ikke å opprette spiller: %s"
 
 #: shell/rb-shell-player.c:539
-msgid "Go to previous song"
-msgstr "Gå til forrige sang"
+msgid "Play previous song"
+msgstr "Spill forrige sang"
 
 #: shell/rb-shell-player.c:568
-msgid "Go to next song"
-msgstr "Gå til neste sang"
+msgid "Play next song"
+msgstr "Spill neste sang"
 
 #: shell/rb-shell-player.c:587
 msgid "Change the music volume"
@@ -1001,23 +996,23 @@ msgstr "Endre volum"
 msgid "Opening %s..."
 msgstr "Åpner %s..."
 
-#: shell/rb-shell-player.c:1475
+#: shell/rb-shell-player.c:1476
 msgid "Pause playback"
 msgstr "Pause avspilling"
 
-#: shell/rb-shell-player.c:1476
+#: shell/rb-shell-player.c:1477
 msgid "_Pause"
 msgstr "_Pause"
 
-#: shell/rb-shell-player.c:1491
+#: shell/rb-shell-player.c:1492
 msgid "Stop playback"
 msgstr "Stopp avspilling"
 
-#: shell/rb-shell-player.c:1492
+#: shell/rb-shell-player.c:1493
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell-player.c:1825
+#: shell/rb-shell-player.c:1826
 msgid "Unexpected end of stream!"
 msgstr "Uventet slutt på data!"
 
@@ -1235,13 +1230,12 @@ msgstr "Fullfør"
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Organize\" then \"Add "
-"to Library\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
 msgstr ""
 "Du er nå klar til å starte Rhythmbox.\n"
 "\n"
-"Husk at du kan legge til musikk i biblioteket ved å bruke «Organiser» og så "
-"«Legg til i biblioteket», eller ved å importere fra CDer."
+"Husk at du kan legge til musikk i biblioteket ved å gå til «Musikk» og så «Importer mappe», eller ved å importere fra CDer."
 
 #: widgets/rb-druid.c:309
 #, c-format
