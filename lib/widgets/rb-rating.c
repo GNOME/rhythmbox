@@ -149,19 +149,36 @@ static void
 rb_rating_init (RBRating *rating)
 {
 	GtkWidget *dummy;
+	GdkPixbuf *pixbuf;
 
 	rating->priv = g_new0 (RBRatingPrivate, 1);
 
 	/* create the needed icons */
 	dummy = gtk_label_new (NULL);
-	rating->priv->pix_star = gtk_widget_render_icon (dummy,
-							 RB_STOCK_SET_STAR,
-							 GTK_ICON_SIZE_MENU,
-							 NULL);
-	rating->priv->pix_blank = gtk_widget_render_icon (dummy,
-							  RB_STOCK_NO_STAR,
-							  GTK_ICON_SIZE_MENU,
-							  NULL);
+	pixbuf = gtk_widget_render_icon (dummy,
+					 RB_STOCK_SET_STAR,
+					 GTK_ICON_SIZE_MENU,
+					 NULL);
+	rating->priv->pix_star = eel_create_colorized_pixbuf 
+					(pixbuf,
+					 dummy->style->text[GTK_STATE_NORMAL].red + COLOR_OFFSET,
+					 dummy->style->text[GTK_STATE_NORMAL].green + COLOR_OFFSET,
+					 dummy->style->text[GTK_STATE_NORMAL].blue + COLOR_OFFSET);
+	g_object_unref (G_OBJECT (pixbuf));
+
+
+
+	pixbuf = gtk_widget_render_icon (dummy,
+					 RB_STOCK_NO_STAR,
+					 GTK_ICON_SIZE_MENU,
+					 NULL);
+	rating->priv->pix_blank = eel_create_colorized_pixbuf 
+					(pixbuf,
+					 dummy->style->text[GTK_STATE_NORMAL].red,
+					 dummy->style->text[GTK_STATE_NORMAL].green,
+					 dummy->style->text[GTK_STATE_NORMAL].blue);
+	g_object_unref (G_OBJECT (pixbuf));
+
 	gtk_widget_destroy (dummy);
 
 	/* register some signals */
@@ -294,26 +311,14 @@ rb_rating_expose (GtkWidget *widget,
 		for (i = 0; i < MAX_SCORE; i++)
 		{
 			GdkPixbuf *pixbuf;
-			GtkStateType state = GTK_STATE_INSENSITIVE;
-			int color_offset = 0;
 
 			if (i < rating->priv->score)
-			{
 				pixbuf = rating->priv->pix_star;
-				color_offset = COLOR_OFFSET;
-			}
 			else
-			{
 				pixbuf = rating->priv->pix_blank;
-			}
 
 			if (pixbuf == NULL)
 				return FALSE;
-
-			pixbuf = eel_create_colorized_pixbuf (pixbuf,
-							      widget->style->text[state].red + color_offset,
-							      widget->style->text[state].green + color_offset,
-							      widget->style->text[state].blue + color_offset);
 
 			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
 							     widget->window,
@@ -322,7 +327,6 @@ rb_rating_expose (GtkWidget *widget,
 							     icon_size, icon_size,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
-			g_object_unref (G_OBJECT (pixbuf));
 		}
 
 
