@@ -453,8 +453,7 @@ rb_metadata_load (RBMetaData *md,
 	g_signal_connect_object (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md, 0);
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 
-	if (!gst_element_link_many (gnomevfssrc, typefind, spider, NULL))
-		goto missing_plugin;
+	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
 
 	filtercaps = gst_caps_new_simple ("audio/x-raw-int", NULL);
 	gst_element_link_filtered (spider, md->priv->sink, filtercaps);
@@ -627,8 +626,7 @@ rb_metadata_save (RBMetaData *md, GError **error)
 	g_object_set (G_OBJECT (md->priv->sink), "handle", handle, NULL);
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 
-	if (!gst_element_link_many (gnomevfssrc, tagger, md->priv->sink, NULL))
-		goto missing_plugin;
+	gst_element_link_many (gnomevfssrc, tagger, md->priv->sink, NULL);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
