@@ -633,7 +633,7 @@ synchronize_entry_with_metadata (RhythmDB *db, RhythmDBEntry *entry)
 	if (rb_metadata_get (db->priv->metadata,
 			     RB_METADATA_FIELD_ALBUM,
 			     &val) && g_value_get_string (&val)[0] != '\0') {
-
+		rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_ALBUM, &val);
 		g_value_unset (&val);
 	}
 }
