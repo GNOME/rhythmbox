@@ -345,16 +345,48 @@ AC_SUBST(MKINSTALLDIRS)
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
+AC_ARG_WITH(bonobo,
+            AC_HELP_STRING([--with-bonobo],
+			   [Enable bonobo support]),,
+	      with_bonobo=auto)
+if test "x$with_bonobo" != "xno"; then
+	PKG_CHECK_MODULES(BONOBO, libbonobo-2.0 >= 2.0.0, enable_bonobo=yes,
+		          enable_bonobo=no)
+        if test "x$with_bonobo" = xyes && test "x$enable_bonobo" = xno; then
+	   AC_MSG_ERROR([Bonobo explicitly requested but no support found])	   
+	fi
+        if test "x$enable_bonobo" = xyes; then
+		AC_DEFINE(WITH_BONOBO, 1, [Define if Bonobo is enabled])	   
+		ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
+		AC_SUBST(ORBIT_IDL)
+
+		LIBBONOBO_IDL="`$PKG_CONFIG --variable=idldir libbonobo-2.0`"
+		AC_SUBST(LIBBONOBO_IDL)
+
+		BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
+		AC_SUBST(BONOBO_ACTIVATION_IDL)
+	fi
+fi			  
+AM_CONDITIONAL(WITH_BONOBO, test "x$enable_bonobo" = "xyes")
+	      
+AC_ARG_WITH(dbus,
+            AC_HELP_STRING([--with-dbus],
+			   [Enable D-BUS support]),,
+	      with_dbus=auto)
+if test "x$with_dbus" != "xno"; then
+	PKG_CHECK_MODULES(DBUS, dbus-glib-1, enable_dbus=yes, enable_dbus=no)
+        if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
+	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
+	fi
+        if test "x$enable_dbus" = xyes; then
+		AC_DEFINE(HAVE_DBUS, 1, [Define if D-BUS is enabled])	   
+		DBUS_CFLAGS="-DDBUS_API_SUBJECT_TO_CHANGE"
+		AC_SUBST(DBUS_CFLAGS)
+	fi
+fi			  
+AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
+
 AM_GCONF_SOURCE_2
-
-ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
-AC_SUBST(ORBIT_IDL)
-
-LIBBONOBO_IDL="`$PKG_CONFIG --variable=idldir libbonobo-2.0`"
-AC_SUBST(LIBBONOBO_IDL)
-
-BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
-AC_SUBST(BONOBO_ACTIVATION_IDL)
 
 AC_ARG_ENABLE(uninstalled-build,
               AC_HELP_STRING([--enable-uninstalled-build],
@@ -470,6 +502,16 @@ if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$enable_bonobo" = xyes; then
+	AC_MSG_NOTICE([** Bonobo control/activation enabled])
+else
+	AC_MSG_NOTICE([   Bonobo control/activation disabled])
+fi
+if test x"$enable_dbus" = xyes; then
+	AC_MSG_NOTICE([** D-BUS control/activation enabled])
+else
+	AC_MSG_NOTICE([   D-BUS control/activation disabled])
 fi
 
 dnl if test "x$enable_audiocd" != "xyes"; then

@@ -44,6 +44,12 @@
 #include <libgda/libgda.h>
 #endif
 
+#include "rb-remote-client-proxy.h"
+#ifdef WITH_BONOBO
+#include <bonobo/bonobo-main.h>
+#include "rb-remote-bonobo.h"
+#endif
+
 #include "rb-refstring.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -55,6 +61,7 @@
 
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
+static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
@@ -69,12 +76,23 @@ static gboolean print_play_time = FALSE;
 static gboolean print_song_length = FALSE;
 static long seek_time           = 0;
 
+static void handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
+			    int argc, char **argv);
+static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
+
 int
 main (int argc, char **argv)
 {
 	GnomeProgram *program;
 	RBShell *rb_shell;
 	char **new_argv;
+	GError **error;
+	RBRemoteClientProxy *client_proxy;
+	gboolean activated;
+	
+#ifdef WITH_BONOBO
+	RBRemoteBonobo *bonobo;
+#endif
 
 	struct poptOption popt_options[] =
 	{
@@ -94,6 +112,7 @@ main (int argc, char **argv)
 
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
 		{ "no-update", 0,  POPT_ARG_NONE,          &no_update,                              0, N_("Do not update the library"), NULL },
+		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
 		{ "rhythmdb-file", 0,  POPT_ARG_STRING,          &rhythmdb_file,                             0, N_("Path for database file to use"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
@@ -147,42 +166,186 @@ main (int argc, char **argv)
 	monkey_media_init (&argc, &argv);
 #endif
 
-	rb_refstring_system_init ();
 	rb_debug_init (debug);
+	rb_debug ("initializing Rhythmbox %s", VERSION);
 	
 	gdk_threads_init ();
 
+	client_proxy = NULL;
+	activated = FALSE;
+	error = NULL;
+
+#ifdef WITH_BONOBO
+	rb_debug ("going to create Bonobo object");
+	bonobo = rb_remote_bonobo_new ();
+	if (!no_registration) {
+		if ((activated = rb_remote_bonobo_activate (bonobo))) {
+			rb_debug ("successfully activated");
+			client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
+		}
+	}
+#endif
+
+	if (!activated) {
 #ifdef WITH_RHYTHMDB_GDA
- 	gda_init (PACKAGE, VERSION, argc, argv);
+		gda_init (PACKAGE, VERSION, argc, argv);
 #endif
  	
-	rb_debug ("initializing Rhythmbox %s", VERSION);
+		rb_refstring_system_init ();
 
-	rb_file_helpers_init ();
-	rb_string_helpers_init ();
+		rb_file_helpers_init ();
+		rb_string_helpers_init ();
 
-	rb_debug ("Going to create a new shell");
+		rb_debug ("Going to create a new shell");
 	
-	glade_gnome_init ();
+		glade_gnome_init ();
 	
-	rb_stock_icons_init ();
+		rb_stock_icons_init ();
 	
-	rb_shell = rb_shell_new (argc, argv, TRUE,
-				 no_update, dry_run, rhythmdb_file);
-	rb_shell_construct (rb_shell);
-	
-	gtk_main ();
+		rb_shell = rb_shell_new (argc, argv, TRUE,
+					 no_update, dry_run, rhythmdb_file);
+		rb_shell_construct (rb_shell);
+		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
+#ifdef WITH_BONOBO
+		rb_remote_bonobo_acquire (bonobo, RB_REMOTE_PROXY (rb_shell), error);
+		if (error) {
+			g_warning ("error: %s", (*error)->message);
+		} else {
+			if (rb_remote_bonobo_activate (bonobo))
+				client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
+			else
+				g_critical ("acquired bonobo service but couldn't activate!");
+		}
+#endif
+	}
+
+	handle_cmdline (client_proxy, activated, argc, argv);
+
+	if (activated) {
+		gdk_notify_startup_complete ();
+	} else {
+
+#ifdef WITH_BONOBO
+                /* Unfortunately Bonobo takes over the main loop ... */
+		bonobo_main ();
+#else
+		gtk_main ();
+#endif
+
+		rb_debug ("out of toplevel loop");
+
+		rb_file_helpers_shutdown ();
+		rb_string_helpers_shutdown ();
+		rb_stock_icons_shutdown ();
+		rb_refstring_system_shutdown ();
+	}
 
 
 #ifdef WITH_MONKEYMEDIA
 	monkey_media_shutdown ();
 #endif
-	rb_file_helpers_shutdown ();
-	rb_string_helpers_shutdown ();
-	rb_refstring_system_shutdown ();
-	rb_stock_icons_shutdown ();
-
 	g_strfreev (new_argv);
 
-	return 0;
+	rb_debug ("THE END");
+	exit (0);
+}
+
+static void
+handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
+		int argc, char **argv)
+{
+	gboolean grab_focus;
+	RBRemoteSong *song;
+	guint i;
+
+	grab_focus = TRUE;
+
+	rb_debug ("handling command line");
+
+	song = NULL;
+	if (print_playing
+	    || print_playing_path
+	    || print_song_length ) {
+		rb_debug ("retrieving playing song");
+		song = rb_remote_client_proxy_get_playing_song (proxy);
+		grab_focus = FALSE;
+	}
+
+	if (print_playing)
+		g_print ("%s\n", song ? song->title : "");
+	
+	if (print_playing_path)
+		g_print ("%s\n", song ? song->uri : "");
+	
+	if (print_song_length)
+		g_print ("%ld\n", song ? song->duration : -1);
+	
+	if (print_play_time
+	    || seek_time > 0
+	    || playpause
+	    || previous
+	    || next
+	    || shuffle)
+		grab_focus = FALSE;
+
+	if (print_play_time)
+		printf ("%ld\n", rb_remote_client_proxy_get_playing_time (proxy));
+	
+	if (seek_time > 0)
+		rb_remote_client_proxy_set_playing_time (proxy, seek_time);
+	
+	if (playpause)
+		rb_remote_client_proxy_toggle_playing (proxy);
+
+	if (previous)
+		g_warning ("not implemented");
+
+	if (next)
+		g_warning ("not implemented");
+
+	if (shuffle)
+		rb_remote_client_proxy_toggle_shuffle (proxy);
+
+	for (i = 1; i < argc; i++) {
+		char *tmp;
+
+		tmp = rb_uri_resolve_relative (argv[i]);
+			
+		if (rb_uri_exists (tmp) == TRUE) {
+			GError *error = NULL;
+			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
+			if (!utf8 && error) {
+				g_error (error->message);
+				continue;
+			}
+			rb_remote_client_proxy_handle_uri (proxy, utf8);
+			g_free (utf8);
+		}
+		
+		g_free (tmp);
+		grab_focus = FALSE;
+	}
+	
+	if (quit)
+		g_warning ("not implemented");
+
+	if (focus)
+		grab_focus = TRUE;
+
+	/* at the very least, we focus the window */
+	if (activated && grab_focus) {
+		rb_debug ("grabbing focus");
+		rb_remote_client_proxy_grab_focus (proxy);
+	}
+}
+
+static void
+main_shell_weak_ref_cb (gpointer data, GObject *objptr)
+{
+	rb_debug ("caught shell finalization");
+#ifdef WITH_BONOBO	
+	bonobo_main_quit ();
+#else
+	gtk_main_quit ();
+#endif
 }

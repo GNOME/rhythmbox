@@ -70,8 +70,13 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
 	$(top_builddir)/iradio/librbiradio.la	        \
+	$(top_builddir)/remote/librbremote.la	        \
 	$(GDA_LIBS)					\
 	$(RHYTHMBOX_LIBS)
+
+if WITH_BONOBO
+rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la
+endif
 
 rhythmbox_LDFLAGS = -export-dynamic
 
@@ -86,6 +91,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/widgets                    	\
 	-I$(top_srcdir)/sources                    	\
 	-I$(top_srcdir)/iradio                    	\
+	-I$(top_srcdir)/remote				\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -93,6 +99,10 @@ INCLUDES = 						\
 	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
+
+if WITH_BONOBO
+INCLUDES += -I$(top_srcdir)/remote/bonobo
+endif
 
 BUILT_SOURCES = $(tab_files)
 

@@ -1,11 +1,10 @@
 ## arch-tag: Automake rules for Rhythmbox corba interface
 
-#lib_LTLIBRARIES = librbcorba.la
-noinst_LTLIBRARIES = librbcorba.la
+noinst_LTLIBRARIES = librbcorba.la librbbonobo.la
 
 noinst_PROGRAMS = test-corba
 test_corba_SOURCES = test-corba.c 
-test_corba_LDADD = librbcorba.la $(RHYTHMBOX_LIBS) 
+test_corba_LDADD = librbcorba.la $(RHYTHMBOX_LIBS) $(ORBIT_LIBS)
 
 nodist_librbcorba_la_SOURCES = $(rhythmbox_interface_idl_sources)
 
@@ -21,6 +20,8 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)				\
 	-I$(top_srcdir)					\
 	-I$(top_builddir)				\
+	-I$(top_srcdir)/lib				\
+	-I$(top_srcdir)/remote				\
 	-I$(top_srcdir)/remote/bonobo			\
 	-I$(top_builddir)/remote/bonobo			\
 	-D_XOPEN_SOURCE
@@ -57,10 +58,12 @@ $(server_in_files:.server.in.in=.server.in): $(server_in_files)
 
 @INTLTOOL_SERVER_RULE@
 
-CLEANFILES = $(rhythmbox_interface_idl_sources) $(server_DATA) $(server_in_files:.server.in.in=.server.in)
-
+librbbonobo_la_SOURCES = rb-remote-bonobo.c rb-remote-bonobo.h
+librbbonobo_la_LIBADD = $(top_builddir)/lib/librb.la librbcorba.la $(RHYTHMBOX_LIBS) $(ORBIT_LIBS) $(BONOBO_LIBS)
 
 EXTRA_DIST = Rhythmbox.idl
+
+CLEANFILES = $(rhythmbox_interface_idl_sources) $(server_DATA) $(server_in_files:.server.in.in=.server.in)
 
 ## idl compiler generates an unused variable at the top of Rhythmbox-common.c,
 ## which breaks -Werror on Mac OSX.

@@ -58,6 +58,7 @@
 #include "rb-druid.h"
 #include "rb-shell-clipboard.h"
 #include "rb-shell-player.h"
+#include "rb-remote-proxy.h"
 #include "rb-source-header.h"
 #include "rb-tray-icon.h"
 #include "rb-statusbar.h"
@@ -83,6 +84,7 @@
 #endif /* WITH_DASHBOARD */
 
 static void rb_shell_class_init (RBShellClass *klass);
+static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_set_property (GObject *object,
@@ -203,6 +205,20 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static gboolean tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
+static void rb_shell_load_song_impl (RBRemoteProxy *proxy, const char *uri);
+static void rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri);
+static void rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri);
+static void rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri);
+static void rb_shell_grab_focus_impl (RBRemoteProxy *proxy);
+static gboolean rb_shell_get_shuffle_impl (RBRemoteProxy *proxy);
+static void rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle);
+static gboolean rb_shell_get_repeat_impl (RBRemoteProxy *proxy);
+static void rb_shell_set_repeat_impl (RBRemoteProxy *proxy, gboolean repeat);
+static void rb_shell_play_impl (RBRemoteProxy *proxy);
+static void rb_shell_pause_impl (RBRemoteProxy *proxy);
+static gboolean rb_shell_playing_impl (RBRemoteProxy *proxy);
+static long rb_shell_get_playing_time_impl (RBRemoteProxy *proxy);
+static void rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time);
 
 typedef RBSource *(*SourceCreateFunc)(RBShell *, RhythmDB *db, 
 				      GtkActionGroup *actiongroup);
@@ -387,9 +403,20 @@ rb_shell_get_type (void)
 			(GInstanceInitFunc) rb_shell_init
 		};
 		
+		static const GInterfaceInfo rb_remote_proxy_info =
+		{
+			(GInterfaceInitFunc) rb_shell_remote_proxy_init,
+			NULL,
+			NULL
+		};
+
 		type = g_type_register_static (G_TYPE_OBJECT,
 					       "RBShell",
 					       &info, 0);
+
+		g_type_add_interface_static (type,
+					     RB_TYPE_REMOTE_PROXY,
+					     &rb_remote_proxy_info);
 	}
 
 	return type;
@@ -464,6 +491,25 @@ rb_shell_class_init (RBShellClass *klass)
 							       "Source which is currently selected", 
 							       G_PARAM_READABLE));
 
+}
+
+static void
+rb_shell_remote_proxy_init (RBRemoteProxyIface *iface)
+{
+	iface->load_song = rb_shell_load_song_impl;
+	iface->load_uri = rb_shell_load_uri_impl;
+	iface->select_uri = rb_shell_select_uri_impl;
+	iface->play_uri = rb_shell_play_uri_impl;
+	iface->grab_focus = rb_shell_grab_focus_impl;
+	iface->get_shuffle = rb_shell_get_shuffle_impl;
+	iface->set_shuffle = rb_shell_set_shuffle_impl;
+	iface->get_repeat = rb_shell_get_repeat_impl;
+	iface->set_repeat = rb_shell_set_repeat_impl;
+	iface->play = rb_shell_play_impl;
+	iface->pause = rb_shell_pause_impl;
+	iface->playing = rb_shell_playing_impl;
+	iface->get_playing_time = rb_shell_get_playing_time_impl;
+	iface->set_playing_time = rb_shell_set_playing_time_impl;
 }
 
 static void
@@ -655,8 +701,7 @@ rb_shell_finalize (GObject *object)
 
         parent_class->finalize (G_OBJECT (shell));
 
-	rb_debug ("THE END");
-	gtk_main_quit ();
+	rb_debug ("shell shutdown complete");
 }
 
 RBShell *
@@ -2022,4 +2067,83 @@ rb_shell_session_init (RBShell *shell)
 				 "die",
 				 G_CALLBACK (session_die_cb),
 				 shell, 0);
+}
+
+static void
+rb_shell_load_song_impl (RBRemoteProxy *proxy, const char *uri)
+{
+}
+
+static void
+rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri)
+{
+}
+
+static void
+rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri)
+{
+}
+
+static void
+rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri)
+{
+}
+
+static void
+rb_shell_grab_focus_impl (RBRemoteProxy *proxy)
+{
+	RBShell *shell = RB_SHELL (proxy);
+
+	rb_debug ("grabbing focus");
+	gtk_window_present (GTK_WINDOW (shell->priv->window));
+	gtk_widget_grab_focus (shell->priv->window);
+}
+
+static gboolean
+rb_shell_get_shuffle_impl (RBRemoteProxy *proxy)
+{
+	return FALSE;
+}
+
+static void
+rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle)
+{
+}
+
+static gboolean
+rb_shell_get_repeat_impl (RBRemoteProxy *proxy)
+{
+	return FALSE;
+}
+
+static void
+rb_shell_set_repeat_impl (RBRemoteProxy *proxy, gboolean repeat)
+{
+}
+
+static void
+rb_shell_play_impl (RBRemoteProxy *proxy)
+{
+}
+
+static void
+rb_shell_pause_impl (RBRemoteProxy *proxy)
+{
+}
+
+static gboolean
+rb_shell_playing_impl (RBRemoteProxy *proxy)
+{
+	return FALSE;
+}
+
+static long
+rb_shell_get_playing_time_impl (RBRemoteProxy *proxy)
+{
+	return 0;
+}
+
+static void
+rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time)
+{
 }
