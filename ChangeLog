@@ -2,6 +2,89 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-04-05 14:18:30 GMT	Colin Walters <walters@verbum.org>	patch-204
+
+    Summary:
+      drag and drop fixes, squash query buglet
+    Revision:
+      rhythmbox--main--0.7--patch-204
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-257
+       merge from main
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-258
+       merge from main
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-259
+       hack up drag and drop...sigh
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-260
+       always push matched entries into queue
+    
+
+    modified files:
+     ChangeLog lib/rb-tree-dnd.c rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-tree.c sources/rb-sourcelist-model.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-257
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-258
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-259
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-260
+
+
+2004-04-05 00:24:45 GMT	Colin Walters <walters@verbum.org>	patch-203
+
+    Summary:
+      add audio/x-mod
+    Revision:
+      rhythmbox--main--0.7--patch-203
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c
+
+
+2004-04-05 00:17:53 GMT	Colin Walters <walters@verbum.org>	patch-202
+
+    Summary:
+      ignore .Trash directories (Jonathan Blandford)
+    Revision:
+      rhythmbox--main--0.7--patch-202
+
+
+    modified files:
+     ChangeLog lib/rb-file-helpers.c lib/rb-playlist.c
+
+
+2004-04-03 23:49:29 GMT	Colin Walters <walters@verbum.org>	patch-201
+
+    Summary:
+      rewrite playlist saving to just write out xml in separate thread
+    Revision:
+      rhythmbox--main--0.7--patch-201
+
+
+    modified files:
+     ChangeLog shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell.c
+     sources/rb-playlist-source.c
+
+
+2004-04-03 23:48:39 GMT	Colin Walters <walters@verbum.org>	patch-200
+
+    Summary:
+      update README for new gst pipeline syntax
+    Revision:
+      rhythmbox--main--0.7--patch-200
+
+
+    modified files:
+     ChangeLog README
+
+
 2004-04-03 21:39:35 GMT	Colin Walters <walters@verbum.org>	patch-199
 
     Summary:
