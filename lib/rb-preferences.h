@@ -38,7 +38,6 @@ G_BEGIN_DECLS
 #define CONF_UI_TIME_DISPLAY CONF_PREFIX "/ui/time_display"
 #define CONF_UI_BROWSER_VIEWS CONF_PREFIX "/ui/browser_views"
 #define CONF_STATE_PLAY_ORDER	CONF_PREFIX "/state/play_order"
-#define CONF_STATE_REPEAT	CONF_PREFIX "/state/repeat"
 #define CONF_STATE_VOLUME	CONF_PREFIX "/state/volume"
 
 G_END_DECLS

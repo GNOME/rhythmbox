@@ -78,12 +78,6 @@ static RBBonoboUIListener rb_statusbar_listeners[] =
 	RB_BONOBO_UI_LISTENER_END
 };
 
-/* Use checkboxes_to_play_order[get_active(shuffle)][get_active(repeat)] to pick
- * a play order */
-static const char* const checkboxes_to_play_order[2][2] =
-	{{"linear",	"linear-loop"},
-	 {"shuffle",	"random-by-age-and-rating"}};
-
 struct RBStatusbarPrivate
 {
 	RBSource *selected_source;
@@ -214,10 +208,6 @@ rb_statusbar_construct (GType                  type,
 
 	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
 				  "notify::play-order", 
-				  G_CALLBACK (rb_statusbar_sync_state), 
-				  statusbar);
-	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
-				  "notify::repeat", 
 				  G_CALLBACK (rb_statusbar_sync_state), 
 				  statusbar);
 	g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
@@ -519,38 +509,23 @@ rb_statusbar_sync_with_source (RBStatusbar *statusbar)
 void
 rb_statusbar_sync_state (RBStatusbar *statusbar)
 {
-	gboolean hidden;
-	gchar *play_order;
-	gint shuffle_active, repeat_active;
+	gboolean hidden, consistent;
+	int shuffle, repeat;
 
 	rb_debug ("syncing state");
 
-	g_object_get (G_OBJECT (statusbar->priv->player), 
-		      "play-order", &play_order,
-		      NULL);
-
-	/* Find the entry in checkboxes_to_play_order that contains the current
-	 * play order. {shuffle,repeat}_active==2 means it wasn't found. */
-	for (shuffle_active = 0; shuffle_active < 2; ++shuffle_active) {
-		for (repeat_active = 0; repeat_active < 2; ++repeat_active) {
-			if (strcmp (play_order, checkboxes_to_play_order[shuffle_active][repeat_active]) == 0)
-				break;
-		}
-		if (repeat_active != 2)
-			break;
-	}
-	g_free (play_order);
-	if (shuffle_active < 2) {
-		/* setting active sets the play order to one in checkboxes_to_play_order */
+	consistent = rb_shell_player_get_playback_state (statusbar->priv->player,
+							 &shuffle, &repeat);
+	if (consistent) {
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-					      shuffle_active);
+					      shuffle);
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
-					      repeat_active);
-	}
+					      repeat);
+	} 
 	gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle),
-					    shuffle_active == 2);
+					    !consistent);
 	gtk_toggle_button_set_inconsistent (GTK_TOGGLE_BUTTON (statusbar->priv->repeat),
-					    shuffle_active == 2);
+					    !consistent);
 	
 	hidden = eel_gconf_get_boolean (CONF_UI_STATUSBAR_HIDDEN);
 	if (hidden)
@@ -578,18 +553,14 @@ rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 				RBStatusbar *statusbar)
 {
 	RBShellPlayer *player = statusbar->priv->player;
+	gboolean shuffle, repeat;
 
 	rb_debug ("toggle changed");
 
-	if (toggle == GTK_TOGGLE_BUTTON (statusbar->priv->shuffle)
-			|| toggle == GTK_TOGGLE_BUTTON (statusbar->priv->repeat)) {
-		rb_shell_player_set_play_order (player, checkboxes_to_play_order
-							[gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle))]
-							[gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat))]);
-		rb_shell_player_set_repeat (player, gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat)));
-	} else {
-		g_warning ("Unexpected widget");
-	}
+	shuffle = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->shuffle));
+	repeat = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (statusbar->priv->repeat));
+
+	rb_shell_player_set_playback_state (player, shuffle, repeat);
 }
 
 static void

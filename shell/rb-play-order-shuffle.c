@@ -186,12 +186,7 @@ rb_shuffle_play_order_get_next (RBPlayOrder* porder)
 
 	if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (sorder))) {
 		if (rb_history_current (get_history (sorder)) == rb_history_last (get_history (sorder))) {
-			if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
-				rb_debug ("No next entry, but repeat is enabled");
-				entry = rb_history_first (get_history (sorder));
-			} else {
-				entry = NULL;
-			}
+			entry = NULL;
 		} else {
 			rb_debug ("choosing next entry in shuffle");
 			entry = rb_history_next (get_history (sorder));
@@ -217,11 +212,9 @@ rb_shuffle_play_order_go_next (RBPlayOrder* porder)
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
 	if (rb_play_order_get_playing_entry (porder) == rb_history_current (get_history (sorder))) {
-		if (rb_history_current (get_history (sorder)) == rb_history_last (get_history (sorder))) {
-			if (eel_gconf_get_boolean (CONF_STATE_REPEAT))
-				rb_history_go_first (get_history (sorder));
-		} else
+		if (rb_history_current (get_history (sorder)) != rb_history_last (get_history (sorder))) {
 			rb_history_go_next (get_history (sorder));
+		}
 	} else {
 		/* If the player is currently stopped, the current song in the
 		 * history needs to stay current */
@@ -232,7 +225,6 @@ static RhythmDBEntry*
 rb_shuffle_play_order_get_previous (RBPlayOrder* porder)
 {
 	RBShufflePlayOrder *sorder;
-	RhythmDBEntry *entry;
 
 	g_return_val_if_fail (porder != NULL, NULL);
 	g_return_val_if_fail (RB_IS_SHUFFLE_PLAY_ORDER (porder), NULL);
@@ -244,16 +236,7 @@ rb_shuffle_play_order_get_previous (RBPlayOrder* porder)
 	rb_shuffle_sync_history_with_entry_view (sorder);
 
 	rb_debug ("choosing previous history entry");
-	entry = rb_history_previous (get_history (sorder));
-
-	if (entry == NULL) {
-		if (eel_gconf_get_boolean (CONF_STATE_REPEAT)) {
-			rb_debug ("No previous entry, but repeat is enabled");
-			entry = rb_history_last (get_history (sorder));
-		}
-	}
-
-	return entry;
+	return rb_history_previous (get_history (sorder));
 }
 
 static void
@@ -268,10 +251,7 @@ rb_shuffle_play_order_go_previous (RBPlayOrder* porder)
 
 	sorder = RB_SHUFFLE_PLAY_ORDER (porder);
 
-	if (rb_history_current (get_history (sorder)) == rb_history_first (get_history (sorder))) {
-		if (eel_gconf_get_boolean (CONF_STATE_REPEAT))
-			rb_history_go_last (get_history (sorder));
-	} else
+	if (rb_history_current (get_history (sorder)) != rb_history_first (get_history (sorder)))
 		rb_history_go_previous (get_history (sorder));
 }
 

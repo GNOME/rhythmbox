@@ -72,6 +72,10 @@ typedef enum
 	PLAY_BUTTON_STOP
 } PlayButtonState;
 
+static const char* const state_to_play_order[2][2] =
+	{{"linear",	"linear-loop"},
+	 {"shuffle",	"random-by-age-and-rating"}};
+
 static void rb_shell_player_class_init (RBShellPlayerClass *klass);
 static void rb_shell_player_init (RBShellPlayer *shell_player);
 static GObject *rb_shell_player_constructor (GType type, guint n_construct_properties,
@@ -157,8 +161,12 @@ static void buffering_progress_cb (RBPlayer *player, int progress, gpointer data
 static void rb_shell_player_enable_buffering (RBShellPlayer *player);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
 
-static void rb_shell_player_sync_play_order (RBShellPlayer *player);
+static void rb_shell_player_set_play_order (RBShellPlayer *player,
+					    const gchar *new_val);
 
+static void rb_shell_player_sync_play_order (RBShellPlayer *player);
+static void gconf_play_order_changed (GConfClient *client,guint cnxn_id,
+				      GConfEntry *entry, RBShellPlayer *player);
 
 #ifdef HAVE_MMKEYS
 static void grab_mmkey (int key_code, GdkWindow *root);
@@ -240,7 +248,6 @@ struct RBShellPlayerPrivate
 
 	RBRemote *remote;
 
-	guint gconf_repeat_id;
 	guint gconf_play_order_id;
 	guint gconf_state_id;
 };
@@ -251,7 +258,6 @@ enum
 	PROP_SOURCE,
 	PROP_COMPONENT,
 	PROP_TRAY_COMPONENT,
-	PROP_REPEAT,
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
 	PROP_BUFFERING,
@@ -287,19 +293,6 @@ static GObjectClass *parent_class = NULL;
 
 static guint rb_shell_player_signals[LAST_SIGNAL] = { 0 };
 
-static void
-gconf_key_changed (GConfClient *client,guint cnxn_id,
-		   GConfEntry *entry, RBShellPlayer *player)
-{
-	if (strcmp (CONF_STATE_REPEAT, entry->key) == 0) {
-		g_object_notify (G_OBJECT (player), "repeat");
-	} else if (strcmp (CONF_STATE_PLAY_ORDER, entry->key) == 0) {
-		rb_shell_player_sync_play_order (player);
-		g_object_notify (G_OBJECT (player), "play-order");
-	}
-}
-
-
 GType
 rb_shell_player_get_type (void)
 {
@@ -326,37 +319,6 @@ rb_shell_player_get_type (void)
 	}
 
 	return rb_shell_player_type;
-}
-
-void 
-rb_shell_player_set_repeat (RBShellPlayer *player, gboolean new_val)
-{
-	gboolean old_val;
-	/* Warning: there's probably a small race if the value stored in 
-	 * gconf is modified after the old_val != new_val test, but that
-	 * doesn't matter that much
-	 */
-	g_object_get (G_OBJECT (player), "repeat", &old_val, NULL);
-	if (old_val != new_val) {
-		/* The notify signal will be emitted by the gconf notifier */
-		eel_gconf_set_boolean (CONF_STATE_REPEAT, new_val);
-	}
-}
-
-
-void 
-rb_shell_player_set_play_order (RBShellPlayer *player, const gchar *new_val)
-{
-	const gchar *old_val;
-	/* Warning: there's probably a small race if the value stored in 
-	 * gconf is modified after the old_val != new_val test, but that
-	 * doesn't matter that much
-	 */
-	g_object_get (G_OBJECT (player), "play-order", &old_val, NULL);
-	if (strcmp (old_val, new_val) != 0) {
-		/* The notify signal will be emitted by the gconf notifier */
-		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, new_val);
-	}
 }
 
 static void
@@ -397,13 +359,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 
 	/* If you change these, be sure to update the CORBA interface
 	 * in rb-shell.c! */
-	g_object_class_install_property (object_class,
-					 PROP_REPEAT,
-					 g_param_spec_boolean ("repeat", 
-							       "repeat", 
-							       "Whether repeat is enabled or not", 
-							       FALSE,
-							       G_PARAM_READABLE));
 	g_object_class_install_property (object_class,
 					 PROP_PLAY_ORDER,
 					 g_param_spec_string ("play-order", 
@@ -530,13 +485,9 @@ rb_shell_player_init (RBShellPlayer *player)
 				 G_CALLBACK (buffering_progress_cb),
 				 player, 0);
 
-	player->priv->gconf_repeat_id =
-		eel_gconf_notification_add (CONF_STATE_REPEAT,
-					    (GConfClientNotifyFunc)gconf_key_changed,
-					    player);
 	player->priv->gconf_play_order_id =
 		eel_gconf_notification_add (CONF_STATE_PLAY_ORDER,
-					    (GConfClientNotifyFunc)gconf_key_changed,
+					    (GConfClientNotifyFunc)gconf_play_order_changed,
 					    player);
 
 	rb_shell_player_sync_volume (player);
@@ -633,7 +584,6 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
-	eel_gconf_notification_remove(player->priv->gconf_repeat_id);
 	eel_gconf_notification_remove(player->priv->gconf_play_order_id);
 	eel_gconf_notification_remove(player->priv->gconf_state_id);
 
@@ -734,10 +684,6 @@ rb_shell_player_set_property (GObject *object,
 							     rb_shell_player_verbs,
 							     player);
 		break;
-	case PROP_REPEAT:
-		eel_gconf_set_boolean (CONF_STATE_REPEAT, 
-				       g_value_get_boolean (value));
-		break;
 
 	case PROP_PLAY_ORDER:
 		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, 
@@ -768,9 +714,6 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_TRAY_COMPONENT:
 		g_value_set_object (value, player->priv->tray_component);
-		break;
-	case PROP_REPEAT:
-		g_value_set_boolean (value, eel_gconf_get_boolean (CONF_STATE_REPEAT));
 		break;
 	case PROP_PLAY_ORDER:
 		g_value_set_string_take_ownership (value, eel_gconf_get_string (CONF_STATE_PLAY_ORDER));
@@ -1000,6 +943,56 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry)
 	rb_shell_player_sync_buttons (player);
 
 	rb_shell_player_sync_replaygain (player);
+}
+
+static void
+gconf_play_order_changed (GConfClient *client,guint cnxn_id,
+			  GConfEntry *entry, RBShellPlayer *player)
+{
+	rb_shell_player_sync_play_order (player);
+	g_object_notify (G_OBJECT (player), "play-order");
+}
+
+gboolean
+rb_shell_player_get_playback_state (RBShellPlayer *player,
+				    gboolean *shuffle,
+				    gboolean *repeat)
+{
+	int i, j;
+	char *play_order;
+
+	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+
+	for (i = 0; i < G_N_ELEMENTS(state_to_play_order); i++)
+		for (j = 0; j < G_N_ELEMENTS(state_to_play_order[0]); j++)
+			if (!strcmp (play_order, state_to_play_order[i][j]))
+				goto found;
+
+	return FALSE;
+
+found:
+	*shuffle = i > 0;
+	*repeat = j > 0;
+	return TRUE;
+}
+
+static void 
+rb_shell_player_set_play_order (RBShellPlayer *player, const gchar *new_val)
+{
+	char *old_val;
+	g_object_get (G_OBJECT (player), "play-order", &old_val, NULL);
+	if (strcmp (old_val, new_val) != 0) {
+		/* The notify signal will be emitted by the gconf notifier */
+		eel_gconf_set_string (CONF_STATE_PLAY_ORDER, new_val);
+	}
+	g_free (old_val);
+}
+
+void
+rb_shell_player_set_playback_state (RBShellPlayer *player, gboolean shuffle, gboolean repeat)
+{
+	const char *neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	rb_shell_player_set_play_order (player, neworder);
 }
 
 static void
@@ -1335,17 +1328,17 @@ rb_shell_player_cmd_stop (BonoboUIComponent *component,
 static void
 rb_shell_player_sync_control_state (RBShellPlayer *player)
 {
-	char *play_order;
-	
+	gboolean shuffle, repeat;
 	rb_debug ("syncing control state");
-	play_order = eel_gconf_get_string (CONF_STATE_PLAY_ORDER);
+
+	if (!rb_shell_player_get_playback_state (player, &shuffle,
+						 &repeat))
+		return;
+	
 	rb_bonobo_set_active (player->priv->component,
-			      CMD_PATH_SHUFFLE,
-			      strcmp (play_order, "linear") != 0);
-	g_free (play_order);
+			      CMD_PATH_SHUFFLE, shuffle);
 	rb_bonobo_set_active (player->priv->component,
-			      CMD_PATH_REPEAT,
-			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
+			      CMD_PATH_REPEAT, repeat);
 }
 
 static void
@@ -1409,26 +1402,33 @@ rb_shell_player_shuffle_changed_cb (BonoboUIComponent *component,
 				    const char *state,
 				    RBShellPlayer *player)
 {
-	gboolean newval = rb_bonobo_get_active (component, CMD_PATH_SHUFFLE);
+	const char *neworder;
+	gboolean shuffle, repeat;
 	rb_debug ("shuffle changed");
 
-	if (newval) {
-		rb_shell_player_set_play_order (player, "shuffle");
-	} else {
-		rb_shell_player_set_play_order (player, "linear");
-	}
+	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
+		return;
+	shuffle = !shuffle;
+	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	rb_shell_player_set_play_order (player, neworder);
 }
 	
-static void rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
-					       const char *path,
-					       Bonobo_UIComponent_EventType type,
-					       const char *state,
-					       RBShellPlayer *player)
+static void
+rb_shell_player_repeat_changed_cb (BonoboUIComponent *component,
+				   const char *path,
+				   Bonobo_UIComponent_EventType type,
+				   const char *state,
+				   RBShellPlayer *player)
 {
-	gboolean newval = rb_bonobo_get_active (component, CMD_PATH_REPEAT);
+	const char *neworder;
+	gboolean shuffle, repeat;
 	rb_debug ("repeat changed");
 
-	rb_shell_player_set_repeat (player, newval);
+	if (!rb_shell_player_get_playback_state (player, &shuffle, &repeat))
+		return;
+	repeat = !repeat;
+	neworder = state_to_play_order[shuffle ? 1 : 0][repeat ? 1 : 0];
+	rb_shell_player_set_play_order (player, neworder);
 }
 
 static void

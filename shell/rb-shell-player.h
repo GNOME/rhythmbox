@@ -99,10 +99,12 @@ const char *		rb_shell_player_get_playing_path(RBShellPlayer *shell_player);
 
 void			rb_shell_player_sync_buttons	(RBShellPlayer *player);
 
-void                    rb_shell_player_set_repeat      (RBShellPlayer *player,
-							 gboolean new_val);
-void                    rb_shell_player_set_play_order	(RBShellPlayer *player,
-							 const gchar *new_val);
+void			rb_shell_player_set_playback_state(RBShellPlayer *player,
+							   gboolean shuffle, gboolean repeat);
+
+gboolean                rb_shell_player_get_playback_state(RBShellPlayer *player,
+							   gboolean *shuffle,
+							   gboolean *repeat);
 
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);
