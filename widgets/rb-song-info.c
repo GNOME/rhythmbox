@@ -640,13 +640,11 @@ rb_song_info_set_entry_auto_rate (RBSongInfo *song_info,
 	/* set the new value for auto-rate */
 	g_value_init (&value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&value, active);
-	rhythmdb_write_lock (song_info->priv->db);
 	rhythmdb_entry_set (song_info->priv->db,
 			    entry,
 			    RHYTHMDB_PROP_AUTO_RATE,
 			    &value);
 	g_value_unset (&value);
-	rhythmdb_write_unlock (song_info->priv->db);
 
 }
 
@@ -660,9 +658,11 @@ rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
 	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (togglebutton));
 
 	active = gtk_toggle_button_get_active (togglebutton);
+	rhythmdb_write_lock (song_info->priv->db);
 	rb_song_info_selection_for_each (song_info,
 					 rb_song_info_set_entry_auto_rate,
 					 &active);
+	rhythmdb_write_unlock (song_info->priv->db);
 }
 
 static void
@@ -672,8 +672,6 @@ rb_song_info_set_entry_rating (RBSongInfo *info,
 {
 	GValue value = {0, };
 	double trouble = *((double*) data);
-
-	rhythmdb_write_lock (info->priv->db);
 
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_DOUBLE);
@@ -692,8 +690,6 @@ rb_song_info_set_entry_rating (RBSongInfo *info,
 			    &value);
 	g_value_unset (&value);
 
-	rhythmdb_write_unlock (info->priv->db);
-
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (info->priv->auto_rate), FALSE);
 }
 	
@@ -707,9 +703,11 @@ rb_song_info_rated_cb (RBRating *rating,
 	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
+	rhythmdb_write_lock (song_info->priv->db);
 	rb_song_info_selection_for_each (song_info,
 					 rb_song_info_set_entry_rating,
 					 &score);
+	rhythmdb_write_unlock (song_info->priv->db);
 
 	g_object_set (G_OBJECT (song_info->priv->rating),
 		      "score", score,
