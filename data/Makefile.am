@@ -21,7 +21,7 @@ applicationsdir = $(datadir)/application-registry
 applications_DATA = rhythmbox.applications
 
 install-schemas: $(schema_DATA)
-	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMAS_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(top_srcdir)/data/$(schema_DATA)
+	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(top_srcdir)/data/$(schema_DATA)
 
 if INSTALL_SCHEMAS
 install-data-local: install-schemas
