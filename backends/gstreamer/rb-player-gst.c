@@ -512,7 +512,7 @@ rb_player_construct (RBPlayer *mp,
 	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->volume);
 	dpman = gst_dpman_get_manager (mp->priv->volume);
 	gst_dpman_set_mode (dpman, "synchronous");
-	mp->priv->volume_dparam = gst_dpsmooth_new (G_TYPE_FLOAT);
+	mp->priv->volume_dparam = gst_dpsmooth_new (G_TYPE_DOUBLE);
 	g_assert (mp->priv->volume_dparam != NULL);
 	gst_dpman_attach_dparam (dpman, "volume", mp->priv->volume_dparam);
 
@@ -546,7 +546,7 @@ rb_player_construct (RBPlayer *mp,
 	if (mp->priv->cur_volume < 0.0)
 		mp->priv->cur_volume = 0;
 	g_object_set (G_OBJECT (mp->priv->volume_dparam),
-		      "value_float", mp->priv->cur_volume,
+		      "value_double", mp->priv->cur_volume,
 		      NULL);
 	g_object_set (G_OBJECT (mp->priv->volume),
 		      "mute", mp->priv->mute,
@@ -849,7 +849,7 @@ rb_player_set_replaygain (RBPlayer *mp,
 
 	if (mp->priv->pipeline != NULL) {
 		g_object_set (G_OBJECT (mp->priv->volume_dparam),
-			      "value_float",
+			      "value_double",
 			      mp->priv->cur_volume * scale,
 			      NULL);
 	}
@@ -857,14 +857,14 @@ rb_player_set_replaygain (RBPlayer *mp,
 
 void
 rb_player_set_volume (RBPlayer *mp,
-				float volume)
+		      float volume)
 {
 	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
 	if (mp->priv->pipeline != NULL) {
 		g_object_set (G_OBJECT (mp->priv->volume_dparam),
-			      "value_float",
+			      "value_double",
 			      volume,
 			      NULL);
 	}
