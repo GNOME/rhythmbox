@@ -49,17 +49,28 @@ typedef struct RBSourceListClass
 	GtkScrolledWindowClass parent_class;
 
 	void (*selected) (RBSourceList *list, RBSource *source);
+
+	void (*drag_finished) (RBSourceList *sourcelist,
+			       GdkDragContext *context,
+			       int x, int y,
+			       GtkSelectionData *data,
+			       guint info, guint time,
+			       RBSource *target);
 } RBSourceListClass;
 
-GType	   rb_sourcelist_get_type (void);
+GType		rb_sourcelist_get_type		(void);
 
-GtkWidget *rb_sourcelist_new	  (void);
+GtkWidget *	rb_sourcelist_new		(void);
 
-void	   rb_sourcelist_append	  (RBSourceList *sourcelist,
-				   RBSource *source);
+void		rb_sourcelist_append		(RBSourceList *sourcelist,
+						 RBSource *source);
 
-void	   rb_sourcelist_select	  (RBSourceList *sourcelist,
-				   RBSource *source);
+void		rb_sourcelist_select		(RBSourceList *sourcelist,
+						 RBSource *source);
+
+void		rb_sourcelist_set_dnd_targets	(RBSourceList *sourcelist,
+						 const GtkTargetEntry *targets,
+						 int n_targets);
 
 G_END_DECLS
 

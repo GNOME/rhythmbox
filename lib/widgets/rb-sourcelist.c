@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <gtk/gtk.h>
+#include <gdk/gdk.h>
 #include <libgnome/gnome-i18n.h>
 #include <unistd.h>
 #include <string.h>
@@ -239,3 +240,16 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 	source = target;
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SELECTED], 0, source);
 }
+
+void
+rb_sourcelist_set_dnd_targets (RBSourceList *sourcelist,
+			       const GtkTargetEntry *targets,
+			       int n_targets)
+{
+	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
+
+	gtk_tree_view_enable_model_drag_dest (GTK_TREE_VIEW (sourcelist->priv->treeview),
+					      targets, n_targets,
+					      GDK_ACTION_LINK);
+}
+	
