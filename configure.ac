@@ -169,23 +169,30 @@ AM_CONDITIONAL(USE_XINE, test x"$with_player" = "xxine")
 
 dnl Tagging
 AC_ARG_WITH(metadata,
-              AC_HELP_STRING([--with-metadata=gstreamer|monkeymedia|auto],
+              AC_HELP_STRING([--with-metadata=gstreamer|monkeymedia|xine|auto],
 			     [Select the metadata reader to use]),,
 	      with_metadata=auto)
 if test x"$with_player" = xxine && test x"$with_metadata" = xgstreamer; then
   AC_MSG_ERROR([cannot use xine as player with gstreamer for metadata])
 fi  
+if test x"$with_player" = xgstreamer && test x"$with_metadata" = xxine; then
+  AC_MSG_ERROR([cannot use gstreamer as player with xine for metadata])
+fi
+
 if test x"$with_metadata" = xauto; then
    if test x"$with_player" = xgstreamer; then
       with_metadata=gstreamer
    else
       with_metadata=monkeymedia
    fi
-fi   
+fi
 AM_CONDITIONAL(USE_MONKEYMEDIA, test x"$with_metadata" = xmonkeymedia)
 if test x"$with_metadata" = xmonkeymedia; then
 	AC_DEFINE(WITH_MONKEYMEDIA, 1, [Define if you are using the monkeymedia metadata reader])
-fi	
+fi
+
+AM_CONDITIONAL(WITH_XINE_METADATA, test x"$with_metadata" = "xxine")
+AM_CONDITIONAL(WITH_GST_METADATA, test x"$with_metadata" = "xgstreamer")
 
 dnl Stolen from D-BUS configury
 dnl Atomic integers (checks by Sebastian Wilhelmi for GLib)

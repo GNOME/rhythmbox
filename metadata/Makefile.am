@@ -24,6 +24,12 @@ SUBDIRS += monkey-media
 librbmetadata_la_LIBADD += $(top_builddir)/metadata/monkey-media/libmonkey-media.la
 librbmetadata_la_SOURCES += rb-metadata-mm.c
 INCLUDES += -I$(top_srcdir)/metadata/monkey-media
-else
+endif
+
+if WITH_XINE_METADATA
+librbmetadata_la_SOURCES += rb-metadata-xine.c
+endif
+
+if WITH_GST_METADATA
 librbmetadata_la_SOURCES += rb-metadata-gst.c
 endif
