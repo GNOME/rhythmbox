@@ -1,5 +1,14 @@
 2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_construct),
+	(rb_node_view_get_node), (rb_node_view_get_first_node),
+	(get_selection), (rb_node_view_row_activated_cb),
+	(rb_tree_model_node_row_deleted_cb),
+	(gtk_tree_sortable_sort_column_changed_cb): fix next and prev
+	sensitivity.
+
+2002-06-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* shell/rb-shell.c: (rb_shell_corba_exception_to_string):
 	fix strcmp (foo, bar != 0) ;)
 
