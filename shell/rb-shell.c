@@ -802,7 +802,8 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 
 enum PlayerProperties {
 	PROP_VISIBILITY,
-	PROP_SONG
+	PROP_SONG,
+	PROP_SHUFFLE,
 };
 
 
@@ -877,6 +878,14 @@ shell_pb_get_prop (BonoboPropertyBag *bag,
 		BONOBO_ARG_SET_BOOLEAN (arg, FALSE);
 		break;
 
+	case PROP_SHUFFLE:
+	{
+		char *play_order;
+		g_object_get (G_OBJECT (player), "play-order", &play_order, NULL);
+		BONOBO_ARG_SET_BOOLEAN (arg, !strcmp ("shuffle", play_order));
+		break;
+	}
+
 	case PROP_SONG: {
 		GNOME_Rhythmbox_SongInfo *ret_val;
 		ret_val = get_song_info_from_player (shell);
@@ -926,34 +935,36 @@ rb_shell_corba_get_player_properties (PortableServer_Servant _servant,
 
 	rb_debug ("getting player properties");
 	if (shell->priv->pb == NULL) {
-		gchar *params_to_map[] = {"repeat", "shuffle", "playing", 
-					  NULL};
+		gchar *params_to_map[] = {"repeat", "play-order", "playing"}; 
 		GParamSpec **params;
-		int length = 0;
 		int i = 0;
+		int total = 0;
 
 		shell->priv->pb = bonobo_property_bag_new (shell_pb_get_prop, 
 							   shell_pb_set_prop, 
 							   shell);
 		
 		
-		/* Map RBShellPlayer properties to bonobo properties */
-		while (params_to_map[length] != NULL) {
-			length++;
-		}
-		params = malloc (length * sizeof (GParamSpec *));
-		for (i = 0; i < length; i++) {
-			params[i] = g_object_class_find_property (G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell)), params_to_map[i]);
+		params = malloc (G_N_ELEMENTS (params_to_map) * sizeof (GParamSpec *));
+		for (i = 0; i < G_N_ELEMENTS (params_to_map); i++) {
+			params[total] = g_object_class_find_property (G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell)), params_to_map[i]);
+			if (params[total])
+				total++;
 		}
 		bonobo_property_bag_map_params (shell->priv->pb,
 						G_OBJECT (shell->priv->player_shell),
-						(const GParamSpec **)params, length);
+						(const GParamSpec **)params, total);
 
 
 		/* Manually install the other properties */
 		bonobo_property_bag_add (shell->priv->pb, "visibility", 
 					 PROP_VISIBILITY, BONOBO_ARG_BOOLEAN, NULL, 
 					 _("Whether the main window is visible"), 0);
+
+		/* Manually install the other properties */
+		bonobo_property_bag_add (shell->priv->pb, "shuffle", 
+					 PROP_SHUFFLE, BONOBO_ARG_BOOLEAN, NULL, 
+					 _("Whether shuffle is enabled"), 0);
 
 		bonobo_property_bag_add (shell->priv->pb, "song", 
 					 PROP_SONG, TC_GNOME_Rhythmbox_SongInfo, NULL, 

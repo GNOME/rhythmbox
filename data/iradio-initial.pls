@@ -1,5 +1,5 @@
 [playlist]
-numberofentries=8
+numberofentries=9
 file1=http://www.somafm.com/groovesalad.pls
 title1=Groove Salad
 genre1=Ambient
@@ -24,3 +24,6 @@ genre7=Rock
 file8=http://sc1.magnatune.com:8010/
 title8=Magnatune World Music: Indian, Celtic, Arabic, Baltic...
 genre8=World
+file9=http://broadband.afterhoursdjs.org:8008/
+title9=AfterHoursDJs.org - All live, all the time!
+genre9=Electronica

@@ -344,11 +344,12 @@ rb_player_gst_signal_error (RBPlayer *mp, const char *msg)
 
 static void
 error_cb (GstElement *element,
-	  GObject *arg1,
-	  char *errmsg,
+	  GstElement *source,
+	  GError *error,
+	  gchar *debug,
 	  RBPlayer *mp)
 {
-	rb_player_gst_signal_error (mp, errmsg);
+	rb_player_gst_signal_error (mp, error->message);
 }
 
 static gboolean

@@ -236,14 +236,15 @@ rb_metadata_gst_eos_cb (GstElement *element, RBMetaData *md)
 
 static void
 rb_metadata_gst_error_cb (GstElement *element,
-			  GObject *arg1,
-			  char *errmsg,
+			  GstElement *source,
+			  GError *error,
+			  gchar *debug,
 			  RBMetaData *md)
 {
-	rb_debug ("caught error: %s ", errmsg);
+	rb_debug ("caught error: %s ", error->message);
 	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
 					       RB_METADATA_ERROR_GENERAL,
-					       errmsg);
+					       error->message);
 }
 
 static void
