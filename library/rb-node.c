@@ -406,7 +406,7 @@ rb_node_get_id (RBNode *node)
 
 	ret = node->priv->id;
 
-	g_static_rw_lock_reader_lock (node->priv->lock);
+	g_static_rw_lock_reader_unlock (node->priv->lock);
 
 	return ret;
 }
