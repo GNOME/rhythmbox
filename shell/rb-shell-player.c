@@ -452,6 +452,9 @@ rb_shell_player_cmd_pause (BonoboUIComponent *component,
 			   RBShellPlayer *player,
 			   const char *verbname)
 {
+	if (player->priv->player == NULL)
+		return;
+
 	monkey_media_mixer_set_state (player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_PAUSED);
 

@@ -1,3 +1,13 @@
+2002-09-09  Jorn Baayen  <jorn@nl.linux.org>
+
+	* shell/rb-remote.c:
+
+	Include string.h.
+	
+	* shell/rb-shell-player.c: (rb_shell_player_cmd_pause):
+
+	Silently fail if no view is playing.
+
 2002-09-09  James Willcox  <jwillcox@gnome.org>
 
 	* lib/widgets/rb-node-view (rb_node_view_get_next_random_node,

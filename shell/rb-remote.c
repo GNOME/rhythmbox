@@ -20,6 +20,8 @@
 
 #include <config.h>
 #include <glib.h>
+#include <string.h>
+
 #include "rb-remote.h"
 
 #ifdef HAVE_REMOTE
