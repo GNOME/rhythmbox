@@ -46,7 +46,7 @@ if test x"$enable_ipod" = xyes; then
 	USE_HAL=""
 	PKG_CHECK_MODULES(HAL, hal,
 		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
-		[ USE_HAL="hal >= $HAL_REQUIRED" ], :)
+		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
 fi
 
 
@@ -433,6 +433,14 @@ AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Define to the Gettext package name])
 
 AM_GLIB_GNU_GETTEXT
+
+dnl Workaround for automake 1.8
+AC_SUBST(mkdir_p) if test x"$mkdir_p" = "x"; then
+  MKINSTALLDIRS="mkinstalldirs"
+fi
+AC_SUBST(MKINSTALLDIRS)
+
+
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
