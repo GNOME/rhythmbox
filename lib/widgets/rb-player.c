@@ -32,6 +32,7 @@
 #include "rb-stock-icons.h"
 #include "rb-link.h"
 #include "rb-player.h"
+#include "rb-string-helpers.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *player);
@@ -306,12 +307,14 @@ rb_player_sync (RBPlayer *player)
 		const char *song   = rb_view_player_get_song   (player->priv->view_player);
 		const char *album  = rb_view_player_get_album  (player->priv->view_player);
 		const char *artist = rb_view_player_get_artist (player->priv->view_player);
-		char *escaped;
+		char *escaped, *compressed;
 
-		tmp = SONG_MARKUP (song);
-		escaped = g_markup_escape_text (tmp, g_utf8_strlen (tmp, -1));
-		gtk_label_set_markup (GTK_LABEL (player->priv->song), escaped);
+		compressed = rb_string_compress (song, 50);
+		escaped = g_markup_escape_text (compressed, g_utf8_strlen (compressed, -1));
+		g_free (compressed);
+		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
 		tmp = ALBUM_INFO_URL (album);
