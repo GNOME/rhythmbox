@@ -1539,6 +1539,7 @@ rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 {
 	GtkTreeIter iter;
 	GtkTreePath *path;
+	RhythmDBEntry *ret;
 
 	g_return_val_if_fail (entry != NULL, NULL);
 
@@ -1554,7 +1555,9 @@ rb_entry_view_get_previous_from_entry (RBEntryView *view, RhythmDBEntry *entry)
 	}
 
 	g_assert (gtk_tree_model_get_iter (GTK_TREE_MODEL (view->priv->model), &iter, path));
-	return entry_from_tree_iter (view, &iter);
+	gtk_tree_path_free (path);
+	ret = entry_from_tree_iter (view, &iter);
+	return ret;
 }
 
 

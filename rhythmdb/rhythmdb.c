@@ -1608,7 +1608,7 @@ rhythmdb_query_append (RhythmDB *db, GPtrArray *query, ...)
 	for (i = 0; i < new->len; i++)
 		g_ptr_array_add (query, g_ptr_array_index (new, i));
 
-	g_ptr_array_free (new, FALSE);
+	g_ptr_array_free (new, TRUE);
 
 	va_end (args);
 }
