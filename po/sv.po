@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
-"POT-Creation-Date: 2003-09-02 21:45+0200\n"
-"PO-Revision-Date: 2003-09-02 21:47+0200\n"
+"POT-Creation-Date: 2003-09-06 01:49+0200\n"
+"PO-Revision-Date: 2003-09-06 01:52+0200\n"
 "Last-Translator: Christian Rose <menthos@menthos.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -45,11 +45,11 @@ msgstr "Läser in..."
 msgid "*"
 msgstr "*"
 
-#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:260
+#: data/glade/druid.glade.h:2 lib/widgets/rb-druid.c:259
 msgid "Finish"
 msgstr "Slutför"
 
-#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:245
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:244
 msgid ""
 "In order to get started using\n"
 "Rhythmbox, this assistant will ask\n"
@@ -60,7 +60,7 @@ msgstr ""
 "kunna komma igång med användningen\n"
 "av Rhythmbox."
 
-#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:251
+#: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:250
 msgid "Library setup"
 msgstr "Bibliotekskonfiguration"
 
@@ -79,7 +79,7 @@ msgstr ""
 "\n"
 "Välj ett av alternativen nedan:"
 
-#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:241
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:240
 msgid "Welcome to Rhythmbox"
 msgstr "Välkommen till Rhythmbox"
 
@@ -321,7 +321,7 @@ msgstr "S_enast spelad"
 msgid "_Play Count"
 msgstr "_Spelräknare"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:556 shell/rb-shell.c:1092
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:671 shell/rb-shell.c:1244
 msgid "Music Player"
 msgstr "Musikspelare"
 
@@ -561,7 +561,7 @@ msgstr "_Ta bort spellista"
 msgid "_Extract CD..."
 msgstr "_Extrahera cd..."
 
-#: data/ui/rhythmbox-ui.xml.in.h:55 lib/widgets/rb-load-failure-dialog.c:145
+#: data/ui/rhythmbox-ui.xml.in.h:55 lib/widgets/rb-load-failure-dialog.c:144
 msgid "_File"
 msgstr "_Arkiv"
 
@@ -589,7 +589,7 @@ msgstr "_Nästa"
 msgid "_Paste"
 msgstr "Klistra _in"
 
-#: data/ui/rhythmbox-ui.xml.in.h:63 shell/rb-shell-player.c:1076
+#: data/ui/rhythmbox-ui.xml.in.h:63 shell/rb-shell-player.c:1117
 msgid "_Play"
 msgstr "_Spela"
 
@@ -613,7 +613,7 @@ msgstr "_Spara spellista..."
 msgid "_Show Window"
 msgstr "_Visa fönster"
 
-#: data/ui/rhythmbox-ui.xml.in.h:69 shell/rb-statusbar.c:163
+#: data/ui/rhythmbox-ui.xml.in.h:69 shell/rb-statusbar.c:161
 msgid "_Shuffle"
 msgstr "_Blanda"
 
@@ -621,54 +621,54 @@ msgstr "_Blanda"
 msgid "_Small Display"
 msgstr "_Liten visning"
 
-#: iradio/rb-iradio-backend.c:182 iradio/rb-iradio-backend.c:556
-#: iradio/rb-new-station-dialog.c:293 library/rb-library.c:746
+#: iradio/rb-iradio-backend.c:181 iradio/rb-iradio-backend.c:555
+#: iradio/rb-new-station-dialog.c:292 library/rb-library.c:745
 msgid "All"
 msgstr "Alla"
 
-#: iradio/rb-iradio-backend.c:340
+#: iradio/rb-iradio-backend.c:339
 msgid "Unable to find file \"iradio-initial.xml\""
 msgstr "Kan inte hitta filen \"iradio-initial.xml\""
 
-#: iradio/rb-iradio-backend.c:370
+#: iradio/rb-iradio-backend.c:369
 #, c-format
 msgid "Failed to parse %s\n"
 msgstr "Misslyckades med att tolka %s\n"
 
-#: iradio/rb-iradio-backend.c:513 iradio/rb-iradio-backend.c:532
-#: iradio/rb-iradio-backend.c:533 lib/widgets/rb-tree-model-node.c:590
+#: iradio/rb-iradio-backend.c:512 iradio/rb-iradio-backend.c:531
+#: iradio/rb-iradio-backend.c:532 lib/widgets/rb-tree-model-node.c:589
 msgid "(Unknown)"
 msgstr "(Okänd)"
 
-#: iradio/rb-iradio-backend.c:719 rhythmdb/rhythmdb-tree.c:245
-#: rhythmdb/rhythmdb.c:322
+#: iradio/rb-iradio-backend.c:718 rhythmdb/rhythmdb-tree.c:244
+#: rhythmdb/rhythmdb.c:321
 msgid "Never"
 msgstr "Aldrig"
 
-#: iradio/rb-new-station-dialog.c:145
+#: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
 msgstr "Ny Internetradiokanal"
 
 #. Initialize the tree structure.
-#: iradio/rb-new-station-dialog.c:183
-#: monkey-media/monkey-media-stream-info.c:405
-#: monkey-media/monkey-media-stream-info.c:421
-#: monkey-media/monkey-media-stream-info.c:668 rhythmdb/rhythmdb-tree.c:251
-#: rhythmdb/rhythmdb-tree.c:252 rhythmdb/rhythmdb-tree.c:253
-#: sources/rb-audiocd-source.c:980 sources/rb-audiocd-source.c:987
-#: sources/rb-iradio-source.c:235 sources/rb-iradio-source.c:236
-#: sources/rb-iradio-source.c:237 sources/rb-playlist-source.c:366
-#: sources/rb-playlist-source.c:382
+#: iradio/rb-new-station-dialog.c:182
+#: monkey-media/monkey-media-stream-info.c:404
+#: monkey-media/monkey-media-stream-info.c:420
+#: monkey-media/monkey-media-stream-info.c:667 rhythmdb/rhythmdb-tree.c:250
+#: rhythmdb/rhythmdb-tree.c:251 rhythmdb/rhythmdb-tree.c:252
+#: sources/rb-audiocd-source.c:979 sources/rb-audiocd-source.c:986
+#: sources/rb-iradio-source.c:234 sources/rb-iradio-source.c:235
+#: sources/rb-iradio-source.c:236 sources/rb-playlist-source.c:365
+#: sources/rb-playlist-source.c:381
 msgid "Unknown"
 msgstr "Okänd"
 
-#: iradio/rb-station-properties-dialog.c:179 lib/widgets/rb-song-info.c:570
-#: lib/widgets/rb-song-info.c:584
+#: iradio/rb-station-properties-dialog.c:178 lib/widgets/rb-song-info.c:569
+#: lib/widgets/rb-song-info.c:583
 #, c-format
 msgid "%s Properties"
 msgstr "Egenskaper för %s"
 
-#: iradio/rb-station-properties-dialog.c:350
+#: iradio/rb-station-properties-dialog.c:349
 #, c-format
 msgid "Properties for %s"
 msgstr "Egenskaper för %s"
@@ -698,17 +698,17 @@ msgstr "Orientering"
 msgid "The orientation of the tray."
 msgstr "Orienteringen på lådan."
 
-#: lib/rb-file-helpers.c:78
+#: lib/rb-file-helpers.c:77
 #, c-format
 msgid "Failed to find %s"
 msgstr "Misslyckades med att hitta %s"
 
-#: lib/rb-file-helpers.c:103
+#: lib/rb-file-helpers.c:102
 #, c-format
 msgid "%s exists, please move it out of the way."
 msgstr "%s finns, flytta undan den."
 
-#: lib/rb-file-helpers.c:106
+#: lib/rb-file-helpers.c:105
 #, c-format
 msgid "Failed to create directory %s."
 msgstr "Misslyckades med att skapa katalogen %s."
@@ -725,11 +725,11 @@ msgstr "Kunde inte öppna spellista: %s"
 
 #. comma separated list of prefixes that are to
 #. * be appended as suffix, NOTE: notice the spaces placement
-#: lib/rb-string-helpers.c:35
+#: lib/rb-string-helpers.c:34
 msgid "THE ,DJ "
 msgstr " "
 
-#: lib/rb-string-helpers.c:50
+#: lib/rb-string-helpers.c:49
 #, c-format
 msgid "%s, %s"
 msgstr "%s, %s"
@@ -766,24 +766,24 @@ msgstr "Pixbuf-objekt"
 msgid "The pixbuf to render."
 msgstr "Pixbuf att rendera."
 
-#: lib/widgets/rb-druid.c:220 shell/main.c:87
+#: lib/widgets/rb-druid.c:219 shell/main.c:101
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: lib/widgets/rb-druid.c:262
+#: lib/widgets/rb-druid.c:261
 msgid "You are now ready to start Rhythmbox."
 msgstr "Du är nu redo att starta Rhythmbox."
 
-#: lib/widgets/rb-druid.c:311
+#: lib/widgets/rb-druid.c:310
 #, c-format
 msgid "Error reading filename: %s"
 msgstr "Fel vid läsning av filnamn: %s"
 
-#: lib/widgets/rb-druid.c:326
+#: lib/widgets/rb-druid.c:325
 msgid "Choose a directory"
 msgstr "Välj en katalog"
 
-#: lib/widgets/rb-link.c:343
+#: lib/widgets/rb-link.c:332
 #, c-format
 msgid ""
 "There was an error going to %s:\n"
@@ -792,139 +792,139 @@ msgstr ""
 "Det uppstod ett fel vid försök att gå till %s:\n"
 "%s"
 
-#: lib/widgets/rb-load-failure-dialog.c:120
+#: lib/widgets/rb-load-failure-dialog.c:119
 msgid "Error loading files into library"
 msgstr "Fel vid inläsning av filer till biblioteket"
 
-#: lib/widgets/rb-load-failure-dialog.c:137
+#: lib/widgets/rb-load-failure-dialog.c:136
 msgid "_Error"
 msgstr "_Fel"
 
-#: lib/widgets/rb-node-view.c:789
+#: lib/widgets/rb-node-view.c:788
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr "Misslyckades med att tolka %s som NodeView-layoutfil"
 
-#: lib/widgets/rb-player.c:263
-msgid "from "
-msgstr "från "
-
 #: lib/widgets/rb-player.c:269
-msgid " by "
-msgstr " av "
-
-#: lib/widgets/rb-player.c:284
 msgid "Listening to "
 msgstr "Lyssnar på "
 
-#: lib/widgets/rb-player.c:489
+#: lib/widgets/rb-player.c:474
 msgid "Get information on this album from the web"
 msgstr "Hämta information om detta album från webben"
 
-#: lib/widgets/rb-player.c:500
+#: lib/widgets/rb-player.c:485
 msgid "Get information on this artist from the web"
 msgstr "Hämta information om denna artist från webben"
 
-#: lib/widgets/rb-player.c:510
+#: lib/widgets/rb-player.c:495
 msgid "Get more information on this station from the web"
 msgstr "Hämta mer information om denna kanal från webben"
 
-#: lib/widgets/rb-player.c:519 shell/rb-shell.c:1094 shell/rb-tray-icon.c:223
+#: lib/widgets/rb-player.c:504 shell/rb-shell.c:1220 shell/rb-tray-icon.c:222
 msgid "Not playing"
 msgstr "Spelar inte"
 
-#: lib/widgets/rb-player.c:787
+#: lib/widgets/rb-player.c:769
 #, c-format
 msgid "%d:%02d of %d:%02d"
 msgstr "%d:%02d av %d:%02d"
 
-#: lib/widgets/rb-player.c:789
+#: lib/widgets/rb-player.c:771
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
 #. this string can only be so long, or there wont be a search entry :)
-#: lib/widgets/rb-search-entry.c:119
+#: lib/widgets/rb-search-entry.c:118
 msgid "_Search:"
 msgstr "_Sök:"
 
-#: lib/widgets/rb-song-info.c:229 lib/widgets/rb-song-info.c:589
+#: lib/widgets/rb-song-display-box.c:116
+msgid "from "
+msgstr "från "
+
+#: lib/widgets/rb-song-display-box.c:119
+msgid "by "
+msgstr "av "
+
+#: lib/widgets/rb-song-info.c:228 lib/widgets/rb-song-info.c:588
 msgid "Song Properties"
 msgstr "Låtegenskaper"
 
-#: lib/widgets/rb-song-info.c:871
+#: lib/widgets/rb-song-info.c:870
 msgid "on the desktop"
 msgstr "på skrivbordet"
 
-#: lib/widgets/rb-song-info.c:1083
+#: lib/widgets/rb-song-info.c:1082
 #, c-format
 msgid "%d kbps"
 msgstr "%d kb/s"
 
-#: lib/widgets/rb-song-info.c:1096
+#: lib/widgets/rb-song-info.c:1095
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:1099
+#: lib/widgets/rb-song-info.c:1098
 msgid " (Stereo)"
 msgstr " (Stereo)"
 
-#: lib/widgets/rb-song-info.c:1102
+#: lib/widgets/rb-song-info.c:1101
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d kanaler)"
 
-#: lib/widgets/rb-sourcelist.c:189
+#: lib/widgets/rb-sourcelist.c:188
 msgid "_Source"
 msgstr "_Källa"
 
 #. Translators - The + and - refer to increasing and decreasing the volume.
 #. ** I don't know if there are sensible alternatives in other languages
-#: lib/widgets/rb-volume.c:234
+#: lib/widgets/rb-volume.c:233
 msgid "+"
 msgstr "+"
 
-#: lib/widgets/rb-volume.c:235
+#: lib/widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:977
+#: library/rb-library.c:976
 msgid "Failed to load library!"
 msgstr "Misslyckades med att läsa in biblioteket!"
 
-#: library/rb-library.c:1244
+#: library/rb-library.c:1243
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-library.c:1545
+#: library/rb-library.c:1544
 msgid "Loading songs..."
 msgstr "Läser in låtar..."
 
-#: library/rb-library.c:1558
+#: library/rb-library.c:1557
 msgid "Refreshing songs..."
 msgstr "Uppdaterar låtar..."
 
-#: library/rb-library.c:1644
+#: library/rb-library.c:1643
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> dagar (%ld låtar)"
 
-#: library/rb-library.c:1647
+#: library/rb-library.c:1646
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> timmar och <b>%ld</b> minuter (%ld låtar)"
 
-#: library/rb-library.c:1650
+#: library/rb-library.c:1649
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minuter (%ld låtar)"
 
-#: library/rb-node.c:1353 rhythmdb/rhythmdb.c:324
+#: library/rb-node.c:1352 rhythmdb/rhythmdb.c:323
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H.%M"
 
-#: monkey-media/monkey-media-audio-cd.c:221
+#: monkey-media/monkey-media-audio-cd.c:220
 #, c-format
 msgid ""
 "%s does not point to a valid CDRom device. This may be caused by:\n"
@@ -937,12 +937,12 @@ msgstr ""
 "b) Du inte har rätt rättigheter för att komma åt cd-enheten\n"
 "c) %s inte är cd-enheten.\n"
 
-#: monkey-media/monkey-media-audio-cd.c:346
+#: monkey-media/monkey-media-audio-cd.c:345
 #, c-format
 msgid "You do not seem to have permission to access %s."
 msgstr "Du verkar inte ha rättigheter att komma åt %s."
 
-#: monkey-media/monkey-media-audio-cd.c:353
+#: monkey-media/monkey-media-audio-cd.c:352
 #, c-format
 msgid ""
 "%s does not appear to point to a valid CD device. This may be because:\n"
@@ -955,200 +955,225 @@ msgstr ""
 "b) Du inte har rätt rättigheter för att komma åt cd-enheten\n"
 "c) %s inte är cd-enheten.\n"
 
-#: monkey-media/monkey-media-audio-cd.c:606
+#: monkey-media/monkey-media-audio-cd.c:605
 #, c-format
 msgid "Error reading CD header: %s"
 msgstr "Fel vid läsning av cd-huvudet: %s"
 
-#: monkey-media/monkey-media-audio-cd.c:732
+#: monkey-media/monkey-media-audio-cd.c:731
 #, c-format
 msgid "Error getting leadout: %s"
 msgstr "Fel vid hämtande av paus: %s"
 
-#: monkey-media/monkey-media-player-gst-old.c:372
-#: monkey-media/monkey-media-player-gst.c:454
+#: monkey-media/monkey-media-player-gst-old.c:371
+#: monkey-media/monkey-media-player-gst.c:453
 msgid "Failed to create gnomevfssrc input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa gnomevfssrc-indataelement; kontrollera din "
 "installation"
 
-#: monkey-media/monkey-media-player-gst-old.c:381
-#: monkey-media/monkey-media-player-gst.c:469
+#: monkey-media/monkey-media-player-gst-old.c:380
+#: monkey-media/monkey-media-player-gst.c:468
 msgid "Failed to create cdparanoia input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa cdparanoia-indataelement; kontrollera din "
 "installation"
 
-#: monkey-media/monkey-media-player-gst-old.c:402
-#: monkey-media/monkey-media-player-gst-tmp.c:563
-#: monkey-media/monkey-media-player-gst.c:519
+#: monkey-media/monkey-media-player-gst-old.c:401
+#: monkey-media/monkey-media-player-gst-tmp.c:562
+#: monkey-media/monkey-media-player-gst.c:518
 msgid "Failed to create spider element; check your installation"
 msgstr ""
 "Misslyckades med att skapa spindelelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-gst-old.c:415
-#: monkey-media/monkey-media-player-gst-tmp.c:575
-#: monkey-media/monkey-media-player-gst.c:534
+#: monkey-media/monkey-media-player-gst-old.c:414
+#: monkey-media/monkey-media-player-gst-tmp.c:574
+#: monkey-media/monkey-media-player-gst.c:533
 msgid "Failed to create volume element; check your installation"
 msgstr "Misslyckades med att skapa volymelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-gst-old.c:435
-#: monkey-media/monkey-media-player-gst-tmp.c:593
-#: monkey-media/monkey-media-player-gst.c:555
+#: monkey-media/monkey-media-player-gst-old.c:434
+#: monkey-media/monkey-media-player-gst-tmp.c:592
+#: monkey-media/monkey-media-player-gst.c:554
 msgid "Could not create audio output element; check your settings"
 msgstr "Kunde inte skapa ljudutmatningselement; kontrollera dina inställningar"
 
-#: monkey-media/monkey-media-player-gst-old.c:525
-#: monkey-media/monkey-media-player-gst-tmp.c:709
-#: monkey-media/monkey-media-player-gst.c:642
+#: monkey-media/monkey-media-player-gst-old.c:524
+#: monkey-media/monkey-media-player-gst-tmp.c:708
+#: monkey-media/monkey-media-player-gst.c:641
 msgid "No AudioCD support; check your settings"
 msgstr "Inget stöd för ljud-cd; kontrollera dina inställningar"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:514
+#: monkey-media/monkey-media-player-gst-tmp.c:513
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "Misslyckades med att skapa %s-indataelelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-gst-tmp.c:539
-#: monkey-media/monkey-media-player-gst.c:492
+#: monkey-media/monkey-media-player-gst-tmp.c:538
+#: monkey-media/monkey-media-player-gst.c:491
 msgid "Failed to create queue element; check your installation"
 msgstr "Misslyckades med att skapa köelement; kontrollera din installation"
 
-#: monkey-media/monkey-media-player-xine.c:335
+#: monkey-media/monkey-media-player-xine.c:334
 msgid "Failed to set up an audio driver; check your installation"
 msgstr ""
 "Misslyckades med att konfigurera en ljuddrivrutin; kontrollera din "
 "installation"
 
-#: monkey-media/monkey-media-player-xine.c:423
+#: monkey-media/monkey-media-player-xine.c:422
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr "Ingen inmatningsinsticksmodul för %s; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:432
+#: monkey-media/monkey-media-player-xine.c:431
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "Ingen demuxinsticksmodul tillgänglig för %s; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:441
+#: monkey-media/monkey-media-player-xine.c:440
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Demux för %s misslyckades; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:449
+#: monkey-media/monkey-media-player-xine.c:448
 msgid "Internal error; check your installation."
 msgstr "Internt fel; kontrollera din installation."
 
-#: monkey-media/monkey-media-player-xine.c:458
+#: monkey-media/monkey-media-player-xine.c:457
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "Ljud för %s hanteras inte; kontrollera din installation."
 
-#: monkey-media/monkey-media-stream-info.c:311
+#: monkey-media/monkey-media-stream-info.c:310
 #, c-format
 msgid "Unsupported MIME type %s"
 msgstr "MIME-typen %s stöds inte"
 
-#: monkey-media/monkey-media-stream-info.c:316
+#: monkey-media/monkey-media-stream-info.c:315
 msgid "Unknown file type"
 msgstr "Okänd filtyp"
 
-#: monkey-media/monkey-media-stream-info.c:387
+#: monkey-media/monkey-media-stream-info.c:386
 #, c-format
 msgid "Track %.2d"
 msgstr "Spår %.2d"
 
-#: monkey-media/monkey-media-stream-info.c:752
-#: monkey-media/monkey-media-stream-info.c:817
+#: monkey-media/monkey-media-stream-info.c:751
+#: monkey-media/monkey-media-stream-info.c:816
 msgid "No TRM ID for this song"
 msgstr "Inget TRM-ID för denna låt"
 
-#: monkey-media/monkey-media-stream-info.c:768
-#: monkey-media/monkey-media-stream-info.c:832
+#: monkey-media/monkey-media-stream-info.c:767
+#: monkey-media/monkey-media-stream-info.c:831
 msgid "No information for this song found"
 msgstr "Ingen information för denna låt hittades"
 
-#: monkey-media/monkey-media.c:229
+#: monkey-media/monkey-media.c:228
 msgid "GStreamer options:"
 msgstr "Flaggor för Gstreamer:"
 
-#: monkey-media/monkey-media.c:506
+#: monkey-media/monkey-media.c:505
 #, c-format
 msgid "Please remove %s"
 msgstr "Ta bort %s"
 
-#: monkey-media/monkey-media.c:508
+#: monkey-media/monkey-media.c:507
 #, c-format
 msgid "Failed to create directory %s"
 msgstr "Misslyckades med att skapa katalogen %s"
 
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:167
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:166
 msgid "Invalid track number"
 msgstr "Ogiltigt spårnummer"
 
-#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:271
+#: monkey-media/stream-info-impl/audiocd-stream-info-impl.c:270
 msgid "Audio CD track"
 msgstr "Ljud-cd-spår"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:198
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:267
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:153
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:168
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:197
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:266
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:152
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "Misslyckades med att öppna fil för läsning"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:250
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:249
 msgid "Error decoding FLAC file"
 msgstr "Fel vid avkodning av FLAC-fil"
 
-#: monkey-media/stream-info-impl/flac-stream-info-impl.c:754
+#: monkey-media/stream-info-impl/flac-stream-info-impl.c:753
 msgid "FLAC"
 msgstr "FLAC"
 
-#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:470
+#: monkey-media/stream-info-impl/mp3-stream-info-impl.c:469
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d lager 3"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:181
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:180
 msgid "Failed to seek file"
 msgstr "Misslyckades med att spola fil"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:195
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:194
 msgid "Failed to open file as Ogg Vorbis"
 msgstr "Misslyckades med att öppna filen som Ogg Vorbis"
 
-#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:540
+#: monkey-media/stream-info-impl/vorbis-stream-info-impl.c:539
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: shell/main.c:74
+#: shell/main.c:79
 msgid "Print the playing song and exit"
 msgstr "Skriv ut den spelade låten och avsluta"
 
-#: shell/main.c:75
+#: shell/main.c:80
 msgid "Print the playing song URI and exit"
 msgstr "Skriv ut URI:n för den spelade låten och avsluta"
 
-#: shell/main.c:76
+#: shell/main.c:82
+msgid "Print the playing song length in seconds and exit"
+msgstr "Skriv ut den spelade låtlängden i sekunder och avsluta"
+
+#: shell/main.c:83
+msgid "Print the current elapsed time of playing song and exit"
+msgstr "Skriv ut den förflutna tiden för den spelade låten och avsluta"
+
+#: shell/main.c:84
+msgid "Seek to the specified time in playing song if possible and exit"
+msgstr ""
+"Spola om möjligt till den angivna tiden i den spelade låten och avsluta"
+
+#: shell/main.c:86
+msgid "Toggle play/pause mode"
+msgstr "Växla uppspelnings-/pausläge"
+
+#: shell/main.c:87
+msgid "Jump to previous song"
+msgstr "Hoppa till föregående låt"
+
+#: shell/main.c:88
+msgid "Jump to next song"
+msgstr "Hoppa till nästa låt"
+
+#: shell/main.c:90
 msgid "Enable debugging code"
 msgstr "Aktivera felsökningsläge"
 
-#: shell/main.c:77
+#: shell/main.c:91
 msgid "Do not register the shell"
 msgstr "Registrera inte skalet"
 
-#: shell/main.c:78
+#: shell/main.c:92
 msgid "Quit Rhythmbox"
 msgstr "Avsluta Rhythmbox"
 
-#: shell/main.c:79
+#: shell/main.c:93
 msgid "MonkeyMedia options:"
 msgstr "MonkeyMedia-alternativ:"
 
-#: shell/main.c:172
+#: shell/main.c:186
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
@@ -1156,7 +1181,7 @@ msgstr ""
 "Rhythmbox fungerar för tillfället inte om GNOME-ljudhändelser är aktiverade "
 "och esdsink används."
 
-#: shell/main.c:212
+#: shell/main.c:226
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -1165,115 +1190,115 @@ msgstr ""
 "Misslyckades med att aktivera skalet:\n"
 "%s"
 
-#: shell/rb-playlist-manager.c:541
+#: shell/rb-playlist-manager.c:549
 msgid "Load playlist"
 msgstr "Läs in spellista"
 
-#: shell/rb-playlist-manager.c:581
+#: shell/rb-playlist-manager.c:589
 msgid "There is already a playlist with that name."
 msgstr "Det finns redan en spellista med det namnet."
 
-#: shell/rb-playlist-manager.c:631
+#: shell/rb-playlist-manager.c:639
 msgid "Save playlist"
 msgstr "Spara spellista"
 
-#: shell/rb-playlist-manager.c:748
+#: shell/rb-playlist-manager.c:756
 msgid "Couldn't parse playlist"
 msgstr "Kunde inte tolka spellista"
 
-#: shell/rb-playlist-manager.c:800 shell/rb-playlist-manager.c:841
-#: shell/rb-playlist-manager.c:916
+#: shell/rb-playlist-manager.c:808 shell/rb-playlist-manager.c:848
+#: shell/rb-playlist-manager.c:923
 msgid "Untitled"
 msgstr "Namnlös"
 
-#: shell/rb-playlist-manager.c:809
+#: shell/rb-playlist-manager.c:816
 msgid "C_reate"
 msgstr "S_kapa"
 
-#: shell/rb-playlist-manager.c:824
+#: shell/rb-playlist-manager.c:831
 msgid "New Playlist"
 msgstr "Ny spellista"
 
-#: shell/rb-playlist-manager.c:835
+#: shell/rb-playlist-manager.c:842
 msgid "Please enter a name for the new playlist:"
 msgstr "Ange ett namn för den nya spellistan:"
 
-#: shell/rb-playlist-manager.c:852
+#: shell/rb-playlist-manager.c:859
 msgid "Add the _selected songs to the new playlist"
 msgstr "Lägg till de _markerade låtarna till den nya spellistan"
 
-#: shell/rb-playlist-manager.c:883
+#: shell/rb-playlist-manager.c:890
 msgid "R_ename"
 msgstr "B_yt namn"
 
-#: shell/rb-playlist-manager.c:898
+#: shell/rb-playlist-manager.c:905
 msgid "Rename Playlist"
 msgstr "Byt namn på spellista"
 
-#: shell/rb-playlist-manager.c:909
+#: shell/rb-playlist-manager.c:916
 msgid "Please enter a new name for the playlist:"
 msgstr "Ange ett nytt namn för spellistan:"
 
-#: shell/rb-shell-player.c:334
+#: shell/rb-shell-player.c:345
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Misslyckades med att skapa spelaren: %s"
 
-#: shell/rb-shell-player.c:388
+#: shell/rb-shell-player.c:399
 msgid "Previous"
 msgstr "Föregående"
 
-#: shell/rb-shell-player.c:417
+#: shell/rb-shell-player.c:428
 msgid "Next"
 msgstr "Nästa"
 
-#: shell/rb-shell-player.c:436
+#: shell/rb-shell-player.c:447
 msgid "Volume Control"
 msgstr "Volymkontroll"
 
-#: shell/rb-shell-player.c:646
+#: shell/rb-shell-player.c:660
 #, c-format
 msgid "Opening %s..."
 msgstr "Öppnar %s..."
 
-#: shell/rb-shell-player.c:1067
+#: shell/rb-shell-player.c:1108
 msgid "Pause"
 msgstr "Paus"
 
-#: shell/rb-shell-player.c:1068
+#: shell/rb-shell-player.c:1109
 msgid "_Pause"
 msgstr "_Paus"
 
-#: shell/rb-shell-player.c:1075
+#: shell/rb-shell-player.c:1116
 msgid "Play"
 msgstr "Spela"
 
-#: shell/rb-shell-player.c:1083
+#: shell/rb-shell-player.c:1124
 msgid "Stop"
 msgstr "Stopp"
 
-#: shell/rb-shell-player.c:1084
+#: shell/rb-shell-player.c:1125
 msgid "_Stop"
 msgstr "_Stopp"
 
-#: shell/rb-shell-player.c:1356
+#: shell/rb-shell-player.c:1444
 msgid "Unexpected end of stream!"
 msgstr "Oväntat slut på flöde!"
 
-#: shell/rb-shell-preferences.c:178
+#: shell/rb-shell-preferences.c:177
 msgid "Music Player Preferences"
 msgstr "Inställningar för musikspelare"
 
-#: shell/rb-shell-preferences.c:226
+#: shell/rb-shell-preferences.c:225
 msgid "General"
 msgstr "Allmänt"
 
-#: shell/rb-shell.c:456
+#: shell/rb-shell.c:492
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "Kan inte tolka URI:n \"%s\"\n"
 
-#: shell/rb-shell.c:772
+#: shell/rb-shell.c:891
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1286,35 +1311,44 @@ msgstr ""
 "i ett annat prefix än bonobo-activation. Denna varning\n"
 "är inte allvarlig, men IPC kommer inte att fungera.\n"
 
-#: shell/rb-shell.c:1107
+#: shell/rb-shell.c:1222
+#, c-format
+msgid ""
+"%s\n"
+"Paused, %s remaining"
+msgstr ""
+"%s\n"
+"Gör paus, %s återstår"
+
+#: shell/rb-shell.c:1225
+#, c-format
+msgid ""
+"%s\n"
+"%s remaining"
+msgstr ""
+"%s\n"
+"%s återstår"
+
+#: shell/rb-shell.c:1258
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Gör paus)"
 
-#: shell/rb-shell.c:1111
-#, c-format
-msgid ""
-"%s\n"
-"Paused"
-msgstr ""
-"%s\n"
-"Gör paus"
-
-#: shell/rb-shell.c:1174
+#: shell/rb-shell.c:1323
 msgid "translator_credits"
 msgstr ""
 "Christian Rose\n"
 "Skicka synpunkter på översättningen till sv@li.org"
 
-#: shell/rb-shell.c:1183
+#: shell/rb-shell.c:1332
 msgid "Maintainers:"
 msgstr "Ansvariga:"
 
-#: shell/rb-shell.c:1187
+#: shell/rb-shell.c:1336
 msgid "Contributors:"
 msgstr "Bidragare:"
 
-#: shell/rb-shell.c:1211
+#: shell/rb-shell.c:1360
 #, c-format
 msgid ""
 "Music management and playback software for GNOME.\n"
@@ -1325,86 +1359,102 @@ msgstr ""
 "Ljudbakände: %s\n"
 "Ljudformat: %s\n"
 
-#: shell/rb-shell.c:1324
+#: shell/rb-shell.c:1473
 msgid "Choose Files or Directory"
 msgstr "Välj filer eller katalog"
 
-#: shell/rb-shell.c:1366
+#: shell/rb-shell.c:1515
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr "För att extrahera cd-skivor måste du installera paketet Sound Juicer."
 
-#: shell/rb-shell.c:1373
+#: shell/rb-shell.c:1522
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "Kunde inte köra sound-juicer: %s"
 
-#: shell/rb-source-header.c:173
+#: shell/rb-source-header.c:172
 msgid "Show _Browser"
 msgstr "Visa _bläddrare"
 
-#: shell/rb-source-header.c:174
+#: shell/rb-source-header.c:173
 msgid "Hide _Browser"
 msgstr "Dölj _bläddrare"
 
-#: shell/rb-statusbar.c:164
+#: shell/rb-statusbar.c:162
 msgid "_Repeat"
 msgstr "_Upprepa"
 
-#: sources/rb-audiocd-source.c:299
+#: sources/rb-audiocd-source.c:298
 msgid "music audiocd"
 msgstr "musik-ljud-cd"
 
-#: sources/rb-audiocd-source.c:302
+#: sources/rb-audiocd-source.c:301
 msgid "Audio CD"
 msgstr "Ljud-cd"
 
-#: sources/rb-audiocd-source.c:933
+#: sources/rb-audiocd-source.c:932
 msgid "Retrieving MusicBrainz data"
 msgstr "Hämtar MusicBrainz-data"
 
-#: sources/rb-audiocd-source.c:1095
+#: sources/rb-audiocd-source.c:1094
 #, c-format
 msgid "Failed to parse %s as disc info file"
 msgstr "Misslyckades med att tolka %s som diskinformationsfil"
 
-#: sources/rb-audiocd-source.c:1165
+#: sources/rb-audiocd-source.c:1164
 msgid "Loading CD information"
 msgstr "Läser in cd-information"
 
-#: sources/rb-audiocd-source.c:1232
+#: sources/rb-audiocd-source.c:1231
 #, c-format
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d låtar, %d.%02d.%02d total tid"
 
-#: sources/rb-iradio-source.c:360
+#: sources/rb-iradio-source.c:359
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:487
+#: sources/rb-iradio-source.c:486
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "totalt <b>%d</b> kanaler inom <b>%d</b> unika genrer"
 
-#: sources/rb-library-source.c:533
+#: sources/rb-library-source.c:532
 msgid "Library"
 msgstr "Bibliotek"
 
-#: sources/rb-library-source.c:880
+#: sources/rb-library-source.c:879
 msgid "Add Location"
 msgstr "Lägg till plats"
 
-#: sources/rb-playlist-source.c:604
+#: sources/rb-playlist-source.c:603
 #, c-format
 msgid "Failed to parse %s as playlist file"
 msgstr "Misslyckades med att tolka %s som spellistefil"
 
-#: sources/rb-source.c:416
+#: sources/rb-source.c:415
 msgid "No properties available."
 msgstr "Inga egenskaper tillgängliga."
 
-#: sources/rb-source.c:499
+#: sources/rb-source.c:498
 msgid "This source does not support drag and drop."
 msgstr "Denna källa stöder inte dra och släpp."
+
+#~ msgid "Paused, %s remaining"
+#~ msgstr "Gör paus, %s återstår"
+
+#~ msgid "%s remaining"
+#~ msgstr "%s återstår"
+
+#~ msgid " by "
+#~ msgstr " av "
+
+#~ msgid ""
+#~ "%s\n"
+#~ "Paused"
+#~ msgstr ""
+#~ "%s\n"
+#~ "Gör paus"
 
 #~ msgid "Source List"
 #~ msgstr "Källista"
@@ -2102,14 +2152,8 @@ msgstr "Denna källa stöder inte dra och släpp."
 #~ msgid "Do not register with bonobo activation"
 #~ msgstr "Registrera inte med bonobo activation"
 
-#~ msgid "by "
-#~ msgstr "av "
-
 #~ msgid "Drag to go to a particular moment in the song"
 #~ msgstr "Dra för att gå till ett visst ställe i låten"
-
-#~ msgid "Play the next song"
-#~ msgstr "Spela nästa låt"
 
 #~ msgid "Shuffle the play list"
 #~ msgstr "Blanda spellistan"
