@@ -673,7 +673,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_box_pack_start (GTK_BOX (vbox), shell->priv->notebook, TRUE, TRUE, 0);
 	
 	gtk_paned_pack1 (GTK_PANED (shell->priv->paned), shell->priv->sidebar, FALSE, FALSE);
-	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, FALSE, FALSE);
+	gtk_paned_pack2 (GTK_PANED (shell->priv->paned), vbox, TRUE, FALSE);
 	g_signal_connect (G_OBJECT (shell->priv->sidebar),
 			  "size_allocate",
 			  G_CALLBACK (rb_shell_sidebar_size_allocate_cb),

@@ -474,7 +474,7 @@ rb_library_view_set_property (GObject *object,
 					  G_CALLBACK (node_view_changed_cb),
 					  view);	
 
-			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), FALSE, FALSE);
+			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), TRUE, FALSE);
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
 
