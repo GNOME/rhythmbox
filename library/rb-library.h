@@ -51,11 +51,6 @@ typedef struct
 	void	(*error)	(const char *uri, const char *msg);
 } RBLibraryClass;
 
-enum
-{
-	RB_ALL_NODE_PROP_PRIORITY = 15
-};
-
 GType			rb_library_get_type		(void);
 
 RBLibrary *		rb_library_new                  (void);

@@ -502,7 +502,7 @@ node_from_sort_iter_cb (RBTreeModelSort *model,
 	egg_tree_model_filter_convert_iter_to_child_iter (EGG_TREE_MODEL_FILTER (view->priv->filtermodel),
 							  &node_iter, &filter_iter);
 	*node = rb_tree_model_node_node_from_iter (RB_TREE_MODEL_NODE (view->priv->nodemodel), &node_iter);
-	if (rb_node_get_property_boolean (*node, RB_ALL_NODE_PROP_PRIORITY) == TRUE)
+	if (rb_node_get_property_boolean (*node, RB_NODE_PROP_PRIORITY) == TRUE)
 		*node = NULL;
 }
 

@@ -70,7 +70,8 @@ enum
 	RB_NODE_PROP_ALBUM_SORT_KEY     = 20,
 	RB_NODE_PROP_QUALITY            = 21,
 	RB_NODE_PROP_ALT_LOCATIONS      = 22,
-	/* 23-99 are reserved */
+	RB_NODE_PROP_PRIORITY		= 23,
+	RB_NODE_PROP_IRADIO_SOURCE	= 24,
 };
 
 typedef void (*RBNodeCallback) (RBNode *node, ...);

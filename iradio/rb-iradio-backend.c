@@ -188,10 +188,10 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 	g_value_init (&value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&value, TRUE);
 	rb_node_set_property (backend->priv->all_genres,
-			      RB_ALL_NODE_PROP_PRIORITY,
+			      RB_NODE_PROP_PRIORITY,
 			      &value);
 	rb_node_set_property (backend->priv->all_stations,
-			      RB_ALL_NODE_PROP_PRIORITY,
+			      RB_NODE_PROP_PRIORITY,
 			      &value);
 	g_value_unset (&value);
 

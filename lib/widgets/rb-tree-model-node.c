@@ -542,13 +542,19 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 				      value);
 		break;
 	case RB_TREE_MODEL_NODE_COL_TITLE_WEIGHT:
+	{
+		GValue tem = {0,};
 		g_value_init (value, G_TYPE_INT);
 
-		if (!rb_node_get_property_boolean (node, RB_ALL_NODE_PROP_PRIORITY))
-			g_value_set_int (value, PANGO_WEIGHT_NORMAL);
-		else
-			g_value_set_int (value, PANGO_WEIGHT_BOLD);
+		if (rb_node_get_property (node, RB_NODE_PROP_PRIORITY, &tem)) {
+			if (g_value_get_boolean (&tem)) {
+				g_value_set_int (value, PANGO_WEIGHT_BOLD);
+				break;
+			}
+		}
+		g_value_set_int (value, PANGO_WEIGHT_NORMAL);
 		break;
+	}
 	case RB_TREE_MODEL_NODE_COL_VISIBLE:
 		g_value_init (value, G_TYPE_BOOLEAN);
 
@@ -568,7 +574,7 @@ rb_tree_model_node_get_value (GtkTreeModel *tree_model,
 		/* ! because of sorting; 1 goes after 0 .. */
 		g_value_set_boolean (value,
 				     !rb_node_get_property_boolean (node,
-					                            RB_ALL_NODE_PROP_PRIORITY));
+					                            RB_NODE_PROP_PRIORITY));
 		break;
 	case RB_TREE_MODEL_NODE_COL_DUMMY:
 		g_value_init (value, G_TYPE_BOOLEAN);
