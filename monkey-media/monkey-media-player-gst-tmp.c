@@ -556,14 +556,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	if (iradio_mode) {
 		mp->priv->decoder = gst_element_factory_make ("mad", "autoplugger");
 	} else {
-		if (g_str_has_suffix (uri, ".mp3"))
-			mp->priv->decoder = gst_element_factory_make ("mad", "autoplugger");
-		else if (g_str_has_suffix (uri, ".ogg"))
-			mp->priv->decoder = gst_element_factory_make ("vorbisfile", "autoplugger");
-		else if (g_str_has_suffix (uri, ".flac"))
-			mp->priv->decoder = gst_element_factory_make ("flacdec", "autoplugger");
-		else
-			mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
+		mp->priv->decoder = gst_element_factory_make ("spider", "autoplugger");
 	}
 
 	if (mp->priv->decoder == NULL) {
