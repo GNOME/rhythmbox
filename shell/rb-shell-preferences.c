@@ -219,7 +219,7 @@ rb_shell_preferences_sync (RBShellPreferences *shell_preferences)
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	for (i = 0; i < G_N_ELEMENTS (styles); i++)
 	{
-		if (strcmp (styles[i], style) == 0)
+		if (style != NULL && strcmp (styles[i], style) == 0)
 			index = i;
 	}
 	gtk_option_menu_set_history (GTK_OPTION_MENU (shell_preferences->priv->style_optionmenu),
