@@ -554,6 +554,9 @@ album_node_activated_cb (RBNodeView *view,
 	if (first_node != NULL)
 	{
 		rb_library_view_set_playing_node (library_view, first_node);
+
+		rb_view_player_notify_changed (RB_VIEW_PLAYER (library_view));
+		rb_view_player_notify_playing (RB_VIEW_PLAYER (library_view));
 	}
 }
 
