@@ -272,11 +272,14 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 				   int response_id,
 				   RBNewStationDialog *dialog)
 {
+	const char *location;
 	GValue title_val = { 0, };
 	GValue genre_val = { 0, };
 	RhythmDBEntry *entry;
 	if (response_id != GTK_RESPONSE_OK)
 		return;
+
+	location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
 
 	g_value_init (&title_val, G_TYPE_STRING);
 	g_value_set_string (&title_val, gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)));
@@ -284,8 +287,11 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 	g_value_set_string (&genre_val,
 			    gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)));
 	rhythmdb_write_lock (dialog->priv->db);
-	entry = rhythmdb_entry_new (dialog->priv->db, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
-				    gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)));
+	entry = rhythmdb_entry_lookup_by_location (dialog->priv->db, location);
+	if (!entry)
+		entry = rhythmdb_entry_new (dialog->priv->db,
+					    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
+					    location);
 	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
 	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
 	rhythmdb_write_unlock (dialog->priv->db);
