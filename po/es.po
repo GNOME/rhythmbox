@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.4.99\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2003-08-09 03:27+0200\n"
+"POT-Creation-Date: 2003-08-09 13:22+0200\n"
 "PO-Revision-Date: 2003-08-09 03:00+0200\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@arrakis.es>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
@@ -52,25 +52,21 @@ msgstr "*"
 msgid "Finish"
 msgstr "Terminar"
 
-#: data/glade/druid.glade.h:3
+#: data/glade/druid.glade.h:3 lib/widgets/rb-druid.c:243
 msgid ""
-"In order to get started using \n"
+"In order to get started using\n"
 "Rhythmbox, this assistant will ask\n"
 "you some simple questions."
 msgstr ""
-"Para poder empezar a utilizar \n"
-"Rhythmbox, este asistente le \n"
-"preguntará unas simples cuestiones."
+"Para poder empezar a utilizar\n"
+"Rhythmbox, este asistente le\n"
+"hará unas simples preguntas."
 
 #: data/glade/druid.glade.h:6 lib/widgets/rb-druid.c:249
 msgid "Library setup"
 msgstr "Configuración de la biblioteca"
 
 #: data/glade/druid.glade.h:7
-msgid "Path: "
-msgstr "Ruta: "
-
-#: data/glade/druid.glade.h:8
 msgid ""
 "Rhythmbox needs to know where to find your music.\n"
 "You may choose to skip this step; instead, you \n"
@@ -84,11 +80,11 @@ msgstr ""
 "\n"
 "Escoja una de las opciones siguientes:"
 
-#: data/glade/druid.glade.h:13 lib/widgets/rb-druid.c:239
+#: data/glade/druid.glade.h:12 lib/widgets/rb-druid.c:239
 msgid "Welcome to Rhythmbox"
 msgstr "Bienvenido a Rhythmbox"
 
-#: data/glade/druid.glade.h:14
+#: data/glade/druid.glade.h:13
 msgid ""
 "You are now ready to start\n"
 "Rhythmbox.  "
@@ -96,13 +92,17 @@ msgstr ""
 "Ya puede empezar a usar \n"
 "Rhythmbox."
 
-#: data/glade/druid.glade.h:16
+#: data/glade/druid.glade.h:15
 msgid "_Browse..."
 msgstr "_Buscar..."
 
+#: data/glade/druid.glade.h:16
+msgid "_Enter location manually:"
+msgstr "_Introducir una ruta manualmente:"
+
 #: data/glade/druid.glade.h:17
-msgid "_Enter location manually"
-msgstr "_Introducir una ruta manualmente"
+msgid "_Path:"
+msgstr "_Ruta: "
 
 #: data/glade/druid.glade.h:18
 msgid "_Skip this step"
@@ -616,7 +616,7 @@ msgstr "_Orden aleatorio"
 msgid "_Source List"
 msgstr "_Lista de fuentes"
 
-#: iradio/rb-iradio-backend.c:180 library/rb-library.c:569
+#: iradio/rb-iradio-backend.c:180 library/rb-library.c:570
 msgid "All"
 msgstr "Todo"
 
@@ -666,8 +666,8 @@ msgstr "Nueva estación de radio"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:527
-#: lib/widgets/rb-song-info.c:541
+#: iradio/rb-station-properties-dialog.c:189 lib/widgets/rb-song-info.c:529
+#: lib/widgets/rb-song-info.c:543
 #, c-format
 msgid "%s Properties"
 msgstr "Propiedades de %s"
@@ -775,16 +775,6 @@ msgstr "El pixbuf a renderizar."
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
-#: lib/widgets/rb-druid.c:243
-msgid ""
-"In order to get started using\n"
-"Rhythmbox, this assisstant will ask\n"
-"you some simple questions. "
-msgstr ""
-"Para poder empezar a utilizar \n"
-"Rhythmbox, este asistente le \n"
-"preguntará unas simples cuestiones."
-
 #: lib/widgets/rb-druid.c:260
 msgid "You are now ready to start Rhythmbox."
 msgstr "Ya puede empezar a usar Rhythmbox."
@@ -844,7 +834,7 @@ msgstr "Obtener información de este artista en Internet"
 msgid "Get more information on this station from the web"
 msgstr "Obtener información de esta estación en Internet"
 
-#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:1981
+#: lib/widgets/rb-player.c:516 shell/rb-shell.c:1041 shell/rb-shell.c:2005
 msgid "Not playing"
 msgstr "Sin reproducción"
 
@@ -863,28 +853,28 @@ msgstr "%d:%02d"
 msgid "_Search:"
 msgstr "_Buscar:"
 
-#: lib/widgets/rb-song-info.c:225 lib/widgets/rb-song-info.c:546
+#: lib/widgets/rb-song-info.c:227 lib/widgets/rb-song-info.c:548
 msgid "Song Properties"
 msgstr "Propiedades de la canción"
 
-#: lib/widgets/rb-song-info.c:828
+#: lib/widgets/rb-song-info.c:830
 msgid "on the desktop"
 msgstr "en el escritorio"
 
-#: lib/widgets/rb-song-info.c:1040
+#: lib/widgets/rb-song-info.c:1042
 #, c-format
 msgid "%d kbps "
 msgstr "%d kbps "
 
-#: lib/widgets/rb-song-info.c:1053
+#: lib/widgets/rb-song-info.c:1055
 msgid " (Mono)"
 msgstr " (Mono)"
 
-#: lib/widgets/rb-song-info.c:1056
+#: lib/widgets/rb-song-info.c:1058
 msgid " (Stereo)"
 msgstr " (Estéreo)"
 
-#: lib/widgets/rb-song-info.c:1059
+#: lib/widgets/rb-song-info.c:1061
 #, c-format
 msgid " (%d channels)"
 msgstr " (%d canales)"
@@ -903,16 +893,16 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#: library/rb-library.c:819
+#: library/rb-library.c:820
 msgid "Failed to load library!"
 msgstr "!Ha ocurrido un error al cargar la biblioteca!"
 
-#: library/rb-library.c:1084
+#: library/rb-library.c:1087
 #, c-format
 msgid "%ld:%02ld"
 msgstr "%ld:%02ld"
 
-#: library/rb-node.c:1319
+#: library/rb-node.c:1339
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
@@ -1239,7 +1229,7 @@ msgstr ""
 "%s\n"
 "Pausado"
 
-#: shell/rb-shell.c:1126
+#: shell/rb-shell.c:1127
 msgid "translator_credits"
 msgstr ""
 "Xan López <xan@dimensis.com>\n"
@@ -1247,55 +1237,62 @@ msgstr ""
 "Francisco Javier F. <serrador@arrakis.es>\n"
 "Carlos Perelló Marín <carlos@gnome.org>"
 
-#: shell/rb-shell.c:1135
+#: shell/rb-shell.c:1136
 msgid "Maintainers:"
 msgstr "Encargados del desarrollo:"
 
-#: shell/rb-shell.c:1139
+#: shell/rb-shell.c:1140
 msgid "Contributors:"
 msgstr "Colaboradores:"
 
-#: shell/rb-shell.c:1147
-msgid "Music management and playback software for GNOME."
-msgstr "Software de organización y reproducción de música para GNOME."
+#: shell/rb-shell.c:1164
+#, c-format
+msgid ""
+"Music management and playback software for GNOME.\n"
+"Audio backend: %s\n"
+"Audio formats: %s\n"
+msgstr ""
+"Software de organización y reproducción de música para GNOME.\n"
+"Biblioteca de audio: %s\n"
+"Formatos de audio: %s\n"
 
-#: shell/rb-shell.c:1284
+#: shell/rb-shell.c:1308
 msgid "Choose Files or Directory"
 msgstr "Elija archivos o directorio"
 
-#: shell/rb-shell.c:1313
+#: shell/rb-shell.c:1337
 msgid "Load playlist"
 msgstr "Cargar lista de reproducción"
 
-#: shell/rb-shell.c:1353
+#: shell/rb-shell.c:1377
 msgid "Save playlist"
 msgstr "Guardar lista de reproducción"
 
-#: shell/rb-shell.c:1373
+#: shell/rb-shell.c:1397
 msgid "There is already a playlist with that name."
 msgstr "Ya hay una lista de reproducción con ese nombre."
 
-#: shell/rb-shell.c:1480
+#: shell/rb-shell.c:1504
 msgid "Couldn't parse playlist"
 msgstr "No se ha podido analizar la lista de reproducción"
 
-#: shell/rb-shell.c:1809
+#: shell/rb-shell.c:1833
 msgid "Create"
 msgstr "Crear"
 
-#: shell/rb-shell.c:1824
+#: shell/rb-shell.c:1848
 msgid "Add Playlist"
 msgstr "Añadir lista de reproducción"
 
-#: shell/rb-shell.c:1835
+#: shell/rb-shell.c:1859
 msgid "Please enter a name for the new playlist:"
 msgstr "Introduzca un nombre para la nueva lista de reproducción:"
 
-#: shell/rb-shell.c:1845
+#: shell/rb-shell.c:1869
 msgid "Untitled"
 msgstr "Sin título"
 
-#: shell/rb-shell.c:1849
+#: shell/rb-shell.c:1873
 msgid "Add the _selected songs to the new playlist"
 msgstr "Añadir las canciones _seleccionadas a la nueva lista de reproducción"
 
@@ -1338,22 +1335,22 @@ msgstr "Cargando información del CD"
 msgid "%d songs, %d:%02d:%02d total time"
 msgstr "%d canciones, %d:%02d:%02d de tiempo total"
 
-#: sources/rb-group-source.c:506 sources/rb-library-source.c:772
+#: sources/rb-group-source.c:506 sources/rb-library-source.c:778
 #, c-format
 msgid "%ld songs"
 msgstr "%ld canciones"
 
-#: sources/rb-group-source.c:547 sources/rb-library-source.c:819
+#: sources/rb-group-source.c:547 sources/rb-library-source.c:825
 #, c-format
 msgid "<b>%.1f</b> days (%ld songs)"
 msgstr "<b>%.1f</b> días (%ld canciones)"
 
-#: sources/rb-group-source.c:550 sources/rb-library-source.c:822
+#: sources/rb-group-source.c:550 sources/rb-library-source.c:828
 #, c-format
 msgid "<b>%ld</b> hours and <b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> horas y <b>%ld</b> minutos (%ld canciones)"
 
-#: sources/rb-group-source.c:553 sources/rb-library-source.c:825
+#: sources/rb-group-source.c:553 sources/rb-library-source.c:831
 #, c-format
 msgid "<b>%ld</b> minutes (%ld songs)"
 msgstr "<b>%ld</b> minutos (%ld canciones)"
@@ -1363,20 +1360,20 @@ msgstr "<b>%ld</b> minutos (%ld canciones)"
 msgid "Failed to parse %s as group file"
 msgstr "Ha ocurrido un error al procesar %s como grupo de archivos"
 
-#: sources/rb-iradio-source.c:372
+#: sources/rb-iradio-source.c:374
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:481
+#: sources/rb-iradio-source.c:487
 #, c-format
 msgid "<b>%d</b> total stations in <b>%d</b> distinct genres"
 msgstr "<b>%d</b> estaciones totales en <b>%d</b> géneros distintos"
 
-#: sources/rb-library-source.c:609
+#: sources/rb-library-source.c:611
 msgid "Library"
 msgstr "Biblioteca"
 
-#: sources/rb-library-source.c:931
+#: sources/rb-library-source.c:937
 msgid "Add Location"
 msgstr "Añadir ubicación"
 
@@ -1387,6 +1384,15 @@ msgstr "No hay propiedades disponibles"
 #: sources/rb-source.c:544
 msgid "This source does not support drag and drop."
 msgstr "Esta fuente no soporta arrastrar y soltar."
+
+#~ msgid ""
+#~ "In order to get started using\n"
+#~ "Rhythmbox, this assisstant will ask\n"
+#~ "you some simple questions. "
+#~ msgstr ""
+#~ "Para poder empezar a utilizar \n"
+#~ "Rhythmbox, este asistente le \n"
+#~ "preguntará unas simples cuestiones."
 
 #~ msgid " "
 #~ msgstr " "
