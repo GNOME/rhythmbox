@@ -126,6 +126,8 @@ struct RhythmDBQueryModelPrivate
 
 	guint stamp;
 
+	guint max_size;
+
 	GSequence *entries;
 	GHashTable *reverse_map;
 	
@@ -140,6 +142,7 @@ enum
 	PROP_QUERY,
 	PROP_SORT_FUNC,
 	PROP_SORT_DATA,
+	PROP_MAX_SIZE,
 };
 
 enum
@@ -268,6 +271,14 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 							      "Sort user data",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (object_class,
+					 PROP_MAX_SIZE,
+					 g_param_spec_int ("max-size",
+							   "maxsize",
+							   "maximum size",
+							   0, G_MAXINT, 0,
+							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -360,6 +371,9 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_SORT_DATA:
 		model->priv->sort_user_data = g_value_get_pointer (value);
 		break;
+	case PROP_MAX_SIZE:
+		model->priv->max_size = g_value_get_int (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -387,6 +401,9 @@ rhythmdb_query_model_get_property (GObject *object,
 		break;
 	case PROP_SORT_DATA:
 		g_value_set_pointer (value, model->priv->sort_user_data);
+		break;
+	case PROP_MAX_SIZE:
+		g_value_set_int (value, model->priv->max_size);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -501,8 +518,11 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				     RhythmDBQueryModel *model)
 {
 	if (G_LIKELY (model->priv->query)) {
-		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rhythmdb_query_model_add_entry (model, entry);
+		if (model->priv->max_size > 0
+		    && g_hash_table_size (model->priv->reverse_map) < model->priv->max_size) {
+			if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
+				rhythmdb_query_model_add_entry (model, entry);
+			}
 		}
 	}
 }
@@ -544,6 +564,10 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
 	struct RhythmDBQueryModelUpdate *update;
 
+	if (model->priv->max_size > 0
+	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
+		return;
+	
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED;
 	update->entry = entry;
@@ -618,6 +642,10 @@ rhythmdb_query_model_poll (RhythmDBModel *rmodel, GTimeVal *timeout)
 		{
 			/* we check again if the entry already exists in the hash table */
 			if (g_hash_table_lookup (model->priv->reverse_map, update->entry) != NULL)
+				break;
+			
+			if (model->priv->max_size > 0
+			    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_size)
 				break;
 
 			if (model->priv->sort_func)

@@ -186,10 +186,10 @@
 	      <property name="spacing">0</property>
 
 	      <child>
-		<widget class="GtkCheckButton" id="checkbutton1">
+		<widget class="GtkCheckButton" id="disjunctionCheck">
 		  <property name="visible">True</property>
 		  <property name="can_focus">True</property>
-		  <property name="label" translatable="yes">Add only if all criteria are matched</property>
+		  <property name="label" translatable="yes">Add if any criteria are matched</property>
 		  <property name="use_underline">True</property>
 		  <property name="relief">GTK_RELIEF_NORMAL</property>
 		  <property name="active">False</property>
@@ -210,7 +210,7 @@
 		  <property name="spacing">0</property>
 
 		  <child>
-		    <widget class="GtkCheckButton" id="checkbutton2">
+		    <widget class="GtkCheckButton" id="limitCheck">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="label" translatable="yes">_Limit to: </property>
@@ -228,7 +228,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkEntry" id="entry4">
+		    <widget class="GtkEntry" id="limitEntry">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="editable">True</property>
@@ -247,7 +247,7 @@
 		  </child>
 
 		  <child>
-		    <widget class="GtkOptionMenu" id="optionmenu8">
+		    <widget class="GtkOptionMenu" id="limitOption">
 		      <property name="visible">True</property>
 		      <property name="can_focus">True</property>
 		      <property name="history">0</property>

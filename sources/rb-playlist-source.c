@@ -424,6 +424,7 @@ rb_playlist_source_set_query (RBPlaylistSource *source, GPtrArray *query,
 
 	source->priv->model = query_model
 		= rhythmdb_query_model_new_empty (source->priv->db);
+	g_object_set (G_OBJECT (source->priv->model), "max-size", limit, NULL);
 
 	model = GTK_TREE_MODEL (query_model);
 

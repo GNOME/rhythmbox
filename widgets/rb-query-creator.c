@@ -20,6 +20,8 @@
  */
 
 #include <config.h>
+#include <string.h>
+#include <stdlib.h>
 #include <libgnome/gnome-i18n.h>
 #include <gtk/gtk.h>
 
@@ -39,10 +41,10 @@ typedef struct
 
 const RBQueryCreatorOption property_options[] =
 {
-	{ N_("Title"),	RHYTHMDB_PROP_TITLE },
-	{ N_("Artist"),	RHYTHMDB_PROP_ARTIST },
-	{ N_("Album"),	RHYTHMDB_PROP_ALBUM },
-	{ N_("Genre"),	RHYTHMDB_PROP_GENRE },
+	{ N_("Title"),	RHYTHMDB_PROP_TITLE_FOLDED },
+	{ N_("Artist"),	RHYTHMDB_PROP_ARTIST_FOLDED },
+	{ N_("Album"),	RHYTHMDB_PROP_ALBUM_FOLDED },
+	{ N_("Genre"),	RHYTHMDB_PROP_GENRE_FOLDED },
 };
 
 const RBQueryCreatorOption criteria_options[] =
@@ -70,6 +72,7 @@ static GtkWidget * create_option_menu (const RBQueryCreatorOption *options,
 static GtkWidget * option_menu_get_active_child (GtkWidget *option_menu);
 static void append_row (RBQueryCreator *dialog);
 static void add_button_click_cb (GtkWidget *button, RBQueryCreator *creator);
+static void limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator);
 
 struct RBQueryCreatorPrivate
 {
@@ -77,6 +80,10 @@ struct RBQueryCreatorPrivate
 	
 	GtkTable *table;
 	GtkWidget *addbutton;
+	GtkWidget *disjunction_check;
+	GtkWidget *limit_check;
+	GtkWidget *limit_entry;
+	GtkWidget *limit_option;
 	GPtrArray *queries;
 };
 
@@ -140,6 +147,8 @@ static void
 rb_query_creator_init (RBQueryCreator *dlg)
 {
 	GladeXML *xml;
+	GtkWidget *label;
+	char *text;	
 	GtkWidget *first_option;
 	GtkWidget *first_criteria;
 	GtkWidget *first_entry;
@@ -166,6 +175,21 @@ rb_query_creator_init (RBQueryCreator *dlg)
 	xml = rb_glade_xml_new ("create-playlist.glade",
 				"main_vbox",
 				dlg);
+	
+		label = GTK_WIDGET (glade_xml_get_widget (xml, "createLabel"));
+	text = g_strdup_printf ("<b>%s</b>", gtk_label_get_text (GTK_LABEL (label)));
+	gtk_label_set_markup (GTK_LABEL (label), text);
+	g_free (text);
+
+	dlg->priv->disjunction_check = GTK_WIDGET (glade_xml_get_widget (xml, "disjunctionCheck"));
+	dlg->priv->limit_check = GTK_WIDGET (glade_xml_get_widget (xml, "limitCheck"));
+	dlg->priv->limit_entry = GTK_WIDGET (glade_xml_get_widget (xml, "limitEntry"));
+	dlg->priv->limit_option = GTK_WIDGET (glade_xml_get_widget (xml, "limitOption"));
+
+	g_signal_connect (G_OBJECT (dlg->priv->limit_check), "toggled", G_CALLBACK (limit_toggled_cb),
+			  dlg);
+	gtk_widget_set_sensitive (dlg->priv->limit_entry, FALSE);
+	gtk_widget_set_sensitive (dlg->priv->limit_option, FALSE);
 
 	dlg->priv->table = GTK_TABLE (glade_xml_get_widget (xml, "main_table"));
 	gtk_table_resize (dlg->priv->table, 1, 4);
@@ -281,6 +305,7 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 {
 	GPtrArray *query;
 	guint i, n_rows;
+	gboolean disjunction;
 
 	query = rhythmdb_query_parse (dlg->priv->db,
 				      RHYTHMDB_QUERY_PROP_EQUALS,
@@ -288,6 +313,8 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 				      RHYTHMDB_ENTRY_TYPE_SONG,
 				      RHYTHMDB_QUERY_END);
 
+	disjunction = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dlg->priv->disjunction_check));
+	
 	g_object_get (G_OBJECT (dlg->priv->table), "n-rows", &n_rows, NULL);
 
 	for (i = 0; i < n_rows; i++) {
@@ -301,12 +328,21 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 		RhythmDBQueryType criteria = extract_option_menu_val (criteria_menu);
 		const char *data = gtk_entry_get_text (GTK_ENTRY (text));
 
-		rhythmdb_query_append (dlg->priv->db,
-				       query,
-				       criteria,
-				       prop,
-				       data,
-				       RHYTHMDB_QUERY_END);
+		if (disjunction)
+			rhythmdb_query_append (dlg->priv->db,
+					       query,
+					       RHYTHMDB_QUERY_DISJUNCTION,
+					       criteria,
+					       prop,
+					       data,
+					       RHYTHMDB_QUERY_END);
+		else
+			rhythmdb_query_append (dlg->priv->db,
+					       query,
+					       criteria,
+					       prop,
+					       data,
+					       RHYTHMDB_QUERY_END);
 	}
 	
 	return query;
@@ -315,7 +351,19 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 guint
 rb_query_creator_get_limit (RBQueryCreator *dlg)
 {
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dlg->priv->limit_check)))
+		return atoi (gtk_entry_get_text (GTK_ENTRY (dlg->priv->limit_entry)));
+
 	return 0;
+}
+
+static void
+limit_toggled_cb (GtkWidget *limit, RBQueryCreator *dialog)
+{
+	gboolean active = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (limit));
+
+	gtk_widget_set_sensitive (dialog->priv->limit_entry, active);
+	gtk_widget_set_sensitive (dialog->priv->limit_option, active);
 }
 
 static void
