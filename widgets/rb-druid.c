@@ -1,7 +1,7 @@
 /* 
  * arch-tag: Implementation of Rhythmbox first-time druid
  *
- *  Copyright (C) 2003 Colin Walters <walters@debian.org>
+ *  Copyright (C) 2003,2004 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -330,7 +330,7 @@ rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
 	GtkWidget *dialog;
 	rb_debug ("browse");
 
-	dialog = rb_ask_file (_("Choose a directory"), NULL,
+	dialog = rb_ask_dir (_("Choose a directory"), NULL,
 			      GTK_WINDOW (druid->priv->window));
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
