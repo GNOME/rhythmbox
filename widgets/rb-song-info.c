@@ -630,24 +630,39 @@ rb_song_info_auto_rate_conf_changed_cb (GConfClient *client,
 }
 
 static void
-rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
-		       RBSongInfo *song_info)
+rb_song_info_set_entry_auto_rate (RBSongInfo *song_info,
+				  RhythmDBEntry *entry,
+				  void *data)
 {
+	gboolean active = *((gboolean *) data);
 	GValue value = { 0, };
-
-	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (togglebutton));
-	g_return_if_fail (RB_IS_SONG_INFO (song_info));
 
 	/* set the new value for auto-rate */
 	g_value_init (&value, G_TYPE_BOOLEAN);
-	g_value_set_boolean (&value, gtk_toggle_button_get_active (togglebutton));
+	g_value_set_boolean (&value, active);
 	rhythmdb_write_lock (song_info->priv->db);
 	rhythmdb_entry_set (song_info->priv->db,
-			    song_info->priv->current_entry,
+			    entry,
 			    RHYTHMDB_PROP_AUTO_RATE,
 			    &value);
 	g_value_unset (&value);
 	rhythmdb_write_unlock (song_info->priv->db);
+
+}
+
+static void
+rb_song_info_auto_rate_toggled_cb (GtkToggleButton *togglebutton,
+				   RBSongInfo *song_info)
+{
+	gboolean active;
+
+	g_return_if_fail (RB_IS_SONG_INFO (song_info));
+	g_return_if_fail (GTK_IS_TOGGLE_BUTTON (togglebutton));
+
+	active = gtk_toggle_button_get_active (togglebutton);
+	rb_song_info_selection_for_each (song_info,
+					 rb_song_info_set_entry_auto_rate,
+					 &active);
 }
 
 static void
