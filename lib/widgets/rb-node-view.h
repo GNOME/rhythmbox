@@ -15,11 +15,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
-<<<<<<< rb-node-view.h
  *  $Id$
-=======
- *  $Id$
->>>>>>> 1.18.2.1
  */
 
 #ifndef __RB_NODE_VIEW_H
