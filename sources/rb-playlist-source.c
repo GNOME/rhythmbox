@@ -390,8 +390,9 @@ rb_playlist_source_new_from_file (BonoboUIContainer *container,
 					  "container", container,
 					  "library", library,
 					  "libsource", libsource,
-					  "file", file,
 					  NULL));
+
+	g_object_set (G_OBJECT (source), "file", file, NULL);
 
 	rb_playlist_source_load (RB_PLAYLIST_SOURCE (source));
 
