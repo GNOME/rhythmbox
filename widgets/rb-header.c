@@ -660,11 +660,11 @@ rb_header_sync_time_locked (RBHeader *player)
 {
 	gboolean ret;
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
 	ret = rb_header_sync_time (player);
 
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 
 	return ret;
 }
@@ -678,8 +678,10 @@ rb_header_sync_time (RBHeader *player)
 	if (player->priv->mmplayer == NULL)
 		return TRUE;
 
-	if (player->priv->slider_dragging == TRUE)
+	if (player->priv->slider_dragging == TRUE) {
+		rb_debug ("slider is dragging, not syncing");
 		return TRUE;
+	}
 
 	player->priv->state->duration = duration =
 		rb_header_get_duration (player);
@@ -724,18 +726,19 @@ slider_moved_timeout (RBHeader *player)
 	double progress;
 	long duration, new;
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 	
 	progress = gtk_adjustment_get_value (gtk_range_get_adjustment (GTK_RANGE (player->priv->scale)));
 	duration = rb_header_get_duration (player);
 	new = (long) (progress * duration);
 	
+	rb_debug ("setting time to %ld", new);
 	rb_player_set_time (player->priv->mmplayer, new);
 
 	player->priv->latest_set_time = new;
 	player->priv->slider_moved_timeout = 0;
 	
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }
@@ -749,8 +752,10 @@ slider_moved_callback (GtkWidget *widget,
 	double progress;
 	long duration;
 
-	if (player->priv->slider_dragging == FALSE)
+	if (player->priv->slider_dragging == FALSE) {
+		rb_debug ("slider is not dragging");
 		return FALSE;
+	}
 
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
@@ -762,6 +767,7 @@ slider_moved_callback (GtkWidget *widget,
 	rb_header_update_elapsed (player);
 
 	if (player->priv->slider_moved_timeout != 0) {
+		rb_debug ("removing old timer");
 		g_source_remove (player->priv->slider_moved_timeout);
 		player->priv->slider_moved_timeout = 0;
 	}
@@ -780,8 +786,10 @@ slider_release_callback (GtkWidget *widget,
 	long duration, new;
 	GtkAdjustment *adjustment;
 
-	if (player->priv->slider_dragging == FALSE)
+	if (player->priv->slider_dragging == FALSE) {
+		rb_debug ("slider is not dragging");
 		return FALSE;
+	}
 
 	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
@@ -789,8 +797,10 @@ slider_release_callback (GtkWidget *widget,
 	duration = rb_header_get_duration (player);
 	new = (long) (progress * duration);
 
-	if (new != player->priv->latest_set_time)
+	if (new != player->priv->latest_set_time) {
+		rb_debug ("setting time to %ld", new);
 		rb_player_set_time (player->priv->mmplayer, new);
+	}
 
 	player->priv->slider_dragging = FALSE;
 
@@ -808,14 +818,15 @@ static gboolean
 changed_idle_callback (RBHeader *player)
 {
 
-	gdk_threads_enter ();
+	GDK_THREADS_ENTER ();
 
 	slider_release_callback (player->priv->scale, NULL, player);
 
 	player->priv->value_changed_update_handler = 0;
 	rb_debug ("in changed_idle_callback"); 
 
-	gdk_threads_leave ();
+	GDK_THREADS_LEAVE ();
+
 	return FALSE;
 }
 
