@@ -1108,11 +1108,23 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	const char *authors[] =
 	{
-		"Jorn Baayen <jorn@nl.linux.org>",
-		"Marco Pesenti Gritti <mpeseng@tin.it>",
-		"Bastien Nocera <hadess@hadess.net>",
-		"Seth Nickell <snickell@stanford.edu>",
-		"Olivier Martin <omartin@ifrance.com>",
+ 		"Lead developers:",
+		"Jorn Baayen (jorn AT nl.linux.org)",
+		"Olivier Martin (oleevye AT wanadoo.fr)",
+ 		"",
+		"Contributors:",
+		"Kenneth Christiansen (kenneth AT gnu.org)",
+		"Mark Finlay (sisob AT eircom.net)",
+		"Marco Pesenti Gritti (marco AT it.gnome.org)",
+		"Laurens Krol (website) (laurens.krol AT planet.nl)",
+		"Seth Nickell (snickell AT stanford.edu)",
+		"Bastien Nocera (hadess AT hadess.net)",
+		"Jan Arne Petersen (jpetersen AT gnome-de.org)",
+		"Kristian Rietveld (kris AT gtk.org)",
+		"Christian Schaller (uraeus AT linuxrising.org)",
+		"Dennis Smit (synap AT yourbase.nl)",
+		"Colin Walters (walters AT gnu.org)",
+		"James Willcox (jwillcox AT gnome.org)",
 		NULL
 	};
 
