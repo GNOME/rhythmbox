@@ -287,7 +287,7 @@ rb_node_dispose (GObject *object)
 {
 	g_signal_emit (object, rb_node_signals[DESTROYED], 0);
 
-	G_OBJECT_CLASS (parent_class)->finalize (object);
+	G_OBJECT_CLASS (parent_class)->dispose (object);
 }
 
 static void

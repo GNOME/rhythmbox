@@ -305,6 +305,8 @@ rb_shell_finalize (GObject *object)
 	g_free (shell->priv);
 
         parent_class->finalize (G_OBJECT (shell));
+
+	bonobo_main_quit ();
 }
 
 RBShell *

@@ -1,5 +1,16 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-node.c: (rb_node_dispose):
+
+	Fix dispose.
+	
+	* shell/main.c: (main), (rb_init):
+	* shell/rb-shell.c: (rb_shell_finalize):
+
+	More responsive shutdown.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/view/rb-view.c: (rb_view_get_sidebar_button):
 	* lib/widgets/rb-node-view.c: (rb_node_view_get_property),
 	(rb_node_view_get_playing_node), (rb_node_view_get_n_rows),

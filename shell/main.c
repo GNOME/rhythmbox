@@ -36,7 +36,6 @@
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 
-static void rb_shell_destroy_cb (RBShell *shell);
 static gboolean rb_init (RBShell *shell);
 static void rb_handle_cmdline ();
 
@@ -91,10 +90,6 @@ main (int argc, char **argv)
 		rb_stock_icons_init ();
 
 		rb_shell = rb_shell_new ();
-		g_signal_connect (G_OBJECT (rb_shell),
-				  "destroy",
-				  G_CALLBACK (rb_shell_destroy_cb),
-				  NULL);
 
 		g_idle_add ((GSourceFunc) rb_init, rb_shell);
 
@@ -125,12 +120,6 @@ rb_init (RBShell *shell)
 	rb_handle_cmdline ();
 	
 	return FALSE;
-}
-
-static void
-rb_shell_destroy_cb (RBShell *shell)
-{
-	bonobo_main_quit ();
 }
 
 static void
