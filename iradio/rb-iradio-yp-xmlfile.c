@@ -31,6 +31,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <sys/types.h>
 
 static void rb_iradio_yp_xmlfile_class_init (RBIRadioYPXMLFileClass *klass);
 static void rb_iradio_yp_xmlfile_init (RBIRadioYPXMLFile *view);
@@ -167,7 +168,6 @@ rb_iradio_yp_xmlfile_init (RBIRadioYPXMLFile *ypxml)
 {
 	ypxml->priv = g_new(RBIRadioYPXMLFilePrivate, 1);
 	ypxml->priv->filename = NULL;
-	fprintf(stderr, "ypxmlfile: created %p\n", ypxml);
 }
 
 static void
@@ -181,7 +181,6 @@ rb_iradio_yp_xmlfile_finalize (GObject *object)
 	ypxml = RB_IRADIO_YP_XMLFILE (object);
 
 	g_return_if_fail (ypxml->priv != NULL);
-	fprintf(stderr, "ypxmlfile: finalized\n");
 
 	g_free (ypxml->priv);
 
@@ -196,9 +195,9 @@ rb_iradio_yp_xmlfile_iterator_init (RBIRadioYPIteratorIface *iface)
 
 static void
 rb_iradio_yp_xmlfile_set_property (GObject *object,
-				 guint prop_id,
-				 const GValue *value,
-				 GParamSpec *pspec)
+				   guint prop_id,
+				   const GValue *value,
+				   GParamSpec *pspec)
 {
 	RBIRadioYPXMLFile *ypxml = RB_IRADIO_YP_XMLFILE (object);
 
@@ -219,7 +218,7 @@ rb_iradio_yp_xmlfile_set_property (GObject *object,
 		ypxml->priv->parsectx = g_markup_parse_context_new(&parser_impl, 0,
 								   ypxml->priv->parserdata,
 								   parse_ctx_destroy_notify);
-		if (!(ypxml->priv->parsingfile = fopen(ypxml->priv->filename, "r")))
+		if (!(ypxml->priv->parsingfile = fopen (ypxml->priv->filename, "r")))
 		{
 			fprintf(stderr, _("Failed to open %s: %s"), ypxml->priv->filename, g_strerror(errno));
 		}
@@ -365,6 +364,7 @@ static void rb_iradio_yp_xmlfile_end_element_handler (GMarkupParseContext *conte
 	{
 		statedata->locations = g_list_append (statedata->locations,
 						      g_string_free (statedata->tmp_url, FALSE));
+		statedata->tmp_url = g_string_new ("");
 		statedata->state = RB_IRADIO_YP_XMLFILE_STATE_IN_STATION;
 		break;
 	}
@@ -419,6 +419,7 @@ rb_iradio_yp_xmlfile_text_handler (GMarkupParseContext *context,
 		return;
 	}
 
+	g_assert (val);
 	g_string_append_len(val, text, text_len);
 	return;
 
@@ -432,7 +433,6 @@ rb_iradio_yp_xmlfile_text_handler (GMarkupParseContext *context,
 
 static void parse_ctx_destroy_notify(gpointer data)
 {
-	fprintf(stderr, "destroying parsing context\n");
 	g_free((RBIRadioYPXMLFileParserStateData *) data);
 }
 
@@ -451,10 +451,11 @@ rb_iradio_yp_xmlfile_impl_get_next_station(RBIRadioYPIterator *it)
 		ssize_t len;
 		if ((len = fread(buf, 1, sizeof(buf), ypxml->priv->parsingfile)) < 0)
 		{
-			fprintf(stderr, _("Failed to read %s: %s"), ypxml->priv->filename, g_strerror(errno));
+			fprintf(stderr, _("Failed to read %s: %s"), ypxml->priv->filename,
+				g_strerror(errno));
 			goto lose;
 		}
-		g_markup_parse_context_parse(ypxml->priv->parsectx, buf, len, &err);
+		g_markup_parse_context_parse (ypxml->priv->parsectx, buf, len, &err);
 		if (err != NULL)
 		{
 			fprintf(stderr, _("Failed to parse %s: %s"), ypxml->priv->filename, err->message);
@@ -462,17 +463,17 @@ rb_iradio_yp_xmlfile_impl_get_next_station(RBIRadioYPIterator *it)
 		}
 	}
 
-	if (ypxml->priv->parsingfile != NULL && feof(ypxml->priv->parsingfile))
+	if (ypxml->priv->parsingfile != NULL && feof (ypxml->priv->parsingfile))
 	{
 		/* FIXME error handling */
-		g_markup_parse_context_end_parse(ypxml->priv->parsectx, NULL);
+		g_markup_parse_context_end_parse (ypxml->priv->parsectx, NULL);
 	}
 
 	if (ypxml->priv->parserdata->result == NULL)
 	{
 		ret = NULL;
-		g_markup_parse_context_free(ypxml->priv->parsectx);
-		fclose(ypxml->priv->parsingfile);
+		g_markup_parse_context_free (ypxml->priv->parsectx);
+		fclose (ypxml->priv->parsingfile);
 		ypxml->priv->parsingfile = NULL;
 	}
 	else

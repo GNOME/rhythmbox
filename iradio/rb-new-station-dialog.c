@@ -23,6 +23,8 @@
 #include <libgnome/gnome-i18n.h>
 #include <gtk/gtkentry.h>
 #include <gtk/gtklabel.h>
+#include <gtk/gtkcombo.h>
+#include <gtk/gtkbox.h>
 #include <gtk/gtktable.h>
 #include <gtk/gtkdialog.h>
 #include <gtk/gtkstock.h>
@@ -54,7 +56,6 @@ static void rb_new_station_dialog_entry_changed_cb (GtkEntry *entry,
 
 struct RBNewStationDialogPrivate
 {
-	RBNodeView *node_view;
 	RBIRadioBackend *backend;
 
 	GtkWidget   *title;
@@ -67,7 +68,6 @@ struct RBNewStationDialogPrivate
 enum 
 {
 	PROP_0,
-	PROP_NODE_VIEW,
 	PROP_BACKEND
 };
 
@@ -112,14 +112,6 @@ rb_new_station_dialog_class_init (RBNewStationDialogClass *klass)
 	object_class->get_property = rb_new_station_dialog_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_NODE_VIEW,
-					 g_param_spec_object ("node-view",
-					                      "RBNodeView",
-					                      "RBNodeView object",
-					                      RB_TYPE_NODE_VIEW,
-					                      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-
-	g_object_class_install_property (object_class,
 					 PROP_BACKEND,
 					 g_param_spec_object ("backend",
 					                      "RBIRadioBackend",
@@ -144,11 +136,20 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 			  dialog);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 12);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 12);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
 	gtk_window_set_title (GTK_WINDOW (dialog), _("New Internet Radio Station"));
+
+	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							    _("_Don't Add"),
+							    GTK_RESPONSE_CANCEL);
+	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
+							GTK_STOCK_ADD,
+							GTK_RESPONSE_OK);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
 	xml = rb_glade_xml_new ("station-new.glade",
 				"newstation",
@@ -157,24 +158,17 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 
 	gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 			   glade_xml_get_widget (xml, "newstation"));
-	dialog->priv->cancelbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							    GTK_STOCK_CANCEL,
-							    GTK_RESPONSE_CANCEL);
-	dialog->priv->okbutton = gtk_dialog_add_button (GTK_DIALOG (dialog),
-							GTK_STOCK_OK,
-							GTK_RESPONSE_OK);
-	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
 	/* get the widgets from the XML */
 	dialog->priv->title = glade_xml_get_widget (xml, "titleEntry");
-	dialog->priv->genre = glade_xml_get_widget (xml, "genreEntry");
+	dialog->priv->genre = glade_xml_get_widget (xml, "genreCombo");
 	dialog->priv->location = glade_xml_get_widget (xml, "locationEntry");
 	g_signal_connect (G_OBJECT (dialog->priv->title),
 			  "changed",
 			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
 			  dialog);
 
-	g_signal_connect (G_OBJECT (dialog->priv->genre),
+	g_signal_connect (G_OBJECT (GTK_COMBO (dialog->priv->genre)->entry),
 			  "changed",
 			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
 			  dialog);
@@ -183,6 +177,10 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 			  "changed",
 			  G_CALLBACK (rb_new_station_dialog_entry_changed_cb),
 			  dialog);
+
+	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
+				       g_list_append (NULL, _("Unknown")));
+	
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->title);
 	/* FIXME */
@@ -218,9 +216,6 @@ rb_new_station_dialog_set_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
-		dialog->priv->node_view = g_value_get_object (value);
-		break;
 	case PROP_BACKEND:
 		dialog->priv->backend = g_value_get_object (value);
 		break;
@@ -240,9 +235,6 @@ rb_new_station_dialog_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_NODE_VIEW:
-		g_value_set_object (value, dialog->priv->node_view);
-		break;
 	case PROP_BACKEND:
 		g_value_set_object (value, dialog->priv->backend);
 		break;
@@ -253,15 +245,18 @@ rb_new_station_dialog_get_property (GObject *object,
 }
 
 GtkWidget *
-rb_new_station_dialog_new (RBNodeView *node_view, RBIRadioBackend *backend)
+rb_new_station_dialog_new (RBIRadioBackend *backend)
 {
 	RBNewStationDialog *dialog;
+	GList *genrenames;
 
-	g_return_val_if_fail (RB_IS_NODE_VIEW (node_view), NULL);
 	g_return_val_if_fail (RB_IS_IRADIO_BACKEND (backend), NULL);
 
-	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "node-view", node_view,
-			       "backend", backend, NULL);
+	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "backend", backend, NULL);
+	
+	genrenames = rb_iradio_backend_get_genre_names (backend);
+	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
+				       genrenames);
 
 	g_return_val_if_fail (dialog->priv != NULL, NULL);
 
@@ -279,20 +274,19 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 	locations = g_list_prepend (locations, g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location))));
 	rb_node_station_new (locations,
 			     g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title))),
-			     g_strdup (gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre))),
+			     g_strdup (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry))),
 			     "user",
 			     dialog->priv->backend);
-cleanup:
-	gtk_widget_destroy (GTK_WIDGET (dialog));
+ cleanup:
+	return;
 }
 
 static void
 rb_new_station_dialog_entry_changed_cb (GtkEntry *entry,
 					RBNewStationDialog *dialog)
 {
-	fprintf (stderr, "handling insert/delete\n");
 	gtk_widget_set_sensitive (dialog->priv->okbutton,
 				  g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)), -1) > 0
-				  && g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre)), -1) > 0
+				  && g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)), -1) > 0
 				  && g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)), -1) > 0);
 }

@@ -19,7 +19,6 @@
  */
 
 #include <gtk/gtkdialog.h>
-#include "rb-node-view.h"
 #include "rb-iradio-backend.h"
 
 #ifndef __RB_NEW_STATION_DIALOG_H
@@ -50,7 +49,7 @@ typedef struct
 
 GType      rb_new_station_dialog_get_type (void);
 
-GtkWidget *rb_new_station_dialog_new      (RBNodeView *view, RBIRadioBackend *backend);
+GtkWidget *rb_new_station_dialog_new      (RBIRadioBackend *backend);
 
 G_END_DECLS
 

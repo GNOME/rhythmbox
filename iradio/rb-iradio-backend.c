@@ -1,5 +1,5 @@
 /* 
- *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
+ *  Copyright (C) 2002,2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@
 #include "rb-iradio-yp-xmlfile.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
+#include "rb-echo-area.h"
 #include "rb-file-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-node-station.h"
@@ -43,6 +44,14 @@
 static void rb_iradio_backend_class_init (RBIRadioBackendClass *klass);
 static void rb_iradio_backend_init (RBIRadioBackend *view);
 static void rb_iradio_backend_finalize (GObject *object);
+static void rb_iradio_backend_set_property (GObject *object,
+					    guint prop_id,
+					    const GValue *value,
+					    GParamSpec *pspec);
+static void rb_iradio_backend_get_property (GObject *object,
+					    guint prop_id,
+					    GValue *value,
+					    GParamSpec *pspec);
 
 static void rb_iradio_backend_save (RBIRadioBackend *backend);
 static void genre_added_cb (RBNode *node, RBNode *child, RBIRadioBackend *backend);
@@ -60,10 +69,26 @@ struct RBIRadioBackendPrivate
 	GHashTable *genre_hash;
 	GStaticRWLock *genre_hash_lock;
 
+	RBEchoArea *echoarea;
+
 	char *xml_file;
 };
 
+enum
+{
+	PROP_0,
+	PROP_ECHO_AREA,
+};
+
+enum
+{
+	CHANGED,
+	LAST_SIGNAL,
+};
+
 static GObjectClass *parent_class = NULL;
+
+static guint rb_iradio_backend_signals[LAST_SIGNAL] = { 0 };
 
 GType
 rb_iradio_backend_get_type (void)
@@ -101,6 +126,27 @@ rb_iradio_backend_class_init (RBIRadioBackendClass *klass)
 	
 	parent_class = g_type_class_peek_parent (klass);
 	
+	object_class->set_property = rb_iradio_backend_set_property;
+	object_class->get_property = rb_iradio_backend_get_property;
+
+	g_object_class_install_property (object_class,
+					 PROP_ECHO_AREA,
+					 g_param_spec_object ("echoarea",
+							      "Echo area",
+							      "Echo area",
+							      RB_TYPE_ECHO_AREA,
+							      G_PARAM_READWRITE));
+
+	rb_iradio_backend_signals[CHANGED] =
+		g_signal_new ("changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBIRadioBackendClass, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
 	object_class->finalize = rb_iradio_backend_finalize;
 
 }
@@ -108,6 +154,7 @@ rb_iradio_backend_class_init (RBIRadioBackendClass *klass)
 static void
 rb_iradio_backend_init (RBIRadioBackend *backend)
 {
+	char *libname = g_strdup_printf ("iradio-%s.xml", RB_IRADIO_BACKEND_XML_VERSION);
 	GValue value = { 0, };
 
 	/* ensure these types have been registered: */
@@ -117,8 +164,10 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 
 	backend->priv = g_new0(RBIRadioBackendPrivate, 1);
 	backend->priv->xml_file = g_build_filename (rb_dot_dir (),
-						    "iradio.xml",
+						    libname,
 						    NULL);
+
+	g_free (libname);
 
 	backend->priv->genre_hash = g_hash_table_new (g_str_hash,
 						      g_str_equal);
@@ -170,7 +219,45 @@ rb_iradio_backend_init (RBIRadioBackend *backend)
 
 	rb_node_add_child (backend->priv->all_genres,
 			   backend->priv->all_stations);
-	fprintf(stderr, "backend: created\n");
+}
+
+static void
+rb_iradio_backend_set_property (GObject *object,
+				guint prop_id,
+				const GValue *value,
+				GParamSpec *pspec)
+{
+	RBIRadioBackend *backend = RB_IRADIO_BACKEND (object);
+
+	switch (prop_id)
+	{
+	case PROP_ECHO_AREA:
+		backend->priv->echoarea = g_value_get_object (value);
+		g_object_ref (backend->priv->echoarea);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+rb_iradio_backend_get_property (GObject *object,
+				guint prop_id,
+				GValue *value,
+				GParamSpec *pspec)
+{
+	RBIRadioBackend *backend = RB_IRADIO_BACKEND (object);
+
+	switch (prop_id)
+	{
+	case PROP_ECHO_AREA:
+		g_value_set_object (value, backend->priv->echoarea);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
 }
 
 static void
@@ -187,19 +274,13 @@ rb_iradio_backend_finalize (GObject *object)
 
 	g_return_if_fail (backend->priv != NULL);
 
-	fprintf (stderr, "backend: finalizing\n");
+	rb_iradio_backend_save (backend);
 
-	fprintf (stderr, "FIXME: iradio saving disabled because it's broken right now\n");
-/*  	rb_iradio_backend_save (backend); */
-
-/* 	children = rb_node_get_children (backend->priv->all_stations); */
-/* 	rb_node_thaw (backend->priv->all_stations); */
-/* 	for (i = children->len - 1; i >= 0; i--) { */
-/* 		rb_node_unref (g_ptr_array_index (children, i)); */
-/* 	} */
-
-	g_hash_table_destroy (backend->priv->genre_hash);
-	g_static_rw_lock_free (backend->priv->genre_hash_lock);
+	children = rb_node_get_children (backend->priv->all_stations);
+	rb_node_thaw (backend->priv->all_stations);
+	for (i = children->len - 1; i >= 0; i--) {
+		rb_node_unref (g_ptr_array_index (children, i));
+	}
 	
 	rb_node_unref (backend->priv->all_stations);
 	rb_node_unref (backend->priv->all_genres);
@@ -261,7 +342,6 @@ genre_added_cb (RBNode *node,
 {
 	g_static_rw_lock_writer_lock (backend->priv->genre_hash_lock);
 
-	fprintf(stderr, "inserting genre %s\n", rb_node_get_property_string (child, RB_NODE_PROP_NAME));
 	g_hash_table_insert (backend->priv->genre_hash,
 			     (char *) rb_node_get_property_string (child, RB_NODE_PROP_NAME),
 			     child);
@@ -276,7 +356,6 @@ genre_removed_cb (RBNode *node,
 {
 	g_static_rw_lock_writer_lock (backend->priv->genre_hash_lock);
 	
-	fprintf(stderr, "removing genre %s\n", rb_node_get_property_string (child, RB_NODE_PROP_NAME));
 	g_hash_table_remove (backend->priv->genre_hash,
 			     rb_node_get_property_string (child, RB_NODE_PROP_NAME));
 	
@@ -285,39 +364,61 @@ genre_removed_cb (RBNode *node,
 static void
 load_initial (RBIRadioBackend *backend)
 {
+	guint taskid;
 	const char *initial_file = rb_file ("iradio-initial.xml");
-	RBIRadioYPIterator *it = RB_IRADIO_YP_ITERATOR (g_object_new (RB_TYPE_IRADIO_YP_XMLFILE,
-								      "filename", initial_file,
-								      NULL));
+	RBIRadioYPIterator *it;
 	RBIRadioStation *station;
 
-	fprintf(stderr, "loading %s\n", initial_file);
+	if (!initial_file)
+	{
+		rb_error_dialog (_("Unable to find file \"iradio-initial.xml\""));
+		return;
+	}
+	
+	it = RB_IRADIO_YP_ITERATOR (g_object_new (RB_TYPE_IRADIO_YP_XMLFILE,
+						  "filename", initial_file,
+						  NULL));
+
+	taskid = rb_echo_area_begin_task (backend->priv->echoarea,
+					  _("Loading Internet Radio stations..."));
+
+	rb_debug ("iradio-backend: loading initial stations");
 	while ((station = rb_iradio_yp_iterator_get_next_station (it)) != NULL) {
-		const char *genre;
-		const char *name;
+		const char *genre = NULL;
+		const char *name = NULL;
 		GList *locations;
 		RBNodeStation *nodestation;
 
 		g_assert (RB_IS_IRADIO_STATION (station));
 
-		g_object_get(G_OBJECT(station), "genre", &genre, NULL);
-		g_object_get(G_OBJECT(station), "name", &name, NULL);
-		g_object_get(G_OBJECT(station), "locations", &locations, NULL);
+		g_object_get (G_OBJECT(station), "genre", &genre, NULL);
+		g_assert (genre != NULL);
+		g_object_get (G_OBJECT(station), "name", &name, NULL);
+		g_assert (name != NULL);
+		g_object_get (G_OBJECT(station), "locations", &locations, NULL);
 
-		fprintf(stderr, "adding station: %s %s\n", genre, name);
-		
+		g_assert (G_IS_OBJECT (backend));
+		g_assert (RB_IS_IRADIO_BACKEND (backend));
 		nodestation = rb_node_station_new (locations, name, genre, "initial", backend);
 	}
+	rb_echo_area_end_task (backend->priv->echoarea, taskid);
+	rb_debug ("iradio-backend: done loading initial stations");
 	g_free ((char *) initial_file);
 	g_object_unref (G_OBJECT (it));
+	g_signal_emit (G_OBJECT (backend), rb_iradio_backend_signals[CHANGED], 0);
 }
 	
-
 void rb_iradio_backend_load (RBIRadioBackend *backend)
 {
 	xmlDocPtr doc;
 	xmlNodePtr root, child;
 	char *tmp;
+	guint taskid;
+
+	rb_debug ("iradio-backend: loading");
+
+	taskid = rb_echo_area_begin_task (backend->priv->echoarea,
+					  _("Loading Internet Radio stations..."));
 
 	if (g_file_test (backend->priv->xml_file, G_FILE_TEST_EXISTS) == FALSE)
 		goto loadinitial;
@@ -330,6 +431,7 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 		unlink (backend->priv->xml_file);
 		goto loadinitial;
 	}
+
 
 	root = xmlDocGetRootElement (doc);
 
@@ -347,17 +449,22 @@ void rb_iradio_backend_load (RBIRadioBackend *backend)
 	for (child = root->children; child != NULL; child = child->next)
 	{
 		/* This automagically sets up the tree structure */
-		rb_node_new_from_xml (child);
-
-		if (RB_IS_NODE_STATION (child))
+		RBNode *node = rb_node_new_from_xml (child);
+		rb_debug ("iradio-backend: loaded node %p", node);
+		if (node != NULL)
 		{
-/* 			rb_node_station_sync (child, backend); */
+			if (RB_IS_NODE_STATION (node))
+			{
+/* 			rb_node_station_sync (node, backend); */
+			}
 		}
 	}
-
+	rb_echo_area_end_task (backend->priv->echoarea, taskid);
 	xmlFreeDoc (doc);
+	g_signal_emit (G_OBJECT (backend), rb_iradio_backend_signals[CHANGED], 0);
 	return;
  loadinitial:
+	rb_echo_area_end_task (backend->priv->echoarea, taskid);
 	load_initial (backend);
 }
 
@@ -369,7 +476,7 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 	GPtrArray *children;
 	int i;
 
-	fprintf(stderr, "writing %s\n", backend->priv->xml_file);
+	rb_debug ("iradio-backend: saving");
 
 	/* save nodes to xml */
 	xmlIndentTreeOutput = TRUE;
@@ -388,8 +495,6 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 		
 		if (kid != backend->priv->all_stations)
 		{
-			fprintf(stderr, "Saving child %p (id %d) (name: %s) of genre root %p\n", kid, i,
-				rb_node_get_property_string (kid, RB_NODE_PROP_NAME), backend->priv->all_genres);
 			rb_node_save_to_xml (kid, root);
 		}
 	}
@@ -402,14 +507,12 @@ rb_iradio_backend_save (RBIRadioBackend *backend)
 
 		kid = g_ptr_array_index (children, i);
 		
-		fprintf(stderr, "Saving child %p (id %d) (name: %s) of stations root %p\n", kid, i,
-			rb_node_get_property_string (kid, RB_NODE_PROP_NAME), backend->priv->all_stations);
 		rb_node_save_to_xml (kid, root);
 	}
 	rb_node_thaw (backend->priv->all_stations);
 
 	xmlSaveFormatFile (backend->priv->xml_file, doc, 1);
-	fprintf(stderr, "writing %s: done\n", backend->priv->xml_file);
+	rb_debug ("iradio-backend: done saving");
 }
 
 void
@@ -419,6 +522,30 @@ rb_iradio_backend_remove_node (RBIRadioBackend *backend,
 	rb_node_unref (RB_NODE (node));
 }
 
+/* Returns a locked RBNode */
+static RBNode *
+rb_iradio_backend_lookup_station_by_title (RBIRadioBackend *backend,
+					  const char *title)
+{
+	int i;
+	RBNode *retval = NULL;
+	GPtrArray *children = rb_node_get_children (backend->priv->all_stations);
+	for (i = 0; retval == NULL && i < children->len; i++)
+	{
+		RBNode *kid = g_ptr_array_index (children, i);
+		if (!strcmp (title, rb_node_get_property_string (kid, RB_NODE_PROP_NAME)))
+		{
+			retval = kid;
+			break;
+		}
+	}
+	if (retval)
+		rb_node_freeze (retval);
+	rb_node_thaw (backend->priv->all_stations);
+	return retval;
+}
+
+/* Returns a locked RBNode */
 static RBNode *
 rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 					      const char *uri)
@@ -429,7 +556,8 @@ rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 	for (i = 0; retval == NULL && i < children->len; i++)
 	{
 		RBNode *kid = g_ptr_array_index (children, i);
-		RBGListWrapper *listwrapper = RB_GLIST_WRAPPER (rb_node_get_property_object (kid, RB_NODE_PROP_ALT_LOCATIONS));
+		RBGListWrapper *listwrapper
+		  = RB_GLIST_WRAPPER (rb_node_get_property_object (kid, RB_NODE_PROP_ALT_LOCATIONS));
 		GList *cur, *locations = rb_glist_wrapper_get_list (listwrapper);
 		for (cur = locations; cur != NULL; cur = cur->next)
 		{
@@ -440,39 +568,74 @@ rb_iradio_backend_lookup_station_by_location (RBIRadioBackend *backend,
 			}
 		}
 	}
+	if (retval)
+		rb_node_freeze (retval);
 	rb_node_thaw (backend->priv->all_stations);
 	return retval;
 }
 
-void rb_iradio_backend_add_station_from_uri (RBIRadioBackend *backend,
-					     const char *uri)
+void
+rb_iradio_backend_add_station_from_uri (RBIRadioBackend *backend,
+					const char *uri)
 {
 	RBNode *station = rb_iradio_backend_lookup_station_by_location (backend, uri);
 	if (station == NULL)
 	{
 		GList *locations = g_list_append (NULL, g_strdup (uri));
-		station = rb_iradio_backend_add_station_full (backend, locations,
-							      _("(Unknown)"), _("(Unknown)"));
+		rb_iradio_backend_add_station_full (backend, locations,
+						    _("(Unknown)"), _("(Unknown)"));
 	}
 	else
-	{
-		/* FIXME: queue station to be played here? or somewhere else?
-		 * like return a handle and have the caller queue it? */
-	}
+		rb_node_thaw (station);
 }
 
 
-RBNode *
+void
 rb_iradio_backend_add_station_full (RBIRadioBackend *backend,
-					 GList *locations,
-					 const char *name,
-					 const char *genre)
+				    GList *locations,
+				    const char *name,
+				    const char *genre)
 {
-	RBNode *ret = RB_NODE (rb_node_station_new (locations,
-						    name ? name : _("(Unknown)"),
-						    genre ? genre : _("(Unknown)"),
-						    "user", backend));
-	/* FIXME: queue station to be played here? or somewhere else?
-	 * like return a handle and have the caller queue it? */
-	return ret;
+	RBNode *node = rb_iradio_backend_lookup_station_by_title (backend, name);
+
+	if (node == NULL)
+	{
+		rb_debug ("iradio-backend: adding station; name: %s genre: %s",
+			  name, genre);
+		node = RB_NODE (rb_node_station_new (locations,
+						     name ? name : _("(Unknown)"),
+						     genre ? genre : _("(Unknown)"),
+						     "user", backend));
+	}
+	else
+	{
+		rb_debug ("iradio-backend: station %s already exists", name);
+		rb_node_thaw (node);
+	}
+}
+
+GList *
+rb_iradio_backend_get_genre_names (RBIRadioBackend *backend)
+{
+	GList *genrenames = NULL;
+	RBNode *genres = rb_iradio_backend_get_all_genres (backend);
+	GPtrArray *children = rb_node_get_children (backend->priv->all_genres);
+	int i;
+	for (i = 0; i < children->len; i++)
+	{
+		RBNode *kid;
+		const char *name;
+		
+		kid = g_ptr_array_index (children, i);
+		
+		name = rb_node_get_property_string (kid, RB_NODE_PROP_NAME);
+		if (strcmp (name, "All"))
+		{
+			/* FIXME memory leak here? */
+			genrenames = g_list_append (genrenames,
+						    g_strdup (name));
+		}
+	}
+	rb_node_thaw (genres);
+	return genrenames;
 }

@@ -23,7 +23,6 @@
 #include "rb-iradio-station.h"
 #include "rb-debug.h"
 #include <limits.h>
-#include <monkey-media-audio-stream.h>
 
 static void rb_iradio_station_class_init (RBIRadioStationClass *klass);
 static void rb_iradio_station_init (RBIRadioStation *view);
@@ -50,7 +49,6 @@ struct RBIRadioStationPrivate
 	const char *genre;
 	const char *name;
 	GList *locations;
-	MonkeyMediaAudioStream *stream;
 };
 
 static GObjectClass *parent_class = NULL;

@@ -58,6 +58,7 @@ typedef struct
 
 	/* Signals */
 	void (*genre_added)(const char *genre);
+	void (*changed)();
 	void (*done_loading)(void);
 } RBIRadioBackendClass;
 
@@ -84,10 +85,12 @@ int     rb_iradio_backend_get_station_count		(RBIRadioBackend *backend);
 
 void    rb_iradio_backend_add_station_from_uri		(RBIRadioBackend *backend,
 							 const char *uri);
-RBNode *rb_iradio_backend_add_station_full		(RBIRadioBackend *backend,
+void	rb_iradio_backend_add_station_full		(RBIRadioBackend *backend,
 							 GList *locations,
 							 const char *name,
 							 const char *genre);
+GList  *rb_iradio_backend_get_genre_names		(RBIRadioBackend *backend);
+
      
 G_END_DECLS
 

@@ -28,6 +28,7 @@
 #include <gtk/gtkstock.h>
 #include <gtk/gtkliststore.h>
 #include <gtk/gtktreemodel.h>
+#include <gtk/gtkbox.h>
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkentry.h>
@@ -180,7 +181,8 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 			  dialog);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 12);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 7);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 8);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
@@ -319,10 +321,14 @@ rb_station_properties_dialog_new (RBNodeView *node_view, RBIRadioBackend *backen
 	dialog = g_object_new (RB_TYPE_STATION_PROPERTIES_DIALOG,
 			       "node-view", node_view,
 			       "backend", backend, NULL);
-
-	rb_station_properties_dialog_get_current_node (dialog);
-	rb_station_properties_dialog_update (dialog);
 	g_return_val_if_fail (dialog->priv != NULL, NULL);
+
+	if (!rb_station_properties_dialog_get_current_node (dialog))
+	{
+		g_object_unref (G_OBJECT (dialog));
+		return NULL;
+	}
+	rb_station_properties_dialog_update (dialog);
 
 	return GTK_WIDGET (dialog);
 }
@@ -353,7 +359,6 @@ rb_station_properties_dialog_get_current_node (RBStationPropertiesDialog *dialog
 	    (RB_IS_NODE (selected_nodes->data) == FALSE))
 	{
 		dialog->priv->current_node = NULL;
-		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return FALSE;
 	}
 
@@ -364,6 +369,8 @@ rb_station_properties_dialog_get_current_node (RBStationPropertiesDialog *dialog
 static void
 rb_station_properties_dialog_update (RBStationPropertiesDialog *dialog)
 {
+	g_return_if_fail (dialog->priv->current_node != NULL);
+	g_return_if_fail (RB_IS_NODE (dialog->priv->current_node));
 	rb_station_properties_dialog_update_location (dialog);
 	rb_station_properties_dialog_update_title (dialog);
 	rb_station_properties_dialog_update_title_entry (dialog);

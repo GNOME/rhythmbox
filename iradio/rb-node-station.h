@@ -28,7 +28,8 @@ G_BEGIN_DECLS
 
 enum
 {
-	RB_NODE_STATION_PROP_SOURCE = 100,
+	/* Must be one more than the last RBNode property */
+	RB_NODE_STATION_PROP_SOURCE = 24,
 };
 
 #define RB_TYPE_NODE_STATION         (rb_node_station_get_type ())
