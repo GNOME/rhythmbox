@@ -536,6 +536,8 @@ rb_uri_handle_recursively (const char *text_uri,
 		info = (GnomeVFSFileInfo *) l->data;
 
 		file_uri = gnome_vfs_uri_append_path (uri, info->name);
+		if (file_uri == NULL)
+			continue;
 		file_uri_text = gnome_vfs_uri_to_string (file_uri,
 							 GNOME_VFS_URI_HIDE_NONE);
 		gnome_vfs_uri_unref (file_uri);

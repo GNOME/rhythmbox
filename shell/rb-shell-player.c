@@ -74,12 +74,8 @@ static void rb_shell_player_player_start_playing_cb (RBViewPlayer *player,
 				                     RBShellPlayer *shell_player);
 
 #define MENU_PATH_PLAY     "/menu/Controls/Play"
-#define MENU_PATH_PREVIOUS "/menu/Controls/Previous"
-#define MENU_PATH_NEXT     "/menu/Controls/Next"
-
-#define TOOLBAR_PATH_PLAY     "/Toolbar/Play"
-#define TOOLBAR_PATH_PREVIOUS "/Toolbar/Previous"
-#define TOOLBAR_PATH_NEXT     "/Toolbar/Next"
+#define TRAY_PATH_PLAY     "/popups/TrayPopup/Play"
+#define TOOLBAR_PATH_PLAY  "/Toolbar/Play"
 
 #define CMD_PATH_PLAY     "/commands/Play"
 #define CMD_PATH_PREVIOUS "/commands/Previous"
@@ -91,6 +87,7 @@ struct RBShellPlayerPrivate
 	RBViewPlayer *player;
 
 	BonoboUIComponent *component;
+	BonoboUIComponent *tray_component;
 
 	MonkeyMediaMixer *mixer;
 
@@ -104,6 +101,7 @@ enum
 	PROP_0,
 	PROP_PLAYER,
 	PROP_COMPONENT,
+	PROP_TRAY_COMPONENT,
 	PROP_SHELL
 };
 
@@ -177,6 +175,13 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 	g_object_class_install_property (object_class,
 					 PROP_COMPONENT,
 					 g_param_spec_object ("component",
+							      "BonoboUIComponent",
+							      "BonoboUIComponent object",
+							      BONOBO_TYPE_UI_COMPONENT,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+	g_object_class_install_property (object_class,
+					 PROP_TRAY_COMPONENT,
+					 g_param_spec_object ("tray-component",
 							      "BonoboUIComponent",
 							      "BonoboUIComponent object",
 							      BONOBO_TYPE_UI_COMPONENT,
@@ -272,6 +277,12 @@ rb_shell_player_set_property (GObject *object,
 							     shell_player);
 		rb_shell_player_set_playing_player (shell_player, NULL);
 		break;
+	case PROP_TRAY_COMPONENT:
+		shell_player->priv->tray_component = g_value_get_object (value);
+		bonobo_ui_component_add_verb_list_with_data (shell_player->priv->tray_component,
+							     rb_shell_player_verbs,
+							     shell_player);
+		break;
 	case PROP_SHELL:
 		shell_player->priv->shell = g_value_get_object (value);
 		break;
@@ -296,6 +307,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_COMPONENT:
 		g_value_set_object (value, shell_player->priv->component);
+		break;
+	case PROP_TRAY_COMPONENT:
+		g_value_set_object (value, shell_player->priv->tray_component);
 		break;
 	case PROP_SHELL:
 		g_value_set_object (value, shell_player->priv->shell);
@@ -328,6 +342,7 @@ rb_shell_player_get_player (RBShellPlayer *shell_player)
 
 RBShellPlayer *
 rb_shell_player_new (BonoboUIComponent *component,
+		     BonoboUIComponent *tray_component,
 		     RBShell *shell)
 {
 	RBShellPlayer *shell_player;
@@ -335,6 +350,7 @@ rb_shell_player_new (BonoboUIComponent *component,
 	shell_player = g_object_new (RB_TYPE_SHELL_PLAYER,
 				     "shell", shell,
 				     "component", component,
+				     "tray-component", tray_component,
 				     NULL);
 
 	g_return_val_if_fail (shell_player->priv != NULL, NULL);
@@ -431,8 +447,10 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 
 	rb_bonobo_set_label (player->priv->component, TOOLBAR_PATH_PLAY, tlabel);
 	rb_bonobo_set_label (player->priv->component, MENU_PATH_PLAY, mlabel);
+	rb_bonobo_set_label (player->priv->component, TRAY_PATH_PLAY, mlabel);
 	rb_bonobo_set_verb (player->priv->component, TOOLBAR_PATH_PLAY, verb);
 	rb_bonobo_set_verb (player->priv->component, MENU_PATH_PLAY, verb);
+	rb_bonobo_set_verb (player->priv->component, TRAY_PATH_PLAY, verb);
 }
 
 static void
@@ -599,4 +617,12 @@ rb_shell_player_stop (RBShellPlayer *shell_player)
 
 	monkey_media_mixer_set_state (shell_player->priv->mixer,
 				      MONKEY_MEDIA_MIXER_STATE_STOPPED);
+}
+
+MonkeyMediaMixerState
+rb_shell_player_get_state (RBShellPlayer *shell_player)
+{
+	g_return_val_if_fail (RB_IS_SHELL_PLAYER (shell_player), -1);
+
+	return monkey_media_mixer_get_state (shell_player->priv->mixer);
 }

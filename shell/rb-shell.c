@@ -24,6 +24,7 @@
 #include <bonobo/bonobo-ui-util.h>
 #include <bonobo/bonobo-ui-component.h>
 #include <bonobo/bonobo-window.h>
+#include <bonobo/bonobo-control-frame.h>
 #include <bonobo-activation/bonobo-activation-register.h>
 #include <gtk/gtk.h>
 #include <config.h>
@@ -55,6 +56,7 @@
 #include "rb-file-monitor.h"
 #include "rb-library-dnd-types.h"
 #include "eel-gconf-extensions.h"
+#include "eggtrayicon.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -129,6 +131,11 @@ static void rb_shell_view_sidebar_changed_cb (BonoboUIComponent *component,
 			                      Bonobo_UIComponent_EventType type,
 			                      const char *state,
 			                      RBShell *shell);
+static void rb_shell_show_window_changed_cb (BonoboUIComponent *component,
+				             const char *path,
+				             Bonobo_UIComponent_EventType type,
+				             const char *state,
+				             RBShell *shell);
 static void rb_shell_load_music_groups (RBShell *shell);
 static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
@@ -140,6 +147,7 @@ static void rb_shell_sync_toolbar_visibility (RBShell *shell);
 static void rb_shell_sync_statusbar_visibility (RBShell *shell);
 static void rb_shell_sync_sidebar_visibility (RBShell *shell);
 static void rb_shell_sync_toolbar_style (RBShell *shell);
+static void rb_shell_sync_window_visibility (RBShell *shell);
 static void toolbar_visibility_changed_cb (GConfClient *client,
 			                   guint cnxn_id,
 			                   GConfEntry *entry,
@@ -156,6 +164,10 @@ static void toolbar_style_changed_cb (GConfClient *client,
 			              guint cnxn_id,
 			              GConfEntry *entry,
 			              RBShell *shell);
+static void window_visibility_changed_cb (GConfClient *client,
+			                  guint cnxn_id,
+			                  GConfEntry *entry,
+			                  RBShell *shell);
 static void rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 			                 GdkDragContext *context,
 			                 int x, int y,
@@ -166,6 +178,8 @@ static void rb_sidebar_drag_finished_cb (RBSidebar *sidebar,
 static void dnd_add_handled_cb (RBLibraryAction *action,
 		                RBGroupView *view);
 GtkWidget *rb_shell_new_group_dialog (RBShell *shell);
+static void setup_tray_icon (RBShell *shell);
+static void sync_tray_menu (RBShell *shell);
 
 static const GtkTargetEntry target_table[] =
 	{
@@ -185,11 +199,13 @@ typedef enum
 #define CMD_PATH_VIEW_TOOLBAR   "/commands/ShowToolbar"
 #define CMD_PATH_VIEW_STATUSBAR "/commands/ShowStatusbar"
 #define CMD_PATH_VIEW_SIDEBAR   "/commands/ShowSidebar"
+#define CMD_PATH_SHOW_WINDOW    "/commands/ShowWindow"
 
 /* prefs */
 #define CONF_STATE_WINDOW_WIDTH     "/apps/rhythmbox/state/window_width"
 #define CONF_STATE_WINDOW_HEIGHT    "/apps/rhythmbox/state/window_height"
 #define CONF_STATE_WINDOW_MAXIMIZED "/apps/rhythmbox/state/window_maximized"
+#define CONF_STATE_WINDOW_VISIBLE   "/apps/rhythmbox/state/window_visible"
 #define CONF_STATE_SHUFFLE          "/apps/rhythmbox/state/shuffle"
 #define CONF_STATE_REPEAT           "/apps/rhythmbox/state/repeat"
 #define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
@@ -234,6 +250,11 @@ struct RBShellPrivate
 	gboolean repeat;
 
 	GList *groups;
+
+	EggTrayIcon *tray_icon;
+	GtkTooltips *tray_icon_tooltip;
+	BonoboControl *tray_icon_control;
+	BonoboUIComponent *tray_icon_component;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -254,6 +275,12 @@ static RBBonoboUIListener rb_shell_listeners[] =
 	RB_BONOBO_UI_LISTENER ("ShowToolbar",   (BonoboUIListenerFn) rb_shell_view_toolbar_changed_cb),
 	RB_BONOBO_UI_LISTENER ("ShowStatusbar", (BonoboUIListenerFn) rb_shell_view_statusbar_changed_cb),
 	RB_BONOBO_UI_LISTENER ("ShowSidebar",   (BonoboUIListenerFn) rb_shell_view_sidebar_changed_cb),
+	RB_BONOBO_UI_LISTENER_END
+};
+
+static RBBonoboUIListener rb_tray_listeners[] =
+{
+	RB_BONOBO_UI_LISTENER ("ShowWindow", (BonoboUIListenerFn) rb_shell_show_window_changed_cb),
 	RB_BONOBO_UI_LISTENER_END
 };
 
@@ -332,6 +359,7 @@ rb_shell_finalize (GObject *object)
         RBShell *shell = RB_SHELL (object);
 
 	gtk_widget_hide (shell->priv->window);
+	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
 	rb_shell_player_stop (shell->priv->player_shell);
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
@@ -352,6 +380,7 @@ rb_shell_finalize (GObject *object)
 			shell);
 
 	gtk_widget_destroy (shell->priv->window);
+	gtk_widget_destroy (GTK_WIDGET (shell->priv->tray_icon));
 	
 	g_list_free (shell->priv->views);
 
@@ -472,15 +501,22 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
 
+	/* tray icon */
+	setup_tray_icon (shell);
+
 	bonobo_ui_component_add_verb_list_with_data (shell->priv->ui_component,
 						     rb_shell_verbs,
 						     shell);
 	rb_bonobo_add_listener_list_with_data (shell->priv->ui_component,
 					       rb_shell_listeners,
 					       shell);
+	rb_bonobo_add_listener_list_with_data (shell->priv->tray_icon_component,
+					       rb_tray_listeners,
+					       shell);
 
 	/* initialize shell services */
 	shell->priv->player_shell = rb_shell_player_new (shell->priv->ui_component,
+							 shell->priv->tray_icon_component,
 							 shell);
 	g_signal_connect (G_OBJECT (shell->priv->player_shell),
 			  "window_title_changed",
@@ -534,6 +570,9 @@ rb_shell_construct (RBShell *shell)
 	eel_gconf_notification_add (CONF_UI_TOOLBAR_STYLE,
 				    (GConfClientNotifyFunc) toolbar_style_changed_cb,
 				    shell);
+	eel_gconf_notification_add (CONF_STATE_WINDOW_VISIBLE,
+				    (GConfClientNotifyFunc) window_visibility_changed_cb,
+				    shell);
 
 	rb_shell_sync_toolbar_visibility (shell);
 	rb_shell_sync_statusbar_visibility (shell);
@@ -580,7 +619,8 @@ rb_shell_show (RBLibrary *library,
 	RBShell *shell = RB_SHELL (user_data);
 
 	/* GO GO GO */
-	gtk_widget_show_now (shell->priv->window);
+	rb_shell_sync_window_visibility (shell);
+	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
 }
@@ -803,11 +843,44 @@ rb_shell_set_window_title (RBShell *shell,
 	{
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 				      _("Music Player"));
+
+		gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
+				      GTK_WIDGET (shell->priv->tray_icon),
+				      _("Not playing"),
+				      NULL);
 	}
 	else
 	{
-		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
-				      window_title);
+		MonkeyMediaMixerState state;
+
+		state = rb_shell_player_get_state (shell->priv->player_shell);
+
+		if (state == MONKEY_MEDIA_MIXER_STATE_PAUSED)
+		{
+			char *tmp;
+
+			tmp = g_strdup_printf (_("%s (Paused)"), window_title);
+			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
+					      tmp);
+			g_free (tmp);
+
+			tmp = g_strdup_printf (_("%s\nPaused"), window_title);
+			gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
+					      GTK_WIDGET (shell->priv->tray_icon),
+					      tmp,
+					      NULL);
+			g_free (tmp);
+		}
+		else
+		{
+			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
+					      window_title);
+
+			gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
+					      GTK_WIDGET (shell->priv->tray_icon),
+					      window_title,
+					      NULL);
+		}
 	}
 }
 
@@ -884,6 +957,17 @@ rb_shell_view_sidebar_changed_cb (BonoboUIComponent *component,
 {
 	eel_gconf_set_boolean (CONF_UI_SIDEBAR_VISIBLE,
 			       rb_bonobo_get_active (component, CMD_PATH_VIEW_SIDEBAR));
+}
+
+static void
+rb_shell_show_window_changed_cb (BonoboUIComponent *component,
+				 const char *path,
+				 Bonobo_UIComponent_EventType type,
+				 const char *state,
+				 RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
+			       rb_bonobo_get_active (component, CMD_PATH_SHOW_WINDOW));
 }
 
 static void
@@ -1292,6 +1376,23 @@ rb_shell_sync_toolbar_style (RBShell *shell)
 }
 
 static void
+rb_shell_sync_window_visibility (RBShell *shell)
+{
+	gboolean visible;
+
+	visible = eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE);
+	
+	if (visible == TRUE)
+		gtk_widget_show_now (shell->priv->window);
+	else
+		gtk_widget_hide (shell->priv->window);
+	
+	rb_bonobo_set_active (shell->priv->ui_component,
+			      CMD_PATH_SHOW_WINDOW,
+			      visible);
+}
+
+static void
 toolbar_visibility_changed_cb (GConfClient *client,
 			       guint cnxn_id,
 			       GConfEntry *entry,
@@ -1325,6 +1426,15 @@ toolbar_style_changed_cb (GConfClient *client,
 			  RBShell *shell)
 {
 	rb_shell_sync_toolbar_style (shell);
+}
+
+static void
+window_visibility_changed_cb (GConfClient *client,
+			      guint cnxn_id,
+			      GConfEntry *entry,
+			      RBShell *shell)
+{
+	rb_shell_sync_window_visibility (shell);
 }
 
 static void
@@ -1561,4 +1671,81 @@ rb_shell_new_group_dialog (RBShell *shell)
 	gtk_widget_show_all (dialog);
 
 	return dialog;
+}
+
+static void
+tray_button_press_event_cb (GtkWidget *ebox,
+			    GdkEventButton *event,
+			    RBShell *shell)
+{
+	switch (event->button)
+	{
+	case 1:
+		/* toggle mainwindow visibility */
+		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE,
+				       !eel_gconf_get_boolean (CONF_STATE_WINDOW_VISIBLE));
+		break;
+	case 3:
+		/* contextmenu */
+		sync_tray_menu (shell);
+		bonobo_control_do_popup (shell->priv->tray_icon_control,
+					 event->button,
+					 event->time);
+		break;
+	}
+}
+
+static void
+setup_tray_icon (RBShell *shell)
+{
+	GtkWidget *ebox, *image;
+	BonoboControlFrame *frame;
+
+	shell->priv->tray_icon_tooltip = gtk_tooltips_new ();
+
+	shell->priv->tray_icon = egg_tray_icon_new ("Rhythmbox tray icon");
+	gtk_tooltips_set_tip (shell->priv->tray_icon_tooltip,
+			      GTK_WIDGET (shell->priv->tray_icon),
+			      _("Not playing"),
+			      NULL);
+	ebox = gtk_event_box_new ();
+	g_signal_connect (G_OBJECT (ebox),
+			  "button_press_event",
+			  G_CALLBACK (tray_button_press_event_cb),
+			  shell);
+	image = gtk_image_new_from_stock (RB_STOCK_TRAY_ICON,
+					  GTK_ICON_SIZE_SMALL_TOOLBAR);
+	gtk_container_add (GTK_CONTAINER (ebox), image);
+	
+	shell->priv->tray_icon_control = bonobo_control_new (ebox);
+	shell->priv->tray_icon_component =
+		bonobo_control_get_popup_ui_component (shell->priv->tray_icon_control);
+
+	frame = bonobo_control_frame_new (BONOBO_OBJREF (shell->priv->container));
+	bonobo_control_frame_bind_to_control (frame, BONOBO_OBJREF (shell->priv->tray_icon_control),
+					      NULL);
+	gtk_container_add (GTK_CONTAINER (shell->priv->tray_icon),
+			   bonobo_control_frame_get_widget (frame));
+
+	gtk_widget_show_all (GTK_WIDGET (ebox));
+}
+
+static void
+sync_tray_menu (RBShell *shell)
+{
+	BonoboUIComponent *pcomp;
+	BonoboUINode *node;
+
+	pcomp = bonobo_control_get_popup_ui_component (shell->priv->tray_icon_control);
+	
+	bonobo_ui_component_set (pcomp, "/", "<popups></popups>", NULL);
+
+	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/popups/TrayPopup", TRUE, NULL);
+	bonobo_ui_node_set_attr (node, "name", "button3");
+	bonobo_ui_component_set_tree (pcomp, "/popups", node, NULL);
+	bonobo_ui_node_free (node);
+
+	node = bonobo_ui_component_get_tree (shell->priv->ui_component, "/commands", TRUE, NULL);
+	bonobo_ui_component_set_tree (pcomp, "/", node, NULL);
+	bonobo_ui_node_free (node);
 }

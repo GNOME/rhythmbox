@@ -23,7 +23,9 @@ librb_la_SOURCES =					\
 	rb-stock-icons.h				\
 	rb-enums.h					\
 	eel-gconf-extensions.c				\
-	eel-gconf-extensions.h
+	eel-gconf-extensions.h				\
+	eggtrayicon.c					\
+	eggtrayicon.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

@@ -19,6 +19,7 @@
  */
 
 #include <bonobo/bonobo-ui-component.h>
+#include <monkey-media.h>
 
 #include "rb-shell.h"
 #include "rb-view-player.h"
@@ -51,17 +52,20 @@ typedef struct
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 } RBShellPlayerClass;
 
-GType          rb_shell_player_get_type   (void);
+GType                 rb_shell_player_get_type   (void);
 
-RBShellPlayer *rb_shell_player_new        (BonoboUIComponent *component,
-					   RBShell *shell);
+RBShellPlayer        *rb_shell_player_new        (BonoboUIComponent *component,
+						  BonoboUIComponent *tray_component,
+					          RBShell *shell);
 
-void           rb_shell_player_set_player (RBShellPlayer *shell_player,
-					   RBViewPlayer *player);
+void                  rb_shell_player_set_player (RBShellPlayer *shell_player,
+					          RBViewPlayer *player);
 
-RBViewPlayer  *rb_shell_player_get_player (RBShellPlayer *shell_player);
+RBViewPlayer         *rb_shell_player_get_player (RBShellPlayer *shell_player);
 
-void           rb_shell_player_stop       (RBShellPlayer *shell_player);
+void                  rb_shell_player_stop       (RBShellPlayer *shell_player);
+
+MonkeyMediaMixerState rb_shell_player_get_state (RBShellPlayer *shell_player);
 
 G_END_DECLS
 

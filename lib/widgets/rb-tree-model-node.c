@@ -887,7 +887,14 @@ root_child_created_cb (RBNode *node,
 		       RBNode *child,
 		       RBTreeModelNode *model)
 {
-	rb_tree_model_node_update_node (model, child);
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
+	rb_tree_model_node_iter_from_node (model, child, &iter);
+
+	path = rb_tree_model_node_get_path (GTK_TREE_MODEL (model), &iter);
+	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model), path, &iter);
+	gtk_tree_path_free (path);
 }
 
 static void

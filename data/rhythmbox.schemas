@@ -112,6 +112,17 @@
         </locale>
       </schema>
       <schema>
+        <key>/schemas/apps/rhythmbox/state/window_visible</key>
+	<applyto>/apps/rhythmbox/state/window_visible</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>1</default>
+	<locale name="C">
+	<short>Main window visibility</short>
+	<long>If true, the main window is visible.</long>
+	</locale>
+      </schema>
+      <schema>
         <key>/schemas/apps/rhythmbox/state/shuffle</key>
         <applyto>/apps/rhythmbox/state/shuffle</applyto>
         <owner>rhythmbox</owner>

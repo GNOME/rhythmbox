@@ -39,6 +39,7 @@ rb_stock_icons_init (void)
 		RB_STOCK_STOP,
 		RB_STOCK_PREVIOUS,
 		RB_STOCK_NEXT,
+		RB_STOCK_REWIND,
 		RB_STOCK_SHUFFLE,
 		RB_STOCK_REPEAT,
 		RB_STOCK_VISUALS,
@@ -51,7 +52,8 @@ rb_stock_icons_init (void)
 		RB_STOCK_VOLUME_MIN,
 		RB_STOCK_VOLUME_MEDIUM,
 		RB_STOCK_VOLUME_MAX,
-		RB_STOCK_VOLUME_MUTE
+		RB_STOCK_VOLUME_MUTE,
+		RB_STOCK_TRAY_ICON
 	};
 
 	factory = gtk_icon_factory_new ();

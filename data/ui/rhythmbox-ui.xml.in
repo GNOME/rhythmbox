@@ -46,6 +46,11 @@
 	     priority="1"
 	     type="toggle"/>
 
+	<cmd name="RestartSong"
+	     pixtype="stock"
+	     pixname="rhythmbox-rewind"
+	     _tip="Restart song from the beginning"/>
+
 	<cmd name="Cut"
 	     pixtype="stock"
 	     pixname="gtk-cut"
@@ -99,6 +104,10 @@
 
 	<cmd name="ShowSidebar"
 	     _tip="Change the visibility of the sidebar"
+	     type="toggle"/>
+	     
+	<cmd name="ShowWindow"
+	     _tip="Change the visibility of the main window"
 	     type="toggle"/>
 
 </commands>
@@ -163,11 +172,13 @@
 
 	<menuitem name="Next" _label="_Next Song" verb="Next" accel="*Control*Right"/>
 
+	<menuitem name="RestartSong" _label="_Restart Song" verb="RestartSong" accel="*Control*r"/>
+
 	<separator/>
 	
 	<menuitem name="Shuffle" _label="_Shuffle" verb="Shuffle" accel="*Control*s"/>
 	
-	<menuitem name="Repeat" _label="_Repeat" verb="Repeat" accel="*Control*r"/>
+	<menuitem name="Repeat" _label="R_epeat" verb="Repeat"/>
 
 </submenu>
 
@@ -178,6 +189,28 @@
 </submenu>
 
 </menu>
+
+<popups>
+
+	<popup name="TrayPopup">
+
+		<menuitem name="Play" _label="_Play" verb="Play"/>
+		
+		<separator/>
+
+		<menuitem name="Previous" _label="P_revious Song" verb="Previous"/>
+
+		<menuitem name="Next" _label="_Next Song" verb="Next"/>
+
+		<menuitem name="RestartSong" _label="_Restart Song" verb="RestartSong"/>
+
+		<separator/>
+
+		<menuitem name="ShowWindow" _label="_Show Window" verb="ShowWindow"/>
+	
+	</popup>
+
+</popups>
 
 <dockitem name="Toolbar" behavior="exclusive,never vertical" config="0">
 

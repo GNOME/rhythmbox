@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_STOP          "rhythmbox-stop"
 #define RB_STOCK_PREVIOUS      "rhythmbox-previous"
 #define RB_STOCK_NEXT          "rhythmbox-next"
+#define RB_STOCK_REWIND        "rhythmbox-rewind"
 #define RB_STOCK_SHUFFLE       "rhythmbox-shuffle"
 #define RB_STOCK_REPEAT        "rhythmbox-repeat"
 #define RB_STOCK_VISUALS       "rhythmbox-visuals"
@@ -41,6 +42,7 @@ G_BEGIN_DECLS
 #define RB_STOCK_VOLUME_MEDIUM "rhythmbox-volume-medium"
 #define RB_STOCK_VOLUME_MAX    "rhythmbox-volume-max"
 #define RB_STOCK_VOLUME_MUTE   "rhythmbox-volume-mute"
+#define RB_STOCK_TRAY_ICON     "rhythmbox-tray-icon"
 
 void rb_stock_icons_init (void);
 
