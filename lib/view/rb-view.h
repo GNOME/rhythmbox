@@ -47,6 +47,8 @@ typedef struct
 typedef struct
 {
 	GtkHBoxClass parent;
+	
+	void (*deleted) (RBView *view);
 } RBViewClass;
 
 GType              rb_view_get_type           (void);
@@ -65,6 +67,8 @@ void               rb_view_set_active         (RBView *view,
 					       gboolean active);
 gboolean           rb_view_get_active         (RBView *view,
 					       const char *path);
+
+void               rb_view_deleted            (RBView *view);
 
 G_END_DECLS
 

@@ -48,6 +48,8 @@ static void get_sensitive_foreach_func (char *key,
 static void get_active_foreach_func (char *key,
 			             gpointer value,
 			             RBView *view);
+static void sidebar_button_deleted_cb (RBSidebarButton *button,
+			               RBView *view);
 
 struct RBViewPrivate
 {
@@ -76,6 +78,14 @@ enum
 	PROP_VERBS,
 	PROP_LISTENERS
 };
+
+enum
+{
+	DELETED,
+	LAST_SIGNAL
+};
+
+static guint rb_view_signals[LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class = NULL;
 
@@ -159,6 +169,16 @@ rb_view_class_init (RBViewClass *klass)
 							       "BonoboUI listener list",
 							       "BonoboUI listener list",
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	rb_view_signals[DELETED] =
+		g_signal_new ("deleted",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBViewClass, deleted),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -216,7 +236,20 @@ rb_view_set_property (GObject *object,
 		view->priv->ui_name = g_strdup (g_value_get_string (value));
 		break;
 	case PROP_SIDEBAR_BUTTON:
+		if (view->priv->button != NULL)
+		{
+			g_signal_handlers_disconnect_by_func (G_OBJECT (view->priv->button),
+							      G_CALLBACK (sidebar_button_deleted_cb),
+							      view);
+		}
+		
 		view->priv->button = g_value_get_object (value);
+
+		g_signal_connect_object (G_OBJECT (view->priv->button),
+				         "deleted",
+				         G_CALLBACK (sidebar_button_deleted_cb),
+				         G_OBJECT (view),
+					 0);
 		break;
 	case PROP_CONTAINER:
 		view->priv->container = g_value_get_object (value);
@@ -270,7 +303,6 @@ rb_view_get_property (GObject *object,
 void
 rb_view_merge_ui (RBView *view)
 {
-
 	view->priv->component = bonobo_ui_component_new (view->priv->ui_name);
 
 	bonobo_ui_component_set_container (view->priv->component,
@@ -394,4 +426,17 @@ get_active_foreach_func (char *key,
 {
 	g_hash_table_replace (view->priv->active_paths, g_strdup (key), 
 	                      GINT_TO_POINTER (rb_bonobo_get_active (view->priv->component, key)));
+}
+
+void
+rb_view_deleted (RBView *view)
+{
+	g_signal_emit (G_OBJECT (view), rb_view_signals[DELETED], 0);
+}
+
+static void
+sidebar_button_deleted_cb (RBSidebarButton *button,
+			   RBView *view)
+{
+	rb_view_deleted (view);
 }

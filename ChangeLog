@@ -1,5 +1,24 @@
 2002-08-03  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/ui/rhythmbox-group-view.xml.in:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/view/rb-view.c: (rb_view_class_init), (rb_view_set_property),
+	(rb_view_merge_ui), (get_active_foreach_func), (rb_view_deleted),
+	(sidebar_button_deleted_cb):
+	* lib/view/rb-view.h:
+	* lib/widgets/rb-sidebar-button.c: (rb_sidebar_button_rename):
+	* lib/widgets/rb-sidebar-button.h:
+	* shell/rb-shell.c: (rb_shell_append_view),
+	(rb_shell_view_deleted_cb):
+	* views/rb-group-view.c: (rb_group_view_cmd_song_info),
+	(rb_group_view_cmd_rename_group), (rb_group_view_cmd_delete_group):
+
+	Ability to rename and remove groups from the file menu,
+	now we're really ready for release - the waiting is for 
+	a new gstreamer.
+
+2002-08-03  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/widgets/rb-link.c: (rb_link_class_init),
 	(rb_link_set_property), (rb_link_get_property), (rb_link_set):
 	* lib/widgets/rb-link.h:

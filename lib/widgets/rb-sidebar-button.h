@@ -68,6 +68,8 @@ void             rb_sidebar_button_get      (RBSidebarButton *button,
 					     char **text,
 					     gboolean *is_static);
 
+void             rb_sidebar_button_rename   (RBSidebarButton *button);
+
 G_END_DECLS
 
 #endif /* __RB_SIDEBAR_BUTTON_H */

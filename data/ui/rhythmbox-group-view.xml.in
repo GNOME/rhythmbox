@@ -18,11 +18,27 @@
        pixtype="stock"
        pixname="gtk-properties"/>
 
+  <cmd name="RenameGroup"
+       _tip="Rename the currently selected group"/>
+
+  <cmd name="DeleteGroup"
+       _tip="Delete the currently selected group"
+       pixtype="stock"
+       pixname="gtk-delete"/>
+
 </commands>
 
 <menu>
 
 <submenu name="File" _label="_File">
+
+  <placeholder name="SourceMenu">
+
+    <menuitem name="RenameGroup" verb="RenameGroup" _label="_Rename Group"/>
+    
+    <menuitem name="DeleteGroup" verb="DeleteGroup" _label="_Delete Group"/>
+
+  </placeholder>
 
   <placeholder name="FileMenu">
 

@@ -115,6 +115,12 @@ static char *filename_from_name (const char *name);
 static void rb_group_view_cmd_song_info (BonoboUIComponent *component,
 					 RBGroupView *view,
 					 const char *verbname);
+static void rb_group_view_cmd_rename_group (BonoboUIComponent *component,
+			                    RBGroupView *view,
+			                    const char *verbname);
+static void rb_group_view_cmd_delete_group (BonoboUIComponent *component,
+			                    RBGroupView *view,
+			                    const char *verbname);
 
 #define CMD_PATH_CURRENT_SONG "/commands/CurrentSong"
 #define CMD_PATH_SONG_INFO    "/commands/SongInfo"
@@ -163,6 +169,8 @@ static BonoboUIVerb rb_group_view_verbs[] =
 	BONOBO_UI_VERB ("SelectNone",  (BonoboUIVerbFn) rb_group_view_cmd_select_none),
 	BONOBO_UI_VERB ("CurrentSong", (BonoboUIVerbFn) rb_group_view_cmd_current_song),
 	BONOBO_UI_VERB ("SongInfo",    (BonoboUIVerbFn) rb_group_view_cmd_song_info),
+	BONOBO_UI_VERB ("RenameGroup", (BonoboUIVerbFn) rb_group_view_cmd_rename_group),
+	BONOBO_UI_VERB ("DeleteGroup", (BonoboUIVerbFn) rb_group_view_cmd_delete_group),
 	BONOBO_UI_VERB_END
 };
 
@@ -1092,6 +1100,22 @@ rb_group_view_cmd_song_info (BonoboUIComponent *component,
 		song_info = rb_song_info_new (RB_NODE (selected_nodes->data));
 		gtk_widget_show_all (song_info);
 	}
+}
+
+static void
+rb_group_view_cmd_rename_group (BonoboUIComponent *component,
+			        RBGroupView *view,
+			        const char *verbname)
+{
+	rb_sidebar_button_rename (rb_view_get_sidebar_button (RB_VIEW (view)));
+}
+
+static void
+rb_group_view_cmd_delete_group (BonoboUIComponent *component,
+			        RBGroupView *view,
+			        const char *verbname)
+{
+	rb_view_deleted (RB_VIEW (view));
 }
 
 void

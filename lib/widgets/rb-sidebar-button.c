@@ -637,3 +637,9 @@ rb_sidebar_button_label_size_allocate_cb (GtkWidget *widget,
 				     widget->allocation.width,
 				     widget->allocation.height);
 }
+
+void
+rb_sidebar_button_rename (RBSidebarButton *button)
+{
+	rb_sidebar_button_set_editing (button, TRUE);
+}

@@ -73,8 +73,8 @@ static void rb_shell_append_view (RBShell *shell, RBView *view);
 static void rb_shell_remove_view (RBShell *shell, RBView *view);
 static void rb_shell_sidebar_button_toggled_cb (GtkToggleButton *widget,
 				                RBShell *shell);
-static void rb_shell_sidebar_button_deleted_cb (GtkWidget *widget,
-				                RBShell *shell);
+static void rb_shell_view_deleted_cb (RBView *view,
+				      RBShell *shell);
 static void rb_shell_set_window_title (RBShell *shell,
 			               const char *window_title);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
@@ -605,9 +605,10 @@ rb_shell_append_view (RBShell *shell,
 			  "toggled",
 			  G_CALLBACK (rb_shell_sidebar_button_toggled_cb),
 			  shell);
-	g_signal_connect (G_OBJECT (button),
+	
+	g_signal_connect (G_OBJECT (view),
 			  "deleted",
-			  G_CALLBACK (rb_shell_sidebar_button_deleted_cb),
+			  G_CALLBACK (rb_shell_view_deleted_cb),
 			  shell);
 }
 
@@ -676,13 +677,9 @@ rb_shell_sidebar_button_toggled_cb (GtkToggleButton *widget,
 }
 
 static void
-rb_shell_sidebar_button_deleted_cb (GtkWidget *widget,
-				    RBShell *shell)
+rb_shell_view_deleted_cb (RBView *view,
+		          RBShell *shell)
 {
-	RBView *view;
-
-	view = g_object_get_data (G_OBJECT (widget), "view");
-
 	if (g_list_find (shell->priv->groups, view) != NULL)
 	{
 		/* so, this is a group */
@@ -692,8 +689,7 @@ rb_shell_sidebar_button_deleted_cb (GtkWidget *widget,
 		rb_shell_save_music_groups (shell);
 	}
 	
-	rb_shell_remove_view (shell,
-			      g_object_get_data (G_OBJECT (widget), "view"));
+	rb_shell_remove_view (shell, view);
 }
 
 static void
