@@ -59,6 +59,9 @@ static void rb_library_view_get_property (GObject *object,
 static void album_node_selected_cb (RBNodeView *view,
 			            RBNode *node,
 			            RBLibraryView *testview);
+static void album_node_activated_cb (RBNodeView *view,
+				     RBNode *node,
+				     RBLibraryView *library_view);
 static void artist_node_selected_cb (RBNodeView *view,
 			             RBNode *node,
 			             RBLibraryView *testview);
@@ -393,6 +396,8 @@ rb_library_view_set_property (GObject *object,
 
 			view->priv->browser = gtk_hbox_new (TRUE, 5);
 			g_object_ref (G_OBJECT (view->priv->browser));
+
+			/* set up artist treeview */
 			view->priv->artists = rb_node_view_new (rb_library_get_all_artists (view->priv->library),
 						                rb_file ("rb-node-view-artists.xml"));
 			g_signal_connect (G_OBJECT (view->priv->artists),
@@ -400,12 +405,19 @@ rb_library_view_set_property (GObject *object,
 					  G_CALLBACK (artist_node_selected_cb),
 					  view);
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->artists));
+
+			/* set up albums treeview */
 			view->priv->albums = rb_node_view_new (rb_library_get_all_albums (view->priv->library),
 						               rb_file ("rb-node-view-albums.xml"));
 			g_signal_connect (G_OBJECT (view->priv->albums),
 					  "node_selected",
 					  G_CALLBACK (album_node_selected_cb),
 					  view);
+			g_signal_connect (G_OBJECT (view->priv->albums),
+					  "node_activated",
+					  G_CALLBACK (album_node_activated_cb),
+					  view);
+
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->browser), GTK_WIDGET (view->priv->albums));
 			gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
 			
@@ -449,6 +461,7 @@ rb_library_view_set_property (GObject *object,
 					  "changed",
 					  G_CALLBACK (node_view_changed_cb),
 					  view);
+
 			gtk_paned_pack2 (GTK_PANED (view->priv->paned), GTK_WIDGET (view->priv->songs), FALSE, FALSE);
 
 			gtk_box_pack_start_defaults (GTK_BOX (view->priv->vbox), view->priv->paned);
@@ -526,6 +539,22 @@ album_node_selected_cb (RBNodeView *view,
 	GList *selection = rb_node_view_get_selection (testview->priv->artists);
 	rb_node_view_set_filter (testview->priv->songs, node,
 				 RB_NODE (selection->data));
+}
+
+static void 
+album_node_activated_cb (RBNodeView *view,
+			 RBNode *node,
+			 RBLibraryView *library_view)
+{
+	RBNode *first_node;
+
+	g_return_if_fail (library_view != NULL);
+
+	first_node = rb_node_view_get_first_node (library_view->priv->songs);
+	if (first_node != NULL)
+	{
+		rb_library_view_set_playing_node (library_view, first_node);
+	}
 }
 
 static void
