@@ -117,6 +117,8 @@ static void rb_shell_save_music_groups (RBShell *shell);
 static void rb_shell_sidebar_size_allocate_cb (GtkWidget *sidebar,
 				               GtkAllocation *allocation,
 				               RBShell *shell);
+static void rb_shell_show (RBLibrary *library,
+			   gpointer   user_data);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -471,11 +473,22 @@ rb_shell_construct (RBShell *shell)
 			      CMD_PATH_REPEAT,
 			      eel_gconf_get_boolean (CONF_STATE_REPEAT));
 
-	gtk_widget_show (shell->priv->window);
-	while (gtk_events_pending ())
-		gtk_main_iteration ();
+	g_signal_connect (shell->priv->library, "finished_preloading",
+			  G_CALLBACK (rb_shell_show), shell);
 
 	rb_library_release_brakes (shell->priv->library);
+}
+
+static void
+rb_shell_show (RBLibrary *library,
+	       gpointer   user_data)
+{
+	RBShell *shell = RB_SHELL (user_data);
+
+	/* GO GO GO */
+	gtk_widget_show_now (shell->priv->window);
+	while (gtk_events_pending ())
+		gtk_main_iteration ();
 }
 
 char *

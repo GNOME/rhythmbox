@@ -1,3 +1,18 @@
+2002-08-23  Kristian Rietveld  <kris@gtk.org>
+
+	* lib/widgets/eggtreemodelfilter.c
+	(egg_tree_model_filter_iter_n_children): return the number of
+	_visible_ nodes,
+	library/rb-library-xml-thread.c (thread_main): emit
+	finished_preloading after 150 media files,
+	library/rb-library.[ch]: add finished_preloading signal,
+	library/rb-node.c (rb_node_action_queue_cb): process multiple
+	nodes in each idle,
+	(rb_node_add_action): changed priority to something lower than
+	the gdk redraw priority,
+	shell/rb-shell.c: show main window if we get a finished_preloading
+	signal.
+
 2002-08-22  xan
 	    Olivier Martin <omartin@ifrance.com>
 

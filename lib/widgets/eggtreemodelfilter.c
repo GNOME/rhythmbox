@@ -1938,10 +1938,22 @@ egg_tree_model_filter_iter_n_children (GtkTreeModel *model,
 
   if (!iter)
     {
+      int i = 0;
+      int count = 0;
+      GArray *a;
+
       if (!filter->root)
         egg_tree_model_filter_build_level (filter, NULL, NULL);
 
-      return FILTER_LEVEL (filter->root)->array->len;
+      a = FILTER_LEVEL (filter->root)->array;
+
+      /* count visible nodes */
+
+      for (i = 0; i < a->len; i++)
+	if (g_array_index (a, FilterElt, i).visible)
+	  count++;
+
+      return count;
     }
 
   elt = FILTER_ELT (iter->user_data2);
@@ -1954,7 +1966,19 @@ egg_tree_model_filter_iter_n_children (GtkTreeModel *model,
                                        elt);
 
   if (elt->children && elt->children->array->len)
-    return elt->children->array->len;
+    {
+      int i = 0;
+      int count = 0;
+      GArray *a = elt->children->array;
+
+      /* count visible nodes */
+
+      for (i = 0; i < a->len; i++)
+	if (g_array_index (a, FilterElt, i).visible)
+	  count++;
+
+      return count;
+    }
 
   return 0;
 }

@@ -97,6 +97,15 @@ rb_library_class_init (RBLibraryClass *klass)
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_library_finalize;
+
+	g_signal_new ("finished_preloading",
+		      G_OBJECT_CLASS_TYPE (object_class),
+		      G_SIGNAL_RUN_LAST,
+		      G_STRUCT_OFFSET (RBLibraryClass, finished_preloading),
+		      NULL, NULL,
+		      g_cclosure_marshal_VOID__VOID,
+		      G_TYPE_NONE,
+		      0);
 }
 
 static void
@@ -346,4 +355,21 @@ rb_library_release_brakes (RBLibrary *library)
 			  G_CALLBACK (xml_thread_done_loading_cb), library);
 
 	library->priv->walker_thread = rb_library_walker_thread_new (library);
+}
+
+static gboolean
+rb_library_finished_preloading_handler (RBLibrary *lib)
+{
+	g_signal_emit_by_name (lib, "finished_preloading", 0);
+
+	return FALSE;
+}
+
+void
+rb_library_finished_preloading (RBLibrary *library)
+{
+	g_idle_add_full (0,
+			 (GSourceFunc) rb_library_finished_preloading_handler,
+			 library,
+			 NULL);
 }

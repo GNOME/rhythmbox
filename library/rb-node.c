@@ -24,6 +24,9 @@
 #include "rb-node.h"
 #include "rb-debug.h"
 
+#define ACTION_ADDITION_PRIORITY 118
+#define NUMBER_OF_ACTIONS_TO_HANDLE 10 /* fun tunable parameter */
+
 static void rb_node_class_init (RBNodeClass *klass);
 static void rb_node_init (RBNode *node);
 static void rb_node_finalize (GObject *object);
@@ -414,24 +417,28 @@ rb_node_action_queue_cb (gpointer node_reference)
 {
 	RBNodeAction *action;
 	gboolean empty;
+	gint i = 0;
 
-	g_static_rw_lock_reader_lock (actions_lock);
-	empty = g_queue_is_empty (actions);
-	g_static_rw_lock_reader_unlock (actions_lock);
-
-	if (empty == TRUE)
+	for (i = 0; i < NUMBER_OF_ACTIONS_TO_HANDLE; i++)
 	{
-		g_mutex_lock (actions_idle_func_lock);
-		actions_idle_func = 0;
-		g_mutex_unlock (actions_idle_func_lock);
-		return FALSE;
+		g_static_rw_lock_reader_lock (actions_lock);
+		empty = g_queue_is_empty (actions);
+		g_static_rw_lock_reader_unlock (actions_lock);
+
+		if (empty == TRUE)
+		{
+			g_mutex_lock (actions_idle_func_lock);
+			actions_idle_func = 0;
+			g_mutex_unlock (actions_idle_func_lock);
+			return FALSE;
+		}
+
+		g_static_rw_lock_writer_lock (actions_lock);
+		action = g_queue_pop_head (actions);
+		g_static_rw_lock_writer_unlock (actions_lock);
+
+		rb_node_system_handle_action (action);
 	}
-
-	g_static_rw_lock_writer_lock (actions_lock);
-	action = g_queue_pop_head (actions);
-	g_static_rw_lock_writer_unlock (actions_lock);
-
-	rb_node_system_handle_action (action);
 
 	return TRUE;
 }
@@ -1313,7 +1320,7 @@ rb_node_add_action (RBNode *node,
 	g_mutex_lock (actions_idle_func_lock);
 	if (actions_idle_func == 0)
 	{
-		actions_idle_func = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+		actions_idle_func = g_idle_add_full (ACTION_ADDITION_PRIORITY,
 						     (GSourceFunc) rb_node_action_queue_cb, 
 						     NULL, 
 						     NULL);

@@ -55,6 +55,8 @@ struct RBLibraryXMLThreadPrivate
 	xmlDocPtr doc;
 	xmlNodePtr root;
 	xmlNodePtr child;
+
+	gboolean finished_preloading;
 };
 
 enum
@@ -248,7 +250,12 @@ rb_library_xml_thread_get_property (GObject *object,
 static gpointer
 thread_main (RBLibraryXMLThreadPrivate *priv)
 {
+	gint media_files = 0;
+
 	static RBProfiler *p = NULL;
+
+	priv->finished_preloading = FALSE;
+
 	
 	while (TRUE)
 	{
@@ -327,10 +334,22 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 								     g_value_get_string (&value));
 					g_value_unset (&value);
 				}
+				/* Don't check for finished_preloading here,
+				 * just doing inc is faster than cmp,
+				 * branching and inc (at least on ia32)
+				 */
+				media_files++;
 				break;
 			default:
 				break;
 			}
+		}
+
+		/* this value is tunable */
+		if (media_files >= 150 && !priv->finished_preloading)
+		{
+			rb_library_finished_preloading (priv->library);
+			priv->finished_preloading = TRUE;
 		}
 
 		if (priv->child == NULL && priv->dead == FALSE)
@@ -352,6 +371,9 @@ thread_main (RBLibraryXMLThreadPrivate *priv)
 static void
 done_loading (RBLibraryXMLThreadPrivate *priv)
 {
+	if (!priv->finished_preloading)
+		rb_library_finished_preloading (priv->library);
+
 	g_timeout_add (0, (GSourceFunc) done_loading_timeout_cb, priv->object);
 
 	priv->dead = TRUE;
