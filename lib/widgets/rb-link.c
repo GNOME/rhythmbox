@@ -159,12 +159,8 @@ rb_link_init (RBLink *link)
 {
 	link->priv = g_new0 (RBLinkPrivate, 1);
 
-#ifdef RB_LINK_USE_ELLIPSIZING_LABEL
 	link->priv->label = rb_ellipsizing_label_new ("");
 	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (link->priv->label), RB_ELLIPSIZE_END);
-#else
-	link->priv->label = gtk_label_new ("");
-#endif
  	gtk_label_set_use_markup (GTK_LABEL (link->priv->label), FALSE);
  	gtk_label_set_selectable (GTK_LABEL (link->priv->label), FALSE);	
 	gtk_misc_set_alignment (GTK_MISC (link->priv->label), 0.0, 0.5);
@@ -224,14 +220,8 @@ rb_link_set_property (GObject *object,
 	case PROP_TEXT:
 		g_free (link->priv->text);
 		link->priv->text = g_strdup (g_value_get_string (value));
-#ifdef RB_LINK_USE_ELLIPSIZING_LABEL
 		rb_ellipsizing_label_set_text (RB_ELLIPSIZING_LABEL (link->priv->label),
 					       link->priv->text);
-#else
-		gtk_label_set_text (GTK_LABEL (link->priv->label),
-				    link->priv->text);
-#endif
-		
 		break;
 	case PROP_TOOLTIP:
 		g_free (link->priv->tooltip);
@@ -435,4 +425,16 @@ rb_link_set_color (RBLink *link,
 
 		g_object_unref (G_OBJECT (rcstyle));
 	}
+}
+
+gboolean
+rb_link_get_ellipsized (RBLink *link)
+{
+	return rb_ellipsizing_label_get_ellipsized ( RB_ELLIPSIZING_LABEL (link->priv->label));
+}
+
+int
+rb_link_get_full_text_size (RBLink *link)
+{
+	return rb_ellipsizing_label_get_full_text_size ( RB_ELLIPSIZING_LABEL (link->priv->label));
 }

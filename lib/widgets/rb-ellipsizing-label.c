@@ -32,6 +32,7 @@ struct RBEllipsizingLabelPrivate
 {
 	char *full_text;
 	int real_width;
+	int full_text_size;
 
 	RBEllipsizeMode mode;
 };
@@ -676,6 +677,8 @@ rb_ellipsizing_label_set_text (RBEllipsizingLabel *label,
 		return;
 	}
 
+	label->priv->full_text_size = -1;
+
 	g_free (label->priv->full_text);
 	label->priv->full_text = g_strdup (string);
 
@@ -692,6 +695,8 @@ rb_ellipsizing_label_set_markup (RBEllipsizingLabel *label,
 	if (rb_str_is_equal (string, label->priv->full_text)) {
 		return;
 	}
+
+	label->priv->full_text_size = -1;
 
 	g_free (label->priv->full_text);
 	label->priv->full_text = g_strdup (string);
@@ -816,6 +821,18 @@ rb_ellipsizing_label_get_ellipsized (RBEllipsizingLabel *label)
 	g_return_val_if_fail (RB_IS_ELLIPSIZING_LABEL (label), FALSE);
 
 	return label->ellipsized;
+}
+
+int
+rb_ellipsizing_label_get_full_text_size (RBEllipsizingLabel *label)
+{
+	if (label->priv->full_text_size == -1)
+		label->priv->full_text_size = measure_string_width (
+				label->priv->full_text,
+				GTK_LABEL (label)->layout,
+				gtk_label_get_use_markup (GTK_LABEL (label)));
+
+	return label->priv->full_text_size;
 }
 
 #ifdef RB_ELLIPSIZING_LABEL_TEST

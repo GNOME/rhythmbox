@@ -12,9 +12,26 @@ module GNOME
 		void handleFile (in string uri);
 
 		void grabFocus ();
+		
+		void playPause ();
+		void next ();
+		void previous ();
+		
+		boolean getShuffle ();
+		void setShuffle (in boolean shuffle);
 
+		boolean getRepeat ();
+		void setRepeat (in boolean repeat);
+		
+		boolean getVisibility ();
+		void setVisibility (in boolean visible);
+    
 		string getPlayingTitle ();
 		string getPlayingPath ();
+
+		long getPlayingSongDuration (); /* returns -1 if no current song */
+		long getPlayingTime ();         /* returns -1 if not playing */
+		void setPlayingTime (in long seconds);
 	
 		void quit ();
 	};

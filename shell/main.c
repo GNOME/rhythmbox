@@ -59,6 +59,12 @@ static gboolean quit            = FALSE;
 static gboolean no_registration = FALSE;
 static gboolean print_playing = FALSE;
 static gboolean print_playing_path = FALSE;
+static gboolean playpause       = FALSE;
+static gboolean previous        = FALSE;
+static gboolean next            = FALSE;
+static gboolean print_play_time = FALSE;
+static gboolean print_song_length = FALSE;
+static long seek_time           = 0;
 
 int
 main (int argc, char **argv)
@@ -70,8 +76,17 @@ main (int argc, char **argv)
 
 	const struct poptOption popt_options[] =
 	{
-		{ "print-playing",   0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
-		{ "print-playing-path", 0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
+		{ "print-playing",	0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
+		{ "print-playing-path",	0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
+        
+        { "print-song-length",	0,  POPT_ARG_NONE,			&print_song_length,		0, N_("Print the playing song length in seconds and exit"),	NULL },
+        { "print-play-time", 	0,  POPT_ARG_NONE,			&print_play_time,		0, N_("Print the current elapsed time of playing song and exit"),	NULL },
+        { "set-play-time", 	    0,  POPT_ARG_LONG,			&seek_time,				0, N_("Seek to the specified time in playing song if possible and exit"),	NULL },
+        
+		{ "play-pause",		    0,  POPT_ARG_NONE,			&playpause,	        	0, N_("Toggle play/pause mode"),     NULL },
+		{ "previous",		    0,  POPT_ARG_NONE,			&previous,	        	0, N_("Jump to previous song"),     NULL },
+		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
+		
 		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
 		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
 		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
@@ -203,7 +218,7 @@ rb_handle_cmdline (char **argv, int argc,
 {
 	GNOME_Rhythmbox shell;
 	int i;
-
+	gboolean grab_focus = TRUE;
 	shell = bonobo_activation_activate_from_id (RB_SHELL_OAFIID, 0, NULL, &ev);
 	if (shell == NULL)
 	{
@@ -215,9 +230,45 @@ rb_handle_cmdline (char **argv, int argc,
 	}
 
 	if (print_playing)
+	{
 		printf ("%s\n", GNOME_Rhythmbox_getPlayingTitle (shell, &ev));
+		grab_focus = FALSE;
+	}
+	
 	if (print_playing_path)
+	{
 		printf ("%s\n", GNOME_Rhythmbox_getPlayingPath (shell, &ev));
+		grab_focus = FALSE;
+	}
+	
+	if (print_song_length)
+	{
+		long song_length = GNOME_Rhythmbox_getPlayingSongDuration (shell, &ev);
+		printf ("%ld\n", song_length);
+		grab_focus = FALSE;
+	}
+	
+	if (print_play_time)
+	{
+		long play_time = GNOME_Rhythmbox_getPlayingTime (shell, &ev);
+		printf ("%ld\n", play_time);
+		grab_focus = FALSE;
+	}
+	
+	if (seek_time > 0)
+	{
+		GNOME_Rhythmbox_setPlayingTime (shell, seek_time, &ev);
+		grab_focus = FALSE;
+	}
+	
+	if (playpause)
+		GNOME_Rhythmbox_playPause (shell, &ev);
+
+	if (previous)
+		GNOME_Rhythmbox_previous (shell, &ev);
+
+	if (next)
+		GNOME_Rhythmbox_next (shell, &ev);
 
 	for (i = 1; i < argc; i++)
 	{
@@ -225,10 +276,13 @@ rb_handle_cmdline (char **argv, int argc,
 
 		tmp = rb_uri_resolve_relative (argv[i]);
 			
-		if (rb_uri_exists (tmp) == TRUE)
+		if (rb_uri_exists (tmp) == TRUE) {
 			GNOME_Rhythmbox_handleFile (shell, tmp, &ev);
-
+			grab_focus = TRUE;
+		}
+		
 		g_free (tmp);
+		
 	}
 	
 	if (quit == TRUE)
@@ -237,6 +291,6 @@ rb_handle_cmdline (char **argv, int argc,
 	}
 
 	/* at the very least, we focus the window */
-	if (already_running == TRUE && !(print_playing_path || print_playing))
+	if (already_running == TRUE && grab_focus == TRUE)
 		GNOME_Rhythmbox_grabFocus (shell, &ev);
 }

@@ -1,3 +1,98 @@
+2003-09-05 06:00:50 GMT	Colin Walters <walters@verbum.org>	patch-25
+
+    Summary:
+      merge with mainline
+    Revision:
+      rhythmbox--cvs--1.0--patch-25
+
+    merge with mainline
+    
+    Patches applied:
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--base-0
+       tag of desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-5
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-1
+       initial display box changes
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-2
+       updates from mainline
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-3
+       fixes
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-4
+       changed allocation algorithm to not use gtk_widget_hide, properly integrated the displaybox into the player widget
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-5
+       cleanup: removed ifdef conditionals for ellipsizing label from rblink
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-6
+       changed allocation routine to allow albumna... if there is room
+    
+     * desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-7
+       update to mainline
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-6
+       merge with walters--mainline
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-7
+       sync to walters' tree
+    
+     * desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-8
+       merge of displaybox into mainline
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-37
+       rhythmbox 0.5.3
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-38
+       merge post-0-5-3
+    
+     * walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-39
+       merge with desrt
+    
+     * walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--base-0
+       tag of walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-26
+    
+     * walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-1
+       implement duration on tray tooltip
+    
+     * walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-2
+       more corba interface methods, from Rached Ben Mustapha
+    
+
+    new files:
+     lib/widgets/rb-song-display-box.c
+     lib/widgets/rb-song-display-box.h
+
+    modified files:
+     configure.ac corba/Rhythmbox.idl lib/widgets/Makefile.am
+     lib/widgets/rb-ellipsizing-label.c
+     lib/widgets/rb-ellipsizing-label.h lib/widgets/rb-link.c
+     lib/widgets/rb-link.h lib/widgets/rb-player.c
+     lib/widgets/rb-player.h shell/main.c shell/rb-shell-player.c
+     shell/rb-shell-player.h shell/rb-shell.c
+
+    new patches:
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-5
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-2
+
+
 2003-09-05 02:20:59 GMT Colin Walters <walters@verbum.org>      patch-22
  
     Summary:

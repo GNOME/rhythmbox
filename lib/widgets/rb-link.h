@@ -55,6 +55,9 @@ void    rb_link_set      (RBLink *link,
 		          const char *text,
 			  const char *tooltip,
 		          const char *url);
+gboolean rb_link_get_ellipsized (RBLink *link);
+int rb_link_get_full_text_size (RBLink *link);
+
 
 G_END_DECLS
 

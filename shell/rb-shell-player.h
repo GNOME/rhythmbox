@@ -51,6 +51,7 @@ typedef struct
 	GtkHBoxClass parent_class;
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
+	void (*duration_changed) (RBShellPlayer *player, const char *duration);
 } RBShellPlayerClass;
 
 GType			rb_shell_player_get_type   (void);
@@ -68,8 +69,13 @@ RBSource *		rb_shell_player_get_source	(RBShellPlayer *shell_player);
 void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
 void			rb_shell_player_playpause	(RBShellPlayer *player);
+void			rb_shell_player_stop		(RBShellPlayer *player);
+void			rb_shell_player_do_previous	(RBShellPlayer *player);
+void			rb_shell_player_do_next		(RBShellPlayer *player);
 
-void			rb_shell_player_stop		(RBShellPlayer *shell_player);
+long			rb_shell_player_get_playing_time (RBShellPlayer *player);
+void			rb_shell_player_set_playing_time (RBShellPlayer *player, long time);
+long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
 void			rb_shell_player_set_shuffle	(RBShellPlayer *shell_player,
 							 gboolean shuffle);

@@ -98,7 +98,28 @@ static char * rb_shell_corba_get_playing_title (PortableServer_Servant _servant,
 						CORBA_Environment *ev);
 static char * rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 					       CORBA_Environment *ev);
-
+static CORBA_boolean rb_shell_corba_get_repeat (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+static void rb_shell_corba_set_repeat (PortableServer_Servant _servant,
+					       CORBA_boolean repeat,
+					       CORBA_Environment *ev);
+static CORBA_boolean rb_shell_corba_get_shuffle (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+static void rb_shell_corba_set_shuffle (PortableServer_Servant _servant,
+					       CORBA_boolean shuffle,
+					       CORBA_Environment *ev);
+static void rb_shell_corba_playpause (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+static void rb_shell_corba_next (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+static void rb_shell_corba_previous (PortableServer_Servant _servant,
+					       CORBA_Environment *ev);
+static CORBA_long rb_shell_corba_get_playing_song_duration (PortableServer_Servant _servant,
+						   CORBA_Environment *ev);
+static CORBA_long rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
+						   CORBA_Environment *ev);
+static void rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
+						   CORBA_long time, CORBA_Environment *ev);
 void rb_shell_handle_playlist_entry (RBShell *shell, GList *locations, const char *title,
 				     const char *genre);
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
@@ -132,11 +153,14 @@ static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source
 static void rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
-static void rb_shell_set_window_title (RBShell *shell,
-			               const char *window_title);
+static void rb_shell_set_window_title (RBShell *shell, const char *window_title);
+static void rb_shell_set_duration (RBShell *shell, const char *duration);
 static void rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 					             const char *window_title,
 					             RBShell *shell);
+static void rb_shell_player_duration_changed_cb (RBShellPlayer *player,
+						 const char *duration,
+						 RBShell *shell);
 static void rb_shell_cmd_about (BonoboUIComponent *component,
 		                RBShell *shell,
 		                const char *verbname);
@@ -260,6 +284,9 @@ struct RBShellPrivate
 	GtkWidget *prefs;
 
 	RBTrayIcon *tray_icon;
+
+	char *cached_title;
+	char *cached_duration;
 };
 
 static BonoboUIVerb rb_shell_verbs[] =
@@ -332,6 +359,16 @@ rb_shell_class_init (RBShellClass *klass)
 	epv->grabFocus    = rb_shell_corba_grab_focus;
 	epv->getPlayingTitle = rb_shell_corba_get_playing_title;
 	epv->getPlayingPath = rb_shell_corba_get_playing_path;
+	epv->playPause = rb_shell_corba_playpause;
+	epv->previous = rb_shell_corba_previous;
+	epv->next = rb_shell_corba_next;
+	epv->getShuffle = rb_shell_corba_get_shuffle;
+	epv->setShuffle = rb_shell_corba_set_shuffle;
+	epv->getRepeat = rb_shell_corba_get_repeat;
+	epv->setRepeat = rb_shell_corba_set_repeat;
+	epv->getPlayingSongDuration = rb_shell_corba_get_playing_song_duration;
+	epv->getPlayingTime = rb_shell_corba_get_playing_time;
+	epv->setPlayingTime = rb_shell_corba_set_playing_time;
 }
 
 static void
@@ -522,6 +559,85 @@ rb_shell_corba_get_playing_path (PortableServer_Servant _servant,
 	return ret;
 }
 
+static void
+rb_shell_corba_set_shuffle (PortableServer_Servant _servant,
+				 CORBA_boolean shuffle,
+				 CORBA_Environment *ev)
+{
+	eel_gconf_set_boolean(CONF_STATE_SHUFFLE, shuffle);
+}
+
+static CORBA_boolean
+rb_shell_corba_get_shuffle (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	
+	return eel_gconf_get_boolean(CONF_STATE_SHUFFLE);
+}
+
+static void
+rb_shell_corba_set_repeat (PortableServer_Servant _servant,
+				 CORBA_boolean repeat,
+				 CORBA_Environment *ev)
+{
+	eel_gconf_set_boolean(CONF_STATE_REPEAT, repeat);
+}
+
+static CORBA_boolean
+rb_shell_corba_get_repeat (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	return eel_gconf_get_boolean(CONF_STATE_REPEAT);
+}
+
+static void
+rb_shell_corba_playpause (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_player_playpause (shell->priv->player_shell);
+}
+
+static void
+rb_shell_corba_next (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_player_do_next (shell->priv->player_shell);
+}
+
+static void
+rb_shell_corba_previous (PortableServer_Servant _servant,
+				 CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_player_do_previous (shell->priv->player_shell);
+}
+
+static CORBA_long
+rb_shell_corba_get_playing_song_duration (PortableServer_Servant _servant,
+                     CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	return rb_shell_player_get_playing_song_duration (shell->priv->player_shell);
+}
+
+static CORBA_long
+rb_shell_corba_get_playing_time (PortableServer_Servant _servant,
+                     CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	return rb_shell_player_get_playing_time (shell->priv->player_shell);
+}
+
+static void
+rb_shell_corba_set_playing_time (PortableServer_Servant _servant,
+                     CORBA_long time, CORBA_Environment *ev)
+{
+	RBShell *shell = RB_SHELL (bonobo_object (_servant));
+	rb_shell_player_set_playing_time (shell->priv->player_shell, time);
+}
+
 static gboolean
 async_library_release_brakes (RBShell *shell)
 {
@@ -565,7 +681,7 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect (G_OBJECT (win), "delete_event",
 			  G_CALLBACK (rb_shell_window_delete_cb),
 			  shell);
-
+  
 	rb_debug ("shell: creating container area");
 	shell->priv->container = bonobo_window_get_ui_container (win);
 
@@ -615,6 +731,10 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect (G_OBJECT (shell->priv->player_shell),
 			  "window_title_changed",
 			  G_CALLBACK (rb_shell_player_window_title_changed_cb),
+			  shell);
+	g_signal_connect (G_OBJECT (shell->priv->player_shell),
+			  "duration_changed",
+			  G_CALLBACK (rb_shell_player_duration_changed_cb),
 			  shell);
 	shell->priv->clipboard_shell = rb_shell_clipboard_new (shell->priv->ui_component);
 	shell->priv->source_header = rb_source_header_new (shell->priv->ui_component);
@@ -1083,44 +1203,73 @@ rb_shell_player_window_title_changed_cb (RBShellPlayer *player,
 }
 
 static void
-rb_shell_set_window_title (RBShell *shell,
-			   const char *window_title)
+rb_shell_player_duration_changed_cb (RBShellPlayer *player,
+				     const char *duration,
+				     RBShell *shell)
 {
+	rb_shell_set_duration (shell, duration);
+}
+
+static void
+rb_shell_set_duration (RBShell *shell, const char *duration)
+{
+	gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
+	char *tooltip;
+		
+	if (shell->priv->cached_title == NULL) 
+		tooltip = g_strdup (_("Not playing"));
+	else if (!playing) {
+		tooltip = g_strdup_printf (_("%s\nPaused, %s remaining"),
+					 shell->priv->cached_title, duration);
+	} else {
+		tooltip = g_strdup_printf (_("%s\n%s remaining"),
+					   shell->priv->cached_title, duration);
+	}
+	
+	rb_tray_icon_set_tooltip (shell->priv->tray_icon, tooltip);
+	g_free (tooltip);
+}
+
+static void
+rb_shell_set_window_title (RBShell *shell, const char *window_title)
+{
+	g_free (shell->priv->cached_title);
+	
 	if (window_title == NULL) {
 		rb_debug ("clearing title");
+
+		shell->priv->cached_title = NULL;
+		
 		gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 				      _("Music Player"));
-
-		rb_tray_icon_set_tooltip (shell->priv->tray_icon, _("Not playing"));
 	}
 	else {
 		gboolean playing = rb_shell_player_get_playing (shell->priv->player_shell);
 		char *title;
 
-		if (!strcmp (gtk_window_get_title (GTK_WINDOW (shell->priv->window)),
-			     window_title))
-		    return;
+		if (shell->priv->cached_title &&
+		    !strcmp (shell->priv->cached_title, window_title))
+			return;
+		
+		shell->priv->cached_title = g_strdup (window_title);
 
 		rb_debug ("setting title to \"%s\"", window_title);
 		if (!playing) {
-			char *tmp;
 			title = g_strdup_printf (_("%s (Paused)"), window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      title);
-
-			tmp = g_strdup_printf (_("%s\nPaused"), window_title);
-			rb_tray_icon_set_tooltip (shell->priv->tray_icon, tmp);
-			g_free (tmp);
+			g_free (title);
 		} else {
-			title = g_strdup (window_title);
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      window_title);
+
+/* This simply doesn't do anything at the moment, because the notification area
+ * is broken.
+ */
 #if 0			
 			egg_tray_icon_send_message (EGG_TRAY_ICON (shell->priv->tray_icon),
 						    3000, window_title, -1);
 #endif
-
-			rb_tray_icon_set_tooltip (shell->priv->tray_icon, window_title);
 		}
 	}
 }

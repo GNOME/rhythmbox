@@ -69,7 +69,6 @@ static void rb_shell_player_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
-static void rb_shell_player_do_previous (RBShellPlayer *player);
 static void rb_shell_player_cmd_previous (BonoboUIComponent *component,
 			                  RBShellPlayer *player,
 			                  const char *verbname);
@@ -82,7 +81,6 @@ static void rb_shell_player_cmd_pause (BonoboUIComponent *component,
 static void rb_shell_player_cmd_stop (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
-static void rb_shell_player_do_next (RBShellPlayer *player);
 static void rb_shell_player_cmd_next (BonoboUIComponent *component,
 			              RBShellPlayer *player,
 			              const char *verbname);
@@ -203,6 +201,8 @@ struct RBShellPlayerPrivate
 	GtkWidget *volume_button;
 	GtkWidget *magic_button;
 
+	guint duration_signal_idle_id;
+
 	RBRemote *remote;
 };
 
@@ -217,6 +217,7 @@ enum
 enum
 {
 	WINDOW_TITLE_CHANGED,
+	DURATION_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -311,6 +312,17 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBShellPlayerClass, window_title_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_STRING);
+
+	rb_shell_player_signals[DURATION_CHANGED] =
+		g_signal_new ("duration_changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, duration_changed),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__STRING,
 			      G_TYPE_NONE,
@@ -459,6 +471,9 @@ rb_shell_player_finalize (GObject *object)
 	player = RB_SHELL_PLAYER (object);
 
 	g_return_if_fail (player->priv != NULL);
+
+	if (player->priv->duration_signal_idle_id)
+		g_source_remove (player->priv->duration_signal_idle_id);
 
 	eel_gconf_set_float (CONF_STATE_VOLUME,
 			     monkey_media_player_get_volume (player->priv->mmplayer));
@@ -685,6 +700,29 @@ rb_shell_player_open_node (RBShellPlayer *player, RBNode *node, GError **error)
 	return;
 }
 
+static gboolean
+duration_signal_idle (RBShellPlayer *player)
+{
+	char *duration;
+	
+	GDK_THREADS_ENTER ();
+
+	if (monkey_media_player_playing (player->priv->mmplayer)) {
+		duration = rb_player_get_duration_string (player->priv->player_widget);
+		g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED],
+			       0, duration);
+		g_free (duration);
+	}
+
+	player->priv->duration_signal_idle_id =
+		g_timeout_add (1000, (GSourceFunc) duration_signal_idle, player);
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+	
+
 static void
 rb_shell_player_play (RBShellPlayer *player)
 {
@@ -693,6 +731,10 @@ rb_shell_player_play (RBShellPlayer *player)
 	rb_node_view_set_playing (songs, TRUE);
 
 	monkey_media_player_play (player->priv->mmplayer);
+
+	if (!player->priv->duration_signal_idle_id)
+		player->priv->duration_signal_idle_id =
+			g_idle_add ((GSourceFunc) duration_signal_idle, player);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);
@@ -794,7 +836,7 @@ rb_shell_player_jump_to_current (RBShellPlayer *player)
 	rb_node_view_select_node (songs, rb_node_view_get_playing_node (songs));
 }
 
-static void
+void
 rb_shell_player_do_previous (RBShellPlayer *player)
 {
 	/* If we're in the first 2 seconds go to the previous song,
@@ -812,7 +854,7 @@ rb_shell_player_do_previous (RBShellPlayer *player)
 	rb_shell_player_jump_to_current (player);
 }
 
-static void
+void
 rb_shell_player_do_next (RBShellPlayer *player)
 {
 	if (player->priv->source != NULL) {
@@ -1110,6 +1152,7 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	const char *nodetitle = NULL, *artist = NULL;
 	char *title;
 	RBNode *node;
+	char *duration;
 
 	node = rb_shell_player_get_playing_node (player);
 	rb_debug ("playing source: %p, active node: %p", player->priv->source, node);
@@ -1137,8 +1180,13 @@ rb_shell_player_sync_with_source (RBShellPlayer *player)
 	else
 		title = NULL;
 
+	duration = rb_player_get_duration_string (player->priv->player_widget);
+
 	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[WINDOW_TITLE_CHANGED], 0,
 		       title);
+	g_signal_emit (G_OBJECT (player), rb_shell_player_signals[DURATION_CHANGED], 0,
+		       duration);
+	g_free (duration);
 
 	/* Sync the player */
 	if (player->priv->song)
@@ -1306,12 +1354,53 @@ rb_shell_player_get_playing (RBShellPlayer *player)
 	return monkey_media_player_playing (player->priv->mmplayer);
 }
 
+char *
+rb_shell_player_get_duration_string (RBShellPlayer *player)
+{
+	return rb_player_get_duration_string (player->priv->player_widget);
+}
+
 MonkeyMediaPlayer *
 rb_shell_player_get_mm_player (RBShellPlayer *player)
 {
 	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), NULL);
 
 	return player->priv->mmplayer;
+}
+
+long
+rb_shell_player_get_playing_time (RBShellPlayer *player)
+{
+	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), 0);
+	
+	return monkey_media_player_get_time (player->priv->mmplayer);
+}
+
+void
+rb_shell_player_set_playing_time (RBShellPlayer *player, long time)
+{
+	g_return_if_fail (RB_IS_SHELL_PLAYER (player));
+	
+	if (monkey_media_player_seekable (player->priv->mmplayer))
+		monkey_media_player_set_time (player->priv->mmplayer, time);
+}
+
+long
+rb_shell_player_get_playing_song_duration (RBShellPlayer *player)
+{
+	RBNode *current_node;
+	
+	g_return_val_if_fail (RB_IS_SHELL_PLAYER (player), -1);
+	
+	current_node = rb_shell_player_get_playing_node (player);
+
+	if (current_node == NULL)
+	{
+		rb_debug ("Did not get playing node : return -1 as length");
+		return -1;
+	}
+	
+	return rb_node_get_property_long (current_node, RB_NODE_PROP_DURATION);
 }
 
 static void

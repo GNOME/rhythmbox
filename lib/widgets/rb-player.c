@@ -32,6 +32,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <string.h>
 
+#include "rb-song-display-box.h"
 #include "rb-stock-icons.h"
 #include "rb-link.h"
 #include "rb-player.h"
@@ -90,11 +91,9 @@ struct RBPlayerPrivate
 	GtkWidget *elapsed;
 
 	GtkWidget *textframe;
-	GtkWidget *textline;
-	gboolean textline_shown;
+	RBSongDisplayBox *displaybox;
+	gboolean displaybox_shown;
 	GtkTooltips *tips;
-	RBLink *artist;
-	RBLink *album;
 	GtkWidget *urlframe;
 	GtkWidget *urlline;
 	gboolean urlline_shown;
@@ -210,11 +209,11 @@ rb_player_init (RBPlayer *player)
 	 *         GtkVBox
 	 *           RBEllipsizingLabel	(priv->song)
 	 *           GtkHBox		(priv->textframe)
-	 *	       GtkHBox		(priv->textline)
+	 *	       RBSongDisplayBox (priv->displaybox)
 	 *               GtkLabel	("from")
-	 *               RBLink		(priv->album)
+	 *               RBLink		(priv->displaybox->album)
 	 *               GtkLabel	("by")
-	 *               RBLink		(priv->artist)
+	 *               RBLink		(priv->displaybox->artist)
 	 *           GtkHBox		(priv->urlframe)
 	 *	       GtkHBox		(priv->urlline)
 	 *               GtkLabel	("Listening to")
@@ -225,7 +224,7 @@ rb_player_init (RBPlayer *player)
 	 *       GtkAlignment
 	 *         GtkLabel		(priv->elapsed)
 	 */
-	GtkWidget *hbox, *vbox, *textline, *urlline, *label, *align, *scalebox, *textvbox;
+	GtkWidget *hbox, *vbox, *urlline, *label, *align, *scalebox, *textvbox;
 
 	player->priv = g_new0 (RBPlayerPrivate, 1);
 
@@ -256,22 +255,9 @@ rb_player_init (RBPlayer *player)
 	player->priv->textframe = gtk_hbox_new (FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (textvbox), player->priv->textframe, FALSE, TRUE, 0);
 
-	textline = player->priv->textline = gtk_hbox_new (FALSE, 0);
-	g_object_ref (G_OBJECT (textline));
-
-	label = gtk_label_new (_("from "));
-	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
-
-	player->priv->album = rb_link_new ();
-	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->album), FALSE, FALSE, 0);
-
-	label = gtk_label_new (_(" by "));
-	gtk_box_pack_start (GTK_BOX (textline), label, FALSE, TRUE, 0);
-
-	player->priv->artist = rb_link_new ();
-	gtk_box_pack_start (GTK_BOX (textline), GTK_WIDGET (player->priv->artist), FALSE, FALSE, 0);
-
-	player->priv->textline_shown = FALSE;
+	player->priv->displaybox = RB_SONG_DISPLAY_BOX (rb_song_display_box_new ());
+	g_object_ref (G_OBJECT (player->priv->displaybox));
+	player->priv->displaybox_shown = FALSE;
 
 	/* Construct the URL display */
 	player->priv->urlframe = gtk_hbox_new (FALSE, 0);
@@ -342,7 +328,7 @@ rb_player_finalize (GObject *object)
 	g_source_remove (player->priv->timeout);
 
 	g_object_unref (G_OBJECT (player->priv->urlline));
-	g_object_unref (G_OBJECT (player->priv->textline));
+	g_object_unref (G_OBJECT (player->priv->displaybox));
 	g_object_unref (G_OBJECT (player->priv->timeline));
 
 	g_free (player->priv->state);
@@ -472,7 +458,7 @@ rb_player_sync (RBPlayer *player)
 
 		rb_player_set_show_artist_album (player, (album != NULL && artist != NULL));
 
-		if (player->priv->textline_shown)
+		if (player->priv->displaybox_shown)
 		{
 			g_return_if_fail (album != NULL);
 			g_return_if_fail (artist != NULL);
@@ -484,7 +470,7 @@ rb_player_sync (RBPlayer *player)
 				*tmp = '|';
 			tmp = ALBUM_INFO_URL (s);
 			g_free (s);
-			rb_link_set (player->priv->album, album,
+			rb_link_set (player->priv->displaybox->album, album,
 				     _("Get information on this album from the web"), tmp);
 			g_free (tmp);
 
@@ -495,7 +481,7 @@ rb_player_sync (RBPlayer *player)
 			}
 			tmp = ARTIST_INFO_URL (s);
 			g_free (s);
-			rb_link_set (player->priv->artist, artist,
+			rb_link_set (player->priv->displaybox->artist, artist,
 				     _("Get information on this artist from the web"), tmp);
 			g_free (tmp);
 		}
@@ -558,15 +544,15 @@ void
 rb_player_set_show_artist_album (RBPlayer *player,
 				 gboolean show)
 {
-	if (player->priv->textline_shown == show)
+	if (player->priv->displaybox_shown == show)
 		return;
 
-	player->priv->textline_shown = show;
+	player->priv->displaybox_shown = show;
 
 	if (show == FALSE)
-		gtk_container_remove (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
+		gtk_container_remove (GTK_CONTAINER (player->priv->textframe), GTK_WIDGET (player->priv->displaybox));
 	else {
-		gtk_container_add (GTK_CONTAINER (player->priv->textframe), player->priv->textline);
+		gtk_container_add (GTK_CONTAINER (player->priv->textframe), GTK_WIDGET (player->priv->displaybox));
 		gtk_widget_show_all (player->priv->textframe);
 	}
 }
@@ -764,29 +750,37 @@ slider_changed_callback (GtkWidget *widget,
 	}
 }
 
+char *
+rb_player_get_duration_string (RBPlayer *player)
+{
+	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
+	guint elapsed = monkey_media_player_get_time (player->priv->mmplayer);
+
+	if (player->priv->state->elapsed > 0) {
+		minutes = elapsed / 60;
+		seconds = elapsed % 60;
+	}
+
+	if (player->priv->state->duration > 0) {
+		minutes2 = player->priv->state->duration / 60;
+		seconds2 = player->priv->state->duration % 60;
+	}
+	if (seconds2 >= 0)
+		return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
+	else
+		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+}
+
 static void
 rb_player_update_elapsed (RBPlayer *player)
 {
 	char *elapsed_text;
-	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
 
 	/* sanity check */
 	if ((player->priv->state->elapsed > player->priv->state->duration) || (player->priv->state->elapsed < 0))
 		return;
 
-	if (player->priv->state->elapsed > 0) {
-		minutes = player->priv->state->elapsed / 60;
-		seconds = player->priv->state->elapsed % 60;
-	}
-	if (player->priv->state->duration > 0) {
-		minutes2 = player->priv->state->duration / 60;
-		seconds2 = player->priv->state->duration % 60;
-	}
-	if (seconds2 >= 0) {
-		elapsed_text = g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
-	} else {
-		elapsed_text = g_strdup_printf (_("%d:%02d"), minutes, seconds);
-	}
+	elapsed_text = rb_player_get_duration_string (player);
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);
