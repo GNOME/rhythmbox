@@ -906,7 +906,13 @@ rb_shell_player_playpause (RBShellPlayer *player)
 		node = rb_shell_player_get_playing_node (player);
 		if (!node) {
 			RBNodeView *songs = rb_source_get_node_view (player->priv->source);
-			node = rb_node_view_get_first_node (songs);
+			
+			if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
+				rb_debug ("choosing random node");
+				node =  rb_node_view_get_random_node (songs);
+			} else {
+				node = rb_node_view_get_first_node (songs);
+			}
 			g_return_if_fail (node != NULL);
 			rb_shell_player_set_playing_node (player, node);
 		} else {
