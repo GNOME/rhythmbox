@@ -678,6 +678,8 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	rhythmdb_write_lock (db);
 
 	entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, realuri);
+	if (entry == NULL)
+		goto out_dupentry;
 	synchronize_entry_with_data (db, entry, metadata);
 
 	/* initialize the last played date to 0=never */
@@ -686,6 +688,7 @@ rhythmdb_add_song (RhythmDB *db, const char *uri, GError **error)
 	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &last_time);
 	g_value_unset (&last_time);
 
+ out_dupentry:
 	g_free (metadata);
 	g_free (realuri);
 
