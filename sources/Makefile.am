@@ -15,9 +15,6 @@ libsourcesimpl_la_SOURCES =		\
 	rb-iradio-source.h		\
 	rb-playlist-source.c            \
 	rb-playlist-source.h		
-#	rb-audiocd-source.c		
-#	rb-audiocd-source.h
-#endif
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
