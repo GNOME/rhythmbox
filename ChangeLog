@@ -1,5 +1,11 @@
 2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
 
+	* library/rb-node.c: (rb_node_system_shutdown):
+
+	Only remove idle if != 0
+
+2002-08-10  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-library-action-queue.c:
 	(rb_library_action_queue_peek_head):
 	* library/rb-library-main-thread.c: (thread_main):

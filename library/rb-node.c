@@ -1156,7 +1156,8 @@ rb_node_system_shutdown (void)
 {
 	g_return_if_fail (actions_lock != NULL);
 
-	g_source_remove (actions_idle_func);
+	if (actions_idle_func != 0)
+		g_source_remove (actions_idle_func);
 
 	g_mutex_free (actions_idle_func_lock);
 
