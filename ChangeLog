@@ -1,3 +1,99 @@
+2003-10-06 17:54:55 GMT	Colin Walters <walters@verbum.org>	patch-80
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-80
+
+
+    new files:
+     po/ro.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog
+
+
+2003-10-06 17:51:38 GMT	Colin Walters <walters@verbum.org>	patch-79
+
+    Summary:
+      squish one more leak
+    Revision:
+      rhythmbox--mainline--0.6--patch-79
+
+
+    modified files:
+     widgets/rb-property-view.c
+
+
+2003-10-06 17:36:30 GMT	Colin Walters <walters@verbum.org>	patch-78
+
+    Summary:
+      more memory leaks plugged
+    Revision:
+      rhythmbox--mainline--0.6--patch-78
+
+
+    modified files:
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     sources/rb-library-source.c
+
+
+2003-10-06 17:07:59 GMT	Colin Walters <walters@verbum.org>	patch-77
+
+    Summary:
+      really plug the leak :)
+    Revision:
+      rhythmbox--mainline--0.6--patch-77
+
+
+    modified files:
+     rhythmdb/rhythmdb.c
+
+
+2003-10-06 17:02:00 GMT	Colin Walters <walters@verbum.org>	patch-76
+
+    Summary:
+      plug a MASSIVE memory leak
+    Revision:
+      rhythmbox--mainline--0.6--patch-76
+
+
+    modified files:
+     iradio/rb-station-properties-dialog.c library/rb-library.c
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     shell/rb-playlist-manager.c shell/rb-shell-player.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+     widgets/rb-entry-view.c widgets/rb-player.c
+     widgets/rb-property-view.c widgets/rb-song-info.c
+
+
+2003-10-06 15:42:41 GMT	Colin Walters <walters@verbum.org>	patch-75
+
+    Summary:
+      default sort is by artist, then album, then track number 
+    Revision:
+      rhythmbox--mainline--0.6--patch-75
+
+    
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-10-06 05:20:04 GMT	Colin Walters <walters@verbum.org>	patch-74
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-74
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-06  Mugurel Tudor  <mugurelu@go.ro>
 
 	* configure.ac: Added 'ro' to ALL_LINGUAS
