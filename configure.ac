@@ -203,13 +203,12 @@ dnl Check for libid3tag
 AC_ARG_ENABLE(mp3, AC_HELP_STRING([--disable-mp3],
 				[don't build with MP3 support]))
 if test "x$enable_mp3" != "xno"; then
-  AC_CHECK_HEADER(id3tag.h,[enable_mp3=yes],)
+  PKG_CHECK_MODULES(ID3TAG, id3tag >= 0.15.0b, enable_mp3=yes, enable_mp3=no)
 fi
 if test "x$enable_mp3" = "xyes"; then
   if test x"$have_gstreamer" = xyes; then
     AM_GST_ELEMENT_CHECK(mad,,missing_gst_elements="$missing_gst_elements mad")
   fi
-  ID3TAG_LIBS="-lid3tag"
   AC_SUBST(ID3TAG_LIBS)
 fi
 if test "x$enable_mp3" = "xyes"; then
@@ -439,6 +438,7 @@ help/Makefile
 help/C/Makefile
 po/Makefile.in
 component/Makefile
+tests/Makefile
 rhythmbox.spec
 ])
 

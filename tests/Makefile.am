@@ -1,10 +1,12 @@
 ## arch-tag: Automake rules for test programs
 ## Process this file with automake to produce Makefile.in
 
-TESTS = test-rhythmdb-simple test-rhythmdb-indexing \
-		  test-rhythmdb-query test-rhythmdb-tree-serialization \
-		  test-rhythmdb-tree-deserialization \
-		  test-rhythmdb-view
+#TESTS = test-rhythmdb-simple test-rhythmdb-indexing \
+#		  test-rhythmdb-query test-rhythmdb-tree-serialization \
+#		  test-rhythmdb-tree-deserialization \
+#		  test-rhythmdb-view
+
+TESTS = 
 
 noinst_PROGRAMS = test-info test-cmdline $(TESTS)
 
