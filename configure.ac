@@ -151,7 +151,7 @@ dnl Check for Ogg Vorbis
 
 AC_ARG_ENABLE(vorbis, AC_HELP_STRING([--disable-vorbis],
 				[don't build with Ogg Vorbis support]))
-if test x"$enable_vorbis" = xyes; then
+if test x"$enable_vorbis" != xno; then
   MM_PATH_OGG(enable_vorbis=yes,enable_vorbis=no)
   if test x"$enable_vorbis" = xyes; then
     MM_PATH_VORBIS(,enable_vorbis=no)
