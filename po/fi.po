@@ -11,9 +11,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-09-17 08:43+0300\n"
-"PO-Revision-Date: 2004-09-17 08:48+0300\n"
-"Last-Translator: Tommi Vainikainen <Tommi.Vainikainen@iki.fi>\n"
+"POT-Creation-Date: 2004-09-23 21:35+0300\n"
+"PO-Revision-Date: 2004-09-23 21:36+0300\n"
+"Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Gnome Finnish Translation Team <laatu@gnome-fi.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,15 +26,15 @@ msgstr "Lisää musiikkikirjastoon"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
 msgid "Nautilus context menu extension for Rhythmbox"
-msgstr "Nautilus pikavalikon laajennos Rhythmboxiin"
+msgstr "Rhythmbox-laajennos Nautiluksen pikavalikkoon"
 
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
-msgstr "Rhythmbox Nautilus pikavalikon kohta"
+msgstr "Nautiluksen pikavalikon Rhythmbox-lisäys"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
-msgstr "Musiikkisoittimen komentotulkki"
+msgstr "Musiikkisoittimen tulkki"
 
 #: data/GNOME_Rhythmbox.server.in.h:2
 msgid "Rhythmbox shell factory"
@@ -420,7 +420,7 @@ msgstr "Liitä valittu"
 
 #: data/ui/rhythmbox-ui.xml.h:33
 msgid "Pause playing"
-msgstr "Keskeytä soitto"
+msgstr "Pysäytä soitto"
 
 #: data/ui/rhythmbox-ui.xml.h:34 shell/rb-statusbar.c:238
 msgid "Play first song again after all songs are played"
@@ -903,7 +903,7 @@ msgstr ""
 
 #: shell/main.c:103
 msgid "Toggle play/pause mode"
-msgstr "Vaihtele soitto/tauko tilaa"
+msgstr "Vaihtele soitto/pysäytetty-tilaa"
 
 #: shell/main.c:104
 msgid "Focus the running player"
@@ -1052,7 +1052,7 @@ msgstr "Keskeytä soitto"
 
 #: shell/rb-shell-player.c:1571
 msgid "_Pause"
-msgstr "_Tauolle"
+msgstr "_Pysäytä"
 
 #: shell/rb-shell-player.c:1586
 msgid "Stop playback"
@@ -1486,11 +1486,11 @@ msgstr "_Hae:"
 
 #: widgets/rb-song-display-box.c:113
 msgid "from"
-msgstr "lähteestä"
+msgstr " "
 
 #: widgets/rb-song-display-box.c:115
 msgid "by"
-msgstr "esittäjänä"
+msgstr "-"
 
 #: widgets/rb-song-info.c:267
 msgid "Song Properties"
@@ -1519,40 +1519,3 @@ msgstr "+"
 msgid "-"
 msgstr "-"
 
-#~ msgid ""
-#~ "Rhythmbox does not currently work if GNOME sound events are are enabled "
-#~ "and esdsink is in use."
-#~ msgstr ""
-#~ "Rhythmbox ei tällä hetkellä toimi, jos GNOMEn äänitapahtumat ovat päällä "
-#~ "ja esdsink on käytössä."
-
-#~ msgid "Could not open iTunesDB \"%s\" for writing.\n"
-#~ msgstr "iTunesDB-tiedostoa \"%s\" ei voitu avata kirjoitettavaksi.\n"
-
-#~ msgid "Could not open file \"%s\" for reading.\n"
-#~ msgstr "Tiedoston \"%s\" avaus luettavaksi epäonnistui.\n"
-
-#~ msgid "Could not open file \"%s\" for writing.\n"
-#~ msgstr "Tiedoston \"%s\" avaus kirjoitettavaksi epäonnistui.\n"
-
-#~ msgid "Toggle random playing order"
-#~ msgstr "Käytä/älä käytä satunnaissoittoa"
-
-#~ msgid "Toggle repeat mode"
-#~ msgstr "Käytä/älä käytä toistotilaa"
-
-#~ msgid "Failed to create thread element; check your GStreamer installation"
-#~ msgstr "Säieelementin luonti epäonnistu, tarkista gstreamer-asennuksesi"
-
-#~ msgid "Failed to create %s input element; check your installation"
-#~ msgstr "%s lukuelementin luonti epäonnistui, tarkista asennuksesi"
-
-#~ msgid "Failed to create queue element; check your installation"
-#~ msgstr "Jonoelementin luonti epäonnistu, tarkista asennuksesi"
-
-#~ msgid "Failed to create typefind element; check your installation"
-#~ msgstr "Tyypinetsintä-elementin luonti epäonnistui: tarkista asennuksesi"
-
-#~ msgid "Failed to create volume element; check your installation"
-#~ msgstr ""
-#~ "Äänenvoimakkuden säätöelementtiä ei pystytty luomaan: tarkista asennuksesi"
