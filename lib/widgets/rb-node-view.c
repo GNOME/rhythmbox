@@ -840,7 +840,6 @@ void
 rb_node_view_set_playing_node (RBNodeView *view,
 			       RBNode *node)
 {
-
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
 	g_object_set (G_OBJECT (view),
