@@ -67,12 +67,13 @@ typedef struct
 {
 	GObjectClass parent_class;
 
-	void (*eos)             (RBPlayer *mp);
-	void (*info)            (RBPlayer *mp, RBMetaDataField field, GValue *value);
-	void (*buffering_begin) (RBPlayer *mp);
-	void (*buffering_end)   (RBPlayer *mp);
-	void (*error)           (RBPlayer *mp, GError *error);
-	void (*tick)            (RBPlayer *mp, long elapsed);
+	void (*eos)             	(RBPlayer *mp);
+	void (*info)            	(RBPlayer *mp, RBMetaDataField field, GValue *value);
+	void (*buffering_begin) 	(RBPlayer *mp);
+	void (*buffering_end)   	(RBPlayer *mp);
+	void (*buffering_progress)	(RBPlayer *mp, int progress);
+	void (*error)           	(RBPlayer *mp, GError *error);
+	void (*tick)            	(RBPlayer *mp, long elapsed);
 } RBPlayerClass;
 
 GType		rb_player_get_type   (void);

@@ -88,6 +88,7 @@ typedef enum
 	INFO,
 	BUFFERING_BEGIN,
 	BUFFERING_END,
+	BUFFERING_PROGRESS,
 	ERROR,
 	TICK,
 	LAST_SIGNAL
@@ -179,6 +180,16 @@ rb_player_class_init (RBPlayerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	rb_player_signals[BUFFERING_PROGRESS] =
+		g_signal_new ("buffering_progress",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerClass, buffering_progress),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__INT,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_INT);
 	rb_player_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),

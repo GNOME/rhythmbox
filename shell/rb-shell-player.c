@@ -151,6 +151,7 @@ static void info_available_cb (RBPlayer *player,
 			       gpointer data);
 static void buffering_end_cb (RBPlayer *player, gpointer data);
 static void buffering_begin_cb (RBPlayer *player, gpointer data);
+static void buffering_progress_cb (RBPlayer *player, int progress, gpointer data);
 static void rb_shell_player_disable_buffering (RBShellPlayer *player);
 
 static void rb_shell_player_sync_play_order (RBShellPlayer *player);
@@ -515,6 +516,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect (G_OBJECT (player->priv->mmplayer),
 			  "buffering_end",
 			  G_CALLBACK (buffering_end_cb),
+			  player);
+
+	g_signal_connect (G_OBJECT (player->priv->mmplayer),
+			  "buffering_progress",
+			  G_CALLBACK (buffering_progress_cb),
 			  player);
 
 	eel_gconf_notification_add (CONF_STATE_REPEAT,
@@ -2028,6 +2034,22 @@ buffering_end_cb (RBPlayer *mmplayer,
 	rb_shell_player_disable_buffering (player);
  	if (player->priv->source)
  		rb_source_buffering_done (player->priv->source);
+}
+
+static void
+buffering_progress_cb (RBPlayer *mmplayer,
+		       int progress,
+		       gpointer data)
+{
+	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+	rb_debug ("got buffering_progress_cb: %d", progress);
+
+	GDK_THREADS_ENTER();
+
+	if (progress == 100)
+		rb_shell_player_sync_with_source (player);
+
+	GDK_THREADS_LEAVE();
 }
 
 const char *

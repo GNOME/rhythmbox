@@ -31,6 +31,7 @@
 #include "rb-player.h"
 #include "rb-file-helpers.h"
 #include "rb-debug.h"
+#include "rb-marshal.h"
 
 static void rb_player_class_init (RBPlayerClass *klass);
 static void rb_player_init (RBPlayer *mp);
@@ -69,6 +70,7 @@ enum
 	INFO,
 	BUFFERING_BEGIN,
 	BUFFERING_END,
+	BUFFERING_PROGRESS,
 	ERROR,
 	TICK,
 	LAST_SIGNAL
@@ -123,19 +125,17 @@ rb_player_class_init (RBPlayerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-#if 0
 	rb_player_signals[INFO] =
 		g_signal_new ("info",
 			      G_OBJECT_CLASS_TYPE (object_class),
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlayerClass, info),
 			      NULL, NULL,
-			      rb_marshal_VOID__ENUM_POINTER,
+			      rb_marshal_VOID__INT_POINTER,
 			      G_TYPE_NONE,
 			      2,
-			      MONKEY_MEDIA_TYPE_STREAM_INFO_FIELD,
+			      G_TYPE_INT,
 			      G_TYPE_POINTER);
-#endif
 	rb_player_signals[BUFFERING_BEGIN] =
 		g_signal_new ("buffering_begin",
 				G_OBJECT_CLASS_TYPE (object_class),
@@ -154,6 +154,16 @@ rb_player_class_init (RBPlayerClass *klass)
 				g_cclosure_marshal_VOID__VOID,
 				G_TYPE_NONE,
 				0);
+	rb_player_signals[BUFFERING_PROGRESS] =
+		g_signal_new ("buffering_progress",
+				G_OBJECT_CLASS_TYPE (object_class),
+				G_SIGNAL_RUN_LAST,
+				G_STRUCT_OFFSET (RBPlayerClass, buffering_progress),
+				NULL, NULL,
+				g_cclosure_marshal_VOID__INT,
+				G_TYPE_NONE,
+				1,
+				G_TYPE_INT);
 	rb_player_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -273,7 +283,8 @@ xine_event (RBPlayer *mp,
 {
 	signal_data *data;
 	xine_progress_data_t* prg;
-
+	GValue val = {0,};
+	
 	switch (event->type) {
 	case XINE_EVENT_UI_PLAYBACK_FINISHED:
 		g_object_ref (G_OBJECT (mp));
@@ -282,18 +293,23 @@ xine_event (RBPlayer *mp,
 		g_async_queue_push (mp->priv->queue, data);
 		g_idle_add ((GSourceFunc) signal_idle, mp);
 		break;
+	case XINE_EVENT_UI_SET_TITLE:
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, xine_get_meta_info(mp->priv->stream, XINE_META_INFO_TITLE));
+		g_signal_emit (G_OBJECT(mp), rb_player_signals[INFO], 0, RB_METADATA_FIELD_TITLE, &val);
+		g_value_unset(&val);
+		break;
 	case XINE_EVENT_PROGRESS:
 		prg = event->data;
-
 		if (prg->percent == 0 || prg->percent == 100)
 		{
 			g_object_ref (G_OBJECT (mp));
 			data = g_new0 (signal_data, 1);
-			data->signal = prg->percent ?
-				BUFFERING_END : BUFFERING_BEGIN;
+			data->signal = (prg->percent == 100) ? BUFFERING_END : BUFFERING_BEGIN;
 			g_idle_add ((GSourceFunc) signal_idle, mp);
-			break;
 		}
+		g_signal_emit (G_OBJECT(mp), rb_player_signals[BUFFERING_PROGRESS], 0, prg->percent);
+		break;
 	}
 }
 
