@@ -1078,7 +1078,7 @@ rb_song_info_update_encoding (RBSongInfo *song_info)
 
 	if (bitrate >= 0)
 	{
-		g_string_append_printf (string, _("%d kbps "), bitrate);
+		g_string_append_printf (string, _("%d kbps"), bitrate);
 	}
 
 	if (text_codec != NULL)

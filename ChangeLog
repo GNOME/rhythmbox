@@ -1,3 +1,20 @@
+2003-08-10  Christian Neumair  <chris@gnome-de.org>
+
+	* data/glade/druid.glade:
+	* data/glade/load-failure.glade:
+	* data/glade/song-info.glade:
+	* data/glade/station-new.glade:
+	* data/glade/station-properties.glade:
+	* data/glade/uri.glade:
+	* iradio/rb-new-station-dialog.c: (rb_new_station_dialog_init):
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_init):
+	* lib/widgets/rb-song-info.c: (rb_song_info_update_encoding):
+	* shell/rb-shell.c: (rb_shell_new_group_dialog):
+
+	Some spacing and string fixes to make these dialogs more
+	HIG-compliant, removed trailing spaces from strings where neccessary.
+
 2003-08-10  Benjamin Otte  <in7y118@public.uni-hamburg.de>
 
 	* configure.ac: Make it possible to disable the treemodel

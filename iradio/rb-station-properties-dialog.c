@@ -181,8 +181,8 @@ rb_station_properties_dialog_init (RBStationPropertiesDialog *dialog)
 			  dialog);
 
 	gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
-	gtk_container_set_border_width (GTK_CONTAINER (dialog), 7);
-	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 8);
+	gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+	gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 2);
 
 	gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 					 GTK_RESPONSE_OK);
