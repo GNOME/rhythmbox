@@ -2,6 +2,193 @@
 # arch-tag: automatic-ChangeLog--walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6
 #
 
+2003-10-22 00:42:11 GMT	Colin Walters <walters@verbum.org>	patch-175
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-175
+
+
+    new files:
+     po/id.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/nl.po
+
+
+2003-10-22 00:33:59 GMT	Colin Walters <walters@verbum.org>	patch-174
+
+    Summary:
+      add configury to check for XFree86/XSun
+    Revision:
+      rhythmbox--mainline--0.6--patch-174
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2003-10-21 15:23:17 GMT	Colin Walters <walters@verbum.org>	patch-173
+
+    Summary:
+      corba/test-corba is junk
+    Revision:
+      rhythmbox--mainline--0.6--patch-173
+
+
+    modified files:
+     ChangeLog {arch}/=tagging-method
+
+
+2003-10-21 15:22:47 GMT	Colin Walters <walters@verbum.org>	patch-172
+
+    Summary:
+      don't lose if we try to restore an entry at the same time it's being loaded
+    Revision:
+      rhythmbox--mainline--0.6--patch-172
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+
+2003-10-21 14:50:44 GMT	Colin Walters <walters@verbum.org>	patch-171
+
+    Summary:
+      -Wall -Werror fixes (teuf)
+    Revision:
+      rhythmbox--mainline--0.6--patch-171
+
+
+    modified files:
+     ChangeLog corba/Rhythmbox.idl corba/test-corba.c
+     monkey-media/monkey-media-player-xine.c shell/main.c
+     shell/rb-shell.c shell/rb-statusbar.c
+
+
+2003-10-21 14:43:13 GMT	Colin Walters <walters@verbum.org>	patch-170
+
+    Summary:
+      bonobo fixes (teuf)
+    Revision:
+      rhythmbox--mainline--0.6--patch-170
+
+    Patches applied:
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.5--base-0
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-1
+       Merged corba changes from mainline, this prepares a merge with walters's mainline
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-2
+       Fixed a few buglets, and actually tested bonobo callbacks work, still a problem with the statusbar when adding new songs
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-3
+       Polishing the big bonobo patch, still gconf notifiers to add, and command line handling to debug
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-4
+       Fixed command line parameters calling CORBA function to query Rhythmbox state
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-5
+       Fixed the remaining few glitches I could find, moved gconf notification for repeat and shuffle in rb-shell-player.c, it's now ready to be tested and broken by more people
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-6
+       Renamed test-activation to test-corba, arch should handle that perfectly (?)
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-143
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+       Merged changes from 0.5 branch and made compilation work
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+       Properly acquire read lock when necessary
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+       uses RBEntryView 'playing-entry' property instead of adding an 'entry' property in RBShellPlayer
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+       Small cleanups in preparation for merge
+    
+     * teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+       Final fixes to for the repeat/shuffle notification, thanks to Vincent Untz for its suggestions
+    
+
+    new files:
+     corba/test-corba.c
+
+    modified files:
+     ChangeLog corba/Makefile.am corba/Rhythmbox.idl
+     monkey-media/monkey-media-player-gst-tmp.c
+     monkey-media/monkey-media-player-gst.c
+     monkey-media/monkey-media-player-xine.c
+     monkey-media/monkey-media-player.h shell/main.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c shell/rb-statusbar.c shell/rb-statusbar.h
+     widgets/rb-player.c widgets/rb-player.h
+
+    new patches:
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-5
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-6
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+
+
+2003-10-21 07:58:45 GMT	Colin Walters <walters@verbum.org>	patch-169
+
+    Summary:
+      some hackery on smart playlists
+    Revision:
+      rhythmbox--mainline--0.6--patch-169
+
+
+    new files:
+     widgets/rb-query-creator.c widgets/rb-query-creator.h
+
+    modified files:
+     ChangeLog data/art/Makefile.am
+     data/glade/create-playlist.glade data/ui/rhythmbox-ui.xml.in
+     lib/rb-stock-icons.c lib/rb-stock-icons.h
+     shell/rb-playlist-manager.c sources/rb-playlist-source.c
+     sources/rb-playlist-source.h widgets/Makefile.am
+
+    renamed files:
+     data/art/.arch-ids/rhythmbox-smart-playlist.png.id
+       ==> data/art/.arch-ids/rhythmbox-automatic-playlist.png.id
+     data/art/rhythmbox-smart-playlist.png
+       ==> data/art/rhythmbox-automatic-playlist.png
+
+
+2003-10-20 15:17:51 GMT	Colin Walters <walters@verbum.org>	patch-168
+
+    Summary:
+      avoid strduping so much when getting strings
+    Revision:
+      rhythmbox--mainline--0.6--patch-168
+
+
+    modified files:
+     ChangeLog iradio/rb-station-properties-dialog.c
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h
+     shell/rb-playlist-manager.c shell/rb-shell-clipboard.c
+     shell/rb-shell-player.c sources/rb-library-source.c
+     sources/rb-playlist-source.c widgets/rb-entry-view.c
+     widgets/rb-player.c widgets/rb-song-info.c
+
+
 2003-10-20 04:22:43 GMT	Colin Walters <walters@verbum.org>	patch-167
 
     Summary:
