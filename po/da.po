@@ -1,16 +1,18 @@
 # Danish translation of Rhythmbox
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <kenneth@gnu.org>, 2002.
+# Kenneth Christiansen <kenneth@gnu.org>, 2002.
 #
 # Konventioner:
 #
 # playlist -> sætliste
+# library  -> samling
+# group    -> ??? ikke gruppe, da det forvæksles med band
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Rhythmbox\n"
-"POT-Creation-Date: 2002-05-21 22:06+0200\n"
+"POT-Creation-Date: 2002-06-12 22:47+0200\n"
 "PO-Revision-Date: 2002-05-21 22:07+0200\n"
 "Last-Translator: Kenneth Christiansen <kenneth@gnu.org>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -21,6 +23,40 @@ msgstr ""
 #: data/GNOME_Rhythmbox_Shell.server.in.h:1
 msgid "Rhythmbox shell"
 msgstr "Rhythmbox-skal"
+
+#: data/node-views/rb-node-view-albums.xml.h:1
+#: data/node-views/rb-node-view-albums.xml.in.h:1
+#: data/node-views/rb-node-view-songs.xml.h:2
+#: data/node-views/rb-node-view-songs.xml.in.h:2
+msgid "Album"
+msgstr "Album"
+
+#: data/node-views/rb-node-view-artists.xml.h:1
+#: data/node-views/rb-node-view-artists.xml.in.h:1
+#: data/node-views/rb-node-view-songs.xml.h:3
+#: data/node-views/rb-node-view-songs.xml.in.h:3
+msgid "Artist"
+msgstr "Kunstner"
+
+#: data/node-views/rb-node-view-songs.xml.h:1
+#: data/node-views/rb-node-view-songs.xml.in.h:1
+msgid "#"
+msgstr "#"
+
+#: data/node-views/rb-node-view-songs.xml.h:4
+#: data/node-views/rb-node-view-songs.xml.in.h:4
+msgid "Genre"
+msgstr "Genre"
+
+#: data/node-views/rb-node-view-songs.xml.h:5
+#: data/node-views/rb-node-view-songs.xml.in.h:5
+msgid "Time"
+msgstr "Tid"
+
+#: data/node-views/rb-node-view-songs.xml.h:6
+#: data/node-views/rb-node-view-songs.xml.in.h:6
+msgid "Title"
+msgstr "Titel"
 
 #: data/ui/rhythmbox-test-view-2.xml.h:1
 #: data/ui/rhythmbox-test-view-2.xml.in.h:1
@@ -104,7 +140,7 @@ msgstr "Vis visualiseringseffekter"
 
 #: data/ui/rhythmbox-ui.xml.h:17 data/ui/rhythmbox-ui.xml.in.h:17
 msgid "Shuffle"
-msgstr "Shuffle"
+msgstr "Vælg tilfældigt"
 
 #: data/ui/rhythmbox-ui.xml.h:18 data/ui/rhythmbox-ui.xml.in.h:18
 msgid "Start playing"
@@ -116,7 +152,7 @@ msgstr "Stop afspilning"
 
 #: data/ui/rhythmbox-ui.xml.h:20 data/ui/rhythmbox-ui.xml.in.h:20
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Slå gentagtilstand til/fra"
 
 #: data/ui/rhythmbox-ui.xml.h:21 data/ui/rhythmbox-ui.xml.in.h:21
 msgid "Turn Visual _On"
@@ -170,10 +206,10 @@ msgstr "Stor"
 msgid "_Medium"
 msgstr "_Mellem"
 
-# Gruppering da band kan forveksles med grupper
+# Samling da band kan forveksles med grupper
 #: data/ui/rhythmbox-ui.xml.h:34 data/ui/rhythmbox-ui.xml.in.h:34
 msgid "_New Group"
-msgstr "_Ny gruppering"
+msgstr "_Ny samling"
 
 #: data/ui/rhythmbox-ui.xml.h:35 data/ui/rhythmbox-ui.xml.in.h:35
 msgid "_Next Song"
@@ -198,7 +234,7 @@ msgstr "Gentag"
 
 #: data/ui/rhythmbox-ui.xml.h:40 data/ui/rhythmbox-ui.xml.in.h:40
 msgid "_Shuffle"
-msgstr "_Shuffle"
+msgstr "Vælg tilfældig"
 
 #: data/ui/rhythmbox-ui.xml.h:41 data/ui/rhythmbox-ui.xml.in.h:41
 msgid "_Small"
@@ -214,11 +250,13 @@ msgid ""
 "GConf error:\n"
 "  %s"
 msgstr ""
+"GConf-fejl:\n"
+"  %s"
 
 #: lib/rb-file-helpers.c:63
 #, c-format
 msgid "Failed to find %s"
-msgstr ""
+msgstr "Mislukkedes at finde %s"
 
 #: lib/widgets/rb-link.c:220
 #, c-format
@@ -232,10 +270,15 @@ msgid ""
 "%s"
 msgstr ""
 
-#: lib/widgets/rb-node-view.c:393
+#: lib/widgets/rb-node-view.c:409
 #, c-format
 msgid "Failed to parse %s as NodeView layout file"
 msgstr ""
+
+#: lib/widgets/rb-node-view.c:867
+#, c-format
+msgid "%d songs, %d:%02d:%02d playing time, %s"
+msgstr "%d sange, %d:%02d:%02d spilletid, %s"
 
 #: lib/widgets/rb-player.c:174
 msgid "from "
@@ -264,30 +307,30 @@ msgstr "/Slet"
 #: lib/widgets/rb-sidebar.c:403
 #, c-format
 msgid "Failed to parse %s as sidebar layout file"
-msgstr ""
+msgstr "Mislykkedes at parse %s som 'sidebar layout'-fil"
 
 #: library/rb-library-thread.c:205
 #, c-format
 msgid "%s of %.2d"
-msgstr ""
+msgstr "%s af %.2d"
 
-#: shell/main.c:55
+#: shell/main.c:57
 msgid "Enable debugging code"
-msgstr ""
+msgstr "Aktivér aflusingstilstand"
 
-#: shell/main.c:56
+#: shell/main.c:58
 msgid "Quit Rhythmbox"
 msgstr "Afslut Rhythmbox"
 
-#: shell/main.c:57
+#: shell/main.c:59
 msgid "MonkeyMedia options:"
 msgstr "Monkeymedia-indstillinger:"
 
-#: shell/main.c:64
+#: shell/main.c:73
 msgid "Rhythmbox"
 msgstr "Rhytmbox"
 
-#: shell/main.c:138
+#: shell/main.c:147
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -325,7 +368,7 @@ msgstr ""
 #: shell/rb-shell.c:178
 #, c-format
 msgid "Failed to create directory %s."
-msgstr ""
+msgstr "Mislykkedes at oprette katalogen %s."
 
 #: shell/rb-shell.c:268
 #, c-format
@@ -334,7 +377,7 @@ msgid ""
 "%s"
 msgstr ""
 
-#: tests/testview.c:571
+#: tests/testview.c:582
 #, c-format
 msgid ""
 "Failed to create stream for %s, error was:\n"
