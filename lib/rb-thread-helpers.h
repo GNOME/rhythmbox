@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header for thread-related utility functions
+ *
  *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify

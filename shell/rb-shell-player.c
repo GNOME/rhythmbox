@@ -1,4 +1,6 @@
 /* 
+ *  arch-tag: Implementation of main playback logic object
+ *
  *  Copyright (C) 2002, 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2002,2003 Colin Walters <walters@debian.org>
  *

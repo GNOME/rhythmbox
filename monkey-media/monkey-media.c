@@ -1,4 +1,7 @@
 /*  monkey-sound
+ *
+ *  arch-tag: Implementation of main MonkeyMedia interface
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *                     Marco Pesenti Gritti <marco@it.gnome.org>
  *                     Bastien Nocera <hadess@hadess.net>

@@ -1,5 +1,6 @@
 /*
  * libid3tag - ID3 tag manipulation library
+ * arch-tag: global definitions for libid3tag - ID3 tag manipulation library
  * Copyright (C) 2000-2001 Robert Leslie
  *
  * This program is free software; you can redistribute it and/or modify

@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of RBNode filtering object
+ *
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
  *            (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *            (C) 2003 Colin Walters <walters@verbum.org>

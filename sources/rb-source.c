@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of the abstract base class of all sources
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *

@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header with various type declarations for DND
+ *
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
  *
  *  This program is free software; you can redistribute it and/or modify

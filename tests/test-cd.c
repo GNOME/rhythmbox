@@ -1,5 +1,5 @@
 /*
- *  sample audiocd code
+ *  arch-tag: Simple CD playback test program
  *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *

@@ -1,4 +1,5 @@
 #!/bin/sh
+# arch-tag: Script to update copied widget files from libegg
 
 function die() {
   echo $*

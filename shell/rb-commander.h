@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header for Rhythmbox commander object
+ *
  *  Copyright © 2002 Jorn Baayen.  All rights reserved.
  *
  *  This program is free software; you can redistribute it and/or modify

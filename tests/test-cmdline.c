@@ -1,5 +1,5 @@
 /*
- * sample command-line player using monkey-sound
+ *  arch-tag: sample command-line player using monkey-sound
  *
  *  Copyright (C) 2002 Thomas Vander Stichele <thomas@apestaart.org>
  *

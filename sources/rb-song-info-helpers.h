@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header for various RBNode song information utility functions
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *                2002 Kenneth Christiansen <kenneth@gnu.org>
  *

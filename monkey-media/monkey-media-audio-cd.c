@@ -1,4 +1,7 @@
 /*  monkey-media
+ *
+ *  arch-tag: Implementation of MonkeyMedia AudioCD playback object
+ *
  *  Copyright (C) 2001 Iain Holmes <iain@ximian.com>
  *                2002 Kenneth Christiansen <kenneth@gnu.org>
  *                     Olivier Martin <omartin@ifrance.com>

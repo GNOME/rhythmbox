@@ -1,4 +1,5 @@
-/* eel-ellipsizing-label.h: Subclass of GtkLabel that ellipsizes the text.
+/* 
+   arch-tag: Header for subclass of GtkLabel that ellipsizes the text.
 
    Copyright (C) 2001 Eazel, Inc.
 

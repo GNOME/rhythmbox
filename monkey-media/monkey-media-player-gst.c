@@ -1,4 +1,7 @@
 /*  monkey-media
+ *
+ *  arch-tag: Implementation of GStreamer backend, without bug workarounds
+ *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify

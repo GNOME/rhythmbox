@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for MonkeyMedia stream information library
+
 SUBDIRS = id3-vfs
 
 noinst_LTLIBRARIES = libstream-info-impl.la

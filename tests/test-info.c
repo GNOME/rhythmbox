@@ -1,4 +1,5 @@
-/* Get the bitrate from an mp3 file with gnome-vfs
+/*
+ * arch-tag: test program for retrieval of metadata from MonkeyMedia
  * compile with:
  * gcc bitrate.c -o bitrate `gnome-config --libs --cflags vfs`
  *

@@ -1,4 +1,5 @@
 #
+# arch-tag: Makefile rules for building GNOMEish Docbook documentation
 # No modifications of this Makefile should be necessary.
 #
 # To use this template:

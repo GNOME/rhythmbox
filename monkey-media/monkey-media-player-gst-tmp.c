@@ -1,4 +1,7 @@
 /*  monkey-media
+ *
+ *  arch-tag: Implementation of GStreamer backends, with workarounds for bugs
+ *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *

@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of dialog that displays errors during library loading
+ *
  *  Copyright (C) 2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for node view XML files
+
 nodeviewsdir = $(pkgdatadir)/node-views
 
 nodeviews_DATA = rb-node-view-songs.xml   \

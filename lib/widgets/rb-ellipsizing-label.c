@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 
-/* eel-ellipsizing-label.c: Subclass of GtkLabel that ellipsizes the text.
+/* 
+   arch-tag: Implementation of subclass of GtkLabel that ellipsizes the text.
 
    Copyright (C) 2001 Eazel, Inc.
 

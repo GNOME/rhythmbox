@@ -1,4 +1,7 @@
 /* rb-cell-renderer-rating.c
+
+ * arch-tag: Implementation of star rating GtkTreeView cell renderer
+ *
  * Copyright (C) 2000  Red Hat, Inc.,  Jonathan Blandford <jrb@redhat.com>
  * Copyright (C) 2002  Olivier Martin <oleevye@wanadoo.fr>
  *

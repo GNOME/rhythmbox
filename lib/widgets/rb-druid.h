@@ -1,4 +1,6 @@
 /*
+ * arch-tag: Header for Rhythmbox first-time druid
+ *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

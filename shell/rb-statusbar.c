@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of status display widget
+ *
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *

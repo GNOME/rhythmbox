@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Implementation of main Rhythmbox shell
+ *
  *  Copyright (C) 2002, 2003 Jorn Baayen
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *

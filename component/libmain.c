@@ -1,4 +1,5 @@
 /*
+ * arch-tag: Nautilus context menu constructor
  * Copyright (C) 2000, 2001 Eazel, Inc
  *
  * This program is free software; you can redistribute it and/or

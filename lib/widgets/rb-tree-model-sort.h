@@ -1,4 +1,7 @@
-/*  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
+/*
+ *  arch-tag: Header for wrapper around GtkTreeModel sort for D&D, etc
+ * 
+ *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

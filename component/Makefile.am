@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for the Nautilus component
+
 INCLUDES =						\
 	-DG_DISABLE_DEPRECATED				\
 	-DGTK_DISABLE_DEPRECATED			\

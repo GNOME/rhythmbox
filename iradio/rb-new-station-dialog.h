@@ -1,5 +1,7 @@
 /*
- *  Copyright (C) Colin Walters <walters@debian.org>
+ *  arch-tag: Header files for new internet radio station dialog
+ *
+ *  Copyright (C) 2002, 2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

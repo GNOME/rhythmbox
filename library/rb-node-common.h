@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header with various definitions for Rhythmbox node database
+ *
  *  Copyright (C) 2003 Xan Lopez <xan@masilla.org>
  * 
  *  This program is free software; you can redistribute it and/or modify

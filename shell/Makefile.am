@@ -1,3 +1,4 @@
+## arch-tag: Automake rules for main Rhythmbox shell
 
 AUTHORS.tab : $(top_srcdir)/AUTHORS
 	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/AUTHORS > $@.tmp

@@ -1,4 +1,6 @@
-/*  Rhythmbox.
+/*
+ *  arch-tag: Implementation of wrapper around GtkTreeModel sort for D&D, etc
+ * 
  *  Copyright (C) 2002 Olivier Martin <omartin@ifrance.com>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for Rhythmbox song library
+
 noinst_LTLIBRARIES = librblibrary.la
 
 librblibrary_la_SOURCES =				\

@@ -1,5 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
+ *  arch-tag: Implementation of the "disclosure" widget
+ *
  *  Authors: Iain Holmes <iain@ximian.com>
  *
  *  Copyright 2002 Iain Holmes

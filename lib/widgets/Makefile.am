@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for Rhythmbox's collection of various widgets
+
 noinst_LTLIBRARIES = librbwidgets.la
 
 librbwidgets_la_SOURCES =				\

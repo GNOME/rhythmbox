@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for MonkeyMedia sound library
+
 SUBDIRS = stream-info-impl
 
 noinst_LTLIBRARIES = libmonkey-media.la

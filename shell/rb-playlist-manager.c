@@ -1,4 +1,6 @@
 /* 
+ *  arch-tag: Implementation of Rhythmbox playlist management object
+ *
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify

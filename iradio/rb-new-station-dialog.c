@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Implementation of new internet radio station dialog
+ *
  *  Copyright (C) 2002,2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify

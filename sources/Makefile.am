@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for source object library
+
 noinst_LTLIBRARIES = libsources.la libsourcesimpl.la
 
 libsources_la_SOURCES = rb-source.c rb-source.h

@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for misc. utility functions
+
 SUBDIRS = widgets
 
 noinst_LTLIBRARIES = librb.la

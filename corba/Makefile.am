@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for Rhythmbox corba interface
+
 #lib_LTLIBRARIES = librbcorba.la
 noinst_LTLIBRARIES = librbcorba.la
 
@@ -27,3 +29,4 @@ $(rhythmbox_interface_idl_sources): Rhythmbox.idl
 BUILT_SOURCES = $(rhythmbox_interface_idl_sources)
 
 EXTRA_DIST = Rhythmbox.idl
+

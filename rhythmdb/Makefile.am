@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for RhythmDB library
+
 noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_SOURCES =				\

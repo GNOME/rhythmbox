@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for internet radio library
+
 noinst_LTLIBRARIES = librbiradio.la
 
 librbiradio_la_SOURCES =				\

@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header with definitions for Rhythmbox icon loading
+ *
  *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify

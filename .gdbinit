@@ -1,4 +1,5 @@
-#  Some macros handy for debugging GObjects.
+#
+#  arch-tag: Some macros handy for debugging GObjects
 #
 #  Copyright © 2003 Colin Walters <walters@verbum.org>
 #

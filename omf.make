@@ -1,4 +1,5 @@
 # 
+# arch-tag: Makefile rules for using Scrollkeeper to install OMF files
 # No modifications of this Makefile should be necessary.
 #
 # This file contains the build instructions for installing OMF files.  It is

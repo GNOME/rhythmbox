@@ -1,3 +1,4 @@
+## arch-tag: Automake rules for hacked-up id3 tag library
 
 if USE_ID3VFS
 noinst_LTLIBRARIES = libid3-vfs.la

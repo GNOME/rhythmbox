@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header file for internet radio station properties dialog
+ *
  *  Copyright (C) Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,4 +1,7 @@
 /*  monkey-media
+ *
+ *  arch-tag: Implementation of Xine audio backend
+ *
  *  Copyright (C) 2003 Jorn Baayen <jorn@nl.linux.org>
  *
  *  This program is free software; you can redistribute it and/or modify

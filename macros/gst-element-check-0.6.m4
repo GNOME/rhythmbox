@@ -1,6 +1,8 @@
 dnl Perform a check for a GStreamer element using gst-inspect
 dnl Thomas Vander Stichele <thomas at apestaart dot org>
 dnl Last modification: 23/10/2002
+define(arch-tag)
+# arch-tag: Autoconf macro for checking GStreamer elements
 
 dnl AM_GST_ELEMENT_CHECK(ELEMENT-NAME, ACTION-IF-FOUND, ACTION-IF-NOT-FOUND)
 

@@ -1,4 +1,5 @@
-/* gtk-playlist.h: Simple playlist dialog
+/* 
+   arch-tag: Header for Rhythmbox playlist parser
 
    Copyright (C) 2002, 2003 Bastien Nocera <hadess@hadess.net>
    Copyright (C) 2003 Colin Walters <walters@verbum.org>

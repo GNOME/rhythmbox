@@ -2,7 +2,7 @@
  * Please see file COPYING or http://bitzi.com/publicdomain 
  * for more info.
  *
- * NIST Secure Hash Algorithm 
+ * arch-tag: NIST Secure Hash Algorithm implementation
  * heavily modified by Uwe Hollerbach <uh@alumni.caltech edu> 
  * from Peter C. Gutmann's implementation as found in 
  * Applied Cryptography by Bruce Schneier 

@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for included art
+
 art_DATA = rhythmbox-next.png          \
 	   rhythmbox-play.png          \
 	   rhythmbox-pause.png         \

@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for glade XML files
+
 glade_DATA =	general-prefs.glade	  	\
 		library-prefs.glade	  	\
 		song-info.glade			\

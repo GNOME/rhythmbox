@@ -1,4 +1,5 @@
-/* gtk-playlist.c
+/* 
+   arch-tag: Implementation of Rhythmbox playlist parser
 
    Copyright (C) 2002, 2003 Bastien Nocera
    Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>

@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header for AudioCD source object
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *

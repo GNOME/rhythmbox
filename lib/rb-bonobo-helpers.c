@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Implementation of various utility functions for using Bonobo
+ *
  *  Copyright (C) 2002 Jorn Baayen
  *
  *  This program is free software; you can redistribute it and/or modify

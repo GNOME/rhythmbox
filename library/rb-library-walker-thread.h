@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header for thread for traversing a directory to add to library
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *

@@ -1,4 +1,5 @@
 /*
+ * arch-tag: Nautilus context menu main implementation
  * Copyright (C) 2003 Yann Rouillard
  *
  * This program is free software; you can redistribute it and/or

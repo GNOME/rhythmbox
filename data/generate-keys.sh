@@ -1,4 +1,6 @@
 #!/bin/sh
+# arch-tag: Simple script to generate mime keys database 
+
 
 MIME_TYPES=`cat $1 | grep mime_types | cut -f 2 -d "=" | tr "," " "`
 

@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Header file for the internet radio backend database
+ *
  *  Copyright (C) 2002 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify

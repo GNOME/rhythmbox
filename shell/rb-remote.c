@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of Rhythmbox LIRC remote control object
+ *
  *  Copyright (C) 2002 James Willcox  <jwillcox@gnome.org>
  *
  *  This program is free software; you can redistribute it and/or modify

@@ -1,6 +1,8 @@
 # Configure paths for libogg
 # Jack Moffitt <jack@icecast.org> 10-21-2000
 # Shamelessly stolen from Owen Taylor and Manish Singh
+define(arch-tag)
+# arch-tag: Autoconf macro for checking libogg
 
 dnl XIPH_PATH_OGG([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Test for libogg, and define OGG_CFLAGS and OGG_LIBS

@@ -1,4 +1,6 @@
 /* 
+ *  arch-tag: Implementation of RhythmDB tree-structured database
+ *
  *  Copyright (C) 2003 Colin Walters <walters@verbum.org>
  *
  *  This program is free software; you can redistribute it and/or modify

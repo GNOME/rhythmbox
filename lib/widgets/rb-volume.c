@@ -1,4 +1,6 @@
 /*
+ *  arch-tag: Implementation of Rhythmbox volume control button
+ * 
  *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
  *
  * Some portions are:

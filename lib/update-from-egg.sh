@@ -1,4 +1,5 @@
 #!/bin/sh
+# arch-tag: Script to update copied utility files from libegg
 
 function die() {
   echo $*

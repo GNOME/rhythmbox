@@ -1,4 +1,7 @@
 /*  monkey-sound
+ *
+ *  arch-tag: Header for various Ogg Vorbis loading functions
+ *
  *  Copyright (C) 2002 Jorn Baayen <jorn@nl.linux.org>
  *                     Marco Pesenti Gritti <marco@it.gnome.org>
  *                     Bastien Nocera <hadess@hadess.net>

@@ -1,4 +1,6 @@
-/* 
+/*
+ *  arch-tag: Implementation of Rhythmbox tray icon object
+ *
  *  Copyright (C) 2003 Colin Walters <walters@debian.org>
  *
  *  This program is free software; you can redistribute it and/or modify

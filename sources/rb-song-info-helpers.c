@@ -1,3 +1,7 @@
+/*
+ *  arch-tag: Implementation of various RBNode song information utility functions
+ */
+
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <monkey-media.h>

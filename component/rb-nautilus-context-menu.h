@@ -1,6 +1,7 @@
 /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
 
 /*
+ * arch-tag: Nautilus context menu main definition
  * Copyright (C) 2002 James Willcox
  *
  * This program is free software; you can redistribute it and/or

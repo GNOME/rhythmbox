@@ -1,3 +1,5 @@
+define(arch-tag)
+# arch-tag: Toplevel Autoconf configuration script
 AC_PREREQ(2.53)
 AC_INIT(shell)
 AM_CONFIG_HEADER(config.h)

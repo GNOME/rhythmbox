@@ -1,3 +1,5 @@
+## arch-tag: Automake rules for the toplevel source
+
 AUTOMAKE_OPTIONS = 1.7
 
 SUBDIRS = monkey-media lib sources library iradio corba shell data po tests component help

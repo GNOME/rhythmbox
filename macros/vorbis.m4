@@ -2,6 +2,8 @@
 # Jack Moffitt <jack@icecast.org> 10-21-2000
 # Shamelessly stolen from Owen Taylor and Manish Singh
 # thomasvs added check for vorbis_bitrate_addblock which is new in rc3
+define(arch-tag)
+# arch-tag: Autoconf macro for checking libvorbis
 
 dnl XIPH_PATH_VORBIS([ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]])
 dnl Test for libvorbis, and define VORBIS_CFLAGS and VORBIS_LIBS
