@@ -1,5 +1,5 @@
 
-if HAVE_MP3
+if USE_ID3VFS
 noinst_LTLIBRARIES = libid3-vfs.la
 
 libid3_vfs_la_SOURCES = id3-vfs.c id3-vfs.h field.h file.h global.h tag.h

@@ -67,7 +67,9 @@
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
-//#include "rb-audiocd-source.h"
+#ifdef HAVE_AUDIOCD
+#include "rb-audiocd-source.h"
+#endif
 #include "rb-shell-preferences.h"
 #include "rb-group-source.h"
 #include "rb-file-monitor.h"
@@ -193,9 +195,9 @@ static void paned_changed_cb (GConfClient *client,
 			      GConfEntry *entry,
 			      RBShell *shell);
 #ifdef HAVE_AUDIOCD
-/* static void audiocd_changed_cb (MonkeyMediaAudioCD *cd, */
-/* 				gboolean available, */
-/* 				gpointer data); */
+static void audiocd_changed_cb (MonkeyMediaAudioCD *cd,
+				gboolean available,
+				gpointer data);
 #endif
 static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 					 RBSource *source,
@@ -267,7 +269,9 @@ struct RBShellPrivate
 	RBIRadioBackend *iradio_backend;
  	RBIRadioSource *iradio_source;
 
-/* 	MonkeyMediaAudioCD *cd; */
+#ifdef HAVE_AUDIOCD
+ 	MonkeyMediaAudioCD *cd;
+#endif
 
 	RBSource *selected_source;
 
@@ -744,25 +748,26 @@ rb_shell_construct (RBShell *shell)
 	g_idle_add ((GSourceFunc) rb_shell_update_source_status,
 		    shell);
 
-/* REWRITEFIXME */
-/*         if (rb_audiocd_is_any_device_available () == TRUE) { */
-/* 		rb_debug ("AudioCD device is available"); */
-/* 		shell->priv->cd = monkey_media_audio_cd_new (NULL); */
+#ifdef HAVE_AUDIOCD
+        if (rb_audiocd_is_any_device_available () == TRUE) {
+		rb_debug ("AudioCD device is available");
+		shell->priv->cd = monkey_media_audio_cd_new (NULL);
 
-/* 		if (monkey_media_audio_cd_available (shell->priv->cd, NULL)) { */
-/* 			rb_debug ("Calling audiocd_changed_cb"); */
-/* 			audiocd_changed_cb (shell->priv->cd, */
-/* 					    TRUE, */
-/* 					    shell); */
-/* 		} */
-/* 		else { */
-/* 			rb_debug("CD is not available"); */
-/* 		} */
-/* 		g_signal_connect (G_OBJECT (shell->priv->cd), "cd_changed", */
-/* 				  G_CALLBACK (audiocd_changed_cb), shell); */
-/*         } */
-/* 	else */
-/* 		rb_debug ("No AudioCD device is available!"); */
+		if (monkey_media_audio_cd_available (shell->priv->cd, NULL)) {
+			rb_debug ("Calling audiocd_changed_cb");
+			audiocd_changed_cb (shell->priv->cd,
+					    TRUE,
+					    shell);
+		}
+		else {
+			rb_debug("CD is not available");
+		}
+		g_signal_connect (G_OBJECT (shell->priv->cd), "cd_changed",
+				  G_CALLBACK (audiocd_changed_cb), shell);
+        }
+	else
+		rb_debug ("No AudioCD device is available!");
+#endif
 	
 	/* register with CORBA */
 	CORBA_exception_init (&ev);

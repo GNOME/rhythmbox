@@ -149,18 +149,22 @@ AM_CONDITIONAL(HAVE_MP3,test "x$enable_mp3" = "xyes")
 
 dnl Check for Ogg Vorbis
 
-MM_PATH_OGG(enable_vorbis=yes,enable_vorbis=no)
+AC_ARG_ENABLE(vorbis, AC_HELP_STRING([--disable-vorbis],
+				[don't build with Ogg Vorbis support]))
 if test x"$enable_vorbis" = xyes; then
-  MM_PATH_VORBIS(,enable_vorbis=no)
-fi
-if test x"$enable_vorbis" = xyes; then
-  if test x"$have_gstreamer" = xyes; then
-    AM_GST_ELEMENT_CHECK(vorbisfile,,
-			 AC_MSG_WARN(vorbisfile element missing, Ogg Vorbis playback will not work!))
+  MM_PATH_OGG(enable_vorbis=yes,enable_vorbis=no)
+  if test x"$enable_vorbis" = xyes; then
+    MM_PATH_VORBIS(,enable_vorbis=no)
   fi
-  CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
-  LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS"
-fi
+  if test x"$enable_vorbis" = xyes; then
+    if test x"$have_gstreamer" = xyes; then
+      AM_GST_ELEMENT_CHECK(vorbisfile,,
+			   AC_MSG_WARN(vorbisfile element missing, Ogg Vorbis playback will not work!))
+    fi
+    CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
+    LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS"
+  fi
+fi  
 if test "x$enable_vorbis" = "xyes"; then
    AC_DEFINE(HAVE_VORBIS,,[Define if we have Ogg Vorbis support])
 fi
@@ -170,7 +174,10 @@ dnl Check for FLAC
 
 AC_ARG_ENABLE(flac, AC_HELP_STRING([--disable-flac],
 				[don't build with flac support]))
-if test "x$enable_flac" != "xno"; then
+if test x"$enable_flac" = xyes && test x"$enable_mp3" != xyes; then
+  AC_MSG_ERROR([libid3tag is required for FLAC support])  
+fi
+if test "$xenable_flac" != "xno" && test x"$enable_mp3" = xyes; then
   AC_CHECK_HEADER(FLAC/all.h,[enable_flac=yes],)
 fi
 if test "x$enable_flac" = "xyes"; then
@@ -183,6 +190,8 @@ AM_CONDITIONAL(HAVE_FLAC,test "x$enable_flac" = "xyes")
 
 CFLAGS="$CFLAGS $OGG_CFLAGS $VORBIS_CFLAGS"
 LIBS="$LIBS $OGG_LIBS $VORBIS_LIBS $VORBISFILE_LIBS $FLAC_LIBS"
+
+AM_CONDITIONAL(USE_ID3VFS, test x"$enable_mp3" = "xyes" || test x"$enable_flac" = "xyes")
 
 dnl Check for Musicbrainz
 AC_ARG_ENABLE(musicbrainz, AC_HELP_STRING([--disable-musicbrainz],
