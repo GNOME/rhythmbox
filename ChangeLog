@@ -1,3 +1,15 @@
+2002-09-01  Olivier Martin  <omartin@ifrance.com>
+
+	* lib/widgets/rb-node-view.c: (rb_node_view_class_init),
+	(rb_node_view_set_property), (rb_node_view_set_playing_node),
+	(rb_node_view_enable_drag_source), (child_deleted_cb):
+	* views/rb-group-view.c: (rb_group_view_init),
+	(rb_group_view_node_removed_cb):
+	* views/rb-library-view.c: (rb_library_view_set_property),
+	(rb_library_view_node_removed_cb):
+
+	Don't crash whem removing the playing node.
+
 2002-08-30  Olivier Martin <omartin@ifrance.com>
 
 	* library/rb-node.c: (rb_node_remove_child):

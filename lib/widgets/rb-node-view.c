@@ -100,6 +100,9 @@ static gboolean rb_node_view_scroll_to_string (RBNodeView *view,
 			                       const char *string,
 			                       RBNode *start,
 			                       RBDirection direction);
+static void child_deleted_cb (RBNode *node,
+			      RBNode *child,
+			      RBNodeView *view);
 
 struct RBNodeViewPrivate
 {
@@ -130,6 +133,7 @@ enum
 	NODE_SELECTED,
 	NODE_ACTIVATED,
 	CHANGED,
+	PLAYING_NODE_REMOVED,
 	LAST_SIGNAL
 };
 
@@ -252,6 +256,17 @@ rb_node_view_class_init (RBNodeViewClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+	
+	rb_node_view_signals[PLAYING_NODE_REMOVED] =
+		g_signal_new ("playing_node_removed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBNodeViewClass, changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
+
 }
 
 static void
@@ -300,8 +315,16 @@ rb_node_view_set_property (GObject *object,
 	switch (prop_id)
 	{
 	case PROP_ROOT:
-		view->priv->root = g_value_get_object (value);
-		rb_node_view_construct (view);
+		{
+			view->priv->root = g_value_get_object (value);
+			rb_node_view_construct (view);
+
+			g_signal_connect_object (G_OBJECT (view->priv->root),
+						 "child_destroyed",
+						 G_CALLBACK (child_deleted_cb),
+						 G_OBJECT (view),
+						 0);
+		}
 		break;
 	case PROP_FILTER_PARENT:
 		{
@@ -691,6 +714,7 @@ void
 rb_node_view_set_playing_node (RBNodeView *view,
 			       RBNode *node)
 {
+
 	g_return_if_fail (RB_IS_NODE_VIEW (view));
 
 	g_object_set (G_OBJECT (view),
@@ -1482,4 +1506,28 @@ rb_node_view_enable_drag_source (RBNodeView *view,
 	gtk_tree_view_enable_model_drag_source (GTK_TREE_VIEW (view->priv->treeview),
 						GDK_BUTTON1_MASK | GDK_BUTTON3_MASK,
 						targets, n_targets, GDK_ACTION_COPY);
+}
+
+static void
+child_deleted_cb (RBNode *node,
+		  RBNode *child,
+		  RBNodeView *view)
+{
+	RBNode *playing_node = NULL;
+
+	g_return_if_fail (view != NULL);
+	g_return_if_fail (child != NULL);
+
+	playing_node = rb_node_view_get_playing_node (view);
+	if (playing_node != NULL)
+	{
+		if (rb_node_get_id (child) ==
+		    rb_node_get_id (playing_node))
+		{
+			g_signal_emit (G_OBJECT (view), 
+				       rb_node_view_signals[PLAYING_NODE_REMOVED], 
+				       0, 
+				       playing_node);
+		}
+	}
 }
