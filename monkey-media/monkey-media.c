@@ -209,11 +209,6 @@ monkey_media_init_internal (void)
 
 	monkey_media_mkdir (mmdir);
 
-#ifdef HAVE_GSTREAMER
-	/* use opt gstreamer sched; so that we work well with rh8 */
-	gst_scheduler_factory_set_default_name ("opt");
-#endif
-
 	/* okay, we're alive */
 	alive = TRUE;
 }
