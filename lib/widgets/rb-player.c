@@ -54,12 +54,14 @@ static void rb_player_set_show_timeline (RBPlayer *player,
 static void rb_player_set_show_textline (RBPlayer *player,
 			                 gboolean show);
 static gboolean rb_player_sync_time (RBPlayer *player);
-static void rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
-				                   RBPlayer *player);
 static void rb_player_elapsed_button_press_event_cb (GtkWidget *elapsed_bix,
 						     GdkEventButton *event,
 					             RBPlayer *player);
 static void rb_player_update_elapsed (RBPlayer *player);
+static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
+static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBPlayer *player);
+static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBPlayer *player);
+static void slider_changed_callback (GtkWidget *widget, RBPlayer *player);
 
 typedef enum 
 {
@@ -87,7 +89,9 @@ struct RBPlayerPrivate
 	gboolean timeline_shown;
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
-	gboolean lock_adjustment;
+	gboolean slider_dragging;
+	gboolean slider_locked;
+	guint value_changed_update_handler;
 	GtkWidget *elapsed_box;
 	GtkWidget *elapsed;
 
@@ -217,11 +221,23 @@ rb_player_init (RBPlayer *player)
 	g_object_ref (G_OBJECT (scalebox));
 	
 	player->priv->adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 1.0, 0.01, 0.1, 0.0));
-	g_signal_connect (G_OBJECT (player->priv->adjustment),
-			  "value_changed",
-			  G_CALLBACK (rb_player_adjustment_value_changed_cb),
-			  player);
 	player->priv->scale = gtk_hscale_new (player->priv->adjustment);
+	g_signal_connect (G_OBJECT (player->priv->scale),
+			  "button_press_event",
+			  G_CALLBACK (slider_press_callback),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->scale),
+			  "button_release_event",
+			  G_CALLBACK (slider_release_callback),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->scale),
+			  "motion_notify_event",
+			  G_CALLBACK (slider_moved_callback),
+			  player);
+	g_signal_connect (G_OBJECT (player->priv->scale),
+			  "value_changed",
+			  G_CALLBACK (slider_changed_callback),
+			  player);
 	gtk_scale_set_draw_value (GTK_SCALE (player->priv->scale), FALSE);
 	gtk_widget_set_size_request (player->priv->scale, 150, -1);
 	gtk_box_pack_start (GTK_BOX (scalebox), player->priv->scale, FALSE, TRUE, 0);
@@ -460,6 +476,9 @@ rb_player_sync_time (RBPlayer *player)
 	if (player->priv->view_player == NULL)
 		return TRUE;
 
+	if (player->priv->slider_dragging == TRUE)
+		return TRUE;
+
 	stream = rb_view_player_get_stream (player->priv->view_player);
 	if (stream == NULL)
 	{
@@ -478,16 +497,16 @@ rb_player_sync_time (RBPlayer *player)
 		if (seconds > 0)
 			progress = (double) ((long) seconds) / duration;
 
-		player->priv->lock_adjustment = TRUE;
+		player->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (player->priv->adjustment, progress);
-		player->priv->lock_adjustment = FALSE;
+		player->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (player->priv->scale, TRUE);
 	}
 	else
 	{
-		player->priv->lock_adjustment = TRUE;
+		player->priv->slider_locked = TRUE;
 		gtk_adjustment_set_value (player->priv->adjustment, 0.0);
-		player->priv->lock_adjustment = FALSE;
+		player->priv->slider_locked = FALSE;
 		gtk_widget_set_sensitive (player->priv->scale, FALSE);
 	}
 
@@ -496,16 +515,53 @@ rb_player_sync_time (RBPlayer *player)
 	return TRUE;
 }
 
-static void
-rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
-				       RBPlayer *player)
+static gboolean
+slider_press_callback (GtkWidget *widget,
+		       GdkEventButton *event,
+		       RBPlayer *player)
+{
+	player->priv->slider_dragging = TRUE;
+	return FALSE;
+}
+
+static gboolean
+slider_moved_callback (GtkWidget *widget,
+		       GdkEventMotion *event,
+		       RBPlayer *player)
+{
+	GtkAdjustment *adjustment;
+	double progress;
+	long duration;
+
+	if (player->priv->slider_dragging == FALSE)
+		return FALSE;
+
+	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
+
+	progress = gtk_adjustment_get_value (adjustment);
+	duration = rb_view_player_get_duration (player->priv->view_player);
+
+	player->priv->state->elapsed = (long) (progress * duration);
+
+	rb_player_update_elapsed (player);
+	
+	return FALSE;
+}
+
+static gboolean
+slider_release_callback (GtkWidget *widget,
+			 GdkEventButton *event,
+			 RBPlayer *player)
 {
 	MonkeyMediaAudioStream *stream;
 	double progress;
 	long duration, new;
+	GtkAdjustment *adjustment;
 
-	if (player->priv->lock_adjustment == TRUE)
-		return;
+	if (player->priv->slider_dragging == FALSE)
+		return FALSE;
+
+	adjustment = gtk_range_get_adjustment (GTK_RANGE (widget));
 
 	stream = rb_view_player_get_stream (player->priv->view_player);
 	progress = gtk_adjustment_get_value (adjustment);
@@ -514,7 +570,35 @@ rb_player_adjustment_value_changed_cb (GtkAdjustment *adjustment,
 	
 	monkey_media_stream_set_elapsed_time (MONKEY_MEDIA_STREAM (stream), new);
 
+	player->priv->slider_dragging = FALSE;
+
 	rb_player_sync_time (player);
+
+	return FALSE;
+}
+
+static gboolean
+changed_idle_callback (RBPlayer *player)
+{
+	slider_release_callback (player->priv->scale, NULL, player);
+
+	player->priv->value_changed_update_handler = 0;
+
+	return FALSE;
+}
+
+static void
+slider_changed_callback (GtkWidget *widget,
+		         RBPlayer *player)
+{
+	if (player->priv->slider_dragging == FALSE &&
+	    player->priv->slider_locked == FALSE &&
+	    player->priv->value_changed_update_handler == 0)
+	{
+		player->priv->slider_dragging = TRUE;
+		player->priv->value_changed_update_handler =
+			g_idle_add ((GSourceFunc) changed_idle_callback, player);
+	}
 }
 
 static void
