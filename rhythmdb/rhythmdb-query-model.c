@@ -39,6 +39,8 @@ static void rhythmdb_query_model_tree_model_init (GtkTreeModelIface *iface);
 static void rhythmdb_query_model_drag_source_init (RbTreeDragSourceIface *iface);
 static void rhythmdb_query_model_drag_dest_init (RbTreeDragDestIface *iface);
 static void rhythmdb_query_model_init (RhythmDBQueryModel *shell_player);
+static GObject *rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
+						  GObjectConstructParam *construct_properties);
 static void rhythmdb_query_model_finalize (GObject *object);
 static void rhythmdb_query_model_set_property (GObject *object,
 					       guint prop_id,
@@ -260,6 +262,7 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 	object_class->get_property = rhythmdb_query_model_get_property;
 
 	object_class->finalize = rhythmdb_query_model_finalize;
+	object_class->constructor = rhythmdb_query_model_constructor;
 
 	g_object_class_install_property (object_class,
 					 PROP_RHYTHMDB,
@@ -371,22 +374,6 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_RHYTHMDB:
 	{
 		model->priv->db = g_value_get_object (value);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_added",
-					 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
-					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_restored",
-					 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
-					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_changed",
-					 G_CALLBACK (rhythmdb_query_model_entry_changed_cb),
-					 model, 0);
-		g_signal_connect_object (G_OBJECT (model->priv->db),
-					 "entry_deleted",
-					 G_CALLBACK (rhythmdb_query_model_entry_deleted_cb),
-					 model, 0);
 		break;
 	}
 	case PROP_QUERY:
@@ -460,6 +447,40 @@ rhythmdb_query_model_init (RhythmDBQueryModel *model)
 	model->priv->reorder_drag_and_drop = FALSE;
 
 	model->priv->model_poll_id = g_idle_add ((GSourceFunc) idle_poll_model, model);
+
+}
+
+static GObject *
+rhythmdb_query_model_constructor (GType type, guint n_construct_properties,
+				  GObjectConstructParam *construct_properties)
+{
+	RhythmDBQueryModel *model;
+	RhythmDBQueryModelClass *klass;
+	GObjectClass *parent_class;  
+
+	klass = RHYTHMDB_QUERY_MODEL_CLASS (g_type_class_peek (RHYTHMDB_TYPE_QUERY_MODEL));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+	model = RHYTHMDB_QUERY_MODEL (parent_class->constructor (type, n_construct_properties,
+								 construct_properties));
+	g_signal_connect_object (G_OBJECT (model->priv->db),
+				 "entry_added",
+				 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
+				 model, 0);
+	g_signal_connect_object (G_OBJECT (model->priv->db),
+				 "entry_restored",
+				 G_CALLBACK (rhythmdb_query_model_entry_added_cb),
+				 model, 0);
+	g_signal_connect_object (G_OBJECT (model->priv->db),
+				 "entry_changed",
+				 G_CALLBACK (rhythmdb_query_model_entry_changed_cb),
+				 model, 0);
+	g_signal_connect_object (G_OBJECT (model->priv->db),
+				 "entry_deleted",
+				 G_CALLBACK (rhythmdb_query_model_entry_deleted_cb),
+				 model, 0);
+
+	return G_OBJECT (model);
 }
 
 static void
