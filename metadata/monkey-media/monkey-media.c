@@ -106,6 +106,8 @@ monkey_media_init_internal (void)
 #ifdef HAVE_FLAC
         register_type ("application/x-flac",
                        TYPE_FLAC_STREAM_INFO_IMPL);
+        register_type ("audio/x-flac",
+                       TYPE_FLAC_STREAM_INFO_IMPL);
 #endif
 #ifdef HAVE_MP3
 	register_type ("audio/x-mp3",
