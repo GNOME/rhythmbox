@@ -31,10 +31,12 @@
 #define X_OFFSET 4
 
 /* Vertical offset */
-#define Y_OFFSET 4
+#define Y_OFFSET 2
 
 /* Number of stars */
 #define MAX_SCORE 5
+
+#define COLOR_OFFSET 120
 
 static void rb_rating_class_init (RBRatingClass *class);
 static void rb_rating_init (RBRating *label);
@@ -246,7 +248,7 @@ rb_rating_size_request (GtkWidget *widget,
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
 	requisition->width = 5 * icon_size + X_OFFSET;
-	requisition->height = icon_size + Y_OFFSET;
+	requisition->height = icon_size + Y_OFFSET * 2;
 }
 
 static gboolean
@@ -259,12 +261,9 @@ rb_rating_expose (GtkWidget *widget,
 
 	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
 
-	/*
-	 * this code sucks, will redo it soon
-	 */
 	if (GTK_WIDGET_DRAWABLE (widget) == TRUE)
 	{
-		int i, y_offset;
+		int i;
 		RBRating *rating = RB_RATING (widget);
 
 		/* make the widget prettier */
@@ -280,14 +279,12 @@ rb_rating_expose (GtkWidget *widget,
 				  widget->allocation.width,
 				  widget->allocation.height);
 
-		y_offset = Y_OFFSET / 2;
-
 		/* draw a blank area at the beggining, this lets the user click
 		 * in this area to unset the rating */
 		gdk_pixbuf_render_to_drawable_alpha (rating->priv->pix_blank,
 						     widget->window,
 						     0, 0,
-						     0, y_offset,
+						     0, Y_OFFSET,
 						     X_OFFSET, icon_size,
 						     GDK_PIXBUF_ALPHA_FULL, 0,
 						     GDK_RGB_DITHER_NORMAL, 0, 0);
@@ -298,12 +295,12 @@ rb_rating_expose (GtkWidget *widget,
 		{
 			GdkPixbuf *pixbuf;
 			GtkStateType state = GTK_STATE_INSENSITIVE;
-			int offset = 0;
+			int color_offset = 0;
 
 			if (i < rating->priv->score)
 			{
 				pixbuf = rating->priv->pix_star;
-				offset = 120;
+				color_offset = COLOR_OFFSET;
 			}
 			else
 			{
@@ -314,14 +311,14 @@ rb_rating_expose (GtkWidget *widget,
 				return FALSE;
 
 			pixbuf = eel_create_colorized_pixbuf (pixbuf,
-							      widget->style->text[state].red + offset,
-							      widget->style->text[state].green + offset,
-							      widget->style->text[state].blue + offset);
+							      widget->style->text[state].red + color_offset,
+							      widget->style->text[state].green + color_offset,
+							      widget->style->text[state].blue + color_offset);
 
 			gdk_pixbuf_render_to_drawable_alpha (pixbuf,
 							     widget->window,
 							     0, 0,
-							     X_OFFSET + i * icon_size, y_offset,
+							     X_OFFSET + i * icon_size, Y_OFFSET,
 							     icon_size, icon_size,
 							     GDK_PIXBUF_ALPHA_FULL, 0,
 							     GDK_RGB_DITHER_NORMAL, 0, 0);
