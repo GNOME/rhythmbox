@@ -1,3 +1,125 @@
+2002-10-02  Marco Pesenti Gritti <marco@it.gnome.org>
+
+	* configure.in:
+	* data/glade/Makefile.am:
+	* data/glade/toolbar-editor.glade:
+	* data/rhythmbox.schemas:
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/Makefile.am:
+	* lib/eel-gconf-extensions.c: (eel_gconf_unset):
+	* lib/eel-gconf-extensions.h:
+	* lib/toolbar/Makefile.am:
+	* lib/toolbar/gul-gobject-misc.h:
+	* lib/toolbar/gul-tbi-separator.c: (gul_tbi_separator_class_init),
+	(gul_tbi_separator_init), (gul_tbi_separator_new),
+	(gul_tbi_separator_finalize_impl),
+	(gul_tbi_separator_get_widget_impl),
+	(gul_tbi_separator_get_icon_impl),
+	(gul_tbi_separator_get_name_human_impl),
+	(gul_tbi_separator_to_string_impl),
+	(gul_tbi_separator_is_unique_impl), (gul_tbi_separator_clone_impl),
+	(gul_tbi_separator_add_to_bonobo_tb_impl),
+	(gul_tbi_separator_parse_properties_impl):
+	* lib/toolbar/gul-tbi-separator.h:
+	* lib/toolbar/gul-tbi-std-toolitem.c:
+	(gul_tbi_std_toolitem_class_init), (gul_tbi_std_toolitem_init),
+	(gul_tbi_std_toolitem_new), (gul_tbi_std_toolitem_finalize_impl),
+	(gul_tbi_std_toolitem_get_widget_impl),
+	(gul_tbi_std_toolitem_get_icon_impl),
+	(gul_tbi_std_toolitem_get_name_human_impl),
+	(gul_tbi_std_toolitem_to_string_impl),
+	(gul_tbi_std_toolitem_is_unique_impl),
+	(gul_tbi_std_toolitem_clone_impl),
+	(gul_tbi_std_toolitem_add_to_bonobo_tb_impl),
+	(gul_tbi_std_toolitem_parse_properties_impl),
+	(gul_tbi_std_toolitem_set_item):
+	* lib/toolbar/gul-tbi-std-toolitem.h:
+	* lib/toolbar/gul-tbi-volume.c: (gul_tbi_volume_class_init),
+	(gul_tbi_volume_init), (gul_tbi_volume_new),
+	(gul_tbi_volume_finalize_impl), (gul_tbi_volume_get_widget_impl),
+	(gul_tbi_volume_get_icon_impl),
+	(gul_tbi_volume_get_name_human_impl),
+	(gul_tbi_volume_to_string_impl), (gul_tbi_volume_is_unique_impl),
+	(gul_tbi_volume_clone_impl),
+	(gul_tbi_volume_add_to_bonobo_tb_impl),
+	(gul_tbi_volume_parse_properties_impl):
+	* lib/toolbar/gul-tbi-volume.h:
+	* lib/toolbar/gul-toolbar-bonobo-view.c:
+	(gul_tb_bonobo_view_class_init), (gul_tb_bonobo_view_init),
+	(gul_tb_bonobo_view_finalize_impl), (gul_tb_bonobo_view_new),
+	(gul_tb_bonobo_view_set_toolbar), (gul_tb_bonobo_view_tb_changed),
+	(gul_tb_bonobo_view_set_path), (gul_bonobo_clear_path),
+	(gul_tb_bonobo_view_rebuild):
+	* lib/toolbar/gul-toolbar-bonobo-view.h:
+	* lib/toolbar/gul-toolbar-editor.c: (gul_tb_editor_class_init),
+	(gul_tb_editor_init), (gul_tb_editor_init_widgets),
+	(gul_tb_editor_undo_clicked_cb), (gul_tb_editor_close_clicked_cb),
+	(gul_tb_editor_up_clicked_cb), (gul_tb_editor_down_clicked_cb),
+	(gul_tb_editor_left_clicked_cb), (gul_tb_editor_right_clicked_cb),
+	(gul_tb_editor_get_selected), (gul_tb_editor_get_selected_index),
+	(gul_tb_editor_select_index), (gul_tb_editor_finalize_impl),
+	(gul_tb_editor_new), (gul_tb_editor_set_toolbar),
+	(gul_tb_editor_set_available), (gul_tb_editor_show),
+	(gul_tb_editor_set_treeview_toolbar),
+	(gul_tb_editor_setup_treeview), (gul_tb_editor_get_toolbar),
+	(gul_tb_editor_get_available), (gul_tb_editor_remove_used_items),
+	(gul_tb_editor_toolbar_changed_cb),
+	(gul_tb_editor_treeview_button_press_event_cb),
+	(gul_tb_editor_get_revert_button):
+	* lib/toolbar/gul-toolbar-editor.h:
+	* lib/toolbar/gul-toolbar-item-factory.c:
+	(gul_toolbar_item_create_from_string),
+	(gul_toolbar_list_item_types):
+	* lib/toolbar/gul-toolbar-item-factory.h:
+	* lib/toolbar/gul-toolbar-item.c: (gul_tb_item_class_init),
+	(gul_tb_item_init), (gul_tb_item_finalize_impl),
+	(gul_tb_item_get_widget), (gul_tb_item_get_icon),
+	(gul_tb_item_get_name_human), (gul_tb_item_to_string),
+	(gul_tb_item_is_unique), (gul_tb_item_clone),
+	(gul_tb_item_add_to_bonobo_tb), (gul_tb_item_set_id),
+	(gul_tb_item_parse_properties):
+	* lib/toolbar/gul-toolbar-item.h:
+	* lib/toolbar/gul-toolbar-tree-model.c:
+	(gul_tb_tree_model_get_type), (gul_tb_tree_model_class_init),
+	(gul_tb_tree_model_tb_tree_model_init),
+	(gul_tb_tree_model_drag_source_init),
+	(gul_tb_tree_model_drag_dest_init), (gul_tb_tree_model_init),
+	(gul_tb_tree_model_new), (gul_tb_tree_model_set_toolbar),
+	(gul_tb_tree_model_finalize_impl),
+	(gul_tb_tree_model_get_flags_impl),
+	(gul_tb_tree_model_get_n_columns_impl),
+	(gul_tb_tree_model_get_column_type_impl),
+	(gul_tb_tree_model_get_iter_impl),
+	(gul_tb_tree_model_get_path_impl),
+	(gul_tb_tree_model_get_value_impl),
+	(gul_tb_tree_model_iter_next_impl),
+	(gul_tb_tree_model_iter_children_impl),
+	(gul_tb_tree_model_iter_has_child_impl),
+	(gul_tb_tree_model_iter_n_children_impl),
+	(gul_tb_tree_model_iter_nth_child_impl),
+	(gul_tb_tree_model_iter_parent_impl),
+	(gul_tb_tree_model_drag_data_delete_impl),
+	(gul_tb_tree_model_drag_data_get_impl),
+	(gul_tb_tree_model_drag_data_received_impl),
+	(gul_tb_tree_model_row_drop_possible_impl),
+	(gul_tb_tree_model_item_from_iter),
+	(gul_tb_tree_model_toolbar_changed_cb), (gul_tb_tree_model_update):
+	* lib/toolbar/gul-toolbar-tree-model.h:
+	* lib/toolbar/gul-toolbar.c: (gul_toolbar_class_init),
+	(gul_toolbar_init), (gul_toolbar_finalize_impl), (gul_toolbar_new),
+	(gul_toolbar_parse), (gul_toolbar_to_string),
+	(gul_toolbar_listen_to_gconf_cb), (gul_toolbar_listen_to_gconf),
+	(gul_toolbar_get_item_by_id), (gul_toolbar_get_item_list),
+	(gul_toolbar_add_item), (gul_toolbar_remove_item),
+	(gul_toolbar_set_fixed_order), (gul_toolbar_set_check_unique),
+	(gul_toolbar_get_check_unique), (gul_toolbar_update_order):
+	* lib/toolbar/gul-toolbar.h:
+	* shell/Makefile.am:
+	* shell/rb-shell.c: (setup_volume_control),
+	(rb_shell_toolbar_changed_cb), (rb_shell_construct):
+
+	Add Galeon's toolbar editor.
+
 2002-09-30  Jan Arne Petersen <jpetersen@gnome-de.org>
 
 	* library/rb-library.c: (rb_library_finalize):

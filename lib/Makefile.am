@@ -1,4 +1,4 @@
-SUBDIRS = view widgets
+SUBDIRS = view widgets toolbar
 
 noinst_LTLIBRARIES = librb.la
 
@@ -25,7 +25,7 @@ librb_la_SOURCES =					\
 	eel-gconf-extensions.c				\
 	eel-gconf-extensions.h				\
 	eggtrayicon.c					\
-	eggtrayicon.h
+	eggtrayicon.h					
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -46,7 +46,8 @@ rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 
 librb_la_LDFLAGS = -export-dynamic
-librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la \
-		  $(top_builddir)/lib/view/librbview.la
+librb_la_LIBADD = $(top_builddir)/lib/widgets/librbwidgets.la 	\
+		  $(top_builddir)/lib/view/librbview.la		\
+		  $(top_builddir)/lib/toolbar/libgultoolbar.la	
 
 EXTRA_DIST = rb-marshal.list

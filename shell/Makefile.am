@@ -37,6 +37,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib                        	\
 	-I$(top_srcdir)/lib/widgets                    	\
 	-I$(top_srcdir)/lib/view                    	\
+	-I$(top_srcdir)/lib/toolbar                    	\
 	-I$(top_srcdir)/views                    	\
 	-I$(top_srcdir)/library                    	\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\

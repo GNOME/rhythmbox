@@ -59,6 +59,9 @@
 #include "rb-remote.h"
 #include "eel-gconf-extensions.h"
 #include "eggtrayicon.h"
+#include "gul-toolbar.h"
+#include "gul-toolbar-bonobo-view.h"
+#include "gul-toolbar-editor.h"
 
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_init (RBShell *shell);
@@ -100,6 +103,9 @@ static void rb_shell_cmd_quit (BonoboUIComponent *component,
 static void rb_shell_cmd_preferences (BonoboUIComponent *component,
 		                      RBShell *shell,
 		                      const char *verbname);
+static void rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
+		           	       RBShell *shell,
+		           	       const char *verbname);
 static void rb_shell_cmd_add_to_library (BonoboUIComponent *component,
 			                 RBShell *shell,
 			                 const char *verbname);
@@ -227,9 +233,26 @@ typedef enum
 #define CONF_STATE_PANED_POSITION   "/apps/rhythmbox/state/paned_position"
 #define CONF_STATE_ADD_DIR          "/apps/rhythmbox/state/add_dir"
 #define CONF_MUSIC_GROUPS           "/apps/rhythmbox/music_groups"
+#define CONF_TOOLBAR_SETUP	    "/apps/rhythmbox/toolbar_setup"
 
 #define RB_SHELL_REMOTE_VOLUME_INTERVAL 10
 
+#define DEFAULT_TOOLBAR_SETUP \
+        "previous=std_toolitem(item=previous);" \
+        "play=std_toolitem(item=play);" \
+        "next=std_toolitem(item=next);" \
+	"shuffle_separator=separator;" \
+        "shuffle=std_toolitem(item=shuffle);"\
+	"volume=volume;"
+
+#define AVAILABLE_TOOLBAR_ITEMS \
+	"previous=std_toolitem(item=previous);" \
+        "play=std_toolitem(item=play);" \
+        "next=std_toolitem(item=next);" \
+	"shuffle_separator=separator;" \
+        "shuffle=std_toolitem(item=shuffle);"\
+	"volume=volume;"
+	
 typedef struct
 {
 	int width;
@@ -269,6 +292,7 @@ struct RBShellPrivate
 
 	GList *groups;
 
+	GulToolbar *toolbar;
 	EggTrayIcon *tray_icon;
 	GtkTooltips *tray_icon_tooltip;
 	BonoboControl *tray_icon_control;
@@ -286,6 +310,7 @@ static BonoboUIVerb rb_shell_verbs[] =
 	BONOBO_UI_VERB ("AddToLibrary", (BonoboUIVerbFn) rb_shell_cmd_add_to_library),
 	BONOBO_UI_VERB ("NewGroup",     (BonoboUIVerbFn) rb_shell_cmd_new_group),
 	BONOBO_UI_VERB ("Shuffle",      (BonoboUIVerbFn) rb_shell_cmd_dummy),
+	BONOBO_UI_VERB ("EditToolbar",  (BonoboUIVerbFn) rb_shell_cmd_edit_toolbar),
 	BONOBO_UI_VERB_END
 };
 
@@ -484,6 +509,35 @@ rb_shell_corba_grab_focus (PortableServer_Servant _servant,
 		eel_gconf_set_boolean (CONF_STATE_WINDOW_VISIBLE, TRUE);
 }
 
+static RBVolume *
+setup_volume_control (GulToolbar *toolbar)
+{
+	RBVolume *volume;
+	GulTbItem *it;
+	
+	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
+	gtk_widget_show_all (GTK_WIDGET (volume));
+	it = gul_toolbar_get_item_by_id (toolbar, "volume");
+        if (it != NULL)
+        {
+		GtkWidget *box;
+        	box = gul_tb_item_get_widget (it);
+		gtk_container_add (GTK_CONTAINER (box), 
+				   GTK_WIDGET (volume));
+	}
+
+	return volume;
+}
+
+static void
+rb_shell_toolbar_changed_cb (GulToolbar *gt, RBShell *shell)
+{
+        if (shell->priv->toolbar != NULL)
+        {
+                setup_volume_control (shell->priv->toolbar);
+        }
+}
+
 void
 rb_shell_construct (RBShell *shell)
 {
@@ -493,9 +547,9 @@ rb_shell_construct (RBShell *shell)
 	Bonobo_UIContainer corba_container;
 	GtkWidget *vbox;
 	RBView *library_view;
-	BonoboControl *control;
-	RBVolume *volume;
-
+	GulToolbar *toolbar;
+	GulTbBonoboView *bview;
+	
 	g_return_if_fail (RB_IS_SHELL (shell));
 
 	rb_debug ("Constructing shell");
@@ -552,16 +606,24 @@ rb_shell_construct (RBShell *shell)
 			       "rhythmbox-ui.xml",
 			       "rhythmbox", NULL);
 
-	volume = rb_volume_new (RB_VOLUME_CHANNEL_PCM);
-	shell->priv->volume = volume;
-	gtk_widget_show_all (GTK_WIDGET (volume));
-	control = bonobo_control_new (GTK_WIDGET (volume));
-	bonobo_ui_component_object_set (shell->priv->ui_component,
-					PATH_VOLUME,
-					BONOBO_OBJREF (control),
-					NULL);
-	bonobo_object_unref (control);
+	/* Toolbar */
+	toolbar = gul_toolbar_new ();
+	shell->priv->toolbar = toolbar;
+	g_signal_connect (toolbar, "changed", G_CALLBACK (rb_shell_toolbar_changed_cb), shell);
+	if (gul_toolbar_listen_to_gconf (toolbar, CONF_TOOLBAR_SETUP) == FALSE)
+        {
+                /* FIXME: make this a dialog? */
+                g_warning ("An incorrect toolbar configuration has been found, \
+			   resetting to the default");
 
+                /* this is to make sure we get a toolbar, even if the
+                   setup is wrong or there is no schema */
+                eel_gconf_set_string (CONF_TOOLBAR_SETUP, DEFAULT_TOOLBAR_SETUP);
+        }
+	bview = gul_tb_bonobo_view_new ();
+	gul_tb_bonobo_view_set_path (bview, shell->priv->ui_component, "/Toolbar");
+	gul_tb_bonobo_view_set_toolbar (bview, toolbar);
+	
 	/* tray icon */
 	setup_tray_icon (shell);
 
@@ -1106,6 +1168,85 @@ rb_shell_cmd_preferences (BonoboUIComponent *component,
 	}
 
 	gtk_widget_show_all (shell->priv->prefs);
+}
+
+static void
+rb_shell_toolbar_editor_revert_clicked_cb (GtkButton *b, GulTbEditor *tbe)
+{
+        gchar *def;
+
+        g_return_if_fail (GUL_IS_TB_EDITOR (tbe));
+        
+        eel_gconf_unset (CONF_TOOLBAR_SETUP);
+        def = eel_gconf_get_string (CONF_TOOLBAR_SETUP);
+        if (def != NULL)
+        {
+                GulToolbar *current;
+                GulToolbar *avail;
+                current = gul_tb_editor_get_toolbar (tbe);
+                gul_toolbar_parse (current, def);
+                g_free (def);
+
+                avail = gul_tb_editor_get_available (tbe);
+                g_object_ref (avail);
+                gul_toolbar_parse (avail, AVAILABLE_TOOLBAR_ITEMS);
+                gul_tb_editor_set_available (tbe, avail);
+                g_object_unref (avail);
+        }
+
+}
+
+static void
+rb_shell_toolbar_editor_current_changed_cb (GulToolbar *tb, gpointer data)
+{
+        gchar *current_str;
+
+        g_return_if_fail (GUL_IS_TOOLBAR (tb));
+
+        current_str = gul_toolbar_to_string (tb);
+        eel_gconf_set_string (CONF_TOOLBAR_SETUP, current_str);
+        g_free (current_str);
+}
+
+static void
+rb_shell_cmd_edit_toolbar (BonoboUIComponent *component,
+		           RBShell *shell,
+		           const char *verbname)
+{
+        GulTbEditor *tbe;
+        GulToolbar *avail;
+        GulToolbar *current;
+        gchar *current_str;
+        GtkButton *revert_button;
+
+        avail = gul_toolbar_new ();
+        gul_toolbar_parse (avail, AVAILABLE_TOOLBAR_ITEMS);
+
+        current_str = eel_gconf_get_string (CONF_TOOLBAR_SETUP);
+        current = gul_toolbar_new ();
+        if (current_str != NULL)
+        {
+                gul_toolbar_parse (current, current_str);
+                g_free (current_str);
+        }
+
+        tbe = gul_tb_editor_new ();
+        gul_tb_editor_set_toolbar (tbe, current);
+        gul_tb_editor_set_available (tbe, avail);
+        g_object_unref (avail);
+        g_object_unref (current);
+
+
+        g_signal_connect (current, "changed", 
+                          G_CALLBACK (rb_shell_toolbar_editor_current_changed_cb), NULL);
+
+        revert_button = gul_tb_editor_get_revert_button (tbe);
+        gtk_widget_show (GTK_WIDGET (revert_button));
+
+        g_signal_connect (revert_button, "clicked", 
+                          G_CALLBACK (rb_shell_toolbar_editor_revert_clicked_cb), tbe);
+        
+        gul_tb_editor_show (tbe);
 }
 
 static void

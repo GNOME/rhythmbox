@@ -177,5 +177,17 @@
 	<long>Show the artist and album browser in the library.</long>
         </locale>
       </schema>
+      <schema>
+        <key>/schemas/apps/rhythmbox/toolbar_setup</key>
+        <applyto>/apps/rhythmbox/toolbar_setup</applyto>
+        <owner>rhythmbox</owner>
+        <type>string</type>
+        <default>previous=std_toolitem(item=previous);play=std_toolitem(item=play);next=std_toolitem(item=next);shuffle_separator=separator;shuffle=std_toolitem(item=shuffle);volume=volume;</default>
+        <locale name="C">
+	<short>The list of controls that will be present in the toolbar. You should edit 
+        this setting with the toolbar editor unless you know what you are doing.</short>
+	<long>"Add to library" filesel state.</long>
+        </locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

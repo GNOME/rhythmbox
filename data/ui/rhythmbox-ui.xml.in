@@ -109,7 +109,10 @@
 	<cmd name="ShowWindow"
 	     _tip="Change the visibility of the main window"
 	     type="toggle"/>
-
+	
+	<cmd name="EditToolbar"
+	     _tip="Edit the main toolbar"/>
+	     
 </commands>
 
 <menu>
@@ -145,6 +148,8 @@
 	<placeholder name="EditMenu"/>
 
 	<separator/>
+
+	<menuitem name="EditToolbar" verb="EditToolbar" _label="T_oolbar"/>
 
 	<menuitem name="Preferences" verb="Preferences" _label="Prefere_nces"/>
 
@@ -213,19 +218,6 @@
 </popups>
 
 <dockitem name="Toolbar" behavior="exclusive,never vertical" config="0">
-
-	<toolitem name="Prevous" _label="Previous" verb="Previous"/>
-
-	<toolitem name="Play" _label="Play" verb="Play"/>
-
-	<toolitem name="Next" _label="Next" verb="Next"/>
-
-	<separator/>
-
-        <toolitem name="Shuffle" _label="Shuffle" verb="Shuffle"/> 
-
-	<control name="Volume" behavior="pack-end"/>
-
 </dockitem>
 
 </Root>
