@@ -100,7 +100,7 @@ rhythmdb_entry_unref (RhythmDB *adb, RhythmDBEntry *aentry)
 	RhythmDBTree *db = (RhythmDBTree *) adb;
 	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
 
-	if (rb_atomic_dec (&entry->refcount) <= 0) {
+	if (rb_atomic_dec (&entry->refcount) <= 1) {
 		rhythmdb_write_lock (adb);
 		rhythmdb_tree_entry_destroy (db, entry);
 		rhythmdb_write_unlock (adb);
@@ -113,7 +113,7 @@ rhythmdb_entry_unref_unlocked (RhythmDB *adb, RhythmDBEntry *aentry)
 	RhythmDBTree *db = (RhythmDBTree *) adb;
 	RhythmDBTreeEntry *entry = (RhythmDBTreeEntry *) aentry;
 
-	if (rb_atomic_dec (&entry->refcount) <= 0) {
+	if (rb_atomic_dec (&entry->refcount) <= 1) {
 		rhythmdb_tree_entry_destroy (db, entry);
 	}
 }

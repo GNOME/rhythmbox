@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Header for RhythmDB query result GtkTreeModel impl.
  *
  *  Copyright (C) 2003 Colin Walters <walters@rhythmbox.org>
@@ -64,6 +64,8 @@ RhythmDBQueryModel *	rhythmdb_query_model_new	(RhythmDB *db, GPtrArray *query,
 RhythmDBQueryModel *	rhythmdb_query_model_new_empty	(RhythmDB *db);
 
 void			rhythmdb_query_model_add_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
+
+void			rhythmdb_query_model_remove_entry	(RhythmDBQueryModel *model, RhythmDBEntry *entry);
 
 void			rhythmdb_query_model_complete	(RhythmDBQueryModel *model);
 

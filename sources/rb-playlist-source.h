@@ -69,11 +69,17 @@ void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 void		rb_playlist_source_save_to_xml	(RBPlaylistSource *source,
 						 xmlNodePtr node);
 
-void		rb_playlist_source_add_entry	(RBPlaylistSource *source, 
+void		rb_playlist_source_add_entry	(RBPlaylistSource *source,
 						 RhythmDBEntry *entry);
 
-void		rb_playlist_source_add_location	(RBPlaylistSource *source, 
+void		rb_playlist_source_remove_entry	(RBPlaylistSource *source,
+						 RhythmDBEntry *entry);
+
+void		rb_playlist_source_add_location	(RBPlaylistSource *source,
 						 const char *location);
+
+void		rb_playlist_source_remove_location	(RBPlaylistSource *source,
+						 	 const char *location);
 
 void		rb_playlist_source_delete	(RBPlaylistSource *source);
 

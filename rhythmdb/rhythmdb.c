@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of RhythmDB - Rhythmbox backend queryable database
  *
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
@@ -533,17 +533,17 @@ rhythmdb_entry_sync_mirrored (RhythmDB *db, RhythmDBEntry *entry, guint propid,
 	case RHYTHMDB_PROP_LAST_PLAYED:
 	{
 		GValue tem = {0, };
-		time_t now;
-		
+		time_t last_time;
+
 		g_value_init (&tem, G_TYPE_STRING);
 
-		time (&now);
+		last_time = g_value_get_long (value);
 
-		if (g_value_get_long (value) == 0)
+		if (last_time == 0)
 			g_value_set_static_string (&tem, _("Never"));
 		else
-			g_value_set_string_take_ownership (&tem, eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&now)));
-		
+			g_value_set_string_take_ownership (&tem, eel_strdup_strftime (_("%Y-%m-%d %H:%M"), localtime (&last_time)));
+
 		klass->impl_entry_set (db, entry,
 				       RHYTHMDB_PROP_LAST_PLAYED_STR,
 				       &tem);

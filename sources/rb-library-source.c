@@ -864,8 +864,11 @@ impl_delete (RBSource *asource)
 	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
 	GList *l;
 
-	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l))
-		rhythmdb_entry_unref (source->priv->db, l->data);
+	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l)) {
+		rhythmdb_write_lock (source->priv->db);
+		rhythmdb_entry_delete (source->priv->db, l->data);
+		rhythmdb_write_unlock (source->priv->db);
+	}
 }
 
 static void

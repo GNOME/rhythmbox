@@ -1,4 +1,4 @@
-/* 
+/*
  *  arch-tag: Implementation of RhythmDB query result GtkTreeModel
  *
  *  Copyright (C) 2003 Colin Walters <cwalters@gnome.org>
@@ -529,20 +529,7 @@ static void
 rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBQueryModel *model)
 {
-	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
-		struct RhythmDBQueryModelUpdate *update;
-
-		rb_debug ("queueing entry deletion");
-
-		update = g_new (struct RhythmDBQueryModelUpdate, 1);
-		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
-		update->entry = entry;
-		
-		/* Called with a locked database */
-		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
-		
-		g_async_queue_push (model->priv->pending_updates, update);
-	}
+	rhythmdb_query_model_remove_entry (model, entry);
 }
 
 /* Threading: Called from the database context, holding a db write lock
@@ -551,7 +538,7 @@ void
 rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 {
 	struct RhythmDBQueryModelUpdate *update;
-		
+
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_INSERTED;
 	update->entry = entry;
@@ -561,6 +548,28 @@ rhythmdb_query_model_add_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
 
 	g_async_queue_push (model->priv->pending_updates, update);
 }
+
+
+/* Threading: Called from the database context, holding a db write lock
+ */
+void
+rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+{
+	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
+		struct RhythmDBQueryModelUpdate *update;
+
+		update = g_new (struct RhythmDBQueryModelUpdate, 1);
+		update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROW_DELETED;
+		update->entry = entry;
+
+		/* Called with a locked database */
+		rhythmdb_entry_ref_unlocked (model->priv->db, entry);
+
+		g_async_queue_push (model->priv->pending_updates, update);
+	}
+}
+
+
 
 static int
 compare_times (GTimeVal *a, GTimeVal *b)

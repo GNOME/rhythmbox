@@ -474,7 +474,7 @@ impl_cut (RBSource *asource)
 
 /* 	for (; sel != NULL; sel = g_list_next (sel)) */
 /* 		rb_node_remove_child (source->priv->root, sel->data); */
-	
+
 /* 	return sel; */
 	return NULL;
 }
@@ -491,11 +491,11 @@ impl_paste (RBSource *asource, GList *nodes)
 static void
 impl_delete (RBSource *asource)
 {
-/* 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource); */
-/* 	GList *sel = rb_node_view_get_selection (source->priv->songs); */
+	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
+	GList *l;
 
-/* 	for (; sel != NULL; sel = g_list_next (sel)) */
-/* 		rb_node_remove_child (source->priv->root, sel->data); */
+	for (l = rb_entry_view_get_selected_entries (source->priv->songs); l != NULL; l = g_list_next (l))
+		rb_playlist_source_remove_entry (source, l->data);
 }
 
 static void
@@ -526,7 +526,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	GList *list;
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 	list = gnome_vfs_uri_list_parse (data->data);
-	
+
 	if (list != NULL)
 		rb_playlist_source_add_list_uri (source, list);
 	else
@@ -569,7 +569,7 @@ rb_playlist_source_drop_cb (GtkWidget *widget,
 }
 
 void
-rb_playlist_source_add_location (RBPlaylistSource *source, 
+rb_playlist_source_add_location (RBPlaylistSource *source,
 				 const char *location)
 {
 	RhythmDBEntry *entry;
@@ -580,10 +580,26 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
 	if (entry != NULL)
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
-}	
+}
+
 
 void
-rb_playlist_source_add_entry (RBPlaylistSource *source, 
+rb_playlist_source_remove_location (RBPlaylistSource *source,
+				    const char *location)
+{
+	RhythmDBEntry *entry;
+
+	g_return_if_fail (g_hash_table_lookup (source->priv->entries, location) != NULL);
+	g_hash_table_remove (source->priv->entries,
+			     location);
+	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
+	if (entry != NULL)
+		rhythmdb_query_model_remove_entry (source->priv->model, entry);
+}
+
+
+void
+rb_playlist_source_add_entry (RBPlaylistSource *source,
 			      RhythmDBEntry *entry)
 {
 	char *location;
@@ -598,7 +614,24 @@ rb_playlist_source_add_entry (RBPlaylistSource *source,
 }
 
 
-static void 
+void
+rb_playlist_source_remove_entry (RBPlaylistSource *source,
+			         RhythmDBEntry *entry)
+{
+	char *location;
+
+	rhythmdb_read_lock (source->priv->db);
+	location = rhythmdb_entry_get_string (source->priv->db, entry,
+					      RHYTHMDB_PROP_LOCATION);
+	rhythmdb_read_lock (source->priv->db);
+
+	rb_playlist_source_remove_location (source, location);
+	g_free (location);
+}
+
+
+
+static void
 rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 				 GList *list)
 {
