@@ -369,8 +369,6 @@ rb_library_view_finalize (GObject *object)
 	g_object_unref (G_OBJECT (view->priv->songs_filter));
 	g_object_unref (G_OBJECT (view->priv->albums_filter));
 
-	g_object_unref (G_OBJECT (view->priv->browser));
-
 	g_object_unref (G_OBJECT (view->priv->search));
 
 	g_free (view->priv);
@@ -395,7 +393,6 @@ rb_library_view_set_property (GObject *object,
 			view->priv->paned = gtk_vpaned_new ();
 
 			view->priv->browser = gtk_hbox_new (TRUE, 5);
-			g_object_ref (G_OBJECT (view->priv->browser));
 
 			/* Initialize the filters */
 			view->priv->songs_filter = rb_node_filter_new ();
@@ -483,6 +480,8 @@ rb_library_view_set_property (GObject *object,
 
 			view->priv->paned_position = eel_gconf_get_integer (CONF_STATE_PANED_POSITION);
 			view->priv->show_browser = eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER);
+
+			gtk_widget_show_all (GTK_WIDGET (view));
 
 			gtk_paned_set_position (GTK_PANED (view->priv->paned), view->priv->paned_position);
 			rb_library_view_show_browser (view, view->priv->show_browser);
@@ -1141,16 +1140,10 @@ rb_library_view_show_browser (RBLibraryView *view,
 
 	view->priv->lock = FALSE;
 
-	if (show == TRUE && view->priv->browser->parent != view->priv->paned)
-	{
-		gtk_paned_pack1 (GTK_PANED (view->priv->paned), view->priv->browser, FALSE, FALSE);
-		gtk_widget_show_all (view->priv->browser);
-	}
-	else if (show == FALSE && view->priv->browser->parent == view->priv->paned)
-	{
+	if (show)
+		gtk_widget_show (view->priv->browser);
+	else
 		gtk_widget_hide (view->priv->browser);
-		gtk_container_remove (GTK_CONTAINER (view->priv->paned), view->priv->browser);
-	}
 }
 
 static void
