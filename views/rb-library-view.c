@@ -225,7 +225,7 @@ rb_library_view_init (RBLibraryView *view)
 	button = rb_sidebar_button_new ("RbLibraryView");
 	rb_sidebar_button_set (button,
 			       RB_STOCK_LIBRARY,
-			       "Library",
+			       _("Library"),
 			       TRUE);
 	g_object_set_data (G_OBJECT (button), "view", view);
 
@@ -634,7 +634,6 @@ rb_library_view_set_playing_node (RBLibraryView *view,
 				  G_CALLBACK (song_eos_cb),
 				  view);
 		
-		/* FIXME shorten when necessary */
 		view->priv->title = g_strdup_printf ("%s - %s", artist, song);
 	}
 }
