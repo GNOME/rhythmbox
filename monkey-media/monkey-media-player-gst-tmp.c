@@ -542,7 +542,7 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 		g_signal_connect (G_OBJECT (mp->priv->queue), "high_watermark",
 				  G_CALLBACK (queue_full_cb), mp);
 #else
-		g_signal_connect (G_OBJECT (mp->priv->queue), "full",
+		g_signal_connect (G_OBJECT (mp->priv->queue), "overrun",
 				  G_CALLBACK (queue_full_cb), mp);
 #endif
 		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
