@@ -1,7 +1,7 @@
 General Information
 ===================
 
-This is Rhythmbox version 0.5.0. Rhythmbox is your one-stop multimedia
+This is Rhythmbox version 0.5. Rhythmbox is your one-stop multimedia
 application, supporting a music library, multiple playlists,
 internet radio, and more.
 
@@ -15,7 +15,10 @@ Information about mailing lists can be found at:
 
 Our IRC channel is #rhythmbox on GIMPnet (irc.gimp.org).
 
-Rhythmbox CVS is hosted at gnome.org, rhythmbox module.
+Rhythmbox is developed primarily using the arch revision control
+system, specifically the "tla" implementation.  To get a copy
+of the latest development tree, see this web page:
+http://web.rhythmbox.org/development.html
 
 Installation
 ============
@@ -56,18 +59,9 @@ In the bug report please include:
 * If the bug was a crash, the exact text that was printed out when the
   crash occured, and a trace (which can be obtained by using gdb or bug-buddy).
 
-Patches
+Development
 =======
 
-Patches should also be submitted to bugzilla.gnome.org. If the patch fixes
-an existing bug, add the patch as an attachment to that bug report.
-
-Otherwise, enter a new bug report that describes the patch, and attach
-the patch to that bug report.
-
-Bug reports containing patches should include the PATCH keywoard in their
-keyword field.
-
-Patches should be in unified diff form. (The -u option to GNU diff.)
+See the HACKING file.
 
 arch-tag: The typical project user README doc

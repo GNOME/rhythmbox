@@ -1,15 +1,29 @@
-In order to keep the code nice and clean we have a few requirements you'll
-need to stick to in order to get your patch accepted:
+First of all, Rhythmbox tries to have a consistent code style.  You will
+need to follow this.  Here's a summary:
 
-- send unified diffs (-u option to patch)
+- Code must compile with -Wall -Werror
 - use 8-space tabs for indentation
 - curly brackets are NOT on a new line, except for function definitions.
   (we are slowly converting the code)
 - if statements are written like this: "if (this != that)"
-- g_list_next/previous is preferred to list->next or list->previous
-- every function should have a prototype
-- callback functions have a suffix _cb
-- Code must compile with -Wall -Werror
+- Major functions should have prototypes
+- callback functions should have a suffix _cb
+
+Rhythmbox is also highly object-oriented using GObject.  Any major
+additions should generally go into their own class, and not be bolted onto
+an existing one.
+
+Any patches you send should be in unified diff format (-u option to patch).
+
+Most importantly, Rhythmbox is developed using the Arch revision control
+system.  If you want to make any major changes, it is highly recommended
+that you create your own branch of the source tree, and work from there.
+When you are done, you can send a message to rhythmbox-devel@gnome.org,
+or post a bugzilla bug with a merge request.
+For more information about this, see:
+http://web.rhythmbox.org/development.html
+
+Finally, here is some sample code written in the correct style:
 
   Important comment blocks are written like this:
   
@@ -34,9 +48,5 @@ foo (const char *bla, gpointer cow)
 
 	...
 }	
-
-You may commit small, obvious fixes to this module.  Anything larger
-should be run by Colin Walters <walters@debian.org>, unless you
-know I've given you blanket commit permission.
 
 arch-tag: How to hack Rhythmbox and submit patches
