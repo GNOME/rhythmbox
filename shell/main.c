@@ -37,7 +37,8 @@
 #include "rb-stock-icons.h"
 
 static gboolean rb_init (RBShell *shell);
-static void rb_handle_cmdline (char **argv, int argc);
+static void rb_handle_cmdline (char **argv, int argc,
+			       gboolean already_running);
 
 static CORBA_Environment ev;
 
@@ -112,7 +113,7 @@ main (int argc, char **argv)
 	{
 		rb_debug ("already running");
 
-		rb_handle_cmdline (argv, argc);
+		rb_handle_cmdline (argv, argc, TRUE);
 	}
 
 	/* cleanup */
@@ -136,13 +137,14 @@ rb_init (RBShell *shell)
 	argv = (char **) g_object_get_data (G_OBJECT (shell), "argv");
 	argc = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (shell), "argc"));
 
-	rb_handle_cmdline (argv, argc);
+	rb_handle_cmdline (argv, argc, FALSE);
 	
 	return FALSE;
 }
 
 static void
-rb_handle_cmdline (char **argv, int argc)
+rb_handle_cmdline (char **argv, int argc,
+		   gboolean already_running)
 {
 	GNOME_RhythmboxShell shell;
 	int i;
@@ -175,7 +177,6 @@ rb_handle_cmdline (char **argv, int argc)
 	}
 
 	/* at the very least, we focus the window */
-	GNOME_RhythmboxShell_grabFocus (shell, &ev);
-
-	
+	if (already_running == TRUE)
+		GNOME_RhythmboxShell_grabFocus (shell, &ev);
 }

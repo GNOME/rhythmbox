@@ -165,7 +165,7 @@ rb_remote_finalize (GObject *object)
 
 	listeners = g_list_remove (listeners, remote);
 
-	if (listeners == NULL) {
+	if (listeners == NULL && lirc_channel != NULL) {
 		g_io_channel_shutdown (lirc_channel, FALSE, &error);
 		if (error != NULL) {
 			g_warning ("Couldn't destroy lirc connection: %s",
@@ -202,12 +202,11 @@ rb_remote_init (RBRemote *remote)
 {
 	int fd;
 	
-	
 	if (lirc_channel == NULL) {
 		fd = lirc_init ("Rhythmbox", 1);
 
 		if (fd < 0) {
-			g_warning ("Couldn't initialize lirc.\n");
+			g_message ("Couldn't initialize lirc.\n");
 			return;
 		}
 			

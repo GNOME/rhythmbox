@@ -1,5 +1,15 @@
 2002-10-21  Jorn Baayen  <jorn@nl.linux.org>
 
+	* shell/main.c: (main), (rb_init), (rb_handle_cmdline):
+
+	Only grab focus when rb is already running.
+	
+	* shell/rb-remote.c: (rb_remote_finalize), (rb_remote_init):
+
+	Fix RBRemote shutdown when lirc init failed.
+
+2002-10-21  Jorn Baayen  <jorn@nl.linux.org>
+
 	* data/ui/rhythmbox-ui.xml.in:
 	* lib/toolbar/gul-tbi-std-toolitem.c:
 	(gul_tbi_std_toolitem_get_icon_impl),
