@@ -15,26 +15,6 @@ on_bonobo_event (BonoboListener *listener, const char *event_name,
 		 gpointer user_data)
 {
 	g_print ("event received: %s\n", event_name);
-
-
-#if 0
-	if (!CORBA_TypeCode_equivalent (any->_type, 
-					TC_GNOME_SoundJuicer_AlbumDetails, 
-					NULL)) { 
-		g_print ("Wrong value type\n");
-	} else {
-		GNOME_SoundJuicer_AlbumDetails *album_details;
-		album_details = (GNOME_SoundJuicer_AlbumDetails*)any->_value;
-		
-		if (album_details == NULL) {
-			g_print ("huho\n");
-			exit (1);
-		}
-		g_print ("Title : %s\n", album_details->title);
-		g_print ("Artist: %s\n", album_details->artist);
-		print_track_list (&album_details->tracks);
-	}
-#endif
 }
 
 static void
@@ -67,7 +47,6 @@ main (int argc, char *argv [])
 	GNOME_Rhythmbox rb;
 	CORBA_Environment  ev;
 	Bonobo_PropertyBag pb;
-	CORBA_any *value;
 
 	/*
 	 * Initialize bonobo.

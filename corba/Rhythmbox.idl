@@ -40,8 +40,14 @@ module GNOME
 		void setPlayingTime (in long seconds);
 	        
 		/* Available properties:
-		 * repeat:     boolean, read-write, notification
-		 * shuffle:    boolean, read-write, notification
+		 * (repeat and shuffle should be pretty easy to make read-write
+		 *  instead of using the generic bonobo wrapper for gobject
+		 *  properties in rb-shell.c, one needs to write custom
+		 *  get/set functions for repeat/shuffle (as is currently
+		 *  done for song
+		 * 
+		 * repeat:     boolean, read-only, notification
+		 * shuffle:    boolean, read-only, notification
 		 * playing:    boolean, read-only, notification
 		 * song:       SongInfo, read-only, notification
 		 * visibility: boolean, NOT FULLY IMPLEMENTED YET

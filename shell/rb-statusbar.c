@@ -522,7 +522,7 @@ static void
 rb_statusbar_toggle_changed_cb (GtkToggleButton *toggle,
 				RBStatusbar *statusbar)
 {
-	GObject *player = G_OBJECT (statusbar->priv->player);
+	RBShellPlayer *player = statusbar->priv->player;
 
 	rb_debug ("toggle changed");
 

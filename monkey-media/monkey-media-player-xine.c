@@ -447,8 +447,7 @@ monkey_media_player_open (MonkeyMediaPlayer *mp,
 			g_set_error (error,
 				     MONKEY_MEDIA_PLAYER_ERROR,
 				     MONKEY_MEDIA_PLAYER_ERROR_INTERNAL,
-				     _("Internal error; check your installation."),
-				     uri);
+				     _("Internal error; check your installation."));
 			break;
 		}
 	} else if (xine_get_stream_info (mp->priv->stream, XINE_STREAM_INFO_AUDIO_HANDLED) == FALSE) {

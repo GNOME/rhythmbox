@@ -311,7 +311,7 @@ rb_handle_cmdline (char **argv, int argc,
 		if (song_info == NULL) {
 			g_print ("-1\n");
 		} else {
-			g_print ("%ld\n", song_info->duration);
+			g_print ("%d\n", song_info->duration);
 			CORBA_free (song_info);
 		}
 		grab_focus = FALSE;
