@@ -1172,7 +1172,7 @@ rb_shell_sync_toolbar_style (RBShell *shell)
 
 	style = eel_gconf_get_string (CONF_UI_TOOLBAR_STYLE);
 	
-	if (strcmp (style, "desktop_default") == 0)
+	if (style == NULL || strcmp (style, "desktop_default") == 0)
 	{
 		g_free (style);
 		style = g_strdup ("");
