@@ -1,3 +1,17 @@
+2002-10-21  Jorn Baayen  <jorn@nl.linux.org>
+
+	* data/ui/rhythmbox-ui.xml.in:
+	* lib/toolbar/gul-tbi-std-toolitem.c:
+	(gul_tbi_std_toolitem_get_icon_impl),
+	(gul_tbi_std_toolitem_add_to_bonobo_tb_impl):
+
+	Fix restart song label, add priority.
+	
+	* shell/rb-shell.c: (rb_shell_cmd_about),
+	(rb_shell_sync_window_visibility):
+
+	Fix showing window from applet.
+
 2002-10-19  Jorn Baayen  <jorn@nl.linux.org>
 
 	* data/glade/preferences.glade:

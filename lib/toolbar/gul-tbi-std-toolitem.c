@@ -166,9 +166,9 @@ gul_tbi_std_toolitem_get_icon_impl (GulTbItem *i)
 						     GTK_ICON_SIZE_SMALL_TOOLBAR,
 						     NULL);
 		pb_repeat = gtk_widget_render_icon (b,
-						     "rhythmbox-repeat",
-						     GTK_ICON_SIZE_SMALL_TOOLBAR,
-						     NULL);
+						    "rhythmbox-repeat",
+						    GTK_ICON_SIZE_SMALL_TOOLBAR,
+						    NULL);
 
 		gtk_widget_destroy (b);
 	}
@@ -327,7 +327,7 @@ gul_tbi_std_toolitem_add_to_bonobo_tb_impl (GulTbItem *i, BonoboUIComponent *ui,
 	case GUL_TBI_STD_TOOLITEM_RESTART:
 		xml_item = g_strdup_printf
 			("<toolitem name=\"Restart\" label=\"%s\" "
-			 "verb=\"RestartSong\"/>", _("RestartSong")); 
+			 "verb=\"RestartSong\"/>", _("Restart")); 
 		break;
 	case GUL_TBI_STD_TOOLITEM_REPEAT:
 		xml_item = g_strdup_printf

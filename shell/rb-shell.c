@@ -1146,8 +1146,8 @@ rb_shell_cmd_about (BonoboUIComponent *component,
 
 	const char *documenters[] =
 	{
-		"Mark Finlay (sisob AT eircom.net)",
-		"Mark Humphreys (marquee AT users.sourceforge.net)",
+		"Mark Finlay (sisob@eircom.net)",
+		"Mark Humphreys (marquee@users.sourceforge.net)",
 		NULL
 	};
 
@@ -1654,7 +1654,7 @@ rb_shell_sync_window_visibility (RBShell *shell)
 			gtk_window_move (GTK_WINDOW (shell->priv->window), window_x,
 					 window_y);
 		}
-		gtk_widget_show_now (shell->priv->window);
+		gtk_widget_show (shell->priv->window);
 	}
 	else
 	{
