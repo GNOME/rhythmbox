@@ -2,6 +2,106 @@
 # arch-tag: automatic-ChangeLog--rhythmbox-devel@gnome.org--2004/rhythmbox--main--0.7
 #
 
+2004-03-10 01:00:08 GMT	Colin Walters <walters@verbum.org>	patch-138
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--main--0.7--patch-138
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/nl.po
+
+
+2004-03-10 00:56:41 GMT	Colin Walters <walters@verbum.org>	patch-137
+
+    Summary:
+      move write lock acquisition out of inner loop
+    Revision:
+      rhythmbox--main--0.7--patch-137
+
+
+    modified files:
+     ChangeLog widgets/rb-song-info.c
+
+
+2004-03-10 00:50:57 GMT	Colin Walters <walters@verbum.org>	patch-136
+
+    Summary:
+      make autorate checkbox handle multiple selection
+    Revision:
+      rhythmbox--main--0.7--patch-136
+
+
+    modified files:
+     ChangeLog widgets/rb-song-info.c
+
+
+2004-03-10 00:45:44 GMT	Colin Walters <walters@verbum.org>	patch-135
+
+    Summary:
+      new UI for multiple song selection
+    Revision:
+      rhythmbox--main--0.7--patch-135
+
+
+    new files:
+     data/glade/.arch-ids/song-info-multiple.glade.id
+     data/glade/song-info-multiple.glade
+
+    modified files:
+     ChangeLog data/glade/Makefile.am widgets/rb-song-info.c
+
+
+2004-03-09 23:45:48 GMT	Colin Walters <walters@verbum.org>	patch-134
+
+    Summary:
+      revert accidentally committed player changes
+    Revision:
+      rhythmbox--main--0.7--patch-134
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
+2004-03-09 23:44:24 GMT	Colin Walters <walters@verbum.org>	patch-133
+
+    Summary:
+      fix rating with multiple selection
+    Revision:
+      rhythmbox--main--0.7--patch-133
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c widgets/rb-song-info.c
+
+
+2004-03-09 22:23:17 GMT	Colin Walters <walters@verbum.org>	patch-132
+
+    Summary:
+      check for GStreamer 0.8
+    Revision:
+      rhythmbox--main--0.7--patch-132
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2004-03-09 22:15:36 GMT	Colin Walters <walters@verbum.org>	patch-131
+
+    Summary:
+      don't set sink to null in eos handler
+    Revision:
+      rhythmbox--main--0.7--patch-131
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
 2004-03-09 21:59:33 GMT	Colin Walters <walters@verbum.org>	patch-130
 
     Summary:
