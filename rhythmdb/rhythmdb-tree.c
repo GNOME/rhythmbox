@@ -351,6 +351,7 @@ struct RhythmDBTreeLoadContext
 		RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY,
 		RHYTHMDB_TREE_PARSER_STATE_END,
 	} state;
+	gboolean in_unknown_elt;
 	RhythmDBTreeEntry *entry;
 	char *genrename;
 	char *albumname;
@@ -368,12 +369,17 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		return;
 	}
 
+	if (ctx->in_unknown_elt)
+		return;
+
 	switch (ctx->state)
 	{
 	case RHYTHMDB_TREE_PARSER_STATE_START:
 	{
 		if (!strcmp (name, "rhythmdb"))
 			ctx->state = RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB;
+		else
+			ctx->in_unknown_elt = TRUE;
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_RHYTHMDB:
@@ -398,14 +404,17 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 			ctx->genrename = NULL;
 			ctx->albumname = NULL;
 			ctx->artistname = NULL;
-		}
+		} else
+			ctx->in_unknown_elt = TRUE;
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
 		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), name);
-		if (val < 0)
+		if (val < 0) {
+			ctx->in_unknown_elt = TRUE;
 			break;
+		}
 		
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY;
 		ctx->propid = val;
@@ -423,6 +432,11 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 {
 	if (*ctx->die == TRUE) {
 		xmlStopParser (ctx->xmlctx);
+		return;
+	}
+
+	if (ctx->in_unknown_elt) {
+		ctx->in_unknown_elt = FALSE;		
 		return;
 	}
 	
