@@ -886,11 +886,8 @@ rb_shell_player_previous (RBShellPlayer *player)
 	if ((entry = rb_history_back (player->priv->history))) {
 		rb_debug ("choosing history entry");
 	} else {
-		/* Do we want to just stop playback if they've run out of history? */
-		if (eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
-			rb_debug ("choosing random entry");
-			entry =  rb_entry_view_get_random_entry (songs);
-		} else {
+		/* Just stop shuffle playback if they've run out of history */
+		if (!eel_gconf_get_boolean (CONF_STATE_SHUFFLE)) {
 			rb_debug ("choosing previous linked entry");
 			entry = rb_entry_view_get_previous_entry (songs);
 		}

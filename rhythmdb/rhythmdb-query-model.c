@@ -799,8 +799,11 @@ rhythmdb_query_model_entry_to_iter (RhythmDBModel *rmodel, RhythmDBEntry *entry,
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 
-	if (G_UNLIKELY (ptr == NULL))
+	if (G_UNLIKELY (ptr == NULL)) {
+		// Invalidate iterator so future uses break quickly.
+		iter->stamp = !(model->priv->stamp);
 		return FALSE;
+	}
 
 	iter->stamp = model->priv->stamp;
 	iter->user_data = ptr;
