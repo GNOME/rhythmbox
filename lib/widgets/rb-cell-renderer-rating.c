@@ -16,6 +16,7 @@
  * License along with this library; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
+ *  $ Id $
  */
 
 #include <config.h>
@@ -94,8 +95,7 @@ rb_cell_renderer_rating_get_type (void)
 {
 	static GtkType cell_rating_type = 0;
 
-	if (!cell_rating_type)
-	{
+	if (!cell_rating_type) {
 		static const GTypeInfo cell_rating_info =
 		{
 			sizeof (RBCellRendererRatingClass),
@@ -209,8 +209,7 @@ rb_cell_renderer_rating_get_property (GObject *object,
 {
 	RBCellRendererRating *cellrating = RB_CELL_RENDERER_RATING (object);
   
-	switch (param_id)
-	{
+	switch (param_id) {
 	case PROP_RATING:
 		g_value_set_int (value, cellrating->priv->rating);
 		break;
@@ -229,8 +228,7 @@ rb_cell_renderer_rating_set_property (GObject *object,
 {
 	RBCellRendererRating *cellrating= RB_CELL_RENDERER_RATING (object);
   
-	switch (param_id)
-	{
+	switch (param_id) {
 	case PROP_RATING:
 		cellrating->priv->rating = g_value_get_int (value);
 		if (cellrating->priv->rating < 0)
@@ -249,6 +247,7 @@ rb_cell_renderer_rating_set_property (GObject *object,
  *  
  * Return value: the new cell renderer
  **/
+
 GtkCellRenderer *
 rb_cell_renderer_rating_new ()
 {
@@ -264,19 +263,22 @@ rb_cell_renderer_rating_get_size (GtkCellRenderer *cell,
 				  gint *width,
 				  gint *height)
 {
-	int icon_size;
+	int icon_width;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 
-	if (x_offset) *x_offset = 0;
-	if (y_offset) *y_offset = 0;
+	if (x_offset)
+		*x_offset = 0;
+	
+	if (y_offset)
+		*y_offset = 0;
 
 	if (width)
-		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_size * 5;
+		*width = (gint) GTK_CELL_RENDERER (cellrating)->xpad * 2 + icon_width * 5;
 
 	if (height)
-		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_size;
+		*height = (gint) GTK_CELL_RENDERER (cellrating)->ypad * 2 + icon_width;
 }
 
 static void
@@ -289,8 +291,9 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 				guint flags)
 
 {
-	int i, icon_size;
+	int i, icon_width;
 	int offset = 0;
+	gboolean selected;
 	GdkRectangle pix_rect, draw_rect;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
@@ -305,75 +308,60 @@ rb_cell_renderer_rating_render (GtkCellRenderer  *cell,
 	pix_rect.width -= cell->xpad * 2;
 	pix_rect.height -= cell->ypad * 2;
 	
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
+	
+	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect) == FALSE)
+		return;
 
-	if (gdk_rectangle_intersect (cell_area, &pix_rect, &draw_rect))
-	{
-		gboolean selected = (flags & GTK_CELL_RENDERER_SELECTED) 
-					== GTK_CELL_RENDERER_SELECTED;
+	selected = flags;
+	
+	for (i = 1; i <= 5; i++) {
+		GdkPixbuf *buf;
+		GtkStateType state;
 
-		for (i = 1; i <= 5; i++)
-		{
-			GdkPixbuf *buf;
-			GtkStateType state;
-
-			if (selected == TRUE)
-			{
-				if (GTK_WIDGET_HAS_FOCUS (widget))
-					state = GTK_STATE_SELECTED;
-				else
-					state = GTK_STATE_ACTIVE;
-		
-				if (i > 0 && i <= cellrating->priv->rating)
-				{
-					buf = cellrating->priv->pix_star;
-				}
-				else
-				{
-					buf = cellrating->priv->pix_blank;
-				}
-			}
+		if (selected == TRUE) {
+			if (GTK_WIDGET_HAS_FOCUS (widget))
+				state = GTK_STATE_SELECTED;
 			else
-			{
-				if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
-					state = GTK_STATE_INSENSITIVE;
-				else
-					state = GTK_STATE_NORMAL;
-				
-				if (i > 0 && i <= cellrating->priv->rating)
-				{
-					buf = cellrating->priv->pix_star;
-					offset = 120;
-				}
-				else
-				{
-					buf = cellrating->priv->pix_blank;
-				}
-			}
-
-			buf = eel_create_colorized_pixbuf (buf,
-							   widget->style->text[state].red + offset,
-							   widget->style->text[state].green + offset,
-							   widget->style->text[state].blue + offset);
-
-			if (buf == NULL)
-				return;
-
-			gdk_pixbuf_render_to_drawable_alpha (buf,
-							     window,
-							     draw_rect.x - pix_rect.x,
-							     draw_rect.y - draw_rect.y,
-							     draw_rect.x +  (i - 1) * icon_size,
-							     draw_rect.y,
-							     icon_size,
-							     icon_size,
-							     GDK_PIXBUF_ALPHA_FULL,
-							     0,
-							     GDK_RGB_DITHER_NORMAL,
-							     0, 0);
-
-			g_object_unref (G_OBJECT (buf));
+				state = GTK_STATE_ACTIVE;
+		} else {
+			if (GTK_WIDGET_STATE (widget) == GTK_STATE_INSENSITIVE)
+				state = GTK_STATE_INSENSITIVE;
+			else
+				state = GTK_STATE_NORMAL;
 		}
+
+		if (i <= cellrating->priv->rating)
+			buf = cellrating->priv->pix_star;
+		else if (i > cellrating->priv->rating && i <= 5)
+			buf = cellrating->priv->pix_unset_star;
+		else
+			buf = cellrating->priv->pix_blank;
+
+		if (selected == FALSE && (buf == cellrating->priv->pix_star ||
+					buf == cellrating->priv->pix_unset_star))
+			offset = 120;
+
+		buf = eel_create_colorized_pixbuf (buf,
+						   widget->style->text[state].red + offset,
+						   widget->style->text[state].green + offset,
+						   widget->style->text[state].blue + offset);
+		if (buf == NULL)
+			return;
+
+		gdk_pixbuf_render_to_drawable_alpha (buf,
+						     window,
+						     draw_rect.x - pix_rect.x,
+						     draw_rect.y - draw_rect.y,
+						     draw_rect.x +  (i - 1) * icon_width,
+						     draw_rect.y,
+						     icon_width,
+						     icon_width,
+						     GDK_PIXBUF_ALPHA_FULL,
+						     0,
+						     GDK_RGB_DITHER_NORMAL,
+						     0, 0);
+		g_object_unref (G_OBJECT (buf));
 	}
 }
 
@@ -386,12 +374,12 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 				  GdkRectangle *cell_area,
 				  GtkCellRendererState flags)
 {
-	int mouse_x, mouse_y, icon_size;
+	int mouse_x, mouse_y, icon_width;
 	RBCellRendererRating *cellrating = (RBCellRendererRating *) cell;
 
 	g_return_val_if_fail (RB_IS_CELL_RENDERER_RATING (cellrating), FALSE);
 
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_size, NULL);
+	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &icon_width, NULL);
 	gtk_widget_get_pointer (widget, &mouse_x, &mouse_y);
 	gtk_tree_view_widget_to_tree_coords (GTK_TREE_VIEW (widget),
 					     mouse_x,
@@ -401,11 +389,10 @@ rb_cell_renderer_rating_activate (GtkCellRenderer *cell,
 
 	/* ensure the user clicks within the good cell */
 	if (mouse_x - cell_area->x >= 0
-	    && mouse_x - cell_area->x <= cell_area->width)
-	{
+	    && mouse_x - cell_area->x <= cell_area->width) {
 		int rating;
 
-		rating = (int) ((mouse_x - cell_area->x) / icon_size) + 1;
+		rating = (int) ((mouse_x - cell_area->x) / icon_width) + 1;
 
 		if (rating > 5)
 			rating = 5;

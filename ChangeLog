@@ -1,3 +1,16 @@
+2002-11-27  Xan Lopez <xan@dimensis.com>
+
+	* data/art/rhythmbox-unset-star.png:
+	* lib/widgets/rb-cell-renderer-rating.c:
+	(rb_cell_renderer_rating_get_type),
+	(rb_cell_renderer_rating_get_property),
+	(rb_cell_renderer_rating_set_property),
+	(rb_cell_renderer_rating_get_size),
+	(rb_cell_renderer_rating_render),
+	(rb_cell_renderer_rating_activate):
+
+	Rating cleanups, make it use prelighting.
+
 2002-11-26  Christian Neumair  <chris@gnome-de.org>
 
 	* .cvsignore: Updated.
