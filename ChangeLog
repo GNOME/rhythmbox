@@ -1,3 +1,149 @@
+2003-10-14 05:21:45 GMT	Colin Walters <walters@verbum.org>	patch-128
+
+    Summary:
+      kill of more RBLibrary cruft
+    Revision:
+      rhythmbox--mainline--0.6--patch-128
+
+
+    removed files:
+     library/rb-library.c
+
+
+2003-10-14 05:08:44 GMT	Colin Walters <walters@verbum.org>	patch-127
+
+    Summary:
+      fix legacy db loading
+    Revision:
+      rhythmbox--mainline--0.6--patch-127
+
+
+    modified files:
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h shell/rb-shell.c
+
+
+2003-10-14 04:59:47 GMT	Colin Walters <walters@verbum.org>	patch-126
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.6--patch-126
+
+
+    modified files:
+     po/ChangeLog po/sr.po po/sr@Latn.po
+
+
+2003-10-14 04:02:22 GMT	Colin Walters <walters@verbum.org>	patch-125
+
+    Summary:
+      kill off RBLibrary!
+    Revision:
+      rhythmbox--mainline--0.6--patch-125
+
+
+    removed files:
+     library/Makefile.am library/rb-library-action.c
+     library/rb-library-action.h library/rb-library-main-thread.c
+     library/rb-library-main-thread.h library/rb-library.h
+
+    modified files:
+     Makefile.am configure.ac lib/rb-file-helpers.c
+     lib/rb-file-helpers.h lib/rb-file-monitor.h
+     library/rb-library.c rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/rb-playlist-manager.c
+     shell/rb-playlist-manager.h shell/rb-shell.c
+     shell/rb-statusbar.c shell/rb-statusbar.h shell/rb-tray-icon.c
+     shell/rb-tray-icon.h sources/rb-iradio-source.c
+     sources/rb-iradio-source.h sources/rb-library-source.c
+     sources/rb-library-source.h sources/rb-playlist-source.c
+     sources/rb-playlist-source.h widgets/rb-druid.c
+     widgets/rb-druid.h widgets/rb-entry-view.c
+
+
+2003-10-13 21:27:32 GMT	Colin Walters <walters@verbum.org>	patch-124
+
+    Summary:
+      refactor MAINTAINERS
+    Revision:
+      rhythmbox--mainline--0.6--patch-124
+
+
+    new files:
+     .arch-ids/MAINTAINERS.old.id MAINTAINERS.old
+
+    modified files:
+     MAINTAINERS shell/Makefile.am shell/rb-shell.c
+
+
+2003-10-13 20:45:50 GMT	Colin Walters <walters@verbum.org>	patch-123
+
+    Summary:
+      restore headers to properties, disable horizontal scroll
+    Revision:
+      rhythmbox--mainline--0.6--patch-123
+
+
+    modified files:
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     widgets/rb-property-view.c widgets/rb-property-view.h
+
+
+2003-10-13 20:35:15 GMT	Colin Walters <walters@verbum.org>	patch-122
+
+    Summary:
+      various sorting fixes 
+    Revision:
+      rhythmbox--mainline--0.6--patch-122
+
+    Save sorting state in GConf.
+    Make playlist columns unclickable.
+    
+
+    modified files:
+     data/rhythmbox.schemas sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+
+2003-10-13 19:31:46 GMT	Colin Walters <walters@verbum.org>	patch-121
+
+    Summary:
+      fix silly bug in last changeset
+    Revision:
+      rhythmbox--mainline--0.6--patch-121
+
+
+    modified files:
+     widgets/rb-entry-view.c
+
+
+2003-10-13 19:26:27 GMT	Colin Walters <walters@verbum.org>	patch-120
+
+    Summary:
+      column sorting rework, artist is now the default 
+    Revision:
+      rhythmbox--mainline--0.6--patch-120
+
+    
+
+    modified files:
+     sources/rb-library-source.c widgets/rb-entry-view.c
+
+
+2003-10-13 18:48:08 GMT	Colin Walters <walters@verbum.org>	patch-119
+
+    Summary:
+      update ChangeLog
+    Revision:
+      rhythmbox--mainline--0.6--patch-119
+
+
+    modified files:
+     ChangeLog
+
+
 2003-10-13 18:44:25 GMT	Colin Walters <walters@verbum.org>	patch-118
 
     Summary:
