@@ -1,5 +1,11 @@
 2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
 
+	* shell/rb-shell-player.c: (rb_shell_player_finalize):
+
+	Don't unref mixer for now, creates crashes.
+
+2002-06-23  Jorn Baayen  <jorn@nl.linux.org>
+
 	* library/rb-node.c: (rb_node_dispose):
 
 	Fix dispose.
