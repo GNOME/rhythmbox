@@ -45,6 +45,10 @@
 	This touches a lot of code, but it really had to be done.  The
 	old way of saving things was unreliable.
 
+	This breaks compatibility with the old iradio xml format;
+	sorry about that!  That's why we're doing this before the
+	final release...
+
 	Also, convert the initial stations list into .pls format, and
 	kill off all the old YPIterator stuff.
 	
