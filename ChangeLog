@@ -2,6 +2,9 @@
 
 	* lib/rb-string-helpers.c (rb_utf8_strncasecmp): New function.
 	* lib/rb-string-helpers.h (rb_utf8_strncasecmp): Prototype it.
+	
+	* lib/rb-windows-ini-file.c (rb_windows_ini_file_parse_from_stream):
+	Trim trailing newline from values.
 
 2002-11-28  Olivier Martin <oleevye@wanadoo.fr>
 
