@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2002,2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -569,7 +569,7 @@ rb_iradio_backend_get_genre_names (RBIRadioBackend *backend)
 		kid = g_ptr_array_index (children, i);
 		
 		name = rb_node_get_property_string (kid, RB_NODE_PROP_NAME);
-		if (strcmp (name, "All"))
+		if (strcmp (name, _("All")))
 			genrenames = g_list_append (genrenames, g_strdup (name));
 	}
 	rb_node_thaw (genres);

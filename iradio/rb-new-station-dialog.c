@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright (C) 2002,2003 Colin Walters <walters@gnu.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -39,13 +39,13 @@
 static void rb_new_station_dialog_class_init (RBNewStationDialogClass *klass);
 static void rb_new_station_dialog_init (RBNewStationDialog *dialog);
 static void rb_new_station_dialog_finalize (GObject *object);
-static void rb_new_station_dialog_set_property (GObject *object, 
+static void rb_new_station_dialog_set_property (GObject *object,
 						guint prop_id,
-						const GValue *value, 
+						const GValue *value,
 						GParamSpec *pspec);
-static void rb_new_station_dialog_get_property (GObject *object, 
+static void rb_new_station_dialog_get_property (GObject *object,
 						guint prop_id,
-						GValue *value, 
+						GValue *value,
 						GParamSpec *pspec);
 static void rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 					       int response_id,
@@ -125,10 +125,10 @@ static void
 rb_new_station_dialog_init (RBNewStationDialog *dialog)
 {
 	GladeXML *xml;
-	
+
 	/* create the dialog and some buttons forward - close */
 	dialog->priv = g_new0 (RBNewStationDialogPrivate, 1);
-	
+
 	g_signal_connect (G_OBJECT (dialog),
 			  "response",
 			  G_CALLBACK (rb_new_station_dialog_response_cb),
@@ -179,7 +179,7 @@ rb_new_station_dialog_init (RBNewStationDialog *dialog)
 
 	gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
 				       g_list_append (NULL, _("Unknown")));
-	
+
 	/* default focus */
 	gtk_widget_grab_focus (dialog->priv->title);
 	/* FIXME */
@@ -252,7 +252,7 @@ rb_new_station_dialog_new (RBIRadioBackend *backend)
 	g_return_val_if_fail (RB_IS_IRADIO_BACKEND (backend), NULL);
 
 	dialog = g_object_new (RB_TYPE_NEW_STATION_DIALOG, "backend", backend, NULL);
-	
+
 	genrenames = rb_iradio_backend_get_genre_names (backend);
 	if (genrenames != NULL) {
 		gtk_combo_set_popdown_strings (GTK_COMBO (dialog->priv->genre),
@@ -288,5 +288,6 @@ rb_new_station_dialog_entry_changed_cb (GtkEntry *entry,
 	gtk_widget_set_sensitive (dialog->priv->okbutton,
 				  g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (dialog->priv->title)), -1) > 0
 				  && g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)), -1) > 0
+				  && g_utf8_collate (gtk_entry_get_text (GTK_ENTRY (GTK_COMBO (dialog->priv->genre)->entry)), _("All"))
 				  && g_utf8_strlen (gtk_entry_get_text (GTK_ENTRY (dialog->priv->location)), -1) > 0);
 }
