@@ -396,6 +396,7 @@ poll_status (RBStatusbar *status)
 			const char *status_str
 				= rb_source_get_status (status->priv->selected_source);
 			gtk_label_set_markup (GTK_LABEL (status->priv->status), status_str);
+			status->priv->source_status_dirty = FALSE;
 		}
 	}
 
