@@ -79,7 +79,7 @@
 	
 	<separator/>
 	
-        <menuitem name="FileExit" verb="" _label="_Quit" pixtype="stock" pixname="gtk-quit"/>
+        <menuitem name="Quit" verb="Quit" _label="_Quit" pixtype="stock" pixname="gtk-quit" accel="*Control*q"/>
 
 </submenu>
 
@@ -139,10 +139,9 @@
 
 <submenu name="Help" _label="_Help">
 
-	<menuitem name="HelpContents" verb="" _label="_Contents"
-	pixtype="stock" pixname="gtk-help"/>
+	<menuitem name="HelpContents" verb="" _label="_Contents" pixtype="stock" pixname="gtk-help"/>
 	
-        <menuitem name="About" verb="" _label="_About..." pixtype="stock" pixname="gnome-stock-about"/>
+        <menuitem name="About" verb="About" _label="_About Rhythmbox" pixtype="stock" pixname="gnome-stock-about"/>
 
 </submenu>
 

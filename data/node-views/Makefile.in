@@ -124,11 +124,10 @@ install_sh = @install_sh@
 
 nodeviewsdir = $(pkgdatadir)/node-views
 
-nodeviews_in_files = rb-node-view-songs.xml.in   \
-		     rb-node-view-albums.xml.in  \
-		     rb-node-view-artists.xml.in
+nodeviews_DATA = rb-node-view-songs.xml   \
+		 rb-node-view-albums.xml  \
+		 rb-node-view-artists.xml
 
-nodeviews_DATA = $(nodeviews_in_files:.xml.in=.xml)
 
 EXTRA_DIST = $(nodeviews_DATA)
 subdir = data/node-views
@@ -277,8 +276,6 @@ uninstall-am: uninstall-info-am uninstall-nodeviewsDATA
 	mostlyclean-libtool uninstall uninstall-am uninstall-info-am \
 	uninstall-nodeviewsDATA
 
-
-@INTLTOOL_XML_RULE@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

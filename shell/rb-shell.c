@@ -28,10 +28,13 @@
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
+#include <libgnome/gnome-program.h>
 #include <libgnomeui/gnome-window-icon.h>
+#include <libgnomeui/gnome-about.h>
 #include <string.h>
 #include <sys/stat.h>
 
+#include "config.h"
 #include "RhythmboxShell.h"
 #include "rb-shell.h"
 #include "rb-debug.h"
@@ -77,6 +80,12 @@ static void rb_shell_cmd_shuffle (BonoboUIComponent *component,
 static void rb_shell_cmd_repeat (BonoboUIComponent *component,
 		                 RBShell *shell,
 		                 const char *verbname);
+static void rb_shell_cmd_about (BonoboUIComponent *component,
+		                RBShell *shell,
+		                const char *verbname);
+static void rb_shell_cmd_quit (BonoboUIComponent *component,
+		               RBShell *shell,
+			       const char *verbname);
 
 #define CMD_PATH_SHUFFLE "/commands/Shuffle"
 #define CMD_PATH_REPEAT  "/commands/Repeat"
@@ -105,6 +114,8 @@ static BonoboUIVerb rb_shell_verbs[] =
 {
 	BONOBO_UI_VERB ("Shuffle", (BonoboUIVerbFn) rb_shell_cmd_shuffle),
 	BONOBO_UI_VERB ("Repeat",  (BonoboUIVerbFn) rb_shell_cmd_repeat),
+	BONOBO_UI_VERB ("About",   (BonoboUIVerbFn) rb_shell_cmd_about),
+	BONOBO_UI_VERB ("Quit",    (BonoboUIVerbFn) rb_shell_cmd_quit),
 	BONOBO_UI_VERB_END
 };
 
@@ -157,7 +168,7 @@ rb_shell_class_init (RBShellClass *klass)
 static void
 rb_shell_init (RBShell *shell) 
 {
-	char *dirname;
+	char *dirname, *file;
 	
 	shell->priv = g_new0 (RBShellPrivate, 1);
 
@@ -185,7 +196,9 @@ rb_shell_init (RBShell *shell)
 
 	g_free (dirname);
 
-	gnome_window_icon_set_default_from_file (PIXMAP_DIR "/rhythmbox.png");
+	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
+	gnome_window_icon_set_default_from_file (file);
+	g_free (file);
 }
 
 static void
@@ -238,6 +251,8 @@ rb_shell_quit (PortableServer_Servant _servant,
 	RBShell *shell = RB_SHELL (bonobo_object (_servant));
 
 	rb_debug ("Quitting");
+
+	gtk_widget_hide (shell->priv->window);
 
 	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
@@ -543,4 +558,65 @@ rb_shell_cmd_repeat (BonoboUIComponent *component,
 
 		rb_view_player_set_repeat (player, repeat);
 	}
+}
+
+static void
+rb_shell_cmd_about (BonoboUIComponent *component,
+		    RBShell *shell,
+		    const char *verbname)
+{
+	static GtkWidget *about = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	char *file;
+
+	const char *authors[] =
+	{
+		"Jorn Baayen <jorn@nl.linux.org>",
+		"Marco Pesenti Gritti <mpeseng@tin.it>",
+		"Bastien Nocera <hadess@hadess.net>",
+		"Seth Nickell <snickell@stanford.edu>",
+		"Olivier Martin <omartin@ifrance.com>",
+		NULL
+	};
+
+	const char *documenters[] =
+	{
+		NULL
+	};
+
+	const char *translator_credits = _("translator_credits");
+
+	if (about != NULL)
+	{
+		gtk_window_present (GTK_WINDOW (about));
+		return;
+	}
+
+	file = gnome_program_locate_file (NULL, GNOME_FILE_DOMAIN_PIXMAP, "rhythmbox.png", TRUE, NULL);
+	pixbuf = gdk_pixbuf_new_from_file (file, NULL);
+	g_free (file);
+
+	about = gnome_about_new ("Rhythmbox", VERSION,
+				 _("Copyright 2002 Jorn Baayen"),
+				 _("Music management and playback software for GNOME."),
+				 (const char **) authors,
+				 (const char **) documenters,
+				 strcmp (translator_credits, "translator_credits") != 0 ? translator_credits : NULL,
+				 pixbuf);
+	gtk_window_set_transient_for (GTK_WINDOW (about), GTK_WINDOW (shell->priv->window));
+
+	g_object_add_weak_pointer (G_OBJECT (about),
+				   (void **) &about);
+
+	gtk_widget_show (about);
+}
+
+static void
+rb_shell_cmd_quit (BonoboUIComponent *component,
+		   RBShell *shell,
+		   const char *verbname)
+{
+	gtk_widget_hide (shell->priv->window);
+
+	bonobo_object_unref (BONOBO_OBJECT (shell));
 }
