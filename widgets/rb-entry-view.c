@@ -668,8 +668,8 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 
 	rhythmdb_read_lock (view->priv->db);
 
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
@@ -683,8 +683,8 @@ rb_entry_view_normal_sort_func (RhythmDBEntry *a, RhythmDBEntry *b,
 		goto out;
 	}
 
-	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ARTIST_SORT_KEY);
-	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ARTIST_SORT_KEY);
+	a_str = rhythmdb_entry_get_string (view->priv->db, a, RHYTHMDB_PROP_ALBUM_SORT_KEY);
+	b_str = rhythmdb_entry_get_string (view->priv->db, b, RHYTHMDB_PROP_ALBUM_SORT_KEY);
 
 	ret = strcmp (a_str, b_str);
 	if (ret != 0)
@@ -1713,12 +1713,14 @@ poll_model (RBEntryView *view)
 
 	did_sync = rhythmdb_model_poll (view->priv->model, &timeout);
 
-	GDK_THREADS_LEAVE ();
-
 	if (did_sync)
-		g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) poll_model, view, NULL);
+		view->priv->model_poll_id =
+			g_idle_add_full (G_PRIORITY_LOW, (GSourceFunc) poll_model, view, NULL);
 	else
-		g_timeout_add (300, (GSourceFunc) poll_model, view);
+		view->priv->model_poll_id =
+			g_timeout_add (300, (GSourceFunc) poll_model, view);
+
+	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }
