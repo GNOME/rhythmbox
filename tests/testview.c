@@ -606,6 +606,8 @@ song_eos_cb (MonkeyMediaStream *stream,
 	     RBTestView *view)
 {
 	rb_test_view_next (RB_VIEW_PLAYER (view));
+
+	rb_view_player_notify_changed (RB_VIEW_PLAYER (view));
 }
 
 static RBNode *
