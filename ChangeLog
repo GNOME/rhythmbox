@@ -1,3 +1,9 @@
+2003-08-27  Bastien Nocera  <hadess@hadess.net>
+
+	* monkey-media/monkey-media-player-xine.c:
+	(monkey_media_player_pause): close the audio device on pause
+	(Closes: #120239)
+
 2003-08-26  Colin Walters  <walters@verbum.org>
 
 	* configure.ac: Remove redundant install-schemas option.

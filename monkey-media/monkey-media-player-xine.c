@@ -519,6 +519,9 @@ monkey_media_player_pause (MonkeyMediaPlayer *mp)
 	if (mp->priv->stream != NULL) {
 		if (xine_get_param (mp->priv->stream, XINE_PARAM_SPEED) == XINE_SPEED_NORMAL)
 			xine_set_param (mp->priv->stream, XINE_PARAM_SPEED, XINE_SPEED_PAUSE);
+
+		/* Close the audio device when on pause */
+		xine_set_param (mp->priv->stream, XINE_PARAM_AUDIO_CLOSE_DEVICE, 1);
 	}
 
 	mp->priv->timer_add += floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5);
