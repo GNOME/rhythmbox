@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-01-24 03:22+0100\n"
-"PO-Revision-Date: 2004-01-24 03:23+0100\n"
+"POT-Creation-Date: 2004-01-30 18:31+0100\n"
+"PO-Revision-Date: 2004-01-30 18:32+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <serrador@cvs.gnome.org>\n"
 "Language-Team: Spanish <traductores@es.gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -35,20 +35,6 @@ msgstr "Extensión del menú contextual de Nautilus para Rhythmbox"
 #: component/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
 msgid "Rhythmbox Nautilus Context Menu Item"
 msgstr "Elemento del menú contextual de Nautilus para Rhythmbox"
-
-#: corba/test-corba.c:55
-msgid "I could not initialize Bonobo"
-msgstr "No se pudo inicializar Bonobo"
-
-#: corba/test-corba.c:62
-msgid "Could not create an instance of the sample echo component"
-msgstr "No se pudo crear una instancia del componente de eco de muestra"
-
-#: corba/test-corba.c:70 corba/test-corba.c:90 shell/main.c:242
-#: shell/main.c:251
-#, c-format
-msgid "An exception occured '%s'"
-msgstr "Ocurrió una excepción «%s»"
 
 #: data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -120,7 +106,7 @@ msgstr "_Ruta: "
 msgid "_Skip this step"
 msgstr "_Saltar este paso"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1322
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1314
 msgid "A_lbum"
 msgstr "Á_lbum"
 
@@ -152,11 +138,11 @@ msgstr "_Ultima reproducción"
 msgid "_Play count"
 msgstr "_Número de reproducciones"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1351
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1344
 msgid "_Quality"
 msgstr "Cal_idad"
 
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1273
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1265
 msgid "_Rating"
 msgstr "_Evaluación"
 
@@ -462,7 +448,7 @@ msgstr "Mostrar información de la canción seleccionada"
 msgid "Source _List"
 msgstr "_Lista de fuentes"
 
-#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1480
+#: data/ui/rhythmbox-ui.xml.h:42 shell/rb-shell-player.c:1484
 msgid "Start playing"
 msgstr "Comenzar reproducción"
 
@@ -546,7 +532,7 @@ msgstr "_Siguiente"
 msgid "_Paste"
 msgstr "_Pegar"
 
-#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1481
+#: data/ui/rhythmbox-ui.xml.h:65 shell/rb-shell-player.c:1485
 msgid "_Play"
 msgstr "_Reproducir"
 
@@ -589,8 +575,8 @@ msgstr "Estación de radio nueva"
 #: metadata/monkey-media/monkey-media-stream-info.c:667
 #: rhythmdb/rhythmdb.c:708 sources/rb-iradio-source.c:250
 #: sources/rb-iradio-source.c:251 sources/rb-iradio-source.c:252
-#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1055
-#: widgets/rb-entry-view.c:1082
+#: sources/rb-playlist-source.c:393 widgets/rb-entry-view.c:1047
+#: widgets/rb-entry-view.c:1074 widgets/rb-song-info.c:581
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -598,7 +584,7 @@ msgstr "Desconocido"
 msgid "All"
 msgstr "Todo"
 
-#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:558
+#: iradio/rb-station-properties-dialog.c:172 widgets/rb-song-info.c:548
 #, c-format
 msgid "%s Properties"
 msgstr "Propiedades de %s"
@@ -743,7 +729,7 @@ msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
 #: metadata/rb-metadata-gst.c:393 metadata/rb-metadata-gst.c:518
-#: player/rb-player-gst.c:523
+#: player/rb-player-gst.c:532
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
@@ -752,88 +738,92 @@ msgstr "Ha ocurrido un error al crear el elemento %s; compruebe su instalación"
 msgid "Operation not supported"
 msgstr "Operación no soportada"
 
-#: player/rb-player-gst.c:322 player/rb-player-gst.c:761
+#: player/rb-player-gst.c:324 player/rb-player-gst.c:776
 msgid "Failed to close audio output sink"
 msgstr "Fallo al cerrar el sumidero de salida de sonido"
 
-#: player/rb-player-gst.c:406 player/rb-player-gst.c:628
-#: player/rb-player-gst.c:637
+#: player/rb-player-gst.c:411 player/rb-player-gst.c:640
+#: player/rb-player-gst.c:650
 msgid "Could not start pipeline playing"
 msgstr "No se ha podido iniciar la reproducción en pipeline"
 
-#: player/rb-player-gst.c:435
+#: player/rb-player-gst.c:440
 msgid "Failed to create thread element; check your GStreamer installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento de hilo; compruebe su instalación "
 "de Gstreamer"
 
-#: player/rb-player-gst.c:469
+#: player/rb-player-gst.c:474
 #, c-format
 msgid "Failed to create %s input element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento de entrada %s; compruebe su "
 "instalación"
 
-#: player/rb-player-gst.c:497
+#: player/rb-player-gst.c:503
 msgid "Failed to create queue element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento de de cola; compruebe su "
 "instalación"
 
-#: player/rb-player-gst.c:542
+#: player/rb-player-gst.c:520
+msgid "Failed to create typefind element; check your installation"
+msgstr "Ha ocurrido un error al crear el elemento typefind; compruebe su instalación"
+
+#: player/rb-player-gst.c:551
 msgid "Failed to create volume element; check your installation"
 msgstr ""
 "Ha ocurrido un error al crear el elemento de volumen; compruebe su "
 "instalación"
 
-#: player/rb-player-gst.c:561
+#: player/rb-player-gst.c:570
 msgid "Could not create audio output element; check your settings"
 msgstr ""
 "No se ha podido crear el elemento de salida de audio; compruebe su "
 "configuración"
 
-#: player/rb-player-gst.c:648
+#: player/rb-player-gst.c:662
 msgid "Could not pause playback"
 msgstr "No se ha podido pausar la reproducción"
 
-#: player/rb-player-gst.c:656
+#: player/rb-player-gst.c:671
 msgid "Could not close output sink"
 msgstr "No se ha podido cerrar el sumidero de salida"
 
-#: player/rb-player-gst.c:702
+#: player/rb-player-gst.c:717
 msgid "No AudioCD support; check your settings"
 msgstr "No hay soporte AudioCD; compruebe su configuración"
 
-#: player/rb-player-xine.c:337
+#: player/rb-player-xine.c:338
 msgid "Failed to set up an audio driver; check your installation"
 msgstr ""
 "Ha fallado la configuración de un controlador de audio; compruebe su "
 "instalación"
 
-#: player/rb-player-xine.c:437
+#: player/rb-player-xine.c:438
 #, c-format
 msgid "No input plugin available for %s; check your installation."
 msgstr ""
 "No hay un complemento de entrada disponible para %s; compruebe su "
 "instalación."
 
-#: player/rb-player-xine.c:446
+#: player/rb-player-xine.c:447
 #, c-format
 msgid "No demux plugin available for %s; check your installation."
 msgstr ""
 "No hay un complemento demultiplexor disponible para %s; compruebe su "
 "instalación."
 
-#: player/rb-player-xine.c:455
+#: player/rb-player-xine.c:456
 #, c-format
 msgid "Demuxing for %s failed; check your installation."
 msgstr "Ha fallado el demultiplexado de %s; compruebe su instalación."
 
-#: player/rb-player-xine.c:463
+#: player/rb-player-xine.c:464
 msgid "Internal error; check your installation."
 msgstr "Error interno; compruebe su instalación."
 
-#: player/rb-player-xine.c:471
+#: player/rb-player-xine.c:472
 #, c-format
 msgid "Audio of %s not handled; check your installation."
 msgstr "El audio de %s no es manejado; compruebe su instalación"
@@ -842,7 +832,8 @@ msgstr "El audio de %s no es manejado; compruebe su instalación"
 msgid "<invalid filename>"
 msgstr "<nombre de archivo inválido>"
 
-#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1021
+#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1013
+#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:810
 msgid "Never"
 msgstr "Nunca"
 
@@ -957,6 +948,11 @@ msgstr ""
 "Rhythmbox no funciona actualmente si están activados los eventos de sonido "
 "de Gnome y esdsink está en uso."
 
+#: shell/main.c:242 shell/main.c:251
+#, c-format
+msgid "An exception occured '%s'"
+msgstr "Ocurrió una excepción «%s»"
+
 #: shell/main.c:289
 #, c-format
 msgid ""
@@ -1008,12 +1004,12 @@ msgid "Failed to create the player: %s"
 msgstr "Ha ocurrido un error al el crear el reproductor: %s"
 
 #: shell/rb-shell-player.c:539
-msgid "Go to previous song"
-msgstr "Saltar a la canción anterior"
+msgid "Play previous song"
+msgstr "Reproducir la canción anterior"
 
 #: shell/rb-shell-player.c:568
-msgid "Go to next song"
-msgstr "Saltar a la canción siguiente"
+msgid "Play next song"
+msgstr "Reproducir la canción siguiente"
 
 #: shell/rb-shell-player.c:587
 msgid "Change the music volume"
@@ -1024,23 +1020,23 @@ msgstr "Cambiar el volumen de la música"
 msgid "Opening %s..."
 msgstr "Abriendo %s..."
 
-#: shell/rb-shell-player.c:1472
+#: shell/rb-shell-player.c:1476
 msgid "Pause playback"
 msgstr "Pausar la reproducción"
 
-#: shell/rb-shell-player.c:1473
+#: shell/rb-shell-player.c:1477
 msgid "_Pause"
 msgstr "_Pausar"
 
-#: shell/rb-shell-player.c:1488
+#: shell/rb-shell-player.c:1492
 msgid "Stop playback"
 msgstr "Detener reproducción"
 
-#: shell/rb-shell-player.c:1489
+#: shell/rb-shell-player.c:1493
 msgid "_Stop"
 msgstr "_Detener"
 
-#: shell/rb-shell-player.c:1822
+#: shell/rb-shell-player.c:1826
 msgid "Unexpected end of stream!"
 msgstr "¡Fin de flujo inesperado!"
 
@@ -1210,7 +1206,7 @@ msgstr "Biblioteca"
 msgid "Add Location"
 msgstr "Añadir ubicación"
 
-#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1291
+#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1283
 msgid "Tra_ck"
 msgstr "_Pista"
 
@@ -1264,13 +1260,12 @@ msgstr "Terminar"
 msgid ""
 "You are now ready to start Rhythmbox.\n"
 "\n"
-"Remember that you may add music to the library using \"Organize\" then \"Add "
-"to Library\", or by importing it from CDs."
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
 msgstr ""
 "Ahora está preparado para iniciar Rhythmbox.\n"
 "\n"
-"Recuerde que puede añadir música a la biblioteca usando «Organizar» y "
-"después «Añadir a la biblioteca» o importándola de CDs."
+"Recuerde que puede añadir música a la biblioteca usando «Música» y después «Importar carpeta» o importándola de CDs."
 
 #: widgets/rb-druid.c:309
 #, c-format
@@ -1281,60 +1276,60 @@ msgstr "Ha ocurrido un error al leer el archivo: %s"
 msgid "Choose a directory"
 msgstr "Elija un directorio"
 
-#: widgets/rb-entry-view.c:1057 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:1049 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1084
+#: widgets/rb-entry-view.c:1076
 msgid "Very Low"
 msgstr "Muy baja"
 
-#: widgets/rb-entry-view.c:1086
+#: widgets/rb-entry-view.c:1078
 msgid "Low"
 msgstr "Baja"
 
-#: widgets/rb-entry-view.c:1088
+#: widgets/rb-entry-view.c:1080
 msgid "Regular"
 msgstr "Regular"
 
-#: widgets/rb-entry-view.c:1090
+#: widgets/rb-entry-view.c:1082
 msgid "High"
 msgstr "Alta"
 
-#: widgets/rb-entry-view.c:1092
+#: widgets/rb-entry-view.c:1084
 msgid "Very High"
 msgstr "Muy alta"
 
-#: widgets/rb-entry-view.c:1094
+#: widgets/rb-entry-view.c:1086
 msgid "Perfect"
 msgstr "Perfecto"
 
-#: widgets/rb-entry-view.c:1300
+#: widgets/rb-entry-view.c:1292
 msgid "_Title"
 msgstr "_Título"
 
-#: widgets/rb-entry-view.c:1311
+#: widgets/rb-entry-view.c:1303
 msgid "Art_ist"
 msgstr "A_rtista"
 
-#: widgets/rb-entry-view.c:1332
+#: widgets/rb-entry-view.c:1325
 msgid "Ge_nre"
 msgstr "Gé_nero"
 
-#: widgets/rb-entry-view.c:1342
+#: widgets/rb-entry-view.c:1335
 msgid "Ti_me"
 msgstr "Dura_ción"
 
-#: widgets/rb-entry-view.c:1361
+#: widgets/rb-entry-view.c:1354
 msgid "_Play Count"
 msgstr "_Número de reproducciones"
 
-#: widgets/rb-entry-view.c:1370
+#: widgets/rb-entry-view.c:1363
 msgid "L_ast Played"
 msgstr "_Ultima reproducción"
 
-#: widgets/rb-entry-view.c:1514
+#: widgets/rb-entry-view.c:1507
 msgid "Now Playing"
 msgstr "Reproduciendo ahora"
 
@@ -1381,16 +1376,16 @@ msgid "Title"
 msgstr "Título"
 
 #: widgets/rb-query-creator.c:60
-msgid "equals"
-msgstr "igual a"
-
-#: widgets/rb-query-creator.c:61
 msgid "contains"
 msgstr "contiene"
 
-#: widgets/rb-query-creator.c:62
+#: widgets/rb-query-creator.c:61
 msgid "does not contain"
 msgstr "no contiene"
+
+#: widgets/rb-query-creator.c:62
+msgid "equals"
+msgstr "igual a"
 
 #: widgets/rb-query-creator.c:230
 msgid "Create Automatic Playlist"
@@ -1413,7 +1408,7 @@ msgstr "por"
 msgid "Song Properties"
 msgstr "Propiedades de la canción"
 
-#: widgets/rb-song-info.c:674
+#: widgets/rb-song-info.c:663
 msgid "on the desktop"
 msgstr "en el escritorio"
 
@@ -1426,6 +1421,12 @@ msgstr "+"
 #: widgets/rb-volume.c:234
 msgid "-"
 msgstr "-"
+
+#~ msgid "I could not initialize Bonobo"
+#~ msgstr "No se pudo inicializar Bonobo"
+
+#~ msgid "Could not create an instance of the sample echo component"
+#~ msgstr "No se pudo crear una instancia del componente de eco de muestra"
 
 #~ msgid "Loading..."
 #~ msgstr "Cargando..."
@@ -1595,11 +1596,6 @@ msgstr "-"
 #~ msgstr ""
 #~ "Ha ocurrido un error al crear el elemento de entrada cdparanoia; "
 #~ "compruebe su instalación"
-
-#~ msgid "Failed to create spider element; check your installation"
-#~ msgstr ""
-#~ "Ha ocurrido un error al crear el elemento dspider; compruebe su "
-#~ "instalación"
 
 #~ msgid "GStreamer options:"
 #~ msgstr "Opciones de GStreamer:"
