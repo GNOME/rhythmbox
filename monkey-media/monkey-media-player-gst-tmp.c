@@ -33,7 +33,6 @@
 #include <libgnomevfs/gnome-vfs-utils.h>
 
 #include "monkey-media.h"
-#include "eel-gconf-extensions.h"
 #include "monkey-media-marshal.h"
 #include "monkey-media-private.h"
 #include "monkey-media-audio-cd.h"
@@ -557,14 +556,14 @@ monkey_media_player_construct (MonkeyMediaPlayer *mp,
 	/* The decoding element */
 	if (iradio_mode)
 		decoder_name = "mad";
-	else if (eel_gconf_get_boolean ("/apps/rhythmbox/use_autoplugger"))
-		decoder_name = "spider";
+#if GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 6
 	else if (g_str_has_suffix (uri, ".mp3"))
 		decoder_name = "mad";
 	else if (g_str_has_suffix (uri, ".ogg"))
 		decoder_name = "vorbisfile";
 	else if (g_str_has_suffix (uri, ".flac"))
 		decoder_name = "flacdec";
+#endif
 	else
 		decoder_name = "spider";
 
