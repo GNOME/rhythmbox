@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox 0.6.99\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2004-02-26 23:04+0900\n"
-"PO-Revision-Date: 2004-02-26 23:12+0900\n"
+"POT-Creation-Date: 2004-03-06 20:36+0900\n"
+"PO-Revision-Date: 2004-03-06 20:36+0900\n"
 "Last-Translator: Young-Ho Cha <ganadist at mizi.com>\n"
 "Language-Team: GNOME Korea <gnome-kr-hackers@lists.kldp.net>\n"
 "MIME-Version: 1.0\n"
@@ -95,7 +95,7 @@ msgstr "경로(_P):"
 msgid "_Skip this step"
 msgstr "이 단계 생략하기(_S)"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1318
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1306
 msgid "A_lbum"
 msgstr "앨범(_L)"
 
@@ -127,11 +127,11 @@ msgstr "최근에 연주된 시간(_L)"
 msgid "_Play count"
 msgstr "연주 횟수(_P)"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1348
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1336
 msgid "_Quality"
 msgstr "음질(_Q)"
 
-#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1269
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1257
 msgid "_Rating"
 msgstr "점수(_R)"
 
@@ -241,7 +241,7 @@ msgstr "더하려는 파일의 위치(URI)를 넣으십시오:"
 msgid "Open from URI"
 msgstr "URI에서 열기"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1174 shell/rb-shell.c:1813
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:1190 shell/rb-shell.c:1860
 msgid "Music Player"
 msgstr "음악 연주기"
 
@@ -587,11 +587,11 @@ msgstr "새 인터넷 라디오 방송국"
 #: metadata/monkey-media/monkey-media-stream-info.c:404
 #: metadata/monkey-media/monkey-media-stream-info.c:420
 #: metadata/monkey-media/monkey-media-stream-info.c:667
-#: rhythmdb/rhythmdb.c:708 sources/rb-ipod-source.c:173
-#: sources/rb-iradio-source.c:249 sources/rb-iradio-source.c:250
-#: sources/rb-iradio-source.c:251 sources/rb-playlist-source.c:393
-#: widgets/rb-entry-view.c:1051 widgets/rb-entry-view.c:1078
-#: widgets/rb-song-info.c:581
+#: rhythmdb/rhythmdb.c:737 sources/rb-ipod-source.c:173
+#: sources/rb-iradio-source.c:254 sources/rb-iradio-source.c:255
+#: sources/rb-iradio-source.c:256 sources/rb-playlist-source.c:393
+#: widgets/rb-entry-view.c:1039 widgets/rb-entry-view.c:1066
+#: widgets/rb-song-info.c:597
 msgid "Unknown"
 msgstr "알 수 없음"
 
@@ -693,7 +693,7 @@ msgstr "음악 CD 트랙"
 
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:197
 #: metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c:266
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:167
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:172
 #: metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c:167
 msgid "Failed to open file for reading"
 msgstr "파일을 읽는데 실패"
@@ -706,16 +706,16 @@ msgstr "FLAC 파일 디코딩 중 오류"
 msgid "FLAC"
 msgstr "FLAC"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:178
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:183
 msgid "Failed to gather information about the file"
 msgstr "파일에 대한 정보를 얻어오기 실패"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:562
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:588
 #, c-format
 msgid "MPEG %d Layer III"
 msgstr "MPEG %d 레이어 III"
 
-#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:564
+#: metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c:590
 msgid "MPEG 2.5 Layer III"
 msgstr "MPEG 2.5 레이어 III"
 
@@ -743,13 +743,13 @@ msgstr "Ogg Vorbis로 파일 열기 실패"
 msgid "Ogg Vorbis"
 msgstr "Ogg Vorbis"
 
-#: metadata/rb-metadata-gst.c:455 metadata/rb-metadata-gst.c:584
+#: metadata/rb-metadata-gst.c:459 metadata/rb-metadata-gst.c:588
 #: player/rb-player-gst.c:565
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "%s 요소 만드는데 실패; 설치가 올바른지 확인하십시오"
 
-#: metadata/rb-metadata-mm.c:202
+#: metadata/rb-metadata-mm.c:205
 msgid "Operation not supported"
 msgstr "동작이 지원되지 않습니다"
 
@@ -810,59 +810,59 @@ msgstr "내부 오류; 설치가 올바른지 확인하십시오."
 msgid "Audio of %s not handled; check your installation."
 msgstr "%s의 오디오 처리할 수 없음; 설치가 올바른지 확인하십시오."
 
-#: rhythmdb/rhythmdb.c:775
+#: rhythmdb/rhythmdb.c:815
 msgid "<invalid filename>"
 msgstr "<잘못된 파일 이름>"
 
-#: rhythmdb/rhythmdb.c:1306 widgets/rb-entry-view.c:1017
-#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:810
+#: rhythmdb/rhythmdb.c:1346 widgets/rb-entry-view.c:1005
+#: widgets/rb-song-info.c:571 widgets/rb-song-info.c:805
 msgid "Never"
 msgstr "없음"
 
-#: rhythmdb/rhythmdb.c:1308
+#: rhythmdb/rhythmdb.c:1348
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2069
+#: rhythmdb/rhythmdb.c:2071
 msgid "Loading songs..."
 msgstr "노래 읽는 중..."
 
-#: rhythmdb/rhythmdb.c:2071
+#: rhythmdb/rhythmdb.c:2073
 msgid "Refreshing songs..."
 msgstr "노래 다시 읽는 중..."
 
-#: rhythmdb/rhythmdb.c:2088
+#: rhythmdb/rhythmdb.c:2090
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d개 노래"
 
-#: rhythmdb/rhythmdb.c:2095
+#: rhythmdb/rhythmdb.c:2097
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld분"
 
-#: rhythmdb/rhythmdb.c:2096 rhythmdb/rhythmdb.c:2106
+#: rhythmdb/rhythmdb.c:2098 rhythmdb/rhythmdb.c:2108
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld시간"
 
-#: rhythmdb/rhythmdb.c:2097
+#: rhythmdb/rhythmdb.c:2099
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
 msgstr[0] "%ld일"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2101
+#: rhythmdb/rhythmdb.c:2103
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s %s"
 
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2109
+#: rhythmdb/rhythmdb.c:2111
 #, c-format
 msgid "%s and %s"
 msgstr "%s, %s"
@@ -927,19 +927,19 @@ msgstr "사용할 데이터베이스 파일 경로"
 msgid "Quit Rhythmbox"
 msgstr "리듬박스를 마칩니다"
 
-#: shell/main.c:208
+#: shell/main.c:210
 msgid ""
 "Rhythmbox does not currently work if GNOME sound events are are enabled and "
 "esdsink is in use."
 msgstr ""
 "리듬박스는 그놈 사운드 이벤트나 esdsink를 쓰고 있을 때 동작하지 않습니다."
 
-#: shell/main.c:247 shell/main.c:256
+#: shell/main.c:249 shell/main.c:258
 #, c-format
 msgid "An exception occured '%s'"
 msgstr "'%s'예외가 발생했습니다"
 
-#: shell/main.c:294
+#: shell/main.c:296
 #, c-format
 msgid ""
 "Failed to activate the shell:\n"
@@ -972,15 +972,15 @@ msgstr "점수에 따른 임의 순서"
 msgid "Random by time since last play and rating"
 msgstr "마지막 연주된 시간과 점수에 따른 임의 순서"
 
-#: shell/rb-playlist-manager.c:420 shell/rb-shell-player.c:897
+#: shell/rb-playlist-manager.c:422 shell/rb-shell-player.c:897
 msgid "Couldn't parse playlist"
 msgstr "연주 목록을 분석할 수 없습니다"
 
-#: shell/rb-playlist-manager.c:634
+#: shell/rb-playlist-manager.c:647
 msgid "Load playlist"
 msgstr "연주 목록 읽기"
 
-#: shell/rb-playlist-manager.c:671
+#: shell/rb-playlist-manager.c:684
 msgid "Save playlist"
 msgstr "연주 목록 저장"
 
@@ -1034,24 +1034,24 @@ msgstr "음악 연주기 기본 설정"
 msgid "General"
 msgstr "일반"
 
-#: shell/rb-shell.c:826
+#: shell/rb-shell.c:842
 #, c-format
 msgid "Unable to parse URI \"%s\"\n"
 msgstr "URI \"%s\"(을)를 분석 실패\n"
 
-#: shell/rb-shell.c:1024
+#: shell/rb-shell.c:1040
 msgid "Whether the main window is visible"
 msgstr "기본 창을 보여줄지 결정합니다"
 
-#: shell/rb-shell.c:1029
+#: shell/rb-shell.c:1045
 msgid "Whether shuffle is enabled"
 msgstr "임의대로 연주할 것인지 결정합니다"
 
-#: shell/rb-shell.c:1033
+#: shell/rb-shell.c:1049
 msgid "Properties for the current song"
 msgstr "현재 노래의 등록 정보"
 
-#: shell/rb-shell.c:1452
+#: shell/rb-shell.c:1471
 #, c-format
 msgid ""
 "Failed to register the shell: %s\n"
@@ -1062,12 +1062,12 @@ msgstr ""
 "리듬박스의 설치위치가 bonobo-activation의 설치위치가 달라서 그런 것입니다; 동"
 "작은 하지만 IPC는 안될것입니다."
 
-#: shell/rb-shell.c:1787 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
+#: shell/rb-shell.c:1834 shell/rb-tray-icon.c:227 widgets/rb-header.c:557
 msgid "Not playing"
 msgstr "연주하지 않음"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1790
+#: shell/rb-shell.c:1837
 #, c-format
 msgid ""
 "%s\n"
@@ -1077,7 +1077,7 @@ msgstr ""
 "잠시 멈춤, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1794
+#: shell/rb-shell.c:1841
 #, c-format
 msgid ""
 "%s\n"
@@ -1087,54 +1087,54 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1829
+#: shell/rb-shell.c:1876
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (멈춤)"
 
-#: shell/rb-shell.c:1897
+#: shell/rb-shell.c:1944
 msgid "translator_credits"
 msgstr "차영호 <ganadist at mizi.com>, 2002-2003"
 
-#: shell/rb-shell.c:1906
+#: shell/rb-shell.c:1953
 msgid "Maintainers:"
 msgstr "관리자:"
 
-#: shell/rb-shell.c:1909
+#: shell/rb-shell.c:1956
 msgid "Former Maintainers:"
 msgstr "이전 관리자:"
 
-#: shell/rb-shell.c:1912
+#: shell/rb-shell.c:1959
 msgid "Contributors:"
 msgstr "도움 주신 분들:"
 
-#: shell/rb-shell.c:1914
+#: shell/rb-shell.c:1961
 msgid "Music management and playback software for GNOME."
 msgstr "그놈용 음악 관리 및 연주 소프트웨어."
 
-#: shell/rb-shell.c:2087
+#: shell/rb-shell.c:2134
 msgid "Choose Files or Directory"
 msgstr "파일이나 디렉토리를 선택하십시오"
 
-#: shell/rb-shell.c:2133
+#: shell/rb-shell.c:2180
 msgid "To extract CDs you must install the Sound Juicer package."
 msgstr ""
 "CD에서 노래를 가져오려면 Sound Juicer 프로그램이 설치되어 있어야 합니다."
 
-#: shell/rb-shell.c:2140
+#: shell/rb-shell.c:2187
 #, c-format
 msgid "Couldn't run sound-juicer: %s"
 msgstr "sound-juicer를 실행할 수 없음: %s"
 
-#: shell/rb-source-header.c:177
+#: shell/rb-source-header.c:183
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "장르, 가수, 앨범, 또는 제목에 따라 음악을 걸러서 보여줍니다"
 
-#: shell/rb-source-header.c:184
+#: shell/rb-source-header.c:190
 msgid "Show _Browser"
 msgstr "찾아보기 보이기(_B)"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:191
 msgid "Hide _Browser"
 msgstr "찾아보기 숨기기(_B)"
 
@@ -1205,46 +1205,46 @@ msgstr "\"%s\" PC 파일을 쓰는 중 오류가 발생했습니다.\n"
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:323 sources/rb-library-source.c:510
-#: widgets/rb-query-creator.c:55
+#: sources/rb-iradio-source.c:328 sources/rb-library-source.c:513
+#: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "장르"
 
-#: sources/rb-iradio-source.c:397
+#: sources/rb-iradio-source.c:403
 msgid "Radio"
 msgstr "라디오"
 
-#: sources/rb-iradio-source.c:547
+#: sources/rb-iradio-source.c:559
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d개 방송국"
 
-#: sources/rb-library-source.c:524 widgets/rb-query-creator.c:53
+#: sources/rb-library-source.c:527 widgets/rb-query-creator.c:54
 msgid "Artist"
 msgstr "가수"
 
-#: sources/rb-library-source.c:538 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:541 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "앨범"
 
-#: sources/rb-library-source.c:647
+#: sources/rb-library-source.c:649
 msgid "Library"
 msgstr "라이브러리"
 
-#: sources/rb-library-source.c:1180
+#: sources/rb-library-source.c:1192
 msgid "Add Location"
 msgstr "위치 더하기"
 
-#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1287
+#: sources/rb-playlist-source.c:270 widgets/rb-entry-view.c:1275
 msgid "Tra_ck"
 msgstr "트랙(_C)"
 
-#: sources/rb-source.c:495
+#: sources/rb-source.c:528
 msgid "No properties available."
 msgstr "쓸 수 있는 등록정보 없음."
 
-#: sources/rb-source.c:578
+#: sources/rb-source.c:611
 msgid "This source does not support drag and drop."
 msgstr "이 소스는 끌어 놓기가 지원되지 않습니다."
 
@@ -1306,60 +1306,60 @@ msgstr "파일 이름 읽는 중 오류: %s"
 msgid "Choose a directory"
 msgstr "디렉토리를 선택하십시오"
 
-#: widgets/rb-entry-view.c:1053 widgets/rb-header.c:838
+#: widgets/rb-entry-view.c:1041 widgets/rb-header.c:838
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:1080
+#: widgets/rb-entry-view.c:1068
 msgid "Very Low"
 msgstr "매우 낮음"
 
-#: widgets/rb-entry-view.c:1082
+#: widgets/rb-entry-view.c:1070
 msgid "Low"
 msgstr "낮음"
 
-#: widgets/rb-entry-view.c:1084
+#: widgets/rb-entry-view.c:1072
 msgid "Regular"
 msgstr "보통"
 
-#: widgets/rb-entry-view.c:1086
+#: widgets/rb-entry-view.c:1074
 msgid "High"
 msgstr "높음"
 
-#: widgets/rb-entry-view.c:1088
+#: widgets/rb-entry-view.c:1076
 msgid "Very High"
 msgstr "매우 높음"
 
-#: widgets/rb-entry-view.c:1090
+#: widgets/rb-entry-view.c:1078
 msgid "Perfect"
 msgstr "완벽함"
 
-#: widgets/rb-entry-view.c:1296
+#: widgets/rb-entry-view.c:1284
 msgid "_Title"
 msgstr "제목(_T)"
 
-#: widgets/rb-entry-view.c:1307
+#: widgets/rb-entry-view.c:1295
 msgid "Art_ist"
 msgstr "가수(_I)"
 
-#: widgets/rb-entry-view.c:1329
+#: widgets/rb-entry-view.c:1317
 msgid "Ge_nre"
 msgstr "장르(_N)"
 
-#: widgets/rb-entry-view.c:1339
+#: widgets/rb-entry-view.c:1327
 msgid "Ti_me"
 msgstr "시간(_M)"
 
-#: widgets/rb-entry-view.c:1358
+#: widgets/rb-entry-view.c:1346
 msgid "_Play Count"
 msgstr "연주 횟수(_P)"
 
-#: widgets/rb-entry-view.c:1367
+#: widgets/rb-entry-view.c:1355
 msgid "L_ast Played"
 msgstr "최근에 연주된 시간(_A)"
 
-#: widgets/rb-entry-view.c:1511
+#: widgets/rb-entry-view.c:1499
 msgid "Now Playing"
 msgstr "연주중"
 
@@ -1401,23 +1401,35 @@ msgstr "오류(_E)"
 msgid "_File"
 msgstr "파일(_F)"
 
-#: widgets/rb-query-creator.c:52
+#: widgets/rb-query-creator.c:53
 msgid "Title"
 msgstr "제목"
 
-#: widgets/rb-query-creator.c:60
+#: widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "점수"
+
+#: widgets/rb-query-creator.c:62
 msgid "contains"
 msgstr "포함됨"
 
-#: widgets/rb-query-creator.c:61
+#: widgets/rb-query-creator.c:63
 msgid "does not contain"
 msgstr "포함되지 않음"
 
-#: widgets/rb-query-creator.c:62
+#: widgets/rb-query-creator.c:64 widgets/rb-query-creator.c:69
 msgid "equals"
 msgstr "같음"
 
-#: widgets/rb-query-creator.c:230
+#: widgets/rb-query-creator.c:70
+msgid "greater than"
+msgstr "더 큼"
+
+#: widgets/rb-query-creator.c:71
+msgid "less than"
+msgstr "더 작음"
+
+#: widgets/rb-query-creator.c:243
 msgid "Create Automatic Playlist"
 msgstr "연주목록을 만듭니다"
 
@@ -1438,7 +1450,12 @@ msgstr " 가수: "
 msgid "Song Properties"
 msgstr "노래 등록 정보"
 
-#: widgets/rb-song-info.c:663
+#: widgets/rb-song-info.c:595
+#, c-format
+msgid "%d kbps"
+msgstr "%d kbps"
+
+#: widgets/rb-song-info.c:658
 msgid "on the desktop"
 msgstr "바탕 화면"
 
@@ -1542,9 +1559,6 @@ msgstr "-"
 
 #~ msgid "MonkeyMedia options:"
 #~ msgstr "MonkeyMedia 옵션:"
-
-#~ msgid "%d kbps"
-#~ msgstr "%d kbps"
 
 #~ msgid " (Mono)"
 #~ msgstr " (모노)"
