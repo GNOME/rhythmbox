@@ -41,6 +41,7 @@
 #include "rb-dialog.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-node-song.h"
+#include "rb-string-helpers.h"
 
 static void rb_node_view_class_init (RBNodeViewClass *klass);
 static void rb_node_view_init (RBNodeView *view);
@@ -1142,6 +1143,8 @@ rb_node_view_scroll_to_node (RBNodeView *view,
 	gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (view->priv->treeview), path,
 				      gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0),
 				      TRUE, 0.5, 0.0);
+	gtk_tree_view_set_cursor (GTK_TREE_VIEW (view->priv->treeview), path,
+				  gtk_tree_view_get_column (GTK_TREE_VIEW (view->priv->treeview), 0), FALSE);
 
 	gtk_tree_path_free (path);
 }
@@ -1151,19 +1154,53 @@ rb_node_view_key_press_event_cb (GtkWidget *widget,
 				 GdkEventKey *event,
 				 RBNodeView *view)
 {
-	GList *sel, *l;
+	gunichar c;
+	char utf8[7];
+	GList *properties = NULL, *selection;
 	
-	if (event->keyval != GDK_Delete)
-		return FALSE;
-
-	sel = g_list_copy (rb_node_view_get_selection (view));
-	for (l = sel; l != NULL; l = g_list_next (l))
+	if (event->keyval == GDK_Delete)
 	{
-		RBNode *node = RB_NODE (l->data);
+		GList *sel, *l;
 
-		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
+		sel = g_list_copy (rb_node_view_get_selection (view));
+		for (l = sel; l != NULL; l = g_list_next (l))
+		{
+			RBNode *node = RB_NODE (l->data);
+
+			g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_DELETED], 0, node);
+		}
+		g_list_free (sel);
+
+		return FALSE;
 	}
-	g_list_free (sel);
+	
+	c = gdk_keyval_to_unicode (event->keyval);
+	if (g_unichar_isgraph (c) == FALSE)
+		return FALSE;
+	
+	g_unichar_to_utf8 (c, utf8);
+	*(utf8 + 1) = '\0';
+
+	properties = g_list_append (properties, g_strdup ("name"));
+	selection = rb_node_view_get_selection (view);
+	
+	if (rb_node_view_scroll_to_string (view,
+				           properties,
+				           TRUE,
+				           utf8,
+				           selection != NULL ? selection->data : NULL,
+				           RB_DIRECTION_DOWN) == FALSE)
+	{
+		rb_node_view_scroll_to_string (view,
+					       properties,
+					       TRUE,
+					       utf8,
+					       NULL,
+					       RB_DIRECTION_DOWN);
+	}
+
+	g_list_foreach (properties, (GFunc) g_free, NULL);
+	g_list_free (properties);
 
 	return FALSE;
 }
@@ -1370,4 +1407,70 @@ tree_view_size_allocate_cb (GtkWidget *widget,
 	}
 
 	g_list_free (columns);
+}
+
+gboolean
+rb_node_view_scroll_to_string (RBNodeView *view,
+			       GList *properties,
+			       gboolean match_start,
+			       const char *string,
+			       RBNode *start,
+			       RBDirection direction)
+{
+	RBNode *node = NULL;
+
+	if (start == NULL)
+		node = rb_node_view_get_first_node (view);
+	else	
+		node = rb_node_view_get_node (view, start, direction);
+	while (node != NULL)
+	{
+		GList *l;
+		
+		for (l = properties; l != NULL; l = g_list_next (l))
+		{
+			GValue value = { 0, };
+			gboolean match = FALSE;
+			char *a, *b;
+
+			rb_node_get_property (node, (char *) l->data, &value);
+
+			a = g_utf8_casefold (string, -1);
+			if (rb_node_get_node_type (node) == RB_NODE_TYPE_ARTIST &&
+			    match_start == TRUE)
+			{
+				char *tmp;
+				tmp = rb_prefix_to_suffix (g_value_get_string (&value));
+				b = g_utf8_casefold (tmp, -1);
+				g_free (tmp);
+			}
+			else
+				b = g_utf8_casefold (g_value_get_string (&value), -1);
+
+			if (match_start == FALSE)
+			{
+				if (strstr (b, a) != NULL)
+					match = TRUE;
+			}
+			else
+			{
+				if (strncmp (b, a, strlen (a)) == 0)
+					match = TRUE;
+			}
+			g_value_unset (&value);
+			g_free (a);
+			g_free (b);
+
+			if (match == TRUE)
+			{
+				rb_node_view_scroll_to_node (view, node);
+				rb_node_view_select_node (view, node);
+				return TRUE;
+			}
+		}
+
+		node = rb_node_view_get_node (view, node, direction);
+	}
+
+	return FALSE;
 }

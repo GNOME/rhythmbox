@@ -1,5 +1,22 @@
 2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
 
+	* data/node-views/rb-node-view-songs.xml:
+	* lib/Makefile.am:
+	* lib/rb-string-helpers.c: (rb_prefix_to_suffix):
+	* lib/rb-string-helpers.h:
+	* lib/widgets/rb-node-view.c: (rb_node_view_scroll_to_node),
+	(rb_node_view_key_press_event_cb), (tree_view_size_allocate_cb),
+	(rb_node_view_scroll_to_string):
+	* lib/widgets/rb-node-view.h:
+	* lib/widgets/rb-tree-model-node.c: (rb_tree_model_node_get_value):
+
+	Pressing a letter in a nodeview will select any node beginning with that
+	letter.
+
+	Also turn of sorting by default for now.
+
+2002-08-14  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink),
 	(rb_uri_is_directory), (rb_uri_exists):
 	* lib/rb-file-helpers.h:

@@ -85,6 +85,13 @@ char       *rb_node_view_get_status        (RBNodeView *view);
 void        rb_node_view_scroll_to_node    (RBNodeView *view,
 					    RBNode *node);
 
+gboolean    rb_node_view_scroll_to_string  (RBNodeView *view,
+					    GList *properties,
+					    gboolean match_start,
+					    const char *string,
+					    RBNode *start,
+					    RBDirection direction);
+
 RBNode 	   *rb_node_view_get_node          (RBNodeView *view,
 				            RBNode *start,
 				            RBDirection direction);

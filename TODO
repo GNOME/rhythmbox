@@ -4,30 +4,12 @@ TODO
 I'm currently working on:
 =========================
 
-Bugs:
------
-* Solve gnome_vfs_monitor_add problem
-* Check where slowness comes from -- the xml loading and
-  tree building only takes like 1 sec.
-* Sometimes crash on exit? (gnome_vfs_shutdown prob)
-* We don't unref the mixer atm (see above)
-
-* Incredible startup slowness!
-
-* Do mtime checking when adding watched dir and file is already in lib
-* Changing files while rb is running is still horked, esp when changing
-  artist/album/genre.
-* If an artist has album kid without grandchildren needs to begone
-* Check for file extisnce when loading from xml (thread..)
-
 Features:
 ---------
 * Implement small view
 * Show current song should change filtering options to show song
 * Volume label instead of icon??
 * Contextmenu on nodeview
-
-* rewrite library once again :-( This time think to refcounting and threads..
 
 Open tasks:
 ===========
@@ -56,13 +38,9 @@ Open tasks:
 need confirmation dialogs
 * File mass tagging
 * Clicking on volume icon to mute/unmute
-* iTunes-like checkbuttons so you can mark songs to be skipped?
 * Save treeview state
 * Group views need to be reorderable, so no sorting
 * Save filtering state
-* Pressing a letter in the album/artist selector should scroll to nodes
- starting with that letter
-
 
 Olive's TODO
 ============
