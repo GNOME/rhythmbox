@@ -1,5 +1,11 @@
 2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
 
+	* lib/widgets/rb-node-view.c: (rb_node_view_selection_changed_cb):
+
+	Fix "node_selected" getting emitted twice.
+
+2002-06-12  Jorn Baayen  <jorn@nl.linux.org>
+
 	* lib/view/rb-view-clipboard.c: (rb_view_clipboard_base_init),
 	(rb_view_clipboard_notify_changed):
 	* lib/view/rb-view-clipboard.h:

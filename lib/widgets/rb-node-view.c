@@ -98,6 +98,8 @@ struct RBNodeViewPrivate
 	char *view_desc_file;
 
 	gboolean have_selection;
+
+	RBNode *selected_node;
 };
 
 enum
@@ -791,10 +793,12 @@ rb_node_view_selection_changed_cb (GtkTreeSelection *selection,
 		view->priv->have_selection = available;
 	}
 
-	if (selected_node != NULL)
+	if (selected_node != NULL && selected_node != view->priv->selected_node)
 	{
 		g_signal_emit (G_OBJECT (view), rb_node_view_signals[NODE_SELECTED], 0, selected_node);
 	}
+
+	view->priv->selected_node = selected_node;
 }
 
 static void
