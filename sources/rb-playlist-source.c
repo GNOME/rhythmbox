@@ -607,7 +607,7 @@ rb_playlist_source_add_entry (RBPlaylistSource *source,
 	rhythmdb_read_lock (source->priv->db);
 	location = rhythmdb_entry_get_string (source->priv->db, entry,
 					      RHYTHMDB_PROP_LOCATION);
-	rhythmdb_read_lock (source->priv->db);
+	rhythmdb_read_unlock (source->priv->db);
 
 	rb_playlist_source_add_location (source, location);
 	g_free (location);
