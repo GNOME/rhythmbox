@@ -1,0 +1,3628 @@
+# This changelog is no longer used. 
+
+2004-01-12 17:58:38 GMT	Colin Walters <walters@verbum.org>	patch-133
+
+    Summary:
+      fix compilation with G_DISABLE_ASSERT
+    Revision:
+      rhythmbox--mainline--0.7--patch-133
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+
+2004-01-12 09:50:49 GMT	Colin Walters <walters@verbum.org>	patch-132
+
+    Summary:
+      restore internet radio metadata
+    Revision:
+      rhythmbox--mainline--0.7--patch-132
+
+
+    modified files:
+     ChangeLog lib/rb-marshal.list player/Makefile.am
+     player/rb-player-gst.c player/rb-player.h
+     shell/rb-shell-player.c
+
+
+2004-01-12 07:18:03 GMT	Colin Walters <walters@verbum.org>	patch-131
+
+    Summary:
+      bust up massive junk regexp into separate .arch-inventory files
+    Revision:
+      rhythmbox--mainline--0.7--patch-131
+
+
+    new files:
+     .arch-ids/.arch-inventory.id .arch-inventory
+     component/.arch-ids/.arch-inventory.id
+     component/.arch-inventory corba/.arch-ids/.arch-inventory.id
+     corba/.arch-inventory data/.arch-ids/.arch-inventory.id
+     data/.arch-inventory data/art/.arch-ids/.arch-inventory.id
+     data/art/.arch-inventory
+     data/glade/.arch-ids/.arch-inventory.id
+     data/glade/.arch-inventory
+     data/ui/.arch-ids/.arch-inventory.id data/ui/.arch-inventory
+     help/.arch-ids/.arch-inventory.id help/.arch-inventory
+     help/C/.arch-ids/.arch-inventory.id help/C/.arch-inventory
+     iradio/.arch-ids/.arch-inventory.id iradio/.arch-inventory
+     lib/.arch-ids/.arch-inventory.id lib/.arch-inventory
+     metadata/.arch-ids/.arch-inventory.id metadata/.arch-inventory
+     metadata/monkey-media/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/.arch-inventory
+     metadata/monkey-media/stream-info-impl/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/stream-info-impl/.arch-inventory
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/.arch-inventory.id
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-inventory
+     player/.arch-ids/.arch-inventory.id player/.arch-inventory
+     po/.arch-ids/.arch-inventory.id po/.arch-inventory
+     rhythmdb/.arch-ids/.arch-inventory.id rhythmdb/.arch-inventory
+     shell/.arch-ids/.arch-inventory.id shell/.arch-inventory
+     sources/.arch-ids/.arch-inventory.id sources/.arch-inventory
+     tests/.arch-ids/.arch-inventory.id tests/.arch-inventory
+     widgets/.arch-ids/.arch-inventory.id widgets/.arch-inventory
+
+    modified files:
+     ChangeLog {arch}/=tagging-method
+
+
+2004-01-12 06:42:30 GMT	Colin Walters <walters@verbum.org>	patch-130
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-130
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/ko.po
+
+
+2004-01-11 08:42:17 GMT	Colin Walters <walters@verbum.org>	patch-129
+
+    Summary:
+      autoconf test for GTK+ 2.3, change ifdefs for filechooser appropriately
+    Revision:
+      rhythmbox--mainline--0.7--patch-129
+
+
+    modified files:
+     ChangeLog configure.ac lib/rb-dialog.c shell/rb-shell.c
+
+
+2004-01-11 08:29:29 GMT	Colin Walters <walters@verbum.org>	patch-128
+
+    Summary:
+      new GtkFileChooser stuff (Sriram Ramkrishna)
+    Revision:
+      rhythmbox--mainline--0.7--patch-128
+
+    Patches applied:
+    
+     * sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-3
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-118
+    
+     * sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-4
+       Use GtkFileChooser dialog boxes
+    
+     * sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-5
+       Fix indentations. <sigh>
+    
+     * sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-6
+       Did some re-ordering of the ifdefs
+    
+
+    modified files:
+     ChangeLog lib/rb-dialog.c shell/rb-shell.c
+
+    new patches:
+     sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-3
+     sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-4
+     sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-5
+     sri@aracnet.com--2003/rhythmbox--mainline--0.7--patch-6
+
+
+2004-01-11 07:38:17 GMT	Colin Walters <walters@verbum.org>	patch-127
+
+    Summary:
+      playback order fixes, other misc fixes (Jeffrey Yasskin)
+    Revision:
+      rhythmbox--mainline--0.7--patch-127
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-10
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-11
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-12
+       merge with OSX fixes
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-13
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-14
+       merge shuffle-random changes
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-25
+       Make default_has_{next,previous}
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-26
+       Factor common elements in random play orders into superclass RBRandomPlayOrder
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-27
+       Make RBShellPlayer explicitly notify the RBPlayOrder when the playing source changes, rather than having the RBPlayOrder connect to a property.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-28
+       Pull common (mostly signal connection) code up to RBPlayOrder from subclasses
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-29
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-30
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-31
+       merge iBook changes
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-32
+       Remove the cache for random because weights weren't being updated enough.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-33
+       Make the random play order not cache the next entry because that causes songs to disappear from the history too quickly.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-34
+       Remove play-order combo and replace it with the shuffle button again.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-35
+       Fix some bugs in the shuffle play order
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-36
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--osxfix--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-10
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--osxfix--0.7--patch-1
+       Fix compile on Mac OSX
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-29
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-1
+       merge with osxfix
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-2
+       Replace shuffle checkbox with play order dropdown
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-3
+       Implement Random by ranking and age
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-4
+       Add an entries-replaced signal to the entry-view and make play orders listen to that instead of RBSource::filter_changed.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-5
+       Prevent the entries-replaced signal from firing when the view is merely resorted
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-6
+       Make RBHistory's owner deal with unrefing its contents so the contents can be a generic pointer. Also fix entry-view's resorting variable.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-7
+       Convert the RBHistory to use a GSequence for storage.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-8
+       Make shuffle maintain its original order as much as possible.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-9
+       Make random faster
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-10
+       Add some g_return checks to public functions of RBHistory
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-11
+       Make random-equal-weights use the generic RBRandomPlayOrder base class.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-12
+       Make RBRandomPlayOrder not permanently change its history in response to entry-view changes until the song changes.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-13
+       Fix bugs which made the previous button return extraneous songs after the filter is changed.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-14
+       Remove temporary_entry from RBShufflePlayOrder's private data and fix an RBHistory bug.
+    
+     * jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-15
+       Make shuffle only commit changes when the playing song switches and make random's commit when the user double-clicks a song.
+    
+
+    new files:
+     shell/rb-play-order-random-by-age-and-rating.c
+     shell/rb-play-order-random-by-age-and-rating.h
+     shell/rb-play-order-random-by-rating.c
+     shell/rb-play-order-random-by-rating.h
+     shell/rb-play-order-random.c shell/rb-play-order-random.h
+
+    modified files:
+     ChangeLog corba/Makefile.am data/rhythmbox.schemas
+     shell/Makefile.am shell/rb-history.c shell/rb-history.h
+     shell/rb-play-order-linear.c shell/rb-play-order-linear.h
+     shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-by-age.h
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-random-equal-weights.h
+     shell/rb-play-order-shuffle.c shell/rb-play-order-shuffle.h
+     shell/rb-play-order.c shell/rb-play-order.h
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-statusbar.c sources/rb-iradio-source.c
+     sources/rb-library-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-25
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-26
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-27
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-28
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-29
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-30
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-31
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-32
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-33
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-34
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-35
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-36
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--osxfix--0.7--base-0
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--osxfix--0.7--patch-1
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--base-0
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-1
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-2
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-3
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-4
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-5
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-6
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-7
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-8
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-9
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-10
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-11
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-12
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-13
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-14
+     jyasskin@mail.utexas.edu--valentine03/rhythmbox--shuffle-random--0.7--patch-15
+
+
+2004-01-11 07:22:19 GMT	Colin Walters <walters@verbum.org>	patch-126
+
+    Summary:
+      capitalize Folder
+    Revision:
+      rhythmbox--mainline--0.7--patch-126
+
+
+    modified files:
+     ChangeLog data/ui/rhythmbox-ui.xml
+
+
+2004-01-10 22:42:52 GMT	Colin Walters <walters@verbum.org>	patch-125
+
+    Summary:
+      only sync metadata for _ENTRY_TYPE_SONG
+    Revision:
+      rhythmbox--mainline--0.7--patch-125
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2004-01-10 22:16:34 GMT	Colin Walters <walters@verbum.org>	patch-124
+
+    Summary:
+      delete all of iradio-initial.pls and add back a few known working stations
+    Revision:
+      rhythmbox--mainline--0.7--patch-124
+
+
+    modified files:
+     ChangeLog data/iradio-initial.pls
+
+
+2004-01-09 15:14:00 GMT	Colin Walters <walters@verbum.org>	patch-123
+
+    Summary:
+      merge fix to g_sequence_ptr_is_begin from nautilus
+    Revision:
+      rhythmbox--mainline--0.7--patch-123
+
+
+    modified files:
+     ChangeLog lib/gsequence.c
+
+
+2004-01-09 00:44:59 GMT	Colin Walters <walters@verbum.org>	patch-122
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-122
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-399
+       disable dashboard by default
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-400
+       remove checks for XSun, therefore no mmkeys with XSun
+    
+
+    modified files:
+     ChangeLog configure.ac
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-399
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-400
+
+
+2004-01-09 00:36:48 GMT	Colin Walters <walters@verbum.org>	patch-121
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-121
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-396
+       rename some functions in rb-shell-player.h, attempt to fix corba bugs 
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-397
+       always initialize artist/album in songinfo to avoid ORBit crash
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-398
+       when a propview is hidden, remove any query it implies
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c sources/rb-library-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-396
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-397
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-398
+
+
+2004-01-08 22:54:36 GMT	Colin Walters <walters@verbum.org>	patch-120
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-120
+
+
+    new files:
+     po/.arch-ids/pl.po.id po/pl.po
+
+    removed files:
+     po/pl.po
+
+    modified files:
+     ChangeLog po/ChangeLog po/ca.po po/sr.po po/sr@Latn.po
+
+
+2004-01-04 22:16:02 GMT	Colin Walters <walters@verbum.org>	patch-119
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-119
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/el.po po/es.po
+
+
+2003-12-30 04:42:03 GMT	Colin Walters <walters@verbum.org>	patch-118
+
+    Summary:
+      add audio/x-flac as a known MIME type for FLAC
+    Revision:
+      rhythmbox--mainline--0.7--patch-118
+
+
+    modified files:
+     ChangeLog metadata/monkey-media/monkey-media.c
+
+
+2003-12-30 00:54:08 GMT	Colin Walters <walters@verbum.org>	patch-117
+
+    Summary:
+      fix volume popup near the bottom of the screen (Johnathan Taylor)
+    Revision:
+      rhythmbox--mainline--0.7--patch-117
+
+
+    modified files:
+     ChangeLog widgets/rb-volume.c
+
+
+2003-12-30 00:54:01 GMT	Colin Walters <walters@verbum.org>	patch-116
+
+    Summary:
+      fix bitrate label in song info dialog
+    Revision:
+      rhythmbox--mainline--0.7--patch-116
+
+
+    modified files:
+     ChangeLog data/glade/station-properties.glade
+
+
+2003-12-29 23:50:41 GMT	Colin Walters <walters@verbum.org>	patch-115
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-115
+
+
+    new files:
+     po/ga.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/tr.po
+
+
+2003-12-29 23:47:41 GMT	Colin Walters <walters@verbum.org>	patch-114
+
+    Summary:
+      show time as Unknown if it is
+    Revision:
+      rhythmbox--mainline--0.7--patch-114
+
+
+    modified files:
+     ChangeLog widgets/rb-entry-view.c
+
+
+2003-12-24 06:06:58 GMT	Colin Walters <walters@verbum.org>	patch-113
+
+    Summary:
+      don't attempt to commit metadata changes for loading entries
+    Revision:
+      rhythmbox--mainline--0.7--patch-113
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c rhythmdb/rhythmdb.c
+
+
+2003-12-24 05:54:11 GMT	Colin Walters <walters@verbum.org>	patch-112
+
+    Summary:
+      make xine player work
+    Revision:
+      rhythmbox--mainline--0.7--patch-112
+
+
+    modified files:
+     ChangeLog player/rb-player-xine.c
+
+
+2003-12-24 04:01:08 GMT	Colin Walters <walters@verbum.org>	patch-111
+
+    Summary:
+      add missing const
+    Revision:
+      rhythmbox--mainline--0.7--patch-111
+
+
+    modified files:
+     ChangeLog metadata/rb-metadata-mm.c
+
+
+2003-12-24 01:27:29 GMT	Colin Walters <walters@verbum.org>	patch-110
+
+    Summary:
+      only enable log catching if debug mode is enabled
+    Revision:
+      rhythmbox--mainline--0.7--patch-110
+
+
+    modified files:
+     ChangeLog lib/rb-debug.c
+
+
+2003-12-24 01:27:11 GMT	Colin Walters <walters@verbum.org>	patch-109
+
+    Summary:
+      add a bit of error handling
+    Revision:
+      rhythmbox--mainline--0.7--patch-109
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
+2003-12-23 22:52:49 GMT	Colin Walters <walters@verbum.org>	patch-108
+
+    Summary:
+      merge more tag writing bits from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-108
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-26
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-27
+       attempt to synchronize metadata
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-28
+       squish memleak
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-29
+       attempt to handle multiple entries in song info dialog
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-30
+       don't sync metadata if dry-run is enabled
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-31
+       don't sync empty values, set labels unsensitive as necessary
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade rhythmdb/rhythmdb.c
+     shell/rb-shell.c widgets/rb-song-info.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-26
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-27
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-28
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-29
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-30
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-31
+
+
+2003-12-23 05:29:35 GMT	Colin Walters <walters@verbum.org>	patch-107
+
+    Summary:
+      ignore changes on disconnected models
+    Revision:
+      rhythmbox--mainline--0.7--patch-107
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+
+
+2003-12-23 05:19:47 GMT	Colin Walters <walters@verbum.org>	patch-106
+
+    Summary:
+      fix up bitrate in iradio properties dialog
+    Revision:
+      rhythmbox--mainline--0.7--patch-106
+
+
+    modified files:
+     ChangeLog iradio/rb-station-properties-dialog.c
+
+
+2003-12-23 05:19:33 GMT	Colin Walters <walters@verbum.org>	patch-105
+
+    Summary:
+      unset temporary gvalue
+    Revision:
+      rhythmbox--mainline--0.7--patch-105
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-12-23 05:14:24 GMT	Colin Walters <walters@verbum.org>	patch-104
+
+    Summary:
+      actually copy old gvalue for changed signal
+    Revision:
+      rhythmbox--mainline--0.7--patch-104
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-12-23 05:04:29 GMT	Colin Walters <walters@verbum.org>	patch-103
+
+    Summary:
+      merge tag writing bits from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-103
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-16
+       make info dialog data writable, first cut at changing props
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-17
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-18
+       make tracknum editing work, make artist editable
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-19
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-20
+       implement atomic vfs temp file creation
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-21
+       minor renames
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-22
+       much hackery on metadata writing; doesn't work yet due to gst borkage...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-23
+       hack hack hack
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-24
+       she compiles...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-25
+       actually rename file into place
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade lib/rb-file-helpers.c
+     lib/rb-file-helpers.h metadata/rb-metadata-gst.c
+     metadata/rb-metadata.h rhythmdb/rhythmdb.c
+     widgets/rb-song-info.c widgets/rb-song-info.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-22
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-23
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-24
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-25
+
+
+2003-12-22 16:20:49 GMT	Colin Walters <walters@verbum.org>	patch-102
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-102
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-387
+       dist dashboard.c
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-389
+       make file dialogs resizable
+    
+
+    modified files:
+     ChangeLog lib/rb-dialog.c shell/Makefile.am
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-387
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-389
+
+
+2003-12-22 06:17:40 GMT	Colin Walters <walters@verbum.org>	patch-101
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-101
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-373
+       gcc-2.95 compile fixes (Kaj-Michael Lang)
+    
+
+    modified files:
+     ChangeLog shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-shuffle.c shell/rb-play-order.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-373
+
+
+2003-12-22 05:15:02 GMT	Colin Walters <walters@verbum.org>	patch-100
+
+    Summary:
+      be sure to zero allocated structure
+    Revision:
+      rhythmbox--mainline--0.7--patch-100
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-query-model.c
+
+
+2003-12-22 05:14:47 GMT	Colin Walters <walters@verbum.org>	patch-99
+
+    Summary:
+      hardcode mad for now with gst
+    Revision:
+      rhythmbox--mainline--0.7--patch-99
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
+2003-12-22 05:06:12 GMT	Colin Walters <walters@verbum.org>	patch-98
+
+    Summary:
+      fix queue signal, always use spider if using gst metadata
+    Revision:
+      rhythmbox--mainline--0.7--patch-98
+
+
+    modified files:
+     ChangeLog player/rb-player-gst.c
+
+
+2003-12-22 00:00:32 GMT	Colin Walters <walters@verbum.org>	patch-97
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-97
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/POTFILES.in po/no.po po/sr.po
+     po/sr@Latn.po
+
+
+2003-12-21 23:59:02 GMT	Colin Walters <walters@verbum.org>	patch-96
+
+    Summary:
+      merge from rhythmdb
+    Revision:
+      rhythmbox--mainline--0.7--patch-96
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-88
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-1
+       have entry change signal include propid and old/new values
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-2
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-3
+       fix gvalue init, handle new changed sig in shell
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-4
+       add missing break to update switch (!)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-5
+       fix gvalue leak
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-6
+       handle new change signal in property model
+    
+
+    modified files:
+     ChangeLog lib/rb-marshal.list
+     rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c rhythmdb/rhythmdb.h shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--rhythmdb--0.7--patch-6
+
+
+2003-12-21 19:50:23 GMT	Colin Walters <walters@verbum.org>	patch-95
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-95
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-385
+       make dashboard less verbose
+    
+
+    modified files:
+     ChangeLog shell/dashboard.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-385
+
+
+2003-12-21 16:32:32 GMT	Colin Walters <walters@verbum.org>	patch-94
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-94
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-382
+       fix retrying on idle actions
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-383
+       really fix non-pkgconfig id3tag configure
+    
+
+    modified files:
+     ChangeLog configure.ac shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-382
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-383
+
+
+2003-12-20 16:37:42 GMT	Colin Walters <walters@verbum.org>	patch-93
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-93
+
+
+    new files:
+     po/ar.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog
+
+
+2003-12-20 16:32:15 GMT	Colin Walters <walters@verbum.org>	patch-92
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-92
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-379
+       don't depend on id3 pkgconfig file, add configury check for id3_frame_field
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-381
+       check a bit better for id3tag
+    
+
+    modified files:
+     ChangeLog configure.ac
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-379
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-381
+
+
+2003-12-20 00:34:53 GMT	Colin Walters <walters@verbum.org>	patch-91
+
+    Summary:
+      merge dashboard from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-91
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-378
+       add dashboard support (Lee Willis)
+    
+
+    new files:
+     shell/dashboard.c
+
+    modified files:
+     ChangeLog configure.ac shell/Makefile.am
+     shell/rb-shell-player.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-378
+
+
+2003-12-19 22:51:16 GMT	Colin Walters <walters@verbum.org>	patch-90
+
+    Summary:
+      use files in build directory first
+    Revision:
+      rhythmbox--mainline--0.7--patch-90
+
+
+    modified files:
+     ChangeLog configure.ac data/glade/song-info.glade
+     lib/rb-file-helpers.c
+
+
+2003-12-19 19:50:14 GMT	Colin Walters <walters@verbum.org>	patch-89
+
+    Summary:
+      merge from tags
+    Revision:
+      rhythmbox--mainline--0.7--patch-89
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-14
+       make song info dialog work again
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-15
+       merge from mainline
+    
+
+    modified files:
+     ChangeLog data/glade/song-info.glade widgets/rb-song-info.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-14
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-15
+
+
+2003-12-19 13:39:56 GMT	Colin Walters <walters@verbum.org>	patch-88
+
+    Summary:
+      xine configury fixes, avoids crash (Bastien Nocera)
+    Revision:
+      rhythmbox--mainline--0.7--patch-88
+
+
+    modified files:
+     ChangeLog configure.ac
+
+
+2003-12-19 00:03:10 GMT	Colin Walters <walters@verbum.org>	patch-87
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-87
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-375
+       kill off unused RhythmDBModel
+    
+
+    removed files:
+     rhythmdb/rhythmdb-model.c rhythmdb/rhythmdb-model.h
+
+    modified files:
+     ChangeLog rhythmdb/Makefile.am rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-query-model.h rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     sources/rb-playlist-source.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-375
+
+
+2003-12-18 23:14:26 GMT	Colin Walters <walters@verbum.org>	patch-86
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-86
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-374
+       don't save default values
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-374
+
+
+2003-12-18 22:30:09 GMT	Colin Walters <walters@verbum.org>	patch-85
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-85
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-10
+       add types to RBMetaData, have rhythmdb use them
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-11
+       merge from mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-12
+       add error handling, eos handling to gst RBMetadata
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-13
+       kill of location metadata prop
+    
+
+    new files:
+     metadata/rb-metadata-common.c
+
+    modified files:
+     ChangeLog metadata/Makefile.am metadata/rb-metadata-gst.c
+     metadata/rb-metadata-mm.c metadata/rb-metadata.h
+     rhythmdb/rhythmdb.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-13
+
+
+2003-12-18 03:34:30 GMT	Colin Walters <walters@verbum.org>	patch-84
+
+    Summary:
+      actually set album property
+    Revision:
+      rhythmbox--mainline--0.7--patch-84
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+
+2003-12-18 03:31:13 GMT	Colin Walters <walters@verbum.org>	patch-83
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-83
+
+
+    removed files:
+     metadata/monkey-media/.arch-ids/monkey-media-includes.h.in.id
+     metadata/monkey-media/monkey-media-includes.h.in
+
+    modified files:
+     ChangeLog
+
+
+2003-12-18 03:28:26 GMT	Colin Walters <walters@verbum.org>	patch-82
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-82
+
+
+    new files:
+     metadata/monkey-media/.arch-ids/monkey-media-includes.h.in.id
+     metadata/monkey-media/monkey-media-includes.h.in
+
+    modified files:
+     ChangeLog
+
+
+2003-12-18 03:25:16 GMT	Colin Walters <walters@verbum.org>	patch-81
+
+    Summary:
+      ignore unknown elements in rhythmdb
+    Revision:
+      rhythmbox--mainline--0.7--patch-81
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
+
+
+2003-12-18 03:10:25 GMT	Colin Walters <walters@verbum.org>	patch-80
+
+    Summary:
+      kill off monkey-media-includes
+    Revision:
+      rhythmbox--mainline--0.7--patch-80
+
+
+    removed files:
+     metadata/monkey-media/.arch-ids/monkey-media-includes.h.in.id
+     metadata/monkey-media/monkey-media-includes.h.in
+
+    modified files:
+     ChangeLog configure.ac metadata/monkey-media/Makefile.am
+     metadata/monkey-media/monkey-media.h
+
+
+2003-12-18 02:02:20 GMT	Colin Walters <walters@verbum.org>	patch-79
+
+    Summary:
+      fix cmdline args
+    Revision:
+      rhythmbox--mainline--0.7--patch-79
+
+
+    modified files:
+     ChangeLog shell/main.c
+
+
+2003-12-18 01:37:13 GMT	Colin Walters <walters@verbum.org>	patch-78
+
+    Summary:
+      remove unused var
+    Revision:
+      rhythmbox--mainline--0.7--patch-78
+
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+
+2003-12-17 02:12:43 GMT	Colin Walters <walters@verbum.org>	patch-77
+
+    Summary:
+      some merges from 0.6 branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-77
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-343
+       some fixes to legacy encoding support (Cha Young-Ho)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-367
+       async queries now require db read lock
+    
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c rhythmdb/rhythmdb.c
+     sources/rb-library-source.c sources/rb-playlist-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-343
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-367
+
+
+2003-12-16 22:57:37 GMT	Colin Walters <walters@verbum.org>	patch-76
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-76
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-9
+       ignore empty tags, fix up about dialog, misc. fixes
+    
+
+    modified files:
+     ChangeLog metadata/rb-metadata-gst.c rhythmdb/rhythmdb.c
+     shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-9
+
+
+2003-12-16 20:58:54 GMT	Colin Walters <walters@verbum.org>	patch-75
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-75
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-6
+       merge with mainline
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-7
+       hackery on gst metadata
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-8
+       more gst tag reading hackery, it's starting to work
+    
+
+    modified files:
+     ChangeLog configure.ac metadata/rb-metadata-gst.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-8
+
+
+2003-12-16 20:36:14 GMT	Colin Walters <walters@verbum.org>	patch-74
+
+    Summary:
+      remove refs to _AUDIO_QUALITY from monkey-meida
+    Revision:
+      rhythmbox--mainline--0.7--patch-74
+
+
+    modified files:
+     ChangeLog
+     metadata/monkey-media/stream-info-impl/flac-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/mp4-stream-info-impl.c
+
+
+2003-12-16 18:36:38 GMT	Colin Walters <walters@verbum.org>	patch-73
+
+    Summary:
+      more POTFILES.in updates
+    Revision:
+      rhythmbox--mainline--0.7--patch-73
+
+
+    modified files:
+     ChangeLog po/POTFILES.in
+
+
+2003-12-16 16:36:03 GMT	Colin Walters <walters@verbum.org>	patch-72
+
+    Summary:
+      upd POTFILES.in
+    Revision:
+      rhythmbox--mainline--0.7--patch-72
+
+
+    modified files:
+     ChangeLog po/POTFILES.in
+
+
+2003-12-16 16:23:10 GMT	Colin Walters <walters@verbum.org>	patch-71
+
+    Summary:
+      remove cruft, fix compile errors
+    Revision:
+      rhythmbox--mainline--0.7--patch-71
+
+
+    removed files:
+     data/node-views/.arch-ids/.cvsignore.id
+     data/node-views/.arch-ids/=id data/node-views/.cvsignore
+     data/node-views/Makefile.am
+     data/node-views/rb-node-view-albums.xml
+     data/node-views/rb-node-view-artists.xml
+     data/node-views/rb-node-view-cdaudio.xml
+     data/node-views/rb-node-view-genres.xml
+     data/node-views/rb-node-view-iradio-genres.xml
+     data/node-views/rb-node-view-iradio-stations.xml
+     data/node-views/rb-node-view-playlist.xml
+     data/node-views/rb-node-view-songs.xml
+     data/views/.arch-ids/.cvsignore.id data/views/.arch-ids/=id
+     data/views/.cvsignore
+
+    modified files:
+     ChangeLog configure.ac data/Makefile.am
+     metadata/monkey-media/monkey-media.c
+
+    removed directories:
+     data/node-views data/node-views/.arch-ids data/views
+     data/views/.arch-ids
+
+
+2003-12-16 16:01:18 GMT	Colin Walters <walters@verbum.org>	patch-70
+
+    Summary:
+      remove cruft
+    Revision:
+      rhythmbox--mainline--0.7--patch-70
+
+
+    removed files:
+     doc/.arch-ids/.cvsignore.id doc/.arch-ids/=id
+     doc/.arch-ids/lirc_example.id doc/.cvsignore doc/lirc_example
+     monkey-media/.arch-ids/=id views/.arch-ids/.cvsignore.id
+     views/.arch-ids/=id views/.cvsignore
+     xine-output/.arch-ids/.cvsignore.id xine-output/.arch-ids/=id
+     xine-output/.cvsignore
+
+    modified files:
+     ChangeLog
+
+    removed directories:
+     doc doc/.arch-ids monkey-media monkey-media/.arch-ids views
+     views/.arch-ids xine-output xine-output/.arch-ids
+
+
+2003-12-16 15:24:53 GMT	Colin Walters <walters@verbum.org>	patch-69
+
+    Summary:
+      merge again from tags
+    Revision:
+      rhythmbox--mainline--0.7--patch-69
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-5
+       add (broken) gst tagging, other misc bits
+    
+
+    new files:
+     metadata/rb-metadata-gst.c monkey-media/.arch-ids/=id
+
+    modified files:
+     ChangeLog metadata/Makefile.am metadata/rb-metadata.h
+     player/rb-player-gst.c
+
+    new directories:
+     monkey-media monkey-media/.arch-ids
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-5
+
+
+2003-12-16 08:06:12 GMT	Colin Walters <walters@verbum.org>	patch-68
+
+    Summary:
+      merge from tags branch
+    Revision:
+      rhythmbox--mainline--0.7--patch-68
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-66
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-1
+       rename RBPlayer to RBHeader
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-2
+       she compiles...barely
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-3
+       she boots and plays...
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-4
+       kill off more monkey-media cruft, fix up gint64 bits, other bugs
+    
+
+    new files:
+     metadata/.arch-ids/=id metadata/Makefile.am
+     metadata/rb-metadata-mm.c metadata/rb-metadata.h
+     player/.arch-ids/=id player/Makefile.am
+
+    removed files:
+     monkey-media/monkey-media-audio-cd-private.h
+     monkey-media/monkey-media-audio-cd.c
+     monkey-media/monkey-media-audio-cd.h
+     monkey-media/monkey-media-audio-quality.c
+     monkey-media/monkey-media-audio-quality.h
+     monkey-media/monkey-media-musicbrainz.c
+     monkey-media/monkey-media-musicbrainz.h monkey-media/sha1.c
+     monkey-media/sha1.h tests/test-info.c
+
+    modified files:
+     ChangeLog Makefile.am configure.ac data/glade/song-info.glade
+     data/glade/station-properties.glade iradio/Makefile.am
+     iradio/rb-station-properties-dialog.c
+     metadata/monkey-media/Makefile.am
+     metadata/monkey-media/monkey-media-stream-info.h
+     metadata/monkey-media/monkey-media.c
+     metadata/monkey-media/monkey-media.h
+     metadata/monkey-media/stream-info-impl/Makefile.am
+     metadata/monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     metadata/monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     player/rb-player-gst.c player/rb-player.h rhythmdb/Makefile.am
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb-query-model.c
+     rhythmdb/rhythmdb-tree.c rhythmdb/rhythmdb.c
+     rhythmdb/rhythmdb.h shell/Makefile.am shell/main.c
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c shell/rb-source-header.c
+     shell/rb-source-header.h shell/rb-statusbar.h
+     sources/Makefile.am tests/Makefile.am widgets/Makefile.am
+     widgets/rb-entry-view.c widgets/rb-header.c
+     widgets/rb-header.h widgets/rb-song-info.c
+
+    renamed files:
+     monkey-media/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/.arch-ids/.cvsignore.id
+     monkey-media/.arch-ids/=id
+       ==> metadata/monkey-media/.arch-ids/=id
+     monkey-media/.arch-ids/monkey-media-includes.h.in.id
+       ==> metadata/monkey-media/.arch-ids/monkey-media-includes.h.in.id
+     monkey-media/.arch-ids/monkey-media-marshal.list.id
+       ==> metadata/monkey-media/.arch-ids/monkey-media-marshal.list.id
+     monkey-media/id3-vfs/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/id3-vfs/.arch-ids/.cvsignore.id
+     monkey-media/id3-vfs/.arch-ids/=id
+       ==> metadata/monkey-media/id3-vfs/.arch-ids/=id
+     monkey-media/monkey-media-player-gst.c
+       ==> player/rb-player-gst.c
+     monkey-media/monkey-media-player-xine.c
+       ==> player/rb-player-xine.c
+     monkey-media/monkey-media-player.h
+       ==> player/rb-player.h
+     monkey-media/stream-info-impl/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/stream-info-impl/.arch-ids/.cvsignore.id
+     monkey-media/stream-info-impl/.arch-ids/=id
+       ==> metadata/monkey-media/stream-info-impl/.arch-ids/=id
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids/.cvsignore.id
+       ==> metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/.cvsignore.id
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids/=id
+       ==> metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids/=id
+     widgets/rb-player.c
+       ==> widgets/rb-header.c
+     widgets/rb-player.h
+       ==> widgets/rb-header.h
+
+    new directories:
+     metadata metadata/.arch-ids metadata/monkey-media/.arch-ids
+     metadata/monkey-media/id3-vfs/.arch-ids
+     metadata/monkey-media/stream-info-impl/.arch-ids
+     metadata/monkey-media/stream-info-impl/id3-vfs/.arch-ids
+     player player/.arch-ids
+
+    removed directories:
+     monkey-media/.arch-ids monkey-media/id3-vfs/.arch-ids
+     monkey-media/stream-info-impl/.arch-ids
+     monkey-media/stream-info-impl/id3-vfs/.arch-ids
+
+    renamed directories:
+     monkey-media
+       ==> metadata/monkey-media
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--tags--0.7--patch-4
+
+
+2003-12-16 04:27:50 GMT	Colin Walters <walters@verbum.org>	patch-67
+
+    Summary:
+      major shuffle/play order work, misc bugfixes (Jeffrey Yasskin)
+    Revision:
+      rhythmbox--mainline--0.7--patch-67
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+       remove spurious string copy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+       Fix some warnings about uninitialized variables that were only found with optimization on.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+       merge from shuffle-repeat branch
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+       merge with walters
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+       merge from shuffle-random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+       Create class hierarchy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+       Made the play order classes work almost as well as original
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+       Add playing-source property to RBShellPlayer and modify RBHistory to use it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+       Fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+       Add shuffle play order and modify RBHistory to accomodate it.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+       Make shuffle mostly work
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+       Fix crash involving changing sources in shuffle mode
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+       Make shuffle's checking for a changed entry view lazy
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+       Cleanups and added a few member functions to RBPlayOrder
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+       Fix problems compiling under C89
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+       Implement go_{next,previous} methods for shuffle
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+       Fix some anomalies with reshuffling. Shuffle now seems to work.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+       Make the shuffle checkbox select shuffle rather than random
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+       Fix up the random play order and document the history more
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+       Fix comments in rb-play-order.h
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+       Fix crash when PLAY_ORDER gconf key doesn't exist
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+       Make the filter_changed event actually fire.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+       Make shuffle play order use RBSource's filter_changed signal and fix a few bugs
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+       Implement random by time since last play
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+       Fix memory leak
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+       Give treed credit for random-by-age algorithm
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+       merge with mainline
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+       remove CONF_STATE_SHUFFLE
+    
+
+    new files:
+     shell/rb-play-order-linear.c shell/rb-play-order-linear.h
+     shell/rb-play-order-random-by-age.c
+     shell/rb-play-order-random-by-age.h
+     shell/rb-play-order-random-equal-weights.c
+     shell/rb-play-order-random-equal-weights.h
+     shell/rb-play-order-shuffle.c shell/rb-play-order-shuffle.h
+     shell/rb-play-order.c shell/rb-play-order.h
+
+    modified files:
+     ChangeLog data/rhythmbox.schemas lib/rb-preferences.h
+     lib/rb-string-helpers.c lib/rb-util.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     monkey-media/stream-info-impl/vorbis-stream-info-impl.c
+     rhythmdb/rhythmdb-query-model.c rhythmdb/rhythmdb-tree.c
+     rhythmdb/rhythmdb.c shell/Makefile.am shell/rb-history.c
+     shell/rb-history.h shell/rb-shell-player.c
+     shell/rb-source-header.c sources/rb-iradio-source.c
+     sources/rb-library-source.c sources/rb-source.c
+     widgets/rb-entry-view.c widgets/rb-player.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-18
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-19
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-20
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-21
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-22
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-23
+     jyasskin@mail.utexas.edu--2003/rhythmbox--shuffle-random--0.7--patch-24
+
+
+2003-12-15 03:02:42 GMT	Colin Walters <walters@verbum.org>	patch-66
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-66
+
+
+    modified files:
+     ChangeLog help/C/rhythmbox-C.omf po/ChangeLog po/no.po
+     rhythmbox.spec.in
+
+
+2003-12-15 03:00:45 GMT	Colin Walters <walters@verbum.org>	patch-65
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-65
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-365
+       add encoding parameter to XML documents
+    
+
+    modified files:
+     ChangeLog help/C/Makefile.am help/C/fdl-appendix.xml
+     help/C/legal.xml help/C/quick-reference.xml
+     help/C/rhythmbox.xml help/C/user-guide.xml
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-365
+
+
+2003-12-13 08:03:03 GMT	Colin Walters <walters@verbum.org>	patch-64
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-64
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-363
+       implement Quality column and metadata reading for it
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-364
+       attempt to implement iradio quality display
+    
+
+    modified files:
+     ChangeLog data/glade/station-properties.glade
+     iradio/rb-station-properties-dialog.c
+     monkey-media/monkey-media-audio-quality.h
+     rhythmdb/rhythmdb-legacy.c rhythmdb/rhythmdb.c
+     sources/rb-iradio-source.c sources/rb-library-source.c
+     widgets/rb-entry-view.c widgets/rb-entry-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-363
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-364
+
+
+2003-12-13 06:38:01 GMT	Colin Walters <walters@verbum.org>	patch-63
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-63
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-362
+       avoid memory corruption when saving playlists
+    
+
+    modified files:
+     ChangeLog sources/rb-playlist-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-362
+
+
+2003-12-13 02:10:42 GMT	Colin Walters <walters@verbum.org>	patch-62
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-62
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-359
+       upd .cvsignore
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-360
+       add statusbar (sri)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-361
+       add new --focus option, operations don't focus by default (David Mansfield)
+    
+
+    modified files:
+     ChangeLog data/ui/.cvsignore data/ui/rhythmbox-ui.xml
+     shell/main.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-359
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-360
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-361
+
+
+2003-12-03 03:29:57 GMT	Colin Walters <walters@verbum.org>	patch-61
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-61
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-357
+       check id3tag version, build updates (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog Makefile.am configure.ac tests/Makefile.am
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-357
+
+
+2003-12-02 01:11:57 GMT	Colin Walters <walters@verbum.org>	patch-60
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-60
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-355
+       minor cleanups to gst player
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-356
+       note tray icon volume change ability in manual (Seth Hadley)
+    
+
+    modified files:
+     ChangeLog help/C/user-guide.xml
+     monkey-media/monkey-media-player-gst.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-355
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-356
+
+
+2003-12-01 04:18:13 GMT	Colin Walters <walters@verbum.org>	patch-59
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-59
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-353
+       fix multimedia keys configure message (Adrian Bunk)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-354
+       fix usage of G_PARAM_CONSTRUCT_ONLY (Jan Arne Petersen)
+    
+
+    modified files:
+     ChangeLog configure.ac rhythmdb/rhythmdb-property-model.c
+     rhythmdb/rhythmdb-query-model.c widgets/rb-player.c
+     widgets/rb-property-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-353
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-354
+
+
+2003-11-29 05:56:07 GMT	Colin Walters <walters@verbum.org>	patch-58
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-58
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-350
+       only kill off intltool bits on distclean, not clean
+    
+
+    modified files:
+     ChangeLog Makefile.am
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-350
+
+
+2003-11-29 00:16:01 GMT	Colin Walters <walters@verbum.org>	patch-57
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-57
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-349
+       make xine backend use less memory (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog configure.ac monkey-media/monkey-media-player-xine.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-349
+
+
+2003-11-29 00:05:29 GMT	Colin Walters <walters@verbum.org>	patch-56
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-56
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-348
+       change default Korean legacy charset to UHC (Cha Young-Ho)
+    
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-348
+
+
+2003-11-28 23:52:16 GMT	Colin Walters <walters@verbum.org>	patch-55
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-55
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-346
+       parse extinfo (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog lib/rb-playlist.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-346
+
+
+2003-11-27 04:40:12 GMT	Colin Walters <walters@verbum.org>	patch-54
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-54
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-345
+       vbr mp3 fixes (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog monkey-media/stream-info-impl/id3-vfs/mp3bitrate.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-345
+
+
+2003-11-27 00:47:39 GMT	Colin Walters <walters@verbum.org>	patch-53
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-53
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po po/sr.po po/sr@Latn.po
+
+
+2003-11-27 00:33:13 GMT	Colin Walters <walters@verbum.org>	patch-52
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-52
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-344
+       move -ui.xml.in to just -ui.xml
+    
+
+    modified files:
+     ChangeLog data/ui/Makefile.am po/POTFILES.in
+     {arch}/=tagging-method
+
+    renamed files:
+     data/ui/.arch-ids/rhythmbox-ui.xml.in.id
+       ==> data/ui/.arch-ids/rhythmbox-ui.xml.id
+     data/ui/rhythmbox-ui.xml.in
+       ==> data/ui/rhythmbox-ui.xml
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-344
+
+
+2003-11-23 05:57:47 GMT	Colin Walters <walters@verbum.org>	patch-51
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-51
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-340
+       Don't crash adding a station with a duplicate location
+    
+
+    modified files:
+     ChangeLog iradio/rb-new-station-dialog.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-340
+
+
+2003-11-22 23:54:12 GMT	Colin Walters <walters@verbum.org>	patch-50
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-50
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/sr.po po/sr@Latn.po
+
+
+2003-11-22 23:43:43 GMT	Colin Walters <walters@verbum.org>	patch-49
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-49
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-339
+       add recursion limit to playlist parsing, handle null titles
+    
+
+    modified files:
+     ChangeLog lib/rb-playlist.c sources/rb-iradio-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-339
+
+
+2003-11-22 22:47:10 GMT	Colin Walters <walters@verbum.org>	patch-48
+
+    Summary:
+      merge NEWS from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-48
+
+
+    modified files:
+     ChangeLog NEWS
+
+
+2003-11-21 18:15:11 GMT	Colin Walters <walters@verbum.org>	patch-47
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-47
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-334
+       add MPEG-4 to format list (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-334
+
+
+2003-11-21 03:42:25 GMT	Colin Walters <walters@verbum.org>	patch-46
+
+    Summary:
+      add ability to load playlists directly for iradio (Bastien Nocera, me)
+    Revision:
+      rhythmbox--mainline--0.7--patch-46
+
+
+    modified files:
+     ChangeLog lib/rb-playlist.c lib/rb-playlist.h
+     shell/rb-shell-player.c shell/rb-shell-player.h
+     shell/rb-shell.c
+
+
+2003-11-20 15:59:51 GMT	Colin Walters <walters@verbum.org>	patch-45
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-45
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/nl.po
+
+
+2003-11-20 15:45:15 GMT	Colin Walters <walters@verbum.org>	patch-44
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-44
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-331
+       fix crash on jump to playing song
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-332
+       fix bonobo property bag unreffing
+    
+
+    modified files:
+     ChangeLog shell/main.c sources/rb-library-source.c
+     widgets/rb-property-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-331
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-332
+
+
+2003-11-20 14:54:16 GMT	Colin Walters <walters@verbum.org>	patch-43
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-43
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-328
+       gcc 2.95 fixes (Danilo Segan)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-329
+       more gcc 2.95 fixes (Danilo Segan)
+    
+
+    modified files:
+     ChangeLog lib/rb-tree-dnd.c shell/rb-tray-icon.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-328
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-329
+
+
+2003-11-20 05:53:35 GMT	Colin Walters <walters@verbum.org>	patch-42
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-42
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/pt.po
+
+
+2003-11-20 05:49:51 GMT	Colin Walters <walters@verbum.org>	patch-41
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-41
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-326
+       treat disk changes as deletion followed by add
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-326
+
+
+2003-11-20 05:48:54 GMT	Colin Walters <walters@verbum.org>	patch-40
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-40
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-325
+       upd NEWS
+    
+
+    modified files:
+     ChangeLog NEWS
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-325
+
+
+2003-11-19 23:33:59 GMT	Colin Walters <walters@verbum.org>	patch-39
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-39
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/ja.po
+
+
+2003-11-19 23:24:38 GMT	Colin Walters <walters@verbum.org>	patch-38
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-38
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-323
+       tray icon size restoration fix (Bastien Nocera)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-324
+       better playlist renaming behavior (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog shell/rb-tray-icon.c sources/rb-sourcelist.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-323
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-324
+
+
+2003-11-18 22:57:01 GMT	Colin Walters <walters@verbum.org>	patch-37
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-37
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/cs.po
+
+
+2003-11-18 22:15:03 GMT	Colin Walters <walters@verbum.org>	patch-36
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-36
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-319
+       only call _buffering_done if there is an active source
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-320
+       don't crash on NULL search in iradio source
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c sources/rb-iradio-source.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-319
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-320
+
+
+2003-11-18 07:25:31 GMT	Colin Walters <walters@verbum.org>	patch-35
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-35
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-318
+       don't unnecessarily reset filters/search on jump to playing song
+    
+
+    modified files:
+     ChangeLog NEWS shell/rb-shell.c widgets/rb-entry-view.c
+     widgets/rb-entry-view.h
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-318
+
+
+2003-11-18 07:07:12 GMT	Colin Walters <walters@verbum.org>	patch-34
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-34
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-317
+       Scroll wheel over tray icon controls volume (Jon Kinred)
+    
+
+    modified files:
+     ChangeLog NEWS shell/rb-tray-icon.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-317
+
+
+2003-11-18 06:32:35 GMT	Colin Walters <walters@verbum.org>	patch-33
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-33
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-315
+       fix bonobo refcounting (Gustavo J. A. M. Carneiro)
+    
+
+    modified files:
+     ChangeLog shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-315
+
+
+2003-11-18 06:09:39 GMT	Colin Walters <walters@verbum.org>	patch-32
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-32
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-313
+       handle multiply added songs (bz #127248)
+    
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-313
+
+
+2003-11-18 05:34:05 GMT	Colin Walters <walters@verbum.org>	patch-31
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-31
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-312
+       reset selection after a model change (bz: #127258)
+    
+
+    modified files:
+     ChangeLog widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-312
+
+
+2003-11-18 03:27:01 GMT	Colin Walters <walters@verbum.org>	patch-30
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-30
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-311
+       upd NEWS
+    
+
+    modified files:
+     ChangeLog NEWS
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-311
+
+
+2003-11-18 00:56:53 GMT	Colin Walters <walters@verbum.org>	patch-29
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-29
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/sr.po po/sr@Latn.po
+
+    renamed files:
+     po/sr.po
+       ==> po/sr@Latn.po
+     po/sr@Latn.po
+       ==> po/sr.po
+
+
+2003-11-18 00:48:57 GMT	Colin Walters <walters@verbum.org>	patch-28
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-28
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-310
+       support for MP4 files (Bastien Nocera)
+    
+
+    new files:
+     monkey-media/stream-info-impl/mp4-stream-info-impl.c
+     monkey-media/stream-info-impl/mp4-stream-info-impl.h
+
+    modified files:
+     ChangeLog configure.ac lib/rb-playlist.c
+     monkey-media/monkey-media.c
+     monkey-media/stream-info-impl/Makefile.am shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-310
+
+
+2003-11-17 05:29:42 GMT	Colin Walters <walters@verbum.org>	patch-27
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-27
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-309
+       mp3-in-wav and more mp3 metadata bits (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog monkey-media/stream-info-impl/id3-vfs/id3-vfs.c
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-309
+
+
+2003-11-16 17:53:27 GMT	Colin Walters <walters@verbum.org>	patch-26
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-26
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-308
+       reinstate tooltips on artist/album links (Mark Humphreys)
+    
+
+    modified files:
+     ChangeLog widgets/rb-player.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-308
+
+
+2003-11-16 17:25:45 GMT	Colin Walters <walters@verbum.org>	patch-25
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-25
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-307
+       handle wavs as mp3s, increase mp3 reading buffers (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog monkey-media/monkey-media.c
+     monkey-media/stream-info-impl/id3-vfs/id3-vfs.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-307
+
+
+2003-11-16 16:57:04 GMT	Colin Walters <walters@verbum.org>	patch-24
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-24
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/POTFILES.in po/ca.po po/ja.po
+
+
+2003-11-16 16:46:28 GMT	Colin Walters <walters@verbum.org>	patch-23
+
+    Summary:
+      reimplement unicodify to look for legacy charsets
+    Revision:
+      rhythmbox--mainline--0.7--patch-23
+
+
+    modified files:
+     ChangeLog lib/rb-string-helpers.c lib/rb-string-helpers.h
+     monkey-media/stream-info-impl/Makefile.am
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+     shell/main.c
+
+
+2003-11-16 01:23:15 GMT	Colin Walters <walters@verbum.org>	patch-22
+
+    Summary:
+      note that TODO is very out of date
+    Revision:
+      rhythmbox--mainline--0.7--patch-22
+
+
+    modified files:
+     ChangeLog TODO
+
+
+2003-11-15 16:25:09 GMT	Colin Walters <walters@verbum.org>	patch-21
+
+    Summary:
+      merge from 0.6, and fix ChangeLog0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-21
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-304
+       upd NEWS
+    
+
+    new files:
+     ChangeLog0.6
+
+    removed files:
+     ChangeLog0.6
+
+    modified files:
+     ChangeLog NEWS
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-304
+
+
+2003-11-15 06:29:56 GMT	Colin Walters <walters@verbum.org>	patch-20
+
+    Summary:
+      play button fixes (jyasskin)
+    Revision:
+      rhythmbox--mainline--0.7--patch-20
+
+    Patches applied:
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+       tag of jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+       When the current song isn't in the entryview, make the next button start the first song.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+       Potential solution to bug #123374 and related complaints.
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+       tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.7--patch-10
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+       Fix use of uninitialized variable
+    
+     * jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+       Merge bugfixes
+    
+
+    modified files:
+     ChangeLog shell/rb-shell-player.c widgets/rb-entry-view.c
+
+    new patches:
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.7--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.7--patch-2
+
+
+2003-11-15 06:11:32 GMT	Colin Walters <walters@verbum.org>	patch-19
+
+    Summary:
+      merge with 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-19
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-302
+       rework of mp3 metadata reading (Bastien Nocera)
+    
+
+    new files:
+     monkey-media/stream-info-impl/id3-vfs/mp3bitrate.c
+     monkey-media/stream-info-impl/id3-vfs/mp3bitrate.h
+
+    modified files:
+     ChangeLog ChangeLog0.6 NEWS
+     monkey-media/stream-info-impl/id3-vfs/Makefile.am
+     monkey-media/stream-info-impl/id3-vfs/id3-vfs.c
+     monkey-media/stream-info-impl/id3-vfs/id3-vfs.h
+     monkey-media/stream-info-impl/mp3-stream-info-impl.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-302
+
+
+2003-11-15 05:43:53 GMT	Colin Walters <walters@verbum.org>	patch-18
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-18
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-301
+       xine backend hang fixes (hadess)
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 monkey-media/monkey-media-player-xine.c
+     shell/rb-shell-player.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-301
+
+
+2003-11-14 16:46:54 GMT	Colin Walters <walters@verbum.org>	patch-17
+
+    Summary:
+      merge NEWS from 0.6, update a bit too
+    Revision:
+      rhythmbox--mainline--0.7--patch-17
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-300
+       upd NEWS
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 NEWS
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-300
+
+
+2003-11-14 16:41:22 GMT	Colin Walters <walters@verbum.org>	patch-16
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-16
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-299
+       rockin DND work from yann
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-19
+       merge with Colin
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-20
+       <no summary provided>
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-21
+       more dnd work.
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-5
+       merge with mainline
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-6
+       improved sourcelist drag dest support
+    
+     * yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-7
+       updated rhythmdb_query_model dnd interface and added empty view drop support
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 lib/rb-marshal.list lib/rb-tree-dnd.c
+     lib/rb-tree-dnd.h rhythmdb/rhythmdb-query-model.c
+     shell/rb-playlist-manager.c shell/rb-playlist-manager.h
+     shell/rb-shell.c sources/rb-sourcelist-model.c
+     sources/rb-sourcelist-model.h sources/rb-sourcelist.c
+     widgets/rb-entry-view.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-299
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-19
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-20
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-21
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-5
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-6
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-7
+
+
+2003-11-14 14:44:30 GMT	Colin Walters <walters@verbum.org>	patch-15
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-15
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-298
+       xine backend fixes (Bastien Nocera)
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 monkey-media/monkey-media-player-xine.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-298
+
+
+2003-11-13 15:01:21 GMT	Colin Walters <walters@verbum.org>	patch-14
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-14
+
+    Patches applied:
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-296
+       add translator comments (Jordi Mallach)
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 lib/rb-string-helpers.c
+     rhythmdb/rhythmdb.c shell/rb-shell.c
+
+    new patches:
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-296
+
+
+2003-11-13 07:30:27 GMT	Colin Walters <walters@verbum.org>	patch-13
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-13
+
+
+    modified files:
+     ChangeLog po/ChangeLog po/pt.po
+
+
+2003-11-13 07:27:55 GMT	Colin Walters <walters@verbum.org>	patch-12
+
+    Summary:
+      be sure to start timer after playback
+    Revision:
+      rhythmbox--mainline--0.7--patch-12
+
+
+    modified files:
+     ChangeLog monkey-media/monkey-media-player-gst.c
+
+
+2003-11-13 03:33:17 GMT	Colin Walters <walters@verbum.org>	patch-11
+
+    Summary:
+      Update from CVS
+    Revision:
+      rhythmbox--mainline--0.7--patch-11
+
+
+    new files:
+     po/ca.po
+
+    modified files:
+     ChangeLog configure.ac po/ChangeLog po/POTFILES.in
+
+
+2003-11-12 02:39:02 GMT	Colin Walters <walters@verbum.org>	patch-10
+
+    Summary:
+      remove buffering-dialog.glade
+    Revision:
+      rhythmbox--mainline--0.7--patch-10
+
+
+    removed files:
+     data/glade/.arch-ids/buffering-dialog.glade.id
+     data/glade/buffering-dialog.glade
+
+    modified files:
+     ChangeLog data/glade/Makefile.am
+
+
+2003-11-12 02:25:16 GMT	Colin Walters <walters@verbum.org>	patch-9
+
+    Summary:
+      clear buffering status from statusbar when done
+    Revision:
+      rhythmbox--mainline--0.7--patch-9
+
+
+    modified files:
+     ChangeLog shell/rb-statusbar.c
+
+
+2003-11-12 02:15:23 GMT	Colin Walters <walters@verbum.org>	patch-8
+
+    Summary:
+      revert to previous pipeline
+    Revision:
+      rhythmbox--mainline--0.7--patch-8
+
+
+    modified files:
+     ChangeLog monkey-media/monkey-media-player-gst.c
+
+
+2003-11-12 00:53:52 GMT	Colin Walters <walters@verbum.org>	patch-7
+
+    Summary:
+      move spider into srcthread
+    Revision:
+      rhythmbox--mainline--0.7--patch-7
+
+
+    modified files:
+     ChangeLog monkey-media/monkey-media-player-gst.c
+
+
+2003-11-11 21:21:13 GMT	Colin Walters <walters@verbum.org>	patch-6
+
+    Summary:
+      merge from 0.6
+    Revision:
+      rhythmbox--mainline--0.7--patch-6
+
+    Patches applied:
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-5
+       star-merge of walters sources
+    
+     * harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-6
+       Arch update and iradio.pls update
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-288
+       revert version to 0.5.99
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-289
+       more default iradio stations (harshy)
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-290
+       have album sort also sort by track, allow rating sort
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-291
+       don't hardcode opt scheduler
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-292
+       Update from CVS
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-293
+       remove redundant entry from NEWS
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-294
+       release 0.6.0
+    
+     * walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-295
+       fix capitalization and phrasing in nautilus component menu entry
+    
+
+    modified files:
+     ChangeLog ChangeLog0.6 NEWS
+     component/Rhythmbox_Nautilus_Context_Menu.server.in.in
+     data/iradio-initial.pls po/ChangeLog po/cs.po po/cy.po
+     po/sr.po po/sr@Latn.po widgets/rb-entry-view.c
+
+    renamed files:
+     po/sr.po
+       ==> po/sr@Latn.po
+     po/sr@Latn.po
+       ==> po/sr.po
+
+    new patches:
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-5
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-288
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-289
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-290
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-291
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-292
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-293
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-294
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-295
+
+
+2003-11-11 18:50:18 GMT	Colin Walters <walters@verbum.org>	patch-5
+
+    Summary:
+      don't hardcode opt scheduler
+    Revision:
+      rhythmbox--mainline--0.7--patch-5
+
+
+    modified files:
+     ChangeLog monkey-media/monkey-media.c
+
+
+2003-11-11 07:16:04 GMT	Colin Walters <walters@verbum.org>	patch-4
+
+    Summary:
+      rotate ChangeLog
+    Revision:
+      rhythmbox--mainline--0.7--patch-4
+
+
+    new files:
+     ChangeLog
+
+    renamed files:
+     ChangeLog
+       ==> ChangeLog0.6
+
+
+2003-11-11 07:15:44 GMT	Colin Walters <walters@verbum.org>	patch-3
+
+    Summary:
+      totally break gstreamer, display buffering progress in statusbar
+    Revision:
+      rhythmbox--mainline--0.7--patch-3
+
+
+    modified files:
+     monkey-media/monkey-media-player-gst.c shell/rb-shell-player.c
+     shell/rb-statusbar.c
+
+
+2003-11-11 05:37:30 GMT	Colin Walters <walters@verbum.org>	patch-2
+
+    Summary:
+      dump old gst code, require 0.7 now
+    Revision:
+      rhythmbox--mainline--0.7--patch-2
+
+
+    removed files:
+     monkey-media/monkey-media-player-gst-old.c
+     monkey-media/monkey-media-player-gst.c
+
+    modified files:
+     configure.ac monkey-media/Makefile.am
+
+    renamed files:
+     monkey-media/monkey-media-player-gst-tmp.c
+       ==> monkey-media/monkey-media-player-gst.c
+
+
+2003-11-11 05:22:53 GMT	Colin Walters <walters@verbum.org>	patch-1
+
+    Summary:
+      bump version
+    Revision:
+      rhythmbox--mainline--0.7--patch-1
+
+
+    modified files:
+     configure.ac
+
+
+2003-11-11 05:20:36 GMT	Colin Walters <walters@verbum.org>	base-0
+
+    Summary:
+      tag of walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-287
+    Revision:
+      rhythmbox--mainline--0.7--base-0
+
+    (automatically generated log message)
+
+    new patches:
+     chris@gnome-de.org--2003/rhythmbox--mainline--0.6--base-0
+     chris@gnome-de.org--2003/rhythmbox--mainline--0.6--patch-1
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-5
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--displaybox--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-1
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-2
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-3
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-4
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-5
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-6
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-7
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-8
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-9
+     desrt@desrt.ca--2003/rhythmbox--mainline--1.0--patch-10
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--base-0
+     desrt@desrt.ca--2003/rhythmbox--small-display--1.0--patch-1
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--base-0
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-1
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-2
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-3
+     harshy@dersoldat.org--2003/rhythmbox--mainline--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--bugzilla--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--history--0.6--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--base-0
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-1
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-2
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-3
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-4
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-5
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-6
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-7
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-8
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-9
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-10
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-11
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-12
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-13
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-14
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-15
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-16
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-17
+     jyasskin@mail.utexas.edu--2003/rhythmbox--mainline--0.6--patch-18
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-5
+     teuf@gnome.org--2003/rhythmbox--mainline--0.5--patch-6
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     teuf@gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--base-0
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-1
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-2
+     treed@surreality.us--2003-rhythmbox/rhythmbox--mainline--0.6--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--cvs--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-28
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-29
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-30
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-31
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-32
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-33
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-34
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-35
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-36
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-40
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-41
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-42
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-43
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-44
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-45
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-46
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-47
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-48
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-49
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-50
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-51
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-52
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-53
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-54
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-55
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-56
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-57
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-58
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-59
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-60
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-61
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-62
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-63
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-64
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-65
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-66
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-67
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-68
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-69
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-70
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-71
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-72
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-73
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-74
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-75
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-76
+     walters@rhythmbox.org--2003/rhythmbox--mainline--1.0--patch-77
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--post-0-5-3--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-1
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-2
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-3
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-4
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-5
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-6
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-7
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-8
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-9
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-10
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-11
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-12
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-13
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-14
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-15
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-16
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-17
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-18
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-19
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-20
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-21
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-22
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-23
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-24
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-25
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-26
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-27
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-28
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-29
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-30
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-31
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-32
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-33
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-34
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-35
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-36
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-37
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-38
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-39
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-40
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-41
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-42
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-43
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-44
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-45
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-46
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-47
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-48
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-49
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-50
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-51
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-52
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-53
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-54
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-55
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-56
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-57
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-58
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-59
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-60
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-61
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-62
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-63
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-64
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-65
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-66
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-67
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-68
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-69
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-70
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-71
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-72
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-73
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-74
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-75
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-76
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-77
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-78
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-79
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-80
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-81
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-82
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-83
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-84
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-85
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-86
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-87
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-88
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-89
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-90
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-91
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-92
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-93
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-94
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-95
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-96
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-97
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-98
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-99
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-100
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-101
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-102
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-103
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-104
+     walters@rhythmbox.org--2003/rhythmbox--rhythmdb--1.0--patch-105
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--base-0
+     walters@rhythmbox.org--2003/rhythmbox--small-fixes--1.0--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-8
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-9
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-13
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-14
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-15
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-22
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-23
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-24
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-25
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-26
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-27
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-28
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-29
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-30
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-31
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-32
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-33
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-34
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-35
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-36
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-37
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-38
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-39
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-40
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-41
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-42
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-43
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-44
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-45
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-46
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-47
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-48
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-49
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-50
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-51
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-52
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-53
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-54
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-55
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-56
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-57
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-58
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-59
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-60
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-61
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-62
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-63
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-64
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-65
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-66
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-67
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-68
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-69
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-70
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-71
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-72
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-73
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-74
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-75
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-76
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-77
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-78
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-79
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-80
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-81
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-82
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-83
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-84
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-85
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-86
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-87
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-88
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-89
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-90
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-91
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-92
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-93
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-94
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-95
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-96
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-97
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-98
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-99
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-100
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-101
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-102
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-103
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-104
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-105
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-106
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-107
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-108
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-109
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-110
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-111
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-112
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-113
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-114
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-115
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-116
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-117
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-118
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-119
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-120
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-121
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-122
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-123
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-124
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-125
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-126
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-127
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-128
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-129
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-130
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-131
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-132
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-133
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-134
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-135
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-136
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-137
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-138
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-139
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-140
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-141
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-142
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-143
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-144
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-145
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-146
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-147
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-148
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-149
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-150
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-151
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-152
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-153
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-154
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-155
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-156
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-157
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-158
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-159
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-160
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-161
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-162
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-163
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-164
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-165
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-166
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-167
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-168
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-169
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-170
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-171
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-172
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-173
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-174
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-175
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-176
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-177
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-178
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-179
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-180
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-181
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-182
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-183
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-184
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-185
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-186
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-187
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-188
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-189
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-190
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-191
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-192
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-193
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-194
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-195
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-196
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-197
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-198
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-199
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-200
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-201
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-202
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-203
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-204
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-205
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-206
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-207
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-208
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-209
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-210
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-211
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-212
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-213
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-214
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-215
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-216
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-217
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-218
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-219
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-220
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-221
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-222
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-223
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-224
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-225
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-226
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-227
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-228
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-229
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-230
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-231
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-232
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-233
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-234
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-235
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-236
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-237
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-238
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-239
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-240
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-241
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-242
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-243
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-244
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-245
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-246
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-247
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-248
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-249
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-250
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-251
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-252
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-253
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-254
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-255
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-256
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-257
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-258
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-259
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-260
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-261
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-262
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-263
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-264
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-265
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-266
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-267
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-268
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-269
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-270
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-271
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-272
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-273
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-274
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-275
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-276
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-277
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-278
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-279
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-280
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-281
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-282
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-283
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-284
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-285
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-286
+     walters@rhythmbox.org--2003b/rhythmbox--mainline--0.6--patch-287
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--base-0
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-1
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-2
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-3
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-4
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-5
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-6
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-7
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-8
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-9
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-10
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-11
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-12
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-13
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-14
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-15
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-16
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-17
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-18
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-19
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-20
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-21
+     walters@rhythmbox.org--2003b/rhythmbox--playlists-2--0.6--patch-22
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-3
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-4
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-5
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-6
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-7
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-8
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-9
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-10
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-11
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-12
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-13
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-14
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-15
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-16
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-17
+     yann@cvs.gnome.org--2003/rhythmbox--mainline--0.6--patch-18
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--base-0
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-1
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-2
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-3
+     yann@cvs.gnome.org--2003/rhythmbox--treednd--0.6--patch-4
+
+
