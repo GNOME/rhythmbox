@@ -25,8 +25,6 @@
 #include <config.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnome/gnome-init.h>
-#include <sys/stat.h>
-#include <sys/param.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <libgnomevfs/gnome-vfs-file-info.h>
 #include <libgnomevfs/gnome-vfs-ops.h>
