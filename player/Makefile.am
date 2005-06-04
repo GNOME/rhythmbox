@@ -6,13 +6,9 @@ BUILT_SOURCES =
 
 librbplayer_la_SOURCES =	\
 	rb-player.h 		\
-	rb-recorder.h 
-
-if USE_XINE
-librbplayer_la_SOURCES += rb-player-xine.c rb-recorder-xine.c
-else
-librbplayer_la_SOURCES += rb-player-gst.c rb-recorder-gst.c
-endif
+	rb-recorder.h		\
+	rb-player-gst.c		\
+	rb-recorder-gst.c
 
 librbplayer_la_LIBADD =				\
 	$(top_builddir)/lib/librb.la		\

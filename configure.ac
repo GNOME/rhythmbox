@@ -112,120 +112,45 @@ fi
 AM_CONDITIONAL(WITH_DASHBOARD, test x"$enable_dashboard" = xyes)
 
 dnl Sound system
-AC_ARG_WITH(player,
-            AC_HELP_STRING([--with-player=gstreamer|xine],[Select the player to use]),,
-	    with_player=gstreamer)
-if test "x$with_player" = "xxine"; then
-	SOUNDSYSTEM_DEPS="libxine >= 1.0.0"
-	AC_SUBST(SOUNDSYSTEM_DEPS)
+dnl Now we're ready to ask for gstreamer libs and cflags
+dnl And we can also ask for the right version of gstreamer
+HAVE_SOUNDSYSTEM=no
 
-	PKG_CHECK_MODULES(SOUNDSYSTEM, $SOUNDSYSTEM_DEPS)
+GST_MAJORMINOR=0.8
+GST_REQUIRED_VERSION=0.8.2
+PKG_CHECK_MODULES(SOUNDSYSTEM, \
+	gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
+	gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
+	HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
 
-	AC_DEFINE(HAVE_XINE,1,[define if you want to use the Xine libraries])
-
-	RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
-	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
-
-	dnl Remove when xine-lib is newer than rc0
-	SAVE_CFLAGS="$CFLAGS"
-	CFLAGS="$RHYTHMBOX_CFLAGS"
-	SAVE_LIBS="$LIBS"
-	LIBS="$RHYTHMBOX_LIBS"
-	AC_MSG_CHECKING(if XINE_PARAM_AUDIO_CLOSE_DEVICE is supported)
-	AC_TRY_COMPILE([
-		#include <xine.h>
-		],[
-		int arg = 0, foo;
-		foo = XINE_PARAM_AUDIO_CLOSE_DEVICE;
-		],[AC_MSG_RESULT(yes)
-		(AC_DEFINE(HAVE_XINE_CLOSE,1,[Define if you have the audio device close feature in xine-lib]))], AC_MSG_RESULT(no))
-	CFLAGS="$SAVE_CFLAGS"
-	LIBS="$SAVE_LIBS"
-
-	dnl Remove when xine-lib is newer than rc2
-	SAVE_CFLAGS="$CFLAGS"
-	CFLAGS="$RHYTHMBOX_CFLAGS -Werror"
-	SAVE_LIBS="$LIBS"
-	LIBS="$RHYTHMBOX_LIBS"
-	AC_CHECK_LIB(xine, xine_osd_show_unscaled,
-			[AC_CHECK_HEADER(xine.h,
-			  [AC_DEFINE(HAVE_NULL_VIDEO,1,[Define if you have the NULL video feature in xine-lib])])])
-	CFLAGS="$SAVE_CFLAGS"
-	LIBS="$SAVE_LIBS"
-else if test "x$with_player" = "xgstreamer"; then
-	dnl Now we're ready to ask for gstreamer libs and cflags
-	dnl And we can also ask for the right version of gstreamer
-	HAVE_SOUNDSYSTEM=no
-
-	GST_MAJORMINOR=0.8
-	GST_REQUIRED_VERSION=0.8.2
-	PKG_CHECK_MODULES(SOUNDSYSTEM, \
-		gstreamer-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-libs-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION
-		gstreamer-control-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION gstreamer-gconf-$GST_MAJORMINOR >= $GST_REQUIRED_VERSION,
-		HAVE_SOUNDSYSTEM=yes,HAVE_SOUNDSYSTEM=no)
-
-	dnl Give error and exit if we don't have gstreamer
-	if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
+dnl Give error and exit if we don't have gstreamer
+if test "x$HAVE_SOUNDSYSTEM" = "xno"; then
 		AC_MSG_ERROR([GStreamer not found, or older than version $GST_REQUIRED_VERSION])
-	fi
-	have_gstreamer=yes
-	SOUNDSYSTEM_DEPS="gstreamer-$GST_MAJORMINOR"
-	AC_SUBST(SOUNDSYSTEM_DEPS)
-
-	AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
-	
-	RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
-	RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
-	
-	dnl Check for gstreamer elements
-	AM_GST_ELEMENT_CHECK(gnomevfssrc,,missing_gst_elements="$missing_gst_elements gnomevfssrc")
-	AM_GST_ELEMENT_CHECK(spider,,missing_gst_elements="$missing_gst_elements spider")
-	AM_GST_ELEMENT_CHECK(volume,,missing_gst_elements="$missing_gst_elements volume")
-	AM_GST_ELEMENT_CHECK(osssink,, AM_GST_ELEMENT_CHECK(alsasink,,missing_gst_output_element=yes))
-
-else
-	AC_MSG_ERROR([Unknown player $with_player])
-fi
 fi
 
-AM_CONDITIONAL(USE_XINE, test x"$with_player" = "xxine")
+SOUNDSYSTEM_DEPS="gstreamer-$GST_MAJORMINOR"
+AC_SUBST(SOUNDSYSTEM_DEPS)
 
-dnl Tagging
-AC_ARG_WITH(metadata,
-              AC_HELP_STRING([--with-metadata=gstreamer|xine|auto],
-			     [Select the metadata reader to use]),,
-	      with_metadata=auto)
-if test x"$with_player" = xxine && test x"$with_metadata" = xgstreamer; then
-  AC_MSG_ERROR([cannot use xine as player with gstreamer for metadata])
-fi  
-if test x"$with_player" = xgstreamer && test x"$with_metadata" = xxine; then
-  AC_MSG_ERROR([cannot use gstreamer as player with xine for metadata])
-fi
+AC_DEFINE(HAVE_GSTREAMER,1,[Define if you want to use the GStreamer media framework])
 
-if test x"$with_metadata" = xauto; then
-   if test x"$with_player" = xgstreamer; then
-      with_metadata=gstreamer
-   else
-      with_metadata=xine
-   fi
-fi
+RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
+RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
+
+dnl Check for gstreamer elements
+AM_GST_ELEMENT_CHECK(gnomevfssrc,,missing_gst_elements="$missing_gst_elements gnomevfssrc")
+AM_GST_ELEMENT_CHECK(spider,,missing_gst_elements="$missing_gst_elements spider")
+AM_GST_ELEMENT_CHECK(volume,,missing_gst_elements="$missing_gst_elements volume")
+AM_GST_ELEMENT_CHECK(osssink,, AM_GST_ELEMENT_CHECK(alsasink,,missing_gst_output_element=yes))
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
 	      AC_HELP_STRING([--enable-tag-writing],
 			     [Enable tag writing support in rhythmbox **EXPERIMENTAL**]))
-if test x"$with_player" != "xgstreamer"; then
-   AC_MSG_WARN([Tag writing support only works with the GStreamer backend])
-   enable_tag_writing="no"
-fi
 if test x"$enable_tag_writing" = xyes; then
    AC_MSG_WARN([Tag writing support is experimental, and may corrupt files, use at your own risk])
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
-
-AM_CONDITIONAL(WITH_XINE_METADATA, test x"$with_metadata" = "xxine")
-AM_CONDITIONAL(WITH_GST_METADATA, test x"$with_metadata" = "xgstreamer")
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
@@ -329,9 +254,7 @@ else
   AC_MSG_NOTICE([CD audio support disabled])
 fi
 if test "x$enable_audiocd" = "xyes"; then
-  if test x"$have_gstreamer" = xyes; then
-    AM_GST_ELEMENT_CHECK(cdparanoia,,missing_gst_elements="$missing_gst_elements cdparanoia")
-  fi
+  AM_GST_ELEMENT_CHECK(cdparanoia,,missing_gst_elements="$missing_gst_elements cdparanoia")
   AC_DEFINE(HAVE_AUDIOCD,,[Define if we have CD Audio support])
   AC_SUBST(AUDIOCD_INCLUDES, ["#include \"monkey-media-audio-cd.h\""])
 else
@@ -495,11 +418,9 @@ fi
 if test x"${with_rhythmdb_debug}" != x0; then
 	AC_MSG_NOTICE([** RhythmDB sanity checking enabled (may be slow!)])
 fi
-if test x"$with_metadata" = xxine; then
-	AC_MSG_NOTICE([** Xine metadata is enabled])
-else
-	AC_MSG_NOTICE([** GStreamer metadata is enabled])
-fi
+
+AC_MSG_NOTICE([** GStreamer metadata is enabled])
+
 if test x"$enable_tag_writing" = xyes; then
         AC_MSG_NOTICE([** Tag writing is enabled - USE AT YOUR OWN RISK])
 else
@@ -520,11 +441,9 @@ dnl 	AC_MSG_NOTICE([   MusicBrainz support is disabled])
 dnl else
 dnl 	AC_MSG_NOTICE([** MusicBrainz support is enabled])
 dnl fi
-if test x"$with_player" = xgstreamer; then
-	AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
-else
-	AC_MSG_NOTICE([** xine player is enabled])
-fi
+
+AC_MSG_NOTICE([** GStreamer $GST_MAJORMINOR player is enabled])
+
 if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else

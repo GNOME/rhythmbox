@@ -4,7 +4,7 @@ SUBDIRS =
 
 noinst_LTLIBRARIES = librbmetadata.la
 
-librbmetadata_la_SOURCES = rb-metadata.h rb-metadata-common.c
+librbmetadata_la_SOURCES = rb-metadata.h rb-metadata-common.c rb-metadata-gst.c
 
 librbmetadata_la_LIBADD =			\
 	$(top_builddir)/lib/librb.la		\
@@ -19,10 +19,3 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib 				\
 	$(RHYTHMBOX_CFLAGS)
 
-if WITH_XINE_METADATA
-librbmetadata_la_SOURCES += rb-metadata-xine.c
-endif
-
-if WITH_GST_METADATA
-librbmetadata_la_SOURCES += rb-metadata-gst.c
-endif
