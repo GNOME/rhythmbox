@@ -1912,7 +1912,7 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
         gboolean smart;
 
         if (source == NULL) {
-		char *datastr = g_strndup (data->data, data->length);
+		char *datastr = g_strndup ((char *) data->data, data->length);
                 smart = data->type != gdk_atom_intern ("text/uri-list", TRUE);
                 source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
 							   datastr, smart);

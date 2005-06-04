@@ -42,6 +42,9 @@
 #include "rb-stock-icons.h"
 #include "eel-gconf-extensions.h"
 
+#define RB_PLAYLIST_MGR_VERSION (xmlChar *) "1.0"
+#define RB_PLAYLIST_MGR_PL (xmlChar *) "rhythmdb-playlists"
+
 static void rb_playlist_manager_class_init (RBPlaylistManagerClass *klass);
 static void rb_playlist_manager_init (RBPlaylistManager *mgr);
 static void rb_playlist_manager_finalize (GObject *object);
@@ -623,9 +626,9 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 
 	data = g_new0 (struct RBPlaylistManagerSaveThreadData, 1);
 	data->mgr = mgr;
-	data->doc = xmlNewDoc ("1.0");
+	data->doc = xmlNewDoc (RB_PLAYLIST_MGR_VERSION);
 
-	root = xmlNewDocNode (data->doc, NULL, "rhythmdb-playlists", NULL);
+	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
 	
 	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)

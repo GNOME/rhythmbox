@@ -62,6 +62,7 @@ PKG_CHECK_MODULES(RHYTHMBOX,                    \
 		  gnome-vfs-2.0 >= 2.6          \
 		  gnome-vfs-module-2.0          \
 		  libnautilus-burn >= 2.9.0	\
+		  totem-plparser >= 1.0         \
 		  $USE_HAL)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"

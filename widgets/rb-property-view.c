@@ -481,7 +481,7 @@ rb_property_view_drag_data_get (GtkWidget *widget, GdkDragContext *context,
         g_assert (gtk_tree_model_get_iter (model, &iter, selected_rows->data));
         gtk_tree_model_get(model, &iter, 0, &str, -1);
         gtk_selection_data_set (selection_data, selection_data->target,
-                                8, str, strlen (str));
+                                8, (guchar *) str, strlen (str));
 }
 
 static GObject *

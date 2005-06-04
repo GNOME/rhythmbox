@@ -419,7 +419,7 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 	if (ret == FALSE)
 		return;
 
-	list = gnome_vfs_uri_list_parse (data->data);
+	list = gnome_vfs_uri_list_parse ((char *) data->data);
 
 	if (list == NULL) {
 		gtk_drag_finish (context, FALSE, FALSE, time);

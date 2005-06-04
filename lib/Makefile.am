@@ -17,8 +17,6 @@ librb_la_SOURCES =					\
 	rb-cut-and-paste-code.h				\
 	rb-util.c					\
 	rb-util.h					\
-	totem-pl-parser.c				\
-	totem-pl-parser.h				\
 	rb-enums.h					\
 	rb-tree-dnd.c					\
 	rb-tree-dnd.h					\
@@ -43,15 +41,8 @@ rb-marshal.h: rb-marshal.list
 	@GLIB_GENMARSHAL@ --prefix=rb_marshal $(srcdir)/rb-marshal.list --header > rb-marshal.h
 BUILT_SOURCES += rb-marshal.c rb-marshal.h
 
-totemplparser-marshal.c: totemplparser-marshal.h
-	@GLIB_GENMARSHAL@ --prefix=totemplparser_marshal $(srcdir)/totemplparser-marshal.list --header --body > totemplparser-marshal.c
-totemplparser-marshal.h: totemplparser-marshal.list
-	@GLIB_GENMARSHAL@ --prefix=totemplparser_marshal $(srcdir)/totemplparser-marshal.list --header > totemplparser-marshal.h
-
-BUILT_SOURCES += totemplparser-marshal.c totemplparser-marshal.h
-
 librb_la_SOURCES += $(BUILT_SOURCES)
 
 librb_la_LDFLAGS = -export-dynamic
 
-EXTRA_DIST = rb-marshal.list totemplparser-marshal.list
+EXTRA_DIST = rb-marshal.list

@@ -778,7 +778,7 @@ select_criteria_from_value (RBQueryCreator *creator,
 {
 	int i;
 	const RBQueryCreatorCriteriaOption *options;
-	gint length;
+	guint length;
 
 	options = get_criteria_for_property (creator, prop, &length);
 			
@@ -800,7 +800,7 @@ property_option_menu_changed (GtkOptionMenu *propmenu,
 	GtkWidget *entry;
 	const RBQueryCreatorPropertyOption *prop_option;
 	const RBQueryCreatorCriteriaOption *criteria_options;
-	int length;
+	guint length;
 	gboolean constrain;
 
 	row = lookup_row_by_widget (creator, GTK_WIDGET (propmenu));

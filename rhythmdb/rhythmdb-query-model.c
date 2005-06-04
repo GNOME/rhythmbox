@@ -949,8 +949,8 @@ rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 
 		gtk_selection_data_set (selection_data,
 					selection_data->target,
-					8, data->str,
-					strlen (data->str));
+					8, (guchar *) data->str,
+					data->len);
 
 		g_string_free (data, TRUE);
 
@@ -981,7 +981,7 @@ rhythmdb_query_model_drag_data_received (RbTreeDragDest *drag_dest,
 		RhythmDBEntry *entry;
 		int i = 0;
 
-		strv = g_strsplit (selection_data->data, "\r\n", -1);
+		strv = g_strsplit ((char *) selection_data->data, "\r\n", -1);
 
 		if (dest == NULL || !rhythmdb_query_model_get_iter (GTK_TREE_MODEL (model), &iter, dest))
 			ptr = g_sequence_get_end_ptr (model->priv->entries);

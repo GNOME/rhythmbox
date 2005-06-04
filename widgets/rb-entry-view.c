@@ -1107,7 +1107,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
 
 	if (coltype == RB_ENTRY_VIEW_COL_RATING) {
-		guint width;
+		gint width;
 
 		propid = RHYTHMDB_PROP_RATING;
 
@@ -1359,7 +1359,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		GtkTreeViewColumn *column;
 		GtkTooltips *tooltip;
 		GtkCellRenderer *renderer;
-		guint width;
+		gint width;
 
 		tooltip = gtk_tooltips_new ();
 		

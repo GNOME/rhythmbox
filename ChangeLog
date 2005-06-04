@@ -1,3 +1,52 @@
+2005-06-04  Bastien Nocera  <hadess@hadess.net>
+
+	* autogen.sh: use the gnome-common autogen.sh, rather than have
+	to maintain it ourselves
+	* configure.ac: require totem-pl-parser
+	* lib/Makefile.am: remove totem-pl-parser copies
+	* lib/rb-debug.c: (rb_profiler_dump):
+	* lib/totem-pl-parser.c:
+	* lib/totem-pl-parser.h:
+	* lib/totemplparser-marshal.list:
+	* player/rb-recorder-gst.c: (tick_timeout_cb):
+	* rhythmdb/rb-refstring.h:
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_drag_data_get),
+	(rhythmdb_query_model_drag_data_received):
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(write_elt_name_open), (write_elt_name_close), (save_entry_string),
+	(save_entry_int), (save_entry_ulong), (save_entry_uint64),
+	(save_entry_double), (save_entry):
+	* rhythmdb/rhythmdb.c: (extract_nice_name_from_enum_entry),
+	(rhythmdb_init), (rhythmdb_nice_elt_name_from_propid),
+	(rhythmdb_propid_from_nice_elt_name), (write_encoded_gvalue),
+	(read_encoded_property), (rhythmdb_query_serialize),
+	(rhythmdb_query_deserialize):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_save_playlists):
+	* shell/rb-shell.c: (sourcelist_drag_received_cb):
+	* shell/rb-tray-icon.c: (rb_tray_icon_drop_cb):
+	* sources/rb-library-source.c: (impl_receive_drag):
+	* sources/rb-playlist-source.c: (impl_receive_drag),
+	(playlist_iter_func), (rb_playlist_source_save_playlist),
+	(rb_playlist_source_new_from_xml),
+	(rb_playlist_source_save_to_xml):
+	* sources/rb-sourcelist-model.c:
+	(rb_sourcelist_model_drag_data_received),
+	(rb_sourcelist_model_drag_data_get):
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column),
+	(rb_entry_view_constructor):
+	* widgets/rb-property-view.c: (rb_property_view_drag_data_get):
+	* widgets/rb-query-creator.c: (select_criteria_from_value),
+	(property_option_menu_changed):
+
+	Port for signed/unsigned char errors with libxml2 functions,
+	Remove the internal copy of Totem's playlist parser
+	Use the gnome-common autogen.sh rather than maintain it ourselves
+	Allow compilation with glib >= 2.6.4 (inline function changes)
+	Misc. GCC4 compilation fixes
+
 2005-04-01  Steve Murphy  <murf@e-tools.com>
 
         * configure.ac: Added "rw" to ALL_LINGUAS.

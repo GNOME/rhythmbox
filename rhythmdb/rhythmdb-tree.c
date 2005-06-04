@@ -260,7 +260,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY:
 	{
-		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), name);
+		int val = rhythmdb_propid_from_nice_elt_name (RHYTHMDB (ctx->db), BAD_CAST name);
 		if (val < 0) {
 			ctx->in_unknown_elt = TRUE;
 			break;
@@ -516,37 +516,38 @@ struct RhythmDBTreeSaveContext
 #define RHYTHMDB_FWRITE_STATICSTR(STR, HANDLE) (RHYTHMDB_FWRITE(STR, 1, sizeof(STR)-1, HANDLE))
 
 static void
-write_elt_name_open (struct RhythmDBTreeSaveContext *ctx, const char *elt_name)
+write_elt_name_open (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
 {
 	RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle);
-	RHYTHMDB_FWRITE (elt_name, 1, strlen (elt_name), ctx->handle);
+	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle);
 	RHYTHMDB_FPUTC ('>', ctx->handle);
 }
 
 static void
-write_elt_name_close (struct RhythmDBTreeSaveContext *ctx, const char *elt_name)
+write_elt_name_close (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
 {
 	RHYTHMDB_FWRITE_STATICSTR ("</", ctx->handle);
-	RHYTHMDB_FWRITE (elt_name, 1, strlen (elt_name), ctx->handle);
+	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle);
 	RHYTHMDB_FWRITE_STATICSTR (">\n", ctx->handle);
 }
 
 static void
 save_entry_string (struct RhythmDBTreeSaveContext *ctx,
-		   const char *elt_name, const char *str)
+		   const xmlChar *elt_name, const char *str)
 {
-	char *encoded;
+	xmlChar *encoded;
 
 	g_return_if_fail (str != NULL);
 	write_elt_name_open (ctx, elt_name);
-	encoded	= xmlEncodeEntitiesReentrant (NULL, str);
-	RHYTHMDB_FWRITE (encoded, 1, strlen (encoded), ctx->handle);
+	encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST str);
+	RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle);
 	g_free (encoded);
 	write_elt_name_close (ctx, elt_name);
 }
 
 static void
-save_entry_int (struct RhythmDBTreeSaveContext *ctx, const char *elt_name, int num)
+save_entry_int (struct RhythmDBTreeSaveContext *ctx,
+		const xmlChar *elt_name, int num)
 {
 	char buf[92];
 	if (num == 0)
@@ -559,7 +560,7 @@ save_entry_int (struct RhythmDBTreeSaveContext *ctx, const char *elt_name, int n
 
 static void
 save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
-		  const char *elt_name, gulong num)
+		  const xmlChar *elt_name, gulong num)
 {
 	char buf[92];
 	if (num == 0)
@@ -571,7 +572,7 @@ save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
 }
 
 static void
-save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const char *elt_name,
+save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name,
 		   guint64 num)
 {
 	char buf[92];
@@ -587,7 +588,7 @@ save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const char *elt_name,
 
 static void
 save_entry_double (struct RhythmDBTreeSaveContext *ctx,
-		   const char *elt_name, double num)
+		   const xmlChar *elt_name, double num)
 {
 	char buf[92];
 
@@ -607,7 +608,7 @@ static void
 save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveContext *ctx)
 {
 	RhythmDBPropType i;
-	
+
 	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle);
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
 		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle);
@@ -619,7 +620,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 		
 	/* Skip over the first property - the type */
 	for (i = 1; i < RHYTHMDB_NUM_PROPERTIES; i++) {
-		const char *elt_name;
+		const xmlChar *elt_name;
 
 		elt_name = rhythmdb_nice_elt_name_from_propid ((RhythmDB *) ctx->db, i);
 

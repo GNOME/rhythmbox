@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <libgnome/gnome-i18n.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
+#include <totem-pl-parser.h>
 #include <libxml/tree.h>
 #include <unistd.h>
 #include <string.h>
@@ -33,7 +34,6 @@
 #include "rb-entry-view.h"
 #include "rb-search-entry.h"
 #include "rb-file-helpers.h"
-#include "totem-pl-parser.h"
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
@@ -46,6 +46,17 @@
 #include "rb-tree-view-column.h"
 
 #define RB_PLAYLIST_XML_VERSION "1.0"
+
+#define RB_PLAYLIST_PLAYLIST (xmlChar *) "playlist"
+#define RB_PLAYLIST_TYPE (xmlChar *) "type"
+#define RB_PLAYLIST_AUTOMATIC (xmlChar *) "automatic"
+#define RB_PLAYLIST_STATIC (xmlChar *) "static"
+#define RB_PLAYLIST_NAME (xmlChar *) "name"
+#define RB_PLAYLIST_INT_NAME (xmlChar *) "internal-name"
+#define RB_PLAYLIST_LIMIT_COUNT (xmlChar *) "limit-count"
+#define RB_PLAYLIST_LIMIT_SIZE (xmlChar *) "limit-size"
+#define RB_PLAYLIST_LIMIT (xmlChar *) "limit"
+#define RB_PLAYLIST_LOCATION (xmlChar *) "location"
 
 static void rb_playlist_source_class_init (RBPlaylistSourceClass *klass);
 static void rb_playlist_source_init (RBPlaylistSource *source);
@@ -578,7 +589,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	RBPlaylistSource *source = RB_PLAYLIST_SOURCE (asource);
 
         if (data->type == gdk_atom_intern ("text/uri-list", TRUE)) {
-                list = gnome_vfs_uri_list_parse (data->data);
+                list = gnome_vfs_uri_list_parse ((char *) data->data);
 
                 if (list != NULL)
                         rb_playlist_source_add_list_uri (source, list);
@@ -726,7 +737,7 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 }
 
 static void
-playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **title)
+playlist_iter_func (GtkTreeModel *model, GtkTreeIter *iter, char **uri, char **title, gpointer user_data)
 {
 	RhythmDBEntry *entry;
 
@@ -746,8 +757,8 @@ rb_playlist_source_save_playlist (RBPlaylistSource *source, const char *uri)
 	playlist = totem_pl_parser_new ();
 
 	totem_pl_parser_write (playlist, GTK_TREE_MODEL (source->priv->model),
-			       playlist_iter_func, uri, TOTEM_PL_PARSER_PLS, 
-			       &error);
+			       playlist_iter_func, uri, TOTEM_PL_PARSER_PLS,
+			       NULL, &error);
 	if (error != NULL)
 		rb_error_dialog (NULL, _("Couldn't save playlist"),
 				 "%s", error->message);
@@ -799,25 +810,25 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 {
 	RBPlaylistSource *source;
 	xmlNodePtr child;
-	char *tmp;
+	xmlChar *tmp;
 
 	source = RB_PLAYLIST_SOURCE (rb_playlist_source_new (shell, FALSE));
 
-	tmp = xmlGetProp (node, "type");
-	if (!strcmp (tmp, "automatic"))
+	tmp = xmlGetProp (node, RB_PLAYLIST_TYPE);
+	if (!xmlStrcmp (tmp, RB_PLAYLIST_AUTOMATIC))
 		source->priv->automatic = TRUE;
 	g_free (tmp);
 
-	tmp = xmlGetProp (node, "name");
+	tmp = xmlGetProp (node, RB_PLAYLIST_NAME);
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
 	g_free (tmp);
 
-	tmp = xmlGetProp (node, "internal-name");
+	tmp = xmlGetProp (node, RB_PLAYLIST_INT_NAME);
 	if (!tmp) {
 		GTimeVal serial;
 		/* Hm.  Upgrades. */
 		g_get_current_time (&serial);
-		tmp = g_strdup_printf ("<playlist:%ld:%ld>",
+		tmp = (xmlChar *) g_strdup_printf ("<playlist:%ld:%ld>",
 				       serial.tv_sec, serial.tv_usec);
 	}
 	g_object_set (G_OBJECT (source), "internal-name", tmp, NULL);
@@ -825,25 +836,25 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 
 	if (source->priv->automatic) {
 		GPtrArray *query;
-		gchar *limit_str;
-		guint limit_count = 0;
-		guint limit_mb = 0;
+		xmlChar *limit_str;
+		gint limit_count = 0;
+		gint limit_mb = 0;
 
 		child = node->children;
 		while (xmlNodeIsText (child))
 			child = child->next;
 
 		query = rhythmdb_query_deserialize (source->priv->db, child);
-		limit_str = xmlGetProp (node, "limit-count");
+		limit_str = xmlGetProp (node, RB_PLAYLIST_LIMIT_COUNT);
 		if (!limit_str) /* Backwards compatibility */
-			limit_str = xmlGetProp (node, "limit");
+			limit_str = xmlGetProp (node, RB_PLAYLIST_LIMIT);
 		if (limit_str) {
-			limit_count = atoi (limit_str);
+			limit_count = atoi ((char *) limit_str);
 			g_free (limit_str);
 		}
-		limit_str = xmlGetProp (node, "limit-size");
+		limit_str = xmlGetProp (node, RB_PLAYLIST_LIMIT_SIZE);
 		if (limit_str) {
-			limit_mb = atoi (limit_str);
+			limit_mb = atoi ((char *) limit_str);
 			g_free (limit_str);
 		}
 		rb_playlist_source_set_query (source, query,
@@ -851,16 +862,17 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 					      limit_mb);
 	} else {
 		for (child = node->children; child; child = child->next) {
-			char *location;
+			xmlChar *location;
 
 			if (xmlNodeIsText (child))
 				continue;
 		
-			if (strcmp (child->name, "location"))
+			if (xmlStrcmp (child->name, RB_PLAYLIST_LOCATION))
 				continue;
 		
 			location = xmlNodeGetContent (child);
-			rb_playlist_source_add_location (source, location);
+			rb_playlist_source_add_location (source,
+							 (char *) location);
 		}
 	}
 
@@ -871,30 +883,30 @@ void
 rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node)
 {
 	xmlNodePtr node;
-	char *name;
-	char *internal_name;
+	xmlChar *name;
+	xmlChar *internal_name;
 	GtkTreeIter iter;
 
-	node = xmlNewChild (parent_node, NULL, "playlist", NULL);
+	node = xmlNewChild (parent_node, NULL, RB_PLAYLIST_PLAYLIST, NULL);
 	g_object_get (G_OBJECT (source), "name", &name,
 		      "internal-name", &internal_name, NULL);
-	xmlSetProp (node, "name", name);
-	xmlSetProp (node, "internal-name", internal_name);
-	xmlSetProp (node, "type", source->priv->automatic ? "automatic" : "static");
-	
+	xmlSetProp (node, RB_PLAYLIST_NAME, name);
+	xmlSetProp (node, RB_PLAYLIST_INT_NAME, internal_name);
+	xmlSetProp (node, RB_PLAYLIST_TYPE, source->priv->automatic ? RB_PLAYLIST_AUTOMATIC : RB_PLAYLIST_STATIC);
+
 	if (!source->priv->automatic) {
 		if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (source->priv->model),
 						    &iter))
 			return;
 		do { 
-			xmlNodePtr child_node = xmlNewChild (node, NULL, "location", NULL);
+			xmlNodePtr child_node = xmlNewChild (node, NULL, RB_PLAYLIST_LOCATION, NULL);
 			RhythmDBEntry *entry;
-			char *encoded;
+			xmlChar *encoded;
 
 			gtk_tree_model_get (GTK_TREE_MODEL (source->priv->model), &iter, 0, &entry, -1);
 
-			encoded = xmlEncodeEntitiesReentrant (NULL, entry->location);
-			
+			encoded = xmlEncodeEntitiesReentrant (NULL, BAD_CAST entry->location);
+
 			xmlNodeSetContent (child_node, encoded);
 			g_free (encoded);
 		} while (gtk_tree_model_iter_next (GTK_TREE_MODEL (source->priv->model),
@@ -910,10 +922,10 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 			      "max-size", &max_size_mb,
 			      "query", &query, NULL);
 		limit_str = g_strdup_printf ("%d", max_count);
-		xmlSetProp (node, "limit-count", limit_str);
+		xmlSetProp (node, RB_PLAYLIST_LIMIT_COUNT, BAD_CAST limit_str);
 		g_free (limit_str);
 		limit_str = g_strdup_printf ("%d", max_size_mb);
-		xmlSetProp (node, "limit-size", limit_str);
+		xmlSetProp (node, RB_PLAYLIST_LIMIT_SIZE, BAD_CAST limit_str);
 		g_free (limit_str);
 		rhythmdb_query_serialize (source->priv->db, query, node);
 	}

@@ -505,7 +505,7 @@ rb_recorder_new (GError **error)
 static gboolean
 tick_timeout_cb (RBRecorder *recorder)
 {
-        guint64 position, total;
+	gint64 position, total;
         double fraction;
         static GstFormat format = GST_FORMAT_BYTES;
 

@@ -281,7 +281,7 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 		if (!dest)
 			return FALSE;
 		
-		path_str = g_strndup (selection_data->data, selection_data->length);
+		path_str = g_strndup ((char *) selection_data->data, selection_data->length);
 	
 		path = gtk_tree_path_new_from_string (path_str);
 		gtk_tree_model_get_iter (GTK_TREE_MODEL (model),
@@ -440,7 +440,7 @@ rb_sourcelist_model_drag_data_get (RbTreeDragSource *drag_source,
 	path_str = gtk_tree_path_to_string (path);
 	gtk_selection_data_set (selection_data,
 				gdk_atom_intern ("application/x-rhythmbox-source", TRUE),
-				8, path_str,
+				8, (guchar *) path_str,
 				strlen (path_str));
 	g_free (path_str);
 	gtk_tree_path_free (path);

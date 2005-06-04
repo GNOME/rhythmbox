@@ -1257,7 +1257,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 	GList *list, *uri_list, *i;
 
 	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse (data->data);
+	list = gnome_vfs_uri_list_parse ((char *) data->data);
 
 	if (list == NULL)
 		return FALSE;

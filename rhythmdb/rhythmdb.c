@@ -49,6 +49,19 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-preferences.h"
 
+#define RB_PARSE_CONJ (xmlChar *) "conjuction"
+#define RB_PARSE_SUBQUERY (xmlChar *) "subquery"
+#define RB_PARSE_LIKE (xmlChar *) "like"
+#define RB_PARSE_PROP (xmlChar *) "prop"
+#define RB_PARSE_NOT_LIKE (xmlChar *) "not-like"
+#define RB_PARSE_EQUALS (xmlChar *) "equals"
+#define RB_PARSE_DISJ (xmlChar *) "disjunction"
+#define RB_PARSE_GREATER (xmlChar *) "greater"
+#define RB_PARSE_LESS (xmlChar *) "less"
+
+#define RB_PARSE_NICK_START (xmlChar *) "["
+#define RB_PARSE_NICK_END (xmlChar *) "]"
+
 GType rhythmdb_property_type_map[RHYTHMDB_NUM_PROPERTIES];
 
 struct RhythmDBPrivate
@@ -61,7 +74,7 @@ struct RhythmDBPrivate
 
 	RBMetaData *metadata;
 
-	char **column_xml_names;
+	xmlChar **column_xml_names;
 
 	RBRefString *empty_string;
 	RBRefString *octet_stream_str;
@@ -437,21 +450,23 @@ extract_gtype_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 	return ret;
 }
 
-static char *
+static xmlChar *
 extract_nice_name_from_enum_entry (RhythmDB *db, GEnumClass *klass, guint i)
 {
 	GEnumValue *value;
-	char *name;
-	char *name_end;
+	xmlChar *nick;
+	const xmlChar *name;
+	const xmlChar *name_end;
 	
 	value = g_enum_get_value (klass, i);
+	nick = BAD_CAST value->value_nick;
 
-	name = strstr (value->value_nick, "[");
+	name = xmlStrstr (nick, RB_PARSE_NICK_START);
 	g_return_val_if_fail (name != NULL, NULL);
-	name_end = strstr (name, "]");
+	name_end = xmlStrstr (name, RB_PARSE_NICK_END);
 	name++;
 
-	return g_strndup (name, name_end-name);
+	return xmlStrndup (name, name_end-name);
 }
 
 static void
@@ -471,7 +486,7 @@ rhythmdb_init (RhythmDB *db)
 	prop_class = g_type_class_ref (RHYTHMDB_TYPE_PROP);
 
 	g_assert (prop_class->n_values == RHYTHMDB_NUM_PROPERTIES);
-	db->priv->column_xml_names = g_new (char *, RHYTHMDB_NUM_PROPERTIES);
+	db->priv->column_xml_names = g_new (xmlChar *, RHYTHMDB_NUM_PROPERTIES);
 	
 	/* Now, extract the GType and XML tag of each column from the
 	 * enum descriptions, and cache that for later use. */
@@ -487,7 +502,7 @@ rhythmdb_init (RhythmDB *db)
 	db->priv->propname_map = g_hash_table_new (g_str_hash, g_str_equal);
 
 	for (i = 0; i < RHYTHMDB_NUM_PROPERTIES; i++) {
-		const char *name = rhythmdb_nice_elt_name_from_propid (db, i);
+		const xmlChar *name = rhythmdb_nice_elt_name_from_propid (db, i);
 		g_hash_table_insert (db->priv->propname_map, (gpointer) name, GINT_TO_POINTER (i));
 	}
 
@@ -2117,14 +2132,14 @@ rhythmdb_query_free (GPtrArray *query)
 	g_ptr_array_free (query, TRUE);
 }
 
-inline const char *
-rhythmdb_nice_elt_name_from_propid (RhythmDB *db, gint propid)
+inline const xmlChar *
+rhythmdb_nice_elt_name_from_propid (RhythmDB *db, RhythmDBPropType propid)
 {
 	return db->priv->column_xml_names[propid];
 }
 
 inline int
-rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const char *name)
+rhythmdb_propid_from_nice_elt_name (RhythmDB *db, const xmlChar *name)
 {
 	gpointer ret, orig;	
 	if (g_hash_table_lookup_extended (db->priv->propname_map, name,
@@ -2139,7 +2154,7 @@ write_encoded_gvalue (xmlNodePtr node,
 		      GValue *val)
 {
 	char *strval;
-	char *quoted;
+	xmlChar *quoted;
 
 	switch (G_VALUE_TYPE (val))
 	{
@@ -2173,7 +2188,7 @@ write_encoded_gvalue (xmlNodePtr node,
 		break;
 	}
 
-	quoted = xmlEncodeEntitiesReentrant (NULL, strval);
+	quoted = xmlEncodeEntitiesReentrant (NULL, BAD_CAST strval);
 	g_free (strval);
 	xmlNodeSetContent (node, quoted);
 	g_free (quoted);
@@ -2186,10 +2201,10 @@ read_encoded_property (RhythmDB *db,
 		       GValue *val)
 {
 	char *content;
-	
+
 	g_value_init (val, rhythmdb_get_property_type (db, propid));
 
-	content = xmlNodeGetContent (node);
+	content = (char *)xmlNodeGetContent (node);
 	
 	switch (G_VALUE_TYPE (val))
 	{
@@ -2221,7 +2236,7 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 			  xmlNodePtr parent)
 {
 	guint i;
-	xmlNodePtr node = xmlNewChild (parent, NULL, "conjunction", NULL);
+	xmlNodePtr node = xmlNewChild (parent, NULL, RB_PARSE_CONJ, NULL);
 	xmlNodePtr subnode;
 
 	for (i = 0; i < query->len; i++) {
@@ -2229,37 +2244,37 @@ rhythmdb_query_serialize (RhythmDB *db, GPtrArray *query,
 		
 		switch (data->type) {
 		case RHYTHMDB_QUERY_SUBQUERY:
-			subnode = xmlNewChild (node, NULL, "subquery", NULL);
+			subnode = xmlNewChild (node, NULL, RB_PARSE_SUBQUERY, NULL);
 			rhythmdb_query_serialize (db, data->subquery, subnode);
 			break;
 		case RHYTHMDB_QUERY_PROP_LIKE:
-			subnode = xmlNewChild (node, NULL, "like", NULL);
-			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			subnode = xmlNewChild (node, NULL, RB_PARSE_LIKE, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
-			subnode = xmlNewChild (node, NULL, "not-like", NULL);
-			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			subnode = xmlNewChild (node, NULL, RB_PARSE_NOT_LIKE, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_EQUALS:
-			subnode = xmlNewChild (node, NULL, "equals", NULL);
-			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			subnode = xmlNewChild (node, NULL, RB_PARSE_EQUALS, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
 		case RHYTHMDB_QUERY_DISJUNCTION:
-			subnode = xmlNewChild (node, NULL, "disjunction", NULL);
+			subnode = xmlNewChild (node, NULL, RB_PARSE_DISJ, NULL);
 			break;
 		case RHYTHMDB_QUERY_END:
 			break;
 		case RHYTHMDB_QUERY_PROP_GREATER:
-			subnode = xmlNewChild (node, NULL, "greater", NULL);
-			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			subnode = xmlNewChild (node, NULL, RB_PARSE_GREATER, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
-			subnode = xmlNewChild (node, NULL, "less", NULL);
-			xmlSetProp (subnode, "prop", rhythmdb_nice_elt_name_from_propid (db, data->propid));
+			subnode = xmlNewChild (node, NULL, RB_PARSE_LESS, NULL);
+			xmlSetProp (subnode, RB_PARSE_PROP, rhythmdb_nice_elt_name_from_propid (db, data->propid));
 			write_encoded_gvalue (subnode, data->val);
 			break;
 		}		
@@ -2272,7 +2287,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 	GPtrArray *query = g_ptr_array_new ();
 	xmlNodePtr child;
 
-	g_assert (!strcmp (parent->name, "conjunction"));
+	g_assert (!xmlStrcmp (parent->name, RB_PARSE_CONJ));
 	
 	for (child = parent->children; child; child = child->next) {
 		RhythmDBQueryData *data;
@@ -2282,7 +2297,7 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 
 		data = g_new0 (RhythmDBQueryData, 1);
 
-		if (!strcmp (child->name, "subquery")) {
+		if (!xmlStrcmp (child->name, RB_PARSE_SUBQUERY)) {
 			xmlNodePtr subquery;
 			data->type = RHYTHMDB_QUERY_SUBQUERY;
 			subquery = child->children;
@@ -2290,27 +2305,27 @@ rhythmdb_query_deserialize (RhythmDB *db, xmlNodePtr parent)
 				subquery = subquery->next;
 			
 			data->subquery = rhythmdb_query_deserialize (db, subquery);
-		} else if (!strcmp (child->name, "disjunction")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_DISJ)) {
 			data->type = RHYTHMDB_QUERY_DISJUNCTION;
-		} else if (!strcmp (child->name, "like")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_LIKE)) {
 			data->type = RHYTHMDB_QUERY_PROP_LIKE;
-		} else if (!strcmp (child->name, "not-like")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)) {
 			data->type = RHYTHMDB_QUERY_PROP_NOT_LIKE;
-		} else if (!strcmp (child->name, "equals")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_EQUALS)) {
 			data->type = RHYTHMDB_QUERY_PROP_EQUALS;
-		} else if (!strcmp (child->name, "greater")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_GREATER)) {
 			data->type = RHYTHMDB_QUERY_PROP_GREATER;
-		} else if (!strcmp (child->name, "less")) {
+		} else if (!xmlStrcmp (child->name, RB_PARSE_LESS)) {
 			data->type = RHYTHMDB_QUERY_PROP_LESS;
 		} else
  			g_assert_not_reached ();
 
-		if (!strcmp (child->name, "like")
-		    || !strcmp (child->name, "not-like")
-		    || !strcmp (child->name, "equals")
-		    || !strcmp (child->name, "greater")
-		    || !strcmp (child->name, "less")) {
-			char *propstr = xmlGetProp (child, "prop");
+		if (!xmlStrcmp (child->name, RB_PARSE_LIKE)
+		    || !xmlStrcmp (child->name, RB_PARSE_NOT_LIKE)
+		    || !xmlStrcmp (child->name, RB_PARSE_EQUALS)
+		    || !xmlStrcmp (child->name, RB_PARSE_GREATER)
+		    || !xmlStrcmp (child->name, RB_PARSE_LESS)) {
+			xmlChar *propstr = xmlGetProp (child, RB_PARSE_PROP);
 			gint propid = rhythmdb_propid_from_nice_elt_name (db, propstr);
 			g_free (propstr);
 

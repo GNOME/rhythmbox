@@ -186,7 +186,7 @@ rb_profiler_new (const char *name)
 void
 rb_profiler_dump (RBProfiler *profiler)
 {
-	long elapsed;
+	gulong elapsed;
 	double seconds;
 
 	if (debugging == FALSE)
@@ -195,7 +195,7 @@ rb_profiler_dump (RBProfiler *profiler)
 		return;
 
 	seconds = g_timer_elapsed (profiler->timer, &elapsed);
-	
+
 	rb_debug ("PROFILER %s %ld ms (%f s) elapsed", profiler->name, 
 		  elapsed / (G_USEC_PER_SEC / 1000), seconds);
 }

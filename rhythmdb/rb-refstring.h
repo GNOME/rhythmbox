@@ -54,7 +54,7 @@ G_INLINE_FUNC gboolean		rb_refstring_equal (gconstpointer a, gconstpointer b);
 
 void				rb_refstring_system_shutdown (void);
 
-#if defined (G_CAN_INLINE) || defined (__RB_REFSTRING_C__)
+#if defined (G_CAN_INLINE) || defined (G_HAVE_INLINE ) || defined (__RB_REFSTRING_C__)
 
 #ifndef __RB_REFSTRING_C__
 extern GHashTable *rb_refstrings;

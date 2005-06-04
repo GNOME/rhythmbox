@@ -157,7 +157,7 @@ typedef struct {
 	gdouble rating;
 	gboolean auto_rate;
 	glong play_count;
-	gulong last_played;
+	glong last_played;
 
 	/* cached data */
 	RBRefString *last_played_str;
@@ -441,8 +441,8 @@ void		rhythmdb_query_serialize		(RhythmDB *db, GPtrArray *query,
 
 GPtrArray *	rhythmdb_query_deserialize		(RhythmDB *db, xmlNodePtr node);
 
-inline const char *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, gint propid);
-inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const char *name);
+inline const xmlChar *	rhythmdb_nice_elt_name_from_propid	(RhythmDB *db, RhythmDBPropType propid);
+inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *name);
 
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
