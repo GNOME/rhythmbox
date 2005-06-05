@@ -49,7 +49,7 @@
 #include "rb-cut-and-paste-code.h"
 #include "rb-preferences.h"
 
-#define RB_PARSE_CONJ (xmlChar *) "conjuction"
+#define RB_PARSE_CONJ (xmlChar *) "conjunction"
 #define RB_PARSE_SUBQUERY (xmlChar *) "subquery"
 #define RB_PARSE_LIKE (xmlChar *) "like"
 #define RB_PARSE_PROP (xmlChar *) "prop"
