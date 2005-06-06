@@ -16,6 +16,11 @@ AM_PROG_LIBTOOL
 AC_C_BIGENDIAN
 AC_CHECK_SIZEOF(long)
 
+GTK_REQS=2.5.4
+GNOME_VFS_REQS=2.6
+NCB_REQS=2.9.0
+TOTEM_PLPARSER_REQS=1.0
+
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
 AC_LINK_IFELSE(
 [AC_LANG_PROGRAM([[
@@ -36,6 +41,18 @@ AC_CHECK_FUNC(mkdtemp,
     mkdtemp_missing=true)
 AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
+dnl Don't let pkg-config 0.16 break us.
+dnl Otherwise, it'll set PKG_CONFIG inside the 'if' block below and expect
+dnl it to be set everywhere.  Earlier pkg-config versions shouldn't care.
+PKG_CHECK_MODULES(PRELIMINARY,
+		  gtk+-2.0 >= $GTK_REQS			\
+		  libgnomeui-2.0			\
+		  libglade-2.0				\
+		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
+		  gnome-vfs-module-2.0			\
+		  libnautilus-burn >= $NCB_REQS		\
+		  totem-plparser >= $TOTEM_PLPARSER_REQS)
+
 dnl iPod support
 dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
 dnl function was added in that release.
@@ -55,14 +72,14 @@ if test x"$enable_ipod" = xyes; then
 		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
 fi
 
-PKG_CHECK_MODULES(RHYTHMBOX,                    \
-                  gtk+-2.0 >= 2.5.4             \
-                  libgnomeui-2.0                \
-		  libglade-2.0                  \
-		  gnome-vfs-2.0 >= 2.6          \
-		  gnome-vfs-module-2.0          \
-		  libnautilus-burn >= 2.9.0	\
-		  totem-plparser >= 1.0         \
+PKG_CHECK_MODULES(RHYTHMBOX,				\
+		  gtk+-2.0 >= $GTK_REQS			\
+		  libgnomeui-2.0			\
+		  libglade-2.0				\
+		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
+		  gnome-vfs-module-2.0			\
+		  libnautilus-burn >= $NCB_REQS		\
+		  totem-plparser >= $TOTEM_PLPARSER_REQS\
 		  $USE_HAL)
 
 RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
