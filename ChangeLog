@@ -1,3 +1,11 @@
+2005-06-07  Bastien Nocera  <hadess@hadess.net>
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_constructor),
+	(rb_iradio_source_first_time_changed),
+	(stations_view_drag_data_received_cb): patch from
+	jonathan@kaolin.hn.org to correctly parse _NETSCAPE_URL type of
+	drag'n'drop from web browsers (Closes: #158717)
+
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
 	* sources/itunesdb.c: (get4int), (get_pl), (ipod_parse_playlists):

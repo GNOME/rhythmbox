@@ -101,6 +101,12 @@ static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
 					     RBIRadioSource *source);
+static void stations_view_drag_data_received_cb (GtkWidget *widget,
+						 GdkDragContext *dc,
+						 gint x, gint y,
+						 GtkSelectionData *data,
+						 guint info, guint time,
+						 RBIRadioSource *source);
 
 #define CMD_PATH_SHOW_BROWSER "/commands/ShowBrowser"
 #define CMD_PATH_CURRENT_STATION "/commands/CurrentStation"
@@ -162,6 +168,11 @@ struct RBIRadioSourcePrivate
 	RhythmDBEntry *async_update_entry;
 
 	RhythmDBEntryType entry_type;
+};
+
+static const GtkTargetEntry stations_view_drag_types[] = {
+	{  "text/uri-list", 0, 0 },
+	{  "_NETSCAPE_URL", 0, 1 },
 };
 
 enum
@@ -337,6 +348,19 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 				 "sort-order-changed",
 				 G_CALLBACK (rb_iradio_source_songs_view_sort_order_changed_cb),
 				 source, 0);
+	
+	/* set up drag and drop for the song tree view.
+	 * we don't use RBEntryView's DnD support because it does too much.
+	 * we just want to be able to drop stations in to add them.
+	 */
+	g_signal_connect_object (G_OBJECT (source->priv->stations), 
+				 "drag_data_received",
+				 G_CALLBACK (stations_view_drag_data_received_cb),
+				 source, 0);
+	gtk_drag_dest_set (GTK_WIDGET (source->priv->stations),
+			   GTK_DEST_DEFAULT_ALL,
+			   stations_view_drag_types, 2,
+			   GDK_ACTION_COPY | GDK_ACTION_MOVE);
 
 	g_signal_connect_object (G_OBJECT (source->priv->stations),
 				 "size_allocate",
@@ -803,5 +827,62 @@ rb_iradio_source_first_time_changed (GConfClient *client,
 				 source, 0);
 	totem_pl_parser_parse (parser, rb_file ("iradio-initial.pls"), FALSE);	
 	g_object_unref (G_OBJECT (parser));
+}
+
+static void
+stations_view_drag_data_received_cb (GtkWidget *widget,
+				     GdkDragContext *dc,
+				     gint x, gint y,
+				     GtkSelectionData *selection_data, 
+				     guint info, guint time,
+				     RBIRadioSource *source)
+{
+	GList *list, *uri_list, *i;
+
+	rb_debug ("parsing uri list");
+	list = gnome_vfs_uri_list_parse (selection_data->data);
+
+	if (list == NULL)
+		return;
+
+	uri_list = NULL;
+
+	for (i = list; i != NULL; i = g_list_next (i))
+		uri_list = g_list_append (uri_list, gnome_vfs_uri_to_string ((const GnomeVFSURI *) i->data, 0));
+
+	gnome_vfs_uri_list_free (list);
+
+	if (uri_list == NULL)
+		return;
+
+	rb_debug ("adding uris");
+
+	for (i = uri_list; i != NULL; i = i->next) {
+		char *uri = NULL;
+		char *title_data = NULL;
+		char *title = NULL;
+
+		uri = i->data;
+
+		/* as totem source says, "Super _NETSCAPE_URL trick" */
+		if (info == 1) {
+			i = i->next;
+			if (i != NULL) {
+				g_free (i->data);
+			}
+		}
+
+		if ((uri != NULL) && 
+		    (rb_uri_is_iradio (uri)) &&
+		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
+			rb_iradio_source_add_station (source, uri, title, NULL);
+		}
+
+		g_free (uri);
+		g_free (title_data);
+	}
+
+	g_list_free (uri_list);
+	return;
 }
 
