@@ -1,5 +1,11 @@
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag): Patch from
+	jonathan@kaolin.hn.org to remove leading and trailing spaces from
+	metadata tags (Closes: #170046)
+
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
 	* configure.ac: don't have the first pkg-config call within an if
 	statement to avoid breakage with pkg-config 0.16 (patch adapted
 	from jonathan@kaolin.hn.org)

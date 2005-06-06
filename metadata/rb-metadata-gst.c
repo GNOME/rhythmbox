@@ -379,7 +379,7 @@ rb_metadata_gst_error_cb (GstElement *element,
 static void
 rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *md)
 {
-	int count, tem;
+	int count, tem, type;
 	RBMetaDataField field;
 	GValue *newval;
 	const GValue *val;
@@ -395,15 +395,29 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		return;
 	field = (RBMetaDataField) tem;
 
+	type = rb_metadata_get_field_type (md, field);
 	val = gst_tag_list_get_value_index (list, tag, 0);
 	newval = g_new0 (GValue, 1);
-	g_value_init (newval, rb_metadata_get_field_type (md, field));
+	g_value_init (newval, type);
 	if (!g_value_transform (val, newval)) {
 		
 		rb_debug ("Could not transform tag value type %s into %s",
 			  g_type_name (G_VALUE_TYPE (val)), 
 			  g_type_name (G_VALUE_TYPE (newval)));
 		return;
+	}
+
+	switch (type) {
+	case G_TYPE_STRING: {
+		/* Remove leading and trailing whitespace */
+		char *str;
+		str = g_value_dup_string (newval);
+		str = g_strstrip (str);
+		g_value_take_string (newval, str);
+		break;
+	}
+	default:
+		break;
 	}
 
 	switch (field) {
