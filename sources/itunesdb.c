@@ -287,7 +287,7 @@ static guint32 get4int(FILE *file, glong seek)
   guchar data[4];
   guint32 n;
 
-  if (seek_get_n_bytes (file, data, seek, 4) != 4) return -1;
+  if (seek_get_n_bytes (file, (gchar *)data, seek, 4) != 4) return -1;
   n =  ((guint32)data[3]) << 24;
   n += ((guint32)data[2]) << 16;
   n += ((guint32)data[1]) << 8;
@@ -381,8 +381,9 @@ static iPodPlaylist * get_pl(iPodParser *parser)
 #ifdef ITUNESDB_PROVIDE_UTF8
   gchar *plname_utf8;
 #endif
-  guint32 type, pltype, tracknum, n;
+  guint32 pltype, tracknum, n;
   guint32 nextseek;
+  gint32 type;
   gint32 zip;
   iPodPlaylist *plitem;
   guint32 ref;
@@ -865,7 +866,7 @@ static gboolean
 ipod_parse_playlists (iPodParser *parser)
 {
     gboolean result = FALSE;
-    guchar data[8];
+    gchar data[8];
 
     do
     {

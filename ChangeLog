@@ -1,5 +1,11 @@
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
+	* sources/itunesdb.c: (get4int), (get_pl), (ipod_parse_playlists):
+	Patch from jonathan@kaolin.hn.org to fix GCC 4 build with iPod code
+	enabled
+
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
 	* iradio/Makefile.am:
 	* metadata/Makefile.am:
 	* player/Makefile.am:
