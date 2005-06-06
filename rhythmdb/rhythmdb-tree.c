@@ -483,7 +483,7 @@ rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
-	if (rb_uri_exists (name)) {
+	if (g_file_test (name, G_FILE_TEST_EXISTS)) {
 		ctxt = xmlCreateFileParserCtxt (name);
 		ctx->xmlctx = ctxt;
 		xmlFree (ctxt->sax);

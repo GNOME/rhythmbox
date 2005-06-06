@@ -1,5 +1,11 @@
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_load):
+	Patch from jonathan@kaolin.hn.org to allow loading the database
+	from a local path instead of a URI
+
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
 	* widgets/eggtrayicon.c: (egg_tray_icon_manager_filter),
 	(egg_tray_icon_update_manager_window),
 	(egg_tray_icon_manager_window_destroyed), (egg_tray_icon_realize):
@@ -33,10 +39,9 @@
 
 2005-06-04  Bastien Nocera  <hadess@hadess.net>
 
-	* autogen.sh: use the gnome-common autogen.sh, rather than have
-	to maintain it ourselves
-	* configure.ac: require totem-pl-parser
-	* lib/Makefile.am: remove totem-pl-parser copies
+	* autogen.sh:
+	* configure.ac:
+	* lib/Makefile.am:
 	* lib/rb-debug.c: (rb_profiler_dump):
 	* lib/totem-pl-parser.c:
 	* lib/totem-pl-parser.h:
