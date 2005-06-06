@@ -204,7 +204,7 @@ static void sourcelist_drag_received_cb (RBSourceList *sourcelist,
 static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
-static gboolean tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell);
+static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
 static void rb_shell_load_song_impl (RBRemoteProxy *proxy, const char *uri);
 static void rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri);
 static void rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri);
@@ -878,7 +878,7 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	rb_debug ("shell: setting up tray icon");
-	tray_destroy_cb (NULL, NULL, shell);
+	tray_destroy_cb (NULL, shell);
 
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
@@ -2021,13 +2021,12 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 }
 
 static gboolean
-tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
+tray_destroy_cb (GtkObject *object, RBShell *shell)
 {
-	shell->priv->tray_icon = NULL;
-
 	if (shell->priv->tray_icon) {
-		rb_debug ("caught delete_event for tray icon");
-		gtk_object_sink (GTK_OBJECT (shell->priv->tray_icon));
+		rb_debug ("caught destroy event for tray icon");
+		gtk_object_sink (object);
+		shell->priv->tray_icon = NULL;
 	}
 
 	rb_debug ("creating new tray icon");
@@ -2035,7 +2034,7 @@ tray_destroy_cb (GtkWidget *win, GdkEventAny *event, RBShell *shell)
 						   shell->priv->actiongroup,
 						   shell->priv->db,
 						   GTK_WINDOW (shell->priv->window));
- 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy-event",
+	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
 				 G_CALLBACK (tray_destroy_cb), shell, 0);
  
  	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));

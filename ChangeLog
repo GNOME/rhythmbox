@@ -1,5 +1,11 @@
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell.c: (rb_shell_construct), (tray_destroy_cb):
+	Patch by jonathan@kaolin.hn.org to avoid crashes when the
+	notification area disappears (Closes: #172224, #172225)
+
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_load):
 	Patch from jonathan@kaolin.hn.org to allow loading the database
 	from a local path instead of a URI
