@@ -1,3 +1,11 @@
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
+	* widgets/eggtrayicon.c: (egg_tray_icon_manager_filter),
+	(egg_tray_icon_update_manager_window),
+	(egg_tray_icon_manager_window_destroyed), (egg_tray_icon_realize):
+	Fix the 1-pixel wide tray icon by updating from libegg HEAD
+	(Closes: #306177)
+
 2005-06-05  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb.c: Fix a typo that could lead to an assert
