@@ -16,4 +16,7 @@ INCLUDES = 						\
 	-D_XOPEN_SOURCE
 
 librbdbus_la_SOURCES = rb-remote-dbus.c rb-remote-dbus.h
-librbdbus_la_LIBADD = $(top_builddir)/lib/librb.la $(RHYTHMBOX_LIBS) $(DBUS_LIBS)
+librbdbus_la_LIBADD =					\
+	$(RHYTHMBOX_LIBS) 				\
+	$(DBUS_LIBS)
+

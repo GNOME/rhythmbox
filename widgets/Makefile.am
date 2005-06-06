@@ -64,4 +64,3 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librbwidgets_la_LDFLAGS = -export-dynamic
-librbwidgets_la_LIBADD = $(top_builddir)/rhythmdb/librhythmdb.la 

@@ -62,15 +62,15 @@ rhythmbox_SOURCES =              			\
 	rb-tray-icon.h				
 
 rhythmbox_LDADD =					\
-	$(top_builddir)/lib/librb.la	                \
-	$(top_builddir)/metadata/librbmetadata.la	\
-	$(top_builddir)/player/librbplayer.la		\
-	$(top_builddir)/widgets/librbwidgets.la         \
-	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/sources/libsources.la	        \
 	$(top_builddir)/sources/libsourcesimpl.la	\
+	$(top_builddir)/rhythmdb/librhythmdb.la         \
 	$(top_builddir)/iradio/librbiradio.la	        \
 	$(top_builddir)/remote/librbremote.la	        \
+	$(top_builddir)/player/librbplayer.la		\
+	$(top_builddir)/metadata/librbmetadata.la	\
+	$(top_builddir)/widgets/librbwidgets.la         \
+	$(top_builddir)/lib/librb.la	                \
 	$(GDA_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 

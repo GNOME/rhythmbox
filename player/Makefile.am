@@ -11,7 +11,6 @@ librbplayer_la_SOURCES =	\
 	rb-recorder-gst.c
 
 librbplayer_la_LIBADD =				\
-	$(top_builddir)/lib/librb.la		\
 	$(RHYTHMBOX_LIBS)
 
 librbplayer_la_LDFLAGS = -export-dynamic

@@ -4,7 +4,6 @@ noinst_LTLIBRARIES = librhythmdb.la
 
 librhythmdb_la_LDFLAGS = -export-dynamic
 librhythmdb_la_LIBADD = 				\
-	$(top_builddir)/metadata/librbmetadata.la	\
 	$(GDA_LIBS)
 
 INCLUDES = 						\

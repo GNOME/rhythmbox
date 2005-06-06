@@ -7,7 +7,6 @@ noinst_LTLIBRARIES = librbmetadata.la
 librbmetadata_la_SOURCES = rb-metadata.h rb-metadata-common.c rb-metadata-gst.c
 
 librbmetadata_la_LIBADD =			\
-	$(top_builddir)/lib/librb.la		\
 	$(RHYTHMBOX_LIBS)
 
 librbmetadata_la_LDFLAGS = -export-dynamic

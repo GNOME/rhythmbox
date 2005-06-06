@@ -20,4 +20,3 @@ INCLUDES =						\
 	$(RHYTHMBOX_CFLAGS)
 
 librbiradio_la_LDFLAGS = -export-dynamic
-librbiradio_la_LIBADD = $(top_builddir)/lib/librb.la

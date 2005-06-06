@@ -1,5 +1,18 @@
 2005-06-06  Bastien Nocera  <hadess@hadess.net>
 
+	* iradio/Makefile.am:
+	* metadata/Makefile.am:
+	* player/Makefile.am:
+	* remote/bonobo/Makefile.am:
+	* remote/dbus/Makefile.am:
+	* rhythmdb/Makefile.am:
+	* shell/Makefile.am:
+	* sources/Makefile.am:
+	* widgets/Makefile.am: Patch from jonathan@kaolin.hn.org to
+	sanitise static library linking, and make partial rebuilds faster
+
+2005-06-06  Bastien Nocera  <hadess@hadess.net>
+
 	* metadata/rb-metadata-gst.c: (rb_metadata_gst_load_tag): Patch from
 	jonathan@kaolin.hn.org to remove leading and trailing spaces from
 	metadata tags (Closes: #170046)

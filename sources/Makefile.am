@@ -40,10 +40,6 @@ INCLUDES =						\
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
-libsourcesimpl_la_LIBADD = 			\
-	$(top_builddir)/rhythmdb/librhythmdb.la \
-	$(top_builddir)/widgets/librbwidgets.la \
-	$(top_builddir)/player/librbplayer.la
 
 if USE_IPOD
 libsourcesimpl_la_SOURCES +=         \

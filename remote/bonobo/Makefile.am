@@ -59,7 +59,11 @@ $(server_in_files:.server.in.in=.server.in): $(server_in_files)
 @INTLTOOL_SERVER_RULE@
 
 librbbonobo_la_SOURCES = rb-remote-bonobo.c rb-remote-bonobo.h
-librbbonobo_la_LIBADD = $(top_builddir)/lib/librb.la librbcorba.la $(RHYTHMBOX_LIBS) $(ORBIT_LIBS) $(BONOBO_LIBS)
+librbbonobo_la_LIBADD = 				\
+	librbcorba.la 					\
+	$(RHYTHMBOX_LIBS) 				\
+	$(ORBIT_LIBS) 					\
+	$(BONOBO_LIBS)
 
 EXTRA_DIST = Rhythmbox.idl
 
