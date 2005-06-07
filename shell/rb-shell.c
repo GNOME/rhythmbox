@@ -337,7 +337,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "Control", NULL, N_("_Control") },
 	{ "Help", NULL, N_("_Help") },
 
-	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New _Internet Radio Station"), NULL,
+	{ "MusicNewInternetRadioStation", GTK_STOCK_NEW, N_("New _Internet Radio Station"), "<control>I",
 	  N_("Create a new Internet Radio station"),
 	  G_CALLBACK (rb_shell_cmd_new_station) },
 
