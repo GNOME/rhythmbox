@@ -69,7 +69,8 @@ rb_error_dialog (GtkWindow *parent,
 GtkWidget *
 rb_file_chooser_new (const char *title,
 		     GtkWindow *parent,
-		     GtkFileChooserAction action)
+		     GtkFileChooserAction action,
+		     gboolean local_only)
 {
 	GtkWidget *dialog;
 
@@ -95,6 +96,8 @@ rb_file_chooser_new (const char *title,
 		g_assert_not_reached ();
 		return NULL;
 	}
+
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (dialog), local_only);
 
 	if (parent != NULL) {
 		gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (parent));

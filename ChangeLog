@@ -1,5 +1,19 @@
 2005-06-07  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_load_playlist),
+	(rb_playlist_manager_cmd_save_playlist):
+	* shell/rb-shell-player.c: (rb_shell_player_error):
+	* shell/rb-shell.c: (rb_shell_cmd_add_folder_to_library),
+	(rb_shell_cmd_add_file_to_library):
+	* widgets/rb-dialog.c: (rb_file_chooser_new):
+	* widgets/rb-dialog.h:
+	* widgets/rb-druid.c: (rb_druid_browse_clicked_cb):
+	API change from jonathan@kaolin.hn.org to allow some filechoosers
+	to be non-local
+
+2005-06-07  Bastien Nocera  <hadess@hadess.net>
+
 	* widgets/rb-header.c: (info_url), (rb_header_sync): Patch from
 	jonathan@kaolin.hn.org to hopefully fix the links to allmusic.com
 	in the header widget

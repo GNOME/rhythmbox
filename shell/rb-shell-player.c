@@ -1985,6 +1985,11 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 	RBEntryView *songs;
 	RhythmDBEntry *entry;
 
+	if (player->priv->source == NULL) {
+		rb_debug ("ignoring error (no source): %s", err->message);
+		return;
+	}
+
 	songs = rb_source_get_entry_view (player->priv->source);
 	entry = rb_entry_view_get_playing_entry (songs);
 

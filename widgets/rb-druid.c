@@ -318,7 +318,8 @@ rb_druid_browse_clicked_cb (GtkButton *button, RBDruid *druid)
 
 	dialog = rb_file_chooser_new (_("Load folder into Library"),
 				      GTK_WINDOW (druid->priv->window),
-				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
+				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+				      TRUE);
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
 	g_signal_connect_object (G_OBJECT (dialog), "response",

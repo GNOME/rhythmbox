@@ -43,7 +43,8 @@ void		rb_error_dialog		(GtkWindow *parent,
 					 
 GtkWidget *	rb_file_chooser_new	(const char *title,
 					 GtkWindow *parent,
-					 GtkFileChooserAction action);
+					 GtkFileChooserAction action,
+					 gboolean local_only);
 
 G_END_DECLS
 
