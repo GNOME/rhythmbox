@@ -1124,10 +1124,13 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
                                                      "please insert it in the drive and try again."),
                                                    duration / 60);
                 } else if ((media_duration > 0) && (media_duration <= duration)) {
-                        message = g_strdup_printf (_("This playlist is %" G_GINT64_FORMAT " minutes long.  "
-                                                     "This exceeds the %" G_GINT64_FORMAT " minute length of the media in the drive."),
-                                                   duration / 60,
-                                                   media_duration / 60);
+			char *duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
+			char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
+                        message = g_strdup_printf (_("This playlist is %s minutes long.  "
+                                                     "This exceeds the %s minute length of the media in the drive."),
+						   duration_string, media_duration_string);
+			g_free (duration_string);
+			g_free (media_duration_string);
                 }
 
                 if (message) {
@@ -1141,11 +1144,13 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
 
                 if (!check_tmp_dir (source, error)) {
                         guint64 mib_needed = rb_playlist_source_recorder_estimate_total_size (source) / 1048576;
+			char *mib_needed_string = g_strdup_printf ("%" G_GUINT64_FORMAT, mib_needed);
 
                         error_dialog (source,
                                       _("Could not find temporary space!"),
-                                      _("Could not find enough temporary space to convert audio tracks.  %" G_GUINT64_FORMAT " MiB required."),
-                                      mib_needed);
+                                      _("Could not find enough temporary space to convert audio tracks.  %s MiB required."),
+                                      mib_needed_string);
+			g_free (mib_needed_string);
 
                         return;
                 }

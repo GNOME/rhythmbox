@@ -1,5 +1,12 @@
 2005-06-07  Bastien Nocera  <hadess@hadess.net>
 
+	* sources/rb-playlist-source-recorder.c:
+	(rb_playlist_source_recorder_start): patch from
+	jonathan@kaolin.hn.org to avoid split sentences in the translations
+	(Closes: #166737)
+
+2005-06-07  Bastien Nocera  <hadess@hadess.net>
+
 	* sources/rb-iradio-source.c: (rb_iradio_source_constructor),
 	(rb_iradio_source_first_time_changed),
 	(stations_view_drag_data_received_cb): patch from
