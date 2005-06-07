@@ -228,7 +228,7 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	/* Set up the name column */
 	sourcelist->priv->title_renderer = renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, FALSE);
+	gtk_tree_view_column_pack_start (gcolumn, renderer, TRUE);
 	gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
 						 (GtkTreeCellDataFunc)
 						 rb_sourcelist_title_cell_data_func,
