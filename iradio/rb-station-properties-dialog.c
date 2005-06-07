@@ -401,7 +401,7 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 	g_value_unset (&value);
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
-		      "score", score,
+		      "rating", score,
 		      NULL);
 }
 
