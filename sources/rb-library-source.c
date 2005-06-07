@@ -130,6 +130,12 @@ static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryT
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
 						 RBLibrarySource *source);
 static GPtrArray * construct_query_from_selection (RBLibrarySource *source);
+static void songs_view_drag_data_received_cb (GtkWidget *widget,
+					      GdkDragContext *dc,
+					      gint x, gint y,
+					      GtkSelectionData *data,
+					      guint info, guint time,
+					      RBLibrarySource *source);
 
 
 #define CONF_UI_LIBRARY_DIR CONF_PREFIX "/ui/library"
@@ -198,6 +204,8 @@ static GtkActionEntry rb_library_source_actions [] =
 	  N_("Set the browser to view only this album"),
 	  G_CALLBACK (rb_library_source_cmd_choose_album) }
 };
+
+static const GtkTargetEntry songs_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
 
 enum
 {
@@ -528,6 +536,20 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 				 "sort-order-changed",
 				 G_CALLBACK (songs_view_sort_order_changed_cb),
 				 source, 0);
+
+	/* set up drag and drop for the song tree view.
+	 * we don't use RBEntryView's DnD support because it does too much.
+	 * we just want to be able to drop songs in to add them to the 
+	 * library.
+	 */
+	g_signal_connect_object (G_OBJECT (source->priv->songs), 
+				 "drag_data_received",
+				 G_CALLBACK (songs_view_drag_data_received_cb),
+				 source, 0);
+	gtk_drag_dest_set (GTK_WIDGET (source->priv->songs),
+			   GTK_DEST_DEFAULT_ALL,
+			   songs_view_drag_types, 1,
+			   GDK_ACTION_COPY | GDK_ACTION_MOVE);	/* really accept move actions? */
 
 	/* set up genres treeview */
 	source->priv->genres = rb_property_view_new (source->priv->db, RHYTHMDB_PROP_GENRE,
@@ -1573,3 +1595,16 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 	rhythmdb_query_free (query);
 	g_object_unref (G_OBJECT (query_model));
 }
+
+static void
+songs_view_drag_data_received_cb (GtkWidget *widget,
+				  GdkDragContext *dc,
+				  gint x, gint y,
+				  GtkSelectionData *selection_data,
+				  guint info, guint time,
+				  RBLibrarySource *source)
+{
+	rb_debug ("data dropped on the library source song view");
+	rb_source_receive_drag (RB_SOURCE (source), selection_data);
+}
+
