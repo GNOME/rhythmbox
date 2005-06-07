@@ -145,9 +145,9 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 			buf = pixbufs->pix_blank;
 
 		buf = eel_create_colorized_pixbuf (buf,
-						   widget->style->text[state].red + offset,
-						   widget->style->text[state].green + offset,
-						   widget->style->text[state].blue + offset);
+						   (widget->style->text[state].red + offset) >> 8,
+						   (widget->style->text[state].green + offset) >> 8,
+						   (widget->style->text[state].blue + offset) >> 8);
 		if (buf == NULL)
 			return FALSE;
 

@@ -292,9 +292,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
     return;
 
   pixbuf = eel_create_colorized_pixbuf (cellpixbuf->pixbuf,
-					widget->style->text[state].red,
-					widget->style->text[state].green,
-					widget->style->text[state].blue);
+					widget->style->text[state].red >> 8,
+					widget->style->text[state].green >> 8,
+					widget->style->text[state].blue >> 8);
 
   if (!pixbuf)
     return;
