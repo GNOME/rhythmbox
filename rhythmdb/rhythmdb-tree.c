@@ -668,7 +668,11 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			save_entry_string(ctx, elt_name, entry->location);
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			save_entry_string(ctx, elt_name, entry->mountpoint);
+			/* Avoid crashes on exit when upgrading from 0.8
+			 * and no mountpoint is available from some entries */
+			if (entry->mountpoint) {
+				save_entry_string(ctx, elt_name, entry->mountpoint);
+			}
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			save_entry_uint64(ctx, elt_name, entry->file_size);

@@ -1,5 +1,10 @@
 2005-06-07  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb-tree.c: (save_entry): avoid crashes on exit
+	when saving iRadio stations upgraded from 0.8 (Closes: #156751)
+
+2005-06-07  Bastien Nocera  <hadess@hadess.net>
+
 	* widgets/rb-cell-renderer-pixbuf.c:
 	(rb_cell_renderer_pixbuf_render):
 	* widgets/rb-rating-helper.c: (rb_rating_render_stars): Patch from
