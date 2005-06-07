@@ -443,7 +443,7 @@ rb_station_properties_dialog_update_rating (RBStationPropertiesDialog *dialog)
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 
 	g_object_set (G_OBJECT (dialog->priv->rating),
-		      "score", dialog->priv->current_entry->rating, NULL);
+		      "rating", dialog->priv->current_entry->rating, NULL);
 }
 
 static void
