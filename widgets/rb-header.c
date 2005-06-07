@@ -453,13 +453,45 @@ rb_header_get_duration (RBHeader *player)
 static char *
 info_url (guint opt, const char *data)
 {
-	char * ret, *p;
+	char *ret, *d;
 
-	ret = g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=%d&sql=%s", opt, data);
+	/*
+	 * netlabels often put URLs (or domain names) in the 'album' field
+	 * of their releases; since there are no artist names in AMG that
+	 * start with 'http://' or 'www.' (there is a 'www', from the 70s,
+	 * strangely enough), we can safely assume anything that looks 
+	 * like a URL or domain name is one.
+	 *
+	 * There's sometimes some trailing junk, usually after a space,
+	 * so it's probably sensible to strip that off.
+	 */
+	if (g_str_has_prefix (data, "http://")) {
+		char *end = strchr (data, ' ');
+		if (end != NULL)
+			ret = g_strndup (data, end - data);
+		else
+			ret = g_strdup (data);
+	} else if (g_str_has_prefix (data, "www.")) {
+		char *end = strchr (data, ' ');
+		if (end != NULL)
+			ret = g_strdup_printf ("http://%*s", end-data, data);
+		else
+			ret = g_strdup_printf ("http://%s", data);
+	} else {
+		char *r;
 
-	for (p = ret; *p; p++)
-		if (*p == ' ')
-			*p = '+';
+		d = g_strdup (data);
+		r = d;
+		while (*r != '\0') {
+			if (*r == ' ')
+				*r = '+';
+			r++;
+		}
+
+		ret = g_strdup_printf ("http://www.allmusic.com/cg/amg.dll?p=amg&opt1=%d&sql=%s", opt, d);
+		g_free (d);
+	}
+
 	return ret;
 }
 
@@ -483,7 +515,7 @@ rb_header_sync (RBHeader *player)
 	rb_debug ("syncing with node = %p", player->priv->entry);
 	if (player->priv->entry != NULL) {
 		const char *song = player->priv->title;
-		char *escaped, *s;
+		char *escaped;
 		gboolean have_duration = rb_header_get_duration (player) > 0;
 		const char *album; 
 		const char *artist; 
@@ -509,12 +541,7 @@ rb_header_sync (RBHeader *player)
 
 			rb_debug ("artist: %s album: %s", artist, album);
 
-			s = tmp = g_strdup (album);
-			while ((tmp = strstr (tmp, " ")) != NULL)
-				*tmp = '|';
-			tmp = album_info_url (s);
-			g_free (s);
-
+			tmp = album_info_url (album);
 			gnome_href_set_url (player->priv->displaybox->album, tmp);
 			escaped = g_markup_escape_text (album, -1);
 			gnome_href_set_text (player->priv->displaybox->album, escaped);
@@ -527,13 +554,7 @@ rb_header_sync (RBHeader *player)
 					      _("Get information on this album from the web"), 
 					      NULL);
 			
-			s = tmp = g_strdup (artist);
-			while ((tmp = strstr (tmp, " ")) != NULL)
-			{
-				*tmp = '|';
-			}
-			tmp = artist_info_url (s);
-			g_free (s);
+			tmp = artist_info_url (artist);
 			gnome_href_set_url (player->priv->displaybox->artist, tmp);
 			escaped = g_markup_escape_text (artist, -1);
 			gnome_href_set_text (player->priv->displaybox->artist, escaped);
