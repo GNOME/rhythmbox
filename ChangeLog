@@ -1,5 +1,11 @@
 2005-06-07  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell.c: (rb_shell_sync_window_state): Patch from
+	jonathan@kaolin.hn.org to work-around problems with some unforgiving
+	window managers while switching to the small mode
+
+2005-06-07  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-tray-icon.c: (rb_tray_icon_button_press_event_cb): Patch
 	from jonathan@kaolin.hn.org to have the tray icon popup menu show
 	up on the right screen

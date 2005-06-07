@@ -1143,7 +1143,9 @@ rb_shell_sync_window_state (RBShell *shell)
 	GdkGeometry hints;
 	if (small == TRUE)
 	{
-		hints.max_height = 0;
+		hints.min_height = -1;
+		hints.min_width = -1;
+		hints.max_height = -1;
 		hints.max_width = 3000;
 		gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
 		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
@@ -1153,7 +1155,7 @@ rb_shell_sync_window_state (RBShell *shell)
 		gtk_window_set_geometry_hints (GTK_WINDOW (shell->priv->window),
 						NULL,
 						&hints,
-						GDK_HINT_MAX_SIZE);
+						GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 	} else {
 		gtk_window_set_default_size (GTK_WINDOW (shell->priv->window),
 					     width, height);
