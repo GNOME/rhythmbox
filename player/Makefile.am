@@ -2,13 +2,15 @@
 
 noinst_LTLIBRARIES = librbplayer.la
 
-BUILT_SOURCES =
+BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h
 
 librbplayer_la_SOURCES =	\
 	rb-player.h 		\
 	rb-recorder.h		\
 	rb-player-gst.c		\
-	rb-recorder-gst.c
+	rb-recorder-gst.c	\
+	rb-recorder-marshal.c	\
+	rb-recorder-marshal.h
 
 librbplayer_la_LIBADD =				\
 	$(RHYTHMBOX_LIBS)
@@ -29,10 +31,6 @@ rb-recorder-marshal.c: rb-recorder-marshal.list
 
 rb-recorder-marshal.h: rb-recorder-marshal.list
 	@GLIB_GENMARSHAL@ $< --prefix=rb_recorder_marshal --header > $@
-
-BUILT_SOURCES += rb-recorder-marshal.c rb-recorder-marshal.h
-
-librbplayer_la_SOURCES += $(BUILT_SOURCES)
 
 EXTRA_DIST = rb-recorder-marshal.list
 

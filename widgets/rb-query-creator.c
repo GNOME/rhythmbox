@@ -54,7 +54,8 @@ const RBQueryCreatorPropertyOption property_options[] =
 	{ N_("Artist"), RHYTHMDB_PROP_ARTIST, RHYTHMDB_PROP_ARTIST_FOLDED },
 	{ N_("Album"), RHYTHMDB_PROP_ALBUM, RHYTHMDB_PROP_ALBUM_FOLDED },
 	{ N_("Genre"), RHYTHMDB_PROP_GENRE, RHYTHMDB_PROP_GENRE_FOLDED },
-	{ N_("Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING }
+	{ N_("Rating"), RHYTHMDB_PROP_RATING, RHYTHMDB_PROP_RATING },
+	{ N_("Path"), RHYTHMDB_PROP_LOCATION, RHYTHMDB_PROP_LOCATION }
 };
 
 const RBQueryCreatorCriteriaOption string_criteria_options[] =

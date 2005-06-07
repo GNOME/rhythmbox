@@ -1577,7 +1577,7 @@ action_thread_main (RhythmDB *db)
 
 		if (action == NULL)
 			break;
-		
+
 		switch (action->type)
 		{
 		case RHYTHMDB_ACTION_STAT:
@@ -1742,10 +1742,11 @@ rhythmdb_save_thread_main (RhythmDB *db)
 
 	g_cond_broadcast (db->priv->saving_condition);
 
+out:
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_DB_SAVED;
 	g_async_queue_push (db->priv->event_queue, result);
-out:
+
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
@@ -2398,7 +2399,7 @@ query_thread_main (struct RhythmDBQueryThreadData *data)
 	rb_debug ("entering query thread");
 
 	rhythmdb_query_internal (data);
-	
+
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (data->db->priv->event_queue, result);
@@ -2417,7 +2418,7 @@ rhythmdb_do_full_query_async_parsed (RhythmDB *db, GtkTreeModel *main_model,
 	data->query = rhythmdb_query_copy (query);
 	data->main_model = main_model;
 	data->cancel = FALSE;
-	
+
 	rhythmdb_read_enter (db);
 
 	g_object_set (G_OBJECT (RHYTHMDB_QUERY_MODEL (main_model)),

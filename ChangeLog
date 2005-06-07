@@ -1,3 +1,17 @@
+2005-06-08  Bastien Nocera  <hadess@hadess.net>
+
+	* library/.cvsignore: removed
+	* player/Makefile.am: cleanup
+	* rhythmdb/rhythmdb.c: (action_thread_main),
+	(rhythmdb_save_thread_main), (query_thread_main),
+	(rhythmdb_do_full_query_async_parsed):
+	send a RHYTHMDB_EVENT_DB_SAVED event even if we don't have to save
+	the database, otherwise the read counter doesn't get decreased
+	* widgets/gst-hig-dialog.c: removed
+	* widgets/gst-hig-dialog.h: removed
+	* widgets/rb-query-creator.c: added beginning of a support for
+	filtering by Path
+
 2005-06-07  Bastien Nocera  <hadess@hadess.net>
 
 	* shell/rb-shell.c: (rb_shell_sync_window_state): Patch from
