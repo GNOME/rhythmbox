@@ -361,6 +361,7 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 		GtkWidget *popup;
 		popup = gtk_ui_manager_get_widget (GTK_UI_MANAGER (icon->priv->ui_manager),
 						   "/RhythmboxTrayPopup");
+		gtk_menu_set_screen (GTK_MENU (popup), gtk_widget_get_screen (GTK_WIDGET (icon)));
 		gtk_menu_popup (GTK_MENU (popup), NULL, NULL,
 				NULL, NULL, 2,
 				gtk_get_current_event_time ());
