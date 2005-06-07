@@ -945,6 +945,9 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	if (error && *error)
 		return;
 
+	g_free (player->priv->song);
+	player->priv->song = NULL;
+	
 	playlist = totem_pl_parser_new ();
 	g_signal_connect_object (G_OBJECT (playlist), "entry",
 				 G_CALLBACK (rb_shell_player_open_playlist_location),
