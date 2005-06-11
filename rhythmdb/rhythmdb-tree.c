@@ -1256,10 +1256,10 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			break;
 		}
 		case RHYTHMDB_QUERY_PROP_GREATER:
-			RHYTHMDB_PROPERTY_COMPARE (<=)
+			RHYTHMDB_PROPERTY_COMPARE (<)
 			break;
 		case RHYTHMDB_QUERY_PROP_LESS:
-			RHYTHMDB_PROPERTY_COMPARE (>=)
+			RHYTHMDB_PROPERTY_COMPARE (>)
 			break;
 		case RHYTHMDB_QUERY_END:
 		case RHYTHMDB_QUERY_DISJUNCTION:

@@ -68,8 +68,8 @@ const RBQueryCreatorCriteriaOption string_criteria_options[] =
 const RBQueryCreatorCriteriaOption numeric_criteria_options[] =
 {
 	{ N_("equals"), 1, RHYTHMDB_QUERY_PROP_EQUALS },
-	{ N_("greater than"), 1, RHYTHMDB_QUERY_PROP_GREATER },
-	{ N_("less than"), 1, RHYTHMDB_QUERY_PROP_LESS }
+	{ N_("at least"), 1, RHYTHMDB_QUERY_PROP_GREATER },	/* matches if A >= B */
+	{ N_("at most"), 1, RHYTHMDB_QUERY_PROP_LESS }		/* matches if A <= B */
 };
 
 static void rb_query_creator_class_init (RBQueryCreatorClass *klass);

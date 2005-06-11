@@ -1,5 +1,13 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery):
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_get_type):
+	* widgets/rb-query-creator.c: Patch from James Livingston
+	<jrl@ids.org.au> to change the "less than" and "more than" queries to
+	"at most" and "at least"
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* widgets/rb-query-creator.c: (rb_query_creator_get_query):
 	Patch from James Livingston <jrl@ids.org.au> to not ignore empty query
 	criteria (Closes: #154280)
