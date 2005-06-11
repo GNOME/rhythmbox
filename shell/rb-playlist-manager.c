@@ -66,6 +66,8 @@ static void rb_playlist_manager_cmd_new_playlist (GtkAction *action,
 						  RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_new_automatic_playlist (GtkAction *action,
 							    RBPlaylistManager *mgr);
+static void rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
+						     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
 						     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
@@ -149,6 +151,9 @@ static GtkActionEntry rb_playlist_manager_actions [] =
 	{ "MusicPlaylistBurnPlaylist", GTK_STOCK_CDROM, N_("_Create Audio CD..."), NULL,
 	  N_("Create an audio CD from playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_burn_playlist) },
+	{ "MusicPlaylistRenamePlaylist", NULL, N_("_Rename..."), NULL,
+	  N_("Rename playlist"),
+	  G_CALLBACK (rb_playlist_manager_cmd_rename_playlist) },
 	{ "MusicPlaylistDeletePlaylist", GTK_STOCK_REMOVE, N_("_Delete"), NULL,
 	  N_("Delete playlist"),
 	  G_CALLBACK (rb_playlist_manager_cmd_delete_playlist) },
@@ -745,6 +750,16 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 
 	rb_playlist_manager_set_automatic_playlist (mgr, playlist, creator);
 	gtk_widget_destroy (GTK_WIDGET (creator));	
+}
+
+static void
+rb_playlist_manager_cmd_rename_playlist (GtkAction *action,
+					 RBPlaylistManager *mgr)
+{
+	rb_debug ("Renaming playlist %p", mgr->priv->selected_source);
+
+	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, mgr->priv->selected_source);
+	rb_playlist_manager_set_dirty (mgr);
 }
 
 static void

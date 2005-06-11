@@ -1,5 +1,16 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_edit_automatic_playlist),
+	(rb_playlist_manager_cmd_rename_playlist):
+	* sources/rb-sourcelist.c: (rb_sourcelist_edit_source_name),
+	(rb_sourcelist_title_cell_data_func), (source_name_edited_cb):
+	Patch from Michael Terry <mike@mterry.name> to use the context menu
+	to rename playlists (Closes: #133845)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* player/rb-recorder-gst.c: (rb_recorder_burn): Who didn't test the
 	build?
 

@@ -357,6 +357,11 @@ rb_sourcelist_edit_source_name (RBSourceList *sourcelist, RBSource *source)
 	path = gtk_tree_model_get_path (GTK_TREE_MODEL (sourcelist->priv->filter_model),
 					&iter);
 	col = gtk_tree_view_get_column (GTK_TREE_VIEW (sourcelist->priv->treeview), 0);
+	
+	/* Make cell editable just for the moment.
+	   We'll turn it off once editing is done. */
+	g_object_set (G_OBJECT (sourcelist->priv->title_renderer), "editable", TRUE, NULL);
+	
 	gtk_tree_view_set_cursor_on_cell (GTK_TREE_VIEW (sourcelist->priv->treeview),
 					  path, col, sourcelist->priv->title_renderer,
 					  TRUE);
@@ -553,12 +558,7 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
 
-	if (gtk_tree_selection_iter_is_selected (sourcelist->priv->selection, iter) != FALSE)
-		g_object_set (G_OBJECT (renderer), "text", str,
-			      "editable", rb_source_can_rename (source),
-			      NULL);
-	else
-		g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 
 	g_free (str);
 }
@@ -583,5 +583,7 @@ source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 	g_object_set (G_OBJECT (source), "name", text, NULL);
 
 	gtk_tree_path_free (path);
+
+	g_object_set (G_OBJECT (renderer), "editable", FALSE, NULL);
 }
 
