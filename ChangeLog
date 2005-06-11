@@ -1,5 +1,10 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell.c: (rb_shell_shutdown): hide the main window
+	and tray icon as soon as we're going to shutdown (Closes: #171863)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/main.c: (main):
 	* shell/rb-shell.c: (rb_shell_cmd_about): remove dead codepaths
 	relative to monkey-media

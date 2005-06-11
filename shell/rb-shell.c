@@ -683,9 +683,17 @@ idle_save_playlist_manager (RBPlaylistManager *mgr)
 static void
 rb_shell_shutdown (RBShell *shell)
 {
+	GdkDisplay *display;
+
 	if (shell->priv->shutting_down)
 		return;
 	shell->priv->shutting_down = TRUE;
+
+	/* Hide the main window and tray icon as soon as possible */
+	display = gtk_widget_get_display (shell->priv->window);
+	gtk_widget_hide (shell->priv->window);
+	gtk_widget_hide (GTK_WIDGET (shell->priv->tray_icon));
+	gdk_display_sync (display);
 }
 
 static void
