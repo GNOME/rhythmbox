@@ -1090,7 +1090,7 @@ rb_recorder_burn (RBRecorder *recorder,
          * nautilus_burn_recorder_write_tracks will fail and issue a signal */
         if ((media_length > 0) && (tracks_length > media_length)) {
 		char *duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, tracks_length / 60);
-		char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
+		char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_length / 60);
 
                 g_set_error (error,
                              RB_RECORDER_ERROR,
