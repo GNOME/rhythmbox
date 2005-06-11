@@ -1,5 +1,12 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_save_thread_main): Patch from Loïc Minier
+	<lool+gnome@via.ecp.fr> to avoid overwriting the existing library
+	if saving the temporary library failed (Closes: #304519)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-statusbar.c: (rb_statusbar_init),
 	(rb_statusbar_sync_status): Patch from Paolo Bacchilega
 	<paolo.bacchilega@libero.it> to hide the progress bar when there is

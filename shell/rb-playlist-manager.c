@@ -27,6 +27,8 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <string.h>
+#include <stdio.h>      /* rename() */
+#include <unistd.h>     /* unlink() */
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
@@ -586,8 +588,12 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 	file = g_build_filename (rb_dot_dir (), "playlists.xml", NULL);
 	tmpname = g_strconcat (file, ".tmp", NULL);
 	
-	xmlSaveFormatFile (tmpname, data->doc, 1);
-	rename (tmpname, file);
+	if (xmlSaveFormatFile (tmpname, data->doc, 1) != -1) {
+		rename (tmpname, file);
+	} else {
+		rb_debug ("error in xmlSaveFormatFile(), not saving");
+		unlink (tmpname);
+	}
 	xmlFreeDoc (data->doc);
 	g_free (tmpname);
 	g_free (file);
