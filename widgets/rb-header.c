@@ -474,7 +474,8 @@ info_url (guint opt, const char *data)
 	} else if (g_str_has_prefix (data, "www.")) {
 		char *end = strchr (data, ' ');
 		if (end != NULL)
-			ret = g_strdup_printf ("http://%*s", end-data, data);
+			ret = g_strdup_printf ("http://%*s",
+					       (int) (end-data), data);
 		else
 			ret = g_strdup_printf ("http://%s", data);
 	} else {

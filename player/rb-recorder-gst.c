@@ -1089,16 +1089,23 @@ rb_recorder_burn (RBRecorder *recorder,
         /* don't fail here if media length cannot be determined
          * nautilus_burn_recorder_write_tracks will fail and issue a signal */
         if ((media_length > 0) && (tracks_length > media_length)) {
+		char *duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, tracks_length / 60);
+		char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
+
                 g_set_error (error,
                              RB_RECORDER_ERROR,
                              RB_RECORDER_ERROR_GENERAL,
-                             _("This playlist is %lld minutes long.  "
-                               "This exceeds the %lld minute length of the media in the drive."),
-                             tracks_length / 60,
-                             media_length / 60);
+                             _("This playlist is %s minutes long.  "
+                               "This exceeds the %s minute length of the media in the drive."),
+                             duration_string,
+                             media_duration_string);
+
+		g_free (duration_string);
+		g_free (media_duration_string);
+
                 return FALSE;
         }
-        
+
         cdrecorder = nautilus_burn_recorder_new ();
 
         g_signal_connect_object (G_OBJECT (cdrecorder), "progress-changed",

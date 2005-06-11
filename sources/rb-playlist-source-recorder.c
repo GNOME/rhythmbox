@@ -1109,29 +1109,30 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
         if (source->priv->already_converted) {
                 g_idle_add ((GSourceFunc)burn_cd_idle, source);
         } else {
-                gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
-                char   *message  = NULL;
-                gint64  media_duration;
+		gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
+		char   *message  = NULL;
+		gint64  media_duration;
+		char   *duration_string;
 
-                set_media_device (source);
-                
-                media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
+		set_media_device (source);
+
+		media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
+		duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
 
                 if ((media_duration < 0) && (duration > 4440)) {
-                        message = g_strdup_printf (_("This playlist is %lld minutes long.  "
+                        message = g_strdup_printf (_("This playlist is %s minutes long.  "
                                                      "This exceeds the length of a standard audio CD.  "
                                                      "If the destination media is larger than a standard audio CD "
                                                      "please insert it in the drive and try again."),
-                                                   duration / 60);
+                                                   duration_string);
                 } else if ((media_duration > 0) && (media_duration <= duration)) {
-			char *duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
 			char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
                         message = g_strdup_printf (_("This playlist is %s minutes long.  "
                                                      "This exceeds the %s minute length of the media in the drive."),
 						   duration_string, media_duration_string);
-			g_free (duration_string);
 			g_free (media_duration_string);
                 }
+		g_free (duration_string);
 
                 if (message) {
                         error_dialog (source,
