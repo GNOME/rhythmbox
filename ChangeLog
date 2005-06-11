@@ -1,5 +1,12 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-statusbar.c: (rb_statusbar_init),
+	(rb_statusbar_sync_status): Patch from Paolo Bacchilega
+	<paolo.bacchilega@libero.it> to hide the progress bar when there is
+	no activity, and left justify the playlist duration (Closes: #153645)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rhythmdb.c: (rhythmdb_compute_status_normal): patch from
 	James Livingston <jrl@ids.org.au> to avoid mentioning hours or
 	minutes if they're '0' (Closes: #157341)

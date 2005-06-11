@@ -245,21 +245,22 @@ rb_statusbar_init (RBStatusbar *statusbar)
 
         statusbar->priv->status = gtk_label_new ("");
         gtk_label_set_use_markup (GTK_LABEL (statusbar->priv->status), TRUE);
-        gtk_misc_set_alignment (GTK_MISC (statusbar->priv->status), 1.0, 0.5);
+        gtk_misc_set_alignment (GTK_MISC (statusbar->priv->status), 0.0, 0.5);
 
         gtk_box_set_spacing (GTK_BOX (statusbar), 5);
 
         statusbar->priv->progress = gtk_progress_bar_new ();
 
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
-
-        gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
-        gtk_box_pack_start (GTK_BOX (statusbar),
-                            GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
+	gtk_widget_hide (statusbar->priv->progress);
 
         gtk_box_pack_start (GTK_BOX (statusbar),
                             GTK_WIDGET (statusbar->priv->status), TRUE, TRUE, 0);
+
+        gtk_box_pack_end (GTK_BOX (statusbar),
+			  GTK_WIDGET (statusbar->priv->repeat), FALSE, TRUE, 0);
+        gtk_box_pack_end (GTK_BOX (statusbar),
+			  GTK_WIDGET (statusbar->priv->shuffle), FALSE, TRUE, 0);
 
         gtk_box_pack_end (GTK_BOX (statusbar),
                           GTK_WIDGET (statusbar->priv->progress), FALSE, TRUE, 0);
@@ -455,6 +456,8 @@ rb_statusbar_sync_status (RBStatusbar *status)
 
         /* Sync the progress bar */
         if (library_is_busy || entry_view_busy || buffering) {
+		gtk_widget_show (status->priv->progress);
+
                 if (status->priv->idle_tick_id == 0) {
                         status->priv->idle_tick_id
                                 = g_timeout_add (250, (GSourceFunc) status_tick_cb,
@@ -469,6 +472,8 @@ rb_statusbar_sync_status (RBStatusbar *status)
                 }
                 gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
                                                1.0);
+
+		gtk_widget_hide (status->priv->progress);
         }
 
         status->priv->status_poll_id = 
