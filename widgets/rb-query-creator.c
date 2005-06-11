@@ -210,11 +210,6 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	GObjectClass *parent_class;  
 	GladeXML *xml;
 	GtkWidget *mainbox;
-	GtkBox *hbox;
-	GtkWidget *first_option;
-	GtkWidget *first_criteria;
-	GtkWidget *first_entry;
-
 
 	klass = RB_QUERY_CREATOR_CLASS (g_type_class_peek (type));
 	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
@@ -255,35 +250,19 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	dlg->priv->limit_check = GTK_WIDGET (glade_xml_get_widget (xml, "limitCheck"));
 	dlg->priv->limit_entry = GTK_WIDGET (glade_xml_get_widget (xml, "limitEntry"));
 	dlg->priv->limit_option = GTK_WIDGET (glade_xml_get_widget (xml, "limitOption"));
+	dlg->priv->addbutton = GTK_WIDGET (glade_xml_get_widget (xml, "addButton"));
 
 	g_signal_connect_object (G_OBJECT (dlg->priv->limit_check), "toggled", G_CALLBACK (limit_toggled_cb),
 				 dlg, 0);
 	gtk_widget_set_sensitive (dlg->priv->limit_entry, FALSE);
 	gtk_widget_set_sensitive (dlg->priv->limit_option, FALSE);
 
-	dlg->priv->vbox = GTK_BOX (glade_xml_get_widget (xml, "sub_vbox"));
-	dlg->priv->addbutton = gtk_button_new_from_stock (GTK_STOCK_ADD);
 	gtk_size_group_add_widget (dlg->priv->button_size_group, dlg->priv->addbutton);
 	g_signal_connect_object (G_OBJECT (dlg->priv->addbutton), "clicked", G_CALLBACK (add_button_click_cb),
 				 dlg, 0);
-	first_option = create_property_option_menu (dlg, property_options,
-						    G_N_ELEMENTS (property_options),
-						    FALSE);
-	gtk_size_group_add_widget (dlg->priv->property_size_group, first_option);
-	first_criteria = create_criteria_option_menu (string_criteria_options,
-						      G_N_ELEMENTS (string_criteria_options),
-						      FALSE);
-	gtk_size_group_add_widget (dlg->priv->criteria_size_group, first_criteria);
-	first_entry = gtk_entry_new ();
-	gtk_size_group_add_widget (dlg->priv->entry_size_group, first_entry);
-
-	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_option));
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_criteria));
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (first_entry));
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (dlg->priv->addbutton));
-	gtk_box_pack_start_defaults (dlg->priv->vbox, GTK_WIDGET (hbox));
-	dlg->priv->rows = g_list_prepend (dlg->priv->rows, hbox);
+	
+	dlg->priv->vbox = GTK_BOX (glade_xml_get_widget (xml, "sub_vbox"));
+	append_row(dlg);
 
 	mainbox = glade_xml_get_widget (xml, "main_vbox");
 	gtk_box_pack_start (GTK_BOX (GTK_DIALOG (dlg)->vbox), mainbox, FALSE, FALSE, 0);
@@ -708,23 +687,12 @@ append_row (RBQueryCreator *dialog)
 	GtkWidget *criteria;
 	GtkWidget *entry;
 	GtkWidget *remove_button;
-	GtkBox *last_hbox;
 	GtkBox *hbox;
 	GList *rows;
 	guint len;
 
 	rows = dialog->priv->rows;
 	len = g_list_length (rows);
-	last_hbox = GTK_BOX (get_box_widget_at_pos (dialog->priv->vbox, len-1));
-	g_object_ref (G_OBJECT (dialog->priv->addbutton));
-	gtk_container_remove (GTK_CONTAINER (last_hbox),
-			      dialog->priv->addbutton);
-
-	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
-	g_signal_connect_object (G_OBJECT (remove_button), "clicked", G_CALLBACK (remove_button_click_cb),
-				 dialog, 0);
-	gtk_size_group_add_widget (dialog->priv->button_size_group, remove_button);
-	gtk_box_pack_start_defaults (last_hbox, GTK_WIDGET (remove_button));
 
 	hbox = GTK_BOX (gtk_hbox_new (FALSE, 5));
 	gtk_box_pack_start_defaults (GTK_BOX (dialog->priv->vbox), GTK_WIDGET (hbox));
@@ -748,8 +716,11 @@ append_row (RBQueryCreator *dialog)
 	gtk_size_group_add_widget (dialog->priv->entry_size_group, entry);
 	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (entry));
 
-	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (dialog->priv->addbutton));
-	g_object_unref (G_OBJECT (dialog->priv->addbutton));
+	remove_button = gtk_button_new_from_stock (GTK_STOCK_REMOVE);
+	g_signal_connect_object (G_OBJECT (remove_button), "clicked", G_CALLBACK (remove_button_click_cb),
+				 dialog, 0);
+	gtk_size_group_add_widget (dialog->priv->button_size_group, remove_button);
+	gtk_box_pack_start_defaults (hbox, GTK_WIDGET (remove_button));
 
 	gtk_widget_show_all (GTK_WIDGET (dialog->priv->vbox));
 	return GTK_WIDGET (hbox);

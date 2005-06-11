@@ -1,5 +1,13 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* data/glade/create-playlist.glade:
+	* widgets/rb-query-creator.c: (rb_query_creator_constructor),
+	(append_row): Patch from James Livingston <jrl@ids.org.au> to allow
+	removing any item in the query dialog not just the all of them but
+	the last one (Closes: #154279)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rhythmdb-query-model.c:
 	(rhythmdb_query_model_entry_added_cb),
 	(rhythmdb_query_model_add_entries),
