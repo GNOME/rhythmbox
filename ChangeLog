@@ -1,5 +1,11 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_compute_status_normal): patch from
+	James Livingston <jrl@ids.org.au> to avoid mentioning hours or
+	minutes if they're '0' (Closes: #157341)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* data/ui/rhythmbox-ui.xml:
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_cmd_edit_automatic_playlist),

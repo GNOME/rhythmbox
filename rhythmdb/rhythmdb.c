@@ -2636,20 +2636,43 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize s
 	minutefmt = ngettext ("%ld minute", "%ld minutes", minutes);
 	hourfmt = ngettext ("%ld hour", "%ld hours", hours);
 	dayfmt = ngettext ("%ld day", "%ld days", days);
-	if (days >= 1) {
-		char *fmt;
-		/* Translators: the format is "X days, X hours and X minutes" */
-		fmt = g_strdup_printf (_("%s, %s and %s"), dayfmt, hourfmt, minutefmt);
-		time = g_strdup_printf (fmt, days, hours, minutes);
-		g_free (fmt);
+	if (days > 0) {
+		if (hours > 0)
+			if (minutes > 0) {
+				char *fmt;
+				/* Translators: the format is "X days, X hours and X minutes" */
+				fmt = g_strdup_printf (_("%s, %s and %s"), dayfmt, hourfmt, minutefmt);
+				time = g_strdup_printf (fmt, days, hours, minutes);
+				g_free (fmt);
+			} else {
+				char *fmt;
+				/* Translators: the format is "X days and X hours" */
+				fmt = g_strdup_printf (_("%s and %s"), dayfmt, hourfmt);
+				time = g_strdup_printf (fmt, days, hours);
+				g_free (fmt);
+			}
+		else
+			if (minutes > 0) {
+				char *fmt;
+				/* Translators: the format is "X days and X minutes" */
+				fmt = g_strdup_printf (_("%s and %s"), dayfmt, minutefmt);
+				time = g_strdup_printf (fmt, days, minutes);
+				g_free (fmt);
+			} else {
+				time = g_strdup_printf (dayfmt, days);
+			}
 	} else {
-		if (hours >= 1) {		
-			const char *hourfmt = ngettext ("%ld hour", "%ld hours", hours);
-			char *fmt;
-			/* Translators: the format is "X hours and X minutes" */
-			fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
-			time = g_strdup_printf (fmt, hours, minutes);
-			g_free (fmt);
+		if (hours > 0) {	
+			if (minutes > 0) {	
+				char *fmt;
+				/* Translators: the format is "X hours and X minutes" */
+				fmt = g_strdup_printf (_("%s and %s"), hourfmt, minutefmt);
+				time = g_strdup_printf (fmt, hours, minutes);
+				g_free (fmt);
+			} else {
+				time = g_strdup_printf (hourfmt, hours);
+			}
+			
 		} else {
 			time = g_strdup_printf (minutefmt, minutes);
 		}
