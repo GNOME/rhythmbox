@@ -1509,9 +1509,10 @@ split_query_by_disjunctions (RhythmDBTree *db, GPtrArray *query)
 	for (i = last_disjunction; i < query->len; i++) {
 		g_ptr_array_add (subquery, g_ptr_array_index (query, i));
 	}
-	g_assert (subquery->len > 0);
 	
-	conjunctions = g_list_prepend (conjunctions, subquery);
+	if (subquery->len > 0)
+		conjunctions = g_list_prepend (conjunctions, subquery);
+	
 	return conjunctions;
 }
 

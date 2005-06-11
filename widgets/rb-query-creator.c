@@ -369,11 +369,12 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 
 	subquery = qdata->subquery;
 
-	for (i = 0; i < subquery->len - 1; i++) {
-		RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
-		if (data->type != RHYTHMDB_QUERY_DISJUNCTION)
-			append_row (creator);
-	}
+	if (subquery->len > 0)
+		for (i = 0; i < subquery->len - 1; i++) {
+			RhythmDBQueryData *data = g_ptr_array_index (subquery, i);
+			if (data->type != RHYTHMDB_QUERY_DISJUNCTION)
+				append_row (creator);
+		}
 	
 	rows = creator->priv->rows;
 
