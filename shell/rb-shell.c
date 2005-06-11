@@ -1515,34 +1515,7 @@ rb_shell_cmd_about (GtkAction *action,
 	*tem = _("Contributors:");
 
 	comment = g_string_new (_("Music management and playback software for GNOME."));
-#ifdef WITH_MONKEYMEDIA
-	{
-		const char *backend;
-		GString *formats = g_string_new ("");
 
-#ifdef HAVE_GSTREAMER
-		backend = "GStreamer";
-#else
-		backend = "xine-lib";
-#endif		
-#ifdef HAVE_MP3
-		g_string_append (formats, " MP3");
-#endif
-#ifdef HAVE_VORBIS
-		g_string_append (formats, " Vorbis");
-#endif
-#ifdef HAVE_FLAC
-		g_string_append (formats, " FLAC");
-#endif
-#ifdef HAVE_MP4
-		g_string_append (formats, " MPEG-4");
-#endif
-		g_string_append_printf (comment, "\nAudio playback: %s\nAudio formats:%s\n",
-					backend, formats->str);
-
-		g_string_free (formats, TRUE);
-	}
-#endif
 	gtk_show_about_dialog (GTK_WINDOW (shell->priv->window),
 			       "name", "Rhythmbox",
 			       "version", VERSION,

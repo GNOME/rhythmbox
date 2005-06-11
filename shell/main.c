@@ -277,10 +277,6 @@ main (int argc, char **argv)
 		rb_refstring_system_shutdown ();
 	}
 
-
-#ifdef WITH_MONKEYMEDIA
-	monkey_media_shutdown ();
-#endif
 	g_strfreev (new_argv);
 
 	rb_debug ("THE END");

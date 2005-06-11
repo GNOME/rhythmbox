@@ -1,5 +1,11 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/main.c: (main):
+	* shell/rb-shell.c: (rb_shell_cmd_about): remove dead codepaths
+	relative to monkey-media
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink): patch from
 	Paolo Borelli <pborelli@katamail.com> to follow more than one level of
 	symlinks (Closes: #163517)
