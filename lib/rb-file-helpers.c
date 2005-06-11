@@ -106,39 +106,60 @@ rb_file_helpers_shutdown (void)
 	g_free (dot_dir);
 }
 
+#define MAX_LINK_LEVEL 5
+
 char *
 rb_uri_resolve_symlink (const char *uri)
 {
+	gint link_count;
 	GnomeVFSFileInfo *info;
-	char *real;
+	char *followed;
 
 	g_return_val_if_fail (uri != NULL, NULL);
-	
+
 	info = gnome_vfs_file_info_new ();
+	gnome_vfs_get_file_info (uri, info, GNOME_VFS_FILE_INFO_DEFAULT);
 
-	gnome_vfs_get_file_info (uri, info,
-				 GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE);
+	if (info->type != GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK) {
+		return g_strdup (uri);
+	}
 
-	if (info->type == GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK) {
-		GnomeVFSURI *vfsuri;
-		GnomeVFSURI *new_vfsuri;
+	link_count = 0;
+	followed = g_strdup (uri);
+	while (link_count < MAX_LINK_LEVEL) {
+		GnomeVFSURI *vfs_uri;
+		GnomeVFSURI *new_vfs_uri;
 		char *escaped_path;
 
-		vfsuri = gnome_vfs_uri_new (uri);
+		vfs_uri = gnome_vfs_uri_new (followed);
 		escaped_path = gnome_vfs_escape_path_string (info->symlink_name);
-		new_vfsuri = gnome_vfs_uri_resolve_relative (vfsuri, escaped_path);
+		new_vfs_uri = gnome_vfs_uri_resolve_relative (vfs_uri,
+							      escaped_path);
 		g_free (escaped_path);
-		real = gnome_vfs_uri_to_string (new_vfsuri, GNOME_VFS_URI_HIDE_NONE); 
 
-		gnome_vfs_uri_unref (new_vfsuri);
-		gnome_vfs_uri_unref (vfsuri);
-	} else {
-		real = g_strdup (uri);
+		g_free (followed);
+		followed = gnome_vfs_uri_to_string (new_vfs_uri,
+						    GNOME_VFS_URI_HIDE_NONE); 
+		link_count++;
+
+		gnome_vfs_uri_unref (new_vfs_uri);
+		gnome_vfs_uri_unref (vfs_uri);
+
+		gnome_vfs_file_info_clear (info);
+		gnome_vfs_get_file_info (followed, info,
+					 GNOME_VFS_FILE_INFO_DEFAULT);
+
+		if (info->type != GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK) {
+			gnome_vfs_file_info_unref (info);
+			return followed;
+		}
 	}
+
+	/* Too many symlinks */
 
 	gnome_vfs_file_info_unref (info);
 
-	return real;
+	return NULL;
 }
 
 gboolean

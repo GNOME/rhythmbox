@@ -1,5 +1,11 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink): patch from
+	Paolo Borelli <pborelli@katamail.com> to follow more than one level of
+	symlinks (Closes: #163517)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_save_thread_main): Patch from Loïc Minier
 	<lool+gnome@via.ecp.fr> to avoid overwriting the existing library
