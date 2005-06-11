@@ -560,21 +560,24 @@ rb_query_creator_get_query (RBQueryCreator *dlg)
 			const char *data = gtk_entry_get_text (GTK_ENTRY (text));
 			char *folded_data = criteria_option->strict ? g_strdup (data) : g_utf8_casefold (data, -1);
 			
-			if (disjunction && row->next)
-				rhythmdb_query_append (dlg->priv->db,
-						       sub_query,
-						       criteria,
-						       prop,
-						       folded_data,
-						       RHYTHMDB_QUERY_DISJUNCTION,
-						       RHYTHMDB_QUERY_END);
-			else
-				rhythmdb_query_append (dlg->priv->db,
-						       sub_query,
-						       criteria,
-						       prop,
-						       folded_data,
-						       RHYTHMDB_QUERY_END);
+			/* ignore the row if the string is empty */
+			if (folded_data && *folded_data) {
+				if (disjunction && row->next)
+					rhythmdb_query_append (dlg->priv->db,
+							       sub_query,
+							       criteria,
+							       prop,
+							       folded_data,
+							       RHYTHMDB_QUERY_DISJUNCTION,
+							       RHYTHMDB_QUERY_END);
+				else
+					rhythmdb_query_append (dlg->priv->db,
+							       sub_query,
+							       criteria,
+							       prop,
+							       folded_data,
+							       RHYTHMDB_QUERY_END);
+			}
 			g_free (folded_data);
 		} else {
 			double rating;

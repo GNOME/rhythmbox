@@ -1,5 +1,11 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* widgets/rb-query-creator.c: (rb_query_creator_get_query):
+	Patch from James Livingston <jrl@ids.org.au> to not ignore empty query
+	criteria (Closes: #154280)
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* data/glade/create-playlist.glade:
 	* widgets/rb-query-creator.c: (rb_query_creator_constructor),
 	(append_row): Patch from James Livingston <jrl@ids.org.au> to allow
