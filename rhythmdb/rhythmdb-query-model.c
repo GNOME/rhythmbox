@@ -555,11 +555,6 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 				     RhythmDBQueryModel *model)
 {
 	if (model->priv->query) {
-		if (model->priv->max_count > 0
-		    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
-			return;
-		/* Check size later */
-		
 		if (rhythmdb_evaluate_query (db, model->priv->query, entry)) {
 			rhythmdb_query_model_do_insert (model, entry);
 		}
@@ -636,13 +631,6 @@ rhythmdb_query_model_add_entries (RhythmDBQueryModel *model, GPtrArray *entries)
 
 	rb_debug ("adding %d entries", entries->len);
 
-	if (model->priv->max_count > 0
-	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count) {
-		g_ptr_array_free (entries, TRUE);
-		return;
-	}
-	/* Check size later */
-
 	update = g_new (struct RhythmDBQueryModelUpdate, 1);
 	update->type = RHYTHMDB_QUERY_MODEL_UPDATE_ROWS_INSERTED;
 	update->entries = entries;
@@ -704,16 +692,8 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL)
 		return;
 
-	if (model->priv->max_count > 0
-	    && g_hash_table_size (model->priv->reverse_map) >= model->priv->max_count)
-		return;
-
 	size = entry->file_size;
 	duration = entry->duration;
-
-	if (model->priv->max_size > 0
-	    && (model->priv->total_size + size >= model->priv->max_size))
-		return;
 
 	rhythmdb_entry_ref (model->priv->db, entry);
 
@@ -739,6 +719,14 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	gtk_tree_model_row_inserted (GTK_TREE_MODEL (model),
 				     path, &iter);
 	gtk_tree_path_free (path);
+	
+	/* make it fit inside the limits */
+	while ((model->priv->max_count > 0 && g_hash_table_size (model->priv->reverse_map) > model->priv->max_count)
+	      || (model->priv->max_size > 0 && model->priv->total_size > model->priv->max_size)) {
+		/* remove the last entry*/
+		ptr = g_sequence_ptr_prev (g_sequence_get_end_ptr (model->priv->entries));
+		rhythmdb_query_model_remove_entry (model, (RhythmDBEntry*) g_sequence_ptr_get_data (ptr));
+	}
 }
 
 void

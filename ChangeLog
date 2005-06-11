@@ -1,5 +1,14 @@
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_added_cb),
+	(rhythmdb_query_model_add_entries),
+	(rhythmdb_query_model_do_insert): Patch from James Livingston
+	<jrl@ids.org.au> to fix problems when an automatic playlist has
+	limits and uses sorting
+
+2005-06-11  Bastien Nocera  <hadess@hadess.net>
+
 	* shell/rb-shell.c: (rb_shell_shutdown): hide the main window
 	and tray icon as soon as we're going to shutdown (Closes: #171863)
 
