@@ -1,5 +1,14 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* rhythmdb/rhythmdb.h:
+	* widgets/rb-property-view.c: (query_model_cb),
+	(rb_property_view_drag_data_get), (rb_property_view_constructor):
+	committ patch from  Gabriel de Perthuis to add a text/uri-list target
+	when dragging an artist/album/genre. This allows dragging a whole
+	album/artist/genre to a playlist or to the desktop. Fixes #165583
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* shell/rb-playlist-manager.c:
 	(rb_playlist_manager_save_thread_main),
 	(rb_playlist_manager_save_playlists):

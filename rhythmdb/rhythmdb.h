@@ -341,7 +341,7 @@ typedef struct
 	void		(*impl_entry_new)	(RhythmDB *db, RhythmDBEntry *entry);
 
 	void		(*impl_entry_set)	(RhythmDB *db, RhythmDBEntry *entry,
-						 guint propid, const GValue *value);
+	                                 guint propid, const GValue *value);
 
 	void		(*impl_entry_get)	(RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, GValue *value);
@@ -404,12 +404,19 @@ void		rhythmdb_entry_foreach		(RhythmDB *db,
 /**
  * Returns a freshly allocated GtkTreeModel which represents the query.
  * The extended arguments alternate between RhythmDBQueryType args
- * and their values.  Here's an example:
+ * and their values. Items are prioritized like algebraic expressions, and
+ * implicitly ANDed. Here's an example:
  *
- * rhythmdb_do_full_query (db, RHYTHMDB_QUERY_PROP_EQUALS, "genre", "Classical",
- *                          RHYTHMDB_QUERY_PROP_GREATER, "rating", 5,
- *                          RHYTHMDB_QUERY_END);
- *
+rhythmdb_do_full_query (db,
+			RHYTHMDB_QUERY_PROP_EQUALS,
+ 				RHYTHMDB_PROP_ARTIST, "Pink Floyd",
+		RHYTHMDB_QUERY_DISJUNCTION,
+			RHYTHMDB_QUERY_PROP_EQUALS,
+				RHYTHMDB_PROP_GENRE, "Classical",
+			RHYTHMDB_QUERY_PROP_GREATER,
+				RHYTHMDB_PROP_RATING, 5,
+	RHYTHMDB_QUERY_END);
+ * Which means: artist = Pink Floyd OR (genre = Classical AND rating >= 5)
  */
 void		rhythmdb_do_full_query			(RhythmDB *db,
 							 GtkTreeModel *main_model,
