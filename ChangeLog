@@ -1,5 +1,11 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* sources/rb-ipod-source.c: (rb_ipod_get_itunesdb_path),
+	(rb_ipod_is_volume_ipod): added some sanity checks which can avoid
+	crashes in some cases
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* data/ui/rhythmbox-ui.xml: add Quit menu item to the tray icon
 
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>

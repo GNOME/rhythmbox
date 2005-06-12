@@ -489,9 +489,14 @@ rb_ipod_get_itunesdb_path (GnomeVFSVolume *volume)
 	gchar *result;
 
 	mount_point_uri = gnome_vfs_volume_get_activation_uri (volume);
+	if (mount_point_uri == NULL) {
+		return NULL;
+	}
 	mount_point = g_filename_from_uri (mount_point_uri, NULL, NULL);
 	g_free (mount_point_uri);
-	g_assert (mount_point != NULL);
+	if (mount_point == NULL) {
+		return NULL;
+	}
 	result = g_build_filename (mount_point, 
 				   "iPod_Control/iTunes/iTunesDB",
 				   NULL);
@@ -523,8 +528,10 @@ rb_ipod_is_volume_ipod (GnomeVFSVolume *volume)
 #endif
 	
 	itunesdb_path = rb_ipod_get_itunesdb_path (volume);
-	result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
-	g_free (itunesdb_path);
+	if (itunesdb_path != NULL) {
+		result = g_file_test (itunesdb_path, G_FILE_TEST_EXISTS);
+		g_free (itunesdb_path);
+	}
 
 	return result;
 }
