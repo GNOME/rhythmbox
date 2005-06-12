@@ -2,13 +2,9 @@
 
 noinst_LTLIBRARIES = librbplayer.la
 
-BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h
-
 librbplayer_la_SOURCES =	\
 	rb-player.h 		\
-	rb-player-gst.c		\
-	rb-recorder-marshal.c	\
-	rb-recorder-marshal.h
+	rb-player-gst.c
 
 librbplayer_la_LIBADD =				\
 	$(RHYTHMBOX_LIBS)
@@ -24,9 +20,14 @@ INCLUDES = 						\
 	$(RHYTHMBOX_CFLAGS)
 
 if USE_CD_BURNER
+
+BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h
+
 librbplayer_la_SOURCES += 	\
 	rb-recorder.h		\
-	rb-recorder-gst.c
+	rb-recorder-gst.c       \
+	rb-recorder-marshal.c	\
+	rb-recorder-marshal.h
 
 INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
 
