@@ -14,9 +14,7 @@ libsourcesimpl_la_SOURCES =		\
 	rb-iradio-source.c		\
 	rb-iradio-source.h		\
 	rb-playlist-source.c            \
-	rb-playlist-source.h		\
-	rb-playlist-source-recorder.c   \
-	rb-playlist-source-recorder.h		
+	rb-playlist-source.h		
 
 INCLUDES =						\
         -DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
@@ -48,3 +46,12 @@ libsourcesimpl_la_SOURCES +=         \
 	itunesdb.c		     \
 	itunesdb.h
 endif
+
+if USE_CD_BURNER
+libsourcesimpl_la_SOURCES += 		\
+	rb-playlist-source-recorder.c   \
+	rb-playlist-source-recorder.h	
+
+INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
+endif
+

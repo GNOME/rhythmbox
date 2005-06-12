@@ -32,7 +32,9 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
+#if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-recorder.h"
+#endif
 #include "rb-sourcelist.h"
 #include "rb-query-creator.h"
 #include "totem-pl-parser.h"
@@ -386,24 +388,28 @@ rb_playlist_manager_set_property (GObject *object,
 	case PROP_SOURCE:
 	{
 		gboolean playlist_active;
-		gboolean recorder_active;
 		GtkAction *action;
 
 		mgr->priv->selected_source = g_value_get_object (value);
 
 		playlist_active = g_list_find (mgr->priv->playlists,
 					       mgr->priv->selected_source) != NULL;
-		recorder_active = playlist_active && rb_recorder_enabled ();
 
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistSavePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
-						      "MusicPlaylistBurnPlaylist");
-		g_object_set (G_OBJECT (action), "sensitive", recorder_active, NULL);
-		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistDeletePlaylist");
 		g_object_set (G_OBJECT (action), "sensitive", playlist_active, NULL);
+#if defined(WITH_CD_BURNER_SUPPORT)
+		{
+			gboolean recorder_active;
+			recorder_active = playlist_active && rb_recorder_enabled ();
+			action = gtk_action_group_get_action (mgr->priv->actiongroup,
+							      "MusicPlaylistBurnPlaylist");
+			g_object_set (G_OBJECT (action), "sensitive", recorder_active, NULL);
+		}
+#endif
 		break;
 	}
 	case PROP_SHELL:

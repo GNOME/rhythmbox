@@ -109,6 +109,9 @@ endif
 if WITH_DBUS
 INCLUDES += -I$(top_srcdir)/remote/dbus
 endif
+if USE_CD_BURNER
+rhythmbox_LDADD += $(LIBNAUTILUS_BURN_LIBS)
+endif
 
 BUILT_SOURCES = $(tab_files)
 

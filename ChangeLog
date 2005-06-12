@@ -1,3 +1,19 @@
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
+	* COPYING:
+	* configure.ac:
+	* player/Makefile.am:
+	* shell/Makefile.am:
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* sources/Makefile.am:
+	* sources/rb-iradio-source.c:
+	(stations_view_drag_data_received_cb):
+	* sources/rb-playlist-source.c: (rb_playlist_source_burn_playlist):
+	Patch from jonathan@kaolin.hn.org to make compilation of the cd
+	burning code optional. Disable the code if libnautilus-burn is older
+	or newer than 2.9 or 2.10.
+
 2005-06-11  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb-tree.c: (split_query_by_disjunctions):

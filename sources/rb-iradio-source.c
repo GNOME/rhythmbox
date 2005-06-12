@@ -840,7 +840,7 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 	GList *list, *uri_list, *i;
 
 	rb_debug ("parsing uri list");
-	list = gnome_vfs_uri_list_parse (selection_data->data);
+	list = gnome_vfs_uri_list_parse ((char *)selection_data->data);
 
 	if (list == NULL)
 		return;

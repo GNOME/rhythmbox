@@ -19,6 +19,7 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.5.4
 GNOME_VFS_REQS=2.6
 NCB_REQS=2.9.0
+NCB_MAX_REQS=2.11.0
 TOTEM_PLPARSER_REQS=1.0
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
@@ -41,17 +42,7 @@ AC_CHECK_FUNC(mkdtemp,
     mkdtemp_missing=true)
 AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
-dnl Don't let pkg-config 0.16 break us.
-dnl Otherwise, it'll set PKG_CONFIG inside the 'if' block below and expect
-dnl it to be set everywhere.  Earlier pkg-config versions shouldn't care.
-PKG_CHECK_MODULES(PRELIMINARY,
-		  gtk+-2.0 >= $GTK_REQS			\
-		  libgnomeui-2.0			\
-		  libglade-2.0				\
-		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
-		  gnome-vfs-module-2.0			\
-		  libnautilus-burn >= $NCB_REQS		\
-		  totem-plparser >= $TOTEM_PLPARSER_REQS)
+PKG_PROG_PKG_CONFIG
 
 dnl iPod support
 dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
@@ -78,7 +69,6 @@ PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  libglade-2.0				\
 		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
 		  gnome-vfs-module-2.0			\
-		  libnautilus-burn >= $NCB_REQS		\
 		  totem-plparser >= $TOTEM_PLPARSER_REQS\
 		  $USE_HAL)
 
@@ -281,6 +271,23 @@ fi
 AM_CONDITIONAL(HAVE_AUDIOCD, test "x$enable_audiocd" = "xyes")
 AM_CONDITIONAL(HAVE_LINUX_CDROM, test "x$enable_linux_cdrom" = "xyes")
 
+dnl CD burner support
+AC_ARG_WITH(cd_burner,
+            AC_HELP_STRING([--with-cd-burner],
+			   [Enable CD burner support in Rhythmbox]),,
+	      with_cd_burner=auto)
+if test "x$with_cd_burner" != "xno"; then
+	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_REQS libnautilus-burn < $NCB_MAX_REQS], enable_cd_burner=yes, enable_cd_burner=no)
+        if test "x$with_cd_burner" = xyes && test "x$enable_cd_burner" = xno; then
+	   AC_MSG_ERROR([CD burner support explicitly requested but no support found])	   
+	fi
+        if test "x$enable_cd_burner" = xyes; then
+		AC_DEFINE(WITH_CD_BURNER_SUPPORT, 1, [Define if CD burner support is enabled])	   
+	fi
+fi			  
+AM_CONDITIONAL(USE_CD_BURNER, test "x$enable_cd_burner" = "xyes")
+
+
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)
 
@@ -465,6 +472,11 @@ if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$enable_cd_burner" = xyes; then
+	AC_MSG_NOTICE([** CD burner support is enabled])
+else
+	AC_MSG_NOTICE([   CD burner support is disabled])
 fi
 if test x"$enable_bonobo" = xyes; then
 	AC_MSG_NOTICE([** Bonobo control/activation enabled])
