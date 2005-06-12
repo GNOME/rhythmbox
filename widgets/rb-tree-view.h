@@ -52,8 +52,6 @@ typedef struct
 GType		rb_tree_view_get_type		(void);
 
 RBTreeView *	rb_tree_view_new		(void);
-/* may kick */
-RBTreeView *	rb_tree_view_new_with_model	(GtkTreeModel *model);
 
 G_END_DECLS
 
