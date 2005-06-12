@@ -40,7 +40,6 @@
 #include "rb-glade-helpers.h"
 #include "rb-dialog.h"
 #include "rb-rating.h"
-#include "rb-ellipsizing-label.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 

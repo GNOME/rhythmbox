@@ -1,3 +1,13 @@
+2005-06-12  Bastien Nocera  <hadess@hadess.net>
+
+	* widgets/Makefile.am:
+	* widgets/rb-ellipsizing-label.c:
+	* widgets/rb-ellipsizing-label.h:
+	* widgets/rb-header.c: (rb_header_init), (rb_header_sync):
+	* widgets/rb-song-info.c: Patch from Paolo Borelli
+	<pborelli@katamail.com> to remove the RBEllipsizing label, and use
+	GTK+'s instead (Closes: #307386)
+
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
 	* rhythmdb/rhythmdb.h:

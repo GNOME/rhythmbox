@@ -37,7 +37,6 @@
 #include "rb-stock-icons.h"
 #include "rb-header.h"
 #include "rb-debug.h"
-#include "rb-ellipsizing-label.h"
 #include "rb-preferences.h"
 #include "eel-gconf-extensions.h"
 
@@ -216,7 +215,7 @@ rb_header_init (RBHeader *player)
 	 *     GtkVBox
 	 *       GtkAlignment
 	 *         GtkVBox
-	 *           RBEllipsizingLabel	(priv->song)
+	 *           GtkLabel		(priv->song)
 	 *           GtkHBox		(priv->textframe)
 	 *	       RBSongDisplayBox (priv->displaybox)
 	 *               GtkLabel	("from")
@@ -253,8 +252,8 @@ rb_header_init (RBHeader *player)
 	textvbox = gtk_vbox_new (FALSE, 0);
 	gtk_container_add (GTK_CONTAINER (align), textvbox);
 	
-	player->priv->song = rb_ellipsizing_label_new ("");
-	rb_ellipsizing_label_set_mode (RB_ELLIPSIZING_LABEL (player->priv->song), RB_ELLIPSIZE_END);
+	player->priv->song = gtk_label_new ("");
+	gtk_label_set_ellipsize (GTK_LABEL (player->priv->song), PANGO_ELLIPSIZE_END);
  	gtk_label_set_use_markup (GTK_LABEL (player->priv->song), TRUE);
  	gtk_label_set_selectable (GTK_LABEL (player->priv->song), TRUE);	
 	gtk_misc_set_alignment (GTK_MISC (player->priv->song), 0, 0);
@@ -529,7 +528,7 @@ rb_header_sync (RBHeader *player)
 		escaped = g_markup_escape_text (song, -1);
 		tmp = SONG_MARKUP (escaped);
 		g_free (escaped);
-		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
 		rb_header_set_show_artist_album (player, (album != NULL && artist != NULL)
@@ -587,7 +586,7 @@ rb_header_sync (RBHeader *player)
 
 		rb_debug ("not playing");
 		tmp = SONG_MARKUP (_("Not playing"));
-		rb_ellipsizing_label_set_markup (RB_ELLIPSIZING_LABEL (player->priv->song), tmp);
+		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 
 		iradio_href_tips = gtk_tooltips_new ();

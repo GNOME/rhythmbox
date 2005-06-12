@@ -25,8 +25,6 @@ librbwidgets_la_SOURCES =				\
 	eggtrayicon.h					\
 	rb-dialog.c					\
 	rb-dialog.h					\
-	rb-ellipsizing-label.c				\
-	rb-ellipsizing-label.h				\
 	rb-cell-renderer-pixbuf.c			\
 	rb-cell-renderer-pixbuf.h			\
 	rb-cell-renderer-rating.c			\
