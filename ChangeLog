@@ -1,5 +1,18 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_save_thread_main),
+	(rb_playlist_manager_save_playlists):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_get_property),
+	(rb_playlist_source_entry_added_cb),
+	(rb_playlist_source_add_location),
+	(rb_playlist_source_remove_location),
+	(rb_playlist_source_save_to_xml): fixes to playlist saving, fixes bug
+	#166340, patch from jonathan@kaolin.hn.org
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* sources/rb-ipod-source.c: (rb_ipod_get_itunesdb_path),
 	(rb_ipod_is_volume_ipod): added some sanity checks which can avoid
 	crashes in some cases

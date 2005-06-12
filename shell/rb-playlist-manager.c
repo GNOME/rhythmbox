@@ -607,6 +607,7 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 	g_mutex_lock (data->mgr->priv->saving_mutex);
 
 	data->mgr->priv->saving = FALSE;
+	data->mgr->priv->dirty = FALSE;
 
 	g_cond_signal (data->mgr->priv->saving_condition);
 	g_mutex_unlock (data->mgr->priv->saving_mutex);
@@ -626,12 +627,29 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	struct RBPlaylistManagerSaveThreadData *data;
 
 	rb_debug ("saving the playlists");
+	
+	if (!force) {
+		gboolean dirty = FALSE;
 
-	if (!force && !mgr->priv->dirty) {
-		rb_debug ("no save needed, ignoring");
-		return;
+		for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next) {
+			g_object_get (G_OBJECT (tmp->data), "dirty", &dirty, NULL);
+			if (dirty)
+				break;
+		}
+
+		if (!dirty) {
+			/* hmm, don't like taking saving_mutex twice like this */
+			g_mutex_lock (mgr->priv->saving_mutex);
+			dirty = mgr->priv->dirty;
+			g_mutex_unlock (mgr->priv->saving_mutex);
+		}
+
+		if (!dirty) {
+			rb_debug ("no save needed, ignoring");
+			return;
+		}
 	}
-
+	
 	g_mutex_lock (mgr->priv->saving_mutex);
 
 	while (mgr->priv->saving)

@@ -123,14 +123,16 @@ struct RBPlaylistSourcePrivate
 
 	RBEntryView *songs;
 
+	gboolean dirty;
+
 	char *title;
 };
 
 enum
 {
 	PROP_0,
-	PROP_LIBRARY,
 	PROP_AUTOMATIC,
+	PROP_DIRTY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -206,6 +208,14 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist is a smartypants",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_DIRTY,
+					 g_param_spec_boolean ("dirty",
+							       "dirty",
+							       "whether this playlist should be saved",
+							       FALSE,
+							       G_PARAM_READABLE));
 }
 
 static void
@@ -396,6 +406,10 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_AUTOMATIC:
 		g_value_set_boolean (value, source->priv->automatic);
 		break;
+	case PROP_DIRTY:
+		g_value_set_boolean (value, source->priv->dirty);
+		break;
+
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -428,6 +442,7 @@ rb_playlist_source_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 	location = entry->location;
 	if (g_hash_table_lookup (source->priv->entries, location)) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
+		source->priv->dirty = TRUE;
 	}
 }
 
@@ -679,6 +694,8 @@ rb_playlist_source_add_location (RBPlaylistSource *source,
 	if (entry != NULL) {
 		rhythmdb_query_model_add_entry (source->priv->model, entry);
 		rhythmdb_entry_unref (source->priv->db, entry);
+
+		source->priv->dirty = TRUE;
 	}
 }
 
@@ -692,8 +709,10 @@ rb_playlist_source_remove_location (RBPlaylistSource *source,
 	g_hash_table_remove (source->priv->entries,
 			     location);
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, location);
-	if (entry != NULL)
+	if (entry != NULL) {
 		rhythmdb_query_model_remove_entry (source->priv->model, entry);
+		source->priv->dirty = TRUE;
+	}
 }
 
 void
@@ -935,4 +954,6 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 		g_free (limit_str);
 		rhythmdb_query_serialize (source->priv->db, query, node);
 	}
+
+	source->priv->dirty = FALSE;
 }
