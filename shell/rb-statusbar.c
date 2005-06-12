@@ -95,7 +95,6 @@ struct RBStatusbarPrivate
 
         gboolean entry_view_busy;
         gboolean library_busy;
-        gboolean buffering;
         guint idle_tick_id;
 
 	guint notify_id;
@@ -212,10 +211,6 @@ rb_statusbar_construct (GType                  type,
 				 "notify::play-order", 
 				 G_CALLBACK (rb_statusbar_shell_play_order_changed_cb), 
 				 statusbar, 0);
-        g_signal_connect_swapped (G_OBJECT (statusbar->priv->player),
-                                  "notify::buffering", 
-                                  G_CALLBACK (rb_statusbar_sync_status), 
-                                  statusbar);
 
         return object;
 }
@@ -411,9 +406,7 @@ rb_statusbar_sync_status (RBStatusbar *status)
 {
         char *str;
         gboolean library_busy_changed;
-        gboolean buffering_changed;
         gboolean library_is_busy;
-        gboolean buffering;
         gboolean entry_view_busy = FALSE;
         gboolean changed = FALSE;
 
@@ -429,33 +422,20 @@ rb_statusbar_sync_status (RBStatusbar *status)
         library_busy_changed = status->priv->library_busy && !library_is_busy;
         status->priv->library_busy = library_is_busy;   
 
-        g_object_get (G_OBJECT (status->priv->player), "buffering",
-                      &buffering, NULL);
-        buffering_changed = status->priv->buffering && !buffering;
-        status->priv->buffering = buffering;    
-
         /* Set up the status display */
         if (status->priv->library_busy) {
                 gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
                 g_free (str);
                 str = NULL;
                 changed = TRUE;
-        } else if (buffering) {
-                rb_debug("synchronizing status, showing buffering state");
-                g_free (str);
-                str = g_strdup_printf ("<b>%s</b>",
-                                       _("Buffering..."));
-                gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
-                g_free (str);
-                str = NULL;
-        } else if (library_busy_changed || buffering_changed) {
+	} else if (library_busy_changed) {
                 rb_statusbar_sync_with_source (status);
                 changed = TRUE;
         }
         g_free (str);
 
         /* Sync the progress bar */
-        if (library_is_busy || entry_view_busy || buffering) {
+	if (library_is_busy || entry_view_busy) {
 		gtk_widget_show (status->priv->progress);
 
                 if (status->priv->idle_tick_id == 0) {

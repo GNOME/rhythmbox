@@ -98,8 +98,6 @@ typedef struct
 	const char *	(*impl_get_artist)	(RBSource *source);
 	const char *	(*impl_get_album)	(RBSource *source);
 	gboolean	(*impl_have_url)	(RBSource *source);
-	void		(*impl_buffering_done)	(RBSource *source);
-
 	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
 	gboolean	(*impl_show_popup)	(RBSource *source);
 				   
@@ -158,7 +156,6 @@ gboolean	rb_source_have_artist_album	(RBSource *source);
 const char *	rb_source_get_artist		(RBSource *source);
 const char *	rb_source_get_album		(RBSource *source);
 gboolean	rb_source_have_url		(RBSource *source);
-void		rb_source_buffering_done	(RBSource *source);
 
 gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
 

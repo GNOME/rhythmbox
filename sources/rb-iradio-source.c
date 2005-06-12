@@ -96,7 +96,6 @@ static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
-static void impl_buffering_done (RBSource *asource);
 static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType type);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
@@ -241,7 +240,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_buffering_done = impl_buffering_done;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -553,6 +551,7 @@ impl_handle_eos (RBSource *asource)
 	return RB_SOURCE_EOF_ERROR;
 }
 
+#if 0
 struct RBIRadioAsyncPlayStatisticsData
 {
 	RBIRadioSource *source;
@@ -583,28 +582,7 @@ rb_iradio_source_async_update_play_statistics (gpointer data)
 
 	return FALSE;
 }
-
-static void
-impl_buffering_done (RBSource *asource)
-{
-	RBIRadioSource *source = RB_IRADIO_SOURCE (asource);
-	RhythmDBEntry *entry = rb_entry_view_get_playing_entry (source->priv->stations);
-
-	rb_debug ("queueing async play statistics update, entry: %p", entry);
-
-	if (source->priv->async_update_entry != NULL) {
-		rb_debug ("async handler already queued, removing");
-		rhythmdb_entry_unref (source->priv->db, source->priv->async_update_entry);
-		g_source_remove (source->priv->async_idlenum);
-	}
-
-	source->priv->async_entry_destroyed = FALSE;
-	source->priv->async_update_entry = entry;
-	rhythmdb_entry_ref (source->priv->db, source->priv->async_update_entry);
-	source->priv->async_idlenum =
-		g_timeout_add (6000, (GSourceFunc) rb_iradio_source_async_update_play_statistics,
-			       source);
-}
+#endif
 
 static char *
 impl_get_status (RBSource *asource)

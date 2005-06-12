@@ -24,10 +24,7 @@
 #include <config.h>
 #include <gdk/gdk.h>
 #include <gst/gst.h>
-#include <gst/gstqueue.h>
 #include <gst/gconf/gconf.h>
-#include <gst/control/control.h>
-#include <gst/control/dparam_smooth.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -48,33 +45,14 @@ struct RBPlayerPrivate
 {
 	char *uri;
 
-	GstElement *pipeline;
-
-	GstElement *srcthread;
-	GstElement *queue;
-	GstElement *typefind;
-	GstElement *waiting_bin;
-	GstElement *src;
-
-	GstElement *decoder;
-	GstElement *volume;
-	GstElement *audioconvert;
-	GstElement *audioscale;
-	GstElement *sink;
+	GstElement *playbin;
 
 	GError *error;
 
-#ifdef HAVE_AUDIOCD
-	MonkeyMediaAudioCD *cd;
-#endif
-
-	gboolean iradio_mode;
 	gboolean playing;
 
 	guint error_signal_id;
 
-	GstDParamManager *volume_dpmanager;
-	GstDParam *volume_dparam;
 	float cur_volume;
 
 	GTimer *timer;
@@ -87,9 +65,6 @@ typedef enum
 {
 	EOS,
 	INFO,
-	BUFFERING_BEGIN,
-	BUFFERING_END,
-	BUFFERING_PROGRESS,
 	ERROR,
 	TICK,
 	LAST_SIGNAL
@@ -105,8 +80,8 @@ typedef struct
 
 static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 
-static gboolean rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error);
-static void rb_player_gst_free_pipeline (RBPlayer *player);
+static gboolean rb_player_sync_pipeline (RBPlayer *mp, GError **error);
+static void rb_player_gst_free_playbin (RBPlayer *player);
 
 static void
 rb_player_class_init (RBPlayerClass *klass)
@@ -124,6 +99,7 @@ rb_player_class_init (RBPlayerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
+#ifdef ENABLE_NOT_REIMPLEMENTED
 	rb_player_signals[INFO] =
 		g_signal_new ("info",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -133,34 +109,7 @@ rb_player_class_init (RBPlayerClass *klass)
 			      rb_marshal_VOID__INT_POINTER,
 			      G_TYPE_NONE,
 			      2, G_TYPE_INT, G_TYPE_POINTER);
-	rb_player_signals[BUFFERING_BEGIN] =
-		g_signal_new ("buffering_begin",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, buffering_begin),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	rb_player_signals[BUFFERING_END] =
-		g_signal_new ("buffering_end",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, buffering_end),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE,
-			      0);
-	rb_player_signals[BUFFERING_PROGRESS] =
-		g_signal_new ("buffering_progress",
-			      G_OBJECT_CLASS_TYPE (object_class),
-			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBPlayerClass, buffering_progress),
-			      NULL, NULL,
-			      g_cclosure_marshal_VOID__INT,
-			      G_TYPE_NONE,
-			      1,
-			      G_TYPE_INT);
+#endif
 	rb_player_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -201,12 +150,8 @@ rb_player_init (RBPlayer *mp)
 	gint ms_period = 1000 / RB_PLAYER_TICK_HZ;
 
 	mp->priv = g_new0 (RBPlayerPrivate, 1);
-
-#ifdef HAVE_AUDIOCD
-	mp->priv->cd = monkey_media_audio_cd_new (NULL);
-#endif	
-
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
+	
 }
 
 static void
@@ -218,39 +163,32 @@ rb_player_finalize (GObject *object)
 
 	g_source_remove (mp->priv->tick_timeout_id);
 
-	if (mp->priv->pipeline) {
-		g_signal_handler_disconnect (G_OBJECT (mp->priv->pipeline),
+	if (mp->priv->playbin) {
+		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
 					     mp->priv->error_signal_id);
 		
-		gst_element_set_state (mp->priv->pipeline,
+		gst_element_set_state (mp->priv->playbin,
 				       GST_STATE_NULL);
 		
-		rb_player_gst_free_pipeline (mp);
+		rb_player_gst_free_playbin (mp);
 	}
 
 	if (mp->priv->timer)
 		g_timer_destroy (mp->priv->timer);
 	
-	g_free (mp->priv->uri);
-
 	g_free (mp->priv);
 
 	G_OBJECT_CLASS (rb_player_parent_class)->finalize (object);
 }
 
 static void
-rb_player_gst_free_pipeline (RBPlayer *player)
+rb_player_gst_free_playbin (RBPlayer *player)
 {
-	if (player->priv->pipeline == NULL)
+	if (player->priv->playbin == NULL)
 		return;
 	
-	if (player->priv->volume_dpmanager) {
-		gst_dpman_detach_dparam (player->priv->volume_dpmanager, "volume");
-		gst_object_unref (GST_OBJECT (player->priv->volume_dparam));
-		player->priv->volume_dpmanager = NULL;
-	}
-	gst_object_unref (GST_OBJECT (player->priv->pipeline));
-	player->priv->pipeline = NULL;
+	gst_object_unref (GST_OBJECT (player->priv->playbin));
+	player->priv->playbin = NULL;
 }
 
 static gboolean
@@ -259,32 +197,6 @@ eos_signal_idle (RBPlayer *mp)
 	g_signal_emit (G_OBJECT (mp), rb_player_signals[EOS], 0);
 
 	g_object_unref (G_OBJECT (mp));
-
-	return FALSE;
-}
-
-static gboolean
-buffering_begin_signal_idle (RBPlayer *mp)
-{
-	GDK_THREADS_ENTER ();
-
-	g_signal_emit (G_OBJECT (mp), rb_player_signals[BUFFERING_BEGIN], 0);
-	g_object_unref (G_OBJECT (mp));
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
-static gboolean
-buffering_end_signal_idle (RBPlayer *mp)
-{
-	GDK_THREADS_ENTER ();
-
-	g_signal_emit (G_OBJECT (mp), rb_player_signals[BUFFERING_END], 0);
-	g_object_unref (G_OBJECT (mp));
-
-	GDK_THREADS_LEAVE ();
 
 	return FALSE;
 }
@@ -393,159 +305,48 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 }
 
 static void
-queue_full_cb (GstQueue *queue,
-	       gpointer data)     
+rb_player_construct (RBPlayer *mp, GError **error)
 {
-	RBPlayer *mp = RB_PLAYER (data);
-
-	rb_debug ("caught queue full");
-	g_signal_handlers_block_by_func (G_OBJECT (mp->priv->queue),
-					 G_CALLBACK (queue_full_cb),
-					 mp);
-	if (gst_element_set_state (mp->priv->waiting_bin, GST_STATE_PLAYING) == GST_STATE_FAILURE) {
-		rb_player_gst_signal_error (mp, RB_PLAYER_ERROR_GENERAL, _("Could not start pipeline playing"));
-	} else {
-		g_object_ref (G_OBJECT (mp));
-		g_idle_add ((GSourceFunc) buffering_end_signal_idle, mp);
-	}
-}
-
-static void
-rb_player_construct (RBPlayer *mp,
-		     gboolean iradio_mode,
-		     gboolean audiocd_mode,
-		     const char *uri,
-		     GError **error)
-{
-	GstDParamManager *dpman;
 	char *element_name = NULL;
+	GstElement *sink;
 
-#define MAKE_ELEMENT_OR_LOSE(NAME, NICE) G_STMT_START {	\
-	element_name = #NAME ;\
-	rb_debug ("constructing element \"" #NICE "\""); \
-	mp->priv->NICE = gst_element_factory_make (#NAME, #NICE); \
-	if (!mp->priv->NICE) \
-		goto missing_element; \
-	} G_STMT_END
-
-	/* The main playback pipeline for iradio, at the end this looks like:
-	 * { { src ! queue } ! { mad ! volume ! sink } }
-	 *
-	 * For local files, it just looks like:
-	 *  { src ! spider ! volume ! sink }
-	 */
-	MAKE_ELEMENT_OR_LOSE(thread, pipeline);
-	g_signal_connect_object (G_OBJECT (mp->priv->pipeline),
+	/* playbin */
+	rb_debug ("constructing element \"playbin\"");
+	mp->priv->playbin = gst_element_factory_make ("playbin", "playbin");
+	if (mp->priv->playbin == NULL) {
+		goto missing_element;
+	}
+	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 				 "deep_notify",
 				 G_CALLBACK (deep_notify_cb),
 				 mp, 0);
 
 	mp->priv->error_signal_id =
-		g_signal_connect_object (G_OBJECT (mp->priv->pipeline),
+		g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 					 "error",
 					 G_CALLBACK (error_cb),
 					 mp, 0);
 
-	/* Construct the two threads */
-	if (iradio_mode) {
-		mp->priv->waiting_bin = gst_element_factory_make ("thread", "waiting_bin");
-		mp->priv->srcthread = gst_element_factory_make ("thread", "srcthread");
-		gst_bin_add_many (GST_BIN (mp->priv->pipeline),
-				  mp->priv->srcthread, mp->priv->waiting_bin, NULL);
-	} else {
-		mp->priv->waiting_bin = mp->priv->pipeline;
-		mp->priv->srcthread = mp->priv->pipeline;
-	}
-
-	/* Construct elements */
-
-	/* The source */
-
-	if (audiocd_mode)
-		element_name = "cdparanoia";
-	else
-		element_name = "gnomevfssrc";
-	mp->priv->src = gst_element_factory_make (element_name, "src");	
-	if (mp->priv->src == NULL)
-		goto missing_element;
-	gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->src);
-
-#ifdef HAVE_AUDIOCD
-	if (audiocd_mode) {
-		g_object_set (G_OBJECT (mp->priv->src),
-			      "paranoia-mode",
-			      monkey_media_get_cd_playback_mode (),
-			      NULL);
-		g_object_set (G_OBJECT (mp->priv->src),
-			      "location",
-			      monkey_media_get_cd_drive (),
-			      NULL);
-	}
-#endif
-
-	rb_debug ("constructing queue");
-	/* The queue */
-	if (iradio_mode) {
-		element_name = "queue";
-		mp->priv->queue = gst_element_factory_make (element_name, element_name);
-		if (mp->priv->queue == NULL)
-			goto missing_element;
-		g_object_set (G_OBJECT (mp->priv->queue), "max-size-bytes", 64 * 1024, NULL);
-		g_signal_connect_object (G_OBJECT (mp->priv->queue), "overrun",
-					 G_CALLBACK (queue_full_cb), mp, 0);
-		gst_bin_add (GST_BIN (mp->priv->srcthread), mp->priv->queue);
-	}
-
-	MAKE_ELEMENT_OR_LOSE(typefind, typefind);
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->typefind);
-
-	MAKE_ELEMENT_OR_LOSE(spider, decoder);
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->decoder);
-
-	MAKE_ELEMENT_OR_LOSE(volume, volume);
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->volume);
-	dpman = gst_dpman_get_manager (mp->priv->volume);
-	mp->priv->volume_dpmanager = dpman;
-	gst_dpman_set_mode (dpman, "synchronous");
-	mp->priv->volume_dparam = gst_dpsmooth_new (G_TYPE_DOUBLE);
-	g_assert (mp->priv->volume_dparam != NULL);
-	gst_dpman_attach_dparam (dpman, "volume", mp->priv->volume_dparam);
-
-	MAKE_ELEMENT_OR_LOSE(audioconvert, audioconvert);
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->audioconvert);
-
-	MAKE_ELEMENT_OR_LOSE(audioscale, audioscale);
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->audioscale);
-
 	/* Output sink */
-	mp->priv->sink = gst_gconf_get_default_audio_sink ();
-	if (mp->priv->sink == NULL) {
+	sink = gst_gconf_get_default_audio_sink ();
+	if (sink == NULL) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_NO_AUDIO,
 			     _("Could not create audio output element; check your settings"));
-		gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-		mp->priv->pipeline = NULL;
+		rb_player_gst_free_playbin (mp);
 		return;
 	}
-	gst_bin_add (GST_BIN (mp->priv->waiting_bin), mp->priv->sink);
 
-	gst_element_link_many (mp->priv->decoder, mp->priv->volume, mp->priv->audioconvert, mp->priv->audioscale, mp->priv->sink, NULL);
-	if (iradio_mode)
-		gst_element_link_many (mp->priv->src, mp->priv->queue, mp->priv->typefind, mp->priv->decoder, NULL);
-	else
-		gst_element_link_many (mp->priv->src, mp->priv->typefind, mp->priv->decoder, NULL);
-
-	g_signal_connect_object (G_OBJECT (mp->priv->sink), "eos",
+	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
+	g_signal_connect_object (G_OBJECT (mp->priv->playbin), "eos",
 				 G_CALLBACK (eos_cb), mp, 0);
 
 	if (mp->priv->cur_volume > 1.0)
 		mp->priv->cur_volume = 1.0;
 	if (mp->priv->cur_volume < 0.0)
 		mp->priv->cur_volume = 0;
-	g_object_set (G_OBJECT (mp->priv->volume_dparam),
-		      "value_double", mp->priv->cur_volume,
-		      NULL);
+	rb_player_set_volume (mp, mp->priv->cur_volume);
 
 	if (mp->priv->timer)
 		g_timer_destroy (mp->priv->timer);
@@ -564,7 +365,7 @@ missing_element:
 			     RB_PLAYER_ERROR_GENERAL,
 			     err);
 		g_free (err);
-		rb_player_gst_free_pipeline (mp);
+		rb_player_gst_free_playbin (mp);
 	}
 }
 
@@ -600,52 +401,29 @@ rb_player_error_quark (void)
 }
 
 static gboolean
-rb_player_sync_pipeline (RBPlayer *mp, gboolean iradio_mode, GError **error)
+rb_player_sync_pipeline (RBPlayer *mp, GError **error)
 {
 	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
-		if (iradio_mode) {
-			rb_debug ("beginning buffering");
-			g_object_ref (G_OBJECT (mp));
-			g_idle_add ((GSourceFunc) buffering_begin_signal_idle, mp);
-			if (gst_element_set_state (mp->priv->srcthread,
-						   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
-				g_set_error (error,
-					     RB_PLAYER_ERROR,
-					     RB_PLAYER_ERROR_GENERAL,
-					     _("Could not start pipeline playing"));
-				return FALSE;
-			}
-		} else {
-			rb_debug ("PLAYING pipeline");
-			if (gst_element_set_state (mp->priv->pipeline,
-						   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
-				g_set_error (error,
-					     RB_PLAYER_ERROR,
-					     RB_PLAYER_ERROR_GENERAL,
-					     _("Could not start pipeline playing"));
-				return FALSE;
-			}				
+ 		rb_debug ("PLAYING pipeline");
+ 		if (gst_element_set_state (mp->priv->playbin,
+ 					   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
+ 			g_set_error (error,
+ 				     RB_PLAYER_ERROR,
+ 				     RB_PLAYER_ERROR_GENERAL,
+ 				     _("Could not start pipeline playing"));
+ 			return FALSE;
 		}
 		g_timer_start (mp->priv->timer);
 	} else {
 		rb_debug ("PAUSING pipeline");
-		if (gst_element_set_state (mp->priv->pipeline,
+		if (gst_element_set_state (mp->priv->playbin,
 					   GST_STATE_PAUSED) == GST_STATE_FAILURE) {
 			g_set_error (error,
 				     RB_PLAYER_ERROR,
 				     RB_PLAYER_ERROR_GENERAL,
 				     _("Could not pause playback"));
 			return FALSE;
-		}
-			
-		rb_debug ("setting sink to NULL");
-		if (gst_element_set_state (mp->priv->sink, GST_STATE_NULL) != GST_STATE_SUCCESS) {
-		  g_set_error (error,
-			       RB_PLAYER_ERROR,
-			       RB_PLAYER_ERROR_GENERAL,
-			       _("Could not close output sink"));
-		  return FALSE;
 		}
 	}
 	return TRUE;
@@ -656,16 +434,15 @@ rb_player_open (RBPlayer *mp,
 		const char *uri,
 		GError **error)
 {
-	gboolean audiocd_mode = uri && g_str_has_prefix (uri, "audiocd://");
-	gboolean iradio_mode = uri && g_str_has_prefix (uri, "http://");
-
 	g_return_if_fail (RB_IS_PLAYER (mp));
 
-	if (mp->priv->pipeline) {
-		gst_element_set_state (mp->priv->pipeline,
-				       GST_STATE_NULL);
-		rb_player_gst_free_pipeline (mp);
+	if (mp->priv->playbin == NULL) {
+		rb_player_construct (mp, error);
+		if (error && *error)
+			return;
 	}
+
+	g_assert (mp->priv->playbin != NULL);
 
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
@@ -674,58 +451,14 @@ rb_player_open (RBPlayer *mp,
 		mp->priv->playing = FALSE;
 		return;
 	}
-
-	rb_player_construct (mp, iradio_mode, audiocd_mode, uri, error);
-	if (error && *error)
-		return;
-
-#ifdef HAVE_AUDIOCD
-	if (audiocd_mode)
-	{
-		GstEvent *event;
-		int tracknum;
-
-		if (!mp->priv->cd) {
-			g_set_error (error,
-				     RB_PLAYER_ERROR,
-				     RB_PLAYER_ERROR_INTERNAL,
-				     _("No AudioCD support; check your settings"));
-			return;
-		}
-
-		tracknum = atoi (uri + 10);
-
-		if (!monkey_media_audio_cd_have_track (mp->priv->cd, tracknum, error)) {
-			return;
-		}
-
-		gst_element_set_state (mp->priv->pipeline, GST_STATE_PAUSED);
-
-		/* 7 is track format */
-		event = gst_event_new_seek (7 |
-					    GST_SEEK_METHOD_SET |
-					    GST_SEEK_FLAG_FLUSH, tracknum);
-		gst_element_send_event (mp->priv->sink, event);
-	} else
-#endif	  
-	{
-
-		/* Internet radio support */
-		g_object_set (G_OBJECT (mp->priv->src),
-			      "iradio-mode", iradio_mode, NULL);
-		
-		g_object_set (G_OBJECT (mp->priv->src),
-			      "location", uri, NULL);
-	}
-	mp->priv->iradio_mode = iradio_mode;
-	
+	g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);	
 	mp->priv->uri = g_strdup (uri);
 
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = 0;
 
-	if (!rb_player_sync_pipeline (mp, iradio_mode, error)) {
+	if (!rb_player_sync_pipeline (mp, error)) {
 		rb_player_close (mp, NULL);
 	}
 }
@@ -740,19 +473,16 @@ rb_player_close (RBPlayer *mp, GError **error)
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
 
-	if (mp->priv->pipeline == NULL)
+	if (mp->priv->playbin == NULL)
 		return;
 
-	if (gst_element_set_state (mp->priv->pipeline,
-				   GST_STATE_NULL) != GST_STATE_SUCCESS) {
+	if (gst_element_set_state (mp->priv->playbin,
+				   GST_STATE_READY) != GST_STATE_SUCCESS) {
 		g_set_error (error,
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
 			     _("Failed to close audio output sink"));
 	}
-
-	gst_object_unref (GST_OBJECT (mp->priv->pipeline));
-	mp->priv->pipeline = NULL;
 }
 
 gboolean
@@ -770,9 +500,9 @@ rb_player_play (RBPlayer *mp, GError **error)
 
 	mp->priv->playing = TRUE;
 
-	g_return_if_fail (mp->priv->pipeline != NULL);
+	g_return_if_fail (mp->priv->playbin != NULL);
 
-	rb_player_sync_pipeline (mp, mp->priv->iradio_mode, error);
+	rb_player_sync_pipeline (mp, error);
 }
 
 void
@@ -785,13 +515,13 @@ rb_player_pause (RBPlayer *mp)
 
 	mp->priv->playing = FALSE;
 
-	g_return_if_fail (mp->priv->pipeline != NULL);
+	g_return_if_fail (mp->priv->playbin != NULL);
 
 	mp->priv->timer_add += floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5);
 	g_timer_stop (mp->priv->timer);
 	g_timer_reset (mp->priv->timer);
 
-	rb_player_sync_pipeline (mp, mp->priv->iradio_mode, NULL);
+	rb_player_sync_pipeline (mp, NULL);
 }
 
 gboolean
@@ -837,9 +567,9 @@ rb_player_set_replaygain (RBPlayer *mp,
 	
         rb_debug ("Scale : %f New volume : %f", scale, mp->priv->cur_volume * scale);
 
-	if (mp->priv->pipeline != NULL) {
-		g_object_set (G_OBJECT (mp->priv->volume_dparam),
-			      "value_double",
+	if (mp->priv->playbin != NULL) {
+		g_object_set (G_OBJECT (mp->priv->playbin),
+			      "volume",
 			      mp->priv->cur_volume * scale,
 			      NULL);
 	}
@@ -852,9 +582,9 @@ rb_player_set_volume (RBPlayer *mp,
 	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (volume >= 0.0 && volume <= 1.0);
 
-	if (mp->priv->pipeline != NULL) {
-		g_object_set (G_OBJECT (mp->priv->volume_dparam),
-			      "value_double",
+	if (mp->priv->playbin != NULL) {
+		g_object_set (G_OBJECT (mp->priv->playbin),
+			      "volume",
 			      volume,
 			      NULL);
 	}
@@ -874,7 +604,7 @@ gboolean
 rb_player_seekable (RBPlayer *mp)
 {
 	g_return_val_if_fail (RB_IS_PLAYER (mp), FALSE);
-	g_return_val_if_fail (mp->priv->pipeline != NULL, FALSE);
+	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
 	/* FIXME we're lying here, no idea how to fix this though, without trying
 	 * a seek which might disrupt playback */
@@ -882,25 +612,23 @@ rb_player_seekable (RBPlayer *mp)
 }
 
 void
-rb_player_set_time (RBPlayer *mp,
-			      long time)
+rb_player_set_time (RBPlayer *mp, long time)
 {
-	GstEvent *event;
-
 	g_return_if_fail (RB_IS_PLAYER (mp));
 	g_return_if_fail (time >= 0);
 
-	g_return_if_fail (mp->priv->pipeline != NULL);
+	g_return_if_fail (mp->priv->playbin != NULL);
 
-	gst_element_set_state (mp->priv->pipeline, GST_STATE_PAUSED);
+	gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
 
-	event = gst_event_new_seek (GST_FORMAT_TIME |
-				    GST_SEEK_METHOD_SET |
-				    GST_SEEK_FLAG_FLUSH, time * GST_SECOND);
-	gst_element_send_event (mp->priv->sink, event);
+	gst_element_seek (mp->priv->playbin, 
+			  GST_FORMAT_TIME 
+			  | GST_SEEK_METHOD_SET 
+			  | GST_SEEK_FLAG_FLUSH, 
+			  time * GST_SECOND);
 
 	if (mp->priv->playing)
-		gst_element_set_state (mp->priv->pipeline, GST_STATE_PLAYING);
+		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 
 	g_timer_reset (mp->priv->timer);
 	mp->priv->timer_add = time;
@@ -911,7 +639,7 @@ rb_player_get_time (RBPlayer *mp)
 {
 	g_return_val_if_fail (RB_IS_PLAYER (mp), -1);
 
-	if (mp->priv->pipeline != NULL)
+	if (mp->priv->playbin != NULL)
 		return (long) floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5) + mp->priv->timer_add;
 	else
 		return -1;

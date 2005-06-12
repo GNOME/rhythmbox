@@ -1,5 +1,26 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* player/rb-player-gst.c: (rb_player_class_init), (rb_player_init),
+	(rb_player_finalize), (rb_player_gst_free_playbin),
+	(rb_player_construct), (rb_player_sync_pipeline), (rb_player_open),
+	(rb_player_close), (rb_player_play), (rb_player_pause),
+	(rb_player_set_replaygain), (rb_player_set_volume),
+	(rb_player_seekable), (rb_player_set_time), (rb_player_get_time):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_init), (rb_shell_player_get_property),
+	(rb_shell_player_open_location),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_error), (tick_cb):
+	* shell/rb-statusbar.c: (rb_statusbar_construct),
+	(rb_statusbar_sync_status):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-source.c: (rb_source_class_init),
+	(rb_source_have_url):
+	* sources/rb-source.h: use playbin instead of making up our own
+	pipeline
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* player/Makefile.am: make the recorder marshallers conditionnally
 	compiled too.
 

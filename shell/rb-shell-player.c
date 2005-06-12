@@ -138,16 +138,6 @@ static void error_cb (RBPlayer *player, GError *err, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, GError *err,
 				   gboolean lock);
 
-static void info_available_cb (RBPlayer *player,
-			       RBMetaDataField field,
-			       GValue *value,
-			       gpointer data);
-static void buffering_end_cb (RBPlayer *player, gpointer data);
-static void buffering_begin_cb (RBPlayer *player, gpointer data);
-static void buffering_progress_cb (RBPlayer *player, int progress, gpointer data);
-static void rb_shell_player_enable_buffering (RBShellPlayer *player);
-static void rb_shell_player_disable_buffering (RBShellPlayer *player);
-
 static void rb_shell_player_set_play_order (RBShellPlayer *player,
 					    const gchar *new_val);
 
@@ -208,8 +198,6 @@ struct RBShellPlayerPrivate
 
 	RBPlayOrder *play_order;
 
-	gboolean buffering;
-
 	GError *playlist_parse_error;
 
 	gboolean last_jumped;
@@ -245,7 +233,6 @@ enum
 	PROP_ACTION_GROUP,
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
-	PROP_BUFFERING,
 };
 
 enum
@@ -395,14 +382,6 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							       FALSE,
 							       G_PARAM_READABLE));
 
-	g_object_class_install_property (object_class,
-					 PROP_BUFFERING,
-					 g_param_spec_boolean ("buffering", 
-							       "buffering", 
-							      "Whether Rhythmbox is currently buffering", 
-							       FALSE,
-							       G_PARAM_READABLE));
-
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -549,11 +528,6 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_box_set_spacing (GTK_BOX (player), 12);
 
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "info",
-				 G_CALLBACK (info_available_cb),
-				 player, 0);
-
-	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
 				 "eos",
 				 G_CALLBACK (eos_cb),
 				 player, 0);
@@ -566,21 +540,6 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
 				 "error",
 				 G_CALLBACK (error_cb),
-				 player, 0);
-
-	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "buffering_begin",
-				 G_CALLBACK (buffering_begin_cb),
-				 player, 0);
-
-	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "buffering_end",
-				 G_CALLBACK (buffering_end_cb),
-				 player, 0);
-
-	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
-				 "buffering_progress",
-				 G_CALLBACK (buffering_progress_cb),
 				 player, 0);
 
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
@@ -823,9 +782,6 @@ rb_shell_player_get_property (GObject *object,
 	case PROP_PLAYING:
 		g_value_set_boolean (value, rb_player_playing (player->priv->mmplayer));
 		break;
-	case PROP_BUFFERING:
-		g_value_set_boolean (value, player->priv->buffering);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -932,7 +888,6 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	gboolean was_playing;
 	gboolean playlist_parsed;
 	TotemPlParserResult playlist_result = TOTEM_PL_PARSER_RESULT_UNHANDLED;
-/* 	gboolean use_buffering = rb_uri_is_iradio (location); */
 
 	rb_debug ("%s", msg);
 
@@ -1812,8 +1767,6 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	if (player->priv->source == source && source != NULL)
 		return;
 
-	rb_shell_player_disable_buffering (player);
-	
 	rb_debug ("setting playing source to %p", source);
 
 	/* Stop the already playing source. */
@@ -2003,8 +1956,6 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 
 	player->priv->handling_error = TRUE;
 
-	rb_shell_player_disable_buffering (player);
-
 	rb_debug ("error: %s", err->message);
 	rb_shell_player_set_entry_playback_error (player, entry, err->message);
 
@@ -2065,167 +2016,6 @@ tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 
 
 	GDK_THREADS_LEAVE ();
-}
-
-static void
-info_available_cb (RBPlayer *mmplayer,
-		   RBMetaDataField field,
-		   GValue *value,
-		   gpointer data)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	RBEntryView *songs;
-	RhythmDBEntry *entry;
-	gboolean changed = FALSE;
-	rb_debug ("info: %d", field);
-
-	/* Sanity check, this signal may come in after we stopped the
-	 * player */
-	if (player->priv->source == NULL
-	    || !rb_player_opened (player->priv->mmplayer)) {
-		rb_debug ("Got info_available but no playing source!");
-		return;
-	}
-
-	GDK_THREADS_ENTER ();
-
-	songs = rb_source_get_entry_view (player->priv->source);
-	entry = rb_entry_view_get_playing_entry (songs);
-
-	if (entry == NULL) {
-		rb_debug ("Got info_available but no playing entry!");
-		goto out_unlock;
-	}
-
-	switch (field)	{
-	case RB_METADATA_FIELD_TITLE:
-	{
-		char *song = g_value_dup_string (value);
-		if (!g_utf8_validate (song, -1, NULL)) {
-			g_warning ("Invalid UTF-8 from internet radio: %s", song);
-			goto out_unlock;
-		}
-
-		if ((!song && player->priv->song)
-		    || !player->priv->song
-		    || strcmp (song, player->priv->song)) {
-			changed = TRUE;
-			g_free (player->priv->song);
-			player->priv->song = song;
-		}
-		else
-			g_free (song);
-		break;
-	}
-#if 0
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_LOCATION:
-	{
-		const char *url = g_value_get_string (value);
-
-		if (!url) break;
-
-		g_return_if_fail (g_utf8_validate (url, -1, NULL));
-
-		if (!player->priv->url || strcmp (url, player->priv->url))
-		{
-			changed = TRUE;
-			g_free (player->priv->url);
-			player->priv->url = g_strdup (url);
-		}
-
-		break;
-	}
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_BIT_RATE:
-	case MONKEY_MEDIA_STREAM_INFO_FIELD_AUDIO_AVERAGE_BIT_RATE:
-	{
-		GValue newval = { 0, };
-		int bitrate = g_value_get_int (value) / 1000;
-		char *qualitystr;
-		MonkeyMediaAudioQuality quality = monkey_media_audio_quality_from_bit_rate (bitrate);
-		qualitystr = monkey_media_audio_quality_to_string (quality);
-		rb_debug ("Got stream quality: \"%s\"", qualitystr);
-		g_value_init (&newval, G_TYPE_STRING);
-		g_value_set_string_take_ownership (&newval, qualitystr);
-		rhythmdb_entry_queue_set (player->priv->db, entry, RHYTHMDB_PROP_QUALITY, &newval);
-		g_value_unset (&newval);
-		break;
-	}
-#endif
-	default:
-	{
-		break;
-	}
-	}
-
-	if (changed)
-		rb_shell_player_sync_with_source (player);
-
- out_unlock:
-	GDK_THREADS_LEAVE ();
-}
-
-static void
-rb_shell_player_enable_buffering (RBShellPlayer *player)
-{
-	if (!player->priv->buffering) {
-		rb_debug("enabling buffering");
-		player->priv->buffering = TRUE;
-		g_object_notify (G_OBJECT (player), "buffering");
-	}
-}
-
-static void
-rb_shell_player_disable_buffering (RBShellPlayer *player)
-{
-	if (player->priv->buffering) {
-		rb_debug("disabling buffering");
-		player->priv->buffering = FALSE;
-		g_object_notify (G_OBJECT (player), "buffering");
-	}
-}
-
-static void
-buffering_begin_cb (RBPlayer *mmplayer,
-		    gpointer data)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	rb_debug ("got buffering_begin_cb");
-	rb_shell_player_enable_buffering (player);
-}
-
-static void
-buffering_end_cb (RBPlayer *mmplayer,
-		  gpointer data)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	rb_debug ("got buffering_end_cb");
-	rb_shell_player_disable_buffering (player);
- 	if (player->priv->source)
- 		rb_source_buffering_done (player->priv->source);
-}
-
-static void
-buffering_progress_cb (RBPlayer *mmplayer,
-		       int progress,
-		       gpointer data)
-{
-	RBShellPlayer *player = RB_SHELL_PLAYER (data);
-	rb_debug ("got buffering_progress_cb: %d", progress);
-
-	GDK_THREADS_ENTER();
-
-	if (progress == 100)
-	{
-		rb_shell_player_disable_buffering (player);
-		rb_shell_player_sync_with_source (player);
-		rb_shell_player_sync_buttons (player);
-	}	
-	else
-	{
-		rb_shell_player_enable_buffering (player);
-	}
-	
-	GDK_THREADS_LEAVE();
 }
 
 const char *
