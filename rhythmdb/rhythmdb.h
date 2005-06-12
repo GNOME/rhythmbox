@@ -328,10 +328,10 @@ typedef struct
 	void	(*entry_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
 					 const GValue *old, const GValue *new);
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
-	void	(*load_complete)	(RhythmDBEntry *entry);
-	void	(*save_complete)	(RhythmDBEntry *entry);
+	void	(*load_complete)	(void);
+	void	(*save_complete)	(void);
 	void	(*error)		(const char *uri, const char *msg);
-	void	(*read_only)		(RhythmDBEntry *entry, gboolean readonly);
+	void	(*read_only)		(gboolean readonly);
 
 	/* virtual methods */
 
@@ -383,10 +383,6 @@ void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 void            rhythmdb_entry_sync     (RhythmDB *db, RhythmDBEntry *entry,
-					 guint propid, GValue *value);
-
-
-void		rhythmdb_entry_queue_set(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, GValue *value);
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);

@@ -45,6 +45,10 @@ gchar *rb_uri_get_mount_point (const char *uri);
 gboolean rb_uri_is_mounted (const char *uri);
 
 
+void rb_threads_init (void);
+gboolean rb_is_main_thread (void);
+
+
 
 
 G_END_DECLS

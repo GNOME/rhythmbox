@@ -1,5 +1,27 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* lib/rb-util.c: (rb_is_main_thread), (rb_threads_init):
+	* lib/rb-util.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (rhythmdb_shutdown),
+	(rhythmdb_read_enter), (rhythmdb_read_leave),
+	(timeout_rhythmdb_commit), (set_metadata_string_default_unknown),
+	(set_props_from_metadata), (rhythmdb_process_stat_event),
+	(rhythmdb_process_metadata_load),
+	(rhythmdb_process_queued_entry_set_event),
+	(rhythmdb_process_events), (action_thread_main),
+	(rhythmdb_entry_sync), (rhythmdb_entry_set_internal),
+	(rhythmdb_entry_queue_set), (rhythmdb_entry_set),
+	(rhythmdb_prop_get_type), (entry_volume_mounted_or_unmounted),
+	(rhythmdb_entry_set_mount_point), (rhythmdb_entry_set_visibility):
+	* rhythmdb/rhythmdb.h:
+	* shell/main.c: (main):
+	* sources/rb-source.c: (rb_source_update_play_statistics):
+	* widgets/rb-entry-view.c: (rb_entry_view_rated_cb): reimplement 
+	rhythmdb_entry_queue_set, this should fix some crashes when doing
+	a rhythmdb_entry_set while the db is read-only
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* configure.ac: check for playbin, and remove the check for all other
 	elements
 

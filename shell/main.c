@@ -60,6 +60,7 @@
 #include "rb-file-helpers.h"
 #include "rb-string-helpers.h"
 #include "rb-stock-icons.h"
+#include "rb-util.h"
 #include "eel-gconf-extensions.h"
 
 static gboolean debug           = FALSE;
@@ -181,8 +182,8 @@ main (int argc, char **argv)
 
 	rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
-	
-	gdk_threads_init ();
+
+	rb_threads_init ();
 
 	client_proxy = NULL;
 	activated = FALSE;

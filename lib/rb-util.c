@@ -24,6 +24,8 @@
 #include <string.h>
 #include <libgnomevfs/gnome-vfs.h>
 
+static GPrivate * private_is_primary_thread;
+
 gboolean
 rb_true_function (gpointer dummy)
 {
@@ -350,3 +352,22 @@ rb_uri_is_mounted (const char *uri)
 	return found;
 }
 
+
+gboolean
+rb_is_main_thread (void)
+{
+	if (g_thread_supported()) {
+		return GPOINTER_TO_UINT(g_private_get (private_is_primary_thread)) == 1;
+	} else {
+		return TRUE;
+	}
+}
+
+
+void
+rb_threads_init (void)
+{
+	private_is_primary_thread = g_private_new (NULL);
+	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
+	gdk_threads_init ();
+}

@@ -384,22 +384,22 @@ rb_source_update_play_statistics (RBSource *source, RhythmDB *db, RhythmDBEntry 
 	gulong current_count;
 	GValue value = { 0, };
 
-	g_value_init (&value, G_TYPE_INT);
+	g_value_init (&value, G_TYPE_ULONG);
 
 	current_count = entry->play_count;
 
-	g_value_set_int (&value, current_count + 1);
+	g_value_set_ulong (&value, current_count + 1);
 
 	/* Increment current play count */
-	rhythmdb_entry_queue_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_PLAY_COUNT, &value);
 	g_value_unset (&value);
 	
 	/* Reset the last played time */
 	time (&now);
 
-	g_value_init (&value, G_TYPE_LONG);
-	g_value_set_long (&value, now);
-	rhythmdb_entry_queue_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, now);
+	rhythmdb_entry_set (db, entry, RHYTHMDB_PROP_LAST_PLAYED, &value);
 	g_value_unset (&value);
 }
 
