@@ -144,10 +144,7 @@ RHYTHMBOX_CFLAGS="$RHYTHMBOX_CFLAGS $SOUNDSYSTEM_CFLAGS"
 RHYTHMBOX_LIBS="$RHYTHMBOX_LIBS $SOUNDSYSTEM_LIBS"
 
 dnl Check for gstreamer elements
-AM_GST_ELEMENT_CHECK(gnomevfssrc,,missing_gst_elements="$missing_gst_elements gnomevfssrc")
-AM_GST_ELEMENT_CHECK(spider,,missing_gst_elements="$missing_gst_elements spider")
-AM_GST_ELEMENT_CHECK(volume,,missing_gst_elements="$missing_gst_elements volume")
-AM_GST_ELEMENT_CHECK(osssink,, AM_GST_ELEMENT_CHECK(alsasink,,missing_gst_output_element=yes))
+AM_GST_ELEMENT_CHECK(playbin,,missing_gst_elements="$missing_gst_elements spider")
 
 dnl Tag writing
 AC_ARG_ENABLE(tag-writing,
