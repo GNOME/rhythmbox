@@ -1,5 +1,9 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* data/ui/rhythmbox-ui.xml: add Quit menu item to the tray icon
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* lib/rb-util.c: (rb_is_main_thread), (rb_threads_init):
 	* lib/rb-util.h:
 	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (rhythmdb_shutdown),
@@ -637,6 +641,18 @@
 
     modified files:
      ChangeLog sources/rb-ipod-source.c
+
+
+2004-12-01 23:53:05 GMT	Christophe Fergeau <teuf@gnome.org>	patch-152
+
+    Summary:
+      Added safety check which should prevent rb from crashing if we try to save a NULL property string
+    Revision:
+      rhythmbox--main--0.9--patch-152
+
+
+    modified files:
+     ChangeLog rhythmdb/rhythmdb-tree.c
 
 
 2004-11-23 05:35:49 GMT	William Jon McCann <mccann@jhu.edu>	patch-150
