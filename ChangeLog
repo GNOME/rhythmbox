@@ -1,5 +1,14 @@
 2005-06-12  Christophe Fergeau  <teuf@gnome.org>
 
+	* widgets/rb-entry-view.c: (type_ahead_search_func),
+	(rb_entry_view_play_count_cell_data_func),
+	(rb_entry_view_constructor), (rb_entry_view_poll_model):
+	* widgets/rb-property-view.c: (rb_property_view_constructor):
+	* widgets/rb-tree-view.c: (rb_tree_view_new): enable type ahead find
+	in the various treeviews in the main UI.
+
+2005-06-12  Christophe Fergeau  <teuf@gnome.org>
+
 	* player/rb-player-gst.c: (rb_player_class_init), (rb_player_init),
 	(rb_player_finalize), (rb_player_gst_free_playbin),
 	(rb_player_construct), (rb_player_sync_pipeline), (rb_player_open),

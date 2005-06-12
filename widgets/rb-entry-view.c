@@ -207,6 +207,23 @@ static GObjectClass *parent_class = NULL;
 
 static guint rb_entry_view_signals[LAST_SIGNAL] = { 0 };
 
+static gboolean
+type_ahead_search_func (GtkTreeModel *model, gint column,
+			const gchar *key, GtkTreeIter *iter,
+			gpointer search_data)
+{
+	RhythmDBEntry *entry;
+	gchar *folded;
+	gboolean res;
+
+	gtk_tree_model_get (model, iter, 0, &entry, -1);
+	folded = g_utf8_casefold (key, -1);
+	res = (strstr (rb_refstring_get_folded (entry->title), folded) == NULL);
+	g_free (folded);
+	return res;
+}
+
+
 GType
 rb_entry_view_get_type (void)
 {
@@ -885,7 +902,7 @@ rb_entry_view_long_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *r
 
 static void
 rb_entry_view_play_count_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-					 GtkTreeModel *tree_model, GtkTreeIter *iter,
+					 GtkTreeModel *tree_model, GtkTreeIter * iter,
 					 struct RBEntryViewCellDataFuncData *data)
 {
 	RhythmDBEntry *entry;
@@ -1318,6 +1335,10 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 							 construct_properties));
 
 	view->priv->treeview = GTK_WIDGET (rb_tree_view_new ());
+
+	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
+					     type_ahead_search_func, 
+					     NULL, NULL);
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "button_press_event",
@@ -2031,4 +2052,3 @@ rb_entry_view_poll_model (RBEntryView *view)
 
 	return rhythmdb_query_model_poll (view->priv->model, &timeout);
 }
-

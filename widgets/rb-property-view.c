@@ -506,7 +506,6 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
-/*  	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (view->priv->treeview), FALSE); */
 
         switch (view->priv->propid)
 	{
