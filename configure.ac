@@ -18,8 +18,12 @@ AC_CHECK_SIZEOF(long)
 
 GTK_REQS=2.5.4
 GNOME_VFS_REQS=2.6
-NCB_REQS=2.9.0
+NCB_MIN_REQS=2.9.0
 NCB_MAX_REQS=2.11.0
+DBUS_MIN_REQS=0.23
+DBUS_MAX_REQS=0.30
+HAL_MIN_REQS=0.2.92
+HAL_MAX_REQS=0.5
 TOTEM_PLPARSER_REQS=1.0
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
@@ -49,8 +53,6 @@ dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi
 dnl function was added in that release.
 dnl enable_ipod = "no"
 
-HAL_REQUIRED=0.2.92
-
 AC_ARG_ENABLE(ipod,
 	      AC_HELP_STRING([--enable-ipod],
 			     [Enable iPod support in Rhythmbox]))
@@ -58,9 +60,9 @@ AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
 if test x"$enable_ipod" = xyes; then
 	AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
 	USE_HAL=""
-	PKG_CHECK_MODULES(HAL, hal gnome-vfs-2.0 >= 2.7.4,
+	PKG_CHECK_MODULES(HAL, hal >= $HAL_MIN_REQS hal < $HAL_MAX_REQS gnome-vfs-2.0 >= 2.7.4,
 		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
-		[ USE_HAL="dbus-glib-1 hal >= $HAL_REQUIRED" ], :)
+		[ USE_HAL="dbus-glib-1 hal >= $HAL_MIN_REQS hal < $HAL_MAX_REQS" ], :)
 fi
 
 PKG_CHECK_MODULES(RHYTHMBOX,				\
@@ -274,7 +276,7 @@ AC_ARG_WITH(cd_burner,
 			   [Enable CD burner support in Rhythmbox]),,
 	      with_cd_burner=auto)
 if test "x$with_cd_burner" != "xno"; then
-	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_REQS libnautilus-burn < $NCB_MAX_REQS], enable_cd_burner=yes, enable_cd_burner=no)
+	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS libnautilus-burn < $NCB_MAX_REQS], enable_cd_burner=yes, enable_cd_burner=no)
         if test "x$with_cd_burner" = xyes && test "x$enable_cd_burner" = xno; then
 	   AC_MSG_ERROR([CD burner support explicitly requested but no support found])	   
 	fi
@@ -339,7 +341,7 @@ AC_ARG_WITH(dbus,
 			   [Enable D-BUS support]),,
 	      with_dbus=auto)
 if test "x$with_dbus" != "xno"; then
-	PKG_CHECK_MODULES(DBUS, dbus-glib-1, enable_dbus=yes, enable_dbus=no)
+	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS dbus-glib-1 < $DBUS_MAX_REQS, enable_dbus=yes, enable_dbus=no)
         if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
 	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
 	fi
