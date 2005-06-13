@@ -19,10 +19,10 @@ INCLUDES = 						\
 	-I$(top_srcdir)/metadata			\
 	$(RHYTHMBOX_CFLAGS)
 
-if USE_CD_BURNER
 
 BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h
 
+if USE_CD_BURNER
 librbplayer_la_SOURCES += 	\
 	rb-recorder.h		\
 	rb-recorder-gst.c       \
@@ -30,6 +30,7 @@ librbplayer_la_SOURCES += 	\
 	rb-recorder-marshal.h
 
 INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
+endif
 
 rb-recorder-marshal.c: rb-recorder-marshal.list
 	echo "#include \"rb-recorder-marshal.h\"" > $@ && \
@@ -38,7 +39,6 @@ rb-recorder-marshal.c: rb-recorder-marshal.list
 rb-recorder-marshal.h: rb-recorder-marshal.list
 	@GLIB_GENMARSHAL@ $< --prefix=rb_recorder_marshal --header > $@
 
-endif
 
 EXTRA_DIST = rb-recorder-marshal.list
 
