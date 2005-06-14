@@ -65,7 +65,7 @@ librbbonobo_la_LIBADD = 				\
 	$(ORBIT_LIBS) 					\
 	$(BONOBO_LIBS)
 
-EXTRA_DIST = Rhythmbox.idl
+EXTRA_DIST = $(server_in_files) Rhythmbox.idl
 
 CLEANFILES = $(rhythmbox_interface_idl_sources) $(server_DATA) $(server_in_files:.server.in.in=.server.in)
 
