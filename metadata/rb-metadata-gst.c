@@ -479,8 +479,9 @@ rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean
 		mimetype = gst_structure_get_name (structure);
 		if (g_str_has_prefix (mimetype, "audio/x-raw")) {
 			/* link this to the fake sink */
+			GstPad *sink_pad;
 			rb_debug ("linking new decoded pad of type %s to fakesink", mimetype);
-			GstPad *sink_pad = gst_element_get_pad (md->priv->sink, "sink");
+			sink_pad = gst_element_get_pad (md->priv->sink, "sink");
 			gst_pad_link (pad, sink_pad);
 
 			/* what happens if we get two audio pads from the same stream? 

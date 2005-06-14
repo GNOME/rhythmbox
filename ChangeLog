@@ -1,5 +1,11 @@
 2005-06-14  Christophe Fergeau  <teuf@gnome.org>
 
+	* metadata/rb-metadata-gst.c: (rb_metadata_gst_new_decoded_pad_cb):
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load): fix gcc 4
+	(and 2.95) compilation
+
+2005-06-14  Christophe Fergeau  <teuf@gnome.org>
+
 	* metadata/rb-metadata-gst.c: (rb_metadata_init),
 	(rb_metadata_finalize), (rb_metadata_gst_error_cb),
 	(rb_metadata_gst_load_tag), (rb_metadata_gst_fakesink_handoff_cb),

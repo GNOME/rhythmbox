@@ -1300,8 +1300,10 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	const char *mime;
 
 	if (event->error) {
+		struct RhythmDBLoadErrorData *data;
+
 		rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
-		struct RhythmDBLoadErrorData *data = g_new0 (struct RhythmDBLoadErrorData, 1);
+		data = g_new0 (struct RhythmDBLoadErrorData, 1);
 		g_object_ref (G_OBJECT (db));
 		data->db = db;
 		data->uri = g_strdup (event->real_uri);
