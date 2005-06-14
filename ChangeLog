@@ -1,3 +1,22 @@
+2005-06-14  Christophe Fergeau  <teuf@gnome.org>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_init),
+	(rb_metadata_finalize), (rb_metadata_gst_error_cb),
+	(rb_metadata_gst_load_tag), (rb_metadata_gst_fakesink_handoff_cb),
+	(rb_metadata_gst_new_decoded_pad_cb),
+	(rb_metadata_gst_unknown_type_cb), (make_pipeline_element),
+	(rb_metadata_load):
+	* metadata/rb-metadata.h:
+	* player/rb-player-gst.c: (rb_player_class_init):
+	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (emit_error_idle),
+	(rhythmdb_process_metadata_load), (rhythmdb_execute_stat):
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(info_available_cb): use decodebin for metadata reading instead of
+	spider, patch from jonathan@kaolin.hn.org. If you don't have
+	gst-plugins 0.8.9, you may get GStreamer-Critical warnings in your
+	console (this is bug #169400).
+
+
 2005-06-13  Christophe Fergeau  <teuf@gnome.org>
 
 	* configure.ac: don't enable dbus or hal if newer (api incompatible)

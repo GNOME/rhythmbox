@@ -572,6 +572,7 @@ rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
 			gnome_vfs_file_info_unref (result->vfsinfo);
 		if (result->metadata)
 			g_object_unref (result->metadata);
+		g_clear_error (&result->error);
 		break;
 	case RHYTHMDB_EVENT_DB_LOAD:
 		break;
@@ -1276,6 +1277,21 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 	}
 }
 
+struct RhythmDBLoadErrorData {
+	RhythmDB *db;
+	char *uri;
+	char *msg;
+};
+
+static gboolean
+emit_error_idle (struct RhythmDBLoadErrorData *data)
+{
+	g_signal_emit (G_OBJECT (data->db), rhythmdb_signals[ERROR], 0, data->uri, data->msg);
+	g_object_unref (G_OBJECT (data->db));
+	g_free (data);
+	return FALSE;
+}
+
 static gboolean
 rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 {
@@ -1285,6 +1301,13 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 
 	if (event->error) {
 		rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
+		struct RhythmDBLoadErrorData *data = g_new0 (struct RhythmDBLoadErrorData, 1);
+		g_object_ref (G_OBJECT (db));
+		data->db = db;
+		data->uri = g_strdup (event->real_uri);
+		data->msg = g_strdup (event->error->message);
+		
+		g_idle_add ((GSourceFunc)emit_error_idle, data);
 		return TRUE;
 	}
 
@@ -1493,12 +1516,6 @@ rhythmdb_idle_poll_events (RhythmDB *db)
 	return FALSE;
 }
 
-struct RhythmDBLoadErrorData {
-	RhythmDB *db;
-	char *uri;
-	char *msg;
-};
-
 static gpointer
 read_queue (GAsyncQueue *queue, gboolean *cancel)
 {
@@ -1577,7 +1594,7 @@ error:
 				    _("Couldn't access %s: %s"),
 				    unescaped,
 				    gnome_vfs_result_to_string (vfsresult));
-	rb_debug ("got error: %s", event->error->message);
+	rb_debug ("got error on %s: %s", unescaped, event->error->message);
 	g_free (unescaped);
 	if (event->vfsinfo)
 		gnome_vfs_file_info_unref (event->vfsinfo);

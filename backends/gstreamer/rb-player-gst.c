@@ -99,7 +99,6 @@ rb_player_class_init (RBPlayerClass *klass)
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
 			      0);
-#ifdef ENABLE_NOT_REIMPLEMENTED
 	rb_player_signals[INFO] =
 		g_signal_new ("info",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -109,7 +108,6 @@ rb_player_class_init (RBPlayerClass *klass)
 			      rb_marshal_VOID__INT_POINTER,
 			      G_TYPE_NONE,
 			      2, G_TYPE_INT, G_TYPE_POINTER);
-#endif
 	rb_player_signals[ERROR] =
 		g_signal_new ("error",
 			      G_OBJECT_CLASS_TYPE (object_class),

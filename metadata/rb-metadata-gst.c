@@ -57,6 +57,7 @@ struct RBMetaDataPrivate
 	char *type;
 	gboolean handoff;
 	gboolean eos;
+	gboolean non_audio;
 	GError *error;
 };
 
@@ -126,32 +127,25 @@ add_supported_type (RBMetaData *md,
 static void
 rb_metadata_init (RBMetaData *md)
 {
-	GstElement *elt;
-	
 	md->priv = g_new0 (RBMetaDataPrivate, 1);
 
 	md->priv->supported_types = g_ptr_array_new ();
 	
+ 	/* the list of supported types serves two purposes:
+ 	 * - it knows how to construct elements for tag writing
+ 	 * - it knows human-readable names for MIME types so we can say
+ 	 *     "There is no plugin available to play WMV files"
+ 	 *     rather than " .. play video/x-ms-asf files".
+ 	 *
+ 	 * only registering types we have plugins for defeats the second 
+	 * purpose.
+ 	 */
+
 	add_supported_type (md, "application/x-id3", rb_add_id3_tagger, "MP3");
 	add_supported_type (md, "audio/mpeg", rb_add_id3_tagger, "MP3");
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
 	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
-
- 	if ((elt = gst_element_factory_make ("ffdec_wmav2", "ffdec_wmav2")) != NULL) {
-		add_supported_type (md, "video/x-ms-asf", NULL, "MusePack");
- 		gst_object_unref (GST_OBJECT (elt));
- 	}
- 
-  	if ((elt = gst_element_factory_make ("musepackdec", "musepackdec")) != NULL) {
- 		add_supported_type (md, "application/x-apetag", NULL, "MusePack");
-  		gst_object_unref (GST_OBJECT (elt));
-  	}
-	
-	if ((elt = gst_element_factory_make ("faad", "faad")) != NULL) {
-		add_supported_type (md, "audio/x-m4a", NULL, "MPEG-4");
-		gst_object_unref (GST_OBJECT (elt));
-	}
 }
 
 static void
@@ -176,6 +170,7 @@ rb_metadata_finalize (GObject *object)
 	if (md->priv->pipeline)
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
 
+	g_free (md->priv->type);
 	g_free (md->priv->uri);
 
 	g_free (md->priv);
@@ -357,20 +352,6 @@ rb_metadata_gst_error_cb (GstElement *element,
 			  RBMetaData *md)
 {
 	rb_debug ("caught error: %s ", error->message);
-
-	if (error->domain == GST_STREAM_ERROR
-	    && error->code == GST_STREAM_ERROR_CODEC_NOT_FOUND) {
-		const char *human_element_hame = rb_metadata_gst_type_to_name (md, md->priv->type);
-		if (human_element_hame) {
-			md->priv->error = g_error_new (RB_METADATA_ERROR,
-						       RB_METADATA_ERROR_MISSING_PLUGIN,
-						       _("There is no plugin installed to handle a %s file."),
-						       human_element_hame);
-			return;
-		}
-	}
-	
-	/* Fallthrough */
 	md->priv->error = g_error_new_literal (RB_METADATA_ERROR,
 					       RB_METADATA_ERROR_GENERAL,
 					       error->message);
@@ -425,7 +406,7 @@ rb_metadata_gst_load_tag (const GstTagList *list, const gchar *tag, RBMetaData *
 		/* GStreamer sends us bitrate in bps, but we need it in kbps*/
 		gulong bitrate;
 		bitrate = g_value_get_ulong (newval);
-		g_value_set_ulong (newval, bitrate/1000);		
+		g_value_set_ulong (newval, bitrate/1000);
 		break;
 	}
 
@@ -467,7 +448,8 @@ static void
 rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPad *pad, RBMetaData *md)
 {
 	if (md->priv->handoff) {
-		rb_debug ("caught recursive handoff!");
+		/* we get lots of these with decodebin.  why? */
+		/* rb_debug ("caught recursive handoff!"); */
 		return;
 	} else if (md->priv->eos) {
 		rb_debug ("caught handoff after eos!");
@@ -478,6 +460,68 @@ rb_metadata_gst_fakesink_handoff_cb (GstElement *fakesink, GstBuffer *buf, GstPa
 	md->priv->handoff = TRUE;
 }
 
+static void
+rb_metadata_gst_new_decoded_pad_cb (GstElement *decodebin, GstPad *pad, gboolean last, RBMetaData *md)
+{
+	GstCaps *caps;
+	GstStructure *structure;
+	const gchar *mimetype;
+
+	caps = gst_pad_get_caps (pad);
+
+	/* we get "ANY" caps for text/plain files etc. */
+	if (gst_caps_is_empty (caps) || gst_caps_is_any (caps)) {
+		rb_debug ("decoded pad with no caps or any caps.  this file is boring.");
+		md->priv->non_audio = TRUE;
+	} else {
+		/* is this pad audio? */
+		structure = gst_caps_get_structure (caps, 0);
+		mimetype = gst_structure_get_name (structure);
+		if (g_str_has_prefix (mimetype, "audio/x-raw")) {
+			/* link this to the fake sink */
+			rb_debug ("linking new decoded pad of type %s to fakesink", mimetype);
+			GstPad *sink_pad = gst_element_get_pad (md->priv->sink, "sink");
+			gst_pad_link (pad, sink_pad);
+
+			/* what happens if we get two audio pads from the same stream? 
+			 * can this happen?
+			 */
+		} else {
+			/* assume anything we can get a video or text stream out of is
+			 * something that should be fed to totem rather than rhythmbox.
+			 */
+			rb_debug ("got decoded pad of non-audio type %s", mimetype);
+			md->priv->non_audio = TRUE;
+		}
+	}
+
+	gst_caps_free (caps);
+}
+
+static void
+rb_metadata_gst_unknown_type_cb (GstElement *decodebin, GstPad *pad, GstCaps *caps, RBMetaData *md)
+{
+	/* try to shortcut it a bit */
+	rb_debug ("decodebin emitted unknown type signal");
+	md->priv->non_audio = TRUE;
+}
+
+static GstElement *make_pipeline_element (GstElement *pipeline, const char *element, GError **error)
+{
+	GstElement *elem = gst_element_factory_make (element, element);
+	if (elem == NULL) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_MISSING_PLUGIN,
+			     _("Failed to create %s element; check your installation"),
+			     element);
+		return NULL;
+	}
+
+	gst_bin_add (GST_BIN (pipeline), elem);
+	return elem;
+}
+
 void
 rb_metadata_load (RBMetaData *md,
 		  const char *uri,
@@ -485,10 +529,8 @@ rb_metadata_load (RBMetaData *md,
 {
 	GstElement *pipeline = NULL;
 	GstElement *gnomevfssrc = NULL;
+	GstElement *decodebin = NULL;
 	GstElement *typefind = NULL;
-	GstElement *spider = NULL;
-	GstCaps *filtercaps = NULL;
-	const char *plugin_name = NULL;
 
 	g_free (md->priv->uri);
 	md->priv->uri = NULL;
@@ -497,14 +539,15 @@ rb_metadata_load (RBMetaData *md,
 	md->priv->error = NULL;
 	md->priv->eos = FALSE;
 	md->priv->handoff = FALSE;
+	md->priv->non_audio = FALSE;
 
-	if (md->priv->pipeline)
+	if (md->priv->pipeline) {
 		gst_object_unref (GST_OBJECT (md->priv->pipeline));
-
-	if (uri == NULL) {
 		md->priv->pipeline = NULL;
-		return;
 	}
+
+	if (uri == NULL)
+		return;
 
 	rb_debug ("loading metadata for uri: %s", uri);
 	md->priv->uri = g_strdup (uri);
@@ -515,40 +558,45 @@ rb_metadata_load (RBMetaData *md,
 						    NULL, (GDestroyNotify) free_gvalue);
 
 	/* The main tagfinding pipeline looks like this:
-	 * gnomevfssrc ! typefind ! spider ! application/x-gst-tags ! fakesink
-	 */
+ 	 * gnomevfssrc ! decodebin ! fakesink
+ 	 *
+ 	 * but we can only link the fakesink in when the decodebin
+ 	 * creates an audio source pad.  we do this in the 'new-decoded-pad'
+ 	 * signal handler.
+ 	 */
 	pipeline = gst_pipeline_new ("pipeline");
 
-	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
-	g_signal_connect_object (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md, 0);
+ 	gnomevfssrc = make_pipeline_element (pipeline, "gnomevfssrc", error);
+ 	decodebin = make_pipeline_element (pipeline, "decodebin", error);
+ 	md->priv->sink = make_pipeline_element (pipeline, "fakesink", error);
+ 	if (!(gnomevfssrc && decodebin && md->priv->sink)) {
+ 		rb_debug ("missing an element, sadly");
+ 		goto out;
+ 	}
 
-	plugin_name = "gnomevfssrc";
-	if (!(gnomevfssrc = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), gnomevfssrc);		  
+
 	g_object_set (G_OBJECT (gnomevfssrc), "location", uri, NULL);
-	plugin_name = "typefind";
-	if (!(typefind = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	g_signal_connect_object (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md, 0);
-	gst_bin_add (GST_BIN (pipeline), typefind);		  
-	plugin_name = "spider";
-	if (!(spider = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), spider);		  
-	plugin_name = "fakesink";
-	if (!(md->priv->sink = gst_element_factory_make (plugin_name, plugin_name)))
-		goto missing_plugin;
-	gst_bin_add (GST_BIN (pipeline), md->priv->sink);		  
 	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
+ 
+ 	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
+ 	g_signal_connect_object (pipeline, "found-tag", G_CALLBACK (rb_metadata_gst_found_tag), md, 0);
+
 	g_signal_connect_object (md->priv->sink, "handoff", G_CALLBACK (rb_metadata_gst_fakesink_handoff_cb), md, 0);
 	g_signal_connect_object (md->priv->sink, "eos", G_CALLBACK (rb_metadata_gst_eos_cb), md, 0);
 
-	gst_element_link_many (gnomevfssrc, typefind, spider, NULL);
-
-	filtercaps = gst_caps_new_simple ("audio/x-raw-int", NULL);
-	gst_element_link_filtered (spider, md->priv->sink, filtercaps);
-	gst_caps_free (filtercaps);
+ 	g_signal_connect_object (decodebin, "new-decoded-pad", G_CALLBACK (rb_metadata_gst_new_decoded_pad_cb), md, 0);
+ 	g_signal_connect_object (decodebin, "unknown-type", G_CALLBACK (rb_metadata_gst_unknown_type_cb), md, 0);
+  
+ 	/* locate the decodebin's typefind, so we can get the have_type signal too.
+ 	 * this is kind of nasty, since it relies on an essentially arbitrary string 
+ 	 * in the decodebin code not changing.  the alternative is to have our own
+ 	 * typefind instance before the decodebin.  it might not like that.
+ 	 */
+ 	typefind = gst_bin_get_by_name (GST_BIN (decodebin), "typefind");
+ 	g_assert (typefind != NULL);
+ 	g_signal_connect_object (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md, 0);
+ 
+ 	gst_element_link (gnomevfssrc, decodebin);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);
@@ -586,35 +634,49 @@ rb_metadata_load (RBMetaData *md,
 	
 	gst_element_set_state (pipeline, GST_STATE_NULL);
 
-	if (!md->priv->type) {
-		rb_debug ("couldn't get MIME type for %s", uri);
-		goto out;
-	}
-
-	{
-		/* FIXME
-		 * For now, we simply ignore files with an unknown MIME
-		 * type. This will be fixed once GStreamer gives us
-		 * a good way to detect audio. */
-		if (!rb_metadata_gst_type_to_name (md, md->priv->type)) {
-			rb_debug ("ignoring file %s with detected type %s",
-				  uri, md->priv->type);
-			g_free (md->priv->type);
-			md->priv->type = NULL;
-			goto out;
-		}
-	}
-	
+	/* report errors for various failure cases.
+	 * these don't include the URI as the load failure dialog
+	 * already displays it.
+	 */
 	if (md->priv->error) {
 		g_propagate_error (error, md->priv->error);
+	} else if (!md->priv->type) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNRECOGNIZED,
+			     _("The MIME type of the file could not be identified"));
+	} else if (md->priv->non_audio) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_NOT_AUDIO,
+			     _("The file is not an audio stream"));
+	} else if (!md->priv->handoff) {
+		const char *report_type = rb_metadata_gst_type_to_name (md, md->priv->type);
+		if (report_type == NULL)
+			report_type = md->priv->type;
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_UNSUPPORTED,
+			     _("There is no plugin installed to handle a %s file."),
+			     md->priv->type);
+	} else {
+		/* yay, it worked */
+		rb_debug ("successfully read metadata for %s", uri);
+	
+		/* it doesn't matter if we don't recognise the format,
+		 * as long as gstreamer can play it, we can put it in
+		 * the library.
+		 */
+		if (!rb_metadata_gst_type_to_name (md, md->priv->type)) {
+			rb_debug ("we don't know what type %s (from file %s) is, but we'll play it anyway",
+				  md->priv->type, uri);
+		}
 	}
-	goto out;
- missing_plugin:
-	g_set_error (error,
-		     RB_METADATA_ERROR,
-		     RB_METADATA_ERROR_MISSING_PLUGIN,
-		     _("Failed to create %s element; check your installation"),
-		     plugin_name);
+
+	if (*error != NULL) {
+		g_free (md->priv->type);
+		md->priv->type = NULL;
+	}
  out:
 	if (pipeline != NULL)
 		gst_object_unref (GST_OBJECT (pipeline));

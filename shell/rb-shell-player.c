@@ -138,6 +138,10 @@ static void error_cb (RBPlayer *player, GError *err, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, GError *err,
 				   gboolean lock);
 
+static void info_available_cb (RBPlayer *player,
+                               RBMetaDataField field,
+                               GValue *value,
+                               gpointer data);
 static void rb_shell_player_set_play_order (RBShellPlayer *player,
 					    const gchar *new_val);
 
@@ -526,6 +530,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	player->priv->last_skipped = FALSE;
 
 	gtk_box_set_spacing (GTK_BOX (player), 12);
+
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "info",
+				 G_CALLBACK (info_available_cb),
+				 player, 0);
 
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
 				 "eos",
@@ -2017,6 +2026,68 @@ tick_cb (RBPlayer *mmplayer, long elapsed, gpointer data)
 
 	GDK_THREADS_LEAVE ();
 }
+
+static void
+info_available_cb (RBPlayer *mmplayer,
+                   RBMetaDataField field,
+                   GValue *value,
+                   gpointer data)
+{
+        RBShellPlayer *player = RB_SHELL_PLAYER (data);
+        RBEntryView *songs;
+        RhythmDBEntry *entry;
+        gboolean changed = FALSE;
+        rb_debug ("info: %d", field);
+
+        /* Sanity check, this signal may come in after we stopped the
+         * player */
+        if (player->priv->source == NULL
+            || !rb_player_opened (player->priv->mmplayer)) {
+                rb_debug ("Got info_available but no playing source!");
+                return;
+        }
+
+        GDK_THREADS_ENTER ();
+
+        songs = rb_source_get_entry_view (player->priv->source);
+        entry = rb_entry_view_get_playing_entry (songs);
+
+        if (entry == NULL) {
+                rb_debug ("Got info_available but no playing entry!");
+                goto out_unlock;
+        }
+
+        switch (field) {
+        case RB_METADATA_FIELD_TITLE:
+        {
+                char *song = g_value_dup_string (value);
+                if (!g_utf8_validate (song, -1, NULL)) {
+                        g_warning ("Invalid UTF-8 from internet radio: %s", song);
+                        goto out_unlock;
+                }
+
+                if ((!song && player->priv->song)
+                    || !player->priv->song
+                    || strcmp (song, player->priv->song)) {
+                        changed = TRUE;
+                        g_free (player->priv->song);
+                        player->priv->song = song;
+                } else {
+                        g_free (song);
+		}
+                break;
+        }
+	default:
+		break;
+	}
+
+	if (changed)
+		rb_shell_player_sync_with_source (player);
+
+ out_unlock:
+	GDK_THREADS_LEAVE ();
+}
+
 
 const char *
 rb_shell_player_get_playing_path (RBShellPlayer *shell_player)
