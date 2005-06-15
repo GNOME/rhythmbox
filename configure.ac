@@ -114,7 +114,7 @@ fi
 
 dnl dashboard support
 AC_ARG_ENABLE(dashboard,
-	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)],enable_dashboard=yes,enable_dashboard=no)
+	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)])
 if test "x$enable_dashboard" = "xyes" ; then
    AC_DEFINE([WITH_DASHBOARD], 1, [Define to enable support for dashboard (http://www.nat.org/dashboard)])
 fi
