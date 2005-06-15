@@ -183,8 +183,12 @@ AM_CONDITIONAL(HAVE_MUSICBRAINZ,test "x$enable_musicbrainz" = "xyes")
 
 AC_PATH_X
 
-CFLAGS="-I$x_includes $CFLAGS"
-LIBS="-L$x_libraries $LIBS"
+if test x"$x_includes" != x"NONE" && test -n "$x_includes" ; then
+	CFLAGS=-I`echo $x_includes | sed -e "s/:/ -I/g"`
+fi
+if test x"$x_libraries" != x"NONE" && test -n "$x_libraries" ; then
+	LIBS=-L`echo $x_libraries | sed -e "s/:/ -L/g"`
+fi
 
 have_xidle=no
 AC_COMPILE_IFELSE([
