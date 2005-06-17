@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-08 17:43-0400\n"
-"PO-Revision-Date: 2005-06-08 15:31-0400\n"
+"POT-Creation-Date: 2005-06-17 02:06-0400\n"
+"PO-Revision-Date: 2005-06-17 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -88,7 +88,7 @@ msgstr "_Path:"
 msgid "_Skip this step"
 msgstr "_Skip this step"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1185
+#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1202
 msgid "A_lbum"
 msgstr "A_lbum"
 
@@ -120,7 +120,7 @@ msgstr "_Last played"
 msgid "_Play count"
 msgstr "_Play count"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1136
+#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1153
 msgid "_Rating"
 msgstr "_Rating"
 
@@ -263,7 +263,7 @@ msgstr "Enter the _location (URI) of the file you would like to add:"
 msgid "Open from URI"
 msgstr "Open from URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:819 shell/rb-shell.c:1429
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:827 shell/rb-shell.c:1448
 msgid "Music Player"
 msgstr "Music Player"
 
@@ -275,54 +275,17 @@ msgstr "Play and organize your music collection"
 msgid "Rhythmbox Music Player"
 msgstr "Rhythmbox Music Player"
 
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:1 shell/rb-shell-clipboard.c:94
-msgid "Deselect all songs"
-msgstr "Deselect all songs"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:2
-msgid "Eject Audio-CD"
-msgstr "Eject Audio-CD"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:3 shell/rb-shell.c:369
-msgid "Scroll the view to the currently playing song"
-msgstr "Scroll the view to the currently playing song"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:4 shell/rb-shell-clipboard.c:90
-msgid "Select _All"
-msgstr "Select _All"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:5 shell/rb-shell-clipboard.c:91
-msgid "Select all songs"
-msgstr "Select all songs"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:6 shell/rb-playlist-manager.c:155
-#: shell/rb-shell.c:335
-msgid "_Edit"
-msgstr "_Edit"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:7
-msgid "_Eject Audio-CD..."
-msgstr "_Eject Audio-CD..."
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:8 shell/rb-shell.c:368
-msgid "_Jump to Playing Song"
-msgstr "_Jump to Playing Song"
-
-#: data/ui/rhythmbox-audiocd-view.xml.in.h:9 shell/rb-shell.c:336
-msgid "_View"
-msgstr "_View"
-
 #: iradio/rb-new-station-dialog.c:144
 msgid "New Internet Radio Station"
 msgstr "New Internet Radio Station"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:981
-#: sources/rb-ipod-source.c:254 sources/rb-iradio-source.c:268
-#: sources/rb-iradio-source.c:269 sources/rb-iradio-source.c:270
-#: sources/rb-iradio-source.c:493 sources/rb-playlist-source.c:409
-#: widgets/rb-entry-view.c:924 widgets/rb-entry-view.c:948
-#: widgets/rb-song-info.c:777 widgets/rb-song-info.c:823
+#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:1004
+#: sources/rb-ipod-source.c:254 sources/rb-iradio-source.c:266
+#: sources/rb-iradio-source.c:267 sources/rb-iradio-source.c:268
+#: sources/rb-iradio-source.c:491 sources/rb-playlist-source.c:425
+#: widgets/rb-entry-view.c:941 widgets/rb-entry-view.c:965
+#: widgets/rb-song-info.c:776 widgets/rb-song-info.c:822
 msgid "Unknown"
 msgstr "Unknown"
 
@@ -330,7 +293,7 @@ msgstr "Unknown"
 msgid "All"
 msgstr "All"
 
-#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:762
+#: iradio/rb-station-properties-dialog.c:173 widgets/rb-song-info.c:761
 #, c-format
 msgid "%s Properties"
 msgstr "%s Properties"
@@ -340,47 +303,42 @@ msgstr "%s Properties"
 msgid "Properties for %s"
 msgstr "Properties for %s"
 
-#: metadata/rb-metadata-gst.c:367
-#, c-format
-msgid "There is no plugin installed to handle a %s file."
-msgstr "There is no plugin installed to handle a %s file."
-
-#: metadata/rb-metadata-gst.c:616 metadata/rb-metadata-gst.c:749
-#: player/rb-player-gst.c:560 player/rb-recorder-gst.c:435
+#: metadata/rb-metadata-gst.c:517 metadata/rb-metadata-gst.c:812
+#: player/rb-player-gst.c:359 player/rb-recorder-gst.c:435
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Failed to create %s element; check your installation"
 
-#: metadata/rb-metadata-mm.c:219
-msgid "Operation not supported"
-msgstr "Operation not supported"
+#: metadata/rb-metadata-gst.c:648
+msgid "The MIME type of the file could not be identified"
+msgstr "The MIME type of the file could not be identified"
 
-#: player/rb-player-gst.c:406 player/rb-player-gst.c:616
-#: player/rb-player-gst.c:626 player/rb-recorder-gst.c:565
-msgid "Could not start pipeline playing"
-msgstr "Could not start pipeline playing"
+#: metadata/rb-metadata-gst.c:653
+msgid "The file is not an audio stream"
+msgstr "The file is not an audio stream"
 
-#: player/rb-player-gst.c:526 player/rb-recorder-gst.c:395
+#: metadata/rb-metadata-gst.c:661
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "There is no plugin installed to handle a %s file."
+
+#: player/rb-player-gst.c:334 player/rb-recorder-gst.c:395
 msgid "Could not create audio output element; check your settings"
 msgstr "Could not create audio output element; check your settings"
 
-#: player/rb-player-gst.c:583 player/rb-recorder-gst.c:496
+#: player/rb-player-gst.c:382 player/rb-recorder-gst.c:496
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
 msgstr "Could not initialize scheduler.  Did you run gst-register?"
 
-#: player/rb-player-gst.c:638 player/rb-recorder-gst.c:580
+#: player/rb-player-gst.c:412 player/rb-recorder-gst.c:565
+msgid "Could not start pipeline playing"
+msgstr "Could not start pipeline playing"
+
+#: player/rb-player-gst.c:423 player/rb-recorder-gst.c:580
 msgid "Could not pause playback"
 msgstr "Could not pause playback"
 
-#: player/rb-player-gst.c:647
-msgid "Could not close output sink"
-msgstr "Could not close output sink"
-
-#: player/rb-player-gst.c:692
-msgid "No AudioCD support; check your settings"
-msgstr "No AudioCD support; check your settings"
-
-#: player/rb-player-gst.c:751
+#: player/rb-player-gst.c:482
 msgid "Failed to close audio output sink"
 msgstr "Failed to close audio output sink"
 
@@ -420,16 +378,16 @@ msgstr "Could not determine default writer device"
 msgid "Could not determine audio track durations."
 msgstr "Could not determine audio track durations."
 
-#: player/rb-recorder-gst.c:1095
+#: player/rb-recorder-gst.c:1098 sources/rb-playlist-source-recorder.c:1130
 #, c-format
 msgid ""
-"This playlist is %lld minutes long.  This exceeds the %lld minute length of "
-"the media in the drive."
+"This playlist is %s minutes long.  This exceeds the %s minute length of the "
+"media in the drive."
 msgstr ""
-"This playlist is %lld minutes long.  This exceeds the %lld minute length of "
-"the media in the drive."
+"This playlist is %s minutes long.  This exceeds the %s minute length of the "
+"media in the drive."
 
-#: player/rb-recorder-gst.c:1131
+#: player/rb-recorder-gst.c:1138
 #, c-format
 msgid ""
 "There was an error writing to the CD:\n"
@@ -438,7 +396,7 @@ msgstr ""
 "There was an error writing to the CD:\n"
 "%s"
 
-#: player/rb-recorder-gst.c:1133
+#: player/rb-recorder-gst.c:1140
 msgid "There was an error writing to the CD"
 msgstr "There was an error writing to the CD"
 
@@ -482,55 +440,55 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "An exception occured '%s'"
 
-#: rhythmdb/rhythmdb.c:964
+#: rhythmdb/rhythmdb.c:987
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Could not monitor %s: %s"
 
-#: rhythmdb/rhythmdb.c:1060
+#: rhythmdb/rhythmdb.c:1088
 msgid "<invalid filename>"
 msgstr "<invalid filename>"
 
-#: rhythmdb/rhythmdb.c:1509
+#: rhythmdb/rhythmdb.c:1596
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Could not access %s: %s"
 
-#: rhythmdb/rhythmdb.c:1963 widgets/rb-entry-view.c:899
-#: widgets/rb-song-info.c:979
+#: rhythmdb/rhythmdb.c:2074 widgets/rb-entry-view.c:916
+#: widgets/rb-song-info.c:978
 msgid "Never"
 msgstr "Never"
 
-#: rhythmdb/rhythmdb.c:1965
+#: rhythmdb/rhythmdb.c:2076
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2612
+#: rhythmdb/rhythmdb.c:2723
 msgid "Loading..."
 msgstr "Loading..."
 
-#: rhythmdb/rhythmdb.c:2629
+#: rhythmdb/rhythmdb.c:2740
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d song"
 msgstr[1] "%d songs"
 
-#: rhythmdb/rhythmdb.c:2636
+#: rhythmdb/rhythmdb.c:2747
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: rhythmdb/rhythmdb.c:2637 rhythmdb/rhythmdb.c:2647
+#: rhythmdb/rhythmdb.c:2748
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hour"
 msgstr[1] "%ld hours"
 
-#: rhythmdb/rhythmdb.c:2638
+#: rhythmdb/rhythmdb.c:2749
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -538,98 +496,100 @@ msgstr[0] "%ld day"
 msgstr[1] "%ld days"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2642
+#: rhythmdb/rhythmdb.c:2755
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s and %s"
 
+#. Translators: the format is "X days and X hours"
+#. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2650
+#: rhythmdb/rhythmdb.c:2761 rhythmdb/rhythmdb.c:2769 rhythmdb/rhythmdb.c:2780
 #, c-format
 msgid "%s and %s"
 msgstr "%s and %s"
 
-#: shell/main.c:108
+#: shell/main.c:109
 msgid "Print the playing song and exit"
 msgstr "Print the playing song and exit"
 
-#: shell/main.c:109
+#: shell/main.c:110
 msgid "Print the playing song artist and exit"
 msgstr "Print the currently playing song artist and exit"
 
-#: shell/main.c:110
+#: shell/main.c:111
 msgid "Print the playing song album and exit"
 msgstr "Print the currently playing song album and exit"
 
-#: shell/main.c:111
+#: shell/main.c:112
 msgid "Print the playing song track and exit"
 msgstr "Print the currently playing song track and exit"
 
-#: shell/main.c:112
+#: shell/main.c:113
 msgid "Print the playing song genre and exit"
 msgstr "Print the currently playing song genre and exit"
 
-#: shell/main.c:113
+#: shell/main.c:114
 msgid "Print the playing song URI and exit"
 msgstr "Print the playing song URI and exit"
 
-#: shell/main.c:115
+#: shell/main.c:116
 msgid "Print the playing song length in seconds and exit"
 msgstr "Print the playing song length in seconds and exit"
 
-#: shell/main.c:116
+#: shell/main.c:117
 msgid "Print the current elapsed time of playing song and exit"
 msgstr "Print the current elapsed time of playing song and exit"
 
-#: shell/main.c:117
+#: shell/main.c:118
 msgid "Seek to the specified time in playing song if possible and exit"
 msgstr "Seek to the specified time in playing song if possible and exit"
 
-#: shell/main.c:119
+#: shell/main.c:120
 msgid "Toggle play/pause mode"
 msgstr "Toggle play/pause mode"
 
-#: shell/main.c:120
+#: shell/main.c:121
 msgid "Focus the running player"
 msgstr "Focus the running player"
 
-#: shell/main.c:121
+#: shell/main.c:122
 msgid "Jump to previous song"
 msgstr "Jump to previous song"
 
-#: shell/main.c:122
+#: shell/main.c:123
 msgid "Jump to next song"
 msgstr "Jump to next song"
 
-#: shell/main.c:124
+#: shell/main.c:125
 msgid "Toggle shuffling"
 msgstr "Toggle shuffling"
 
-#: shell/main.c:126
+#: shell/main.c:127
 msgid "Enable debugging code"
 msgstr "Enable debugging code"
 
-#: shell/main.c:127
+#: shell/main.c:128
 msgid "Do not update the library"
 msgstr "Do not update the library"
 
-#: shell/main.c:128
+#: shell/main.c:129
 msgid "Do not register the shell"
 msgstr "Do not register the shell"
 
-#: shell/main.c:129
+#: shell/main.c:130
 msgid "Don't save any data permanently (implies --no-registration)"
 msgstr "Do not save any data permanently (implies --no-registration)"
 
-#: shell/main.c:130
+#: shell/main.c:131
 msgid "Path for database file to use"
 msgstr "Path for database file to use"
 
-#: shell/main.c:131
+#: shell/main.c:132
 msgid "Quit Rhythmbox"
 msgstr "Quit Rhythmbox"
 
-#: shell/main.c:154 widgets/rb-druid.c:218
+#: shell/main.c:155 widgets/rb-druid.c:218
 msgid "Rhythmbox"
 msgstr "Rhythmbox"
 
@@ -662,81 +622,105 @@ msgid "Random by time since last play and rating"
 msgstr "Random by time since last play and rating"
 
 #. Submenu of Music
-#: shell/rb-playlist-manager.c:135
+#: shell/rb-playlist-manager.c:141
 msgid "_Playlist"
 msgstr "_Playlist"
 
-#: shell/rb-playlist-manager.c:137
+#: shell/rb-playlist-manager.c:143
 msgid "_New Playlist..."
 msgstr "_New Playlist..."
 
-#: shell/rb-playlist-manager.c:138
+#: shell/rb-playlist-manager.c:144
 msgid "Create a new playlist"
 msgstr "Create a new playlist"
 
-#: shell/rb-playlist-manager.c:140
+#: shell/rb-playlist-manager.c:146
 msgid "New _Automatic Playlist..."
 msgstr "New _Automatic Playlist..."
 
-#: shell/rb-playlist-manager.c:141
+#: shell/rb-playlist-manager.c:147
 msgid "Create a new automatically updating playlist"
 msgstr "Create a new automatically updating playlist"
 
-#: shell/rb-playlist-manager.c:143
+#: shell/rb-playlist-manager.c:149
 msgid "_Load from file..."
 msgstr "_Load from file..."
 
-#: shell/rb-playlist-manager.c:144
+#: shell/rb-playlist-manager.c:150
 msgid "Choose a playlist to be loaded"
 msgstr "Choose a playlist to be loaded"
 
-#: shell/rb-playlist-manager.c:146
+#: shell/rb-playlist-manager.c:152
 msgid "_Save to file..."
 msgstr "_Save to file..."
 
-#: shell/rb-playlist-manager.c:147
+#: shell/rb-playlist-manager.c:153
 msgid "Save a playlist to a file"
 msgstr "Save a playlist to a file"
 
-#: shell/rb-playlist-manager.c:149
+#: shell/rb-playlist-manager.c:155
 msgid "_Create Audio CD..."
 msgstr "_Create Audio CD..."
 
-#: shell/rb-playlist-manager.c:150
+#: shell/rb-playlist-manager.c:156
 msgid "Create an audio CD from playlist"
 msgstr "Create an audio CD from playlist"
 
-#: shell/rb-playlist-manager.c:152 shell/rb-shell-clipboard.c:105
+#: shell/rb-playlist-manager.c:158
+msgid "_Rename..."
+msgstr "_Rename..."
+
+#: shell/rb-playlist-manager.c:159
+msgid "Rename playlist"
+msgstr "Rename playlist"
+
+#: shell/rb-playlist-manager.c:161 shell/rb-shell-clipboard.c:105
 msgid "_Delete"
 msgstr "_Remove"
 
-#: shell/rb-playlist-manager.c:153
+#: shell/rb-playlist-manager.c:162
 msgid "Delete playlist"
 msgstr "Delete playlist"
 
-#: shell/rb-playlist-manager.c:156
+#: shell/rb-playlist-manager.c:164 shell/rb-shell.c:335
+msgid "_Edit"
+msgstr "_Edit"
+
+#: shell/rb-playlist-manager.c:165
 msgid "Change this automatic playlist"
 msgstr "Change this automatic playlist"
 
-#: shell/rb-playlist-manager.c:505
+#: shell/rb-playlist-manager.c:518
 msgid "Couldn't read playlist"
 msgstr "Could not read playlist"
 
-#: shell/rb-playlist-manager.c:506
+#: shell/rb-playlist-manager.c:519
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "The playlist file may be in an unknown format or corrupted."
 
-#: shell/rb-playlist-manager.c:790
+#: shell/rb-playlist-manager.c:835
 msgid "Load playlist"
 msgstr "Load playlist"
 
-#: shell/rb-playlist-manager.c:828
+#: shell/rb-playlist-manager.c:873
 msgid "Save playlist"
 msgstr "Save playlist"
+
+#: shell/rb-shell-clipboard.c:90
+msgid "Select _All"
+msgstr "Select _All"
+
+#: shell/rb-shell-clipboard.c:91
+msgid "Select all songs"
+msgstr "Select all songs"
 
 #: shell/rb-shell-clipboard.c:93
 msgid "D_eselect All"
 msgstr "D_eselect All"
+
+#: shell/rb-shell-clipboard.c:94
+msgid "Deselect all songs"
+msgstr "Deselect all songs"
 
 #: shell/rb-shell-clipboard.c:96
 msgid "Cu_t"
@@ -766,105 +750,105 @@ msgstr "Paste selection"
 msgid "Delete selection"
 msgstr "Remove selection"
 
-#: shell/rb-shell-player.c:261
+#: shell/rb-shell-player.c:252
 msgid "P_revious"
 msgstr "P_revious"
 
-#: shell/rb-shell-player.c:262
+#: shell/rb-shell-player.c:253
 msgid "Start playing the previous song"
 msgstr "Start playing the previous song"
 
-#: shell/rb-shell-player.c:264
+#: shell/rb-shell-player.c:255
 msgid "_Next"
 msgstr "_Next"
 
-#: shell/rb-shell-player.c:265
+#: shell/rb-shell-player.c:256
 msgid "Start playing the next song"
 msgstr "Start playing the next song"
 
-#: shell/rb-shell-player.c:267
+#: shell/rb-shell-player.c:258
 msgid "_Properties"
 msgstr "_Properties"
 
-#: shell/rb-shell-player.c:268
+#: shell/rb-shell-player.c:259
 msgid "Show information on the selected song"
 msgstr "Show information on the selected song"
 
-#: shell/rb-shell-player.c:275
+#: shell/rb-shell-player.c:266
 msgid "_Play"
 msgstr "_Play"
 
-#: shell/rb-shell-player.c:276
+#: shell/rb-shell-player.c:267
 msgid "Start playback"
 msgstr "Start playback"
 
-#: shell/rb-shell-player.c:282
+#: shell/rb-shell-player.c:273
 msgid "_Pause"
 msgstr "_Pause"
 
-#: shell/rb-shell-player.c:283
+#: shell/rb-shell-player.c:274
 msgid "Pause playback"
 msgstr "Pause playback"
 
-#: shell/rb-shell-player.c:289
+#: shell/rb-shell-player.c:280
 msgid "_Stop"
 msgstr "_Stop"
 
-#: shell/rb-shell-player.c:290
+#: shell/rb-shell-player.c:281
 msgid "Stop playback"
 msgstr "Stop playback"
 
-#: shell/rb-shell-player.c:296 shell/rb-statusbar.c:232
+#: shell/rb-shell-player.c:287 shell/rb-statusbar.c:227
 msgid "Sh_uffle"
 msgstr "Sh_uffle"
 
-#: shell/rb-shell-player.c:297 shell/rb-statusbar.c:235
+#: shell/rb-shell-player.c:288 shell/rb-statusbar.c:230
 msgid "Play songs in a random order"
 msgstr "Play songs in a random order"
 
-#: shell/rb-shell-player.c:299 shell/rb-statusbar.c:237
+#: shell/rb-shell-player.c:290 shell/rb-statusbar.c:232
 msgid "_Repeat"
 msgstr "_Repeat"
 
-#: shell/rb-shell-player.c:300 shell/rb-statusbar.c:240
+#: shell/rb-shell-player.c:291 shell/rb-statusbar.c:235
 msgid "Play first song again after all songs are played"
 msgstr "Play first song again after all songs are played"
 
-#: shell/rb-shell-player.c:540
+#: shell/rb-shell-player.c:523
 #, c-format
 msgid "Failed to create the player: %s"
 msgstr "Failed to create the player: %s"
 
-#: shell/rb-shell-player.c:614
+#: shell/rb-shell-player.c:582
 msgid "Play previous song"
 msgstr "Play previous song"
 
-#: shell/rb-shell-player.c:643
+#: shell/rb-shell-player.c:611
 msgid "Play next song"
 msgstr "Play next song"
 
-#: shell/rb-shell-player.c:662
+#: shell/rb-shell-player.c:630
 msgid "Change the music volume"
 msgstr "Change the music volume"
 
-#: shell/rb-shell-player.c:930
+#: shell/rb-shell-player.c:895
 #, c-format
 msgid "Opening %s..."
 msgstr "Opening %s..."
 
-#: shell/rb-shell-player.c:1876
+#: shell/rb-shell-player.c:1838
 msgid "Couldn't stop playback"
 msgstr "Could not stop playback"
 
-#: shell/rb-shell-player.c:1968 shell/rb-shell-player.c:2013
+#: shell/rb-shell-player.c:1930 shell/rb-shell-player.c:1973
 msgid "Stream error"
 msgstr "Stream error"
 
-#: shell/rb-shell-player.c:1969 shell/rb-shell-player.c:2014
+#: shell/rb-shell-player.c:1931 shell/rb-shell-player.c:1974
 msgid "Unexpected end of stream!"
 msgstr "Unexpected end of stream!"
 
-#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1575
+#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1567
 msgid "Couldn't display help"
 msgstr "Could not display help"
 
@@ -879,6 +863,10 @@ msgstr "General"
 #: shell/rb-shell.c:334
 msgid "_Music"
 msgstr "_Music"
+
+#: shell/rb-shell.c:336
+msgid "_View"
+msgstr "_View"
 
 #: shell/rb-shell.c:337
 msgid "_Control"
@@ -960,6 +948,14 @@ msgstr "Show _all"
 msgid "Show all items in this music source"
 msgstr "Show all items in this music source"
 
+#: shell/rb-shell.c:368
+msgid "_Jump to Playing Song"
+msgstr "_Jump to Playing Song"
+
+#: shell/rb-shell.c:369
+msgid "Scroll the view to the currently playing song"
+msgstr "Scroll the view to the currently playing song"
+
 #: shell/rb-shell.c:376
 msgid "Source _List"
 msgstr "Source _List"
@@ -976,12 +972,12 @@ msgstr "_Small Display"
 msgid "Make the main window smaller"
 msgstr "Make the main window smaller"
 
-#: shell/rb-shell.c:1404 shell/rb-tray-icon.c:203 widgets/rb-header.c:588
+#: shell/rb-shell.c:1423 shell/rb-tray-icon.c:203 widgets/rb-header.c:588
 msgid "Not playing"
 msgstr "Not playing"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1407
+#: shell/rb-shell.c:1426
 #, c-format
 msgid ""
 "%s\n"
@@ -991,7 +987,7 @@ msgstr ""
 "Paused, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1411
+#: shell/rb-shell.c:1430
 #, c-format
 msgid ""
 "%s\n"
@@ -1001,54 +997,54 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1445
+#: shell/rb-shell.c:1464
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Paused)"
 
-#: shell/rb-shell.c:1505
+#: shell/rb-shell.c:1524
 msgid "translator_credits"
 msgstr ""
 "Adam Weinberger <adamw@gnome.org>\n"
 "Alexander Winston <alexander.winston@comcast.net>"
 
-#: shell/rb-shell.c:1509
+#: shell/rb-shell.c:1528
 msgid "Maintainers:"
 msgstr "Maintainers:"
 
-#: shell/rb-shell.c:1512
+#: shell/rb-shell.c:1531
 msgid "Former Maintainers:"
 msgstr "Former Maintainers:"
 
-#: shell/rb-shell.c:1515
+#: shell/rb-shell.c:1534
 msgid "Contributors:"
 msgstr "Contributors:"
 
-#: shell/rb-shell.c:1517
+#: shell/rb-shell.c:1536
 msgid "Music management and playback software for GNOME."
 msgstr "Music management and playback software for GNOME."
 
-#: shell/rb-shell.c:1635 widgets/rb-druid.c:319
+#: shell/rb-shell.c:1627 widgets/rb-druid.c:319
 msgid "Load folder into Library"
 msgstr "Load folder into Library"
 
-#: shell/rb-shell.c:1657
+#: shell/rb-shell.c:1649
 msgid "Load file into Library"
 msgstr "Load file into Library"
 
-#: shell/rb-shell.c:1691
+#: shell/rb-shell.c:1683
 msgid "CD Ripper not found"
 msgstr "CD Ripper not found"
 
-#: shell/rb-shell.c:1692
+#: shell/rb-shell.c:1684
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "To extract CDs you must install the Sound Juicer CD Ripper package."
 
-#: shell/rb-shell.c:1700
+#: shell/rb-shell.c:1692
 msgid "Couldn't run CD Ripper"
 msgstr "Could not run CD Ripper"
 
-#: shell/rb-shell.c:1701
+#: shell/rb-shell.c:1693
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "An error occurred while running sound-juicer: %s"
@@ -1080,10 +1076,6 @@ msgstr "S_tatusbar"
 #: shell/rb-statusbar.c:70
 msgid "Change the visibility of the statusbar"
 msgstr "Change the visibility of the statusbar"
-
-#: shell/rb-statusbar.c:446
-msgid "Buffering..."
-msgstr "Buffering..."
 
 #: shell/rb-tray-icon.c:110
 msgid "_Show Window"
@@ -1142,16 +1134,16 @@ msgstr "Error writing PC file \"%s\".\n"
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:375 sources/rb-library-source.c:556
+#: sources/rb-iradio-source.c:373 sources/rb-library-source.c:556
 #: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Genre"
 
-#: sources/rb-iradio-source.c:449
+#: sources/rb-iradio-source.c:447
 msgid "Radio"
 msgstr "Radio"
 
-#: sources/rb-iradio-source.c:615
+#: sources/rb-iradio-source.c:593
 #, c-format
 msgid "%d station"
 msgid_plural "%d stations"
@@ -1198,11 +1190,11 @@ msgstr "Library"
 msgid "Add Location"
 msgstr "Add Location"
 
-#: sources/rb-playlist-source.c:279 widgets/rb-entry-view.c:1154
+#: sources/rb-playlist-source.c:291 widgets/rb-entry-view.c:1171
 msgid "Tra_ck"
 msgstr "Tra_ck"
 
-#: sources/rb-playlist-source.c:763
+#: sources/rb-playlist-source.c:784
 msgid "Couldn't save playlist"
 msgstr "Could not save playlist"
 
@@ -1364,35 +1356,26 @@ msgstr "Create audio CD from '%s' playlist?"
 msgid "Cannot get free space at %s"
 msgstr "Cannot get free space at %s"
 
-#: sources/rb-playlist-source-recorder.c:1121
+#: sources/rb-playlist-source-recorder.c:1123
 #, c-format
 msgid ""
-"This playlist is %lld minutes long.  This exceeds the length of a standard "
+"This playlist is %s minutes long.  This exceeds the length of a standard "
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 msgstr ""
-"This playlist is %lld minutes long.  This exceeds the length of a standard "
+"This playlist is %s minutes long, which exceeds the length of a standard "
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 
-#: sources/rb-playlist-source-recorder.c:1129
-#, c-format
-msgid ""
-"This playlist is %s minutes long.  This exceeds the %s minute length of the "
-"media in the drive."
-msgstr ""
-"This playlist is %s minutes long.  This exceeds the %s minute length of the "
-"media in the drive."
-
-#: sources/rb-playlist-source-recorder.c:1138
+#: sources/rb-playlist-source-recorder.c:1139
 msgid "Playlist too long"
 msgstr "Playlist too long"
 
-#: sources/rb-playlist-source-recorder.c:1150
+#: sources/rb-playlist-source-recorder.c:1151
 msgid "Could not find temporary space!"
 msgstr "Could not find temporary space!"
 
-#: sources/rb-playlist-source-recorder.c:1151
+#: sources/rb-playlist-source-recorder.c:1152
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -1401,11 +1384,11 @@ msgstr ""
 "Could not find enough temporary space to convert audio tracks.  %s MB "
 "required."
 
-#: sources/rb-source.c:657
+#: sources/rb-source.c:640
 msgid "Not supported"
 msgstr "Not supported"
 
-#: sources/rb-source.c:658
+#: sources/rb-source.c:641
 msgid "This source does not support drag and drop."
 msgstr "This source does not support drag and drop."
 
@@ -1479,72 +1462,72 @@ msgstr ""
 "Remember that you may add music to the library using \"Music\" then \"Import "
 "Folder\", or by importing it from CDs."
 
-#: widgets/rb-entry-view.c:926 widgets/rb-header.c:880
+#: widgets/rb-entry-view.c:943 widgets/rb-header.c:880
 #, c-format
 msgid "%d:%02d"
 msgstr "%d:%02d"
 
-#: widgets/rb-entry-view.c:950
+#: widgets/rb-entry-view.c:967
 msgid "Very Low"
 msgstr "Very Low"
 
-#: widgets/rb-entry-view.c:952
+#: widgets/rb-entry-view.c:969
 msgid "Low"
 msgstr "Low"
 
-#: widgets/rb-entry-view.c:954
+#: widgets/rb-entry-view.c:971
 msgid "Regular"
 msgstr "Regular"
 
-#: widgets/rb-entry-view.c:956
+#: widgets/rb-entry-view.c:973
 msgid "High"
 msgstr "High"
 
-#: widgets/rb-entry-view.c:958
+#: widgets/rb-entry-view.c:975
 msgid "Very High"
 msgstr "Very High"
 
-#: widgets/rb-entry-view.c:960
+#: widgets/rb-entry-view.c:977
 msgid "Perfect"
 msgstr "Perfect"
 
-#: widgets/rb-entry-view.c:1163
+#: widgets/rb-entry-view.c:1180
 msgid "_Title"
 msgstr "_Title"
 
-#: widgets/rb-entry-view.c:1174
+#: widgets/rb-entry-view.c:1191
 msgid "Art_ist"
 msgstr "Art_ist"
 
-#: widgets/rb-entry-view.c:1196
+#: widgets/rb-entry-view.c:1213
 msgid "Ge_nre"
 msgstr "Ge_nre"
 
-#: widgets/rb-entry-view.c:1206
+#: widgets/rb-entry-view.c:1223
 msgid "Ti_me"
 msgstr "Ti_me"
 
-#: widgets/rb-entry-view.c:1216
+#: widgets/rb-entry-view.c:1233
 msgid "_Quality"
 msgstr "_Quality"
 
-#: widgets/rb-entry-view.c:1227
+#: widgets/rb-entry-view.c:1244
 msgid "_Play Count"
 msgstr "_Play Count"
 
-#: widgets/rb-entry-view.c:1236
+#: widgets/rb-entry-view.c:1253
 msgid "L_ast Played"
 msgstr "L_ast Played"
 
-#: widgets/rb-entry-view.c:1385
+#: widgets/rb-entry-view.c:1406
 msgid "Now Playing"
 msgstr "Now Playing"
 
-#: widgets/rb-entry-view.c:1468
+#: widgets/rb-entry-view.c:1489
 msgid "Playback Error"
 msgstr "Playback Error"
 
-#: widgets/rb-header.c:278
+#: widgets/rb-header.c:277
 msgid "Listening to "
 msgstr "Listening to "
 
@@ -1607,14 +1590,15 @@ msgid "equals"
 msgstr "equals"
 
 #: widgets/rb-query-creator.c:71
-msgid "greater than"
-msgstr "greater than"
+msgid "at least"
+msgstr "at least"
 
+#. matches if A >= B
 #: widgets/rb-query-creator.c:72
-msgid "less than"
-msgstr "less than"
+msgid "at most"
+msgstr "at most"
 
-#: widgets/rb-query-creator.c:244
+#: widgets/rb-query-creator.c:239
 msgid "Create Automatic Playlist"
 msgstr "Create Automatic Playlist"
 
@@ -1631,28 +1615,28 @@ msgstr "from"
 msgid "by"
 msgstr "by"
 
-#: widgets/rb-song-info.c:283
+#: widgets/rb-song-info.c:282
 msgid "Song Properties"
 msgstr "Song Properties"
 
-#: widgets/rb-song-info.c:375
+#: widgets/rb-song-info.c:374
 msgid "Multiple Song Properties"
 msgstr "Multiple Song Properties"
 
-#: widgets/rb-song-info.c:821
+#: widgets/rb-song-info.c:820
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: widgets/rb-song-info.c:866
+#: widgets/rb-song-info.c:865
 msgid "Unknown file name"
 msgstr "Unknown file name"
 
-#: widgets/rb-song-info.c:885
+#: widgets/rb-song-info.c:884
 msgid "On the desktop"
 msgstr "On the desktop"
 
-#: widgets/rb-song-info.c:894
+#: widgets/rb-song-info.c:893
 msgid "Unknown location"
 msgstr "Unknown location"
 
