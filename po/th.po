@@ -1,0 +1,1649 @@
+# Thai translation of rhythmbox.
+# Copyright (C) 2005 Free Software Foundation, Inc.
+# This file is distributed under the same license as the rhythmbox package.
+# Isriya Paireepairit <markpeak@gmail.com>, 2005.
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: rhythmbox 0.8.99\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-06-17 16:03+0700\n"
+"PO-Revision-Date: 2005-06-18 12:36+0700\n"
+"Last-Translator: Theppitak Karoonboonyanan <thep@linux.thai.net>\n"
+"Language-Team: Thai <l10n@opentle.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: ../data/GNOME_Rhythmbox.server.in.h:1
+msgid "Rhythmbox shell"
+msgstr ""
+
+#: ../data/GNOME_Rhythmbox.server.in.h:2
+msgid "Rhythmbox shell factory"
+msgstr ""
+
+#: ../data/glade/create-playlist.glade.h:1 ../data/glade/druid.glade.h:1
+#: ../data/glade/song-info.glade.h:1
+#: ../data/glade/song-info-multiple.glade.h:1
+#: ../data/glade/station-new.glade.h:1
+#: ../data/glade/station-properties.glade.h:1 ../data/glade/uri.glade.h:1
+msgid "*"
+msgstr "*"
+
+#: ../data/glade/create-playlist.glade.h:2
+msgid "Add if any criteria are matched"
+msgstr "เพิ่มในรายการ เมื่อเงื่อนไขตรงเพียงข้อเดียว"
+
+#: ../data/glade/create-playlist.glade.h:3
+msgid "Create automatically updating playlist where:"
+msgstr "สร้างรายการเพลงอัตโนมัติซึ่ง"
+
+#: ../data/glade/create-playlist.glade.h:4
+msgid "GB"
+msgstr "กิกะไบต์"
+
+#: ../data/glade/create-playlist.glade.h:5
+msgid "MB"
+msgstr "เมกะไบต์"
+
+#: ../data/glade/create-playlist.glade.h:6
+msgid "_Limit: "
+msgstr "_จำกัดที่:"
+
+#: ../data/glade/create-playlist.glade.h:7
+msgid "songs"
+msgstr "เพลง"
+
+#: ../data/glade/druid.glade.h:2
+msgid ""
+"Rhythmbox จัดการเก็บเพลงทั้งหมดไว้ใน \"library\" เก็บเพลงกลาง "
+"เพื่อให้คุณสามารถจัดการและแก้ไขได้ง่าย"
+"การที่ใช้ความสามารถนี้ คุณต้องบอก Rhythmbox ว่าคุณเก็บเพลงไว้ที่ไหน "
+"คุณสามารถข้ามขั้นตอนนี้ได้ โดยคุณสามารถเพิ่มเพลงลง library ได้เองในภายหลัง\n"
+"กรุณาเลือกตัวเลือกด้านล่าง:"
+msgstr ""
+
+#: ../data/glade/druid.glade.h:5
+msgid "_Browse..."
+msgstr "เ_ลือก..."
+
+#: ../data/glade/druid.glade.h:6
+msgid "_Enter location:"
+msgstr "ใ_ส่ที่อยู่"
+
+#: ../data/glade/druid.glade.h:7
+msgid "_Path:"
+msgstr "_ตำแหน่ง"
+
+#: ../data/glade/druid.glade.h:8
+msgid "_Skip this step"
+msgstr "_ข้ามขั้นตอนนี้"
+
+#: ../data/glade/general-prefs.glade.h:1 ../widgets/rb-entry-view.c:1202
+msgid "A_lbum"
+msgstr "_อัลบั้ม"
+
+#: ../data/glade/general-prefs.glade.h:2
+msgid "Track _number"
+msgstr "_ลำดับเพลง"
+
+#: ../data/glade/general-prefs.glade.h:3
+msgid "Visible Columns"
+msgstr "คอลัมน์ที่แสดง"
+
+#: ../data/glade/general-prefs.glade.h:4
+msgid "_Artist"
+msgstr "ศิ_ลปิน"
+
+#: ../data/glade/general-prefs.glade.h:5
+msgid "_Duration"
+msgstr "ความ_ยาว"
+
+#: ../data/glade/general-prefs.glade.h:6
+msgid "_Genre"
+msgstr "_ประเภท"
+
+#: ../data/glade/general-prefs.glade.h:7
+msgid "_Last played"
+msgstr "เล่นครั้งสุด_ท้าย"
+
+#: ../data/glade/general-prefs.glade.h:8
+msgid "_Play count"
+msgstr "_จำนวนครั้งที่เล่น"
+
+#: ../data/glade/general-prefs.glade.h:9 ../widgets/rb-entry-view.c:1153
+msgid "_Rating"
+msgstr "_คะแนน"
+
+#: ../data/glade/library-prefs.glade.h:1
+msgid "Artists and albums"
+msgstr "ศิลปินและอัลบั้ม"
+
+#: ../data/glade/library-prefs.glade.h:2
+msgid "Browser Views"
+msgstr "มุมมองเบราวเซอร์"
+
+#: ../data/glade/library-prefs.glade.h:3
+msgid "Genres and artists"
+msgstr "ประเภทและศิลปิน"
+
+#: ../data/glade/library-prefs.glade.h:4
+msgid "Genres, artists and albums"
+msgstr "ประเภท ศิลปินและอัลบั้ม"
+
+#: ../data/glade/load-failure.glade.h:1
+msgid "The following files couldn't be loaded:"
+msgstr "ไม่สามารถเรียกแฟ้มต่อไปนี้:"
+
+#: ../data/glade/recorder.glade.h:1
+msgid "Album Progress"
+msgstr "ความคืบหน้าอัลบั้ม"
+
+#: ../data/glade/recorder.glade.h:2
+msgid "Create audio CD from playlist?"
+msgstr "สร้างซีดีเพลงจากรายการเพลง?"
+
+#: ../data/glade/recorder.glade.h:3
+msgid "Options"
+msgstr "ตัวเลือก"
+
+#: ../data/glade/recorder.glade.h:4
+msgid "Track Progress"
+msgstr "ความคืบหน้าเพลง"
+
+#: ../data/glade/recorder.glade.h:5
+msgid "Writer Device"
+msgstr "อุปกรณ์เขียนซีดี"
+
+#: ../data/glade/recorder.glade.h:6
+msgid "_Make multiple copies"
+msgstr "เ_ขียนหลายชุด"
+
+#: ../data/glade/song-info.glade.h:2
+#: ../data/glade/song-info-multiple.glade.h:2
+msgid "Automatically rate:"
+msgstr ""
+
+#: ../data/glade/song-info.glade.h:3
+msgid "Basic"
+msgstr "ทั่วไป"
+
+#: ../data/glade/song-info.glade.h:4
+#: ../data/glade/station-properties.glade.h:2
+msgid "Bitrate:"
+msgstr "บิตเรต:"
+
+#: ../data/glade/song-info.glade.h:5
+msgid "Details"
+msgstr "รายละเอียด"
+
+#: ../data/glade/song-info.glade.h:6
+msgid "Duration:"
+msgstr "ความยาว:"
+
+#: ../data/glade/song-info.glade.h:7
+msgid "Error message"
+msgstr "ข้อความแสดงข้อผิดพลาด"
+
+#: ../data/glade/song-info.glade.h:8
+msgid "File name:"
+msgstr "ชื่อแฟ้ม:"
+
+#: ../data/glade/song-info.glade.h:9
+msgid "Last played:"
+msgstr "เล่นครั้งสุดท้ายเมื่อ:"
+
+#: ../data/glade/song-info.glade.h:10
+msgid "Location:"
+msgstr "ที่อยู่:"
+
+#: ../data/glade/song-info.glade.h:11
+msgid "Play count:"
+msgstr "จำนวนครั้งที่เล่น:"
+
+#: ../data/glade/song-info.glade.h:12
+#: ../data/glade/song-info-multiple.glade.h:3
+msgid "_Album:"
+msgstr "_อัลบั้ม:"
+
+#: ../data/glade/song-info.glade.h:13
+#: ../data/glade/song-info-multiple.glade.h:4
+msgid "_Artist:"
+msgstr "ศิ_ลปิน:"
+
+#: ../data/glade/song-info.glade.h:14
+#: ../data/glade/song-info-multiple.glade.h:5
+#: ../data/glade/station-new.glade.h:2
+#: ../data/glade/station-properties.glade.h:6
+msgid "_Genre:"
+msgstr "_ประเภท:"
+
+#: ../data/glade/song-info.glade.h:15
+#: ../data/glade/song-info-multiple.glade.h:6
+#: ../data/glade/station-properties.glade.h:8
+msgid "_Rating:"
+msgstr "_คะแนน:"
+
+#: ../data/glade/song-info.glade.h:16 ../data/glade/station-new.glade.h:4
+#: ../data/glade/station-properties.glade.h:9
+msgid "_Title:"
+msgstr "_ชื่อ:"
+
+#: ../data/glade/song-info.glade.h:17
+msgid "_Track number:"
+msgstr "_ลำดับเพลง"
+
+#: ../data/glade/station-new.glade.h:3
+msgid "_Location:"
+msgstr "_ที่อยู่:"
+
+#: ../data/glade/station-properties.glade.h:3
+msgid "L_ocation:"
+msgstr "_ที่อยู่:"
+
+#: ../data/glade/station-properties.glade.h:4
+msgid "Play Count:"
+msgstr "จำนวนครั้งที่เล่น:"
+
+#: ../data/glade/station-properties.glade.h:5
+msgid "Wed, Jan 01, 1970 00:00:00 -0500"
+msgstr ""
+
+#: ../data/glade/station-properties.glade.h:7
+msgid "_Last Played:"
+msgstr "เล่นครั้งสุด_ท้ายเมื่อ:"
+
+#: ../data/glade/uri.glade.h:2
+msgid "Enter the _location (URI) of the file you would like to add:"
+msgstr "ใส่_ตำแหน่งของแฟ้ม (URI) ที่ต้องการเพิ่ม:"
+
+#: ../data/glade/uri.glade.h:3
+msgid "Open from URI"
+msgstr "เปิดจาก URI"
+
+#: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:827
+#: ../shell/rb-shell.c:1448
+msgid "Music Player"
+msgstr "ตัวเล่นเพลง"
+
+#: ../data/rhythmbox.desktop.in.h:2
+msgid "Play and organize your music collection"
+msgstr "เล่นและจัดการกับเพลงของคุณ"
+
+#: ../data/rhythmbox.desktop.in.h:3
+msgid "Rhythmbox Music Player"
+msgstr "ตัวเล่นเพลง Rhythmbox"
+
+#: ../iradio/rb-new-station-dialog.c:144
+msgid "New Internet Radio Station"
+msgstr "เพิ่มสถานีวิทยุอินเทอร์เน็ต"
+
+#: ../iradio/rb-new-station-dialog.c:182
+#: ../iradio/rb-station-properties-dialog.c:425 ../rhythmdb/rhythmdb.c:1004
+#: ../sources/rb-ipod-source.c:254 ../sources/rb-iradio-source.c:266
+#: ../sources/rb-iradio-source.c:267 ../sources/rb-iradio-source.c:268
+#: ../sources/rb-iradio-source.c:491 ../sources/rb-playlist-source.c:425
+#: ../widgets/rb-entry-view.c:941 ../widgets/rb-entry-view.c:965
+#: ../widgets/rb-song-info.c:776 ../widgets/rb-song-info.c:822
+msgid "Unknown"
+msgstr "ไม่รู้"
+
+#: ../iradio/rb-new-station-dialog.c:308
+#: ../rhythmdb/rhythmdb-property-model.c:333
+msgid "All"
+msgstr "ทั้งหมด"
+
+#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:761
+#, c-format
+msgid "%s Properties"
+msgstr "คุณสมบัติของ %s"
+
+#: ../iradio/rb-station-properties-dialog.c:354
+#, c-format
+msgid "Properties for %s"
+msgstr "คุณสมบัติของ %s"
+
+#: ../metadata/rb-metadata-gst.c:517 ../metadata/rb-metadata-gst.c:812
+#: ../player/rb-player-gst.c:359 ../player/rb-recorder-gst.c:435
+#, c-format
+msgid "Failed to create %s element; check your installation"
+msgstr "ไม่สามารถสร้าง %s กรุณาตรวจสอบการติดตั้ง"
+
+#: ../metadata/rb-metadata-gst.c:648
+msgid "The MIME type of the file could not be identified"
+msgstr ""
+
+#: ../metadata/rb-metadata-gst.c:653
+msgid "The file is not an audio stream"
+msgstr "แฟ้มนี้ไม่ใช่สตรีมไฟล์เสียง"
+
+#: ../metadata/rb-metadata-gst.c:661
+#, c-format
+msgid "There is no plugin installed to handle a %s file."
+msgstr "ไม่มีปลั๊กอินในการเล่นแฟ้ม %s"
+
+#: ../player/rb-player-gst.c:334 ../player/rb-recorder-gst.c:395
+msgid "Could not create audio output element; check your settings"
+msgstr ""
+
+#: ../player/rb-player-gst.c:382 ../player/rb-recorder-gst.c:496
+msgid "Couldn't initialize scheduler.  Did you run gst-register?"
+msgstr ""
+
+#: ../player/rb-player-gst.c:412 ../player/rb-recorder-gst.c:565
+msgid "Could not start pipeline playing"
+msgstr ""
+
+#: ../player/rb-player-gst.c:423 ../player/rb-recorder-gst.c:580
+msgid "Could not pause playback"
+msgstr ""
+
+#: ../player/rb-player-gst.c:482
+msgid "Failed to close audio output sink"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:350
+msgid "Failed to create pipeline"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:453 ../player/rb-recorder-gst.c:457
+#, c-format
+msgid "Unable to unlink '%s'"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:523 ../player/rb-recorder-gst.c:529
+msgid "Could not get current track position"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:777
+#, c-format
+msgid "Cannot find drive %s"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:791
+#, c-format
+msgid "Drive %s is not a recorder"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:1036
+#, c-format
+msgid "Could not get track time for file: %s"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:1068
+msgid "Could not determine default writer device"
+msgstr ""
+
+#: ../player/rb-recorder-gst.c:1083
+msgid "Could not determine audio track durations."
+msgstr "ไม่สามารถหาความยาวของเพลงได้"
+
+#: ../player/rb-recorder-gst.c:1098
+#: ../sources/rb-playlist-source-recorder.c:1130
+#, c-format
+msgid ""
+"This playlist is %s minutes long.  This exceeds the %s minute length of the "
+"media in the drive."
+msgstr "รายการเพลงนี้ยาว %s นาที ซึ่งเกินความจุ %s นาทีของสื่อในไดรว์"
+
+#: ../player/rb-recorder-gst.c:1138
+#, c-format
+msgid ""
+"There was an error writing to the CD:\n"
+"%s"
+msgstr ""
+"มีข้อผิดพลาดในการเขียนซีดี:\n"
+"%s"
+
+#: ../player/rb-recorder-gst.c:1140
+msgid "There was an error writing to the CD"
+msgstr "มีข้อผิดพลาดในการเขียนซีดี"
+
+#: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:1
+msgid "Add to Music Library"
+msgstr "เพิ่มใน Music Library"
+
+#: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:2
+msgid "Nautilus context menu extension for Rhythmbox"
+msgstr ""
+
+#: ../remote/bonobo/Rhythmbox_Nautilus_Context_Menu.server.in.in.h:3
+msgid "Rhythmbox Nautilus Context Menu Item"
+msgstr ""
+
+#: ../remote/bonobo/rb-remote-bonobo.c:517
+msgid "Whether the main window is visible"
+msgstr ""
+
+#: ../remote/bonobo/rb-remote-bonobo.c:522
+msgid "Whether shuffle is enabled"
+msgstr ""
+
+#: ../remote/bonobo/rb-remote-bonobo.c:526
+msgid "Properties for the current song"
+msgstr "คุณสมบัติของเพลงปัจจุบัน"
+
+#: ../remote/bonobo/rb-remote-bonobo.c:677
+#, c-format
+msgid ""
+"Failed to register the shell: %s\n"
+"This probably means that you installed Rhythmbox in a different prefix than "
+"bonobo-activation; this warning is harmless, but IPC will not work."
+msgstr ""
+
+#: ../remote/bonobo/rb-remote-bonobo.c:722
+#: ../remote/bonobo/rb-remote-bonobo.c:731
+#, c-format
+msgid "An exception occured '%s'"
+msgstr ""
+
+#: ../rhythmdb/rhythmdb.c:987
+#, c-format
+msgid "Couldn't monitor %s: %s"
+msgstr ""
+
+#: ../rhythmdb/rhythmdb.c:1088
+msgid "<invalid filename>"
+msgstr "<ชื่อแฟ้มไม่ถูกต้อง>"
+
+#: ../rhythmdb/rhythmdb.c:1596
+#, c-format
+msgid "Couldn't access %s: %s"
+msgstr ""
+
+#: ../rhythmdb/rhythmdb.c:2074 ../widgets/rb-entry-view.c:916
+#: ../widgets/rb-song-info.c:978
+msgid "Never"
+msgstr "ไม่ต้อง"
+
+#: ../rhythmdb/rhythmdb.c:2076
+msgid "%Y-%m-%d %H:%M"
+msgstr ""
+
+#: ../rhythmdb/rhythmdb.c:2723
+msgid "Loading..."
+msgstr "กำลังอ่าน..."
+
+#: ../rhythmdb/rhythmdb.c:2740
+#, c-format
+msgid "%d song"
+msgid_plural "%d songs"
+msgstr[0] "%d เพลง"
+msgstr[1] "%d เพลง"
+
+#: ../rhythmdb/rhythmdb.c:2747
+#, c-format
+msgid "%ld minute"
+msgid_plural "%ld minutes"
+msgstr[0] "%ld นาที"
+msgstr[1] "%ld นาที"
+
+#: ../rhythmdb/rhythmdb.c:2748
+#, c-format
+msgid "%ld hour"
+msgid_plural "%ld hours"
+msgstr[0] "%ld ชั่วโมง"
+msgstr[1] "%ld ชั่วโมง"
+
+#: ../rhythmdb/rhythmdb.c:2749
+#, c-format
+msgid "%ld day"
+msgid_plural "%ld days"
+msgstr[0] "%ld วัน"
+msgstr[1] "%ld วัน"
+
+#. Translators: the format is "X days, X hours and X minutes"
+#: ../rhythmdb/rhythmdb.c:2755
+#, c-format
+msgid "%s, %s and %s"
+msgstr "%s %s %s"
+
+#. Translators: the format is "X days and X hours"
+#. Translators: the format is "X days and X minutes"
+#. Translators: the format is "X hours and X minutes"
+#: ../rhythmdb/rhythmdb.c:2761 ../rhythmdb/rhythmdb.c:2769
+#: ../rhythmdb/rhythmdb.c:2780
+#, c-format
+msgid "%s and %s"
+msgstr "%s %s"
+
+#: ../shell/main.c:109
+msgid "Print the playing song and exit"
+msgstr "พิมพ์เพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:110
+msgid "Print the playing song artist and exit"
+msgstr "พิมพ์ศิลปินของเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:111
+msgid "Print the playing song album and exit"
+msgstr "พิมพ์อัลบั้มของเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:112
+msgid "Print the playing song track and exit"
+msgstr "พิมพ์ลำดับเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:113
+msgid "Print the playing song genre and exit"
+msgstr "พิมพ์ประเภทของเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:114
+msgid "Print the playing song URI and exit"
+msgstr "พิมพ์ตำแหน่ง URI ของเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:116
+msgid "Print the playing song length in seconds and exit"
+msgstr "พิมพ์ความยาวของเพลงที่เล่นเป็นวินาที แล้วออก"
+
+#: ../shell/main.c:117
+msgid "Print the current elapsed time of playing song and exit"
+msgstr "พิมพ์ความยาวที่เหลืออยู่ของเพลงที่เล่น แล้วออก"
+
+#: ../shell/main.c:118
+msgid "Seek to the specified time in playing song if possible and exit"
+msgstr "ค้นหาเวลาที่ระบุของเพลงที่เล่น(ถ้าทำได้) แล้วออก"
+
+#: ../shell/main.c:120
+msgid "Toggle play/pause mode"
+msgstr ""
+
+#: ../shell/main.c:121
+msgid "Focus the running player"
+msgstr ""
+
+#: ../shell/main.c:122
+msgid "Jump to previous song"
+msgstr ""
+
+#: ../shell/main.c:123
+msgid "Jump to next song"
+msgstr ""
+
+#: ../shell/main.c:125
+msgid "Toggle shuffling"
+msgstr ""
+
+#: ../shell/main.c:127
+msgid "Enable debugging code"
+msgstr ""
+
+#: ../shell/main.c:128
+msgid "Do not update the library"
+msgstr ""
+
+#: ../shell/main.c:129
+msgid "Do not register the shell"
+msgstr ""
+
+#: ../shell/main.c:130
+msgid "Don't save any data permanently (implies --no-registration)"
+msgstr ""
+
+#: ../shell/main.c:131
+msgid "Path for database file to use"
+msgstr "ตำแหน่งของฐานข้อมูลที่ใช้"
+
+#: ../shell/main.c:132
+msgid "Quit Rhythmbox"
+msgstr "ออกจาก Rhythmbox"
+
+#: ../shell/main.c:155 ../widgets/rb-druid.c:218
+msgid "Rhythmbox"
+msgstr "Rhythmbox"
+
+#: ../shell/rb-play-order.c:228
+msgid "Linear"
+msgstr ""
+
+#: ../shell/rb-play-order.c:229
+msgid "Linear looping"
+msgstr ""
+
+#: ../shell/rb-play-order.c:230
+msgid "Shuffle"
+msgstr "สุ่ม"
+
+#: ../shell/rb-play-order.c:231
+msgid "Random with equal weights"
+msgstr "สุ่มแบบเท่าเทียมกันหมด"
+
+#: ../shell/rb-play-order.c:232
+msgid "Random by time since last play"
+msgstr "สุ่มตามเวลาตั้งแต่เมื่อวานนี้"
+
+#: ../shell/rb-play-order.c:233
+msgid "Random by rating"
+msgstr "สุ่มตามคะแนน"
+
+#: ../shell/rb-play-order.c:234
+msgid "Random by time since last play and rating"
+msgstr "สุ่มตามเวลาตั้งแต่เล่นครั้งล่าสุด และตามคะแนน"
+
+#. Submenu of Music
+#: ../shell/rb-playlist-manager.c:141
+msgid "_Playlist"
+msgstr "_รายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:143
+msgid "_New Playlist..."
+msgstr "_สร้างรายการเพลงใหม่..."
+
+#: ../shell/rb-playlist-manager.c:144
+msgid "Create a new playlist"
+msgstr "สร้างรายการเพลงใหม่"
+
+#: ../shell/rb-playlist-manager.c:146
+msgid "New _Automatic Playlist..."
+msgstr "สร้างรายการเพลง_อัตโนมัติ"
+
+#: ../shell/rb-playlist-manager.c:147
+msgid "Create a new automatically updating playlist"
+msgstr "สร้างรายการเพลงที่ปรับปรุงอย่างอัตโนมัติ"
+
+#: ../shell/rb-playlist-manager.c:149
+msgid "_Load from file..."
+msgstr "เ_รียกจากแฟ้ม..."
+
+#: ../shell/rb-playlist-manager.c:150
+msgid "Choose a playlist to be loaded"
+msgstr "เรียกรายการเพลงที่เก็บไว้แล้ว"
+
+#: ../shell/rb-playlist-manager.c:152
+msgid "_Save to file..."
+msgstr "_บันทึกเป็นแฟ้ม..."
+
+#: ../shell/rb-playlist-manager.c:153
+msgid "Save a playlist to a file"
+msgstr "บันทึกรายการเพลงลงแฟ้ม"
+
+#: ../shell/rb-playlist-manager.c:155
+msgid "_Create Audio CD..."
+msgstr "สร้างซีดีเพ_ลง"
+
+#: ../shell/rb-playlist-manager.c:156
+msgid "Create an audio CD from playlist"
+msgstr "สร้างซีดีเพลงจากรายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:158
+msgid "_Rename..."
+msgstr "เปลี่ยน_ชื่อ..."
+
+#: ../shell/rb-playlist-manager.c:159
+msgid "Rename playlist"
+msgstr "เปลี่ยนชื่อรายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:161 ../shell/rb-shell-clipboard.c:105
+msgid "_Delete"
+msgstr "_ลบ"
+
+#: ../shell/rb-playlist-manager.c:162
+msgid "Delete playlist"
+msgstr "ลบรายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:164 ../shell/rb-shell.c:335
+msgid "_Edit"
+msgstr "แ_ก้ไข"
+
+#: ../shell/rb-playlist-manager.c:165
+msgid "Change this automatic playlist"
+msgstr "แก้ไขรายการเพลงอัตโนมัติ"
+
+#: ../shell/rb-playlist-manager.c:518
+msgid "Couldn't read playlist"
+msgstr "ไม่สามารถอ่านรายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:519
+msgid "The playlist file may be in an unknown format or corrupted."
+msgstr "แฟ้มรายการเพลงอยู่ในรูปแบบที่ไม่รู้จักหรือเสีย"
+
+#: ../shell/rb-playlist-manager.c:835
+msgid "Load playlist"
+msgstr "เรียกรายการเพลง"
+
+#: ../shell/rb-playlist-manager.c:873
+msgid "Save playlist"
+msgstr "บันทึกรายการเพลง"
+
+#: ../shell/rb-shell-clipboard.c:90
+msgid "Select _All"
+msgstr "เลือก_ทั้งหมด"
+
+#: ../shell/rb-shell-clipboard.c:91
+msgid "Select all songs"
+msgstr "เลือกเพลงทั้งหมด"
+
+#: ../shell/rb-shell-clipboard.c:93
+msgid "D_eselect All"
+msgstr "เ_ลิกเลือกทั้งหมด"
+
+#: ../shell/rb-shell-clipboard.c:94
+msgid "Deselect all songs"
+msgstr "ยกเลิกการเลือกเพลงทั้งหมด"
+
+#: ../shell/rb-shell-clipboard.c:96
+msgid "Cu_t"
+msgstr "_ตัด"
+
+#: ../shell/rb-shell-clipboard.c:97
+msgid "Cut selection"
+msgstr "ตัดที่เลือก"
+
+#: ../shell/rb-shell-clipboard.c:99
+msgid "_Copy"
+msgstr "_คัดลอก"
+
+#: ../shell/rb-shell-clipboard.c:100
+msgid "Copy selection"
+msgstr "คัดลอกที่เลือก"
+
+#: ../shell/rb-shell-clipboard.c:102
+msgid "_Paste"
+msgstr "_แปะ"
+
+#: ../shell/rb-shell-clipboard.c:103
+msgid "Paste selection"
+msgstr "แปะสิ่งที่เลือก"
+
+#: ../shell/rb-shell-clipboard.c:106
+msgid "Delete selection"
+msgstr "ลบสิ่งที่เลือก"
+
+#: ../shell/rb-shell-player.c:252
+msgid "P_revious"
+msgstr "_ก่อนหน้า"
+
+#: ../shell/rb-shell-player.c:253
+msgid "Start playing the previous song"
+msgstr "เล่นเพลงก่อนหน้านี้"
+
+#: ../shell/rb-shell-player.c:255
+msgid "_Next"
+msgstr "_ถัดไป"
+
+#: ../shell/rb-shell-player.c:256
+msgid "Start playing the next song"
+msgstr "เล่นเพลงถัดไป"
+
+#: ../shell/rb-shell-player.c:258
+msgid "_Properties"
+msgstr "คุณ_สมบัติ"
+
+#: ../shell/rb-shell-player.c:259
+msgid "Show information on the selected song"
+msgstr "แสดงข้อมูลของเพลงที่เลือก"
+
+#: ../shell/rb-shell-player.c:266
+msgid "_Play"
+msgstr "_เล่น"
+
+#: ../shell/rb-shell-player.c:267
+msgid "Start playback"
+msgstr "เริ่มการเล่น"
+
+#: ../shell/rb-shell-player.c:273
+msgid "_Pause"
+msgstr "_หยุดชั่วคราว"
+
+#: ../shell/rb-shell-player.c:274
+msgid "Pause playback"
+msgstr "หยุดชั่วคราว"
+
+#: ../shell/rb-shell-player.c:280
+msgid "_Stop"
+msgstr "ห_ยุด"
+
+#: ../shell/rb-shell-player.c:281
+msgid "Stop playback"
+msgstr "หยุดเล่น"
+
+#: ../shell/rb-shell-player.c:287 ../shell/rb-statusbar.c:227
+msgid "Sh_uffle"
+msgstr "_สุ่ม"
+
+#: ../shell/rb-shell-player.c:288 ../shell/rb-statusbar.c:230
+msgid "Play songs in a random order"
+msgstr "เล่นเพลงแบบสุ่ม"
+
+#: ../shell/rb-shell-player.c:290 ../shell/rb-statusbar.c:232
+msgid "_Repeat"
+msgstr "เล่_นซ้ำ"
+
+#: ../shell/rb-shell-player.c:291 ../shell/rb-statusbar.c:235
+msgid "Play first song again after all songs are played"
+msgstr "เล่นเพลงแรกอีกครั้งเมื่อเล่นครบแล้ว"
+
+#: ../shell/rb-shell-player.c:523
+#, c-format
+msgid "Failed to create the player: %s"
+msgstr "ไม่สามารถสร้างตัวเล่น: %s"
+
+#: ../shell/rb-shell-player.c:582
+msgid "Play previous song"
+msgstr "เล่นเพลงก่อนหน้า"
+
+#: ../shell/rb-shell-player.c:611
+msgid "Play next song"
+msgstr "เล่นเพลงถัดไป"
+
+#: ../shell/rb-shell-player.c:630
+msgid "Change the music volume"
+msgstr "ปรับความดัง"
+
+#: ../shell/rb-shell-player.c:895
+#, c-format
+msgid "Opening %s..."
+msgstr "กำลังเปิด %s..."
+
+#: ../shell/rb-shell-player.c:1838
+msgid "Couldn't stop playback"
+msgstr "ไม่สามารถหยุดเล่นได้"
+
+#: ../shell/rb-shell-player.c:1930 ../shell/rb-shell-player.c:1973
+msgid "Stream error"
+msgstr "สตรีมผิดพลาด"
+
+#: ../shell/rb-shell-player.c:1931 ../shell/rb-shell-player.c:1974
+msgid "Unexpected end of stream!"
+msgstr ""
+
+#: ../shell/rb-shell-preferences.c:141 ../shell/rb-shell.c:1567
+msgid "Couldn't display help"
+msgstr "ไม่สามารถแสดงวิธีใช้"
+
+#: ../shell/rb-shell-preferences.c:179
+msgid "Music Player Preferences"
+msgstr "ปรับแต่งตัวเล่นเพลง"
+
+#: ../shell/rb-shell-preferences.c:227
+msgid "General"
+msgstr "ทั่วไป"
+
+#: ../shell/rb-shell.c:334
+msgid "_Music"
+msgstr "เ_พลง"
+
+#: ../shell/rb-shell.c:336
+msgid "_View"
+msgstr "_มุมมอง"
+
+#: ../shell/rb-shell.c:337
+msgid "_Control"
+msgstr "_ควบคุม"
+
+#: ../shell/rb-shell.c:338
+msgid "_Help"
+msgstr "_วิธีใช้"
+
+#: ../shell/rb-shell.c:340
+msgid "New _Internet Radio Station"
+msgstr "เพิ่มสถานี_วิทยุอินเทอร์เน็ต"
+
+#: ../shell/rb-shell.c:341
+msgid "Create a new Internet Radio station"
+msgstr "สร้างสถานีวิทยุอินเทอร์เน็ตใหม่"
+
+#: ../shell/rb-shell.c:344
+msgid "_Import Folder..."
+msgstr "_นำเข้าโฟลเดอร์..."
+
+#: ../shell/rb-shell.c:345
+msgid "Choose folder to be added to the Library"
+msgstr "เลือกโฟลเดอร์ที่ต้องการนำเข้า Library"
+
+#: ../shell/rb-shell.c:347
+msgid "Import _File..."
+msgstr "นำเข้าแ_ฟ้ม..."
+
+#: ../shell/rb-shell.c:348
+msgid "Choose file to be added to the Library"
+msgstr "เลือกแฟ้มที่ต้องการนำเข้า Library"
+
+#: ../shell/rb-shell.c:350
+msgid "Import _Audio CD..."
+msgstr "นำเข้าจากซี_ดีเพลง"
+
+#: ../shell/rb-shell.c:351
+msgid "Extract and import songs from a CD"
+msgstr "นำเข้าเพลงจากซีดีเพลง"
+
+#: ../shell/rb-shell.c:353
+msgid "_About"
+msgstr "เ_กี่ยวกับ"
+
+#: ../shell/rb-shell.c:354
+msgid "Show information about the music player"
+msgstr "แสดงข้อมูลของโปรแกรมเล่นเพลง"
+
+#: ../shell/rb-shell.c:356
+msgid "_Contents"
+msgstr "เ_นื้อหา"
+
+#: ../shell/rb-shell.c:357
+msgid "Display music player help"
+msgstr "แสดงวิธีการใช้งาน"
+
+#: ../shell/rb-shell.c:359
+msgid "_Quit"
+msgstr "_ออก"
+
+#: ../shell/rb-shell.c:360
+msgid "Quit the music player"
+msgstr "ออกจากตัวเล่นเพลง"
+
+#: ../shell/rb-shell.c:362
+msgid "Prefere_nces"
+msgstr "_ปรับแต่ง"
+
+#: ../shell/rb-shell.c:363
+msgid "Edit music player preferences"
+msgstr "แก้ไขค่าปรับแต่งของตัวเล่นเพลง"
+
+#: ../shell/rb-shell.c:365
+msgid "Show _all"
+msgstr "เลือก_ทั้งหมด"
+
+#: ../shell/rb-shell.c:366
+msgid "Show all items in this music source"
+msgstr "เลือกเพลงทั้งหมดในที่เก็บเพลง"
+
+#: ../shell/rb-shell.c:368
+msgid "_Jump to Playing Song"
+msgstr "ไป_ยังเพลงที่เล่น"
+
+#: ../shell/rb-shell.c:369
+msgid "Scroll the view to the currently playing song"
+msgstr "เลื่อนไปแสดงเพลงที่กำลังเล่น"
+
+#: ../shell/rb-shell.c:376
+msgid "Source _List"
+msgstr "_ที่เก็บเพลง"
+
+#: ../shell/rb-shell.c:377
+msgid "Change the visibility of the source list"
+msgstr "แสดงที่เก็บเพลง"
+
+#: ../shell/rb-shell.c:379
+msgid "_Small Display"
+msgstr "ข_นาดเล็ก"
+
+#: ../shell/rb-shell.c:380
+msgid "Make the main window smaller"
+msgstr "ปรับหน้าต่างให้เป็นขนาดเล็ก"
+
+#: ../shell/rb-shell.c:1423 ../shell/rb-tray-icon.c:203
+#: ../widgets/rb-header.c:588
+msgid "Not playing"
+msgstr "ไม่ได้เล่น"
+
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: ../shell/rb-shell.c:1426
+#, c-format
+msgid ""
+"%s\n"
+"Paused, %s"
+msgstr ""
+"%s\n"
+"หยุดชั่วขณะ %s"
+
+#. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
+#: ../shell/rb-shell.c:1430
+#, c-format
+msgid ""
+"%s\n"
+"%s"
+msgstr ""
+"%s\n"
+"%s"
+
+#. Translators: %s is the song name
+#: ../shell/rb-shell.c:1464
+#, c-format
+msgid "%s (Paused)"
+msgstr "%s (หยุดชั่วขณะ)"
+
+#: ../shell/rb-shell.c:1524
+msgid "translator_credits"
+msgstr "_รายชื่อผู้แปล"
+
+#: ../shell/rb-shell.c:1528
+msgid "Maintainers:"
+msgstr ""
+
+#: ../shell/rb-shell.c:1531
+msgid "Former Maintainers:"
+msgstr ""
+
+#: ../shell/rb-shell.c:1534
+msgid "Contributors:"
+msgstr ""
+
+#: ../shell/rb-shell.c:1536
+msgid "Music management and playback software for GNOME."
+msgstr "โปรแกรมจัดการและเล่นเพลงของ GNOME"
+
+#: ../shell/rb-shell.c:1627 ../widgets/rb-druid.c:319
+msgid "Load folder into Library"
+msgstr "เพิ่มเพลงในโฟลเดอร์ไปยัง Library"
+
+#: ../shell/rb-shell.c:1649
+msgid "Load file into Library"
+msgstr "เพิ่มแฟ้มไปยัง Library"
+
+#: ../shell/rb-shell.c:1683
+msgid "CD Ripper not found"
+msgstr "ไม่พบตัวแปลงเพลงจากซีดี"
+
+#: ../shell/rb-shell.c:1684
+msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
+msgstr "ในการแปลงซีดีเพลง คุณต้องติดตั้งโปรแกรม Sound Juicer CD Ripper"
+
+#: ../shell/rb-shell.c:1692
+msgid "Couldn't run CD Ripper"
+msgstr "ไม่สามารถเรียกตัวแปลงเพลง"
+
+#: ../shell/rb-shell.c:1693
+#, c-format
+msgid "An error occurred while running sound-juicer: %s"
+msgstr "เกิดปัญหาในการเรียก sound-juicer: %s"
+
+#: ../shell/rb-source-header.c:94
+msgid "_Browser"
+msgstr "เ_บราวเซอร์"
+
+#: ../shell/rb-source-header.c:95
+msgid "Change the visibility of the browser"
+msgstr "แสดงเบราวเซอร์"
+
+#: ../shell/rb-source-header.c:177
+msgid "Filter music display by genre, artist, album, or title"
+msgstr "เลือกเพลงตามประเภท, ศิลปิน, อัลบั้ม หรือชื่อเพลง"
+
+#: ../shell/rb-source-header.c:184
+msgid "Show _Browser"
+msgstr "แสดงเ_บราวเซอร์"
+
+#: ../shell/rb-source-header.c:185
+msgid "Hide _Browser"
+msgstr "ซ่อนเ_บราวเซอร์"
+
+#: ../shell/rb-statusbar.c:69
+msgid "S_tatusbar"
+msgstr "แถบส_ถานะ"
+
+#: ../shell/rb-statusbar.c:70
+msgid "Change the visibility of the statusbar"
+msgstr "แสดงแถบสถานะ"
+
+#: ../shell/rb-tray-icon.c:110
+msgid "_Show Window"
+msgstr "แสดง_หน้าต่าง"
+
+#: ../shell/rb-tray-icon.c:111
+msgid "Change the visibility of the main window"
+msgstr "แสดงหน้าต่างหลัก"
+
+#: ../sources/itunesdb.c:430
+msgid "Master-PL"
+msgstr ""
+
+#: ../sources/itunesdb.c:432
+msgid "Playlist"
+msgstr "รายการเล่น"
+
+#: ../sources/itunesdb.c:784
+#, c-format
+msgid "Error reading \"%s\".\n"
+msgstr "เกิดข้อผิดพลาดขณะอ่าน \"%s\".\n"
+
+#: ../sources/itunesdb.c:792
+#, c-format
+msgid "\"%s\" is not a valid iPod database.\n"
+msgstr "\"%s\" ไม่ใช่ฐานข้อมูลไอพ็อดที่ถูกต้อง\n"
+
+#: ../sources/itunesdb.c:1032 ../sources/itunesdb.c:1692
+#, c-format
+msgid "Could not open \"%s\" file for reading.\n"
+msgstr "ไม่สามารถเปิดแฟ้ม \"%s\" เพื่ออ่านได้\n"
+
+#: ../sources/itunesdb.c:1544 ../sources/itunesdb.c:1699
+#, c-format
+msgid "Could not open \"%s\" file for writing.\n"
+msgstr "ไม่สามารถเปิดแฟ้ม \"%s\" เพื่อเขียนได้\n"
+
+#. an error occured
+#: ../sources/itunesdb.c:1556
+#, c-format
+msgid "Error renaming '%s' to '%s' (%s).\n"
+msgstr "เกิดข้อผิดพลาดในการเปลี่ยนชื่อ '%s' เป็น '%s' (%s).\n"
+
+#. error -- not end of file!
+#: ../sources/itunesdb.c:1712
+#, c-format
+msgid "Error reading file \"%s\".\n"
+msgstr "เกิดข้อผิดพลาดในการอ่านแฟ้ม \"%s\".\n"
+
+#: ../sources/itunesdb.c:1724
+#, c-format
+msgid "Error writing PC file \"%s\".\n"
+msgstr ""
+
+#: ../sources/rb-ipod-source.c:232
+msgid "iPod"
+msgstr "ไอพ็อด"
+
+#: ../sources/rb-iradio-source.c:373 ../sources/rb-library-source.c:556
+#: ../widgets/rb-query-creator.c:56
+msgid "Genre"
+msgstr "ประเภท"
+
+#: ../sources/rb-iradio-source.c:447
+msgid "Radio"
+msgstr "วิทยุ"
+
+#: ../sources/rb-iradio-source.c:593
+#, c-format
+msgid "%d station"
+msgid_plural "%d stations"
+msgstr[0] "%d สถานี"
+msgstr[1] "%d สถานี"
+
+#: ../sources/rb-library-source.c:197
+msgid "Browse this genre"
+msgstr "แสดงเฉพาะเพลงประเภทนี้"
+
+#: ../sources/rb-library-source.c:198
+msgid "Set the browser to view only this genre"
+msgstr "ตั้งให้เบราวเซอร์แสดงเฉพาะเพลงประเภทนี้"
+
+#: ../sources/rb-library-source.c:200
+msgid "Browse this artist"
+msgstr "แสดงเฉพาะศิลปินนี้"
+
+#: ../sources/rb-library-source.c:201
+msgid "Set the browser to view only this artist"
+msgstr "ตั้งให้เบราวเซอร์แสดงเฉพาะศิลปินนี้"
+
+#: ../sources/rb-library-source.c:203
+msgid "Browse this album"
+msgstr "แสดงเฉพาะอัลบั้มนี้"
+
+#: ../sources/rb-library-source.c:204
+msgid "Set the browser to view only this album"
+msgstr "ตั้งให้เบราวเซอร์แสดงเฉพาะอัลบั้มนี้"
+
+#: ../sources/rb-library-source.c:570 ../widgets/rb-query-creator.c:54
+msgid "Artist"
+msgstr "ศิลปิน"
+
+#: ../sources/rb-library-source.c:584 ../widgets/rb-query-creator.c:55
+msgid "Album"
+msgstr "อัลบ้ม"
+
+#: ../sources/rb-library-source.c:685
+msgid "Library"
+msgstr "Library"
+
+#: ../sources/rb-library-source.c:1215
+msgid "Add Location"
+msgstr "เพิ่มตำแหน่ง"
+
+#: ../sources/rb-playlist-source.c:291 ../widgets/rb-entry-view.c:1171
+msgid "Tra_ck"
+msgstr "_ลำดับ"
+
+#: ../sources/rb-playlist-source.c:784
+msgid "Couldn't save playlist"
+msgstr "ไม่สามารถบันทึกรายการเพลง"
+
+#: ../sources/rb-playlist-source-recorder.c:219
+#, c-format
+msgid "Invalid writer device: %s"
+msgstr ""
+
+#: ../sources/rb-playlist-source-recorder.c:293
+msgid "Error creating audio CD"
+msgstr "เกิดข้อผิดพลาดในการสร้างซีดีเพลง"
+
+#: ../sources/rb-playlist-source-recorder.c:316
+#, c-format
+msgid "%.0f%% complete"
+msgstr "เสร็จไปแล้ว %.0f%%"
+
+#: ../sources/rb-playlist-source-recorder.c:332
+msgid "Burning audio to CD"
+msgstr "กำลังเขียนเพลงลงซีดี"
+
+#: ../sources/rb-playlist-source-recorder.c:347
+msgid "Finished creating audio CD."
+msgstr "เสร็จการสร้างซีดีเพลง"
+
+#: ../sources/rb-playlist-source-recorder.c:352
+msgid ""
+"Finished creating audio CD.\n"
+"Create another copy?"
+msgstr ""
+"สร้างซีดีเพลงเสร็จแล้ว\n"
+"ต้องการทำสำเนาอีกชุดหรือไม่?"
+
+#: ../sources/rb-playlist-source-recorder.c:354
+msgid "Writing cancelled.  Try again?"
+msgstr "การเขียนซีดีถูกยกเลิก ต้องการลองใหม่หรือไม่"
+
+#: ../sources/rb-playlist-source-recorder.c:415
+msgid "Audio recording error"
+msgstr "การบันทึกเสียงผิดพลาด"
+
+#: ../sources/rb-playlist-source-recorder.c:450
+msgid "Audio Conversion Error"
+msgstr "การแปลงเพลงผิดพลาด"
+
+#: ../sources/rb-playlist-source-recorder.c:475
+msgid "Recording error"
+msgstr "การบันทึกผิดพลาด"
+
+#: ../sources/rb-playlist-source-recorder.c:559
+msgid "Do you wish to interrupt writing this disc?"
+msgstr "คุณต้องการขัดขวางการเขียนแผ่นหรือไม่"
+
+#: ../sources/rb-playlist-source-recorder.c:562
+msgid "This may result in an unusable disc."
+msgstr "อาจทำให้แผ่นนี้ใช้ไม่ได้"
+
+#: ../sources/rb-playlist-source-recorder.c:567
+msgid "_Cancel"
+msgstr "_ยกเลิก"
+
+#: ../sources/rb-playlist-source-recorder.c:568
+msgid "_Interrupt"
+msgstr "_ขัดขวาง"
+
+#: ../sources/rb-playlist-source-recorder.c:590
+msgid "Could not create audio CD"
+msgstr "ไม่สามารถสร้างซีดีเพลง"
+
+#: ../sources/rb-playlist-source-recorder.c:611
+msgid "Please make sure another application is not using the disc."
+msgstr "กรุณาตรวจสอบว่าโปรแกรมอื่นไม่ได้กำลังใช้งานแผ่นดิสก์"
+
+#: ../sources/rb-playlist-source-recorder.c:612
+msgid "Disc is busy"
+msgstr "ดิสก์ถูกใช้งานอยู่"
+
+#: ../sources/rb-playlist-source-recorder.c:614
+msgid "Please insert a rewritable or blank media in the drive tray."
+msgstr "กรุณาใส่แผ่นเปล่าหรือแผ่นแบบเขียนซ้ำได้ ในไดรว์"
+
+#: ../sources/rb-playlist-source-recorder.c:615
+msgid "Insert rewritable or blank media"
+msgstr "ใส่แผ่นเปล่าหรือแผ่นแบบเขียนซ้ำ"
+
+#: ../sources/rb-playlist-source-recorder.c:617
+msgid "Please insert a blank media in the drive tray."
+msgstr "กรุณาใส่แผ่นเปล่าในไดรว์"
+
+#: ../sources/rb-playlist-source-recorder.c:618
+msgid "Insert blank media"
+msgstr "ใส่แผ่นเปล่า"
+
+#: ../sources/rb-playlist-source-recorder.c:620
+msgid "Please replace the in-drive media by a rewritable or blank media."
+msgstr "กรุณาเปลี่ยนแผ่นในไดรว์เป็นแผ่นเปล่าหรือแผ่นแบบเขียนซ้ำได้"
+
+#: ../sources/rb-playlist-source-recorder.c:621
+msgid "Reload rewritable or blank media"
+msgstr "ใส่แผ่นเปล่าหรือแผ่นเขียนซ้ำอีกครั้ง"
+
+#: ../sources/rb-playlist-source-recorder.c:623
+msgid "Please replace the in-drive media by a blank media."
+msgstr "กรุณาเปลี่ยนแผ่นในไดรว์เป็นแผ่นเปล่า"
+
+#: ../sources/rb-playlist-source-recorder.c:624
+msgid "Reload blank media"
+msgstr "ใส่แผ่นเปล่าใหม่"
+
+#: ../sources/rb-playlist-source-recorder.c:669
+msgid "Converting audio track"
+msgstr "กำลังแปลงเพลงจากซีดี"
+
+#: ../sources/rb-playlist-source-recorder.c:672
+msgid "Preparing to write disc"
+msgstr "กำลังเตรียมตัวเขียนแผ่นซีดี"
+
+#: ../sources/rb-playlist-source-recorder.c:675
+msgid "Writing disc"
+msgstr "กำลังเขียนซีดี"
+
+#: ../sources/rb-playlist-source-recorder.c:678
+msgid "Fixating disc"
+msgstr ""
+
+#: ../sources/rb-playlist-source-recorder.c:681
+msgid "Erasing disc"
+msgstr "กำลังลบข้อมูลในซีดี"
+
+#: ../sources/rb-playlist-source-recorder.c:684
+msgid "Unhandled action in burn_action_changed_cb"
+msgstr ""
+
+#: ../sources/rb-playlist-source-recorder.c:722
+msgid "C_reate"
+msgstr "_สร้าง"
+
+#: ../sources/rb-playlist-source-recorder.c:806
+#, c-format
+msgid "Failed to create the recorder: %s"
+msgstr "สร้างตัวบันทึกล้มเหลว: %s"
+
+#: ../sources/rb-playlist-source-recorder.c:890
+#, c-format
+msgid "Could not remove temporary directory '%s': %s"
+msgstr "ไม่สามารถลบไดเรคทอรีชั่วคราว '%s': %s"
+
+#: ../sources/rb-playlist-source-recorder.c:910
+msgid "Create Audio CD"
+msgstr "สร้างซีดีเพลง"
+
+#: ../sources/rb-playlist-source-recorder.c:928
+#, c-format
+msgid "Create audio CD from '%s' playlist?"
+msgstr "ต้องการสร้างซีดีเพลงจากรายการเพลง '%s'?"
+
+#: ../sources/rb-playlist-source-recorder.c:1026
+#, c-format
+msgid "Cannot get free space at %s"
+msgstr "ไม่สามารถขอเนื้อที่ว่างที่ %s"
+
+#: ../sources/rb-playlist-source-recorder.c:1123
+#, c-format
+msgid ""
+"This playlist is %s minutes long.  This exceeds the length of a standard "
+"audio CD.  If the destination media is larger than a standard audio CD "
+"please insert it in the drive and try again."
+msgstr ""
+"รายการเพลงนี้ยาว %s นาที ซึ่งยาวเกินมาตรฐานซีดีเพลง"
+"ถ้าแผ่นซีดีที่ใช้สามารถบันทึกได้ยาวกว่าปกติ"
+"กรุณาใส่แผ่นในไดรว์แล้วลองอีกครั้ง"
+
+#: ../sources/rb-playlist-source-recorder.c:1139
+msgid "Playlist too long"
+msgstr "รายการเพลงยาวเกินไป"
+
+#: ../sources/rb-playlist-source-recorder.c:1151
+msgid "Could not find temporary space!"
+msgstr "ไม่สามารถหาเนื้อที่ว่างชั่วคราวได้"
+
+#: ../sources/rb-playlist-source-recorder.c:1152
+#, c-format
+msgid ""
+"Could not find enough temporary space to convert audio tracks.  %s MiB "
+"required."
+msgstr ""
+"ไม่สามารถหาเนื้อที่ว่างชั่วคราวสำหรับแปลงเพลง ต้องการ %s MiB"
+
+#: ../sources/rb-source.c:640
+msgid "Not supported"
+msgstr "ไม่สนับสนุน"
+
+#: ../sources/rb-source.c:641
+msgid "This source does not support drag and drop."
+msgstr "ที่เก็บเพลงนี้ไม่สนับสนุนการลากแล้ววาง"
+
+#: ../sources/rb-sourcelist.c:218
+msgid "_Source"
+msgstr "_ที่เก็บ"
+
+#: ../widgets/disclosure-widget.c:300
+msgid "Expander Size"
+msgstr ""
+
+#: ../widgets/disclosure-widget.c:301
+msgid "Size of the expander arrow"
+msgstr ""
+
+#: ../widgets/eel-gconf-extensions.c:68
+msgid "Configuration system error"
+msgstr ""
+
+#: ../widgets/eggtrayicon.c:120
+msgid "Orientation"
+msgstr ""
+
+#: ../widgets/eggtrayicon.c:121
+msgid "The orientation of the tray."
+msgstr ""
+
+#: ../widgets/rb-cell-renderer-pixbuf.c:129
+msgid "Pixbuf Object"
+msgstr ""
+
+#: ../widgets/rb-cell-renderer-pixbuf.c:130
+msgid "The pixbuf to render."
+msgstr ""
+
+#: ../widgets/rb-druid.c:239
+msgid "Welcome to Rhythmbox"
+msgstr "ยินดีต้อนรับสู่ Rhythmbox"
+
+#: ../widgets/rb-druid.c:243
+msgid ""
+"Rhythmbox is the GNOME music player that lets you do everything: play your "
+"music files, listen to Internet Radio, import music from CDs, and much "
+"more.\n"
+"\n"
+"This assistant will help you get started by asking you some simple questions."
+msgstr ""
+"Rhythmbox เป็นตัวเล่นเพลงของ GNOME ซึ่งช่วยให้คุณ"
+"เล่นเพลง, ฟังวิทยุอินเทอร์เน็ต, นำเข้าเพลงจากซีดี และอื่นๆ\n"
+"\n"
+"ตัวช่วยเหลือนี้จะช่วยคุณเริ่มต้น โดยถามคำถามเล็กน้อย"
+
+#: ../widgets/rb-druid.c:249
+msgid "Music library setup"
+msgstr "ติดตั้ง Music library"
+
+#: ../widgets/rb-druid.c:258
+msgid "Finish"
+msgstr "เสร็จ"
+
+#: ../widgets/rb-druid.c:260
+msgid ""
+"You are now ready to start Rhythmbox.\n"
+"\n"
+"Remember that you may add music to the library using \"Music\" then \"Import "
+"Folder\", or by importing it from CDs."
+msgstr ""
+"คุณพร้อมใช้งาน Rhythmbox แล้ว\n"
+"\n"
+"คุณสามารถเพิ่มเพลงใน library โดยใช้เมนู \"เพลง\" และ \"นำเข้าโฟลเดอร์\""
+"หรือนำเข้าจากซีดีเพลง"
+
+#: ../widgets/rb-entry-view.c:943 ../widgets/rb-header.c:880
+#, c-format
+msgid "%d:%02d"
+msgstr "%d:%02d"
+
+#: ../widgets/rb-entry-view.c:967
+msgid "Very Low"
+msgstr "ต่ำมาก"
+
+#: ../widgets/rb-entry-view.c:969
+msgid "Low"
+msgstr "ต่ำ"
+
+#: ../widgets/rb-entry-view.c:971
+msgid "Regular"
+msgstr "ปกติ"
+
+#: ../widgets/rb-entry-view.c:973
+msgid "High"
+msgstr "สูง"
+
+#: ../widgets/rb-entry-view.c:975
+msgid "Very High"
+msgstr "สูงมาก"
+
+#: ../widgets/rb-entry-view.c:977
+msgid "Perfect"
+msgstr "ยอดเยี่ยม"
+
+#: ../widgets/rb-entry-view.c:1180
+msgid "_Title"
+msgstr "_ชื่อเพลง"
+
+#: ../widgets/rb-entry-view.c:1191
+msgid "Art_ist"
+msgstr "ศิ_ลปิน"
+
+#: ../widgets/rb-entry-view.c:1213
+msgid "Ge_nre"
+msgstr "_ประเภท"
+
+#: ../widgets/rb-entry-view.c:1223
+msgid "Ti_me"
+msgstr "เ_วลา"
+
+#: ../widgets/rb-entry-view.c:1233
+msgid "_Quality"
+msgstr "คุณ_ภาพ"
+
+#: ../widgets/rb-entry-view.c:1244
+msgid "_Play Count"
+msgstr "_จำนวนครั้ง"
+
+#: ../widgets/rb-entry-view.c:1253
+msgid "L_ast Played"
+msgstr "เล่น_ล่าสุด"
+
+#: ../widgets/rb-entry-view.c:1406
+msgid "Now Playing"
+msgstr "กำลังเล่น"
+
+#: ../widgets/rb-entry-view.c:1489
+msgid "Playback Error"
+msgstr "การเล่นเพลงผิดพลาด"
+
+#: ../widgets/rb-header.c:277
+msgid "Listening to "
+msgstr "กำลังฟัง"
+
+#: ../widgets/rb-header.c:554
+msgid "Get information on this album from the web"
+msgstr "หาข้อมูลของอัลบั้มนี้จากเว็บ"
+
+#: ../widgets/rb-header.c:567
+msgid "Get information on this artist from the web"
+msgstr "หาข้อมูลศิลปินนี้จากเว็บ"
+
+#: ../widgets/rb-header.c:595
+msgid "Get information on this station from the web"
+msgstr "หาข้อมูลสถานีนี้จากเว็บ"
+
+#: ../widgets/rb-header.c:869
+#, c-format
+msgid "%d:%02d of %d:%02d"
+msgstr "%d:%02d จาก %d:%02d"
+
+#: ../widgets/rb-header.c:877
+#, c-format
+msgid "%d:%02d of %d:%02d remaining"
+msgstr "เหลืออีก %d:%02d จาก %d:%02d"
+
+#: ../widgets/rb-load-failure-dialog.c:119
+msgid "Error loading files into library"
+msgstr "เกิดข้อผิดพลาดในการอ่านไฟล์ไปยัง library"
+
+#: ../widgets/rb-load-failure-dialog.c:136
+msgid "_Error"
+msgstr "_ผิดพลาด"
+
+#: ../widgets/rb-load-failure-dialog.c:144
+msgid "_File"
+msgstr "แ_ฟ้ม"
+
+#: ../widgets/rb-query-creator.c:53
+msgid "Title"
+msgstr "ชื่อ"
+
+#: ../widgets/rb-query-creator.c:57
+msgid "Rating"
+msgstr "คะแนน"
+
+#: ../widgets/rb-query-creator.c:58
+msgid "Path"
+msgstr "ตำแหน่ง"
+
+#: ../widgets/rb-query-creator.c:63
+msgid "contains"
+msgstr "มีคำว่า"
+
+#: ../widgets/rb-query-creator.c:64
+msgid "does not contain"
+msgstr "ไม่มีคำว่า"
+
+#: ../widgets/rb-query-creator.c:65 ../widgets/rb-query-creator.c:70
+msgid "equals"
+msgstr "คือ"
+
+#: ../widgets/rb-query-creator.c:71
+msgid "at least"
+msgstr "อย่างน้อย"
+
+#. matches if A >= B
+#: ../widgets/rb-query-creator.c:72
+msgid "at most"
+msgstr "อย่างมาก"
+
+#: ../widgets/rb-query-creator.c:239
+msgid "Create Automatic Playlist"
+msgstr "สร้างรายการเพลงอัตโนมัติ"
+
+#. this string can only be so long, or there wont be a search entry :)
+#: ../widgets/rb-search-entry.c:118
+msgid "_Search:"
+msgstr "_ค้นหา:"
+
+#: ../widgets/rb-song-display-box.c:113
+msgid "from"
+msgstr "จาก"
+
+#: ../widgets/rb-song-display-box.c:115
+msgid "by"
+msgstr "โดย"
+
+#: ../widgets/rb-song-info.c:282
+msgid "Song Properties"
+msgstr "คุณสมบัติเพลง"
+
+#: ../widgets/rb-song-info.c:374
+msgid "Multiple Song Properties"
+msgstr "คุณสมบัติเพลงแบบหลายเพลง"
+
+#: ../widgets/rb-song-info.c:820
+#, c-format
+msgid "%lu kbps"
+msgstr "%lu kbps"
+
+#: ../widgets/rb-song-info.c:865
+msgid "Unknown file name"
+msgstr "ไม่มีข้อมูลชื่อแฟ้ม"
+
+#: ../widgets/rb-song-info.c:884
+msgid "On the desktop"
+msgstr "บนพื้นโต๊ะ"
+
+#: ../widgets/rb-song-info.c:893
+msgid "Unknown location"
+msgstr "ไม่มีข้อมูลตำแหน่ง"
+
+#. Translators - The + and - refer to increasing and decreasing the volume.
+#. ** I don't know if there are sensible alternatives in other languages
+#: ../widgets/rb-volume.c:236
+msgid "+"
+msgstr "+"
+
+#: ../widgets/rb-volume.c:237
+msgid "-"
+msgstr "-"
+
