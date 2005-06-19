@@ -1,3 +1,121 @@
+2005-06-19  Bastien Nocera  <hadess@hadess.net>
+
+	* lib/rb-util.c: (_rb_threads_lock), (_rb_threads_unlock),
+	(rb_threads_init):
+	* remote/bonobo/Rhythmbox.idl:
+	* remote/bonobo/rb-remote-bonobo.c: (rb_remote_bonobo_class_init),
+	(rb_remote_bonobo_remote_client_proxy_init),
+	(rb_remote_bonobo_corba_quit),
+	(rb_remote_bonobo_corba_handle_file),
+	(rb_remote_bonobo_corba_add_to_library),
+	(rb_remote_bonobo_corba_next), (rb_remote_bonobo_corba_previous),
+	(rb_remote_bonobo_corba_skip), (rb_remote_bonobo_corba_set_rating),
+	(rb_remote_bonobo_corba_toggle_mute),
+	(convert_from_rb_remote_song), (get_song_info_from_player),
+	(bonobo_pb_get_prop), (bonobo_pb_set_prop),
+	(rb_remote_bonobo_add_player_property),
+	(rb_remote_bonobo_corba_get_player_properties),
+	(rb_remote_bonobo_song_changed_cb),
+	(rb_remote_bonobo_visibility_changed_cb),
+	(rb_remote_bonobo_player_notify_cb), (rb_remote_bonobo_acquire),
+	(rb_remote_bonobo_client_get_playing_song_impl),
+	(_rb_remote_bonobo_client_toggle_property),
+	(_rb_remote_bonobo_client_get_boolean_property),
+	(_rb_remote_bonobo_client_set_boolean_property),
+	(rb_remote_bonobo_client_toggle_visibility_impl),
+	(rb_remote_bonobo_client_get_visibility_impl),
+	(rb_remote_bonobo_client_set_visibility_impl),
+	(rb_remote_bonobo_client_toggle_shuffle_impl),
+	(rb_remote_bonobo_client_get_shuffle_impl),
+	(rb_remote_bonobo_client_set_shuffle_impl),
+	(rb_remote_bonobo_client_toggle_repeat_impl),
+	(rb_remote_bonobo_client_get_repeat_impl),
+	(rb_remote_bonobo_client_set_repeat_impl),
+	(_rb_remote_bonobo_client_set_playing),
+	(rb_remote_bonobo_client_play_impl),
+	(rb_remote_bonobo_client_pause_impl),
+	(rb_remote_bonobo_client_jump_next_impl),
+	(rb_remote_bonobo_client_jump_previous_impl),
+	(rb_remote_bonobo_client_quit_impl),
+	(rb_remote_bonobo_client_set_rating_impl),
+	(rb_remote_bonobo_client_seek_impl),
+	(rb_remote_bonobo_client_set_volume_impl),
+	(rb_remote_bonobo_client_get_volume_impl),
+	(rb_remote_bonobo_client_toggle_mute_impl):
+	* remote/bonobo/test-corba.c: (main):
+	* remote/rb-remote-client-proxy.c:
+	(rb_remote_client_proxy_add_to_library),
+	(rb_remote_client_proxy_play_uri),
+	(rb_remote_client_proxy_toggle_visibility),
+	(rb_remote_client_proxy_set_visibility),
+	(rb_remote_client_proxy_get_visibility),
+	(rb_remote_client_proxy_toggle_repeat),
+	(rb_remote_client_proxy_play), (rb_remote_client_proxy_pause),
+	(rb_remote_client_proxy_set_playing_time),
+	(rb_remote_client_proxy_seek), (rb_remote_client_proxy_set_rating),
+	(rb_remote_client_proxy_jump_next),
+	(rb_remote_client_proxy_jump_previous),
+	(rb_remote_client_proxy_quit), (rb_remote_client_proxy_set_volume),
+	(rb_remote_client_proxy_get_volume),
+	(rb_remote_client_proxy_toggle_mute):
+	* remote/rb-remote-client-proxy.h:
+	* remote/rb-remote-common.h:
+	* remote/rb-remote-proxy.c: (rb_remote_proxy_base_init),
+	(rb_remote_proxy_load_uri), (rb_remote_proxy_set_visibility),
+	(rb_remote_proxy_get_visibility),
+	(rb_remote_proxy_set_playing_time), (rb_remote_proxy_seek),
+	(rb_remote_proxy_get_playing_uri), (rb_remote_proxy_get_song_info),
+	(rb_remote_proxy_set_rating), (rb_remote_proxy_jump_next),
+	(rb_remote_proxy_jump_previous), (rb_remote_proxy_quit),
+	(rb_remote_proxy_toggle_mute),
+	(rb_remote_proxy_find_player_property),
+	(rb_remote_proxy_player_notify_handler),
+	(rb_remote_proxy_set_player_property),
+	(rb_remote_proxy_get_player_property),
+	(rb_remote_proxy_get_playing_source):
+	* remote/rb-remote-proxy.h:
+	* shell/Makefile.am:
+	* shell/main.c: (main), (handle_cmdline):
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_init), (rb_shell_player_set_property),
+	(rb_shell_player_get_property),
+	(rb_shell_player_set_playing_entry), (rb_shell_player_cmd_play),
+	(rb_shell_player_playpause_button), (rb_shell_player_playpause),
+	(rb_shell_player_cmd_pause), (rb_shell_player_toggle_mute),
+	(rb_shell_player_seek), (filter_mmkeys):
+	* shell/rb-shell-player.h:
+	* shell/rb-shell.c: (rb_shell_remote_proxy_init),
+	(rb_shell_construct), (source_activated_cb),
+	(rb_shell_db_error_cb), (rb_shell_db_entry_added_cb),
+	(rb_shell_playing_entry_changed_cb), (tray_destroy_cb),
+	(rb_shell_load_uri_impl), (rb_shell_select_uri_impl),
+	(rb_shell_play_uri_impl), (rb_shell_grab_focus_impl),
+	(rb_shell_get_visibility_impl), (rb_shell_set_visibility_impl),
+	(rb_shell_get_shuffle_impl), (rb_shell_set_shuffle_impl),
+	(rb_shell_get_repeat_impl), (rb_shell_set_repeat_impl),
+	(rb_shell_play_impl), (rb_shell_pause_impl),
+	(rb_shell_playing_impl), (rb_shell_get_playing_time_impl),
+	(rb_shell_set_playing_time_impl), (rb_shell_get_playing_uri_impl),
+	(rb_shell_get_song_info_impl), (rb_shell_jump_next_impl),
+	(rb_shell_jump_previous_impl), (rb_shell_remote_quit_impl),
+	(rb_shell_find_player_property_impl),
+	(rb_shell_player_notify_handler_impl),
+	(rb_shell_set_player_property_impl),
+	(rb_shell_get_player_property_impl),
+	(rb_shell_get_playing_source_impl), (rb_shell_seek_impl),
+	(rb_shell_set_rating_impl), (rb_shell_toggle_mute_impl):
+	* shell/rb-statusbar.c: (rb_statusbar_shell_play_order_changed_cb):
+	* shell/rb-tray-icon.c: (rb_tray_icon_class_init),
+	(rb_tray_icon_init), (rb_tray_icon_constructor),
+	(rb_tray_icon_sync_action), (rb_tray_icon_set_property),
+	(rb_tray_icon_get_property), (rb_tray_icon_new),
+	(rb_tray_icon_button_press_event_cb), (rb_tray_icon_drop_cb),
+	(rb_tray_icon_show_window_changed_cb):
+	* shell/rb-tray-icon.h:
+
+	Huge patch from jonathan@kaolin.hn.org to bring the Bonobo interface
+	back from the dark ages (Closes: #306384)
+
 2005-06-18  Dennis Cranston <dennis_cranston@yahoo.com>
 
 	* shell/rb-playlist-manager.c:  Use header capitalization 
