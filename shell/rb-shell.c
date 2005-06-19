@@ -362,7 +362,7 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "EditPreferences", GTK_STOCK_PREFERENCES, N_("Prefere_nces"), NULL,
 	  N_("Edit music player preferences"),
 	  G_CALLBACK (rb_shell_cmd_preferences) },
-	{ "ViewAll", NULL, N_("Show _all"), "<control>Y",
+	{ "ViewAll", NULL, N_("Show _All"), "<control>Y",
 	  N_("Show all items in this music source"),
 	  G_CALLBACK (rb_shell_cmd_view_all) },
 	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
@@ -1624,7 +1624,7 @@ rb_shell_cmd_add_folder_to_library (GtkAction *action,
 	char * dir = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	GtkWidget *dialog;
     
-	dialog = rb_file_chooser_new (_("Load folder into Library"),
+	dialog = rb_file_chooser_new (_("Import Folder into Library"),
 			              GTK_WINDOW (shell->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
 				      TRUE);
@@ -1646,7 +1646,7 @@ rb_shell_cmd_add_file_to_library (GtkAction *action,
 	char * dir = eel_gconf_get_string (CONF_STATE_ADD_DIR);
 	GtkWidget *dialog;
     
-	dialog = rb_file_chooser_new (_("Load file into Library"),
+	dialog = rb_file_chooser_new (_("Import File into Library"),
 			              GTK_WINDOW (shell->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      TRUE);
