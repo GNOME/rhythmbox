@@ -49,7 +49,9 @@ static void rb_statusbar_get_property (GObject *object,
 				       GValue *value,
 				       GParamSpec *pspec);
 static void rb_statusbar_sync_with_source (RBStatusbar *statusbar);
-static void rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, RBStatusbar *statusbar);
+static void rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, 
+						      GParamSpec *param,
+						      RBStatusbar *statusbar);
 static void rb_statusbar_state_changed_cb (GConfClient *client,
 					   guint cnxn_id,
 					   GConfEntry *entry,
@@ -545,7 +547,9 @@ rb_statusbar_state_changed_cb (GConfClient *client,
 }
 
 static void
-rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, RBStatusbar *statusbar)
+rb_statusbar_shell_play_order_changed_cb (RBShellPlayer *player, 
+					  GParamSpec *param, 
+					  RBStatusbar *statusbar)
 {
         rb_debug ("state changed");
 	if (statusbar->priv->syncing_state)

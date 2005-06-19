@@ -67,6 +67,18 @@ rb_remote_client_proxy_handle_uri (RBRemoteClientProxy *proxy, const char *uri)
 	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->handle_uri) (proxy, uri);
 }
 
+void
+rb_remote_client_proxy_add_to_library (RBRemoteClientProxy *proxy, const char *uri)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->add_to_library) (proxy, uri);
+}
+
+void
+rb_remote_client_proxy_play_uri (RBRemoteClientProxy *proxy, const char *uri)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->play_uri) (proxy, uri);
+}
+
 RBRemoteSong *
 rb_remote_client_proxy_get_playing_song (RBRemoteClientProxy *proxy)
 {
@@ -80,9 +92,33 @@ rb_remote_client_proxy_grab_focus (RBRemoteClientProxy *proxy)
 }
 
 void
+rb_remote_client_proxy_toggle_visibility (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->toggle_visibility) (proxy);
+}
+
+void
+rb_remote_client_proxy_set_visibility (RBRemoteClientProxy *proxy, gboolean visible)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->set_visibility) (proxy, visible);
+}
+
+gboolean
+rb_remote_client_proxy_get_visibility (RBRemoteClientProxy *proxy)
+{
+	return (* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->get_visibility) (proxy);
+}
+
+void
 rb_remote_client_proxy_toggle_shuffle (RBRemoteClientProxy *proxy)
 {
 	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->toggle_shuffle) (proxy);
+}
+
+void
+rb_remote_client_proxy_toggle_repeat (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->toggle_repeat) (proxy);
 }
 
 void
@@ -91,13 +127,74 @@ rb_remote_client_proxy_toggle_playing (RBRemoteClientProxy *proxy)
 	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->toggle_playing) (proxy);
 }
 
+void
+rb_remote_client_proxy_play (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->play) (proxy);
+}
+
+void
+rb_remote_client_proxy_pause (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->pause) (proxy);
+}
+
 long
 rb_remote_client_proxy_get_playing_time (RBRemoteClientProxy *proxy)
 {
 	return (* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->get_playing_time) (proxy);
 }
+
 void
 rb_remote_client_proxy_set_playing_time (RBRemoteClientProxy *proxy, long time)
 {
 	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->set_playing_time) (proxy, time);
+}
+
+void
+rb_remote_client_proxy_seek (RBRemoteClientProxy *proxy, long offset)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->seek) (proxy, offset);
+}
+
+void
+rb_remote_client_proxy_set_rating (RBRemoteClientProxy *proxy, double rating)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->set_rating) (proxy, rating);
+}
+
+void
+rb_remote_client_proxy_jump_next (RBRemoteClientProxy *proxy)
+{
+        (* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->jump_next) (proxy);
+}
+
+void
+rb_remote_client_proxy_jump_previous (RBRemoteClientProxy *proxy)
+{
+        (* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->jump_previous) (proxy);
+}
+
+void
+rb_remote_client_proxy_quit (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->quit) (proxy);
+}
+
+void
+rb_remote_client_proxy_set_volume (RBRemoteClientProxy *proxy, float volume)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->set_volume) (proxy, volume);
+}
+
+float
+rb_remote_client_proxy_get_volume (RBRemoteClientProxy *proxy)
+{
+	return (* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->get_volume) (proxy);
+}
+
+void
+rb_remote_client_proxy_toggle_mute (RBRemoteClientProxy *proxy)
+{
+	(* RB_REMOTE_CLIENT_PROXY_GET_IFACE (proxy)->toggle_mute) (proxy);
 }

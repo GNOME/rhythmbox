@@ -34,12 +34,16 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-preferences.h"
+#include "rb-shell.h"
 
 static void rb_tray_icon_class_init (RBTrayIconClass *klass);
 static void rb_tray_icon_init (RBTrayIcon *shell_player);
 static GObject *rb_tray_icon_constructor (GType type, guint n_construct_properties,
 					  GObjectConstructParam *construct_properties);
 static void rb_tray_icon_finalize (GObject *object);
+static void rb_tray_icon_sync_action (RBRemoteProxy *proxy, 
+				      gboolean visible, 
+				      RBTrayIcon *tray);
 static void rb_tray_icon_set_property (GObject *object,
 					  guint prop_id,
 					  const GValue *value,
@@ -48,7 +52,6 @@ static void rb_tray_icon_get_property (GObject *object,
 					  guint prop_id,
 					  GValue *value,
 					  GParamSpec *pspec);
-static void rb_tray_set_visibility (RBTrayIcon *tray, int state);
 static void rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 						RBTrayIcon *icon);
 static void rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
@@ -71,16 +74,9 @@ struct RBTrayIconPrivate
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
 
-	GtkWindow *main_window;
 	GtkWidget *ebox;
 
-	RhythmDB *db;
-
-	int window_x;
-	int window_y;
-	int window_w;
-	int window_h;
-	gboolean visible;
+	RBRemoteProxy *proxy;
 };
 
 enum
@@ -88,16 +84,7 @@ enum
 	PROP_0,
 	PROP_UI_MANAGER,
 	PROP_ACTION_GROUP,
-	PROP_DB,
-	PROP_WINDOW,
-};
-
-enum
-{
-	VISIBILITY_HIDDEN,
-	VISIBILITY_VISIBLE,
-	VISIBILITY_SYNC,
-	VISIBILITY_TOGGLE
+	PROP_REMOTE
 };
 
 enum
@@ -159,12 +146,12 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 	object_class->get_property = rb_tray_icon_get_property;
 
 	g_object_class_install_property (object_class,
-					 PROP_WINDOW,
-					 g_param_spec_object ("window",
-							      "GtkWindow",
-							      "main GtkWindo",
-							      GTK_TYPE_WINDOW,
-							      G_PARAM_READWRITE));
+					 PROP_REMOTE,
+					 g_param_spec_object ("remote",
+							      "RBRemoteProxy",
+							      "RBRemoteProxy object",
+							      RB_TYPE_REMOTE_PROXY,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 	g_object_class_install_property (object_class,
 					 PROP_UI_MANAGER,
 					 g_param_spec_object ("ui-manager",
@@ -178,13 +165,6 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "GtkActionGroup",
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-	g_object_class_install_property (object_class,
-					 PROP_DB,
-					 g_param_spec_object ("db",
-							      "RhythmDB",
-							      "RhythmDB object",
-							      RHYTHMDB_TYPE,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
@@ -219,12 +199,6 @@ rb_tray_icon_init (RBTrayIcon *icon)
 					  GTK_ICON_SIZE_SMALL_TOOLBAR);
 	gtk_container_add (GTK_CONTAINER (icon->priv->ebox), image);
 	
-	icon->priv->window_x = -1;
-	icon->priv->window_y = -1;
-	icon->priv->window_w = -1;
-	icon->priv->window_h = -1;
-	icon->priv->visible = TRUE;
-
 	gtk_container_add (GTK_CONTAINER (icon), icon->priv->ebox);
 	gtk_widget_show_all (GTK_WIDGET (icon->priv->ebox));
 }
@@ -243,7 +217,6 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 	tray = RB_TRAY_ICON (parent_class->constructor (type, n_construct_properties,
 							construct_properties));
 
-	rb_tray_set_visibility (tray, VISIBILITY_SYNC);
 	return G_OBJECT (tray);
 }
 
@@ -267,17 +240,34 @@ rb_tray_icon_finalize (GObject *object)
 }
 
 static void
+rb_tray_icon_sync_action (RBRemoteProxy *proxy, gboolean visible, RBTrayIcon *tray)
+{
+	GtkAction *action;
+	if ((tray->priv->actiongroup != NULL) && (tray->priv->proxy != NULL)) {
+		action = gtk_action_group_get_action (tray->priv->actiongroup,
+						      "TrayShowWindow");
+		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
+					      rb_remote_proxy_get_visibility (tray->priv->proxy));
+	}
+}
+
+static void
 rb_tray_icon_set_property (GObject *object,
-			      guint prop_id,
-			      const GValue *value,
-			      GParamSpec *pspec)
+			   guint prop_id,
+			   const GValue *value,
+			   GParamSpec *pspec)
 {
 	RBTrayIcon *tray = RB_TRAY_ICON (object);
 
 	switch (prop_id)
 	{
-	case PROP_WINDOW:
-		tray->priv->main_window = g_value_get_object (value);
+	case PROP_REMOTE:
+		tray->priv->proxy = g_value_get_object (value);
+		g_signal_connect_object (G_OBJECT (tray->priv->proxy),
+					 "visibility_changed",
+					 G_CALLBACK (rb_tray_icon_sync_action),
+					 tray, 0);
+		rb_tray_icon_sync_action (NULL, FALSE, tray);
 		break;
 	case PROP_UI_MANAGER:
 		tray->priv->ui_manager = g_value_get_object (value);
@@ -288,9 +278,7 @@ rb_tray_icon_set_property (GObject *object,
 						     rb_tray_icon_toggle_entries,
 						     rb_tray_icon_n_toggle_entries,
 						     tray);
-		break;
-	case PROP_DB:
-		tray->priv->db = g_value_get_object (value);
+		rb_tray_icon_sync_action (NULL, FALSE, tray);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -308,17 +296,14 @@ rb_tray_icon_get_property (GObject *object,
 
 	switch (prop_id)
 	{
-	case PROP_WINDOW:
-		g_value_set_object (value, tray->priv->main_window);
+	case PROP_REMOTE:
+		g_value_set_object (value, tray->priv->proxy);
 		break;
 	case PROP_UI_MANAGER:
 		g_value_set_object (value, tray->priv->ui_manager);
 		break;
 	case PROP_ACTION_GROUP:
 		g_value_set_object (value, tray->priv->actiongroup);
-		break;
-	case PROP_DB:
-		g_value_set_object (value, tray->priv->db);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -329,15 +314,13 @@ rb_tray_icon_get_property (GObject *object,
 RBTrayIcon *
 rb_tray_icon_new (GtkUIManager *mgr,
 		  GtkActionGroup *group,
-		  RhythmDB *db,
-		  GtkWindow *window)
+		  RBRemoteProxy *remote)
 {
 	return g_object_new (RB_TYPE_TRAY_ICON,
 			     "title", "Rhythmbox tray icon",
 			     "ui-manager", mgr,
 			     "action-group", group,
-			     "db", db,
-			     "window", window,
+			     "remote", remote,
 			     NULL);
 }
 
@@ -353,8 +336,11 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 
 	switch (event->button) {
 	case 1:
-		rb_tray_set_visibility (icon, VISIBILITY_TOGGLE);
+	{
+		gboolean visible = rb_remote_proxy_get_visibility (icon->priv->proxy);
+		rb_remote_proxy_set_visibility (icon->priv->proxy, visible ? FALSE : TRUE);
 		break;
+	}
 
 	case 3:
 	{
@@ -441,9 +427,8 @@ rb_tray_icon_drop_cb (GtkWidget *widget,
 
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
-
 		if (uri != NULL)
-			rhythmdb_add_uri (icon->priv->db, uri);
+			rb_remote_proxy_load_uri (icon->priv->proxy, uri, FALSE);
 
 		g_free (uri);
 	}
@@ -458,8 +443,8 @@ rb_tray_icon_show_window_changed_cb (GtkAction *action,
 				     RBTrayIcon *icon)
 {
 	rb_debug ("show window clicked");
-	rb_tray_set_visibility (icon,
-				gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+	rb_remote_proxy_set_visibility (icon->priv->proxy,
+					gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
 }
 
 void
@@ -470,61 +455,3 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 			      tooltip, NULL);
 }
 
-static void
-rb_tray_restore_main_window (RBTrayIcon *icon)
-{
-	if ((icon->priv->window_x >= 0 && icon->priv->window_y >= 0) || (icon->priv->window_h >= 0 && icon->priv->window_w >=0 ))
-	{
-		gtk_widget_realize (GTK_WIDGET (icon->priv->main_window));
-		gdk_flush ();
-
-		if (icon->priv->window_x >= 0 && icon->priv->window_y >= 0)
-		{
-			gtk_window_move (icon->priv->main_window,
-					icon->priv->window_x,
-					icon->priv->window_y);                                }
-		if (icon->priv->window_w >= 0 && icon->priv->window_y >=0)
-		{
-			gtk_window_resize (icon->priv->main_window,
-					icon->priv->window_w,
-					icon->priv->window_h);
-		}
-	}
-}
-
-static void
-rb_tray_set_visibility (RBTrayIcon *icon, int state)
-{
-	GtkAction *action;
-
-	action = gtk_action_group_get_action (icon->priv->actiongroup,
-					      "TrayShowWindow");
-	switch (state)
-	{
-	case VISIBILITY_HIDDEN:
-       	case VISIBILITY_VISIBLE:
-		if (icon->priv->visible != state)
-			rb_tray_set_visibility (icon, VISIBILITY_TOGGLE);
-		break;
-        case VISIBILITY_TOGGLE:
-		icon->priv->visible = !icon->priv->visible;
-
-		if (icon->priv->visible == TRUE)
-		{
-			rb_tray_restore_main_window (icon);
-			gtk_widget_show (GTK_WIDGET (icon->priv->main_window));
-		} else {
-			gtk_window_get_position (icon->priv->main_window,
-						 &icon->priv->window_x,
-						 &icon->priv->window_y);
-			gtk_window_get_size (icon->priv->main_window,
-					     &icon->priv->window_w,
-					     &icon->priv->window_h);
-			gtk_widget_hide (GTK_WIDGET (icon->priv->main_window));
-		}
-
-	case VISIBILITY_SYNC:
-		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (action),
-					      icon->priv->visible);
-	}
-}

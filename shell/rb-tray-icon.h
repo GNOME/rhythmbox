@@ -23,6 +23,7 @@
 #include <gtk/gtkuimanager.h>
 #include "eggtrayicon.h"
 #include "rhythmdb.h"
+#include "rb-remote-proxy.h"
 
 #ifndef __RB_TRAY_ICON_H
 #define __RB_TRAY_ICON_H
@@ -54,8 +55,7 @@ GType			rb_tray_icon_get_type	(void);
 
 RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr,
 						 GtkActionGroup *actiongroup,
-						 RhythmDB *db,
-						 GtkWindow *window);
+						 RBRemoteProxy *remote);
 
 void			rb_tray_icon_set_tooltip(RBTrayIcon *icon, const char *tooltip);
 

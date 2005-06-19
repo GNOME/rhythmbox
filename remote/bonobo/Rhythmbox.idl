@@ -12,15 +12,23 @@ module GNOME
 			string title;
 			string artist;
 			string genre;
-			string album;			
+			string album;
 			string path;
 			long track_number;
+			long disc_number;
 			long duration;
 			long bitrate;
+
 			long filesize;
-			long rating;
+
+			double rating;
 			long play_count;
-			long last_played;			
+			long last_played;
+
+			double track_gain;
+			double track_peak;
+			double album_gain;
+			double album_peak;
 		};
 
 		void addToLibrary (in string uri);
@@ -39,24 +47,25 @@ module GNOME
 
 		long getPlayingTime ();         /* returns -1 if not playing */
 		void setPlayingTime (in long seconds);
+		void skip (in long offset);
+
+		void setRating (in double rating);
 	        
 		/* Available properties:
-		 * (repeat and shuffle should be pretty easy to make read-write
-		 *  instead of using the generic bonobo wrapper for gobject
-		 *  properties in rb-shell.c, one needs to write custom
-		 *  get/set functions for repeat/shuffle (as is currently
-		 *  done for song
 		 * 
-		 * repeat:     boolean, read-only, notification
-		 * shuffle:    boolean, read-only, notification
+		 * repeat:     boolean, read-write, notification
+		 * shuffle:    boolean, read-write, notification
 		 * play-order: string,  read-only, notification
 		 * playing:    boolean, read-only, notification
 		 * song:       SongInfo, read-only, notification
-		 * visibility: boolean, NOT FULLY IMPLEMENTED YET
+		 * visibility: boolean, read-write, notification
+		 * volume:     float,   read-write, notification
 		 */
 	        Bonobo::PropertyBag getPlayerProperties ();
 		
 		void quit ();
+
+		void toggleMute ();
 	};
 };
 

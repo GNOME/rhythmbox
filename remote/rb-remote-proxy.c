@@ -24,6 +24,7 @@
 
 enum {
 	SONG_CHANGED,
+	VISIBILITY_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -74,20 +75,24 @@ rb_remote_proxy_base_init (gpointer g_class)
 				      G_TYPE_NONE, 1,
 				      G_TYPE_POINTER);
 
+		rb_remote_proxy_signals[VISIBILITY_CHANGED] =
+			g_signal_new ("visibility_changed",
+				      RB_TYPE_REMOTE_PROXY,
+				      G_SIGNAL_RUN_LAST,
+				      G_STRUCT_OFFSET (RBRemoteProxyIface, visibility_changed),
+				      NULL, NULL,
+				      g_cclosure_marshal_VOID__BOOLEAN,
+				      G_TYPE_NONE, 1,
+				      G_TYPE_BOOLEAN);
+
 		initialized = TRUE;
 	}
 }
 
 void
-rb_remote_proxy_load_song (RBRemoteProxy *proxy, const char *uri)
+rb_remote_proxy_load_uri (RBRemoteProxy *proxy, const char *uri, gboolean play)
 {
-	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->load_song) (proxy, uri);
-}
-
-void
-rb_remote_proxy_load_uri (RBRemoteProxy *proxy, const char *uri)
-{
-	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->load_uri) (proxy, uri);
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->load_uri) (proxy, uri, play);
 }
 
 void
@@ -106,6 +111,18 @@ void
 rb_remote_proxy_grab_focus (RBRemoteProxy *proxy)
 {
 	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->grab_focus) (proxy);
+}
+
+void
+rb_remote_proxy_set_visibility (RBRemoteProxy *proxy, gboolean visible)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_visibility) (proxy, visible);
+}
+
+gboolean
+rb_remote_proxy_get_visibility (RBRemoteProxy *proxy)
+{
+	return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->get_visibility) (proxy);
 }
 
 gboolean
@@ -160,4 +177,82 @@ void
 rb_remote_proxy_set_playing_time (RBRemoteProxy *proxy, long time)
 {
 	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_playing_time) (proxy, time);
+}
+
+void
+rb_remote_proxy_seek (RBRemoteProxy *proxy, long offset)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->seek) (proxy, offset);
+}
+
+gchar*
+rb_remote_proxy_get_playing_uri (RBRemoteProxy *proxy)
+{
+        return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->get_playing_uri) (proxy);
+}
+
+gboolean
+rb_remote_proxy_get_song_info (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSong *song)
+{
+        return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->get_song_info) (proxy, uri, song);
+}
+
+void
+rb_remote_proxy_set_rating (RBRemoteProxy *proxy, double rating)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_rating) (proxy, rating);
+}
+
+void
+rb_remote_proxy_jump_next (RBRemoteProxy *proxy)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->jump_next) (proxy);
+}
+
+void
+rb_remote_proxy_jump_previous (RBRemoteProxy *proxy)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->jump_previous) (proxy);
+}
+
+void
+rb_remote_proxy_quit (RBRemoteProxy *proxy)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->quit) (proxy);
+}
+
+void
+rb_remote_proxy_toggle_mute (RBRemoteProxy *proxy)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->toggle_mute) (proxy);
+}
+
+GParamSpec *
+rb_remote_proxy_find_player_property (RBRemoteProxy *proxy, const gchar *property)
+{
+	return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->find_player_property) (proxy, property);
+}
+
+void
+rb_remote_proxy_player_notify_handler (RBRemoteProxy *proxy, GCallback c_handler, gpointer gobject)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->player_notify_handler) (proxy, c_handler, gobject);
+}
+
+void
+rb_remote_proxy_set_player_property (RBRemoteProxy *proxy, const gchar *property, GValue *value)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->set_player_property) (proxy, property, value);
+}
+
+void
+rb_remote_proxy_get_player_property (RBRemoteProxy *proxy, const gchar *property, GValue *value)
+{
+	(* RB_REMOTE_PROXY_GET_IFACE (proxy)->get_player_property) (proxy, property, value);
+}
+
+gchar *
+rb_remote_proxy_get_playing_source (RBRemoteProxy *proxy)
+{
+	return (* RB_REMOTE_PROXY_GET_IFACE (proxy)->get_playing_source) (proxy);
 }

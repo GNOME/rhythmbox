@@ -65,6 +65,7 @@ typedef struct
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 	void (*duration_changed) (RBShellPlayer *player, const char *duration);
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
+	void (*playing_song_changed) (RBShellPlayer *player, RhythmDBEntry *entry);
 } RBShellPlayerClass;
 
 GType			rb_shell_player_get_type   (void);
@@ -84,13 +85,14 @@ void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
 void			rb_shell_player_play_entry	(RBShellPlayer *player,
 							 RhythmDBEntry *entry);
-void			rb_shell_player_playpause	(RBShellPlayer *player);
+void			rb_shell_player_playpause	(RBShellPlayer *player, gboolean ignore_stop);
 void			rb_shell_player_stop		(RBShellPlayer *player);
 void			rb_shell_player_do_previous	(RBShellPlayer *player);
 void			rb_shell_player_do_next		(RBShellPlayer *player);
 
 long			rb_shell_player_get_playing_time(RBShellPlayer *player);
 void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);
+void			rb_shell_player_seek		(RBShellPlayer *player, long offset);
 long			rb_shell_player_get_playing_song_duration (RBShellPlayer *player);
 
 RBPlayer *		rb_shell_player_get_mm_player	(RBShellPlayer *shell_player);
@@ -107,6 +109,10 @@ void			rb_shell_player_set_playback_state(RBShellPlayer *player,
 gboolean                rb_shell_player_get_playback_state(RBShellPlayer *player,
 							   gboolean *shuffle,
 							   gboolean *repeat);
+
+RhythmDBEntry *         rb_shell_player_get_playing_entry (RBShellPlayer *player);
+
+void			rb_shell_player_toggle_mute	(RBShellPlayer *player);
 
 #ifdef HAVE_ACME
 gboolean		rb_shell_player_handle_key	(RBShellPlayer *player, guint keyval);

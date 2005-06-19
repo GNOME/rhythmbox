@@ -81,6 +81,15 @@ main (int argc, char *argv [])
 	bonobo_event_source_client_add_listener (pb, on_bonobo_event,
 						 "Bonobo/Property:change:playing",
 						 &ev, NULL);
+	bonobo_event_source_client_add_listener (pb, on_bonobo_event,
+						 "Bonobo/Property:change:visibility",
+						 &ev, NULL);
+	bonobo_event_source_client_add_listener (pb, on_bonobo_event,
+						 "Bonobo/Property:change:play-order",
+						 &ev, NULL);
+	bonobo_event_source_client_add_listener (pb, on_bonobo_event,
+						 "Bonobo/Property:change:volume",
+						 &ev, NULL);
 	bonobo_event_source_client_add_listener (pb, on_song_change,
 						 "Bonobo/Property:change:song",
 						 &ev, NULL);

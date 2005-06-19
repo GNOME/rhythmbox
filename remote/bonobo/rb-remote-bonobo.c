@@ -71,22 +71,65 @@ static CORBA_long rb_remote_bonobo_corba_get_playing_time (PortableServer_Servan
 						   CORBA_Environment *ev);
 static void rb_remote_bonobo_corba_set_playing_time (PortableServer_Servant _servant,
 						   CORBA_long time, CORBA_Environment *ev);
+static void rb_remote_bonobo_corba_skip (PortableServer_Servant _servant,
+					 CORBA_long offset, CORBA_Environment *ev);
+static void rb_remote_bonobo_corba_set_rating (PortableServer_Servant _servant,
+					       CORBA_double rating, CORBA_Environment *ev);
+static void rb_remote_bonobo_corba_toggle_mute (PortableServer_Servant _servant,
+						CORBA_Environment *ev);
+
 static Bonobo_PropertyBag rb_remote_bonobo_corba_get_player_properties (PortableServer_Servant _servant, CORBA_Environment *ev);
+
+/* Server signal handlers */
+static void rb_remote_bonobo_song_changed_cb (RBRemoteProxy *proxy,
+					      const RBRemoteSong *song,
+					      RBRemoteBonobo *bonobo);
+static void rb_remote_bonobo_visibility_changed_cb (RBRemoteProxy *proxy, 
+						    gboolean visible,
+						    RBRemoteBonobo *bonobo);
+static void rb_remote_bonobo_player_notify_cb (GObject *object,
+					       GParamSpec *param,
+					       RBRemoteBonobo *bonobo);
 
 /* Client methods */
 static void rb_remote_bonobo_client_handle_uri_impl (RBRemoteClientProxy *proxy, const char *uri);
 static RBRemoteSong *rb_remote_bonobo_client_get_playing_song_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_bonobo_client_grab_focus_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_toggle_visibility_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_set_visibility_impl (RBRemoteClientProxy *proxy, gboolean visible);
+static gboolean rb_remote_bonobo_client_get_visibility_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_bonobo_client_toggle_shuffle_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_set_shuffle_impl (RBRemoteClientProxy *proxy, gboolean visible);
+static gboolean rb_remote_bonobo_client_get_shuffle_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_toggle_repeat_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_set_repeat_impl (RBRemoteClientProxy *proxy, gboolean visible);
+static gboolean rb_remote_bonobo_client_get_repeat_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_bonobo_client_toggle_playing_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_play_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_pause_impl (RBRemoteClientProxy *proxy);
 static long rb_remote_bonobo_client_get_playing_time_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_bonobo_client_set_playing_time_impl (RBRemoteClientProxy *proxy, long time);
+static void rb_remote_bonobo_client_jump_next_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_jump_previous_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_quit_impl (RBRemoteClientProxy *proxy);
+
+static void rb_remote_bonobo_client_set_rating_impl (RBRemoteClientProxy *proxy, double rating);
+static void rb_remote_bonobo_client_seek_impl (RBRemoteClientProxy *proxy, long offset);
+static void rb_remote_bonobo_client_set_volume_impl (RBRemoteClientProxy *proxy, float volume);
+static float rb_remote_bonobo_client_get_volume_impl (RBRemoteClientProxy *proxy);
+static void rb_remote_bonobo_client_toggle_mute_impl (RBRemoteClientProxy *proxy);
+
 
 static GObjectClass *parent_class;
 
 enum
 {
-	PROP_NONE,
+	PROP_0,
+	PROP_VISIBILITY,
+	PROP_SHUFFLE,
+	PROP_REPEAT,
+	PROP_SONG,
+	PROP_LAST_STATIC
 };
 
 struct RBRemoteBonoboPrivate
@@ -98,6 +141,9 @@ struct RBRemoteBonoboPrivate
 	RBRemoteProxy *proxy;
 
 	BonoboPropertyBag *pb;
+
+	guint next_property;
+	GParamSpec *property_spec[16];
 };
 
 GType
@@ -165,7 +211,9 @@ rb_remote_bonobo_class_init (RBRemoteBonoboClass *klass)
 	epv->getPlayingTime = rb_remote_bonobo_corba_get_playing_time;
 	epv->setPlayingTime = rb_remote_bonobo_corba_set_playing_time;
 	epv->getPlayerProperties = rb_remote_bonobo_corba_get_player_properties;
-
+	epv->setRating = rb_remote_bonobo_corba_set_rating;
+	epv->skip = rb_remote_bonobo_corba_skip;
+	epv->toggleMute = rb_remote_bonobo_corba_toggle_mute;
 }
 
 static void
@@ -175,9 +223,27 @@ rb_remote_bonobo_remote_client_proxy_init (RBRemoteClientProxyIface *iface)
 	iface->get_playing_song = rb_remote_bonobo_client_get_playing_song_impl;
 	iface->grab_focus = rb_remote_bonobo_client_grab_focus_impl;
 	iface->toggle_shuffle = rb_remote_bonobo_client_toggle_shuffle_impl;
+	iface->set_shuffle = rb_remote_bonobo_client_set_shuffle_impl;
+	iface->get_shuffle = rb_remote_bonobo_client_get_shuffle_impl;
+	iface->toggle_repeat = rb_remote_bonobo_client_toggle_repeat_impl;
+	iface->set_repeat = rb_remote_bonobo_client_set_repeat_impl;
+	iface->get_repeat = rb_remote_bonobo_client_get_repeat_impl;
 	iface->toggle_playing = rb_remote_bonobo_client_toggle_playing_impl;
+	iface->play = rb_remote_bonobo_client_play_impl;
+	iface->pause = rb_remote_bonobo_client_pause_impl;
 	iface->get_playing_time = rb_remote_bonobo_client_get_playing_time_impl;
 	iface->set_playing_time = rb_remote_bonobo_client_set_playing_time_impl;
+	iface->jump_next = rb_remote_bonobo_client_jump_next_impl;
+	iface->jump_previous = rb_remote_bonobo_client_jump_previous_impl;
+	iface->quit = rb_remote_bonobo_client_quit_impl;
+	iface->set_rating = rb_remote_bonobo_client_set_rating_impl;
+	iface->seek = rb_remote_bonobo_client_seek_impl;
+	iface->set_volume = rb_remote_bonobo_client_set_volume_impl;
+	iface->get_volume = rb_remote_bonobo_client_get_volume_impl;
+	iface->toggle_mute = rb_remote_bonobo_client_toggle_mute_impl;
+	iface->toggle_visibility = rb_remote_bonobo_client_toggle_visibility_impl;
+	iface->set_visibility = rb_remote_bonobo_client_set_visibility_impl;
+	iface->get_visibility = rb_remote_bonobo_client_get_visibility_impl;
 }
 
 static void
@@ -217,13 +283,11 @@ static void
 rb_remote_bonobo_corba_quit (PortableServer_Servant _servant,
 			     CORBA_Environment *ev)
 {
-#if 0
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
 
 	GDK_THREADS_ENTER ();
 	rb_remote_proxy_quit (bonobo->priv->proxy);
 	GDK_THREADS_LEAVE ();
-#endif
 }
 
 static void
@@ -234,7 +298,7 @@ rb_remote_bonobo_corba_handle_file (PortableServer_Servant _servant,
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
 
 	GDK_THREADS_ENTER ();
-	rb_remote_proxy_load_uri (bonobo->priv->proxy, uri);
+	rb_remote_proxy_load_uri (bonobo->priv->proxy, uri, TRUE);
 	GDK_THREADS_LEAVE ();
 }
 
@@ -246,7 +310,7 @@ rb_remote_bonobo_corba_add_to_library (PortableServer_Servant _servant,
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
 
 	GDK_THREADS_ENTER ();
-	rb_remote_proxy_load_song (bonobo->priv->proxy, uri);
+	rb_remote_proxy_load_uri (bonobo->priv->proxy, uri, FALSE);
 	GDK_THREADS_LEAVE ();
 }
 
@@ -305,18 +369,20 @@ static void
 rb_remote_bonobo_corba_next (PortableServer_Servant _servant,
 		     CORBA_Environment *ev)
 {
-#if 0
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
-#endif
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_jump_next (bonobo->priv->proxy);
+	GDK_THREADS_LEAVE ();
 }
 
 static void
 rb_remote_bonobo_corba_previous (PortableServer_Servant _servant,
 				 CORBA_Environment *ev)
 {
-#if 0
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
-#endif
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_jump_previous (bonobo->priv->proxy);
+	GDK_THREADS_LEAVE ();
 }
 
 static CORBA_long
@@ -344,47 +410,79 @@ rb_remote_bonobo_corba_set_playing_time (PortableServer_Servant _servant,
 	GDK_THREADS_LEAVE ();
 }
 
-#if 0
-static GNOME_Rhythmbox_SongInfo *
-get_song_info_from_player (RBRemoteBonobo *bonobo)
+static void
+rb_remote_bonobo_corba_skip (PortableServer_Servant _servant,
+			     CORBA_long offset, CORBA_Environment *ev)
 {
-	RhythmDBEntry *entry;
-	RhythmDB *db = shell->priv->db;
-	GNOME_Rhythmbox_SongInfo *song_info;
-	RBEntryView *view;
-	RBSource *playing_source;
-
-	playing_source = rb_remote_bonobo_player_get_playing_source (shell->priv->player_shell);
-
-	if (playing_source == NULL)
-		goto lose;
-
-	view = rb_source_get_entry_view (playing_source);
-	g_object_get (G_OBJECT (view), "playing_entry", &entry, NULL);
-	if (entry == NULL)
-		goto lose;
-
-	song_info = GNOME_Rhythmbox_SongInfo__alloc ();
-	rhythmdb_read_lock (db);
-	song_info->title = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_TITLE));
-	song_info->artist = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ARTIST));
-	song_info->album = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_ALBUM));
-	song_info->genre = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_GENRE));
-	song_info->path = CORBA_string_dup (rhythmdb_entry_get_string (db, entry, RHYTHMDB_PROP_LOCATION));
-	song_info->track_number = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_TRACK_NUMBER);
-	song_info->duration = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_DURATION);
-	song_info->bitrate = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_BITRATE);
-	song_info->filesize = rhythmdb_entry_get_uint64 (db, entry, RHYTHMDB_PROP_FILE_SIZE);
-	song_info->rating = rhythmdb_entry_get_double (db, entry, RHYTHMDB_PROP_RATING);
-	song_info->play_count = rhythmdb_entry_get_int (db, entry, RHYTHMDB_PROP_PLAY_COUNT);
-	song_info->last_played = rhythmdb_entry_get_long (db, entry, RHYTHMDB_PROP_LAST_PLAYED);
-	rhythmdb_read_unlock (db);
-
-	return song_info;
- lose:
-	return NULL;
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_seek (bonobo->priv->proxy, (long) offset);
+	GDK_THREADS_LEAVE ();
 }
-#endif
+
+static void
+rb_remote_bonobo_corba_set_rating (PortableServer_Servant _servant,
+				   CORBA_double rating, CORBA_Environment *ev)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_set_rating (bonobo->priv->proxy, rating);
+	GDK_THREADS_LEAVE ();
+}
+
+static void
+rb_remote_bonobo_corba_toggle_mute (PortableServer_Servant _servant,
+				    CORBA_Environment *ev)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
+
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_toggle_mute (bonobo->priv->proxy);
+	GDK_THREADS_LEAVE ();
+}
+
+static GNOME_Rhythmbox_SongInfo *
+convert_from_rb_remote_song (const RBRemoteSong *song)
+{
+	GNOME_Rhythmbox_SongInfo *song_info = GNOME_Rhythmbox_SongInfo__alloc ();
+	song_info->title = CORBA_string_dup (song->title);
+	song_info->artist = CORBA_string_dup (song->artist);
+	song_info->album = CORBA_string_dup (song->album);
+	song_info->genre = CORBA_string_dup (song->genre);
+	song_info->path = CORBA_string_dup (song->uri);
+	song_info->track_number = song->track_number;
+	song_info->duration = song->duration;
+	song_info->bitrate = song->bitrate;
+	song_info->filesize = song->filesize;
+	song_info->rating = (long)song->rating;
+	song_info->play_count = song->play_count;
+	song_info->last_played = song->last_played;
+	return song_info;
+}
+
+static GNOME_Rhythmbox_SongInfo *
+get_song_info_from_player (RBRemoteProxy *proxy)
+{
+	gchar *uri;
+	RBRemoteSong *song = NULL;
+	GNOME_Rhythmbox_SongInfo *song_info = NULL;
+
+	GDK_THREADS_ENTER ();
+	uri = rb_remote_proxy_get_playing_uri (proxy);
+	if (uri != NULL) {
+		song = g_new0 (RBRemoteSong, 1);
+		if (song != NULL) {
+			if (rb_remote_proxy_get_song_info (proxy, uri, song) == TRUE) {
+				song_info = convert_from_rb_remote_song (song);
+			}
+			rb_remote_song_free (song);
+		}
+	}
+	GDK_THREADS_LEAVE ();
+	g_free (uri);
+	
+	return song_info;
+}
 
 static void
 bonobo_pb_get_prop (BonoboPropertyBag *bag,
@@ -393,45 +491,75 @@ bonobo_pb_get_prop (BonoboPropertyBag *bag,
 		    CORBA_Environment *ev,
 		    gpointer           user_data)
 {
-#if 0
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (user_data);
-	RBRemoteBonoboPlayer *player;
 
-	player = RB_REMOTE_BONOBO_PLAYER (shell->priv->player_shell);
+	if ((arg_id >= PROP_LAST_STATIC) && 
+	    (arg_id < (bonobo->priv->next_property + PROP_LAST_STATIC))) {
+		GValue value = {0};
+		RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (user_data);
+		GParamSpec *param = bonobo->priv->property_spec[arg_id - PROP_LAST_STATIC];
 
+		g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (param));
+		GDK_THREADS_ENTER ();
+		rb_remote_proxy_get_player_property (bonobo->priv->proxy, 
+						     param->name,
+						     &value);
+		GDK_THREADS_LEAVE ();
+		bonobo_arg_from_gvalue (arg, &value);
+		g_value_unset (&value);
+		return;
+	}
+	
 	switch (arg_id) {
 
 	case PROP_VISIBILITY:
-		BONOBO_ARG_SET_BOOLEAN (arg, FALSE);
+	{
+		gboolean visibility;
+		GDK_THREADS_ENTER ();
+		visibility = rb_remote_proxy_get_visibility (bonobo->priv->proxy);
+		GDK_THREADS_LEAVE ();
+		BONOBO_ARG_SET_BOOLEAN (arg, visibility);
 		break;
+	}
 
 	case PROP_SHUFFLE:
 	{
-		gboolean shuffle, repeat;
-		rb_remote_bonobo_player_get_playback_state (player,
-						    &shuffle, &repeat);
+		gboolean shuffle;
+		GDK_THREADS_ENTER ();
+		shuffle = rb_remote_proxy_get_shuffle (bonobo->priv->proxy);
+		GDK_THREADS_LEAVE ();
 		BONOBO_ARG_SET_BOOLEAN (arg, shuffle);
 		break;
 	}
 
-	case PROP_SONG: {
+	case PROP_REPEAT:
+	{
+		gboolean repeat;
+		GDK_THREADS_ENTER ();
+		repeat = rb_remote_proxy_get_repeat (bonobo->priv->proxy);
+		GDK_THREADS_LEAVE ();
+		BONOBO_ARG_SET_BOOLEAN (arg, repeat);
+		break;
+	}
+
+	case PROP_SONG: 
+	{
 		GNOME_Rhythmbox_SongInfo *ret_val;
 		
-		ret_val = get_song_info_from_player (shell);
+		ret_val = get_song_info_from_player (bonobo->priv->proxy);
 		arg->_value = (gpointer)ret_val;
 		if (ret_val == NULL) {
 			arg->_type = TC_null;
 		} else {
 			arg->_type = TC_GNOME_Rhythmbox_SongInfo;
 		}
-		break;		
+		break;
 	}
 
 	default:
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
 		break;
 	}
-#endif
 }
 
 static void
@@ -441,16 +569,35 @@ bonobo_pb_set_prop (BonoboPropertyBag *bag,
 		   CORBA_Environment *ev,
 		   gpointer           user_data)
 {
-#if 0
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (user_data);
-	RBRemoteBonoboPlayer *player;
 
-	player = RB_REMOTE_BONOBO_PLAYER (shell->priv->player_shell);
+	if ((arg_id >= PROP_LAST_STATIC) && 
+	    (arg_id < (bonobo->priv->next_property + PROP_LAST_STATIC))) {
+		GValue value = {0};
+		RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (user_data);
+		GParamSpec *param = bonobo->priv->property_spec[arg_id - PROP_LAST_STATIC];
+
+		g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (param));
+		bonobo_arg_to_gvalue (&value, arg);
+		GDK_THREADS_ENTER ();
+		rb_remote_proxy_set_player_property (bonobo->priv->proxy, 
+						     param->name, 
+						     &value);
+		GDK_THREADS_LEAVE ();
+		g_value_unset (&value);
+		return;
+	}
 	
 	switch (arg_id) {
 
 	case PROP_VISIBILITY:
+	{
+		gboolean visible = BONOBO_ARG_GET_BOOLEAN (arg);
+		GDK_THREADS_ENTER ();
+		rb_remote_proxy_set_visibility (bonobo->priv->proxy, visible);
+		GDK_THREADS_LEAVE ();
 		break;
+	}
 
 	case PROP_SONG:
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_ReadOnly);
@@ -458,17 +605,19 @@ bonobo_pb_set_prop (BonoboPropertyBag *bag,
 
 	case PROP_SHUFFLE:
 	{
-		gboolean repeat;
-		gboolean shuffle;
+		gboolean shuffle = BONOBO_ARG_GET_BOOLEAN (arg);
+		GDK_THREADS_ENTER ();
+		rb_remote_proxy_set_shuffle (bonobo->priv->proxy, shuffle);
+		GDK_THREADS_LEAVE ();
+		break;
+	}
 
-
-		rb_remote_bonobo_player_get_playback_state (player, &shuffle,
-						    &repeat);
-		shuffle = BONOBO_ARG_GET_BOOLEAN (arg);
-
-		rb_remote_bonobo_player_set_playback_state (player,
-						    shuffle,
-						    repeat);
+	case PROP_REPEAT:
+	{
+		gboolean repeat = BONOBO_ARG_GET_BOOLEAN (arg);
+		GDK_THREADS_ENTER ();
+		rb_remote_proxy_set_repeat (bonobo->priv->proxy, repeat);
+		GDK_THREADS_LEAVE ();
 		break;
 	}
 
@@ -476,7 +625,28 @@ bonobo_pb_set_prop (BonoboPropertyBag *bag,
 		bonobo_exception_set (ev, ex_Bonobo_PropertyBag_NotFound);
 		break;
 	}
-#endif
+}
+
+static void
+rb_remote_bonobo_add_player_property (RBRemoteBonobo *bonobo,
+				      const gchar *property,
+				      const gchar *description)
+{
+	guint prop_id;
+	GParamSpec *param;
+
+	g_assert (bonobo->priv->next_property < G_N_ELEMENTS (bonobo->priv->property_spec));
+	prop_id = bonobo->priv->next_property++;
+	param = rb_remote_proxy_find_player_property (bonobo->priv->proxy,
+								  property);
+	
+	bonobo->priv->property_spec[prop_id] = param;
+	bonobo_property_bag_add (bonobo->priv->pb, property, 
+				 prop_id + PROP_LAST_STATIC, 
+				 bonobo_arg_type_from_gtype (G_PARAM_SPEC_VALUE_TYPE (param)), 
+				 NULL,
+				 description, 0);
+
 }
 
 
@@ -486,46 +656,47 @@ rb_remote_bonobo_corba_get_player_properties (PortableServer_Servant _servant,
 {	
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (bonobo_object (_servant));
 
+	GDK_THREADS_ENTER ();
 	if (bonobo->priv->pb == NULL) {
-#if 0
-		gchar *params_to_map[] = {"repeat", "play-order", "playing"}; 
-		GParamSpec **params;
-		int i = 0;
-		int total = 0;
-#endif
-
 		bonobo->priv->pb = bonobo_property_bag_new (bonobo_pb_get_prop, 
 							    bonobo_pb_set_prop, 
 							    bonobo);
 		
 		
-#if 0
-		params = malloc (G_N_ELEMENTS (params_to_map) * sizeof (GParamSpec *));
-		for (i = 0; i < G_N_ELEMENTS (params_to_map); i++) {
-			params[total] = g_object_class_find_property (G_OBJECT_CLASS (RB_REMOTE_BONOBO_PLAYER_GET_CLASS (shell->priv->player_shell)), params_to_map[i]);
-			if (params[total])
-				total++;
-		}
-		bonobo_property_bag_map_params (shell->priv->pb,
-						G_OBJECT (shell->priv->player_shell),
-						(const GParamSpec **)params, total);
-
-
-		/* Manually install the other properties */
-		bonobo_property_bag_add (shell->priv->pb, "visibility", 
+		bonobo_property_bag_add (bonobo->priv->pb, "visibility", 
 					 PROP_VISIBILITY, BONOBO_ARG_BOOLEAN, NULL, 
 					 _("Whether the main window is visible"), 0);
 
-		/* Manually install the other properties */
-		bonobo_property_bag_add (shell->priv->pb, "shuffle", 
+		bonobo_property_bag_add (bonobo->priv->pb, "shuffle", 
 					 PROP_SHUFFLE, BONOBO_ARG_BOOLEAN, NULL, 
 					 _("Whether shuffle is enabled"), 0);
+		
+		bonobo_property_bag_add (bonobo->priv->pb, "repeat", 
+					 PROP_REPEAT, BONOBO_ARG_BOOLEAN, NULL, 
+					 _("Whether repeat is enabled"), 0);
 
-		bonobo_property_bag_add (shell->priv->pb, "song", 
+		bonobo_property_bag_add (bonobo->priv->pb, "song", 
 					 PROP_SONG, TC_GNOME_Rhythmbox_SongInfo, NULL, 
 					 _("Properties for the current song"), 0);
-#endif
+
+		rb_remote_proxy_player_notify_handler (bonobo->priv->proxy,
+						       G_CALLBACK (rb_remote_bonobo_player_notify_cb),
+						       bonobo);
+
+		rb_remote_bonobo_add_player_property (bonobo,
+						      "playing",
+						      _("Whether Rhythmbox is currently playing"));
+
+		rb_remote_bonobo_add_player_property (bonobo,
+						      "play-order",
+						      _("What play order to use"));
+
+		rb_remote_bonobo_add_player_property (bonobo,
+						      "volume",
+						      _("Current playback volume"));
+
 	}
+	GDK_THREADS_LEAVE ();
 
 	/* If the creation of the property bag failed, 
 	 * return a corba exception
@@ -534,70 +705,80 @@ rb_remote_bonobo_corba_get_player_properties (PortableServer_Servant _servant,
 	return bonobo_object_dup_ref (BONOBO_OBJREF (bonobo->priv->pb), NULL);
 }
 
-#if 0
-static void 
-shell_notify_pb_changes (RBRemoteBonobo *bonobo, const gchar *property_name, 
-			 BonoboArg *arg) 
+static void
+rb_remote_bonobo_song_changed_cb (RBRemoteProxy *proxy,
+				  const RBRemoteSong *song,
+				  RBRemoteBonobo *bonobo)
 {
+	GNOME_Rhythmbox_SongInfo *song_info;
+	BonoboArg *arg;
+
+	if (bonobo->priv->pb == NULL)
+		return;
+	
+	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
+	song_info = convert_from_rb_remote_song (song);
+	arg->_value = (gpointer)song_info;
 	if (bonobo->priv->pb != NULL) {
 		bonobo_event_source_notify_listeners_full (bonobo->priv->pb->es,
 							   "Bonobo/Property",
 							   "change",
-							   property_name,
+							   "song",
 							   arg, NULL);
 	}
-}
-
-static void
-rb_remote_bonobo_property_changed_generic_cb (GObject *object,
-					      GParamSpec *pspec, 
-					      RBRemoteBonobo *bonobo)
-{
-	BonoboArg *arg = bonobo_arg_new (TC_CORBA_boolean);
-	gboolean value;
-
-	g_object_get (object, pspec->name, &value, NULL);
-	BONOBO_ARG_SET_BOOLEAN (arg, value);
-	shell_notify_pb_changes (shell, pspec->name, arg);
-	bonobo_arg_release (arg);
-}
-
-static void
-rb_remote_bonobo_entry_changed_cb (GObject *object, GParamSpec *pspec, RBRemoteBonobo *bonobo)
-{
-	GNOME_Rhythmbox_SongInfo *song_info;
-	BonoboArg *arg;
 	
-	g_assert (strcmp (pspec->name, "playing-entry") == 0);
-	song_info = get_song_info_from_player (shell);
-	if (!song_info) {
-		rb_debug ("no song info returned!");
-		return;
-	}
-	arg = bonobo_arg_new (TC_GNOME_Rhythmbox_SongInfo);
-	arg->_value = (gpointer)song_info;
-	shell_notify_pb_changes (shell, "song", arg);
 	bonobo_arg_release (arg);
-
-#ifdef WITH_DASHBOARD
-	if (song_info) {
-        	char *cluepacket;
-        	/* Send cluepacket to dashboard */
-        	cluepacket =
-			dashboard_build_cluepacket_then_free_clues ("Music Player",
-							    	TRUE, 
-							    	"", 
-							    	dashboard_build_clue (song_info->title, "song_title", 10),
-							    	dashboard_build_clue (song_info->artist, "artist", 10),
-							    	dashboard_build_clue (song_info->album, "album", 10),
-							    	NULL);
-       		dashboard_send_raw_cluepacket (cluepacket);
-       		g_free (cluepacket);
-	}
-#endif /* WITH_DASHBOARD */
 }
 
-#endif
+static void
+rb_remote_bonobo_visibility_changed_cb (RBRemoteProxy *proxy,
+					gboolean visible,
+					RBRemoteBonobo *bonobo)
+{
+	BonoboArg *arg;
+
+	if (bonobo->priv->pb == NULL)
+		return;
+	
+	arg = bonobo_arg_new (TC_CORBA_boolean);
+	BONOBO_ARG_SET_BOOLEAN (arg, visible);
+	bonobo_event_source_notify_listeners_full (bonobo->priv->pb->es,
+						   "Bonobo/Property",
+						   "change",
+						   "visibility",
+						   arg, NULL);
+	
+	bonobo_arg_release (arg);
+}
+					
+
+static void
+rb_remote_bonobo_player_notify_cb (GObject *object,
+				   GParamSpec *param,
+				   RBRemoteBonobo *bonobo)
+{
+	GValue value = {0};
+	BonoboArg *arg;
+
+	if (bonobo->priv->pb == NULL)
+		return;
+	
+	arg = bonobo_arg_new (bonobo_arg_type_from_gtype (G_PARAM_SPEC_VALUE_TYPE (param)));
+	g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (param));
+	GDK_THREADS_ENTER ();
+	rb_remote_proxy_get_player_property (bonobo->priv->proxy,
+					     param->name,
+					     &value);
+	GDK_THREADS_LEAVE ();
+	bonobo_arg_from_gvalue (arg, &value);
+	bonobo_event_source_notify_listeners_full (bonobo->priv->pb->es,
+						   "Bonobo/Property",
+						   "change",
+						   param->name,
+						   arg, NULL);
+	g_value_unset (&value);
+	bonobo_arg_release (arg);
+}
 
 GQuark
 rb_remote_bonobo_error_quark (void)
@@ -658,6 +839,17 @@ rb_remote_bonobo_acquire (RBRemoteBonobo *bonobo,
 	bonobo->priv->proxy = proxy;
 	g_object_weak_ref (G_OBJECT (proxy), shell_weak_ref_cb, bonobo);
 
+	g_signal_connect_object (G_OBJECT (proxy),
+				 "song_changed",
+				 G_CALLBACK (rb_remote_bonobo_song_changed_cb),
+				 bonobo, 0);
+				 
+	g_signal_connect_object (G_OBJECT (proxy),
+				 "visibility_changed",
+				 G_CALLBACK (rb_remote_bonobo_visibility_changed_cb),
+				 bonobo, 0);
+				 
+
 	corba_object = bonobo_object_corba_objref (BONOBO_OBJECT (bonobo));
 
 	registration_failed = FALSE;
@@ -705,7 +897,7 @@ static RBRemoteSong *
 rb_remote_bonobo_client_get_playing_song_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
-	RBRemoteSong *song;
+	RBRemoteSong *song = NULL;
 	Bonobo_PropertyBag pb;
 	CORBA_any *any;
 	CORBA_Environment ev;
@@ -742,21 +934,23 @@ rb_remote_bonobo_client_get_playing_song_impl (RBRemoteClientProxy *proxy)
 		CORBA_free (any);
 	}
 
-	song = g_new0 (RBRemoteSong, 1);
-	song->title = g_strdup (song_info->title);
-	song->artist = g_strdup (song_info->artist);
-	song->genre = g_strdup (song_info->genre);
-	song->album = g_strdup (song_info->album);
-	song->uri = g_strdup (song_info->path);
-	song->track_number = song_info->track_number;
-	song->duration = song_info->duration;
-	song->bitrate = song_info->bitrate;
-	song->filesize = song_info->filesize;
-	song->rating = song_info->rating;
-	song->play_count = song_info->play_count;
-	song->last_played = song_info->last_played;
-								
-	CORBA_free (song_info);
+	if (song_info != NULL) {
+		song = g_new0 (RBRemoteSong, 1);
+		song->title = g_strdup (song_info->title);
+		song->artist = g_strdup (song_info->artist);
+		song->genre = g_strdup (song_info->genre);
+		song->album = g_strdup (song_info->album);
+		song->uri = g_strdup (song_info->path);
+		song->track_number = song_info->track_number;
+		song->duration = song_info->duration;
+		song->bitrate = song_info->bitrate;
+		song->filesize = song_info->filesize;
+		song->rating = song_info->rating;
+		song->play_count = song_info->play_count;
+		song->last_played = song_info->last_played;
+									
+		CORBA_free (song_info);
+	}
 
 	bonobo_object_release_unref ((Bonobo_Unknown) pb, &ev);
 
@@ -775,33 +969,139 @@ rb_remote_bonobo_client_grab_focus_impl (RBRemoteClientProxy *proxy)
 }
 
 static void
-rb_remote_bonobo_client_toggle_shuffle_impl (RBRemoteClientProxy *proxy)
+_rb_remote_bonobo_client_toggle_property (RBRemoteBonobo *bonobo,
+					  const char *property)
 {
-	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
 	Bonobo_PropertyBag pb;
-	gboolean shuffle;
+	gboolean v;
 	CORBA_Environment ev;
 
 	CORBA_exception_init (&ev);
-		
+
 	pb = GNOME_Rhythmbox_getPlayerProperties (bonobo->priv->remote, &ev);
 
-	shuffle = bonobo_pbclient_get_boolean (pb,
-					       "shuffle",
-					       &ev);
+	v  = bonobo_pbclient_get_boolean (pb,
+					  property,
+					  &ev);
 	if (BONOBO_EX (&ev)) {
 		return;
 	}
 		
 	bonobo_pbclient_set_boolean (pb,
-				     "shuffle",
-				     shuffle ? FALSE : TRUE,
+				     property,
+				     v ? FALSE : TRUE,
 				     &ev);
 	if (BONOBO_EX (&ev))
 		return;
 
 	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
 }
+
+static gboolean
+_rb_remote_bonobo_client_get_boolean_property (RBRemoteBonobo *bonobo,
+					       const char *property)
+{
+	Bonobo_PropertyBag pb;
+	gboolean v;
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+
+	pb = GNOME_Rhythmbox_getPlayerProperties (bonobo->priv->remote, &ev);
+
+	v  = bonobo_pbclient_get_boolean (pb,
+					  property,
+					  &ev);
+	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
+	return v;
+}
+
+static void
+_rb_remote_bonobo_client_set_boolean_property (RBRemoteBonobo *bonobo,
+					       const char *property,
+					       gboolean value)
+{
+	Bonobo_PropertyBag pb;
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+
+	pb = GNOME_Rhythmbox_getPlayerProperties (bonobo->priv->remote, &ev);
+
+	bonobo_pbclient_set_boolean (pb,
+				     property,
+				     value,
+				     &ev);
+	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
+}
+
+static void
+rb_remote_bonobo_client_toggle_visibility_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_toggle_property (bonobo, "visibility");
+}
+
+static gboolean 
+rb_remote_bonobo_client_get_visibility_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	return _rb_remote_bonobo_client_get_boolean_property (bonobo, "visibility");
+}
+
+static void
+rb_remote_bonobo_client_set_visibility_impl (RBRemoteClientProxy *proxy,
+					     gboolean visible)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_set_boolean_property (bonobo, "visibility", visible);
+}
+
+
+static void
+rb_remote_bonobo_client_toggle_shuffle_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_toggle_property (bonobo, "shuffle");
+}
+
+static gboolean 
+rb_remote_bonobo_client_get_shuffle_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	return _rb_remote_bonobo_client_get_boolean_property (bonobo, "shuffle");
+}
+
+static void
+rb_remote_bonobo_client_set_shuffle_impl (RBRemoteClientProxy *proxy,
+					  gboolean shuffle)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_set_boolean_property (bonobo, "shuffle", shuffle);
+}
+
+static void
+rb_remote_bonobo_client_toggle_repeat_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_toggle_property (bonobo, "repeat");
+}
+
+static gboolean 
+rb_remote_bonobo_client_get_repeat_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	return _rb_remote_bonobo_client_get_boolean_property (bonobo, "repeat");
+}
+
+static void
+rb_remote_bonobo_client_set_repeat_impl (RBRemoteClientProxy *proxy,
+					 gboolean repeat)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	_rb_remote_bonobo_client_set_boolean_property (bonobo, "repeat", repeat);
+}
+
 
 static void
 rb_remote_bonobo_client_toggle_playing_impl (RBRemoteClientProxy *proxy)
@@ -812,6 +1112,35 @@ rb_remote_bonobo_client_toggle_playing_impl (RBRemoteClientProxy *proxy)
 	CORBA_exception_init (&ev);
 	GNOME_Rhythmbox_playPause (bonobo->priv->remote, &ev);
 	CORBA_exception_free (&ev);
+}
+
+static void
+_rb_remote_bonobo_client_set_playing (RBRemoteClientProxy *proxy, gboolean play)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	gboolean is_playing;
+	CORBA_Environment ev;
+
+	is_playing = _rb_remote_bonobo_client_get_boolean_property (bonobo, "playing");
+	
+	if (is_playing != play) {
+		CORBA_exception_init (&ev);
+		rb_remote_bonobo_client_toggle_playing_impl (proxy);
+		CORBA_exception_free (&ev);
+	}
+
+}
+
+static void
+rb_remote_bonobo_client_play_impl (RBRemoteClientProxy *proxy)
+{
+	_rb_remote_bonobo_client_set_playing (proxy, TRUE);
+}
+
+static void
+rb_remote_bonobo_client_pause_impl (RBRemoteClientProxy *proxy)
+{
+	_rb_remote_bonobo_client_set_playing (proxy, FALSE);
 }
 
 static long
@@ -842,4 +1171,111 @@ rb_remote_bonobo_client_set_playing_time_impl (RBRemoteClientProxy *proxy, long 
 	GNOME_Rhythmbox_setPlayingTime (bonobo->priv->remote, time, &ev);
 	CORBA_exception_free (&ev);
 }
+
+static void
+rb_remote_bonobo_client_jump_next_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_next (bonobo->priv->remote, &ev);
+	CORBA_exception_free (&ev);
+}
+
+static void
+rb_remote_bonobo_client_jump_previous_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_previous (bonobo->priv->remote, &ev);
+	CORBA_exception_free (&ev);
+}
+
+
+static void
+rb_remote_bonobo_client_quit_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_quit (bonobo->priv->remote, &ev);
+	CORBA_exception_free (&ev);
+}
+
+static void
+rb_remote_bonobo_client_set_rating_impl (RBRemoteClientProxy *proxy, double rating)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_setRating (bonobo->priv->remote, rating, &ev);
+	CORBA_exception_free (&ev);
+}
+
+static void
+rb_remote_bonobo_client_seek_impl (RBRemoteClientProxy *proxy, long offset)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_skip (bonobo->priv->remote, offset, &ev);
+	CORBA_exception_free (&ev);
+}
+
+static void
+rb_remote_bonobo_client_set_volume_impl (RBRemoteClientProxy *proxy, float volume)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	Bonobo_PropertyBag pb;
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+
+	pb = GNOME_Rhythmbox_getPlayerProperties (bonobo->priv->remote, &ev);
+
+	bonobo_pbclient_set_float (pb,
+				   "volume",
+				   volume,
+				   &ev);
+	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
+}
+
+static float 
+rb_remote_bonobo_client_get_volume_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	Bonobo_PropertyBag pb;
+	CORBA_Environment ev;
+	float v = 1.0f;
+
+	CORBA_exception_init (&ev);
+
+	pb = GNOME_Rhythmbox_getPlayerProperties (bonobo->priv->remote, &ev);
+
+	v = bonobo_pbclient_get_float (pb,
+				       "volume",
+				       &ev);
+	bonobo_object_release_unref ((Bonobo_Unknown)pb, &ev);
+	CORBA_exception_free (&ev);
+
+	return v;
+}
+
+static void
+rb_remote_bonobo_client_toggle_mute_impl (RBRemoteClientProxy *proxy)
+{
+	RBRemoteBonobo *bonobo = RB_REMOTE_BONOBO (proxy);
+	CORBA_Environment ev;
+
+	CORBA_exception_init (&ev);
+	GNOME_Rhythmbox_toggleMute (bonobo->priv->remote, &ev);
+	CORBA_exception_free (&ev);
+}
+
 

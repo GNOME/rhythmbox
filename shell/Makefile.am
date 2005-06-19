@@ -81,6 +81,9 @@ if WITH_DBUS
 rhythmbox_LDADD += $(top_builddir)/remote/dbus/librbdbus.la
 endif
 
+# i hate link order problems
+rhythmbox_LDADD += $(top_builddir)/remote/librbremote.la
+
 rhythmbox_LDFLAGS = -export-dynamic
 
 INCLUDES = 						\

@@ -37,9 +37,14 @@ typedef struct
 	long duration;
 	long bitrate;
 	long filesize;
-	long rating;
+	double rating;
 	long play_count;
 	long last_played;			
+	long disc_number;
+	double track_gain;
+	double track_peak;
+	double album_gain;
+	double album_peak;
 } RBRemoteSong;
 
 void rb_remote_song_free (RBRemoteSong *song);

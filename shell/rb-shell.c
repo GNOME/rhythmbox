@@ -119,12 +119,18 @@ static void source_selected_cb (RBSourceList *sourcelist,
 static void rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 						RBSource *source,
 						RBShell *shell);
+static void rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
+					       RhythmDBEntry *entry,
+					       RBShell *shell);
 static void source_activated_cb (RBSourceList *sourcelist,
 				 RBSource *source,
 				 RBShell *shell);
 static void rb_shell_db_error_cb (RhythmDB *db,
 				  const char *uri, const char *msg,
 				  RBShell *shell); 
+static void rb_shell_db_entry_added_cb (RhythmDB *db,
+					RhythmDBEntry *entry,
+					RBShell *shell);
 static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      int response_id,
 						      RBShell *shell);
@@ -205,11 +211,12 @@ static gboolean rb_shell_show_popup_cb (RBSourceList *sourcelist,
 					RBSource *target,
 					RBShell *shell);
 static gboolean tray_destroy_cb (GtkObject *object, RBShell *shell);
-static void rb_shell_load_song_impl (RBRemoteProxy *proxy, const char *uri);
-static void rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri);
+static void rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play);
 static void rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri);
 static void rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri);
 static void rb_shell_grab_focus_impl (RBRemoteProxy *proxy);
+static gboolean rb_shell_get_visibility_impl (RBRemoteProxy *proxy);
+static void rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible);
 static gboolean rb_shell_get_shuffle_impl (RBRemoteProxy *proxy);
 static void rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle);
 static gboolean rb_shell_get_repeat_impl (RBRemoteProxy *proxy);
@@ -219,6 +226,29 @@ static void rb_shell_pause_impl (RBRemoteProxy *proxy);
 static gboolean rb_shell_playing_impl (RBRemoteProxy *proxy);
 static long rb_shell_get_playing_time_impl (RBRemoteProxy *proxy);
 static void rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time);
+static void rb_shell_seek_impl (RBRemoteProxy *proxy, long offset);
+static gchar *rb_shell_get_playing_uri_impl (RBRemoteProxy *proxy);
+static gboolean rb_shell_get_song_info_impl (RBRemoteProxy *proxy,
+                                             const gchar *uri,
+                                             RBRemoteSong *song);
+static void rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating);
+static void rb_shell_jump_next_impl (RBRemoteProxy *proxy);
+static void rb_shell_jump_previous_impl (RBRemoteProxy *proxy);
+static void rb_shell_remote_quit_impl (RBRemoteProxy *proxy);
+static GParamSpec *rb_shell_find_player_property_impl (RBRemoteProxy *proxy,
+						       const gchar *property);
+static void rb_shell_player_notify_handler_impl (RBRemoteProxy *proxy, 
+						 GCallback c_handler, 
+						 gpointer gobject);
+static void rb_shell_set_player_property_impl (RBRemoteProxy *proxy,
+					       const gchar *property,
+					       GValue *value);
+static void rb_shell_get_player_property_impl (RBRemoteProxy *proxy,
+					       const gchar *property,
+					       GValue *value);
+static gchar *rb_shell_get_playing_source_impl (RBRemoteProxy *proxy);
+
+static void rb_shell_toggle_mute_impl (RBRemoteProxy *proxy);
 
 typedef RBSource *(*SourceCreateFunc)(RBShell *);
 
@@ -277,6 +307,9 @@ enum
 struct RBShellPrivate
 {
 	GtkWidget *window;
+	int window_x;
+	int window_y;
+	gboolean visible;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -288,8 +321,6 @@ struct RBShellPrivate
 
 	GList *sources;
 	GHashTable *sources_hash;
-
-	gboolean play_queued;
 
 	guint async_state_save_id;
 
@@ -304,6 +335,7 @@ struct RBShellPrivate
 	char *rhythmdb_file;
 
 	RhythmDB *db;
+	char *pending_entry;
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
@@ -516,20 +548,43 @@ rb_shell_class_init (RBShellClass *klass)
 static void
 rb_shell_remote_proxy_init (RBRemoteProxyIface *iface)
 {
-	iface->load_song = rb_shell_load_song_impl;
 	iface->load_uri = rb_shell_load_uri_impl;
 	iface->select_uri = rb_shell_select_uri_impl;
 	iface->play_uri = rb_shell_play_uri_impl;
 	iface->grab_focus = rb_shell_grab_focus_impl;
+
+	iface->get_visibility = rb_shell_get_visibility_impl;
+	iface->set_visibility = rb_shell_set_visibility_impl;
 	iface->get_shuffle = rb_shell_get_shuffle_impl;
 	iface->set_shuffle = rb_shell_set_shuffle_impl;
 	iface->get_repeat = rb_shell_get_repeat_impl;
 	iface->set_repeat = rb_shell_set_repeat_impl;
+
 	iface->play = rb_shell_play_impl;
 	iface->pause = rb_shell_pause_impl;
 	iface->playing = rb_shell_playing_impl;
+
 	iface->get_playing_time = rb_shell_get_playing_time_impl;
 	iface->set_playing_time = rb_shell_set_playing_time_impl;
+	iface->seek = rb_shell_seek_impl;
+
+	iface->get_playing_uri = rb_shell_get_playing_uri_impl;
+	iface->get_song_info = rb_shell_get_song_info_impl;
+	iface->set_rating = rb_shell_set_rating_impl;
+
+	iface->jump_next = rb_shell_jump_next_impl;
+	iface->jump_previous = rb_shell_jump_previous_impl;
+
+	iface->quit = rb_shell_remote_quit_impl;
+
+	iface->find_player_property = rb_shell_find_player_property_impl;
+	iface->player_notify_handler = rb_shell_player_notify_handler_impl;
+	iface->set_player_property = rb_shell_set_player_property_impl;
+	iface->get_player_property = rb_shell_get_player_property_impl;
+
+	iface->get_playing_source = rb_shell_get_playing_source_impl;
+
+	iface->toggle_mute = rb_shell_toggle_mute_impl;
 }
 
 static void
@@ -753,59 +808,6 @@ rb_shell_new (int argc, char **argv, gboolean no_registration,
 	return s;
 }
 
-struct RBShellAction
-{
-	RBShell *shell;
-	char *uri;
-	guint tries;
-	enum {
-		RB_SHELL_ACTION_JUMP,
-		RB_SHELL_ACTION_PLAY,
-	} type;
-};
-
-static gboolean
-idle_do_action (struct RBShellAction *data)
-{
-	RhythmDBEntry *entry;
-	char *unquoted = NULL;
-	
-	GDK_THREADS_ENTER ();
-	rb_debug ("entering idle_do_action");
-
-	data->tries++;
-
-	entry = rhythmdb_entry_lookup_by_location (data->shell->priv->db, data->uri);
-
-	if (entry) {
-		switch (data->type) {
-		case RB_SHELL_ACTION_PLAY:
-			rb_debug ("doing play action");
-			rb_shell_play_entry (data->shell, entry);
-			/* fall through */ 
-		case RB_SHELL_ACTION_JUMP:
-			rb_debug ("doing jump action");
-			rb_shell_jump_to_entry (data->shell, entry);
-			break;
-		}
-	} else if (data->tries < 4) {
-		rb_debug ("entry not added yet, queueing retry");
-		g_timeout_add (500 + data->tries*200, (GSourceFunc) idle_do_action, data);
-		goto out_unlock;
-	} else
-		rb_debug ("No entry %s in db", data->uri);
-
-	data->shell->priv->play_queued = FALSE;
-
-	g_free (unquoted);
-	g_free (data->uri);
-	g_free (data);
-
- out_unlock:
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
 void
 rb_shell_construct (RBShell *shell)
 {
@@ -827,6 +829,7 @@ rb_shell_construct (RBShell *shell)
 	gtk_window_set_title (win, _("Music Player"));
 
 	shell->priv->window = GTK_WIDGET (win);
+	shell->priv->visible = TRUE;
 
 #ifdef FIXME
 	g_signal_connect_object (G_OBJECT (win), "window-state-event",
@@ -897,6 +900,10 @@ rb_shell_construct (RBShell *shell)
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "playing-source-changed",
 				 G_CALLBACK (rb_shell_playing_source_changed_cb),
+				 shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+				 "playing-song-changed",
+				 G_CALLBACK (rb_shell_playing_entry_changed_cb),
 				 shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
 				 "window_title_changed",
@@ -981,6 +988,8 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect_object (G_OBJECT (shell->priv->db), "error",
 				 G_CALLBACK (rb_shell_db_error_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->db), "entry-added",
+				 G_CALLBACK (rb_shell_db_entry_added_cb), shell, 0);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->load_error_dialog), "response",
 				 G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell, 0);
@@ -1044,7 +1053,7 @@ rb_shell_construct (RBShell *shell)
 	}
 
 	g_timeout_add (10000, (GSourceFunc) idle_save_playlist_manager, shell->priv->playlist_manager);
-		
+	
 	rb_shell_sync_window_state (shell);
 
 	rb_shell_select_source_internal (shell, library_source);
@@ -1214,7 +1223,7 @@ source_activated_cb (RBSourceList *sourcelist,
 	/* Select the new one, and start it playing */
 	rb_shell_select_source (shell, source);
 	rb_shell_player_set_playing_source (shell->priv->player_shell, source);
-	rb_shell_player_playpause (shell->priv->player_shell);
+	rb_shell_player_playpause (shell->priv->player_shell, FALSE);
 }
 
 static void
@@ -1224,6 +1233,12 @@ rb_shell_db_error_cb (RhythmDB *db,
 {
 	rb_debug ("got db error, showing: %s",
 		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
+
+	if (shell->priv->pending_entry && 
+	    strcmp(uri, shell->priv->pending_entry) == 0) {
+		g_free (shell->priv->pending_entry);
+		shell->priv->pending_entry = NULL;
+	}
 	
 	if (!shell->priv->show_db_errors)
 		return;
@@ -1231,6 +1246,23 @@ rb_shell_db_error_cb (RhythmDB *db,
 	rb_load_failure_dialog_add (RB_LOAD_FAILURE_DIALOG (shell->priv->load_error_dialog),
 				    uri, msg);
 	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
+}
+
+static void
+rb_shell_db_entry_added_cb (RhythmDB *db,
+			    RhythmDBEntry *entry,
+			    RBShell *shell)
+{
+	if (shell->priv->pending_entry == NULL)
+		return;
+	
+	rb_debug ("got entry added for %s", entry->location);
+	if (strcmp (entry->location, shell->priv->pending_entry) == 0) {
+		rb_shell_play_entry (shell, entry);
+
+		g_free (shell->priv->pending_entry);
+		shell->priv->pending_entry = NULL;
+	}
 }
 
 static void
@@ -1344,6 +1376,49 @@ rb_shell_playing_source_changed_cb (RBShellPlayer *player,
 	rb_debug ("playing source changed");
 	rb_sourcelist_set_playing_source (RB_SOURCELIST (shell->priv->sourcelist),
 					  source);
+}
+
+static void
+rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
+				   RhythmDBEntry *entry,
+				   RBShell *shell)
+{
+	RBRemoteSong song;
+#ifdef WITH_DASHBOARD
+	char *cluepacket;
+#endif
+
+	/* emit remote song_changed notification */
+	song.title = g_strdup (rb_refstring_get (entry->title));
+	song.artist = g_strdup (rb_refstring_get (entry->artist));
+	song.genre = g_strdup (rb_refstring_get (entry->genre));
+	song.album = g_strdup (rb_refstring_get (entry->album));
+	song.uri = g_strdup (entry->location);
+
+	song.track_number = entry->tracknum;
+	song.disc_number = entry->discnum;
+	song.duration = entry->duration;
+	song.bitrate = entry->bitrate;
+	song.filesize = entry->file_size;
+	song.rating = entry->rating;
+	song.play_count = entry->play_count;
+	song.last_played = entry->last_played;
+
+	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
+
+#ifdef WITH_DASHBOARD
+	/* Send cluepacket to dashboard */
+	cluepacket =
+		dashboard_build_cluepacket_then_free_clues ("Music Player",
+							TRUE, 
+							"", 
+							dashboard_build_clue (song.title, "song_title", 10),
+							dashboard_build_clue (song.artist, "artist", 10),
+							dashboard_build_clue (song.album, "album", 10),
+							NULL);
+	dashboard_send_raw_cluepacket (cluepacket);
+	g_free (cluepacket);
+#endif /* WITH_DASHBOARD */
 }
 
 static void
@@ -2028,8 +2103,7 @@ tray_destroy_cb (GtkObject *object, RBShell *shell)
 	rb_debug ("creating new tray icon");
 	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager,
 						   shell->priv->actiongroup,
-						   shell->priv->db,
-						   GTK_WINDOW (shell->priv->window));
+						   RB_REMOTE_PROXY (shell));
 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
 				 G_CALLBACK (tray_destroy_cb), shell, 0);
  
@@ -2079,80 +2153,351 @@ rb_shell_session_init (RBShell *shell)
 }
 
 static void
-rb_shell_load_song_impl (RBRemoteProxy *proxy, const char *uri)
+rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 {
-}
+	RBShell *shell = RB_SHELL (proxy);
 
-static void
-rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri)
-{
+	rhythmdb_add_uri (shell->priv->db, uri);
+
+	if (play) {
+		/* wait for this entry to appear (or until we
+		 * get a load error for it), then play it.
+		 *
+		 * we only handle one entry here because
+		 * we don't have a playback queue (yet).
+		 */
+		if (shell->priv->pending_entry != NULL) {
+			g_free (shell->priv->pending_entry);
+		}
+		shell->priv->pending_entry = g_strdup (uri);
+	}
 }
 
 static void
 rb_shell_select_uri_impl (RBRemoteProxy *proxy, const char *uri)
 {
+	RBShell *shell = RB_SHELL (proxy);
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	if (entry != NULL) {
+		rb_shell_jump_to_entry (shell, entry);
+	}
 }
 
 static void
 rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri)
 {
+	RBShell       *shell = RB_SHELL (proxy);
+	RhythmDBEntry *entry;
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+	if (entry != NULL) {
+		rb_shell_player_play_entry (RB_SHELL_PLAYER (shell->priv->player_shell),
+					    entry);
+	}
 }
 
 static void
 rb_shell_grab_focus_impl (RBRemoteProxy *proxy)
 {
-	RBShell *shell = RB_SHELL (proxy);
+	gtk_window_present (GTK_WINDOW (RB_SHELL (proxy)->priv->window));
+	gtk_widget_grab_focus (RB_SHELL (proxy)->priv->window);
+}
 
-	rb_debug ("grabbing focus");
-	gtk_window_present (GTK_WINDOW (shell->priv->window));
-	gtk_widget_grab_focus (shell->priv->window);
+static gboolean
+rb_shell_get_visibility_impl (RBRemoteProxy *proxy)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	return shell->priv->visible;
+}
+
+static void
+rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	if (visible == shell->priv->visible)
+		return;
+
+	if (visible) {
+		rb_debug ("showing main window");
+		rb_shell_sync_window_state (shell);
+
+		gtk_widget_realize (shell->priv->window);
+		gdk_flush ();
+		if ((shell->priv->window_x >= 0) && (shell->priv->window_y >= 0))
+			gtk_window_move (GTK_WINDOW (shell->priv->window),
+					 shell->priv->window_x,
+					 shell->priv->window_y);
+
+		gtk_widget_show (shell->priv->window);
+	} else {
+		/* should store this stuff in gconf instead? */
+		rb_debug ("hiding main window");
+		gtk_window_get_position (GTK_WINDOW (shell->priv->window),
+					 &shell->priv->window_x,
+					 &shell->priv->window_y);
+		gtk_widget_hide (shell->priv->window);
+	}
+
+	shell->priv->visible = visible;
+	g_signal_emit_by_name (proxy, "visibility_changed", visible);
 }
 
 static gboolean
 rb_shell_get_shuffle_impl (RBRemoteProxy *proxy)
 {
-	return FALSE;
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	gboolean       shuffle, repeat;
+
+	rb_shell_player_get_playback_state (player,
+					    &shuffle,
+					    &repeat);
+
+	return shuffle;
 }
 
 static void
 rb_shell_set_shuffle_impl (RBRemoteProxy *proxy, gboolean shuffle)
 {
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	gboolean       shuffle_old, repeat;
+
+	rb_shell_player_get_playback_state (player,
+					    &shuffle_old,
+					    &repeat);
+
+	rb_shell_player_set_playback_state (player,
+					    shuffle,
+					    repeat);
 }
 
 static gboolean
 rb_shell_get_repeat_impl (RBRemoteProxy *proxy)
 {
-	return FALSE;
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	gboolean       shuffle, repeat;
+
+	rb_shell_player_get_playback_state (player,
+					    &shuffle,
+					    &repeat);
+
+	return repeat;
 }
 
 static void
 rb_shell_set_repeat_impl (RBRemoteProxy *proxy, gboolean repeat)
 {
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	gboolean       shuffle, repeat_old;
+
+	rb_shell_player_get_playback_state (player,
+					    &shuffle,
+					    &repeat_old);
+
+	rb_shell_player_set_playback_state (player,
+					    shuffle,
+					    repeat);
 }
 
 static void
 rb_shell_play_impl (RBRemoteProxy *proxy)
 {
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	rb_shell_player_playpause (player, TRUE);
 }
 
 static void
 rb_shell_pause_impl (RBRemoteProxy *proxy)
 {
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	rb_shell_player_playpause (player, TRUE);
 }
 
 static gboolean
 rb_shell_playing_impl (RBRemoteProxy *proxy)
 {
-	return FALSE;
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	return rb_shell_player_get_playing (player);
 }
 
 static long
 rb_shell_get_playing_time_impl (RBRemoteProxy *proxy)
 {
-	return 0;
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	return rb_shell_player_get_playing_time (player);
 }
 
 static void
 rb_shell_set_playing_time_impl (RBRemoteProxy *proxy, long time)
 {
+	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
+	rb_shell_player_set_playing_time (player, time);
+}
+
+static gchar*
+rb_shell_get_playing_uri_impl (RBRemoteProxy *proxy)
+{
+	RBShellPlayer *player;
+	RhythmDBEntry *entry;
+
+	player = RB_SHELL (proxy)->priv->player_shell;
+
+	entry = rb_shell_player_get_playing_entry (player);
+
+	if (entry != NULL && entry->location != NULL)
+	    return g_strdup (entry->location);
+	else
+	    return NULL;
+}
+
+static gboolean
+rb_shell_get_song_info_impl (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSong *song)
+{
+	RBShell       *shell;
+	RhythmDBEntry *entry;
+
+	shell = RB_SHELL (proxy);
+
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+	if (entry == NULL)
+		return FALSE;
+
+	song->title = g_strdup (rb_refstring_get (entry->title));
+	song->artist = g_strdup (rb_refstring_get (entry->artist));
+	song->album = g_strdup (rb_refstring_get (entry->album));
+	song->genre = g_strdup (rb_refstring_get (entry->genre));
+
+	/* Should be the same as parameter uri */
+	song->uri = g_strdup (entry->location);
+
+	song->track_number = entry->tracknum;
+	song->disc_number = entry->discnum;
+	song->duration = entry->duration;
+	song->bitrate = entry->bitrate;
+	song->filesize = entry->file_size;
+	song->rating = entry->rating;
+	song->play_count = entry->play_count;
+	song->last_played = entry->last_played;
+
+	song->track_gain = entry->track_gain;
+	song->track_peak = entry->track_peak;
+	song->album_gain = entry->album_gain;
+	song->album_peak = entry->album_peak;
+
+	return TRUE;
+}
+
+static void
+rb_shell_jump_next_impl (RBRemoteProxy *proxy)
+{
+	rb_shell_player_do_next (RB_SHELL (proxy)->priv->player_shell);
+}
+
+static void
+rb_shell_jump_previous_impl (RBRemoteProxy *proxy)
+{
+	rb_shell_player_do_previous (RB_SHELL (proxy)->priv->player_shell);
+}
+
+static void
+rb_shell_remote_quit_impl (RBRemoteProxy *proxy)
+{
+	rb_shell_quit (RB_SHELL (proxy));
+}
+
+static GParamSpec *
+rb_shell_find_player_property_impl (RBRemoteProxy *proxy,
+				    const gchar *property)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	GObjectClass *klass = G_OBJECT_CLASS (RB_SHELL_PLAYER_GET_CLASS (shell->priv->player_shell));
+	return g_object_class_find_property (klass, property);
+}
+
+static void
+rb_shell_player_notify_handler_impl (RBRemoteProxy *proxy,
+				     GCallback c_handler,
+				     gpointer gobject)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	g_signal_connect_object (G_OBJECT (shell->priv->player_shell),
+				 "notify",
+				 c_handler,
+				 gobject, 0);
+}
+
+static void
+rb_shell_set_player_property_impl (RBRemoteProxy *proxy,
+				   const gchar *property,
+				   GValue *value)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	g_object_set_property (G_OBJECT (shell->priv->player_shell), property, value);
+}
+
+static void
+rb_shell_get_player_property_impl (RBRemoteProxy *proxy,
+				   const gchar *property,
+				   GValue *value)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	g_object_get_property (G_OBJECT (shell->priv->player_shell), property, value);
+}
+
+static gchar *
+rb_shell_get_playing_source_impl (RBRemoteProxy *proxy)
+{
+	RBShellPlayer *player;
+	RBSource *source;
+	gchar *source_name;
+
+	player = RB_SHELL (proxy)->priv->player_shell;
+	source = rb_shell_player_get_playing_source (player);
+	g_object_get (G_OBJECT (source), "name", &source_name, NULL);
+	return source_name;
+}
+
+static void
+rb_shell_seek_impl (RBRemoteProxy *proxy, long offset)
+{
+	RBShellPlayer *player;
+	player = RB_SHELL (proxy)->priv->player_shell;
+	rb_shell_player_seek (player, offset);
+}
+
+static void
+rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating)
+{
+	RBShell *shell = RB_SHELL (proxy);
+	RhythmDBEntry *entry;
+	RBEntryView *view;
+	RBSource *playing_source;
+
+	rb_debug ("setting rating of playing entry to %f", rating);
+
+	playing_source = rb_shell_player_get_playing_source (shell->priv->player_shell);
+	if (playing_source != NULL) {
+		view = rb_source_get_entry_view (playing_source);
+		entry = rb_entry_view_get_playing_entry (view);
+		if (entry != NULL) {
+			GValue value = {0, };
+			g_value_init (&value, G_TYPE_DOUBLE);
+			g_value_set_double (&value, rating);
+
+			rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
+
+			g_value_unset (&value);
+		}
+	}
+}
+
+static void
+rb_shell_toggle_mute_impl (RBRemoteProxy *proxy)
+{
+	RBShellPlayer *player;
+	player = RB_SHELL (proxy)->priv->player_shell;
+	rb_shell_player_toggle_mute (player);
 }

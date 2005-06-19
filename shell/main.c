@@ -62,6 +62,7 @@
 #include "rb-stock-icons.h"
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
+#include "rb-util.h"
 
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
@@ -76,13 +77,21 @@ static gboolean print_playing_track = FALSE;
 static gboolean print_playing_genre = FALSE;
 static gboolean print_playing_path = FALSE;
 static gboolean playpause       = FALSE;
+static gboolean play            = FALSE;
+static gboolean do_pause        = FALSE;
 static gboolean focus           = FALSE;
 static gboolean previous        = FALSE;
 static gboolean next            = FALSE;
 static gboolean shuffle         = FALSE;
+static gboolean repeat          = FALSE;
 static gboolean print_play_time = FALSE;
 static gboolean print_song_length = FALSE;
 static long seek_time           = 0;
+static long seek_relative       = 0;
+static double set_rating          = -1.0;
+static float set_volume         = -1.0;
+static gboolean toggle_mute     = FALSE;
+static gboolean toggle_hide     = FALSE;
 
 static void handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 			    int argc, char **argv);
@@ -106,30 +115,39 @@ main (int argc, char **argv)
 
 	struct poptOption popt_options[] =
 	{
-		{ "print-playing",	0,  POPT_ARG_NONE,          &print_playing,                                  0, N_("Print the playing song and exit"),     NULL },
-		{ "print-playing-artist",	0,  POPT_ARG_NONE,  &print_playing_artist,                        0, N_("Print the playing song artist and exit"),  NULL },
-		{ "print-playing-album",	0,  POPT_ARG_NONE,  &print_playing_album,                         0, N_("Print the playing song album and exit"),   NULL },
-		{ "print-playing-track",	0,  POPT_ARG_NONE,  &print_playing_track,                         0, N_("Print the playing song track and exit"),   NULL },
-		{ "print-playing-genre",	0,  POPT_ARG_NONE,  &print_playing_genre,                         0, N_("Print the playing song genre and exit"),   NULL },
-		{ "print-playing-path",	0,  POPT_ARG_NONE,          &print_playing_path,                          0, N_("Print the playing song URI and exit"),     NULL },
+		{ "print-playing",		0,  POPT_ARG_NONE,	&print_playing,			0, N_("Print the playing song and exit"), NULL },
+		{ "print-playing-artist",	0,  POPT_ARG_NONE,	&print_playing_artist,		0, N_("Print the playing song artist and exit"), NULL },
+		{ "print-playing-album",	0,  POPT_ARG_NONE,	&print_playing_album,		0, N_("Print the playing song album and exit"), NULL },
+		{ "print-playing-track",	0,  POPT_ARG_NONE,	&print_playing_track,		0, N_("Print the playing song track and exit"), NULL },
+		{ "print-playing-genre",	0,  POPT_ARG_NONE,	&print_playing_genre,		0, N_("Print the playing song genre and exit"), NULL },
+		{ "print-playing-path",		0,  POPT_ARG_NONE,	&print_playing_path,		0, N_("Print the playing song URI and exit"), NULL },
         
-        { "print-song-length",	0,  POPT_ARG_NONE,			&print_song_length,		0, N_("Print the playing song length in seconds and exit"),	NULL },
-        { "print-play-time", 	0,  POPT_ARG_NONE,			&print_play_time,		0, N_("Print the current elapsed time of playing song and exit"),	NULL },
-        { "set-play-time", 	    0,  POPT_ARG_LONG,			&seek_time,				0, N_("Seek to the specified time in playing song if possible and exit"),	NULL },
+		{ "print-song-length",		0,  POPT_ARG_NONE,	&print_song_length,		0, N_("Print the playing song length in seconds and exit"), NULL },
+		{ "print-play-time",		0,  POPT_ARG_NONE,	&print_play_time,		0, N_("Print the current elapsed time of playing song and exit"), NULL },
+		{ "set-play-time",		0,  POPT_ARG_LONG,	&seek_time,			0, N_("Seek to the specified time in playing song if possible and exit"), NULL },
+		{ "seek",			0,  POPT_ARG_LONG,	&seek_relative,			0, N_("Seek by the specified amount if possible and exit"), NULL },
+		{ "set-rating",			0,  POPT_ARG_DOUBLE,	&set_rating,			0, N_("Set the rating of the currently playing song and exit"), NULL },
         
-		{ "play-pause",		    0,  POPT_ARG_NONE,			&playpause,	        	0, N_("Toggle play/pause mode"),     NULL },
-		{ "focus",	    0,  POPT_ARG_NONE,			&focus,	        	0, N_("Focus the running player"),     NULL },
-		{ "previous",		    0,  POPT_ARG_NONE,			&previous,	        	0, N_("Jump to previous song"),     NULL },
-		{ "next",		        0,  POPT_ARG_NONE,			&next,		        	0, N_("Jump to next song"),     NULL },
+		{ "play-pause",			0,  POPT_ARG_NONE,	&playpause,			0, N_("Toggle play/pause mode"), NULL },
+		{ "pause",			0,  POPT_ARG_NONE,	&do_pause,			0, N_("Pause playback if currently playing"), NULL },
+		{ "play",			0,  POPT_ARG_NONE,	&play,				0, N_("Resume playback if currently paused"), NULL },
+		{ "focus",			0,  POPT_ARG_NONE,	&focus,				0, N_("Focus the running player"), NULL },
+		{ "previous",			0,  POPT_ARG_NONE,	&previous,			0, N_("Jump to previous song"), NULL },
+		{ "next",			0,  POPT_ARG_NONE,	&next,				0, N_("Jump to next song"), NULL },
 		
-		{ "shuffle",		        0,  POPT_ARG_NONE,			&shuffle,		        	0, N_("Toggle shuffling"),     NULL },
+		{ "shuffle",			0,  POPT_ARG_NONE,	&shuffle,			0, N_("Toggle shuffling"), NULL },
+		{ "repeat",			0,  POPT_ARG_NONE,	&repeat,			0, N_("Toggle repeat"), NULL },
 
-		{ "debug",           'd',  POPT_ARG_NONE,          &debug,                                        0, N_("Enable debugging code"),     NULL },
-		{ "no-update", 0,  POPT_ARG_NONE,          &no_update,                              0, N_("Do not update the library"), NULL },
-		{ "no-registration", 'n',  POPT_ARG_NONE,          &no_registration,                              0, N_("Do not register the shell"), NULL },
-		{ "dry-run", 0,  POPT_ARG_NONE,          &dry_run,                             0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
-		{ "rhythmdb-file", 0,  POPT_ARG_STRING,          &rhythmdb_file,                             0, N_("Path for database file to use"), NULL },
-		{ "quit",            'q',  POPT_ARG_NONE,          &quit,                                         0, N_("Quit Rhythmbox"),            NULL },
+		{ "set-volume",			0,  POPT_ARG_FLOAT,	&set_volume,			0, N_("Set the volume level"), NULL },
+		{ "toggle-mute",		0,  POPT_ARG_NONE,	&toggle_mute,			0, N_("Mute or unmute playback"), NULL },
+		{ "toggle-hide",		0,  POPT_ARG_NONE,	&toggle_hide,			0, N_("Change visibility of the main Rhythmbox window"), NULL },
+
+		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debugging code"), NULL },
+		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library"), NULL },
+		{ "no-registration",		'n',POPT_ARG_NONE,	&no_registration,		0, N_("Do not register the shell"), NULL },
+		{ "dry-run",			0,  POPT_ARG_NONE,	&dry_run,			0, N_("Don't save any data permanently (implies --no-registration)"), NULL },
+		{ "rhythmdb-file",		0,  POPT_ARG_STRING,	&rhythmdb_file,			0, N_("Path for database file to use"), NULL },
+		{ "quit",			'q',POPT_ARG_NONE,	&quit,				0, N_("Quit Rhythmbox"), NULL },
 #ifdef HAVE_GSTREAMER
 		{NULL, '\0', POPT_ARG_INCLUDE_TABLE, NULL, 0, "GStreamer", NULL},
 #endif
@@ -182,7 +200,24 @@ main (int argc, char **argv)
 
 	rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
-
+	
+	/*
+	 * By default, GDK_THREADS_ENTER/GDK_THREADS_LEAVE uses a 
+	 * non-recursive mutex; this leads to deadlock, as there are
+	 * many code paths that lead to (for example) gconf operations
+	 * with the gdk lock held.  While performing these gconf operations,
+	 * ORBit will process incoming bonobo remote interface requests.
+	 * The implementations of the bonobo request handlers attempt
+	 * to acquire the gdk lock (as far as I know this is necessary, as
+	 * some operations will result in UI updates etc.); if the mutex
+	 * does not support recursive locks, this will deadlock.
+	 *
+	 * Dropping the gdk lock before all code paths that will possibly
+	 * lead to a gconf operation is way too hard (they're *everywhere*),
+	 * and unless someone can find a way of implementing the entire
+	 * remote interface without needing to acquire the gdk lock, this
+	 * is what we're stuck with.
+	 */
 	rb_threads_init ();
 
 	client_proxy = NULL;
@@ -333,6 +368,8 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 	if (print_play_time
 	    || seek_time > 0
 	    || playpause
+	    || play
+	    || do_pause
 	    || previous
 	    || next
 	    || shuffle)
@@ -340,21 +377,45 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 
 	if (print_play_time)
 		printf ("%ld\n", rb_remote_client_proxy_get_playing_time (proxy));
+
+	if (set_rating != -1)
+		rb_remote_client_proxy_set_rating (proxy, set_rating);
 	
 	if (seek_time > 0)
 		rb_remote_client_proxy_set_playing_time (proxy, seek_time);
+
+	if (seek_relative != 0)
+		rb_remote_client_proxy_seek (proxy, seek_relative);
 	
-	if (playpause)
+	if (play)
+		rb_remote_client_proxy_play (proxy);
+	else if (do_pause)
+		rb_remote_client_proxy_pause (proxy);
+	else if (playpause)
 		rb_remote_client_proxy_toggle_playing (proxy);
 
 	if (previous)
-		g_warning ("not implemented");
+                rb_remote_client_proxy_jump_previous (proxy);
 
 	if (next)
-		g_warning ("not implemented");
+                rb_remote_client_proxy_jump_next (proxy);
 
 	if (shuffle)
 		rb_remote_client_proxy_toggle_shuffle (proxy);
+
+	if (repeat)
+		rb_remote_client_proxy_toggle_repeat (proxy);
+
+	if (set_volume > -0.0001) {
+		if (set_volume > 1.0)
+			set_volume = 1.0;
+		else if (set_volume < 0.0)
+			set_volume = 0.0;
+		rb_remote_client_proxy_set_volume (proxy, set_volume);
+	}
+
+	if (toggle_mute)
+		rb_remote_client_proxy_toggle_mute (proxy);
 
 	for (i = 1; i < argc; i++) {
 		char *tmp;
@@ -377,10 +438,13 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 	}
 	
 	if (quit)
-		g_warning ("not implemented");
+		rb_remote_client_proxy_quit (proxy);
 
 	if (focus)
 		grab_focus = TRUE;
+
+	if (toggle_hide)
+		rb_remote_client_proxy_toggle_visibility (proxy);
 
 	/* at the very least, we focus the window */
 	if (activated && grab_focus) {

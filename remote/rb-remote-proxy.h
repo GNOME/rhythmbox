@@ -47,14 +47,17 @@ struct _RBRemoteProxyIface
 	/* Signals */
 	void (*song_changed) (RBRemoteProxy *proxy,
 			      const RBRemoteSong *song);
+	void (*visibility_changed) (RBRemoteProxy *proxy,
+				    gboolean visible);
 
 	/* Methods */
-	void (*load_song) (RBRemoteProxy *proxy, const char *uri);
-	void (*load_uri) (RBRemoteProxy *proxy, const char *uri);
+	void (*load_uri) (RBRemoteProxy *proxy, const char *uri, gboolean play);
 	void (*select_uri) (RBRemoteProxy *proxy, const char *uri);
 	void (*play_uri) (RBRemoteProxy *proxy, const char *uri);
 
 	void (*grab_focus) (RBRemoteProxy *proxy);
+	void (*set_visibility) (RBRemoteProxy *proxy, gboolean visible);
+	gboolean (*get_visibility) (RBRemoteProxy *proxy);
 
 	gboolean (*get_shuffle) (RBRemoteProxy *proxy);
 	void (*set_shuffle) (RBRemoteProxy *proxy, gboolean shuffle);
@@ -67,19 +70,40 @@ struct _RBRemoteProxyIface
 
 	long (*get_playing_time) (RBRemoteProxy *proxy);
 	void (*set_playing_time) (RBRemoteProxy *proxy, long time);
+	void (*seek) (RBRemoteProxy *proxy, long offset);
+
+	gchar* (*get_playing_uri) (RBRemoteProxy *proxy);
+	gboolean (*get_song_info) (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSong *song);
+	void (*set_rating) (RBRemoteProxy *proxy, double rating);
+
+	void (*jump_next) (RBRemoteProxy *proxy);
+	void (*jump_previous) (RBRemoteProxy *proxy);
+
+	void (*toggle_mute) (RBRemoteProxy *proxy);
+
+	void (*quit) (RBRemoteProxy *proxy);
+
+	GParamSpec *(*find_player_property) (RBRemoteProxy *proxy, const gchar *property);
+	void (*player_notify_handler) (RBRemoteProxy *proxy, GCallback c_handler, gpointer gobject);
+	void (*get_player_property) (RBRemoteProxy *proxy, const gchar *property, GValue *value);
+	void (*set_player_property) (RBRemoteProxy *proxy, const gchar *property, GValue *value);
+
+	gchar* (*get_playing_source) (RBRemoteProxy *proxy);
+
 };
 
 GType rb_remote_proxy_get_type (void) G_GNUC_CONST;
 
-void rb_remote_proxy_load_song (RBRemoteProxy *tree_model,
-				const char *uri);
-void rb_remote_proxy_load_uri (RBRemoteProxy *tree_model,
-			       const char *uri);
-void rb_remote_proxy_select_uri (RBRemoteProxy *tree_model,
+void rb_remote_proxy_load_uri (RBRemoteProxy *proxy,
+			       const char *uri,
+			       gboolean play);
+void rb_remote_proxy_select_uri (RBRemoteProxy *proxy,
 				 const char *uri);
-void rb_remote_proxy_play_uri (RBRemoteProxy *tree_model,
+void rb_remote_proxy_play_uri (RBRemoteProxy *proxy,
 			       const char *uri);
-void rb_remote_proxy_grab_focus (RBRemoteProxy *tree_model);
+void rb_remote_proxy_grab_focus (RBRemoteProxy *proxy);
+void rb_remote_proxy_set_visibility (RBRemoteProxy *proxy, gboolean visible);
+gboolean rb_remote_proxy_get_visibility (RBRemoteProxy *proxy);
 
 gboolean rb_remote_proxy_get_shuffle (RBRemoteProxy *proxy);
 void rb_remote_proxy_set_shuffle (RBRemoteProxy *proxy, gboolean shuffle);
@@ -92,6 +116,25 @@ gboolean rb_remote_proxy_playing (RBRemoteProxy *proxy);
 
 long rb_remote_proxy_get_playing_time (RBRemoteProxy *proxy);
 void rb_remote_proxy_set_playing_time (RBRemoteProxy *proxy, long time);
+void rb_remote_proxy_seek (RBRemoteProxy *proxy, long offset);
+void rb_remote_proxy_set_rating (RBRemoteProxy *proxy, double rating);
+
+gchar *rb_remote_proxy_get_playing_uri (RBRemoteProxy *proxy);
+gboolean rb_remote_proxy_get_song_info (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSong *song);
+
+void rb_remote_proxy_jump_next (RBRemoteProxy *proxy);
+void rb_remote_proxy_jump_previous (RBRemoteProxy *proxy);
+
+void rb_remote_proxy_toggle_mute (RBRemoteProxy *proxy);
+
+void rb_remote_proxy_quit (RBRemoteProxy *proxy);
+
+GParamSpec *rb_remote_proxy_find_player_property (RBRemoteProxy *proxy, const gchar *property);
+void rb_remote_proxy_player_notify_handler (RBRemoteProxy *proxy, GCallback c_handler, gpointer gobject);
+void rb_remote_proxy_set_player_property (RBRemoteProxy *proxy, const gchar *property, GValue *value);
+void rb_remote_proxy_get_player_property (RBRemoteProxy *proxy, const gchar *property, GValue *value);
+
+gchar *rb_remote_proxy_get_playing_source (RBRemoteProxy *proxy);
 
 G_END_DECLS
 
