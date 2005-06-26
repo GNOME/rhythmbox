@@ -585,7 +585,7 @@ rb_header_sync (RBHeader *player)
 		GtkTooltips *iradio_href_tips;
 
 		rb_debug ("not playing");
-		tmp = SONG_MARKUP (_("Not playing"));
+		tmp = SONG_MARKUP (_("Not Playing"));
 		gtk_label_set_markup (GTK_LABEL (player->priv->song), tmp);
 		g_free (tmp);
 

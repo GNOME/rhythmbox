@@ -194,13 +194,13 @@ struct RBLibrarySourcePrivate
 
 static GtkActionEntry rb_library_source_actions [] =
 {
-	{ "LibrarySrcChooseGenre", NULL, N_("Browse this genre"), NULL,
+	{ "LibrarySrcChooseGenre", NULL, N_("Browse This _Genre"), NULL,
 	  N_("Set the browser to view only this genre"),
 	  G_CALLBACK (rb_library_source_cmd_choose_genre) },
-	{ "LibrarySrcChooseArtist", NULL , N_("Browse this artist"), NULL,
+	{ "LibrarySrcChooseArtist", NULL , N_("Browse This _Artist"), NULL,
 	  N_("Set the browser to view only this artist"),
 	  G_CALLBACK (rb_library_source_cmd_choose_artist) },
-	{ "LibrarySrcChooseAlbum", NULL, N_("Browse this album"), NULL,
+	{ "LibrarySrcChooseAlbum", NULL, N_("Browse This A_lbum"), NULL,
 	  N_("Set the browser to view only this album"),
 	  G_CALLBACK (rb_library_source_cmd_choose_album) }
 };
