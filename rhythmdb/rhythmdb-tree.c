@@ -506,12 +506,30 @@ struct RhythmDBTreeSaveContext
 };
 
 #ifdef HAVE_GNU_FWRITE_UNLOCKED
-#define RHYTHMDB_FWRITE fwrite_unlocked
-#define RHYTHMDB_FPUTC fputc_unlocked
+#define RHYTHMDB_FWRITE_REAL fwrite_unlocked
+#define RHYTHMDB_FPUTC_REAL fputc_unlocked
 #else
-#define RHYTHMDB_FWRITE fwrite
-#define RHYTHMDB_FPUTC fputc
+#define RHYTHMDB_FWRITE_REAL fwrite
+#define RHYTHMDB_FPUTC_REAL fputc
 #endif
+
+#define RHYTHMDB_FWRITE(w,x,len,handle) {				\
+	int ret;							\
+	ret = RHYTHMDB_FWRITE_REAL (w,x,len,handle);			\
+	if (ferror (handle) != 0) {					\
+		g_warning ("Writing to the database failed");		\
+		clearerr (handle);					\
+	}								\
+}
+
+#define RHYTHMDB_FPUTC(x,handle) {					\
+	int ret;							\
+	ret = RHYTHMDB_FPUTC_REAL (x,handle);				\
+	if (ferror (handle) != 0) {					\
+		g_warning ("Writing to the database failed");		\
+		clearerr (handle);					\
+	}								\
+}
 
 #define RHYTHMDB_FWRITE_STATICSTR(STR, HANDLE) (RHYTHMDB_FWRITE(STR, 1, sizeof(STR)-1, HANDLE))
 
