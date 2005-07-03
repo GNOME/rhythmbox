@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-23 19:53-0400\n"
-"PO-Revision-Date: 2005-06-23 15:31-0400\n"
+"POT-Creation-Date: 2005-07-03 18:59-0400\n"
+"PO-Revision-Date: 2005-07-03 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -88,57 +88,61 @@ msgstr "_Path:"
 msgid "_Skip this step"
 msgstr "_Skip this step"
 
-#: data/glade/general-prefs.glade.h:1 widgets/rb-entry-view.c:1202
+#: data/glade/general-prefs.glade.h:1 data/glade/library-prefs.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: data/glade/general-prefs.glade.h:2 widgets/rb-entry-view.c:1202
 msgid "A_lbum"
 msgstr "A_lbum"
 
-#: data/glade/general-prefs.glade.h:2
+#: data/glade/general-prefs.glade.h:3
 msgid "Track _number"
 msgstr "Track _number"
 
-#: data/glade/general-prefs.glade.h:3
+#: data/glade/general-prefs.glade.h:4
 msgid "Visible Columns"
 msgstr "Visible Columns"
 
-#: data/glade/general-prefs.glade.h:4
+#: data/glade/general-prefs.glade.h:5
 msgid "_Artist"
 msgstr "_Artist"
 
-#: data/glade/general-prefs.glade.h:5
+#: data/glade/general-prefs.glade.h:6
 msgid "_Duration"
 msgstr "_Duration"
 
-#: data/glade/general-prefs.glade.h:6
+#: data/glade/general-prefs.glade.h:7
 msgid "_Genre"
 msgstr "_Genre"
 
-#: data/glade/general-prefs.glade.h:7
+#: data/glade/general-prefs.glade.h:8
 msgid "_Last played"
 msgstr "_Last played"
 
-#: data/glade/general-prefs.glade.h:8
+#: data/glade/general-prefs.glade.h:9
 msgid "_Play count"
 msgstr "_Play count"
 
-#: data/glade/general-prefs.glade.h:9 widgets/rb-entry-view.c:1153
+#: data/glade/general-prefs.glade.h:10 widgets/rb-entry-view.c:1153
 msgid "_Rating"
 msgstr "_Rating"
-
-#: data/glade/library-prefs.glade.h:1
-msgid "Artists and albums"
-msgstr "Artists and albums"
 
 #: data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
 msgstr "Browser Views"
 
 #: data/glade/library-prefs.glade.h:3
-msgid "Genres and artists"
-msgstr "Genres and artists"
+msgid "G_enres, artists and albums"
+msgstr "G_enres, artists and albums"
 
 #: data/glade/library-prefs.glade.h:4
-msgid "Genres, artists and albums"
-msgstr "Genres, artists and albums"
+msgid "_Artists and albums"
+msgstr "_Artists and albums"
+
+#: data/glade/library-prefs.glade.h:5
+msgid "_Genres and artists"
+msgstr "_Genres and artists"
 
 #: data/glade/load-failure.glade.h:1
 msgid "The following files couldn't be loaded:"
@@ -1020,7 +1024,7 @@ msgstr "_Small Display"
 msgid "Make the main window smaller"
 msgstr "Make the main window smaller"
 
-#: shell/rb-shell.c:1498 shell/rb-tray-icon.c:183 widgets/rb-header.c:588
+#: shell/rb-shell.c:1498 shell/rb-tray-icon.c:183
 msgid "Not playing"
 msgstr "Not playing"
 
@@ -1199,24 +1203,24 @@ msgstr[0] "%d station"
 msgstr[1] "%d stations"
 
 #: sources/rb-library-source.c:197
-msgid "Browse this genre"
-msgstr "Browse this genre"
+msgid "Browse This _Genre"
+msgstr "Browse This _Genre"
 
 #: sources/rb-library-source.c:198
 msgid "Set the browser to view only this genre"
 msgstr "Set the browser to view only this genre"
 
 #: sources/rb-library-source.c:200
-msgid "Browse this artist"
-msgstr "Browse this artist"
+msgid "Browse This _Artist"
+msgstr "Browse This _Artist"
 
 #: sources/rb-library-source.c:201
 msgid "Set the browser to view only this artist"
 msgstr "Set the browser to view only this artist"
 
 #: sources/rb-library-source.c:203
-msgid "Browse this album"
-msgstr "Browse this album"
+msgid "Browse This A_lbum"
+msgstr "Browse This A_lbum"
 
 #: sources/rb-library-source.c:204
 msgid "Set the browser to view only this album"
@@ -1590,6 +1594,10 @@ msgstr "Get information on this album from the web"
 #: widgets/rb-header.c:567
 msgid "Get information on this artist from the web"
 msgstr "Get information on this artist from the web"
+
+#: widgets/rb-header.c:588
+msgid "Not Playing"
+msgstr "Not Playing"
 
 #: widgets/rb-header.c:595
 msgid "Get information on this station from the web"
