@@ -1,5 +1,11 @@
 2005-07-05  Bastien Nocera  <hadess@hadess.net>
 
+	* widgets/rb-song-info.c: (rb_song_info_update_playback_error):
+	Avoid a crash in the properties window when no song is selected
+	(Patch by jonathan@kaolin.hn.org) (Closes: #307993)
+
+2005-07-05  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
 	(save_entry):
 	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_internal):

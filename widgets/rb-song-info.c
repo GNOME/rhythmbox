@@ -793,6 +793,9 @@ rb_song_info_update_playback_error (RBSongInfo *song_info)
 {
 	char *message = NULL;
 
+	if (!song_info->priv->current_entry)
+		return;
+
 	if (song_info->priv->current_entry->playback_error)
 		message = g_strdup (song_info->priv->current_entry->playback_error);
 
