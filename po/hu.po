@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox.HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-06-23 12:09+0000\n"
-"PO-Revision-Date: 2005-06-24 12:19+0200\n"
+"POT-Creation-Date: 2005-07-05 04:12+0000\n"
+"PO-Revision-Date: 2005-07-05 17:56+0200\n"
 "Last-Translator: Gabor Kelemen <kelemeng@gnome.hu>\n"
 "Language-Team: Hungarian <gnome@gnome.hu>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms:  nplurals=1; plural=0;\n"
-"X-Generator: KBabel 1.10\n"
+"X-Generator: KBabel 1.10.1\n"
 
 #: ../data/GNOME_Rhythmbox.server.in.h:1
 msgid "Rhythmbox shell"
@@ -90,57 +90,61 @@ msgstr "_Útvonal:"
 msgid "_Skip this step"
 msgstr "_Kihagyás"
 
-#: ../data/glade/general-prefs.glade.h:1 ../widgets/rb-entry-view.c:1202
+#: ../data/glade/general-prefs.glade.h:1 ../data/glade/library-prefs.glade.h:1
+msgid "    "
+msgstr "    "
+
+#: ../data/glade/general-prefs.glade.h:2 ../widgets/rb-entry-view.c:1202
 msgid "A_lbum"
 msgstr "A_lbum"
 
-#: ../data/glade/general-prefs.glade.h:2
+#: ../data/glade/general-prefs.glade.h:3
 msgid "Track _number"
 msgstr "S_orszám"
 
-#: ../data/glade/general-prefs.glade.h:3
+#: ../data/glade/general-prefs.glade.h:4
 msgid "Visible Columns"
 msgstr "Látható oszlopok"
 
-#: ../data/glade/general-prefs.glade.h:4
+#: ../data/glade/general-prefs.glade.h:5
 msgid "_Artist"
 msgstr "_Előadó"
 
-#: ../data/glade/general-prefs.glade.h:5
+#: ../data/glade/general-prefs.glade.h:6
 msgid "_Duration"
 msgstr "_Időtartam"
 
-#: ../data/glade/general-prefs.glade.h:6
+#: ../data/glade/general-prefs.glade.h:7
 msgid "_Genre"
 msgstr "_Műfaj"
 
-#: ../data/glade/general-prefs.glade.h:7
+#: ../data/glade/general-prefs.glade.h:8
 msgid "_Last played"
 msgstr "_Utoljára lejátszva"
 
-#: ../data/glade/general-prefs.glade.h:8
+#: ../data/glade/general-prefs.glade.h:9
 msgid "_Play count"
 msgstr "Le_játszások száma"
 
-#: ../data/glade/general-prefs.glade.h:9 ../widgets/rb-entry-view.c:1153
+#: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1153
 msgid "_Rating"
 msgstr "_Értékelés"
-
-#: ../data/glade/library-prefs.glade.h:1
-msgid "Artists and albums"
-msgstr "Előadók és albumok"
 
 #: ../data/glade/library-prefs.glade.h:2
 msgid "Browser Views"
 msgstr "Böngésző nézetek"
 
 #: ../data/glade/library-prefs.glade.h:3
-msgid "Genres and artists"
-msgstr "Műfajok és előadók"
+msgid "G_enres, artists and albums"
+msgstr "_Műfajok, előadók és albumok"
 
 #: ../data/glade/library-prefs.glade.h:4
-msgid "Genres, artists and albums"
-msgstr "Műfajok, előadók és albumok"
+msgid "_Artists and albums"
+msgstr "_Előadók és albumok"
+
+#: ../data/glade/library-prefs.glade.h:5
+msgid "_Genres and artists"
+msgstr "Mű_fajok és előadók"
 
 #: ../data/glade/load-failure.glade.h:1
 msgid "The following files couldn't be loaded:"
@@ -1044,7 +1048,6 @@ msgid "Make the main window smaller"
 msgstr "A főablak méretének csökkentése"
 
 #: ../shell/rb-shell.c:1498 ../shell/rb-tray-icon.c:183
-#: ../widgets/rb-header.c:588
 msgid "Not playing"
 msgstr "Lejátszás áll"
 
@@ -1223,24 +1226,24 @@ msgstr[0] "%d állomás"
 msgstr[1] "%d állomás"
 
 #: ../sources/rb-library-source.c:197
-msgid "Browse this genre"
-msgstr "Műfaj böngészése"
+msgid "Browse This _Genre"
+msgstr "Műf_aj böngészése"
 
 #: ../sources/rb-library-source.c:198
 msgid "Set the browser to view only this genre"
 msgstr "Böngésző beállítása, hogy csak ezt a műfajt jelenítse meg"
 
 #: ../sources/rb-library-source.c:200
-msgid "Browse this artist"
-msgstr "Előadó böngészése"
+msgid "Browse This _Artist"
+msgstr "Előa_dó böngészése"
 
 #: ../sources/rb-library-source.c:201
 msgid "Set the browser to view only this artist"
 msgstr "Böngésző beállítása, hogy csak ezt az előadót jelenítse meg"
 
 #: ../sources/rb-library-source.c:203
-msgid "Browse this album"
-msgstr "Album böngészése"
+msgid "Browse This A_lbum"
+msgstr "Alb_um böngészése"
 
 #: ../sources/rb-library-source.c:204
 msgid "Set the browser to view only this album"
@@ -1437,9 +1440,9 @@ msgid ""
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 msgstr ""
-"A lejátszólista %s perc hosszú. Ez meghaladja a szabványos audio CD "
-"hosszát. Ha a cél adathordozó nagyobb mint a szabványos audio CD, helyezze "
-"be a meghajtóba és próbálja újra."
+"A lejátszólista %s perc hosszú. Ez meghaladja a szabványos audio CD hosszát. "
+"Ha a cél adathordozó nagyobb mint a szabványos audio CD, helyezze be a "
+"meghajtóba és próbálja újra."
 
 #: ../sources/rb-playlist-source-recorder.c:1139
 msgid "Playlist too long"
@@ -1454,7 +1457,9 @@ msgstr "Nem található átmeneti hely!"
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
 "required."
-msgstr "Nem található elég átmeneti hely az audioszámok konvertálásához. %s MiB lenne  szükséges."
+msgstr ""
+"Nem található elég átmeneti hely az audioszámok konvertálásához. %s MiB "
+"lenne  szükséges."
 
 #: ../sources/rb-source.c:640
 msgid "Not supported"
@@ -1615,6 +1620,10 @@ msgstr "Információk beszerzése erről az albumról az internet segítségéve
 #: ../widgets/rb-header.c:567
 msgid "Get information on this artist from the web"
 msgstr "Információk beszerzése erről az előadóról az internet segítségével"
+
+#: ../widgets/rb-header.c:588
+msgid "Not Playing"
+msgstr "Nincs lejátszás"
 
 #: ../widgets/rb-header.c:595
 msgid "Get information on this station from the web"
