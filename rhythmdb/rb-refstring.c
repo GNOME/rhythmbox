@@ -71,6 +71,7 @@ rb_refstring_new_full (const char *init, gboolean compute_sortdata)
 	}
 	
 	strcpy (ret->value, init);
+	g_hash_table_insert (rb_refstrings, ret->value, ret);
 	return ret;
 }
 

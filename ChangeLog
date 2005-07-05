@@ -1,3 +1,12 @@
+2005-07-05  Bastien Nocera  <hadess@hadess.net>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_new_full): make
+	RbRefString work by actually pushing it to the hash table
+	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink):
+	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (add_thread_main):
+	Plug memory leaks in (very) often called functions
+	Both patches from James Livingston <jrl@ids.org.au> (Closes: #309444)
+
 2005-06-26  Dennis Cranston <dennis_cranston@yahoo.com>
 
 	* sources/rb-library-source.c:  Use header capitalization for

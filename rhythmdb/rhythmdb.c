@@ -563,11 +563,13 @@ rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
 	switch (result->type) {
 	case RHYTHMDB_EVENT_STAT:
 		g_free (result->uri);
+		g_free (result->real_uri);
 		if (result->vfsinfo)
 			gnome_vfs_file_info_unref (result->vfsinfo);
 		break;
 	case RHYTHMDB_EVENT_METADATA_LOAD:
 		g_free (result->uri);
+		g_free (result->real_uri);
 		if (result->vfsinfo)
 			gnome_vfs_file_info_unref (result->vfsinfo);
 		if (result->metadata)
@@ -1569,6 +1571,7 @@ add_thread_main (struct RhythmDBAddThreadData *data)
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (data->db->priv->event_queue, result);
+	g_free (data->uri);
 	g_free (data);
 	return NULL;
 }

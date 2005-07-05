@@ -121,6 +121,7 @@ rb_uri_resolve_symlink (const char *uri)
 	gnome_vfs_get_file_info (uri, info, GNOME_VFS_FILE_INFO_DEFAULT);
 
 	if (info->type != GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK) {
+		gnome_vfs_file_info_unref (info);
 		return g_strdup (uri);
 	}
 
