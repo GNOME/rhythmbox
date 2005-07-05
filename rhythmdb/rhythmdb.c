@@ -1981,8 +1981,8 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 		entry->playback_error = g_value_dup_string (value);
 		break;
 	case RHYTHMDB_PROP_MOUNTPOINT:
-		g_free (entry->mountpoint);
-		entry->mountpoint = g_value_dup_string (value);
+		rb_refstring_unref (entry->mountpoint);
+		entry->mountpoint = rb_refstring_new (g_value_get_string (value));
 		break;
 	case RHYTHMDB_PROP_FILE_SIZE:
 		entry->file_size = g_value_get_uint64 (value);

@@ -1,5 +1,14 @@
 2005-07-05  Bastien Nocera  <hadess@hadess.net>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_end_element),
+	(save_entry):
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_set_internal):
+	* rhythmdb/rhythmdb.h:
+	Make the mountpoint struct entry use an RbRefString
+	(patch by James Livingston <jrl@ids.org.au>)
+
+2005-07-05  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rb-refstring.c: (rb_refstring_new_full): make
 	RbRefString work by actually pushing it to the hash table
 	* lib/rb-file-helpers.c: (rb_uri_resolve_symlink):

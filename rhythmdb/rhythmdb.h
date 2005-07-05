@@ -142,7 +142,7 @@ typedef struct {
 
 	/* filesystem */
 	char *location;
-	char *mountpoint;
+	RBRefString *mountpoint;
 	guint64 file_size;
 	RBRefString *mimetype;
 #if 0
@@ -212,7 +212,7 @@ rhythmdb_entry_get_string (RhythmDBEntry *entry, RhythmDBPropType propid)
 	case RHYTHMDB_PROP_LOCATION:
 		return entry->location;
 	case RHYTHMDB_PROP_MOUNTPOINT:
-		return entry->mountpoint;
+		return rb_refstring_get (entry->mountpoint);
 	case RHYTHMDB_PROP_LAST_PLAYED_STR:
 		return rb_refstring_get (entry->last_played_str);
 	case RHYTHMDB_PROP_PLAYBACK_ERROR:

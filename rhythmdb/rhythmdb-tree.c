@@ -360,7 +360,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			g_string_free (ctx->buf, FALSE);
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			ctx->entry->mountpoint = ctx->buf->str;
+			ctx->entry->mountpoint = rb_refstring_new_full (ctx->buf->str, FALSE);
 			g_string_free (ctx->buf, FALSE);
 			break;
 		case RHYTHMDB_PROP_MTIME:
@@ -689,7 +689,7 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			/* Avoid crashes on exit when upgrading from 0.8
 			 * and no mountpoint is available from some entries */
 			if (entry->mountpoint) {
-				save_entry_string(ctx, elt_name, entry->mountpoint);
+				save_entry_string(ctx, elt_name, rb_refstring_get (entry->mountpoint));
 			}
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
