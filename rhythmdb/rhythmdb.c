@@ -1304,6 +1304,9 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	if (event->error) {
 		struct RhythmDBLoadErrorData *data;
 
+		if (g_error_matches (event->error, RB_METADATA_ERROR, RB_METADATA_ERROR_NOT_AUDIO_IGNORE))
+			return TRUE;
+
 		rb_debug ("error loading %s: %s", event->real_uri, event->error->message);
 		data = g_new0 (struct RhythmDBLoadErrorData, 1);
 		g_object_ref (G_OBJECT (db));

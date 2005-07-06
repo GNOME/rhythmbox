@@ -1,3 +1,11 @@
+2005-07-06  Bastien Nocera  <hadess@hadess.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_load):
+	* metadata/rb-metadata.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load):
+	Don't complain about text/* and image/* types being non-audio
+	files (patch from James Livingston <jrl@ids.org.au>) (Closes: #309334)
+
 2005-07-05  Bastien Nocera  <hadess@hadess.net>
 
 	* widgets/rb-song-info.c: (rb_song_info_update_playback_error):

@@ -35,6 +35,16 @@ static void rb_metadata_finalize (GObject *object);
 
 typedef GstElement *(*RBAddTaggerElem) (GstBin *, GstElement *);
 
+
+/*
+ * The list of mine type prefixes for files that shouldn't display errors about being non-audio.
+ * Useful for people who have cover art, et cetera, in their music directories
+ */
+const char * ignore_mime_types[] = {
+	"image/",
+	"text/",
+};
+
 struct RBMetadataGstType
 {
 	char *mimetype;
@@ -647,10 +657,22 @@ rb_metadata_load (RBMetaData *md,
 			     RB_METADATA_ERROR_UNRECOGNIZED,
 			     _("The MIME type of the file could not be identified"));
 	} else if (md->priv->non_audio) {
-		g_set_error (error,
-			     RB_METADATA_ERROR,
-			     RB_METADATA_ERROR_NOT_AUDIO,
-			     _("The file is not an audio stream"));
+		gboolean ignore = FALSE;
+		int i;
+
+		for (i = 0; i < G_N_ELEMENTS (ignore_mime_types); i++)
+			if (g_str_has_prefix (md->priv->type, ignore_mime_types[i]))
+				ignore = TRUE;
+		if (!ignore)
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_NOT_AUDIO,
+				     _("The file is not an audio stream"));
+		else
+			g_set_error (error,
+				     RB_METADATA_ERROR,
+				     RB_METADATA_ERROR_NOT_AUDIO_IGNORE,
+				     _("The file is not an audio stream, but is being ignored"));
 	} else if (!md->priv->handoff) {
 		const char *report_type = rb_metadata_gst_type_to_name (md, md->priv->type);
 		if (report_type == NULL)
