@@ -126,6 +126,9 @@ enum
 	PROP_0,
 };
 
+const int RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE = 256;
+
+
 static void
 rhythmdb_tree_class_init (RhythmDBTreeClass *klass)
 {
@@ -268,7 +271,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY;
 		ctx->propid = val;
-		ctx->buf = g_string_new ("");
+		ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
@@ -361,7 +364,7 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
 			ctx->entry->mountpoint = rb_refstring_new_full (ctx->buf->str, FALSE);
-			g_string_free (ctx->buf, FALSE);
+			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			ctx->entry->mtime = parse_ulong (ctx->buf->str);

@@ -1,5 +1,12 @@
 2005-07-07  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element):
+	Fix a memory leak, and stop some pointless string reallocation in the tree
+	parser.
+
+2005-07-07  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-library-source.c: (rb_library_source_finalize),
 	(rb_library_source_constructor):
 	Remove GConf notifications when a RBLibrarySource is destroyed
