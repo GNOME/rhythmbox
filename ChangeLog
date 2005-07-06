@@ -1,3 +1,8 @@
+2005-07-06  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rb-refstring.h: (rb_refstring_unref):
+	Avoid a crash if NULL is passed
+
 2005-07-06  Bastien Nocera  <hadess@hadess.net>
 
 	* metadata/rb-metadata-gst.c: (rb_metadata_load):

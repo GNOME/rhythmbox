@@ -76,6 +76,9 @@ rb_refstring_ref (RBRefString *val)
 G_INLINE_FUNC void
 rb_refstring_unref (RBRefString *val)
 {
+	if (!val)
+		return;
+
 	if (--val->refcount == 0)
 		g_hash_table_remove (rb_refstrings, val);
 }
