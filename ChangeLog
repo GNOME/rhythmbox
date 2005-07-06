@@ -1,5 +1,11 @@
 2005-07-07  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-library-source.c: (rb_library_source_finalize),
+	(rb_library_source_constructor):
+	Remove GConf notifications when a RBLibrarySource is destroyed
+
+2005-07-07  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-remote.c: (rb_remote_finalize), (rb_remote_class_init):
 	* sources/rb-ipod-source.c: (rb_ipod_source_class_init),
 	(rb_ipod_source_finalize):

@@ -190,6 +190,10 @@ struct RBLibrarySourcePrivate
 	GSList *browser_views_group;
 	
 	RhythmDBEntryType entry_type;
+	
+	guint ui_dir_notify_id;
+	guint state_dir_notify_id;
+	guint browser_view_notify_id;
 };
 
 static GtkActionEntry rb_library_source_actions [] =
@@ -432,6 +436,10 @@ rb_library_source_finalize (GObject *object)
 	g_return_if_fail (source->priv != NULL);
 
 	rb_debug ("finalizing library source");
+	
+	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
+	eel_gconf_notification_remove (source->priv->state_dir_notify_id);
+	eel_gconf_notification_remove (source->priv->browser_view_notify_id);
 
 	g_free (source->priv->artist);
 	g_free (source->priv->album);
@@ -609,12 +617,15 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_library_source_state_prefs_sync (source);
 	rb_library_source_ui_prefs_sync (source);
 	update_browser_views_visibility (source);
-	eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
+	source->priv->ui_dir_notify_id =
+		eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 				    source);
-	eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
+	source->priv->state_dir_notify_id =
+		eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
-	eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
+	source->priv->browser_view_notify_id =
+		eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
 				    (GConfClientNotifyFunc) rb_library_source_browser_views_changed, source);
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 	return G_OBJECT (source);
