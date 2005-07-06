@@ -1,3 +1,11 @@
+2005-07-07  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-remote.c: (rb_remote_finalize), (rb_remote_class_init):
+	* sources/rb-ipod-source.c: (rb_ipod_source_class_init),
+	(rb_ipod_source_finalize):
+	Make rb-remote and rb-ipod-source chain the finalizers up to their
+	parent classes
+
 2005-07-06  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rb-refstring.h: (rb_refstring_unref):

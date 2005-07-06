@@ -69,6 +69,8 @@ struct RBiPodSourcePrivate
 	gchar *ipod_mount_path;
 };
 
+static GObjectClass *parent_class = NULL;
+
 
 GType
 rb_ipod_source_get_type (void)
@@ -103,6 +105,8 @@ static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_ipod_source_finalize;
 	object_class->constructor = rb_ipod_source_constructor;
@@ -196,6 +200,8 @@ rb_ipod_source_finalize (GObject *object)
 	}
 	g_free (source->priv->ipod_mount_path);
 	g_free (source->priv);
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static GdkPixbuf *

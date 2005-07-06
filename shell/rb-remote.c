@@ -56,6 +56,8 @@ enum
 	LAST_SIGNAL
 };
 
+static GObjectClass *parent_class = NULL;
+
 static guint rb_remote_signals[LAST_SIGNAL] = { 0 };
 static GIOChannel *lirc_channel = NULL;
 static GList *listeners = NULL;
@@ -177,12 +179,16 @@ rb_remote_finalize (GObject *object)
 
 		lirc_deinit ();
 	}
+
+	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void
 rb_remote_class_init (RBRemote *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_remote_finalize;
 
