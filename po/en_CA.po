@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-03 18:59-0400\n"
-"PO-Revision-Date: 2005-07-03 15:31-0400\n"
+"POT-Creation-Date: 2005-07-06 18:50-0400\n"
+"PO-Revision-Date: 2005-07-06 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,12 +284,12 @@ msgid "New Internet Radio Station"
 msgstr "New Internet Radio Station"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:1004
-#: sources/rb-ipod-source.c:254 sources/rb-iradio-source.c:266
+#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:1006
+#: sources/rb-ipod-source.c:260 sources/rb-iradio-source.c:266
 #: sources/rb-iradio-source.c:267 sources/rb-iradio-source.c:268
 #: sources/rb-iradio-source.c:491 sources/rb-playlist-source.c:425
 #: widgets/rb-entry-view.c:941 widgets/rb-entry-view.c:965
-#: widgets/rb-song-info.c:776 widgets/rb-song-info.c:822
+#: widgets/rb-song-info.c:776 widgets/rb-song-info.c:825
 msgid "Unknown"
 msgstr "Unknown"
 
@@ -307,21 +307,25 @@ msgstr "%s Properties"
 msgid "Properties for %s"
 msgstr "Properties for %s"
 
-#: metadata/rb-metadata-gst.c:517 metadata/rb-metadata-gst.c:812
+#: metadata/rb-metadata-gst.c:527 metadata/rb-metadata-gst.c:834
 #: player/rb-player-gst.c:359 player/rb-recorder-gst.c:435
 #, c-format
 msgid "Failed to create %s element; check your installation"
 msgstr "Failed to create %s element; check your installation"
 
-#: metadata/rb-metadata-gst.c:648
+#: metadata/rb-metadata-gst.c:658
 msgid "The MIME type of the file could not be identified"
 msgstr "The MIME type of the file could not be identified"
 
-#: metadata/rb-metadata-gst.c:653
+#: metadata/rb-metadata-gst.c:670
 msgid "The file is not an audio stream"
 msgstr "The file is not an audio stream"
 
-#: metadata/rb-metadata-gst.c:661
+#: metadata/rb-metadata-gst.c:675
+msgid "The file is not an audio stream, but is being ignored"
+msgstr "The file is not an audio stream, but is being ignored"
+
+#: metadata/rb-metadata-gst.c:683
 #, c-format
 msgid "There is no plugin installed to handle a %s file."
 msgstr "There is no plugin installed to handle a %s file."
@@ -460,55 +464,55 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "An exception occured '%s'"
 
-#: rhythmdb/rhythmdb.c:987
+#: rhythmdb/rhythmdb.c:989
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Could not monitor %s: %s"
 
-#: rhythmdb/rhythmdb.c:1088
+#: rhythmdb/rhythmdb.c:1090
 msgid "<invalid filename>"
 msgstr "<invalid filename>"
 
-#: rhythmdb/rhythmdb.c:1596
+#: rhythmdb/rhythmdb.c:1602
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Could not access %s: %s"
 
-#: rhythmdb/rhythmdb.c:2074 widgets/rb-entry-view.c:916
-#: widgets/rb-song-info.c:978
+#: rhythmdb/rhythmdb.c:2080 widgets/rb-entry-view.c:916
+#: widgets/rb-song-info.c:981
 msgid "Never"
 msgstr "Never"
 
-#: rhythmdb/rhythmdb.c:2076
+#: rhythmdb/rhythmdb.c:2082
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2723
+#: rhythmdb/rhythmdb.c:2729
 msgid "Loading..."
 msgstr "Loading..."
 
-#: rhythmdb/rhythmdb.c:2740
+#: rhythmdb/rhythmdb.c:2746
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d song"
 msgstr[1] "%d songs"
 
-#: rhythmdb/rhythmdb.c:2747
+#: rhythmdb/rhythmdb.c:2753
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: rhythmdb/rhythmdb.c:2748
+#: rhythmdb/rhythmdb.c:2754
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hour"
 msgstr[1] "%ld hours"
 
-#: rhythmdb/rhythmdb.c:2749
+#: rhythmdb/rhythmdb.c:2755
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -516,7 +520,7 @@ msgstr[0] "%ld day"
 msgstr[1] "%ld days"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2755
+#: rhythmdb/rhythmdb.c:2761
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s and %s"
@@ -524,7 +528,7 @@ msgstr "%s, %s and %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2761 rhythmdb/rhythmdb.c:2769 rhythmdb/rhythmdb.c:2780
+#: rhythmdb/rhythmdb.c:2767 rhythmdb/rhythmdb.c:2775 rhythmdb/rhythmdb.c:2786
 #, c-format
 msgid "%s and %s"
 msgstr "%s and %s"
@@ -1182,11 +1186,11 @@ msgstr "Error reading file \"%s\".\n"
 msgid "Error writing PC file \"%s\".\n"
 msgstr "Error writing PC file \"%s\".\n"
 
-#: sources/rb-ipod-source.c:232
+#: sources/rb-ipod-source.c:238
 msgid "iPod"
 msgstr "iPod"
 
-#: sources/rb-iradio-source.c:373 sources/rb-library-source.c:556
+#: sources/rb-iradio-source.c:373 sources/rb-library-source.c:564
 #: widgets/rb-query-creator.c:56
 msgid "Genre"
 msgstr "Genre"
@@ -1202,43 +1206,43 @@ msgid_plural "%d stations"
 msgstr[0] "%d station"
 msgstr[1] "%d stations"
 
-#: sources/rb-library-source.c:197
+#: sources/rb-library-source.c:201
 msgid "Browse This _Genre"
 msgstr "Browse This _Genre"
 
-#: sources/rb-library-source.c:198
+#: sources/rb-library-source.c:202
 msgid "Set the browser to view only this genre"
 msgstr "Set the browser to view only this genre"
 
-#: sources/rb-library-source.c:200
+#: sources/rb-library-source.c:204
 msgid "Browse This _Artist"
 msgstr "Browse This _Artist"
 
-#: sources/rb-library-source.c:201
+#: sources/rb-library-source.c:205
 msgid "Set the browser to view only this artist"
 msgstr "Set the browser to view only this artist"
 
-#: sources/rb-library-source.c:203
+#: sources/rb-library-source.c:207
 msgid "Browse This A_lbum"
 msgstr "Browse This A_lbum"
 
-#: sources/rb-library-source.c:204
+#: sources/rb-library-source.c:208
 msgid "Set the browser to view only this album"
 msgstr "Set the browser to view only this album"
 
-#: sources/rb-library-source.c:570 widgets/rb-query-creator.c:54
+#: sources/rb-library-source.c:578 widgets/rb-query-creator.c:54
 msgid "Artist"
 msgstr "Artist"
 
-#: sources/rb-library-source.c:584 widgets/rb-query-creator.c:55
+#: sources/rb-library-source.c:592 widgets/rb-query-creator.c:55
 msgid "Album"
 msgstr "Album"
 
-#: sources/rb-library-source.c:685
+#: sources/rb-library-source.c:696
 msgid "Library"
 msgstr "Library"
 
-#: sources/rb-library-source.c:1215
+#: sources/rb-library-source.c:1226
 msgid "Add Location"
 msgstr "Add Location"
 
@@ -1683,20 +1687,20 @@ msgstr "Song Properties"
 msgid "Multiple Song Properties"
 msgstr "Multiple Song Properties"
 
-#: widgets/rb-song-info.c:820
+#: widgets/rb-song-info.c:823
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: widgets/rb-song-info.c:865
+#: widgets/rb-song-info.c:868
 msgid "Unknown file name"
 msgstr "Unknown file name"
 
-#: widgets/rb-song-info.c:884
+#: widgets/rb-song-info.c:887
 msgid "On the desktop"
 msgstr "On the desktop"
 
-#: widgets/rb-song-info.c:893
+#: widgets/rb-song-info.c:896
 msgid "Unknown location"
 msgstr "Unknown location"
 
