@@ -655,7 +655,7 @@ rb_song_info_set_entry_auto_rate (RBSongInfo *song_info,
 	/* set the new value for auto-rate */
 	g_value_init (&value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&value, active);
-	rhythmdb_entry_set (song_info->priv->db,
+	rhythmdb_entry_sync (song_info->priv->db,
 			    entry,
 			    RHYTHMDB_PROP_AUTO_RATE,
 			    &value);
@@ -690,7 +690,7 @@ rb_song_info_set_entry_rating (RBSongInfo *info,
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_DOUBLE);
 	g_value_set_double (&value, trouble);
-	rhythmdb_entry_set (info->priv->db,
+	rhythmdb_entry_sync (info->priv->db,
 			    entry,
 			    RHYTHMDB_PROP_RATING,
 			    &value);
@@ -698,7 +698,7 @@ rb_song_info_set_entry_rating (RBSongInfo *info,
 	/* since the user changed the rating, stop auto-rating */
 	g_value_init (&value, G_TYPE_BOOLEAN);
 	g_value_set_boolean (&value, FALSE);
-	rhythmdb_entry_set (info->priv->db,
+	rhythmdb_entry_sync (info->priv->db,
 			    entry,
 			    RHYTHMDB_PROP_AUTO_RATE,
 			    &value);

@@ -1,3 +1,26 @@
+2005-07-08  James Livingston  <jrl@ids.org.au>
+
+	* iradio/rb-station-properties-dialog.c:
+	(rb_station_properties_dialog_rated_cb),
+	(rb_station_properties_dialog_sync_entries):
+	* rhythmdb/rhythmdb-query-model.c: (rhythmdb_query_model_init),
+	(rhythmdb_query_model_finalize),
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_insert_into_main_list),
+	(rhythmdb_query_model_insert_into_limited_list),
+	(rhythmdb_query_model_remove_from_main_list),
+	(rhythmdb_query_model_remove_from_limited_list),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_do_insert),
+	(rhythmdb_query_model_remove_entry):
+	* shell/rb-shell-player.c: (rb_shell_player_auto_adjust_rating):
+	* sources/rb-source.c: (rb_source_update_play_statistics):
+	* widgets/rb-entry-view.c: (rb_entry_view_rated_cb):
+	* widgets/rb-song-info.c: (rb_song_info_set_entry_auto_rate),
+	(rb_song_info_set_entry_rating):
+	Fix query and EntryView change notification, so that automatic playlists are updated
+	when an entry in them changes
+
 2005-07-07  Bastien Nocera  <hadess@hadess.net>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_shutdown), (read_queue),

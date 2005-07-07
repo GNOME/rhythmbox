@@ -1298,7 +1298,7 @@ rb_shell_player_auto_adjust_rating (RBShellPlayer *player, gboolean jumped)
 		/* set the new value for the song */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, new_rating);
-		rhythmdb_entry_set (player->priv->db,
+		rhythmdb_entry_sync (player->priv->db,
 				    current_entry,
 				    RHYTHMDB_PROP_RATING,
 				    &value);

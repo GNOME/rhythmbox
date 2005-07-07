@@ -393,7 +393,7 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_DOUBLE);
 	g_value_set_double (&value, score);
-	rhythmdb_entry_set (dialog->priv->db,
+	rhythmdb_entry_sync (dialog->priv->db,
 			    dialog->priv->current_entry,
 			    RHYTHMDB_PROP_RATING,
 			    &value);
@@ -456,19 +456,19 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, title);
-	rhythmdb_entry_set (dialog->priv->db,
+	rhythmdb_entry_sync (dialog->priv->db,
 			    dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, genre);
-	rhythmdb_entry_set (dialog->priv->db,
+	rhythmdb_entry_sync (dialog->priv->db,
 			    dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
 	g_value_unset (&val);
 
 	g_value_init (&val, G_TYPE_STRING);
 	g_value_set_string (&val, location);
-	rhythmdb_entry_set (dialog->priv->db,
+	rhythmdb_entry_sync (dialog->priv->db,
 			    dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION, &val);
 	g_value_unset (&val);
 	rhythmdb_commit (dialog->priv->db);
