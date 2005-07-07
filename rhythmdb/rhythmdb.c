@@ -631,6 +631,7 @@ rhythmdb_shutdown (RhythmDB *db)
 		rhythmdb_event_free (db, result);
 	}
 
+	//FIXME
 	while ((result = g_async_queue_try_pop (db->priv->event_queue)) != NULL)
 		rhythmdb_event_free (db, result);
 }
@@ -1523,6 +1524,8 @@ rhythmdb_idle_poll_events (RhythmDB *db)
 	return FALSE;
 }
 
+#define READ_QUEUE_TIMEOUT G_USEC_PER_SEC / 10
+
 static gpointer
 read_queue (GAsyncQueue *queue, gboolean *cancel)
 {
@@ -1530,8 +1533,8 @@ read_queue (GAsyncQueue *queue, gboolean *cancel)
 	gpointer ret;
 
 	g_get_current_time (&timeout);
-	g_time_val_add (&timeout, G_USEC_PER_SEC);
-	
+	g_time_val_add (&timeout, READ_QUEUE_TIMEOUT);
+
 	if (G_UNLIKELY (*cancel))
 		return NULL;
 	while ((ret = g_async_queue_timed_pop (queue, &timeout)) == NULL) {
@@ -1739,7 +1742,7 @@ action_thread_main (RhythmDB *db)
 		rhythmdb_action_free (db, action);
 
 	}
-	rb_debug ("exiting");
+	rb_debug ("exiting main thread");
 	result = g_new0 (struct RhythmDBEvent, 1);
 	result->type = RHYTHMDB_EVENT_THREAD_EXITED;
 	g_async_queue_push (db->priv->event_queue, result);
