@@ -156,6 +156,7 @@ rb_metadata_init (RBMetaData *md)
 	add_supported_type (md, "application/ogg", NULL, "Ogg");
 	add_supported_type (md, "audio/x-flac", rb_add_flac_tagger, "FLAC");
 	add_supported_type (md, "audio/x-mod", NULL, "MOD");
+	add_supported_type (md, "audio/x-wav", NULL, "WAV");
 }
 
 static void
