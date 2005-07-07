@@ -1,5 +1,11 @@
 2005-07-08  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell-player.c: (eos_cb):
+	Fix intermittent crash caused if change notification changes the
+	source
+
+2005-07-08  James Livingston  <jrl@ids.org.au>
+
 	* iradio/rb-station-properties-dialog.c:
 	(rb_station_properties_dialog_rated_cb),
 	(rb_station_properties_dialog_sync_entries):

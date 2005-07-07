@@ -1985,11 +1985,10 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 	GDK_THREADS_ENTER ();
 
 	if (player->priv->source != NULL) {
-		rb_debug ("updating play statistics");
+		RhythmDBEntry *entry = rb_shell_player_get_playing_entry (player);
+		RBSource *source = player->priv->source;
 
-		rb_source_update_play_statistics (player->priv->source,
-						  player->priv->db,
-						  rb_shell_player_get_playing_entry (player));
+		rb_debug ("updating play statistics");
 
 		switch (rb_source_handle_eos (player->priv->source))
 		{
@@ -2002,6 +2001,10 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 			rb_shell_player_do_next (player);
 			break;
 		}
+
+		rb_source_update_play_statistics (source,
+						  player->priv->db,
+						  entry);
 	}
 
 	GDK_THREADS_LEAVE ();
