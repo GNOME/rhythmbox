@@ -154,6 +154,7 @@ struct RBEntryViewPrivate
 	GList *clickable_columns;
 	GtkTreeViewColumn *sorting_column;
 	gint sorting_order;
+	char *sorting_column_name;
 	struct RBEntryViewReverseSortingData *reverse_sorting_data;
 	gboolean resorting;
 
@@ -998,65 +999,104 @@ rb_entry_view_string_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer 
 static void
 rb_entry_view_sync_sorting (RBEntryView *view)
 {
-	GList *columns, *tem;
 	GtkTreeViewColumn *column;
-	char **strs;
 	gint direction;
-	char *sorttype;
+	const char *column_name;
 
-	if (!view->priv->sorting_key)
-		return;
-
-	sorttype = eel_gconf_get_string (view->priv->sorting_key);
-
-	if (!sorttype || !*sorttype) {
-		rb_debug ("no sorting data available in gconf!");
-		return;
-	}
-
-	if (!strchr (sorttype, ',')) {
-		g_warning ("malformed sort data");
-		return;
-	}
+	rb_entry_view_get_sorting_order (view, &column_name, &direction);
 	
-	strs = g_strsplit (sorttype, ",", 0);
+	if (!column_name)
+		return;
 
-	column = g_hash_table_lookup (view->priv->column_key_map, strs[0]);
+	column = g_hash_table_lookup (view->priv->column_key_map, column_name);
 	if (!column)
-		goto free_out;
+		return;
 
-	if (!strcmp ("ascending", strs[1]))
-		direction = GTK_SORT_ASCENDING;
-	else if (!strcmp ("descending", strs[1]))
-		direction = GTK_SORT_DESCENDING;		
-	else if (!strcmp ("none", strs[1]))
-		direction = -1;
-	else
-		goto free_out;
-
-  	columns = gtk_tree_view_get_columns (GTK_TREE_VIEW (view->priv->treeview));
-	for (tem = columns; tem; tem = tem->next)
-		gtk_tree_view_column_set_sort_indicator (tem->data, FALSE); 
-	g_list_free (columns);
+	rb_debug("Updating EntryView sort order to %s:%d", column_name, direction);
 	
+	/* remove the old sorting indicator */
+	if (view->priv->sorting_column)
+		gtk_tree_view_column_set_sort_indicator (view->priv->sorting_column, FALSE);
+	
+	/* set the sorting order and indicator of the new sorting column */
 	view->priv->sorting_column = column;
-	view->priv->sorting_order = direction;
+	gtk_tree_view_column_set_sort_indicator (column, TRUE);
+	gtk_tree_view_column_set_sort_order (column, direction);
 
-	if (view->priv->sorting_order != -1) {
-		gtk_tree_view_column_set_sort_indicator (column, TRUE);
-		gtk_tree_view_column_set_sort_order (column, view->priv->sorting_order);
-
-		rb_debug ("emitting sort order changed");
-		g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0); 
-	}
-free_out:
-	g_strfreev (strs);
+	rb_debug ("emitting sort order changed");
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SORT_ORDER_CHANGED], 0); 
 }
 
 const char *
 rb_entry_view_get_sorting_type (RBEntryView *view)
 {
-	return eel_gconf_get_string (view->priv->sorting_key);
+	char *sorttype;
+	GString *key = g_string_new (view->priv->sorting_column_name);
+
+	g_string_append_c (key, ',');
+
+	switch (view->priv->sorting_order)
+	{
+	case GTK_SORT_ASCENDING:
+		g_string_append (key, "ascending");
+		break;
+	case GTK_SORT_DESCENDING:
+		g_string_append (key, "descending");
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+	
+	sorttype = g_strdup(key->str);
+	g_string_free (key, TRUE);
+	
+	return sorttype;
+}
+
+void
+rb_entry_view_set_sorting_type (RBEntryView *view, const char *sorttype)
+{
+	char **strs;
+
+	if (!sorttype || !strchr (sorttype, ',')) {
+		g_warning ("malformed sort data");
+		return;
+	}
+	
+	strs = g_strsplit (sorttype, ",", 0);
+	
+	g_free(view->priv->sorting_column_name);
+	view->priv->sorting_column_name = g_strdup(strs[0]);
+	
+	if (!strcmp ("ascending", strs[1]))
+		view->priv->sorting_order = GTK_SORT_ASCENDING;
+	else if (!strcmp ("descending", strs[1]))
+		view->priv->sorting_order = GTK_SORT_DESCENDING;		
+	else {
+		g_warning ("atttempting to sort in unknown direction");
+		view->priv->sorting_order = GTK_SORT_ASCENDING;
+	}
+	
+	g_strfreev (strs);
+	
+	rb_entry_view_sync_sorting (view);
+}
+
+void 
+rb_entry_view_get_sorting_order (RBEntryView *view, const char **column_name, gint *sort_order)
+{
+	*column_name = g_strdup(view->priv->sorting_column_name);
+	*sort_order = view->priv->sorting_order;
+}
+
+void
+rb_entry_view_set_sorting_order (RBEntryView *view, const char *column_name, gint sort_order)
+{
+	g_free(view->priv->sorting_column_name);
+	view->priv->sorting_column_name = g_strdup(column_name);
+	view->priv->sorting_order = sort_order;
+	
+	rb_entry_view_sync_sorting (view);
 }
 
 void
@@ -1070,41 +1110,27 @@ rb_entry_view_set_resorting (RBEntryView *view)
 static void
 rb_entry_view_column_clicked_cb (GtkTreeViewColumn *column, RBEntryView *view)
 {
-	GString *key = g_string_new ("");
-	gboolean is_sorted;
-	gint sorting_order;
+	gint sort_order;
+	char *clicked_column;
 
 	rb_debug ("sorting on column %p", column);
-	g_string_append (key, (char*) g_object_get_data (G_OBJECT (column), "rb-entry-view-key"));
-	g_string_append_c (key, ',');
-
-	is_sorted = gtk_tree_view_column_get_sort_indicator (column);
-
-	if (is_sorted) {
-		sorting_order = gtk_tree_view_column_get_sort_order (column);
-		if (sorting_order == GTK_SORT_ASCENDING)
-			sorting_order = GTK_SORT_DESCENDING;
-		else
-			sorting_order = -1;
-	} else
-		sorting_order = GTK_SORT_ASCENDING;
-
-	switch (sorting_order)
-	{
-	case -1:
-		g_string_append (key, "none");
-		break;
-	case GTK_SORT_ASCENDING:
-		g_string_append (key, "ascending");
-		break;
-	case GTK_SORT_DESCENDING:
-		g_string_append (key, "descending");
-		break;
-	default:
-		g_assert_not_reached ();
-	}
-	eel_gconf_set_string (view->priv->sorting_key, key->str);
-	g_string_free (key, TRUE);
+	
+	/* identify the clicked column, and then update the sorting order */
+	clicked_column = (char*) g_object_get_data (G_OBJECT (column), "rb-entry-view-key");
+	sort_order = view->priv->sorting_order;
+	
+	if (view->priv->sorting_column_name
+	    && !strcmp(clicked_column, view->priv->sorting_column_name)
+	    && (sort_order == GTK_SORT_ASCENDING))
+		sort_order = GTK_SORT_DESCENDING;
+	else
+		sort_order = GTK_SORT_ASCENDING;
+	
+	rb_entry_view_set_sorting_order (view, clicked_column, sort_order);
+	
+	/* update the sort order in GConf */
+	if (view->priv->sorting_key)
+		eel_gconf_set_string (view->priv->sorting_key, rb_entry_view_get_sorting_type(view));
 }
 
 void
@@ -1415,6 +1441,9 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 			eel_gconf_notification_add (view->priv->sorting_key,
 						    rb_entry_view_sort_key_changed_cb,
 						    view);
+	
+	if (view->priv->sorting_key)
+		rb_entry_view_set_sorting_type (view, eel_gconf_get_string (view->priv->sorting_key));
 	
 	{
 		RhythmDBQueryModel *query_model;
@@ -1957,7 +1986,7 @@ rb_entry_view_sort_key_changed_cb (GConfClient* client,
 
 	g_return_if_fail (RB_IS_ENTRY_VIEW (view));
 
-	rb_entry_view_sync_sorting (view);
+	rb_entry_view_set_sorting_type (view, eel_gconf_get_string (view->priv->sorting_key));
 }
 
 static void

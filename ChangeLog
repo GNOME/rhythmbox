@@ -1,5 +1,17 @@
 2005-07-07  Bastien Nocera  <hadess@hadess.net>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_sync_sorting),
+	(rb_entry_view_get_sorting_type), (rb_entry_view_set_sorting_type),
+	(rb_entry_view_get_sorting_order),
+	(rb_entry_view_set_sorting_order),
+	(rb_entry_view_column_clicked_cb), (rb_entry_view_constructor),
+	(rb_entry_view_sort_key_changed_cb):
+	* widgets/rb-entry-view.h: fix a number of bugs with the RBEntryView
+	sort-order (patch from James Livingston <jrl@ids.org.au>)
+	(Closes: #306775)
+
+2005-07-07  Bastien Nocera  <hadess@hadess.net>
+
 	* metadata/rb-metadata-gst.c: (rb_metadata_init): support wave files
 	in the library (Closes: #158356)
 
