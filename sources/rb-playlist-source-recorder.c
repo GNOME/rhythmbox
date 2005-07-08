@@ -27,13 +27,17 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <gtk/gtk.h>
+#include <math.h>
+
 #include <glib/gprintf.h>
-#include <libgnome/gnome-i18n.h>
+#include <glib/gi18n.h>
+#include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <glade/glade.h>
+#include <nautilus-burn-drive.h>
 #include <nautilus-burn-drive-selection.h>
+
 #include "rb-file-helpers.h"
 #include "rb-glade-helpers.h"
 #include "rb-preferences.h"
@@ -58,9 +62,9 @@ static void rb_playlist_source_recorder_class_init (RBPlaylistSourceRecorderClas
 static void rb_playlist_source_recorder_init       (RBPlaylistSourceRecorder *source);
 static void rb_playlist_source_recorder_finalize   (GObject *object);
 
-void        rb_playlist_source_recorder_device_changed_cb  (NautilusBurnDriveSelection *bcs,
+void        rb_playlist_source_recorder_device_changed_cb  (NautilusBurnDriveSelection *selection,
                                                             const char                 *device_path,
-                                                            gpointer                    data);
+                                                            RBPlaylistSourceRecorder   *source);
 
 GtkWidget * rb_playlist_source_recorder_device_menu_create (void);
 
@@ -82,18 +86,20 @@ struct RBPlaylistSourceRecorderPrivate
         GSList      *songs;
         GSList      *current;
         GConfClient *gconf_client;
+        GTimer      *timer;
+        guint64      start_pos;
 
         GtkWidget   *vbox;
         GtkWidget   *multiple_copies_checkbutton;
         GtkWidget   *cancel_button;
         GtkWidget   *burn_button;
         GtkWidget   *message_label;
-        GtkWidget   *track_progress;
-        GtkWidget   *album_progress;
+        GtkWidget   *progress_label;
+        GtkWidget   *progress;
         GtkWidget   *device_menu;
+        GtkWidget   *speed_combobox;
         GtkWidget   *options_box;
-        GtkWidget   *track_progress_frame;
-        GtkWidget   *album_progress_frame;
+        GtkWidget   *progress_frame;
 
         gboolean     burning;
         gboolean     already_converted;
@@ -195,15 +201,95 @@ rb_playlist_source_recorder_device_menu_create (void)
         return widget;
 }
 
+
+static const NautilusBurnDrive *
+lookup_current_recorder (RBPlaylistSourceRecorder *source)
+{
+        const NautilusBurnDrive *drive;
+
+        drive = nautilus_burn_drive_selection_get_drive (NAUTILUS_BURN_DRIVE_SELECTION (source->priv->device_menu));
+
+        return drive;
+}
+
+static int
+get_speed_selection (GtkWidget *combobox)
+{
+        int           speed;
+        GtkTreeModel *model;
+        GtkTreeIter   iter;
+
+        speed = 0;
+
+        if (! gtk_combo_box_get_active_iter (GTK_COMBO_BOX (combobox), &iter))
+                return speed;
+
+        model = gtk_combo_box_get_model (GTK_COMBO_BOX (combobox));
+        gtk_tree_model_get (model, &iter, 1, &speed, -1);
+
+        return speed;
+}
+
+static void
+update_speed_combobox (RBPlaylistSourceRecorder *source)
+{
+        GtkWidget               *combobox;
+        GConfClient             *gc;
+        char                    *name;
+        int                      i, default_speed;
+        const NautilusBurnDrive *drive;
+        GtkTreeModel            *model;
+        GtkTreeIter              iter;
+
+        /* Find active recorder: */
+        drive = lookup_current_recorder (source);
+
+        /* add speed items: */
+        combobox = source->priv->speed_combobox;
+        model = gtk_combo_box_get_model (GTK_COMBO_BOX (combobox));
+        gtk_list_store_clear (GTK_LIST_STORE (model));
+
+        gc = gconf_client_get_default ();
+        default_speed = gconf_client_get_int (gc, "/apps/nautilus-cd-burner/default_speed", NULL);
+        g_object_unref (G_OBJECT (gc));
+
+        gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+        gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+                            0, _("Maximum possible"),
+                            1, 0,
+                            -1);
+
+        if (drive) {
+                for (i = 1; i <= drive->max_speed_write; i++) {
+                        name = g_strdup_printf ("%d \303\227", i);
+
+                        gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+                        gtk_list_store_set (GTK_LIST_STORE (model), &iter,
+                                            0, name,
+                                            1, i,
+                                            -1);
+                        g_free (name);
+                }
+
+                /* Disable speed if max speed < 1 */
+                gtk_widget_set_sensitive (combobox, drive->max_speed_write > 0);
+        }
+
+        /* for now assume equivalence between index in comboxbox and speed */
+        gtk_combo_box_set_active (GTK_COMBO_BOX (combobox), default_speed);
+}
+
 void
-rb_playlist_source_recorder_device_changed_cb (NautilusBurnDriveSelection *bcs,
+rb_playlist_source_recorder_device_changed_cb (NautilusBurnDriveSelection *selection,
                                                const char                 *device_path,
-                                               gpointer                    data)
+                                               RBPlaylistSourceRecorder   *source)
 {
         if (!device_path)
                 return;
 
         eel_gconf_set_string (CONF_STATE_BURN_DEVICE, device_path);
+
+        update_speed_combobox (source);
 }
 
 static void
@@ -289,8 +375,7 @@ error_dialog (RBPlaylistSourceRecorder *source,
         gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
                                                   text);
 
-        gtk_window_set_title (GTK_WINDOW (dialog),
-                              _("Error creating audio CD"));
+        gtk_window_set_title (GTK_WINDOW (dialog), "");
 
         gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 
@@ -304,44 +389,100 @@ error_dialog (RBPlaylistSourceRecorder *source,
         g_free (text);
 }
 
+/* Adapted from totem_time_to_string_text */
+static char *
+time_to_string_text (long time)
+{
+	char *secs, *mins, *hours, *string;
+	int sec, min, hour;
+
+	sec = time % 60;
+	time = time - sec;
+	min = (time % (60 * 60)) / 60;
+	time = time - (min * 60);
+	hour = time / (60 * 60);
+
+	hours = g_strdup_printf (ngettext ("%d hour", "%d hours", hour), hour);
+
+	mins = g_strdup_printf (ngettext ("%d minute",
+					  "%d minutes", min), min);
+
+	secs = g_strdup_printf (ngettext ("%d second",
+					  "%d seconds", sec), sec);
+
+	if (hour > 0) {
+		/* hour:minutes:seconds */
+		string = g_strdup_printf (_("%s %s %s"), hours, mins, secs);
+	} else if (min > 0) {
+		/* minutes:seconds */
+		string = g_strdup_printf (_("%s %s"), mins, secs);
+	} else if (sec > 0) {
+		/* seconds */
+		string = g_strdup_printf (_("%s"), secs);
+	} else {
+		/* 0 seconds */
+		string = g_strdup (_("0 seconds"));
+	}
+
+	g_free (hours);
+	g_free (mins);
+	g_free (secs);
+
+	return string;
+}
+
 static void
-album_progress_set_fraction (GtkWidget *progress,
-                             gdouble    fraction)
+progress_set_time (GtkWidget *progress,
+                   long       seconds)
 {
         char *text;
 
-        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
-
-        if (fraction > 0)
-                text = g_strdup_printf (_("%.0f%% complete"), fraction * 100);
-        else
-                text = g_strdup (" ");
+	if (seconds >= 0) {
+		char *remaining;
+		remaining = time_to_string_text (seconds);
+		text = g_strdup_printf (_("About %s left"), remaining);
+		g_free (remaining);
+	} else {
+		text = g_strdup (" ");
+	}
 
         gtk_progress_bar_set_text (GTK_PROGRESS_BAR (progress), text);
         g_free (text);
 }
 
-static gboolean
+static void
+progress_set_fraction (GtkWidget *progress,
+                       gdouble    fraction)
+{
+        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress), fraction);
+}
+
+static int
 burn_cd (RBPlaylistSourceRecorder *source,
          GError                  **error)
 {
-        gboolean res;
+        int res;
+        int speed;
+
+        speed = 1;
 
         set_media_device (source);
 
         set_message_text (source, _("Burning audio to CD"));
 
-        gtk_widget_hide (GTK_WIDGET (source->priv->track_progress_frame));
-        album_progress_set_fraction (source->priv->album_progress, 0);
+        speed = get_speed_selection (source->priv->speed_combobox);
+
+        progress_set_fraction (source->priv->progress, 0);
+        progress_set_time (source->priv->progress, -1);
 
         source->priv->burning = TRUE;
-        res = rb_recorder_burn (source->priv->recorder, error);
+        res = rb_recorder_burn (source->priv->recorder, speed, error);
         source->priv->burning = FALSE;
 
         if (error && *error)
-                return FALSE;
+                return RB_RECORDER_RESULT_ERROR;
 
-        if (res) {
+        if (res == RB_RECORDER_RESULT_FINISHED) {
                 gboolean do_another = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->multiple_copies_checkbutton));
                 if (!do_another) {
                         set_message_text (source, _("Finished creating audio CD."));
@@ -350,10 +491,12 @@ burn_cd (RBPlaylistSourceRecorder *source,
                         return res;
                 }
                 set_message_text (source, _("Finished creating audio CD.\nCreate another copy?"));
-        } else
+        } else {
                 set_message_text (source, _("Writing cancelled.  Try again?"));  
+        }
 
-        album_progress_set_fraction (source->priv->album_progress, 0);
+        progress_set_fraction (source->priv->progress, 0);
+        progress_set_time (source->priv->progress, -1);
 
         gtk_widget_set_sensitive (GTK_WIDGET (source->priv->burn_button), TRUE);
         gtk_widget_set_sensitive (GTK_WIDGET (source->priv->options_box), TRUE);
@@ -382,14 +525,16 @@ write_file (RBPlaylistSourceRecorder *source,
 {
         RBRecorderSong *song   = source->priv->current->data;
         char           *cdtext = NULL;
+        char           *markup;
 
-        gtk_widget_set_sensitive (source->priv->track_progress_frame, TRUE);
-        gtk_widget_set_sensitive (source->priv->album_progress_frame, TRUE);
+        gtk_widget_set_sensitive (source->priv->progress_frame, TRUE);
 
         cdtext = get_song_description (song);
 
-        gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->track_progress), cdtext);
-        
+        markup = g_markup_printf_escaped ("<i>Converting '%s'</i>", cdtext);
+        gtk_label_set_markup (GTK_LABEL (source->priv->progress_label), markup);
+        g_free (markup);
+
         rb_recorder_open (source->priv->recorder, song->uri, cdtext, error);
 
         g_free (cdtext);
@@ -430,20 +575,13 @@ eos_cb (RBRecorder *recorder,
         rb_debug ("Caught eos!");
 
         rb_recorder_close (source->priv->recorder, NULL);
-        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (source->priv->track_progress), 0);
+
+        gtk_label_set_text (GTK_LABEL (source->priv->progress_label), "");
 
         if (source->priv->current->next) {
-                int num, total;
 
                 source->priv->current = source->priv->current->next;
 
-                num = g_slist_position (source->priv->songs, source->priv->current);
-                total = g_slist_length (source->priv->songs);
-                if (num > 0) {
-                        float percent = CLAMP ((float)num / (float)total, 0, 1);
-                        
-                        album_progress_set_fraction (source->priv->album_progress, percent);
-                }
                 write_file (source, &error);
                 if (error) {
                         error_dialog (source,
@@ -453,6 +591,11 @@ eos_cb (RBRecorder *recorder,
                         return;
                 }
         } else {
+                if (source->priv->timer) {
+                        g_timer_destroy (source->priv->timer);
+                        source->priv->timer = NULL;
+                }
+
                 source->priv->already_converted = TRUE;
 
                 g_idle_add ((GSourceFunc)burn_cd_idle, source);
@@ -496,22 +639,53 @@ error_cb (GObject *object,
 
 static void
 track_progress_changed_cb (GObject *object,
-                           gdouble  fraction,
+                           double   fraction,
+                           long     secs,
                            gpointer data)
 {
         RBPlaylistSourceRecorder *source = RB_PLAYLIST_SOURCE_RECORDER (data);
-        float album_fraction;
-        int   num;
-        int   total;
+        double  album_fraction;
+        double  rate;
+        double  elapsed;
+        double  album_secs;
+        GSList *l;
+        guint64 total;
+        guint64 prev_total;
+        guint64 song_length;
+        guint64 position;
 
-        num = g_slist_position (source->priv->songs, source->priv->current);
-        total = g_slist_length (source->priv->songs);
+        total = 0;
+        prev_total = 0;
+        song_length = 0;
+        for (l = source->priv->songs; l; l = l->next) {
+                RBRecorderSong *song = l->data;
 
-        album_fraction = CLAMP ((((float)num + fraction) / (float)total), 0, 1);
+                if (song == source->priv->current->data) {
+                        prev_total = total;
+                        song_length = song->duration;
+                }
+                total += song->duration;
+        }
 
-        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (source->priv->track_progress),
-                                       fraction);
-        album_progress_set_fraction (source->priv->album_progress, album_fraction);
+        position = prev_total + song_length * fraction;
+        if (! source->priv->timer) {
+                source->priv->timer = g_timer_new ();
+                source->priv->start_pos = position;
+        }
+
+        album_fraction = (float)position / (float)total;
+
+        elapsed = g_timer_elapsed (source->priv->timer, NULL);
+
+        rate = (double)(position - source->priv->start_pos) / elapsed;
+
+        if (rate >= 1)
+                album_secs = ceil ((total - position) / rate);
+        else
+                album_secs = -1;
+
+        progress_set_time (source->priv->progress, album_secs);
+        progress_set_fraction (source->priv->progress, album_fraction);
 }
 static void
 interrupt_burn_dialog_response_cb (GtkDialog *dialog,
@@ -521,9 +695,13 @@ interrupt_burn_dialog_response_cb (GtkDialog *dialog,
         RBPlaylistSourceRecorder *source = RB_PLAYLIST_SOURCE_RECORDER (data);
 
         if (response_id == GTK_RESPONSE_ACCEPT) {
-                source->priv->confirmed_exit = TRUE;
-                gtk_dialog_response (GTK_DIALOG (source),
-                                     GTK_RESPONSE_CANCEL);
+                if (source->priv->burning) {
+                        rb_recorder_burn_cancel (source->priv->recorder);
+                } else {
+                        source->priv->confirmed_exit = TRUE;
+                        gtk_dialog_response (GTK_DIALOG (source),
+                                             GTK_RESPONSE_CANCEL);
+                }
         } else {
                 source->priv->confirmed_exit = FALSE;
         }
@@ -560,6 +738,8 @@ response_cb (GtkDialog *dialog,
 
                         gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (interrupt_dialog),
                                                                   _("This may result in an unusable disc."));
+
+                        gtk_window_set_title (GTK_WINDOW (interrupt_dialog), "");
 
                         gtk_container_set_border_width (GTK_CONTAINER (interrupt_dialog), 6);
 
@@ -606,52 +786,59 @@ insert_media_request_cb (RBRecorder *recorder,
         GtkWidget  *dialog;
         const char *msg;
         const char *title;
+        int         res;
 
         if (busy_cd) {
-                msg = N_("Please make sure another application is not using the disc.");
-                title = N_("Disc is busy");
+                msg = N_("Please make sure another application is not using the drive.");
+                title = N_("Drive is busy");
         } else if (is_reload && can_rewrite) {
-                msg = N_("Please insert a rewritable or blank media in the drive tray.");
-                title = N_("Insert rewritable or blank media");
+                msg = N_("Please put a rewritable or blank CD in the drive.");
+                title = N_("Insert a rewritable or blank CD");
         } else if (is_reload && !can_rewrite) {
-                msg = N_("Please insert a blank media in the drive tray.");
-                title = N_("Insert blank media");
+                msg = N_("Please put a blank CD in the drive.");
+                title = N_("Insert a blank CD");
         } else if (can_rewrite) {
-                msg = N_("Please replace the in-drive media by a rewritable or blank media.");
-                title = N_("Reload rewritable or blank media");
+                msg = N_("Please replace the disc in the drive with a rewritable or blank CD.");
+                title = N_("Reload a rewritable or blank CD");
         } else {
-                msg = N_("Please replace the in-drive media by a blank media.");
-                title = N_("Reload blank media");
+                msg = N_("Please replace the disc in the drive with a blank CD.");
+                title = N_("Reload a blank CD");
         }
 
         dialog = gtk_message_dialog_new (GTK_WINDOW (source),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_MESSAGE_ERROR,
-                                         GTK_BUTTONS_CLOSE,
-                                         title);
+                                         GTK_BUTTONS_OK_CANCEL,
+                                         "%s", title);
 
         gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), msg);
 
-        gtk_window_set_title (GTK_WINDOW (dialog), title);
+        gtk_window_set_title (GTK_WINDOW (dialog), "");
 
         gtk_container_set_border_width (GTK_CONTAINER (dialog), 6);
 
-        g_signal_connect (dialog, "response",
-                          G_CALLBACK (gtk_widget_destroy), NULL);
+        GDK_THREADS_ENTER ();
+        res = gtk_dialog_run (GTK_DIALOG (dialog));
+        GDK_THREADS_LEAVE ();
 
-        gtk_widget_show (dialog);
+        gtk_widget_destroy (dialog);
 
-        return FALSE;
+        if (res == GTK_RESPONSE_CANCEL)
+                return FALSE;
+
+        return TRUE;
 }
 
 static void
 burn_progress_changed_cb (RBRecorder *recorder,
                           gdouble     fraction,
+                          long        secs,
                           gpointer    data)
 {
         RBPlaylistSourceRecorder *source = RB_PLAYLIST_SOURCE_RECORDER (data);
 
-        album_progress_set_fraction (source->priv->album_progress, fraction);
+        progress_set_fraction (source->priv->progress, fraction);
+        progress_set_time (source->priv->progress, secs);
 }
 
 static void
@@ -666,19 +853,19 @@ burn_action_changed_cb (RBRecorder        *recorder,
 
         switch (action) {
         case RB_RECORDER_ACTION_FILE_CONVERTING:
-                text = N_("Converting audio track");
+                text = N_("Converting audio tracks");
                 break;
         case RB_RECORDER_ACTION_DISC_PREPARING_WRITE:
-                text = N_("Preparing to write disc");
+                text = N_("Preparing to write CD");
                 break;
         case RB_RECORDER_ACTION_DISC_WRITING:
-                text = N_("Writing disc");
+                text = N_("Writing CD");
                 break;
         case RB_RECORDER_ACTION_DISC_FIXATING:
-                text = N_("Fixating disc");
+                text = N_("Finishing write");
                 break;
         case RB_RECORDER_ACTION_DISC_BLANKING:
-                text = N_("Erasing disc");
+                text = N_("Erasing CD");
                 break;
         default:
                 g_warning (_("Unhandled action in burn_action_changed_cb"));
@@ -686,6 +873,194 @@ burn_action_changed_cb (RBRecorder        *recorder,
 
         if (text)
                 set_message_text (source, text);
+}
+
+/* copied from nautilus-burn-drive 2.12 */
+static NautilusBurnDrive *
+_nautilus_burn_drive_new_from_path (const char *device)
+{
+        GList             *drives, *l;
+        NautilusBurnDrive *drive;
+
+        drives = nautilus_burn_drive_get_list (FALSE, FALSE);
+
+        drive = NULL;
+
+        for (l = drives; l != NULL; l = l->next) {
+                NautilusBurnDrive *d = l->data;
+                if (g_str_equal (device, d->device)) {
+                        drive = nautilus_burn_drive_copy (d);
+                }
+        }
+
+        g_list_foreach (drives, (GFunc)nautilus_burn_drive_free, NULL);
+        g_list_free (drives);
+
+        return drive;
+}
+
+/* copied from nautilus-burn-drive 2.12 */
+static const char *
+_nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
+{
+        switch (type) {
+        case NAUTILUS_BURN_MEDIA_TYPE_BUSY:
+                return _("Unknown media, CD drive is busy");
+        case NAUTILUS_BURN_MEDIA_TYPE_ERROR:
+                return _("Couldn't open media");
+        case NAUTILUS_BURN_MEDIA_TYPE_UNKNOWN:
+                return _("Unknown Media");
+        case NAUTILUS_BURN_MEDIA_TYPE_CD:
+                return _("Commercial CD or Audio CD");
+        case NAUTILUS_BURN_MEDIA_TYPE_CDR:
+                return _("CD-R");
+        case NAUTILUS_BURN_MEDIA_TYPE_CDRW:
+                return _("CD-RW");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD:
+                return _("DVD");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVDR:
+                return _("DVD-R, or DVD-RAM");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVDRW:
+                return _("DVD-RW");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_RAM:
+                return _("DVD-RAM");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_R:
+                return _("DVD+R");
+        case NAUTILUS_BURN_MEDIA_TYPE_DVD_PLUS_RW:
+                return _("DVD+RW");
+        default:
+                break;
+        }
+
+        return _("Broken media type");
+}
+
+/* copied from nautilus-burn-drive 2.12 */
+static gboolean
+_nautilus_burn_drive_eject (NautilusBurnDrive *drive)
+{
+        char    *cmd;
+        gboolean res;
+
+        g_return_val_if_fail (drive != NULL, FALSE);
+
+        if (drive->device == NULL)
+                return FALSE;
+        
+        cmd = g_strdup_printf ("eject %s", drive->device);
+        res = g_spawn_command_line_sync (cmd, NULL, NULL, NULL, NULL);
+        g_free (cmd);
+
+        /* delay a bit to make sure eject finishes */
+        sleep (2);
+
+        return res;
+}
+
+static int
+ask_rewrite_disc (RBPlaylistSourceRecorder *source,
+                  const char               *device)
+{
+        GtkWidget            *dialog;
+        GtkWidget            *button;
+        GtkWidget            *image;
+        int                   res;
+        NautilusBurnMediaType type;
+        char                 *msg;
+        NautilusBurnDrive    *drive;
+
+        drive = _nautilus_burn_drive_new_from_path (device);
+        type = nautilus_burn_drive_get_media_type (drive);
+
+        msg = g_strdup_printf (_("This %s appears to have information already recorded on it."),
+                               _nautilus_burn_drive_media_type_get_string (type));
+
+
+        dialog = gtk_message_dialog_new (GTK_WINDOW (source),
+                                         GTK_DIALOG_DESTROY_WITH_PARENT,
+                                         GTK_MESSAGE_WARNING,
+                                         GTK_BUTTONS_NONE,
+                                         "%s", _("Erase information on this disc?"));
+
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog), msg);
+        g_free (msg);
+
+        gtk_window_set_title (GTK_WINDOW (dialog), "");
+
+        image = gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_BUTTON);
+        gtk_widget_show (image);
+        button = gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Try Another"), RB_RECORDER_RESPONSE_RETRY);
+        g_object_set (button, "image", image, NULL);
+
+        gtk_dialog_add_button (GTK_DIALOG (dialog), GTK_STOCK_CANCEL, RB_RECORDER_RESPONSE_CANCEL);
+
+        image = gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_BUTTON);
+        gtk_widget_show (image);
+        button = gtk_dialog_add_button (GTK_DIALOG (dialog), _("_Erase Disc"), RB_RECORDER_RESPONSE_ERASE);
+        g_object_set (button, "image", image, NULL);
+
+        gtk_dialog_set_default_response (GTK_DIALOG (dialog),
+                                         RB_RECORDER_RESPONSE_CANCEL);
+
+        GDK_THREADS_ENTER ();
+        res = gtk_dialog_run (GTK_DIALOG (dialog));
+        GDK_THREADS_LEAVE ();
+
+        gtk_widget_destroy (dialog);
+
+        if (res == RB_RECORDER_RESPONSE_RETRY) {
+                _nautilus_burn_drive_eject (drive);
+        }
+
+        nautilus_burn_drive_free (drive);
+
+        return res;
+}
+
+static int
+warn_data_loss_cb (RBRecorder               *recorder,
+                   RBPlaylistSourceRecorder *source)
+{
+        char *device;
+        int   res;
+
+        device = rb_recorder_get_device (recorder, NULL);
+        res = ask_rewrite_disc (source, device);
+
+        g_free (device);
+
+        return res;
+}
+
+static void
+setup_speed_combobox (GtkWidget *combobox)
+{
+        GtkCellRenderer *cell;
+        GtkListStore    *store;
+
+        store = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
+
+        gtk_combo_box_set_model (GTK_COMBO_BOX (combobox),
+                                 GTK_TREE_MODEL (store));
+        g_object_unref (store);
+
+        cell = gtk_cell_renderer_text_new ();
+        gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combobox), cell, TRUE);
+        gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combobox), cell,
+                                        "text", 0,
+                                        NULL);
+}
+
+static int
+delete_event_handler (GtkWidget   *widget,
+                      GdkEventAny *event,
+                      gpointer     user_data)
+{
+        /* emit response signal */
+        gtk_dialog_response (GTK_DIALOG (widget), GTK_RESPONSE_DELETE_EVENT);
+
+        /* Do the destroy by default */
+        return TRUE;
 }
 
 static void
@@ -696,9 +1071,13 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         GtkWidget      *widget;
         GtkWidget      *hbox;
         int             font_size;
-	PangoAttrList  *pattrlist;
-	PangoAttribute *attr;
-        PangoFontDescription *fontdesc;
+        PangoAttrList  *pattrlist;
+        PangoAttribute *attr;
+
+        g_signal_connect (GTK_DIALOG (source),
+                          "delete_event",
+                          G_CALLBACK (delete_event_handler),
+                          NULL);
 
         source->priv = g_new0 (RBPlaylistSourceRecorderPrivate, 1);
         source->priv->gconf_client = gconf_client_get_default ();
@@ -737,20 +1116,23 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         source->priv->vbox = glade_xml_get_widget (xml, "recorder_vbox");
 
         source->priv->message_label  = glade_xml_get_widget (xml, "message_label");
+        source->priv->progress_label  = glade_xml_get_widget (xml, "progress_label");
 
-        source->priv->track_progress = glade_xml_get_widget (xml, "track_progress");
-        source->priv->album_progress = glade_xml_get_widget (xml, "album_progress");
-        gtk_progress_bar_set_ellipsize (GTK_PROGRESS_BAR (source->priv->track_progress), PANGO_ELLIPSIZE_END);
-        gtk_progress_bar_set_ellipsize (GTK_PROGRESS_BAR (source->priv->album_progress), PANGO_ELLIPSIZE_END);
-        gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->track_progress), " ");
-        gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->album_progress), " ");
+        source->priv->progress = glade_xml_get_widget (xml, "progress");
+        gtk_progress_bar_set_ellipsize (GTK_PROGRESS_BAR (source->priv->progress), PANGO_ELLIPSIZE_END);
+        gtk_progress_bar_set_text (GTK_PROGRESS_BAR (source->priv->progress), " ");
 
-        source->priv->track_progress_frame = glade_xml_get_widget (xml, "track_progress_frame");
-        source->priv->album_progress_frame = glade_xml_get_widget (xml, "album_progress_frame");
+        source->priv->progress_frame = glade_xml_get_widget (xml, "progress_frame");
 
         source->priv->options_box    = glade_xml_get_widget (xml, "options_box");
         source->priv->device_menu    = glade_xml_get_widget (xml, "device_menu");
         source->priv->multiple_copies_checkbutton = glade_xml_get_widget (xml, "multiple_copies_checkbutton");
+
+        source->priv->speed_combobox = glade_xml_get_widget (xml, "speed_combobox");
+        setup_speed_combobox (source->priv->speed_combobox);
+
+        widget = glade_xml_get_widget (xml, "device_label");
+        gtk_label_set_mnemonic_widget (GTK_LABEL (widget), source->priv->device_menu);
 
         pattrlist = pango_attr_list_new ();
         attr = pango_attr_weight_new (PANGO_WEIGHT_BOLD);
@@ -758,13 +1140,7 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         attr->end_index = G_MAXINT;
         pango_attr_list_insert (pattrlist, attr);
 
-        widget = glade_xml_get_widget (xml, "device_frame_label");
-        gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);
-
-        widget = glade_xml_get_widget (xml, "track_progress_frame_label");
-        gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);
-
-        widget = glade_xml_get_widget (xml, "album_progress_frame_label");
+        widget = glade_xml_get_widget (xml, "progress_frame_label");
         gtk_label_set_attributes (GTK_LABEL (widget), pattrlist);
 
         widget = glade_xml_get_widget (xml, "options_expander_label");
@@ -788,13 +1164,6 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
 
         pango_attr_list_unref (pattrlist);
 
-        fontdesc = pango_font_description_copy (GTK_WIDGET (source->priv->track_progress)->style->font_desc);
-        font_size = pango_font_description_get_size (fontdesc) * 0.8;
-        pango_font_description_set_size (fontdesc, font_size);
-        gtk_widget_modify_font (source->priv->track_progress, fontdesc);
-        gtk_widget_modify_font (source->priv->album_progress, fontdesc);
-        pango_font_description_free (fontdesc);
-
         gtk_box_pack_start (GTK_BOX (GTK_DIALOG (source)->vbox),
                             source->priv->vbox,
                             TRUE, TRUE, 0);
@@ -815,6 +1184,11 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
                 return;
         }
 
+        update_speed_combobox (source);
+        g_signal_connect (source->priv->device_menu, "device-changed",
+                          G_CALLBACK (rb_playlist_source_recorder_device_changed_cb),
+                          xml);
+
         g_signal_connect_object (G_OBJECT (source->priv->recorder), "eos",
                                  G_CALLBACK (eos_cb), source, 0);
 
@@ -829,6 +1203,9 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
 
         g_signal_connect_object (G_OBJECT (source->priv->recorder), "insert-media-request",
                                  G_CALLBACK (insert_media_request_cb), source, 0);
+
+        g_signal_connect_object (G_OBJECT (source->priv->recorder), "warn-data-loss",
+                                 G_CALLBACK (warn_data_loss_cb), source, 0);
 
         g_signal_connect_object (G_OBJECT (source->priv->recorder), "burn-progress-changed",
                                  G_CALLBACK (burn_progress_changed_cb), source, 0);
@@ -1109,15 +1486,15 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
         if (source->priv->already_converted) {
                 g_idle_add ((GSourceFunc)burn_cd_idle, source);
         } else {
-		gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
-		char   *message  = NULL;
-		gint64  media_duration;
-		char   *duration_string;
+                gint64  duration = rb_playlist_source_recorder_get_total_duration (source);
+                char   *message  = NULL;
+                gint64  media_duration;
+                char   *duration_string;
 
-		set_media_device (source);
+                set_media_device (source);
 
-		media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
-		duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
+                media_duration = rb_recorder_get_media_length (source->priv->recorder, NULL);
+                duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, duration / 60);
 
                 if ((media_duration < 0) && (duration > 4440)) {
                         message = g_strdup_printf (_("This playlist is %s minutes long.  "
@@ -1126,13 +1503,13 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
                                                      "please insert it in the drive and try again."),
                                                    duration_string);
                 } else if ((media_duration > 0) && (media_duration <= duration)) {
-			char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
+                        char *media_duration_string = g_strdup_printf ("%" G_GINT64_FORMAT, media_duration / 60);
                         message = g_strdup_printf (_("This playlist is %s minutes long.  "
                                                      "This exceeds the %s minute length of the media in the drive."),
-						   duration_string, media_duration_string);
-			g_free (media_duration_string);
+                                                   duration_string, media_duration_string);
+                        g_free (media_duration_string);
                 }
-		g_free (duration_string);
+                g_free (duration_string);
 
                 if (message) {
                         error_dialog (source,
@@ -1145,13 +1522,13 @@ rb_playlist_source_recorder_start (RBPlaylistSourceRecorder *source,
 
                 if (!check_tmp_dir (source, error)) {
                         guint64 mib_needed = rb_playlist_source_recorder_estimate_total_size (source) / 1048576;
-			char *mib_needed_string = g_strdup_printf ("%" G_GUINT64_FORMAT, mib_needed);
+                        char   *mib_needed_string = g_strdup_printf ("%" G_GUINT64_FORMAT, mib_needed);
 
                         error_dialog (source,
                                       _("Could not find temporary space!"),
                                       _("Could not find enough temporary space to convert audio tracks.  %s MiB required."),
                                       mib_needed_string);
-			g_free (mib_needed_string);
+                        g_free (mib_needed_string);
 
                         return;
                 }

@@ -1,3 +1,41 @@
+2005-07-08  William Jon McCann  <mccann@jhu.edu>
+
+	* player/rb-recorder-gst.c (rb_recorder_finalize) 
+	(rb_recorder_burn_cancel, rb_recorder_burn): Add proper
+	cancellation of burning process.
+
+	* data/glade/recorder.glade: Updated to use single progress
+	bar and speed selection.
+
+	* sources/rb-playlist-source-recorder.c (get_speed_selection)
+	(update_speed_combobox)
+	(rb_playlist_source_recorder_device_changed_cb): Allow user to
+	change writing speed.  This is unfortunate but necessary when
+	combinations of factors prevent us from writing at maximum speed.
+	(time_to_string_text): Stolen from totem.
+	(progress_set_time, progress_set_fraction, burn_cd, eos_cb)
+	(track_progress_changed_cb): Use only one progress bar to show
+	overall progress, indicate the current task in italics below bar,
+	and show overall time remaining as progress bar text.
+	(response_cb): Don't show title on alert dialogs.
+	(insert_media_request_cb): Be specific about media types since it
+	only makes sense to write audio to media in the CD family.  Use
+	cancel button instead of close.  Don't show title on alert
+	dialogs.  Make dialog modal so it can be used to set the return value
+	for a signal handler.
+	(burn_action_changed_cb): Update strings.
+	(ask_rewrite_disc, warn_data_loss_cb): Warn the user if the action
+	will cause data to be lost.
+	(setup_speed_combobox): New function for speed selection.
+	(rb_playlist_source_recorder_init): Use single progress bar.  Add
+	speed selection.  Handle n-c-b warn-data-loss signal.
+
+	* player/rb-recorder-gst.c: Fix order of includes.
+	Add warn-data-loss signal.  Update to new n-c-b API
+	to support reporting time remaining.
+
+	* configure.ac: Allow n-c-b > 2.10.
+
 2005-07-08  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-shell-player.c: (eos_cb):

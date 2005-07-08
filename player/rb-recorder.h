@@ -46,6 +46,20 @@ typedef enum {
         RB_RECORDER_ACTION_DISC_BLANKING
 } RBRecorderAction;
 
+typedef enum {
+	RB_RECORDER_RESPONSE_NONE   =  0,
+	RB_RECORDER_RESPONSE_CANCEL = -1,
+	RB_RECORDER_RESPONSE_ERASE  = -2,
+	RB_RECORDER_RESPONSE_RETRY  = -3
+} RBRecorderResponse;
+
+typedef enum {
+	RB_RECORDER_RESULT_ERROR,
+	RB_RECORDER_RESULT_CANCEL,
+	RB_RECORDER_RESULT_FINISHED,
+	RB_RECORDER_RESULT_RETRY
+} RBRecorderResult;
+
 #define RB_RECORDER_ERROR rb_recorder_error_quark ()
 
 GQuark rb_recorder_error_quark (void);
@@ -93,6 +107,9 @@ void         rb_recorder_pause              (RBRecorder *recorder,
 
 char *       rb_recorder_get_default_device (void);
 
+char *       rb_recorder_get_device         (RBRecorder *recorder,
+                                             GError    **error);
+
 gboolean     rb_recorder_set_device         (RBRecorder *recorder,
                                              const char *device,
                                              GError    **error);
@@ -104,8 +121,10 @@ void         rb_recorder_set_tmp_dir        (RBRecorder *recorder,
 gint64       rb_recorder_get_media_length   (RBRecorder *recorder,
                                              GError    **error);
         
-gboolean     rb_recorder_burn               (RBRecorder *recorder,
+int          rb_recorder_burn               (RBRecorder *recorder,
+                                             int         speed,
                                              GError    **error);
+int          rb_recorder_burn_cancel        (RBRecorder *recorder);
 
 gboolean     rb_recorder_enabled            (void);
 

@@ -19,7 +19,6 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.5.4
 GNOME_VFS_REQS=2.6
 NCB_MIN_REQS=2.9.0
-NCB_MAX_REQS=2.11.0
 DBUS_MIN_REQS=0.23
 DBUS_MAX_REQS=0.30
 HAL_MIN_REQS=0.2.92
@@ -280,7 +279,7 @@ AC_ARG_WITH(cd_burner,
 			   [Enable CD burner support in Rhythmbox]),,
 	      with_cd_burner=auto)
 if test "x$with_cd_burner" != "xno"; then
-	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS libnautilus-burn < $NCB_MAX_REQS], enable_cd_burner=yes, enable_cd_burner=no)
+	PKG_CHECK_MODULES(LIBNAUTILUS_BURN, [libnautilus-burn >= $NCB_MIN_REQS], enable_cd_burner=yes, enable_cd_burner=no)
         if test "x$with_cd_burner" = xyes && test "x$enable_cd_burner" = xno; then
 	   AC_MSG_ERROR([CD burner support explicitly requested but no support found])	   
 	fi
