@@ -72,6 +72,7 @@ static void row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
 static gboolean button_press_cb (GtkTreeView *treeview,
 				 GdkEventButton *event,
 				 RBSourceList *sourcelist);
+static gboolean popup_menu_cb (GtkTreeView *treeview, RBSourceList *sourcelist);
 static void name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data);
 static void visibility_notify_cb (GObject *obj, GParamSpec *pspec, 
 				  gpointer data);
@@ -200,6 +201,11 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
 				 "button_press_event",
 				 G_CALLBACK (button_press_cb),
+				 sourcelist, 0);
+
+	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
+				 "popup_menu",
+				 G_CALLBACK (popup_menu_cb),
 				 sourcelist, 0);
 
 	dummy = gtk_tree_view_new ();
@@ -498,16 +504,12 @@ row_activated_cb (GtkTreeView *treeview,
 }
 
 static gboolean
-button_press_cb (GtkTreeView *treeview,
-		 GdkEventButton *event,
+emit_show_popup (GtkTreeView *treeview,
 		 RBSourceList *sourcelist)
 {
 	GtkTreeIter iter;
 	RBSource *target;
 	gboolean ret;
-
-	if (event->button != 3)
-		return FALSE;
 
 	if (!gtk_tree_selection_get_selected (gtk_tree_view_get_selection (treeview),
 					      NULL, &iter))
@@ -520,6 +522,24 @@ button_press_cb (GtkTreeView *treeview,
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SHOW_POPUP], 0, target, &ret);
 
 	return ret;
+}
+
+static gboolean
+button_press_cb (GtkTreeView *treeview,
+		 GdkEventButton *event,
+		 RBSourceList *sourcelist)
+{
+	if (event->button == 3)
+		return emit_show_popup (treeview, sourcelist);
+
+	return FALSE;
+}
+
+static gboolean
+popup_menu_cb (GtkTreeView *treeview,
+	       RBSourceList *sourcelist)
+{
+	return emit_show_popup (treeview, sourcelist);
 }
 
 static void
