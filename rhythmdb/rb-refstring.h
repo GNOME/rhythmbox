@@ -26,39 +26,32 @@
 
 typedef struct
 {
-	guint32 refcount;
+	gint refcount;
 	char *folded;
 	char *sortkey;
 	char value[1];
 } RBRefString;
 
+
 void				rb_refstring_system_init (void);
+void				rb_refstring_system_shutdown (void);
 
 G_INLINE_FUNC RBRefString *	rb_refstring_new (const char *init);
-
 RBRefString *			rb_refstring_new_full (const char *init, gboolean compute_sortdata);
 
 G_INLINE_FUNC RBRefString *	rb_refstring_ref (RBRefString *val);
-
 G_INLINE_FUNC void		rb_refstring_unref (RBRefString *val);
 
+
 G_INLINE_FUNC const char *	rb_refstring_get (const RBRefString *val);
-
 G_INLINE_FUNC const char *	rb_refstring_get_folded (const RBRefString *val);
-
 G_INLINE_FUNC const char *	rb_refstring_get_sort_key (const RBRefString *val);
 
 G_INLINE_FUNC guint		rb_refstring_hash (gconstpointer a);
-
 G_INLINE_FUNC gboolean		rb_refstring_equal (gconstpointer a, gconstpointer b);
 
-void				rb_refstring_system_shutdown (void);
 
 #if defined (G_CAN_INLINE) || defined (G_HAVE_INLINE ) || defined (__RB_REFSTRING_C__)
-
-#ifndef __RB_REFSTRING_C__
-extern GHashTable *rb_refstrings;
-#endif
 
 G_INLINE_FUNC RBRefString *
 rb_refstring_new (const char *init)
@@ -69,18 +62,8 @@ rb_refstring_new (const char *init)
 G_INLINE_FUNC RBRefString *
 rb_refstring_ref (RBRefString *val)
 {
-	val->refcount++;
+	g_atomic_int_inc (&val->refcount);
 	return val;
-}
-
-G_INLINE_FUNC void
-rb_refstring_unref (RBRefString *val)
-{
-	if (!val)
-		return;
-
-	if (--val->refcount == 0)
-		g_hash_table_remove (rb_refstrings, val);
 }
 
 G_INLINE_FUNC const char *

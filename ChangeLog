@@ -1,3 +1,12 @@
+2005-07-10  James Livingston,,,  <jrl@ids.org.au>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_system_init),
+	(rb_refstring_new_full), (rb_refstring_unref),
+	(rb_refstring_system_shutdown):
+	* rhythmdb/rb-refstring.h:
+	Make rb-refstrings thread safe, which should fix some intermittent
+	crashes on SMP/SMT systems.
+
 2005-07-09  Paolo Borelli  <pborelli@katamail.com>
 
 	* sources/rb-sourcelist.c: popup the menu on keyboard shortcuts,
