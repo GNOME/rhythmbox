@@ -1,4 +1,16 @@
-2005-07-10  James Livingston,,,  <jrl@ids.org.au>
+2005-07-10  James Livingston  <jrl@ids.org.au>
+
+	* shell/rb-source-header.c: (rb_source_header_init),
+	(rb_source_header_disclosure_toggled_cb),
+	(rb_source_header_sync_control_state):
+	* widgets/disclosure-widget.c: (finalize), (class_init), (init),
+	(cddb_disclosure_get_type), (cddb_disclosure_new),
+	(cddb_disclosure_set_labels), (expander_callback):
+	* widgets/disclosure-widget.h:
+	Make the disclosure widget use GtkExpander, rather than having our own
+	custom widget. Closes bug 306824.
+
+2005-07-10  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rb-refstring.c: (rb_refstring_system_init),
 	(rb_refstring_new_full), (rb_refstring_unref),

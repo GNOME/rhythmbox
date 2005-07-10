@@ -26,7 +26,7 @@
 #ifndef __DISCLOSURE_WIDGET_H__
 #define __DISCLOSURE_WIDGET_H__
 
-#include <gtk/gtkcheckbutton.h>
+#include <gtk/gtkexpander.h>
 
 G_BEGIN_DECLS
 
@@ -36,21 +36,19 @@ G_BEGIN_DECLS
 #define IS_CDDB_DISCLOSURE(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CDDB_DISCLOSURE_TYPE))
 #define IS_CDDB_DISCLOSURE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), CDDB_DISCLOSURE_TYPE))
 
-typedef struct _CDDBDisclosure CDDBDisclosure;
-typedef struct _CDDBDisclosureClass CDDBDisclosureClass;
-typedef struct _CDDBDisclosurePrivate CDDBDisclosurePrivate;
+typedef struct CDDBDisclosurePrivate CDDBDisclosurePrivate;
 
-struct _CDDBDisclosure {
-	GtkCheckButton parent;
+typedef struct {
+	GtkExpander parent;
 
 	CDDBDisclosurePrivate *priv;
-};
+} CDDBDisclosure;
 
-struct _CDDBDisclosureClass {
-	GtkCheckButtonClass parent_class;
+typedef struct {
+	GtkExpanderClass parent_class;
 
 	void	(*changed) (CDDBDisclosure *cddb, gboolean disclosed);
-};
+} CDDBDisclosureClass;
 
 GType 		 cddb_disclosure_get_type (void);
 
@@ -63,10 +61,6 @@ void	   	 cddb_disclosure_set_container	(CDDBDisclosure *cddb,
 void	   	 cddb_disclosure_set_labels (CDDBDisclosure *cddb,
 					     const char *label_when_shown,
 					     const char *label_when_hidden);
-
-GtkWidget 	*cddb_disclosure_new_from_glade	(gchar *widget_name,
-						 gchar *string1, gchar *string2,
-						 gint int1, gint int2);
 
 G_END_DECLS
 

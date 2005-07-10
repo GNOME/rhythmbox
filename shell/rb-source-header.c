@@ -52,7 +52,8 @@ static void rb_source_header_filter_changed_cb (RBSource *source,
 static void rb_source_header_search_cb (RBSearchEntry *search,
 					const char *text,
 					RBSourceHeader *header);
-static void rb_source_header_disclosure_toggled_cb (GtkToggleButton *disclosure,
+static void rb_source_header_disclosure_toggled_cb (GObject *object,
+						    GParamSpec *param_spec,
 						    gpointer data);
 static void rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
 							   guint cnxn_id,
@@ -184,7 +185,7 @@ rb_source_header_init (RBSourceHeader *header)
 	header->priv->disclosure = cddb_disclosure_new (_("Show _Browser"),
 							_("Hide _Browser"));
 	gtk_widget_set_sensitive (header->priv->disclosure, FALSE);
-	g_signal_connect_object (G_OBJECT (header->priv->disclosure), "toggled",
+	g_signal_connect_object (G_OBJECT (header->priv->disclosure), "notify::expanded",
 				 G_CALLBACK (rb_source_header_disclosure_toggled_cb), header, 0);
 
 	gtk_table_attach_defaults (GTK_TABLE (header),
@@ -400,11 +401,13 @@ rb_source_header_clear_search (RBSourceHeader *header)
 }
 
 static void
-rb_source_header_disclosure_toggled_cb (GtkToggleButton *disclosure,
+rb_source_header_disclosure_toggled_cb (GObject *object,
+					GParamSpec *param_spec,
 					gpointer data)
 {
 	RBSourceHeader *header = RB_SOURCE_HEADER (data);
-	gboolean disclosed = gtk_toggle_button_get_active (disclosure);
+	GtkExpander *expander = GTK_EXPANDER (object);
+	gboolean disclosed = gtk_expander_get_expanded (expander);
 
 	rb_debug ("disclosed: %s", disclosed ? "TRUE" : "FALSE");
 	
@@ -469,7 +472,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 		      have_browser && not_small, NULL);
 	if (have_browser) {
 		gboolean shown = eel_gconf_get_boolean (header->priv->browser_key);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (header->priv->disclosure),
+		gtk_expander_set_expanded    (GTK_EXPANDER (header->priv->disclosure),
 					      shown);
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
 					      shown);
