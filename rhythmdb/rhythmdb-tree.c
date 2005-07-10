@@ -126,7 +126,7 @@ enum
 	PROP_0,
 };
 
-const int RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE = 256;
+const int RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE = 512;
 
 
 static void
@@ -271,7 +271,7 @@ rhythmdb_tree_parser_start_element (struct RhythmDBTreeLoadContext *ctx,
 		
 		ctx->state = RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY;
 		ctx->propid = val;
-		ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
+		g_string_truncate (ctx->buf, 0);
 		break;
 	}
 	case RHYTHMDB_TREE_PARSER_STATE_ENTRY_PROPERTY:
@@ -328,95 +328,72 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 			break;
 		case RHYTHMDB_PROP_TITLE:
 			ctx->entry->title = rb_refstring_new (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_GENRE:
 			ctx->entry->genre = rb_refstring_new (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_ARTIST:
 			ctx->entry->artist = rb_refstring_new (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_ALBUM:
 			ctx->entry->album = rb_refstring_new (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TRACK_NUMBER:
 			ctx->entry->tracknum = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_DISC_NUMBER:
 			ctx->entry->discnum = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_DURATION:
 			ctx->entry->duration = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_FILE_SIZE:
 			ctx->entry->file_size = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_LOCATION:
-			ctx->entry->location = ctx->buf->str;
-			g_string_free (ctx->buf, FALSE);
+			ctx->entry->location = g_strdup (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_MOUNTPOINT:
-			ctx->entry->mountpoint = rb_refstring_new_full (ctx->buf->str, FALSE);
-			g_string_free (ctx->buf, TRUE);
+			ctx->entry->mountpoint = rb_refstring_new (ctx->buf->str);
 			break;
 		case RHYTHMDB_PROP_MTIME:
 			ctx->entry->mtime = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_FIRST_SEEN:
 			ctx->entry->first_seen = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_LAST_SEEN:
 			ctx->entry->last_seen = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_RATING:
 			ctx->entry->rating = g_ascii_strtod (ctx->buf->str, NULL);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_AUTO_RATE:
 			ctx->entry->auto_rate = !strcmp (ctx->buf->str, "1");
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_PLAY_COUNT:
 			ctx->entry->play_count = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_LAST_PLAYED:
 			ctx->entry->last_played = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_BITRATE:
 			ctx->entry->bitrate = parse_ulong (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TRACK_GAIN:
 			ctx->entry->track_gain = g_ascii_strtod (ctx->buf->str, NULL);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TRACK_PEAK:
 			ctx->entry->track_peak = g_ascii_strtod (ctx->buf->str, NULL);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_ALBUM_GAIN:
 			ctx->entry->album_gain = g_ascii_strtod (ctx->buf->str, NULL);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_ALBUM_PEAK:
 			ctx->entry->album_peak = g_ascii_strtod (ctx->buf->str, NULL);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_MIMETYPE:
 			ctx->entry->mimetype = rb_refstring_new (ctx->buf->str);
-			g_string_free (ctx->buf, TRUE);
 			break;
 		case RHYTHMDB_PROP_TITLE_SORT_KEY:
 		case RHYTHMDB_PROP_GENRE_SORT_KEY:
@@ -483,6 +460,7 @@ rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 	ctx->state = RHYTHMDB_TREE_PARSER_STATE_START;
 	ctx->db = db;
 	ctx->die = die;
+	ctx->buf = g_string_sized_new (RHYTHMDB_TREE_PARSER_INITIAL_BUFFER_SIZE);
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
@@ -497,6 +475,7 @@ rhythmdb_tree_load (RhythmDB *rdb, gboolean *die)
 		xmlFreeParserCtxt (ctxt);
 			
 	}
+	g_string_free (ctx->buf, TRUE);
 	g_free (name);
 	g_free (sax_handler);
 	g_free (ctx);

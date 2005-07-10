@@ -1,5 +1,11 @@
 2005-07-10  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
+	(rhythmdb_tree_parser_end_element), (rhythmdb_tree_load):
+	Remove some pointless memory reallocations in rhythmdb-tree
+
+2005-07-10  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-source-header.c: (rb_source_header_init),
 	(rb_source_header_disclosure_toggled_cb),
 	(rb_source_header_sync_control_state):
