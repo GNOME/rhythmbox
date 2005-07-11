@@ -905,7 +905,7 @@ _nautilus_burn_drive_media_type_get_string (NautilusBurnMediaType type)
 {
         switch (type) {
         case NAUTILUS_BURN_MEDIA_TYPE_BUSY:
-                return _("Unknown media, CD drive is busy");
+                return _("Could not determine media type because CD drive is busy");
         case NAUTILUS_BURN_MEDIA_TYPE_ERROR:
                 return _("Couldn't open media");
         case NAUTILUS_BURN_MEDIA_TYPE_UNKNOWN:
