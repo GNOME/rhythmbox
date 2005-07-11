@@ -311,6 +311,8 @@ main (int argc, char **argv)
 		rb_string_helpers_shutdown ();
 		rb_stock_icons_shutdown ();
 		rb_refstring_system_shutdown ();
+
+		gnome_vfs_shutdown ();
 	}
 
 	g_strfreev (new_argv);

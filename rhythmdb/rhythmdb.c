@@ -78,7 +78,6 @@ struct RhythmDBPrivate
 
 	RBRefString *empty_string;
 	RBRefString *octet_stream_str;
-	RBRefString *empty_sort_key;
 
 	gint outstanding_threads;
 	GAsyncQueue *action_queue;
@@ -663,7 +662,7 @@ rhythmdb_finalize (GObject *object)
 	g_hash_table_destroy (db->priv->monitored_directories);
 
 	rb_refstring_unref (db->priv->empty_string);
-	rb_refstring_unref (db->priv->empty_sort_key);
+	rb_refstring_unref (db->priv->octet_stream_str);
 
 	g_free (db->priv->name);
 

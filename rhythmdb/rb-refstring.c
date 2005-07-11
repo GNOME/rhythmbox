@@ -92,7 +92,7 @@ rb_refstring_unref (RBRefString *val)
 
 	if (g_atomic_int_dec_and_test (&val->refcount)) {
 		g_mutex_lock (rb_refstrings_mutex);
-		g_hash_table_remove (rb_refstrings, val);
+		g_hash_table_remove (rb_refstrings, val->value);
 		g_mutex_unlock (rb_refstrings_mutex);
 	}
 }

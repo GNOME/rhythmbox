@@ -1,3 +1,12 @@
+2005-07-11  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rb-refstring.c: (rb_refstring_unref):
+	* rhythmdb/rhythmdb.c: (rhythmdb_finalize):
+	More rb-refstring fixes (patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org>, Closes: 309983)
+	* shell/main.c: (main):
+	Fix intermittent crash on exit.
+
 2005-07-10  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-tree.c: (rhythmdb_tree_parser_start_element),
