@@ -1,5 +1,15 @@
 2005-07-11  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_update_limited_entries),
+	(rhythmdb_query_model_do_reorder):
+	Add support for dynamic re-ordering of the library/playlists when
+	metadata the affects the sorting order changes. This also fixes a bug
+	where it would stop playing when trying to change to the next song.
+
+2005-07-11  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rb-refstring.c: (rb_refstring_unref):
 	* rhythmdb/rhythmdb.c: (rhythmdb_finalize):
 	More rb-refstring fixes (patch from Jonathan Matthew

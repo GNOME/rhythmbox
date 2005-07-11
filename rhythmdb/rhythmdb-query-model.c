@@ -67,6 +67,7 @@ static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
+static void rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry);
 static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 							  GList *paths,
 							  GtkSelectionData *selection_data);
@@ -604,8 +605,7 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 			       entry, prop, old, new);
 
 		/* it may have moved, so we can't just emit a changed entry */
-		rhythmdb_query_model_remove_entry (model, entry);
-		rhythmdb_query_model_do_insert (model, entry);
+		rhythmdb_query_model_do_reorder (model, entry);
 	} else {
 		if (hidden == FALSE) {
 			/* the changed entry may now satisfy the query 
@@ -808,6 +808,83 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 					     path, &iter);
 		gtk_tree_path_free (path);
 	}
+}
+
+
+static void
+rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+{
+	GSequencePtr ptr;
+	int old_pos, new_pos;
+	gint *reorder_map;
+	int length, i;
+	GtkTreePath *path;
+	GtkTreeIter iter;
+
+	if (model->priv->sort_func == NULL)
+		return;
+
+	ptr = g_sequence_get_begin_ptr (model->priv->limited_entries);
+
+	if (ptr != NULL && !g_sequence_ptr_is_end (ptr)) {
+		RhythmDBEntry *first_limited = g_sequence_ptr_get_data (ptr);
+		int cmp = (model->priv->sort_func) (entry, first_limited, model->priv->sort_user_data);
+
+		if (cmp > 0) {
+			/* the entry belongs in the limited list, so we don't need a re-order */
+			rhythmdb_query_model_remove_entry (model, entry);
+			rhythmdb_query_model_do_insert (model, entry);
+			return;
+		}
+	}
+
+	/* it may have moved, check for a re-order */
+	length = g_sequence_get_length (model->priv->entries);
+
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	old_pos = g_sequence_ptr_get_position (ptr);
+	g_sequence_remove (ptr);
+
+	ptr = g_sequence_insert_sorted (model->priv->entries, entry,
+					model->priv->sort_func,
+					model->priv->sort_user_data);
+	new_pos = g_sequence_ptr_get_position (ptr);
+
+	if (new_pos == old_pos) {
+		/* it hasn't moved, don't emit a re-order */
+		return;
+	}
+
+	reorder_map = malloc (length * sizeof(gint));
+
+	if (new_pos > old_pos ){
+		/* it has mover furthur down the list */
+		for (i = 0; i < old_pos; i++)
+			reorder_map[i] = i;
+		for (i = old_pos; i < new_pos; i++)
+			reorder_map[i] = i + 1;
+		reorder_map[new_pos] = old_pos;
+		for (i = new_pos + 1; i < length; i++)
+			reorder_map[i] = i;
+	} else {
+		/* it has moved up the list */
+		for (i = 0; i < new_pos; i++)
+			reorder_map[i] = i;
+		reorder_map[new_pos] = old_pos;
+		for (i = new_pos + 1; i < old_pos; i++)
+			reorder_map[i] = i - 1;
+		for (i = new_pos; i < length; i++)
+			reorder_map[i] = i;
+	}
+
+	gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+	path = gtk_tree_model_get_path (GTK_TREE_MODEL (model), &iter);
+
+	gtk_tree_model_rows_reordered (GTK_TREE_MODEL (model),
+				       path, &iter,
+				       reorder_map);
+	gtk_tree_path_free (path);
+	free (reorder_map);
 }
 
 static void
