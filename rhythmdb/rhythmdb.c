@@ -805,12 +805,15 @@ rhythmdb_commit_internal (RhythmDB *db, gboolean signal_changed)
 	emit_changed_signals (db, signal_changed);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next) {
-		const gchar *uri;
+		RhythmDBEntry *entry = tem->data;
 
-		rhythmdb_emit_entry_added (db, tem->data);
-		uri = rhythmdb_entry_get_string (tem->data, 
-						 RHYTHMDB_PROP_LOCATION);
-		queue_stat_uri (uri, db);
+		rhythmdb_emit_entry_added (db, entry);
+		if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
+			const gchar *uri;
+			uri = rhythmdb_entry_get_string (entry, 
+							 RHYTHMDB_PROP_LOCATION);
+			queue_stat_uri (uri, db);
+		}
 
 	}
 
@@ -1551,6 +1554,8 @@ queue_stat_uri (const char *uri, RhythmDB *db)
 {
 	struct RhythmDBAction *action;
 
+	rb_debug ("queueing stat for \"%s\"", uri);
+
 	action = g_new0 (struct RhythmDBAction, 1);
 	action->type = RHYTHMDB_ACTION_STAT;
 	action->uri = g_strdup (uri);
@@ -1680,7 +1685,7 @@ action_thread_main (RhythmDB *db)
 			result = g_new0 (struct RhythmDBEvent, 1);
 			result->type = RHYTHMDB_EVENT_STAT;
 
-			rb_debug ("executing RHYTHMDB_ACTION_STAT");
+			rb_debug ("executing RHYTHMDB_ACTION_STAT for \"%s\"", action->uri);
 
 			rhythmdb_execute_stat (db, action->uri, result);
 
@@ -1692,7 +1697,7 @@ action_thread_main (RhythmDB *db)
 			result = g_new0 (struct RhythmDBEvent, 1);
 			result->type = RHYTHMDB_EVENT_METADATA_LOAD;
 
-			rb_debug ("executing RHYTHMDB_ACTION_LOAD");
+			rb_debug ("executing RHYTHMDB_ACTION_LOAD for \"%s\"", action->uri);
 
 			/* First do another stat */
 			rhythmdb_execute_stat (db, action->uri, result);

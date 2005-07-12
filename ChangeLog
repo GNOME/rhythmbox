@@ -1,3 +1,11 @@
+2005-07-12  Colin Walters  <walters@verbum.org>
+
+	* rhythmdb/rhythmdb.c (rhythmdb_commit_internal): Only queue
+	stats for RHYTHMDB_ENTRY_TYPE_SONG; it's a bit evil to do
+	http requests to all your iradio sites, doesn't really make
+	sense from a UI standpoint, and also apparently triggers some
+	valgrind errors.
+
 2005-07-11  William Jon McCann  <mccann@jhu.edu>
 
 	* sources/rb-playlist-source-recorder.c (_nautilus_burn_drive_media_type_get_string):
