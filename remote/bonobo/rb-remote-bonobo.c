@@ -275,7 +275,7 @@ rb_remote_bonobo_finalize (GObject *object)
 RBRemoteBonobo *
 rb_remote_bonobo_new (void)
 {
-	return g_object_new (RB_TYPE_REMOTE_BONOBO, NULL);
+	return g_object_new (RB_TYPE_REMOTE_BONOBO, NULL, NULL);
 }
 
 

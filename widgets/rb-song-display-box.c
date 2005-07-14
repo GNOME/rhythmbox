@@ -131,7 +131,7 @@ rb_song_display_box_new (void)
 {
 	RBSongDisplayBox *displaybox;
 
-	displaybox = g_object_new (RB_TYPE_SONG_DISPLAY_BOX, NULL);
+	displaybox = g_object_new (RB_TYPE_SONG_DISPLAY_BOX, NULL, NULL);
 
 	return GTK_WIDGET (displaybox);
 }

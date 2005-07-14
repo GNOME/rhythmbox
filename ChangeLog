@@ -1,3 +1,24 @@
+2005-07-14  Colin Walters  <walters@verbum.org>
+	
+	* configure.ac: Remove -Wall since then we lose with -Werror when
+	new GCC warnings are introduced.  Instead hardcode a list of warnings
+	we want.	
+
+	* widgets/rb-volume.c (rb_volume_new): 
+	* widgets/rb-tree-view.c (rb_tree_view_new): 
+	* widgets/rb-tree-view-column.c (rb_tree_view_column_new): 
+	* widgets/rb-song-display-box.c (rb_song_display_box_new): 
+	* widgets/rb-rating.c (rb_rating_new): 
+	* widgets/rb-load-failure-dialog.c (rb_load_failure_dialog_new): 
+	* shell/rb-shell-preferences.c (rb_shell_preferences_new): 
+	* remote/bonobo/rb-remote-bonobo.c (rb_remote_bonobo_new): 
+	* remote/bonobo/libmain.c (rhythmbox_shlib_make_object): 
+	* player/rb-recorder-gst.c (rb_recorder_new): 
+	* player/rb-player-gst.c (rb_player_new): 
+	* metadata/rb-metadata-gst.c (rb_metadata_new): 
+
+	Pass extra NULL to g_object_new to silence gcc.
+
 2005-07-12  Colin Walters  <walters@verbum.org>
 
 	* rhythmdb/rhythmdb.c (rhythmdb_commit_internal): Only queue

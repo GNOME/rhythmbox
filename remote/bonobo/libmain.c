@@ -44,7 +44,7 @@ rhythmbox_shlib_make_object (PortableServer_POA poa,
                 return CORBA_OBJECT_NIL;
         }
 
-	rncm = RB_NAUTILUS_CONTEXT_MENU (g_object_new (TYPE_RB_NAUTILUS_CONTEXT_MENU, NULL));
+	rncm = RB_NAUTILUS_CONTEXT_MENU (g_object_new (TYPE_RB_NAUTILUS_CONTEXT_MENU, NULL, NULL));
 
 	bonobo_activation_plugin_use (poa, impl_ptr);
 

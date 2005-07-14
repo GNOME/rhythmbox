@@ -192,7 +192,7 @@ rb_metadata_finalize (GObject *object)
 RBMetaData *
 rb_metadata_new (void)
 {
-	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL));
+	return RB_METADATA (g_object_new (RB_TYPE_METADATA, NULL, NULL));
 }
 
 static void

@@ -383,7 +383,7 @@ rb_player_new (GError **error)
 		return NULL;
 	}
 
-	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL));
+	mp = RB_PLAYER (g_object_new (RB_TYPE_PLAYER, NULL, NULL));
 
 	return mp;
 }

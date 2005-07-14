@@ -274,7 +274,7 @@ rb_volume_new (void)
 {
 	RBVolume *volume;
 
-	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME, NULL));
+	volume = RB_VOLUME (g_object_new (RB_TYPE_VOLUME, NULL, NULL));
 
 	g_return_val_if_fail (volume->priv != NULL, NULL);
 

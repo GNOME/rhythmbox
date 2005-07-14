@@ -277,7 +277,7 @@ rb_shell_preferences_new (GList *views)
 	RBShellPreferences *shell_preferences;
 
 	shell_preferences = g_object_new (RB_TYPE_SHELL_PREFERENCES,
-				          NULL);
+				          NULL, NULL);
 
 	g_return_val_if_fail (shell_preferences->priv != NULL, NULL);
 

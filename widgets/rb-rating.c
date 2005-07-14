@@ -207,7 +207,7 @@ rb_rating_new ()
 {
 	RBRating *rating;
   
-	rating = g_object_new (RB_TYPE_RATING, NULL);
+	rating = g_object_new (RB_TYPE_RATING, NULL, NULL);
 
 	g_return_val_if_fail (rating->priv != NULL, NULL);
   

@@ -184,7 +184,7 @@ rb_load_failure_dialog_finalize (GObject *object)
 GtkWidget *
 rb_load_failure_dialog_new (void)
 {
-	RBLoadFailureDialog *dlg = g_object_new (RB_TYPE_LOAD_FAILURE_DIALOG, NULL);
+	RBLoadFailureDialog *dlg = g_object_new (RB_TYPE_LOAD_FAILURE_DIALOG, NULL, NULL);
 
 	g_return_val_if_fail (dlg->priv != NULL, NULL);
 

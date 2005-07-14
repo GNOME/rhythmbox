@@ -380,15 +380,21 @@ fi
 AC_MSG_CHECKING(for more warnings, including -Werror)
 if test "$GCC" = "yes" -a "$set_more_warnings" != "no"; then
 	AC_MSG_RESULT(yes)
-	CFLAGS="\
-	-Wall \
+	WARN_CFLAGS="\
+	-Wcomment -Wformat -Wnonnull -Wimplicit-int -Wimplicit \
+	-Wmain -Wmissing-braces -Wparentheses -Wsequence-point \
+	-Wreturn-type -Wswitch -Wtrigraphs -Wunused-function \
+	-Wunused-label -Wunused-value \
 	-Wchar-subscripts -Wmissing-declarations -Wmissing-prototypes \
 	-Wnested-externs -Wpointer-arith \
-	-Wcast-align -Wsign-compare \
-	-Werror -std=gnu89 \
-	$CFLAGS"
+	-Wcast-align \
+	-Werror -std=gnu89"
 
-	for option in -Wno-strict-aliasing -Wno-sign-compare -Wdeclaration-after-statement; do
+	if echo "$CFLAGS" | grep -e '-O[1-9]'; then
+	   WARN_CFLAGS="-Wuninitialized $WARN_CFLAGS"
+	fi
+
+	for option in $WARN_CFLAGS; do
 		SAVE_CFLAGS="$CFLAGS"
 		CFLAGS="$CFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])

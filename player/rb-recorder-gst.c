@@ -522,7 +522,7 @@ rb_recorder_new (GError **error)
                 return NULL;
         }
 
-        recorder = g_object_new (RB_TYPE_RECORDER, NULL);
+        recorder = g_object_new (RB_TYPE_RECORDER, NULL, NULL);
 
         return recorder;
 }

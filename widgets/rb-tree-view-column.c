@@ -181,7 +181,7 @@ rb_tree_view_column_new (void)
 {
 	RBTreeViewColumn *tree_view_column;
 
-	tree_view_column = RB_TREE_VIEW_COLUMN (g_object_new (RB_TYPE_TREE_VIEW_COLUMN, NULL));
+	tree_view_column = RB_TREE_VIEW_COLUMN (g_object_new (RB_TYPE_TREE_VIEW_COLUMN, NULL, NULL));
 
 	g_return_val_if_fail (tree_view_column->priv != NULL, NULL);
 
