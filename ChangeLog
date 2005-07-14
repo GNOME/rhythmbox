@@ -1,5 +1,10 @@
 2005-07-14  Colin Walters  <walters@verbum.org>
-	
+
+	* rhythmdb/rhythmdb.c (rhythmdb_process_events): Kill off warning
+	about readonly db.
+
+2005-07-14  Colin Walters  <walters@verbum.org>
+
 	* configure.ac: Remove -Wall since then we lose with -Werror when
 	new GCC warnings are introduced.  Instead hardcode a list of warnings
 	we want.	

@@ -1437,7 +1437,7 @@ rhythmdb_process_events (RhythmDB *db, GTimeVal *timeout)
 		    ((event->type == RHYTHMDB_EVENT_STAT) 
 		     || (event->type == RHYTHMDB_EVENT_METADATA_LOAD) 
 		     || (event->type == RHYTHMDB_EVENT_ENTRY_SET))) {
-			g_warning ("Database is read-only, delaying event processing\n");
+			rb_debug ("Database is read-only, delaying event processing\n");
 			g_async_queue_push (db->priv->event_queue, event);
 			goto next_event;
 		}
