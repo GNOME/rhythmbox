@@ -748,6 +748,7 @@ rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = i->data;
 		if (uri != NULL) {
+			rhythmdb_add_uri (source->priv->db, uri);
 			rb_playlist_source_add_location (source, uri);
 		}
 
