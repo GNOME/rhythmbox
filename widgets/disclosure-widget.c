@@ -138,7 +138,7 @@ cddb_disclosure_set_labels	(CDDBDisclosure *cddb,
 	/* update the correct label text depending on button state */
 	active = gtk_expander_get_expanded (GTK_EXPANDER(cddb));
 	g_object_set (G_OBJECT(cddb),
-		      "label", active ? cddb->priv->shown : cddb->priv->hidden,
+		      "label", active ? cddb->priv->hidden : cddb->priv->shown,
 		      NULL);
 }
 
@@ -152,6 +152,6 @@ expander_callback (GObject    *object,
 
 	active = gtk_expander_get_expanded (GTK_EXPANDER (disclosure));
 	g_object_set (disclosure,
-		      "label", active ? disclosure->priv->shown : disclosure->priv->hidden,
+		      "label", active ? disclosure->priv->hidden : disclosure->priv->shown,
 		      NULL);
 }
