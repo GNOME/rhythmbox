@@ -582,8 +582,6 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
 	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
-		GSequencePtr ptr;
-
 		if (hidden != FALSE) {
 			rhythmdb_query_model_remove_entry (model, entry);
 			return;
@@ -594,11 +592,6 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 			rhythmdb_query_model_remove_entry (model, entry);
 			return;
 		}
-
-		ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
-
-		if (ptr == NULL)
-			return;
 
 		g_signal_emit (G_OBJECT (model),
 			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
@@ -842,6 +835,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 	length = g_sequence_get_length (model->priv->entries);
 
 	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	g_hash_table_remove (model->priv->reverse_map, entry);
 	old_pos = g_sequence_ptr_get_position (ptr);
 	g_sequence_remove (ptr);
 
@@ -849,6 +843,7 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 					model->priv->sort_func,
 					model->priv->sort_user_data);
 	new_pos = g_sequence_ptr_get_position (ptr);
+	g_hash_table_insert (model->priv->reverse_map, entry, ptr);
 
 	if (new_pos == old_pos) {
 		/* it hasn't moved, don't emit a re-order */
