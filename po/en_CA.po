@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-07-09 02:16-0400\n"
-"PO-Revision-Date: 2005-07-09 15:31-0400\n"
+"POT-Creation-Date: 2005-07-18 05:06-0400\n"
+"PO-Revision-Date: 2005-07-18 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -284,7 +284,7 @@ msgid "New Internet Radio Station"
 msgstr "New Internet Radio Station"
 
 #: iradio/rb-new-station-dialog.c:182
-#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:1007
+#: iradio/rb-station-properties-dialog.c:425 rhythmdb/rhythmdb.c:1009
 #: sources/rb-ipod-source.c:260 sources/rb-iradio-source.c:266
 #: sources/rb-iradio-source.c:267 sources/rb-iradio-source.c:268
 #: sources/rb-iradio-source.c:491 sources/rb-playlist-source.c:425
@@ -468,55 +468,55 @@ msgstr ""
 msgid "An exception occured '%s'"
 msgstr "An exception occured '%s'"
 
-#: rhythmdb/rhythmdb.c:990
+#: rhythmdb/rhythmdb.c:992
 #, c-format
 msgid "Couldn't monitor %s: %s"
 msgstr "Could not monitor %s: %s"
 
-#: rhythmdb/rhythmdb.c:1091
+#: rhythmdb/rhythmdb.c:1093
 msgid "<invalid filename>"
 msgstr "<invalid filename>"
 
-#: rhythmdb/rhythmdb.c:1605
+#: rhythmdb/rhythmdb.c:1609
 #, c-format
 msgid "Couldn't access %s: %s"
 msgstr "Could not access %s: %s"
 
-#: rhythmdb/rhythmdb.c:2083 widgets/rb-entry-view.c:917
+#: rhythmdb/rhythmdb.c:2087 widgets/rb-entry-view.c:917
 #: widgets/rb-song-info.c:981
 msgid "Never"
 msgstr "Never"
 
-#: rhythmdb/rhythmdb.c:2085
+#: rhythmdb/rhythmdb.c:2089
 msgid "%Y-%m-%d %H:%M"
 msgstr "%Y-%m-%d %H:%M"
 
-#: rhythmdb/rhythmdb.c:2732
+#: rhythmdb/rhythmdb.c:2736
 msgid "Loading..."
 msgstr "Loading..."
 
-#: rhythmdb/rhythmdb.c:2749
+#: rhythmdb/rhythmdb.c:2753
 #, c-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d song"
 msgstr[1] "%d songs"
 
-#: rhythmdb/rhythmdb.c:2756
+#: rhythmdb/rhythmdb.c:2760
 #, c-format
 msgid "%ld minute"
 msgid_plural "%ld minutes"
 msgstr[0] "%ld minute"
 msgstr[1] "%ld minutes"
 
-#: rhythmdb/rhythmdb.c:2757
+#: rhythmdb/rhythmdb.c:2761
 #, c-format
 msgid "%ld hour"
 msgid_plural "%ld hours"
 msgstr[0] "%ld hour"
 msgstr[1] "%ld hours"
 
-#: rhythmdb/rhythmdb.c:2758
+#: rhythmdb/rhythmdb.c:2762
 #, c-format
 msgid "%ld day"
 msgid_plural "%ld days"
@@ -524,7 +524,7 @@ msgstr[0] "%ld day"
 msgstr[1] "%ld days"
 
 #. Translators: the format is "X days, X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2764
+#: rhythmdb/rhythmdb.c:2768
 #, c-format
 msgid "%s, %s and %s"
 msgstr "%s, %s and %s"
@@ -532,7 +532,7 @@ msgstr "%s, %s and %s"
 #. Translators: the format is "X days and X hours"
 #. Translators: the format is "X days and X minutes"
 #. Translators: the format is "X hours and X minutes"
-#: rhythmdb/rhythmdb.c:2770 rhythmdb/rhythmdb.c:2778 rhythmdb/rhythmdb.c:2789
+#: rhythmdb/rhythmdb.c:2774 rhythmdb/rhythmdb.c:2782 rhythmdb/rhythmdb.c:2793
 #, c-format
 msgid "%s and %s"
 msgstr "%s and %s"
@@ -1109,23 +1109,23 @@ msgstr "Could not run CD Ripper"
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "An error occurred while running sound-juicer: %s"
 
-#: shell/rb-source-header.c:94
+#: shell/rb-source-header.c:95
 msgid "_Browser"
 msgstr "_Browser"
 
-#: shell/rb-source-header.c:95
+#: shell/rb-source-header.c:96
 msgid "Change the visibility of the browser"
 msgstr "Change the visibility of the browser"
 
-#: shell/rb-source-header.c:177
+#: shell/rb-source-header.c:178
 msgid "Filter music display by genre, artist, album, or title"
 msgstr "Filter music display by genre, artist, album, or title"
 
-#: shell/rb-source-header.c:184
+#: shell/rb-source-header.c:185
 msgid "Show _Browser"
 msgstr "Show _Browser"
 
-#: shell/rb-source-header.c:185
+#: shell/rb-source-header.c:186
 msgid "Hide _Browser"
 msgstr "Hide _Browser"
 
@@ -1254,7 +1254,7 @@ msgstr "Add Location"
 msgid "Tra_ck"
 msgstr "Tra_ck"
 
-#: sources/rb-playlist-source.c:784
+#: sources/rb-playlist-source.c:785
 msgid "Couldn't save playlist"
 msgstr "Could not save playlist"
 
@@ -1433,8 +1433,8 @@ msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Unhandled action in burn_action_changed_cb"
 
 #: sources/rb-playlist-source-recorder.c:908
-msgid "Unknown media, CD drive is busy"
-msgstr "Unknown media, or CD drive is busy"
+msgid "Could not determine media type because CD drive is busy"
+msgstr "Could not determine media type because CD drive is busy"
 
 #: sources/rb-playlist-source-recorder.c:910
 msgid "Couldn't open media"
@@ -1565,17 +1565,9 @@ msgstr "Not supported"
 msgid "This source does not support drag and drop."
 msgstr "This source does not support drag and drop."
 
-#: sources/rb-sourcelist.c:218
+#: sources/rb-sourcelist.c:224
 msgid "_Source"
 msgstr "_Source"
-
-#: widgets/disclosure-widget.c:300
-msgid "Expander Size"
-msgstr "Expander Size"
-
-#: widgets/disclosure-widget.c:301
-msgid "Size of the expander arrow"
-msgstr "Size of the expander arrow"
 
 #: widgets/eel-gconf-extensions.c:68
 msgid "Configuration system error"
