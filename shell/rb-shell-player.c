@@ -922,17 +922,15 @@ rb_shell_player_open_location (RBShellPlayer *player,
 			       const char *location,
 			       GError **error)
 {
-	char *unescaped = gnome_vfs_unescape_string_for_display (location);
-	char *msg = g_strdup_printf (_("Opening %s..."), unescaped);
+	char *unescaped;
 	TotemPlParser *playlist;
 	gboolean was_playing;
 	gboolean playlist_parsed;
 	TotemPlParserResult playlist_result = TOTEM_PL_PARSER_RESULT_UNHANDLED;
 
-	rb_debug ("%s", msg);
-
+	unescaped = gnome_vfs_unescape_string_for_display (location);
+	rb_debug ("Opening %s...", unescaped);
 	g_free (unescaped);
-	g_free (msg);
 
 	was_playing = rb_player_playing (player->priv->mmplayer);
 
@@ -942,12 +940,12 @@ rb_shell_player_open_location (RBShellPlayer *player,
 
 	g_free (player->priv->song);
 	player->priv->song = NULL;
-	
+
 	playlist = totem_pl_parser_new ();
 	g_signal_connect_object (G_OBJECT (playlist), "entry",
 				 G_CALLBACK (rb_shell_player_open_playlist_location),
 				 player, 0);
-	totem_pl_parser_add_ignored_scheme (playlist, "x-directory/normal");
+	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
 	playlist_parsed = FALSE;
 	if (rb_uri_is_iradio (location)) {

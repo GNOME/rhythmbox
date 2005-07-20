@@ -1,3 +1,11 @@
+2005-07-20  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.ac: update the playlist parser requirements
+	* shell/rb-shell-player.c: (rb_shell_player_open_location):
+	Avoid creating a newly-allocated string for no reason, use
+	totem_pl_parser_add_ignored_mimetype instead of
+	totem_pl_parser_add_ignored_scheme as it was meant
+
 2005-07-18  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:
