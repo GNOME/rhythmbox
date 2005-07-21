@@ -1,3 +1,16 @@
+2005-07-22  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-player-gst.c: (rb_player_finalize),
+	(rb_player_construct), (rb_player_sync_pipeline), (rb_player_open),
+	(rb_player_pause), (rb_player_set_time), (rb_player_get_time):
+	* widgets/rb-header.c: (rb_header_class_init), (rb_header_init),
+	(rb_header_finalize), (rb_header_set_property),
+	(rb_header_get_property), (rb_header_sync_time),
+	(rb_header_get_elapsed_string), (rb_header_update_elapsed),
+	(rb_header_tick_cb): Query GStreamer, rather than using a timer, to
+	determine the current playback position. Patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org> (Closes 167364)
+
 2005-07-20  Bastien Nocera  <hadess@hadess.net>
 
 	* configure.ac: update the playlist parser requirements

@@ -54,12 +54,13 @@ static void rb_header_get_property (GObject *object,
 static long rb_header_get_duration (RBHeader *player);
 static void rb_header_set_show_timeline (RBHeader *player,
 			                 gboolean show);
-static gboolean rb_header_sync_time_locked (RBHeader *player);
 static void rb_header_update_elapsed (RBHeader *player);
 static gboolean slider_press_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
 static gboolean slider_moved_callback (GtkWidget *widget, GdkEventMotion *event, RBHeader *player);
 static gboolean slider_release_callback (GtkWidget *widget, GdkEventButton *event, RBHeader *player);
 static void slider_changed_callback (GtkWidget *widget, RBHeader *player);
+
+static void rb_header_tick_cb (RBPlayer *mmplayer, long time, RBHeader *header);
 
 typedef struct
 {
@@ -76,6 +77,7 @@ struct RBHeaderPrivate
 	char *urltext, *urllink;
 
 	RBPlayer *mmplayer;
+	gulong tick_id;
 
 	GtkWidget *image;
 	GtkWidget *song;
@@ -101,8 +103,6 @@ struct RBHeaderPrivate
 	gboolean urlline_shown;
 	GnomeHRef *url;
 
-	guint timeout;
-	
 	RBHeaderState *state;
 };
 
@@ -110,7 +110,7 @@ enum
 {
 	PROP_0,
 	PROP_DB,
-	PROP_HEADER,
+	PROP_PLAYER,
 	PROP_ENTRY,
 	PROP_TITLE,
 	PROP_URLTEXT,
@@ -175,10 +175,10 @@ rb_header_class_init (RBHeaderClass *klass)
 							       "RhythmDBEntry pointer",
 							       G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
-					 PROP_HEADER,
+					 PROP_PLAYER,
 					 g_param_spec_object ("player",
 							      "Player",
-							      "MonkeyMediaPlayer",
+							      "RBPlayer object",
 							      RB_TYPE_PLAYER,
 							      G_PARAM_READWRITE));
 	g_object_class_install_property (object_class,
@@ -317,8 +317,6 @@ rb_header_init (RBHeader *player)
 
 	gtk_box_pack_start (GTK_BOX (player), hbox, TRUE, TRUE, 0);
 	gtk_box_pack_end (GTK_BOX (player), align, FALSE, FALSE, 0);
-
-	player->priv->timeout = g_timeout_add (1000, (GSourceFunc) rb_header_sync_time_locked, player);
 }
 
 static void
@@ -332,8 +330,6 @@ rb_header_finalize (GObject *object)
 	player = RB_HEADER (object);
 
 	g_return_if_fail (player->priv != NULL);
-
-	g_source_remove (player->priv->timeout);
 
 	g_object_unref (G_OBJECT (player->priv->urlline));
 	g_object_unref (G_OBJECT (player->priv->displaybox));
@@ -360,8 +356,17 @@ rb_header_set_property (GObject *object,
 	case PROP_ENTRY:
 		player->priv->entry = g_value_get_pointer (value);
 		break;
-	case PROP_HEADER:
+	case PROP_PLAYER:
+		if (player->priv->mmplayer) {
+			g_signal_handler_disconnect (player->priv->mmplayer,
+						     player->priv->tick_id);
+			player->priv->tick_id = 0;
+		}
 		player->priv->mmplayer = g_value_get_object (value);
+		player->priv->tick_id = g_signal_connect (G_OBJECT (player->priv->mmplayer),
+							  "tick", 
+							  (GCallback) rb_header_tick_cb,
+							  player);
 		break;
 	case PROP_TITLE:
 		g_free (player->priv->title);
@@ -396,7 +401,7 @@ rb_header_get_property (GObject *object,
 	case PROP_ENTRY:
 		g_value_set_object (value, player->priv->entry);
 		break;
-	case PROP_HEADER:
+	case PROP_PLAYER:
 		g_value_set_object (value, player->priv->mmplayer);
 		break;
 	case PROP_TITLE:
@@ -665,20 +670,6 @@ rb_header_set_show_timeline (RBHeader *player,
 }
 
 gboolean
-rb_header_sync_time_locked (RBHeader *player)
-{
-	gboolean ret;
-
-	GDK_THREADS_ENTER ();
-
-	ret = rb_header_sync_time (player);
-
-	GDK_THREADS_LEAVE ();
-
-	return ret;
-}
-
-gboolean
 rb_header_sync_time (RBHeader *player)
 {
 	int seconds;
@@ -694,8 +685,7 @@ rb_header_sync_time (RBHeader *player)
 
 	player->priv->state->duration = duration =
 		rb_header_get_duration (player);
-	player->priv->state->elapsed = seconds =
-		rb_player_get_time (player->priv->mmplayer);
+	seconds = player->priv->state->elapsed;
 
 	if (duration > -1) {
 		double progress = 0.0;
@@ -855,11 +845,10 @@ char *
 rb_header_get_elapsed_string (RBHeader *player)
 {
 	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
-	guint elapsed = rb_player_get_time (player->priv->mmplayer);
 
-	if (elapsed > 0) {
-		minutes = elapsed / 60;
-		seconds = elapsed % 60;
+	if (player->priv->state->elapsed > 0) {
+		minutes = player->priv->state->elapsed / 60;
+		seconds = player->priv->state->elapsed % 60;
 	}
 
 	if (player->priv->state->duration > 0) {
@@ -868,7 +857,7 @@ rb_header_get_elapsed_string (RBHeader *player)
 		if (eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY)) {
 			return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
 		} else {
-			int remaining = player->priv->state->duration - elapsed;
+			int remaining = player->priv->state->duration - player->priv->state->elapsed;
 			int remaining_minutes = remaining / 60;
 			/* remaining could conceivably be negative. This would
 			 * be a bug, but the elapsed time will display right
@@ -894,4 +883,18 @@ rb_header_update_elapsed (RBHeader *player)
 
 	gtk_label_set_text (GTK_LABEL (player->priv->elapsed), elapsed_text);
 	g_free (elapsed_text);
+}
+
+static void rb_header_tick_cb (RBPlayer *mmplayer, long elapsed, RBHeader *header)
+{
+	gboolean sync = (elapsed != header->priv->state->elapsed);
+	header->priv->state->elapsed = elapsed;
+	
+	if (sync) {
+		GDK_THREADS_ENTER ();
+
+		rb_header_sync_time (header);
+
+		GDK_THREADS_LEAVE ();
+	}
 }

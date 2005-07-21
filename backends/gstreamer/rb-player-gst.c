@@ -55,9 +55,6 @@ struct RBPlayerPrivate
 
 	float cur_volume;
 
-	GTimer *timer;
-	long timer_add;
-
 	guint tick_timeout_id;
 };
 
@@ -171,9 +168,6 @@ rb_player_finalize (GObject *object)
 		rb_player_gst_free_playbin (mp);
 	}
 
-	if (mp->priv->timer)
-		g_timer_destroy (mp->priv->timer);
-	
 	g_free (mp->priv);
 
 	G_OBJECT_CLASS (rb_player_parent_class)->finalize (object);
@@ -346,12 +340,6 @@ rb_player_construct (RBPlayer *mp, GError **error)
 		mp->priv->cur_volume = 0;
 	rb_player_set_volume (mp, mp->priv->cur_volume);
 
-	if (mp->priv->timer)
-		g_timer_destroy (mp->priv->timer);
-	mp->priv->timer = g_timer_new ();
-	g_timer_stop (mp->priv->timer);
-	g_timer_reset (mp->priv->timer);
-	mp->priv->timer_add = 0;
 	rb_debug ("pipeline construction complete");
 	return;
 missing_element:
@@ -412,7 +400,6 @@ rb_player_sync_pipeline (RBPlayer *mp, GError **error)
  				     _("Could not start pipeline playing"));
  			return FALSE;
 		}
-		g_timer_start (mp->priv->timer);
 	} else {
 		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->playbin,
@@ -451,10 +438,6 @@ rb_player_open (RBPlayer *mp,
 	}
 	g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);	
 	mp->priv->uri = g_strdup (uri);
-
-	g_timer_stop (mp->priv->timer);
-	g_timer_reset (mp->priv->timer);
-	mp->priv->timer_add = 0;
 
 	if (!rb_player_sync_pipeline (mp, error)) {
 		rb_player_close (mp, NULL);
@@ -514,10 +497,6 @@ rb_player_pause (RBPlayer *mp)
 	mp->priv->playing = FALSE;
 
 	g_return_if_fail (mp->priv->playbin != NULL);
-
-	mp->priv->timer_add += floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5);
-	g_timer_stop (mp->priv->timer);
-	g_timer_reset (mp->priv->timer);
 
 	rb_player_sync_pipeline (mp, NULL);
 }
@@ -627,9 +606,6 @@ rb_player_set_time (RBPlayer *mp, long time)
 
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
-
-	g_timer_reset (mp->priv->timer);
-	mp->priv->timer_add = time;
 }
 
 long
@@ -637,8 +613,12 @@ rb_player_get_time (RBPlayer *mp)
 {
 	g_return_val_if_fail (RB_IS_PLAYER (mp), -1);
 
-	if (mp->priv->playbin != NULL)
-		return (long) floor (g_timer_elapsed (mp->priv->timer, NULL) + 0.5) + mp->priv->timer_add;
-	else
+	if (mp->priv->playbin != NULL) {
+		gint64 gst_position;
+		GstFormat fmt = GST_FORMAT_TIME;
+		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &gst_position);
+	
+		return (long)(gst_position / (1000*1000*1000));
+	} else
 		return -1;
 }
