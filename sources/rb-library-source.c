@@ -750,6 +750,12 @@ rb_library_source_gather_hash_keys (char *key, gpointer unused,
 	*data = g_list_prepend (*data, key);
 }
 
+static void
+rb_library_source_free_list_data (gpointer *data, gpointer unused)
+{
+	g_free (data);
+}
+
 static GList *
 rb_library_source_gather_properties (RBLibrarySource *source,
 				     RhythmDBPropType prop)
@@ -787,6 +793,7 @@ rb_library_source_cmd_choose_genre (GtkAction *action,
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_GENRE);
 	rb_property_view_set_selection (source->priv->genres, props);
+	g_list_foreach (props, (GFunc) rb_library_source_free_list_data, NULL);
 	g_list_free (props);
 	g_object_unref (source);
 }
@@ -803,6 +810,7 @@ rb_library_source_cmd_choose_artist (GtkAction *action,
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ARTIST);
 	rb_property_view_set_selection (source->priv->artists, props);
+	g_list_foreach (props, (GFunc) rb_library_source_free_list_data, NULL);
 	g_list_free (props);
 	g_object_unref (source);
 }
@@ -819,6 +827,7 @@ rb_library_source_cmd_choose_album (GtkAction *action,
 	g_object_get (G_OBJECT (shell), "selected-source", &source, NULL);
 	props = rb_library_source_gather_properties (source, RHYTHMDB_PROP_ALBUM);
 	rb_property_view_set_selection (source->priv->albums, props);
+	g_list_foreach (props, (GFunc) rb_library_source_free_list_data, NULL);
 	g_list_free (props);
 	g_object_unref (source);
 }

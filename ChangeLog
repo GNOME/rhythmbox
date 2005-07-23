@@ -1,3 +1,10 @@
+2005-07-23  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-library-source.c: (rb_library_source_free_list_data),
+	(rb_library_source_cmd_choose_genre),
+	(rb_library_source_cmd_choose_artist),
+	(rb_library_source_cmd_choose_album): fix another memory leak
+
 2005-07-22  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-player-gst.c: (rb_player_finalize),
