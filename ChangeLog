@@ -1,3 +1,13 @@
+2005-07-26  James Livingston  <jrl@ids.org.au>
+
+	* data/glade/create-playlist.glade:
+	* shell/rb-shell.c: (rb_shell_db_error_cb),
+	(idle_play_added_entry_cb), (rb_shell_db_entry_added_cb),
+	(idle_handle_load_complete), (rb_shell_load_uri_impl):
+	* widgets/rb-query-creator.c: (rb_query_creator_load_query),
+	(rb_query_creator_get_limit): use a spin button, rather than a text
+	entry, for the limit in the playlist editor.
+
 2005-07-23  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-library-source.c: (rb_library_source_free_list_data),

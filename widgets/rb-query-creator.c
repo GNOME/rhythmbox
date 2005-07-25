@@ -418,20 +418,14 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (creator->priv->limit_check),
 				      limit_count || limit_size);
 	if (limit_count) {
-		char *str = g_strdup_printf ("%d", limit_count);
 		gtk_option_menu_set_history (GTK_OPTION_MENU (creator->priv->limit_option), 0);
-		gtk_entry_set_text (GTK_ENTRY (creator->priv->limit_entry), str);
-		g_free (str);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (creator->priv->limit_entry), limit_count);
 	} else if (limit_size > 0 && limit_size < 1000) {
-		char *str = g_strdup_printf ("%d", limit_size);
 		gtk_option_menu_set_history (GTK_OPTION_MENU (creator->priv->limit_option), 1);
-		gtk_entry_set_text (GTK_ENTRY (creator->priv->limit_entry), str);
-		g_free (str);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (creator->priv->limit_entry), limit_size);
 	} else if (limit_size >= 1000) {
-		char *str = g_strdup_printf ("%d", limit_size / 1000);
 		gtk_option_menu_set_history (GTK_OPTION_MENU (creator->priv->limit_option), 2);
-		gtk_entry_set_text (GTK_ENTRY (creator->priv->limit_entry), str);
-		g_free (str);
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (creator->priv->limit_entry), limit_size / 1000);
 	}
 }
 
@@ -616,7 +610,7 @@ rb_query_creator_get_limit (RBQueryCreator *dlg, RBQueryCreatorLimitType *type,
 {
 	guint limitpos;
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dlg->priv->limit_check)))
-		*limit = atoi (gtk_entry_get_text (GTK_ENTRY (dlg->priv->limit_entry)));
+		*limit = (guint) gtk_spin_button_get_value(GTK_SPIN_BUTTON (dlg->priv->limit_entry));
 	else
 		*limit = 0;
 	limitpos = gtk_option_menu_get_history (GTK_OPTION_MENU (dlg->priv->limit_option));
