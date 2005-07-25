@@ -335,8 +335,7 @@ struct RBShellPrivate
 	char *rhythmdb_file;
 
 	RhythmDB *db;
-	char *pending_entry_uri;
-	RhythmDBEntry *pending_entry;
+	char *pending_entry;
 
 	RBShellPlayer *player_shell;
 	RBShellClipboard *clipboard_shell;
@@ -1235,10 +1234,10 @@ rb_shell_db_error_cb (RhythmDB *db,
 	rb_debug ("got db error, showing: %s",
 		  shell->priv->show_db_errors ? "TRUE" : "FALSE");
 
-	if (shell->priv->pending_entry_uri && 
-	    strcmp(uri, shell->priv->pending_entry_uri) == 0) {
-		g_free (shell->priv->pending_entry_uri);
-		shell->priv->pending_entry_uri = NULL;
+	if (shell->priv->pending_entry && 
+	    strcmp(uri, shell->priv->pending_entry) == 0) {
+		g_free (shell->priv->pending_entry);
+		shell->priv->pending_entry = NULL;
 	}
 	
 	if (!shell->priv->show_db_errors)
@@ -1249,50 +1248,21 @@ rb_shell_db_error_cb (RhythmDB *db,
 	gtk_widget_show (GTK_WIDGET (shell->priv->load_error_dialog));
 }
 
-typedef struct {
-	RBShell *shell;
-	RhythmDBEntry *entry;
-} RBShellPlayEntryData;
-
-static gboolean
-idle_play_added_entry_cb (RBShellPlayEntryData *data)
-{
-	GDK_THREADS_ENTER ();
-
-	rb_shell_play_entry (data->shell, data->entry);
-	rhythmdb_entry_unref (data->shell->priv->db, data->entry);
-	g_object_unref (data->shell);
-	g_free (data);
-
-	GDK_THREADS_LEAVE ();
-
-	return FALSE;
-}
-
 static void
 rb_shell_db_entry_added_cb (RhythmDB *db,
 			    RhythmDBEntry *entry,
 			    RBShell *shell)
 {
-	if (shell->priv->pending_entry_uri == NULL)
+	if (shell->priv->pending_entry == NULL)
 		return;
 	
-	GDK_THREADS_ENTER ();
-	
 	rb_debug ("got entry added for %s", entry->location);
-	if (strcmp (entry->location, shell->priv->pending_entry_uri) == 0) {
-		RBShellPlayEntryData *d = g_new0 (RBShellPlayEntryData, 1);
-		d->shell = shell;
-		d->entry = entry;
-		g_object_ref (shell);
-		rhythmdb_entry_ref (db, entry);
-		g_idle_add ((GSourceFunc) idle_play_added_entry_cb, d);
+	if (strcmp (entry->location, shell->priv->pending_entry) == 0) {
+		rb_shell_play_entry (shell, entry);
 
-		g_free (shell->priv->pending_entry_uri);
-		shell->priv->pending_entry_uri = NULL;
+		g_free (shell->priv->pending_entry);
+		shell->priv->pending_entry = NULL;
 	}
-	
-	GDK_THREADS_LEAVE ();
 }
 
 static void
@@ -1822,12 +1792,6 @@ idle_handle_load_complete (RBShell *shell)
 	rb_shell_sync_selected_source (shell);
 	shell->priv->load_complete = TRUE;
 
-	if (shell->priv->pending_entry) {
-		rb_shell_play_entry (shell, shell->priv->pending_entry);
-		rhythmdb_entry_unref (shell->priv->db, shell->priv->pending_entry);
-		shell->priv->pending_entry = NULL;
-	}
-
 	GDK_THREADS_LEAVE ();
 
 	return FALSE;
@@ -2192,39 +2156,20 @@ static void
 rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 {
 	RBShell *shell = RB_SHELL (proxy);
-	RhythmDBEntry *entry = NULL;
 
-	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
-	if (entry == NULL)
-		rhythmdb_add_uri (shell->priv->db, uri);
+	rhythmdb_add_uri (shell->priv->db, uri);
 
-	if (!play)
-		return;
-
-	/* clean up any existing pending entry we might be waiting to play;
-	 * we can only handle one entry because we don't have a playback queue (yet) */
-	if (shell->priv->pending_entry != NULL) {
-		rhythmdb_entry_unref (shell->priv->db, shell->priv->pending_entry);
-		shell->priv->pending_entry = NULL;
-	}
-	if (shell->priv->pending_entry_uri != NULL) {
-		g_free (shell->priv->pending_entry_uri);
-		shell->priv->pending_entry_uri = NULL;
-	}
-
-	/* we can only play the entry directly if we've already loaded the DB */
-	if (shell->priv->load_complete && entry != NULL) {
-		rb_shell_player_play_entry (RB_SHELL_PLAYER (shell->priv->player_shell),
-					    entry);
-	} else if (entry != NULL) {
-		/* wait for the db load to complete before playing */
-		rhythmdb_entry_ref (shell->priv->db, entry);
-		shell->priv->pending_entry = entry;
-	} else {
+	if (play) {
 		/* wait for this entry to appear (or until we
 		 * get a load error for it), then play it.
+		 *
+		 * we only handle one entry here because
+		 * we don't have a playback queue (yet).
 		 */
-		shell->priv->pending_entry_uri = g_strdup (uri);
+		if (shell->priv->pending_entry != NULL) {
+			g_free (shell->priv->pending_entry);
+		}
+		shell->priv->pending_entry = g_strdup (uri);
 	}
 }
 
