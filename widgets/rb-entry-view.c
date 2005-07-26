@@ -113,6 +113,8 @@ static void rb_entry_view_pixbuf_clicked_cb (RBEntryView *view,
 static gboolean rb_entry_view_button_press_cb (GtkTreeView *treeview,
 					      GdkEventButton *event,
 					      RBEntryView *view);
+static gboolean rb_entry_view_popup_menu_cb (GtkTreeView *treeview,
+					     RBEntryView *view);
 static void rb_entry_view_entry_is_visible (RBEntryView *view, RhythmDBEntry *entry,
 					    gboolean *realized, gboolean *visible,
 					    GtkTreeIter *iter);
@@ -1376,6 +1378,11 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 			         G_CALLBACK (rb_entry_view_row_activated_cb),
 			         view,
 				 0);
+	g_signal_connect_object (G_OBJECT (view->priv->treeview),
+				 "popup_menu",
+				 G_CALLBACK (rb_entry_view_popup_menu_cb),
+				 view,
+				 0);
 	view->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view->priv->treeview));
 	g_signal_connect_object (G_OBJECT (view->priv->selection),
 			         "changed",
@@ -1700,6 +1707,17 @@ rb_entry_view_button_press_cb (GtkTreeView *treeview,
 	}
 
 	return FALSE;
+}
+
+static gboolean
+rb_entry_view_popup_menu_cb (GtkTreeView *treeview,
+			     RBEntryView *view)
+{
+	if (gtk_tree_selection_count_selected_rows (gtk_tree_view_get_selection (treeview)) == 0)
+		return FALSE;
+
+	g_signal_emit (G_OBJECT (view), rb_entry_view_signals[SHOW_POPUP], 0);
+	return TRUE;
 }
 
 

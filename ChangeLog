@@ -1,5 +1,27 @@
 2005-07-26  James Livingston  <jrl@ids.org.au>
 
+	* data/ui/rhythmbox-ui.xml:
+	* shell/rb-shell.c: (rb_shell_construct):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init),
+	(stations_view_drag_data_received_cb), (impl_show_popup):
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_set_property), (rb_sourcelist_get_property),
+	(rb_sourcelist_new), (button_press_cb):
+	* sources/rb-sourcelist.h: Make popup menus work correctly in the
+	sourcelist and entry view, also have some better popup menu entries.
+	Patch from Jonathan Matthew <jonathan@kaolin.hn.org> (Closes 311493)
+	
+	* widgets/rb-entry-view.c: (rb_entry_view_constructor),
+	(rb_entry_view_button_press_cb), (rb_entry_view_popup_menu_cb): Make
+	the entryview respond to Shift-F10/Menu with the popup menu. Patch
+	from Jonathan Matthew <jonathan@kaolin.hn.org> (Closes 152650)
+
+	* lib/rb-tree-dnd.c: (rb_tree_dnd_button_press_event_cb): Allow
+	columns to be resized when the first track is selected. Patch from
+	Jonathan Matthew <jonathan@kaolin.hn.org> (Closes 172654)
+
+2005-07-26  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-shell.c: (rb_shell_db_error_cb),
 	(rb_shell_db_entry_added_cb), (idle_handle_load_complete),
 	(rb_shell_load_uri_impl): Undo a patch that got accidently commited in

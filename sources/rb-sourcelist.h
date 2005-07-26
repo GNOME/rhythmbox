@@ -26,6 +26,7 @@
 #include <gtk/gtkscrolledwindow.h>
 
 #include "rb-source.h"
+#include "rb-shell.h"
 
 G_BEGIN_DECLS
 
@@ -61,7 +62,7 @@ typedef struct RBSourceListClass
 
 GType		rb_sourcelist_get_type		(void);
 
-GtkWidget *	rb_sourcelist_new		(void);
+GtkWidget *	rb_sourcelist_new		(RBShell *shell);
 
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
 						 RBSource *source);

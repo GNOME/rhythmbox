@@ -96,6 +96,7 @@ static void impl_search (RBSource *source, const char *text);
 static void impl_delete (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static RBSourceEOFType impl_handle_eos (RBSource *asource);
+static gboolean impl_show_popup (RBSource *source);
 static void rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType type);
 
 void rb_iradio_source_show_columns_changed_cb (GtkToggleButton *button,
@@ -240,6 +241,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_handle_eos = impl_handle_eos;
 	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
+	source_class->impl_show_popup = impl_show_popup;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,
@@ -862,5 +864,12 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 
 	g_list_free (uri_list);
 	return;
+}
+
+static gboolean
+impl_show_popup (RBSource *source)
+{
+	_rb_source_show_popup (RB_SOURCE (source), "/IRadioSourcePopup");
+	return TRUE;
 }
 

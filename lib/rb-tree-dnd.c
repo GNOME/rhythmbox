@@ -717,6 +717,9 @@ rb_tree_dnd_button_press_event_cb (GtkWidget      *widget,
 		return FALSE;
 
 	tree_view = GTK_TREE_VIEW (widget);
+	if (event->window != gtk_tree_view_get_bin_window (tree_view))
+		return FALSE;
+
 	priv_data = g_object_get_data (G_OBJECT (tree_view), RB_TREE_DND_STRING);
 	if (priv_data == NULL)
 	{

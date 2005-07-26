@@ -36,6 +36,7 @@
 #include "rb-tree-view-column.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-tree-dnd.h"
+#include "rb-util.h"
 
 struct RBSourceListPriv
 {
@@ -49,6 +50,14 @@ struct RBSourceListPriv
 	RBSource *playing_source;
 	GdkPixbuf *playing_pixbuf;
 	GdkPixbuf *paused_pixbuf;
+
+	RBShell *shell;
+};
+
+enum
+{
+	PROP_0,
+	PROP_SHELL
 };
 
 enum
@@ -63,6 +72,14 @@ enum
 static void rb_sourcelist_class_init (RBSourceListClass *klass);
 static void rb_sourcelist_init (RBSourceList *sourcelist);
 static void rb_sourcelist_finalize (GObject *object);
+static void rb_sourcelist_set_property (GObject *object,
+					guint prop_id,
+					const GValue *value,
+					GParamSpec *pspec);
+static void rb_sourcelist_get_property (GObject *object,
+					guint prop_id,
+					GValue *value,
+					GParamSpec *pspec);
 static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
 static void drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
@@ -127,6 +144,16 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 	object_class = (GtkObjectClass *) class;
 
 	o_class->finalize = rb_sourcelist_finalize;
+	o_class->set_property = rb_sourcelist_set_property;
+	o_class->get_property = rb_sourcelist_get_property;
+
+	g_object_class_install_property (o_class,
+					 PROP_SHELL,
+					 g_param_spec_object ("shell",
+							      "RBShell",
+							      "RBShell object",
+							      RB_TYPE_SHELL,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 	rb_sourcelist_signals[SELECTED] =
 		g_signal_new ("selected",
@@ -270,9 +297,45 @@ rb_sourcelist_finalize (GObject *object)
 	if (G_OBJECT_CLASS (parent_class)->finalize)
 		(* G_OBJECT_CLASS (parent_class)->finalize) (object);
 }
+static void
+rb_sourcelist_set_property (GObject *object,
+			    guint prop_id,
+			    const GValue *value,
+			    GParamSpec *pspec)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (object);
+	switch (prop_id)
+	{
+	case PROP_SHELL:
+		sourcelist->priv->shell = g_value_get_object (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void 
+rb_sourcelist_get_property (GObject *object,
+			    guint prop_id,
+			    GValue *value,
+			    GParamSpec *pspec)
+{
+	RBSourceList *sourcelist = RB_SOURCELIST (object);
+	switch (prop_id)
+	{
+	case PROP_SHELL:
+		g_value_set_object (value, sourcelist->priv->shell);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
 
 GtkWidget *
-rb_sourcelist_new (void)
+rb_sourcelist_new (RBShell *shell)
 {
 	RBSourceList *sourcelist;
 
@@ -282,6 +345,7 @@ rb_sourcelist_new (void)
 					          "hscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					          "vscrollbar_policy", GTK_POLICY_AUTOMATIC,
 					          "shadow_type", GTK_SHADOW_IN,
+						  "shell", shell,
 					          NULL));
 
 	gtk_container_add (GTK_CONTAINER (sourcelist),
@@ -529,10 +593,26 @@ button_press_cb (GtkTreeView *treeview,
 		 GdkEventButton *event,
 		 RBSourceList *sourcelist)
 {
-	if (event->button == 3)
-		return emit_show_popup (treeview, sourcelist);
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	
+	if (event->button != 3)
+		return FALSE;
 
-	return FALSE;
+	if (gtk_tree_view_get_path_at_pos (treeview, event->x, event->y,
+					   &path, NULL, NULL, NULL) == FALSE) {
+		/* pointer is over empty space */
+		GtkUIManager *uimanager;
+		g_object_get (G_OBJECT (sourcelist->priv->shell), "ui-manager", &uimanager, NULL);
+		rb_gtk_action_popup_menu (uimanager, "/SourceListPopup");
+		g_object_unref (G_OBJECT (uimanager));
+		return TRUE;
+	}
+
+	gtk_tree_model_get_iter (GTK_TREE_MODEL (sourcelist->priv->filter_model), &iter, path);
+	gtk_tree_selection_select_iter (gtk_tree_view_get_selection (treeview), &iter);
+
+	return emit_show_popup (treeview, sourcelist);
 }
 
 static gboolean

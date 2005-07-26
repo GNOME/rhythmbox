@@ -95,10 +95,19 @@
     <menuitem name="PropertiesPlaylistPopup" action="MusicProperties"/>
   </popup>
 
+  <popup name="SourceListPopup">
+    <menuitem name="SourceListPopupNewPlaylist" action="MusicPlaylistNewPlaylist"/>
+    <menuitem name="SourceListPopupNewAutomaticPlaylist" action="MusicPlaylistNewAutomaticPlaylist"/>
+  </popup>
+
   <popup name="LibrarySourcePopup">
     <menuitem name="LibrarySrcPopupAddFile" action="MusicImportFile"/>
     <menuitem name="LibrarySrcPopupAddFolder" action="MusicImportFolder"/>
     <menuitem name="LibrarySrcPopupAddCD" action="MusicImportCD"/>
+  </popup>
+
+  <popup name="IRadioSourcePopup">
+    <menuitem name="IRadioSrcPopupNewStation" action="MusicNewInternetRadioStation"/>
   </popup>
 
   <popup name="IRadioViewPopup">

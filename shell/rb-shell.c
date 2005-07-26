@@ -919,7 +919,7 @@ rb_shell_construct (RBShell *shell)
 
 	shell->priv->paned = gtk_hpaned_new ();
 
-	shell->priv->sourcelist = rb_sourcelist_new ();
+	shell->priv->sourcelist = rb_sourcelist_new (shell);
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "drop_received",
 				 G_CALLBACK (sourcelist_drag_received_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "source_activated",
