@@ -69,19 +69,19 @@ rb_refstring_ref (RBRefString *val)
 G_INLINE_FUNC const char *
 rb_refstring_get (const RBRefString *val)
 {
-	return val->value;
+	return val ? val->value : NULL;
 }
 
 G_INLINE_FUNC const char *
 rb_refstring_get_folded (const RBRefString *val)
 {
-	return val->folded;
+	return val ? val->folded : NULL;
 }
 
 G_INLINE_FUNC const char *
 rb_refstring_get_sort_key (const RBRefString *val)
 {
-	return val->sortkey;
+	return val ? val->sortkey : NULL;
 }
 
 G_INLINE_FUNC guint
