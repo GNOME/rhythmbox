@@ -68,7 +68,7 @@ struct RhythmDBPrivate
 {
 	char *name;
 
-	guint read_counter;
+	gint read_counter;
 
 	GMemChunk *entry_memchunk;
 
@@ -579,7 +579,7 @@ rhythmdb_event_free (RhythmDB *db, struct RhythmDBEvent *result)
 		break;
 	case RHYTHMDB_EVENT_THREAD_EXITED:
 		g_object_unref (db);
-		db->priv->outstanding_threads--;
+		g_atomic_int_dec_and_test (&db->priv->outstanding_threads);
 		g_async_queue_unref (db->priv->action_queue);
 		g_async_queue_unref (db->priv->event_queue);
 		break;
@@ -624,8 +624,8 @@ rhythmdb_shutdown (RhythmDB *db)
 		rhythmdb_action_free (db, action);
 
 	
-	rb_debug ("%d outstanding threads", db->priv->outstanding_threads);
-	while (db->priv->outstanding_threads > 0) {
+	rb_debug ("%d outstanding threads", g_atomic_int_get (&db->priv->outstanding_threads));
+	while (g_atomic_int_get (&db->priv->outstanding_threads) > 0) {
 		result = g_async_queue_pop (db->priv->event_queue);
 		rhythmdb_event_free (db, result);
 	}
@@ -725,21 +725,29 @@ static void
 rhythmdb_thread_create (RhythmDB *db, GThreadFunc func, gpointer data)
 {
 	g_object_ref (G_OBJECT (db));
-	db->priv->outstanding_threads++;
+	g_atomic_int_inc (&db->priv->outstanding_threads);
 	g_async_queue_ref (db->priv->action_queue);
 	g_async_queue_ref (db->priv->event_queue);
 	g_thread_create ((GThreadFunc) func, data, FALSE, NULL);
 }
 
+static gboolean
+rhythmdb_get_readonly (RhythmDB *db)
+{
+	return (g_atomic_int_get (&db->priv->read_counter) > 0);
+}
+
+
 static void
 rhythmdb_read_enter (RhythmDB *db)
 {
-	g_return_if_fail (db->priv->read_counter >= 0);
+	gint count;
+	g_return_if_fail (g_atomic_int_get (&db->priv->read_counter) >= 0);
 	g_assert (rb_is_main_thread ());
 
-	db->priv->read_counter++;
-	rb_debug ("counter: %d", db->priv->read_counter);
-	if (db->priv->read_counter == 1)
+	count = g_atomic_int_exchange_and_add (&db->priv->read_counter, 1);
+	rb_debug ("counter: %d", count+1);
+	if (count == 0)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[READ_ONLY],
 			       0, TRUE);
 }
@@ -747,20 +755,15 @@ rhythmdb_read_enter (RhythmDB *db)
 static void
 rhythmdb_read_leave (RhythmDB *db)
 {
-	g_return_if_fail (db->priv->read_counter > 0);
+	gint count;
+	g_return_if_fail (rhythmdb_get_readonly (db));
 	g_assert (rb_is_main_thread ());
 
-	db->priv->read_counter--;
-	rb_debug ("counter: %d", db->priv->read_counter);
-	if (db->priv->read_counter == 0)
+	count = g_atomic_int_exchange_and_add (&db->priv->read_counter, -1);
+	rb_debug ("counter: %d", count-1);
+	if (count == 1)
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[READ_ONLY],
 			       0, FALSE);
-}
-
-static gboolean
-rhythmdb_get_readonly (RhythmDB *db)
-{
-	return db->priv->read_counter > 0;
 }
 
 static void
@@ -1916,6 +1919,7 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
+	g_assert (rb_is_main_thread ());
 	g_assert (rhythmdb_get_readonly (db) == FALSE);
 
 #ifndef G_DISABLE_ASSERT	
@@ -2036,11 +2040,13 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	db->priv->dirty = TRUE;
 }
 
-static void
-rhythmdb_entry_queue_set (RhythmDB *db, RhythmDBEntry *entry,
-			  guint propid, GValue *value)
+void 
+rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
+		    guint propid, GValue *value)
 {
-	if (rhythmdb_get_readonly (db) == TRUE) {
+	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
+		rhythmdb_entry_set_internal (db, entry, propid, value);
+	} else {
 		struct RhythmDBEvent *result;
 
 		result = g_new0 (struct RhythmDBEvent, 1);
@@ -2053,23 +2059,6 @@ rhythmdb_entry_queue_set (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_init (&result->change.new, G_VALUE_TYPE (value));
 		g_value_copy (value, &result->change.new);
 		g_async_queue_push (db->priv->event_queue, result);
-	} else {
-		rhythmdb_entry_set_internal (db, entry, propid, value);
-		/* FIXME: should this commit be there, should it be delayed
-		 * with a small timeout ? 
-		 */
-		rhythmdb_commit (db);
-	}
-}
-
-void 
-rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
-		    guint propid, GValue *value)
-{
-	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
-		rhythmdb_entry_set_internal (db, entry, propid, value);
-	} else {
-		rhythmdb_entry_queue_set (db, entry, propid, value);
 	}	
 }
 
@@ -2811,12 +2800,12 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize s
 	return ret;
 }
 
-static gint last_entry_type = {0};
+static gint last_entry_type = 0;
 
 RhythmDBEntryType
 rhythmdb_entry_register_type (void)
 {
-	return last_entry_type++;		
+	return g_atomic_int_exchange_and_add (&last_entry_type, 1);		
 }
 
 RhythmDBEntryType 

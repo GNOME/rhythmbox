@@ -1,3 +1,14 @@
+2005-07-28  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (rhythmdb_shutdown),
+	(rhythmdb_thread_create), (rhythmdb_get_readonly),
+	(rhythmdb_read_enter), (rhythmdb_read_leave),
+	(rhythmdb_entry_set_internal), (rhythmdb_entry_set): Several rhythmdb
+	thread-safety fixes. Patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org> (closes 311382)
+	
+	(rhythmdb_entry_register_type): Another thread-safety fix
+
 2005-07-27  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rb-refstring.h: Fix occasional crasher when a volume is
