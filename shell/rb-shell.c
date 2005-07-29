@@ -930,6 +930,7 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->statusbar = rb_statusbar_new (shell->priv->db,
 						   shell->priv->actiongroup,
 						   shell->priv->player_shell);
+	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
 
 	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
 				       G_N_ELEMENTS (target_table));

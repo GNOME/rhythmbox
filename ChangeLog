@@ -1,3 +1,23 @@
+2005-07-30  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-player-gst.c: (rb_player_class_init),
+	(rb_player_finalize), (emit_signal_idle), (eos_cb), (error_cb),
+	(deep_notify_cb), (buffering_cb), (rb_player_construct):
+	* player/rb-player.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_is_busy):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-shell-player.c: (rb_shell_player_class_init),
+	(rb_shell_player_init), (rb_shell_player_set_property),
+	(rb_shell_player_get_property), (rb_shell_player_open_location),
+	(info_available_cb), (buffering_cb):
+	* shell/rb-shell.c: (rb_shell_construct):
+	* shell/rb-statusbar.c: (rb_statusbar_init),
+	(rb_statusbar_sync_status), (poll_status),
+	(rb_statusbar_set_progress), (rb_statusbar_entry_view_changed_cb):
+	* shell/rb-statusbar.h: Patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org> to give a buffering indication for iradio
+	sources (Closes 309708)
+
 2005-07-29  James Livingston  <jrl@ids.org.au>
 
 	* widgets/rb-song-info.c: (rb_song_info_sync_entry_single): Fix issue

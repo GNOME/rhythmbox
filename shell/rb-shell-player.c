@@ -58,6 +58,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 #include "rb-play-order.h"
+#include "rb-statusbar.h"
 
 #ifdef HAVE_XIDLE_EXTENSION
 #include <X11/extensions/xidle.h>
@@ -136,6 +137,7 @@ static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
 static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
 static void eos_cb (RBPlayer *player, gpointer data);
 static void error_cb (RBPlayer *player, GError *err, gpointer data);
+static void buffering_cb (RBPlayer *player, guint progress, gpointer data);
 static void rb_shell_player_error (RBShellPlayer *player, GError *err,
 				   gboolean lock);
 
@@ -217,6 +219,7 @@ struct RBShellPlayerPrivate
 	GtkWidget *next_button;
 
 	RBHeader *header_widget;
+	RBStatusbar *statusbar_widget;
 
 	GtkWidget *shuffle_button;
 	GtkWidget *volume_button;
@@ -240,7 +243,8 @@ enum
 	PROP_ACTION_GROUP,
 	PROP_PLAY_ORDER,
 	PROP_PLAYING,
-	PROP_VOLUME
+	PROP_VOLUME,
+	PROP_STATUSBAR
 };
 
 enum
@@ -398,6 +402,15 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 							     "Current playback volume",
 							     0.0f, 1.0f, 1.0f,
 							     G_PARAM_READWRITE));
+	
+	g_object_class_install_property (object_class,
+					 PROP_STATUSBAR,
+					 g_param_spec_object ("statusbar", 
+							      "RBStatusbar", 
+							      "RBStatusbar object", 
+							      RB_TYPE_STATUSBAR,
+							      G_PARAM_READWRITE));
+
 
 	rb_shell_player_signals[WINDOW_TITLE_CHANGED] =
 		g_signal_new ("window_title_changed",
@@ -573,6 +586,11 @@ rb_shell_player_init (RBShellPlayer *player)
 	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
 				 "error",
 				 G_CALLBACK (error_cb),
+				 player, 0);
+
+	g_signal_connect_object (G_OBJECT (player->priv->mmplayer),
+				 "buffering",
+				 G_CALLBACK (buffering_cb),
 				 player, 0);
 
 	g_signal_connect (G_OBJECT (gnome_vfs_get_volume_monitor ()), 
@@ -779,7 +797,9 @@ rb_shell_player_set_property (GObject *object,
 		eel_gconf_set_float (CONF_STATE_VOLUME, 
 				     g_value_get_float (value));
 		break;
-	
+	case PROP_STATUSBAR:
+		player->priv->statusbar_widget = g_value_get_object (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -821,6 +841,9 @@ rb_shell_player_get_property (GObject *object,
 		break;
 	case PROP_VOLUME:
 		g_value_set_float (value, rb_player_get_volume (player->priv->mmplayer));
+		break;
+	case PROP_STATUSBAR:
+		g_value_set_object (value, player->priv->statusbar_widget);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -969,6 +992,8 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	if (error && *error)
 		return;
 
+	rb_statusbar_set_progress (player->priv->statusbar_widget, -1.0, NULL);
+	
 	rb_player_play (player->priv->mmplayer, error);
 	if (error && *error)
 		return;
@@ -2153,6 +2178,16 @@ info_available_cb (RBPlayer *mmplayer,
 		rb_shell_player_sync_with_source (player);
 
  out_unlock:
+	GDK_THREADS_LEAVE ();
+}
+
+static void
+buffering_cb (RBPlayer *mmplayer, guint progress, gpointer data)
+{
+ 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
+
+	GDK_THREADS_ENTER ();
+	rb_statusbar_set_progress (player->priv->statusbar_widget, ((double)progress)/100, _("Buffering"));
 	GDK_THREADS_LEAVE ();
 }
 

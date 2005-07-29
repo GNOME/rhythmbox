@@ -34,6 +34,8 @@
 #include "eel-gconf-extensions.h"
 #include "rb-play-order.h"
 
+#define EPSILON		(0.00001)
+
 static GObject* rb_statusbar_construct (GType type,
 					guint n_construct_properties,
 					GObjectConstructParam *construct_properties);
@@ -92,11 +94,15 @@ struct RBStatusbarPrivate
         GtkWidget *status;
 
         GtkWidget *progress;
+        double progress_fraction;
+        gboolean progress_changed;
+        gchar *progress_text;
+
+        gchar *loading_text;
 
         guint status_poll_id;
 
-        gboolean entry_view_busy;
-        gboolean library_busy;
+        gboolean idle;
         guint idle_tick_id;
 
 	guint notify_id;
@@ -247,6 +253,9 @@ rb_statusbar_init (RBStatusbar *statusbar)
         gtk_box_set_spacing (GTK_BOX (statusbar), 5);
 
         statusbar->priv->progress = gtk_progress_bar_new ();
+        statusbar->priv->progress_fraction = 1.0;
+
+        statusbar->priv->loading_text = g_strdup_printf ("<b>%s</b>", _("Loading..."));
 
         gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (statusbar->priv->progress), 1.0);
 	gtk_widget_hide (statusbar->priv->progress);
@@ -406,60 +415,87 @@ status_tick_cb (GtkProgressBar *progress)
 static void
 rb_statusbar_sync_status (RBStatusbar *status)
 {
-        char *str;
-        gboolean library_busy_changed;
-        gboolean library_is_busy;
-        gboolean entry_view_busy = FALSE;
         gboolean changed = FALSE;
+        gboolean show_progress = TRUE;
+        gboolean pulse_progress = FALSE;
+        char *status_text = NULL;
 
-        str = rhythmdb_get_status (status->priv->db);
+        /*
+         * Behaviour of status bar.
+         * progress bar:
+         * - if we have a progress fraction, display it
+         * - otherwise, if the library or selected entry view are busy, pulse
+         * - otherwise, hide.
+         * 
+         * status text:
+         * - if we have a progress fraction, display its text
+         * - otherwise, if the library is busy, display its text
+         * - otherwise, display the selected source's status text
+         */
 
-        if (!str && status->priv->selected_source) {
+        /* 1. progress bar moving? */
+        if (status->priv->progress_fraction < (1.0 - EPSILON) ||
+            status->priv->progress_changed) {
+                status_text = status->priv->progress_text;
+                status->priv->progress_changed = FALSE;
+        }
+
+        /* 2. library busy? */
+        if (status_text == NULL && rhythmdb_is_busy (status->priv->db)) {
+                status_text = status->priv->loading_text;
+                pulse_progress = TRUE;
+        }
+
+        /* 3. entry view busy? */
+        if (status_text == NULL && status->priv->selected_source) {
                 RBEntryView *view;
                 view = rb_source_get_entry_view (status->priv->selected_source);
-                entry_view_busy = rb_entry_view_busy (view);
+                if (rb_entry_view_busy (view))
+                        pulse_progress = TRUE;
+                else
+                        show_progress = FALSE;
         }
 
-        library_is_busy = str != NULL;
-        library_busy_changed = status->priv->library_busy && !library_is_busy;
-        status->priv->library_busy = library_is_busy;   
+        /* set up the status text */
+        if (status_text) {
+                gtk_label_set_markup (GTK_LABEL (status->priv->status), status_text);
 
-        /* Set up the status display */
-        if (status->priv->library_busy) {
-                gtk_label_set_markup (GTK_LABEL (status->priv->status), str);
-                g_free (str);
-                str = NULL;
                 changed = TRUE;
-	} else if (library_busy_changed) {
+                status->priv->idle = FALSE;
+        } else if (!status->priv->idle) {
                 rb_statusbar_sync_with_source (status);
                 changed = TRUE;
+                status->priv->idle = TRUE;
         }
-        g_free (str);
+
+        if (!pulse_progress && status->priv->idle_tick_id > 0) {
+                g_source_remove (status->priv->idle_tick_id);
+                status->priv->idle_tick_id = 0;
+                changed = TRUE;
+        }
 
         /* Sync the progress bar */
-	if (library_is_busy || entry_view_busy) {
-		gtk_widget_show (status->priv->progress);
+        if (show_progress) {
+                gtk_widget_show (status->priv->progress);
 
-                if (status->priv->idle_tick_id == 0) {
-                        status->priv->idle_tick_id
-                                = g_timeout_add (250, (GSourceFunc) status_tick_cb,
-                                                 status->priv->progress);
+                if (pulse_progress) {
+                        if (status->priv->idle_tick_id == 0) {
+                                status->priv->idle_tick_id
+                                        = g_timeout_add (250, (GSourceFunc) status_tick_cb,
+                                                         status->priv->progress);
+                        }
                         changed = TRUE;
+                } else {
+                        gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
+                                                       status->priv->progress_fraction);
                 }
         } else {
-                if (status->priv->idle_tick_id > 0) {
-                        g_source_remove (status->priv->idle_tick_id);
-                        status->priv->idle_tick_id = 0;
-                        changed = TRUE;
-                }
-                gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (status->priv->progress),
-                                               1.0);
-
-		gtk_widget_hide (status->priv->progress);
+                gtk_widget_hide (status->priv->progress);
         }
 
-        status->priv->status_poll_id = 
-                g_timeout_add (changed ? 350 : 750, (GSourceFunc) poll_status, status);
+        if (status->priv->status_poll_id == 0)
+                status->priv->status_poll_id = 
+                        g_timeout_add (changed ? 350 : 750, (GSourceFunc) poll_status, status);
 }
 
 static gboolean
@@ -467,6 +503,7 @@ poll_status (RBStatusbar *status)
 {
         GDK_THREADS_ENTER ();
 
+        status->priv->status_poll_id = 0;
         rb_statusbar_sync_status (status);
 
         GDK_THREADS_LEAVE ();
@@ -487,6 +524,26 @@ rb_statusbar_new (RhythmDB *db, GtkActionGroup *actions,
         g_return_val_if_fail (statusbar->priv != NULL, NULL);
 
         return statusbar;
+}
+
+void
+rb_statusbar_set_progress (RBStatusbar *statusbar, double progress, const char *text)
+{
+        if (statusbar->priv->progress_text) {
+                g_free (statusbar->priv->progress_text);
+                statusbar->priv->progress_text = NULL;
+        }
+        
+        if (progress > 0.0) {
+                statusbar->priv->progress_fraction = progress;
+                statusbar->priv->progress_changed = TRUE;
+                statusbar->priv->progress_text = g_strdup_printf ("<b>%s</b>", text);
+        } else {
+                /* trick sync_status into hiding it */
+                statusbar->priv->progress_fraction = 1.0;
+                statusbar->priv->progress_changed = FALSE;
+        }
+        rb_statusbar_sync_status (statusbar);
 }
 
 static void
@@ -595,6 +652,6 @@ rb_statusbar_entry_view_changed_cb (RBEntryView *view,
                                     RBStatusbar *statusbar)
 {
         rb_debug ("entry view changed");
-        if (!(statusbar->priv->library_busy || statusbar->priv->entry_view_busy))
+        if (statusbar->priv->idle)
                 rb_statusbar_sync_with_source (statusbar);
 }

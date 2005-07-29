@@ -61,7 +61,10 @@ RBStatusbar *		rb_statusbar_new	(RhythmDB *db,
 void			rb_statusbar_set_source	(RBStatusbar *bar,
 						 RBSource *player);
 
-void			rb_statusbar_set_progress(RBStatusbar *bar, double progress);
+void			rb_statusbar_set_progress(RBStatusbar *bar, 
+						  double progress,
+						  const char *text);
+
 void			rb_statusbar_sync_state (RBStatusbar *statusbar);
 
 G_END_DECLS

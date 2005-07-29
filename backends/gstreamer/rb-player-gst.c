@@ -52,6 +52,7 @@ struct RBPlayerPrivate
 	gboolean playing;
 
 	guint error_signal_id;
+	guint buffering_signal_id;
 
 	float cur_volume;
 
@@ -64,11 +65,13 @@ typedef enum
 	INFO,
 	ERROR,
 	TICK,
+	BUFFERING,
 	LAST_SIGNAL
 } RBPlayerSignalType;
 
 typedef struct
 {
+	int type;
 	RBPlayer *object;
 	RBMetaDataField info_field;
 	GError *error;
@@ -125,6 +128,16 @@ rb_player_class_init (RBPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_LONG);
+	rb_player_signals[BUFFERING] =
+		g_signal_new ("buffering",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlayerClass, buffering),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__UINT,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_UINT);
 }
 
 static gboolean
@@ -161,6 +174,8 @@ rb_player_finalize (GObject *object)
 	if (mp->priv->playbin) {
 		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
 					     mp->priv->error_signal_id);
+		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
+					     mp->priv->buffering_signal_id);
 		
 		gst_element_set_state (mp->priv->playbin,
 				       GST_STATE_NULL);
@@ -184,28 +199,46 @@ rb_player_gst_free_playbin (RBPlayer *player)
 }
 
 static gboolean
-eos_signal_idle (RBPlayer *mp)
+emit_signal_idle (RBPlayerSignal *signal)
 {
-	g_signal_emit (G_OBJECT (mp), rb_player_signals[EOS], 0);
+	switch (signal->type) {
+	case ERROR:
+		g_signal_emit (G_OBJECT (signal->object),
+			       rb_player_signals[ERROR], 0,
+			       signal->error);
 
-	g_object_unref (G_OBJECT (mp));
+		/* close if not already closing */
+		if (signal->object->priv->uri != NULL)
+			rb_player_close (signal->object, NULL);
 
-	return FALSE;
-}
+		break;
 
-static gboolean
-error_signal_idle (RBPlayerSignal *signal)
-{
-	g_signal_emit (G_OBJECT (signal->object),
-		       rb_player_signals[ERROR], 0,
-		       signal->error);
+	case EOS:
+		g_signal_emit (G_OBJECT (signal->object), rb_player_signals[EOS], 0);
+		break;
 
-	/* close if not already closing */
-	if (signal->object->priv->uri != NULL)
-		rb_player_close (signal->object, NULL);
+	case INFO:
+		g_signal_emit (G_OBJECT (signal->object),
+			       rb_player_signals[INFO], 0,
+			       signal->info_field, signal->info);
+		break;
 
+	case BUFFERING:
+		g_signal_emit (G_OBJECT (signal->object),
+			       rb_player_signals[BUFFERING], 0,
+			       g_value_get_uint (signal->info));
+		break;
+	}
+
+	if (signal->error)
+		g_error_free (signal->error);
+
+	if (signal->info) {
+		g_value_unset (signal->info);
+		g_free (signal->info);
+	}
+	
 	g_object_unref (G_OBJECT (signal->object));
-	g_error_free (signal->error);
 	g_free (signal);
 
 	return FALSE;
@@ -215,24 +248,12 @@ static void
 eos_cb (GstElement *element,
 	RBPlayer *mp)
 {
-	g_object_ref (G_OBJECT (mp));
-	g_idle_add ((GSourceFunc) eos_signal_idle, mp);
-}
-
-static void
-rb_player_gst_signal_error (RBPlayer *mp, int code, const char *msg)
-{
 	RBPlayerSignal *signal;
-
 	signal = g_new0 (RBPlayerSignal, 1);
+	signal->type = EOS;
 	signal->object = mp;
-	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
-					     code,
-					     msg);
-
 	g_object_ref (G_OBJECT (mp));
-
-	g_idle_add ((GSourceFunc) error_signal_idle, signal);
+	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
 
 static void
@@ -243,6 +264,7 @@ error_cb (GstElement *element,
 	  RBPlayer *mp)
 {
 	int code;
+	RBPlayerSignal *signal;
 
 	if ((error->domain == GST_CORE_ERROR)
 	    || (error->domain == GST_LIBRARY_ERROR)
@@ -252,21 +274,16 @@ error_cb (GstElement *element,
 		code = RB_PLAYER_ERROR_GENERAL;
 	}
 
-	rb_player_gst_signal_error (mp, code, error->message);
-}
+	signal = g_new0 (RBPlayerSignal, 1);
+	signal->type = ERROR;
+	signal->object = mp;
+	signal->error = g_error_new_literal (RB_PLAYER_ERROR,
+					     code,
+					     error->message);
 
-static gboolean
-info_signal_idle (RBPlayerSignal *signal)
-{
-	g_signal_emit (G_OBJECT (signal->object),
-		       rb_player_signals[INFO], 0,
-		       signal->info_field, signal->info);
+	g_object_ref (G_OBJECT (mp));
 
-	g_object_unref (G_OBJECT (signal->object));
-	g_free (signal->info);
-	g_free (signal);
-
-	return FALSE;
+	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
 
 static void
@@ -282,6 +299,7 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 
 		signal = g_new0 (RBPlayerSignal, 1);
 
+		signal->type = INFO;
 		signal->info_field = RB_METADATA_FIELD_TITLE;
 		signal->info = g_new0 (GValue, 1);
 		g_value_init (signal->info, G_TYPE_STRING); 
@@ -291,9 +309,26 @@ deep_notify_cb (GstElement *element, GstElement *orig,
 
 		g_object_ref (G_OBJECT (player));
 
-		g_idle_add ((GSourceFunc) info_signal_idle, signal);
+		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 		return;
 	}
+}
+
+static void
+buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
+{
+	RBPlayerSignal *signal;
+
+	signal = g_new0 (RBPlayerSignal, 1);
+	signal->type = BUFFERING;
+
+	g_object_ref (G_OBJECT (mp));
+	signal->object = mp;
+
+	signal->info = g_new0 (GValue, 1);
+	g_value_init (signal->info, G_TYPE_UINT);
+	g_value_set_uint (signal->info, (guint)progress);
+	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
 
 static void
@@ -313,6 +348,12 @@ rb_player_construct (RBPlayer *mp, GError **error)
 				 G_CALLBACK (deep_notify_cb),
 				 mp, 0);
 
+	mp->priv->buffering_signal_id =
+		g_signal_connect_object (G_OBJECT (mp->priv->playbin),
+					 "buffering",
+					 G_CALLBACK (buffering_cb),
+					 mp, 0);
+	
 	mp->priv->error_signal_id =
 		g_signal_connect_object (G_OBJECT (mp->priv->playbin),
 					 "error",

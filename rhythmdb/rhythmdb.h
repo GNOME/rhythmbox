@@ -450,7 +450,7 @@ inline int		rhythmdb_propid_from_nice_elt_name	(RhythmDB *db, const xmlChar *nam
 void		rhythmdb_emit_entry_added		(RhythmDB *db, RhythmDBEntry *entry);
 void		rhythmdb_emit_entry_deleted		(RhythmDB *db, RhythmDBEntry *entry);
 
-char *		rhythmdb_get_status			(RhythmDB *db);
+gboolean	rhythmdb_is_busy			(RhythmDB *db);
 char *		rhythmdb_compute_status_normal		(gint n_songs, glong duration,
 							 GnomeVFSFileSize size);
 RhythmDBEntryType rhythmdb_entry_register_type          (void);

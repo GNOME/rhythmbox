@@ -2716,15 +2716,10 @@ queue_is_empty (GAsyncQueue *queue)
 	return g_async_queue_length (queue) <= 0;
 }
 
-char *
-rhythmdb_get_status (RhythmDB *db)
+gboolean
+rhythmdb_is_busy (RhythmDB *db)
 {
-	char *ret = NULL;
-
-	if (!queue_is_empty (db->priv->event_queue))
-		ret = g_strdup_printf ("<b>%s</b>", _("Loading..."));
-
-	return ret;
+	return (!queue_is_empty (db->priv->event_queue));
 }
 
 char *

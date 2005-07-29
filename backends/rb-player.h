@@ -69,9 +69,7 @@ typedef struct
 
 	void (*eos)             	(RBPlayer *mp);
 	void (*info)            	(RBPlayer *mp, RBMetaDataField field, GValue *value);
-	void (*buffering_begin) 	(RBPlayer *mp);
-	void (*buffering_end)   	(RBPlayer *mp);
-	void (*buffering_progress)	(RBPlayer *mp, int progress);
+	void (*buffering)		(RBPlayer *mp, guint progress);
 	void (*error)           	(RBPlayer *mp, GError *error);
 	void (*tick)            	(RBPlayer *mp, long elapsed);
 } RBPlayerClass;
