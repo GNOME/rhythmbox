@@ -45,7 +45,6 @@
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"
-#include "rb-tree-view-column.h"
 
 #define RB_PLAYLIST_XML_VERSION "1.0"
 
@@ -278,7 +277,7 @@ rb_playlist_source_constructor (GType type, guint n_construct_properties,
 	rb_entry_view_set_model (source->priv->songs, RHYTHMDB_QUERY_MODEL (source->priv->model));
 
 	{
-		GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
+		GtkTreeViewColumn *column = gtk_tree_view_column_new ();
 		GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 

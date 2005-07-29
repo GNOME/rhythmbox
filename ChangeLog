@@ -1,3 +1,21 @@
+2005-07-29  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
+	* sources/rb-sourcelist.c:
+	* widgets/Makefile.am:
+	* widgets/rb-entry-view.c: (rb_entry_view_append_column),
+	(rb_entry_view_constructor): Patch from Nickolay V. Shmyrev
+	<nshmyrev@yandex.ru> to use GTK's TreeView rather than our own
+	implementation. (Closes 169152)
+
+	Files removed:
+	* widgets/gtkrbtree.h:
+	* widgets/gtktreeprivate.h:
+	* widgets/rb-tree-view-column.c:
+	* widgets/rb-tree-view-column.h:
+	* widgets/rb-tree-view.c:
+	* widgets/rb-tree-view.h:
+
 2005-07-28  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (rhythmdb_event_free), (rhythmdb_shutdown),

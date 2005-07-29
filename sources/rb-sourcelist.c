@@ -33,7 +33,6 @@
 #include "rb-debug.h"
 #include "rb-stock-icons.h"
 #include "rb-marshal.h"
-#include "rb-tree-view-column.h"
 #include "rb-cell-renderer-pixbuf.h"
 #include "rb-tree-dnd.h"
 #include "rb-util.h"

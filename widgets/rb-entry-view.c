@@ -36,7 +36,6 @@
 #include <math.h>
 
 #include "rb-tree-dnd.h"
-#include "rb-tree-view-column.h"
 #include "rb-entry-view.h"
 #include "rb-dialog.h"
 #include "rb-debug.h"
@@ -47,7 +46,6 @@
 #include "rb-string-helpers.h"
 #include "rb-stock-icons.h"
 #include "rb-preferences.h"
-#include "rb-tree-view.h"
 #include "eel-gconf-extensions.h"
 
 static const GtkTargetEntry rb_entry_view_drag_types[] = {{  "text/uri-list", 0, 0 }};
@@ -1148,8 +1146,9 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	GCompareDataFunc sort_func = NULL;
 	gpointer real_sort_data = NULL;
 	RhythmDBPropType propid;
+	gboolean ellipsize = FALSE;
 
-	column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
+	column = gtk_tree_view_column_new ();
 
 	if (coltype == RB_ENTRY_VIEW_COL_RATING) {
 		gint width;
@@ -1207,7 +1206,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		sort_func = (GCompareDataFunc) rb_entry_view_string_sort_func;
 		title = _("_Title");
 		key = "Title";
-		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
+		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_ARTIST:
 		propid = RHYTHMDB_PROP_ARTIST;
@@ -1218,7 +1217,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		real_sort_data = view;
 		title = _("Art_ist");
 		key = "Artist";
-		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
+		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_ALBUM:
 		propid = RHYTHMDB_PROP_ALBUM;
@@ -1229,7 +1228,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		real_sort_data = view;
 		title = _("A_lbum");
 		key = "Album";
-		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
+		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_GENRE:
 		propid = RHYTHMDB_PROP_GENRE;
@@ -1240,7 +1239,7 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 		real_sort_data = view;
 		title = _("Ge_nre");
 		key = "Genre";
-		rb_tree_view_column_set_expand (RB_TREE_VIEW_COLUMN (column), TRUE);
+		ellipsize = TRUE;
 		break;
 	case RB_ENTRY_VIEW_COL_DURATION:
 		propid = RHYTHMDB_PROP_DURATION;
@@ -1289,6 +1288,10 @@ rb_entry_view_append_column (RBEntryView *view, RBEntryViewColumn coltype)
 	}
 
 	renderer = gtk_cell_renderer_text_new ();
+	if (ellipsize) {
+		g_object_set (G_OBJECT (renderer), "ellipsize", PANGO_ELLIPSIZE_END, NULL);
+		gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
+	}
 	gtk_tree_view_column_pack_start (column, renderer, TRUE);
 	gtk_tree_view_column_set_cell_data_func (column, renderer,
 						 cell_data_func, cell_data, g_free);
@@ -1362,7 +1365,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 	view = RB_ENTRY_VIEW (parent_class->constructor (type, n_construct_properties,
 							 construct_properties));
 
-	view->priv->treeview = GTK_WIDGET (rb_tree_view_new ());
+	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new ());
 
 	gtk_tree_view_set_search_equal_func (GTK_TREE_VIEW (view->priv->treeview),
 					     type_ahead_search_func, 
@@ -1418,7 +1421,7 @@ rb_entry_view_constructor (GType type, guint n_construct_properties,
 		tooltip = gtk_tooltips_new ();
 		
 		/* Playing icon column */
-		column = GTK_TREE_VIEW_COLUMN (rb_tree_view_column_new ());
+		column = GTK_TREE_VIEW_COLUMN (gtk_tree_view_column_new ());
 		renderer = rb_cell_renderer_pixbuf_new ();
 		gtk_tree_view_column_pack_start (column, renderer, TRUE);
 		gtk_tree_view_column_set_cell_data_func (column, renderer,

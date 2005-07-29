@@ -33,18 +33,12 @@ librbwidgets_la_SOURCES =				\
 	rb-song-info.h					\
 	rb-load-failure-dialog.c			\
 	rb-load-failure-dialog.h			\
-	gtktreeprivate.h				\
-	gtkrbtree.h					\
 	rb-rating.c					\
 	rb-rating.h					\
 	rb-rating-helper.c				\
 	rb-rating-helper.h				\
-	rb-tree-view.c					\
-	rb-tree-view.h					\
 	rb-query-creator.c				\
-	rb-query-creator.h				\
-	rb-tree-view-column.c				\
-	rb-tree-view-column.h
+	rb-query-creator.h
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \
