@@ -2803,14 +2803,18 @@ rhythmdb_entry_register_type (void)
 	return g_atomic_int_exchange_and_add (&last_entry_type, 1);		
 }
 
+static GStaticMutex entry_type_mutex = G_STATIC_MUTEX_INIT;
+
 RhythmDBEntryType 
 rhythmdb_entry_song_get_type (void) 
 {
 	static RhythmDBEntryType song_type = -1;
-       
+
+	g_static_mutex_lock (&entry_type_mutex);
 	if (song_type == -1) {
 		song_type = rhythmdb_entry_register_type ();
 	}
+	g_static_mutex_unlock (&entry_type_mutex);
 
 	return song_type;
 }
@@ -2819,9 +2823,11 @@ RhythmDBEntryType rhythmdb_entry_iradio_get_type (void)
 {
 	static RhythmDBEntryType iradio_type = -1;
        
+	g_static_mutex_lock (&entry_type_mutex);
 	if (iradio_type == -1) {
 		iradio_type = rhythmdb_entry_register_type ();
 	}
+	g_static_mutex_unlock (&entry_type_mutex);
 
 	return iradio_type;
 }

@@ -1,5 +1,10 @@
 2005-07-30  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (rhythmdb_entry_song_get_type),
+	(rhythmdb_entry_iradio_get_type): A small thread safety fix.
+
+2005-07-30  James Livingston  <jrl@ids.org.au>
+
 	* remote/bonobo/rb-remote-bonobo.c:
 	(rb_remote_bonobo_player_notify_cb): Patch from Jonathan Matthew
 	<jonathan@kaolin.hn.org> to fix an assertion in the bonobo code.
