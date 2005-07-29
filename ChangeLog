@@ -1,5 +1,10 @@
 2005-07-29  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-song-info.c: (rb_song_info_sync_entry_single): Fix issue
+	where editing some tags may corrupt the tarck number. (Closes 305637)
+
+2005-07-29  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-playlist-source.c: (rb_playlist_source_constructor):
 	* sources/rb-sourcelist.c:
 	* widgets/Makefile.am:

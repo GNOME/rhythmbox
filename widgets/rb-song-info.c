@@ -1125,7 +1125,7 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 
 	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);
 	if (endptr == tracknum_str)
-		tracknum = -1;
+		tracknum = 0;
 
 	type = rhythmdb_get_property_type (dialog->priv->db,
 					   RHYTHMDB_PROP_TITLE);
