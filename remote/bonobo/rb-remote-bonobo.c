@@ -759,11 +759,16 @@ rb_remote_bonobo_player_notify_cb (GObject *object,
 {
 	GValue value = {0};
 	BonoboArg *arg;
+	BonoboArgType arg_type;
 
 	if (bonobo->priv->pb == NULL)
 		return;
+
+	arg_type = bonobo_arg_type_from_gtype (G_PARAM_SPEC_VALUE_TYPE (param));
+	if (arg_type == 0)
+		return;
 	
-	arg = bonobo_arg_new (bonobo_arg_type_from_gtype (G_PARAM_SPEC_VALUE_TYPE (param)));
+	arg = bonobo_arg_new (arg_type);
 	g_value_init (&value, G_PARAM_SPEC_VALUE_TYPE (param));
 	GDK_THREADS_ENTER ();
 	rb_remote_proxy_get_player_property (bonobo->priv->proxy,

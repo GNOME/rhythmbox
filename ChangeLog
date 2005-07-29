@@ -1,5 +1,11 @@
 2005-07-30  James Livingston  <jrl@ids.org.au>
 
+	* remote/bonobo/rb-remote-bonobo.c:
+	(rb_remote_bonobo_player_notify_cb): Patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org> to fix an assertion in the bonobo code.
+
+2005-07-30  James Livingston  <jrl@ids.org.au>
+
 	* player/rb-player-gst.c: (rb_player_class_init),
 	(rb_player_finalize), (emit_signal_idle), (eos_cb), (error_cb),
 	(deep_notify_cb), (buffering_cb), (rb_player_construct):
