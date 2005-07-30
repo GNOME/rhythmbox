@@ -90,7 +90,7 @@ struct RhythmDBPrivate
 	gboolean no_update;
 
 	GList *added_entries;
-	GList *changed_entries;
+	GHashTable *changed_entries;
 
 	GHashTable *propname_map;
 
@@ -114,14 +114,6 @@ struct RhythmDBQueryThreadData
 	guint propid;
 	GtkTreeModel *main_model;
 	gboolean cancel;
-};
-
-struct RhythmDBEntryChangeData
-{
-	RhythmDBEntry *entry;
-	RhythmDBPropType prop;
-	GValue old;
-	GValue new;
 };
 
 struct RhythmDBAddThreadData
@@ -165,10 +157,10 @@ struct RhythmDBEvent
 	RBMetaData *metadata;
 	/* QUERY_COMPLETE */
 	RhythmDBQueryModel *model;
-	/* ENTRY_RESTORED */
+	/* ENTRY_RESTORED / ENTRY_SET */
 	RhythmDBEntry *entry;
 	/* ENTRY_SET */
-	struct RhythmDBEntryChangeData change;
+	RhythmDBEntryChange change;
 };
 
 G_DEFINE_ABSTRACT_TYPE(RhythmDB, rhythmdb, G_TYPE_OBJECT)
@@ -204,6 +196,9 @@ static void rhythmdb_volume_mounted_cb (GnomeVFSVolumeMonitor *monitor,
 static void rhythmdb_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
  					  GnomeVFSVolume *volume, 
  					  gpointer data);
+static gboolean free_entry_changes (RhythmDBEntry *entry, 
+				    GSList *changes,
+				    RhythmDB *db);
 
 enum
 {
@@ -296,9 +291,9 @@ rhythmdb_class_init (RhythmDBClass *klass)
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RhythmDBClass, entry_changed),
 			      NULL, NULL,
-			      rhythmdb_marshal_VOID__POINTER_INT_POINTER_POINTER,
-			      G_TYPE_NONE, 4, G_TYPE_POINTER,
-			      G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
+			      rhythmdb_marshal_VOID__POINTER_POINTER,
+			      G_TYPE_NONE, 2, 
+			      G_TYPE_POINTER, G_TYPE_POINTER);
 
 	rhythmdb_signals[LOAD_COMPLETE] =
 		g_signal_new ("load_complete",
@@ -517,6 +512,8 @@ rhythmdb_init (RhythmDB *db)
 								 (GDestroyNotify) g_free,
 								 NULL);
 
+	db->priv->changed_entries = g_hash_table_new (NULL, NULL);
+	
 	db->priv->event_poll_id = g_idle_add ((GSourceFunc) rhythmdb_idle_poll_events, db);
 
 	rhythmdb_thread_create (db, (GThreadFunc) action_thread_main, db);
@@ -766,46 +763,49 @@ rhythmdb_read_leave (RhythmDB *db)
 			       0, FALSE);
 }
 
-static void
-emit_changed_signals (RhythmDB *db, gboolean commit)
+static gboolean
+free_entry_changes (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 {
-	GList *tem;
-	GHashTable *queued_entry_changes = g_hash_table_new (NULL, NULL);
+	GSList *t;
+	for (t = changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+		g_value_unset (&change->old);
+		g_value_unset (&change->new);
+		g_free (change);
+	}
+	g_slist_free (changes);
+	return TRUE;
+}
 
-	for (tem = db->priv->changed_entries; tem; tem = tem->next) {
-		struct RhythmDBEntryChangeData *data = tem->data;
-		if (commit) {
-			struct RhythmDBAction *action;
+static void
+emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
+{
+	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
+		GSList *t;
+		gboolean sync = FALSE;
+		for (t = changes; t; t = t->next) {
 			RBMetaDataField field;
-
-			if (rhythmdb_entry_get_ulong (data->entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG
-			    && !g_hash_table_lookup (queued_entry_changes, data->entry)
-			    && metadata_field_from_prop (data->prop, &field)) {
-				action = g_new0 (struct RhythmDBAction, 1);
+			RhythmDBEntryChange *change = t->data;
+			if (metadata_field_from_prop (change->prop, &field)) {
+				struct RhythmDBAction *action = g_new0 (struct RhythmDBAction, 1);
 				action->type = RHYTHMDB_ACTION_SYNC;
-				action->uri = g_strdup (data->entry->location);
-
-				g_hash_table_insert (queued_entry_changes, data->entry, action);
+				action->uri = g_strdup (entry->location);
 				g_async_queue_push (db->priv->action_queue, action);
 			}
-			g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, data->entry,
-				       data->prop, &data->old, &data->new);
 		}
-		g_value_unset (&data->old);
-		g_value_unset (&data->new);
-		g_free (data);
 	}
-	g_list_free (db->priv->changed_entries);
-	db->priv->changed_entries = NULL;
-	g_hash_table_destroy (queued_entry_changes);
+	
+	g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 0, entry, changes);
 }
 
 static void
 rhythmdb_commit_internal (RhythmDB *db, gboolean signal_changed)
 {
-       GList *tem;
+	GList *tem;
 
-	emit_changed_signals (db, signal_changed);
+	if (signal_changed)
+		g_hash_table_foreach (db->priv->changed_entries, (GHFunc) emit_entry_changed, db);
+	g_hash_table_foreach_remove (db->priv->changed_entries, (GHRFunc) free_entry_changes, db);
 
 	for (tem = db->priv->added_entries; tem; tem = tem->next) {
 		RhythmDBEntry *entry = tem->data;
@@ -1382,7 +1382,7 @@ static void
 rhythmdb_process_queued_entry_set_event (RhythmDB *db, 
 					 struct RhythmDBEvent *event)
 {
-	rhythmdb_entry_set_internal (db, event->change.entry, 
+	rhythmdb_entry_set_internal (db, event->entry, 
 			    event->change.prop, 
 			    &event->change.new);
 	/* Don't run rhythmdb_commit right now in case there 
@@ -1886,10 +1886,10 @@ void
 rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
 		     guint propid, GValue *value)
 {
-	struct RhythmDBEntryChangeData *changedata;
+	RhythmDBEntryChange *changedata;
+	GSList *changelist;
 
-	changedata = g_new0 (struct RhythmDBEntryChangeData, 1);
-	changedata->entry = entry;
+	changedata = g_new0 (RhythmDBEntryChange, 1);
 	changedata->prop = propid;
 
 	/* Copy a temporary gvalue, since _entry_get uses
@@ -1905,7 +1905,9 @@ rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
 	g_value_init (&changedata->new, G_VALUE_TYPE (value));
 	g_value_copy (value, &changedata->new);
 
-	db->priv->changed_entries = g_list_append (db->priv->changed_entries, changedata);
+	changelist = g_hash_table_lookup (db->priv->changed_entries, entry);
+	changelist = g_slist_append (changelist, changedata);
+	g_hash_table_insert (db->priv->changed_entries, entry, changelist);
 
 	rhythmdb_entry_set_internal (db, entry, propid, value);
 }
@@ -2054,7 +2056,7 @@ rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry,
 
 		rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
 
-		result->change.entry = entry;
+		result->entry = entry;
 		result->change.prop = propid;
 		g_value_init (&result->change.new, G_VALUE_TYPE (value));
 		g_value_copy (value, &result->change.new);

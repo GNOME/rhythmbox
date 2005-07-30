@@ -169,6 +169,11 @@ typedef struct {
 	gboolean hidden;
 } RhythmDBEntry;
 
+typedef struct {
+	RhythmDBPropType prop;
+	GValue old;
+	GValue new;
+} RhythmDBEntryChange;
 
 G_INLINE_FUNC const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 G_INLINE_FUNC gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
@@ -325,8 +330,7 @@ typedef struct
 	/* signals */
 	void	(*entry_added)		(RhythmDBEntry *entry);
 	void	(*entry_restored)	(RhythmDBEntry *entry);
-	void	(*entry_changed)	(RhythmDBEntry *entry, RhythmDBPropType prop,
-					 const GValue *old, const GValue *new);
+	void	(*entry_changed)	(RhythmDBEntry *entry, GSList *changes); /* list of RhythmDBEntryChanges */
 	void	(*entry_deleted)	(RhythmDBEntry *entry);
 	void	(*load_complete)	(void);
 	void	(*save_complete)	(void);

@@ -62,11 +62,12 @@ static void rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 static void rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 						 RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-						   RhythmDBPropType prop, const GValue *old,
-						   const GValue *new, RhythmDBQueryModel *model);
+						   GSList *changes, RhythmDBQueryModel *model);
 static void rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 						   RhythmDBQueryModel *model);
 
+static void rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
+						   RhythmDBEntry *entry);
 static void rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry);
 static gboolean rhythmdb_query_model_drag_data_get (RbTreeDragSource *dragsource,
 							  GList *paths,
@@ -183,6 +184,7 @@ enum
 {
 	COMPLETE,
 	ENTRY_PROP_CHANGED,
+	ENTRY_REMOVED,
 	LAST_SIGNAL
 };
 
@@ -265,6 +267,14 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 			      rhythmdb_marshal_VOID__POINTER_INT_POINTER_POINTER,
 			      G_TYPE_NONE, 4, G_TYPE_POINTER,
 			      G_TYPE_INT, G_TYPE_POINTER, G_TYPE_POINTER);
+	rhythmdb_query_model_signals[ENTRY_REMOVED] =
+		g_signal_new ("entry-removed",
+			      RHYTHMDB_TYPE_QUERY_MODEL,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RhythmDBQueryModelClass, entry_removed),
+			      NULL, NULL,
+			      rhythmdb_marshal_VOID__POINTER,
+			      G_TYPE_NONE, 1, G_TYPE_POINTER);
 	rhythmdb_query_model_signals[COMPLETE] =
 		g_signal_new ("complete",
 			      RHYTHMDB_TYPE_QUERY_MODEL,
@@ -570,42 +580,47 @@ rhythmdb_query_model_entry_added_cb (RhythmDB *db, RhythmDBEntry *entry,
 
 static void
 rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
-				       RhythmDBPropType prop, const GValue *old,
-				       const GValue *new, RhythmDBQueryModel *model)
+				       GSList *changes, RhythmDBQueryModel *model)
 {
 	gboolean hidden = FALSE;
+	GSList *t;
 
-	if (!model->priv->connected) {
+	if (!model->priv->connected)
 		return;
-	}
+
 
 	hidden = rhythmdb_entry_get_boolean (entry, RHYTHMDB_PROP_HIDDEN);
 
-	if (g_hash_table_lookup (model->priv->reverse_map, entry) != NULL) {
-		if (hidden != FALSE) {
-			rhythmdb_query_model_remove_entry (model, entry);
-			return;
-		}
-
-		if (model->priv->query &&
-		    !rhythmdb_evaluate_query (db, model->priv->query, entry)) {
-			rhythmdb_query_model_remove_entry (model, entry);
-			return;
-		}
-
-		g_signal_emit (G_OBJECT (model),
-			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
-			       entry, prop, old, new);
-
-		/* it may have moved, so we can't just emit a changed entry */
-		rhythmdb_query_model_do_reorder (model, entry);
-	} else {
+	if (g_hash_table_lookup (model->priv->reverse_map, entry) == NULL) {
 		if (hidden == FALSE) {
 			/* the changed entry may now satisfy the query 
 			 * so we test it */
 			rhythmdb_query_model_entry_added_cb (db, entry, model);
 		}
+		return;
 	}
+
+	if (hidden) {
+		rhythmdb_query_model_remove_entry (model, entry);
+		return;
+	}
+
+	/* emit separate change signals for each property */
+	for (t = changes; t; t = t->next) {
+		RhythmDBEntryChange *change = t->data;
+		g_signal_emit (G_OBJECT (model),
+			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
+			       entry, change->prop, &change->old, &change->new);
+	}
+
+	if (model->priv->query &&
+	    !rhythmdb_evaluate_query (db, model->priv->query, entry)) {
+		rhythmdb_query_model_filter_out_entry (model, entry);
+		return;
+	}
+
+	/* it may have moved, so we can't just emit a changed entry */
+	rhythmdb_query_model_do_reorder (model, entry);
 }
 
 static void
@@ -913,8 +928,9 @@ rhythmdb_query_model_do_insert (RhythmDBQueryModel *model,
 	rhythmdb_query_model_update_limited_entries (model);
 }
 
-void
-rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, RhythmDBEntry *entry)
+static void
+rhythmdb_query_model_filter_out_entry (RhythmDBQueryModel *model,
+				       RhythmDBEntry *entry)
 {
 	GSequencePtr ptr;
 
@@ -931,6 +947,21 @@ rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, RhythmDBEntry *ent
 		rhythmdb_query_model_update_limited_entries (model);
 		return;
 	}
+}
+				
+
+void
+rhythmdb_query_model_remove_entry (RhythmDBQueryModel *model, 
+				   RhythmDBEntry *entry)
+{
+	/* emit entry-removed, so listeners know the
+	 * entry has actually been removed, rather than filtered
+	 * out.
+	 */
+	g_signal_emit (G_OBJECT (model),
+		       rhythmdb_query_model_signals[ENTRY_REMOVED], 0,
+		       entry);
+	rhythmdb_query_model_filter_out_entry (model, entry);
 }
 
 static gboolean

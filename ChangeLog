@@ -1,5 +1,36 @@
 2005-07-30  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-iradio-source.c: (rb_iradio_source_constructor),
+	(genre_selected_cb), (genre_selection_reset_cb): Handle the
+	RBPropertyView 'property-selection-reset' signal in iradio source.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb): correctly emit changed
+	signals whether the entry was removed or not.
+
+	* rhythmdb/rhythmdb-marshal.list:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_set_property),
+	(rhythmdb_property_model_entry_removed_cb):
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_filter_out_entry),
+	(rhythmdb_query_model_remove_entry):
+	* rhythmdb/rhythmdb-query-model.h:
+	* rhythmdb/rhythmdb.c: (rhythmdb_class_init), (rhythmdb_init),
+	(free_entry_changes), (emit_entry_changed),
+	(rhythmdb_commit_internal),
+	(rhythmdb_process_queued_entry_set_event), (rhythmdb_entry_sync),
+	(rhythmdb_entry_set):
+	* rhythmdb/rhythmdb.h:
+	Emit 'entry-removed' signal from query model, to distinguish between
+	removed and filters entried. Emit entry-changed signal for all changed
+	properties.
+	
+	Patches from Jonathan Matthew <jonathan@kaolin.hn.org> (Closes 149799)
+
+2005-07-30  James Livingston  <jrl@ids.org.au>
+
 	* data/glade/station-properties.glade: remove extraneous string that
 	was causing translators problems.
 

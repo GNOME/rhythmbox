@@ -52,9 +52,9 @@ static void rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry
 						     RhythmDBPropType prop, const GValue *old,
 						     const GValue *new,
 						     RhythmDBPropertyModel *propmodel);
-static void rhythmdb_property_model_row_deleted_cb (GtkTreeModel *model,
-						    GtkTreePath *path,
-						    RhythmDBPropertyModel *propmodel);
+static void rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
+						      RhythmDBEntry *entry,
+						      RhythmDBPropertyModel *propmodel);
 static void rhythmdb_property_model_insert (RhythmDBPropertyModel *model, RhythmDBEntry *entry);
 static void rhythmdb_property_model_delete (RhythmDBPropertyModel *model,
 					    RhythmDBEntry *entry);
@@ -251,7 +251,7 @@ rhythmdb_property_model_set_property (GObject *object,
 							      G_CALLBACK (rhythmdb_property_model_row_inserted_cb),
 							      model);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
-							      G_CALLBACK (rhythmdb_property_model_row_deleted_cb),
+							      G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
 							      model);
 			g_signal_handlers_disconnect_by_func (G_OBJECT (model->priv->query_model),
 							      G_CALLBACK (rhythmdb_property_model_prop_changed_cb),
@@ -268,8 +268,8 @@ rhythmdb_property_model_set_property (GObject *object,
 						 model,
 						 0);
 			g_signal_connect_object (G_OBJECT (model->priv->query_model),
-						 "row_deleted",
-						 G_CALLBACK (rhythmdb_property_model_row_deleted_cb),
+						 "entry-removed",
+						 G_CALLBACK (rhythmdb_property_model_entry_removed_cb),
 						 model,
 						 0);
 			g_signal_connect_object (G_OBJECT (model->priv->query_model),
@@ -381,18 +381,6 @@ entry_from_tree_iter (GtkTreeModel *model, GtkTreeIter *iter)
 	return entry;
 }
 
-static RhythmDBEntry *
-entry_from_tree_path (GtkTreeModel *model, GtkTreePath *path)
-{
-	GtkTreeIter entry_iter;
-	RhythmDBEntry *entry;
-
-	gtk_tree_model_get_iter (model, &entry_iter, path);
-	gtk_tree_model_get (model, &entry_iter, 0,
-			    &entry, -1);
-	return entry;
-}
-
 static void
 rhythmdb_property_model_row_inserted_cb (GtkTreeModel *model,
 					 GtkTreePath *path,
@@ -417,11 +405,10 @@ rhythmdb_property_model_prop_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 }
 
 static void
-rhythmdb_property_model_row_deleted_cb (GtkTreeModel *model,
-					GtkTreePath *path,
-					RhythmDBPropertyModel *propmodel)
+rhythmdb_property_model_entry_removed_cb (RhythmDBQueryModel *model,
+					  RhythmDBEntry *entry,
+					  RhythmDBPropertyModel *propmodel)
 {
-	RhythmDBEntry *entry = entry_from_tree_path (model, path);
 	rhythmdb_property_model_delete (propmodel, entry);
 }
 

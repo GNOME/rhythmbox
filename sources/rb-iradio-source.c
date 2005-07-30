@@ -84,6 +84,7 @@ static void rb_iradio_source_show_browser (RBIRadioSource *source,
 static void rb_iradio_source_state_prefs_sync (RBIRadioSource *source);
 static void genre_selected_cb (RBPropertyView *propview, const char *name,
 			       RBIRadioSource *iradio_source);
+static void genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source);
 static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view, RBIRadioSource *source);
 
 /* source methods */
@@ -376,6 +377,10 @@ rb_iradio_source_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (source->priv->genres),
 				 "property-selected",
 				 G_CALLBACK (genre_selected_cb),
+				 source, 0);
+	g_signal_connect_object (G_OBJECT (source->priv->genres),
+				 "property-selection-reset",
+				 G_CALLBACK (genre_selection_reset_cb),
 				 source, 0);
 
 	g_object_set (G_OBJECT (source->priv->genres), "vscrollbar_policy",
@@ -690,6 +695,17 @@ genre_selected_cb (RBPropertyView *propview, const char *name,
 {
 	g_free (iradio_source->priv->selected_genre);
 	iradio_source->priv->selected_genre = g_strdup (name);
+	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
+
+	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
+}
+
+static void
+genre_selection_reset_cb (RBPropertyView *propview, RBIRadioSource *iradio_source)
+{
+	g_free (iradio_source->priv->selected_genre);
+	iradio_source->priv->selected_genre = NULL;
+
 	rb_iradio_source_do_query (iradio_source, RB_IRADIO_QUERY_TYPE_GENRE);
 
 	rb_source_notify_filter_changed (RB_SOURCE (iradio_source));
