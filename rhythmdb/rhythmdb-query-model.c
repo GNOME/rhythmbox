@@ -627,7 +627,9 @@ static void
 rhythmdb_query_model_entry_deleted_cb (RhythmDB *db, RhythmDBEntry *entry,
 				       RhythmDBQueryModel *model)
 {
-	rhythmdb_query_model_remove_entry (model, entry);
+	
+	if (g_hash_table_lookup (model->priv->reverse_map, entry))
+		rhythmdb_query_model_remove_entry (model, entry);
 }
 
 /* Threading: Called from the database context, holding a db write lock
