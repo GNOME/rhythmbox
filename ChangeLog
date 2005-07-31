@@ -1,3 +1,9 @@
+2005-07-31  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_process_metadata_load): don't reset
+	the rating and last-played time when reloading track metadata (if the
+	file has changed).
+
 2005-07-30  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-iradio-source.c: (rb_iradio_source_constructor),

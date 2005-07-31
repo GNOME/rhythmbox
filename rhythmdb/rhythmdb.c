@@ -1343,29 +1343,29 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 			rb_debug ("entry already exists");
 			return TRUE;
 		}
+
+		/* initialize the last played date to 0=never */
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, 0);
+		rhythmdb_entry_set_internal (db, entry, 
+					     RHYTHMDB_PROP_LAST_PLAYED, &value);
+		g_value_unset (&value);
+
+		/* initialize the rating */
+		g_value_init (&value, G_TYPE_DOUBLE);
+		g_value_set_double (&value, 2.5);
+		rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_RATING, &value);
+		g_value_unset (&value);
+
+		/* initialize auto rating */
+		g_value_init (&value, G_TYPE_BOOLEAN);
+		g_value_set_boolean (&value, TRUE);
+		rhythmdb_entry_set_internal (db, entry, 
+					     RHYTHMDB_PROP_AUTO_RATE, &value);
+		g_value_unset (&value);
 	}
 
 	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
-
-	/* initialize the last played date to 0=never */
-	g_value_init (&value, G_TYPE_ULONG);
-	g_value_set_ulong (&value, 0);
-	rhythmdb_entry_set_internal (db, entry, 
-				     RHYTHMDB_PROP_LAST_PLAYED, &value);
-	g_value_unset (&value);
-
-	/* initialize the rating */
-	g_value_init (&value, G_TYPE_DOUBLE);
-	g_value_set_double (&value, 2.5);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_RATING, &value);
-	g_value_unset (&value);
-
-	/* initialize auto rating */
-	g_value_init (&value, G_TYPE_BOOLEAN);
-	g_value_set_boolean (&value, TRUE);
-	rhythmdb_entry_set_internal (db, entry, 
-				     RHYTHMDB_PROP_AUTO_RATE, &value);
-	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
