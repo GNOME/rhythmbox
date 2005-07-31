@@ -2129,7 +2129,9 @@ info_available_cb (RBPlayer *mmplayer,
         RBShellPlayer *player = RB_SHELL_PLAYER (data);
         RBEntryView *songs;
         RhythmDBEntry *entry;
+        RhythmDBPropType entry_field = 0;
         gboolean changed = FALSE;
+        gboolean set_field = FALSE;
         rb_debug ("info: %d", field);
 
         /* Sanity check, this signal may come in after we stopped the
@@ -2150,32 +2152,91 @@ info_available_cb (RBPlayer *mmplayer,
                 goto out_unlock;
         }
 
-        switch (field) {
-        case RB_METADATA_FIELD_TITLE:
-        {
-                char *song = g_value_dup_string (value);
-                if (!g_utf8_validate (song, -1, NULL)) {
-                        g_warning ("Invalid UTF-8 from internet radio: %s", song);
-                        goto out_unlock;
-                }
+	if (entry->type != RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
+		rb_debug ("Got info_available but entry isn't an iradio station");
+		goto out_unlock;
+	}
 
-                if ((!song && player->priv->song)
-                    || !player->priv->song
-                    || strcmp (song, player->priv->song)) {
-                        changed = TRUE;
-                        g_free (player->priv->song);
-                        player->priv->song = song;
-                } else {
-                        g_free (song);
+	switch (field)	{
+	case RB_METADATA_FIELD_TITLE:
+	{
+		char *song = g_value_dup_string (value);
+		if (!g_utf8_validate (song, -1, NULL)) {
+			g_warning ("Invalid UTF-8 from internet radio: %s", song);
+			goto out_unlock;
 		}
-                break;
-        }
+
+		if ((!song && player->priv->song)
+		    || !player->priv->song
+		    || strcmp (song, player->priv->song)) {
+			changed = TRUE;
+			g_free (player->priv->song);
+			player->priv->song = song;
+		}
+		else
+			g_free (song);
+		break;
+	}
+	case RB_METADATA_FIELD_GENRE:
+	{
+		const char *genre = g_value_get_string (value);
+		const char *existing;
+		if (!g_utf8_validate (genre, -1, NULL)) {
+			g_warning ("Invalid UTF-8 from internet radio: %s", genre);
+			goto out_unlock;
+		}
+
+		/* check if the db entry already has a genre; if so, don't change it */
+		existing = rb_refstring_get (entry->genre);
+		if ((existing == NULL) || 
+		    (strcmp (existing, "") == 0) ||
+		    (strcmp (existing, _("Unknown")) == 0)) {
+			entry_field = RHYTHMDB_PROP_GENRE;
+			rb_debug ("setting genre of iradio station to %s", genre);
+			set_field = TRUE;
+		} else {
+			rb_debug ("iradio station already has genre: %s; ignoring %s", existing, genre);
+		}
+		break;
+	}
+	case RB_METADATA_FIELD_COMMENT:
+	{
+		const char *name = g_value_get_string (value);
+		const char *existing;
+		if (!g_utf8_validate (name, -1, NULL)) {
+			g_warning ("Invalid UTF-8 from internet radio: %s", name);
+			goto out_unlock;
+		}
+
+		/* check if the db entry already has a title; if so, don't change it.
+		 * consider title==URI to be the same as no title, since that's what
+		 * happens for stations imported by DnD or commandline args.
+		 * if the station title really is the same as the URI, then surely
+		 * the station title in the stream metadata will say that too..
+		 */
+		existing = rb_refstring_get (entry->title);
+		if ((existing == NULL) || 
+		    (strcmp(existing, "") == 0) || 
+		    (strcmp(existing, entry->location) == 0)) {
+			entry_field = RHYTHMDB_PROP_TITLE;
+			rb_debug ("setting title of iradio station to %s", name);
+			set_field = TRUE;
+		} else {
+			rb_debug ("iradio station already has title: %s; ignoring %s", existing, name);
+		}
+		break;
+	}
 	default:
 		break;
 	}
 
 	if (changed)
 		rb_shell_player_sync_with_source (player);
+
+	if (set_field && entry_field != 0) {
+		rhythmdb_entry_sync (player->priv->db, entry, entry_field, value);
+		rhythmdb_commit (player->priv->db);
+	}
 
  out_unlock:
 	GDK_THREADS_LEAVE ();

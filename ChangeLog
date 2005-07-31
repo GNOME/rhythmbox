@@ -1,3 +1,11 @@
+2005-08-01  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-player-gst.c: (process_tag), (found_tag_cb),
+	(rb_player_construct):
+	* shell/rb-shell-player.c: (info_available_cb): patch from Jonathan
+	Matthew <jonathan@kaolin.hn.org> to use iradio station metadata if the
+	user hasn't provided them (Closes 307899)
+
 2005-07-31  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:

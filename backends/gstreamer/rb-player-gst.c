@@ -287,31 +287,52 @@ error_cb (GstElement *element,
 }
 
 static void
-deep_notify_cb (GstElement *element, GstElement *orig,
-	        GParamSpec *pspec, RBPlayer *player)
+process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 {
-	if (!(pspec->flags & G_PARAM_READABLE)) return;
+	int count;
+	RBMetaDataField field;
+	RBPlayerSignal *signal;
+	const GValue *val;
+	GValue *newval;
 
-	if (strcmp (pspec->name, "iradio-title") == 0) {
-		RBPlayerSignal *signal;
+	count = gst_tag_list_get_tag_size (list, tag);
+	if (count < 1)
+		return;
+	
+	/* only handle the subset of fields we use for iradio */
+	if (!strcmp (tag, GST_TAG_TITLE))
+		field = RB_METADATA_FIELD_TITLE;
+	else if (!strcmp (tag, GST_TAG_GENRE))
+		field = RB_METADATA_FIELD_GENRE;
+	else if (!strcmp (tag, GST_TAG_COMMENT))
+		field = RB_METADATA_FIELD_COMMENT;
+	else
+		return;
 
-		rb_debug ("caught deep notify for iradio-title");
-
-		signal = g_new0 (RBPlayerSignal, 1);
-
-		signal->type = INFO;
-		signal->info_field = RB_METADATA_FIELD_TITLE;
-		signal->info = g_new0 (GValue, 1);
-		g_value_init (signal->info, G_TYPE_STRING); 
-		g_object_get_property (G_OBJECT (orig), pspec->name, signal->info);
-
-		signal->object = player;
-
-		g_object_ref (G_OBJECT (player));
-
-		g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+	/* of those, all are strings */
+	newval = g_new0 (GValue, 1);
+	g_value_init (newval, G_TYPE_STRING);
+	val = gst_tag_list_get_value_index (list, tag, 0);
+	if (!g_value_transform (val, newval)) {
+		rb_debug ("Could not transform tag value type %s into string",
+			  g_type_name (G_VALUE_TYPE (val)));
 		return;
 	}
+
+	signal = g_new0 (RBPlayerSignal, 1);
+	signal->object = player;
+	signal->info_field = field;
+	signal->info = newval;
+	signal->type = INFO;
+
+	g_object_ref (G_OBJECT (player));
+	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+}
+
+static void
+found_tag_cb (GObject *pipeline, GstElement *source, GstTagList *tags, RBPlayer *player)
+{
+	gst_tag_list_foreach (tags, (GstTagForeachFunc) process_tag, player);
 }
 
 static void
@@ -344,8 +365,8 @@ rb_player_construct (RBPlayer *mp, GError **error)
 		goto missing_element;
 	}
 	g_signal_connect_object (G_OBJECT (mp->priv->playbin),
-				 "deep_notify",
-				 G_CALLBACK (deep_notify_cb),
+				 "found_tag",
+				 G_CALLBACK (found_tag_cb),
 				 mp, 0);
 
 	mp->priv->buffering_signal_id =
