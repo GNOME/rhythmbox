@@ -612,7 +612,7 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_tooltips_enable (player->priv->tooltips);
 
 	/* Previous button */
-	image = rb_image_new_from_stock (GTK_STOCK_MEDIA_PREVIOUS,
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PREVIOUS,
 					 GTK_ICON_SIZE_LARGE_TOOLBAR);
 
 	player->priv->prev_button = gtk_button_new ();
@@ -624,13 +624,13 @@ rb_shell_player_init (RBShellPlayer *player)
 			      _("Play previous song"), NULL);
 
 	/* Button images */
-	player->priv->play_image = rb_image_new_from_stock (GTK_STOCK_MEDIA_PLAY,
+	player->priv->play_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PLAY,
 							    GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->play_image);
-	player->priv->pause_image = rb_image_new_from_stock (GTK_STOCK_MEDIA_PAUSE,
+	player->priv->pause_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_PAUSE,
 							     GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->pause_image);
-	player->priv->stop_image = rb_image_new_from_stock (GTK_STOCK_MEDIA_STOP,
+	player->priv->stop_image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_STOP,
 							    GTK_ICON_SIZE_LARGE_TOOLBAR);
 	g_object_ref (player->priv->stop_image);
 
@@ -642,7 +642,7 @@ rb_shell_player_init (RBShellPlayer *player)
 				  "clicked", G_CALLBACK (rb_shell_player_playpause_button), player);
 
 	/* Next button */
-	image = rb_image_new_from_stock (GTK_STOCK_MEDIA_NEXT,
+	image = gtk_image_new_from_stock (GTK_STOCK_MEDIA_NEXT,
 					 GTK_ICON_SIZE_LARGE_TOOLBAR);
 	player->priv->next_button = gtk_button_new ();
 	gtk_container_add (GTK_CONTAINER (player->priv->next_button), image);

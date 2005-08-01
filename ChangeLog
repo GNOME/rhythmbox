@@ -1,5 +1,11 @@
 2005-08-01  Bastien Nocera  <hadess@hadess.net>
 
+	* shell/rb-shell-player.c: (rb_shell_player_init): don't use
+	rb_image_new_from_stock (which mirrors icons for RTL languages) when
+	the icons are in GTK+ (Closes: #312264)
+
+2005-08-01  Bastien Nocera  <hadess@hadess.net>
+
 	* rhythmdb/rhythmdb.c: (emit_entry_changed): fix warning by removing
 	unused variable
 
