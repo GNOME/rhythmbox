@@ -1,5 +1,11 @@
 2005-08-01  James Livingston  <jrl@ids.org.au>
 
+	* widgets/rb-entry-view.c: (rb_entry_view_set_property): patch from
+	Jonathan Matthew <jonathan@kaolin.hn.org> to fix a crasher when an
+	EntryView kept a cached copy of an iterator.
+
+2005-08-01  James Livingston  <jrl@ids.org.au>
+
 	* player/rb-player-gst.c: (process_tag), (found_tag_cb),
 	(rb_player_construct):
 	* shell/rb-shell-player.c: (info_available_cb): patch from Jonathan
