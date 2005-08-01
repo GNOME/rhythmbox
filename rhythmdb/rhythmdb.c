@@ -782,7 +782,6 @@ emit_entry_changed (RhythmDBEntry *entry, GSList *changes, RhythmDB *db)
 {
 	if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_TYPE) == RHYTHMDB_ENTRY_TYPE_SONG) {
 		GSList *t;
-		gboolean sync = FALSE;
 		for (t = changes; t; t = t->next) {
 			RBMetaDataField field;
 			RhythmDBEntryChange *change = t->data;
