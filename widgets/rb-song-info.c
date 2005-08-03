@@ -1076,35 +1076,53 @@ rb_song_info_sync_entries_multiple (RBSongInfo *dialog)
 	const char *album = gtk_entry_get_text (GTK_ENTRY (dialog->priv->album));	
 	GValue val = {0,};
 	GList *tem;
-
-	rhythmdb_commit (dialog->priv->db);
+	gboolean changed = FALSE;
+	RhythmDBEntry *entry;
 
 	if (strlen (album) > 0) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, album);
-		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_sync (dialog->priv->db,
-					     tem->data, RHYTHMDB_PROP_ALBUM, &val);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			entry = (RhythmDBEntry *)tem->data;
+			if (strcmp (album, rb_refstring_get (entry->album)) == 0)
+				continue;
+			rhythmdb_entry_sync (dialog->priv->db, entry,
+					     RHYTHMDB_PROP_ALBUM, &val);
+			changed = TRUE;
+		}
 		g_value_unset (&val);
 	}
 	
 	if (strlen (artist) > 0) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, artist);
-		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_sync (dialog->priv->db,
-					     tem->data, RHYTHMDB_PROP_ARTIST, &val);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			entry = (RhythmDBEntry *)tem->data;
+			if (strcmp (artist, rb_refstring_get (entry->artist)) == 0)
+				continue;
+			rhythmdb_entry_sync (dialog->priv->db, entry,
+					     RHYTHMDB_PROP_ARTIST, &val);
+			changed = TRUE;
+		}
 		g_value_unset (&val);
 	}
 
 	if (strlen (genre) > 0) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
-		for (tem = dialog->priv->selected_entries; tem; tem = tem->next)
-			rhythmdb_entry_sync (dialog->priv->db,
-					     tem->data, RHYTHMDB_PROP_GENRE, &val);
+		for (tem = dialog->priv->selected_entries; tem; tem = tem->next) {
+			entry = (RhythmDBEntry *)tem->data;
+			if (strcmp (genre, rb_refstring_get (entry->genre)) == 0)
+				continue;
+			rhythmdb_entry_sync (dialog->priv->db, entry,
+					     RHYTHMDB_PROP_GENRE, &val);
+			changed = TRUE;
+		}
 		g_value_unset (&val);
 	}
+
+	if (changed)
+		rhythmdb_commit (dialog->priv->db);
 }
 
 static void
@@ -1119,62 +1137,78 @@ rb_song_info_sync_entry_single (RBSongInfo *dialog)
 	GType type;
 	gint tracknum;
 	GValue val = {0,};
+	gboolean changed = FALSE;
+	RhythmDBEntry *entry = dialog->priv->current_entry;
 
 	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[PRE_METADATA_CHANGE], 0,
-		       dialog->priv->current_entry);
+		       entry);
 
 	tracknum = g_ascii_strtoull (tracknum_str, &endptr, 10);
-	if (endptr == tracknum_str)
-		tracknum = 0;
+	if ((endptr != tracknum_str) && (tracknum != entry->tracknum)) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_TRACK_NUMBER);
+		g_value_init (&val, type);
+		g_value_set_ulong (&val, tracknum);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_TRACK_NUMBER, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 
-	type = rhythmdb_get_property_type (dialog->priv->db,
-					   RHYTHMDB_PROP_TITLE);
-	g_value_init (&val, type);
-	g_value_set_string (&val, title);
-	rhythmdb_entry_sync (dialog->priv->db,
-			     dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_unset (&val);
-
-	type = rhythmdb_get_property_type (dialog->priv->db,
-					   RHYTHMDB_PROP_TRACK_NUMBER);
-	g_value_init (&val, type);
-	g_value_set_ulong (&val, tracknum);
-	rhythmdb_entry_sync (dialog->priv->db,
-			     dialog->priv->current_entry, RHYTHMDB_PROP_TRACK_NUMBER, &val);
-	g_value_unset (&val);
-
-	type = rhythmdb_get_property_type (dialog->priv->db,
-					   RHYTHMDB_PROP_ALBUM);
-	g_value_init (&val, type);
-	g_value_set_string (&val, album);
-	rhythmdb_entry_sync (dialog->priv->db,
-			     dialog->priv->current_entry, RHYTHMDB_PROP_ALBUM, &val);
-	g_value_unset (&val);
-
-	type = rhythmdb_get_property_type (dialog->priv->db,
-					   RHYTHMDB_PROP_ARTIST);
-	g_value_init (&val, type);
-	g_value_set_string (&val, artist);
-	rhythmdb_entry_sync (dialog->priv->db,
-			     dialog->priv->current_entry, RHYTHMDB_PROP_ARTIST, &val);
-	g_value_unset (&val);
+	if (strcmp (title, rb_refstring_get (entry->title))) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_TITLE);
+		g_value_init (&val, type);
+		g_value_set_string (&val, title);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_TITLE, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 
 
-	type = rhythmdb_get_property_type (dialog->priv->db,
-					   RHYTHMDB_PROP_GENRE);
-	g_value_init (&val, type);
-	g_value_set_string (&val, genre);
-	rhythmdb_entry_sync (dialog->priv->db,
-			     dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
-	g_value_unset (&val);
+	if (strcmp (album, rb_refstring_get (entry->album))) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_ALBUM);
+		g_value_init (&val, type);
+		g_value_set_string (&val, album);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_ALBUM, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
+	if (strcmp (artist, rb_refstring_get (entry->artist))) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_ARTIST);
+		g_value_init (&val, type);
+		g_value_set_string (&val, artist);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_ARTIST, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
+
+	if (strcmp (artist, rb_refstring_get (entry->artist))) {
+		type = rhythmdb_get_property_type (dialog->priv->db,
+						   RHYTHMDB_PROP_GENRE);
+		g_value_init (&val, type);
+		g_value_set_string (&val, genre);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 
 	/* FIXME: when an entry is SYNCed, a changed signal is emitted, and
 	 * this signal is also emitted, aren't they redundant?
 	 */
 	g_signal_emit (G_OBJECT (dialog), rb_song_info_signals[POST_METADATA_CHANGE], 0,
-		       dialog->priv->current_entry);
+		       entry);
 
-	rhythmdb_commit (dialog->priv->db);
+	if (changed)
+		rhythmdb_commit (dialog->priv->db);
 }	
 
 static void

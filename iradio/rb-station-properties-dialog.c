@@ -453,23 +453,36 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	const char *genre = gtk_entry_get_text (GTK_ENTRY (dialog->priv->genre));
 	const char *location = gtk_entry_get_text (GTK_ENTRY (dialog->priv->location));
 	GValue val = {0,};
+	gboolean changed = FALSE;
+	RhythmDBEntry *entry = dialog->priv->current_entry;
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, title);
-	rhythmdb_entry_sync (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_TITLE, &val);
-	g_value_unset (&val);
+	if (strcmp (title, rb_refstring_get (entry->title))) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, title);
+		rhythmdb_entry_sync (dialog->priv->db, entry, 
+				     RHYTHMDB_PROP_TITLE, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, genre);
-	rhythmdb_entry_sync (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_GENRE, &val);
-	g_value_unset (&val);
+	if (strcmp (genre, rb_refstring_get (entry->genre))) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, genre);
+		rhythmdb_entry_sync (dialog->priv->db, entry, 
+				     RHYTHMDB_PROP_GENRE, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
 
-	g_value_init (&val, G_TYPE_STRING);
-	g_value_set_string (&val, location);
-	rhythmdb_entry_sync (dialog->priv->db,
-			    dialog->priv->current_entry, RHYTHMDB_PROP_LOCATION, &val);
-	g_value_unset (&val);
-	rhythmdb_commit (dialog->priv->db);
+	if (strcmp (location, entry->location)) {
+		g_value_init (&val, G_TYPE_STRING);
+		g_value_set_string (&val, location);
+		rhythmdb_entry_sync (dialog->priv->db, entry,
+				     RHYTHMDB_PROP_LOCATION, &val);
+		g_value_unset (&val);
+		changed = TRUE;
+	}
+
+	if (changed)
+		rhythmdb_commit (dialog->priv->db);
 }
