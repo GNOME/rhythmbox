@@ -720,7 +720,7 @@ rb_iradio_source_do_query (RBIRadioSource *source, RBIRadioQueryType qtype)
 
 	if ((qtype == RB_IRADIO_QUERY_TYPE_ALL) && (source->priv->all_query)) {
 		rb_debug ("using cached query");
-		rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (query_model));
+		rb_entry_view_set_model (source->priv->stations, RHYTHMDB_QUERY_MODEL (source->priv->all_query));
 		return;
 	}
 
