@@ -1,3 +1,12 @@
+2005-08-04  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-iradio-source.c: (rb_iradio_source_dispose),
+	(rb_iradio_source_do_query): Patch from Jonathan Matthew
+	<jonathan@kaolin.hn.org> that stops the iradio source attempting to
+	use a query before the database it fully loaded. (Closes 145217)
+
+	Also removed unused fields from RBIRadioSourcePrivate.
+
 2005-08-03  James Livingston  <jrl@ids.org.au>
 
 	* iradio/rb-station-properties-dialog.c:
