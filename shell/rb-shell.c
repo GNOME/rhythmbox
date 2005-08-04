@@ -95,11 +95,9 @@ static void rb_shell_get_property (GObject *object,
 				   guint prop_id,
 				   GValue *value,
 				   GParamSpec *pspec);
-#ifdef FIXME
 static gboolean rb_shell_window_state_cb (GtkWidget *widget,
 					  GdkEvent *event,
 					  RBShell *shell);
-#endif
 static gboolean rb_shell_window_delete_cb (GtkWidget *win,
 			                   GdkEventAny *event,
 			                   RBShell *shell);
@@ -307,8 +305,6 @@ enum
 struct RBShellPrivate
 {
 	GtkWidget *window;
-	int window_x;
-	int window_y;
 	gboolean visible;
 
 	GtkUIManager *ui_manager;
@@ -831,14 +827,10 @@ rb_shell_construct (RBShell *shell)
 	shell->priv->window = GTK_WIDGET (win);
 	shell->priv->visible = TRUE;
 
-#ifdef FIXME
 	g_signal_connect_object (G_OBJECT (win), "window-state-event",
 				 G_CALLBACK (rb_shell_window_state_cb),
 				 shell, 0);
-	g_signal_connect_object (G_OBJECT (win), "configure-event",
-				 G_CALLBACK (rb_shell_window_state_cb),
-				 shell, 0);
-#endif
+
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
 				 shell, 0);
@@ -1112,43 +1104,27 @@ rb_shell_construct (RBShell *shell)
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 }
 
-#ifdef FIXME
 static gboolean
 rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEvent *event,
 			  RBShell *shell)
 {
-	gboolean small = eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
+	gboolean visible;
 
 	g_return_val_if_fail (widget != NULL, FALSE);
 	rb_debug ("caught window state change");
 
-	switch (event->type)
-	{
-	case GDK_WINDOW_STATE:
-		if (small == TRUE)
-			gtk_window_unmaximize (GTK_WINDOW (shell->priv->window));
-		else
-			eel_gconf_set_boolean (CONF_STATE_WINDOW_MAXIMIZED,
-					       event->window_state.new_window_state &
-					       GDK_WINDOW_STATE_MAXIMIZED);
-		break;
-	case GDK_CONFIGURE:
-		if (small == TRUE)
-			eel_gconf_set_integer (CONF_STATE_SMALL_WIDTH, event->configure.width);
-		else
-			if (!eel_gconf_get_boolean (CONF_STATE_WINDOW_MAXIMIZED)) {
-				eel_gconf_set_integer (CONF_STATE_WINDOW_WIDTH, event->configure.width);
-				eel_gconf_set_integer (CONF_STATE_WINDOW_HEIGHT, event->configure.height);
-			}
-		break;
-	default:
-		break;
+	if (event->type == GDK_WINDOW_STATE) {
+		visible = ! ((event->window_state.new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||
+			     (event->window_state.new_window_state & GDK_WINDOW_STATE_WITHDRAWN));
+		if (visible != shell->priv->visible) {
+			shell->priv->visible = visible;
+			g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "visibility_changed", visible);
+		}
 	}
 
 	return FALSE;
 }
-#endif
 
 static gboolean
 rb_shell_window_delete_cb (GtkWidget *win,
@@ -1159,7 +1135,7 @@ rb_shell_window_delete_cb (GtkWidget *win,
 	rb_shell_quit (shell);
 
 	return TRUE;
-};
+}
 
 static void
 rb_shell_sync_window_state (RBShell *shell)
@@ -2218,27 +2194,15 @@ static void
 rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
 {
 	RBShell *shell = RB_SHELL (proxy);
+
 	if (visible == shell->priv->visible)
 		return;
 
 	if (visible) {
 		rb_debug ("showing main window");
-		rb_shell_sync_window_state (shell);
-
-		gtk_widget_realize (shell->priv->window);
-		gdk_flush ();
-		if ((shell->priv->window_x >= 0) && (shell->priv->window_y >= 0))
-			gtk_window_move (GTK_WINDOW (shell->priv->window),
-					 shell->priv->window_x,
-					 shell->priv->window_y);
-
-		gtk_widget_show (shell->priv->window);
+		gtk_window_present (GTK_WINDOW (shell->priv->window));
 	} else {
-		/* should store this stuff in gconf instead? */
 		rb_debug ("hiding main window");
-		gtk_window_get_position (GTK_WINDOW (shell->priv->window),
-					 &shell->priv->window_x,
-					 &shell->priv->window_y);
 		gtk_widget_hide (shell->priv->window);
 	}
 

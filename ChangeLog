@@ -1,5 +1,14 @@
 2005-08-04  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_window_state_cb), (rb_shell_window_delete_cb),
+	(rb_shell_set_visibility_impl): Patch from Jaap A. Haitsma
+	<jaap@haitsma.org> to make the tracy icon work better. It now shows
+	the window whenever it is not user-visible (including minimised or on
+	another workspace).
+
+2005-08-04  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-iradio-source.c: (rb_iradio_source_dispose),
 	(rb_iradio_source_do_query): Patch from Jonathan Matthew
 	<jonathan@kaolin.hn.org> that stops the iradio source attempting to
