@@ -1,3 +1,9 @@
+2005-08-09  Colin Walters  <walters@verbum.org>
+
+	* data/rhythmbox.desktop.in (MimeType): Remove x-directory from
+	  list; we shouldn't advertise as a generic directory processor
+	  since Rhythmbox is only useful for particular directories.
+
 2005-08-10  James Livingston  <jrl@ids.org.au>
 
 	* INSTALL.quick: updated for the first time since 0.5.0. Now lists the
