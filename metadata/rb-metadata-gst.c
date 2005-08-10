@@ -23,6 +23,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <gst/gst.h>
 #include <gst/gsttag.h>
+#include <gst/gsturi.h>
 #include <string.h>
 
 #include "rb-metadata.h"
@@ -540,7 +541,7 @@ rb_metadata_load (RBMetaData *md,
 		  GError **error)
 {
 	GstElement *pipeline = NULL;
-	GstElement *gnomevfssrc = NULL;
+	GstElement *urisrc = NULL;
 	GstElement *decodebin = NULL;
 	GstElement *typefind = NULL;
 
@@ -571,6 +572,8 @@ rb_metadata_load (RBMetaData *md,
 
 	/* The main tagfinding pipeline looks like this:
  	 * gnomevfssrc ! decodebin ! fakesink
+	 * or
+	 * filesrc ! decodebin ! fakesink
  	 *
  	 * but we can only link the fakesink in when the decodebin
  	 * creates an audio source pad.  we do this in the 'new-decoded-pad'
@@ -578,16 +581,24 @@ rb_metadata_load (RBMetaData *md,
  	 */
 	pipeline = gst_pipeline_new ("pipeline");
 
- 	gnomevfssrc = make_pipeline_element (pipeline, "gnomevfssrc", error);
+	urisrc = gst_element_make_from_uri (GST_URI_SRC, uri, "urisrc");
+	if (urisrc == NULL) {
+		g_set_error (error,
+			     RB_METADATA_ERROR,
+			     RB_METADATA_ERROR_MISSING_PLUGIN,
+			     _("Failed to create a source element; check your installation"));
+		rb_debug ("missing an element to load the uri, sadly");
+		goto out;
+	}
+	gst_bin_add (GST_BIN (pipeline), urisrc);
+
  	decodebin = make_pipeline_element (pipeline, "decodebin", error);
  	md->priv->sink = make_pipeline_element (pipeline, "fakesink", error);
- 	if (!(gnomevfssrc && decodebin && md->priv->sink)) {
+ 	if (!(urisrc && decodebin && md->priv->sink)) {
  		rb_debug ("missing an element, sadly");
  		goto out;
  	}
 
-
-	g_object_set (G_OBJECT (gnomevfssrc), "location", uri, NULL);
 	g_object_set (G_OBJECT (md->priv->sink), "signal-handoffs", TRUE, NULL);
  
  	g_signal_connect_object (pipeline, "error", G_CALLBACK (rb_metadata_gst_error_cb), md, 0);
@@ -608,7 +619,7 @@ rb_metadata_load (RBMetaData *md,
  	g_assert (typefind != NULL);
  	g_signal_connect_object (typefind, "have_type", G_CALLBACK (rb_metadata_gst_typefind_cb), md, 0);
  
- 	gst_element_link (gnomevfssrc, decodebin);
+ 	gst_element_link (urisrc, decodebin);
 
 	md->priv->pipeline = pipeline;
 	gst_element_set_state (pipeline, GST_STATE_PLAYING);

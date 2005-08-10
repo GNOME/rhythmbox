@@ -1,3 +1,12 @@
+2005-08-10  Bastien Nocera  <hadess@hadess.net>
+
+	* metadata/rb-metadata-gst.c: (rb_metadata_load):
+	Use filesrc for local files, instead of gnomevfssrc (with
+	brain-surgery performed by Jonathan Matthew <jonathan@kaolin.hn.org>)
+	(Closes: #313088)
+	Should fix some infinite loops importing files as in #313084
+	* metadata/rb-metadata-mm.c: removed, it's unused
+
 2005-08-09  Colin Walters  <walters@verbum.org>
 
 	* data/rhythmbox.desktop.in (MimeType): Remove x-directory from
