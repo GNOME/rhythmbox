@@ -22,7 +22,7 @@
 #ifndef __RB_REMOTE_BONOBO_H
 #define __RB_REMOTE_BONOBO_H
 
-#include "Rhythmbox.h"
+#include "bonobo/Rhythmbox.h"
 #include "rb-remote-proxy.h"
 
 #include <bonobo/bonobo-control.h>

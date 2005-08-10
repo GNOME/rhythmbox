@@ -23,6 +23,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/lib				\
 	-I$(top_srcdir)/remote				\
 	-I$(top_srcdir)/remote/bonobo			\
+	-I$(top_builddir)/remote			\
 	-I$(top_builddir)/remote/bonobo			\
 	-D_XOPEN_SOURCE
 

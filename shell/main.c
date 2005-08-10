@@ -47,7 +47,7 @@
 #include "rb-remote-client-proxy.h"
 #ifdef WITH_BONOBO
 #include <bonobo/bonobo-main.h>
-#include "rb-remote-bonobo.h"
+#include "bonobo/rb-remote-bonobo.h"
 #endif
 #ifdef WITH_DBUS
 #include "rb-remote-dbus.h"
