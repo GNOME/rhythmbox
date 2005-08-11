@@ -453,8 +453,9 @@ rb_ipod_unplugged (RBiPodSource *source)
 	
 	g_assert (source->priv->ipod_mount_path != NULL);
 
-	source->priv->ipod_volume = NULL;
 	gnome_vfs_volume_unref (source->priv->ipod_volume);
+	source->priv->ipod_volume = NULL;
+	
 	g_free (source->priv->ipod_mount_path);
 	source->priv->ipod_mount_path = NULL;
 	g_object_set (G_OBJECT (source), "visibility", FALSE, NULL);
