@@ -71,6 +71,8 @@ struct RBTrayIconPrivate
 {
 	GtkTooltips *tooltips;
 
+	EggNotificationBubble *bubble;
+
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
 
@@ -455,3 +457,37 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 			      tooltip, NULL);
 }
 
+static void
+rb_tray_icon_hide_notify_cb (EggNotificationBubble *bubble)
+{
+	rb_debug ("hiding notification");
+	egg_notification_bubble_hide (bubble);
+}
+
+void
+rb_tray_icon_notify (RBTrayIcon *icon,
+		     guint timeout,
+		     const char *primary,
+		     GtkWidget *msgicon,
+		     const char *secondary)
+{
+	if (icon->priv->bubble) {
+		g_object_unref (icon->priv->bubble);
+		g_signal_handlers_disconnect_by_func (icon->priv->bubble,
+						      rb_tray_icon_hide_notify_cb,
+						      icon);
+	}
+	icon->priv->bubble = egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, primary, msgicon, secondary);
+	g_object_ref (icon->priv->bubble);
+	g_signal_connect_object (icon->priv->bubble,
+				 "clicked",
+				 G_CALLBACK (rb_tray_icon_hide_notify_cb),
+				 icon, 0);
+}
+
+void
+rb_tray_icon_cancel_notify (RBTrayIcon *icon)
+{
+	if (icon->priv->bubble)
+		egg_notification_bubble_hide (icon->priv->bubble);
+}

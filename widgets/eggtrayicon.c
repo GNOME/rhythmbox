@@ -24,8 +24,13 @@
 
 #include "eggtrayicon.h"
 
+#include <gdkconfig.h>
+#if defined (GDK_WINDOWING_X11)
 #include <gdk/gdkx.h>
 #include <X11/Xatom.h>
+#elif defined (GDK_WINDOWING_WIN32)
+#include <gdk/gdkwin32.h>
+#endif
 
 #ifndef EGG_COMPILATION
 #ifndef _
@@ -62,9 +67,11 @@ static void egg_tray_icon_get_property (GObject    *object,
 static void egg_tray_icon_realize   (GtkWidget *widget);
 static void egg_tray_icon_unrealize (GtkWidget *widget);
 
+#ifdef GDK_WINDOWING_X11
 static void egg_tray_icon_update_manager_window    (EggTrayIcon *icon,
 						    gboolean     dock_if_realized);
 static void egg_tray_icon_manager_window_destroyed (EggTrayIcon *icon);
+#endif
 
 GType
 egg_tray_icon_get_type (void)
@@ -122,6 +129,14 @@ egg_tray_icon_class_init (EggTrayIconClass *klass)
 						      GTK_TYPE_ORIENTATION,
 						      GTK_ORIENTATION_HORIZONTAL,
 						      G_PARAM_READABLE));
+
+#if defined (GDK_WINDOWING_X11)
+  /* Nothing */
+#elif defined (GDK_WINDOWING_WIN32)
+  g_warning ("Port eggtrayicon to Win32");
+#else
+  g_warning ("Port eggtrayicon to this GTK+ backend");
+#endif
 }
 
 static void
@@ -142,6 +157,8 @@ egg_tray_icon_get_property (GObject    *object,
       break;
     }
 }
+
+#ifdef GDK_WINDOWING_X11
 
 static void
 egg_tray_icon_get_orientation_property (EggTrayIcon *icon)
@@ -219,13 +236,15 @@ egg_tray_icon_manager_filter (GdkXEvent *xevent, GdkEvent *event, gpointer user_
 	  egg_tray_icon_manager_window_destroyed (icon);
 	}
     }
-  
   return GDK_FILTER_CONTINUE;
 }
+
+#endif  
 
 static void
 egg_tray_icon_unrealize (GtkWidget *widget)
 {
+#ifdef GDK_WINDOWING_X11
   EggTrayIcon *icon = EGG_TRAY_ICON (widget);
   GdkWindow *root_window;
 
@@ -245,7 +264,10 @@ egg_tray_icon_unrealize (GtkWidget *widget)
 
   if (GTK_WIDGET_CLASS (parent_class)->unrealize)
     (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+#endif
 }
+
+#ifdef GDK_WINDOWING_X11
 
 static void
 egg_tray_icon_send_manager_message (EggTrayIcon *icon,
@@ -343,9 +365,12 @@ egg_tray_icon_manager_window_destroyed (EggTrayIcon *icon)
   egg_tray_icon_update_manager_window (icon, TRUE);
 }
 
+#endif
+
 static void
 egg_tray_icon_realize (GtkWidget *widget)
 {
+#ifdef GDK_WINDOWING_X11
   EggTrayIcon *icon = EGG_TRAY_ICON (widget);
   GdkScreen *screen;
   GdkDisplay *display;
@@ -385,6 +410,7 @@ egg_tray_icon_realize (GtkWidget *widget)
   /* Add a root window filter so that we get changes on MANAGER */
   gdk_window_add_filter (root_window,
 			 egg_tray_icon_manager_filter, icon);
+#endif
 }
 
 EggTrayIcon *
@@ -407,58 +433,21 @@ egg_tray_icon_send_message (EggTrayIcon *icon,
 			    const gchar *message,
 			    gint         len)
 {
-  guint stamp;
-  
   g_return_val_if_fail (EGG_IS_TRAY_ICON (icon), 0);
   g_return_val_if_fail (timeout >= 0, 0);
   g_return_val_if_fail (message != NULL, 0);
 		     
-  if (icon->manager_window == None)
-    return 0;
-
-  if (len < 0)
-    len = strlen (message);
-
-  stamp = icon->stamp++;
-  
-  /* Get ready to send the message */
-  egg_tray_icon_send_manager_message (icon, SYSTEM_TRAY_BEGIN_MESSAGE,
-				      (Window)gtk_plug_get_id (GTK_PLUG (icon)),
-				      timeout, len, stamp);
-
-  /* Now to send the actual message */
-  gdk_error_trap_push ();
-  while (len > 0)
+  if (!icon->bubble)
     {
-      XClientMessageEvent ev;
-      Display *xdisplay;
-
-      xdisplay = GDK_DISPLAY_XDISPLAY (gtk_widget_get_display (GTK_WIDGET (icon)));
-      
-      ev.type = ClientMessage;
-      ev.window = (Window)gtk_plug_get_id (GTK_PLUG (icon));
-      ev.format = 8;
-      ev.message_type = XInternAtom (xdisplay,
-				     "_NET_SYSTEM_TRAY_MESSAGE_DATA", False);
-      if (len > 20)
-	{
-	  memcpy (&ev.data, message, 20);
-	  len -= 20;
-	  message += 20;
-	}
-      else
-	{
-	  memcpy (&ev.data, message, len);
-	  len = 0;
-	}
-
-      XSendEvent (xdisplay,
-		  icon->manager_window, False, StructureNotifyMask, (XEvent *)&ev);
-      XSync (xdisplay, False);
+      icon->bubble = egg_notification_bubble_new ();
+      egg_notification_bubble_attach (icon->bubble, GTK_WIDGET (icon));
     }
-  gdk_error_trap_pop ();
 
-  return stamp;
+  egg_notification_bubble_set (icon->bubble, _("Notification"),
+			       NULL, message);
+  egg_notification_bubble_show (icon->bubble, timeout);
+
+  return 1;
 }
 
 void
@@ -467,10 +456,9 @@ egg_tray_icon_cancel_message (EggTrayIcon *icon,
 {
   g_return_if_fail (EGG_IS_TRAY_ICON (icon));
   g_return_if_fail (id > 0);
-  
-  egg_tray_icon_send_manager_message (icon, SYSTEM_TRAY_CANCEL_MESSAGE,
-				      (Window)gtk_plug_get_id (GTK_PLUG (icon)),
-				      id, 0, 0);
+  g_return_if_fail (icon->bubble != NULL);
+
+  egg_notification_bubble_hide (icon->bubble);
 }
 
 GtkOrientation
@@ -479,4 +467,26 @@ egg_tray_icon_get_orientation (EggTrayIcon *icon)
   g_return_val_if_fail (EGG_IS_TRAY_ICON (icon), GTK_ORIENTATION_HORIZONTAL);
 
   return icon->orientation;
+}
+
+EggNotificationBubble *
+egg_tray_icon_notify (EggTrayIcon *icon,
+		      guint timeout,
+		      const char *primary,
+		      GtkWidget *msgicon,
+		      const char *secondary)
+{
+  gint x, y;
+  gdk_window_get_origin (GTK_WIDGET (icon)->window,
+			 &x, &y);
+  if (!icon->bubble)
+    {
+      icon->bubble = egg_notification_bubble_new ();
+      egg_notification_bubble_attach (icon->bubble, GTK_WIDGET (icon));
+    }
+  
+  egg_notification_bubble_set (icon->bubble, primary,
+			       msgicon, secondary);
+  egg_notification_bubble_show (icon->bubble, timeout);
+  return icon->bubble;
 }

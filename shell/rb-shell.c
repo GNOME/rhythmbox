@@ -1383,6 +1383,18 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
 
+	if (!shell->priv->visible) {
+		char *title;
+
+		title = g_strdup_printf ("%s by %s",
+					 song.title, song.artist);
+		rb_tray_icon_notify (shell->priv->tray_icon,
+				     4000, _("Now Playing"),
+				     NULL, title);
+		g_free (title);
+	}
+				     
+
 #ifdef WITH_DASHBOARD
 	/* Send cluepacket to dashboard */
 	cluepacket =

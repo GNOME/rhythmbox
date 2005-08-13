@@ -57,6 +57,14 @@ RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr,
 						 GtkActionGroup *actiongroup,
 						 RBRemoteProxy *remote);
 
+void                    rb_tray_icon_notify     (RBTrayIcon *icon,
+						 guint timeout,
+						 const char *primary,
+						 GtkWidget *msgicon,
+						 const char *secondary);
+
+void                    rb_tray_icon_cancel_notify (RBTrayIcon *icon);
+
 void			rb_tray_icon_set_tooltip(RBTrayIcon *icon, const char *tooltip);
 
 G_END_DECLS
