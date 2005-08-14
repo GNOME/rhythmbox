@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: mk\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2005-07-22 12:16+0000\n"
-"PO-Revision-Date: 2005-07-27 14:51+0200\n"
+"PO-Revision-Date: 2005-08-14 14:12+0200\n"
 "Last-Translator: Арангел Ангов <ufo@linux.net.mk>\n"
 "Language-Team: Macedonian <ossm-members@hedona.on.net.mk>\n"
 "MIME-Version: 1.0\n"
@@ -38,11 +38,11 @@ msgstr "*"
 
 #: ../data/glade/create-playlist.glade.h:2
 msgid "Add if any criteria are matched"
-msgstr ""
+msgstr "Додај ако се совпаѓа во некој критериум"
 
 #: ../data/glade/create-playlist.glade.h:3
 msgid "Create automatically updating playlist where:"
-msgstr ""
+msgstr "Креирај автоматска плејлиста во:"
 
 #: ../data/glade/create-playlist.glade.h:4
 msgid "GB"
@@ -69,6 +69,11 @@ msgid ""
 "library at any point later.\n"
 "Please choose one of the options below:"
 msgstr ""
+"Ритамбокс се справува си цела Ваша музика во централна музичка \"библиотека\" и "
+"затоа можете лесно да ги прегледувате, пребарувате и организирате Вашите музички датотеки.\n"
+"За да ја користите оваа опција треба да му кажете на Ритамбокс каде да ја најде Вашата музика.  "
+"Можете да го прескокнете ово чекор и да додадете музика подоцна.\n"
+"Ве молам одберете една од опциите подолу:"
 
 #: ../data/glade/druid.glade.h:5
 msgid "_Browse..."
@@ -120,7 +125,7 @@ msgstr "_Последна пуштена"
 
 #: ../data/glade/general-prefs.glade.h:9
 msgid "_Play count"
-msgstr ""
+msgstr "_Број на пуштања"
 
 #: ../data/glade/general-prefs.glade.h:10 ../widgets/rb-entry-view.c:1179
 msgid "_Rating"
@@ -330,7 +335,7 @@ msgstr "Датотеката не е аудио проток"
 
 #: ../metadata/rb-metadata-gst.c:676
 msgid "The file is not an audio stream, but is being ignored"
-msgstr ""
+msgstr "Датотеката не е аудио проток и е игнорирана"
 
 #: ../metadata/rb-metadata-gst.c:684
 #, c-format
@@ -343,15 +348,15 @@ msgstr "Неможе да се креира audio елемент; провере
 
 #: ../player/rb-player-gst.c:370 ../player/rb-recorder-gst.c:521
 msgid "Couldn't initialize scheduler.  Did you run gst-register?"
-msgstr ""
+msgstr "Не можам да го иницијализирам распоредот.  Дали извршивте gst-register?"
 
 #: ../player/rb-player-gst.c:400 ../player/rb-recorder-gst.c:611
 msgid "Could not start pipeline playing"
-msgstr ""
+msgstr "Could not start pipeline playing"
 
 #: ../player/rb-player-gst.c:410 ../player/rb-recorder-gst.c:626
 msgid "Could not pause playback"
-msgstr ""
+msgstr "Не можам да го паузирам плејбекот"
 
 #: ../player/rb-player-gst.c:465
 msgid "Failed to close audio output sink"
@@ -368,7 +373,7 @@ msgstr "Не успеа да се одврзам од %s"
 
 #: ../player/rb-recorder-gst.c:555 ../player/rb-recorder-gst.c:560
 msgid "Could not get current track position"
-msgstr ""
+msgstr "Не можам да ја добијам моменталната позиција на песната"
 
 #: ../player/rb-recorder-gst.c:815
 msgid "Cannot find drive"
@@ -377,21 +382,21 @@ msgstr "Не можам да го најдам уредот"
 #: ../player/rb-recorder-gst.c:852
 #, c-format
 msgid "Cannot find drive %s"
-msgstr ""
+msgstr "Не можам да го најдам уредот %s"
 
 #: ../player/rb-recorder-gst.c:860
 #, c-format
 msgid "Drive %s is not a recorder"
-msgstr ""
+msgstr "Уредот %s не е снимач"
 
 #: ../player/rb-recorder-gst.c:1170
 #, c-format
 msgid "Could not get track time for file: %s"
-msgstr ""
+msgstr "Не можам да го добијам времето за песната: %s"
 
 #: ../player/rb-recorder-gst.c:1221
 msgid "Could not determine default writer device"
-msgstr ""
+msgstr "Не можам да ја одредам стандардната брзина на уредот за снимање"
 
 #: ../player/rb-recorder-gst.c:1236
 msgid "Could not determine audio track durations."
@@ -442,7 +447,7 @@ msgstr "Дали е вклучено мешањето"
 
 #: ../remote/bonobo/rb-remote-bonobo.c:676
 msgid "Whether repeat is enabled"
-msgstr ""
+msgstr "Дали е вклучено повторување"
 
 #: ../remote/bonobo/rb-remote-bonobo.c:680
 msgid "Properties for the current song"
@@ -450,7 +455,7 @@ msgstr "Својства за моменталната песна"
 
 #: ../remote/bonobo/rb-remote-bonobo.c:688
 msgid "Whether Rhythmbox is currently playing"
-msgstr ""
+msgstr "Дали Ритамбокс свири моментално"
 
 #: ../remote/bonobo/rb-remote-bonobo.c:692
 msgid "What play order to use"
@@ -590,7 +595,7 @@ msgstr "Измотај го одреденото и излези"
 
 #: ../shell/main.c:129
 msgid "Set the rating of the currently playing song and exit"
-msgstr ""
+msgstr "Постави рејтинг за тековната песна и излези"
 
 #: ../shell/main.c:131
 msgid "Toggle play/pause mode"
@@ -1331,41 +1336,43 @@ msgstr "Преостанати околу %s"
 
 #: ../sources/rb-playlist-source-recorder.c:471
 msgid "Burning audio to CD"
-msgstr ""
+msgstr "Снимам на аудио CD"
 
 #: ../sources/rb-playlist-source-recorder.c:488
 msgid "Finished creating audio CD."
-msgstr ""
+msgstr "Завршив со креирањето на аудио CD."
 
 #: ../sources/rb-playlist-source-recorder.c:493
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 msgstr ""
+"Завршив со креирањето на аудио CD.\n"
+"Да креирам уште една копија?"
 
 #: ../sources/rb-playlist-source-recorder.c:495
 msgid "Writing cancelled.  Try again?"
-msgstr ""
+msgstr "Снимањето е откажано.  Да пробам пак?"
 
 #: ../sources/rb-playlist-source-recorder.c:560
 msgid "Audio recording error"
-msgstr ""
+msgstr "Грешка при снимање на аудио"
 
 #: ../sources/rb-playlist-source-recorder.c:588
 msgid "Audio Conversion Error"
-msgstr ""
+msgstr "Грешка при конвертирање на аудио"
 
 #: ../sources/rb-playlist-source-recorder.c:618
 msgid "Recording error"
-msgstr ""
+msgstr "Грешка при снимање"
 
 #: ../sources/rb-playlist-source-recorder.c:737
 msgid "Do you wish to interrupt writing this disc?"
-msgstr ""
+msgstr "Дали сакате да го прекинете запишувањето на дискот?"
 
 #: ../sources/rb-playlist-source-recorder.c:740
 msgid "This may result in an unusable disc."
-msgstr ""
+msgstr "Ова може да резултира со расипан диск."
 
 #: ../sources/rb-playlist-source-recorder.c:747
 msgid "_Cancel"
@@ -1373,15 +1380,15 @@ msgstr "_Откажи"
 
 #: ../sources/rb-playlist-source-recorder.c:748
 msgid "_Interrupt"
-msgstr ""
+msgstr "_Прекини"
 
 #: ../sources/rb-playlist-source-recorder.c:770
 msgid "Could not create audio CD"
-msgstr ""
+msgstr "Не можам да креирам аудио Cd"
 
 #: ../sources/rb-playlist-source-recorder.c:792
 msgid "Please make sure another application is not using the drive."
-msgstr ""
+msgstr "Ве молам осигурајте се дека уредот не го користи друга апликација"
 
 #: ../sources/rb-playlist-source-recorder.c:793
 msgid "Drive is busy"
@@ -1401,7 +1408,7 @@ msgstr ""
 
 #: ../sources/rb-playlist-source-recorder.c:799
 msgid "Insert a blank CD"
-msgstr ""
+msgstr "Внесете празно CD"
 
 #: ../sources/rb-playlist-source-recorder.c:801
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
@@ -1429,15 +1436,15 @@ msgstr ""
 
 #: ../sources/rb-playlist-source-recorder.c:862
 msgid "Writing CD"
-msgstr ""
+msgstr "Запишувам на CD"
 
 #: ../sources/rb-playlist-source-recorder.c:865
 msgid "Finishing write"
-msgstr ""
+msgstr "Завршив со запишувањето"
 
 #: ../sources/rb-playlist-source-recorder.c:868
 msgid "Erasing CD"
-msgstr ""
+msgstr "Бришам CD"
 
 #: ../sources/rb-playlist-source-recorder.c:871
 msgid "Unhandled action in burn_action_changed_cb"
@@ -1493,7 +1500,7 @@ msgstr "DVD+RW"
 
 #: ../sources/rb-playlist-source-recorder.c:935
 msgid "Broken media type"
-msgstr ""
+msgstr "Расипан тип на медиум"
 
 #: ../sources/rb-playlist-source-recorder.c:975
 #, c-format
@@ -1506,11 +1513,11 @@ msgstr "Да ги избришам информациите на дискот?"
 
 #: ../sources/rb-playlist-source-recorder.c:992
 msgid "_Try Another"
-msgstr ""
+msgstr "_Пробај со друго"
 
 #: ../sources/rb-playlist-source-recorder.c:999
 msgid "_Erase Disc"
-msgstr ""
+msgstr "_Избриши диск"
 
 #: ../sources/rb-playlist-source-recorder.c:1101
 msgid "C_reate"
@@ -1607,6 +1614,11 @@ msgid ""
 "\n"
 "This assistant will help you get started by asking you some simple questions."
 msgstr ""
+"Ритамбокс е пуштач на музика кој што Ви овозможува се: пуштање на Вашите "
+"музички датотеки, слушање на радио станици, увоз на музика од CD-иња и "
+"уште многу повеќе.\n"
+"\n"
+"Овој помошник ќе Ви помогне да започнете со тоа што ќе Ви постави неколку едноставни прашања."
 
 #: ../widgets/rb-druid.c:249
 msgid "Music library setup"
@@ -1623,6 +1635,10 @@ msgid ""
 "Remember that you may add music to the library using \"Music\" then \"Import "
 "Folder\", or by importing it from CDs."
 msgstr ""
+"Сега сте спремни да го подигнете Ритамбокс.\n"
+"\n"
+"Запомнете дека можете да додавате музика во библиотеката со одбирање на \"Музика\" па "
+"\"Увези папка\" или пак преку увезување од CD."
 
 #: ../widgets/rb-druid.c:319
 msgid "Load folder into Library"
