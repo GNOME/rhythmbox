@@ -1364,6 +1364,7 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 #ifdef WITH_DASHBOARD
 	char *cluepacket;
 #endif
+	char *notifytitle;
 
 	/* emit remote song_changed notification */
 	song.title = g_strdup (rb_refstring_get (entry->title));
@@ -1383,18 +1384,11 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 
 	g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "song_changed", &song);
 
-	if (!shell->priv->visible) {
-		char *title;
-
-		title = g_strdup_printf ("%s by %s",
-					 song.title, song.artist);
-		rb_tray_icon_notify (shell->priv->tray_icon,
-				     4000, _("Now Playing"),
-				     NULL, title);
-		g_free (title);
-	}
+	notifytitle = g_strdup_printf ("%s by %s",
+				       song.title, song.artist);
+	rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, notifytitle);
+	g_free (notifytitle);
 				     
-
 #ifdef WITH_DASHBOARD
 	/* Send cluepacket to dashboard */
 	cluepacket =
@@ -2101,6 +2095,24 @@ tray_destroy_cb (GtkObject *object, RBShell *shell)
  	return TRUE;
 }
 
+void
+rb_shell_hidden_notify (RBShell *shell,
+			guint timeout,
+			const char *primary,
+			GtkWidget *icon,
+			const char *secondary)
+{
+
+	if (shell->priv->visible) {
+		rb_debug ("shell is visible, not notifying");
+		return;
+	}
+
+	rb_tray_icon_notify (shell->priv->tray_icon,
+			     timeout, primary,
+			     icon, secondary);
+}
+
 static void 
 session_die_cb (GnomeClient *client, 
                 RBShell *shell)
@@ -2207,14 +2219,16 @@ rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
 {
 	RBShell *shell = RB_SHELL (proxy);
 
+	rb_debug ("setting visibility %s current visibility %s",
+		  visible ? "TRUE" : "FALSE",
+		  shell->priv->visible ? "TRUE" : "FALSE");
+
 	if (visible == shell->priv->visible)
 		return;
 
 	if (visible) {
-		rb_debug ("showing main window");
 		gtk_window_present (GTK_WINDOW (shell->priv->window));
 	} else {
-		rb_debug ("hiding main window");
 		gtk_widget_hide (shell->priv->window);
 	}
 

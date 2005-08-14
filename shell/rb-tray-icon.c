@@ -458,10 +458,21 @@ rb_tray_icon_set_tooltip (RBTrayIcon *icon, const char *tooltip)
 }
 
 static void
-rb_tray_icon_hide_notify_cb (EggNotificationBubble *bubble)
+rb_tray_icon_hide_notify_cb (EggNotificationBubble *bubble, gpointer data)
 {
+	gboolean visible;
+	RBTrayIcon *icon;
+
+	icon = RB_TRAY_ICON (data);
+
 	rb_debug ("hiding notification");
+
 	egg_notification_bubble_hide (bubble);
+	visible = rb_remote_proxy_get_visibility (icon->priv->proxy);	
+	if (!visible) {
+		rb_debug ("setting visible");
+		rb_remote_proxy_set_visibility (icon->priv->proxy, TRUE);
+	}
 }
 
 void
@@ -477,6 +488,7 @@ rb_tray_icon_notify (RBTrayIcon *icon,
 						      rb_tray_icon_hide_notify_cb,
 						      icon);
 	}
+	rb_debug ("doing notify: %s", primary);
 	icon->priv->bubble = egg_tray_icon_notify (EGG_TRAY_ICON (icon), timeout, primary, msgicon, secondary);
 	g_object_ref (icon->priv->bubble);
 	g_signal_connect_object (icon->priv->bubble,

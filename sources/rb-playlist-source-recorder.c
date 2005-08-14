@@ -43,6 +43,7 @@
 #include "rb-preferences.h"
 #include "rb-dialog.h"
 #include "rb-util.h"
+#include "rb-shell.h"
 #include "rb-playlist-source.h"
 #include "rb-playlist-source-recorder.h"
 #include "rb-debug.h"
@@ -80,6 +81,8 @@ struct RBPlaylistSourceRecorderPrivate
 {
         GtkWidget   *parent;
 
+        RBShell     *shell;
+
         char        *name;
 
         RBRecorder  *recorder;
@@ -89,6 +92,7 @@ struct RBPlaylistSourceRecorderPrivate
         GTimer      *timer;
         guint64      start_pos;
 
+        GtkWidget   *cd_icon;
         GtkWidget   *vbox;
         GtkWidget   *multiple_copies_checkbutton;
         GtkWidget   *cancel_button;
@@ -483,9 +487,17 @@ burn_cd (RBPlaylistSourceRecorder *source,
                 return RB_RECORDER_RESULT_ERROR;
 
         if (res == RB_RECORDER_RESULT_FINISHED) {
-                gboolean do_another = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->multiple_copies_checkbutton));
+                RBShell *shell;
+                gboolean do_another;
+                const char *finished_msg;
+
+                finished_msg = _("Finished creating audio CD.");
+
+                rb_shell_hidden_notify (source->priv->shell, 0, finished_msg, source->priv->cd_icon, "");
+
+                do_another = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (source->priv->multiple_copies_checkbutton));
                 if (!do_another) {
-                        set_message_text (source, _("Finished creating audio CD."));
+                        set_message_text (source, finished_msg);
                         gtk_widget_set_sensitive (GTK_WIDGET (source), FALSE);
                         g_idle_add ((GSourceFunc)response_idle_cb, source);
                         return res;
@@ -1096,6 +1108,8 @@ rb_playlist_source_recorder_init (RBPlaylistSourceRecorder *source)
         gtk_container_add (GTK_CONTAINER (widget), hbox);
         gtk_widget_show (hbox);
         widget = gtk_image_new_from_stock (GTK_STOCK_CDROM, GTK_ICON_SIZE_BUTTON);
+        source->priv->cd_icon = widget;
+        g_object_ref (source->priv->cd_icon);
         gtk_box_pack_start (GTK_BOX (hbox), widget, TRUE, TRUE, 0);
         gtk_widget_show (widget);
         widget = gtk_label_new_with_mnemonic (_("C_reate"));
@@ -1246,6 +1260,10 @@ rb_playlist_source_recorder_finalize (GObject *object)
 
         rb_debug ("Finalize source recorder");
 
+        g_object_unref (source->priv->shell);
+
+        g_object_unref (source->priv->cd_icon);
+
         if (source->priv->gconf_client)
                 g_object_unref (source->priv->gconf_client);
         source->priv->gconf_client = NULL;
@@ -1279,17 +1297,18 @@ rb_playlist_source_recorder_finalize (GObject *object)
 
 GtkWidget *
 rb_playlist_source_recorder_new (GtkWidget  *parent,
+                                 RBShell    *shell,
                                  const char *name)
 {
         GtkWidget *result;
-
+        RBPlaylistSourceRecorder *source;
+        
         result = g_object_new (RB_TYPE_PLAYLIST_SOURCE_RECORDER,
                                "title", _("Create Audio CD"),
                                NULL);
-
+        
+        source = RB_PLAYLIST_SOURCE_RECORDER (result);
         if (parent) {
-                RBPlaylistSourceRecorder *source = RB_PLAYLIST_SOURCE_RECORDER (result);
-
                 source->priv->parent = gtk_widget_get_toplevel (parent);
 
                 gtk_window_set_transient_for (GTK_WINDOW (source),
@@ -1297,9 +1316,9 @@ rb_playlist_source_recorder_new (GtkWidget  *parent,
                 gtk_window_set_destroy_with_parent (GTK_WINDOW (source), TRUE);
         }
 
-        if (name) {
-                RBPlaylistSourceRecorder *source = RB_PLAYLIST_SOURCE_RECORDER (result);
+        source->priv->shell = g_object_ref (shell);
 
+        if (name) {
                 source->priv->name = g_strdup (name);
 
                 set_message_text (source, _("Create audio CD from '%s' playlist?"), name);

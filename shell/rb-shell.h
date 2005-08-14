@@ -57,6 +57,12 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 					 gboolean dry_run,
 					 char *rhythmdb);
 
+void            rb_shell_hidden_notify  (RBShell *shell,
+					 guint timeout,
+					 const char *primary,
+					 GtkWidget *icon,
+					 const char *secondary);
+
 void		rb_shell_construct	(RBShell *shell);
 
 void            rb_shell_register_entry_type_for_source (RBShell *shell,

@@ -57,6 +57,7 @@ typedef void (*RBPlaylistSourceIterFunc) (GtkTreeModel *model,
 GType       rb_playlist_source_recorder_get_type (void);
 
 GtkWidget * rb_playlist_source_recorder_new            (GtkWidget                *parent,
+                                                        RBShell                  *shell,
                                                         const char               *name);
 
 void        rb_playlist_source_recorder_set_name       (RBPlaylistSourceRecorder *recorder,

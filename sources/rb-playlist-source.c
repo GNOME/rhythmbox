@@ -806,13 +806,16 @@ rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 #if defined(WITH_CD_BURNER_SUPPORT)
 	GtkWidget *recorder;
 	char *name;
+	RBShell *shell;
 
 	rb_debug ("burning playlist");
 
-	g_object_get (source, "name", &name, NULL);
+	g_object_get (source, "name", &name, "shell", &shell, NULL);
 
 	recorder = rb_playlist_source_recorder_new (gtk_widget_get_toplevel (GTK_WIDGET (source)),
+						    shell,
 						    name);
+	g_object_unref (shell);
 	g_free (name);
 
 	rb_playlist_source_recorder_add_from_model (RB_PLAYLIST_SOURCE_RECORDER (recorder),

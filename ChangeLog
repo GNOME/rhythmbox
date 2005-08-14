@@ -1,5 +1,25 @@
 2005-08-13  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell.c (rb_shell_playing_entry_changed_cb): Use
+	rb_shell_hidden_notify.
+	(rb_shell_hidden_notify): Notify if the shell is hidden.
+	(rb_shell_set_visibility_impl): Debug goo.
+
+	* shell/rb-shell.h: Export rb_shell_hidden_notify.
+
+	* shell/rb-tray-icon.c (rb_tray_icon_hide_notify_cb): Show Rhythmbox
+	when the user clicks on notification.
+
+	* sources/rb-playlist-source-recorder.c (burn_cd): Notify when
+	CD burn is complete.
+	(rb_playlist_source_recorder_finalize): Unref shell.
+	(rb_playlist_source_recorder_new): Take shell.
+
+	* sources/rb-playlist-source.c (rb_playlist_source_burn_playlist):
+	Pass shell to RBPlaylistSourceRecorder.
+	
+2005-08-13  Colin Walters  <walters@verbum.org>
+
 	* lib/rb-thread.c:
 	* lib/rb-thread.h: Not used yet, but put in CVS in case we get
           time to convert.
