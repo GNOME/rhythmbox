@@ -134,6 +134,7 @@ static void rb_shell_load_failure_dialog_response_cb (GtkDialog *dialog,
 						      RBShell *shell);
 
 static void rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
+static void rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell);
 static void rb_shell_playlist_load_start_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_playlist_load_finish_cb (RBPlaylistManager *mgr, RBShell *shell);
 static void rb_shell_source_deleted_cb (RBSource *source, RBShell *shell);
@@ -1011,6 +1012,8 @@ rb_shell_construct (RBShell *shell)
 
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_created",
+				 G_CALLBACK (rb_shell_playlist_created_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_start",
 				 G_CALLBACK (rb_shell_playlist_load_start_cb), shell, 0);
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_finish",
@@ -1304,6 +1307,13 @@ static void
 rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
 {
 	rb_shell_append_source (shell, source);
+}
+
+static void
+rb_shell_playlist_created_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
+{
+	eel_gconf_set_boolean (CONF_UI_SMALL_DISPLAY, FALSE);
+	eel_gconf_set_boolean (CONF_UI_SOURCELIST_HIDDEN, FALSE);
 }
 
 static void

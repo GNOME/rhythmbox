@@ -128,6 +128,7 @@ enum
 enum
 {
 	PLAYLIST_ADDED,
+	PLAYLIST_CREATED,
 	PLAYLIST_LOAD_START,
 	PLAYLIST_LOAD_FINISH,
 	LAST_SIGNAL,
@@ -253,6 +254,16 @@ rb_playlist_manager_class_init (RBPlaylistManagerClass *klass)
 			      RB_TYPE_PLAYLIST_MANAGER,
 			      G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_added),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE,
+			      1, G_TYPE_OBJECT);
+	
+	rb_playlist_manager_signals[PLAYLIST_CREATED] =
+		g_signal_new ("playlist_created",
+			      RB_TYPE_PLAYLIST_MANAGER,
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBPlaylistManagerClass, playlist_created),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__OBJECT,
 			      G_TYPE_NONE,
@@ -705,6 +716,9 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 	append_new_playlist_source (mgr, RB_PLAYLIST_SOURCE (playlist));
 	rb_sourcelist_edit_source_name (mgr->priv->sourcelist, playlist);
 	rb_playlist_manager_set_dirty (mgr);
+	
+	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_CREATED], 0,
+		       playlist);
 
 	return playlist;
 }

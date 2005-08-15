@@ -52,6 +52,7 @@ typedef struct
 
 	/* signals */
 	void	(*playlist_added) (RBSource *source);
+	void	(*playlist_created) (RBSource *source);
 	void	(*load_start) (void);
 	void	(*load_finish) (void);
 } RBPlaylistManagerClass;

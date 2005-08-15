@@ -1,5 +1,15 @@
 2005-08-15  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init),
+	(rb_playlist_manager_new_playlist):
+	* shell/rb-playlist-manager.h:
+	* shell/rb-shell.c: (rb_shell_construct),
+	(rb_shell_playlist_added_cb), (rb_shell_playlist_created_cb): Force
+	the source list to be shown when a new playlist is created. (Closes
+	bug 161935)
+
+2005-08-15  James Livingston  <jrl@ids.org.au>
+
 	* widgets/rb-header.c: (rb_header_init),
 	(rb_header_set_show_timeline): disable the seek slider, rather than
 	hiding it, which more closely follows the HIG. (Closes bug 139102)
