@@ -84,7 +84,6 @@ struct RBHeaderPrivate
 
 	GtkWidget *timeframe;
 	GtkWidget *timeline;
-	gboolean timeline_shown;
 	GtkWidget *scale;
 	GtkAdjustment *adjustment;
 	gboolean slider_dragging;
@@ -312,6 +311,8 @@ rb_header_init (RBHeader *player)
 	gtk_container_add (GTK_CONTAINER (align), player->priv->elapsed);
 	gtk_box_pack_start (GTK_BOX (scalebox), align, FALSE, TRUE, 0);
 	align = player->priv->timeframe = gtk_alignment_new (1.0, 0.5, 0.0, 0.0);
+	gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
+	gtk_widget_set_sensitive (player->priv->timeline, FALSE);
 
 	gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
 
@@ -656,17 +657,7 @@ static void
 rb_header_set_show_timeline (RBHeader *player,
 			     gboolean show)
 {
-	if (player->priv->timeline_shown == show)
-		return;
-
-	player->priv->timeline_shown = show;
-
-	if (show == FALSE)
-		gtk_container_remove (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
-	else {
-		gtk_container_add (GTK_CONTAINER (player->priv->timeframe), player->priv->timeline);
-		gtk_widget_show_all (player->priv->timeline);
-	}
+	gtk_widget_set_sensitive (player->priv->timeline, show);
 }
 
 gboolean

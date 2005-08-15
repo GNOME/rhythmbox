@@ -1,3 +1,9 @@
+2005-08-15  James Livingston  <jrl@ids.org.au>
+
+	* widgets/rb-header.c: (rb_header_init),
+	(rb_header_set_show_timeline): disable the seek slider, rather than
+	hiding it, which more closely follows the HIG. (Closes bug 139102)
+
 2005-08-13  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell.c (rb_shell_playing_entry_changed_cb): Use
