@@ -47,6 +47,7 @@ typedef struct
 	GtkHBoxClass parent;
 
 	void (*search) (RBSearchEntry *view, const char *text);
+	void (*activate) (RBSearchEntry *entry);
 } RBSearchEntryClass;
 
 GType		rb_search_entry_get_type (void);

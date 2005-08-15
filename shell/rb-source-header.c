@@ -34,6 +34,7 @@
 #include "rb-search-entry.h"
 #include "rb-debug.h"
 #include "rb-remote.h"
+#include "rb-entry-view.h"
 #include "eel-gconf-extensions.h"
 
 static void rb_source_header_class_init (RBSourceHeaderClass *klass);
@@ -59,6 +60,8 @@ static void rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
 							   guint cnxn_id,
 							   GConfEntry *entry,
 							   RBSourceHeader *header);
+static void rb_source_header_search_activate_cb (RBSearchEntry *search,
+						 RBSourceHeader *header);
 static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
 							  guint cnxn_id,
 							  GConfEntry *entry,
@@ -181,6 +184,8 @@ rb_source_header_init (RBSourceHeader *header)
 
 	g_signal_connect_object (G_OBJECT (header->priv->search), "search",
 				 G_CALLBACK (rb_source_header_search_cb), header, 0);
+	g_signal_connect_object (G_OBJECT (header->priv->search), "activate",
+				 G_CALLBACK (rb_source_header_search_activate_cb), header, 0);
 
 	header->priv->disclosure = cddb_disclosure_new (_("Show _Browser"),
 							_("Hide _Browser"));
@@ -477,4 +482,14 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 		gtk_toggle_action_set_active (GTK_TOGGLE_ACTION (viewbrowser_action),
 					      shown);
 	}
+}
+
+static void
+rb_source_header_search_activate_cb (RBSearchEntry *search,
+				     RBSourceHeader *header)
+{
+	RBEntryView *entry_view;
+
+	entry_view = rb_source_get_entry_view (header->priv->selected_source);
+	gtk_widget_grab_focus (GTK_WIDGET (entry_view));
 }

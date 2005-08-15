@@ -35,6 +35,8 @@ static void rb_search_entry_finalize (GObject *object);
 static gboolean rb_search_entry_timeout_cb (RBSearchEntry *entry);
 static void rb_search_entry_changed_cb (GtkEditable *editable,
 			                RBSearchEntry *entry);
+static void rb_search_entry_activate_cb (GtkEntry *gtkentry,
+					 RBSearchEntry *entry);
 static gboolean rb_search_entry_focus_out_event_cb (GtkWidget *widget,
 				                    GdkEventFocus *event,
 				                    RBSearchEntry *entry);
@@ -51,6 +53,7 @@ struct RBSearchEntryPrivate
 enum
 {
 	SEARCH,
+	ACTIVATE,
 	LAST_SIGNAL
 };
 
@@ -105,6 +108,15 @@ rb_search_entry_class_init (RBSearchEntryClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_STRING);
+	rb_search_entry_signals[ACTIVATE] =
+		g_signal_new ("activate",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBSearchEntryClass, activate),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE,
+			      0);
 }
 
 static void
@@ -133,6 +145,10 @@ rb_search_entry_init (RBSearchEntry *entry)
 	g_signal_connect_object (G_OBJECT (entry->priv->entry),
 				 "focus_out_event",
 				 G_CALLBACK (rb_search_entry_focus_out_event_cb),
+				 entry, 0);
+	g_signal_connect_object (G_OBJECT (entry->priv->entry),
+				 "activate",
+				 G_CALLBACK (rb_search_entry_activate_cb),
 				 entry, 0);
 }
 
@@ -239,4 +255,11 @@ gboolean
 rb_search_entry_searching(RBSearchEntry *entry)
 {
 	return strcmp ("", gtk_entry_get_text (GTK_ENTRY (entry->priv->entry))) != 0;
+}
+
+static void
+rb_search_entry_activate_cb (GtkEntry *gtkentry,
+			     RBSearchEntry *entry)
+{
+	g_signal_emit (G_OBJECT (entry), rb_search_entry_signals[ACTIVATE], 0);
 }

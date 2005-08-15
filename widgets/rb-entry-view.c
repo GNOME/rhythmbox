@@ -71,6 +71,7 @@ static void rb_entry_view_get_property (GObject *object,
 				       GParamSpec *pspec);
 static void rb_entry_view_selection_changed_cb (GtkTreeSelection *selection,
 				               RBEntryView *view);
+static void rb_entry_view_grab_focus (GtkWidget *widget);
 static void rb_entry_view_row_activated_cb (GtkTreeView *treeview,
 			                   GtkTreePath *path,
 			                   GtkTreeViewColumn *column,
@@ -256,6 +257,7 @@ static void
 rb_entry_view_class_init (RBEntryViewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
@@ -264,6 +266,8 @@ rb_entry_view_class_init (RBEntryViewClass *klass)
 
 	object_class->set_property = rb_entry_view_set_property;
 	object_class->get_property = rb_entry_view_get_property;
+
+	widget_class->grab_focus = rb_entry_view_grab_focus;
 
 	g_object_class_install_property (object_class,
 					 PROP_DB,
@@ -2105,4 +2109,12 @@ rb_entry_view_poll_model (RBEntryView *view)
 	g_time_val_add (&timeout, G_USEC_PER_SEC*0.75);
 
 	return rhythmdb_query_model_poll (view->priv->model, &timeout);
+}
+
+static void
+rb_entry_view_grab_focus (GtkWidget *widget)
+{
+	RBEntryView *view = RB_ENTRY_VIEW (widget);
+
+	gtk_widget_grab_focus (GTK_WIDGET (view->priv->treeview));
 }

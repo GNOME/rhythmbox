@@ -1,5 +1,19 @@
 2005-08-15  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-source-header.c: (rb_source_header_init),
+	(rb_source_header_sync_control_state),
+	(rb_source_header_search_activate_cb):
+	* widgets/rb-entry-view.c: (rb_entry_view_class_init),
+	(rb_entry_view_poll_model), (rb_entry_view_grab_focus):
+	* widgets/rb-search-entry.c: (rb_search_entry_class_init),
+	(rb_search_entry_init), (rb_search_entry_searching),
+	(rb_search_entry_activate_cb):
+	* widgets/rb-search-entry.h: Move focus to the entry view when user
+	presses enter in the search box. Patch from Paolo Borelli
+	<pborelli@katamail.com> (Closes bug 128110)
+
+2005-08-15  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_class_init),
 	(rb_playlist_manager_new_playlist):
 	* shell/rb-playlist-manager.h:
