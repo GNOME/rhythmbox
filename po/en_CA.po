@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-13 14:28-0400\n"
-"PO-Revision-Date: 2005-08-13 15:31-0400\n"
+"POT-Creation-Date: 2005-08-14 22:39-0400\n"
+"PO-Revision-Date: 2005-08-14 15:31-0400\n"
 "Last-Translator: Adam Weinberger <adamw@ngome.org>\n"
 "Language-Team: Canadian English <adamw@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -262,7 +262,7 @@ msgstr "Enter the _location (URI) of the file you would like to add:"
 msgid "Open from URI"
 msgstr "Open from URI"
 
-#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:825 shell/rb-shell.c:1500
+#: data/rhythmbox.desktop.in.h:1 shell/rb-shell.c:825 shell/rb-shell.c:1506
 msgid "Music Player"
 msgstr "Music Player"
 
@@ -390,7 +390,7 @@ msgstr "Could not determine default writer device"
 msgid "Could not determine audio track durations."
 msgstr "Could not determine audio track durations."
 
-#: player/rb-recorder-gst.c:1251 sources/rb-playlist-source-recorder.c:1507
+#: player/rb-recorder-gst.c:1251 sources/rb-playlist-source-recorder.c:1526
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the %s minute length of the "
@@ -903,7 +903,7 @@ msgstr "Unexpected end of stream!"
 msgid "Buffering"
 msgstr "Buffering"
 
-#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1619
+#: shell/rb-shell-preferences.c:141 shell/rb-shell.c:1625
 msgid "Couldn't display help"
 msgstr "Could not display help"
 
@@ -1027,12 +1027,16 @@ msgstr "_Small Display"
 msgid "Make the main window smaller"
 msgstr "Make the main window smaller"
 
-#: shell/rb-shell.c:1475 shell/rb-tray-icon.c:183
+#: shell/rb-shell.c:1389 widgets/rb-entry-view.c:1444
+msgid "Now Playing"
+msgstr "Now Playing"
+
+#: shell/rb-shell.c:1481 shell/rb-tray-icon.c:185
 msgid "Not playing"
 msgstr "Not playing"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1478
+#: shell/rb-shell.c:1484
 #, c-format
 msgid ""
 "%s\n"
@@ -1042,7 +1046,7 @@ msgstr ""
 "Paused, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: shell/rb-shell.c:1482
+#: shell/rb-shell.c:1488
 #, c-format
 msgid ""
 "%s\n"
@@ -1052,54 +1056,54 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: shell/rb-shell.c:1516
+#: shell/rb-shell.c:1522
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (Paused)"
 
-#: shell/rb-shell.c:1576
+#: shell/rb-shell.c:1582
 msgid "translator_credits"
 msgstr ""
 "Adam Weinberger <adamw@gnome.org>\n"
 "Alexander Winston <alexander.winston@comcast.net>"
 
-#: shell/rb-shell.c:1580
+#: shell/rb-shell.c:1586
 msgid "Maintainers:"
 msgstr "Maintainers:"
 
-#: shell/rb-shell.c:1583
+#: shell/rb-shell.c:1589
 msgid "Former Maintainers:"
 msgstr "Former Maintainers:"
 
-#: shell/rb-shell.c:1586
+#: shell/rb-shell.c:1592
 msgid "Contributors:"
 msgstr "Contributors:"
 
-#: shell/rb-shell.c:1588
+#: shell/rb-shell.c:1594
 msgid "Music management and playback software for GNOME."
 msgstr "Music management and playback software for GNOME."
 
-#: shell/rb-shell.c:1679
+#: shell/rb-shell.c:1685
 msgid "Import Folder into Library"
 msgstr "Import Folder into Library"
 
-#: shell/rb-shell.c:1701
+#: shell/rb-shell.c:1707
 msgid "Import File into Library"
 msgstr "Import File into Library"
 
-#: shell/rb-shell.c:1735
+#: shell/rb-shell.c:1741
 msgid "CD Ripper not found"
 msgstr "CD Ripper not found"
 
-#: shell/rb-shell.c:1736
+#: shell/rb-shell.c:1742
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "To extract CDs you must install the Sound Juicer CD Ripper package."
 
-#: shell/rb-shell.c:1744
+#: shell/rb-shell.c:1750
 msgid "Couldn't run CD Ripper"
 msgstr "Could not run CD Ripper"
 
-#: shell/rb-shell.c:1745
+#: shell/rb-shell.c:1751
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "An error occurred while running sound-juicer: %s"
@@ -1136,11 +1140,11 @@ msgstr "Change the visibility of the statusbar"
 msgid "Loading..."
 msgstr "Loading..."
 
-#: shell/rb-tray-icon.c:97
+#: shell/rb-tray-icon.c:99
 msgid "_Show Window"
 msgstr "_Show Window"
 
-#: shell/rb-tray-icon.c:98
+#: shell/rb-tray-icon.c:100
 msgid "Change the visibility of the main window"
 msgstr "Change the visibility of the main window"
 
@@ -1257,30 +1261,30 @@ msgstr "Tra_ck"
 msgid "Couldn't save playlist"
 msgstr "Could not save playlist"
 
-#: sources/rb-playlist-source-recorder.c:258
+#: sources/rb-playlist-source-recorder.c:262
 msgid "Maximum possible"
 msgstr "Maximum possible"
 
-#: sources/rb-playlist-source-recorder.c:305
+#: sources/rb-playlist-source-recorder.c:309
 #, c-format
 msgid "Invalid writer device: %s"
 msgstr "Invalid writer device: %s"
 
-#: sources/rb-playlist-source-recorder.c:405
+#: sources/rb-playlist-source-recorder.c:409
 #, c-format
 msgid "%d hour"
 msgid_plural "%d hours"
 msgstr[0] "%d hour"
 msgstr[1] "%d hours"
 
-#: sources/rb-playlist-source-recorder.c:407
+#: sources/rb-playlist-source-recorder.c:411
 #, c-format
 msgid "%d minute"
 msgid_plural "%d minutes"
 msgstr[0] "%d minute"
 msgstr[1] "%d minutes"
 
-#: sources/rb-playlist-source-recorder.c:410
+#: sources/rb-playlist-source-recorder.c:414
 #, c-format
 msgid "%d second"
 msgid_plural "%d seconds"
@@ -1288,42 +1292,42 @@ msgstr[0] "%d second"
 msgstr[1] "%d seconds"
 
 #. hour:minutes:seconds
-#: sources/rb-playlist-source-recorder.c:415
+#: sources/rb-playlist-source-recorder.c:419
 #, c-format
 msgid "%s %s %s"
 msgstr "%s %s %s"
 
 #. minutes:seconds
-#: sources/rb-playlist-source-recorder.c:418
+#: sources/rb-playlist-source-recorder.c:422
 #, c-format
 msgid "%s %s"
 msgstr "%s %s"
 
 #. seconds
-#: sources/rb-playlist-source-recorder.c:421
+#: sources/rb-playlist-source-recorder.c:425
 #, c-format
 msgid "%s"
 msgstr "%s"
 
 #. 0 seconds
-#: sources/rb-playlist-source-recorder.c:424
+#: sources/rb-playlist-source-recorder.c:428
 msgid "0 seconds"
 msgstr "0 seconds"
 
-#: sources/rb-playlist-source-recorder.c:443
+#: sources/rb-playlist-source-recorder.c:447
 #, c-format
 msgid "About %s left"
 msgstr "About %s left"
 
-#: sources/rb-playlist-source-recorder.c:471
+#: sources/rb-playlist-source-recorder.c:475
 msgid "Burning audio to CD"
 msgstr "Burning audio to CD"
 
-#: sources/rb-playlist-source-recorder.c:488
+#: sources/rb-playlist-source-recorder.c:494
 msgid "Finished creating audio CD."
 msgstr "Finished creating audio CD."
 
-#: sources/rb-playlist-source-recorder.c:493
+#: sources/rb-playlist-source-recorder.c:505
 msgid ""
 "Finished creating audio CD.\n"
 "Create another copy?"
@@ -1331,204 +1335,204 @@ msgstr ""
 "Finished creating audio CD.\n"
 "Create another copy?"
 
-#: sources/rb-playlist-source-recorder.c:495
+#: sources/rb-playlist-source-recorder.c:507
 msgid "Writing cancelled.  Try again?"
 msgstr "Writing cancelled.  Try again?"
 
-#: sources/rb-playlist-source-recorder.c:560
+#: sources/rb-playlist-source-recorder.c:572
 msgid "Audio recording error"
 msgstr "Audio recording error"
 
-#: sources/rb-playlist-source-recorder.c:588
+#: sources/rb-playlist-source-recorder.c:600
 msgid "Audio Conversion Error"
 msgstr "Audio Conversion Error"
 
-#: sources/rb-playlist-source-recorder.c:618
+#: sources/rb-playlist-source-recorder.c:630
 msgid "Recording error"
 msgstr "Recording error"
 
-#: sources/rb-playlist-source-recorder.c:737
+#: sources/rb-playlist-source-recorder.c:749
 msgid "Do you wish to interrupt writing this disc?"
 msgstr "Do you wish to interrupt writing this disc?"
 
-#: sources/rb-playlist-source-recorder.c:740
+#: sources/rb-playlist-source-recorder.c:752
 msgid "This may result in an unusable disc."
 msgstr "This may result in an unusable disc."
 
-#: sources/rb-playlist-source-recorder.c:747
+#: sources/rb-playlist-source-recorder.c:759
 msgid "_Cancel"
 msgstr "_Cancel"
 
-#: sources/rb-playlist-source-recorder.c:748
+#: sources/rb-playlist-source-recorder.c:760
 msgid "_Interrupt"
 msgstr "_Interrupt"
 
-#: sources/rb-playlist-source-recorder.c:770
+#: sources/rb-playlist-source-recorder.c:782
 msgid "Could not create audio CD"
 msgstr "Could not create audio CD"
 
-#: sources/rb-playlist-source-recorder.c:792
+#: sources/rb-playlist-source-recorder.c:804
 msgid "Please make sure another application is not using the drive."
 msgstr "Please make sure no other applications are using the drive."
 
-#: sources/rb-playlist-source-recorder.c:793
+#: sources/rb-playlist-source-recorder.c:805
 msgid "Drive is busy"
 msgstr "Drive is busy"
 
-#: sources/rb-playlist-source-recorder.c:795
+#: sources/rb-playlist-source-recorder.c:807
 msgid "Please put a rewritable or blank CD in the drive."
 msgstr "Please put a rewritable or blank CD in the drive."
 
-#: sources/rb-playlist-source-recorder.c:796
+#: sources/rb-playlist-source-recorder.c:808
 msgid "Insert a rewritable or blank CD"
 msgstr "Insert a rewritable or blank CD"
 
-#: sources/rb-playlist-source-recorder.c:798
+#: sources/rb-playlist-source-recorder.c:810
 msgid "Please put a blank CD in the drive."
 msgstr "Please put a blank CD in the drive."
 
-#: sources/rb-playlist-source-recorder.c:799
+#: sources/rb-playlist-source-recorder.c:811
 msgid "Insert a blank CD"
 msgstr "Insert a blank CD"
 
-#: sources/rb-playlist-source-recorder.c:801
+#: sources/rb-playlist-source-recorder.c:813
 msgid "Please replace the disc in the drive with a rewritable or blank CD."
 msgstr "Please replace the disc in the drive with a rewritable or blank CD."
 
-#: sources/rb-playlist-source-recorder.c:802
+#: sources/rb-playlist-source-recorder.c:814
 msgid "Reload a rewritable or blank CD"
 msgstr "Reload a rewritable or blank CD"
 
-#: sources/rb-playlist-source-recorder.c:804
+#: sources/rb-playlist-source-recorder.c:816
 msgid "Please replace the disc in the drive with a blank CD."
 msgstr "Please replace the disc in the drive with a blank CD."
 
-#: sources/rb-playlist-source-recorder.c:805
+#: sources/rb-playlist-source-recorder.c:817
 msgid "Reload a blank CD"
 msgstr "Reload a blank CD"
 
-#: sources/rb-playlist-source-recorder.c:856
+#: sources/rb-playlist-source-recorder.c:868
 msgid "Converting audio tracks"
 msgstr "Converting audio tracks"
 
-#: sources/rb-playlist-source-recorder.c:859
+#: sources/rb-playlist-source-recorder.c:871
 msgid "Preparing to write CD"
 msgstr "Preparing to write CD"
 
-#: sources/rb-playlist-source-recorder.c:862
+#: sources/rb-playlist-source-recorder.c:874
 msgid "Writing CD"
 msgstr "Writing CD"
 
-#: sources/rb-playlist-source-recorder.c:865
+#: sources/rb-playlist-source-recorder.c:877
 msgid "Finishing write"
 msgstr "Finishing write"
 
-#: sources/rb-playlist-source-recorder.c:868
+#: sources/rb-playlist-source-recorder.c:880
 msgid "Erasing CD"
 msgstr "Erasing CD"
 
-#: sources/rb-playlist-source-recorder.c:871
+#: sources/rb-playlist-source-recorder.c:883
 msgid "Unhandled action in burn_action_changed_cb"
 msgstr "Unhandled action in burn_action_changed_cb"
 
-#: sources/rb-playlist-source-recorder.c:908
+#: sources/rb-playlist-source-recorder.c:920
 msgid "Could not determine media type because CD drive is busy"
 msgstr "Could not determine media type because CD drive is busy"
 
-#: sources/rb-playlist-source-recorder.c:910
+#: sources/rb-playlist-source-recorder.c:922
 msgid "Couldn't open media"
 msgstr "Could not open media"
 
-#: sources/rb-playlist-source-recorder.c:912
+#: sources/rb-playlist-source-recorder.c:924
 msgid "Unknown Media"
 msgstr "Unknown Media"
 
-#: sources/rb-playlist-source-recorder.c:914
+#: sources/rb-playlist-source-recorder.c:926
 msgid "Commercial CD or Audio CD"
 msgstr "Commercial CD or Audio CD"
 
-#: sources/rb-playlist-source-recorder.c:916
+#: sources/rb-playlist-source-recorder.c:928
 msgid "CD-R"
 msgstr "CD-R"
 
-#: sources/rb-playlist-source-recorder.c:918
+#: sources/rb-playlist-source-recorder.c:930
 msgid "CD-RW"
 msgstr "CD-RW"
 
-#: sources/rb-playlist-source-recorder.c:920
+#: sources/rb-playlist-source-recorder.c:932
 msgid "DVD"
 msgstr "DVD"
 
-#: sources/rb-playlist-source-recorder.c:922
+#: sources/rb-playlist-source-recorder.c:934
 msgid "DVD-R, or DVD-RAM"
 msgstr "DVD-R, or DVD-RAM"
 
-#: sources/rb-playlist-source-recorder.c:924
+#: sources/rb-playlist-source-recorder.c:936
 msgid "DVD-RW"
 msgstr "DVD-RW"
 
-#: sources/rb-playlist-source-recorder.c:926
+#: sources/rb-playlist-source-recorder.c:938
 msgid "DVD-RAM"
 msgstr "DVD-RAM"
 
-#: sources/rb-playlist-source-recorder.c:928
+#: sources/rb-playlist-source-recorder.c:940
 msgid "DVD+R"
 msgstr "DVD+R"
 
-#: sources/rb-playlist-source-recorder.c:930
+#: sources/rb-playlist-source-recorder.c:942
 msgid "DVD+RW"
 msgstr "DVD+RW"
 
-#: sources/rb-playlist-source-recorder.c:935
+#: sources/rb-playlist-source-recorder.c:947
 msgid "Broken media type"
 msgstr "Broken media type"
 
-#: sources/rb-playlist-source-recorder.c:975
+#: sources/rb-playlist-source-recorder.c:987
 #, c-format
 msgid "This %s appears to have information already recorded on it."
 msgstr "This %s appears to have information already recorded on it."
 
-#: sources/rb-playlist-source-recorder.c:983
+#: sources/rb-playlist-source-recorder.c:995
 msgid "Erase information on this disc?"
 msgstr "Erase information on this disc?"
 
-#: sources/rb-playlist-source-recorder.c:992
+#: sources/rb-playlist-source-recorder.c:1004
 msgid "_Try Another"
 msgstr "_Try Another"
 
-#: sources/rb-playlist-source-recorder.c:999
+#: sources/rb-playlist-source-recorder.c:1011
 msgid "_Erase Disc"
 msgstr "_Erase Disc"
 
-#: sources/rb-playlist-source-recorder.c:1101
+#: sources/rb-playlist-source-recorder.c:1115
 msgid "C_reate"
 msgstr "C_reate"
 
-#: sources/rb-playlist-source-recorder.c:1175
+#: sources/rb-playlist-source-recorder.c:1189
 #, c-format
 msgid "Failed to create the recorder: %s"
 msgstr "Failed to create the recorder: %s"
 
-#: sources/rb-playlist-source-recorder.c:1267
+#: sources/rb-playlist-source-recorder.c:1285
 #, c-format
 msgid "Could not remove temporary directory '%s': %s"
 msgstr "Could not remove temporary directory '%s': %s"
 
-#: sources/rb-playlist-source-recorder.c:1287
+#: sources/rb-playlist-source-recorder.c:1307
 msgid "Create Audio CD"
 msgstr "Create Audio CD"
 
-#: sources/rb-playlist-source-recorder.c:1305
+#: sources/rb-playlist-source-recorder.c:1324
 #, c-format
 msgid "Create audio CD from '%s' playlist?"
 msgstr "Create audio CD from '%s' playlist?"
 
-#: sources/rb-playlist-source-recorder.c:1403
+#: sources/rb-playlist-source-recorder.c:1422
 #, c-format
 msgid "Cannot get free space at %s"
 msgstr "Cannot get free space at %s"
 
-#: sources/rb-playlist-source-recorder.c:1500
+#: sources/rb-playlist-source-recorder.c:1519
 #, c-format
 msgid ""
 "This playlist is %s minutes long.  This exceeds the length of a standard "
@@ -1539,15 +1543,15 @@ msgstr ""
 "audio CD.  If the destination media is larger than a standard audio CD "
 "please insert it in the drive and try again."
 
-#: sources/rb-playlist-source-recorder.c:1516
+#: sources/rb-playlist-source-recorder.c:1535
 msgid "Playlist too long"
 msgstr "Playlist too long"
 
-#: sources/rb-playlist-source-recorder.c:1528
+#: sources/rb-playlist-source-recorder.c:1547
 msgid "Could not find temporary space!"
 msgstr "Could not find temporary space!"
 
-#: sources/rb-playlist-source-recorder.c:1529
+#: sources/rb-playlist-source-recorder.c:1548
 #, c-format
 msgid ""
 "Could not find enough temporary space to convert audio tracks.  %s MiB "
@@ -1572,13 +1576,17 @@ msgstr "_Source"
 msgid "Configuration system error"
 msgstr "Configuration system error"
 
-#: widgets/eggtrayicon.c:120
+#: widgets/eggtrayicon.c:127
 msgid "Orientation"
 msgstr "Orientation"
 
-#: widgets/eggtrayicon.c:121
+#: widgets/eggtrayicon.c:128
 msgid "The orientation of the tray."
 msgstr "The orientation of the tray."
+
+#: widgets/eggtrayicon.c:446
+msgid "Notification"
+msgstr "Notification"
 
 #: widgets/rb-cell-renderer-pixbuf.c:129
 msgid "Pixbuf Object"
@@ -1686,10 +1694,6 @@ msgstr "_Play Count"
 #: widgets/rb-entry-view.c:1282
 msgid "L_ast Played"
 msgstr "L_ast Played"
-
-#: widgets/rb-entry-view.c:1444
-msgid "Now Playing"
-msgstr "Now Playing"
 
 #: widgets/rb-entry-view.c:1532
 msgid "Playback Error"
