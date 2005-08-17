@@ -1,5 +1,11 @@
 2005-08-17  James Livingston  <jrl@ids.org.au>
 
+	* rhythmdb/rhythmdb.c: (set_props_from_metadata),
+	(rhythmdb_process_metadata_load): don't reset the First Seen time
+	whenever we recheck the metadata.
+
+2005-08-17  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-playlist-source.c: (rb_playlist_source_burn_playlist):
 	temporary workaround to stop crashes when trying to burn an empty
 	playlist. Doesn't disable the menu item which is the better solution

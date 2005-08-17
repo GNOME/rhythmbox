@@ -1107,14 +1107,6 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_MTIME, &val);
 	g_value_unset (&val);
 
-        /* first seen and last seen */
-	g_get_current_time (&time);
-	g_value_init (&val, G_TYPE_ULONG);
-	g_value_set_ulong (&val, time.tv_sec);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &val);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_LAST_SEEN, &val);
-	g_value_unset (&val);
-
 	/* genre */
 	set_metadata_string_default_unknown (db, metadata, entry,
 					     RB_METADATA_FIELD_GENRE,
@@ -1305,6 +1297,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 	RhythmDBEntry *entry;
 	GValue value = {0,};
 	const char *mime;
+	GTimeVal time;
 
 	if (event->error) {
 		struct RhythmDBLoadErrorData *data;
@@ -1335,8 +1328,11 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 		return TRUE;
 	}
 
+	g_get_current_time (&time);
+
 	entry = rhythmdb_entry_lookup_by_location (db, event->real_uri);
 	if (!entry) {
+
 		entry = rhythmdb_entry_new (db, RHYTHMDB_ENTRY_TYPE_SONG, event->real_uri);
 		if (entry == NULL) {
 			rb_debug ("entry already exists");
@@ -1362,9 +1358,20 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 		rhythmdb_entry_set_internal (db, entry, 
 					     RHYTHMDB_PROP_AUTO_RATE, &value);
 		g_value_unset (&value);
+		
+	        /* first seen and last seen */
+		g_value_init (&value, G_TYPE_ULONG);
+		g_value_set_ulong (&value, time.tv_sec);
+		rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+		g_value_unset (&value);
 	}
 
 	set_props_from_metadata (db, entry, event->vfsinfo, event->metadata);
+
+	g_value_init (&value, G_TYPE_ULONG);
+	g_value_set_ulong (&value, time.tv_sec);
+	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_LAST_SEEN, &value);
+	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
 	rhythmdb_entry_set_mount_point (db, entry, event->real_uri);
