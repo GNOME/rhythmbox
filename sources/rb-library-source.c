@@ -40,7 +40,6 @@
 #include "rb-util.h"
 #include "rb-file-helpers.h"
 #include "rb-dialog.h"
-#include "rb-volume.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"

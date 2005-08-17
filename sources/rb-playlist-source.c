@@ -41,7 +41,6 @@
 #if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-playlist-source-recorder.h"
 #endif
-#include "rb-volume.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 #include "rb-song-info.h"

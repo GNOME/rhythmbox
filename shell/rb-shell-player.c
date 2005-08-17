@@ -51,7 +51,7 @@
 #include "rb-header.h"
 #include "totem-pl-parser.h"
 #include "rb-metadata.h"
-#include "rb-volume.h"
+#include "bacon-volume.h"
 #include "rb-remote.h"
 #include "rb-iradio-source.h"
 #include "rb-library-source.h"
@@ -131,6 +131,8 @@ static void rb_shell_player_volume_changed_cb (GConfClient *client,
 					       guint cnxn_id,
 					       GConfEntry *entry,
 					       RBShellPlayer *playa);
+static void rb_shell_player_volume_widget_changed_cb (BaconVolumeButton *vol,
+						      RBShellPlayer     *playa);
 static void rb_shell_player_sync_volume (RBShellPlayer *player); 
 static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
@@ -603,8 +605,6 @@ rb_shell_player_init (RBShellPlayer *player)
 					    (GConfClientNotifyFunc)gconf_play_order_changed,
 					    player);
 
-	rb_shell_player_sync_volume (player);
-
 	hbox = gtk_hbox_new (FALSE, 5);
 	gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
 
@@ -665,7 +665,12 @@ rb_shell_player_init (RBShellPlayer *player)
 	gtk_container_add (GTK_CONTAINER (alignment), GTK_WIDGET (player->priv->header_widget));
 	gtk_box_pack_start (GTK_BOX (player), alignment, TRUE, TRUE, 0);
 
-	player->priv->volume_button = GTK_WIDGET (rb_volume_new ());
+	player->priv->volume_button = bacon_volume_button_new (GTK_ICON_SIZE_LARGE_TOOLBAR,
+							       0.0, 1.0, 0.02);
+	rb_shell_player_sync_volume (player);
+	g_signal_connect (player->priv->volume_button, "value-changed",
+			  G_CALLBACK (rb_shell_player_volume_widget_changed_cb),
+			  player);
 
 	gtk_tooltips_set_tip (GTK_TOOLTIPS (player->priv->tooltips), 
 			      GTK_WIDGET (player->priv->volume_button), 
@@ -1501,6 +1506,8 @@ rb_shell_player_sync_volume (RBShellPlayer *player)
 		volume = 0.0;
 	else if (volume > 1.0)
 		volume = 1.0;
+	bacon_volume_button_set_value (BACON_VOLUME_BUTTON (player->priv->volume_button),
+				       volume);
 	rb_player_set_volume (player->priv->mmplayer,
 					volume);
 					
@@ -1548,6 +1555,14 @@ rb_shell_player_volume_changed_cb (GConfClient *client,
 {
 	rb_debug ("volume changed");
 	rb_shell_player_sync_volume (playa);
+}
+
+static void
+rb_shell_player_volume_widget_changed_cb (BaconVolumeButton *vol,
+					  RBShellPlayer     *playa)
+{
+	eel_gconf_set_float (CONF_STATE_VOLUME,
+			     bacon_volume_button_get_value (vol));
 }
 
 static void

@@ -1,3 +1,27 @@
+2005-08-17  Ronald S. Bultje  <rbultje@ronald.bitfreak.net>
+
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_sync_volume), (rb_shell_player_volume_changed_cb),
+	(rb_shell_player_volume_widget_changed_cb):
+	* sources/rb-iradio-source.c:
+	* sources/rb-library-source.c:
+	* sources/rb-playlist-source.c:
+	* widgets/Makefile.am:
+	* widgets/bacon-volume.c: (bacon_volume_button_get_type),
+	(bacon_volume_button_class_init), (bacon_volume_button_init),
+	(bacon_volume_button_dispose), (bacon_volume_button_new),
+	(bacon_volume_button_get_value), (bacon_volume_button_set_value),
+	(bacon_volume_button_scroll), (bacon_volume_button_press),
+	(cb_button_timeout), (cb_button_press), (cb_button_release),
+	(bacon_volume_release_grab), (cb_dock_press),
+	(bacon_volume_scale_get_type), (bacon_volume_scale_class_init),
+	(bacon_volume_scale_new), (bacon_volume_scale_press),
+	(bacon_volume_scale_release), (bacon_volume_scale_value_changed):
+	* widgets/bacon-volume.h:
+	* widgets/rb-volume.c:
+	* widgets/rb-volume.h:
+	  Use BaconVolumeButton (#300867).
+
 2005-08-17  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb.c: (set_props_from_metadata),

@@ -15,8 +15,8 @@ librbwidgets_la_SOURCES =				\
 	rb-search-entry.h				\
 	rb-header.c					\
 	rb-header.h					\
-	rb-volume.c					\
-	rb-volume.h					\
+	bacon-volume.c					\
+	bacon-volume.h					\
 	rb-druid.c					\
 	rb-druid.h					\
 	disclosure-widget.c				\

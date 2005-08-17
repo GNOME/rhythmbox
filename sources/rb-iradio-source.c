@@ -41,7 +41,6 @@
 #include "rb-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-station-properties-dialog.h"
-#include "rb-volume.h"
 #include "rb-debug.h"
 #include "eel-gconf-extensions.h"
 
