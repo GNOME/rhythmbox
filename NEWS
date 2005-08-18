@@ -1,7 +1,28 @@
+Overview of Changes in Rhythmbox 0.9.1
+======================================
+
+* Notification bubble from tray icon [Colin Walters]
+* Use new volume widget, same as in Totem [Ronald S. Bultje: 300867]
+* Focus entry view when enter is pressed in search box [Paolo Borelli: 128110]
+* Show source list when playlist os created [James Livingston: 161935]
+* Disable rather then hide seek bar [James Livingston: 139102]
+* Misc bug fixes [James Livingston: 313253, Raphael Slinckx: 313262]
+
 Overview of Changes in Rhythmbox 0.9.0
 ======================================
 
 * Too many to mention, focus was on stability, and memory usage
+* Support for buring audio CDs (pass --with-cdburner to configure)
+* Experimental tag editing support (pass --enable-tag-writing to configure)
+* Remove deprecated Xine backend
+* Play any audio file that GStreamer can decode
+* Don't remove tracks that are unavailable, just hide them
+* Internet Radio improvements
+* Heaps of UI Improvements
+* Updated Bonobo interface
+* Heaps of bug fixes, some memory usage reduction and code cleanup
+* Promises to keep the NEWS file up to date
+
 
 Overview of Changes in Rhythmbox 0.7.2
 ======================================
