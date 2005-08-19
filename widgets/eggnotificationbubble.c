@@ -475,20 +475,13 @@ draw_bubble (EggNotificationBubble *bubble, guint timeout)
   rectangle.width = w - (rectangle_border * 2);
   rectangle.height = h - (rectangle_border * 2);
   region = add_bevels_to_rectangle (&rectangle);
-  
-  if (orient == ORIENT_BOTTOM)
-    {
-      triangle_points[0].x = triangle_offset;
-      triangle_points[0].y = BORDER_SIZE;
-      triangle_points[1].x = triangle_points[0].x + 20;
-      triangle_points[1].y = triangle_points[0].y;
-      triangle_points[2].x = (triangle_points[1].x + triangle_points[0].x) /2;
-      triangle_points[2].y = 0;
-    }
-  else
-    {
-      /* FIXME */
-    }
+
+  triangle_points[0].x = triangle_offset;
+  triangle_points[0].y = orient == ORIENT_BOTTOM ? BORDER_SIZE : h - BORDER_SIZE;
+  triangle_points[1].x = triangle_points[0].x + 20;
+  triangle_points[1].y = triangle_points[0].y;
+  triangle_points[2].x = (triangle_points[1].x + triangle_points[0].x) /2;
+  triangle_points[2].y = orient == ORIENT_BOTTOM ? 0 : h;
 
   triangle_region = gdk_region_polygon (triangle_points, 3, GDK_WINDING_RULE);
 

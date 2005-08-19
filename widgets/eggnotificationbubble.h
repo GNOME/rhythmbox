@@ -83,9 +83,6 @@ void		 egg_notification_bubble_set (EggNotificationBubble   *bubble,
 void             egg_notification_bubble_show (EggNotificationBubble *bubble, guint timeout);
 void             egg_notification_bubble_hide (EggNotificationBubble *bubble);
 
-void             egg_notification_bubble_force_window (EggNotificationBubble   *bubble);
-
-
 gboolean         egg_notification_bubble_get_info_from_tip_window (GtkWindow    *window,
                                                         EggNotificationBubble **bubble,
                                                         GtkWidget   **current_widget);
