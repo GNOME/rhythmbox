@@ -1,3 +1,8 @@
+2005-08-21  James Livingston  <jrl@ids.org.au>
+
+	* player/rb-player-gst.c: (error_cb): ignore any playbin errors, where
+	error=NULL. This stops some crashes.
+
 2005-08-19  Colin Walters  <walters@verbum.org>
 
 	Patch from Olivier Blin <oblin@mandriva.com>

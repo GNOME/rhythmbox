@@ -266,6 +266,10 @@ error_cb (GstElement *element,
 	int code;
 	RBPlayerSignal *signal;
 
+	/* the handler shouldn't get called with error=NULL, but sometimes it does */
+	if (error == NULL)
+		return;
+
 	if ((error->domain == GST_CORE_ERROR)
 	    || (error->domain == GST_LIBRARY_ERROR)
 	    || (error->code == GST_RESOURCE_ERROR_BUSY)) {
