@@ -1030,7 +1030,6 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 {
 	const char *mime;
 	GValue val = {0,};
-	GTimeVal time;
 
 	g_value_init (&val, G_TYPE_STRING);
 	mime = rb_metadata_get_mime (metadata);
