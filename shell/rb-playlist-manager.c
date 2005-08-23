@@ -737,15 +737,21 @@ rb_playlist_manager_set_automatic_playlist (RBPlaylistManager *mgr,
 {
 	RBQueryCreatorLimitType type;
 	guint limit, limit_count = 0, limit_size = 0;
+	const char *sort_key;
+	gint sort_direction;
 
 	rb_query_creator_get_limit (creator, &type, &limit);
 	if (type == RB_QUERY_CREATOR_LIMIT_COUNT)
 		limit_count = limit;
 	else if (type == RB_QUERY_CREATOR_LIMIT_MB)
 		limit_size = limit;
+
+	rb_query_creator_get_sort_order (creator, &sort_key, &sort_direction);
+
 	rb_playlist_source_set_query (playlist,
 				      rb_query_creator_get_query (creator),
-				      limit_count, limit_size);
+				      limit_count, limit_size,
+				      sort_key, sort_direction);
 }
 
 static void
@@ -780,15 +786,17 @@ rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 	RBPlaylistSource *playlist;
 	GPtrArray *query;
 	guint limit_count = 0, limit_size = 0;
+	const char *sort_key;
+	gint sort_direction;
 	
 
 	playlist = RB_PLAYLIST_SOURCE (mgr->priv->selected_source);
-	rb_playlist_source_get_query (playlist, &query, &limit_count, &limit_size);
+	rb_playlist_source_get_query (playlist, &query, &limit_count, &limit_size, &sort_key, &sort_direction);
 
 	creator = RB_QUERY_CREATOR (rb_query_creator_new_from_query (mgr->priv->db,
 								     query,
-								     limit_count,
-								     limit_size));	
+								     limit_count, limit_size,
+								     sort_key, sort_direction));
 
 	gtk_dialog_run (GTK_DIALOG (creator));
 

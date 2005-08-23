@@ -40,7 +40,9 @@ librbwidgets_la_SOURCES =				\
 	rb-rating-helper.c				\
 	rb-rating-helper.h				\
 	rb-query-creator.c				\
-	rb-query-creator.h
+	rb-query-creator.h				\
+	rb-query-creator-private.h			\
+	rb-query-creator-properties.c
 
 INCLUDES =						\
 	-DGNOMELOCALEDIR=\""$(datadir)/locale"\"        \

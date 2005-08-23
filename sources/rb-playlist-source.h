@@ -63,17 +63,19 @@ RBSource *	rb_playlist_source_new		(RBShell *shell,
 RBSource *	rb_playlist_source_new_from_xml	(RBShell *shell,
 						 xmlNodePtr node);
 
-RhythmDBQueryModel *rb_playlist_source_get_model(RBPlaylistSource *source);
-
 void		rb_playlist_source_set_query	(RBPlaylistSource *source,
 						 GPtrArray *query,
 						 guint limit_count,
-						 guint limit_mb);
+						 guint limit_mb,
+						 const char *sort_key,
+						 gint sort_order);
 
 void		rb_playlist_source_get_query	(RBPlaylistSource *source,
 						 GPtrArray **query,
 						 guint *limit_count,
-						 guint *limit_mb);
+						 guint *limit_mb,
+						 const char **sort_key,
+						 gint *sort_order);
 
 void		rb_playlist_source_save_playlist(RBPlaylistSource *source,
 						 const char *uri);

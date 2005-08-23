@@ -59,6 +59,8 @@ typedef enum
 	RHYTHMDB_QUERY_PROP_NOT_LIKE,
 	RHYTHMDB_QUERY_PROP_GREATER,
 	RHYTHMDB_QUERY_PROP_LESS,
+	RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN,
+	RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN,
 } RhythmDBQueryType;
 
 /* If you modify this enum, don't forget to modify rhythmdb_prop_get_type */

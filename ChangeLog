@@ -1,3 +1,61 @@
+2005-08-24  James Livingston  <jrl@ids.org.au>
+
+	* NEWS:
+	* data/glade/create-playlist.glade:
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery):
+	* rhythmdb/rhythmdb.c: (rhythmdb_query_parse_valist),
+	(rhythmdb_query_free), (rhythmdb_query_serialize),
+	(rhythmdb_query_deserialize), (rhythmdb_query_get_type):
+	* rhythmdb/rhythmdb.h:
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_set_automatic_playlist),
+	(rb_playlist_manager_cmd_edit_automatic_playlist):
+	* sources/rb-playlist-source.c: (rb_playlist_source_constructor),
+	(rb_playlist_source_set_query), (rb_playlist_source_get_query),
+	(impl_receive_drag), (rb_playlist_source_new_from_xml),
+	(rb_playlist_source_save_to_xml),
+	(rb_playlist_source_songs_sort_order_changed_cb),
+	(rb_playlist_source_do_query):
+	* sources/rb-playlist-source.h:
+	* widgets/Makefile.am:
+	* widgets/rb-entry-view.c: (rb_entry_view_get_sorting_order),
+	(rb_entry_view_set_sorting_order):
+	* widgets/rb-query-creator-private.h:
+	* widgets/rb-query-creator-properties.c:
+	(stringCriteriaCreateWidget), (stringCriteriaSetWidgetData),
+	(stringCriteriaGetWidgetData),
+	(escapedStringCriteriaSetWidgetData),
+	(escapedStringCriteriaGetWidgetData), (set_rating_score),
+	(ratingCriteriaCreateWidget), (ratingCriteriaSetWidgetData),
+	(ratingCriteriaGetWidgetData), (integerCriteriaCreateWidget),
+	(integerCriteriaSetWidgetData), (integerCriteriaGetWidgetData),
+	(durationCriteriaCreateWidget), (durationCriteriaSetWidgetData),
+	(durationCriteriaGetWidgetData), (create_time_unit_option_menu),
+	(relativeTimeCriteriaCreateWidget),
+	(relativeTimeCriteriaSetWidgetData),
+	(relativeTimeCriteriaGetWidgetData):
+	* widgets/rb-query-creator.c: (rb_query_creator_get_type),
+	(rb_query_creator_class_init), (rb_query_creator_constructor),
+	(rb_query_creator_dispose), (rb_query_creator_set_property),
+	(rb_query_creator_get_property), (rb_query_creator_load_query),
+	(rb_query_creator_set_sorting), (rb_query_creator_new_from_query),
+	(get_entry_for_property), (rb_query_creator_get_query),
+	(rb_query_creator_get_limit), (rb_query_creator_get_sort_order),
+	(limit_toggled_cb), (lookup_row_by_widget),
+	(remove_button_click_cb), (append_row),
+	(get_property_index_from_proptype), (select_criteria_from_value),
+	(property_option_menu_changed), (create_property_option_menu),
+	(create_criteria_option_menu), (sort_option_menu_changed),
+	(setup_sort_option_menu):
+	* widgets/rb-query-creator.h: A fairly huge patch to improve automatic
+	playlists. The two most notable improvements are 1) adding more
+	properties to the query creator, making it much easier to add more in
+	the future, and 2) allow playlists to be sorted, from the query editor
+	if they gave limits, and by clicking on column headers if they don't.
+
+	Files added: widgets/rb-query-creator-private.h,
+	sources/rb-query-creator-properties.c
+
 2005-08-21  James Livingston  <jrl@ids.org.au>
 
 	* player/rb-player-gst.c: (error_cb): ignore any playbin errors, where

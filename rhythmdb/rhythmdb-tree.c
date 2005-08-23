@@ -1214,6 +1214,9 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			GList *conjunctions = split_query_by_disjunctions (dbtree, data->subquery);
 			GList *tem;
 
+			if (conjunctions == NULL)
+				matched = TRUE;
+
 			for (tem = conjunctions; tem; tem = tem->next) {
 				GPtrArray *subquery = tem->data;
 				if (!matched && evaluate_conjunctive_subquery (dbtree, subquery,
@@ -1228,6 +1231,26 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 				return FALSE;
 		}
 		break;
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN:
+		case RHYTHMDB_QUERY_PROP_CURRENT_TIME_NOT_WITHIN:
+		{
+			gulong relative_time;
+			GTimeVal current_time;
+
+			g_assert (rhythmdb_get_property_type (db, data->propid) == G_TYPE_ULONG);
+
+			relative_time = g_value_get_ulong (data->val);
+			g_get_current_time  (&current_time);
+
+			rb_debug ("relative time query: cur=%u, rel=%u", current_time.tv_sec, relative_time);
+
+			if (data->type == RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN)
+				return (rhythmdb_entry_get_ulong (entry, data->propid) >= (current_time.tv_sec - relative_time));
+			else
+				return (rhythmdb_entry_get_ulong (entry, data->propid) < (current_time.tv_sec - relative_time));
+
+			break;
+		}
 		case RHYTHMDB_QUERY_PROP_LIKE:
 		case RHYTHMDB_QUERY_PROP_NOT_LIKE:
 		{

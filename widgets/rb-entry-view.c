@@ -1091,15 +1091,18 @@ rb_entry_view_set_sorting_type (RBEntryView *view, const char *sorttype)
 void 
 rb_entry_view_get_sorting_order (RBEntryView *view, const char **column_name, gint *sort_order)
 {
-	*column_name = g_strdup(view->priv->sorting_column_name);
+	*column_name = g_strdup (view->priv->sorting_column_name);
 	*sort_order = view->priv->sorting_order;
 }
 
 void
 rb_entry_view_set_sorting_order (RBEntryView *view, const char *column_name, gint sort_order)
 {
-	g_free(view->priv->sorting_column_name);
-	view->priv->sorting_column_name = g_strdup(column_name);
+	if (column_name == NULL)
+		return;
+
+	g_free (view->priv->sorting_column_name);
+	view->priv->sorting_column_name = g_strdup (column_name);
 	view->priv->sorting_order = sort_order;
 	
 	rb_entry_view_sync_sorting (view);
