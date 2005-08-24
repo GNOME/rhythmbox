@@ -79,6 +79,9 @@ static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 static void handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri, const char *title,
 						    const char *genre, RBPlaylistManager *mgr);
 static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
+static void rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view,
+							   RhythmDBEntry *entry,
+							   RBPlaylistManager *mgr);
 
 struct RBPlaylistManagerPrivate
 {
@@ -401,6 +404,11 @@ rb_playlist_manager_set_property (GObject *object,
 		gboolean playlist_active;
 		GtkAction *action;
 
+		if (mgr->priv->selected_source != NULL)
+			g_signal_handlers_disconnect_by_func (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
+							      G_CALLBACK (rb_playlist_manager_playlist_entries_changed),
+							      mgr);
+
 		mgr->priv->selected_source = g_value_get_object (value);
 
 		playlist_active = g_list_find (mgr->priv->playlists,
@@ -415,10 +423,20 @@ rb_playlist_manager_set_property (GObject *object,
 #if defined(WITH_CD_BURNER_SUPPORT)
 		{
 			gboolean recorder_active;
-			recorder_active = playlist_active && rb_recorder_enabled ();
-			action = gtk_action_group_get_action (mgr->priv->actiongroup,
-							      "MusicPlaylistBurnPlaylist");
+			int num_tracks = rb_entry_view_get_num_entries (rb_source_get_entry_view (mgr->priv->selected_source));
+
+			recorder_active = playlist_active && rb_recorder_enabled ()
+					&& (num_tracks > 0);
+			action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
 			g_object_set (G_OBJECT (action), "sensitive", recorder_active, NULL);
+			
+			if (playlist_active && rb_recorder_enabled ()) {
+				/* monitor for changes, to enable/disable the burn menu item */
+				g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
+							 "entry-added", G_CALLBACK (rb_playlist_manager_playlist_entries_changed), mgr, 0);
+				g_signal_connect_object (G_OBJECT (rb_source_get_entry_view (mgr->priv->selected_source)),
+							 "entry-deleted", G_CALLBACK (rb_playlist_manager_playlist_entries_changed), mgr, 0);
+			}
 		}
 #endif
 		break;
@@ -968,4 +986,13 @@ handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri
 	}
 	add_uri_to_playlist (mgr, mgr->priv->loading_playlist, uri, title);
 	g_free (uri);
+}
+
+static void
+rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view, RhythmDBEntry *entry, RBPlaylistManager *mgr)
+{
+	int num_tracks = rb_entry_view_get_num_entries (entry_view);
+	GtkAction *action = gtk_action_group_get_action (mgr->priv->actiongroup, "MusicPlaylistBurnPlaylist");
+
+	g_object_set (G_OBJECT (action), "sensitive", (num_tracks > 0), NULL);
 }

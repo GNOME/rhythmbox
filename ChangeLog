@@ -1,5 +1,13 @@
 2005-08-24  James Livingston  <jrl@ids.org.au>
 
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property),
+	(handle_playlist_entry_into_playlist_cb),
+	(rb_playlist_manager_playlist_entries_changed): Disable the "create
+	audio cd" menu item when a non-playlist source is selected, or the
+	playlist is empty. (Closes Bug 313253)
+
+2005-08-24  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-playlist-source.c: (rb_playlist_source_burn_playlist):
 	Fix the playlist length checkso it doesn't report 0 for automatic
 	playlists. This was stopping automati playlists being burnt to cd.
