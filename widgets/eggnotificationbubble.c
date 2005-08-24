@@ -449,10 +449,13 @@ draw_bubble (EggNotificationBubble *bubble, guint timeout)
   monitor_num = gdk_screen_get_monitor_at_window (screen, widget->window);
   gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
 
-  if ((x + w) > monitor.x + monitor.width)
-    x -= (x + w) - (monitor.x + monitor.width);
-  else if (x < monitor.x)
+  if ((x + w) > monitor.x + monitor.width) {
+    gint offset = (x + w) - (monitor.x + monitor.width);
+    triangle_offset += offset;
+    x -= offset;
+  } else if (x < monitor.x) {
     x = monitor.x;
+  }
 
   if ((y + h + widget->allocation.height + 4) > monitor.y + monitor.height)
     {
