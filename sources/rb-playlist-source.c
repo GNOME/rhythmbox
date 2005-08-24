@@ -1001,8 +1001,6 @@ rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBPlaylistSou
 	GPtrArray *query;
 	guint limit_count;
 	guint limit_mb;
-	const gchar *sort_key;
-	gint sort_direction;
 
 	g_assert (source->priv->automatic);
 

@@ -487,7 +487,6 @@ burn_cd (RBPlaylistSourceRecorder *source,
                 return RB_RECORDER_RESULT_ERROR;
 
         if (res == RB_RECORDER_RESULT_FINISHED) {
-                RBShell *shell;
                 gboolean do_another;
                 const char *finished_msg;
 

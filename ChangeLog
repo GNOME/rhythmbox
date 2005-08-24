@@ -1,5 +1,14 @@
 2005-08-24  James Livingston  <jrl@ids.org.au>
 
+	* configure.ac:
+	* sources/rb-playlist-source-recorder.c: (burn_cd):
+	* sources/rb-playlist-source.c:
+	(rb_playlist_source_songs_sort_order_changed_cb):
+	* widgets/rb-query-creator.c: (rb_query_creator_dispose): Fix some
+	more warnings that occur when compiling RPMs on Fedora.
+
+2005-08-24  James Livingston  <jrl@ids.org.au>
+
 	* rhythmdb/rhythmdb.c: (set_props_from_metadata): Fix a warning that
 	was stopping some distros gcc version compiling.
 

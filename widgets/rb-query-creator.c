@@ -244,7 +244,6 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 static void
 rb_query_creator_dispose (GObject *object)
 {
-	RBQueryCreator *creator;
 	RBQueryCreatorPrivate *priv;
 
 	g_return_if_fail (RB_IS_QUERY_CREATOR (object));
