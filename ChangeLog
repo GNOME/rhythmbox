@@ -1,5 +1,11 @@
 2005-08-24  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init),
+	(rb_playlist_source_get_property), (rb_playlist_source_do_query): add
+	a gobject property to get the query model that backs the playlist.
+
+2005-08-24  James Livingston  <jrl@ids.org.au>
+
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_set_property),
 	(handle_playlist_entry_into_playlist_cb),
 	(rb_playlist_manager_playlist_entries_changed): Disable the "create

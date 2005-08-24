@@ -139,6 +139,7 @@ enum
 {
 	PROP_0,
 	PROP_AUTOMATIC,
+	PROP_QUERY_MODEL,
 	PROP_DIRTY
 };
 
@@ -215,6 +216,14 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 							       "whether this playlist is a smartypants",
 							       FALSE,
 							       G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_QUERY_MODEL,
+					 g_param_spec_object ("query-model",
+							      "query-model",
+							      "query model for the playlist",
+							      RHYTHMDB_TYPE_QUERY_MODEL,
+							      G_PARAM_READABLE));
 
 	g_object_class_install_property (object_class,
 					 PROP_DIRTY,
@@ -420,7 +429,9 @@ rb_playlist_source_get_property (GObject *object,
 	case PROP_DIRTY:
 		g_value_set_boolean (value, source->priv->dirty);
 		break;
-
+	case PROP_QUERY_MODEL:
+		g_value_set_object (value, source->priv->model);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -1037,4 +1048,7 @@ rb_playlist_source_do_query (RBPlaylistSource *source,
 
 	rb_entry_view_set_model (source->priv->songs, source->priv->model);
 	rhythmdb_do_full_query_async_parsed (source->priv->db, GTK_TREE_MODEL (source->priv->model), query);
+
+	/* emit notification the the property has changed */
+	g_object_notify (G_OBJECT (source), "query-model");
 }
