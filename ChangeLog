@@ -1,5 +1,11 @@
 2005-08-24  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-playlist-source.c: (rb_playlist_source_burn_playlist):
+	Fix the playlist length checkso it doesn't report 0 for automatic
+	playlists. This was stopping automati playlists being burnt to cd.
+
+2005-08-24  James Livingston  <jrl@ids.org.au>
+
 	* configure.ac:
 	* sources/rb-playlist-source-recorder.c: (burn_cd):
 	* sources/rb-playlist-source.c:

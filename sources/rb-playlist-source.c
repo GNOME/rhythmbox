@@ -811,7 +811,8 @@ rb_playlist_source_burn_playlist (RBPlaylistSource *source)
 	char *name;
 	RBShell *shell;
 
-	if (g_hash_table_size (source->priv->entries) == 0)
+	/* don't burn if the playlist is empty */
+	if (gtk_tree_model_iter_n_children (GTK_TREE_MODEL (source->priv->model), NULL) == 0)
 		return;
 
 	rb_debug ("burning playlist");
