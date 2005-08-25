@@ -89,6 +89,12 @@ struct _RbTreeDragDestIface {
 					GList *targets,
 					GtkTreeViewDropPosition *pos);
 
+	/* optional */
+	GdkAtom  (* get_drag_target)    (RbTreeDragDest   *drag_dest,
+					 GtkWidget        *widget,
+					 GdkDragContext   *context,
+					 GtkTreePath      *dest_path,
+					 GtkTargetList    *target_list);
 };
 
 

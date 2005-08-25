@@ -627,22 +627,40 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
                         return FALSE;
 
 	} else {
-		GPtrArray *query;
-		GPtrArray *subquery;
+		GPtrArray *subquery = NULL;
+		gchar **names = g_strsplit ((char *)data->data, "\r\n", 0);
+		guint propid = rb_playlist_source_drag_atom_to_prop (data->type);
+		int i;
 
-		subquery = rhythmdb_query_parse (source->priv->db,
-						 RHYTHMDB_QUERY_PROP_EQUALS,
-						 rb_playlist_source_drag_atom_to_prop (data->type),
-						 data->data,
-						 RHYTHMDB_QUERY_END);
-		query = rhythmdb_query_parse (source->priv->db,
-					      RHYTHMDB_QUERY_PROP_EQUALS,
-					      RHYTHMDB_PROP_TYPE,
-					      RHYTHMDB_ENTRY_TYPE_SONG,
-					      RHYTHMDB_QUERY_SUBQUERY,
-					      subquery,
-					      RHYTHMDB_QUERY_END);
-                rb_playlist_source_set_query (source, query, 0, 0, NULL, 0);
+		for (i=0; names[i]; i++) {
+			if (subquery == NULL) 
+				subquery = rhythmdb_query_parse (source->priv->db,
+								 RHYTHMDB_QUERY_PROP_EQUALS,
+								 propid,
+								 names[i],
+								 RHYTHMDB_QUERY_END);
+			else
+				rhythmdb_query_append (source->priv->db,
+						       subquery,
+						       RHYTHMDB_QUERY_DISJUNCTION,
+						       RHYTHMDB_QUERY_PROP_EQUALS,
+						       propid,
+						       names[i],
+						       RHYTHMDB_QUERY_END);
+		}
+
+		g_strfreev (names);
+
+		if (subquery) {
+			GPtrArray *query = rhythmdb_query_parse (source->priv->db,
+							         RHYTHMDB_QUERY_PROP_EQUALS,
+							         RHYTHMDB_PROP_TYPE,
+							         RHYTHMDB_ENTRY_TYPE_SONG,
+							         RHYTHMDB_QUERY_SUBQUERY,
+							         subquery,
+							         RHYTHMDB_QUERY_END);
+			rb_playlist_source_set_query (source, query, 0, 0, NULL, 0);
+		}
 	}
 
         return TRUE;

@@ -79,10 +79,6 @@ void		rb_sourcelist_remove		(RBSourceList *sourcelist,
 void		rb_sourcelist_select		(RBSourceList *sourcelist,
 						 RBSource *source);
 
-void		rb_sourcelist_set_dnd_targets	(RBSourceList *sourcelist,
-						 const GtkTargetEntry *targets,
-						 int n_targets);
-
 G_END_DECLS
 
 #endif /* __RB_SOURCELIST_H */

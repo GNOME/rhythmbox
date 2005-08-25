@@ -56,7 +56,8 @@ struct RBSourceListPriv
 enum
 {
 	PROP_0,
-	PROP_SHELL
+	PROP_SHELL,
+	PROP_MODEL
 };
 
 enum
@@ -154,6 +155,13 @@ rb_sourcelist_class_init (RBSourceListClass *class)
 							      RB_TYPE_SHELL,
 							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
+	g_object_class_install_property (o_class,
+					 PROP_MODEL,
+					 g_param_spec_object ("model",
+							      "GtkTreeModel",
+							      "GtkTreeModel object",
+							      GTK_TYPE_TREE_MODEL,
+							      G_PARAM_READABLE));
 	rb_sourcelist_signals[SELECTED] =
 		g_signal_new ("selected",
 			      G_OBJECT_CLASS_TYPE (object_class),
@@ -218,6 +226,8 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 
 	sourcelist->priv->treeview = gtk_tree_view_new_with_model (sourcelist->priv->filter_model);
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW (sourcelist->priv->treeview), FALSE);
+	rb_sourcelist_model_set_dnd_targets (RB_SOURCELIST_MODEL (sourcelist->priv->filter_model),
+					     GTK_TREE_VIEW (sourcelist->priv->treeview));
 
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->treeview),
 				 "row_activated",
@@ -325,6 +335,9 @@ rb_sourcelist_get_property (GObject *object,
 	{
 	case PROP_SHELL:
 		g_value_set_object (value, sourcelist->priv->shell);
+		break;
+	case PROP_MODEL:
+		g_value_set_object (value, sourcelist->priv->filter_model);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -520,24 +533,6 @@ rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 	g_return_if_fail (RB_IS_SOURCE (target));
 	source = target;
 	g_signal_emit (G_OBJECT (sourcelist), rb_sourcelist_signals[SELECTED], 0, source);
-}
-
-void
-rb_sourcelist_set_dnd_targets (RBSourceList *sourcelist,
-			       const GtkTargetEntry *targets,
-			       int n_targets)
-{
-	g_return_if_fail (RB_IS_SOURCELIST (sourcelist));
-
-	rb_tree_dnd_add_drag_dest_support (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					   RB_TREE_DEST_EMPTY_VIEW_DROP,
-					   targets, n_targets,
-					   GDK_ACTION_LINK);
-	rb_tree_dnd_add_drag_source_support (GTK_TREE_VIEW (sourcelist->priv->treeview),
-					     GDK_BUTTON1_MASK,
-					     targets,
-					     n_targets,
-					     GDK_ACTION_MOVE);
 }
 
 static void

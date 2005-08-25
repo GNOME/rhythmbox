@@ -221,6 +221,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
+	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
 
 	g_object_class_install_property (object_class,
 					 PROP_ENTRY_TYPE,

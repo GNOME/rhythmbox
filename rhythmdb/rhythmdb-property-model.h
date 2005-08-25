@@ -22,6 +22,7 @@
 #include "config.h"
 #include <glib-object.h>
 #include <glib.h>
+#include <gtk/gtktreeview.h>
 
 #include "rhythmdb.h"
 #include "rhythmdb-query-model.h"
@@ -66,6 +67,8 @@ GType			rhythmdb_property_model_get_type	(void);
 RhythmDBPropertyModel *	rhythmdb_property_model_new		(RhythmDB *db, RhythmDBPropType propid);
 
 gboolean		rhythmdb_property_model_iter_from_string(RhythmDBPropertyModel *model, const char *name, GtkTreeIter *iter);
+
+void			rhythmdb_property_model_enable_drag	(RhythmDBPropertyModel *model, GtkTreeView *view);
 
 G_END_DECLS
 

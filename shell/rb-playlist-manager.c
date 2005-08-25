@@ -36,6 +36,7 @@
 #include "rb-recorder.h"
 #endif
 #include "rb-sourcelist.h"
+#include "rb-sourcelist-model.h"
 #include "rb-query-creator.h"
 #include "totem-pl-parser.h"
 
@@ -97,8 +98,6 @@ struct RBPlaylistManagerPrivate
 	RBLibrarySource *libsource;
 	RBIRadioSource *iradio_source;
 	GtkWindow *window;
-
-	GList *playlists;
 
 	guint playlist_serial;
 
@@ -353,8 +352,6 @@ rb_playlist_manager_finalize (GObject *object)
 	g_mutex_free (mgr->priv->saving_mutex);
 	g_cond_free (mgr->priv->saving_condition);
 
-	g_list_free (mgr->priv->playlists);
-
 	g_free (mgr->priv);
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
@@ -410,9 +407,7 @@ rb_playlist_manager_set_property (GObject *object,
 							      mgr);
 
 		mgr->priv->selected_source = g_value_get_object (value);
-
-		playlist_active = g_list_find (mgr->priv->playlists,
-					       mgr->priv->selected_source) != NULL;
+		playlist_active = RB_IS_PLAYLIST_SOURCE (mgr->priv->selected_source);
 
 		action = gtk_action_group_get_action (mgr->priv->actiongroup,
 						      "MusicPlaylistSavePlaylist");
@@ -556,18 +551,8 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
 }
 
 static void
-rb_playlist_manager_source_deleted_cb (RBSource *source, RBPlaylistManager *mgr)
-{
-	rb_debug ("removing playlist %p", source);
-	mgr->priv->playlists = g_list_remove (mgr->priv->playlists, source);
-}
-
-static void
 append_new_playlist_source (RBPlaylistManager *mgr, RBPlaylistSource *source)
 {
-	mgr->priv->playlists = g_list_append (mgr->priv->playlists, source);
-	g_signal_connect_object (G_OBJECT (source), "deleted",
-				 G_CALLBACK (rb_playlist_manager_source_deleted_cb), mgr, 0);
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_ADDED], 0,
 		       source);
 }
@@ -651,19 +636,34 @@ rb_playlist_manager_save_thread_main (struct RBPlaylistManagerSaveThreadData *da
 void
 rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 {
-	GList *tmp;
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveThreadData *data;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
 
 	rb_debug ("saving the playlists");
+
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &model, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model));
 	
 	if (!force) {
 		gboolean dirty = FALSE;
 
-		for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next) {
-			g_object_get (G_OBJECT (tmp->data), "dirty", &dirty, NULL);
-			if (dirty)
-				break;
+		if (gtk_tree_model_get_iter_first (model, &iter)) {
+			do {
+				RBSource *source;
+				GValue v = {0,};
+				gtk_tree_model_get_value (model,
+							  &iter,
+							  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+							  &v);
+				source = g_value_get_pointer (&v);
+				if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+					continue;
+
+				g_object_get (G_OBJECT (source), "dirty", &dirty, NULL);
+
+			} while (gtk_tree_model_iter_next (model, &iter));
 		}
 
 		if (!dirty) {
@@ -695,8 +695,21 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	root = xmlNewDocNode (data->doc, NULL, RB_PLAYLIST_MGR_PL, NULL);
 	xmlDocSetRootElement (data->doc, root);
 	
-	for (tmp = mgr->priv->playlists; tmp; tmp = tmp->next)
-		rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (tmp->data), root);
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			RBSource *source;
+			GValue v = {0,};
+			gtk_tree_model_get_value (model,
+						  &iter,
+						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+						  &v);
+			source = g_value_get_pointer (&v);
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+				continue;
+
+			rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
+		} while (gtk_tree_model_iter_next (model, &iter));
+	}
 
 	g_object_ref (G_OBJECT (mgr));
 	mgr->priv->outstanding_threads++;

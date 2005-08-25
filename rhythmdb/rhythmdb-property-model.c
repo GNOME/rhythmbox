@@ -28,12 +28,16 @@
 #include "rhythmdb-property-model.h"
 #include "rb-debug.h"
 #include "gsequence.h"
+#include "rb-tree-dnd.h"
 
 static void rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface);
+static void rhythmdb_property_model_drag_source_init (RbTreeDragSourceIface *iface);
 
 G_DEFINE_TYPE_WITH_CODE(RhythmDBPropertyModel, rhythmdb_property_model, G_TYPE_OBJECT,
 			G_IMPLEMENT_INTERFACE(GTK_TYPE_TREE_MODEL,
-					      rhythmdb_property_model_tree_model_init))
+					      rhythmdb_property_model_tree_model_init)
+			G_IMPLEMENT_INTERFACE(RB_TYPE_TREE_DRAG_SOURCE,
+					      rhythmdb_property_model_drag_source_init))
 
 static void rhythmdb_property_model_finalize (GObject *object);
 static void rhythmdb_property_model_set_property (GObject *object,
@@ -88,6 +92,37 @@ static gboolean rhythmdb_property_model_iter_parent (GtkTreeModel *tree_model,
 						  GtkTreeIter  *iter,
 						  GtkTreeIter  *child);
 
+static gboolean rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
+						       GList *paths,
+						       GtkSelectionData *selection_data);
+static gboolean rhythmdb_property_model_drag_data_delete (RbTreeDragSource *dragsource,
+							  GList *paths);
+static gboolean rhythmdb_property_model_row_draggable (RbTreeDragSource *dragsource,
+						       GList *paths);
+enum {
+	TARGET_ALBUMS,
+	TARGET_GENRE,
+	TARGET_ARTISTS,
+	TARGET_URIS,
+};
+
+static const GtkTargetEntry targets_album  [] = {
+	{ "text/x-rhythmbox-album",  0, TARGET_ALBUMS },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
+static const GtkTargetEntry targets_genre  [] = {
+	{ "text/x-rhythmbox-genre",  0, TARGET_GENRE },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
+static const GtkTargetEntry targets_artist [] = {
+	{ "text/x-rhythmbox-artist", 0, TARGET_ARTISTS },
+	{ "text/uri-list", 0, TARGET_URIS },
+};
+
+static GtkTargetList *rhythmdb_property_model_album_drag_target_list = NULL;
+static GtkTargetList *rhythmdb_property_model_artist_drag_target_list = NULL;
+static GtkTargetList *rhythmdb_property_model_genre_drag_target_list = NULL;
+
 typedef struct {
 	char *name;
 	char *sort_key;
@@ -137,6 +172,19 @@ static void
 rhythmdb_property_model_class_init (RhythmDBPropertyModelClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	if (!rhythmdb_property_model_artist_drag_target_list)
+		rhythmdb_property_model_artist_drag_target_list =
+			gtk_target_list_new (targets_artist,
+					     G_N_ELEMENTS (targets_artist));
+	if (!rhythmdb_property_model_album_drag_target_list)
+		rhythmdb_property_model_album_drag_target_list =
+			gtk_target_list_new (targets_album,
+					     G_N_ELEMENTS (targets_album));
+	if (!rhythmdb_property_model_genre_drag_target_list)
+		rhythmdb_property_model_genre_drag_target_list =
+			gtk_target_list_new (targets_genre,
+					     G_N_ELEMENTS (targets_genre));
 
 	object_class->set_property = rhythmdb_property_model_set_property;
 	object_class->get_property = rhythmdb_property_model_get_property;
@@ -201,6 +249,14 @@ rhythmdb_property_model_tree_model_init (GtkTreeModelIface *iface)
 	iface->iter_n_children = rhythmdb_property_model_iter_n_children;
 	iface->iter_nth_child = rhythmdb_property_model_iter_nth_child;
 	iface->iter_parent = rhythmdb_property_model_iter_parent;
+}
+
+static void
+rhythmdb_property_model_drag_source_init (RbTreeDragSourceIface *iface)
+{
+	iface->row_draggable = rhythmdb_property_model_row_draggable;
+	iface->drag_data_delete = rhythmdb_property_model_drag_data_delete;
+	iface->drag_data_get = rhythmdb_property_model_drag_data_get;
 }
 
 static void
@@ -730,4 +786,212 @@ rhythmdb_property_model_iter_parent (GtkTreeModel *tree_model,
 				     GtkTreeIter  *child)
 {
 	return FALSE;
+}
+
+static gboolean
+rhythmdb_property_model_row_draggable (RbTreeDragSource *dragsource,
+				       GList *paths)
+{
+	return TRUE;
+}
+
+static gboolean
+rhythmdb_property_model_drag_data_delete (RbTreeDragSource *dragsource, 
+					  GList *paths)
+{
+	/* not supported */
+	return TRUE;
+}
+
+/*Going through hoops to avoid nested functions*/
+struct QueryModelCbStruct { 
+	RhythmDB* db; 
+	GString* reply; 
+}; 
+
+static gboolean 
+query_model_cb (GtkTreeModel *query_model,
+ 		GtkTreePath *path, GtkTreeIter *iter,
+ 		struct QueryModelCbStruct *data) 
+{
+ 	const char* uri;
+ 	RhythmDBEntry* entry;
+	
+ 	gtk_tree_model_get (query_model, iter, 0, &entry, -1);
+ 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
+ 	g_string_append (data->reply, uri);
+ 	g_string_append (data->reply, "\r\n");
+	
+ 	rhythmdb_entry_unref (data->db, entry);
+ 	return FALSE;
+}
+
+static gboolean
+rhythmdb_property_model_drag_data_get (RbTreeDragSource *dragsource,
+				       GList *paths,
+				       GtkSelectionData *selection_data)
+{
+	RhythmDBPropertyModel *model = RHYTHMDB_PROPERTY_MODEL (dragsource);
+	guint target;
+	GtkTargetList *drag_target_list;
+
+	switch (model->priv->propid) {
+	case RHYTHMDB_PROP_GENRE:
+		drag_target_list = rhythmdb_property_model_genre_drag_target_list;
+		break;
+	case RHYTHMDB_PROP_ALBUM:
+		drag_target_list = rhythmdb_property_model_album_drag_target_list;
+		break;
+	case RHYTHMDB_PROP_ARTIST:
+		drag_target_list = rhythmdb_property_model_artist_drag_target_list;
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	if (!gtk_target_list_find (drag_target_list,
+				   selection_data->target, 
+				   &target)) {
+		return FALSE;
+	}
+
+	if (target == TARGET_URIS) {
+		RhythmDB *db = model->priv->db;
+ 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(db));
+ 		GString* reply = g_string_new ("");
+ 		GtkTreeIter iter;
+ 		gboolean is_all;
+ 		struct QueryModelCbStruct tmp;
+		GtkTreePath *path;
+
+		rb_debug ("getting drag data as uri list");
+		/* check if first selected row is 'All' */
+		path = gtk_tree_row_reference_get_path (paths->data);
+		gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+		gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+				    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY,
+				    &is_all, -1);
+		gtk_tree_path_free (path);
+		if (is_all) {
+ 			/*filter out radios*/
+ 			rhythmdb_do_full_query (db, query_model,
+ 						RHYTHMDB_QUERY_PROP_EQUALS,
+ 						RHYTHMDB_PROP_TYPE, 
+ 						RHYTHMDB_ENTRY_TYPE_SONG,
+ 						RHYTHMDB_QUERY_END);
+		} else {
+ 			GList *row;
+			GPtrArray* subquery = g_ptr_array_new();
+ 
+ 			for (row = paths; row; row = row->next) {
+ 				char* name;
+				path = gtk_tree_row_reference_get_path (row->data);
+ 				gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+ 				gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+ 						    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, 
+						    &name, -1);
+ 				if (row->next) {
+ 					rhythmdb_query_append (db, subquery,
+ 							       RHYTHMDB_QUERY_PROP_EQUALS,
+ 							       model->priv->propid, name,
+ 							       RHYTHMDB_QUERY_DISJUNCTION,
+ 							       RHYTHMDB_QUERY_END);
+ 				} else {
+ 					rhythmdb_query_append (db, subquery,
+ 							       RHYTHMDB_QUERY_PROP_EQUALS,
+ 							       model->priv->propid, name,
+							       RHYTHMDB_QUERY_END);
+ 				}
+ 
+				gtk_tree_path_free (path);
+ 				g_free (name);
+ 			}
+ 			/*filter out radios*/
+ 			rhythmdb_do_full_query (db, query_model,
+ 						RHYTHMDB_QUERY_PROP_EQUALS,
+ 						RHYTHMDB_PROP_TYPE, 
+ 						RHYTHMDB_ENTRY_TYPE_SONG,
+ 						RHYTHMDB_QUERY_SUBQUERY,
+ 						subquery,
+ 						RHYTHMDB_QUERY_END);
+		}
+ 		
+		tmp.db = db; 
+ 		tmp.reply = reply;
+ 		/* Too bad that we're on the main thread. Why doesn't gtk call us async?
+ 		 * How does file-roller manage? - it seems it refuses the drop when it isn't 
+		 * done unpacking. In which case, we should tweak the drop acknowledgement, 
+		 * and prepare the query using do_full_query_async. The query would be 
+		 * hooked to the drag context.
+		 */
+ 		gtk_tree_model_foreach (query_model,
+ 					(GtkTreeModelForeachFunc)query_model_cb,
+ 					&tmp);
+ 		
+ 		g_object_unref (query_model);
+ 
+ 		gtk_selection_data_set (selection_data,
+ 		                        selection_data->target,
+ 		                        8, (guchar *)reply->str,
+ 		                        reply->len);
+ 		g_string_free (reply, TRUE);
+
+	} else {
+		char* title;
+		GList *p;
+		GString* reply = g_string_new ("");
+ 
+		rb_debug ("getting drag data as list of property values");
+
+		for (p = paths; p; p = p->next) {
+			GtkTreeIter iter;
+			GtkTreePath *path;
+
+			path = gtk_tree_row_reference_get_path (p->data);
+			gtk_tree_model_get_iter (GTK_TREE_MODEL (model), &iter, path);
+			gtk_tree_model_get (GTK_TREE_MODEL (model), &iter,
+					    RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title, -1);
+			g_string_append (reply, title);
+			if (p->next)
+				g_string_append (reply, "\r\n");
+			g_free (title);
+			gtk_tree_path_free (path);
+		}
+		gtk_selection_data_set (selection_data,
+					selection_data->target,
+					8, (guchar *)reply->str,
+					reply->len);
+		g_string_free (reply, TRUE);
+	}
+
+	return TRUE;
+}
+
+void			
+rhythmdb_property_model_enable_drag (RhythmDBPropertyModel *model, GtkTreeView *view)
+{
+	const GtkTargetEntry *targets;
+	gint n_elements;
+
+	switch (model->priv->propid) {
+	case RHYTHMDB_PROP_GENRE:
+		targets = targets_genre;
+		n_elements = G_N_ELEMENTS (targets_genre);
+		break;
+	case RHYTHMDB_PROP_ALBUM:
+		targets = targets_album;
+		n_elements = G_N_ELEMENTS (targets_album);
+		break;
+	case RHYTHMDB_PROP_ARTIST:
+		targets = targets_artist;
+		n_elements = G_N_ELEMENTS (targets_artist);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+	
+	rb_tree_dnd_add_drag_source_support (view,
+					     GDK_BUTTON1_MASK,
+					     targets, n_elements,
+					     GDK_ACTION_COPY);
 }

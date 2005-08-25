@@ -67,6 +67,9 @@ GType		rb_sourcelist_model_get_type	(void);
 
 GtkTreeModel *	rb_sourcelist_model_new		(void);
 
+void		rb_sourcelist_model_set_dnd_targets (RBSourceListModel *sourcelist,
+						     GtkTreeView *treeview);
+
 G_END_DECLS
 
 #endif /* __RB_SOURCELIST_H */

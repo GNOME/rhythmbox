@@ -479,137 +479,6 @@ rb_property_view_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *ren
 	g_free (str);
 }
 
-
-/*Going through hoops to avoid nested functions*/
-struct QueryModelCbStruct { 
-	RhythmDB* db; 
-	GString* reply; 
-}; 
-
-static gboolean query_model_cb (GtkTreeModel *query_model,
- 				GtkTreePath *path, GtkTreeIter *iter,
- 				struct QueryModelCbStruct *data) 
-{
- 	const char* uri;
- 	RhythmDBEntry* entry;
-	
- 	gtk_tree_model_get (query_model, iter, 0, &entry, -1);
- 	uri = rhythmdb_entry_get_string (entry, RHYTHMDB_PROP_LOCATION);
- 	g_string_append (data->reply, uri);
- 	g_string_append (data->reply, "\r\n");
-	
- 	rhythmdb_entry_unref (data->db, entry);
- 	return FALSE;
-}
-
-
-static void
-rb_property_view_drag_data_get (GtkWidget *widget, GdkDragContext *context,
-				GtkSelectionData *selection_data, guint info,
-				guint time, gpointer data)
-{
- 	if (info == TARGET_URIS) {
- 		/*We get all entries for selected property entries - other filters that have been set don't apply, the user can have them by selecting all then dragging from the entry view*/
- 		RBPropertyView* view = RB_PROPERTY_VIEW (data);
- 		RhythmDB* db = view->priv->db;
- 		GList* selected_rows;
- 		GtkTreeModel* query_model = GTK_TREE_MODEL (rhythmdb_query_model_new_empty(db));
- 		GtkTreeModel* model;
- 		GPtrArray* subquery = g_ptr_array_new();
- 		GString* reply = g_string_new ("");
- 		GtkTreeIter iter;
- 		gboolean is_all;
- 		struct QueryModelCbStruct tmp;
- 
- 		selected_rows = gtk_tree_selection_get_selected_rows (
- 			view->priv->selection, &model);
- 
- 		gtk_tree_model_get_iter (model, &iter, (GtkTreePath*)selected_rows->data);		
- 		gtk_tree_model_get (model, &iter,
- 				    RHYTHMDB_PROPERTY_MODEL_COLUMN_PRIORITY, 
- 				    &is_all, -1);
- 		if (!is_all) {
- 			GList* row;
- 
- 			for (row=selected_rows; row; row = row->next) {
- 				char* name;
- 				gtk_tree_model_get_iter (model, &iter, (GtkTreePath*)row->data);
- 				gtk_tree_model_get (model, &iter,
- 					RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &name, -1);
- 				if (row->next) {
- 					rhythmdb_query_append (db, subquery,
- 							RHYTHMDB_QUERY_PROP_EQUALS,
- 								view->priv->propid, name,
- 						RHYTHMDB_QUERY_DISJUNCTION,
- 						RHYTHMDB_QUERY_END);				
- 				} else {
- 					rhythmdb_query_append (db, subquery,
- 							RHYTHMDB_QUERY_PROP_EQUALS,
- 								view->priv->propid, name,
- 						RHYTHMDB_QUERY_END);				
- 				}
- 
- 				g_free (name);
- 			}
- 			/*filter out radios*/
- 			rhythmdb_do_full_query (db, query_model,
- 						RHYTHMDB_QUERY_PROP_EQUALS,
- 						RHYTHMDB_PROP_TYPE, 
- 						RHYTHMDB_ENTRY_TYPE_SONG,
- 						RHYTHMDB_QUERY_SUBQUERY,
- 						subquery,
- 				RHYTHMDB_QUERY_END);
- 		} else {
- 			/*filter out radios*/
- 			rhythmdb_do_full_query (db, query_model,
- 						RHYTHMDB_QUERY_PROP_EQUALS,
- 						RHYTHMDB_PROP_TYPE, 
- 						RHYTHMDB_ENTRY_TYPE_SONG,
- 						RHYTHMDB_QUERY_END);
- 		}
- 
- 		g_list_foreach (selected_rows, (GFunc)gtk_tree_path_free, NULL);
- 		g_list_free (selected_rows);
- 
- 		tmp.db = db; 
- 		tmp.reply = reply;
- 		/*Too bad that we're on the main thread. Why doesn't gtk call us async?
- 		How does file-roller manage? - it seems it refuses the drop when it isn't done unpacking. In which case, we should tweak the drop acknowledgement, and prepare the query using do_full_query_async. The query would be hooked to the drag context.*/
- 		gtk_tree_model_foreach (query_model,
- 					(GtkTreeModelForeachFunc)query_model_cb,
- 					&tmp);
- 		
- 		g_object_unref (query_model);
- 
- 		gtk_selection_data_set (selection_data,
- 		                        selection_data->target,
- 		                        8, (guchar *)reply->str,
- 		                        reply->len);
- 		g_string_free (reply, TRUE);
- 	} else {
- 		/*We could add more cases and more targets, like an albums target for artists. OTOH, no one uses these targets for now, so they could be completely removed*/
- 		/*The part below doesn't allow multiple selection - delete it?*/
- 		RBPropertyView *view;
- 		GtkTreeIter iter;
- 		char* title;
- 		GtkTreeModel *model;
- 		GList *rows;
- 
- 		view = RB_PROPERTY_VIEW (data);
- 		rows = gtk_tree_selection_get_selected_rows (view->priv->selection, &model);
- 		gtk_tree_model_get_iter (model, &iter, (GtkTreePath*)rows->data);
- 		gtk_tree_model_get (model, &iter,
- 				RHYTHMDB_PROPERTY_MODEL_COLUMN_TITLE, &title, -1);
- 		gtk_selection_data_set (selection_data, selection_data->target,
- 		                        8, (guchar *)title, strlen(title));
- 
- 		g_free (title);
- 		g_list_foreach (rows, (GFunc)gtk_tree_path_free, NULL);
- 		g_list_free (rows);
- 	}
-}
-
-
 static GObject *
 rb_property_view_constructor (GType type, guint n_construct_properties,
 			      GObjectConstructParam *construct_properties)
@@ -620,9 +489,6 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	RBPropertyView *view;
 	RBPropertyViewClass *klass;
 	GObjectClass *parent_class; 
-	const GtkTargetEntry *targets;
-	gint n_elements;
-
 
 	klass = RB_PROPERTY_VIEW_CLASS (g_type_class_peek (RB_TYPE_PROPERTY_VIEW));
 
@@ -633,32 +499,8 @@ rb_property_view_constructor (GType type, guint n_construct_properties,
 	view->priv->prop_model = rhythmdb_property_model_new (view->priv->db, view->priv->propid);
 	view->priv->treeview = GTK_WIDGET (gtk_tree_view_new_with_model (GTK_TREE_MODEL (view->priv->prop_model)));
 
-        switch (view->priv->propid)
-	{
-	case RHYTHMDB_PROP_GENRE:
-		targets = targets_genre;
-		n_elements = G_N_ELEMENTS (targets_genre);
-		break;
-        case RHYTHMDB_PROP_ALBUM:
-                targets = targets_album;
-		n_elements = G_N_ELEMENTS (targets_album);
-		break;
-        case RHYTHMDB_PROP_ARTIST:
-                targets = targets_artist;
-		n_elements = G_N_ELEMENTS (targets_artist);
-		break;
-	default:
-		targets = NULL;
-		g_assert_not_reached ();
-	}
-
-        gtk_drag_source_set (GTK_WIDGET(view->priv->treeview),
-                             GDK_BUTTON1_MASK,
-                             targets, n_elements,
-                             GDK_ACTION_COPY);
-
-	g_signal_connect_object (G_OBJECT (view->priv->treeview), "drag_data_get",
-				 G_CALLBACK (rb_property_view_drag_data_get), view, 0);
+	rhythmdb_property_model_enable_drag (view->priv->prop_model,
+					     GTK_TREE_VIEW (view->priv->treeview));
 
 	g_signal_connect_object (G_OBJECT (view->priv->treeview),
 			         "row_activated",

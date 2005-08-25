@@ -1,3 +1,43 @@
+2005-08-25  James Livingston  <jrl@ids.org.au>
+
+	Patch from Jonathan Mattnew <jonathan@kaolin.hn.org>
+
+	* lib/rb-tree-dnd.c: (rb_tree_dnd_drag_drop_cb):
+	* lib/rb-tree-dnd.h:
+	* rhythmdb/rhythmdb-property-model.c:
+	(rhythmdb_property_model_class_init),
+	(rhythmdb_property_model_drag_source_init),
+	(rhythmdb_property_model_iter_parent),
+	(rhythmdb_property_model_row_draggable),
+	(rhythmdb_property_model_drag_data_delete), (query_model_cb),
+	(rhythmdb_property_model_drag_data_get),
+	(rhythmdb_property_model_enable_drag):
+	* rhythmdb/rhythmdb-property-model.h:
+	* shell/rb-playlist-manager.c: (rb_playlist_manager_finalize),
+	(rb_playlist_manager_set_property), (append_new_playlist_source),
+	(rb_playlist_manager_save_playlists):
+	* shell/rb-shell.c: (rb_shell_construct),
+	(sourcelist_drag_received_cb):
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-playlist-source.c: (impl_receive_drag):
+	* sources/rb-sourcelist-model.c: (rb_sourcelist_model_class_init),
+	(rb_sourcelist_model_drag_dest_init),
+	(rb_sourcelist_model_set_dnd_targets),
+	(rb_sourcelist_model_drag_data_received), (path_is_reorderable),
+	(rb_sourcelist_model_row_drop_position),
+	(rb_sourcelist_model_get_drag_target),
+	(rb_sourcelist_model_drag_data_get):
+	* sources/rb-sourcelist-model.h:
+	* sources/rb-sourcelist.c: (rb_sourcelist_class_init),
+	(rb_sourcelist_init), (rb_sourcelist_get_property),
+	(rb_sourcelist_selection_changed_cb):
+	* sources/rb-sourcelist.h:
+	* widgets/rb-property-view.c: (rb_property_view_constructor): Greatly
+	improve drag-n-drop support. Allow dragging of item from property
+	views to the source list, to create new automatic playlists. Allow
+	playlist re-ordering. Fix dragging from Rhythmbox to other
+	applications. (Closes bug 147337)
+
 2005-08-24  Colin Walters  <walters@verbum.org>
 
 	Patch from Olivier Blin <oblin@mandriva.com>

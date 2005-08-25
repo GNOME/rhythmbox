@@ -273,13 +273,6 @@ static gboolean save_yourself_cb (GnomeClient *client,
 static void session_die_cb (GnomeClient *client, RBShell *shell);
 static void rb_shell_session_init (RBShell *shell);
 
-
-static const GtkTargetEntry target_table[] = { { "text/uri-list", 0,0 },
-                                               { "text/x-rhythmbox-album", 0, 0 },
-                                               { "text/x-rhythmbox-artist", 0, 0 },
-                                               { "text/x-rhythmbox-genre", 0, 0 },
-					       { "application/x-rhythmbox-source", 0, 0 }};
-
 enum
 {
 	PROP_NONE,
@@ -924,9 +917,6 @@ rb_shell_construct (RBShell *shell)
 						   shell->priv->actiongroup,
 						   shell->priv->player_shell);
 	g_object_set (shell->priv->player_shell, "statusbar", shell->priv->statusbar, NULL);
-
-	rb_sourcelist_set_dnd_targets (RB_SOURCELIST (shell->priv->sourcelist), target_table,
-				       G_N_ELEMENTS (target_table));
 
 	g_signal_connect_object (G_OBJECT (shell->priv->sourcelist), "selected",
 				 G_CALLBACK (source_selected_cb), shell, 0);
@@ -1973,14 +1963,10 @@ sourcelist_drag_received_cb (RBSourceList *sourcelist,
 			     GtkSelectionData *data,
 			     RBShell *shell)
 {
-        gboolean smart;
-
         if (source == NULL) {
-		char *datastr = g_strndup ((char *) data->data, data->length);
-                smart = data->type != gdk_atom_intern ("text/uri-list", TRUE);
-                source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
-							   datastr, smart);
-		g_free (datastr);
+		gboolean smart = (data->type != gdk_atom_intern ("text/uri-list", TRUE));
+		source = rb_playlist_manager_new_playlist (shell->priv->playlist_manager, 
+							   NULL, smart);
         }
 
         if (source != NULL) {

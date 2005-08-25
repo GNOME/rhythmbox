@@ -639,7 +639,18 @@ rb_tree_dnd_drag_drop_cb (GtkWidget        *widget,
 					 GTK_TREE_VIEW_DROP_BEFORE);
 
 	if (path || priv_data->dest_flags & RB_TREE_DEST_EMPTY_VIEW_DROP) {
-		GdkAtom target = gtk_drag_dest_find_target (widget, context, priv_data->dest_target_list);
+
+		GdkAtom target;
+		RbTreeDragDestIface *iface = RB_TREE_DRAG_DEST_GET_IFACE (model);
+		if (iface->get_drag_target) {
+			RbTreeDragDest *dest = RB_TREE_DRAG_DEST (model);
+			target = (* iface->get_drag_target) (dest, widget, 
+							     context, path, 
+							     priv_data->dest_target_list);
+		} else {
+			target = gtk_drag_dest_find_target (widget, context, 
+							    priv_data->dest_target_list);
+		}
 
 		if (path)
 			gtk_tree_path_free (path);
