@@ -1,5 +1,10 @@
 2005-08-25  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell.c (rb_shell_present): Be sure to gtk_widget_show
+	before gtk_window_present_with_time.
+	
+2005-08-25  Colin Walters  <walters@verbum.org>
+
 	* configure.ac: Require D-BUS 0.35.  Bonobo is disabled by
 	default.
 
