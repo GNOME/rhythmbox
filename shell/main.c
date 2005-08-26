@@ -105,16 +105,20 @@ int
 main (int argc, char **argv)
 {
 	GnomeProgram *program;
+#ifdef WITH_DBUS
 	DBusGConnection *session_bus;
+#endif
 	RBShell *rb_shell;
 	char **new_argv;
-	GError *error = NULL;
 	RBRemoteClientProxy *client_proxy;
 	gboolean activated;
 	poptContext poptContext;
         GValue context_as_value = { 0 };
 #ifdef WITH_BONOBO
 	RBRemoteBonobo *bonobo;
+#endif
+#if WITH_DBUS || WITH_BONOBO
+	GError *error = NULL;
 #endif
 
 	struct poptOption popt_options[] =
