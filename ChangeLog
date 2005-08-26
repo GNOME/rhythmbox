@@ -1,4 +1,11 @@
 2005-08-26  Colin Walters  <walters@verbum.org>
+	
+	Patch from Olivier Blin <oblin@mandriva.com>
+
+	* widgets/eggnotificationbubble.c (draw_bubble): 
+	Handle extreme-left case as well.
+	
+2005-08-26  Colin Walters  <walters@verbum.org>
 
 	* shell/rb-shell.c (idle_save_state): Don't do this.
 	(rb_shell_construct): Remove idle calls to idle_save_state.

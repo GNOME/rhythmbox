@@ -454,7 +454,9 @@ draw_bubble (EggNotificationBubble *bubble, guint timeout)
     triangle_offset += offset;
     x -= offset;
   } else if (x < monitor.x) {
-    x = monitor.x;
+    gint offset = monitor.x - x;
+    triangle_offset -= offset;
+    x += offset;
   }
 
   if ((y + h + widget->allocation.height + 4) > monitor.y + monitor.height)
