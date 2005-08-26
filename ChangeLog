@@ -1,5 +1,17 @@
 2005-08-25  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell-player.c (rb_shell_player_auto_adjust_rating):
+	Delete.
+	(rb_shell_player_do_next_with_rating): Move back into
+	rb_shell_player_do_next.
+	(rb_shell_player_entry_activated_cb): Remove call to
+	rb_shell_player_auto_adjust_rating.
+	(do_next_idle): Just call rb_shell_player_do_next.
+
+	* shell/rb-shell.c (rb_shell_present): Cast to GTK_WIDGET.
+
+2005-08-25  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell.c (rb_shell_present): Be sure to gtk_widget_show
 	before gtk_window_present_with_time.
 	
