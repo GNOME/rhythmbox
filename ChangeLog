@@ -1,5 +1,45 @@
 2005-08-26  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell.c (idle_save_state): Don't do this.
+	(rb_shell_construct): Remove idle calls to idle_save_state.
+	We should save the playlists automatically when they're
+	modified.
+	(rb_shell_load_uri): Don't try to re-stat entry if it already
+	exists.
+
+	* shell/rb-shell-player.c: Keep track of entry we are attempting
+	to play.
+	(rb_shell_player_set_playing_entry): Set playing_attempt_entry.
+	Don't double-free error.
+	(rb_shell_player_play_entry): Signal errors.
+	(rb_shell_player_entry_activated_cb): Ditto.
+	(rb_shell_player_property_row_activated_cb): Ditto.
+	(rb_shell_player_set_playing_source_internal): Unset attempted
+	playing entry.
+	(rb_shell_player_error): Refactor to be usable both sync and
+	async.  Handle case where displayed entry differs from entry.
+	(error_cb): Move GDK locking here.
+
+	* shell/main.c (main): Drop most commandline arguments for D-BUS;
+	people can just use dbus-send or python.  We only support focusing
+	and loading files.
+	(load_uri_args): New function, extracted from handle_cmdline.
+	(dbus_load_uri, bonobo_load_uri): New functions.
+
+	* shell/Makefile.am (rhythmbox_LDADD): Add D-BUS libs as
+	appropriate.
+
+	* remote/Makefile.am: Don't compile dbus subdir, it's not used.
+	* remote/dbus/rb-remote-dbus.c: Deleted.
+
+	* player/rb-player-gst.c: Clear any pending idle handlers when we
+	close the player.  Signal errors generated during open/play etc
+	as synchronous errors.
+
+	* configure.ac: Enable Bonobo by default if D-BUS isn't enabled.
+	
+2005-08-26  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell.c (rb_shell_present): Try harder.
 
 2005-08-26  Colin Walters  <walters@verbum.org>

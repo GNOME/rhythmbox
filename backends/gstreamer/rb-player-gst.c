@@ -47,9 +47,15 @@ struct RBPlayerPrivate
 
 	GstElement *playbin;
 
+	gboolean can_signal_direct_error;
 	GError *error;
 
 	gboolean playing;
+
+	guint idle_error_id;
+	guint idle_eos_id;
+	guint idle_buffering_id;
+	GHashTable *idle_info_ids;
 
 	guint error_signal_id;
 	guint buffering_signal_id;
@@ -76,11 +82,12 @@ typedef struct
 	RBMetaDataField info_field;
 	GError *error;
 	GValue *info;
+	guint id;
 } RBPlayerSignal;
 
 static guint rb_player_signals[LAST_SIGNAL] = { 0 };
 
-static gboolean rb_player_sync_pipeline (RBPlayer *mp, GError **error);
+static gboolean rb_player_sync_pipeline (RBPlayer *mp);
 static void rb_player_gst_free_playbin (RBPlayer *player);
 
 static void
@@ -159,6 +166,7 @@ rb_player_init (RBPlayer *mp)
 
 	mp->priv = g_new0 (RBPlayerPrivate, 1);
 	mp->priv->tick_timeout_id = g_timeout_add (ms_period, (GSourceFunc) tick_timeout, mp);
+	mp->priv->idle_info_ids = g_hash_table_new (NULL, NULL);
 	
 }
 
@@ -170,6 +178,7 @@ rb_player_finalize (GObject *object)
 	mp = RB_PLAYER (object);
 
 	g_source_remove (mp->priv->tick_timeout_id);
+	g_hash_table_destroy (mp->priv->idle_info_ids);
 
 	if (mp->priv->playbin) {
 		g_signal_handler_disconnect (G_OBJECT (mp->priv->playbin),
@@ -198,6 +207,29 @@ rb_player_gst_free_playbin (RBPlayer *player)
 	player->priv->playbin = NULL;
 }
 
+static void
+destroy_idle_signal (gpointer signal_pointer)
+{
+	RBPlayerSignal *signal = signal_pointer;
+
+	if (signal->error)
+		g_error_free (signal->error);
+
+	if (signal->info) {
+		g_value_unset (signal->info);
+		g_free (signal->info);
+	}
+
+	if (signal->id != 0) {
+		g_hash_table_remove (signal->object->priv->idle_info_ids,
+				     GUINT_TO_POINTER (signal->id));
+	}
+	
+	g_object_unref (G_OBJECT (signal->object));
+	g_free (signal);
+
+}
+
 static gboolean
 emit_signal_idle (RBPlayerSignal *signal)
 {
@@ -215,6 +247,7 @@ emit_signal_idle (RBPlayerSignal *signal)
 
 	case EOS:
 		g_signal_emit (G_OBJECT (signal->object), rb_player_signals[EOS], 0);
+		signal->object->priv->idle_eos_id = 0;
 		break;
 
 	case INFO:
@@ -227,19 +260,9 @@ emit_signal_idle (RBPlayerSignal *signal)
 		g_signal_emit (G_OBJECT (signal->object),
 			       rb_player_signals[BUFFERING], 0,
 			       g_value_get_uint (signal->info));
+		signal->object->priv->idle_buffering_id = 0;
 		break;
 	}
-
-	if (signal->error)
-		g_error_free (signal->error);
-
-	if (signal->info) {
-		g_value_unset (signal->info);
-		g_free (signal->info);
-	}
-	
-	g_object_unref (G_OBJECT (signal->object));
-	g_free (signal);
 
 	return FALSE;
 }
@@ -253,13 +276,18 @@ eos_cb (GstElement *element,
 	signal->type = EOS;
 	signal->object = mp;
 	g_object_ref (G_OBJECT (mp));
-	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+	if (mp->priv->idle_eos_id)
+		g_source_remove (mp->priv->idle_eos_id);
+	mp->priv->idle_eos_id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+						 (GSourceFunc) emit_signal_idle,
+						 signal,
+						 destroy_idle_signal);
 }
 
 static void
 error_cb (GstElement *element,
 	  GstElement *source,
-	  GError *error,
+	  const GError *error,
 	  gchar *debug,
 	  RBPlayer *mp)
 {
@@ -278,6 +306,18 @@ error_cb (GstElement *element,
 		code = RB_PLAYER_ERROR_GENERAL;
 	}
 
+	/* If we're in a synchronous op, we can signal the error directly */
+	if (mp->priv->can_signal_direct_error) {
+		if (mp->priv->error) {
+			g_warning ("Overwriting previous error \"%s\" with new error \"%s\"",
+				   mp->priv->error->message,
+				   error->message);
+			g_error_free (mp->priv->error);
+		}
+		mp->priv->error = g_error_copy (error);
+		return;
+	}
+
 	signal = g_new0 (RBPlayerSignal, 1);
 	signal->type = ERROR;
 	signal->object = mp;
@@ -287,7 +327,12 @@ error_cb (GstElement *element,
 
 	g_object_ref (G_OBJECT (mp));
 
-	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+	if (mp->priv->idle_error_id)
+		g_source_remove (mp->priv->idle_error_id);
+	mp->priv->idle_error_id = g_idle_add_full (G_PRIORITY_HIGH_IDLE,
+						   (GSourceFunc) emit_signal_idle,
+						   signal,
+						   destroy_idle_signal);
 }
 
 static void
@@ -328,9 +373,13 @@ process_tag (const GstTagList *list, const gchar *tag, RBPlayer *player)
 	signal->info_field = field;
 	signal->info = newval;
 	signal->type = INFO;
+	signal->id = g_idle_add_full (G_PRIORITY_DEFAULT_IDLE,
+				      (GSourceFunc) emit_signal_idle,
+				      signal,
+				      destroy_idle_signal);
 
 	g_object_ref (G_OBJECT (player));
-	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+	g_hash_table_insert (player->priv->idle_info_ids, GUINT_TO_POINTER (signal->id), NULL);
 }
 
 static void
@@ -353,7 +402,9 @@ buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
 	signal->info = g_new0 (GValue, 1);
 	g_value_init (signal->info, G_TYPE_UINT);
 	g_value_set_uint (signal->info, (guint)progress);
-	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
+	if (mp->priv->idle_buffering_id)
+		g_source_remove (mp->priv->idle_buffering_id);
+	mp->priv->idle_buffering_id = g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
 
 static gboolean
@@ -454,31 +505,51 @@ rb_player_error_quark (void)
 }
 
 static gboolean
-rb_player_sync_pipeline (RBPlayer *mp, GError **error)
+rb_player_sync_pipeline (RBPlayer *mp)
 {
 	rb_debug ("syncing pipeline");
 	if (mp->priv->playing) {
  		rb_debug ("PLAYING pipeline");
  		if (gst_element_set_state (mp->priv->playbin,
  					   GST_STATE_PLAYING) == GST_STATE_FAILURE) {
- 			g_set_error (error,
- 				     RB_PLAYER_ERROR,
- 				     RB_PLAYER_ERROR_GENERAL,
- 				     _("Could not start pipeline playing"));
  			return FALSE;
 		}
 	} else {
 		rb_debug ("PAUSING pipeline");
 		if (gst_element_set_state (mp->priv->playbin,
 					   GST_STATE_PAUSED) == GST_STATE_FAILURE) {
-			g_set_error (error,
-				     RB_PLAYER_ERROR,
-				     RB_PLAYER_ERROR_GENERAL,
-				     _("Could not pause playback"));
 			return FALSE;
 		}
 	}
 	return TRUE;
+}
+
+/* Start a sequence of synchronous GStreamer operations in which we
+ * can receive an error signal.
+ */
+static void
+begin_gstreamer_operation (RBPlayer *mp)
+{
+	g_assert (mp->priv->error == NULL);
+	mp->priv->can_signal_direct_error = TRUE;
+}
+
+/* End a sequence of synchronous operations and propagate any
+ * error from the sequence into error.
+ */
+static void
+end_gstreamer_operation (RBPlayer *mp, gboolean op_failed, GError **error)
+{
+	mp->priv->can_signal_direct_error = FALSE;
+	if (mp->priv->error) {
+		g_propagate_error (error, mp->priv->error);
+		mp->priv->error = NULL;
+	} else if (op_failed) {
+		g_set_error (error,
+			     RB_PLAYER_ERROR,
+			     RB_PLAYER_ERROR_GENERAL,
+			     _("Unknown playback error"));
+	}
 }
 
 gboolean
@@ -502,19 +573,32 @@ rb_player_open (RBPlayer *mp,
 		mp->priv->playing = FALSE;
 		return TRUE;
 	}
+
+	begin_gstreamer_operation (mp);
 	g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);	
 	mp->priv->uri = g_strdup (uri);
 
-	if (!rb_player_sync_pipeline (mp, error)) {
+	if (!rb_player_sync_pipeline (mp)) {
+		end_gstreamer_operation (mp, TRUE, error);
 		rb_player_close (mp, NULL);
 		return FALSE;
 	}
+	end_gstreamer_operation (mp, FALSE, error);
 	return TRUE;
+}
+
+static void
+remove_idle_source (gpointer key, gpointer value, gpointer user_data)
+{
+	guint id = GPOINTER_TO_UINT (key);
+
+	g_source_remove (id);
 }
 
 gboolean
 rb_player_close (RBPlayer *mp, GError **error)
 {
+	gboolean ret;
 	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = FALSE;
@@ -522,18 +606,27 @@ rb_player_close (RBPlayer *mp, GError **error)
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
 
+	if (mp->priv->idle_eos_id != 0) {
+		g_source_remove (mp->priv->idle_eos_id);
+		mp->priv->idle_eos_id = 0;
+	}
+	if (mp->priv->idle_error_id != 0) {
+		g_source_remove (mp->priv->idle_error_id);
+		mp->priv->idle_error_id = 0;
+	}
+	if (mp->priv->idle_buffering_id != 0) {
+		g_source_remove (mp->priv->idle_buffering_id);
+		mp->priv->idle_buffering_id = 0;
+	}
+	g_hash_table_foreach (mp->priv->idle_info_ids, remove_idle_source, NULL);
+
 	if (mp->priv->playbin == NULL)
 		return TRUE;
 
-	if (gst_element_set_state (mp->priv->playbin,
-				   GST_STATE_READY) != GST_STATE_SUCCESS) {
-		g_set_error (error,
-			     RB_PLAYER_ERROR,
-			     RB_PLAYER_ERROR_GENERAL,
-			     _("Failed to close audio output sink"));
-		return FALSE;
-	}
-	return TRUE;
+	begin_gstreamer_operation (mp);
+	ret = gst_element_set_state (mp->priv->playbin, GST_STATE_READY) == GST_STATE_SUCCESS;
+	end_gstreamer_operation (mp, !ret, error);
+	return ret;
 }
 
 gboolean
@@ -547,13 +640,17 @@ rb_player_opened (RBPlayer *mp)
 gboolean
 rb_player_play (RBPlayer *mp, GError **error)
 {
+	gboolean ret;
 	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = TRUE;
 
 	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
-	return rb_player_sync_pipeline (mp, error);
+	begin_gstreamer_operation (mp);
+	ret = rb_player_sync_pipeline (mp);
+	end_gstreamer_operation (mp, !ret, error);
+	return ret;
 }
 
 void
@@ -568,7 +665,7 @@ rb_player_pause (RBPlayer *mp)
 
 	g_return_if_fail (mp->priv->playbin != NULL);
 
-	rb_player_sync_pipeline (mp, NULL);
+	rb_player_sync_pipeline (mp);
 }
 
 gboolean

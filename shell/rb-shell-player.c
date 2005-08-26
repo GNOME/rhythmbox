@@ -136,10 +136,9 @@ static void rb_shell_player_sync_replaygain (RBShellPlayer *player,
                                              RhythmDBEntry *entry);
 static void tick_cb (RBPlayer *player, long elapsed, gpointer data);
 static void eos_cb (RBPlayer *player, gpointer data);
-static void error_cb (RBPlayer *player, GError *err, gpointer data);
+static void error_cb (RBPlayer *player, const GError *err, gpointer data);
 static void buffering_cb (RBPlayer *player, guint progress, gpointer data);
-static void rb_shell_player_error (RBShellPlayer *player, GError *err,
-				   gboolean lock);
+static void rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err);
 
 static void info_available_cb (RBPlayer *player,
                                RBMetaDataField field,
@@ -182,6 +181,7 @@ struct RBShellPlayerPrivate
 	
 	RBSource *selected_source;
 	RBSource *source;
+	RhythmDBEntry *playing_attempt_entry;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -723,6 +723,9 @@ rb_shell_player_finalize (GObject *object)
 
 	g_return_if_fail (player->priv != NULL);
 
+	if (player->priv->playing_attempt_entry)
+		rhythmdb_entry_unref (player->priv->db, player->priv->playing_attempt_entry);
+
 	eel_gconf_notification_remove(player->priv->gconf_play_order_id);
 	eel_gconf_notification_remove(player->priv->gconf_state_id);
 
@@ -919,8 +922,9 @@ rb_shell_player_new (RhythmDB *db, GtkUIManager *mgr,
 RhythmDBEntry *
 rb_shell_player_get_playing_entry (RBShellPlayer *player)
 {
-	RBEntryView *songs;
+	
 	if (player->priv->source) {
+		RBEntryView *songs;
 		songs = rb_source_get_entry_view (player->priv->source);
 		return rb_entry_view_get_playing_entry (songs);
 	}
@@ -1095,6 +1099,10 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry, 
 	
 	songs = rb_source_get_entry_view (player->priv->source);
 
+	if (player->priv->playing_attempt_entry)
+		rhythmdb_entry_unref (player->priv->db, player->priv->playing_attempt_entry);
+	rhythmdb_entry_ref (player->priv->db, entry);
+	player->priv->playing_attempt_entry = entry;
 	if (!rb_shell_player_open_entry (player, entry, &tmp_error))
 		goto lose;
 	rb_shell_player_sync_replaygain (player, entry);
@@ -1117,9 +1125,13 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry, 
 
 	return TRUE;
  lose:
+	/* Ignore errors, shutdown the player */
+	rb_player_close (player->priv->mmplayer, NULL);
+	/* Mark this song as failed */
 	rb_shell_player_set_entry_playback_error (player, entry, tmp_error->message);
 	g_propagate_error (error, tmp_error);
-	g_clear_error (&tmp_error);
+	rhythmdb_entry_unref (player->priv->db, player->priv->playing_attempt_entry);
+	player->priv->playing_attempt_entry = NULL;
 	return FALSE;
 }
 
@@ -1310,8 +1322,12 @@ void
 rb_shell_player_play_entry (RBShellPlayer *player,
 			    RhythmDBEntry *entry)
 {
+	GError *error = NULL;
 	rb_shell_player_set_playing_source (player, player->priv->selected_source);
-	rb_shell_player_set_playing_entry (player, entry, NULL);
+	if (!rb_shell_player_set_playing_entry (player, entry, &error)) {
+		rb_shell_player_error (player, FALSE, error);
+		g_clear_error (&error);
+	}
 }
 
 static void
@@ -1575,13 +1591,18 @@ rb_shell_player_entry_activated_cb (RBEntryView *view,
 				   RhythmDBEntry *entry,
 				   RBShellPlayer *playa)
 {
+	GError *error = NULL;
+
 	g_return_if_fail (entry != NULL);
 
 	rb_debug  ("got entry %p activated", entry);
 	
 	rb_shell_player_set_playing_source (playa, playa->priv->selected_source);
 
-	rb_shell_player_set_playing_entry (playa, entry, NULL);
+	if (!rb_shell_player_set_playing_entry (playa, entry, &error)) {
+		rb_shell_player_error (playa, FALSE, error);
+		g_clear_error (&error);
+	}
 }
 
 static void
@@ -1591,6 +1612,7 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 {
 	RhythmDBEntry *entry;
 	RBEntryView *songs;
+	GError *error = NULL;
 
 	rb_debug  ("got property activated");
 	
@@ -1601,8 +1623,12 @@ rb_shell_player_property_row_activated_cb (RBPropertyView *view,
 	songs = rb_source_get_entry_view (playa->priv->source);
 	entry = rb_entry_view_get_first_entry (songs);
 
-	if (entry != NULL) {
-		rb_shell_player_set_playing_entry (playa, entry, NULL);
+	if (!entry)
+		return;
+
+	if (!rb_shell_player_set_playing_entry (playa, entry, &error)) {
+		rb_shell_player_error (playa, FALSE, error);
+		g_clear_error (&error);
 	}
 }
 
@@ -1822,6 +1848,10 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	
 	player->priv->source = source;
 
+	if (player->priv->playing_attempt_entry)
+		rhythmdb_entry_unref (player->priv->db, player->priv->playing_attempt_entry);
+	player->priv->playing_attempt_entry = NULL;
+
 	if (source != NULL) {
 		RBEntryView *songs = rb_source_get_entry_view (player->priv->source);
 		g_signal_connect_object (G_OBJECT (songs),
@@ -1984,32 +2014,37 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 }
 
 static void
-rb_shell_player_error (RBShellPlayer *player, GError *err,
-		       gboolean lock)
+rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 {
 	RBEntryView *songs;
 	RhythmDBEntry *entry;
+	RhythmDBEntry *displayed_entry;
 
-	if (player->priv->source == NULL) {
-		rb_debug ("ignoring error (no source): %s", err->message);
-		return;
-	}
-
-	songs = rb_source_get_entry_view (player->priv->source);
-	entry = rb_entry_view_get_playing_entry (songs);
-
-	if (player->priv->handling_error) {
-		rb_debug ("ignoring error: %s", err->message);
-		return;
-	}
-
-	if (lock != FALSE)
-		GDK_THREADS_ENTER ();
+	g_assert (player->priv->handling_error == FALSE);
 
 	player->priv->handling_error = TRUE;
 
-	rb_debug ("error: %s", err->message);
-	rb_shell_player_set_entry_playback_error (player, entry, err->message);
+	entry = player->priv->playing_attempt_entry;
+
+	songs = rb_source_get_entry_view (player->priv->source);
+
+	displayed_entry = rb_entry_view_get_playing_entry (songs);
+	if (displayed_entry != entry) {
+		/* This can happen if there was an error - the currently
+		 * displayed entry won't match what we were trying to play.
+		 * In order to get the play order to actually go next, we
+		 * set the currently playing entry as a hack here.  This
+		 * should really be fixed so RBPlayOrder also tracks
+		 * the attempted entry, and just uses the view to decide
+		 * where the next/previous one is.
+		 */
+		rb_entry_view_set_playing_entry (songs, entry);
+	}
+
+	g_printerr ("playback error: %s", err->message);
+	/* For synchronous errors the entry playback error has already been set */
+	if (entry && async)
+		rb_shell_player_set_entry_playback_error (player, entry, err->message);
 
 	switch (rb_source_handle_eos (player->priv->source)) {
 	case RB_SOURCE_EOF_ERROR:
@@ -2026,21 +2061,27 @@ rb_shell_player_error (RBShellPlayer *player, GError *err,
 	}
 
 	player->priv->handling_error = FALSE;
-	rb_debug ("exiting error hander");
-
-	if (lock != FALSE)
-		GDK_THREADS_LEAVE ();
 }
 
 static void
-error_cb (RBPlayer *mmplayer, GError *err, gpointer data)
+error_cb (RBPlayer *mmplayer, const GError *err, gpointer data)
 {
 	RBShellPlayer *player = RB_SHELL_PLAYER (data);
 
 	if (player->priv->handling_error)
 		return;
 
-	rb_shell_player_error (player, err, TRUE);
+	if (player->priv->source == NULL) {
+		rb_debug ("ignoring error (no source): %s", err->message);
+		return;
+	}
+
+	GDK_THREADS_ENTER ();
+
+	rb_shell_player_error (player, TRUE, err);
+	
+	rb_debug ("exiting error hander");
+	GDK_THREADS_LEAVE ();
 }
 
 static void

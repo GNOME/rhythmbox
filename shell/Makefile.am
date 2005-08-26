@@ -89,7 +89,8 @@ rb-shell-player-glue.h: rb-shell-player.xml Makefile
 
 BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h
 
-rhythmbox_LDADD += $(top_builddir)/remote/dbus/librbdbus.la
+rhythmbox_LDADD += $(DBUS_LIBS)
+
 endif
 
 # i hate link order problems

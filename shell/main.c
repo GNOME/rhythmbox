@@ -27,6 +27,7 @@
 #include <libgnome/gnome-i18n.h>
 #include <libgnomeui/gnome-ui-init.h>
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h> /* For _get_user_time... */
 #include <glade/glade-init.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -56,8 +57,8 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 
-#include "rb-remote-client-proxy.h"
 #ifdef WITH_BONOBO
+#include "rb-remote-client-proxy.h"
 #include <bonobo/bonobo-main.h>
 #include "bonobo/rb-remote-bonobo.h"
 #endif
@@ -74,6 +75,9 @@ static gboolean no_registration = FALSE;
 static gboolean no_update	= FALSE;
 static gboolean dry_run		= FALSE;
 static char *rhythmdb_file = NULL;
+static gboolean load_uri_args (const char **args, GFunc handler, gpointer user_data);
+
+#ifdef WITH_BONOBO
 static gboolean print_playing = FALSE;
 static gboolean print_playing_artist = FALSE;
 static gboolean print_playing_album = FALSE;
@@ -99,6 +103,11 @@ static gboolean toggle_hide     = FALSE;
 
 static void handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 			    const char **args);
+#endif
+#ifdef WITH_DBUS
+static void dbus_load_uri (const char *filename, DBusGProxy *proxy);
+#endif
+
 static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
 
 int
@@ -110,11 +119,11 @@ main (int argc, char **argv)
 #endif
 	RBShell *rb_shell;
 	char **new_argv;
-	RBRemoteClientProxy *client_proxy;
 	gboolean activated;
 	poptContext poptContext;
         GValue context_as_value = { 0 };
 #ifdef WITH_BONOBO
+	RBRemoteClientProxy *client_proxy;
 	RBRemoteBonobo *bonobo;
 #endif
 #if WITH_DBUS || WITH_BONOBO
@@ -123,6 +132,8 @@ main (int argc, char **argv)
 
 	struct poptOption popt_options[] =
 	{
+		/* These are all legacy; for D-BUS just use dbus-send or Python scripts */ 
+#ifdef WITH_BONOBO
 		{ "print-playing",		0,  POPT_ARG_NONE,	&print_playing,			0, N_("Print the playing song and exit"), NULL },
 		{ "print-playing-artist",	0,  POPT_ARG_NONE,	&print_playing_artist,		0, N_("Print the playing song artist and exit"), NULL },
 		{ "print-playing-album",	0,  POPT_ARG_NONE,	&print_playing_album,		0, N_("Print the playing song album and exit"), NULL },
@@ -149,6 +160,7 @@ main (int argc, char **argv)
 		{ "set-volume",			0,  POPT_ARG_FLOAT,	&set_volume,			0, N_("Set the volume level"), NULL },
 		{ "toggle-mute",		0,  POPT_ARG_NONE,	&toggle_mute,			0, N_("Mute or unmute playback"), NULL },
 		{ "toggle-hide",		0,  POPT_ARG_NONE,	&toggle_hide,			0, N_("Change visibility of the main Rhythmbox window"), NULL },
+#endif
 
 		{ "debug",			'd',POPT_ARG_NONE,	&debug,				0, N_("Enable debugging code"), NULL },
 		{ "no-update",			0,  POPT_ARG_NONE,	&no_update,			0, N_("Do not update the library"), NULL },
@@ -216,12 +228,12 @@ main (int argc, char **argv)
 	/* TODO: kill this function */
 	rb_threads_init ();
 
-	client_proxy = NULL;
 	activated = FALSE;
 
 #ifdef WITH_BONOBO
 	rb_debug ("going to create Bonobo object");
 	bonobo = rb_remote_bonobo_new ();
+	client_proxy = NULL;
 	if (!no_registration) {
 		if ((activated = rb_remote_bonobo_activate (bonobo))) {
 			rb_debug ("successfully activated Bonobo");
@@ -263,15 +275,11 @@ main (int argc, char **argv)
 		g_object_unref (bus_proxy);
 
 		if (request_name_reply == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER
-		    || request_name_reply == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER) {
+		    || request_name_reply == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER)
 			activated = FALSE;
-		} else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS) {
-			rb_debug ("Creating new dbus client proxy");
-			client_proxy = RB_REMOTE_CLIENT_PROXY (rb_remote_dbus_new ());
-			if (!rb_remote_dbus_activate (RB_REMOTE_DBUS (client_proxy)))
-				g_critical ("Couldn't activate org.gnome.Rhythmbox");
+		else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS)
 			activated = TRUE;
-		} else {
+		else {
 			g_critical ("Got unhandled reply %u from RequestName",
 				    request_name_reply);
 			activated = FALSE;
@@ -308,6 +316,8 @@ main (int argc, char **argv)
 			else
 				g_critical ("acquired bonobo service but couldn't activate!");
 		}
+
+		handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
 #endif
 #ifdef WITH_DBUS
 		if (session_bus != NULL) {
@@ -323,9 +333,26 @@ main (int argc, char **argv)
 			dbus_g_connection_register_g_object (session_bus, path, G_OBJECT (player));
 		}
 #endif
-	}
+	} else {
+#ifdef WITH_DBUS
+		DBusGProxy *shell_proxy;
 
-	handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
+		shell_proxy = dbus_g_proxy_new_for_name_owner (session_bus,
+							       "org.gnome.Rhythmbox",
+							       "/org/gnome/Rhythmbox/Shell",
+							       "org.gnome.Rhythmbox.Shell",
+							       &error);
+		if (!shell_proxy) {
+			g_critical ("Couldn't create proxy for Rhythmbox shell: %s",
+				    error->message);
+		} else {
+			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
+		}
+		dbus_g_proxy_call_no_reply (shell_proxy, "present",
+					    G_TYPE_UINT, gdk_x11_display_get_user_time (gdk_display_get_default ()),
+					    G_TYPE_INVALID);
+#endif
+	}
 
 	if (activated) {
 		gdk_notify_startup_complete ();
@@ -352,6 +379,60 @@ main (int argc, char **argv)
 
 	rb_debug ("THE END");
 	exit (0);
+}
+
+static gboolean
+load_uri_args (const char **args, GFunc handler, gpointer user_data)
+{
+	gboolean handled;
+	guint i;
+	GError *error = NULL;
+
+	handled = FALSE;
+	for (i = 0; args && args[i]; i++) {
+		char *tmp;
+
+		rb_debug ("examining argument %s", args[i]);
+		tmp = rb_uri_resolve_relative (args[i]);
+			
+		if (rb_uri_exists (tmp) == TRUE) {
+			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
+			if (!utf8 && error) {
+				g_error (error->message);
+				continue;
+			}
+			handler (utf8, user_data);
+			g_free (utf8);
+		}
+		
+		g_free (tmp);
+		handled = TRUE;
+	}
+	return handled;
+}
+
+#ifdef WITH_DBUS
+static void
+dbus_load_uri (const char *filename, DBusGProxy *proxy)
+{
+	GError *error = NULL;
+	rb_debug ("Sending loadURI for %s", filename);
+	if (!dbus_g_proxy_call (proxy, "loadURI", &error,
+				G_TYPE_STRING, filename,
+				G_TYPE_BOOLEAN, TRUE,
+				G_TYPE_INVALID,
+				G_TYPE_INVALID))
+		g_printerr ("Failed to load %s: %s",
+			    filename, error->message);
+}
+#endif
+
+#ifdef WITH_BONOBO
+
+static void
+bonobo_load_uri (const char *filename, RBRemoteClientProxy *proxy)
+{
+	rb_remote_client_proxy_handle_uri (proxy, filename);
 }
 
 static void
@@ -452,26 +533,9 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated, const char **arg
 	if (toggle_mute)
 		rb_remote_client_proxy_toggle_mute (proxy);
 
-	for (i = 0; args && args[i]; i++) {
-		char *tmp;
-
-		rb_debug ("examining argument %s", args[i]);
-		tmp = rb_uri_resolve_relative (args[i]);
-			
-		if (rb_uri_exists (tmp) == TRUE) {
-			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
-			if (!utf8 && error) {
-				g_error (error->message);
-				continue;
-			}
-			rb_remote_client_proxy_handle_uri (proxy, utf8);
-			g_free (utf8);
-		}
-		
-		g_free (tmp);
+	if (load_uri_args (args, bonobo_load_uri, proxy))
 		grab_focus = FALSE;
-	}
-	
+
 	if (quit)
 		rb_remote_client_proxy_quit (proxy);
 
@@ -487,6 +551,7 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated, const char **arg
 		rb_remote_client_proxy_grab_focus (proxy);
 	}
 }
+#endif
 
 static void
 main_shell_weak_ref_cb (gpointer data, GObject *objptr)

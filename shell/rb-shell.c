@@ -702,17 +702,6 @@ rb_shell_sync_state (RBShell *shell)
 }
 
 static gboolean
-idle_save_state (RBShell *shell)
-{
-	GDK_THREADS_ENTER ();
-
-	rb_shell_sync_state (shell);
-
-	GDK_THREADS_LEAVE ();
-	return FALSE;
-}
-
-static gboolean
 idle_save_rhythmdb (RhythmDB *db)
 {
 	rhythmdb_save (db);
@@ -1100,8 +1089,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 		gtk_widget_hide (GTK_WIDGET (shell->priv->window));
 		rb_druid_show (druid);
 		g_object_unref (G_OBJECT (druid));
-
-		g_timeout_add (5000, (GSourceFunc) idle_save_state, shell);
 	}
 	
 	rb_statusbar_sync_state (shell->priv->statusbar);
@@ -2174,20 +2161,30 @@ rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 gboolean
 rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **error)
 {
-	/* FIXME should be sync and return errors */
-	rhythmdb_add_uri (shell->priv->db, uri);
+	RhythmDBEntry *entry;
+	
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+	if (entry == NULL) {
+		/* FIXME should be sync and return errors */
+		rhythmdb_add_uri (shell->priv->db, uri);
+	}
 
 	if (play) {
-		/* wait for this entry to appear (or until we
-		 * get a load error for it), then play it.
-		 *
-		 * we only handle one entry here because
-		 * we don't have a playback queue (yet).
-		 */
-		if (shell->priv->pending_entry != NULL) {
-			g_free (shell->priv->pending_entry);
+		if (entry == NULL) {
+			/* wait for this entry to appear (or until we
+			 * get a load error for it), then play it.
+			 *
+			 * we only handle one entry here because
+			 * we don't have a playback queue (yet).
+			 */
+			if (shell->priv->pending_entry != NULL) {
+				g_free (shell->priv->pending_entry);
+			}
+			shell->priv->pending_entry = g_strdup (uri);
+		} else {
+			rb_shell_play_entry (shell, entry);
 		}
-		shell->priv->pending_entry = g_strdup (uri);
 	}
 
 	return TRUE;

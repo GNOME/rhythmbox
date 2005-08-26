@@ -6,13 +6,7 @@ else
 MAYBE_BONOBO =
 endif
 
-if WITH_DBUS
-MAYBE_DBUS = dbus
-else
-MAYBE_DBUS =
-endif
-
-SUBDIRS = $(MAYBE_BONOBO) $(MAYBE_DBUS)
+SUBDIRS = $(MAYBE_BONOBO)
 
 noinst_LTLIBRARIES = librbremote.la
 

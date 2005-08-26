@@ -314,10 +314,33 @@ AC_SUBST(MKINSTALLDIRS)
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
+AC_MSG_CHECKING([for D-BUS])
+AC_ARG_WITH(dbus,
+            AC_HELP_STRING([--with-dbus],
+			   [Enable D-BUS support]),,
+	      with_dbus=auto)
+if test "x$with_dbus" != "xno"; then
+	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
+        if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
+	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
+	fi
+        if test "x$enable_dbus" = xyes; then
+		AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
+		DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
+		AC_MSG_RESULT([we're getting on D-BUS])
+	else
+		AC_MSG_RESULT([not found])
+	fi
+
+fi			  
+AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
+
+if test x$enable_dbus != xyes; then
+AC_MSG_CHECKING([for Bonobo])
 AC_ARG_WITH(bonobo,
             AC_HELP_STRING([--with-bonobo],
 			   [Enable bonobo support]),,
-	      with_bonobo=no)
+	      with_bonobo=`test x$enable_dbus != xyes`)
 if test "x$with_bonobo" != "xno"; then
 	PKG_CHECK_MODULES(BONOBO, libbonobo-2.0 >= 2.0.0, enable_bonobo=yes,
 		          enable_bonobo=no)
@@ -334,26 +357,17 @@ if test "x$with_bonobo" != "xno"; then
 
 		BONOBO_ACTIVATION_IDL="`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
 		AC_SUBST(BONOBO_ACTIVATION_IDL)
+		AC_MSG_RESULT([found])
+	else
+		AC_MSG_RESULT([not found])
 	fi
+	
 fi			  
+else
+	AC_MSG_NOTICE([Bonobo disabled by default since D-BUS support compiled in])
+fi	
 AM_CONDITIONAL(WITH_BONOBO, test "x$enable_bonobo" = "xyes")
 	      
-AC_ARG_WITH(dbus,
-            AC_HELP_STRING([--with-dbus],
-			   [Enable D-BUS support]),,
-	      with_dbus=auto)
-if test "x$with_dbus" != "xno"; then
-	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
-        if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
-	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
-	fi
-        if test "x$enable_dbus" = xyes; then
-		AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
-		DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
-	fi
-fi			  
-AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
-
 AM_GCONF_SOURCE_2
 
 AC_ARG_ENABLE(uninstalled-build,
