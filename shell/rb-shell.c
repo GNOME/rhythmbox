@@ -2236,7 +2236,13 @@ rb_shell_present (RBShell *shell, guint32 timestamp, GError **error)
 {
 	rb_debug ("presenting with timestamp %u", timestamp);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
+#if GTK_MINOR_VERSION >= 8
 	gtk_window_present_with_time (GTK_WINDOW (shell->priv->window), timestamp);
+#else	
+	gtk_window_present (GTK_WINDOW (shell->priv->window));
+	gdk_window_focus (GTK_WINDOW (shell->priv->window)->window, timestamp);
+#endif
+
 	return TRUE;
 }
 
