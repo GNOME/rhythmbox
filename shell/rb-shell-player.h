@@ -43,6 +43,8 @@ G_BEGIN_DECLS
 typedef enum
 {
 	RB_SHELL_PLAYER_ERROR_PLAYLIST_PARSE_ERROR,
+	RB_SHELL_PLAYER_ERROR_END_OF_PLAYLIST,
+	RB_SHELL_PLAYER_ERROR_NOT_PLAYING
 } RBShellPlayerError;
 
 #define RB_SHELL_PLAYER_ERROR rb_shell_player_error_quark ()
@@ -64,6 +66,7 @@ typedef struct
 
 	void (*window_title_changed) (RBShellPlayer *player, const char *window_title);
 	void (*duration_changed) (RBShellPlayer *player, const char *duration);
+	void (*playing_changed) (RBShellPlayer *player, gboolean playing);
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
 	void (*playing_song_changed) (RBShellPlayer *player, RhythmDBEntry *entry);
 } RBShellPlayerClass;
@@ -85,10 +88,10 @@ void			rb_shell_player_jump_to_current (RBShellPlayer *player);
 
 void			rb_shell_player_play_entry	(RBShellPlayer *player,
 							 RhythmDBEntry *entry);
-void			rb_shell_player_playpause	(RBShellPlayer *player, gboolean ignore_stop);
+gboolean                rb_shell_player_playpause	(RBShellPlayer *player, gboolean ignore_stop, GError **error);
 void			rb_shell_player_stop		(RBShellPlayer *player);
-void			rb_shell_player_do_previous	(RBShellPlayer *player);
-void			rb_shell_player_do_next		(RBShellPlayer *player);
+gboolean                rb_shell_player_do_previous	(RBShellPlayer *player, GError **error);
+gboolean		rb_shell_player_do_next		(RBShellPlayer *player, GError **error);
 
 long			rb_shell_player_get_playing_time(RBShellPlayer *player);
 void			rb_shell_player_set_playing_time(RBShellPlayer *player, long time);

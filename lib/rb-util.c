@@ -352,21 +352,6 @@ rb_uri_is_mounted (const char *uri)
 	return found;
 }
 
-/* hack to use a recursive mutex for gdk locking */
-static GStaticRecMutex _rb_threads_mutex = G_STATIC_REC_MUTEX_INIT;
-
-static void
-_rb_threads_lock (void)
-{
-	g_static_rec_mutex_lock (&_rb_threads_mutex);
-}
-
-static void
-_rb_threads_unlock (void)
-{
-	g_static_rec_mutex_unlock (&_rb_threads_mutex);
-}
-
 gboolean
 rb_is_main_thread (void)
 {
@@ -383,9 +368,6 @@ rb_threads_init (void)
 {
 	private_is_primary_thread = g_private_new (NULL);
 	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
-
-	gdk_threads_set_lock_functions (G_CALLBACK (_rb_threads_lock),
-					G_CALLBACK (_rb_threads_unlock));
 
 	/* not really necessary, but in case it does something besides
 	 * set up lock functions some day..

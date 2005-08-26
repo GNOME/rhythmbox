@@ -24,15 +24,11 @@
 #include "rb-remote-client-proxy.h"
 #include <libgnome/libgnome.h>
 #include <libgnome/gnome-i18n.h>
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
 #include <string.h>
-#include <dbus/dbus.h>
-#include <dbus/dbus-glib.h>
-#include <dbus/dbus-glib-lowlevel.h>
 
 #include "rb-debug.h"
-
-#define RB_REMOTE_DBUS_SERVICE_PATH "org.gnome.Rhythmbox"
-#define RB_REMOTE_DBUS_OBJECT_PATH "/org/gnome/Rhythmbox/DBusRemote0"
 
 static void rb_remote_dbus_remote_client_proxy_init (RBRemoteClientProxyIface *iface);
 
@@ -43,6 +39,9 @@ G_DEFINE_TYPE_WITH_CODE(RBRemoteDBus, rb_remote_dbus, G_TYPE_OBJECT,
 static void rb_remote_dbus_dispose (GObject *object);
 static void rb_remote_dbus_finalize (GObject *object);
 
+static gboolean rb_remote_dbus_grab_focus (RBRemoteDBus *dbus, GError **error);
+static gboolean rb_remote_dbus_handle_uri (RBRemoteDBus *dbus, const char *uri, GError **error);
+
 /* Client methods */
 static void rb_remote_dbus_client_handle_uri_impl (RBRemoteClientProxy *proxy, const char *uri);
 static RBRemoteSong *rb_remote_dbus_client_get_playing_song_impl (RBRemoteClientProxy *proxy);
@@ -52,19 +51,7 @@ static void rb_remote_dbus_client_toggle_playing_impl (RBRemoteClientProxy *prox
 static long rb_remote_dbus_client_get_playing_time_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_dbus_client_set_playing_time_impl (RBRemoteClientProxy *proxy, long time);
 
-static void rb_remote_dbus_unregister_handler (DBusConnection *connection, void *data);
-
-static DBusHandlerResult rb_remote_dbus_message_handler (DBusConnection *connection,
-							 DBusMessage *message,
-							 void *user_data);
-
-static DBusObjectPathVTable
-rb_remote_dbus_vtable = { &rb_remote_dbus_unregister_handler,
-			  &rb_remote_dbus_message_handler,
-			  NULL,
-			  NULL,
-			  NULL,
-			  NULL };
+#include "rb-remote-dbus-glue.h"
 
 static GObjectClass *parent_class;
 
@@ -77,7 +64,8 @@ struct RBRemoteDBusPrivate
 {
 	gboolean disposed;
 
-	DBusConnection *connection;
+	DBusGConnection *connection;
+	DBusGProxy *rb_proxy;
 	
 	RBRemoteProxy *proxy;
 };
@@ -108,19 +96,7 @@ rb_remote_dbus_remote_client_proxy_init (RBRemoteClientProxyIface *iface)
 static void
 rb_remote_dbus_init (RBRemoteDBus *dbus) 
 {
-	DBusError error;
 	dbus->priv = g_new0 (RBRemoteDBusPrivate, 1);
-
-	dbus_error_init (&error);
-	dbus->priv->connection = dbus_bus_get (DBUS_BUS_SESSION, &error);
-	if (dbus->priv->connection == NULL) {
-		g_critical ("couldn't connect to session bus: %s",
-			    error.message);
-	} else {
-		rb_debug ("we're on DBus with the GConnection! Yeah baby!");
-		dbus_connection_setup_with_g_main (dbus->priv->connection, NULL);
-	}
-	dbus_error_free (&error);
 }
 
 static void
@@ -165,141 +141,45 @@ rb_remote_dbus_error_quark (void)
 gboolean
 rb_remote_dbus_activate (RBRemoteDBus *dbus)
 {
-	DBusError error;
-	gboolean ret;
+	GError *error = NULL;
 
-	if (!dbus->priv->connection) {
-		rb_debug ("failed to activate, we're not on DBus...");
+	dbus->priv->connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+	if (!dbus->priv->connection)
+		return FALSE;
+
+	dbus->priv->rb_proxy = dbus_g_proxy_new_for_name_owner (dbus->priv->connection,
+								"org.gnome.Rhythmbox",
+								"/org/gnome/Rhythmbox/Shell",
+								"org.gnome.Rhythmbox.Shell",
+								&error);
+	if (!dbus->priv->rb_proxy) {
+		g_critical ("Couldn't create proxy for org.gnome.Rhythmbox: %s",
+			    error->message);
 		return FALSE;
 	}
 	
-	dbus_error_init (&error);
-	ret = dbus_bus_service_exists (dbus->priv->connection,
-				       RB_REMOTE_DBUS_SERVICE_PATH,
-				       &error);
-	if (dbus_error_is_set (&error))
-		rb_debug ("Couldn't check service: %s", error.message);
-	dbus_error_free (&error);
-	return ret;
+	return TRUE;
 }
 
-static void
-shell_weak_ref_cb (gpointer data, GObject *objptr)
+static gboolean
+rb_remote_dbus_grab_focus (RBRemoteDBus *dbus, GError **error)
 {
-	g_object_unref (G_OBJECT (data));
+	rb_remote_proxy_grab_focus (dbus->priv->proxy);
+	return TRUE;
 }
 
-gboolean
-rb_remote_dbus_acquire (RBRemoteDBus *dbus,
-			RBRemoteProxy *proxy,
-			GError **error)
+static gboolean
+rb_remote_dbus_handle_uri (RBRemoteDBus *dbus, const char *uri, GError **error)
 {
-	gboolean acquired;
-	DBusError buserror;
-
-	if (!dbus->priv->connection) {
-		rb_debug ("failed to register, we're not on DBus...");
-		return FALSE;
-	}
-	
-	dbus->priv->proxy = proxy;
-	g_object_weak_ref (G_OBJECT (proxy), shell_weak_ref_cb, dbus);
-
-	dbus_error_init (&buserror);
-	acquired = dbus_bus_acquire_service (dbus->priv->connection,
-					     RB_REMOTE_DBUS_SERVICE_PATH,
-					     0, &buserror) != -1;
-	if (dbus_error_is_set (&buserror))
-		g_set_error (error,
-			     RB_REMOTE_DBUS_ERROR,
-			     RB_REMOTE_DBUS_ERROR_ACQUISITION_FAILURE,
-			     "%s",
-			     buserror.message);
-
-	rb_debug ("acquiring service %s with dbus: %s",
-		  RB_REMOTE_DBUS_SERVICE_PATH, acquired ? "success" : "failure"); 
-
-	if (dbus_connection_register_object_path (dbus->priv->connection,
-						  RB_REMOTE_DBUS_OBJECT_PATH,
-						  &rb_remote_dbus_vtable,
-						  dbus) == FALSE)
-		g_critical ("out of memory registering object path");
-	else
-		rb_debug ("registered session object: %s", RB_REMOTE_DBUS_OBJECT_PATH);
-
-	dbus_error_free (&buserror);
-
-	return acquired;
-}
-
-static void
-rb_remote_dbus_unregister_handler (DBusConnection *connection, void *data)
-{
-	rb_debug ("unregistered!");
-}
-
-static DBusHandlerResult
-rb_remote_dbus_message_handler (DBusConnection *connection,
-				DBusMessage *message,
-				void *user_data)
-{
-	RBRemoteDBus *dbus = RB_REMOTE_DBUS (user_data);
-
-	rb_debug ("got message: %s.%s",
-		  dbus_message_get_interface (message),
-		  dbus_message_get_member (message));
-
-	if (dbus_message_is_method_call (message,
-					 RB_REMOTE_DBUS_SERVICE_PATH,
-					 "grabFocus")) {
-		rb_debug ("grabbing focus");
-		rb_remote_proxy_grab_focus (dbus->priv->proxy);
-		return DBUS_HANDLER_RESULT_HANDLED;
-	}
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-}
-/* Client methods */
-
-static DBusMessage *
-invoke_noarg_method (DBusConnection *connection, const char *name,
-	       gboolean expect_reply)
-{
-  DBusMessage *message;
-  DBusMessage *reply;
-  DBusError error;
-
-  dbus_error_init (&error);
-  message = dbus_message_new_method_call (RB_REMOTE_DBUS_SERVICE_PATH,
-					  RB_REMOTE_DBUS_OBJECT_PATH,
-					  RB_REMOTE_DBUS_SERVICE_PATH,
-					  name);
-  if (message == NULL) {
-	  g_critical ("Out of memory in invoke_noarg_method!\n");
-	  return NULL;
-  }
-
-  if (!expect_reply) {
-	  if (!dbus_connection_send (connection, message, NULL))
-		  g_critical ("Out of memory in invoke_noarg_method!\n");
-	  reply = NULL;
-  } else {
-	  reply = dbus_connection_send_with_reply_and_block (connection, message,
-							     -1, &error);
-	  if (dbus_error_is_set (&error)) {
-		  fprintf (stderr, "%s raised:\n %s\n\n", error.name, error.message);
-		  reply = NULL;
-	  }
-    }
-  dbus_message_unref (message);
-  dbus_error_free (&error);
-  return reply;
+	rb_remote_proxy_load_uri (dbus->priv->proxy, uri, TRUE);
+	return TRUE;
 }
 
 static void
 rb_remote_dbus_client_handle_uri_impl (RBRemoteClientProxy *proxy, const char *uri)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	invoke_noarg_method (dbus->priv->connection, "handleURI", FALSE); 
+	dbus_g_proxy_call_no_reply (dbus->priv->rb_proxy, "handleURI", G_TYPE_STRING, uri, G_TYPE_INVALID);
 }
 
 static RBRemoteSong *
@@ -307,44 +187,22 @@ rb_remote_dbus_client_get_playing_song_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
 	RBRemoteSong *song;
-	DBusMessage *reply;
-	DBusMessageIter song_dict;
-	DBusError error;
+	GHashTable *table;
+	const GValue *val;
+	GError *error = NULL;
 	
-	reply = invoke_noarg_method (dbus->priv->connection,
-			       "getPlayingSong", TRUE);
-	if (!reply)
-		return NULL;
-
-	dbus_error_init (&error);
-
-	song = NULL;
-	if (!dbus_message_get_args (reply, &error,
-				    DBUS_TYPE_DICT, &song_dict,
-				    DBUS_TYPE_INVALID)) {
-		g_warning ("Couldn't parse arguments");
-		goto out;
-	}
-
+	if (!dbus_g_proxy_call (dbus->priv->rb_proxy, "getPlayingSong", &error, G_TYPE_INVALID,
+				dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE),
+				&table, G_TYPE_INVALID))
+		
 	song = g_new0 (RBRemoteSong, 1);
-								
-	while (dbus_message_iter_get_arg_type (&song_dict) != DBUS_TYPE_INVALID) {
-		const char *key;
-
-		key = dbus_message_iter_get_dict_key (&song_dict);
-		dbus_message_iter_next (&song_dict);
-		if (!strcmp (key, "Title")) {
-			song->title = g_strdup (dbus_message_iter_get_string (&song_dict));
-			dbus_message_iter_next (&song_dict);
-		} else if (!strcmp (key, "Artist")) {
-			song->artist = g_strdup (dbus_message_iter_get_string (&song_dict));
-			dbus_message_iter_next (&song_dict);
-		}
-	}
-
-out:
-	dbus_error_free (&error);
-	dbus_message_unref (reply);
+#define TAKE_STRING(key, member) \
+	if ((val = g_hash_table_lookup (table, key)) && G_VALUE_TYPE (val) == G_TYPE_STRING) \
+		song->member = g_strdup (g_value_get_string (val));
+		
+	TAKE_STRING ("title", title);
+	TAKE_STRING ("artist", artist);
+	    
 	return song;
 }
 
@@ -352,100 +210,60 @@ static void
 rb_remote_dbus_client_grab_focus_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	invoke_noarg_method (dbus->priv->connection, "grabFocus", FALSE);
+
+	dbus_g_proxy_call_no_reply (dbus->priv->rb_proxy, "present",
+				    G_TYPE_UINT,
+				    gdk_x11_display_get_user_time (gdk_display_get_default ()),
+				    G_TYPE_INVALID);
 }
 
 static void
 rb_remote_dbus_client_toggle_shuffle_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	DBusMessage *message;
-	DBusMessage *reply;
-	DBusError error;
+	GError *error = NULL;
 	gboolean shuffle;
 	
-	reply = invoke_noarg_method (dbus->priv->connection, "getShuffle", TRUE);
-	if (!reply)
+	if (!(dbus_g_proxy_call (dbus->priv->rb_proxy, "getShuffle", &error,
+				 G_TYPE_INVALID, G_TYPE_BOOLEAN, &shuffle,
+				 G_TYPE_INVALID)))
 		return;
-
-	shuffle = FALSE;
-	dbus_error_init (&error);
-	if (!dbus_message_get_args (reply, &error,
-				    DBUS_TYPE_BOOLEAN, &shuffle,
-				    DBUS_TYPE_INVALID)) {
-		g_warning ("Couldn't parse arguments");
-		goto out;
-	}
-
-	message = dbus_message_new_method_call (RB_REMOTE_DBUS_SERVICE_PATH,
-						RB_REMOTE_DBUS_OBJECT_PATH,
-						RB_REMOTE_DBUS_SERVICE_PATH,
-						"setShuffle");
-	dbus_message_append_args (message, DBUS_TYPE_BOOLEAN, !shuffle, DBUS_TYPE_INVALID);
-	dbus_connection_send (dbus->priv->connection, message, NULL);
-	dbus_message_unref (message);
-
-out:
-	dbus_error_free (&error);
-	dbus_message_unref (reply);
+	if (!(dbus_g_proxy_call (dbus->priv->rb_proxy, "setShuffle", &error,
+				 G_TYPE_BOOLEAN, !shuffle,
+				 G_TYPE_INVALID,
+				 G_TYPE_INVALID)))
+		return;
 }
 
 static void
 rb_remote_dbus_client_toggle_playing_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	DBusMessage *message;
-	DBusMessage *reply;
-	DBusError error;
-	dbus_bool_t playing;
+	GError *error = NULL;
+	gboolean playing;
 	
-	reply = invoke_noarg_method (dbus->priv->connection, "getPlaying", TRUE);
-	if (!reply)
+	if (!(dbus_g_proxy_call (dbus->priv->rb_proxy, "getPlaying", &error,
+				 G_TYPE_INVALID, G_TYPE_BOOLEAN, &playing,
+				 G_TYPE_INVALID)))
 		return;
-
-	playing = FALSE;
-	dbus_error_init (&error);
-	if (!dbus_message_get_args (reply, &error,
-				    DBUS_TYPE_BOOLEAN, &playing,
-				    DBUS_TYPE_INVALID)) {
-		g_warning ("Couldn't parse arguments");
-		goto out;
-	}
-
-	message = dbus_message_new_method_call (RB_REMOTE_DBUS_SERVICE_PATH,
-						RB_REMOTE_DBUS_OBJECT_PATH,
-						RB_REMOTE_DBUS_SERVICE_PATH,
-						"setPlaying");
-	dbus_message_append_args (message, DBUS_TYPE_BOOLEAN, !playing, DBUS_TYPE_INVALID);
-	dbus_connection_send (dbus->priv->connection, message, NULL);
-	dbus_message_unref (message);
-
-out:
-	dbus_error_free (&error);
-	dbus_message_unref (reply);
+	if (!(dbus_g_proxy_call (dbus->priv->rb_proxy, "setPlaying", &error,
+				 G_TYPE_BOOLEAN, !playing,
+				 G_TYPE_INVALID,
+				 G_TYPE_INVALID)))
+		return;
 }
 
 static long
 rb_remote_dbus_client_get_playing_time_impl (RBRemoteClientProxy *proxy)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	DBusMessage *reply;
-	DBusError error;
-	dbus_int64_t playing_time;
+	guint64 playing_time;
+	GError *error = NULL;
 	
-	reply = invoke_noarg_method (dbus->priv->connection, "getPlayingTime", TRUE);
-	if (!reply)
+	if (!(dbus_g_proxy_call (dbus->priv->rb_proxy, "getPlayingTime", &error,
+				 G_TYPE_INVALID, G_TYPE_UINT64, &playing_time,
+				 G_TYPE_INVALID)))
 		return -1;
-	playing_time = FALSE;
-	dbus_error_init (&error);
-	if (!dbus_message_get_args (reply, &error,
-				    DBUS_TYPE_INT64, &playing_time,
-				    DBUS_TYPE_INVALID)) {
-		g_warning ("Couldn't parse arguments");
-	}
-
-	dbus_error_free (&error);
-	dbus_message_unref (reply);
 	return (long) playing_time;
 }
 
@@ -453,17 +271,7 @@ static void
 rb_remote_dbus_client_set_playing_time_impl (RBRemoteClientProxy *proxy, long time)
 {
 	RBRemoteDBus *dbus = RB_REMOTE_DBUS (proxy);
-	DBusMessage *message;
-	DBusError error;
 
-	dbus_error_init (&error);
-	message = dbus_message_new_method_call (RB_REMOTE_DBUS_SERVICE_PATH,
-						RB_REMOTE_DBUS_OBJECT_PATH,
-						RB_REMOTE_DBUS_SERVICE_PATH,
-						"setPlayingTime");
-	dbus_message_append_args (message, DBUS_TYPE_INT64, time, DBUS_TYPE_INVALID);
-	dbus_connection_send (dbus->priv->connection, message, NULL);
-	dbus_message_unref (message);
-	dbus_error_free (&error);
+	dbus_g_proxy_call_no_reply (dbus->priv->rb_proxy, "setPlayingTime", G_TYPE_UINT64, time, G_TYPE_INVALID);
 }
 

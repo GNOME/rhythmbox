@@ -356,7 +356,7 @@ buffering_cb (GstElement *element, gint progress, RBPlayer *mp)
 	g_idle_add ((GSourceFunc) emit_signal_idle, signal);
 }
 
-static void
+static gboolean
 rb_player_construct (RBPlayer *mp, GError **error)
 {
 	char *element_name = NULL;
@@ -393,7 +393,7 @@ rb_player_construct (RBPlayer *mp, GError **error)
 			     RB_PLAYER_ERROR_NO_AUDIO,
 			     _("Could not create audio output element; check your settings"));
 		rb_player_gst_free_playbin (mp);
-		return;
+		return FALSE;
 	}
 
 	g_object_set (G_OBJECT (mp->priv->playbin), "audio-sink", sink, NULL);
@@ -407,7 +407,7 @@ rb_player_construct (RBPlayer *mp, GError **error)
 	rb_player_set_volume (mp, mp->priv->cur_volume);
 
 	rb_debug ("pipeline construction complete");
-	return;
+	return TRUE;
 missing_element:
 	{
 		char *err = g_strdup_printf (_("Failed to create %s element; check your installation"),
@@ -418,6 +418,7 @@ missing_element:
 			     err);
 		g_free (err);
 		rb_player_gst_free_playbin (mp);
+		return FALSE;
 	}
 }
 
@@ -480,17 +481,16 @@ rb_player_sync_pipeline (RBPlayer *mp, GError **error)
 	return TRUE;
 }
 
-void
+gboolean
 rb_player_open (RBPlayer *mp,
 		const char *uri,
 		GError **error)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	if (mp->priv->playbin == NULL) {
-		rb_player_construct (mp, error);
-		if (error && *error)
-			return;
+		if (!rb_player_construct (mp, error))
+			return FALSE;
 	}
 
 	g_assert (mp->priv->playbin != NULL);
@@ -500,20 +500,22 @@ rb_player_open (RBPlayer *mp,
 
 	if (uri == NULL) {
 		mp->priv->playing = FALSE;
-		return;
+		return TRUE;
 	}
 	g_object_set (G_OBJECT (mp->priv->playbin), "uri", uri, NULL);	
 	mp->priv->uri = g_strdup (uri);
 
 	if (!rb_player_sync_pipeline (mp, error)) {
 		rb_player_close (mp, NULL);
+		return FALSE;
 	}
+	return TRUE;
 }
 
-void
+gboolean
 rb_player_close (RBPlayer *mp, GError **error)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = FALSE;
 
@@ -521,7 +523,7 @@ rb_player_close (RBPlayer *mp, GError **error)
 	mp->priv->uri = NULL;
 
 	if (mp->priv->playbin == NULL)
-		return;
+		return TRUE;
 
 	if (gst_element_set_state (mp->priv->playbin,
 				   GST_STATE_READY) != GST_STATE_SUCCESS) {
@@ -529,7 +531,9 @@ rb_player_close (RBPlayer *mp, GError **error)
 			     RB_PLAYER_ERROR,
 			     RB_PLAYER_ERROR_GENERAL,
 			     _("Failed to close audio output sink"));
+		return FALSE;
 	}
+	return TRUE;
 }
 
 gboolean
@@ -540,16 +544,16 @@ rb_player_opened (RBPlayer *mp)
 	return mp->priv->uri != NULL;
 }
 
-void
+gboolean
 rb_player_play (RBPlayer *mp, GError **error)
 {
-	g_return_if_fail (RB_IS_PLAYER (mp));
+	g_return_val_if_fail (RB_IS_PLAYER (mp), TRUE);
 
 	mp->priv->playing = TRUE;
 
-	g_return_if_fail (mp->priv->playbin != NULL);
+	g_return_val_if_fail (mp->priv->playbin != NULL, FALSE);
 
-	rb_player_sync_pipeline (mp, error);
+	return rb_player_sync_pipeline (mp, error);
 }
 
 void

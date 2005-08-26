@@ -246,10 +246,62 @@ rb_remote_bonobo_remote_client_proxy_init (RBRemoteClientProxyIface *iface)
 	iface->get_visibility = rb_remote_bonobo_client_get_visibility_impl;
 }
 
+/* hack to use a recursive mutex for gdk locking */
+static GStaticRecMutex _rb_bonobo_mutex = G_STATIC_REC_MUTEX_INIT;
+static gboolean set_lock_functions = FALSE;
+
+static void
+bonobo_lock (void)
+{
+	g_static_rec_mutex_lock (&_rb_bonobo_mutex);
+}
+
+static void
+bonobo_unlock (void)
+{
+	g_static_rec_mutex_unlock (&_rb_bonobo_mutex);
+}
+
 static void
 rb_remote_bonobo_init (RBRemoteBonobo *bonobo) 
 {
 	bonobo->priv = g_new0 (RBRemoteBonoboPrivate, 1);
+
+	/*
+	 * By default, GDK_THREADS_ENTER/GDK_THREADS_LEAVE uses a 
+	 * non-recursive mutex; this leads to deadlock, as there are
+	 * many code paths that lead to (for example) gconf operations
+	 * with the gdk lock held.  While performing these gconf operations,
+	 * ORBit will process incoming bonobo remote interface requests.
+	 * The implementations of the bonobo request handlers attempt
+	 * to acquire the gdk lock (as far as I know this is necessary, as
+	 * some operations will result in UI updates etc.); if the mutex
+	 * does not support recursive locks, this will deadlock.
+	 *
+	 * Dropping the gdk lock before all code paths that will possibly
+	 * lead to a gconf operation is way too hard (they're *everywhere*),
+	 * and unless someone can find a way of implementing the entire
+	 * remote interface without needing to acquire the gdk lock, this
+	 * is what we're stuck with.
+	 *
+	 ***
+	 *
+	 * Note: this is why CORBA sucks.  Arbitrary reentrancy is
+	 * nearly impossible to get right in an application with
+	 * significant global state (as nearly every GUI app has). The
+	 * D-BUS approach of queueing requests may lead to deadlocks,
+	 * but it's very obvious when this happens, and it's a lot
+	 * easier to debug and fix.  The above approach of making the
+	 * GDK lock recursive only partially helps; I am certain
+	 * there are code paths in Rhythmbox which are not expecting
+	 * to be reentered, particularly in RBShellPlayer.
+	 */
+	if (!set_lock_functions)
+	  {
+	    gdk_threads_set_lock_functions (G_CALLBACK (_rb_threads_lock),
+					    G_CALLBACK (_rb_threads_unlock));
+	    set_lock_functions = TRUE;
+	  }
 }
 
 static void

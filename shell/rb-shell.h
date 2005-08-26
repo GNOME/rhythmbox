@@ -57,6 +57,14 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 					 gboolean dry_run,
 					 char *rhythmdb);
 
+gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
+
+gboolean        rb_shell_load_uri       (RBShell *shell, const char *uri, gboolean play, GError **error);
+
+GObject *       rb_shell_get_player     (RBShell *shell);
+
+const char *    rb_shell_get_player_path(RBShell *shell);
+
 void            rb_shell_hidden_notify  (RBShell *shell,
 					 guint timeout,
 					 const char *primary,

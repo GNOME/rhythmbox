@@ -78,15 +78,15 @@ GType		rb_player_get_type   (void);
 
 RBPlayer *	rb_player_new        (GError **error);
 
-void		rb_player_open       (RBPlayer *mp,
+gboolean        rb_player_open       (RBPlayer *mp,
 				      const char *uri,
 				      GError **error);
 
 gboolean	rb_player_opened     (RBPlayer *mp);
 
-void		rb_player_close      (RBPlayer *mp, GError **error);
+gboolean        rb_player_close      (RBPlayer *mp, GError **error);
 
-void		rb_player_play       (RBPlayer *mp, GError **error);
+gboolean	rb_player_play       (RBPlayer *mp, GError **error);
 
 void		rb_player_pause      (RBPlayer *mp);
 

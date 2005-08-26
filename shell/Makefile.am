@@ -1,5 +1,8 @@
 ## arch-tag: Automake rules for main Rhythmbox shell
 
+BUILT_SOURCES = 
+CLEANFILES =
+
 AUTHORS.tab : $(top_srcdir)/AUTHORS
 	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/AUTHORS > $@.tmp
 	mv $@.tmp $@
@@ -77,7 +80,15 @@ rhythmbox_LDADD =					\
 if WITH_BONOBO
 rhythmbox_LDADD += $(top_builddir)/remote/bonobo/librbbonobo.la
 endif
+
 if WITH_DBUS
+rb-shell-glue.h: rb-shell.xml Makefile
+	libtool --mode=execute dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
+rb-shell-player-glue.h: rb-shell-player.xml Makefile
+	libtool --mode=execute dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
+
+BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h
+
 rhythmbox_LDADD += $(top_builddir)/remote/dbus/librbdbus.la
 endif
 
@@ -105,6 +116,8 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(DBUS_LIBS)					\
+	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE
 
 if WITH_BONOBO
@@ -117,8 +130,8 @@ if USE_CD_BURNER
 rhythmbox_LDADD += $(LIBNAUTILUS_BURN_LIBS)
 endif
 
-BUILT_SOURCES = $(tab_files)
+BUILT_SOURCES += $(tab_files)
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES += $(BUILT_SOURCES)
 
 EXTRA_DIST = dashboard.c

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.gnome.Rhythmbox.Shell">
+
+    <method name="loadURI">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_load_uri"/>
+      <arg type="s"/>
+      <arg type="b"/>
+    </method>
+
+    
+    <method name="getPlayer">
+      <arg type="o" direction="out">
+	<annotation name="org.freedesktop.DBus.GLib.ReturnVal" value=""/>
+	<annotation name="org.freedesktop.DBus.GLib.Const" value=""/>
+      </arg>
+    </method>
+
+    <method name="present">
+      <arg type="u"/>
+    </method>
+
+    <signal name="visibilityChanged"/>
+
+  </interface>
+</node>

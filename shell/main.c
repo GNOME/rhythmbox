@@ -44,17 +44,9 @@
 #include <libgda/libgda.h>
 #endif
 
-#include "rb-remote-client-proxy.h"
-#ifdef WITH_BONOBO
-#include <bonobo/bonobo-main.h>
-#include "bonobo/rb-remote-bonobo.h"
-#endif
-#ifdef WITH_DBUS
-#include "rb-remote-dbus.h"
-#endif
-
 #include "rb-refstring.h"
 #include "rb-shell.h"
+#include "rb-shell-player.h"
 #include "rb-debug.h"
 #include "rb-dialog.h"
 #include "rb-file-helpers.h"
@@ -63,6 +55,18 @@
 #include "rb-util.h"
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
+
+#include "rb-remote-client-proxy.h"
+#ifdef WITH_BONOBO
+#include <bonobo/bonobo-main.h>
+#include "bonobo/rb-remote-bonobo.h"
+#endif
+#ifdef WITH_DBUS
+#include <dbus/dbus-glib.h>
+#include "rb-shell-glue.h"
+#include "rb-shell-player-glue.h"
+#include "rb-remote-dbus.h"
+#endif
 
 static gboolean debug           = FALSE;
 static gboolean quit            = FALSE;
@@ -94,23 +98,23 @@ static gboolean toggle_mute     = FALSE;
 static gboolean toggle_hide     = FALSE;
 
 static void handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
-			    int argc, char **argv);
+			    const char **args);
 static void main_shell_weak_ref_cb (gpointer data, GObject *objptr);
 
 int
 main (int argc, char **argv)
 {
 	GnomeProgram *program;
+	DBusGConnection *session_bus;
 	RBShell *rb_shell;
 	char **new_argv;
-	GError **error;
+	GError *error = NULL;
 	RBRemoteClientProxy *client_proxy;
 	gboolean activated;
+	poptContext poptContext;
+        GValue context_as_value = { 0 };
 #ifdef WITH_BONOBO
 	RBRemoteBonobo *bonobo;
-#endif
-#ifdef WITH_DBUS
-	RBRemoteDBus *dbus;
 #endif
 
 	struct poptOption popt_options[] =
@@ -173,6 +177,10 @@ main (int argc, char **argv)
 				      GNOME_PARAM_HUMAN_READABLE_NAME, _("Rhythmbox"),
 				      GNOME_PARAM_APP_DATADIR, DATADIR,
 				      NULL);
+	g_object_get_property (G_OBJECT (program),
+                               GNOME_PARAM_POPT_CONTEXT,
+                               g_value_init (&context_as_value, G_TYPE_POINTER));
+        poptContext = g_value_get_pointer (&context_as_value);
 
 	/* Disabled because it breaks internet radio and other things -
 	 * doing synchronous calls in the main thread causes deadlock.
@@ -201,28 +209,11 @@ main (int argc, char **argv)
 	rb_debug_init (debug);
 	rb_debug ("initializing Rhythmbox %s", VERSION);
 	
-	/*
-	 * By default, GDK_THREADS_ENTER/GDK_THREADS_LEAVE uses a 
-	 * non-recursive mutex; this leads to deadlock, as there are
-	 * many code paths that lead to (for example) gconf operations
-	 * with the gdk lock held.  While performing these gconf operations,
-	 * ORBit will process incoming bonobo remote interface requests.
-	 * The implementations of the bonobo request handlers attempt
-	 * to acquire the gdk lock (as far as I know this is necessary, as
-	 * some operations will result in UI updates etc.); if the mutex
-	 * does not support recursive locks, this will deadlock.
-	 *
-	 * Dropping the gdk lock before all code paths that will possibly
-	 * lead to a gconf operation is way too hard (they're *everywhere*),
-	 * and unless someone can find a way of implementing the entire
-	 * remote interface without needing to acquire the gdk lock, this
-	 * is what we're stuck with.
-	 */
+	/* TODO: kill this function */
 	rb_threads_init ();
 
 	client_proxy = NULL;
 	activated = FALSE;
-	error = NULL;
 
 #ifdef WITH_BONOBO
 	rb_debug ("going to create Bonobo object");
@@ -236,15 +227,53 @@ main (int argc, char **argv)
 #endif
 #ifdef WITH_DBUS
 	rb_debug ("going to create DBus object");
-	dbus = rb_remote_dbus_new ();
-	if (!no_registration) {
-		if ((activated = rb_remote_dbus_activate (dbus))) {
-			rb_debug ("successfully activated DBus");
-			/* Use Bonobo if available */
-			if (!client_proxy)
-				client_proxy = RB_REMOTE_CLIENT_PROXY (dbus);
+
+	dbus_g_thread_init ();
+
+	session_bus = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
+	if (session_bus == NULL) {
+		g_critical ("couldn't connect to session bus: %s", error->message);
+		g_clear_error (&error);
+	} else {
+		guint request_name_reply;
+		DBusGProxy *bus_proxy;
+
+		bus_proxy = dbus_g_proxy_new_for_name (session_bus,
+						       "org.freedesktop.DBus",
+						       "/org/freedesktop/DBus",
+						       "org.freedesktop.DBus");
+		if (!dbus_g_proxy_call (bus_proxy,
+					"RequestName",
+					&error,
+					G_TYPE_STRING,
+					"org.gnome.Rhythmbox",
+					G_TYPE_UINT,
+					DBUS_NAME_FLAG_PROHIBIT_REPLACEMENT,
+					G_TYPE_INVALID,
+					G_TYPE_UINT,
+					&request_name_reply,
+					G_TYPE_INVALID)) {
+			g_critical ("Failed to invoke RequestName: %s",
+				    error->message);
+		}
+		g_object_unref (bus_proxy);
+
+		if (request_name_reply == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER
+		    || request_name_reply == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER) {
+			activated = FALSE;
+		} else if (request_name_reply == DBUS_REQUEST_NAME_REPLY_EXISTS) {
+			rb_debug ("Creating new dbus client proxy");
+			client_proxy = RB_REMOTE_CLIENT_PROXY (rb_remote_dbus_new ());
+			if (!rb_remote_dbus_activate (RB_REMOTE_DBUS (client_proxy)))
+				g_critical ("Couldn't activate org.gnome.Rhythmbox");
+			activated = TRUE;
+		} else {
+			g_critical ("Got unhandled reply %u from RequestName",
+				    request_name_reply);
+			activated = FALSE;
 		}
 	}
+		
 #endif
 
 	if (!activated) {
@@ -263,14 +292,12 @@ main (int argc, char **argv)
 	
 		rb_stock_icons_init ();
 	
-		rb_shell = rb_shell_new (argc, argv, TRUE,
-					 no_update, dry_run, rhythmdb_file);
-		rb_shell_construct (rb_shell);
+		rb_shell = rb_shell_new (argc, argv, TRUE, no_update, dry_run, rhythmdb_file);
 		g_object_weak_ref (G_OBJECT (rb_shell), main_shell_weak_ref_cb, NULL);
 #ifdef WITH_BONOBO
-		rb_remote_bonobo_acquire (bonobo, RB_REMOTE_PROXY (rb_shell), error);
+		rb_remote_bonobo_acquire (bonobo, RB_REMOTE_PROXY (rb_shell), &error);
 		if (error) {
-			g_warning ("error: %s", (*error)->message);
+			g_warning ("error: %s", error->message);
 		} else {
 			if (rb_remote_bonobo_activate (bonobo))
 				client_proxy = RB_REMOTE_CLIENT_PROXY (bonobo);
@@ -279,20 +306,22 @@ main (int argc, char **argv)
 		}
 #endif
 #ifdef WITH_DBUS
-		rb_remote_dbus_acquire (dbus, RB_REMOTE_PROXY (rb_shell), error);
-		if (error) {
-			g_warning ("error: %s", (*error)->message);
-		} else {
-			if (rb_remote_dbus_activate (dbus)) {
-				if (!client_proxy)
-					client_proxy = RB_REMOTE_CLIENT_PROXY (dbus);
-			} else
-				g_critical ("acquired DBus service but couldn't activate!");
+		if (session_bus != NULL) {
+			GObject *player;
+			const char *path;
+
+			dbus_g_object_type_install_info (RB_TYPE_SHELL, &dbus_glib_rb_shell_object_info);
+			
+			dbus_g_connection_register_g_object (session_bus, "/org/gnome/Rhythmbox/Shell", G_OBJECT (rb_shell));
+			dbus_g_object_type_install_info (RB_TYPE_SHELL_PLAYER, &dbus_glib_rb_shell_player_object_info);
+			player = rb_shell_get_player (rb_shell);
+			path = rb_shell_get_player_path (rb_shell);
+			dbus_g_connection_register_g_object (session_bus, path, G_OBJECT (player));
 		}
 #endif
 	}
 
-	handle_cmdline (client_proxy, activated, argc, argv);
+	handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
 
 	if (activated) {
 		gdk_notify_startup_complete ();
@@ -322,12 +351,12 @@ main (int argc, char **argv)
 }
 
 static void
-handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
-		int argc, char **argv)
+handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated, const char **args)
 {
 	gboolean grab_focus;
 	RBRemoteSong *song;
 	guint i;
+	GError *error = NULL;
 
 	grab_focus = TRUE;
 
@@ -419,13 +448,13 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated,
 	if (toggle_mute)
 		rb_remote_client_proxy_toggle_mute (proxy);
 
-	for (i = 1; i < argc; i++) {
+	for (i = 0; args && args[i]; i++) {
 		char *tmp;
 
-		tmp = rb_uri_resolve_relative (argv[i]);
+		rb_debug ("examining argument %s", args[i]);
+		tmp = rb_uri_resolve_relative (args[i]);
 			
 		if (rb_uri_exists (tmp) == TRUE) {
-			GError *error = NULL;
 			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
 			if (!utf8 && error) {
 				g_error (error->message);

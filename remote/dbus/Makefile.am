@@ -2,6 +2,7 @@
 
 noinst_LTLIBRARIES = librbdbus.la
 
+
 INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	-DDATADIR=\"$(datadir)\"			\

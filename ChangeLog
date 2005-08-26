@@ -1,3 +1,71 @@
+2005-08-25  Colin Walters  <walters@verbum.org>
+
+	* configure.ac: Require D-BUS 0.35.  Bonobo is disabled by
+	default.
+
+	* shell/rb-shell.c (rb_shell_constructor): Adapted from
+	rb_shell_construct.  This is so we only have to do g_object_new.
+	(rb_shell_get_player): New function.
+	(rb_shell_get_player_path): Ditto.
+	(rb_shell_load_uri): New function, adapted from rb_shell_load_uri_impl.
+	
+	* shell/rb-shell.h: Prototype them.
+
+	* shell/rb-shell-player.c: Add new PLAYING_CHANGED signal which we
+	export over D-BUS.
+	(reemit_playing_signal): New function.
+	(rb_shell_player_open_playlist_location): Use return values from
+	rb_player_open, rb_player_close, etc. instead of checking "error".
+	Return a gboolean on failure.
+	(rb_shell_player_open_entry): Just open entry location, don't
+	print to stderr.
+	(rb_shell_player_play): Handle retval from rb_player_play.  Return
+	a gboolean.
+	(do_next_idle): Move logic for handling of end of playlist here.
+	(rb_shell_player_set_playing_entry): Take a GError, return a
+	gboolean.  Update to use gboolean return values.
+	(rb_shell_player_do_previous): Delete lots of crazy duplicate
+	logic.  Signal an error on end of playlist.  Also signal error if
+	we're not playing.  Move heuristic for replaying the song into
+	rb_shell_player_cmd_previous.
+	(rb_shell_player_do_next_with_rating): Signal error on end of
+	playlist.
+	(rb_shell_player_do_next): Return errors.
+	(rb_shell_player_cmd_previous): Heuristic for restarting song
+	moved here; the idea is you generally only want that from the GUI.
+	(rb_shell_player_cmd_play): Handle error.
+	(rb_shell_player_playpause): Signal errors.
+	(filter_mmkeys): Use rb_shell_player_cmd_previous and
+	rb_shell_player_cmd_next in favor of the internal _do functions.
+	
+	* shell/rb-shell-player.h (enum RBShellPlayerError): Add some
+	errors.  Update prototypes for above changes.
+
+	* shell/main.c: More tightly integrate D-BUS; register various
+	major singleton objects here.  Fix handle_cmdline so we only
+	process extra arguments, not every argument.
+
+	* shell/Makefile.am: Generate D-BUS glue headers.
+
+	* remote/dbus/rb-remote-dbus.c: Move all the D-BUS service stuff
+	into shell/main.c.  Now this file just acts as a client library.
+	Not heavily tested.
+
+	* remote/bonobo/rb-remote-bonobo.c (bonobo_lock, bonobo_unlock):
+	Moved here.
+	(rb_remote_bonobo_init): Move long CORBA rant here along with
+	setting of lock functions.
+
+	* player/rb-player-gst.c (rb_player_construct)
+	(rb_player_play, rb_player_open, rb_player_close): Return gboolean
+	on error.
+
+	* player/rb-player.h: Update prototypes.
+
+	* lib/rb-util.c (_rb_threads_lock, _rb_threads_unlock): Moved to
+	rb-remote-bonobo.c.
+	(rb_threads_init): Don't set gdk lock functions here.
+
 2005-08-25  James Livingston  <jrl@ids.org.au>
 
 	Patch from Jonathan Mattnew <jonathan@kaolin.hn.org>

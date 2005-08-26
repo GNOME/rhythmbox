@@ -19,8 +19,7 @@ AC_CHECK_SIZEOF(long)
 GTK_REQS=2.5.4
 GNOME_VFS_REQS=2.6
 NCB_MIN_REQS=2.9.0
-DBUS_MIN_REQS=0.23
-DBUS_MAX_REQS=0.30
+DBUS_MIN_REQS=0.35
 HAL_MIN_REQS=0.2.92
 HAL_MAX_REQS=0.5
 TOTEM_PLPARSER_REQS=1.1.3
@@ -318,7 +317,7 @@ AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 AC_ARG_WITH(bonobo,
             AC_HELP_STRING([--with-bonobo],
 			   [Enable bonobo support]),,
-	      with_bonobo=auto)
+	      with_bonobo=no)
 if test "x$with_bonobo" != "xno"; then
 	PKG_CHECK_MODULES(BONOBO, libbonobo-2.0 >= 2.0.0, enable_bonobo=yes,
 		          enable_bonobo=no)
@@ -344,7 +343,7 @@ AC_ARG_WITH(dbus,
 			   [Enable D-BUS support]),,
 	      with_dbus=auto)
 if test "x$with_dbus" != "xno"; then
-	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS dbus-glib-1 < $DBUS_MAX_REQS, enable_dbus=yes, enable_dbus=no)
+	PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= $DBUS_MIN_REQS, enable_dbus=yes, enable_dbus=no)
         if test "x$with_dbus" = xyes && test "x$enable_dbus" = xno; then
 	   AC_MSG_ERROR([D-BUS explicitly requested but no support found])	   
 	fi

@@ -86,6 +86,8 @@
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
+static GObject *rb_shell_constructor (GType type, guint n_construct_properties,
+				      GObjectConstructParam *construct_properties);
 static void rb_shell_finalize (GObject *object);
 static void rb_shell_set_property (GObject *object,
 				   guint prop_id,
@@ -456,6 +458,7 @@ rb_shell_class_init (RBShellClass *klass)
 	object_class->set_property = rb_shell_set_property;
 	object_class->get_property = rb_shell_get_property;
         object_class->finalize = rb_shell_finalize;
+	object_class->constructor = rb_shell_constructor;
 
 	g_object_class_install_property (object_class,
 					 PROP_ARGC,
@@ -798,9 +801,13 @@ rb_shell_new (int argc, char **argv, gboolean no_registration,
 	return s;
 }
 
-void
-rb_shell_construct (RBShell *shell)
+static GObject *
+rb_shell_constructor (GType type, guint n_construct_properties,
+		      GObjectConstructParam *construct_properties)
 {
+	RBShell *shell;
+	RBShellClass *klass;
+	GObjectClass *parent_class;  
 	GtkWindow *win;
 	GtkWidget *menubar;
 	GtkWidget *vbox;
@@ -810,7 +817,12 @@ rb_shell_construct (RBShell *shell)
 	int i = 0;
 	GError *error = NULL;
 
-	g_return_if_fail (RB_IS_SHELL (shell));
+	klass = RB_SHELL_CLASS (g_type_class_peek (RB_TYPE_SHELL));
+
+	parent_class = G_OBJECT_CLASS (g_type_class_peek_parent (klass));
+
+	shell = RB_SHELL (parent_class->constructor (type, n_construct_properties,
+						      construct_properties));
 
 	rb_debug ("Constructing shell");
 
@@ -1095,6 +1107,8 @@ rb_shell_construct (RBShell *shell)
 	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
+
+	return G_OBJECT (shell);
 }
 
 static gboolean
@@ -1193,7 +1207,8 @@ source_activated_cb (RBSourceList *sourcelist,
 	/* Select the new one, and start it playing */
 	rb_shell_select_source (shell, source);
 	rb_shell_player_set_playing_source (shell->priv->player_shell, source);
-	rb_shell_player_playpause (shell->priv->player_shell, FALSE);
+	/* Ignore error from here */
+	rb_shell_player_playpause (shell->priv->player_shell, FALSE, NULL);
 }
 
 static void
@@ -2153,7 +2168,13 @@ static void
 rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 {
 	RBShell *shell = RB_SHELL (proxy);
+	rb_shell_load_uri (shell, uri, play, NULL);
+}
 
+gboolean
+rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **error)
+{
+	/* FIXME should be sync and return errors */
 	rhythmdb_add_uri (shell->priv->db, uri);
 
 	if (play) {
@@ -2168,6 +2189,20 @@ rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 		}
 		shell->priv->pending_entry = g_strdup (uri);
 	}
+
+	return TRUE;
+}
+
+GObject *
+rb_shell_get_player (RBShell *shell)
+{
+	return G_OBJECT (shell->priv->player_shell);
+}
+
+const char *
+rb_shell_get_player_path (RBShell *shell)
+{
+	return "/org/gnome/Rhythmbox/Player";
 }
 
 static void
@@ -2196,11 +2231,18 @@ rb_shell_play_uri_impl (RBRemoteProxy *proxy, const char *uri)
 	}
 }
 
+gboolean
+rb_shell_present (RBShell *shell, guint32 timestamp, GError **error)
+{
+	rb_debug ("presenting with timestamp %u", timestamp);
+	gtk_window_present_with_time (GTK_WINDOW (shell->priv->window), timestamp);
+	return TRUE;
+}
+
 static void
 rb_shell_grab_focus_impl (RBRemoteProxy *proxy)
 {
-	gtk_window_present (GTK_WINDOW (RB_SHELL (proxy)->priv->window));
-	gtk_widget_grab_focus (RB_SHELL (proxy)->priv->window);
+	rb_shell_present (RB_SHELL (proxy), gtk_get_current_event_time (), NULL);
 }
 
 static gboolean
@@ -2292,14 +2334,16 @@ static void
 rb_shell_play_impl (RBRemoteProxy *proxy)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_playpause (player, TRUE);
+	/* These interfaces are busted...need a way to signal errors */
+	rb_shell_player_playpause (player, TRUE, NULL);
 }
 
 static void
 rb_shell_pause_impl (RBRemoteProxy *proxy)
 {
 	RBShellPlayer *player = RB_SHELL (proxy)->priv->player_shell;
-	rb_shell_player_playpause (player, TRUE);
+	/* These interfaces are busted...need a way to signal errors */
+	rb_shell_player_playpause (player, TRUE, NULL);
 }
 
 static gboolean
@@ -2380,13 +2424,13 @@ rb_shell_get_song_info_impl (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSon
 static void
 rb_shell_jump_next_impl (RBRemoteProxy *proxy)
 {
-	rb_shell_player_do_next (RB_SHELL (proxy)->priv->player_shell);
+	rb_shell_player_do_next (RB_SHELL (proxy)->priv->player_shell, NULL);
 }
 
 static void
 rb_shell_jump_previous_impl (RBRemoteProxy *proxy)
 {
-	rb_shell_player_do_previous (RB_SHELL (proxy)->priv->player_shell);
+	rb_shell_player_do_previous (RB_SHELL (proxy)->priv->player_shell, NULL);
 }
 
 static void

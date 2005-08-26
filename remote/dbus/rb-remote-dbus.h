@@ -64,10 +64,6 @@ RBRemoteDBus * rb_remote_dbus_new (void);
 
 gboolean rb_remote_dbus_activate (RBRemoteDBus *bonobo);
 
-gboolean rb_remote_dbus_acquire (RBRemoteDBus *bonobo,
-				 RBRemoteProxy *proxy,
-				 GError **error);
-
 G_END_DECLS
 
 #endif /* __RB_REMOTE_DBUS_H */

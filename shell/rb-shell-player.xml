@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<node name="/">
+  <interface name="org.gnome.Rhythmbox.Player">
+
+    <method name="playPause">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_playpause"/>
+      <arg type="b"/>
+    </method>
+
+    <method name="previous">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_do_previous"/>
+    </method>
+
+    <method name="next">
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="rb_shell_player_do_next"/>
+    </method>
+
+    <!-- <property name="playing" access="readwrite"/> -->
+    <signal name="playingChanged"/>
+
+  </interface>
+</node>
