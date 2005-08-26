@@ -27,6 +27,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <string.h>
+#include <dbus/dbus-glib.h>
 
 #include "rb-debug.h"
 
@@ -39,9 +40,6 @@ G_DEFINE_TYPE_WITH_CODE(RBRemoteDBus, rb_remote_dbus, G_TYPE_OBJECT,
 static void rb_remote_dbus_dispose (GObject *object);
 static void rb_remote_dbus_finalize (GObject *object);
 
-static gboolean rb_remote_dbus_grab_focus (RBRemoteDBus *dbus, GError **error);
-static gboolean rb_remote_dbus_handle_uri (RBRemoteDBus *dbus, const char *uri, GError **error);
-
 /* Client methods */
 static void rb_remote_dbus_client_handle_uri_impl (RBRemoteClientProxy *proxy, const char *uri);
 static RBRemoteSong *rb_remote_dbus_client_get_playing_song_impl (RBRemoteClientProxy *proxy);
@@ -50,8 +48,6 @@ static void rb_remote_dbus_client_toggle_shuffle_impl (RBRemoteClientProxy *prox
 static void rb_remote_dbus_client_toggle_playing_impl (RBRemoteClientProxy *proxy);
 static long rb_remote_dbus_client_get_playing_time_impl (RBRemoteClientProxy *proxy);
 static void rb_remote_dbus_client_set_playing_time_impl (RBRemoteClientProxy *proxy, long time);
-
-#include "rb-remote-dbus-glue.h"
 
 static GObjectClass *parent_class;
 
@@ -161,20 +157,6 @@ rb_remote_dbus_activate (RBRemoteDBus *dbus)
 	return TRUE;
 }
 
-static gboolean
-rb_remote_dbus_grab_focus (RBRemoteDBus *dbus, GError **error)
-{
-	rb_remote_proxy_grab_focus (dbus->priv->proxy);
-	return TRUE;
-}
-
-static gboolean
-rb_remote_dbus_handle_uri (RBRemoteDBus *dbus, const char *uri, GError **error)
-{
-	rb_remote_proxy_load_uri (dbus->priv->proxy, uri, TRUE);
-	return TRUE;
-}
-
 static void
 rb_remote_dbus_client_handle_uri_impl (RBRemoteClientProxy *proxy, const char *uri)
 {
@@ -194,6 +176,7 @@ rb_remote_dbus_client_get_playing_song_impl (RBRemoteClientProxy *proxy)
 	if (!dbus_g_proxy_call (dbus->priv->rb_proxy, "getPlayingSong", &error, G_TYPE_INVALID,
 				dbus_g_type_get_map ("GHashTable", G_TYPE_STRING, G_TYPE_VALUE),
 				&table, G_TYPE_INVALID))
+	  return NULL;
 		
 	song = g_new0 (RBRemoteSong, 1);
 #define TAKE_STRING(key, member) \
