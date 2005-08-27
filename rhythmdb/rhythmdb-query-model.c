@@ -145,6 +145,7 @@ struct RhythmDBQueryModelPrivate
 
 	GnomeVFSFileSize max_size;
 	guint max_count;
+	guint max_time;
 
 	gboolean cancelled;
 	
@@ -178,6 +179,7 @@ enum
 	PROP_SORT_DATA_DESTROY,
 	PROP_MAX_SIZE,
 	PROP_MAX_COUNT,
+	PROP_MAX_TIME,
 };
 
 enum
@@ -255,6 +257,14 @@ rhythmdb_query_model_class_init (RhythmDBQueryModelClass *klass)
 					 g_param_spec_int ("max-count",
 							   "maxcount",
 							   "maximum count (songs)",
+							   0, G_MAXINT, 0,
+							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_MAX_TIME,
+					 g_param_spec_int ("max-time",
+							   "maxtime",
+							   "maximum time (seconds)",
 							   0, G_MAXINT, 0,
 							   G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
@@ -351,6 +361,9 @@ rhythmdb_query_model_set_property (GObject *object,
 	case PROP_MAX_COUNT:
 		model->priv->max_count = g_value_get_int (value);
 		break;
+	case PROP_MAX_TIME:
+		model->priv->max_time = g_value_get_int (value);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -387,6 +400,9 @@ rhythmdb_query_model_get_property (GObject *object,
 		break;
 	case PROP_MAX_COUNT:
 		g_value_set_int (value, model->priv->max_count);
+		break;
+	case PROP_MAX_TIME:
+		g_value_set_int (value, model->priv->max_time);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -774,7 +790,8 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 
 	/* make it fit inside the limits */
 	while ((model->priv->max_count > 0 && g_hash_table_size (model->priv->reverse_map) > model->priv->max_count) ||
-	      (model->priv->max_size > 0 && model->priv->total_size > model->priv->max_size)) {
+	      (model->priv->max_size > 0 && model->priv->total_size > model->priv->max_size) ||
+	      (model->priv->max_time > 0 && model->priv->total_duration > model->priv->max_time)) {
 
 		ptr = g_sequence_ptr_prev (g_sequence_get_end_ptr (model->priv->entries));
 		entry = (RhythmDBEntry*) g_sequence_ptr_get_data (ptr);
@@ -802,7 +819,8 @@ rhythmdb_query_model_update_limited_entries (RhythmDBQueryModel *model)
 		duration = entry->duration;
 
 		if ((model->priv->max_count > 0 && (g_hash_table_size (model->priv->reverse_map) + 1) > model->priv->max_count) ||
-		    (model->priv->max_size > 0 && model->priv->total_size + size > model->priv->max_size))
+		    (model->priv->max_size > 0 && model->priv->total_size + size > model->priv->max_size) ||
+		    (model->priv->max_time > 0 && model->priv->total_duration + duration > model->priv->max_time))
 			break;
 
 		rb_debug ("query: moving entry from limited list");

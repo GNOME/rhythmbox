@@ -48,6 +48,7 @@ typedef enum
 {
 	RB_QUERY_CREATOR_LIMIT_COUNT,
 	RB_QUERY_CREATOR_LIMIT_MB,
+	RB_QUERY_CREATOR_LIMIT_SECONDS,
 } RBQueryCreatorLimitType;	
 
 GType		rb_query_creator_get_type	(void);
@@ -55,7 +56,7 @@ GType		rb_query_creator_get_type	(void);
 GtkWidget *	rb_query_creator_new		(RhythmDB *db);
 
 GtkWidget *	rb_query_creator_new_from_query	(RhythmDB *db, GPtrArray *query,
-						 int limit_count, int limit_size,
+						 int limit_count, int limit_size, int limit_time,
 						 const char *sort_column, gint sort_direction);
 
 

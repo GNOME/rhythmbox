@@ -1,5 +1,31 @@
 2005-08-27  James Livingston  <jrl@ids.org.au>
 
+	* data/glade/create-playlist.glade:
+	* widgets/rb-query-creator.c: (rb_query_creator_load_query),
+	(rb_query_creator_new_from_query), (rb_query_creator_get_limit): Add
+	"minutes" as an option in the playlist limit menu.
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_class_init),
+	(rhythmdb_query_model_set_property),
+	(rhythmdb_query_model_get_property),
+	(rhythmdb_query_model_update_limited_entries): Allow query models to
+	have a time limit
+	
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_set_automatic_playlist),
+	(rb_playlist_manager_cmd_edit_automatic_playlist):
+	* sources/rb-playlist-source.c: (rb_playlist_source_set_query),
+	(rb_playlist_source_get_query), (impl_receive_drag),
+	(rb_playlist_source_new_from_xml),
+	(rb_playlist_source_save_to_xml),
+	(rb_playlist_source_songs_sort_order_changed_cb),
+	(rb_playlist_source_do_query):
+	* sources/rb-playlist-source.h:
+	* widgets/rb-query-creator.h: Allow playlists to be limited by time
+
+2005-08-27  James Livingston  <jrl@ids.org.au>
+
 	Patch from Jonathan Mattnew <jonathan@kaolin.hn.org>.
 
 	* configure.ac:

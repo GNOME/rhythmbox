@@ -67,6 +67,7 @@ void		rb_playlist_source_set_query	(RBPlaylistSource *source,
 						 GPtrArray *query,
 						 guint limit_count,
 						 guint limit_mb,
+						 guint limit_time,
 						 const char *sort_key,
 						 gint sort_order);
 
@@ -74,6 +75,7 @@ void		rb_playlist_source_get_query	(RBPlaylistSource *source,
 						 GPtrArray **query,
 						 guint *limit_count,
 						 guint *limit_mb,
+						 guint *limit_time,
 						 const char **sort_key,
 						 gint *sort_order);
 

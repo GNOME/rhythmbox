@@ -326,7 +326,7 @@ rb_query_creator_new (RhythmDB *db)
 
 static gboolean
 rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
-			     int limit_count, int limit_size)
+			     int limit_count, int limit_size, int limit_time)
 {
 	RBQueryCreatorPrivate *priv = QUERY_CREATOR_GET_PRIVATE (creator);
 	int i;
@@ -382,16 +382,19 @@ rb_query_creator_load_query (RBQueryCreator *creator, GPtrArray *query,
 	{
 		int limit;
 
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
-				      disjunction);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
-				      limit_count || limit_size);
-			
-	if (limit_count) {
-		gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->disjunction_check),
+					      disjunction);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->limit_check),
+					      limit_count || limit_size);
+				
+		if (limit_count > 0) {
+			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 0);
 			limit = limit_count;
+		} else if (limit_time > 0) {
+			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 3);
+			limit = limit_time / 60;
 		} else if (limit_size % 1000 == 0) {
-		gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 2);
+			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 2);
 			limit = limit_size / 1000;
 		} else {
 			gtk_option_menu_set_history (GTK_OPTION_MENU (priv->limit_option), 1);
@@ -433,7 +436,7 @@ rb_query_creator_set_sorting (RBQueryCreator *creator, const char *sort_column, 
 
 GtkWidget *
 rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
-				 int limit_count, int limit_size,
+				 int limit_count, int limit_size, int limit_time,
 				 const char *sort_column, gint sort_direction)
 {
 	RBQueryCreator *creator = g_object_new (RB_TYPE_QUERY_CREATOR, "db", db,
@@ -441,7 +444,7 @@ rb_query_creator_new_from_query (RhythmDB *db, GPtrArray *query,
 	if (!creator)
 		return NULL;
 
-	if ( !rb_query_creator_load_query (creator, query, limit_count, limit_size)
+	if ( !rb_query_creator_load_query (creator, query, limit_count, limit_size, limit_time)
 	   | !rb_query_creator_set_sorting (creator, sort_column, sort_direction)) {
 		gtk_widget_destroy (GTK_WIDGET (creator));
 		return NULL;
@@ -564,6 +567,10 @@ rb_query_creator_get_limit (RBQueryCreator *creator, RBQueryCreatorLimitType *ty
 	case 2:
 		*type = RB_QUERY_CREATOR_LIMIT_MB;
 		*limit *= 1000;
+		break;
+	case 3:
+		*type = RB_QUERY_CREATOR_LIMIT_SECONDS;
+		*limit *= 60;
 		break;
 	default:
 		g_assert_not_reached ();

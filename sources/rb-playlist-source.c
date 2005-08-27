@@ -55,6 +55,7 @@
 #define RB_PLAYLIST_INT_NAME (xmlChar *) "internal-name"
 #define RB_PLAYLIST_LIMIT_COUNT (xmlChar *) "limit-count"
 #define RB_PLAYLIST_LIMIT_SIZE (xmlChar *) "limit-size"
+#define RB_PLAYLIST_LIMIT_TIME (xmlChar *) "limit-time"
 #define RB_PLAYLIST_SORT_KEY (xmlChar *) "sort-key"
 #define RB_PLAYLIST_SORT_DIRECTION (xmlChar *) "sort-direction"
 #define RB_PLAYLIST_LIMIT (xmlChar *) "limit"
@@ -106,7 +107,8 @@ static void rb_playlist_source_add_list_uri (RBPlaylistSource *source,
 static void rb_playlist_source_do_query (RBPlaylistSource *source,
 					 GPtrArray *query,
 					 guint limit_count,
-					 guint limit_mb);
+					 guint limit_mb,
+					 guint limit_time);
 
 #define PLAYLIST_SOURCE_SONGS_POPUP_PATH "/PlaylistViewPopup"
 #define PLAYLIST_SOURCE_POPUP_PATH "/PlaylistSourcePopup"
@@ -473,6 +475,7 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 			      GPtrArray *query,
 			      guint limit_count,
 			      guint limit_mb,
+			      guint limit_time,
 			      const char *sort_key,
 			      gint sort_direction)
 {
@@ -484,7 +487,7 @@ rb_playlist_source_set_query (RBPlaylistSource *source,
 	rb_entry_view_set_columns_clickable (source->priv->songs, (limit_count == 0 && limit_mb == 0));
 	rb_entry_view_set_sorting_order (source->priv->songs, sort_key, sort_direction);
 
-	rb_playlist_source_do_query (source, query, limit_count, limit_mb);
+	rb_playlist_source_do_query (source, query, limit_count, limit_mb, limit_time);
 	rhythmdb_query_free (query);
 	source->priv->query_resetting = FALSE;
 }
@@ -494,6 +497,7 @@ rb_playlist_source_get_query (RBPlaylistSource *source,
 			      GPtrArray **query,
 			      guint *limit_count,
 			      guint *limit_mb,
+			      guint *limit_time,
 			      const char **sort_key,
 			      gint *sort_direction)
 {
@@ -502,7 +506,9 @@ rb_playlist_source_get_query (RBPlaylistSource *source,
 	g_object_get (G_OBJECT (source->priv->model),
 		      "query", query,
 		      "max-count", limit_count,
-		      "max-size", limit_mb, NULL);
+		      "max-size", limit_mb,
+		      "max-time", limit_time,
+		      NULL);
 
 	rb_entry_view_get_sorting_order (source->priv->songs, sort_key, sort_direction);
 }
@@ -659,7 +665,7 @@ impl_receive_drag (RBSource *asource, GtkSelectionData *data)
 							         RHYTHMDB_QUERY_SUBQUERY,
 							         subquery,
 							         RHYTHMDB_QUERY_END);
-			rb_playlist_source_set_query (source, query, 0, 0, NULL, 0);
+			rb_playlist_source_set_query (source, query, 0, 0, 0, NULL, 0);
 		}
 	}
 
@@ -900,8 +906,7 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 
 	if (source->priv->automatic) {
 		GPtrArray *query;
-		gint limit_count = 0;
-		gint limit_mb = 0;
+		gint limit_count = 0, limit_mb = 0, limit_time = 0;
 		gchar *sort_key = NULL;
 		gint sort_direction = 0;
 
@@ -922,6 +927,11 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 			limit_mb = atoi ((char*) tmp);
 			g_free (tmp);
 		}
+		tmp = xmlGetProp (node, RB_PLAYLIST_LIMIT_TIME);
+		if (tmp) {
+			limit_time = atoi ((char*) tmp);
+			g_free (tmp);
+		}
 
 		sort_key = (gchar*) xmlGetProp (node, RB_PLAYLIST_SORT_KEY);
 		if (sort_key && *sort_key) {
@@ -939,6 +949,7 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 		rb_playlist_source_set_query (source, query,
 					      limit_count,
 					      limit_mb,
+					      limit_time,
 					      sort_key,
 					      sort_direction);
 		g_free (sort_key);
@@ -995,21 +1006,23 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 						   &iter));
 	} else {
 		GPtrArray *query;
-		guint max_count;
-		guint max_size_mb;
+		guint max_count, max_size_mb, max_time;
 		const gchar *sort_key;
 		gint sort_direction;
 		gchar *temp_str;
 
 		rb_playlist_source_get_query (source,
 					      &query,
-					      &max_count, &max_size_mb,
+					      &max_count, &max_size_mb, &max_time,
 					      &sort_key, &sort_direction);
 		temp_str = g_strdup_printf ("%d", max_count);
 		xmlSetProp (node, RB_PLAYLIST_LIMIT_COUNT, BAD_CAST temp_str);
 		g_free (temp_str);
 		temp_str = g_strdup_printf ("%d", max_size_mb);
 		xmlSetProp (node, RB_PLAYLIST_LIMIT_SIZE, BAD_CAST temp_str);
+		g_free (temp_str);
+		temp_str = g_strdup_printf ("%d", max_time);
+		xmlSetProp (node, RB_PLAYLIST_LIMIT_TIME, BAD_CAST temp_str);
 		g_free (temp_str);
 
 		if (sort_key && *sort_key) {
@@ -1029,8 +1042,7 @@ static void
 rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBPlaylistSource *source)
 {
 	GPtrArray *query;
-	guint limit_count;
-	guint limit_mb;
+	guint limit_count, limit_mb, limit_time;
 
 	g_assert (source->priv->automatic);
 
@@ -1044,9 +1056,10 @@ rb_playlist_source_songs_sort_order_changed_cb (RBEntryView *view, RBPlaylistSou
 		      "query", &query,
 		      "max-count", &limit_count,
 		      "max-size", &limit_mb,
+		      "max-size", &limit_time,
 		      NULL);
 
-	rb_playlist_source_do_query (source, query, limit_count, limit_mb);
+	rb_playlist_source_do_query (source, query, limit_count, limit_mb, limit_time);
 	rhythmdb_query_free (query);
 }
 
@@ -1054,7 +1067,8 @@ static void
 rb_playlist_source_do_query (RBPlaylistSource *source,
 			      GPtrArray *query,
 			      guint limit_count,
-			      guint limit_mb)
+			      guint limit_mb,
+			      guint limit_time)
 {
 	g_assert (source->priv->automatic);
 
@@ -1062,6 +1076,7 @@ rb_playlist_source_do_query (RBPlaylistSource *source,
 				    "db", source->priv->db,
 				    "max-count", limit_count,
 				    "max-size", limit_mb, 
+				    "max-time", limit_time, 
 				    NULL);
 
 	rb_entry_view_set_model (source->priv->songs, source->priv->model);
