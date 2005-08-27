@@ -328,6 +328,9 @@ if test "x$with_dbus" != "xno"; then
 		AC_DEFINE(WITH_DBUS, 1, [Define if D-BUS is enabled])	   
 		DBUS_CFLAGS="$DBUS_CFLAGS -DDBUS_API_SUBJECT_TO_CHANGE"
 		AC_MSG_RESULT([we're getting on D-BUS])
+
+		DBUS_GLIB_BIN="`$PKG_CONFIG --variable=exec_prefix dbus-glib-1`/bin"
+		AC_SUBST(DBUS_GLIB_BIN)
 	else
 		AC_MSG_RESULT([not found])
 	fi

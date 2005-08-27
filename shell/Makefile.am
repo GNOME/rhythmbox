@@ -83,9 +83,9 @@ endif
 
 if WITH_DBUS
 rb-shell-glue.h: rb-shell.xml Makefile
-	libtool --mode=execute dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
+	libtool --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell --mode=glib-server --output=$@ $<
 rb-shell-player-glue.h: rb-shell-player.xml Makefile
-	libtool --mode=execute dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
+	libtool --mode=execute $(DBUS_GLIB_BIN)/dbus-binding-tool --prefix=rb_shell_player --mode=glib-server --output=$@ $<
 
 BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h
 
