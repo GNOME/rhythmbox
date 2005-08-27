@@ -937,17 +937,20 @@ rb_entry_view_duration_cell_data_func (GtkTreeViewColumn *column, GtkCellRendere
 {
 	RhythmDBEntry *entry;
 	char *str;
-	int minutes, seconds;
+	int hours, minutes, seconds;
 
 	entry = entry_from_tree_iter (data->view, iter);
 
-	minutes = entry->duration / 60;
+	hours = entry->duration / (60 * 60);
+	minutes = (entry->duration - (hours * 60 * 60)) / 60;
 	seconds = entry->duration % 60;
 
-	if (minutes == 0 && seconds == 0)
+	if (hours == 0 && minutes == 0 && seconds == 0)
 		str = g_strdup (_("Unknown"));
-	else
+	else if (hours == 0)
 		str = g_strdup_printf (_("%d:%02d"), minutes, seconds);
+	else
+		str = g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
 
 	g_object_set (G_OBJECT (renderer), "text", str, NULL);
 

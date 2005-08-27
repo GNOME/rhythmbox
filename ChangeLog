@@ -1,3 +1,11 @@
+2005-08-28  James Livingston  <jrl@ids.org.au>
+
+	Patch from Jonathan Mattnew <jonathan@kaolin.hn.org>
+
+	* widgets/rb-entry-view.c: (rb_entry_view_duration_cell_data_func):
+	* widgets/rb-header.c: (rb_header_get_elapsed_string): Display hours
+	is a song is longer than 60 minutes. Closes bug 313311.
+
 2005-08-27  James Livingston  <jrl@ids.org.au>
 
 	* data/glade/create-playlist.glade:

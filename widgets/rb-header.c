@@ -835,29 +835,49 @@ slider_changed_callback (GtkWidget *widget,
 char *
 rb_header_get_elapsed_string (RBHeader *player)
 {
-	int seconds = 0, minutes = 0, seconds2 = -1, minutes2 = -1;
+	int seconds = 0, minutes = 0, hours = 0, seconds2 = -1, minutes2 = -1, hours2 = -1;
 
 	if (player->priv->state->elapsed > 0) {
-		minutes = player->priv->state->elapsed / 60;
+		hours = player->priv->state->elapsed / (60 * 60);
+		minutes = (player->priv->state->elapsed - (hours * 60 * 60)) / 60;
 		seconds = player->priv->state->elapsed % 60;
 	}
 
 	if (player->priv->state->duration > 0) {
-		minutes2 = player->priv->state->duration / 60;
+		hours2 = player->priv->state->duration / (60 * 60);
+		minutes2 = (player->priv->state->duration - (hours2 * 60 * 60)) / 60;
 		seconds2 = player->priv->state->duration % 60;
 		if (eel_gconf_get_boolean (CONF_UI_TIME_DISPLAY)) {
-			return g_strdup_printf (_("%d:%02d of %d:%02d"), minutes, seconds, minutes2, seconds2);
+			if (hours == 0 && hours2 == 0)
+				return g_strdup_printf (_("%d:%02d of %d:%02d"),
+							minutes, seconds,
+							minutes2, seconds2);
+			else
+				return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d"),
+							hours, minutes, seconds,
+							hours2, minutes2, seconds2);
 		} else {
 			int remaining = player->priv->state->duration - player->priv->state->elapsed;
-			int remaining_minutes = remaining / 60;
+			int remaining_hours = remaining / (60 * 60);
+			int remaining_minutes = (remaining - (remaining_hours * 60 * 60)) / 60;
 			/* remaining could conceivably be negative. This would
 			 * be a bug, but the elapsed time will display right
 			 * with the abs(). */
 			int remaining_seconds = abs (remaining % 60);
-			return g_strdup_printf (_("%d:%02d of %d:%02d remaining"), remaining_minutes, remaining_seconds, minutes2, seconds2);
+			if (hours2 == 0)
+				return g_strdup_printf (_("%d:%02d of %d:%02d remaining"),
+							remaining_minutes, remaining_seconds,
+							minutes2, seconds2);
+			else
+				return g_strdup_printf (_("%d:%02d:%02d of %d:%02d:%02d remaining"),
+							remaining_hours, remaining_minutes, remaining_seconds,
+							hours2, minutes2, seconds2);
 		}
 	} else {
-		return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+		if (hours == 0)
+			return g_strdup_printf (_("%d:%02d"), minutes, seconds);
+		else
+			return g_strdup_printf (_("%d:%02d:%02d"), hours, minutes, seconds);
 	}
 }
 
