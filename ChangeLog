@@ -1,5 +1,17 @@
 2005-08-28  Colin Walters  <walters@verbum.org>
 
+	* data/org.gnome.Rhythmbox.service.in: New.
+
+	* data/Makefile.am: Install service file.
+
+	* configure.ac: Define DBUS_SERVICES_DIR.
+
+	* autogen.sh: Set ACLOCAL_FLAGS.
+
+	* macros/acinclude.m4: New.
+	
+2005-08-28  Colin Walters  <walters@verbum.org>
+
 	Initial patch from Jonathan Matthew; closes 313684.
 
 	* rhythmdb/rhythmdb-tree.c:

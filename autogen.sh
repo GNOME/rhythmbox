@@ -17,4 +17,5 @@ which gnome-autogen.sh || {
 	exit 1
 }
 
+ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I macros"
 REQUIRED_AUTOMAKE_VERSION=1.7 USE_GNOME2_MACROS=1 . gnome-autogen.sh

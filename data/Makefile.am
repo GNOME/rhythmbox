@@ -37,6 +37,15 @@ rhythmbox.keys: generate-keys.sh rhythmbox.applications
 	$(srcdir)/generate-keys.sh $(srcdir)/rhythmbox.applications \
 	> rhythmbox.keys
 
+# Dbus service file
+servicedir = $(DBUS_SERVICES_DIR)
+service_in_files = org.gnome.Rhythmbox.service.in
+service_DATA = $(service_in_files:.service.in=.service)
+
+# Rule to make the service file with bindir expanded
+$(service_DATA): $(service_in_files) Makefile
+	@sed -e "s|\@bindir\@|$(bindir)|" $< > $@
+
 if GCONF_SCHEMAS_INSTALL
 install-data-local: $(schema_DATA)
 	GCONF_CONFIG_SOURCE=$(GCONF_SCHEMA_CONFIG_SOURCE) $(GCONFTOOL) --makefile-install-rule $(srcdir)/$(schema_DATA);
