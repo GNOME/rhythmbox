@@ -68,6 +68,7 @@ typedef struct
 	void (*duration_changed) (RBShellPlayer *player, const char *duration);
 	void (*playing_changed) (RBShellPlayer *player, gboolean playing);
 	void (*playing_source_changed) (RBShellPlayer *player, RBSource *source);
+	void (*playing_uri_changed) (RBShellPlayer *player, const char *uri);
 	void (*playing_song_changed) (RBShellPlayer *player, RhythmDBEntry *entry);
 } RBShellPlayerClass;
 

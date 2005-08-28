@@ -35,6 +35,15 @@ G_BEGIN_DECLS
 #define RB_IS_SHELL_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_SHELL))
 #define RB_SHELL_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_SHELL, RBShellClass))
 
+typedef enum
+{
+	RB_SHELL_ERROR_NO_SUCH_URI
+} RBShellError;
+
+#define RB_SHELL_ERROR rb_shell_error_quark ()
+
+GQuark rb_shell_error_quark (void);
+
 typedef struct RBShellPrivate RBShellPrivate;
 
 typedef struct
@@ -64,6 +73,11 @@ gboolean        rb_shell_load_uri       (RBShell *shell, const char *uri, gboole
 GObject *       rb_shell_get_player     (RBShell *shell);
 
 const char *    rb_shell_get_player_path(RBShell *shell);
+
+gboolean        rb_shell_get_song_properties (RBShell *shell,
+					      const char *uri,
+					      GHashTable **properties,
+					      GError **error);
 
 void            rb_shell_hidden_notify  (RBShell *shell,
 					 guint timeout,

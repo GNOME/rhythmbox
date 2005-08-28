@@ -254,6 +254,7 @@ enum
 	PLAYING_SOURCE_CHANGED,
 	PLAYING_CHANGED,
 	PLAYING_SONG_CHANGED,
+	PLAYING_URI_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -467,6 +468,17 @@ rb_shell_player_class_init (RBShellPlayerClass *klass)
 			      G_TYPE_NONE,
 			      1,
 			      G_TYPE_POINTER);
+
+	rb_shell_player_signals[PLAYING_URI_CHANGED] =
+		g_signal_new ("playing-uri-changed",
+			      G_OBJECT_CLASS_TYPE (object_class),
+			      G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (RBShellPlayerClass, playing_uri_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__STRING,
+			      G_TYPE_NONE,
+			      1,
+			      G_TYPE_STRING);
 }
 
 static GObject *
@@ -1119,6 +1131,9 @@ rb_shell_player_set_playing_entry (RBShellPlayer *player, RhythmDBEntry *entry, 
 	g_signal_emit (G_OBJECT (player),
 		       rb_shell_player_signals[PLAYING_SONG_CHANGED], 0,
 		       entry);
+	g_signal_emit (G_OBJECT (player),
+		       rb_shell_player_signals[PLAYING_URI_CHANGED], 0,
+		       entry->location);
 
 	rb_shell_player_sync_with_source (player);
 	rb_shell_player_sync_buttons (player);

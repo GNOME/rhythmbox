@@ -8,7 +8,6 @@
       <arg type="s"/>
       <arg type="b"/>
     </method>
-
     
     <method name="getPlayer">
       <arg type="o" direction="out">
@@ -19,6 +18,11 @@
 
     <method name="present">
       <arg type="u"/>
+    </method>
+
+    <method name="getSongProperties">
+      <arg type="s" name="uri"/>
+      <arg type="a{sv}" direction="out"/>
     </method>
 
     <signal name="visibilityChanged"/>

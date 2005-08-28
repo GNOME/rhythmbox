@@ -177,6 +177,7 @@ typedef struct {
 	GValue new;
 } RhythmDBEntryChange;
 
+void rhythmdb_entry_get (RhythmDBEntry *entry, RhythmDBPropType propid, GValue *val);
 G_INLINE_FUNC const char *rhythmdb_entry_get_string	(RhythmDBEntry *entry, RhythmDBPropType propid);
 G_INLINE_FUNC gboolean rhythmdb_entry_get_boolean	(RhythmDBEntry *entry, RhythmDBPropType propid);
 G_INLINE_FUNC guint64 rhythmdb_entry_get_uint64		(RhythmDBEntry *entry, RhythmDBPropType propid);

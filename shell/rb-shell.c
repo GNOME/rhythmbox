@@ -2119,6 +2119,16 @@ session_die_cb (GnomeClient *client,
         rb_shell_quit (shell);
 }
 
+GQuark
+rb_shell_error_quark (void)
+{
+	static GQuark quark = 0;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_shell_error");
+
+	return quark;
+}
+
 static gboolean
 save_yourself_cb (GnomeClient *client, 
                   gint phase,
@@ -2421,6 +2431,58 @@ rb_shell_get_song_info_impl (RBRemoteProxy *proxy, const gchar *uri, RBRemoteSon
 	song->track_peak = entry->track_peak;
 	song->album_gain = entry->album_gain;
 	song->album_peak = entry->album_peak;
+
+	return TRUE;
+}
+
+static void
+unset_and_free_g_value (gpointer valpointer)
+{
+	GValue *value = valpointer;
+	g_value_unset (value);
+	g_free (value);
+}
+
+gboolean
+rb_shell_get_song_properties (RBShell *shell,
+			      const char *uri,
+			      GHashTable **properties,
+			      GError **error)
+{
+	RhythmDBEntry *entry;
+	GEnumClass *klass;
+	guint i;
+	
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+	if (entry == NULL) {
+		g_set_error (error,
+			     RB_SHELL_ERROR,
+			     RB_SHELL_ERROR_NO_SUCH_URI,
+			     _("Unknown song URI: %s"),
+			     uri);
+		return FALSE;
+	}
+
+	*properties = g_hash_table_new_full (g_str_hash, g_str_equal,
+					     NULL,
+					     unset_and_free_g_value);
+
+	klass = g_type_class_ref (RHYTHMDB_TYPE_PROP);
+	for (i = 0; i < klass->n_values; i++) {
+		GValue *value;
+		gint prop;
+
+		prop = klass->values[i].value;
+
+		value = g_new0 (GValue, 1);
+		g_value_init (value, rhythmdb_get_property_type (shell->priv->db, prop));
+		rhythmdb_entry_get (entry, prop, value);
+		g_hash_table_insert (*properties,
+				     (gpointer) rhythmdb_nice_elt_name_from_propid (shell->priv->db, prop),
+				     value);
+	}
+	g_type_class_unref (klass);
 
 	return TRUE;
 }

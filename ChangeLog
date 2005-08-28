@@ -1,5 +1,20 @@
 2005-08-28  Colin Walters  <walters@verbum.org>
 
+	* rhythmdb/rhythmdb.c (rhythmdb_entry_get): 
+	* rhythmdb/rhythmdb.h: Make rhythmdb_entry_get public.
+
+	* shell/rb-shell-player.h:
+	* shell/rb-shell-player.c: Add playing-uri-changed signal.
+	* shell/rb-shell-player.xml: Export it.
+
+	* shell/rb-shell.c (rb_shell_get_song_properties): New function.
+	(rb_shell_error_quark): New.
+
+	* shell/rb-shell.h: Prototype.  Also add RBShellError.
+	* shell/rb-shell.xml: Export rb_shell_get_song_properties.
+	
+2005-08-28  Colin Walters  <walters@verbum.org>
+
 	* remote/bonobo/rb-remote-bonobo.c (rb_bonobo_workaround_lock)
 	(rb_bonobo_workaround_unlock): Renamed from bonobo_lock and
 	bonobo_unlock.

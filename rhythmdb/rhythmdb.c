@@ -1626,7 +1626,7 @@ error:
 	event->vfsinfo = NULL;
 }
 
-static void
+void
 rhythmdb_entry_get (RhythmDBEntry *entry, 
 		    RhythmDBPropType propid, GValue *val)
 {
