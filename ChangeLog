@@ -1,5 +1,16 @@
 2005-08-28  Colin Walters  <walters@verbum.org>
 
+	Initial patch from Jonathan Matthew; closes 313684.
+
+	* rhythmdb/rhythmdb-tree.c:
+	(RHYTHMDB_FWRITE, RHYTHMDB_FPUTC): Handle errors.
+	(save_entry): Return on error.
+	(rhythmdb_tree_save): Handle error when saving the
+	db; additionally, handle errors from fclose and unlink,
+	and print error too.
+
+2005-08-28  Colin Walters  <walters@verbum.org>
+
 	* sources/Makefile.am (libsourcesimpl_la_LIBADD): Fix
 	extra _.
 	

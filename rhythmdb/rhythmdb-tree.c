@@ -29,6 +29,7 @@
 #endif
 #include <unistd.h>
 #include <stdlib.h>
+#include <errno.h>
 #include <string.h>
 #include <glib/gprintf.h>
 #include <glib/gatomic.h>
@@ -485,6 +486,7 @@ struct RhythmDBTreeSaveContext
 {
 	RhythmDBTree *db;
 	FILE *handle;
+	char *error;
 };
 
 #ifdef HAVE_GNU_FWRITE_UNLOCKED
@@ -495,40 +497,38 @@ struct RhythmDBTreeSaveContext
 #define RHYTHMDB_FPUTC_REAL fputc
 #endif
 
-#define RHYTHMDB_FWRITE(w,x,len,handle) {				\
-	int ret;							\
-	ret = RHYTHMDB_FWRITE_REAL (w,x,len,handle);			\
-	if (ferror (handle) != 0) {					\
-		g_warning ("Writing to the database failed");		\
-		clearerr (handle);					\
+#define RHYTHMDB_FWRITE(w,x,len,handle,error) do {			\
+	if (error == NULL) {						\
+		if (RHYTHMDB_FWRITE_REAL (w,x,len,handle) != len) {	\
+			error = g_strdup (g_strerror (errno));		\
+		}							\
 	}								\
-}
+} while (0)
 
-#define RHYTHMDB_FPUTC(x,handle) {					\
-	int ret;							\
-	ret = RHYTHMDB_FPUTC_REAL (x,handle);				\
-	if (ferror (handle) != 0) {					\
-		g_warning ("Writing to the database failed");		\
-		clearerr (handle);					\
+#define RHYTHMDB_FPUTC(x,handle,error) do {				\
+	if (error == NULL) {						\
+		if (RHYTHMDB_FPUTC_REAL (x,handle) == EOF) {		\
+			error = g_strdup (g_strerror (errno));		\
+		}							\
 	}								\
-}
+} while (0)
 
-#define RHYTHMDB_FWRITE_STATICSTR(STR, HANDLE) (RHYTHMDB_FWRITE(STR, 1, sizeof(STR)-1, HANDLE))
+#define RHYTHMDB_FWRITE_STATICSTR(STR, HANDLE, ERROR) RHYTHMDB_FWRITE(STR, 1, sizeof(STR)-1, HANDLE, ERROR)
 
 static void
 write_elt_name_open (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
 {
-	RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle);
-	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle);
-	RHYTHMDB_FPUTC ('>', ctx->handle);
+	RHYTHMDB_FWRITE_STATICSTR ("    <", ctx->handle, ctx->error);
+	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle, ctx->error);
+	RHYTHMDB_FPUTC ('>', ctx->handle, ctx->error);
 }
 
 static void
 write_elt_name_close (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name)
 {
-	RHYTHMDB_FWRITE_STATICSTR ("</", ctx->handle);
-	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle);
-	RHYTHMDB_FWRITE_STATICSTR (">\n", ctx->handle);
+	RHYTHMDB_FWRITE_STATICSTR ("</", ctx->handle, ctx->error);
+	RHYTHMDB_FWRITE (elt_name, 1, xmlStrlen (elt_name), ctx->handle, ctx->error);
+	RHYTHMDB_FWRITE_STATICSTR (">\n", ctx->handle, ctx->error);
 }
 
 static void
@@ -540,7 +540,7 @@ save_entry_string (struct RhythmDBTreeSaveContext *ctx,
 	g_return_if_fail (str != NULL);
 	write_elt_name_open (ctx, elt_name);
 	encoded	= xmlEncodeEntitiesReentrant (NULL, BAD_CAST str);
-	RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle);
+	RHYTHMDB_FWRITE (encoded, 1, xmlStrlen (encoded), ctx->handle, ctx->error);
 	g_free (encoded);
 	write_elt_name_close (ctx, elt_name);
 }
@@ -554,7 +554,7 @@ save_entry_int (struct RhythmDBTreeSaveContext *ctx,
 		return;
 	write_elt_name_open (ctx, elt_name);
 	g_snprintf (buf, sizeof (buf), "%d", num);
-	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle);
+	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle, ctx->error);
 	write_elt_name_close (ctx, elt_name);
 }
 
@@ -567,7 +567,7 @@ save_entry_ulong (struct RhythmDBTreeSaveContext *ctx,
 		return;
 	write_elt_name_open (ctx, elt_name);
 	g_snprintf (buf, sizeof (buf), "%lu", num);
-	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle);
+	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle, ctx->error);
 	write_elt_name_close (ctx, elt_name);
 }
 
@@ -582,7 +582,7 @@ save_entry_uint64 (struct RhythmDBTreeSaveContext *ctx, const xmlChar *elt_name,
 
 	write_elt_name_open (ctx, elt_name);
 	g_snprintf (buf, sizeof (buf), "%" G_GUINT64_FORMAT, num);
-	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle);
+	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle, ctx->error);
 	write_elt_name_close (ctx, elt_name);
 }
 
@@ -597,7 +597,7 @@ save_entry_double (struct RhythmDBTreeSaveContext *ctx,
 
 	write_elt_name_open (ctx, elt_name);
 	g_snprintf (buf, sizeof (buf), "%f", num);
-	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle);
+	RHYTHMDB_FWRITE (buf, 1, strlen (buf), ctx->handle, ctx->error);
 	write_elt_name_close (ctx, elt_name);
 }
 
@@ -609,19 +609,27 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 {
 	RhythmDBPropType i;
 
-	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle);
+	if (ctx->error)
+		return;
+
+	RHYTHMDB_FWRITE_STATICSTR ("  <entry type=\"", ctx->handle, ctx->error);
+
 	if (entry->type == RHYTHMDB_ENTRY_TYPE_SONG) {
-		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle);
+		RHYTHMDB_FWRITE_STATICSTR ("song", ctx->handle, ctx->error);
 	} else if (entry->type == RHYTHMDB_ENTRY_TYPE_IRADIO_STATION) {
-		RHYTHMDB_FWRITE_STATICSTR ("iradio", ctx->handle);
+		RHYTHMDB_FWRITE_STATICSTR ("iradio", ctx->handle, ctx->error);
 	} else
 		g_assert_not_reached ();
-	RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle);
+
+	RHYTHMDB_FWRITE_STATICSTR ("\">\n", ctx->handle, ctx->error);
 		
 	/* Skip over the first property - the type */
 	for (i = 1; i < RHYTHMDB_NUM_PROPERTIES; i++) {
 		const xmlChar *elt_name;
 
+		if (ctx->error)
+			return;
+		
 		elt_name = rhythmdb_nice_elt_name_from_propid ((RhythmDB *) ctx->db, i);
 
 		switch (i)
@@ -716,12 +724,8 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		}
 	}
-	RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle);
 
-#undef RHYTHMDB_FWRITE_ENCODED_STR
-#undef RHYTHMDB_FWRITE_STATICSTR
-#undef RHYTHMDB_FPUTC
-#undef RHYTHMDB_FWRITE
+	RHYTHMDB_FWRITE_STATICSTR ("  </entry>\n", ctx->handle, ctx->error);
 }
 
 static void
@@ -731,9 +735,7 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	char *name;
 	GString *savepath;
 	FILE *f;
-	struct RhythmDBTreeSaveContext *ctx;
-
-	ctx = g_new0 (struct RhythmDBTreeSaveContext, 1);
+	struct RhythmDBTreeSaveContext ctx;
 
 	g_object_get (G_OBJECT (db), "name", &name, NULL);
 
@@ -743,34 +745,57 @@ rhythmdb_tree_save (RhythmDB *rdb)
 	f = fopen (savepath->str, "w");
 
 	if (!f) {
-		g_warning ("Can't save XML");
+		g_critical ("Can't save XML: %s", g_strerror (errno));
 		goto out;
 	}
 
-	fprintf (f, "%s\n%s\n", "<?xml version=\"1.0\" standalone=\"yes\"?>",
-		 "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">");
-
-	ctx->db = db;
-	ctx->handle = f;
+	ctx.db = db;
+	ctx.handle = f;
+	ctx.error = NULL;
+	RHYTHMDB_FWRITE_STATICSTR ("<?xml version=\"1.0\" standalone=\"yes\"?>\n"
+				   "<rhythmdb version=\"" RHYTHMDB_TREE_XML_VERSION "\">", 
+				   ctx.handle, ctx.error);
 
 	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_SONG, 
 				    (RBTreeEntryItFunc)save_entry, 
-				    NULL, NULL, NULL, ctx);
+				    NULL, NULL, NULL, &ctx);
 	rhythmdb_hash_tree_foreach (rdb, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION, 
 				    (RBTreeEntryItFunc)save_entry, 
-				    NULL, NULL, NULL, ctx);
+				    NULL, NULL, NULL, &ctx);
 
-	fprintf (f, "%s\n", "</rhythmdb>");
+	RHYTHMDB_FWRITE_STATICSTR ("</rhythmdb>\n", ctx.handle, ctx.error);
 
-	fclose (f);
+	if (fclose (f) < 0) {
+		g_critical ("Couldn't close %s: %s",
+			    savepath->str,
+			    g_strerror (errno));
+		unlink (savepath->str);
+		goto out;
+	}
 
-	rename (savepath->str, name);
+	if (ctx.error != NULL) {
+		g_critical ("Writing to the database failed: %s", ctx.error);
+		g_free (ctx.error);
+		unlink (savepath->str);
+	} else {
+		if (rename (savepath->str, name) < 0) {
+			g_critical ("Couldn't rename %s to %s: %s",
+				    name, savepath->str,
+				    g_strerror (errno));
+			unlink (savepath->str);
+		}
+	}
+
 out:
 	g_string_free (savepath, TRUE);
 	g_free (name);
-
-	g_free (ctx);
+	return;
 }
+
+#undef RHYTHMDB_FWRITE_ENCODED_STR
+#undef RHYTHMDB_FWRITE_STATICSTR
+#undef RHYTHMDB_FPUTC
+#undef RHYTHMDB_FWRITE
 
 RhythmDB *
 rhythmdb_tree_new (const char *name)
