@@ -49,7 +49,7 @@ libsourcesimpl_la_SOURCES +=         \
 	itunesdb.c		     \
 	itunesdb.h
 INCLUDES += $(HAL_CFLAGS)
-libsources_impl_la_LIBADD += $(HAL_LIBS)
+libsourcesimpl_la_LIBADD += $(HAL_LIBS)
 endif
 
 if USE_CD_BURNER
