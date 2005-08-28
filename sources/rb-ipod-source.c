@@ -20,6 +20,10 @@
  */
 
 #include <config.h>
+#if defined(HAVE_HAL_0_5) || defined(HAVE_HAL_0_2)
+#define HAVE_HAL 1
+#endif
+
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkicontheme.h>
@@ -29,7 +33,7 @@
 #include <libgnome/gnome-i18n.h>
 #ifdef HAVE_HAL
 #include <libhal.h>
-#include <dbus/dbus-glib.h>
+#include <dbus/dbus.h>
 #endif
 #include <libgnomevfs/gnome-vfs-volume.h>
 #include <libgnomevfs/gnome-vfs-volume-monitor.h>
@@ -286,7 +290,7 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 	g_assert (source->priv->parser != NULL);
 
 	for (i = 0; i < MAX_SONGS_LOADED_AT_ONCE; i++) {
-		gchar *pc_path;
+		gchar *pc_path, *pc_vfs_path;
 		gchar *mount_path;
 		iPodItem *item;
 		iPodSong *song;
@@ -304,10 +308,12 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 		/* Set URI */
 		mount_path = source->priv->ipod_mount_path;
 		pc_path = itunesdb_get_track_name_on_ipod (mount_path, song);
+		pc_vfs_path = g_strdup_printf ("file://%s", pc_path);
+		g_free (pc_path);
 		entry = rhythmdb_entry_new (RHYTHMDB (db), 
 					    RHYTHMDB_ENTRY_TYPE_IPOD,
-					    pc_path);
-		g_free (pc_path);
+					    pc_vfs_path);
+		g_free (pc_vfs_path);
 
 		rb_debug ("Adding %s from iPod", pc_path);
 
@@ -575,7 +581,55 @@ rb_ipod_volume_unmounted_cb (GnomeVFSVolumeMonitor *monitor,
 }
 
 
-#ifdef HAVE_HAL
+#ifdef HAVE_HAL_0_5
+
+static gboolean
+hal_udi_is_ipod (const char *udi)
+{
+	LibHalContext *ctx;
+	DBusConnection *conn;
+	char *parent_udi, *parent_name;
+	gboolean result;
+	DBusError error;
+
+	result = FALSE;
+	dbus_error_init (&error);
+	conn = NULL;
+	ctx = libhal_ctx_new ();
+	if (ctx == NULL) {
+		/* FIXME: should we return an error somehow so that we can 
+		 * fall back to a check for iTunesDB presence instead ?
+		 */
+		g_print ("Error: %s\n", error.message);
+		goto end;
+	}
+	conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
+	if (conn == NULL) {
+		g_print ("Error: %s\n", error.message);
+		goto end;
+	}
+	libhal_ctx_set_dbus_connection (ctx, conn);
+	parent_udi = libhal_device_get_property_string (ctx, udi,
+			"info.parent", &error);
+	parent_name = libhal_device_get_property_string (ctx, parent_udi,
+			"storage.model", &error);
+	g_free (parent_udi);
+	if (parent_name != NULL && strcmp (parent_name, "iPod") == 0) {
+		result = TRUE;
+	}
+
+	g_free (parent_name);
+end:
+	if (ctx) {
+		libhal_ctx_shutdown (ctx, &error);
+		libhal_ctx_free(ctx);
+	}
+	dbus_error_free (&error);
+
+	return result;
+}
+
+#elif HAVE_HAL_0_2
 
 static gboolean
 hal_udi_is_ipod (const char *udi)
@@ -608,4 +662,4 @@ hal_udi_is_ipod (const char *udi)
 	return result;
 }
 
-#endif /* HAVE_HAL */
+#endif

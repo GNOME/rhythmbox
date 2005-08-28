@@ -34,10 +34,13 @@ INCLUDES =						\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
 	$(WARN_CFLAGS)					\
+	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(RHYTHMBOX_CFLAGS)
 
 libsources_la_LDFLAGS = -export-dynamic
 libsourcesimpl_la_LDFLAGS = -export-dynamic
+
+libsourcesimpl_la_LIBADD = $(TOTEM_PLPARSER_LIBS) #for iradio
 
 if USE_IPOD
 libsourcesimpl_la_SOURCES +=         \
@@ -45,6 +48,8 @@ libsourcesimpl_la_SOURCES +=         \
 	rb-ipod-source.h	     \
 	itunesdb.c		     \
 	itunesdb.h
+INCLUDES += $(HAL_CFLAGS)
+libsources_impl_la_LIBADD += $(HAL_LIBS)
 endif
 
 if USE_CD_BURNER

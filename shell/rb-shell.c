@@ -77,12 +77,6 @@
 #include "rb-playlist-source.h"
 #include "eel-gconf-extensions.h"
 
-#ifdef WITH_DASHBOARD
-#include <glib.h>
-#include <sys/time.h>
-#include "dashboard.c"
-#endif /* WITH_DASHBOARD */
-
 static void rb_shell_class_init (RBShellClass *klass);
 static void rb_shell_remote_proxy_init (RBRemoteProxyIface *iface);
 static void rb_shell_init (RBShell *shell);
@@ -1363,9 +1357,6 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				   RBShell *shell)
 {
 	RBRemoteSong song;
-#ifdef WITH_DASHBOARD
-	char *cluepacket;
-#endif
 	char *notifytitle;
 
 	/* emit remote song_changed notification */
@@ -1390,20 +1381,6 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 				       song.title, song.artist);
 	rb_shell_hidden_notify (shell, 4000, _("Now Playing"), NULL, notifytitle);
 	g_free (notifytitle);
-				     
-#ifdef WITH_DASHBOARD
-	/* Send cluepacket to dashboard */
-	cluepacket =
-		dashboard_build_cluepacket_then_free_clues ("Music Player",
-							TRUE, 
-							"", 
-							dashboard_build_clue (song.title, "song_title", 10),
-							dashboard_build_clue (song.artist, "artist", 10),
-							dashboard_build_clue (song.album, "album", 10),
-							NULL);
-	dashboard_send_raw_cluepacket (cluepacket);
-	g_free (cluepacket);
-#endif /* WITH_DASHBOARD */
 }
 
 static void

@@ -20,8 +20,6 @@ GTK_REQS=2.5.4
 GNOME_VFS_REQS=2.6
 NCB_MIN_REQS=2.9.0
 DBUS_MIN_REQS=0.35
-HAL_MIN_REQS=0.2.92
-HAL_MAX_REQS=0.5
 TOTEM_PLPARSER_REQS=1.1.3
 
 AC_MSG_CHECKING([for GNU extension fwrite_unlocked])
@@ -46,34 +44,51 @@ AM_CONDITIONAL(MKDTEMP_MISSING, test x$mkdtemp_missing = xtrue)
 
 PKG_PROG_PKG_CONFIG
 
-dnl iPod support
-dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
-dnl function was added in that release.
-dnl enable_ipod = "no"
-
-AC_ARG_ENABLE(ipod,
-	      AC_HELP_STRING([--enable-ipod],
-			     [Enable iPod support in Rhythmbox]))
-AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
-if test x"$enable_ipod" = xyes; then
-	AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
-	USE_HAL=""
-	PKG_CHECK_MODULES(HAL, hal >= $HAL_MIN_REQS hal < $HAL_MAX_REQS gnome-vfs-2.0 >= 2.7.4,
-		[ AC_DEFINE([HAVE_HAL], 1, [Use the HAL library]) ]
-		[ USE_HAL="dbus-glib-1 hal >= $HAL_MIN_REQS hal < $HAL_MAX_REQS" ], :)
-fi
-
 PKG_CHECK_MODULES(RHYTHMBOX,				\
 		  gtk+-2.0 >= $GTK_REQS			\
 		  libgnomeui-2.0			\
 		  libglade-2.0				\
 		  gnome-vfs-2.0 >= $GNOME_VFS_REQS	\
-		  gnome-vfs-module-2.0			\
-		  totem-plparser >= $TOTEM_PLPARSER_REQS\
-		  $USE_HAL)
+		  gnome-vfs-module-2.0)
 
-RHYTHMBOX_CFLAGS="$CFLAGS $RHYTHMBOX_CFLAGS"
+PKG_CHECK_MODULES(TOTEM_PLPARSER, totem-plparser >= $TOTEM_PLPARSER_REQS, have_totem_plparser=yes, have_totem_plparser=no)
+if test x$have_totem_plparser != xyes; then
+   AC_MSG_ERROR([totem playlist parsing library not found or too old])
+fi   
 
+dnl iPod support
+dnl gnome-vfs 2.7.4 is required because the gnome_vfs_volume_get_hal_udi 
+dnl function was added in that release.
+dnl enable_ipod = "no"
+
+AC_ARG_WITH(ipod,
+            AC_HELP_STRING([--with-ipod],
+			   [Enable iPod support]),,
+	      with_ipod=auto)
+if test "x$with_ipod" != "xno"; then
+	PKG_CHECK_MODULES(HAL, hal >= 0.5 hal < 0.6 gnome-vfs-2.0 >= 2.7.4, enable_hal05=yes, enable_hal05=no)
+	if test x$enable_hal05 != xyes; then
+	   PKG_CHECK_MODULES(HAL, hal >= 0.2.92 hal < 0.5 gnome-vfs-2.0 >= 2.7.4, enable_hal02=yes, enable_hal02=no)
+	fi
+	if test x$enable_hal05 == xyes || test x$enable_hal02 == xyes; then
+  	  enable_hal=yes
+	else
+	  enable_hal=no
+	fi
+        if test "x$with_hal" = xyes && test "x$enable_hal" = xno; then
+	   AC_MSG_ERROR([iPod explicitly requested but HAL not found or too old])	   
+	fi
+        if test "x$enable_hal" = xyes; then
+	   AC_DEFINE(WITH_IPOD_SUPPORT, 1, [Define if iPod support is enabled])
+	   enable_ipod=yes
+	   if test x$enable_hal05 == xyes; then
+	      AC_DEFINE(HAVE_HAL_0_5, 1, [Define if you have HAL 0.5 or later])
+	   else
+	      AC_DEFINE(HAVE_HAL_0_2, 1, [Define if you have HAL 0.2 or later])
+	   fi
+	fi
+fi			  
+AM_CONDITIONAL(USE_IPOD, test x"$enable_ipod" = xyes)
 
 dnl Database
 AC_ARG_WITH(database,
@@ -109,14 +124,6 @@ AC_ARG_WITH(rhythmdb-debug,
 if test x"${with_rhythmdb_debug}" != x0; then
    AC_DEFINE_UNQUOTED([RHYTHMDB_ENABLE_SANITY_CHECK], "${with_rhythmdb_debug}", [Define to the level of RhythmDB sanity checking])
 fi
-
-dnl dashboard support
-AC_ARG_ENABLE(dashboard,
-	      [  --enable-dashboard	  Enable dashboard support (http://www.nat.org/dashboard) (default disabled)])
-if test "x$enable_dashboard" = "xyes" ; then
-   AC_DEFINE([WITH_DASHBOARD], 1, [Define to enable support for dashboard (http://www.nat.org/dashboard)])
-fi
-AM_CONDITIONAL(WITH_DASHBOARD, test x"$enable_dashboard" = xyes)
 
 dnl Sound system
 dnl Now we're ready to ask for gstreamer libs and cflags
@@ -287,7 +294,6 @@ if test "x$with_cd_burner" != "xno"; then
 	fi
 fi			  
 AM_CONDITIONAL(USE_CD_BURNER, test "x$enable_cd_burner" = "xyes")
-
 
 AC_SUBST(CFLAGS)
 AC_SUBST(LDFLAGS)

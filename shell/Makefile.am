@@ -75,6 +75,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/widgets/librbwidgets.la         \
 	$(top_builddir)/lib/librb.la	                \
 	$(GDA_LIBS)					\
+	$(TOTEM_PLPARSER_LIBS)				\
 	$(RHYTHMBOX_LIBS)
 
 if WITH_BONOBO
@@ -117,6 +118,7 @@ INCLUDES = 						\
 	$(WARN_CFLAGS)					\
 	$(GDA_CFLAGS)					\
 	$(RHYTHMBOX_CFLAGS)				\
+	$(TOTEM_PLPARSER_CFLAGS)			\
 	$(DBUS_LIBS)					\
 	$(DBUS_CFLAGS)					\
 	-D_XOPEN_SOURCE -D_BSD_SOURCE

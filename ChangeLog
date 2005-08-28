@@ -1,5 +1,32 @@
 2005-08-28  Colin Walters  <walters@verbum.org>
 
+	* configure.ac: Change iPod support to --with-ipod;
+	  automatically enable it if we have HAL.  Try to
+	  support both HAL 0.5 and HAL 0.2.  Break out
+	  totem-plparser into its own check so later we
+	  can do version tests there too.
+	  Kill dashboard support.
+	
+	* sources/rb-ipod-source.c: Merge in changes from Ronald Bultje
+	to support HAL > 0.5, but preserve the old code for HAL < 0.5
+	Closes #310017.
+	
+	* shell/Makefile.am (rhythmbox_LDADD): Add TOTEM_PLPARSER_LIBS.
+	(INCLUDES): Add TOTEM_PLPARSER_CFLAGS.
+
+	* sources/Makefile.am: Also handle
+	TOTEM_PLPARSER_LIBS/TOTEM_PLPARSER_CFLAGS.
+
+	* shell/dashboard.c: Delete; someone should just write a little
+	python shim which lists on the D-BUS interface and writes the
+	stuff to Dashboard.  Even better Dashboard should be ported
+	to D-BUS and do the listening itself, perhaps on an abstract
+	"org.gnome.MusicPlayer" interface or something.
+
+	* shell/rb-shell.c: Kill dashboard support.
+
+2005-08-28  Colin Walters  <walters@verbum.org>
+
 	* remote/dbus/rb-print-playing.py: New file.
 
 2005-08-28  Colin Walters  <walters@verbum.org>
