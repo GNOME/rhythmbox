@@ -1,5 +1,26 @@
 2005-08-28  Colin Walters  <walters@verbum.org>
 
+	* data/rhythmbox.schemas: Delete search_text for library
+	and iradio; this isn't a persistent value anymore.
+	Closes #313757.
+	
+	* sources/rb-source.h:
+	* sources/rb-source.c: Delete impl_can_search.
+
+	* sources/rb-iradio-source.c: Delete search_text usage.
+	* sources/rb-library-source.c: Ditto.
+
+	* shell/rb-source-header.c: Don't use GConf for search key.  Reset
+	search when source is set, and just do rb_source_search in
+	rb_source_header_search_cb.
+
+	* shell/rb-shell.c (rb_shell_append_source): Don't
+	initiate search.
+
+	* shell/Makefile.am: Don't dist dashboard.c.
+
+2005-08-28  Colin Walters  <walters@verbum.org>
+
 	* shell/main.c: Remove include of dead file rb-remote-dbus.h.
 	
 2005-08-28  Colin Walters  <walters@verbum.org>

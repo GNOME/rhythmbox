@@ -56,10 +56,6 @@ static void rb_source_header_search_cb (RBSearchEntry *search,
 static void rb_source_header_disclosure_toggled_cb (GObject *object,
 						    GParamSpec *param_spec,
 						    gpointer data);
-static void rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
-							   guint cnxn_id,
-							   GConfEntry *entry,
-							   RBSourceHeader *header);
 static void rb_source_header_search_activate_cb (RBSearchEntry *search,
 						 RBSourceHeader *header);
 static void rb_source_header_gconf_disclosure_changed_cb (GConfClient *client,
@@ -82,8 +78,8 @@ struct RBSourceHeaderPrivate
 
 	guint browser_notify_id;
 	guint search_notify_id;
+	gboolean have_search;
 	const char *browser_key;
-	const char *search_key;
 };
 
 enum
@@ -237,9 +233,6 @@ rb_source_header_set_property (GObject *object,
 		{
 			if (header->priv->browser_key)
 				eel_gconf_notification_remove (header->priv->browser_notify_id);
-			if (header->priv->search_key)
-				eel_gconf_notification_remove (header->priv->search_notify_id);
-
 			g_signal_handlers_disconnect_by_func (G_OBJECT (header->priv->selected_source),
 							      G_CALLBACK (rb_source_header_filter_changed_cb),
 							      header);
@@ -251,35 +244,27 @@ rb_source_header_set_property (GObject *object,
 		if (header->priv->selected_source != NULL)
 		{
 			header->priv->browser_key = rb_source_get_browser_key (header->priv->selected_source);
-			header->priv->search_key = rb_source_get_search_key (header->priv->selected_source);
 			if (header->priv->browser_key)
 				header->priv->browser_notify_id
 					= eel_gconf_notification_add (header->priv->browser_key,
 								      (GConfClientNotifyFunc) rb_source_header_gconf_disclosure_changed_cb,
 								      header);
-			if (header->priv->search_key) {
-				gchar *temp = eel_gconf_get_string (header->priv->search_key);
-				
-				header->priv->search_notify_id
-					= eel_gconf_notification_add (header->priv->search_key,
-								      (GConfClientNotifyFunc) rb_source_header_gconf_search_text_changed_cb,
-								      header);
-
-				rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
-							  temp);
-				g_free (temp);
-			}
+			rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search), "");
 			g_signal_connect_object (G_OBJECT (header->priv->selected_source),
 						 "filter_changed",
 						 G_CALLBACK (rb_source_header_filter_changed_cb),
 						 header, 0);
 			gtk_widget_set_sensitive (GTK_WIDGET (header->priv->search),
 						  rb_source_can_search (header->priv->selected_source));
-			if (!header->priv->browser_key &&
-			    !rb_source_can_search (header->priv->selected_source))
+			header->priv->have_search = rb_source_can_search (header->priv->selected_source);
+			if (!header->priv->browser_key && !header->priv->have_search)
 				gtk_widget_hide (GTK_WIDGET (header));
 			else
 				gtk_widget_show (GTK_WIDGET (header));
+			if (header->priv->have_search)
+				rb_source_header_search_cb (RB_SEARCH_ENTRY (header->priv->search),
+							    "",
+							    header);
 		}
 		rb_source_header_sync_control_state (header);
 		
@@ -357,37 +342,12 @@ rb_source_header_filter_changed_cb (RBSource *source,
 }
 
 static void
-rb_source_header_gconf_search_text_changed_cb (GConfClient *client,
-					       guint cnxn_id,
-					       GConfEntry *entry,
-					       RBSourceHeader *header)
-{
-	char *searchtext;
-
-	g_return_if_fail (header->priv->search_key != NULL);
-	
-	rb_debug ("gconf search text changed");
-
-	searchtext = eel_gconf_get_string (header->priv->search_key);
-
-	rb_search_entry_set_text (RB_SEARCH_ENTRY (header->priv->search),
-				  searchtext);
-
-	rb_source_search (header->priv->selected_source, searchtext);
-
-	rb_source_header_sync_control_state (header);
-
-	g_free (searchtext);
-}
-
-static void
 rb_source_header_search_cb (RBSearchEntry *search,
 			    const char *text,
 			    RBSourceHeader *header)
 {
 	rb_debug  ("searching for \"%s\"", text);
-
-	eel_gconf_set_string (header->priv->search_key, text);
+	rb_source_search (header->priv->selected_source, text);
 	rb_source_header_sync_control_state (header);
 }
 
@@ -451,15 +411,6 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	gboolean have_browser = header->priv->selected_source != NULL
 		&& header->priv->browser_key != NULL;
 	gboolean not_small = !eel_gconf_get_boolean (CONF_UI_SMALL_DISPLAY);
-	gboolean has_search;
-
-	if (header->priv->search_key == NULL) {
-		has_search = FALSE;
-	} else {
-		const char *search_string;
-		search_string = eel_gconf_get_string (header->priv->search_key);
-		has_search = search_string != NULL && search_string[0];
-	}
 
 	gtk_widget_set_sensitive (header->priv->disclosure,
 				  have_browser);
@@ -470,7 +421,7 @@ rb_source_header_sync_control_state (RBSourceHeader *header)
 	viewstatusbar_action = gtk_action_group_get_action (header->priv->actiongroup,
 							    "ViewStatusbar");
 	g_object_set (G_OBJECT (viewstatusbar_action), "sensitive",
-		      not_small && has_search, NULL);
+		      not_small && header->priv->have_search, NULL);
 	viewall_action = gtk_action_group_get_action (header->priv->actiongroup,
 						      "ViewAll");
 	g_object_set (G_OBJECT (viewall_action), "sensitive",

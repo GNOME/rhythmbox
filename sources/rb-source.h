@@ -60,13 +60,12 @@ typedef struct
 	void (*status_changed)	(RBSource *source);
 	void (*filter_changed)	(RBSource *source);
 	void (*deleted)		(RBSource *source);
+	void (*artistalbum_changed)	(RBSource *source);
 
 	/* methods */
 	char *	        (*impl_get_status)	(RBSource *source);
 
 	const char *	(*impl_get_browser_key)	(RBSource *source);
-
-	const char *	(*impl_get_search_key)	(RBSource *source);
 
 	RBEntryView *	(*impl_get_entry_view)	(RBSource *source);
 	GList *		(*impl_get_extra_views)	(RBSource *source);
@@ -119,8 +118,6 @@ void		rb_source_update_play_statistics(RBSource *source, RhythmDB *db,
 char *	        rb_source_get_status		(RBSource *source);
 
 const char *	rb_source_get_browser_key	(RBSource *source);
-
-const char *	rb_source_get_search_key	(RBSource *source);
 
 RBEntryView *	rb_source_get_entry_view	(RBSource *source);
 

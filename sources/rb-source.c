@@ -46,7 +46,6 @@ static void rb_source_get_property (GObject *object,
 					GParamSpec *pspec);
 
 static const char * default_get_browser_key (RBSource *status);
-static const char * default_get_search_key (RBSource *status);
 static GList *default_get_extra_views (RBSource *source);
 static gboolean default_can_rename (RBSource *source);
 static gboolean default_can_search (RBSource *source);
@@ -132,7 +131,6 @@ rb_source_class_init (RBSourceClass *klass)
 	object_class->get_property = rb_source_get_property;
 
 	klass->impl_get_browser_key = default_get_browser_key;
-	klass->impl_get_search_key = default_get_search_key;
 	klass->impl_get_extra_views = default_get_extra_views;
 	klass->impl_can_rename = default_can_rename;
 	klass->impl_can_search = default_can_search;
@@ -198,7 +196,7 @@ rb_source_class_init (RBSourceClass *klass)
 		g_signal_new ("deleted",
 			      RB_TYPE_SOURCE,
 			      G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (RBSourceClass, status_changed),
+			      G_STRUCT_OFFSET (RBSourceClass, deleted),
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE,
@@ -343,26 +341,12 @@ default_get_browser_key (RBSource *status)
 	return NULL;
 }
 
-static const char *
-default_get_search_key (RBSource *status)
-{
-	return NULL;
-}
-
 const char *
 rb_source_get_browser_key (RBSource *status)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
 
 	return klass->impl_get_browser_key (status);
-}
-
-const char *
-rb_source_get_search_key (RBSource *status)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (status);
-
-	return klass->impl_get_search_key (status);
 }
 
 void

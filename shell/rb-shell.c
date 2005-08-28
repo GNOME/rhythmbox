@@ -1266,8 +1266,6 @@ static void
 rb_shell_append_source (RBShell *shell,
 			RBSource *source)
 {
-	char *search_text;
-	
 	shell->priv->sources
 		= g_list_append (shell->priv->sources, source);
 
@@ -1281,12 +1279,6 @@ rb_shell_append_source (RBShell *shell,
 
 	rb_sourcelist_append (RB_SOURCELIST (shell->priv->sourcelist),
 			      source);
-
-	if (rb_source_can_search (source)) {
-		search_text = eel_gconf_get_string (rb_source_get_search_key (source));
-		rb_source_search (source, search_text);
-		g_free (search_text);
-	}
 }
 
 static void

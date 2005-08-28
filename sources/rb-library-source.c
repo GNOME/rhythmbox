@@ -111,7 +111,6 @@ static void rb_library_source_preferences_sync (RBLibrarySource *source);
 /* source methods */
 static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
-static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static GList *impl_get_extra_views (RBSource *source);
@@ -143,7 +142,6 @@ static void songs_view_drag_data_received_cb (GtkWidget *widget,
 #define CONF_STATE_LIBRARY_SORTING CONF_PREFIX "/state/library/sorting"
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/library/paned_position"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/library/show_browser"
-#define CONF_STATE_SEARCH_TEXT   CONF_PREFIX "/state/library/search_text"
 
 struct RBLibrarySourcePrivate
 {
@@ -265,7 +263,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 
 	source_class->impl_get_status = impl_get_status;
 	source_class->impl_get_browser_key = impl_get_browser_key;
-	source_class->impl_get_search_key = impl_get_search_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -957,12 +954,6 @@ static const char *
 impl_get_browser_key (RBSource *source)
 {
 	return CONF_STATE_SHOW_BROWSER;
-}
-
-static const char *
-impl_get_search_key (RBSource *source)
-{
-	return CONF_STATE_SEARCH_TEXT;
 }
 
 static GdkPixbuf *

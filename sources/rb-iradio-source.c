@@ -89,7 +89,6 @@ static void rb_iradio_source_songs_view_sort_order_changed_cb (RBEntryView *view
 /* source methods */
 static char *impl_get_status (RBSource *source);
 static const char *impl_get_browser_key (RBSource *source);
-static const char *impl_get_search_key (RBSource *source);
 static GdkPixbuf *impl_get_pixbuf (RBSource *source);
 static RBEntryView *impl_get_entry_view (RBSource *source);
 static void impl_search (RBSource *source, const char *text);
@@ -118,7 +117,6 @@ static void stations_view_drag_data_received_cb (GtkWidget *widget,
 #define CONF_STATE_PANED_POSITION CONF_PREFIX "/state/iradio/paned_position"
 #define CONF_STATE_IRADIO_SORTING CONF_PREFIX "/state/iradio/sorting"
 #define CONF_STATE_SHOW_BROWSER   CONF_PREFIX "/state/iradio/show_browser"
-#define CONF_STATE_SEARCH_TEXT   CONF_PREFIX "/state/iradio/search_text"
 
 struct RBIRadioSourcePrivate
 {
@@ -208,7 +206,6 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 
 	source_class->impl_get_status  = impl_get_status;
 	source_class->impl_get_browser_key  = impl_get_browser_key;
-	source_class->impl_get_search_key  = impl_get_search_key;
 	source_class->impl_get_pixbuf  = impl_get_pixbuf;
 	source_class->impl_can_search = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_search = impl_search;
@@ -586,12 +583,6 @@ static const char *
 impl_get_browser_key (RBSource *asource)
 {
 	return CONF_STATE_SHOW_BROWSER;
-}
-
-static const char *
-impl_get_search_key (RBSource *asource)
-{
-	return CONF_STATE_SEARCH_TEXT;
 }
 
 static void
