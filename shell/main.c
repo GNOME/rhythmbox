@@ -67,7 +67,6 @@
 #include <dbus/dbus-glib.h>
 #include "rb-shell-glue.h"
 #include "rb-shell-player-glue.h"
-#include "rb-remote-dbus.h"
 #endif
 
 static gboolean debug           = FALSE;
