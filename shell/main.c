@@ -57,6 +57,7 @@
 #include "eel-gconf-extensions.h"
 #include "rb-util.h"
 
+
 #ifdef WITH_BONOBO
 #include "rb-remote-client-proxy.h"
 #include <bonobo/bonobo-main.h>
@@ -184,6 +185,9 @@ main (int argc, char **argv)
 #ifdef HAVE_GSTREAMER	
 	popt_options[(sizeof(popt_options)/sizeof(popt_options[0]))-2].arg
 		= (void *) gst_init_get_popt_table ();
+#endif
+#ifdef WITH_BONOBO
+	rb_remote_bonobo_preinit ();
 #endif
 
 	gtk_set_locale ();
@@ -317,7 +321,6 @@ main (int argc, char **argv)
 				g_critical ("acquired bonobo service but couldn't activate!");
 		}
 
-		handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
 #endif
 #ifdef WITH_DBUS
 		if (session_bus != NULL) {
@@ -353,6 +356,9 @@ main (int argc, char **argv)
 					    G_TYPE_INVALID);
 #endif
 	}
+#ifdef WITH_BONOBO	
+	handle_cmdline (client_proxy, activated, poptGetArgs (poptContext));
+#endif
 
 	if (activated) {
 		gdk_notify_startup_complete ();
@@ -440,8 +446,6 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated, const char **arg
 {
 	gboolean grab_focus;
 	RBRemoteSong *song;
-	guint i;
-	GError *error = NULL;
 
 	grab_focus = TRUE;
 
@@ -533,7 +537,7 @@ handle_cmdline (RBRemoteClientProxy *proxy, gboolean activated, const char **arg
 	if (toggle_mute)
 		rb_remote_client_proxy_toggle_mute (proxy);
 
-	if (load_uri_args (args, bonobo_load_uri, proxy))
+	if (load_uri_args (args, (GFunc) bonobo_load_uri, proxy))
 		grab_focus = FALSE;
 
 	if (quit)

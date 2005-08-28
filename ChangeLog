@@ -1,3 +1,16 @@
+2005-08-28  Colin Walters  <walters@verbum.org>
+
+	* remote/bonobo/rb-remote-bonobo.c (rb_bonobo_workaround_lock)
+	(rb_bonobo_workaround_unlock): Renamed from bonobo_lock and
+	bonobo_unlock.
+	(rb_remote_bonobo_preinit): Lock setting moved here.
+	(rb_remote_bonobo_init): From here.
+
+	* shell/main.c (main): Call rb_remote_bonobo_preinit very early.
+	Also invoke handle_cmdline in the right place.
+	(handle_cmdline): Remove some unused vars.  Cast bonobo_load_uri to
+	GFunc.
+
 2005-08-28  James Livingston  <jrl@ids.org.au>
 
 	* NEWS: keep the NEWS file up to date, so we don't have to do it all

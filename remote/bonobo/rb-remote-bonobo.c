@@ -251,21 +251,20 @@ static GStaticRecMutex _rb_bonobo_mutex = G_STATIC_REC_MUTEX_INIT;
 static gboolean set_lock_functions = FALSE;
 
 static void
-bonobo_lock (void)
+rb_bonobo_workaround_lock (void)
 {
 	g_static_rec_mutex_lock (&_rb_bonobo_mutex);
 }
 
 static void
-bonobo_unlock (void)
+rb_bonobo_workaround_unlock (void)
 {
 	g_static_rec_mutex_unlock (&_rb_bonobo_mutex);
 }
 
-static void
-rb_remote_bonobo_init (RBRemoteBonobo *bonobo) 
+void
+rb_remote_bonobo_preinit (void)
 {
-	bonobo->priv = g_new0 (RBRemoteBonoboPrivate, 1);
 
 	/*
 	 * By default, GDK_THREADS_ENTER/GDK_THREADS_LEAVE uses a 
@@ -298,10 +297,16 @@ rb_remote_bonobo_init (RBRemoteBonobo *bonobo)
 	 */
 	if (!set_lock_functions)
 	  {
-	    gdk_threads_set_lock_functions (G_CALLBACK (_rb_threads_lock),
-					    G_CALLBACK (_rb_threads_unlock));
+	    gdk_threads_set_lock_functions (G_CALLBACK (rb_bonobo_workaround_lock),
+					    G_CALLBACK (rb_bonobo_workaround_unlock));
 	    set_lock_functions = TRUE;
 	  }
+}
+
+static void
+rb_remote_bonobo_init (RBRemoteBonobo *bonobo) 
+{
+	bonobo->priv = g_new0 (RBRemoteBonoboPrivate, 1);
 }
 
 static void

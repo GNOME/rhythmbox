@@ -69,6 +69,9 @@ GQuark rb_remote_bonobo_error_quark (void);
 
 GType rb_remote_bonobo_get_type	(void);
 
+void  rb_remote_bonobo_preinit (void);
+
+
 RBRemoteBonobo * rb_remote_bonobo_new (void);
 
 gboolean rb_remote_bonobo_activate (RBRemoteBonobo *bonobo);
