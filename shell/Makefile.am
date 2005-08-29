@@ -76,6 +76,7 @@ rhythmbox_LDADD =					\
 	$(top_builddir)/lib/librb.la	                \
 	$(GDA_LIBS)					\
 	$(TOTEM_PLPARSER_LIBS)				\
+	$(HAL_LIBS)					\
 	$(RHYTHMBOX_LIBS)
 
 if WITH_BONOBO

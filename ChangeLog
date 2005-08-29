@@ -1,3 +1,18 @@
+2005-08-29  Colin Walters  <walters@verbum.org>
+
+	* sources/Makefile.am (INCLUDES): Add HAL_CFLAGS unconditionally.
+
+	* shell/Makefile.am (rhythmbox_LDADD): Add HAL_LIBS to avoid
+	linking insanity.
+
+	* widgets/rb-header.c (sanitize_string): New function, extracted
+	from old info_url.  Be sure to always strip the string.
+	(info_url): Rewrite to take artist/album, and generate a sane
+	URL for them from last.fm, which is better than allmusic.com in
+	that they support Rhythmbox, and have a *SANE* URL scheme.
+	(artist_info_url, album_info_url): Delete.
+	(rb_header_sync): Use info_url.
+
 2005-08-29  James Livingston  <jrl@ids.org.au>
 
 	* sources/rb-source.c: (rb_source_search): Check to ensure that this
