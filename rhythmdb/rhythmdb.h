@@ -123,6 +123,7 @@ typedef struct {
 #ifndef G_DISABLE_ASSERT
 	guint magic;
 #endif	
+	gboolean inserted;
 	gint refcount;
 	void *data;
 	gulong type;
@@ -387,6 +388,8 @@ void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
 					 guint propid, const GValue *value);
 void		rhythmdb_entry_set_nonotify	(RhythmDB *db, RhythmDBEntry *entry,
+						 guint propid, const GValue *value);
+void		rhythmdb_entry_set_uninserted   (RhythmDB *db, RhythmDBEntry *entry,
 						 guint propid, const GValue *value);
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);

@@ -1,3 +1,26 @@
+2005-08-29  Colin Walters  <walters@verbum.org>
+
+	* rhythmdb/rhythmdb.h (struct RhythmDBEntry): Add
+	"inserted" member which we use to keep track of
+	whether or not an entry is in the DB.  Prototype
+	rhythmdb_entry_set_uninserted.
+
+	* rhythmdb/rhythmdb.c (rhythmdb_commit_internal): Set inserted
+	flag.
+	(rhythmdb_entry_insert): Assert entry is not already inserted.
+	(rhythmdb_process_metadata_load): Update to call _set_uninserted
+	just after creating entry.
+	(rhythmdb_entry_set): Document, and fail on uninserted entries.
+	(rhythmdb_entry_set_nonotify): Ditto.
+	(rhythmdb_entry_set_uninserted): Document, and fail on inserted
+	entries.
+	(rhythmdb_entry_set_internal): Change notify flag to
+	notify_if_inserted.  Also move notification after assertions.
+
+	Update all existing callers of rhythmdb_entry_set_internal
+	to give TRUE for notify_if_inserted; this should be what
+	we want but may be an efficiency hit.
+	
 2005-08-30  Raphael Slinckx  <rslinckx@cvs.gnome.org>
 
 	* shell/rb-shell-player.c: (rb_shell_player_init),
