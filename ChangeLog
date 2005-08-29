@@ -1,3 +1,22 @@
+2005-08-29  James Livingston  <jrl@ids.org.au>
+
+	* sources/rb-source.c: (rb_source_search): Check to ensure that this
+	is implemented before calling it. Many sources don't implement the
+	method.
+
+2005-08-28  Dennis Cranston  <dennis_cranston@yahoo.com>
+
+	* data/glade/create-playlist.glade:  Cleanup the layout,
+	and add a few more mnemonics.
+	* shell/rb-playlist-manager.c:
+	(rb_playlist_manager_cmd_load_playlist),
+	(rb_playlist_manager_cmd_save_playlist): HIG fix, use title 
+	capitalization for window titles.
+	* widgets/rb-query-creator-properties.c: Add mnemonics
+	to checkbutton labels.
+	* widgets/rb-query-creator.c: (rb_query_creator_constructor),
+	(limit_toggled_cb):  Toggle the sortLabel sensitivity.
+
 2005-08-28  Colin Walters  <walters@verbum.org>
 
 	* data/rhythmbox.schemas: Delete search_text for library

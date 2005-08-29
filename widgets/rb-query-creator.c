@@ -88,6 +88,7 @@ typedef struct
 	GtkWidget *limit_check;
 	GtkWidget *limit_entry;
 	GtkWidget *limit_option;
+	GtkWidget *sort_label;
 	GtkWidget *sort_menu;
 	GtkWidget *sort_desc;
 } RBQueryCreatorPrivate;
@@ -218,6 +219,7 @@ rb_query_creator_constructor (GType type, guint n_construct_properties,
 	priv->limit_entry = GTK_WIDGET (glade_xml_get_widget (xml, "limitEntry"));
 	priv->limit_option = GTK_WIDGET (glade_xml_get_widget (xml, "limitOption"));
 	priv->addbutton = GTK_WIDGET (glade_xml_get_widget (xml, "addButton"));
+	priv->sort_label = GTK_WIDGET (glade_xml_get_widget (xml, "sortLabel"));
 	priv->sort_menu = GTK_WIDGET (glade_xml_get_widget (xml, "sortMenu"));
 	priv->sort_desc = GTK_WIDGET (glade_xml_get_widget (xml, "sortDesc"));
 
@@ -601,6 +603,7 @@ limit_toggled_cb (GtkWidget *limit, RBQueryCreator *creator)
 	gtk_widget_set_sensitive (priv->limit_entry, active);
 	gtk_widget_set_sensitive (priv->limit_option, active);
 	gtk_widget_set_sensitive (priv->sort_menu, active);
+	gtk_widget_set_sensitive (priv->sort_label, active);
 	gtk_widget_set_sensitive (priv->sort_desc, active);
 }
 

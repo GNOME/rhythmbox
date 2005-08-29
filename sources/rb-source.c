@@ -452,7 +452,9 @@ rb_source_search (RBSource *source, const char *text)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	klass->impl_search (source, text);
+	/* several sources don't have a search ability */
+	if (klass->impl_search != NULL)
+		klass->impl_search (source, text);
 }
 
 static GtkWidget *

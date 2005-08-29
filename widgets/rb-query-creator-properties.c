@@ -85,15 +85,15 @@ const int num_property_options = G_N_ELEMENTS (property_options);
  */
 const RBQueryCreatorSortOption sort_options[] =
 {
-	{ N_("Artist"), "Artist", N_("In reverse alphabetical order") },
-	{ N_("Album"), "Album", N_("In reverse alphabetical order") },
-	{ N_("Genre"), "Genre", N_("In reverse alphabetical order") },
-	{ N_("Title"), "Title", N_("In reverse alphabetical order") },
-	{ N_("Rating"), "Rating", N_("With more highly rated tracks first") },
-	{ N_("Play Count"), "PlayCount", N_("With more often played songs first") },
-	{ N_("Duration"), "Time", N_("With longer tracks first") },
-	{ N_("Track Number"), "Track", N_("In decreasing order")},
-	{ N_("Last Played"), "LastPlayed", N_("With more recently played tracks first") },
+	{ N_("Artist"), "Artist", N_("_In reverse alphabetical order") },
+	{ N_("Album"), "Album", N_("_In reverse alphabetical order") },
+	{ N_("Genre"), "Genre", N_("_In reverse alphabetical order") },
+	{ N_("Title"), "Title", N_("_In reverse alphabetical order") },
+	{ N_("Rating"), "Rating", N_("W_ith more highly rated tracks first") },
+	{ N_("Play Count"), "PlayCount", N_("W_ith more often played songs first") },
+	{ N_("Duration"), "Time", N_("W_ith longer tracks first") },
+	{ N_("Track Number"), "Track", N_("_In decreasing order")},
+	{ N_("Last Played"), "LastPlayed", N_("W_ith more recently played tracks first") },
 };
 
 const int num_sort_options = G_N_ELEMENTS (sort_options);

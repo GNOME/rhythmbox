@@ -889,7 +889,7 @@ rb_playlist_manager_cmd_load_playlist (GtkAction *action,
 {
 	GtkWidget *dialog;
 
-	dialog = rb_file_chooser_new (_("Load playlist"),
+	dialog = rb_file_chooser_new (_("Load Playlist"),
 				      GTK_WINDOW (mgr->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_OPEN,
 				      TRUE);
@@ -927,7 +927,7 @@ rb_playlist_manager_cmd_save_playlist (GtkAction *action,
 {
 	GtkWidget *dialog;
     
-	dialog = rb_file_chooser_new (_("Save playlist"),
+	dialog = rb_file_chooser_new (_("Save Playlist"),
 				      GTK_WINDOW (mgr->priv->window),
 				      GTK_FILE_CHOOSER_ACTION_SAVE,
 				      TRUE);
