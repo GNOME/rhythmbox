@@ -162,6 +162,7 @@ struct RhythmDBEvent
 	/* ENTRY_RESTORED / ENTRY_SET */
 	RhythmDBEntry *entry;
 	/* ENTRY_SET */
+	gboolean signal_change;
 	RhythmDBEntryChange change;
 };
 
@@ -185,7 +186,7 @@ static gpointer action_thread_main (RhythmDB *db);
 static gpointer query_thread_main (struct RhythmDBQueryThreadData *data);
 static void queue_stat_uri (const char *uri, RhythmDB *db);
 static void rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
-					 guint propid, GValue *value);
+					 gboolean notify, guint propid, const GValue *value);
 static void rhythmdb_entry_set_mount_point (RhythmDB *db, 
  					    RhythmDBEntry *entry, 
  					    const gchar *realuri);
@@ -1020,7 +1021,7 @@ set_metadata_string_default_unknown (RhythmDB *db,
 		g_value_set_static_string (&val, unknown);
 	} else if (g_value_get_string (&val)[0] == '\0')
 		g_value_set_static_string (&val, unknown);
-	rhythmdb_entry_set_internal (db, entry, prop, &val);
+	rhythmdb_entry_set_internal (db, entry, FALSE, prop, &val);
 	g_value_unset (&val);
 }
 
@@ -1035,7 +1036,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	mime = rb_metadata_get_mime (metadata);
 	if (mime) {
 		g_value_set_string (&val, mime);
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_MIMETYPE, &val);
 	}
 	g_value_unset (&val);
@@ -1047,7 +1048,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, 0);
 	}
-	rhythmdb_entry_set_internal (db, entry, 
+	rhythmdb_entry_set_internal (db, entry, FALSE,
 				     RHYTHMDB_PROP_TRACK_NUMBER, &val);
 	g_value_unset (&val);
 
@@ -1058,7 +1059,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, 0);
 	}
-	rhythmdb_entry_set_internal (db, entry,
+	rhythmdb_entry_set_internal (db, entry, FALSE,
 				     RHYTHMDB_PROP_DISC_NUMBER, &val);
 	g_value_unset (&val);
 
@@ -1066,7 +1067,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	if (rb_metadata_get (metadata,
 			     RB_METADATA_FIELD_DURATION,
 			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_DURATION, &val);
 		g_value_unset (&val);
 	}
@@ -1075,7 +1076,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	if (rb_metadata_get (metadata,
 			     RB_METADATA_FIELD_BITRATE,
 			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_BITRATE, &val);
 		g_value_unset (&val);
 	}
@@ -1083,7 +1084,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	/* filesize */
 	g_value_init (&val, G_TYPE_UINT64);
 	g_value_set_uint64 (&val, vfsinfo->size);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_FILE_SIZE, &val);
+	rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_FILE_SIZE, &val);
 	g_value_unset (&val);
 
 	/* title */
@@ -1099,13 +1100,13 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 		g_value_set_string (&val, utf8name);
 		g_free (utf8name);
 	}
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_TITLE, &val);
+	rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_TITLE, &val);
 	g_value_unset (&val);
 
 	/* mtime */
 	g_value_init (&val, G_TYPE_ULONG);
 	g_value_set_ulong (&val, vfsinfo->mtime);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_MTIME, &val);
+	rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_MTIME, &val);
 	g_value_unset (&val);
 
 	/* genre */
@@ -1126,7 +1127,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
         if (rb_metadata_get (metadata,
                              RB_METADATA_FIELD_TRACK_GAIN,
                              &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_TRACK_GAIN, &val);
 		g_value_unset (&val);
 	}
@@ -1135,7 +1136,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	if (rb_metadata_get (metadata,
 			     RB_METADATA_FIELD_TRACK_PEAK,
 			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_TRACK_PEAK, &val);
 		g_value_unset (&val);
 	}
@@ -1144,7 +1145,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	if (rb_metadata_get (metadata,
 			     RB_METADATA_FIELD_ALBUM_GAIN,
 			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_ALBUM_GAIN, &val);
 		g_value_unset (&val);
 	}
@@ -1153,7 +1154,7 @@ set_props_from_metadata (RhythmDB *db, RhythmDBEntry *entry,
 	if (rb_metadata_get (metadata,
 			     RB_METADATA_FIELD_ALBUM_PEAK,
 			     &val)) {
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_ALBUM_PEAK, &val);
 		g_value_unset (&val);
 	}
@@ -1242,14 +1243,14 @@ rhythmdb_process_stat_event (RhythmDB *db, struct RhythmDBEvent *event)
 			g_get_current_time (&time);
 			g_value_init (&val, G_TYPE_ULONG);
 			g_value_set_ulong (&val, time.tv_sec);
-			rhythmdb_entry_set_internal (db, entry, 
+			rhythmdb_entry_set_internal (db, entry, FALSE,
 						     RHYTHMDB_PROP_LAST_SEEN,
 						     &val);
 			/* Old rhythmdb.xml files won't have a value for
 			 * FIRST_SEEN, so set it here
 			 */
 			if (rhythmdb_entry_get_ulong (entry, RHYTHMDB_PROP_FIRST_SEEN) == 0) {
-				rhythmdb_entry_set_internal (db, entry, 
+				rhythmdb_entry_set_internal (db, entry, FALSE,
 							     RHYTHMDB_PROP_FIRST_SEEN,
 							     &val);
 			}
@@ -1343,27 +1344,20 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 		/* initialize the last played date to 0=never */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, 0);
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_LAST_PLAYED, &value);
 		g_value_unset (&value);
 
 		/* initialize the rating */
 		g_value_init (&value, G_TYPE_DOUBLE);
 		g_value_set_double (&value, 2.5);
-		rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_RATING, &value);
+		rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_RATING, &value);
 		g_value_unset (&value);
 
-		/* initialize auto rating */
-		g_value_init (&value, G_TYPE_BOOLEAN);
-		g_value_set_boolean (&value, TRUE);
-		rhythmdb_entry_set_internal (db, entry, 
-					     RHYTHMDB_PROP_AUTO_RATE, &value);
-		g_value_unset (&value);
-		
 	        /* first seen and last seen */
 		g_value_init (&value, G_TYPE_ULONG);
 		g_value_set_ulong (&value, time.tv_sec);
-		rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_FIRST_SEEN, &value);
+		rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_FIRST_SEEN, &value);
 		g_value_unset (&value);
 	}
 
@@ -1371,7 +1365,7 @@ rhythmdb_process_metadata_load (RhythmDB *db, struct RhythmDBEvent *event)
 
 	g_value_init (&value, G_TYPE_ULONG);
 	g_value_set_ulong (&value, time.tv_sec);
-	rhythmdb_entry_set_internal (db, entry, RHYTHMDB_PROP_LAST_SEEN, &value);
+	rhythmdb_entry_set_internal (db, entry, FALSE, RHYTHMDB_PROP_LAST_SEEN, &value);
 	g_value_unset (&value);
 
 	/* Remember the mount point of the volume the song is on */
@@ -1390,8 +1384,9 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 					 struct RhythmDBEvent *event)
 {
 	rhythmdb_entry_set_internal (db, event->entry, 
-			    event->change.prop, 
-			    &event->change.new);
+				     event->signal_change,
+				     event->change.prop, 
+				     &event->change.new);
 	/* Don't run rhythmdb_commit right now in case there 
 	 * we can run a single commit for several queued 
 	 * entry_set
@@ -1888,10 +1883,46 @@ rhythmdb_save (RhythmDB *db)
 	g_mutex_unlock (db->priv->saving_mutex);
 }
 
-/* FIXME: this has nothing to do with entry_sync_mirrored */
+static void
+threadsafe_entry_set (RhythmDB *db, RhythmDBEntry *entry,
+		      gboolean notify, guint propid, const GValue *value)
+{
+	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
+		rhythmdb_entry_set_internal (db, entry, notify, propid, value);
+	} else {
+		struct RhythmDBEvent *result;
+
+		result = g_new0 (struct RhythmDBEvent, 1);
+		result->type = RHYTHMDB_EVENT_ENTRY_SET;
+
+		rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
+
+		result->entry = entry;
+		result->change.prop = propid;
+		result->signal_change = notify;
+		g_value_init (&result->change.new, G_VALUE_TYPE (value));
+		g_value_copy (value, &result->change.new);
+		g_async_queue_push (db->priv->event_queue, result);
+	}
+}
+
 void 
-rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
-		     guint propid, GValue *value)
+rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
+		    guint propid, const GValue *value)
+{
+	threadsafe_entry_set (db, entry, TRUE, propid, value);
+}
+
+void 
+rhythmdb_entry_set_nonotify (RhythmDB *db, RhythmDBEntry *entry, 
+			     guint propid, const GValue *value)
+{
+	threadsafe_entry_set (db, entry, FALSE, propid, value);
+}
+
+static void
+record_entry_change (RhythmDB *db, RhythmDBEntry *entry,
+		     guint propid, const GValue *value)
 {
 	RhythmDBEntryChange *changedata;
 	GSList *changelist;
@@ -1915,8 +1946,6 @@ rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
 	changelist = g_hash_table_lookup (db->priv->changed_entries, entry);
 	changelist = g_slist_append (changelist, changedata);
 	g_hash_table_insert (db->priv->changed_entries, entry, changelist);
-
-	rhythmdb_entry_set_internal (db, entry, propid, value);
 }
 
 /* This function must be called from the main thread when the database isn't
@@ -1924,12 +1953,15 @@ rhythmdb_entry_sync (RhythmDB *db, RhythmDBEntry *entry,
  */
 static void
 rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
-			     guint propid, GValue *value)
+			     gboolean notify, guint propid, const GValue *value)
 {
 	RhythmDBClass *klass = RHYTHMDB_GET_CLASS (db);
 
 	g_assert (rb_is_main_thread ());
 	g_assert (rhythmdb_get_readonly (db) == FALSE);
+
+	if (notify)
+		record_entry_change (db, entry, propid, value);
 
 #ifndef G_DISABLE_ASSERT	
 	switch (G_VALUE_TYPE (value))
@@ -2027,9 +2059,6 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	case RHYTHMDB_PROP_RATING:
 		entry->rating = g_value_get_double (value);
 		break;
-	case RHYTHMDB_PROP_AUTO_RATE:
-		entry->auto_rate = g_value_get_boolean (value);
-		break;
 	case RHYTHMDB_PROP_PLAY_COUNT:
 		entry->play_count = g_value_get_ulong (value);
 		break;
@@ -2047,28 +2076,6 @@ rhythmdb_entry_set_internal (RhythmDB *db, RhythmDBEntry *entry,
 	
 	/* set the dirty state */
 	db->priv->dirty = TRUE;
-}
-
-void 
-rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
-		    guint propid, GValue *value)
-{
-	if (!rhythmdb_get_readonly (db) && rb_is_main_thread ()) {
-		rhythmdb_entry_set_internal (db, entry, propid, value);
-	} else {
-		struct RhythmDBEvent *result;
-
-		result = g_new0 (struct RhythmDBEvent, 1);
-		result->type = RHYTHMDB_EVENT_ENTRY_SET;
-
-		rb_debug ("queuing RHYTHMDB_ACTION_ENTRY_SET");
-
-		result->entry = entry;
-		result->change.prop = propid;
-		g_value_init (&result->change.new, G_VALUE_TYPE (value));
-		g_value_copy (value, &result->change.new);
-		g_async_queue_push (db->priv->event_queue, result);
-	}	
 }
 
 void
@@ -2699,7 +2706,6 @@ rhythmdb_prop_get_type (void)
 			ENUM_ENTRY (RHYTHMDB_PROP_FIRST_SEEN, "Time the song was added to the library (gulong) [first-seen]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_SEEN, "Last time the song was available (gulong) [last-seen]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_RATING, "Rating (gdouble) [rating]"),
-			ENUM_ENTRY (RHYTHMDB_PROP_AUTO_RATE, "Whether to auto-rate song (gboolean) [auto-rate]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_PLAY_COUNT, "Play Count (gulong) [play-count]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_LAST_PLAYED, "Last Played (gulong) [last-played]"),
 			ENUM_ENTRY (RHYTHMDB_PROP_BITRATE, "Bitrate (gulong) [bitrate]"),
@@ -2894,7 +2900,7 @@ entry_volume_mounted_or_unmounted (RhythmDBEntry *entry,
 		g_get_current_time (&time);
 		g_value_init (&val, G_TYPE_ULONG);
 		g_value_set_ulong (&val, time.tv_sec);
-		rhythmdb_entry_set_internal (ctxt->db, entry, 
+		rhythmdb_entry_set_internal (ctxt->db, entry, FALSE,
 					     RHYTHMDB_PROP_LAST_SEEN, &val);
 		g_value_unset (&val);
 
@@ -2948,7 +2954,7 @@ rhythmdb_entry_set_mount_point (RhythmDB *db, RhythmDBEntry *entry,
 	if (mount_point != NULL) {
 		g_value_init (&value, G_TYPE_STRING);
 		g_value_set_string_take_ownership (&value, mount_point);
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_MOUNTPOINT, 
 					     &value);
 		g_value_unset (&value);
@@ -2974,7 +2980,7 @@ rhythmdb_entry_set_visibility (RhythmDB *db, RhythmDBEntry *entry,
 		
 		g_value_init (&new_val, G_TYPE_BOOLEAN);
 		g_value_set_boolean (&new_val, !visible);
-		rhythmdb_entry_set_internal (db, entry, 
+		rhythmdb_entry_set_internal (db, entry, FALSE,
 					     RHYTHMDB_PROP_HIDDEN, &new_val);
 		
 		g_signal_emit (G_OBJECT (db), rhythmdb_signals[ENTRY_CHANGED], 

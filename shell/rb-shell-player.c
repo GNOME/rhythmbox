@@ -1074,10 +1074,10 @@ rb_shell_player_set_entry_playback_error (RBShellPlayer *player,
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, message);
-	rhythmdb_entry_set (player->priv->db,
-			    entry,
-			    RHYTHMDB_PROP_PLAYBACK_ERROR,
-			    &value);
+	rhythmdb_entry_set_nonotify (player->priv->db,
+				     entry,
+				     RHYTHMDB_PROP_PLAYBACK_ERROR,
+				     &value);
 	g_value_unset (&value);
 	rhythmdb_commit (player->priv->db);
 }
@@ -2240,7 +2240,7 @@ info_available_cb (RBPlayer *mmplayer,
 		rb_shell_player_sync_with_source (player);
 
 	if (set_field && entry_field != 0) {
-		rhythmdb_entry_sync (player->priv->db, entry, entry_field, value);
+		rhythmdb_entry_set (player->priv->db, entry, entry_field, value);
 		rhythmdb_commit (player->priv->db);
 	}
 

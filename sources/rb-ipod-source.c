@@ -268,7 +268,7 @@ entry_set_string_prop (RhythmDB *db, RhythmDBEntry *entry,
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string_take_ownership (&value, tmp);
-	rhythmdb_entry_set (RHYTHMDB (db), entry, propid, &value);
+	rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, propid, &value);
 	g_value_unset (&value);
 }
 
@@ -322,9 +322,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			GValue value = {0, };
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, song->track_nr);
-			rhythmdb_entry_set (RHYTHMDB (db), entry, 
-					    RHYTHMDB_PROP_TRACK_NUMBER, 
-					    &value);
+			rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, 
+						     RHYTHMDB_PROP_TRACK_NUMBER, 
+						     &value);
 			g_value_unset (&value);
 		}
 
@@ -333,9 +333,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			GValue value = {0, };
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, song->cd_nr);
-			rhythmdb_entry_set (RHYTHMDB (db), entry, 
-					    RHYTHMDB_PROP_DISC_NUMBER, 
-					    &value);
+			rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, 
+						     RHYTHMDB_PROP_DISC_NUMBER, 
+						     &value);
 			g_value_unset (&value);
 		}
 		
@@ -344,9 +344,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			GValue value = {0, };
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, song->bitrate);
-			rhythmdb_entry_set (RHYTHMDB (db), entry, 
-					    RHYTHMDB_PROP_BITRATE, 
-					    &value);
+			rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, 
+						     RHYTHMDB_PROP_BITRATE, 
+						     &value);
 			g_value_unset (&value);
 		}
 		
@@ -355,9 +355,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			GValue value = {0, };
 			g_value_init (&value, G_TYPE_ULONG);
 			g_value_set_ulong (&value, song->tracklen/1000);
-			rhythmdb_entry_set (RHYTHMDB (db), entry, 
-					    RHYTHMDB_PROP_DURATION, 
-					    &value);
+			rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, 
+						     RHYTHMDB_PROP_DURATION, 
+						     &value);
 			g_value_unset (&value);
 		}
 		
@@ -366,9 +366,9 @@ load_ipod_db_idle_cb (RBiPodSource *source)
 			GValue value = {0, };
 			g_value_init (&value, G_TYPE_UINT64);
 			g_value_set_uint64 (&value, song->size);
-			rhythmdb_entry_set (RHYTHMDB (db), entry, 
-					    RHYTHMDB_PROP_FILE_SIZE, 
-					    &value);
+			rhythmdb_entry_set_nonotify (RHYTHMDB (db), entry, 
+						     RHYTHMDB_PROP_FILE_SIZE, 
+						     &value);
 			g_value_unset (&value);
 		}
 		

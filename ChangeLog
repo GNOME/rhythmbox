@@ -1,5 +1,44 @@
 2005-08-29  Colin Walters  <walters@verbum.org>
 
+	* rhythmdb/rhythmdb.c (struct RhythmDBEvent): Add
+	signal_change member.
+	(threadsafe_entry_set): New function.
+	(rhythmdb_entry_set): Just call threadsafe_entry_set with TRUE.
+	(rhythmdb_entry_set_nonotify): New function; just call
+	threadsafe_entry_set with FALSE.
+	(rhythmdb_entry_set_internal): Take a notify flag; if true
+	add the change to our pending set.
+
+	Also update all internal callers of rhythmdb_entry_set_internal
+	to pass FALSE.  Some of these may be bugs however and need to
+	pass TRUE...
+
+	* rhythmdb/rhythmdb.h: Rename rhythmdb_entry_sync to
+	rhythmdb_entry_set, and rename rhythmdb_entry_set to
+	rhythmdb_entry_set_nonotify.
+
+	* rhythmdb/rhythmdb.h (enum RhythmDBProp)
+	(rhythmdb_entry_get_boolean): Kill off RHYTHMDB_PROP_AUTO_RATE.
+
+	* widgets/rb-song-info.c: Kill off vestiges of auto rating.
+
+	* widgets/rb-entry-view.c (rb_entry_view_rated_cb): 
+	* sources/rb-source.c (rb_source_update_play_statistics): 
+	* sources/rb-iradio-source.c (rb_iradio_source_add_station): 
+	* sources/rb-ipod-source.c (entry_set_string_prop) 
+	(load_ipod_db_idle_cb): 
+	* shell/rb-shell.c (rb_shell_set_rating_impl): 
+	* shell/rb-shell-player.c (rb_shell_player_set_entry_playback_error) 
+	(info_available_cb): 
+	* iradio/rb-station-properties-dialog.c (rb_station_properties_dialog_rated_cb) 
+	(rb_station_properties_dialog_sync_entries): 
+	* iradio/rb-new-station-dialog.c (rb_new_station_dialog_response_cb): 
+
+	Update callers of rhythmdb_entry_set to rhythmdb_entry_set_nonotify,
+	and callers of rhythmdb_entry_sync to rhythmdb_entry_set.
+	
+2005-08-29  Colin Walters  <walters@verbum.org>
+
 	* sources/Makefile.am (INCLUDES): Add HAL_CFLAGS unconditionally.
 
 	* shell/Makefile.am (rhythmbox_LDADD): Add HAL_LIBS to avoid

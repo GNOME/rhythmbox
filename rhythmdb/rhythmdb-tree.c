@@ -369,9 +369,6 @@ rhythmdb_tree_parser_end_element (struct RhythmDBTreeLoadContext *ctx, const cha
 		case RHYTHMDB_PROP_RATING:
 			ctx->entry->rating = g_ascii_strtod (ctx->buf->str, NULL);
 			break;
-		case RHYTHMDB_PROP_AUTO_RATE:
-			ctx->entry->auto_rate = !strcmp (ctx->buf->str, "1");
-			break;
 		case RHYTHMDB_PROP_PLAY_COUNT:
 			ctx->entry->play_count = parse_ulong (ctx->buf->str);
 			break;
@@ -699,9 +696,6 @@ save_entry (RhythmDBTree *db, RhythmDBEntry *entry, struct RhythmDBTreeSaveConte
 			break;
 		case RHYTHMDB_PROP_RATING:
 			save_entry_double(ctx, elt_name, entry->rating);
-			break;
-		case RHYTHMDB_PROP_AUTO_RATE:
-			save_entry_ulong(ctx, elt_name, entry->auto_rate ? 1 : 0);
 			break;
 		case RHYTHMDB_PROP_PLAY_COUNT:
 			save_entry_ulong(ctx, elt_name, entry->play_count);

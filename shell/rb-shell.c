@@ -2553,7 +2553,7 @@ rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating)
 			g_value_init (&value, G_TYPE_DOUBLE);
 			g_value_set_double (&value, rating);
 
-			rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
+			rhythmdb_entry_set_nonotify (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
 
 			g_value_unset (&value);
 		}

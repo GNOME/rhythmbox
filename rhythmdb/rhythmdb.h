@@ -81,7 +81,6 @@ typedef enum
 	RHYTHMDB_PROP_FIRST_SEEN,
 	RHYTHMDB_PROP_LAST_SEEN,
 	RHYTHMDB_PROP_RATING,
-	RHYTHMDB_PROP_AUTO_RATE,
 	RHYTHMDB_PROP_PLAY_COUNT,
 	RHYTHMDB_PROP_LAST_PLAYED,
 	RHYTHMDB_PROP_BITRATE,
@@ -235,8 +234,6 @@ G_INLINE_FUNC gboolean
 rhythmdb_entry_get_boolean (RhythmDBEntry *entry, RhythmDBPropType propid)
 {
 	switch (propid) {
-	case RHYTHMDB_PROP_AUTO_RATE:
-		return entry->auto_rate;
 	case RHYTHMDB_PROP_HIDDEN:
 		return entry->hidden;
 	default:
@@ -388,9 +385,9 @@ RhythmDBEntry *	rhythmdb_entry_new	(RhythmDB *db, RhythmDBEntryType type, const 
 void		rhythmdb_add_uri	(RhythmDB *db, const char *uri);
 
 void		rhythmdb_entry_set	(RhythmDB *db, RhythmDBEntry *entry,
-					 guint propid, GValue *value);
-void            rhythmdb_entry_sync     (RhythmDB *db, RhythmDBEntry *entry,
-					 guint propid, GValue *value);
+					 guint propid, const GValue *value);
+void		rhythmdb_entry_set_nonotify	(RhythmDB *db, RhythmDBEntry *entry,
+						 guint propid, const GValue *value);
 
 void		rhythmdb_entry_delete	(RhythmDB *db, RhythmDBEntry *entry);
 void            rhythmdb_entry_delete_by_type (RhythmDB *db, 

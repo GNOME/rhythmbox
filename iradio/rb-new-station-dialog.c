@@ -294,8 +294,8 @@ rb_new_station_dialog_response_cb (GtkDialog *gtkdialog,
 		entry = rhythmdb_entry_new (dialog->priv->db,
 					    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION,
 					    trimmed_location);
-	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
-	rhythmdb_entry_set (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
+	rhythmdb_entry_set_nonotify (dialog->priv->db, entry, RHYTHMDB_PROP_TITLE, &title_val);
+	rhythmdb_entry_set_nonotify (dialog->priv->db, entry, RHYTHMDB_PROP_GENRE, &genre_val);
 	rhythmdb_commit (dialog->priv->db);
 	g_value_unset (&title_val);
 	g_value_unset (&genre_val);

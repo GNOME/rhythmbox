@@ -384,25 +384,24 @@ rb_station_properties_dialog_rated_cb (RBRating *rating,
 				       double score,
 				       RBStationPropertiesDialog *dialog)
 {
-	GValue value = { 0, };
-
+	GValue value = {0, };
+	
 	g_return_if_fail (RB_IS_RATING (rating));
 	g_return_if_fail (RB_IS_STATION_PROPERTIES_DIALOG (dialog));
 	g_return_if_fail (score >= 0 && score <= 5 );
 
-	/* set the new value for the song */
 	g_value_init (&value, G_TYPE_DOUBLE);
 	g_value_set_double (&value, score);
-	rhythmdb_entry_sync (dialog->priv->db,
+
+	/* set the new value for the song */
+	rhythmdb_entry_set (dialog->priv->db,
 			    dialog->priv->current_entry,
 			    RHYTHMDB_PROP_RATING,
 			    &value);
-	rhythmdb_commit (dialog->priv->db);
 	g_value_unset (&value);
+	rhythmdb_commit (dialog->priv->db);
 
-	g_object_set (G_OBJECT (dialog->priv->rating),
-		      "rating", score,
-		      NULL);
+	g_object_set (G_OBJECT (dialog->priv->rating), "rating", score, NULL);
 }
 
 static void
@@ -459,8 +458,9 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	if (strcmp (title, rb_refstring_get (entry->title))) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, title);
-		rhythmdb_entry_sync (dialog->priv->db, entry, 
-				     RHYTHMDB_PROP_TITLE, &val);
+		rhythmdb_entry_set (dialog->priv->db, entry, 
+				    RHYTHMDB_PROP_TITLE,
+				    &val);
 		g_value_unset (&val);
 		changed = TRUE;
 	}
@@ -468,8 +468,8 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	if (strcmp (genre, rb_refstring_get (entry->genre))) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, genre);
-		rhythmdb_entry_sync (dialog->priv->db, entry, 
-				     RHYTHMDB_PROP_GENRE, &val);
+		rhythmdb_entry_set (dialog->priv->db, entry, 
+				    RHYTHMDB_PROP_GENRE, &val);
 		g_value_unset (&val);
 		changed = TRUE;
 	}
@@ -477,8 +477,8 @@ rb_station_properties_dialog_sync_entries (RBStationPropertiesDialog *dialog)
 	if (strcmp (location, entry->location)) {
 		g_value_init (&val, G_TYPE_STRING);
 		g_value_set_string (&val, location);
-		rhythmdb_entry_sync (dialog->priv->db, entry,
-				     RHYTHMDB_PROP_LOCATION, &val);
+		rhythmdb_entry_set (dialog->priv->db, entry,
+				    RHYTHMDB_PROP_LOCATION, &val);
 		g_value_unset (&val);
 		changed = TRUE;
 	}
