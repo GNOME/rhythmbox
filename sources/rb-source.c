@@ -590,30 +590,6 @@ rb_source_handle_eos (RBSource *source)
 }
 
 gboolean
-rb_source_have_artist_album (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_have_artist_album (source);
-}
-
-const char *
-rb_source_get_artist (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_artist (source);
-}
-
-const char *
-rb_source_get_album (RBSource *source)
-{
-	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
-
-	return klass->impl_get_album (source);
-}
-
-gboolean
 rb_source_have_url (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);

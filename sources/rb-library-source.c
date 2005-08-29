@@ -119,8 +119,6 @@ static void impl_search (RBSource *source, const char *text);
 static void impl_reset_filters (RBSource *source);
 static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_song_properties (RBSource *source);
-static const char * impl_get_artist (RBSource *player);
-static const char * impl_get_album (RBSource *player);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
 static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
@@ -276,9 +274,6 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_can_delete = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_delete = impl_delete;
-	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_get_artist = impl_get_artist;
-	source_class->impl_get_album = impl_get_album;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
@@ -1079,44 +1074,6 @@ impl_get_config_widget (RBSource *asource)
 	rb_library_source_preferences_sync (source);
 	return source->priv->config_widget;
 }
-
-static const char *
-impl_get_artist (RBSource *asource)
-{
-	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	RhythmDBEntry *entry;
-
-	g_free (source->priv->artist);
-
-	entry = rb_entry_view_get_playing_entry (source->priv->songs);
-
-	if (entry != NULL) {
-		source->priv->artist = g_strdup (rb_refstring_get (entry->artist));
-	} else {
-		source->priv->artist = NULL;
-	}
-
-	return source->priv->artist;
-}
-
-static const char *
-impl_get_album (RBSource *asource)
-{
-	RBLibrarySource *source = RB_LIBRARY_SOURCE (asource);
-	RhythmDBEntry *entry;
-
-	g_free (source->priv->artist);
-
-	entry = rb_entry_view_get_playing_entry (source->priv->songs);
-
-	if (entry != NULL) {
-		source->priv->album = g_strdup (rb_refstring_get (entry->album));
-	} else {
-		source->priv->album = NULL;
-	}
-	return source->priv->album;
-}
-
 
 static void
 rb_library_source_preferences_sync (RBLibrarySource *source)

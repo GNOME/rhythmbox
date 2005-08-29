@@ -206,7 +206,6 @@ rb_playlist_source_class_init (RBPlaylistSourceClass *klass)
 	source_class->impl_delete = impl_delete;
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_true_function;
-	source_class->impl_have_artist_album = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;

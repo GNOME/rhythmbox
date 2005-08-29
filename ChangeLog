@@ -1,3 +1,20 @@
+2005-08-30  Raphael Slinckx  <rslinckx@cvs.gnome.org>
+
+	* shell/rb-shell-player.c: (rb_shell_player_init),
+	(rb_shell_player_set_property), (rb_shell_player_entry_changed_cb),
+	(rb_shell_player_set_playing_source_internal),
+	(rb_shell_player_sync_with_selected_source): Notify the player when an
+	entry has updated the title, album or artist field, and resync the big
+	display.
+	
+	* sources/rb-iradio-source.c: (rb_iradio_source_class_init):
+	* sources/rb-library-source.c: (rb_library_source_class_init),
+	(impl_get_config_widget):
+	* sources/rb-playlist-source.c: (rb_playlist_source_class_init):
+	* sources/rb-source.c:
+	* sources/rb-source.h: Removed unused have_artist_album, get_artist, and
+	get_album functions in rb-source and adapted other sources accordingly.
+	
 2005-08-29  Colin Walters  <walters@verbum.org>
 
 	* rhythmdb/rhythmdb.c (struct RhythmDBEvent): Add

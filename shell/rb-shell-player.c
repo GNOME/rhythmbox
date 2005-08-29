@@ -113,7 +113,11 @@ static void rb_shell_player_set_play_button (RBShellPlayer *player,
 			                     PlayButtonState state);
 static void rb_shell_player_sync_with_source (RBShellPlayer *player);
 static void rb_shell_player_sync_with_selected_source (RBShellPlayer *player);
-
+static void rb_shell_player_entry_changed_cb (RhythmDB *db,
+							RhythmDBEntry *entry,
+				       		GSList *changes,
+				       		RBShellPlayer *player);
+				       
 static void rb_shell_player_playing_entry_deleted_cb (RBEntryView *view,
 						      RhythmDBEntry *entry,
 						      RBShellPlayer *playa);
@@ -197,7 +201,6 @@ struct RBShellPlayerPrivate
 
 	char *song;
 	gboolean have_url;
-	gboolean have_artist_album;
 	char *url;
 
 	gboolean have_previous_entry;
@@ -716,7 +719,7 @@ rb_shell_player_init (RBShellPlayer *player)
 
 	g_signal_connect (player, "notify::playing",
 			  G_CALLBACK (reemit_playing_signal), NULL);
-
+				 
 #ifdef HAVE_MMKEYS
 	/* Enable Multimedia Keys */
 	rb_shell_player_init_mmkeys (player);
@@ -825,6 +828,12 @@ rb_shell_player_set_property (GObject *object,
 		break;
 	case PROP_DB:
 		player->priv->db = g_value_get_object (value);
+		
+		/* Listen for changed entries to update metadata display */
+		g_signal_connect_object (G_OBJECT (player->priv->db),
+			 "entry_changed",
+			 G_CALLBACK (rb_shell_player_entry_changed_cb),
+			 player, 0);
 		break;
 	case PROP_ACTION_GROUP:
 		player->priv->actiongroup = g_value_get_object (value);
@@ -1689,6 +1698,34 @@ rb_shell_player_set_play_button (RBShellPlayer *player,
 }
 
 static void
+rb_shell_player_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
+				       GSList *changes, RBShellPlayer *player)
+{
+	GSList *t;
+	RhythmDBEntry *playing_entry = rb_shell_player_get_playing_entry (player);
+	
+	/* We try to update only if the changed entry is currently playing */
+	if (entry != playing_entry) {
+		return;
+	}
+	
+	/* We update only if the artist, title or album has changed */
+	for (t = changes; t; t = t->next)
+	{
+		switch (t->data->prop)
+		{
+			case RHYTHMDB_PROP_TITLE:
+			case RHYTHMDB_PROP_ARTIST:
+			case RHYTHMDB_PROP_ALBUM:
+				rb_shell_player_sync_with_source (player);
+				return;
+			default:
+				break;
+		}
+	}
+}
+
+static void
 rb_shell_player_sync_with_source (RBShellPlayer *player)
 {
 	const char *entry_title = NULL;
@@ -1884,7 +1921,6 @@ rb_shell_player_set_playing_source_internal (RBShellPlayer *player,
 	player->priv->song = NULL;
 	player->priv->url = NULL;
 	player->priv->have_url = FALSE;
-	player->priv->have_artist_album = FALSE;
 
 	if (source == NULL)
 		rb_shell_player_stop (player);
@@ -1985,9 +2021,6 @@ rb_shell_player_sync_with_selected_source (RBShellPlayer *player)
 		rb_debug ("no playing source, new source is %p", player->priv->selected_source);
 
 		player->priv->have_url = rb_source_have_url (player->priv->selected_source);
-
-		player->priv->have_artist_album
-			= rb_source_have_artist_album (player->priv->selected_source);
 
 		rb_shell_player_sync_with_source (player);
 	}

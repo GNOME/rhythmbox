@@ -93,9 +93,6 @@ typedef struct
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 	
-	gboolean	(*impl_have_artist_album)(RBSource *source);
-	const char *	(*impl_get_artist)	(RBSource *source);
-	const char *	(*impl_get_album)	(RBSource *source);
 	gboolean	(*impl_have_url)	(RBSource *source);
 	gboolean	(*impl_receive_drag)	(RBSource *source, GtkSelectionData *data);
 	gboolean	(*impl_show_popup)	(RBSource *source);
@@ -149,9 +146,6 @@ void		rb_source_song_properties	(RBSource *source);
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);
 
-gboolean	rb_source_have_artist_album	(RBSource *source);
-const char *	rb_source_get_artist		(RBSource *source);
-const char *	rb_source_get_album		(RBSource *source);
 gboolean	rb_source_have_url		(RBSource *source);
 
 gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
