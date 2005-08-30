@@ -47,8 +47,6 @@ struct RBSourceListPriv
 	GtkTreeSelection *selection;
 
 	RBSource *playing_source;
-	GdkPixbuf *playing_pixbuf;
-	GdkPixbuf *paused_pixbuf;
 
 	RBShell *shell;
 };
@@ -95,9 +93,6 @@ static void visibility_notify_cb (GObject *obj, GParamSpec *pspec,
 				  gpointer data);
 static void source_name_edited_cb (GtkCellRendererText *renderer, const char *pathstr,
 				   const char *text, RBSourceList *sourcelist);
-static void rb_sourcelist_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-						  GtkTreeModel *tree_model, GtkTreeIter *iter,
-						  RBSourceList *sourcelist);
 static void rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
 						GtkTreeModel *tree_model, GtkTreeIter *iter,
 						RBSourceList *sourcelist);
@@ -212,7 +207,6 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *gcolumn;
-	GtkWidget *dummy;
 
 	sourcelist->priv = g_new0 (RBSourceListPriv, 1);
 
@@ -244,18 +238,6 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 				 G_CALLBACK (popup_menu_cb),
 				 sourcelist, 0);
 
-	dummy = gtk_tree_view_new ();
-	sourcelist->priv->playing_pixbuf = gtk_widget_render_icon (dummy,
-								   RB_STOCK_PLAYING,
-								   GTK_ICON_SIZE_MENU,
-								   NULL);
-
-	sourcelist->priv->paused_pixbuf = gtk_widget_render_icon (dummy,
-								  RB_STOCK_PAUSED,
-								  GTK_ICON_SIZE_MENU,
-								  NULL);
-	gtk_widget_destroy (dummy);
-
 	gcolumn = gtk_tree_view_column_new ();
 	gtk_tree_view_column_set_title (gcolumn, _("_Source"));
 	gtk_tree_view_column_set_clickable (gcolumn, FALSE);
@@ -277,14 +259,6 @@ rb_sourcelist_init (RBSourceList *sourcelist)
 						 sourcelist, NULL);
 	g_signal_connect_object (renderer, "edited", G_CALLBACK (source_name_edited_cb), sourcelist, 0);
 
-	/* Set up the playing column */
-	renderer = rb_cell_renderer_pixbuf_new ();
-	gtk_tree_view_column_pack_start (gcolumn, renderer, FALSE);
-	gtk_tree_view_column_set_cell_data_func (gcolumn, renderer,
-						 (GtkTreeCellDataFunc)
-						 rb_sourcelist_playing_cell_data_func,
-						 sourcelist, NULL);
-
 	sourcelist->priv->selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sourcelist->priv->treeview));
 	g_signal_connect_object (G_OBJECT (sourcelist->priv->selection),
 			         "changed",
@@ -297,9 +271,6 @@ static void
 rb_sourcelist_finalize (GObject *object)
 {
 	RBSourceList *sourcelist = RB_SOURCELIST (object);
-
-	g_object_unref (G_OBJECT (sourcelist->priv->playing_pixbuf));
-	g_object_unref (G_OBJECT (sourcelist->priv->paused_pixbuf));
 
 	g_free (sourcelist->priv);
 
@@ -494,28 +465,6 @@ rb_sourcelist_select (RBSourceList *sourcelist, RBSource *source)
 }
 
 static void
-rb_sourcelist_playing_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *renderer,
-				      GtkTreeModel *tree_model, GtkTreeIter *iter,
-				      RBSourceList *sourcelist)
-{
-	GdkPixbuf *pixbuf;
-	gboolean playing;
-	gtk_tree_model_get (sourcelist->priv->filter_model, iter,
-			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing, -1);
-	
-	if (playing)
-		pixbuf = sourcelist->priv->playing_pixbuf;
-#if 0
-	else if (source == sourcelist->priv->playing_source)
-		pixbuf = sourcelist->priv->paused_pixbuf;
-#endif
-	else
-		pixbuf = NULL;
-
-	g_object_set (G_OBJECT (renderer), "pixbuf", pixbuf, NULL);
-}
-
-static void
 rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 				    RBSourceList *sourcelist)
 {
@@ -647,12 +596,17 @@ rb_sourcelist_title_cell_data_func (GtkTreeViewColumn *column, GtkCellRenderer *
 {
 	RBSource *source;
 	char *str;
-
+	gboolean playing;
+	
 	gtk_tree_model_get (GTK_TREE_MODEL (sourcelist->priv->filter_model), iter,
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, &str,
-			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source, -1);
+			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &source,
+			    RB_SOURCELIST_MODEL_COLUMN_PLAYING, &playing,
+			    -1);
 
-	g_object_set (G_OBJECT (renderer), "text", str, NULL);
+	g_object_set (G_OBJECT (renderer), "text", str,
+		      "weight", playing ? PANGO_WEIGHT_BOLD : PANGO_WEIGHT_NORMAL,
+		      NULL);
 
 	g_free (str);
 }
