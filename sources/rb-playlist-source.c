@@ -52,7 +52,6 @@
 #define RB_PLAYLIST_AUTOMATIC (xmlChar *) "automatic"
 #define RB_PLAYLIST_STATIC (xmlChar *) "static"
 #define RB_PLAYLIST_NAME (xmlChar *) "name"
-#define RB_PLAYLIST_INT_NAME (xmlChar *) "internal-name"
 #define RB_PLAYLIST_LIMIT_COUNT (xmlChar *) "limit-count"
 #define RB_PLAYLIST_LIMIT_SIZE (xmlChar *) "limit-size"
 #define RB_PLAYLIST_LIMIT_TIME (xmlChar *) "limit-time"
@@ -892,17 +891,6 @@ rb_playlist_source_new_from_xml	(RBShell *shell,
 	g_object_set (G_OBJECT (source), "name", tmp, NULL);
 	g_free (tmp);
 
-	tmp = xmlGetProp (node, RB_PLAYLIST_INT_NAME);
-	if (!tmp) {
-		GTimeVal serial;
-		/* Hm.  Upgrades. */
-		g_get_current_time (&serial);
-		tmp = (xmlChar *) g_strdup_printf ("<playlist:%ld:%ld>",
-				       serial.tv_sec, serial.tv_usec);
-	}
-	g_object_set (G_OBJECT (source), "internal-name", tmp, NULL);
-	g_free (tmp);
-
 	if (source->priv->automatic) {
 		GPtrArray *query;
 		gint limit_count = 0, limit_mb = 0, limit_time = 0;
@@ -976,14 +964,11 @@ rb_playlist_source_save_to_xml (RBPlaylistSource *source, xmlNodePtr parent_node
 {
 	xmlNodePtr node;
 	xmlChar *name;
-	xmlChar *internal_name;
 	GtkTreeIter iter;
 
 	node = xmlNewChild (parent_node, NULL, RB_PLAYLIST_PLAYLIST, NULL);
-	g_object_get (G_OBJECT (source), "name", &name,
-		      "internal-name", &internal_name, NULL);
+	g_object_get (G_OBJECT (source), "name", &name, NULL);
 	xmlSetProp (node, RB_PLAYLIST_NAME, name);
-	xmlSetProp (node, RB_PLAYLIST_INT_NAME, internal_name);
 	xmlSetProp (node, RB_PLAYLIST_TYPE, source->priv->automatic ? RB_PLAYLIST_AUTOMATIC : RB_PLAYLIST_STATIC);
 
 	if (!source->priv->automatic) {

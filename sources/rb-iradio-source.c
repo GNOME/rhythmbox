@@ -430,7 +430,6 @@ rb_iradio_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_IRADIO_SOURCE,
 					  "name", _("Radio"),
 					  "shell", shell,
-					  "internal-name", "<radio>",
 					  NULL));
 
 	rb_shell_register_entry_type_for_source (shell, source, 

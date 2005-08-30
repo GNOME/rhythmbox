@@ -241,7 +241,6 @@ rb_ipod_source_new (RBShell *shell)
 	source = RB_SOURCE (g_object_new (RB_TYPE_IPOD_SOURCE,
 					  "name", _("iPod"),
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_IPOD,
-					  "internal-name", "<ipod>",
 					  "icon", rb_ipod_get_icon (),
 					  "shell", shell,
 					  "visibility", FALSE,

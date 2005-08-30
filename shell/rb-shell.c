@@ -104,7 +104,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
-static void rb_shell_select_source_internal (RBShell *shell, RBSource *source);
 static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
@@ -188,12 +187,6 @@ static void paned_changed_cb (GConfClient *client,
 			      guint cnxn_id,
 			      GConfEntry *entry,
 			      RBShell *shell);
-static void rb_shell_sync_selected_source (RBShell *shell);
-
-static void selected_source_changed_cb (GConfClient *client,
-					guint cnxn_id,
-					GConfEntry *entry,
-					RBShell *shell);
 #ifdef HAVE_AUDIOCD
 static void audiocd_changed_cb (MonkeyMediaAudioCD *cd,
 				gboolean available,
@@ -278,7 +271,6 @@ enum
 #define CONF_STATE_WINDOW_MAXIMIZED CONF_PREFIX "/state/window_maximized"
 #define CONF_STATE_PANED_POSITION   CONF_PREFIX "/state/paned_position"
 #define CONF_STATE_ADD_DIR          CONF_PREFIX "/state/add_dir"
-#define CONF_STATE_SELECTED_SOURCE  CONF_PREFIX "/state/selected_source"
 
 struct RBShellPrivate
 {
@@ -651,9 +643,6 @@ rb_shell_get_property (GObject *object,
 	case PROP_RHYTHMDB_FILE:
 		g_value_set_string (value, shell->priv->rhythmdb_file);
 		break;
-	case PROP_SELECTED_SOURCE:
-		g_value_set_object (value, shell->priv->selected_source);
-		break;
 	case PROP_DB:
 		g_value_set_object (value, shell->priv->db);
 		break;
@@ -934,9 +923,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
-	eel_gconf_notification_add (CONF_STATE_SELECTED_SOURCE,
-				    (GConfClientNotifyFunc) selected_source_changed_cb,
-				    shell);
 	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
@@ -1021,7 +1007,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	
 	rb_shell_sync_window_state (shell);
 
-	rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
+	rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -1298,11 +1284,7 @@ rb_shell_source_deleted_cb (RBSource *source,
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 	}
 	if (source == shell->priv->selected_source) {
-		/* Set the gconf key */
 		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
-		/* Deal with it immediately, since we can't reference
-		 * the old source anymore. */
-		rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
 	}
 
 	shell->priv->sources = g_list_remove (shell->priv->sources, source);
@@ -1359,16 +1341,6 @@ rb_shell_playing_entry_changed_cb (RBShellPlayer *player,
 static void
 rb_shell_select_source (RBShell *shell,
 			RBSource *source)
-{
-	char *internalname;
-
-	g_object_get (G_OBJECT (source), "internal-name", &internalname, NULL);
-	eel_gconf_set_string (CONF_STATE_SELECTED_SOURCE, internalname);
-}
-
-static void
-rb_shell_select_source_internal (RBShell *shell,
-				 RBSource *source)
 {
 	RBEntryView *view;
 
@@ -1724,7 +1696,6 @@ idle_handle_load_complete (RBShell *shell)
 	rb_debug ("load complete");
 
 	rb_playlist_manager_load_playlists (shell->priv->playlist_manager);
-	rb_shell_sync_selected_source (shell);
 	shell->priv->load_complete = TRUE;
 
 	GDK_THREADS_LEAVE ();
@@ -1866,47 +1837,6 @@ paned_changed_cb (GConfClient *client,
 {
 	rb_debug ("paned changed");
 	rb_shell_sync_paned (shell);
-}
-
-static void
-rb_shell_sync_selected_source (RBShell *shell)
-{
-	char *internalname;
-	GList *tmp;
-
-	internalname = eel_gconf_get_string (CONF_STATE_SELECTED_SOURCE);
-	g_return_if_fail (internalname);
-
-	for (tmp = shell->priv->sources; tmp ; tmp = tmp->next) {
-		const char *tmpname;
-		g_object_get (G_OBJECT (tmp->data), "internal-name", &tmpname, NULL);
-		if (!strcmp (internalname, tmpname)) {
-			gboolean visible;
-			g_assert (tmp->data != NULL);
-			g_object_get (G_OBJECT (tmp->data), 
-				      "visibility", &visible, 
-				      NULL);
-			if (visible != FALSE) {
-				g_free (internalname);
-				rb_shell_select_source_internal (shell,
-								 tmp->data);
-				return;
-
-			}
-		}
-	}
-	rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
-	g_free (internalname);
-}
-
-
-static void
-selected_source_changed_cb (GConfClient *client,
-			    guint cnxn_id,
-			    GConfEntry *entry,
-			    RBShell *shell)
-{
-	rb_shell_sync_selected_source (shell);
 }
 
 static void

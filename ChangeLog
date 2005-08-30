@@ -1,5 +1,19 @@
 2005-08-30  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell.c: Don't use GConf for selected source; it's
+	confusing to have the selected source change after startup,
+	and since we don't save other things it's not worth saving this.
+
+	* sources/rb-playlist-source.c:
+	* sources/rb-library-source.c:
+	* sources/rb-iradio-source.c:
+	* sources/rb-ipod-source.c: Delete internal-name property usage.
+	* sources/rb-source.c: Delete internal-name property.
+
+	* data/rhythmbox.schemas: Delete selected_source.
+	
+2005-08-30  Colin Walters  <walters@verbum.org>
+
 	* sources/rb-sourcelist.c: Make playing source bold instead of
 	displaying a pixbuf; it's much less ugly.
 	

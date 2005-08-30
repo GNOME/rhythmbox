@@ -63,7 +63,6 @@ static void default_delete_thyself (RBSource *source);
 struct RBSourcePrivate
 {
 	char *name;
-	char *internal_name;
 	
 	RBShell *shell;
 	gboolean visible;
@@ -73,7 +72,6 @@ enum
 {
 	PROP_0,
 	PROP_NAME,
-	PROP_INTERNAL_NAME,
 	PROP_SHELL,
 	PROP_UI_MANAGER,
 	PROP_VISIBLE
@@ -153,13 +151,6 @@ rb_source_class_init (RBSourceClass *klass)
 					 g_param_spec_string ("name",
 							      "UI name",
 							      "Interface name",
-							      NULL,
-							      G_PARAM_READWRITE));
-	g_object_class_install_property (object_class,
-					 PROP_INTERNAL_NAME,
-					 g_param_spec_string ("internal-name",
-							      "Internal name",
-							      "Internal name",
 							      NULL,
 							      G_PARAM_READWRITE));
 
@@ -272,10 +263,6 @@ rb_source_set_property (GObject *object,
 		g_free (source->priv->name);
 		source->priv->name = g_strdup (g_value_get_string (value));
 		break;
-	case PROP_INTERNAL_NAME:
-		g_free (source->priv->internal_name);
-		source->priv->internal_name = g_strdup (g_value_get_string (value));
-		break;
 	case PROP_SHELL:
 		source->priv->shell = g_value_get_object (value);
 		break;
@@ -303,9 +290,6 @@ rb_source_get_property (GObject *object,
 	{
 	case PROP_NAME:
 		g_value_set_string (value, source->priv->name);
-		break;
-	case PROP_INTERNAL_NAME:
-		g_value_set_string (value, source->priv->internal_name);
 		break;
 	case PROP_SHELL:
 		g_value_set_object (value, source->priv->shell);

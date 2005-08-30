@@ -685,7 +685,6 @@ rb_library_source_new (RBShell *shell)
 
 	source = RB_SOURCE (g_object_new (RB_TYPE_LIBRARY_SOURCE,
 					  "name", _("Library"),
-					  "internal-name", "<library>",
 					  "entry-type", RHYTHMDB_ENTRY_TYPE_SONG,
 					  "shell", shell,
 					  "icon", icon,
