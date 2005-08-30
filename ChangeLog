@@ -1,5 +1,10 @@
 2005-08-30  Colin Walters  <walters@verbum.org>
 
+	* shell/rb-shell-preferences.c (rb_shell_preferences_append_view_page): 
+	Make non-visible sources insensitive.
+	
+2005-08-30  Colin Walters  <walters@verbum.org>
+
 	* shell/rb-shell.c: Don't use GConf for selected source; it's
 	confusing to have the selected source change after startup,
 	and since we don't save other things it's not worth saving this.

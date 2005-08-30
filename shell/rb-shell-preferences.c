@@ -258,17 +258,22 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 				       RBSource *source)
 {
 	GtkWidget *widget;
+	GtkWidget *label;
+	gboolean visible;
 
 	g_return_if_fail (RB_IS_SHELL_PREFERENCES (prefs));
 	g_return_if_fail (RB_IS_SOURCE (source));
 
 	widget = rb_source_get_config_widget (source);
-	if (widget)
-		gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
-					  widget,
-					  gtk_label_new (name));
-	else
-		rb_debug ("No config widget for source %s", name);
+	if (!widget)
+		return;
+	label = gtk_label_new (name);
+	g_object_get (source, "visibility", &visible, NULL);
+	if (!visible)
+		gtk_widget_set_sensitive (label, FALSE);
+	gtk_notebook_append_page (GTK_NOTEBOOK (prefs->priv->notebook),
+				  widget,
+				  label);
 }
 
 GtkWidget *
