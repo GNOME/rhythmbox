@@ -25,6 +25,12 @@
       <arg type="a{sv}" direction="out"/>
     </method>
 
+    <method name="setSongProperty">
+      <arg type="s" name="uri"/>
+      <arg type="s" name="propname"/>
+      <arg type="v" name="value"/>
+    </method>
+
     <signal name="visibilityChanged"/>
 
   </interface>

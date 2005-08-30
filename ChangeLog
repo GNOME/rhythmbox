@@ -1,5 +1,36 @@
 2005-08-29  Colin Walters  <walters@verbum.org>
 
+	* sources/rb-iradio-source.c (rb_iradio_source_add_station): Return
+	if entry already exists.  Use rhythmdb_entry_set_uninserted.
+
+	* sources/rb-ipod-source.c (entry_set_string_prop): Avoid
+	needlessly duping string, and use rhythmdb_entry_set_uninserted.
+	(load_ipod_db_idle_cb): Use rhythmdb_entry_set_uninserted.
+
+	* shell/rb-shell.h (enum RBShellError): Add some more errors.
+	Prototype rb_shell_set_song_property.
+
+	* shell/rb-shell.xml: Export setSongProperty.
+
+	* shell/rb-shell.c (rb_shell_set_song_property): New function.
+	(rb_shell_set_rating_impl): Call rhythmdb_entry_set instead of
+	rhythmdb_entry_set_nonotify, and call rhythmdb_commit.
+
+	* shell/rb-shell-player.c (rb_shell_player_set_entry_playback_error): Call
+	rhythmdb_entry_set instead of rhythmdb_entry_set_nonotify, since we do
+	want to notify of the change.
+	(rb_shell_player_entry_changed_cb): Cast to RhythmDBEntryChange.
+
+	* rhythmdb/rhythmdb.c (rhythmdb_process_queued_entry_set_event): Fix
+	logic error; idle functions would be enqueued for each set.
+	(rhythmdb_entry_set): Fix assertion logic error.
+
+	* iradio/rb-new-station-dialog.c (rb_new_station_dialog_response_cb):
+	Avoid needlessly duping strings, and use rhythmdb_entry_set_uninserted.
+	Return if the entry already exists.
+	
+2005-08-29  Colin Walters  <walters@verbum.org>
+
 	* rhythmdb/rhythmdb.h (struct RhythmDBEntry): Add
 	"inserted" member which we use to keep track of
 	whether or not an entry is in the DB.  Prototype

@@ -1392,7 +1392,7 @@ rhythmdb_process_queued_entry_set_event (RhythmDB *db,
 	 * we can run a single commit for several queued 
 	 * entry_set
 	 */
-	if (db->priv->commit_timeout_id) {
+	if (!db->priv->commit_timeout_id) {
 		db->priv->commit_timeout_id = g_timeout_add (100, (GSourceFunc)timeout_rhythmdb_commit, db);
 	}
 }
@@ -1927,7 +1927,7 @@ void
 rhythmdb_entry_set (RhythmDB *db, RhythmDBEntry *entry, 
 		    guint propid, const GValue *value)
 {
-	g_return_if_fail (!entry->inserted);
+	g_return_if_fail (entry->inserted == TRUE);
 	threadsafe_entry_set (db, entry, TRUE, propid, value);
 }
 

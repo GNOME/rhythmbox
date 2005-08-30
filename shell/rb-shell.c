@@ -2456,6 +2456,52 @@ rb_shell_get_song_properties (RBShell *shell,
 	return TRUE;
 }
 
+gboolean
+rb_shell_set_song_property (RBShell *shell,
+			    const char *uri,
+			    const char *propname,
+			    const GValue *value,
+			    GError **error)
+{
+	RhythmDBEntry *entry;
+	GType proptype;
+	int propid;
+	
+	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+
+	if (entry == NULL) {
+		g_set_error (error,
+			     RB_SHELL_ERROR,
+			     RB_SHELL_ERROR_NO_SUCH_URI,
+			     _("Unknown song URI: %s"),
+			     uri);
+		return FALSE;
+	}
+
+	if ((propid = rhythmdb_propid_from_nice_elt_name (shell->priv->db, (guchar *) propname)) < 0) {
+		g_set_error (error,
+			     RB_SHELL_ERROR,
+			     RB_SHELL_ERROR_NO_SUCH_PROPERTY,
+			     _("Unknown property %s"),
+			     propname);
+		return FALSE;
+	}
+
+	proptype = rhythmdb_get_property_type (shell->priv->db, propid);
+	if (G_VALUE_TYPE (value) != proptype) {
+		g_set_error (error,
+			     RB_SHELL_ERROR,
+			     RB_SHELL_ERROR_INVALID_PROPERTY_TYPE,
+			     _("Invalid property type %s for property %s"),
+			     g_type_name (G_VALUE_TYPE (value)),
+			     uri);
+		return FALSE;
+	}
+
+	rhythmdb_entry_set (shell->priv->db, entry, propid, value);
+	return TRUE;
+}
+
 static void
 rb_shell_jump_next_impl (RBRemoteProxy *proxy)
 {
@@ -2553,9 +2599,10 @@ rb_shell_set_rating_impl (RBRemoteProxy *proxy, double rating)
 			g_value_init (&value, G_TYPE_DOUBLE);
 			g_value_set_double (&value, rating);
 
-			rhythmdb_entry_set_nonotify (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
+			rhythmdb_entry_set (shell->priv->db, entry, RHYTHMDB_PROP_RATING, &value);
 
 			g_value_unset (&value);
+			rhythmdb_commit (shell->priv->db);
 		}
 	}
 }

@@ -37,7 +37,10 @@ G_BEGIN_DECLS
 
 typedef enum
 {
-	RB_SHELL_ERROR_NO_SUCH_URI
+	RB_SHELL_ERROR_NO_SUCH_URI,
+	RB_SHELL_ERROR_NO_SUCH_PROPERTY,
+	RB_SHELL_ERROR_IMMUTABLE_PROPERTY,
+	RB_SHELL_ERROR_INVALID_PROPERTY_TYPE
 } RBShellError;
 
 #define RB_SHELL_ERROR rb_shell_error_quark ()
@@ -78,6 +81,12 @@ gboolean        rb_shell_get_song_properties (RBShell *shell,
 					      const char *uri,
 					      GHashTable **properties,
 					      GError **error);
+
+gboolean        rb_shell_set_song_property (RBShell *shell,
+					    const char *uri,
+					    const char *propname,
+					    const GValue *value,
+					    GError **error);
 
 void            rb_shell_hidden_notify  (RBShell *shell,
 					 guint timeout,

@@ -1083,10 +1083,10 @@ rb_shell_player_set_entry_playback_error (RBShellPlayer *player,
 
 	g_value_init (&value, G_TYPE_STRING);
 	g_value_set_string (&value, message);
-	rhythmdb_entry_set_nonotify (player->priv->db,
-				     entry,
-				     RHYTHMDB_PROP_PLAYBACK_ERROR,
-				     &value);
+	rhythmdb_entry_set (player->priv->db,
+			    entry,
+			    RHYTHMDB_PROP_PLAYBACK_ERROR,
+			    &value);
 	g_value_unset (&value);
 	rhythmdb_commit (player->priv->db);
 }
@@ -1712,7 +1712,8 @@ rb_shell_player_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 	/* We update only if the artist, title or album has changed */
 	for (t = changes; t; t = t->next)
 	{
-		switch (t->data->prop)
+		RhythmDBEntryChange *change = t->data;
+		switch (change->prop)
 		{
 			case RHYTHMDB_PROP_TITLE:
 			case RHYTHMDB_PROP_ARTIST:
