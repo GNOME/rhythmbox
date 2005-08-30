@@ -32,6 +32,7 @@ G_BEGIN_DECLS
 
 typedef enum {
 	RB_SOURCE_EOF_ERROR,
+	RB_SOURCE_EOF_RETRY,
 	RB_SOURCE_EOF_NEXT,
 } RBSourceEOFType;
 
@@ -90,6 +91,8 @@ typedef struct
 
 	void		(*impl_song_properties)	(RBSource *source);
 
+	gboolean	(*impl_try_playlist)	(RBSource *source);
+
 	gboolean	(*impl_can_pause)	(RBSource *source);
 	RBSourceEOFType	(*impl_handle_eos)	(RBSource *source);
 	
@@ -142,6 +145,8 @@ void		rb_source_paste			(RBSource *source, GList *entries);
 void		rb_source_delete		(RBSource *source);
 
 void		rb_source_song_properties	(RBSource *source);
+
+gboolean	rb_source_try_playlist		(RBSource *source);
 
 gboolean	rb_source_can_pause		(RBSource *source);
 RBSourceEOFType	rb_source_handle_eos		(RBSource *source);

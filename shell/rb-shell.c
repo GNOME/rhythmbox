@@ -64,6 +64,7 @@
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
+#include "totem-pl-parser.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
 #endif /* WITH_IPOD_SUPPORT */
@@ -245,19 +246,6 @@ static gchar *rb_shell_get_playing_source_impl (RBRemoteProxy *proxy);
 
 static void rb_shell_toggle_mute_impl (RBRemoteProxy *proxy);
 
-typedef RBSource *(*SourceCreateFunc)(RBShell *);
-
-static SourceCreateFunc known_sources[] = {
-	rb_library_source_new,
-	rb_iradio_source_new,
-#ifdef WITH_IPOD_SUPPORT
-	rb_ipod_source_new,	
-#endif /* WITH_IPOD_SUPPORT */
-	NULL,
-};
-
-
-
 static gboolean save_yourself_cb (GnomeClient *client, 
                                   gint phase,
                                   GnomeSaveStyle save_style,
@@ -332,6 +320,10 @@ struct RBShellPrivate
 	GtkWidget *load_error_dialog;
 	GList *supported_media_extensions;
 	gboolean show_db_errors;
+
+	RBLibrarySource *library_source;
+	RBIRadioSource *iradio_source;
+	RBiPodSource *ipod_source;
 
 #ifdef HAVE_AUDIOCD
  	MonkeyMediaAudioCD *cd;
@@ -795,9 +787,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	GtkWidget *menubar;
 	GtkWidget *vbox;
 	gboolean rhythmdb_exists;
-	RBSource *iradio_source;
-	RBSource *library_source;
-	int i = 0;
 	GError *error = NULL;
 
 	klass = RB_SHELL_CLASS (g_type_class_peek (RB_TYPE_SHELL));
@@ -973,27 +962,22 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (shell->priv->load_error_dialog), "response",
 				 G_CALLBACK (rb_shell_load_failure_dialog_response_cb), shell, 0);
 
-	/* initialize sources */
-	while (known_sources[i] != NULL) {
-		RBSource *source;
 
-		source = known_sources[i] (shell);
-		rb_shell_append_source (shell, RB_SOURCE (source));
-		i++;
-	}
-
-	library_source = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG);
-	g_assert (library_source != NULL);
-
-	iradio_source  = rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
-	g_assert (iradio_source != NULL);
+	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source));
+	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
+#ifdef WITH_IPOD_SUPPORT
+	shell->priv->ipod_source = RB_IPOD_SOURCE (rb_ipod_source_new (shell));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->ipod_source));
+#endif
 
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
 								 RB_SOURCELIST (shell->priv->sourcelist),
-								 RB_LIBRARY_SOURCE (library_source),
-								 RB_IRADIO_SOURCE (iradio_source));
+								 shell->priv->library_source,
+								 shell->priv->iradio_source);
 
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "playlist_added",
 				 G_CALLBACK (rb_shell_playlist_added_cb), shell, 0);
@@ -1037,7 +1021,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	
 	rb_shell_sync_window_state (shell);
 
-	rb_shell_select_source_internal (shell, library_source);
+	rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
 
 #ifdef HAVE_AUDIOCD
         if (rb_audiocd_is_any_device_available () == TRUE) {
@@ -1314,14 +1298,11 @@ rb_shell_source_deleted_cb (RBSource *source,
 		rb_shell_player_set_playing_source (shell->priv->player_shell, NULL);
 	}
 	if (source == shell->priv->selected_source) {
-		RBSource *library_source;
-		library_source = rb_shell_get_source_by_entry_type (shell, 
-								    RHYTHMDB_ENTRY_TYPE_SONG);
 		/* Set the gconf key */
-		rb_shell_select_source (shell, library_source);
+		rb_shell_select_source (shell, RB_SOURCE (shell->priv->library_source));
 		/* Deal with it immediately, since we can't reference
 		 * the old source anymore. */
-		rb_shell_select_source_internal (shell, library_source);
+		rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
 	}
 
 	shell->priv->sources = g_list_remove (shell->priv->sources, source);
@@ -1914,7 +1895,7 @@ rb_shell_sync_selected_source (RBShell *shell)
 			}
 		}
 	}
-	rb_shell_select_source_internal (shell, rb_shell_get_source_by_entry_type (shell, RHYTHMDB_ENTRY_TYPE_SONG));
+	rb_shell_select_source_internal (shell, RB_SOURCE (shell->priv->library_source));
 	g_free (internalname);
 }
 
@@ -1973,19 +1954,10 @@ rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
 
 	g_return_if_fail (entry != NULL);
 
-	if (source == NULL) {
-		if (rb_uri_is_iradio (entry->location)) {
-			RBSource *iradio_source;
-			iradio_source = rb_shell_get_source_by_entry_type (shell, 
-									    RHYTHMDB_ENTRY_TYPE_IRADIO_STATION);
-			source = RB_SOURCE (iradio_source);
-		} else {
-			RBSource *library_source;
-			library_source = rb_shell_get_source_by_entry_type (shell, 
-									    RHYTHMDB_ENTRY_TYPE_SONG);			
-			source = RB_SOURCE (library_source);
-		}
-	}
+	if (source == NULL)
+		source = rb_shell_get_source_by_entry_type (shell, entry->type); 
+	if (source == NULL)
+		return;
 
 	songs = rb_source_get_entry_view (source);
 	if (!rb_entry_view_get_entry_contained (songs, entry)) {
@@ -2137,33 +2109,119 @@ rb_shell_load_uri_impl (RBRemoteProxy *proxy, const char *uri, gboolean play)
 	rb_shell_load_uri (shell, uri, play, NULL);
 }
 
+gint
+rb_shell_guess_type_for_uri (RBShell *shell, const char *uri)
+{
+	GnomeVFSURI *vfs_uri;
+
+	if (uri == NULL)
+		return -1;
+
+	vfs_uri = gnome_vfs_uri_new (uri);
+	if (vfs_uri == NULL) {
+		rb_debug ("Invalid uri: %s", uri);
+		return -1;
+	}
+
+	if (strncmp ("http", uri, 4) == 0
+	    || strncmp ("pnm", uri, 3) == 0
+	    || strncmp ("rtsp", uri, 4) == 0)
+		return RHYTHMDB_ENTRY_TYPE_IRADIO_STATION;
+	return RHYTHMDB_ENTRY_TYPE_SONG;
+}
+
+/* Load a URI representing an element of the given type, with
+ * optional metadata
+ */
+gboolean
+rb_shell_add_uri (RBShell *shell, gint entrytype, const char *uri,
+		  const char *title,
+		  const char *genre,
+		  GError **error)
+{
+	RBSource *source;
+
+	/* FIXME should abstract this... */
+	source = rb_shell_get_source_by_entry_type (shell, entrytype);
+	if (source == RB_SOURCE (shell->priv->iradio_source)) {
+		rb_iradio_source_add_station (shell->priv->iradio_source,
+					      uri,
+					      title,
+					      genre);
+		return TRUE;
+	} else if (entrytype == RHYTHMDB_ENTRY_TYPE_SONG) {
+		/* FIXME should be sync... */
+		rhythmdb_add_uri (shell->priv->db, uri);
+		return TRUE;
+	} else {
+		g_assert_not_reached ();
+		return FALSE;
+	}
+}
+
+static gboolean
+handle_one_uri_with_possible_metadata (RBShell *shell,
+				       const char *uri,
+				       const char *title,
+				       const char *genre)
+{
+	gint entrytype;
+
+	entrytype = rb_shell_guess_type_for_uri (shell, uri);
+	if (entrytype < 0)
+		return FALSE;
+
+	if (title && !g_utf8_validate (title, -1, NULL))
+		return FALSE;
+	if (genre && !g_utf8_validate (genre, -1, NULL))
+		return FALSE;
+
+	rb_shell_add_uri (shell, entrytype, uri, title, genre, NULL);
+	return TRUE;
+}
+
+/* Load a URI representing a single song, a directory, a playlist, or
+ * an internet radio station, and optionally start playing it.
+ */
 gboolean
 rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **error)
 {
 	RhythmDBEntry *entry;
+	gboolean handled;
 	
 	entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+	handled = FALSE;
 
 	if (entry == NULL) {
-		/* FIXME should be sync and return errors */
-		rhythmdb_add_uri (shell->priv->db, uri);
-	}
-
-	if (play) {
-		if (entry == NULL) {
-			/* wait for this entry to appear (or until we
-			 * get a load error for it), then play it.
-			 *
-			 * we only handle one entry here because
-			 * we don't have a playback queue (yet).
-			 */
-			if (shell->priv->pending_entry != NULL) {
-				g_free (shell->priv->pending_entry);
-			}
-			shell->priv->pending_entry = g_strdup (uri);
+		TotemPlParser *parser;
+		TotemPlParserResult result;
+		
+		parser = totem_pl_parser_new ();
+		totem_pl_parser_add_ignored_mimetype (parser, "x-directory/normal");
+		result = totem_pl_parser_parse (parser, uri, FALSE);
+		g_object_unref (parser);
+		
+		if (result == TOTEM_PL_PARSER_RESULT_SUCCESS) {
+			if (!rb_playlist_manager_parse_file (shell->priv->playlist_manager,
+							     uri, error))
+				return FALSE;
 		} else {
-			rb_shell_play_entry (shell, entry);
+			handled = handle_one_uri_with_possible_metadata (shell, uri, NULL, NULL);
 		}
+	}
+	
+	if (play && handled) {
+		RhythmDBEntry *entry;
+		
+		entry = rhythmdb_entry_lookup_by_location (shell->priv->db, uri);
+		if (entry)
+			rb_shell_play_entry (shell, entry);
+	} else if (entry == NULL) {
+		/* Do nothing here; we will have set the pending entry,
+		 * it should play when it's loaded.  This should really
+		 * do a recursive mainloop and wait for the entry to
+		 * load.
+		 */
 	}
 
 	return TRUE;

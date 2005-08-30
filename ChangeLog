@@ -1,3 +1,51 @@
+2005-08-30  Colin Walters  <walters@verbum.org>
+
+	* sources/rb-source.c:
+	* sources/rb-source.h: New virtual method try_playlist.
+
+	* sources/rb-iradio-source.c (rb_iradio_source_class_init): Implement
+	impl_try_playlist.
+	(rb_iradio_source_add_station): Remove validation; we do that elsewhere.
+	(impl_handle_eos): Return RB_SOURCE_EOF_RETRY.
+	(handle_playlist_entry_cb): Don't check for iradio uris, we don't
+	need to.
+	(stations_view_drag_data_received_cb): Don't check for iradio uris;
+	in theory we should though...
+
+	* shell/rb-shell.c (known_sources): Delete; we just hardcode the
+	list in rb_shell_construct now.
+	(struct RBShellPrivate): Add RBLibrarySource, RBIRadioSource,
+	RBiPodSource.
+	(rb_shell_constructor): Create library, iradio, ipod here.
+	(rb_shell_source_deleted_cb): Use source directly instead of
+	indirecting through type.
+	(rb_shell_sync_selected_source): Ditto.
+	(rb_shell_jump_to_entry_with_source): Just use the source reutrned
+	from the type instead of special-casing.
+	(rb_shell_guess_type_for_uri) 
+	(rb_shell_add_uri)
+	(handle_one_uri_with_possible_metadata): New functions.
+	(rb_shell_load_uri): Refactor to allow loading playlists again,
+	also use other URI infrastructure.
+
+	* shell/rb-shell-player.c (eos_cb): Handle RB_SOURCE_EOF_RETRY.
+	(rb_shell_player_error): Always set entry error on error, instead
+	of depending on EOF behavior.
+
+	* shell/rb-playlist-manager.c (handle_playlist_entry_cb): Refactor
+	to just invoke rb_shell_add_uri.
+	(rb_playlist_manager_parse_file): Return error instead of tossing
+	up dialog box directly.
+	(load_playlist_response_cb): Display error here.
+	(add_uri_to_playlist): Delete.
+	(handle_playlist_entry_into_playlist_cb): Renamed to
+	handle_playlist_entry_cb.
+
+	* shell/rb-playlist-manager.h: Add error, update prototype.
+
+	* lib/rb-file-helpers.c:
+	* lib/rb-file-helpers.h: Delete rb_uri_is_iradio.
+
 2005-08-29  Colin Walters  <walters@verbum.org>
 
 	* sources/rb-iradio-source.c (rb_iradio_source_add_station): Return

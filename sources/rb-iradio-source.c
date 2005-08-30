@@ -215,6 +215,7 @@ rb_iradio_source_class_init (RBIRadioSourceClass *klass)
 	source_class->impl_song_properties = impl_song_properties;
 	source_class->impl_can_pause = (RBSourceFeatureFunc) rb_false_function;
 	source_class->impl_handle_eos = impl_handle_eos;
+	source_class->impl_try_playlist = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_have_url = (RBSourceFeatureFunc) rb_true_function;
 	source_class->impl_show_popup = impl_show_popup;
 	source_class->impl_can_copy = (RBSourceFeatureFunc) rb_false_function;
@@ -445,19 +446,6 @@ rb_iradio_source_add_station (RBIRadioSource *source,
 	RhythmDBEntry *entry;
 	GValue val = { 0, };
 
-	if (uri && !g_utf8_validate (uri, -1, NULL)) {
-		rb_debug ("uri \"%s\" is not valid UTF-8", uri);
-		return;
-	}
-	if (title && !g_utf8_validate (title, -1, NULL)) {
-		rb_debug ("title \"s\" is not valid UTF-8", title);
-		return;
-	}
-	if (genre && !g_utf8_validate (genre, -1, NULL)) {
-		rb_debug ("genre \"s\" is not valid UTF-8", genre);
-		genre = "";
-	}
-
 	entry = rhythmdb_entry_lookup_by_location (source->priv->db, uri);
 	if (entry) {
 		rb_debug ("uri %s already in db", uri); 
@@ -535,7 +523,7 @@ impl_get_entry_view (RBSource *asource)
 static RBSourceEOFType
 impl_handle_eos (RBSource *asource)
 {
-	return RB_SOURCE_EOF_ERROR;
+	return RB_SOURCE_EOF_RETRY;
 }
 
 #if 0
@@ -785,10 +773,8 @@ static void
 handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri, const char *title,
 			  const char *genre, RBIRadioSource *source)
 {
-	if (rb_uri_is_iradio (uri)) {
-		if (!rhythmdb_entry_lookup_by_location (source->priv->db, uri)) {
-			rb_iradio_source_add_station (source, uri, title, genre);
-		}
+	if (!rhythmdb_entry_lookup_by_location (source->priv->db, uri)) {
+		rb_iradio_source_add_station (source, uri, title, genre);
 	}
 }
 
@@ -837,8 +823,6 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 
 	for (i = uri_list; i != NULL; i = i->next) {
 		char *uri = NULL;
-		char *title_data = NULL;
-		char *title = NULL;
 
 		uri = i->data;
 
@@ -851,13 +835,11 @@ stations_view_drag_data_received_cb (GtkWidget *widget,
 		}
 
 		if ((uri != NULL) && 
-		    (rb_uri_is_iradio (uri)) &&
 		    (!rhythmdb_entry_lookup_by_location (source->priv->db, uri))) {
-			rb_iradio_source_add_station (source, uri, title, NULL);
+			rb_iradio_source_add_station (source, uri, NULL, NULL);
 		}
 
 		g_free (uri);
-		g_free (title_data);
 	}
 
 	g_list_free (uri_list);

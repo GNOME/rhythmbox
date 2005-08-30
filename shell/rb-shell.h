@@ -71,6 +71,15 @@ RBShell *	rb_shell_new		(int argc, char **argv,
 
 gboolean        rb_shell_present        (RBShell *shell, guint32 timestamp, GError **error);
 
+gint            rb_shell_guess_type_for_uri (RBShell *shell, const char *uri);
+
+gboolean        rb_shell_add_uri        (RBShell *shell,
+					 gint entry_type,
+					 const char *uri,
+					 const char *title,
+					 const char *genre,
+					 GError **error);
+
 gboolean        rb_shell_load_uri       (RBShell *shell, const char *uri, gboolean play, GError **error);
 
 GObject *       rb_shell_get_player     (RBShell *shell);

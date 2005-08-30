@@ -77,8 +77,6 @@ static void rb_playlist_manager_cmd_delete_playlist (GtkAction *action,
 						     RBPlaylistManager *mgr);
 static void rb_playlist_manager_cmd_edit_automatic_playlist (GtkAction *action,
 							     RBPlaylistManager *mgr);
-static void handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri, const char *title,
-						    const char *genre, RBPlaylistManager *mgr);
 static gboolean reap_dead_playlist_threads (RBPlaylistManager *mgr);
 static void rb_playlist_manager_playlist_entries_changed (RBEntryView *entry_view,
 							   RhythmDBEntry *entry,
@@ -521,8 +519,63 @@ rb_playlist_manager_new (RBShell *shell,
 			     NULL);
 }
 
-const char *
-rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
+GQuark
+rb_playlist_manager_error_quark (void)
+{
+	static GQuark quark = 0;
+	if (!quark)
+		quark = g_quark_from_static_string ("rb_playlist_manager_error");
+
+	return quark;
+}
+
+static void
+handle_playlist_entry_cb (TotemPlParser *playlist, const char *uri_maybe,
+			  const char *title,
+			  const char *genre, RBPlaylistManager *mgr)
+{
+	char *uri;
+	gint entry_type;
+
+	if (uri_maybe[0] == '/') {
+		uri = gnome_vfs_get_uri_from_local_path (uri_maybe);
+		if (uri == NULL) {
+			rb_debug ("Error processing absolute filename %s", uri_maybe);
+			return;
+		}
+	} else {
+		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri_maybe);
+		if (!vfsuri) {
+			rb_debug ("Error processing probable URI %s", uri_maybe);
+			return;
+		}
+		gnome_vfs_uri_unref (vfsuri);
+	}
+
+	entry_type = rb_shell_guess_type_for_uri (mgr->priv->shell, uri_maybe);
+	if (entry_type < 0) {
+		return;
+	}
+
+	rb_shell_add_uri (mgr->priv->shell,
+			  entry_type,
+			  uri_maybe,
+			  title,
+			  genre,
+			  NULL);
+
+	if (entry_type == RHYTHMDB_ENTRY_TYPE_SONG) {
+		if (!mgr->priv->loading_playlist) {
+			mgr->priv->loading_playlist =
+				RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
+		}
+		rb_playlist_source_add_location (mgr->priv->loading_playlist,
+						 uri_maybe);
+	}
+}
+
+gboolean
+rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri, GError **error)
 {
 	rb_debug ("loading playlist from %s", uri);
 
@@ -535,19 +588,24 @@ rb_playlist_manager_parse_file (RBPlaylistManager *mgr, const char *uri)
 		TotemPlParser *parser = totem_pl_parser_new ();
 
 		g_signal_connect_object (G_OBJECT (parser), "entry",
-					 G_CALLBACK (handle_playlist_entry_into_playlist_cb),
+					 G_CALLBACK (handle_playlist_entry_cb),
 					 mgr, 0);
-
-		if (totem_pl_parser_parse (parser, uri, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS)
-			rb_error_dialog (NULL, _("Couldn't read playlist"),
-					 _("The playlist file may be in an unknown format or corrupted."));
+		
+		if (totem_pl_parser_parse (parser, uri, FALSE) != TOTEM_PL_PARSER_RESULT_SUCCESS) {
+			g_set_error (error,
+				     RB_PLAYLIST_MANAGER_ERROR,
+				     RB_PLAYLIST_MANAGER_ERROR_PARSE,
+				     "%s",
+				     _("The playlist file may be in an unknown format or corrupted."));
+			return FALSE;
+		}
 		mgr->priv->loading_playlist = NULL;
 
 		g_object_unref (G_OBJECT (parser));
 	}
 
 	g_signal_emit (G_OBJECT (mgr), rb_playlist_manager_signals[PLAYLIST_LOAD_FINISH], 0);
-	return mgr->priv->firsturi;
+	return TRUE;
 }
 
 static void
@@ -865,6 +923,7 @@ load_playlist_response_cb (GtkDialog *dialog,
 			   RBPlaylistManager *mgr)
 {
 	char *escaped_file = NULL;
+	GError *error = NULL;
 
 	if (response_id != GTK_RESPONSE_ACCEPT) {
 		gtk_widget_destroy (GTK_WIDGET (dialog));
@@ -878,7 +937,12 @@ load_playlist_response_cb (GtkDialog *dialog,
 	if (escaped_file == NULL)
 		return;
 
-	rb_playlist_manager_parse_file (mgr, escaped_file);
+	if (!rb_playlist_manager_parse_file (mgr, escaped_file, &error)) {
+		rb_error_dialog (NULL, _("Couldn't read playlist"),
+				 error->message);
+		g_error_free (error);
+	}
+
 	g_free (escaped_file);
 	rb_playlist_manager_set_dirty (mgr);
 }
@@ -942,67 +1006,6 @@ rb_playlist_manager_cmd_burn_playlist (GtkAction *action,
 				       RBPlaylistManager *mgr)
 {
 	rb_playlist_source_burn_playlist (RB_PLAYLIST_SOURCE (mgr->priv->selected_source));
-}
-
-static void
-add_uri_to_playlist (RBPlaylistManager *mgr, RBPlaylistSource *playlist, const char *uri, const char *title)
-{
-	GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri);
-	const char *scheme = gnome_vfs_uri_get_scheme (vfsuri);
-
-	if (rb_uri_is_iradio (scheme)) {
-		rb_iradio_source_add_station (mgr->priv->iradio_source, uri, title, NULL);
-		goto out;
-	}
-
-	rhythmdb_add_uri (mgr->priv->db, uri);
-
-	/* REWRITEFIXME */
-#if 0
-	rb_playlist_source_add_location (playlist, uri);
-#endif
-out:
-	gnome_vfs_uri_unref (vfsuri);
-}
-
-static void
-handle_playlist_entry_into_playlist_cb (TotemPlParser *playlist, const char *uri_maybe,
-					const char *title,
-					const char *genre, RBPlaylistManager *mgr)
-{
-	char *uri;
-
-	if (uri_maybe[0] == '/') {
-		uri = gnome_vfs_get_uri_from_local_path (uri_maybe);
-		if (uri == NULL) {
-			rb_debug ("Error processing absolute filename: %s", uri_maybe);
-			return;
-		}
-	} else {
-		GnomeVFSURI *vfsuri = gnome_vfs_uri_new (uri_maybe);
-		if (!vfsuri) {
-			rb_debug ("Error processing probable URI: %s", uri_maybe);
-			return;
-		}
-		uri = gnome_vfs_uri_to_string (vfsuri, GNOME_VFS_URI_HIDE_NONE);
-		gnome_vfs_uri_unref (vfsuri);
-	}
-	
-	if (!mgr->priv->firsturi)
-		mgr->priv->firsturi = g_strdup (uri);
-	if (rb_uri_is_iradio (uri)) {
-		rb_iradio_source_add_station (mgr->priv->iradio_source,
-					      uri, title, genre);
-		g_free (uri);
-		return;
-	}
-
-	if (!mgr->priv->loading_playlist) {
-		mgr->priv->loading_playlist =
-			RB_PLAYLIST_SOURCE (rb_playlist_manager_new_playlist (mgr, NULL, FALSE));
-	}
-	add_uri_to_playlist (mgr, mgr->priv->loading_playlist, uri, title);
-	g_free (uri);
 }
 
 static void

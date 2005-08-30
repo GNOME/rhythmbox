@@ -40,7 +40,6 @@ gboolean	rb_uri_exists		(const char *uri);
 char *		rb_uri_resolve_relative	(const char *uri);
 gboolean	rb_uri_is_readable	(const char *uri);
 gboolean	rb_uri_is_writable	(const char *uri);
-gboolean	rb_uri_is_iradio	(const char *uri);
 
 void		rb_uri_handle_recursively(const char *uri,
 					  GFunc func,

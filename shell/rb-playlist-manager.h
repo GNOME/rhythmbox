@@ -37,6 +37,15 @@ G_BEGIN_DECLS
 #define RB_IS_PLAYLIST_MANAGER_CLASS(k)  (G_TYPE_CHECK_CLASS_TYPE ((k), RB_TYPE_PLAYLIST_MANAGER))
 #define RB_PLAYLIST_MANAGER_GET_CLASS(o) (G_TYPE_INSTANCE_GET_CLASS ((o), RB_TYPE_PLAYLIST_MANAGER, RBPlaylistManagerClass))
 
+typedef enum
+{
+	RB_PLAYLIST_MANAGER_ERROR_PARSE
+} RBPlaylistManagerError;
+
+#define RB_PLAYLIST_MANAGER_ERROR rb_playlist_manager_error_quark ()
+
+GQuark rb_playlist_manager_error_quark (void);
+
 typedef struct RBPlaylistManagerPrivate RBPlaylistManagerPrivate;
 
 typedef struct
@@ -64,8 +73,9 @@ RBPlaylistManager *	rb_playlist_manager_new		(RBShell *shell,
 							 RBLibrarySource *libsource,
 							 RBIRadioSource *iradio_source);
 
-const char *		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
-							 const char *uri);
+gboolean 		rb_playlist_manager_parse_file	(RBPlaylistManager *mgr,
+							 const char *uri,
+							 GError **error);
 
 void			rb_playlist_manager_set_source	(RBPlaylistManager *mgr,
 							 RBSource *player);

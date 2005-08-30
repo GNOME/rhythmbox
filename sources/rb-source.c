@@ -54,6 +54,7 @@ static GList *default_copy (RBSource *source);
 static void default_reset_filters (RBSource *source);
 static void default_song_properties (RBSource *source);
 static GtkWidget * default_get_config_widget (RBSource *source);
+static gboolean default_try_playlist (RBSource *source);
 static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_receive_drag  (RBSource *source, GtkSelectionData *data);
 static gboolean default_show_popup  (RBSource *source);
@@ -145,6 +146,7 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_receive_drag = default_receive_drag;
 	klass->impl_show_popup = default_show_popup;
 	klass->impl_delete_thyself = default_delete_thyself;
+	klass->impl_try_playlist = default_try_playlist;
 
 	g_object_class_install_property (object_class,
 					 PROP_NAME,
@@ -568,11 +570,25 @@ rb_source_song_properties (RBSource *source)
 }
 
 gboolean
+rb_source_try_playlist (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_try_playlist (source);
+}
+
+gboolean
 rb_source_can_pause (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
 	return klass->impl_can_pause (source);
+}
+
+static gboolean
+default_try_playlist (RBSource *source)
+{
+	return FALSE;
 }
 
 static RBSourceEOFType

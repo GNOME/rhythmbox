@@ -603,24 +603,6 @@ rb_uri_is_writable (const char *text_uri)
 	return ret;
 }
 
-gboolean
-rb_uri_is_iradio (const char *uri)
-{
-	g_return_val_if_fail (uri != NULL, FALSE);
-
-	if (strstr (uri, "://") == NULL)
-		return FALSE;
-
-	if (strncmp ("http", uri, 4) == 0)
-		return TRUE;
-	if (strncmp ("pnm", uri, 3) == 0)
-		return TRUE;
-	if (strncmp ("rtsp", uri, 4) == 0)
-		return TRUE;
-
-	return FALSE;
-}
-
 void
 rb_uri_handle_recursively (const char *text_uri,
 		           GFunc func,

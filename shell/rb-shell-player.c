@@ -186,6 +186,8 @@ struct RBShellPlayerPrivate
 	RBSource *selected_source;
 	RBSource *source;
 	RhythmDBEntry *playing_attempt_entry;
+	gboolean did_retry;
+	GTimeVal last_retry;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -1019,7 +1021,7 @@ rb_shell_player_open_location (RBShellPlayer *player,
 	totem_pl_parser_add_ignored_mimetype (playlist, "x-directory/normal");
 
 	playlist_parsed = FALSE;
-	if (rb_uri_is_iradio (location)) {
+	if (rb_source_try_playlist (player->priv->source)) {
 		playlist_result = totem_pl_parser_parse (playlist, location, FALSE);
 		playlist_parsed = (playlist_result != TOTEM_PL_PARSER_RESULT_UNHANDLED);
 	}
@@ -2049,6 +2051,21 @@ eos_cb (RBPlayer *mmplayer, gpointer data)
 					 _("Unexpected end of stream!"));
 			rb_shell_player_set_playing_source (player, NULL);
 			break;
+		case RB_SOURCE_EOF_RETRY: {
+			GTimeVal current;
+			g_get_current_time (&current);
+			if (player->priv->did_retry
+			    && (current.tv_sec - player->priv->last_retry.tv_sec) < 4) {
+				rb_debug ("Last retry was less than 4 seconds ago...aborting retry playback");
+				player->priv->did_retry = FALSE;
+				break;
+			} else {
+				player->priv->did_retry = TRUE;
+				g_get_current_time (&(player->priv->last_retry));
+				rb_shell_player_play_entry (player, entry);
+			}
+		}
+			break;
 		case RB_SOURCE_EOF_NEXT:
 			rb_shell_player_do_next (player, NULL);
 			break;
@@ -2095,19 +2112,10 @@ rb_shell_player_error (RBShellPlayer *player, gboolean async, const GError *err)
 	if (entry && async)
 		rb_shell_player_set_entry_playback_error (player, entry, err->message);
 
-	switch (rb_source_handle_eos (player->priv->source)) {
-	case RB_SOURCE_EOF_ERROR:
-		rb_error_dialog (NULL, _("Stream error"),
-				 _("Unexpected end of stream!"));
+	if (err->code == RB_PLAYER_ERROR_NO_AUDIO)
 		rb_shell_player_set_playing_source (player, NULL);
-		break;
-	case RB_SOURCE_EOF_NEXT:
-		if (err->code == RB_PLAYER_ERROR_NO_AUDIO)
-			rb_shell_player_set_playing_source (player, NULL);
-		else
-			g_idle_add ((GSourceFunc)do_next_idle, player);
-		break;
-	}
+	else
+		g_idle_add ((GSourceFunc)do_next_idle, player);
 
 	player->priv->handling_error = FALSE;
 }
