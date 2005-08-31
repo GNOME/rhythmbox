@@ -351,7 +351,7 @@ main (int argc, char **argv)
 			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
 		}
 		dbus_g_proxy_call_no_reply (shell_proxy, "present",
-					    G_TYPE_UINT, gdk_x11_display_get_user_time (gdk_display_get_default ()),
+					    G_TYPE_UINT, GDK_CURRENT_TIME,
 					    G_TYPE_INVALID);
 #endif
 	}
