@@ -2,6 +2,7 @@ define(arch-tag)
 # arch-tag: Toplevel Autoconf configuration script
 AC_PREREQ(2.53)
 AC_INIT(shell)
+AC_CONFIG_MACRO_DIR(macros)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(rhythmbox, 0.9.0)
 
@@ -116,6 +117,14 @@ esac
 AC_SUBST(GDA_CFLAGS)
 AC_SUBST(GDA_LIBS)
 
+AC_ARG_WITH(old-art,
+            AC_HELP_STRING([--with-old-art],
+			   [Use old artwork]),with_old_art=yes,
+	      with_old_art=no)
+if test x$with_old_art == xyes; then
+  AC_DEFINE(WITH_OLD_ART, 1, [Define if you want to use old artwork])
+fi      
+AM_CONDITIONAL(WITH_OLD_ART, test "x$with_old" == "xyes")
 
 dnl Database debugging
 AC_ARG_WITH(rhythmdb-debug,
@@ -455,6 +464,7 @@ shell/Makefile
 data/Makefile
 data/ui/Makefile
 data/art/Makefile
+data/art-clearlooks/Makefile
 data/glade/Makefile
 data/rhythmbox.pc
 sources/Makefile

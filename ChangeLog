@@ -1,5 +1,17 @@
 2005-08-31  Colin Walters  <walters@verbum.org>
 
+	* configure.ac: Add --with-old-art configure switch.  Also
+	add AC_CONFIG_MACRO_DIR in the hope to avoid autotools bustage,
+	but it doesn't work.
+
+	* widgets/rb-cell-renderer-pixbuf.c (rb_cell_renderer_pixbuf_render):
+	Don't use eel_create_colorized_pixbuf for new art.
+	* widgets/rb-rating-helper.c (rb_rating_render_stars): Ditto.
+
+	* data/art-clearlooks: New artwork.
+	
+2005-08-31  Colin Walters  <walters@verbum.org>
+
 	* shell/main.c (main): Fix Bastien's commit to continue to focus
 	the window with GTK+ 2.8 at least.
 	

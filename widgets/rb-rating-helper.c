@@ -144,12 +144,15 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 		else
 			buf = pixbufs->pix_blank;
 
+#ifdef WITH_OLD_ART
 		buf = eel_create_colorized_pixbuf (buf,
 						   (widget->style->text[state].red + offset) >> 8,
 						   (widget->style->text[state].green + offset) >> 8,
 						   (widget->style->text[state].blue + offset) >> 8);
 		if (buf == NULL)
 			return FALSE;
+#endif
+
 
 		if (rtl) {
 			star_offset = (RB_RATING_MAX_SCORE-i-1) * icon_width;
@@ -169,7 +172,9 @@ rb_rating_render_stars (GtkWidget *widget, GdkWindow *window,
 						     0,
 						     GDK_RGB_DITHER_NORMAL,
 						     0, 0);
+#ifdef WITH_OLD_ART
 		g_object_unref (G_OBJECT (buf));
+#endif
 	}
 
 	return TRUE;

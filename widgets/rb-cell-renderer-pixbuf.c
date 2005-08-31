@@ -271,6 +271,7 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
   GdkPixbuf *pixbuf;
   GdkRectangle pix_rect;
   GdkRectangle draw_rect;
+#ifdef WITH_OLD_ART
   GtkStateType state;
 
   if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
@@ -298,6 +299,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
 
   if (!pixbuf)
     return;
+#else
+  pixbuf = cellpixbuf->pixbuf;
+#endif  
 
   rb_cell_renderer_pixbuf_get_size (cell, widget, cell_area,
 				     &pix_rect.x,
@@ -325,7 +329,9 @@ rb_cell_renderer_pixbuf_render (GtkCellRenderer    *cell,
                                          GDK_RGB_DITHER_NORMAL,
                                          0, 0);
 
+#ifdef WITH_OLD_ART
   g_object_unref (pixbuf);
+#endif  
 }
 
 
