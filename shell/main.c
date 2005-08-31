@@ -338,6 +338,7 @@ main (int argc, char **argv)
 	} else {
 #ifdef WITH_DBUS
 		DBusGProxy *shell_proxy;
+		guint32 current_time;
 
 		shell_proxy = dbus_g_proxy_new_for_name_owner (session_bus,
 							       "org.gnome.Rhythmbox",
@@ -350,8 +351,20 @@ main (int argc, char **argv)
 		} else {
 			load_uri_args (poptGetArgs (poptContext), (GFunc) dbus_load_uri, shell_proxy);
 		}
+#if GTK_MINOR_VERSION >= 8
+		current_time = gdk_x11_display_get_user_time (gdk_display_get_default ());
+#else
+		/* FIXME - this does not work; it will return 0 since
+		 * we're not in an event.  When we pass this to
+		 * gtk_window_present_with_time, it ignores the value
+		 * since it's 0.  The only alternative is to parse the
+		 * startup-notification junk from the environment
+		 * ourself...
+		 */
+		current_time = GDK_CURRENT_TIME;
+#endif
 		dbus_g_proxy_call_no_reply (shell_proxy, "present",
-					    G_TYPE_UINT, GDK_CURRENT_TIME,
+					    G_TYPE_UINT, current_time,
 					    G_TYPE_INVALID);
 #endif
 	}
