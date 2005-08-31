@@ -391,26 +391,20 @@ load_uri_args (const char **args, GFunc handler, gpointer user_data)
 {
 	gboolean handled;
 	guint i;
-	GError *error = NULL;
 
 	handled = FALSE;
 	for (i = 0; args && args[i]; i++) {
-		char *tmp;
+		char *uri;
 
 		rb_debug ("examining argument %s", args[i]);
-		tmp = rb_uri_resolve_relative (args[i]);
+
+		uri = gnome_vfs_make_uri_from_shell_arg (args[i]);
 			
-		if (rb_uri_exists (tmp) == TRUE) {
-			char *utf8 = g_filename_to_utf8 (tmp, -1, NULL, NULL, &error);
-			if (!utf8 && error) {
-				g_error (error->message);
-				continue;
-			}
-			handler (utf8, user_data);
-			g_free (utf8);
+		if (rb_uri_exists (uri) == TRUE) {
+			handler (uri, user_data);
 		}
+		g_free (uri);
 		
-		g_free (tmp);
 		handled = TRUE;
 	}
 	return handled;

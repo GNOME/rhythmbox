@@ -2138,6 +2138,8 @@ rb_shell_load_uri (RBShell *shell, const char *uri, gboolean play, GError **erro
 		} else {
 			handled = handle_one_uri_with_possible_metadata (shell, uri, NULL, NULL);
 		}
+	} else {
+		handled = TRUE;
 	}
 	
 	if (play && handled) {

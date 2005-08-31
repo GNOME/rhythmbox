@@ -1,3 +1,10 @@
+2005-08-31  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-shell.c (rb_shell_load_uri): Handle the case where entry
+	is already loaded.
+
+	* shell/main.c (load_uri_args): Use gnome_vfs_make_uri_from_shell_arg.
+
 2005-08-31  Bastien Nocera  <hadess@hadess.net>
 
 	* README: remove mentions of the xine-lib backend
