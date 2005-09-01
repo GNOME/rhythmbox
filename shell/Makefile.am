@@ -2,6 +2,7 @@
 
 BUILT_SOURCES = 
 CLEANFILES =
+EXTRA_DIST =
 
 AUTHORS.tab : $(top_srcdir)/AUTHORS
 	sed -e 's/^/"/' -e 's/$$/",/' < $(top_srcdir)/AUTHORS > $@.tmp
@@ -92,6 +93,8 @@ rb-shell-player-glue.h: rb-shell-player.xml Makefile
 BUILT_SOURCES += rb-shell-glue.h rb-shell-player-glue.h
 
 rhythmbox_LDADD += $(DBUS_LIBS)
+
+EXTRA_DIST += rb-shell.xml rb-shell-player.xml
 
 endif
 

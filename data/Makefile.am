@@ -58,6 +58,7 @@ install-data-local: $(schema_DATA)
 endif
 
 EXTRA_DIST = $(server_in_files)     \
+	     $(service_in_files)    \
 	     $(appicon_DATA)        \
 	     $(Multimedia_in_files) \
 	     $(applications_DATA)   \

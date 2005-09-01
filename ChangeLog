@@ -1,3 +1,17 @@
+2005-09-01  Colin Walters  <walters@verbum.org>
+
+	* shell/Makefile.am (EXTRA_DIST): Dist rb-shell.xml and
+	rb-shell-player.xml.
+
+	* remote/dbus/rb-remote-dbus.h: Deleted.
+	
+	* remote/dbus/Makefile.am: Delete all the junk, just dist
+	rb-print-playing.py and rb-set-rating.py.
+
+	* remote/Makefile.am (SUBDIRS): Always dist dbus and bonobo.
+
+	* data/Makefile.am (EXTRA_DIST): Add service_in_files.
+
 2005-09-02  James Livingston  <jrl@ids.org.au>
 
 	- data/ui/rhythmbox-audiocd-view.xml.in: remove extremely obsolete

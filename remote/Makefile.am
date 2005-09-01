@@ -6,7 +6,8 @@ else
 MAYBE_BONOBO =
 endif
 
-SUBDIRS = $(MAYBE_BONOBO)
+SUBDIRS = dbus $(MAYBE_BONOBO)
+DIST_SUBDIRS = dbus bonobo
 
 noinst_LTLIBRARIES = librbremote.la
 
