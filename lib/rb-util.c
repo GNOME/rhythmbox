@@ -38,6 +38,12 @@ rb_false_function (gpointer dummy)
 	return FALSE;
 }
 
+gpointer
+rb_null_function (gpointer dummy)
+{
+	return NULL;
+}
+
 int
 rb_gvalue_compare (GValue *a, GValue *b)
 {

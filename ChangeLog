@@ -1,3 +1,13 @@
+2005-09-02  James Livingston  <jrl@ids.org.au>
+
+	- data/ui/rhythmbox-audiocd-view.xml.in: remove extremely obsolete
+	file from cvs
+
+	* shell/rb-shell.c: (rb_shell_get_property), (rb_shell_finalize),
+	(rb_shell_constructor): Patches from Jonathan Matthew
+	<jonathan@kaolin.hn.org> to fix compilation without ipod support, and
+	a crash when using "browse this artist".
+
 2005-08-31  Colin Walters  <walters@verbum.org>
 
 	* configure.ac: Add --with-old-art configure switch.  Also

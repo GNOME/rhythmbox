@@ -315,7 +315,9 @@ struct RBShellPrivate
 
 	RBLibrarySource *library_source;
 	RBIRadioSource *iradio_source;
+#ifdef WITH_IPOD_SUPPORT
 	RBiPodSource *ipod_source;
+#endif
 
 #ifdef HAVE_AUDIOCD
  	MonkeyMediaAudioCD *cd;
@@ -329,6 +331,10 @@ struct RBShellPrivate
 
 	char *cached_title;
 	char *cached_duration;
+
+	guint sourcelist_visibility_notify_id;
+	guint smalldisplay_notify_id;
+	guint paned_changed_notify_id;
 };
 
 static GtkActionEntry rb_shell_actions [] =
@@ -649,6 +655,9 @@ rb_shell_get_property (GObject *object,
 	case PROP_UI_MANAGER:
 		g_value_set_object (value, shell->priv->ui_manager);
 		break;
+	case PROP_SELECTED_SOURCE:
+		g_value_set_object (value, shell->priv->selected_source);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -732,6 +741,11 @@ rb_shell_finalize (GObject *object)
 	g_object_unref (G_OBJECT (shell->priv->clipboard_shell));
 
 	gtk_widget_destroy (shell->priv->window);
+
+	
+	eel_gconf_notification_remove (shell->priv->sourcelist_visibility_notify_id);
+	eel_gconf_notification_remove (shell->priv->smalldisplay_notify_id);
+	eel_gconf_notification_remove (shell->priv->paned_changed_notify_id);
 
 	rb_debug ("shutting down DB");
 	rhythmdb_shutdown (shell->priv->db);
@@ -923,13 +937,16 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_debug ("shell: adding gconf notification");
 	/* sync state */
-	eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
+	shell->priv->sourcelist_visibility_notify_id =
+		eel_gconf_notification_add (CONF_UI_SOURCELIST_HIDDEN,
 				    (GConfClientNotifyFunc) sourcelist_visibility_changed_cb,
 				    shell);
-	eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
+	shell->priv->smalldisplay_notify_id =
+		eel_gconf_notification_add (CONF_UI_SMALL_DISPLAY,
 				    (GConfClientNotifyFunc) smalldisplay_changed_cb,
 				    shell);
-	eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
+	shell->priv->paned_changed_notify_id =
+		eel_gconf_notification_add (CONF_STATE_PANED_POSITION,
 				    (GConfClientNotifyFunc) paned_changed_cb,
 				    shell);
 
