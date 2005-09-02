@@ -1164,11 +1164,11 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible)
 		rb_debug ("showing main window");
 		rb_shell_sync_window_state (shell);
 
+		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
+			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
-		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
-			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 	} else {
 		int x, y, width, height;
 
@@ -1177,9 +1177,9 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible)
 				       &x, &y, &width, &height);
 		set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
 				   x, y, width, height);
-		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
 		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
 			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
+		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
 
 		/* FIMXE - this is horribly evil racy workaround for a
 		 * current bug in the tasklist not noticing our hint
