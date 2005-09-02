@@ -119,8 +119,11 @@ AC_SUBST(GDA_LIBS)
 
 AC_ARG_WITH(old-art,
             AC_HELP_STRING([--with-old-art],
-			   [Use old artwork]),with_old_art=yes,
-	      with_old_art=no)
+			   [Use old artwork]),,
+	      with_old_art=auto)
+if test x$with_old_art == xauto; then
+  with_old_art = xyes
+fi       
 if test x$with_old_art == xyes; then
   AC_DEFINE(WITH_OLD_ART, 1, [Define if you want to use old artwork])
 fi      
@@ -451,6 +454,7 @@ fi
 
 AC_OUTPUT([ 
 Makefile
+macros/Makefile
 lib/Makefile
 metadata/Makefile
 player/Makefile
