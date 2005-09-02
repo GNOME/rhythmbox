@@ -361,12 +361,11 @@ if test "x$with_dbus" != "xno"; then
 fi			  
 AM_CONDITIONAL(WITH_DBUS, test "x$enable_dbus" = "xyes")
 
-if test x$enable_dbus != xyes; then
 AC_MSG_CHECKING([for Bonobo])
 AC_ARG_WITH(bonobo,
             AC_HELP_STRING([--with-bonobo],
 			   [Enable bonobo support]),,
-	      with_bonobo=`test x$enable_dbus != xyes`)
+	      with_bonobo=auto)
 if test "x$with_bonobo" != "xno"; then
 	PKG_CHECK_MODULES(BONOBO, libbonobo-2.0 >= 2.0.0, enable_bonobo=yes,
 		          enable_bonobo=no)
@@ -389,9 +388,6 @@ if test "x$with_bonobo" != "xno"; then
 	fi
 	
 fi			  
-else
-	AC_MSG_NOTICE([Bonobo disabled by default since D-BUS support compiled in])
-fi	
 AM_CONDITIONAL(WITH_BONOBO, test "x$enable_bonobo" = "xyes")
 	      
 AM_GCONF_SOURCE_2
