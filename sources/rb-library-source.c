@@ -121,6 +121,7 @@ static GtkWidget *impl_get_config_widget (RBSource *source);
 static void impl_song_properties (RBSource *source);
 static gboolean impl_receive_drag (RBSource *source, GtkSelectionData *data);
 static gboolean impl_show_popup (RBSource *source);
+static const char * impl_get_paned_key (RBLibrarySource *source);
 static void rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype);
 
 void rb_library_source_browser_views_activated_cb (GtkWidget *widget,
@@ -185,9 +186,12 @@ struct RBLibrarySourcePrivate
 	GSList *browser_views_group;
 	
 	RhythmDBEntryType entry_type;
-	
+
+	char *sorting_key;
 	guint ui_dir_notify_id;
-	guint state_dir_notify_id;
+	guint state_paned_notify_id;
+	guint state_browser_notify_id;
+	guint state_sorting_notify_id;
 	guint browser_view_notify_id;
 };
 
@@ -210,7 +214,8 @@ enum
 {
 	PROP_0,
 	PROP_ICON,
-	PROP_ENTRY_TYPE
+	PROP_ENTRY_TYPE,
+	PROP_SORTING_KEY
 };
 
 static GObjectClass *parent_class = NULL;
@@ -278,6 +283,8 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 	source_class->impl_receive_drag = impl_receive_drag;
 	source_class->impl_show_popup = impl_show_popup;
 
+	klass->impl_get_paned_key = impl_get_paned_key;
+
 	g_object_class_install_property (object_class,
 					 PROP_ICON,
 					 g_param_spec_object ("icon",
@@ -294,6 +301,14 @@ rb_library_source_class_init (RBLibrarySourceClass *klass)
 							    G_MAXINT,
 							    RHYTHMDB_ENTRY_TYPE_SONG,
 							    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+	g_object_class_install_property (object_class,
+					 PROP_SORTING_KEY,
+					 g_param_spec_string ("sorting-key",
+							      "Sorting key",
+							      "GConf key for storing sort-order",
+							      CONF_STATE_LIBRARY_SORTING,
+							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
 }
 
@@ -429,9 +444,13 @@ rb_library_source_finalize (GObject *object)
 	rb_debug ("finalizing library source");
 	
 	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
-	eel_gconf_notification_remove (source->priv->state_dir_notify_id);
+	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
+	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
+	if (source->priv->sorting_key != NULL)
+		eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
 	eel_gconf_notification_remove (source->priv->browser_view_notify_id);
 
+	g_free (source->priv->sorting_key);
 	g_free (source->priv->artist);
 	g_free (source->priv->album);
 
@@ -516,7 +535,7 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	source->priv->browser = gtk_hbox_new (TRUE, 5);
 
 	/* set up songs tree view */
-	source->priv->songs = rb_entry_view_new (source->priv->db, CONF_STATE_LIBRARY_SORTING,
+	source->priv->songs = rb_entry_view_new (source->priv->db, source->priv->sorting_key,
 						 TRUE, FALSE);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TRACK_NUMBER);
 	rb_entry_view_append_column (source->priv->songs, RB_ENTRY_VIEW_COL_TITLE);
@@ -608,11 +627,22 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_library_source_state_prefs_sync (source);
 	rb_library_source_ui_prefs_sync (source);
 	update_browser_views_visibility (source);
-	source->priv->ui_dir_notify_id =
-		eel_gconf_notification_add (CONF_STATE_LIBRARY_DIR,
+
+	if (source->priv->sorting_key != NULL) {
+		source->priv->state_sorting_notify_id =
+			eel_gconf_notification_add (source->priv->sorting_key,
+					    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
+					    source);
+	}
+	source->priv->state_paned_notify_id =
+		eel_gconf_notification_add (rb_library_source_get_paned_key (source),
 				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 				    source);
-	source->priv->state_dir_notify_id =
+	source->priv->state_browser_notify_id =
+		eel_gconf_notification_add (rb_source_get_browser_key (RB_SOURCE (source)),
+				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
+				    source);
+	source->priv->ui_dir_notify_id =
 		eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
 	source->priv->browser_view_notify_id =
@@ -638,10 +668,16 @@ rb_library_source_set_property (GObject *object,
 			g_object_unref (G_OBJECT (source->priv->pixbuf));
 		}
 		source->priv->pixbuf = g_value_get_object (value);
-		g_object_ref (source->priv->pixbuf);
+
+		if (source->priv->pixbuf)
+			g_object_ref (source->priv->pixbuf);
 		break;
 	case PROP_ENTRY_TYPE:
 		source->priv->entry_type = g_value_get_uint (value);
+		break;
+	case PROP_SORTING_KEY:
+		g_free (source->priv->sorting_key);
+		source->priv->sorting_key = g_strdup (g_value_get_string (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -664,6 +700,9 @@ rb_library_source_get_property (GObject *object,
 		break;
 	case PROP_ENTRY_TYPE:
 		g_value_set_uint (value, source->priv->entry_type);
+		break;
+	case PROP_SORTING_KEY:
+		g_value_set_string (value, source->priv->sorting_key);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -950,6 +989,12 @@ impl_get_browser_key (RBSource *source)
 	return CONF_STATE_SHOW_BROWSER;
 }
 
+static const char *
+impl_get_paned_key (RBLibrarySource *status)
+{
+	return CONF_STATE_PANED_POSITION;
+}
+
 static GdkPixbuf *
 impl_get_pixbuf (RBSource *asource)
 {
@@ -1137,21 +1182,26 @@ paned_size_allocate_cb (GtkWidget *widget,
 {
 	/* save state */
 	rb_debug ("paned size allocate");
-	eel_gconf_set_integer (CONF_STATE_PANED_POSITION,
+	eel_gconf_set_integer (rb_library_source_get_paned_key (source),
 			       gtk_paned_get_position (GTK_PANED (source->priv->paned)));
 }
 
 static void
 rb_library_source_state_prefs_sync (RBLibrarySource *source)
 {
+	const char *key;
+
 	rb_debug ("syncing state");
-	gtk_paned_set_position (GTK_PANED (source->priv->paned),
-				eel_gconf_get_integer (CONF_STATE_PANED_POSITION));
-	
-	if (eel_gconf_get_boolean (CONF_STATE_SHOW_BROWSER))
-		gtk_widget_show (source->priv->browser);
-	else
-		gtk_widget_hide (source->priv->browser);
+	key = rb_library_source_get_paned_key (source);
+	if (key)
+		gtk_paned_set_position (GTK_PANED (source->priv->paned),
+					eel_gconf_get_integer (key));
+
+	key = rb_source_get_browser_key (RB_SOURCE (source));
+	if (key && eel_gconf_get_boolean (key))
+			gtk_widget_show (source->priv->browser);
+		else
+			gtk_widget_hide (source->priv->browser);
 }
 
 static void
@@ -1280,6 +1330,14 @@ impl_show_popup (RBSource *source)
 {
 	_rb_source_show_popup (RB_SOURCE (source), "/LibrarySourcePopup");
 	return TRUE;
+}
+
+const char *
+rb_library_source_get_paned_key (RBLibrarySource *source)
+{
+	RBLibrarySourceClass *klass = RB_LIBRARY_SOURCE_GET_CLASS (source);
+
+	return klass->impl_get_paned_key (source);
 }
 
 static void

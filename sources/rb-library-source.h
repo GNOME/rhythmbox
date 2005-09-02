@@ -50,19 +50,20 @@ typedef struct
 typedef struct
 {
 	RBSourceClass parent;
+
+	const char *	(*impl_get_paned_key)		(RBLibrarySource *source);
 } RBLibrarySourceClass;
 
 GType		rb_library_source_get_type	(void);
 
 RBSource *      rb_library_source_new           (RBShell *shell);
 
-void		rb_library_source_show_browser	(RBLibrarySource *source,
-						 gboolean show);
-
 void		rb_library_source_add_location	(RBLibrarySource *source, GtkWindow *win);
 
 void            rb_library_source_class_add_actions (RBShell *shell, 
 						     GtkActionGroup *uimgr);
+
+const char *	rb_library_source_get_paned_key	(RBLibrarySource *source);
 
 G_END_DECLS
 
