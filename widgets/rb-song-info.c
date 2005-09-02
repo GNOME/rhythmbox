@@ -462,6 +462,13 @@ rb_song_info_constructor (GType type, guint n_construct_properties,
 					     gtk_label_get_label GTK_LABEL (label));
 		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
 		g_free (str_final);
+		
+		label = glade_xml_get_widget (xml, "auto_rate_label");
+		str_final = g_strdup_printf ("<b>%s</b>",
+					     gtk_label_get_label GTK_LABEL (label));
+     		gtk_label_set_markup_with_mnemonic (GTK_LABEL (label), str_final);
+		g_free (str_final);
+		
 	}
 
 	g_signal_connect_object (G_OBJECT (song_info->priv->artist),
