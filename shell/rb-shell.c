@@ -66,6 +66,9 @@
 #include "rb-statusbar.h"
 #include "rb-shell-preferences.h"
 #include "rb-library-source.h"
+#ifdef WITH_IPOD_SUPPORT
+#include "rb-ipod-source.h"
+#endif
 #include "totem-pl-parser.h"
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
@@ -322,10 +325,6 @@ struct RBShellPrivate
 	RBIRadioSource *iradio_source;
 #ifdef WITH_IPOD_SUPPORT
 	RBiPodSource *ipod_source;
-#endif
-
-#ifdef HAVE_AUDIOCD
- 	MonkeyMediaAudioCD *cd;
 #endif
 
 	RBSource *selected_source;
