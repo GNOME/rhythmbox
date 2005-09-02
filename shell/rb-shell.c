@@ -280,6 +280,7 @@ struct RBShellPrivate
 {
 	GtkWidget *window;
 	gboolean iconified;
+	guint idle_hide_mainwindow_id;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -870,9 +871,6 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_debug ("shell: setting up tray icon");
 	tray_destroy_cb (NULL, shell);
-	/* FIXME - should make this conditional on whether or not we
-	 * have a notification icon */
-	gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
 
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
@@ -1133,6 +1131,22 @@ rb_shell_get_visibility (RBShell *shell)
 		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));
 }
 
+static gboolean
+idle_hide_mainwindow (gpointer data)
+{
+	RBShell *shell = RB_SHELL (data);
+
+	GDK_THREADS_ENTER ();
+
+	gtk_widget_hide (GTK_WIDGET (shell->priv->window));
+
+	g_object_unref (shell);
+
+	GDK_THREADS_LEAVE ();
+
+	return FALSE;
+}
+
 static void
 rb_shell_set_visibility (RBShell *shell, gboolean visible)
 {
@@ -1142,12 +1156,20 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible)
 	if (visible == current_visible)
 		return;
 
+	/* FIXME - see below */
+	if (shell->priv->idle_hide_mainwindow_id > 0)
+		g_source_remove (shell->priv->idle_hide_mainwindow_id);
+	shell->priv->idle_hide_mainwindow_id = 0;
+
 	if (visible) {
 		rb_debug ("showing main window");
 		rb_shell_sync_window_state (shell);
 
+		gtk_widget_show (GTK_WIDGET (shell->priv->window));
 		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
 		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
+		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
+			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), FALSE);
 	} else {
 		int x, y, width, height;
 
@@ -1157,6 +1179,15 @@ rb_shell_set_visibility (RBShell *shell, gboolean visible)
 		set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
 				   x, y, width, height);
 		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
+		if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon)))
+			gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
+
+		/* FIMXE - this is horribly evil racy workaround for a
+		 * current bug in the tasklist not noticing our hint
+		 * change
+		 */
+		shell->priv->idle_hide_mainwindow_id =
+			g_timeout_add (250, idle_hide_mainwindow, g_object_ref (shell));
 	}
 
 	g_signal_emit_by_name (shell, "visibility_changed", visible);

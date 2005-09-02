@@ -1,3 +1,13 @@
+2005-09-02  Colin Walters  <walters@verbum.org>
+
+	* shell/rb-shell.c (struct RBShellPrivate): Add
+	idle_hide_mainwindow_id.
+	(rb_shell_constructor): Move taskbar skipping hint into
+	rb_shell_set_visibility.
+	(idle_hide_mainwindow): New function.
+	(rb_shell_set_visibility): Taskbar hinting moved here; add evil
+	racy hack to avoid rb appearing in taskbar when minimized.
+
 2005-09-01  Colin Walters  <walters@verbum.org>
 
 	* widgets/eggtrayicon.h: Prototype egg_tray_icon_have_manager.
