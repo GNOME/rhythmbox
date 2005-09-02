@@ -23,6 +23,8 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <X11/Xatom.h>
 #include <config.h>
 #include <libgnome/libgnome.h>
 #include <libgnomeui/gnome-stock-icons.h>
@@ -146,6 +148,8 @@ static void rb_shell_cmd_about (GtkAction *action,
 		                RBShell *shell);
 static void rb_shell_cmd_contents (GtkAction *action,
 				   RBShell *shell);
+static void rb_shell_cmd_toggle_visibility (GtkAction *action,
+					    RBShell *shell);
 static void rb_shell_cmd_quit (GtkAction *action,
 			       RBShell *shell);
 static void rb_shell_cmd_preferences (GtkAction *action,
@@ -275,7 +279,7 @@ enum
 struct RBShellPrivate
 {
 	GtkWidget *window;
-	gboolean visible;
+	gboolean iconified;
 
 	GtkUIManager *ui_manager;
 	GtkActionGroup *actiongroup;
@@ -364,6 +368,9 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "HelpContents", GTK_STOCK_HELP, N_("_Contents"), "F1",
 	  N_("Display music player help"),
 	  G_CALLBACK (rb_shell_cmd_contents) },
+	{ "MusicClose", GTK_STOCK_CLOSE, N_("_Close"), "<control>W",
+	  N_("Hide the music player window"),
+	  G_CALLBACK (rb_shell_cmd_toggle_visibility) },
 	{ "MusicQuit", GTK_STOCK_QUIT, N_("_Quit"), "<control>Q",
 	  N_("Quit the music player"),
 	  G_CALLBACK (rb_shell_cmd_quit) },
@@ -806,11 +813,11 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	gtk_window_set_title (win, _("Music Player"));
 
 	shell->priv->window = GTK_WIDGET (win);
-	shell->priv->visible = TRUE;
-
+	shell->priv->iconified = FALSE;
 	g_signal_connect_object (G_OBJECT (win), "window-state-event",
 				 G_CALLBACK (rb_shell_window_state_cb),
 				 shell, 0);
+
 
 	g_signal_connect_object (G_OBJECT (win), "delete_event",
 				 G_CALLBACK (rb_shell_window_delete_cb),
@@ -863,6 +870,9 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 	rb_debug ("shell: setting up tray icon");
 	tray_destroy_cb (NULL, shell);
+	/* FIXME - should make this conditional on whether or not we
+	 * have a notification icon */
+	gtk_window_set_skip_taskbar_hint (GTK_WINDOW (shell->priv->window), TRUE);
 
 	/* initialize shell services */
 	rb_debug ("shell: initializing shell services");
@@ -1079,26 +1089,78 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	return G_OBJECT (shell);
 }
 
+/* Based on a function found in wnck */
+static void
+set_icon_geometry  (GdkWindow *window,
+		    int        x,
+		    int        y,
+		    int        width,
+		    int        height)
+{
+	gulong data[4];
+	Display *dpy = gdk_x11_drawable_get_xdisplay (window);
+
+	data[0] = x;
+	data[1] = y;
+	data[2] = width;
+	data[3] = height;
+
+	XChangeProperty (dpy,
+			 GDK_WINDOW_XID (window),
+			 gdk_x11_get_xatom_by_name_for_display (gdk_drawable_get_display (window),
+								"_NET_WM_ICON_GEOMETRY"),
+			 XA_CARDINAL, 32, PropModeReplace,
+			 (guchar *)&data, 4);
+}
+
 static gboolean
 rb_shell_window_state_cb (GtkWidget *widget,
 			  GdkEvent *event,
 			  RBShell *shell)
 {
-	gboolean visible;
-
-	g_return_val_if_fail (widget != NULL, FALSE);
-	rb_debug ("caught window state change");
-
 	if (event->type == GDK_WINDOW_STATE) {
-		visible = ! ((event->window_state.new_window_state & GDK_WINDOW_STATE_ICONIFIED) ||
-			     (event->window_state.new_window_state & GDK_WINDOW_STATE_WITHDRAWN));
-		if (visible != shell->priv->visible) {
-			shell->priv->visible = visible;
-			g_signal_emit_by_name (RB_REMOTE_PROXY (shell), "visibility_changed", visible);
-		}
+		shell->priv->iconified = (event->window_state.new_window_state
+					  & GDK_WINDOW_STATE_ICONIFIED);
+	}
+	return FALSE;
+}
+
+static gboolean
+rb_shell_get_visibility (RBShell *shell)
+{
+	return GTK_WIDGET_REALIZED (shell->priv->window)
+		&& !shell->priv->iconified
+		&& gtk_window_is_active (GTK_WINDOW (shell->priv->window));
+}
+
+static void
+rb_shell_set_visibility (RBShell *shell, gboolean visible)
+{
+	gboolean current_visible;
+
+	current_visible = rb_shell_get_visibility (shell);
+	if (visible == current_visible)
+		return;
+
+	if (visible) {
+		rb_debug ("showing main window");
+		rb_shell_sync_window_state (shell);
+
+		gtk_window_deiconify (GTK_WINDOW (shell->priv->window));
+		rb_shell_present (shell, gtk_get_current_event_time (), NULL);
+	} else {
+		int x, y, width, height;
+
+		rb_debug ("hiding main window");
+		rb_tray_icon_get_geom (shell->priv->tray_icon,
+				       &x, &y, &width, &height);
+		set_icon_geometry (GTK_WIDGET (shell->priv->window)->window,
+				   x, y, width, height);
+		gtk_window_iconify (GTK_WINDOW (shell->priv->window));
 	}
 
-	return FALSE;
+	g_signal_emit_by_name (shell, "visibility_changed", visible);
+
 }
 
 static gboolean
@@ -1106,9 +1168,13 @@ rb_shell_window_delete_cb (GtkWidget *win,
 			   GdkEventAny *event,
 			   RBShell *shell)
 {
-	rb_debug ("window deleted");
-	rb_shell_quit (shell);
-
+	if (egg_tray_icon_have_manager (EGG_TRAY_ICON (shell->priv->tray_icon))) {
+		rb_debug ("window deleted, hiding");
+		rb_shell_set_visibility (shell, FALSE);
+	} else {
+		rb_debug ("no tray icon to minimize to, quitting");
+		rb_shell_quit (shell);
+	}
 	return TRUE;
 }
 
@@ -1467,14 +1533,6 @@ rb_shell_set_window_title (RBShell *shell, const char *window_title)
 		} else {
 			gtk_window_set_title (GTK_WINDOW (shell->priv->window),
 					      window_title);
-
-/* This simply doesn't do anything at the moment, because the notification area
- * is broken.
- */
-#if 0			
-			egg_tray_icon_send_message (EGG_TRAY_ICON (shell->priv->tray_icon),
-						    3000, window_title, -1);
-#endif
 		}
 	}
 }
@@ -1545,6 +1603,23 @@ rb_shell_cmd_about (GtkAction *action,
 			       "logo", pixbuf,
 			       NULL);
 	g_string_free (comment, TRUE);
+}
+
+void
+rb_shell_toggle_visibility (RBShell *shell)
+{
+	gboolean visible;
+
+	visible = rb_shell_get_visibility (shell);
+
+	rb_shell_set_visibility (shell, !visible);
+}
+
+static void
+rb_shell_cmd_toggle_visibility (GtkAction *action,
+				RBShell *shell)
+{
+	rb_shell_toggle_visibility (shell);
 }
 
 static void
@@ -1964,20 +2039,21 @@ static gboolean
 tray_destroy_cb (GtkObject *object, RBShell *shell)
 {
 	if (shell->priv->tray_icon) {
-		rb_debug ("caught destroy event for tray icon");
+		rb_debug ("caught destroy event for tray icon %p", object);
 		gtk_object_sink (object);
 		shell->priv->tray_icon = NULL;
+		rb_debug ("finished sinking tray");
 	}
 
 	rb_debug ("creating new tray icon");
 	shell->priv->tray_icon = rb_tray_icon_new (shell->priv->ui_manager,
-						   shell->priv->actiongroup,
 						   RB_REMOTE_PROXY (shell));
 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
 				 G_CALLBACK (tray_destroy_cb), shell, 0);
- 
+
  	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
- 
+
+	rb_debug ("done creating new tray icon %p", shell->priv->tray_icon);
  	return TRUE;
 }
 
@@ -1989,7 +2065,7 @@ rb_shell_hidden_notify (RBShell *shell,
 			const char *secondary)
 {
 
-	if (shell->priv->visible) {
+	if (rb_shell_get_visibility (shell)) {
 		rb_debug ("shell is visible, not notifying");
 		return;
 	}
@@ -2239,29 +2315,14 @@ static gboolean
 rb_shell_get_visibility_impl (RBRemoteProxy *proxy)
 {
 	RBShell *shell = RB_SHELL (proxy);
-	return shell->priv->visible;
+	return rb_shell_get_visibility (shell);
 }
 
 static void
 rb_shell_set_visibility_impl (RBRemoteProxy *proxy, gboolean visible)
 {
 	RBShell *shell = RB_SHELL (proxy);
-
-	rb_debug ("setting visibility %s current visibility %s",
-		  visible ? "TRUE" : "FALSE",
-		  shell->priv->visible ? "TRUE" : "FALSE");
-
-	if (visible == shell->priv->visible)
-		return;
-
-	if (visible) {
-		gtk_window_present (GTK_WINDOW (shell->priv->window));
-	} else {
-		gtk_widget_hide (shell->priv->window);
-	}
-
-	shell->priv->visible = visible;
-	g_signal_emit_by_name (proxy, "visibility_changed", visible);
+	rb_shell_set_visibility (shell, visible);
 }
 
 static gboolean

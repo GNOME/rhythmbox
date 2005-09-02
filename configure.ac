@@ -201,7 +201,7 @@ AM_CONDITIONAL(HAVE_MUSICBRAINZ,test "x$enable_musicbrainz" = "xyes")
 AC_PATH_X
 
 if test x"$x_includes" != x"NONE" && test -n "$x_includes" ; then
-	CFLAGS=-I`echo $x_includes | sed -e "s/:/ -I/g"`
+	CFLAGS=$CFLAGS -I`echo $x_includes | sed -e "s/:/ -I/g"`
 fi
 if test x"$x_libraries" != x"NONE" && test -n "$x_libraries" ; then
 	LIBS=-L`echo $x_libraries | sed -e "s/:/ -L/g"`

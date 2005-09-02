@@ -367,6 +367,17 @@ egg_tray_icon_manager_window_destroyed (EggTrayIcon *icon)
 
 #endif
 
+gboolean
+egg_tray_icon_have_manager (EggTrayIcon *icon)
+{
+  GtkPlug * plug = GTK_PLUG (icon);
+
+  if (plug->socket_window)
+    return TRUE;
+  else
+    return FALSE;
+}
+
 static void
 egg_tray_icon_realize (GtkWidget *widget)
 {

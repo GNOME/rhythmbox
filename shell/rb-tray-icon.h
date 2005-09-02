@@ -54,8 +54,9 @@ typedef struct
 GType			rb_tray_icon_get_type	(void);
 
 RBTrayIcon *		rb_tray_icon_new	(GtkUIManager *mgr,
-						 GtkActionGroup *actiongroup,
 						 RBRemoteProxy *remote);
+
+void                    rb_tray_icon_get_geom   (RBTrayIcon *icon, int *x, int *y, int *width, int *height);
 
 void                    rb_tray_icon_notify     (RBTrayIcon *icon,
 						 guint timeout,

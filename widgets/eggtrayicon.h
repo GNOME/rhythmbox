@@ -75,6 +75,8 @@ guint        egg_tray_icon_send_message   (EggTrayIcon *icon,
 void         egg_tray_icon_cancel_message (EggTrayIcon *icon,
 					   guint        id);
 
+gboolean     egg_tray_icon_have_manager   (EggTrayIcon *icon);
+
 EggNotificationBubble *egg_tray_icon_notify         (EggTrayIcon *icon,
 						     guint timeout,
 						     const char *primary,

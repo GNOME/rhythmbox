@@ -86,6 +86,8 @@ GObject *       rb_shell_get_player     (RBShell *shell);
 
 const char *    rb_shell_get_player_path(RBShell *shell);
 
+void            rb_shell_toggle_visibility (RBShell *shell);
+
 gboolean        rb_shell_get_song_properties (RBShell *shell,
 					      const char *uri,
 					      GHashTable **properties,

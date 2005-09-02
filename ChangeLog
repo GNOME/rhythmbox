@@ -1,5 +1,48 @@
 2005-09-01  Colin Walters  <walters@verbum.org>
 
+	* widgets/eggtrayicon.h: Prototype egg_tray_icon_have_manager.
+
+	* widgets/eggtrayicon.c (egg_tray_icon_have_manager): Steal
+	from gtkstatusicion.c.
+
+	* shell/rb-tray-icon.h: Prototype rb_tray_icon_get_geom.
+
+	* shell/rb-tray-icon.c (rb_tray_icon_toggle_entries): Retitle
+	TrayShowWindow entry.
+	(rb_tray_icon_class_init): Make GtkActionGroup readable only.
+	(rb_tray_icon_constructor): Create action group here.
+	(rb_tray_icon_finalize): Destroy action group.
+	(rb_tray_icon_set_property): Don't take an action group.
+	(rb_tray_icon_new): Ditto.
+	(tray_popup_position_menu): Some mostly boilerplate code
+	to position menu.
+	(rb_tray_icon_button_press_event_cb): Position menu.
+	(rb_tray_icon_get_geom): New function used for the shell
+	to set minimization hints.
+
+	* shell/rb-shell.h: Prototype rb_shell_toggle_visibility.
+
+	* shell/rb-shell.c (rb_shell_actions): Add MusicClose.
+	(struct RBShellPrivate): Change visible to iconified.
+	(set_icon_geometry): New function from Søren Sandmann to
+	tell Metacity where to draw the minimization animiation.
+	(rb_shell_window_state_cb): Update iconified.
+	(rb_shell_get_visibility): New function to say whether
+	or not we're currently visible.
+	(rb_shell_set_visibility): Update to minimize to
+	tray or present as appropriate.
+	(rb_shell_window_delete_cb): On window close, just
+	minimize to tray if we're deleted.
+	(rb_shell_set_window_title): Kill old notification code.
+	(rb_shell_toggle_visibility): Nwe function.
+	(rb_shell_cmd_toggle_visibility): Call it.
+	(rb_shell_constructor): Skip the taskbar.
+	(tray_destroy_cb): Better debugging.
+	
+2005-09-01  Colin Walters  <walters@verbum.org>
+
+	* data/ui/rhythmbox-ui.xml: Add MusicClose.
+
 	* configure.ac: Enable bonobo by default.
 	
 2005-09-01  Colin Walters  <walters@verbum.org>

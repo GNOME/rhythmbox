@@ -96,8 +96,8 @@ enum
 
 static GtkToggleActionEntry rb_tray_icon_toggle_entries [] =
 {
-	{ "TrayShowWindow", NULL, N_("_Show Window"), NULL,
-	  N_("Change the visibility of the main window"),
+	{ "TrayShowWindow", NULL, N_("_Show Music Player"), NULL,
+	  N_("Choose music to play"),
 	  G_CALLBACK (rb_tray_icon_show_window_changed_cb) }
 };
 static guint rb_tray_icon_n_toggle_entries = G_N_ELEMENTS (rb_tray_icon_toggle_entries);
@@ -167,7 +167,7 @@ rb_tray_icon_class_init (RBTrayIconClass *klass)
 							      "GtkActionGroup",
 							      "GtkActionGroup object",
 							      GTK_TYPE_ACTION_GROUP,
-							      G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+							      G_PARAM_READABLE));
 }
 
 static void
@@ -219,6 +219,16 @@ rb_tray_icon_constructor (GType type, guint n_construct_properties,
 	tray = RB_TRAY_ICON (parent_class->constructor (type, n_construct_properties,
 							construct_properties));
 
+	tray->priv->actiongroup = gtk_action_group_new ("TrayActions");
+	gtk_action_group_add_toggle_actions (tray->priv->actiongroup,
+					     rb_tray_icon_toggle_entries,
+					     rb_tray_icon_n_toggle_entries,
+					     tray);
+	rb_tray_icon_sync_action (NULL, FALSE, tray);
+
+	gtk_ui_manager_insert_action_group (tray->priv->ui_manager, tray->priv->actiongroup, 0);
+	g_object_unref (tray->priv->actiongroup);
+
 	return G_OBJECT (tray);
 }
 
@@ -231,6 +241,10 @@ rb_tray_icon_finalize (GObject *object)
 	g_return_if_fail (RB_IS_TRAY_ICON (object));
 
 	tray = RB_TRAY_ICON (object);
+
+	rb_debug ("tray icon %p finalizing", object);
+
+	gtk_ui_manager_remove_action_group (tray->priv->ui_manager, tray->priv->actiongroup);
 
 	g_return_if_fail (tray->priv != NULL);
 	
@@ -274,14 +288,6 @@ rb_tray_icon_set_property (GObject *object,
 	case PROP_UI_MANAGER:
 		tray->priv->ui_manager = g_value_get_object (value);
 		break;
-	case PROP_ACTION_GROUP:
-		tray->priv->actiongroup = g_value_get_object (value);
-		gtk_action_group_add_toggle_actions (tray->priv->actiongroup,
-						     rb_tray_icon_toggle_entries,
-						     rb_tray_icon_n_toggle_entries,
-						     tray);
-		rb_tray_icon_sync_action (NULL, FALSE, tray);
-		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -315,21 +321,52 @@ rb_tray_icon_get_property (GObject *object,
 
 RBTrayIcon *
 rb_tray_icon_new (GtkUIManager *mgr,
-		  GtkActionGroup *group,
 		  RBRemoteProxy *remote)
 {
 	return g_object_new (RB_TYPE_TRAY_ICON,
 			     "title", "Rhythmbox tray icon",
 			     "ui-manager", mgr,
-			     "action-group", group,
 			     "remote", remote,
 			     NULL);
+}
+
+static void
+tray_popup_position_menu (GtkMenu *menu,
+			  int *x,
+			  int *y,
+			  gboolean *push_in,
+			  gpointer user_data)
+{
+        GtkWidget *widget;
+        GtkRequisition requisition;
+        gint menu_xpos;
+        gint menu_ypos;
+
+        widget = GTK_WIDGET (user_data);
+
+        gtk_widget_size_request (GTK_WIDGET (menu), &requisition);
+
+        gdk_window_get_origin (widget->window, &menu_xpos, &menu_ypos);
+
+        menu_xpos += widget->allocation.x;
+        menu_ypos += widget->allocation.y;
+
+	if (menu_ypos > gdk_screen_get_height (gtk_widget_get_screen (widget)) / 2)
+		menu_ypos -= requisition.height;
+	else
+		menu_ypos += widget->allocation.height;
+
+        *x = menu_xpos;
+        *y = menu_ypos;
+        *push_in = TRUE;
 }
 
 static void
 rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 				    RBTrayIcon *icon)
 {
+	GtkWidget *popup;
+
 	/* filter out double, triple clicks */
 	if (event->type != GDK_BUTTON_PRESS)
 		return;
@@ -337,26 +374,21 @@ rb_tray_icon_button_press_event_cb (GtkWidget *ebox, GdkEventButton *event,
 	rb_debug ("tray button press");
 
 	switch (event->button) {
-	case 1:
-	{
+	case 1: {
 		gboolean visible = rb_remote_proxy_get_visibility (icon->priv->proxy);
 		rb_remote_proxy_set_visibility (icon->priv->proxy, visible ? FALSE : TRUE);
 		break;
 	}
-
-	case 3:
-	{
-		GtkWidget *popup;
+		
+	case 3: {
 		popup = gtk_ui_manager_get_widget (GTK_UI_MANAGER (icon->priv->ui_manager),
 						   "/RhythmboxTrayPopup");
 		gtk_menu_set_screen (GTK_MENU (popup), gtk_widget_get_screen (GTK_WIDGET (icon)));
 		gtk_menu_popup (GTK_MENU (popup), NULL, NULL,
-				NULL, NULL, 2,
+				tray_popup_position_menu, ebox, 2,
 				gtk_get_current_event_time ());
-	}
-	break;
-	default:
 		break;
+	}
 	}
 }
 
@@ -367,7 +399,7 @@ rb_tray_icon_scroll_event_cb (GtkWidget *ebox, GdkEvent *event,
 	float volume;
 	rb_debug ("tray button scroll");
 	volume = eel_gconf_get_float (CONF_STATE_VOLUME);
-	switch(event->scroll.direction) {
+	switch (event->scroll.direction) {
 	case GDK_SCROLL_UP:
 		volume += 0.1;
 		if (volume > 1.0)
@@ -444,9 +476,25 @@ static void
 rb_tray_icon_show_window_changed_cb (GtkAction *action,
 				     RBTrayIcon *icon)
 {
-	rb_debug ("show window clicked");
+	rb_debug ("show window clicked for %p", icon);
 	rb_remote_proxy_set_visibility (icon->priv->proxy,
 					gtk_toggle_action_get_active (GTK_TOGGLE_ACTION (action)));
+}
+
+void
+rb_tray_icon_get_geom (RBTrayIcon *icon, int *x, int *y, int *width, int *height)
+{
+	GtkWidget *widget;
+	GtkRequisition requisition;
+
+	widget = GTK_WIDGET (icon->priv->ebox);
+  
+	gtk_widget_size_request (widget, &requisition);
+  
+	gdk_window_get_origin (widget->window, x, y);
+  
+	*width = widget->allocation.x;
+	*height = widget->allocation.y;
 }
 
 void
