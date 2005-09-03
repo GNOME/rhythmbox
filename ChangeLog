@@ -1,3 +1,11 @@
+2005-09-03  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-tree.c: (evaluate_conjunctive_subquery): remove
+	extraneous debug message
+	* sources/rb-library-source.c: (rb_library_source_do_query): fix a
+	crasher would affect any library-derived sources (which was also a
+	memory leak).
+
 2005-09-02  Colin Walters  <walters@verbum.org>
 
 	* configure.ac: Fix sytnax error.

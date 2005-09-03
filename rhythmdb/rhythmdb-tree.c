@@ -1261,8 +1261,6 @@ evaluate_conjunctive_subquery (RhythmDBTree *dbtree, GPtrArray *query,
 			relative_time = g_value_get_ulong (data->val);
 			g_get_current_time  (&current_time);
 
-			rb_debug ("relative time query: cur=%u, rel=%u", current_time.tv_sec, relative_time);
-
 			if (data->type == RHYTHMDB_QUERY_PROP_CURRENT_TIME_WITHIN)
 				return (rhythmdb_entry_get_ulong (entry, data->propid) >= (current_time.tv_sec - relative_time));
 			else

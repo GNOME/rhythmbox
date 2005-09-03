@@ -1546,10 +1546,6 @@ rb_library_source_do_query (RBLibrarySource *source, RBLibraryQueryType qtype)
 					    source->priv->cached_artists_model);
 		rb_property_view_set_model (source->priv->albums,
 					    source->priv->cached_albums_model);
-		g_object_ref (G_OBJECT (source->priv->cached_all_query));
-		g_object_ref (G_OBJECT (source->priv->cached_genres_model));
-		g_object_ref (G_OBJECT (source->priv->cached_artists_model));
-		g_object_ref (G_OBJECT (source->priv->cached_albums_model));
 	} else {
 		rb_debug ("query is not special");
 		source->priv->active_query = source->priv->model = 
