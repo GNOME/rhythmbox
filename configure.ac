@@ -122,7 +122,7 @@ AC_ARG_WITH(old-art,
 			   [Use old artwork]),,
 	      with_old_art=auto)
 if test x$with_old_art == xauto; then
-  with_old_art = xyes
+  with_old_art=xyes
 fi       
 if test x$with_old_art == xyes; then
   AC_DEFINE(WITH_OLD_ART, 1, [Define if you want to use old artwork])

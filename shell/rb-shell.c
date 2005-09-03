@@ -1081,6 +1081,7 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	
 	rb_statusbar_sync_state (shell->priv->statusbar);
 	rb_shell_sync_smalldisplay (shell);
+
 	gtk_widget_show (GTK_WIDGET (shell->priv->window));
 
 	return G_OBJECT (shell);
@@ -2065,6 +2066,21 @@ rb_shell_show_popup_cb (RBSourceList *sourcelist,
 	return rb_source_show_popup (target);
 }
 
+static void
+tray_embedded_cb (GtkPlug *plug,
+		  gpointer data)
+{
+	/* FIXME - this doens't work */
+#if 0
+	RBShell *shell = RB_SHELL (data);
+
+	rb_debug ("got embedded signal");
+
+	gdk_window_set_decorations (shell->priv->window->window,
+				    GDK_DECOR_ALL | GDK_DECOR_MINIMIZE | GDK_DECOR_MAXIMIZE);
+#endif	
+}
+
 static gboolean
 tray_destroy_cb (GtkObject *object, RBShell *shell)
 {
@@ -2080,6 +2096,8 @@ tray_destroy_cb (GtkObject *object, RBShell *shell)
 						   RB_REMOTE_PROXY (shell));
 	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "destroy",
 				 G_CALLBACK (tray_destroy_cb), shell, 0);
+	g_signal_connect_object (G_OBJECT (shell->priv->tray_icon), "embedded",
+				 G_CALLBACK (tray_embedded_cb), shell, 0);
 
  	gtk_widget_show_all (GTK_WIDGET (shell->priv->tray_icon));
 
