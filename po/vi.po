@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rhythmbox Gnome HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-09-02 04:32+0000\n"
-"PO-Revision-Date: 2005-09-02 19:54+0930\n"
+"POT-Creation-Date: 2005-09-04 04:51+0000\n"
+"PO-Revision-Date: 2005-09-04 19:46+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -182,8 +182,8 @@ msgstr "Tạo _nhiều bản sao"
 
 #: ../data/glade/song-info.glade.h:2
 #: ../data/glade/song-info-multiple.glade.h:2
-msgid "Automatically rate:"
-msgstr "Tự động đánh giá"
+msgid "A_utomatically rate:"
+msgstr "_Tự động đánh giá"
 
 #: ../data/glade/song-info.glade.h:3
 msgid "Basic"
@@ -279,7 +279,7 @@ msgid "Open from URI"
 msgstr "Mở từ URI"
 
 #: ../data/rhythmbox.desktop.in.h:1 ../shell/rb-shell.c:813
-#: ../shell/rb-shell.c:1513
+#: ../shell/rb-shell.c:1544
 msgid "Music Player"
 msgstr "Bộ phát nhạc"
 
@@ -301,8 +301,8 @@ msgstr "Trạm Radio Mạng mới"
 #: ../sources/rb-iradio-source.c:245 ../sources/rb-iradio-source.c:246
 #: ../sources/rb-iradio-source.c:247 ../sources/rb-iradio-source.c:465
 #: ../sources/rb-playlist-source.c:447 ../widgets/rb-entry-view.c:949
-#: ../widgets/rb-entry-view.c:975 ../widgets/rb-song-info.c:694
-#: ../widgets/rb-song-info.c:742
+#: ../widgets/rb-entry-view.c:975 ../widgets/rb-song-info.c:701
+#: ../widgets/rb-song-info.c:749
 msgid "Unknown"
 msgstr "Không biết"
 
@@ -311,7 +311,7 @@ msgstr "Không biết"
 msgid "All"
 msgstr "Tất cả"
 
-#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:679
+#: ../iradio/rb-station-properties-dialog.c:173 ../widgets/rb-song-info.c:686
 #, c-format
 msgid "%s Properties"
 msgstr "Thuộc tính %s"
@@ -504,7 +504,7 @@ msgid "Couldn't access %s: %s"
 msgstr "Không thể truy cập %s: %s"
 
 #: ../rhythmdb/rhythmdb.c:2127 ../widgets/rb-entry-view.c:923
-#: ../widgets/rb-song-info.c:898
+#: ../widgets/rb-song-info.c:905
 msgid "Never"
 msgstr "Không bao giờ"
 
@@ -770,15 +770,15 @@ msgstr "Thay đổi liệt phát tự động này."
 msgid "The playlist file may be in an unknown format or corrupted."
 msgstr "Tập tin liệt phát có lẽ có dạng lạ hoặc nó bị hỏng."
 
-#: ../shell/rb-playlist-manager.c:941
+#: ../shell/rb-playlist-manager.c:932
 msgid "Couldn't read playlist"
 msgstr "Không thể đọc liệt phát."
 
-#: ../shell/rb-playlist-manager.c:956
+#: ../shell/rb-playlist-manager.c:947
 msgid "Load Playlist"
 msgstr "Tải liệt phát"
 
-#: ../shell/rb-playlist-manager.c:994
+#: ../shell/rb-playlist-manager.c:985
 msgid "Save Playlist"
 msgstr "Lưu liệt phát"
 
@@ -940,7 +940,7 @@ msgstr "Gặp kết thức dòng bất ngờ."
 msgid "Buffering"
 msgstr "Đang lưu tạm vào bộ đệm"
 
-#: ../shell/rb-shell-preferences.c:141 ../shell/rb-shell.c:1641
+#: ../shell/rb-shell-preferences.c:141 ../shell/rb-shell.c:1672
 msgid "Couldn't display help"
 msgstr "Không thể hiển thị trợ giúp"
 
@@ -1072,16 +1072,16 @@ msgstr "_Hiển thị nhỏ"
 msgid "Make the main window smaller"
 msgstr "Thu nhỏ cửa sổ chính."
 
-#: ../shell/rb-shell.c:1420 ../widgets/rb-entry-view.c:1454
+#: ../shell/rb-shell.c:1451 ../widgets/rb-entry-view.c:1454
 msgid "Now Playing"
 msgstr "Đang phát"
 
-#: ../shell/rb-shell.c:1488 ../shell/rb-tray-icon.c:185
+#: ../shell/rb-shell.c:1519 ../shell/rb-tray-icon.c:185
 msgid "Not playing"
 msgstr "Không đang phát"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1491
+#: ../shell/rb-shell.c:1522
 #, c-format
 msgid ""
 "%s\n"
@@ -1091,7 +1091,7 @@ msgstr ""
 "Tạm ngừng, %s"
 
 #. Translators: the first %s is substituted by the song name, the second one is the elapsed and total time
-#: ../shell/rb-shell.c:1495
+#: ../shell/rb-shell.c:1526
 #, c-format
 msgid ""
 "%s\n"
@@ -1101,67 +1101,67 @@ msgstr ""
 "%s"
 
 #. Translators: %s is the song name
-#: ../shell/rb-shell.c:1529
+#: ../shell/rb-shell.c:1560
 #, c-format
 msgid "%s (Paused)"
 msgstr "%s (tạm ngừng)"
 
-#: ../shell/rb-shell.c:1581
+#: ../shell/rb-shell.c:1612
 msgid "translator_credits"
 msgstr "Nhóm Việt hóa Gnome <gnomevi-list@lists.sourceforge.net>"
 
-#: ../shell/rb-shell.c:1585
+#: ../shell/rb-shell.c:1616
 msgid "Maintainers:"
 msgstr "Người bảo quản:"
 
-#: ../shell/rb-shell.c:1588
+#: ../shell/rb-shell.c:1619
 msgid "Former Maintainers:"
 msgstr "Người bảo quản trước đây:"
 
-#: ../shell/rb-shell.c:1591
+#: ../shell/rb-shell.c:1622
 msgid "Contributors:"
 msgstr "Người đóng góp:"
 
-#: ../shell/rb-shell.c:1593
+#: ../shell/rb-shell.c:1624
 msgid "Music management and playback software for GNOME."
 msgstr "Phần mềm quản lý và phát nhạc cho GNOME."
 
-#: ../shell/rb-shell.c:1701
+#: ../shell/rb-shell.c:1732
 msgid "Import Folder into Library"
 msgstr "Nhập danh mục vào Thư viện"
 
-#: ../shell/rb-shell.c:1723
+#: ../shell/rb-shell.c:1754
 msgid "Import File into Library"
 msgstr "Nhập tập tin vào Thư viện"
 
-#: ../shell/rb-shell.c:1757
+#: ../shell/rb-shell.c:1788
 msgid "CD Ripper not found"
 msgstr "Không tìm được bộ nhổ đĩa CD."
 
-#: ../shell/rb-shell.c:1758
+#: ../shell/rb-shell.c:1789
 msgid "To extract CDs you must install the Sound Juicer CD Ripper package."
 msgstr "Để nhổ đĩa CD, bạn phải cài đặt gói Sound Juicer."
 
-#: ../shell/rb-shell.c:1766
+#: ../shell/rb-shell.c:1797
 msgid "Couldn't run CD Ripper"
 msgstr "Không thể chạy bộ nhổ đĩa CD."
 
-#: ../shell/rb-shell.c:1767
+#: ../shell/rb-shell.c:1798
 #, c-format
 msgid "An error occurred while running sound-juicer: %s"
 msgstr "Gặp lỗi khi chạy sound-juicer: %s"
 
-#: ../shell/rb-shell.c:2499 ../shell/rb-shell.c:2544
+#: ../shell/rb-shell.c:2547 ../shell/rb-shell.c:2592
 #, c-format
 msgid "Unknown song URI: %s"
 msgstr "Không biết URI bài hát này: %s"
 
-#: ../shell/rb-shell.c:2553
+#: ../shell/rb-shell.c:2601
 #, c-format
 msgid "Unknown property %s"
 msgstr "Không biết tài sản này: %s"
 
-#: ../shell/rb-shell.c:2563
+#: ../shell/rb-shell.c:2611
 #, c-format
 msgid "Invalid property type %s for property %s"
 msgstr "Kiểu tài sản không hợp lệ %s cho tài sản %s."
@@ -1255,7 +1255,7 @@ msgstr "Gặp lỗi khi ghi vào tập tin PC « %s ».\n"
 msgid "iPod"
 msgstr "iPod"
 
-#: ../sources/rb-iradio-source.c:353 ../sources/rb-library-source.c:555
+#: ../sources/rb-iradio-source.c:353 ../sources/rb-library-source.c:574
 msgid "Genre"
 msgstr "Loại"
 
@@ -1269,43 +1269,43 @@ msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d trạm"
 
-#: ../sources/rb-library-source.c:196
+#: ../sources/rb-library-source.c:200
 msgid "Browse This _Genre"
 msgstr "Duyệt _loại này"
 
-#: ../sources/rb-library-source.c:197
+#: ../sources/rb-library-source.c:201
 msgid "Set the browser to view only this genre"
 msgstr "Đặt bộ duyệt để xem chỉ loại này."
 
-#: ../sources/rb-library-source.c:199
+#: ../sources/rb-library-source.c:203
 msgid "Browse This _Artist"
 msgstr "Duyệt _nghệ sĩ này"
 
-#: ../sources/rb-library-source.c:200
+#: ../sources/rb-library-source.c:204
 msgid "Set the browser to view only this artist"
 msgstr "Đặt bộ duyệt để xem chỉ nghệ sĩ này."
 
-#: ../sources/rb-library-source.c:202
+#: ../sources/rb-library-source.c:206
 msgid "Browse This A_lbum"
 msgstr "Duyệt _tập này"
 
-#: ../sources/rb-library-source.c:203
+#: ../sources/rb-library-source.c:207
 msgid "Set the browser to view only this album"
 msgstr "Đặt bộ duyệt để xem chỉ tập này."
 
-#: ../sources/rb-library-source.c:569
+#: ../sources/rb-library-source.c:588
 msgid "Artist"
 msgstr "Nghệ sĩ"
 
-#: ../sources/rb-library-source.c:583
+#: ../sources/rb-library-source.c:602
 msgid "Album"
 msgstr "Tập"
 
-#: ../sources/rb-library-source.c:687
+#: ../sources/rb-library-source.c:726
 msgid "Library"
 msgstr "Thư viện"
 
-#: ../sources/rb-library-source.c:1181
+#: ../sources/rb-library-source.c:1231
 msgid "Add Location"
 msgstr "Thêm địa điểm"
 
@@ -1838,19 +1838,19 @@ msgstr "Thuộc tính bài hát"
 msgid "Multiple Song Properties"
 msgstr "Thuộc tính đa bài hát"
 
-#: ../widgets/rb-song-info.c:740
+#: ../widgets/rb-song-info.c:747
 #, c-format
 msgid "%lu kbps"
 msgstr "%lu kbps"
 
-#: ../widgets/rb-song-info.c:785
+#: ../widgets/rb-song-info.c:792
 msgid "Unknown file name"
 msgstr "Tên tập tin lạ"
 
-#: ../widgets/rb-song-info.c:804
+#: ../widgets/rb-song-info.c:811
 msgid "On the desktop"
 msgstr "Trên mặt bàn"
 
-#: ../widgets/rb-song-info.c:813
+#: ../widgets/rb-song-info.c:820
 msgid "Unknown location"
 msgstr "Không biết địa điểm này"
