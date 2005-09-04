@@ -627,6 +627,14 @@ rhythmdb_query_model_entry_changed_cb (RhythmDB *db, RhythmDBEntry *entry,
 		g_signal_emit (G_OBJECT (model),
 			       rhythmdb_query_model_signals[ENTRY_PROP_CHANGED], 0,
 			       entry, change->prop, &change->old, &change->new);
+
+		if (change->prop == RHYTHMDB_PROP_DURATION) {
+			model->priv->total_duration -= g_value_get_ulong (&change->old);
+			model->priv->total_duration += g_value_get_ulong (&change->new);
+		} else if (change->prop == RHYTHMDB_PROP_FILE_SIZE) {
+			model->priv->total_size -= g_value_get_uint64 (&change->old);
+			model->priv->total_size += g_value_get_uint64 (&change->new);
+		}
 	}
 
 	if (model->priv->query &&
@@ -866,10 +874,18 @@ rhythmdb_query_model_do_reorder (RhythmDBQueryModel *model, RhythmDBEntry *entry
 		}
 	}
 
+	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
+	iter.stamp = model->priv->stamp;
+	iter.user_data = ptr;
+	path = rhythmdb_query_model_get_path (GTK_TREE_MODEL (model),
+					      &iter);
+	gtk_tree_model_row_changed (GTK_TREE_MODEL (model),
+				     path, &iter);
+	gtk_tree_path_free (path);
+
 	/* it may have moved, check for a re-order */
 	length = g_sequence_get_length (model->priv->entries);
 
-	ptr = g_hash_table_lookup (model->priv->reverse_map, entry);
 	g_hash_table_remove (model->priv->reverse_map, entry);
 	old_pos = g_sequence_ptr_get_position (ptr);
 	g_sequence_remove (ptr);

@@ -2798,9 +2798,9 @@ char *
 rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize size)
 {
 	long days, hours, minutes, seconds;
-	char *songcount;
-	char *time;
-	char *size_str;
+	char *songcount = NULL;
+	char *time = NULL;
+	char *size_str = NULL;
 	char *ret;
 	const char *minutefmt;
 	const char *hourfmt;	
@@ -2859,7 +2859,17 @@ rhythmdb_compute_status_normal (gint n_songs, glong duration, GnomeVFSFileSize s
 	}
 
 	size_str = gnome_vfs_format_file_size_for_display (size);
-	ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
+
+	if (size > 0 && duration > 0) {
+		ret = g_strdup_printf ("%s, %s, %s", songcount, time, size_str);
+	} else if (duration > 0) {
+		ret = g_strdup_printf ("%s, %s", songcount, time);
+	} else if (size > 0) {
+		ret = g_strdup_printf ("%s, %s", songcount, size_str);
+	} else {
+		ret = g_strdup (songcount);
+	}
+
 	g_free (songcount);
 	g_free (time);
 	g_free (size_str);

@@ -1,3 +1,14 @@
+2005-09-05  James Livingston  <jrl@ids.org.au>
+
+	* rhythmdb/rhythmdb-query-model.c:
+	(rhythmdb_query_model_entry_changed_cb),
+	(rhythmdb_query_model_do_reorder): Update the query model's totals if
+	the duration of filesize of an entry changes.  Emit the row-changed
+	signals that I forgot to put back in, when I was doing query sorting.
+
+	* rhythmdb/rhythmdb.c: (rhythmdb_compute_status_normal): Don't print
+	out "0 minutes" or "0 bytes".
+
 2005-09-04  James Livingston  <jrl@ids.org.au>
 
 	* shell/rb-playlist-manager.c: (rb_playlist_manager_new_playlist):
