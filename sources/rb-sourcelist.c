@@ -78,6 +78,12 @@ static void rb_sourcelist_get_property (GObject *object,
 					guint prop_id,
 					GValue *value,
 					GParamSpec *pspec);
+static gboolean rb_sourcelist_source_to_iter (RBSourceList *sourcelist, 
+					      RBSource *source,
+					      GtkTreeIter *iter);
+static gboolean rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, 
+						      RBSource *source,
+						      GtkTreeIter *iter);
 static void rb_sourcelist_selection_changed_cb (GtkTreeSelection *selection,
 						RBSourceList *sourcelist);
 static void drop_received_cb (RBSourceListModel *model, RBSource *target, GtkTreeViewDropPosition pos,
@@ -339,7 +345,8 @@ rb_sourcelist_new (RBShell *shell)
 
 void
 rb_sourcelist_append (RBSourceList *sourcelist,
-		      RBSource *source)
+		      RBSource *source,
+		      RBSource *parent)
 {
 	GtkTreeIter iter;
 	PangoAttrList *attrs = pango_attr_list_new ();
@@ -350,9 +357,15 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 
 	g_object_get (G_OBJECT (source), "name", &name, NULL);
 
-	gtk_list_store_append (GTK_LIST_STORE (sourcelist->priv->real_model), &iter);
+	if (parent) {
+		GtkTreeIter parent_iter;
+		g_assert (rb_sourcelist_source_to_iter (sourcelist, parent, &parent_iter));
+		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, &parent_iter);
+	} else {
+		gtk_tree_store_append (GTK_TREE_STORE (sourcelist->priv->real_model), &iter, NULL);
+	}
 
-	gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->real_model), &iter,
+	gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
 			    RB_SOURCELIST_MODEL_COLUMN_PIXBUF, rb_source_get_pixbuf (source),
 			    RB_SOURCELIST_MODEL_COLUMN_NAME, name,
 			    RB_SOURCELIST_MODEL_COLUMN_SOURCE, source,
@@ -364,39 +377,70 @@ rb_sourcelist_append (RBSourceList *sourcelist,
 
 }
 
+typedef struct _SourcePath {
+	RBSource *source;
+	GtkTreePath *path;
+} SourcePath;
+
+static gboolean
+match_source_to_iter (GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter,
+		      SourcePath *sp)
+{
+	RBSource *target = NULL;
+	
+	gtk_tree_model_get (model, iter, RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
+	if (target == sp->source) {
+		sp->path = gtk_tree_path_copy(path);
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
 static gboolean
 rb_sourcelist_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 			      GtkTreeIter *iter)
 {
-	if (gtk_tree_model_get_iter_first (sourcelist->priv->real_model, iter) == FALSE) {
-		return FALSE;
+	SourcePath *sp = g_new0(SourcePath,1);
+	gboolean ret = FALSE;
+	
+	sp->source = source;
+	
+	gtk_tree_model_foreach (sourcelist->priv->real_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
+	
+	if (sp->path) {
+		gtk_tree_model_get_iter (sourcelist->priv->real_model, iter, sp->path);
+		ret = TRUE;
 	}
 
-	do {
-		RBSource *target = NULL;
-		gtk_tree_model_get (sourcelist->priv->real_model, iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
-		if (source == target)
-			return TRUE;
-	} while (gtk_tree_model_iter_next (sourcelist->priv->real_model, iter));
-	return FALSE;
+	gtk_tree_path_free(sp->path);
+	g_free(sp);
+	sp = NULL;
+
+	return ret;
 }
 
 static gboolean
 rb_sourcelist_visible_source_to_iter (RBSourceList *sourcelist, RBSource *source,
 				      GtkTreeIter *iter)
 {
-	if (gtk_tree_model_get_iter_first (sourcelist->priv->filter_model, iter) == FALSE) {
-		return FALSE;
+	SourcePath *sp = g_new0(SourcePath,1);
+	gboolean ret = FALSE;
+	
+	sp->source = source;
+	
+	gtk_tree_model_foreach (sourcelist->priv->filter_model, (GtkTreeModelForeachFunc) match_source_to_iter, sp);
+
+	if (sp->path) {
+		gtk_tree_model_get_iter (sourcelist->priv->filter_model, iter, sp->path);
+		ret = TRUE;
 	}
-	do {
-		RBSource *target = NULL;
-		gtk_tree_model_get (sourcelist->priv->filter_model, iter,
-				    RB_SOURCELIST_MODEL_COLUMN_SOURCE, &target, -1);
-		if (source == target)
-			return TRUE;
-	} while (gtk_tree_model_iter_next (sourcelist->priv->filter_model, iter));
-	return FALSE;
+
+	gtk_tree_path_free(sp->path);
+	g_free(sp);
+	sp = NULL;
+
+	return ret;
 }
 
 void
@@ -430,13 +474,13 @@ rb_sourcelist_set_playing_source (RBSourceList *sourcelist, RBSource *source)
 		g_assert (rb_sourcelist_source_to_iter (sourcelist,
 							sourcelist->priv->playing_source,
 							&iter));
-		gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->real_model), &iter,
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_PLAYING, FALSE, -1);
 	}
 	sourcelist->priv->playing_source = source;
 	if (source) {
 		g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
-		gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->real_model), &iter,
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model), &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_PLAYING, TRUE, -1);
 	}
 }
@@ -447,7 +491,7 @@ rb_sourcelist_remove (RBSourceList *sourcelist, RBSource *source)
 	GtkTreeIter iter;
 
 	g_assert (rb_sourcelist_source_to_iter (sourcelist, source, &iter));
-	gtk_list_store_remove (GTK_LIST_STORE (sourcelist->priv->real_model), &iter);
+	gtk_tree_store_remove (GTK_TREE_STORE (sourcelist->priv->real_model), &iter);
 	g_signal_handlers_disconnect_by_func (G_OBJECT (source),
 					      G_CALLBACK (name_notify_cb), sourcelist);
         g_signal_handlers_disconnect_by_func (G_OBJECT (source),
@@ -575,7 +619,7 @@ name_notify_cb (GObject *obj, GParamSpec *pspec, gpointer data)
 	
 	if (rb_sourcelist_source_to_iter (sourcelist, source, &iter)) {
 		g_object_get (obj, "name", &name, NULL);
-		gtk_list_store_set (GTK_LIST_STORE (sourcelist->priv->real_model),
+		gtk_tree_store_set (GTK_TREE_STORE (sourcelist->priv->real_model),
 				    &iter,
 				    RB_SOURCELIST_MODEL_COLUMN_NAME, name, -1);
 	}

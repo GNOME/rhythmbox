@@ -89,6 +89,7 @@ void			rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean forc
 RBSource *		rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 							  const char *suggested_name,
 							  gboolean automatic);
+GList *			rb_playlist_manager_get_playlists (RBPlaylistManager *manager);
 
 G_END_DECLS
 

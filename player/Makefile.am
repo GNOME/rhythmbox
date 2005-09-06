@@ -17,7 +17,16 @@ INCLUDES = 						\
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/lib 				\
 	-I$(top_srcdir)/metadata			\
+	-I$(top_srcdir)/sources				\
+	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/rhythmdb			\
+	-I$(top_srcdir)/widgets				\
 	$(RHYTHMBOX_CFLAGS)
+
+
+if USE_DAAP
+INCLUDES += -I$(top_srcdir)/daapsharing			
+endif
 
 
 BUILT_SOURCES = rb-recorder-marshal.c rb-recorder-marshal.h

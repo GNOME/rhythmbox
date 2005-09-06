@@ -245,7 +245,7 @@ GtkTreeModel *
 rb_sourcelist_model_new (void)
 {
 	RBSourceListModel *model;
-	GtkListStore *store;
+	GtkTreeStore *store;
  	GType *column_types = g_new (GType, RB_SOURCELIST_MODEL_N_COLUMNS);
 
 	column_types[RB_SOURCELIST_MODEL_COLUMN_PLAYING] = G_TYPE_BOOLEAN;
@@ -253,7 +253,7 @@ rb_sourcelist_model_new (void)
 	column_types[RB_SOURCELIST_MODEL_COLUMN_NAME] = G_TYPE_STRING;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_SOURCE] = G_TYPE_POINTER;
 	column_types[RB_SOURCELIST_MODEL_COLUMN_ATTRIBUTES] = PANGO_TYPE_ATTR_LIST;
-	store = gtk_list_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS, 
+	store = gtk_tree_store_newv (RB_SOURCELIST_MODEL_N_COLUMNS, 
 				     column_types);
 
  	model = RB_SOURCELIST_MODEL (g_object_new (RB_TYPE_SOURCELIST_MODEL, 
@@ -331,13 +331,13 @@ rb_sourcelist_model_drag_data_received (RbTreeDragDest *drag_dest,
 			gtk_tree_model_filter_convert_iter_to_child_iter (GTK_TREE_MODEL_FILTER (model),
 									  &real_dest_iter, &dest_iter);
 			if (pos == GTK_TREE_VIEW_DROP_AFTER)
-				gtk_list_store_move_after (GTK_LIST_STORE (real_model),
+				gtk_tree_store_move_after (GTK_TREE_STORE (real_model),
 							   &real_iter, &real_dest_iter);
 			else
-				gtk_list_store_move_before (GTK_LIST_STORE (real_model),
+				gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
 							    &real_iter, &real_dest_iter);
 		} else
-			gtk_list_store_move_before (GTK_LIST_STORE (real_model),
+			gtk_tree_store_move_before (GTK_TREE_STORE (real_model),
 						    &real_iter, NULL);
 		g_free (path_str);
 	}
@@ -365,7 +365,7 @@ rb_sourcelist_model_row_drop_possible (RbTreeDragDest *drag_dest,
 		return TRUE;
 			
 	/* Call the superclass method */
-	return gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (GTK_LIST_STORE (model)),
+	return gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (GTK_TREE_STORE (model)),
 						     dest, selection_data);
 }
 

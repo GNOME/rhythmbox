@@ -31,6 +31,9 @@
 #include <gtk/gtkoptionmenu.h>
 #include <gtk/gtkradiobutton.h>
 #include <gtk/gtknotebook.h>
+#include <gtk/gtkvbox.h>
+#include <gtk/gtkhbox.h>
+#include <gtk/gtkcheckbutton.h>
 #include <glade/glade.h>
 #include <libgnome/gnome-help.h>
 #include <string.h>
@@ -276,6 +279,81 @@ rb_shell_preferences_append_view_page (RBShellPreferences *prefs,
 				  label);
 }
 
+#ifdef WITH_DAAP_SUPPORT
+
+#define CONF_ENABLE_SHARING "/apps/rhythmbox/sharing/enable_sharing"
+#define CONF_NAME "/apps/rhythmbox/sharing/share_name"
+
+static void
+share_check_button_toggled_cb (GtkToggleButton *button, GtkWidget *hbox)
+{
+	gboolean b;
+
+	b = gtk_toggle_button_get_active (button);
+
+	eel_gconf_set_boolean (CONF_ENABLE_SHARING, b);
+
+	gtk_widget_set_sensitive (hbox, b);
+	
+	return;
+}
+
+static gboolean
+share_name_entry_focus_out_event_cb (GtkEntry *entry, GdkEventFocus *event, gpointer data)
+{
+	const gchar *name;
+
+	name = gtk_entry_get_text (entry);
+
+	eel_gconf_set_string (CONF_NAME, name);
+
+	return FALSE;
+}
+
+static void
+add_daap_preferences (RBShellPreferences *shell_preferences)
+{
+	GtkWidget *vbox;
+	GtkWidget *check;
+	gboolean b;
+	GtkWidget *hbox;
+	GtkWidget *label;
+	GtkWidget *entry;
+	gchar *name;
+
+	vbox = gtk_vbox_new (FALSE, 5);
+	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
+
+	hbox = gtk_hbox_new (FALSE, 5);
+
+	check = gtk_check_button_new_with_mnemonic (_("_Share my music"));
+	gtk_box_pack_start (GTK_BOX (vbox), check, FALSE, FALSE, 0);
+	
+	b = eel_gconf_get_boolean (CONF_ENABLE_SHARING);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (check), b);
+	g_signal_connect (G_OBJECT (check), "toggled", G_CALLBACK (share_check_button_toggled_cb), hbox);
+	
+	gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+	label = gtk_label_new_with_mnemonic (_("Shared music _name"));
+	gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+
+	entry = gtk_entry_new ();
+	gtk_box_pack_start (GTK_BOX (hbox), entry, FALSE, FALSE, 0);
+	gtk_label_set_mnemonic_widget (GTK_LABEL (label), entry);
+
+	name = eel_gconf_get_string (CONF_NAME);
+	gtk_entry_set_text (GTK_ENTRY (entry), name);
+	g_signal_connect (G_OBJECT (entry), "focus-out-event", G_CALLBACK (share_name_entry_focus_out_event_cb), NULL);	
+
+	gtk_widget_set_sensitive (hbox, b);
+	
+	gtk_notebook_append_page (GTK_NOTEBOOK (shell_preferences->priv->notebook), vbox, gtk_label_new (_("Sharing")));
+
+	return;
+}
+#endif /* WITH_DAAP_SUPPORT */
+
 GtkWidget *
 rb_shell_preferences_new (GList *views)
 {
@@ -295,6 +373,11 @@ rb_shell_preferences_new (GList *views)
 						       name,
 						       RB_SOURCE (views->data));
 	}
+
+#ifdef WITH_DAAP_SUPPORT
+	add_daap_preferences (shell_preferences);
+#endif /* WITH_DAAP_SUPPORT */
+
 	return GTK_WIDGET (shell_preferences);
 }
 

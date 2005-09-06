@@ -301,5 +301,38 @@
 	<long>Audio disc burner device.</long>
         </locale>
       </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/sharing/enable_browsing</key>
+	<applyto>/apps/rhythmbox/sharing/enable_browsing</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Enables browsing your network for computers with shared music</short>
+	<long>When enabled, Rhythmbox will search for computers running Rhythmbox or Apple iTunes with shared music on your local network</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/sharing/enable_sharing</key>
+	<applyto>/apps/rhythmbox/sharing/enable_sharing</applyto>
+	<owner>rhythmbox</owner>
+	<type>bool</type>
+	<default>0</default>
+	<locale name="C">
+	<short>Enables sharing your music with computers on your network</short>
+	<long>When enabled, Rhythmbox will share your music with other computers running Rhythmbox or Apple iTunes</long>
+	</locale>
+      </schema>
+      <schema>
+	<key>/schemas/apps/rhythmbox/sharing/share_name</key>
+	<applyto>/apps/rhythmbox/sharing/share_name</applyto>
+	<owner>rhythmbox</owner>
+	<type>string</type>
+	<default></default>
+	<locale name="C">
+	<short>Name for your shared music</short>
+	<long>Name other computers will see your music shared as</long>
+	</locale>
+      </schema>
     </schemalist>
 </gconfschemafile>

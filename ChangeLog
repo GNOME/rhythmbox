@@ -1,3 +1,53 @@
+2005-09-06  Charles Schmidt   <cschmidt2@emich.edu>
+
+	* daapsharing/*: Music sharing library.
+	
+	* sources/rb-daap-source.c/h: Music share RBSource.
+	* sources/rb-daap-playlist-source.c/h: Music share playlist RBSource.
+
+	* configure.ac: --enable-daap flag to turn on music sharing. Requires
+	libsoup and a mutlicast DNS implementation (howl or avahi).
+
+	* data/rhythmbox.schemas: New GConf keys for music sharing.
+
+	* data/ui/rhythmbox-ui.xml: New popup menu ui definition for daap
+	source right click menu.
+
+	* player/rb-player-gst.c: Changes to properly play & seek in remote
+	music share files.
+
+	* shell/rb-playlist-manager.c/h:
+	(rb_playlist_manager_get_playlists): New function to get a GList * of
+	the playlists.
+	(rb_playlist_manager_save_playlists): Don't save music share playlists
+	and fixed a GObject reference leak.
+
+	* shell/rb-shell.c/h:
+	(rb_shell_append_source): No longer a local function.  Now takes a
+	parent RBSource * argument, NULL to append a toplevel source.
+	(rb_shell_cmd_source_disconnect): New function to 'disconnect' a
+	source (useful for disconnecting from remote music share,
+	specifically).
+	(rb_shell_quit): Stop music sharing/browsing.
+	(rb_shell_playlist_added_cb): Work with tree source structure.
+	(rb_shell_get_property): "playlist-manager" property accessor.
+	(rb_shell_class_init): New "playlist-manager" property.
+	(rb_shell_construor): Append sources as toplevel sources.  Initialize
+	daap sharing/browsing.
+	(rb_shell_select_source): Notify source of activation/deactivation.
+
+	* shell/rb-shell-prefernces.c: Music sharing preferences.
+
+	* sources/rb-source.c/h: New activate, deactivate and disconnect
+	class functions.  Activate & deactivate are notification style 
+	functions that will tell a source when it is selected/unselected.
+	Disconnect can be hooked up to a UI object to disconnect the source.
+
+	* sources/rb-sourcelist-model.c:
+	* sources/rb-sourcelist.c/h: Sourcelist is now a tree structure.
+	(rb_sourcelist_append): Takes a RBSource * parent arguement, NULL to
+	append a toplevel source.
+
 2005-09-05  James Livingston  <jrl@ids.org.au>
 
 	* rhythmdb/rhythmdb-query-model.c:

@@ -65,7 +65,8 @@ GType		rb_sourcelist_get_type		(void);
 GtkWidget *	rb_sourcelist_new		(RBShell *shell);
 
 void		rb_sourcelist_append		(RBSourceList *sourcelist,
-						 RBSource *source);
+						 RBSource *source,
+						 RBSource *parent);
 
 void		rb_sourcelist_set_playing_source(RBSourceList *sourcelist,
 						 RBSource *source);

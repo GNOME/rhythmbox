@@ -73,6 +73,10 @@
 #ifdef WITH_IPOD_SUPPORT
 #include "rb-ipod-source.h"
 #endif /* WITH_IPOD_SUPPORT */
+#ifdef WITH_DAAP_SUPPORT
+#include "rb-daap-source.h"
+#include "rb-daap-sharing.h"
+#endif /* WITH_DAAP_SUPPORT */
 #include "rb-load-failure-dialog.h"
 #include "rb-new-station-dialog.h"
 #include "rb-iradio-source.h"
@@ -109,7 +113,6 @@ static void paned_size_allocate_cb (GtkWidget *widget,
 				    GtkAllocation *allocation,
 				    RBShell *shell);
 static void rb_shell_select_source (RBShell *shell, RBSource *source);
-static void rb_shell_append_source (RBShell *shell, RBSource *source);
 static RBSource *rb_shell_get_source_by_entry_type (RBShell *shell, 
 						    RhythmDBEntryType type);
 static void source_selected_cb (RBSourceList *sourcelist,
@@ -167,6 +170,8 @@ static void rb_shell_cmd_extract_cd (GtkAction *action,
 				     RBShell *shell);
 static void rb_shell_cmd_current_song (GtkAction *action,
 				       RBShell *shell);
+static void rb_shell_cmd_source_disconnect (GtkAction *action,
+					    RBShell *shell);
 static void rb_shell_jump_to_current (RBShell *shell);
 static void rb_shell_jump_to_entry (RBShell *shell, RhythmDBEntry *entry);
 static void rb_shell_jump_to_entry_with_source (RBShell *shell, RBSource *source,
@@ -268,7 +273,8 @@ enum
 	PROP_RHYTHMDB_FILE,
 	PROP_SELECTED_SOURCE,
 	PROP_DB,
-	PROP_UI_MANAGER
+	PROP_UI_MANAGER,
+	PROP_PLAYLIST_MANAGER
 };
 
 /* prefs */
@@ -383,6 +389,9 @@ static GtkActionEntry rb_shell_actions [] =
 	{ "ViewJumpToPlaying", GTK_STOCK_JUMP_TO, N_("_Jump to Playing Song"), "<control>J",
 	  N_("Scroll the view to the currently playing song"),
 	  G_CALLBACK (rb_shell_cmd_current_song) },
+	{ "SourceDisconnect", GTK_STOCK_DISCONNECT, N_("_Disconnect"), NULL, 
+	  N_("Disconnect from selected source"), 
+	  G_CALLBACK (rb_shell_cmd_source_disconnect) },
 };
 static guint rb_shell_n_actions = G_N_ELEMENTS (rb_shell_actions);
 
@@ -525,7 +534,13 @@ rb_shell_class_init (RBShellClass *klass)
 							      "GtkUIManager object", 
 							      GTK_TYPE_UI_MANAGER,
 							       G_PARAM_READABLE));
-
+	g_object_class_install_property (object_class,
+					 PROP_PLAYLIST_MANAGER,
+					 g_param_spec_object ("playlist-manager",
+						 	      "RBPlaylistManager",
+							      "RBPlaylistManager object",
+							      RB_TYPE_PLAYLIST_MANAGER,
+							      G_PARAM_READABLE));
 
 }
 
@@ -661,6 +676,9 @@ rb_shell_get_property (GObject *object,
 		break;
 	case PROP_UI_MANAGER:
 		g_value_set_object (value, shell->priv->ui_manager);
+		break;
+	case PROP_PLAYLIST_MANAGER:
+		g_value_set_object (value, shell->priv->playlist_manager);
 		break;
 	case PROP_SELECTED_SOURCE:
 		g_value_set_object (value, shell->priv->selected_source);
@@ -974,14 +992,14 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 
 
 	shell->priv->library_source = RB_LIBRARY_SOURCE (rb_library_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->library_source), NULL);
 	shell->priv->iradio_source = RB_IRADIO_SOURCE (rb_iradio_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->iradio_source), NULL);
 #ifdef WITH_IPOD_SUPPORT
 	shell->priv->ipod_source = RB_IPOD_SOURCE (rb_ipod_source_new (shell));
-	rb_shell_append_source (shell, RB_SOURCE (shell->priv->ipod_source));
+	rb_shell_append_source (shell, RB_SOURCE (shell->priv->ipod_source), NULL);
 #endif
-
+	
 	/* Initialize playlist manager */
 	rb_debug ("shell: creating playlist manager");
 	shell->priv->playlist_manager = rb_playlist_manager_new (shell,
@@ -998,6 +1016,11 @@ rb_shell_constructor (GType type, guint n_construct_properties,
 	g_signal_connect_object (G_OBJECT (shell->priv->playlist_manager), "load_finish",
 				 G_CALLBACK (rb_shell_playlist_load_finish_cb), shell, 0);
 
+#ifdef WITH_DAAP_SUPPORT
+	rb_daap_sources_init (shell);
+	rb_daap_sharing_init (shell);
+#endif
+	
 	rb_debug ("shell: loading ui");
 	gtk_ui_manager_insert_action_group (shell->priv->ui_manager,
 					    shell->priv->actiongroup, 0);
@@ -1346,9 +1369,10 @@ rb_shell_register_entry_type_for_source (RBShell *shell,
 
 
 
-static void
+void
 rb_shell_append_source (RBShell *shell,
-			RBSource *source)
+			RBSource *source,
+			RBSource *parent)
 {
 	shell->priv->sources
 		= g_list_append (shell->priv->sources, source);
@@ -1362,13 +1386,13 @@ rb_shell_append_source (RBShell *shell,
 	gtk_widget_show (GTK_WIDGET (source));
 
 	rb_sourcelist_append (RB_SOURCELIST (shell->priv->sourcelist),
-			      source);
+			      source, parent);
 }
 
 static void
 rb_shell_playlist_added_cb (RBPlaylistManager *mgr, RBSource *source, RBShell *shell)
 {
-	rb_shell_append_source (shell, source);
+	rb_shell_append_source (shell, source, NULL);
 }
 
 static void
@@ -1463,7 +1487,12 @@ rb_shell_select_source (RBShell *shell,
 
 	rb_debug ("selecting source %p", source);
 	
+	if (shell->priv->selected_source) {
+		rb_source_deactivate(shell->priv->selected_source);
+	}
+	
 	shell->priv->selected_source = source;
+	rb_source_activate(shell->priv->selected_source);
 	
 	view = rb_source_get_entry_view (shell->priv->selected_source);
 
@@ -1805,7 +1834,11 @@ static void
 rb_shell_quit (RBShell *shell)
 {
 	rb_debug ("Quitting");
-
+	
+#ifdef WITH_DAAP_SUPPORT
+	rb_daap_sources_shutdown (shell);
+	rb_daap_sharing_shutdown (shell);
+#endif /* WITH_DAAP_SUPPORT */
 	rb_shell_shutdown (shell);
 	rb_shell_sync_state (shell);
 	g_object_unref (G_OBJECT (shell));
@@ -1987,6 +2020,27 @@ rb_shell_cmd_current_song (GtkAction *action,
 	rb_debug ("current song");
 
 	rb_shell_jump_to_current (shell);
+}
+
+static void
+rb_shell_cmd_source_disconnect (GtkAction *action,
+				RBShell *shell)
+{
+	rb_debug ("disconnect from source");
+
+	if (shell->priv->selected_source) {
+		RBSource *library_source;
+
+		library_source = rb_shell_get_source_by_entry_type (shell, 
+								    RHYTHMDB_ENTRY_TYPE_SONG);
+		rb_shell_select_source (shell, library_source);
+		
+		rb_source_disconnect (shell->priv->selected_source);
+	}
+	
+
+	
+	return;
 }
 
 static void

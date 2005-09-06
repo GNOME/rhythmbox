@@ -733,7 +733,6 @@ rb_library_source_new (RBShell *shell)
 	return source;
 }
 
-
 static gboolean
 string_list_equal (GList *a, GList *b)
 {

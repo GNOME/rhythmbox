@@ -59,6 +59,9 @@ static RBSourceEOFType default_handle_eos (RBSource *source);
 static gboolean default_receive_drag  (RBSource *source, GtkSelectionData *data);
 static gboolean default_show_popup  (RBSource *source);
 static void default_delete_thyself (RBSource *source);
+static void default_activate (RBSource *source);
+static void default_deactivate (RBSource *source);
+static gboolean default_disconnect (RBSource *source);
 
 struct RBSourcePrivate
 {
@@ -144,6 +147,9 @@ rb_source_class_init (RBSourceClass *klass)
 	klass->impl_receive_drag = default_receive_drag;
 	klass->impl_show_popup = default_show_popup;
 	klass->impl_delete_thyself = default_delete_thyself;
+	klass->impl_activate = default_activate;
+	klass->impl_deactivate = default_deactivate;
+	klass->impl_disconnect = default_disconnect;
 	klass->impl_try_playlist = default_try_playlist;
 
 	g_object_class_install_property (object_class,
@@ -454,7 +460,11 @@ rb_source_get_config_widget (RBSource *source)
 {
 	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
 
-	return klass->impl_get_config_widget (source);
+	if (klass->impl_get_config_widget) {
+		return klass->impl_get_config_widget (source);
+	} else {
+		return NULL;
+	}
 }
 
 static gboolean
@@ -654,3 +664,44 @@ rb_source_delete_thyself (RBSource *source)
 	klass->impl_delete_thyself (source);
 	g_signal_emit (G_OBJECT (source), rb_source_signals[DELETED], 0);
 }
+
+static void default_activate (RBSource *source)
+{
+	return;
+}
+
+static void default_deactivate (RBSource *source)
+{
+	return;
+}
+
+static gboolean default_disconnect (RBSource *source)
+{
+	return TRUE;
+}
+
+void rb_source_activate (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_activate (source);
+
+	return;
+}
+
+void rb_source_deactivate (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	klass->impl_deactivate (source);
+
+	return;
+}
+
+gboolean rb_source_disconnect (RBSource *source)
+{
+	RBSourceClass *klass = RB_SOURCE_GET_CLASS (source);
+
+	return klass->impl_disconnect (source);
+}
+

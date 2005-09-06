@@ -30,6 +30,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/player	 			\
 	-I$(top_srcdir)/iradio				\
 	-I$(top_srcdir)/shell				\
+	-I$(top_srcdir)/daapsharing			\
 	-DPIXMAP_DIR=\""$(datadir)/pixmaps"\"		\
 	-DSHARE_DIR=\"$(pkgdatadir)\"                   \
 	-DDATADIR=\""$(datadir)"\"			\
@@ -55,5 +56,16 @@ libsourcesimpl_la_SOURCES += 		\
 	rb-playlist-source-recorder.h	
 
 INCLUDES += $(LIBNAUTILUS_BURN_CFLAGS)
+endif
+
+if USE_DAAP
+libsourcesimpl_la_SOURCES +=		\
+	rb-daap-source.c 		\
+	rb-daap-source.h		\
+	rb-daap-playlist-source.c	\
+	rb-daap-playlist-source.h	
+
+INCLUDES += $(SOUP_CFLAGS) 
+
 endif
 

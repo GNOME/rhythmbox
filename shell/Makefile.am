@@ -137,6 +137,14 @@ if USE_CD_BURNER
 rhythmbox_LDADD += $(LIBNAUTILUS_BURN_LIBS)
 endif
 
+if USE_DAAP
+INCLUDES += -I$(top_srcdir)/daapsharing
+
+rhythmbox_LDADD += $(SOUP_LIBS) \
+		   $(MDNS_LIBS) \
+		   $(top_builddir)/daapsharing/libdaapsharing.la
+endif
+
 BUILT_SOURCES += $(tab_files)
 
 CLEANFILES += $(BUILT_SOURCES)

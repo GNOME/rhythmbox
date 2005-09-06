@@ -110,6 +110,9 @@ void		rb_shell_construct	(RBShell *shell);
 void            rb_shell_register_entry_type_for_source (RBShell *shell,
 							 RBSource *source,
 							 RhythmDBEntryType type);
+
+void rb_shell_append_source (RBShell *shell, RBSource *source, RBSource *parent);
+
 G_END_DECLS
 
 #endif /* __RB_SHELL_H */

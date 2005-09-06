@@ -174,6 +174,47 @@ if test x"$enable_tag_writing" = xyes; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
+dnl DAAP (iTunes Music Shares)
+AC_ARG_ENABLE(daap,
+	      AC_HELP_STRING([--enable-daap],
+			     [Enable Digital Audio Access Protocol (music sharing) in rhythmbox **EXPERIMENTAL**]))
+AM_CONDITIONAL(USE_DAAP, test x"$enable_daap" = xyes)
+if test x"$enable_daap" = xyes; then
+   AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
+   PKG_CHECK_MODULES(SOUP,                            \
+		libsoup-2.2,
+		have_libsoup=yes)
+   PKG_CHECK_MODULES(MDNS,
+		howl,
+		have_howl=yes,
+		have_howl=no)
+   if test x"$have_howl" = xyes; then
+      AC_DEFINE(WITH_HOWL, 1, [Define if Howl should be used for mDNS])
+      have_mdns="yes"
+   else
+	PKG_CHECK_MODULES(MDNS,
+		avahi-client avahi-glib,
+		have_avahi=yes,
+		have_avahi=no)
+	if test x"$have_avahi" = xyes; then
+	   AC_DEFINE(WITH_AVAHI, 1, [Define if Avahi should be used for mDNS])
+	   have_mdns="yes"
+        fi
+   fi
+
+   enable_daap="no"
+
+   if test x"$have_libsoup" = xyes; then
+     if test x"$have_mdns" = xyes; then
+	AC_DEFINE(WITH_DAAP_SUPPORT, 1, [Define if daap should be enabled])
+	enable_daap="yes"
+     else
+	AC_MSG_ERROR([DAAP support explicitly requested, but no mDNS implentation found.  Install Howl or Avahi])
+     fi	
+   fi
+
+   AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
+fi
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
@@ -460,6 +501,7 @@ iradio/Makefile
 remote/Makefile
 remote/bonobo/Makefile
 remote/dbus/Makefile
+daapsharing/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile
@@ -517,6 +559,11 @@ if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
+fi
+if test x"$enable_daap" = xyes; then
+	AC_MSG_NOTICE([** DAAP shares enabled])
+else
+	AC_MSG_NOTICE([   DAAP shares disabled])
 fi
 if test x"$enable_cd_burner" = xyes; then
 	AC_MSG_NOTICE([** CD burner support is enabled])

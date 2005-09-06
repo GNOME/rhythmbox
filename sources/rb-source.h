@@ -101,6 +101,9 @@ typedef struct
 	gboolean	(*impl_show_popup)	(RBSource *source);
 				   
 	void		(*impl_delete_thyself)	(RBSource *source);
+	void		(*impl_activate)	(RBSource *source);
+	void		(*impl_deactivate)	(RBSource *source);
+	gboolean	(*impl_disconnect)	(RBSource *source);
 } RBSourceClass;
 
 typedef gboolean (*RBSourceFeatureFunc) (RBSource *source);
@@ -158,6 +161,10 @@ gboolean	rb_source_receive_drag		(RBSource *source, GtkSelectionData *data);
 gboolean	rb_source_show_popup		(RBSource *source);
 
 void		rb_source_delete_thyself	(RBSource *source);
+
+void		rb_source_activate		(RBSource *source);
+void		rb_source_deactivate		(RBSource *source);
+gboolean	rb_source_disconnect		(RBSource *source);
 
 /* Protected method, should only be used by objects inheriting from RBSource */
 void            _rb_source_show_popup           (RBSource *source, 

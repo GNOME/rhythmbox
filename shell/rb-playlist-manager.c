@@ -32,6 +32,9 @@
 
 #include "rb-playlist-manager.h"
 #include "rb-playlist-source.h"
+#ifdef WITH_DAAP_SUPPORT
+#include "rb-daap-playlist-source.h"
+#endif
 #if defined(WITH_CD_BURNER_SUPPORT)
 #include "rb-recorder.h"
 #endif
@@ -697,12 +700,14 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	xmlNodePtr root;
 	struct RBPlaylistManagerSaveThreadData *data;
 	GtkTreeIter iter;
+	GtkTreeModel *fmodel;
 	GtkTreeModel *model;
 
 	rb_debug ("saving the playlists");
 
-	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &model, NULL);
-	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (model));
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
+	g_object_unref (fmodel);
 	
 	if (!force) {
 		gboolean dirty = FALSE;
@@ -718,7 +723,10 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 				source = g_value_get_pointer (&v);
 				if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 					continue;
-
+#ifdef WITH_DAAP_SUPPORT
+				if (RB_IS_DAAP_PLAYLIST_SOURCE (source))
+					continue;
+#endif /* WITH DAAP_SUPPORT */
 				g_object_get (G_OBJECT (source), "dirty", &dirty, NULL);
 
 			} while (gtk_tree_model_iter_next (model, &iter));
@@ -764,6 +772,10 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 			source = g_value_get_pointer (&v);
 			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
 				continue;
+#ifdef WITH_DAAP_SUPPORT
+			if (RB_IS_DAAP_PLAYLIST_SOURCE (source))
+				continue;
+#endif /* WITH DAAP_SUPPORT */
 
 			rb_playlist_source_save_to_xml (RB_PLAYLIST_SOURCE (source), root);
 		} while (gtk_tree_model_iter_next (model, &iter));
@@ -773,6 +785,7 @@ rb_playlist_manager_save_playlists (RBPlaylistManager *mgr, gboolean force)
 	mgr->priv->outstanding_threads++;
 	
 	g_thread_create ((GThreadFunc) rb_playlist_manager_save_thread_main, data, FALSE, NULL);
+	g_object_unref (G_OBJECT (model));
 }
 
 static void
@@ -801,6 +814,44 @@ rb_playlist_manager_new_playlist (RBPlaylistManager *mgr,
 		       playlist);
 
 	return playlist;
+}
+
+GList *
+rb_playlist_manager_get_playlists (RBPlaylistManager *mgr)
+{
+	GList *playlists = NULL;
+	GtkTreeIter iter;
+	GtkTreeModel *fmodel;
+	GtkTreeModel *model;
+	
+	g_object_get (G_OBJECT (mgr->priv->sourcelist), "model", &fmodel, NULL);
+	model = gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (fmodel));
+	g_object_unref (fmodel);
+	
+	if (gtk_tree_model_get_iter_first (model, &iter)) {
+		do {
+			RBSource *source;
+			GValue v = {0,};
+			gtk_tree_model_get_value (model,
+						  &iter,
+						  RB_SOURCELIST_MODEL_COLUMN_SOURCE,
+						  &v);
+			source = g_value_get_pointer (&v);
+			if (RB_IS_PLAYLIST_SOURCE (source) == FALSE)
+				continue;
+#ifdef WITH_DAAP_SUPPORT
+			if (RB_IS_DAAP_PLAYLIST_SOURCE (source)) 
+				continue;
+#endif
+
+			playlists = g_list_prepend (playlists, source);
+
+		} while (gtk_tree_model_iter_next (model, &iter));
+	}
+	
+	g_object_unref (model);
+	
+	return playlists;
 }
 
 static void
