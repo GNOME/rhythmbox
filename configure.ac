@@ -174,6 +174,7 @@ if test x"$enable_tag_writing" = xyes; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
+<<<<<<< configure.ac
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
@@ -183,7 +184,13 @@ if test x"$enable_daap" = xyes; then
    AC_MSG_WARN([DAAP support is experimental, and may cause Rhythmbox to crash uncontrollably, use at your own risk])
    PKG_CHECK_MODULES(SOUP,                            \
 		libsoup-2.2,
+		have_libsoup=yes,
+		have_libsoup=no)
+   if test x"$have_libsoup" = xno; then
+      PKG_CHECK_MODULES(SOUP,
+		libsoup-2.4,
 		have_libsoup=yes)
+   fi
    PKG_CHECK_MODULES(MDNS,
 		howl,
 		have_howl=yes,
@@ -215,6 +222,8 @@ if test x"$enable_daap" = xyes; then
 
    AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 fi
+=======
+>>>>>>> 1.161
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
@@ -501,7 +510,6 @@ iradio/Makefile
 remote/Makefile
 remote/bonobo/Makefile
 remote/dbus/Makefile
-daapsharing/Makefile
 shell/Makefile
 data/Makefile
 data/ui/Makefile
@@ -559,11 +567,6 @@ if test x"$enable_ipod" = xyes; then
 	AC_MSG_NOTICE([** iPod integration enabled])
 else
 	AC_MSG_NOTICE([   iPod integration disabled])
-fi
-if test x"$enable_daap" = xyes; then
-	AC_MSG_NOTICE([** DAAP shares enabled])
-else
-	AC_MSG_NOTICE([   DAAP shares disabled])
 fi
 if test x"$enable_cd_burner" = xyes; then
 	AC_MSG_NOTICE([** CD burner support is enabled])

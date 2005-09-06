@@ -37,10 +37,6 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
-#ifdef WITH_DAAP_SUPPORT
-#include "rb-daap-src.h"
-#endif /* WITH_DAAP_SUPPORT */
-
 G_DEFINE_TYPE(RBPlayer, rb_player, G_TYPE_OBJECT)
 
 static void rb_player_finalize (GObject *object);
@@ -572,7 +568,7 @@ rb_player_open (RBPlayer *mp,
 
 	g_free (mp->priv->uri);
 	mp->priv->uri = NULL;
-	
+
 	if (uri == NULL) {
 		mp->priv->playing = FALSE;
 		return TRUE;
@@ -769,29 +765,12 @@ rb_player_set_time (RBPlayer *mp, long time)
 
 	gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
 
-#ifdef WITH_DAAP_SUPPORT
-	if (g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
-		gst_element_set_state (mp->priv->playbin, GST_STATE_READY);
-		/* FIXME?
-		 * This is sorta hack/sorta best way to do it.
-		 * If we set up the daapsrc to do regular GStreamer seeking,
-		 * GStreamer goes ape-shit and tries to seek all over the 
-		 * place, which can cause iTunes to return errors
-		 * (probably cause we're requesting the same file too often)
-		 *
-		 * So, we do it this way.
-		 */
-		rb_daap_src_set_time (time);
-	} else {
-#endif /* WITH_DAAP_SUPPORT */
-		gst_element_seek (mp->priv->playbin, 
+	gst_element_seek (mp->priv->playbin, 
 			  GST_FORMAT_TIME 
 			  | GST_SEEK_METHOD_SET 
 			  | GST_SEEK_FLAG_FLUSH, 
 			  time * GST_SECOND);
-#ifdef WITH_DAAP_SUPPORT
-	}
-#endif /* WITH_DAAP_SUPPORT */
+
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 }
@@ -803,18 +782,22 @@ rb_player_get_time (RBPlayer *mp)
 
 	if (mp->priv->playbin != NULL) {
 		gint64 gst_position;
-		glong ret;
 		GstFormat fmt = GST_FORMAT_TIME;
 		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &gst_position);
+<<<<<<< rb-player-gst.c
 
 		ret = (glong) (gst_position / (1000*1000*1000));
 #ifdef WITH_DAAP_SUPPORT
-		if (g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
+		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
 			ret += rb_daap_src_get_time ();
 		}
 #endif
 
 		return ret;
+=======
+	
+		return (long)(gst_position / (1000*1000*1000));
+>>>>>>> 1.42
 	} else
 		return -1;
 }
