@@ -1,3 +1,14 @@
+2005-09-06   Charles Schmidt   <cschmidt2@emich.edu>
+	* configure.ac: Fix for extra <<<<<<< & ======= that accidentally made
+	it in last time.  Sorry.
+
+2005-09-06  Charles Schmidt   <cschmidt2@emich.edu>
+
+	* daapsharing/rb-daap-share.c:
+	(rb_daap_share_start_publish): Attempt to start on standard daap port
+	of 3689 first, failing that try any port.  Suggested by Johan Lund 
+	<jlund@home.se>.
+	
 2005-09-06  Charles Schmidt   <cschmidt2@emich.edu>
 	
 	* player/rb-player-gst.c:

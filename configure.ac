@@ -174,7 +174,6 @@ if test x"$enable_tag_writing" = xyes; then
    AC_DEFINE(ENABLE_TAG_WRITING, 1, [Define if tag writing should be enabled])
 fi
 
-<<<<<<< configure.ac
 dnl DAAP (iTunes Music Shares)
 AC_ARG_ENABLE(daap,
 	      AC_HELP_STRING([--enable-daap],
@@ -222,8 +221,6 @@ if test x"$enable_daap" = xyes; then
 
    AM_CONDITIONAL(USE_DAAP, test "x$enable_daap" = "xyes")
 fi
-=======
->>>>>>> 1.161
 
 dnl AC_CHECK_LIB(lirc_client, lirc_init,
 dnl 		[ AC_CHECK_HEADER(lirc/lirc_client.h,
