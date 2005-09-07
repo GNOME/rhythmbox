@@ -1,4 +1,11 @@
 2005-09-06   Charles Schmidt   <cschmidt2@emich.edu>
+	* player/rb-player-gst.c: 
+	(rb_player_get_time): Fix for extra << & == that accidentally made
+	it in.
+
+	* player/Makefile.am: -Idaapsharing so we can include rb-daap-src.h
+	
+2005-09-06   Charles Schmidt   <cschmidt2@emich.edu>
 	* configure.ac: Fix for extra <<<<<<< & ======= that accidentally made
 	it in last time.  Sorry.
 

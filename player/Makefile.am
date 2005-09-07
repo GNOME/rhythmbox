@@ -21,6 +21,7 @@ INCLUDES = 						\
 	-I$(top_srcdir)/shell				\
 	-I$(top_srcdir)/rhythmdb			\
 	-I$(top_srcdir)/widgets				\
+	-I$(top_srcdir)/daapsharing			\
 	$(RHYTHMBOX_CFLAGS)
 
 

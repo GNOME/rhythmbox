@@ -37,6 +37,10 @@
 #include "rb-debug.h"
 #include "rb-marshal.h"
 
+#ifdef WITH_DAAP_SUPPORT
+#include "rb-daap-src.h"
+#endif
+
 G_DEFINE_TYPE(RBPlayer, rb_player, G_TYPE_OBJECT)
 
 static void rb_player_finalize (GObject *object);
@@ -782,11 +786,12 @@ rb_player_get_time (RBPlayer *mp)
 
 	if (mp->priv->playbin != NULL) {
 		gint64 gst_position;
+		glong ret = 0;
+
 		GstFormat fmt = GST_FORMAT_TIME;
 		gst_element_query (mp->priv->playbin, GST_QUERY_POSITION, &fmt, &gst_position);
-<<<<<<< rb-player-gst.c
-
 		ret = (glong) (gst_position / (1000*1000*1000));
+
 #ifdef WITH_DAAP_SUPPORT
 		if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
 			ret += rb_daap_src_get_time ();
@@ -794,10 +799,6 @@ rb_player_get_time (RBPlayer *mp)
 #endif
 
 		return ret;
-=======
-	
-		return (long)(gst_position / (1000*1000*1000));
->>>>>>> 1.42
 	} else
 		return -1;
 }
