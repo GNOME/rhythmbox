@@ -515,6 +515,7 @@ data/art-clearlooks/Makefile
 data/glade/Makefile
 data/rhythmbox.pc
 sources/Makefile
+daapsharing/Makefile
 help/Makefile
 help/C/Makefile
 help/ja/Makefile
