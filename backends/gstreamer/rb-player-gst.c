@@ -769,12 +769,28 @@ rb_player_set_time (RBPlayer *mp, long time)
 
 	gst_element_set_state (mp->priv->playbin, GST_STATE_PAUSED);
 
+#ifdef WITH_DAAP_SUPPORT
+	/* FIXME?
+	 * This is sorta hack/sorta best way to do it.
+	 * If we set up the daapsrc to do regular GStreamer seeking,
+	 * GStreamer goes ape-shit and tries to seek all over the 
+	 * place (typefinding), which can cause iTunes to return errors
+	 * (probably cause we're requesting the same file too often)
+ 	 *
+	 * So, we do it this way.  Doesn't that suck?
+	 */
+	if (mp->priv->uri && g_strncasecmp (mp->priv->uri, "daap://", 7) == 0) {
+		rb_daap_src_set_time (time);
+	} else {
+#endif
 	gst_element_seek (mp->priv->playbin, 
 			  GST_FORMAT_TIME 
 			  | GST_SEEK_METHOD_SET 
 			  | GST_SEEK_FLAG_FLUSH, 
 			  time * GST_SECOND);
-
+#ifdef WITH_DAAP_SUPPORT
+	}
+#endif
 	if (mp->priv->playing)
 		gst_element_set_state (mp->priv->playbin, GST_STATE_PLAYING);
 }
