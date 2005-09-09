@@ -444,11 +444,10 @@ rb_library_source_finalize (GObject *object)
 	rb_debug ("finalizing library source");
 	
 	eel_gconf_notification_remove (source->priv->ui_dir_notify_id);
+	eel_gconf_notification_remove (source->priv->browser_view_notify_id);
 	eel_gconf_notification_remove (source->priv->state_browser_notify_id);
 	eel_gconf_notification_remove (source->priv->state_paned_notify_id);
-	if (source->priv->sorting_key != NULL)
-		eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
-	eel_gconf_notification_remove (source->priv->browser_view_notify_id);
+	eel_gconf_notification_remove (source->priv->state_sorting_notify_id);
 
 	g_free (source->priv->sorting_key);
 	g_free (source->priv->artist);
@@ -628,26 +627,32 @@ rb_library_source_constructor (GType type, guint n_construct_properties,
 	rb_library_source_ui_prefs_sync (source);
 	update_browser_views_visibility (source);
 
-	if (source->priv->sorting_key != NULL) {
+	if (source->priv->sorting_key) {
 		source->priv->state_sorting_notify_id =
 			eel_gconf_notification_add (source->priv->sorting_key,
 					    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
 					    source);
 	}
-	source->priv->state_paned_notify_id =
-		eel_gconf_notification_add (rb_library_source_get_paned_key (source),
-				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
-				    source);
-	source->priv->state_browser_notify_id =
-		eel_gconf_notification_add (rb_source_get_browser_key (RB_SOURCE (source)),
-				    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
-				    source);
+	if (rb_library_source_get_paned_key (source)) {
+		source->priv->state_paned_notify_id =
+			eel_gconf_notification_add (rb_library_source_get_paned_key (source),
+					    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
+					    source);
+	}
+	if (rb_source_get_browser_key (RB_SOURCE (source))) {
+		source->priv->state_browser_notify_id =
+			eel_gconf_notification_add (rb_source_get_browser_key (RB_SOURCE (source)),
+					    (GConfClientNotifyFunc) rb_library_source_state_pref_changed,
+					    source);
+	}
+
 	source->priv->ui_dir_notify_id =
 		eel_gconf_notification_add (CONF_UI_LIBRARY_DIR,
 				    (GConfClientNotifyFunc) rb_library_source_ui_pref_changed, source);
 	source->priv->browser_view_notify_id =
 		eel_gconf_notification_add (CONF_UI_LIBRARY_BROWSER_VIEWS,
 				    (GConfClientNotifyFunc) rb_library_source_browser_views_changed, source);
+
 	rb_library_source_do_query (source, RB_LIBRARY_QUERY_TYPE_ALL);
 	return G_OBJECT (source);
 }
