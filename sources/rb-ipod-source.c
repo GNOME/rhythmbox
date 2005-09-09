@@ -109,11 +109,14 @@ static void
 rb_ipod_source_class_init (RBiPodSourceClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	RBSourceClass *source_class = RB_SOURCE_CLASS (klass);
 
 	parent_class = g_type_class_peek_parent (klass);
 
 	object_class->finalize = rb_ipod_source_finalize;
 	object_class->constructor = rb_ipod_source_constructor;
+
+	source_class->impl_get_config_widget = NULL;
 }
 
 

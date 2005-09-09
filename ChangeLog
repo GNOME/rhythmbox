@@ -1,5 +1,11 @@
 2005-09-09  James Livingston  <jrl@ids.org.au>
 
+	* sources/rb-ipod-source.c: (rb_ipod_source_class_init): remove the
+	iPod preferences pane, as it already uses the browser views as the
+	library.
+
+2005-09-09  James Livingston  <jrl@ids.org.au>
+
 	* sources/rb-library-source.c: (rb_library_source_finalize),
 	(rb_library_source_constructor): fix gconf monitoring of library
 	preference keys.
