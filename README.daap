@@ -16,7 +16,7 @@ How Music Sharing Works
 3. Connecting to a music share
 4. Playing remote music
 5. Publishing your music
-6. RBDAAPStructure
+6. RBDAAPStructure - structure parsing & building
 
 0. Definitions / Fundamentals
 
@@ -194,7 +194,7 @@ file is opened via GnomeVFS and its contents returned.  Rhythmbox's DAAP server
 implementation does not require iTunes hashing headers nor does it require
 unique session-ids.
 
-6. RBDAAPStructure
+6. RBDAAPStructure - structure parsing & building
 
 RBDAAPStructure is a data structure that handles parsing and building DAAP 
 responses.  It lives in daapsharing/rb-daap-structure.c/h.
@@ -204,11 +204,65 @@ Useful reading:
 http://www.deleet.de/projekte/daap/  The section titled 'DAAPD technicals'
 http://molelog.molehill.org/blox/Computers/Macintosh/DAAP3.writeback (#1&2 also)
 
-**** INCOMPLETE ****
+A DAAP response is of the form:
+
+Byte:	1234 		| 5678 			| length bytes
+Data:	content code	| content length 	| content
+
+Codes are 4 byte character strings like 'msrv', 'mstt', 'mpro', and so on.
+A list of codes is available in the RBDAAPContentCode enumeration in 
+rb-daap-structure.h.  They are defined in the RBDAAPContentCodeDefintion array 
+in rb-daap-structure.c.  There are several DAAP types.  You can ask the
+DAAP server for /content-codes to retrieve a dictionary mapping codes to types,
+or you can "just know."
+
+Type	   | C data type | Size
+------------------------------
+Byte	   | gchar	 | 1
+Signed Int | gchar	 | 1
+Short	   | gint16	 | 2
+Int	   | gint32	 | 4
+Date	   | gint32	 | 4
+Int64	   | gint64	 | 8
+Version	   | gdouble	 | 4
+String	   | gchar *	 | Whatever the DAAP response says
+Container  | GNode *	 | Whatever the DAAP response says
+
+Containers hold other data.  For example, the response from /server-info is:
+
+dmap.serverinforesponse			Container
+	dmap.status			Int
+	dmap.protocolversion		Version
+	daap.protocolversion		Version
+	daap.itemname			String
+	dmap.loginrequired		Int
+	...
+dmap.databasescoutn			Int
 
 
+The serverinforesponse is a Container holding the other content.
 
+The bulk of the parsing work is done in 
+rb_daap_structure_parse_container_buffer() The data & the length are passed in,
+as well as a GNode * for the parent container.  The first pass is provided an
+empty container to add all the "toplevel" content to.  The 4 byte content code 
+is read and the daap type looked up accordingly.  The 4 byte data length 
+(code size) is read.  The data is read into a GValue, with its type set 
+accordingly.  The GValue & content code are added to the GNode * as new 
+children.  If type is a container, rb_daap_structure_parse_container_buffer() is
+called recursively.
 
+There are find functions rb_daap_structure_find_item() & 
+rb_daap_structure_find_node() which take a GNode * structure and content code
+to be located.  The structure is walked until a node matching the content code
+is found.  The node or the item is returned, depending on the function being
+used.
 
-
+To build a DAAP structure you use rb_daap_structure_add().  It creates a new 
+node containing the data you add and appends it to the parent node you pass.  
+You pass NULL for the parent to create a toplevel node.  The new node is 
+returned.  The data you add is passed in as a content code and then the data.  
+If the content type is Container, you don't need to pass any data.  Once the 
+DAAP structure is build, use rb_daap_structure_serialize() to convert it to
+a string appropriate for sending over a socket. 
 
