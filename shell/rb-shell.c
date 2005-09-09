@@ -2031,11 +2031,11 @@ rb_shell_cmd_source_disconnect (GtkAction *action,
 	if (shell->priv->selected_source) {
 		RBSource *library_source;
 
+		rb_source_disconnect (shell->priv->selected_source);
+		
 		library_source = rb_shell_get_source_by_entry_type (shell, 
 								    RHYTHMDB_ENTRY_TYPE_SONG);
 		rb_shell_select_source (shell, library_source);
-		
-		rb_source_disconnect (shell->priv->selected_source);
 	}
 	
 

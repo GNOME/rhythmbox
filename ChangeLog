@@ -1,4 +1,20 @@
 2005-09-09  Charles Schmidt   <cschmidt2@emich.edu>
+	* AUTHORS: Added myself.
+
+	* daapsharing/rb-daap-connection.c:
+	(connection_login), (rb_connection_new): Reorganized password
+	handling.
+
+	* po/POTFILES.in: Added daapsharing/rb-daap-dialog.c
+
+	* shell/rb-shell.c:
+	(rb_shell_cmd_disconnect_source): Fixed disconnecting from sources.
+
+	* sources/rb-daap-source.c:
+	(rb_daap_source_activate): Better error handling when we are unable to
+	connect.
+	
+2005-09-09  Charles Schmidt   <cschmidt2@emich.edu>
 	* README.daap: Fixed some terminology.
 
 	* configure.ac: Better automatic detection of mDNS/DNS-SD library.

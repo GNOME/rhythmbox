@@ -65,8 +65,6 @@ struct RBDAAPSourcePrivate
 
 	RBDAAPConnection *connection;
 	GSList *playlist_sources;
-
-	gboolean connected;
 };
 
 
@@ -462,8 +460,12 @@ rb_daap_source_activate (RBSource *source)
 		 * this is the call that takes a long time 
 		 */
 		daap_source->priv->connection = rb_daap_connection_new (name, daap_source->priv->host, daap_source->priv->port, daap_source->priv->password_protected, db, type);
-		g_free (name);
 
+		if (daap_source->priv->connection == NULL) {
+			daap_source->priv->playlist_sources = NULL;
+			goto out;
+		}
+		
 		playlists = rb_daap_connection_get_playlists (daap_source->priv->connection);
 		for (l = playlists; l; l = l->next) {
 			RBDAAPPlaylist *playlist = l->data;
@@ -484,10 +486,10 @@ rb_daap_source_activate (RBSource *source)
 			daap_source->priv->playlist_sources = g_slist_prepend (daap_source->priv->playlist_sources, playlist_source);
 		}
 	
+out:
+		g_free (name);
 		g_object_unref (G_OBJECT (db));
 		g_object_unref (G_OBJECT (shell));
-
-		daap_source->priv->connected = TRUE;
 	}
 
 	return;
@@ -498,12 +500,14 @@ rb_daap_source_disconnect (RBSource *source)
 {
 	RBDAAPSource *daap_source = RB_DAAP_SOURCE (source);
 
-	if (daap_source->priv->connected) {
+	if (daap_source->priv->connection) {
 		GSList *l;
 		RBShell *shell;
 		RhythmDB *db;
 		RhythmDBEntryType type;
 
+		rb_debug ("Disconnecting source");
+		
 		g_object_get (G_OBJECT (source), "shell", &shell, "entry-type", &type, NULL);
 		g_object_get (G_OBJECT (shell), "db", &db, NULL);
 		rhythmdb_entry_delete_by_type (db, type);
@@ -513,19 +517,17 @@ rb_daap_source_disconnect (RBSource *source)
 
 		for (l = daap_source->priv->playlist_sources; l; l = l->next) {
 			RBSource *playlist_source = RB_SOURCE (l->data);
-	
+			gchar *s;
+
+			g_object_get (G_OBJECT (playlist_source), "name", &s, NULL);
 			rb_source_delete_thyself (playlist_source);	
 		}
 		
 		g_slist_free (daap_source->priv->playlist_sources);
 		daap_source->priv->playlist_sources = NULL;
 	
-		if (daap_source->priv->connection) {
-			rb_daap_connection_destroy (daap_source->priv->connection);
-			daap_source->priv->connection = NULL;
-		}
-
-		daap_source->priv->connected = FALSE;
+		rb_daap_connection_destroy (daap_source->priv->connection);
+		daap_source->priv->connection = NULL;
 	}
 	
 	return TRUE;

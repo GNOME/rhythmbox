@@ -712,7 +712,7 @@ out:
 }
 
 static gboolean
-connection_login (RBDAAPConnection *connection, gboolean password_protected)
+connection_login (RBDAAPConnection *connection)
 {
 	GNode *structure = NULL;
 	HTTPResponse resp;
@@ -721,10 +721,11 @@ connection_login (RBDAAPConnection *connection, gboolean password_protected)
 	gchar *path = NULL;
 
 get_password:	
-        if (password_protected) {
-                connection->password_protected = password_protected;
+        if (connection->password_protected) {
+		rb_debug ("Need a password for %s", connection->name);
                 connection->password = connection_get_password (connection);
 		if (connection->password == NULL || connection->password[0] == '\0') {
+			rb_debug ("Password entry canceled");
 			return FALSE;
 		}
         }
@@ -733,6 +734,7 @@ get_password:
 	resp = http_get (connection, "/login", FALSE, 0.0, 0, FALSE, &structure);
 
 	if (resp == HTTP_AUTH_ERR) {
+		rb_debug ("Incorrect password");
 		goto get_password;
 	}
 
@@ -1187,7 +1189,8 @@ rb_daap_connection_new (const gchar *name,
 	}
 
 	rb_debug ("Logging into DAAP server");
-	if (connection_login (connection, password_protected) == FALSE) {
+	connection->password_protected = password_protected;
+	if (connection_login (connection) == FALSE) {
 		rb_debug ("Could not login to DAAP server");
 		goto error_out;
 	}
